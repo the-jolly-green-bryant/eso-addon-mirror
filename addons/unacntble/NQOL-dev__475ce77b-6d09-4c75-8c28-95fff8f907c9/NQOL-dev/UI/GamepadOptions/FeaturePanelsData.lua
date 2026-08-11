@@ -123,7 +123,6 @@ function GamepadOptions.BuildMountsOptionsData()
         GamepadOptions.BuildAllowUseInteractionsOption(),
         GamepadOptions.BuildAllowOpenInteractionsOption(),
         GamepadOptions.BuildAllowTalkInteractionsOption(),
-        GamepadOptions.BuildRandomMountOption(),
         GamepadOptions.BuildTrainingCheckOption(),
     }
 end

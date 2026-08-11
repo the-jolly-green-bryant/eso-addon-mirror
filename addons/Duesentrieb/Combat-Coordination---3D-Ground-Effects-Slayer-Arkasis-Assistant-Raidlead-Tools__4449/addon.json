@@ -1,7 +1,8 @@
 {
-  "archive_path": "addons/Duesentrieb/Combat-Coordinates---Ground-Effects-e.g.-Olorime-Standard-of-Might-Group-Sync__4449",
+  "archive_format": "zip",
+  "archive_path": "addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-Slayer-Arkasis-Assistant-Raidlead-Tools__4449",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Duesentrieb",
   "canonical_id": "esoui:4449",
   "category_id": "25",
@@ -46,22 +47,27 @@
   "content_id": "esoui:4449",
   "deleted": false,
   "directories": [
-    "CombatCoordinates"
+    "CombatCoordination"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4449/",
-  "fingerprint": "49796da65ba2edba24493f55975bf07d77edaa47932bef3218040ebaa252c344",
-  "images": [],
+  "fingerprint": "204466fa699a708e7266d902fd7152282ab4bffef56cf7fce53a2bd218f6afdc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16950.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16949.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16951.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16953.png"
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4449",
-  "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordinates-GroundEffectse.g.OlorimeStandardofMightGroupSync.html",
+  "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordination-3DGroundEffectsSlayerArkasisAssistantRaidleadTools.html",
   "stats": {
-    "downloads": 322,
-    "favorites": 1,
-    "monthly_downloads": 36
+    "downloads": 362,
+    "favorites": 2,
+    "monthly_downloads": 64
   },
-  "title": "Combat Coordinates - Ground Effects (e.g. Olorime, Standard of Might) & Group Sync",
-  "updated_at": 1773529009000,
-  "version": "20260314-0002"
+  "title": "Combat Coordination - 3D Ground Effects, Slayer & Arkasis Assistant, Raidlead Tools",
+  "updated_at": 1786366724000,
+  "version": "20260810-0001"
 }

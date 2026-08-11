@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Ookimus/Recall-Rotator__4765",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Ookimus",
+  "canonical_id": "esoui:4765",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4765",
+  "deleted": false,
+  "directories": [
+    "RecallRotator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4765/",
+  "fingerprint": "71ae867de5e7c92d7b2259f55080252b03cd147f746f29618027494fb341d1c1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4765",
+  "source_url": "https://www.esoui.com/downloads/info4765-RecallRotator.html",
+  "stats": {
+    "downloads": 8,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "Recall Rotator",
+  "updated_at": 1786391540000,
+  "version": "1.0"
+}

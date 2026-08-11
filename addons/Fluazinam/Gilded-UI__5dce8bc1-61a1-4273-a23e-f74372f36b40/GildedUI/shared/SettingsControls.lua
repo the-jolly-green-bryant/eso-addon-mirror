@@ -42,16 +42,10 @@ function Addon:CreateSettingsHelpers()
     end
 
     function H.FontSizeDropdown(sizeKey)
-        local choices, values = {}, {}
-        for i, item in ipairs(Addon.fontSizeItems) do
-            choices[i] = item.name
-            values[i] = item.value
-        end
         return {
             type = "selector",
             name = "Font Size",
-            choices = choices,
-            choicesValues = values,
+            choices = Addon.fontSizeItems,
             getFunc = function() return sv[sizeKey] end,
             setFunc = function(value)
                 sv[sizeKey] = value

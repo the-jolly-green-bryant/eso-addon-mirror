@@ -17,7 +17,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [WARmart Guild Hall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/WARmart-Guild-Hall__3816) | DakJaniels | PC / Mac | 1.0 |
 | [Warmask Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Warmask-Tracker__b7f8c335-5c64-42cf-813e-c178bb11a1e5) | codeWarrior82 | Console | — |
 | [Wayfinder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KanashiReinkyatto/Wayfinder__4678) | KanashiReinkyatto | PC / Mac | 1.1 |
-| [Wayshrine Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Infinite_1st/Wayshrine-Blocker__4745) | Infinite_1st | PC / Mac | 1 |
+| [Wayshrine Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Infinite_1st/Wayshrine-Blocker__4745) | Infinite_1st | PC / Mac | 1.1 |
 | [Wayshrine Tab Selector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kulturnilpferd/Wayshrine-Tab-Selector__2294) | Kulturnilpferd | PC / Mac | 1.3 |
 | [wd's pings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wdiscute/wd-s-pings__4000) | wdiscute | PC / Mac | 1.23 |
 | [Wealth Evaluator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Wealth-Evaluator__1559) | Rhyono | PC / Mac | 1.52 |
@@ -31,7 +31,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Well Eater](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/esorochinskiy/Well-Eater__3378) | esorochinskiy | PC / Mac | 1.2.0 |
 | [Werewolf Rave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Erickson9610/Werewolf-Rave__4739) | Erickson9610 | PC / Mac | 1.3.3 |
 | [Werewolf Timer Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Bar__2911) | maximoz | PC / Mac | 2.6 |
-| [Werewolf Timer Bar Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhnxZ/Werewolf-Timer-Bar-Updated__3814) | PhnxZ | PC / Mac | 3.04 |
+| [Werewolf Timer Bar Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhnxZ/Werewolf-Timer-Bar-Updated__3814) | PhnxZ | PC / Mac | 3.05 |
 | [Werewolf Timer Icon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Icon__2912) | maximoz | PC / Mac | 2.6 |
 | [Werewolf Trackers and QOL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Grizzly_Khan/Werewolf-Trackers-and-QOL__4698) | Grizzly_Khan | PC / Mac | 1.1.1 |
 | [WerewolfHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/im_rookie/WerewolfHelper__3832) | im_rookie | PC / Mac | 1.1 |

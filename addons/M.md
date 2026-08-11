@@ -82,7 +82,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Mer Quickslot Filters](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/merlight/Mer-Quickslot-Filters__707) | merlight | PC / Mac | 1.8 |
 | [Mer Quickslot Filters - Fixed Update43](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Mer-Quickslot-Filters---Fixed-Update43__953) | Baertram | PC / Mac | 3.0 |
 | [Mer Torchbug - Fixed and Improved (Variable inspector/Scripts/Events/and more)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Mer-Torchbug---Fixed-and-Improved-Variable-inspector-Scripts-Events-and-more__2601) | Baertram | PC / Mac | 1.76 |
-| [Meridias Block Pooky](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Claudi/Meridias-Block-Pooky__4353) | Claudi | PC / Mac | 2.18 |
+| [Meridias Block Pooky](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Claudi/Meridias-Block-Pooky__4353) | Claudi | PC / Mac | 2.19 |
 | [Merlin the Enchanter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/Merlin-the-Enchanter__659) | Khrill | PC / Mac | 1.8.2 |
 | [Merlin's Heal Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Just_Merlin/Merlin-s-Heal-Helper__1599) | Just_Merlin | PC / Mac | 1.2.0 |
 | [Merlin's Rez Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Just_Merlin/Merlin-s-Rez-Helper__1600) | Just_Merlin | PC / Mac | 2.1.0 |
@@ -119,6 +119,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [MirrorLand GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/t.vicson/MirrorLand-GuildHalls__3016) | t.vicson | PC / Mac | 2.0.0 |
 | [Missing Food/Drink Buff CSA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dack.Janiels/Missing-Food-Drink-Buff-CSA__a8df6914-51e2-4059-8c77-a773a30bee81) | Dack.Janiels | Console | — |
 | [Missing Map Textures Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Missing-Map-Textures-Patch__1203) | CaptainBlagbird | PC / Mac | 1.2.13 |
+| [MitigationFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/MitigationFilter__4767) | lebiez | PC / Mac | 1.00 |
 | [MMO Mouse Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DarkPhalanx/MMO-Mouse-Bar__2705) | DarkPhalanx | PC / Mac | 1.04 |
 | [moi necrotic orb synergy blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/moi-rah/moi-necrotic-orb-synergy-blocker__3183) | moi-rah | PC / Mac | 0.1.1 |
 | [Molag Kena Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Molag-Kena-Tracker__1888) | aldericon | PC / Mac | 12.0 |

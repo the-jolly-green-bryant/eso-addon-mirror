@@ -186,7 +186,7 @@ function Hodor.GetSettings()
                 Hodor.Initialize()
             end,
             width = "full",
-            disabled = function() return not HodorReflexes.modules or not HodorReflexes.modules.share or not HodorReflexes.modules.share.RefreshControls end,
+            disabled = function() return not HodorReflexes or not HodorReflexes.modules or not HodorReflexes.modules.share or not HodorReflexes.modules.share.RefreshControls end,
         },
         {
             type = "checkbox",
@@ -199,7 +199,7 @@ function Hodor.GetSettings()
             end,
             width = "full",
             disabled = function()
-                return not KyzderpsDerps.savedOptions.hodor.horn or not HodorReflexes.modules or not HodorReflexes.modules.share or not HodorReflexes.modules.share.RefreshControls
+                return not KyzderpsDerps.savedOptions.hodor.horn or not HodorReflexes or not HodorReflexes.modules or not HodorReflexes.modules.share or not HodorReflexes.modules.share.RefreshControls
             end,
         },
     }

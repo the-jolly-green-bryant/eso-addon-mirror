@@ -1,0 +1,14 @@
+## Title: Group Mementos
+## Author: |cFF0000P|cFFA500v|cFFFF00P|c00FF00e|c0000FFn|c4B0082n|c800080y|r
+## Version: 2.3.3
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: GroupMementosSavedVariables
+## Description: Tracks how many times each current group member has used the Mud Ball Pouch, Murderous Crow, Cherry Blossom Branch, Everlasting Snowball, and Revelry Pie this group session. Requires LibAddonMenu-2.0.
+
+src/init.lua
+src/core.lua
+src/display.lua
+src/settings.lua
+src/command.lua
+src/tally.xml

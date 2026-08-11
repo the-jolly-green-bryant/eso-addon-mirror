@@ -18,14 +18,14 @@ local Templates = {
 }
 
 -- Native-style inline group label (options center or nav left).
-function LibConsoleMenu:AddSettingEntry(setting)
+function LibConsoleMenu:AddControlEntry(setting)
 	local list = self.list
 	local templateName = LibConsoleMenu.ResolveSettingEntryTemplate(list, setting, Templates[setting.type])
 	list:AddEntry(templateName, setting)
 end
 
 
-function LibConsoleMenu.AddonSettings:InitHandlers()
+function LibConsoleMenu.AddonMenu:InitHandlers()
 	CALLBACK_MANAGER:RegisterCallback(
 		"LibConsoleMenu_AddonSelected",
 		function()
@@ -37,7 +37,7 @@ function LibConsoleMenu.AddonSettings:InitHandlers()
 	)
 end
 
-function LibConsoleMenu.AddonSettings:CreateControls()
+function LibConsoleMenu.AddonMenu:CreateControls()
 	local list = LibConsoleMenu.scrollList:GetCurrentList() or LibConsoleMenu.scrollList:GetMainList()
 	list:Clear()
 	list.lastLcmHeader = nil
@@ -46,8 +46,8 @@ function LibConsoleMenu.AddonSettings:CreateControls()
 	local hasDefaults = false
 
 	local currentSubmenu = list.currentSubmenu
-	for i = 1, #self.settings do
-		local setting = self.settings[i]
+	for i = 1, #self.controls do
+		local setting = self.controls[i]
 		if setting.currentSubmenu == currentSubmenu then
 			setting:CreateControl()
 			hasDefaults = hasDefaults or setting.default ~= nil
@@ -59,11 +59,11 @@ function LibConsoleMenu.AddonSettings:CreateControls()
 	LibConsoleMenu.needUpdate = false
 end
 
-function LibConsoleMenu.AddonSettings:UpdateControls()
+function LibConsoleMenu.AddonMenu:UpdateControls()
 	local list = LibConsoleMenu.scrollList:GetCurrentList() or LibConsoleMenu.scrollList:GetMainList()
 	local currentSubmenu = list.currentSubmenu
-	for i = 1, #self.settings do
-		local setting = self.settings[i]
+	for i = 1, #self.controls do
+		local setting = self.controls[i]
 		if setting.currentSubmenu == currentSubmenu then
 			setting:UpdateControl()
 		end
@@ -72,9 +72,9 @@ function LibConsoleMenu.AddonSettings:UpdateControls()
 	LibConsoleMenu.needUpdate = false
 end
 
-function LibConsoleMenu.AddonSettings:RefreshSelection()
+function LibConsoleMenu.AddonMenu:RefreshSelection()
 	local list = LibConsoleMenu.list
-	if #self.settings > 0 then
+	if #self.controls > 0 then
 		local selectedIndex =
 			list:FindFirstIndexByEval(
 			function(data)
@@ -107,7 +107,7 @@ local function ApplySelectFirstRow()
 	list:EnableAnimation(true)
 end
 
-function LibConsoleMenu.AddonSettings:SelectFirstRow()
+function LibConsoleMenu.AddonMenu:SelectFirstRow()
 	-- Immediate snap, then a short deferred re-snap so leftover stick/D-pad
 	-- input after a fast A-press cannot leave us on row 2.
 	ApplySelectFirstRow()
@@ -137,13 +137,16 @@ function LibConsoleMenu.AddonSettings:SelectFirstRow()
 	)
 end
 
-function LibConsoleMenu.AddonSettings:SetupSubmenus()
-	local settings = self.settings
+function LibConsoleMenu.AddonMenu:SetupSubmenus()
+	local controls = self.controls
 	local currentSubmenu = nil
-	for i = 1, #settings do
-		local setting = settings[i]
+	for i = 1, #controls do
+		local setting = controls[i]
 		local isSubmenu = setting.type == LibConsoleMenu.CT_SUBMENU
-		if isSubmenu then
+		-- After a submenu and its descendants, resume under that submenu's parent.
+		if setting.popAfterSubmenu then
+			currentSubmenu = setting.popAfterSubmenu.parentSubmenu
+		elseif isSubmenu then
 			-- Default: root sibling. nested=true keeps current parent.
 			if not setting.nested then
 				currentSubmenu = nil
@@ -193,24 +196,24 @@ function LibConsoleMenu:GetSubmenuListAtDepth(depth)
 	return self.scrollList:GetList(GetSubmenuListName(depth))
 end
 
-function LibConsoleMenu:RefreshAddonSettings()
+function LibConsoleMenu:RefreshCurrentMenu()
 	-- Called from out-side, therefore need to check this (again)
-	if LibConsoleMenu.needUpdate and LibConsoleMenu.currentSettings ~= nil then
-		LibConsoleMenu.currentSettings:UpdateControls()
+	if LibConsoleMenu.needUpdate and LibConsoleMenu.currentMenu ~= nil then
+		LibConsoleMenu.currentMenu:UpdateControls()
 	end
 end
 
 function LibConsoleMenu:SelectFirstAddon()
-	LibConsoleMenu.currentSettings = LibConsoleMenu.addons[1]
-	if not LibConsoleMenu.currentSettings.selected then
-		LibConsoleMenu.currentSettings:Select()
+	LibConsoleMenu.currentMenu = LibConsoleMenu.menus[1]
+	if not LibConsoleMenu.currentMenu.selected then
+		LibConsoleMenu.currentMenu:Select()
 	end
 end
 
 -- Root: addon name + version. Nested: submenu title only. Never author/messageText.
 function LibConsoleMenu:RefreshSceneHeader()
 	local header = self.scrollList and self.scrollList.header
-	local addon = self.currentSettings
+	local addon = self.currentMenu
 	if not header or not addon then
 		return
 	end
@@ -224,7 +227,7 @@ function LibConsoleMenu:RefreshSceneHeader()
 		headerData.subtitleText = nil
 		headerData.messageText = nil
 	else
-		headerData.titleText = addon.displayName or addon.name
+		headerData.titleText = addon.displayTitle or addon.title
 		headerData.subtitleText = addon.version
 		headerData.messageText = nil
 	end
@@ -250,11 +253,11 @@ function LibConsoleMenu:GoBack()
 		end
 		-- Switch lists so the parametric screen plays the back transition.
 		self.scrollList:SetCurrentList(targetList)
-		if LibConsoleMenu.currentSettings then
+		if LibConsoleMenu.currentMenu then
 			-- Reselect the submenu we drilled into (e.g. FPS under Analytics).
-			LibConsoleMenu.currentSettings.lastSelectedRow = submenu
-			LibConsoleMenu.currentSettings:CreateControls()
-			LibConsoleMenu.currentSettings:RefreshSelection()
+			LibConsoleMenu.currentMenu.lastSelectedRow = submenu
+			LibConsoleMenu.currentMenu:CreateControls()
+			LibConsoleMenu.currentMenu:RefreshSelection()
 		end
 		self:RefreshSceneHeader()
 		PlaySound(SOUNDS.GAMEPAD_MENU_BACK)
@@ -437,8 +440,8 @@ end
 local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 	if newState == SCENE_FRAGMENT_HIDING then
 		LibConsoleMenu.needUpdate = true
-		if LibConsoleMenu.currentSettings then
-			LibConsoleMenu.currentSettings.lastSelectedRow = LibConsoleMenu.list:GetSelectedData()
+		if LibConsoleMenu.currentMenu then
+			LibConsoleMenu.currentMenu.lastSelectedRow = LibConsoleMenu.list:GetSelectedData()
 		end
 		-- Leave any open submenu so onExit previews clear when settings close.
 		local submenu = LibConsoleMenu.list and LibConsoleMenu.list.currentSubmenu
@@ -451,18 +454,18 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 			selectedControl:Deactivate()
 		end
 	elseif newState == SCENE_FRAGMENT_SHOWING then
-		if LibConsoleMenu.needUpdate and LibConsoleMenu.currentSettings ~= nil then
-			LibConsoleMenu:RefreshAddonSettings()
-		elseif LibConsoleMenu.currentSettings == nil and #LibConsoleMenu.addons == 1 then
+		if LibConsoleMenu.needUpdate and LibConsoleMenu.currentMenu ~= nil then
+			LibConsoleMenu:RefreshCurrentMenu()
+		elseif LibConsoleMenu.currentMenu == nil and #LibConsoleMenu.menus == 1 then
 			LibConsoleMenu:SelectFirstAddon()
 		end
-		if LibConsoleMenu.currentSettings then
+		if LibConsoleMenu.currentMenu then
 			if LibConsoleMenu.list.currentSubmenu then
 				LibConsoleMenu.list.currentSubmenu = nil
 				LibConsoleMenu.scrollList:SetCurrentList(LibConsoleMenu.scrollList:GetMainList())
-				LibConsoleMenu.currentSettings:CreateControls()
+				LibConsoleMenu.currentMenu:CreateControls()
 			else
-				LibConsoleMenu.currentSettings:RefreshSelection()
+				LibConsoleMenu.currentMenu:RefreshSelection()
 			end
 			LibConsoleMenu:RefreshSceneHeader()
 		end
@@ -471,7 +474,7 @@ end
 
 
 
-function LibConsoleMenu:CreateAddonSettingsPanel()
+function LibConsoleMenu:CreateSharedMenuScene()
 	local insertPosition = 0
 	for i = 1, #ZO_MENU_ENTRIES do
 		if ZO_MENU_ENTRIES[i].id == ZO_MENU_MAIN_ENTRIES.ACTIVITY_FINDER then
@@ -517,13 +520,13 @@ function LibConsoleMenu:CreateAddonSettingsPanel()
 
 	CALLBACK_MANAGER:RegisterCallback(
 		"LibConsoleMenu_AddonSelected",
-		function(_, addonSettings)
-			LibConsoleMenu.currentSettings = addonSettings
+		function(_, AddonMenu)
+			LibConsoleMenu.currentMenu = AddonMenu
 			self:CancelDeferredSelectFirstRow()
 			self.list.currentSubmenu = nil
-			addonSettings:SetupSubmenus()
+			AddonMenu:SetupSubmenus()
 			self.scrollList:SetCurrentList(self.scrollList:GetMainList())
-			addonSettings:CreateControls()
+			AddonMenu:CreateControls()
 		end
 	)
 

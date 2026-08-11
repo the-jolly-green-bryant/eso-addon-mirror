@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.13
+- Added verification of ESO's active group role immediately after selection and
+  again before every queue starts.
+- Prevented queueing when ESO's active role differs from the role selected in
+  the addon window.
+- Synchronized verified role changes with ESO's original preferred-role UI and
+  its role-change listeners.
+- Role cards now dim and disable whenever ESO prevents role changes.
+- Added a live queue-role summary and a clearer selected-role indicator.
+- Rebuilt the header into a compact layout and replaced `CLOSE` with `X`.
+- Refined pledge-card borders, numbering, background contrast, and visual hierarchy.
+
+## 0.7.12
+- Fixed detection of the Banished Cells I and Banished Cells II pledge quests.
+- Restricted detection to ESO's dedicated Undaunted pledge quest type before
+  matching localized dungeon names.
+- Added a conservative locale-neutral fallback for Activity Finder names whose
+  leading word is omitted from the corresponding localized pledge title.
+
 ## 0.7.11
 - Registered the shared Flamechasers keybind category and action label before
   ESO parses `Bindings.xml`, preventing the category from appearing as its raw string ID.

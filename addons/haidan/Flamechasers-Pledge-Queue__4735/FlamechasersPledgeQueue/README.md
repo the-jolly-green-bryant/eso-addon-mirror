@@ -12,6 +12,8 @@ A focused ESO dungeon-finder window that detects active Undaunted pledge quests 
 - Separate Random Normal and Random Veteran queue buttons.
 - Leave the active queue from the same window.
 - View and change the preferred Tank, Healer, or Damage role.
+- Verify the active ESO role after selection and again before queueing, preventing
+  an unintended role from being used silently.
 - Automatically tracks the matching pledge quest after entering its dungeon.
 - Open from `/fpq`, `/fpledge`, or an assigned keybind.
 

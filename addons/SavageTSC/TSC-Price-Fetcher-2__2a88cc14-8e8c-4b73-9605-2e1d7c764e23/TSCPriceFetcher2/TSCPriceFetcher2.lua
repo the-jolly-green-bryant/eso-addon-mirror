@@ -7,7 +7,7 @@
 
 local TSC = {
     name = "TSCPriceFetcher2",
-    version = 115
+    version = 116
 }
 
 -- Local references for performance
@@ -26,7 +26,7 @@ local notificationProvider
 -- Saved variables version and update notification version
 local SAVED_VARS_VERSION = 1
 local ANNOUNCEMENT_VERSION = TSC.version
-local NOTIFICATION_MESSAGE = "TSC sales data has been updated with data from July 20 thru 26."
+local NOTIFICATION_MESSAGE = "TSC sales data has been updated with data from Aug 3 thru 9."
 
 -- Default settings structure
 TSC.default = {

@@ -6,6 +6,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
+| [P11's Slash Hotkeys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phobus11/P11-s-Slash-Hotkeys__4747) | Phobus11 | PC / Mac | 102 |
 | [PadMerchant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mcdonnelldean/PadMerchant__1616) | mcdonnelldean | PC / Mac | 2.0 |
 | [PadUI Reload](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ckau/PadUI-Reload__1596) | Ckau | PC / Mac | 2.3.3 |
 | [PairsWellWithCheese](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/saranicole1980/PairsWellWithCheese__b57202fe-9b3a-4021-ad86-f2db8dfe0c5e) | saranicole1980 | Console | — |
@@ -143,6 +144,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PrideGuildhall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sityDJVEN25/PrideGuildhall__3277) | sityDJVEN25 | PC / Mac | 1.5 |
 | [Priority Buff Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Priority-Buff-Alerts__1835) | aldericon | PC / Mac | 12.0 |
 | [Priority Bunny](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jokergrrrrl/Priority-Bunny__49741053-9987-45a6-af58-7e96635ea689) | Jokergrrrrl | Console | — |
+| [Priority Bunny](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jokergrrrrl/Priority-Bunny__fa4ee6fb-c601-4163-998f-801078e1eac0) | Jokergrrrrl | Console | — |
 | [Priority Mail](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectura/Priority-Mail__2516) | Architectura | PC / Mac | 6 |
 | [Priority Recast](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Amerlite/Priority-Recast__4655) | Amerlite | PC / Mac | 1.3 |
 | [Prismatic Warning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pretz333/Prismatic-Warning__2985) | Pretz333 | PC / Mac | 4.5.4 |

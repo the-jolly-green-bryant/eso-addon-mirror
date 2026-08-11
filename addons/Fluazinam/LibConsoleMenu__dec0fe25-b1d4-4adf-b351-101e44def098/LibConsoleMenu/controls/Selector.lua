@@ -48,7 +48,7 @@ LCM.updateControlFunctions[LCM.CT_SELECTOR] = function(self, control, selected, 
 	combobox:RefreshVisible()
 end
 
-LCM.createControlFunctions[LCM.CT_SELECTOR] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_SELECTOR] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_SELECTOR] = function(self)
 	local combobox = self.control:GetDropDown()
@@ -107,7 +107,7 @@ function LCM.CreateSelectorPoolFactory()
 		end
 		function control:SetValue(data)
 			local combobox = self:GetDropDown()
-			-- registerForRefresh sync must not re-fire setFunc.
+			-- Sibling sync must not re-fire setFunc.
 			local callback = combobox.onSelectedDataChangedCallback
 			combobox:SetOnSelectedDataChangedCallback(nil)
 			local index = combobox:FindIndexFromData(data, combobox.equalityFunction)

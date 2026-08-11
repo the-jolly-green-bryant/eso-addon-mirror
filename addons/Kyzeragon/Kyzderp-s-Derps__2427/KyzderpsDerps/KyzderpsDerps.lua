@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 KyzderpsDerps = {
     name = "KyzderpsDerps",
-    version = "1.49.0",
+    version = "1.50.1",
 }
 local KD = KyzderpsDerps
 
@@ -106,6 +106,7 @@ local defaultOptions = {
                 pp = false,
             },
             spaulder = false,
+            noJudgement = false,
         },
         state = {
             includeActivityFinder = true,
@@ -219,6 +220,13 @@ local defaultOptions = {
     },
     groupLoot = {
         obnoxiousHighValue = false,
+    },
+    gamepad = {
+        ratchet = false,
+        modifyVibes = false,
+    },
+    kyzerg = {
+        group = false,
     },
 }
 
@@ -396,6 +404,7 @@ local function Initialize()
     KyzderpsDerps.Chatter.Initialize()
     KyzderpsDerps.Combat.Initialize()
     KD.InitializeVibrations()
+    KD.Gamepad.Initialize()
     KD.WorldEvent.Initialize()
     KD.MoreMarkers.Initialize()
     KD.GroupLoot.Initialize()
@@ -412,6 +421,7 @@ local function Initialize()
     ZO_CreateStringId("SI_BINDING_NAME_KDD_QUICKSLOT_8", "Select Quickslot 8")
     ZO_CreateStringId("SI_BINDING_NAME_KDD_ANTISPUD_DISMISS", "Dismiss AntiSpud Notification")
     ZO_CreateStringId("SI_BINDING_NAME_KDD_ANTISPUD_SNOOZE", "Snooze AntiSpud Notification")
+    ZO_CreateStringId("SI_BINDING_NAME_KDD_KMOUNT", "Use nearest multi-rider mount")
 
     -- BEHOLD! My stuff.
     if (KyzderpsDerps.savedOptions.general.experimental) then

@@ -1,14 +1,38 @@
 -------------------------------------------------------------------------
                                 v1.0
 -------------------------------------------------------------------------
+
 base functions with old LibStub
 
 -------------------------------------------------------------------------
                                 v1.1
 -------------------------------------------------------------------------
+
 for ESOUI changes:
 
 1) removed LibStub, only LibAddonMenu-2.0
 2) all language files with "local strings = {"
 3) Global variables without local reference to speed-up the _G table access - fixed
 4) some smlall changes fixed like problems above
+
+-------------------------------------------------------------------------
+                                v1.2
+-------------------------------------------------------------------------
+
+**1. Single Global Table (Unified Namespace)**
+✅ Correctly implemented.
+Only one global table is used: `ESOPLUSFREETRIALNOTIFICATION_ESWAGROM`, with a local alias `EPFTN`.
+
+**2. Access Optimization (_G optimization)**
+✅ Using `local EPFTN = ...` is considered very good coding style. It speeds up access to the table at the micro-level by caching the reference in the Lua stack, avoiding repeated lookups in the slow global `_G` table on every function call.
+
+**3.
+✅   **Integrated Settings Menu:** The external `.xml` settings file has been completely removed. All configuration and records is now handled internally and have all records using the modern LibAddonMenu-2.0 library for a seamless user experience.
+
+**4. Changed
+✅   **Code Optimization:**
+*   Removed all unused settings and purged approximately mostly lines of obsolete code to significantly reduce code size.
+*   Heavily optimized the remaining codebase; logic is now minimal, clean, and easy to maintain.
+
+**5. Fixed
+✅*   **Scrollable Table UI:** Resolved an issue with the internal data table. A fully functional vertical scrollbar has been implemented, allowing users to navigate through entries smoothly.

@@ -19,9 +19,8 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_FONT"] = "Font size in table",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_FONT_A"] = "|c00FF00Changes font size in status history window (from 8 to 24)|r",
     
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "available",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "unavailable",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION_ESOPLUS"] = "|ccdfff3INFORMATION|r",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "|c00FF00available|r",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "|cFF0000unavailable|r",
 
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY"] = "Subscription record table",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_A"] = "|c00FF00Opens a separate window with info about your free trial.|r",
@@ -45,7 +44,8 @@ local strings = {
     
     -- Info submenu
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS"] = "|c00FF00About ESO Plus|r",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_A"] = "|c9999FF/esoplus|r |cFF6347type into chat for manual check!|r This addon saves records of when you got the free trial, so you'll always know exactly when it was activated or missing.",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_A"] = "|c9999FF/esoplus|r |cFF6347write in chat for manual check!|r This addon saves records of receiving a free subscription, so you will always know exactly on which day it was activated or absent. By default, the history stores up to 2000 records. What does this mean in practice? Each record in the table takes up one line per day. Thus, the limit of 2000 lines covers a period of approximately 2000/365≈5.48 years. In other words, the addon will store your subscription history for almost five and a half years.",
+
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AA"] = "|c00FF00APIs used by this addon|r",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAA"] = "|c00FF00API (Application Programming Interface)|r — it's a set of rules that allow your addon to interact with the game server. In simple terms: it's a list of allowed commands defining its capabilities. For implementation were used:",
     
@@ -56,7 +56,17 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAC"] = "This addon has no keybind function to call a custom user history table, because the addon is purely informational. You'll almost never need this table. The author deliberately didn't add such a button due to game limitations: only 100 slots are available for custom keys, so filling them with unnecessary elements is impractical.",
     
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AD"] = "|c00FF00Automatic Check Function!!!|r",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAD"] = "|c9999FFAutomatic checks happen every 15 minutes regardless of addon settings, so you don't miss activation if it happens later that day. This timer is completely safe for performance. Here's why:|r |cFFFFC5Execution frequency Once every 15 minutes — extremely rare for a game engine. For comparison: ESO client itself processes tens of thousands of events per second (animation, rendering, network packets). One function every 15 minutes is a drop in the ocean. - All operations here are pure logic: reading account status via built-in API (HasEsoPlus...), working with local Lua table, and outputting to chat (d()). No heavy calculations, loops over large arrays, file or network access. Calls like ZO_SavedVars, d(), ClearEsoPlus... are optimized by ZOS devs and run in microseconds.|r |cffd700Ping|r is determined by internet quality and ESO server load. Local Lua timer doesn't send data more often than the game already does. |c1E90FFComparison with other addons.|r Many popular addons use much more frequent timers: |cADD8E6- Inventory Insight|r — checks inventory on open; |cADD8E6- Combat Metrics|r — analyzes every combat tick (dozens per second); — even standard UI updates 60+ times/sec. This |cADD8E6timer|r of 900 seconds looks like 'once in an era' against this backdrop."
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAD"] = "|c9999FFAutomatic checks happen every 15 minutes regardless of addon settings, so you don't miss activation if it happens later that day. This timer is completely safe for performance. Here's why:|r |cFFFFC5Execution frequency Once every 15 minutes — extremely rare for a game engine. For comparison: ESO client itself processes tens of thousands of events per second (animation, rendering, network packets). One function every 15 minutes is a drop in the ocean. - All operations here are pure logic: reading account status via built-in API (HasEsoPlus...), working with local Lua table, and outputting to chat (d()). No heavy calculations, loops over large arrays, file or network access. Calls like ZO_SavedVars, d(), ClearEsoPlus... are optimized by ZOS devs and run in microseconds.|r |cffd700Ping|r is determined by internet quality and ESO server load. Local Lua timer doesn't send data more often than the game already does. |c1E90FFComparison with other addons.|r Many popular addons use much more frequent timers: |cADD8E6- Inventory Insight|r — checks inventory on open; |cADD8E6- Combat Metrics|r — analyzes every combat tick (dozens per second); — even standard UI updates 60+ times/sec. This |cADD8E6timer|r of 900 seconds looks like 'once in an era' against this backdrop.",
+
+["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION"] ="|cFF6347The table is now below:|r",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION_A"] ="|c9999FFWhen displaying a large number of records (2000 by default), the table may open with a one-second delay, this is normal.|r |cFFFFC5Open the table:|r",
+
+["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES"] = "Number of lines to record",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES_A"] = "|c00FF00How many lines will be saved in the SavedVariables file history [affects file size and recording duration, upon reaching the limit, it will be overwritten] (от 100 до 5000 number of possible lines)|r",
+
+["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION__ALLRECORDS"] = "|ccdfff3All records|r",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION_ESOPLUS"] = "|ccdfff3INFORMATION|r"
+
 }
 
 -- Register all strings in one loop — ESOUI REQUIREMENT!

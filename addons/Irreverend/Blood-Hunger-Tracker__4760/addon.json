@@ -18,10 +18,10 @@
     "BloodHungerTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4760/",
-  "fingerprint": "0536fb1a7c336eeb8bcc8a0e5dc9dc28bfad89dcbd1c9c3598345ad9df7b7921",
+  "fingerprint": "c5229067466e6a70675064d2f8685add36271d4c92057c3bf2ad4e13fc9b1dc1",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16940.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16941.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16947.png"
   ],
   "platform": "pc",
   "published": true,
@@ -29,11 +29,11 @@
   "source_id": "4760",
   "source_url": "https://www.esoui.com/downloads/info4760-BloodHungerTracker.html",
   "stats": {
-    "downloads": 5,
-    "favorites": 0,
-    "monthly_downloads": 4
+    "downloads": 57,
+    "favorites": 1,
+    "monthly_downloads": 55
   },
   "title": "Blood Hunger Tracker",
-  "updated_at": 1786146496000,
-  "version": "1.0.1"
+  "updated_at": 1786385743000,
+  "version": "1.0.3"
 }

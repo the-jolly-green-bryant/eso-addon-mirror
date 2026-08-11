@@ -1,3 +1,18 @@
+Better Buffs v0.3.05
+
+Warmask ownership + group-coverage reconciliation release.
+
+- Huntsman's Warmask now verifies the actual equipped mythic (item ID 223189) and consumes the verified local player effect 252050 as the authoritative owner/application state.
+- Mark of Hircine 252048 is now target identity only. Another group member's Mark can no longer start your cooldown, drive your timer, or make your tile show READY.
+- Warmask's 10-second application cooldown now starts from a genuine new local 252050 application, not from target-effect refreshes, eliminating the repeating 9-second cooldown loop.
+- The local 252050 effect owns the 60-second Mark duration; 252048 supplies the marked target identity.
+- Target death removes the target state while preserving only a still-valid local 10-second cooldown. Local 252050 fade clears the Mark for phase transitions/expiration.
+- Equipment changes are handled by ESO's inventory-slot event. Unequipping Warmask immediately clears its local provider state without polling.
+- Generic stale-FADE protection prevents an older group-buff application from deleting a newer recipient record that has already refreshed.
+- Ferocious Roar combat events (ability IDs 39113/42155/42156/42157) trigger a one-shot Major Courage roster reconciliation after application. The reconciliation adds confirmed live Courage recipients without erasing still-valid recipients from another Courage source.
+- Major Courage remains one normalized effect. No Werewolf-specific tracker, second cache, or periodic group scan was added.
+- No additional EVENT_EFFECT_CHANGED or EVENT_COMBAT_EVENT owner was added.
+
 Better Buffs v0.3.04
 
 Lifecycle correctness audit release.

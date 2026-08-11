@@ -76,6 +76,7 @@ local function OnAddonLoaded(_, addonName)
         NQOL.Features.Debug.InitializeSavedVariables()
     end
     NQOL.Settings.RemovePath({ "collections" })
+    NQOL.Settings.RemovePath({ "mounts", "randomMount" })
     NQOL.Settings.RemovePath({ "ui", "customFrames", "playerFrame", "defaultFrame" })
     NQOL.Settings.RemovePath({ "ui", "customFrames", "companionFrame", "defaultFrame" })
     NQOL.Settings.RemovePath({ "ui", "customFrames", "groupFrame", "defaultFrame" })

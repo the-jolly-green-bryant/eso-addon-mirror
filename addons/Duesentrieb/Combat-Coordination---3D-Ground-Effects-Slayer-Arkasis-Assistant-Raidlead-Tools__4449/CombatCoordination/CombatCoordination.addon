@@ -1,0 +1,54 @@
+## Title: |cFF7F00Combat|r |cFFFFFFCoordination|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[PC/EU]|r
+## Version: 20260810-0001
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=43 LibGroupBroadcast LibCustomMenu LibSkillBlocker LibChatMenuButton
+## OptionalDependsOn: HodorReflexes
+## SavedVariables: CombatCoordinationVariables
+## Description: Shares 3D combat markers and essential tools for raid coordination.
+
+Bindings.xml
+
+CC_Global.lua
+CC_Database.lua
+
+CC_DisplayBorder.lua
+CC_DisplayDialog.lua
+CC_DisplayIcon.lua
+CC_DisplayLabel.lua
+CC_DisplayNotification.lua
+CC_DisplayPanel.lua
+CC_DisplayStatus.lua
+CC_DisplayEffect.lua
+
+CC_SkillBlocker.lua
+CC_Functions.lua
+CC_Helper.lua
+CC_Events.lua
+CC_Menu.lua
+CC_API.lua
+CC_Broadcast.lua
+CC_Keybinds.lua
+CC_Initialize.lua
+
+modules/CC_ArcanistFatecarver.lua
+modules/CC_ArcanistGlyphic.lua
+modules/CC_ArkasisAssistant.lua
+modules/CC_AssaultCaltrops.lua
+modules/CC_BlessingOfProtection.lua
+modules/CC_BowVolley.lua
+modules/CC_DragonknightStandard.lua
+modules/CC_DeathMarker.lua
+modules/CC_DrawShape.lua
+modules/CC_NecromancerColossus.lua
+modules/CC_PathTracking.lua
+modules/CC_Pointer.lua
+modules/CC_RaidleadTools.lua
+modules/CC_RaidMechanics.lua
+modules/CC_RoarOfAlkosh.lua
+modules/CC_SlayerAssistant.lua
+modules/CC_SorcererAtronach.lua
+modules/CC_SupportBarrier.lua
+modules/CC_VestmentOfOlorime.lua
+modules/CC_WallOfElements.lua
+modules/CC_WardenHealingSeed.lua

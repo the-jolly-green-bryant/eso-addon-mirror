@@ -1,6 +1,6 @@
 ## Title: Already Listed
 ## Author: |cFFFF00@tzammy_|r
-## APIVersion: 101050 101049
+## APIVersion: 101050
 ## Version: 1.0.1
 ## AddOnVersion: 101
 ## Description: Shows how many of an item you already have listed at the current guild trader, next to the inventory/bank counts in the gamepad tooltip. Gamepad/console UI. No dependencies.

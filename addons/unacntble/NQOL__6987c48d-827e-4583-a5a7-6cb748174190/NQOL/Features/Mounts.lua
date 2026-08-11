@@ -11,7 +11,6 @@ local defaults = {
         allowUseInteractions = false,
         allowOpenInteractions = false,
         allowTalkInteractions = false,
-        randomMount = false,
         trainingCheck = false,
     },
 }
@@ -19,7 +18,6 @@ local defaults = {
 local Mounts = {}
 local savedVariables
 local hooksInstalled = false
-local randomMountHooksInstalled = false
 local trainingHooksInstalled = false
 local hookAttempts = 0
 local alertAtMilliseconds = 0
@@ -65,7 +63,6 @@ local function GetSettings()
     NQOL.Settings.Default(settings, defaultSettings, "allowUseInteractions")
     NQOL.Settings.Default(settings, defaultSettings, "allowOpenInteractions")
     NQOL.Settings.Default(settings, defaultSettings, "allowTalkInteractions")
-    NQOL.Settings.Default(settings, defaultSettings, "randomMount")
     NQOL.Settings.Default(settings, defaultSettings, "trainingCheck")
 
     return settings
@@ -111,15 +108,6 @@ local function SetReticleBlockedMessage()
     if RETICLE.interactKeybindButton then
         RETICLE.interactKeybindButton:SetEnabled(false)
     end
-end
-
-local function CanUseRandomMount()
-    return SetRandomMountType
-        and HasAnyUnlockedCollectiblesAvailableToActorCategoryByCategoryType
-        and RANDOM_MOUNT_TYPE_ANY
-        and COLLECTIBLE_CATEGORY_TYPE_MOUNT
-        and GAMEPLAY_ACTOR_CATEGORY_PLAYER
-        and HasAnyUnlockedCollectiblesAvailableToActorCategoryByCategoryType(COLLECTIBLE_CATEGORY_TYPE_MOUNT, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
 end
 
 local function HasTrainableRidingStat()
@@ -199,20 +187,6 @@ CheckRidingTraining = function()
     end
 end
 
-local function PrepareRandomMount()
-    if not Mounts.GetRandomMount() or IsMounted() or not CanUseRandomMount() then
-        return
-    end
-
-    SetRandomMountType(RANDOM_MOUNT_TYPE_ANY, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
-end
-
-local function OnMountedStateChanged(_, mounted)
-    if not mounted then
-        zo_callLater(PrepareRandomMount, 500)
-    end
-end
-
 local function InstallInteractionHooks()
     if hooksInstalled then
         return
@@ -250,24 +224,6 @@ local function InstallInteractionHooks()
     end
 end
 
-local function InstallRandomMountHooks()
-    if randomMountHooksInstalled or not EVENT_MANAGER then
-        return
-    end
-
-    EVENT_MANAGER:RegisterForEvent(NQOL.name .. "_RandomMount", EVENT_MOUNTED_STATE_CHANGED, OnMountedStateChanged)
-    randomMountHooksInstalled = true
-end
-
-local function UninstallRandomMountHooks()
-    if not randomMountHooksInstalled or not EVENT_MANAGER then
-        return
-    end
-
-    EVENT_MANAGER:UnregisterForEvent(NQOL.name .. "_RandomMount", EVENT_MOUNTED_STATE_CHANGED)
-    randomMountHooksInstalled = false
-end
-
 local function InstallTrainingHooks()
     if trainingHooksInstalled or not EVENT_MANAGER then
         return
@@ -300,10 +256,6 @@ end
 
 function Mounts.Initialize()
     InstallInteractionHooks()
-    if Mounts.GetRandomMount() then
-        InstallRandomMountHooks()
-        zo_callLater(PrepareRandomMount, 500)
-    end
     if Mounts.GetTrainingCheck() then
         InstallTrainingHooks()
         zo_callLater(CheckRidingTraining, 1500)
@@ -358,25 +310,6 @@ function Mounts.SetAllowTalkInteractions(value)
     GetSettings().allowTalkInteractions = value == true
 end
 
-function Mounts.GetRandomMount()
-    if not savedVariables then
-        return defaults.mounts.randomMount
-    end
-
-    return GetSettings().randomMount
-end
-
-function Mounts.SetRandomMount(value)
-    GetSettings().randomMount = value == true
-
-    if GetSettings().randomMount then
-        InstallRandomMountHooks()
-        PrepareRandomMount()
-    else
-        UninstallRandomMountHooks()
-    end
-end
-
 function Mounts.GetTrainingCheck()
     if not savedVariables then
         return defaults.mounts.trainingCheck
@@ -428,14 +361,6 @@ end
 
 function Mounts.GetAllowTalkInteractionsTooltip()
     return NQOL.L("features.mounts.allow_talk_interactions_tooltip")
-end
-
-function Mounts.GetRandomMountLabel()
-    return NQOL.L("features.mounts.random_mount_label")
-end
-
-function Mounts.GetRandomMountTooltip()
-    return NQOL.L("features.mounts.random_mount_tooltip")
 end
 
 function Mounts.GetTrainingCheckLabel()

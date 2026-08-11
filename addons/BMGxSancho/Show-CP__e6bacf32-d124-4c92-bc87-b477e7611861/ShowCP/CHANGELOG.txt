@@ -1,6 +1,7 @@
-Show CP v0.0.03
+Show CP v0.0.04
 
-- Added native ESO HUD scene ownership for all Blue, Red, and Green CP displays.
-- CP displays now yield automatically when ESO menus and non-HUD scenes take over.
-- Preserved v0.0.02 CP detection, positioning, 20-pixel movement steps, scaling, and SavedVariables behavior.
-- No polling, networking, or menu-by-menu visibility checks were added.
+- Corrected module visibility ownership after ReloadUI.
+- ESO HUD scene fragments now control only HUD/menu scene visibility.
+- Blue, Red, and Green enabled states now control a child display independently, preventing scene transitions from re-showing disabled modules.
+- Reconciles saved visibility on EVENT_PLAYER_ACTIVATED after reload/login.
+- Preserved CP detection, refresh behavior, positioning, scaling, and 20-pixel movement steps.

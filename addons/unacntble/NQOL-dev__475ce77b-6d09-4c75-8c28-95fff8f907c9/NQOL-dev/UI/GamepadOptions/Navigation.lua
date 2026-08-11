@@ -60,7 +60,7 @@ function GamepadOptions.BuildMountsEntry()
             GamepadOptions.InitializeNavigationEntry(control)
         end,
         gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.control_mounted_interactions_random_mounts_and_ridin_8f78f59"))
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.control_mounted_interactions_and_riding_training_8f78f59"))
         end,
         callback = function()
             GamepadOptions.ShowPanel(MOUNTS_PANEL_ID)
@@ -1381,30 +1381,6 @@ function GamepadOptions.BuildAllowTalkInteractionsOption()
         mounts.GetAllowTalkInteractions,
         mounts.SetAllowTalkInteractions
     )
-end
-
-function GamepadOptions.BuildRandomMountOption()
-    local mounts = NQOL.Features.Mounts
-
-    return {
-        panel = MOUNTS_PANEL_ID,
-        system = MOUNTS_PANEL_ID,
-        settingId = 2,
-        controlType = OPTIONS_CHECKBOX,
-        text = mounts.GetRandomMountLabel(),
-        gamepadTextOverride = mounts.GetRandomMountLabel(),
-        tooltipText = mounts.GetRandomMountTooltip(),
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, mounts.GetRandomMountTooltip())
-        end,
-        onInitializeFunction = GamepadOptions.RunOptionInitialize,
-        GetSettingOverride = function()
-            return mounts.GetRandomMount()
-        end,
-        SetSettingOverride = function(_, value)
-            mounts.SetRandomMount(value)
-        end,
-    }
 end
 
 function GamepadOptions.BuildTrainingCheckOption()

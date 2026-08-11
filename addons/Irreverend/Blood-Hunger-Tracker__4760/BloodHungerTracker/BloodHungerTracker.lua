@@ -3,7 +3,7 @@
 
 local ADDON_NAME = "BloodHungerTracker"
 local ADDON_VERSION = 1
-local ADDON_DISPLAY_VERSION = "1.0.1"
+local ADDON_DISPLAY_VERSION = "1.0.3"
 
 local BloodHungerTracker = {}
 local addon = BloodHungerTracker
@@ -189,12 +189,11 @@ local function OnMoveStop()
 end
 
 --------------------------------------------------------------------------------
--- Settings panel (LibAddonMenu-2.0, optional)
+-- Settings panel (LibAddonMenu-2.0)
 --------------------------------------------------------------------------------
 
 function addon:InitializeSettings()
     local LAM = LibAddonMenu2
-    if not LAM then return end
 
     local panelData = {
         type = "panel",

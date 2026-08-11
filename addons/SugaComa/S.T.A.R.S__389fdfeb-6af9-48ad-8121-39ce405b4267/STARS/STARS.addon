@@ -2,7 +2,7 @@
 ## Description: SugaComa's Tenacious Aeon Reward System - Chronicle memories, character legacy, prestige, Veterancy, PvP and underworld history.
 ## APIVersion: 101049 101050
 ## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
-## Version: 0.5.38-test15
+## Version: 0.6.10
 ## SavedVariables: STARS_SV
 ## OptionalDependsOn: LibHarvensAddonSettings
 
@@ -16,5 +16,6 @@
 
 Bindings.xml
 STARS_Journal.xml
+STARS_Badges.lua
 STARS_Journal.lua
 STARS.lua

@@ -1,8 +1,9 @@
 local ADDON_NAME = "WayshrineBlocker"
-local ADDON_VERSION = 1
+local ADDON_VERSION = 2
 
 local WayshrineBlocker = {}
 WayshrineBlocker.savedVars = nil
+WayshrineBlocker.hookRegistered = false
 
 local defaults = {
     enabled = true,
@@ -38,21 +39,38 @@ local function OnTryHandlingInteraction(action, interactableName, currentFrameTi
 end
 
 local function RegisterHook()
+    if WayshrineBlocker.hookRegistered then
+        return
+    end
     LibInteractionHook.RegisterOnTryHandlingInteraction(ADDON_NAME, OnTryHandlingInteraction)
+    WayshrineBlocker.hookRegistered = true
+    d("WayshrineBlocker: blocking enabled")
 end
 
 local function UnregisterHook()
+    if not WayshrineBlocker.hookRegistered then
+        return
+    end
     LibInteractionHook.UnregisterOnTryHandlingInteraction(ADDON_NAME)
+    WayshrineBlocker.hookRegistered = false
+    d("WayshrineBlocker: blocking disabled")
 end
 
-local function SetEnabled(enabled)
-    WayshrineBlocker.savedVars.enabled = enabled
-    if enabled then
+local function ApplyHookState()
+    if WayshrineBlocker.savedVars.enabled and not IsPlayerInAvAWorld() then
         RegisterHook()
     else
         UnregisterHook()
     end
-    d("WayshrineBlocker: " .. (enabled and "blocking enabled" or "blocking disabled"))
+end
+
+local function SetEnabled(enabled)
+    WayshrineBlocker.savedVars.enabled = enabled
+    ApplyHookState()
+end
+
+local function OnPlayerActivated()
+    ApplyHookState()
 end
 
 local function OnAddOnLoaded(_, addonName)
@@ -63,9 +81,8 @@ local function OnAddOnLoaded(_, addonName)
 
     WayshrineBlocker.savedVars = ZO_SavedVars:NewAccountWide("WayshrineBlockerSV", ADDON_VERSION, GetWorldName(), defaults)
 
-    if WayshrineBlocker.savedVars.enabled then
-        RegisterHook()
-    end
+    ApplyHookState()
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
 
     SLASH_COMMANDS["/wayshrineblock"] = function()
         SetEnabled(not WayshrineBlocker.savedVars.enabled)

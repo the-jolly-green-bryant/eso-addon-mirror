@@ -1,0 +1,11 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c70C0F0Recall Rotator|r">
+
+			<Action name="RECALLROTATOR_REROLL">
+				<Down>RecallRotator:Reroll()</Down>
+			</Action>
+
+		</Category>
+	</Layer>
+</Bindings>

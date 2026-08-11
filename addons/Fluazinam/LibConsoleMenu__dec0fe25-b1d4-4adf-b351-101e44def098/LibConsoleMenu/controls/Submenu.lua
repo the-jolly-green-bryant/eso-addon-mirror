@@ -223,15 +223,15 @@ local function ApplySubmenuChipAppearance(control, selected, enabled)
 end
 
 local function RefreshCenteredSubmenuChipEdges(setting)
-	local panel = LCM.currentSettings
+	local panel = LCM.currentMenu
 	if not panel or not setting then
 		return
 	end
 	local group = setting.lcmArrowGroup or ""
 	local currentSubmenu = setting.currentSubmenu
 	local list = LCM.list
-	for i = 1, #panel.settings do
-		local other = panel.settings[i]
+	for i = 1, #panel.controls do
+		local other = panel.controls[i]
 		if other.currentSubmenu == currentSubmenu and IsCenteredSubmenuSetting(other, panel) and (other.lcmArrowGroup or "") == group then
 			local control = other.control
 			if control and control.lcmChip and not control.lcmChip:IsHidden() then
@@ -360,7 +360,7 @@ local function ApplySubmenuLabelLayout(control, center, showArrow, selected, ena
 end
 
 local function ResolveSubmenuCenter(setting)
-	local align = LCM.ResolveRowAlign(setting, LCM.currentSettings)
+	local align = LCM.ResolveRowAlign(setting, LCM.currentMenu)
 	return align == "center"
 end
 
@@ -384,11 +384,11 @@ local function RelayoutSubmenuControl(control, selected, enabled)
 end
 
 -- Per header-group max label width for centered drill-in chevrons.
-function LCM.AddonSettings:AssignCenteredSubmenuArrowColumns(currentSubmenu)
-	AssignChipEdgeRolesForSettings(self.settings, currentSubmenu, self)
+function LCM.AddonMenu:AssignCenteredSubmenuArrowColumns(currentSubmenu)
+	AssignChipEdgeRolesForSettings(self.controls, currentSubmenu, self)
 	local maxByGroup = {}
-	for i = 1, #self.settings do
-		local setting = self.settings[i]
+	for i = 1, #self.controls do
+		local setting = self.controls[i]
 		if setting.currentSubmenu == currentSubmenu and IsCenteredSubmenuSetting(setting, self) then
 			local text = setting:GetString(setting:GetValueOrCallback(setting.labelText))
 			local width = MeasureSubmenuLabelWidth(text, setting.control and setting.control.label)
@@ -398,8 +398,8 @@ function LCM.AddonSettings:AssignCenteredSubmenuArrowColumns(currentSubmenu)
 			end
 		end
 	end
-	for i = 1, #self.settings do
-		local setting = self.settings[i]
+	for i = 1, #self.controls do
+		local setting = self.controls[i]
 		if setting.currentSubmenu == currentSubmenu then
 			if IsCenteredSubmenuSetting(setting, self) then
 				setting.lcmCenteredArrowMaxWidth = maxByGroup[setting.lcmArrowGroup or ""] or 0
@@ -492,7 +492,7 @@ LCM.updateControlFunctions[LCM.CT_SUBMENU] = function(self, control, selected, e
 	end
 end
 
-LCM.createControlFunctions[LCM.CT_SUBMENU] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_SUBMENU] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_SUBMENU] = function(self)
 	(self.control.label or self.control:GetNamedChild("Label")):SetText(nil)
@@ -504,6 +504,8 @@ LCM.setupControlFunctions[LCM.CT_SUBMENU] = function(self, params)
 	self.subMenu = params.subMenu -- false = non-entering row (no arrow / no Activate)
 	self.nested = params.nested
 	self.popSubmenu = params.popSubmenu
+	self.popAfterSubmenu = params.popAfterSubmenu
+	self.popAfterSubmenuIndex = params.popAfterSubmenuIndex
 	self.align = params.align
 	self.centerSubmenu = params.centerSubmenu -- legacy alias for align
 	self.icon = params.icon
@@ -541,9 +543,9 @@ function LCM.CreateSubmenuPoolFactory()
 			local targetList = LCM:GetSubmenuListAtDepth(LCM.GetSubmenuDepth(submenu))
 			targetList.currentSubmenu = submenu
 			LCM.scrollList:SetCurrentList(targetList)
-			LCM.currentSettings.lastSelectedRow = nil
-			LCM.currentSettings:CreateControls()
-			LCM.currentSettings:SelectFirstRow()
+			LCM.currentMenu.lastSelectedRow = nil
+			LCM.currentMenu:CreateControls()
+			LCM.currentMenu:SelectFirstRow()
 			LCM:RefreshSceneHeader()
 			PlaySound(SOUNDS.GAMEPAD_MENU_FORWARD)
 			if type(submenu.onEnter) == "function" then

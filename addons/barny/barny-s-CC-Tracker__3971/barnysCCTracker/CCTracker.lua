@@ -7,7 +7,7 @@ CCTracker = {
 	["version"] = {
 		["patch"] = 1,
 		["major"] = 1,
-		["minor"] = 2,
+		["minor"] = 3,
 	},
 	["beta"] = beta,
 	["menu"] = {},
@@ -336,6 +336,12 @@ function CCTracker:HandleCombatEvents	(_, res,  err,	aName, _, _, sName, _, tNam
 		-- self:PrintDebug("actualSnares", "Root in list "..aId..": "..aName.." - "..res)
 	-- end
 	
+	-- special CC abilities
+	if self.constants.specialCC[aId] then
+		res = self.constants.specialCC[aId]
+		err = false
+	end
+	
 	local time = GetFrameTimeMilliseconds()
 		
 	if self.status.alive == 0 or (self.status.dead ~= 0 and self.status.dead <= time) then
@@ -348,7 +354,7 @@ function CCTracker:HandleCombatEvents	(_, res,  err,	aName, _, _, sName, _, tNam
 	
 		aName = self:CropZOSString(aName, "ability")
 		
-		if aId == self.constants.breakFree and self:DoesBreakFreeWork() then			-- remove stuns, fear and charm if player breaks free
+		if aId == self.constants.breakFree and self:DoesBreakFreeWork() then			-- remove stuns, knockbacks, fear and charm if player breaks free
 			self:BreakFreeDetected()
 			return
 		elseif aId == self.constants.rollDodge.abilityId and res == ACTION_RESULT_EFFECT_GAINED then	-- remove roots when player uses dodgeroll

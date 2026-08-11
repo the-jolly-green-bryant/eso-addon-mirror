@@ -1,6 +1,5 @@
-KyzderpsDerps = KyzderpsDerps or {}
-KyzderpsDerps.AntiSpud = KyzderpsDerps.AntiSpud or {}
-local Spud = KyzderpsDerps.AntiSpud
+local KD = KyzderpsDerps
+local Spud = KD.AntiSpud
 
 -- Some stuff yoinked from LibEquipmentBonus in Cooldowns by g4rr3t
 
@@ -61,6 +60,10 @@ end
 
 -------------------------------------------------------------------------------
 local function CheckEmptySlots()
+    if (KD.savedOptions.antispud.equipped.noJudgement) then
+        return Spud.Display(nil, Spud.MISSING)
+    end
+
     local missing = {}
     for slot, name in pairs(ITEM_SLOTS_MAIN) do
         local itemLink = GetItemLink(BAG_WORN, slot)
@@ -84,6 +87,7 @@ local function CheckEmptySlots()
             table.insert(missing, "a backbar weapon")
         end
     end
+
 
     if (#missing > 3) then
         return Spud.Display("You are nekkid", Spud.MISSING)
@@ -135,7 +139,7 @@ local function CheckSlotsSets(isFrontbar)
             -- detect whether only 1 piece is equipped without using something like LibSets maybe.
             -- Or more complicated stuff so cba
             color = ""
-        elseif (KyzderpsDerps.savedOptions.antispud.equipped.fourPieceExceptions[setName]) then
+        elseif (KD.savedOptions.antispud.equipped.fourPieceExceptions[setName]) then
             -- The var is called fourPiece but it now means general exception. This was before
             -- Druid's Braid came out, and while I could only ignore Druid's Braid, I think it's
             -- simpler for the user to just add a set as an exception entirely.
@@ -170,15 +174,18 @@ local function CheckSlotsSets(isFrontbar)
     end
 
     local resultString = table.concat(result, " / ")
-    if (KyzderpsDerps.savedOptions.antispud.equipped.printToChat) then
-        KyzderpsDerps:msg("Equipped" .. extraText .. ": " .. resultString)
+    if (KD.savedOptions.antispud.equipped.printToChat) then
+        KD:msg("Equipped" .. extraText .. ": " .. resultString)
     end
     Spud.UpdateBuffTheGroup(equippedSets)
-    Spud.Display(error and (error .. extraText) or nil, isFrontbar and Spud.FRONTBAR or Spud.BACKBAR)
+
+    if (not KD.savedOptions.antispud.equipped.noJudgement) then
+        Spud.Display(error and (error .. extraText) or nil, isFrontbar and Spud.FRONTBAR or Spud.BACKBAR)
+    end
 end
 
 local function CheckAllSlots()
-    EVENT_MANAGER:UnregisterForUpdate(KyzderpsDerps.name .. "SpudEquippedTimeout")
+    EVENT_MANAGER:UnregisterForUpdate(KD.name .. "SpudEquippedTimeout")
 
     CheckEmptySlots()
     CheckSlotsSets(true)
@@ -193,18 +200,18 @@ local function OnSlotUpdated(_, bagId, slotId)
     if (slotId == EQUIP_SLOT_COSTUME or slotId == EQUIP_SLOT_POISON or slotId == EQUIP_SLOT_BACKUP_POISON) then return end
 
     -- 1000ms would cover the double firing due to barswap swap gear or whatever it is, but it feels too sluggish
-    EVENT_MANAGER:RegisterForUpdate(KyzderpsDerps.name .. "SpudEquippedTimeout", 500, CheckAllSlots)
+    EVENT_MANAGER:RegisterForUpdate(KD.name .. "SpudEquippedTimeout", 500, CheckAllSlots)
 end
 
 function Spud.InitializeEquipped()
-    KyzderpsDerps:dbg("    Initializing AntiSpud Equipped...")
+    KD:dbg("    Initializing AntiSpud Equipped...")
 
-    EVENT_MANAGER:RegisterForEvent(KyzderpsDerps.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnSlotUpdated)
-    EVENT_MANAGER:AddFilterForEvent(KyzderpsDerps.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
-        REGISTER_FILTER_BAG_ID, BAG_WORN,
-        REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+    EVENT_MANAGER:RegisterForEvent(KD.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnSlotUpdated)
+    EVENT_MANAGER:AddFilterForEvent(KD.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+        REGISTER_FILTER_BAG_ID, BAG_WORN)
+    EVENT_MANAGER:AddFilterForEvent(KD.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
 
-    EVENT_MANAGER:RegisterForEvent(KyzderpsDerps.name .. "ArmoryEquipped", EVENT_ARMORY_BUILD_RESTORE_RESPONSE, CheckAllSlots)
+    EVENT_MANAGER:RegisterForEvent(KD.name .. "ArmoryEquipped", EVENT_ARMORY_BUILD_RESTORE_RESPONSE, CheckAllSlots)
 
     Spud.InitializeBTG()
 
@@ -212,7 +219,7 @@ function Spud.InitializeEquipped()
 end
 
 function Spud.UninitializeEquipped()
-    EVENT_MANAGER:UnregisterForEvent(KyzderpsDerps.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+    EVENT_MANAGER:UnregisterForEvent(KD.name .. "SpudEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
     Spud.Display(nil, Spud.MISSING)
     Spud.Display(nil, Spud.FRONTBAR)
     Spud.Display(nil, Spud.BACKBAR)

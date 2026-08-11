@@ -1,6 +1,6 @@
 ## Title: Gilded UI
 ## Description: Something.
-## Version: 0.2.27
+## Version: 0.2.28
 ## Author: Fluazinam
 ## APIVersion: 101050
 ## SavedVariables: GildedUISV
@@ -11,34 +11,35 @@ GildedUI.lua
 shared/Defaults.lua
 shared/Readout.lua
 shared/SettingsControls.lua
-modules/analytics/monitoring/FPS.lua
-modules/analytics/monitoring/Ping.lua
-modules/analytics/monitoring/Memory.lua
-modules/analytics/Analytics.lua
-modules/analytics/Overlay.lua
-modules/analytics/Menu.lua
-modules/resources/indicators/Bag.lua
-modules/resources/indicators/Bank.lua
-modules/resources/indicators/Menu.lua
-modules/resources/currencies/GoldFormat.lua
+categories/interface/analytics/monitoring/FPS.lua
+categories/interface/analytics/monitoring/Ping.lua
+categories/interface/analytics/monitoring/Memory.lua
+categories/interface/analytics/Analytics.lua
+categories/interface/analytics/Overlay.lua
+categories/interface/resources/indicators/Bag.lua
+categories/interface/resources/indicators/Bank.lua
+categories/interface/resources/indicators/Menu.lua
+categories/interface/resources/currencies/GoldFormat.lua
 media/specs/CurrencySpecs.lua
-modules/resources/currencies/Currencies.lua
-modules/resources/currencies/Menu.lua
-modules/resources/Menu.lua
-modules/resources/Overlay.lua
-modules/player/indicators/CombatStatus.lua
-modules/player/indicators/Menu.lua
-modules/player/Menu.lua
-modules/player/Overlay.lua
-modules/layout/Layout.lua
-modules/layout/trackers/Column.lua
-modules/layout/trackers/Menu.lua
-modules/layout/alerts/AlertText.lua
-modules/layout/alerts/Menu.lua
-modules/layout/Menu.lua
-modules/system/mount/StayMounted.lua
-modules/system/mount/Menu.lua
-modules/system/Menu.lua
+categories/interface/resources/currencies/Currencies.lua
+categories/interface/resources/currencies/Menu.lua
+categories/interface/resources/Overlay.lua
+categories/interface/player/indicators/CombatStatus.lua
+categories/interface/player/indicators/Menu.lua
+categories/interface/player/Overlay.lua
+categories/interface/layout/Layout.lua
+categories/interface/layout/trackers/Column.lua
+categories/interface/layout/trackers/Menu.lua
+categories/interface/layout/alerts/AlertText.lua
+categories/interface/layout/alerts/Menu.lua
+categories/system/mount/StayMounted.lua
+categories/system/mount/Menu.lua
+categories/interface/Menu.lua
+categories/interface/analytics/Menu.lua
+categories/interface/resources/Menu.lua
+categories/interface/player/Menu.lua
+categories/interface/layout/Menu.lua
+categories/system/Menu.lua
 Overlay.lua
 settings/SettingsMenu.lua
 bindings.xml

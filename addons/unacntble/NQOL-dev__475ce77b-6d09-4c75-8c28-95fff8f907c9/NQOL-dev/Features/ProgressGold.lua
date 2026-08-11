@@ -5,6 +5,7 @@ local ProgressGold = {}
 
 local EVENT_NAMESPACE = "NQOL_ProgressGold"
 local UPDATE_INTERVAL_MS = 1000
+local CURRENCY_REFRESH_DELAY_MS = 50
 local TEXTURE_GOLD = "EsoUI/Art/currency/gamepad/gp_gold.dds"
 local DRAW_LEVEL = 215
 local DEFAULT_FONT_SIZE = 18
@@ -77,6 +78,8 @@ local initialized = false
 local settingsPanelVisible = false
 local sceneCallbackInstalled = false
 local eventsRegistered = false
+local updateLoopRunning = false
+local currencyRefreshQueued = false
 local control
 local headerLabel
 local amountLabel
@@ -85,7 +88,8 @@ local chartArea
 local chartBaseline
 local chartBars = {}
 local cards = {}
-local samples = {}
+local sampleQueue = { values = {}, head = 1, tail = 0 }
+local rateScratch = { requests = {}, results = {} }
 local chartBuckets = {}
 local chartCurrentMinute
 local lastBalance
@@ -227,11 +231,28 @@ end
 local function PruneSamples(now)
     now = now or GetNow()
     local cutoff = now - MAX_WINDOW_SECONDS
-    local firstKept = 1
-    while samples[firstKept] and samples[firstKept].time < cutoff do firstKept = firstKept + 1 end
-    if firstKept > 1 then
-        for index = firstKept, #samples do samples[index - firstKept + 1] = samples[index] end
-        for index = #samples, #samples - firstKept + 2, -1 do samples[index] = nil end
+    local values = sampleQueue.values
+    while sampleQueue.head <= sampleQueue.tail do
+        local sample = values[sampleQueue.head]
+        if sample and sample.time >= cutoff then break end
+        values[sampleQueue.head] = nil
+        sampleQueue.head = sampleQueue.head + 1
+    end
+    if sampleQueue.head > sampleQueue.tail then
+        sampleQueue.head = 1
+        sampleQueue.tail = 0
+        return
+    end
+
+    local discardedCount = sampleQueue.head - 1
+    local retainedCount = sampleQueue.tail - sampleQueue.head + 1
+    if discardedCount >= 256 and discardedCount >= retainedCount then
+        local oldHead = sampleQueue.head
+        local oldTail = sampleQueue.tail
+        for index = 1, retainedCount do values[index] = values[oldHead + index - 1] end
+        for index = retainedCount + 1, oldTail do values[index] = nil end
+        sampleQueue.head = 1
+        sampleQueue.tail = retainedCount
     end
 end
 
@@ -263,14 +284,17 @@ local function AddSample(amount)
     amount = tonumber(amount) or 0
     if amount <= 0 then return end
     local now = GetNow()
-    samples[#samples + 1] = { time = now, amount = amount }
+    sampleQueue.tail = sampleQueue.tail + 1
+    sampleQueue.values[sampleQueue.tail] = { time = now, amount = amount }
     PruneSamples(now)
     AdvanceChartToMinute(math.floor(now / 60))
     chartBuckets[CHART_BAR_COUNT] = (chartBuckets[CHART_BAR_COUNT] or 0) + amount
 end
 
 local function ResetRuntimeTimers(resetBalance)
-    for index = #samples, 1, -1 do samples[index] = nil end
+    for index = sampleQueue.head, sampleQueue.tail do sampleQueue.values[index] = nil end
+    sampleQueue.head = 1
+    sampleQueue.tail = 0
     for index = #chartBuckets, 1, -1 do chartBuckets[index] = nil end
     chartCurrentMinute = nil
     if resetBalance ~= false then lastBalance = GetCurrentGoldAmount() end
@@ -290,22 +314,64 @@ local function DetectGoldGain()
     return currentBalance
 end
 
-local function ComputeWindow(windowSeconds)
+local function ComputeRateWindows(settings)
     local now = GetNow()
-    local cutoff = now - windowSeconds
-    local gain = 0
-    local oldest
     PruneSamples(now)
-    for _, sample in ipairs(samples) do
-        if sample.time >= cutoff then
-            gain = gain + sample.amount
-            if not oldest or sample.time < oldest then oldest = sample.time end
+
+    local requests = rateScratch.requests
+    local results = rateScratch.results
+    local requestCount = 0
+    for _, window in ipairs(WINDOWS) do
+        local result = results[window.key]
+        if not result then
+            result = {}
+            results[window.key] = result
+        end
+        result.gain = 0
+        result.rate = 0
+
+        if settings.showTrackers == true and settings.timers[window.key] == true then
+            requestCount = requestCount + 1
+            local request = requests[requestCount] or {}
+            request.id = window.key
+            request.windowSeconds = window.seconds
+            request.cutoff = now - window.seconds
+            requests[requestCount] = request
         end
     end
-    local elapsedSeconds = windowSeconds
-    if oldest then elapsedSeconds = math.min(windowSeconds, math.max(now - oldest, 1)) end
-    local rate = gain > 0 and gain / (elapsedSeconds / 60) or 0
-    return gain, rate
+
+    for index = 2, requestCount do
+        local request = requests[index]
+        local insertionIndex = index - 1
+        while insertionIndex >= 1 and requests[insertionIndex].cutoff < request.cutoff do
+            requests[insertionIndex + 1] = requests[insertionIndex]
+            insertionIndex = insertionIndex - 1
+        end
+        requests[insertionIndex + 1] = request
+    end
+
+    local values = sampleQueue.values
+    local sampleIndex = sampleQueue.tail
+    local gain = 0
+    local oldest
+    for requestIndex = 1, requestCount do
+        local request = requests[requestIndex]
+        while sampleIndex >= sampleQueue.head do
+            local sample = values[sampleIndex]
+            if not sample or sample.time < request.cutoff then break end
+            gain = gain + sample.amount
+            oldest = sample.time
+            sampleIndex = sampleIndex - 1
+        end
+
+        local elapsedSeconds = request.windowSeconds
+        if oldest then elapsedSeconds = math.min(request.windowSeconds, math.max(now - oldest, 1)) end
+        local result = results[request.id]
+        result.gain = gain
+        result.rate = gain > 0 and gain / (elapsedSeconds / 60) or 0
+    end
+
+    return results
 end
 
 local function GetCurrentSceneName()
@@ -552,15 +618,19 @@ local function Render()
         amountLabel:SetText(FormatNumber(currentGold))
     end
     if GetSettings().showTrackers == true then
+        local settings = GetSettings()
+        local rateResults = ComputeRateWindows(settings)
         for index, window in ipairs(WINDOWS) do
-            local gain, rate = ComputeWindow(window.seconds)
-            local card = cards[index]
-            card.timeLabel:SetFont(ResolveFont(-4))
-            card.gainLabel:SetFont(ResolveFont(2))
-            card.rateLabel:SetFont(ResolveFont(-5))
-            card.timeLabel:SetText(window.hudLabel)
-            card.gainLabel:SetText(FormatGainText(gain))
-            card.rateLabel:SetText(FormatRateText(rate))
+            if settings.timers[window.key] == true then
+                local result = rateResults[window.key]
+                local card = cards[index]
+                card.timeLabel:SetFont(ResolveFont(-4))
+                card.gainLabel:SetFont(ResolveFont(2))
+                card.rateLabel:SetFont(ResolveFont(-5))
+                card.timeLabel:SetText(window.hudLabel)
+                card.gainLabel:SetText(FormatGainText(result and result.gain or 0))
+                card.rateLabel:SetText(FormatRateText(result and result.rate or 0))
+            end
         end
     end
     RenderChart()
@@ -571,12 +641,33 @@ end
 local function Refresh() Render() end
 local function UpdateLoop()
     if not EVENT_MANAGER then return end
+    local settings = GetSettings()
+    local shouldRun = (settings.enabled == true and IsGameplaySceneShowing())
+        or (settingsPanelVisible and settings.showInSettings == true)
+    if shouldRun == updateLoopRunning then return shouldRun end
+
     EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
-    if GetSettings().enabled == true then EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE, UPDATE_INTERVAL_MS, Refresh) end
+    updateLoopRunning = false
+    if shouldRun then
+        EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE, UPDATE_INTERVAL_MS, Refresh)
+        updateLoopRunning = true
+    end
+    return shouldRun
+end
+
+local function FlushCurrencyRefresh()
+    currencyRefreshQueued = false
+    if ShouldShow() then Refresh() end
 end
 
 local function OnCurrencyChanged()
-    Refresh()
+    if currencyRefreshQueued or not ShouldShow() then return end
+    currencyRefreshQueued = true
+    if zo_callLater then
+        zo_callLater(FlushCurrencyRefresh, CURRENCY_REFRESH_DELAY_MS)
+    else
+        FlushCurrencyRefresh()
+    end
 end
 
 local function RegisterCurrencyEvent(eventName, suffix)
@@ -594,7 +685,7 @@ local function RegisterEvents()
     RegisterCurrencyEvent(EVENT_MONEY_UPDATE, "_Money")
     RegisterCurrencyEvent(EVENT_CARRIED_CURRENCY_UPDATE, "_CarriedCurrency")
     RegisterCurrencyEvent(EVENT_BANKED_CURRENCY_UPDATE, "_BankedCurrency")
-    if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_Activated", EVENT_PLAYER_ACTIVATED, function() lastBalance = GetCurrentGoldAmount() Refresh() end) end
+    if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_Activated", EVENT_PLAYER_ACTIVATED, function() lastBalance = GetCurrentGoldAmount() if ShouldShow() then Refresh() end end) end
     if EVENT_SCREEN_RESIZED then EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_ScreenResized", EVENT_SCREEN_RESIZED, ApplyPosition) end
 end
 
@@ -619,9 +710,9 @@ local function UpdateRuntimeState()
         return
     end
 
-    if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE) end
     UnregisterEvents()
     ResetRuntimeState()
+    UpdateLoop()
     if settingsPanelVisible and GetSettings().showInSettings == true then
         InstallSceneCallback()
         Refresh()
@@ -632,6 +723,7 @@ local function UpdateRuntimeState()
 end
 
 local function OnSceneStateChanged()
+    UpdateLoop()
     if ShouldShow() then Refresh() else HideControl() end
 end
 

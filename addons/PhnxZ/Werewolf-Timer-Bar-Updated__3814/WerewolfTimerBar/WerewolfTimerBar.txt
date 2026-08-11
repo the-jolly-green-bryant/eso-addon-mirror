@@ -8,9 +8,9 @@
 ## Title: Werewolf Timer Bar
 ## Author: maximoz, PhnxZ
 ## Description: Timer bar for tracking werewolf transformation.
-## Version: 3.04
-## AddOnVersion: 304
-## APIVersion: 101050
+## Version: 3.05
+## AddOnVersion: 305
+## APIVersion: 101050 101051
 ## DependsOn: LibSavedVars>=60007 LibAddonMenu-2.0>=43
 ## SavedVariables: WerewolfTimerBarVars_Account WerewolfTimerBarVars_Characters
 

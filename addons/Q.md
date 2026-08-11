@@ -34,6 +34,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Quick Fashion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lari/Quick-Fashion__3115) | Lari | PC / Mac | 2.3 |
 | [Quick Junk And Destroy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FoG/Quick-Junk-And-Destroy__3535) | FoG | PC / Mac | 1.0.1 |
 | [Quick Menu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rockingdice/Quick-Menu__1816) | rockingdice | PC / Mac | 1.03 |
+| [Quick Scry Access](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/erikaulin/Quick-Scry-Access__5dd4a9f8-7f3d-4c60-9c5b-6853afce66ad) | erikaulin | Console | — |
 | [Quick Survey Opener](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Botch_00/Quick-Survey-Opener__4569) | Botch_00 | PC / Mac | 1.0 |
 | [QuickBind (Bind Uncollected Items Fast)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lazy/QuickBind-Bind-Uncollected-Items-Fast__4296) | lazy | PC / Mac | 1.1.0 |
 | [QuickCompass - Modified](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/QuickCompass---Modified__2471) | Phuein | PC / Mac | 1.0.1.18 |

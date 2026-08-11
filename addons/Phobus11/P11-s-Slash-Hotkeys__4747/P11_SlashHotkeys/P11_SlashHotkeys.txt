@@ -1,0 +1,14 @@
+## Title: P11_SlashHotkeys
+## Version: 1.1.0
+## AddOnVersion: 102
+## Author: Phobus11
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=43 LibExtendedSavedVars>=104
+## SavedVariables: P11_SlashHotkeys_SavedVars
+## Description: Allows user to set hotkeys for standard chat topics such as guild recruiting.
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+P11_SlashHotkeys.lua
+Bindings\Bindings.xml

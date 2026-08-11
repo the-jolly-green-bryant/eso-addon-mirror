@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/PvPenny/Group-Mementos__4766",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PvPenny",
+  "canonical_id": "esoui:4766",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4766",
+  "deleted": false,
+  "directories": [
+    "GroupMementos"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4766/",
+  "fingerprint": "0130ea26995a54843035b57d69bb0699a58dfd3c806ceff30145b6f9c4ae0407",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16960.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16961.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4766",
+  "source_url": "https://www.esoui.com/downloads/info4766-GroupMementos.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 1
+  },
+  "title": "Group Mementos",
+  "updated_at": 1786396568000,
+  "version": "2.3.3"
+}

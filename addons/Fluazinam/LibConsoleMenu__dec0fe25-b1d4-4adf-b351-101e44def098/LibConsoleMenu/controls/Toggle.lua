@@ -1,4 +1,4 @@
--- Toggle control. type = "toggle"; "checkbox" is accepted as an alias.
+-- Toggle control. type = "toggle".
 -- Visuals follow ZO_GamepadOptions: focused shows both On/Off; unfocused shows the
 -- active value centered and greyed (checkbox.selected + ZO_DISABLED_TEXT).
 -- Labels: values > preset > SI_CHECK_BUTTON_ON/OFF. Disabled rows show SI_CHECK_BUTTON_DISABLED.
@@ -133,7 +133,7 @@ LCM.updateControlFunctions[LCM.CT_TOGGLE] = function(self, control, selected, en
 	enabled = not self:IsDisabled()
 
 	local collapse = true
-	local panel = LCM.currentSettings
+	local panel = LCM.currentMenu
 	if panel and panel.collapseToggleLabels == false then
 		collapse = false
 	end
@@ -202,7 +202,7 @@ LCM.updateControlFunctions[LCM.CT_TOGGLE] = function(self, control, selected, en
 	)
 end
 
-LCM.createControlFunctions[LCM.CT_TOGGLE] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_TOGGLE] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_TOGGLE] = function(self)
 	ZO_CheckButton_SetToggleFunction(self.control:GetNamedChild("Checkbox"), nil)

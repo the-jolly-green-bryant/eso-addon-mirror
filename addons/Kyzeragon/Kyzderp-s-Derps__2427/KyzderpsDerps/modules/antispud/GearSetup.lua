@@ -48,6 +48,7 @@ local function GetUnitNameIfExists(unitTag)
 end
 
 local prevBosses = ""
+local prevActualBosses = ""
 local function OnBossesChanged()
     local bossHash = ""
 
@@ -61,10 +62,19 @@ local function OnBossesChanged()
     -- Only trigger off bosses truly changing (sometimes the event fires for no apparent reason?)
     if (bossHash ~= prevBosses and (bossHash == "" or prevBosses == "")) then
         KD:dbg("[" .. prevBosses .. "] -> [" .. bossHash .. "]")
-        prevBosses = bossHash
-        -- TODO: don't do it on wipe (boss respawn)
+
         OnSetupNeedsChanging()
+
+        -- Save the last actual bosses, so if wipe boss -> nothing -> boss, clear the spud
+        if (prevActualBosses == bossHash) then
+            Spud.Display(nil, Spud.SETUP)
+        end
+
+        if (bossHash ~= "") then
+            prevActualBosses = bossHash
+        end
     end
+    prevBosses = bossHash
 end
 
 

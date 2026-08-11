@@ -7,12 +7,20 @@ local Kyzerg = Sync.Kyzerg
 ---------------------------------------------------------------------
 -- Known accounts
 ---------------------------------------------------------------------
+local function NameIsUnit(name, unitTag)
+    return GetUnitName(unitTag) == name or GetUnitDisplayName(unitTag) == name
+end
+
+local function NameIsPlayer(name)
+    return NameIsUnit(name, "player")
+end
+
 local function GetSVTable()
     if (not KyzderpsDerpsSavedVariables.Default) then return {} end
     return KyzderpsDerpsSavedVariables.Default
 end
 
-local function IsMe(name)
+local function IsSelf(name)
     -- @name
     if (GetSVTable()[name]) then
         return true
@@ -31,6 +39,54 @@ local function IsMe(name)
     return false
 end
 
+-- get acc name from char name, but it could be acc name already
+local function GetGroupMemberAccountName(name)
+    for i = 1, GetGroupSize() do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if (NameIsUnit(name, unitTag)) then
+            return GetUnitDisplayName(unitTag)
+        end
+    end
+end
+
+local KYZ = {
+    ["@Kyzeragon"] = true,
+    ["@Kyzeragone"] = true,
+    ["@TheClawlessConqueror"] = true,
+}
+
+local JWPD2 = {
+    ["@camrenis"] = true,
+    ["@efiye"] = true,
+    ["@jetplane_18"] = true,
+    ["@jetplane_19"] = true,
+}
+
+local function IsKyzer(name)
+    local atName = GetGroupMemberAccountName(name)
+    return KYZ[atName]
+end
+
+local function IsJWPD2(name)
+    local atName = GetGroupMemberAccountName(name)
+    return KYZ[atName] or JWPD2[atName]
+end
+
+-- Is own alt account, or is Kyzer
+local function IsSelfOrKyzer(name)
+    return IsSelf(name) or IsKyzer(name)
+end
+
+local function IsSelfOrJWPD2(name)
+    return IsSelf(name) or IsJWPD2(name)
+end
+
+local function IsPlayerJWPD2()
+    local atName = GetUnitDisplayName("player")
+    return KYZ[atName] or JWPD2[atName]
+end
+KD.IsPlayerJWPD2 = IsPlayerJWPD2
+
 
 ---------------------------------------------------------------------
 -- Misc
@@ -44,47 +100,84 @@ local function IndexOf(tab, item)
     return -1
 end
 
-local function NameIsPlayer(name)
-    return GetUnitName("player") == name or GetUnitDisplayName("player") == name
-end
-
 local drivers = {}
 local onlineCharNames = {}
 local passengers = {}
 local riders = {}
-local function SortRiders(fromName)
+local function FindNearestDriver(fromName)
     ZO_ClearTable(drivers)
     ZO_ClearTable(onlineCharNames)
     ZO_ClearTable(passengers)
+
+    local isPassenger = false
 
     -- Only online in group
     for i = 1, GetGroupSize() do
         local unitTag = GetGroupUnitTagByIndex(i)
         local atName = GetUnitDisplayName(unitTag)
-        if (IsMe(atName) and IsUnitOnline(unitTag)) then
+        if (IsUnitOnline(unitTag)) then
             local charName = GetUnitName(unitTag)
             onlineCharNames[atName] = charName
 
             local mountedState, isRidingGroupMount, hasFreePassengerSlot = GetTargetMountedStateInfo(charName)
-            KyzderpsDerps:dbg(zo_strformat("<<1>>: mountedState <<2>> isRidingGroupMount <<3>> hasFreePassengerSlot <<4>>", charName, mountedState, isRidingGroupMount and "true" or "false", hasFreePassengerSlot and "true" or "false"))
+            KD:dbg(zo_strformat("<<1>>: mountedState <<2>> isRidingGroupMount <<3>> hasFreePassengerSlot <<4>>", charName, mountedState, isRidingGroupMount and "true" or "false", hasFreePassengerSlot and "true" or "false"))
             if (mountedState == MOUNTED_STATE_MOUNT_RIDER and isRidingGroupMount and hasFreePassengerSlot) then
-                table.insert(drivers, atName)
+                table.insert(drivers, unitTag)
             else
-                table.insert(passengers, atName)
+                table.insert(passengers, unitTag)
+                if (AreUnitsEqual(unitTag, "player")) then
+                    isPassenger = true
+                end
             end
         end
     end
 
     table.sort(drivers)
     table.sort(passengers)
-    d("drivers", drivers)
-    d("passengers", passengers)
 
-    local index = IndexOf(passengers, GetUnitDisplayName("player"))
-    if (index > 0 and index <= #drivers) then
-        return onlineCharNames[drivers[index]]
-    else
-        d(index)
+    -- look for closest driver
+    local driver
+    local distance = math.huge
+    if (isPassenger) then
+        local _, pX, pY, pZ = GetUnitRawWorldPosition("player")
+        for _, unitTag in ipairs(drivers) do
+            if (IsUnitInGroupSupportRange(unitTag)) then
+                local _, x, y, z = GetUnitRawWorldPosition(unitTag)
+                local dist = math.pow(x - pX, 2) + math.pow(y - pY, 2) + math.pow(z - pZ, 2)
+                KD:msg(GetUnitDisplayName(unitTag) .. " sqdistance: " .. dist)
+                if (dist < distance) then
+                    driver = unitTag
+                    distance = dist
+                end
+            end
+        end
+    end
+
+    return GetUnitDisplayName(driver)
+end
+
+local function KMount()
+    if (IsMounted() or IsGroupMountPassenger()) then return end
+    local driver = FindNearestDriver()
+    if (driver) then
+        KD:msg("Trying to use " .. driver .. "'s mount")
+        UseMountAsPassenger(driver)
+    end
+end
+Kyzerg.KMount = KMount
+
+local function KJWPD2(fromName)
+    for name, _ in pairs(KYZ) do
+        if (name ~= GetUnitDisplayName("player")) then
+            KD:msg("Inviting " .. name)
+            GroupInviteByName(name)
+        end
+    end
+    for name, _ in pairs(JWPD2) do
+        if (name ~= GetUnitDisplayName("player")) then
+            KD:msg("Inviting " .. name)
+            GroupInviteByName(name)
+        end
     end
 end
 
@@ -92,10 +185,16 @@ end
 ---------------------------------------------------------------------
 -- Functions
 ---------------------------------------------------------------------
+-- fromName, text
 local COMMANDS = {
     -- Port to sender
     k2me = function(fromName)
-        if (fromName == GetUnitDisplayName("player") or fromName == GetUnitName("player")) then return end
+        if (NameIsPlayer(fromName)) then return end
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized k2me from " .. fromName)
+            return
+        end
+        KD:msg("Porting to " .. fromName)
         if (IsPlayerInGroup(fromName)) then
             JumpToGroupMember(fromName)
         else
@@ -107,22 +206,44 @@ local COMMANDS = {
 
     -- Port to house
     khouse = function(_, text)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized khouse from " .. fromName)
+            return
+        end
         KD.KHouse.PortToHouse(string.sub(text, 8))
     end,
 
     -- Port to self house
-    khouseself = function()
+    khouseself = function(fromName)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized khouseself from " .. fromName)
+            return
+        end
         RequestJumpToHouse(GetHousingPrimaryHouse())
     end,
 
     -- Mudball
-    kmud = function()
+    kmud = function(fromName)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized kmud from " .. fromName)
+            return
+        end
         UseCollectible(601)
     end,
 
     -- Snowball
-    ksnow = function()
+    ksnow = function(fromName)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized ksnow from " .. fromName)
+            return
+        end
         UseCollectible(6932)
+    end,
+
+    -- Invite jwpd2
+    kjwpd2 = function(fromName)
+        if (not NameIsPlayer(fromName)) then return end
+        KJWPD2()
     end,
 
     -- Invite all (CURRENT PLAYER ONLY)
@@ -137,12 +258,18 @@ local COMMANDS = {
     end,
 
     -- PTE
-    kpte = function()
-        ExitInstanceImmediately()
+    kpte = function(fromName)
+        if (IsSelf(fromName)) then
+            ExitInstanceImmediately()
+        end
     end,
 
     -- Accept whatever?
-    kyes = function()
+    kyes = function(fromName)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized kyes from " .. fromName)
+            return
+        end
         local groupInvite = GetGroupInviteInfo()
         if (groupInvite and groupInvite ~= "") then
             AcceptGroupInvite()
@@ -160,36 +287,88 @@ local COMMANDS = {
     end,
 
     -- reloadui
-    krl = function()
-        ReloadUI()
+    krl = function(fromName)
+        if (IsSelf(fromName)) then
+            ReloadUI()
+        end
     end,
 
     -- log out
-    klog = function()
-        Logout()
+    klog = function(fromName)
+        if (IsSelf(fromName)) then
+            Logout()
+        end
     end,
 
     -- quit
-    kquit = function()
-        Quit()
+    kquit = function(fromName)
+        if (IsSelf(fromName)) then
+            Quit()
+        end
     end,
 
-    -- Get on multi rider mount
-    kmount = function()
-        local driver = SortRiders()
-        if (driver) then
-            KyzderpsDerps:msg("Trying to use " .. driver .. "'s mount")
-            UseMountAsPassenger(driver)
+    -- Get on multi rider mount as passenger
+    kmount = KMount,
+
+    -- Equip multi rider mount
+    kmm = function(fromName)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized kmm from " .. fromName)
+            return
+        end
+
+        local multiMounts = { -- Incomprehensive. Just the ones I have
+            13808, -- Warparty Timber Mammoth
+            13897, -- Duo-Dynamo Dungeon Delver Spider
+            6972, -- Duo-Dynamo Dwarven Spider
+            13552, -- Duo-Dynamo Hollowsteel Spider
+            11887, -- Nightmare Pillion Courser
+            10254, -- Wayrest Vanner Pillion Steed
+        }
+
+        for _, id in ipairs(multiMounts) do
+            if (IsCollectibleUnlocked(id) and not IsCollectibleActive(id, GAMEPLAY_ACTOR_CATEGORY_PLAYER)) then
+                KD:msg(string.format("Equipping %s (%d)", GetCollectibleName(id), id))
+                UseCollectible(id)
+                return
+            end
+        end
+    end,
+
+    -- Give crown
+    kcrown = function(fromName)
+        if (NameIsPlayer(fromName)) then return end
+        if (not IsUnitGroupLeader("player")) then return end
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized kcrown from " .. fromName)
+            return
+        end
+
+        -- Find the sender's unit tag
+        for i = 1, GetGroupSize() do
+            local unitTag = GetGroupUnitTagByIndex(i)
+            if (IsUnitOnline(unitTag) and NameIsUnit(fromName, unitTag)) then
+                GroupPromote(unitTag)
+                return
+            end
         end
     end,
 
     -- ktp
     ktp = function(_, text)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized ktp from " .. fromName)
+            return
+        end
         KD.PortToAny(string.sub(text, 5))
     end,
 
     -- krez
-    krez = function()
+    krez = function(fromName)
+        if (not IsSelfOrJWPD2(fromName)) then
+            KD:msg("Unauthorized krez from " .. fromName)
+            return
+        end
         Revive()
     end,
 }
@@ -204,9 +383,7 @@ end
 ---------------------------------------------------------------------
 -- Chat handler
 ---------------------------------------------------------------------
-local validChannels = {
-    -- [CHAT_CHANNEL_PARTY] = true,
-}
+local validChannels = {}
 
 local function OnChatMessage(_, channelType, fromName, text)
     if (not validChannels[channelType]) then return end
@@ -234,7 +411,7 @@ local function OnQuestShared(_, questId)
     local questName, _, _, displayName = GetOfferedQuestShareInfo(questId)
     KD:msg(displayName .. " shared " .. questName .. " (" .. questId .. ")")
 
-    if (IsMe(displayName)) then
+    if (IsSelfOrKyzer(displayName)) then
         AcceptSharedQuest(questId)
         KD:msg("Accepting quest " .. questName .. " (" .. questId .. ") from " .. displayName)
     end
@@ -255,23 +432,38 @@ end
 ---------------------------------------------------------------------
 function Kyzerg.Initialize()
     EVENT_MANAGER:UnregisterForEvent(KD.name .. "KyzergChatMessage", EVENT_CHAT_MESSAGE_CHANNEL)
-
     EVENT_MANAGER:UnregisterForEvent(KD.name .. "KyzergFocus", EVENT_GAME_FOCUS_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(KD.name .. "KyzergQuestShared", EVENT_QUEST_SHARED)
 
-    if (KD.savedOptions.general.experimental) then
+    if (KD.savedOptions.general.experimental or KD.savedOptions.kyzerg.group) then
         KD:dbg("    Initializing Kyzerg module...")
 
         EVENT_MANAGER:RegisterForEvent(KD.name .. "KyzergChatMessage", EVENT_CHAT_MESSAGE_CHANNEL, OnChatMessage)
-        EVENT_MANAGER:RegisterForEvent(KD.name .. "KyzergFocus", EVENT_GAME_FOCUS_CHANGED, OnFocusChanged)
 
-        -- Put zerg guild channel in valid. This breaks if leaving or joining, but it's not like I do that often
-        for i = 1, GetNumGuilds() do
-            if (GetGuildId(i) == 580319) then
-                local channel = _G["CHAT_CHANNEL_GUILD_" .. tostring(i)]
-                validChannels[channel] = true
+        if (KD.savedOptions.general.experimental) then
+            -- Stop moving when tabbing back in
+            EVENT_MANAGER:RegisterForEvent(KD.name .. "KyzergFocus", EVENT_GAME_FOCUS_CHANGED, OnFocusChanged)
+
+            -- Put zerg guild channel in valid. This breaks if leaving or joining, but it's not like I do that often
+            for i = 1, GetNumGuilds() do
+                if (GetGuildId(i) == 580319) then -- FC
+                    local channel = _G["CHAT_CHANNEL_GUILD_" .. tostring(i)]
+                    validChannels[channel] = true
+                end
             end
+
+            -- Auto accept quests from myself
+            EVENT_MANAGER:RegisterForEvent(KD.name .. "KyzergQuestShared", EVENT_QUEST_SHARED, OnQuestShared)
         end
 
-        EVENT_MANAGER:RegisterForEvent(KD.name .. "KyzergQuestShared", EVENT_QUEST_SHARED, OnQuestShared)
+        validChannels[CHAT_CHANNEL_PARTY] = KD.savedOptions.kyzerg.group
+    end
+
+    if (not IsPlayerJWPD2()) then
+        SLASH_COMMANDS["/kjwpd2"] = nil
     end
 end
+-- /script KyzderpsDerps.savedOptions.kyzerg.group = true KyzderpsDerps.Sync.Kyzerg.Initialize()
+
+SLASH_COMMANDS["/kmount"] = KMount
+SLASH_COMMANDS["/kjwpd2"] = KJWPD2

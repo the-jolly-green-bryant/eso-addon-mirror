@@ -43,6 +43,13 @@ local function E(key, name, effectType, timer, coverage, defaultTracked, aliases
         readyRequiresObservedProvider=options.readyRequiresObservedProvider == true,
         preserveRecipientCooldownOnEncounterEnd=options.preserveRecipientCooldownOnEncounterEnd == true,
         compositeChildren=options.compositeChildren,
+        localProviderAbilityIds=options.localProviderAbilityIds or {},
+        requiredWornItemId=tonumber(options.requiredWornItemId),
+        requiredEquipSlot=options.requiredEquipSlot,
+        providerCooldownFromLocalEffect=options.providerCooldownFromLocalEffect == true,
+        requiresLocalProviderEffect=options.requiresLocalProviderEffect == true,
+        coverageTriggerIds=options.coverageTriggerIds or {},
+        reconcileCoverageOnTrigger=options.reconcileCoverageOnTrigger == true,
         lifecycle=options.lifecycle or (
             options.intelligenceMode == "RECIPIENT_COOLDOWN" and "RECIPIENT_COOLDOWN" or
             (options.targetCooldown and "TARGET_ACTIVE_COOLDOWN" or
@@ -59,7 +66,7 @@ Registry.definitions = {
     E("MINOR_FORCE","Minor Force","BUFF",true,true,false,nil,{displayPriority=70,icon=I("ability_buff_minor_force")}),
     E("MAJOR_SLAYER","Major Slayer","BUFF",true,true,true,nil,{abilityIds={93109},showMissingPlayers=true,missingWindow=5,displayPriority=5,iconAbilityId=93109}),
     E("MINOR_SLAYER","Minor Slayer","BUFF",false,true,false,nil,{displayPriority=75,icon=I("ability_buff_minor_slayer")}),
-    E("MAJOR_COURAGE","Major Courage","BUFF",true,true,true,nil,{displayPriority=15,icon=I("ability_buff_major_courage")}),
+    E("MAJOR_COURAGE","Major Courage","BUFF",true,true,true,nil,{displayPriority=15,icon=I("ability_buff_major_courage"),coverageTriggerIds={39113,42155,42156,42157},reconcileCoverageOnTrigger=true}),
     E("MINOR_COURAGE","Minor Courage","BUFF",false,true,true,nil,{displayPriority=25,icon=I("ability_buff_minor_courage")}),
     E("AURA_OF_PRIDE","Aura of Pride","BUFF",false,true,true,{"Spaulder of Ruin"},{coveragePerProvider=6,observedProviderCapacity=true,targetType="GROUP",activeUntilFade=true,recipientDisplay="ACTIVE",displayPriority=20,icon=I("ability_mage_065")}),
     E("MAJOR_MENDING","Major Mending","BUFF",true,false,true,nil,{targetType="SELF",displayPriority=45,icon=I("ability_buff_major_mending")}),
@@ -103,9 +110,10 @@ Registry.definitions = {
     E("THRASSIAN_STRANGLERS","Thrassian Stranglers","BUFF",false,false,false,{"Sload's Call"},{abilityIds={136123},targetType="SELF",showStacks=true,displayPriority=80,activeUntilFade=true,icon=I("gear_thrassianstranglers_a")}),
     E("ROURKEN_STEAMGUARDS","Rourken Steamguards","BUFF",true,false,false,{"Steam Guardian"},{targetType="SELF",displayPriority=81}),
 
-    -- Huntsman's Warmask: 252048 is the verified Mark of Hircine target effect.
-    -- The player-side 252050 state is intentionally not duplicated as another tile.
-    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},targetType="RETICLE_HOSTILE",providerCooldown=10,cooldownStartsEveryApplication=true,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048}),
+    -- Huntsman's Warmask uses the local self effect (252050) as ownership and
+    -- application authority, while 252048 is used only to identify the marked
+    -- hostile target. This prevents another player's Mark from driving our tile.
+    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},localProviderAbilityIds={252050},requiredWornItemId=223189,requiredEquipSlot=EQUIP_SLOT_HEAD,providerCooldownFromLocalEffect=true,requiresLocalProviderEffect=true,targetType="RETICLE_HOSTILE",providerCooldown=10,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048}),
 
     E("MAJOR_VULNERABILITY","Major Vulnerability","DEBUFF",true,false,true,nil,{abilityIds={106754},displayPriority=5,icon=I("ability_debuff_major_vulnerability")}),
     E("MINOR_VULNERABILITY","Minor Vulnerability","DEBUFF",true,false,true,nil,{displayPriority=55,icon=I("ability_debuff_minor_vulnerability")}),
@@ -139,7 +147,7 @@ Registry.definitions = {
 }
 
 function Registry:Initialize()
-    self.byKey, self.byName, self.byAbilityId, self.byCombatEventId, self.releaseByAbilityId, self.buffs, self.debuffs = {}, {}, {}, {}, {}, {}, {}
+    self.byKey, self.byName, self.byAbilityId, self.byCombatEventId, self.releaseByAbilityId, self.localProviderByAbilityId, self.coverageTriggerByAbilityId, self.buffs, self.debuffs = {}, {}, {}, {}, {}, {}, {}, {}, {}
     for _, effect in ipairs(self.definitions) do
         self.byKey[effect.key] = effect
         self.byName[BB:NormalizeText(effect.name)] = effect
@@ -147,6 +155,8 @@ function Registry:Initialize()
         for _, abilityId in ipairs(effect.abilityIds or {}) do self.byAbilityId[tonumber(abilityId)] = effect end
         for _, abilityId in ipairs(effect.combatEventIds or {}) do self.byCombatEventId[tonumber(abilityId)] = effect end
         for _, abilityId in ipairs(effect.releaseTriggerIds or {}) do self.releaseByAbilityId[tonumber(abilityId)] = effect end
+        for _, abilityId in ipairs(effect.localProviderAbilityIds or {}) do self.localProviderByAbilityId[tonumber(abilityId)] = effect end
+        for _, abilityId in ipairs(effect.coverageTriggerIds or {}) do self.coverageTriggerByAbilityId[tonumber(abilityId)] = effect end
         if effect.compositeChildren then
             effect.compositeByName = {}
             for childName, childKey in pairs(effect.compositeChildren) do

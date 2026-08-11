@@ -18,7 +18,7 @@
     "WayshrineBlocker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4745/",
-  "fingerprint": "76d0530a7cc747c68376a9765d449c2a6e506b4bd5e957dbbb8bb6edd099f158",
+  "fingerprint": "dfb23bcd43bce8db55dfa9b95850cf4aa982954ad5772fc74535f0b081a3b1bd",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16881.png",
     "https://cdn-eso.mmoui.com/preview/pvw16882.png"
@@ -29,11 +29,11 @@
   "source_id": "4745",
   "source_url": "https://www.esoui.com/downloads/info4745-WayshrineBlocker.html",
   "stats": {
-    "downloads": 4,
+    "downloads": 21,
     "favorites": 0,
-    "monthly_downloads": 3
+    "monthly_downloads": 21
   },
   "title": "Wayshrine Blocker",
-  "updated_at": 1785676918000,
-  "version": "1"
+  "updated_at": 1786382804000,
+  "version": "1.1"
 }

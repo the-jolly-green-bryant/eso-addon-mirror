@@ -6,7 +6,6 @@ local MODULE_ORDER = { "blue", "red", "green" }
 local LINE_HEIGHT = 28
 local WIDTH = 420
 local HEIGHT = LINE_HEIGHT * 4
-local VISIBILITY_REASON = "ShowCPModuleDisabled"
 
 local function AddHudFragment(fragment)
     if HUD_SCENE then
@@ -22,13 +21,21 @@ function Display:Initialize()
 
     for _, moduleKey in ipairs(MODULE_ORDER) do
         local module = SC.Modules[moduleKey]
-        local control = WINDOW_MANAGER:CreateTopLevelWindow("ShowCP_" .. moduleKey)
-        control:SetDimensions(WIDTH, HEIGHT)
-        control:SetClampedToScreen(true)
+
+        -- The scene root is owned only by ESO scene visibility. The child control
+        -- owns Show CP's module enabled/disabled state so scene transitions can
+        -- never override a disabled module.
+        local sceneRoot = WINDOW_MANAGER:CreateTopLevelWindow("ShowCP_" .. moduleKey .. "_SceneRoot")
+        sceneRoot:SetDimensions(WIDTH, HEIGHT)
+        sceneRoot:SetClampedToScreen(true)
+        sceneRoot:SetMouseEnabled(false)
+        sceneRoot:SetMovable(false)
+        sceneRoot:SetDrawLayer(DL_OVERLAY)
+        sceneRoot:SetDrawTier(DT_HIGH)
+
+        local control = WINDOW_MANAGER:CreateControl("ShowCP_" .. moduleKey, sceneRoot, CT_CONTROL)
+        control:SetAnchorFill(sceneRoot)
         control:SetMouseEnabled(false)
-        control:SetMovable(false)
-        control:SetDrawLayer(DL_OVERLAY)
-        control:SetDrawTier(DT_HIGH)
 
         local labels = {}
         for i = 1, 4 do
@@ -47,10 +54,11 @@ function Display:Initialize()
             labels[i] = label
         end
 
-        local fragment = ZO_HUDFadeSceneFragment:New(control, nil, 0)
+        local fragment = ZO_HUDFadeSceneFragment:New(sceneRoot, nil, 0)
         AddHudFragment(fragment)
 
         self.controls[moduleKey] = {
+            sceneRoot = sceneRoot,
             control = control,
             labels = labels,
             fragment = fragment,
@@ -67,10 +75,10 @@ function Display:ApplyPlacement(moduleKey)
     local saved = SC.saved and SC.saved[moduleKey]
     if not entry or not saved then return end
 
-    local control = entry.control
-    control:ClearAnchors()
-    control:SetAnchor(CENTER, GuiRoot, CENTER, saved.x or 0, saved.y or 0)
-    control:SetScale(saved.scale or 1)
+    local sceneRoot = entry.sceneRoot
+    sceneRoot:ClearAnchors()
+    sceneRoot:SetAnchor(CENTER, GuiRoot, CENTER, saved.x or 0, saved.y or 0)
+    sceneRoot:SetScale(saved.scale or 1)
 end
 
 function Display:RefreshVisibility(moduleKey)
@@ -79,10 +87,10 @@ function Display:RefreshVisibility(moduleKey)
     local function Apply(key)
         local entry = self.controls[key]
         local saved = SC.saved[key]
-        if not entry or not saved or not entry.fragment then return end
+        if not entry or not saved or not entry.control then return end
 
-        local shouldHide = not (SC.saved.enabled and saved.enabled)
-        entry.fragment:SetHiddenForReason(VISIBILITY_REASON, shouldHide, 0, 0)
+        -- Module visibility is independent from the HUD scene fragment.
+        entry.control:SetHidden(not (SC.saved.enabled and saved.enabled))
     end
 
     if moduleKey then

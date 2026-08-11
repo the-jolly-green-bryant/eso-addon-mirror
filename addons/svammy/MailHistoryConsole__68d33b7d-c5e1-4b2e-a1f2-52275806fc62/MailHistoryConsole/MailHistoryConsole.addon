@@ -1,8 +1,8 @@
-## APIVersion: 101049
+## APIVersion: 101050
 ## Title: Mail History (Console)
-## Version: 2026.08.08
+## Version: 2026.08.10
 ## AddOnVersion: 1
-## Author: @PacificOshie — console port
+## Author: @tzammy_ — console port
 ## Description: Console port of the Mail History addon. Saves a copy of your mail when sending, taking, returning, and deleting mail. Original work by @PacificOshie.
 ## SavedVariables: MailHistoryConsoleData MailHistoryConsoleSettings
 ## DependsOn: LibHarvensAddonSettings>=20107 LibAsync>=20302

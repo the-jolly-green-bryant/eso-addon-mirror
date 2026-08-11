@@ -20,6 +20,7 @@ CCTracker.menu.constants = {
 		"Endeavor_Complete",
 		"EnlightenedState_Gained",
 		"General_Alert_Error",
+		"Justice_StateChanged",
 		"GroupElection_Requested",
 		"PromotionalEvent_ClaimCapstoneReward",
 		"PromotionalEvent_ClaimReward",
@@ -251,9 +252,29 @@ local function CreateSoundControls()
 		control2.getFunc = function() return CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].sound end
 		control2.setFunc = function(value)
 			CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].sound = value
-			PlaySound(value)
+			for j = 1, math.max(CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].volume, 1) do
+				PlaySound(value)
+			end
 		end
 		table.insert(CCTracker.menu.options[position].controls, control2)
+		
+		-- Volume slider
+		local control3 = {}
+		control3.type = "slider"
+		control3.name = CCTracker.menu.constants.sound[i].Name.." sound volume"
+		-- control3.width = "half"
+		control3.disabled = function() return (not CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].enabled) or (CCTracker.ccVariables[CCTracker.menu.constants.sound[i].Id].isHardCC and CCTracker.SV.sound.MuteOnHardCC) end
+		control3.min = 1
+		control3.max = 30
+		control3.default = 1
+		control3.getFunc = function() return CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].volume end
+		control3.setFunc = function(value)
+			CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].volume = value
+			for j = 1, value do
+				PlaySound(CCTracker.SV.sound[CCTracker.menu.constants.sound[i].Name].sound)
+			end
+		end
+		table.insert(CCTracker.menu.options[position].controls, control3)
 	end
 end
 

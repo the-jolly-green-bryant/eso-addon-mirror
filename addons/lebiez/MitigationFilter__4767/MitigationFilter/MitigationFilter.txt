@@ -1,0 +1,8 @@
+## Title: MitigationFilter
+## Author: Bièz
+## Version: 1.0
+## APIVersion: 101046
+## SavedVariables: MitigationFilterSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+MitigationFilter.lua

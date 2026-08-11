@@ -1,3 +1,7 @@
+2026.07.10 v1.1.3
++ Adding volume selection for sound notifications
++ Adding new ignore ids
+
 2025.12.18 v1.1.2
 + Adding endTimers to combat Events if they gained a duration
 + Adding visual timers to cc effects

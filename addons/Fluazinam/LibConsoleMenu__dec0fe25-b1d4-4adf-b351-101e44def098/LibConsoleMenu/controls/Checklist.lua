@@ -277,7 +277,7 @@ end
 LCM.updateControlFunctions[LCM.CT_CHECKLIST] = function(self, control, selected, enabled)
 	local nameControl = control:GetNamedChild("Name")
 	local label = self:GetString(self:GetValueOrCallback(self.labelText))
-	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentSettings)
+	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
 	if nameControl then
 		nameControl:SetText(label)
 		LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
@@ -342,7 +342,7 @@ LCM.updateControlFunctions[LCM.CT_CHECKLIST] = function(self, control, selected,
 	ApplyChecklistColors(dropdown, selected, enabled)
 end
 
-LCM.createControlFunctions[LCM.CT_CHECKLIST] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_CHECKLIST] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_CHECKLIST] = function(self, control)
 	control = control or self.control

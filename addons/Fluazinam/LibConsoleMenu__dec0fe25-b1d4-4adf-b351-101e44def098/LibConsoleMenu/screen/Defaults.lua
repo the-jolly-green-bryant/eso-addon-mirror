@@ -21,16 +21,16 @@ local function IsRootPage()
 	return list ~= nil and list.currentSubmenu == nil
 end
 
--- Reset controls on the current list page only (never calls panel resetFunc).
-function LCM.AddonSettings:ResetToDefaults()
-	if not self.selected or not self.allowDefaults then
+-- Reset controls on the current list page only (never calls menu resetFunc).
+function LCM.AddonMenu:ResetToDefaults()
+	if not self.selected or not self.enableDefaults then
 		return
 	end
 
 	local list = GetCurrentList()
 	local currentSubmenu = list and list.currentSubmenu
-	for i = 1, #self.settings do
-		local setting = self.settings[i]
+	for i = 1, #self.controls do
+		local setting = self.controls[i]
 		if setting.currentSubmenu == currentSubmenu and setting.type ~= LCM.CT_SUBMENU then
 			setting:ResetToDefaults()
 		end
@@ -38,16 +38,16 @@ function LCM.AddonSettings:ResetToDefaults()
 	self:UpdateControls()
 end
 
--- Full addon reset via panel resetFunc / defaultsFunction (root Tertiary only).
-function LCM.AddonSettings:ResetAddonToDefaults()
-	if not self.selected then
+-- Full addon reset via menu resetFunc / resetFunction (root Tertiary only).
+function LCM.AddonMenu:ResetAddonToDefaults()
+	if not self.selected or not self.enableReset then
 		return
 	end
-	if type(self.defaultsFunction) ~= "function" then
+	if type(self.resetFunction) ~= "function" then
 		return
 	end
 
-	self.defaultsFunction()
+	self.resetFunction()
 	self:CreateControls()
 	self:UpdateControls()
 end
@@ -58,7 +58,7 @@ function LCM.AppendDefaultsKeybinds(descriptor)
 		name = GetString(SI_OPTIONS_DEFAULTS),
 		keybind = "UI_SHORTCUT_SECONDARY",
 		visible = function()
-			return LCM.currentSettings and LCM.currentSettings.hasDefaults and LCM.currentSettings.allowDefaults
+			return LCM.currentMenu and LCM.currentMenu.hasDefaults and LCM.currentMenu.enableDefaults
 		end,
 		callback = function()
 			ZO_Dialogs_ShowGamepadDialog("LibConsoleMenu_Defaults")
@@ -70,8 +70,11 @@ function LCM.AppendDefaultsKeybinds(descriptor)
 		name = GetString(SI_CHAT_CONFIG_RESET),
 		keybind = "UI_SHORTCUT_TERTIARY",
 		visible = function()
-			local settings = LCM.currentSettings
-			return settings and type(settings.defaultsFunction) == "function" and IsRootPage()
+			local settings = LCM.currentMenu
+			return settings
+				and settings.enableReset
+				and type(settings.resetFunction) == "function"
+				and IsRootPage()
 		end,
 		callback = function()
 			ZO_Dialogs_ShowGamepadDialog("LibConsoleMenu_ResetAddon")
@@ -96,8 +99,8 @@ ZO_Dialogs_RegisterCustomDialog(
 			[1] = {
 				text = SI_OPTIONS_RESET,
 				callback = function()
-					if LCM.currentSettings then
-						LCM.currentSettings:ResetToDefaults()
+					if LCM.currentMenu then
+						LCM.currentMenu:ResetToDefaults()
 					end
 				end,
 			},
@@ -125,8 +128,8 @@ ZO_Dialogs_RegisterCustomDialog(
 			[1] = {
 				text = SI_OPTIONS_RESET,
 				callback = function()
-					if LCM.currentSettings then
-						LCM.currentSettings:ResetAddonToDefaults()
+					if LCM.currentMenu then
+						LCM.currentMenu:ResetAddonToDefaults()
 					end
 				end,
 			},

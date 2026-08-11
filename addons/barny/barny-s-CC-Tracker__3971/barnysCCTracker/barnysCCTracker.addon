@@ -1,12 +1,12 @@
 ## Title: |c2a52beb|rarnys|c2a52beCC|rTracker
 ## Description: Tracker for incoming CC with icons and optional warning sounds
 ## Author: |c2a52beb|rarny
-## Version: 1.1.2
-## AddOnVersion: 010102
-## APIVersion: 101048
+## Version: 1.1.3
+## AddOnVersion: 010103
+## APIVersion: 101050
 ## SavedVariables: CCTrackerSV
-## DependsOn: LibAddonMenu-2.0>=41 libAddonKeybinds>=5 LibNotification>=15
-## OptionalDependsOn: LibChatMessage>=113
+## DependsOn: LibAddonMenu-2.0>=43 libAddonKeybinds>=6 LibNotification>=15
+## OptionalDependsOn: LibChatMessage>=120
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax
 ; Media Inc. or its affiliates. The Elder Scrolls® and related logos are

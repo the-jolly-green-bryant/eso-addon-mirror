@@ -4,19 +4,17 @@ local Addon = GildedUI
 
 function Addon:BuildSettingsMenu()
     local LCM = LibConsoleMenu
-    if not LCM or type(LCM.RegisterAddonPanel) ~= "function" then
+    if not LCM or type(LCM.CreateAddonMenu) ~= "function" then
         error("LibConsoleMenu is not available")
     end
 
-    local panelName = "GildedUISettingsPanel"
-    LCM:RegisterAddonPanel(panelName, {
-        type = "panel",
-        name = self.displayName,
+    local menu = LCM:CreateAddonMenu(self.name, {
+        title = self.title,
         author = "Fluazinam",
         version = self.version,
         category = "ui_graphics",
-        registerForDefaults = true,
-        registerForRefresh = true,
+        enableDefaults = true,
+        enableReset = true,
         centerSubmenus = true,
         resetFunc = function()
             Addon:ResetToDefaults()
@@ -24,13 +22,8 @@ function Addon:BuildSettingsMenu()
     })
 
     local H = self:CreateSettingsHelpers()
-    LCM:RegisterOptionControls(panelName, {
-        { type = "header", name = "Interface", align = "left" },
-        self:BuildAnalyticsMenu(H),
-        self:BuildResourcesMenu(H),
-        self:BuildPlayerMenu(H),
-        self:BuildLayoutMenu(H),
-        { type = "header", name = "System", align = "left" },
-        self:BuildSystemMenu(H),
-    })
+    local sections = self.menuSections or {}
+    for i = 1, #sections do
+        sections[i](menu, H)
+    end
 end

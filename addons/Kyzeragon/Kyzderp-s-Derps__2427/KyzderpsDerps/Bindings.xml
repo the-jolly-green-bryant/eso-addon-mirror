@@ -34,6 +34,9 @@
             <Action name="KDD_ANTISPUD_SNOOZE">
                 <Down>KyzderpsDerps.AntiSpud.SnoozeCurrent()</Down>
             </Action>
+            <Action name="KDD_KMOUNT">
+                <Down>KyzderpsDerps.Sync.Kyzerg.KMount()</Down>
+            </Action>
         </Category>
     </Layer>
     <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">

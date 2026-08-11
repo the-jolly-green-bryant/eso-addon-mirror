@@ -1,4 +1,4 @@
--- Add-ons submenu left tooltip: manifest via GetAddOnInfo + panelData.version.
+-- Add-ons submenu left tooltip: manifest via GetAddOnInfo + menu version.
 
 if not LibConsoleMenu or not IsConsoleUI() then
 	return
@@ -26,24 +26,24 @@ local function FindAddOnIndex(addon)
 		return nil
 	end
 
-	local addonID = addon.addonID
-	local displayName = addon.displayName or addon.name
+	local menuId = addon.menuId or addon.addonID
+	local displayTitle = addon.displayTitle or addon.title
 
-	-- 1) Folder / TOC name == RegisterAddonPanel id
-	if addonID and addonID ~= "" then
+	-- 1) Folder / TOC name == CreateAddonMenu id
+	if menuId and menuId ~= "" then
 		for i = 1, mgr:GetNumAddOns() do
 			local name = mgr:GetAddOnInfo(i)
-			if name == addonID then
+			if name == menuId then
 				return i
 			end
 		end
 	end
 
-	-- 2) Stripped manifest title == panel display name
-	if displayName and displayName ~= "" then
+	-- 2) Stripped manifest title == menu display title
+	if displayTitle and displayTitle ~= "" then
 		for i = 1, mgr:GetNumAddOns() do
 			local _, title = mgr:GetAddOnInfo(i)
-			if TitlesMatch(title, displayName) then
+			if TitlesMatch(title, displayTitle) then
 				return i
 			end
 		end
@@ -53,7 +53,7 @@ local function FindAddOnIndex(addon)
 end
 
 -- Returns nil if the addon cannot be resolved in AddOnManager (no tooltip).
--- Title/author/description/OOD from manifest; version from panelData (## Version is not in the API).
+-- Title/author/description/OOD from manifest; version from menuData (## Version is not in the API).
 function LCM.GetAddonManifestMeta(addon)
 	if not addon then
 		return nil

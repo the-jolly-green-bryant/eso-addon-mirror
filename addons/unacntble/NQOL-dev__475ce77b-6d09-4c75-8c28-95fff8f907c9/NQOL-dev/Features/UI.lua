@@ -190,6 +190,21 @@ local activeQuestPreviewScene
 local previewBorders = {}
 local officialPlayerFrameBarRequirements = {}
 local UpdatePositionPreviewBorder
+local runtimeState = {
+    alertTextEventsInstalled = false,
+    alertTextHooksInstalled = false,
+    playerFrameEventsInstalled = false,
+    companionFrameEventsInstalled = false,
+    groupFrameEventsInstalled = false,
+    groupFrameRetryDelays = { 200, 750, 1000 },
+    activeCombatTipsActive = false,
+    synergyPromptsActive = false,
+    centerScreenAnnounceActive = false,
+    movableUiFrameActive = {},
+    anyMovableUiFrameActive = false,
+    alertTextsActive = false,
+    dungeonFinderSortActive = false,
+}
 
 local Clamp = NQOL.Util.Clamp
 
@@ -349,6 +364,26 @@ end
 
 local function IsCenterScreenAnnouncePreviewActive()
     return GetCenterScreenAnnounceSettings().drawBorders == true
+end
+
+function runtimeState.IsActiveCombatTipsActive()
+    local settings = GetActiveCombatTipsSettings()
+    return settings.enabled == true or settings.drawBorders == true
+end
+
+function runtimeState.IsSynergyPromptsActive()
+    local settings = GetSynergyPromptsSettings()
+    return settings.enabled == true or settings.drawBorders == true
+end
+
+function runtimeState.IsCenterScreenAnnounceActive()
+    local settings = GetCenterScreenAnnounceSettings()
+    return settings.enabled == true or settings.drawBorders == true
+end
+
+function runtimeState.IsMovableUiFrameActive(key)
+    local settings = GetMovableUiFrameSettings(key)
+    return settings.enabled == true or settings.drawBorders == true
 end
 
 local function ApplyActiveQuestPosition()
@@ -515,13 +550,15 @@ local function GetPreviewBorder(name)
 end
 
 local function UpdatePreviewBorder(name, control, show, fallbackWidth, fallbackHeight)
-    local border = GetPreviewBorder(name)
-    if not border then
+    if not show or not control then
+        if previewBorders[name] then
+            previewBorders[name]:SetHidden(true)
+        end
         return
     end
 
-    if not show or not control then
-        border:SetHidden(true)
+    local border = GetPreviewBorder(name)
+    if not border then
         return
     end
 
@@ -535,13 +572,15 @@ local function UpdatePreviewBorder(name, control, show, fallbackWidth, fallbackH
 end
 
 local function UpdatePreviewBorderBounds(name, show, left, top, right, bottom)
-    local border = GetPreviewBorder(name)
-    if not border then
+    if not show or not left or not top or not right or not bottom or right <= left or bottom <= top then
+        if previewBorders[name] then
+            previewBorders[name]:SetHidden(true)
+        end
         return
     end
 
-    if not show or not left or not top or not right or not bottom or right <= left or bottom <= top then
-        border:SetHidden(true)
+    local border = GetPreviewBorder(name)
+    if not border then
         return
     end
 
@@ -650,13 +689,15 @@ local function GetCenterScreenAnnounceActiveBounds()
 end
 
 function UpdatePositionPreviewBorder(name, settings, show, width, height)
-    local border = GetPreviewBorder(name)
-    if not border then
+    if not show or not GuiRoot then
+        if previewBorders[name] then
+            previewBorders[name]:SetHidden(true)
+        end
         return
     end
 
-    if not show or not GuiRoot then
-        border:SetHidden(true)
+    local border = GetPreviewBorder(name)
+    if not border then
         return
     end
 
@@ -862,6 +903,10 @@ local function ApplyOfficialPlayerFrameVisibility()
     SetOfficialPlayerFrameControlVisible(ZO_PlayerAttributeMountStamina, visible)
 end
 
+function runtimeState.IsPlayerFrameActive()
+    return NQOL.Features.PlayerBars.GetShowNqolPlayerFrame() == true
+end
+
 local function ApplyOfficialCompanionFrameVisibility()
     if not UNIT_FRAMES or not UNIT_FRAMES.SetFrameHiddenForReason then
         return
@@ -869,6 +914,10 @@ local function ApplyOfficialCompanionFrameVisibility()
 
     local visible = NQOL.Features.PlayerBars.GetShowNqolCompanionFrame() ~= true
     UNIT_FRAMES:SetFrameHiddenForReason("companion", "NQOL", not visible)
+end
+
+function runtimeState.IsCompanionFrameActive()
+    return NQOL.Features.PlayerBars.GetShowNqolCompanionFrame() == true
 end
 
 local function ApplyOfficialGroupFrameVisibility()
@@ -888,6 +937,10 @@ local function ApplyOfficialGroupFrameVisibility()
     end
 end
 
+function runtimeState.IsGroupFrameActive()
+    return NQOL.Features.PlayerBars.GetShowNqolGroupFrame() == true
+end
+
 local function IsGroupOrGroupCompanionUnitTag(unitTag)
     if not unitTag then
         return false
@@ -905,15 +958,14 @@ local function ApplyOfficialCreatedUnitFrameVisibility(unitTag)
         return
     end
 
-    if unitTag == "companion" then
+    if unitTag == "companion" and runtimeState.IsCompanionFrameActive() then
         UNIT_FRAMES:SetFrameHiddenForReason(unitTag, "NQOL", NQOL.Features.PlayerBars.GetShowNqolCompanionFrame() == true)
-    elseif IsGroupOrGroupCompanionUnitTag(unitTag) then
+    elseif IsGroupOrGroupCompanionUnitTag(unitTag) and runtimeState.IsGroupFrameActive() then
         UNIT_FRAMES:SetFrameHiddenForReason(unitTag, "NQOL", NQOL.Features.PlayerBars.GetShowNqolGroupFrame() == true)
     end
 end
 
 local function ApplyOfficialGroupMembershipFrameVisibility()
-    ApplyOfficialCompanionFrameVisibility()
     ApplyOfficialGroupFrameVisibility()
 end
 
@@ -934,28 +986,44 @@ local function QueueOfficialCompanionFrameApply()
 end
 
 local function QueueOfficialGroupFrameApply()
+    if runtimeState.groupFrameApplyQueued then
+        return
+    end
+
     ApplyOfficialGroupFrameVisibility()
 
     if zo_callLater then
-        zo_callLater(ApplyOfficialGroupFrameVisibility, APPLY_DELAY_MS)
-        zo_callLater(ApplyOfficialGroupFrameVisibility, 250)
-        zo_callLater(ApplyOfficialGroupFrameVisibility, 1000)
+        runtimeState.groupFrameApplyQueued = true
+        runtimeState.groupFrameApplyStep = 1
+        zo_callLater(runtimeState.RunQueuedGroupFrameApply, APPLY_DELAY_MS)
     end
 end
 
 local function QueueOfficialGroupMembershipFrameApply()
+    QueueOfficialGroupFrameApply()
+end
+
+function runtimeState.RunQueuedGroupFrameApply()
     ApplyOfficialGroupMembershipFrameVisibility()
 
-    if zo_callLater then
-        zo_callLater(ApplyOfficialGroupMembershipFrameVisibility, APPLY_DELAY_MS)
-        zo_callLater(ApplyOfficialGroupMembershipFrameVisibility, 250)
-        zo_callLater(ApplyOfficialGroupMembershipFrameVisibility, 1000)
-        zo_callLater(ApplyOfficialGroupMembershipFrameVisibility, 2000)
+    if not runtimeState.IsGroupFrameActive() then
+        runtimeState.groupFrameApplyQueued = false
+        runtimeState.groupFrameApplyStep = nil
+        return
+    end
+
+    runtimeState.groupFrameApplyStep = runtimeState.groupFrameApplyStep + 1
+    local delay = runtimeState.groupFrameRetryDelays[runtimeState.groupFrameApplyStep - 1]
+    if delay and zo_callLater then
+        zo_callLater(runtimeState.RunQueuedGroupFrameApply, delay)
+    else
+        runtimeState.groupFrameApplyQueued = false
+        runtimeState.groupFrameApplyStep = nil
     end
 end
 
 local function InstallActiveCombatTipsHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or not runtimeState.activeCombatTipsActive then
         return
     end
 
@@ -979,14 +1047,16 @@ local function InstallActiveCombatTipsHooks()
     end
 
     ZO_PostHook(ACTIVE_COMBAT_TIP_SYSTEM, "ApplyStyle", function()
-        QueueActiveCombatTipsApply()
+        if runtimeState.activeCombatTipsActive then
+            QueueActiveCombatTipsApply()
+        end
     end)
 
     activeCombatTipsHookInstalled = true
 end
 
 local function InstallSynergyPromptHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or not runtimeState.synergyPromptsActive then
         return
     end
 
@@ -1010,14 +1080,16 @@ local function InstallSynergyPromptHooks()
     end
 
     ZO_PostHook(SYNERGY, "ApplyTextStyle", function()
-        QueueSynergyPromptsApply()
+        if runtimeState.synergyPromptsActive then
+            QueueSynergyPromptsApply()
+        end
     end)
 
     synergyPromptsHookInstalled = true
 end
 
 local function InstallCenterScreenAnnounceHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or not runtimeState.centerScreenAnnounceActive then
         return
     end
 
@@ -1041,17 +1113,21 @@ local function InstallCenterScreenAnnounceHooks()
     end
 
     ZO_PostHook(CENTER_SCREEN_ANNOUNCE, "ApplyPlatformStyle", function()
-        QueueCenterScreenAnnounceApply()
+        if runtimeState.centerScreenAnnounceActive then
+            QueueCenterScreenAnnounceApply()
+        end
     end)
     ZO_PostHook(CENTER_SCREEN_ANNOUNCE, "DisplayMessage", function()
-        QueueCenterScreenAnnounceApply()
+        if runtimeState.centerScreenAnnounceActive then
+            QueueCenterScreenAnnounceApply()
+        end
     end)
 
     centerScreenAnnounceHookInstalled = true
 end
 
 local function InstallMovableUiFrameHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or not runtimeState.anyMovableUiFrameActive then
         return
     end
 
@@ -1059,7 +1135,9 @@ local function InstallMovableUiFrameHooks()
         EVENT_MANAGER:RegisterForEvent(MOVABLE_UI_FRAMES_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
             InstallMovableUiFrameHooks()
             for key in pairs(MOVABLE_UI_FRAMES) do
-                QueueMovableUiFrameApply(key)
+                if runtimeState.movableUiFrameActive[key] then
+                    QueueMovableUiFrameApply(key)
+                end
             end
         end)
 
@@ -1074,12 +1152,75 @@ local function InstallMovableUiFrameHooks()
     end
 
     ZO_PostHook(ENDLESS_DUNGEON_HUD_TRACKER, "RefreshAnchors", function()
-        if GetMovableUiFrameSettings("infiniteArchive").enabled == true then
+        if runtimeState.movableUiFrameActive.infiniteArchive then
             QueueMovableUiFrameApply("infiniteArchive")
         end
     end)
 
     infiniteArchiveFrameHookInstalled = true
+end
+
+function runtimeState.RefreshActiveCombatTips()
+    runtimeState.activeCombatTipsActive = runtimeState.IsActiveCombatTipsActive()
+    if runtimeState.activeCombatTipsActive then
+        InstallActiveCombatTipsHooks()
+        QueueActiveCombatTipsApply()
+    elseif activeCombatTipsEventsInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForEvent(ACTIVE_COMBAT_TIPS_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        if EVENT_DISPLAY_ACTIVE_COMBAT_TIP then
+            EVENT_MANAGER:UnregisterForEvent(ACTIVE_COMBAT_TIPS_NAMESPACE, EVENT_DISPLAY_ACTIVE_COMBAT_TIP)
+        end
+        activeCombatTipsEventsInstalled = false
+    end
+end
+
+function runtimeState.RefreshSynergyPrompts()
+    runtimeState.synergyPromptsActive = runtimeState.IsSynergyPromptsActive()
+    if runtimeState.synergyPromptsActive then
+        InstallSynergyPromptHooks()
+        QueueSynergyPromptsApply()
+    elseif synergyPromptsEventsInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForEvent(SYNERGY_PROMPTS_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        if EVENT_SYNERGY_ABILITY_CHANGED then
+            EVENT_MANAGER:UnregisterForEvent(SYNERGY_PROMPTS_NAMESPACE, EVENT_SYNERGY_ABILITY_CHANGED)
+        end
+        synergyPromptsEventsInstalled = false
+    end
+end
+
+function runtimeState.RefreshCenterScreenAnnounce()
+    runtimeState.centerScreenAnnounceActive = runtimeState.IsCenterScreenAnnounceActive()
+    if runtimeState.centerScreenAnnounceActive then
+        InstallCenterScreenAnnounceHooks()
+        QueueCenterScreenAnnounceApply()
+    elseif centerScreenAnnounceEventsInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForEvent(CENTER_SCREEN_ANNOUNCE_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        if EVENT_DISPLAY_ANNOUNCEMENT then
+            EVENT_MANAGER:UnregisterForEvent(CENTER_SCREEN_ANNOUNCE_NAMESPACE, EVENT_DISPLAY_ANNOUNCEMENT)
+        end
+        centerScreenAnnounceEventsInstalled = false
+    end
+end
+
+function runtimeState.RefreshMovableUiFrames()
+    runtimeState.anyMovableUiFrameActive = false
+    for key in pairs(MOVABLE_UI_FRAMES) do
+        local active = runtimeState.IsMovableUiFrameActive(key)
+        runtimeState.movableUiFrameActive[key] = active
+        runtimeState.anyMovableUiFrameActive = runtimeState.anyMovableUiFrameActive or active
+    end
+
+    if runtimeState.anyMovableUiFrameActive then
+        InstallMovableUiFrameHooks()
+        for key in pairs(MOVABLE_UI_FRAMES) do
+            if runtimeState.movableUiFrameActive[key] then
+                QueueMovableUiFrameApply(key)
+            end
+        end
+    elseif movableUiFrameEventsInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForEvent(MOVABLE_UI_FRAMES_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        movableUiFrameEventsInstalled = false
+    end
 end
 
 local function RefreshActiveQuestSettingsPreview()
@@ -1184,7 +1325,7 @@ local function ClearAlertTexts()
 end
 
 local function ShouldSuppressAlertText()
-    return GetSettings().disableAlertTexts == true
+    return runtimeState.alertTextsActive
 end
 
 local function PreHookGlobalFunction(functionName, callback)
@@ -1289,7 +1430,7 @@ local function ApplyDungeonFinderSortForRefresh(activityFinder)
         return
     end
 
-    if GetSettings().sortDungeonsFinder == true and activityFinder.navigationMode == DUNGEON_FINDER_SPECIFIC_NAVIGATION_MODE then
+    if runtimeState.dungeonFinderSortActive and activityFinder.navigationMode == DUNGEON_FINDER_SPECIFIC_NAVIGATION_MODE then
         activityFinder.entryList:SetSortFunction(CompareDungeonFinderEntries)
     else
         activityFinder.entryList:SetSortFunction(nil)
@@ -1297,7 +1438,7 @@ local function ApplyDungeonFinderSortForRefresh(activityFinder)
 end
 
 local function InstallDungeonFinderSortHook()
-    if dungeonFinderSortHookInstalled then
+    if dungeonFinderSortHookInstalled or not runtimeState.dungeonFinderSortActive then
         return
     end
 
@@ -1315,34 +1456,52 @@ local function InstallDungeonFinderSortHook()
 end
 
 local function InstallAlertTextHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or not ShouldSuppressAlertText() then
         return
     end
 
-    PreHookGlobalFunction("ZO_Alert", ShouldSuppressAlertText)
-    PreHookGlobalFunction("ZO_AlertNoSuppression", ShouldSuppressAlertText)
-    PreHookGlobalFunction("ZO_AlertTemplated_Gamepad", ShouldSuppressAlertText)
-    PreHookGlobalFunction("ZO_AlertNoSuppressionTemplated_Gamepad", ShouldSuppressAlertText)
+    if not runtimeState.alertTextHooksInstalled then
+        PreHookGlobalFunction("ZO_Alert", ShouldSuppressAlertText)
+        PreHookGlobalFunction("ZO_AlertNoSuppression", ShouldSuppressAlertText)
+        PreHookGlobalFunction("ZO_AlertTemplated_Gamepad", ShouldSuppressAlertText)
+        PreHookGlobalFunction("ZO_AlertNoSuppressionTemplated_Gamepad", ShouldSuppressAlertText)
+        runtimeState.alertTextHooksInstalled = true
+    end
 
-    EVENT_MANAGER:RegisterForEvent(ALERT_TEXT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
-        if ShouldSuppressAlertText() then
-            ClearAlertTexts()
-        end
-    end)
+    if not runtimeState.alertTextEventsInstalled then
+        EVENT_MANAGER:RegisterForEvent(ALERT_TEXT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
+            if ShouldSuppressAlertText() then
+                ClearAlertTexts()
+            end
+        end)
+        runtimeState.alertTextEventsInstalled = true
+    end
+end
+
+function runtimeState.RefreshAlertTexts()
+    runtimeState.alertTextsActive = GetSettings().disableAlertTexts == true
+    if ShouldSuppressAlertText() then
+        InstallAlertTextHooks()
+        ClearAlertTexts()
+    elseif runtimeState.alertTextEventsInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForEvent(ALERT_TEXT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        runtimeState.alertTextEventsInstalled = false
+    end
 end
 
 local function InstallPlayerFrameVisibilityHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or runtimeState.playerFrameEventsInstalled or not runtimeState.IsPlayerFrameActive() then
         return
     end
 
     EVENT_MANAGER:RegisterForEvent(PLAYER_FRAME_VISIBILITY_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
         QueueOfficialPlayerFrameApply()
     end)
+    runtimeState.playerFrameEventsInstalled = true
 end
 
 local function InstallCompanionFrameVisibilityHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or runtimeState.companionFrameEventsInstalled or not runtimeState.IsCompanionFrameActive() then
         return
     end
 
@@ -1364,10 +1523,16 @@ local function InstallCompanionFrameVisibilityHooks()
             end
         end)
     end
+    runtimeState.companionFrameEventsInstalled = true
 end
 
 local function InstallOfficialUnitFrameCreateHook()
-    if officialUnitFrameCreateHookInstalled or not UNIT_FRAMES or type(UNIT_FRAMES.CreateFrame) ~= "function" or type(ZO_PostHook) ~= "function" then
+    if officialUnitFrameCreateHookInstalled
+        or not (runtimeState.IsCompanionFrameActive() or runtimeState.IsGroupFrameActive())
+        or not UNIT_FRAMES
+        or type(UNIT_FRAMES.CreateFrame) ~= "function"
+        or type(ZO_PostHook) ~= "function"
+    then
         return
     end
 
@@ -1379,7 +1544,7 @@ local function InstallOfficialUnitFrameCreateHook()
 end
 
 local function InstallGroupFrameVisibilityHooks()
-    if not EVENT_MANAGER then
+    if not EVENT_MANAGER or runtimeState.groupFrameEventsInstalled or not runtimeState.IsGroupFrameActive() then
         return
     end
 
@@ -1419,6 +1584,75 @@ local function InstallGroupFrameVisibilityHooks()
             end
         end)
     end
+    runtimeState.groupFrameEventsInstalled = true
+end
+
+function runtimeState.RefreshOfficialPlayerFrame()
+    if runtimeState.IsPlayerFrameActive() then
+        InstallPlayerFrameVisibilityHooks()
+        QueueOfficialPlayerFrameApply()
+    elseif runtimeState.playerFrameEventsInstalled and EVENT_MANAGER then
+        ApplyOfficialPlayerFrameVisibility()
+        EVENT_MANAGER:UnregisterForEvent(PLAYER_FRAME_VISIBILITY_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        runtimeState.playerFrameEventsInstalled = false
+    end
+end
+
+function runtimeState.RefreshOfficialCompanionFrame()
+    if runtimeState.IsCompanionFrameActive() then
+        InstallOfficialUnitFrameCreateHook()
+        InstallCompanionFrameVisibilityHooks()
+        QueueOfficialCompanionFrameApply()
+    elseif runtimeState.companionFrameEventsInstalled and EVENT_MANAGER then
+        ApplyOfficialCompanionFrameVisibility()
+        EVENT_MANAGER:UnregisterForEvent(COMPANION_FRAME_VISIBILITY_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        if EVENT_ACTIVE_COMPANION_STATE_CHANGED then
+            EVENT_MANAGER:UnregisterForEvent(COMPANION_FRAME_VISIBILITY_NAMESPACE, EVENT_ACTIVE_COMPANION_STATE_CHANGED)
+        end
+        if EVENT_UNIT_CREATED then
+            EVENT_MANAGER:UnregisterForEvent(COMPANION_FRAME_VISIBILITY_NAMESPACE, EVENT_UNIT_CREATED)
+        end
+        if EVENT_UNIT_DESTROYED then
+            EVENT_MANAGER:UnregisterForEvent(COMPANION_FRAME_VISIBILITY_NAMESPACE, EVENT_UNIT_DESTROYED)
+        end
+        runtimeState.companionFrameEventsInstalled = false
+    end
+end
+
+function runtimeState.RefreshOfficialGroupFrame()
+    if runtimeState.IsGroupFrameActive() then
+        InstallOfficialUnitFrameCreateHook()
+        InstallGroupFrameVisibilityHooks()
+        QueueOfficialGroupMembershipFrameApply()
+    elseif runtimeState.groupFrameEventsInstalled and EVENT_MANAGER then
+        ApplyOfficialGroupFrameVisibility()
+        EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+        if EVENT_GROUP_UPDATE then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_GROUP_UPDATE)
+        end
+        if EVENT_GROUP_MEMBER_JOINED then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_GROUP_MEMBER_JOINED)
+        end
+        if EVENT_GROUP_MEMBER_LEFT then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_GROUP_MEMBER_LEFT)
+        end
+        if EVENT_GROUP_MEMBER_CONNECTED_STATUS then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_GROUP_MEMBER_CONNECTED_STATUS)
+        end
+        if EVENT_GROUP_TYPE_CHANGED then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_GROUP_TYPE_CHANGED)
+        end
+        if EVENT_GROUP_MEMBER_ROLE_CHANGED then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_GROUP_MEMBER_ROLE_CHANGED)
+        end
+        if EVENT_UNIT_CREATED then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_UNIT_CREATED)
+        end
+        if EVENT_UNIT_DESTROYED then
+            EVENT_MANAGER:UnregisterForEvent(GROUP_FRAME_VISIBILITY_NAMESPACE, EVENT_UNIT_DESTROYED)
+        end
+        runtimeState.groupFrameEventsInstalled = false
+    end
 end
 
 function UI.InitializeSavedVariables()
@@ -1435,32 +1669,23 @@ function UI.Initialize()
     if type(UI.InitializeCombatReticle) == "function" then
         UI.InitializeCombatReticle()
     end
-    InstallActiveCombatTipsHooks()
-    InstallSynergyPromptHooks()
-    InstallCenterScreenAnnounceHooks()
-    InstallMovableUiFrameHooks()
-    InstallAlertTextHooks()
-    InstallDungeonFinderSortHook()
+    runtimeState.RefreshActiveCombatTips()
+    runtimeState.RefreshSynergyPrompts()
+    runtimeState.RefreshCenterScreenAnnounce()
+    runtimeState.RefreshMovableUiFrames()
+    runtimeState.RefreshAlertTexts()
+    runtimeState.dungeonFinderSortActive = GetSettings().sortDungeonsFinder == true
+    if runtimeState.dungeonFinderSortActive then
+        InstallDungeonFinderSortHook()
+    end
     if type(UI.InitializeLootLog) == "function" then
         UI.InitializeLootLog()
     end
-    InstallPlayerFrameVisibilityHooks()
-    InstallCompanionFrameVisibilityHooks()
-    InstallOfficialUnitFrameCreateHook()
-    InstallGroupFrameVisibilityHooks()
-    QueueActiveQuestApply()
-    QueueActiveCombatTipsApply()
-    QueueSynergyPromptsApply()
-    QueueCenterScreenAnnounceApply()
-    for key in pairs(MOVABLE_UI_FRAMES) do
-        QueueMovableUiFrameApply(key)
-    end
-    QueueOfficialPlayerFrameApply()
-    QueueOfficialCompanionFrameApply()
-    QueueOfficialGroupMembershipFrameApply()
-
-    if GetSettings().disableAlertTexts == true then
-        ClearAlertTexts()
+    runtimeState.RefreshOfficialPlayerFrame()
+    runtimeState.RefreshOfficialCompanionFrame()
+    runtimeState.RefreshOfficialGroupFrame()
+    if GetActiveQuestSettings().enabled == true then
+        QueueActiveQuestApply()
     end
 end
 
@@ -1510,7 +1735,9 @@ local function RegisterMovableUiFrameApi(key, prefix)
 
     UI["Set" .. prefix .. "HorizontalOffset"] = function(value)
         GetMovableUiFrameSettings(key).horizontalPosition = Clamp(value, 0, 100)
-        QueueMovableUiFrameApply(key)
+        if runtimeState.movableUiFrameActive[key] then
+            QueueMovableUiFrameApply(key)
+        end
         RefreshMovableUiFrameSettingsPreview(key)
     end
 
@@ -1524,7 +1751,9 @@ local function RegisterMovableUiFrameApi(key, prefix)
 
     UI["Set" .. prefix .. "VerticalOffset"] = function(value)
         GetMovableUiFrameSettings(key).verticalPosition = Clamp(value, 0, 100)
-        QueueMovableUiFrameApply(key)
+        if runtimeState.movableUiFrameActive[key] then
+            QueueMovableUiFrameApply(key)
+        end
         RefreshMovableUiFrameSettingsPreview(key)
     end
 
@@ -1534,6 +1763,7 @@ local function RegisterMovableUiFrameApi(key, prefix)
 
     UI["Set" .. prefix .. "DrawBorders"] = function(value)
         GetMovableUiFrameSettings(key).drawBorders = value == true
+        runtimeState.RefreshMovableUiFrames()
         RefreshMovableUiFrameSettingsPreview(key)
     end
 
@@ -1547,7 +1777,10 @@ local function RegisterMovableUiFrameApi(key, prefix)
 
     UI["Set" .. prefix .. "Enabled"] = function(value)
         GetMovableUiFrameSettings(key).enabled = value == true
-        QueueMovableUiFrameApply(key)
+        if not runtimeState.IsMovableUiFrameActive(key) then
+            ApplyMovableUiFramePosition(key)
+        end
+        runtimeState.RefreshMovableUiFrames()
         RefreshMovableUiFrameSettingsPreview(key)
     end
 
@@ -1667,13 +1900,15 @@ end
 
 function UI.SetActiveCombatTipsEnabled(value)
     GetActiveCombatTipsSettings().enabled = value == true
-    QueueActiveCombatTipsApply()
+    runtimeState.RefreshActiveCombatTips()
     RefreshActiveCombatTipsSettingsPreview()
 end
 
 function UI.SetActiveCombatTipsHorizontalOffset(value)
     GetActiveCombatTipsSettings().horizontalPosition = Clamp(value, 0, 100)
-    QueueActiveCombatTipsApply()
+    if runtimeState.activeCombatTipsActive then
+        QueueActiveCombatTipsApply()
+    end
     RefreshActiveCombatTipsSettingsPreview()
 end
 
@@ -1687,7 +1922,9 @@ end
 
 function UI.SetActiveCombatTipsVerticalOffset(value)
     GetActiveCombatTipsSettings().verticalPosition = Clamp(value, 0, 100)
-    QueueActiveCombatTipsApply()
+    if runtimeState.activeCombatTipsActive then
+        QueueActiveCombatTipsApply()
+    end
     RefreshActiveCombatTipsSettingsPreview()
 end
 
@@ -1697,9 +1934,8 @@ end
 
 function UI.SetActiveCombatTipsDrawBorders(value)
     GetActiveCombatTipsSettings().drawBorders = value == true
-    if value == true then
-        QueueActiveCombatTipsApply()
-    else
+    runtimeState.RefreshActiveCombatTips()
+    if value ~= true then
         ClearActiveCombatTipsBorder()
     end
 end
@@ -1718,13 +1954,15 @@ end
 
 function UI.SetSynergyPromptsEnabled(value)
     GetSynergyPromptsSettings().enabled = value == true
-    QueueSynergyPromptsApply()
+    runtimeState.RefreshSynergyPrompts()
     RefreshSynergyPromptsSettingsPreview()
 end
 
 function UI.SetSynergyPromptsHorizontalOffset(value)
     GetSynergyPromptsSettings().horizontalPosition = Clamp(value, 0, 100)
-    QueueSynergyPromptsApply()
+    if runtimeState.synergyPromptsActive then
+        QueueSynergyPromptsApply()
+    end
     RefreshSynergyPromptsSettingsPreview()
 end
 
@@ -1738,7 +1976,9 @@ end
 
 function UI.SetSynergyPromptsVerticalOffset(value)
     GetSynergyPromptsSettings().verticalPosition = Clamp(value, 0, 100)
-    QueueSynergyPromptsApply()
+    if runtimeState.synergyPromptsActive then
+        QueueSynergyPromptsApply()
+    end
     RefreshSynergyPromptsSettingsPreview()
 end
 
@@ -1748,9 +1988,8 @@ end
 
 function UI.SetSynergyPromptsDrawBorders(value)
     GetSynergyPromptsSettings().drawBorders = value == true
-    if value == true then
-        QueueSynergyPromptsApply()
-    else
+    runtimeState.RefreshSynergyPrompts()
+    if value ~= true then
         ClearSynergyPromptsBorder()
     end
 end
@@ -1769,13 +2008,15 @@ end
 
 function UI.SetCenterScreenAnnounceEnabled(value)
     GetCenterScreenAnnounceSettings().enabled = value == true
-    QueueCenterScreenAnnounceApply()
+    runtimeState.RefreshCenterScreenAnnounce()
     RefreshCenterScreenAnnounceSettingsPreview()
 end
 
 function UI.SetCenterScreenAnnounceHorizontalOffset(value)
     GetCenterScreenAnnounceSettings().horizontalPosition = Clamp(value, 0, 100)
-    QueueCenterScreenAnnounceApply()
+    if runtimeState.centerScreenAnnounceActive then
+        QueueCenterScreenAnnounceApply()
+    end
 end
 
 function UI.GetCenterScreenAnnounceVerticalOffset()
@@ -1788,7 +2029,9 @@ end
 
 function UI.SetCenterScreenAnnounceVerticalOffset(value)
     GetCenterScreenAnnounceSettings().verticalPosition = Clamp(value, 0, 100)
-    QueueCenterScreenAnnounceApply()
+    if runtimeState.centerScreenAnnounceActive then
+        QueueCenterScreenAnnounceApply()
+    end
 end
 
 function UI.GetCenterScreenAnnounceDrawBorders()
@@ -1797,9 +2040,8 @@ end
 
 function UI.SetCenterScreenAnnounceDrawBorders(value)
     GetCenterScreenAnnounceSettings().drawBorders = value == true
-    if value == true then
-        QueueCenterScreenAnnounceApply()
-    else
+    runtimeState.RefreshCenterScreenAnnounce()
+    if value ~= true then
         UpdatePreviewBorder("CenterScreenAnnounce", nil, false)
     end
 end
@@ -1910,23 +2152,20 @@ function UI.GetDisableAlertTexts()
 end
 
 function UI.RefreshOfficialPlayerFrameVisibility()
-    QueueOfficialPlayerFrameApply()
+    runtimeState.RefreshOfficialPlayerFrame()
 end
 
 function UI.RefreshOfficialCompanionFrameVisibility()
-    QueueOfficialCompanionFrameApply()
+    runtimeState.RefreshOfficialCompanionFrame()
 end
 
 function UI.RefreshOfficialGroupFrameVisibility()
-    QueueOfficialGroupMembershipFrameApply()
+    runtimeState.RefreshOfficialGroupFrame()
 end
 
 function UI.SetDisableAlertTexts(value)
     GetSettings().disableAlertTexts = value == true
-
-    if GetSettings().disableAlertTexts == true then
-        ClearAlertTexts()
-    end
+    runtimeState.RefreshAlertTexts()
 end
 
 function UI.GetActiveQuestHorizontalOffsetMin()
@@ -2171,6 +2410,12 @@ end
 
 function UI.SetSortDungeonsFinder(value)
     GetSettings().sortDungeonsFinder = value == true
+    runtimeState.dungeonFinderSortActive = value == true
+    if runtimeState.dungeonFinderSortActive then
+        InstallDungeonFinderSortHook()
+    end
+
+    ApplyDungeonFinderSortForRefresh(DUNGEON_FINDER_GAMEPAD)
 end
 
 function UI.GetSortDungeonsFinderLabel()

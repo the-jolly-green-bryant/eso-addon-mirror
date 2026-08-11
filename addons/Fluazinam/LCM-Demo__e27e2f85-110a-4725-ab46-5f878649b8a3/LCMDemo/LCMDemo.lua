@@ -1,50 +1,59 @@
 -- LCM Demo: realistic settings menu that exercises every LibConsoleMenu control
--- and field. Root + centered branches use options-style centering; Alignment
--- Modes showcases left+indent and left+flush (indent = false).
+-- and field. Root uses options-style centering; left-aligned sections showcase
+-- indent vs no-indent layout on the root page.
 
 LCMDemo = LCMDemo or {}
 local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
-Addon.displayName = "LCM Demo"
-Addon.version = "1.1.2"
+Addon.title = "LCM Demo"
+Addon.version = "1.1.4"
 
 Addon.defaults = {
 	-- General
 	enabled = true,
-	accountWide = true,
-	-- Toggle label showcase
+	-- Toggles
 	labelYesNo = true,
 	labelEnabledDisabled = true,
 	labelShowHide = true,
 	labelCharacterAccount = false,
+	labelDawnDusk = true,
 	labelCustomScope = true,
-	labelCheckboxAlias = false,
-	-- Performance
+	-- Sliders
 	updateRate = 1.0,
 	updateFrequency = 5,
 	opacity = 80,
 	windowOpacity = 0.85,
-	-- Profiles / lists
-	profile = "balanced",
-	difficultyMode = "seasoned",
-	featureTags = { "ui", "combat" },
-	-- Identity
+	-- Edit
 	playerTag = "Demo",
 	pinCode = "1234",
-	-- Appearance
+	-- Selectors
+	profile = "balanced",
+	uiTheme = "ember",
+	sortMode = "name",
+	-- Dropdowns
+	difficultyMode = "seasoned",
+	travelStyle = "mount",
+	lockedDropdown = "beta",
+	-- Checklists
+	featureTags = { "ui", "combat" },
+	craftSkills = { "blacksmithing" },
+	lockedChecklist = { "a" },
+	-- Color pickers
 	accentColor = { 0.2, 0.75, 1.0, 1 },
 	warningColor = { 1.0, 0.35, 0.2, 1 },
+	lockedColor = { 0.45, 0.45, 0.45, 1 },
+	-- Icon pickers
 	statusIcon = 1,
 	atlasIcon = 1,
 	atlasSubsetIcon = 1,
-	-- Alerts
+	lockedIcon = 2,
+	-- Into the Nest
 	showAlerts = true,
 	alertSound = true,
 	combatOnly = false,
 	combatPriority = "normal",
 	filterNote = "Ready",
-	-- Currency overlays (nested chip groups)
 	showGold = true,
 	showAlliancePoints = true,
 	showTelVar = false,
@@ -53,10 +62,11 @@ Addon.defaults = {
 	apThreshold = 50000,
 	telVarThreshold = 1000,
 	writThreshold = 50,
-	-- Alignment showcase
+	-- Left alignment (indent)
 	navTheme = "dark",
 	navChecklist = { "ui" },
 	navNote = "ok",
+	-- Left alignment, no indent
 	toolsTheme = "system",
 	toolsChecklist = { "map" },
 	toolsNote = "flush",
@@ -111,20 +121,20 @@ local function OnAddOnLoaded(_, name)
 	end
 
 	local LCM = LibConsoleMenu
-	if not LCM or type(LCM.RegisterAddonPanel) ~= "function" then
+	if not LCM or type(LCM.CreateAddonMenu) ~= "function" then
 		return
 	end
 
 	local sv = Addon.sv
 	local defaults = Addon.defaults
 
-	LCM:RegisterAddonPanel(Addon.name, {
-		name = Addon.displayName,
+	local menu = LCM:CreateAddonMenu(Addon.name, {
+		title = Addon.title,
 		author = "Fluazinam",
 		version = Addon.version,
 		category = "UTILITY",
-		registerForDefaults = true,
-		registerForRefresh = true,
+		enableDefaults = true,
+		enableReset = true,
 		centerSubmenus = true,
 		collapseToggleLabels = true,
 		collapseSliderLabels = true,
@@ -133,15 +143,15 @@ local function OnAddOnLoaded(_, name)
 		end,
 	})
 
-	LCM:RegisterOptionControls(Addon.name, {
+	menu:AddOptions({
 		---------------------------------------------------------------------------
-		-- Root: options-style (centered headers). Master switch gates several rows.
+		-- Root: control-type order (toggle → … → button), then alignment, then submenus.
 		---------------------------------------------------------------------------
 		{ type = "header", name = "General", align = "center" },
 		{
 			type = "toggle",
 			name = "Enable LCM Demo Features",
-			tooltip = "Master switch. Several rows below disable when this is off (registerForRefresh).",
+			tooltip = "Master switch. Some settings below lock when this is off.",
 			getFunc = function()
 				return sv.enabled
 			end,
@@ -150,27 +160,8 @@ local function OnAddOnLoaded(_, name)
 			end,
 			default = defaults.enabled,
 		},
-		{
-			type = "toggle",
-			name = "Account-Wide Settings",
-			tooltip = "Custom On/Off labels via values (wins over preset).",
-			values = {
-				on = "Account",
-				off = "Character",
-			},
-			getFunc = function()
-				return sv.accountWide
-			end,
-			setFunc = function(value)
-				sv.accountWide = value
-			end,
-			default = defaults.accountWide,
-			disabled = function()
-				return not sv.enabled
-			end,
-		},
 
-		{ type = "header", name = "Toggle Labels", align = "center" },
+		{ type = "header", name = "Toggles", align = "center" },
 		{
 			type = "toggle",
 			name = "Yes / No",
@@ -220,21 +211,28 @@ local function OnAddOnLoaded(_, name)
 			default = defaults.labelCharacterAccount,
 		},
 		{
-			type = "checkbox",
-			name = "Checkbox Alias",
-			tooltip = "type = \"checkbox\" is accepted as an alias for toggle.",
+			type = "toggle",
+			name = "Dawn / Dusk",
+			tooltip = "Custom values, not a preset: labels read Dawn and Dusk.",
+			values = {
+				on = "Dawn",
+				off = "Dusk",
+			},
 			getFunc = function()
-				return sv.labelCheckboxAlias
+				return sv.labelDawnDusk
 			end,
 			setFunc = function(value)
-				sv.labelCheckboxAlias = value
+				sv.labelDawnDusk = value
 			end,
-			default = defaults.labelCheckboxAlias,
+			default = defaults.labelDawnDusk,
+			disabled = function()
+				return not sv.enabled
+			end,
 		},
 		{
 			type = "toggle",
 			name = "Always Locked",
-			tooltip = "Static disabled = true example.",
+			tooltip = "Permanently locked so you can see the disabled look.",
 			getFunc = function()
 				return sv.labelCustomScope
 			end,
@@ -245,11 +243,11 @@ local function OnAddOnLoaded(_, name)
 			disabled = true,
 		},
 
-		{ type = "header", name = "Performance", align = "center" },
+		{ type = "header", name = "Sliders", align = "center" },
 		{
 			type = "slider",
 			name = "Update Rate",
-			tooltip = "Fractional step with decimals.",
+			tooltip = "Refresh interval in seconds, in half-second steps.",
 			min = 0.5,
 			max = 5,
 			step = 0.5,
@@ -268,7 +266,7 @@ local function OnAddOnLoaded(_, name)
 		{
 			type = "slider",
 			name = "Update Frequency",
-			tooltip = "Integer slider with unit text and bigStep.",
+			tooltip = "Seconds between updates. L1 / R1 jump in larger steps.",
 			min = 1,
 			max = 60,
 			step = 1,
@@ -318,13 +316,46 @@ local function OnAddOnLoaded(_, name)
 			default = defaults.windowOpacity,
 		},
 
-		{ type = "header", name = "Profiles", align = "center" },
+		{ type = "header", name = "Edit", align = "center" },
+		{
+			type = "editbox",
+			name = "Player Tag",
+			tooltip = "Short label used in status messages.",
+			getFunc = function()
+				return sv.playerTag
+			end,
+			setFunc = function(value)
+				sv.playerTag = value
+			end,
+			default = defaults.playerTag,
+			maxChars = 24,
+			textType = TEXT_TYPE_ALL,
+		},
+		{
+			type = "editbox",
+			name = "PIN Code",
+			tooltip = "Digits only; letters are rejected.",
+			getFunc = function()
+				return sv.pinCode
+			end,
+			setFunc = function(value)
+				sv.pinCode = value
+			end,
+			default = defaults.pinCode,
+			maxChars = 8,
+			textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,
+		},
+
+		{ type = "header", name = "Selectors", align = "center" },
 		{
 			type = "selector",
 			name = "Profile",
-			tooltip = "String choices + choicesValues.",
-			choices = { "Performance", "Balanced", "Quality" },
-			choicesValues = { "performance", "balanced", "quality" },
+			tooltip = "Cycle with left/right. Labels can differ from the stored value.",
+			choices = {
+				{ name = "Performance", value = "performance" },
+				{ name = "Balanced", value = "balanced" },
+				{ name = "Quality", value = "quality" },
+			},
 			getFunc = function()
 				return sv.profile
 			end,
@@ -337,9 +368,60 @@ local function OnAddOnLoaded(_, name)
 			end,
 		},
 		{
+			type = "selector",
+			name = "UI Theme",
+			tooltip = "Cosmetic theme for the demo UI.",
+			choices = {
+				{ name = "Ember", value = "ember" },
+				{ name = "Frost", value = "frost" },
+				{ name = "Moss", value = "moss" },
+			},
+			getFunc = function()
+				return sv.uiTheme
+			end,
+			setFunc = function(value)
+				sv.uiTheme = value
+			end,
+			default = defaults.uiTheme,
+		},
+		{
+			type = "selector",
+			name = "Sort Mode",
+			choices = {
+				{ name = "Name", value = "name" },
+				{ name = "Level", value = "level" },
+				{ name = "Recent", value = "recent" },
+			},
+			getFunc = function()
+				return sv.sortMode
+			end,
+			setFunc = function(value)
+				sv.sortMode = value
+			end,
+			default = defaults.sortMode,
+		},
+		{
+			type = "selector",
+			name = "Locked Selector",
+			choices = {
+				{ name = "One", value = "one" },
+				{ name = "Two", value = "two" },
+				{ name = "Three", value = "three" },
+			},
+			getFunc = function()
+				return "two"
+			end,
+			setFunc = function()
+			end,
+			default = "two",
+			disabled = true,
+		},
+
+		{ type = "header", name = "Dropdown", align = "center" },
+		{
 			type = "dropdown",
 			name = "Challenge Style",
-			tooltip = "Table choices with per-item tips. Open with A.",
+			tooltip = "Open with A. Some options show their own tips when highlighted.",
 			align = "center",
 			choices = {
 				{ name = "Adventurer", value = "adventurer", tooltip = "Gentler overland experience." },
@@ -362,9 +444,46 @@ local function OnAddOnLoaded(_, name)
 			default = defaults.difficultyMode,
 		},
 		{
+			type = "dropdown",
+			name = "Travel Style",
+			tooltip = "Open with A. Options here have no extra tips.",
+			align = "center",
+			choices = {
+				{ name = "Mount", value = "mount" },
+				{ name = "Boat", value = "boat" },
+				{ name = "Wayshrine", value = "wayshrine" },
+			},
+			getFunc = function()
+				return sv.travelStyle
+			end,
+			setFunc = function(value)
+				sv.travelStyle = value
+			end,
+			default = defaults.travelStyle,
+		},
+		{
+			type = "dropdown",
+			name = "Locked Dropdown",
+			align = "center",
+			choices = {
+				{ name = "Alpha", value = "alpha" },
+				{ name = "Beta", value = "beta" },
+				{ name = "Gamma", value = "gamma" },
+			},
+			getFunc = function()
+				return sv.lockedDropdown
+			end,
+			setFunc = function()
+			end,
+			default = defaults.lockedDropdown,
+			disabled = true,
+		},
+
+		{ type = "header", name = "Checklist", align = "center" },
+		{
 			type = "checklist",
 			name = "Feature Tags",
-			tooltip = "Multi-select with cap and custom empty/multi text.",
+			tooltip = "Pick up to three tags. Empty and multi-select wording is customized.",
 			align = "center",
 			choices = {
 				{ name = "UI", value = "ui", tooltip = "Interface and layout." },
@@ -385,52 +504,165 @@ local function OnAddOnLoaded(_, name)
 			default = defaults.featureTags,
 		},
 		{
-			type = "selector",
-			name = "Locked Selector",
-			choices = { "One", "Two", "Three" },
-			choicesValues = { "one", "two", "three" },
+			type = "checklist",
+			name = "Craft Skills",
+			tooltip = "Multi-select craft skills. Options have no extra tips.",
+			align = "center",
+			choices = {
+				{ name = "Blacksmithing", value = "blacksmithing" },
+				{ name = "Clothing", value = "clothing" },
+				{ name = "Woodworking", value = "woodworking" },
+				{ name = "Jewelry", value = "jewelry" },
+			},
+			noSelectionText = "None",
 			getFunc = function()
-				return "two"
+				return sv.craftSkills
+			end,
+			setFunc = function(values)
+				sv.craftSkills = values
+			end,
+			default = defaults.craftSkills,
+		},
+		{
+			type = "checklist",
+			name = "Locked Checklist",
+			align = "center",
+			choices = {
+				{ name = "A", value = "a" },
+				{ name = "B", value = "b" },
+				{ name = "C", value = "c" },
+			},
+			noSelectionText = "None",
+			getFunc = function()
+				return sv.lockedChecklist
 			end,
 			setFunc = function()
 			end,
-			default = "two",
+			default = defaults.lockedChecklist,
 			disabled = true,
 		},
 
-		{ type = "header", name = "Identity", align = "center" },
+		{ type = "header", name = "Color Pickers", align = "center" },
 		{
-			type = "editbox",
-			name = "Player Tag",
-			tooltip = "Free-text edit (TEXT_TYPE_ALL).",
+			type = "colorpicker",
+			name = "Accent",
+			tooltip = "Primary accent color for the demo UI.",
 			getFunc = function()
-				return sv.playerTag
+				local c = sv.accentColor
+				return c[1], c[2], c[3], c[4] or 1
 			end,
-			setFunc = function(value)
-				sv.playerTag = value
+			setFunc = function(r, g, b, a)
+				sv.accentColor = { r, g, b, a or 1 }
 			end,
-			default = defaults.playerTag,
-			maxChars = 24,
-			textType = TEXT_TYPE_ALL,
+			default = {
+				defaults.accentColor[1],
+				defaults.accentColor[2],
+				defaults.accentColor[3],
+				defaults.accentColor[4],
+			},
 		},
 		{
-			type = "editbox",
-			name = "PIN Code",
-			tooltip = "Numeric-only editbox example.",
+			type = "colorpicker",
+			name = "Warning",
 			getFunc = function()
-				return sv.pinCode
+				local c = sv.warningColor
+				return c[1], c[2], c[3], c[4] or 1
 			end,
-			setFunc = function(value)
-				sv.pinCode = value
+			setFunc = function(r, g, b, a)
+				sv.warningColor = { r, g, b, a or 1 }
 			end,
-			default = defaults.pinCode,
-			maxChars = 8,
-			textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,
+			default = {
+				defaults.warningColor[1],
+				defaults.warningColor[2],
+				defaults.warningColor[3],
+				defaults.warningColor[4],
+			},
 		},
+		{
+			type = "colorpicker",
+			name = "Locked Color",
+			tooltip = "Permanently locked so you can see the disabled look.",
+			getFunc = function()
+				local c = sv.lockedColor
+				return c[1], c[2], c[3], c[4] or 1
+			end,
+			setFunc = function()
+			end,
+			default = {
+				defaults.lockedColor[1],
+				defaults.lockedColor[2],
+				defaults.lockedColor[3],
+				defaults.lockedColor[4],
+			},
+			disabled = true,
+		},
+
+		{ type = "header", name = "Icon Pickers", align = "center" },
+		{
+			type = "iconpicker",
+			name = "Status Icon",
+			tooltip = "Choose from a short list of icon paths.",
+			choices = ICON_CHOICES,
+			getFunc = function()
+				return sv.statusIcon
+			end,
+			setFunc = function(index)
+				sv.statusIcon = index
+			end,
+			default = defaults.statusIcon,
+		},
+		{
+			type = "iconpicker",
+			name = "Atlas Icon",
+			tooltip = "Pick a tile from a 2×2 spritesheet.",
+			texture = ATLAS_TEXTURE,
+			atlasSizeX = 2,
+			atlasSizeY = 2,
+			atlasStart = 1,
+			atlasEnd = 4,
+			getFunc = function()
+				return sv.atlasIcon
+			end,
+			setFunc = function(index)
+				sv.atlasIcon = index
+			end,
+			default = defaults.atlasIcon,
+		},
+		{
+			type = "iconpicker",
+			name = "Atlas Subset",
+			tooltip = "Same spritesheet, but only two tiles are offered.",
+			texture = ATLAS_TEXTURE,
+			atlasSizeX = 2,
+			atlasSizeY = 2,
+			atlasIndices = { 1, 3 },
+			getFunc = function()
+				return sv.atlasSubsetIcon
+			end,
+			setFunc = function(index)
+				sv.atlasSubsetIcon = index
+			end,
+			default = defaults.atlasSubsetIcon,
+		},
+		{
+			type = "iconpicker",
+			name = "Locked Icon",
+			tooltip = "Permanently locked so you can see the disabled look.",
+			choices = ICON_CHOICES,
+			getFunc = function()
+				return sv.lockedIcon
+			end,
+			setFunc = function()
+			end,
+			default = defaults.lockedIcon,
+			disabled = true,
+		},
+
+		{ type = "header", name = "Button", align = "center" },
 		{
 			type = "button",
 			name = "Print Status to Chat",
-			tooltip = "Fires clickHandler (func).",
+			tooltip = "Prints enabled state, profile, and player tag to chat.",
 			func = function()
 				d(string.format(
 					"[LCM Demo] enabled=%s profile=%s tag=%s",
@@ -440,113 +672,15 @@ local function OnAddOnLoaded(_, name)
 				))
 			end,
 		},
-
 		---------------------------------------------------------------------------
-		-- Centered submenus (panel centerSubmenus = true). Chip edge ownership
-		-- is covered by the Currencies group under Alerts.
+		-- Submenus
 		---------------------------------------------------------------------------
+		{ type = "header", name = "Submenus", align = "center" },
 		{
 			type = "submenu",
-			name = "Appearance",
-			tooltip = "Colors, icons, and opacity.",
-			onEnter = function()
-				d("[LCM Demo] Entered Appearance")
-			end,
-			onExit = function()
-				d("[LCM Demo] Left Appearance")
-			end,
-			controls = {
-				{ type = "header", name = "Colors", align = "center" },
-				{
-					type = "colorpicker",
-					name = "Accent",
-					tooltip = "RGBA colorpicker.",
-					getFunc = function()
-						local c = sv.accentColor
-						return c[1], c[2], c[3], c[4] or 1
-					end,
-					setFunc = function(r, g, b, a)
-						sv.accentColor = { r, g, b, a or 1 }
-					end,
-					default = {
-						defaults.accentColor[1],
-						defaults.accentColor[2],
-						defaults.accentColor[3],
-						defaults.accentColor[4],
-					},
-				},
-				{
-					type = "colorpicker",
-					name = "Warning",
-					getFunc = function()
-						local c = sv.warningColor
-						return c[1], c[2], c[3], c[4] or 1
-					end,
-					setFunc = function(r, g, b, a)
-						sv.warningColor = { r, g, b, a or 1 }
-					end,
-					default = {
-						defaults.warningColor[1],
-						defaults.warningColor[2],
-						defaults.warningColor[3],
-						defaults.warningColor[4],
-					},
-				},
-				{ type = "header", name = "Icons", align = "center" },
-				{
-					type = "iconpicker",
-					name = "Status Icon",
-					tooltip = "Path-list iconpicker (choices).",
-					choices = ICON_CHOICES,
-					getFunc = function()
-						return sv.statusIcon
-					end,
-					setFunc = function(index)
-						sv.statusIcon = index
-					end,
-					default = defaults.statusIcon,
-				},
-				{
-					type = "iconpicker",
-					name = "Atlas Icon",
-					tooltip = "Spritesheet atlas (texture + atlasSizeX/Y).",
-					texture = ATLAS_TEXTURE,
-					atlasSizeX = 2,
-					atlasSizeY = 2,
-					atlasStart = 1,
-					atlasEnd = 4,
-					getFunc = function()
-						return sv.atlasIcon
-					end,
-					setFunc = function(index)
-						sv.atlasIcon = index
-					end,
-					default = defaults.atlasIcon,
-				},
-				{
-					type = "iconpicker",
-					name = "Atlas Subset",
-					tooltip = "Same atlas with atlasIndices subset.",
-					texture = ATLAS_TEXTURE,
-					atlasSizeX = 2,
-					atlasSizeY = 2,
-					atlasIndices = { 1, 3 },
-					getFunc = function()
-						return sv.atlasSubsetIcon
-					end,
-					setFunc = function(index)
-						sv.atlasSubsetIcon = index
-					end,
-					default = defaults.atlasSubsetIcon,
-				},
-			},
-		},
-
-		{
-			type = "submenu",
-			name = "Alerts",
-			tooltip = "Centered drill-in with nested packs and a currency chip group.",
-			controls = {
+			name = "Into the Nest",
+			tooltip = "Alerts, combat filters, and currency overlays.",
+			options = {
 				{ type = "header", name = "Behavior", align = "center" },
 				{
 					type = "toggle",
@@ -562,7 +696,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "toggle",
 					name = "Play Sound",
-					tooltip = "Disabled while Show Alerts is off.",
+					tooltip = "Only available while Show Alerts is on.",
 					getFunc = function()
 						return sv.alertSound
 					end,
@@ -591,13 +725,16 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "submenu",
 					name = "Combat Pack",
-					tooltip = "Nested centered submenu (depth 2).",
-					controls = {
+					tooltip = "Priority and filter settings for combat alerts.",
+					options = {
 						{
 							type = "selector",
 							name = "Priority",
-							choices = { "Low", "Normal", "High" },
-							choicesValues = { "low", "normal", "high" },
+							choices = {
+								{ name = "Low", value = "low" },
+								{ name = "Normal", value = "normal" },
+								{ name = "High", value = "high" },
+							},
 							getFunc = function()
 								return sv.combatPriority
 							end,
@@ -609,8 +746,8 @@ local function OnAddOnLoaded(_, name)
 						{
 							type = "submenu",
 							name = "Filters",
-							tooltip = "Nested centered submenu (depth 3).",
-							controls = {
+							tooltip = "Narrow which combat events can fire.",
+							options = {
 								{
 									type = "editbox",
 									name = "Filter Note",
@@ -628,12 +765,11 @@ local function OnAddOnLoaded(_, name)
 					},
 				},
 
-				-- Four sibling centered chips under one header → edge ownership.
 				{ type = "header", name = "Currencies", align = "center" },
 				{
 					type = "submenu",
 					name = "Gold",
-					controls = {
+					options = {
 						{
 							type = "toggle",
 							name = "Show Gold Overlay",
@@ -666,7 +802,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "submenu",
 					name = "Alliance Points",
-					controls = {
+					options = {
 						{
 							type = "toggle",
 							name = "Show AP Overlay",
@@ -699,7 +835,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "submenu",
 					name = "Tel Var Stones",
-					controls = {
+					options = {
 						{
 							type = "toggle",
 							name = "Show Tel Var Overlay",
@@ -732,7 +868,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "submenu",
 					name = "Writ Vouchers",
-					controls = {
+					options = {
 						{
 							type = "toggle",
 							name = "Show Writ Overlay",
@@ -764,26 +900,26 @@ local function OnAddOnLoaded(_, name)
 				},
 			},
 		},
-
 		---------------------------------------------------------------------------
-		-- Alignment showcase: centered entry into left+indent, then left+flush.
+		-- Left alignment showcase on the root (type = "section" authoring sugar).
 		---------------------------------------------------------------------------
-		{ type = "header", name = "Alignment Modes", align = "center" },
 		{
-			type = "submenu",
+			type = "section",
 			name = "Left Alignment",
-			tooltip = "Indented left controls, then a flush (no-indent) Tools page.",
-			align = "center",
-			controls = {
-				{ type = "header", name = "Diagnostics", align = "left", indent = true },
+			align = "left",
+			indent = true,
+			options = {
 				{
 					type = "dropdown",
 					name = "Nav Theme",
-					tooltip = "Left + indent dropdown.",
+					tooltip = "Theme used by the diagnostics sample.",
 					align = "left",
 					indent = true,
-					choices = { "Dark", "Light", "System" },
-					choicesValues = { "dark", "light", "system" },
+					choices = {
+						{ name = "Dark", value = "dark" },
+						{ name = "Light", value = "light" },
+						{ name = "System", value = "system" },
+					},
 					getFunc = function()
 						return sv.navTheme
 					end,
@@ -795,11 +931,14 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "checklist",
 					name = "Nav Modules",
-					tooltip = "Left + indent checklist.",
+					tooltip = "Which modules the diagnostics sample reports on.",
 					align = "left",
 					indent = true,
-					choices = { "UI", "Combat", "Map" },
-					choicesValues = { "ui", "combat", "map" },
+					choices = {
+						{ name = "UI", value = "ui" },
+						{ name = "Combat", value = "combat" },
+						{ name = "Map", value = "map" },
+					},
 					noSelectionText = "None",
 					getFunc = function()
 						return sv.navChecklist
@@ -812,7 +951,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "editbox",
 					name = "Nav Note",
-					tooltip = "Left + indent edit.",
+					tooltip = "Free-text note included in the diagnostics printout.",
 					align = "left",
 					indent = true,
 					getFunc = function()
@@ -828,7 +967,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "button",
 					name = "Run Diagnostics",
-					tooltip = "Left + indent button.",
+					tooltip = "Prints theme, module count, and note to chat.",
 					align = "left",
 					indent = true,
 					func = function()
@@ -840,85 +979,90 @@ local function OnAddOnLoaded(_, name)
 						))
 					end,
 				},
-				{
-					type = "submenu",
-					name = "Tools",
-					tooltip = "Opens a flush-left (no indent) page.",
-					align = "left",
-					controls = {
-						{ type = "header", name = "Actions", align = "left", indent = false },
-						{
-							type = "dropdown",
-							name = "Tools Theme",
-							tooltip = "Left + flush dropdown.",
-							align = "left",
-							indent = false,
-							choices = { "Dark", "Light", "System" },
-							choicesValues = { "dark", "light", "system" },
-							getFunc = function()
-								return sv.toolsTheme
-							end,
-							setFunc = function(value)
-								sv.toolsTheme = value
-							end,
-							default = defaults.toolsTheme,
-						},
-						{
-							type = "checklist",
-							name = "Tools Modules",
-							tooltip = "Left + flush checklist.",
-							align = "left",
-							indent = false,
-							choices = { "UI", "Combat", "Map" },
-							choicesValues = { "ui", "combat", "map" },
-							noSelectionText = "None",
-							getFunc = function()
-								return sv.toolsChecklist
-							end,
-							setFunc = function(values)
-								sv.toolsChecklist = values
-							end,
-							default = defaults.toolsChecklist,
-						},
-						{
-							type = "editbox",
-							name = "Tools Note",
-							tooltip = "Left + flush edit.",
-							align = "left",
-							indent = false,
-							getFunc = function()
-								return sv.toolsNote
-							end,
-							setFunc = function(value)
-								sv.toolsNote = value
-							end,
-							default = defaults.toolsNote,
-							maxChars = 24,
-							textType = TEXT_TYPE_ALL,
-						},
-						{
-							type = "button",
-							name = "Restore Player Tag",
-							align = "left",
-							indent = false,
-							func = function()
-								sv.playerTag = defaults.playerTag
-								d("[LCM Demo] Player tag restored to default.")
-							end,
-						},
-						{
-							type = "button",
-							name = "Locked Button",
-							align = "left",
-							indent = false,
-							func = function()
-							end,
-							disabled = true,
-						},
-					},
-				},
 			},
 		},
+		{
+			type = "section",
+			name = "Left Alignment Without Indent",
+			align = "left",
+			indent = false,
+			options = {
+				{
+					type = "dropdown",
+					name = "Tools Theme",
+					tooltip = "Theme shown in this left-aligned section.",
+					align = "left",
+					indent = false,
+					choices = {
+						{ name = "Dark", value = "dark" },
+						{ name = "Light", value = "light" },
+						{ name = "System", value = "system" },
+					},
+					getFunc = function()
+						return sv.toolsTheme
+					end,
+					setFunc = function(value)
+						sv.toolsTheme = value
+					end,
+					default = defaults.toolsTheme,
+				},
+				{
+					type = "checklist",
+					name = "Tools Modules",
+					tooltip = "Modules included in this left-aligned section.",
+					align = "left",
+					indent = false,
+					choices = {
+						{ name = "UI", value = "ui" },
+						{ name = "Combat", value = "combat" },
+						{ name = "Map", value = "map" },
+					},
+					noSelectionText = "None",
+					getFunc = function()
+						return sv.toolsChecklist
+					end,
+					setFunc = function(values)
+						sv.toolsChecklist = values
+					end,
+					default = defaults.toolsChecklist,
+				},
+				{
+					type = "editbox",
+					name = "Tools Note",
+					tooltip = "Optional note for this left-aligned section.",
+					align = "left",
+					indent = false,
+					getFunc = function()
+						return sv.toolsNote
+					end,
+					setFunc = function(value)
+						sv.toolsNote = value
+					end,
+					default = defaults.toolsNote,
+					maxChars = 24,
+					textType = TEXT_TYPE_ALL,
+				},
+				{
+					type = "button",
+					name = "Restore Player Tag",
+					align = "left",
+					indent = false,
+					func = function()
+						sv.playerTag = defaults.playerTag
+						d("[LCM Demo] Player tag restored to default.")
+					end,
+				},
+				{
+					type = "button",
+					name = "Locked Button",
+					align = "left",
+					indent = false,
+					func = function()
+					end,
+					disabled = true,
+				},
+			},
+		}
 	})
 end
 

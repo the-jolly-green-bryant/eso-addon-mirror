@@ -1,6 +1,6 @@
 STARS = {}
 STARS.name = "STARS"
-STARS.version = "0.5.38-test15"
+STARS.version = "0.6.10"
 STARS.sv = nil
 
 STARS.CP_MILESTONES = {160,300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600}
@@ -33,10 +33,20 @@ STARS.PRESTIGE_BADGES_PER_TIER = 11
 STARS.PRESTIGE_TIER_SIZE = STARS.PRESTIGE_BADGE_STEP * STARS.PRESTIGE_BADGES_PER_TIER
 STARS.PRESTIGE_TIER_NAMES = { "Bronze", "Silver", "Gold" }
 
+-- Temporary, runtime-only artwork review state. It intentionally resets after
+-- /reloadui and is never written to STARS_SV. Remove this block and its LHAS
+-- controls before the final release.
+STARS.heraldryPreview = {
+    enabled = false,
+    rankKey = "wayfarer",
+    stage = 1,
+}
+
 local DEFAULTS = {
     options = {
         enabled = true,
         debug = false,
+        heraldryEnabled = true,
         sound = true,
         csa = false,
         startCP = 160,
@@ -1392,12 +1402,92 @@ function STARS:InitSettingsMenu()
         })
     end
 
+    local function RefreshCurrentJournalPage()
+        if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage
+            and STARS_JOURNAL_GAMEPAD.currentPage then
+            STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage)
+        end
+    end
+
     AddCategoryHeader("GENERAL")
     settings:AddSetting({type=HAS.ST_SECTION,label="STARS"})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Enable STARS",getFunction=function() return self.sv.options.enabled end,setFunction=function(v) self.sv.options.enabled=v; self:TouchSV() end})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Debug Mode",getFunction=function() return self.sv.options.debug end,setFunction=function(v) self.sv.options.debug=v; self:TouchSV() end})
 
     AddCategoryHeader("PRESTIGE")
+    settings:AddSetting({type=HAS.ST_SECTION,label="Display"})
+    settings:AddSetting({
+        type=HAS.ST_CHECKBOX,
+        label="Show Heraldry Badges",
+        tooltip="Shows the new heraldry artwork on the Prestige page. If a badge is unfinished or cannot be rendered, STARS automatically keeps the existing icon and text view.",
+        getFunction=function() return self.sv.options.heraldryEnabled == true end,
+        setFunction=function(v)
+            self.sv.options.heraldryEnabled = v == true
+            self:TouchSV()
+            RefreshCurrentJournalPage()
+        end,
+    })
+    settings:AddSetting({type=HAS.ST_SECTION,label="Development Preview"})
+    settings:AddSetting({
+        type=HAS.ST_LABEL,
+        label="Artwork review only — removed before release",
+        tooltip="Temporarily previews Legacy heraldry without changing Champion Points, ranks, XP, unlocks, or saved progression. Preview state resets after /reloadui.",
+    })
+    settings:AddSetting({
+        type=HAS.ST_CHECKBOX,
+        label="Enable Heraldry Preview",
+        tooltip="Overrides only the badge artwork shown on the Prestige page. All text and progression remain live and unchanged.",
+        getFunction=function() return self.heraldryPreview.enabled == true end,
+        setFunction=function(v)
+            self.heraldryPreview.enabled = v == true
+            RefreshCurrentJournalPage()
+        end,
+    })
+
+    local previewRankItems = {}
+    for _, rank in ipairs(self.LEGACY_RANKS) do
+        previewRankItems[#previewRankItems + 1] = { name=rank.name, data=rank.key }
+    end
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Legacy Rank",
+        items=previewRankItems,
+        getFunction=function()
+            for _, item in ipairs(previewRankItems) do
+                if item.data == self.heraldryPreview.rankKey then return item.name end
+            end
+            return previewRankItems[1].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.rankKey = item.data
+                RefreshCurrentJournalPage()
+            end
+        end,
+    })
+
+    local previewStageItems = {
+        {name="Stage 1 (50)", data=1},
+        {name="Stage 2 (100)", data=2},
+        {name="Stage 3 (150)", data=3},
+        {name="Stage 4 (200)", data=4},
+        {name="Stage 5 (250)", data=5},
+    }
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Colour Stage",
+        items=previewStageItems,
+        getFunction=function()
+            local stage = math.max(1, math.min(5, math.floor(tonumber(self.heraldryPreview.stage) or 1)))
+            return previewStageItems[stage].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.stage = item.data
+                RefreshCurrentJournalPage()
+            end
+        end,
+    })
     settings:AddSetting({type=HAS.ST_SECTION,label="Notifications"})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Sound",getFunction=function() return self.sv.options.sound end,setFunction=function(v) self.sv.options.sound=v; self:TouchSV() end})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Center Screen Announce",getFunction=function() return self.sv.options.csa end,setFunction=function(v) self.sv.options.csa=v; self:TouchSV() end})

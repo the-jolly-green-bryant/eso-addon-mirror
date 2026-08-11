@@ -1,4 +1,4 @@
-Better Buffs v0.3.04
+Better Buffs v0.3.05
 Created by BMGxSancho
 
 Better Buffs is a lightweight raid-effect intelligence addon for ESO console.

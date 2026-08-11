@@ -368,6 +368,7 @@ function STARS_Journal_Gamepad:ApplyResponsiveLayout()
         local width = self.contentFrame:GetWidth() or 0
         if width > 0 then
             local badge = self.prestigePage:GetNamedChild("Badge")
+            local heraldryBadge = self.prestigePage:GetNamedChild("HeraldryBadge")
             local title = self.prestigePage:GetNamedChild("Title")
             local tier = self.prestigePage:GetNamedChild("Tier")
             local details = self.prestigePage:GetNamedChild("Details")
@@ -383,6 +384,11 @@ function STARS_Journal_Gamepad:ApplyResponsiveLayout()
                 badge:ClearAnchors()
                 badge:SetDimensions(180, 180)
                 badge:SetAnchor(TOPRIGHT, self.prestigePage, TOPRIGHT, -45, 15)
+            end
+            if heraldryBadge then
+                heraldryBadge:ClearAnchors()
+                heraldryBadge:SetDimensions(180, 180)
+                heraldryBadge:SetAnchor(TOPRIGHT, self.prestigePage, TOPRIGHT, -45, 15)
             end
             if title then
                 title:ClearAnchors()
@@ -670,6 +676,51 @@ local function SetTexture(parent, childName, texturePath)
     else
         control:SetHidden(true)
     end
+end
+
+-- Heraldry is an optional overlay. The established Prestige icon and every
+-- text label remain the fallback view and are only displaced after the badge
+-- module reports a successful render.
+local function RefreshPrestigeHeraldry(parent, progression, fallbackIcon)
+    local view = parent and parent:GetNamedChild("HeraldryBadge")
+    local enabled = STARS
+        and STARS.sv
+        and STARS.sv.options
+        and STARS.sv.options.heraldryEnabled == true
+
+    if enabled and view and type(STARS_BADGES) == "table"
+        and type(STARS_BADGES.BuildModel) == "function"
+        and type(STARS_BADGES.Render) == "function" then
+        local preview = STARS and STARS.heraldryPreview
+        local modelOk, model
+        if preview and preview.enabled == true
+            and type(STARS_BADGES.BuildLegacyPreviewModel) == "function" then
+            modelOk, model = pcall(
+                STARS_BADGES.BuildLegacyPreviewModel,
+                STARS_BADGES,
+                preview.rankKey,
+                preview.stage)
+        else
+            modelOk, model = pcall(STARS_BADGES.BuildModel, STARS_BADGES, progression)
+        end
+        if modelOk and model then
+            local renderOk, rendered = pcall(STARS_BADGES.Render, STARS_BADGES, view, model)
+            if renderOk and rendered then
+                SetTexture(parent, "Badge", nil)
+                return true
+            end
+        end
+    end
+
+    if view then
+        if type(STARS_BADGES) == "table" and type(STARS_BADGES.Release) == "function" then
+            pcall(STARS_BADGES.Release, STARS_BADGES, view)
+        else
+            view:SetHidden(true)
+        end
+    end
+    SetTexture(parent, "Badge", fallbackIcon)
+    return false
 end
 
 local function FormatTimeRemaining(seconds)
@@ -1116,7 +1167,7 @@ function STARS_Journal_Gamepad:ShowPage(page)
 
 
     elseif page == PAGE_PRESTIGE and self.prestigePage then
-        SetTexture(self.prestigePage, "Badge", tierIcon)
+        RefreshPrestigeHeraldry(self.prestigePage, progression, tierIcon)
         SetLabel(self.prestigePage, "Title", progressionLabel)
         SetLabel(self.prestigePage, "Tier", string.upper(progression.rankName or tier or "BRONZE"))
         if progression.phase == "legacy" then
@@ -1188,4 +1239,3 @@ function Journal:Initialize()
         end)
     end
 end
-

@@ -32,8 +32,8 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_CCC"] = "Обновить историю статусов",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_UPDATE_WINDOW_H"] = "|c00FF00Если что-то забаговало в окне таблице истории - обновите, может это поможет вам.|r",
     
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "доступно",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "недоступно",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "|c00FF00доступно|r",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "|cFF0000недоступно|r",
     
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES"] = "Количество строк для записи",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES_A"] = "|c00FF00Сколько строк будет сохранено в истории SavedVariables афйла [влияет на размер файла и длительности записи, по достижению лимита будет перезапись] (от 100 до 5000 количество возможных строк)|r",
@@ -61,7 +61,12 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AD"] = "|c00FF00Функция автоматической проверки!!!|r",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAD"] = "|c9999FFАвтоматические проверки статуса подписки происходит каждые 15 минут, независимо от настроек аддона, это нужно для того, чтобы вы не пропустили статус подписки, если она будет активирована чуть позже этим же днём, функция проверки не нагружает вашу систему. Такой таймер совершенно безопасен для производительности. Вот почему:|r |cFFFFC5Частота выполнения Раз в 15 минут — это крайне редко для игрового движка. Для сравнения: сам клиент ESO обрабатывает десятки тысяч событий каждую секунду (анимация, рендеринг, сетевые пакеты). Одна функция раз в 15 минут — капля в море. - Все операции здесь — чисто логические: чтение статуса аккаунта через встроенный API (HasEsoPlus...), работа с локальной таблицей (Lua table) и вывод сообщения в чат (d()). Здесь нет тяжёлых вычислений, циклов по большим массивам, обращений к файлам или сети. Вызовы вроде ZO_SavedVars, d(), ClearEsoPlus... оптимизированы разработчиками ZOS и выполняются за микросекунды.|r |cffd700Пинг|r определяется качеством интернет-соединения и нагрузкой на серверы ESO. Локальный Lua-таймер клиента никак не отправляет данные на сервер чаще, чем это уже делает сама игра. Функция HasEsoPlusFreeTrialNotification() использует кэшированный статус аккаунта — она не создаёт дополнительного сетевого трафика. |c1E90FFСравнение с другими аддонами.|r Многие популярные аддоны используют гораздо более частые таймеры: |cADD8E6- Inventory Insight|r — проверяет инвентарь при каждом открытии; |cADD8E6- Combat Metrics|r — анализирует каждый тик боя (десятки раз в секунду); - даже стандартные UI-элементы обновляются 60+ раз в секунду. Этот |cADD8E6таймер|r в 900 секунд выглядит как «раз в эпоху» на этом фоне.",
     
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION"] ="|cFF6347Таблица теперь тут ниже:|r",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION_A"] ="|c9999FFПри отображении большого количества записей (2000 по умолчанию) таблица может открыться с секундной задержкой, это нормально.|r |cFFFFC5Откройте таблицу:|r",
+
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION__ALLRECORDS"] = "|ccdfff3Все записи|r",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION_ESOPLUS"] = "|ccdfff3ИНФОРМАЦИЯ|r"
+
 }
 
 -- Регистрация ВСЕХ строк одним циклом — соответствует требованиям ESOUI!

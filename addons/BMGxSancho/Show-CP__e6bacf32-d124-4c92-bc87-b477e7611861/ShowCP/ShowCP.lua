@@ -3,7 +3,7 @@ local SC = ShowCP
 
 SC.name = "ShowCP"
 SC.displayName = "Show CP"
-SC.version = "0.0.03"
+SC.version = "0.0.04"
 SC.savedVersion = 1
 SC.refreshToken = 0
 SC.initialized = false
@@ -113,4 +113,11 @@ function SC:ResetModulePosition(moduleKey)
     end
 end
 
+local function OnPlayerActivated()
+    if SC.initialized and SC.Display then
+        SC.Display:RefreshVisibility()
+    end
+end
+
 EVENT_MANAGER:RegisterForEvent(SC.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
+EVENT_MANAGER:RegisterForEvent(SC.name .. "_PlayerActivated", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)

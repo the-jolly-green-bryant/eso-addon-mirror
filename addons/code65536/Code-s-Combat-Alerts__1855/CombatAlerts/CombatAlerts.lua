@@ -3,7 +3,7 @@ local LCA = LibCombatAlerts
 CombatAlerts2 = {
 	ID = "CombatAlerts2",
 	NAME = "CombatAlerts",
-	EXPECTED_VERSION = 205000,
+	EXPECTED_VERSION = 205010,
 	URL = "https://www.esoui.com/downloads/info1855.html",
 
 	currentModules = { },
@@ -71,7 +71,7 @@ function CA2.OnZoneChange( zoneId )
 		CA2.currentModules = modules
 		CA2.LoadModulesForCurrentZone()
 	else
-		ZO_ClearTable(CA2.currentModules)
+		CA2.currentModules = { }
 		CA2.ToggleLegacy(true)
 	end
 end

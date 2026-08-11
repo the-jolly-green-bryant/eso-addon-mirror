@@ -106,6 +106,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Group Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Group-Log__4316) | atharti | PC / Mac | 1.9 |
 | [Group Loot](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Temeez/Group-Loot__1027) | Temeez | PC / Mac | 0.9.7 |
 | [Group Loot Notifier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hoft/Group-Loot-Notifier__1618) | Hoft | PC / Mac | 2.17 |
+| [Group Mementos](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PvPenny/Group-Mementos__4766) | PvPenny | PC / Mac | 2.3.3 |
 | [Group Notifications](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Group-Notifications__1250) | CaptainBlagbird | PC / Mac | 2.0 |
 | [Group Reformer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MikeX/Group-Reformer__1162) | MikeX | PC / Mac | 1.3 |
 | [Group Resources](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Group-Resources__3d1bd08c-876b-4248-b347-1a5fd451912d) | sirinsidiator | Console | — |
@@ -153,6 +154,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Guild Invite Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pyrowin/Guild-Invite-Blocker__4601) | Pyrowin | PC / Mac | 1.0.0 |
 | [Guild Items Stacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Guild-Items-Stacker__97602269-0c8d-4bb7-aa31-33cde23e39b7) | Eldibabalo | Console | — |
 | [Guild Listing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lahouari/Guild-Listing__3485) | lahouari | PC / Mac | 1.0.1 |
+| [Guild Market Scanner DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MajesticMinxi/Guild-Market-Scanner-DEV__f419b0e2-e53c-4875-bcf2-5bf0e372218b) | MajesticMinxi | Console | — |
 | [Guild Member Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uberswe/Guild-Member-Manager__3386) | uberswe | PC / Mac | 1.1 |
 | [Guild Notificator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Guild-Notificator__780) | Ayantir | PC / Mac | 13 |
 | [Guild Notificator - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Llether/Guild-Notificator---Updated__3614) | Llether | PC / Mac | 1.0.1 |

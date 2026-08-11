@@ -235,6 +235,15 @@ local collectibleNames = {
 local function CreateMiscSettings()
     local controls = {
         {
+            type = "checkbox",
+            name = "Debug",
+            tooltip = "Show lots of spam",
+            default = false,
+            getFunc = function() return KyzderpsDerps.savedOptions.general.debug end,
+            setFunc = function(value) KyzderpsDerps.savedOptions.general.debug = value end,
+            width = "full",
+        },
+        {
             type = "dropdown",
             name = "Use collectible on login",
             tooltip = "Specify a collectible to use when you first load into a character",
@@ -377,394 +386,7 @@ function KyzderpsDerps:CreateSettingsMenu()
             name = "General Settings",
             width = "full",
         },
-        {
-            type = "checkbox",
-            name = "Debug",
-            tooltip = "Show lots of spam",
-            default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.general.debug end,
-            setFunc = function(value) KyzderpsDerps.savedOptions.general.debug = value end,
-            width = "full",
-        },
-        {
-            type = "submenu",
-            name = "Custom Target Name",
-            controls = {
-                {
-                    type = "checkbox",
-                    name = "Show Frame",
-                    tooltip = "Show frame to allow moving or editing settings",
-                    default = false,
-                    getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.move end,
-                    setFunc = function(value)
-                        KyzderpsDerps.savedOptions.customTargetFrame.move = value
-                        CustomTargetCustomName:SetHidden(not value)
-                        if (value) then
-                            CustomTargetCustomNameLabel:SetText("Sample Name")
-                        end
-                    end,
-                    width = "full",
-                },
-                {
-                    type = "slider",
-                    name = "Text Size",
-                    min = 12,
-                    max = 72,
-                    step = 2,
-                    default = 48,
-                    width = "full",
-                    getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.size end,
-                    setFunc = function(value)
-                        KyzderpsDerps.savedOptions.customTargetFrame.size = value
-                        CustomTargetCustomNameLabel:SetFont("$(BOLD_FONT)|"..value.."|soft-shadow-thick")
-                    end,
-                },
 -------------------------------------------------------------------------------
-                {
-                    type = "submenu",
-                    name = "NPC Target",
-                    controls = {
-                        {
-                            type = "checkbox",
-                            name = "Show NPC Names",
-                            tooltip = "Display large target name for NPCs",
-                            default = true,
-                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.npc.enable end,
-                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.npc.enable = value end,
-                            width = "full",
-                        },
-                        {
-                            type = "checkbox",
-                            name = "Show Only Filter",
-                            tooltip = "Display names for NPCs only if they are in the custom filter",
-                            default = false,
-                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.npc.useFilter end,
-                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.npc.useFilter = value end,
-                            width = "full",
-                            disabled = function() return not KyzderpsDerps.savedOptions.customTargetFrame.npc.enable end,
-                        },
-                        {
-                            type = "header",
-                            name = "Custom Filter",
-                            width = "half",
-                        },
-                        {
-                            type = "editbox",
-                            name = "Add an NPC",
-                            width = "full",
-                            tooltip = "Enter the full NPC name exactly as it appears, case sensitive!",
-                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterBox").editbox:GetText() end,
-                            setFunc = function(name)
-                                if (name == "") then return end
-
-                                -- Clear the textbox
-                                WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterBox").editbox:SetText("")
-
-                                -- Add it to the dropdown
-                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList")
-                                local newEntry = {
-                                    customName = name,
-                                    color = {1, 1, 1},
-                                }
-                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[name] = newEntry
-                                namesDropdown:UpdateChoices(getNpcNames())
-                                namesDropdown.dropdown:SetSelectedItem(name)
-                            end,
-                            isMultiline = false,
-                            isExtraWide = false,
-                            reference = "KyzderpsDerps#NpcFilterBox",
-                        },
-                        {
-                            type = "button",
-                            name = "Most Recent Target",
-                            tooltip = "Uses the most recently *displayed* NPC name",
-                            width = "full",
-                            func = function()
-                                local editbox = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterBox").editbox
-                                editbox:SetText(KyzderpsDerps.recentNpc)
-                                editbox:TakeFocus()
-                            end
-                        },
-                        {
-                            type = "dropdown",
-                            name = "Select NPC",
-                            width = "full",
-                            tooltip = "Choose an NPC",
-                            choices = getNpcNames(),
-                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem() end,
-                            setFunc = function(name) end,
-                            reference = "KyzderpsDerps#NpcFilterList",
-                        },
-                        {
-                            type = "editbox",
-                            name = "Custom Name",
-                            width = "full",
-                            tooltip = "Enter what you want the name to show up as",
-                            getFunc = function()
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-                                local selected = KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName]
-                                if (selected) then return selected.customName end
-                                return ""
-                            end,
-                            setFunc = function(name)
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName].customName = name
-                            end,
-                            isMultiline = false,
-                            isExtraWide = false,
-                            reference = "KyzderpsDerps#NpcCustomBox",
-                            disabled = function()
-                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-                                return selected == ""
-                            end
-                        },
-                        {
-                            type = "colorpicker",
-                            name = "Custom Color",
-                            getFunc = function()
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-
-                                local selected = KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName]
-                                if (selected) then return unpack(selected.color) end
-                                return unpack({1, 1, 1})
-                            end,
-                            setFunc = function(r, g, b)
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName].color = {r, g, b}
-                            end,
-                            disabled = function()
-                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-                                return selected == ""
-                            end
-                        },
-                        {
-                            type = "button",
-                            name = "Remove",
-                            width = "full",
-                            func = function()
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
-                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName] = nil
-                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList")
-                                namesDropdown:UpdateChoices(getNpcNames())
-                            end
-                        },
-                    },
-                },
--------------------------------------------------------------------------------
-                {
-                    type = "submenu",
-                    name = "Player Target",
-                    controls = {
-                        {
-                            type = "checkbox",
-                            name = "Show Player Names",
-                            tooltip = "Display large target name for players",
-                            default = true,
-                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.player.enable end,
-                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.player.enable = value end,
-                            width = "full",
-                        },
-                        {
-                            type = "checkbox",
-                            name = "Show Only Filter",
-                            tooltip = "Show player name only if they are in the custom filter",
-                            default = false,
-                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.player.useFilter end,
-                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.player.useFilter = value end,
-                            width = "full",
-                            disabled = function() return not KyzderpsDerps.savedOptions.customTargetFrame.player.enable end,
-                        },
-                        {
-                            type = "header",
-                            name = "Custom Filter",
-                            width = "half",
-                        },
-                        {
-                            type = "editbox",
-                            name = "Add a Player",
-                            width = "full",
-                            tooltip = "Enter the full player name exactly as it appears, including the @. Case sensitive!",
-                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterBox").editbox:GetText() end,
-                            setFunc = function(name)
-                                if (name == "") then return end
-
-                                -- Clear the textbox
-                                WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterBox").editbox:SetText("")
-
-                                -- Add it to the dropdown
-                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList")
-                                local newEntry = {
-                                    customName = name,
-                                    color = {1, 1, 1},
-                                }
-                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[name] = newEntry
-                                namesDropdown:UpdateChoices(getPlayerNames())
-                                namesDropdown.dropdown:SetSelectedItem(name)
-                            end,
-                            isMultiline = false,
-                            isExtraWide = false,
-                            reference = "KyzderpsDerps#PlayerFilterBox",
-                        },
-                        {
-                            type = "button",
-                            name = "Most Recent Target",
-                            tooltip = "Uses the most recently *displayed* player name",
-                            width = "full",
-                            func = function()
-                                local editbox = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterBox").editbox
-                                editbox:SetText(KyzderpsDerps.recentPlayer)
-                                editbox:TakeFocus()
-                            end
-                        },
-                        {
-                            type = "dropdown",
-                            name = "Select Player",
-                            width = "full",
-                            tooltip = "Choose a player",
-                            choices = getPlayerNames(),
-                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem() end,
-                            setFunc = function(name) end,
-                            reference = "KyzderpsDerps#PlayerFilterList",
-                        },
-                        {
-                            type = "editbox",
-                            name = "Custom Name",
-                            width = "full",
-                            tooltip = "Enter what you want the name to show up as",
-                            getFunc = function()
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-                                local selected = KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName]
-                                if (selected) then return selected.customName end
-                                return ""
-                            end,
-                            setFunc = function(name)
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName].customName = name
-                            end,
-                            isMultiline = false,
-                            isExtraWide = false,
-                            reference = "KyzderpsDerps#PlayerCustomBox",
-                            disabled = function()
-                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-                                return selected == ""
-                            end
-                        },
-                        {
-                            type = "colorpicker",
-                            name = "Custom Color",
-                            getFunc = function()
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-
-                                local selected = KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName]
-                                if (selected) then return unpack(selected.color) end
-                                return unpack({1, 1, 1})
-                            end,
-                            setFunc = function(r, g, b)
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName].color = {r, g, b}
-                            end,
-                            disabled = function()
-                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-                                return selected == ""
-                            end
-                        },
-                        {
-                            type = "button",
-                            name = "Remove",
-                            width = "full",
-                            func = function()
-                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
-                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName] = nil
-                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList")
-                                namesDropdown:UpdateChoices(getPlayerNames())
-                            end
-                        },
-                    },
-                },
-            },
-        },
--------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Grievous Retaliation Alert",
-            controls = {
-                {
-                    type = "checkbox",
-                    name = "Enable Overlay",
-                    tooltip = "Display *very noticeable* text on screen when anyone is taking damage from rezzing a player whose shade is not killed yet in vCR",
-                    default = true,
-                    getFunc = function() return KyzderpsDerps.savedOptions.grievous.enable end,
-                    setFunc = function(value) KyzderpsDerps.savedOptions.grievous.enable = value end,
-                    width = "full",
-                },
-                {
-                    type = "checkbox",
-                    name = "Show Self Only",
-                    tooltip = "Show the alert only if you are the one dying from rezzing",
-                    default = true,
-                    getFunc = function() return KyzderpsDerps.savedOptions.grievous.selfOnly end,
-                    setFunc = function(value) KyzderpsDerps.savedOptions.grievous.selfOnly = value end,
-                    width = "full",
-                },
-                {
-                    type = "slider",
-                    name = "Fade Time",
-                    tooltip = "Time in milliseconds after the damage taken in which the overlay will fade. Grievous Retaliation ticks every half a second",
-                    min = 100,
-                    max = 3000,
-                    step = 100,
-                    default = 1000,
-                    width = "full",
-                    getFunc = function() return KyzderpsDerps.savedOptions.grievous.timer end,
-                    setFunc = function(value)
-                        KyzderpsDerps.savedOptions.grievous.timer = value
-                    end,
-                },
-                {
-                    type = "description",
-                    title = nil,
-                    text = "|c99FF99/kdd grievous|r - Toggles Grievous Retaliation overlay (in case it gets stuck)",
-                    width = "full",
-                },
-            }
-        },
--------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Boss Timer",
-            controls = KyzderpsDerps.SpawnTimer.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Dynamic Events",
-            controls = KyzderpsDerps.WorldEvent.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Death Alert",
-            controls = KyzderpsDerps.DeathAlert.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Quickslots",
-            controls = KyzderpsDerps.QuickSlots.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Companion",
-            controls = KyzderpsDerps.Companion.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Combat",
-            controls = KyzderpsDerps.Combat.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
         {
             type = "submenu",
             name = "Anti-Spud",
@@ -853,12 +475,26 @@ function KyzderpsDerps:CreateSettingsMenu()
                 },
                 {
                     type = "checkbox",
-                    name = "Print equipped sets",
+                    name = "    Print equipped sets",
                     tooltip = "Print equipped sets along with how many pieces you are wearing to your chatbox when equipment changes",
                     default = false,
                     getFunc = function() return KyzderpsDerps.savedOptions.antispud.equipped.printToChat end,
                     setFunc = function(value)
                         KyzderpsDerps.savedOptions.antispud.equipped.printToChat = value
+                    end,
+                    width = "full",
+                    disabled = function()
+                        return not KyzderpsDerps.savedOptions.antispud.equipped.enable
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "    No judgement",
+                    tooltip = "Doesn't notify you about your missing gear as the red anti-spud text, but other things like printing to chat or integrations still work, if applicable. Because jet doesn't want to be judged",
+                    default = false,
+                    getFunc = function() return KyzderpsDerps.savedOptions.antispud.equipped.noJudgement end,
+                    setFunc = function(value)
+                        KyzderpsDerps.savedOptions.antispud.equipped.noJudgement = value
                     end,
                     width = "full",
                     disabled = function()
@@ -1161,8 +797,43 @@ function KyzderpsDerps:CreateSettingsMenu()
         -------------------------------------------------------------------------------
         {
             type = "submenu",
-            name = "Fashion",
-            controls = KyzderpsDerps.Fashion.GetSettings(),
+            name = "Boss Timer",
+            controls = KyzderpsDerps.SpawnTimer.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Chat Spam",
+            controls = {
+                {
+                    type = "checkbox",
+                    name = "Use LibFilteredChatPanel",
+                    tooltip = "Send the output of the chat spam to the filtered chat panel instead of regular chat. Requires LibFilteredChatPanel",
+                    default = true,
+                    getFunc = function() return KyzderpsDerps.savedOptions.chatSpam.useLFCP end,
+                    setFunc = function(value)
+                        KyzderpsDerps.savedOptions.chatSpam.useLFCP = value
+                    end,
+                    width = "full",
+                    disabled = function() return LibFilteredChatPanel == nil end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Display score gains",
+                    tooltip = "Display spammy chat whenever you gain score in veteran scored activities such as trials and arenas",
+                    default = false,
+                    getFunc = function() return KyzderpsDerps.savedOptions.chatSpam.printScore end,
+                    setFunc = function(value)
+                        KyzderpsDerps.savedOptions.chatSpam.printScore = value
+                        if (value) then
+                            KyzderpsDerps.ChatSpam.RegisterScore()
+                        else
+                            KyzderpsDerps.ChatSpam.UnregisterScore()
+                        end
+                    end,
+                    width = "full",
+                },
+            }
         },
         -------------------------------------------------------------------------------
         {
@@ -1233,34 +904,390 @@ function KyzderpsDerps:CreateSettingsMenu()
         -------------------------------------------------------------------------------
         {
             type = "submenu",
-            name = "Chat Spam",
+            name = "Combat",
+            controls = KyzderpsDerps.Combat.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Companion",
+            controls = KyzderpsDerps.Companion.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Container Opener",
+            controls = KyzderpsDerps.Opener.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Custom Target Name",
             controls = {
                 {
                     type = "checkbox",
-                    name = "Use LibFilteredChatPanel",
-                    tooltip = "Send the output of the chat spam to the filtered chat panel instead of regular chat. Requires LibFilteredChatPanel",
-                    default = true,
-                    getFunc = function() return KyzderpsDerps.savedOptions.chatSpam.useLFCP end,
+                    name = "Show Frame",
+                    tooltip = "Show frame to allow moving or editing settings",
+                    default = false,
+                    getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.move end,
                     setFunc = function(value)
-                        KyzderpsDerps.savedOptions.chatSpam.useLFCP = value
+                        KyzderpsDerps.savedOptions.customTargetFrame.move = value
+                        CustomTargetCustomName:SetHidden(not value)
+                        if (value) then
+                            CustomTargetCustomNameLabel:SetText("Sample Name")
+                        end
                     end,
                     width = "full",
-                    disabled = function() return LibFilteredChatPanel == nil end,
+                },
+                {
+                    type = "slider",
+                    name = "Text Size",
+                    min = 12,
+                    max = 72,
+                    step = 2,
+                    default = 48,
+                    width = "full",
+                    getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.size end,
+                    setFunc = function(value)
+                        KyzderpsDerps.savedOptions.customTargetFrame.size = value
+                        CustomTargetCustomNameLabel:SetFont("$(BOLD_FONT)|"..value.."|soft-shadow-thick")
+                    end,
+                },
+                -------------------------------------------------------------------------------
+                {
+                    type = "submenu",
+                    name = "NPC Target",
+                    controls = {
+                        {
+                            type = "checkbox",
+                            name = "Show NPC Names",
+                            tooltip = "Display large target name for NPCs",
+                            default = true,
+                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.npc.enable end,
+                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.npc.enable = value end,
+                            width = "full",
+                        },
+                        {
+                            type = "checkbox",
+                            name = "Show Only Filter",
+                            tooltip = "Display names for NPCs only if they are in the custom filter",
+                            default = false,
+                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.npc.useFilter end,
+                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.npc.useFilter = value end,
+                            width = "full",
+                            disabled = function() return not KyzderpsDerps.savedOptions.customTargetFrame.npc.enable end,
+                        },
+                        {
+                            type = "header",
+                            name = "Custom Filter",
+                            width = "half",
+                        },
+                        {
+                            type = "editbox",
+                            name = "Add an NPC",
+                            width = "full",
+                            tooltip = "Enter the full NPC name exactly as it appears, case sensitive!",
+                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterBox").editbox:GetText() end,
+                            setFunc = function(name)
+                                if (name == "") then return end
+
+                                -- Clear the textbox
+                                WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterBox").editbox:SetText("")
+
+                                -- Add it to the dropdown
+                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList")
+                                local newEntry = {
+                                    customName = name,
+                                    color = {1, 1, 1},
+                                }
+                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[name] = newEntry
+                                namesDropdown:UpdateChoices(getNpcNames())
+                                namesDropdown.dropdown:SetSelectedItem(name)
+                            end,
+                            isMultiline = false,
+                            isExtraWide = false,
+                            reference = "KyzderpsDerps#NpcFilterBox",
+                        },
+                        {
+                            type = "button",
+                            name = "Most Recent Target",
+                            tooltip = "Uses the most recently *displayed* NPC name",
+                            width = "full",
+                            func = function()
+                                local editbox = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterBox").editbox
+                                editbox:SetText(KyzderpsDerps.recentNpc)
+                                editbox:TakeFocus()
+                            end
+                        },
+                        {
+                            type = "dropdown",
+                            name = "Select NPC",
+                            width = "full",
+                            tooltip = "Choose an NPC",
+                            choices = getNpcNames(),
+                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem() end,
+                            setFunc = function(name) end,
+                            reference = "KyzderpsDerps#NpcFilterList",
+                        },
+                        {
+                            type = "editbox",
+                            name = "Custom Name",
+                            width = "full",
+                            tooltip = "Enter what you want the name to show up as",
+                            getFunc = function()
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+                                local selected = KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName]
+                                if (selected) then return selected.customName end
+                                return ""
+                            end,
+                            setFunc = function(name)
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName].customName = name
+                            end,
+                            isMultiline = false,
+                            isExtraWide = false,
+                            reference = "KyzderpsDerps#NpcCustomBox",
+                            disabled = function()
+                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+                                return selected == ""
+                            end
+                        },
+                        {
+                            type = "colorpicker",
+                            name = "Custom Color",
+                            getFunc = function()
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+
+                                local selected = KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName]
+                                if (selected) then return unpack(selected.color) end
+                                return unpack({1, 1, 1})
+                            end,
+                            setFunc = function(r, g, b)
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName].color = {r, g, b}
+                            end,
+                            disabled = function()
+                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+                                return selected == ""
+                            end
+                        },
+                        {
+                            type = "button",
+                            name = "Remove",
+                            width = "full",
+                            func = function()
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList").combobox.m_comboBox:GetSelectedItem()
+                                KyzderpsDerps.savedValues.customTargetFrame.npcCustom[selectedName] = nil
+                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#NpcFilterList")
+                                namesDropdown:UpdateChoices(getNpcNames())
+                            end
+                        },
+                    },
+                },
+                -------------------------------------------------------------------------------
+                {
+                    type = "submenu",
+                    name = "Player Target",
+                    controls = {
+                        {
+                            type = "checkbox",
+                            name = "Show Player Names",
+                            tooltip = "Display large target name for players",
+                            default = true,
+                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.player.enable end,
+                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.player.enable = value end,
+                            width = "full",
+                        },
+                        {
+                            type = "checkbox",
+                            name = "Show Only Filter",
+                            tooltip = "Show player name only if they are in the custom filter",
+                            default = false,
+                            getFunc = function() return KyzderpsDerps.savedOptions.customTargetFrame.player.useFilter end,
+                            setFunc = function(value) KyzderpsDerps.savedOptions.customTargetFrame.player.useFilter = value end,
+                            width = "full",
+                            disabled = function() return not KyzderpsDerps.savedOptions.customTargetFrame.player.enable end,
+                        },
+                        {
+                            type = "header",
+                            name = "Custom Filter",
+                            width = "half",
+                        },
+                        {
+                            type = "editbox",
+                            name = "Add a Player",
+                            width = "full",
+                            tooltip = "Enter the full player name exactly as it appears, including the @. Case sensitive!",
+                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterBox").editbox:GetText() end,
+                            setFunc = function(name)
+                                if (name == "") then return end
+
+                                -- Clear the textbox
+                                WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterBox").editbox:SetText("")
+
+                                -- Add it to the dropdown
+                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList")
+                                local newEntry = {
+                                    customName = name,
+                                    color = {1, 1, 1},
+                                }
+                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[name] = newEntry
+                                namesDropdown:UpdateChoices(getPlayerNames())
+                                namesDropdown.dropdown:SetSelectedItem(name)
+                            end,
+                            isMultiline = false,
+                            isExtraWide = false,
+                            reference = "KyzderpsDerps#PlayerFilterBox",
+                        },
+                        {
+                            type = "button",
+                            name = "Most Recent Target",
+                            tooltip = "Uses the most recently *displayed* player name",
+                            width = "full",
+                            func = function()
+                                local editbox = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterBox").editbox
+                                editbox:SetText(KyzderpsDerps.recentPlayer)
+                                editbox:TakeFocus()
+                            end
+                        },
+                        {
+                            type = "dropdown",
+                            name = "Select Player",
+                            width = "full",
+                            tooltip = "Choose a player",
+                            choices = getPlayerNames(),
+                            getFunc = function() return WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem() end,
+                            setFunc = function(name) end,
+                            reference = "KyzderpsDerps#PlayerFilterList",
+                        },
+                        {
+                            type = "editbox",
+                            name = "Custom Name",
+                            width = "full",
+                            tooltip = "Enter what you want the name to show up as",
+                            getFunc = function()
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+                                local selected = KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName]
+                                if (selected) then return selected.customName end
+                                return ""
+                            end,
+                            setFunc = function(name)
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName].customName = name
+                            end,
+                            isMultiline = false,
+                            isExtraWide = false,
+                            reference = "KyzderpsDerps#PlayerCustomBox",
+                            disabled = function()
+                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+                                return selected == ""
+                            end
+                        },
+                        {
+                            type = "colorpicker",
+                            name = "Custom Color",
+                            getFunc = function()
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+
+                                local selected = KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName]
+                                if (selected) then return unpack(selected.color) end
+                                return unpack({1, 1, 1})
+                            end,
+                            setFunc = function(r, g, b)
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName].color = {r, g, b}
+                            end,
+                            disabled = function()
+                                local selected = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+                                return selected == ""
+                            end
+                        },
+                        {
+                            type = "button",
+                            name = "Remove",
+                            width = "full",
+                            func = function()
+                                local selectedName = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList").combobox.m_comboBox:GetSelectedItem()
+                                KyzderpsDerps.savedValues.customTargetFrame.playerCustom[selectedName] = nil
+                                local namesDropdown = WINDOW_MANAGER:GetControlByName("KyzderpsDerps#PlayerFilterList")
+                                namesDropdown:UpdateChoices(getPlayerNames())
+                            end
+                        },
+                    },
+                },
+            },
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Death Alert",
+            controls = KyzderpsDerps.DeathAlert.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Dialogue Chatter",
+            controls = KyzderpsDerps.Chatter.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Dynamic Encounters",
+            controls = KyzderpsDerps.WorldEvent.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Fashion",
+            controls = KyzderpsDerps.Fashion.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Gamepad",
+            controls = KyzderpsDerps.Gamepad.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Grievous Retaliation Alert",
+            controls = {
+                {
+                    type = "checkbox",
+                    name = "Enable Overlay",
+                    tooltip = "Display *very noticeable* text on screen when anyone is taking damage from rezzing a player whose shade is not killed yet in vCR",
+                    default = true,
+                    getFunc = function() return KyzderpsDerps.savedOptions.grievous.enable end,
+                    setFunc = function(value) KyzderpsDerps.savedOptions.grievous.enable = value end,
+                    width = "full",
                 },
                 {
                     type = "checkbox",
-                    name = "Display score gains",
-                    tooltip = "Display spammy chat whenever you gain score in veteran scored activities such as trials and arenas",
-                    default = false,
-                    getFunc = function() return KyzderpsDerps.savedOptions.chatSpam.printScore end,
+                    name = "Show Self Only",
+                    tooltip = "Show the alert only if you are the one dying from rezzing",
+                    default = true,
+                    getFunc = function() return KyzderpsDerps.savedOptions.grievous.selfOnly end,
+                    setFunc = function(value) KyzderpsDerps.savedOptions.grievous.selfOnly = value end,
+                    width = "full",
+                },
+                {
+                    type = "slider",
+                    name = "Fade Time",
+                    tooltip = "Time in milliseconds after the damage taken in which the overlay will fade. Grievous Retaliation ticks every half a second",
+                    min = 100,
+                    max = 3000,
+                    step = 100,
+                    default = 1000,
+                    width = "full",
+                    getFunc = function() return KyzderpsDerps.savedOptions.grievous.timer end,
                     setFunc = function(value)
-                        KyzderpsDerps.savedOptions.chatSpam.printScore = value
-                        if (value) then
-                            KyzderpsDerps.ChatSpam.RegisterScore()
-                        else
-                            KyzderpsDerps.ChatSpam.UnregisterScore()
-                        end
+                        KyzderpsDerps.savedOptions.grievous.timer = value
                     end,
+                },
+                {
+                    type = "description",
+                    title = nil,
+                    text = "|c99FF99/kdd grievous|r - Toggles Grievous Retaliation overlay (in case it gets stuck)",
                     width = "full",
                 },
             }
@@ -1268,8 +1295,14 @@ function KyzderpsDerps:CreateSettingsMenu()
         -------------------------------------------------------------------------------
         {
             type = "submenu",
-            name = "Container Opener",
-            controls = KyzderpsDerps.Opener.GetSettings(),
+            name = "Pre-Logout",
+            controls = KyzderpsDerps.PreLogout.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Quickslots",
+            controls = KyzderpsDerps.QuickSlots.GetSettings(),
         },
         -------------------------------------------------------------------------------
         {
@@ -1335,26 +1368,14 @@ function KyzderpsDerps:CreateSettingsMenu()
         -------------------------------------------------------------------------------
         {
             type = "submenu",
-            name = "World Icons",
-            controls = KyzderpsDerps.WorldIcons.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = "Pre-Logout",
-            controls = KyzderpsDerps.PreLogout.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
             name = "User Interface",
             controls = KyzderpsDerps.UIElements.GetSettings(),
         },
         -------------------------------------------------------------------------------
         {
             type = "submenu",
-            name = "Dialogue Chatter",
-            controls = KyzderpsDerps.Chatter.GetSettings(),
+            name = "World Icons",
+            controls = KyzderpsDerps.WorldIcons.GetSettings(),
         },
         -------------------------------------------------------------------------------
         {

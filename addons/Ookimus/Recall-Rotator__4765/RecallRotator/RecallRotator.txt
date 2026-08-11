@@ -1,0 +1,14 @@
+## Title: Recall Rotator
+## Author: Ookimus
+## Version: 1.4.2
+## APIVersion: 101050
+## SavedVariables: RecallRotator_SavedVariables
+## Description: Randomizes your active Recall Customized Action on demand via a keybind, on-screen button, or /rr. A settings panel is available if LibAddonMenu-2.0 (optional) is also installed.
+## DependsOn: LibAddonMenu-2.0>=43
+
+RecallRotator.lua
+ui.lua
+
+## Bindings
+bindings/bindings.lua
+bindings/bindings.xml

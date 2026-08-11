@@ -304,9 +304,9 @@ local BOSS_NAMES = {
     ["Temple District"] = 900,
 
 -- Dynamic Events
-    ["Auridon DE"] = 1860,
-    ["Glenumbra DE"] = 1800,
-    ["Stonefalls DE"] = 1980,
+    ["Auridon DE"] = 960, -- 31 -> 16
+    ["Glenumbra DE"] = 910, -- 30 -> 15:10
+    ["Stonefalls DE"] = 1080, -- 33 -> 18
 }
 
 -- Boss actual names to name of the group. GetPlayerLocationName = should use output of that method

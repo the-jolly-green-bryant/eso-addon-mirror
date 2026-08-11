@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 96
+LibConsoleMenu.version = 100
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -28,37 +28,38 @@ LibConsoleMenu.createControlFunctions = {}
 LibConsoleMenu.cleanControlFunctions = {}
 LibConsoleMenu.setupControlFunctions = {}
 
--- Screen runtime (written by Settings / navigation).
-LibConsoleMenu.currentSettings = nil
+-- Screen runtime (written by navigation).
+LibConsoleMenu.currentMenu = nil
 LibConsoleMenu.needUpdate = true
 
-LibConsoleMenu.addons = {}
+LibConsoleMenu.menus = {}
+LibConsoleMenu.menuData = {}
 
-local AddonSettings = ZO_Object:Subclass()
-local AddonSettingsControl = ZO_Object:Subclass()
+local AddonMenu = ZO_Object:Subclass()
+local Control = ZO_Object:Subclass()
 
-LibConsoleMenu.AddonSettings = AddonSettings
-LibConsoleMenu.AddonSettingsControl = AddonSettingsControl
+LibConsoleMenu.AddonMenu = AddonMenu
+LibConsoleMenu.Control = Control
 
 -----
--- AddonSettingsControl class - represents single option control
+-- Control class - internal UI row for one option
 -----
-function AddonSettingsControl:New(callbackManager, type)
+function Control:New(callbackManager, type)
 	local object = ZO_Object.New(self)
 	object.type = type
 	object.callbackManager = callbackManager
 	if object.callbackManager then
-		object.callbackManager:RegisterCallback("ValueChanged", object.SettingValueChangedCallback, object)
+		object.callbackManager:RegisterCallback("ValueChanged", object.ValueChangedCallback, object)
 	end
 	return object
 end
 
-function AddonSettingsControl:IsDisabled()
+function Control:IsDisabled()
 	return (self.disable == true) or (type(self.disable) == "function" and self.disable())
 end
 
-function AddonSettingsControl:SettingValueChangedCallback(changedSetting)
-	if self == changedSetting then
+function Control:ValueChangedCallback(changedControl)
+	if self == changedControl then
 		return
 	end
 
@@ -73,11 +74,11 @@ function AddonSettingsControl:SettingValueChangedCallback(changedSetting)
 	self:SetEnabled(not self:IsDisabled())
 end
 
-function AddonSettingsControl:SetAnchor(lastControl)
+function Control:SetAnchor(lastControl)
 	-- Console parametric list owns layout; no manual anchoring.
 end
 
-function AddonSettingsControl:ValueChanged(...)
+function Control:ValueChanged(...)
 	if type(self.setFunction) == "function" then
 		self.setFunction(...)
 	elseif type(self.clickHandler) == "function" then
@@ -88,22 +89,22 @@ function AddonSettingsControl:ValueChanged(...)
 	end
 end
 
-function AddonSettingsControl:GetValueOrCallback(arg)
+function Control:GetValueOrCallback(arg)
 	return type(arg) == "function" and arg(self) or arg
 end
 
-function AddonSettingsControl:GetString(strOrId)
+function Control:GetString(strOrId)
 	return type(strOrId) == "number" and GetString(strOrId) or strOrId
 end
 
-function AddonSettingsControl:SetValue(...)
+function Control:SetValue(...)
 	if not self.control or not self.control.SetValue then
 		return
 	end
 	return self.control:SetValue(...)
 end
 
-function AddonSettingsControl:ResetToDefaults()
+function Control:ResetToDefaults()
 	if self.ignoreDefault then
 		return
 	end
@@ -156,147 +157,154 @@ function AddonSettingsControl:ResetToDefaults()
 	end
 end
 
-function AddonSettingsControl:GetHeight()
+function Control:GetHeight()
 	return self.control:GetHeight() + 8
 end
 -----
 
 -----
--- AddonSettings class - represents addon settings panel
+-- AddonMenu class - Add-ons menu entry + control list
 -----
-function AddonSettings:New(name, options)
+function AddonMenu:New(title, options)
 	local object = ZO_Object.New(self)
 	if type(options) == "table" then
-		object.allowDefaults = options.allowDefaults
-		object.defaultsFunction = options.defaultsFunction
+		-- Page Defaults. Opt out with false.
+		object.enableDefaults = options.enableDefaults ~= false
+		-- Full-addon Reset. Opt in; requires resetFunc / resetFunction.
+		object.enableReset = options.enableReset == true
+		object.resetFunction = options.resetFunction
 		object.author = options.author
 		object.version = options.version
 		object.category = options.category
-		object.addonID = options.addonID
+		object.menuId = options.menuId or options.addonID
 		-- Center submenu labels to match options-style headers (default: stock left nav look).
 		object.centerSubmenus = options.centerSubmenus == true
 		-- Unfocused toggles show only the active On/Off label (native). Opt out with false.
 		object.collapseToggleLabels = options.collapseToggleLabels ~= false
 		-- Unfocused sliders hide min/max/value labels. Opt out with false.
 		object.collapseSliderLabels = options.collapseSliderLabels ~= false
-		if options.allowRefresh then
-			object.callbackManager = ZO_CallbackObject:New()
-		end
+		-- Always refresh sibling rows after a change (disabled callbacks, live values).
+		object.callbackManager = ZO_CallbackObject:New()
 	end
-	object.name = name
+	object.title = title
 	object.selected = false
-	object.settings = {}
+	object.controls = {}
 	return object
 end
 
-function AddonSettings:InsertSetting(params, index)
-	--Append if invalid or empty index
+function AddonMenu:InsertControl(params, index)
+	-- Append if invalid or empty index
 	if index == nil or index < 1 then
-		index = #self.settings + 1
+		index = #self.controls + 1
 	end
 
-	local setting = AddonSettingsControl:New(self.callbackManager, params.type)
-	table.insert(self.settings, index, setting)
-	setting:SetupControl(params)
+	local control = Control:New(self.callbackManager, params.type)
+	table.insert(self.controls, index, control)
+	control:Setup(params)
 
-	return setting, index
+	return control, index
 end
 
-function AddonSettings:RefreshAfterSettingsChange(playAnimation)
-	--Put insertions into proper sections.
+function AddonMenu:RefreshAfterControlsChange(playAnimation)
+	-- Put insertions into proper sections.
 	self:SetupSubmenus()
 
-	--Force the settings page to update immediately if currently showing.
+	-- Force the page to update immediately if currently showing.
 	if self.selected then
 		self:CreateControls()
 	end
 end
 
-function AddonSettings:AddSetting(params, index, playAnimation)
-	--Prevent an attempt at cleaning up the new control before it gets created.
+function AddonMenu:AddControl(params, index, playAnimation)
+	-- Prevent an attempt at cleaning up the new control before it gets created.
 	self:CleanUpIfSelected()
 
-	local setting, insertIndex = self:InsertSetting(params, index)
-	self:RefreshAfterSettingsChange(playAnimation)
+	local control, insertIndex = self:InsertControl(params, index)
+	self:RefreshAfterControlsChange(playAnimation)
 
-	return setting, insertIndex
+	return control, insertIndex
 end
 
-function AddonSettings:AddSettings(params, index, playAnimation)
-	--It should be possible to set for i = (index or 1), #params + index and let the indexes be
-	--built into the returned table, but that might be less intuitive to iterate through.
+function AddonMenu:AddControls(params, index, playAnimation)
 	self:CleanUpIfSelected()
 
+	local base = #self.controls
 	local ret = {}
 	local indexes = {}
 	for i = 1, #params do
-		ret[i], indexes[i] = self:InsertSetting(params[i], index)
+		ret[i], indexes[i] = self:InsertControl(params[i], index)
 		if index ~= nil and index > 0 then
 			index = index + 1
-		end --Increment the index to add them in-order, not reverse order.
+		end
+	end
+
+	-- popAfterSubmenuIndex is relative to this compiled batch; bind live Control refs.
+	for i = 1, #ret do
+		local control = ret[i]
+		local rel = control.popAfterSubmenuIndex
+		if rel then
+			control.popAfterSubmenu = self.controls[base + rel]
+			control.popAfterSubmenuIndex = nil
+		end
 	end
 
 	if #params > 0 then
-		self:RefreshAfterSettingsChange(playAnimation)
+		self:RefreshAfterControlsChange(playAnimation)
 	end
 
 	return ret, indexes
 end
 
---removes up to count settings at index.
---always refreshes list to ensure proper cleanup.
-function AddonSettings:RemoveSettings(index, count, playAnimation)
-	--It is important to cleanup before removing from table or else we can get stuck with the controls forever.
+-- Removes up to count controls at index.
+-- Always refreshes list to ensure proper cleanup.
+function AddonMenu:RemoveControls(index, count, playAnimation)
 	self:CleanUpIfSelected()
-	local removedSettingsList = {}
+	local removedList = {}
 	if not count then
 		count = 1
 	end
 	for i = 1, count do
-		if not self.settings[index] then
+		if not self.controls[index] then
 			break
 		end
-		table.insert(removedSettingsList, table.remove(self.settings, index))
+		table.insert(removedList, table.remove(self.controls, index))
 	end
 
-	if #removedSettingsList > 0 then
-		self:RefreshAfterSettingsChange(playAnimation)
+	if #removedList > 0 then
+		self:RefreshAfterControlsChange(playAnimation)
 	end
 
-	return removedSettingsList
+	return removedList
 end
 
---removes all settings
---always refreshes list to ensure proper cleanup.
-function AddonSettings:RemoveAllSettings(playAnimation)
+function AddonMenu:RemoveAllControls(playAnimation)
 	self:CleanUpIfSelected()
 
-	local oldSettingsList = {}
-	while #self.settings > 0 do
-		table.insert(oldSettingsList, table.remove(self.settings, 1))
+	local oldList = {}
+	while #self.controls > 0 do
+		table.insert(oldList, table.remove(self.controls, 1))
 	end
 
-	if #oldSettingsList > 0 then
-		self:RefreshAfterSettingsChange(playAnimation)
+	if #oldList > 0 then
+		self:RefreshAfterControlsChange(playAnimation)
 	end
 
-	return oldSettingsList
+	return oldList
 end
 
---Find the index of the first setting made from these params.
---This uses shallow table comparisons, which feels very unoptimal.
---If a setting's index position is static, it would be better to use the return value of AddSetting(s)
-function AddonSettings:GetIndexOf(setting, areParams)
+-- Find the index of the first control made from these params.
+-- Uses shallow table comparisons. Prefer the return value of AddControl(s) when possible.
+function AddonMenu:GetIndexOf(control, areParams)
 	if areParams then
-		local tempSetting = AddonSettingsControl:New(self.callbackManager, setting.type)
-		tempSetting:SetupControl(setting)
-		setting = tempSetting
+		local tempControl = Control:New(self.callbackManager, control.type)
+		tempControl:Setup(control)
+		control = tempControl
 	end
 
 	local isMatch = false
-	for index, existing in pairs(self.settings) do
+	for index, existing in pairs(self.controls) do
 		isMatch = true
-		for k, v in pairs(setting) do
+		for k, v in pairs(control) do
 			local t = type(v)
 			if t ~= "table" and t ~= "userdata" and existing[k] ~= v then
 				isMatch = false
@@ -310,29 +318,29 @@ function AddonSettings:GetIndexOf(setting, areParams)
 	return nil
 end
 
-function AddonSettings:Select()
+function AddonMenu:Select()
 	if self.selected then
 		return
 	end
-	CALLBACK_MANAGER:FireCallbacks("LibConsoleMenu_AddonSelected", self.name, self)
+	CALLBACK_MANAGER:FireCallbacks("LibConsoleMenu_AddonSelected", self.title, self)
 	self.selected = true
 end
 
-function AddonSettings:CleanUp()
-	for i = 1, #self.settings do
-		self.settings[i]:CleanUp()
+function AddonMenu:CleanUp()
+	for i = 1, #self.controls do
+		self.controls[i]:CleanUp()
 	end
 end
 
-function AddonSettings:CleanUpIfSelected()
+function AddonMenu:CleanUpIfSelected()
 	if not self.selected then
 		return
 	end
 	return self:CleanUp()
 end
 
-function AddonSettings:Clear()
-	self.settings = {}
+function AddonMenu:Clear()
+	self.controls = {}
 	self.selected = false
 end
 -----
@@ -340,25 +348,28 @@ end
 -----
 -- LibConsoleMenu singleton
 -----
-local function RemoveColorMarkup(name)
-	name = zo_strgsub(name, "|[Cc][%w][%w][%w][%w][%w][%w]", "")
-	name = zo_strgsub(name, "|[Rr]", "")
-	return name
+local function RemoveColorMarkup(title)
+	title = zo_strgsub(title, "|[Cc][%w][%w][%w][%w][%w][%w]", "")
+	title = zo_strgsub(title, "|[Rr]", "")
+	return title
 end
 
-function LibConsoleMenu:AddAddon(name, options)
-	name = RemoveColorMarkup(name)
+-- Used only by CreateAddonMenu (not author-facing).
+local function CreateMenuInstance(self, title, options)
+	title = RemoveColorMarkup(title)
 
-	for i = 1, #self.addons do
-		if self.addons[i].name == name then
-			return self.addons[i]
+	for i = 1, #self.menus do
+		if self.menus[i].title == title then
+			return self.menus[i]
 		end
 	end
-	local addonSettings = AddonSettings:New(name, options)
-	table.insert(self.addons, addonSettings)
+	local menu = AddonMenu:New(title, options)
+	table.insert(self.menus, menu)
 
-	return addonSettings
+	return menu
 end
+
+LibConsoleMenu._CreateMenuInstance = CreateMenuInstance
 
 function LibConsoleMenu:Initialize()
 	if self.initialized then
@@ -368,11 +379,9 @@ function LibConsoleMenu:Initialize()
 		return
 	end
 
-	self:CreateAddonSettingsPanel()
+	self:CreateSharedMenuScene()
 	self:CreateControlPools()
 	self:CreateAddonList()
 
 	self.initialized = true
 end
-
-

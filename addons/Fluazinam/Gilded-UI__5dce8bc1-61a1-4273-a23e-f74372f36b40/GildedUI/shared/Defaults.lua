@@ -9,6 +9,11 @@ function Addon:RegisterDefaults(chunk)
     end
 end
 
+function Addon:RegisterMenuSection(buildFn)
+    self.menuSections = self.menuSections or {}
+    self.menuSections[#self.menuSections + 1] = buildFn
+end
+
 function Addon:ClampSavedNumber(key, range)
     local sv = self.state.sv
     local defaults = self.defaults

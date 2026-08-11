@@ -80,6 +80,8 @@ local savedVariables
 local initialized = false
 local sceneCallbackInstalled = false
 local settingsPanelVisible = false
+local updateLoopRunning = false
+local sceneUpdateQueued = false
 local tickerControl
 local tickerBackground
 local refreshRetryQueued = false
@@ -87,6 +89,12 @@ local measuringLabel
 local rowControls = {}
 local dividerControls = {}
 local entryControls = {}
+local tickerScratch = {
+    definitions = { {}, {}, {} },
+    values = { {}, {}, {} },
+    controls = { {}, {}, {} },
+    widths = { 0, 0, 0 },
+}
 local fontStringCache = {}
 local soulGemCacheDirty = true
 local soulGemCountCache = 0
@@ -893,7 +901,20 @@ local function GetScreenHeight()
     return GuiRoot and GuiRoot.GetHeight and GuiRoot:GetHeight() or 1080
 end
 
+local function ClearTickerScratch()
+    for rowIndex = 1, 3 do
+        local definitions = tickerScratch.definitions[rowIndex]
+        local values = tickerScratch.values[rowIndex]
+        local controls = tickerScratch.controls[rowIndex]
+        for index = #definitions, 1, -1 do definitions[index] = nil end
+        for index = #values, 1, -1 do values[index] = nil end
+        for index = #controls, 1, -1 do controls[index] = nil end
+        tickerScratch.widths[rowIndex] = 0
+    end
+end
+
 local function HideTicker()
+    ClearTickerScratch()
     if tickerControl then
         tickerControl:SetHidden(true)
     end
@@ -1162,19 +1183,34 @@ local function ClearRows()
     end
 end
 
-local function AddEntryToRow(rows, rowName, definition, value)
+local function AddEntryToRow(rowName, definition, value)
     local rowIndex = rowName == ROW_1 and 1 or rowName == ROW_2 and 2 or rowName == ROW_3 and 3 or nil
     if not rowIndex then
         return
     end
 
-    rows[rowIndex][#rows[rowIndex] + 1] = {
-        definition = definition,
-        value = value,
-    }
+    local definitions = tickerScratch.definitions[rowIndex]
+    local entryIndex = #definitions + 1
+    definitions[entryIndex] = definition
+    tickerScratch.values[rowIndex][entryIndex] = value
 end
 
-local Refresh
+local Refresh, UpdateUpdateLoop
+
+local function CompleteQueuedSceneUpdate()
+    sceneUpdateQueued = false
+    UpdateUpdateLoop()
+end
+
+local function QueueSceneUpdate()
+    if sceneUpdateQueued then return end
+    if zo_callLater then
+        sceneUpdateQueued = true
+        zo_callLater(CompleteQueuedSceneUpdate, 0)
+    else
+        UpdateUpdateLoop()
+    end
+end
 
 local function InstallSceneCallback()
     if sceneCallbackInstalled or not SCENE_MANAGER or not SCENE_MANAGER.RegisterCallback then
@@ -1183,25 +1219,10 @@ local function InstallSceneCallback()
 
     sceneCallbackInstalled = true
     SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, _, newState)
-        local sceneName = scene and scene.GetName and scene:GetName() or nil
-        local isGameplayScene = GAMEPLAY_SCENES[sceneName] == true
         local isShowing = newState == SCENE_SHOWING or newState == SCENE_SHOWN
         local isHiding = newState == SCENE_HIDING or newState == SCENE_HIDDEN
-        local settings = GetSettings()
-        local canShowInSettings = settingsPanelVisible and settings.showInSettings == true
-
-        if isHiding or (isShowing and not isGameplayScene and not ShouldShowForCurrentScene()) then
-            HideTicker()
-            return
-        end
-
-        if isShowing and HasEnabledEntry() and ShouldShowForCurrentScene() and (settings.enabled == true or canShowInSettings) then
-            if zo_callLater then
-                zo_callLater(Refresh, 0)
-            else
-                Refresh()
-            end
-        end
+        if isHiding then HideTicker() end
+        if isShowing or isHiding then QueueSceneUpdate() end
     end)
 end
 
@@ -1264,16 +1285,18 @@ Refresh = function()
     end
 
     ClearRows()
+    ClearTickerScratch()
 
     local settings = GetSettings()
-    local rows = { {}, {}, {} }
+    local rows = tickerScratch.definitions
+    local rowValues = tickerScratch.values
 
     for _, definition in ipairs(entryDefinitions) do
         local rowName = settings.entries[definition.key]
         if rowName ~= ROW_OFF then
             local value = definition.getValue()
             if value and value ~= "" then
-                AddEntryToRow(rows, rowName, definition, value)
+                AddEntryToRow(rowName, definition, value)
             end
         end
     end
@@ -1288,7 +1311,6 @@ Refresh = function()
         return
     end
 
-    local rowLayouts = {}
     local widestRow = 0
     local font = ResolveFont()
     local rowHeight = GetRowHeight()
@@ -1299,15 +1321,17 @@ Refresh = function()
 
         if #entries > 0 then
             local totalWidth = 0
-            local controls = {}
+            local controls = tickerScratch.controls[rowIndex]
+            local values = rowValues[rowIndex]
             local needsRetry = false
-            for _, entry in ipairs(entries) do
-                local control = GetEntryControl(entry.definition)
-                local icon = ResolveIcon(entry.definition)
-                local hideIcon = not entry.definition.iconText and entry.definition.hideIconWhenMissing == true and not icon
-                if entry.definition.iconText then
+            for entryIndex, definition in ipairs(entries) do
+                local value = values[entryIndex]
+                local control = GetEntryControl(definition)
+                local icon = ResolveIcon(definition)
+                local hideIcon = not definition.iconText and definition.hideIconWhenMissing == true and not icon
+                if definition.iconText then
                     control.icon:SetTexture(TEXTURE_WHITE)
-                    control.iconLabel:SetText(entry.definition.iconText)
+                    control.iconLabel:SetText(definition.iconText)
                     control.iconLabel:SetHidden(false)
                     control.icon:SetHidden(false)
                     control.label:ClearAnchors()
@@ -1325,12 +1349,12 @@ Refresh = function()
                     control.label:SetAnchor(LEFT, control.icon, RIGHT, TEXT_GAP, 0)
                 end
                 if not hideIcon then
-                    ApplyIconStyle(control, entry.definition)
+                    ApplyIconStyle(control, definition)
                 end
                 control.label:SetFont(font)
-                control.label:SetText(entry.value)
+                control.label:SetText(value)
 
-                local textWidth = GetEntryTextWidth(entry.value, font, rowHeight)
+                local textWidth = GetEntryTextWidth(value, font, rowHeight)
                 if textWidth <= 0 then
                     needsRetry = true
                     textWidth = control.label:GetWidth() or 0
@@ -1346,10 +1370,7 @@ Refresh = function()
             end
             totalWidth = totalWidth + (math.max(#controls - 1, 0) * ENTRY_GAP)
             widestRow = math.max(widestRow, totalWidth)
-            rowLayouts[rowIndex] = {
-                controls = controls,
-                totalWidth = totalWidth,
-            }
+            tickerScratch.widths[rowIndex] = totalWidth
         end
     end
 
@@ -1359,12 +1380,12 @@ Refresh = function()
     tickerControl:SetHidden(false)
 
     for rowIndex = 1, 3 do
-        local layout = rowLayouts[rowIndex]
-        if layout then
+        local totalWidth = tickerScratch.widths[rowIndex]
+        if #tickerScratch.definitions[rowIndex] > 0 then
             local row = rowControls[rowIndex]
-            local controls = layout.controls
+            local controls = tickerScratch.controls[rowIndex]
 
-            local left = -layout.totalWidth / 2
+            local left = -totalWidth / 2
             for _, control in ipairs(controls) do
                 control:ClearAnchors()
                 control:SetAnchor(LEFT, row, CENTER, left, 0)
@@ -1393,23 +1414,32 @@ Refresh = function()
     end
 end
 
-local function UpdateUpdateLoop()
+UpdateUpdateLoop = function()
     if not EVENT_MANAGER then
         return
     end
 
-    EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
-
     local settings = GetSettings()
     local hasEnabledEntry = HasEnabledEntry()
-    if settings.enabled == true and hasEnabledEntry then
-        InstallSceneCallback()
+    local shouldRun = hasEnabledEntry and (
+        (settings.enabled == true and IsGameplaySceneShowing())
+        or (settingsPanelVisible and settings.showInSettings == true)
+    )
+
+    if shouldRun ~= updateLoopRunning then
+        EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
+        updateLoopRunning = false
+    end
+
+    if shouldRun and not updateLoopRunning then
         EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE, UPDATE_INTERVAL_MS, Refresh)
-        Refresh()
-    elseif settingsPanelVisible and settings.showInSettings == true and hasEnabledEntry then
+        updateLoopRunning = true
+    end
+
+    if shouldRun then
         InstallSceneCallback()
         Refresh()
-    elseif tickerControl then
+    else
         HideTicker()
     end
 end
@@ -1424,10 +1454,8 @@ function Ticker.Initialize()
     if initialized then
         if settings.enabled == true then
             RegisterInventoryEvents()
-            UpdateUpdateLoop()
-        elseif settingsPanelVisible and settings.showInSettings == true then
-            Refresh()
         end
+        UpdateUpdateLoop()
         return
     end
 
@@ -1440,10 +1468,8 @@ function Ticker.Initialize()
     InstallSceneCallback()
     if settings.enabled == true then
         RegisterInventoryEvents()
-        UpdateUpdateLoop()
-    else
-        Refresh()
     end
+    UpdateUpdateLoop()
 end
 
 function Ticker.GetEntries()
@@ -1491,16 +1517,11 @@ function Ticker.SetEnabled(value)
         RegisterInventoryEvents()
         UpdateUpdateLoop()
     else
-        if EVENT_MANAGER then
-            EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
-        end
         UnregisterInventoryEvents()
         if settingsPanelVisible and GetSettings().showInSettings == true then
             Ticker.Initialize()
-            Refresh()
-        else
-            HideTicker()
         end
+        if initialized then UpdateUpdateLoop() else HideTicker() end
     end
 end
 
@@ -1588,7 +1609,7 @@ function Ticker.SetShowInSettings(value)
     if settingsPanelVisible and GetSettings().showInSettings == true then
         Ticker.Initialize()
     end
-    Refresh()
+    if initialized then UpdateUpdateLoop() else HideTicker() end
 end
 
 function Ticker.GetColoredIcons()
@@ -1609,7 +1630,7 @@ function Ticker.SetSettingsPanelVisible(value)
     if settingsPanelVisible and GetSettings().showInSettings == true then
         Ticker.Initialize()
     end
-    Refresh()
+    if initialized then UpdateUpdateLoop() else HideTicker() end
 end
 
 function Ticker.GetEnabledLabel()

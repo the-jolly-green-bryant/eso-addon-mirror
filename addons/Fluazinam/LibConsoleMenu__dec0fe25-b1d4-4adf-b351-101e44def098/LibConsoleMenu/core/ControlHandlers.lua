@@ -1,4 +1,4 @@
--- Shared control helpers + AddonSettingsControl dispatch.
+-- Shared control helpers + Control dispatch.
 -- Individual types live under controls/*.lua and register into the handler tables.
 
 if not LibConsoleMenu or not IsConsoleUI() then
@@ -21,37 +21,39 @@ function LCM.SetNameControlState(control, enabled, selected)
 	end
 end
 
-function LCM.AddControlEntry(self)
-	LCM:AddSettingEntry(self)
+function LCM.CreateControlListEntry(control)
+	LCM:AddControlEntry(control)
 end
 
--- AddonSettingsControl setup stores headerIndent for ResolveSettingEntryTemplate.
-function LCM.AddonSettingsControl:SetupControl(params)
+-- Control setup stores headerIndent for ResolveSettingEntryTemplate.
+function LCM.Control:Setup(params)
 	local setup = LCM.setupControlFunctions[self.type]
 	if setup then
 		setup(self, params)
 	end
 	self.popSubmenu = params.popSubmenu
+	self.popAfterSubmenu = params.popAfterSubmenu
+	self.popAfterSubmenuIndex = params.popAfterSubmenuIndex
 	self.headerText = params.header
 	self.headerAlign = params.headerAlign
 	self.headerIndent = params.headerIndent
 end
 
-function LCM.AddonSettingsControl:CreateControl(lastControl)
+function LCM.Control:CreateControl(lastControl)
 	local create = LCM.createControlFunctions[self.type]
 	if create then
 		create(self, lastControl)
 	end
 end
 
-function LCM.AddonSettingsControl:SetEnabled(state, selected)
+function LCM.Control:SetEnabled(state, selected)
 	local change = LCM.changeControlStateFunctions[self.type]
 	if self.control and change then
 		change(self.control, state, selected)
 	end
 end
 
-function LCM.AddonSettingsControl:UpdateControl()
+function LCM.Control:UpdateControl()
 	local updateFunc = LCM.updateControlFunctions[self.type]
 	if self.control and updateFunc then
 		updateFunc(self, self.control)
@@ -59,6 +61,6 @@ function LCM.AddonSettingsControl:UpdateControl()
 	self:SetEnabled(not self:IsDisabled())
 end
 
-function LCM.AddonSettingsControl:CleanUp()
+function LCM.Control:CleanUp()
 	self:SetEnabled(true)
 end

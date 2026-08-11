@@ -32,8 +32,8 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_CCC"] = "Status-Historie aktualisieren",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_UPDATE_WINDOW_H"] = "|c00FF00Falls etwas im Historiefenster fehlerhaft ist — aktualisieren Sie es, vielleicht hilft das.|r",
     
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "verfügbar",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "nicht verfügbar",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "|c00FF00verfügbar|r",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "|cFF0000nicht verfügbar|r",
     
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES"] = "Anzahl der Zeilen für die Aufzeichnung",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES_A"] = "|c00FF00Wie viele Zeilen werden in der SavedVariables-Historie gespeichert [beeinflusst Dateigröße und Dauer, bei Limit Überschreitung wird überschrieben] (von 100 bis 5000 mögliche Zeilen)|r",
@@ -59,7 +59,14 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAC"] = "Dieses Addon hat keine Funktion zum Binden einer Taste, um die Benutzertabelle mit Historie aufzurufen, da es rein informativ ist. Diese Tabelle benötigen Sie fast nie. Der Autor hat bewusst darauf verzichtet wegen der Begrenzung im Spiel: Nur 100 Slots sind für benutzerdefinierte Tasten verfügbar, daher ist es unpraktisch, sie mit unnötigen Elementen zu füllen.",
     
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AD"] = "|c00FF00Automatische Überprüfungsfunktion!!!|r",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAD"] = "|c9999FFAutomatische Überprüfungen des Abonnementstatus finden alle 15 Minuten statt, unabhängig von den Addon-Einstellungen, damit Sie den Status nicht verpassen, falls er am selben Tag später aktiviert wird. Die Prüfung belastet Ihr System nicht. Solch ein Timer ist komplett sicher für die Leistung. Warum:|r |cFFFFC5Ausführungshäufigkeit Alle 15 Minuten — extrem selten für eine Spiele-Engine. Zum Vergleich: Der ESO-Client selbst verarbeitet zehntausende Events pro Sekunde (Animation, Rendering, Netzwerkpakete). Eine Funktion alle 15 Minuten ist ein Tropfen auf dem heißen Stein. - Alle Operationen hier sind rein logisch: Lesen des Kontostatus via API (HasEsoPlus...), Arbeit mit lokaler Lua-Tabelle und Ausgabe einer Nachricht im Chat (d()). Keine schweren Berechnungen, große Arrays, Datei- oder Netzwerkzugriffe. Calls wie ZO_SavedVars, d(), ClearEsoPlus... sind von ZOS optimiert und laufen in Mikrosekunden.|r |cffd700Ping|r hängt von Internetqualität und Serverlast ab. Lokaler Lua-Timer sendet Daten nicht häufiger als das Spiel selbst. HasEsoPlusFreeTrialNotification() nutzt gecachten Account-Status — kein zusätzlicher Traffic. |c1E90FFVergleich mit anderen Addons.|r Viele populäre Addons verwiesen viel häufigere Timer: |cADD8E6- Inventory Insight|r — prüft Inventar beim Öffnen; |cADD8E6- Combat Metrics|r — analysiert jeden Kampf-Tick (dutzende Male pro Sekunde); — sogar UI-Elemente updaten sich 60+ Mal pro Sekunde. Dieser |cADD8E6Timer|r von 900 Sekunden wirkt wie 'einmal in einer Ära' dagegen."
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAD"] = "|c9999FFAutomatische Überprüfungen des Abonnementstatus finden alle 15 Minuten statt, unabhängig von den Addon-Einstellungen, damit Sie den Status nicht verpassen, falls er am selben Tag später aktiviert wird. Die Prüfung belastet Ihr System nicht. Solch ein Timer ist komplett sicher für die Leistung. Warum:|r |cFFFFC5Ausführungshäufigkeit Alle 15 Minuten — extrem selten für eine Spiele-Engine. Zum Vergleich: Der ESO-Client selbst verarbeitet zehntausende Events pro Sekunde (Animation, Rendering, Netzwerkpakete). Eine Funktion alle 15 Minuten ist ein Tropfen auf dem heißen Stein. - Alle Operationen hier sind rein logisch: Lesen des Kontostatus via API (HasEsoPlus...), Arbeit mit lokaler Lua-Tabelle und Ausgabe einer Nachricht im Chat (d()). Keine schweren Berechnungen, große Arrays, Datei- oder Netzwerkzugriffe. Calls wie ZO_SavedVars, d(), ClearEsoPlus... sind von ZOS optimiert und laufen in Mikrosekunden.|r |cffd700Ping|r hängt von Internetqualität und Serverlast ab. Lokaler Lua-Timer sendet Daten nicht häufiger als das Spiel selbst. HasEsoPlusFreeTrialNotification() nutzt gecachten Account-Status — kein zusätzlicher Traffic. |c1E90FFVergleich mit anderen Addons.|r Viele populäre Addons verwiesen viel häufigere Timer: |cADD8E6- Inventory Insight|r — prüft Inventar beim Öffnen; |cADD8E6- Combat Metrics|r — analysiert jeden Kampf-Tick (dutzende Male pro Sekunde); — sogar UI-Elemente updaten sich 60+ Mal pro Sekunde. Dieser |cADD8E6Timer|r von 900 Sekunden wirkt wie 'einmal in einer Ära' dagegen.",
+
+["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION"] ="|cFF6347Die Tabelle ist jetzt hier unten:|r",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION_A"] ="|c9999FFBei der Anzeige einer großen Anzahl von Einträgen (2000 standardmäßig) kann sich die Tabelle mit einer Sekundenverzögerung öffnen, das ist normal.|r |cFFFFC5Öffnen Sie die Tabelle:|r",
+
+["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION__ALLRECORDS"] = "|ccdfff3Alle Einträge|r",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION_ESOPLUS"] = "|ccdfff3INFORMATION|r"
+
 }
 
 -- Регистрация всех строк одним циклом — ТРЕБОВАНИЕ ESOUI!

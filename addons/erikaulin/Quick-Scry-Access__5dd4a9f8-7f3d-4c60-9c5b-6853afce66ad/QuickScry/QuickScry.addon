@@ -1,0 +1,13 @@
+## Title: Quick Scry Access
+## Author: valknarr
+## Description: Opens the native Antiquities list for the displayed map from map Options.
+## APIVersion: 101049 101050
+## AddOnVersion: 1
+## Version: 0.1.0
+## IsLibrary: False
+
+QuickScry.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls(R) and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

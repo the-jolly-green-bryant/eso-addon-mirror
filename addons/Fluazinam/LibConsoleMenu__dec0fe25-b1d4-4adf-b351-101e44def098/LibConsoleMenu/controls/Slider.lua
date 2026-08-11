@@ -67,7 +67,7 @@ local function ShouldShowSliderLabels(selected, enabled)
 		return false
 	end
 	local collapse = true
-	local panel = LCM.currentSettings
+	local panel = LCM.currentMenu
 	if panel and panel.collapseSliderLabels == false then
 		collapse = false
 	end
@@ -130,7 +130,7 @@ LCM.updateControlFunctions[LCM.CT_SLIDER] = function(self, control, selected)
 	)
 end
 
-LCM.createControlFunctions[LCM.CT_SLIDER] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_SLIDER] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_SLIDER] = function(self, control)
 	control.slider:SetHandler("OnValueChanged", nil)

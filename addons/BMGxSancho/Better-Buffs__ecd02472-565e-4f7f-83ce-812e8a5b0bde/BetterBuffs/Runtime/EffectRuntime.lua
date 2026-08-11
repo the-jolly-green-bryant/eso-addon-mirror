@@ -4,6 +4,7 @@ local Runtime = BB.Runtime
 local EVENT_NAME = "BetterBuffsEffectRuntime"
 local UPDATE_NAME = "BetterBuffsActiveEffects"
 local PLAYER_EVENT_NAME = "BetterBuffsPlayerEffectSync"
+local EQUIPMENT_EVENT_NAME = "BetterBuffsEquipmentSync"
 
 local function EffectNow() return GetFrameTimeSeconds() end
 local function NewIntelligence() return { recipientCooldowns={}, targetCooldowns={} } end
@@ -35,15 +36,179 @@ function Runtime:SetEnabled(value)
         EVENT_MANAGER:RegisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED, function()
             zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects() end end, 250)
         end)
+        EVENT_MANAGER:RegisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, _, slotId, ...)
+            Runtime:OnEquipmentChanged(slotId)
+        end)
         zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects() end end, 250)
         if BB.Context and BB.Context.inCombat then self:StartEncounter() end
     else
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAME, EVENT_EFFECT_CHANGED)
         EVENT_MANAGER:UnregisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED)
+        EVENT_MANAGER:UnregisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
         self:StopUpdate()
         if BB.Analytics then BB.Analytics.encounter = nil end
         self:ClearAll()
     end
+end
+
+
+function Runtime:IsRequiredItemEquipped(definition)
+    if not definition or not definition.requiredWornItemId then return true end
+    local slot = definition.requiredEquipSlot
+    if slot == nil then return false end
+    local itemId = GetItemId and GetItemId(BAG_WORN, slot) or 0
+    return tonumber(itemId) == tonumber(definition.requiredWornItemId)
+end
+
+function Runtime:RefreshLocalProviderEquipment(definition, now)
+    if not definition or not definition.requiredWornItemId then return true end
+    now = now or EffectNow()
+    local intel = self.intelligence[definition.key] or NewIntelligence()
+    self.intelligence[definition.key] = intel
+    local equipped = self:IsRequiredItemEquipped(definition)
+    intel.providerEquipped = equipped
+    intel.providerObserved = equipped
+    if not equipped then
+        intel.localProviderActive = false
+        intel.localProviderBegin = nil
+        intel.localProviderEnd = nil
+        intel.awaitingLocalTargetUntil = nil
+        intel.providerCooldownUntil = nil
+        self.active[definition.key] = {}
+    end
+    return equipped
+end
+
+function Runtime:OnEquipmentChanged(slotId)
+    if not self.enabled then return end
+    local now = EffectNow()
+    for _,definition in pairs(BB.Registry.byKey) do
+        if definition.requiredWornItemId and definition.requiredEquipSlot == slotId then
+            self:RefreshLocalProviderEquipment(definition, now)
+            self:RefreshEffect(definition.key, now)
+        end
+    end
+    if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
+end
+
+function Runtime:IsStaleFade(prior, beginTime, endTime)
+    if not prior then return false end
+    local currentBegin = tonumber(prior.beginTime) or 0
+    local currentEnd = tonumber(prior.endTime) or 0
+    local fadedBegin = tonumber(beginTime) or 0
+    local fadedEnd = tonumber(endTime) or 0
+    if fadedBegin > 0 and currentBegin > fadedBegin + 0.25 then return true end
+    if fadedEnd > 0 and currentEnd ~= math.huge and currentEnd > fadedEnd + 0.25 then return true end
+    return false
+end
+
+function Runtime:SynchronizeLocalProviderTarget(definition, now)
+    if not definition or not definition.requiresLocalProviderEffect then return false end
+    local intel = self.intelligence[definition.key] or NewIntelligence()
+    self.intelligence[definition.key] = intel
+    if not intel.providerEquipped or not intel.localProviderActive then return false end
+    if not DoesUnitExist("reticleover") or not GetNumBuffs or not GetUnitBuffInfo then return false end
+
+    local unitTag = "reticleover"
+    local unitId = GetUnitId and GetUnitId(unitTag) or nil
+    local unitName = GetUnitName(unitTag) or ""
+    local allowed = BB.Context:CanTrackEffect(definition, unitTag, unitId, unitName)
+    if not allowed then return false end
+    local targetKey, displayTarget = BB.Context:GetTargetKey(unitTag, unitId, unitName, definition.effectType)
+    if not targetKey then return false end
+
+    local providerBegin = tonumber(intel.localProviderBegin) or now
+    local providerEnd = tonumber(intel.localProviderEnd) or 0
+    for index=1,(tonumber(GetNumBuffs(unitTag)) or 0) do
+        local effectName, beginTime, endTime, _, stackCount, iconName, _, _, _, _, abilityId = GetUnitBuffInfo(unitTag, index)
+        if BB.Registry.byAbilityId[tonumber(abilityId)] == definition then
+            local useBegin = providerBegin > 0 and providerBegin or beginTime
+            local useEnd = providerEnd > now and providerEnd or endTime
+            self:UpsertEffect(definition, targetKey, displayTarget, unitTag, unitName, unitId, useBegin, useEnd, stackCount, abilityId, now, iconName)
+            intel.awaitingLocalTargetUntil = nil
+            return true
+        end
+    end
+    return false
+end
+
+function Runtime:OnLocalProviderEffect(definition, changeType, unitTag, unitName, unitId, beginTime, endTime, now)
+    if not definition or not BB.Context:IsLocalPlayer(unitTag, unitId, unitName) then return end
+    now = now or EffectNow()
+    local intel = self.intelligence[definition.key] or NewIntelligence()
+    self.intelligence[definition.key] = intel
+    local equipped = self:RefreshLocalProviderEquipment(definition, now)
+    if not equipped then
+        self:RefreshEffect(definition.key, now)
+        return
+    end
+
+    if changeType == EFFECT_RESULT_FADED then
+        intel.localProviderActive = false
+        intel.localProviderBegin = nil
+        intel.localProviderEnd = nil
+        intel.awaitingLocalTargetUntil = nil
+        self.active[definition.key] = {}
+        self:RefreshEffect(definition.key, now)
+        if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
+        return
+    end
+
+    local numericBegin = tonumber(beginTime) or now
+    local numericEnd = tonumber(endTime) or 0
+    if numericEnd <= now then return end
+    local priorBegin = tonumber(intel.localProviderBegin) or 0
+    local isNewApplication = not intel.localProviderActive or numericBegin > priorBegin + 0.25
+    intel.localProviderActive = true
+    intel.localProviderBegin = numericBegin
+    intel.localProviderEnd = numericEnd
+    intel.providerObserved = true
+
+    if isNewApplication and definition.providerCooldownFromLocalEffect and definition.providerCooldown then
+        intel.providerCooldownUntil = now + definition.providerCooldown
+        intel.awaitingLocalTargetUntil = now + 1.0
+    end
+
+    self:SynchronizeLocalProviderTarget(definition, now)
+    self:RefreshEffect(definition.key, now, isNewApplication)
+    self:StartUpdate()
+end
+
+function Runtime:ScheduleCoverageReconcile(definition)
+    if not definition or not definition.reconcileCoverageOnTrigger then return end
+    self.coverageReconcileGeneration = self.coverageReconcileGeneration or {}
+    local generation = (self.coverageReconcileGeneration[definition.key] or 0) + 1
+    self.coverageReconcileGeneration[definition.key] = generation
+    zo_callLater(function()
+        if not Runtime.enabled or Runtime.coverageReconcileGeneration[definition.key] ~= generation then return end
+        Runtime:ReconcileGroupBuff(definition)
+    end, 175)
+end
+
+function Runtime:ReconcileGroupBuff(definition)
+    if not definition or definition.effectType ~= "BUFF" or not GetNumBuffs or not GetUnitBuffInfo then return end
+    local now = EffectNow()
+    local function scan(unitTag)
+        if not unitTag or unitTag == "" or not DoesUnitExist(unitTag) then return end
+        local unitId = GetUnitId and GetUnitId(unitTag) or nil
+        local unitName = GetUnitName(unitTag) or ""
+        local allowed = BB.Context:CanTrackEffect(definition, unitTag, unitId, unitName)
+        if not allowed then return end
+        local targetKey, displayTarget = BB.Context:GetTargetKey(unitTag, unitId, unitName, "BUFF")
+        if not targetKey then return end
+        for index=1,(tonumber(GetNumBuffs(unitTag)) or 0) do
+            local effectName, beginTime, endTime, _, stackCount, iconName, _, _, _, _, abilityId = GetUnitBuffInfo(unitTag, index)
+            local resolved = BB.Registry:Resolve(effectName, abilityId)
+            if resolved and resolved.key == definition.key then
+                self:UpsertEffect(definition, targetKey, displayTarget, unitTag, unitName, unitId, beginTime, endTime, stackCount, abilityId, now, iconName)
+                break
+            end
+        end
+    end
+    scan("player")
+    for index=1,(tonumber(GetGroupSize()) or 0) do scan(GetGroupUnitTagByIndex(index)) end
+    self:RefreshEffect(definition.key, now)
+    if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
 
 function Runtime:StartUpdate()
@@ -268,7 +433,7 @@ function Runtime:UpsertEffect(definition, targetKey, displayTarget, unitTag, uni
         account=BB.Context:ResolveAccount(unitTag,unitName,unitId), unitId=unitId,
         abilityId=abilityId, stackCount=tonumber(stackCount) or 0, iconName=iconName or (prior and prior.iconName),
     }
-    if definition.providerCooldown and ((definition.cooldownStartsEveryApplication and isNewApplication) or (not definition.cooldownStartsEveryApplication and not hadAny)) then
+    if definition.providerCooldown and not definition.providerCooldownFromLocalEffect and ((definition.cooldownStartsEveryApplication and isNewApplication) or (not definition.cooldownStartsEveryApplication and not hadAny)) then
         intel.providerCooldownUntil = now + definition.providerCooldown
         intel.providerObserved = true
     end
@@ -286,11 +451,24 @@ function Runtime:SynchronizePlayerEffects()
 
     for key,definition in pairs(BB.Registry.byKey) do
         if definition.effectType == "BUFF" and self.active[key] then self.active[key][targetKey] = nil end
+        if definition.requiredWornItemId then
+            self:RefreshLocalProviderEquipment(definition, now)
+            local intel = self.intelligence[key]
+            if intel then
+                intel.localProviderActive = false
+                intel.localProviderBegin = nil
+                intel.localProviderEnd = nil
+            end
+        end
     end
 
     local count = tonumber(GetNumBuffs("player")) or 0
     for index = 1, count do
         local effectName, beginTime, endTime, _, stackCount, iconName, _, _, _, _, abilityId = GetUnitBuffInfo("player", index)
+        local providerDefinition = BB.Registry.localProviderByAbilityId and BB.Registry.localProviderByAbilityId[tonumber(abilityId)]
+        if providerDefinition then
+            self:OnLocalProviderEffect(providerDefinition, EFFECT_RESULT_UPDATED, "player", playerName, playerId, beginTime, endTime, now)
+        end
         local definition = BB.Registry:Resolve(effectName, abilityId)
         if definition and definition.effectType == "BUFF" and BB:IsEffectEnabled(definition.key) then
             local allowed = BB.Context:CanTrackEffect(definition, "player", playerId, playerName)
@@ -298,15 +476,38 @@ function Runtime:SynchronizePlayerEffects()
         end
     end
 
-    for key,definition in pairs(BB.Registry.byKey) do if definition.effectType == "BUFF" then self:RefreshEffect(key, now) end end
+    for key,definition in pairs(BB.Registry.byKey) do
+        if definition.requiredWornItemId then
+            local intel = self.intelligence[key]
+            if not intel or not intel.localProviderActive then self.active[key] = {} end
+            self:RefreshEffect(key, now)
+        elseif definition.effectType == "BUFF" then
+            self:RefreshEffect(key, now)
+        end
+    end
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
 
 function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount,
         iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
     if not self.enabled then return end
+    abilityId = tonumber(abilityId)
+    local providerDefinition = BB.Registry.localProviderByAbilityId and BB.Registry.localProviderByAbilityId[abilityId]
+    if providerDefinition then
+        if self:IsObserved(providerDefinition.key) then
+            self:OnLocalProviderEffect(providerDefinition, changeType, unitTag, unitName, unitId, beginTime, endTime, EffectNow())
+        end
+        return
+    end
+
     local definition = BB.Registry:Resolve(effectName,abilityId)
     if not definition or not self:IsObserved(definition.key) then return end
+    local intel = self.intelligence[definition.key] or NewIntelligence()
+    self.intelligence[definition.key] = intel
+    if definition.requiresLocalProviderEffect then
+        self:RefreshLocalProviderEquipment(definition, EffectNow())
+        if not intel.providerEquipped or not intel.localProviderActive then return end
+    end
     local allowed = BB.Context:CanTrackEffect(definition,unitTag,unitId,unitName)
     if not allowed and changeType ~= EFFECT_RESULT_FADED then return end
     local baseTargetKey,displayTarget = BB.Context:GetTargetKey(unitTag,unitId,unitName,definition.effectType)
@@ -322,6 +523,21 @@ function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, be
 
     if changeType == EFFECT_RESULT_FADED then
         local prior = targets[targetKey]
+        -- ESO may deliver the FADED callback for an older application after a
+        -- newer refresh is already stored. Never let that stale callback erase
+        -- the newer canonical recipient state. This is particularly important
+        -- for group-wide refreshes such as Ferocious Roar -> Major Courage.
+        if prior and self:IsStaleFade(prior, beginTime, endTime) then
+            self:RefreshEffect(definition.key, now)
+            return
+        end
+        -- Player-owned hostile procs such as Warmask use the local self effect
+        -- as lifecycle authority. The target-side Mark is used for identity only,
+        -- so another player's target fade cannot clear our state.
+        if definition.requiresLocalProviderEffect then
+            self:RefreshEffect(definition.key, now)
+            return
+        end
         targets[targetKey] = nil
         if definition.targetCooldownOnFade and definition.targetCooldown and prior then
             local intel = self.intelligence[definition.key] or NewIntelligence()
@@ -335,7 +551,22 @@ function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, be
             }
         end
     elseif allowed then
+        if definition.requiresLocalProviderEffect then
+            local existing = targets[targetKey] ~= nil
+            local withinLocalApplication = (intel.awaitingLocalTargetUntil or 0) >= now
+            if not existing and not withinLocalApplication then
+                self:RefreshEffect(definition.key, now)
+                return
+            end
+            -- The verified 252050 self effect owns the duration. This prevents
+            -- another player's copy of 252048 from replacing our timer.
+            if (intel.localProviderEnd or 0) > now then
+                beginTime = intel.localProviderBegin or beginTime
+                endTime = intel.localProviderEnd
+            end
+        end
         application = self:UpsertEffect(definition, targetKey, displayTarget, unitTag, unitName, unitId, beginTime, endTime, stackCount, abilityId, now, iconName)
+        if definition.requiresLocalProviderEffect then intel.awaitingLocalTargetUntil = nil end
         local data = targets[targetKey]
         if data then
             data.baseTargetKey = baseTargetKey
@@ -363,6 +594,11 @@ function Runtime:OnCombatEvent(result, sourceName, targetName, sourceUnitId, tar
     if releaseDefinition then
         self.active[releaseDefinition.key] = {}
         self:RefreshEffect(releaseDefinition.key, EffectNow())
+    end
+
+    local coverageDefinition = BB.Registry.coverageTriggerByAbilityId and BB.Registry.coverageTriggerByAbilityId[abilityId]
+    if coverageDefinition and BB:IsEffectEnabled(coverageDefinition.key) and BB.Context:IsGroupedPlayer(nil, sourceUnitId, sourceName) then
+        self:ScheduleCoverageReconcile(coverageDefinition)
     end
 
     local definition = BB.Registry.byCombatEventId and BB.Registry.byCombatEventId[abilityId]
@@ -562,7 +798,7 @@ function Runtime:GetSnapshot(key,now)
 
     local availability = "INACTIVE"
     local providerCooldownActive = (intel.providerCooldownUntil or 0) > now
-    local providerKnown = not definition.readyRequiresObservedProvider or intel.providerObserved == true
+    local providerKnown = definition.requiredWornItemId and intel.providerEquipped == true or (not definition.readyRequiresObservedProvider or intel.providerObserved == true)
     if definition.intelligenceMode == "RECIPIENT_COOLDOWN" then
         if locked == 0 then
             availability = providerKnown and "READY" or "INACTIVE"

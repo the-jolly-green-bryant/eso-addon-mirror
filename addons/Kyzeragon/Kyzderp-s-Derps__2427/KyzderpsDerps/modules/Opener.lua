@@ -1,6 +1,6 @@
-KyzderpsDerps = KyzderpsDerps or {}
-KyzderpsDerps.Opener = KyzderpsDerps.Opener or {}
-local Opener = KyzderpsDerps.Opener
+local KD = KyzderpsDerps
+KD.Opener = {}
+local Opener = KD.Opener
 
 ---------------------------------------------------------------------
 local toLoot = {}
@@ -20,8 +20,8 @@ end
 -- Loot All items once the container is opened
 ---------------------------------------------------------------------
 local function OnOpenLootWindow()
-    -- KyzderpsDerps:dbg("update loot window")
     local title = GetLootTargetInfo()
+    -- KD:dbg("OnOpenLootWindow: " .. title)
     if (toLootNames[title]) then
         LootAll()
     elseif (toLootWrithing[title] and not IsWrithingDone()) then
@@ -30,7 +30,7 @@ local function OnOpenLootWindow()
 
     if (next(toLootWrithing) and IsWrithingDone()) then
         toLootWrithing = {}
-        KyzderpsDerps:msg("Done looting Writhing Wall event crafting boxes")
+        KD:msg("Done looting Writhing Wall event crafting boxes")
     end
 end
 
@@ -43,6 +43,7 @@ local function CanOpenContainer()
         IsInteractionUsingInteractCamera() or
         SCENE_MANAGER:GetCurrentScene().name == "interact" or
         SCENE_MANAGER:GetCurrentScene().name == "mailInbox" or
+        SCENE_MANAGER:GetCurrentScene().name == "mailGamepad" or
         IsUnitSwimming("player") or
         IsUnitInCombat("player") or
         IsLooting()) then
@@ -61,12 +62,12 @@ local CONTAINER_TYPES = {
 local function OpenContainer(bagId, slotIndex)
     if (not CONTAINER_TYPES[GetItemType(bagId, slotIndex)]) then
         local itemLink = GetItemLink(bagId, slotIndex, LINK_STYLE_BRACKETS)
-        KyzderpsDerps:dbg("|cFF0000Not a container?! maybe event double fired: " .. itemLink)
+        KD:dbg("|cFF0000Not a container?! maybe event double fired: " .. itemLink)
         return
     end
 
     if (CanOpenContainer()) then
-        KyzderpsDerps:dbg("trying to open container")
+        KD:dbg("trying to open container")
         queuedWrithing[slotIndex] = nil
         if IsProtectedFunction("UseItem") then
             CallSecureProtected("UseItem", bagId, slotIndex)
@@ -74,7 +75,7 @@ local function OpenContainer(bagId, slotIndex)
             UseItem(bagId, slotIndex)
         end
     else
-        KyzderpsDerps:dbg("waiting to open container")
+        KD:dbg("waiting to open container")
         zo_callLater(function()
             OpenContainer(bagId, slotIndex)
         end, 1000)
@@ -88,7 +89,7 @@ local function OnInventorySlotUpdate(_, bagId, slotIndex, isNewItem, _, _, _)
         toLootNames[GetItemName(bagId, slotIndex)] = true
         zo_callLater(function()
             OpenContainer(bagId, slotIndex)
-        end, KyzderpsDerps.savedOptions.opener.delay)
+        end, KD.savedOptions.opener.delay)
     end
 end
 
@@ -129,74 +130,88 @@ Opener.OpenAllWrithingCrafting = OpenAllWrithingCrafting
 ---------------------------------------------------------------------
 -- Init
 ---------------------------------------------------------------------
-local prehooked = false
+-- If this was initialized with keyboard but user switches to gamepad, or vice versa, we also need to hook the new mode
+local keyboardHooked, gamepadHooked
+local function MaybeHookLoot(_, gamepadPreferred)
+    if (gamepadPreferred and not gamepadHooked) then
+        KD:dbg("opener hooking gamepad")
+        ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnOpenLootWindow)
+        gamepadHooked = true
+    elseif (not gamepadPreferred and not keyboardHooked) then
+        KD:dbg("opener hooking keyboard")
+        ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnOpenLootWindow)
+        keyboardHooked = true
+    end
+end
+
 function Opener.Initialize()
-    KyzderpsDerps:dbg("    Initializing Opener module...")
+    KD:dbg("    Initializing Opener module...")
 
     toLoot = {}
     toLootNames = {}
     local shouldRegister = false
-    if (KyzderpsDerps.savedOptions.opener.openMirriBag) then
+    if (KD.savedOptions.opener.openMirriBag) then
         toLoot[178470] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openGunnySack) then
+    if (KD.savedOptions.opener.openGunnySack) then
         toLoot[43757] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openToxinSatchel) then
+    if (KD.savedOptions.opener.openToxinSatchel) then
         toLoot[79675] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openPurpleZenithar) then
+    if (KD.savedOptions.opener.openPurpleZenithar) then
         toLoot[187701] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openZenitharCurrency) then
+    if (KD.savedOptions.opener.openZenitharCurrency) then
         toLoot[187700] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openPelinalsBoonBox and (KyzderpsDerps.savedOptions.opener.openPelinalsBoonBoxInIC or not IsInImperialCity())) then
+    if (KD.savedOptions.opener.openPelinalsBoonBox and (KD.savedOptions.opener.openPelinalsBoonBoxInIC or not IsInImperialCity())) then
         toLoot[192612] = true
+        toLoot[225336] = true -- newer ID
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openPurplePlunderSkull) then
+    if (KD.savedOptions.opener.openPurplePlunderSkull) then
         toLoot[190037] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openCrowTouchedCoffer) then
+    if (KD.savedOptions.opener.openCrowTouchedCoffer) then
         toLoot[133559] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openResearchPortfolio) then
+    if (KD.savedOptions.opener.openResearchPortfolio) then
         toLoot[197790] = true
         shouldRegister = true
     end
-    if (KyzderpsDerps.savedOptions.opener.openFallenPack) then
+    if (KD.savedOptions.opener.openFallenPack) then
         toLoot[188144] = true
         shouldRegister = true
     end
     -- Probably don't do this, because it's stolen
-    -- if (KyzderpsDerps.savedOptions.opener.openEmberWallet) then
+    -- if (KD.savedOptions.opener.openEmberWallet) then
     --     toLoot[187747] = true
     --     shouldRegister = true
     -- end
 
-    for _, id in ipairs(KyzderpsDerps.savedOptions.opener.extraIds) do
+    for _, id in ipairs(KD.savedOptions.opener.extraIds) do
         toLoot[id] = true
         shouldRegister = true
     end
 
     if (shouldRegister) then
-        EVENT_MANAGER:RegisterForEvent(KyzderpsDerps.name .. "OpenerSlotUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnInventorySlotUpdate)
-        EVENT_MANAGER:AddFilterForEvent(KyzderpsDerps.name .. "OpenerSlotUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+        EVENT_MANAGER:RegisterForEvent(KD.name .. "OpenerSlotUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnInventorySlotUpdate)
+        EVENT_MANAGER:AddFilterForEvent(KD.name .. "OpenerSlotUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
 
-        if (not prehooked) then
-            ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnOpenLootWindow)
-            prehooked = true
-        end
+        MaybeHookLoot(nil, IsInGamepadPreferredMode())
+
+        EVENT_MANAGER:RegisterForEvent(KD.name .. "OpenerGamepadChanged", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, MaybeHookLoot)
     else
-        EVENT_MANAGER:UnregisterForEvent(KyzderpsDerps.name .. "OpenerSlotUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+        EVENT_MANAGER:UnregisterForEvent(KD.name .. "OpenerSlotUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+        EVENT_MANAGER:UnregisterForEvent(KD.name .. "OpenerGamepadChanged", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED)
     end
 end
 
@@ -221,9 +236,9 @@ function Opener.GetSettings()
             step = 100,
             default = 0,
             width = "full",
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.delay end,
+            getFunc = function() return KD.savedOptions.opener.delay end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.delay = value
+                KD.savedOptions.opener.delay = value
             end,
         },
         {
@@ -231,9 +246,9 @@ function Opener.GetSettings()
             name = "Auto open Hidden Treasure Bag",
             tooltip = "When you loot a Hidden Treasure Bag from Mirri's bonus, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openMirriBag end,
+            getFunc = function() return KD.savedOptions.opener.openMirriBag end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openMirriBag = value
+                KD.savedOptions.opener.openMirriBag = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -243,9 +258,9 @@ function Opener.GetSettings()
         --     name = "Auto open Hidden Wallet",
         --     tooltip = "When you loot a Hidden Wallet from Ember's bonus, automatically open and loot it",
         --     default = false,
-        --     getFunc = function() return KyzderpsDerps.savedOptions.opener.openEmberWallet end,
+        --     getFunc = function() return KD.savedOptions.opener.openEmberWallet end,
         --     setFunc = function(value)
-        --         KyzderpsDerps.savedOptions.opener.openEmberWallet = value
+        --         KD.savedOptions.opener.openEmberWallet = value
         --         Opener.Initialize()
         --     end,
         --     width = "full",
@@ -255,9 +270,9 @@ function Opener.GetSettings()
             name = "Auto open Wet Gunny Sack",
             tooltip = "When you loot a Wet Gunny Sack from fishing, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openGunnySack end,
+            getFunc = function() return KD.savedOptions.opener.openGunnySack end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openGunnySack = value
+                KD.savedOptions.opener.openGunnySack = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -267,9 +282,9 @@ function Opener.GetSettings()
             name = "Auto open Toxin Satchel",
             tooltip = "When you loot a Toxin Satchel, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openToxinSatchel end,
+            getFunc = function() return KD.savedOptions.opener.openToxinSatchel end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openToxinSatchel = value
+                KD.savedOptions.opener.openToxinSatchel = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -279,9 +294,9 @@ function Opener.GetSettings()
             name = "Auto open Zenithar's Delightful Parcel",
             tooltip = "When you loot a (purple) Zenithar's Delightful Parcel, automatically open and loot it. Will NOT loot stolen ones!",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openPurpleZenithar end,
+            getFunc = function() return KD.savedOptions.opener.openPurpleZenithar end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openPurpleZenithar = value
+                KD.savedOptions.opener.openPurpleZenithar = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -291,9 +306,9 @@ function Opener.GetSettings()
             name = "Auto open Zenithar's Bounty",
             tooltip = "When you loot a Zenithar's Bounty (the gold bag containing currency), automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openZenitharCurrency end,
+            getFunc = function() return KD.savedOptions.opener.openZenitharCurrency end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openZenitharCurrency = value
+                KD.savedOptions.opener.openZenitharCurrency = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -303,9 +318,9 @@ function Opener.GetSettings()
             name = "Auto open Pelinal's Boon Box",
             tooltip = "When you loot a Pelinal's Boon Box, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openPelinalsBoonBox end,
+            getFunc = function() return KD.savedOptions.opener.openPelinalsBoonBox end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openPelinalsBoonBox = value
+                KD.savedOptions.opener.openPelinalsBoonBox = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -315,22 +330,22 @@ function Opener.GetSettings()
             name = "    ... in Imperial City",
             tooltip = "Toggles whether to open Pelinal's boxes while in Imperial City, since the boxes can contain some Tel Var",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openPelinalsBoonBoxInIC end,
+            getFunc = function() return KD.savedOptions.opener.openPelinalsBoonBoxInIC end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openPelinalsBoonBoxInIC = value
+                KD.savedOptions.opener.openPelinalsBoonBoxInIC = value
                 Opener.Initialize()
             end,
             width = "full",
-            disabled = function() return not KyzderpsDerps.savedOptions.opener.openPelinalsBoonBox end,
+            disabled = function() return not KD.savedOptions.opener.openPelinalsBoonBox end,
         },
         {
             type = "checkbox",
             name = "Auto open purple Plunder Skull",
             tooltip = "When you loot a purple Plunder Skull, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openPurplePlunderSkull end,
+            getFunc = function() return KD.savedOptions.opener.openPurplePlunderSkull end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openPurplePlunderSkull = value
+                KD.savedOptions.opener.openPurplePlunderSkull = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -340,9 +355,9 @@ function Opener.GetSettings()
             name = "Auto open Crow-Touched Clockwork Coffer",
             tooltip = "When you loot a Crow-Touched Clockwork Coffer, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openCrowTouchedCoffer end,
+            getFunc = function() return KD.savedOptions.opener.openCrowTouchedCoffer end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openCrowTouchedCoffer = value
+                KD.savedOptions.opener.openCrowTouchedCoffer = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -352,9 +367,9 @@ function Opener.GetSettings()
             name = "Auto open Research Portfolio",
             tooltip = "When you loot a Research Portfolio from Azandar's bonus, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openResearchPortfolio end,
+            getFunc = function() return KD.savedOptions.opener.openResearchPortfolio end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openResearchPortfolio = value
+                KD.savedOptions.opener.openResearchPortfolio = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -364,9 +379,9 @@ function Opener.GetSettings()
             name = "Auto open Fallen Knight's Pack",
             tooltip = "When you loot a Fallen Knight's Pack from Isobel's bonus, automatically open and loot it",
             default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.opener.openFallenPack end,
+            getFunc = function() return KD.savedOptions.opener.openFallenPack end,
             setFunc = function(value)
-                KyzderpsDerps.savedOptions.opener.openFallenPack = value
+                KD.savedOptions.opener.openFallenPack = value
                 Opener.Initialize()
             end,
             width = "full",
@@ -382,7 +397,7 @@ function Opener.GetSettings()
             name = "Additional container IDs, separated by commas",
             default = "",
             getFunc = function()
-                return table.concat(KyzderpsDerps.savedOptions.opener.extraIds, ",")
+                return table.concat(KD.savedOptions.opener.extraIds, ",")
             end,
             setFunc = function(value)
                 local ids = {}
@@ -392,7 +407,7 @@ function Opener.GetSettings()
                         table.insert(ids, id)
                     end
                 end
-                KyzderpsDerps.savedOptions.opener.extraIds = ids
+                KD.savedOptions.opener.extraIds = ids
                 Opener.Initialize()
             end,
             isExtraWide = true,

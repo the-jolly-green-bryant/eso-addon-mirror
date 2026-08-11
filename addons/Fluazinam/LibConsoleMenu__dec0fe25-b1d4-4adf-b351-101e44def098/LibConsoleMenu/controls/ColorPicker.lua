@@ -35,7 +35,7 @@ LCM.updateControlFunctions[LCM.CT_COLORPICKER] = function(self, control)
 	ApplyColorSwatchActivated(self.control, not self:IsDisabled())
 end
 
-LCM.createControlFunctions[LCM.CT_COLORPICKER] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_COLORPICKER] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_COLORPICKER] = function(self)
 	self.control:GetNamedChild("Name"):SetText(nil)

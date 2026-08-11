@@ -1,0 +1,156 @@
+<GuiXml>
+    <Controls>
+        <Label name="GroupMementosDummyText" font="ZoFontGame" hidden="true"></Label>
+        <TopLevelControl name="GroupMementosContainer" mouseEnabled="false" movable="false">
+            <OnInitialized>
+                HUD_SCENE:AddFragment(ZO_SimpleSceneFragment:New(self))
+                HUD_UI_SCENE:AddFragment(ZO_SimpleSceneFragment:New(self))
+            </OnInitialized>
+            <Controls>
+                <Control name="GroupMementosPanel" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+                    <Dimensions x="400" y="100"/>
+                    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="300"/>
+                    <OnMoveStop>
+                        GroupMementos.SavePosition()
+                    </OnMoveStop>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                        <Label name="$(parent)Header" font="ZoFontGame" color="FFFFFF" text="Group Mementos" horizontalAlignment="CENTER">
+                            <Dimensions x="400" y="24"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                            </Controls>
+                        </Label>
+                        <Control name="$(parent)Buttons">
+                            <Dimensions x="400" y="24"/>
+                            <Anchor point="TOP" relativeTo="$(parent)Header" relativePoint="BOTTOM"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="00000000" hidden="false"><AnchorFill/></Backdrop>
+                                <Label name="$(parent)Total" font="ZoFontGameSmall" color="FFFFFF" text="Total" horizontalAlignment="CENTER">
+                                    <Dimensions x="45" y="20"/>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                                </Label>
+                                <Texture name="$(parent)Pie" textureFile="/esoui/art/icons/event_jestersfestival_revelerypie.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-24"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Revelry Pie: |H1:item:147300:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Crow" textureFile="/esoui/art/icons/achievement_update16_016.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Pie" relativePoint="LEFT" offsetX="-25"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Murderous Crow: |H1:collectible:1385|h|h")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Blossom" textureFile="/art/fx/texture/cherryblossomground_01.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Crow" relativePoint="LEFT" offsetX="-25"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Cherry Blossom Branch: |H1:collectible:1108|h|h")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Snowball" textureFile="/esoui/art/icons/collectible_memento_snowball.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Blossom" relativePoint="LEFT" offsetX="-25"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Everlasting Snowball: |H1:collectible:6932|h|h")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Texture name="$(parent)Mudball" textureFile="/esoui/art/icons/collectible_memento_mudball_bag.dds" tier="HIGH" mouseEnabled="true" movable="false">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)Snowball" relativePoint="LEFT" offsetX="-25"/>
+                                    <Dimensions x="20" y="20"/>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Mud Ball Pouch: |H1:collectible:601|h|h")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Texture>
+                                <Button name="$(parent)Close" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="2"/>
+                                    <Dimensions x="24" y="24"/>
+                                    <OnClicked>
+                                        GroupMementos.savedOptions.showPanel = false
+                                        GroupMementos.UpdateDisplay()
+                                    </OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Hide this panel")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                                <Button name="$(parent)Options" alpha="1" topmost="true">
+                                    <Textures normal="/esoui/art/chatwindow/chat_options_up.dds" mouseOver="/esoui/art/chatwindow/chat_options_over.dds"/>
+                                    <Anchor point="LEFT" relativeTo="$(parent)Close" relativePoint="RIGHT" offsetX="4"/>
+                                    <Dimensions x="24" y="24" />
+                                    <OnClicked>GroupMementos.OpenSettingsMenu()</OnClicked>
+                                    <OnMouseEnter>
+                                        ZO_Tooltips_ShowTextTooltip(self, LEFT, "Open the addon settings")
+                                    </OnMouseEnter>
+                                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                                </Button>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer">
+                            <Dimensions x="382" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Buttons" relativePoint="BOTTOMRIGHT" offsetX="-9"/>
+                        </Control>
+                        <Label name="$(parent)Pie" font="ZoFontGame" color="FFFFFF" text="" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                            <Dimensions x="40" y="60"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                                self:SetAnchor(TOPRIGHT, GetControl("GroupMementosPanelScrollContainerScrollChild"), TOPRIGHT)
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Crow" font="ZoFontGame" color="FFFFFF" text="" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                            <Dimensions x="40" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Pie" relativePoint="TOPLEFT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Blossom" font="ZoFontGame" color="FFFFFF" text="" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                            <Dimensions x="40" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Crow" relativePoint="TOPLEFT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Snowball" font="ZoFontGame" color="FFFFFF" text="" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                            <Dimensions x="40" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Blossom" relativePoint="TOPLEFT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Mudball" font="ZoFontGame" color="FFFFFF" text="" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                            <Dimensions x="40" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Snowball" relativePoint="TOPLEFT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Names" font="ZoFontGame" color="FFFFFF" text="" horizontalAlignment="LEFT" wrapMode="TRUNCATE">
+                            <Dimensions x="150" y="60"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Mudball" relativePoint="TOPLEFT"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Total" font="ZoFontGame" color="FFD700" text="" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                            <Dimensions x="45" y="60"/>
+                            <OnInitialized>
+                                self:SetParent(GetControl("GroupMementosPanelScrollContainerScrollChild"))
+                            </OnInitialized>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

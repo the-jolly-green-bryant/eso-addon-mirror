@@ -32,8 +32,8 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_CCC"] = "ステータス履歴を更新",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_UPDATE_WINDOW_H"] = "|c00FF00履歴テーブルウィンドウでバグが発生した場合は更新してください、解決するかもしれません。|r",
     
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "利用可能",
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "利用不可",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_AVA"] = "|c00FF00利用可能|r",
+    ["STRING_ESOPLUSFREETRIALNOTIFICATION_UNAVA"] = "|cFF0000利用不可|r",
     
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES"] = "記録用の行数",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_HISTORY_LINES_A"] = "|c00FF00SavedVariables履歴ファイルに保存される行数 [ファイルサイズと記録期間に影響し、制限到達時は上書きされます]（100から5000までの可能な行数）|r",
@@ -61,7 +61,12 @@ local strings = {
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AD"] = "|c00FF00自動チェック機能!!!|r",
     ["STRING_ESOPLUSFREETRIALNOTIFICATION_INFORMATION_ESO_PLUS_AAD"] = "|c9999FFAサブスクリプションステータスの自動チェックは15分ごとに実行され、アドオン設定に関係なく行われます。これは同じ日に少し遅れてサブスクリプションがアクティベートされた場合でもステータスを見逃さないようにするためであり、チェック機能はシステムに負荷をかけません。このタイマーはパフォーマンスに完全に安全です。理由は次の通りです：|r |cFFFFC5実行頻度 15分ごと — これはゲームエンジンにとって非常に稀です。比較のため：ESOクライアント自体は毎秒数千のイベント（アニメーション、レンダリング、ネットワークパケット）を処理します。15分ごとの関数は海への一滴です。- ここでの操作はすべて論理的です：組み込みAPI（HasEsoPlus...）によるアカウントステータスの読み取り、ローカルテーブル（Lua table）の操作、そしてチャットへのメッセージ出力（d()）。重い計算、大規模配列のループ、ファイルやネットワークへの呼び出しはありません。ZO_SavedVars、d()、ClearEsoPlus... のような呼び出しはZOS開発者によって最適化されており、マイクロ秒で実行されます。|r |cffd700Ping|r はインターネット接続品質とESOサーバーの負荷によって決まります。クライアントのローカルLuaタイマーは、ゲーム自身が既に行っている以上にサーバーにデータを送信しません。HasEsoPlusFreeTrialNotification()関数はアカウントステータスのキャッシュを使用しています — 追加のネットワークトラフィックを作成しません。|c1E90FF他のアドオンとの比較。|r 多くの人気アドオンははるかに頻繁なタイマーを使用しています：|cADD8E6- Inventory Insight|r — インベントリを開くたびにチェック；|cADD8E6- Combat Metrics|r — 戦闘のティックごとに分析（毎秒数十回）；- 標準UI要素は毎秒60回以上更新されます。この|cADD8E6タイマー|r 900秒はこの背景に対して「時代に一度」のように見えます。",
     
-    ["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION_ESOPLUS"] = "|ccdfff3情報|r"
+["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION"] ="|cFF6347テーブルはここにあります:|r",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_ADDON_NAME_INFORMATION_A"] ="|c9999FF多数のレコード（デフォルトで2000）を表示すると、テーブルが1秒の遅延で開くことがあります。これは正常です。|r |cFFFFC5テーブルを開いてください:|r",
+
+["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION__ALLRECORDS"] = "|ccdfff3すべてのレコード|r",
+["STRING_ESOPLUSFREETRIALNOTIFICATION_GENERAL_INFORMATION_ESOPLUS"] = "|ccdfff3情報|r"
+
 }
 
 -- Регистрация всех строк одним циклом — ТРЕБОВАНИЕ ESOUI!

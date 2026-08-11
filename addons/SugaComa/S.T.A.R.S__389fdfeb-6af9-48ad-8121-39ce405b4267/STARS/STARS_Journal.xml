@@ -228,6 +228,19 @@
                   <Dimensions x="180" y="180" />
                   <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-45" offsetY="15" />
                 </Texture>
+                <Control name="$(parent)HeraldryBadge" hidden="true" mouseEnabled="false">
+                  <Dimensions x="180" y="180" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-45" offsetY="15" />
+                  <Controls>
+                    <Texture name="$(parent)Shield"><AnchorFill /></Texture>
+                    <Texture name="$(parent)Field"><AnchorFill /></Texture>
+                    <Texture name="$(parent)Rim"><AnchorFill /></Texture>
+                    <Texture name="$(parent)ChargeA"><AnchorFill /></Texture>
+                    <Texture name="$(parent)ChargeB"><AnchorFill /></Texture>
+                    <Texture name="$(parent)LegacyA"><AnchorFill /></Texture>
+                    <Texture name="$(parent)LegacyB"><AnchorFill /></Texture>
+                  </Controls>
+                </Control>
                 <Label name="$(parent)Title" font="ZoFontGamepad61" horizontalAlignment="CENTER">
                   <Dimensions x="760" y="80" />
                   <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="20" />

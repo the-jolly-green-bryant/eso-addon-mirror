@@ -15,7 +15,7 @@ end
 LCM.updateControlFunctions[LCM.CT_EDIT] = function(self, control)
 	control:SetHidden(false)
 	local nameControl = control:GetNamedChild("Name")
-	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentSettings)
+	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
 	indentPx = indentPx or 0
 	if nameControl then
 		nameControl:SetText(self:GetString(self:GetValueOrCallback(self.labelText)))
@@ -36,7 +36,7 @@ LCM.updateControlFunctions[LCM.CT_EDIT] = function(self, control)
 	editControl:SetColor(ZO_NORMAL_TEXT:UnpackRGB())
 end
 
-LCM.createControlFunctions[LCM.CT_EDIT] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_EDIT] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_EDIT] = function(self)
 	self.control:SetHidden(true)

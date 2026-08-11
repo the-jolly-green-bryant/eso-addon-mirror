@@ -83,6 +83,7 @@ local initialized = false
 local settingsPanelVisible = false
 local sceneCallbackInstalled = false
 local eventsRegistered = false
+local updateLoopRunning = false
 local control
 local headerLabel
 local progressLabel
@@ -98,7 +99,8 @@ local chartArea
 local chartBaseline
 local chartBars = {}
 local cards = {}
-local samples = {}
+local sampleQueue = { values = {}, head = 1, tail = 0 }
+local rateScratch = { requests = {}, results = {} }
 local timerStartedAt = {}
 local goalStartedAt
 local chartBuckets = {}
@@ -488,27 +490,45 @@ end
 local function PruneSamples(now)
     now = now or GetNow()
     local longestWindowSeconds = GetLongestWindowHistorySeconds()
+    local values = sampleQueue.values
     if longestWindowSeconds <= 0 then
-        for index = #samples, 1, -1 do
-            samples[index] = nil
+        for index = sampleQueue.head, sampleQueue.tail do
+            values[index] = nil
         end
+        sampleQueue.head = 1
+        sampleQueue.tail = 0
         return
     end
 
     local cutoff = now - math.min(longestWindowSeconds, MAX_WINDOW_SECONDS)
-    local firstKept = 1
-
-    while samples[firstKept] and samples[firstKept].time < cutoff do
-        firstKept = firstKept + 1
+    while sampleQueue.head <= sampleQueue.tail do
+        local sample = values[sampleQueue.head]
+        if sample and sample.time >= cutoff then
+            break
+        end
+        values[sampleQueue.head] = nil
+        sampleQueue.head = sampleQueue.head + 1
     end
 
-    if firstKept > 1 then
-        for index = firstKept, #samples do
-            samples[index - firstKept + 1] = samples[index]
+    if sampleQueue.head > sampleQueue.tail then
+        sampleQueue.head = 1
+        sampleQueue.tail = 0
+        return
+    end
+
+    local discardedCount = sampleQueue.head - 1
+    local retainedCount = sampleQueue.tail - sampleQueue.head + 1
+    if discardedCount >= 256 and discardedCount >= retainedCount then
+        local oldHead = sampleQueue.head
+        local oldTail = sampleQueue.tail
+        for index = 1, retainedCount do
+            values[index] = values[oldHead + index - 1]
         end
-        for index = #samples, #samples - firstKept + 2, -1 do
-            samples[index] = nil
+        for index = retainedCount + 1, oldTail do
+            values[index] = nil
         end
+        sampleQueue.head = 1
+        sampleQueue.tail = retainedCount
     end
 end
 
@@ -603,7 +623,8 @@ local function AddSample(amount, progress)
 
     local now = GetNow()
     if collectWindowHistory then
-        samples[#samples + 1] = {
+        sampleQueue.tail = sampleQueue.tail + 1
+        sampleQueue.values[sampleQueue.tail] = {
             time = now,
             amount = amount,
         }
@@ -615,9 +636,11 @@ local function AddSample(amount, progress)
 end
 
 local function ClearWindowSamples()
-    for index = #samples, 1, -1 do
-        samples[index] = nil
+    for index = sampleQueue.head, sampleQueue.tail do
+        sampleQueue.values[index] = nil
     end
+    sampleQueue.head = 1
+    sampleQueue.tail = 0
 end
 
 local function ClearWindowHistory()
@@ -659,39 +682,88 @@ local function ResetRuntimeState()
     end
 end
 
-local function ComputeWindow(window, startedAt)
-    if not window or not startedAt then
-        return 0, 0
-    end
-
+local function ComputeRateWindows(settings, includeGoal)
     local now = GetNow()
-    local windowSeconds = window.seconds
-    local cutoff = math.max(now - windowSeconds, startedAt)
-    local gain = 0
-    local oldest
-
     PruneSamples(now)
 
-    for _, sample in ipairs(samples) do
-        if sample.time >= cutoff then
-            gain = gain + sample.amount
-            if not oldest or sample.time < oldest then
-                oldest = sample.time
-            end
+    local requests = rateScratch.requests
+    local results = rateScratch.results
+    local requestCount = 0
+
+    for _, window in ipairs(WINDOWS) do
+        local result = results[window.key]
+        if not result then
+            result = {}
+            results[window.key] = result
+        end
+        result.gain = 0
+        result.rate = 0
+
+        local startedAt = timerStartedAt[window.key]
+        if settings.showTrackers == true and settings.timers[window.key] == true and startedAt then
+            requestCount = requestCount + 1
+            local request = requests[requestCount] or {}
+            request.id = window.key
+            request.windowSeconds = window.seconds
+            request.cutoff = math.max(now - window.seconds, startedAt)
+            requests[requestCount] = request
         end
     end
 
-    local elapsedSeconds = windowSeconds
-    if oldest then
-        elapsedSeconds = math.min(windowSeconds, math.max(now - oldest, 1))
+    local goalResult = results.goal
+    if not goalResult then
+        goalResult = {}
+        results.goal = goalResult
+    end
+    goalResult.gain = 0
+    goalResult.rate = 0
+
+    if includeGoal and goalStartedAt then
+        local window = GetWindowByKey(settings.progressEstimator)
+        requestCount = requestCount + 1
+        local request = requests[requestCount] or {}
+        request.id = "goal"
+        request.windowSeconds = window.seconds
+        request.cutoff = math.max(now - window.seconds, goalStartedAt)
+        requests[requestCount] = request
     end
 
-    local rate = 0
-    if gain > 0 then
-        rate = gain / (elapsedSeconds / 60)
+    for index = 2, requestCount do
+        local request = requests[index]
+        local insertionIndex = index - 1
+        while insertionIndex >= 1 and requests[insertionIndex].cutoff < request.cutoff do
+            requests[insertionIndex + 1] = requests[insertionIndex]
+            insertionIndex = insertionIndex - 1
+        end
+        requests[insertionIndex + 1] = request
     end
 
-    return gain, rate
+    local values = sampleQueue.values
+    local sampleIndex = sampleQueue.tail
+    local gain = 0
+    local oldest
+    for requestIndex = 1, requestCount do
+        local request = requests[requestIndex]
+        while sampleIndex >= sampleQueue.head do
+            local sample = values[sampleIndex]
+            if not sample or sample.time < request.cutoff then
+                break
+            end
+            gain = gain + sample.amount
+            oldest = sample.time
+            sampleIndex = sampleIndex - 1
+        end
+
+        local elapsedSeconds = request.windowSeconds
+        if oldest then
+            elapsedSeconds = math.min(request.windowSeconds, math.max(now - oldest, 1))
+        end
+        local result = results[request.id]
+        result.gain = gain
+        result.rate = gain > 0 and gain / (elapsedSeconds / 60) or 0
+    end
+
+    return results
 end
 
 local function GetNormalXpRemainingToLevel50(progress)
@@ -1275,7 +1347,7 @@ local function RenderChart()
     end
 end
 
-local function RenderGoal(progress)
+local function RenderGoal(goal, rateResult)
     if not goalNameLabel or not goalEstimateLabel then
         return
     end
@@ -1286,15 +1358,13 @@ local function RenderGoal(progress)
         return
     end
 
-    local goal = GetActiveGoal(progress)
     if not goal then
         goalNameLabel:SetHidden(true)
         goalEstimateLabel:SetHidden(true)
         return
     end
 
-    local estimatorWindow = GetWindowByKey(GetSettings().progressEstimator)
-    local _, rate = ComputeWindow(estimatorWindow, goalStartedAt)
+    local rate = rateResult and rateResult.rate or 0
     local estimateText = "Estimating..."
     if rate and rate > 0 and goal.remainingXp and goal.remainingXp > 0 then
         estimateText = FormatGoalTime(goal.remainingXp / rate)
@@ -1365,13 +1435,18 @@ local function Render()
         enlightenmentFill:SetDimensions(math.max(fillWidth, 1), UNDERLINE_HEIGHT)
     end
 
-    RenderGoal(progress)
+    local settings = GetSettings()
+    local goal = settings.showGoal == true and GetActiveGoal(progress) or nil
+    local rateResults = ComputeRateWindows(settings, goal ~= nil)
+    RenderGoal(goal, rateResults.goal)
 
-    if GetSettings().showTrackers == true then
-        local timers = GetSettings().timers
+    if settings.showTrackers == true then
+        local timers = settings.timers
         for index, window in ipairs(WINDOWS) do
             if timers[window.key] == true then
-                local gain, rate = ComputeWindow(window, timerStartedAt[window.key])
+                local result = rateResults[window.key]
+                local gain = result and result.gain or 0
+                local rate = result and result.rate or 0
                 local card = cards[index]
                 card.timeLabel:SetFont(ResolveFont(-4))
                 card.gainLabel:SetFont(ResolveFont(2))
@@ -1424,11 +1499,20 @@ local function UpdateLoop()
         return
     end
 
-    EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
-
-    if GetSettings().enabled == true then
-        EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE, UPDATE_INTERVAL_MS, Refresh)
+    local settings = GetSettings()
+    local shouldRun = (settings.enabled == true and IsGameplaySceneShowing())
+        or (settingsPanelVisible and settings.showInSettings == true)
+    if shouldRun == updateLoopRunning then
+        return shouldRun
     end
+
+    EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
+    updateLoopRunning = false
+    if shouldRun then
+        EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE, UPDATE_INTERVAL_MS, Refresh)
+        updateLoopRunning = true
+    end
+    return shouldRun
 end
 
 local function OnExperienceGain(_, _, _, previousExperience, currentExperience)
@@ -1441,7 +1525,7 @@ local function OnExperienceGain(_, _, _, previousExperience, currentExperience)
     end
 
     lastProgress = progress
-    Refresh()
+    if ShouldShow() then Refresh() end
 end
 
 local function UpdateExperienceGainListener()
@@ -1467,7 +1551,7 @@ local function OnProgressUpdated()
     end
 
     lastProgress = progress
-    Refresh()
+    if ShouldShow() then Refresh() end
 end
 
 local function RegisterEvents()
@@ -1500,7 +1584,7 @@ local function RegisterEvents()
     if EVENT_PLAYER_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_Activated", EVENT_PLAYER_ACTIVATED, function()
             lastProgress = GetProgress()
-            Refresh()
+            if ShouldShow() then Refresh() end
         end)
     end
 
@@ -1520,14 +1604,13 @@ local function UpdateRuntimeState()
         return
     end
 
-    if EVENT_MANAGER then
-        EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE)
-    end
     UnregisterEvents()
     ResetRuntimeState()
-    HideControl()
+    UpdateLoop()
     if settingsPanelVisible and GetSettings().showInSettings == true then
         Refresh()
+    else
+        HideControl()
     end
 end
 
@@ -1538,6 +1621,7 @@ local function InstallSceneCallback()
 
     sceneCallbackInstalled = true
     SCENE_MANAGER:RegisterCallback("SceneStateChanged", function()
+        UpdateLoop()
         if ShouldShow() then
             Refresh()
         else
@@ -1563,6 +1647,7 @@ end
 
 function Progress.SetSettingsPanelVisible(value)
     settingsPanelVisible = value == true
+    UpdateLoop()
     if GetSettings().enabled == true or (settingsPanelVisible and GetSettings().showInSettings == true) then
         Refresh()
     else
@@ -1585,6 +1670,7 @@ end
 
 function Progress.SetXpShowInSettings(value)
     GetSettings().showInSettings = value == true
+    UpdateLoop()
     if GetSettings().enabled == true or (settingsPanelVisible and GetSettings().showInSettings == true) then
         Refresh()
     else

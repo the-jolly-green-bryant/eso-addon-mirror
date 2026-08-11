@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__4237",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "tmbrinks",
   "canonical_id": "esoui:4237",
   "category_id": "24",
@@ -17,7 +18,7 @@
     "SurveyResetMarker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4237/",
-  "fingerprint": "d0a3712fa313778073f3d8bd2eb6a8d4c146ada0340699ccfe66da772375df4e",
+  "fingerprint": "045337a291369f5e68dc7f3cffef8833744dd5fca135c887c89ecf2188fff889",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15666.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw15667.png",
@@ -29,11 +30,11 @@
   "source_id": "4237",
   "source_url": "https://www.esoui.com/downloads/info4237-ResetMarkersSurveyTreasureMap.html",
   "stats": {
-    "downloads": 18243,
+    "downloads": 18717,
     "favorites": 30,
-    "monthly_downloads": 1456
+    "monthly_downloads": 1633
   },
   "title": "Reset Markers (Survey & Treasure Map)",
-  "updated_at": 1784471078000,
-  "version": "2.2.5"
+  "updated_at": 1786397902000,
+  "version": "2.2.6"
 }

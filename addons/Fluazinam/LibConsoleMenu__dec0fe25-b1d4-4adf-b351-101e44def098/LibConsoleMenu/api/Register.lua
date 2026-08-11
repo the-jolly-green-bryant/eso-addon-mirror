@@ -1,8 +1,10 @@
--- RegisterAddonPanel / RegisterOptionControls — panel and control registration (console only).
--- Nested submenus compile to CT_SUBMENU with nested/popSubmenu flags.
+-- CreateAddonMenu / AddonMenu:AddOptions - menu registration (console only).
+-- Nested submenus compile to CT_SUBMENU with nested/popSubmenu/popAfterSubmenuIndex flags.
 -- submenu icon = texture path (shown only when the row is not centered; tinted on selection).
 -- centered submenus: chip textures normal / selected / disabled.
--- type = "header" / option.header become native inline list headers.
+-- type = "header" / type = "section" become native inline list headers.
+-- type = "section" is authoring sugar: expands to a header + its options (same page).
+-- Nested author key on submenu/section is options (not controls).
 -- align = "center" | "left" (default center). indent = true | false (default true;
 --   ignored when center). left+indent = nav icon column; left+indent false = flush.
 -- Supported: Dropdown/Checklist/Button/Edit/Header = all three; Submenu = center|left+indent;
@@ -15,20 +17,53 @@ end
 
 local LCM = LibConsoleMenu
 
-LCM.panelData = LCM.panelData or {}
-LCM.optionTables = LCM.optionTables or {}
-LCM.compiledPanels = LCM.compiledPanels or {}
+LCM.menuData = LCM.menuData or {}
 
 local function AddToIndexed(out, option)
 	out[#out + 1] = option
 end
 
--- pendingHeader is { text, align, indent } from a preceding type = "header".
--- Controls may also set header / headerAlign / headerIndent (or align/indent) directly.
-local function ConsumeHeader(entry, pendingHeader)
-	if entry.header then
-		return entry.header, entry.headerAlign or entry.align, entry.headerIndent
+-- Expand type = "section" into a pending-style header entry + children (same page).
+-- Nested sections and sections inside submenu.options are expanded recursively.
+-- Does not mutate the author table (submenus get a shallow copy with new options).
+local function ExpandSections(optionsTable)
+	local out = {}
+	if not optionsTable then
+		return out
 	end
+
+	for i = 1, #optionsTable do
+		local entry = optionsTable[i]
+		if entry then
+			if entry.type == "section" then
+				out[#out + 1] = {
+					type = "header",
+					name = entry.name,
+					align = entry.align,
+					indent = entry.indent,
+				}
+				local children = ExpandSections(entry.options or {})
+				for j = 1, #children do
+					out[#out + 1] = children[j]
+				end
+			elseif entry.type == "submenu" then
+				local copy = {}
+				for key, value in pairs(entry) do
+					copy[key] = value
+				end
+				copy.options = ExpandSections(entry.options or {})
+				out[#out + 1] = copy
+			else
+				out[#out + 1] = entry
+			end
+		end
+	end
+
+	return out
+end
+
+-- pendingHeader is { text, align, indent } from a preceding type = "header" / section.
+local function ConsumePendingHeader(pendingHeader)
 	if pendingHeader then
 		return pendingHeader.text, pendingHeader.align, pendingHeader.indent
 	end
@@ -41,7 +76,6 @@ end
 
 local function BuildChoiceItems(entry)
 	local choices = entry.choices or {}
-	local values = entry.choicesValues
 	local items = {}
 	local labelMap = {}
 	for i = 1, #choices do
@@ -53,9 +87,6 @@ local function BuildChoiceItems(entry)
 			name = choice.name or choice.label
 			value = choice.value
 			if value == nil then
-				value = choice.data
-			end
-			if value == nil then
 				value = name
 			end
 			if name == nil then
@@ -64,11 +95,7 @@ local function BuildChoiceItems(entry)
 			tooltip = choice.tooltip
 		else
 			name = choice
-			if values then
-				value = values[i]
-			else
-				value = choice
-			end
+			value = choice
 		end
 		items[i] = { name = name, data = value, tooltip = tooltip }
 		if value ~= nil then
@@ -82,7 +109,7 @@ local function ConvertSelector(entry, out, pendingHeader)
 	local items, labelMap = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 	AddToIndexed(out, {
 		type = LCM.CT_SELECTOR,
 		label = entry.name,
@@ -106,6 +133,7 @@ local function ConvertSelector(entry, out, pendingHeader)
 			end
 		end,
 		popSubmenu = entry._popSubmenu,
+		popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 	})
 end
 
@@ -113,7 +141,7 @@ local function ConvertDropdown(entry, out, pendingHeader)
 	local items, labelMap = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 	local align, indent = ResolveEntryAlign(entry)
 	AddToIndexed(out, {
 		type = LCM.CT_DROPDOWN,
@@ -140,6 +168,7 @@ local function ConvertDropdown(entry, out, pendingHeader)
 			end
 		end,
 		popSubmenu = entry._popSubmenu,
+		popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 	})
 end
 
@@ -147,7 +176,7 @@ local function ConvertChecklist(entry, out, pendingHeader)
 	local items = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 	local align, indent = ResolveEntryAlign(entry)
 	local default = entry.default
 	if type(default) ~= "table" then
@@ -184,11 +213,12 @@ local function ConvertChecklist(entry, out, pendingHeader)
 			end
 		end,
 		popSubmenu = entry._popSubmenu,
+		popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 	})
 end
 
 local function ConvertIconPicker(entry, out, pendingHeader)
-	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 	local atlasEnd = entry.atlasEnd
 	if not atlasEnd and entry.atlasSizeX and entry.atlasSizeY then
 		atlasEnd = entry.atlasSizeX * entry.atlasSizeY
@@ -216,13 +246,14 @@ local function ConvertIconPicker(entry, out, pendingHeader)
 			end
 		end,
 		popSubmenu = entry._popSubmenu,
+		popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 	})
 end
 
-local ConvertControls
+local ConvertOptions
 
 local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
-	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 	local align = entry.align
 	-- Legacy: centerSubmenu true/false maps to align when align unset.
 	if align == nil and entry.centerSubmenu ~= nil then
@@ -237,6 +268,7 @@ local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
 		headerIndent = headerIndent,
 		nested = depth > 0,
 		popSubmenu = needPop and depth > 0,
+		popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 		align = align,
 		centerSubmenu = entry.centerSubmenu,
 		icon = entry.icon,
@@ -245,25 +277,27 @@ local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
 		onExit = entry.onExit,
 	}
 	AddToIndexed(out, submenu)
-	ConvertControls(entry.controls or {}, out, depth + 1)
-	return true -- caller should pop before next sibling
+	local submenuIndex = #out
+	ConvertOptions(entry.options or {}, out, depth + 1)
+	-- Next sibling resumes under this submenu's parent (index into compiled list).
+	return submenuIndex
 end
 
-ConvertControls = function(optionsTable, out, depth)
+ConvertOptions = function(optionsTable, out, depth)
 	out = out or {}
 	depth = depth or 0
-	local needPop = false
+	local closedSubmenu = nil
 	local pendingHeader = nil
+	optionsTable = ExpandSections(optionsTable or {})
 
 	for i = 1, #optionsTable do
 		local entry = optionsTable[i]
 		if entry then
 			local entryType = entry.type
-			if needPop then
-				if entryType ~= "header" then
-					entry._popSubmenu = true
-					needPop = false
-				end
+			if closedSubmenu and entryType ~= "header" then
+				entry._popAfterSubmenuIndex = closedSubmenu
+				entry._popSubmenu = true
+				closedSubmenu = nil
 			end
 
 			if entryType == "header" then
@@ -273,9 +307,10 @@ ConvertControls = function(optionsTable, out, depth)
 					indent = entry.indent,
 				}
 			elseif entryType == "submenu" then
-				needPop = ConvertSubmenu(entry, out, depth, entry._popSubmenu, pendingHeader)
+				closedSubmenu = ConvertSubmenu(entry, out, depth, entry._popSubmenu, pendingHeader)
 				pendingHeader = nil
 				entry._popSubmenu = nil
+				entry._popAfterSubmenuIndex = nil
 			elseif entryType == "selector" then
 				ConvertSelector(entry, out, pendingHeader)
 				pendingHeader = nil
@@ -288,8 +323,8 @@ ConvertControls = function(optionsTable, out, depth)
 			elseif entryType == "iconpicker" then
 				ConvertIconPicker(entry, out, pendingHeader)
 				pendingHeader = nil
-			elseif entryType == "toggle" or entryType == "checkbox" then
-				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+			elseif entryType == "toggle" then
+				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_TOGGLE,
 					label = entry.name,
@@ -304,10 +339,11 @@ ConvertControls = function(optionsTable, out, depth)
 					togglePreset = entry.preset,
 					toggleValues = entry.values,
 					popSubmenu = entry._popSubmenu,
+					popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 				})
 				pendingHeader = nil
 			elseif entryType == "slider" then
-				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_SLIDER,
 					label = entry.name,
@@ -326,10 +362,11 @@ ConvertControls = function(optionsTable, out, depth)
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					popSubmenu = entry._popSubmenu,
+					popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 				})
 				pendingHeader = nil
 			elseif entryType == "colorpicker" then
-				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_COLORPICKER,
 					label = entry.name,
@@ -342,10 +379,11 @@ ConvertControls = function(optionsTable, out, depth)
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					popSubmenu = entry._popSubmenu,
+					popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 				})
 				pendingHeader = nil
 			elseif entryType == "button" then
-				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 				local align, indent = ResolveEntryAlign(entry)
 				AddToIndexed(out, {
 					type = LCM.CT_BUTTON,
@@ -360,10 +398,11 @@ ConvertControls = function(optionsTable, out, depth)
 					indent = indent,
 					clickHandler = entry.func,
 					popSubmenu = entry._popSubmenu,
+					popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 				})
 				pendingHeader = nil
 			elseif entryType == "editbox" then
-				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 				local align, indent = ResolveEntryAlign(entry)
 				AddToIndexed(out, {
 					type = LCM.CT_EDIT,
@@ -381,6 +420,7 @@ ConvertControls = function(optionsTable, out, depth)
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					popSubmenu = entry._popSubmenu,
+					popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 				})
 				pendingHeader = nil
 			end
@@ -390,64 +430,42 @@ ConvertControls = function(optionsTable, out, depth)
 	return out
 end
 
-local function BuildPanel(addonID)
-	local panelData = LCM.panelData[addonID]
-	local optionsTable = LCM.optionTables[addonID]
-	if not panelData or not optionsTable then
-		return
-	end
-	if LCM.compiledPanels[addonID] then
-		return LCM.compiledPanels[addonID]
-	end
-
-	local settings = LCM:AddAddon(panelData.name, {
-		addonID = addonID,
-		allowDefaults = panelData.registerForDefaults,
-		allowRefresh = panelData.registerForRefresh,
-		defaultsFunction = panelData.resetFunc,
-		author = panelData.author,
-		version = panelData.version,
-		category = panelData.category,
-		centerSubmenus = panelData.centerSubmenus,
-		collapseToggleLabels = panelData.collapseToggleLabels,
-		collapseSliderLabels = panelData.collapseSliderLabels,
-	})
-
-	local compiled = ConvertControls(optionsTable, {}, 0)
-	for i = 1, #compiled do
-		settings:AddSetting(compiled[i])
-	end
-
-	LCM.compiledPanels[addonID] = settings
-	return settings
-end
-
--- addonID = unique string; panelData = { name, author, version, category, registerForDefaults, registerForRefresh, resetFunc, centerSubmenus, collapseToggleLabels, collapseSliderLabels, ... }
+-- menuId = unique string (folder / Addon.name); menuData = { title, author, version, category, enableDefaults, enableReset, resetFunc, centerSubmenus, collapseToggleLabels, collapseSliderLabels, ... }
 -- category = MOD_BROWSER_CATEGORY_TYPE_* or string alias (e.g. "UTILITY"); drives Add-ons submenu icon.
-function LCM:RegisterAddonPanel(addonID, panelData)
+function LCM:CreateAddonMenu(menuId, menuData)
 	if not IsConsoleUI() then
 		return
 	end
-	assert(type(addonID) == "string" and addonID ~= "", "RegisterAddonPanel: addonID required")
-	assert(type(panelData) == "table" and panelData.name, "RegisterAddonPanel: panelData.name required")
+	assert(type(menuId) == "string" and menuId ~= "", "CreateAddonMenu: menuId required")
+	assert(type(menuData) == "table" and menuData.title, "CreateAddonMenu: menuData.title required")
 
-	self.panelData[addonID] = panelData
-	BuildPanel(addonID)
+	self.menuData[menuId] = menuData
+
+	return self:_CreateMenuInstance(menuData.title, {
+		menuId = menuId,
+		enableDefaults = menuData.enableDefaults,
+		enableReset = menuData.enableReset,
+		resetFunction = menuData.resetFunc,
+		author = menuData.author,
+		version = menuData.version,
+		category = menuData.category,
+		centerSubmenus = menuData.centerSubmenus,
+		collapseToggleLabels = menuData.collapseToggleLabels,
+		collapseSliderLabels = menuData.collapseSliderLabels,
+	})
 end
 
--- optionsTable = control list (toggle, slider, selector, dropdown, checklist, submenu, iconpicker, ...); checkbox is an alias for toggle
-function LCM:RegisterOptionControls(addonID, optionsTable)
-	if not IsConsoleUI() then
-		return
+-- Append author options (callable again). Nested submenu/section children use options = { ... }.
+function LCM.AddonMenu:AddOptions(optionsTable)
+	assert(type(optionsTable) == "table", "AddOptions: optionsTable required")
+	local compiled = ConvertOptions(optionsTable, {}, 0)
+	if #compiled > 0 then
+		self:AddControls(compiled)
 	end
-	assert(type(addonID) == "string" and addonID ~= "", "RegisterOptionControls: addonID required")
-	assert(type(optionsTable) == "table", "RegisterOptionControls: optionsTable required")
-
-	self.optionTables[addonID] = optionsTable
-	BuildPanel(addonID)
+	return self
 end
 
--- Compile an options table without registering a panel.
-function LCM:ConvertOptionControls(optionsTable)
-	return ConvertControls(optionsTable or {}, {}, 0)
+-- Compile an options table without attaching to a menu (advanced).
+function LCM:ConvertOptions(optionsTable)
+	return ConvertOptions(optionsTable or {}, {}, 0)
 end

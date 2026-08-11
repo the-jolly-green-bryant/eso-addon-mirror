@@ -95,6 +95,7 @@ do
 		CCTracker.DEFAULT_SAVED_VARS.sound[entry.name] = {
 			enabled = false,
 			sound = "General_Alert_Error",
+			volume = 1,
 		}
 		i = i + 1
 	end
@@ -125,8 +126,14 @@ CCTracker.constants = CCTracker.constants or {
 		[203101] = "IA - choosing vision/verse",
 		[203124] = "IA - choosing vision/verse",
 		[203125] = "IA - choosing vision/verse",
-		[166794] = "DSR - Raging Current",
-		[167949] = "DSR - Raging Current",
+		[166794] = "DSR - raging current",
+		[167949] = "DSR - raging current",
+		[131323] = "Werewolf transformation root",
+		[259205] = "Hideyhole",
+		[261613] = "Hideyhole",
+		[261629] = "Hideyhole",
+		[261624] = "Hideyhole",
+		[261608] = "Hideyhole",
 		[37139] = "Mount",
 		[36434] = "Mount",
 		[36419] = "Dismount",
@@ -137,7 +144,7 @@ CCTracker.constants = CCTracker.constants or {
 		[72712] = "Hideyhole",
 		[75747] = "Hideyhole",
 		[28549] = "RollDodge",
-		[39518] = "Vampire Initiation",
+		[39518] = "Vampire initiation",
 		[14646] = "Revive (Snare)",
 		[14644] = "Revive (Stun)",
 		-- [40602] = "MQ - Returning home after final quest",
@@ -147,6 +154,8 @@ CCTracker.constants = CCTracker.constants or {
 		-- [39358] = "Fighters Guild - Destroying Mortuum Vivicus",
 	},
 	["specialCC"] = {
+		[127792] = ACTION_RESULT_STUNNED,
+		[28888] = ACTION_RESULT_STUNNED,
 	},
 }
 	--------------------------
@@ -483,7 +492,7 @@ end
 function CCTracker:BreakFreeDetected()
 	local newActive = {}
 	for _, entry in ipairs(self.ccActive) do
-		if not (entry.type == "charm" or entry.type == 9 or entry.type == 27) then
+		if not (entry.type == "charm" or entry.type == 9 or entry.type == 27 or entry.type == 17) then
 			table.insert(newActive, entry)
 		end
 	end
@@ -787,7 +796,9 @@ function CCTracker:PlayCCSound()
 				self:PrintDebug("audioMute", "Hard cc. Setting audio volume to 0")
 				SetSetting(SETTING_TYPE_AUDIO, AUDIO_SETTING_AUDIO_VOLUME, 0)
 			elseif entry.playSound then
-				PlaySound(self.SV.sound[entry.name].sound)
+				for i = 1, math.max(self.SV.sound[entry.name].volume, 1) do
+					PlaySound(self.SV.sound[entry.name].sound)
+				end
 				-- self.debug:Print("Playing sound for "..entry.name)
 				entry.playSound = false
 			end

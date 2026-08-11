@@ -1,0 +1,3 @@
+2026-08-02 v1.0.1 Added the ability to save settings at the
+           Server/Account/Character levels. Default is Server wide.
+           Now requires the library  LibExtendedSavedVars >= 104

@@ -594,6 +594,9 @@ SurveyResetMarker.MARKER_DATA = {
 		[44947] = { -- Treasure Map CE
 			"5,319050,26288,243877",
 		},
+		[194360] = { -- Rift Treasure Map, Scrivener's Treasure
+			"5,227880,23780,134740",
+		},
 	},
 	[104] = { -- Alik'r
 		[57779] = { -- Alchemy (2.1.0)

@@ -188,6 +188,11 @@ local pendingEncounters = {}
 ---@type DiscardedEncounterSink[]
 local discardedSinks = {}
 
+-- Serializes finalize pipelines. Overlapping finalizes share the instance's
+-- append-only registry, and interleaved _instanceData encodes could persist a
+-- registry snapshot missing entries a just-stored encounter references.
+local finalizeMutex = LibEffect.Semaphore.New(1)
+
 ---Compute time overlap between two time ranges
 ---@param startA number Start of range A (seconds)
 ---@param endA number End of range A (seconds)
@@ -608,6 +613,14 @@ function scribe:ImportEncounterFromStateAsync()
 
     local instance = self.instance
     local decodedAbilityInfo = self.decodedAbilityInfo
+    -- Capture the registry together with its instance: the async body below
+    -- survives zone changes, and ResetForNewInstance swaps self.registry for
+    -- the new instance's - encoding against that would overwrite this
+    -- instance's persisted registry with one that no longer matches its
+    -- already-stored encounters. Lazily created for instances started before
+    -- the addon reload that introduced registries.
+    self.registry = self.registry or BattleScrolls.binaryStorage.newRegistry()
+    local registry = self.registry
 
     -- Register pending encounter so matchShare can find it during the encoding window
     local durationMs = capturedState.lastDamageDoneMs - capturedState.fightStartTimeMs
@@ -618,7 +631,7 @@ function scribe:ImportEncounterFromStateAsync()
     }
     table.insert(pendingEncounters, pendingEntry)
 
-    return LibEffect.Async(function()
+    return finalizeMutex:WithPermit(LibEffect.Async(function()
         -- Finalize active effects on the state snapshot (moderate: up to ~600 effects)
         -- Pass lastDamageDoneMs so effect uptimes are consistent with fight duration
         BattleScrolls.effects.finalize(capturedState, capturedState.lastDamageDoneMs)
@@ -839,11 +852,7 @@ function scribe:ImportEncounterFromStateAsync()
             pooledSetup = BattleScrolls.storage:InternOwnSetup(setupHash, encounter.setup)
         end
 
-        -- Encode encounter to binary (yields internally based on data volume).
-        -- Lazily create the registry: finalize can run for instances started
-        -- before the addon reload that introduced registries.
-        self.registry = self.registry or BattleScrolls.binaryStorage.newRegistry()
-        local registry = self.registry
+        -- Encode encounter to binary (yields internally based on data volume)
         local compactEncounter = BattleScrolls.storage.EncodeEncounterAsync(encounter, pooledSetup, registry):Await()
         if pooledSetup then
             compactEncounter._setupHash = setupHash
@@ -891,7 +900,7 @@ function scribe:ImportEncounterFromStateAsync()
 
         BattleScrolls.gc:RequestGC(2)
         BattleScrolls.storage:CleanupIfNecessaryAsync()
-    end):Ensure(function()
+    end)):Ensure(function()
         -- Safety net: remove pending entry if async chain errors or is cancelled
         removePendingEncounter(pendingEntry)
     end):Run()

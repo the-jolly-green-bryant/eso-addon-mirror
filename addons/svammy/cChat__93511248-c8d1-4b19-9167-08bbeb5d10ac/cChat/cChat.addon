@@ -8,7 +8,7 @@
 ## Description: Console-friendly chat enhancement addon that adds timestamps and chat history restoration. Designed for gamepad UI compatibility. LibAsync is recommended for performance but not needed. Based on rChat by Shadowfen.
 ## Version: 1.1.0
 ## AddOnVersion: 2
-## Author: tzammy_
+## Author: |cFFFF00@tzammy_|r
 ## APIVersion: 101050
 ## SavedVariables: CCHAT_SETTINGS CCHAT_HISTORY
 ## DependsOn: LibAddonMenu-2.0

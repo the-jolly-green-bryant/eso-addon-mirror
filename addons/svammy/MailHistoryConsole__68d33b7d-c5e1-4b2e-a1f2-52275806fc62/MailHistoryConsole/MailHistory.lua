@@ -10,7 +10,7 @@ MailHistory.settings = nil  -- SavedVars
 -- Used with MailHistory.settings.numMailToKeep variable.
 MailHistory.SAVED_MAIL_MIN = 100
 MailHistory.SAVED_MAIL_MAX = 5000
-MailHistory.SAVED_MAIL_DEFAULT = 500
+MailHistory.SAVED_MAIL_DEFAULT = 100
 
 
 

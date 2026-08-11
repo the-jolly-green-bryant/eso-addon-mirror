@@ -4,7 +4,7 @@
 WerewolfTimerBar = {}
 local WWTB = WerewolfTimerBar
 WWTB.Name = "WerewolfTimerBar"
-WWTB.Version = 3.04
+WWTB.Version = 3.05
 WWTB.Default = 
 	{
 		Unlock = false,
@@ -42,9 +42,43 @@ local HeaderText = "Werewolf Form"
 local UltiText = "Ultimate"
 local FuryText = "Fury"
 local FuryMaxText = "RAMPAGE!!"
-
+local OldTime = GetTimeStamp()
 -- Create string for the key bind
 ZO_CreateStringId("SI_BINDING_NAME_BAR_ULTIMATELOCK_TOGGLE", "Toggle Lock/Unlock Ultimate")
+
+-------------------------------------------------------------------------------------------------
+--  Check if Player is Infected by Werewolf --
+-------------------------------------------------------------------------------------------------
+function WerewolfTimerBar.IsPlayerWerewolf()
+	local numberOfBuffs = GetNumBuffs('player')
+	if numberOfBuffs ~= 0 then
+		for i = 0, numberOfBuffs do
+			local buffName, _, _, _, _, _, _, _, _, _, abilityId, _, _ = GetUnitBuffInfo('player', i)
+			if abilityId == 35658 or abilityId == 40521 then
+				return true
+			end
+		end
+	end
+	return false
+end
+ 
+-------------------------------------------------------------------------------------------------
+--  Register for Events  --
+-------------------------------------------------------------------------------------------------
+function WerewolfTimerBar.RegisterEvents()
+	-- Register events for werewolf (State change) updates --
+	EVENT_MANAGER:RegisterForEvent(WWTB.Name_WWState, EVENT_WEREWOLF_STATE_CHANGED, WWTB.OnWerewolfStateChanged)
+end
+
+-------------------------------------------------------------------------------------------------
+--  Unregister for Events  --
+-------------------------------------------------------------------------------------------------
+function WerewolfTimerBar.UnregisterEvents()
+	-- Unregister events for werewolf (State change) updates --
+	EVENT_MANAGER:UnregisterForEvent(WWTB.Name_WWState, EVENT_WEREWOLF_STATE_CHANGED)
+	-- Unregister events for werewolf updates --
+	EVENT_MANAGER:UnregisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE)
+end
 
 -------------------------------------------------------------------------------------------------
 --  Save Location Function --
@@ -429,13 +463,12 @@ function WerewolfTimerBar.SetupSettingsWindow()
 							WWTB.SV.ShowTimer = false
 							-- If both bars disabled, unregister for updates --
 							if not WWTB.SV.ShowFury then
-								EVENT_MANAGER:UnregisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE)
+								WWTB.UnregisterEvents()
 							end
 						else
 							WWTB.SV.ShowTimer = true
 							-- Register for updates --
-							EVENT_MANAGER:RegisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, WWTB.onPowerUpdate)
-							EVENT_MANAGER:AddFilterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, 'player')
+							WWTB.RegisterEvents()
 						end
 						WWTB.SetupUIElements()
 					end
@@ -452,13 +485,12 @@ function WerewolfTimerBar.SetupSettingsWindow()
 							WWTB.SV.ShowFury = false
 							-- If both bars disabled, unregister for updates --
 							if not WWTB.SV.ShowTimer then
-								EVENT_MANAGER:UnregisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE)
+								WWTB.UnregisterEvents()
 							end
 						else
 							WWTB.SV.ShowFury = true
 							-- Register for updates --
-							EVENT_MANAGER:RegisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, WWTB.onPowerUpdate)
-							EVENT_MANAGER:AddFilterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, 'player')
+							WWTB.RegisterEvents()
 						end
 						WWTB.SetupUIElements()
 					end
@@ -755,6 +787,11 @@ end
 
 function WerewolfTimerBar.OnWerewolfStateChanged(eventCode, isWerewolf)
 	if isWerewolf then
+		-- Register events for werewolf updates --
+		if WWTB.SV.ShowTimer or WWTB.SV.ShowFury then
+			EVENT_MANAGER:RegisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, WWTB.onPowerUpdate)
+			EVENT_MANAGER:AddFilterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, 'player')
+		end
 		-- If werewolf then show the bar --
 		if WWTB.SV.ShowTimer then
 			-- Get Ultimate value --
@@ -785,6 +822,7 @@ function WerewolfTimerBar.OnWerewolfStateChanged(eventCode, isWerewolf)
 		end
 		WerewolfTimerBarWindow:SetHidden(false)
 	else
+		EVENT_MANAGER:UnregisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE)
 		WerewolfTimerBarWindow:SetHidden(true)
 		WWTB.SV.Unlock = false
 	end
@@ -820,7 +858,34 @@ function WerewolfTimerBar.OnPlayerActivated(eventCode, initial)
 		WWTB.ShowHide()
 	end
 end
- 
+
+-------------------------------------------------------------------------------------------------
+--  On Skill Line Added  --
+-------------------------------------------------------------------------------------------------
+function WerewolfTimerBar.SkillLineAdded(_, skillType, skillLineIndex)
+	local NewTime = GetTimeStamp()
+	if (NewTime - OldTime) < 5 then return end
+	-- Is it World (4) & Werewolf (6) --
+	if skillType == 4 and skillLineIndex == 6 then 
+		WWTB.RegisterEvents()
+	end
+	OldTime = GetTimeStamp()
+end
+
+-------------------------------------------------------------------------------------------------
+--  On Armory Station Use  --
+-------------------------------------------------------------------------------------------------
+function WerewolfTimerBar.Armory()
+	local NewTime = GetTimeStamp()
+	if (NewTime - OldTime) < 5 then return end
+	if WWTB.IsPlayerWerewolf() then
+		WWTB.RegisterEvents()
+	else
+		WWTB.UnregisterEvents()
+	end
+	OldTime = GetTimeStamp()
+end
+
 -------------------------------------------------------------------------------------------------
 --  On AddOn Loaded  --
 -------------------------------------------------------------------------------------------------
@@ -839,32 +904,19 @@ function WerewolfTimerBar.OnAddOnLoaded(eventCode, addonName)
 		WWTB.SetupUltimateBlock()
 		-- Setup ultimate lock/unlock button ---
 		WWTB.DrawUltimateBlockButton(WerewolfTimerBarWindow_UltimateBlockButton)
-		-- Check if player is infected by werewolf --
-		local isWerewolfInfected = false
-		local numberOfBuffs = GetNumBuffs('player')
-		if numberOfBuffs ~= 0 then
-			for i = 0, numberOfBuffs do
-				local buffName, _, _, _, _, _, _, _, _, _, abilityId, _, _ = GetUnitBuffInfo('player', i)
-				if abilityId == 35658 or abilityId == 40521 then
-					isWerewolfInfected = true
-					break
-				end
-			end
+		-- Register event for player logging in and porting --
+		EVENT_MANAGER:RegisterForEvent(WWTB.Name_PlayerAct, EVENT_PLAYER_ACTIVATED, WWTB.OnPlayerActivated)
+		-- Register event for showing and hiding UI when it's unlocked or in different scenes --
+		EVENT_MANAGER:RegisterForEvent(WWTB.Name_RetHide, EVENT_RETICLE_HIDDEN_UPDATE, WWTB.OnReticleHidden)
+		-- Register event for player gaining a skill line --
+		EVENT_MANAGER:RegisterForEvent(WWTB.Name_Skill_Line, EVENT_SKILL_LINE_ADDED, WWTB.SkillLineAdded)
+		-- Register event for Armory Station Use --
+		EVENT_MANAGER:RegisterForEvent(WWTB.Name_Armory, EVENT_ARMORY_BUILD_RESTORE_RESPONSE, WWTB.Armory)
+		-- If player is a werewolf, register for relevant updates --
+		if WWTB.IsPlayerWerewolf() then
+			WWTB.RegisterEvents()
 		end
-		if isWerewolfInfected then
-			-- Register event for player logging in and porting --
-			EVENT_MANAGER:RegisterForEvent(WWTB.Name_PlayerAct, EVENT_PLAYER_ACTIVATED, WWTB.OnPlayerActivated)
-			-- Register event for showing and hiding UI when it's unlock or in different scenes --
-			EVENT_MANAGER:RegisterForEvent(WWTB.Name_RetHide, EVENT_RETICLE_HIDDEN_UPDATE, WWTB.OnReticleHidden)
-			-- Register events for werewolf (State change) updates --
-			EVENT_MANAGER:RegisterForEvent(WWTB.Name_WWState, EVENT_WEREWOLF_STATE_CHANGED, WWTB.OnWerewolfStateChanged)
-			-- Register events for werewolf updates --
-			if WWTB.SV.ShowTimer or WWTB.SV.ShowFury then
-				EVENT_MANAGER:RegisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, WWTB.onPowerUpdate)
-				EVENT_MANAGER:AddFilterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, 'player')
-			end
-
-		end	
+		-- If UI was left unlocked, lock it --
 		if WWTB.SV.Unlock then
 			WWTB.ClickLockUIButton(WerewolfTimerBarWindow_LockUIButton)
 		end

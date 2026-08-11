@@ -54,12 +54,12 @@ local function CheckDE(worldEventInstanceId)
             PlaySound(SOUNDS.BATTLEGROUND_CAPTURE_FLAG_TAKEN_OWN_TEAM)
         end
         if (KD.savedOptions.overland.dynamicEventChat) then
-            KD:msg(zo_strformat("<<1>> dynamic event active!", GetZoneNameById(GetZoneId(GetUnitZoneIndex("player")))))
+            KD:msg(zo_strformat("<<1>> dynamic encounter active!", GetZoneNameById(GetZoneId(GetUnitZoneIndex("player")))))
         end
         if (KD.savedOptions.overland.dynamicEventCrutch and CrutchAlerts and CrutchAlerts.DisplayProminentSpin) then
-            CrutchAlerts.DisplayProminentSpin("DYNAMIC EVENT", {1, 0, 0}, 1)
-            CrutchAlerts.DisplayProminentSpin("DYNAMIC EVENT", {0, 1, 0}, 2)
-            CrutchAlerts.DisplayProminentSpin("DYNAMIC EVENT", {0, 0, 1}, 3)
+            CrutchAlerts.DisplayProminentSpin("DYNAMIC ENCOUNTER", {1, 0, 0}, 1)
+            CrutchAlerts.DisplayProminentSpin("DYNAMIC ENCOUNTER", {0, 1, 0}, 2)
+            CrutchAlerts.DisplayProminentSpin("DYNAMIC ENCOUNTER", {0, 0, 1}, 3)
         end
         return true
     end
@@ -73,7 +73,7 @@ local function OnWorldEventDeactivated(_, worldEventInstanceId)
     KD:dbg("deactivated " .. worldEventInstanceId)
     local deName = IsDE(worldEventInstanceId)
     if (deName and KD.savedOptions.spawnTimer.enable and KD.savedOptions.overland.dynamicEventSpawnTimer) then
-        KD:msg(zo_strformat("Adding timer since <<1>> dynamic event ended. This is only accurate for the current instance; different instances of the same zone are on their own timers.", GetZoneNameById(GetZoneId(GetUnitZoneIndex("player")))))
+        KD:msg(zo_strformat("Adding timer since <<1>> dynamic encounter ended. This is only accurate for the current instance; different instances of the same zone are on their own timers.", GetZoneNameById(GetZoneId(GetUnitZoneIndex("player")))))
         KD.SpawnTimer.CustomBossKilled(deName)
     end
 end
@@ -122,7 +122,7 @@ function WE.GetSettings()
         {
             type = "checkbox",
             name = "Show chat message",
-            tooltip = "Shows a message in chat when a dynamic event starts in your current zone",
+            tooltip = "Shows a message in chat when a dynamic encounter starts in your current zone",
             default = false,
             getFunc = function() return KD.savedOptions.overland.dynamicEventChat end,
             setFunc = function(value)
@@ -133,7 +133,7 @@ function WE.GetSettings()
         {
             type = "checkbox",
             name = "Play sound",
-            tooltip = "Plays a sound when a dynamic event starts in your current zone",
+            tooltip = "Plays a sound when a dynamic encounter starts in your current zone",
             default = false,
             getFunc = function() return KD.savedOptions.overland.dynamicEventSound end,
             setFunc = function(value)
@@ -144,7 +144,7 @@ function WE.GetSettings()
         {
             type = "checkbox",
             name = "Use obnoxious text and sound",
-            tooltip = "Uses CrutchAlerts to display really obnoxious prominent alerts and spammy sounds when a dynamic event starts in your current zone. Requires CrutchAlerts",
+            tooltip = "Uses CrutchAlerts to display really obnoxious prominent alerts and spammy sounds when a dynamic encounter starts in your current zone. Requires CrutchAlerts",
             default = false,
             getFunc = function() return KD.savedOptions.overland.dynamicEventCrutch end,
             setFunc = function(value)
@@ -156,7 +156,7 @@ function WE.GetSettings()
         {
             type = "checkbox",
             name = "Track time since DE ended",
-            tooltip = "Similar to boss spawn timers, tracks the time since a dynamic event ended in your current zone. The respawn time is approximately 30 minutes. Note that this timer is per-instance, so if you port away and back, you might not be in the same instance anymore. Requires Boss Timer to be enabled because I'm lazy",
+            tooltip = "Similar to boss spawn timers, tracks the time since a dynamic encounter ended in your current zone. The respawn time is approximately 30 minutes. Note that this timer is per-instance, so if you port away and back, you might not be in the same instance anymore. Requires Boss Timer to be enabled because I'm lazy",
             default = false,
             getFunc = function() return KD.savedOptions.overland.dynamicEventSpawnTimer end,
             setFunc = function(value)

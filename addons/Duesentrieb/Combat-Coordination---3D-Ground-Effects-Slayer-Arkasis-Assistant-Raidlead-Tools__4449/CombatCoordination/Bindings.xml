@@ -1,0 +1,56 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFF7F00Combat|r |cFFFFFFCoordination|r">
+            <!-- CONVENIENCE / GENERAL -->
+            <Action name="COMBATCOORDINATION_ADDONMENU_TOGGLE">
+                <Down>CombatCoordination.Keybinds.AddonMenuToggle()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_DISPLAYPANEL_TOGGLE">
+                <Down>CombatCoordination.Keybinds.DisplayPanelToggle()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_DEBUGCOMBATEVENT_TOGGLE">
+                <Down>CombatCoordination.Keybinds.DebugCombatEventToggle()</Down>
+            </Action>
+
+            <!-- RAIDLEAD TOOLS -->
+            <Action name="COMBATCOORDINATION_PULLTIMER_CUSTOM">
+                <Down>CombatCoordination.Keybinds.PullTimerCustom()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_PULLTIMER_TRASH">
+                <Down>CombatCoordination.Keybinds.PullTimerTrash()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_PULLTIMER_BOSS">
+                <Down>CombatCoordination.Keybinds.PullTimerBoss()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_PULLTIMER_PREBUFF">
+                <Down>CombatCoordination.Keybinds.PullTimerPrebuff()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_BREAKTIMER_TOGGLE">
+                <Down>CombatCoordination.Keybinds.BreakTimerToggle()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_EXITINSTANCE_REQUEST">
+                <Down>CombatCoordination.Keybinds.RequestExitInstance()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_SLAYERASSISTANT_TOGGLE">
+                <Down>CombatCoordination.Keybinds.SlayerAssistantToggle()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_ARKASISASSISTANT_TOGGLE">
+                <Down>CombatCoordination.Keybinds.ArkasisAssistantToggle()</Down>
+            </Action>
+
+            <!-- DRAWING / MARKERS -->
+            <Action name="COMBATCOORDINATION_POINTER_TOGGLE">
+                <Down>CombatCoordination.Keybinds.PointerToggle()</Down>
+            </Action>
+
+            <!-- PATH TRACKING -->
+            <Action name="COMBATCOORDINATION_PATHTRACKING_TOGGLE">
+                <Down>CombatCoordination.Keybinds.PathTrackingToggle()</Down>
+            </Action>
+            <Action name="COMBATCOORDINATION_PATHTRACKING_STOPALL">
+                <Down>CombatCoordination.Keybinds.PathTrackingStopAll()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

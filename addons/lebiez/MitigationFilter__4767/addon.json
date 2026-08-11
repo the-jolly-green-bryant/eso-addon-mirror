@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/lebiez/MitigationFilter__4767",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "lebiez",
+  "canonical_id": "esoui:4767",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4767",
+  "deleted": false,
+  "directories": [
+    "MitigationFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4767/",
+  "fingerprint": "828276b4094915e267a371aa22cf6732776b60d6af34e844ce4f0bfb0154ecf7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16962.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16963.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4767",
+  "source_url": "https://www.esoui.com/downloads/info4767-MitigationFilter.html",
+  "stats": {
+    "downloads": 1,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "MitigationFilter",
+  "updated_at": 1786406934000,
+  "version": "1.00"
+}

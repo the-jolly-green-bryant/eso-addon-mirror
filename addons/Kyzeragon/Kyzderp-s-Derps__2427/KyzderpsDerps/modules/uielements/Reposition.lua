@@ -49,6 +49,7 @@ function UIE.Initialize()
     -- Personal UI elements repositioning
     if (KyzderpsDerps.savedOptions.ui.reposition) then
         Reposition()
+        ZO_PlatformStyle:New(Reposition)
     end
 
     -- Hiding quest tracker while in a trial

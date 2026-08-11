@@ -244,20 +244,20 @@ function LCM:InjectIntoAddonsMenu()
 	end
 
 	local subItems = {}
-	for i = 1, #self.addons do
-		local addon = self.addons[i]
+	for i = 1, #self.menus do
+		local addon = self.menus[i]
 		addon.control = self.container
 		addon:InitHandlers()
 
-		local addonName = addon.name
-		local _, name = addonName:match("^(.+)'s%s(.+)")
-		if name == nil then
-			name = addonName
+		local title = addon.title
+		local _, displayTitle = title:match("^(.+)'s%s(.+)")
+		if displayTitle == nil then
+			displayTitle = title
 		end
-		addon.displayName = name
+		addon.displayTitle = displayTitle
 
 		subItems[#subItems + 1] = {
-			name = name,
+			name = displayTitle,
 			icon = LCM.ResolveAddonMenuIcon(addon.category),
 			addon = addon,
 			activatedCallback = function()
@@ -266,7 +266,7 @@ function LCM:InjectIntoAddonsMenu()
 				SCENE_MANAGER:Push("LibConsoleMenuScene")
 			end,
 			enabled = function()
-				return #self.addons > 0
+				return #self.menus > 0
 			end,
 			onSelectedCallback = function()
 				if not MAIN_MENU_GAMEPAD:IsShowing() then
@@ -293,7 +293,7 @@ function LCM:InjectIntoAddonsMenu()
 		end
 	)
 
-	if #self.addons > 0 then
+	if #self.menus > 0 then
 		local host = FindForeignAddonsMenu()
 		if host then
 			host.subMenu = host.subMenu or {}

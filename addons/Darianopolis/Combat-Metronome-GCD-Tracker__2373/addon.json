@@ -1,14 +1,19 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Darianopolis/Combat-Metronome-GCD-Tracker__2373",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Darianopolis",
   "canonical_id": "esoui:2373",
   "category_id": "112",
   "compatibility": [
     {
-      "name": "Seasons of the Worm Cult Pt2",
-      "version": "11.2.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
     }
   ],
   "content_id": "esoui:2373",
@@ -17,7 +22,7 @@
     "CombatMetronome"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2373/",
-  "fingerprint": "71a64892cef1bc332e98ca3193f2c0226f8c012c7d866f856ba1574a66cb0e8e",
+  "fingerprint": "ea3016ef14f8e7d0bdb8f96e036d8b5a385dc5e3d5876ae72125cc89954e0648",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8189.png",
     "https://cdn-eso.mmoui.com/preview/pvw12876.png",
@@ -29,11 +34,11 @@
   "source_id": "2373",
   "source_url": "https://www.esoui.com/downloads/info2373-CombatMetronomeGCDTracker.html",
   "stats": {
-    "downloads": 487661,
-    "favorites": 176,
-    "monthly_downloads": 1962
+    "downloads": 490134,
+    "favorites": 175,
+    "monthly_downloads": 3281
   },
   "title": "Combat Metronome (GCD Tracker)",
-  "updated_at": 1767890689000,
-  "version": "1.7.4"
+  "updated_at": 1786395418000,
+  "version": "1.7.5"
 }

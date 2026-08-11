@@ -23,7 +23,7 @@ end
 -- Whether the user is in a PvE, PvP, or boss area
 ---------------------------------------------------------------------
 local function IsInNeedTorteArea()
-    return Spud.GetCurrentState() == Spud.PVP and KyzderpsDerps.savedOptions.antispud.torte
+    return (Spud.GetCurrentState() == Spud.PVP or Spud.GetCurrentState() == Spud.VENGEANCE) and KyzderpsDerps.savedOptions.antispud.torte
 end
 
 ---------------------------------------------------------------------

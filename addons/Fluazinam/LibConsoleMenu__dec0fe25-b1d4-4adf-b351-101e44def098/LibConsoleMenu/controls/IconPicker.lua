@@ -48,7 +48,7 @@ LCM.updateControlFunctions[LCM.CT_ICONPICKER] = function(self, control)
 	combobox:SetOnSelectedDataChangedCallback(callback)
 end
 
-LCM.createControlFunctions[LCM.CT_ICONPICKER] = LCM.AddControlEntry
+LCM.createControlFunctions[LCM.CT_ICONPICKER] = LCM.CreateControlListEntry
 
 LCM.cleanControlFunctions[LCM.CT_ICONPICKER] = function(self)
 	local combobox = self.control:GetDropDown()

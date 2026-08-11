@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Kyzeragon/Kyzderp-s-Derps__2427",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Kyzeragon",
   "canonical_id": "esoui:2427",
   "category_id": "27",
@@ -17,7 +18,7 @@
     "KyzderpsDerps"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2427/",
-  "fingerprint": "75817c8246e0aa62def2ba5feb2be8a39278c513f792ca0bb9b2a985cbbdc4f8",
+  "fingerprint": "50e06b36946aecaf8590d592dfdbd73cfc18888ccb89bb8dc1ef7bd9933ee300",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8255.png",
     "https://cdn-eso.mmoui.com/preview/pvw8256.png",
@@ -36,11 +37,11 @@
   "source_id": "2427",
   "source_url": "https://www.esoui.com/downloads/info2427-KyzderpsDerps.html",
   "stats": {
-    "downloads": 64177,
-    "favorites": 51,
-    "monthly_downloads": 1709
+    "downloads": 64783,
+    "favorites": 50,
+    "monthly_downloads": 2093
   },
   "title": "Kyzderp's Derps",
-  "updated_at": 1784776846000,
-  "version": "1.49.0"
+  "updated_at": 1786410908000,
+  "version": "1.50.1"
 }

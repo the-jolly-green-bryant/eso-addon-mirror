@@ -2,7 +2,7 @@ FlamechasersPledgeQueue = {}
 local FPQ = FlamechasersPledgeQueue
 local WM = WINDOW_MANAGER
 local ADDON_NAME = "FlamechasersPledgeQueue"
-FPQ.version = "0.7.11"
+FPQ.version = "0.7.13"
 local SAVED_VARIABLES_NAME = "FlamechasersPledgeQueueSavedVariables"
 -- Keep the wrapper version unchanged so existing data is never reset merely
 -- because the active namespace is now server-specific.
@@ -23,6 +23,16 @@ local COLORS = {
     green = { 0.35, 0.84, 0.58, 1 },
     red = { 1.00, 0.38, 0.40, 1 },
 }
+
+local ROLE_NAMES = {
+    [LFG_ROLE_TANK] = "TANK",
+    [LFG_ROLE_HEAL] = "HEALER",
+    [LFG_ROLE_DPS] = "DAMAGE",
+}
+
+local function RoleName(role)
+    return ROLE_NAMES[role] or "UNKNOWN ROLE"
+end
 
 local function SetColor(control, color)
     control:SetColor(unpack(color))
@@ -82,6 +92,21 @@ local function Normalize(text)
     return text:gsub("[%p%s%c]+", "")
 end
 
+-- ESO occasionally includes a leading word in an Activity Finder name that
+-- is omitted from the corresponding localized pledge title. Keep the exact
+-- localized match as the primary path, then expose one conservative alias
+-- without that first word. This handles names such as Banished Cells without
+-- hardcoding any language-specific article.
+local function NormalizeWithoutFirstWord(text)
+    text = zo_strformat("<<C:1>>", text or "")
+    text = zo_strlower(text)
+    text = text:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    local _, firstWordEnd = text:find("^%s*%S+")
+    if not firstWordEnd then return "" end
+    local aliasKey = Normalize(text:sub(firstWordEnd + 1))
+    return #aliasKey >= 8 and aliasKey or ""
+end
+
 local function SafeActivityInfo(activityId)
     if not activityId then return nil end
     local name = GetActivityInfo(activityId)
@@ -103,7 +128,11 @@ function FPQ.BuildActivityCatalog()
             if name and key ~= "" then
                 local entry = FPQ.activityCatalog[key]
                 if not entry then
-                    entry = { key = key, name = name }
+                    entry = {
+                        key = key,
+                        aliasKey = NormalizeWithoutFirstWord(name),
+                        name = name,
+                    }
                     FPQ.activityCatalog[key] = entry
                     FPQ.activityList[#FPQ.activityList + 1] = entry
                 end
@@ -134,12 +163,16 @@ function FPQ.FindPledges()
     for questIndex = 1, MAX_JOURNAL_QUESTS do
         local questName = GetJournalQuestName(questIndex)
         if questName ~= "" then
-            local isDaily = GetJournalQuestRepeatType(questIndex) == QUEST_REPEAT_DAILY
-            if isDaily then
+            local isPledge = GetJournalQuestType(questIndex)
+                == QUEST_TYPE_UNDAUNTED_PLEDGE
+            if isPledge then
                 local normalizedQuest = Normalize(questName)
                 for _, activity in ipairs(FPQ.activityList) do
                     if not used[activity.key]
-                        and normalizedQuest:find(activity.key, 1, true) then
+                        and (normalizedQuest:find(activity.key, 1, true)
+                            or (activity.aliasKey ~= ""
+                                and normalizedQuest:find(
+                                    activity.aliasKey, 1, true))) then
                         pledges[#pledges + 1] = {
                             key = activity.key,
                             name = activity.name,
@@ -244,10 +277,19 @@ function FPQ.CreateRole(parent, role, x, labelText)
     local label = Label(button, "FlamechasersPledgeRoleLabel" .. role, labelText, "ZoFontWinH3")
     label:SetAnchor(LEFT, icon, RIGHT, 13, 0)
 
-    button.role, button.background, button.outline, button.accent, button.icon, button.label =
-        role, background, outline, accent, icon, label
+    local selected = WM:CreateControl("FlamechasersPledgeRoleSelected" .. role,
+        button, CT_TEXTURE)
+    selected:SetDimensions(18, 18)
+    selected:SetAnchor(TOPRIGHT, button, TOPRIGHT, -10, 9)
+    selected:SetTexture("EsoUI/Art/Buttons/checkbox_checked.dds")
+    selected:SetColor(unpack(COLORS.cyan))
+    selected:SetHidden(true)
+
+    button.role, button.background, button.outline, button.accent, button.icon,
+        button.label, button.selected = role, background, outline, accent, icon,
+        label, selected
     button:SetHandler("OnMouseEnter", function(control)
-        if not control.active then
+        if control.canUpdate and not control.active then
             SetOutlineColor(control.outline, { 0.48, 0.39, 0.55, 1 })
             control.background:SetCenterColor(0.045, 0.035, 0.055, 0.98)
         end
@@ -260,22 +302,39 @@ function FPQ.CreateRole(parent, role, x, labelText)
 end
 
 function FPQ.SetRole(role)
+    -- Remember the player's explicit choice even if ESO refuses the update.
+    -- This prevents a queue from silently starting with the previous role.
+    FPQ.expectedRole = role
     if not CanUpdateSelectedLFGRole() then
+        FPQ.RefreshRoles()
         FPQ.SetStatus("Your preferred role cannot be changed right now.", COLORS.red)
-        return
+        return false
     end
     UpdateSelectedLFGRole(role)
     ZO_ACTIVITY_FINDER_ROOT_MANAGER:UpdateLocationData()
+    local actualRole = GetSelectedLFGRole()
+    -- Our button does not pass through ESO's own preferred-role radio group,
+    -- so refresh that manager explicitly to keep the original group UI in sync.
+    PREFERRED_ROLES:RefreshRoles()
     FPQ.RefreshRoles()
-    FPQ.SetStatus("Preferred group role updated.", COLORS.green)
+    if actualRole ~= role then
+        FPQ.SetStatus("ESO did not apply the selected role. Queue was not changed.",
+            COLORS.red)
+        return false
+    end
+    PREFERRED_ROLES:FireCallbacks("LFGRoleChanged")
+    FPQ.SetStatus("Queue role set to " .. RoleName(actualRole) .. ".", COLORS.green)
+    return true
 end
 
 function FPQ.RefreshRoles()
     if not FPQ.roleButtons then return end
     local selected = GetSelectedLFGRole()
+    local canUpdate = CanUpdateSelectedLFGRole()
     for role, button in pairs(FPQ.roleButtons) do
         local active = role == selected
-        button.active = active
+        button.active, button.canUpdate = active, canUpdate
+        button:SetMouseEnabled(canUpdate)
         button.background:SetCenterColor(
             active and 0.075 or 0.025,
             active and 0.055 or 0.019,
@@ -284,9 +343,48 @@ function FPQ.RefreshRoles()
         SetOutlineColor(button.outline,
             active and COLORS.cyan or { 0.24, 0.21, 0.29, 0.85 })
         button.accent:SetAlpha(active and 1 or 0.16)
-        button.icon:SetAlpha(active and 1 or 0.48)
-        button.label:SetAlpha(active and 1 or 0.58)
+        button.icon:SetAlpha(canUpdate and (active and 1 or 0.48)
+            or (active and 0.62 or 0.24))
+        button.label:SetAlpha(canUpdate and (active and 1 or 0.58)
+            or (active and 0.68 or 0.30))
+        button.selected:SetHidden(not active)
+        button.selected:SetAlpha(canUpdate and 1 or 0.58)
+        button:SetAlpha(canUpdate and 1 or (active and 0.72 or 0.48))
     end
+
+    if FPQ.roleSummary then
+        local roleText = RoleName(selected)
+        if selected == LFG_ROLE_INVALID then
+            FPQ.roleSummary:SetText("NO ROLE SELECTED")
+            SetColor(FPQ.roleSummary, COLORS.red)
+        elseif FPQ.expectedRole and selected ~= FPQ.expectedRole then
+            FPQ.roleSummary:SetText("ROLE MISMATCH  •  ESO: " .. roleText)
+            SetColor(FPQ.roleSummary, COLORS.red)
+        elseif canUpdate then
+            FPQ.roleSummary:SetText("QUEUE ROLE  •  " .. roleText)
+            SetColor(FPQ.roleSummary, COLORS.cyan)
+        else
+            FPQ.roleSummary:SetText("ROLE LOCKED  •  " .. roleText)
+            SetColor(FPQ.roleSummary, COLORS.muted)
+        end
+    end
+end
+
+function FPQ.VerifyQueueRole()
+    local actualRole = GetSelectedLFGRole()
+    local expectedRole = FPQ.expectedRole or actualRole
+    if actualRole == LFG_ROLE_INVALID then
+        FPQ.RefreshRoles()
+        FPQ.SetStatus("Select a valid group role before queueing.", COLORS.red)
+        return nil
+    end
+    if actualRole ~= expectedRole then
+        FPQ.RefreshRoles()
+        FPQ.SetStatus("ESO's active role is " .. RoleName(actualRole)
+            .. ". Select the intended role again before queueing.", COLORS.red)
+        return nil
+    end
+    return actualRole
 end
 
 function FPQ.SetStatus(text, color)
@@ -368,9 +466,14 @@ function FPQ.StartPreparedQueue(addEntries)
     if not FPQ.CanStartQueue() then return false end
     ClearActivityFinderSearch()
     addEntries()
+    local queueRole = FPQ.VerifyQueueRole()
+    if not queueRole then
+        ClearActivityFinderSearch()
+        return false
+    end
     local result = StartActivityFinderSearch()
     if result == ACTIVITY_QUEUE_RESULT_SUCCESS then
-        FPQ.SetStatus("Queue started.", COLORS.green)
+        FPQ.SetStatus("Queue started as " .. RoleName(queueRole) .. ".", COLORS.green)
         FPQ.RefreshQueueState()
         FPQ.Close(true)
         return true
@@ -454,6 +557,7 @@ end
 function FPQ.Open()
     FPQ.CreateWindow()
     FPQ.cursorWasActive = IsGameCameraUIModeActive()
+    FPQ.expectedRole = GetSelectedLFGRole()
     FPQ.window:SetHidden(false)
     FPQ.Refresh()
     FPQ.RefreshQueueState()
@@ -483,7 +587,7 @@ function FPQ.CreateWindow()
     FPQ.selections = {}
 
     local window = WM:CreateTopLevelWindow("FlamechasersPledgeQueueWindow")
-    window:SetDimensions(760, 730)
+    window:SetDimensions(760, 686)
     window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV.left, SV.top)
     window:SetMovable(true)
     window:SetMouseEnabled(true)
@@ -498,46 +602,61 @@ function FPQ.CreateWindow()
     FPQ.window = window
 
     local background = Panel(window, "FlamechasersPledgeQueueBackdrop",
-        { 0.018, 0.014, 0.026, 0.975 })
+        { 0.018, 0.014, 0.026, 1 })
     background:SetAnchorFill(window)
     background:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Tooltip-Border.dds", 128, 16)
     background:SetInsets(4, 4, -4, -4)
     background:SetEdgeColor(0.27, 0.22, 0.31, 1)
 
+    -- The tooltip texture is translucent by design. This independent layer
+    -- keeps the game world from competing with the queue controls.
+    local opacityLayer = WM:CreateControl("FlamechasersPledgeOpacityLayer",
+        window, CT_BACKDROP)
+    opacityLayer:SetAnchor(TOPLEFT, window, TOPLEFT, 8, 8)
+    opacityLayer:SetAnchor(BOTTOMRIGHT, window, BOTTOMRIGHT, -8, -8)
+    opacityLayer:SetCenterColor(0.008, 0.005, 0.012, 0.54)
+    opacityLayer:SetEdgeColor(0, 0, 0, 0)
+
     local header = Panel(window, "FlamechasersPledgeHeader", { 0.040, 0.030, 0.050, 1 })
-    header:SetDimensions(752, 102)
+    header:SetDimensions(752, 58)
     header:SetAnchor(TOP, window, TOP, 0, 4)
     local accent = WM:CreateControl("FlamechasersPledgeHeaderAccent", header, CT_TEXTURE)
     accent:SetDimensions(752, 3)
     accent:SetAnchor(BOTTOM, header, BOTTOM, 0, 0)
     accent:SetColor(unpack(COLORS.cyan))
 
-    local title = Label(header, "FlamechasersPledgeTitle", "FLAMECHASERS", "ZoFontWinH1")
+    local title = Label(header, "FlamechasersPledgeTitle", "FLAMECHASERS", "ZoFontGameSmall")
     SetColor(title, COLORS.cyan)
-    title:SetAnchor(TOPLEFT, header, TOPLEFT, 24, 12)
-    local subtitle = Label(header, "FlamechasersPledgeSubtitle", "PLEDGE QUEUE", "ZoFontWinH3")
-    subtitle:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, -5)
+    title:SetAnchor(TOPLEFT, header, TOPLEFT, 18, 7)
+    local subtitle = Label(header, "FlamechasersPledgeSubtitle", "PLEDGE QUEUE", "ZoFontGameBold")
+    subtitle:SetAnchor(TOPLEFT, header, TOPLEFT, 18, 25)
     local tagline = Label(header, "FlamechasersPledgeTagline",
         "Your Undaunted contracts. One decisive queue.", "ZoFontGameSmall")
     SetColor(tagline, COLORS.muted)
-    tagline:SetAnchor(LEFT, subtitle, RIGHT, 16, 1)
-    local close = Button(header, "FlamechasersPledgeClose", "CLOSE", "ZoFontWinH3")
-    close:SetDimensions(90, 42)
-    close:SetAnchor(TOPRIGHT, header, TOPRIGHT, -14, 11)
+    tagline:SetAnchor(LEFT, subtitle, RIGHT, 14, 0)
+    local close = Button(header, "FlamechasersPledgeClose", "X", "ZoFontGameBold")
+    close:SetDimensions(32, 32)
+    close:SetAnchor(TOPRIGHT, header, TOPRIGHT, -12, 13)
     close:SetHandler("OnClicked", function() FPQ.Close() end)
 
     local roleHeading = Label(window, "FlamechasersPledgeRoleHeading",
         "PREFERRED ROLE", "ZoFontWinH3")
     SetColor(roleHeading, COLORS.muted)
-    roleHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 118)
+    roleHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 74)
     local roleLine = WM:CreateControl("FlamechasersPledgeRoleLine", window, CT_TEXTURE)
-    roleLine:SetDimensions(565, 1)
+    roleLine:SetDimensions(270, 1)
     roleLine:SetAnchor(LEFT, roleHeading, RIGHT, 15, 1)
     roleLine:SetColor(0.27, 0.22, 0.32, 0.8)
 
+    FPQ.roleSummary = Label(window, "FlamechasersPledgeRoleSummary", "", "ZoFontGameSmall")
+    FPQ.roleSummary:SetDimensions(255, 24)
+    FPQ.roleSummary:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    FPQ.roleSummary:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    FPQ.roleSummary:SetAnchor(TOPRIGHT, window, TOPRIGHT, -25, 72)
+
     local roleBar = WM:CreateControl("FlamechasersPledgeRoles", window, CT_CONTROL)
     roleBar:SetDimensions(710, 66)
-    roleBar:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 148)
+    roleBar:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 104)
     FPQ.roleButtons = {}
     FPQ.CreateRole(roleBar, LFG_ROLE_TANK, 0, "TANK")
     FPQ.CreateRole(roleBar, LFG_ROLE_HEAL, 260, "HEALER")
@@ -546,7 +665,7 @@ function FPQ.CreateWindow()
     local function CreateModeButton(name, x, titleText, iconTexture, onClick)
         local control = WM:CreateControl(name, window, CT_BUTTON)
         control:SetDimensions(226, 50)
-        control:SetAnchor(TOPLEFT, window, TOPLEFT, x, 588)
+        control:SetAnchor(TOPLEFT, window, TOPLEFT, x, 544)
         local shadow = Panel(control, name .. "Shadow", { 0, 0, 0, 0.72 })
         shadow:SetDimensions(226, 50)
         shadow:SetAnchor(TOPLEFT, control, TOPLEFT, 5, 6)
@@ -607,41 +726,52 @@ function FPQ.CreateWindow()
     local pledgeHeading = Label(window, "FlamechasersPledgeListHeading",
         "ACTIVE PLEDGES", "ZoFontWinH3")
     SetColor(pledgeHeading, COLORS.muted)
-    pledgeHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 228)
+    pledgeHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 184)
 
     FPQ.rows = {}
     for index = 1, 3 do
         local row = Panel(window, "FlamechasersPledgeRow" .. index,
             { 0.026, 0.019, 0.036, 0.94 })
         row:SetDimensions(710, 86)
-        row:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 258 + ((index - 1) * 94))
+        row:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 214 + ((index - 1) * 94))
+        CreateOutline(row, "FlamechasersPledgeRowOutline" .. index,
+            710, 86, 1, { 0.18, 0.14, 0.22, 0.82 })
+        local highlight = WM:CreateControl("FlamechasersPledgeRowHighlight" .. index,
+            row, CT_TEXTURE)
+        highlight:SetDimensions(699, 1)
+        highlight:SetAnchor(TOPRIGHT, row, TOPRIGHT, -1, 1)
+        highlight:SetColor(0.45, 0.35, 0.53, 0.26)
         local stripe = WM:CreateControl("FlamechasersPledgeRowStripe" .. index, row, CT_TEXTURE)
         stripe:SetDimensions(5, 86)
         stripe:SetAnchor(LEFT, row, LEFT, 0, 0)
         stripe:SetColor(unpack(COLORS.cyan))
-        local number = Label(row, "FlamechasersPledgeRowNumber" .. index,
+        local numberPlate = Panel(row, "FlamechasersPledgeRowNumberPlate" .. index,
+            { 0.060, 0.042, 0.073, 0.96 })
+        numberPlate:SetDimensions(36, 24)
+        numberPlate:SetAnchor(TOPRIGHT, row, TOPRIGHT, -8, 7)
+        local number = Label(numberPlate, "FlamechasersPledgeRowNumber" .. index,
             string.format("%02d", index), "ZoFontGameBold")
         SetColor(number, COLORS.cyan)
-        number:SetAnchor(TOPRIGHT, row, TOPRIGHT, -13, 8)
+        number:SetAnchor(CENTER, numberPlate, CENTER, 0, 0)
         local icon = WM:CreateControl("FlamechasersPledgeRowIcon" .. index, row, CT_TEXTURE)
         icon:SetDimensions(42, 42)
         icon:SetAnchor(LEFT, row, LEFT, 18, 0)
         icon:SetTexture("EsoUI/Art/Icons/mapKey/mapKey_groupInstance.dds")
         local name = Label(row, "FlamechasersPledgeRowName" .. index, "", "ZoFontWinH3")
-        name:SetDimensions(305, 30)
+        name:SetDimensions(280, 30)
         name:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         name:SetAnchor(TOPLEFT, row, TOPLEFT, 76, 13)
         local quest = Label(row, "FlamechasersPledgeRowQuest" .. index, "", "ZoFontGameSmall")
         SetColor(quest, COLORS.muted)
-        quest:SetDimensions(305, 24)
+        quest:SetDimensions(280, 24)
         quest:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         quest:SetAnchor(TOPLEFT, name, BOTTOMLEFT, 0, 2)
         local normal = FPQ.CreateCheck(row,
             "FlamechasersPledgeNormal" .. index, "NORMAL", "normal")
-        normal:SetAnchor(RIGHT, row, RIGHT, -169, 0)
+        normal:SetAnchor(RIGHT, row, RIGHT, -205, 0)
         local veteran = FPQ.CreateCheck(row,
             "FlamechasersPledgeVeteran" .. index, "VETERAN", "veteran")
-        veteran:SetAnchor(RIGHT, row, RIGHT, -19, 0)
+        veteran:SetAnchor(RIGHT, row, RIGHT, -55, 0)
         row.name, row.quest, row.normal, row.veteran = name, quest, normal, veteran
         FPQ.rows[index] = row
     end
@@ -657,7 +787,7 @@ function FPQ.CreateWindow()
     local modeHeading = Label(window, "FlamechasersPledgeModeHeading",
         "START QUEUE  •  CHOOSE ONE ACTION", "ZoFontWinH3")
     SetColor(modeHeading, COLORS.muted)
-    modeHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 546)
+    modeHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 502)
 
     local footer = Panel(window, "FlamechasersPledgeFooter", { 0.040, 0.021, 0.055, 1 })
     footer:SetDimensions(752, 62)
@@ -727,6 +857,7 @@ function FPQ.OnActivityFinderStatusUpdate()
     zo_callLater(function()
         FPQ.RefreshQueueState()
         if FPQ.window and not FPQ.window:IsHidden() then
+            FPQ.RefreshRoles()
             if IsCurrentlySearchingForGroup() then
                 FPQ.SetStatus("Queued. Use Leave Queue to cancel the search.", COLORS.green)
             else

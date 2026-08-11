@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/DakJaniels/HUD-Grid-Snap__4750",
+  "archive_path": "addons/DakJaniels/HUDitorTools__4750",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "DakJaniels",
@@ -18,7 +18,7 @@
     "HUDGridSnap"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4750/",
-  "fingerprint": "af21dccd988e2fe759ecd159e138ab37a163b6a145cd5e39eea1d847a5bfafed",
+  "fingerprint": "f8f969912bac829c96c13e2a106d409f2a701f482c513f08267a7503ceec73ff",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16914.png"
   ],
@@ -26,13 +26,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4750",
-  "source_url": "https://www.esoui.com/downloads/info4750-HUDGridSnap.html",
+  "source_url": "https://www.esoui.com/downloads/info4750-HUDitorTools.html",
   "stats": {
-    "downloads": 2,
+    "downloads": 18,
     "favorites": 1,
-    "monthly_downloads": 2
+    "monthly_downloads": 18
   },
-  "title": "HUD Grid Snap",
+  "title": "HUDitorTools",
   "updated_at": 1785786955000,
   "version": "1"
 }

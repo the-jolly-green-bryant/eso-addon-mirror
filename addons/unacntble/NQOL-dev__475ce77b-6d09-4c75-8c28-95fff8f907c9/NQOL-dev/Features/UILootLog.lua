@@ -98,7 +98,9 @@ local function ReleaseExpiredLootLogEntries(stream, nowMs)
             stream.doesContainsEntries = false
             stream.bottomEntry = nil
             stream.lastAnchoredEntry = nil
-        elseif type(stream.DisplayBatches) == "function" then
+        end
+
+        if type(stream.DisplayBatches) == "function" then
             stream:DisplayBatches()
         end
     end

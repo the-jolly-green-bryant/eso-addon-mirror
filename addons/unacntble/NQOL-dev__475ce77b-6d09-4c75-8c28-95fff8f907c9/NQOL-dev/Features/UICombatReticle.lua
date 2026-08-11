@@ -79,6 +79,8 @@ local applyQueued = false
 local initialized = false
 local hooksInstalled = false
 local hookAttempts = 0
+local eventsInstalled = false
+local runtimeActive = false
 local updateLoopInstalled = false
 local sceneCallbackInstalled = false
 local appliedShape
@@ -101,6 +103,10 @@ local function GetShape()
     end
 
     return shape
+end
+
+local function IsCustomReticleActive()
+    return runtimeActive
 end
 
 local function GetScale()
@@ -337,14 +343,16 @@ local function ApplyCombatReticle()
 end
 
 function UI.QueueCombatReticleApply()
-    if applyQueued then
+    if applyQueued or not IsCustomReticleActive() then
         return
     end
 
     applyQueued = true
     zo_callLater(function()
         applyQueued = false
-        ApplyCombatReticle()
+        if IsCustomReticleActive() then
+            ApplyCombatReticle()
+        end
     end, APPLY_DELAY_MS)
 end
 
@@ -355,7 +363,7 @@ local function StopReticleHitIndicator()
 end
 
 local function InstallReticleHooks()
-    if hooksInstalled then
+    if hooksInstalled or not IsCustomReticleActive() then
         return
     end
 
@@ -368,41 +376,55 @@ local function InstallReticleHooks()
     end
 
     ZO_PostHook(RETICLE, "OnImpactfulHit", function()
-        if GetShape() ~= SHAPE_DEFAULT then
+        if IsCustomReticleActive() then
             StopReticleHitIndicator()
             ApplyCombatReticle()
         end
     end)
 
     ZO_PostHook(RETICLE, "UpdateHiddenState", function()
-        ApplyCombatReticle()
+        if IsCustomReticleActive() then
+            ApplyCombatReticle()
+        end
     end)
 
     hooksInstalled = true
 end
 
+local function OnSceneStateChanged(scene, _, newState)
+    if not IsCustomReticleActive() then
+        return
+    end
+
+    local sceneName = scene and scene.GetName and scene:GetName() or nil
+    local isGameplayScene = GAMEPLAY_SCENES[sceneName] == true
+    local isShowing = newState == SCENE_SHOWING or newState == SCENE_SHOWN
+
+    if isShowing and not isGameplayScene then
+        HideCustomReticle()
+        if RETICLE and RETICLE.reticleTexture then
+            RETICLE.reticleTexture:SetHidden(true)
+        end
+    end
+
+    UI.QueueCombatReticleApply()
+end
+
 local function InstallSceneCallback()
-    if sceneCallbackInstalled or not SCENE_MANAGER or not SCENE_MANAGER.RegisterCallback then
+    if sceneCallbackInstalled or not IsCustomReticleActive() or not SCENE_MANAGER or not SCENE_MANAGER.RegisterCallback then
         return
     end
 
     sceneCallbackInstalled = true
-    SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, _, newState)
-        if GetShape() ~= SHAPE_DEFAULT then
-            local sceneName = scene and scene.GetName and scene:GetName() or nil
-            local isGameplayScene = GAMEPLAY_SCENES[sceneName] == true
-            local isShowing = newState == SCENE_SHOWING or newState == SCENE_SHOWN
+    SCENE_MANAGER:RegisterCallback("SceneStateChanged", OnSceneStateChanged)
+end
 
-            if isShowing and not isGameplayScene then
-                HideCustomReticle()
-                if RETICLE and RETICLE.reticleTexture then
-                    RETICLE.reticleTexture:SetHidden(true)
-                end
-            end
+local function UninstallSceneCallback()
+    if sceneCallbackInstalled and SCENE_MANAGER and SCENE_MANAGER.UnregisterCallback then
+        SCENE_MANAGER:UnregisterCallback("SceneStateChanged", OnSceneStateChanged)
+    end
 
-            UI.QueueCombatReticleApply()
-        end
-    end)
+    sceneCallbackInstalled = false
 end
 
 local function InstallUpdateLoop()
@@ -411,7 +433,7 @@ local function InstallUpdateLoop()
     end
 
     EVENT_MANAGER:RegisterForUpdate(UPDATE_NAMESPACE, ANIMATION_UPDATE_MS, function()
-        if GetShape() ~= SHAPE_DEFAULT then
+        if IsCustomReticleActive() then
             ApplyCombatReticle()
         else
             animationScale = OPEN_ANIMATION_SCALE
@@ -430,19 +452,18 @@ local function UninstallUpdateLoop()
 end
 
 RefreshAnimationLoop = function()
-    if IsAnimatedReticleEnabled() and GetShape() ~= SHAPE_DEFAULT then
+    if IsAnimatedReticleEnabled() and IsCustomReticleActive() then
         InstallUpdateLoop()
     else
         UninstallUpdateLoop()
     end
 end
 
-function UI.InitializeCombatReticle()
-    if initialized or not EVENT_MANAGER then
+local function InstallReticleEvents()
+    if eventsInstalled or not EVENT_MANAGER or not IsCustomReticleActive() then
         return
     end
 
-    initialized = true
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
         InstallReticleHooks()
         InstallSceneCallback()
@@ -462,15 +483,54 @@ function UI.InitializeCombatReticle()
         end
     end)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_IMPACTFUL_HIT, function()
-        if IsAnimatedReticleEnabled() and GetShape() ~= SHAPE_DEFAULT then
+        if IsAnimatedReticleEnabled() and IsCustomReticleActive() then
             zo_callLater(ApplyCombatReticle, HIT_INDICATOR_DURATION_MS + APPLY_DELAY_MS)
         end
     end)
+    eventsInstalled = true
+end
 
-    InstallReticleHooks()
-    InstallSceneCallback()
-    RefreshAnimationLoop()
-    UI.QueueCombatReticleApply()
+local function UninstallReticleEvents()
+    if not eventsInstalled or not EVENT_MANAGER then
+        return
+    end
+
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ALIVE)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_DEAD)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_RETICLE_HIDDEN_UPDATE)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_STEALTH_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_DISGUISE_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_IMPACTFUL_HIT)
+    eventsInstalled = false
+end
+
+local function RefreshReticleRuntime()
+    runtimeActive = GetShape() ~= SHAPE_DEFAULT
+    if IsCustomReticleActive() then
+        InstallReticleEvents()
+        InstallReticleHooks()
+        InstallSceneCallback()
+        RefreshAnimationLoop()
+        UI.QueueCombatReticleApply()
+        return
+    end
+
+    UninstallReticleEvents()
+    UninstallSceneCallback()
+    UninstallUpdateLoop()
+    if appliedShape ~= nil or customRoot then
+        ApplyCombatReticle()
+    end
+end
+
+function UI.InitializeCombatReticle()
+    if initialized or not EVENT_MANAGER then
+        return
+    end
+
+    initialized = true
+    RefreshReticleRuntime()
 end
 
 function UI.GetCombatReticleColor()
@@ -485,7 +545,9 @@ function UI.SetCombatReticleColor(red, green, blue, alpha)
     color.g = NQOL.Util.Clamp(tonumber(green) or DEFAULT_COLOR.g, 0, 1)
     color.b = NQOL.Util.Clamp(tonumber(blue) or DEFAULT_COLOR.b, 0, 1)
     color.a = 1
-    UI.QueueCombatReticleApply()
+    if IsCustomReticleActive() then
+        UI.QueueCombatReticleApply()
+    end
 end
 
 function UI.GetCombatReticleShape()
@@ -498,8 +560,7 @@ function UI.SetCombatReticleShape(shape)
     end
 
     GetSettings().shape = shape
-    RefreshAnimationLoop()
-    UI.QueueCombatReticleApply()
+    RefreshReticleRuntime()
 end
 
 function UI.GetCombatReticleShapeChoices()
@@ -521,7 +582,9 @@ end
 function UI.SetCombatReticleScale(value)
     local scale = NQOL.Util.Clamp(tonumber(value) or SCALE_DEFAULT, SCALE_MIN, SCALE_MAX)
     GetSettings().scale = math.floor(scale + 0.5)
-    UI.QueueCombatReticleApply()
+    if IsCustomReticleActive() then
+        UI.QueueCombatReticleApply()
+    end
 end
 
 function UI.GetAnimatedCombatReticle()
@@ -531,7 +594,9 @@ end
 function UI.SetAnimatedCombatReticle(value)
     GetSettings().animated = value == true
     RefreshAnimationLoop()
-    UI.QueueCombatReticleApply()
+    if IsCustomReticleActive() then
+        UI.QueueCombatReticleApply()
+    end
 end
 
 function UI.GetAnimatedCombatReticleDefault()

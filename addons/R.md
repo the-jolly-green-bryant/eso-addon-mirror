@@ -65,6 +65,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Real Bound Armor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ArtOfShred/Real-Bound-Armor__1974) | ArtOfShred | PC / Mac | 2.3 |
 | [Realistic Needs and Diseases](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Realistic-Needs-and-Diseases__4711) | kreksar@gmail.com | PC / Mac | 0.19.13 |
 | [Rebar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Rebar__1e6ecfd4-9947-49dc-9392-c5fab2256ab2) | Vixen_Hunny | Console | — |
+| [Recall Rotator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ookimus/Recall-Rotator__4765) | Ookimus | PC / Mac | 1.0 |
 | [Recipe and Motif Price For Writ Worthy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alezhu/Recipe-and-Motif-Price-For-Writ-Worthy__3625) | alezhu | PC / Mac | 1.1.1 |
 | [Recount (Renovated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lwndow/Recount-Renovated__2739) | lwndow | PC / Mac | 0.7.6 |
 | [Recount (Update)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ferather/Recount-Update__2754) | Ferather | PC / Mac | 0.6.5 |
@@ -98,7 +99,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ResearchTimer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hisdad/ResearchTimer__974) | hisdad | PC / Mac | 1.98 |
 | [ResearchTimer - Unofficial Update](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fennek/ResearchTimer---Unofficial-Update__3063) | Fennek | PC / Mac | 2.1.8 |
 | [Reset Markers (Survey & Treasure Map)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__6a2d5726-84d1-4db6-adba-e378e2005067) | tmbrinks | Console | — |
-| [Reset Markers (Survey & Treasure Map)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__4237) | tmbrinks | PC / Mac | 2.2.5 |
+| [Reset Markers (Survey & Treasure Map)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__4237) | tmbrinks | PC / Mac | 2.2.6 |
 | [Reset Tp](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eymix/Reset-Tp__3310) | Eymix | PC / Mac | 1.1 |
 | [Resist-O-Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Resist-O-Meter__3537) | Complicative | PC / Mac | 1.2.0 |
 | [Resource Dump](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Flamindemigod/Resource-Dump__3104) | Flamindemigod | PC / Mac | 1.1.0 |

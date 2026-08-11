@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/olegbl/GamePadHelper__3268",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "olegbl",
   "canonical_id": "esoui:3268",
   "category_id": "17",
@@ -17,7 +18,7 @@
     "GamePadHelper"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3268/",
-  "fingerprint": "69eba0603948da0eb0d5ecdfa57a7b5108718ca700c75a75462aa3efe0384359",
+  "fingerprint": "02bd185a3cf65418cd0222feaf27cc772a44ee8f8f47cba92cbac53350afdf80",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11112.png",
     "https://cdn-eso.mmoui.com/preview/pvw14553.png",
@@ -36,11 +37,11 @@
   "source_id": "3268",
   "source_url": "https://www.esoui.com/downloads/info3268-GamePadHelper.html",
   "stats": {
-    "downloads": 12628,
-    "favorites": 26,
-    "monthly_downloads": 664
+    "downloads": 12897,
+    "favorites": 27,
+    "monthly_downloads": 845
   },
   "title": "GamePadHelper",
-  "updated_at": 1785251562000,
+  "updated_at": 1786372646000,
   "version": "1.06.18"
 }

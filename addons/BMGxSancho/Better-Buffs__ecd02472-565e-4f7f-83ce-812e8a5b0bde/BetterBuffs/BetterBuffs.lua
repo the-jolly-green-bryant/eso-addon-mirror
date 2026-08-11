@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.04"
+BB.version = "0.3.05"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
