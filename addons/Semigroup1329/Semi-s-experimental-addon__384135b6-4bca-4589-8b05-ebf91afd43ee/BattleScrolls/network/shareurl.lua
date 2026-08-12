@@ -8,16 +8,16 @@
 -- Transport facts this module is built on (measured, see url-share-limits):
 --   * Xbox caps at 32655 total URL chars and FAILS SILENTLY above - chunk
 --     sizes must be clamped client-side.
---   * There is no queue in the open-URL pipeline: bursts lose everything and
---     paced timers tear down the previous confirmation dialog. Only serial
---     user-confirmed stepping works for multi-part payloads.
---   * A ZO_Dialogs stepper does not survive the URL confirmation (scene
---     fragment release + cross-environment dialog sync); the stepper is an
---     unmanaged TopLevelControl.
---   * Consoles have no addon keybinds and EVENT_GAME_FOCUS_CHANGED does not
---     fire around the browser app-switch, so multi-part advance gestures are:
---     crouch (STEALTH_STATE_NONE -> non-NONE edge only) or opening and
---     closing any menu. Focus regain stays as a PC convenience.
+--   * There is no queue in the open-URL pipeline: bursts lose everything.
+--     Only serial user-confirmed stepping works for multi-part payloads.
+--   * ZO_Dialogs do not survive the URL confirmation (scene fragment release
+--     + cross-environment dialog sync), but the gamepad journal scene DOES -
+--     so the stepper lives there as a first-class view
+--     (ui/journal/share_stepper.lua) and each part is fired by a real
+--     keybind press. No advance gestures.
+--
+-- This module is presentation-free: it owns the chain state machine and
+-- notifies an observer (the journal) on every transition.
 -----------------------------------------------------------
 
 if not SemisPlaygroundCheckAccess() then
@@ -27,6 +27,7 @@ end
 BattleScrolls = BattleScrolls or {}
 
 ---@class BattleScrollsShareUrl
+---@field _doneTotal number|nil Part count of the last completed chain
 local shareUrl = {}
 BattleScrolls.shareUrl = shareUrl
 
@@ -36,87 +37,63 @@ local BASE_URL = "https://bs.sheludchenkov.com/u"
 -- Xbox cap
 local CHUNK_DATA_CHARS = 32000
 local SESSION_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-local WIDGET_AUTOHIDE_MS = 15000
-local ADVANCE_DELAY_MS = 2000
+
+---@alias SharePhase "idle"|"building"|"sending"|"done"|"failed"
 
 ---@class ShareChain
 ---@field parts string[] Base64 data parts
 ---@field session string Upload session id
----@field nextSeq number
+---@field nextSeq number Next part to fire (1-based)
 ---@field total number
+
+---@class ShareState
+---@field phase SharePhase
+---@field sentCount number Parts already fired
+---@field total number Part count (0 while building)
 
 ---@type ShareChain|nil
 local chain = nil
 ---@type Fiber|nil
 local buildFiber = nil
----True after a part was requested: the next advance gesture fires the next one
-local awaitingReturn = false
----True once a non-HUD scene was shown while awaiting; the next HUD show
----counts as the menu open+close gesture
-local sawMenuScene = false
-local lastStealthState = STEALTH_STATE_NONE
----@type integer[]
-local pendingCalls = {}
+---@type SharePhase
+local phase = "idle"
 
--- =============================================================================
--- STEPPER WIDGET (unmanaged TopLevelControl, invisible to scene/dialog systems)
--- =============================================================================
+---Observer for state transitions (the journal's stepper view). Called with
+---no arguments after every phase/progress change.
+---@type fun()|nil
+shareUrl.onStateChanged = nil
 
----@type TopLevelWindow|nil
-local widget
----@type LabelControl|nil
-local widgetLabel
-
----@return LabelControl
-local function ensureWidget()
-    if widgetLabel then
-        return widgetLabel
-    end
-    widget = WINDOW_MANAGER:CreateTopLevelWindow("BattleScrollsShareStepper")
-    widget:SetDimensions(1100, 160)
-    widget:SetAnchor(TOP, GuiRoot, TOP, 0, 80)
-    widget:SetMouseEnabled(false)
-    widget:SetMovable(false)
-    widget:SetDrawLayer(DL_OVERLAY)
-
-    local bg = WINDOW_MANAGER:CreateControl("BattleScrollsShareStepperBG", widget, CT_BACKDROP)
-    bg:SetAnchor(TOPLEFT, widget, TOPLEFT, 0, 0)
-    bg:SetAnchor(BOTTOMRIGHT, widget, BOTTOMRIGHT, 0, 0)
-    bg:SetCenterColor(0, 0, 0, 0.7)
-    bg:SetEdgeColor(0, 0, 0, 0)
-    bg:SetEdgeTexture("", 1, 1, 1, 0)
-
-    widgetLabel = WINDOW_MANAGER:CreateControl("BattleScrollsShareStepperLabel", widget, CT_LABEL) --[[@as LabelControl]]
-    widgetLabel:SetFont("ZoFontGamepad34")
-    widgetLabel:SetColor(1, 1, 1, 1)
-    widgetLabel:SetAnchor(TOPLEFT, widget, TOPLEFT, 30, 15)
-    widgetLabel:SetAnchor(BOTTOMRIGHT, widget, BOTTOMRIGHT, -30, -15)
-    widgetLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    widgetLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    return widgetLabel
-end
-
----@param text string
-local function showWidget(text)
-    ensureWidget():SetText(text)
-    widget:SetHidden(false)
-end
-
-local function hideWidget()
-    if widget then
-        widget:SetHidden(true)
+local function notify()
+    if shareUrl.onStateChanged then
+        shareUrl.onStateChanged()
     end
 end
 
+---@param newPhase SharePhase
+local function setPhase(newPhase)
+    phase = newPhase
+    notify()
+end
+
 -- =============================================================================
--- CHAIN STATE
+-- STATE
 -- =============================================================================
 
-local function clearPendingCalls()
-    for _, id in ipairs(pendingCalls) do
-        zo_removeCallLater(id)
-    end
-    ZO_ClearNumericallyIndexedTable(pendingCalls)
+---Snapshot for the stepper view.
+---@return ShareState
+function shareUrl.getState()
+    return {
+        phase = phase,
+        sentCount = chain and (chain.nextSeq - 1) or (phase == "done" and shareUrl._doneTotal or 0),
+        total = chain and chain.total or (phase == "done" and shareUrl._doneTotal or 0),
+    }
+end
+
+---True while a build or an unfinished chain is active ("done"/"failed" are
+---resting states, not busy).
+---@return boolean
+function shareUrl.isBusy()
+    return chain ~= nil or buildFiber ~= nil
 end
 
 ---Cancels any build or send in progress.
@@ -127,18 +104,14 @@ function shareUrl.stop()
         buildFiber:Cancel()
         buildFiber = nil
     end
-    clearPendingCalls()
     chain = nil
-    awaitingReturn = false
-    sawMenuScene = false
-    hideWidget()
+    setPhase("idle")
     return hadWork
 end
 
----@return boolean
-function shareUrl.isBusy()
-    return chain ~= nil or buildFiber ~= nil
-end
+-- =============================================================================
+-- CHAIN
+-- =============================================================================
 
 ---@return string
 local function newSessionId()
@@ -157,27 +130,21 @@ local function partUrl(seq)
         BASE_URL, chain.session, seq, chain.total, chain.parts[seq])
 end
 
-local function sendNext()
+---Fires the next part's browser link. The caller (stepper keybind) invokes
+---this once per user press; there is no auto-advance.
+function shareUrl.sendNextPart()
     if not chain then
-        hideWidget()
         return
     end
     local seq, total = chain.nextSeq, chain.total
     RequestOpenUnsafeURL(partUrl(seq))
     if seq >= total then
+        shareUrl._doneTotal = total
         chain = nil
-        awaitingReturn = false
-        if total == 1 then
-            showWidget(GetString(BATTLESCROLLS_SHARE_SINGLE))
-        else
-            showWidget(zo_strformat(GetString(BATTLESCROLLS_SHARE_DONE), total))
-        end
-        table.insert(pendingCalls, zo_callLater(hideWidget, WIDGET_AUTOHIDE_MS))
+        setPhase("done")
     else
         chain.nextSeq = seq + 1
-        awaitingReturn = true
-        sawMenuScene = false
-        showWidget(zo_strformat(GetString(BATTLESCROLLS_SHARE_STEP_WAIT), seq, total))
+        notify()
     end
 end
 
@@ -194,54 +161,8 @@ local function startChain(exportResult)
         nextSeq = 1,
         total = #parts,
     }
-    lastStealthState = GetUnitStealthState("player")
-    sendNext()
+    setPhase("sending")
 end
-
--- =============================================================================
--- ADVANCE GESTURES
--- =============================================================================
-
-local function tryAutoAdvance()
-    if not (chain and awaitingReturn) then
-        return
-    end
-    awaitingReturn = false
-    showWidget(zo_strformat(GetString(BATTLESCROLLS_SHARE_STEP_FIRING), chain.nextSeq, chain.total))
-    table.insert(pendingCalls, zo_callLater(sendNext, ADVANCE_DELAY_MS))
-end
-
-EVENT_MANAGER:RegisterForEvent("BattleScrollsShare_Focus", EVENT_GAME_FOCUS_CHANGED, function(_, hasFocus)
-    if chain and awaitingReturn and hasFocus then
-        tryAutoAdvance()
-    end
-end)
-
-EVENT_MANAGER:RegisterForEvent("BattleScrollsShare_Stealth", EVENT_STEALTH_STATE_CHANGED, function(_, _, stealthState)
-    local previous = lastStealthState
-    lastStealthState = stealthState
-    if chain and awaitingReturn
-        and previous == STEALTH_STATE_NONE and stealthState ~= STEALTH_STATE_NONE then
-        tryAutoAdvance()
-    end
-end)
-EVENT_MANAGER:AddFilterForEvent("BattleScrollsShare_Stealth", EVENT_STEALTH_STATE_CHANGED,
-    REGISTER_FILTER_UNIT_TAG, "player")
-
-SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, _, newState)
-    if not (chain and awaitingReturn) or newState ~= SCENE_SHOWN then
-        return
-    end
-    local name = scene:GetName()
-    if name == "hud" or name == "hudui" then
-        if sawMenuScene then
-            sawMenuScene = false
-            tryAutoAdvance()
-        end
-    else
-        sawMenuScene = true
-    end
-end)
 
 -- =============================================================================
 -- PUBLIC ENTRY POINTS
@@ -250,17 +171,15 @@ end)
 ---@param buildEffect Effect Effect resolving to ExportResult
 local function runShare(buildEffect)
     if shareUrl.isBusy() then
-        ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NEGATIVE_CLICK, GetString(BATTLESCROLLS_SHARE_BUSY))
         return
     end
-    showWidget(GetString(BATTLESCROLLS_SHARE_PREPARING))
+    setPhase("building")
     buildFiber = BattleScrolls.Effect.Async(function()
         local result = buildEffect:Await()
         startChain(result)
     end):Recover(function()
         chain = nil
-        showWidget(GetString(BATTLESCROLLS_SHARE_FAILED))
-        table.insert(pendingCalls, zo_callLater(hideWidget, WIDGET_AUTOHIDE_MS))
+        setPhase("failed")
         return nil
     end):Ensure(function()
         buildFiber = nil

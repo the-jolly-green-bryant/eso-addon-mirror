@@ -6,6 +6,7 @@ local ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 local ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
 local COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
 local COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
+local TRIAL_TIMER_PANEL_ID = PanelIds.TRIAL_TIMER
 
 local function BuildUltimateCountdownEnabledOption(panelId, settingId, countdownKey)
     local ultimateCountdown = NQOL.Features.UltimateCountdown
@@ -128,6 +129,25 @@ end
 
 function GamepadOptions.BuildUltimateCountdownFrontOptionsData()
     return BuildUltimateCountdownOptionsData(ULTIMATE_COUNTDOWN_FRONT_PANEL_ID, NQOL.Features.UltimateCountdown.GetFrontBarKey())
+end
+
+function GamepadOptions.BuildTrialTimerOptionsData()
+    local timer = NQOL.Features.TrialTimer
+    return {
+        GamepadOptions.BuildCheckboxOption(TRIAL_TIMER_PANEL_ID, 1, timer.GetEnabledLabel(), timer.GetEnabledTooltip(), timer.GetEnabled, timer.SetEnabled, nil, timer.GetEnabledDefault),
+        GamepadOptions.BuildCheckboxOption(TRIAL_TIMER_PANEL_ID, 2, timer.GetShowInSettingsLabel(), timer.GetShowInSettingsTooltip(), timer.GetShowInSettings, timer.SetShowInSettings),
+        GamepadOptions.WithHeader(GamepadOptions.BuildCheckboxOption(TRIAL_TIMER_PANEL_ID, 3, timer.GetShowElapsedTimeLabel(), timer.GetShowElapsedTimeTooltip(), timer.GetShowElapsedTime, timer.SetShowElapsedTime), NQOL.L("features.trial_timer.components_header")),
+        GamepadOptions.BuildCheckboxOption(TRIAL_TIMER_PANEL_ID, 4, timer.GetShowVitalityLabel(), timer.GetShowVitalityTooltip(), timer.GetShowVitality, timer.SetShowVitality),
+        GamepadOptions.BuildCheckboxOption(TRIAL_TIMER_PANEL_ID, 5, timer.GetShowLiveScoreLabel(), timer.GetShowLiveScoreTooltip(), timer.GetShowLiveScore, timer.SetShowLiveScore),
+        GamepadOptions.BuildCheckboxOption(TRIAL_TIMER_PANEL_ID, 6, timer.GetShowBestScoreLabel(), timer.GetShowBestScoreTooltip(), timer.GetShowBestScore, timer.SetShowBestScore),
+        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(TRIAL_TIMER_PANEL_ID, 7, timer.GetHorizontalPositionLabel(), timer.GetHorizontalPositionTooltip(), 0, 100, "%.0f", timer.GetHorizontalPosition, timer.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
+        GamepadOptions.BuildPositionSliderOption(TRIAL_TIMER_PANEL_ID, 8, timer.GetVerticalPositionLabel(), timer.GetVerticalPositionTooltip(), 0, 100, "%.0f", timer.GetVerticalPosition, timer.SetVerticalPosition),
+        GamepadOptions.BuildFiniteListOption(TRIAL_TIMER_PANEL_ID, 9, timer.GetFontLabel(), timer.GetFontTooltip(), timer.GetFontChoices(), timer.GetFontChoiceNames(), timer.GetFont, timer.SetFont),
+        GamepadOptions.BuildValueStepSliderOption(TRIAL_TIMER_PANEL_ID, 10, timer.GetFontSizeLabel(), timer.GetFontSizeTooltip(), timer.GetFontSizeMin(), timer.GetFontSizeMax(), "%.0f", timer.GetFontSize, timer.SetFontSize, 1),
+        GamepadOptions.BuildColorOption(TRIAL_TIMER_PANEL_ID, 11, timer.GetColorLabel(), timer.GetColorTooltip(), timer.GetColor, timer.SetColor),
+        GamepadOptions.BuildColorOption(TRIAL_TIMER_PANEL_ID, 12, timer.GetBackgroundColorLabel(), timer.GetBackgroundColorTooltip(), timer.GetBackgroundColor, timer.SetBackgroundColor),
+        GamepadOptions.BuildSliderOption(TRIAL_TIMER_PANEL_ID, 13, timer.GetBackgroundOpacityLabel(), timer.GetBackgroundOpacityTooltip(), timer.GetBackgroundOpacityMin(), timer.GetBackgroundOpacityMax(), "%.0f", timer.GetBackgroundOpacity, timer.SetBackgroundOpacity, 1),
+    }
 end
 
 function GamepadOptions.BuildCombatInfiniteArchiveOptionsData()

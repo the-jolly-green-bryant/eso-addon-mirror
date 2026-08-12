@@ -1,6 +1,6 @@
 -- STARS_Badges.lua
 -- Standalone visual-state module for STARS Legacy/Prestige heraldry.
--- DEVELOPMENT STATUS: LEGACY ASSET CONTRACT IN PROGRESS
+-- RELEASE-CANDIDATE STATUS: LEGACY, BRONZE, SILVER AND GOLD APPROVED
 --
 -- Design rules:
 --   Legacy  : flat two-layer emblems, controlled colour-family progression.
@@ -13,13 +13,22 @@
 STARS_BADGES = STARS_BADGES or {}
 local B = STARS_BADGES
 
-B.VERSION = "0.7-dev"
+B.VERSION = "0.13-rc"
 B.RENDERER_READY = true
-B.ASSETS_READY = false
-B.LEGACY_ASSETS_READY = false
-B.PRESTIGE_ASSETS_READY = false
+B.ASSETS_READY = true
+B.LEGACY_ASSETS_READY = true
+B.PRESTIGE_ASSETS_READY = true
+
+--[[
+DEVELOPER HERALDRY GATES (disabled for the spoiler-free build)
+
+Uncomment together with the preview state/menu in STARS.lua and the preview
+override in STARS_Journal.lua if the artwork review rig is needed again.
+
 B.DEVELOPMENT_PREVIEW_READY = true
 B.DEVELOPMENT_NATIVE_LEGACY_READY = true
+B.DEVELOPMENT_PRESTIGE_PREVIEW_READY = true
+]]
 
 B.PRESTIGE_CLASS = {
     LEGACY = "legacy",
@@ -34,6 +43,8 @@ B.ASSET_PATHS = {
         round  = "STARS/Badges/Shields/shield_round.dds",
         oblong = "STARS/Badges/Shields/shield_oblong.dds",
         kite   = "STARS/Badges/Shields/shield_kite.dds",
+        silver = "STARS/Badges/Shields/shield_silver.dds",
+        gold   = "STARS/Badges/Shields/shield_gold.dds",
     },
     fields = {
         solid            = "STARS/Badges/Fields/field_solid.dds",
@@ -51,6 +62,8 @@ B.ASSET_PATHS = {
         cross            = "STARS/Badges/Fields/field_cross.dds",
         saltire          = "STARS/Badges/Fields/field_saltire.dds",
         pile             = "STARS/Badges/Fields/field_pile.dds",
+        silver_per_pale  = "STARS/Badges/Fields/field_silver_per_pale.dds",
+        gold_per_pale    = "STARS/Badges/Fields/field_gold_per_pale.dds",
     },
     rims = {
         none   = "STARS/Badges/Rims/rim_none.dds",
@@ -60,6 +73,54 @@ B.ASSET_PATHS = {
         double = "STARS/Badges/Rims/rim_double.dds",
         inner  = "STARS/Badges/Rims/rim_inner.dds",
         ornate = "STARS/Badges/Rims/rim_ornate.dds",
+        silver_ornate = "STARS/Badges/Rims/rim_silver_ornate.dds",
+        gold_ornate   = "STARS/Badges/Rims/rim_gold_ornate.dds",
+    },
+    bronzeCharges = {
+        wayfarer = {
+            a = "STARS/Badges/Charges/bronze_wayfarer_ring.dds",
+            b = "STARS/Badges/Charges/bronze_wayfarer_star.dds",
+        },
+        pathfinder = {
+            a = "STARS/Badges/Charges/bronze_pathfinder_a.dds",
+            b = "STARS/Badges/Charges/bronze_pathfinder_b.dds",
+        },
+        standard_bearer = {
+            a = "STARS/Badges/Charges/bronze_standard_bearer_a.dds",
+            b = "STARS/Badges/Charges/bronze_standard_bearer_b.dds",
+        },
+        vanguard = {
+            a = "STARS/Badges/Charges/bronze_vanguard_a.dds",
+            b = "STARS/Badges/Charges/bronze_vanguard_b.dds",
+        },
+        guardian = {
+            a = "STARS/Badges/Charges/bronze_guardian_a.dds",
+            b = "STARS/Badges/Charges/bronze_guardian_b.dds",
+        },
+        sentinel = {
+            a = "STARS/Badges/Charges/bronze_sentinel_a.dds",
+            b = "STARS/Badges/Charges/bronze_sentinel_b.dds",
+        },
+        champion = {
+            a = "STARS/Badges/Charges/bronze_champion_a.dds",
+            b = "STARS/Badges/Charges/bronze_champion_b.dds",
+        },
+        paragon = {
+            a = "STARS/Badges/Charges/bronze_paragon_a.dds",
+            b = "STARS/Badges/Charges/bronze_paragon_b.dds",
+        },
+        exemplar = {
+            a = "STARS/Badges/Charges/bronze_exemplar_a.dds",
+            b = "STARS/Badges/Charges/bronze_exemplar_b.dds",
+        },
+        luminary = {
+            a = "STARS/Badges/Charges/bronze_luminary_a.dds",
+            b = "STARS/Badges/Charges/bronze_luminary_b.dds",
+        },
+        ascendant = {
+            a = "STARS/Badges/Charges/bronze_ascendant_a.dds",
+            b = "STARS/Badges/Charges/bronze_ascendant_b.dds",
+        },
     },
     legacyAtlas   = "STARS/Badges/legacy_atlas.dds",
     heraldryAtlas = "STARS/Badges/heraldry_atlas.dds",
@@ -79,6 +140,30 @@ B.LEGACY_RANK_KEYS = {
     "ascendant",
     "venerated",
 }
+
+--[[
+DEVELOPER PREVIEW LABELS (disabled; retained for future artwork review)
+
+B.BRONZE_PREVIEW_STATES = {
+    { key = "bronze_wayfarer",        rankKey = "wayfarer",        name = "Bronze Wayfarer" },
+    { key = "bronze_pathfinder",      rankKey = "pathfinder",      name = "Bronze Pathfinder" },
+    { key = "bronze_standard_bearer", rankKey = "standard_bearer", name = "Bronze Standard Bearer" },
+    { key = "bronze_vanguard",        rankKey = "vanguard",        name = "Bronze Vanguard" },
+    { key = "bronze_guardian",        rankKey = "guardian",        name = "Bronze Guardian" },
+    { key = "bronze_sentinel",        rankKey = "sentinel",        name = "Bronze Sentinel" },
+    { key = "bronze_champion",        rankKey = "champion",        name = "Bronze Champion" },
+    { key = "bronze_paragon",         rankKey = "paragon",         name = "Bronze Paragon" },
+    { key = "bronze_exemplar",        rankKey = "exemplar",        name = "Bronze Exemplar" },
+    { key = "bronze_luminary",        rankKey = "luminary",        name = "Bronze Luminary" },
+    { key = "bronze_ascendant",       rankKey = "ascendant",       name = "Bronze Ascendant" },
+}
+
+B.BRONZE_PREVIEW_BY_KEY = {}
+for stage, state in ipairs(B.BRONZE_PREVIEW_STATES) do
+    state.stage = stage
+    B.BRONZE_PREVIEW_BY_KEY[state.key] = state
+end
+]]
 
 -- Approved/current working palette.
 -- Extra blue/green shades can be inserted later without changing renderer logic.
@@ -117,9 +202,8 @@ B.COLOURS = {
 -- These are deliberately separate from STARS' CP math: this module only translates
 -- the progression state into presentation.
 --
--- Wayfarer is the approved reference palette. The other eleven complete tables
--- are a consolidated development pass so every rank and stage can be judged in
--- one PS5 test. They remain review data until explicitly approved.
+-- All twelve palettes completed their consolidated PS5 review and are now the
+-- production colour hand-off for native Legacy progression.
 B.LEGACY_COLOUR_STEPS = {
     wayfarer = {
         { "frozen_blood",     "craglorn_crimson" },
@@ -226,6 +310,7 @@ B.ASSETS = {
     -- Each Legacy emblem ultimately exposes two atlas regions: A + B.
     legacy = {},
 
+    bronzeCharges = B.ASSET_PATHS.bronzeCharges,
     silverCharges = {},
     goldCharges = {},
 }
@@ -239,11 +324,62 @@ for _, key in ipairs(B.LEGACY_RANK_KEYS) do
     B.ASSETS.goldCharges[key]   = "STARS/Badges/Charges/gold_" .. key .. ".dds"
 end
 
--- Development atlas contract: 1024x512, arranged as 128x128 cells.
+-- Production presentation contract for the three complete Prestige tiers.
+-- Each tier reuses the first eleven approved Legacy identities; Venerated
+-- remains the final flat Legacy emblem before Bronze begins.
+B.PRESTIGE_TIER_STYLES = {
+    bronze = {
+        visualClass = B.PRESTIGE_CLASS.BRONZE,
+        tierName = "Bronze",
+        tierNumber = 1,
+        shieldShape = "oblong",
+        shieldField = "solid",
+        shieldRim = "thick",
+    },
+    silver = {
+        visualClass = B.PRESTIGE_CLASS.SILVER,
+        tierName = "Silver",
+        tierNumber = 2,
+        shieldShape = "silver",
+        shieldField = "silver_per_pale",
+        shieldRim = "silver_ornate",
+    },
+    gold = {
+        visualClass = B.PRESTIGE_CLASS.GOLD,
+        tierName = "Gold",
+        tierNumber = 3,
+        shieldShape = "gold",
+        shieldField = "gold_per_pale",
+        shieldRim = "gold_ornate",
+    },
+}
+
+--[[
+DEVELOPER PRESTIGE PREVIEW INDEX (disabled; retained for future artwork review)
+
+B.PRESTIGE_PREVIEW_STATES = {}
+B.PRESTIGE_PREVIEW_BY_KEY = {}
+for _, tierKey in ipairs({ "bronze", "silver", "gold" }) do
+    local tier = B.PRESTIGE_TIER_STYLES[tierKey]
+    for stage = 1, 11 do
+        local rankKey = B.LEGACY_RANK_KEYS[stage]
+        local key = tierKey .. "_" .. rankKey
+        local state = {
+            key = key,
+            tierKey = tierKey,
+            rankKey = rankKey,
+            stage = stage,
+            name = tier.tierName .. " " .. (B.BRONZE_PREVIEW_STATES[stage].name:gsub("^Bronze ", "")),
+        }
+        B.PRESTIGE_PREVIEW_STATES[#B.PRESTIGE_PREVIEW_STATES + 1] = state
+        B.PRESTIGE_PREVIEW_BY_KEY[key] = state
+    end
+end
+]]
+
+-- Legacy atlas contract: 1024x512, arranged as 128x128 cells.
 -- Each Legacy rank owns two consecutive cells: tintable layer A then layer B.
--- The complete concept set is available to the runtime-only preview, while
--- normal Legacy rendering remains blocked by LEGACY_ASSETS_READY until the
--- artwork and per-rank colour families are approved.
+-- All twelve approved rank families are available to native progression.
 local function LegacyAtlasCell(cellIndex)
     local column = cellIndex % 8
     local row = math.floor(cellIndex / 8)
@@ -285,8 +421,8 @@ end
 
 -- Reports whether every Legacy rank has two usable atlas regions and all five
 -- colour stages. This is intentionally read-only: it never enables artwork or
--- changes progression/SavedVariables. It gives the visual build a single,
--- testable completion gate before Legacy rendering is switched on.
+-- changes progression/SavedVariables. It remains a read-only integrity report
+-- for the production Legacy asset contract.
 function B:GetLegacyReadiness()
     local report = {
         ready = true,
@@ -385,8 +521,12 @@ function B:BuildLegacyModel(progression)
     }
 end
 
--- Builds a display-only Legacy model for artwork review. This never calls or
--- mutates STARS progression and never owns SavedVariables.
+--[=[
+DEVELOPER MODEL BUILDERS (disabled; retained for future artwork review)
+
+Builds display-only Legacy and Prestige models without touching live
+progression or SavedVariables.
+
 function B:BuildLegacyPreviewModel(rankKey, emblemStage)
     rankKey = tostring(rankKey or "wayfarer")
     if not self.ASSETS.legacy[rankKey] then
@@ -416,13 +556,64 @@ function B:BuildLegacyPreviewModel(rankKey, emblemStage)
     return model, nil
 end
 
+-- Builds one of the 33 Bronze/Silver/Gold review states without touching live
+-- Prestige progression. The optional two-argument form accepts tier + rank;
+-- the one-argument combined key remains supported by the existing test path.
+function B:BuildPrestigePreviewModel(previewKey, previewRankKey)
+    if previewRankKey ~= nil then
+        previewKey = tostring(previewKey or "bronze") .. "_" .. tostring(previewRankKey or "wayfarer")
+    else
+        previewKey = tostring(previewKey or "bronze_wayfarer")
+    end
+    local preview = self.PRESTIGE_PREVIEW_BY_KEY[previewKey]
+    if not preview then
+        return nil, "unknown_prestige_preview"
+    end
+
+    local tier = self.PRESTIGE_TIER_STYLES[preview.tierKey]
+    local bronzeCharge = preview.tierKey == "bronze" and self.ASSETS.bronzeCharges[preview.rankKey] or nil
+    local chargeTable = preview.tierKey == "silver" and self.ASSETS.silverCharges
+        or preview.tierKey == "gold" and self.ASSETS.goldCharges or nil
+    local chargePath = chargeTable and chargeTable[preview.rankKey] or nil
+    local model = {
+        visualClass = tier.visualClass,
+        tierName = tier.tierName,
+        tierNumber = tier.tierNumber,
+        tierLevel = (preview.stage - 1) * 10,
+        totalPrestigeRanks = ((tier.tierNumber - 1) * 110) + ((preview.stage - 1) * 10),
+        badgeStage = preview.stage,
+
+        shieldShape = tier.shieldShape,
+        shieldField = tier.shieldField,
+        shieldRim = tier.shieldRim,
+        shieldPalette = {},
+        chargeKey = preview.rankKey,
+        chargeAPath = bronzeCharge and bronzeCharge.a,
+        chargeBPath = bronzeCharge and bronzeCharge.b,
+        chargePath = chargePath,
+
+        renderable = (bronzeCharge ~= nil and bronzeCharge.a ~= nil and bronzeCharge.b ~= nil)
+            or chargePath ~= nil,
+        pendingReason = nil,
+        developmentPreview = true,
+        prestigePreview = true,
+    }
+    return model, nil
+end
+
+]=]
+
 function B:BuildPrestigeModel(progression)
     local class = self:GetPrestigeClass(progression)
     local stage = Clamp(math.floor(tonumber(progression.badgeStage) or 1), 1, 11)
+    local rankKey = self.LEGACY_RANK_KEYS[stage]
+    local tier = self.PRESTIGE_TIER_STYLES[class]
+    local bronzeCharge = class == self.PRESTIGE_CLASS.BRONZE
+        and self.ASSETS.bronzeCharges[rankKey] or nil
+    local chargeTable = class == self.PRESTIGE_CLASS.SILVER and self.ASSETS.silverCharges
+        or class == self.PRESTIGE_CLASS.GOLD and self.ASSETS.goldCharges or nil
+    local chargePath = chargeTable and chargeTable[rankKey] or nil
 
-    -- The exact shield shape, field division and palette progression are still
-    -- a design concern. Keep them explicit-but-unassigned rather than inventing
-    -- behaviour that later becomes accidental compatibility debt.
     local model = {
         visualClass = class,
         tierName = progression.tierName,
@@ -431,23 +622,31 @@ function B:BuildPrestigeModel(progression)
         totalPrestigeRanks = tonumber(progression.totalPrestigeRanks) or 0,
         badgeStage = stage,
 
-        shieldShape = nil,
-        shieldField = nil,
-        shieldRim = nil,
-        shieldPalette = nil,
-        chargeKey = nil,
+        shieldShape = tier and tier.shieldShape,
+        shieldField = tier and tier.shieldField,
+        shieldRim = tier and tier.shieldRim,
+        shieldPalette = {},
+        chargeKey = rankKey,
+        chargeAPath = bronzeCharge and bronzeCharge.a,
+        chargeBPath = bronzeCharge and bronzeCharge.b,
+        chargePath = chargePath,
 
-        renderable = false,
-        pendingReason = "shield_rules_pending",
+        renderable = tier ~= nil and (
+            bronzeCharge ~= nil and bronzeCharge.a ~= nil and bronzeCharge.b ~= nil
+            or chargePath ~= nil),
+        pendingReason = nil,
     }
 
     if class == self.PRESTIGE_CLASS.BRONZE then
         model.chargeStyle = "flat"
-        model.chargeSource = self.ASSETS.legacyAtlas
     elseif class == self.PRESTIGE_CLASS.SILVER then
         model.chargeStyle = "decorative_gold"
     else
         model.chargeStyle = "detailed"
+    end
+
+    if not model.renderable then
+        model.pendingReason = "prestige_assets_incomplete"
     end
 
     return model
@@ -484,6 +683,26 @@ function B:CanRender(model)
             and candidate.layerBColour ~= nil
     end
 
+    local function IsCompletePrestigeModel(candidate)
+        local knownClass = candidate.visualClass == self.PRESTIGE_CLASS.BRONZE
+            or candidate.visualClass == self.PRESTIGE_CLASS.SILVER
+            or candidate.visualClass == self.PRESTIGE_CLASS.GOLD
+        if not knownClass then return false end
+        local hasCharge
+        if candidate.visualClass == self.PRESTIGE_CLASS.BRONZE then
+            hasCharge = candidate.chargeAPath ~= nil and candidate.chargeBPath ~= nil
+        else
+            hasCharge = candidate.chargePath ~= nil
+        end
+        return self.ASSET_PATHS.shields[candidate.shieldShape] ~= nil
+            and self.ASSET_PATHS.fields[candidate.shieldField] ~= nil
+            and self.ASSET_PATHS.rims[candidate.shieldRim] ~= nil
+            and hasCharge
+    end
+
+    --[[
+    DEVELOPER RENDER BYPASSES (disabled; retained for future artwork review)
+
     -- A development preview may render one individually complete Legacy emblem
     -- while the production gate remains closed. Normal gameplay never receives
     -- a model carrying this marker.
@@ -491,6 +710,12 @@ function B:CanRender(model)
         and model.developmentPreview == true
         and model.visualClass == self.PRESTIGE_CLASS.LEGACY then
         return IsCompleteLegacyModel(model)
+    end
+
+    if self.DEVELOPMENT_PRESTIGE_PREVIEW_READY == true
+        and model.developmentPreview == true
+        and model.prestigePreview == true then
+        return IsCompletePrestigeModel(model)
     end
 
     -- Test-only native path: with preview disabled, let the player's genuine
@@ -501,15 +726,13 @@ function B:CanRender(model)
         and model.visualClass == self.PRESTIGE_CLASS.LEGACY then
         return IsCompleteLegacyModel(model)
     end
+    ]]
 
-    -- ASSETS_READY remains the master compatibility switch. The class-specific
-    -- gates let Legacy be completed and tested before unfinished Prestige
-    -- shields are allowed onto the page.
-    if self.ASSETS_READY == true then return true end
+    if self.ASSETS_READY ~= true then return false end
     if model.visualClass == self.PRESTIGE_CLASS.LEGACY then
-        return self.LEGACY_ASSETS_READY == true
+        return self.LEGACY_ASSETS_READY == true and IsCompleteLegacyModel(model)
     end
-    return self.PRESTIGE_ASSETS_READY == true
+    return self.PRESTIGE_ASSETS_READY == true and IsCompletePrestigeModel(model)
 end
 
 local LAYERS = { "Shield", "Field", "Rim", "ChargeA", "ChargeB", "LegacyA", "LegacyB" }
@@ -571,21 +794,30 @@ function B:RenderPrestige(view, model)
 
     if not shieldPath or not fieldPath or not rimPath then return nil, "shield_rules_pending" end
 
-    SetLayer(view, "Shield", shieldPath, ResolveColour(self.COLOURS, palette.shield))
-    SetLayer(view, "Field", fieldPath, ResolveColour(self.COLOURS, palette.field))
-    SetLayer(view, "Rim", rimPath, ResolveColour(self.COLOURS, palette.rim))
+    local shield = SetLayer(view, "Shield", shieldPath, ResolveColour(self.COLOURS, palette.shield))
+    local field = SetLayer(view, "Field", fieldPath, ResolveColour(self.COLOURS, palette.field))
+    local rim = SetLayer(view, "Rim", rimPath, ResolveColour(self.COLOURS, palette.rim))
+    if not shield or not field or not rim then return nil, "shield_layers_unavailable" end
 
     if model.visualClass == self.PRESTIGE_CLASS.BRONZE then
-        local charge = model.chargeKey and self.ASSETS.legacy[model.chargeKey]
-        if not charge or not charge.a or not charge.b then return nil, "bronze_charge_pending" end
-        SetLayer(view, "ChargeA", self.ASSETS.legacyAtlas, ResolveColour(self.COLOURS, palette.chargeA), charge.a)
-        SetLayer(view, "ChargeB", self.ASSETS.legacyAtlas, ResolveColour(self.COLOURS, palette.chargeB), charge.b)
+        if model.chargeAPath and model.chargeBPath then
+            local a = SetLayer(view, "ChargeA", model.chargeAPath, ResolveColour(self.COLOURS, palette.chargeA))
+            local b = SetLayer(view, "ChargeB", model.chargeBPath, ResolveColour(self.COLOURS, palette.chargeB))
+            if not a or not b then return nil, "bronze_charge_layers_unavailable" end
+        else
+            local charge = model.chargeKey and self.ASSETS.legacy[model.chargeKey]
+            if not charge or not charge.a or not charge.b then return nil, "bronze_charge_pending" end
+            local a = SetLayer(view, "ChargeA", self.ASSETS.legacyAtlas, ResolveColour(self.COLOURS, palette.chargeA), charge.a)
+            local b = SetLayer(view, "ChargeB", self.ASSETS.legacyAtlas, ResolveColour(self.COLOURS, palette.chargeB), charge.b)
+            if not a or not b then return nil, "bronze_charge_layers_unavailable" end
+        end
     else
         local chargeTable = model.visualClass == self.PRESTIGE_CLASS.SILVER
             and self.ASSETS.silverCharges or self.ASSETS.goldCharges
         local chargePath = model.chargePath or (model.chargeKey and chargeTable[model.chargeKey])
         if not chargePath then return nil, "prestige_charge_pending" end
-        SetLayer(view, "ChargeA", chargePath, ResolveColour(self.COLOURS, palette.charge))
+        local charge = SetLayer(view, "ChargeA", chargePath, ResolveColour(self.COLOURS, palette.charge))
+        if not charge then return nil, "prestige_charge_layer_unavailable" end
     end
 
     view:SetHidden(false)

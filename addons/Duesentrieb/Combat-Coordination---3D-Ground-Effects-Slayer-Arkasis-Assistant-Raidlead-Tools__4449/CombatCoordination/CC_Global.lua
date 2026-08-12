@@ -4,7 +4,7 @@
 CombatCoordination = {
     NAME    = "CombatCoordination",
     AUTHOR  = "@Duesentrieb",
-    VERSION = "20260810-0001",
+    VERSION = "20260811-0001",
     CHAT    = "|cFF7F00[CC]|r",
 
     ----------------------------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ local LUT = CC.LUT.SYNC
 local Module = {
     name = "Broadcast",
     Handler = nil,
-    CallbackModules = {},
+    BroadcastModules = {},
 
     LutDataIn = {},
     LutDataOut = {},
@@ -216,10 +216,10 @@ function Module:OnData(unitTag, Data)
     end
 
     -- ROUTE TO MODULE
-    local CallbackModule = self.CallbackModules[Data.ID]
+    local BroadcastModule = self.BroadcastModules[Data.ID]
 
-    if CallbackModule and CallbackModule.HandleBroadcast then
-        CallbackModule:HandleBroadcast(unitTag, Data)
+    if BroadcastModule and BroadcastModule.HandleBroadcast then
+        BroadcastModule:HandleBroadcast(unitTag, Data)
         CC.DisplayStatus:PlayAnimation()
     end
 end

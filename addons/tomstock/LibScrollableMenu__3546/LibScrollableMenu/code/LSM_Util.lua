@@ -55,6 +55,7 @@ local libDivider = lib.DIVIDER
 local NIL_CHECK_TABLE = constants.NIL_CHECK_TABLE
 
 local additionalDataKeyToLSMEntryType = entryTypeConstants.additionalDataKeyToLSMEntryType
+local isEntryTypeWithParentMocCtrl = entryTypeConstants.isEntryTypeWithParentMocCtrl
 
 --local sv
 
@@ -596,7 +597,9 @@ function libUtil.checkEntryType(text, entryType, additionalData, isAddDataTypeTa
 end
 
 --Execute pre-stored callback functions of the data table, in data._LSM.funcData
-function libUtil.updateDataByFunctions(data)
+function libUtil.updateDataByFunctions(comboBox, data)
+	--d( debugPrefix .. 'libUtil:updateDataByFunctions')
+
 	data = getDataSource(data)
 
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 13, tos(data)) end
@@ -607,9 +610,25 @@ function libUtil.updateDataByFunctions(data)
 
 	--Execute the callback functions for e.g. "name", "label", "checked", "enabled", ... now
 	for _, updateFN in pairs(funcData) do
-		updateFN(data)
+		updateFN(comboBox, data)
 	end
 end
+
+--Is the control e.g. a checkbox of a checkBox row (or a radiobutton, editbox, slider, ...) then get the parent = the row
+---> See table isEntryTypeWithParentMocCtrl
+function libUtil.getEntryTypeControl(control)
+	if control ~= nil and control.m_owner == nil then
+		if (control.entryType ~= nil and isEntryTypeWithParentMocCtrl[control.entryType]) or control.toggleFunction then
+			local parentCtrl = control:GetParent()
+			if parentCtrl ~= nil then
+--d(">>found mocCtrl with relevant parent!")
+				return parentCtrl
+			end
+		end
+	end
+	return control
+end
+local libUtil_getEntryTypeControl = libUtil.getEntryTypeControl
 
 
 --------------------------------------------------------------------
@@ -1232,10 +1251,12 @@ end
 function libUtil.getComboBox(control, owningMenu)
 	getComboBox = libUtil.getComboBox
 	if control then
+		control = libUtil_getEntryTypeControl(control)
+
 		--owningMenu boolean will be used to determine the m_comboBox (main menu) only and not the m_owner
 		-->Needed for LSM context menus that do not open on any LSM control, but standalone!
 		-->Checked in onMouseUp's callback function
-		if owningMenu then
+		if owningMenu == true then
 			if control.m_comboBox then
 				return control.m_comboBox
 			end

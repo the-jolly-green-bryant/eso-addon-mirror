@@ -1,26 +1,28 @@
--- TTC Price v1.2
+-- TTC Price v1.3
 -- Author: @NPViral
--- Adds a TTC price button to AwesomeGuildStore sell tab with undercut and thin market protection.
+-- Adds automatic TTC pricing and quick undercut controls to the AwesomeGuildStore sell tab.
 
 TTCPrice = TTCPrice or {}
 
 local TP = TTCPrice
 TP.name    = "TTCPrice"
-TP.version = "1.2"
+TP.version = "1.3"
 
 -- ─── Defaults ────────────────────────────────────────────────────────────────
 
 local defaults = {
     priceSource     = "SaleAvg",  -- "SuggestedPrice" | "SaleAvg" | "Avg"
-    undercutPercent = 2,          -- % below TTC price
+    undercutPercent = 0,          -- baseline % below TTC price
     minEntryCount   = 5,          -- skip items with fewer listings than this
-    agsAssist       = true,       -- show button in AGS sell tab
+    autoPrice       = true,       -- price selected AGS items automatically
+    showPriceButton = false,      -- optional manual baseline-price button
 }
 
 -- ─── State ───────────────────────────────────────────────────────────────────
 
 local sv
 local priceButton
+local quickButtons = {}
 local agsHookRegistered = false
 
 -- ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -43,18 +45,155 @@ local function GetPriceFromData(data)
     return price, data.EntryCount or 0
 end
 
-local function CalcUnitPrice(ttcPrice)
-    return math.max(1, math.floor(ttcPrice * (1 - sv.undercutPercent / 100) + 0.5))
+local function CalcUnitPrice(ttcPrice, undercutPercent)
+    local percent = undercutPercent
+    if percent == nil then
+        percent = sv.undercutPercent
+    end
+    return math.max(1, math.floor(ttcPrice * (1 - percent / 100) + 0.5))
+end
+
+local function ApplyPrice(undercutPercent)
+    local internal = AwesomeGuildStore and AwesomeGuildStore.internal
+    local tradingHouse = internal and internal.tradingHouse
+    local sellTab = tradingHouse and tradingHouse.sellTab
+    if not sellTab or type(sellTab.SetUnitPrice) ~= "function" then return end
+
+    local link = sellTab.pendingItemLink
+    if not link or link == "" then return end
+
+    local data = GetTTCData(link)
+    local ttcPrice, entryCount = GetPriceFromData(data)
+
+    if not ttcPrice then return end
+    if entryCount < sv.minEntryCount then return end
+
+    local unit = CalcUnitPrice(ttcPrice, undercutPercent)
+
+    if sellTab.isMasterWrit then
+        local getVoucherCount = internal.GetItemLinkWritVoucherCount
+        local vouchers = type(getVoucherCount) == "function" and getVoucherCount(link)
+        if vouchers and vouchers > 0 then
+            sellTab:SetUnitPrice(math.floor(unit / vouchers))
+        else
+            sellTab:SetUnitPrice(unit)
+        end
+    else
+        sellTab:SetUnitPrice(unit)
+    end
 end
 
 -- ─── AGS Sell Tab Button ─────────────────────────────────────────────────────
 
-local BUTTON_SIZE    = 24
-local BUTTON_TEXTURE = "/esoui/art/vendor/vendor_tabicon_sell_%s.dds"
+local BUTTON_SIZE         = 24
+local BUTTON_TEXTURE      = "/esoui/art/vendor/vendor_tabicon_sell_%s.dds"
+local QUICK_BUTTON_WIDTH  = 44
+local QUICK_BUTTON_HEIGHT = 28
+local QUICK_BUTTON_GAP    = 12
+local QUICK_BUTTON_MAX        = 20
+local QUICK_BUTTON_Y          = -4
+local QUICK_BUTTON_STACK_Y    = -26
+
+local function UpdateQuickButtons()
+    if not sv then return end
+
+    local quantitySlider = WINDOW_MANAGER:GetControlByName("AwesomeGuildStoreFormInvoiceQuantitySlider")
+    local invoice = quantitySlider and quantitySlider:GetParent()
+
+    local centerOffsetX = 0
+    if quantitySlider and invoice then
+        local invoiceCenterX = select(1, invoice:GetCenter())
+        local quantityCenterX = select(1, quantitySlider:GetCenter())
+        if invoiceCenterX and quantityCenterX then
+            centerOffsetX = invoiceCenterX - quantityCenterX
+        end
+    end
+
+    local base = tonumber(sv.undercutPercent) or 0
+    local visibleButtons = {}
+
+    for offset = 1, 3 do
+        local button = quickButtons[offset]
+        if button then
+            local target = base + offset
+            local visible = target <= QUICK_BUTTON_MAX
+
+            button:SetText(string.format("%d%%", target))
+            button:SetHidden(not visible)
+            button:ClearAnchors()
+
+            if visible then
+                visibleButtons[#visibleButtons + 1] = button
+            end
+        end
+    end
+
+    if not quantitySlider then return end
+
+    local count = #visibleButtons
+    if count == 0 then return end
+
+    local groupWidth = count * QUICK_BUTTON_WIDTH + (count - 1) * QUICK_BUTTON_GAP
+    local firstCenterX = -(groupWidth / 2) + (QUICK_BUTTON_WIDTH / 2)
+
+    local internal = AwesomeGuildStore and AwesomeGuildStore.internal
+    local tradingHouse = internal and internal.tradingHouse
+    local sellTab = tradingHouse and tradingHouse.sellTab
+    local isStackLayout = sellTab and (tonumber(sellTab.pendingStackCount) or 0) > 1
+    local y = isStackLayout and QUICK_BUTTON_STACK_Y or QUICK_BUTTON_Y
+
+    for index, button in ipairs(visibleButtons) do
+        local x = centerOffsetX + firstCenterX + (index - 1) * (QUICK_BUTTON_WIDTH + QUICK_BUTTON_GAP)
+        button:SetAnchor(CENTER, quantitySlider, TOP, x, y)
+    end
+end
+
+local function AddQuickButtons(buttonContainer)
+    if #quickButtons > 0 or not priceButton then
+        UpdateQuickButtons()
+        return
+    end
+
+    local quantitySlider = WINDOW_MANAGER:GetControlByName("AwesomeGuildStoreFormInvoiceQuantitySlider")
+    if not quantitySlider then return end
+
+    local quickParent = quantitySlider:GetParent() or buttonContainer
+
+    for offset = 1, 3 do
+        local button = WINDOW_MANAGER:CreateControlFromVirtual(
+            "TTCPriceQuick" .. offset .. "Button",
+            quickParent,
+            "ZO_DefaultButton"
+        )
+        button:SetDimensions(QUICK_BUTTON_WIDTH, QUICK_BUTTON_HEIGHT)
+
+        -- Keep the controls transparent so the AGS sell-panel artwork shows through.
+        button:SetNormalTexture("")
+        button:SetPressedTexture("")
+        button:SetMouseOverTexture("")
+        button:SetDisabledTexture("")
+
+        button:SetDrawLayer(DL_OVERLAY)
+
+        local quickOffset = offset
+        button:SetHandler("OnClicked", function()
+            local base = tonumber(sv.undercutPercent) or 0
+            local target = base + quickOffset
+            if target <= QUICK_BUTTON_MAX then
+                ApplyPrice(target)
+            end
+        end)
+
+        quickButtons[offset] = button
+    end
+
+    UpdateQuickButtons()
+end
 
 local function AddPriceButton()
     if priceButton then
-        priceButton:SetHidden(not sv.agsAssist)
+        priceButton:SetHidden(not sv.showPriceButton)
+        UpdateQuickButtons()
         return
     end
 
@@ -64,7 +203,8 @@ local function AddPriceButton()
     local existingButton = buttonContainer:GetNamedChild("TPPriceButton")
     if existingButton then
         priceButton = existingButton
-        priceButton:SetHidden(not sv.agsAssist)
+        priceButton:SetHidden(not sv.showPriceButton)
+        AddQuickButtons(buttonContainer)
         return
     end
 
@@ -84,39 +224,14 @@ local function AddPriceButton()
     btn.control:ClearAnchors()
     btn.control:SetAnchor(RIGHT, anchorTarget, LEFT, 2, 0)
     btn.control:SetDrawLayer(DL_OVERLAY)
-    btn.control:SetHidden(not sv.agsAssist)
+    btn.control:SetHidden(not sv.showPriceButton)
 
     btn.HandlePress = function()
-        local internal = AwesomeGuildStore and AwesomeGuildStore.internal
-        local tradingHouse = internal and internal.tradingHouse
-        local sellTab = tradingHouse and tradingHouse.sellTab
-        if not sellTab or type(sellTab.SetUnitPrice) ~= "function" then return end
-
-        local link = sellTab.pendingItemLink
-        if not link or link == "" then return end
-
-        local data = GetTTCData(link)
-        local ttcPrice, entryCount = GetPriceFromData(data)
-
-        if not ttcPrice then return end
-        if entryCount < sv.minEntryCount then return end
-
-        local unit = CalcUnitPrice(ttcPrice)
-
-        if sellTab.isMasterWrit then
-            local getVoucherCount = internal.GetItemLinkWritVoucherCount
-            local vouchers = type(getVoucherCount) == "function" and getVoucherCount(link)
-            if vouchers and vouchers > 0 then
-                sellTab:SetUnitPrice(math.floor(unit / vouchers))
-            else
-                sellTab:SetUnitPrice(unit)
-            end
-        else
-            sellTab:SetUnitPrice(unit)
-        end
+        ApplyPrice()
     end
 
     priceButton = btn.control
+    AddQuickButtons(buttonContainer)
 end
 
 local function OnAGSFilterSetup()
@@ -128,6 +243,12 @@ local function OnAGSFilterSetup()
     end
     agsHookRegistered = true
     ZO_PostHook(AwesomeGuildStore.class.SellTabWrapper, "InitializeListingInput", AddPriceButton)
+    ZO_PostHook(AwesomeGuildStore.class.SellTabWrapper, "SetPendingItem", function()
+        UpdateQuickButtons()
+        if sv.autoPrice then
+            ApplyPrice()
+        end
+    end)
 end
 
 local function RegisterAGSCallback()
@@ -147,15 +268,15 @@ end
 
 local function BuildSettingsPanel()
     local LAM = LibAddonMenu2
-    if not LAM then return end
 
     local panelData = {
         type               = "panel",
         name               = "TTCPrice",
         displayName        = "TTC Price",
         author             = "@NPViral",
-        version            = TP.version,
-        registerForRefresh = true,
+        version             = TP.version,
+        registerForRefresh  = true,
+        registerForDefaults = true,
     }
 
     LAM:RegisterAddonPanel("TTCPricePanel", panelData)
@@ -166,53 +287,73 @@ local function BuildSettingsPanel()
             name = "Pricing",
         },
         {
+            type    = "description",
+            text    = "The baseline undercut is used by Auto Price and the optional manual TTC button. Quick buttons add 1%, 2%, or 3% to the baseline without changing the saved setting.",
+            width   = "full",
+        },
+        {
             type          = "dropdown",
             name          = "Price Source",
-            tooltip       = "Which TTC price to use as the base before applying the undercut.",
+            tooltip       = "Which TTC price to use as the base before applying the baseline undercut.",
             choices       = { "SaleAvg", "SuggestedPrice", "Avg" },
             choicesValues = { "SaleAvg", "SuggestedPrice", "Avg" },
             getFunc       = function() return sv.priceSource end,
             setFunc       = function(v) sv.priceSource = v end,
+            default       = defaults.priceSource,
         },
         {
             type    = "slider",
-            name    = "Undercut Percent (%)",
-            tooltip = "Percentage below the selected TTC price to list at.",
+            name    = "Baseline Undercut (%)",
+            tooltip = "The normal undercut used by Auto Price and the optional manual TTC button. Quick buttons add +1%, +2%, or +3% to this value.",
             min     = 0,
             max     = 20,
             step    = 1,
             getFunc = function() return sv.undercutPercent end,
-            setFunc = function(v) sv.undercutPercent = v end,
+            setFunc = function(v)
+                sv.undercutPercent = v
+                UpdateQuickButtons()
+            end,
+            default = defaults.undercutPercent,
+        },
+        {
+            type    = "checkbox",
+            name    = "Auto Price Selected Item",
+            tooltip = "Automatically fills the AGS price field when you select an item, using the current baseline price. It never lists or sells the item. If TTCPrice cannot produce a valid price, the AGS price is left unchanged.",
+            getFunc = function() return sv.autoPrice end,
+            setFunc = function(v) sv.autoPrice = v end,
+            default = defaults.autoPrice,
         },
         {
             type = "header",
-            name = "Filters",
+            name = "Market Safety",
         },
         {
             type    = "slider",
             name    = "Minimum Listings",
-            tooltip = "Skip items with fewer active listings than this.",
+            tooltip = "Do not apply a TTCPrice value when TTC reports fewer active listings than this.",
             min     = 0,
             max     = 50,
             step    = 1,
             getFunc = function() return sv.minEntryCount end,
             setFunc = function(v) sv.minEntryCount = v end,
+            default = defaults.minEntryCount,
         },
         {
             type = "header",
-            name = "Integration",
+            name = "Sell Tab",
         },
         {
             type    = "checkbox",
-            name    = "Show Sell Tab Button",
-            tooltip = "Show or hide the TTC Price button in the AGS sell form.",
-            getFunc = function() return sv.agsAssist end,
+            name    = "Show Manual TTC Price Button",
+            tooltip = "Show the original TTC Price button in the AGS sell form. It reapplies the current baseline price and is optional when Auto Price is enabled.",
+            getFunc = function() return sv.showPriceButton end,
             setFunc = function(v)
-                sv.agsAssist = v
+                sv.showPriceButton = v
                 if priceButton then
                     priceButton:SetHidden(not v)
                 end
             end,
+            default = defaults.showPriceButton,
         },
         {
             type    = "button",

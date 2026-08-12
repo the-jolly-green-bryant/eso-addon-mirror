@@ -1379,6 +1379,11 @@ function Module:Hide()
 end
 
 function Module:Toggle()
+    if not CC.SV.enableAddon then
+        d(CC.CHAT .. " |cFF0000Addon is disabled.|r")
+        return
+    end
+
     if self.SV.isVisible then
         self:Hide()
         --SCENE_MANAGER:SetInUIMode(false)
@@ -1432,6 +1437,11 @@ end
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
     if not self.Parent then self:CreatePanel() end
+
+    if not CC.SV.enableAddon then
+        self:Hide()
+        return
+    end
 
     if self.SV.isVisible then
         self:Show(false)

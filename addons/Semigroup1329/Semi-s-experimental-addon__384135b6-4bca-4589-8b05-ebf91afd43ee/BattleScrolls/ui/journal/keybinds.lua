@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, inject-field -- the ESO Control/ZO_* API stubs are too incomplete for field checking in UI code
 if not SemisPlaygroundCheckAccess() then
     return
 end
@@ -18,6 +19,79 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
     local STATS_TAB = BattleScrolls_Journal_StatsTab
     local INSTANCE_TAB = BattleScrolls_Journal_InstanceTab
     local ENCOUNTER_TAB = BattleScrolls_Journal_EncounterTab
+
+    -- =========================================================================
+    -- SHARE STEPPER (survives the browser round-trip; back keeps the chain)
+    -- =========================================================================
+
+    ---Returns to the view the stepper was entered from. The upload chain (if
+    ---unfinished) stays alive - the share keybind there reads "Continue".
+    local function leaveShareStepper()
+        ZO_ConveyorSceneFragment_SetMovingBackward()
+        if journalUI.shareSourceMode == NAVIGATION_MODE.STATS
+            and journalUI.selectedEncounter and journalUI.selectedInstance then
+            journalUI.mode = NAVIGATION_MODE.STATS
+            journalUI:SetCurrentList(journalUI.statsList)
+            journalUI:RefreshList()
+            journalUI:SetActiveKeybinds(journalUI.statsKeybindStripDescriptor)
+        elseif journalUI.selectedInstance then
+            journalUI.mode = NAVIGATION_MODE.ENCOUNTERS
+            journalUI:SetCurrentList(journalUI.encounterList)
+            journalUI:RefreshList()
+            journalUI:SetActiveKeybinds(journalUI.encounterKeybindStripDescriptor)
+        else
+            journalUI:NavigateToInstanceList()
+        end
+    end
+
+    ---Enters the share stepper view, remembering where to return.
+    ---@param sourceMode NavigationMode
+    local function enterShareStepper(sourceMode)
+        journalUI.shareSourceMode = sourceMode
+        journalUI.mode = NAVIGATION_MODE.SHARE
+        ZO_ConveyorSceneFragment_SetMovingForward()
+        journalUI:SetCurrentList(journalUI.shareList)
+        journalUI:RefreshList()
+        journalUI:SetActiveKeybinds(journalUI.shareKeybindStripDescriptor)
+    end
+    journalUI.enterShareStepper = enterShareStepper
+
+    journalUI.shareKeybindStripDescriptor = {
+        alignment = KEYBIND_STRIP_ALIGN_LEFT,
+        {
+            keybind = "UI_SHORTCUT_PRIMARY",
+            name = function()
+                local state = BattleScrolls.shareUrl.getState()
+                return zo_strformat(GetString(BATTLESCROLLS_SHARE_SEND_PART),
+                    state.sentCount + 1, state.total)
+            end,
+            callback = function()
+                BattleScrolls.shareUrl.sendNextPart()
+            end,
+            visible = function()
+                return BattleScrolls.shareUrl.getState().phase == "sending"
+            end,
+            sound = SOUNDS.DIALOG_ACCEPT,
+        },
+        {
+            keybind = "UI_SHORTCUT_NEGATIVE",
+            name = GetString(SI_GAMEPAD_BACK_OPTION),
+            callback = leaveShareStepper,
+            sound = SOUNDS.GAMEPAD_MENU_BACK,
+        },
+        {
+            keybind = "UI_SHORTCUT_SECONDARY",
+            name = GetString(BATTLESCROLLS_SHARE_CANCEL),
+            callback = function()
+                BattleScrolls.shareUrl.stop()
+                leaveShareStepper()
+            end,
+            visible = function()
+                return BattleScrolls.shareUrl.isBusy()
+            end,
+            sound = SOUNDS.DIALOG_DECLINE,
+        },
+    }
 
     -- Instance list keybinds
     journalUI.instanceKeybindStripDescriptor = {
@@ -188,17 +262,19 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         },
         {
             keybind = "UI_SHORTCUT_SECONDARY",
-            name = GetString(BATTLESCROLLS_SHARE_INSTANCE),
+            name = function()
+                return BattleScrolls.shareUrl.isBusy()
+                    and GetString(BATTLESCROLLS_SHARE_CONTINUE)
+                    or GetString(BATTLESCROLLS_SHARE_INSTANCE)
+            end,
             callback = function()
-                if journalUI.selectedInstance then
+                if not BattleScrolls.shareUrl.isBusy() and journalUI.selectedInstance then
                     BattleScrolls.shareUrl.uploadInstance(journalUI.selectedInstance)
                 end
+                enterShareStepper(NAVIGATION_MODE.ENCOUNTERS)
             end,
             visible = function()
                 return journalUI.selectedInstance ~= nil
-            end,
-            enabled = function()
-                return not BattleScrolls.shareUrl.isBusy()
             end,
             sound = SOUNDS.DIALOG_ACCEPT,
         },
@@ -327,18 +403,21 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         -- Share the viewed fight via the browser (view profile export)
         {
             keybind = "UI_SHORTCUT_LEFT_STICK",
-            name = GetString(BATTLESCROLLS_SHARE_FIGHT),
+            name = function()
+                return BattleScrolls.shareUrl.isBusy()
+                    and GetString(BATTLESCROLLS_SHARE_CONTINUE)
+                    or GetString(BATTLESCROLLS_SHARE_FIGHT)
+            end,
             callback = function()
-                if journalUI.selectedInstance and journalUI.selectedEncounter then
+                if not BattleScrolls.shareUrl.isBusy()
+                    and journalUI.selectedInstance and journalUI.selectedEncounter then
                     BattleScrolls.shareUrl.shareEncounter(
                         journalUI.selectedInstance, journalUI.selectedEncounter)
                 end
+                enterShareStepper(NAVIGATION_MODE.STATS)
             end,
             visible = function()
                 return journalUI.selectedInstance ~= nil and journalUI.selectedEncounter ~= nil
-            end,
-            enabled = function()
-                return not BattleScrolls.shareUrl.isBusy()
             end,
             sound = SOUNDS.DIALOG_ACCEPT,
         },

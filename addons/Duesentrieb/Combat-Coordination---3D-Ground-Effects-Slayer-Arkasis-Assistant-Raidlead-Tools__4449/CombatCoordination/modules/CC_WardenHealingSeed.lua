@@ -13,15 +13,16 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Healing Seed"]      = { 85578, },
         ["Corrupting Pollen"] = { 85845, },
         ["Budding Seeds"]     = { 85840, },
+        ["Instant Bloom"]     = { 85922, },
     },
     Broadcast = {
-        ["Healing Seed"]      = LUT.VITALIZING_GLYPHIC,
-        ["Corrupting Pollen"] = LUT.GLYPHIC_OF_THE_TIDED,
-        ["Budding Seeds"]     = LUT.RESONATING_GLYPHIC,
+        ["Healing Seed"]      = LUT.HEALING_SEED,
+        ["Corrupting Pollen"] = LUT.CORRUPTING_POLLEN,
+        ["Budding Seeds"]     = LUT.BUDDING_SEEDS,
     },
     SkillData = {
         ["Healing Seed"]   = {
@@ -54,6 +55,15 @@ local Module = {
     ---@type table|any
     SV = {},
 }
+
+----------------------------------------------------------------------------------------------------
+-- BLOOM CAST
+----------------------------------------------------------------------------------------------------
+function Module:HandleActionSlotAbilityUsed(abilityId)
+    if abilityId == 85922 then
+        CC.ClearCombatVisuals(self, true, "player")
+    end
+end
 
 Module.HandleCombatEvent = CC.Events.HandleCombatEvent
 Module.HandleBroadcast = CC.Broadcast.HandleBroadcast

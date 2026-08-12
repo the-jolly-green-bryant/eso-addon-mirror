@@ -1,0 +1,28 @@
+## Title: HUDditor Tools
+## Author: @dack_janiels[PC], Baertram[PC]
+## APIVersion: 101051
+## Version: 1.0.1
+## AddOnVersion: 10100
+## Description: HUD editor tools: grid overlay and snap-to-grid, colored borders for hidden elements & other features.
+## SavedVariables: HUDitorToolsSV
+## DependsOn: LibAddonMenu-2.0>=43 LibScrollableMenu>=020405
+
+;Main addon
+HUDitorTools.lua
+SettingsMenu.lua
+
+;Grid & snap
+GridOverlay.xml
+Snap.lua
+GridOverlay.lua
+
+;HUD Editor InfoBox additions
+InfoBoxControls.xml
+InfoBoxControls.lua
+
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

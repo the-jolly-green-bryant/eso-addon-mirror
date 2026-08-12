@@ -15,7 +15,7 @@ local ALIGN_FULL = {
 	[LCM.CT_DROPDOWN] = true,
 	[LCM.CT_CHECKLIST] = true,
 	[LCM.CT_BUTTON] = true,
-	[LCM.CT_EDIT] = true,
+	[LCM.CT_EDITBOX] = true,
 }
 
 -- Submenu: center / left+indent only (flush coerced to indented)

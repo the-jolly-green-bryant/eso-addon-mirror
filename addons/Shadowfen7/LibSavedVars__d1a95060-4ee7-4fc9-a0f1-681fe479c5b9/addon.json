@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Shadowfen7/LibSavedVars__d1a95060-4ee7-4fc9-a0f1-681fe479c5b9",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Shadowfen7",
+  "canonical_id": "bethesda:d1a95060-4ee7-4fc9-a0f1-681fe479c5b9",
+  "content_id": "d1a95060-4ee7-4fc9-a0f1-681fe479c5b9",
+  "deleted": false,
+  "fingerprint": "fbf99ad3b8b5296a050c076d7c86c52860f657be7ed56a8413038eae5428053e",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d1a95060-4ee7-4fc9-a0f1-681fe479c5b9",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d1a95060-4ee7-4fc9-a0f1-681fe479c5b9",
+  "title": "LibSavedVars"
+}

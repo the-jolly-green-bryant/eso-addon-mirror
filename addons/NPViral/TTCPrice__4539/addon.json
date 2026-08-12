@@ -18,11 +18,11 @@
     "TTCPrice"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4539/",
-  "fingerprint": "35a6b4938982df1c10fe807708d20e38e06eb4fd9d9846a888c10ac3fb191be8",
+  "fingerprint": "00ddb1d2b84787cbc54827f129234fd2fc686d28c445157316cc521ac8d9b02f",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw15865.png",
-    "https://cdn-eso.mmoui.com/preview/pvw15859.png",
-    "https://cdn-eso.mmoui.com/preview/pvw15866.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16966.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16967.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16965.png"
   ],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4539",
   "source_url": "https://www.esoui.com/downloads/info4539-TTCPrice.html",
   "stats": {
-    "downloads": 820,
-    "favorites": 5,
-    "monthly_downloads": 216
+    "downloads": 992,
+    "favorites": 4,
+    "monthly_downloads": 330
   },
   "title": "TTCPrice",
-  "updated_at": 1785921566000,
-  "version": "1.2"
+  "updated_at": 1786459633000,
+  "version": "1.3"
 }

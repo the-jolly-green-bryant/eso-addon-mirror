@@ -302,9 +302,9 @@ EM:RegisterForEvent(MAJOR, EVENT_ADD_ON_LOADED, onAddonLoaded)
 
 
 ---------------------------------------------------------------
-	CHANGELOG Current version: 2.44 - Updated 2026-06-06
+	CHANGELOG Current version: 2.45 - Updated 2026-08-10
 ---------------------------------------------------------------
-Max error #: 2026_14
+Max error #: 2026_20
 
 
 [WORKING ON]
@@ -323,14 +323,27 @@ Max error #: 2026_14
 
 
 [Fixed]
---#2026_01 1st click on a checkbox/radio button in a new opened contextMenu, after another contextMenu was opened before and a checkbox/radiobutton was clicked inside, did not work
---#2026_11 Opening a contextMenu from a non LSM control (e.g. custom button to show the contextMenu on) showed the contextMenu empty, if another LSM non-contextMenu dropdown was opened at that time)
---#2026_13 Opening a contextmenu sometimes made it vanish behind the openingControl, due to the automatic (sub)menuRefreshs (if enabled)
---#2026_14 Checkboxes/Radiobuttons clicked in opened submenus closed the submenus sometimes
+--#2026_15 Add support at RefreshCustomScrollableMenu for existing comboBoxes where AddCustomScrollableComboBoxDropdownMenu added the LSM
+--#2026_18 Clicking on a checkbox in a submenu (the [ ], not the name label!) the refresh of the e.g. enabled state of other entries in the same submenu did not work
+--#2026_19 Debugging functions did not work, debugging ON/OFF chat messages did not show, and some messages got not enough/too many parameters
 
 [Added]
+--#2026_16 Added API function SortCustomScrollableMenu
+--Sort function using table.sort, automatically checking for LSM entry's label or name attribute to compare them alphabetically,
+--and keeps entries with .sortPosition = <number or function returning a number> specified at that position.
+--Parameter tableToSort must be the table that should be sorted
+--Parameter sortOrder must be a boolean (like ZO_SORT_ORDER_UP -> ASC: A to Z, and ZO_SORT_ORDER_DOWN -> DESC: Z to A), or function returning a boolean
+-->Returns the sortedTable
+--function SortCustomScrollableMenu(tableToSort, sortOrder)
+--#2026_17 Added API function GetCustomScrollableMenuCtrlsInfo
+-- Get the currently mouse-over control and it's relating comboBox + the itemData
+-- Parameter ctrl must be a userdata control
+-- Parameter comboBoxFromParentMenu boolean defines if you want the owning LSM menu's comboBox, or the current ctrl's one
+--> returns owning comboBox object, itemData table
+function GetCustomScrollableMenuCtrlsInfo(ctrl, comboBoxFromParentMenu)
 
 [Changed]
+--#2026_20 the enabled function currently only uses the data table, but should provide comboBox, data as parameters (like the callback functions)
 
 [Removed]
 

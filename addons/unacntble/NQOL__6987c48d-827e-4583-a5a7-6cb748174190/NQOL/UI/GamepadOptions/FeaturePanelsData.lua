@@ -145,6 +145,7 @@ end
 
 function GamepadOptions.BuildCombatOptionsData()
     return {
+        GamepadOptions.BuildTrialTimerEntry(),
         GamepadOptions.BuildCombatInfiniteArchiveEntry(),
         GamepadOptions.BuildCombatMiscellaneousEntry(),
         GamepadOptions.BuildUltimateCountdownEntry(),
@@ -161,6 +162,7 @@ end
 function GamepadOptions.BuildAutoChargeOptionsData()
     return {
         GamepadOptions.BuildAutoChargeOption(),
+        GamepadOptions.BuildChargeThresholdOption(),
         GamepadOptions.BuildLogChargeOption(),
     }
 end
@@ -168,6 +170,8 @@ end
 function GamepadOptions.BuildAutoRepairOptionsData()
     return {
         GamepadOptions.BuildAutoRepairOption(),
+        GamepadOptions.BuildRepairThresholdOption(),
+        GamepadOptions.BuildRepairAllInMerchantsOption(),
         GamepadOptions.BuildLogRepairOption(),
     }
 end
@@ -254,6 +258,7 @@ end
 function GamepadOptions.BuildProvisioningOptionsData()
     return {
         GamepadOptions.BuildAutoFoodOption(),
+        GamepadOptions.BuildAutoFoodRefreshThresholdOption(),
         GamepadOptions.BuildCheckStockOption(),
         GamepadOptions.BuildLogFoodOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildAutoFoodSavedFoodLabel(), NQOL.L("ui.headers.actions_c3cd636")),

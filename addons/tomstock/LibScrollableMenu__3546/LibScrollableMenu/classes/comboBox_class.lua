@@ -107,6 +107,7 @@ classes.comboBoxClass = comboBoxClass
 -- comboBoxClass:New(To simplify locating the beginning of the class
 function comboBoxClass:Initialize(parent, comboBoxContainer, options, depth, initExistingComboBox)
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 126, tos(getControlName(parent)), tos(getControlName(comboBoxContainer)), tos(depth)) end
+	if initExistingComboBox == false then initExistingComboBox = nil end  --#2026_15
 	comboBoxContainer.m_comboBox = self
 
 	--Set the self.default values
@@ -122,6 +123,9 @@ function comboBoxClass:Initialize(parent, comboBoxContainer, options, depth, ini
 	self.containerMinWidth = nil --Will be filled via comboBox_base:SetMinMaxWidth(minWidth, maxWidth), from comboBox_base:UpdateWidth()
 	self.m_selectedItemText = comboBoxContainer:GetNamedChild("SelectedItemText")
 	self.m_multiSelectItemData = {}
+	--Show to others that this ZO_ComboBox was applied to an exisitng one
+	self.wasUsingAddCustomScrollableComboBoxDropdownMenu = initExistingComboBox --#2026_15
+
 	comboBox_base.Initialize(self, parent, comboBoxContainer, options, depth, initExistingComboBox)
 
 	return self

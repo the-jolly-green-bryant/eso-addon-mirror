@@ -39,6 +39,7 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 - **Vigor Timing**: Optimal recasting reminders (8s intervals for group play)
 - **Custom Cooldown Bars**: Track any ability or effect with personalized bars
 - **Mount Notifications**: Reminds you when it's safe to mount in Cyrodiil, plus optional group-wide messages ("All Pookies Mounted!", "All Pookies can Mount!", "Pooky unmounted!") while grouped
+  - **Mount Traffic Light**: Optional single colored light while grouped — green = all mounted, yellow = all can mount, red = at least one Pooky unmounted (movable)
 
 
 ### 🎨 Customization & Combat Visuals
@@ -196,6 +197,46 @@ This addon is released under standard ESO addon terms. See individual library li
 
 ## Changelog
 
+### Version 2.19 - Active CC Bar CSA Notifications
+- **Center screen alerts when hard CCs land**: You now notice being CC'd even if you miss the bar
+  - **Stun** → "STUNNED!", **Fear** → "FEARED!", **Disorient** → "DISORIENTED!" (big CSA text)
+  - Only **hard CCs** (stun/fear/disorient) trigger it — staggers and silence don't
+- **Independent toggle**: "Show Active CC Bar CSA" enables/disables the alerts separately from the bar
+- **Anti-spam cooldown**: Default 2s between messages, adjustable via the "Active CC Bar CSA Cooldown (ms)" slider, so chain-CCs don't spam your screen
+- **Customizable texts**: The three CSA messages can be edited in the "Customize Messages" submenu
+- **Mount Traffic Light**: Optional single colored light shown while grouped (green = all mounted, yellow = all can mount, red = at least one Pooky unmounted); reuses the existing group mount poll (no extra timer), movable with position persistence, toggle in the "Group Mount Notifications" submenu
+
+### Version 2.18 - HoT Counter Core Rewrite & Group Mount Notifications & CC Immunity Bar Split & Active CC Bar
+- **HoT Counter Core Rewrite**:
+  - Replaced the manual ability-ID database with game-state counting via `GetUnitBuffInfo`
+  - Covers every HoT source automatically (skills, sets, items, scribing effects, procs) — no ability IDs to maintain, nothing goes stale
+  - Accurate durations using the game's real begin/end times (refreshes, CP/buff/set modifiers, and expiry handled automatically)
+  - Much smaller code: removed ~2000 lines of generated database and the fragile combat/effect event tracking
+  - UI unchanged: colored counter bar (green/yellow/red), status bar, movable with position persistence, menu toggle
+- **Group Mount Notifications**:
+  - Group-wide mount messages (inspired by the AreWeMounted addon):
+    - "All Pookies Mounted!" — when every online same-zone group member is mounted
+    - "All Pookies can Mount!" — when every online same-zone group member is off mount and out of combat
+    - "Pooky unmounted!" — when a group member (not you) dismounts
+  - Messages only fire while grouped; the lightweight 500ms poll only runs while grouped (and also powers the personal "Pooky you can MOUNT!" reminder), so it costs nothing when solo
+  - Editable texts in a new "Group Mount Notifications" submenu — leave a message empty to disable it
+  - Same CSA notification style as the existing Mount Ready message — no extra UI element
+- **CC Immunity Bar — Hard vs Soft Split**:
+  - The bar now distinguishes HARD CC immunity (stun/knockdown/fear/disorient) from SOFT CC immunity (snares/immobilizes) with separate colors
+  - Hard: immunity potions, Heavy Armor "Immovable" buff, Berserker Rage (default green)
+  - Soft: Race Against Time, Bird of Prey, Elusive Mist, Swift of the Falcon, Phantasmal Escape, Protective Plate (default blue)
+  - Dodge roll grants a short full-immunity window (both kinds)
+  - Blended color while both kinds are active at the same time
+  - New color pickers: "CC Immunity Bar Color (Hard CC)" and "CC Immunity Bar Color (Soft CC)"
+  - Bugfixes: bar drains correctly again, no early-hide during chain dodge-rolls, fixed duplicate event registration, activated `/blockpookytestimmo` test command
+- **Active CC Bar**:
+  - New bar (separate from the CC immunity bar) showing the highest-priority crowd control currently affecting you
+  - Priority order: Stun → Fear → Disorient → Silence → Stagger; switches to the next as each expires
+  - Per-type text (STUNNED/FEARED/DISORIENTED/SILENCED/STAGGER) and colors (red/purple/blue/cyan/yellow)
+  - Silence detected via standing in enemy Negate Magic fields
+  - Stun clears instantly on break free so the bar switches to the next CC immediately
+  - Independently toggleable in the menu with its own color pickers and position sliders
+  - Test command: `/blockpookytestcc`
 
 ### Version 2.17 - UI Positioning Improvements
 - **Fixed repositioning mode**: CC immunity bar and custom cooldown bars no longer hide themselves while arranging the UI (undefined `locked` variable)

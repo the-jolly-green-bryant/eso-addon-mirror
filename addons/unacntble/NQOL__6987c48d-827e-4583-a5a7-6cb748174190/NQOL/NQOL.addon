@@ -1,9 +1,9 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 290
-## LastProdVersionCommitID: 34dc12c
-## LastDevVersionCommitID: 85f44ef
+## AddOnVersion: 297
+## LastProdVersionCommitID: 5d5acc0
+## LastDevVersionCommitID: 622fd6e
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariables NQOLLanguageSettings
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames
@@ -63,6 +63,7 @@ Features/SkipLogoutConfirmation.lua
 Features/Positioning.lua
 Features/LuaGc.lua
 Features/UltimateCountdown.lua
+Features/TrialTimer.lua
 Features/CombatInfiniteArchive.lua
 Features/CombatMiscellaneous.lua
 Features/BuffsDebuffsEffectIds.lua

@@ -236,17 +236,18 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibResearch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibResearch__517) | Baertram | PC / Mac | 4.0r3 |
 | [LibResurrection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibResurrection__1312) | sirinsidiator | PC / Mac | r2 |
 | [LibRunebox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/LibRunebox__2317) | Kyoma | PC / Mac | 5 |
+| [LibSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen7/LibSavedVars__d1a95060-4ee7-4fc9-a0f1-681fe479c5b9) | Shadowfen7 | Console | — |
 | [LibSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/LibSavedVars__2161) | silvereyes | PC / Mac | 6.0.8 |
 | [LibSaveToDisk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomtomhotep/LibSaveToDisk__1993) | tomtomhotep | PC / Mac | 1.3g r6 |
 | [LibScroll](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/circonian/LibScroll__1151) | circonian | PC / Mac | 2 |
-| [LibScrollableMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomstock/LibScrollableMenu__3546) | tomstock | PC / Mac | 2.44 |
+| [LibScrollableMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomstock/LibScrollableMenu__3546) | tomstock | PC / Mac | 2.45 |
 | [LibScrollList](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibScrollList__4609) | imPDA | PC / Mac | 4 |
 | [LibSeasonalEventManager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/LibSeasonalEventManager__3670) | IsJustaGhost | PC / Mac | 1.3 |
 | [LibServerResetTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibServerResetTime__d1e62d86-1a34-4727-8221-e23b1c5b7616) | code65536 | Console | — |
 | [LibServerResetTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibServerResetTime__4427) | code65536 | PC / Mac | 2.0.0 |
 | [LibSetDetection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/LibSetDetection__3338) | ExoY | PC / Mac | 5.0 |
 | [LibSets (All set items ingame & preview. lua API + excel sheet)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibSets-All-set-items-ingame-preview.-lua-API-excel-sheet__2241) | Baertram | PC / Mac | 0.9.3 |
-| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 72 |
+| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 74 |
 | [LibShifterBox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klingo/LibShifterBox__2444) | Klingo | PC / Mac | 0.7.0 |
 | [LibSimpleArrow](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/LibSimpleArrow__4251) | sshogrin | PC / Mac | 1.0.0 |
 | [LibSimpleSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibSimpleSavedVars__2805) | zelenin | PC / Mac | 0.0.3 |

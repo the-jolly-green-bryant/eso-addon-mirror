@@ -2,6 +2,10 @@
     Nemesis - UI
     Reticle dossier popup + banner announcements.
     Reticle-driven by design: zero keybinds required (console rule).
+
+    The dossier stacks its rows at runtime (Layout), so sections that are
+    disabled in settings or have no data collapse instead of leaving gaps,
+    and the frame auto-sizes to its content.
 ]]
 
 Nemesis = Nemesis or {}
@@ -13,10 +17,18 @@ local EM = EVENT_MANAGER
 local SV
 
 local dossier, banner
+local rows            -- ordered row descriptors for layout
 local currentKey = nil
 local bannerQueue = {}
 local bannerBusy = false
 local bannerTimeline
+
+local PAD_X = 24
+local PAD_TOP = 18
+local PAD_BOTTOM = 18
+local HP_TRACK_WIDTH = 316
+
+local GROUP_COLOR = { 0.40, 0.80, 1.00 }
 
 -- Formatting helpers -----------------------------------------------------------
 
@@ -33,18 +45,29 @@ local function TimeAgo(ts)
     return string.format("%dd ago", math.floor(diff / 86400))
 end
 
-local function TopAbilities(rec, count)
+local function AbilityLine(abilityId, seen)
+    local name = zo_strformat("<<1>>", GetAbilityName(abilityId))
+    if not name or name == "" then return nil end
+    local icon = GetAbilityIcon(abilityId)
+    local line = icon and icon ~= "" and string.format("|t24:24:%s|t %s", icon, name) or name
+    if seen and seen > 1 then
+        line = line .. Colorize(string.format("  x%d", seen), 0.45, 0.45, 0.45)
+    end
+    return line
+end
+
+local function TopAbilityLines(rec, count)
     local list = {}
     for abilityId, seen in pairs(rec.ab or {}) do
         list[#list + 1] = { id = abilityId, seen = seen }
     end
     table.sort(list, function(a, b) return a.seen > b.seen end)
-    local names = {}
+    local lines = {}
     for i = 1, zo_min(count, #list) do
-        local name = zo_strformat("<<1>>", GetAbilityName(list[i].id))
-        if name and name ~= "" then names[#names + 1] = name end
+        local line = AbilityLine(list[i].id, list[i].seen)
+        if line then lines[#lines + 1] = line end
     end
-    return names
+    return lines
 end
 
 local function KnownSets(rec, count)
@@ -61,35 +84,81 @@ local function KnownSets(rec, count)
     return names
 end
 
+-- Layout engine ------------------------------------------------------------------
+-- Each row: control, optional second control (header chip), fixed height or
+-- dynamic (text height), a settings key gating it, and a content flag set
+-- during render. Layout() stacks whatever is visible and resizes the frame.
+
+local function Layout()
+    if not rows then return end
+    local y = PAD_TOP
+    for i = 1, #rows do
+        local row = rows[i]
+        local show = row.content ~= false and (not row.setting or SV[row.setting])
+        row.ctrl:SetHidden(not show)
+        if row.side then row.side:SetHidden(not show) end
+        if show then
+            y = y + (row.gap or 4)
+            row.ctrl:ClearAnchors()
+            row.ctrl:SetAnchor(TOPLEFT, dossier.control, TOPLEFT, PAD_X, y)
+            if row.side then
+                row.side:ClearAnchors()
+                row.side:SetAnchor(TOPRIGHT, dossier.control, TOPRIGHT, -PAD_X, y)
+            end
+            local h = row.h
+            if not h then
+                h = row.ctrl:GetTextHeight()
+                row.ctrl:SetHeight(h)
+            end
+            y = y + h
+        end
+    end
+    dossier.control:SetHeight(y + PAD_BOTTOM)
+end
+
+local function SetRowText(row, label, text)
+    label:SetText(text or "")
+    row.content = text ~= nil and text ~= ""
+end
+
 -- Dossier ------------------------------------------------------------------------
+
+local function SetAccentColor(r, g, b)
+    dossier.tierLabel:SetColor(r, g, b, 1)
+    dossier.bg:SetEdgeColor(r, g, b, 0.9)
+    dossier.divider:SetCenterColor(r, g, b, 0.8)
+end
 
 local function SetTierAppearance(tier)
     local color = N.TIER_COLORS[tier] or N.TIER_COLORS[0]
-    dossier.tierLabel:SetColor(color[1], color[2], color[3], 1)
-    dossier.bg:SetEdgeColor(color[1], color[2], color[3], 0.9)
+    SetAccentColor(color[1], color[2], color[3])
     dossier.tierLabel:SetText(tier > 0 and N.TIER_NAMES[tier] or "TRACKED")
 end
 
-local function ApplyVisibility()
-    dossier.infoLabel:SetHidden(not SV.showDossierInfo)
-    dossier.hpLabel:SetHidden(not SV.showDossierHP)
-    dossier.kdLabel:SetHidden(not SV.showDossierKD)
-    dossier.winLabel:SetHidden(not SV.showDossierWin)
-    dossier.movesLabel:SetHidden(not SV.showDossierMoves)
-    dossier.setsLabel:SetHidden(not SV.showDossierSets)
-    dossier.lastLabel:SetHidden(not SV.showDossierFooter)
+local function SetRecordChip(rec)
+    local k, d = rec and (rec.k or 0) or 0, rec and (rec.d or 0) or 0
+    if k + d > 0 then
+        dossier.recordLabel:SetText(Colorize(k .. "W", 0.45, 0.90, 0.45)
+            .. Colorize(" - ", 0.5, 0.5, 0.5) .. Colorize(d .. "L", 0.95, 0.40, 0.40))
+    else
+        dossier.recordLabel:SetText("")
+    end
 end
 
 local function UpdateHP(unitTag)
     local current, max = GetUnitPower(unitTag, COMBAT_MECHANIC_FLAGS_HEALTH)
     if current and max and max > 0 then
         local pct = current / max
-        local r = pct < 0.35 and 1 or 0.7
-        local g = pct < 0.35 and 0.25 or 0.9
-        dossier.hpLabel:SetText(Colorize(string.format("HP %d%%", pct * 100), r, g, 0.3))
-    else
-        dossier.hpLabel:SetText("")
+        local r, g, b = 0.30, 0.85, 0.35
+        if pct < 0.25 then r, g, b = 0.95, 0.30, 0.25
+        elseif pct < 0.50 then r, g, b = 0.95, 0.85, 0.30 end
+        dossier.hpFill:SetCenterColor(r, g, b, 1)
+        dossier.hpFill:SetWidth(zo_max(1, HP_TRACK_WIDTH * pct))
+        dossier.hpPct:SetText(string.format("%d%%", pct * 100))
+        return true
     end
+    dossier.hpPct:SetText("")
+    return false
 end
 
 local function ShowEnemyDossier(unitTag)
@@ -104,6 +173,7 @@ local function ShowEnemyDossier(unitTag)
 
     local tier = N.GetTier(rec)
     SetTierAppearance(tier)
+    SetRecordChip(rec)
 
     -- name, colored by alliance if known
     local nameText = key
@@ -122,32 +192,39 @@ local function ShowEnemyDossier(unitTag)
         local rankName = zo_strformat("<<1>>", GetAvARankName(GENDER_MALE, rec.rank))
         if rankName ~= "" then bits[#bits + 1] = rankName end
     end
-    dossier.infoLabel:SetText(table.concat(bits, "  ·  "))
+    SetRowText(dossier.rowInfo, dossier.infoLabel, table.concat(bits, "  -  "))
 
-    UpdateHP(unitTag)
+    dossier.rowHP.content = UpdateHP(unitTag)
 
     -- head-to-head
     local k, d = rec.k or 0, rec.d or 0
     local duels = (rec.dw or 0) + (rec.dl or 0)
-    local kdText = string.format("You killed them %s · They killed you %s",
+    local kdText = string.format("You killed them %s - they killed you %s",
         Colorize(tostring(k) .. "x", 0.4, 1, 0.4), Colorize(tostring(d) .. "x", 1, 0.4, 0.4))
     if duels > 0 then
-        kdText = kdText .. string.format(" · Duels %d-%d", rec.dw or 0, rec.dl or 0)
+        kdText = kdText .. string.format(" - duels %d-%d", rec.dw or 0, rec.dl or 0)
     end
-    dossier.kdLabel:SetText(kdText)
+    SetRowText(dossier.rowKD, dossier.kdLabel, kdText)
 
     -- win chance
     local pct = N.WinChance(rec) * 100
     local wr, wg = 0.4, 1
     if pct < 40 then wr, wg = 1, 0.35 elseif pct < 60 then wr, wg = 1, 0.85 end
-    dossier.winLabel:SetText(Colorize(string.format("Win chance ~%d%%", pct), wr, wg, 0.3)
-        .. Colorize("  (est.)", 0.5, 0.5, 0.5))
+    SetRowText(dossier.rowWin, dossier.winLabel,
+        Colorize(string.format("Win chance ~%d%%", pct), wr, wg, 0.3) .. Colorize("  (est.)", 0.5, 0.5, 0.5))
 
     -- known moves & sets
-    local moves = TopAbilities(rec, 4)
-    dossier.movesLabel:SetText(#moves > 0 and ("Watch for: " .. table.concat(moves, ", ")) or "No combat data yet - survive one fight to learn their moves.")
+    local moveLines = TopAbilityLines(rec, 4)
+    if #moveLines > 0 then
+        SetRowText(dossier.rowMoves, dossier.movesLabel,
+            Colorize("WATCH FOR", 0.60, 0.60, 0.60) .. "\n" .. table.concat(moveLines, "\n"))
+    else
+        SetRowText(dossier.rowMoves, dossier.movesLabel,
+            Colorize("No combat data yet - survive one fight to learn their moves.", 0.55, 0.55, 0.55))
+    end
     local sets = KnownSets(rec, 3)
-    dossier.setsLabel:SetText(#sets > 0 and ("Detected sets: " .. table.concat(sets, ", ")) or "")
+    SetRowText(dossier.rowSets, dossier.setsLabel,
+        #sets > 0 and ("Detected sets: " .. table.concat(sets, ", ")) or nil)
 
     -- footer
     local footer = {}
@@ -156,9 +233,10 @@ local function ShowEnemyDossier(unitTag)
     end
     if rec.loc and rec.loc ~= "" then footer[#footer + 1] = "Last clash: " .. rec.loc end
     footer[#footer + 1] = "Seen " .. TimeAgo(rec.last)
-    dossier.lastLabel:SetText(table.concat(footer, " · "))
+    SetRowText(dossier.rowLast, dossier.lastLabel, table.concat(footer, "  -  "))
+    dossier.rowFootDiv.content = dossier.rowLast.content
 
-    ApplyVisibility()
+    Layout()
     dossier.control:SetHidden(false)
     N.CheckSpotted(key, rec)
 end
@@ -169,9 +247,9 @@ local function ShowAllyBuild(unitTag)
     if not build then return end
     currentKey = displayName
 
+    SetAccentColor(GROUP_COLOR[1], GROUP_COLOR[2], GROUP_COLOR[3])
     dossier.tierLabel:SetText("GROUPMATE")
-    dossier.tierLabel:SetColor(0.4, 0.8, 1, 1)
-    dossier.bg:SetEdgeColor(0.4, 0.8, 1, 0.9)
+    dossier.recordLabel:SetText("")
     dossier.nameLabel:SetText(Colorize(displayName, 0.6, 0.9, 1))
 
     local bits = {}
@@ -179,25 +257,27 @@ local function ShowAllyBuild(unitTag)
         bits[#bits + 1] = zo_strformat("<<1>>", GetClassName(GENDER_MALE, build.classId))
     end
     if build.cp and build.cp > 0 then bits[#bits + 1] = string.format("CP %d", build.cp) end
-    dossier.infoLabel:SetText(table.concat(bits, "  ·  "))
-    UpdateHP(unitTag)
-    dossier.kdLabel:SetText("Shared build (Nemesis scrim link)")
-    dossier.winLabel:SetText("")
+    SetRowText(dossier.rowInfo, dossier.infoLabel, table.concat(bits, "  -  "))
 
-    local function BarText(label, bar)
-        local names = {}
+    dossier.rowHP.content = UpdateHP(unitTag)
+    SetRowText(dossier.rowKD, dossier.kdLabel, Colorize("Shared build (Nemesis scrim link)", 0.6, 0.75, 0.85))
+    dossier.rowWin.content = false
+
+    local function BarLine(label, bar)
+        local icons = {}
         for _, abilityId in ipairs(bar or {}) do
             if abilityId and abilityId > 0 then
-                local name = zo_strformat("<<1>>", GetAbilityName(abilityId))
-                if name ~= "" then names[#names + 1] = name end
+                local icon = GetAbilityIcon(abilityId)
+                if icon and icon ~= "" then icons[#icons + 1] = string.format("|t26:26:%s|t", icon) end
             end
         end
-        if #names == 0 then return nil end
-        return label .. table.concat(names, ", ")
+        if #icons == 0 then return nil end
+        return Colorize(label, 0.60, 0.60, 0.60) .. " " .. table.concat(icons, " ")
     end
-    local front = BarText("Front: ", build.front)
-    local back = BarText("Back: ", build.back)
-    dossier.movesLabel:SetText(table.concat({ front or "", back or "" }, "\n"))
+    local barLines = {}
+    barLines[#barLines + 1] = BarLine("FRONT", build.front)
+    barLines[#barLines + 1] = BarLine("BACK ", build.back)
+    SetRowText(dossier.rowMoves, dossier.movesLabel, table.concat(barLines, "\n"))
 
     local setNames = {}
     for _, setId in ipairs(build.sets or {}) do
@@ -206,10 +286,13 @@ local function ShowAllyBuild(unitTag)
             if name and name ~= "" then setNames[#setNames + 1] = zo_strformat("<<1>>", name) end
         end
     end
-    dossier.setsLabel:SetText(#setNames > 0 and ("Sets: " .. table.concat(setNames, ", ")) or "")
-    dossier.lastLabel:SetText("Shared " .. TimeAgo(build.at))
+    SetRowText(dossier.rowSets, dossier.setsLabel,
+        #setNames > 0 and ("Sets: " .. table.concat(setNames, ", ")) or nil)
 
-    ApplyVisibility()
+    SetRowText(dossier.rowLast, dossier.lastLabel, "Shared " .. TimeAgo(build.at))
+    dossier.rowFootDiv.content = dossier.rowLast.content
+
+    Layout()
     dossier.control:SetHidden(false)
 end
 
@@ -263,11 +346,7 @@ function UI.ApplyPositionAndScale()
     if not dossier or not dossier.control then return end
     dossier.control:ClearAnchors()
     dossier.control:SetAnchor(CENTER, nil, CENTER, SV.dossierX, SV.dossierY)
-    -- keep the clamped area matching the scaled size so it can reach screen edges
-    local w, h = dossier.control:GetDimensions()
-    local s = SV.dossierScale
-    dossier.control:SetClampedToScreenInsets(-w * s / 2, -w * s / 2, -h * s / 2, -h * s / 2)
-    dossier.control:SetScale(s)
+    dossier.control:SetScale(SV.dossierScale or 1)
 end
 
 function UI.OnDossierMoveStop(control)
@@ -294,8 +373,14 @@ local function ProcessBannerQueue()
     if not entry then return end
     bannerBusy = true
 
+    local r, g, b = entry.color[1], entry.color[2], entry.color[3]
     banner.titleLabel:SetText(entry.title)
-    banner.titleLabel:SetColor(entry.color[1], entry.color[2], entry.color[3], 1)
+    banner.titleLabel:SetColor(r, g, b, 1)
+    local accentWidth = zo_min(banner.titleLabel:GetTextWidth() + 80, 900)
+    banner.accentTop:SetCenterColor(r, g, b, 0.9)
+    banner.accentTop:SetWidth(accentWidth)
+    banner.accentBottom:SetCenterColor(r, g, b, 0.9)
+    banner.accentBottom:SetWidth(accentWidth)
     banner.subLabel:SetText(entry.sub or "")
     banner.control:SetAlpha(0)
     banner.control:SetHidden(false)
@@ -348,6 +433,11 @@ end
 
 -- Init ---------------------------------------------------------------------------
 
+local function SolidRect(bd, r, g, b, a)
+    bd:SetCenterColor(r, g, b, a)
+    bd:SetEdgeColor(0, 0, 0, 0)
+end
+
 function UI.Init(savedVars)
     SV = savedVars
 
@@ -356,19 +446,52 @@ function UI.Init(savedVars)
         control = d,
         bg = d:GetNamedChild("BG"),
         tierLabel = d:GetNamedChild("Tier"),
+        recordLabel = d:GetNamedChild("Record"),
         nameLabel = d:GetNamedChild("Name"),
+        divider = d:GetNamedChild("Divider"),
         infoLabel = d:GetNamedChild("Info"),
-        hpLabel = d:GetNamedChild("HP"),
+        hpRow = d:GetNamedChild("HPRow"),
         kdLabel = d:GetNamedChild("KD"),
         winLabel = d:GetNamedChild("Win"),
         movesLabel = d:GetNamedChild("Moves"),
         setsLabel = d:GetNamedChild("Sets"),
+        footDivider = d:GetNamedChild("FootDivider"),
         lastLabel = d:GetNamedChild("Last"),
     }
-    dossier.bg:SetCenterColor(0.05, 0.05, 0.05, 0.85)
+    dossier.hpTrack = dossier.hpRow:GetNamedChild("Track")
+    dossier.hpFill = dossier.hpRow:GetNamedChild("Fill")
+    dossier.hpPct = dossier.hpRow:GetNamedChild("Pct")
 
-    -- default size (matches XML)
-    dossier.control:SetDimensions(440, 540)
+    dossier.bg:SetCenterColor(0.05, 0.05, 0.05, 0.85)
+    SolidRect(dossier.divider, 1, 1, 1, 0.8)
+    SolidRect(dossier.footDivider, 0.35, 0.35, 0.35, 0.5)
+    SolidRect(dossier.hpTrack, 0.10, 0.10, 0.10, 0.9)
+    SolidRect(dossier.hpFill, 0.30, 0.85, 0.35, 1)
+    dossier.hpFill:SetWidth(1)
+
+    -- layout order: settings-gated rows collapse when disabled or empty
+    dossier.rowInfo = { ctrl = dossier.infoLabel, h = 26, setting = "showDossierInfo", gap = 8 }
+    dossier.rowHP = { ctrl = dossier.hpRow, h = 18, setting = "showDossierHP", gap = 6 }
+    dossier.rowKD = { ctrl = dossier.kdLabel, h = 26, setting = "showDossierKD", gap = 6 }
+    dossier.rowWin = { ctrl = dossier.winLabel, h = 40, setting = "showDossierWin", gap = 2 }
+    dossier.rowMoves = { ctrl = dossier.movesLabel, setting = "showDossierMoves", gap = 14 }
+    dossier.rowSets = { ctrl = dossier.setsLabel, setting = "showDossierSets", gap = 8 }
+    dossier.rowFootDiv = { ctrl = dossier.footDivider, h = 1, setting = "showDossierFooter", gap = 14 }
+    dossier.rowLast = { ctrl = dossier.lastLabel, setting = "showDossierFooter", gap = 8 }
+    rows = {
+        { ctrl = dossier.tierLabel, side = dossier.recordLabel, h = 30 },
+        { ctrl = dossier.nameLabel, h = 42, gap = 0 },
+        { ctrl = dossier.divider, h = 2, gap = 6 },
+        dossier.rowInfo,
+        dossier.rowHP,
+        dossier.rowKD,
+        dossier.rowWin,
+        dossier.rowMoves,
+        dossier.rowSets,
+        dossier.rowFootDiv,
+        dossier.rowLast,
+    }
+
     UI.ApplyPositionAndScale()
 
     local b = NemesisBanner
@@ -376,15 +499,19 @@ function UI.Init(savedVars)
         control = b,
         titleLabel = b:GetNamedChild("Title"),
         subLabel = b:GetNamedChild("Sub"),
+        accentTop = b:GetNamedChild("AccentTop"),
+        accentBottom = b:GetNamedChild("AccentBottom"),
     }
+    SolidRect(banner.accentTop, 1, 1, 1, 0.9)
+    SolidRect(banner.accentBottom, 1, 1, 1, 0.9)
 
     bannerTimeline = ANIMATION_MANAGER:CreateTimeline()
     local fadeIn = bannerTimeline:InsertAnimation(ANIMATION_ALPHA, banner.control, 0)
     fadeIn:SetAlphaValues(0, 1)
     fadeIn:SetDuration(250)
-    local fadeOut = bannerTimeline:InsertAnimation(ANIMATION_ALPHA, banner.control, 3250)
+    local fadeOut = bannerTimeline:InsertAnimation(ANIMATION_ALPHA, banner.control, 3400)
     fadeOut:SetAlphaValues(1, 0)
-    fadeOut:SetDuration(600)
+    fadeOut:SetDuration(550)
     bannerTimeline:SetHandler("OnStop", function()
         banner.control:SetHidden(true)
         bannerBusy = false
@@ -399,5 +526,5 @@ function UI.Init(savedVars)
         REGISTER_FILTER_POWER_TYPE, COMBAT_MECHANIC_FLAGS_HEALTH)
 end
 
-UI.ApplyVisibility = ApplyVisibility
+UI.ApplyVisibility = Layout
 UI.HideDossier = HideDossier

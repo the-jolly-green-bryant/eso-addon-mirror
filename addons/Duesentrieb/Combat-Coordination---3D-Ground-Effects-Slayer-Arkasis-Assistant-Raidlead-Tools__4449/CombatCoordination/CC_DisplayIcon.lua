@@ -67,9 +67,7 @@ end
 -- ENABLE MODULE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
-    if not self.Parent then
-        self:Create()
-    end
+    if not self.Parent then self:Create() end
 end
 
 ----------------------------------------------------------------------------------------------------

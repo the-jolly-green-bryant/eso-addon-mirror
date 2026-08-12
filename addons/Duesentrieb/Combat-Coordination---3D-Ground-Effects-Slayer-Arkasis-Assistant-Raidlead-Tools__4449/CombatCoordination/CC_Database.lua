@@ -253,6 +253,11 @@ CC.LUT = {
     -- 704 .. 719
     -- 720 .. 735
     -- 736 .. 751 ASSAULT
+    ASSAULT = {
+        WAR_HORN        = 736,
+        AGGRESSIVE_HORN = 737,
+        STURDY_HORN     = 738,
+    },
     -- 752 .. 767 SUPPORT
     SUPPORT = {
         BARRIER              = 752,

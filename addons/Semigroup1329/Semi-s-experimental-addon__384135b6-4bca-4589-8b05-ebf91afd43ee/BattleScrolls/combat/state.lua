@@ -27,6 +27,7 @@ BattleScrolls = BattleScrolls or {}
 
 ---Per-ability damage breakdown with crit stats
 ---@class DamageBreakdown
+---@field rawTotal number|nil Total before shield/absorb adjustments
 ---@field total number Total damage value
 ---@field ticks number Total number of ticks (hits)
 ---@field critTicks number Number of critical ticks
@@ -36,7 +37,7 @@ BattleScrolls = BattleScrolls or {}
 ---Damage tracking broken down by various dimensions
 ---@class DamageDone
 ---@field total number
----@field byDotOrDirect { dot: number , direct: number }
+---@field byDotOrDirect { dot: number, direct: number, healAbsorption: number|nil, shielded: number|nil, unknown: number|nil }
 ---@field byDamageType table<DamageType, number>
 ---@field byAbilityId table<number, DamageBreakdown>
 
@@ -96,6 +97,7 @@ BattleScrolls = BattleScrolls or {}
 
 ---Active effect instance for tracking during combat
 ---@class EffectInstance
+---@field storageKey string|number|nil Stable storage key resolved at finalize
 ---@field abilityId number
 ---@field effectType number BUFF_EFFECT_TYPE_BUFF or BUFF_EFFECT_TYPE_DEBUFF
 ---@field startTimeMs number Game time when effect was gained
@@ -134,6 +136,8 @@ BattleScrolls = BattleScrolls or {}
 
 ---Main combat tracking state
 ---@class BattleScrollsState : EffectContext
+---@field isPlayerFight boolean|nil True when a player/duel fight (no NPC enemies)
+---@field isDummyFight boolean|nil True when the target is a target dummy
 ---@field initialized boolean
 ---@field inCombat boolean
 ---@field isBossFight boolean
@@ -171,8 +175,6 @@ BattleScrolls = BattleScrolls or {}
 ---@field cruxStacks number Current Crux stack count (0-3, for Exhausting Fatecarver duration)
 ---@field cruxRecentMax number Max Crux stacks seen within current event burst window
 ---@field cruxWindowStartMs number Start of current Crux event burst window
-
---- @type BattleScrollsState
 local state = {}
 
 BattleScrolls.state = state
@@ -257,13 +259,13 @@ end
 
 ---Register an observer to receive state lifecycle notifications
 ---@param observer StateObserver Object with state lifecycle methods
-function BattleScrolls.state:RegisterObserver(observer)
+function state:RegisterObserver(observer)
     table.insert(observers, observer)
 end
 
 ---Unregister an observer for cleanup/hot reload support
 ---@param observer StateObserver Observer to unregister
-function BattleScrolls.state:UnregisterObserver(observer)
+function state:UnregisterObserver(observer)
     for i = #observers, 1, -1 do
         if observers[i] == observer then
             table.remove(observers, i)
@@ -273,7 +275,7 @@ function BattleScrolls.state:UnregisterObserver(observer)
 end
 
 ---Notify all observers that state has been initialized (combat started)
-function BattleScrolls.state:NotifyInitialized()
+function state:NotifyInitialized()
     -- Backfill any already-active effects when combat starts
     BattleScrolls.effects.backfill(self)
 
@@ -285,7 +287,7 @@ function BattleScrolls.state:NotifyInitialized()
 end
 
 ---Notify all observers before state is reset (combat ended, data still available)
-function BattleScrolls.state:NotifyPreReset()
+function state:NotifyPreReset()
     -- Note: effects.finalize() is now called in scribe's async chain after queue drain
 
     for _, observer in ipairs(observers) do
@@ -296,7 +298,7 @@ function BattleScrolls.state:NotifyPreReset()
 end
 
 ---Notify all observers before live combat snapshots/calculations are created.
-function BattleScrolls.state:NotifyPreTick()
+function state:NotifyPreTick()
     for _, observer in ipairs(observers) do
         if observer.OnStatePreTick then
             observer:OnStatePreTick(self)
@@ -304,7 +306,7 @@ function BattleScrolls.state:NotifyPreTick()
     end
 end
 
-function BattleScrolls.state:Reset()
+function state:Reset()
     -- Notify observers before clearing state (so they can read final data)
     if self.initialized then
         self:NotifyPreReset()
@@ -375,7 +377,7 @@ function BattleScrolls.state:Reset()
 end
 
 ---@return BattleScrollsState
-function BattleScrolls.state:Snapshot()
+function state:Snapshot()
     local snapshot = {}
 
     snapshot.initialized = self.initialized
@@ -427,7 +429,7 @@ local BOSS_TAGS = BattleScrolls.constants.BOSS_TAGS
 
 ---Returns false if in combat, in portal, or bosses are in progress
 ---@return boolean
-function BattleScrolls.state:ShouldReset()
+function state:ShouldReset()
     if not self.initialized then
         -- BattleScrolls.log.Trace("ShouldReset: not initialized")
         return false
@@ -467,7 +469,7 @@ function BattleScrolls.state:ShouldReset()
     return true
 end
 
-function BattleScrolls.state:RefreshBosses()
+function state:RefreshBosses()
     for i = BOSS_RANK_ITERATION_BEGIN, BOSS_RANK_ITERATION_END do
         local bossTag = BOSS_TAGS[i]
         local bossName = GetRawUnitName(bossTag)
@@ -502,7 +504,7 @@ end
 ---@param unitTag string Boss unit tag ("boss1", etc.)
 ---@param unitId number Unit ID from the effect event
 ---@param unitName string Boss unit name from the effect event
-function BattleScrolls.state:CorrelateBossUnitId(unitTag, unitId, unitName)
+function state:CorrelateBossUnitId(unitTag, unitId, unitName)
     -- Ensure every boss unitId has a name in unitIdToName. Effect events are often
     -- the first source of a boss unitId (before any damage event), and without this,
     -- the unitId can end up in bossesUnits with no corresponding name entry.
@@ -582,7 +584,7 @@ end
 
 ---Handles EVENT_UNIT_CREATED for boss tags. Detects tag reuse (different boss name on same tag).
 ---@param unitTag string Boss unit tag ("boss1", etc.)
-function BattleScrolls.state:OnBossUnitCreated(unitTag)
+function state:OnBossUnitCreated(unitTag)
     local bossData = self.bossesByTag[unitTag]
     local bossName = GetRawUnitName(unitTag)
     if not bossData then
@@ -647,7 +649,7 @@ local CRUX_ABILITY_ID = 184220
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitID, targetUnitID, abilityID, overflow)
     -- Extra safety check for isError (also filtered at ESO level)
     if isError then
         return
@@ -780,7 +782,7 @@ local function registerCombatEvent(name, callback, ...)
 end
 
 ---Unregisters all event handlers for cleanup/hot reload
-function BattleScrolls.state:Cleanup()
+function state:Cleanup()
     for _, name in ipairs(combatEventNames) do
         EVENT_MANAGER:UnregisterForEvent(name, EVENT_COMBAT_EVENT)
     end
@@ -803,7 +805,7 @@ end
 ---only invokes our Lua handler for the specific result/source/target combinations
 ---we actually process. Each handler verifies its expected filter conditions in Lua
 ---as a safety measure against duplicate dispatch.
-function BattleScrolls.state:Initialize()
+function state:Initialize()
     local bsLog = BattleScrolls.log
 
     -- Damage: one registration per result type, no source/target filter
@@ -953,7 +955,7 @@ end
 ---@param isDot boolean
 ---@param damageType number|nil
 ---@param isShield boolean|nil
-function BattleScrolls.state:UpdateAbilityInfo(abilityId, isDot, damageType, isShield)
+function state:UpdateAbilityInfo(abilityId, isDot, damageType, isShield)
     if not self.abilityInfo[abilityId] then
         self.abilityInfo[abilityId] = {
             deliveryType = {},
@@ -979,13 +981,13 @@ end
 
 ---Marks an ability as damage-shield delivery without adding damage type metadata.
 ---@param abilityId number
-function BattleScrolls.state:MarkShieldAbility(abilityId)
+function state:MarkShieldAbility(abilityId)
     self:UpdateAbilityInfo(abilityId, false, nil, true)
 end
 
 ---Marks an ability as natural health recovery without adding damage type metadata.
 ---@param abilityId number
-function BattleScrolls.state:MarkRegenAbility(abilityId)
+function state:MarkRegenAbility(abilityId)
     if not self.abilityInfo[abilityId] then
         self.abilityInfo[abilityId] = {
             deliveryType = {},
@@ -1000,7 +1002,7 @@ end
 
 ---Marks an ability as heal-absorption delivery without adding damage type metadata.
 ---@param abilityId number
-function BattleScrolls.state:MarkHealAbsorptionAbility(abilityId)
+function state:MarkHealAbsorptionAbility(abilityId)
     if not self.abilityInfo[abilityId] then
         self.abilityInfo[abilityId] = {
             deliveryType = {},
@@ -1021,13 +1023,13 @@ local isCriticalResult = BattleScrolls.accumulators.isCriticalResult
 ---Updates cached unit name for a given unit ID
 ---@param unitId number
 ---@param name string
-function BattleScrolls.state:UpdateUnitName(unitId, name)
+function state:UpdateUnitName(unitId, name)
     if (not self.unitIdToName[unitId]) and name and name ~= "" then
         self.unitIdToName[unitId] = name
     end
 end
 
-function BattleScrolls.state:UpdateUnitFriendliness(unitId, unitType)
+function state:UpdateUnitFriendliness(unitId, unitType)
     if self.unitIdToIsFriendly[unitId] == nil then
         local isFriendly = friendlyTypesSet[unitType] == true
         self.unitIdToIsFriendly[unitId] = isFriendly
@@ -1124,7 +1126,7 @@ end
 
 ---@param previousUnitId number
 ---@param unitId number
-function BattleScrolls.state:RetconPersonalUnitIdentity(previousUnitId, unitId)
+function state:RetconPersonalUnitIdentity(previousUnitId, unitId)
     if not previousUnitId or not unitId or previousUnitId <= 0 or unitId <= 0 or previousUnitId == unitId then
         return
     end
@@ -1141,7 +1143,7 @@ end
 ---@param unitType number
 ---@param previousUnitId number
 ---@param unitId number
-function BattleScrolls.state:NotifyPersonalUnitIdentityChanged(unitType, previousUnitId, unitId)
+function state:NotifyPersonalUnitIdentityChanged(unitType, previousUnitId, unitId)
     local shieldTracker = BattleScrolls.shields
     if shieldTracker and shieldTracker.OnPersonalUnitIdentityChanged then
         shieldTracker:OnPersonalUnitIdentityChanged(unitType, previousUnitId, unitId)
@@ -1150,7 +1152,7 @@ end
 
 ---@param unitType number
 ---@return number|nil
-function BattleScrolls.state:GetPersonalUnitId(unitType)
+function state:GetPersonalUnitId(unitType)
     local inferredUnitId = getInferredPersonalUnitId(unitType)
     if not inferredUnitId then
         return nil
@@ -1164,7 +1166,7 @@ end
 ---@param unitId number
 ---@param name string
 ---@return number|nil previousUnitId Previous unit ID when it changed, otherwise nil
-function BattleScrolls.state:RememberPersonalUnitIdentity(unitType, unitId, name)
+function state:RememberPersonalUnitIdentity(unitType, unitId, name)
     local inferredUnitId = getInferredPersonalUnitId(unitType)
     if not inferredUnitId or not unitId or unitId <= 0 then
         return nil
@@ -1194,7 +1196,7 @@ end
 ---@param targetName string
 ---@param targetType number
 ---@return number targetUnitID Redirected target unit ID
-function BattleScrolls.state:NormalizeAndTrackPersonalDamageTarget(targetUnitID, targetName, targetType)
+function state:NormalizeAndTrackPersonalDamageTarget(targetUnitID, targetName, targetType)
     -- Redirect boss unit IDs (merging if boss unit recreated on the client,
     -- for example after going in and out of the portal)
     targetUnitID = self.bossUnitIdRedirects[targetUnitID] or targetUnitID
@@ -1247,7 +1249,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnPersonalDamageDone(_eventCode, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnPersonalDamageDone(_eventCode, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
     if hitValue <= 0 then
         return
     end
@@ -1287,7 +1289,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:ApplyPersonalDamage(result, sourceName, sourceType, targetName, targetType, hitValue, damageType, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:ApplyPersonalDamage(result, sourceName, sourceType, targetName, targetType, hitValue, damageType, sourceUnitID, targetUnitID, abilityID, overflow)
     self:UpdateUnitName(sourceUnitID, sourceName)
     self:UpdateUnitName(targetUnitID, targetName)
     self:UpdateUnitFriendliness(sourceUnitID, sourceType)
@@ -1333,7 +1335,7 @@ end
 ---@param targetUnitID number
 ---@param _abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnPersonalDamageShielded(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, _abilityID, overflow)
+function state:OnPersonalDamageShielded(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, _abilityID, overflow)
     if hitValue <= 0 then
         return
     end
@@ -1369,7 +1371,7 @@ end
 ---@param hitValue number
 ---@param sourceUnitID number
 ---@param targetUnitID number
-function BattleScrolls.state:ApplyPersonalDamageShielded(sourceName, sourceType, targetName, targetType, hitValue, sourceUnitID, targetUnitID)
+function state:ApplyPersonalDamageShielded(sourceName, sourceType, targetName, targetType, hitValue, sourceUnitID, targetUnitID)
     self:UpdateUnitName(sourceUnitID, sourceName)
     self:UpdateUnitName(targetUnitID, targetName)
     self:UpdateUnitFriendliness(sourceUnitID, sourceType)
@@ -1399,7 +1401,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnGroupDamageDone(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, _sourceName, _sourceType, _targetName, _targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnGroupDamageDone(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, _sourceName, _sourceType, _targetName, _targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
     -- if math.random() < 0.025 then
     --     BattleScrolls.log.Trace(function()
     --         return string.format("OnGroupDamageDone: sourceUnitID=%d targetUnitID=%d abilityID=%d hitValue=%d sourceUnitType=%s targetUnitType=%s",
@@ -1442,7 +1444,7 @@ end
 ---@param hitValue number
 ---@param overflow number
 ---@param _damageType number
-function BattleScrolls.state:ApplyGroupDamage(result, sourceUnitID, targetUnitID, abilityID, hitValue, overflow, _damageType)
+function state:ApplyGroupDamage(result, sourceUnitID, targetUnitID, abilityID, hitValue, overflow, _damageType)
     -- Redirect boss unit IDs (merging if boss unit recreated on the client,
     -- for example after going in and out of the portal)
     targetUnitID = self.bossUnitIdRedirects[targetUnitID] or targetUnitID
@@ -1476,7 +1478,7 @@ end
 ---@param targetUnitID number
 ---@param _abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnGroupDamageShielded(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, _sourceName, _sourceType, _targetName, _targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, _abilityID, overflow)
+function state:OnGroupDamageShielded(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, _sourceName, _sourceType, _targetName, _targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, _abilityID, overflow)
     if hitValue <= 0 then
         return
     end
@@ -1508,7 +1510,7 @@ end
 ---@param sourceUnitID number
 ---@param targetUnitID number
 ---@param hitValue number
-function BattleScrolls.state:ApplyGroupDamageShielded(sourceUnitID, targetUnitID, hitValue)
+function state:ApplyGroupDamageShielded(sourceUnitID, targetUnitID, hitValue)
     -- Redirect boss unit IDs (merging if boss unit recreated on the client,
     -- for example after going in and out of the portal)
     targetUnitID = self.bossUnitIdRedirects[targetUnitID] or targetUnitID
@@ -1540,7 +1542,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnSelfHealing(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnSelfHealing(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
     if not self.initialized then
         return
     end
@@ -1584,7 +1586,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnHealingOut(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnHealingOut(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
     if not self.initialized then
         return
     end
@@ -1628,7 +1630,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnHealingIn(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnHealingIn(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
     if not self.initialized then
         return
     end
@@ -1676,7 +1678,7 @@ end
 ---@param targetUnitID number
 ---@param _abilityID number
 ---@param _overflow number
-function BattleScrolls.state:OnSelfHealingAbsorbed(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
+function state:OnSelfHealingAbsorbed(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
     if not self.initialized then
         return
     end
@@ -1712,7 +1714,7 @@ end
 ---@param targetUnitID number
 ---@param _abilityID number
 ---@param _overflow number
-function BattleScrolls.state:OnHealingOutAbsorbed(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
+function state:OnHealingOutAbsorbed(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
     if not self.initialized then
         return
     end
@@ -1752,7 +1754,7 @@ end
 ---@param targetUnitID number
 ---@param _abilityID number
 ---@param _overflow number
-function BattleScrolls.state:OnHealingInAbsorbed(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
+function state:OnHealingInAbsorbed(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
     if not self.initialized then
         return
     end
@@ -1792,7 +1794,7 @@ end
 ---@param targetUnitID number
 ---@param abilityID number
 ---@param overflow number
-function BattleScrolls.state:OnDamageTaken(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
+function state:OnDamageTaken(_, result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, damageType, _log, sourceUnitID, targetUnitID, abilityID, overflow)
     if not self.initialized then
         return
     end
@@ -1845,7 +1847,7 @@ end
 ---@param targetUnitID number
 ---@param _abilityID number
 ---@param _overflow number
-function BattleScrolls.state:OnDamageShieldedTaken(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
+function state:OnDamageShieldedTaken(_, _result, _isError, _abilityName, _abilityGraphic, _abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, _powerType, _damageType, _log, sourceUnitID, targetUnitID, _abilityID, _overflow)
     if not self.initialized then
         return
     end
@@ -1872,7 +1874,7 @@ end
 
 ---Initializes fight tracking when combat starts for the first time
 ---@param inCombat boolean
-function BattleScrolls.state:ChangePlayerCombatState(inCombat)
+function state:ChangePlayerCombatState(inCombat)
     self.inCombat = inCombat
 
     if inCombat and not self.initialized then
@@ -1926,7 +1928,7 @@ end
 
 ---@param _ number
 ---@param changeType number EFFECT_RESULT_GAINED or EFFECT_RESULT_FADED
-function BattleScrolls.state:OnPortalEffectChanged(_, changeType)
+function state:OnPortalEffectChanged(_, changeType)
     if changeType == EFFECT_RESULT_GAINED then
         self:EnterPortal()
     else
@@ -1934,11 +1936,11 @@ function BattleScrolls.state:OnPortalEffectChanged(_, changeType)
     end
 end
 
-function BattleScrolls.state:EnterPortal()
+function state:EnterPortal()
     self.isInPortal = true
 end
 
-function BattleScrolls.state:ExitPortal()
+function state:ExitPortal()
     if self.isInPortal then
         self.isInPortal = false
         self:RefreshBosses()

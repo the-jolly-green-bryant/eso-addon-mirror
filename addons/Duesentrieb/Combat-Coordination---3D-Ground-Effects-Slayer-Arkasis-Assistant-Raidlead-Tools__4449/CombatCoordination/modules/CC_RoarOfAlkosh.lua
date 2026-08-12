@@ -13,7 +13,7 @@ local Module = {
     TextureChoices = CC.SQUARE_CHOICES,
     TextureValues  = CC.SQUARE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Roar of Alkosh"] = { 76667, },
     },
     Broadcast = {

@@ -13,7 +13,7 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Frozen Colossus"]    = { 122174, },
         ["Pestilent Colossus"] = { 122395, },
         ["Glacial Colossus"]   = { 122388, },

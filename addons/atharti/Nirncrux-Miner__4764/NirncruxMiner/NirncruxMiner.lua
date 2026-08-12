@@ -1,37 +1,21 @@
 local NirncruxMiner = {}
-
 local NM = NirncruxMiner
-
 NM.name = "NirncruxMiner"
 
 ZO_CreateStringId("SI_NIRNCRUX_MINER_OPTION", "Nirncrux Miner")
 ZO_CreateStringId("SI_NIRNCRUX_MINER_DIALOG_TITLE", "Nirncrux Miner")
-ZO_CreateStringId("SI_NIRNCRUX_MINER_CONFIRM", "Retrait to Nirnhoned?")
 
-local TRAIT_NIRNHONED = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
+local NIRN = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
 
 local processing = false
 local pendingItems = {}
 local currentIndex = 0
-
 local deconstructQueue = {}
 local deconstructReady = false
-
 local atRetraitStation = false
 
-function NM.IsAtCraftingStation()
-    local craftingType = GetCraftingInteractionType()
-    return craftingType == CRAFTING_TYPE_BLACKSMITHING or
-           craftingType == CRAFTING_TYPE_WOODWORKING
-end
-
-function NM.GetItemIdFromLink(link)
-    if not link or link == "" then return nil end
-    return GetItemLinkItemId(link)
-end
-
 function NM.FindIdenticalWeapons(itemLink, skipSlot)
-    local targetId = NM.GetItemIdFromLink(itemLink)
+    local targetId = GetItemLinkItemId(itemLink)
     if not targetId then return {} end
 
     local matches = {}
@@ -39,38 +23,20 @@ function NM.FindIdenticalWeapons(itemLink, skipSlot)
     for slot = 0, bagSize - 1 do
         if not skipSlot or slot ~= skipSlot then
             local link = GetItemLink(BAG_BACKPACK, slot)
-            if link and link ~= "" then
-                local id = NM.GetItemIdFromLink(link)
-                if id == targetId then
-                    local itemType = GetItemLinkItemType(link)
-                    if itemType == ITEMTYPE_WEAPON then
-                        table.insert(matches, {
-                            bag = BAG_BACKPACK,
-                            slot = slot,
-                            itemId = id,
-                            itemLink = link,
-                        })
-                    end
+            if link then
+                local id = GetItemLinkItemId(link)
+                if id == targetId and GetItemLinkItemType(link) == ITEMTYPE_WEAPON then
+                    table.insert(matches, {
+                        bag = BAG_BACKPACK,
+                        slot = slot,
+                        itemId = id,
+                        itemLink = link,
+                    })
                 end
             end
         end
     end
     return matches
-end
-
-function NM.IsItemNirnhoned(bag, slot)
-    local link = GetItemLink(bag, slot)
-    if not link or link == "" then return false end
-    local traitType = GetItemLinkTraitInfo(link)
-    return traitType == TRAIT_NIRNHONED
-end
-
-function NM.GetItemRetraitCost(bag, slot)
-    local cost = GetItemRetraitCost(bag, slot)
-    if not cost or cost == 0 then
-        return 50
-    end
-    return cost
 end
 
 function NM.GetCrystalCount()
@@ -86,39 +52,30 @@ function NM.FormatCurrency(amount)
 end
 
 function NM.AddToDeconstructQueue(itemLink)
-    if not itemLink or itemLink == "" then return end
-    local itemId = NM.GetItemIdFromLink(itemLink)
+    local itemId = GetItemLinkItemId(itemLink)
     if not itemId then return end
     
     if not deconstructQueue[itemId] then
-        deconstructQueue[itemId] = {
-            itemId = itemId,
-            itemLink = itemLink,
-            count = 0
-        }
+        deconstructQueue[itemId] = { itemId = itemId, itemLink = itemLink, count = 0 }
     end
     deconstructQueue[itemId].count = deconstructQueue[itemId].count + 1
     deconstructReady = true
 end
 
 function NM.ProcessDeconstructQueue()
-    if not NM.IsAtCraftingStation() then
-        return
-    end
-
-    if not deconstructReady or next(deconstructQueue) == nil then
+    local craftingType = GetCraftingInteractionType()
+    if craftingType ~= CRAFTING_TYPE_BLACKSMITHING and craftingType ~= CRAFTING_TYPE_WOODWORKING then
         return
     end
 
     PrepareDeconstructMessage()
-
     local totalAdded = 0
     local bagSize = GetBagSize(BAG_BACKPACK)
     
     for slot = 0, bagSize - 1 do
         local link = GetItemLink(BAG_BACKPACK, slot)
-        if link and link ~= "" then
-            local itemId = NM.GetItemIdFromLink(link)
+        if link then
+            local itemId = GetItemLinkItemId(link)
             if deconstructQueue[itemId] and deconstructQueue[itemId].count > 0 then
                 if CanItemBeDeconstructed(BAG_BACKPACK, slot) then
                     if AddItemToDeconstructMessage(BAG_BACKPACK, slot, 1) then
@@ -143,51 +100,37 @@ function NM.ProcessDeconstructQueue()
 end
 
 function NM.ProcessNextItem()
-    if not processing then
-        return
-    end
+    if not processing then return end
 
     if currentIndex > #pendingItems then
         processing = false
-        local itemsToQueue = {}
         for _, item in ipairs(pendingItems) do
-            table.insert(itemsToQueue, item)
+            NM.AddToDeconstructQueue(item.itemLink)
         end
         pendingItems = {}
         currentIndex = 0
-        
-        for _, item in ipairs(itemsToQueue) do
-            NM.AddToDeconstructQueue(item.itemLink)
-        end
-        
         d("[NirncruxMiner] |t24:24:NirncruxMiner/textures/yes.dds|t")
         return
     end
 
     local item = pendingItems[currentIndex]
-    if not item then
-        currentIndex = currentIndex + 1
-        NM.ProcessNextItem()
-        return
-    end
-
     local bag, slot = item.bag, item.slot
     local link = GetItemLink(bag, slot)
-    if not link or link == "" then
+    
+    if not link then
         currentIndex = currentIndex + 1
         NM.ProcessNextItem()
         return
     end
 
-    if NM.IsItemNirnhoned(bag, slot) then
+    if GetItemLinkTraitInfo(link) == NIRN then
         currentIndex = currentIndex + 1
         NM.ProcessNextItem()
         return
     end
 
-    local cost = NM.GetItemRetraitCost(bag, slot)
-    local have = NM.GetCrystalCount()
-    if have < cost then
+    local cost = GetItemRetraitCost(bag, slot)
+    if NM.GetCrystalCount() < cost then
         d("[NirncruxMiner] Insufficient transmute crystals.")
         processing = false
         pendingItems = {}
@@ -196,15 +139,13 @@ function NM.ProcessNextItem()
     end
 
     d("[NirncruxMiner] " .. currentIndex .. "/" .. #pendingItems)
-    RequestItemTraitChange(bag, slot, TRAIT_NIRNHONED)
+    RequestItemTraitChange(bag, slot, NIRN)
 end
 
 function NM.OnRetraitResponse(_, result, bag, slot, itemLink, traitType)
     if not processing then return end
 
-    if result == RETRAIT_RESPONSE_SUCCESS then
-	
-    else
+    if result ~= RETRAIT_RESPONSE_SUCCESS then
         d("[NirncruxMiner] Failed: " .. GetString("SI_RETRAITRESPONSE", result))
     end
 
@@ -213,19 +154,18 @@ function NM.OnRetraitResponse(_, result, bag, slot, itemLink, traitType)
 end
 
 function NM.StartProcessing(items)
-    if processing then
-        return
-    end
+    if processing then return end
 
     local filtered = {}
     for _, item in ipairs(items) do
-        if not NM.IsItemNirnhoned(item.bag, item.slot) then
+        local link = GetItemLink(item.bag, item.slot)
+        if link and GetItemLinkTraitInfo(link) ~= NIRN then
             table.insert(filtered, item)
         end
     end
 
     if #filtered == 0 then
-        d("[NirncruxMiner] No items to process (all already Nirnhoned).")
+        d("[NirncruxMiner] |t24:24:NirncruxMiner/textures/no.dds|t No items to process (all already Nirnhoned).")
         return
     end
 
@@ -236,25 +176,18 @@ function NM.StartProcessing(items)
 end
 
 function NM.ShowConfirmationDialog(items, itemLink)
-    local count = #items
-    local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-    
     local totalCost = 0
     for _, item in ipairs(items) do
-        totalCost = totalCost + NM.GetItemRetraitCost(item.bag, item.slot)
+        totalCost = totalCost + GetItemRetraitCost(item.bag, item.slot)
     end
-    
-    local formattedCost = NM.FormatCurrency(totalCost)
 
     local dialogParams = {
-        callback = function()
-            NM.StartProcessing(items)
-        end,
+        callback = function() NM.StartProcessing(items) end,
         mainText = zo_strformat(
             "Retrait <<1>> items of |cFFFFFF\"<<2>>\"|r to |cFFA500Nirnhoned|r?\n\nCost: <<3>>",
-            count,
-            itemName,
-            formattedCost
+            #items,
+            zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)),
+            NM.FormatCurrency(totalCost)
         )
     }
 
@@ -263,42 +196,18 @@ end
 
 function NM.RegisterDialog()
     ESO_Dialogs["NIRNCRUX_MINER_CONFIRMATION_DIALOG"] = {
-        gamepadInfo = {
-            dialogType = GAMEPAD_DIALOGS.BASIC,
-        },
-        title = {
-            text = SI_NIRNCRUX_MINER_DIALOG_TITLE,
-        },
-        mainText = {
-            text = function(dialog)
-                return dialog.data.mainText
-            end,
-        },
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS.BASIC },
+        title = { text = SI_NIRNCRUX_MINER_DIALOG_TITLE },
+        mainText = { text = function(dialog) return dialog.data.mainText end },
         mustChoose = true,
         buttons = {
-            [1] = {
-                text = SI_DIALOG_ACCEPT,
-                callback = function(dialog)
-                    dialog.data.callback()
-                end,
-            },
-            [2] = {
-                text = SI_DIALOG_CANCEL,
-            },
+            [1] = { text = SI_DIALOG_ACCEPT, callback = function(dialog) dialog.data.callback() end },
+            [2] = { text = SI_DIALOG_CANCEL },
         },
-        finishedCallback = function(dialog)
-            if dialog.data.finishingCallback then
-                dialog.data.finishingCallback()
-            end
-        end,
     }
 end
 
 function NM.AddNirncruxOption(inventorySlot, slotActions)
-    if not atRetraitStation then
-        return
-    end
-
     slotActions:AddCustomSlotAction(
         SI_NIRNCRUX_MINER_OPTION,
         function()
@@ -306,18 +215,19 @@ function NM.AddNirncruxOption(inventorySlot, slotActions)
             if not bagId then return end
 
             local link = GetItemLink(bagId, slotIndex)
-            if not link or link == "" then return end
-
-            if GetItemLinkItemType(link) ~= ITEMTYPE_WEAPON then return end
+            if GetItemLinkItemType(link) ~= ITEMTYPE_WEAPON then
+				d("[NirncruxMiner] |t24:24:NirncruxMiner/textures/no.dds|t Not a weapon.")
+				return
+			end
 
             local matches = NM.FindIdenticalWeapons(link, slotIndex)
-            if #matches == 0 then 
+            if #matches == 0 then
                 d("[NirncruxMiner] |t24:24:NirncruxMiner/textures/no.dds|t No matching weapons found.")
-                return 
+                return
             end
 
             local allMatches = {
-                { bag = bagId, slot = slotIndex, itemId = NM.GetItemIdFromLink(link), itemLink = link }
+                { bag = bagId, slot = slotIndex, itemId = GetItemLinkItemId(link), itemLink = link }
             }
             for _, m in ipairs(matches) do
                 table.insert(allMatches, m)
@@ -325,22 +235,23 @@ function NM.AddNirncruxOption(inventorySlot, slotActions)
 
             local filtered = {}
             for _, item in ipairs(allMatches) do
-                if not NM.IsItemNirnhoned(item.bag, item.slot) then
+                local itemLink = GetItemLink(item.bag, item.slot)
+                if itemLink and GetItemLinkTraitInfo(itemLink) ~= NIRN then
                     table.insert(filtered, item)
                 end
             end
 
-            if #filtered < 2 then 
+            if #filtered < 2 then
                 d("[NirncruxMiner] |t24:24:NirncruxMiner/textures/no.dds|t Need at least 2 items to retrait (found " .. #filtered .. " retrait-able items).")
-                return 
+                return
             end
 
             local totalCost = 0
             for _, item in ipairs(filtered) do
-                totalCost = totalCost + NM.GetItemRetraitCost(item.bag, item.slot)
+                totalCost = totalCost + GetItemRetraitCost(item.bag, item.slot)
             end
-            local have = NM.GetCrystalCount()
             
+            local have = NM.GetCrystalCount()
             if have < totalCost then
                 d("[NirncruxMiner] |t24:24:NirncruxMiner/textures/no.dds|t Not enough |t20:20:" .. GetCurrencyKeyboardIcon(CURT_TRANSMUTE_CRYSTALS) .. "|t (need " .. totalCost .. ", have " .. have .. ").")
                 return
@@ -349,27 +260,8 @@ function NM.AddNirncruxOption(inventorySlot, slotActions)
             NM.ShowConfirmationDialog(filtered, link)
         end,
         "",
-        function() 
-            return atRetraitStation 
-        end
+        function() return atRetraitStation end
     )
-end
-
-function NM.OnRetraitStationInteract()
-    atRetraitStation = true
-end
-
-function NM.OnInteractionEnded(_, interactType, cancelContext)
-    if interactType == INTERACTION_RETRAIT then
-        atRetraitStation = false
-    end
-end
-
-function NM.OnStationInteract(event, craftingType)
-    if craftingType == CRAFTING_TYPE_BLACKSMITHING or
-       craftingType == CRAFTING_TYPE_WOODWORKING then
-        NM.ProcessDeconstructQueue()
-    end
 end
 
 function NM.OnAddonLoaded(event, addonName)
@@ -377,13 +269,25 @@ function NM.OnAddonLoaded(event, addonName)
     EVENT_MANAGER:UnregisterForEvent(NM.name, EVENT_ADD_ON_LOADED)
 
     NM.RegisterDialog()
-
     LibCustomMenu:RegisterContextMenu(NM.AddNirncruxOption, LibCustomMenu.CATEGORY_LATE)
 
-    EVENT_MANAGER:RegisterForEvent(NM.name .. "_RetraitStationStart", EVENT_RETRAIT_STATION_INTERACT_START, NM.OnRetraitStationInteract)
-    EVENT_MANAGER:RegisterForEvent(NM.name .. "_InteractionEnded", EVENT_INTERACTION_ENDED, NM.OnInteractionEnded)
+    EVENT_MANAGER:RegisterForEvent(NM.name .. "_RetraitStationStart", EVENT_RETRAIT_STATION_INTERACT_START, function()
+		atRetraitStation = true
+	end)
+
+	EVENT_MANAGER:RegisterForEvent(NM.name .. "_InteractionEnded", EVENT_INTERACTION_ENDED, function(_, interactType)
+		if interactType == INTERACTION_RETRAIT then
+			atRetraitStation = false
+		end
+	end)
+	
     EVENT_MANAGER:RegisterForEvent(NM.name .. "_RetraitResponse", EVENT_RETRAIT_RESPONSE, NM.OnRetraitResponse)
-    EVENT_MANAGER:RegisterForEvent(NM.name .. "_StationInteract", EVENT_CRAFTING_STATION_INTERACT, NM.OnStationInteract)
+	
+	EVENT_MANAGER:RegisterForEvent(NM.name .. "_StationInteract", EVENT_CRAFTING_STATION_INTERACT, function(event, craftingType)
+		if (craftingType == CRAFTING_TYPE_BLACKSMITHING or craftingType == CRAFTING_TYPE_WOODWORKING) and deconstructReady then
+			NM.ProcessDeconstructQueue()
+		end
+	end)
 end
 
 EVENT_MANAGER:RegisterForEvent(NM.name, EVENT_ADD_ON_LOADED, NM.OnAddonLoaded)

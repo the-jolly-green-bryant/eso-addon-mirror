@@ -53,3 +53,13 @@ The original package includes an MIT-style permission notice. This fork keeps th
 - Safe side-panel placement when the keyboard chat controls are unavailable.
 - Player resource frame position is restored after death and HUD rebuilds.
 - Added a 35-pixel gap between the player resource frame and the action bar.
+
+
+## 1.0.28-xbox
+- Keep the native ESO top boss-health fill texture so the red fill stays inside the boss-bar frame/brackets.
+
+
+## v1.0.34-xbox
+- Restored the top boss-bar adjustment from v1.0.29.
+- Kept the syntax/loading safety correction from v1.0.30.
+- Removed the later boss-frame/background shifting experiments.

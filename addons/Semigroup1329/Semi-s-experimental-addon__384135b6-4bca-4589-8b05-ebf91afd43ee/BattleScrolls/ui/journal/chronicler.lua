@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, inject-field -- the ESO Control/ZO_* API stubs are too incomplete for field checking in UI code
 -----------------------------------------------------------
 -- The Chronicler
 -- Orchestrates how the battle journal is presented
@@ -760,6 +761,11 @@ function chronicler.refreshSettingsList(journalUI)
     end)
 end
 
+---@param journalUI BattleScrolls_Journal_Gamepad
+function chronicler.refreshShareList(journalUI)
+    BattleScrolls.journal.shareStepper.render(journalUI.shareList)
+end
+
 ---Get or cache the loading label control
 ---@param journalUI BattleScrolls_Journal_Gamepad
 ---@return Control|nil
@@ -875,6 +881,8 @@ function chronicler.refreshList(journalUI, skipHeaderRefresh)
         chronicler.refreshSettingsList(journalUI)
     elseif journalUI.mode == NAVIGATION_MODE.PIVOT then
         chronicler.refreshPivotList(journalUI)
+    elseif journalUI.mode == NAVIGATION_MODE.SHARE then
+        chronicler.refreshShareList(journalUI)
     end
 
     -- Refresh sub-header on every list refresh (handles show/hide based on tab).

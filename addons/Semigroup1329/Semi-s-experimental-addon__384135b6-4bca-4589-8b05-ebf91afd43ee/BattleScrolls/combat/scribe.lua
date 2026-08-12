@@ -148,8 +148,6 @@ end
 ---@field instance InstanceStorage The current instance data (always compressed format)
 ---@field decodedAbilityInfo table<number, AbilityInfo> Decoded cache for active instance
 ---@field registry EncounterRegistry|nil Live ability/name registry for the active instance (v17+)
-
----@type Scribe
 local scribe = {
     pushedToStorage = false,
     instance = {

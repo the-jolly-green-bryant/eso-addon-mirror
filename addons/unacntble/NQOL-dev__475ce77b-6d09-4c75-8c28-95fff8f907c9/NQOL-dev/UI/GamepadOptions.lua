@@ -68,6 +68,7 @@ GamepadOptions.PanelIds = {
     COMBAT_INFINITE_ARCHIVE = 9181,
     COMBAT_MISCELLANEOUS = 9183,
     MAP_OPTIONS = 9184,
+    TRIAL_TIMER = 9185,
 }
 
 local PanelIds = GamepadOptions.PanelIds
@@ -96,6 +97,7 @@ local SUBTITLES_PANEL_ID = PanelIds.SUBTITLES
 local COMBAT_PANEL_ID = PanelIds.COMBAT
 local COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
 local COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
+local TRIAL_TIMER_PANEL_ID = PanelIds.TRIAL_TIMER
 local ULTIMATE_COUNTDOWN_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN
 local ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 local ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
@@ -147,6 +149,7 @@ GamepadOptions.SUBTITLES_PANEL_ID = PanelIds.SUBTITLES
 GamepadOptions.COMBAT_PANEL_ID = PanelIds.COMBAT
 GamepadOptions.COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
 GamepadOptions.COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
+GamepadOptions.TRIAL_TIMER_PANEL_ID = PanelIds.TRIAL_TIMER
 GamepadOptions.ULTIMATE_COUNTDOWN_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN
 GamepadOptions.ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 GamepadOptions.ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
@@ -382,6 +385,7 @@ local SUBPANEL_PARENT_IDS = {
     [COMBAT_PANEL_ID] = ROOT_PANEL_ID,
     [COMBAT_INFINITE_ARCHIVE_PANEL_ID] = COMBAT_PANEL_ID,
     [COMBAT_MISCELLANEOUS_PANEL_ID] = COMBAT_PANEL_ID,
+    [TRIAL_TIMER_PANEL_ID] = COMBAT_PANEL_ID,
     [ULTIMATE_COUNTDOWN_PANEL_ID] = COMBAT_PANEL_ID,
     [ULTIMATE_COUNTDOWN_FRONT_PANEL_ID] = ULTIMATE_COUNTDOWN_PANEL_ID,
     [ULTIMATE_COUNTDOWN_BACK_PANEL_ID] = ULTIMATE_COUNTDOWN_PANEL_ID,
@@ -425,6 +429,7 @@ local SUBPANEL_PARENT_IDS = {
     [GROUPING_PANEL_ID] = ROOT_PANEL_ID,
     [AUTO_INVITE_PANEL_ID] = GROUPING_PANEL_ID,
     [LUA_GC_PANEL_ID] = UTILITY_PANEL_ID,
+    [BUFFS_DEBUFFS_PANEL_ID] = ROOT_PANEL_ID,
     [BUFFS_DEBUFFS_TRACKERS_PANEL_ID] = BUFFS_DEBUFFS_PANEL_ID,
     [PROGRESS_PANEL_ID] = ROOT_PANEL_ID,
     [XP_TRACKER_PANEL_ID] = PROGRESS_PANEL_ID,
@@ -446,9 +451,10 @@ PANEL_RESET_PATHS = {
     [AUTO_CHARGE_PANEL_ID] = { { "gear" } },
     [AUTO_REPAIR_PANEL_ID] = { { "gear" } },
     [AUTO_BOUND_PANEL_ID] = { { "gear" } },
-    [COMBAT_PANEL_ID] = { { "ultimateCountdown" }, { "combat", "infiniteArchive" }, { "combat", "miscellaneous" } },
+    [COMBAT_PANEL_ID] = { { "trialTimer" }, { "ultimateCountdown" }, { "combat", "infiniteArchive" }, { "combat", "miscellaneous" } },
     [COMBAT_INFINITE_ARCHIVE_PANEL_ID] = { { "combat", "infiniteArchive" } },
     [COMBAT_MISCELLANEOUS_PANEL_ID] = { { "combat", "miscellaneous" } },
+    [TRIAL_TIMER_PANEL_ID] = { { "trialTimer" } },
     [ULTIMATE_COUNTDOWN_PANEL_ID] = { { "ultimateCountdown" } },
     [ULTIMATE_COUNTDOWN_FRONT_PANEL_ID] = { { "ultimateCountdown", "frontBar" } },
     [ULTIMATE_COUNTDOWN_BACK_PANEL_ID] = { { "ultimateCountdown", "backBar" } },
@@ -663,6 +669,10 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
         else
             NQOL.Features.UltimateCountdown.SetSettingsPanelVisible(nil)
         end
+    end
+
+    if NQOL.Features and NQOL.Features.TrialTimer then
+        NQOL.Features.TrialTimer.SetSettingsPanelVisible(panelId == TRIAL_TIMER_PANEL_ID)
     end
 
     if GamepadOptions.IsSubpanel(panelId) then
@@ -1604,6 +1614,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. COMBAT_MISCELLANEOUS_PANEL_ID, NQOL.L("ui.gamepad_options.miscellaneous"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. COMBAT_MISCELLANEOUS_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. TRIAL_TIMER_PANEL_ID, NQOL.L("ui.gamepad_options.trial_timer"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. TRIAL_TIMER_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. ULTIMATE_COUNTDOWN_PANEL_ID, NQOL.L("ui.gamepad_options.ultimate_countdown_12344ec"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. ULTIMATE_COUNTDOWN_PANEL_ID, 1)
 
@@ -1850,6 +1863,10 @@ function GamepadOptions.RegisterPanels()
 
     if not GAMEPAD_SETTINGS_DATA[COMBAT_MISCELLANEOUS_PANEL_ID] then
         GamepadOptions.RegisterPanel(COMBAT_MISCELLANEOUS_PANEL_ID, GamepadOptions.BuildCombatMiscellaneousOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[TRIAL_TIMER_PANEL_ID] then
+        GamepadOptions.RegisterPanel(TRIAL_TIMER_PANEL_ID, GamepadOptions.BuildTrialTimerOptionsData())
     end
 
     if not GAMEPAD_SETTINGS_DATA[ULTIMATE_COUNTDOWN_PANEL_ID] then
@@ -2137,6 +2154,9 @@ local function OpenRootPanel()
     if NQOL.Features and NQOL.Features.UltimateCountdown then
         NQOL.Features.UltimateCountdown.SetSettingsPanelVisible(nil)
     end
+    if NQOL.Features and NQOL.Features.TrialTimer then
+        NQOL.Features.TrialTimer.SetSettingsPanelVisible(false)
+    end
     SCENE_MANAGER:Push("gamepad_options_panel")
 end
 
@@ -2411,6 +2431,9 @@ function GamepadOptions.InstallSubpanelBackOverride()
             end
             if NQOL.Features and NQOL.Features.UltimateCountdown then
                 NQOL.Features.UltimateCountdown.SetSettingsPanelVisible(nil)
+            end
+            if NQOL.Features and NQOL.Features.TrialTimer then
+                NQOL.Features.TrialTimer.SetSettingsPanelVisible(false)
             end
             if GAMEPAD_OPTIONS then
                 GAMEPAD_OPTIONS:RevertBackKeybind()

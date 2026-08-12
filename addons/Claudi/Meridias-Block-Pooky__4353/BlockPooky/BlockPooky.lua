@@ -21,7 +21,7 @@
 --[[ basic initialization -------------------------------------------------------------------------------------------]]
 BlockPooky = BlockPooky or {}
 -- Addon version information
-BlockPooky.version = 2.17
+BlockPooky.version = 2.19
 BlockPooky.svVersion = 1.8  -- SavedVariables version for config migration
 BlockPooky.name = "BlockPooky"
 BlockPooky.msgText = "BLOCK Pooky!"
@@ -37,6 +37,9 @@ BlockPooky.defaultMessages = {
     roaReady = "ROA Ready!",
     mountReady = "Pooky you can MOUNT!",
     ccImmunity = "CC Immunity",
+    ccStun = "STUNNED!",
+    ccFear = "FEARED!",
+    ccDisorient = "DISORIENTED!",
     negateWarning = "MOVE Pooky! You're in a Negate!",
     allMounted = "All Pookies Mounted!",
     allCanMount = "All Pookies can Mount!",
@@ -249,6 +252,9 @@ function BlockPooky.SetUiLock(locked)
     end
     if BlockPooky.ccDebuffBar then
         BlockPooky.ccDebuffBar:SetHidden(not locked)
+    end
+    if BlockPooky.mountLight then
+        BlockPooky.mountLight:SetHidden(not locked)
     end
     BlockPooky.CooldownBarsSetHidden(not locked)
     if BlockPooky.negateWarning then
@@ -530,6 +536,7 @@ function BlockPooky.Initialize()
     BlockPooky.SetStaminaLowTexture()
     BlockPooky.InitHoTBarUI()
     BlockPooky.InitHoTTracker()
+    BlockPooky.InitMountLightUI()
     -- Synchronize ALL UI elements (including bars) to the saved lock state.
     -- Without this, only the text indicators are shown on load while bars like the
     -- HoT counter stay hidden even though the UI is in repositioning (lock) mode.
@@ -626,6 +633,8 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
             ccBarSoftColor= {0, 0.75, 1, 1},
             CCImmunityHint=true,
             showCCDebuff=true,
+            ccDebuffCSA=true,
+            ccDebuffCSACooldown=2000,
             ccDebuffPosition = {
                 left = 0,
                 top = 0
@@ -685,6 +694,9 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
                 roaReady = "ROA Ready!",
                 mountReady = "Pooky you can MOUNT!",
                 ccImmunity = "CC Immunity",
+                ccStun = "STUNNED!",
+                ccFear = "FEARED!",
+                ccDisorient = "DISORIENTED!",
                 negateWarning = "MOVE Pooky! You're in a Negate!",
                 allMounted = "All Pookies Mounted!",
                 allCanMount = "All Pookies can Mount!",
@@ -697,7 +709,13 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
                 top = 0
             },
             -- Group Mount Notifications defaults
-            groupMountNotify = false
+            groupMountNotify = false,
+            -- Mount Traffic Light defaults
+            showMountLight = false,
+            mountLightPosition = {
+                left = 0,
+                top = 0
+            }
         }
         for idx = #BlockPooky.predefinedTriggerAbilities, 1, -1 do
             -- d(\"this: \" .. BlockPooky.CleanAbilityName(BlockPooky.predefinedTriggerAbilities[idx]))
@@ -860,6 +878,7 @@ function BlockPooky.UpdateMountPollRegistration()
         BlockPooky.allMountedArmed = false
         BlockPooky.allCanMountArmed = false
         BlockPooky.playerCanMountArmed = false
+        BlockPooky.SetMountLightState(BlockPooky.MOUNT_LIGHT_OFF)
     end
 end
 
@@ -887,11 +906,7 @@ function BlockPooky.CheckGroupMountStates()
         BlockPooky.playerCanMountArmed = true
     end
 
-    -- Group-wide messages only while enabled
-    if not BlockPooky.config.groupMountNotify then return end
-
     local groupSize = GetGroupSize()
-    if groupSize <= 1 then return end  -- no "all Pookies" with just yourself
 
     local myZone = GetUnitZoneIndex("player")
     local myName = GetUnitName("player")
@@ -934,6 +949,24 @@ function BlockPooky.CheckGroupMountStates()
         end
     end
 
+    -- Optional mount traffic light: green = all mounted, yellow = all can mount,
+    -- red = at least one Pooky unmounted (someone can't mount right now / mixed)
+    if activeMembers > 1 then
+        if allMounted and mountedCount == activeMembers then
+            BlockPooky.SetMountLightState(BlockPooky.MOUNT_LIGHT_GREEN)
+        elseif allCanMount then
+            BlockPooky.SetMountLightState(BlockPooky.MOUNT_LIGHT_YELLOW)
+        else
+            BlockPooky.SetMountLightState(BlockPooky.MOUNT_LIGHT_RED)
+        end
+    else
+        BlockPooky.SetMountLightState(BlockPooky.MOUNT_LIGHT_OFF)
+    end
+
+    -- Group-wide messages only while enabled
+    if not BlockPooky.config.groupMountNotify then return end
+    if groupSize <= 1 then return end  -- no "all Pookies" with just yourself
+
     -- "All Pookies Mounted" fires on the transition into all-mounted
     if activeMembers > 1 and allMounted and mountedCount == activeMembers then
         if BlockPooky.allMountedArmed
@@ -957,6 +990,106 @@ function BlockPooky.CheckGroupMountStates()
     else
         BlockPooky.allCanMountArmed = true
     end
+end
+
+
+--[[ mount traffic light ---------------------------------------------------------------------------------------------]]
+---Optional single "traffic light" shown while grouped: one colored square that
+---reflects the group mount readiness. Piggybacks on the existing mount poll, so
+---it adds no extra timer.
+
+---Traffic light states (only one light is shown at a time)
+BlockPooky.MOUNT_LIGHT_OFF = 0
+BlockPooky.MOUNT_LIGHT_GREEN = 1
+BlockPooky.MOUNT_LIGHT_YELLOW = 2
+BlockPooky.MOUNT_LIGHT_RED = 3
+
+---Create the optional mount traffic light (a single colored square)
+function BlockPooky.InitMountLightUI()
+    if not BlockPooky.mountLight then
+        BlockPooky.mountLight = CreateControl(BlockPooky.name .. "MountLight", GuiRoot, CT_TOPLEVELCONTROL)
+        if not BlockPooky.mountLight then return end
+        BlockPooky.mountLight:SetDimensions(22, 22)
+        BlockPooky.mountLight:SetAnchor(CENTER, GuiRoot, CENTER, 0, -80)
+        BlockPooky.mountLight:SetHidden(true)
+        BlockPooky.mountLight:SetMovable(true)
+        BlockPooky.mountLight:SetMouseEnabled(true)
+        BlockPooky.mountLight:SetHandler("OnMoveStop", function()
+            BlockPooky.SaveMountLightPosition()
+        end)
+    end
+
+    if not BlockPooky.mountLightBackdrop then
+        BlockPooky.mountLightBackdrop = CreateControl(BlockPooky.name .. "MountLightBackdrop", BlockPooky.mountLight, CT_BACKDROP)
+        if not BlockPooky.mountLightBackdrop then return end
+        BlockPooky.mountLightBackdrop:SetAnchorFill(BlockPooky.mountLight)
+        BlockPooky.mountLightBackdrop:SetEdgeColor(0, 0, 0, 0.8)
+        BlockPooky.mountLightBackdrop:SetCenterColor(0.4, 0.4, 0.4, 0.9)
+    end
+
+    BlockPooky.LoadMountLightPosition()
+end
+
+function BlockPooky.SaveMountLightPosition()
+    if BlockPooky.config and BlockPooky.mountLight then
+        local left, top = BlockPooky.mountLight:GetLeft(), BlockPooky.mountLight:GetTop()
+        BlockPooky.config.mountLightPosition = {left = left, top = top}
+    end
+end
+
+function BlockPooky.LoadMountLightPosition()
+    if not BlockPooky.mountLight then return end
+    if BlockPooky.mountLight:GetAnchor() ~= nil then
+        BlockPooky.mountLight:ClearAnchors()
+    end
+    if BlockPooky.config and BlockPooky.config.mountLightPosition then
+        BlockPooky.mountLight:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.mountLightPosition.left, BlockPooky.config.mountLightPosition.top)
+    else
+        BlockPooky.mountLight:SetAnchor(CENTER, GuiRoot, CENTER, 0, -80)
+    end
+end
+
+function BlockPooky.ResetMountLightPosition()
+    if BlockPooky.mountLight then
+        if BlockPooky.mountLight:GetAnchor() ~= nil then
+            BlockPooky.mountLight:ClearAnchors()
+        end
+        BlockPooky.mountLight:SetAnchor(CENTER, GuiRoot, CENTER, 0, -80)
+        BlockPooky.SaveMountLightPosition()
+    end
+end
+
+---Set the mount traffic light color (only one light is shown at a time).
+---@param state number one of BlockPooky.MOUNT_LIGHT_*
+function BlockPooky.SetMountLightState(state)
+    if not BlockPooky.mountLight or not BlockPooky.mountLightBackdrop then return end
+
+    -- While repositioning, keep the light visible (grey) so it can be moved
+    if BlockPooky.config and BlockPooky.config.lockedUI then
+        BlockPooky.mountLightBackdrop:SetCenterColor(0.5, 0.5, 0.5, 0.9)
+        BlockPooky.mountLight:SetHidden(false)
+        return
+    end
+
+    if not BlockPooky.config or not BlockPooky.config.showMountLight then
+        BlockPooky.mountLight:SetHidden(true)
+        return
+    end
+
+    local r, g, b
+    if state == BlockPooky.MOUNT_LIGHT_GREEN then
+        r, g, b = 0.2, 1.0, 0.2
+    elseif state == BlockPooky.MOUNT_LIGHT_YELLOW then
+        r, g, b = 1.0, 1.0, 0.2
+    elseif state == BlockPooky.MOUNT_LIGHT_RED then
+        r, g, b = 1.0, 0.25, 0.25
+    else
+        BlockPooky.mountLight:SetHidden(true)
+        return
+    end
+
+    BlockPooky.mountLightBackdrop:SetCenterColor(r, g, b, 0.95)
+    BlockPooky.mountLight:SetHidden(false)
 end
 
 

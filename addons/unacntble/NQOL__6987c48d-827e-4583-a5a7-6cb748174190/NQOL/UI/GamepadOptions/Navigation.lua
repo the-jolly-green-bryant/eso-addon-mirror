@@ -39,6 +39,7 @@ local AUTO_REPAIR_PANEL_ID = PanelIds.AUTO_REPAIR
 local COMBAT_PANEL_ID = PanelIds.COMBAT
 local COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
 local COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
+local TRIAL_TIMER_PANEL_ID = PanelIds.TRIAL_TIMER
 local ULTIMATE_COUNTDOWN_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN
 local ULTIMATE_COUNTDOWN_FRONT_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_FRONT
 local ULTIMATE_COUNTDOWN_BACK_PANEL_ID = PanelIds.ULTIMATE_COUNTDOWN_BACK
@@ -144,6 +145,26 @@ function GamepadOptions.BuildUltimateCountdownEntry()
         end,
         callback = function()
             GamepadOptions.ShowPanel(ULTIMATE_COUNTDOWN_PANEL_ID)
+        end,
+    }
+end
+
+function GamepadOptions.BuildTrialTimerEntry()
+    return {
+        panel = COMBAT_PANEL_ID,
+        system = COMBAT_PANEL_ID,
+        settingId = 3,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = NQOL.L("ui.navigation.trial_timer"),
+        gamepadTextOverride = NQOL.L("ui.navigation.trial_timer"),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.trial_timer_tooltip"))
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(TRIAL_TIMER_PANEL_ID)
         end,
     }
 end
@@ -1465,6 +1486,25 @@ function GamepadOptions.BuildAutoChargeOption()
     }
 end
 
+function GamepadOptions.BuildChargeThresholdOption()
+    local gear = NQOL.Features.Gear
+
+    return GamepadOptions.BuildValueStepSliderOption(
+        AUTO_CHARGE_PANEL_ID,
+        3,
+        gear.GetChargeThresholdLabel(),
+        gear.GetChargeThresholdTooltip(),
+        gear.GetChargeThresholdMin(),
+        gear.GetChargeThresholdMax(),
+        "%.0f%%",
+        gear.GetChargeThreshold,
+        gear.SetChargeThreshold,
+        1,
+        nil,
+        gear.GetChargeThresholdDefault
+    )
+end
+
 function GamepadOptions.BuildLogChargeOption()
     local gear = NQOL.Features.Gear
 
@@ -1511,6 +1551,40 @@ function GamepadOptions.BuildAutoRepairOption()
             gear.SetAutoRepair(value)
         end,
     }
+end
+
+function GamepadOptions.BuildRepairThresholdOption()
+    local gear = NQOL.Features.Gear
+
+    return GamepadOptions.BuildValueStepSliderOption(
+        AUTO_REPAIR_PANEL_ID,
+        3,
+        gear.GetRepairThresholdLabel(),
+        gear.GetRepairThresholdTooltip(),
+        gear.GetRepairThresholdMin(),
+        gear.GetRepairThresholdMax(),
+        "%.0f%%",
+        gear.GetRepairThreshold,
+        gear.SetRepairThreshold,
+        1,
+        nil,
+        gear.GetRepairThresholdDefault
+    )
+end
+
+function GamepadOptions.BuildRepairAllInMerchantsOption()
+    local gear = NQOL.Features.Gear
+
+    return GamepadOptions.BuildCheckboxOption(
+        AUTO_REPAIR_PANEL_ID,
+        4,
+        gear.GetRepairAllInMerchantsLabel(),
+        gear.GetRepairAllInMerchantsTooltip(),
+        gear.GetRepairAllInMerchants,
+        gear.SetRepairAllInMerchants,
+        nil,
+        false
+    )
 end
 
 function GamepadOptions.BuildLogRepairOption()
@@ -1607,6 +1681,25 @@ function GamepadOptions.BuildAutoFoodOption()
             provisioning.SetAutoFood(value)
         end,
     }
+end
+
+function GamepadOptions.BuildAutoFoodRefreshThresholdOption()
+    local provisioning = NQOL.Features.Provisioning
+
+    return GamepadOptions.BuildValueStepSliderOption(
+        PROVISIONING_PANEL_ID,
+        5,
+        provisioning.GetAutoFoodRefreshThresholdLabel(),
+        provisioning.GetAutoFoodRefreshThresholdTooltip(),
+        provisioning.GetAutoFoodRefreshThresholdMinutesMin(),
+        provisioning.GetAutoFoodRefreshThresholdMinutesMax(),
+        NQOL.L("common.minutes_format"),
+        provisioning.GetAutoFoodRefreshThresholdMinutes,
+        provisioning.SetAutoFoodRefreshThresholdMinutes,
+        5,
+        nil,
+        provisioning.GetAutoFoodRefreshThresholdMinutesDefault
+    )
 end
 
 function GamepadOptions.BuildCheckStockOption()

@@ -426,7 +426,7 @@ local function test()
 				callback        =   function(comboBox, itemName, item, selectionChanged, oldItem)
 					d("Submenu entry test 1")
 				end,
-				contextMenuCallback =   function(self)
+				contextMenuCallback =   function(comboBox, control, data)
 					d("Submenu Entry Test 1 (contextMenu) -> Callback")
 					ClearCustomScrollableMenu()
 
@@ -464,7 +464,7 @@ d(debugPrefix .. "Context menu submenu - Custom menu Normal entry 1->RunCustomSc
 				callback        =   function(comboBox, itemName, item, selectionChanged, oldItem)
 					d("Submenu entry test 2")
 				end,
-				contextMenuCallback =   function(self)
+				contextMenuCallback =   function(comboBox, control, data)
 					d("Submenu Entry Test 2 (contextMenu) -> Callback")
 					ClearCustomScrollableMenu()
 
@@ -757,7 +757,7 @@ d(debugPrefix .. "Context menu submenu 2 - Custom menu 2 Normal entry 1->RunCust
 					--valueLabelFont = 		"ZoFontWinH3",
 					hideValueTooltip = 		true,
 					--[[
-					contextMenuCallback = 	function(self)
+					contextMenuCallback = 	function(comboBox, control, data)
 						d("--> ContextMenu at Slider")
 						ClearCustomScrollableMenu()
 						AddCustomScrollableMenuRadioButton("Radio button3 at context", function() d("clicked radio button3 at context") end, true, 2, nil)
@@ -803,7 +803,7 @@ d(debugPrefix .. "Context menu submenu 2 - Custom menu 2 Normal entry 1->RunCust
 					font = 					"ZoFontChat",
 					--width = 				"100%",
 					--[[
-					contextMenuCallback = 	function(self)
+					contextMenuCallback = 	function(comboBox, control, data)
 						d("--> ContextMenu at EditBox")
 						ClearCustomScrollableMenu()
 						AddCustomScrollableMenuRadioButton("Radio button1 at context", function() d("clicked radio button1 at context") end, true, 1, nil)
@@ -870,8 +870,8 @@ d(debugPrefix .. "Context menu submenu 2 - Custom menu 2 Normal entry 1->RunCust
 					d("I clicked checkbox group3-1 with the name: " .. tostring(itemName) .. ", checked: " .. tostring(checked))
 				end,
 				buttonGroup = 3,
-				contextMenuCallback = function(...)
-					LibScrollableMenu.ButtonGroupDefaultContextMenu(...)
+				contextMenuCallback = function(comboBox, control, data)
+					LibScrollableMenu.ButtonGroupDefaultContextMenu(comboBox, control, data)
 				end,
 			},
 			{
@@ -913,7 +913,7 @@ d(debugPrefix .. "Context menu submenu 2 - Custom menu 2 Normal entry 1->RunCust
 					d("Normal entry 1")
 				end,
 				--entryType = lib.LSM_ENTRY_TYPE_CHECKBOX,
-				contextMenuCallback =   function(self)
+				contextMenuCallback =   function(comboBox, control, data)
 					d("contextMenuCallback")
 					ClearCustomScrollableMenu()
 					--AddCustomScrollableSubMenuEntry("Context menu entry 1", subEntries)
@@ -1082,7 +1082,7 @@ d(debugPrefix .. "Context menu submenu 2 - Custom menu 2 Normal entry 1->RunCust
 				callback        =   function(self)
 					d("Normal entry 2")
 				end,
-				contextMenuCallback         =   function(self)
+				contextMenuCallback         =   function(comboBox, control, data)
 					d("Normal entry 2")
 					ClearCustomScrollableMenu()
 
@@ -1204,7 +1204,7 @@ d(debugPrefix .. "Context menu submenu 2 - Custom menu 2 Normal entry 1->RunCust
 						end,
 						tooltip         = "Submenu Entry Test 6 1:1 - context menu with divider tests",
 						icon 			= { [1] = function() return "EsoUI/Art/Inventory/inventory_trait_reconstruct_icon.dds" end },
-						contextMenuCallback         =   function(self)
+						contextMenuCallback         =   function(comboBox, control, data)
 							d("contextMenuCallback Submenu Entry Test 6 1:1")
 							ClearCustomScrollableMenu()
 

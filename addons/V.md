@@ -31,7 +31,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Vestige Mirror](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Vestige-Mirror__4564) | Wrynch | PC / Mac | v1.2.2 |
 | [Vestige's Epic Quest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Vestige-s-Epic-Quest__3228) | Masteroshi430 | PC / Mac | 2026.07.30 |
 | [VeterancyAutoClaim](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/VeterancyAutoClaim__4759) | NPViral | PC / Mac | 1.0.2 |
-| [VeterancyBar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/noxenrom/VeterancyBar__4748) | noxenrom | PC / Mac | 1.4 |
+| [VeterancyBar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/noxenrom/VeterancyBar__4748) | noxenrom | PC / Mac | 1.5 |
 | [Vic's CharTrackr](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/crazedvic/Vic-s-CharTrackr__4565) | crazedvic | PC / Mac | 1.5.9 |
 | [Vic's Unfinished Business](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/crazedvic/Vic-s-Unfinished-Business__4568) | crazedvic | PC / Mac | 1.1.5 |
 | [VisiblePickpocketPing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/VisiblePickpocketPing__1895) | manavortex | PC / Mac | 1.4 |

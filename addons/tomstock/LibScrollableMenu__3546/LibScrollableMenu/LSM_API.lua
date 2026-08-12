@@ -24,7 +24,9 @@ local tins = table.insert
 
 local tableType   = "table"
 local booleanType = "boolean"
+local userDataType = "userdata"
 
+local constants = lib.constants
 
 --------------------------------------------------------------------
 --Library classes
@@ -64,6 +66,9 @@ local getComboBoxsSortedItems = libUtil.getComboBoxsSortedItems
 local validateContextMenuSubmenuEntries = libUtil.validateContextMenuSubmenuEntries
 local checkEntryType = libUtil.checkEntryType
 local libUtil_BelongsToContextMenuCheck = libUtil.belongsToContextMenuCheck
+local getDataSource = libUtil.getDataSource
+local getComboBox = libUtil.getComboBox
+local libUtil_getEntryTypeControl = libUtil.getEntryTypeControl
 
 local g_contextMenu
 local buttonGroupDefaultContextMenu
@@ -267,7 +272,7 @@ GetCustomScrollableMenuRowData = libUtil.getControlData
 --					textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,	-- optional number or function returning a number The text type constant for the validation
 --					font = "ZoFontChat",						-- optional string or function returning a string The font of the editBox
 --					width = "80%",								-- optional string/number or function returning a string/number The width of the editbox
---					contextMenuCallback = function(selfEditBox) end,	-- optional function to open a contextMenu at the editbox (if right clicked)
+--					contextMenuCallback = function(comboBox, selfEditBox, data) end,	-- optional function to open a contextMenu at the editbox (if right clicked)
 --		->		}
 --		isSlider = false, -- optional boolean or function returning a boolean Is this entry a clickable slider control with text?
 --		-> --ONLY for slider control type:	sliderData = { table or function returning a table providing the slider's visuals, validation options, right click handler etc.
@@ -281,17 +286,22 @@ GetCustomScrollableMenuRowData = libUtil.getControlData
 --					valueLabelFont = "ZoFontWinH5",				-- optional string or function returning a string The font of the value label
 --					hideValueTooltip = true,					-- optional boolean or function returning a boolean Hide the tooltip showing the actual value, min, max and tooltip of the row at the slider
 --					width = "80%",								-- optional string/number or function returning a string/number The width of the slider
---					contextMenuCallback = function(selfSlider) end,	-- optional function to open a contextMenu at the slider (if right clicked)
+--					contextMenuCallback = function(comboBox, selfSlider, data) end,	-- optional function to open a contextMenu at the slider (if right clicked)
 --		->		}
---		isNew = false, --  optional booelan or function returning a boolean Is this entry a new entry and thus shows the "New" icon?
+--		enabled = false, -- optional boolean or function isEnabled(comboBox, data) returning a boolean. Is this entry enabled (mouse over & clickable)
+--		isNew = false, --  optional boolean or function returning a boolean Is this entry a new entry and thus shows the "New" icon?
 --		entries = { ... see above ... }, -- optional table containing nested submenu entries in this submenu -> This entry opens a new nested submenu then. Contents of entries use the same values as shown in this example here
 --		contextMenuCallback = function(comboBox, control, data) ... end, -- optional function for a right click action, e.g. show a scrollable context menu at the menu entry
+--		doNotFilter = false, --boolean or function returning a boolean. If true this entry won't be hidden (filtered) if the header's filter editbox is used. If it's a function it's signature is doNotFilterFunc(LSM_comboBox, selectedMenuItem, openingMenusEntries), so one can e.g. make a button entryType only filter if there is no other entry inside the table currentDropdownEntriesTable
+--		doNotFilterEntryTypes = { LSM_ENTRY_TYPE_CHECKBOX }, --table or function returning a table of LSM entryTypes. Only works in combination with doNotFilter = function! If provided the current list is prefiltered by these entryTypes, before the doNotFilter function is executed on them (e.g. { LSM_ENTRY_TYPE_CHECKBOX } to only prefilter checkbox entries of the current list)
+--		sortPosition = 1, --number or function returning a number. This is the index the entry should be sorted to, if the entry table is sorted via API function SortCustomScrollableMenu
 -- }
 --}, --[[additionalData]]
 --	 	{ isNew = true, normalColor = ZO_ColorDef, highlightColor = ZO_ColorDef, disabledColor = ZO_ColorDef, highlightTemplate = "ZO_SelectionHighlight",
 --		   font = "ZO_FontGame", label="test label", name="test value", enabled = true, checked = true, customValue1="foo", cutomValue2="bar", ... }
 --		--[[ Attention: additionalData keys which are maintained in table LSMOptionsKeyToZO_ComboBoxOptionsKey will be mapped to ZO_ComboBox's key and taken over into the entry.data[ZO_ComboBox's key]. All other "custom keys" will stay in entry.data.additionalData[key]! ]]
 --)
+--callback function signature:  comboBox, itemName, item, selectionChanged, oldItem
 ---> returns nilable:number indexOfNewAddedEntry, nilable:table newEntryData
 function AddCustomScrollableMenuEntry(text, callback, entryType, entries, additionalData)
 --d(debugPrefix .. "AddCustomScrollableMenuEntry - text: " .. tos(text) .. ", type: " ..tos(entryType) .. ", entries: " ..tos(entries))
@@ -389,6 +399,7 @@ local addCustomScrollableMenuEntry = AddCustomScrollableMenuEntry
 --Adds an entry having a submenu (or maybe nested submenues) in the entries table/entries function whch returns a table
 --> See examples for the table "entries" values above AddCustomScrollableMenuEntry
 --Existing context menu entries will be kept (until ClearCustomScrollableMenu will be called)
+--callback function signature:  comboBox, itemName, item, selectionChanged, oldItem
 ---> returns nilable:number indexOfNewAddedEntry, nilable:table newEntryData
 function AddCustomScrollableSubMenuEntry(text, entries, callbackFunc, additionalData) --#2026_04
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 163, tos(text), tos(entries)) end
@@ -412,8 +423,8 @@ function AddCustomScrollableMenuHeader(text, additionalData)
 end
 
 --Adds a checkbox line to the context menu entries
---callback function signature:  comboBox, itemName, item, checked, data
 --Existing context menu entries will be kept (until ClearCustomScrollableMenu will be called)
+--callback function signature:  comboBox, itemName, item, checked, data
 ---> returns nilable:number indexOfNewAddedEntry, nilable:table newEntryData
 function AddCustomScrollableMenuCheckbox(text, callback, checked, additionalData)
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 166, tos(text), tos(checked)) end
@@ -428,8 +439,8 @@ end
 --The buttonGroup number (function returning a number) controls which group the radiobutton belongs to (same number = 1 group)
 -->If the buttonGroup is not specified it will be automatically set to 1!
 -->If you want to specify the buttonGroupOnSelectionChangedCallback function(control, previousControl), add it to the additionalData table
---callback function signature:  comboBox, itemName, item, checked, data
 --Existing context menu entries will be kept (until ClearCustomScrollableMenu will be called)
+--callback function signature:  comboBox, itemName, item, checked, data
 ---> returns nilable:number indexOfNewAddedEntry, nilable:table newEntryData
 function AddCustomScrollableMenuRadioButton(text, callback, checked, buttonGroup, additionalData)
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 189, tos(text), tos(checked), tos(buttonGroup)) end
@@ -445,6 +456,7 @@ end
 --Adds an editBox line to the context menu entries
 --Existing context menu entries will be kept (until ClearCustomScrollableMenu will be called)
 -->Clicking the line does not call any callback, only changing the text in the editBox calls the callback!
+--callback function signature:  comboBox, filterBox, text
 ---> returns nilable:number indexOfNewAddedEntry, nilable:table newEntryData
 function AddCustomScrollableMenuEditBox(text, callback, editBoxData, additionalData)
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 188, tos(text), tos(editBoxData)) end
@@ -458,6 +470,7 @@ end
 --Adds a slider line to the context menu entries
 --Existing context menu entries will be kept (until ClearCustomScrollableMenu will be called)
 -->Clicking the line does not call any callback, only changing the slider value calls the callback!
+--callback function signature:  comboBox, slider, value
 ---> returns nilable:number indexOfNewAddedEntry, nilable:table newEntryData
 function AddCustomScrollableMenuSlider(text, callback, sliderData, additionalData)
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 191, tos(text), tos(sliderData)) end
@@ -620,6 +633,18 @@ LSM_Debug.cntxtMenuControlToAnchorTo = controlToAnchorTo
 end
 local showCustomScrollableMenu = ShowCustomScrollableMenu
 
+
+-- Get the currently mouse-over control and it's relating comboBox + the itemData
+-- Parameter ctrl must be a userdata control
+-- Parameter comboBoxFromParentMenu boolean defines if you want the owning LSM menu's comboBox, or the current ctrl's one
+--> returns owning comboBox object, itemData table
+function GetCustomScrollableMenuCtrlsInfo(ctrl, comboBoxFromParentMenu) --#2026_17
+	ctrl = ctrl or moc()
+	assert(type(ctrl) == userDataType, sfor("["..MAJOR..":GetCustomScrollableMenuCtrlsInfo] ctrl: userdata expected"))
+	return getComboBox(ctrl, comboBoxFromParentMenu), getDataSource(ctrl)
+end
+
+
 --Run a callback function myAddonCallbackFunc passing in the entries of the opening menu/submenu of a clicked LSM context menu item
 -->Parameters of your function myAddonCallbackFunc must be:
 -->function myAddonCallbackFunc(userdata LSM_comboBox, userdata selectedContextMenuItem, table openingMenusEntries, ...)
@@ -651,6 +676,8 @@ local showCustomScrollableMenu = ShowCustomScrollableMenu
 ---> returns boolean customCallbackFuncWasExecuted, nilable:any customCallbackFunc's return value
 function RunCustomScrollableMenuItemsCallback(comboBox, item, myAddonCallbackFunc, filterEntryTypes, fromParentMenu, ...)
 	updateContextMenuRef()
+
+	if item == nil or comboBox == nil then return end
 	local assertFuncName = "RunCustomScrollableMenuItemsCallback"
 	local addonCallbackFuncType = type(myAddonCallbackFunc)
 	assert(addonCallbackFuncType == "function", sfor("["..MAJOR..":"..assertFuncName.."] myAddonCallbackFunc: function expected, got %q", tos(addonCallbackFuncType)))
@@ -720,24 +747,31 @@ end
 --->LSM_UPDATE_MODE_BOTH		Update the submenu and the mainmenu, both
 ---Parameter comboBox is optional
 local function LSM_RefreshLibScrollableMenu(mocCtrl, updateMode, comboBox) -- #2025_58
+	local refreshDone = 0
 	--Update the visible LSM dropdown's submenu now so the disabled state and checkbox values commit again
 	if mocCtrl == nil then mocCtrl = moc() end
 --d("[RefreshCustomScrollableMenu] - moc: " .. getControlName(mocCtrl) .. "; updateMode: " ..tos(updateMode) .. "; comboBox: " .. tos(comboBox))
 	if mocCtrl ~= nil then
+		--#2026_18 Check if the mocCtrl is a [ ] of a checkbox or a ( ) or a radiobutton (you did not click the name label but the icon),
+		--and get the proper label control then instead, to let this function properly work (editBox/slider also need that here?)
+		mocCtrl = libUtil_getEntryTypeControl(mocCtrl)
+--d(">moc or parent: " .. getControlName(mocCtrl))
 		if comboBox == nil then
 			comboBox = (mocCtrl.m_comboBox or (mocCtrl.m_owner and mocCtrl.m_owner.m_comboBox)) or nil
 		end
 		if comboBox == nil then return end
---d(">[LSM]found combobox")
+--d(">found combobox")
 		--Main Menu
 		if updateMode == LSM_UPDATE_MODE_BOTH or updateMode == LSM_UPDATE_MODE_MAINMENU then
 			--local owningWindow = mocCtrl.GetOwningWindow ~= nil and mocCtrl:GetOwningWindow() or nil
 			--local mainMenuDropdown = (owningWindow and owningWindow.m_dropdownObject) or nil
-			local mainMenuComboBox = (mocCtrl.m_owner ~= nil and mocCtrl.m_owner.m_comboBox) or nil
+			local mainMenuComboBox = ((mocCtrl.m_owner ~= nil and mocCtrl.m_owner.m_comboBox) or (comboBox.wasUsingAddCustomScrollableComboBoxDropdownMenu == true and mocCtrl.m_owner) or nil) --#2026_15 Support Dropdowns added to existing comboBoxes via AddCustomScrollableComboBoxDropdownMenu
 			local mainMenuDropdown = (mainMenuComboBox ~= nil and mainMenuComboBox.m_dropdownObject) or nil
 			if mainMenuDropdown ~= nil then
 				if mainMenuComboBox:IsDropdownVisible() == true then
-					mainMenuDropdown:SubmenuOrCurrentListRefresh(mocCtrl, true, true)
+--d(">>dropdownIsVisible! -> SubmenuOrCurrentListRefresh(mocCtrl, true, true)")
+					refreshDone = mainMenuDropdown:SubmenuOrCurrentListRefresh(mocCtrl, true, true) --calls dropdownClass:SubmenuOrCurrentListRefresh(control, override, refreshMainMenuOrSubmenu)
+					refreshDone = refreshDone or 0
 				end
 			end
 		end
@@ -745,11 +779,14 @@ local function LSM_RefreshLibScrollableMenu(mocCtrl, updateMode, comboBox) -- #2
 		--Submenu
 		if updateMode == LSM_UPDATE_MODE_BOTH or updateMode == LSM_UPDATE_MODE_SUBMENU then
 			if mocCtrl.m_dropdownObject and comboBox and comboBox:IsDropdownVisible() == true then
---d(">[LSM[refresh submenu - TRY")
-				mocCtrl.m_dropdownObject:SubmenuOrCurrentListRefresh(mocCtrl, true, false)
+--d(">>subMenu dropdownIsVisible! -> SubmenuOrCurrentListRefresh(mocCtrl, true, false)")
+				local refreshDoneSubmenu = mocCtrl.m_dropdownObject:SubmenuOrCurrentListRefresh(mocCtrl, true, false) --calls dropdownClass:SubmenuOrCurrentListRefresh(control, override, refreshMainMenuOrSubmenu)
+				refreshDoneSubmenu = refreshDoneSubmenu or 0
+				refreshDone = refreshDone + refreshDoneSubmenu
 			end
 		end
 	end
+--d(">>>>RefreshDone: " ..tos(refreshDone))
 end
 RefreshCustomScrollableMenu = LSM_RefreshLibScrollableMenu
 
@@ -805,6 +842,12 @@ end
 -- API to show a context menu at a buttonGroup where you can (un)check/invert all buttons in a group:
 -- Select all, Unselect All, Invert all.
 function buttonGroupDefaultContextMenu(comboBox, control, data, useZO_Menu)
+lib._debugButtonGroupDefaultContextMenu = {
+	comboBox = comboBox,
+	control = control,
+	data = data,
+	useZO_Menu = useZO_Menu,
+}
 	if useZO_Menu == nil then
 		--Try to auto detect if we cannot use LSM here (because another LSM contextMenu is already opened)
 		useZO_Menu = LSM_IsContextMenuCurrentlyShown()
@@ -908,6 +951,69 @@ function buttonGroupDefaultContextMenu(comboBox, control, data, useZO_Menu)
 end
 lib.SetButtonGroupState = buttonGroupDefaultContextMenu --Only for compatibilitxy (if any other addon was using 'SetButtonGroupState' already)
 lib.ButtonGroupDefaultContextMenu = buttonGroupDefaultContextMenu
+
+
+
+--- SORT API functions
+local sortPositionFound = false
+local function sortASC(a, b)
+	if a == nil or b == nil then return false end
+	if a.sortPosition ~= nil or b.sortPosition ~= nil then
+		sortPositionFound = true
+		return
+	end
+	local aLabel, aName, bLabel, bName = a.label, a.name, b.label, b.name
+	return (aLabel and bLabel and aLabel < bLabel)
+			or (aName and bLabel and aName < bLabel)
+			or (aLabel and bName and aLabel < bName)
+			or (aName and bName and aName < bName)
+end
+local function sortDESC(a, b)
+	if a == nil or b == nil then return false end
+	if a.sortPosition ~= nil or b.sortPosition ~= nil then
+		sortPositionFound = true
+		return
+	end
+	local aLabel, aName, bLabel, bName = a.label, a.name, b.label, b.name
+	return (aLabel and bLabel and aLabel > bLabel)
+			or (aName and bLabel and aName > bLabel)
+			or (aLabel and bName and aLabel > bName)
+			or (aName and bName and aName > bName)
+end
+
+--Sort function using table.sort, automatically checking for LSM entry's label or name attribute to compare them alphabetically,
+--and keeps entries with .sortPosition = <number or function returning a number> specified at that position.
+--Parameter tableToSort must be the table that should be sorted
+--Parameter sortOrder must be a boolean (like ZO_SORT_ORDER_UP -> ASC: A to Z, and ZO_SORT_ORDER_DOWN -> DESC: Z to A), or function returning a boolean
+-->Returns the sortedTable
+function SortCustomScrollableMenu(tableToSort, sortOrder) --#2026_16
+	sortPositionFound = false
+	assert(type(tableToSort) == "table", MAJOR .. " - SortCustomScrollableMenu ERROR: Parameter tableToSort must be a table!")
+	local sortOrderValue = getValueOrCallback(sortOrder)
+	if sortOrderValue == nil then sortOrderValue = ZO_SORT_ORDER_UP end
+	table.sort(tableToSort, (sortOrderValue == ZO_SORT_ORDER_UP and sortASC) or sortDESC)
+
+	--Any fixed sortPosition found in the table? Put these at their defined fixed positions again
+	if sortPositionFound == true then
+		local newRetTab   = {}
+		local otherSorted = {}
+		for _, entry in ipairs(tableToSort) do
+			local sortPosition = getValueOrCallback(entry.sortPosition, entry)
+			if type(sortPosition) == "number" then
+				newRetTab[sortPosition] = entry
+			else
+				otherSorted[#otherSorted + 1] = entry
+			end
+		end
+		for _, otherSortedEntry in ipairs(otherSorted) do
+			newRetTab[#newRetTab + 1] = otherSortedEntry
+		end
+		otherSorted = nil
+		sortPositionFound = false
+		return newRetTab
+	end
+	return tableToSort
+end
 
 
 --======================================================================================================================

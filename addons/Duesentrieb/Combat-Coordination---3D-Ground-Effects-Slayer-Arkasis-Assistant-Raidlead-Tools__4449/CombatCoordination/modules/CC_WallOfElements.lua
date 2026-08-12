@@ -12,7 +12,7 @@ local Module = {
     TextureChoices = CC.SQUARE_CHOICES,
     TextureValues  = CC.SQUARE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Wall of Element"]           = { 28849, 28807, 28854, },
         ["Unstable Wall of Elements"] = { 39067, 39053, 39073, },
         ["Elemental Blockade"]        = { 39028, 39012, 39018, },

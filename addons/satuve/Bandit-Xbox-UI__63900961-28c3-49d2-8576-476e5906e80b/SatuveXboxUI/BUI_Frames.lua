@@ -189,6 +189,7 @@ local function Frame_Player_UI()	--UI init
 	health.bar:SetDrawLayer(1) health.bar:SetGradientColors(ch[1],ch[2],ch[3],ch[4],ch1[1],ch1[2],ch1[3],ch1[4])
 	health.bar1		=BUI.UI.Backdrop("BUI_PlayerFrame_HealthBar1",		health.bar,	{0,h2},		{LEFT,RIGHT,0,0},			{ch[1],ch[2],ch[3],.3}, {0,0,0,0}, nil, false)
 	health.bar2		=BUI.UI.Backdrop("BUI_PlayerFrame_HealthBar2",		health.bar,	{0,h2},		{RIGHT,LEFT,0,0},			{ch[1],ch[2],ch[3],.3}, {0,0,0,0}, nil, false)
+	health.bar1:SetHidden(true) health.bar2:SetHidden(true)
 	health.current	=BUI.UI.Label("BUI_PlayerFrame_HealthCurrent",		health,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, 'Health', false)
 	health.current:SetDrawLayer(3)
 	health.pct		=BUI.UI.Label("BUI_PlayerFrame_HealthPct",		health,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', not BUI.Vars.FramePercents)
@@ -207,6 +208,7 @@ local function Frame_Player_UI()	--UI init
 	magicka.bar		=BUI.UI.Statusbar("BUI_PlayerFrame_MagickaBar",		magicka.bg,	{w,h},		{RIGHT,RIGHT,0,0},		cm, BUI.Textures[BUI.Vars.FramesTexture], false)
 	magicka.bar:SetDrawLayer(1) magicka.bar:SetGradientColors(cm1[1],cm1[2],cm1[3],cm1[4],cm[1],cm[2],cm[3],cm[4])
 	magicka.bar1	=BUI.UI.Backdrop("BUI_PlayerFrame_MagickaBar1",		magicka.bar,{0,h},		{RIGHT,LEFT,0,0},			{cm[1],cm[2],cm[3],.3}, {0,0,0,0}, nil, false)
+	magicka.bar1:SetHidden(true)
 	magicka.current	=BUI.UI.Label("BUI_PlayerFrame_MagickaCurrent",		magicka,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, 'Magicka', false)
 	magicka.pct		=BUI.UI.Label("BUI_PlayerFrame_MagickaPct",		magicka,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', not BUI.Vars.FramePercents)
 	player.magicka	=magicka
@@ -219,6 +221,7 @@ local function Frame_Player_UI()	--UI init
 	stamina.bar		=BUI.UI.Statusbar("BUI_PlayerFrame_StaminaBar",		stamina.bg,	{w,h},		{LEFT,LEFT,0,0},			cs, BUI.Textures[BUI.Vars.FramesTexture], false)
 	stamina.bar:SetDrawLayer(1) stamina.bar:SetGradientColors(cs[1],cs[2],cs[3],cs[4],cs1[1],cs1[2],cs1[3],cs1[4])
 	stamina.bar1	=BUI.UI.Backdrop("BUI_PlayerFrame_StaminaBar1",		stamina.bar,{0,h},		{LEFT,RIGHT,0,0},			{cs[1],cs[2],cs[3],.3}, {0,0,0,0}, nil, false)
+	stamina.bar1:SetHidden(true)
 	stamina.current	=BUI.UI.Label("BUI_PlayerFrame_StaminaCurrent",		stamina,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, 'Stamina', false)
 	stamina.pct		=BUI.UI.Label("BUI_PlayerFrame_StaminaPct",		stamina,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', not BUI.Vars.FramePercents)
 	player.stamina	=stamina
@@ -631,7 +634,9 @@ function BUI.Frames.Bosses_UI()	--UI init
 	for i=1, SXUI_MAX_BOSSES do
 		local unitTag="boss"..i
 		local boss	=BUI.UI.Backdrop("BUI_BossFrame"..i.."_Health",		bosses,	{w,h},		anchor,				{0,0,0,1}, theme_color, nil, true) boss:SetDrawTier(0)
-		boss.bar	=BUI.UI.Statusbar("BUI_BossFrame"..i.."_Bar",		boss,		{w-4,h-4},		{LEFT,LEFT,2,0},			ch, BUI.Textures[BUI.Vars.FramesTexture], false)
+		-- Xbox adaptation: inset the boss health fill so the red texture stays
+		-- completely inside the decorative frame/lines.
+		boss.bar	=BUI.UI.Statusbar("BUI_BossFrame"..i.."_Bar",		boss,		{w-8,h-8},		{LEFT,LEFT,4,0},			ch, BUI.Textures[BUI.Vars.FramesTexture], false)
 		boss.bar:SetGradientColors(ch[1],ch[2],ch[3],ch[4],ch1[1],ch1[2],ch1[3],ch1[4])
 		boss.name	=BUI.UI.Label(	"BUI_BossFrame"..i.."_Name",		boss,		{w,h},		{LEFT,LEFT,8,0},			BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {0,1}, 'Name', false)
 		boss.pct	=BUI.UI.Label(	"BUI_BossFrame"..i.."_Pct",		boss,		{w,h},		{RIGHT,RIGHT,-8,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', false)
@@ -1055,13 +1060,14 @@ function BUI.Frames:SetupPlayer()
 			BUI_PlayerFrame_PlateName:SetText(icon..BUI.Player.name.." ("..level..")")
 		end
 		BUI_PlayerFrame_PlateName:SetHidden(not BUI.Vars.EnableNameplate)
-		--Food buff feature
-		if BUI.Vars.FrameHorisontal and BUI.Vars.FoodBuff then
-			local stats=BUI.GetFoodBuff()
+		-- Xbox adaptation: keep horizontal player bars at a fixed width.
+		-- The original food-buff expansion made magicka and stamina appear
+		-- longer than intended and visually overlap the health row.
+		if BUI.Vars.FrameHorisontal then
 			local w,b1=BUI.Vars.FrameWidth,BUI.border[Border][3]
 			for _,stat in pairs({"Health","Stamina","Magicka"}) do
-				_G["BUI_PlayerFrame_"..stat]:SetWidth(w*(stats[stat] and 1.25 or 1)+b1*2)
-				_G["BUI_PlayerFrame_"..stat.."Bg"]:SetWidth(w*(stats[stat] and 1.25 or 1))
+				_G["BUI_PlayerFrame_"..stat]:SetWidth(w+b1*2)
+				_G["BUI_PlayerFrame_"..stat.."Bg"]:SetWidth(w)
 			end
 		end
 	end
@@ -1459,14 +1465,13 @@ function BUI.Frames.Attribute(unitTag, attribute, powerValue, powerMax, pct, shi
 
 		local control=frame[attribute]
 		local w=(group and BUI.Vars.RaidWidth*BUI_RaidFrame.scale-4 or control.bg:GetWidth())
-		--Decay animation
+		-- Xbox adaptation: disable the trailing decay overlay on player bars.
+		-- It made the resource bars look like two colors stacked over each other.
 		if unitTag=='player' then
-			local dw=control.bar:GetWidth()-pct*w dw=dw>0 and dw-Decay[attribute] or dw+Decay[attribute]
-			if dw>=DecayStep then
-				control.bar1:SetWidth(dw)
-				Decay[attribute]=dw
-				EVENT_MANAGER:RegisterForUpdate("BUI_AttributeDecay", 50, AttributeDecay)
-			end
+			Decay[attribute]=0
+			if control.bar1 then control.bar1:SetWidth(0) end
+			if control.bar2 then control.bar2:SetWidth(0) end
+			EVENT_MANAGER:UnregisterForUpdate("BUI_AttributeDecay")
 		end
 		control.bar:SetWidth(pct*w)
 		if unitTag=='reticleover' and attribute=='health' then

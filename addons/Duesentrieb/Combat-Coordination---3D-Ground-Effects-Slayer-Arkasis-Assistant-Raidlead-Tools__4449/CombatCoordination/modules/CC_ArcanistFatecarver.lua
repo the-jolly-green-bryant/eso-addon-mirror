@@ -16,7 +16,7 @@ local Module = {
     TextureChoices = CC.SQUARE_CHOICES,
     TextureValues  = CC.SQUARE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Fatecarver"]            = { 193331, },
         ["Exhausting Fatecarver"] = { 193397, },
         ["Pragmatic Fatecarver"]  = { 193398, },

@@ -1,8 +1,8 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 466
-## Version: 0.0.466
+## AddOnVersion: 468
+## Version: 0.0.468
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
@@ -115,6 +115,7 @@ ui/journal/filters.lua
 ui/journal/overview_panel.lua
 ui/journal/chronicler.lua
 ui/journal/subheader.lua
+ui/journal/share_stepper.lua
 ui/journal/group_table.lua
 ui/journal/journal.xml
 ui/journal/dialogs.xml

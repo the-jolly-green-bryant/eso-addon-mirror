@@ -9,6 +9,7 @@ local Module = {
     Label = nil,
     Icon = nil,
     Background = nil,
+    Fragment = nil,
     Timeline = nil,
     ScaleUp = nil,
     ScaleDown = nil,
@@ -86,26 +87,44 @@ function Module:Create()
     self.Background:SetEdgeTexture("", 1, 1, 2)
 
     -- THX ExoY FOR TEACHING ME THIS
-    local Fragment = ZO_HUDFadeSceneFragment:New(self.Parent)
-    HUD_SCENE:AddFragment(Fragment)
-    HUD_UI_SCENE:AddFragment(Fragment)
+    self.Fragment = ZO_HUDFadeSceneFragment:New(self.Parent)
 end
 
 ----------------------------------------------------------------------------------------------------
 -- CUSTOM ENABLE / DISABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
-    if not self.Parent then
-        self:Create()
+    if not self.Parent then self:Create() end
+
+    if not CC.SV.enableAddon then
+        self:CustomDisable()
+        return
     end
-    if self.Parent then
-        self.Parent:SetHidden(false)
+
+    self.Parent:SetHidden(false)
+
+    if self.Fragment then
+        if not HUD_SCENE:HasFragment(self.Fragment) then
+            HUD_SCENE:AddFragment(self.Fragment)
+        end
+        if not HUD_UI_SCENE:HasFragment(self.Fragment) then
+            HUD_UI_SCENE:AddFragment(self.Fragment)
+        end
     end
 end
 
 function Module:CustomDisable()
     if self.Parent then
         self.Parent:SetHidden(true)
+    end
+
+    if self.Fragment then
+        if HUD_SCENE:HasFragment(self.Fragment) then
+            HUD_SCENE:RemoveFragment(self.Fragment)
+        end
+        if HUD_UI_SCENE:HasFragment(self.Fragment) then
+            HUD_UI_SCENE:RemoveFragment(self.Fragment)
+        end
     end
 end
 

@@ -38,8 +38,6 @@ end
 ---@field HEALTH_RECOVERY_ICON string Synthetic health recovery icon
 ---@field VENGEANCE_LOADOUTS_BY_SKILL_LINE_ID table<number, VengeanceLoadoutDef> Vengeance loadout metadata keyed by skill line id
 ---@field VENGEANCE_PERK_SLOTS number[] Positional perk slot order: red, yellow, blue
-
----@type BattleScrollsConstants
 local constants = {}
 
 BattleScrolls.constants = constants

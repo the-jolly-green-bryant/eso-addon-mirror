@@ -12,7 +12,7 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Volley"]        = { 28876, },
         ["Endless Hail"]  = { 38689, },
         ["Arrow Barrage"] = { 38695, },

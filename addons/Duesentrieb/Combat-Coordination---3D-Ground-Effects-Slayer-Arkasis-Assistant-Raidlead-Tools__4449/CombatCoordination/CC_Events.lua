@@ -5,7 +5,8 @@ local CC = CombatCoordination
 ----------------------------------------------------------------------------------------------------
 local Module = {
     name = "Events",
-    CallbackModules = {},
+    SkillModules = {},
+    BuffModules = {},
 
     startTimeCombatEvent = 0,
     counterCombatEventGained = 0,
@@ -89,35 +90,25 @@ function Module:OnPlayerActivated()
 
     CC.SkillBlocker:UpdateEquippedSkills()
 
-    -- -- INSTANCE PORT ASSIGNMENT CHECK
-    -- zo_callLater(function()
-    --     local zoneId = CC.GetCleanZoneId()
+    -- CHECK ASSIGNMENT ON PORT TO INSTANCE
+    local zoneId = CC.GetCleanZoneId()
+    if zoneId ~= 0 then
+        -- CHECK SLAYER
+        local slayerSide = CC.SlayerAssistant:GetSideIdFromZoneId(zoneId)
+        if slayerSide == CC.SlayerAssistant.SIDE_NONE then
+            local zoneName = CC.SlayerAssistant:GetZoneNameFromZoneId(zoneId)
+            local sideName = CC.SlayerAssistant:GetSideNameFromSideId(slayerSide)
+            CC.DisplayDialog:RequestSlayer(zoneId, zoneName, sideName)
+        end
 
-    --     -- CHECK INSTANCE
-    --     if zoneId ~= 0 then
-
-    --         -- CHECK SLAYER
-    --         if CC.SlayerAssistant then
-    --             local slayerSide = CC.SlayerAssistant:GetSideIdFromZoneId(zoneId)
-    --             if slayerSide == CC.SlayerAssistant.SIDE_NONE then
-    --                 local zoneName = CC.SlayerAssistant:GetZoneNameFromZoneId(zoneId)
-    --                 local sideName = CC.SlayerAssistant:GetSideNameFromSideId(slayerSide)
-    --                 CC.DisplayDialog:RequestSlayer(zoneId, zoneName, sideName)
-    --             end
-    --         end
-
-    --         -- CHECK ARKASIS
-    --         if CC.ArkasisAssistant then
-    --             local arkasisSide = CC.ArkasisAssistant:GetSideIdFromZoneId(zoneId)
-    --             if arkasisSide == CC.ArkasisAssistant.SIDE_NONE then
-    --                 local zoneName = CC.ArkasisAssistant:GetZoneNameFromZoneId(zoneId)
-    --                 local sideName = CC.ArkasisAssistant:GetSideNameFromSideId(arkasisSide)
-    --                 CC.DisplayDialog:RequestArkasis(zoneId, zoneName, sideName)
-    --             end
-    --         end
-
-    --     end
-    -- end, 2500)
+        -- CHECK ARKASIS
+        local arkasisSide = CC.ArkasisAssistant:GetSideIdFromZoneId(zoneId)
+        if arkasisSide == CC.ArkasisAssistant.SIDE_NONE then
+            local zoneName = CC.ArkasisAssistant:GetZoneNameFromZoneId(zoneId)
+            local sideName = CC.ArkasisAssistant:GetSideNameFromSideId(arkasisSide)
+            CC.DisplayDialog:RequestArkasis(zoneId, zoneName, sideName)
+        end
+    end
 
     -- INSTALLATION CHECK
     zo_callLater(function()
@@ -135,9 +126,6 @@ end
 -- COMBAT STATE
 ----------------------------------------------------------------------------------------------------
 function Module:OnPlayerCombatState(eventCode, inCombat)
-    -- if inCombat then
-    --     CC.SkillBlocker:UpdateEquippedSkills()
-    -- end
     CC.SkillBlocker:UpdateEquippedSkills()
 end
 
@@ -185,6 +173,11 @@ function Module:OnActionSlotAbilityUsed(eventCode, actionSlotIndex)
     end
 
     self:RefreshLastCast(abilityId)
+
+    local SkillModule = self.SkillModules[abilityId]
+    if SkillModule and SkillModule.HandleActionSlotAbilityUsed then
+        SkillModule:HandleActionSlotAbilityUsed(abilityId)
+    end
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -253,35 +246,9 @@ function Module:OnCombatEvent(eventCode, result, isError, abilityName, abilityGr
     end
 
     -- MODULE CALLBACK! (IF SO)
-    local CallbackModule = self.CallbackModules[abilityId]
-    if CallbackModule and CallbackModule.HandleCombatEvent then
-        CallbackModule:HandleCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-    end
-end
-
-----------------------------------------------------------------------------------------------------
--- ON EFFECT CHANGED
-----------------------------------------------------------------------------------------------------
-function Module:OnEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceUnitType)
-    if unitTag ~= "player" then return end
-
-    local ShouldBlock = CC.SkillBlocker.BlockableBuffs[abilityId]
-    if not ShouldBlock then return end
-
-    for skillId, _ in pairs(ShouldBlock) do
-        local SkillData = CC.SkillData[skillId]
-
-        if SkillData and SkillData.moduleName and CC.SV[SkillData.moduleName].enableSkillBlocker and CC.SkillBlocker.EquippedSkills[skillId] then
-            if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
-                local expireTimeMs = (endTime > 0) and (math.floor(endTime * 1000) + 500) or 0
-
-                CC.SkillBlocker.PlayerBuffs[skillId] = expireTimeMs
-                CC.SkillBlocker:StartSkillBlockerLoop()
-
-            elseif changeType == EFFECT_RESULT_FADED then
-                CC.SkillBlocker.PlayerBuffs[skillId] = nil
-            end
-        end
+    local SkillModule = self.SkillModules[abilityId]
+    if SkillModule and SkillModule.HandleCombatEvent then
+        SkillModule:HandleCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
     end
 end
 
@@ -293,39 +260,74 @@ function Module:HandleCombatEvent(eventCode, result, isError, abilityName, abili
     if sourceType ~= COMBAT_UNIT_TYPE_PLAYER then return end
 
     local ID = abilityId
-
     local SkillData = CC.SkillData[ID]
-    if not SkillData then
-        CC.Debug("CC.Events:HandleCombatEvent; if not SkillData then return end")
-        return
-    end
+    if not SkillData then return end
 
     -- NOTE TO LATER SELF: IN CASE OF OLORIME THIS DATA IS ALREADY INJECTED WITH CAMERA TARGET
     local originX = CC.LastCast.playerX
     local originY = CC.LastCast.playerY
     local originZ = CC.LastCast.playerZ
     local heading = CC.LastCast.heading
-
-    if not (originX and originY and originZ and heading) then
-        CC.Debug("CC.Events:HandleCombatEvent; if not (originX and originY and originZ and heading) then return end")
-        return
-    end
+    if not (originX and originY and originZ and heading) then return end
 
     local TX, TY, TZ = CC.GetAbilityTargetPosition(SkillData, originX, originY, originZ, heading)
     local RX, RY, RZ = CC.GetGroundRotation(TX, TY, TZ)
     RY = heading or RY
-
-    if not (TX and TY and TZ and RY) then
-        CC.Debug("CC.Events:HandleCombatEvent; if not (TX and TY and TZ and RY) then return end")
-        return
-    end
+    if not (TX and TY and TZ and RY) then return end
 
     local isPlayer = true
     CC.DrawCombatVisuals(self, isPlayer, "player", ID, TX, TY, TZ, RX, RY, RZ)
 end
 
 ----------------------------------------------------------------------------------------------------
--- DRAW COMBAT EVENT OR BROADCAST
+-- ON EFFECT CHANGED
+----------------------------------------------------------------------------------------------------
+function Module:OnEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceUnitType)
+    -- SKILLBLOCKER
+    local ShouldBlock = CC.SkillBlocker.BlockableBuffs[abilityId]
+    if ShouldBlock then
+        if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
+            local expireTimeMs = (endTime > 0) and (math.floor(endTime * 1000) + 500) or 0
+            CC.SkillBlocker.PlayerBuffs[abilityId] = expireTimeMs
+            CC.SkillBlocker:StartSkillBlockerLoop()
+        elseif changeType == EFFECT_RESULT_FADED then
+            CC.SkillBlocker.PlayerBuffs[abilityId] = nil
+        end
+    end
+
+    -- VISUALS
+    local BuffModule = CC.Events.BuffModules[abilityId]
+    if BuffModule and BuffModule.HandleEffectChanged then
+        BuffModule:HandleEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceUnitType)
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- DRAW EFFECT CHANGED
+----------------------------------------------------------------------------------------------------
+function Module:HandleEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceUnitType)
+    if changeType ~= EFFECT_RESULT_GAINED and changeType ~= EFFECT_RESULT_UPDATED then return end
+    if sourceUnitType ~= COMBAT_UNIT_TYPE_PLAYER then return end
+
+    local ID = abilityId
+    local SkillData = CC.SkillData[ID]
+    if not SkillData then return end
+
+    local _, playerX, playerY, playerZ = GetUnitRawWorldPosition("player")
+    local _, _, heading = GetMapPlayerPosition("player")
+    if not (playerX and playerY and playerZ and heading) then return end
+
+    local TX, TY, TZ = CC.GetAbilityTargetPosition(SkillData, playerX, playerY, playerZ, heading)
+    local RX, RY, RZ = CC.GetGroundRotation(TX, TY, TZ)
+    RY = heading or RY
+    if not (TX and TY and TZ and RY) then return end
+
+    local isPlayer = true
+    CC.DrawCombatVisuals(self, isPlayer, "player", ID, TX, TY, TZ, RX, RY, RZ)
+end
+
+----------------------------------------------------------------------------------------------------
+-- DRAW / BROADCAST
 ----------------------------------------------------------------------------------------------------
 function CC.DrawCombatVisuals(self, isPlayer, unitTag, ID, TX, TY, TZ, RX, RY, RZ)
     local SkillData = CC.SkillData[ID]
@@ -444,6 +446,27 @@ function CC.DrawCombatVisuals(self, isPlayer, unitTag, ID, TX, TY, TZ, RX, RY, R
             durationMs = durationMs,
         })
         CC.DisplayLabel.LabelTimers[trackingKey] = { currentTime = currentTime, startTime = startTime, labelId = labelId }
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- CLEAR VISUALS (EARLY)
+----------------------------------------------------------------------------------------------------
+function CC.ClearCombatVisuals(self, isPlayer, unitTag)
+    local trackingKey = self.name .. (isPlayer and "Player" or tostring(unitTag))
+
+    -- REMOVE 3D EFFECT
+    local LastEffectData = CC.DisplayEffect.EffectTimers[trackingKey]
+    if LastEffectData and LastEffectData.effectId then
+        CC.DisplayEffect:RemoveTrackedEffect(LastEffectData.effectId)
+        CC.DisplayEffect.EffectTimers[trackingKey] = nil
+    end
+
+    -- REMOVE LABEL
+    local LastLabelData = CC.DisplayLabel.LabelTimers[trackingKey]
+    if LastLabelData and LastLabelData.labelId then
+        CC.DisplayLabel:RemoveTrackedLabel(LastLabelData.labelId)
+        CC.DisplayLabel.LabelTimers[trackingKey] = nil
     end
 end
 

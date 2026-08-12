@@ -53,13 +53,14 @@ local defaults = {
     players = {},       -- key (@account or char name) -> record
     charToAccount = {}, -- character name -> @account
     totals = { kills = 0, deaths = 0 },
+    welcomeVersion = "", -- last version that showed the full welcome message
 }
 
 -- Runtime state --------------------------------------------------------------
 
 local recentKill, recentDeath, spottedAt = {}, {}, {}
 local lastPlayerDeath = 0
-local setNameToId = nil
+local setNameToId = nil       -- built asynchronously after load, nil until ready
 N.session = { kills = 0, deaths = 0 }
 
 -- Helpers --------------------------------------------------------------------
@@ -86,10 +87,36 @@ function N.InPvPOrDuel()
     return N.InPvP() or N.IsDueling()
 end
 
-function N.Msg(text)
-    if CHAT_ROUTER then
-        CHAT_ROUTER:AddSystemMessage("|cFF4040Nemesis|r " .. text)
+-- Chat isn't ready to display messages until shortly after login; anything
+-- sent earlier is dropped silently. Queue messages and flush once ready.
+local chatReady = false
+local pendingMsgs = {}
+
+local function DeliverMsg(msg)
+    if CHAT_ROUTER and CHAT_ROUTER.AddSystemMessage then
+        CHAT_ROUTER:AddSystemMessage(msg)
+    elseif CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
+        CHAT_SYSTEM:AddMessage(msg)
+    else
+        d(msg)
     end
+end
+
+function N.Msg(text)
+    local msg = "|cFF4040Nemesis|r " .. text
+    if chatReady then
+        DeliverMsg(msg)
+    else
+        pendingMsgs[#pendingMsgs + 1] = msg
+    end
+end
+
+function N.FlushMsgs()
+    chatReady = true
+    for i = 1, #pendingMsgs do
+        DeliverMsg(pendingMsgs[i])
+    end
+    pendingMsgs = {}
 end
 
 -- Identity -------------------------------------------------------------------
@@ -109,8 +136,18 @@ function N.KeyFor(displayName, charName)
     return nil
 end
 
+-- Guarantee sub-tables exist (protects against records saved by older versions).
+local function Normalize(rec)
+    rec.ab = rec.ab or {}
+    rec.sets = rec.sets or {}
+    rec.chars = rec.chars or {}
+    return rec
+end
+
 local function MergeRecord(rec, old)
     if not old or rec == old then return end
+    Normalize(rec)
+    Normalize(old)
     rec.k = (rec.k or 0) + (old.k or 0)
     rec.d = (rec.d or 0) + (old.d or 0)
     rec.dw = (rec.dw or 0) + (old.dw or 0)
@@ -149,10 +186,11 @@ function N.Touch(key, charName)
                 first = N.Now(), ab = {}, sets = {}, chars = {} }
         SV.players[key] = rec
     elseif not rec then
-        rec = old
+        rec = Normalize(old)
         SV.players[charName] = nil
         SV.players[key] = rec
     else
+        Normalize(rec)
         if old then
             MergeRecord(rec, old)
             SV.players[charName] = nil
@@ -160,7 +198,12 @@ function N.Touch(key, charName)
     end
     rec.last = N.Now()
     if charName and charName ~= "" then
-        rec.chars[Clean(charName)] = true
+        local clean = Clean(charName)
+        if not rec.chars[clean] then
+            local count = 0
+            for _ in pairs(rec.chars) do count = count + 1 end
+            if count < 8 then rec.chars[clean] = true end
+        end
     end
     return rec
 end
@@ -197,7 +240,7 @@ end
 -- Win chance heuristic (a fun estimate, not science) -------------------------
 
 function N.WinChance(rec)
-    local k, d = rec.k or 0, rec.d or 0
+    local k, d = (rec.k or 0) + (rec.dw or 0), (rec.d or 0) + (rec.dl or 0)
     local base = (k + 1) / (k + d + 2)
     local myCP = GetUnitChampionPoints("player") or 0
     local theirCP = rec.cp or myCP
@@ -208,19 +251,30 @@ end
 
 -- Set inference: proc ability names that match item set names ----------------
 
-local function EnsureSetLookup()
+-- Built in small chunks across frames to avoid a combat hitch on first use.
+local function BuildSetLookupAsync()
     if setNameToId then return end
-    setNameToId = {}
-    for setId = 1, 5000 do
-        local setName = GetItemSetName(setId)
-        if setName and setName ~= "" then
-            setNameToId[zo_strlower(Clean(setName))] = setId
+    local lookup, setId = {}, 1
+    local function Step()
+        local stop = setId + 399
+        while setId <= stop do
+            local setName = GetItemSetName(setId)
+            if setName and setName ~= "" then
+                lookup[zo_strlower(Clean(setName))] = setId
+            end
+            setId = setId + 1
+        end
+        if setId > 5000 then
+            setNameToId = lookup
+        else
+            zo_callLater(Step, 100)
         end
     end
+    Step()
 end
 
 local function TryInferSet(rec, abilityId)
-    EnsureSetLookup()
+    if not setNameToId then return end -- lookup still building; sets are caught on later procs
     local abilityName = zo_strlower(Clean(GetAbilityName(abilityId)))
     local setId = setNameToId[abilityName]
     if setId then
@@ -290,6 +344,7 @@ function N.RecordDeath(key, charName, location)
     else
         N.UI.ShowDeathNote(key, rec)
     end
+    N.UI.RefreshIfShowing(key)
 end
 
 -- Event handlers ---------------------------------------------------------------
@@ -338,11 +393,11 @@ local function ReadDeathRecap()
                     if cp and cp > 0 then rec.cp = cp end
                     if avaRank and avaRank > 0 then rec.rank = avaRank end
                     if alliance and alliance ~= 0 then rec.alli = alliance end
-                    local _, _, _, wasKillingBlow = GetKillingAttackInfo(i)
-                    if wasKillingBlow then
-                        killingBlowKey, killingBlowChar = key, charName
+                    local _, _, _, wasKillingBlow, _, _, _, abilityId = GetKillingAttackInfo(i)
+                    if abilityId and abilityId > 0 then
+                        N.LearnAbility(rec, abilityId)
                     end
-                    if not killingBlowKey then
+                    if wasKillingBlow or not killingBlowKey then
                         killingBlowKey, killingBlowChar = key, charName
                     end
                 end
@@ -436,18 +491,36 @@ end
 -- Pruning ----------------------------------------------------------------------
 
 local function PrunePlayers()
+    -- drop players who were only looked at, never actually fought
+    for key, rec in pairs(SV.players) do
+        local fought = ((rec.k or 0) + (rec.d or 0) + (rec.dw or 0) + (rec.dl or 0)) > 0
+        if not fought and (not rec.ab or next(rec.ab) == nil) then
+            SV.players[key] = nil
+        end
+    end
+
+    -- evict lowest-tier, least-fought, least recently seen players beyond the cap
     local keys = {}
     for key in pairs(SV.players) do keys[#keys + 1] = key end
-    if #keys <= MAX_PLAYERS then return end
-    -- evict least recently seen, lowest-tier players first
-    table.sort(keys, function(a, b)
-        local ra, rb = SV.players[a], SV.players[b]
-        local ta, tb = N.GetTier(ra), N.GetTier(rb)
-        if ta ~= tb then return ta < tb end
-        return (ra.last or 0) < (rb.last or 0)
-    end)
-    for i = 1, #keys - MAX_PLAYERS do
-        SV.players[keys[i]] = nil
+    if #keys > MAX_PLAYERS then
+        table.sort(keys, function(a, b)
+            local ra, rb = SV.players[a], SV.players[b]
+            local ta, tb = N.GetTier(ra), N.GetTier(rb)
+            if ta ~= tb then return ta < tb end
+            local ea, eb = (ra.k or 0) + (ra.d or 0), (rb.k or 0) + (rb.d or 0)
+            if ea ~= eb then return ea < eb end
+            return (ra.last or 0) < (rb.last or 0)
+        end)
+        for i = 1, #keys - MAX_PLAYERS do
+            SV.players[keys[i]] = nil
+        end
+    end
+
+    -- drop character-name mappings that no longer point at a tracked player
+    for charName, account in pairs(SV.charToAccount) do
+        if not SV.players[account] then
+            SV.charToAccount[charName] = nil
+        end
     end
 end
 
@@ -467,6 +540,23 @@ function N.GetTopRivals(count)
     local out = {}
     for i = 1, zo_min(count or 5, #list) do out[i] = list[i] end
     return out
+end
+
+-- Welcome ------------------------------------------------------------------------
+
+local function TierTag(tier)
+    local c = N.TIER_COLORS[tier]
+    return string.format("|c%02X%02X%02X%s|r",
+        math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5),
+        N.TIER_NAMES[tier])
+end
+
+local function ShowWelcome()
+    N.Msg(string.format("|cFFFFFFWelcome to Nemesis v%s|r - your PvP rival tracker.", N.version))
+    N.Msg("Aim at an enemy player in Cyrodiil, Imperial City, a battleground, or a duel to open their dossier: your record against them, their class and CP, their favorite moves, detected sets, and your estimated win chance.")
+    N.Msg(string.format("Players who keep killing you are promoted to %s, %s, and %s - you'll get a warning when they're spotted, and a vengeance celebration when you finally take them down.",
+        TierTag(N.TIER_RIVAL), TierTag(N.TIER_NEMESIS), TierTag(N.TIER_ARCH)))
+    N.Msg("Options: Settings > Addons > Nemesis. Chat commands: /nemesis top, dossier, banners, sounds, scrim, help.")
 end
 
 -- Slash commands ----------------------------------------------------------------
@@ -498,12 +588,17 @@ local function OnSlashCommand(args)
     elseif args == "sounds" then
         SV.sounds = not SV.sounds
         N.Msg("Sounds " .. (SV.sounds and "enabled" or "disabled") .. ".")
+    elseif args == "scrim" then
+        SV.scrim = not SV.scrim
+        N.Msg("Group build sharing " .. (SV.scrim and "enabled" or "disabled") .. " - takes effect after a UI reload.")
+    elseif args == "help" then
+        ShowWelcome()
     else
         local tracked = 0
         for _ in pairs(SV.players) do tracked = tracked + 1 end
         N.Msg(string.format("v%s - tracking %d players. Lifetime PvP: %d kills / %d deaths. Session: %d/%d.",
             N.version, tracked, SV.totals.kills, SV.totals.deaths, N.session.kills, N.session.deaths))
-        N.Msg("Commands: /nemesis top, dossier, banners, sounds")
+        N.Msg("Commands: /nemesis top, dossier, banners, sounds, scrim, help")
     end
 end
 
@@ -519,6 +614,9 @@ local function OnAddOnLoaded(_, addOnName)
 
     SV = ZO_SavedVars:NewAccountWide("NemesisSV", 1, nil, defaults)
     PrunePlayers()
+
+    -- build the set-name lookup off the load path, spread across frames
+    zo_callLater(BuildSetLookupAsync, 5000)
 
     -- kill feed: authoritative for AvA kills/deaths
     EM:RegisterForEvent(N.name .. "KillFeed", EVENT_PVP_KILL_FEED_DEATH, OnKillFeed)
@@ -547,6 +645,21 @@ local function OnAddOnLoaded(_, addOnName)
     EM:RegisterForEvent(N.name .. "Duel", EVENT_DUEL_FINISHED, OnDuelFinished)
 
     SLASH_COMMANDS["/nemesis"] = OnSlashCommand
+
+    -- greet once chat is actually ready (a beat after activation): full
+    -- welcome on first run / after updates, otherwise a single loaded line
+    EM:RegisterForEvent(N.name .. "Welcome", EVENT_PLAYER_ACTIVATED, function()
+        EM:UnregisterForEvent(N.name .. "Welcome", EVENT_PLAYER_ACTIVATED)
+        zo_callLater(function()
+            if SV.welcomeVersion ~= N.version then
+                SV.welcomeVersion = N.version
+                ShowWelcome()
+            else
+                N.Msg(string.format("v%s loaded - /nemesis help for commands. Options: Settings > Addons > Nemesis.", N.version))
+            end
+            N.FlushMsgs()
+        end, 2000)
+    end)
 
     N.UI.Init(SV)
     N.Scrim.Init(SV)

@@ -1,19 +1,24 @@
-Guild Market Scanner DEV — v0.1.1
+Guild Market Scanner DEV — v0.2.2
 Author: MajesticMinxi
 
-LEAN STORAGE OPTIMIZATION
-- Keeps pricing accuracy while reducing SavedVariables size.
-- Each guild snapshot becomes a compact numeric array.
-- Keeps: listing count, median, Q1, Q3, updated timestamp.
-- Removes per-guild min/max.
-- Removes duplicated permanent cached price profiles.
-- Price suggestions are calculated from compact guild snapshots when queried.
-- Many guilds agreeing on a price still dominate the result.
-- Isolated extreme guild prices can still be rejected as outliers.
-- Future scans remain temporary, then compress to one snapshot per item/guild.
+BATCHED PRICE DATA EXPORT
 
-TEST
-1. Update to v0.1.1.
-2. Before scanning, compare SavedVariables size with ~10.1 MB.
-3. Run /gmsprice Perfect Roe and compare the result.
-4. If both are good, resume scanning.
+Fixes the console CPU-time error from v0.2.1.
+
+What changed
+------------
+- /gmsexport no longer processes the entire market database in one frame.
+- Export is built in small batches across many frames.
+- Progress is printed periodically in chat.
+- Existing scanner database and Guild Scan Registry are preserved.
+- /gmscancelxport cancels an in-progress export.
+- /gmsclearexport clears the saved export after it has been retrieved.
+
+Test
+----
+1. Update to v0.2.2 and reload UI.
+2. Do NOT rescan the trader unless you want to. The completed scan from v0.2.1 is already in the database.
+3. Run /gmsexport.
+4. Let it finish; do not reload while EXPORT PROGRESS is running.
+5. Send the final EXPORT READY line and the memory line.
+6. Then /reloadui once to persist the generated export.

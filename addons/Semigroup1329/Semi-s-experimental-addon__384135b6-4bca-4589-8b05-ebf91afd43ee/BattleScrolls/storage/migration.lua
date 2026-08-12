@@ -347,9 +347,11 @@ end
 ---@param secondaryText string
 ---@param sound string
 local function announce(secondaryText, sound)
+    ---@diagnostic disable-next-line: undefined-field -- CreateMessageParams missing from the CSA stub
     local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT, sound)
     messageParams:SetText(GetString(BATTLESCROLLS_UI_NAME), secondaryText)
     messageParams:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_SYSTEM_BROADCAST)
+    ---@diagnostic disable-next-line: undefined-field -- AddMessageWithParams missing from the CSA stub
     CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
 end
 

@@ -204,7 +204,7 @@ BUI.Buffs	={
 		MinimumDuration	=3,
 		CastbyPlayer	=true,
 		PlayerBuffsAlign	=CENTER,
-		BUI_BuffsP		={CENTER,CENTER,0,245},
+		BUI_BuffsP		={CENTER,CENTER,0,195},
 		--Passives
 		BuffsPassives	="On additional panel",
 		PassiveBuffSize	=36,
@@ -428,22 +428,28 @@ function BUI.Frames.PlayerBuffs_Init()
 	local space		=3
 	local size		=BUI.Vars.PlayerBuffSize
 
-	-- Xbox adaptation: older profiles saved the player-buff row too close to
-	-- the player health frame. Move those legacy positions 100 pixels upward
-	-- once, so the icons remain clearly above the HP display.
-	local playerBuffAnchor=BUI.Vars.BUI_BuffsP
-	if type(playerBuffAnchor)=="table" and not BUI.Vars.SXUI_PlayerBuffsAboveHP then
-		local y=tonumber(playerBuffAnchor[4]) or 345
-		if y>=300 then y=y-100 end
+	-- Xbox adaptation: keep the player-buff row above the HP display, but not
+	-- so high that it floats near the character model. Earlier versions moved
+	-- it too far upward on some profiles, so shift those saved positions back
+	-- down to a more natural spot above the player bars.
+	local playerBuffAnchor=BUI.Vars.BUI_BuffsP or {CENTER,CENTER,0,195}
+	if type(playerBuffAnchor)=="table" and not BUI.Vars.SXUI_PlayerBuffsAboveHP_v3 then
+		local y=tonumber(playerBuffAnchor[4]) or 195
+		if y<=140 then y=y+90 end
 		playerBuffAnchor={playerBuffAnchor[1] or CENTER,playerBuffAnchor[2] or CENTER,playerBuffAnchor[3] or 0,y}
 		BUI.Vars.BUI_BuffsP=playerBuffAnchor
 		BUI.Vars.SXUI_PlayerBuffsAboveHP=true
+		BUI.Vars.SXUI_PlayerBuffsAboveHP_v2=true
+		BUI.Vars.SXUI_PlayerBuffsAboveHP_v3=true
 	end
 
 	--Create the Self Buffs frame container
 	local ui		=BUI.UI.Control(	"BUI_BuffsP",			SatuveUI,	{(size+space)*number-space,size},	playerBuffAnchor,		false)
-	ui.backdrop		=BUI.UI.Backdrop(	"BUI_BuffsP_BG",			ui,		"inherit",					{CENTER,CENTER,0,0},		{0,0,0,0.4}, {0,0,0,1}, nil, true) --ui.backdrop:SetEdgeTexture("",16,4,4)
+	ui.backdrop		=BUI.UI.Backdrop(	"BUI_BuffsP_BG",			ui,		"inherit",					{CENTER,CENTER,0,0},		{0,0,0,0}, {0,0,0,0}, nil, true)
+	ui.backdrop:SetMouseEnabled(false)
 	ui.label		=BUI.UI.Label(	"BUI_BuffsP_Label",		ui.backdrop,	"inherit",				{CENTER,CENTER,0,0},		BUI.UI.Font("standard",20,true), nil, {1,1}, BUI.Loc("PBuffsLabel"))
+	ui.backdrop:SetHidden(true)
+	ui.label:SetHidden(true)
 	ui:SetAlpha(BUI.Vars.FrameOpacityOut/100)
 	ui:SetDrawLayer(DT_HIGH)
 	ui:SetMovable(true)
@@ -452,8 +458,9 @@ function BUI.Frames.PlayerBuffs_Init()
 	local anchor	={LEFT,LEFT,0,0,ui.base}
 	--Iterate over Buffs
 	for i=1, number do
-	local ability	=BUI.UI.Backdrop(	"BUI_BuffsP"..i,			ui.base,	{size,size},				anchor,				theme_color, theme_color, BUI.abilityframe, true)
+	local ability	=BUI.UI.Backdrop(	"BUI_BuffsP"..i,			ui.base,	{size,size},				anchor,				{0,0,0,0}, theme_color, BUI.abilityframe, true)
 	ability:SetDrawLayer(0) ability:SetEdgeTexture("",8,4,4)
+	ability:SetCenterColor(0,0,0,0)
 --	local ability	=BUI.UI.Statusbar("BUI_BuffsP"..i,			ui.base,	{size,size},				anchor,				{1,1,1,1},texture, false)
 	ability.icon	=BUI.UI.Statusbar("BUI_BuffsP"..i.."_Icon",	ability,	{size-border,size-border},		{CENTER,CENTER,0,0},		{1,1,1,1},'', false)
 	ability.icon:SetDrawLayer(0)
@@ -1393,19 +1400,26 @@ function BUI.Buffs.ShowTooltip(control)
 	if not data or data.Blank then return end
 	if data.Target then for name in pairs(data) do if name~="Target" then data=data[name] break end end end
 	InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -16)
-	InformationTooltip:AddLine(zo_strformat("<<C:1>>",data.Name),'$(BOLD_FONT)'..'|22',1,1,1)
+	InformationTooltip:ClearLines()
+	if InformationTooltip.SetDimensionConstraints then InformationTooltip:SetDimensionConstraints(420,0,520,0) end
+	InformationTooltip:AddLine(zo_strformat("<<C:1>>",data.Name),'$(BOLD_FONT)|26|soft-shadow-thick',1,1,1,CENTER,MODIFY_TEXT_TYPE_NONE,TEXT_ALIGN_CENTER,true)
+	InformationTooltip:AddLine(' ','$(MEDIUM_FONT)|4',1,1,1)
 	local desc=type(data.id)=="number" and GetAbilityDescription(data.id) or ""
-	local text=	'|t300:8:/EsoUI/Art/Miscellaneous/horizontalDivider.dds|t\n'
-		..	'ID: |cFFFFFF'..data.id..'|r\n'
-		..	'Duration: |cFFFFFF'..(data.Duration and math.floor(data.Duration) or GetAbilityDuration(data.id)/1000)..' seconds|r\n'
-		..	'Type: |cFFFFFF'..(data.Positive and "Buff" or "Debuff")..'|r\n'
-		..	(data.Player and 'Cast by: |cFFFFFFPlayer|r\n' or '')
-		..	'|t300:8:/EsoUI/Art/Miscellaneous/horizontalDivider.dds|t\n'
-		..	(desc~='' and desc..'\n|t300:8:/EsoUI/Art/Miscellaneous/horizontalDivider.dds|t\n' or '')
-		..	((not control.custom and not control.widget) and '|t16:16:/SatuveXboxUI/textures/lmb.dds|t'	.." Add to custom " or "")
-		..	'|t16:16:/SatuveXboxUI/textures/rmb.dds|t'	..((control.custom or control.widget) and " Remove" or " Blacklist")
-		..	(not control.widget and '\n|t16:16:/SatuveXboxUI/textures/mmb.dds|t'	.." Make widget" or "")
-	SetTooltipText(InformationTooltip, text)
+	local duration=(data.Duration and math.floor(data.Duration) or ((type(data.id)=="number" and GetAbilityDuration(data.id) or 0)/1000))
+	local info='ID: |cFFFFFF'..tostring(data.id)..'|r\n'
+		..'Duration: |cFFFFFF'..tostring(duration)..' seconds|r\n'
+		..'Type: |cFFFFFF'..(data.Positive and "Buff" or "Debuff")..'|r\n'
+		..(data.Player and 'Cast by: |cFFFFFFPlayer|r\n' or '')
+	InformationTooltip:AddLine(info,'$(MEDIUM_FONT)|18|soft-shadow-thick',1,1,1,LEFT,MODIFY_TEXT_TYPE_NONE,TEXT_ALIGN_LEFT,true)
+	if desc~='' then
+		InformationTooltip:AddLine(' ','$(MEDIUM_FONT)|4',1,1,1)
+		InformationTooltip:AddLine(desc,'$(MEDIUM_FONT)|18|soft-shadow-thick',1,1,1,LEFT,MODIFY_TEXT_TYPE_NONE,TEXT_ALIGN_LEFT,true)
+	end
+	local actions=((not control.custom and not control.widget) and '|t16:16:/SatuveXboxUI/textures/lmb.dds|t Add to custom ' or '')
+		..'|t16:16:/SatuveXboxUI/textures/rmb.dds|t '..((control.custom or control.widget) and 'Remove' or 'Blacklist')
+		..(not control.widget and '\n|t16:16:/SatuveXboxUI/textures/mmb.dds|t Make widget' or '')
+	InformationTooltip:AddLine(' ','$(MEDIUM_FONT)|4',1,1,1)
+	InformationTooltip:AddLine(actions,'$(MEDIUM_FONT)|18|soft-shadow-thick',1,1,1,LEFT,MODIFY_TEXT_TYPE_NONE,TEXT_ALIGN_LEFT,true)
 end
 
 local function UpdateChoices(target,id,clear)

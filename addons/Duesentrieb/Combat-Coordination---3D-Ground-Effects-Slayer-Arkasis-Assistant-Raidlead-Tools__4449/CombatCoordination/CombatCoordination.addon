@@ -1,8 +1,8 @@
 ## Title: |cFF7F00Combat|r |cFFFFFFCoordination|r
 ## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[PC/EU]|r
-## Version: 20260810-0001
+## Version: 20260811-0001
 ## APIVersion: 101050
-## DependsOn: LibAddonMenu-2.0>=43 LibGroupBroadcast LibCustomMenu LibSkillBlocker LibChatMenuButton
+## DependsOn: LibAddonMenu-2.0>=43 LibGroupBroadcast>=91 LibCustomMenu>=730 LibSkillBlocker>=110 LibChatMenuButton>=1006
 ## OptionalDependsOn: HodorReflexes
 ## SavedVariables: CombatCoordinationVariables
 ## Description: Shares 3D combat markers and essential tools for raid coordination.
@@ -35,6 +35,7 @@ modules/CC_ArcanistFatecarver.lua
 modules/CC_ArcanistGlyphic.lua
 modules/CC_ArkasisAssistant.lua
 modules/CC_AssaultCaltrops.lua
+modules/CC_AssaultWarHorn.lua
 modules/CC_BlessingOfProtection.lua
 modules/CC_BowVolley.lua
 modules/CC_DragonknightStandard.lua

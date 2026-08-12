@@ -13,7 +13,7 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Storm Atronach"]         = { 23634, },
         ["Greater Storm Atronach"] = { 23492, },
         ["Charged Atronach"]       = { 23495, },
@@ -24,9 +24,9 @@ local Module = {
         ["Charged Atronach"]       = LUT.CHARGED_ATRONACH,
     },
     SkillBlocker = {
-        ["Storm Atronach"]         = { 61745, 80459, }, -- BERSERK FROM DK CLASS MASTERY: 61745
-        ["Greater Storm Atronach"] = { 61745, 80463, },
-        ["Charged Atronach"]       = { 61745, 80468, },
+        ["Storm Atronach"]         = { 80459, 61745, }, -- 80459, 80463, 80468: ATRO SPAWNED "STANDING IN AREA" BUFFS
+        ["Greater Storm Atronach"] = { 80463, }, -- 61745: BERSERK FROM E.G. DK CLASS MASTERY
+        ["Charged Atronach"]       = { 80468, },
     },
     SkillData = {
         ["Storm Atronach"] = {

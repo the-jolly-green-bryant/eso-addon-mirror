@@ -29,6 +29,7 @@ journal.NavigationMode = {
     STATS = 3,
     SETTINGS = 4,
     PIVOT = 5,
+    SHARE = 6,
 }
 
 -------------------------

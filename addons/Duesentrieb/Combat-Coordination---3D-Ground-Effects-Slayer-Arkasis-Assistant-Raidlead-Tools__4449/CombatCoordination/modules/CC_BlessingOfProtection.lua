@@ -12,7 +12,7 @@ local Module = {
     TextureChoices = CC.SQUARE_CHOICES,
     TextureValues  = CC.SQUARE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Blessing of Protection"]  = { 37243, },
         ["Combat Prayer"]           = { 40094, },
         ["Blessing of Restoration"] = { 40103, },

@@ -7,20 +7,34 @@ local LibConsoleMenu = LibConsoleMenu
 local Templates = {
 	[LibConsoleMenu.CT_TOGGLE] = "ZO_GamepadOptionsCheckboxRow",
 	[LibConsoleMenu.CT_SLIDER] = "LibConsoleMenuGamepadSlider",
-	[LibConsoleMenu.CT_EDIT] = "LibConsoleMenuGamepadEdit",
+	[LibConsoleMenu.CT_EDITBOX] = {
+		default = "LibConsoleMenuGamepadEditBox",
+		multiLine = "LibConsoleMenuGamepadEditBoxMultiline",
+	},
 	[LibConsoleMenu.CT_SELECTOR] = "ZO_GamepadHorizontalListRow",
 	[LibConsoleMenu.CT_DROPDOWN] = "LibConsoleMenuGamepadDropdown",
 	[LibConsoleMenu.CT_CHECKLIST] = "LibConsoleMenuGamepadChecklist",
-	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorRow",
+	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorOption",
 	[LibConsoleMenu.CT_ICONPICKER] = "LibConsoleMenuGamepadIconPicker",
 	[LibConsoleMenu.CT_BUTTON] = "ZO_GamepadOptionsLabelRow",
 	[LibConsoleMenu.CT_SUBMENU] = "ZO_GamepadMenuEntryTemplateWithArrow",
 }
 
+local function ResolveTemplate(setting)
+	local entry = Templates[setting.type]
+	if type(entry) == "table" then
+		if setting.multiLine and entry.multiLine then
+			return entry.multiLine
+		end
+		return entry.default
+	end
+	return entry
+end
+
 -- Native-style inline group label (options center or nav left).
 function LibConsoleMenu:AddControlEntry(setting)
 	local list = self.list
-	local templateName = LibConsoleMenu.ResolveSettingEntryTemplate(list, setting, Templates[setting.type])
+	local templateName = LibConsoleMenu.ResolveSettingEntryTemplate(list, setting, ResolveTemplate(setting))
 	list:AddEntry(templateName, setting)
 end
 
@@ -291,7 +305,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 		[LibConsoleMenu.CT_TOGGLE] = true,
 		[LibConsoleMenu.CT_BUTTON] = true,
 		[LibConsoleMenu.CT_COLORPICKER] = true,
-		[LibConsoleMenu.CT_EDIT] = true,
+		[LibConsoleMenu.CT_EDITBOX] = true,
 		[LibConsoleMenu.CT_SUBMENU] = true,
 		[LibConsoleMenu.CT_DROPDOWN] = true,
 		[LibConsoleMenu.CT_CHECKLIST] = true,
@@ -334,7 +348,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 					LibConsoleMenu.list:GetSelectedData():ValueChanged(control)
 				elseif controlType == LibConsoleMenu.CT_COLORPICKER then
 					control:ShowDialog()
-				elseif controlType == LibConsoleMenu.CT_EDIT or controlType == LibConsoleMenu.CT_SUBMENU or controlType == LibConsoleMenu.CT_DROPDOWN or controlType == LibConsoleMenu.CT_CHECKLIST then
+				elseif controlType == LibConsoleMenu.CT_EDITBOX or controlType == LibConsoleMenu.CT_SUBMENU or controlType == LibConsoleMenu.CT_DROPDOWN or controlType == LibConsoleMenu.CT_CHECKLIST then
 					control:Activate()
 				end
 			end,
@@ -543,6 +557,7 @@ function LibConsoleMenu:CreateControlPools()
 			return control
 		end
 	end
+
 	local function update(control, data, selected, reselectingDuringRebuild, enabled, active)
 		data.control = control
 		control.data = data
@@ -577,6 +592,7 @@ function LibConsoleMenu:CreateControlPools()
 			end
 		end
 	end
+
 	local function reset(control)
 		local data = control.data
 		if data then
@@ -585,13 +601,13 @@ function LibConsoleMenu:CreateControlPools()
 			control.data = nil
 		end
 	end
-	local function AddPool(type, suffix, factory)
-		local list = self.scrollList:GetMainList()
-		local templateName = Templates[type]
-		local withHeaderName = templateName .. LibConsoleMenu.WITH_HEADER_SUFFIX
-		local withNavHeaderName = templateName .. LibConsoleMenu.WITH_NAV_HEADER_SUFFIX
-		list:AddDataTemplate(templateName, update, ZO_GamepadMenuEntryTemplateParametricListFunction, nil, suffix, reset)
+
+	-- Registers one template under its three list-entry shapes: plain, WithHeader
+	-- (used on the Main list), and WithNavHeader (used when the same row is nested
+	-- inside a Submenu list). Same registration body as 0.13.3 AddPool.
+	local function RegisterTemplateVariants(list, templateName, poolSuffix)
 		-- Args: template, setup, parametric, equality, headerTemplate, headerSetup, poolPrefix, poolReset
+		list:AddDataTemplate(templateName, update, ZO_GamepadMenuEntryTemplateParametricListFunction, nil, poolSuffix, reset)
 		list:AddDataTemplateWithHeader(
 			templateName,
 			update,
@@ -599,34 +615,73 @@ function LibConsoleMenu:CreateControlPools()
 			nil,
 			LibConsoleMenu.HEADER_TEMPLATE_OPTIONS,
 			LibConsoleMenu.HeaderSetup,
-			suffix,
+			poolSuffix,
 			reset
 		)
-		LibConsoleMenu.RegisterWithNavHeader(list, templateName, suffix, update, reset)
-		if factory then
-			extendFactory(list, templateName, factory)
-			local basePool = list.dataTypes[templateName] and list.dataTypes[templateName].pool
-			local headerDataType = list.dataTypes[withHeaderName]
-			if headerDataType and headerDataType.pool and headerDataType.pool ~= basePool then
-				extendFactory(list, withHeaderName, factory)
-			end
-			local navHeaderDataType = list.dataTypes[withNavHeaderName]
-			if navHeaderDataType and navHeaderDataType.pool and navHeaderDataType.pool ~= basePool then
-				extendFactory(list, withNavHeaderName, factory)
-			end
-		end
-		-- Share templates with every nest-depth list (same pool/factories as Main).
-		for depth = 1, MAX_SUBMENU_DEPTH do
-			local submenuList = self.scrollList:GetList(GetSubmenuListName(depth))
-			submenuList.dataTypes[templateName] = list.dataTypes[templateName]
-			if list.dataTypes[withHeaderName] then
-				submenuList.dataTypes[withHeaderName] = list.dataTypes[withHeaderName]
-			end
-			if list.dataTypes[withNavHeaderName] then
-				submenuList.dataTypes[withNavHeaderName] = list.dataTypes[withNavHeaderName]
+		LibConsoleMenu.RegisterWithNavHeader(list, templateName, poolSuffix, update, reset)
+	end
+
+	-- The base template's pool always gets wrapped with `factory`. The WithHeader/
+	-- WithNavHeader variants only get their own wrap if the list actually gave them
+	-- a *different* pool from the base template — some variants share a single pool
+	-- under the hood, and double-wrapping a shared pool's factory would run `factory`
+	-- on each control twice.
+	local function ExtendTemplateFactories(list, names, factory)
+		local baseName = names[1]
+		extendFactory(list, baseName, factory)
+		local basePool = list.dataTypes[baseName] and list.dataTypes[baseName].pool
+		for i = 2, #names do
+			local name = names[i]
+			local dataType = list.dataTypes[name]
+			if dataType and dataType.pool and dataType.pool ~= basePool then
+				extendFactory(list, name, factory)
 			end
 		end
 	end
+
+	-- Nested submenu lists (depth 1..MAX_SUBMENU_DEPTH) reuse the exact same pools
+	-- and factories as Main rather than registering their own — share the dataType
+	-- entries directly instead of re-registering.
+	local function ShareTemplatesWithSubmenus(list, names)
+		for depth = 1, MAX_SUBMENU_DEPTH do
+			local submenuList = self.scrollList:GetList(GetSubmenuListName(depth))
+			for _, name in ipairs(names) do
+				if list.dataTypes[name] then
+					submenuList.dataTypes[name] = list.dataTypes[name]
+				end
+			end
+		end
+	end
+
+	local function RegisterTemplatePool(templateName, poolSuffix, factory)
+		local list = self.scrollList:GetMainList()
+		local names = {
+			templateName,
+			templateName .. LibConsoleMenu.WITH_HEADER_SUFFIX,
+			templateName .. LibConsoleMenu.WITH_NAV_HEADER_SUFFIX,
+		}
+
+		RegisterTemplateVariants(list, templateName, poolSuffix)
+		if factory then
+			ExtendTemplateFactories(list, names, factory)
+		end
+		ShareTemplatesWithSubmenus(list, names)
+	end
+
+	-- Templates[controlType] is either a string (one template) or
+	-- { default = "...", multiLine = "..." }. suffix matches that shape.
+	local function AddPool(controlType, suffix, factory)
+		local entry = Templates[controlType]
+		if type(entry) == "table" then
+			RegisterTemplatePool(entry.default, suffix.default, factory)
+			if entry.multiLine then
+				RegisterTemplatePool(entry.multiLine, suffix.multiLine, factory)
+			end
+		else
+			RegisterTemplatePool(entry, suffix, factory)
+		end
+	end
+
 	AddPool(
 		self.CT_TOGGLE,
 		"Toggle",
@@ -638,9 +693,9 @@ function LibConsoleMenu:CreateControlPools()
 		LibConsoleMenu.CreateSliderPoolFactory()
 	)
 	AddPool(
-		self.CT_EDIT,
-		"Edit",
-		LibConsoleMenu.CreateEditPoolFactory()
+		self.CT_EDITBOX,
+		{ default = "EditBox", multiLine = "EditBoxMulti" },
+		LibConsoleMenu.CreateEditBoxPoolFactory()
 	)
 	AddPool(
 		self.CT_SELECTOR,

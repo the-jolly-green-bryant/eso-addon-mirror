@@ -505,9 +505,9 @@ end
 -- Dropdown entry filter functions
 --------------------------------------------------------------------
 -- Prevents errors on the off chance a non-string makes it through into ZO_ComboBox
-local function verifyLabelString(data)
+local function verifyLabelString(comboBox, data) --#2026_20
 	--Check for data.* keys to run any function and update data[key] with actual values
-	updateDataByFunctions(data)
+	updateDataByFunctions(comboBox, data) --#2026_20
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 18, tos(data.name)) end
 	--Require the name to be a string
 	return type(data.name) == stringType
@@ -643,7 +643,7 @@ end
 -->if doFilter is true the text search will be executed, else textsearch is not executed -> Item should be shown directly
 local function itemPassesFilter(item, comboBox, doFilter, dropdownObject)
 	--Check if the data.name / data.label are provided (also check all other data.* keys if functions need to be executed)
-	if verifyLabelString(item) then
+	if verifyLabelString(comboBox, item) then --#2026_20
 		if doFilter then
 			--Recursively check menu entries (submenu and nested submenu entries) for the matching search string
 			return recursiveOverEntries(item, comboBox, filterResults, dropdownObject)
@@ -2146,6 +2146,7 @@ function dropdownClass:Show(comboBox, itemTable, minWidth, maxWidth, maxHeight, 
 end
 
 function dropdownClass:ShowSubmenu(control)
+--d("dropdownClass:ShowSubmenu")
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 80, tos(getControlName(control))) end
 	if self.owner then
 		-- Must clear now. Otherwise, moving onto a submenu will close it from exiting previous row.
@@ -2178,6 +2179,7 @@ end
 --#2025_42 Automatically update all entries (checkbox/radiobutton checked, and all entries enabled state) in a (sub)menu, if e.g. any other entry was clicked
 function dropdownClass:SubmenuOrCurrentListRefresh(control, override, refreshMainMenuOrSubmenu)
 	override = override or false
+--d("[LSM]dropdownClass:SubmenuOrCurrentListRefresh - refreshMainMenuOrSubmenu: " .. tos(refreshMainMenuOrSubmenu))
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 192, tos(getControlName(control))) end
 	local comboBox = self.m_comboBox
 	if not comboBox or not comboBox:IsDropdownVisible() then return end
@@ -2188,7 +2190,7 @@ function dropdownClass:SubmenuOrCurrentListRefresh(control, override, refreshMai
 		automaticRefresh = true
 		automaticSubmenuRefresh = true
 	end
---d("[LSM]dropdownClass:SubmenuOrCurrentListRefresh - automaticRefresh: " .. tos(automaticRefresh) .. ", automaticSubmenuRefresh: " .. tos(automaticSubmenuRefresh) .. ", refreshMainMenuOrSubmenu: " .. tos(refreshMainMenuOrSubmenu))
+--d(">automaticRefresh: " .. tos(automaticRefresh) .. ", automaticSubmenuRefresh: " .. tos(automaticSubmenuRefresh))
 
 	if automaticRefresh == true and ( not self.m_parentMenu or (refreshMainMenuOrSubmenu ~= nil and refreshMainMenuOrSubmenu == true) ) then --dropdown got no submenu? Refresh current scrollList
 --d(">refreshing menu")
@@ -2202,8 +2204,7 @@ function dropdownClass:SubmenuOrCurrentListRefresh(control, override, refreshMai
 		local owner = (control ~= nil and control.m_owner) or self.owner
 		if owner ~= nil and owner.openingControl ~= nil then
 --d(">refreshing submenu")
-			--Reshow the whole submenu of the openingControl again, to update all enabled and checked states of the entries,
-			--if any other entry was clicked
+			--Reshow the whole submenu of the openingControl again, to update all enabled and checked states of the entries, if any other entry was clicked.
 			-- Must clear now. Otherwise, moving onto a submenu will close it from exiting previous row.
 			clearTimeout()
 			self:ShowSubmenu(owner.openingControl)

@@ -404,9 +404,13 @@ ConvertOptions = function(optionsTable, out, depth)
 			elseif entryType == "editbox" then
 				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
 				local align, indent = ResolveEntryAlign(entry)
+				local label = entry.name
+				if label == "" then
+					label = nil
+				end
 				AddToIndexed(out, {
-					type = LCM.CT_EDIT,
-					label = entry.name,
+					type = LCM.CT_EDITBOX,
+					label = label,
 					tooltip = entry.tooltip,
 					default = entry.default,
 					disable = entry.disabled,
@@ -415,8 +419,11 @@ ConvertOptions = function(optionsTable, out, depth)
 					headerIndent = headerIndent,
 					align = align,
 					indent = indent,
-					maxChars = entry.maxChars,
+					maxInputCharacters = entry.maxInputCharacters,
 					textType = entry.textType,
+					multiLine = entry.multiLine,
+					placeholderText = entry.placeholderText,
+					isPassword = entry.isPassword,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					popSubmenu = entry._popSubmenu,

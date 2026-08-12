@@ -248,6 +248,10 @@ local ccDebuffIncoming = {}
 -- Debug: print raw CC combat events to chat (toggle with /blockpookyccdebug)
 local ccDebuffDebug = false
 
+-- Last CSA timestamp PER CC TYPE (for the anti-spam cooldown). Per-type so a fear
+-- right after a stun is not swallowed by the stun's cooldown.
+local ccDebuffLastCSATimes = {}
+
 ---Player's raw name as used in combat events (cached; may include ^Mx/^Fx markers).
 ---@return string
 function BlockPooky.GetRawPlayerName()
@@ -268,6 +272,21 @@ function BlockPooky.IsPlayerName(name)
     if name == myName then return true end
     if name == (myName .. "^Mx") or name == (myName .. "^Fx") then return true end
     return false
+end
+
+---Show a center screen CC alert, throttled PER CC TYPE by ccDebuffCSACooldown to avoid
+---spam during chain CCs. Does nothing if the CSA toggle is off.
+---@param typeKey string
+---@param message string
+function BlockPooky.ShowCCDebuffCSA(typeKey, message)
+    if not BlockPooky.config.ccDebuffCSA then return end
+    local cooldown = BlockPooky.config.ccDebuffCSACooldown or 2000
+    local now = GetGameTimeMilliseconds()
+    local last = ccDebuffLastCSATimes[typeKey] or 0
+    if now - last >= cooldown then
+        ccDebuffLastCSATimes[typeKey] = now
+        BlockPooky.MessageThePooky(message)
+    end
 end
 
 ---EVENT_COMBAT_EVENT handler for CC debuffs affecting the player.
@@ -294,12 +313,15 @@ function BlockPooky.OnCCDebuffCombat(
     if result == ACTION_RESULT_STUNNED then
         ccDebuffIncoming[ACTION_RESULT_STUNNED] = abilityId
         BlockPooky.SetCCDebuff("stun", now + dur(hitValue, BlockPooky.ccDebuffDefaults.stun))
+        BlockPooky.ShowCCDebuffCSA("stun", BlockPooky.config.messages.ccStun)
     elseif result == ACTION_RESULT_FEARED then
         ccDebuffIncoming[ACTION_RESULT_FEARED] = abilityId
         BlockPooky.SetCCDebuff("fear", now + dur(hitValue, BlockPooky.ccDebuffDefaults.fear))
+        BlockPooky.ShowCCDebuffCSA("fear", BlockPooky.config.messages.ccFear)
     elseif result == ACTION_RESULT_DISORIENTED then
         ccDebuffIncoming[ACTION_RESULT_DISORIENTED] = abilityId
         BlockPooky.SetCCDebuff("disorient", now + dur(hitValue, BlockPooky.ccDebuffDefaults.disorient))
+        BlockPooky.ShowCCDebuffCSA("disorient", BlockPooky.config.messages.ccDisorient)
     elseif result == ACTION_RESULT_STAGGERED then
         BlockPooky.SetCCDebuff("stagger", now + dur(hitValue, BlockPooky.ccDebuffDefaults.stagger))
     elseif result == ACTION_RESULT_EFFECT_GAINED_DURATION then

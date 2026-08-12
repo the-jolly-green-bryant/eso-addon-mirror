@@ -129,6 +129,8 @@ function submenuClass:UpdateOptions(options, onInit)
 end
 
 function submenuClass:AddMenuItems(parentControl)
+--	d( debugPrefix .. 'submenuClass:AddMenuItems')
+
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 142, tos(getControlName(parentControl))) end
 	self.openingControl = parentControl
 	self:RefreshSortedItems(parentControl)

@@ -691,18 +691,32 @@ local function RefreshPrestigeHeraldry(parent, progression, fallbackIcon)
     if enabled and view and type(STARS_BADGES) == "table"
         and type(STARS_BADGES.BuildModel) == "function"
         and type(STARS_BADGES.Render) == "function" then
+        --[[
+        DEVELOPER HERALDRY OVERRIDE (disabled for the spoiler-free build)
+
         local preview = STARS and STARS.heraldryPreview
         local modelOk, model
-        if preview and preview.enabled == true
-            and type(STARS_BADGES.BuildLegacyPreviewModel) == "function" then
-            modelOk, model = pcall(
-                STARS_BADGES.BuildLegacyPreviewModel,
-                STARS_BADGES,
-                preview.rankKey,
-                preview.stage)
+        if preview and preview.enabled == true then
+            if preview.mode == "prestige"
+                and type(STARS_BADGES.BuildPrestigePreviewModel) == "function" then
+                modelOk, model = pcall(
+                    STARS_BADGES.BuildPrestigePreviewModel,
+                    STARS_BADGES,
+                    preview.prestigeTier,
+                    preview.prestigeRankKey)
+            elseif type(STARS_BADGES.BuildLegacyPreviewModel) == "function" then
+                modelOk, model = pcall(
+                    STARS_BADGES.BuildLegacyPreviewModel,
+                    STARS_BADGES,
+                    preview.rankKey,
+                    preview.stage)
+            end
         else
             modelOk, model = pcall(STARS_BADGES.BuildModel, STARS_BADGES, progression)
         end
+        ]]
+
+        local modelOk, model = pcall(STARS_BADGES.BuildModel, STARS_BADGES, progression)
         if modelOk and model then
             local renderOk, rendered = pcall(STARS_BADGES.Render, STARS_BADGES, view, model)
             if renderOk and rendered then

@@ -1,8 +1,8 @@
 ## Title: Guild Market Scanner DEV
 ## Description: Development prototype for scanning ESO guild trader listings on console.
 ## Author: MajesticMinxi
-## Version: 0.1.1
-## AddOnVersion: 11
+## Version: 0.2.2
+## AddOnVersion: 22
 ## APIVersion: 101050
 ## SavedVariables: GuildMarketScannerSavedVariables
 

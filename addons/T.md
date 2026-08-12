@@ -179,9 +179,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Trust, but Verify](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Trust-but-Verify__8421afb6-ec3a-4d66-a247-e161c5656103) | ReliktKoala | Console | — |
 | [TSC Data Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SavageTSC/TSC-Data-Hub__df7e78bb-63a0-4221-a1f6-36c7ac0c29e8) | SavageTSC | Console | — |
 | [TSC Price Fetcher 2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SavageTSC/TSC-Price-Fetcher-2__2a88cc14-8e8c-4b73-9605-2e1d7c764e23) | SavageTSC | Console | — |
+| [tt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/tt__8f749129-7ffe-4951-a1f9-bf3ac664788f) | user562x | Console | — |
 | [TTC Loot Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Leahcim70/TTC-Loot-Alert__4369) | Leahcim70 | PC / Mac | 1.0.10 |
 | [TTCmac](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/TTCmac__3067) | tdenc | PC / Mac | 0.4.0 |
-| [TTCPrice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/TTCPrice__4539) | NPViral | PC / Mac | 1.2 |
+| [TTCPrice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/TTCPrice__4539) | NPViral | PC / Mac | 1.3 |
 | [TTCTooltip](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GlandePas/TTCTooltip__4508) | GlandePas | PC / Mac | 1 |
 | [TTDungeon (ToolTip for Dungeons)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Koro.Sensei/TTDungeon-ToolTip-for-Dungeons__4042) | Koro.Sensei | PC / Mac | 2.0 |
 | [TTMP: Merge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirAndy/TTMP-Merge__1437) | SirAndy | PC / Mac | 3.5.0 |

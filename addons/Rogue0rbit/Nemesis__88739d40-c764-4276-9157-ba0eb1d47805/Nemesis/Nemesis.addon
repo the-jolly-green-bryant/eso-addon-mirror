@@ -3,9 +3,9 @@
 ## AddOnVersion: 100
 ## Version: 1.0.0
 ## Author: YoZo
-## Description: |cFF0000Y|c000000o|cFF0000Z|c000000o|r remembers every player who kills you in PvP. Builds a dossier on your rivals: K/D against you, their class, CP, known abilities and sets, and your estimated win chance. Nemesis warnings, vengeance celebrations, and group build sharing.
+## Description: |cFF4040Y|cFFFFFFo|cFF4040Z|cFFFFFFo|r remembers every player who kills you in PvP. Builds a dossier on your rivals: K/D against you, their class, CP, known abilities and sets, and your estimated win chance. Nemesis warnings, vengeance celebrations, and group build sharing.
 ## SavedVariables: NemesisSV
-## OptionalDependsOn: LibHarvensAddonSettings
+## OptionalDependsOn: LibHarvensAddonSettings LibVotans
 
 Nemesis.lua
 NemesisUI.xml

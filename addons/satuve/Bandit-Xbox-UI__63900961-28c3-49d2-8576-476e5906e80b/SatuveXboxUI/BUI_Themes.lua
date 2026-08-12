@@ -96,8 +96,9 @@ end
 local function Setup_AdvancedTheme()
 	local a_color={BUI.Vars.AdvancedThemeColor[1],BUI.Vars.AdvancedThemeColor[2],BUI.Vars.AdvancedThemeColor[3],BUI.Vars.AdvancedThemeColor[4]/2}
 	local function HideElements(hide)
-		for _,text in pairs({"Center","Left","Right"}) do local frame=_G["ZO_CompassFrame"..text] if frame then frame:SetHidden(hide) end end
-		for _,text in pairs({"Left","Right"}) do local frame=_G["ZO_BossBarBracket"..text] if frame then frame:SetHidden(hide) end end
+		-- Keep compass and top boss-bar controls native and visible on Xbox.
+		for _,text in pairs({"Center","Left","Right"}) do local frame=_G["ZO_CompassFrame"..text] if frame then frame:SetHidden(false) end end
+		for _,text in pairs({"Left","Right"}) do local frame=_G["ZO_BossBarBracket"..text] if frame then frame:SetHidden(false) end end
 		ZO_ChatWindowDivider:SetHidden(hide) ZO_ChatWindowBg:SetHidden(hide)
 		if BUI.Vars.StatsMiniMeter then BUI_MiniMeter_BG:SetHidden(hide) end
 		ZO_PerformanceMetersBg:SetHidden(hide)
@@ -343,13 +344,16 @@ function BUI.Themes_Setup(change)
 	end
 	--ActionBar
 	if BUI.Vars.ActionSlots then Setup_ActionSlot() end
-	--Compass
-	local texture=BUI.Vars.Theme<=3 and "/esoui/art/compass/compass.dds" or "/SatuveXboxUI/textures/theme/compass.dds"
-	for _,text in pairs({"Center","Left","Right"}) do local frame=_G["ZO_CompassFrame"..text] if frame then frame:SetTexture(texture) if color then frame:SetColor(unpack(color)) end end end
-	local texture=BUI.Vars.Theme<=3 and "/esoui/art/bossbar/bossbar_bracket_left.dds" or "/SatuveXboxUI/textures/theme/bossbar_bracket_left.dds"
-	local frame=_G["ZO_BossBarBracketLeft"] if frame then frame:SetTexture(texture) if color then frame:SetColor(unpack(color)) end end
-	local texture=BUI.Vars.Theme<=3 and "/esoui/art/bossbar/bossbar_bracket_right.dds" or "/SatuveXboxUI/textures/theme/bossbar_bracket_right.dds"
-	local frame=_G["ZO_BossBarBracketRight"] if frame then frame:SetTexture(texture) if color then frame:SetColor(unpack(color)) end end
+	-- Xbox adaptation: keep the complete compass / top boss-bar frame native.
+	-- ESO reuses the compass frame behind the large boss health bar. Styling only
+	-- the brackets was not enough and caused the red fill to appear outside the
+	-- themed top/bottom lines. Keep all of these textures and colors at ESO defaults.
+	for _,text in pairs({"Center","Left","Right"}) do
+		local frame=_G["ZO_CompassFrame"..text]
+		if frame then frame:SetTexture("/esoui/art/compass/compass.dds") frame:SetColor(1,1,1,1) end
+	end
+	local frame=_G["ZO_BossBarBracketLeft"] if frame then frame:SetTexture("/esoui/art/bossbar/bossbar_bracket_left.dds") frame:SetColor(1,1,1,1) end
+	local frame=_G["ZO_BossBarBracketRight"] if frame then frame:SetTexture("/esoui/art/bossbar/bossbar_bracket_right.dds") frame:SetColor(1,1,1,1) end
 	--Change frame colors
 	if change then
 		if BUI.init.Frames then BUI.Frames:Initialize() end
@@ -362,11 +366,16 @@ function BUI.Themes_Setup(change)
 	Setup_AdvancedTheme()
 end
 
+
 function BUI.Frames.ChangeTextures()
 	local v=BUI.Vars.Theme
-	local bars={ZO_TargetUnitFramereticleoverBarLeft=true,ZO_TargetUnitFramereticleoverBarRight=true,ZO_BossBarHealthBarRight=false,ZO_BossBarHealthBarLeft=false,ZO_PlayerAttributeHealthBarRight=false,ZO_PlayerAttributeHealthBarLeft=false,ZO_PlayerAttributeStaminaBar=false,ZO_PlayerAttributeMagickaBar=false,ZO_PlayerAttributeSiegeHealthBarLeft=true,ZO_PlayerAttributeSiegeHealthBarRight=true,ZO_PlayerAttributeWerewolfBar=true,ZO_PlayerAttributeMountStaminaBar=true}
+	-- Keep ESO's native boss-health textures. The generic Bandits status-bar
+	-- texture can extend vertically outside the thin ZO_BossBar bracket on the
+	-- Xbox client. Other resource bars continue to use the selected BUI texture.
+	local bars={ZO_TargetUnitFramereticleoverBarLeft=true,ZO_TargetUnitFramereticleoverBarRight=true,ZO_PlayerAttributeHealthBarRight=false,ZO_PlayerAttributeHealthBarLeft=false,ZO_PlayerAttributeStaminaBar=false,ZO_PlayerAttributeMagickaBar=false,ZO_PlayerAttributeSiegeHealthBarLeft=true,ZO_PlayerAttributeSiegeHealthBarRight=true,ZO_PlayerAttributeWerewolfBar=true,ZO_PlayerAttributeMountStaminaBar=true}
 	for bar,half in pairs(bars) do
-		_G[bar.."Gloss"]:SetHidden(v==3 or v==5 or v==7)
+		local gloss=_G[bar.."Gloss"]
+		if gloss then gloss:SetHidden(v==3 or v==5 or v==7) end
 		if (v==3 or v==5 or v==7) and not BUI.GamepadMode then
 			local frame=_G[bar]
 			if frame then

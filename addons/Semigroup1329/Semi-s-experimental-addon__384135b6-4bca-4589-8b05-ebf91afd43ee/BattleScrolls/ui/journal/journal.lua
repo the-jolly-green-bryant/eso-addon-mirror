@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, inject-field -- the ESO Control/ZO_* API stubs are too incomplete for field checking in UI code
 if not SemisPlaygroundCheckAccess() then
     return
 end
@@ -305,6 +306,9 @@ function BattleScrolls_Journal_Gamepad:RefreshHeader()
     elseif self.mode == NAVIGATION_MODE.SETTINGS then
         self.headerData.titleText = GetString(BATTLESCROLLS_UI_NAME)
         self.headerData.subtitleText = GetString(BATTLESCROLLS_UI_SETTINGS)
+    elseif self.mode == NAVIGATION_MODE.SHARE then
+        self.headerData.titleText = GetString(BATTLESCROLLS_UI_NAME)
+        self.headerData.subtitleText = GetString(BATTLESCROLLS_SHARE_TITLE)
     elseif self.mode == NAVIGATION_MODE.PIVOT then
         self.headerData.titleText = GetString(BATTLESCROLLS_UI_NAME)
         local pivotSubState = self.pivotSubState or BattleScrolls.journal.pivot.SubState.CONFIG
@@ -518,6 +522,20 @@ function BattleScrolls_Journal_Gamepad:InitializeLists()
     self.pivotConfigList = self:AddList("PivotConfig", function(list)
         SetupList(list, GetString(BATTLESCROLLS_PIVOT_NO_RESULTS))
     end)
+    self.shareList = self:AddList("Share", function(list)
+        SetupList(list, GetString(BATTLESCROLLS_LIST_NO_DATA))
+    end)
+
+    -- The share stepper re-renders on every transport transition (part fired,
+    -- build finished/failed), including the return from a browser round-trip
+    BattleScrolls.shareUrl.onStateChanged = function()
+        if self.mode == NAVIGATION_MODE.SHARE then
+            self:RefreshList()
+            if self.keybindStripDescriptor then
+                KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+            end
+        end
+    end
 
     self.mode = NAVIGATION_MODE.INSTANCES
 end

@@ -7,21 +7,42 @@ function CC.Enable()
     if not CC.SV.enableAddon then return end
 
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_INVENTORY_SINGLE_SLOT_UPDATE", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(...) CC.Events:OnInventorySingleSlotUpdate(...) end)
+    EVENT_MANAGER:AddFilterForEvent(CC.NAME .. "EVENT_INVENTORY_SINGLE_SLOT_UPDATE", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_WORN, REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_PLAYER_ACTIVATED", EVENT_PLAYER_ACTIVATED, function(...) CC.Events:OnPlayerActivated(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_ACTION_SLOT_ABILITY_USED", EVENT_ACTION_SLOT_ABILITY_USED, function(...) CC.Events:OnActionSlotAbilityUsed(...) end)
-    EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_COMBAT_EVENT", EVENT_COMBAT_EVENT, function(...) CC.Events:OnCombatEvent(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED", EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, function() CC.SkillBlocker:UpdateEquippedSkills() end)
-    EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_EFFECT_CHANGED", EVENT_EFFECT_CHANGED, function(...) CC.Events:OnEffectChanged(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_JOINED", EVENT_GROUP_MEMBER_JOINED, function(...) CC.Events:OnGroupMemberJoined(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_LEFT", EVENT_GROUP_MEMBER_LEFT, function(...) CC.Events:OnGroupMemberLeft(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_UNIT_DEATH_STATE_CHANGED", EVENT_UNIT_DEATH_STATE_CHANGED, function(...) CC.DeathMarker:OnDeathStateChanged(...) end)
 
-    -- FILTER
-    EVENT_MANAGER:AddFilterForEvent(CC.NAME .. "EVENT_EFFECT_CHANGED", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-    EVENT_MANAGER:AddFilterForEvent(CC.NAME .. "EVENT_INVENTORY_SINGLE_SLOT_UPDATE", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_WORN)
+    -- COMBAT EVENT
+    for abilityId, _ in pairs(CC.Events.SkillModules) do
+        local name = CC.NAME .. "EVENT_COMBAT_EVENT_" .. tostring(abilityId)
+        EVENT_MANAGER:RegisterForEvent(name, EVENT_COMBAT_EVENT, function(...) CC.Events:OnCombatEvent(...) end)
+        EVENT_MANAGER:AddFilterForEvent(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
+    end
+
+    -- EFFECT CHANGED
+    local RegisteredBuffs = {}
+    for buffId, _ in pairs(CC.Events.BuffModules) do RegisteredBuffs[buffId] = true end
+    for buffId, _ in pairs(CC.SkillBlocker.BlockableBuffs) do RegisteredBuffs[buffId] = true end
+
+    for buffId, _ in pairs(RegisteredBuffs) do
+        local name = CC.NAME .. "EVENT_EFFECT_CHANGED_" .. tostring(buffId)
+        EVENT_MANAGER:RegisterForEvent(name, EVENT_EFFECT_CHANGED, function(...) CC.Events:OnEffectChanged(...) end)
+        EVENT_MANAGER:AddFilterForEvent(name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player", REGISTER_FILTER_ABILITY_ID, buffId)
+    end
+
+    for _, Module in ipairs(CC.Modules) do
+        if Module.CustomEnable then
+            Module:CustomEnable()
+        end
+    end
 
     CC.CreateChatButton()
 
+    CC.Events:OnPlayerActivated()
     CC.addOnLoaded = true
 end
 
@@ -29,16 +50,27 @@ end
 -- DISABLE (MASTERSWITCH OFF)
 ----------------------------------------------------------------------------------------------------
 function CC.Disable()
-
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_INVENTORY_SINGLE_SLOT_UPDATE", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_PLAYER_ACTIVATED", EVENT_PLAYER_ACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_ACTION_SLOT_ABILITY_USED", EVENT_ACTION_SLOT_ABILITY_USED)
-    EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_COMBAT_EVENT", EVENT_COMBAT_EVENT)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED", EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED)
-    EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_EFFECT_CHANGED", EVENT_EFFECT_CHANGED)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_JOINED", EVENT_GROUP_MEMBER_JOINED)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_LEFT", EVENT_GROUP_MEMBER_LEFT)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_UNIT_DEATH_STATE_CHANGED", EVENT_UNIT_DEATH_STATE_CHANGED)
+
+    -- COMBAT EVENT
+    for abilityId, _ in pairs(CC.Events.SkillModules) do
+        EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_COMBAT_EVENT_" .. tostring(abilityId), EVENT_COMBAT_EVENT)
+    end
+
+    -- EFFECT CHANGED
+    local RegisteredBuffs = {}
+    for buffId, _ in pairs(CC.Events.BuffModules) do RegisteredBuffs[buffId] = true end
+    for buffId, _ in pairs(CC.SkillBlocker.BlockableBuffs) do RegisteredBuffs[buffId] = true end
+
+    for buffId, _ in pairs(RegisteredBuffs) do
+        EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_EFFECT_CHANGED_" .. tostring(buffId), EVENT_EFFECT_CHANGED)
+    end
 
     for _, Module in ipairs(CC.Modules) do
         if Module.CustomDisable then
@@ -58,12 +90,19 @@ function CC.EnableAllModules()
         -- DATABASE FROM MODULES (AND DATABASE.LUA OFC)
         if Module.SkillData then
             for abilityName, Data in pairs(Module.SkillData) do
-                if Module.CombatEvent and Module.CombatEvent[abilityName] then
-                    for _, abilityId in ipairs(Module.CombatEvent[abilityName]) do
+                if Module.Skills and Module.Skills[abilityName] then
+                    for _, abilityId in ipairs(Module.Skills[abilityName]) do
                         Data.moduleName = Module.name
                         Data.name = Data.name or abilityName
-
                         CC.SkillData[abilityId] = Data
+                    end
+                end
+
+                if Module.Buffs and Module.Buffs[abilityName] then
+                    for _, buffId in ipairs(Module.Buffs[abilityName]) do
+                        Data.moduleName = Module.name
+                        Data.name = Data.name or abilityName
+                        CC.SkillData[buffId] = Data
                     end
                 end
             end
@@ -72,27 +111,47 @@ function CC.EnableAllModules()
         -- SKILL BLOCKER
         if Module.SkillBlocker then
             for abilityName, buffList in pairs(Module.SkillBlocker) do
-                if Module.CombatEvent and Module.CombatEvent[abilityName] then
-                    for _, abilityId in ipairs(Module.CombatEvent[abilityName]) do
-                        CC.SkillBlocker.BlockableSkills[abilityId] = true
 
-                        if buffList then
-                            for _, buffId in ipairs(buffList) do
-                                CC.SkillBlocker.BlockableBuffs[buffId] = CC.SkillBlocker.BlockableBuffs[buffId] or {}
-                                CC.SkillBlocker.BlockableBuffs[buffId][abilityId] = true
-                            end
+                -- REG BLOCKER
+                local function RegisterBlocker(abilityId)
+                    CC.SkillBlocker.BlockableSkills[abilityId] = true
+                    if buffList then
+                        for _, buffId in ipairs(buffList) do
+                            CC.SkillBlocker.BlockableBuffs[buffId] = CC.SkillBlocker.BlockableBuffs[buffId] or {}
+                            CC.SkillBlocker.BlockableBuffs[buffId][abilityId] = true
                         end
+                    end
+                end
+
+                if Module.Skills and Module.Skills[abilityName] then
+                    for _, abilityId in ipairs(Module.Skills[abilityName]) do
+                        RegisterBlocker(abilityId)
+                    end
+                elseif Module.Buffs and Module.Buffs[abilityName] then
+                    for _, abilityId in ipairs(Module.Buffs[abilityName]) do
+                        RegisterBlocker(abilityId)
                     end
                 end
             end
         end
 
         -- CALLBACK FUNCTIONS FOR COMBAT EVENTS
-        if Module.CombatEvent then
-            for _, abilityList in pairs(Module.CombatEvent) do
+        if Module.Skills then
+            for _, abilityList in pairs(Module.Skills) do
                 for _, abilityId in ipairs(abilityList) do
                     if Module.HandleCombatEvent then
-                        CC.Events.CallbackModules[abilityId] = Module
+                        CC.Events.SkillModules[abilityId] = Module
+                    end
+                end
+            end
+        end
+
+        -- CALLBACK FUNCTIONS FOR EFFECT CHANGED
+        if Module.Buffs then
+            for _, buffList in pairs(Module.Buffs) do
+                for _, buffId in ipairs(buffList) do
+                    if Module.HandleEffectChanged then
+                        CC.Events.BuffModules[buffId] = Module
                     end
                 end
             end
@@ -101,34 +160,33 @@ function CC.EnableAllModules()
         -- BROADCAST LUT
         if Module.Broadcast then
             for broadcastName, broadcastId in pairs(Module.Broadcast) do
-                -- EVENT ID AND PROTOCOL ID
-                if Module.CombatEvent and Module.CombatEvent[broadcastName] then
-                    for _, abilityId in ipairs(Module.CombatEvent[broadcastName]) do
 
-                        CC.Broadcast.LutDataIn[broadcastId] = abilityId
-                        CC.Broadcast.LutDataOut[abilityId] = broadcastId
-
-                        if Module.HandleBroadcast then
-                            CC.Broadcast.CallbackModules[abilityId] = Module
-                        end
-
-                        if CC.SkillData[abilityId] then
-                            CC.SkillData[abilityId].broadcastId = broadcastId
-                        end
+                -- REG IN BROADCAST
+                local function RegisterBroadcast(abilityId)
+                    CC.Broadcast.LutDataIn[broadcastId] = abilityId
+                    CC.Broadcast.LutDataOut[abilityId] = broadcastId
+                    if Module.HandleBroadcast then
+                        CC.Broadcast.BroadcastModules[abilityId] = Module
                     end
-                -- PROTOCOL ID (PING, TIMERS, DRAWSHAPE..)
+                    if CC.SkillData[abilityId] then
+                        CC.SkillData[abilityId].broadcastId = broadcastId
+                    end
+                end
+
+                if Module.Skills and Module.Skills[broadcastName] then
+                    for _, abilityId in ipairs(Module.Skills[broadcastName]) do
+                        RegisterBroadcast(abilityId)
+                    end
+                elseif Module.Buffs and Module.Buffs[broadcastName] then
+                    for _, buffId in ipairs(Module.Buffs[broadcastName]) do
+                        RegisterBroadcast(buffId)
+                    end
                 else
                     if Module.HandleBroadcast then
-                        CC.Broadcast.CallbackModules[broadcastId] = Module
+                        CC.Broadcast.BroadcastModules[broadcastId] = Module
                     end
                 end
             end
-        end
-
-        -- HAS ITS OWN SPECIAL SNOWFLAKE ENABLE? I GUESS I REMOVED THEM ALL BY NOW. MAYBE.
-        -- EDIT: NOPE.. CUSTOM MENU STILL RUNS IT
-        if Module.CustomEnable then
-            Module:CustomEnable()
         end
     end
 end
@@ -183,8 +241,6 @@ function CC.Initialize()
 
     math.randomseed(GetGameTimeMilliseconds())
     math.random() math.random() math.random()
-
-    if not CC.SV.enableAddon then return end
 
     CC.EnableAllModules()
     CC.CreateSettings()

@@ -165,8 +165,8 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.texture end,
             setFunc = function(value)
                 self.SV.texture = value
-                if self.CombatEvent then
-                    for _, AbilityList in pairs(self.CombatEvent) do
+                if self.Skills then
+                    for _, AbilityList in pairs(self.Skills) do
                         for _, abilityId in ipairs(AbilityList) do
                             CC.DisplayEffect:UpdateActiveTextures(abilityId, value)
                         end
@@ -298,9 +298,8 @@ function CC.CreateSettings()
             getFunc = function() return CC.SV.enableAddon end,
             setFunc = function(value)
                 CC.SV.enableAddon = value
-                --if value then CC.Enable() else CC.Disable() end
+                if value then CC.Enable() else CC.Disable() end
             end,
-            requiresReload = true,
             default = CC.Default.enableAddon,
         },
 
@@ -472,7 +471,7 @@ function CC.CreateSettings()
                 {
                     type = "button",
                     name = "RESET POSITION",
-                    tooltip = "Reset panel positioon to default.",
+                    tooltip = "Reset panel position to default.",
                     func = function()
                         CC.DisplayPanel:ResetPosition()
                     end,
@@ -496,7 +495,7 @@ function CC.CreateSettings()
                 {
                     type = "button",
                     name = "RESET POSITION",
-                    tooltip = "Reset status icon positioon to default.",
+                    tooltip = "Reset status icon position to default.",
                     func = function()
                         CC.DisplayStatus:ResetPosition()
                     end,
@@ -535,7 +534,6 @@ function CC.CreateSettings()
                             end
                         end
                     end,
-                    --default = false,
                     width = "half",
                     disabled = function() return not CC.SV.enableAddon end,
                 },
@@ -550,7 +548,6 @@ function CC.CreateSettings()
                             CC.DisplayPanel:UpdateDimensions()
                         end
                     end,
-                    --default = false,
                     width = "half",
                     disabled = function() return not CC.SV.isRaidleadIntent or not CC.SV.enableAddon end,
                 },
@@ -566,7 +563,7 @@ function CC.CreateSettings()
                     getFunc = function() return CC.RaidleadTools.SV.breakMinutes end,
                     setFunc = function(value) CC.RaidleadTools.SV.breakMinutes = value end,
                     default = CC.RaidleadTools.Default.breakMinutes,
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -575,7 +572,7 @@ function CC.CreateSettings()
                         CC.RaidleadTools:RequestBreak(CC.RaidleadTools.SV.breakMinutes)
                     end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -584,7 +581,7 @@ function CC.CreateSettings()
                         CC.RaidleadTools:RequestBreak(0)
                     end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 ----------------------------------------------------------------------------------------------------
                 -- PULL TIMER
@@ -597,7 +594,7 @@ function CC.CreateSettings()
                     getFunc = function() return CC.RaidleadTools.SV.pullSeconds end,
                     setFunc = function(value) CC.RaidleadTools.SV.pullSeconds = value end,
                     default = CC.RaidleadTools.Default.pullSeconds,
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -606,7 +603,7 @@ function CC.CreateSettings()
                         CC.RaidleadTools:RequestPull(CC.RaidleadTools.SV.pullSeconds)
                     end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -615,7 +612,7 @@ function CC.CreateSettings()
                         CC.RaidleadTools:RequestPull(0)
                     end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 ----------------------------------------------------------------------------------------------------
                 -- TOOLS & ASSIGNMENTS
@@ -627,7 +624,7 @@ function CC.CreateSettings()
                     tooltip = "Broadcasts wipe request to group members.",
                     func = function() CC.RaidleadTools:RequestWipe() end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -635,7 +632,7 @@ function CC.CreateSettings()
                     tooltip = "Broadcasts exit instance request to group members.",
                     func = function() CC.RaidleadTools:RequestExitInstance() end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -643,7 +640,7 @@ function CC.CreateSettings()
                     tooltip = "Broadcasts port-in request to group members.",
                     func = function() CC.RaidleadTools:RequestPortIn() end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -651,7 +648,7 @@ function CC.CreateSettings()
                     tooltip = "Broadcasts leader port request to group members.",
                     func = function() CC.RaidleadTools:RequestPortToLeader() end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -659,7 +656,7 @@ function CC.CreateSettings()
                     tooltip = "Initiates a group ready check.",
                     func = function() SLASH_COMMANDS["/readycheck"]() end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 {
                     type = "button",
@@ -667,7 +664,7 @@ function CC.CreateSettings()
                     tooltip = "Initiates a group vote.",
                     func = function() CC.RaidleadTools:StartVote() end,
                     width = "half",
-                    disabled = function() return not CC.IsRaidlead() end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
             },
         },

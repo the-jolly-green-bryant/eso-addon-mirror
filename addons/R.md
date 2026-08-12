@@ -144,7 +144,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [RolePlayNeeds - Tamriel Survival!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/matheusbk2/RolePlayNeeds---Tamriel-Survival__4147) | matheusbk2 | PC / Mac | 0.7.1 |
 | [Roll Call](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Roll-Call__1099) | Phinix | PC / Mac | 1.07 |
 | [Rolodex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/Rolodex__fba4016e-4c55-48b5-9f38-f169d2190581) | dicen9 | Console | — |
-| [Roomba - Guildbank Stacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Roomba---Guildbank-Stacker__402) | Masteroshi430 | PC / Mac | 2026.07.06 |
+| [Roomba](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Roomba__80e548e3-0d72-47fa-9ef8-f6966b42ee75) | Masteroshi430 | Console | — |
+| [Roomba - Guildbank Stacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Roomba---Guildbank-Stacker__402) | Masteroshi430 | PC / Mac | 2026.08.12 |
 | [Root State](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solaris-Lorica/Root-State__2593) | Solaris Lorica | PC / Mac | 0.1 |
 | [RootBreak](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solaris-Lorica/RootBreak__2595) | Solaris Lorica | PC / Mac | 1 |
 | [Rose Guilds - Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kay.Cee/Rose-Guilds---Guildhalls__3345) | Kay.Cee | PC / Mac | 07.14.26 |

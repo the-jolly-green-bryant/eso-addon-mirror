@@ -5,7 +5,7 @@ local VeterancyBar = {
     bar = nil,
     label = nil,
     savedVars = nil,
-    version = "1.4.0",
+    version = "1.5.0",
 }
 
 VeterancyBar.defaults = {
@@ -70,11 +70,12 @@ function VeterancyBar.Update()
     VeterancyBar.bar:SetMinMax(0, max)
     VeterancyBar.bar:SetValue(current)
 
-    VeterancyBar.label:SetText(string.format(
-        "Vet %d  %d%%",
-        rank,
-        math.floor(current / max * 100)
-    ))
+    if rank >= 100 then
+        VeterancyBar.label:SetText("Vet Max Rank")
+    else
+        VeterancyBar.label:SetText(string.format("Vet %d  %d%%", rank, math.floor(current / max * 100))
+    )
+    end
 end
 
 ------------------------------------------------------------

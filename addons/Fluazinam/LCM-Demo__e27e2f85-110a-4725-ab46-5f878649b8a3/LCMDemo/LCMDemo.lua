@@ -7,7 +7,7 @@ local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
 Addon.title = "LCM Demo"
-Addon.version = "1.1.4"
+Addon.version = "1.1.5"
 
 Addon.defaults = {
 	-- General
@@ -27,6 +27,9 @@ Addon.defaults = {
 	-- Edit
 	playerTag = "Demo",
 	pinCode = "1234",
+	bioBlurb = "",
+	secretCode = "hunter2",
+	inviteHint = "",
 	-- Selectors
 	profile = "balanced",
 	uiTheme = "ember",
@@ -328,7 +331,7 @@ local function OnAddOnLoaded(_, name)
 				sv.playerTag = value
 			end,
 			default = defaults.playerTag,
-			maxChars = 24,
+			maxInputCharacters = 24,
 			textType = TEXT_TYPE_ALL,
 		},
 		{
@@ -342,8 +345,54 @@ local function OnAddOnLoaded(_, name)
 				sv.pinCode = value
 			end,
 			default = defaults.pinCode,
-			maxChars = 8,
+			maxInputCharacters = 8,
 			textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,
+		},
+		{
+			type = "editbox",
+			name = "Bio",
+			tooltip = "multiLine field; Enter inserts a newline.",
+			multiLine = true,
+			placeholderText = "Write a short bio...",
+			getFunc = function()
+				return sv.bioBlurb
+			end,
+			setFunc = function(value)
+				sv.bioBlurb = value
+			end,
+			default = defaults.bioBlurb,
+			maxInputCharacters = 200,
+			textType = TEXT_TYPE_ALL,
+		},
+		{
+			type = "editbox",
+			name = "Secret Code",
+			tooltip = "Masked with isPassword (not TEXT_TYPE_PASSWORD).",
+			isPassword = true,
+			getFunc = function()
+				return sv.secretCode
+			end,
+			setFunc = function(value)
+				sv.secretCode = value
+			end,
+			default = defaults.secretCode,
+			maxInputCharacters = 32,
+			textType = TEXT_TYPE_ALL,
+		},
+		{ type = "header", name = "Invite Code", align = "center" },
+		{
+			type = "editbox",
+			placeholderText = "Enter code",
+			tooltip = "Nameless row: omit name; label comes from header + placeholder.",
+			textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,
+			maxInputCharacters = 6,
+			getFunc = function()
+				return sv.inviteHint
+			end,
+			setFunc = function(value)
+				sv.inviteHint = value
+			end,
+			default = defaults.inviteHint,
 		},
 
 		{ type = "header", name = "Selectors", align = "center" },
@@ -758,7 +807,7 @@ local function OnAddOnLoaded(_, name)
 										sv.filterNote = value
 									end,
 									default = defaults.filterNote,
-									maxChars = 32,
+									maxInputCharacters = 32,
 								},
 							},
 						},
@@ -961,7 +1010,7 @@ local function OnAddOnLoaded(_, name)
 						sv.navNote = value
 					end,
 					default = defaults.navNote,
-					maxChars = 24,
+					maxInputCharacters = 24,
 					textType = TEXT_TYPE_ALL,
 				},
 				{
@@ -1039,7 +1088,7 @@ local function OnAddOnLoaded(_, name)
 						sv.toolsNote = value
 					end,
 					default = defaults.toolsNote,
-					maxChars = 24,
+					maxInputCharacters = 24,
 					textType = TEXT_TYPE_ALL,
 				},
 				{

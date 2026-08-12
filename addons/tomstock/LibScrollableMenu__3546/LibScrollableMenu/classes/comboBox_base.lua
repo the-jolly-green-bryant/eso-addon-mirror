@@ -96,6 +96,7 @@ local playSelectedSoundCheck = libUtil.playSelectedSoundCheck
 local getEditBoxData = libUtil.getEditBoxData
 local getSliderData = libUtil.getSliderData
 local isScrollBarClicked = libUtil.isScrollBarClicked
+local libUtil_getEntryTypeControl = libUtil.getEntryTypeControl
 
 
 
@@ -321,7 +322,9 @@ end
 --> update data["name"] with the returned value from that prestored function in data._LSM.funcData["name"]
 --> If the function does not return anything (nil) the nilOrTrue of table possibleEntryDataWithFunctionAndDefaultValue
 --> will be used IF i is true (e.g. for the "enabled" state of the entry)
-local function updateDataValues(data, onlyTheseEntries)
+local function updateDataValues(comboBox, data, onlyTheseEntries) --#2026_20
+	--d( debugPrefix .. 'comboBox_base:updateDataValues')
+
 	--Backup all original values of the data passed in in data's subtable _LSM.OriginalData.data
 	--so we can leave this untouched and use it to check if e.g. data.m_highlightTemplate etc. were passed in to "always overwrite"
 	if data and data[subTableConstants.LSM_DATA_SUBTABLE] == nil then
@@ -354,9 +357,9 @@ local function updateDataValues(data, onlyTheseEntries)
 				--local originalFuncOfDataKey = dataValue
 
 				--Add the _LSM.funcData[key] = function to run on Show of the LSM dropdown now
-				addEntryLSM(data, subTableConstants.LSM_DATA_SUBTABLE_CALLBACK_FUNCTIONS, key, function(p_data) --'funcData'
+				addEntryLSM(data, subTableConstants.LSM_DATA_SUBTABLE_CALLBACK_FUNCTIONS, key, function(p_comboBox, p_data) --'funcData'  --#2026_20
 					--Run the original function of the data[key] now and pass in the current provided data as params
-					local value = dataValue(p_data)
+					local value = dataValue(p_comboBox, p_data) --#2026_20
 					if value == nil and l_nilToTrue == true then
 						value = l_nilToTrue
 					end
@@ -374,16 +377,16 @@ local function updateDataValues(data, onlyTheseEntries)
 		end
 	end
 
-	--Execute the callbackFunctions (the functions of the data[key] were moved to subtable _LSM.funcData via function addEntryLSM above)
+	--Execute the callbackFunctions (the functions of the data[key] were moved to subtable _LSM.funcData via function addEntryLSM above ~line 360)
 	--and update data[key] with the results of that functions now
 	-->This way we keep the original callback functions for later but always got the actual value returned by them in data[key]
-	updateDataByFunctions(data)
+	updateDataByFunctions(comboBox, data) --#2026_20
 end
 
 local function preUpdateSubItems(item, comboBox)
 	if item[subTableConstants.LSM_DATA_SUBTABLE] == nil then
 		--Get/build the additionalData table, and name/label etc. functions' texts and data
-		updateDataValues(item)
+		updateDataValues(comboBox, item)
 	end
 
 
@@ -591,23 +594,25 @@ end
 
 
 -- We can add any row-type post checks and update dataEntry with static values.
-local function addItem_Base(self, itemEntry)
+local function addItem_Base(comboBox, itemEntry) --#2026_20
+	--d( debugPrefix .. 'comboBox_base:addItem_Base')
+
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 35, tos(itemEntry)) end
 
 	--Get/build data.label and/or data.name / data.* values, and others (see table LSMEntryKeyZO_ComboBoxEntryKey)
-	updateDataValues(itemEntry)
+	updateDataValues(comboBox, itemEntry) --#2026_20
 
 	--Validate the entryType now
 	validateEntryType(itemEntry)
 
 	if not itemEntry.customEntryTemplate then
 		--Set it's XML entry row template
-		setItemEntryCustomTemplate(itemEntry, self.XMLRowTemplates)
+		setItemEntryCustomTemplate(itemEntry, comboBox.XMLRowTemplates)
 	end
 
 	--Run a post setup function to update mandatory data or change visuals, for the entryType
 	-->Recursively checks all submenu and their nested submenu entries
-	runPostItemSetupFunction(self, itemEntry)
+	runPostItemSetupFunction(comboBox, itemEntry)
 end
 
 local function getMouseOver_HiddenFor_Info()
@@ -1068,7 +1073,7 @@ end
 
 function comboBox_base:GetBaseWidth(control)
 	-- We need to include the header width
-	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 91, tos(getControlName(control)), tos(control.header ~= nil), tos(control.header ~= nil and control.header:GetWidth() or 0)) end
+	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 91, tos(getControlName(control)), tos(control and control.header ~= nil), tos(control and control.header ~= nil and control.header:GetWidth() or 0)) end
 	if control and control.header then
 		local minWidth = control.header:GetWidth()
 		if minWidth <= 0 then minWidth = dropdownDefaults.MIN_WIDTH_WITHOUT_SEARCH_HEADER end
@@ -1179,7 +1184,6 @@ local function wasTextSearchContextMenuEntryClickedCheck(selfVar, mocCtrl, wasTe
 	end
 end
 
-
 --Check if the comboBox should be hidden (after an entry was clicked e.g.)
 --return false:	Do not hide the combobox
 --return true: Hide the comboBox
@@ -1189,17 +1193,9 @@ function comboBox_base:HiddenForReasons(button, isMouseOverOwningDropdown)
 	local owningWindow, mocCtrl, comboBox, mocEntry = getMouseOver_HiddenFor_Info()
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 96, tos(button)) end
 
-	--is the mocCtrl e.g. a checkbox of a checkBox row (or a radiobutton, editbox, slider, ... -> See table isEntryTypeWithParentMocCtrl): then get the parent = the row
+	--Check if checkbox, radiobutton, slider, editBox
 	local mocCtrlOrig = mocCtrl
-	if mocCtrl ~= nil and mocCtrl.m_owner == nil then
-		if (mocCtrl.entryType ~= nil and isEntryTypeWithParentMocCtrl[mocCtrl.entryType]) or mocCtrl.toggleFunction then
-			local parentCtrl = mocCtrl:GetParent()
-			if parentCtrl ~= nil then
-				mocCtrl = parentCtrl
-			end
-		end
-	end
-
+	mocCtrl = libUtil_getEntryTypeControl(mocCtrlOrig)
 
 	local doDebugNow = false -- todo disable after testing again 20251023
 	if doDebugNow then
@@ -1608,6 +1604,8 @@ end
 
 --Called from submenu or contextMenu
 function comboBox_base:RefreshSortedItems(parentControl)
+	--d( debugPrefix .. 'comboBox_base:RefreshSortedItems')
+
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 101, tos(getControlName(parentControl))) end
 	ZO_ClearNumericallyIndexedTable(self.m_sortedItems)
 
@@ -1662,6 +1660,7 @@ end
 -- used for onMouseEnter[submenu] and onMouseUp[contextMenu]
 function comboBox_base:ShowDropdownOnMouseAction(parentControl)
 --d( debugPrefix .. 'comboBox_base:ShowDropdownOnMouseAction')
+
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 105, tos(getControlName(parentControl))) end
 	if self:IsDropdownVisible() then
 		-- If submenu was currently opened, close it so it can reset.
@@ -1681,6 +1680,8 @@ function comboBox_base:ShowDropdownOnMouseAction(parentControl)
 end
 
 function comboBox_base:ShowSubmenu(parentControl)
+--	d("comboBox_base:ShowSubmenu")
+
 	if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_VERBOSE, 106, tos(getControlName(parentControl))) end
 	-- We don't want a submenu to open under the context menu or it's submenus.
 
@@ -2195,7 +2196,7 @@ do -- Row setup functions
 		end
 	end
 
-	local function processEditBoxData(control)
+	local function processEditBoxData(comboBox, control, data)
 		local editBoxData = control.editBoxData
 		if type(editBoxData) ~= "table" then return end
 
@@ -2212,10 +2213,10 @@ do -- Row setup functions
 		--contextMenuCallback -- ContextMenu at the editBox
 		local contextMenuCallback = editBoxData.contextMenuCallback
 		if type(contextMenuCallback) == "function" then
-			local function showEditBoxContextMenu(p_editBox)
+			local function showEditBoxContextMenu(p_comboBox, p_editBox, p_data)
 				ZO_Tooltips_HideTextTooltip()
 				--Show the contextMenu now
-				contextMenuCallback(p_editBox)
+				contextMenuCallback(p_comboBox, p_editBox, p_data)
 			end
 
 			editBoxCtrl:SetMouseEnabled(true)
@@ -2223,7 +2224,7 @@ do -- Row setup functions
 			editBoxCtrl:SetHandler("OnMouseUp", function(p_editBox, button, upInside, ctrl, alt, shift)
 				if button == MOUSE_BUTTON_INDEX_RIGHT and upInside then
 					--Remove the cursor from the editbox
-					showEditBoxContextMenu(p_editBox)
+					showEditBoxContextMenu(comboBox, p_editBox, data)
 				end
 			end)
 
@@ -2233,7 +2234,7 @@ do -- Row setup functions
 				labelCtrl:SetHandler("OnMouseUp", function(p_editBox, button, upInside, ctrl, alt, shift)
 					if not upInside then return end
 					if button == MOUSE_BUTTON_INDEX_RIGHT then
-						showEditBoxContextMenu(p_editBox)
+						showEditBoxContextMenu(comboBox, p_editBox, data)
 					end
 				end)
 			end
@@ -2359,7 +2360,7 @@ do -- Row setup functions
 	end
 
 	local currentMinMaxStepText = GetString(SI_LSM_SLIDER_CURRENT_MIN_MAX_STEP)
-	local function processSliderData(control)
+	local function processSliderData(comboBox, control, data)
 		local sliderData = control.sliderData
 		if type(sliderData) ~= "table" then return end
 
@@ -2433,7 +2434,7 @@ do -- Row setup functions
 		end
 
 		local sliderGotContextMenu = contextMenuCallback ~= nil --#2026_08
-		local function showSliderContextMenu(p_sliderCtrl) --#2026_08
+		local function showSliderContextMenu(p_comboBox, p_sliderCtrl, p_data) --#2026_08
 			if not sliderGotContextMenu then return end
 			ZO_Tooltips_HideTextTooltip()
 			contextMenuCallback(p_sliderCtrl)
@@ -2445,13 +2446,13 @@ do -- Row setup functions
 			labelCtrl:SetHandler("OnMouseUp", function(p_sliderCtrl, button, upInside, ctrl, alt, shift)
 				if not upInside then return end
 				if button == MOUSE_BUTTON_INDEX_RIGHT then
-					showSliderContextMenu(p_sliderCtrl)
+					showSliderContextMenu(comboBox, p_sliderCtrl, data)
 				end
 			end)
 			sliderValueLabel:SetHandler("OnMouseUp", function(p_sliderCtrl, button, upInside, ctrl, alt, shift)
 				if not upInside then return end
 				if button == MOUSE_BUTTON_INDEX_RIGHT then
-					showSliderContextMenu(p_sliderCtrl)
+					showSliderContextMenu(comboBox, p_sliderCtrl, data)
 				end
 			end)
 		end
@@ -2461,7 +2462,7 @@ do -- Row setup functions
 		local function onSliderMouseUp(p_sliderCtrl, button, upInside, ctrl, alt, shift)
 			if not upInside then return end
 			if button == MOUSE_BUTTON_INDEX_RIGHT then
-				showSliderContextMenu(p_sliderCtrl)
+				showSliderContextMenu(comboBox, p_sliderCtrl, data)
 			elseif button == MOUSE_BUTTON_INDEX_LEFT then
 				sliderValueLabel:SetText((showSliderValueLabel == true and tos(p_sliderCtrl:GetValue())) or "")
 				sliderOnMouseEnter(p_sliderCtrl)
@@ -2708,7 +2709,7 @@ d(">enabled: " .. tos(data.enabled))
 		if editBoxTemplate then
 			ApplyTemplateToControl(control, editBoxTemplate)
 		end
-		processEditBoxData(control)
+		processEditBoxData(self, control, data)
 
 		local isEnabled = data.enabled
 		if isEnabled == nil then
@@ -2746,7 +2747,7 @@ d(">enabled: " .. tos(data.enabled))
 		if sliderTemplate then
 			ApplyTemplateToControl(control, sliderTemplate)
 		end
-		processSliderData(control)
+		processSliderData(self, control, data)
 
 		local isEnabled = data.enabled
 		if isEnabled == nil then

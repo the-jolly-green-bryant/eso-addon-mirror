@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 100
+LibConsoleMenu.version = 101
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -11,7 +11,7 @@ local LibConsoleMenu = LibConsoleMenu
 -----
 LibConsoleMenu.CT_TOGGLE = 1
 LibConsoleMenu.CT_SLIDER = 2
-LibConsoleMenu.CT_EDIT = 3
+LibConsoleMenu.CT_EDITBOX = 3
 LibConsoleMenu.CT_SELECTOR = 4
 LibConsoleMenu.CT_DROPDOWN = 5
 LibConsoleMenu.CT_CHECKLIST = 6

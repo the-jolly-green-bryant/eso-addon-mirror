@@ -13,7 +13,7 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Barrier"]              = { 38573, },
         ["Reviving Barrier"]     = { 40237, },
         ["Replenishing Barrier"] = { 40239, },
@@ -23,13 +23,11 @@ local Module = {
         ["Reviving Barrier"]     = LUT.REVIVING_BARRIER,
         ["Replenishing Barrier"] = LUT.REPLENISHING_BARRIER,
     },
-    -- TODO: SKILL BLOCKER DOES NOT WORK ATM.. WHY? DONT KNOW.. KINDA SHOULD BUT DONT..?
-    -- TODO: THIS NEEDS TO BE DECOUPLED FROM THE BUFF..
-    -- SkillBlocker = {
-    --     ["Barrier"]              = { 38573, },
-    --     ["Reviving Barrier"]     = { 40237, },
-    --     ["Replenishing Barrier"] = { 40239, },
-    -- },
+    SkillBlocker = {
+        ["Barrier"]              = {},
+        ["Reviving Barrier"]     = {},
+        ["Replenishing Barrier"] = {},
+    },
     SkillData = {
         ["Barrier"] = {
             type = 0, offsetPlayer = 0, maxRange = 0, width = 24, height = 24, durationSec = 2.5,
@@ -49,7 +47,7 @@ local Module = {
         ColorSelf = { 0.5, 1, 0.25, 0.25 },
         ColorGroup = { 0.5, 1, 0.25, 0.25 },
         texture = "/textures/circle_4_clean.dds",
-        --enableSkillBlocker = true,
+        enableSkillBlocker = true,
     },
     ---@type table|any
     SV = {},

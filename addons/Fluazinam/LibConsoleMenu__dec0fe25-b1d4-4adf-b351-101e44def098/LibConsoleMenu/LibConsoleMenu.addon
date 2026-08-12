@@ -8,8 +8,8 @@
 
 ## Title: LibConsoleMenu
 ## Author: Fluazinam
-## AddOnVersion: 100
-## Version: 0.13.3
+## AddOnVersion: 101
+## Version: 0.14.0
 ## APIVersion: 101050 101051
 ## IsLibrary: true
 ## Description: Console-only addon settings menus with nested submenus.
@@ -22,7 +22,7 @@ core/Align.lua
 controls/Toggle.lua
 controls/Slider.lua
 controls/Button.lua
-controls/Edit.lua
+controls/EditBox.lua
 controls/Selector.lua
 controls/Dropdown.lua
 controls/Checklist.lua

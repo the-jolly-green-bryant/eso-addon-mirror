@@ -720,6 +720,29 @@ function BlockPooky.InitAddonMenu()
             end,
         },
         {
+            type = "checkbox",
+            name = "Show Active CC Bar CSA",
+            tooltip = "Display a center screen message (e.g. \"STUNNED!\") when a hard CC (stun/fear/disorient) lands on you, so you notice it even if you miss the bar.",
+            default = true,
+            getFunc = function() return BlockPooky.config.ccDebuffCSA end,
+            setFunc = function( newValue )
+                BlockPooky.config.ccDebuffCSA = newValue
+            end,
+        },
+        {
+            type = "slider",
+            name = "Active CC Bar CSA Cooldown (ms)",
+            tooltip = "Minimum time between Active CC Bar center screen messages, to avoid spam during chain CCs.",
+            min = 0,
+            max = 10000,
+            step = 100,
+            default = 2000,
+            getFunc = function() return BlockPooky.config.ccDebuffCSACooldown end,
+            setFunc = function(newValue)
+                BlockPooky.config.ccDebuffCSACooldown = newValue
+            end,
+        },
+        {
             type = "submenu",
             name = "Active CC Bar Colors",
             tooltip = "Set the color for each CC type shown on the Active CC Bar.",
@@ -1392,6 +1415,42 @@ function BlockPooky.InitAddonMenu()
                 },
                 {
                     type = "editbox",
+                    name = "Stun CSA Message",
+                    tooltip = "Center screen message shown when you are stunned.",
+                    getFunc = function() return BlockPooky.config.messages.ccStun end,
+                    setFunc = function(value)
+                        if value ~= "" then
+                            BlockPooky.config.messages.ccStun = value
+                        end
+                    end,
+                    isMultiline = false,
+                },
+                {
+                    type = "editbox",
+                    name = "Fear CSA Message",
+                    tooltip = "Center screen message shown when you are feared.",
+                    getFunc = function() return BlockPooky.config.messages.ccFear end,
+                    setFunc = function(value)
+                        if value ~= "" then
+                            BlockPooky.config.messages.ccFear = value
+                        end
+                    end,
+                    isMultiline = false,
+                },
+                {
+                    type = "editbox",
+                    name = "Disorient CSA Message",
+                    tooltip = "Center screen message shown when you are disoriented.",
+                    getFunc = function() return BlockPooky.config.messages.ccDisorient end,
+                    setFunc = function(value)
+                        if value ~= "" then
+                            BlockPooky.config.messages.ccDisorient = value
+                        end
+                    end,
+                    isMultiline = false,
+                },
+                {
+                    type = "editbox",
                     name = "Negate Warning",
                     tooltip = "Message shown when standing in enemy Negate Magic field.",
                     getFunc = function() return BlockPooky.config.messages.negateWarning end,
@@ -1417,6 +1476,9 @@ function BlockPooky.InitAddonMenu()
                         BlockPooky.config.messages.roaReady = BlockPooky.defaultMessages.roaReady
                         BlockPooky.config.messages.mountReady = BlockPooky.defaultMessages.mountReady
                         BlockPooky.config.messages.ccImmunity = BlockPooky.defaultMessages.ccImmunity
+                        BlockPooky.config.messages.ccStun = BlockPooky.defaultMessages.ccStun
+                        BlockPooky.config.messages.ccFear = BlockPooky.defaultMessages.ccFear
+                        BlockPooky.config.messages.ccDisorient = BlockPooky.defaultMessages.ccDisorient
                         BlockPooky.config.messages.negateWarning = BlockPooky.defaultMessages.negateWarning
                         BlockPooky.config.messages.allMounted = BlockPooky.defaultMessages.allMounted
                         BlockPooky.config.messages.allCanMount = BlockPooky.defaultMessages.allCanMount
@@ -1451,6 +1513,24 @@ function BlockPooky.InitAddonMenu()
                             BlockPooky.UpdateMountPollRegistration()
                         end
                     end,
+                },
+                {
+                    type    = "checkbox",
+                    name    = "Show Mount Traffic Light (beta)",
+                    tooltip = "Shows a small single light while grouped: green = all mounted, yellow = all can mount, red = at least one Pooky unmounted. Drag to reposition.",
+                    default = false,
+                    getFunc = function() return BlockPooky.config.showMountLight end,
+                    setFunc = function( newValue )
+                        if newValue~=BlockPooky.config.showMountLight then
+                            BlockPooky.config.showMountLight=newValue
+                        end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Reset Traffic Light Position",
+                    tooltip = "Reset the traffic light to its default position.",
+                    func = function() BlockPooky.ResetMountLightPosition() end,
                 },
                 {
                     type = "editbox",

@@ -1,0 +1,7 @@
+## Title: KDStatTracker
+## APIVersion: 101046
+## AddOnVersion: 1
+## Author: Synkronist and Awh_Lina
+## Description: Tracks duels and BG K/D (/).
+## SavedVariables: KDStatTrackerVars
+KDStatTracker.lua

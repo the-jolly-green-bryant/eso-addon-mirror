@@ -2,13 +2,17 @@
 -- Export
 -- Builds self-contained binary export streams for online sharing.
 --
--- Wire format v1 (bytes, before URL transport):
---   u8  wireVersion (1)
+-- Wire format v3 (bytes, before URL transport):
+--   u8  wireVersion (3; v1 lacked the facts bytes, v2 the shared-entry flags)
 --   u8  flags: bit0 = body is raw-DEFLATE compressed, bit1 = archive profile
 --   body (compressed when bit0 is set):
 --     varint createdAtS
 --     string instanceName             (string = varint byte length + bytes)
 --     varint abilityCount, varint abilityId ...
+--     u8 factsByte x abilityCount     (per-ability classification from the
+--       instance's recorded abilityInfo: damageType in bits 0-3 (0 = unknown
+--       or ambiguous), dot class in bits 4-5: 0 unknown, 1 direct, 2 dot,
+--       3 mixed. Scoped to this export's own combat recordings.)
 --     varint nameCount, string name ...
 --     varint encounterCount
 --     per encounter:
@@ -23,7 +27,8 @@
 --         (re-encoded against the export registry, WITHOUT the setup
 --         section - the build ships as the compact struct below)
 --       varint sharedCount
---       per entry: string displayName, varint role, varint payloadVersion,
+--       per entry: u8 entryFlags (bit0 = the uploader's own entry),
+--         string displayName, varint role, varint payloadVersion,
 --         varint timestampS, varint durationMs,
 --         varint payloadLen, then payload bytes (binary shared entry;
 --         timestamp/duration live OUTSIDE the payload in storage too)
@@ -67,7 +72,7 @@ BattleScrolls = BattleScrolls or {}
 local export = {}
 BattleScrolls.export = export
 
-export.WIRE_VERSION = 1
+export.WIRE_VERSION = 3
 export.PROFILE_VIEW = 1
 export.PROFILE_ARCHIVE = 2
 
@@ -432,6 +437,7 @@ end
 ---@field exportSetup ExportSetup|nil
 
 ---@class ExportSharedEntry
+---@field isSelf boolean True when this is the uploader's own entry
 ---@field displayName string
 ---@field role number
 ---@field payloadVersion number
@@ -452,6 +458,9 @@ end
 ---@return ExportSharedEntry[]
 local function collectSharedEntries(encounter, decoded)
     local binaryStorage = BattleScrolls.binaryStorage
+    -- The uploader's own broadcast entry is marked explicitly: the viewer
+    -- must not have to guess which member the personal data belongs to
+    local ownName = BattleScrolls.utils.GetUndecoratedDisplayName("player")
     local entries = {}
     local compactEntries = encounter._shared
     if not compactEntries and decoded.sharedData then
@@ -463,6 +472,7 @@ local function collectSharedEntries(encounter, decoded)
     for i, compact in ipairs(compactEntries or {}) do
         entries[i] = {
             displayName = compact.d or "",
+            isSelf = compact.d == ownName,
             role = compact.r or 0,
             payloadVersion = compact.v or 17,
             timestampS = compact.t or 0,
@@ -471,6 +481,39 @@ local function collectSharedEntries(encounter, decoded)
         }
     end
     return entries
+end
+
+---Wire facts byte for one ability: damage type + dot/direct class from the
+---delivery flags and damage-type set the combat recorder stored per instance.
+---An ability recorded with several damage types encodes 0 (unknown) - the
+---component model says that should not happen, so ambiguity is not guessed at.
+---@param info AbilityInfo|nil
+---@return number
+local function factsByte(info)
+    if not info then
+        return 0
+    end
+    local delivery = info.deliveryType or {}
+    local class = 0
+    if delivery.overTime and delivery.direct then
+        class = 3
+    elseif delivery.overTime then
+        class = 2
+    elseif delivery.direct then
+        class = 1
+    end
+    local damageType = 0
+    for dt in pairs(info.damageTypes or {}) do
+        if damageType ~= 0 then
+            damageType = 0
+            break
+        end
+        damageType = dt
+    end
+    if damageType > 15 then
+        damageType = 0
+    end
+    return damageType + class * 16
 end
 
 ---Decodes and re-encodes the given stored encounters against a fresh export
@@ -483,6 +526,19 @@ local function buildStreamAsync(instance, encounters, profile)
     return LibEffect.Async(function()
         local binaryStorage = BattleScrolls.binaryStorage
         local registry = binaryStorage.newRegistry()
+
+        -- The instance's recorded abilityInfo (delivery flags + damage types
+        -- seen in combat) classifies every export registry id - it has been
+        -- part of every recording, so old encounters are covered too
+        ---@type table<number, AbilityInfo>
+        local abilityInfo
+        if instance.abilityInfo then
+            abilityInfo = instance.abilityInfo
+        elseif instance._instanceData then
+            abilityInfo = BattleScrolls.storage.DecodeInstanceFieldsAsync(instance):Await()[1]
+        else
+            abilityInfo = {}
+        end
         ---@type ExportEncounterEntry[]
         local entries = {}
         local skipped = 0
@@ -525,10 +581,18 @@ local function buildStreamAsync(instance, encounters, profile)
 
         local body = ByteWriter.new()
         body:writeVarUInt(GetTimeStamp())
-        body:writeString(instance.name)
+        -- The journal titles instances by zone; instanceName on the wire is
+        -- the same string ("Earthen Root Enclave", "Sunspire", ...)
+        body:writeString(instance.zone or "")
         body:writeVarUInt(#registry.abilityIds)
         for i = 1, #registry.abilityIds do
             body:writeVarUInt(registry.abilityIds[i])
+        end
+        -- Per-ability classification, scoped to this export: the recorder
+        -- saw every registry id's combat events in this very instance, so
+        -- coverage is exact - and a bad actor can only mislabel their own share
+        for i = 1, #registry.abilityIds do
+            body:writeByte(factsByte(abilityInfo[registry.abilityIds[i]]))
         end
         body:writeVarUInt(#registry.names)
         for i = 1, #registry.names do
@@ -566,6 +630,7 @@ local function buildStreamAsync(instance, encounters, profile)
             body:writeBytes(entry.dataBytes)
             body:writeVarUInt(#entry.shared)
             for _, shared in ipairs(entry.shared) do
+                body:writeByte(shared.isSelf and 1 or 0)
                 body:writeString(shared.displayName)
                 body:writeVarUInt(shared.role)
                 body:writeVarUInt(shared.payloadVersion)

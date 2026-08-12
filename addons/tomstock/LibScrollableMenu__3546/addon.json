@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/tomstock/LibScrollableMenu__3546",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "tomstock",
   "canonical_id": "esoui:3546",
   "category_id": "53",
@@ -53,7 +54,7 @@
     "LibScrollableMenu"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3546/",
-  "fingerprint": "ffd59333eb5f7a30c3bfe404568e906e268eb861617817489824ca7b212031de",
+  "fingerprint": "90ed04e79e6817ac55d66db0cc338322255a7e8e23e69462de633316d4c8dc34",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14558.png",
     "https://cdn-eso.mmoui.com/preview/pvw14559.png",
@@ -69,11 +70,11 @@
   "source_id": "3546",
   "source_url": "https://www.esoui.com/downloads/info3546-LibScrollableMenu.html",
   "stats": {
-    "downloads": 772068,
-    "favorites": 221,
-    "monthly_downloads": 10915
+    "downloads": 779626,
+    "favorites": 222,
+    "monthly_downloads": 11461
   },
   "title": "LibScrollableMenu",
-  "updated_at": 1780770971000,
-  "version": "2.44"
+  "updated_at": 1786480714000,
+  "version": "2.45"
 }

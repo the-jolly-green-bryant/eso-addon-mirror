@@ -4,7 +4,11 @@ NQOL.Features = NQOL.Features or {}
 local Provisioning = {}
 
 local EVENT_NAMESPACE = "NQOL_Provisioning"
-local REFRESH_THRESHOLD_SECONDS = 5 * 60
+local REFRESH_THRESHOLD_MINUTES_MIN = 5
+local REFRESH_THRESHOLD_MINUTES_MAX = 60
+local REFRESH_THRESHOLD_MINUTES_STEP = 5
+local REFRESH_THRESHOLD_MINUTES_DEFAULT = 10
+local SECONDS_PER_MINUTE = 60
 local CHECK_INTERVAL_MS = 60 * 1000
 local RETRY_DELAY_MS = 3000
 local EFFECT_CHECK_DELAY_MS = 250
@@ -19,6 +23,7 @@ local INDEX_ACTION_CALLBACK = 2
 local defaults = {
     provisioning = {
         autoFood = false,
+        refreshThresholdMinutes = REFRESH_THRESHOLD_MINUTES_DEFAULT,
         logFood = false,
         checkStock = false,
         characterFood = {},
@@ -66,6 +71,7 @@ local function GetSettings()
     local settings = NQOL.Settings.GetSection(savedVariables, defaults, "provisioning")
 
     NQOL.Settings.Default(settings, defaults.provisioning, "autoFood")
+    NQOL.Settings.Default(settings, defaults.provisioning, "refreshThresholdMinutes")
     NQOL.Settings.Default(settings, defaults.provisioning, "logFood")
     NQOL.Settings.Default(settings, defaults.provisioning, "checkStock")
     NQOL.Settings.EnsureTable(settings, "characterFood")
@@ -176,7 +182,7 @@ local function IsFoodBuffExpiring(activeFoodBuff)
     end
 
     local now = GetFrameTimeSeconds and GetFrameTimeSeconds() or 0
-    return timeEnding - now <= REFRESH_THRESHOLD_SECONDS
+    return timeEnding - now <= Provisioning.GetAutoFoodRefreshThresholdMinutes() * SECONDS_PER_MINUTE
 end
 
 local function GetFrameTimeMs()
@@ -723,6 +729,40 @@ function Provisioning.SetAutoFood(value)
     end
 end
 
+function Provisioning.GetAutoFoodRefreshThresholdMinutes()
+    if not savedVariables then
+        return defaults.provisioning.refreshThresholdMinutes
+    end
+
+    local value = tonumber(GetSettings().refreshThresholdMinutes) or REFRESH_THRESHOLD_MINUTES_DEFAULT
+    value = math.floor((value / REFRESH_THRESHOLD_MINUTES_STEP) + 0.5) * REFRESH_THRESHOLD_MINUTES_STEP
+    value = math.max(REFRESH_THRESHOLD_MINUTES_MIN, math.min(REFRESH_THRESHOLD_MINUTES_MAX, value))
+    GetSettings().refreshThresholdMinutes = value
+    return value
+end
+
+function Provisioning.SetAutoFoodRefreshThresholdMinutes(value)
+    value = tonumber(value) or REFRESH_THRESHOLD_MINUTES_DEFAULT
+    value = math.floor((value / REFRESH_THRESHOLD_MINUTES_STEP) + 0.5) * REFRESH_THRESHOLD_MINUTES_STEP
+    GetSettings().refreshThresholdMinutes = math.max(REFRESH_THRESHOLD_MINUTES_MIN, math.min(REFRESH_THRESHOLD_MINUTES_MAX, value))
+
+    if Provisioning.GetAutoFood() then
+        Provisioning.CheckAutoFood()
+    end
+end
+
+function Provisioning.GetAutoFoodRefreshThresholdMinutesMin()
+    return REFRESH_THRESHOLD_MINUTES_MIN
+end
+
+function Provisioning.GetAutoFoodRefreshThresholdMinutesMax()
+    return REFRESH_THRESHOLD_MINUTES_MAX
+end
+
+function Provisioning.GetAutoFoodRefreshThresholdMinutesDefault()
+    return REFRESH_THRESHOLD_MINUTES_DEFAULT
+end
+
 function Provisioning.GetLogFood()
     if not savedVariables then
         return defaults.provisioning.logFood
@@ -753,6 +793,14 @@ end
 
 function Provisioning.GetAutoFoodTooltip()
     return NQOL.L("features.provisioning.auto_food_tooltip")
+end
+
+function Provisioning.GetAutoFoodRefreshThresholdLabel()
+    return NQOL.L("features.provisioning.refresh_threshold_label")
+end
+
+function Provisioning.GetAutoFoodRefreshThresholdTooltip()
+    return NQOL.L("features.provisioning.refresh_threshold_tooltip")
 end
 
 function Provisioning.GetLogFoodLabel()

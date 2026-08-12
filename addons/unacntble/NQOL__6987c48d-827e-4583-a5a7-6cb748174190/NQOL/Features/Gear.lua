@@ -3,8 +3,12 @@ NQOL.Features = NQOL.Features or {}
 
 local Gear = {}
 
-local CHARGE_THRESHOLD_PERCENT = 10
-local REPAIR_THRESHOLD_PERCENT = 10
+local CHARGE_THRESHOLD_MIN = 1
+local CHARGE_THRESHOLD_MAX = 99
+local CHARGE_THRESHOLD_DEFAULT = 10
+local REPAIR_THRESHOLD_MIN = 1
+local REPAIR_THRESHOLD_MAX = 99
+local REPAIR_THRESHOLD_DEFAULT = 10
 local RETRY_DELAY_MS = 3000
 local VERIFY_DELAY_MS = 250
 local REPAIR_VERIFY_DELAY_MS = 1000
@@ -15,7 +19,10 @@ local REPAIR_KIT_TYPE_CROWN = 2
 local defaults = {
     gear = {
         autoCharge = false,
+        chargeThreshold = CHARGE_THRESHOLD_DEFAULT,
         autoRepair = false,
+        repairThreshold = REPAIR_THRESHOLD_DEFAULT,
+        repairAllInMerchants = false,
         autoBound = false,
         logCharge = false,
         logRepair = false,
@@ -109,7 +116,10 @@ local function GetSettings()
     local defaultSettings = defaults.gear
 
     NQOL.Settings.Default(settings, defaultSettings, "autoCharge")
+    NQOL.Settings.Default(settings, defaultSettings, "chargeThreshold")
     NQOL.Settings.Default(settings, defaultSettings, "autoRepair")
+    NQOL.Settings.Default(settings, defaultSettings, "repairThreshold")
+    NQOL.Settings.Default(settings, defaultSettings, "repairAllInMerchants")
     NQOL.Settings.Default(settings, defaultSettings, "autoBound")
     NQOL.Settings.Default(settings, defaultSettings, "logCharge")
     NQOL.Settings.Default(settings, defaultSettings, "logRepair")
@@ -269,7 +279,7 @@ local function TryChargeSlot(slotId)
         return false
     end
 
-    if (charge / maxCharge) * 100 > CHARGE_THRESHOLD_PERCENT then
+    if (charge / maxCharge) * 100 > Gear.GetChargeThreshold() then
         return false
     end
 
@@ -310,7 +320,7 @@ local function TryRepairSlot(slotId)
     end
 
     local condition = GetItemCondition(BAG_WORN, slotId)
-    if not condition or condition > REPAIR_THRESHOLD_PERCENT then
+    if not condition or condition > Gear.GetRepairThreshold() then
         return false
     end
 
@@ -394,8 +404,34 @@ local function OnPlayerAlive()
 end
 
 local function OnRepairFailure()
-    pendingRepair = true
-    QueueRetry()
+    if Gear.GetAutoRepair() then
+        pendingRepair = true
+        QueueRetry()
+    end
+end
+
+local function OnOpenStore()
+    if not Gear.GetRepairAllInMerchants()
+        or not CanStoreRepair
+        or not GetRepairAllCost
+        or not RepairAll
+        or not CanStoreRepair()
+    then
+        return
+    end
+
+    local repairCost = GetRepairAllCost()
+    if not repairCost or repairCost <= 0 then
+        return
+    end
+
+    if GetCurrencyAmount
+        and repairCost > GetCurrencyAmount(CURT_MONEY, CURRENCY_LOCATION_CHARACTER)
+    then
+        return
+    end
+
+    pcall(RepairAll)
 end
 
 local function RegisterEvents()
@@ -427,6 +463,7 @@ local function RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_Alive", EVENT_PLAYER_ALIVE, OnPlayerAlive)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_Reincarnated", EVENT_PLAYER_REINCARNATED, OnPlayerAlive)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_RepairFailure", EVENT_ITEM_REPAIR_FAILURE, OnRepairFailure)
+    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_MerchantRepair", EVENT_OPEN_STORE, OnOpenStore)
 
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_AutoBound", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnBackpackItemAdded)
     EVENT_MANAGER:AddFilterForEvent(
@@ -452,12 +489,13 @@ local function UnregisterEvents()
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE .. "_Alive", EVENT_PLAYER_ALIVE)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE .. "_Reincarnated", EVENT_PLAYER_REINCARNATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE .. "_RepairFailure", EVENT_ITEM_REPAIR_FAILURE)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE .. "_MerchantRepair", EVENT_OPEN_STORE)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE .. "_AutoBound", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
     eventsRegistered = false
 end
 
 local function RefreshEvents()
-    if Gear.GetAutoCharge() or Gear.GetAutoRepair() or Gear.GetAutoBound() then
+    if Gear.GetAutoCharge() or Gear.GetAutoRepair() or Gear.GetRepairAllInMerchants() or Gear.GetAutoBound() then
         RegisterEvents()
     else
         UnregisterEvents()
@@ -509,6 +547,38 @@ function Gear.SetAutoCharge(value)
     end
 end
 
+function Gear.GetChargeThreshold()
+    if not savedVariables then
+        return defaults.gear.chargeThreshold
+    end
+
+    local value = math.floor((tonumber(GetSettings().chargeThreshold) or CHARGE_THRESHOLD_DEFAULT) + 0.5)
+    value = math.max(CHARGE_THRESHOLD_MIN, math.min(CHARGE_THRESHOLD_MAX, value))
+    GetSettings().chargeThreshold = value
+    return value
+end
+
+function Gear.SetChargeThreshold(value)
+    value = math.floor((tonumber(value) or CHARGE_THRESHOLD_DEFAULT) + 0.5)
+    GetSettings().chargeThreshold = math.max(CHARGE_THRESHOLD_MIN, math.min(CHARGE_THRESHOLD_MAX, value))
+
+    if Gear.GetAutoCharge() then
+        TryChargeAll()
+    end
+end
+
+function Gear.GetChargeThresholdMin()
+    return CHARGE_THRESHOLD_MIN
+end
+
+function Gear.GetChargeThresholdMax()
+    return CHARGE_THRESHOLD_MAX
+end
+
+function Gear.GetChargeThresholdDefault()
+    return CHARGE_THRESHOLD_DEFAULT
+end
+
 function Gear.GetAutoRepair()
     if not savedVariables then
         return defaults.gear.autoRepair
@@ -524,6 +594,51 @@ function Gear.SetAutoRepair(value)
     if GetSettings().autoRepair then
         TryRepairAll()
     end
+end
+
+function Gear.GetRepairThreshold()
+    if not savedVariables then
+        return defaults.gear.repairThreshold
+    end
+
+    local value = math.floor((tonumber(GetSettings().repairThreshold) or REPAIR_THRESHOLD_DEFAULT) + 0.5)
+    value = math.max(REPAIR_THRESHOLD_MIN, math.min(REPAIR_THRESHOLD_MAX, value))
+    GetSettings().repairThreshold = value
+    return value
+end
+
+function Gear.SetRepairThreshold(value)
+    value = math.floor((tonumber(value) or REPAIR_THRESHOLD_DEFAULT) + 0.5)
+    GetSettings().repairThreshold = math.max(REPAIR_THRESHOLD_MIN, math.min(REPAIR_THRESHOLD_MAX, value))
+
+    if Gear.GetAutoRepair() then
+        TryRepairAll()
+    end
+end
+
+function Gear.GetRepairThresholdMin()
+    return REPAIR_THRESHOLD_MIN
+end
+
+function Gear.GetRepairThresholdMax()
+    return REPAIR_THRESHOLD_MAX
+end
+
+function Gear.GetRepairThresholdDefault()
+    return REPAIR_THRESHOLD_DEFAULT
+end
+
+function Gear.GetRepairAllInMerchants()
+    if not savedVariables then
+        return defaults.gear.repairAllInMerchants
+    end
+
+    return GetSettings().repairAllInMerchants
+end
+
+function Gear.SetRepairAllInMerchants(value)
+    GetSettings().repairAllInMerchants = value == true
+    RefreshEvents()
 end
 
 function Gear.GetAutoBound()
@@ -583,6 +698,14 @@ function Gear.GetAutoChargeTooltip()
     return NQOL.L("features.gear.auto_charge_tooltip")
 end
 
+function Gear.GetChargeThresholdLabel()
+    return NQOL.L("features.gear.charge_threshold_label")
+end
+
+function Gear.GetChargeThresholdTooltip()
+    return NQOL.L("features.gear.charge_threshold_tooltip")
+end
+
 function Gear.GetLogChargeLabel()
     return NQOL.L("features.gear.log_charge_label")
 end
@@ -597,6 +720,22 @@ end
 
 function Gear.GetAutoRepairTooltip()
     return NQOL.L("features.gear.auto_repair_tooltip")
+end
+
+function Gear.GetRepairThresholdLabel()
+    return NQOL.L("features.gear.repair_threshold_label")
+end
+
+function Gear.GetRepairThresholdTooltip()
+    return NQOL.L("features.gear.repair_threshold_tooltip")
+end
+
+function Gear.GetRepairAllInMerchantsLabel()
+    return NQOL.L("features.gear.repair_all_in_merchants_label")
+end
+
+function Gear.GetRepairAllInMerchantsTooltip()
+    return NQOL.L("features.gear.repair_all_in_merchants_tooltip")
 end
 
 function Gear.GetLogRepairLabel()

@@ -171,21 +171,27 @@ function Module:HandleSkillBlocker()
         end
     end
 
+    -- BUFFS
     for buffId, expireTime in pairs(self.PlayerBuffs) do
         if expireTime > 0 and currentTime > expireTime then
             self.PlayerBuffs[buffId] = nil
         else
-            local SkillData = CC.SkillData[buffId]
-            if SkillData and SkillData.moduleName and SkillData.name then
-                local moduleName = SkillData.moduleName
-                local skillName = SkillData.name
-                local SourceModule = CC[moduleName]
+            local MappedSkills = self.BlockableBuffs[buffId]
+            if MappedSkills then
+                for abilityId, _ in pairs(MappedSkills) do
+                    local SkillData = CC.SkillData[abilityId]
 
-                -- MODULE SKILLBLOCKER TABLE
-                if SourceModule and SourceModule.SkillBlocker and SourceModule.SkillBlocker[skillName] then
-                    local isBlockerEnabled = CC.SV[moduleName].enableSkillBlocker
-                    if isBlockerEnabled then
-                        self.BlockedModules[moduleName] = true
+                    if SkillData and SkillData.moduleName and SkillData.name then
+                        local moduleName = SkillData.moduleName
+                        local skillName = SkillData.name
+                        local SourceModule = CC[moduleName]
+
+                        if SourceModule and SourceModule.SkillBlocker and SourceModule.SkillBlocker[skillName] then
+                            local isBlockerEnabled = CC.SV[moduleName].enableSkillBlocker
+                            if isBlockerEnabled then
+                                self.BlockedModules[moduleName] = true
+                            end
+                        end
                     end
                 end
             end

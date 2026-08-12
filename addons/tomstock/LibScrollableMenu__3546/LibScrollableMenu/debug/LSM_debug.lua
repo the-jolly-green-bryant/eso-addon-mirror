@@ -145,8 +145,8 @@ local debugLogMessagePatterns = {
 	[102] = "comboBox_base:FireEntrtCallback",
 	[103] = "comboBox_base:SetOptions",
 	[104] = "comboBox_base:SetupEntryBase - control:  %s",
-	[105] = "comboBox_base:ShowDropdownOnMouseAction - parentControl: %s  %s",
-	[106] = "comboBox_base:ShowSubmenu - parentControl: %s  %s",
+	[105] = "comboBox_base:ShowDropdownOnMouseAction - parentControl: %s",
+	[106] = "comboBox_base:ShowSubmenu - parentControl: %s",
 	[107] = "comboBox_base:UpdateHeight - control: %q, maxHeight: %s, maxDropdownHeight: %s, maxHeightByEntries: %s, baseEntryHeight: %s, maxRows: %s, spacing: %s, headerHeight: %s",
 	[108] = "applyEntryFont - control: %s, font: %s, color: %s, horizontalAlignment: %s",
 	[109] = "addIcon - control: %s, list: %s,",
@@ -244,13 +244,17 @@ local debugLogMessagePatterns = {
 ------------------------------------------------------------------------------------------------------------------------
 -- Logger creation
 ------------------------------------------------------------------------------------------------------------------------
+local loggerLibLoadedDone = false
 local function loadLogger()
 	--LibDebugLogger
 	LDL = LDL or LibDebugLogger
 	if not lib.logger and LDL then
 		logger = LDL(MAJOR)
 		logger:SetEnabled(true)
-		logger:Debug("Library loaded")
+		if not loggerLibLoadedDone then
+			logger:Debug("Library loaded")
+			loggerLibLoadedDone = true
+		end
 		logger.verbose = logger:Create("Verbose")
 		logger.verbose:SetEnabled(false)
 
@@ -258,6 +262,7 @@ local function loadLogger()
 
 		lib.Debug.logger = logger
 	end
+	return lib.Debug.logger ~= nil
 end
 libDebug.LoadLogger = loadLogger
 
@@ -269,9 +274,18 @@ loadLogger()
 ------------------------------------------------------------------------------------------------------------------------
 -- Logging functions
 ------------------------------------------------------------------------------------------------------------------------
+--These textIds should always be logged even if the libDebug.doDebug is OFF
+local alwaysLogTextIds = {
+	[176] = true, --DEBUG ON/OFF
+	[177] = true, --DEBUG VERBOSE ON/OFF
+}
+
+
 --Debug log function
 local function dlog(debugType, textId, ...)
-	if not lib.doDebug or not textId then return end
+	--d(MAJOR .. "- dlog - debugType: " .. tos(debugType) .. ", textId: " ..tos(textId))
+	if not textId then return end
+	if not libDebug.doDebug then if not alwaysLogTextIds[textId] then return end end
 	debugType = debugType or LSM_LOGTYPE_DEBUG
 
 	local debugText = debugLogMessagePatterns[textId]
@@ -303,7 +317,7 @@ local function dlog(debugType, textId, ...)
 			logger:Error(debugText)
 		end
 
-	--Normal debugging via chat d() messages
+		--Normal debugging via chat d() messages
 	else
 		--No verbose debuglos in normal chat!
 		if debugType ~= LSM_LOGTYPE_VERBOSE then
@@ -315,11 +329,19 @@ end
 libDebug.DebugLog = dlog
 
 local function initDebugLogging()
-	if not lib.Debug then return false end
 	libDebug = lib.Debug
-	if not libDebug.LoadLogger then return false end
-	libDebug.LoadLogger()
-	return true
+	return libDebug.LoadLogger()
+end
+
+local function changeLoggerState(debugType, stateValue)
+	if not libDebug.logger then return end
+	if debugType == "debug" then
+		libDebug.logger:SetEnabled(stateValue)
+	elseif debugType == "debugVerbose" then
+		if libDebug.logger.verbose then
+			libDebug.logger.verbose:SetEnabled(stateValue)
+		end
+	end
 end
 
 local function debugLoggingToggle(debugType)
@@ -328,15 +350,24 @@ local function debugLoggingToggle(debugType)
 	if debugType == "debug" then
 		lib.Debug.doDebug = not lib.Debug.doDebug
 		libDebug = lib.Debug
-		if libDebug.logger then libDebug.logger:SetEnabled(libDebug.doDebug) end
-		if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 176, tos(libDebug.doDebug and "ON" or "OFF")) end
+--d(">debugLoggingToggle doDebug: " .. tos(libDebug.doDebug) ..", logger: " ..tos(libDebug.logger))
+		if libDebug.doDebug then
+			changeLoggerState(debugType, true)
+		end
+		dlog(libDebug.LSM_LOGTYPE_INFO, 176, tos(libDebug.doDebug and "ON" or "OFF"))
+		if not libDebug.doDebug then
+			changeLoggerState(debugType, false)
+		end
 
 	elseif debugType == "debugVerbose" then
 		lib.Debug.doVerboseDebug = not lib.Debug.doVerboseDebug
 		libDebug = lib.Debug
-		if libDebug.logger and libDebug.logger.verbose then
-			libDebug.logger.verbose:SetEnabled(libDebug.doVerboseDebug)
-			if libDebug.doDebug then dlog(libDebug.LSM_LOGTYPE_DEBUG, 177, tos(libDebug.doVerboseDebug and "ON" or "OFF"), tos(libDebug.doDebug and "ON" or "OFF")) end
+		if libDebug.doDebug then
+			changeLoggerState(debugType, true)
+		end
+		dlog(libDebug.LSM_LOGTYPE_INFO, 177, tos(libDebug.doVerboseDebug and "ON" or "OFF"), tos(libDebug.doDebug and "ON" or "OFF"))
+		if not libDebug.doDebug then
+			changeLoggerState(debugType, false)
 		end
 	end
 end

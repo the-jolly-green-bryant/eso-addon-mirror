@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.15.4"
+R.version     = "3.17.4"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -45,6 +45,10 @@ local LIST_CONTENT_TAIL_PAD = 24 -- padding below scroll content (was 20)
 local function trendPanelHeight()
   return 6 + 18 + 2 + 14 + 6 + TREND_FIGHT_HEADER_H + 4 + (3 * (TREND_ROW_H + 4)) + 10
 end
+-- Keep the original SV name so existing parse history is preserved for all users.
+-- v3.17.4: auto-compact history after load (strip bulk combat tables, keep outcomes/coach).
+-- Note: if a file is so huge the client dies *during* SV parse, that rare case still needs
+-- a one-time clear — normal users with older history compact in place and keep fights.
 R.ns          = "DM2_ParseFightStats_SV"
 
 local EM = EVENT_MANAGER
@@ -73,12 +77,14 @@ R.defaults = {
     resultsPopupDelaySecs = 2, -- delay stats popup after fight ends (0-5)
     autoCloseSecs = 0,    -- 0 = never (menu uses O/back; legacy overlay optional timer)
 
-    historyMax = 20,
+    historyMax = 12,        -- PS5 SV memory: full sessions are heavy; 12 is enough for A/B
     bucketMs = 2000,
 
     -- Heuristics
     minFightMs = 8000,      -- ignore tiny skirmishes
     minDamage = 50000,
+    -- When false: only start captures that look like dummy/housing parses (saves open-world spam)
+    trackOpenWorld = true,
 
     -- Spike detection window exclusions
     ignoreFirstMs = 2000,
@@ -368,9 +374,21 @@ R._announcements = {
     title = "Phase 2.5.1 + 2.5.2b (coach depth)",
     body = "• Crit-dmg exposure: mid-fight sheet samples + profile ceiling · Insights waste + Dashboard cue\n• CP A/B marginal: same bars/sets/Mundus, champion swap · ΔDPS on Build & Sets + Insights Build\n• End-of-fight sheet fallback when mid-fight API returns 0\n\nNeed 2+ dummy parses with a one-star CP swap to see A/B lines. New parse recommended for exposure series.",
   },
-  -- 3.15.1–3.15.4 = quiet polish / load + SV harden. No popup — keep 3.15.0 announce.
+  ["3.16.0"] = {
+    title = "Phase 2.5 complete (trustworthy depth)",
+    body = "Closes the coach loop after playtest scaffolds:\n\n• Crit exposure: clearer confidence wording (sheet samples; no per-hit mult on console)\n• CP A/B: strict one-star swap · median ΔDPS · Observed when n≥3 pairs\n• Experiment loop: Y on Insights: DPS starts/clears a 3-parse experiment (CP holds core build, execution holds full fingerprint)\n• Buffs: pen context footer → Insights recipe\n• History: fingerprint cohort strip + EXP tags on experiment runs\n\nReload UI, open Insights: DPS, press Y to start a controlled test.",
+  },
+  ["3.17.0"] = {
+    title = "Insights Evolution Phase 3",
+    body = "Phase 3 P0 — execution richness (no resource polling yet):\n\n• Insights §4 exception-driven: bars, ult casts, DoT gaps, best/worst active 20s\n• §1 opportunities: window collapse + DoT gaps when strong\n• Rotation markers: S swap · U ult · L late phase\n• Weave DoT table: gap counts (maintainable skills only)\n• Capture: bar dwell, swap-delay distribution, ult cast times (capped)\n\nNew parse recommended. Resources/potions come later (P1).",
+  },
+  ["3.17.4"] = {
+    title = "History auto-compact (keeps your parses)",
+    body = "Console stability without wiping everyone’s fight history.\n\n• On load: strip bulk combat tables from stored fights (timelines bulk, bucket skill maps, raw tick floods)\n• Keeps DPS, skills, weave counts, fingerprints, coach outcomes, windows/gaps summaries\n• New parses stay compact so SavedVariables cannot re-bloat\n• History size default 12 (max 20)\n\nYour past parses remain. No manual SavedVariables delete for normal users.",
+  },
+  -- 3.15.x / 3.17.1–3.17.3 = quiet or superseded. Announce 3.17.4.
 }
-R._latestAnnouncementVersion = "3.15.0"
+R._latestAnnouncementVersion = "3.17.4"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -887,6 +905,39 @@ local function newSession()
       inputSkillPresses = 0,       -- total skill button presses captured
       barSwapCount = 0,            -- number of bar swaps during the fight
     },
+
+    -- Phase 3 P0: execution capture (lean — running totals + capped event lists)
+    meta = {
+      captureSchemaVersion = "3.0",
+      analysisVersion = nil, -- set at finalize
+      quality = {
+        markerOverflow = false,
+        bucketTopSources = false,
+        degraded = {},
+      },
+    },
+    barStats = {
+      frontMs = 0,
+      backMs = 0,
+      unknownMs = 0,
+      currentBar = nil,       -- "Front" | "Back" | nil
+      lastChangeMs = 0,
+      pendingSwapMs = nil,    -- for swap→first action delay
+      swaps = {},             -- { tMs, toBar } cap 40
+      swapDelayMs = {},       -- raw delays cap 40
+      delayOverThresholdCount = 0,
+      delayWithMissedWeaveCount = 0,
+    },
+    ultEconomy = {
+      casts = 0,
+      castTimes = {},         -- cap 12
+      damage = 0,
+      firstUltMs = nil,
+    },
+    markers = {
+      points = {},            -- { tMs, type, label } cap 40
+    },
+    -- Filled at finalize (MenuShell): windowStats, dotQuality, execSummary
 
     -- metadata
     lastTargetName = nil,
@@ -2520,9 +2571,24 @@ local function finiteNum(n, fallback)
   return n
 end
 
+-- Cap array length in-place (keep newest / tail)
+local function capArrayTail(arr, maxN)
+  if type(arr) ~= "table" then return end
+  maxN = tonumber(maxN) or 0
+  if maxN <= 0 then return end
+  local n = #arr
+  if n <= maxN then return end
+  local drop = n - maxN
+  for i = 1, maxN do arr[i] = arr[i + drop] end
+  for i = maxN + 1, n do arr[i] = nil end
+end
+
+-- Aggressive compact for SavedVariables (PS5 shared addon memory).
+-- Keeps coach/outcomes; drops combat hotpath bulk that can make SV multi‑MB.
 local function prepareSessionForHistory(session)
   if type(session) ~= "table" then return session end
-  -- Drop bulk mid-fight sample series; exposure summary is enough for coach UI
+
+  -- Crit samples: keep aggregates only
   if type(session.critDmgStats) == "table" then
     session.critDmgStats.sampleSeries = nil
     session.critDmgStats.eligibleDmg = finiteNum(session.critDmgStats.eligibleDmg, 0)
@@ -2542,28 +2608,143 @@ local function prepareSessionForHistory(session)
   session.durationMs = finiteNum(session.durationMs, 0)
   session.directDamage = finiteNum(session.directDamage, 0)
   session.dotDamage = finiteNum(session.dotDamage, 0)
+
+  -- Skills: drop unique-target maps; keep numbers
   if type(session.skills) == "table" then
     for _, sk in pairs(session.skills) do
       if type(sk) == "table" then
-        sk.uniqueTargets = nil -- large string-key map; count already on uniqueTargetCount
+        sk.uniqueTargets = nil
         sk.dmg = finiteNum(sk.dmg, 0)
         sk.hits = finiteNum(sk.hits, 0)
         sk.dot = finiteNum(sk.dot, 0)
         sk.direct = finiteNum(sk.direct, 0)
+        sk.crit = finiteNum(sk.crit, 0)
+        sk.max = finiteNum(sk.max, 0)
       end
     end
   end
-  -- Debug blob not needed in SV unless debug is on
+
+  -- Buckets: keep totals only (best/worst windows use dmg; per-skill maps explode SV size)
+  if type(session.buckets) == "table" then
+    for idx, b in pairs(session.buckets) do
+      if type(b) == "table" then
+        b.skills = nil
+        b.dmg = finiteNum(b.dmg, 0)
+        b.direct = finiteNum(b.direct, 0)
+        b.dot = finiteNum(b.dot, 0)
+        b.hits = finiteNum(b.hits, 0)
+        b.crit = finiteNum(b.crit, 0)
+      end
+    end
+  end
+
+  -- Weave: cap timeline for Rotation; drop interval arrays
+  if type(session.weave) == "table" then
+    local w = session.weave
+    w.laIntervals = nil
+    w.pendingSkill = nil
+    w.pendingPostChannel = nil
+    w.skillBarByName = nil
+    if type(w.timeline) == "table" then
+      capArrayTail(w.timeline, 64) -- enough icons for Rotation review
+    end
+  end
+
+  -- DoT ticks: keep sparse samples for gap math (not every tick of a 3‑min dummy)
+  if type(session.dotTicks) == "table" then
+    for id, entry in pairs(session.dotTicks) do
+      if type(entry) == "table" and type(entry.ticks) == "table" then
+        local ticks = entry.ticks
+        local n = #ticks
+        if n > 48 then
+          -- keep first, last, and evenly spaced middle samples
+          local keep = { ticks[1] }
+          local step = math.max(1, math.floor((n - 2) / 46))
+          for i = 2, n - 1, step do keep[#keep + 1] = ticks[i] end
+          keep[#keep + 1] = ticks[n]
+          entry.ticks = keep
+          entry.tickCountOrig = n
+        end
+      end
+    end
+  end
+
+  -- Phase 3: drop raw lists; keep derived medians/counts
+  if type(session.barStats) == "table" then
+    local bs = session.barStats
+    bs.swaps = nil
+    bs.swapDelayMs = nil
+    bs.pendingSwapMs = nil
+    bs.currentBar = nil
+    bs.lastChangeMs = nil
+  end
+  if type(session.markers) == "table" and type(session.markers.points) == "table" then
+    capArrayTail(session.markers.points, 32)
+  end
+  if type(session.ultEconomy) == "table" and type(session.ultEconomy.castTimes) == "table" then
+    capArrayTail(session.ultEconomy.castTimes, 12)
+  end
+
+  -- Coach recompute is fine; do not persist huge intermediate coach tables
+  session.coach = nil
+
+  -- Player stats: keep buffed/unbuffed numbers only (drop nested junk if any)
+  local function thinSnap(snap)
+    if type(snap) ~= "table" then return nil end
+    return {
+      buffed = snap.buffed,
+      base = snap.base,
+      attributes = snap.attributes,
+      mundus = snap.mundus,
+      capturedAt = snap.capturedAt,
+    }
+  end
+  if session.playerStats then session.playerStats = thinSnap(session.playerStats) end
+  if session.playerStatsEnd then session.playerStatsEnd = thinSnap(session.playerStatsEnd) end
+  if session.playerStatsStart then session.playerStatsStart = thinSnap(session.playerStatsStart) end
+
+  -- Build snapshot: drop redundant dual copies of full gear if present
+  if type(session.build) == "table" and type(session.buildEnd) == "table" then
+    session.buildStart = nil -- start snap rarely needed after end fingerprint exists
+  end
+
   if not (SV and SV.settings and SV.settings.debugRotation) then
     session.rotationDebug = nil
   end
   return session
 end
 
+-- Re-compact every history slot (call on load — fixes already-bloated SVs).
+-- Preserves fights: only strips bulk fields; does not wipe history.
+local function sanitizeHistoryInPlace()
+  if not SV or type(SV.history) ~= "table" then return 0 end
+  local n = 0
+  for slot, s in pairs(SV.history) do
+    if type(s) == "table" then
+      prepareSessionForHistory(s)
+      n = n + 1
+    end
+  end
+  -- Hard ceiling only: never force-down a user's 12–20 preference to 12
+  local max = tonumber(SV.settings and SV.settings.historyMax) or 12
+  if max < 1 then max = 12 end
+  if max > 20 then
+    max = 20
+    if SV.settings then SV.settings.historyMax = 20 end
+  end
+  -- Drop only absurd debris above hard ceiling (legacy max-50 slider)
+  for slot, _ in pairs(SV.history) do
+    local i = tonumber(slot)
+    if i and i > 20 then SV.history[slot] = nil end
+  end
+  return n
+end
+
 local function pushHistory(session)
   if not SV then return end
-  local max = tonumber(SV.settings.historyMax) or 20
-  if max < 1 then max = 20 end
+  local max = tonumber(SV.settings.historyMax) or 12
+  if max < 1 then max = 12 end
+  if max > 20 then max = 20 end
 
   prepareSessionForHistory(session)
 
@@ -2574,14 +2755,16 @@ local function pushHistory(session)
 end
 
 local function getHistoryCount()
-  local max = tonumber(SV.settings.historyMax) or 20
+  local max = tonumber(SV.settings.historyMax) or 12
+  if max > 20 then max = 20 end
   local idx = tonumber(SV.lastIndex) or 0
   return math.min(idx, max)
 end
 
 local function getHistoryAt(offsetFromLatest)
   offsetFromLatest = tonumber(offsetFromLatest) or 0
-  local max = tonumber(SV.settings.historyMax) or 20
+  local max = tonumber(SV.settings.historyMax) or 12
+  if max > 20 then max = 20 end
   local idx = tonumber(SV.lastIndex) or 0
   if idx <= 0 then return nil end
 
@@ -5317,6 +5500,144 @@ function R:Toggle()
 end
 
 -- ----------------------------
+-- Phase 3 P0 capture helpers (must sit above startIfNeeded / combat handlers)
+-- ----------------------------
+local P3_SWAP_DELAY_THRESHOLD_MS = 400
+local P3_MAX_SWAPS = 40
+local P3_MAX_MARKERS = 40
+local P3_MAX_ULT_CASTS = 12
+
+local function p3BarLabelFromCategory(cat)
+  if cat == nil then return nil end
+  if type(HOTBAR_CATEGORY_BACKUP) ~= "nil" and cat == HOTBAR_CATEGORY_BACKUP then return "Back" end
+  if type(HOTBAR_CATEGORY_PRIMARY) ~= "nil" and cat == HOTBAR_CATEGORY_PRIMARY then return "Front" end
+  if cat == 1 or cat == 0 then return "Front" end
+  if cat == 2 then return "Back" end
+  return nil
+end
+
+local function p3EnsureBarStats(session)
+  if not session then return nil end
+  if type(session.barStats) ~= "table" then
+    session.barStats = {
+      frontMs = 0, backMs = 0, unknownMs = 0,
+      currentBar = nil, lastChangeMs = 0, pendingSwapMs = nil,
+      swaps = {}, swapDelayMs = {},
+      delayOverThresholdCount = 0, delayWithMissedWeaveCount = 0,
+    }
+  end
+  session.barStats.swaps = session.barStats.swaps or {}
+  session.barStats.swapDelayMs = session.barStats.swapDelayMs or {}
+  return session.barStats
+end
+
+local function p3EnsureMarkers(session)
+  if not session then return nil end
+  if type(session.markers) ~= "table" then session.markers = { points = {} } end
+  session.markers.points = session.markers.points or {}
+  return session.markers
+end
+
+local function p3EnsureUlt(session)
+  if not session then return nil end
+  if type(session.ultEconomy) ~= "table" then
+    session.ultEconomy = { casts = 0, castTimes = {}, damage = 0, firstUltMs = nil }
+  end
+  session.ultEconomy.castTimes = session.ultEconomy.castTimes or {}
+  return session.ultEconomy
+end
+
+local function p3PushMarker(session, tMs, mtype, label)
+  local m = p3EnsureMarkers(session)
+  if not m then return end
+  local pts = m.points
+  if #pts >= P3_MAX_MARKERS then
+    if session.meta and session.meta.quality then session.meta.quality.markerOverflow = true end
+    table.remove(pts, 1)
+  end
+  pts[#pts + 1] = { tMs = tMs, type = mtype, label = label or mtype }
+end
+
+local function p3AccrueBarDwell(session, tMs)
+  local bs = p3EnsureBarStats(session)
+  if not bs or not session.started then return end
+  local last = tonumber(bs.lastChangeMs) or 0
+  if last <= 0 then
+    bs.lastChangeMs = tMs
+    return
+  end
+  local dt = tMs - last
+  if dt <= 0 then return end
+  local bar = bs.currentBar
+  if bar == "Front" then bs.frontMs = (bs.frontMs or 0) + dt
+  elseif bar == "Back" then bs.backMs = (bs.backMs or 0) + dt
+  else bs.unknownMs = (bs.unknownMs or 0) + dt end
+  bs.lastChangeMs = tMs
+end
+
+local function p3InitBarAtCombatStart(session, tMs)
+  local bs = p3EnsureBarStats(session)
+  if not bs then return end
+  local cat = R._activeBar
+  if type(GetActiveHotbarCategory) == "function" then
+    local ok, c = pcall(GetActiveHotbarCategory)
+    if ok then cat = c; R._activeBar = c end
+  end
+  bs.currentBar = p3BarLabelFromCategory(cat) or "Front"
+  bs.lastChangeMs = tMs
+  bs.pendingSwapMs = nil
+end
+
+local function p3NotePostSwapAction(session, tMs)
+  local bs = p3EnsureBarStats(session)
+  if not bs or not bs.pendingSwapMs then return end
+  local delay = tMs - bs.pendingSwapMs
+  if delay < 0 then delay = 0 end
+  if delay > 15000 then delay = 15000 end
+  local delays = bs.swapDelayMs
+  if #delays < P3_MAX_SWAPS then
+    delays[#delays + 1] = delay
+  end
+  if delay >= P3_SWAP_DELAY_THRESHOLD_MS then
+    bs.delayOverThresholdCount = (bs.delayOverThresholdCount or 0) + 1
+  end
+  bs.pendingSwapMs = nil
+end
+
+local function p3IsUltPress(session, actionSlotIndex, abilityId, abilityName)
+  if (tonumber(actionSlotIndex) or 0) == 8 then return true end
+  abilityId = tonumber(abilityId) or 0
+  if abilityId > 0 and type(GetAbilityUltimateCost) == "function" then
+    local ok, cost = pcall(GetAbilityUltimateCost, abilityId)
+    if ok and (tonumber(cost) or 0) > 0 then return true end
+  end
+  if session and type(session.slottedAbilityBySlot) == "table" then
+    for _, bar in ipairs({ "Front", "Back" }) do
+      local e = session.slottedAbilityBySlot[bar .. ":8"]
+      if type(e) == "table" and (tonumber(e.id) or 0) == abilityId and abilityId > 0 then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+local function p3RecordUltCast(session, tMs, abilityId)
+  local ue = p3EnsureUlt(session)
+  if not ue then return end
+  local times = ue.castTimes
+  if #times > 0 and (tMs - (times[#times] or 0)) < 400 then return end
+  if #times >= P3_MAX_ULT_CASTS then return end
+  times[#times + 1] = tMs
+  ue.casts = #times
+  if not ue.firstUltMs then
+    local start = tonumber(session.startMs) or tMs
+    ue.firstUltMs = math.max(0, tMs - start)
+  end
+  p3PushMarker(session, tMs, "ult", "ult")
+end
+
+-- ----------------------------
 -- Combat capture
 -- ----------------------------
 local function ensureSession()
@@ -5326,6 +5647,15 @@ end
 
 local function startIfNeeded(session, tMs, targetName)
   if session.started then return end
+  -- Optional: skip open-world skirmishes (trial/dummy still captured when trackOpenWorld true)
+  if SV and SV.settings and SV.settings.trackOpenWorld == false then
+    local name = targetName or ""
+    if not isDummyParseConfidence(name) then
+      session._skipCapture = true
+      return
+    end
+  end
+  if session._skipCapture then return end
   session.started = true
   session.startMs = tMs
   session.lastTargetName = targetName
@@ -5362,6 +5692,8 @@ local function startIfNeeded(session, tMs, targetName)
       session.build = build
     end
   end
+  -- Phase 3 P0: start bar dwell clock
+  p3InitBarAtCombatStart(session, tMs)
 end
 
 local function closeActiveBuffs(session)
@@ -5464,6 +5796,12 @@ local function finalizeSession(session)
     end
   end
 
+  -- Phase 3 P0: close bar dwell + finalize windows / gaps / exec summary
+  p3AccrueBarDwell(session, session.endMs or NowMs())
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.FinalizePhase3Execution) == "function" then
+    pcall(DM2StatsMenuShell.FinalizePhase3Execution, session)
+  end
+
   -- Phase 2.5 scaffold: attach parse to active controlled experiment when fingerprint holds
   if DM2StatsMenuShell and type(DM2StatsMenuShell.TryAttachExperimentRun) == "function" then
     pcall(DM2StatsMenuShell.TryAttachExperimentRun, session)
@@ -5484,14 +5822,17 @@ function R:OnCombatState(_, inCombat)
 
   if inCombat then
     cancelQueuedResultsPopup()
-    -- reset runtime capture
+    -- reset runtime capture (lightweight until first qualifying hit)
     self.session = newSession()
     return
   end
 
   -- combat ended — hide any active weave flash
   hideWeaveFlash()
-  if not self.session or not self.session.started then return end
+  if not self.session or not self.session.started then
+    self.session = nil
+    return
+  end
 
   local s = finalizeSession(self.session)
   if not s then
@@ -5537,6 +5878,8 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
   -- -------------------------------------------------------
   if isLA then
     w.laPressCount = (w.laPressCount or 0) + 1
+    -- Phase 3: LA also ends swap-delay measurement
+    p3NotePostSwapAction(session, tMs)
 
     -- Resolve post-channel: LA after a channel = good recovery
     if w.pendingPostChannel then
@@ -5691,10 +6034,16 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
   w.lastInputMs = tMs
   w.inputSkillPresses = (w.inputSkillPresses or 0) + 1
   recordSkillBar(session, abilityId, barLabel, abilityName)
+
+  -- Phase 3 P0: swap→first action delay + ultimate casts
+  p3NotePostSwapAction(session, tMs)
+  if p3IsUltPress(session, actionSlotIndex, abilityId, abilityName) then
+    p3RecordUltCast(session, tMs, abilityId)
+  end
 end
 
 -- ----------------------------
--- Bar swap detection (v3.0.25)
+-- Bar swap detection (v3.0.25 + Phase 3 dwell/delay)
 -- ----------------------------
 function R:OnActiveWeaponPairChanged(_, activeWeaponPair, locked)
   if not SV or not SV.settings.enable then return end
@@ -5727,6 +6076,20 @@ function R:OnActiveWeaponPairChanged(_, activeWeaponPair, locked)
     session.slottedAbilityBySlot = slotBySlot or {}
     if not session.weave then session.weave = {} end
     session.weave.barSwapCount = (session.weave.barSwapCount or 0) + 1
+
+    -- Phase 3: dwell accrue + swap list + pending delay
+    p3AccrueBarDwell(session, tMs)
+    local bs = p3EnsureBarStats(session)
+    local toBar = p3BarLabelFromCategory(self._activeBar) or "Front"
+    if bs then
+      bs.currentBar = toBar
+      bs.pendingSwapMs = tMs
+      local swaps = bs.swaps
+      if #swaps < P3_MAX_SWAPS then
+        swaps[#swaps + 1] = { tMs = tMs, toBar = toBar }
+      end
+    end
+    p3PushMarker(session, tMs, "swap", toBar)
   end
 end
 
@@ -5809,7 +6172,16 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
       if not dt[abilityId] then
         dt[abilityId] = { name = resolveAbilityName(abilityId, abilityName), ticks = {} }
       end
-      table.insert(dt[abilityId].ticks, tMs)
+      local ticks = dt[abilityId].ticks
+      -- Cap live tick list (console memory mid-fight); gap math still works on sparse samples
+      if #ticks >= 64 then
+        -- drop every other old sample, keep newest
+        local slim = {}
+        for i = 1, #ticks, 2 do slim[#slim + 1] = ticks[i] end
+        ticks = slim
+        dt[abilityId].ticks = ticks
+      end
+      ticks[#ticks + 1] = tMs
     end
   else
     session.directDamage = session.directDamage + dmg
@@ -6043,6 +6415,12 @@ local function slashHandler(text)
     return
   end
 
+  if text == "compact" or text == "fix" then
+    local n = sanitizeHistoryInPlace()
+    d("|c88ff88DM2 Stats|r: compacted " .. tostring(n) .. " stored fights (console memory).")
+    return
+  end
+
   if text == "share" then
     exportParseToChat(getHistoryAt(0))
     return
@@ -6194,17 +6572,37 @@ local function initLAM()
     },
     {
       type = "slider",
-      name = "History size",
-      min = 5, max = 50, step = 1,
-      getFunc = function() return SV.settings.historyMax end,
-      setFunc = function(v) SV.settings.historyMax = v end,
+      name = "History size (console: keep low)",
+      tooltip = "Fights stored in SavedVariables. High values + full captures can crash PS5 (shared addon memory). Max 20.",
+      min = 5, max = 20, step = 1,
+      getFunc = function() return math.min(20, tonumber(SV.settings.historyMax) or 12) end,
+      setFunc = function(v) SV.settings.historyMax = math.min(20, math.max(5, tonumber(v) or 12)) end,
       default = R.defaults.settings.historyMax,
     },
     {
       type = "button",
       name = "Clear history",
-      func = function() clearHistory(); R:Hide() end,
+      tooltip = "Wipes all stored fights from SavedVariables. Use if the game keeps disabling addons.",
+      func = function() clearHistory(); R:Hide(); d("|c88ff88DM2 Parse|r: history cleared.") end,
       width = "half",
+    },
+    {
+      type = "button",
+      name = "Compact history now",
+      tooltip = "Strips bulk combat tables from stored fights (safe for coach/outcomes). Run if memory is tight.",
+      func = function()
+        local n = sanitizeHistoryInPlace()
+        d("|c88ff88DM2 Parse|r: compacted " .. tostring(n) .. " stored fights.")
+      end,
+      width = "half",
+    },
+    {
+      type = "checkbox",
+      name = "Track open-world fights",
+      tooltip = "When OFF, only dummy/housing-style parses start a capture (less open-world overhead). Trials still need this ON.",
+      getFunc = function() return SV.settings.trackOpenWorld ~= false end,
+      setFunc = function(v) SV.settings.trackOpenWorld = v and true or false end,
+      default = R.defaults.settings.trackOpenWorld,
     },
     {
       type = "checkbox",
@@ -6327,9 +6725,8 @@ function R:Initialize()
   if okSV and svOrErr then
     SV = svOrErr
   else
-    d("|cFF6666DM2 Parse|r: SavedVariables failed to open. If login showed a SavedVariables stack, delete:")
-    d("|cFFAA66Documents/Elder Scrolls Online/<server>/SavedVariables/DM2_ParseFightStats.lua|r")
-    d("|cAAAAAAThen reload. Settings/history will reset. Err:|r " .. tostring(svOrErr))
+    d("|cFF6666DM2 Parse|r: SavedVariables failed to open. Using temporary defaults this session.")
+    d("|cAAAAAAErr:|r " .. tostring(svOrErr))
     -- Last resort empty table so the rest of the addon can load this session (not persisted)
     SV = {
       settings = {},
@@ -6342,14 +6739,35 @@ function R:Initialize()
   end
   ensureSV() -- also sets R.SV = SV for MenuShell / experiments / content profile
 
+  -- Auto-compact every load: preserve fights, drop bulk tables that bloat SV / console memory.
+  -- Do NOT wipe history. Cap size only at hard ceiling (20); default soft target 12 for new installs.
+  do
+    local max = tonumber(SV.settings.historyMax) or 12
+    if max > 20 then SV.settings.historyMax = 20 end -- never allow 50-slot bloat again
+    local compactN = 0
+    pcall(function() compactN = sanitizeHistoryInPlace() or 0 end)
+    if not SV._historyCompact_3174 then
+      SV._historyCompact_3174 = true
+      if compactN > 0 then
+        zo_callLater(function()
+          d("|c88ff88DM2 Parse|r: auto-compacted " .. tostring(compactN)
+            .. " stored fight(s) — history kept, bulk data stripped for console memory.")
+        end, 5000)
+      end
+    end
+  end
+
   registerSlash()
   initLAM()
 
   -- MenuShell is the default stats viewer (v3.9.0). Always init when available so
   -- post-parse popup and /dm2stats show can open it. Journal entry still gated.
-  if DM2StatsMenuShell and type(DM2StatsMenuShell.Initialize) == "function" then
-    pcall(function() DM2StatsMenuShell.Initialize() end)
-  end
+  -- Deferred: zone load is when console memory is tightest.
+  zo_callLater(function()
+    if DM2StatsMenuShell and type(DM2StatsMenuShell.Initialize) == "function" then
+      pcall(function() DM2StatsMenuShell.Initialize() end)
+    end
+  end, 1500)
 
   EM:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, function(...) self:OnCombatState(...) end)
   EM:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, function(...) self:OnCombatEvent(...) end)

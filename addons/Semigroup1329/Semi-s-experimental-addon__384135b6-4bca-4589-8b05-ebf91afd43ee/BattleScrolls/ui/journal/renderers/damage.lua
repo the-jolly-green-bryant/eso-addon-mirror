@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, inject-field -- the ESO Control/ZO_* API stubs are too incomplete for field checking in UI code
 -----------------------------------------------------------
 -- Damage Renderer
 -- Renders damage-related tabs (Boss Damage Done, Damage Done, Damage Taken)

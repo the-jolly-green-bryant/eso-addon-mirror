@@ -13,7 +13,7 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Vestment Of Olorime"] = { 107141, },
     },
     Broadcast = {

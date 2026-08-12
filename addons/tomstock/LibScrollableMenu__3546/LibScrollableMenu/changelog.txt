@@ -1,10 +1,34 @@
+-v- ---------------LSM v2.45 - 2026-08-10--------------------------------------------------------------------------- -v-
+[Fixed]
+--#2026_15 Add support at RefreshCustomScrollableMenu for existing comboBoxes where AddCustomScrollableComboBoxDropdownMenu added the LSM
+--#2026_18 Clicking on a checkbox in a submenu (the [ ], not the name label!) the refresh of the e.g. enabled state of other entries in the same submenu did not work
+--#2026_19 Debugging functions did not work, debugging ON/OFF chat messages did not show, and some messages got not enough/too many parameters
+
+[Added]
+--#2026_16 Added API function SortCustomScrollableMenu
+--Sort function using table.sort, automatically checking for LSM entry's label or name attribute to compare them alphabetically,
+--and keeps entries with .sortPosition = <number or function returning a number> specified at that position.
+--Parameter tableToSort must be the table that should be sorted
+--Parameter sortOrder must be a boolean (like ZO_SORT_ORDER_UP -> ASC: A to Z, and ZO_SORT_ORDER_DOWN -> DESC: Z to A), or function returning a boolean
+-->Returns the sortedTable
+--function SortCustomScrollableMenu(tableToSort, sortOrder)
+--#2026_17 Added API function GetCustomScrollableMenuCtrlsInfo
+-- Get the currently mouse-over control and it's relating comboBox + the itemData
+-- Parameter ctrl must be a userdata control
+-- Parameter comboBoxFromParentMenu boolean defines if you want the owning LSM menu's comboBox, or the current ctrl's one
+--> returns owning comboBox object, itemData table
+function GetCustomScrollableMenuCtrlsInfo(ctrl, comboBoxFromParentMenu)
+[Changed]
+--#2026_20 the enabled function currently only uses the data table, but should provide comboBox, data as parameters (like the callback functions)
+
+
+
 -v- ---------------LSM v2.44 - 2026-06-06--------------------------------------------------------------------------- -v-
 [Fixed]
 --#2026_01 1st click on a checkbox/radio button in a new opened contextMenu, after another contextMenu was opened before and a checkbox/radiobutton was clicked inside, did not work
 --#2026_11 Opening a contextMenu from a non LSM control (e.g. custom button to show the contextMenu on) showed the contextMenu empty, if another LSM non-contextMenu dropdown was opened at that time)
 --#2026_13 Opening a contextmenu sometimes made it vanish behind the openingControl, due to the automatic (sub)menuRefreshs (if enabled)
 --#2026_14 Checkboxes/Radiobuttons clicked in opened submenus closed the submenus sometimes
-
 
 -v- ---------------LSM v2.43 - 2026-05-27--------------------------------------------------------------------------- -v-
 [Added]
@@ -41,7 +65,6 @@ function PreventCustomScrollableContextMenuHide()
 --Mandatory parameter clickCount controls how many clicks it will stay open
 function PreventCustomScrollableContextMenuEntryClickHide(clickCount)
 
-
 -v- ---------------LSM v2.40 - 2025-12-14--------------------------------------------------------------------------- -v-
 [Added]
 #2025_63 Add options.headerCollapsedIcon and options.headerCollapsedTitle
@@ -49,7 +72,6 @@ function PreventCustomScrollableContextMenuEntryClickHide(clickCount)
 --		table headerCollapsedTitle				table or function returning a table of signature { text = "Click to search", color=ZO_ColorDef, font="FontNameHere", align=LEFT|CENTER(default)|RIGHT, offSetX=12, offSetY=-12 }: Title text shown as the header is collapsed (e.g. a text to show you can expand the section and see the search). Default value is nil.
 #2025_64 options.headerToggleTooltip
 --		string headerToggleTooltip				String or function returning a string: Tooltip text for the collapse/expand buttons. Function signature function(state). Default: returns "Collapse"/"Expand" strings from vanilla ESOUI, depending on the current state
-
 
 -v- ---------------LSM v2.39 - 2025-12-09--------------------------------------------------------------------------- -v-
 [Fixed]
@@ -100,8 +122,6 @@ RefreshCustomScrollableMenu(mocCtrl, updateMode, comboBox)
 #2025_56 Change entry's data.doNotFilter: If it's a function it's signature now is doNotFilterFunc(LSM_comboBox, selectedContextMenuItem, openingMenusEntries), so one can e.g. make a button entryType only filter if there is no other entry inside the table currentDropdownEntriesTable
 --->If it's a fucntion you can also specify doNotFilterEntryTypes = table or function returning a table of LSM entryTypes which should be prefiltering the current list, before the doNotFilter function is executed on them (e.g. { LSM_ENTRY_TYPE_CHECKBOX } to only prefilter checkbox entries of the current list)
 
-
-
 -v- ---------------LSM v2.37 - 2025-09-21--------------------------------------------------------------------------- -v-
 [Added]
 -2025_37    Added API function AddCustomScrollableMenuRadioButton(text, callback, checked, buttonGroup, additionalData)
@@ -112,7 +132,6 @@ RefreshCustomScrollableMenu(mocCtrl, updateMode, comboBox)
 
 [Fixed]
 -2025_39 	Clicking icon in contextmenu's submenu will close the entry
-
 
 -v- ---------------LSM v2.36 - 2025-05-30--------------------------------------------------------------------------- -v-
 [Added]
@@ -147,7 +166,6 @@ RefreshCustomScrollableMenu(mocCtrl, updateMode, comboBox)
 -2025_28: 	ContextMenu: API function RunCustomScrollableMenuItemsCallback is not respecting the parameter fromParentMenu
 -2025_29	ContextMenu: Opening a contextmenu on another control, while another LSM was opened, cleared the contextMenu entries
 -2025_30:   ContextMenu: Opening a contextmenu sometimes does not change the maximum width of the entries properly
-
 
 [Added]
 -2025_10:	If multiselection is enabled: Submenus with a selection can show the submenu arrow colored differently. option.multiSelectSubmenuSelectedArrowColor defines the color to use (default is white)
@@ -221,7 +239,7 @@ RefreshCustomScrollableMenu(mocCtrl, updateMode, comboBox)
 --Added LSM_ENTRY_TYPE_CHECKBOX with checkboxButtonGroups. data.buttonTemplate can be used to define the buttons XML template. Clicking a checkbox keeps the dropdown opened!
 	data.buttonGroup defines the button group. Specifying several checkboxes with the same group number adds them to the same group.
 --Added API function LibScrollableMenu.SetButtonGroupState(...) for checkboxes which belong to a buttonGroup. Use it from data.contextMenuCallback e.g. to show a "Select all" , "Unselect all" and "Invert selection" context menu
-----contextMenuCallback = function(...) LibScrollableMenu.SetButtonGroupState(...) end,
+----contextMenuCallback = function(comboBox, control, data) LibScrollableMenu.SetButtonGroupState(comboBox, control, data) end,
 
 --Added API function GetCustomScrollableMenuRowData(rowControl)
 --Added item.m_owner to RefreshSortedItems
@@ -232,7 +250,6 @@ RefreshCustomScrollableMenu(mocCtrl, updateMode, comboBox)
 -v- ---------------LSM v2.21 - 2024-06-02--------------------------------------------------------------------------- -v-
 -[Fixes]-
 --Search/filter edtibox resets to empty if options.enableFilter == false
-
 
 -v- ---------------LSM v2.2 - 2024-06-02---------------------------------------------------------------------------- -v-
 -[Fixes]-
@@ -312,6 +329,4 @@ function ShowCustomScrollableMenu(controlToAnchorTo, options)
 
 -API that can be used in a callback function of an entry
 function RunCustomScrollableMenuItemsCallback(comboBox, item, myAddonCallbackFunc, filterEntryTypes, fromParentMenu, ...)
-
-
 -^- ---------------LSM v2.2 - 2024-06-02---------------------------------------------------------------------------- -^-

@@ -84,6 +84,8 @@ BattleScrolls = BattleScrolls or {}
 ---@field gameVersion string|nil Game patch version at time of encounter (e.g. "11.3.5")
 
 ---@class Encounter
+---@field isPlayerFight boolean|nil True when a player/duel fight
+---@field isDummyFight boolean|nil True when the target is a target dummy
 ---@field displayName string|nil Pre-computed display name for encounter list UI (avoids decoding entire encounter)
 ---@field location string|nil Location within the zone (e.g., "Courtyard", "Faceted Gallery") if defined and different from zone name
 ---@field timestampS number Absolute timestamp when encounter started
@@ -123,6 +125,11 @@ BattleScrolls = BattleScrolls or {}
 ---@field encounters Encounter[] Array of encounters in this instance
 
 ---@class InstanceStorage
+---@field isHouse boolean|nil True when the zone is a player house
+---@field isPvP boolean|nil True when an AvA/battleground zone
+---@field isAdventureZone boolean|nil True when an adventure zone (infinite archive)
+---@field _estimatedSize number|nil Cached memory estimate
+---@field index number|nil Position in history (set by the journal list)
 ---@field zone string Zone or instance name
 ---@field isOverland boolean True if this is an overland zone
 ---@field left boolean True if player left this zone
@@ -147,6 +154,7 @@ BattleScrolls = BattleScrolls or {}
 ---@alias RecordFightType "boss"|"trash"|"player"|"dummy"
 
 ---@class StorageSettings
+---@field logLevel number|nil Minimum level for chat log output
 ---@field dpsMeterLingerMs number Linger duration (0 = no linger, -1 = always show)
 ---@field dpsMeterPersonalEnabled boolean
 ---@field dpsMeterPersonalMode "auto"|"damage"|"healing"
@@ -218,15 +226,13 @@ BattleScrolls = BattleScrolls or {}
 ---@class Storage
 ---@field savedVariables StorageData
 ---@field defaults StorageData
----@field cleanupTask Effect|nil Currently running cleanup task (nil if none)
+---@field cleanupTask Fiber|nil Currently running cleanup fiber (nil if none)
 ---@field sizePresets table<string, SizePreset> Available memory size presets
 ---@field sizePresetOrder string[] Ordered list of size preset keys
 ---@field asyncSpeedPresets table<string, AsyncSpeedPreset> Available async speed presets
 ---@field asyncSpeedPresetOrder string[] Ordered list of async speed preset keys
 ---@field meterPresets table<string, MeterPreset> Available meter configuration presets
 ---@field meterPresetOrder string[] Ordered list of meter preset keys
-
----@type Storage
 local storage = {
     cleanupTask = nil,
 }

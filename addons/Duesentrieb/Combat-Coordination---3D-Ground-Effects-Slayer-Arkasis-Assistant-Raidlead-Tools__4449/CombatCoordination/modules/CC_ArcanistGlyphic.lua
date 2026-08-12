@@ -13,7 +13,7 @@ local Module = {
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
 
-    CombatEvent = {
+    Skills = {
         ["Vitalizing Glyphic"]   = { 183709, },
         ["Glyphic of the Tides"] = { 193794, },
         ["Resonating Glyphic"]   = { 193558, },

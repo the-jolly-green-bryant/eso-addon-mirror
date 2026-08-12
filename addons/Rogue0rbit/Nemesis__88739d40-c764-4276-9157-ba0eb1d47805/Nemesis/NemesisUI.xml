@@ -1,76 +1,109 @@
 <GuiXml>
     <Controls>
+        <!--
+            Dossier rows carry no vertical anchors here: NemesisUI.lua stacks the
+            visible rows at runtime and auto-sizes the frame, so disabled sections
+            collapse instead of leaving gaps.
+        -->
         <TopLevelControl name="NemesisDossier" hidden="true" clampedToScreen="true" tier="HIGH" movable="true" mouseEnabled="true">
-            <ClampedToScreenInsets left="-220" right="-220" top="-270" bottom="-270"/>
             <Dimensions x="440" y="540"/>
             <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="230" offsetY="20"/>
+            <OnMouseDown>
+                self:StartMoving()
+            </OnMouseDown>
+            <OnMouseUp>
+                self:StopMovingOrResizing()
+            </OnMouseUp>
+            <OnMoveStop>
+                Nemesis.UI.OnDossierMoveStop(self)
+            </OnMoveStop>
             <Controls>
-                <Backdrop name="$(parent)BG" centerColor="FFFFFF">
+                <Backdrop name="$(parent)BG">
                     <AnchorFill/>
                     <Center file="EsoUI/Art/Tooltips/Gamepad/gp_toolTip_center_16.dds"/>
                     <Edge file="EsoUI/Art/Tooltips/Gamepad/gp_toolTip_edge_16.dds" edgeFileWidth="128" edgeFileHeight="16"/>
                     <Insets left="16" top="16" right="-16" bottom="-16"/>
                 </Backdrop>
+
+                <!-- header row: threat tier on the left, W-L record chip on the right -->
                 <Label name="$(parent)Tier" font="ZoFontGamepad27" text="" maxLineCount="1" wrapMode="ELLIPSIS">
-                    <Dimensions x="392" y="30"/>
-                    <Anchor point="TOPLEFT" offsetX="24" offsetY="6"/>
+                    <Dimensions x="260" y="30"/>
                 </Label>
+                <Label name="$(parent)Record" font="ZoFontGamepad22" text="" maxLineCount="1" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                    <Dimensions x="128" y="30"/>
+                </Label>
+
                 <Label name="$(parent)Name" font="ZoFontGamepad36" text="" maxLineCount="1" wrapMode="ELLIPSIS">
                     <Dimensions x="392" y="42"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)Tier" relativePoint="BOTTOMLEFT"/>
                 </Label>
+
+                <Backdrop name="$(parent)Divider">
+                    <Dimensions x="392" y="2"/>
+                </Backdrop>
+
                 <Label name="$(parent)Info" font="ZoFontGamepad20" text="" color="C0C0C0" maxLineCount="1" wrapMode="ELLIPSIS">
-                    <Dimensions x="392" y="28"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT"/>
-                </Label>
-                <Label name="$(parent)HP" font="ZoFontGamepad20" text="" maxLineCount="1" wrapMode="ELLIPSIS">
                     <Dimensions x="392" y="26"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)Info" relativePoint="BOTTOMLEFT"/>
                 </Label>
+
+                <!-- live health bar -->
+                <Control name="$(parent)HPRow">
+                    <Dimensions x="392" y="18"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Track">
+                            <Dimensions x="316" y="10"/>
+                            <Anchor point="LEFT" relativePoint="LEFT" offsetY="1"/>
+                        </Backdrop>
+                        <Backdrop name="$(parent)Fill">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Track" relativePoint="TOPLEFT"/>
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Track" relativePoint="BOTTOMLEFT"/>
+                        </Backdrop>
+                        <Label name="$(parent)Pct" font="ZoFontGamepad18" text="" maxLineCount="1" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="64" y="18"/>
+                            <Anchor point="RIGHT" relativePoint="RIGHT"/>
+                        </Label>
+                    </Controls>
+                </Control>
+
                 <Label name="$(parent)KD" font="ZoFontGamepad20" text="" maxLineCount="1" wrapMode="ELLIPSIS">
                     <Dimensions x="392" y="26"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)HP" relativePoint="BOTTOMLEFT"/>
                 </Label>
                 <Label name="$(parent)Win" font="ZoFontGamepad36" text="" maxLineCount="1" wrapMode="ELLIPSIS">
                     <Dimensions x="392" y="40"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)KD" relativePoint="BOTTOMLEFT"/>
                 </Label>
-                <Label name="$(parent)Moves" font="ZoFontGamepad20" text="" color="C0C0C0" maxLineCount="5" wrapMode="ELLIPSIS">
-                    <Dimensions x="392" y="150"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)Win" relativePoint="BOTTOMLEFT" offsetY="16"/>
+
+                <Label name="$(parent)Moves" font="ZoFontGamepad20" text="" color="C0C0C0" maxLineCount="8" wrapMode="ELLIPSIS">
+                    <Dimensions x="392"/>
                 </Label>
                 <Label name="$(parent)Sets" font="ZoFontGamepad20" text="" color="E0B040" maxLineCount="3" wrapMode="ELLIPSIS">
-                    <Dimensions x="392" y="80"/>
-                    <Anchor point="TOPLEFT" relativeTo="$(parent)Moves" relativePoint="BOTTOMLEFT" offsetY="8"/>
+                    <Dimensions x="392"/>
                 </Label>
-                <Label name="$(parent)Last" font="ZoFontGamepad20" text="" color="808080" maxLineCount="2" wrapMode="ELLIPSIS">
-                    <Dimensions x="392" y="60"/>
-                    <Anchor point="BOTTOMLEFT" offsetX="24" offsetY="-8"/>
+
+                <Backdrop name="$(parent)FootDivider">
+                    <Dimensions x="392" y="1"/>
+                </Backdrop>
+                <Label name="$(parent)Last" font="ZoFontGamepad18" text="" color="808080" maxLineCount="2" wrapMode="ELLIPSIS">
+                    <Dimensions x="392"/>
                 </Label>
-                <Control name="$(parent)DragHandle" mouseEnabled="true" alpha="0">
-                    <AnchorFill/>
-                    <OnMouseDown>
-                        self:GetParent():StartMoving()
-                    </OnMouseDown>
-                    <OnMouseUp>
-                        self:GetParent():StopMovingOrResizing()
-                    </OnMouseUp>
-                </Control>
             </Controls>
-            <OnMoveStop>
-                Nemesis.UI.OnDossierMoveStop(self)
-            </OnMoveStop>
         </TopLevelControl>
 
         <TopLevelControl name="NemesisBanner" hidden="true" clampedToScreen="true" tier="HIGH">
-            <Dimensions x="1000" y="140"/>
-            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="180"/>
+            <Dimensions x="1000" y="160"/>
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="170"/>
             <Controls>
                 <Label name="$(parent)Title" font="ZoFontGamepadBold48" text="" maxLineCount="1" wrapMode="ELLIPSIS" horizontalAlignment="CENTER">
-                    <Anchor point="TOP" offsetY="0"/>
+                    <Anchor point="TOP" offsetY="14"/>
                 </Label>
-                <Label name="$(parent)Sub" font="ZoFontGamepad36" text="" color="D0D0D0" maxLineCount="2" wrapMode="ELLIPSIS" horizontalAlignment="CENTER">
+                <Backdrop name="$(parent)AccentTop">
+                    <Dimensions x="460" y="3"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Title" relativePoint="TOP" offsetY="-6"/>
+                </Backdrop>
+                <Backdrop name="$(parent)AccentBottom">
+                    <Dimensions x="460" y="3"/>
                     <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="6"/>
+                </Backdrop>
+                <Label name="$(parent)Sub" font="ZoFontGamepad27" text="" color="D0D0D0" maxLineCount="2" wrapMode="ELLIPSIS" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)AccentBottom" relativePoint="BOTTOM" offsetY="10"/>
                 </Label>
             </Controls>
         </TopLevelControl>

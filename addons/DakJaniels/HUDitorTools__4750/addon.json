@@ -15,12 +15,16 @@
   "content_id": "esoui:4750",
   "deleted": false,
   "directories": [
-    "HUDGridSnap"
+    "HUDitorTools"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4750/",
-  "fingerprint": "f8f969912bac829c96c13e2a106d409f2a701f482c513f08267a7503ceec73ff",
+  "fingerprint": "f2fbeeb9534575aa869d2268fb8b3d97c50103007e18ba7468975fdeba68d3f2",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16914.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16914.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16968.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16969.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16970.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16971.png"
   ],
   "platform": "pc",
   "published": true,
@@ -28,11 +32,11 @@
   "source_id": "4750",
   "source_url": "https://www.esoui.com/downloads/info4750-HUDitorTools.html",
   "stats": {
-    "downloads": 18,
-    "favorites": 1,
-    "monthly_downloads": 18
+    "downloads": 25,
+    "favorites": 0,
+    "monthly_downloads": 24
   },
   "title": "HUDitorTools",
-  "updated_at": 1785786955000,
-  "version": "1"
+  "updated_at": 1786481415000,
+  "version": "1.01"
 }
