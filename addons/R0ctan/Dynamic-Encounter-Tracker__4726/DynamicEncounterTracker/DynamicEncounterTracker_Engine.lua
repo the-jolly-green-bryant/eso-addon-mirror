@@ -324,8 +324,7 @@ function DE:GetConfiguredStepPosition(stepDefId)
         return previousOrdinal, #sequence
     end
 
-    -- Prefer the next matching occurrence. This disambiguates repeated IDs such
-    -- as step 27 in Bilsas Lieferung when the run has already progressed.
+    -- Prefer the next occurrence to disambiguate repeated step IDs in one run.
     if previousOrdinal then
         for index = previousOrdinal + 1, #sequence do
             if sequence[index] == stepDefId then
@@ -420,9 +419,8 @@ function DE:ParseLocalizedStepDescription(description)
     local hintParts = {}
     for index = 2, #paragraphs do
         local hint = paragraphs[index]
-        -- ESO commonly prefixes secondary paragraphs with a localized label
-        -- such as "Hinweis:". The status row already has its own label, so a
-        -- short leading paragraph label is removed language-independently.
+        -- ESO may prefix secondary paragraphs with a localized label such as
+        -- "Hint:"; remove it language-independently because the row has a label.
         local prefix, remainder = string.match(hint, "^([^:]+):%s*(.+)$")
         if prefix and remainder and #prefix <= 32 then
             hint = remainder
@@ -855,7 +853,19 @@ end
 
 function DE:SetUnknownState(reason)
     self:StopTimerUpdate()
-    self.state.status = self.state.zoneEncounterConfigs and self.STATUS_UNKNOWN or self.STATUS_UNSUPPORTED
+    local newStatus = self.state.zoneEncounterConfigs and self.STATUS_UNKNOWN or self.STATUS_UNSUPPORTED
+    -- Preserve the first genuine unknown timestamp across routine rescans.
+    if newStatus == self.STATUS_UNKNOWN then
+        -- Initial state already says unknown, so the timestamp itself is the reliable guard.
+        if self.state.status ~= self.STATUS_UNKNOWN or not self.state.unknownSince then
+            self.state.unknownSince = GetTimeStamp()
+        end
+        -- The one-second timer keeps the unknown count-up moving.
+        self:StartTimerUpdate()
+    else
+        self.state.unknownSince = nil
+    end
+    self.state.status = newStatus
     self.state.activeWorldEventInstanceId = nil
     self.state.activeWorldEventRole = nil
     self.state.parentActive = false
@@ -866,6 +876,8 @@ function DE:SetUnknownState(reason)
     self.state.cooldownStartedAt = nil
     self.state.cooldownStartExact = nil
     self.state.cooldownSource = nil
+    self.state.activeStartedAt = nil
+    self.state.activeSource = nil
     self.state.noActiveSince = nil
     self.state.chestCandidateCount = 0
     self.state.chestHintText = nil
@@ -899,6 +911,8 @@ function DE:SetActiveState(worldEventInstanceId, role, activationSource, activat
     self.state.status = self.STATUS_ACTIVE
     self.state.activeWorldEventInstanceId = worldEventInstanceId
     self.state.activeWorldEventRole = role
+    -- Local observation takes ownership from any earlier relay estimate.
+    self.state.activeSource = nil
 
     self.state.earliestRespawnAt = nil
     self.state.respawnAt = nil
@@ -973,6 +987,10 @@ function DE:SetCooldownState(deactivationExact, deactivationSource)
     self.state.cooldownStartedAt = now
     self.state.cooldownStartExact = deactivationExact == true
     self.state.cooldownSource = deactivationSource or "unknown"
+    -- A cooldown reached via real, locally observed encounter deactivation is
+    -- always the player's own timer, sharable via relay (see EncodeRelayTimerMessage's
+    -- not-own-timer check, which otherwise assumes an unset timerSource is foreign).
+    self:EnsureRelayState().timerSource = "self"
 
     local timing = self:GetRespawnTiming(eventData)
     self.state.earliestRespawnAt = now + timing.earliestSeconds

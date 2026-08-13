@@ -1,0 +1,7 @@
+## Title: Guild Loop
+## Author: user562
+## Version: 1
+## APIVersion: 101050
+## AddOnVersion: 1
+## SavedVariables: GuildLoopSavedVariables
+GuildLoop.lua

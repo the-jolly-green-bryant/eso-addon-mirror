@@ -45,6 +45,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Global Cooldown Monitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Armodeniz/Global-Cooldown-Monitor__2627) | Armodeniz | PC / Mac | 1.7 |
 | [Global Cooldown Monitor Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/Global-Cooldown-Monitor-Revised__2fd5ce0c-10fd-49de-9d22-2de4052785b3) | CaffeinatedMayhem | Console | — |
 | [GlossFreeAttribute](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarkasion/GlossFreeAttribute__2316) | Tarkasion | PC / Mac | 1.04 |
+| [GLt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/GLt__b4445246-dea8-4bb9-842c-2235db14a84b) | user562x | Console | — |
 | [Glyphic Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cerbin/Glyphic-Tracker__3653) | Cerbin | PC / Mac | 1.0.0 |
 | [GMen - Guild Roster Dumper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/GMen---Guild-Roster-Dumper__1137) | Ayantir | PC / Mac | 0.1 |
 | [GnolamsGuildhall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sityDJVEN25/GnolamsGuildhall__3357) | sityDJVEN25 | PC / Mac | 1.0 |
@@ -65,7 +66,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Gold Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Gold-Ledger__53c19565-2bb9-4872-a40f-90825e736a2f) | Eldibabalo | Console | — |
 | [Gold Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/P5ych3/Gold-Ledger__3566) | P5ych3 | PC / Mac | 2.3.0 |
 | [Gold Per Hour](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satchmo1991/Gold-Per-Hour__2604) | satchmo1991 | PC / Mac | 1.2 |
-| [Gold Rush — Trading & Pricing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Gold-Rush-Trading-Pricing__4685) | atharti | PC / Mac | 1.9 |
+| [Gold Rush — Trading & Pricing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Gold-Rush-Trading-Pricing__4685) | atharti | PC / Mac | 2.0 |
 | [Gold!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheSpyridon/Gold__1551) | TheSpyridon | PC / Mac | Alpha 0.6.3 |
 | [Golden Light Guild Hall Portal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lerozain/Golden-Light-Guild-Hall-Portal__3389) | Lerozain | PC / Mac | 1.1 |
 | [Golden Pursuits Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Golden-Pursuits-Tracker__4276) | atharti | PC / Mac | 1.6 |

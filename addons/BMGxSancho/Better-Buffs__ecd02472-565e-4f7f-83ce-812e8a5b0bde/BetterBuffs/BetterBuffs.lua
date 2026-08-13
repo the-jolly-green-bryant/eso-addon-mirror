@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.05"
+BB.version = "0.3.06"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -95,6 +95,22 @@ function BB:IsEffectEnabled(key)
         return effect and effect.defaultTracked == true or false
     end
     return value == true
+end
+
+-- Manual tracking preference and temporary loadout relevance are intentionally
+-- separate. Auto-tracked effects appear while their required item is equipped
+-- without rewriting the character's saved checkbox.
+function BB:IsEffectAutoTracked(key)
+    if not self.saved or not self.saved.enabled then return false end
+    local effect = self.Registry and self.Registry.byKey[key]
+    if not effect or effect.autoTrackWhenEquipped ~= true then return false end
+    if not effect.requiredWornItemId or effect.requiredEquipSlot == nil then return false end
+    local itemId = GetItemId and GetItemId(BAG_WORN, effect.requiredEquipSlot) or 0
+    return tonumber(itemId) == tonumber(effect.requiredWornItemId)
+end
+
+function BB:IsEffectRelevant(key)
+    return self:IsEffectEnabled(key) or self:IsEffectAutoTracked(key)
 end
 
 function BB:SetEffectEnabled(key, value)

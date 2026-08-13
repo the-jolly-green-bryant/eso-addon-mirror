@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Masteroshi430/Roomba---Guildbank-Stacker__402",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Masteroshi430",
   "canonical_id": "esoui:402",
   "category_id": "20",
@@ -17,7 +18,7 @@
     "Roomba"
   ],
   "download_url": "https://www.esoui.com/downloads/dl402/",
-  "fingerprint": "3dd7cebd6325783ca8d8e19244ee5e819fae71d342d7596d793781761626b3c3",
+  "fingerprint": "1795d9e958467676c38ef4edd7183c6b8147180aded8824a3b138675cb7ec2bd",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw2880.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw2881.jpg"
@@ -28,11 +29,11 @@
   "source_id": "402",
   "source_url": "https://www.esoui.com/downloads/info402-Roomba-GuildbankStacker.html",
   "stats": {
-    "downloads": 686435,
-    "favorites": 469,
-    "monthly_downloads": 5972
+    "downloads": 690165,
+    "favorites": 470,
+    "monthly_downloads": 5218
   },
   "title": "Roomba - Guildbank Stacker",
-  "updated_at": 1783316241000,
-  "version": "2026.07.06"
+  "updated_at": 1786512830000,
+  "version": "2026.08.12"
 }

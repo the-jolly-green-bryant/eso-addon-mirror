@@ -230,6 +230,7 @@ local strings =
     -- slash command overview
     SI_AAB_CMD_HEAD    = "Commands",
     SI_AAB_CMD_PANEL   = "open the settings panel",
+    SI_AAB_CMD_INFO    = "open the Info tab directly",
 
     SI_AAB_CMD_ID      = "list slotted ability IDs in chat",
     SI_AAB_CMD_SETEND  = "set when the end animation fires for one ability (ms after cast)",
@@ -281,6 +282,23 @@ local strings =
     SI_AAB_CONTACT_DESC           = "Enjoying the addon? In-game donations are very welcome - Potions, Gold and crafting Resources all help! Click below to open a mail addressed to @haze068.",
     SI_AAB_CONTACT_DONATE_BTN     = "Donate via in-game mail",
     SI_AAB_CONTACT_DONATE_BTN_TT  = "Opens the in-game mail panel with recipient and title prefilled.",
+
+    SI_AAB_SUB_INFO               = "Info",
+    SI_AAB_SUB_INFO_TT            = "Compatibility notes for using AnimatedActionBar+ together with other addons.",
+    SI_AAB_INFO_THINFRAMES        = "If you use the \"Frame Appearance: Thin Frames\" option from this addon, please turn OFF the following in FancyActionBar+ under UI Customization -> Custom Frames Keyboard:\n\n" ..
+                                        "  - \"Hide Default Frames\"\n" ..
+                                        "  - \"Use Thin Frames\"\n\n" ..
+                                        "Both addons drawing thin frames at once causes doubled or misaligned frames.",
+    SI_AAB_INFO_GAMEPAD           = "Playing on controller?\n\n" ..
+                                        "If your abilities are shifted, misaligned or otherwise displayed incorrectly, please turn OFF \"Gamepad Mode\" in FancyActionBar+.\n\n" ..
+                                        "If that still does not fix it, please contact me on Discord (haze.3169) so we can sort the problem out together.",
+
+    SI_AAB_DLG_TITLE              = "AnimatedActionBar+",
+    SI_AAB_DLG_BODY               = "Thanks for installing AnimatedActionBar+!\n\n" ..
+                                        "Using the \"Thin Frames\" frame style together with FancyActionBar+? Please read the compatibility note.\n\n" ..
+                                        "Playing on controller? Please check the \"Info\" tab as well.\n\n" ..
+                                        "Open the settings and check the \"Info\" tab for the details. Type /aabcmds in chat for a list of all commands.",
+    SI_AAB_DLG_OK                 = "Got it",
 }
 
 for stringId, stringValue in pairs(strings) do

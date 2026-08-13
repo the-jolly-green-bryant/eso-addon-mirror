@@ -56,6 +56,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Who Pulled - Shows Who Was First To Attack!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Who-Pulled---Shows-Who-Was-First-To-Attack__4328) | Duesentrieb | PC / Mac | 20251229-0001 |
 | [Whoison?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/broekman/Whoison__4079) | broekman | PC / Mac | 1.0.0 |
 | [Wide Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tagaris/Wide-Tooltips__3785) | Tagaris | PC / Mac | 1.0.1 |
+| [WIIt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/WIIt__836b1e5f-ac9c-4e14-bb7f-7697ca3d6707) | user562x | Console | — |
 | [Wiki Links](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Wiki-Links__3005) | kawamonkey | PC / Mac | 1.0 |
 | [Wild Hunt Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FAR747/Wild-Hunt-Helper__2709) | FAR747 | PC / Mac | 1.0.3 |
 | [Windex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Werewolf-Finds-Dragon/Windex__1055) | Werewolf Finds Dragon | PC / Mac | 014-100022 |

@@ -18,6 +18,7 @@ local ENTRY_GAP = 18
 local TEXT_GAP = 5
 local TEXTURE_WHITE = "EsoUI/Art/Miscellaneous/white.dds"
 local MAIL_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playermenu_icon_mail.dds"
+local CLOCK_ICON_FILE = "nqol_clock.dds"
 local SOUL_GEM_FALLBACK_ICON = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_up.dds"
 local GAMEPLAY_SCENES = {
     hud = true,
@@ -123,7 +124,7 @@ local ICON_COLORS = {
     memoryUsage = { 1.00, 0.42, 0.30, 1 },
     mountFeedTimer = { 0.72, 0.52, 0.32, 1 },
     soulGems = { 0.82, 0.48, 1.00, 1 },
-    tamrielTime = { 0.35, 1.00, 0.72, 1 },
+    tamrielTime = { 0.78, 0.58, 0.26, 1 },
     telVarStones = { 0.64, 1.00, 0.42, 1 },
     tradeBars = { 1.00, 0.64, 0.28, 1 },
     transmuteCrystals = { 0.38, 0.98, 0.88, 1 },
@@ -569,6 +570,10 @@ local function GetAutoInviteModeText()
     return NQOL.Features.Grouping.GetAutoInviteModeName()
 end
 
+local function GetClockIcon()
+    return "/" .. tostring(NQOL.name or "NQOL") .. "/Art/Ticker/" .. CLOCK_ICON_FILE
+end
+
 -- Static texture paths below are intentionally limited to paths verified in ESOUI source or extracted addon sources.
 local entryDefinitions = {
     CreateCurrencyEntry(
@@ -621,14 +626,14 @@ local entryDefinitions = {
         key = "clock",
         label = NQOL.L("features.ticker.clock_04f6b3e"),
         tooltip = NQOL.L("features.ticker.shows_your_local_time_in_24_hour_format_2ca26ed"),
-        icon = "EsoUI/Art/Miscellaneous/Gamepad/gp_icon_timer32.dds",
+        icon = GetClockIcon,
         getValue = FormatLocalTime,
     },
     {
         key = "clock12",
         label = NQOL.L("features.ticker.clock12"),
         tooltip = NQOL.L("features.ticker.clock12_tooltip"),
-        icon = "EsoUI/Art/Miscellaneous/Gamepad/gp_icon_timer32.dds",
+        icon = GetClockIcon,
         getValue = FormatLocalTime12,
     },
     {
@@ -748,7 +753,7 @@ local entryDefinitions = {
         key = "tamrielTime",
         label = NQOL.L("features.ticker.tamriel_time_eb46349"),
         tooltip = NQOL.L("features.ticker.shows_the_current_tamriel_time_in_24_hour_format_77f9d47"),
-        icon = "EsoUI/Art/Miscellaneous/timer_32.dds",
+        icon = "EsoUI/Art/HUD/Gamepad/Ouroboros_Saving-128.dds",
         getValue = FormatTamrielTime,
     },
     CreateCurrencyEntry(

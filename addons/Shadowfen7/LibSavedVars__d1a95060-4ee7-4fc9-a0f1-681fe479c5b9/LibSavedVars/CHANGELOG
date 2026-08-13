@@ -1,5 +1,6 @@
 [COLOR="DeepSkyBlue"]6.1[/COLOR]:
 [LIST]
+[*] Fixed error trying to call LSV_Data:EnsureSavedVars().
 [*] Removed Lua 5.2-based code as ESO does not provide it.
 [*] Created wiki documentation for the library at [url=http://github.com/Shadowfen/LibSavedVars/wiki]LibSavedVars Wiki[/url].
 [*] Created a new [COLOR="MediumSeaGreen"]protected.zoDebug()[/color] which takes debugMode as the first parameter and then can take formatstrings + args, several args to "tostring" and concatenate, tables (which are recursed and concat'ed), and the output of functions(). Revised the original [COLOR="MediumSeaGreen"]protected.Debug()[/color] to be an old API-compliant wrapper that now uses zoDebug.

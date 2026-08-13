@@ -1,3 +1,13 @@
+Better Buffs v0.3.06
+
+Loadout-aware Warmask display release.
+
+- Huntsman's Warmask now automatically becomes a tracked/displayed effect while item ID 223189 is equipped in the head slot.
+- Removing Warmask immediately removes its automatic HUD relevance and clears its provider/Mark state through the existing equipment event path.
+- The automatic state does not rewrite the character's saved checkbox. Manually enabled effects remain visible regardless of equipment; an otherwise-disabled Warmask tile appears only while the Mythic is actually equipped.
+- Reused the existing EVENT_INVENTORY_SINGLE_SLOT_UPDATE subscription. No gear polling loop, secondary cache, or separate loadout tracker was added.
+- Runtime, UI, preview, and timer update gates now consume the same manual-or-loadout relevance decision so the tile can appear/disappear immediately on gear swaps.
+
 Better Buffs v0.3.05
 
 Warmask ownership + group-coverage reconciliation release.

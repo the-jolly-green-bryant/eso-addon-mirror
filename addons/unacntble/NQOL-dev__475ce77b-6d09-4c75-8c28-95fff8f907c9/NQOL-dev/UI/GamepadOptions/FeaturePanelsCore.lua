@@ -11,6 +11,7 @@ local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
 local FISHING_PANEL_ID = PanelIds.FISHING
 local UI_PANEL_ID = PanelIds.UI
+local CAMERA_PANEL_ID = PanelIds.CAMERA
 local COMBAT_RETICLE_PANEL_ID = PanelIds.COMBAT_RETICLE
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
@@ -386,6 +387,26 @@ end
 function GamepadOptions.BuildDisableAlertTextsOption()
     local ui = NQOL.Features.UI
     return GamepadOptions.BuildCheckboxOption(UI_PANEL_ID, 2, ui.GetDisableAlertTextsLabel(), ui.GetDisableAlertTextsTooltip(), ui.GetDisableAlertTexts, ui.SetDisableAlertTexts)
+end
+
+function GamepadOptions.BuildCameraEnabledOption()
+    local camera = NQOL.Features.Camera
+    return GamepadOptions.BuildCheckboxOption(CAMERA_PANEL_ID, 1, camera.GetEnabledLabel(), camera.GetEnabledTooltip(), camera.GetEnabled, camera.SetEnabled, nil, camera.GetEnabledDefault)
+end
+
+function GamepadOptions.BuildCameraOnFootZoomOption()
+    local camera = NQOL.Features.Camera
+    return GamepadOptions.BuildValueStepSliderOption(CAMERA_PANEL_ID, 2, camera.GetOnFootZoomLabel(), camera.GetOnFootZoomTooltip(), camera.GetZoomMin(), camera.GetZoomMax(), "%.1f", camera.GetOnFootZoom, camera.SetOnFootZoom, camera.GetZoomStep(), nil, camera.GetOnFootZoomDefault)
+end
+
+function GamepadOptions.BuildCameraMountedZoomOption()
+    local camera = NQOL.Features.Camera
+    return GamepadOptions.BuildValueStepSliderOption(CAMERA_PANEL_ID, 3, camera.GetMountedZoomLabel(), camera.GetMountedZoomTooltip(), camera.GetZoomMin(), camera.GetZoomMax(), "%.1f", camera.GetMountedZoom, camera.SetMountedZoom, camera.GetZoomStep(), nil, camera.GetMountedZoomDefault)
+end
+
+function GamepadOptions.BuildCameraCombatZoomOption()
+    local camera = NQOL.Features.Camera
+    return GamepadOptions.BuildValueStepSliderOption(CAMERA_PANEL_ID, 4, camera.GetCombatZoomLabel(), camera.GetCombatZoomTooltip(), camera.GetZoomMin(), camera.GetZoomMax(), "%.1f", camera.GetCombatZoom, camera.SetCombatZoom, camera.GetZoomStep(), nil, camera.GetCombatZoomDefault)
 end
 
 function GamepadOptions.BuildLootLogShowTotalsOption()

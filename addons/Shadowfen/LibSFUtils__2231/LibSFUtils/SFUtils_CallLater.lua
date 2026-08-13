@@ -1,7 +1,7 @@
---[[
-    CallLater is a robust timer utility library designed to manage delayed and periodic function execution. 
-        It wraps the native zo_callLater API to provide features like automatic retry on failure, argument passing, 
-        periodic scheduling, and safe cleanup.
+--[[ CallLater is a robust timer utility library designed to manage delayed 
+        and periodic function execution. 
+     It wraps the native zo_callLater API to provide features like automatic 
+        retry on failure, argument passing, periodic scheduling, and safe cleanup.
 
     Key Features:
 
@@ -14,7 +14,6 @@
     
     Usage Examples
         1. Simple One-Shot Timer
-
             Execute a function 2 seconds later.
 
             local timer = CallLater:New(function()
@@ -24,7 +23,6 @@
             timer:Start()
 
         2. Passing Arguments
-
             Pass data to the callback dynamically.
 
             local timer = CallLater:New(function(playerName, score)
@@ -34,7 +32,6 @@
             timer:StartWithArgs("Lumo", 9999)
 
         3. Retry Logic
-
             Attempt to run a risky function up to 3 times if it fails.
 
             local timer = CallLater:NewMaxTries(function()
@@ -46,7 +43,6 @@
             -- This will log the error 3 times, then stop retrying.
 
         4. Periodic Timer
-
             Run a function every 1 second indefinitely.
 
             local timer = CallLater:NewTimer(function()
@@ -79,7 +75,14 @@
         Standard One-shot: The error is logged, and the timer stops without retrying.
 
 --]]
+-- Dependencies
 local SF = LibSFUtils
+assert(SF, "LibSFUtils_Global must be loaded before this file")
+
+local SF_safeCall = SF.safeCall       -- loaded with LibSFUtils.lua
+assert(SF_safeCall, "LibSFUtils must be loaded before this file")
+
+--
 SF.CallLater = {}
 local CallLater = SF.CallLater
 CallLater.__index = CallLater
@@ -94,22 +97,27 @@ local function invokeLater(self)
 
     local args = self.pendingArgs or {}
     self.pendingArgs = nil
+    self.attemptsMade = self.attemptsMade or 0
 
     if not self.callback then return end
 
-    local ok, err = SF.safeCall(self.callback, unpack(args))
+    local ok, err = SF_safeCall(self.callback, unpack(args))
 
     if not ok then
+        -- Increment attempts FIRST, THEN check if we can retry
+        self.attemptsMade = self.attemptsMade + 1
         if self.maxTries and self.attemptsMade < self.maxTries then
-            self.attemptsMade = self.attemptsMade + 1
+            -- Still have retries left, schedule next attempt
             self.timerId = zo_callLater(function() invokeLater(self) end,
                                          self.delay)
             self.active = true
         else
+            -- Exhausted all retries, clear retry tracking
             self.maxTries     = nil
             self.attemptsMade = nil
         end
     else
+        -- Success, clear retry tracking
         self.maxTries     = nil
         self.attemptsMade = nil
     end
@@ -154,6 +162,7 @@ CallLater.NewSingle = CallLater.New
     Returns: A new CallLater instance configured for retries.
 --]]
 function CallLater:NewMaxTries(callback, delayMs, maxTries)
+    if type(maxTries) ~= "number" or maxTries < 0 then maxTries = 0 end
     return setmetatable({
         callback      = callback,
         delay         = delayMs or 0,
@@ -192,7 +201,7 @@ function CallLater:_scheduleNext()
 
     self._tickWrapper = function()
         if not self.periodicCallback then return end
-        local ok, err = SF.safeCall(self.periodicCallback)
+        local ok, err = SF_safeCall(self.periodicCallback)
         if not ok then
             d("[PeriodicTimer] callback error: " .. tostring(err))
         end
@@ -205,8 +214,7 @@ end
 --------------------------------------------------------------------
 -- Public start / start‑with‑args
 --------------------------------------------------------------------
---[[
-    timer:Start(delayMs)
+--[[ timer:Start(delayMs)
 
     Starts the timer.
 
@@ -236,8 +244,7 @@ function CallLater:Start(delayMs)
     return self
 end
 
---[[
-    timer:StartWithArgs(...)
+--[[ timer:StartWithArgs(...)
 
     Starts a one-shot timer with specific arguments passed to the callback.
 
@@ -250,6 +257,7 @@ end
 function CallLater:StartWithArgs(...)
     if self.interval then
         d("[CallLater] StartWithArgs is not supported for periodic timers")
+        self.pendingArgs = nil
         return self
     end
     self.pendingArgs = { ... }
@@ -259,18 +267,37 @@ end
 --------------------------------------------------------------------
 -- Cancel / destroy
 --------------------------------------------------------------------
---[[
-    timer:Cancel()
+--[[ timer:Cancel()
 
-    Stops the timer and clears all internal references.
+    Stops the timer. It can still be started again.
 
     Behavior:
         Removes the underlying zo_callLater handle.
-        Clears callback references, pending arguments, and retry counters.
     Returns: true if the timer was active and cancelled; false otherwise.
 --]]
 function CallLater:Cancel()
-    if not self.active then return false end
+    local rval = true
+    if self.active == false then
+        rval = false
+    else
+        self.active = false
+    end
+
+    if self.timerId then
+        zo_removeCallLater(self.timerId)
+    end
+
+    self.timerId      = nil
+    self.pendingArgs  = nil
+    self.attemptsMade = 0
+
+    return rval
+end
+
+--[[ timer:Destroy()
+    Stops the timer and destroys/clears the instance so that it cannot be reused.
+--]]
+function CallLater:Destroy()
     if self.timerId then zo_removeCallLater(self.timerId) end
 
     self.timerId          = nil
@@ -282,18 +309,9 @@ function CallLater:Cancel()
     self.periodicCallback = nil
     self.interval         = nil
     self._tickWrapper     = nil
-    return true
-end
-
---[[
-    timer:Destroy()
-
-    Alias for Cancel(). Returns nil after cleanup.
---]]
-function CallLater:Destroy()
-    self:Cancel()
     return nil
 end
+
 
 --------------------------------------------------------------------
 -- Introspection & convenience
@@ -332,7 +350,9 @@ end
     Returns: The timer instance.
 --]]
 function CallLater:SetDelay(newDelayMs)
-    self.delay = newDelayMs
+    if type(newDelayMs) == "number" then
+        self.delay = newDelayMs
+    end
     -- Note: changing the delay does not affect a running periodic timer.
     return self
 end

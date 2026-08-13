@@ -6,6 +6,8 @@ DE.encountersByZoneId = {
     [41] = {
         {
             key = "stonefalls_bilsa_delivery",
+            relayCode = "B",
+            relayZoneNameEn = "Stonefalls",
             zoneId = 41,
             parentWorldEventInstanceId = 95,
             knownChildInstanceIds = {
@@ -18,8 +20,8 @@ DE.encountersByZoneId = {
             },
             settingsOrder = 10,
             respawn = {
-                earliestSeconds = 30 * 60,
-                expectedSeconds = 33 * 60,
+                earliestSeconds = 15 * 60,
+                expectedSeconds = 18 * 60,
             },
             knownStepSequence = { 22, 23, 24, 25, 26, 27, 28, 27, 40, 29, 30 },
             chestRules = {
@@ -50,6 +52,8 @@ DE.encountersByZoneId = {
     [3] = {
         {
             key = "glenumbra_vampire_hunt",
+            relayCode = "V",
+            relayZoneNameEn = "Glenumbra",
             zoneId = 3,
             parentWorldEventInstanceId = 96,
             knownChildInstanceIds = {
@@ -63,8 +67,8 @@ DE.encountersByZoneId = {
             },
             settingsOrder = 20,
             respawn = {
-                earliestSeconds = 30 * 60,
-                expectedSeconds = (30 * 60) + 11,
+                earliestSeconds = 15 * 60,
+                expectedSeconds = (15 * 60) + 11,
             },
             knownStepSequence = { 10, 11, 12, 18, 13, 18, 14, 18, 15, 18, 16, 18, 17 },
             chestRules = {
@@ -97,6 +101,8 @@ DE.encountersByZoneId = {
     [381] = {
         {
             key = "auridon_flower_vine_court",
+            relayCode = "F",
+            relayZoneNameEn = "Auridon",
             zoneId = 381,
             parentWorldEventInstanceId = 98,
             knownChildInstanceIds = {
@@ -104,8 +110,8 @@ DE.encountersByZoneId = {
             },
             settingsOrder = 30,
             respawn = {
-                earliestSeconds = 30 * 60,
-                expectedSeconds = (31 * 60) + 2,
+                earliestSeconds = 15 * 60,
+                expectedSeconds = (16 * 60) + 2,
             },
             knownStepSequence = { 31, 32, 33, 34, 35 },
             chestRules = {

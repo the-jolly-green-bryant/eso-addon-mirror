@@ -406,8 +406,221 @@ function Addon:SanitizeCurrencies()
     end
 end
 
-function Addon:BuildCurrenciesMenu(H)
+-- Menu grouping (game Character / Account wallets). Not ResolveCurrencyLocation.
+local CHARACTER_CURRENCY_IDS = {
+    gold = true,
+    ap = true,
+    telVar = true,
+    writ = true,
+}
+
+local CURRENCY_MENU_GROUPS = {
+    character = {
+        submenuName = "Character Currencies",
+        selectedField = "currencyMenuSelectedIdCharacter",
+    },
+    account = {
+        submenuName = "Account Currencies",
+        selectedField = "currencyMenuSelectedIdAccount",
+    },
+}
+
+local function FilterCurrenciesByMenuGroup(currencies, groupKey)
+    local out = {}
+    for i = 1, #currencies do
+        local def = currencies[i]
+        local isCharacter = CHARACTER_CURRENCY_IDS[def.id] == true
+        if groupKey == "character" and isCharacter then
+            out[#out + 1] = def
+        elseif groupKey == "account" and not isCharacter then
+            out[#out + 1] = def
+        end
+    end
+    return out
+end
+
+local function BuildCurrencyDropdownChoices(defs)
+    local choices = {}
+    for i = 1, #defs do
+        local def = defs[i]
+        choices[i] = { name = def.name, value = def.id }
+    end
+    return choices
+end
+
+function Addon:BuildCurrencySettingsPage(def, H)
     local sv = self.state.sv
+    local page = {
+        H.Toggle(
+            "Enable",
+            function() return sv[def.showKey] end,
+            function(v) Addon:SetCurrencyEnabled(def, v) end,
+            Addon.defaults[def.showKey]
+        ),
+    }
+
+    if def.onlyInCyrodiilKey then
+        page[#page + 1] = H.Toggle(
+            "Only show in Cyrodiil",
+            function() return sv[def.onlyInCyrodiilKey] end,
+            function(v)
+                sv[def.onlyInCyrodiilKey] = v
+                Addon:UpdateVisibility()
+            end,
+            Addon.defaults[def.onlyInCyrodiilKey],
+            function() return not sv[def.showKey] end
+        )
+    end
+
+    page[#page + 1] = H.FontSizeDropdown(def.fontKey)
+
+    if def.formatKey then
+        page[#page + 1] = {
+            type = "selector",
+            name = "Format",
+            choices = self.goldFormatItems,
+            getFunc = function() return sv[def.formatKey] end,
+            setFunc = function(value)
+                sv[def.formatKey] = value
+                Addon:UpdateCurrency(def)
+            end,
+            default = Addon.defaults[def.formatKey],
+        }
+    end
+
+    page[#page + 1] = H.IconPicker(def.iconKey, def.iconChoices, function() Addon:ApplyCurrencyIcon(def) end)
+
+    if def.useColorsKey then
+        page[#page + 1] = H.Toggle(
+            "Use Colors",
+            function() return sv[def.useColorsKey] end,
+            function(v)
+                sv[def.useColorsKey] = v
+                Addon:ApplyCurrencyColor(def)
+            end,
+            Addon.defaults[def.useColorsKey]
+        )
+    end
+
+    H.Append(page, H.BackgroundControls(def.backgroundKey, def.paddingKey, def.opacityKey))
+    H.Append(page, H.PositionSliders(
+        "X Position",
+        "Y Position",
+        def.posXKey,
+        def.posYKey,
+        function() Addon:ApplyCurrencyPosition(def) end
+    ))
+
+    return page
+end
+
+function Addon:FindCurrencyMenuSettingsBlock(groupKey)
+    local meta = CURRENCY_MENU_GROUPS[groupKey]
+    local menu = self.settingsMenu
+    local LCM = LibConsoleMenu
+    if not meta or not menu or not LCM then
+        return nil, 0, nil
+    end
+
+    local controls = menu.controls
+    for i = 1, #controls do
+        local control = controls[i]
+        if control.type == LCM.CT_SUBMENU and control.labelText == meta.submenuName then
+            local settingsStart = i + 2
+            local count = 0
+            for j = settingsStart, #controls do
+                if controls[j].type == LCM.CT_SUBMENU then
+                    break
+                end
+                count = count + 1
+            end
+            return settingsStart, count, i + 1
+        end
+    end
+    return nil, 0, nil
+end
+
+function Addon:RebuildCurrencyMenuGroup(groupKey)
+    local meta = CURRENCY_MENU_GROUPS[groupKey]
+    local menu = self.settingsMenu
+    local H = self.settingsHelpers
+    local LCM = LibConsoleMenu
+    if not meta or not menu or not H or not LCM or type(LCM.ConvertOptions) ~= "function" then
+        return
+    end
+
+    local groupDefs = FilterCurrenciesByMenuGroup(self.currencies or {}, groupKey)
+    local selectedId = self[meta.selectedField]
+    local def = self:GetCurrencyDef(selectedId)
+    local inGroup = false
+    for i = 1, #groupDefs do
+        if groupDefs[i].id == selectedId then
+            inGroup = true
+            break
+        end
+    end
+    if not def or not inGroup then
+        def = groupDefs[1]
+        if not def then
+            return
+        end
+        self[meta.selectedField] = def.id
+    end
+
+    local settingsStart, settingsCount = self:FindCurrencyMenuSettingsBlock(groupKey)
+    if not settingsStart then
+        return
+    end
+
+    if settingsCount > 0 then
+        menu:RemoveControls(settingsStart, settingsCount)
+    end
+
+    local compiled = LCM:ConvertOptions(self:BuildCurrencySettingsPage(def, H))
+    if #compiled > 0 then
+        menu:AddControls(compiled, settingsStart)
+    end
+end
+
+local function BuildCurrencyGroupSubmenu(addon, H, groupKey, defs)
+    local meta = CURRENCY_MENU_GROUPS[groupKey]
+    if not meta or #defs == 0 then
+        return nil
+    end
+
+    if not addon[meta.selectedField] or not addon:GetCurrencyDef(addon[meta.selectedField]) then
+        addon[meta.selectedField] = defs[1].id
+    end
+
+    local selectedId = addon[meta.selectedField]
+    local selectedDef = addon:GetCurrencyDef(selectedId) or defs[1]
+    addon[meta.selectedField] = selectedDef.id
+
+    local page = {
+        {
+            type = "dropdown",
+            name = "Currency",
+            choices = BuildCurrencyDropdownChoices(defs),
+            getFunc = function() return addon[meta.selectedField] end,
+            setFunc = function(id)
+                if addon[meta.selectedField] == id then
+                    return
+                end
+                addon[meta.selectedField] = id
+                addon:RebuildCurrencyMenuGroup(groupKey)
+            end,
+        },
+    }
+    H.Append(page, addon:BuildCurrencySettingsPage(selectedDef, H))
+
+    return {
+        type = "submenu",
+        name = meta.submenuName,
+        options = page,
+    }
+end
+
+function Addon:BuildCurrenciesMenu(H)
     local controls = {
         { type = "header", name = "Currencies" },
     }
@@ -416,76 +629,36 @@ function Addon:BuildCurrenciesMenu(H)
         return controls
     end
 
-    for _, def in ipairs(self.currencies) do
-        local page = {
-            H.Toggle(
-                "Enable " .. def.name,
-                function() return sv[def.showKey] end,
-                function(v) Addon:SetCurrencyEnabled(def, v) end,
-                Addon.defaults[def.showKey]
-            ),
-        }
+    local characterDefs = FilterCurrenciesByMenuGroup(self.currencies, "character")
+    local accountDefs = FilterCurrenciesByMenuGroup(self.currencies, "account")
 
-        if def.onlyInCyrodiilKey then
-            page[#page + 1] = H.Toggle(
-                "Only show in Cyrodiil",
-                function() return sv[def.onlyInCyrodiilKey] end,
-                function(v)
-                    sv[def.onlyInCyrodiilKey] = v
-                    Addon:UpdateVisibility()
-                end,
-                Addon.defaults[def.onlyInCyrodiilKey],
-                function() return not sv[def.showKey] end
-            )
-        end
+    local characterSubmenu = BuildCurrencyGroupSubmenu(self, H, "character", characterDefs)
+    if characterSubmenu then
+        controls[#controls + 1] = characterSubmenu
+    end
 
-        page[#page + 1] = H.FontSizeDropdown(def.fontKey)
-
-        if def.formatKey then
-            page[#page + 1] = {
-                type = "selector",
-                name = "Format",
-                choices = self.goldFormatItems,
-                getFunc = function() return sv[def.formatKey] end,
-                setFunc = function(value)
-                    sv[def.formatKey] = value
-                    Addon:UpdateCurrency(def)
-                end,
-                default = Addon.defaults[def.formatKey],
-            }
-        end
-
-        page[#page + 1] = H.IconPicker(def.iconKey, def.iconChoices, function() Addon:ApplyCurrencyIcon(def) end)
-
-        if def.useColorsKey then
-            page[#page + 1] = H.Toggle(
-                "Use Colors",
-                function() return sv[def.useColorsKey] end,
-                function(v)
-                    sv[def.useColorsKey] = v
-                    Addon:ApplyCurrencyColor(def)
-                end,
-                Addon.defaults[def.useColorsKey]
-            )
-        end
-
-        H.Append(page, H.BackgroundControls(def.backgroundKey, def.paddingKey, def.opacityKey))
-        H.Append(page, H.PositionSliders(
-            def.name .. " X Position",
-            def.name .. " Y Position",
-            def.posXKey,
-            def.posYKey,
-            function() Addon:ApplyCurrencyPosition(def) end
-        ))
-
-        controls[#controls + 1] = {
-            type = "submenu",
-            name = def.name,
-            options = page,
-        }
+    local accountSubmenu = BuildCurrencyGroupSubmenu(self, H, "account", accountDefs)
+    if accountSubmenu then
+        controls[#controls + 1] = accountSubmenu
     end
 
     return controls
+end
+
+-- Page Defaults should reset the selected currency's settings only, not the Currency dropdown.
+function Addon:FinalizeCurrencyMenuPages()
+    local menu = self.settingsMenu
+    if not menu then
+        return
+    end
+
+    for _, groupKey in ipairs({ "character", "account" }) do
+        local _, _, dropdownIndex = self:FindCurrencyMenuSettingsBlock(groupKey)
+        local dropdown = dropdownIndex and menu.controls[dropdownIndex]
+        if dropdown then
+            dropdown.ignoreDefault = true
+        end
+    end
 end
 
 -- Thin wrappers kept for any leftover call sites / defaults reset.

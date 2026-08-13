@@ -13,6 +13,7 @@ VeterancyBar.defaults = {
     y = 200,
     isLocked = false,
     onlyInPvp = true,
+	showRawXP = false,
     progressColor = {
         R = 1,
         G = 1,
@@ -73,8 +74,24 @@ function VeterancyBar.Update()
     if rank >= 100 then
         VeterancyBar.label:SetText("Vet Max Rank")
     else
-        VeterancyBar.label:SetText(string.format("Vet %d  %d%%", rank, math.floor(current / max * 100))
-    )
+        if VeterancyBar.savedVars.showRawXP then
+            VeterancyBar.label:SetText(
+                string.format(
+                    "Vet %d  %s / %s",
+                    rank,
+                    ZO_CommaDelimitNumber(current),
+                    ZO_CommaDelimitNumber(max)
+                )
+            )
+        else
+            VeterancyBar.label:SetText(
+                string.format(
+                    "Vet %d  %d%%",
+                    rank,
+                    math.floor(current / max * 100)
+                )
+            )
+        end
     end
 end
 
@@ -327,6 +344,18 @@ function initializeVeterancyBarOptions()
             VeterancyBar:UpdateFontColor() 
         end
         }, 
+	[6] = {
+		type = "checkbox",
+		name = "Show Raw XP Instead of Percentage",
+		tooltip = "When enabled, the bar displays your current Veterancy XP and the XP required for the next rank instead of a percentage.",
+		getFunc = function()
+			return VeterancyBar.savedVars.showRawXP
+		end,
+		setFunc = function(value)
+			VeterancyBar.savedVars.showRawXP = value
+			VeterancyBar.Update()
+		end,
+		},
     }
 
     local LAM = LibAddonMenu2

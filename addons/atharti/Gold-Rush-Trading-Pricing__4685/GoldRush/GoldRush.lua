@@ -736,6 +736,12 @@ function GR.IsSaleInTimeWindow(saleTimestamp)
     if GR.selectedTimeWindow == 1 then
         return saleTimestamp >= GR.GetStartOfTradingWeek(0)
     elseif GR.selectedTimeWindow == 2 then
+        return saleTimestamp >= GR.GetStartOfTradingWeek(-1) and saleTimestamp < GR.GetStartOfTradingWeek(0)
+    elseif GR.selectedTimeWindow == 3 then
+        return saleTimestamp >= GR.GetStartOfTradingWeek(-2) and saleTimestamp < GR.GetStartOfTradingWeek(-1)
+    elseif GR.selectedTimeWindow == 4 then
+        return saleTimestamp >= GR.GetStartOfTradingWeek(-3) and saleTimestamp < GR.GetStartOfTradingWeek(-2)
+    elseif GR.selectedTimeWindow == 5 then
         return saleTimestamp >= (now - (30 * SECONDS_IN_DAY))
     end
     return true
@@ -790,16 +796,28 @@ function GR.InitializeFooterControls()
         GR.BuildSalesList()
     end
 
-    local orderedOptions = {
-        {
-            id = 1,
-            text = FormatTimeSeconds(7 * 24 * 60 * 60, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS, TIME_FORMAT_DIRECTION_DESCENDING) -- "1 Week"
-        },
-        {
-            id = 2,
-            text = FormatTimeSeconds(30 * 24 * 60 * 60, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS, TIME_FORMAT_DIRECTION_DESCENDING) -- "30 Days"
-        }
-    }
+	local orderedOptions = {
+		{
+			id = 1,
+			text = GetString(SI_MARKET_CURRENT_PRICE_NARRATION)
+		},
+		{
+			id = 2,
+			text = "< 1"
+		},
+		{
+			id = 3,
+			text = "< 2"
+		},
+		{
+			id = 4,
+			text = "< 3"
+		},
+		{
+			id = 5,
+			text = FormatTimeSeconds(30 * 24 * 60 * 60, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS, TIME_FORMAT_DIRECTION_DESCENDING)
+		}
+	}
 
     local defaultEntry = nil
 

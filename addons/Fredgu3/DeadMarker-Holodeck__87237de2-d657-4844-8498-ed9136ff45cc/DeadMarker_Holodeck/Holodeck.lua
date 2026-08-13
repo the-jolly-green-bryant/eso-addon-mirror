@@ -1,14 +1,14 @@
 --=====================================================================
--- Holodeck.lua — v0.0.18
+-- Holodeck.lua — v0.0.19
 --
 -- Versioning (DM2 suite): human Version = M.m.p
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
---   0.0.18 → 18
+--   0.0.19 → 19
 --
+-- 0.0.19: Boss bar only (no reticle-as-boss); path collapse keeps movement
 -- 0.0.18: Saved fight load/play (SavedVars keyframe rebuild + entities format)
 -- 0.0.17: Playback icons for long elite ids; panel paging; higher pin heights
 -- 0.0.16: Open last/saves UX; plant no longer forces house_demo; tier filter
--- 0.0.15: Texture palette + role/spot kinds
 -- 0.0.8: Stock ESO textures; snap playback flag
 --
 -- plant = coordinate ZERO (room anchor), NOT automatic boss spawn.
@@ -18,7 +18,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.18"
+Holodeck.version     = "0.0.19"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)

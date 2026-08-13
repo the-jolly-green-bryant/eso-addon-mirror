@@ -455,12 +455,10 @@ function LSV_Data:LoadAllSavedVars()
     protected.zoDebug(debugMode, "LSV_Data:LoadAllSavedVars()")
 
     local ds = self.__dataSource
-    if ds.character then
-        ds.character:EnsureSavedVars()
-    end
-    if ds.account then
-        ds.account:EnsureSavedVars()
-    end
+    -- Lazy load character saved vars
+    if ds.character and ds.character.savedVars then end
+    -- Lazy load account saved vars
+    if ds.account and ds.account.savedVars then end
 
     return self
 end

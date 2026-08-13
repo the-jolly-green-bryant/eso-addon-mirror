@@ -25,6 +25,7 @@ local function AddEffectSettings(panel,effects)
         local key=effect.key
         local tooltip=(effect.timer and "Tracks remaining duration. " or "")..(effect.coverage and "Tracks group coverage. " or "")
         if effect.intelligenceMode=="RECIPIENT_COOLDOWN" then tooltip=tooltip.."Tracks recipient eligibility/cooldown from verified combat events." end
+        if effect.autoTrackWhenEquipped then tooltip=tooltip.." Automatically appears while the required item is equipped; this checkbox remains your manual preference." end
         rows[#rows+1]={type=LHAS.ST_CHECKBOX,label=effect.name,tooltip=tooltip,getFunction=function() return BB:IsEffectEnabled(key) end,setFunction=function(value) BB:SetEffectEnabled(key,value) end}
     end
     panel:AddSettings(rows)

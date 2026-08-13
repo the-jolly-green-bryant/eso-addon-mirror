@@ -92,7 +92,7 @@ function A:Print(report)
     d(string.format("|cFFD447Better Buffs Encounter|r |cFFFFFF%.1fs|r", report.duration or 0))
     for _,definition in ipairs(BB.Registry.definitions) do
         local row = report.effects[definition.key]
-        if row and BB:IsEffectEnabled(definition.key) and (row.applications > 0 or row.uptime > 0) then
+        if row and BB:IsEffectRelevant(definition.key) and (row.applications > 0 or row.uptime > 0) then
             local text = string.format("|cD9D9D9%s|r  |cFFFFFF%.0f%%|r  x%d  gap %.1fs", definition.name, row.uptime, row.applications, row.longestGap)
             if definition.coverage and BB.saved.uptime.showAdvanced ~= false then
                 text = text .. string.format("  avg %.1f  low %s", row.averageCoverage or 0, row.lowestCoverage == nil and "-" or tostring(row.lowestCoverage))

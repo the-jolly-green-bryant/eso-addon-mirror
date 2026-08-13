@@ -813,4 +813,12 @@ AUTOMATION_SETTINGS_MAP_PIN_Disabled="Disabled",
 AUTOMATION_Global_Cooldown="Setting Global Cooldown",
 AUTOMATION_Quest_Low_Reward="Quest with low reward is skipped",
 
+
+-- Satuve CP Priority Helper
+SXUI_CP_Header='Championpunkte Prioritäten-Build',
+SXUI_CP_Preview='CP-Build Vorschau',
+SXUI_CP_PreviewDesc='Zeigt, wie deine verfügbaren blauen Warfare-Championpunkte nach der gespeicherten Prioritätenliste verteilt werden.',
+SXUI_CP_Apply='CP-Build anwenden',
+SXUI_CP_ApplyDesc='Wendet die gespeicherte Warfare-CP-Prioritätenliste an. Wenn vorhandene Punkte im Weg sind, kann ESO eine Neuverteilung mit den normalen Goldkosten verlangen.',
+
 }

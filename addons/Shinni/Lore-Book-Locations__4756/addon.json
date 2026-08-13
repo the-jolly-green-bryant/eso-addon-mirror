@@ -18,7 +18,7 @@
     "LoreLibrary"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4756/",
-  "fingerprint": "0fbf5a325aba0d371012d4a8a88e44abc94f4a4dc2ffafede5ee704205c5e7b9",
+  "fingerprint": "098025c1fb6530f9fbd95e7f912231e4c10daef824103a9c57990a9d6080ff05",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16926.png",
     "https://cdn-eso.mmoui.com/preview/pvw16928.png",
@@ -30,11 +30,11 @@
   "source_id": "4756",
   "source_url": "https://www.esoui.com/downloads/info4756-LoreBookLocations.html",
   "stats": {
-    "downloads": 153,
-    "favorites": 4,
-    "monthly_downloads": 134
+    "downloads": 355,
+    "favorites": 5,
+    "monthly_downloads": 345
   },
   "title": "Lore Book Locations",
-  "updated_at": 1786207859000,
-  "version": "1.0.17"
+  "updated_at": 1786510802000,
+  "version": "1.0.21"
 }

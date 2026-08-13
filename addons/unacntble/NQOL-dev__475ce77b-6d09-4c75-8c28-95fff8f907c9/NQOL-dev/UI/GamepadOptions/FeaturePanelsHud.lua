@@ -285,7 +285,7 @@ end
 
 function GamepadOptions.BuildAutoInviteGroupSizeOption()
     local grouping = NQOL.Features.Grouping
-    return GamepadOptions.BuildFiniteListOption(AUTO_INVITE_PANEL_ID, 2, grouping.GetAutoInviteGroupSizeLabel(), grouping.GetAutoInviteGroupSizeTooltip(), grouping.GetAutoInviteGroupSizeChoices(), grouping.GetAutoInviteGroupSizeChoiceNames(), grouping.GetAutoInviteGroupSize, grouping.SetAutoInviteGroupSize)
+    return GamepadOptions.BuildValueStepSliderOption(AUTO_INVITE_PANEL_ID, 2, grouping.GetAutoInviteGroupSizeLabel(), grouping.GetAutoInviteGroupSizeTooltip(), grouping.GetAutoInviteGroupSizeMin(), grouping.GetAutoInviteGroupSizeMax(), "%.0f", grouping.GetAutoInviteGroupSize, grouping.SetAutoInviteGroupSize, 1)
 end
 
 function GamepadOptions.BuildAutoInviteTriggerTextOption()
@@ -418,14 +418,19 @@ function GamepadOptions.BuildAutoClaimGoldenPursuitsOption()
     return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 2, tomePoints.GetAutoClaimGoldenPursuitsLabel(), tomePoints.GetAutoClaimGoldenPursuitsTooltip(), tomePoints.GetAutoClaimGoldenPursuits, tomePoints.SetAutoClaimGoldenPursuits)
 end
 
+function GamepadOptions.BuildAutoClaimVeterancyRewardsOption()
+    local veterancyRewards = NQOL.Features.VeterancyRewards
+    return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 3, veterancyRewards.GetEnabledLabel(), veterancyRewards.GetEnabledTooltip(), veterancyRewards.GetEnabled, veterancyRewards.SetEnabled)
+end
+
 function GamepadOptions.BuildTransmuteWatchOption()
     local transmuteWatch = NQOL.Features.TransmuteWatch
-    return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 3, transmuteWatch.GetEnabledLabel(), transmuteWatch.GetEnabledTooltip(), transmuteWatch.GetEnabled, transmuteWatch.SetEnabled, nil, transmuteWatch.GetEnabledDefault)
+    return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 4, transmuteWatch.GetEnabledLabel(), transmuteWatch.GetEnabledTooltip(), transmuteWatch.GetEnabled, transmuteWatch.SetEnabled, nil, transmuteWatch.GetEnabledDefault)
 end
 
 function GamepadOptions.BuildSkipLogoutConfirmationOption()
     local skipLogoutConfirmation = NQOL.Features.SkipLogoutConfirmation
-    return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 4, skipLogoutConfirmation.GetEnabledLabel(), skipLogoutConfirmation.GetEnabledTooltip(), skipLogoutConfirmation.GetEnabled, skipLogoutConfirmation.SetEnabled)
+    return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 5, skipLogoutConfirmation.GetEnabledLabel(), skipLogoutConfirmation.GetEnabledTooltip(), skipLogoutConfirmation.GetEnabled, skipLogoutConfirmation.SetEnabled)
 end
 
 function GamepadOptions.BuildLuaGcOption()

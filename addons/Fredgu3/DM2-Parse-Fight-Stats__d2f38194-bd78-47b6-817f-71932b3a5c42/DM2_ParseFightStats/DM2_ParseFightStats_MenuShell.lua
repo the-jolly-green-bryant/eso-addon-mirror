@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.17.4"
+M.version = "3.17.5"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -126,6 +126,77 @@ local menuEntryAdded = false
 local sceneBuildFailed = false
 local listPopulateWarned = false
 local headerNote = ""
+
+-- Menu-local coach cache ONLY (never attach coach tables to SV.history sessions).
+-- Writing coach onto session caused SV re-bloat: coach.cpAbPairs held sessionA/sessionB
+-- refs into other history slots; ESO serialization duplicates them (n² growth).
+local coachCache = {} -- [cacheKey] = coach
+
+local function coachCacheKey(session)
+  if type(session) ~= "table" then return nil end
+  if session.completedAt then
+    return string.format("c:%s:%s:%s",
+      tostring(session.completedAt),
+      tostring(session.totalDamage or 0),
+      tostring(session.durationMs or 0))
+  end
+  -- Live (not yet history) session: use table identity via a private token
+  if not session._coachTok then
+    session._coachTok = string.format("L%d", (tonumber(session.startMs) or 0) + (tonumber(session.totalDamage) or 0))
+  end
+  return session._coachTok
+end
+
+local function detachCoachPersistRefs(coach)
+  if type(coach) ~= "table" then return coach end
+  if type(coach.cpAbPairs) == "table" then
+    for _, p in ipairs(coach.cpAbPairs) do
+      if type(p) == "table" then
+        p.sessionA = nil
+        p.sessionB = nil
+      end
+    end
+  end
+  if type(coach.syn) == "table" and type(coach.syn.cps) == "table" then
+    for _, c in ipairs(coach.syn.cps) do
+      if type(c) == "table" and type(c.abPair) == "table" then
+        c.abPair.sessionA = nil
+        c.abPair.sessionB = nil
+      end
+    end
+  end
+  -- Never embed live SV.experiments.active table (another SV root)
+  if type(coach.experiment) == "table" then
+    local e = coach.experiment
+    coach.experiment = {
+      id = e.id,
+      title = e.title,
+      ruleId = e.ruleId,
+      completed = e.completed,
+      targetRuns = e.targetRuns,
+      runCount = type(e.runs) == "table" and #e.runs or (tonumber(e.runCount) or 0),
+    }
+  end
+  return coach
+end
+
+local function setSessionCoach(session, coach)
+  if type(session) ~= "table" then return end
+  -- Critical: never leave coach on the session table (it is often an SV.history entry)
+  session.coach = nil
+  coach = detachCoachPersistRefs(coach)
+  local key = coachCacheKey(session)
+  if key then coachCache[key] = coach end
+end
+
+local function getSessionCoach(session)
+  if type(session) ~= "table" then return nil end
+  -- Ignore any legacy session.coach left in old SV (and clear it)
+  if session.coach ~= nil then session.coach = nil end
+  local key = coachCacheKey(session)
+  if key then return coachCache[key] end
+  return nil
+end
 
 ---------------------------------------------------------------------
 -- Platform / format helpers (Tier 0)
@@ -2543,7 +2614,8 @@ local function critBalanceCue(snap, session)
     penBit = string.format("  ·  pen at/over %s ref (%s)", fmtInt(resist), profile.shortLabel or "trial-prep")
   end
   -- Phase 2.5.1: prefer exposure one-liner when samples exist
-  local exp = session and (session.critDmgExposure or (session.coach and session.coach.waste and session.coach.waste.critDmg and session.coach.waste.critDmg.exposure))
+  local cachedCoach = session and getSessionCoach(session)
+  local exp = session and (session.critDmgExposure or (cachedCoach and cachedCoach.waste and cachedCoach.waste.critDmg and cachedCoach.waste.critDmg.exposure))
   if type(exp) == "table" and (tonumber(exp.samples) or 0) > 0 and exp.confidence ~= CONFIDENCE.INSUFFICIENT then
     local avg = tonumber(exp.avgSheetCritPct) or critDmg
     local over = (tonumber(exp.overcapExposure) or 0) * 100
@@ -4776,9 +4848,9 @@ local function findCpAbPairs(maxPairs)
                     else
                       swapLabel = namesB[1] .. " only in B"
                     end
+                    -- Never store sessionA/sessionB — those are SV.history tables;
+                    -- embedding them under coach caused n² SV serialization bloat.
                     out[#out + 1] = {
-                      sessionA = a,
-                      sessionB = b,
                       offsetA = i,
                       offsetB = j,
                       onlyInA = onlyA,
@@ -4876,7 +4948,16 @@ local function applyCpAbMarginals(syn, abPairs)
         fmtDpsDelta(med),
         confidenceChip(conf)
       )
-      c.abPair = p
+      -- Scalar summary only (no session table refs)
+      c.abPair = {
+        swapLabel = p.swapLabel,
+        deltaDps = p.deltaDps,
+        dpsA = p.dpsA,
+        dpsB = p.dpsB,
+        offsetA = p.offsetA,
+        offsetB = p.offsetB,
+        confidence = conf,
+      }
     end
   end
 end
@@ -8011,8 +8092,8 @@ local function refreshProcsUI(screen, session)
 
   -- Champion Point impact: eligible % + Path B A/B marginal when history allows
   local syn = buildBuildSynergy(session)
-  local coach = session.coach or buildCoachAnalysis(session, syn, buildParseDiagnosis(session), profile)
-  session.coach = coach
+  local coach = getSessionCoach(session) or buildCoachAnalysis(session, syn, buildParseDiagnosis(session), profile)
+  setSessionCoach(session, coach)
   -- Coach already applies A/B marginals onto its syn; re-apply to local syn for display
   if coach and coach.cpAbPairs then
     applyCpAbMarginals(syn, coach.cpAbPairs)
@@ -9971,7 +10052,7 @@ local function refreshInsightsUI(screen, session, mode)
   local diag = buildParseDiagnosis(session)
   local syn = buildBuildSynergy(session)
   local coach = buildCoachAnalysis(session, syn, diag, profile)
-  session.coach = coach -- cache for other screens this view
+  setSessionCoach(session, coach) -- menu-local cache only — never onto SV history
   local bench = diag.bench
   local benchNote = ""
   if bench and (bench.comparableCount or 0) >= 2 then
@@ -11269,10 +11350,10 @@ local function refreshDashboardUI(screen, session)
   -- Pen contribution one-liner (what builds effective pen)
   if dash.penBreakdown then
     local profile = getActiveContentProfile()
-    local coach = session.coach
+    local coach = getSessionCoach(session)
     if not coach or not coach.waste or not coach.waste.pen then
       coach = buildCoachAnalysis(session, buildBuildSynergy(session), buildParseDiagnosis(session), profile)
-      session.coach = coach
+      setSessionCoach(session, coach)
     end
     local pen = coach.waste and coach.waste.pen
     if pen then
@@ -11515,7 +11596,7 @@ function DM2StatsMenuShell_Gamepad:RefreshHeader()
       and string.format("EXP DONE %d/%d", n, need)
       or string.format("EXP ON %d/%d", n, need)
   end
-  local subtitle = "v3.17.4  |  L2/R2 fights  |  " .. expBit .. "  |  "
+  local subtitle = "v3.17.5  |  L2/R2 fights  |  " .. expBit .. "  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",

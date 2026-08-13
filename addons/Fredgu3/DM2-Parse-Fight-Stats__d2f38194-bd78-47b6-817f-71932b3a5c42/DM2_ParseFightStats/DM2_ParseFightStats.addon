@@ -1,9 +1,9 @@
 ## Title: DM2 Parse & Fight Stats
 ## APIVersion: 101048 101047
-## AddOnVersion: 31704
+## AddOnVersion: 31705
 ## Author: Skye-Forge
-## Description: Parse + fight stats. v3.17.4 auto-compact history (keeps parses).
-## Version: 3.17.4
+## Description: Parse + fight stats. v3.17.5 coach SV re-bloat fix.
+## Version: 3.17.5
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: DM2_ParseFightStats_SV
 

@@ -118,6 +118,13 @@ local function MenuOptions_Init()	--Menu options
 		func		=function()ZO_Dialogs_ShowDialog ("BUI_RESET_CONFIRMATION", {text=BUI.Loc("ResetPositionsDesc"),func=function()BUI.Menu.Reset("Positions")end})end,
 		reference	="BUI_MenuButton_Reset",
 	},
+	-- Satuve character-specific Champion Point step list
+	{	type="header", name="Champion Point Step List"},
+	{	type="description", text="One numbered list per character. BLUE, RED and GREEN Champion stars are detected automatically."},
+	{	type="button", name="Edit CP Step List", func=function() if BUI.ChampionPriority then BUI.ChampionPriority:Edit() end end},
+	{	type="button", name="Preview CP Step List", func=function() if BUI.ChampionPriority then BUI.ChampionPriority:Preview() end end},
+	{	type="button", name="Apply CP Step List", func=function() if BUI.ChampionPriority then BUI.ChampionPriority:Apply() end end},
+	{	type="button", name="Clear CP Step List", func=function() if BUI.ChampionPriority then BUI.ChampionPriority:ClearList() end end},
 	--Theme
 	{	type		="header", name="Theme"},
 	{	type		="dropdown",
@@ -476,7 +483,7 @@ local function MenuOptions_Init()	--Menu options
 		name		="FrameHeight",
 		min		=16,
 		max		=40,
-		step		=4,
+		step		=2,
 		getFunc	=function() return BUI.Vars.FrameHeight end,
 		setFunc	=function(value) BUI.Menu.UpdateFrames("FrameHeight", value) end,
 		disabled	=function() return not BUI.Vars.PlayerFrame end,
@@ -1140,11 +1147,11 @@ end
 	},
 	{	type		="slider",
 		name		="MarkerSize",
-		min		=26,
-		max		=72,
+		min		=12,
+		max		=48,
 		step		=4,
 		getFunc	=function() return BUI.Vars.MarkerSize end,
-		setFunc	=function(value) BUI.Vars.MarkerSize=value BUI.Menu.MarkerLeader() end,
+		setFunc	=function(value) BUI.Vars.MarkerSize=value BUI.Menu.MarkerLeader(true) end,
 		disabled	=function() return not BUI.Vars.MarkerLeader end,
 	}}},
 	--Reset Unit Frames
@@ -2167,11 +2174,12 @@ function BUI.Menu.Reset(context)
 	elseif context=="Positions" then
 		if MoveMode_1 then
 			local frames={
-				"BUI_OnScreen","BUI_PlayerFrame","BUI_HPlayerFrame","BUI_TargetFrame","BUI_BossFrame","BUI_RaidFrame","BUI_MiniMeter",
-				"BUI_BuffsP","BUI_BuffsPas","BUI_BuffsT","BUI_BuffsC",
+				"BUI_OnScreen","BUI_OnScreenS","BUI_PlayerFrame","BUI_HPlayerFrame","BUI_TargetFrame","BUI_BossFrame","BUI_RaidFrame",
+				"BUI_Minimap","BUI_MiniMeter","BUI_GroupDPS","BUI_Attackers","BUI_Glyphs","BUI_BuffsUp",
+				"BUI_BuffsP","BUI_BuffsPas","BUI_BuffsT","BUI_BuffsC","BUI_BuffsS",
 				"BUI_Meter_Speed","BUI_Meter_Power","BUI_Meter_Crit","BUI_Meter_Exp","BUI_Meter_DPS","BUI_Meter_Criminal"
 				}
-			for _,frame in pairs(frames) do BUI.Vars[frame]=BUI.Defaults[frame] end
+			for _,frame in pairs(frames) do if BUI.Defaults[frame]~=nil then BUI.Vars[frame]=BUI.Defaults[frame] end end
 		end
 		if MoveMode_2 then
 			for frame in pairs(BUI.DefaultFrames) do BUI.Vars[frame]=nil end
@@ -2229,11 +2237,20 @@ function BUI.Menu.UpdateFrames(setting,value,...)
 	if setting=="FramesTexture" then BUI.Frames.ChangeTextures() end
 end
 
-function BUI.Menu.MarkerLeader(init)
+function BUI.Menu.MarkerLeader(force)
+	if type(SetFloatingMarkerInfo)~="function" then return end
+
+	-- Xbox client: first reset the floating marker before applying new data.
+	-- Without this reset, size/texture changes can be ignored until reload.
+	pcall(SetFloatingMarkerInfo, MAP_PIN_TYPE_GROUP_LEADER)
+
 	if BUI.Vars.MarkerLeader then
-		SetFloatingMarkerInfo(MAP_PIN_TYPE_GROUP_LEADER, BUI.Vars.MarkerSize, "/esoui/art/tutorial/gamepad/gp_playermenu_icon_store.dds")
-	elseif not init then
-		SetFloatingMarkerInfo(MAP_PIN_TYPE_GROUP_LEADER)
+		local size=tonumber(BUI.Vars.MarkerSize) or 24
+		size=math.max(12,math.min(size,48))
+		BUI.Vars.MarkerSize=size
+		zo_callLater(function()
+			pcall(SetFloatingMarkerInfo, MAP_PIN_TYPE_GROUP_LEADER, size, "/esoui/art/compass/groupleader.dds")
+		end, 50)
 	end
 end
 
@@ -2544,6 +2561,120 @@ function BUI.Menu.ManageWidgets(move)
 end
 
 --Move frames
+-- Xbox adaptation: modal Move Frames mode.
+local function SXUI_MoveModeOverlay(show)
+	local overlay=_G["SXUI_MoveModeOverlay"]
+	if not overlay then
+		overlay=WINDOW_MANAGER:CreateTopLevelWindow("SXUI_MoveModeOverlay")
+		overlay:SetDimensions(GuiRoot:GetDimensions())
+		overlay:ClearAnchors()
+		overlay:SetAnchor(CENTER,GuiRoot,CENTER,0,0)
+		overlay:SetDrawTier(DT_LOW)
+		overlay:SetDrawLayer(DL_BACKGROUND)
+		overlay:SetDrawLevel(0)
+		overlay:SetMouseEnabled(false)
+		if overlay.SetKeyboardEnabled then overlay:SetKeyboardEnabled(true) end
+		local hint=BUI.UI.Backdrop("SXUI_MoveModeHint",overlay,{700,76},{TOP,TOP,0,28},{0,0,0,.86},{1,.82,.25,1},nil,false)
+		hint:SetEdgeTexture("",8,2,2)
+		BUI.UI.Label("SXUI_MoveModeHintText",hint,{680,66},{CENTER,CENTER,0,0},BUI.UI.Font("standard",20,true),{1,1,1,1},{1,1},"MOVE FRAMES MODE\nDrag frames to reposition  •  ESC / Xbox View (Back) = Exit and save",false)
+		overlay:SetHandler("OnKeyDown",function(self,key)
+			if key==KEY_ESCAPE or key==KEY_GAMEPAD_BACK or key==KEY_GAMEPAD_BACK_HOLD then
+				if BUI.move then BUI.Menu.MoveFrames(false) end
+				return true
+			end
+			return true
+		end)
+	end
+	overlay:SetHidden(not show)
+end
+
+local SXUI_MoveGroups={
+	["BUI_PlayerFrame"]={"BUI_BuffsP","BUI_BuffsPas"},
+	["BUI_TargetFrame"]={"BUI_BuffsT"},
+}
+
+local function SXUI_PrepareFrameForDrag(frame)
+	if not frame or not frame.GetCenter then return end
+	local x,y=frame:GetCenter()
+	local rootX,rootY=GuiRoot:GetCenter()
+	if not x or not y or not rootX or not rootY then return end
+	-- Preserve the exact current on-screen position before StartMoving().
+	-- This prevents ESO from resolving old relative anchors to the screen centre
+	-- when a frame begins to drag.
+	frame:ClearAnchors()
+	frame:SetAnchor(CENTER,GuiRoot,CENTER,x-rootX,y-rootY)
+end
+
+local function SXUI_StartLinkedMove(frame)
+	local name=frame and frame.GetName and frame:GetName()
+	local linked=name and SXUI_MoveGroups[name]
+	if not linked then return end
+	local fx,fy=frame:GetCenter()
+	if not fx then return end
+	frame.SXUI_LinkedMove={}
+	for _,linkedName in ipairs(linked) do
+		local ctrl=_G[linkedName]
+		if ctrl and not ctrl:IsHidden() then
+			local cx,cy=ctrl:GetCenter()
+			if cx then table.insert(frame.SXUI_LinkedMove,{control=ctrl,dx=cx-fx,dy=cy-fy}) end
+		end
+	end
+	if #frame.SXUI_LinkedMove>0 then
+		EVENT_MANAGER:UnregisterForUpdate("SXUI_LinkedFrameMove")
+		EVENT_MANAGER:RegisterForUpdate("SXUI_LinkedFrameMove",16,function()
+			if not BUI.move or not frame.SXUI_LinkedMove then EVENT_MANAGER:UnregisterForUpdate("SXUI_LinkedFrameMove") return end
+			local x,y=frame:GetCenter() if not x then return end
+			local rootX,rootY=GuiRoot:GetCenter()
+			for _,entry in ipairs(frame.SXUI_LinkedMove) do
+				local ctrl=entry.control
+				if ctrl then ctrl:ClearAnchors() ctrl:SetAnchor(CENTER,GuiRoot,CENTER,(x+entry.dx)-rootX,(y+entry.dy)-rootY) end
+			end
+		end)
+	end
+end
+
+local function SXUI_StopLinkedMove(frame)
+	EVENT_MANAGER:UnregisterForUpdate("SXUI_LinkedFrameMove")
+	if not frame or not frame.SXUI_LinkedMove then return end
+	for _,entry in ipairs(frame.SXUI_LinkedMove) do if entry.control then BUI.Menu:SaveAnchor(entry.control) end end
+	frame.SXUI_LinkedMove=nil
+end
+
+-- Xbox adaptation: reliable drag/save linkage for every movable BUI frame.
+local function SXUI_SetFrameMoveLinked(frame, move, saveName, anchorPoint)
+	if not frame then return end
+	if frame.SetMouseEnabled then frame:SetMouseEnabled(move) end
+	if frame.SetMovable then frame:SetMovable(move) end
+	if move then
+		if not frame.SXUI_MoveHandlersSaved and frame.GetHandler then
+			frame.SXUI_OriginalMouseDown=frame:GetHandler("OnMouseDown")
+			frame.SXUI_OriginalMouseUp=frame:GetHandler("OnMouseUp")
+			frame.SXUI_OriginalMouseEnter=frame:GetHandler("OnMouseEnter")
+			frame.SXUI_OriginalMouseExit=frame:GetHandler("OnMouseExit")
+			frame.SXUI_MoveHandlersSaved=true
+		end
+		frame:SetHandler("OnMouseDown", function(self,button)
+			if button==MOUSE_BUTTON_INDEX_LEFT and self.StartMoving then
+				SXUI_StartLinkedMove(self)
+				SXUI_PrepareFrameForDrag(self)
+				self:StartMoving()
+			end
+		end)
+		frame:SetHandler("OnMouseUp", function(self)
+			if self.StopMovingOrResizing then self:StopMovingOrResizing() end
+			BUI.Menu:SaveAnchor(self,nil,saveName,anchorPoint)
+			SXUI_StopLinkedMove(self)
+		end)
+	else
+		if frame.SXUI_MoveHandlersSaved then
+			frame:SetHandler("OnMouseDown",frame.SXUI_OriginalMouseDown)
+			frame:SetHandler("OnMouseUp",frame.SXUI_OriginalMouseUp)
+			frame:SetHandler("OnMouseEnter",frame.SXUI_OriginalMouseEnter)
+			frame:SetHandler("OnMouseExit",frame.SXUI_OriginalMouseExit)
+		end
+	end
+end
+
 local function MoveDefaultFrames(move)
 	if BUI.init.DefaultFrames then
 		BUI_Move:SetHidden(not move)
@@ -2582,7 +2713,14 @@ local function MoveDefaultFrames(move)
 			BUI.UI.Line(name.."_Line_vert",	bg,	{0,h+200},	{TOPLEFT,TOP,0,-100},	{.8,.8,.8,.4},1.8, false)
 			bg:SetMovable(true)
 			bg:SetMouseEnabled(true)
+			bg:SetHandler("OnMouseDown", function(self,button)
+				if button==MOUSE_BUTTON_INDEX_LEFT and self.StartMoving then
+					SXUI_PrepareFrameForDrag(self)
+					self:StartMoving()
+				end
+			end)
 			bg:SetHandler("OnMouseUp", function(self)
+				if self.StopMovingOrResizing then self:StopMovingOrResizing() end
 				BUI.Menu:SaveAnchor(self,nil,name,anchorPoint)
 				BUI.Frames.ZO_Frame_reposition()
 				end)
@@ -2595,10 +2733,13 @@ end
 
 function BUI.Menu.MoveFrames(move)
 	if not (MoveMode_1 or MoveMode_2) then return end
-	if SCENE_MANAGER:IsInUIMode() and not WINDOW_MANAGER:IsSecureRenderModeEnabled() then SCENE_MANAGER:SetInUIMode(false) end
+	if move and not WINDOW_MANAGER:IsSecureRenderModeEnabled() then SCENE_MANAGER:SetInUIMode(true) end
+	SXUI_MoveModeOverlay(move)
 	--Move elements back to their normal positions
 	if move then
 		BUI.inMenu=false
+		-- Hide the settings window while editing frames so it cannot block drag targets.
+		if BUI_SettingsWindow then BUI_SettingsWindow:SetHidden(true) end
 		BUI.Menu.FramesRestore()
 		ZO_WorldMap:SetHidden(true)
 		_G["ZO_WorldMapMapFrame"]:SetHidden(true)
@@ -2619,31 +2760,34 @@ function BUI.Menu.MoveFrames(move)
 	MoveFramesButtons()
 	if BUI.init.Frames and MoveMode_1 then
 		local frames={}
-		if BUI.Vars.RaidFrames then table.insert(frames, BUI_RaidFrame) end
-		if BUI.Vars.PlayerFrame then table.insert(frames, BUI_PlayerFrame) end
-		if BUI.Vars.TargetFrame and BUI_TargetFrame~=nil then table.insert(frames, BUI_TargetFrame) end
-		if BUI.Vars.PlayerBuffs then table.insert(frames, BUI_BuffsP) end
-		if BUI.Vars.EnableCustomBuffs then table.insert(frames, BUI_BuffsC) end
-		if BUI.Vars.EnableSynergyCd then table.insert(frames, BUI_BuffsS) end
-		if BUI.Vars.TargetBuffs then table.insert(frames, BUI_BuffsT) end
-		if BUI.Vars.BuffsPassives=="On additional panel" then table.insert(frames, BUI_BuffsPas) end
-		if BUI.Vars.BossFrame then table.insert(frames, BUI_BossFrame) end
-		if BUI.Vars.MiniMap then table.insert(frames, BUI_Minimap) end
-		if BUI.Vars.NotificationsTrial or BUI.Vars.NotificationsWorld or BUI.Vars.NotificationsGroup then table.insert(frames, BUI_OnScreen) table.insert(frames, BUI_OnScreenS) end
-		if BUI.Vars.Glyphs and BUI_Glyphs then table.insert(frames, BUI_Glyphs) end
-		if BUI.Vars.StatsMiniMeter then table.insert(frames, BUI_MiniMeter) end
-		if BUI.Vars.StatsGroupDPSframe then table.insert(frames, BUI_GroupDPS) end
-		if BUI.Vars.Attackers then table.insert(frames, BUI_Attackers) end
+		local function AddFrame(frame) if frame then table.insert(frames,frame) end end
+		if BUI.Vars.RaidFrames then AddFrame(BUI_RaidFrame) end
+		if BUI.Vars.PlayerFrame then AddFrame(BUI_PlayerFrame) end
+		if BUI.Vars.TargetFrame then AddFrame(BUI_TargetFrame) end
+		if BUI.Vars.PlayerBuffs then AddFrame(BUI_BuffsP) end
+		if BUI.Vars.EnableCustomBuffs then AddFrame(BUI_BuffsC) end
+		if BUI.Vars.EnableSynergyCd then AddFrame(BUI_BuffsS) end
+		if BUI.Vars.TargetBuffs then AddFrame(BUI_BuffsT) end
+		if BUI.Vars.BuffsPassives=="On additional panel" then AddFrame(BUI_BuffsPas) end
+		if BUI.Vars.BossFrame then AddFrame(BUI_BossFrame) end
+		if BUI.Vars.MiniMap then AddFrame(BUI_Minimap) end
+		if BUI.Vars.NotificationsTrial or BUI.Vars.NotificationsWorld or BUI.Vars.NotificationsGroup then AddFrame(BUI_OnScreen) AddFrame(BUI_OnScreenS) end
+		if BUI.Vars.Glyphs then AddFrame(BUI_Glyphs) end
+		if BUI.Vars.StatsMiniMeter then AddFrame(BUI_MiniMeter) end
+		if BUI.Vars.StatsGroupDPSframe then AddFrame(BUI_GroupDPS) end
+		if BUI.Vars.Attackers then AddFrame(BUI_Attackers) end
+		if BUI_BuffsUp and BUI.Vars.BUI_BuffsUp then AddFrame(BUI_BuffsUp) end
 		for _,name in pairs(BUI.Meters.List) do
-			if BUI.Vars["Meter_"..name] then table.insert(frames, _G["BUI_Meter_"..name]) end
+			if BUI.Vars["Meter_"..name] then AddFrame(_G["BUI_Meter_"..name]) end
 		end
 		for _, frame in pairs(frames) do
+			SXUI_SetFrameMoveLinked(frame,move)
 			frame:SetMouseEnabled(move)
 			frame:SetHidden(false)
 			frame:SetAlpha(1)
-			frame:SetHandler("OnMouseEnter", ShowButtons)
+			if move then frame:SetHandler("OnMouseEnter", ShowButtons) end
 			if frame.backdrop then frame.backdrop:SetHidden(not move) end
-			if frame.base then frame.base:SetHidden(move) end
+			if frame.base then frame.base:SetHidden(false) end
 			if move then
 				local name=frame:GetName()
 				local width=frame:GetWidth()
@@ -2655,12 +2799,12 @@ function BUI.Menu.MoveFrames(move)
 				frame.line_hor	=BUI.UI.Line(name.."_Line_hor",	frame,	{width+200,0},	{TOPLEFT,LEFT,-100,0},		{.8,.8,.8,.3},1.8, false)
 				frame.line_vert	=BUI.UI.Line(name.."_Line_vert",	frame,	{0,height+200},	{TOPLEFT,TOP,0,-100},		{.8,.8,.8,.3},1.8, false)
 			else
-				frame.line_top:SetHidden(true)
-				frame.line_bot:SetHidden(true)
-				frame.line_left:SetHidden(true)
-				frame.line_right:SetHidden(true)
-				frame.line_hor:SetHidden(true)
-				frame.line_vert:SetHidden(true)
+				if frame.line_top then frame.line_top:SetHidden(true) end
+				if frame.line_bot then frame.line_bot:SetHidden(true) end
+				if frame.line_left then frame.line_left:SetHidden(true) end
+				if frame.line_right then frame.line_right:SetHidden(true) end
+				if frame.line_hor then frame.line_hor:SetHidden(true) end
+				if frame.line_vert then frame.line_vert:SetHidden(true) end
 			end
 		end
 		--If we are done moving, make sure frame visibility is correct
@@ -2674,6 +2818,7 @@ function BUI.Menu.MoveFrames(move)
 	if MoveMode_2 then MoveDefaultFrames(move) end
 	SetGameCameraUIMode(move)
 	BUI.move=move
+	if not move and SCENE_MANAGER:IsInUIMode() and not WINDOW_MANAGER:IsSecureRenderModeEnabled() then SCENE_MANAGER:SetInUIMode(false) end
 	--Register events
 	if move then
 		local function OnLayerChange(eventCode, layerIndex, activeLayerIndex)

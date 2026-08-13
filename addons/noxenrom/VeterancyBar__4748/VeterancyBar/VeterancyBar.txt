@@ -6,7 +6,7 @@
 
 ## Title: |c2046e5Veterancy Bar|r
 ## APIVersion: 101050 101051
-## Version: 1.5.0
+## Version: 1.6.0
 ## AddOnVersion: 10500
 ## Author: Noxenrom Settings by |c2046e5sshogrin|r
 ## DependsOn: LibAddonMenu-2.0>=43

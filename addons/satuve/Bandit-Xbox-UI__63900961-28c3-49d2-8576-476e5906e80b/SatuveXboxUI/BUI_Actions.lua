@@ -243,7 +243,66 @@ local EffectResults={
 [EFFECT_RESULT_UPDATED]="UPDATED",
 }
 
-local function OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, startTimeSec, endTimeSec, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId)
+local SXUI_TrapEffect={
+	[40375]=true, -- Trap Beast effect
+	[40385]=true, -- Barbed Trap effect
+}
+local SXUI_TrapAction={}
+
+local function SXUI_RegisterTrapAbilityRanks()
+	-- Register every rank/morph belonging to the Trap Beast progression.
+	-- This avoids assuming that the currently slotted trap is always rank IV.
+	local _,progressionIndex=GetAbilityProgressionXPInfoFromAbilityId(40372)
+	if progressionIndex then
+		for morph=0,2 do
+			for rank=1,4 do
+				local id=GetAbilityProgressionAbilityId(progressionIndex,morph,rank)
+				if id and id>0 then SXUI_TrapAction[id]=true end
+			end
+		end
+	end
+	-- Fallback IDs used by older API versions.
+	SXUI_TrapAction[40372]=true
+	SXUI_TrapAction[40382]=true
+end
+
+local function SXUI_GetSlottedTrapActionId()
+	for pair=1,2 do
+		local slots=BUI.Actions.AbilitySlots[pair]
+		if slots then
+			for slot=3,7 do
+				local id=slots[slot]
+				if id and SXUI_TrapAction[id] then return id end
+			end
+		end
+	end
+	-- Fall back to the live action bar in case AbilitySlots has not refreshed yet.
+	for slot=3,7 do
+		local id=BUI.TranslateIdToScribedId(GetSlotBoundId(slot))
+		if id and SXUI_TrapAction[id] then return id end
+	end
+	return nil
+end
+
+local function OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, startTimeSec, endTimeSec, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
+	-- Trap Beast / Barbed Trap special case:
+	-- Ignore cast timing and Precise Timer queue. The action-bar timer starts only
+	-- from the real debuff that appears on the current target. This remains correct
+	-- even when the skill animation is block-cancelled.
+	local trapActionId=SXUI_TrapEffect[abilityId] and SXUI_GetSlottedTrapActionId() or nil
+	if trapActionId and unitTag=="reticleover" and changeType~=EFFECT_RESULT_FADED then
+		local sourceIsPlayer=(sourceType==nil or sourceType==COMBAT_UNIT_TYPE_PLAYER)
+		if sourceIsPlayer and BUI.Vars.Actions and BUI.Actions.AbilityBar[trapActionId]
+			and startTimeSec and endTimeSec and endTimeSec>startTimeSec then
+			local duration=(endTimeSec-startTimeSec)*1000
+			StartTimer(trapActionId,duration,stackCount,effectType)
+			-- Preserve the actual debuff start time instead of the event-arrival time.
+			BUI.Actions.AbilityBar[trapActionId].StartTime=startTimeSec*1000
+			BUI.Actions.AbilityBar[trapActionId].Duration=duration
+			return
+		end
+	end
+
 	--d(BUI.TimeStamp().."["..abilityId.."] |t16:16:"..iconName.."|t "..effectName.."|| "..unitTag.."|| "..stackCount.."|| duration: "..math.floor((endTimeSec-startTimeSec)*100)/100 .."|| "..EffectResults[changeType])	--.."|| "..EffectResults[changeType].."|| "..BuffTypes[buffType].."|| "..BuffEffectTypes[effectType]..", AbType:  "..AbilityTypes[abilityType].."|| "..", StatusEff: "..StatusEffectTypes[statusEffectType]	
 	if QueueAbility and changeType~=EFFECT_RESULT_FADED then
 		local duration=math.floor((endTimeSec-startTimeSec)*1000)
@@ -373,7 +432,12 @@ local function OnSlotAbilityUsed(_,slot)
 	if BUI.Vars.Actions and slot>2 then
 		if BUI.Actions.AbilityBar[id] then
 			local castTime=BUI.Actions.AbilityBar[id].castTime+(AdditionalCastTime[id] and AdditionalCastTime[id] or 0)
-			if BUI.Vars.ActionsPrecise then
+			-- Trap Beast / Barbed Trap: never start from cast/slot use.
+			-- Wait exclusively for the actual target debuff handled by OnEffectChanged.
+			if SXUI_TrapAction[id] then
+				QueueAbility=nil
+				EVENT_MANAGER:UnregisterForEvent("BUI_Actions2", EVENT_EFFECT_CHANGED)
+			elseif BUI.Vars.ActionsPrecise then
 				QueueAbility={id=id,start=now+castTime}
 				EVENT_MANAGER:RegisterForEvent("BUI_Actions2", EVENT_EFFECT_CHANGED, OnEffectChanged)
 			else
@@ -566,6 +630,20 @@ function BUI.Actions.Initialize()
 		EVENT_MANAGER:UnregisterForEvent("BUI_Actions", EVENT_PLAYER_ACTIVATED)
 	end
 --	EVENT_MANAGER:RegisterForEvent("BUI_Actions2", EVENT_EFFECT_CHANGED,	OnEffectChanged)
+
+	if BUI.Vars.Actions then
+		SXUI_RegisterTrapAbilityRanks()
+		for effectId in pairs(SXUI_TrapEffect) do
+			local eventName="SXUI_TrapTimer"..effectId
+			EVENT_MANAGER:RegisterForEvent(eventName, EVENT_EFFECT_CHANGED, OnEffectChanged)
+			EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, effectId)
+			EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "reticleover")
+		end
+	else
+		for effectId in pairs(SXUI_TrapEffect) do
+			EVENT_MANAGER:UnregisterForEvent("SXUI_TrapTimer"..effectId, EVENT_EFFECT_CHANGED)
+		end
+	end
 
 	if BUI.Vars.Actions or BUI.Vars.ProcAnimation then
 		for id in pairs(ProcEffectId) do

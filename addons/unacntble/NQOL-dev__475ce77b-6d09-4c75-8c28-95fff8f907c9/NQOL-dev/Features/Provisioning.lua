@@ -49,6 +49,12 @@ local function Log(message)
     NQOL.Chat.Message(message, NQOL.L("common.feature.provisioning"))
 end
 
+local function DebugLog(message)
+    if NQOL.IsDevMode and NQOL.IsDevMode() then
+        NQOL.Chat.Message(message)
+    end
+end
+
 local function GetCharacterKey()
     if GetCurrentCharacterId then
         local characterId = GetCurrentCharacterId()
@@ -528,15 +534,14 @@ local function UseBackpackItem(slotId)
     end
 
     if CallSecureProtected then
-        return CallSecureProtected("UseItem", BAG_BACKPACK, slotId) == true
+        local callSucceeded, useSucceeded = pcall(CallSecureProtected, "UseItem", BAG_BACKPACK, slotId)
+        if callSucceeded and useSucceeded == true then
+            return true
+        end
     end
 
-    if not UseItem then
-        return false
-    end
-
-    UseItem(BAG_BACKPACK, slotId)
-    return true
+    DebugLog("Auto-food could not securely use the saved food or drink.")
+    return false
 end
 
 local function TryRefreshFood(activeFoodBuff)

@@ -1,9 +1,9 @@
 ## Title: |c4B8BFESatuve|r Xbox UI
 ## Description: Xbox-server PC interface fork with mouse and keyboard support, compatibility fixes, minimap, combat notifications, buffs and combat statistics. Based on Bandits User Interface.
 ## Author: Satuve (Xbox adaptation); original Bandits UI by secretrob and Hoft
-## Version: 1.0.38-xbox
+## Version: 1.1.14-xbox
 ## APIVersion: 101050
-## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS
+## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS SATUVE_XBOX_UI_CP_CHAR
 
 ; Satuve Xbox UI is a modified fork of Bandits User Interface.
 ; Xbox adaptation and maintenance: Satuve.
@@ -50,6 +50,7 @@ BUI_Panel.lua
 BUI_CustomBar.lua
 BUI_Meters.lua
 BUI_Markers.lua
+SXUI_ChampionPriority.lua
 BUI_Initialize.lua
 
 lang\en.lua

@@ -1,4 +1,4 @@
-Better Buffs v0.3.05
+Better Buffs v0.3.06
 Created by BMGxSancho
 
 Better Buffs is a lightweight raid-effect intelligence addon for ESO console.
@@ -39,3 +39,5 @@ V0.3.02 FINAL CORRECTION PASS
 - Personal Slayer miss callout is hidden at creation, is opt-in, requires combat, and is cancelled immediately when disabled.
 - Huntsman's Warmask accepts verified Mark of Hircine effect 252048 through ESO's Reticle Target path while retaining the existing target lifecycle and 10-second reapplication lockout.
 - Opening Buff Display or Debuff Display positioning controls on console attaches that existing HUD fragment to the settings scene so the corresponding interface is visible while it is being configured.
+
+- Automatically displays Huntsman's Warmask while the Mythic is equipped, without changing the user's saved manual tracking preference.

@@ -27,7 +27,7 @@ function H.CreateSettingsMenu()
         name = "DeadMarker Holodeck",
         displayName = "DeadMarker Holodeck",
         author = "Skye-Forge",
-        version = H.version or "0.0.18",
+        version = H.version or "0.0.19",
         slashCommand = "/hdsettings",
         registerForRefresh = true,
         registerForDefaults = true,
@@ -108,15 +108,16 @@ function H.CreateSettingsMenu()
         { type = "header", name = "What to capture" },
         {
             type = "description",
-            text = "Default: |cFFAA66bosses + reticle elites|r, no team ghosts.\n"
-                .. "Elites: |cC0E0FFsoft aim|r (crosshair on mob) is enough — not only Tab hard-lock.\n"
-                .. "Looking at adds while casting will sample them too if filter allows.\n"
-                .. "Debug: |cC0E0FF/hd record probe|r with crosshair on the mob.",
+            text = "Bosses and elites are separate:\n"
+                .. "· |cFFAA66Bosses|r = boss bar only (boss1–8). Pack fights: leave ON, no false bosses.\n"
+                .. "· |cFFAA66Elites|r = soft-aim reticle → mini tracks (not tagged boss).\n"
+                .. "Path sampling: keep crosshair on the mob while it moves — no room scan.\n"
+                .. "Debug: |cC0E0FF/hd record probe|r",
         },
         {
             type = "checkbox",
-            name = "Capture bosses (boss1–8 + reticle if no bar)",
-            tooltip = "Boss bar units always. If no boss bar, aimed hostile can be stored as training boss.",
+            name = "Capture bosses (boss bar boss1–8 only)",
+            tooltip = "Only traditional boss bar units.\nDoes NOT turn reticle mobs into bosses (pack elites use Elites below).",
             getFunc = function() return sv.recordCaptureBosses ~= false end,
             setFunc = function(v) sv.recordCaptureBosses = v end,
             default = true,
@@ -124,8 +125,9 @@ function H.CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Capture elites via reticle (soft aim)",
-            tooltip = "Samples unit under crosshair each tick (soft aim or hard-lock).\n"
-                .. "Not a room scan — glance = sample if filter allows.\nON/OFF is this checkbox — not the tier dropdown.",
+            tooltip = "Samples unit under crosshair each poll as mini/elite (not boss).\n"
+                .. "Must keep aiming to record movement — looking away pauses that unit.\n"
+                .. "Not a room scan. Tier filter applies only when this is ON.",
             getFunc = function() return sv.recordCaptureElites ~= false end,
             setFunc = function(v)
                 sv.recordCaptureElites = v

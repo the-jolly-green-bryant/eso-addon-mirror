@@ -24,7 +24,7 @@ It will be easiest to implement for the following kinds of addons:
 - Addons that only have a single saved var table for player settings
 - Addons that have a single saved var for character settings and a single saved var for account-wide settings, and the state for which one is active for a player is stored within the character settings table.
 
-If your addon falls into one of those two categories, migrating to LibSavedVars should only take a few lines of code beyond including the library.
+If your addon falls into one of these categories, migrating to LibSavedVars should only take a few lines of code beyond including the library.
 
 
 
@@ -40,41 +40,30 @@ If your addon falls into one of those two categories, migrating to LibSavedVars 
 
 - Addons with a saved var for character settings and one for account settings, but the state for which one is active is stored within the account settings table.
 
-  I'll probably add a function in the future to enable account-wide settings on all characters with a simple function call, but it will always retain the ability to disable account-wide settings for an individual character while having them enabled for others.
-
   LibSavedVars is designed with the idea that account-wide settings represent a player's global default preferences, and character-specific settings act as overrides to those defaults.
 
   Forcing a player to choose between whether they want global defaults -OR- per-character customization runs counter to the purpose of LibSavedVars.
 
 
-
-## Planned Features
-
-- 
-  Adding a function and a LibAddonMenu-2.0 button to enable account-wide settings on all characters
-- Utilities and LibAddonMenu-2.0 controls for copying settings between characters, accounts and servers.
-
-
-
 ## Installation
 
-Add a [`## DependsOn: LibSavedVars`](https://wiki.esoui.com/Addon_manifest_(.txt)_format#DependsOn) clause to your addon manifest.  That's it.  You should no longer need to bundle libraries with your addons.
+Add a [`## DependsOn: LibSavedVars`](https://wiki.esoui.com/Addon_manifest_(.addon)_format#DependsOn) clause to your addon manifest.  That's it.  You should no longer bundle libraries with your addons.
 
 
 
 ## Setup
 
-- Create a SavedVariables entry in your addon manifest txt file.  If you have any existing `## SavedVariables` entry (e.g. `MyAddon_Data`) leave it in place.
+- Create a SavedVariables entry in your addon manifest file.  If you have any existing `## SavedVariables` entry (e.g. `MyAddon_Data`) leave it in place.
 
-  ###### MyAddon/MyAddon.txt (manifest file example)
+  ###### MyAddon/MyAddon.addon (or .txt manifest file example)
 
   ```
   ## Title: My Cool Addon
   ## Author: silvereyes
   ## Description: Example of LibSavedVars usage.
-  ## Version: 1.2.0
-  ## APIVersion: 100030 100031
-  ## DependsOn: LibSavedVars LibAddonMenu-2.0
+  ## Version: 1.2.1
+  ## APIVersion: 100050 100051
+  ## DependsOn: LibSavedVars>=601000 LibAddonMenu-2.0>=43
   ## SavedVariables: MyAddon_Data
   ```
 

@@ -3,6 +3,57 @@
 <GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
     <Controls>
 
+        <!-- Self-contained copy of ZO_StableTrainingRow_Keyboard's structure. The base
+             ZO_StableTrainingRow_Keyboard template is only registered by the keyboard UI
+             and is unavailable on console clients, so both windows below inherit this
+             local template instead to stay platform-agnostic. -->
+        <Control name="RoobaUIWINDOW_STUFF" mouseEnabled="true" virtual="true">
+            <Dimensions y="64"/>
+            <OnInitialized>
+                ZO_StableTrainingRow_Init(self)
+            </OnInitialized>
+            <OnMouseEnter>
+                InitializeTooltip(InformationTooltip, self, RIGHT, -15)
+                SetTooltipToMountTrain(InformationTooltip, self.trainingType)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ClearTooltip(InformationTooltip)
+            </OnMouseExit>
+            <Controls>
+                <Button name="$(parent)TrainButton" mouseOverBlendMode="ADD" hidden="true">
+                    <Dimensions x="64" y="64"/>
+                    <Anchor point="LEFT"/>
+                    <OnClicked>
+                        ZO_Stable_TrainButtonClicked(self)
+                    </OnClicked>
+                    <Textures normal="EsoUI/Art/Progression/addPoints_up.dds" pressed="EsoUI/Art/Progression/addPoints_down.dds" mouseOver="EsoUI/Art/Progression/addPoints_over.dds"/>
+                </Button>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="64" y="64"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)TrainButton" relativePoint="RIGHT" offsetX="-10"/>
+                </Texture>
+                <Control name="$(parent)BarContainer" inherits="ZO_StableAttributeBar">
+                    <Dimensions y="35"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" offsetX="15"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                    <Controls>
+                        <Label name="$(parent)Value" override="true" font="$(BOLD_FONT)|26|soft-shadow-thick"/>
+                        <Control name="$(parent)StatusBar" override="true">
+                            <Dimensions y="23"/>
+                            <Controls>
+                                <StatusBar name="$(parent)Bar" inherits="ZO_ArrowStatusBarWithBG">
+                                    <AnchorFill/>
+                                </StatusBar>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)Label" font="$(BOLD_FONT)|20|soft-shadow-thick" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)BarContainer" relativePoint="TOPLEFT"/>
+                </Label>
+            </Controls>
+        </Control>
+
         <!-- Keyboard UI -->
         <TopLevelControl name="RoombaWindow" hidden="true" mouseEnabled="true">
             <Dimensions x="565" />
@@ -21,7 +72,7 @@
                     <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="5" offsetX="-300"/>
                     <Dimensions x="600" y="40" />
                 </Label>
-                <Control name="$(parent)SpeedRow" inherits="ZO_StableTrainingRow_Keyboard" />
+                <Control name="$(parent)SpeedRow" inherits="RoobaUIWINDOW_STUFF" />
             </Controls>
         </TopLevelControl>
 
@@ -39,11 +90,11 @@
                     <Dimensions x="80" y="80" />
                     <Anchor point="CENTER" relativeTo="$(parent)" />
                 </Texture>
-                <Label name="$(parent)Description" inherits="ZO_TooltipIfTruncatedLabel" font="ZoFontGameMedium" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SECOND_CONTRAST" horizontalAlignment="CENTER">
+                <Label name="$(parent)Description" inherits="ZO_TooltipIfTruncatedLabel" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SECOND_CONTRAST" horizontalAlignment="CENTER">
                     <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="5" offsetX="-300"/>
                     <Dimensions x="600" y="40" />
                 </Label>
-                <Control name="$(parent)SpeedRow" inherits="ZO_StableTrainingRow_Keyboard" />
+                <Control name="$(parent)SpeedRow" inherits="RoobaUIWINDOW_STUFF" />
             </Controls>
         </TopLevelControl>
 

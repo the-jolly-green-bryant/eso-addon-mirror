@@ -190,8 +190,7 @@ local function EnsureControl()
     background:SetEdgeColor(0, 0, 0, 0)
 
     local label = WINDOW_MANAGER:CreateControl(nil, root, CT_LABEL)
-    label:SetAnchor(CENTER, root, CENTER, 0, 0)
-    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     label:SetColor(1, 1, 1, 1)
 
@@ -310,17 +309,24 @@ local function ApplyAppearance(text)
 
     current.label:SetFont(ResolveFont())
     current.label:SetColor(color.r, color.g, color.b, color.a)
+    current.label:SetDimensions(4096, math.max(128, fontSize * 2))
     current.label:SetText(text)
 
-    local measuredWidth = current.label.GetTextWidth and current.label:GetTextWidth() or 0
+    local measuredWidth = current.label.GetTextDimensions and current.label:GetTextDimensions() or 0
+    if measuredWidth <= 0 and current.label.GetTextWidth then
+        measuredWidth = current.label:GetTextWidth()
+    end
     local measuredHeight = current.label.GetTextHeight and current.label:GetTextHeight() or 0
     local paddingX = math.ceil(fontSize * 0.55)
     local paddingY = math.ceil(fontSize * 0.25)
-    local width = math.max(measuredWidth + paddingX * 2, fontSize * 16)
+    local contentWidth = math.ceil(measuredWidth) + math.max(4, math.ceil(fontSize * 0.15))
+    local width = math.max(contentWidth + paddingX * 2, fontSize + paddingX * 2)
     local height = math.max(measuredHeight + paddingY * 2, fontSize * 1.5)
 
     current.root:SetDimensions(width, height)
-    current.label:SetDimensions(width - paddingX * 2, height - paddingY * 2)
+    current.label:ClearAnchors()
+    current.label:SetAnchor(TOPLEFT, current.root, TOPLEFT, paddingX, paddingY)
+    current.label:SetDimensions(contentWidth, height - paddingY * 2)
     current.background:SetCenterColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, settings.backgroundOpacity / 100)
     current.background:SetEdgeColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0)
     ApplyPosition()

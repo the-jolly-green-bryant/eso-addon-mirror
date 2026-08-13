@@ -237,6 +237,10 @@ local defaults = {
     perfSlowRainbow      = false,
     perfSingleStyleHook  = false,
     perfLimitTimelineCache = false,
+
+    -- einmaliger hinweis-dialog nach der installation. bleibt true sobald der
+    -- nutzer bestaetigt hat, dann poppt er nie wieder von selbst auf
+    infoDialogShown      = false,
 }
 
 -- true = animationen erlaubt. nur bei perfCombatOnly ausserhalb kampf false
@@ -1613,6 +1617,117 @@ local function OpenDonationMail()
     end
 end
 
+-- einmaliger hinweis-dialog nach der installation. verweist auf den Info-tab.
+-- bewusst ein eigenes WM-fenster statt ZO_Dialogs: so koennen wir die
+-- addon-farben und das logo genauso setzen wie im rest des addons
+local INFO_DIALOG_NAME = ADDON_NAME .. "_InfoDialog"
+local infoDialog
+
+-- hex aus der palette in 0-1 rgb, damit die farben im dialog zu chat/ui passen
+local function HexToRGB(hex)
+    local r = tonumber(hex:sub(1, 2), 16) / 255
+    local g = tonumber(hex:sub(3, 4), 16) / 255
+    local b = tonumber(hex:sub(5, 6), 16) / 255
+    return r, g, b
+end
+
+-- baut das fenster genau einmal und hebt es in infoDialog auf
+local function BuildInfoDialog()
+    if infoDialog then return infoDialog end
+
+    local ar, ag, ab = HexToRGB(AAB_COLORS.accent)   -- purpur, titel/rahmen
+    local vr, vg, vb = HexToRGB(AAB_COLORS.value)     -- lavendel, fliesstext
+
+    -- feste breite, hoehe rechnen wir unten aus der tatsaechlichen texthoehe.
+    -- so passt der dialog fuer jede sprache ohne dass text hinter den button laeuft
+    local W = 460
+    local PAD        = 20   -- rand links/rechts
+    local BODY_TOP   = 96   -- start des haupttexts unter der trennlinie
+    local BTN_GAP    = 20   -- luft zwischen text und button
+    local BTN_H      = 32
+    local BTN_BOTTOM = 18   -- luft zwischen button und unterkante
+
+    -- oberste ebene, damit der dialog ueber der restlichen UI liegt
+    local win = WM:CreateTopLevelWindow(INFO_DIALOG_NAME)
+    win:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    win:SetDrawTier(DT_HIGH)
+    win:SetDrawLayer(DL_OVERLAY)
+    win:SetMovable(true)
+    win:SetMouseEnabled(true)
+    win:SetClampedToScreen(true)
+    win:SetHidden(true)
+
+    -- dunkler rahmen im addon-look statt des grauen vanilla-dialogs
+    local bg = WM:CreateControlFromVirtual(INFO_DIALOG_NAME .. "_BG", win, "ZO_DefaultBackdrop")
+    bg:SetAnchorFill(win)
+    bg:SetCenterColor(0.05, 0.04, 0.09, 0.96)
+    bg:SetEdgeColor(ar, ag, ab, 0.9)
+
+    -- titelzeile in akzentfarbe
+    local title = WM:CreateControl(INFO_DIALOG_NAME .. "_Title", win, CT_LABEL)
+    title:SetFont("ZoFontWinH2")
+    title:SetColor(ar, ag, ab, 1)
+    title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    title:SetAnchor(TOPLEFT, win, TOPLEFT, PAD, 18)
+    title:SetText(GetString(SI_AAB_DLG_TITLE))
+
+    -- logo oben rechts, wie im installations-check
+    local logo = WM:CreateControl(INFO_DIALOG_NAME .. "_Logo", win, CT_TEXTURE)
+    logo:SetDimensions(56, 56)
+    logo:SetAnchor(TOPRIGHT, win, TOPRIGHT, -18, 14)
+    logo:SetTexture("AnimatedActionBarPlus/AnimatedActionBarPlus_64.dds")
+
+    -- trennlinie unter titel/logo
+    local sep = WM:CreateControl(INFO_DIALOG_NAME .. "_Sep", win, CT_TEXTURE)
+    sep:SetDimensions(W - 2 * PAD, 2)
+    sep:SetColor(ar, ag, ab, 0.5)
+    sep:SetTexture("EsoUI/Art/Miscellaneous/textbox_divider.dds")
+    sep:SetAnchor(TOPLEFT, win, TOPLEFT, PAD, 78)
+
+    -- haupttext, links unter der trennlinie. feste breite, damit der umbruch
+    -- und die gemessene hoehe stimmen, nach der wir das fenster dimensionieren
+    local body = WM:CreateControl(INFO_DIALOG_NAME .. "_Body", win, CT_LABEL)
+    body:SetFont("ZoFontWinH4")
+    body:SetColor(vr, vg, vb, 1)
+    body:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    body:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    body:SetDimensionConstraints(W - 2 * PAD, 0, W - 2 * PAD, 0)
+    body:SetAnchor(TOPLEFT, win, TOPLEFT, PAD, BODY_TOP)
+    body:SetWrapMode(TEXT_WRAP_MODE_WORD_WRAP)
+    body:SetText(GetString(SI_AAB_DLG_BODY))
+
+    -- jetzt steht der umbrochene text fest -> fenster + button danach ausrichten.
+    -- manche clients liefern die texthoehe erst nach einem layout-frame, daher
+    -- ein sinnvoller mindestwert als notnagel
+    local textH = body:GetTextHeight()
+    if not textH or textH < 40 then textH = 220 end
+    local H = BODY_TOP + textH + BTN_GAP + BTN_H + BTN_BOTTOM
+    win:SetDimensions(W, H)
+
+    -- bestaetigen-button unter dem text (nicht am fensterrand), schliesst
+    -- den dialog und merkt sich das flag
+    local btn = WM:CreateControlFromVirtual(INFO_DIALOG_NAME .. "_OK", win, "ZO_DefaultButton")
+    btn:SetDimensions(160, BTN_H)
+    btn:SetAnchor(TOP, body, BOTTOM, 0, BTN_GAP)
+    btn:SetText(GetString(SI_AAB_DLG_OK))
+    btn:SetHandler("OnClicked", function()
+        win:SetHidden(true)
+        if sv then sv.infoDialogShown = true end
+    end)
+
+    infoDialog = win
+    return win
+end
+
+-- macht den dialog auf. force=true umgeht das gesehen-flag (fuer /aab dialog),
+-- ohne force poppt er nur beim allerersten mal
+local function ShowInfoDialog(force)
+    if not force and sv.infoDialogShown then return end
+    local win = BuildInfoDialog()
+    win:SetHidden(false)
+    win:BringWindowToTop()
+end
+
 -- listet die aktuell geslotteten ability-ids beider bars im chat auf,
 -- inklusive erkannter dauer und gesetztem End-Anim-Override.
 local function PrintSlottedIds()
@@ -1674,6 +1789,7 @@ local function PrintCommandHelp()
     local h = "|ca970ff"; local k = "|ca970ff"; local e = "|r"
     d(h .. "=== AnimatedActionBar+ " .. GetString(SI_AAB_CMD_HEAD) .. " ===" .. e)
     d(k .. "/aab" .. e .. " - " .. GetString(SI_AAB_CMD_PANEL))
+    d(k .. "/aab info" .. e .. " - " .. GetString(SI_AAB_CMD_INFO))
     d(k .. "/aab id" .. e .. " |c8a7fa6(/aabids)|r - " .. GetString(SI_AAB_CMD_ID))
     d(k .. "/aab setend <id> <ms|auto>" .. e .. " - " .. GetString(SI_AAB_CMD_SETEND))
     d(k .. "/aab debug" .. e .. " - " .. GetString(SI_AAB_CMD_DEBUG))
@@ -1766,7 +1882,7 @@ local function BuildMenu()
         name                = "AnimatedActionBar+",
         displayName         = C_TITLE .. "Animated" .. C_RESET .. "ActionBar" .. C_TITLE .. "+" .. C_RESET,
         author              = "haze068",
-        version             = "1.8.0",
+        version             = "1.8.1",
         slashCommand        = "/aabplus",
         registerForRefresh  = true,
         registerForDefaults = true,
@@ -2624,6 +2740,17 @@ local function BuildMenu()
             },
         },
         {
+            type      = "submenu",
+            reference = ADDON_NAME .. "InfoSubmenu",
+            name      = C_FRAME .. GetString(SI_AAB_SUB_INFO) .. C_RESET,
+            tooltip   = GetString(SI_AAB_SUB_INFO_TT),
+            controls  = {
+                { type = "description", text = GetString(SI_AAB_INFO_THINFRAMES) },
+                { type = "divider" },
+                { type = "description", text = GetString(SI_AAB_INFO_GAMEPAD) },
+            },
+        },
+        {
             type     = "submenu",
             name     = C_DONATE .. GetString(SI_AAB_SUB_CONTACT) .. C_RESET,
             tooltip  = GetString(SI_AAB_SUB_CONTACT_TT),
@@ -2772,6 +2899,20 @@ local function OnAddOnLoaded(_, addonName)
         end
     end
 
+    -- oeffnet das panel und klappt direkt das Info-submenu auf. LAM baut die
+    -- controls erst beim ersten oeffnen, daher kurz warten und dann aufklappen
+    local function OpenInfo()
+        OpenPanel()
+        zo_callLater(function()
+            local sub = _G[ADDON_NAME .. "InfoSubmenu"]
+            -- .open ist der aufklapp-status des submenus. nur oeffnen wenn zu,
+            -- ein zweiter aufruf wuerde es sonst wieder zuklappen
+            if sub and sub.open == false and sub.OnClicked then
+                sub:OnClicked()
+            end
+        end, 100)
+    end
+
     -- ein einziger einstieg mit sub-befehlen. args wird an leerzeichen getrennt.
     local function Dispatch(args)
         args = args or ""
@@ -2780,6 +2921,8 @@ local function OnAddOnLoaded(_, addonName)
 
         if cmd == "" then
             OpenPanel()
+        elseif cmd == "info" then
+            OpenInfo()
         elseif cmd == "id" or cmd == "ids" then
             PrintSlottedIds()
         elseif cmd == "setend" then
@@ -2788,6 +2931,10 @@ local function OnAddOnLoaded(_, addonName)
             PrintDebugDump()
         elseif cmd == "track" or cmd == "trace" then
             ToggleExpireTrace()
+        elseif cmd == "dialog" then
+            -- versteckter test-befehl: hinweis-dialog erzwingen, auch wenn
+            -- er schon bestaetigt wurde. bewusst nicht in der hilfe gelistet
+            ShowInfoDialog(true)
         elseif cmd == "cmd" or cmd == "commands" or cmd == "?" then
             PrintCommandHelp()
         else
@@ -2802,12 +2949,13 @@ local function OnAddOnLoaded(_, addonName)
     -- aufrufen können statt über den chat-parser
     AnimatedActionBarPlus = AnimatedActionBarPlus or {}
     AnimatedActionBarPlus.OpenPanel        = OpenPanel
+    AnimatedActionBarPlus.OpenInfo         = OpenInfo
     AnimatedActionBarPlus.PrintSlottedIds  = PrintSlottedIds
     AnimatedActionBarPlus.SetExpireLength  = SetExpireOverride  -- (idStr, "ms"|"auto")
     AnimatedActionBarPlus.PrintDebug       = PrintDebugDump
     AnimatedActionBarPlus.PrintCommands    = PrintCommandHelp
     AnimatedActionBarPlus.RunCommand       = Dispatch           -- roher "id", "setend", ...
-    AnimatedActionBarPlus.version          = "1.8.0"
+    AnimatedActionBarPlus.version          = "1.8.1"
 
     -- kurze aliase fürs chat-tab-complete
     SLASH_COMMANDS["/aabids"]   = function() PrintSlottedIds() end
@@ -2824,6 +2972,10 @@ local function OnAddOnLoaded(_, addonName)
         if sv.perfSlotLookupMap and RebuildSlotLookup then RebuildSlotLookup() end
         lastQuickslotCooldownRemain =
             GetSlotCooldownInfo(QUICKSLOT_INDEX, HOTBAR_CATEGORY_QUICKSLOT_WHEEL) or 0
+
+        -- einmaliger hinweis-dialog. etwas spaeter, damit er nicht in den
+        -- lade-screen platzt sondern erst wenn der spieler wirklich im spiel ist
+        zo_callLater(function() ShowInfoDialog(false) end, 2000)
     end, 500)
 end
 

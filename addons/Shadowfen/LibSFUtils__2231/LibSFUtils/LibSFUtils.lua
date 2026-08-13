@@ -93,6 +93,10 @@ sfutil.rgb = {
     mythic = sfutil.colors.mythic.rgb
 }
 
+
+local select = select
+local unpack = unpack
+
 local function ZOS_addSystemMsg(msg)
     CHAT_ROUTER:AddSystemMessage(msg)
 end
@@ -115,15 +119,76 @@ function sfutil.iter_args(...)
         end
 end
 
---- Creates a closure that calls `callback` with `tblself` as its first argument,
---- followed by whatever arguments the returned function receives.
---- @param callback function  The function to be invoked later.
---- @param tblself  table|nil  Optional “self” table that will be passed first.
---- @return function  A new function that you can call with any arguments.
-function sfutil.closure(callback, tblself, ...)
+--[[ closure for pure functions and varargs 
+        @param callback function - The function to be invoked later.
+        @param ... - any Arguments to bind to the callback.
+
+        @return function - A function that calls callback with the bound arguments,
+                    followed by any arguments supplied when the returned function is invoked.
+        
+    Yes, you can just pass self as the first or only arg, but having closure() and
+    methodClosure() make the code intention clearer to understand.
+--]]
+function sfutil.closure(callback, ...)
+    local bound = {...}
+    local boundCount = select("#", ...)
+
     return function(...)
-            return callback(tblself, ...)
+        local providedcnt = select("#", ...)
+        if providedcnt == 0 then
+            -- no additional parameters
+            return callback(unpack(bound, 1, boundCount))
         end
+
+        -- merge base and additional parameters into single arg list
+        local args = {}
+
+        for i = 1, boundCount do
+            args[i] = bound[i]
+        end
+
+        local provided = {...}
+        for i = 1, providedcnt do
+            args[boundCount + i] = provided[i]
+        end
+
+        return callback(unpack(args))
+    end
+end
+
+--[[ closure for method functions, self, and varargs 
+        @param callback function - The function to be invoked later.
+        @param tblself table|nil - Value passed as first argument to callback.
+        @param ... - any Arguments to bind to the callback.
+
+        @return function - A function that calls callback with the bound arguments (including tblself),
+                    followed by any arguments supplied when the returned function is invoked.
+--]]
+function sfutil.methodClosure(callback, tblself, ...)
+    local bound = {...}
+    local boundCount = select("#", ...)
+
+    return function(...)
+        local providedcnt = select("#", ...)
+        if providedcnt == 0 then
+            -- no additional parameters
+            return callback(tblself, unpack(bound, 1, boundCount))
+        end
+
+        -- merge base and additional parameters into single arg list
+        local args = {}
+
+        for i=1,boundCount do
+            args[i] = bound[i]
+        end
+
+        local provided = {...}
+        for i=1, providedcnt do
+            args[boundCount+i] = provided[i]
+        end
+
+        return callback(tblself, unpack(args))
+    end
 end
 
 
@@ -224,6 +289,7 @@ function sfutil.WrapFunction(namespace, functionName, wrapper)
         -- invalid parameters
         return nil
     end
+    assert(type(namespace[functionName])=="function")
     local originalFunction = namespace[functionName]
     namespace[functionName] = function(...)
         return wrapper(originalFunction, ...)
@@ -242,10 +308,12 @@ end
 
 -- turn a string (hopefully containing a boolean value) into a boolean
 function sfutil.str2bool(str)
-    if (string.lower(str) == "true" or str == "1") then
-        return true
+    if type(str) ~= "string" then
+        return false
     end
-    return false
+
+    str = string.lower(str)
+    return str=="true" or str=="1"
 end
 
 ---------------------
@@ -255,7 +323,7 @@ end
 -- Any other value will return false
 function sfutil.isTrue(val)
     -- must be a variety of true value
-    if (val == 1 or val == "1" or val == true or val == "true") then
+    if val == 1 or val == "1" or val == true or val == "true" then
         return true
     end
     return false
@@ -316,7 +384,7 @@ end
 -- Convert a number of seconds into an
 -- HH:MM:SS string.
 function sfutil.secondsToClock(seconds)
-    seconds = tonumber(seconds)
+    seconds = tonumber(seconds) or 0
 
     if seconds <= 0 then
         return "00:00:00"
@@ -341,27 +409,34 @@ end
 -- (Standalone function - not part of addonChatter.)
 function sfutil.systemMsg(prefix, text, hexcolor)
     hexcolor = sfutil.nilDefault(hexcolor, sfutil.hex.normal)
-    local msg = prefix .. sfutil.ColorText(text, hexcolor)
+    local msg = sfutil.str(prefix, sfutil.ColorText(text, hexcolor))
     ZOS_addSystemMsg(msg)
 end
 
 sfutil.addonChatter = {}
+sfutil.addonChatter.__index = sfutil.addonChatter
+
+local NOOP = function() end
 
 function sfutil.addonChatter:New(addon_name)
-    local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    local o = setmetatable({}, self)
 
+    o.addonName = addon_name
     o.namecolor = sfutil.hex.goldenrod
     o.normalcolor = sfutil.hex.mocassin
     o.debugcolor = sfutil.hex.ltskyblue
     o.prefix = sfutil.initSystemMsgPrefix(addon_name, o.namecolor)
-    o.d = function(...)
-        end -- debug messages off by default
+    o.d = NOOP -- debug messages off by default
     o.isdbgon = false
     return o
 end
 
+-- private version of the d function
+local function _d(self, ...)
+    local msg = sfutil.ColorText(sfutil.dstr(" ", ...), self.debugcolor)
+    ZOS_addSystemMsg(self.prefix .. msg)
+end
+-- ------------- set colors for chat messages
 function sfutil.addonChatter:setNormalColor(hexcolor)
     self.normalcolor = hexcolor
 end
@@ -370,11 +445,41 @@ function sfutil.addonChatter:setDebugColor(hexcolor)
     self.debugcolor = hexcolor
 end
 
+function sfutil.addonChatter:setNameColor(hexcolor)
+    self.namecolor = hexcolor
+    self.prefix = sfutil.initSystemMsgPrefix(self.addonName, self.namecolor)
+end
+
+-- ------------- debug state
 function sfutil.addonChatter:disableDebug()
     self.isdbgon = false
-    self.d = function(...)
-        end
+    self.d = NOOP
 end
+
+function sfutil.addonChatter:enableDebug()
+    self.isdbgon = true
+    self.d = _d
+end
+
+function sfutil.addonChatter:toggleDebug()
+    if self.isdbgon then
+        self:disableDebug()
+    else
+        self:enableDebug()
+    end
+end
+
+function sfutil.addonChatter:isDebugEnabled()
+    return self.isdbgon
+end
+
+function sfutil.addonChatter:getDebugState()
+    -- as a debug function, this returns a string
+    return sfutil.bool2str(self.isdbgon)
+end
+
+-- ------------- send messages to chat
+
 -- print normal messages to chat
 function sfutil.addonChatter:systemMessage(...)
     local msg = sfutil.str(self.prefix, sfutil.ColorText(sfutil.dstr(" ", ...), self.normalcolor))
@@ -383,35 +488,7 @@ end
 
 -- print debug messages to chat
 function sfutil.addonChatter:debugMsg(...)
-    if (self.isdbgon == true) then
-        local msg = sfutil.ColorText(sfutil.dstr(" ", ...), self.debugcolor)
-        ZOS_addSystemMsg(self.prefix .. msg)
-    end
-end
-
-function sfutil.addonChatter:enableDebug()
-    self.isdbgon = true
-    self.d = function(...)
-            local msg = sfutil.ColorText(sfutil.dstr(" ", ...), self.debugcolor)
-            ZOS_addSystemMsg(self.prefix .. msg)
-        end
-end
-
-function sfutil.addonChatter:toggleDebug()
-    if (self.isdbgon == true) then
-        self:disableDebug()
-    else
-        self:enableDebug()
-    end
-end
-
-function sfutil.addonChatter:getDebugState()
-    -- as a debug function, this returns a string
-    return sfutil.bool2str(self.isdbgon)
-end
-
-function sfutil.addonChatter:isDebugEnabled()
-    return self.isdbgon
+    self.d(self, ...)
 end
 
 -- -------------------------------------------------------
@@ -492,17 +569,35 @@ end
 -- -----------------------------------------------------------------------
 -- Utilities for parsing colors in chat messages
 
--- Get the positions of all of the color markers (|c and |r) in a string
--- Return a table where each entry has the index into the string (start)
--- and the type of marker (code = "c" or "r", lower case)
--- Havok allows "|" escape character for "|" (user input) so we must handle doubled pipes for chat.
---
--- Returns the markertable for the markers that are in the string
---   (can be empty but never nil)
--- where table entry is { start, estr, code } and
---   start is the beginning of the string section for this entry
---   estr is the end of the string section for this entry (section includes the trailing color code for |c).
---   code is either "c" or "r" (lower case)
+--[[ Returns a table containing all ESO color delimiters found in a string.
+
+    Searches the string for color start markers (`|cRRGGBB`) and color reset
+    markers (`|r`). The returned table is always valid (never nil), but may
+    be empty if no delimiters are found.
+    Color markers are normalized to lowercase if they were found as uppercase.
+
+    Each entry in the returned table has the form:
+        {
+            start = number,  -- 1-based starting position of the delimiter
+            estr  = number,  -- 1-based ending position of the delimiter
+            code  = string   -- "c" for color start or "r" for color reset
+        }
+
+    For color start markers, `estr` includes the entire color sequence:
+        |cRRGGBB
+
+    For reset markers, `estr` includes:
+    |r
+
+    Returns:
+        {
+            { start = 1,  estr = 8,  code = "c" },
+            { start = 11, estr = 12, code = "r" }
+        }
+
+    @param str string|nil The string to search for color delimiters.
+    @return table Array of delimiter entries; never nil.
+--]]
 function sfutil.getAllColorDelim(str)
     if not str then
         return {}
@@ -531,64 +626,172 @@ function sfutil.getAllColorDelim(str)
     return t1
 end
 
--- Evaluate and correct the color markers in the string so that
--- empty colors are marked for removal, "|c" markers are
--- always balanced by "|r" markers, and we don't have extra "|r"
--- markers
---
--- Uses the source string and a marker table as produced by
--- getAllColorDelim(). The marker table is modified by this function.
---
--- Returns the modified markertable for the markers that are in (or should be in) the string
--- where table entry is { start, estr, code, action } and
---   action is nil (keep), "+" (add), or "-" (remove);
---   estr is the end of the string section for this entry.
-function sfutil.regularizeColors(markertable, str)
-    if not str then
-        return {}
-    end
-    if not markertable or #markertable == 0 then
-        return {}
-    end
-    -- clean positions
-    local prev_v, sv_start
-    local needR = false
+--[[
+Regularizes an ESO color delimiter table against a string.
+
+Examines the supplied markers table and identifies delimiter corrections
+needed to make the color sequence valid and balanced.
+
+The markers table must contain entries sorted by start position.
+
+The function may:
+  * Mark unnecessary reset markers (`|r`) for removal.
+  * Insert missing reset markers (`|r`) when a new color starts before the
+    previous color has been closed.
+  * Mark empty color sections (`|cRRGGBB|r`) for removal.
+  * Append a missing final reset marker when the string ends while a color
+    is still active.
+
+Each markers table entry has the form:
+    {
+        start  = number,       -- 1-based start position
+        estr   = number,       -- 1-based end position
+        code   = "c"|"r",      -- color start or reset marker
+        action = nil|"+"|"-"   -- correction to apply: keep, add, or remove
+    }
+
+The input markers table is modified in place and returned.
+
+@param markers table Existing color delimiter entries sorted by start position.
+@param str string Source string being validated.
+
+@return table Modified markers table; empty table if str or markers table is nil/empty.
+--]]
+--[[
+function sfutil.regularizeColors(markers, str)
+    if not str then return {} end
+    if not markers or #markers == 0 then return {} end
+
+    local result = {}
     local tbl_insert = table.insert
-    for k, v in ipairs(markertable) do
-        sv_start = v.start
-        if v.code == "r" then
-            if needR == false then
-                -- don't need this |r so mark for removal
-                v.action = "-"
+
+    local prev_v
+    local inColor = false
+
+    for _, v in ipairs(markers) do
+        local marker = v
+
+        if marker.code == "r" then
+            if not inColor then
+                -- unnecessary |r
+                marker.action = "-"
+                
             else
-                needR = false
+                inColor = false
             end
-        elseif v.code == "c" then
-            if needR == true then
-                -- the color we were processing has been bumped to next, so we will process it again.
-                -- we are already in a color so we need to add a |r to close it
-                v = {start = sv_start, estr = sv_start, code = "r", action = "+"}
-                tbl_insert(markertable, k, v)
-                needR = false
-            else
-                needR = true
+
+        elseif marker.code == "c" then
+            if inColor then
+                -- previous color was not closed
+                -- insert missing |r before this color
+                local reset = {
+                    start = marker.start,
+                    estr = marker.start,
+                    code = "r",
+                    action = "+"
+                }
+
+                tbl_insert(result, reset)
+                inColor = false
             end
+
+            inColor = true
         end
 
-        -- filter out empty colors. At this point if prev_v.code == "c" then v.code == "r".
-        if prev_v and prev_v.code == "c" and prev_v.estr + 1 == sv_start then
-            -- mark both this "|r" and the previous "|c" for removal
+        -- remove empty colors: |cRRGGBB|r
+        if prev_v and prev_v.code == "c" and prev_v.estr + 1 == marker.start
+        then
             prev_v.action = "-"
-            v.action = "-"
+            marker.action = "-"
         end
-        prev_v = v
+
+        tbl_insert(result, marker)
+        prev_v = marker
     end
-    -- we've reached the end of the markertable
-    if needR == true then
-        -- we still need a |r, so append one
-        tbl_insert(markertable, {start = #str + 1, estr = #str + 1, action = "+", code = "r"})
+
+    -- add missing final reset
+    if inColor then
+        tbl_insert(result, {
+            start = #str + 1,
+            estr = #str + 1,
+            code = "r",
+            action = "+"
+        })
     end
-    return markertable
+
+    return result
+end
+--]]
+function sfutil.regularizeColors(markers, str)
+    if not str then return {} end
+    if not markers or #markers == 0 then return {} end
+
+    local result = {}
+    local tbl_insert = table.insert
+
+    local prev_v
+    local inColor = false
+
+    for _, marker in ipairs(markers) do
+
+        if marker.code == "r" then
+
+            if not inColor then
+                -- unnecessary |r
+                marker.action = "-"
+            else
+                -- remove empty color: |cRRGGBB|r
+                if prev_v
+                    and prev_v.code == "c"
+                    and prev_v.estr + 1 == marker.start
+                then
+                    prev_v.action = "-"
+                    marker.action = "-"
+                end
+
+                inColor = false
+            end
+
+        elseif marker.code == "c" then
+
+            if inColor then
+                -- Adjacent colors: |cAAAAAA|cBBBBBB
+                -- discard the previous color and keep the new one.
+                if prev_v
+                    and prev_v.code == "c"
+                    and prev_v.estr + 1 == marker.start
+                then
+                    prev_v.action = "-"
+                else
+                    -- Previous color contained text and was not closed.
+                    -- Insert a missing |r before the new color.
+                    tbl_insert(result, {
+                        start = marker.start,
+                        estr = marker.start,
+                        code = "r",
+                        action = "+"
+                    })
+                end
+            end
+
+            inColor = true
+        end
+
+        tbl_insert(result, marker)
+        prev_v = marker
+    end
+
+    -- Add missing final reset.
+    if inColor then
+        tbl_insert(result, {
+            start = #str + 1,
+            estr = #str + 1,
+            code = "r",
+            action = "+"
+        })
+    end
+
+    return result
 end
 
 function sfutil.applyColor(str, colorhex)

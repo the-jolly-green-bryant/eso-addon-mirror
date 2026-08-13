@@ -176,6 +176,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Puma](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Puma__5fcc6401-3a36-427e-acd5-9611fb589e78) | Vixen_Hunny | Console | — |
 | [PurchaseTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/be.ste/PurchaseTracker__2891) | be.ste | PC / Mac | 1.0.0 |
 | [Purge Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Purge-Tracker__1803) | code65536 | PC / Mac | 1.3.2 |
+| [PUt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/PUt__8f749129-7ffe-4951-a1f9-bf3ac664788f) | user562x | Console | — |
 | [PvDoor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/skineh/PvDoor__3098) | skineh | PC / Mac | 1.0.2 |
 | [PVP Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Velothhh/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d) | Velothhh | Console | — |
 | [PvP FPS 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/PvP-FPS-2018__2011) | Phuein | PC / Mac | 1.22 |

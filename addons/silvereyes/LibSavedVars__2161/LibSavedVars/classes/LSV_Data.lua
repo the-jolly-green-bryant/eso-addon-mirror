@@ -1,16 +1,12 @@
---[[
-     LibSavedVars data storage class.
-     
-     LSV_Data:NewAccountWide()
-     LSV_Data:NewCharacterSettings()
-  ]]--
+--[[ LibSavedVars data storage class.
+--]]
 
 local LIBNAME      = "LibSavedVars"
 local CLASSNAME    = "Data"
 local CLASSVERSION = 1.8
 
 -- If a newer version of this class is already loaded, exit
-local class, protected = LibSavedVars:NewClass(CLASSNAME, CLASSVERSION)
+local class, protected = LibSavedVars:LoadClass(CLASSNAME, CLASSVERSION)
 if not class then return end
 
 LSV_Data = class
@@ -22,8 +18,8 @@ local DO_NOT_OVERWRITE = true
 local debugMode = false
 
 -- Private member declarations.  Definitions are at the end of the file.
-local initAccountWide, initCharacterSettings, initToggle, onToggleLazyLoaded, shiftOptionalParams, 
-      tableDiffKeys, tableFilterKeys, tableMerge, validateScope
+local initAccountWide, initCharacterSettings, initToggle, onToggleLazyLoaded, 
+      validateScope
 
 -- Lua 5.1 versions of next() and ipairs()
 local rawnext = LibLua52 and LibLua52.rawnext or next
@@ -37,12 +33,11 @@ local rawipairs = LibLua52 and LibLua52.rawipairs or ipairs
 -- 
 ---------------------------------------
 
---[[
-     Creates a new data object with account-wide saved vars as the default.  You can add a character-specific saved vars
+--[[ Creates a new data object with account-wide saved vars as the default. You can add a character-specific saved vars
      toggle by chaining :AddCharacterSettingsToggle() below.  
      
      You can also chain with several other methods, such as :Migrate(), :RemoveSettings(), :RenameSettings() and 
-     :Version(). See the Public Methods section below for details.
+     :Version().
      
      savedVariableTableName:  The name of the top-level global table containing the saved vars. Required. 
                               Matches the name in ## SavedVariables: in the manifest text file.
@@ -60,28 +55,26 @@ local rawipairs = LibLua52 and LibLua52.rawipairs or ipairs
                                          (i.e. "NA Megaserver", "EU Megaserver", "PTS"). Defaults to megaserver name.
                                          
      displayName:             (optional) The account name the saved vars are for. Defaults to the current account name.
-  ]]--
+--]]
 function LSV_Data:NewAccountWide(savedVariableTable, version, namespace, defaults, profile, displayName)
-    
-    local _
+
     version, namespace, defaults, _, profile, displayName = 
-        shiftOptionalParams(version, namespace, defaults, nil, profile, displayName)
-    
-    protected.Debug("LSV_Data:NewAccountWide(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>)", debugMode, 
+        LSV_Data.shiftOptionalParams(version, namespace, defaults, nil, profile, displayName)
+
+    protected.zoDebug(debugMode, "LSV_Data:NewAccountWide(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>)",
         savedVariableTable, version, namespace, defaults, profile, displayName)
-    
+
     local data = { 
         __dataSource = { defaultToAccount = true }
     }
     setmetatable(data, self)
-    
+
     initAccountWide(data, savedVariableTable, version, namespace, defaults, profile, displayName)
 
     return data
 end
 
---[[
-     Creates a new data object with character-specific saved vars as the default.  You can add an account-wide saved 
+--[[ Creates a new data object with character-specific saved vars as the default. You can add an account-wide saved 
      vars toggle by chaining :AddAccountWideToggle() below.  
      
      You can also chain with several other methods, such as :Migrate(), :RemoveSettings(), :RenameSettings() and 
@@ -105,19 +98,19 @@ end
      displayName:             (optional) The account name the saved vars are for. Defaults to the current account name.
      
      
-     characterName:           (optional) The character name the saved vars belong to.  Defaults to the current character.
+     characterName:           (optional) The character name the saved vars belong to. Defaults to the current character.
      
-     characterId:             (optional) The character id the saved vars belong to.  Defaults to the current character id.
-  ]]--
+     characterId:             (optional) The character id the saved vars belong to. Defaults to the current character id.
+--]]
 function LSV_Data:NewCharacterSettings(savedVariableTable, version, namespace, defaults, profile, displayName, 
                                        characterName, characterId, characterKeyType)
     
     local _
     version, namespace, defaults, _, profile, displayName, characterName, characterId, characterKeyType = 
-        shiftOptionalParams(version, namespace, defaults, nil, profile, displayName, characterName, characterId, characterKeyType)
+        LSV_Data.shiftOptionalParams(version, namespace, defaults, nil, profile, displayName, characterName, characterId, characterKeyType)
     
-    protected.Debug("LSV_Data:NewCharacterSettings(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>, <<7>>, <<8>>, <<9>>)", 
-        debugMode, savedVariableTable, version, namespace, defaults, profile, displayName, 
+    protected.zoDebug(debugMode, "LSV_Data:NewCharacterSettings(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>, <<7>>, <<8>>, <<9>>)", 
+        savedVariableTable, version, namespace, defaults, profile, displayName,
         characterName, characterId, characterKeyType)
     
     local data = { 
@@ -139,23 +132,21 @@ end
 -- 
 ---------------------------------------
 
---[[
-     Used to add an account-wide saved vars scope to an existing character-specific scope that can then be toggled
+--[[ Used to add an account-wide saved vars scope to an existing character-specific scope that can then be toggled
      back and forth at runtime, automatically switching the behavior of reading and writing settings on this instance.
      
      See the NewAccountWide() constructor above for parameter descriptions.
-  ]]--
+--]]
 function LSV_Data:AddAccountWideToggle(savedVariableTableName, version, namespace, defaults, profile, displayName)
     if not self then
         return
     end
     
-    protected.Debug("LSV_Data:AddAccountWideToggle(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>)", debugMode, 
+    protected.zoDebug(debugMode, "LSV_Data:AddAccountWideToggle(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>)",
         savedVariableTableName, version, namespace, defaults, profile, displayName)
     
-    local _
     version, namespace, defaults, _, profile, displayName = 
-        shiftOptionalParams(version, namespace, defaults, nil, profile, displayName)
+        LSV_Data.shiftOptionalParams(version, namespace, defaults, nil, profile, displayName)
     
     local ds = self.__dataSource
     
@@ -168,8 +159,8 @@ function LSV_Data:AddAccountWideToggle(savedVariableTableName, version, namespac
     if defaults == nil then
         defaults = characterDefaults
     else
-        ds.pinnedAccountKeys = tableDiffKeys(defaults, characterDefaults)
-        defaults = tableMerge(defaults, characterDefaults)
+        ds.pinnedAccountKeys = LSV_Data.tableDiffKeys(defaults, characterDefaults)
+        defaults = protected.tableMerge(defaults, characterDefaults)
     end
     
     if profile == nil then
@@ -186,12 +177,11 @@ function LSV_Data:AddAccountWideToggle(savedVariableTableName, version, namespac
     return self
 end
 
---[[
-     Used to add an character-specific saved vars scope to an existing account-wide scope that can then be toggled
+--[[ Used to add an character-specific saved vars scope to an existing account-wide scope that can then be toggled
      back and forth at runtime, automatically switching the behavior of reading and writing settings on this instance.
      
      See the NewCharacterSettings() constructor above for parameter descriptions.
-  ]]--
+--]]
 function LSV_Data:AddCharacterSettingsToggle(savedVariableTableName, version, namespace, defaults, profile, 
                                              displayName, characterName, characterId, characterKeyType)
     if not self then
@@ -200,10 +190,10 @@ function LSV_Data:AddCharacterSettingsToggle(savedVariableTableName, version, na
     
     local _
     version, namespace, defaults, _, profile, displayName, characterName, characterId, characterKeyType = 
-        shiftOptionalParams(version, namespace, defaults, nil, profile, displayName, characterName, characterId, characterKeyType)
+        LSV_Data.shiftOptionalParams(version, namespace, defaults, nil, profile, displayName, characterName, characterId, characterKeyType)
     
-    protected.Debug("LSV_Data:AddCharacterSettingsToggle(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>, <<7>>, <<8>>, <<9>>)", 
-        debugMode, savedVariableTableName, version, namespace, defaults, profile, displayName, 
+    protected.zoDebug(debugMode, "LSV_Data:AddCharacterSettingsToggle(<<1>>, <<2>>, <<3>>, <<4>>, <<5>>, <<6>>, <<7>>, <<8>>, <<9>>)", 
+        savedVariableTableName, version, namespace, defaults, profile, displayName, 
         characterName, characterId, characterKeyType)
     
     local ds = self.__dataSource
@@ -217,10 +207,10 @@ function LSV_Data:AddCharacterSettingsToggle(savedVariableTableName, version, na
         defaults = { }
         trimDefaults = ZO_ShallowTableCopy(ds.account.defaults)
     else
-        ds.pinnedAccountKeys = tableDiffKeys(ds.account.defaults, defaults)
-        local defaultsNotOnAccount = tableDiffKeys(defaults, ds.account.defaults)
+        ds.pinnedAccountKeys = LSV_Data.tableDiffKeys(ds.account.defaults, defaults)
+        local defaultsNotOnAccount = LSV_Data.tableDiffKeys(defaults, ds.account.defaults)
         if next(defaultsNotOnAccount) ~= nil then
-            ds.account.defaults = tableMerge(ds.account.defaults, defaultsNotOnAccount)
+            ds.account.defaults = protected.tableMerge(ds.account.defaults, defaultsNotOnAccount)
         end
     end
     
@@ -241,7 +231,7 @@ end
 
 function LSV_Data:EnableDefaultsTrimming()
     local ds = rawget(self, "__dataSource")
-    if not ds then return end
+    if not ds then return self end
     if ds.account then
         ds.account:EnableDefaultsTrimming()
     end
@@ -251,39 +241,40 @@ function LSV_Data:EnableDefaultsTrimming()
     return self
 end
 
---[[ 
-     Returns true if account-wide saved vars are currently toggled on.  When no character-specific settings have been
+--[[ Returns true if account-wide saved vars are currently toggled on. When no character-specific settings have been
      specified, always returns true.
-  ]]--
+ --]]
 function LSV_Data:GetAccountSavedVarsActive()
     if not self then return end
-    protected.Debug("LSV_Data:GetAccountSavedVarsActive()", debugMode)
+    protected.zoDebug(debugMode, "LSV_Data:GetAccountSavedVarsActive()")
     local ds = rawget(self, "__dataSource")
     
-    if ds.active then
-        return ds.active == ds.account
-    else
-        return ds.account ~= nil
+    if ds then
+      if ds.active then
+          return ds.active == ds.account
+      else
+          return ds.account ~= nil
+      end
     end
+    return false
 end
 
---[[ 
-     Returns the internal ZO_SavedVars instance that is active for the currently logged in character.
+--[[ Returns the internal ZO_SavedVars instance that is active for the currently logged in character.
      
      Usage note: if no settings have yet been accessed with getters or setters, calling this method will cause an 
      underlying call to ZO_SavedVars:NewCharacterIdSettings() or ZO_SavedVars:NewAccountWide().
-  ]]--
+--]]
 function LSV_Data:GetActiveSavedVars(key)
     if not self then return end
-    protected.Debug("LSV_Data:GetActiveSavedVars(<<1>>)", debugMode, key)
-    
+    protected.zoDebug(debugMode, "LSV_Data:GetActiveSavedVars(<<1>>)", key)
+
     local ds = rawget(self, "__dataSource")
-    
+
     -- Get account pinned vars
     if key ~= nil and ds.account and ds.pinnedAccountKeys and ds.pinnedAccountKeys[key] ~= nil then
         return ds.account.savedVars
     end
-    
+
     if not ds.active then
         if ds.account then
             ds.active = ds.account
@@ -291,25 +282,24 @@ function LSV_Data:GetActiveSavedVars(key)
             ds.active = ds.character
         end
     end
-    
+
     return ds.active and ds.active.savedVars or nil
 end
 
---[[
-     Returns a function like next() used to iterate over the active ZO_SavedVar instance for the currently logged in 
-     character.  If account-wide vars are not active, then any pinned account-wide vars are prepended.
+--[[ Returns a function like next() used to iterate over the active ZO_SavedVar instance for the currently logged in 
+     character. If account-wide vars are not active, then any pinned account-wide vars are prepended.
      Appends "__dataSource" as the last key/value pair, to provide access to the internal table containing
      configuration info and references to account and character saved vars managers.
-  ]]--
+--]]
 local emptyObject = setmetatable({ __dataSource = {} }, LSV_Data)
 function LSV_Data:GetIterator()
-    protected.Debug("LSV_Data:GetIterator()", debugMode)
+    protected.zoDebug(debugMode, "LSV_Data:GetIterator()")
     if not self then return rawnext, emptyObject end
     local ds = rawget(self, "__dataSource")
     if not ds then return rawnext, emptyObject end
-    
+
     if ds.iterator then return ds.iterator, self end
-    
+
     local subTables = {}
     local pinnedKeys = ds.pinnedAccountKeys
     if pinnedKeys and rawnext(pinnedKeys) == nil or LSV_Data.GetAccountSavedVarsActive(self) then
@@ -318,20 +308,20 @@ function LSV_Data:GetIterator()
     if pinnedKeys then
         local accountRawDataTable = ds.account and ds.account:LoadRawTableData()
         if accountRawDataTable then
-            local pinnedSettings = tableFilterKeys(accountRawDataTable, pinnedKeys)
+            local pinnedSettings = LSV_Data.tableFilterKeys(accountRawDataTable, pinnedKeys)
             table.insert(subTables, pinnedSettings)
         end
     end
-    
+
     local savedVars = LSV_Data.GetActiveSavedVars(self)
     local rawDataTable = savedVars and LibSavedVars:GetRawDataTable(savedVars)
     if rawDataTable then
         table.insert(subTables, rawDataTable)
     end
-    
+
     table.insert(subTables, { __dataSource = ds })
-    protected.Debug("subTables: <<1>>, #subTables: <<2>>", debugMode, tostring(subTables), #subTables)
-    
+    protected.zoDebug(debugMode, "subTables: <<1>>, #subTables: <<2>>",subTables, #subTables)
+
     local subTableIndex, subTable = 1, subTables[1]
     return
         function(_, key)
@@ -340,14 +330,14 @@ function LSV_Data:GetIterator()
             end
             local value
             repeat
-                protected.Debug("subtableIndex: <<1>>, subTable: <<2>>, key: <<3>>", debugMode, 
-                                subTableIndex, tostring(subTable), key)
+                protected.zoDebug(debugMode, "subtableIndex: <<1>>, subTable: <<2>>, key: <<3>>",
+                                subTableIndex, subTable, key)
                 key, value = rawnext(subTable, key)
                 if key == nil then
                     subTableIndex, subTable = subTableIndex + 1, subTables[subTableIndex + 1]
                 end
             until key ~= nil or not subTable
-            protected.Debug("key: <<1>>, value: <<2>>", debugMode, key, value)
+            protected.zoDebug(debugMode, "key: <<1>>, value: <<2>>", key, value)
             if not subTable then
                 ds.iterator = nil
             end
@@ -357,31 +347,31 @@ function LSV_Data:GetIterator()
         nil
 end
 
---[[
-     Works like the # operator.  Gets the number of saved vars stored in the active internal ZO_SavedVars instance for 
-     the currently logged in character.  The same caveats as # apply, i.e. it is not reliable except for tables 
+--[[ Works like the # operator. Gets the number of saved vars stored in the active internal ZO_SavedVars instance for 
+     the currently logged in character. The same caveats as # apply, i.e. it is not reliable except for tables 
      stored as a numerically indexed array beginning with index 1 and having no gaps.
      Provided as a separate method, because overriding the # operator is not supported in Lua 5.1.
-  ]]--
+--]]
 function LSV_Data:GetLength()
     if not self then return 0 end
-    protected.Debug("LSV_Data:GetLength()", debugMode)
-    
+    protected.zoDebug(debugMode, "LSV_Data:GetLength()")
+
     local accountActive = LSV_Data:GetAccountSavedVarsActive()
     if accountActive then
         if not self.account then return 0 end
         return #self.account:LoadRawTableData()
     end
-    
+
+    if not self.character then return 0 end
     local rawCharacterDataTable = self.character:LoadRawTableData()
     if not self.pinnedAccountKeys then
         return #rawCharacterDataTable
     end
-    
+
     -- Length is only valid on contiguous numeric keys.
     -- If the pinned keys and nonpinned keys form such a sequence, then the # operator is not trustworthy for the 
     -- individual pieces.  We calculate length directly here.
-    
+
     local i = 1
     while self.pinnedAccountKeys[i] ~= nil 
           or rawCharacterDataTable[i] ~= nil
@@ -392,8 +382,7 @@ function LSV_Data:GetLength()
 end
 
 
---[[ 
-     Returns an "Account-wide Settings" checkbox control configuration table for a LibAddonMenu-2 panel, 
+--[[ Returns an "Account-wide Settings" checkbox control configuration table for a LibAddonMenu-2 panel, 
      localized for English, French, German, Japanese and Russian.
      
      Defaults to the value of self.__dataSource.defaultToAccount.
@@ -404,47 +393,16 @@ end
                                      If set to false, toggling to character-specific settings inializes any undefined 
                                      saved vars with default values.
                                      (default: true)
-     
-     EXAMPLE:
-     
-     local LAM2 = LibAddonMenu2 or LibStub("LibAddonMenu-2.0")
-     local LSV  = LibSavedVars or LibStub("LibSavedVars")
-     
-     addon.settings = LSV:New(addon.name .. "_Account", addon.name .. "_Character", addon.defaults, false)
-     
-     -- Setup options panel
-     local panelData = {
-         type = "panel",
-         name = addon.title,
-         displayName = addon.title,
-         author = addon.author,
-         version = addon.version,
-         registerForRefresh = true,  -- IMPORTANT! registerForRefresh must be set to true!
-         registerForDefaults = true,
-     }
-     LAM2:RegisterAddonPanel(addon.name .. "Options", panelData)
- 
-     local optionsTable = { 
-     
-         -- Account-wide settings
-         addon.settings:GetLibAddonMenuAccountCheckbox(),
-        
-         -- other LAM2 setting options....
-        
-     }
- 
-     LAM2:RegisterOptionControls(addon.name .. "Options", optionsTable)
-  ]]--
-
+--]]
 function LSV_Data:GetLibAddonMenuAccountCheckbox(initializeCharacterWithAccount)
-    
+
     if not self then return end
-    protected.Debug("LSV_Data:GetLibAddonMenuAccountCheckbox(<<1>>)", debugMode, initializeCharacterWithAccount)
-    
+    protected.zoDebug(debugMode, "LSV_Data:GetLibAddonMenuAccountCheckbox(<<1>>)", initializeCharacterWithAccount)
+
     if initializeCharacterWithAccount == nil then
         initializeCharacterWithAccount = true
     end
-    
+
     -- Account-wide settings
     return {
         type    = "checkbox",
@@ -468,13 +426,13 @@ function LSV_Data:GetLibAddonMenuAccountCheckbox(initializeCharacterWithAccount)
     }
 end
 
---[[
-     Gets a table containing all underlying LSV_SavedVarsManager instances for the given scope.
+--[[ Gets a table containing all underlying LSV_SavedVarsManager instances for the given scope.
      
      scope: LIBSAVEDVARS_SCOPE_CHARACTER, LIBSAVEDVARS_SCOPE_ACCOUNT or '*' for all scopes. Defaults to '*'.
-  ]]--
+--]]
 function LSV_Data:GetSavedVarsManagers(scope)
-    protected.Debug("LSV_Data:GetSavedVarsManagers(<<1>>)", debugMode, scope)
+    protected.zoDebug(debugMode, "LSV_Data:GetSavedVarsManagers(<<1>>)", scope)
+
     local wildcard = not scope or scope == "*"
     validateScope(scope)
     local ds = self.__dataSource
@@ -485,46 +443,46 @@ function LSV_Data:GetSavedVarsManagers(scope)
     if (wildcard or scope == "account") and ds.account then
         table.insert(savedVarManagers, ds.account)
     end
-    protected.Debug("<<1>> saved var managers found", debugMode, #savedVarManagers)
+    protected.zoDebug(debugMode, "<<1>> saved var managers found", #savedVarManagers)
     return savedVarManagers
 end
 
---[[
-     Forces the loading of all underlying ZO_SavedVars instances instead of waiting for them to be lazy-loaded.
-  ]]--
+--[[ Forces the loading of all underlying ZO_SavedVars instances instead of waiting for them to be lazy-loaded.
+--]]
 function LSV_Data:LoadAllSavedVars()
     if not self then return end
-    protected.Debug("LSV_Data:LoadAllSavedVars()", debugMode)
+
+    protected.zoDebug(debugMode, "LSV_Data:LoadAllSavedVars()")
+
     local ds = self.__dataSource
     -- Lazy load character saved vars
     if ds.character and ds.character.savedVars then end
     -- Lazy load account saved vars
     if ds.account and ds.account.savedVars then end
-    
+
     return self
 end
 
---[[
-     Moves a legacy saved var with the specified info to one or more new saved vars with their own specified info.
+--[[ Moves a legacy saved var with the specified info to one or more new saved vars with their own specified info.
      
      Can be chained with other transformations like :Version(), :RemoveSettings() and :RenameSettings().
      
      See LibSavedVars.lua => LibSavedVars:Migrate() for full documentation, since this method works the same, just 
      without the toSavedVarsInfo parameters.
-  ]]--
+--]]
 function LSV_Data:MigrateFrom(fromSavedVarsInfo, copyToAllServers)
 
     if not fromSavedVarsInfo.keyType then
         fromSavedVarsInfo.keyType = LIBSAVEDVARS_CHARACTER_NAME_KEY
     end
-    
-    protected.Debug("LSV_Data:MigrateFrom(<<1>> (<<2>>), <<3>>)", debugMode, 
-                    fromSavedVarsInfo, fromSavedVarsInfo and #fromSavedVarsInfo or nil, copyToAllServers)
-    
+
+    protected.zoDebug(debugMode, "LSV_Data:MigrateFrom(<<1>> (<<2>>), <<3>>)",
+            fromSavedVarsInfo, fromSavedVarsInfo and #fromSavedVarsInfo or nil, copyToAllServers)
+
     local from
     local ds = self.__dataSource
     if ds.account then
-        protected.Debug("ds.account block entered")
+        protected.zoDebug(debugMode, "ds.account block entered")
         if copyToAllServers == nil then
             copyToAllServers = ds.account:IsProfileWorldName()
         end
@@ -538,19 +496,19 @@ function LSV_Data:MigrateFrom(fromSavedVarsInfo, copyToAllServers)
                 ds.account
             )
         if to then
-            protected.Debug("Saving account saved var manager for profile " .. tostring(profile) .. " as " 
-                            .. tostring(to[profile]), debugMode)
+            protected.zoDebug(debugMode, "Saving account saved var manager for profile ", profile, " as ",
+                            to[profile])
             ds.account = to[profile]
         else
-            protected.Debug("toSavedVars was nil", debugMode)
+            protected.zoDebug(debugMode, "toSavedVars was nil")
         end
     end
-    
+
     if ds.character 
        and (fromSavedVarsInfo.keyType ~= LIBSAVEDVARS_ACCOUNT_KEY
             or not ds.defaultToAccount)
     then
-        protected.Debug("ds.character block entered")
+        protected.zoDebug(debugMode, "ds.character block entered")
         local profile = ds.character.profile
         local to
         to, from = 
@@ -561,56 +519,47 @@ function LSV_Data:MigrateFrom(fromSavedVarsInfo, copyToAllServers)
                 ds.character
             )
         if to then
-            protected.Debug("Saving character saved var manager as "..tostring(to[profile]), debugMode)
+            protected.zoDebug(debugMode, "Saving character saved var manager as ", to[profile])
             ds.character = to[profile]
         else
-            protected.Debug("toSavedVars was nil", debugMode)
+            protected.zoDebug(debugMode, "toSavedVars was nil")
         end
     end
-    
-    protected.Debug("Unsetting from raw saved vars path", debugMode)
-    
-    -- Remove the source saved var and any empty parent containers
-    protected.UnsetPath(from.table, unpack(from.rawSavedVarsTablePath))
-    
-    protected.Debug("Migration complete.", debugMode)
+
+    protected.zoDebug(debugMode, "Migration complete.")
     
     return self
 end
 
---[[ 
-     Same as MigrateFrom, but with a default keyType set to LIBSAVEDVARS_ACCOUNT_KEY.
-  ]]--
+--[[ Same as MigrateFrom, but with a default keyType set to LIBSAVEDVARS_ACCOUNT_KEY.
+--]]
 function LSV_Data:MigrateFromAccountWide(fromSavedVarsInfo, copyToAllServers)
-    protected.Debug("LSV_Data:MigrateFromAccountWide(<<1>> (<<2>>), <<3>>)", debugMode, 
+    protected.zoDebug(debugMode, "LSV_Data:MigrateFromAccountWide(<<1>> (<<2>>), <<3>>)",
                     fromSavedVarsInfo, fromSavedVarsInfo and #fromSavedVarsInfo or nil, copyToAllServers)
     fromSavedVarsInfo.keyType = LIBSAVEDVARS_ACCOUNT_KEY
     return self:MigrateFrom(fromSavedVarsInfo, copyToAllServers)
 end
 
---[[ 
-     Same as MigrateFrom, but with a default keyType set to LIBSAVEDVARS_CHARACTER_ID_KEY.
-  ]]--
+--[[ Same as MigrateFrom, but with a default keyType set to LIBSAVEDVARS_CHARACTER_ID_KEY.
+--]]
 function LSV_Data:MigrateFromCharacterId(fromSavedVarsInfo, copyToAllServers)
-    protected.Debug("LSV_Data:MigrateFromCharacterId(<<1>> (<<2>>), <<3>>)", debugMode, 
+    protected.zoDebug(debugMode, "LSV_Data:MigrateFromCharacterId(<<1>> (<<2>>), <<3>>)",
                     fromSavedVarsInfo, fromSavedVarsInfo and #fromSavedVarsInfo or nil, copyToAllServers)
     fromSavedVarsInfo.keyType = LIBSAVEDVARS_CHARACTER_ID_KEY
     return self:MigrateFrom(fromSavedVarsInfo, copyToAllServers)
 end
 
---[[ 
-     Same as MigrateFrom, but with a default keyType set to LIBSAVEDVARS_CHARACTER_ID_NAME.
-  ]]--
+--[[ Same as MigrateFrom, but with a default keyType set to LIBSAVEDVARS_CHARACTER_ID_NAME.
+--]]
 function LSV_Data:MigrateFromCharacterName(fromSavedVarsInfo, copyToAllServers)
-    protected.Debug("LSV_Data:MigrateFromCharacterName(<<1>> (<<2>>), <<3>>)", debugMode, 
+    protected.zoDebug(debugMode, "LSV_Data:MigrateFromCharacterName(<<1>> (<<2>>), <<3>>)",
                     fromSavedVarsInfo, fromSavedVarsInfo and #fromSavedVarsInfo or nil, copyToAllServers)
     fromSavedVarsInfo.keyType = LIBSAVEDVARS_CHARACTER_NAME_KEY
     return self:MigrateFrom(fromSavedVarsInfo, copyToAllServers)
 end
 
---[[
-     Removes a list of settings from all saved vars tracked by this data instance of a given scope
-     when upgrading to the given version number.  Has no effect on saved vars at or above the given version.
+--[[ Removes a list of settings from all saved vars tracked by this data instance of a given scope
+     when upgrading to the given version number. Has no effect on saved vars at or above the given version.
      
      version:          Settings are only removed from saved vars below this version number.
      
@@ -618,8 +567,8 @@ end
                                   Defaults to '*'.
      
      settingsToRemove: Either a table containing a list of string setting names to remove, or a single string 
-                       setting name.  If a string is given, then additional strings can be provided as extra parameters.
-  ]]--
+                       setting name. If a string is given, then additional strings can be provided as extra parameters.
+--]]
 function LSV_Data:RemoveSettings(version, scope, settingsToRemove, ...)
     
     assert(type(version) == "number", 
@@ -635,7 +584,7 @@ function LSV_Data:RemoveSettings(version, scope, settingsToRemove, ...)
         settingsToRemove = params
     end
         
-    protected.Debug("LSV_Data:RemoveSettings(<<1>>, <<2>>, <<3>> (<<4>>))", debugMode, 
+    protected.zoDebug(debugMode, "LSV_Data:RemoveSettings(<<1>>, <<2>>, <<3>> (<<4>>))",
                     version, scope, tostring(settingsToRemove), settingsToRemove and #settingsToRemove or nil)
     validateScope(scope)
     local svManagers = self:GetSavedVarsManagers(scope)
@@ -646,9 +595,8 @@ function LSV_Data:RemoveSettings(version, scope, settingsToRemove, ...)
     return self
 end
 
---[[
-     Changes the names of a list of settings in all saved vars tracked by this data instance of a given scope
-     when upgrading to the given version number.  Has no effect on saved vars at or above the given version.
+--[[ Changes the names of a list of settings in all saved vars tracked by this data instance of a given scope
+     when upgrading to the given version number. Has no effect on saved vars at or above the given version.
      
      version:   Settings are only renamed on saved vars below this version number.
      
@@ -659,28 +607,27 @@ end
      
      callback:   (optional) A function to be called on saved vars values right before they are renamed. 
                            Used by RenameSettingsAndInvert().
-  ]]--
+--]]
 function LSV_Data:RenameSettings(version, scope, renameMap, callback)
-    
-    if scope ~= nil and type(scope) ~= "number" then
+
+    if scope ~= nil and type(scope) ~= "number" and scope ~= "*" then
         callback = renameMap
         renameMap = scope
         scope = nil
     end
-    protected.Debug("LSV_Data:RenameSettings(<<1>>, <<2>>, <<3>>, <<4>>)", debugMode, 
-                    version, scope, tostring(renameMap), tostring(callback))
+    protected.zoDebug(debugMode, "LSV_Data:RenameSettings(<<1>>, <<2>>, <<3>>, <<4>>)",
+                    version, scope, renameMap, callback)
     validateScope(scope)
     local svManagers = self:GetSavedVarsManagers(scope)
     for _, svManager in rawipairs(svManagers) do
         svManager:RenameSettings(version, renameMap, callback)
     end
-    
+
     return self
 end
 
---[[
-     Changes the names of a list of boolean settings and inverts them in all saved vars tracked by this data instance of 
-     a given scope when upgrading to the given version number.  Has no effect on saved vars at or above the given version.
+--[[ Changes the names of a list of boolean settings and inverts them in all saved vars tracked by this data instance of 
+     a given scope when upgrading to the given version number. Has no effect on saved vars at or above the given version.
      
      version:   Settings are only renamed on saved vars below this version number.
      
@@ -688,62 +635,66 @@ end
                            Defaults to '*'.
      
      renameMap: A key-value table containing a mapping of old setting names (keys) to new setting names (values).
-  ]]--
+--]]
 function LSV_Data:RenameSettingsAndInvert(version, scope, renameMap)
-    protected.Debug("LSV_Data:RenameSettingsAndInvert(<<1>>, <<2>>, <<3>>)", debugMode, 
-                    version, scope, tostring(renameMap))
+    protected.zoDebug(debugMode, "LSV_Data:RenameSettingsAndInvert(<<1>>, <<2>>, <<3>>)",
+                    version, scope, renameMap)
     return self:RenameSettings(version, scope, renameMap, protected.Invert)
 end
 
---[[
-     Toggles whether account-wide settings or character-specific settings are active.
+--[[ Toggles whether account-wide settings or character-specific settings are active.
      
      accountActive:                  True to user account-wide settings for the current character; 
                                      false to use character-specific settings
                                      
      initializeCharacterWithAccount: If set to true and accountActive is false, copy any account-wide settings that are 
                                      not defined in the character-specific saved vars from the account saved vars
-  ]]--
+--]]
 function LSV_Data:SetAccountSavedVarsActive(accountActive, initializeCharacterWithAccount)
-    
+
     if not self then return end
-    protected.Debug("LSV_Data:SetAccountSavedVarsActive(<<1>>, <<2>>)", debugMode, 
+    protected.zoDebug(debugMode, "LSV_Data:SetAccountSavedVarsActive(<<1>>, <<2>>)",
                     accountActive, initializeCharacterWithAccount)
-    
+
     local ds = self.__dataSource
-    
+
     if not ds.character 
        or not ds.account
+       or not ds.character.savedVars 
        or not ds.character.savedVars[LIBNAME] 
     then 
         return self
     end
-        
+
     ds.character.savedVars[LIBNAME].accountSavedVarsActive = accountActive
-    
+
     initializeCharacterWithAccount = initializeCharacterWithAccount or ds.defaultToAccount
-    
+
     if accountActive then
         ds.active = ds.account
         return self
     end
-    
+
     ds.active = ds.character
-    
+
     local characterRawDataTable = ds.character:LoadRawTableData()
-    
+
     if initializeCharacterWithAccount and ds.account.savedVars then
-        
+
         local accountVars = ds.account:LoadRawTableData()
-        if ds.pinnedAccountKeys then
-            accountVars = tableDiffKeys(accountVars, ds.pinnedAccountKeys)
+        if ds.pinnedAccountKeys and accountVars then
+            accountVars = LSV_Data.tableDiffKeys(accountVars, ds.pinnedAccountKeys)
         end
-        
-        protected.Debug("Copying the following settings from account-wide scope to character settings:", debugMode)
-        for key, value in pairs(accountVars) do
-            protected.Debug("<<1>>: <<2>>", debugMode, key, tostring(value))
+
+        if debugMode then
+            protected.zoDebug(debugMode, "Copying the following settings from account-wide scope to character settings:")
+            if accountVars then
+                for key, value in pairs(accountVars) do
+                    protected.zoDebug(debugMode, "<<1>>: <<2>>", key, tostring(value))
+                end
+            end
         end
-        
+
         LibSavedVars:DeepSavedVarsCopy(accountVars, characterRawDataTable, DO_NOT_OVERWRITE)
     else
         LibSavedVars:DeepSavedVarsCopy(ds.character.defaults, characterRawDataTable, DO_NOT_OVERWRITE)
@@ -752,13 +703,16 @@ function LSV_Data:SetAccountSavedVarsActive(accountActive, initializeCharacterWi
     return self
 end
 
---[[
-     Toggles whether to output LSV_Data debug messages to chat at runtime.
+--[[ Toggles whether to output LSV_Data debug messages to chat at runtime.
      
-     enable: True enables debug messages for LSV_Data.  False disables them.
-  ]]--
+     enable: True enables debug messages for LSV_Data. False disables them.
+--]]
 function LSV_Data:SetDebugMode(enable)
     debugMode = enable
+    return self
+end
+function LSV_Data:GetDebugMode()
+    return debugMode
 end
 
 --[[
@@ -771,22 +725,23 @@ end
                                  Defaults to '*'.
      
      onVersionUpdate: Upgrade script function with the signature function(rawDataTable) end to be run before updating
-                      saved vars version.  You can run any settings transforms in here.
-  ]]--
+                      saved vars version. You can run any settings transforms in here.
+--]]
 function LSV_Data:Version(version, scope, onVersionUpdate)
-    
+
     if type(scope) == "function" then
         onVersionUpdate = scope
         scope = nil
     end
-    protected.Debug("LSV_Data:Version(<<1>>, <<2>>, <<3>>)", debugMode, version, scope, onVersionUpdate)
+    protected.zoDebug(debugMode, "LSV_Data:Version(<<1>>, <<2>>, <<3>>)", version, scope, onVersionUpdate)
     validateScope(scope)
     local svManagers = self:GetSavedVarsManagers(scope)
     for _, svManager in rawipairs(svManagers) do
         svManager:Version(version, onVersionUpdate)
     end
-    
+
     return self
+
 end
 
 
@@ -806,43 +761,23 @@ end
 --            data[key] = value  -- Set
 --            data.key = value   -- Set
 --           
---          The following require LibLua5.2:
---            ipairs(data)       -- Looping by numerical index.
-
---            next(data, key)    -- Iterating by key.  Note: will include functions 
---                                  and the __dataSource property.
---            pairs(data)        -- Looping by key.  Note: will include functions 
---                                  and the __dataSource property.
---
---          Unsupported syntax:
---
---            #data              -- Length/count. There is no support for the
---                                  __len metamethod on tables in Lua 5.1, and no 
---                                  way to rewrite the # operator with a custom one 
---                                  like is done with __ipairs and __pairs in LibLua5.2.
---                                  See: http://lua-users.org/wiki/LuaVirtualization
---                                  
---                                  Use data:GetLength() instead if you need a count
---                                  of how many saved vars are stored.
---
 -----------------------------------------------------------------------------------
 
---[[
-     Allows data[key] and data.key to grab their values from the active internal ZO_SavedVars instance for the 
+--[[ Allows data[key] and data.key to grab their values from the active internal ZO_SavedVars instance for the 
      currently logged in character
-  ]]--
+--]]
 function LSV_Data.__index(data, key)
-    
-    protected.Debug("LSV_Data.__index(<<1>>, <<2>>)", debugMode, data, key)
-    
+
+    protected.zoDebug(debugMode, "LSV_Data.__index(<<1>>, <<2>>)", data, key)
+
     if not data then return end
-    
+
     -- Always use metatable for function lookups, to avoid lazy loading saved vars earlier than needed
     local meta = getmetatable(data)
     if meta and type(meta[key]) == "function" then
         return meta[key]
     end
-    
+
     -- Get toggleable values from active saved vars
     local savedVars = LSV_Data.GetActiveSavedVars(data, key)
     if savedVars then
@@ -851,62 +786,25 @@ function LSV_Data.__index(data, key)
             return value
         end
     end
-    
+
     -- Metatable fallback for non-function values
     if meta then
         return meta[key]
     end
 end
 
---[[
-     Allows iterating through the active internal ZO_SavedVars instance for the currently logged in character with the
-     ipairs() table iterator method.
-     Requires LibLua5.2 to work.
-  ]]--
-if LibLua52 then
-    function LSV_Data.__ipairs(data)
-        
-        protected.Debug("LSV_Data.__ipairs(<<1>>, <<2>>)", debugMode, data)
-        
-        if not data then return end
-        
-        local savedVars = LSV_Data.GetActiveSavedVars(data)
-        if savedVars then
-            local rawDataTable = LibSavedVars:GetRawDataTable(savedVars)
-            return ipairs(rawDataTable)
-        end
-    end
-end
-
---[[
-     Allows data[key] = value and data.key = value to set values on the active internal ZO_SavedVars instance for the 
+--[[ Allows data[key] = value and data.key = value to set values on the active internal ZO_SavedVars instance for the 
      currently logged in character
-  ]]--
+--]]
 function LSV_Data.__newindex(data, key, value)
-    
-    protected.Debug("LSV_Data.__newindex(<<1>>, <<2>>, <<3>>)", debugMode, data, key, value)
-    
+
+    protected.zoDebug(debugMode, "LSV_Data.__newindex(<<1>>, <<2>>, <<3>>)", data, key, value)
+
     if not data then return end
-    
+
     local savedVars = LSV_Data.GetActiveSavedVars(data, key)
     if savedVars then
         savedVars[key] = value
-    end
-end
-
---[[
-     Allows iterating through the active internal ZO_SavedVars instance for the currently logged in character with the
-     pairs() table iterator method.
-     Requires LibLua5.2 to work.
-  ]]--
-if LibLua52 then
-    function LSV_Data.__pairs(data)
-        
-        protected.Debug("LSV_Data.__pairs(<<1>>)", debugMode, data)
-        
-        local iterator
-        iterator, data = LSV_Data.GetIterator(data)
-        return iterator, data, nil
     end
 end
 
@@ -916,9 +814,9 @@ end
 --          Private Members
 -- 
 ---------------------------------------
-
+--[[ create and initialize the account structure for a datasource ]]
 function initAccountWide(self, savedVariableTable, version, namespace, defaults, profile, displayName)
-    
+
     self.__dataSource.account = 
         LSV_SavedVarsManager:New(
             {
@@ -931,11 +829,14 @@ function initAccountWide(self, savedVariableTable, version, namespace, defaults,
                 displayName=displayName
             }
         )
+    self.__dataSource.account:EnsureRawTableData()
+
 end
 
+--[[ create and initialize the character structure for a datasource ]]
 function initCharacterSettings(self, savedVariableTable, version, namespace, defaults, trimDefaults, profile, displayName, 
                                characterName, characterId, characterKeyType)
-    
+
     self.__dataSource.character = 
         LSV_SavedVarsManager:New(
             {
@@ -951,22 +852,24 @@ function initCharacterSettings(self, savedVariableTable, version, namespace, def
                 characterId=characterId
             }
         )
+    self.__dataSource.character:EnsureRawTableData()
 end
 
+--[[ create a account/char toggle for the datasource ]]
 function initToggle(self)
-    
+
     local ds = self.__dataSource
-    
+
     if ds.character == nil then
-        protected.Debug("Trying to initialized toggle failed. No character-specific saved vars manager found.", debugMode)
+        protected.zoDebug(debugMode, "Trying to initialized toggle failed. No character-specific saved vars manager found.")
         return
     end
-    
+
     if ds.account == nil then
-        protected.Debug("Trying to initialized toggle failed. No account-wide saved vars manager found.", debugMode)
+        protected.zoDebug(debugMode, "Trying to initialized toggle failed. No account-wide saved vars manager found.")
         return
     end
-    
+
     local characterRawDataTable = ds.character:LoadRawTableData() or nil
     if not characterRawDataTable
        or (characterRawDataTable[LIBNAME] 
@@ -979,7 +882,7 @@ function initToggle(self)
         ds.active = ds.account
     else
         ds.active = ds.character
-        
+
         -- Ensure that active character settings receive new default values from account scope
         if (not ds.character.defaults or not next(ds.character.defaults))
            and ds.account.defaults and next(ds.account.defaults)
@@ -987,35 +890,34 @@ function initToggle(self)
             ds.character.defaults = ZO_ShallowTableCopy(ds.account.defaults)
         end
     end
-    
+
     ds.character.defaults[LIBNAME] = {
         accountSavedVarsActive = ds.defaultToAccount
     }
-    
+
     ds.character.trimDefaults[LIBNAME] = {
         accountSavedVarsActive = ds.defaultToAccount
     }
 end
 
-function shiftOptionalParams(version, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId, characterKeyType)
-    
+function LSV_Data.shiftOptionalParams(version, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId, characterKeyType)
+
     if version ~= nil and type(version) ~= "number" then
-        return shiftOptionalParams(nil, version, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId)
+        return LSV_Data.shiftOptionalParams(nil, version, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId)
     elseif namespace ~= nil and type(namespace) ~= "string" then
-        return shiftOptionalParams(version, nil, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId)
+        return LSV_Data.shiftOptionalParams(version, nil, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId)
     elseif defaults ~= nil and type(defaults) ~= "table" then
-        return shiftOptionalParams(version, namespace, nil, defaults, defaultToAccount, profile, displayName, characterName, characterId)
+        return LSV_Data.shiftOptionalParams(version, namespace, nil, defaults, defaultToAccount, profile, displayName, characterName, characterId)
     elseif defaultToAccount ~= nil and type(defaultToAccount) ~= "boolean" then
-        return shiftOptionalParams(version, namespace, defaults, true, defaultToAccount, profile, displayName, characterName, characterId)
+        return LSV_Data.shiftOptionalParams(version, namespace, defaults, true, defaultToAccount, profile, displayName, characterName, characterId)
     end
-    
+
     return version, namespace, defaults, defaultToAccount, profile, displayName, characterName, characterId, characterKeyType
 end
 
---[[
-     Gets a list of all key value pairs in table1 that do not have corresponding keys in table2.
-  ]]--
-function tableDiffKeys(table1, table2)
+--[[ Gets a list of all key value pairs in table1 that do not have corresponding keys in table2.
+--]]
+function LSV_Data.tableDiffKeys(table1, table2)
     local diff = { }
     for key1, value1 in pairs(table1) do
         if table2[key1] == nil then
@@ -1025,24 +927,9 @@ function tableDiffKeys(table1, table2)
     return diff
 end
 
---[[
-     Gets a new merged table with all keys from table1 and table2.  If the same key exists in both tables, 
-     table1's value is used.
-  ]]--
-function tableMerge(table1, table2)
-    local merged = ZO_ShallowTableCopy(table1)
-    for key2, value2 in pairs(table2) do
-        if table1[key2] == nil then
-            merged[key2] = value2
-        end
-    end
-    return merged
-end
-
---[[
-     Gets a list of all key value pairs in tbl that have corresponding keys in keyTable.
-  ]]--
-function tableFilterKeys(tbl, keyTable)
+---[[ Gets a list of all key value pairs in tbl that have corresponding keys in keyTable.
+--]]
+function LSV_Data.tableFilterKeys(tbl, keyTable)
     local filtered = {}
     for key, value in pairs(tbl) do
         if keyTable[key] ~= nil then
@@ -1052,14 +939,21 @@ function tableFilterKeys(tbl, keyTable)
     return filtered
 end
 
+--[[
+    Throw an error message if the scope is not valid, i.e.
+        numbers outside of [LIBSAVEDVARS_SCOPE_MIN, LIBSAVEDVARS_SCOPE_MAX]
+        strings not equal to "*"
+    For valid values, the function simply returns.
+    Nil values for scope will be interpreted as "*".
+--]]
 function validateScope(scope)
     if scope == nil then
-        return
+        scope = "*"
     end
-    if type(scope) ~= "number" then
+    if type(scope) == "string" and scope ~= "*" then
         error("Invalid type for parameter 'scope'. Expected 'number'. Got '" .. type(scope) .. "' instead.", 2)
     end
-    if scope < LIBSAVEDVARS_SCOPE_MIN or scope > LIBSAVEDVARS_SCOPE_MAX then
+    if type(scope) == "number" and (scope < LIBSAVEDVARS_SCOPE_MIN or scope > LIBSAVEDVARS_SCOPE_MAX) then
         error("Invalid value for parameter 'scope'.  Valid values must be between " .. tostring(LIBSAVEDVARS_SCOPE_MIN)
               .. " and " .. tostring(LIBSAVEDVARS_SCOPE_MAX) .. ".", 2)
     end

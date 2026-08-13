@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Shadowfen/LibSFUtils__2231",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Shadowfen",
   "canonical_id": "esoui:2231",
   "category_id": "53",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -69,7 +74,7 @@
     "LibSFUtils"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2231/",
-  "fingerprint": "dd6f2854de243846c80f90e22484ddbf438bf0c6227b6c37d30dbbfd30c10244",
+  "fingerprint": "4ca42411ff1eef003e356004a7c4aad9d3ca98f91d8f97ffb07f388e7b8aca72",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -77,11 +82,11 @@
   "source_id": "2231",
   "source_url": "https://www.esoui.com/downloads/info2231-LibSFUtils.html",
   "stats": {
-    "downloads": 1682026,
-    "favorites": 329,
-    "monthly_downloads": 21773
+    "downloads": 1694533,
+    "favorites": 328,
+    "monthly_downloads": 23049
   },
   "title": "LibSFUtils",
-  "updated_at": 1783916343000,
-  "version": "72"
+  "updated_at": 1786580136000,
+  "version": "75"
 }

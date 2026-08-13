@@ -313,6 +313,7 @@ end
 
 function GamepadOptions.BuildUIOptionsData()
     return {
+        GamepadOptions.BuildCameraEntry(),
         GamepadOptions.BuildCombatReticleEntry(),
         GamepadOptions.BuildDefaultFramesEntry(),
         GamepadOptions.BuildDisableAlertTextsOption(),
@@ -320,6 +321,15 @@ function GamepadOptions.BuildUIOptionsData()
         GamepadOptions.BuildLootLogEntry(),
         GamepadOptions.BuildPlayerInfoEntry(),
         GamepadOptions.BuildSortDungeonsFinderOption(),
+    }
+end
+
+function GamepadOptions.BuildCameraOptionsData()
+    return {
+        GamepadOptions.BuildCameraEnabledOption(),
+        GamepadOptions.BuildCameraOnFootZoomOption(),
+        GamepadOptions.BuildCameraMountedZoomOption(),
+        GamepadOptions.BuildCameraCombatZoomOption(),
     }
 end
 

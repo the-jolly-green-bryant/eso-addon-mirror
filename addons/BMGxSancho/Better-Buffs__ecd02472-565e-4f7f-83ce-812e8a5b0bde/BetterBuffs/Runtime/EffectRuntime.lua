@@ -23,7 +23,7 @@ end
 
 
 function Runtime:IsObserved(key)
-    if BB:IsEffectEnabled(key) then return true end
+    if BB:IsEffectRelevant(key) then return true end
     return key == "MAJOR_SLAYER" and BB.saved and BB.saved.ui and BB.saved.ui.slayerMissAlert and BB.saved.ui.slayerMissAlert.enabled == true
 end
 
@@ -36,8 +36,8 @@ function Runtime:SetEnabled(value)
         EVENT_MANAGER:RegisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED, function()
             zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects() end end, 250)
         end)
-        EVENT_MANAGER:RegisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, _, slotId, ...)
-            Runtime:OnEquipmentChanged(slotId)
+        EVENT_MANAGER:RegisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId, slotId, ...)
+            if bagId == BAG_WORN then Runtime:OnEquipmentChanged(slotId) end
         end)
         zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects() end end, 250)
         if BB.Context and BB.Context.inCombat then self:StartEncounter() end
@@ -82,12 +82,15 @@ end
 function Runtime:OnEquipmentChanged(slotId)
     if not self.enabled then return end
     local now = EffectNow()
+    local changed = false
     for _,definition in pairs(BB.Registry.byKey) do
         if definition.requiredWornItemId and definition.requiredEquipSlot == slotId then
             self:RefreshLocalProviderEquipment(definition, now)
             self:RefreshEffect(definition.key, now)
+            changed = true
         end
     end
+    if changed and BB.UI then BB.UI:RefreshAll(true) end
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
 
@@ -349,7 +352,7 @@ function Runtime:ResetEncounterEffects()
 
         self.intelligence[key] = intel
         self.missingVisibleUntil[key] = nil
-        if BB:IsEffectEnabled(key) then self:RefreshEffect(key, now) end
+        if self:IsObserved(key) then self:RefreshEffect(key, now) end
     end
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
@@ -370,7 +373,7 @@ function Runtime:NeedsUpdate()
     local now = EffectNow()
     for key,targets in pairs(self.active) do
         local definition=BB.Registry.byKey[key]
-        if definition and BB:IsEffectEnabled(key) then
+        if definition and self:IsObserved(key) then
             for _,data in pairs(targets) do
                 local endTime = tonumber(data.endTime)
                 if endTime and endTime ~= math.huge and endTime > now then return true end
@@ -470,7 +473,7 @@ function Runtime:SynchronizePlayerEffects()
             self:OnLocalProviderEffect(providerDefinition, EFFECT_RESULT_UPDATED, "player", playerName, playerId, beginTime, endTime, now)
         end
         local definition = BB.Registry:Resolve(effectName, abilityId)
-        if definition and definition.effectType == "BUFF" and BB:IsEffectEnabled(definition.key) then
+        if definition and definition.effectType == "BUFF" and self:IsObserved(definition.key) then
             local allowed = BB.Context:CanTrackEffect(definition, "player", playerId, playerName)
             if allowed then self:UpsertEffect(definition, targetKey, displayTarget, "player", playerName, playerId, beginTime, endTime, stackCount, abilityId, now, iconName) end
         end
@@ -597,12 +600,12 @@ function Runtime:OnCombatEvent(result, sourceName, targetName, sourceUnitId, tar
     end
 
     local coverageDefinition = BB.Registry.coverageTriggerByAbilityId and BB.Registry.coverageTriggerByAbilityId[abilityId]
-    if coverageDefinition and BB:IsEffectEnabled(coverageDefinition.key) and BB.Context:IsGroupedPlayer(nil, sourceUnitId, sourceName) then
+    if coverageDefinition and self:IsObserved(coverageDefinition.key) and BB.Context:IsGroupedPlayer(nil, sourceUnitId, sourceName) then
         self:ScheduleCoverageReconcile(coverageDefinition)
     end
 
     local definition = BB.Registry.byCombatEventId and BB.Registry.byCombatEventId[abilityId]
-    if not definition or not BB:IsEffectEnabled(definition.key) then return end
+    if not definition or not self:IsObserved(definition.key) then return end
     if definition.intelligenceMode ~= "RECIPIENT_COOLDOWN" then return end
     local groupState = BB.Context:GetGroupEncounterState()
     if not BB.Context.inCombat and not groupState.encounterActive then return end
@@ -838,7 +841,7 @@ function Runtime:OnBossContextChanged()
     if not self.enabled then return end
     local now = EffectNow()
     for key,definition in pairs(BB.Registry.byKey) do
-        if definition.effectType == "DEBUFF" and BB:IsEffectEnabled(key) then self:RefreshEffect(key, now) end
+        if definition.effectType == "DEBUFF" and self:IsObserved(key) then self:RefreshEffect(key, now) end
     end
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
@@ -849,7 +852,7 @@ function Runtime:RefreshEffect(key,now,application)
     if not self:IsObserved(key) then self:ClearEffect(key); return end
     local snapshot = self:GetSnapshot(key,now)
     self.lastSnapshots[key] = snapshot
-    if BB:IsEffectEnabled(key) then
+    if self:IsObserved(key) then
         if BB.Analytics then BB.Analytics:Observe(key,snapshot,now,application) end
         if BB.UI then BB.UI:UpdateEffect(definition,snapshot) end
         if BB.API then BB.API:Fire(application and "EFFECT_ACTIVATED" or "EFFECT_CHANGED", key, snapshot) end
@@ -859,7 +862,7 @@ end
 function Runtime:Update()
     if not self.enabled then self:StopUpdate(); return end
     local now=EffectNow()
-    for key in pairs(self.active) do if BB:IsEffectEnabled(key) then self:RefreshEffect(key,now) end end
+    for key in pairs(self.active) do if self:IsObserved(key) then self:RefreshEffect(key,now) end end
     BB.UI:RefreshAll(false)
     if not self:NeedsUpdate() then self:StopUpdate() end
 end

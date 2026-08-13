@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/haze068/AnimatedActionBar__4598",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "haze068",
   "canonical_id": "esoui:4598",
   "category_id": "19",
@@ -21,7 +22,7 @@
     "AnimatedActionBarPlus"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4598/",
-  "fingerprint": "caa99ce19707a20434b4f09220bf3b70b36c2846d205cf961f1c7cdb82d4a4d9",
+  "fingerprint": "79c5c36f20ec543fde0362cebe7b59c4c295f7ab610464f220ee43859ba98e27",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16133.png",
     "https://cdn-eso.mmoui.com/preview/pvw16132.png"
@@ -32,11 +33,11 @@
   "source_id": "4598",
   "source_url": "https://www.esoui.com/downloads/info4598-AnimatedActionBar.html",
   "stats": {
-    "downloads": 1511,
-    "favorites": 9,
-    "monthly_downloads": 506
+    "downloads": 1694,
+    "favorites": 8,
+    "monthly_downloads": 460
   },
   "title": "AnimatedActionBar+",
-  "updated_at": 1785274889000,
+  "updated_at": 1786539421000,
   "version": "2.0"
 }

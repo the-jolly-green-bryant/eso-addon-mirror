@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/silvereyes/LibSavedVars__2161",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "silvereyes",
   "canonical_id": "esoui:2161",
   "category_id": "53",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -69,7 +74,7 @@
     "LibSavedVars"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2161/",
-  "fingerprint": "889c2d38751571462747b06b2d7bc4052dc74f061110d804b0b38f9e9893029d",
+  "fingerprint": "b0d71ce836406ea8ed344004db1b9da4c48d53e9c3d7a8bb912a33431f089730",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw7350.png"
   ],
@@ -79,11 +84,11 @@
   "source_id": "2161",
   "source_url": "https://www.esoui.com/downloads/info2161-LibSavedVars.html",
   "stats": {
-    "downloads": 2008348,
+    "downloads": 2021726,
     "favorites": 981,
-    "monthly_downloads": 43305
+    "monthly_downloads": 50198
   },
   "title": "LibSavedVars",
-  "updated_at": 1784229888000,
-  "version": "6.0.8"
+  "updated_at": 1786581659000,
+  "version": "6.1"
 }

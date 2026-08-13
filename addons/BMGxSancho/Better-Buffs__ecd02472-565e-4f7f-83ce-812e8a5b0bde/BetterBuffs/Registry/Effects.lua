@@ -45,6 +45,7 @@ local function E(key, name, effectType, timer, coverage, defaultTracked, aliases
         compositeChildren=options.compositeChildren,
         localProviderAbilityIds=options.localProviderAbilityIds or {},
         requiredWornItemId=tonumber(options.requiredWornItemId),
+        autoTrackWhenEquipped=options.autoTrackWhenEquipped == true,
         requiredEquipSlot=options.requiredEquipSlot,
         providerCooldownFromLocalEffect=options.providerCooldownFromLocalEffect == true,
         requiresLocalProviderEffect=options.requiresLocalProviderEffect == true,
@@ -113,7 +114,7 @@ Registry.definitions = {
     -- Huntsman's Warmask uses the local self effect (252050) as ownership and
     -- application authority, while 252048 is used only to identify the marked
     -- hostile target. This prevents another player's Mark from driving our tile.
-    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},localProviderAbilityIds={252050},requiredWornItemId=223189,requiredEquipSlot=EQUIP_SLOT_HEAD,providerCooldownFromLocalEffect=true,requiresLocalProviderEffect=true,targetType="RETICLE_HOSTILE",providerCooldown=10,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048}),
+    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},localProviderAbilityIds={252050},requiredWornItemId=223189,requiredEquipSlot=EQUIP_SLOT_HEAD,autoTrackWhenEquipped=true,providerCooldownFromLocalEffect=true,requiresLocalProviderEffect=true,targetType="RETICLE_HOSTILE",providerCooldown=10,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048}),
 
     E("MAJOR_VULNERABILITY","Major Vulnerability","DEBUFF",true,false,true,nil,{abilityIds={106754},displayPriority=5,icon=I("ability_debuff_major_vulnerability")}),
     E("MINOR_VULNERABILITY","Minor Vulnerability","DEBUFF",true,false,true,nil,{displayPriority=55,icon=I("ability_debuff_minor_vulnerability")}),

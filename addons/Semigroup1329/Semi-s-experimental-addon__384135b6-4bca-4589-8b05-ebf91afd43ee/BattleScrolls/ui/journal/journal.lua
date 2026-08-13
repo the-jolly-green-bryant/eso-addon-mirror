@@ -199,9 +199,19 @@ function BattleScrolls_Journal_Gamepad:Initialize(control)
                 self.selectedEncounterTab = ENCOUNTER_TAB.ALL
                 self.pendingTabIndex = 1  -- Start at first tab
                 self:ResetAllFilters()
-                self:SetCurrentList(self.instanceList)
-                self:RefreshList()
-                self:SetActiveKeybinds(self.instanceKeybindStripDescriptor)
+                if BattleScrolls.shareUrl.isBusy() then
+                    -- An upload chain survived a hide/re-show round-trip
+                    -- (URL confirm, browser switch): land back on the stepper
+                    self.mode = NAVIGATION_MODE.SHARE
+                    self.shareSourceMode = nil
+                    self:SetCurrentList(self.shareList)
+                    self:RefreshList()
+                    self:SetActiveKeybinds(self.shareKeybindStripDescriptor)
+                else
+                    self:SetCurrentList(self.instanceList)
+                    self:RefreshList()
+                    self:SetActiveKeybinds(self.instanceKeybindStripDescriptor)
+                end
             elseif newState == SCENE_FRAGMENT_HIDDEN then
                 self:ClearSearchText()
                 self:ResetTooltips()

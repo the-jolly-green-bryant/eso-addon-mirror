@@ -1,9 +1,9 @@
 ## Title: |cFF3B3BCritMarker|r
-## Version: 1.0.16
+## Version: 1.0.21
 ## AddOnVersion: 1
 ## APIVersion: 101050
 ## Author: |cADFF2F@Ruptxre|r & |c00FFFF@Sikma|r
-## Description: Customizable FPS-style hitmarker: spawns on critical hits, PvP killing blows and duel wins. 24 marker styles, color-wheel tints with rainbow mode, sizes and sound effects/boosts with live test buttons, plus an optional Halo-style MLG kill-streak announcer (Double Kill to KILLIONAIRE) with its own movable, resizable text window.
+## Description: Customizable FPS-style hitmarker: spawns on critical hits, PvP killing blows and duel wins. 24 marker styles, color-wheel tints with rainbow mode, sizes and sound effects/boosts with live test buttons, plus an optional Halo-style MLG kill-streak announcer (Double Kill to KILLIONAIRE, medals pop with every tier, plus per-life spree medals: Killing Spree to Invincible, and KILLJOY on revenge kills) with its own movable, resizable text window.
 ## Category: Combat
 ## SavedVariables: CritMarker_SV
 ## DependsOn: LibAddonMenu-2.0

@@ -301,7 +301,7 @@ local function ApplyOwnedMinimapControlDrawOrder(control)
         control:SetDrawTier(drawOrder.tier)
     else
         control:SetDrawLayer(DL_BACKGROUND)
-        control:SetDrawTier(DT_LOW)
+        control:SetDrawTier(control == areaLabel and DT_HIGH or DT_LOW)
     end
 end
 

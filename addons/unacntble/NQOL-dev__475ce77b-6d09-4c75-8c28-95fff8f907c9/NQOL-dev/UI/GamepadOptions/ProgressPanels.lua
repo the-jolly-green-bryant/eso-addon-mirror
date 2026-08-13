@@ -570,6 +570,7 @@ function GamepadOptions.BuildUtilityOptionsData()
     return {
         GamepadOptions.BuildAutoClaimTomePointsOption(),
         GamepadOptions.BuildAutoClaimGoldenPursuitsOption(),
+        GamepadOptions.BuildAutoClaimVeterancyRewardsOption(),
         GamepadOptions.BuildTransmuteWatchOption(),
         GamepadOptions.BuildSkipLogoutConfirmationOption(),
         GamepadOptions.BuildLuaGcEntry(),

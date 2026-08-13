@@ -3,7 +3,11 @@ local DE = DynamicEncounterTracker
 
 DE.name = "DynamicEncounterTracker"
 DE.displayName = "Dynamic Encounter Tracker"
-DE.version = "1.0.0"
+DE.version = "1.2.0"
+-- Bumped by tools/increment-build-number.ps1 on every build (prod and dev),
+-- independent of the semantic version above. Pilot for a cross-project
+-- build-number convention (see .build-counter).
+DE.buildNumber = 205
 DE.author = "R0ctan"
 DE.savedVariablesName = "DynamicEncounterTracker_Data"
 DE.savedVariablesVersion = 1
@@ -117,11 +121,24 @@ function DE:Print(message)
     CHAT_ROUTER:AddSystemMessage(string.format("|cD6BD78[%s]|r %s", self.displayName, tostring(message)))
 end
 
+function DE:Debug(message)
+    if not self:IsDebugEnabled() then
+        return
+    end
+    if type(message) == "function" then
+        message = message()
+    end
+    self:Print(message)
+end
+
 function DE:IsAddonRuntimeEnabled()
     return self.sv ~= nil and self.sv.enabled == true and self.state.runtimeEnabled == true
 end
 
 function DE:IsZoneRuntimeEnabled()
+    if self.state.relayDebugPaused then
+        return false
+    end
     return self:IsAddonRuntimeEnabled() and self.state.zoneRuntimeActive == true
 end
 
@@ -130,22 +147,38 @@ DE.defaults = {
     showWindow = true,
     locked = false,
     minimalMode = false,
+    minimalShowFrame = false,
+    showFrame = false,
     showCloseButton = true,
     showMinimalToggleButton = true,
     hideInMenus = true,
     showOnWorldMap = true,
-    hideOutsideSupportedZones = true,
     showStepInStatus = true,
     showStepProgressInStatus = true,
     showParticipationInStatus = true,
     showPhase = true,
     showHintInStatusWindow = true,
-    debugEnabled = true,
-    showDebugArea = true,
+    showUnknownCountUp = true,
+    -- Debugging must be explicitly enabled even in development builds.
+    debugEnabled = false,
+    showDebugArea = false,
     showRespawnTimer = true,
     showSpawnWindowHint = true,
     showRespawnOverrun = true,
     respawnTimerOverrides = {},
+    respawnDefaultsAcknowledgedVersion = 0,
+    relayShowButton = true,
+    relayReceiveEnabled = true,
+    relayAutoAccept = false,
+    relayShowInvalidNotice = true,
+    relaySequence = 0,
+    relayGuildShowButton = true,
+    relayGuildReceiveEnabled = true,
+    relayCodeOfConductAcceptedVersion = 0,
+    relayRequestReceiveEnabled = true,
+    relayRequestReplyChannel = "ask",
+    relayRequestShowButton = true,
+    relayRequestCollectionWindowSeconds = 60,
     showChestHints = true,
     showCenterChestAlert = true,
     centerChestAlertSeconds = 5,
@@ -177,6 +210,33 @@ DE.defaults = {
         background = { 0.015, 0.018, 0.02, 0.90 },
         frame = { 0.63, 0.52, 0.31, 0.95 },
         text = { 0.96, 0.72, 0.18, 1 },
+    },
+    relayWindowShow = true,
+    relayWindowLocked = false,
+    relayWindowShowBorder = false,
+    relayWindowFontSize = 16,
+    relayWindowSortMode = "remaining",
+    relayWindowBlinkThresholdSeconds = 30,
+    relayWindowCheckIntervalSeconds = 15,
+    -- One-time shares expire quickly; locally estimated starts have a calculable lifetime.
+    relayWindowActiveShareMaxAgeSeconds = 30,
+    relayWindowActiveEstimatedMaxAgeSeconds = 180,
+    -- Left-aligned directly under the status window's own default position
+    -- (TOPLEFT 200,200, height 190) with a small gap.
+    relayWindowPosition = {
+        anchor = "left",
+        x = 200,
+        y = 400,
+    },
+    relayWindowColors = {
+        background = { 0.015, 0.018, 0.02, 0.90 },
+        titleBar = { 0.13, 0.11, 0.09, 0.95 },
+        titleText = { 0.93, 0.88, 0.72, 1 },
+        zoneText = { 0.96, 0.96, 0.94, 1 },
+        playerText = { 0.88, 0.84, 0.76, 1 },
+        separator = { 0.63, 0.52, 0.31, 0.55 },
+        warning = { 1, 0.55, 0, 1 },
+        blink = { 0.42, 0.90, 0.28, 1 },
     },
     colors = {
         title = { 0.93, 0.88, 0.72, 1 },
@@ -245,7 +305,83 @@ DE.state = {
     cooldownStartedAt = nil,
     cooldownStartExact = nil,
     cooldownSource = nil,
+    -- Player-plus-encounter keys make later shares update rather than duplicate rows.
+    guildRelayEntries = {},
 }
+
+-- Keybind handlers (see Bindings.xml). Guarded by IsAddonRuntimeEnabled so a
+-- keybind press while the addon is off (via /dynet off) does nothing, same
+-- as the equivalent slash commands (see HandleSlashCommand).
+function DE:OnKeybindToggleWindow()
+    if not self:IsAddonRuntimeEnabled() then
+        return
+    end
+    self.sv.showWindow = not self.sv.showWindow
+    self:RefreshVisibility()
+end
+
+function DE:OnKeybindToggleMinimal()
+    if not self:IsAddonRuntimeEnabled() then
+        return
+    end
+    self.sv.minimalMode = not self.sv.minimalMode
+    self:RefreshUI()
+    self:RefreshSettingsPanel()
+end
+
+function DE:OnKeybindShareDialog()
+    if not self:IsAddonRuntimeEnabled() then
+        return
+    end
+    self:ShowRelayShareDialog()
+end
+
+function DE:OnKeybindRequestDialog()
+    if not self:IsAddonRuntimeEnabled() then
+        return
+    end
+    self:ShowRelayRequestDialog()
+end
+
+function DE:OnKeybindToggleGuildWindow()
+    if not self:IsAddonRuntimeEnabled() or not self.GuildRelayWindow then
+        return
+    end
+    self.sv.relayWindowShow = not self.sv.relayWindowShow
+    -- Refresh also restarts the one-second tick after the window was hidden.
+    self.GuildRelayWindow:Refresh()
+end
+
+-- Bindings.xml resolves plain global functions, so wrappers guard the addon load order.
+function DynamicEncounterTracker_OnKeybindToggleWindow()
+    if DynamicEncounterTracker and DynamicEncounterTracker.OnKeybindToggleWindow then
+        DynamicEncounterTracker:OnKeybindToggleWindow()
+    end
+end
+
+function DynamicEncounterTracker_OnKeybindToggleMinimal()
+    if DynamicEncounterTracker and DynamicEncounterTracker.OnKeybindToggleMinimal then
+        DynamicEncounterTracker:OnKeybindToggleMinimal()
+    end
+end
+
+function DynamicEncounterTracker_OnKeybindShareDialog()
+    if DynamicEncounterTracker and DynamicEncounterTracker.OnKeybindShareDialog then
+        DynamicEncounterTracker:OnKeybindShareDialog()
+    end
+end
+
+function DynamicEncounterTracker_OnKeybindRequestDialog()
+    if DynamicEncounterTracker and DynamicEncounterTracker.OnKeybindRequestDialog then
+        DynamicEncounterTracker:OnKeybindRequestDialog()
+    end
+end
+
+function DynamicEncounterTracker_OnKeybindToggleGuildWindow()
+    if DynamicEncounterTracker and DynamicEncounterTracker.OnKeybindToggleGuildWindow then
+        DynamicEncounterTracker:OnKeybindToggleGuildWindow()
+    end
+end
 
 function DE:Initialize()
     self.sv = ZO_SavedVars:NewAccountWide(
@@ -255,11 +391,18 @@ function DE:Initialize()
         self.defaults,
         GetWorldName()
     )
+    -- Validate table types because corrupted SavedVariables may contain non-nil scalars.
     if self:HasDebugModule() then
-        self.sv.stepLearning = self.sv.stepLearning or {}
-        self.sv.diagnosticHistory = self.sv.diagnosticHistory or {}
+        if type(self.sv.stepLearning) ~= "table" then
+            self.sv.stepLearning = {}
+        end
+        if type(self.sv.diagnosticHistory) ~= "table" then
+            self.sv.diagnosticHistory = {}
+        end
     end
-    self.sv.size = self.sv.size or {}
+    if type(self.sv.size) ~= "table" then
+        self.sv.size = {}
+    end
     if type(self.sv.size.width) ~= "number" then
         self.sv.size.width = self.defaults.size.width
     end
@@ -268,7 +411,9 @@ function DE:Initialize()
     end
     self.sv.size.width = zo_clamp(self.sv.size.width, self.WINDOW_MIN_WIDTH, self.WINDOW_MAX_WIDTH)
     self.sv.size.height = self.WINDOW_DEFAULT_HEIGHT
-    self.sv.colors = self.sv.colors or {}
+    if type(self.sv.colors) ~= "table" then
+        self.sv.colors = {}
+    end
     if not self.sv.colors.frame then
         local oldBorder = self.sv.colors.border or self.defaults.colors.frame
         self.sv.colors.frame = {
@@ -289,6 +434,48 @@ function DE:Initialize()
     end
     if self.sv.showHintInStatusWindow == nil then
         self.sv.showHintInStatusWindow = self.defaults.showHintInStatusWindow
+    end
+    if self.sv.showUnknownCountUp == nil then
+        self.sv.showUnknownCountUp = self.defaults.showUnknownCountUp
+    end
+    if self.sv.minimalShowFrame == nil then
+        self.sv.minimalShowFrame = self.defaults.minimalShowFrame
+    end
+    if self.sv.showFrame == nil then
+        self.sv.showFrame = self.defaults.showFrame
+    end
+    if self.sv.relayShowButton == nil then
+        self.sv.relayShowButton = self.defaults.relayShowButton
+    end
+    if self.sv.relayReceiveEnabled == nil then
+        self.sv.relayReceiveEnabled = self.defaults.relayReceiveEnabled
+    end
+    if self.sv.relayAutoAccept == nil then
+        self.sv.relayAutoAccept = self.defaults.relayAutoAccept
+    end
+    if self.sv.relayShowInvalidNotice == nil then
+        self.sv.relayShowInvalidNotice = self.defaults.relayShowInvalidNotice
+    end
+    if type(self.sv.relaySequence) ~= "number" then
+        self.sv.relaySequence = self.defaults.relaySequence
+    end
+    if self.sv.relayGuildShowButton == nil then
+        self.sv.relayGuildShowButton = self.defaults.relayGuildShowButton
+    end
+    if self.sv.relayGuildReceiveEnabled == nil then
+        self.sv.relayGuildReceiveEnabled = self.defaults.relayGuildReceiveEnabled
+    end
+    if type(self.sv.relayCodeOfConductAcceptedVersion) ~= "number" then
+        self.sv.relayCodeOfConductAcceptedVersion = self.defaults.relayCodeOfConductAcceptedVersion
+    end
+    if self.sv.relayRequestReceiveEnabled == nil then
+        self.sv.relayRequestReceiveEnabled = self.defaults.relayRequestReceiveEnabled
+    end
+    if self.sv.relayRequestShowButton == nil then
+        self.sv.relayRequestShowButton = self.defaults.relayRequestShowButton
+    end
+    if type(self.sv.relayRequestCollectionWindowSeconds) ~= "number" then
+        self.sv.relayRequestCollectionWindowSeconds = self.defaults.relayRequestCollectionWindowSeconds
     end
     if self.sv.showRespawnTimer == nil then
         self.sv.showRespawnTimer = self.defaults.showRespawnTimer
@@ -323,22 +510,90 @@ function DE:Initialize()
         self.sv.chestAlertTextSize = self.defaults.chestAlertTextSize
     end
     self.sv.chestAlertTextSize = zo_clamp(self.sv.chestAlertTextSize, 16, 42)
-    self.sv.chestAlertSize = self.sv.chestAlertSize or {}
+    if type(self.sv.chestAlertSize) ~= "table" then
+        self.sv.chestAlertSize = {}
+    end
     if type(self.sv.chestAlertSize.width) ~= "number" then
         self.sv.chestAlertSize.width = self.defaults.chestAlertSize.width
     end
     self.sv.chestAlertSize.width = zo_clamp(self.sv.chestAlertSize.width, 320, 900)
     self.sv.chestAlertSize.height = self.defaults.chestAlertSize.height
-    self.sv.chestAlertPosition = self.sv.chestAlertPosition or {
-        point = self.defaults.chestAlertPosition.point,
-        relativePoint = self.defaults.chestAlertPosition.relativePoint,
-        x = self.defaults.chestAlertPosition.x,
-        y = self.defaults.chestAlertPosition.y,
-    }
-    self.sv.chestAlertColors = self.sv.chestAlertColors or {}
+    if type(self.sv.chestAlertPosition) ~= "table" then
+        self.sv.chestAlertPosition = {
+            point = self.defaults.chestAlertPosition.point,
+            relativePoint = self.defaults.chestAlertPosition.relativePoint,
+            x = self.defaults.chestAlertPosition.x,
+            y = self.defaults.chestAlertPosition.y,
+        }
+    end
+    if type(self.sv.chestAlertColors) ~= "table" then
+        self.sv.chestAlertColors = {}
+    end
     for colorName, defaultColor in pairs(self.defaults.chestAlertColors) do
         if not self.sv.chestAlertColors[colorName] then
             self.sv.chestAlertColors[colorName] = {
+                defaultColor[1],
+                defaultColor[2],
+                defaultColor[3],
+                defaultColor[4] or 1,
+            }
+        end
+    end
+
+    if self.sv.relayWindowShow == nil then
+        self.sv.relayWindowShow = self.defaults.relayWindowShow
+    end
+    if self.sv.relayWindowLocked == nil then
+        self.sv.relayWindowLocked = self.defaults.relayWindowLocked
+    end
+    if self.sv.relayWindowShowBorder == nil then
+        self.sv.relayWindowShowBorder = self.defaults.relayWindowShowBorder
+    end
+    if type(self.sv.relayWindowFontSize) ~= "number" then
+        self.sv.relayWindowFontSize = self.defaults.relayWindowFontSize
+    end
+    self.sv.relayWindowFontSize = zo_clamp(self.sv.relayWindowFontSize, 12, 28)
+    if type(self.sv.relayWindowSortMode) ~= "string" then
+        self.sv.relayWindowSortMode = self.defaults.relayWindowSortMode
+    end
+    if type(self.sv.relayWindowBlinkThresholdSeconds) ~= "number" then
+        self.sv.relayWindowBlinkThresholdSeconds = self.defaults.relayWindowBlinkThresholdSeconds
+    end
+    self.sv.relayWindowBlinkThresholdSeconds = zo_clamp(self.sv.relayWindowBlinkThresholdSeconds, 5, 300)
+    if type(self.sv.relayWindowCheckIntervalSeconds) ~= "number" then
+        self.sv.relayWindowCheckIntervalSeconds = self.defaults.relayWindowCheckIntervalSeconds
+    end
+    self.sv.relayWindowCheckIntervalSeconds = zo_clamp(self.sv.relayWindowCheckIntervalSeconds, 5, 60)
+    if type(self.sv.relayWindowActiveShareMaxAgeSeconds) ~= "number" then
+        self.sv.relayWindowActiveShareMaxAgeSeconds = self.defaults.relayWindowActiveShareMaxAgeSeconds
+    end
+    self.sv.relayWindowActiveShareMaxAgeSeconds = zo_clamp(self.sv.relayWindowActiveShareMaxAgeSeconds, 10, 300)
+    if type(self.sv.relayWindowActiveEstimatedMaxAgeSeconds) ~= "number" then
+        self.sv.relayWindowActiveEstimatedMaxAgeSeconds = self.defaults.relayWindowActiveEstimatedMaxAgeSeconds
+    end
+    self.sv.relayWindowActiveEstimatedMaxAgeSeconds = zo_clamp(self.sv.relayWindowActiveEstimatedMaxAgeSeconds, 30, 1800)
+    if type(self.sv.relayWindowPosition) ~= "table" then
+        self.sv.relayWindowPosition = {
+            anchor = self.defaults.relayWindowPosition.anchor,
+            x = self.defaults.relayWindowPosition.x,
+            y = self.defaults.relayWindowPosition.y,
+        }
+    end
+    if type(self.sv.relayWindowColors) ~= "table" then
+        self.sv.relayWindowColors = {}
+    end
+    -- Preserve customized colors when migrating the legacy field names.
+    if self.sv.relayWindowColors.nameText and not self.sv.relayWindowColors.zoneText then
+        self.sv.relayWindowColors.zoneText = self.sv.relayWindowColors.nameText
+        self.sv.relayWindowColors.nameText = nil
+    end
+    if self.sv.relayWindowColors.timeText and not self.sv.relayWindowColors.playerText then
+        self.sv.relayWindowColors.playerText = self.sv.relayWindowColors.timeText
+        self.sv.relayWindowColors.timeText = nil
+    end
+    for colorName, defaultColor in pairs(self.defaults.relayWindowColors) do
+        if not self.sv.relayWindowColors[colorName] then
+            self.sv.relayWindowColors[colorName] = {
                 defaultColor[1],
                 defaultColor[2],
                 defaultColor[3],
@@ -357,13 +612,25 @@ function DE:Initialize()
         debugModule:Initialize()
     end
 
+    local relayModule = self:GetModule("relay")
+    if relayModule and type(relayModule.Initialize) == "function" then
+        relayModule:Initialize()
+    end
+
     self:CreateUI()
     self:CreateSettings()
+
+    if self.GuildRelayWindow and type(self.GuildRelayWindow.Initialize) == "function" then
+        self.GuildRelayWindow:Initialize(self)
+    end
 
     SLASH_COMMANDS["/dynet"] = function(text)
         self:HandleSlashCommand(text)
     end
     SLASH_COMMANDS["/dynamicencountertracker"] = SLASH_COMMANDS["/dynet"]
+
+    self:RegisterRespawnDefaultsMigrationDialog()
+    self:MaybeShowRespawnDefaultsMigrationDialog()
 
     if self.sv.enabled then
         self:EnableRuntime()
@@ -371,4 +638,3 @@ function DE:Initialize()
         self:DisableRuntime()
     end
 end
-

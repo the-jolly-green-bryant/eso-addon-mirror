@@ -43,6 +43,7 @@ local SESSION_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 ---@class ShareChain
 ---@field parts string[] Base64 data parts
 ---@field session string Upload session id
+---@field lang string Game client language (drives the upload page's texts)
 ---@field nextSeq number Next part to fire (1-based)
 ---@field total number
 
@@ -126,8 +127,8 @@ end
 ---@param seq number
 ---@return string
 local function partUrl(seq)
-    return string.format("%s#s=%s&i=%d&n=%d&d=%s",
-        BASE_URL, chain.session, seq, chain.total, chain.parts[seq])
+    return string.format("%s#s=%s&i=%d&n=%d&l=%s&d=%s",
+        BASE_URL, chain.session, seq, chain.total, chain.lang, chain.parts[seq])
 end
 
 ---Fires the next part's browser link. The caller (stepper keybind) invokes
@@ -158,6 +159,7 @@ local function startChain(exportResult)
     chain = {
         parts = parts,
         session = newSessionId(),
+        lang = GetCVar("Language.2") or "en",
         nextSeq = 1,
         total = #parts,
     }

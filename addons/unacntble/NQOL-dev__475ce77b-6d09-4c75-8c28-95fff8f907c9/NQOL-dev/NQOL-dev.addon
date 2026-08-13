@@ -1,9 +1,9 @@
 ## Title: NQOL-dev
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 295
-## LastProdVersionCommitID: dcc03ee
-## LastDevVersionCommitID: d9b38b4
+## AddOnVersion: 298
+## LastProdVersionCommitID: a4b4312
+## LastDevVersionCommitID: b9ed919
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariablesDev NQOLLanguageSettingsDev
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames
@@ -38,6 +38,7 @@ Features/MapTravelTabs.lua
 Features/Minimap.lua
 Features/Fishing.lua
 Features/Freeport.lua
+Features/Camera.lua
 Features/UI.lua
 Features/UIPlayerInfo.lua
 Features/UICombatReticle.lua
@@ -58,6 +59,7 @@ Features/GroupFinderMonitor.lua
 Features/GroupFinderMonitorHud.lua
 Features/Grouping.lua
 Features/TomePoints.lua
+Features/VeterancyRewards.lua
 Features/TransmuteWatch.lua
 Features/SkipLogoutConfirmation.lua
 Features/Positioning.lua

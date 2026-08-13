@@ -4,6 +4,8 @@ DE.RESPAWN_PHASE_COOLDOWN = "cooldown"
 DE.RESPAWN_PHASE_WINDOW = "spawn-window"
 DE.RESPAWN_PHASE_OVERDUE = "overdue"
 DE.RESPAWN_MAX_SECONDS = (120 * 60) + 59
+-- Increment when shipped respawn defaults change so existing profiles can migrate explicitly.
+DE.RESPAWN_DEFAULTS_VERSION = 1
 
 local function ClampSeconds(seconds)
     if type(seconds) ~= "number" then
@@ -125,7 +127,10 @@ function DE:SetRespawnTimerOverride(config, fieldName, seconds)
         return false
     end
 
-    self.sv.respawnTimerOverrides = self.sv.respawnTimerOverrides or {}
+    -- Validate table types because corrupted SavedVariables may contain non-nil scalars.
+    if type(self.sv.respawnTimerOverrides) ~= "table" then
+        self.sv.respawnTimerOverrides = {}
+    end
     local timing = self:GetRespawnTiming(config)
     local override = self.sv.respawnTimerOverrides[key] or {
         earliestSeconds = timing.earliestSeconds,
@@ -153,6 +158,55 @@ end
 function DE:ResetRespawnTimerOverrides()
     self.sv.respawnTimerOverrides = {}
     self:RecalculateActiveCooldown()
+end
+
+-- Ask once per version because saved overrides would otherwise mask changed defaults forever.
+function DE:MaybeShowRespawnDefaultsMigrationDialog()
+    if (self.sv.respawnDefaultsAcknowledgedVersion or 0) >= self.RESPAWN_DEFAULTS_VERSION then
+        return
+    end
+
+    local hasOverrides = false
+    for _ in pairs(self.sv.respawnTimerOverrides or {}) do
+        hasOverrides = true
+        break
+    end
+
+    if not hasOverrides then
+        -- Nothing to migrate, but still record the version as seen so this
+        -- check stays a no-op on every future login too, not just this one.
+        self.sv.respawnDefaultsAcknowledgedVersion = self.RESPAWN_DEFAULTS_VERSION
+        return
+    end
+
+    ZO_Dialogs_ShowDialog("DE_RESPAWN_DEFAULTS_MIGRATION")
+end
+
+function DE:RegisterRespawnDefaultsMigrationDialog()
+    ZO_Dialogs_RegisterCustomDialog("DE_RESPAWN_DEFAULTS_MIGRATION", {
+        title = {
+            text = DE:T("DE_RESPAWN_DEFAULTS_MIGRATION_TITLE"),
+        },
+        mainText = {
+            text = DE:T("DE_RESPAWN_DEFAULTS_MIGRATION_TEXT"),
+        },
+        buttons = {
+            [1] = {
+                text = DE:T("DE_RESPAWN_DEFAULTS_MIGRATION_ACCEPT"),
+                callback = function()
+                    DE:ResetRespawnTimerOverrides()
+                    DE.sv.respawnDefaultsAcknowledgedVersion = DE.RESPAWN_DEFAULTS_VERSION
+                end,
+            },
+            [2] = {
+                text = DE:T("DE_RESPAWN_DEFAULTS_MIGRATION_KEEP"),
+                callback = function()
+                    -- A deliberate keep decision still acknowledges this defaults version.
+                    DE.sv.respawnDefaultsAcknowledgedVersion = DE.RESPAWN_DEFAULTS_VERSION
+                end,
+            },
+        },
+    })
 end
 
 function DE:RecalculateActiveCooldown()
@@ -214,4 +268,20 @@ function DE:GetAllEncounterConfigsForSettings()
         return leftOrder < rightOrder
     end)
     return result
+end
+
+function DE:GetEncounterConfigByRelayCode(relayCode)
+    if type(relayCode) ~= "string" or relayCode == "" then
+        return nil
+    end
+
+    for _, configs in pairs(self.encountersByZoneId or {}) do
+        for _, config in ipairs(configs) do
+            if config.relayCode == relayCode then
+                return config
+            end
+        end
+    end
+
+    return nil
 end

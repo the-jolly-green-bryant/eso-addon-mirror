@@ -13,6 +13,7 @@ local MINIMAP_PANEL_ID = PanelIds.MINIMAP
 local FISHING_PANEL_ID = PanelIds.FISHING
 local FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
 local UI_PANEL_ID = PanelIds.UI
+local CAMERA_PANEL_ID = PanelIds.CAMERA
 local DEFAULT_FRAMES_PANEL_ID = PanelIds.DEFAULT_FRAMES
 local COMBAT_RETICLE_PANEL_ID = PanelIds.COMBAT_RETICLE
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
@@ -576,6 +577,27 @@ function GamepadOptions.BuildUIEntry()
     }
 end
 
+function GamepadOptions.BuildCameraEntry()
+    local camera = NQOL.Features.Camera
+    return {
+        panel = UI_PANEL_ID,
+        system = UI_PANEL_ID,
+        settingId = 3,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = camera.GetName(),
+        gamepadTextOverride = camera.GetName(),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, camera.GetEntryTooltip())
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(CAMERA_PANEL_ID)
+        end,
+    }
+end
+
 function GamepadOptions.BuildCombatReticleEntry()
     return {
         panel = UI_PANEL_ID,
@@ -966,7 +988,7 @@ function GamepadOptions.BuildLuaGcEntry()
     return {
         panel = UTILITY_PANEL_ID,
         system = UTILITY_PANEL_ID,
-        settingId = 5,
+        settingId = 6,
         controlType = OPTIONS_INVOKE_CALLBACK,
         text = NQOL.L("ui.navigation.lua_gc_be3883a"),
         gamepadTextOverride = NQOL.L("ui.navigation.lua_gc_be3883a"),

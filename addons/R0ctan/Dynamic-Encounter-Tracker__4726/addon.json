@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/R0ctan/Dynamic-Encounter-Tracker__4726",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "R0ctan",
   "canonical_id": "esoui:4726",
   "category_id": "109",
@@ -17,12 +18,14 @@
     "DynamicEncounterTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4726/",
-  "fingerprint": "966d2c36eccf09a4b575051124af7db2b603d172fcf164163f1fd3a0e5c2860f",
+  "fingerprint": "760e03371c33912d580232918ea698b02d60e2bd245f144a986295d728e12101",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16829.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16830.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16831.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16832.jpg"
+    "https://cdn-eso.mmoui.com/preview/pvw16832.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16974.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16973.jpg"
   ],
   "platform": "pc",
   "published": true,
@@ -30,11 +33,11 @@
   "source_id": "4726",
   "source_url": "https://www.esoui.com/downloads/info4726-DynamicEncounterTracker.html",
   "stats": {
-    "downloads": 656,
-    "favorites": 5,
-    "monthly_downloads": 623
+    "downloads": 1348,
+    "favorites": 6,
+    "monthly_downloads": 1307
   },
   "title": "Dynamic Encounter Tracker",
-  "updated_at": 1785091487000,
-  "version": "1.1.0"
+  "updated_at": 1786538094000,
+  "version": "1.2.0"
 }

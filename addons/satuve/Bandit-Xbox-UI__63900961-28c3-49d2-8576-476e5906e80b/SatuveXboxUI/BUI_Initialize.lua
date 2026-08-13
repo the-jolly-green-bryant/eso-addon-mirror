@@ -245,6 +245,7 @@ local function Initialize(eventCode, addOnName)
 	BUI.OnScreen.Initialize()
 	BUI.Meters.Initialize()
 	--BUI.Markers.Initialize()
+	if BUI.ChampionPriority and BUI.ChampionPriority.Initialize then BUI.ChampionPriority:Initialize() end
 	BUI.Menu.Init()
 	BUI.Menu.Initialize()
 	BUI.MiniMap.Initialize()

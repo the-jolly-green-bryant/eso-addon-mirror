@@ -10,7 +10,18 @@ function DE:UpdateCurrentZone(resetState)
     local zoneId, zoneName, configs = self:GetCurrentZoneData()
     local zoneChanged = zoneId ~= previousZoneId
 
-    if zoneChanged and self.state.zoneRuntimeActive then
+    -- Relay travel is time-window based because ESO does not expose zone instance IDs.
+    -- Apply the pending share after local detection so observed state always wins.
+    local isRelayTravel = self:IsRelayTravelPending()
+    if isRelayTravel then
+        self:ClearRelayTravelPending()
+    end
+    local relayState = self:EnsureRelayState()
+    local pendingAccept = isRelayTravel and relayState.pendingGuildRelayAccept or nil
+    relayState.pendingGuildRelayAccept = nil
+
+    -- Preserve runtime state across relay travel until destination detection resolves it.
+    if zoneChanged and self.state.zoneRuntimeActive and not isRelayTravel then
         self:DeactivateZoneRuntime("zone changed", true)
     end
     if zoneChanged and previousZoneId ~= 0 then
@@ -22,43 +33,71 @@ function DE:UpdateCurrentZone(resetState)
     self.state.zoneEncounterConfigs = configs
 
     if not configs then
-        self.state.eventData = nil
-        self.state.status = self.STATUS_UNSUPPORTED
-        self.state.zoneRuntimeActive = false
-        if self.window then
-            self.window:SetHidden(true)
+        if not isRelayTravel then
+            self.state.eventData = nil
+            self.state.status = self.STATUS_UNSUPPORTED
+        elseif pendingAccept then
+            -- Preserve an accepted share even if the destination has no local configuration.
+            self:ApplyPendingGuildRelayAccept(pendingAccept)
         end
+        self.state.zoneRuntimeActive = false
+        -- Visibility must remain centralized for scene and preview exceptions.
+        self:RefreshVisibility()
         return false
     end
 
-    if #configs == 1 and not self.state.eventData then
-        self.state.eventData = configs[1]
-    elseif self.state.eventData then
-        local stillConfigured = false
-        for _, config in ipairs(configs) do
-            if config == self.state.eventData then
-                stillConfigured = true
-                break
+    if not isRelayTravel then
+        if #configs == 1 and not self.state.eventData then
+            self.state.eventData = configs[1]
+        elseif self.state.eventData then
+            local stillConfigured = false
+            for _, config in ipairs(configs) do
+                if config == self.state.eventData then
+                    stillConfigured = true
+                    break
+                end
             end
-        end
-        if not stillConfigured then
-            self.state.eventData = #configs == 1 and configs[1] or nil
+            if not stillConfigured then
+                self.state.eventData = #configs == 1 and configs[1] or nil
+            end
         end
     end
 
-    if resetState or zoneChanged then
+    local appliedRelayState = false
+    if self:IsAddonRuntimeEnabled() and not self.state.zoneRuntimeActive then
+        -- ActivateZoneRuntime scans immediately; active status means local data won.
+        self:ActivateZoneRuntime()
+        if isRelayTravel and pendingAccept and self.state.status ~= self.STATUS_ACTIVE then
+            self:ApplyPendingGuildRelayAccept(pendingAccept)
+            appliedRelayState = true
+        end
+    else
+        -- Relay travel keeps runtime active, so scan the destination directly.
+        if isRelayTravel then
+            local foundActive = self:ScanActiveWorldEvents()
+            -- Locally observed state always wins over a relay estimate.
+            if pendingAccept and not foundActive then
+                self:ApplyPendingGuildRelayAccept(pendingAccept)
+                appliedRelayState = true
+            elseif foundActive then
+                appliedRelayState = true
+                -- The accepted row is redundant once local observation confirms arrival.
+                if pendingAccept then
+                    self:RemoveGuildRelayEntry(pendingAccept.fromDisplayName, pendingAccept.config.relayCode)
+                end
+            end
+        end
+        self:RefreshUI()
+    end
+
+    -- Start a fresh unknown interval only when neither local nor relay data was applied.
+    if not appliedRelayState and (resetState or zoneChanged) then
         local reason = zoneChanged and string.format("zone changed: %d -> %d", previousZoneId, zoneId) or "zone state reset"
         self:SetUnknownState(reason)
         if #configs == 1 then
             self.state.eventData = configs[1]
             self.state.status = self.STATUS_UNKNOWN
         end
-    end
-
-    if self:IsAddonRuntimeEnabled() and not self.state.zoneRuntimeActive then
-        self:ActivateZoneRuntime()
-    else
-        self:RefreshUI()
     end
     return true
 end
@@ -147,6 +186,11 @@ end
 
 function DE:OnPlayerDeactivated()
     if not self:IsAddonRuntimeEnabled() then
+        return
+    end
+
+    -- Loading starts before destination events, so preserve pending relay travel here too.
+    if self:IsRelayTravelPending() then
         return
     end
 
@@ -306,6 +350,13 @@ function DE:OnTimerUpdate()
     end
 
     self:ExpireChestHint()
+
+    -- Unknown count-up needs the same one-second redraw cadence as cooldowns.
+    if self.state.status == self.STATUS_UNKNOWN then
+        self:RefreshUI()
+        return
+    end
+
     if self.state.status ~= self.STATUS_COOLDOWN or not self.state.respawnAt then
         self:StopTimerUpdate()
         return
@@ -345,6 +396,9 @@ function DE:RegisterBaseRuntimeEvents()
     EVENT_MANAGER:RegisterForEvent(self.eventPrefix .. "ZoneChanged", EVENT_ZONE_CHANGED, function(...)
         self:OnZoneChanged()
     end)
+    EVENT_MANAGER:RegisterForEvent(self.eventPrefix .. "ChatMessageChannel", EVENT_CHAT_MESSAGE_CHANNEL, function(_, ...)
+        self:OnChatMessageChannel(...)
+    end)
     self.state.baseEventsRegistered = true
 end
 
@@ -355,6 +409,7 @@ function DE:UnregisterBaseRuntimeEvents()
     EVENT_MANAGER:UnregisterForEvent(self.eventPrefix .. "PlayerActivated", EVENT_PLAYER_ACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(self.eventPrefix .. "PlayerDeactivated", EVENT_PLAYER_DEACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(self.eventPrefix .. "ZoneChanged", EVENT_ZONE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(self.eventPrefix .. "ChatMessageChannel", EVENT_CHAT_MESSAGE_CHANNEL)
     self.state.baseEventsRegistered = false
 end
 
@@ -414,6 +469,8 @@ function DE:ActivateZoneRuntime()
     self:RegisterSceneCallback()
     self:ScanActiveWorldEvents()
     self:StartPeriodicScan()
+    -- Start after zoneRuntimeActive is true so unknown-state count-up cannot miss its tick.
+    self:StartTimerUpdate()
     self:RefreshVisibility()
     return true
 end
@@ -425,7 +482,7 @@ function DE:DeactivateZoneRuntime(reason, clearEncounterConfig)
     self:UnregisterSceneCallback()
     self.state.zoneRuntimeActive = false
 
-    self.state.status = self.state.zoneEncounterConfigs and self.STATUS_UNKNOWN or self.STATUS_UNSUPPORTED
+    -- Callers own status and unknownSince transitions; this function only tears down runtime.
     self.state.activeWorldEventInstanceId = nil
     self.state.activeWorldEventRole = nil
     self.state.parentActive = false
@@ -441,9 +498,8 @@ function DE:DeactivateZoneRuntime(reason, clearEncounterConfig)
     if clearEncounterConfig then
         self.state.eventData = nil
     end
-    if self.window then
-        self.window:SetHidden(true)
-    end
+    -- Keep scene and preview exceptions in the central visibility path.
+    self:RefreshVisibility()
 end
 
 function DE:EnableRuntime()
@@ -459,27 +515,45 @@ function DE:EnableRuntime()
     if self.state.zoneEncounterConfigs and not self.state.zoneRuntimeActive then
         self:ActivateZoneRuntime()
     end
+    -- Unlike the zone-scoped periodic scan, the guild relay list's liveness
+    -- tick is not tied to standing in a configured zone - guild members can
+    -- report from anywhere, so this only gates on the addon being on at all.
+    self:StartGuildRelayLivenessTick()
 end
 
 function DE:DisableRuntime()
     self:DeactivateZoneRuntime("runtime disabled", true)
     self.state.runtimeEnabled = false
     self:UnregisterBaseRuntimeEvents()
+    self:StopGuildRelayLivenessTick()
+    -- Discards a guild relay accept still in flight (see AcceptGuildRelayEntry/
+    -- pendingGuildRelayAccept) - if the addon gets disabled mid-jump, applying
+    -- it later on re-enable would be surprising and use stale data anyway.
+    self:EnsureRelayState().pendingGuildRelayAccept = nil
 
     self.state.zoneEncounterConfigs = nil
     self.state.status = self.STATUS_UNKNOWN
+    -- No SetUnknownState call follows here (runtime is fully off, window
+    -- stays hidden) - clear unknownSince explicitly so a stale timestamp
+    -- from before disabling can't leak into the count-up on next enable.
+    self.state.unknownSince = nil
     self.state.zoneId = 0
     self.state.zoneName = ""
     self.state.eventData = nil
     self.state.lastDiagnosticSignature = nil
     self:ModuleHook("respawnMeasurement", "ResetMeasurementChain", "runtime disabled")
 
+    -- Do not retain stale relay entries while runtime processing is disabled.
+    self.state.guildRelayEntries = {}
+    if self.GuildRelayWindow then
+        self.GuildRelayWindow:Refresh()
+    end
+
     if self.centerAlertWindow then
         self:HideCenterChestAlert()
     end
-    if self.window then
-        self.window:SetHidden(true)
-    end
+    -- Keep shutdown visibility in the same centralized path.
+    self:RefreshVisibility()
 end
 
 function DE:SetEnabled(enabled)
@@ -530,6 +604,17 @@ function DE:HandleSlashCommand(text)
     elseif command == "hide" then
         self.sv.showWindow = false
         self:RefreshVisibility()
+    elseif command == "toggle" then
+        self.sv.showWindow = not self.sv.showWindow
+        self:RefreshVisibility()
+    elseif command == "minimal" then
+        self.sv.minimalMode = not self.sv.minimalMode
+        self:RefreshUI()
+        self:RefreshSettingsPanel()
+    elseif command == "share" then
+        self:ShowRelayShareDialog()
+    elseif command == "request" then
+        self:ShowRelayRequestDialog()
     else
         local respawnMeasurementModule = self:GetModule("respawnMeasurement")
         if respawnMeasurementModule and type(respawnMeasurementModule.HandleSlashCommand) == "function"
@@ -542,9 +627,24 @@ function DE:HandleSlashCommand(text)
             and debugModule:HandleSlashCommand(command) then
             return
         end
+
+        local relayModule = self:GetModule("relay")
+        if relayModule and type(relayModule.HandleSlashCommand) == "function"
+            and relayModule:HandleSlashCommand(command) then
+            return
+        end
+
+        local relayDebugModule = self:GetModule("relayDebug")
+        if relayDebugModule and type(relayDebugModule.HandleSlashCommand) == "function"
+            and relayDebugModule:HandleSlashCommand(command) then
+            return
+        end
+
         self:Print(self:T("DE_SLASH_COMMANDS"))
         self:ModuleHook("respawnMeasurement", "PrintCommandHelp")
         self:ModuleHook("debug", "PrintCommandHelp")
+        self:ModuleHook("relay", "PrintCommandHelp")
+        self:ModuleHook("relayDebug", "PrintCommandHelp")
     end
 end
 

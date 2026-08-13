@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_CATEGORY_DYNAMICENCOUNTERTRACKER">
+            <Action name="DYNAMICENCOUNTERTRACKER_TOGGLE_WINDOW">
+                <Down>DynamicEncounterTracker_OnKeybindToggleWindow()</Down>
+            </Action>
+            <Action name="DYNAMICENCOUNTERTRACKER_TOGGLE_MINIMAL">
+                <Down>DynamicEncounterTracker_OnKeybindToggleMinimal()</Down>
+            </Action>
+            <Action name="DYNAMICENCOUNTERTRACKER_SHARE_DIALOG">
+                <Down>DynamicEncounterTracker_OnKeybindShareDialog()</Down>
+            </Action>
+            <Action name="DYNAMICENCOUNTERTRACKER_REQUEST_DIALOG">
+                <Down>DynamicEncounterTracker_OnKeybindRequestDialog()</Down>
+            </Action>
+            <Action name="DYNAMICENCOUNTERTRACKER_TOGGLE_GUILD_WINDOW">
+                <Down>DynamicEncounterTracker_OnKeybindToggleGuildWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

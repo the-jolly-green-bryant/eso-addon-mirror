@@ -174,7 +174,7 @@ BUI	={
 		GroupSynergyCount	=2,
 		--Group leader
 		MarkerLeader		=false,
-		MarkerSize			=40,
+		MarkerSize			=24,
 		ShortenThreshold    =100000,
 		}
 	},

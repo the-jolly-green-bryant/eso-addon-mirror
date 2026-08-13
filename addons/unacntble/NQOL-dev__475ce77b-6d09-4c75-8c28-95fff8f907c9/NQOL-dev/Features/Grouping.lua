@@ -7,18 +7,15 @@ local AUTO_INVITE_OFF = 0
 local AUTO_INVITE_DMS_ONLY = 1
 local AUTO_INVITE_ZONE_ONLY = 2
 local AUTO_INVITE_DMS_AND_ZONE = 3
-local AUTO_INVITE_GROUP_SIZE_2 = 2
-local AUTO_INVITE_GROUP_SIZE_4 = 4
-local AUTO_INVITE_GROUP_SIZE_8 = 8
-local AUTO_INVITE_GROUP_SIZE_12 = 12
+local AUTO_INVITE_GROUP_SIZE_MIN = 2
+local AUTO_INVITE_GROUP_SIZE_MAX = 12
+local AUTO_INVITE_GROUP_SIZE_DEFAULT = 12
 local AUTO_INVITE_DELAY_MINUTES_MIN = 0
 local AUTO_INVITE_DELAY_MINUTES_MAX = 60
 local AUTO_INVITE_DECLINED_DELAY_MINUTES_DEFAULT = 60
 local AUTO_INVITE_REINVITE_DELAY_MINUTES_DEFAULT = 15
 local MINUTES_TO_MS = 60000
 local AUTO_INVITE_RESPONSE_WINDOW_MS = 5 * MINUTES_TO_MS
-local GROUP_FULL_MESSAGE = NQOL.L("features.grouping.group_full_reply")
-NQOL.Lexicon.RegisterRefreshCallback(function() GROUP_FULL_MESSAGE = NQOL.L("features.grouping.group_full_reply") end)
 local EVENT_NAMESPACE = "NQOL_Grouping"
 
 local AUTO_INVITE_CHOICES = {
@@ -42,33 +39,12 @@ local VALID_AUTO_INVITE_MODES = {
     [AUTO_INVITE_DMS_AND_ZONE] = true,
 }
 
-local AUTO_INVITE_GROUP_SIZE_CHOICES = {
-    AUTO_INVITE_GROUP_SIZE_2,
-    AUTO_INVITE_GROUP_SIZE_4,
-    AUTO_INVITE_GROUP_SIZE_8,
-    AUTO_INVITE_GROUP_SIZE_12,
-}
-
-local AUTO_INVITE_GROUP_SIZE_CHOICE_NAMES = {
-    "2",
-    "4",
-    "8",
-    "12",
-}
-
-local VALID_AUTO_INVITE_GROUP_SIZES = {
-    [AUTO_INVITE_GROUP_SIZE_2] = true,
-    [AUTO_INVITE_GROUP_SIZE_4] = true,
-    [AUTO_INVITE_GROUP_SIZE_8] = true,
-    [AUTO_INVITE_GROUP_SIZE_12] = true,
-}
-
 local defaults = {
     grouping = {
         autoInvite = {
             mode = AUTO_INVITE_OFF,
             triggerText = "",
-            groupSize = AUTO_INVITE_GROUP_SIZE_12,
+            groupSize = AUTO_INVITE_GROUP_SIZE_DEFAULT,
             declinedDelayMinutes = AUTO_INVITE_DECLINED_DELAY_MINUTES_DEFAULT,
             reinviteDelayMinutes = AUTO_INVITE_REINVITE_DELAY_MINUTES_DEFAULT,
             logInChat = false,
@@ -130,6 +106,16 @@ local function ClampDelayMinutes(value, defaultValue)
     return value
 end
 
+local function ClampGroupSize(value)
+    value = tonumber(value)
+    if value == nil then
+        return AUTO_INVITE_GROUP_SIZE_DEFAULT
+    end
+
+    value = zo_round and zo_round(value) or math.floor(value + 0.5)
+    return math.max(AUTO_INVITE_GROUP_SIZE_MIN, math.min(AUTO_INVITE_GROUP_SIZE_MAX, value))
+end
+
 local function IsAutoInviteTriggerText(rawText, triggerText)
     if type(rawText) ~= "string" then
         return false
@@ -164,9 +150,7 @@ local function GetSettings()
         settings.triggerText = NormalizeAutoInviteTriggerText(settings.triggerText)
     end
 
-    if not VALID_AUTO_INVITE_GROUP_SIZES[settings.groupSize] then
-        settings.groupSize = defaultSettings.groupSize
-    end
+    settings.groupSize = ClampGroupSize(settings.groupSize)
 
     settings.declinedDelayMinutes = ClampDelayMinutes(settings.declinedDelayMinutes, defaultSettings.declinedDelayMinutes)
     settings.reinviteDelayMinutes = ClampDelayMinutes(settings.reinviteDelayMinutes, defaultSettings.reinviteDelayMinutes)
@@ -261,18 +245,8 @@ local function IsGroupedPlayer(targetName, fromName, fromDisplayName)
     return false
 end
 
-local function IsGroupFull(maxGroupSize)
-    if not GetGroupSize then
-        return false
-    end
-
-    return GetGroupSize() >= maxGroupSize
-end
-
-local function SendGroupFullMessage(targetName)
-    if SendChatMessage then
-        SendChatMessage(GROUP_FULL_MESSAGE, CHAT_CHANNEL_WHISPER, targetName)
-    end
+local function HasReachedAutoInviteGroupSize(maxGroupSize)
+    return GetGroupSize and GetGroupSize() >= maxGroupSize
 end
 
 local function GetNowMilliseconds()
@@ -494,9 +468,7 @@ function GroupingFeature.HandleChatMessage(messageType, fromName, rawText, fromD
         return
     end
 
-    if IsGroupFull(settings.groupSize) then
-        SendGroupFullMessage(targetName)
-        NQOL.Chat.Message(NQOL.L("features.grouping.group_full", targetName), NQOL.L("features.grouping.feature_name"))
+    if HasReachedAutoInviteGroupSize(settings.groupSize) then
         return
     end
 
@@ -539,11 +511,7 @@ function GroupingFeature.GetAutoInviteGroupSize()
 end
 
 function GroupingFeature.SetAutoInviteGroupSize(value)
-    if not VALID_AUTO_INVITE_GROUP_SIZES[value] then
-        value = defaults.grouping.autoInvite.groupSize
-    end
-
-    GetSettings().groupSize = value
+    GetSettings().groupSize = ClampGroupSize(value)
 end
 
 function GroupingFeature.GetAutoInviteDeclinedDelayMinutes()
@@ -589,12 +557,12 @@ function GroupingFeature.GetAutoInviteModeName()
     return AUTO_INVITE_CHOICE_NAMES[1]
 end
 
-function GroupingFeature.GetAutoInviteGroupSizeChoices()
-    return AUTO_INVITE_GROUP_SIZE_CHOICES
+function GroupingFeature.GetAutoInviteGroupSizeMin()
+    return AUTO_INVITE_GROUP_SIZE_MIN
 end
 
-function GroupingFeature.GetAutoInviteGroupSizeChoiceNames()
-    return AUTO_INVITE_GROUP_SIZE_CHOICE_NAMES
+function GroupingFeature.GetAutoInviteGroupSizeMax()
+    return AUTO_INVITE_GROUP_SIZE_MAX
 end
 
 function GroupingFeature.GetAutoInviteModeLabel()

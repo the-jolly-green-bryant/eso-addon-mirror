@@ -122,9 +122,31 @@ function DE:SetChestAlertWidth(width)
 end
 
 function DE:CreateFrameLine(name, parent)
-    local line = WM:CreateControl(name, parent, CT_TEXTURE)
-    line:SetTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+    local line = WM:CreateControl(name, parent, CT_BACKDROP)
+    line:SetEdgeTexture(nil, 1, 1, 0)
+    line:SetEdgeColor(0, 0, 0, 0)
+    line:SetInsets(0, 0, 0, 0)
     return line
+end
+
+-- Reproduces ZO_CloseButton's dim-normal/bright-hover look on controls that
+-- have no dedicated mouseOver texture of their own (icon buttons using a
+-- single generic texture, or the "_" minimal-toggle text label).
+local HOVER_DIM_ALPHA = 0.6
+function DE:AddHoverDimming(control)
+    control:SetAlpha(HOVER_DIM_ALPHA)
+    control:SetHandler("OnMouseEnter", function(c) c:SetAlpha(1) end, "DynamicEncounterTrackerHoverDimEnter")
+    control:SetHandler("OnMouseExit", function(c) c:SetAlpha(HOVER_DIM_ALPHA) end, "DynamicEncounterTrackerHoverDimExit")
+end
+
+-- Dynamic tooltip text needs a direct hover handler instead of this fixed-text helper.
+function DE:AddHoverTooltip(control, stringId)
+    control:SetHandler("OnMouseEnter", function(c)
+        ZO_Tooltips_ShowTextTooltip(c, TOP, self:T(stringId))
+    end, "DynamicEncounterTrackerHoverTooltipEnter")
+    control:SetHandler("OnMouseExit", function()
+        ZO_Tooltips_HideTextTooltip()
+    end, "DynamicEncounterTrackerHoverTooltipExit")
 end
 
 function DE:CreateUI()
@@ -148,7 +170,12 @@ function DE:CreateUI()
         self:SaveWindowPosition(control)
         self:SaveWindowSize(control)
     end)
+    -- Suppress saved-width layout updates while the user is actively resizing.
+    window:SetHandler("OnResizeStart", function()
+        self.isResizingWindow = true
+    end)
     window:SetHandler("OnResizeStop", function(control)
+        self.isResizingWindow = false
         self:SaveWindowSize(control)
         self:RefreshUI()
     end)
@@ -156,7 +183,9 @@ function DE:CreateUI()
     local background = WM:CreateControl("DynamicEncounterTrackerWindowBackground", window, CT_BACKDROP)
     self.background = background
     background:SetAnchorFill(window)
-    background:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+    background:SetEdgeTexture(nil, 1, 1, 0)
+    background:SetEdgeColor(0, 0, 0, 0)
+    background:SetInsets(0, 0, 0, 0)
 
     self.frameLines = {
         top = self:CreateFrameLine("DynamicEncounterTrackerWindowFrameTop", window),
@@ -186,6 +215,16 @@ function DE:CreateUI()
     title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     title:SetMaxLineCount(1)
+
+    if self:HasDebugModule() then
+        local devLabel = WM:CreateControl("DynamicEncounterTrackerWindowDevLabel", window, CT_LABEL)
+        self.devLabel = devLabel
+        devLabel:SetAnchor(BOTTOM, window, TOP, 0, -6)
+        devLabel:SetFont("$(BOLD_FONT)|28|soft-shadow-thick")
+        devLabel:SetColor(1, 0.2, 0.2, 1)
+        devLabel:SetText(string.format("DEV BUILD %s", self.version))
+        devLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    end
 
     local divider = WM:CreateControl("DynamicEncounterTrackerWindowDivider", window, CT_TEXTURE)
     self.divider = divider
@@ -228,6 +267,7 @@ function DE:CreateUI()
         end
     end)
 
+    -- ZO_CloseButton supplies its own state textures; custom icons need alpha dimming.
     local closeButton = WM:CreateControlFromVirtual("DynamicEncounterTrackerWindowClose", window, "ZO_CloseButton")
     self.closeButton = closeButton
     closeButton:ClearAnchors()
@@ -236,6 +276,7 @@ function DE:CreateUI()
         self.sv.showWindow = false
         self:RefreshVisibility()
     end)
+    self:AddHoverTooltip(closeButton, "DE_CLOSE_BUTTON_TOOLTIP")
 
     local minimalToggle = WM:CreateControl("DynamicEncounterTrackerWindowMinimalToggle", window, CT_LABEL)
     self.minimalToggle = minimalToggle
@@ -251,6 +292,49 @@ function DE:CreateUI()
             self:RefreshSettingsPanel()
         end
     end)
+    self:AddHoverDimming(minimalToggle)
+    self:AddHoverTooltip(minimalToggle, "DE_MINIMAL_TOGGLE_BUTTON_TOOLTIP")
+
+    -- CT_BUTTON (not CT_TEXTURE) so the control gets ESO's built-in button
+    -- click priority, the same way ZO_CloseButton reliably receives clicks
+    -- on top of this movable window's own drag area.
+    local relayButton = WM:CreateControl("DynamicEncounterTrackerWindowRelayButton", window, CT_BUTTON)
+    self.relayButton = relayButton
+    relayButton:SetDimensions(26, 26)
+    relayButton:SetAnchor(TOPLEFT, window, TOPLEFT, 10, 6)
+    relayButton:SetNormalTexture("EsoUI/Art/Mail/mail_inbox_unreadMessage.dds")
+    relayButton:SetMouseEnabled(true)
+    relayButton:SetHandler("OnClicked", function(_, button)
+        if button ~= MOUSE_BUTTON_INDEX_LEFT then
+            return
+        end
+        self:ShowRelayShareDialog()
+    end)
+    self:AddHoverDimming(relayButton)
+    -- A named handler lets dynamic tooltip logic coexist with hover dimming.
+    relayButton:SetHandler("OnMouseEnter", function(control)
+        local stringId = self.state.status == self.STATUS_ACTIVE and "DE_RELAY_ENCOUNTER_BUTTON_TOOLTIP" or "DE_RELAY_TIMER_BUTTON_TOOLTIP"
+        ZO_Tooltips_ShowTextTooltip(control, TOP, self:T(stringId))
+    end, "DynamicEncounterTrackerRelayButtonTooltipEnter")
+    relayButton:SetHandler("OnMouseExit", function()
+        ZO_Tooltips_HideTextTooltip()
+    end, "DynamicEncounterTrackerRelayButtonTooltipExit")
+
+    -- Request stays available without own state; sharing does not.
+    local relayRequestButton = WM:CreateControl("DynamicEncounterTrackerWindowRelayRequestButton", window, CT_BUTTON)
+    self.relayRequestButton = relayRequestButton
+    relayRequestButton:SetDimensions(26, 26)
+    relayRequestButton:SetAnchor(TOPLEFT, window, TOPLEFT, 10, 6)
+    relayRequestButton:SetNormalTexture("EsoUI/Art/Miscellaneous/help_icon.dds")
+    relayRequestButton:SetMouseEnabled(true)
+    relayRequestButton:SetHandler("OnClicked", function(_, button)
+        if button ~= MOUSE_BUTTON_INDEX_LEFT then
+            return
+        end
+        self:ShowRelayRequestDialog()
+    end)
+    self:AddHoverDimming(relayRequestButton)
+    self:AddHoverTooltip(relayRequestButton, "DE_RELAY_REQUEST_BUTTON_TOOLTIP")
 
     local resizeHandle = WM:CreateControl("DynamicEncounterTrackerWindowResizeHandle", window, CT_CONTROL)
     self.resizeHandle = resizeHandle
@@ -364,11 +448,598 @@ function DE:CreateUI()
         end
     end)
 
+    self:CreateRelayChannelDialog()
+    self:CreateRelayEncounterChannelDialog()
+    self:CreateRelayRequestChannelDialog()
+
     self:RefreshWindowLayout()
     self:ApplyAppearance()
     self:ApplyLockState()
     self:ApplyChestAlertInteraction()
     self:RefreshUI()
+end
+
+-- Options are listed top to bottom in this table's order. New channels (e.g.
+-- future guild chat slots) can be appended here without further layout changes.
+DE.RELAY_CHANNEL_DIALOG_OPTIONS = {
+    { labelKey = "DE_RELAY_CHANNEL_SAY", channelType = CHAT_CHANNEL_SAY },
+    { labelKey = "DE_RELAY_CHANNEL_ZONE", channelType = CHAT_CHANNEL_ZONE },
+}
+
+-- The say/zone options are always present and static (built once below). Guild
+-- options are appended dynamically on every Show, since guild membership can
+-- change between sessions - see RebuildRelayChannelDialogGuildButtons.
+local RELAY_CHANNEL_DIALOG_BUTTON_HEIGHT = 26
+local RELAY_CHANNEL_DIALOG_BUTTON_GAP = 6
+local RELAY_CHANNEL_DIALOG_WIDTH = 220
+local RELAY_CHANNEL_DIALOG_TOP_PADDING = 44
+local RELAY_CHANNEL_DIALOG_BOTTOM_PADDING = 14
+local RELAY_CHANNEL_DIALOG_SECTION_GAP = 16
+
+function DE:CreateRelayChannelDialog()
+    local optionCount = #self.RELAY_CHANNEL_DIALOG_OPTIONS
+    local buttonHeight = RELAY_CHANNEL_DIALOG_BUTTON_HEIGHT
+    local buttonGap = RELAY_CHANNEL_DIALOG_BUTTON_GAP
+    local dialogWidth = RELAY_CHANNEL_DIALOG_WIDTH
+    local topPadding = RELAY_CHANNEL_DIALOG_TOP_PADDING
+    local optionsHeight = (optionCount * buttonHeight) + ((optionCount - 1) * buttonGap)
+
+    local dialog = WM:CreateTopLevelWindow("DynamicEncounterTrackerRelayChannelDialog")
+    self.relayChannelDialog = dialog
+    dialog:SetDimensions(dialogWidth, topPadding + optionsHeight)
+    dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    dialog:SetDrawLayer(DL_OVERLAY)
+    dialog:SetDrawTier(DT_HIGH)
+    dialog:SetDrawLevel(200)
+    dialog:SetHidden(true)
+    dialog:SetMouseEnabled(true)
+    dialog:SetKeyboardEnabled(true)
+    dialog:SetHandler("OnKeyUp", function(_, key)
+        if key == KEY_ESCAPE then
+            self:HideRelayChannelChoiceDialog()
+        end
+    end)
+
+    local underlay = WM:CreateControl("DynamicEncounterTrackerRelayChannelDialogUnderlay", GuiRoot, CT_TEXTURE)
+    self.relayChannelDialogUnderlay = underlay
+    underlay:SetAnchorFill(GuiRoot)
+    underlay:SetColor(0, 0, 0, 0.55)
+    underlay:SetDrawLayer(DL_OVERLAY)
+    underlay:SetDrawTier(DT_HIGH)
+    underlay:SetDrawLevel(199)
+    underlay:SetHidden(true)
+    underlay:SetMouseEnabled(true)
+    underlay:SetHandler("OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            self:HideRelayChannelChoiceDialog()
+        end
+    end)
+
+    local background = WM:CreateControl("DynamicEncounterTrackerRelayChannelDialogBg", dialog, CT_BACKDROP)
+    background:SetAnchorFill(dialog)
+    background:SetCenterColor(0.015, 0.018, 0.02, 0.95)
+    background:SetEdgeTexture(nil, 1, 1, 0)
+    background:SetEdgeColor(0, 0, 0, 0)
+    background:SetInsets(0, 0, 0, 0)
+
+    local title = WM:CreateControl("DynamicEncounterTrackerRelayChannelDialogTitle", dialog, CT_LABEL)
+    title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 14, 12)
+    title:SetAnchor(TOPRIGHT, dialog, TOPRIGHT, -14, 12)
+    title:SetHeight(22)
+    title:SetText(self:T("DE_RELAY_CHANNEL_DIALOG_TITLE"))
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetFont("$(BOLD_FONT)|16|soft-shadow-thin")
+
+    local function CreateDialogButton(name, labelText)
+        local button = WM:CreateControlFromVirtual(name, dialog, "ZO_DefaultButton")
+        button:SetDimensions(dialogWidth - 28, buttonHeight)
+        button:SetText(labelText)
+        return button
+    end
+
+    self.relayChannelDialogButtons = {}
+    local previousButton
+    for _, option in ipairs(self.RELAY_CHANNEL_DIALOG_OPTIONS) do
+        local button = CreateDialogButton("DynamicEncounterTrackerRelayChannelDialogOption" .. #self.relayChannelDialogButtons + 1, self:T(option.labelKey))
+        if previousButton then
+            button:SetAnchor(TOP, previousButton, BOTTOM, 0, buttonGap)
+        else
+            button:SetAnchor(TOP, dialog, TOP, 0, topPadding)
+        end
+        button:SetHandler("OnClicked", function()
+            local config = self.relayChannelDialogConfig
+            self:HideRelayChannelChoiceDialog()
+            self:SendRelayTimerMessage(config, option.channelType)
+        end)
+        self.relayChannelDialogButtons[#self.relayChannelDialogButtons + 1] = button
+        previousButton = button
+    end
+    self.relayChannelDialogLastStaticButton = previousButton
+
+    self.relayChannelDialogGuildHeader = nil
+    self.relayChannelDialogGuildButtons = {}
+    self.relayChannelDialogCancelButton = nil
+end
+
+-- Appends the player's current guild channels below the static say/zone options,
+-- with a separating header, and resizes the dialog to fit. Rebuilt on every Show
+-- since guild membership can change between sessions.
+function DE:RebuildRelayChannelDialogGuildButtons()
+    local buttonHeight = RELAY_CHANNEL_DIALOG_BUTTON_HEIGHT
+    local buttonGap = RELAY_CHANNEL_DIALOG_BUTTON_GAP
+    local dialogWidth = RELAY_CHANNEL_DIALOG_WIDTH
+    local topPadding = RELAY_CHANNEL_DIALOG_TOP_PADDING
+    local bottomPadding = RELAY_CHANNEL_DIALOG_BOTTOM_PADDING
+    local cancelGap = 10
+    local optionCount = #self.RELAY_CHANNEL_DIALOG_OPTIONS
+    local staticOptionsHeight = (optionCount * buttonHeight) + ((optionCount - 1) * buttonGap)
+
+    for _, button in ipairs(self.relayChannelDialogGuildButtons) do
+        button:SetHidden(true)
+        button:ClearAnchors()
+    end
+
+    local guildChannels = self:GetActiveGuildChannels()
+    local anchorControl = self.relayChannelDialogLastStaticButton
+    local bottomOffset = topPadding + staticOptionsHeight
+
+    if not self.relayChannelDialogGuildHeader then
+        local header = WM:CreateControl("DynamicEncounterTrackerRelayChannelDialogGuildHeader", self.relayChannelDialog, CT_LABEL)
+        header:SetHeight(18)
+        header:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        header:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
+        header:SetText(self:T("DE_RELAY_CHANNEL_DIALOG_GUILD_HEADER"))
+        self.relayChannelDialogGuildHeader = header
+    end
+    local header = self.relayChannelDialogGuildHeader
+    header:SetHidden(#guildChannels == 0)
+    if #guildChannels > 0 then
+        header:ClearAnchors()
+        header:SetAnchor(TOP, anchorControl, BOTTOM, 0, RELAY_CHANNEL_DIALOG_SECTION_GAP)
+        anchorControl = header
+        bottomOffset = bottomOffset + RELAY_CHANNEL_DIALOG_SECTION_GAP + 18
+    end
+
+    local function AcquireGuildButton(index)
+        local button = self.relayChannelDialogGuildButtons[index]
+        if not button then
+            button = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayChannelDialogGuildOption" .. index, self.relayChannelDialog, "ZO_DefaultButton")
+            button:SetDimensions(dialogWidth - 28, buttonHeight)
+            self.relayChannelDialogGuildButtons[index] = button
+        end
+        button:SetHidden(false)
+        return button
+    end
+
+    for index, guildChannel in ipairs(guildChannels) do
+        local button = AcquireGuildButton(index)
+        button:SetText(self:T("DE_RELAY_CHANNEL_GUILD_FMT", guildChannel.guildIndex, guildChannel.guildName))
+        button:ClearAnchors()
+        button:SetAnchor(TOP, anchorControl, BOTTOM, 0, buttonGap)
+        button:SetHandler("OnClicked", function()
+            local config = self.relayChannelDialogConfig
+            self:HideRelayChannelChoiceDialog()
+            self:SendRelayTimerMessage(config, guildChannel.channelType)
+        end)
+        anchorControl = button
+        bottomOffset = bottomOffset + buttonHeight + buttonGap
+    end
+
+    if not self.relayChannelDialogCancelButton then
+        local cancelButton = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayChannelDialogCancel", self.relayChannelDialog, "ZO_DefaultButton")
+        cancelButton:SetDimensions(dialogWidth - 28, buttonHeight)
+        cancelButton:SetText(GetString(SI_DIALOG_CANCEL))
+        cancelButton:SetHandler("OnClicked", function()
+            self:HideRelayChannelChoiceDialog()
+        end)
+        self.relayChannelDialogCancelButton = cancelButton
+    end
+    local cancelButton = self.relayChannelDialogCancelButton
+    cancelButton:ClearAnchors()
+    cancelButton:SetAnchor(TOP, anchorControl, BOTTOM, 0, cancelGap)
+    bottomOffset = bottomOffset + cancelGap + buttonHeight + bottomPadding
+
+    self.relayChannelDialog:SetDimensions(dialogWidth, bottomOffset)
+end
+
+-- Say/zone requests require the implicit local encounter; guild requests do not.
+function DE:CreateRelayRequestChannelDialog()
+    local dialog = WM:CreateTopLevelWindow("DynamicEncounterTrackerRelayRequestChannelDialog")
+    self.relayRequestChannelDialog = dialog
+    dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    dialog:SetDrawLayer(DL_OVERLAY)
+    dialog:SetDrawTier(DT_HIGH)
+    dialog:SetDrawLevel(200)
+    dialog:SetHidden(true)
+    dialog:SetMouseEnabled(true)
+    dialog:SetKeyboardEnabled(true)
+    dialog:SetHandler("OnKeyUp", function(_, key)
+        if key == KEY_ESCAPE then
+            self:HideRelayRequestChannelChoiceDialog()
+        end
+    end)
+
+    local underlay = WM:CreateControl("DynamicEncounterTrackerRelayRequestChannelDialogUnderlay", GuiRoot, CT_TEXTURE)
+    self.relayRequestChannelDialogUnderlay = underlay
+    underlay:SetAnchorFill(GuiRoot)
+    underlay:SetColor(0, 0, 0, 0.55)
+    underlay:SetDrawLayer(DL_OVERLAY)
+    underlay:SetDrawTier(DT_HIGH)
+    underlay:SetDrawLevel(199)
+    underlay:SetHidden(true)
+    underlay:SetMouseEnabled(true)
+    underlay:SetHandler("OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            self:HideRelayRequestChannelChoiceDialog()
+        end
+    end)
+
+    local background = WM:CreateControl("DynamicEncounterTrackerRelayRequestChannelDialogBg", dialog, CT_BACKDROP)
+    background:SetAnchorFill(dialog)
+    background:SetCenterColor(0.015, 0.018, 0.02, 0.95)
+    background:SetEdgeTexture(nil, 1, 1, 0)
+    background:SetEdgeColor(0, 0, 0, 0)
+    background:SetInsets(0, 0, 0, 0)
+
+    local title = WM:CreateControl("DynamicEncounterTrackerRelayRequestChannelDialogTitle", dialog, CT_LABEL)
+    title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 14, 12)
+    title:SetAnchor(TOPRIGHT, dialog, TOPRIGHT, -14, 12)
+    title:SetHeight(22)
+    title:SetText(self:T("DE_RELAY_REQUEST_CHANNEL_DIALOG_TITLE"))
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetFont("$(BOLD_FONT)|16|soft-shadow-thin")
+
+    self.relayRequestChannelDialogStaticButtons = {}
+    self.relayRequestChannelDialogGuildHeader = nil
+    self.relayRequestChannelDialogGuildButtons = {}
+    self.relayRequestChannelDialogCancelButton = nil
+end
+
+function DE:RebuildRelayRequestChannelDialogButtons()
+    local buttonHeight = RELAY_CHANNEL_DIALOG_BUTTON_HEIGHT
+    local buttonGap = RELAY_CHANNEL_DIALOG_BUTTON_GAP
+    local dialogWidth = RELAY_CHANNEL_DIALOG_WIDTH
+    local topPadding = RELAY_CHANNEL_DIALOG_TOP_PADDING
+    local bottomPadding = RELAY_CHANNEL_DIALOG_BOTTOM_PADDING
+    local cancelGap = 10
+    local dialog = self.relayRequestChannelDialog
+
+    for _, button in ipairs(self.relayRequestChannelDialogStaticButtons) do
+        button:SetHidden(true)
+        button:ClearAnchors()
+    end
+
+    local config = self.relayRequestChannelDialogConfig
+    local _, _, currentConfigs = self:GetCurrentZoneData()
+    local inOwnZone = false
+    if type(currentConfigs) == "table" then
+        for _, candidate in ipairs(currentConfigs) do
+            if candidate == config then
+                inOwnZone = true
+                break
+            end
+        end
+    end
+
+    -- Own state suppresses local requests; guild requests may still help other members.
+    local relayState = self:EnsureRelayState()
+    local ownTimerActive = self.state.status == self.STATUS_COOLDOWN and relayState.timerSource == "self"
+    local ownEncounterActive = self.state.status == self.STATUS_ACTIVE and not self.state.activeSource
+    if inOwnZone and (ownTimerActive or ownEncounterActive) then
+        inOwnZone = false
+    end
+
+    local function AcquireStaticButton(index)
+        local button = self.relayRequestChannelDialogStaticButtons[index]
+        if not button then
+            button = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayRequestChannelDialogStatic" .. index, dialog, "ZO_DefaultButton")
+            button:SetDimensions(dialogWidth - 28, buttonHeight)
+            self.relayRequestChannelDialogStaticButtons[index] = button
+        end
+        button:SetHidden(false)
+        return button
+    end
+
+    local anchorControl
+    local bottomOffset = topPadding
+    if inOwnZone then
+        for index, option in ipairs(self.RELAY_CHANNEL_DIALOG_OPTIONS) do
+            local button = AcquireStaticButton(index)
+            button:SetText(self:T(option.labelKey))
+            button:ClearAnchors()
+            if anchorControl then
+                button:SetAnchor(TOP, anchorControl, BOTTOM, 0, buttonGap)
+                bottomOffset = bottomOffset + buttonGap
+            else
+                button:SetAnchor(TOP, dialog, TOP, 0, topPadding)
+            end
+            button:SetHandler("OnClicked", function()
+                self:HideRelayRequestChannelChoiceDialog()
+                self:SendRelayTimerRequest(config, option.channelType)
+            end)
+            anchorControl = button
+            bottomOffset = bottomOffset + buttonHeight
+        end
+    end
+
+    local guildChannels = self:GetActiveGuildChannels()
+    if not self.relayRequestChannelDialogGuildHeader then
+        local header = WM:CreateControl("DynamicEncounterTrackerRelayRequestChannelDialogGuildHeader", dialog, CT_LABEL)
+        header:SetHeight(18)
+        header:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        header:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
+        header:SetText(self:T("DE_RELAY_CHANNEL_DIALOG_GUILD_HEADER"))
+        self.relayRequestChannelDialogGuildHeader = header
+    end
+    local header = self.relayRequestChannelDialogGuildHeader
+    header:SetHidden(#guildChannels == 0)
+    if #guildChannels > 0 then
+        header:ClearAnchors()
+        if anchorControl then
+            header:SetAnchor(TOP, anchorControl, BOTTOM, 0, RELAY_CHANNEL_DIALOG_SECTION_GAP)
+            bottomOffset = bottomOffset + RELAY_CHANNEL_DIALOG_SECTION_GAP
+        else
+            header:SetAnchor(TOP, dialog, TOP, 0, topPadding)
+        end
+        anchorControl = header
+        bottomOffset = bottomOffset + 18
+    end
+
+    local function AcquireGuildButton(index)
+        local button = self.relayRequestChannelDialogGuildButtons[index]
+        if not button then
+            button = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayRequestChannelDialogGuild" .. index, dialog, "ZO_DefaultButton")
+            button:SetDimensions(dialogWidth - 28, buttonHeight)
+            self.relayRequestChannelDialogGuildButtons[index] = button
+        end
+        button:SetHidden(false)
+        return button
+    end
+
+    for _, button in ipairs(self.relayRequestChannelDialogGuildButtons) do
+        button:SetHidden(true)
+        button:ClearAnchors()
+    end
+
+    for index, guildChannel in ipairs(guildChannels) do
+        local button = AcquireGuildButton(index)
+        button:SetText(self:T("DE_RELAY_CHANNEL_GUILD_FMT", guildChannel.guildIndex, guildChannel.guildName))
+        button:ClearAnchors()
+        button:SetAnchor(TOP, anchorControl, BOTTOM, 0, buttonGap)
+        button:SetHandler("OnClicked", function()
+            self:HideRelayRequestChannelChoiceDialog()
+            self:SendRelayTimerRequest(config, guildChannel.channelType)
+        end)
+        anchorControl = button
+        bottomOffset = bottomOffset + buttonGap + buttonHeight
+    end
+
+    if not self.relayRequestChannelDialogCancelButton then
+        local cancelButton = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayRequestChannelDialogCancel", dialog, "ZO_DefaultButton")
+        cancelButton:SetDimensions(dialogWidth - 28, buttonHeight)
+        cancelButton:SetText(GetString(SI_DIALOG_CANCEL))
+        cancelButton:SetHandler("OnClicked", function()
+            self:HideRelayRequestChannelChoiceDialog()
+        end)
+        self.relayRequestChannelDialogCancelButton = cancelButton
+    end
+    local cancelButton = self.relayRequestChannelDialogCancelButton
+    cancelButton:ClearAnchors()
+    cancelButton:SetAnchor(TOP, anchorControl, BOTTOM, 0, cancelGap)
+    bottomOffset = bottomOffset + cancelGap + buttonHeight + bottomPadding
+
+    dialog:SetDimensions(dialogWidth, bottomOffset)
+end
+
+function DE:ShowRelayRequestChannelChoiceDialog(config)
+    if not self.relayRequestChannelDialog then
+        return
+    end
+    self.relayRequestChannelDialogConfig = config
+    self:RebuildRelayRequestChannelDialogButtons()
+    self.relayRequestChannelDialogUnderlay:SetHidden(false)
+    self.relayRequestChannelDialog:SetHidden(false)
+end
+
+function DE:HideRelayRequestChannelChoiceDialog()
+    if not self.relayRequestChannelDialog then
+        return
+    end
+    self.relayRequestChannelDialogUnderlay:SetHidden(true)
+    self.relayRequestChannelDialog:SetHidden(true)
+    self.relayRequestChannelDialogConfig = nil
+end
+
+-- Guild requests use a wildcard; say and zone require the current configured encounter.
+function DE:ShowRelayRequestDialog()
+    local _, _, currentConfigs = self:GetCurrentZoneData()
+    local config = (type(currentConfigs) == "table" and currentConfigs[1]) or nil
+    self:ShowRelayRequestChannelChoiceDialog(config)
+end
+
+-- Keybinds can invoke this while the button is hidden, so missing shareable state is a no-op.
+function DE:ShowRelayShareDialog()
+    local relayState = self:EnsureRelayState()
+    local ownTimerActive = self.state.status == self.STATUS_COOLDOWN and relayState.timerSource == "self"
+    local ownEncounterActive = self.state.status == self.STATUS_ACTIVE and not self.state.activeSource
+    if ownEncounterActive then
+        self:ShowRelayEncounterChannelChoiceDialog(self.state.eventData)
+    elseif ownTimerActive then
+        self:ShowRelayChannelChoiceDialog(self.state.eventData)
+    end
+end
+
+function DE:ShowRelayChannelChoiceDialog(config)
+    if not self.relayChannelDialog then
+        return
+    end
+    self.relayChannelDialogConfig = config
+    self:RebuildRelayChannelDialogGuildButtons()
+    self.relayChannelDialogUnderlay:SetHidden(false)
+    self.relayChannelDialog:SetHidden(false)
+end
+
+function DE:HideRelayChannelChoiceDialog()
+    if not self.relayChannelDialog then
+        return
+    end
+    self.relayChannelDialogUnderlay:SetHidden(true)
+    self.relayChannelDialog:SetHidden(true)
+    self.relayChannelDialogConfig = nil
+end
+
+-- Unlike the Say/Zone channel dialog above, the guild option list is not known
+-- until runtime (guild membership can change between sessions), so this dialog's
+-- button set is rebuilt on every Show instead of being built once at UI setup.
+function DE:CreateRelayEncounterChannelDialog()
+    local dialog = WM:CreateTopLevelWindow("DynamicEncounterTrackerRelayEncounterChannelDialog")
+    self.relayEncounterChannelDialog = dialog
+    dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    dialog:SetDrawLayer(DL_OVERLAY)
+    dialog:SetDrawTier(DT_HIGH)
+    dialog:SetDrawLevel(200)
+    dialog:SetHidden(true)
+    dialog:SetMouseEnabled(true)
+    dialog:SetKeyboardEnabled(true)
+    dialog:SetHandler("OnKeyUp", function(_, key)
+        if key == KEY_ESCAPE then
+            self:HideRelayEncounterChannelChoiceDialog()
+        end
+    end)
+
+    local underlay = WM:CreateControl("DynamicEncounterTrackerRelayEncounterChannelDialogUnderlay", GuiRoot, CT_TEXTURE)
+    self.relayEncounterChannelDialogUnderlay = underlay
+    underlay:SetAnchorFill(GuiRoot)
+    underlay:SetColor(0, 0, 0, 0.55)
+    underlay:SetDrawLayer(DL_OVERLAY)
+    underlay:SetDrawTier(DT_HIGH)
+    underlay:SetDrawLevel(199)
+    underlay:SetHidden(true)
+    underlay:SetMouseEnabled(true)
+    underlay:SetHandler("OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            self:HideRelayEncounterChannelChoiceDialog()
+        end
+    end)
+
+    local background = WM:CreateControl("DynamicEncounterTrackerRelayEncounterChannelDialogBg", dialog, CT_BACKDROP)
+    background:SetAnchorFill(dialog)
+    background:SetCenterColor(0.015, 0.018, 0.02, 0.95)
+    background:SetEdgeTexture(nil, 1, 1, 0)
+    background:SetEdgeColor(0, 0, 0, 0)
+    background:SetInsets(0, 0, 0, 0)
+    self.relayEncounterChannelDialogBg = background
+
+    local title = WM:CreateControl("DynamicEncounterTrackerRelayEncounterChannelDialogTitle", dialog, CT_LABEL)
+    title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 14, 12)
+    title:SetAnchor(TOPRIGHT, dialog, TOPRIGHT, -14, 12)
+    title:SetHeight(22)
+    title:SetText(self:T("DE_RELAY_ENCOUNTER_CHANNEL_DIALOG_TITLE"))
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetFont("$(BOLD_FONT)|16|soft-shadow-thin")
+    self.relayEncounterChannelDialogTitle = title
+
+    local emptyLabel = WM:CreateControl("DynamicEncounterTrackerRelayEncounterChannelDialogEmpty", dialog, CT_LABEL)
+    emptyLabel:SetAnchor(TOPLEFT, dialog, TOPLEFT, 14, 44)
+    emptyLabel:SetAnchor(TOPRIGHT, dialog, TOPRIGHT, -14, 44)
+    emptyLabel:SetText(self:T("DE_RELAY_ENCOUNTER_NO_GUILD"))
+    emptyLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    emptyLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    emptyLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    self.relayEncounterChannelDialogEmptyLabel = emptyLabel
+
+    self.relayEncounterChannelDialogButtons = {}
+end
+
+function DE:RebuildRelayEncounterChannelDialogButtons()
+    local dialogWidth = 220
+    local buttonHeight = 26
+    local buttonGap = 6
+    local topPadding = 44
+    local bottomPadding = 14
+    local cancelGap = 10
+
+    for _, button in ipairs(self.relayEncounterChannelDialogButtons) do
+        button:SetHidden(true)
+        button:ClearAnchors()
+    end
+
+    local guildChannels = self:GetActiveGuildChannels()
+    local optionCount = #guildChannels
+    self.relayEncounterChannelDialogEmptyLabel:SetHidden(optionCount > 0)
+
+    local optionsHeight = optionCount > 0 and ((optionCount * buttonHeight) + ((optionCount - 1) * buttonGap)) or 0
+    local dialogHeight = topPadding + optionsHeight + (optionCount > 0 and cancelGap or 0) + buttonHeight + bottomPadding
+    if optionCount == 0 then
+        dialogHeight = dialogHeight + 22 -- room for the "no guild" hint label
+    end
+    self.relayEncounterChannelDialog:SetDimensions(dialogWidth, dialogHeight)
+
+    local function AcquireButton(index)
+        local button = self.relayEncounterChannelDialogButtons[index]
+        if not button then
+            button = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayEncounterChannelDialogOption" .. index, self.relayEncounterChannelDialog, "ZO_DefaultButton")
+            button:SetDimensions(dialogWidth - 28, buttonHeight)
+            self.relayEncounterChannelDialogButtons[index] = button
+        end
+        button:SetHidden(false)
+        return button
+    end
+
+    local previousButton
+    local topAnchorOffset = optionCount > 0 and topPadding or (topPadding + 22)
+    for index, guildChannel in ipairs(guildChannels) do
+        local button = AcquireButton(index)
+        button:SetText(self:T("DE_RELAY_CHANNEL_GUILD_FMT", guildChannel.guildIndex, guildChannel.guildName))
+        if previousButton then
+            button:SetAnchor(TOP, previousButton, BOTTOM, 0, buttonGap)
+        else
+            button:SetAnchor(TOP, self.relayEncounterChannelDialog, TOP, 0, topAnchorOffset)
+        end
+        button:SetHandler("OnClicked", function()
+            local config = self.relayEncounterChannelDialogConfig
+            self:HideRelayEncounterChannelChoiceDialog()
+            self:SendRelayEncounterMessage(config, guildChannel.channelType)
+        end)
+        previousButton = button
+    end
+
+    if not self.relayEncounterChannelDialogCancelButton then
+        local cancelButton = WM:CreateControlFromVirtual("DynamicEncounterTrackerRelayEncounterChannelDialogCancel", self.relayEncounterChannelDialog, "ZO_DefaultButton")
+        cancelButton:SetDimensions(dialogWidth - 28, buttonHeight)
+        cancelButton:SetText(GetString(SI_DIALOG_CANCEL))
+        cancelButton:SetHandler("OnClicked", function()
+            self:HideRelayEncounterChannelChoiceDialog()
+        end)
+        self.relayEncounterChannelDialogCancelButton = cancelButton
+    end
+
+    local cancelButton = self.relayEncounterChannelDialogCancelButton
+    cancelButton:ClearAnchors()
+    if previousButton then
+        cancelButton:SetAnchor(TOP, previousButton, BOTTOM, 0, cancelGap)
+    else
+        cancelButton:SetAnchor(TOP, self.relayEncounterChannelDialogEmptyLabel, BOTTOM, 0, cancelGap)
+    end
+end
+
+function DE:ShowRelayEncounterChannelChoiceDialog(config)
+    if not self.relayEncounterChannelDialog then
+        return
+    end
+    self.relayEncounterChannelDialogConfig = config
+    self:RebuildRelayEncounterChannelDialogButtons()
+    self.relayEncounterChannelDialogUnderlay:SetHidden(false)
+    self.relayEncounterChannelDialog:SetHidden(false)
+end
+
+function DE:HideRelayEncounterChannelChoiceDialog()
+    if not self.relayEncounterChannelDialog then
+        return
+    end
+    self.relayEncounterChannelDialogUnderlay:SetHidden(true)
+    self.relayEncounterChannelDialog:SetHidden(true)
+    self.relayEncounterChannelDialogConfig = nil
 end
 
 
@@ -412,6 +1083,53 @@ function DE:RefreshMinimalToggleControl()
     end
 
     self.minimalToggle:SetText("_")
+end
+
+-- Shared by both the normal and minimal window layouts to compute how far the
+-- title needs to shift right to avoid overlapping the relay/request buttons -
+-- 0, 1, or both of which may be visible at once (see RefreshRelayButton).
+function DE:GetRelayButtonsTitleLeftMargin(baseMargin)
+    baseMargin = baseMargin or ROW_LABEL_LEFT
+    local relayButtonVisible = self.relayButton and not self.relayButton:IsHidden()
+    local relayRequestButtonVisible = self.relayRequestButton and not self.relayRequestButton:IsHidden()
+    if relayButtonVisible and relayRequestButtonVisible then
+        return 62
+    elseif relayButtonVisible or relayRequestButtonVisible then
+        return 34
+    end
+    return baseMargin
+end
+
+function DE:RefreshRelayButton()
+    if not self.relayButton then
+        return
+    end
+
+    local relayState = self:EnsureRelayState()
+    local ownTimerActive = self.state.status == self.STATUS_COOLDOWN and relayState.timerSource == "self"
+    local ownEncounterActive = self.state.status == self.STATUS_ACTIVE and not self.state.activeSource
+
+    local shouldShow
+    if ownTimerActive then
+        shouldShow = self.sv.relayShowButton ~= false
+    elseif ownEncounterActive then
+        shouldShow = self.sv.relayGuildShowButton ~= false
+    else
+        shouldShow = false
+    end
+    self.relayButton:SetHidden(not shouldShow)
+
+    if self.relayRequestButton then
+        local requestShouldShow = self.sv.relayRequestShowButton ~= false
+        self.relayRequestButton:SetHidden(not requestShouldShow)
+
+        self.relayRequestButton:ClearAnchors()
+        if shouldShow then
+            self.relayRequestButton:SetAnchor(TOPLEFT, self.window, TOPLEFT, 38, 6)
+        else
+            self.relayRequestButton:SetAnchor(TOPLEFT, self.window, TOPLEFT, 10, 6)
+        end
+    end
 end
 
 function DE:MeasureLabelTextWidth(label)
@@ -458,9 +1176,13 @@ function DE:RefreshWindowLayoutMinimal()
     else
         minimalRightMargin = ROW_LABEL_LEFT -- neither button visible: mirror the left margin for a symmetric, centered look
     end
+    local titleLeftMargin = self:GetRelayButtonsTitleLeftMargin()
     local safetyMargin = 24 -- guards against GetTextWidth rounding/measurement slack
-    local contentWidth = zo_max(statusTextWidth, titleTextWidth, participationTextWidth)
-    local width = zo_clamp(math.ceil(contentWidth) + safetyMargin + ROW_LABEL_LEFT + minimalRightMargin, 60, self.WINDOW_MAX_WIDTH)
+    -- The title needs separate padding for relay buttons; other rows use the normal margin.
+    local titleRowWidth = math.ceil(titleTextWidth) + titleLeftMargin
+    local otherRowWidth = math.ceil(zo_max(statusTextWidth, participationTextWidth)) + ROW_LABEL_LEFT
+    local contentWidth = zo_max(titleRowWidth, otherRowWidth)
+    local width = zo_clamp(contentWidth + safetyMargin + minimalRightMargin, 60, self.WINDOW_MAX_WIDTH)
 
     row.value:ClearAnchors()
     row.value:SetAnchor(TOPLEFT, self.window, TOPLEFT, ROW_LABEL_LEFT, rowY)
@@ -480,7 +1202,7 @@ function DE:RefreshWindowLayoutMinimal()
     local height = zo_max(self.MINIMAL_MIN_HEIGHT, contentBottom + 11)
 
     self.titleLabel:ClearAnchors()
-    self.titleLabel:SetAnchor(TOPLEFT, self.window, TOPLEFT, 18, 7)
+    self.titleLabel:SetAnchor(TOPLEFT, self.window, TOPLEFT, titleLeftMargin, 7)
     self.titleLabel:SetAnchor(TOPRIGHT, self.window, TOPRIGHT, -minimalRightMargin, 7)
     self.titleLabel:SetHeight(31)
 
@@ -495,6 +1217,17 @@ function DE:RefreshWindowLayout()
     end
 
     self:RefreshMinimalToggleControl()
+    self:RefreshRelayButton()
+
+    local showFrame
+    if self.sv.minimalMode then
+        showFrame = self.sv.minimalShowFrame
+    else
+        showFrame = self.sv.showFrame
+    end
+    for _, line in pairs(self.frameLines) do
+        line:SetHidden(not showFrame)
+    end
 
     if self.sv.minimalMode then
         self.rows.zone.label:SetHidden(true)
@@ -517,7 +1250,7 @@ function DE:RefreshWindowLayout()
     self.rows.minimalParticipation.value:SetHidden(true)
     self.titleLabel:SetText(self:T("DE_ADDON_NAME"))
     self.titleLabel:ClearAnchors()
-    self.titleLabel:SetAnchor(TOPLEFT, self.window, TOPLEFT, 18, 7)
+    self.titleLabel:SetAnchor(TOPLEFT, self.window, TOPLEFT, self:GetRelayButtonsTitleLeftMargin(18), 7)
     self.titleLabel:SetAnchor(TOPRIGHT, self.window, TOPRIGHT, -44, 7)
     self.titleLabel:SetHeight(31)
 
@@ -547,9 +1280,14 @@ function DE:RefreshWindowLayout()
 
     local newHeight = zo_max(self.WINDOW_MIN_HEIGHT, y + 11)
     self.currentWindowHeight = newHeight
-    local width = zo_clamp(self.sv.size.width or self.WINDOW_DEFAULT_WIDTH, self.WINDOW_MIN_WIDTH, self.WINDOW_MAX_WIDTH)
     self.window:SetDimensionConstraints(self.WINDOW_MIN_WIDTH, newHeight, self.WINDOW_MAX_WIDTH, newHeight)
-    self.window:SetDimensions(width, newHeight)
+    -- During resizing, only the live control width is current; saved width is stale.
+    if not self.isResizingWindow then
+        local width = zo_clamp(self.sv.size.width or self.WINDOW_DEFAULT_WIDTH, self.WINDOW_MIN_WIDTH, self.WINDOW_MAX_WIDTH)
+        self.window:SetDimensions(width, newHeight)
+    else
+        self.window:SetHeight(newHeight)
+    end
     self.sv.size.height = newHeight
 end
 
@@ -659,8 +1397,8 @@ function DE:ApplyLockState()
     self.window:SetMouseEnabled(unlocked)
     self.window:SetResizeHandleSize(unlocked and RESIZE_HANDLE_SIZE or 0)
     self.titleLabel:SetMouseEnabled(unlocked)
-    self.closeButton:SetHidden(not unlocked or self.sv.showCloseButton == false)
-    self.minimalToggle:SetHidden(not unlocked or self.sv.showMinimalToggleButton == false)
+    self.closeButton:SetHidden(self.sv.showCloseButton == false)
+    self.minimalToggle:SetHidden(self.sv.showMinimalToggleButton == false)
     self.resizeHandle:SetHidden(not unlocked)
     self.resizeHandle:SetMouseEnabled(false)
     self:ApplyChestAlertInteraction()
@@ -705,14 +1443,15 @@ function DE:ApplyAppearance()
     self.divider:SetColor(divider[1], divider[2], divider[3], (divider[4] or 1) * 0.65)
 
     for _, line in pairs(self.frameLines) do
-        line:SetColor(frame[1], frame[2], frame[3], frame[4] or 1)
+        line:SetCenterColor(frame[1], frame[2], frame[3], frame[4] or 1)
     end
+    local resizeHandleColor = self.sv.colors.label
     for _, line in pairs(self.resizeHandleLines) do
-        line:SetColor(frame[1], frame[2], frame[3], frame[4] or 1)
+        line:SetCenterColor(resizeHandleColor[1], resizeHandleColor[2], resizeHandleColor[3], (resizeHandleColor[4] or 1) * 0.55)
     end
     local alertFrame = self.sv.chestAlertColors.frame
     for _, line in pairs(self.centerAlertFrameLines) do
-        line:SetColor(alertFrame[1], alertFrame[2], alertFrame[3], alertFrame[4] or 1)
+        line:SetCenterColor(alertFrame[1], alertFrame[2], alertFrame[3], alertFrame[4] or 1)
     end
     self:ModuleHook("debug", "ApplyStatusAppearance", normalFont, boldFont, divider)
 end
@@ -802,6 +1541,12 @@ function DE:GetStatusTextAndColor(includeParticipation)
         return self:T("DE_STATUS_NO_EVENTS"), self.sv.colors.unknown
     end
 
+    -- unknownSince is stamped only on a genuine transition, so this count-up stays stable.
+    if self.sv.showUnknownCountUp ~= false and self.state.unknownSince then
+        local elapsed = zo_max(0, GetTimeStamp() - self.state.unknownSince)
+        return self:T("DE_STATUS_UNKNOWN_COUNTUP_FMT", FormatCountdown(elapsed)), self.sv.colors.unknown
+    end
+
     return self:T("DE_STATUS_UNKNOWN"), self.sv.colors.unknown
 end
 
@@ -853,6 +1598,13 @@ function DE:RefreshUI()
         return
     end
 
+    if self.statusWindowPreviewActive then
+        self:RefreshStatusWindowPreview()
+        self:RefreshWindowLayout()
+        self:RefreshVisibility()
+        return
+    end
+
     local active = self.state.status == self.STATUS_ACTIVE
     self.rows.zone.value:SetText(self.state.zoneName ~= "" and self.state.zoneName or "--")
     self.rows.event.value:SetText(active and (self.state.eventName or "-") or "-")
@@ -878,6 +1630,49 @@ function DE:RefreshUI()
 
     self:RefreshWindowLayout()
     self:RefreshVisibility()
+end
+
+-- Preview uses a configured zone but placeholder encounter text because names come from ESO at runtime.
+function DE:RefreshStatusWindowPreview()
+    local configs = self:GetAllEncounterConfigsForSettings()
+    local zoneText = (configs[1] and configs[1].relayZoneNameEn) or "--"
+
+    self.rows.zone.value:SetText(zoneText)
+    self.rows.event.value:SetText(self:T("DE_STATUS_PREVIEW_EVENT"))
+    self.rows.currentSection.value:SetText(self:T("DE_STATUS_PREVIEW_SECTION"))
+
+    self.rows.status.value:SetText(self:T("DE_STATUS_PREVIEW_STATUS"))
+    SetLabelColor(self.rows.status.value, self.sv.colors.active)
+
+    self.rows.minimal.value:SetText(string.format("%s %s", self:T("DE_LABEL_STATUS"), self:T("DE_STATUS_PREVIEW_STATUS")))
+    SetLabelColor(self.rows.minimal.value, self.sv.colors.active)
+
+    self.rows.hint.value:SetText(self:T("DE_STATUS_PREVIEW_HINT"))
+    SetLabelColor(self.rows.hint.value, self.sv.colors.value)
+
+    self:ModuleHook("debug", "RefreshStatusRows", true)
+
+    SetLabelColor(self.rows.zone.value, self.sv.colors.value)
+    SetLabelColor(self.rows.event.value, self.sv.colors.value)
+    SetLabelColor(self.rows.currentSection.value, self.sv.colors.value)
+end
+
+function DE:ShowStatusWindowPreview()
+    if not self.window or not self.sv then
+        return
+    end
+
+    self.statusWindowPreviewActive = true
+    self:RefreshUI()
+end
+
+function DE:HideStatusWindowPreview()
+    if not self.statusWindowPreviewActive then
+        return
+    end
+
+    self.statusWindowPreviewActive = false
+    self:RefreshUI()
 end
 
 function DE:IsWorldMapScene(scene)
@@ -913,6 +1708,11 @@ end
 
 function DE:RefreshVisibility()
     if not self.window or not self.sv then
+        return
+    end
+
+    if self.statusWindowPreviewActive then
+        self.window:SetHidden(not (self.sv.enabled and self.sv.showWindow))
         return
     end
 
@@ -1009,4 +1809,24 @@ function DE:ResetChestAlertAppearance()
     self:SetChestAlertWidth(self.defaults.chestAlertSize.width)
     self:ApplyAppearance()
     self:UpdateChestAlertPreview()
+end
+
+function DE:ResetGuildRelayWindowAppearance()
+    self.sv.relayWindowShowBorder = self.defaults.relayWindowShowBorder
+    self.sv.relayWindowFontSize = self.defaults.relayWindowFontSize
+    self.sv.relayWindowSortMode = self.defaults.relayWindowSortMode
+    self.sv.relayWindowBlinkThresholdSeconds = self.defaults.relayWindowBlinkThresholdSeconds
+    self.sv.relayWindowCheckIntervalSeconds = self.defaults.relayWindowCheckIntervalSeconds
+    self.sv.relayWindowActiveShareMaxAgeSeconds = self.defaults.relayWindowActiveShareMaxAgeSeconds
+    self.sv.relayWindowActiveEstimatedMaxAgeSeconds = self.defaults.relayWindowActiveEstimatedMaxAgeSeconds
+    for colorName, defaultColor in pairs(self.defaults.relayWindowColors) do
+        self.sv.relayWindowColors[colorName] = CopyColorValues(defaultColor)
+    end
+    if self.GuildRelayWindow then
+        self.GuildRelayWindow:ApplyWindowVisual()
+        self.GuildRelayWindow:Refresh()
+    end
+    -- Re-arms the liveness tick with the restored interval, same reasoning
+    -- as the check-interval slider's own setFunc.
+    self:StartGuildRelayLivenessTick()
 end

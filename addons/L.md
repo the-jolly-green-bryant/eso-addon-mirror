@@ -237,7 +237,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibResurrection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibResurrection__1312) | sirinsidiator | PC / Mac | r2 |
 | [LibRunebox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/LibRunebox__2317) | Kyoma | PC / Mac | 5 |
 | [LibSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen7/LibSavedVars__d1a95060-4ee7-4fc9-a0f1-681fe479c5b9) | Shadowfen7 | Console | — |
-| [LibSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/LibSavedVars__2161) | silvereyes | PC / Mac | 6.0.8 |
+| [LibSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/LibSavedVars__2161) | silvereyes | PC / Mac | 6.1 |
 | [LibSaveToDisk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomtomhotep/LibSaveToDisk__1993) | tomtomhotep | PC / Mac | 1.3g r6 |
 | [LibScroll](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/circonian/LibScroll__1151) | circonian | PC / Mac | 2 |
 | [LibScrollableMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomstock/LibScrollableMenu__3546) | tomstock | PC / Mac | 2.45 |
@@ -247,7 +247,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibServerResetTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibServerResetTime__4427) | code65536 | PC / Mac | 2.0.0 |
 | [LibSetDetection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/LibSetDetection__3338) | ExoY | PC / Mac | 5.0 |
 | [LibSets (All set items ingame & preview. lua API + excel sheet)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibSets-All-set-items-ingame-preview.-lua-API-excel-sheet__2241) | Baertram | PC / Mac | 0.9.3 |
-| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 74 |
+| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 75 |
 | [LibShifterBox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klingo/LibShifterBox__2444) | Klingo | PC / Mac | 0.7.0 |
 | [LibSimpleArrow](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/LibSimpleArrow__4251) | sshogrin | PC / Mac | 1.0.0 |
 | [LibSimpleSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibSimpleSavedVars__2805) | zelenin | PC / Mac | 0.0.3 |
@@ -332,7 +332,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LootHound by BeanConure](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BeanConure/LootHound-by-BeanConure__4538) | BeanConure | PC / Mac | 1.0.0 |
 | [LootWall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vicodine/LootWall__1010) | Vicodine | PC / Mac | 0.7 |
 | [LootWall Ultimate 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/redgabber/LootWall-Ultimate-2018__1988) | redgabber | PC / Mac | 1.0.8 |
-| [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/Lore-Book-Locations__4756) | Shinni | PC / Mac | 1.0.17 |
+| [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/Lore-Book-Locations__4756) | Shinni | PC / Mac | 1.0.21 |
 | [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/Lore-Book-Locations__ca0d62e7-58ab-4ea4-9729-f139cb28a64d) | Shinni42 | Console | — |
 | [LoreBooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/LoreBooks__288) | Kyoma | PC / Mac | 107 |
 | [Lorebooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/Lorebooks__d324f223-1cd9-40d2-8e37-8cf302dde557) | Sharlikran | Console | — |

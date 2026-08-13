@@ -69,6 +69,7 @@ GamepadOptions.PanelIds = {
     COMBAT_MISCELLANEOUS = 9183,
     MAP_OPTIONS = 9184,
     TRIAL_TIMER = 9185,
+    CAMERA = 9186,
 }
 
 local PanelIds = GamepadOptions.PanelIds
@@ -83,6 +84,7 @@ local MINIMAP_PANEL_ID = PanelIds.MINIMAP
 local FISHING_PANEL_ID = PanelIds.FISHING
 local FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
 local UI_PANEL_ID = PanelIds.UI
+local CAMERA_PANEL_ID = PanelIds.CAMERA
 local DEFAULT_FRAMES_PANEL_ID = PanelIds.DEFAULT_FRAMES
 local COMBAT_RETICLE_PANEL_ID = PanelIds.COMBAT_RETICLE
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
@@ -142,6 +144,7 @@ GamepadOptions.SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
 GamepadOptions.CENTER_SCREEN_ANNOUNCE_PANEL_ID = PanelIds.CENTER_SCREEN_ANNOUNCE
 GamepadOptions.FISHING_PANEL_ID = PanelIds.FISHING
 GamepadOptions.FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
+GamepadOptions.CAMERA_PANEL_ID = PanelIds.CAMERA
 GamepadOptions.LOOT_LOG_PANEL_ID = PanelIds.LOOT_LOG
 GamepadOptions.PLAYER_INFO_PANEL_ID = PanelIds.PLAYER_INFO
 GamepadOptions.PLAYER_INTERACTION_PANEL_ID = PanelIds.PLAYER_INTERACTION
@@ -398,6 +401,7 @@ local SUBPANEL_PARENT_IDS = {
     [FISHING_TRACKER_PANEL_ID] = FISHING_PANEL_ID,
     [AUTO_BOUND_PANEL_ID] = GEAR_PANEL_ID,
     [UI_PANEL_ID] = ROOT_PANEL_ID,
+    [CAMERA_PANEL_ID] = UI_PANEL_ID,
     [DEFAULT_FRAMES_PANEL_ID] = UI_PANEL_ID,
     [COMBAT_RETICLE_PANEL_ID] = UI_PANEL_ID,
     [ACTIVE_QUEST_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
@@ -465,6 +469,7 @@ PANEL_RESET_PATHS = {
     [FISHING_PANEL_ID] = { { "fishing" } },
     [FISHING_TRACKER_PANEL_ID] = { { "fishing", "tracker" } },
     [UI_PANEL_ID] = { { "ui" } },
+    [CAMERA_PANEL_ID] = { { "ui", "camera" } },
     [DEFAULT_FRAMES_PANEL_ID] = { { "ui", "activeQuest" }, { "ui", "activeCombatTips" }, { "ui", "synergyPrompts" }, { "ui", "centerScreenAnnounce" }, { "ui", "infiniteArchive" }, { "ui", "playerInteraction" }, { "ui", "subtitles" } },
     [COMBAT_RETICLE_PANEL_ID] = { { "ui", "combatReticle" } },
     [ACTIVE_QUEST_PANEL_ID] = { { "ui", "activeQuest" } },
@@ -1650,6 +1655,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. UI_PANEL_ID, NQOL.L("ui.gamepad_options.ui_9d57875"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. UI_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. CAMERA_PANEL_ID, NQOL.Features.Camera.GetName())
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. CAMERA_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. DEFAULT_FRAMES_PANEL_ID, NQOL.L("ui.gamepad_options.default_frames_acdfa98"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. DEFAULT_FRAMES_PANEL_ID, 1)
 
@@ -1930,6 +1938,10 @@ function GamepadOptions.RegisterPanels()
 
     if not GAMEPAD_SETTINGS_DATA[UI_PANEL_ID] then
         GamepadOptions.RegisterPanel(UI_PANEL_ID, GamepadOptions.BuildUIOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[CAMERA_PANEL_ID] then
+        GamepadOptions.RegisterPanel(CAMERA_PANEL_ID, GamepadOptions.BuildCameraOptionsData())
     end
 
     if not GAMEPAD_SETTINGS_DATA[DEFAULT_FRAMES_PANEL_ID] then

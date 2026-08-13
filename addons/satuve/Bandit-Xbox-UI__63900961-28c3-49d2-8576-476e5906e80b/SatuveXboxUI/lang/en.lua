@@ -826,4 +826,12 @@ AUTOMATION_SETTINGS_MAP_PIN_Disabled="Disabled",
 AUTOMATION_Global_Cooldown="Setting Global Cooldown",
 AUTOMATION_Quest_Low_Reward="Quest with low reward is skipped",
 
+
+-- Satuve CP Priority Helper
+SXUI_CP_Header='Champion Point Priority Build',
+SXUI_CP_Preview='Preview CP Build',
+SXUI_CP_PreviewDesc='Shows how your available Warfare Champion Points will be distributed by the saved priority list.',
+SXUI_CP_Apply='Apply CP Build',
+SXUI_CP_ApplyDesc='Applies the saved Warfare CP priority list. If existing allocations conflict, ESO may require a Champion Point redistribution and its normal gold cost.',
+
 }

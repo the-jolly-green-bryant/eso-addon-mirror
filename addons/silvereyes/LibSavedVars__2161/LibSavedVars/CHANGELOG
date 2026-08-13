@@ -1,3 +1,29 @@
+[COLOR="DeepSkyBlue"]6.1[/COLOR]:
+[BOLD]Noticable (to User/Everyone) Changes:[/BOLD]
+[LIST]
+[*] Fixed error trying to call LSV_Data:EnsureSavedVars().
+[*] Created wiki documentation for the library at [url=http://github.com/Shadowfen/LibSavedVars/wiki]LibSavedVars Wiki[/url].
+[/LIST]
+[BOLD]Noticable (to Developer) Changes:[/BOLD]
+[LIST]
+[*] Removed Lua 5.2-based code as ESO does not provide it.
+[*] Moved local function tableMerge() to [COLOR="MediumSeaGreen"]protected.tableMerge()[/color] for wider access. Added [COLOR="MediumSeaGreen"]protected.arrayMerge[/color] function to handle arrays too.
+[*] Make [COLOR="MediumSeaGreen"]LibSavedVars.GetWorldNames()[/color] return all PC worlds if scope passed in was '*'.
+[*] Fix table key error in [COLOR="MediumSeaGreen"]protected.GetAccountsAndProfiles()[/color].
+[*] Fixed scope validation for the various scope-limited or limitable functions to accept [COLOR="MediumSlateBlue"]"*"[/color] (meaining all scopes) as well as the numeric [COLOR="MediumSlateBlue"]LIBSAVEDVARS_SCOPE_CHARACTER[/color], or [COLOR="MediumSlateBlue"]LIBSAVEDVARS_SCOPE_ACCOUNT[/color] numeric values. 
+[/LIST]
+[BOLD]Internal Changes: (probably unnoticable for developers)[/BOLD]
+[LIST]
+[*] Created a new [COLOR="MediumSeaGreen"]protected.zoDebug()[/color] which takes debugMode as the first parameter and then can take formatstrings + args, several args to "tostring" and concatenate, tables (which are recursed and concat'ed), and the output of functions(). Revised the original [COLOR="MediumSeaGreen"]protected.Debug()[/color] to be an old API-compliant wrapper that now uses zoDebug.
+[*] Added a [COLOR="MediumSeaGreen"]GetDebugMode()[/color] to LSV_Data, LSV_SavedVarsManager, and LibSavedVars to get what it was set to in those specific files. Currently used to test that the corresponding SetDebugMode() works.
+[*] Provided [COLOR="MediumSeaGreen"]LSV_SavedVarsManager:OnLogout()[/color] and [COLOR="MediumSeaGreen"]LSV_SavedVarsManager:UpdatePendingVersion()[/color] to move the class-specific behaviours inside and clearer to call in the local file functions. Aside from general "best practices" this also makes the behaviours testable. 
+[*] Added a [COLOR="MediumSeaGreen"]LSV_SavedVarsManager:EnsureRawTableData()[/color] to provide instance tables initialization so that [COLOR="MediumSeaGreen"]LSV_SavedVarsManager:LoadRawTableData()[/color] can be used and expected to be a read-only function.
+[*] Fix empty table detection in [COLOR="MediumSeaGreen"]onLogout()[/color].
+[*] Added various non-table and nil key guards to Protected functions.
+[*] Update/expand comments.
+[*] Writing unit tests and then ensuring that they pass. (Note: Unit tests are designed to run from ZeroBrane IDE with the LibSavedVars directory as the project directory.)
+[/LIST]
+
 [COLOR="DeepSkyBlue"]6.0.8[/COLOR]:
 [LIST]
 [*] New version by Shadowfen. I am taking over maintenance of this library, intending to fix any errors that I find  but preserving the behaviour so that addons that use LibSavedVars through the provided API continue to work.

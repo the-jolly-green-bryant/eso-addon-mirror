@@ -987,7 +987,6 @@ function BUI.Frames:Initialize()
 	BUI.init.Frames=true
 	--Populate initial frames
 	BUI.Frames:SetupPlayer()
-	BUI.Frames.StabilizePlayerPosition()
 	BUI.Frames:SetupTarget()
 	if BUI.Vars.RaidFrames then
 		BUI.Frames:SetupGroup()
@@ -1039,12 +1038,6 @@ function BUI.Frames:Initialize()
 		BUI.Player:UpdateTrauma('player', nil, nil)
 	end)
 
-	EVENT_MANAGER:UnregisterForUpdate("SXUI_PlayerPosition")
-	EVENT_MANAGER:RegisterForUpdate("SXUI_PlayerPosition",250,function()
-		if BUI and BUI.init and BUI.init.Frames and BUI.Vars and BUI.Vars.PlayerFrame and not BUI.move then
-			BUI.Frames.StabilizePlayerPosition()
-		end
-	end)
 end
 
 	--Frames functions

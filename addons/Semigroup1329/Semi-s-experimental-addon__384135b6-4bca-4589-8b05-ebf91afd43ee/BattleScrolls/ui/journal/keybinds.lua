@@ -44,6 +44,20 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         end
     end
 
+    ---Re-adds the stepper keybinds once no dialog owns input anymore. The
+    ---URL confirm dialog does not reliably push a keybind-strip state, so the
+    ---strip is pulled while it is up and polled back in.
+    local function restoreShareKeybindsWhenClear()
+        if journalUI.mode ~= NAVIGATION_MODE.SHARE then
+            return
+        end
+        if ZO_Dialogs_IsShowingDialog() then
+            zo_callLater(restoreShareKeybindsWhenClear, 500)
+            return
+        end
+        journalUI:SetActiveKeybinds(journalUI.shareKeybindStripDescriptor)
+    end
+
     ---Enters the share stepper view, remembering where to return.
     ---@param sourceMode NavigationMode
     local function enterShareStepper(sourceMode)
@@ -66,7 +80,14 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
                     state.sentCount + 1, state.total)
             end,
             callback = function()
+                if ZO_Dialogs_IsShowingDialog() then
+                    return
+                end
                 BattleScrolls.shareUrl.sendNextPart()
+                -- The URL confirm dialog owns input now: pull our strip so
+                -- its buttons cannot double-fire ours, restore when clear
+                journalUI:SetActiveKeybinds(nil)
+                zo_callLater(restoreShareKeybindsWhenClear, 1000)
             end,
             visible = function()
                 return BattleScrolls.shareUrl.getState().phase == "sending"
@@ -76,13 +97,21 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         {
             keybind = "UI_SHORTCUT_NEGATIVE",
             name = GetString(SI_GAMEPAD_BACK_OPTION),
-            callback = leaveShareStepper,
+            callback = function()
+                if ZO_Dialogs_IsShowingDialog() then
+                    return
+                end
+                leaveShareStepper()
+            end,
             sound = SOUNDS.GAMEPAD_MENU_BACK,
         },
         {
             keybind = "UI_SHORTCUT_SECONDARY",
             name = GetString(BATTLESCROLLS_SHARE_CANCEL),
             callback = function()
+                if ZO_Dialogs_IsShowingDialog() then
+                    return
+                end
                 BattleScrolls.shareUrl.stop()
                 leaveShareStepper()
             end,

@@ -46,4 +46,5 @@ Addon:RegisterMenuSection(function(menu, H)
             options = controls,
         },
     })
+    Addon:FinalizeCurrencyMenuPages()
 end)

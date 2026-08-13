@@ -14,7 +14,7 @@ local Templates = {
 	[LibConsoleMenu.CT_SELECTOR] = "ZO_GamepadHorizontalListRow",
 	[LibConsoleMenu.CT_DROPDOWN] = "LibConsoleMenuGamepadDropdown",
 	[LibConsoleMenu.CT_CHECKLIST] = "LibConsoleMenuGamepadChecklist",
-	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorOption",
+	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorRow",
 	[LibConsoleMenu.CT_ICONPICKER] = "LibConsoleMenuGamepadIconPicker",
 	[LibConsoleMenu.CT_BUTTON] = "ZO_GamepadOptionsLabelRow",
 	[LibConsoleMenu.CT_SUBMENU] = "ZO_GamepadMenuEntryTemplateWithArrow",
@@ -602,9 +602,6 @@ function LibConsoleMenu:CreateControlPools()
 		end
 	end
 
-	-- Registers one template under its three list-entry shapes: plain, WithHeader
-	-- (used on the Main list), and WithNavHeader (used when the same row is nested
-	-- inside a Submenu list). Same registration body as 0.13.3 AddPool.
 	local function RegisterTemplateVariants(list, templateName, poolSuffix)
 		-- Args: template, setup, parametric, equality, headerTemplate, headerSetup, poolPrefix, poolReset
 		list:AddDataTemplate(templateName, update, ZO_GamepadMenuEntryTemplateParametricListFunction, nil, poolSuffix, reset)
@@ -621,11 +618,6 @@ function LibConsoleMenu:CreateControlPools()
 		LibConsoleMenu.RegisterWithNavHeader(list, templateName, poolSuffix, update, reset)
 	end
 
-	-- The base template's pool always gets wrapped with `factory`. The WithHeader/
-	-- WithNavHeader variants only get their own wrap if the list actually gave them
-	-- a *different* pool from the base template — some variants share a single pool
-	-- under the hood, and double-wrapping a shared pool's factory would run `factory`
-	-- on each control twice.
 	local function ExtendTemplateFactories(list, names, factory)
 		local baseName = names[1]
 		extendFactory(list, baseName, factory)
@@ -639,9 +631,6 @@ function LibConsoleMenu:CreateControlPools()
 		end
 	end
 
-	-- Nested submenu lists (depth 1..MAX_SUBMENU_DEPTH) reuse the exact same pools
-	-- and factories as Main rather than registering their own — share the dataType
-	-- entries directly instead of re-registering.
 	local function ShareTemplatesWithSubmenus(list, names)
 		for depth = 1, MAX_SUBMENU_DEPTH do
 			local submenuList = self.scrollList:GetList(GetSubmenuListName(depth))

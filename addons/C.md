@@ -252,7 +252,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Criminal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/napalmskull/Criminal__3765) | napalmskull | PC / Mac | 1.0.1 |
 | [Criscal's Enchantability Display (Check Enchantment)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Criscal-s-Enchantability-Display-Check-Enchantment__317) | Criscal | PC / Mac | 1.0.20 |
 | [Crit Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bjørn/Crit-Meter__3231) | Bjørn | PC / Mac | 1.3.0 |
-| [CritMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ruptxre/CritMarker__4690) | Ruptxre | PC / Mac | 1.0.16 |
+| [CritMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ruptxre/CritMarker__4690) | Ruptxre | PC / Mac | 1.0.20 |
 | [Critty: Live Crit Tracking](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/Critty-Live-Crit-Tracking__bcbbd5b5-03d6-4958-a225-2c9f4b63cfa8) | YFNatey | Console | — |
 | [CritWidget: Weapon / Spell Crit Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zempak/CritWidget-Weapon-Spell-Crit-Tracker__3751) | zempak | PC / Mac | 1.0.0 |
 | [Crosshair Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Crosshair-Info__2989) | iiJonno | PC / Mac | 1.2 |

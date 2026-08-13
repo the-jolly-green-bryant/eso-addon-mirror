@@ -8,8 +8,8 @@
   "category_id": "25",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4690",
@@ -18,7 +18,7 @@
     "CritMarker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4690/",
-  "fingerprint": "c79185e68473ef600c652fd6ceccb1d0538450faaceb41475979f2f2c1d4a77d",
+  "fingerprint": "f6a341e45869a60560578197b4045b61cef6d41dbac85462b3a4c590c51833da",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16780.png",
     "https://cdn-eso.mmoui.com/preview/pvw16948.png"
@@ -29,11 +29,11 @@
   "source_id": "4690",
   "source_url": "https://www.esoui.com/downloads/info4690-CritMarker.html",
   "stats": {
-    "downloads": 365,
+    "downloads": 409,
     "favorites": 3,
-    "monthly_downloads": 330
+    "monthly_downloads": 301
   },
   "title": "CritMarker",
-  "updated_at": 1786304706000,
-  "version": "1.0.16"
+  "updated_at": 1786582961000,
+  "version": "1.0.20"
 }

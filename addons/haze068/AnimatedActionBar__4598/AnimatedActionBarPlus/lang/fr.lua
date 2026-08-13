@@ -230,6 +230,7 @@ local strings =
     -- aperçu des commandes
     SI_AAB_CMD_HEAD    = "Commandes",
     SI_AAB_CMD_PANEL   = "ouvrir le panneau de réglages",
+    SI_AAB_CMD_INFO    = "ouvrir directement l'onglet Info",
 
     SI_AAB_CMD_ID      = "lister les ID de capacités équipées dans le chat",
     SI_AAB_CMD_SETEND  = "definir quand l'animation de fin se declenche (ms apres l'incantation)",
@@ -281,6 +282,23 @@ local strings =
     SI_AAB_CONTACT_DESC           = "L'addon vous plaît ? Les dons en jeu sont les bienvenus - Potions, Or et Ressources d'artisanat aident tous ! Cliquez ci-dessous pour ouvrir un courrier adressé à @haze068.",
     SI_AAB_CONTACT_DONATE_BTN     = "Faire un don par courrier",
     SI_AAB_CONTACT_DONATE_BTN_TT  = "Ouvre le panneau de courrier avec le destinataire et le titre pré-remplis.",
+
+    SI_AAB_SUB_INFO               = "Info",
+    SI_AAB_SUB_INFO_TT            = "Notes de compatibilité pour utiliser AnimatedActionBar+ avec d'autres addons.",
+    SI_AAB_INFO_THINFRAMES        = "Si vous utilisez l'option \"Frame Appearance: Thin Frames\" de cet addon, désactivez les options suivantes dans FancyActionBar+ sous UI Customization -> Custom Frames Keyboard :\n\n" ..
+                                        "  - \"Hide Default Frames\"\n" ..
+                                        "  - \"Use Thin Frames\"\n\n" ..
+                                        "Si les deux addons dessinent des cadres fins en même temps, les cadres se doublent ou se décalent.",
+    SI_AAB_INFO_GAMEPAD           = "Vous jouez à la manette ?\n\n" ..
+                                        "Si vos compétences sont décalées, mal alignées ou affichées incorrectement, désactivez le \"Gamepad Mode\" dans FancyActionBar+.\n\n" ..
+                                        "Si le problème persiste, contactez-moi sur Discord (haze.3169) afin que nous puissions le résoudre ensemble.",
+
+    SI_AAB_DLG_TITLE              = "AnimatedActionBar+",
+    SI_AAB_DLG_BODY               = "Merci d'avoir installé AnimatedActionBar+ !\n\n" ..
+                                        "Vous utilisez le style de cadre \"Thin Frames\" avec FancyActionBar+ ? Veuillez lire la note de compatibilité.\n\n" ..
+                                        "Vous jouez à la manette ? Consultez également l'onglet \"Info\".\n\n" ..
+                                        "Ouvrez les paramètres et consultez l'onglet \"Info\" pour les détails.",
+    SI_AAB_DLG_OK                 = "Compris",
 }
 
 for stringId, stringValue in pairs(strings) do

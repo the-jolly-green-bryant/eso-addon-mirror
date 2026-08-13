@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.4"
+R.version     = "3.17.5"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -384,11 +384,14 @@ R._announcements = {
   },
   ["3.17.4"] = {
     title = "History auto-compact (keeps your parses)",
-    body = "Console stability without wiping everyone’s fight history.\n\n• On load: strip bulk combat tables from stored fights (timelines bulk, bucket skill maps, raw tick floods)\n• Keeps DPS, skills, weave counts, fingerprints, coach outcomes, windows/gaps summaries\n• New parses stay compact so SavedVariables cannot re-bloat\n• History size default 12 (max 20)\n\nYour past parses remain. No manual SavedVariables delete for normal users.",
+    body = "Console stability without wiping everyone’s fight history.\n\n• On load: strip bulk combat tables from stored fights\n• Keeps DPS, skills, weave, fingerprints, windows/gaps\n• History size default 12 (max 20)",
   },
-  -- 3.15.x / 3.17.1–3.17.3 = quiet or superseded. Announce 3.17.4.
+  ["3.17.5"] = {
+    title = "SV re-bloat fix (coach write-back)",
+    body = "Stops SavedVariables from exploding after browsing the menu:\n\n• Coach analysis no longer stores cross-links between history fights (the n² logout bloat bug)\n• History scrubbed on logout / character select\n• Trash fights skip heavy finalize work\n• Combat events filtered to you + pet (open-world CPU)\n• Live timeline/tick caps; history still kept and auto-compacted\n\nReload once. No history wipe for normal users.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.4"
+R._latestAnnouncementVersion = "3.17.5"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -1847,6 +1850,15 @@ end
 local function pushTimelineToken(session, label, symbol, result, meta)
   if not session or not session.weave then return end
   session.weave.timeline = session.weave.timeline or {}
+  local tl = session.weave.timeline
+  -- Live cap (console): long stuck-in-combat events must not grow unbounded
+  if #tl >= 512 then
+    local keepFrom = #tl - 383 -- drop oldest, keep ~384 then append
+    local slim = {}
+    for i = keepFrom, #tl do slim[#slim + 1] = tl[i] end
+    session.weave.timeline = slim
+    tl = slim
+  end
   local item = {
     label = label or "?",
     symbol = symbol or "",
@@ -1855,7 +1867,7 @@ local function pushTimelineToken(session, label, symbol, result, meta)
   if meta then
     for k,v in pairs(meta) do item[k] = v end
   end
-  table.insert(session.weave.timeline, item)
+  tl[#tl + 1] = item
 end
 
 local CHANNEL_DASH_COUNTS = {
@@ -2685,8 +2697,9 @@ local function prepareSessionForHistory(session)
     capArrayTail(session.ultEconomy.castTimes, 12)
   end
 
-  -- Coach recompute is fine; do not persist huge intermediate coach tables
+  -- Coach recompute is fine; NEVER persist coach (may hold cross-history refs)
   session.coach = nil
+  session._coachTok = nil
 
   -- Player stats: keep buffed/unbuffed numbers only (drop nested junk if any)
   local function thinSnap(snap)
@@ -2732,10 +2745,14 @@ local function sanitizeHistoryInPlace()
     max = 20
     if SV.settings then SV.settings.historyMax = 20 end
   end
-  -- Drop only absurd debris above hard ceiling (legacy max-50 slider)
+  -- Trim slots above current max (and hard ceiling 20). Stale slots from a
+  -- former higher historyMax must not live forever as invisible SV bulk.
+  local trimMax = max
+  if trimMax < 1 then trimMax = 12 end
+  if trimMax > 20 then trimMax = 20 end
   for slot, _ in pairs(SV.history) do
     local i = tonumber(slot)
-    if i and i > 20 then SV.history[slot] = nil end
+    if i and i > trimMax then SV.history[slot] = nil end
   end
   return n
 end
@@ -5718,6 +5735,14 @@ end
 local function finalizeSession(session)
   session.endMs = NowMs()
   session.durationMs = math.max(0, session.endMs - session.startMs)
+  -- Cheap reject before gear/build/Phase-3 snapshots (open-world trash fights)
+  do
+    local minMs = tonumber(SV and SV.settings and SV.settings.minFightMs) or 0
+    local minDmg = tonumber(SV and SV.settings and SV.settings.minDamage) or 0
+    if session.durationMs < minMs or (tonumber(session.totalDamage) or 0) < minDmg then
+      return nil
+    end
+  end
   closeActiveBuffs(session)
   finalizePendingWeave(session, true)
   if session.weave and session.weave.pendingPostChannel then
@@ -5807,12 +5832,8 @@ local function finalizeSession(session)
     pcall(DM2StatsMenuShell.TryAttachExperimentRun, session)
   end
 
-  local minMs = tonumber(SV.settings.minFightMs) or 0
-  local minDmg = tonumber(SV.settings.minDamage) or 0
-
-  if session.durationMs < minMs or session.totalDamage < minDmg then
-    return nil
-  end
+  -- Never leave coach/analysis caches on the session (SV write-back hazard)
+  session.coach = nil
 
   return session
 end
@@ -5909,7 +5930,14 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
     if w.lastLaPressMs then
       local delta = tMs - w.lastLaPressMs
       if delta > 0 then
-        table.insert(w.laIntervals, delta)
+        w.laIntervals = w.laIntervals or {}
+        if #w.laIntervals >= 256 then
+          -- keep newest half
+          local slim = {}
+          for i = #w.laIntervals - 127, #w.laIntervals do slim[#slim + 1] = w.laIntervals[i] end
+          w.laIntervals = slim
+        end
+        w.laIntervals[#w.laIntervals + 1] = delta
       end
     end
     w.lastLaPressMs = tMs
@@ -6175,9 +6203,11 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
       local ticks = dt[abilityId].ticks
       -- Cap live tick list (console memory mid-fight); gap math still works on sparse samples
       if #ticks >= 64 then
-        -- drop every other old sample, keep newest
+        -- Keep newest half (even-step from end), then append
         local slim = {}
-        for i = 1, #ticks, 2 do slim[#slim + 1] = ticks[i] end
+        local start = #ticks - 31
+        if start < 1 then start = 1 end
+        for i = start, #ticks do slim[#slim + 1] = ticks[i] end
         ticks = slim
         dt[abilityId].ticks = ticks
       end
@@ -6770,28 +6800,65 @@ function R:Initialize()
   end, 1500)
 
   EM:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, function(...) self:OnCombatState(...) end)
-  EM:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, function(...) self:OnCombatEvent(...) end)
+
+  -- Combat events: C-side filter to player + pet only (open-world CPU). Two registrations.
+  local function combatHandler(...) self:OnCombatEvent(...) end
+  EM:RegisterForEvent(self.name .. "_CombatP", EVENT_COMBAT_EVENT, combatHandler)
+  if type(EM.AddFilterForEvent) == "function" and type(REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE) ~= "nil"
+      and type(COMBAT_UNIT_TYPE_PLAYER) == "number" then
+    pcall(function()
+      EM:AddFilterForEvent(self.name .. "_CombatP", EVENT_COMBAT_EVENT,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+      if type(REGISTER_FILTER_IS_ERROR) ~= "nil" then
+        EM:AddFilterForEvent(self.name .. "_CombatP", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
+      end
+    end)
+    if type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" then
+      EM:RegisterForEvent(self.name .. "_CombatPet", EVENT_COMBAT_EVENT, combatHandler)
+      pcall(function()
+        EM:AddFilterForEvent(self.name .. "_CombatPet", EVENT_COMBAT_EVENT,
+          REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER_PET)
+        if type(REGISTER_FILTER_IS_ERROR) ~= "nil" then
+          EM:AddFilterForEvent(self.name .. "_CombatPet", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
+        end
+      end)
+    end
+  else
+    -- Fallback: unfiltered (old clients)
+    EM:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, combatHandler)
+  end
 
   -- v3.0.25: Input-based rotation capture — fires the instant a skill button is pressed.
-  -- This replaces damage-event inference for the rotation timeline and weave analysis.
   if type(EVENT_ACTION_SLOT_ABILITY_USED) ~= "nil" then
     EM:RegisterForEvent(self.name .. "_SlotUsed", EVENT_ACTION_SLOT_ABILITY_USED,
       function(...) self:OnActionSlotAbilityUsed(...) end)
   end
 
-  -- v3.0.25: Bar swap tracking — refresh slot mappings and count swaps.
   if type(EVENT_ACTIVE_WEAPON_PAIR_CHANGED) ~= "nil" then
     EM:RegisterForEvent(self.name .. "_BarSwap", EVENT_ACTIVE_WEAPON_PAIR_CHANGED,
       function(...) self:OnActiveWeaponPairChanged(...) end)
   end
 
-  -- Capture initial active bar
   if type(GetActiveHotbarCategory) == "function" then
     local ok, cat = pcall(GetActiveHotbarCategory)
     if ok then self._activeBar = cat end
   end
 
   EM:RegisterForEvent(self.name, EVENT_EFFECT_CHANGED, function(...) self:OnEffectChanged(...) end)
+
+  -- Belt-and-braces: scrub history before SV serialization (logout / character select)
+  if type(EVENT_PLAYER_DEACTIVATED) ~= "nil" then
+    EM:RegisterForEvent(self.name .. "_Deact", EVENT_PLAYER_DEACTIVATED, function()
+      pcall(function()
+        if type(SV) == "table" and type(SV.history) == "table" then
+          for _, s in pairs(SV.history) do
+            if type(s) == "table" then s.coach = nil; s._coachTok = nil end
+          end
+        end
+        sanitizeHistoryInPlace()
+      end)
+    end)
+  end
 
   if type(SCENE_MANAGER) == "table" and SCENE_MANAGER.RegisterCallback then
     SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, oldState, newState)

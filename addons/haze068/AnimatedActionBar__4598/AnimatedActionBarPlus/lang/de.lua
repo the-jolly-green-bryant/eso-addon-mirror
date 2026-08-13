@@ -230,6 +230,7 @@ local strings =
     -- Befehls-Übersicht
     SI_AAB_CMD_HEAD    = "Befehle",
     SI_AAB_CMD_PANEL   = "Einstellungsfenster öffnen",
+    SI_AAB_CMD_INFO    = "direkt den Info-Tab öffnen",
 
     SI_AAB_CMD_ID      = "geslottete Ability-IDs im Chat anzeigen",
     SI_AAB_CMD_SETEND  = "festlegen, wann die End-Animation eines Skills feuert (ms nach Cast)",
@@ -281,6 +282,23 @@ local strings =
     SI_AAB_CONTACT_DESC           = "Gefällt dir das Addon? Ingame-Spenden sind sehr willkommen - Tränke, Gold und Handwerks-Ressourcen helfen alle! Klick unten, um eine Mail an @haze068 zu öffnen.",
     SI_AAB_CONTACT_DONATE_BTN     = "Per Ingame-Mail spenden",
     SI_AAB_CONTACT_DONATE_BTN_TT  = "Öffnet das Ingame-Mailfenster mit vorausgefülltem Empfänger und Titel.",
+
+    SI_AAB_SUB_INFO               = "Info",
+    SI_AAB_SUB_INFO_TT            = "Kompatibilitäts-Hinweise zur Nutzung von AnimatedActionBar+ zusammen mit anderen Addons.",
+    SI_AAB_INFO_THINFRAMES        = "Wenn du die Option \"Frame Appearance: Thin Frames\" aus diesem Addon nutzt, deaktiviere bitte in FancyActionBar+ unter UI Customization -> Custom Frames Keyboard folgendes:\n\n" ..
+                                        "  - \"Hide Default Frames\"\n" ..
+                                        "  - \"Use Thin Frames\"\n\n" ..
+                                        "Zeichnen beide Addons gleichzeitig schlanke Rahmen, kommt es zu doppelten oder versetzten Rahmen.",
+    SI_AAB_INFO_GAMEPAD           = "Spielst du mit Controller?\n\n" ..
+                                        "Wenn deine Fähigkeiten verschoben, versetzt oder anderweitig falsch dargestellt werden, deaktiviere bitte in FancyActionBar+ den \"Gamepad Mode\".\n\n" ..
+                                        "Sollte das Problem danach immer noch bestehen, kontaktiere mich bitte über Discord (haze.3169), damit wir das gemeinsam beheben können.",
+
+    SI_AAB_DLG_TITLE              = "AnimatedActionBar+",
+    SI_AAB_DLG_BODY               = "Danke fürs Installieren von AnimatedActionBar+!\n\n" ..
+                                        "Nutzt du den Rahmen-Stil \"Thin Frames\" zusammen mit FancyActionBar+? Dann lies bitte den Kompatibilitäts-Hinweis.\n\n" ..
+                                        "Spielst du mit Controller? Dann schau bitte ebenfalls in den \"Info\"-Tab.\n\n" ..
+                                        "Öffne die Einstellungen und schau dir dafür den \"Info\"-Tab an. Gib /aabcmds im Chat ein für eine Liste aller Befehle.",
+    SI_AAB_DLG_OK                 = "Verstanden",
 }
 
 for stringId, stringValue in pairs(strings) do

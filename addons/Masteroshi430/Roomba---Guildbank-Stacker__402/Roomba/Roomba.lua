@@ -6,7 +6,7 @@
 Roomba = {
     name = "Roomba",
     author = "|c3CB371@Masteroshi430|r, Wobin, CrazyDutchGuy, Ayantir & silvereyes",
-    version = "2026.07.06",
+    version = "2026.08.12",
     website = "http://www.esoui.com/downloads/info402-Roomba.html",
     debugMode = false,
 }
@@ -966,7 +966,7 @@ function BuildKeybindDescriptor()
         alignment = db.RoombaPosition,
         [keyBindIndex] = {
             name = function() return descriptorName end,
-            keybind = "RUN_ROOMBA", 
+            keybind = IsConsoleUI() and "UI_SHORTCUT_SECONDARY" or "RUN_ROOMBA", 
             control = IsInGamepadPreferredMode() and RoombaWindowGamepad or RoombaWindow,
             callback = Roomba_StartRoomba, 
             visible = UpdateAndDisplayKeybind, 
@@ -1083,7 +1083,12 @@ local function InitialiseSettings()
                     keybindCheck = "leftButtons"
                 end
                 
-                ReloadUI()
+                if IsConsoleUI() then
+                    -- Delay slightly so the gamepad settings menu can close cleanly before reload.
+                    zo_callLater(function() ReloadUI() end, 250)
+                else
+                    ReloadUI()
+                end
                 
             end,
         },
@@ -1155,8 +1160,15 @@ local function OnAddonLoaded(_, addOnName)
 		
         ZO_CreateStringId("SI_BINDING_NAME_RUN_ROOMBA", descriptorName)
         
-        InitializeSpeedRow(RoombaWindow)
+        -- RoombaWindow is the keyboard-UI window and is never shown on console.
+        if not IsConsoleUI() then
+            InitializeSpeedRow(RoombaWindow)
+        end
         InitializeSpeedRow(RoombaWindowGamepad)
+
+        if IsConsoleUI() then
+            RoombaWindowGamepad:GetNamedChild("Description"):SetFont("$(MEDIUM_FONT)|18|soft-shadow-thin")
+        end
         
         InitialiseSettings()
         InitializeKeybind()

@@ -1,10 +1,9 @@
 --=====================================================================
--- Holodeck_Record.lua — arm / record / sample (v0.0.14)
+-- Holodeck_Record.lua — arm / record / sample (v0.0.19)
 --
--- Training packs = lean keyframes (boss / mini / elites), not video streams.
--- Dense samples only when capturing self/team (review mode).
--- Reticle path uses unit tag "reticleover" = whatever is under the crosshair
--- (soft aim) OR the locked hard-target when one is set. Not a room scan.
+-- Bosses = boss1–8 bar only (never reticle-as-boss).
+-- Elites = reticle soft-aim → mini/elite tracks.
+-- Collapse uses path fidelity so continuous reticle samples keep movement.
 --=====================================================================
 
 local H = Holodeck
@@ -397,24 +396,21 @@ local function ProbeReticle()
         classKey = classKey, name = p.name,
     }
     local allowElite = p.capElite and EliteAllowedByTier(infoLike)
-    local allowAsBoss = p.capBoss and not p.bossBar
     if not p.hostile then
-        p.reason = "reticle not hostile (friend/dead/neutral?) — lock a hostile target"
+        p.reason = "reticle not hostile (friend/dead/neutral?)"
     elseif not p.hasPos then
         p.reason = "hostile but no world position from API"
-    elseif not p.capBoss and not p.capElite then
-        p.reason = "capture bosses+elites both OFF in settings"
     elseif allowElite then
         p.reason = string.format("OK — would capture as elite/mini (rank=%s hp=%.0f)",
             tostring(p.rank), p.maxHealth or 0)
-    elseif allowAsBoss then
-        p.reason = "OK — would capture as boss_reticle (no boss bar)"
+    elseif p.capBoss and p.bossBar then
+        p.reason = "OK — boss bar (boss1–8); reticle not used for bosses"
     elseif p.capElite and not allowElite then
         p.reason = string.format(
-            "tier filter blocked (tier=%s rank=%s hp=%.0f) — raise filter or use Any hostile",
+            "elite tier blocked (tier=%s rank=%s hp=%.0f) — raise filter or Any hostile",
             tostring(p.eliteTier), tostring(p.rank), p.maxHealth or 0)
-    elseif p.capBoss and p.bossBar then
-        p.reason = "OK — on boss bar (boss1–8 path)"
+    elseif not p.capElite then
+        p.reason = "elites OFF — reticle ignored (bosses still need boss bar)"
     else
         p.reason = "blocked — check /hdsettings capture toggles"
     end
@@ -500,7 +496,7 @@ local function CollectUnitsNow()
         end
     end
 
-    -- Boss bar units (trials / dungeons that expose boss1–8)
+    -- Boss bar units ONLY (traditional boss1–8). Never reticle-as-boss.
     if capBoss then
         for i = 1, 8 do
             local tag = "boss" .. i
@@ -509,32 +505,21 @@ local function CollectUnitsNow()
         end
     end
 
-    -- Reticleover = unit under crosshair (soft) or locked hard-target (sticky when looking away).
-    -- Pack elites / delve minis almost never appear as boss1 — this is the main path.
-    if (capBoss or capElite) and DoesUnitExist and DoesUnitExist("reticleover") then
+    -- Reticle elites / pack minis (soft aim). Always mini/elite kind — never boss.
+    -- Keep crosshair on the unit to sample movement (no off-reticle follow API).
+    if capElite and DoesUnitExist and DoesUnitExist("reticleover") then
         ProbeReticle()
         if IsHostileNpc("reticleover") then
             local keyId, info = CaptureReticleTarget()
             local name = (info and info.name) or (GetUnitName and GetUnitName("reticleover")) or "enemy"
             local unitId = keyId or GetUnitIdSafe("reticleover")
             local onBossBar = unitId and H.record.activeBossIds[unitId]
-            if not onBossBar then
-                local kind, ekey
-                local allowElite = capElite and EliteAllowedByTier(info)
-                local allowAsBoss = capBoss and not BossUnitExists()
-                if allowElite then
-                    kind = (info and info.kind) or "mini"
-                    if info and info.classKey == "BOSS" then kind = "boss" end
-                    ekey = "elite_" .. SanitizeKey(name) .. "_" .. tostring(unitId or SanitizeKey(name))
-                elseif allowAsBoss then
-                    -- No boss bar + bosses ON → treat aimed hostile as the training target
-                    kind = "boss"
-                    ekey = "boss_reticle"
-                end
-                if kind and ekey then
-                    if add("reticleover", kind, name, ekey) then
-                        if not H.record.primaryTarget then H.record.primaryTarget = name end
-                    end
+            if not onBossBar and info and EliteAllowedByTier(info) then
+                local kind = info.kind or "mini"
+                if kind == "boss" then kind = "mini" end -- reticle path never "boss"
+                local ekey = "elite_" .. SanitizeKey(name) .. "_" .. tostring(unitId or SanitizeKey(name))
+                if add("reticleover", kind, name, ekey) then
+                    if not H.record.primaryTarget then H.record.primaryTarget = name end
                 end
             end
         end
@@ -599,18 +584,26 @@ local function StartRecordTick()
 end
 
 -- ============================= Keyframe collapse ========================
--- Lean: keep sparse stops like manual edit (hold / walk / snap).
--- Dense (self/team): keep closer samples for review / screenshare.
-local function CollapseTrack(points, dense)
+-- mode:
+--   "dense" = self/team review (tight)
+--   "path"  = recorded boss/elite movement (default for record) — keep the path
+--   "lean"  = sparse (manual-style); NOT used for live reticle capture anymore
+--
+-- BUG FIX: old lean thresh 1.25m collapsed continuous walks into 1 start pose + hold.
+local function CollapseTrack(points, mode)
     if not points or #points == 0 then return {} end
     if #points == 1 then
         local p = points[1]
         return { { t = p.t, x = p.x, z = p.z, hold = 0, visible = true, snap = false } }
     end
 
-    local moveThresh = dense and 0.35 or 1.25      -- meters
-    local snapDist = dense and 12 or 8             -- meters in one step = snap
-    local stillSec = dense and 0.8 or 1.25         -- seconds still → hold
+    local dense = (mode == true or mode == "dense")
+    local path = (mode == "path") or (not dense and mode ~= "lean")
+    -- path (default for elite/boss record): 0.45m — walk steps survive collapse
+    -- dense: 0.35m  ·  lean: 1.25m (manual packs only)
+    local moveThresh = dense and 0.35 or (path and 0.45 or 1.25)
+    local snapDist = dense and 12 or (path and 10 or 8)
+    local stillSec = dense and 0.5 or (path and 0.6 or 1.25)
 
     local out = {}
     local cur = {
@@ -628,17 +621,13 @@ local function CollapseTrack(points, dense)
         if dt < 0 then dt = 0 end
 
         if dist < moveThresh then
-            -- still (or jitter): extend hold on previous keyframe
+            -- still / jitter: extend hold, stay at prev pose
             local leave = (prev.t or 0) + (prev.hold or 0)
             if (p.t or 0) > leave then
                 prev.hold = math.floor(((p.t or 0) - (prev.t or 0)) * 100 + 0.5) / 100
             end
         else
             local isSnap = dist >= snapDist and dt <= 0.75
-            -- close previous hold if we were still before this move
-            if not isSnap and dt > stillSec and dist >= moveThresh then
-                -- walk after a stand: hold already on prev
-            end
             out[#out + 1] = {
                 t = p.t,
                 x = p.x,
@@ -647,6 +636,25 @@ local function CollapseTrack(points, dense)
                 visible = true,
                 snap = isSnap,
             }
+        end
+    end
+
+    -- Always keep final sample pose if last keyframe isn't there yet
+    local lastIn = points[#points]
+    local lastOut = out[#out]
+    if lastIn and lastOut then
+        local dx = (lastIn.x or 0) - (lastOut.x or 0)
+        local dz = (lastIn.z or 0) - (lastOut.z or 0)
+        local dist = math.sqrt(dx * dx + dz * dz)
+        if dist >= moveThresh * 0.5 or math.abs((lastIn.t or 0) - (lastOut.t or 0) - (lastOut.hold or 0)) > 0.5 then
+            if dist >= 0.05 then
+                out[#out + 1] = {
+                    t = lastIn.t, x = lastIn.x, z = lastIn.z,
+                    hold = 0, visible = true, snap = false,
+                }
+            elseif (lastIn.t or 0) > (lastOut.t or 0) then
+                lastOut.hold = math.floor(((lastIn.t or 0) - (lastOut.t or 0)) * 100 + 0.5) / 100
+            end
         end
     end
     return out
@@ -664,10 +672,13 @@ local function ApplyRecordingToSandbox()
     end
 
     local dense = IsDenseCaptureMode()
+    -- Boss/elite-only takes: "path" fidelity (not old lean 1.25m collapse)
+    local collapseMode = dense and "dense" or "path"
     -- Gather raw points per key
     local raw = {}
     local kinds = {}
     local names = {}
+    local rawCounts = {}
     for _, frame in ipairs(samples) do
         local t = frame.t or 0
         for key, u in pairs(frame.units or {}) do
@@ -675,12 +686,15 @@ local function ApplyRecordingToSandbox()
             kinds[key] = u.kind or "stack"
             names[key] = u.name or key
             raw[key][#raw[key] + 1] = { t = t, x = u.x, z = u.z }
+            rawCounts[key] = (rawCounts[key] or 0) + 1
         end
     end
 
     local tracks = {}
+    local kfTotal = 0
     for key, pts in pairs(raw) do
-        tracks[key] = CollapseTrack(pts, dense)
+        tracks[key] = CollapseTrack(pts, collapseMode)
+        kfTotal = kfTotal + #(tracks[key] or {})
     end
 
     H.stops = tracks
@@ -698,8 +712,16 @@ local function ApplyRecordingToSandbox()
 
     local entCount = 0
     for _ in pairs(tracks) do entCount = entCount + 1 end
-    dhd(string.format("Record applied: %d entities, %s keyframes (%s mode).",
-        entCount, dense and "dense" or "lean", dense and "review" or "training"))
+    dhd(string.format("Record applied: %d entities · %d keyframes (%s collapse) · %d raw frames",
+        entCount, kfTotal, collapseMode, #samples))
+    -- Hint if collapse still looks flat
+    for key, pts in pairs(raw) do
+        local tr = tracks[key]
+        if pts and #pts >= 5 and tr and #tr <= 2 then
+            dhd(string.format("  note: %s had %d samples → %d keys (little XY change while on reticle?)",
+                tostring(names[key] or key), #pts, #tr))
+        end
+    end
     return true
 end
 
@@ -809,7 +831,7 @@ function H.RecordStart(silent)
         if #bits == 0 then bits[1] = "nothing — enable targets in /hdsettings" end
         dhd("Record |cFF5555RUNNING|r — " .. table.concat(bits, "+")
             .. (IsDenseCaptureMode() and " (dense)" or " (lean keyframes)"))
-        dhd("Soft-aim: keep crosshair on the unit to sample it. No hard-target required.")
+        dhd("Soft-aim: keep crosshair on a unit to sample its path (look away = no new samples).")
         local p = ProbeReticle()
         if p.exists then
             dhd(string.format("  reticle now: %s · hostile=%s · pos=%s",

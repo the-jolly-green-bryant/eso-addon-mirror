@@ -1,4 +1,4 @@
---[[ LibSavedVars and its files © silvereyes
+--[[ LibSavedVars and its files © silvereyes, Shadowfen
      Distributed under MIT license (see LICENSE) ]]
 
 -- copy language strings locally, then destroy
@@ -6,7 +6,7 @@ local libSavedVarsStrings = LIBSAVEDVARS_STRINGS
 LIBSAVEDVARS_STRINGS = nil
 
 local libSavedVars = {
-    version = 60007
+    version = 60100
 }
 
 LibSavedVars = libSavedVars
@@ -20,23 +20,18 @@ LIBSAVEDVARS_SCOPE_ACCOUNT      = 2
 LIBSAVEDVARS_SCOPE_MIN          = LIBSAVEDVARS_SCOPE_CHARACTER
 LIBSAVEDVARS_SCOPE_MAX          = LIBSAVEDVARS_SCOPE_ACCOUNT
 
--- Protected methods accessible to LibSavedVars and all classes created with :NewClass() (see below)
-local protected
 
--- Server/world name registry
-local WORLDS
+local protected             -- Protected methods accessible to LibSavedVars and all classes created with :LoadClass() (see below)
+local debugMode = false     -- file-level debug flag
 
--- Registry of extra parameters to pass to "LibSavedVarsMigrateStart" callbacks
-local extraMigrateParams = { }
+local WORLDS                -- Server/world name registry tables
 
--- Registry of saved var table names and paths by saved var instances
-local savedVarRegistry = { }
+local extraMigrateParams = { }  -- Registry of extra parameters to pass to "MigrateStart" callbacks
+
+local savedVarRegistry = { }    -- Registry of saved var table names and paths by saved var instances
 
 -- Addon name most recently loaded
 local currentAddonName
-
--- Local functions
-local codeFormat, debug, deepSavedVarsCopy, registerSavedVars, toCode
 
 -- Create localized strings
 for stringId, value in pairs(libSavedVarsStrings) do
@@ -49,12 +44,11 @@ end
 -- 
 ---------------------------------------
 
---[[
-     Clears all saved vars values from the given ZO_SavedVars instance. Leaves the built-in "version" var, and all
-     function definitions.
+--[[ Clears all saved vars values from the given ZO_SavedVars instance. Leaves the 
+        built-in "version" var, and all function definitions.
      
      savedVars: the ZO_SavedVars table to clear
-  ]]--
+--]]
 function LibSavedVars:ClearSavedVars(savedVars)
     local dataTable = self:GetRawDataTable(savedVars)
     for key, value in pairs(dataTable) do
@@ -64,33 +58,33 @@ function LibSavedVars:ClearSavedVars(savedVars)
     end
 end
 
---[[
-     Copies saved var values from one ZO_SavedVars instance to another, optionally ignoring vars that already exist in
-     the destination.
+--[[ Copies saved var values from one ZO_SavedVars instance to another, optionally ignoring vars 
+        that already exist in the destination.
      
      source:         The ZO_SavedVars instance to copy values from
      destination:    The ZO_SavedVars instance to copy values to
-     doNotOverwrite: (optional) If true, only vars that equal nil in the destination will be copied. default: false.
-  ]]--
+     doNotOverwrite: (optional) If true, only vars that equal nil in the destination 
+                        will be copied. default: false.
+--]]
 function LibSavedVars:DeepSavedVarsCopy(source, destination, doNotOverwrite)
-    
+    if not source or type(source) ~= "table" then return end
+    if not destination or type(destination) ~= "table" then return end
+
     -- Get rid of the annoying ZO_SavedVars interface crap to deal with the data directly
     source      = self:GetRawDataTable(source)
     destination = self:GetRawDataTable(destination)
-    
+
     -- Copy keys from source to destination
     for key, value in pairs(source) do
-        
         -- Copy nested tables
         if type(value) == "table" then
             if type(destination[key]) ~= "table" then
                 destination[key] = {}
             end
             self:DeepSavedVarsCopy(value, destination[key], doNotOverwrite)
-            
+
         -- Copy scalar values
         elseif key ~= "version" and type(value) ~= "function" then
-        
             -- Make sure we don't overwrite destination values, if requested
             if not doNotOverwrite or destination[key] == nil then
                 destination[key] = value
@@ -99,13 +93,11 @@ function LibSavedVars:DeepSavedVarsCopy(source, destination, doNotOverwrite)
     end
 end
 
-
---[[
-     Gets a list of tables of the form { account = "@displayName", profile = "NA Megaserver" } for all accounts within
+--[[ Gets a list of tables of the form { account = "@displayName", profile = "NA Megaserver" } for all accounts within
      the given saved var table.
      
      savedVarName: The name of the saved var table to extract account names from.
-  ]]--
+--]]
 function LibSavedVars:GetAccountsAndProfiles(savedVarName)
     local savedVariableTable = _G[savedVarName]
     if type(savedVariableTable) ~= "table" then
@@ -118,7 +110,7 @@ function LibSavedVars:GetAccountsAndProfiles(savedVarName)
                 table.insert(accountsAndProfiles, { account = key1 })
             else
                 for key2, value2 in pairs(value1) do
-                    if type(value2) == "table" and key1:sub(1, 1) == "@" then
+                    if type(value2) == "table" and key2:sub(1, 1) == "@" then
                         table.insert(accountsAndProfiles, { account = key2, profile = key1 } )
                     end
                 end
@@ -128,9 +120,8 @@ function LibSavedVars:GetAccountsAndProfiles(savedVarName)
     return accountsAndProfiles
 end
 
---[[
-     Gets table containing the following information about a ZO_SavedVars interface instance.  Can be passed directly
-     to LSV_SavedVarsManager:New().
+--[[ Gets table containing the following information about a registered ZO_SavedVars interface instance.  
+    Can be passed directly to LSV_SavedVarsManager:New().
      
      addonName:     The name of the addon that created the saved vars.
      
@@ -167,61 +158,99 @@ end
      
      rawSavedVarsTableKey:    The key within *rawSavedVarsTableParent* that can be used to lookup rawSavedVarsTable.
                               Usually equals either *namespace*, *characterId*, *characterName* or "$AccountWide"
-  ]]--
+--]]
 function LibSavedVars:GetInfo(savedVars)
     if savedVars == nil then return end
     return savedVarRegistry[savedVars]
 end
 
---[[
-     Gets the underlying data table for a ZO_SavedVars instance, since ZO_SavedVars don't support many common table
+--[[ Gets the underlying data table for a ZO_SavedVars instance, since ZO_SavedVars don't support many common table
      operations directly (e.g. pairs/ipairs/next/#).
-  ]]--
+--]]
 function LibSavedVars:GetRawDataTable(savedVars)
     local meta = getmetatable(savedVars)
     return meta and meta.__index or savedVars
 end
 
---[[
-     Returns an array of world (i.e. server) names for the given environment.
+--[[ Returns an array of world (i.e. server) names for the given environment.
      
      environment: "live", "pts", "*" for all, or empty/nil to autodetect
-  ]]--
+     Note: Does not require self for processing - only for call.
+
+     returns a table containing server names - can be empty for invalid environment.
+--]]
 function LibSavedVars:GetWorldNames(environment)
+    -- Handle wildcard case - return combined list of ALL environments
     if environment == "*" then
-        return { unpack(WORLDS["live"]), unpack(WORLDS["pts"]) }
+        local live = WORLDS["live"] or {}
+        local pts = WORLDS["pts"] or {}
+        local combined = protected.arrayMerge(live, pts)
+        return combined
     end
-    if not environment then
-        environment = GetWorldName() == "PTS" and "pts" or "live"
+
+    -- Handle autodetection for nil or empty string
+    if not environment or environment == "" then
+        environment = (GetWorldName() == "PTS") and "pts" or "live"
     end
-    return WORLDS[environment]
+
+    -- Lookup specific environment
+    local worldList = WORLDS[environment]
+
+    -- Safety check: return empty table for unknown environments instead of nil
+    if not worldList then
+        protected.zoDebug(debugMode, "Warning: Unknown environment '", environment, "', returning empty list.")
+        return {}
+    end
+
+    -- Return fresh copy by iterating all values
+    local copy = {}
+    local i = 1
+    for _, v in ipairs(worldList) do
+        copy[i] = v
+        i = i + 1
+    end
+    return copy
 end
 
---[[
-     Returns true if the given input is a ZO_SavedVars interface instance; otherwise nil.
-  ]]--
+--[[ Returns true if the given input is a ZO_SavedVars interface instance; otherwise nil.
+     
+     This function performs multi-layer validation:
+     1. Basic type check (must be a table)
+     2. Registry cross-reference check (if we've previously registered it)
+     3. Metatable structure check (__index pointing to valid data table)
+--]]
 function LibSavedVars:IsZOSavedVars(input)
-    return type(input) == "table" and type(input.GetInterfaceForCharacter) == "function"
+    if type(input) ~= "table" then
+        return false
+    end
+
+    if savedVarRegistry[input] then
+        return true
+    end
+
+    local meta = getmetatable(input)
+
+    return meta ~= nil
+       and meta.__index == ZO_SavedVars
 end
 
---[[
-     Moves a legacy saved var with the specified info to one or more new saved vars with their own specified info.
+--[[ Moves a legacy saved var with the specified info to one or more new saved vars with their own specified info.
      
      Returns an array of migrated saved vars loader instances that can optionally be used to create 
      ZO_SavedVars instances.
      
      defaultKeyType:    (optional) If specified, selects the general type of saved vars to be copied.
-                                   Should be one of the following values:
+                            Should be one of the following values:
                                 
-                                   LIBSAVEDVARS_CHARACTER_NAME_KEY - for saved vars created with ZO_SavedVars:New() 
-                                                                     or ZO_SavedVars:NewCharacterNameSettings().
-                                                                     This is the default.
-                                                                  
-                                   LIBSAVEDVARS_CHARACTER_ID_KEY   - for saved vars created with 
-                                                                     ZO_SavedVars:NewCharacterIdSettings().
-                                
-                                   LIBSAVEDVARS_ACCOUNT_KEY        - for saved vars created with 
-                                                                     ZO_SavedVars:NewAccountWideSettings().
+                            LIBSAVEDVARS_CHARACTER_NAME_KEY - for saved vars created with ZO_SavedVars:New() 
+                                                                or ZO_SavedVars:NewCharacterNameSettings().
+                                                                This is the default.
+                                                            
+                            LIBSAVEDVARS_CHARACTER_ID_KEY   - for saved vars created with 
+                                                                ZO_SavedVars:NewCharacterIdSettings().
+                        
+                            LIBSAVEDVARS_ACCOUNT_KEY        - for saved vars created with 
+                                                                ZO_SavedVars:NewAccountWideSettings().
                                                                   
      fromSavedVarsInfo: details describing the parameters to ZO_SavedVars used for the source saved var to migrate.
                         See below for details.
@@ -230,6 +259,7 @@ end
                    ...: details describing the parameters to ZO_SavedVars used for one or more destination saved vars.
                    
      Each info parameter (fromSavedVarsInfo, toSavedVarsInfo1, ...) should be a table of the following format:
+     (basically an LSV_SavedVarsManager table)
      
      {
        name          = The string name of the saved variable table. Required.
@@ -247,7 +277,7 @@ end
        characterId   = (optional) The numeric id of the character the saved vars are for, if keyType is 
                                   LIBSAVEDVARS_CHARACTER_ID_KEY.  Defaults to the current character id.
      }
-  ]]--
+--]]
 function LibSavedVars:Migrate(defaultKeyType, fromSavedVarsInfo, toSavedVarsInfo1, ...)
     
     local toParams, from = protected.Migrate(defaultKeyType, fromSavedVarsInfo, toSavedVarsInfo1, ...)
@@ -258,41 +288,36 @@ function LibSavedVars:Migrate(defaultKeyType, fromSavedVarsInfo, toSavedVarsInfo
     return toParams
 end
 
---[[
-     Same as Migrate, with the assumption that all saved vars involved are account-wide.
-  ]]--
+--[[ Same as Migrate, with the assumption that all saved vars involved are account-wide.
+--]]
 function LibSavedVars:MigrateAccountWide(fromSavedVarsInfo, toSavedVarsInfo1, ...)
     
     return self:Migrate(LIBSAVEDVARS_ACCOUNT_KEY, fromSavedVarsInfo, toSavedVarsInfo1, ...)
 end
 
---[[
-     Same as Migrate, with the assumption that all saved vars involved are character-id-specific.
-  ]]--
+--[[ Same as Migrate, with the assumption that all saved vars involved are character-id-specific.
+--]]
 function LibSavedVars:MigrateCharacterId(fromSavedVarsInfo, toSavedVarsInfo1, ...)
     
     return self:Migrate(LIBSAVEDVARS_CHARACTER_ID_KEY, fromSavedVarsInfo, toSavedVarsInfo1, ...)
 end
 
---[[
-     Same as Migrate, with the assumption that all saved vars involved are character-name-specific.
-  ]]--
+--[[ Same as Migrate, with the assumption that all saved vars involved are character-name-specific.
+--]]
 function LibSavedVars:MigrateCharacterName(fromSavedVarsInfo, toSavedVarsInfo1, ...)
     
     return self:Migrate(LIBSAVEDVARS_CHARACTER_NAME_KEY, fromSavedVarsInfo, toSavedVarsInfo1, ...)
 end
 
---[[
-     Same as Migrate, but for migrating character name saved vars to character id ones.
-  ]]--
+--[[ Same as Migrate, but for migrating character name saved vars to character id ones.
+--]]
 function LibSavedVars:MigrateCharacterNameToId(fromSavedVarsInfo, toSavedVarsInfo1, ...)
     
     fromSavedVarsInfo.keyType = LIBSAVEDVARS_CHARACTER_NAME_KEY
     return self:Migrate(LIBSAVEDVARS_CHARACTER_ID_KEY, fromSavedVarsInfo, toSavedVarsInfo1, ...)
 end
 
---[[
-     Same as Migrate, but simply moves all of the given saved vars to megaserver-specific copies.
+--[[ Same as Migrate, but simply moves all of the given saved vars to megaserver-specific copies.
      
      defaultkeyType:    (optional) Same as Migrate()
      fromSavedVarsInfo: Same as Migrate(). Required.
@@ -305,7 +330,7 @@ end
                                    megaserver saved vars.  If nil or omitted, then it's assumed the destination
                                    saved vars will be the same as fromSavedVarsInfo, except with megaserver name as the
                                    profile name.
-  ]]--
+--]]
 function LibSavedVars:MigrateToMegaserverProfiles(defaultKeyType, fromSavedVarsInfo, copyToAllServers, toSavedVarsInfo)
     
     local toParams, from = protected.MigrateToMegaserverProfiles(defaultKeyType, fromSavedVarsInfo, copyToAllServers, toSavedVarsInfo)
@@ -316,21 +341,19 @@ function LibSavedVars:MigrateToMegaserverProfiles(defaultKeyType, fromSavedVarsI
     return toParams
 end
 
---[[
-     Stand-in replacement for ZO_SavedVars:NewAccountWide() that defaults to server-specific profiles.
+--[[ Stand-in replacement for ZO_SavedVars:NewAccountWide() that defaults to server-specific profiles.
      Returns an LSV_Data object
      
      To add a character-specific scope for the same settings that can be toggled, call :AddCharacterSettingsToggle() on the 
      object that is returned by this function.
      
      See classes/LSV_Data.lua => LSV_Data:AddCharacterSettingsToggle()
-  ]]--
+--]]
 function LibSavedVars:NewAccountWide(savedVariableTable, version, namespace, defaults, profile, displayName)
     return LSV_Data:NewAccountWide(savedVariableTable, version, namespace, defaults, profile, displayName)
 end
 
---[[
-     Stand-in replacement for ZO_SavedVars:New() that defaults to server-specific profiles and character id settings 
+--[[ Stand-in replacement for ZO_SavedVars:New() that defaults to server-specific profiles and character id settings 
      instead of character name.
      Returns an LSV_Data object.
      
@@ -338,23 +361,25 @@ end
      object that is returned by this function.
      
      See classes/LSV_Data.lua => LSV_Data:AddAccountWideToggle()
-  ]]--
+--]]
 function LibSavedVars:NewCharacterSettings(savedVariableTable, version, namespace, defaults, profile, displayName, 
                                            characterName, characterId, characterKeyType)
     return LSV_Data:NewCharacterSettings(savedVariableTable, version, namespace, defaults, profile, displayName, 
                                          characterName, characterId, characterKeyType)
 end
 
---[[
-     Alias of LibSavedVars:NewCharacterSettings()
+--[[ Alias of LibSavedVars:NewCharacterSettings()
      For backwards compatibility with v3
-  ]]--
+--]]
 LibSavedVars.NewCharacterIdSettings = LibSavedVars.NewCharacterSettings
 
 function LibSavedVars:SetDebugMode(enable)
-    protected.SetDebugMode(enable)
+    debugMode = enable
+    return self
 end
-
+function LibSavedVars:GetDebugMode()
+    return debugMode
+end
 
 
 -------------------------------------------------------
@@ -366,117 +391,45 @@ end
 -- Library class registry tables
 local classVersions = { }
 
---[[
-     Similar to LibStub:NewLibrary(), but used to break out LibSavedVars classes into separate files without version 
-     conflicts.  Not necessary if people include the LibSavedVars.txt manifest - the ## AddonVersion should take 
+--[[ Similar to LibStub:NewLibrary(), but used to break out LibSavedVars classes into separate files without version 
+     conflicts.  Not necessary if people include the LibSavedVars.addon manifest - the ## AddonVersion should take 
      care of versioning - but I can't assume people won't try to bundle this library without the manifest.
-  ]]--
-function LibSavedVars:NewClass(name, version)
+--]]
+function LibSavedVars:LoadClass(name, version)
     if not classVersions[name] or classVersions[name] < version then
         classVersions[name] = version
-        
-        local newClass = { }
+
+        local newClass = {}
         if name == "Protected" then
             protected = newClass
         end
         return newClass, protected
     end
 end
+LibSavedVars.NewClass = LibSavedVars.LoadClass      -- kept for compatibility
 
+-- -------------------------------------------------------------------------------------------
 
-
--------------------------------------------------------
---
---             Global Overrides
--- 
--------------------------------------------------------
-
---[[
-     Override ZO_SavedVars:New() so that the parameters for the resulting saved var can be registered.
-  ]]--
-local origSavedVarsNew = ZO_SavedVars.New
-function ZO_SavedVars:New(savedVariableTable, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
-    local savedVars = origSavedVarsNew(self, savedVariableTable, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
-    registerSavedVars(savedVars, savedVariableTable, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
-    return savedVars
-end
-
---[[
-     Override ZO_SavedVars:NewCharacterNameSettings() so that the parameters for the resulting saved var can be registered.
-  ]]--
-function ZO_SavedVars:NewCharacterNameSettings(savedVariableTable, version, namespace, defaults, profile)
-    return self:New(savedVariableTable, version, namespace, defaults, profile, GetDisplayName(), GetUnitName("player"), GetCurrentCharacterId(), ZO_SAVED_VARS_CHARACTER_NAME_KEY)
-end
-
---[[
-     Override ZO_SavedVars:NewCharacterIdSettings() so that the parameters for the resulting saved var can be registered.
-  ]]--
-function ZO_SavedVars:NewCharacterIdSettings(savedVariableTable, version, namespace, defaults, profile)
-    return self:New(savedVariableTable, version, namespace, defaults, profile, GetDisplayName(), GetUnitName("player"), GetCurrentCharacterId(), ZO_SAVED_VARS_CHARACTER_ID_KEY)
-end
-
---[[
-     Override ZO_SavedVars:NewAccountWide() so that the parameters for the resulting saved var can be registered.
-  ]]--
-local origSavedVarsNewAccountWide = ZO_SavedVars.NewAccountWide
-function ZO_SavedVars:NewAccountWide(savedVariableTable, version, namespace, defaults, profile, displayName)
-    local savedVars = origSavedVarsNewAccountWide(self, savedVariableTable, version, namespace, defaults, profile, displayName)
-    registerSavedVars(savedVars, savedVariableTable, version, namespace, defaults, profile, displayName)
-    return savedVars
-end
-
-
-
----------------------------------------
---
---       Private functions
--- 
----------------------------------------
-
-function codeFormat(format, ...)
-    local params = {}
-    for i = 1, select("#", ...) do
-        local value = toCode(select(i, ...))
-        table.insert(params, value)
-    end
-    return zo_strformat(format, unpack(params))
-end
-
---[[
-     Helper method for LibSavedVars:DeepSavedVarsCopy()
-  ]]--
-function deepSavedVarsCopy(source, dest, doNotOverwrite)
-    for key, value in pairs(source) do
-        if type(value) == "table" then
-            if type(dest[key]) ~= "table" then
-                dest[key] = {}
-            end
-            deepSavedVarsCopy(value, dest[key], doNotOverwrite)
-        elseif key ~= "version" and type(value) ~= "function" then
-            if not doNotOverwrite or dest[key] == nil then
-                dest[key] = value
-            end
-        end
-    end
-end
-
---[[
-     Adds the given ZO_SavedVars instance and its creation parameters, data table, and lookup path to savedVarRegistry
+--[[ Adds the given ZO_SavedVars instance and its creation parameters, data table, and lookup path to savedVarRegistry
      to be able to get detailed metadata about the var after the fact.
+     Used by the global overrides.
      
      See LibSavedVars:GetInfo()
-  ]]--
-function registerSavedVars(savedVars, savedVariableTableName, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
-    
+--]]
+local DBG_SAV_ACCT_FMT="ZO_SavedVars:New(<<1>>,<<2>>,<<3>>,<<4>>,<<5>>,<<6>>,<<7>>,<<8>>,<<9>>)"
+local DBG_SAV_CHR_FMT="ZO_SavedVars:NewAccountWide(<<1>>,<<2>>,<<3>>,<<4>>,<<5>>,<<6>>)"
+local function registerSavedVars(savedVars, savedVariableTableName, version, namespace, defaults, profile,
+                            displayName, characterName, characterId, characterKeyType)
+
     local rawSavedVarsTable, parent, key, savedVariableTable, path = 
         protected.GetSavedVarsTable(savedVariableTableName, namespace, profile, displayName, 
                                     characterName, characterId, characterKeyType)
-    
+
     local info = { 
         addonName = currentAddonName,
         name = savedVariableTableName,
         table = savedVariableTable,
-        keyType = characterName == nil and LIBSAVEDVARS_ACCOUNT_KEY 
+        keyType = characterName == nil and LIBSAVEDVARS_ACCOUNT_KEY
                   or characterKeyType ~= nil and characterKeyType
                   or LIBSAVEDVARS_CHARACTER_NAME_KEY,
         defaults = defaults,
@@ -492,29 +445,71 @@ function registerSavedVars(savedVars, savedVariableTableName, version, namespace
         rawSavedVarsTableKey = key,
     }
     
-    if protected.debugMode then
-    
+    if debugMode then
         local format
         if key == LIBSAVEDVARS_ACCOUNT_KEY then
-            format = "ZO_SavedVars:New(<<1>>,<<2>>,<<3>>,<<4>>,<<5>>,<<6>>,<<7>>,<<8>>,<<9>>)"
+            format = DBG_SAV_ACCT_FMT
         else
-            format = "ZO_SavedVars:NewAccountWide(<<1>>,<<2>>,<<3>>,<<4>>,<<5>>,<<6>>)"
+            format = DBG_SAV_CHR_FMT
         end
-        local message = codeFormat(format, savedVariableTableName, version, namespace, defaults, profile, displayName, 
+        protected.zoDebug(debugMode, format, savedVariableTableName, version, namespace, defaults, profile, displayName, 
                                    characterName, characterId, characterKeyType)
-        protected.Debug(message)
     end
     
     savedVarRegistry[savedVars] = info
 end
 
-function toCode(input)
-    local t = type(input)
-    if t == "string" then
-        return "'" .. input .. "'"
-    end
-    return tostring(input)
+--[[ [Global Override] Override ZO_SavedVars:New() so that the parameters for the resulting saved var can be registered.
+    Usage:
+    local sv = ZO_SavedVars:New(savedVariableTable, version, [, namespace], defaults [, profile])
+
+    * savedVariableTable - The string name of the saved variable table
+    * version            - The current version. If the saved data is a lower version it is destroyed and replaced with the defaults
+    * namespace          - An optional string namespace to separate other variables using the same table
+    * defaults           - A table describing the default saved variables, see the example below
+    * profile            - An optional string to describe the profile, or "Default"
+
+    The defaults table will be used when accessing a key that doesn't exist or hasn't been set yet. There is a special wild card key
+    that can be used to make all sibling keys inherit the defaults specified by the wild card. The wild card value can be either a value or a table.
+
+    Note: SavedVars must be created in the EVENT_ADD_ON_LOADED function event in order for the settings file to properly save. 
+    Note: ZO_SavedVars:NewAccountWide provides the same interface as ZO_SavedVars:New, but is used to save account-wide saved vars.
+--]]
+local origSavedVarsNew = ZO_SavedVars.New
+function ZO_SavedVars:New(savedVariableTable, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
+    local savedVars = origSavedVarsNew(self, savedVariableTable, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
+    registerSavedVars(savedVars, savedVariableTable, version, namespace, defaults, profile, displayName, characterName, characterId, characterKeyType)
+    return savedVars
 end
+
+--[[ [Global Override] Override ZO_SavedVars:NewCharacterNameSettings() so that the parameters for the resulting saved var can be registered.
+--]]
+function ZO_SavedVars:NewCharacterNameSettings(savedVariableTable, version, namespace, defaults, profile)
+    return self:New(savedVariableTable, version, namespace, defaults, profile, GetDisplayName(), GetUnitName("player"), GetCurrentCharacterId(), ZO_SAVED_VARS_CHARACTER_NAME_KEY)
+end
+
+--[[ [Global Override] Override ZO_SavedVars:NewCharacterIdSettings() so that the parameters for the resulting saved var can be registered.
+--]]
+function ZO_SavedVars:NewCharacterIdSettings(savedVariableTable, version, namespace, defaults, profile)
+    return self:New(savedVariableTable, version, namespace, defaults, profile, GetDisplayName(), GetUnitName("player"), GetCurrentCharacterId(), ZO_SAVED_VARS_CHARACTER_ID_KEY)
+end
+
+--[[ [Global Override] Override ZO_SavedVars:NewAccountWide() so that the parameters for the resulting saved var can be registered.
+--]]
+local origSavedVarsNewAccountWide = ZO_SavedVars.NewAccountWide
+function ZO_SavedVars:NewAccountWide(savedVariableTable, version, namespace, defaults, profile, displayName)
+    local savedVars = origSavedVarsNewAccountWide(self, savedVariableTable, version, namespace, defaults, profile, displayName)
+    registerSavedVars(savedVars, savedVariableTable, version, namespace, defaults, profile, displayName)
+    return savedVars
+end
+
+
+
+---------------------------------------
+--
+--       Private functions
+-- 
+---------------------------------------
 
 local function onAddonLoaded(event, name)
     currentAddonName = name

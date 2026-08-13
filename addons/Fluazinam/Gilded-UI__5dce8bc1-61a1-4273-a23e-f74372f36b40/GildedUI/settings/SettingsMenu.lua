@@ -21,7 +21,9 @@ function Addon:BuildSettingsMenu()
         end,
     })
 
+    self.settingsMenu = menu
     local H = self:CreateSettingsHelpers()
+    self.settingsHelpers = H
     local sections = self.menuSections or {}
     for i = 1, #sections do
         sections[i](menu, H)
