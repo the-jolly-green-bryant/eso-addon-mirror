@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Quick Emote Menu">
+            <Action name="QUICK_EMOTE_MENU">
+                <Down>QEM_Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

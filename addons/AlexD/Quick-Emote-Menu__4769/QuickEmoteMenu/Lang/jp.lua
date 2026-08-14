@@ -1,0 +1,31 @@
+local strings = {
+    SI_QUICKEMOTEMENU_UNKNOWN_NAME         = "?",
+    SI_QUICKEMOTEMENU_CATEGORIES           = "カテゴリ",
+    SI_QUICKEMOTEMENU_FAVORITES            = "お気に入り",
+    SI_QUICKEMOTEMENU_NO_FAVORITES         = "(空)",
+    SI_QUICKEMOTEMENU_BINDING_TOGGLE       = "切替",
+    SI_QUICKEMOTEMENU_OPTION_HOVER         = "サブメニューホバー遅延 (ms)",
+    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP = "0 = クリック時のみ開く",
+    SI_QUICKEMOTEMENU_OPTION_CLOSE         = "エモート再生後にメニューを閉じる (左クリック)",
+    SI_QUICKEMOTEMENU_OPTION_RESET         = "ボタン位置をリセット",
+    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION   = [[|c3399FF操作|r
+• ボタンを左クリックでメニュー開閉
+• 右クリック＆ドラッグでボタン移動
+• エモートを左クリックで再生
+• エモートを右クリックでお気に入り追加/削除
+
+|c3399FFメニュー|r
+• カテゴリ — カテゴリ別にエモートを閲覧
+• お気に入り — 保存したエモートへ素早くアクセス
+• サブメニューはホバーまたはクリックで開く (遅延設定参照)
+• メニューはボタン位置に応じて上下左右に開く
+
+|c3399FFヒント|r
+• キーバインドでメニューを切替
+• /qempanel でこの設定パネルを開く
+• お気に入りはアカウント全体で保存]],
+}
+
+for stringId, stringValue in pairs(strings) do
+    SafeAddString(_G[stringId], stringValue, 2)
+end

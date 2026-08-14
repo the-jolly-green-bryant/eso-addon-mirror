@@ -1,0 +1,8 @@
+## Title: AlchemyOpener
+## APIVersion: 101046
+## AddOnVersion: 1
+## Author: Awh_Lina
+## Description: Auto open bags for telvar!
+## DependsOn: LibAddonMenu-2.0 LibHarvensAddonSettings
+## SavedVariables: AlchemyOpenerSettings
+AlchemyOpener.lua

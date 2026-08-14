@@ -1612,9 +1612,9 @@ local function OnCombatEvent(_,result,isError,_,_,_,sourceName,_,_,_,hitValue,_,
 		end
 		--Ability timers
 		if BUI.Vars.Actions then
-			if abilityId==40468 and BUI.Actions.AbilityBar[40465] then
-				BUI.Actions.AbilityBar[40465].StartTime=now
-				BUI.Actions.AbilityBar[40465].Duration=BUI.GetAbilityDuration(40465)
+			if abilityId==40375 and BUI.Actions.AbilityBar[40372] then BUI.Actions.AbilityBar[40372].StartTime=now  BUI.Actions.AbilityBar[40372].Duration=BUI.GetAbilityDuration(40372)	--Trap
+			elseif abilityId==40385 and BUI.Actions.AbilityBar[40382] then BUI.Actions.AbilityBar[40382].StartTime=now BUI.Actions.AbilityBar[40382].Duration=BUI.GetAbilityDuration(40382)	--Trap
+			elseif abilityId==40468 and BUI.Actions.AbilityBar[40465] then BUI.Actions.AbilityBar[40465].StartTime=now BUI.Actions.AbilityBar[40465].Duration=BUI.GetAbilityDuration(40465)	--Scalding Rune
 			end
 		end
 	elseif Synergy_id[abilityId] and BUI.Vars.GroupSynergy~=3 then

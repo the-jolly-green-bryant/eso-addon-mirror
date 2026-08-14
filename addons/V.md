@@ -6,6 +6,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
+| [ValknarrUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/valknarr/ValknarrUI__2d43e3ed-9017-4e93-95f0-125ddf2d99fa) | valknarr | Console | — |
 | [Vampire Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notrix/Vampire-Info__377) | notrix | PC / Mac | 4 |
 | [Vampire's Woe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Vampire-s-Woe__1375) | Phinix | PC / Mac | 1.28 |
 | [VampireStageReminder_v2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/VampireStageReminder_v2__80e0a510-1882-45f4-9e0a-8ed6cdff9032) | SugaComa | Console | — |

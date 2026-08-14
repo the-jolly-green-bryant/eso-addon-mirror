@@ -5,53 +5,14 @@ end
 
 BattleScrolls = BattleScrolls or {}
 
--------------------------
--- Navigation & Tab Constants (defined here, loaded first)
--------------------------
-BattleScrolls_Journal_NavigationMode = {
-    INSTANCES = 1,
-    ENCOUNTERS = 2,
-    STATS = 3,
-    SETTINGS = 4,
-    PIVOT = 5,
-}
-
-BattleScrolls_Journal_StatsTab = {
-    OVERVIEW = 1,
-    BOSS_DAMAGE_DONE = 2,
-    DAMAGE_DONE = 3,
-    DAMAGE_TAKEN = 4,
-    HEALING_OUT = 5,
-    SELF_HEALING = 6,
-    HEALING_IN = 7,
-    EFFECTS_PLAYER = 8,
-    EFFECTS_BOSS = 9,
-    EFFECTS_GROUP = 10,
-    GROUP = 11,
-    SETUP = 12,
-    ACTIVITY = 13,
-}
-
-BattleScrolls_Journal_InstanceTab = {
-    ALL = 1,
-    INSTANCED = 2,
-    OVERLAND = 3,
-    HOUSE = 4,
-    PVP = 5,
-}
-
-BattleScrolls_Journal_EncounterTab = {
-    ALL = 1,
-    BOSS = 2,
-    TRASH = 3,
-    PLAYER = 4,
-    DUMMY = 5,
-}
-
-local NAVIGATION_MODE = BattleScrolls_Journal_NavigationMode
-local STATS_TAB = BattleScrolls_Journal_StatsTab
-local INSTANCE_TAB = BattleScrolls_Journal_InstanceTab
-local ENCOUNTER_TAB = BattleScrolls_Journal_EncounterTab
+-- Navigation & tab constants live in types.lua (BattleScrolls.journal.*),
+-- which loads before every other journal module. A second copy used to be
+-- defined here as globals; the two drifted (this one had no SHARE mode) and
+-- every mode comparison against the missing entry silently became nil == nil.
+local NAVIGATION_MODE = BattleScrolls.journal.NavigationMode
+local STATS_TAB = BattleScrolls.journal.StatsTab
+local INSTANCE_TAB = BattleScrolls.journal.InstanceTab
+local ENCOUNTER_TAB = BattleScrolls.journal.EncounterTab
 
 local function isEffectsTab(tab)
     return tab == STATS_TAB.EFFECTS_PLAYER or tab == STATS_TAB.EFFECTS_BOSS or tab == STATS_TAB.EFFECTS_GROUP
@@ -259,6 +220,25 @@ function BattleScrolls_Journal_Gamepad:Initialize(control)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(GAMEPAD_MENU_SOUND_FRAGMENT)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(FRAME_EMOTE_FRAGMENT_SOCIAL)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(BATTLESCROLLS_JOURNAL_GAMEPAD_FRAGMENT)
+
+        -- Cancelling the cross-environment URL confirm with B forces the
+        -- ingame scene manager to the base scene (see network/shareurl.lua
+        -- header), tearing the journal down mid-share. Bring the stepper
+        -- back so the chain is not stranded on the HUD.
+        EVENT_MANAGER:RegisterForEvent("BattleScrolls_JournalShareKick", EVENT_REMOTE_SCENE_REQUEST,
+            function(_, messageOrigin, requestType)
+                if messageOrigin == SCENE_MANAGER_MESSAGE_ORIGIN_INTERNAL
+                    and requestType == REMOTE_SCENE_REQUEST_TYPE_SHOW_BASE_SCENE
+                    and self.mode == NAVIGATION_MODE.SHARE
+                    and BattleScrolls.shareUrl.isBusy() then
+                    zo_callLater(function()
+                        if BattleScrolls.shareUrl.isBusy()
+                            and not SCENE_MANAGER:IsShowing("battleScrollsJournalGamepad") then
+                            SCENE_MANAGER:Show("battleScrollsJournalGamepad")
+                        end
+                    end, 400)
+                end
+            end)
         LibEffect.YieldWithGC():Await()
 
         -- Initialize base class
@@ -537,13 +517,18 @@ function BattleScrolls_Journal_Gamepad:InitializeLists()
     end)
 
     -- The share stepper re-renders on every transport transition (part fired,
-    -- build finished/failed), including the return from a browser round-trip
+    -- part settled, build finished/failed). It also re-arms the keybind strip
+    -- that the send keybind pulls while a part's URL confirm is in flight.
     BattleScrolls.shareUrl.onStateChanged = function()
-        if self.mode == NAVIGATION_MODE.SHARE then
-            self:RefreshList()
-            if self.keybindStripDescriptor then
-                KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
-            end
+        if self.mode ~= NAVIGATION_MODE.SHARE
+            or not SCENE_MANAGER:IsShowing("battleScrollsJournalGamepad") then
+            return
+        end
+        self:RefreshList()
+        if self.keybindStripDescriptor then
+            KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+        elseif not ZO_DIALOG_SYNC_OBJECT:IsShown() then
+            self:SetActiveKeybinds(self.shareKeybindStripDescriptor)
         end
     end
 

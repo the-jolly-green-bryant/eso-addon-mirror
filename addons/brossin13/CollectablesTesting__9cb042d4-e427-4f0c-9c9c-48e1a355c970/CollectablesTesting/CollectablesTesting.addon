@@ -1,0 +1,6 @@
+## Title: CollectablesTesting
+## APIVersion: 101047
+## Version: 1.0.1
+## Description: Scans arms pack styles and outputs style IDs. PS5-compatible.
+## Author: Brandon
+CollectablesTesting.lua

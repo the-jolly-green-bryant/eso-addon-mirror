@@ -25,7 +25,7 @@ local ICON_NEXT = "EsoUI/Art/Miscellaneous/Gamepad/gp_rightArrow.dds"
 ---Renders the stepper into the share list.
 ---@param list ZO_ParametricScrollList
 function shareStepper.render(list)
-    local entryBuilder = BattleScrolls.journal.entryBuilder
+    local entryBuilder = BattleScrolls.journal.EntryBuilder
     local state = BattleScrolls.shareUrl.getState()
     list:Clear()
 

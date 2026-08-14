@@ -1712,17 +1712,25 @@ end
 	end
 end--]]
 
+local function SXUI_StatsAlert(text)
+	if ZO_Alert then
+		ZO_Alert(UI_ALERT_CATEGORY_ALERT, nil, tostring(text or ""))
+	elseif d then
+		d(tostring(text or ""))
+	end
+end
+
 function BUI.Stats.SaveReport()		--Save
 	local slot=1 for i in pairs(BUI.Reports.data) do if i+1>slot then slot=i+1 end end
 	BUI.Reports.data[slot]={}
 	BUI:JoinTables(BUI.Reports.data[slot],BUI.Stats.Current[ReportToShow])
 	BUI.Stats.Current[ReportToShow].Saved=slot
 	BUI_Report_Save:SetDisabled(true)
-	a(BUI.Loc("STATISTICS_Report").." "..ReportToShow.." "..BUI.Loc("STATISTICS_Report_Saved"))
+	SXUI_StatsAlert(BUI.Loc("STATISTICS_Report").." "..ReportToShow.." "..BUI.Loc("STATISTICS_Report_Saved"))
 end
 
 function BUI.Stats.ClearReport(n)		--Del
-	if BUI.Stats.Current[n].Saved then a(BUI.Loc("STATISTICS_Report").." "..n.." "..BUI.Loc("STATISTICS_Report_Deleted")) BUI.Reports.data[BUI.Stats.Current[n].Saved]=nil end
+	if BUI.Stats.Current[n].Saved then SXUI_StatsAlert(BUI.Loc("STATISTICS_Report").." "..n.." "..BUI.Loc("STATISTICS_Report_Deleted")) BUI.Reports.data[BUI.Stats.Current[n].Saved]=nil end
 	SetupStatsCurrent(n)
 	BUI.Stats.NextReport(true)
 end

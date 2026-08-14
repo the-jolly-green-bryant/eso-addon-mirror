@@ -1,18 +1,24 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Shinni/PinKiller__190",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Shinni",
   "canonical_id": "esoui:190",
   "category_id": "24",
-  "compatibility": [],
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
   "content_id": "esoui:190",
   "deleted": false,
   "directories": [
     "PinKiller"
   ],
   "download_url": "https://www.esoui.com/downloads/dl190/",
-  "fingerprint": "63858b648979247c10d25e288954c5ca13a76bf9f348a831abb641fba6b6bf80",
+  "fingerprint": "943fa324956aefa52123eca58f3cc6ad370488b24baf739b158664033eae76e1",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw486.png"
   ],
@@ -22,11 +28,11 @@
   "source_id": "190",
   "source_url": "https://www.esoui.com/downloads/info190-PinKiller.html",
   "stats": {
-    "downloads": 36924,
+    "downloads": 37035,
     "favorites": 86,
-    "monthly_downloads": 126
+    "monthly_downloads": 175
   },
   "title": "PinKiller",
-  "updated_at": 1651728655000,
-  "version": "2.3"
+  "updated_at": 1786641090000,
+  "version": "2.5"
 }

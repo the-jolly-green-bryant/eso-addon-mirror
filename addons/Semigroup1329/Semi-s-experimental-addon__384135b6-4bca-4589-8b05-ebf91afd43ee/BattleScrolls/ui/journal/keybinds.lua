@@ -12,13 +12,44 @@ local journal = BattleScrolls.journal
 local keybinds = {}
 journal.keybinds = keybinds
 
+-- =============================================================================
+-- BROWSER-EXIT LEAK GUARD
+-- =============================================================================
+-- Closing the console browser with B resumes the game with that same B
+-- delivered to our keybind strip (the app-switcher return path delivers
+-- nothing), which used to fire Back on the share stepper. A wall-clock
+-- heartbeat spots the suspend: game time freezes while wall time keeps
+-- moving, so a share keybind press landing right after a multi-second
+-- heartbeat gap belongs to the browser exit, not to the user.
+local RESUME_GAP_S = 2
+local RESUME_GUARD_MS = 300
+local lastBeatWallS = GetTimeStamp()
+local resumeGuardUntilMs = 0
+
+EVENT_MANAGER:RegisterForUpdate("BattleScrollsShareResumeBeat", 100, function()
+    local nowWallS = GetTimeStamp()
+    if nowWallS - lastBeatWallS >= RESUME_GAP_S then
+        resumeGuardUntilMs = GetGameTimeMilliseconds() + RESUME_GUARD_MS
+    end
+    lastBeatWallS = nowWallS
+end)
+
+---True while a keybind press is attributable to the app resume itself:
+---either the heartbeat has not caught up with the suspend gap yet (the
+---press was processed before the first post-resume tick), or it caught up
+---moments ago.
+local function justResumed()
+    return GetTimeStamp() - lastBeatWallS >= RESUME_GAP_S
+        or GetGameTimeMilliseconds() < resumeGuardUntilMs
+end
+
 ---Initializes all keybind strip descriptors and assigns them to the journalUI
 ---@param journalUI BattleScrolls_Journal_Gamepad
 function keybinds.initializeKeybindStripDescriptors(journalUI)
-    local NAVIGATION_MODE = BattleScrolls_Journal_NavigationMode
-    local STATS_TAB = BattleScrolls_Journal_StatsTab
-    local INSTANCE_TAB = BattleScrolls_Journal_InstanceTab
-    local ENCOUNTER_TAB = BattleScrolls_Journal_EncounterTab
+    local NAVIGATION_MODE = journal.NavigationMode
+    local STATS_TAB = journal.StatsTab
+    local INSTANCE_TAB = journal.InstanceTab
+    local ENCOUNTER_TAB = journal.EncounterTab
 
     -- =========================================================================
     -- SHARE STEPPER (survives the browser round-trip; back keeps the chain)
@@ -44,18 +75,11 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         end
     end
 
-    ---Re-adds the stepper keybinds once no dialog owns input anymore. The
-    ---URL confirm dialog does not reliably push a keybind-strip state, so the
-    ---strip is pulled while it is up and polled back in.
-    local function restoreShareKeybindsWhenClear()
-        if journalUI.mode ~= NAVIGATION_MODE.SHARE then
-            return
-        end
-        if ZO_Dialogs_IsShowingDialog() then
-            zo_callLater(restoreShareKeybindsWhenClear, 500)
-            return
-        end
-        journalUI:SetActiveKeybinds(journalUI.shareKeybindStripDescriptor)
+    ---Any dialog currently owns input - including the cross-environment URL
+    ---confirm, which ZO_Dialogs_IsShowingDialog cannot see. The dialog sync
+    ---object is shared by name across GUI environments, so it covers both.
+    local function dialogOwnsInput()
+        return ZO_DIALOG_SYNC_OBJECT:IsShown()
     end
 
     ---Enters the share stepper view, remembering where to return.
@@ -80,14 +104,16 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
                     state.sentCount + 1, state.total)
             end,
             callback = function()
-                if ZO_Dialogs_IsShowingDialog() then
+                if justResumed() or BattleScrolls.shareUrl.isSendBlocked() then
                     return
                 end
                 BattleScrolls.shareUrl.sendNextPart()
-                -- The URL confirm dialog owns input now: pull our strip so
-                -- its buttons cannot double-fire ours, restore when clear
+                -- The URL confirm lives in another GUI environment: it draws
+                -- its own keybind strip over this spot and its buttons can
+                -- reach ours. Pull the strip while the part is in flight; the
+                -- share observer in journal.lua re-arms it once the outcome
+                -- settles (reopening the journal restores it too).
                 journalUI:SetActiveKeybinds(nil)
-                zo_callLater(restoreShareKeybindsWhenClear, 1000)
             end,
             visible = function()
                 return BattleScrolls.shareUrl.getState().phase == "sending"
@@ -98,7 +124,7 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             keybind = "UI_SHORTCUT_NEGATIVE",
             name = GetString(SI_GAMEPAD_BACK_OPTION),
             callback = function()
-                if ZO_Dialogs_IsShowingDialog() then
+                if justResumed() or dialogOwnsInput() then
                     return
                 end
                 leaveShareStepper()
@@ -109,7 +135,7 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             keybind = "UI_SHORTCUT_SECONDARY",
             name = GetString(BATTLESCROLLS_SHARE_CANCEL),
             callback = function()
-                if ZO_Dialogs_IsShowingDialog() then
+                if justResumed() or dialogOwnsInput() then
                     return
                 end
                 BattleScrolls.shareUrl.stop()

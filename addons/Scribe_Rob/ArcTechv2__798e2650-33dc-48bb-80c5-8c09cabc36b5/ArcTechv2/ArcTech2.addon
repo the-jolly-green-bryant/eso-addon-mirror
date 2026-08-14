@@ -1,0 +1,8 @@
+## Title: ArcTechv2
+## Author: Arcanist Rob
+## Version: 0.0.1a
+## APIVersion: 101049 101050
+## Description: A set of utility commands for the members of the Arcanists Guild
+## DependsOn: LibHarvensAddonSettings LibNotification
+
+src/ArcTech2.lua

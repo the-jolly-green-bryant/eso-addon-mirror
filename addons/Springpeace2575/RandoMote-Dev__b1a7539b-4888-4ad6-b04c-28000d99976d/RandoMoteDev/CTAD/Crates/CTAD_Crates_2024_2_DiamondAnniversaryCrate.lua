@@ -1,0 +1,97 @@
+CollectThemAllData_Crates_2024_2_DiamondAnniversaryCrate = {
+    name = "Diamond Anniversary Crate (2024)",
+    source = "Crates",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {
+            { name = "Shackled Titan", q = 1 },
+            { name = "Worm Cultist Senche-Raht", q = 1 },
+            { name = "Tharn's Lucent Revelry Senche", q = 1 },
+            { name = "Sai-Sahan's Revelry Ursine", q = 2 },
+            { name = "Titanborn's Revelry Wolf", q = 2 },
+            { name = "Varen's Revelry Courser", q = 2 },
+            { name = "Nightmare Pillion Courser", q = 2 },
+            { name = "Alavelis Ringed Guar", q = 3 },
+            { name = "Piebald Camel", q = 3 },
+            { name = "Sandsquall Durzog", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
+            { name = "Chorrol Retriever", q = 4 },
+            { name = "Coldharbour Ocular Observer", q = 4 },
+            { name = "Companion Revelry Tomeshell", q = 4 },
+            { name = "Mistral Thunderbug", q = 4 },
+            { name = "Meownimarco", q = 4 },
+            { name = "Thorn Gecko", q = 5 },
+            { name = "Winterhold Chestnut Pony", q = 5 },
+            { name = "Mead-Dancer Honeybee", q = 5 },
+            { name = "Cream and Coffee Sheep", q = 5 },
+            { name = "Strid River Crab", q = 5 },
+            { name = "Twilight Bantam Guar", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {
+            { name = "Anchorite's Carved Bone", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {
+            { name = "Celebratory Dance", q = 4 },
+            { name = "I Shall Remember This!", q = 4 },
+            { name = "Apple Intimidation", q = 5 },
+            { name = "Teeba Dribble", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {
+            { name = "Sapiarch", q = 3, motif = 62 },
+            { name = "Shield of Senchal", q = 3, motif = 80 },
+            { name = "Companion Revelry Bow", q = 3 },
+            { name = "Companion Revelry Maul", q = 3 },
+            { name = "Companion Revelry Shield", q = 3 },
+            { name = "Companion Revelry Staff", q = 3 },
+            { name = "Companion Revelry Sword", q = 3 },
+            { name = "Companion Revelry Helm", q = 5 },
+            { name = "Companion Revelry Pauldrons", q = 5 },
+            { name = "Companion Revelry Gauntlets", q = 5 },
+            { name = "Companion Revelry Sabatons", q = 5 },
+            { name = "Companion Revelry Greaves", q = 5 },
+            { name = "Companion Revelry Cuirass", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {
+            { name = "Coldharbour Recall", q = 3 },
+            { name = "Bone Harvest", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {
+            { name = "Molag Bal Illusion", q = 2 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {
+            { name = "Skin of the Anchorite", q = 2 },
+            { name = "Boralis Wolf Pelt", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {
+            { name = "King Emeric's Diamond Regalia", q = 3 },
+            { name = "Prince Irnskar's Gala Regalia", q = 3 },
+            { name = "Queen Ayrenn's Diamond Gown", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {
+            { name = "Sotha Sil Novelty Mask", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {
+            { name = "Body Art of the Five Companions", q = 5 },
+            { name = "Soulburst Body Soulmarkings", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {
+            { name = "Golden Eye Gaze", q = 4 },
+            { name = "Fabulous Diamond Eyes", q = 4 },
+            { name = "Face Art of the Five Companions", q = 5 },
+            { name = "Soulburst Face Soulmarkings", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {
+            { name = "Titanborn's Tresses", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {
+            { name = "Queen Ayrenn's Aldmeri Circlet", q = 4 },
+            { name = "Molag Bal Masquerade", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {
+            { name = "Red Diamond Earrings", q = 4 },
+        },
+    },
+}

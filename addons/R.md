@@ -150,6 +150,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [RootBreak](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solaris-Lorica/RootBreak__2595) | Solaris Lorica | PC / Mac | 1 |
 | [Rose Guilds - Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kay.Cee/Rose-Guilds---Guildhalls__3345) | Kay.Cee | PC / Mac | 07.14.26 |
 | [Rotation Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RipleyZepher/Rotation-Helper__183094f4-334c-48ea-abb9-14add7fbbbd7) | RipleyZepher | Console | — |
+| [Rotation Trainer v1](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/Rotation-Trainer-v1__dc853c4f-c4b9-4948-9774-c0093a25d836) | satuve | Console | — |
 | [Royal Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klainor/Royal-Guildhalls__2494) | Klainor | PC / Mac | 1.1 |
 | [Royal House Club](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/royalhouse/Royal-House-Club__3184) | royalhouse | PC / Mac | 0.1.1 |
 | [Royale With Cheese (Chat Filter)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Messajah/Royale-With-Cheese-Chat-Filter__3319) | Messajah | PC / Mac | 1.1.0 |

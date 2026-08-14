@@ -1,0 +1,30 @@
+CollectThemAllData_Crates_Preview_2020_2_NightfallCrate = {
+    name = "Nightfall (2020 - Previews)",
+    source = "Crates",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
+            { name = "Duskfire Nectar Bat", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {
+            { name = "Hircine's Hunt Body Markings", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {
+            { name = "Hircine's Hunt Face Markings", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {},
+    },
+}

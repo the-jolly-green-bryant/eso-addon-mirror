@@ -41,11 +41,8 @@ PinKiller.compassPins = {
 function PinKiller:InitializeCompassPins()
 	-- save original settings
 	self.originalAlphaCoefficients = {}
-	self.originalMinVisibleAlpha = {}
-	
 	for _, pinType in pairs(self.compassPins) do
-		--self.originalAlphaCoefficients[pinType] = {COMPASS.container:GetAlphaDropoffBehavior(pinType)}
-		--self.originalMinVisibleAlpha[pinType] = COMPASS.container:GetMinVisibleAlpha(pinType)
+		self.originalAlphaCoefficients[pinType] = {COMPASS.container:GetAlphaDropoffBehavior(pinType)}
 	end
 	
 	self.originalAreaAnimation = COMPASS.PlayAreaPinOutAnimation
@@ -61,20 +58,19 @@ function PinKiller:RefreshCompassPinSettings(pinType)
 	local isEnabled = self:IsCompassPinTypeEnabled(pinType)
 	if isEnabled then
 		COMPASS.container:SetAlphaDropoffBehavior(pinType, 1, 0.75, 0, 85)
-		--COMPASS.container:SetMinVisibleAlpha(pinType, PinKiller.originalMinVisibleAlpha[pinType]) 
 	else
-		COMPASS.container:SetAlphaDropoffBehavior(pinType, 1/99, 1/99, 0, 1)
-		--COMPASS.container:SetMinVisibleAlpha(pinType, 2)
+		-- setting alpha to 0 deletes the compass and also floating(!) pin
+		COMPASS.container:SetAlphaDropoffBehavior(pinType, 1/50, 1/50, 0, 1) 
 	end
 	
 end
 
 local origFunction = COMPASS.container.IsCenterOveredPinSuppressed
 function COMPASS.container:IsCenterOveredPinSuppressed(pinIndex, ...)
-	if PinKiller:IsCompassPinTypeEnabled(self:GetCenterOveredPinType(pinIndex)) then
-		return origFunction(self, pinIndex, ...)
+	if not PinKiller:IsCompassPinTypeEnabled(self:GetCenterOveredPinType(pinIndex)) then
+		return true
 	end
-	return true
+	return origFunction(self, pinIndex, ...)
 end
 
 function PinKiller:RefreshAreaAnimation()

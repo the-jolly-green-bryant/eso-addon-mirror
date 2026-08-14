@@ -1,0 +1,98 @@
+CollectThemAllData_Crates_2026_1_WarriorWaveCrate = {
+    name = "Warrior Wave Crate (2026)",
+    source = "Crates",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {
+            { name = "Celestial Warrior Ornaug", q = 1 },
+            { name = "Glinting Talon Quasigriff", q = 1 },
+            { name = "Na-Totambu War Elephant", q = 1 },
+            { name = "Warrior Wave Badger-Bear", q = 2 },
+            { name = "Warrior Wave Antelope", q = 2 },
+            { name = "Warrior Wave Senche-Cheetah", q = 2 },
+            { name = "Warrior Wave Fennec Fox", q = 2 },
+            { name = "Diamondscale Ornaug", q = 3 },
+            { name = "Warrior Wave Painted Camel", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
+            { name = "Na-Totambu Pocket Elephant", q = 4 },
+            { name = "Azurian Moth", q = 4 },
+            { name = "Celestial Warrior Senche Cub", q = 4 },
+            { name = "Glinting Talon Fledgling Gryphon", q = 4 },
+            { name = "Keel-Sakka Crocodile Hatchling", q = 5 },
+            { name = "Sapphire Fledgling Terror Bird", q = 5 },
+            { name = "Broken Light Hermit Crab", q = 5 },
+            { name = "Abecean Ship Rat", q = 5 },
+            { name = "Krona-Konu Danger Frog", q = 5 },
+            { name = "Riften Rat Tracker", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {
+            { name = "Saber Sparring", q = 3 },
+            { name = "Warrior Wave Celebration Dance", q = 3 },
+            { name = "Confident Navigator", q = 4 },
+            { name = "Deal Breaker", q = 4 },
+            { name = "In Tava's Name", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {
+            { name = "Drowned Mariner", q = 3, motif = 116 },
+            { name = "Warrior Wave Marine Maul", q = 3 },
+            { name = "Warrior Wave Marine Bow", q = 3 },
+            { name = "Warrior Wave Marine Shield", q = 3 },
+            { name = "Warrior Wave Marine Staff", q = 3 },
+            { name = "Warrior Wave Marine Axe", q = 3 },
+            { name = "Warrior Wave Marine Jack", q = 5 },
+            { name = "Warrior Wave Marine Guards", q = 5 },
+            { name = "Warrior Wave Marine Helmet", q = 5 },
+            { name = "Warrior Wave Marine Boots", q = 5 },
+            { name = "Warrior Wave Marine Bracers", q = 5 },
+            { name = "Warrior Wave Marine Arm Cops", q = 5 },
+            { name = "Warrior Wave Marine Belt", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {
+            { name = "Tava's Sweeping Sands Recall", q = 2 },
+            { name = "Warrior Wave Cleave", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {
+            { name = "Whirlwind, Black Sands", q = 3 },
+            { name = "Lightning Form, Celestial Warrior", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {
+            { name = "Nereid Noble", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {
+            { name = "Tava's Glinting Talon", q = 2 },
+            { name = "Yathian Tilework", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {
+            { name = "Swift-Winds Sailor", q = 2 },
+            { name = "Seasworn Navigator", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {
+            { name = "Captain's Turban", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {
+            { name = "Ibis Dancer Body Tattoos", q = 5 },
+            { name = "Satakal's Coils Body Tattoo", q = 5 },
+            { name = "Warrior Wave Body Marking", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {
+            { name = "Rage of the Warrior Wave", q = 4 },
+            { name = "Tava's Golden Gaze", q = 4 },
+            { name = "Ibis Dancer Face Tattoos", q = 5 },
+            { name = "Satakal's Coils Face Tattoo", q = 5 },
+            { name = "Warrior Wave Face Marking", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {
+            { name = "Windjammer Braids", q = 4 },
+            { name = "Warrior Wave Locs", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {
+            { name = "Satakal Eye Binder", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {
+            { name = "Old Salt's Sea Hoops", q = 4 },
+        },
+    },
+}

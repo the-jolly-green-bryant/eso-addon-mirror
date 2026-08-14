@@ -1,0 +1,31 @@
+## Title: Valknarr UI
+## Author: valknarr
+## Description: Gamepad grid editor for native HUD: resource bars, chat, action bar, compass, and more.
+## APIVersion: 101049 101050
+## AddOnVersion: 22
+## Version: 0.9.1
+## SavedVariables: ValknarrUIElementsEditor_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibRadialMenu LibHarvensAddonSettings
+## IsLibrary: False
+
+version.lua
+logger.lua
+safe.lua
+platform.lua
+budget.lua
+adapters/player_attributes.lua
+adapters/gamepad_chat.lua
+adapters/hud_controls.lua
+adapters/editor_scene.lua
+adapters/radial_menu.lua
+layout_store.lua
+registry.lua
+adapters/settings_menu.lua
+grid.lua
+movement_controller.lua
+editor.lua
+editor_overlay.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls(R) and related logos are registered trademarks or trademarks of ZeniMax Media Inc.

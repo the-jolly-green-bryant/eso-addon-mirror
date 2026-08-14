@@ -83,7 +83,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinAutoResizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PinAutoResizer__f386385b-2805-4720-8481-1d87d1cd1d0c) | Masteroshi430 | Console | — |
 | [PinAutoResizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PinAutoResizer__3365) | Masteroshi430 | PC / Mac | 2026.07.24 |
 | [PinHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/PinHelper__3259) | olegbl | PC / Mac | 1.06 |
-| [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.3 |
+| [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/PinKiller__b141aa03-f456-45eb-b8b9-eee57c6d78d9) | Shinni42 | Console | — |
 | [Pit's Zenkosh Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pit_Eso/Pit-s-Zenkosh-Tracker__4723) | Pit_Eso | PC / Mac | 1.0.0 |
 | [Pithka Localizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/Pithka-Localizer__4258) | Soul_Hagans | PC / Mac | 4.0.2 |
@@ -134,7 +134,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pre101046UI_PlayerCompanionOnly](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/Pre101046UI_PlayerCompanionOnly__4131) | DakJaniels | PC / Mac | 3 |
 | [Predefine Chat Messages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/msetten/Predefine-Chat-Messages__47bd1882-3ae4-414d-929c-aad937946be0) | msetten | Console | — |
 | [Prevent Attacking Guards](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Prevent-Attacking-Guards__3762) | kawamonkey | PC / Mac | 1.0.1 |
-| [PreventActionCrimes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FloIstImGame/PreventActionCrimes__4663) | FloIstImGame | PC / Mac | 1.0 |
+| [PreventActionCrimes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FloIstImGame/PreventActionCrimes__4663) | FloIstImGame | PC / Mac | 1.1 |
 | [PreviousQuest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PreviousQuest__3801) | Masteroshi430 | PC / Mac | 2026.07.09 |
 | [Price Tooltip (+Gamepad)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mladen90/Price-Tooltip-Gamepad__2221) | Mladen90 | PC / Mac | 1.7.2 |
 | [Price Tooltip Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Price-Tooltip-Gamepad__4439) | Muffins714 | PC / Mac | 1.4 |

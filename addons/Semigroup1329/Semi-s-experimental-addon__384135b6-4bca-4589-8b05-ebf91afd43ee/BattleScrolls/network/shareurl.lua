@@ -5,16 +5,34 @@
 -- https://<share host>/u; the page posts it to the API and redirects to the
 -- share link.
 --
--- Transport facts this module is built on (measured, see url-share-limits):
+-- Transport facts this module is built on (measured + esoui source):
 --   * Xbox caps at 32655 total URL chars and FAILS SILENTLY above - chunk
 --     sizes must be clamped client-side.
 --   * There is no queue in the open-URL pipeline: bursts lose everything.
 --     Only serial user-confirmed stepping works for multi-part payloads.
---   * ZO_Dialogs do not survive the URL confirmation (scene fragment release
---     + cross-environment dialog sync), but the gamepad journal scene DOES -
---     so the stepper lives there as a first-class view
---     (ui/journal/share_stepper.lua) and each part is fired by a real
---     keybind press. No advance gestures.
+--   * The "Confirm Open URL" dialog (CONFIRM_UNSAFE_URL) lives in the
+--     internalingame GUI environment. Nothing in this environment sees it
+--     through ZO_Dialogs (ZO_Dialogs_IsShowingDialog() stays false); the
+--     one cross-environment window is ZO_DIALOG_SYNC_OBJECT, a
+--     SynchronizingObject shared by name between the GUI environments.
+--   * Cancelling that dialog with B makes internalingame request the base
+--     scene (ZO_Dialogs_CloseKeybindPressed -> RequestShowLeaderBaseScene),
+--     which tears down whatever gamepad scene is open here. Observable via
+--     EVENT_REMOTE_SCENE_REQUEST; doubles as decline evidence. Confirming,
+--     or declining via the "No" button, leaves the scene alone - so the
+--     journal scene survives the normal round-trip and hosts the stepper
+--     as a first-class view (ui/journal/share_stepper.lua), each part
+--     fired by a real keybind press.
+--   * Closing the console browser with B delivers that same B to our
+--     keybind strip as the game resumes (the app-switcher return path
+--     delivers nothing) - stepper presses landing right after a suspend
+--     gap are discarded (browser-exit leak guard in ui/journal/keybinds.lua).
+--
+-- Because RequestOpenUnsafeURL reports nothing back, a fired part is held
+-- "in flight" and only counted as sent once its confirm dialog has come and
+-- gone without decline evidence. Declining via the "No" button is
+-- indistinguishable from confirming (both just close the dialog); that
+-- residual gap surfaces as a missing part on the upload page.
 --
 -- This module is presentation-free: it owns the chain state machine and
 -- notifies an observer (the journal) on every transition.
@@ -58,6 +76,29 @@ local chain = nil
 local buildFiber = nil
 ---@type SharePhase
 local phase = "idle"
+
+-- In-flight part settlement (see header): the fired part whose confirm
+-- dialog has not resolved yet, plus the evidence gathered while watching it
+local WATCH_NAMESPACE = "BattleScrollsShareUrlInFlight"
+local WATCH_INTERVAL_MS = 300
+local NO_DIALOG_TIMEOUT_MS = 4000
+local SETTLE_GRACE_MS = 400
+---@type number|nil
+local inFlightSeq = nil
+local confirmDialogSeen = false
+local declineSeen = false
+local firedAtMs = 0
+---@type number|nil
+local settleAtMs = nil
+
+local function clearInFlight()
+    EVENT_MANAGER:UnregisterForUpdate(WATCH_NAMESPACE)
+    inFlightSeq = nil
+    confirmDialogSeen = false
+    declineSeen = false
+    firedAtMs = 0
+    settleAtMs = nil
+end
 
 ---Observer for state transitions (the journal's stepper view). Called with
 ---no arguments after every phase/progress change.
@@ -106,6 +147,7 @@ function shareUrl.stop()
         buildFiber = nil
     end
     chain = nil
+    clearInFlight()
     setPhase("idle")
     return hadWork
 end
@@ -131,16 +173,21 @@ local function partUrl(seq)
         BASE_URL, chain.session, seq, chain.total, chain.lang, chain.parts[seq])
 end
 
----Fires the next part's browser link. The caller (stepper keybind) invokes
----this once per user press; there is no auto-advance.
-function shareUrl.sendNextPart()
-    if not chain then
+---Counts the in-flight part as sent (or leaves it pending if declined) and
+---moves the chain forward. Runs a beat after the confirm dialog goes away.
+local function settleInFlight()
+    local seq = inFlightSeq
+    local wasDeclined = declineSeen
+    clearInFlight()
+    if not chain or not seq then
         return
     end
-    local seq, total = chain.nextSeq, chain.total
-    RequestOpenUnsafeURL(partUrl(seq))
-    if seq >= total then
-        shareUrl._doneTotal = total
+    if wasDeclined then
+        -- The part never reached the browser: leave it pending so the next
+        -- press fires the same part again
+        notify()
+    elseif seq >= chain.total then
+        shareUrl._doneTotal = chain.total
         chain = nil
         setPhase("done")
     else
@@ -148,6 +195,70 @@ function shareUrl.sendNextPart()
         notify()
     end
 end
+
+---Watches the cross-environment dialog state while a part is in flight.
+local function watchInFlight()
+    if not inFlightSeq then
+        clearInFlight()
+        return
+    end
+    if ZO_DIALOG_SYNC_OBJECT:IsShown()
+        and ZO_DIALOG_SYNC_OBJECT:GetState() == "CONFIRM_UNSAFE_URL" then
+        confirmDialogSeen = true
+        settleAtMs = nil
+        return
+    end
+    local nowMs = GetGameTimeMilliseconds()
+    if confirmDialogSeen then
+        -- Dialog came and went; give decline evidence (the remote
+        -- base-scene request) a beat to arrive before settling
+        settleAtMs = settleAtMs or (nowMs + SETTLE_GRACE_MS)
+        if nowMs >= settleAtMs then
+            settleInFlight()
+        end
+    elseif nowMs - firedAtMs >= NO_DIALOG_TIMEOUT_MS then
+        -- No confirm dialog ever appeared - count the part as not sent
+        -- rather than pretend it was
+        declineSeen = true
+        settleInFlight()
+    end
+end
+
+---Fires the next pending part's browser link. The caller (stepper keybind)
+---invokes this once per user press; the part stays pending until its confirm
+---dialog resolves without decline evidence.
+function shareUrl.sendNextPart()
+    if not chain or inFlightSeq then
+        return
+    end
+    local seq = chain.nextSeq
+    RequestOpenUnsafeURL(partUrl(seq))
+    inFlightSeq = seq
+    confirmDialogSeen = false
+    declineSeen = false
+    firedAtMs = GetGameTimeMilliseconds()
+    settleAtMs = nil
+    EVENT_MANAGER:RegisterForUpdate(WATCH_NAMESPACE, WATCH_INTERVAL_MS, watchInFlight)
+    notify()
+end
+
+---True while the stepper must not fire another URL: a part's confirmation
+---round-trip has not settled, or a dialog (any GUI environment) owns input.
+---@return boolean
+function shareUrl.isSendBlocked()
+    return inFlightSeq ~= nil or ZO_DIALOG_SYNC_OBJECT:IsShown()
+end
+
+-- Decline evidence: cancelling the confirm dialog with B makes the internal
+-- environment kick the ingame scene manager to the base scene
+EVENT_MANAGER:RegisterForEvent("BattleScrollsShareUrlDecline", EVENT_REMOTE_SCENE_REQUEST,
+    function(_, messageOrigin, requestType)
+        if inFlightSeq
+            and messageOrigin == SCENE_MANAGER_MESSAGE_ORIGIN_INTERNAL
+            and requestType == REMOTE_SCENE_REQUEST_TYPE_SHOW_BASE_SCENE then
+            declineSeen = true
+        end
+    end)
 
 ---@param exportResult ExportResult
 local function startChain(exportResult)

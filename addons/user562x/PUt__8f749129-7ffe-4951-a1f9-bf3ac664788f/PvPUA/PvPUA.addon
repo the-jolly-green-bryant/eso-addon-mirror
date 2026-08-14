@@ -3,7 +3,7 @@
 ## Version: 4.6
 ## APIVersion: 101048 101049 101050
 ## SavedVariables: PvPUA_SavedVars PvPUA_CharVars
-## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibConsoleMenu
 
 PvPUA.xml
 PvPUA.lua
