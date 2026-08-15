@@ -2,7 +2,7 @@ GuildMarketScannerDev = GuildMarketScannerDev or {}
 local GMS = GuildMarketScannerDev
 
 GMS.name = "GuildMarketScannerDev"
-GMS.version = "0.2.2"
+GMS.version = "0.2.4"
 GMS.schemaVersion = 7
 GMS.maxGuildSnapshotsPerItem = 20
 GMS.maxPricesPerItemDuringScan = 24
@@ -24,6 +24,9 @@ GMS.exportWorking=nil
 GMS.exportItemCount=0
 GMS.exportGuildRows=0
 GMS.exportBatchSize=120
+GMS.exportCurrentChunk=nil
+GMS.exportCurrentChunkBytes=0
+GMS.exportChunkTargetBytes=24000
 
 -- FLAT per-item snapshot array.
 -- Repeating groups of 4:
@@ -560,10 +563,62 @@ function GMS:OnTradingHouseResponse(responseType,result)
     end
 end
 
+local function ExportEscape(s)
+    s=tostring(s or "")
+    s=string.gsub(s,"%%","%%25")
+    s=string.gsub(s,"|","%%7C")
+    s=string.gsub(s,";","%%3B")
+    s=string.gsub(s,",","%%2C")
+    s=string.gsub(s,"\n","%%0A")
+    s=string.gsub(s,"\r","")
+    return s
+end
+
+local function HashLink(link,seed)
+    -- Deterministic compact key generated from the exact item link.
+    -- Two independent 31-bit hashes are exported to make accidental
+    -- collisions vanishingly unlikely while avoiding repeated full links.
+    local h=seed or 5381
+    for i=1,#link do
+        h=(h*33+string.byte(link,i))%2147483647
+    end
+    return h
+end
+
+function GMS:AppendExportLine(line)
+    if not self.exportWorking then return end
+
+    if not self.exportCurrentChunk then
+        self.exportCurrentChunk={}
+        self.exportCurrentChunkBytes=0
+    end
+
+    self.exportCurrentChunk[#self.exportCurrentChunk+1]=line
+    self.exportCurrentChunkBytes=self.exportCurrentChunkBytes+#line+1
+
+    if self.exportCurrentChunkBytes>=self.exportChunkTargetBytes then
+        self.exportWorking.chunks[#self.exportWorking.chunks+1]=
+            table.concat(self.exportCurrentChunk,"\n")
+        self.exportCurrentChunk={}
+        self.exportCurrentChunkBytes=0
+    end
+end
+
+function GMS:FlushExportChunk()
+    if self.exportCurrentChunk and #self.exportCurrentChunk>0 then
+        self.exportWorking.chunks[#self.exportWorking.chunks+1]=
+            table.concat(self.exportCurrentChunk,"\n")
+    end
+    self.exportCurrentChunk={}
+    self.exportCurrentChunkBytes=0
+end
+
 function GMS:CancelExport()
     self.exportRunning=false
     self.exportKeys=nil
     self.exportWorking=nil
+    self.exportCurrentChunk=nil
+    self.exportCurrentChunkBytes=0
     self.exportIndex=1
     self.exportItemCount=0
     self.exportGuildRows=0
@@ -576,15 +631,22 @@ function GMS:FinishExport()
         return
     end
 
-    self.saved.export=self.exportWorking
+    self:FlushExportChunk()
 
     local items=self.exportItemCount or 0
     local guildRows=self.exportGuildRows or 0
     local guilds=self:GuildScanCount()
+    local chunks=#self.exportWorking.chunks
+
+    -- Save only compact strings + tiny metadata, never a second nested
+    -- item/guild database.
+    self.saved.export=self.exportWorking
 
     self.exportRunning=false
     self.exportKeys=nil
     self.exportWorking=nil
+    self.exportCurrentChunk=nil
+    self.exportCurrentChunkBytes=0
     self.exportIndex=1
     self.exportItemCount=0
     self.exportGuildRows=0
@@ -592,12 +654,12 @@ function GMS:FinishExport()
     if collectgarbage then collectgarbage("collect") end
 
     Chat(string.format(
-        "EXPORT READY: %d items / %d guild rows / %d scanned guilds.",
-        items,guildRows,guilds
+        "EXPORT READY: %d items / %d guild rows / %d scanned guilds / %d chunks.",
+        items,guildRows,guilds,chunks
     ))
-    Chat("Export saved in GuildMarketScannerSavedVariables -> export.")
-    Chat("Now /reloadui once to force SavedVariables to persist.")
-    self:MemoryReport("after export",false)
+    Chat("Compact export stored in SavedVariables -> export.chunks.")
+    Chat("Run /reloadui once only after checking memory.")
+    self:MemoryReport("after compact export",false)
 end
 
 function GMS:ProcessExportBatch()
@@ -610,29 +672,43 @@ function GMS:ProcessExportBatch()
     for idx=self.exportIndex,last do
         local link=self.exportKeys[idx]
         local item=self.saved.items[link]
+
         if item then
             local a=self:AnalyzeItem(item)
             if a then
-                local guildData={}
+                local h1=HashLink(link,5381)
+                local h2=HashLink(link,7919)
+
+                -- I|h1|h2|name|suggested|low|high|confidence|guildCount|
+                -- representedListings|updated|guildId,count,median,updated;...
+                local guildParts={}
                 for i=1,#item.s,F_STRIDE do
-                    guildData[#guildData+1]=item.s[i] or 0
-                    guildData[#guildData+1]=item.s[i+F_COUNT] or 0
-                    guildData[#guildData+1]=item.s[i+F_MED] or 0
-                    guildData[#guildData+1]=item.s[i+F_UPD] or 0
+                    guildParts[#guildParts+1]=string.format(
+                        "%s,%s,%s,%s",
+                        tostring(item.s[i] or 0),
+                        tostring(item.s[i+F_COUNT] or 0),
+                        tostring(item.s[i+F_MED] or 0),
+                        tostring(item.s[i+F_UPD] or 0)
+                    )
                     self.exportGuildRows=self.exportGuildRows+1
                 end
 
-                self.exportWorking.items[link]={
-                    item.n or "",
-                    a.p or 0,
-                    a.l or 0,
-                    a.h or 0,
-                    a.cf or 0,
-                    a.g or 0,
-                    a.o or 0,
-                    a.u or 0,
-                    guildData,
-                }
+                local line=table.concat({
+                    "I",
+                    tostring(h1),
+                    tostring(h2),
+                    ExportEscape(item.n or ""),
+                    tostring(a.p or 0),
+                    tostring(a.l or 0),
+                    tostring(a.h or 0),
+                    tostring(a.cf or 0),
+                    tostring(a.g or 0),
+                    tostring(a.o or 0),
+                    tostring(a.u or 0),
+                    table.concat(guildParts,";")
+                },"|")
+
+                self:AppendExportLine(line)
                 self.exportItemCount=self.exportItemCount+1
             end
         end
@@ -649,8 +725,10 @@ function GMS:ProcessExportBatch()
     local total=#self.exportKeys
 
     if done==self.exportBatchSize or done%1200<self.exportBatchSize then
-        Chat(string.format("EXPORT PROGRESS: %d/%d items (%.0f%%)",
-            done,total,(done/total)*100))
+        Chat(string.format(
+            "EXPORT PROGRESS: %d/%d items (%.0f%%) | %d chunks",
+            done,total,(done/total)*100,#self.exportWorking.chunks
+        ))
     end
 
     zo_callLater(function()
@@ -664,18 +742,23 @@ function GMS:BuildExport()
         return
     end
 
-    Chat("BUILDING PRICE DATA EXPORT IN BATCHES...")
+    -- Ensure an old export never exists beside the new build.
+    self.saved.export=nil
+    if collectgarbage then collectgarbage("collect") end
 
-    local export={
-        v=1,
+    Chat("BUILDING COMPACT STRING PRICE DATA EXPORT...")
+
+    local working={
+        v=2,
         generated=GetTimeStamp(),
         world=GetWorldName and GetWorldName() or "",
         guilds={},
-        items={},
+        chunks={},
     }
 
+    -- Guild registry is tiny and is kept structured for easy library import.
     for guildId,g in pairs(self.saved.guildScans or {}) do
-        export.guilds[guildId]={g.n or "",g.t or 0,g.l or 0}
+        working.guilds[guildId]={g.n or "",g.t or 0,g.l or 0}
     end
 
     local keys={}
@@ -686,12 +769,18 @@ function GMS:BuildExport()
     self.exportRunning=true
     self.exportKeys=keys
     self.exportIndex=1
-    self.exportWorking=export
+    self.exportWorking=working
+    self.exportCurrentChunk={}
+    self.exportCurrentChunkBytes=0
     self.exportItemCount=0
     self.exportGuildRows=0
 
-    Chat(string.format("EXPORT START: %d item records queued. Batch size: %d.",
-        #keys,self.exportBatchSize))
+    Chat(string.format(
+        "EXPORT START: %d items queued. Compact chunk target: %d KB.",
+        #keys,math.floor(self.exportChunkTargetBytes/1024)
+    ))
+
+    self:MemoryReport("export start",false)
 
     zo_callLater(function()
         GMS:ProcessExportBatch()
@@ -706,7 +795,7 @@ function GMS:ClearExport()
 
     self.saved.export=nil
     if collectgarbage then collectgarbage("collect") end
-    Chat("Temporary export cache cleared.")
+    Chat("Compact export cache cleared.")
     self:MemoryReport("after export clear",false)
 end
 
@@ -737,87 +826,56 @@ function GMS:RemoveTraderKeybind()
 end
 
 function GMS:Initialize()
+    -- RECOVERY BUILD:
+    -- Load the existing SavedVariables, immediately remove any lingering
+    -- v0.2.1/v0.2.2/v0.2.3 export cache, collect garbage, and do nothing else.
+    -- No trader events, no scanner UI, no export builder, no price analysis.
     self.saved=ZO_SavedVars:NewAccountWide(
         "GuildMarketScannerSavedVariables",
         1,nil,defaults
     )
 
-    self:MemoryReport("loaded saved vars",false)
+    Chat("BUILD 024 RECOVERY MODE")
+    Chat("GMS scanner/export functions are intentionally OFF in this build.")
+    self:MemoryReport("recovery after SavedVariables load",false)
 
-    if (self.saved.schemaVersion or 1)<7 then
-        self:MigrateToV7()
-    else
-        self.saved.items=self.saved.items or {}
-        self:Recount()
+    local hadExport=self.saved.export~=nil
+    self.saved.export=nil
+
+    -- Clear any transient references that should never survive recovery.
+    self.exportRunning=false
+    self.exportKeys=nil
+    self.exportWorking=nil
+    self.exportCurrentChunk=nil
+    self.scanBuffer={}
+
+    if collectgarbage then
+        collectgarbage("collect")
+        collectgarbage("collect")
     end
 
-    SLASH_COMMANDS["/gmsprice"]=function(text)
-        GMS:PrintPriceByName(text)
-    end
+    Chat(hadExport and "RECOVERY: lingering export cache REMOVED."
+                   or "RECOVERY: no lingering export cache was present.")
+
+    -- Count only the already-flat permanent database. This does not rebuild it.
+    self.saved.items=self.saved.items or {}
+    self:Recount()
+
+    Chat(string.format(
+        "RECOVERY DB: %d items / %d guild snapshots / %d registered completed scans.",
+        self.saved.totalItems or 0,
+        self.saved.totalGuildSnapshots or 0,
+        self:GuildScanCount()
+    ))
+
+    self:MemoryReport("recovery after export purge + GC",false)
 
     SLASH_COMMANDS["/gmsmem"]=function()
-        GMS:MemoryReport("manual",true)
+        GMS:MemoryReport("recovery manual",true)
     end
 
-    SLASH_COMMANDS["/gmsexport"]=function()
-        GMS:BuildExport()
-    end
-
-    SLASH_COMMANDS["/gmsclearexport"]=function()
-        GMS:ClearExport()
-    end
-
-    SLASH_COMMANDS["/gmscancelxport"]=function()
-        if GMS.exportRunning then
-            GMS:CancelExport()
-            Chat("Export cancelled.")
-        else
-            Chat("No export is currently running.")
-        end
-    end
-
-    EVENT_MANAGER:RegisterForEvent(
-        self.name.."_Open",
-        EVENT_OPEN_TRADING_HOUSE,
-        function()
-            GMS.isTraderOpen=true
-            GMS:AddTraderKeybind()
-            Chat("Trader opened. Press Scan Trader to start.")
-        end
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        self.name.."_Close",
-        EVENT_CLOSE_TRADING_HOUSE,
-        function()
-            if GMS.isScanning then
-                GMS:StopScan("Scan stopped: trader closed",false)
-            end
-            GMS.isTraderOpen=false
-            GMS:RemoveTraderKeybind()
-        end
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        self.name.."_Response",
-        EVENT_TRADING_HOUSE_RESPONSE_RECEIVED,
-        function(_,rt,res)
-            GMS:OnTradingHouseResponse(rt,res)
-        end
-    )
-
-    if collectgarbage then collectgarbage("collect") end
-
-    Chat("BUILD 022 BATCHED PRICE DATA EXPORT")
-    Chat("Guild Market Scanner DEV v0.2.2 loaded.")
-    Chat(string.format(
-        "Flat DB: %d items / %d guild snapshots.",
-        self.saved.totalItems or 0,
-        self.saved.totalGuildSnapshots or 0
-    ))
-    Chat(string.format("Registered completed scans: %d guilds.",self:GuildScanCount()))
-    Chat("Use /gmsexport only when you want to generate the library export.")
-    self:MemoryReport("startup final",false)
+    Chat("IMPORTANT: /reloadui once now to persist the export removal.")
+    Chat("Do NOT scan or export with v0.2.4. This is recovery-only.")
 end
 
 local function OnAddonLoaded(_,addonName)

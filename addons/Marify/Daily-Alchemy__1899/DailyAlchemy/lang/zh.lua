@@ -51,7 +51,7 @@ ZO_CreateStringId("DA_SPELL_RESIST",        "提高法术抗性") -- Increase Sp
 ZO_CreateStringId("DA_BREACH",              "破甲")         -- Breach                [zh.lang.csv] "156152165","0","8","xxxxxxxx"
 ZO_CreateStringId("DA_ARMOR",               "提高盔甲")     -- Increase Armor        [zh.lang.csv] "156152165","0","9","xxxxxxxx"
 ZO_CreateStringId("DA_FRACTURE",            "断裂")         -- Fracture              [zh.lang.csv] "156152165","0","10","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_POWER",         "提高法术威力") -- Increase Spell Power  [zh.lang.csv] "156152165","0","11","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_POWER",         "提高威力")     -- Increase Power        [zh.lang.csv] "156152165","0","11","xxxxxxxx"
 ZO_CreateStringId("DA_COWARDICE",           "怯懦")         -- Cowardice             [zh.lang.csv] "156152165","0","12","xxxxxxxx"
 ZO_CreateStringId("DA_WEAPON_POWER",        "提高武器威力") -- Increase Weapon Power [zh.lang.csv] "156152165","0","13","xxxxxxxx"
 ZO_CreateStringId("DA_MAIM",                "致残")         -- Maim                  [zh.lang.csv] "156152165","0","14","xxxxxxxx"
@@ -94,15 +94,15 @@ function DailyAlchemy:ConvertedItemNames(itemName)
         {"(\-)",    "(\-)"},
         {" ",       " "},   -- code(0xA0) > space(0x20): HTML non-breaking space ?("0xC2 0xA0")
         {"(\^).*",  ""},
-        {"IX$",     "Ⅸ"},
-        {"VIII$",   "Ⅷ"},
-        {"VII$",    "Ⅶ"},
-        {"VI$",     "Ⅵ"},
-        {"IV$",     "Ⅳ"},
-        {"V$",      "Ⅴ"},
-        {"III$",    "Ⅲ"},
-        {"II$",     "Ⅱ"},
-        {"I$",      "Ⅰ"},
+        {" IX$",    "Ⅸ"},
+        {" VIII$",  "Ⅷ"},
+        {" VII$",   "Ⅶ"},
+        {" VI$",    "Ⅵ"},
+        {" IV$",    "Ⅳ"},
+        {" V$",     "Ⅴ"},
+        {" III$",   "Ⅲ"},
+        {" II$",    "Ⅱ"},
+        {" I$",     "Ⅰ"},
     }
     for _, value in ipairs(list) do
         itemName = string.gsub(itemName, value[1], value[2])
@@ -142,7 +142,7 @@ function DailyAlchemy:ConvertedItemNames(itemName)
         {"魔力药水",        "魔力药水"},            -- "7949764","0","44938","xxxxxxxx","制作魔力药水"
         {"耐力药水",        "耐力药水"},            -- "7949764","0","44956","xxxxxxxx","制作耐力药水"
 
-        {"损害耐力溶剂",    "强效耐力损耗药水"},    -- "7949764","0","44976","xxxxxxxx","制作强效耐力损耗药水。"
+        {"损害耐力溶剂",    "强效耐力损耗药水"},    -- "7949764","0","44976","xxxxxxxx"
         {"生命溶剂",        "强效生命药水"},        -- "7949764","0","44921","xxxxxxxx","制作强效生命药水"
         {"魔力溶剂",        "强效魔力药水"},        -- "7949764","0","44940","xxxxxxxx","制作强效魔力药水"
         {"耐力溶剂",        "强效耐力药水"},        -- "7949764","0","44958","xxxxxxxx","制作强效耐力药水"
@@ -150,6 +150,9 @@ function DailyAlchemy:ConvertedItemNames(itemName)
         {"灵药损害魔力",    "灵药魔力损耗药水"},    -- "7949764","0","44978","xxxxxxxx","制作灵药魔力损耗药水。"
         {"灵药魔力",        "灵药魔力药水"},        -- "7949764","0","44942","xxxxxxxx","制作灵药魔力药水"
         {"灵药耐力",        "灵药耐力药水"},        -- "7949764","0","44960","xxxxxxxx","制作灵药耐力药水"
+
+        {"^体力流失毒药",   "生命流失毒药"},        -- "7949764","0","56981","xxxxxxxx","制作生命流失毒药IX"
+
 
         {"蒸馏物缓慢生命损害"},                     -- Need data.(Not Delete!)
         {"蒸馏物绵长生命"},                         -- Need data.(Not Delete!)
@@ -160,26 +163,22 @@ function DailyAlchemy:ConvertedItemNames(itemName)
         {"蒸馏物魔力"},                             -- Need data.(Not Delete!)
         {"蒸馏物耐力"},                             -- Need data.(Not Delete!)
 
-        {"损害生命",        "万能生命损耗药水"},    -- "7949764","0","44981","xxxxxxxx","制作万能生命损耗药水。"
+        {"损害生命",        "万能生命损耗药水"},    -- "7949764","0","44981","xxxxxxxx"
         {"损害魔力"},                               -- Need data.(Not Delete!)
         {"损害耐力"},                               -- Need data.(Not Delete!)
-        {"生命",            "万能生命药水"},        -- "7949764","0","44927","xxxxxxxx","制作万能生命药水"
-        {"魔力",            "万能魔力药水"},        -- "7949764","0","44945","xxxxxxxx","制作万能魔力药水"
-        {"耐力",            "万能耐力药水"},        -- "7949764","0","44963","xxxxxxxx","制作万能耐力药水"
+        {"^生命万能药水",   "万能生命药水"},        -- "7949764","0","44927","xxxxxxxx"
+        {"^魔力万能药水",   "万能魔力药水"},        -- "7949764","0","44945","xxxxxxxx"
+        {"^耐力万能药水",   "万能耐力药水"},        -- "7949764","0","44963","xxxxxxxx"
 
-      --{"",                "生命吸取毒药"},        -- "7949764","0","56972","xxxxxxxx","体力吸収の毒9を生産する"            "7949764","0","56972","xxxxxxxx","制作生命吸取毒药IX"
-        {"体力流失毒药Ⅸ",  "生命流失毒药Ⅸ"},      -- "7949764","0","56981","xxxxxxxx","制作生命流失毒药IX"
-        {"法力流失毒药Ⅸ",  "魔力流失毒药Ⅸ"},      -- "7949764","0","56978","xxxxxxxx","制作魔力流失毒药IX"
-        {"耐力流失毒药Ⅸ",  "耐力流失毒药Ⅸ"},      -- "7949764","0","56975","xxxxxxxx","制作耐力流失毒药IX"
-
-        {"损害生命精华",    "精华生命损耗药水",     -- "7949764","0","47337","xxxxxxxx","制作精华生命损耗药水。"
-                            "损耗生命精华药水"},    -- "7949764","0","56962","xxxxxxxx","制作损耗生命精华药水"
-        {"精华生命",        "精华生命药水",         -- "7949764","0","47328","xxxxxxxx","制作精华生命药水"
-                            "生命精华药水"},        -- "7949764","0","56969","xxxxxxxx","制作生命精华药水"
-      --{"",                "魔力精华药水",         -- "7949764","0","56966","xxxxxxxx","マジカのエキスを生産する"           "7949764","0","56966","xxxxxxxx","制作魔力精华药水"
-      --                    "精华魔力药水"},        -- "7949764","0","47332","xxxxxxxx","マジカのエキスを生産する"           "7949764","0","47332","xxxxxxxx","制作精华魔力药水"
-      --{"",                "精华耐力药水",         -- "7949764","0","47334","xxxxxxxx","スタミナのエキスを生産する"         "7949764","0","47334","xxxxxxxx","制作精华耐力药水"
-      --                    "耐力精华药水"},        -- "7949764","0","56963","xxxxxxxx","スタミナのエキスを生産する"         "7949764","0","56963","xxxxxxxx","制作耐力精华药水"
+      --{"",                "生命吸取毒药"},        -- "7949764","0","56972","xxxxxxxx"
+        {"损害生命精华",    "精华生命损耗药水",     -- "7949764","0","47337","xxxxxxxx"
+                            "损耗生命精华药水"},    -- "7949764","0","56962","xxxxxxxx"
+        {"精华生命",        "精华生命药水",         -- "7949764","0","47328","xxxxxxxx"
+                            "生命精华药水"},        -- "7949764","0","56969","xxxxxxxx"
+      --{"",                "魔力精华药水",         -- "7949764","0","56966","xxxxxxxx"
+      --                    "精华魔力药水"},        -- "7949764","0","47332","xxxxxxxx"
+      --{"",                "精华耐力药水",         -- "7949764","0","47334","xxxxxxxx"
+      --                    "耐力精华药水"},        -- "7949764","0","56963","xxxxxxxx"
     }
     table.sort(list2, function(valueA, valueB)
         return string.len(valueA[1]) > string.len(valueB[1])
@@ -206,6 +205,15 @@ function DailyAlchemy:ConvertedJournalCondition(journalCondition)
     local list = {
         {" ",  " "},   -- code(0xA0) > space(0x20): HTML non-breaking space ?("0xC2 0xA0")
         {"%-", " "},
+        {" IX",    "Ⅸ"},
+        {" VIII",  "Ⅷ"},
+        {" VII",   "Ⅶ"},
+        {" VI",    "Ⅵ"},
+        {" IV",    "Ⅳ"},
+        {" V",     "Ⅴ"},
+        {" III",   "Ⅲ"},
+        {" II",    "Ⅱ"},
+        {" I",     "Ⅰ"},
         {"IX：",   "Ⅸ:"},
         {"IX:",    "Ⅸ:"},
         {"IX，",   "Ⅸ:"},

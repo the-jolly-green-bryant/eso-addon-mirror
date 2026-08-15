@@ -1,27 +1,55 @@
 VerticalBuffsDebuffs = {}
 VerticalBuffsDebuffs.name = "VerticalBuffsDebuffs"
 VerticalBuffsDebuffs.savedVariables = nil
-VerticalBuffsDebuffs.previewMode = false
+VerticalBuffsDebuffs.previewBuffs = false
+VerticalBuffsDebuffs.previewDebuffs = false
+
+VerticalBuffsDebuffs.defaults = {
+    buffPosX           = 680,
+    buffPosY           = 600,
+    debuffPosX         = 1470,
+    debuffPosY         = 600,
+    buffSize           = 31,
+    debuffSize         = 31,
+    buffScaleOverflow  = false,
+    debuffScaleOverflow = false,
+    showBuffs          = true,
+    showDebuffs        = true,
+    showBuffText       = true,
+    showDebuffText     = true,
+}
 
 local activeBuffs   = {}
 local activeDebuffs = {}
 
-local buffRows   = {}
-local debuffRows = {}
+local buffBoxes   = {}
+local debuffBoxes = {}
+
+local boxCounter = 0
 
 local SIDE_MARGIN    = 8
+local BOX_GAP        = 6
+local RING_PAD       = 10
+local FRAME_PAD      = 14
 local MAX_EFFECTS    = 30
 local SHOW_THRESHOLD = 60
+
+local NAME_SCALE     = 26 / 31
+
+local PERMANENT_MS   = 3600000
+
+local MOVE_TIMEOUT   = 30000
+local MOVE_SNAP      = 10
 
 local ORANGE_THRESHOLD = 0.50
 local RED_THRESHOLD    = 0.25
 
 local PREVIEW_EFFECTS = {
-    { name = "Major Sorcery",   duration = 20, elapsed = 2  },
-    { name = "Minor Brutality", duration = 20, elapsed = 8  },
-    { name = "Major Resolve",   duration = 20, elapsed = 12 },
-    { name = "Minor Endurance", duration = 20, elapsed = 16 },
-    { name = "Major Fortitude", duration = 20, elapsed = 18 },
+    { name = "Major Sorcery",   duration = 20, elapsed = 2,  icon = "/esoui/art/icons/ability_mage_022.dds" },
+    { name = "Minor Brutality", duration = 20, elapsed = 8,  icon = "/esoui/art/icons/ability_warrior_003.dds" },
+    { name = "Major Resolve",   duration = 20, elapsed = 12, icon = "/esoui/art/icons/ability_armor_002.dds" },
+    { name = "Minor Endurance", duration = 20, elapsed = 16, icon = "/esoui/art/icons/ability_rogue_051.dds" },
+    { name = "Major Fortitude", duration = 20, elapsed = 18, icon = "/esoui/art/icons/ability_healer_012.dds" },
 }
 
 --------------------------------------------------
@@ -46,19 +74,47 @@ end
 --------------------------------------------------
 -- Font / Size
 --------------------------------------------------
-function VerticalBuffsDebuffs:GetFont()
+function VerticalBuffsDebuffs:GetFont(size)
     return string.format(
         "EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick",
-        self.savedVariables.fontSize
+        size
     )
 end
 
-function VerticalBuffsDebuffs:GetRowHeight()
-    return self.savedVariables.fontSize + 20
+function VerticalBuffsDebuffs:GetNumberFont(iconSize)
+    return string.format(
+        "EsoUI/Common/Fonts/univers67.otf|%d|outline",
+        math.max(12, math.floor(iconSize * 0.5))
+    )
 end
 
-function VerticalBuffsDebuffs:GetIconSize()
-    return math.floor(self.savedVariables.fontSize * 1.60)
+function VerticalBuffsDebuffs:GetNameFontSize(size)
+    return math.max(10, math.floor(size * NAME_SCALE))
+end
+
+function VerticalBuffsDebuffs:GetIconSize(size)
+    return math.floor(size * 1.60)
+end
+
+function VerticalBuffsDebuffs:GetPanelSize(isDebuff)
+    if isDebuff then
+        return self.savedVariables.debuffSize
+    end
+    return self.savedVariables.buffSize
+end
+
+function VerticalBuffsDebuffs:GetPanelOverflow(isDebuff)
+    if isDebuff then
+        return self.savedVariables.debuffScaleOverflow
+    end
+    return self.savedVariables.buffScaleOverflow
+end
+
+function VerticalBuffsDebuffs:GetPanelShowText(isDebuff)
+    if isDebuff then
+        return self.savedVariables.showDebuffText
+    end
+    return self.savedVariables.showBuffText
 end
 
 --------------------------------------------------
@@ -102,137 +158,156 @@ function VerticalBuffsDebuffs:CreatePanels()
 end
 
 --------------------------------------------------
--- Create Effect Row
+-- Create Effect Box
 --------------------------------------------------
-function VerticalBuffsDebuffs:CreateEffectRow(parent, index)
-    local rowHeight = self:GetRowHeight()
-    local iconSize  = self:GetIconSize()
-    local yOff      = (index - 1) * rowHeight
+function VerticalBuffsDebuffs:CreateEffectBox(parent)
+    boxCounter = boxCounter + 1
 
-    local row = WINDOW_MANAGER:CreateControl(nil, parent, CT_CONTROL)
-    row:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, yOff)
-    row:SetDimensions(400, rowHeight)
+    local box = WINDOW_MANAGER:CreateControlFromVirtual(
+        "VerticalBuffsDebuffs_Box" .. boxCounter,
+        parent,
+        "VerticalBuffsDebuffs_EffectBox"
+    )
 
-    local icon = WINDOW_MANAGER:CreateControl(nil, row, CT_TEXTURE)
-    icon:SetDimensions(iconSize, iconSize)
-    icon:SetAnchor(LEFT, row, LEFT, SIDE_MARGIN, 0)
-    row.icon = icon
+    box.frame     = box:GetNamedChild("Frame")
+    box.radial    = box:GetNamedChild("Radial")
+    box.inner     = box:GetNamedChild("Inner")
+    box.icon      = box:GetNamedChild("Icon")
+    box.number    = box:GetNamedChild("Number")
+    box.nameLabel = box:GetNamedChild("Name")
 
-    local nameLabel = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
-    nameLabel:SetFont(self:GetFont())
-    nameLabel:SetAnchor(LEFT, icon, RIGHT, 6, 0)
-    nameLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    row.nameLabel = nameLabel
+    box.cdKey = nil
+    box.cdEnd = 0
 
-    local timerLabel = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
-    timerLabel:SetFont(self:GetFont())
-    timerLabel:SetAnchor(LEFT, nameLabel, RIGHT, 8, 0)
-    timerLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    row.timerLabel = timerLabel
-
-    row:SetHidden(true)
-    return row
+    box:SetHidden(true)
+    return box
 end
 
 --------------------------------------------------
--- Build Row Pools
+-- Size Effect Box
 --------------------------------------------------
-function VerticalBuffsDebuffs:BuildRowPools()
-    for _, row in ipairs(buffRows) do
-        row:SetHidden(true)
-        row:SetParent(nil)
-        row:ClearAnchors()
+function VerticalBuffsDebuffs:SizeBox(box, iconSize, nameFont)
+    local ringSize  = iconSize + RING_PAD
+    local frameSize = iconSize + FRAME_PAD
+
+    box:SetDimensions(frameSize, frameSize)
+    box.frame:SetDimensions(frameSize, frameSize)
+    box.radial:SetDimensions(ringSize, ringSize)
+    box.inner:SetDimensions(iconSize, iconSize)
+    box.icon:SetDimensions(iconSize, iconSize)
+    box.number:SetDimensions(iconSize, iconSize)
+    box.number:SetFont(self:GetNumberFont(iconSize))
+    box.nameLabel:SetFont(nameFont)
+
+    return frameSize
+end
+
+--------------------------------------------------
+-- Build Box Pools
+--------------------------------------------------
+function VerticalBuffsDebuffs:BuildBoxPools()
+    for _, box in ipairs(buffBoxes) do
+        box:SetHidden(true)
+        box:ClearAnchors()
+        box:SetParent(nil)
     end
-    for _, row in ipairs(debuffRows) do
-        row:SetHidden(true)
-        row:SetParent(nil)
-        row:ClearAnchors()
+    for _, box in ipairs(debuffBoxes) do
+        box:SetHidden(true)
+        box:ClearAnchors()
+        box:SetParent(nil)
     end
 
-    buffRows   = {}
-    debuffRows = {}
+    buffBoxes   = {}
+    debuffBoxes = {}
 
     for i = 1, MAX_EFFECTS do
-        buffRows[i]   = self:CreateEffectRow(self.buffPanel,   i)
-        debuffRows[i] = self:CreateEffectRow(self.debuffPanel, i)
+        buffBoxes[i]   = self:CreateEffectBox(self.buffPanel)
+        debuffBoxes[i] = self:CreateEffectBox(self.debuffPanel)
     end
 end
 
 --------------------------------------------------
--- Render Row Pool
+-- Render Box Pool
 --------------------------------------------------
-function VerticalBuffsDebuffs:RenderRows(rowPool, effectsList, isDebuff)
-    local nameR, nameG, nameB = 0.2, 1.0, 0.2
+function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
+    local ringR, ringG, ringB = 0.2, 1.0, 0.2
     if isDebuff then
-        nameR, nameG, nameB = 1.0, 0.2, 0.2
+        ringR, ringG, ringB = 1.0, 0.2, 0.2
     end
 
-    local fullFont    = self:GetFont()
-    local smallFont   = string.format(
-        "EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick",
-        math.max(10, math.floor(self.savedVariables.fontSize * 0.5))
-    )
-    local fullIcon    = self:GetIconSize()
-    local smallIcon   = math.max(8, math.floor(fullIcon * 0.5))
-    local fullHeight  = self:GetRowHeight()
-    local smallHeight = math.max(12, math.floor(fullHeight * 0.5))
+    local now = GetGameTimeSeconds()
 
-    local showText = isDebuff and self.savedVariables.showDebuffText
-                              or self.savedVariables.showBuffText
+    local panelSize = self:GetPanelSize(isDebuff)
+    local nameSize  = self:GetNameFontSize(panelSize)
+    local fullFont  = self:GetFont(nameSize)
+    local smallFont = self:GetFont(math.max(10, math.floor(nameSize * 0.5)))
+    local fullIcon  = self:GetIconSize(panelSize)
+    local smallIcon = math.max(12, math.floor(fullIcon * 0.5))
+
+    local scaleOverflow = self:GetPanelOverflow(isDebuff)
+    local showText      = self:GetPanelShowText(isDebuff)
 
     local visible = 0
     local yOffset = 0
 
-    for i, row in ipairs(rowPool) do
+    for i, box in ipairs(boxPool) do
         local entry = effectsList[i]
         if entry then
-            local isSmall  = self.savedVariables.scaleOverflow and (i > 10)
-            local font     = isSmall and smallFont or fullFont
+            local isSmall  = scaleOverflow and (i > 10)
             local iconSize = isSmall and smallIcon or fullIcon
-            local rowH     = isSmall and smallHeight or fullHeight
+            local nameFont = isSmall and smallFont or fullFont
 
-            row:ClearAnchors()
-            row:SetAnchor(TOPLEFT, row:GetParent(), TOPLEFT, 0, yOffset)
-            row:SetDimensions(400, rowH)
+            local frameSize = self:SizeBox(box, iconSize, nameFont)
 
-            row.icon:SetDimensions(iconSize, iconSize)
+            box:ClearAnchors()
+            box:SetAnchor(TOPLEFT, box:GetParent(), TOPLEFT, SIDE_MARGIN, yOffset)
+
             if entry.fx.icon then
-                row.icon:SetTexture(entry.fx.icon)
-                row.icon:SetHidden(false)
+                box.icon:SetTexture(entry.fx.icon)
+                box.icon:SetHidden(false)
             else
-                row.icon:SetHidden(true)
+                box.icon:SetHidden(true)
+            end
+
+            box.radial:SetFillColor(ringR, ringG, ringB, 1)
+
+            if box.cdKey ~= entry.key or now >= box.cdEnd then
+                box.cdKey = entry.key
+                if entry.fx.isPermanent then
+                    box.cdEnd = now + (PERMANENT_MS / 1000)
+                    box.radial:StartCooldown(PERMANENT_MS, PERMANENT_MS, CD_TYPE_RADIAL, CD_TIME_TYPE_TIME_UNTIL, false)
+                else
+                    local remainingMs = math.max(entry.remaining, 0) * 1000
+                    local totalMs     = math.max(entry.fx.totalDuration, entry.remaining) * 1000
+                    box.cdEnd = now + math.max(entry.remaining, 0)
+                    box.radial:StartCooldown(remainingMs, totalMs, CD_TYPE_RADIAL, CD_TIME_TYPE_TIME_UNTIL, false)
+                end
+            end
+
+            if entry.fx.isPermanent then
+                box.number:SetText("∞")
+                box.number:SetColor(ringR, ringG, ringB, 1)
+            else
+                box.number:SetText(string.format("%.1f", math.max(entry.remaining, 0)))
+                local tr, tg, tb = GetTimerColor(entry.remaining, entry.fx.totalDuration)
+                box.number:SetColor(tr, tg, tb, 1)
             end
 
             if showText then
-                row.nameLabel:SetFont(font)
-                row.nameLabel:SetText(entry.fx.name)
-                row.nameLabel:SetColor(nameR, nameG, nameB, 1)
-                row.nameLabel:SetHidden(false)
-                row.timerLabel:ClearAnchors()
-                row.timerLabel:SetAnchor(LEFT, row.nameLabel, RIGHT, 8, 0)
+                box.nameLabel:SetText(entry.fx.name)
+                box.nameLabel:SetColor(ringR, ringG, ringB, 1)
+                box.nameLabel:SetHidden(false)
             else
-                row.nameLabel:SetHidden(true)
-                row.timerLabel:ClearAnchors()
-                row.timerLabel:SetAnchor(LEFT, row.icon, RIGHT, 8, 0)
+                box.nameLabel:SetHidden(true)
             end
 
-            row.timerLabel:SetFont(font)
-            if entry.fx.isPermanent then
-                row.timerLabel:SetText("∞")
-                row.timerLabel:SetColor(nameR, nameG, nameB, 1)
-            else
-                row.timerLabel:SetText(
-                    string.format("%.1fs", math.max(entry.remaining, 0))
-                )
-                local tr, tg, tb = GetTimerColor(entry.remaining, entry.fx.totalDuration)
-                row.timerLabel:SetColor(tr, tg, tb, 1)
-            end
-
-            row:SetHidden(false)
+            box:SetHidden(false)
             visible = visible + 1
-            yOffset = yOffset + rowH
+            yOffset = yOffset + frameSize + BOX_GAP
         else
-            row:SetHidden(true)
+            box.cdKey = nil
+            box.cdEnd = 0
+            box:SetHidden(true)
         end
     end
 
@@ -242,55 +317,69 @@ end
 --------------------------------------------------
 -- Refresh Display
 --------------------------------------------------
-function VerticalBuffsDebuffs:RefreshDisplay()
-    local now           = GetGameTimeSeconds()
-    local buffsToShow   = {}
-    local debuffsToShow = {}
+local function BuildPreviewList()
+    local list = {}
+    for i, fx in ipairs(PREVIEW_EFFECTS) do
+        table.insert(list, {
+            remaining = fx.duration - fx.elapsed,
+            key       = "preview" .. i,
+            fx = {
+                name          = fx.name,
+                icon          = fx.icon,
+                isPermanent   = false,
+                totalDuration = fx.duration,
+            },
+        })
+    end
+    return list
+end
 
-    if self.previewMode then
-        for _, fx in ipairs(PREVIEW_EFFECTS) do
-            local remaining = fx.duration - fx.elapsed
-            local entry = {
+local function BuildActiveList(source, now)
+    local list = {}
+    for slot, fx in pairs(source) do
+        local remaining = fx.endTime - now
+        if remaining > 0 and remaining <= SHOW_THRESHOLD then
+            table.insert(list, {
                 remaining = remaining,
-                fx = {
-                    name          = fx.name,
-                    icon          = nil,
-                    isPermanent   = false,
-                    totalDuration = fx.duration,
-                },
-            }
-            table.insert(buffsToShow,   entry)
-            table.insert(debuffsToShow, entry)
+                key       = slot .. ":" .. fx.endTime,
+                fx        = fx,
+            })
         end
+    end
+    table.sort(list, function(a, b) return a.remaining < b.remaining end)
+    return list
+end
+
+function VerticalBuffsDebuffs:RefreshDisplay()
+    local now = GetGameTimeSeconds()
+
+    local buffsToShow, debuffsToShow
+
+    if self.previewBuffs then
+        buffsToShow = BuildPreviewList()
     else
-        for slot, fx in pairs(activeBuffs) do
-            local remaining = fx.endTime - now
-            if remaining > 0 and remaining <= SHOW_THRESHOLD then
-                table.insert(buffsToShow, { remaining = remaining, fx = fx })
-            end
-        end
-
-        for slot, fx in pairs(activeDebuffs) do
-            local remaining = fx.endTime - now
-            if remaining > 0 and remaining <= SHOW_THRESHOLD then
-                table.insert(debuffsToShow, { remaining = remaining, fx = fx })
-            end
-        end
-
-        table.sort(buffsToShow,   function(a, b) return a.remaining < b.remaining end)
-        table.sort(debuffsToShow, function(a, b) return a.remaining < b.remaining end)
+        buffsToShow = BuildActiveList(activeBuffs, now)
     end
 
-    local buffVisible,   buffHeight   = self:RenderRows(buffRows,   buffsToShow,   false)
-    local debuffVisible, debuffHeight = self:RenderRows(debuffRows, debuffsToShow, true)
+    if self.previewDebuffs then
+        debuffsToShow = BuildPreviewList()
+    else
+        debuffsToShow = BuildActiveList(activeDebuffs, now)
+    end
 
-    self.buffPanel:SetHidden(not self.savedVariables.showBuffs or buffVisible == 0)
-    if self.savedVariables.showBuffs and buffVisible > 0 then
+    local buffVisible,   buffHeight   = self:RenderBoxes(buffBoxes,   buffsToShow,   false)
+    local debuffVisible, debuffHeight = self:RenderBoxes(debuffBoxes, debuffsToShow, true)
+
+    local showBuffs   = self.savedVariables.showBuffs   or self.movingBuffs   or self.previewBuffs
+    local showDebuffs = self.savedVariables.showDebuffs or self.movingDebuffs or self.previewDebuffs
+
+    self.buffPanel:SetHidden(not showBuffs or buffVisible == 0)
+    if showBuffs and buffVisible > 0 then
         self.buffPanel:SetDimensions(400, buffHeight)
     end
 
-    self.debuffPanel:SetHidden(not self.savedVariables.showDebuffs or debuffVisible == 0)
-    if self.savedVariables.showDebuffs and debuffVisible > 0 then
+    self.debuffPanel:SetHidden(not showDebuffs or debuffVisible == 0)
+    if showDebuffs and debuffVisible > 0 then
         self.debuffPanel:SetDimensions(400, debuffHeight)
     end
 end
@@ -381,140 +470,319 @@ function VerticalBuffsDebuffs:InitializeSceneHiding()
 end
 
 --------------------------------------------------
+-- Reset
+--------------------------------------------------
+function VerticalBuffsDebuffs:ResetSettings()
+    if not self.savedVariables then return end
+
+    for key, value in pairs(self.defaults) do
+        self.savedVariables[key] = value
+    end
+
+    self.previewBuffs   = false
+    self.previewDebuffs = false
+    self:ApplyBuffPosition()
+    self:ApplyDebuffPosition()
+    self:BuildBoxPools()
+    self:RefreshDisplay()
+end
+
+--------------------------------------------------
+-- Move Mode
+--------------------------------------------------
+function VerticalBuffsDebuffs:GetMover(isDebuff)
+    local LCA = LibCombatAlerts
+    if not LCA then return nil end
+
+    if isDebuff then
+        if not self.debuffMover then
+            self.debuffMover = LCA.MoveableControl:New(self.debuffPanel, { color = 0xFF3333FF, size = 2 })
+            self.debuffMover:SetSnap(MOVE_SNAP)
+            self.debuffMover:RegisterCallback(
+                "VerticalBuffsDebuffs_DebuffMoveStop",
+                LCA.EVENT_CONTROL_MOVE_STOP,
+                function() VerticalBuffsDebuffs:OnMoveStopped(true) end
+            )
+        end
+        return self.debuffMover
+    end
+
+    if not self.buffMover then
+        self.buffMover = LCA.MoveableControl:New(self.buffPanel, { color = 0x33FF33FF, size = 2 })
+        self.buffMover:SetSnap(MOVE_SNAP)
+        self.buffMover:RegisterCallback(
+            "VerticalBuffsDebuffs_BuffMoveStop",
+            LCA.EVENT_CONTROL_MOVE_STOP,
+            function() VerticalBuffsDebuffs:OnMoveStopped(false) end
+        )
+    end
+    return self.buffMover
+end
+
+function VerticalBuffsDebuffs:EnsureKeybind()
+    if self.keybindDescriptor then return end
+
+    self.actionLayerName = GetString(SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS)
+
+    self.keybindDescriptor = {
+        {
+            name     = "Save & Exit",
+            keybind  = "UI_SHORTCUT_NEGATIVE",
+            callback = function() VerticalBuffsDebuffs:StopMove() end,
+        },
+    }
+end
+
+function VerticalBuffsDebuffs:AddKeybind()
+    self:EnsureKeybind()
+
+    local scene = SCENE_MANAGER:GetCurrentScene()
+    if KEYBIND_STRIP_GAMEPAD_FRAGMENT and scene
+       and not scene:HasFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT) then
+        scene:AddFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT)
+        self.keybindFragmentScene = scene
+    end
+
+    if self.keybindActive then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindDescriptor)
+    else
+        KEYBIND_STRIP:AddKeybindButtonGroup(self.keybindDescriptor)
+        PushActionLayerByName(self.actionLayerName)
+        self.keybindActive = true
+    end
+end
+
+function VerticalBuffsDebuffs:ExitMoveMode()
+    if self.keybindActive then
+        KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindDescriptor)
+        RemoveActionLayerByName(self.actionLayerName)
+        self.keybindActive = false
+    end
+
+    if self.keybindFragmentScene then
+        if KEYBIND_STRIP_GAMEPAD_FRAGMENT then
+            self.keybindFragmentScene:RemoveFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT)
+        end
+        self.keybindFragmentScene = nil
+    end
+
+    self.movingBuffs    = false
+    self.movingDebuffs  = false
+    self.previewBuffs   = false
+    self.previewDebuffs = false
+
+    self:RefreshDisplay()
+end
+
+function VerticalBuffsDebuffs:OnMoveStopped(isDebuff)
+    local panel = isDebuff and self.debuffPanel or self.buffPanel
+
+    local x = math.max(0, math.floor(panel:GetLeft()))
+    local y = math.max(0, math.floor(panel:GetTop()))
+
+    if isDebuff then
+        self.savedVariables.debuffPosX = x
+        self.savedVariables.debuffPosY = y
+        self:ApplyDebuffPosition()
+    else
+        self.savedVariables.buffPosX = x
+        self.savedVariables.buffPosY = y
+        self:ApplyBuffPosition()
+    end
+
+    self:ExitMoveMode()
+end
+
+function VerticalBuffsDebuffs:StopMove()
+    if self.buffMover then
+        self.buffMover:ToggleGamepadMove(false)
+    end
+    if self.debuffMover then
+        self.debuffMover:ToggleGamepadMove(false)
+    end
+
+    self:ExitMoveMode()
+end
+
+function VerticalBuffsDebuffs:StartMove(isDebuff)
+    local mover = self:GetMover(isDebuff)
+    if not mover then return end
+
+    self:StopMove()
+
+    SCENE_MANAGER:ShowBaseScene()
+
+    if isDebuff then
+        self.movingDebuffs  = true
+        self.previewDebuffs = true
+    else
+        self.movingBuffs  = true
+        self.previewBuffs = true
+    end
+
+    self:RefreshDisplay()
+
+    zo_callLater(function()
+        VerticalBuffsDebuffs:AddKeybind()
+        mover:ToggleGamepadMove(true, MOVE_TIMEOUT)
+    end, 250)
+end
+
+--------------------------------------------------
 -- Settings
 --------------------------------------------------
 function VerticalBuffsDebuffs:CreateSettings()
-    local LAM = LibAddonMenu2
+    local LCM = LibConsoleMenu
+    if not LCM then return end
 
-    local panelData = {
-        type               = "panel",
-        name               = "Vertical Buffs Debuffs",
-        displayName        = "Vertical Buffs Debuffs",
-        author             = "user562",
-        version            = "1.4",
-        registerForRefresh = true,
-    }
+    local menu = LCM:CreateAddonMenu("VerticalBuffsDebuffs", {
+        title          = "Vertical Buffs Debuffs",
+        author         = "user562",
+        version        = "1.5",
+        category       = MOD_BROWSER_CATEGORY_TYPE_BUFFS_AND_DEBUFFS,
+        enableDefaults = true,
+        enableReset    = true,
+        resetFunc      = function() self:ResetSettings() end,
+    })
 
-    LAM:RegisterAddonPanel("VerticalBuffsDebuffs_Settings", panelData)
+    if not menu then return end
 
     local options = {
 
         {
-            type    = "checkbox",
-            name    = "Preview",
-            getFunc = function() return self.previewMode end,
-            setFunc = function(val)
-                self.previewMode = val
-                self:RefreshDisplay()
-            end,
+            type    = "submenu",
+            name    = "|c33FF33Buffs|r",
+            align   = "left",
+            indent  = true,
+            icon    = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
+            options = {
+                {
+                    type    = "toggle",
+                    name    = "Preview",
+                    getFunc = function() return self.previewBuffs end,
+                    setFunc = function(val)
+                        self.previewBuffs = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "Move |c33FF33Buffs|r",
+                    tooltip = "Move with the right stick. Press B to save and exit.",
+                    func    = function() self:StartMove(false) end,
+                },
+                {
+                    type    = "toggle",
+                    name    = "Enabled",
+                    default = self.defaults.showBuffs,
+                    getFunc = function() return self.savedVariables.showBuffs end,
+                    setFunc = function(val)
+                        self.savedVariables.showBuffs = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "toggle",
+                    name    = "Show Text",
+                    default = self.defaults.showBuffText,
+                    getFunc = function() return self.savedVariables.showBuffText end,
+                    setFunc = function(val)
+                        self.savedVariables.showBuffText = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "slider",
+                    name    = "Size",
+                    min     = 18, max = 60, step = 1,
+                    default = self.defaults.buffSize,
+                    getFunc = function() return self.savedVariables.buffSize end,
+                    setFunc = function(val)
+                        self.savedVariables.buffSize = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "toggle",
+                    name    = "1-10 ^ - 11+ 50% Smaller",
+                    default = self.defaults.buffScaleOverflow,
+                    getFunc = function() return self.savedVariables.buffScaleOverflow end,
+                    setFunc = function(val)
+                        self.savedVariables.buffScaleOverflow = val
+                        self:RefreshDisplay()
+                    end,
+                },
+            },
         },
 
-        { type = "divider" },
-
         {
-            type    = "checkbox",
-            name    = "Enable |c33FF33Buff|r Panel",
-            getFunc = function() return self.savedVariables.showBuffs end,
-            setFunc = function(val)
-                self.savedVariables.showBuffs = val
-                self:RefreshDisplay()
-            end,
-        },
-        {
-            type    = "checkbox",
-            name    = "Show Text",
-            getFunc = function() return self.savedVariables.showBuffText end,
-            setFunc = function(val)
-                self.savedVariables.showBuffText = val
-                self:RefreshDisplay()
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Horizontal Position",
-            min     = 0, max = 3000, step = 10,
-            getFunc = function() return self.savedVariables.buffPosX end,
-            setFunc = function(val)
-                self.savedVariables.buffPosX = val
-                self:ApplyBuffPosition()
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Vertical Position",
-            min     = 0, max = 2000, step = 10,
-            getFunc = function() return self.savedVariables.buffPosY end,
-            setFunc = function(val)
-                self.savedVariables.buffPosY = val
-                self:ApplyBuffPosition()
-            end,
-        },
-
-        { type = "divider" },
-
-        {
-            type    = "checkbox",
-            name    = "Enable |cFF3333Debuff|r Panel",
-            getFunc = function() return self.savedVariables.showDebuffs end,
-            setFunc = function(val)
-                self.savedVariables.showDebuffs = val
-                self:RefreshDisplay()
-            end,
-        },
-        {
-            type    = "checkbox",
-            name    = "Show Text",
-            getFunc = function() return self.savedVariables.showDebuffText end,
-            setFunc = function(val)
-                self.savedVariables.showDebuffText = val
-                self:RefreshDisplay()
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Horizontal Position",
-            min     = 0, max = 3000, step = 10,
-            getFunc = function() return self.savedVariables.debuffPosX end,
-            setFunc = function(val)
-                self.savedVariables.debuffPosX = val
-                self:ApplyDebuffPosition()
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Vertical Position",
-            min     = 0, max = 2000, step = 10,
-            getFunc = function() return self.savedVariables.debuffPosY end,
-            setFunc = function(val)
-                self.savedVariables.debuffPosY = val
-                self:ApplyDebuffPosition()
-            end,
-        },
-
-        { type = "divider" },
-
-        { type = "header", name = "General" },
-        {
-            type    = "slider",
-            name    = "Text Size",
-            min     = 18, max = 60, step = 1,
-            getFunc = function() return self.savedVariables.fontSize end,
-            setFunc = function(val)
-                self.savedVariables.fontSize = val
-                self:BuildRowPools()
-            end,
-        },
-        {
-            type    = "checkbox",
-            name    = "1-10 ^ - 11+ 50% Smaller",
-            getFunc = function() return self.savedVariables.scaleOverflow end,
-            setFunc = function(val)
-                self.savedVariables.scaleOverflow = val
-            end,
+            type    = "submenu",
+            name    = "|cFF3333Debuffs|r",
+            align   = "left",
+            indent  = true,
+            icon    = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
+            options = {
+                {
+                    type    = "toggle",
+                    name    = "Preview",
+                    getFunc = function() return self.previewDebuffs end,
+                    setFunc = function(val)
+                        self.previewDebuffs = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "Move |cFF3333Debuffs|r",
+                    tooltip = "Move with the right stick. Press B to save and exit.",
+                    func    = function() self:StartMove(true) end,
+                },
+                {
+                    type    = "toggle",
+                    name    = "Enabled",
+                    default = self.defaults.showDebuffs,
+                    getFunc = function() return self.savedVariables.showDebuffs end,
+                    setFunc = function(val)
+                        self.savedVariables.showDebuffs = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "toggle",
+                    name    = "Show Text",
+                    default = self.defaults.showDebuffText,
+                    getFunc = function() return self.savedVariables.showDebuffText end,
+                    setFunc = function(val)
+                        self.savedVariables.showDebuffText = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "slider",
+                    name    = "Size",
+                    min     = 18, max = 60, step = 1,
+                    default = self.defaults.debuffSize,
+                    getFunc = function() return self.savedVariables.debuffSize end,
+                    setFunc = function(val)
+                        self.savedVariables.debuffSize = val
+                        self:RefreshDisplay()
+                    end,
+                },
+                {
+                    type    = "toggle",
+                    name    = "1-10 ^ - 11+ 50% Smaller",
+                    default = self.defaults.debuffScaleOverflow,
+                    getFunc = function() return self.savedVariables.debuffScaleOverflow end,
+                    setFunc = function(val)
+                        self.savedVariables.debuffScaleOverflow = val
+                        self:RefreshDisplay()
+                    end,
+                },
+            },
         },
     }
 
-    LAM:RegisterOptionControls("VerticalBuffsDebuffs_Settings", options)
+    menu:AddOptions(options)
 end
 
 --------------------------------------------------
@@ -527,22 +795,23 @@ local function OnAddonLoaded(event, addonName)
             "VerticalBuffsDebuffs_SavedVars",
             2,
             nil,
-            {
-                buffPosX      = 680,
-                buffPosY      = 600,
-                debuffPosX    = 1470,
-                debuffPosY    = 600,
-                fontSize      = 31,
-                scaleOverflow = false,
-                showBuffs     = true,
-                showDebuffs   = true,
-                showBuffText  = true,
-                showDebuffText = true,
-            }
+            VerticalBuffsDebuffs.defaults
         )
 
+        local sv = VerticalBuffsDebuffs.savedVariables
+        if sv.fontSize then
+            sv.buffSize   = sv.fontSize
+            sv.debuffSize = sv.fontSize
+            sv.fontSize   = nil
+        end
+        if sv.scaleOverflow ~= nil then
+            sv.buffScaleOverflow   = sv.scaleOverflow
+            sv.debuffScaleOverflow = sv.scaleOverflow
+            sv.scaleOverflow       = nil
+        end
+
         VerticalBuffsDebuffs:CreatePanels()
-        VerticalBuffsDebuffs:BuildRowPools()
+        VerticalBuffsDebuffs:BuildBoxPools()
         VerticalBuffsDebuffs:CreateSettings()
         VerticalBuffsDebuffs:InitializeSceneHiding()
 

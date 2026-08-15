@@ -2,7 +2,7 @@ SatuveRotationTrainer = SatuveRotationTrainer or {}
 local SRT = SatuveRotationTrainer
 
 SRT.name = "SatuveRotationTrainer"
-SRT.version = "0.6.13"
+SRT.version = "0.6.26"
 SRT.maxPriorities = 10
 SRT.routeLength = 2
 
@@ -16,6 +16,22 @@ local FONT_HEADER = "$(BOLD_FONT)|25|soft-shadow-thick"
 local FONT_TEXT   = "$(MEDIUM_FONT)|23|soft-shadow-thick"
 local FONT_BUTTON = "$(BOLD_FONT)|21|soft-shadow-thick"
 local FONT_SMALL  = "$(MEDIUM_FONT)|19|soft-shadow-thick"
+local FONT_FLOW_KEY = "$(BOLD_FONT)|32|soft-shadow-thick"
+local FONT_FLOW_SWAP = "$(BOLD_FONT)|20|soft-shadow-thick"
+
+-- v0.6.21: feste maschinenlesbare RGB-Codes fuer AHK PixelSearch.
+-- Die Schrift bleibt hell/pastellig, die Farben sind aber weit genug auseinander.
+local AHK_ACTION_COLORS = {
+    ["1"]    = {255/255, 184/255, 184/255}, -- #FFB8B8
+    ["2"]    = {184/255, 255/255, 184/255}, -- #B8FFB8
+    ["3"]    = {184/255, 212/255, 255/255}, -- #B8D4FF
+    ["4"]    = {255/255, 240/255, 168/255}, -- #FFF0A8
+    ["5"]    = {228/255, 184/255, 255/255}, -- #E4B8FF
+    ["SWAP"] = {168/255, 255/255, 255/255}, -- #A8FFFF
+    ["ULT"]  = {255/255, 208/255, 160/255}, -- #FFD0A0
+}
+local FLOW_ITEM_GAP_PX = 8      -- minimum visual gap so Skill / SWAP / Skill never overlap
+local MISSED_MIN_SPEED = 0.035  -- almost-stop speed after an unpressed action passes PRESS
 
 local defaults = {
     enabled = true,
@@ -24,6 +40,18 @@ local defaults = {
     scale = 1.0,
     gcdMs = 1000,
     pressLeadMs = 950,
+    skillDetectLeadMs = 250,  -- extra visual recognition window before PRESS
+    skillDetectTrailMs = 200, -- keep pressed skill visible before fade-out begins
+    pressVisualHoldEnabled = true, -- freeze CURRENT exactly on PRESS briefly for screen recognition
+    pressVisualHoldMs = 200,       -- fixed visual hold duration; toggleable in menu
+    ahkColorMarkersEnabled = false, -- legacy; recognition now uses the separate white image box
+    ahkDataCodeEnabled = false, -- legacy data-code disabled in v0.6.25
+    recognitionBoxEnabled = true,
+    recognitionLeadMs = 300,   -- show action image this many ms before PRESS
+    recognitionHoldMs = 350,   -- keep it visible for at least this long
+    fixedFlowSpeed = false,    -- false = existing easing/slowdown, true = constant movement speed
+    swapLeadMs = 250,         -- BAR SWAP: spacing before SWAP, expressed as travel-time at normal skill speed
+    swapTrailMs = 200,        -- BAR SWAP: spacing after SWAP, expressed as travel-time at normal skill speed
     iconSize = 58,
     hitZoneX = 120,
     executeHp = 25,
@@ -286,15 +314,21 @@ function SRT:ClearHeldRecommendation()
     self.heldReachedPress = false
     self.heldStartMs = nil
     self.currentHeldX = nil
+    -- v0.6.16: BAR SWAP is planned once when a recommendation becomes current.
+    -- Never create a new swap later just because the live bar/proc state changed.
+    self.heldPlannedSwapBar = nil
+    self.heldPlannedSwapDone = nil
 end
 
 function SRT:StartFadeRecommendation(item, atMs)
     if not item then return end
     self.fadingRecommendation = item
     self.fadeStartMs = atMs or now()
-    self.fadeDurationMs = 320
-    -- Fade from the icon's real on-screen position. Early presses therefore also
-    -- look continuous instead of teleporting to PRESS before sliding away.
+    self.fadeHoldMs = tonumber(self.sv.skillDetectTrailMs) or 200
+    self.fadeDurationMs = 260
+    -- Keep the recognized skill stable briefly after the real press, then fade it
+    -- from its actual screen position. This gives screen-reading helpers a clean
+    -- post-press window without changing the planner/GCD itself.
     self.fadeFromX = self.currentHeldX
 end
 
@@ -302,6 +336,7 @@ function SRT:ClearFadeRecommendation()
     self.fadingRecommendation = nil
     self.fadeStartMs = nil
     self.fadeFromX = nil
+    self.fadeHoldMs = nil
 end
 
 function SRT:ResetFlow()
@@ -354,6 +389,9 @@ function SRT:SetCombatState(inCombat)
         self:ClearFadeRecommendation()
         self:SyncActivePlayerEffects()
         self:RefreshProcState()
+        -- Freeze button numbers + selected bars at combat start. Proc state may change
+        -- icons/recommendations, but never the visible key label or mapped bar.
+        self:CaptureCombatDisplayMap()
         self.lastUltimatePoints = getUltimatePoints()
     end
 
@@ -371,6 +409,81 @@ function SRT:GetAllConfiguredSkills()
         if self.sv.priorities[i] then table.insert(out, self.sv.priorities[i]) end
     end
     return out
+end
+
+-- v0.6.16: Freeze the visual key/bar mapping for the duration of combat.
+-- Proc replacements are allowed to change the shown ability icon, but they must NEVER
+-- change the number/key that a screen reader sees on top of that configured skill.
+function SRT:CaptureCombatDisplayMap()
+    self.combatDisplayMap = {}
+    self:RefreshBarMap()
+
+    for _, skill in ipairs(self:GetAllConfiguredSkills()) do
+        if skill and skill.abilityId and skill.abilityId > 0 then
+            local bar = skill.hotbar
+            local slot = tonumber(skill.slotIndex)
+
+            -- Repair missing saved placement once, BEFORE the combat display is frozen.
+            if (not bar or not slot) then
+                for _, hb in ipairs({HOTBAR_PRIMARY, HOTBAR_BACKUP}) do
+                    local found = self.barSlots and self.barSlots[hb] and self.barSlots[hb][skill.abilityId]
+                    if found then
+                        bar, slot = hb, tonumber(found)
+                        break
+                    end
+                end
+            end
+
+            if bar and slot then
+                self.combatDisplayMap[skill.abilityId] = {
+                    hotbar = bar,
+                    slotIndex = slot,
+                    inputLabel = slotInputLabel(slot),
+                }
+            end
+        end
+    end
+end
+
+function SRT:GetStableDisplayPlacement(item)
+    if not item then return nil, nil end
+    local sourceId = item.sourceAbilityId or item.abilityId
+    local skill = item.skill
+
+    -- A proc always inherits the configured base skill's frozen combat mapping.
+    if self.combatDisplayMap then
+        local entry = sourceId and self.combatDisplayMap[sourceId] or nil
+        if not entry and skill and skill.abilityId then entry = self.combatDisplayMap[skill.abilityId] end
+        if not entry and item.abilityId and PROC_BASE_BY_PROC[item.abilityId] then
+            entry = self.combatDisplayMap[PROC_BASE_BY_PROC[item.abilityId]]
+        end
+        if entry then return entry.hotbar, entry.slotIndex end
+    end
+
+    -- Outside combat/test fallback: prefer the configured placement, not the temporary proc id.
+    if skill and skill.hotbar and skill.slotIndex then
+        return skill.hotbar, tonumber(skill.slotIndex)
+    end
+    return self:ResolveItemPlacement(item)
+end
+
+function SRT:GetStableDisplayLabel(item)
+    if not item then return "?" end
+    if item.type == "ultimate" then return "ULT" end
+    local sourceId = item.sourceAbilityId or item.abilityId
+    local skill = item.skill
+
+    if self.combatDisplayMap then
+        local entry = sourceId and self.combatDisplayMap[sourceId] or nil
+        if not entry and skill and skill.abilityId then entry = self.combatDisplayMap[skill.abilityId] end
+        if not entry and item.abilityId and PROC_BASE_BY_PROC[item.abilityId] then
+            entry = self.combatDisplayMap[PROC_BASE_BY_PROC[item.abilityId]]
+        end
+        if entry and entry.inputLabel and entry.inputLabel ~= "" then return entry.inputLabel end
+    end
+
+    local _, slot = self:GetStableDisplayPlacement(item)
+    return slotInputLabel(slot)
 end
 
 function SRT:IsConfiguredAbility(id)
@@ -1462,15 +1575,24 @@ function SRT:CreateMain()
     local zone = WM:CreateControl("SRT_HitZone", w, CT_BACKDROP)
     zone:SetDimensions(76, 86)
     zone:SetAnchor(LEFT, w, LEFT, self.sv.hitZoneX - 38, 0)
-    zone:SetCenterColor(0.08, 0.55, 0.10, 0.22)
-    zone:SetEdgeColor(0.2, 1.0, 0.25, 1)
+    zone:SetCenterColor(0.06, 0.06, 0.06, 0.18)
+    zone:SetEdgeColor(0.60, 0.60, 0.60, 0.95)
     zone:SetEdgeTexture("", 4, 4, 4)
+    self.hitZone = zone
 
-    local ztxt = label(w, "SRT_HitZoneText", self.sv.hitZoneX - 35, 4, 70, 20, FONT_HEADER, "PRESS")
+    local ztxt = label(w, "SRT_HitZoneText", self.sv.hitZoneX - 35, 4, 70, 20, FONT_HEADER, "")
     ztxt:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
+    -- Separate machine-readable action image. It is static, white and uses the
+    -- exact same source artwork as the PNG templates shipped with the AHK script.
+    local recognition = WM:CreateControl("SRT_RecognitionBox", w, CT_TEXTURE)
+    recognition:SetDimensions(72, 42)
+    recognition:SetAnchor(BOTTOM, zone, TOP, 0, -4)
+    recognition:SetHidden(true)
+    self.recognitionBox = recognition
+
     self.flowIcons = {}
-    for i = 1, self.routeLength do
+    for i = 1, 3 do
         local holder = WM:CreateControl("SRT_FlowHolder" .. i, w, CT_CONTROL)
         holder:SetDimensions(self.sv.iconSize + 8, 94)
         local frame = WM:CreateControl("SRT_FlowFrame" .. i, holder, CT_BACKDROP)
@@ -1482,8 +1604,12 @@ function SRT:CreateMain()
         local icon = WM:CreateControl("SRT_FlowIcon" .. i, holder, CT_TEXTURE)
         icon:SetAnchor(TOPLEFT, holder, TOPLEFT, 4, 4)
         icon:SetDimensions(self.sv.iconSize, self.sv.iconSize)
-        local slot = label(holder, "SRT_FlowSlot" .. i, 0, self.sv.iconSize + 10, self.sv.iconSize + 8, 20, FONT_SMALL, "")
+        -- Put the action key directly on top of the skill icon.  A larger bold
+        -- font makes the number easy to read (and easier for external screen
+        -- recognition) while keeping the ability icon visible underneath.
+        local slot = label(holder, "SRT_FlowSlot" .. i, 4, 4, self.sv.iconSize, self.sv.iconSize, FONT_FLOW_KEY, "")
         slot:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        slot:SetColor(1, 1, 1, 1)
         holder.frame, holder.icon, holder.slot = frame, icon, slot
         holder:SetHidden(true)
         self.flowIcons[i] = holder
@@ -1501,12 +1627,15 @@ function SRT:UpdateFlow()
         self.main:SetHidden(false)
         self:UpdateMoveInput()
         for _, holder in ipairs(self.flowIcons) do holder:SetHidden(true) end
+        self:HideRecognitionBox()
         self.status:SetText("")
         return
     end
 
     if not self.sv.enabled or (not self.inCombat and not self.testMode) then
         self.main:SetHidden(true)
+        self:HideRecognitionBox()
+        if self.SetAhkDataCode then self:SetAhkDataCode(nil, false) end
         return
     end
     self.main:SetHidden(false)
@@ -1517,14 +1646,20 @@ function SRT:UpdateFlow()
         route = {}
         local current = self.testSequence[self.testIndex]
         local nxt = self.testSequence[self.testIndex + 1]
+        local third = self.testSequence[self.testIndex + 2]
         if current then table.insert(route, current) end
         if nxt then table.insert(route, nxt) end
+        if third then table.insert(route, third) end
     else
-        route = self:BuildRoute()
+        -- Request three skills for DISPLAY only. The combat lock queue remains the same;
+        -- the third item is used so a pre-planned SWAP can sit between two skills
+        -- without hiding the skill that follows it.
+        route = self:BuildRoute(3)
     end
 
     if #route == 0 then
         for _, holder in ipairs(self.flowIcons) do holder:SetHidden(true) end
+        self:HideRecognitionBox()
         self.status:SetText("")
         return
     end
@@ -1549,95 +1684,282 @@ function SRT:UpdateFlow()
         holder:SetAnchor(TOPLEFT, self.main, TOPLEFT, x, 28)
         holder:SetHidden(false)
         holder:SetAlpha(alpha or 1)
+
+        if item.type == "swap" then
+            holder.icon:SetHidden(true)
+            holder.slot:SetFont(FONT_FLOW_SWAP)
+            holder.slot:SetText("")
+            holder.frame:SetCenterColor(green and 0.08 or 0.10, green and 0.08 or 0.18, green and 0.08 or 0.55, green and 0.62 or 0.62)
+            holder.frame:SetEdgeColor(green and 0.65 or 0.35, green and 0.65 or 0.65, green and 0.65 or 1.0, 1.0)
+            return
+        end
+
+        holder.icon:SetHidden(false)
         holder.icon:SetTexture(abilityIcon(item.abilityId))
-        local bar, slot = self:ResolveItemPlacement(item)
-        local needSwap = bar and bar ~= activeBar
-        local slotText = item.type == "ultimate" and "ULT" or slotInputLabel(slot)
-        holder.slot:SetText((needSwap and "SWAP > " or "") .. slotText)
-        holder.frame:SetCenterColor(green and 0.05 or 0, green and 0.55 or 0, green and 0.08 or 0, green and 0.48 or 0)
-        holder.frame:SetEdgeColor(green and 0.2 or 0.75, green and 1.0 or 0.75, green and 0.25 or 0.75, green and 1 or 0.85)
-        holder.icon:SetColor(green and 0.55 or 1, 1, green and 0.55 or 1, 1)
+        holder.slot:SetFont(FONT_FLOW_KEY)
+        -- v0.6.26: Moving skill cards no longer show 1-5/ULT text.
+        -- Recognition is handled exclusively by the white DETECT BOX above PRESS.
+        local stableLabel = self:GetStableDisplayLabel(item)
+        holder.slot:SetText("")
+        holder.frame:SetCenterColor(green and 0.08 or 0, green and 0.08 or 0, green and 0.08 or 0, green and 0.48 or 0)
+        holder.frame:SetEdgeColor(green and 0.65 or 0.75, green and 0.65 or 0.75, green and 0.65 or 0.75, green and 1 or 0.85)
+        holder.icon:SetColor(1, 1, 1, 1)
     end
 
     if not self.heldRecommendation then
         self.heldRecommendation = route[1]
         self.heldStartMs = self.lastActionMs or now()
         self.heldReachedPress = false
+
+        -- Pre-calculate BAR SWAP exactly once for this held skill. This prevents a
+        -- proc/live-slot change from suddenly inserting SWAP in the middle of combat.
+        local plannedBar = select(1, self:GetStableDisplayPlacement(self.heldRecommendation))
+        local barNow = currentBar()
+        if plannedBar and plannedBar ~= barNow then
+            self.heldPlannedSwapBar = plannedBar
+            self.heldPlannedSwapDone = false
+        else
+            self.heldPlannedSwapBar = nil
+            self.heldPlannedSwapDone = true
+        end
     end
 
     local current = self.heldRecommendation
-    local nextSkill = route[1]
-    if current and nextSkill and self:RecommendationMatchesAbility(current, nextSkill.sourceAbilityId or nextSkill.abilityId) then
-        nextSkill = route[2]
+    local nextIndex = 1
+    if current and route[1] and self:RecommendationMatchesAbility(current, route[1].sourceAbilityId or route[1].abilityId) then
+        nextIndex = 2
+    end
+    local nextSkill = route[nextIndex]
+    local thirdSkill = route[nextIndex + 1]
+
+    -- v0.6.16: BAR SWAP is part of the visual plan, not a reaction to a changing
+    -- live slot/proc state. The current recommendation receives its swap requirement
+    -- once when it becomes held. The NEXT preview is also calculated from the frozen
+    -- mapped bars so SWAP can already be seen BETWEEN the two skills.
+    local visualCurrent = current
+    local visualNext = nextSkill
+    local visualThird = nil
+
+    local currentBarNeeded = current and select(1, self:GetStableDisplayPlacement(current)) or nil
+    local nextBarNeeded = nextSkill and select(1, self:GetStableDisplayPlacement(nextSkill)) or nil
+
+    -- Consume only the swap that was pre-planned for CURRENT. Once completed it can
+    -- never reappear for this skill, even if ESO later reports a proc replacement.
+    if self.heldPlannedSwapBar and self.heldPlannedSwapDone == false then
+        if activeBar == self.heldPlannedSwapBar then
+            self.heldPlannedSwapDone = true
+            self.visualSwapJustResolved = true
+        else
+            visualCurrent = {type="swap", targetBar=self.heldPlannedSwapBar, abilityId=0}
+            visualNext = current
+            visualThird = nextSkill
+        end
+    end
+
+    -- If CURRENT itself is being shown, pre-calculate the transition to NEXT.
+    -- When NEXT lives on the opposite mapped bar, the second moving item is SWAP
+    -- immediately; it does not suddenly appear later at PRESS.
+    if visualCurrent == current and nextSkill and currentBarNeeded and nextBarNeeded
+        and nextBarNeeded ~= currentBarNeeded then
+        visualNext = {
+            type = "swap",
+            targetBar = nextBarNeeded,
+            abilityId = 0,
+            plannedBetween = true,
+        }
+        -- Keep the skill AFTER the swap visible as a third moving item.
+        visualThird = nextSkill
     end
 
     -- True frame-by-frame metronome motion. Never snap/clamp CURRENT to PRESS.
     -- Keep a persistent X coordinate and physically move it every update.
     local tNow = now()
-    local visualKey = tostring(current and (current.sourceAbilityId or current.abilityId) or 0) .. ":" .. tostring(current and current.type or "")
+    local visualKey
+    if visualCurrent and visualCurrent.type == "swap" then
+        visualKey = "swap:" .. tostring(visualCurrent.targetBar or 0)
+    else
+        visualKey = tostring(visualCurrent and (visualCurrent.sourceAbilityId or visualCurrent.abilityId) or 0) .. ":" .. tostring(visualCurrent and visualCurrent.type or "")
+    end
     if self.visualHeldKey ~= visualKey or self.currentVisualX == nil then
         self.visualHeldKey = visualKey
-        self.currentVisualX = entryX
+        self.visualPressHoldStartMs = nil
+        self.visualPressHoldDoneKey = nil
+        local skillPxPerMsInit = math.max(0.05, (entryX - pressX) / gcd)
+        if self.visualSwapJustResolved then
+            -- AFTER controls only the distance to the next skill. Movement speed stays
+            -- identical to a normal skill.
+            local afterMs = zo_clamp(tonumber(self.sv.swapTrailMs) or 200, 200, 1000)
+            self.currentVisualX = pressX + (skillPxPerMsInit * afterMs)
+            self.visualSwapJustResolved = nil
+        elseif visualCurrent and visualCurrent.type == "swap" then
+            -- BEFORE controls where SWAP enters the visible lane. It does NOT make
+            -- SWAP move faster; SWAP travels with the exact same metronome speed.
+            local beforeMs = zo_clamp(tonumber(self.sv.swapLeadMs) or 250, 200, 1000)
+            self.currentVisualX = pressX + (skillPxPerMsInit * beforeMs)
+        else
+            self.currentVisualX = entryX
+        end
         self.lastVisualUpdateMs = tNow
     end
 
     local dt = math.max(0, math.min(100, tNow - (self.lastVisualUpdateMs or tNow)))
     self.lastVisualUpdateMs = tNow
 
-    -- Base speed crosses entryX -> PRESS in one adaptive beat.
-    local basePxPerMs = math.max(0.05, (entryX - pressX) / gcd)
+    -- v0.6.18: SWAP is a true in-between action. It always moves with the SAME
+    -- metronome velocity and the SAME PRESS-zone easing as a skill. BEFORE/AFTER
+    -- change only the spacing around it, never its movement speed.
+    local isSwapCurrent = visualCurrent and visualCurrent.type == "swap"
+    local skillPxPerMs = math.max(0.05, (entryX - pressX) / gcd)
+    local swapBeforeMs = zo_clamp(tonumber(self.sv.swapLeadMs) or 250, 200, 1000)
+    local swapAfterMs = zo_clamp(tonumber(self.sv.swapTrailMs) or 200, 200, 1000)
+    local basePxPerMs = skillPxPerMs
     local distToPress = self.currentVisualX - pressX
     local speedFactor = 1.0
 
-    -- Slow down smoothly near PRESS, but never stop.
-    if distToPress > 0 and distToPress <= 90 then
-        local n = distToPress / 90
-        speedFactor = 0.28 + 0.72 * n
-    elseif distToPress <= 0 and distToPress >= -110 then
-        -- Missed/late zone: crawl left so the player can still react.
-        speedFactor = 0.28
-        self.heldReachedPress = true
-    elseif distToPress < -110 then
-        speedFactor = 0.55
-        self.heldReachedPress = true
+    if not (self.sv.fixedFlowSpeed == true) then
+        if distToPress > 0 and distToPress <= 90 then
+            local n = distToPress / 90
+            speedFactor = 0.28 + 0.72 * n
+        elseif distToPress <= 0 then
+            -- Existing adaptive/missed-action slowdown remains available when FIXED is OFF.
+            self.heldReachedPress = true
+            local latePx = math.max(0, -distToPress)
+            local lateN = zo_clamp(latePx / 150, 0, 1)
+            speedFactor = 0.28 - ((0.28 - MISSED_MIN_SPEED) * lateN)
+        end
     end
 
-    self.currentVisualX = self.currentVisualX - (basePxPerMs * speedFactor * dt)
+    -- Optional v0.6.20 recognition hold:
+    -- When CURRENT first reaches PRESS, keep it pixel-stable exactly on pressX for
+    -- 200 ms. This is purely visual: planner/GCD/ability recognition keep running.
+    -- The hold happens only once per visual item, then movement resumes normally.
+    local pressHoldEnabled = (self.sv.pressVisualHoldEnabled == true)
+    local pressHoldMs = zo_clamp(tonumber(self.sv.pressVisualHoldMs) or 200, 50, 500)
+    local holdActive = false
+
+    if pressHoldEnabled and self.visualPressHoldStartMs and self.visualPressHoldDoneKey ~= visualKey then
+        local holdElapsed = tNow - self.visualPressHoldStartMs
+        if holdElapsed < pressHoldMs then
+            self.currentVisualX = pressX
+            holdActive = true
+        else
+            self.visualPressHoldStartMs = nil
+            self.visualPressHoldDoneKey = visualKey
+        end
+    end
+
+    if not holdActive then
+        local proposedX = self.currentVisualX - (basePxPerMs * speedFactor * dt)
+
+        if pressHoldEnabled
+            and self.visualPressHoldDoneKey ~= visualKey
+            and self.currentVisualX > pressX
+            and proposedX <= pressX then
+            self.currentVisualX = pressX
+            self.visualPressHoldStartMs = tNow
+            holdActive = true
+        else
+            self.currentVisualX = proposedX
+        end
+    end
+
     local currentX = self.currentVisualX
     self.currentHeldX = currentX
 
+    -- v0.6.25: static white recognition image appears before PRESS and remains
+    -- visible for the configured minimum hold time.
+    self:UpdateRecognitionBox(visualCurrent, visualKey, currentX, pressX, basePxPerMs, tNow)
+
     -- NEXT follows continuously behind CURRENT instead of being pinned to a midpoint.
     -- It starts one runway length to the right and inherits the same physical motion.
-    local nextX = currentX + (farRightX - entryX)
+    local nextX
+    local thirdX
+    -- v0.6.19: Keep every visible card physically side-by-side. The configured
+    -- BEFORE/AFTER values still define the desired timing distance, but if that
+    -- distance would make two cards overlap we enforce one card width + a small gap.
+    -- Nothing is sped up; this only changes the visual spacing of the previews.
+    local holderWidth = self.sv.iconSize + 8
+    local minVisualGap = holderWidth + FLOW_ITEM_GAP_PX
+
+    if isSwapCurrent then
+        -- SWAP -> skill: compact AFTER spacing, but never overlap.
+        nextX = currentX + math.max(skillPxPerMs * swapAfterMs, minVisualGap)
+        if visualThird then
+            thirdX = nextX + math.max((farRightX - entryX), minVisualGap)
+        end
+    elseif visualNext and visualNext.type == "swap" then
+        -- skill -> SWAP -> skill: three cards remain in one clean row.
+        nextX = currentX + math.max(skillPxPerMs * swapBeforeMs, minVisualGap)
+        if visualThird then
+            thirdX = nextX + math.max(skillPxPerMs * swapAfterMs, minVisualGap)
+        end
+    else
+        nextX = currentX + math.max((farRightX - entryX), minVisualGap)
+    end
 
     local fadeActive = false
     local fadeP = 1
     if self.fadingRecommendation and self.fadeStartMs then
-        fadeP = zo_clamp((now() - self.fadeStartMs) / (self.fadeDurationMs or 320), 0, 1)
-        if fadeP < 1 then fadeActive = true else self:ClearFadeRecommendation() end
+        local elapsedFade = now() - self.fadeStartMs
+        local holdMs = tonumber(self.fadeHoldMs) or 200
+        if elapsedFade < holdMs then
+            fadeP = 0
+            fadeActive = true
+        else
+            fadeP = zo_clamp((elapsedFade - holdMs) / (self.fadeDurationMs or 260), 0, 1)
+            if fadeP < 1 then fadeActive = true else self:ClearFadeRecommendation() end
+        end
     end
 
-    local h1, h2 = self.flowIcons[1], self.flowIcons[2]
+    local h1, h2, h3 = self.flowIcons[1], self.flowIcons[2], self.flowIcons[3]
     if fadeActive then
         local eased = 1 - ((1 - fadeP) * (1 - fadeP))
         local fromX = self.fadeFromX or pressX
         local fx = fromX + (leftX - fromX) * eased
         setHolder(h1, self.fadingRecommendation, fx, false, 1 - fadeP)
-        if current then
-            local inPressZone = currentX <= (pressX + 30) and currentX >= (pressX - 110)
-            setHolder(h2, current, currentX, inPressZone, 1)
+        if visualCurrent then
+            local leadMs = isSwapCurrent and swapBeforeMs or (tonumber(self.sv.skillDetectLeadMs) or 250)
+            local trailMs = isSwapCurrent and zo_clamp(tonumber(self.sv.swapTrailMs) or 200, 200, 1000) or (tonumber(self.sv.skillDetectTrailMs) or 200)
+            local leadPx = basePxPerMs * leadMs
+            local trailPx = basePxPerMs * trailMs
+            local inPressZone = (currentX <= (pressX + leadPx) and currentX >= (pressX - trailPx))
+            setHolder(h2, visualCurrent, currentX, inPressZone, 1)
         else
             h2:SetHidden(true)
         end
+        if visualThird and thirdX then setHolder(h3, visualThird, thirdX, false, 1) else h3:SetHidden(true) end
     else
-        if current then
-            local inPressZone = currentX <= (pressX + 30) and currentX >= (pressX - 110)
-            setHolder(h1, current, currentX, inPressZone, 1)
+        if visualCurrent then
+            local leadMs = isSwapCurrent and swapBeforeMs or (tonumber(self.sv.skillDetectLeadMs) or 250)
+            local trailMs = isSwapCurrent and zo_clamp(tonumber(self.sv.swapTrailMs) or 200, 200, 1000) or (tonumber(self.sv.skillDetectTrailMs) or 200)
+            local leadPx = basePxPerMs * leadMs
+            local trailPx = basePxPerMs * trailMs
+            local inPressZone = (currentX <= (pressX + leadPx) and currentX >= (pressX - trailPx))
+            setHolder(h1, visualCurrent, currentX, inPressZone, 1)
         else
             h1:SetHidden(true)
         end
-        if nextSkill then setHolder(h2, nextSkill, nextX, false, 1) else h2:SetHidden(true) end
+        if visualNext then setHolder(h2, visualNext, nextX, false, 1) else h2:SetHidden(true) end
+        if visualThird and thirdX then setHolder(h3, visualThird, thirdX, false, 1) else h3:SetHidden(true) end
     end
+
+    -- The code is only visible while CURRENT is actually at PRESS.
+    -- PRESS HOLD keeps this state pixel-stable long enough for the external reader.
+    local codeActive = false
+    if visualCurrent and self.currentVisualX then
+        codeActive = math.abs(self.currentVisualX - pressX) <= 3
+    end
+
+    local codeLabel = nil
+    if visualCurrent then
+        if visualCurrent.type == "swap" then
+            codeLabel = "SWAP"
+        else
+            codeLabel = self:GetStableDisplayLabel(visualCurrent)
+            if visualCurrent.type == "ultimate" then codeLabel = "ULT" end
+        end
+    end
+    -- Legacy 3-bit marker disabled; v0.6.25 uses the white recognition image box.
 
     self.status:SetText("")
     if self.config and not self.config:IsHidden() and self.ultimateResourceLabel then self:RefreshUltimateDisplay() end
@@ -2068,9 +2390,215 @@ function SRT:ToggleRotationMode()
     self:RefreshConfig()
 end
 
+
+-- v0.6.23: 3-bit machine code in the existing PRESS frame.
+-- Four tiny 3x3 blocks are used:
+--   sync + bit1 + bit2 + bit3
+-- The sync block is a unique muted cyan. Bits are two different gray levels.
+-- This is far more robust than reading moving text or ability icons.
+local AHK_CODE_SYNC = {0.275, 0.620, 0.745} -- approx #469EBD
+local AHK_CODE_ZERO = {0.220, 0.220, 0.220} -- approx #383838
+local AHK_CODE_ONE  = {0.620, 0.620, 0.620} -- approx #9E9E9E
+
+local AHK_ACTION_CODE = {
+    ["1"]    = 1, -- 001
+    ["2"]    = 2, -- 010
+    ["3"]    = 3, -- 011
+    ["4"]    = 4, -- 100
+    ["5"]    = 5, -- 101
+    ["SWAP"] = 6, -- 110
+    ["ULT"]  = 7, -- 111
+}
+
+function SRT:ToggleAhkDataCode()
+    self.sv.ahkDataCodeEnabled = not (self.sv.ahkDataCodeEnabled == true)
+    msg("AHK data code: " .. ((self.sv.ahkDataCodeEnabled == true) and "ON" or "OFF"))
+    if not self.sv.ahkDataCodeEnabled then
+        self:SetAhkDataCode(nil, false)
+    end
+    self:RefreshConfig()
+end
+
+function SRT:EnsureAhkDataCode()
+    if self.ahkCodeControls then return end
+    if not self.hitZone then return end
+
+    self.ahkCodeControls = {}
+    for i = 1, 4 do
+        local c = WM:CreateControl("SRT_AhkCode" .. tostring(i), self.hitZone, CT_BACKDROP)
+        c:SetDimensions(3, 3)
+        c:SetAnchor(TOPLEFT, self.hitZone, TOPLEFT, 5 + ((i - 1) * 5), 3)
+        c:SetCenterColor(0.22, 0.22, 0.22, 1)
+        c:SetEdgeColor(0, 0, 0, 0)
+        c:SetHidden(true)
+        self.ahkCodeControls[i] = c
+    end
+end
+
+function SRT:SetAhkDataCode(actionLabel, active)
+    self:EnsureAhkDataCode()
+    if not self.ahkCodeControls then return end
+
+    if not (self.sv and self.sv.ahkDataCodeEnabled == true) or not active then
+        for i = 1, 4 do self.ahkCodeControls[i]:SetHidden(true) end
+        return
+    end
+
+    local code = AHK_ACTION_CODE[tostring(actionLabel or "")]
+    if not code then
+        for i = 1, 4 do self.ahkCodeControls[i]:SetHidden(true) end
+        return
+    end
+
+    local sync = self.ahkCodeControls[1]
+    sync:SetCenterColor(AHK_CODE_SYNC[1], AHK_CODE_SYNC[2], AHK_CODE_SYNC[3], 1)
+    sync:SetHidden(false)
+
+    -- MSB -> LSB: bit1, bit2, bit3
+    local masks = {4, 2, 1}
+    for i = 1, 3 do
+        local on = (math.floor(code / masks[i]) % 2) == 1
+        local col = on and AHK_CODE_ONE or AHK_CODE_ZERO
+        local c = self.ahkCodeControls[i + 1]
+        c:SetCenterColor(col[1], col[2], col[3], 1)
+        c:SetHidden(false)
+    end
+end
+
+
+local RECOGNITION_TEXTURES = {
+    ["1"]    = "SatuveRotationTrainer/textures/1.dds",
+    ["2"]    = "SatuveRotationTrainer/textures/2.dds",
+    ["3"]    = "SatuveRotationTrainer/textures/3.dds",
+    ["4"]    = "SatuveRotationTrainer/textures/4.dds",
+    ["5"]    = "SatuveRotationTrainer/textures/5.dds",
+    ["SWAP"] = "SatuveRotationTrainer/textures/swap.dds",
+    ["ULT"]  = "SatuveRotationTrainer/textures/ulti.dds",
+}
+
+function SRT:ToggleRecognitionBox()
+    self.sv.recognitionBoxEnabled = not (self.sv.recognitionBoxEnabled == true)
+    if not self.sv.recognitionBoxEnabled and self.recognitionBox then
+        self.recognitionBox:SetHidden(true)
+    end
+    msg("Recognition box: " .. ((self.sv.recognitionBoxEnabled == true) and "ON" or "OFF"))
+    self:RefreshConfig()
+end
+
+function SRT:AdjustRecognitionTiming(which, delta)
+    if which == "lead" then
+        self.sv.recognitionLeadMs = zo_clamp((tonumber(self.sv.recognitionLeadMs) or 300) + delta, 50, 1000)
+    else
+        self.sv.recognitionHoldMs = zo_clamp((tonumber(self.sv.recognitionHoldMs) or 350) + delta, 100, 1500)
+    end
+    self:RefreshConfig()
+end
+
+function SRT:ToggleFixedFlowSpeed()
+    self.sv.fixedFlowSpeed = not (self.sv.fixedFlowSpeed == true)
+    msg("Flow speed: " .. ((self.sv.fixedFlowSpeed == true) and "FIXED" or "ADAPTIVE"))
+    self:RefreshConfig()
+end
+
+function SRT:GetRecognitionActionLabel(item)
+    if not item then return nil end
+    if item.type == "swap" then return "SWAP" end
+    if item.type == "ultimate" then return "ULT" end
+    local stable = self:GetStableDisplayLabel(item)
+    if stable == "ULT" then return "ULT" end
+    if stable == "1" or stable == "2" or stable == "3" or stable == "4" or stable == "5" then
+        return stable
+    end
+    return nil
+end
+
+function SRT:HideRecognitionBox()
+    if self.recognitionBox then self.recognitionBox:SetHidden(true) end
+end
+
+function SRT:UpdateRecognitionBox(item, visualKey, currentX, pressX, basePxPerMs, tNow)
+    if not self.recognitionBox then return end
+    if not (self.sv.recognitionBoxEnabled == true) then
+        self:HideRecognitionBox()
+        self.recognitionDisplayKey = nil
+        return
+    end
+
+    local action = self:GetRecognitionActionLabel(item)
+    local texture = action and RECOGNITION_TEXTURES[action] or nil
+    if not texture then
+        self:HideRecognitionBox()
+        return
+    end
+
+    local leadMs = zo_clamp(tonumber(self.sv.recognitionLeadMs) or 300, 50, 1000)
+    local holdMs = zo_clamp(tonumber(self.sv.recognitionHoldMs) or 350, 100, 1500)
+    local triggerX = pressX + (basePxPerMs * leadMs)
+
+    -- Trigger exactly once per CURRENT item as it approaches PRESS.
+    if self.recognitionTriggeredKey ~= visualKey and currentX <= triggerX then
+        self.recognitionTriggeredKey = visualKey
+        self.recognitionDisplayKey = visualKey
+        self.recognitionHideAtMs = tNow + holdMs
+        self.recognitionBox:SetTexture(texture)
+        self.recognitionBox:SetHidden(false)
+    end
+
+    -- Minimum hold duration: old image stays stable even if CURRENT changes shortly after PRESS.
+    if self.recognitionDisplayKey and self.recognitionHideAtMs then
+        if tNow >= self.recognitionHideAtMs then
+            self:HideRecognitionBox()
+            self.recognitionDisplayKey = nil
+            self.recognitionHideAtMs = nil
+        end
+    end
+end
+
+function SRT:ToggleAhkColorMarkers()
+    self.sv.ahkColorMarkersEnabled = not (self.sv.ahkColorMarkersEnabled == true)
+    msg("AHK color markers: " .. ((self.sv.ahkColorMarkersEnabled == true) and "ON" or "OFF"))
+    self:RefreshConfig()
+end
+
+function SRT:SetPressFrameStyle(holder)
+    if not holder or not holder.frame then return end
+    -- v0.6.22: PRESS no longer turns green. A neutral dark frame keeps the
+    -- machine-readable RGB text unchanged for AHK PixelSearch.
+    holder.frame:SetCenterColor(0.08, 0.08, 0.08, 0.72)
+    holder.frame:SetEdgeColor(0.65, 0.65, 0.65, 1)
+end
+
+function SRT:SetActionTextColor(labelControl, actionLabel)
+    if not labelControl then return end
+    if self.sv and self.sv.ahkColorMarkersEnabled == true then
+        local c = AHK_ACTION_COLORS[tostring(actionLabel or "")]
+        if c then
+            labelControl:SetColor(c[1], c[2], c[3], 1)
+            return
+        end
+    end
+    labelControl:SetColor(1, 1, 1, 1)
+end
+
+function SRT:TogglePressVisualHold()
+    self.sv.pressVisualHoldEnabled = not (self.sv.pressVisualHoldEnabled == true)
+    -- Reset the current one-shot hold state so the new setting takes effect cleanly.
+    self.visualPressHoldStartMs = nil
+    self.visualPressHoldDoneKey = nil
+    msg("PRESS visual hold: " .. ((self.sv.pressVisualHoldEnabled == true) and "ON (200 ms)" or "OFF"))
+    self:RefreshConfig()
+end
+
+function SRT:AdjustSwapTiming(which, delta)
+    local field = (which == "after") and "swapTrailMs" or "swapLeadMs"
+    local current = tonumber(self.sv[field]) or ((field == "swapTrailMs") and 200 or 250)
+    self.sv[field] = zo_clamp(current + (tonumber(delta) or 0), 200, 1000)
+    self:RefreshConfig()
+end
+
 function SRT:CreateConfig()
     local w = WM:CreateTopLevelWindow("SRT_Config")
-    w:SetDimensions(1080, 1010)
+    w:SetDimensions(1080, 1050)
     w:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     w:SetHidden(true)
     w:SetMouseEnabled(true)
@@ -2100,6 +2628,44 @@ function SRT:CreateConfig()
     label(w, "SRT_ModeTitle", 780, 82, 90, 30, FONT_HEADER, "MODE:")
     self.modeButton = button(w, "SRT_ModeButton", 870, 82, 170, 30, "DYNAMIC", function() self:ToggleRotationMode() end)
 
+    -- BAR SWAP uses normal skill movement; these values control only the compact spacing around it.
+    -- skill GCD. Both sides are adjustable from 200 ms to 1000 ms in 50 ms steps.
+    label(w, "SRT_SwapTimingTitle", 18, 122, 160, 30, FONT_HEADER, "SWAP TIMING:")
+    label(w, "SRT_SwapBeforeTitle", 185, 122, 95, 30, FONT_TEXT, "BEFORE")
+    self.swapLeadLabel = label(w, "SRT_SwapBeforeValue", 278, 122, 90, 30, FONT_HEADER, "")
+    button(w, "SRT_SwapBeforeMinus", 372, 122, 55, 30, "-50", function() self:AdjustSwapTiming("before", -50) end)
+    button(w, "SRT_SwapBeforePlus", 432, 122, 55, 30, "+50", function() self:AdjustSwapTiming("before", 50) end)
+
+    label(w, "SRT_SwapAfterTitle", 530, 122, 80, 30, FONT_TEXT, "AFTER")
+    self.swapTrailLabel = label(w, "SRT_SwapAfterValue", 610, 122, 90, 30, FONT_HEADER, "")
+    button(w, "SRT_SwapAfterMinus", 704, 122, 55, 30, "-50", function() self:AdjustSwapTiming("after", -50) end)
+    button(w, "SRT_SwapAfterPlus", 764, 122, 55, 30, "+50", function() self:AdjustSwapTiming("after", 50) end)
+    label(w, "SRT_SwapTimingRange", 835, 122, 205, 30, FONT_SMALL, "200 - 1000 ms")
+
+    label(w, "SRT_PressHoldTitle", 18, 154, 235, 30, FONT_HEADER, "PRESS HOLD (200 ms):")
+    self.pressHoldButton = button(w, "SRT_PressHoldButton", 255, 154, 150, 30, "ON", function() self:TogglePressVisualHold() end)
+    label(w, "SRT_PressHoldHint", 420, 154, 180, 30, FONT_SMALL, "Pixel-stable at PRESS")
+
+    label(w, "SRT_AhkColorTitle", 610, 154, 145, 30, FONT_HEADER, "AHK COLORS:")
+    self.ahkColorButton = button(w, "SRT_AhkColorButton", 755, 154, 120, 30, "ON", function() self:ToggleAhkColorMarkers() end)
+    label(w, "SRT_AhkColorHint", 885, 154, 150, 30, FONT_SMALL, "fixed RGB")
+
+    label(w, "SRT_RecognitionTitle", 18, 186, 150, 30, FONT_HEADER, "DETECT BOX:")
+    self.recognitionButton = button(w, "SRT_RecognitionButton", 168, 186, 110, 30, "ON", function() self:ToggleRecognitionBox() end)
+
+    label(w, "SRT_RecognitionLeadTitle", 300, 186, 95, 30, FONT_TEXT, "LEAD")
+    self.recognitionLeadLabel = label(w, "SRT_RecognitionLeadValue", 395, 186, 80, 30, FONT_HEADER, "")
+    button(w, "SRT_RecognitionLeadMinus", 480, 186, 48, 30, "-50", function() self:AdjustRecognitionTiming("lead", -50) end)
+    button(w, "SRT_RecognitionLeadPlus", 532, 186, 48, 30, "+50", function() self:AdjustRecognitionTiming("lead", 50) end)
+
+    label(w, "SRT_RecognitionHoldTitle", 600, 186, 95, 30, FONT_TEXT, "HOLD")
+    self.recognitionHoldLabel = label(w, "SRT_RecognitionHoldValue", 690, 186, 80, 30, FONT_HEADER, "")
+    button(w, "SRT_RecognitionHoldMinus", 775, 186, 48, 30, "-50", function() self:AdjustRecognitionTiming("hold", -50) end)
+    button(w, "SRT_RecognitionHoldPlus", 827, 186, 48, 30, "+50", function() self:AdjustRecognitionTiming("hold", 50) end)
+
+    label(w, "SRT_FixedSpeedTitle", 895, 186, 75, 30, FONT_TEXT, "SPEED")
+    self.fixedSpeedButton = button(w, "SRT_FixedSpeedButton", 970, 186, 90, 30, "ADAPT", function() self:ToggleFixedFlowSpeed() end)
+
     self.specialRows = {}
     local function createSpecial(kind, title, y)
         label(w, "SRT_" .. kind .. "Title", 18, y, 150, 34, FONT_HEADER, title)
@@ -2113,28 +2679,28 @@ function SRT:CreateConfig()
         self.specialRows[kind] = {icon = ic, label = nm, bar = br}
     end
 
-    createSpecial("spammable", "SPAMMABLE", 124)
-    createSpecial("execute", "EXECUTE", 166)
+    createSpecial("spammable", "SPAMMABLE", 238)
+    createSpecial("execute", "EXECUTE", 280)
 
     -- Dedicated Ultimate row. Ultimate is intentionally separate from the normal
     -- skill picker because it has its own resource pool/cost rules.
-    label(w, "SRT_UltimateTitle", 18, 208, 150, 34, FONT_HEADER, "ULTIMATE")
+    label(w, "SRT_UltimateTitle", 18, 322, 150, 34, FONT_HEADER, "ULTIMATE")
     local ultIcon = WM:CreateControl("SRT_UltimateIcon", w, CT_TEXTURE)
-    ultIcon:SetAnchor(TOPLEFT, w, TOPLEFT, 175, 208)
+    ultIcon:SetAnchor(TOPLEFT, w, TOPLEFT, 175, 322)
     ultIcon:SetDimensions(34, 34)
-    local ultName = label(w, "SRT_UltimateName", 218, 208, 330, 34, FONT_TEXT, "Empty")
-    local ultBar = label(w, "SRT_UltimateBar", 552, 208, 82, 34, FONT_TEXT, "-")
-    self.ultimateResourceLabel = label(w, "SRT_UltimateResource", 638, 208, 180, 34, FONT_TEXT, "ULT 0 / COST ?")
-    button(w, "SRT_UltSetFront", 824, 208, 96, 34, "FRONT", function() self:SetUltimateFromBar(HOTBAR_PRIMARY) end)
-    button(w, "SRT_UltSetBack", 924, 208, 96, 34, "BACK", function() self:SetUltimateFromBar(HOTBAR_BACKUP) end)
+    local ultName = label(w, "SRT_UltimateName", 218, 322, 330, 34, FONT_TEXT, "Empty")
+    local ultBar = label(w, "SRT_UltimateBar", 552, 322, 82, 34, FONT_TEXT, "-")
+    self.ultimateResourceLabel = label(w, "SRT_UltimateResource", 638, 322, 180, 34, FONT_TEXT, "ULT 0 / COST ?")
+    button(w, "SRT_UltSetFront", 824, 322, 96, 34, "FRONT", function() self:SetUltimateFromBar(HOTBAR_PRIMARY) end)
+    button(w, "SRT_UltSetBack", 924, 322, 96, 34, "BACK", function() self:SetUltimateFromBar(HOTBAR_BACKUP) end)
     self.specialRows.ultimate = {icon = ultIcon, label = ultName, bar = ultBar}
 
-    label(w, "SRT_PriorityHeader", 18, 254, 1020, 34, FONT_HEADER,
+    label(w, "SRT_PriorityHeader", 18, 368, 1020, 34, FONT_HEADER,
         "PRIORITY SKILLS                    BAR      MANUAL RECAST       EARLY      ACTION")
 
     self.rows = {}
     for i = 1, self.maxPriorities do
-        local y = 294 + (i - 1) * 48
+        local y = 408 + (i - 1) * 48
         label(w, "SRT_Num" .. i, 18, y, 34, 32, FONT_HEADER, tostring(i))
         local ic = WM:CreateControl("SRT_Icon" .. i, w, CT_TEXTURE)
         ic:SetAnchor(TOPLEFT, w, TOPLEFT, 58, y)
@@ -2150,8 +2716,8 @@ function SRT:CreateConfig()
         self.rows[i] = {icon = ic, label = nm, bar = br, recast = recast, early = early}
     end
 
-    label(w, "SRT_HotbarHeader", 18, 772, 1020, 30, FONT_HEADER, "ASSIGN NORMAL SKILLS FROM YOUR HOTBARS")
-    self.selectedSkillLabel = label(w, "SRT_SelectedSkill", 18, 802, 1020, 28, FONT_TEXT, "Selected: none")
+    label(w, "SRT_HotbarHeader", 18, 812, 1020, 30, FONT_HEADER, "ASSIGN NORMAL SKILLS FROM YOUR HOTBARS")
+    self.selectedSkillLabel = label(w, "SRT_SelectedSkill", 18, 842, 1020, 28, FONT_TEXT, "Selected: none")
 
     self.hotbarButtons = {[HOTBAR_PRIMARY] = {}, [HOTBAR_BACKUP] = {}}
 
@@ -2190,8 +2756,8 @@ function SRT:CreateConfig()
         end
     end
 
-    createHotbarRow(HOTBAR_PRIMARY, "front", "FRONT BAR", 836)
-    createHotbarRow(HOTBAR_BACKUP, "back", "BACK BAR", 896)
+    createHotbarRow(HOTBAR_PRIMARY, "front", "FRONT BAR", 876)
+    createHotbarRow(HOTBAR_BACKUP, "back", "BACK BAR", 936)
 
     button(w, "SRT_RoutePreviewOpen", 720, 12, 180, 34, "20-SKILL PREVIEW", function() self:OpenRoutePreview() end)
     button(w, "SRT_Close", 910, 12, 140, 34, "CLOSE", function() self:CloseConfig() end)
@@ -2242,8 +2808,32 @@ function SRT:RefreshSkillRow(row, s)
 end
 
 function SRT:RefreshConfig()
+    if self.pressHoldButton then
+        self.pressHoldButton:SetText((self.sv.pressVisualHoldEnabled == true) and "ON" or "OFF")
+    end
+    if self.ahkColorButton then
+        self.ahkColorButton:SetText((self.sv.ahkColorMarkersEnabled == true) and "ON" or "OFF")
+    end
+    if self.recognitionButton then
+        self.recognitionButton:SetText((self.sv.recognitionBoxEnabled == true) and "ON" or "OFF")
+    end
+    if self.recognitionLeadLabel then
+        self.recognitionLeadLabel:SetText(tostring(zo_clamp(tonumber(self.sv.recognitionLeadMs) or 300, 50, 1000)) .. " ms")
+    end
+    if self.recognitionHoldLabel then
+        self.recognitionHoldLabel:SetText(tostring(zo_clamp(tonumber(self.sv.recognitionHoldMs) or 350, 100, 1500)) .. " ms")
+    end
+    if self.fixedSpeedButton then
+        self.fixedSpeedButton:SetText((self.sv.fixedFlowSpeed == true) and "FIXED" or "ADAPT")
+    end
     if self.modeButton then
         self.modeButton:SetText(self.sv.rotationMode == "static" and "STATIC" or "DYNAMIC")
+    end
+    if self.swapLeadLabel then
+        self.swapLeadLabel:SetText(tostring(zo_clamp(tonumber(self.sv.swapLeadMs) or 250, 200, 1000)) .. " ms")
+    end
+    if self.swapTrailLabel then
+        self.swapTrailLabel:SetText(tostring(zo_clamp(tonumber(self.sv.swapTrailMs) or 200, 200, 1000)) .. " ms")
     end
     if self.gcdLabel then
         local hitRate, hitCount = self:GetHitRate()

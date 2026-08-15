@@ -51,7 +51,7 @@ ZO_CreateStringId("DA_SPELL_RESIST",        "Увеличение магичес
 ZO_CreateStringId("DA_BREACH",              "Прорыв")                                                                 -- Breach                [ru.lang.csv] "156152165","0","8","xxxxxxxx"
 ZO_CreateStringId("DA_ARMOR",               "Увеличение показателя брони")                         -- Increase Armor        [ru.lang.csv] "156152165","0","9","xxxxxxxx"
 ZO_CreateStringId("DA_FRACTURE",            "Перелом")                                                               -- Fracture              [ru.lang.csv] "156152165","0","10","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_POWER",         "Увеличение силы заклинаний")                           -- Increase Spell Power  [ru.lang.csv] "156152165","0","11","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_POWER",         "Увеличение силы")                                                -- Increase Power        [ru.lang.csv] "156152165","0","11","xxxxxxxx"
 ZO_CreateStringId("DA_COWARDICE",           "Трусость")                                                             -- Cowardice             [ru.lang.csv] "156152165","0","12","xxxxxxxx"
 ZO_CreateStringId("DA_WEAPON_POWER",        "Увеличение силы оружия")                                   -- Increase Weapon Power [ru.lang.csv] "156152165","0","13","xxxxxxxx"
 ZO_CreateStringId("DA_MAIM",                "Повреждение")                                                       -- Maim                  [ru.lang.csv] "156152165","0","14","xxxxxxxx"

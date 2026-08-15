@@ -1,24 +1,41 @@
-Guild Market Scanner DEV — v0.2.2
+Guild Market Scanner DEV — v0.2.4 RECOVERY
 Author: MajesticMinxi
 
-BATCHED PRICE DATA EXPORT
+RECOVERY-ONLY BUILD
 
-Fixes the console CPU-time error from v0.2.1.
+Purpose
+-------
+GMS reached the console add-on memory ceiling at login. This build is NOT
+for scanning. It exists only to recover the existing market database safely.
 
-What changed
-------------
-- /gmsexport no longer processes the entire market database in one frame.
-- Export is built in small batches across many frames.
-- Progress is printed periodically in chat.
-- Existing scanner database and Guild Scan Registry are preserved.
-- /gmscancelxport cancels an in-progress export.
-- /gmsclearexport clears the saved export after it has been retrieved.
+On startup it:
+1. Loads the existing GMS SavedVariables.
+2. Immediately deletes any lingering saved export cache.
+3. Clears transient exporter/scanner references.
+4. Runs garbage collection twice.
+5. Counts the existing flat permanent database.
+6. Reports memory.
+7. Does NOT register trader events or enable scanning/exporting.
 
-Test
+TEST
 ----
-1. Update to v0.2.2 and reload UI.
-2. Do NOT rescan the trader unless you want to. The completed scan from v0.2.1 is already in the database.
-3. Run /gmsexport.
-4. Let it finish; do not reload while EXPORT PROGRESS is running.
-5. Send the final EXPORT READY line and the memory line.
-6. Then /reloadui once to persist the generated export.
+1. Keep normal addons enabled.
+2. Install/update GMS to v0.2.4.
+3. At Character Select, enable GMS.
+4. Log in.
+5. If ESO stays loaded, open chat and photograph the [GMS] RECOVERY lines.
+6. If the message says the export was removed, run /reloadui ONCE so that
+   deletion is committed to SavedVariables.
+7. After reload, photograph the recovery memory lines again.
+
+DO NOT:
+- scan traders
+- run /gmsexport
+- uninstall GMS
+- delete ESO saved data
+
+If enabling this recovery build still causes ESO to disable all addons before
+the recovery messages can appear, leave GMS disabled. That would indicate the
+permanent SavedVariables themselves are already too expensive to load alongside
+the user's normal addon set, and the next step must be a storage migration
+strategy rather than an export fix.

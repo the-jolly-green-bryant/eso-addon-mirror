@@ -3,7 +3,7 @@
 
 local ADDON_NAME = "BloodHungerTracker"
 local ADDON_VERSION = 1
-local ADDON_DISPLAY_VERSION = "1.0.3"
+local ADDON_DISPLAY_VERSION = "1.0.4"
 
 local BloodHungerTracker = {}
 local addon = BloodHungerTracker
@@ -12,6 +12,7 @@ local defaults = {
     isEnabled = true,
     onlyShowInForm = true,
     lockPosition = false,
+    hideWhenNoStacks = false,
 }
 
 local positionDefaults = {
@@ -37,7 +38,7 @@ local MAX_SCALE = 1.5
 local BLOOD_HUNGER_ABILITY_IDS = { 267744 }
 local NUM_PIPS = 4
 
-local window, timerText, pips = nil, nil, {}
+local window, content, timerText, pips = nil, nil, nil, {}
 
 local isBloodHungerAbilityId = {}
 for _, id in ipairs(BLOOD_HUNGER_ABILITY_IDS) do
@@ -92,6 +93,11 @@ local function RefreshBloodHunger()
     end
 
     local stacks, endTime = ScanBloodHunger()
+
+    if stacks == 0 and addon.savedVariables.hideWhenNoStacks then
+        HideDisplay()
+        return
+    end
 
     window:SetHidden(false)
 
@@ -152,22 +158,26 @@ local function ApplySavedScale()
         pv.scale = positionDefaults.scale
     end
 
-    window:SetScale(pv.scale)
+    window:SetDimensions(BASE_WIDTH * pv.scale, BASE_HEIGHT * pv.scale)
+    content:SetScale(pv.scale)
 end
 
 local function OnResizeStop(control)
     local width, height = control:GetDimensions()
 
-    -- The resize grip changes raw width/height, but we drive the visual
-    -- size entirely through SetScale so pips/text/title scale as one unit.
-    -- Derive a single scale factor from the width the user dragged to,
-    -- clamp it, then snap the raw dimensions back to base and apply the
-    -- scale instead (otherwise the two would compound).
+    -- Derive a single scale fraction from the width the user dragged to, and
+    -- set the window's raw Dimensions directly to that fraction of the base
+    -- size (not reset back to base) -- this keeps the window's actual size
+    -- and what the resize grip tracks for the next drag always in sync.
+    -- SetScale is applied only to the separate "content" wrapper (title,
+    -- pips, timer), never to the window itself, so it can't fight with the
+    -- resize grip's own tracking of the window's raw dimensions -- the same
+    -- lag bug fixed the same way in DarkConvergenceTracker.
     local scale = width / BASE_WIDTH
     scale = zo_clamp(scale, MIN_SCALE, MAX_SCALE)
 
-    control:SetDimensions(BASE_WIDTH, BASE_HEIGHT)
-    control:SetScale(scale)
+    control:SetDimensions(BASE_WIDTH * scale, BASE_HEIGHT * scale)
+    content:SetScale(scale)
 
     addon.positionVariables.scale = scale
 end
@@ -228,6 +238,18 @@ function addon:InitializeSettings()
         },
         {
             type = "checkbox",
+            name = "Hide window when no stacks",
+            tooltip = "Hide the display whenever you have zero Blood Hunger stacks, even if you are transformed.",
+            width = "full",
+            getFunc = function() return addon.savedVariables.hideWhenNoStacks end,
+            setFunc = function(value)
+                addon.savedVariables.hideWhenNoStacks = value
+                RefreshBloodHunger()
+            end,
+            default = defaults.hideWhenNoStacks,
+        },
+        {
+            type = "checkbox",
             name = "Lock Position",
             tooltip = "Lock the display so it can no longer be dragged.",
             getFunc = function() return addon.savedVariables.lockPosition end,
@@ -273,20 +295,22 @@ local function OnAddonLoaded(eventCode, loadedAddonName)
     if loadedAddonName ~= ADDON_NAME then return end
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
 
-    -- Note: intentionally not passing a "profile" argument (e.g. GetWorldName()) here.
-    -- Per ZO_SavedVars' own source, omitting it uses a fixed "Default" profile rather
-    -- than one keyed by server, so this stays shared across NA/EU/PTS on this account
-    -- instead of being split per megaserver.
-    addon.savedVariables = ZO_SavedVars:NewAccountWide("BloodHungerTrackerSavedVariables", ADDON_VERSION, nil, defaults)
+    -- Note: this used to be account-wide (intentionally not passing a "profile"
+    -- argument, e.g. GetWorldName(), which per ZO_SavedVars' own source keeps
+    -- data shared across NA/EU/PTS rather than split per server). Now switched
+    -- to character-specific, matching positionVariables below, so every setting
+    -- can be configured independently per character.
+    addon.savedVariables = ZO_SavedVars:NewCharacterIdSettings("BloodHungerTrackerSavedVariables", ADDON_VERSION, nil, defaults)
     addon.positionVariables = ZO_SavedVars:NewCharacterIdSettings("BloodHungerTrackerPosition", ADDON_VERSION, nil, positionDefaults)
     addon.buffEndTime = 0
 
     window = BloodHungerTracker_Window
-    timerText = BloodHungerTracker_WindowTimerText
-    pips[1] = BloodHungerTracker_WindowPip1
-    pips[2] = BloodHungerTracker_WindowPip2
-    pips[3] = BloodHungerTracker_WindowPip3
-    pips[4] = BloodHungerTracker_WindowPip4
+    content = BloodHungerTracker_WindowContent
+    timerText = BloodHungerTracker_WindowContentTimerText
+    pips[1] = BloodHungerTracker_WindowContentPip1
+    pips[2] = BloodHungerTracker_WindowContentPip2
+    pips[3] = BloodHungerTracker_WindowContentPip3
+    pips[4] = BloodHungerTracker_WindowContentPip4
 
     ApplySavedPosition()
     ApplySavedScale()

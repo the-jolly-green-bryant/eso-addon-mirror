@@ -47,6 +47,19 @@ local function ReadDirectional(token)
     return nil, nil
 end
 
+local function ClaimOwnerName(owner)
+    if not owner then
+        return "none"
+    end
+    if owner == ValknarrUIEEditor then
+        return "editor"
+    end
+    if owner == ValknarrUIESettingsMenu then
+        return "settings"
+    end
+    return "other"
+end
+
 -- Resolve claim/release API presence once. Avoid type()+pcall probes every frame.
 function Movement:ResolveClaimApis()
     if self.apisResolved then
@@ -138,9 +151,15 @@ function Movement:ClaimSticks(owner, control)
         active = true,
     }
     owner.UpdateDirectionalInput = function()
-        if Movement.claimed then
-            Movement:HoldClaim()
+        -- Deactivate can lag a frame after a quick A/B. Never re-consume
+        -- sticks once the editor has started teardown.
+        if not Movement.claimed then
+            return
         end
+        if owner.ending or owner.active == false then
+            return
+        end
+        Movement:HoldClaim()
     end
     if DIRECTIONAL_INPUT and type(DIRECTIONAL_INPUT.Activate) == "function" then
         pcall(DIRECTIONAL_INPUT.Activate, DIRECTIONAL_INPUT, owner, control or GuiRoot)
@@ -154,8 +173,31 @@ function Movement:ClaimSticks(owner, control)
         self:StopFrameClaim()
     end
     if Log and not already then
-        Log:Debug("Sticks claimed for UI (per-frame consume so character does not walk)")
+        Log:Debug("Sticks claimed owner=" .. ClaimOwnerName(owner) .. " gen=" .. tostring(self.claimGeneration) .. " (per-frame consume so character does not walk)")
     end
+end
+
+function Movement:Describe()
+    self:ResolveClaimApis()
+    local ledger = self.ledger
+    local owner = self.claimed or (ledger and ledger.owner)
+    return {
+        owner = ClaimOwnerName(self.claimed),
+        claimed = self.claimed ~= nil,
+        ownerActive = owner and owner.active and true or false,
+        ownerEnding = owner and owner.ending and true or false,
+        claimGeneration = self.claimGeneration or 0,
+        actionLayerPushed = self.actionLayerPushed and true or false,
+        frameClaim = self.frameClaim and true or false,
+        ledgerActive = ledger and ledger.active and true or false,
+        ledgerOwner = ClaimOwnerName(ledger and ledger.owner),
+        ledgerGeneration = ledger and ledger.generation or 0,
+        leftConsumeApi = self.apiLeftConsume ~= nil,
+        rightConsumeApi = self.apiRightConsume ~= nil,
+        cameraUiApi = self.apiCameraUI ~= nil,
+        setInUIModeApi = self.apiSetInUIMode ~= nil,
+        directionalApi = DIRECTIONAL_INPUT ~= nil,
+    }
 end
 
 function Movement:HoldClaim()
@@ -197,6 +239,18 @@ end
 -- Restores only what the current ledger recorded when possible.
 function Movement:ForceRelease(owner)
     self:ResolveClaimApis()
+    if Log then
+        local held = self.claimed ~= nil or self.actionLayerPushed or self.frameClaim
+        Log:Debug(string.format(
+            "ForceRelease %s owner=%s claimed=%s gen=%s layer=%s frameClaim=%s",
+            held and "held" or "idle",
+            ClaimOwnerName(self.claimed or owner),
+            tostring(self.claimed ~= nil),
+            tostring(self.claimGeneration or 0),
+            tostring(self.actionLayerPushed and true or false),
+            tostring(self.frameClaim and true or false)
+        ))
+    end
     local ledger = self.ledger
     local target = owner or self.claimed or (ledger and ledger.owner)
     self.claimed = nil
@@ -248,7 +302,7 @@ function Movement:ReleaseSticksDeferred(owner)
     if type(zo_callLater) ~= "function" then
         return
     end
-    local delays = { 1, 25, 50, 100, 200, 400, 700 }
+    local delays = { 1, 25, 50, 100, 200, 400, 700, 1000, 1500 }
     for index = 1, #delays do
         local delay = delays[index]
         zo_callLater(function()

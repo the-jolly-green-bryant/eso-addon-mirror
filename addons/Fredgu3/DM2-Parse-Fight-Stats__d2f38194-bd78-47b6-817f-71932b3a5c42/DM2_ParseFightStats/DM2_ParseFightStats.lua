@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.5"
+R.version     = "3.17.6"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -390,8 +390,12 @@ R._announcements = {
     title = "SV re-bloat fix (coach write-back)",
     body = "Stops SavedVariables from exploding after browsing the menu:\n\n• Coach analysis no longer stores cross-links between history fights (the n² logout bloat bug)\n• History scrubbed on logout / character select\n• Trash fights skip heavy finalize work\n• Combat events filtered to you + pet (open-world CPU)\n• Live timeline/tick caps; history still kept and auto-compacted\n\nReload once. No history wipe for normal users.",
   },
+  ["3.17.6"] = {
+    title = "Parse QA: fingerprint, DoT uptime, rotation",
+    body = "Testing fixes:\n\n• Build ID more stable (merge bar slots on swap; CP union start+end)\n• Experiment X: if fingerprint drifts but bars/sets/Mundus match, still count (no more stuck 2/3)\n• DoT uptime: running activeMs — Stampede/LL/Hurricane no longer undercount after tick caps\n• Rotation: S/U under timeline on dummy only; drop duplicate header strip + L marker\n• Late weave window slightly wider (1.2–2.2s); skill→skill still Missed\n• Insights CP list: 8 rows + fight-time champion snapshot for A/B impact lines\n\nNew dummy parses recommended for uptime + experiment counter.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.5"
+R._latestAnnouncementVersion = "3.17.6"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -1639,12 +1643,14 @@ end
 -- Classify the weave gap: time from skill button press to next LA button press.
 -- In ESO, the weave rhythm is: LA → Skill (fast, ~50-150ms) → wait GCD → LA.
 -- So skill-to-next-LA gap is roughly 600-1100ms for a good weave (GCD remainder).
+-- Late = LA eventually pressed but slow (1.2–2.2s). Missed = no LA in window, or
+-- skill→skill with no LA between (handled separately as always Missed).
 local function classifyWeaveGap(deltaMs)
   deltaMs = tonumber(deltaMs) or 0
   if deltaMs <= 0 then return SYM_MISS, "Missed" end
   if deltaMs < 400 then return SYM_FAST, "Too Fast" end
   if deltaMs <= 1200 then return SYM_OK, "Good" end
-  if deltaMs <= 1800 then return SYM_LATE, "Late" end
+  if deltaMs <= 2200 then return SYM_LATE, "Late" end
   return SYM_MISS, "Missed"
 end
 
@@ -2391,9 +2397,42 @@ local function recordSkillBar(session, abilityId, barLabel, abilityName)
   rememberSkillBarName(session, abilityName, barLabel)
 end
 
--- v3.2.0: DOT uptime calculation
--- Estimates uptime by looking at tick regularity. If ticks are regular (~2s apart),
--- gaps > 4s indicate the DOT dropped. Uptime = time covered by ticks / fight duration.
+-- v3.2.0 / 3.17.6: DOT uptime — prefer running activeMs (live sparse samples);
+-- fall back to tick-gap math. Never trust newest-only tick tails.
+local function estimateDotUptimeFromEntry(entry, durMs)
+  durMs = tonumber(durMs) or 0
+  if durMs <= 0 or type(entry) ~= "table" then return 0, 0 end
+  local tickN = tonumber(entry.tickCount) or (type(entry.ticks) == "table" and #entry.ticks) or 0
+  local activeMs = tonumber(entry.activeMs)
+  if activeMs and activeMs > 0 then
+    -- Tail credit: one typical interval after last tick while still "up"
+    local med = tonumber(entry.medianIntervalMs) or 0
+    if med <= 0 and type(entry.ticks) == "table" and #entry.ticks >= 2 then
+      local intervals = {}
+      for i = 2, #entry.ticks do intervals[#intervals + 1] = entry.ticks[i] - entry.ticks[i - 1] end
+      table.sort(intervals)
+      med = intervals[math.ceil(#intervals / 2)] or 2000
+    end
+    if med <= 0 then med = 2000 end
+    local covered = activeMs + med
+    return math.min(1.0, covered / durMs), tickN
+  end
+  local ticks = entry.ticks
+  if type(ticks) ~= "table" or #ticks < 2 then return 0, tickN end
+  local intervals = {}
+  for i = 2, #ticks do intervals[#intervals + 1] = ticks[i] - ticks[i - 1] end
+  table.sort(intervals)
+  local medianInterval = intervals[math.ceil(#intervals / 2)] or 2000
+  local maxGap = math.max(medianInterval * 2.5, 4000)
+  local coveredMs = 0
+  for i = 2, #ticks do
+    local gap = ticks[i] - ticks[i - 1]
+    if gap <= maxGap then coveredMs = coveredMs + gap end
+  end
+  coveredMs = coveredMs + medianInterval
+  return math.min(1.0, coveredMs / durMs), (#ticks > tickN and #ticks or tickN)
+end
+
 local function buildDotUptimeRows(session, maxRows)
   maxRows = tonumber(maxRows) or 6
   if not session or not session.dotTicks then return {} end
@@ -2403,29 +2442,10 @@ local function buildDotUptimeRows(session, maxRows)
   local arr = {}
   for id, entry in pairs(session.dotTicks) do
     local ticks = entry and entry.ticks
-    if ticks and #ticks >= 2 then
-      -- Calculate median tick interval
-      local intervals = {}
-      for i = 2, #ticks do
-        table.insert(intervals, ticks[i] - ticks[i-1])
-      end
-      table.sort(intervals)
-      local medianInterval = intervals[math.ceil(#intervals / 2)] or 2000
-
-      -- Count "covered" time: each tick covers up to 2x the median interval (generous)
-      local maxGap = math.max(medianInterval * 2.5, 4000)
-      local coveredMs = 0
-      for i = 2, #ticks do
-        local gap = ticks[i] - ticks[i-1]
-        if gap <= maxGap then
-          coveredMs = coveredMs + gap
-        end
-      end
-      -- Add one interval for the last tick
-      coveredMs = coveredMs + medianInterval
-
-      local uptimePct = math.min(1.0, coveredMs / dur)
-      table.insert(arr, { id = id, name = entry.name, uptime = uptimePct, ticks = #ticks })
+    local hasActive = entry and tonumber(entry.activeMs) and tonumber(entry.activeMs) > 0
+    if hasActive or (ticks and #ticks >= 2) then
+      local uptimePct, tickN = estimateDotUptimeFromEntry(entry, dur)
+      table.insert(arr, { id = id, name = entry.name, uptime = uptimePct, ticks = tickN })
     end
   end
 
@@ -2662,20 +2682,28 @@ local function prepareSessionForHistory(session)
     end
   end
 
-  -- DoT ticks: keep sparse samples for gap math (not every tick of a 3‑min dummy)
+  -- DoT ticks: keep sparse full-span samples + running activeMs (uptime source of truth)
   if type(session.dotTicks) == "table" then
     for id, entry in pairs(session.dotTicks) do
       if type(entry) == "table" and type(entry.ticks) == "table" then
         local ticks = entry.ticks
         local n = #ticks
+        if not entry.tickCount or entry.tickCount < n then
+          entry.tickCount = n
+        end
         if n > 48 then
-          -- keep first, last, and evenly spaced middle samples
+          -- keep first, last, and evenly spaced middle samples (full fight span)
           local keep = { ticks[1] }
-          local step = math.max(1, math.floor((n - 2) / 46))
-          for i = 2, n - 1, step do keep[#keep + 1] = ticks[i] end
-          keep[#keep + 1] = ticks[n]
+          local step = (n - 1) / 47
+          for i = 1, 46 do
+            local idx = 1 + math.floor(i * step + 0.5)
+            if idx < 1 then idx = 1 end
+            if idx > n then idx = n end
+            if keep[#keep] ~= ticks[idx] then keep[#keep + 1] = ticks[idx] end
+          end
+          if keep[#keep] ~= ticks[n] then keep[#keep + 1] = ticks[n] end
           entry.ticks = keep
-          entry.tickCountOrig = n
+          entry.tickCountOrig = entry.tickCount or n
         end
       end
     end
@@ -5781,6 +5809,9 @@ local function finalizeSession(session)
       session.build = build
       session.buildFingerprint = build.fingerprint
       session.buildFingerprintLabel = build.fingerprintLabel
+      if type(build.coreKey) == "string" and build.coreKey ~= "" then
+        session.coreBuildKey = build.coreKey
+      end
     end
   end
   -- Phase 2.5.1: if mid-fight sheet samples were empty, try end-of-fight sheet once
@@ -6087,12 +6118,15 @@ function R:OnActiveWeaponPairChanged(_, activeWeaponPair, locked)
     if ok then self._activeBar = cat end
   end
 
-  -- Refresh slotted abilities on the session (captures the new bar's skills)
+  -- Refresh slotted abilities on the session (merge — never wipe a bar that
+  -- failed to re-read; replacing the whole map made build fingerprints drift).
   local session = self.session
   if session and session.started then
     local slotIds, slotNames, slotBars, slotBarsByName, slotBySlot = captureSlottedAbilities()
-    session.slottedAbilityIds = slotIds
-    session.slottedAbilityNames = slotNames
+    session.slottedAbilityIds = session.slottedAbilityIds or {}
+    for id, v in pairs(slotIds or {}) do session.slottedAbilityIds[id] = v end
+    session.slottedAbilityNames = session.slottedAbilityNames or {}
+    for nk, v in pairs(slotNames or {}) do session.slottedAbilityNames[nk] = v end
     session.slottedAbilityBar = session.slottedAbilityBar or {}
     for id, bar in pairs(slotBars or {}) do
       session.slottedAbilityBar[id] = bar
@@ -6101,7 +6135,12 @@ function R:OnActiveWeaponPairChanged(_, activeWeaponPair, locked)
     for nameKey, bar in pairs(slotBarsByName or {}) do
       session.slottedAbilityBarByName[nameKey] = bar
     end
-    session.slottedAbilityBySlot = slotBySlot or {}
+    session.slottedAbilityBySlot = session.slottedAbilityBySlot or {}
+    for k, entry in pairs(slotBySlot or {}) do
+      if type(entry) == "table" and (tonumber(entry.id) or 0) > 0 then
+        session.slottedAbilityBySlot[k] = entry
+      end
+    end
     if not session.weave then session.weave = {} end
     session.weave.barSwapCount = (session.weave.barSwapCount or 0) + 1
 
@@ -6198,20 +6237,59 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
     if not resolveSetName(session, abilityId, resolvedAbilityName) then
       local dt = session.dotTicks
       if not dt[abilityId] then
-        dt[abilityId] = { name = resolveAbilityName(abilityId, abilityName), ticks = {} }
+        dt[abilityId] = {
+          name = resolveAbilityName(abilityId, abilityName),
+          ticks = {},
+          tickCount = 0,
+          activeMs = 0,
+          lastTickMs = nil,
+          intervalSum = 0,
+          intervalN = 0,
+          medianIntervalMs = 0,
+        }
       end
-      local ticks = dt[abilityId].ticks
-      -- Cap live tick list (console memory mid-fight); gap math still works on sparse samples
-      if #ticks >= 64 then
-        -- Keep newest half (even-step from end), then append
-        local slim = {}
-        local start = #ticks - 31
-        if start < 1 then start = 1 end
-        for i = start, #ticks do slim[#slim + 1] = ticks[i] end
-        ticks = slim
-        dt[abilityId].ticks = ticks
+      local e = dt[abilityId]
+      e.tickCount = (tonumber(e.tickCount) or 0) + 1
+      local last = tonumber(e.lastTickMs)
+      if last and tMs > last then
+        local gap = tMs - last
+        -- Multi-target same pulse: ignore sub-80ms gaps for coverage/interval
+        if gap >= 80 then
+          if gap < 8000 then
+            e.intervalSum = (tonumber(e.intervalSum) or 0) + gap
+            e.intervalN = (tonumber(e.intervalN) or 0) + 1
+            e.medianIntervalMs = e.intervalSum / math.max(1, e.intervalN)
+          end
+          local med = tonumber(e.medianIntervalMs) or 2000
+          if med < 200 then med = 200 end
+          local maxGap = math.max(med * 2.5, 4000)
+          if gap <= maxGap then
+            e.activeMs = (tonumber(e.activeMs) or 0) + gap
+          end
+          -- Sparse full-span samples (not newest-only — that destroyed uptime)
+          local ticks = e.ticks
+          ticks[#ticks + 1] = tMs
+          if #ticks > 48 then
+            local n = #ticks
+            local keep = { ticks[1] }
+            local step = (n - 1) / 47
+            for i = 1, 46 do
+              local idx = 1 + math.floor(i * step + 0.5)
+              if idx < 1 then idx = 1 end
+              if idx > n then idx = n end
+              if keep[#keep] ~= ticks[idx] then keep[#keep + 1] = ticks[idx] end
+            end
+            if keep[#keep] ~= ticks[n] then keep[#keep + 1] = ticks[n] end
+            e.ticks = keep
+          end
+          e.lastTickMs = tMs
+        end
+        -- else: multi-hit same pulse — count already bumped, keep lastTickMs
+      else
+        -- First tick (or same-ms): seed sample list
+        e.ticks[#e.ticks + 1] = tMs
+        e.lastTickMs = tMs
       end
-      ticks[#ticks + 1] = tMs
     end
   else
     session.directDamage = session.directDamage + dmg

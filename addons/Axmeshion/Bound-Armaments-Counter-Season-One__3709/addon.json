@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Axmeshion/Bound-Armaments-Counter-Season-One__3709",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Axmeshion",
+  "canonical_id": "esoui:3709",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:3709",
+  "deleted": false,
+  "directories": [
+    "BoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3709/",
+  "fingerprint": "f0bc2794442ecd804d425a5ab531f1866f5293e6ad650e7cfb1f1402fffb7262",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3709",
+  "source_url": "https://www.esoui.com/downloads/info3709-BoundArmamentsCounterSeasonOne.html",
+  "stats": {
+    "downloads": 2494,
+    "favorites": 1,
+    "monthly_downloads": 53
+  },
+  "title": "Bound Armaments Counter(Season One)",
+  "updated_at": 1786735108000,
+  "version": "1.2.3"
+}

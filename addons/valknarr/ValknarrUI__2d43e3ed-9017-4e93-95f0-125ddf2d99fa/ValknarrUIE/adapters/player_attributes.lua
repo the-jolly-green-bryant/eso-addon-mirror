@@ -277,6 +277,76 @@ function Adapter:Apply(control, x, y, w, h)
     return true
 end
 
+-- Native target frame is TOP-anchored to GuiRoot TOP (offset 0, 88) so
+-- name length, rank/level, difficulty brackets, and shrink/expand can
+-- change width without the frame sliding sideways. Pinning TOPLEFT and
+-- SetDimensions fights that and looks uncentered on alternate targets.
+function Adapter:ApplyTopCentered(control, x, y)
+    local width, height = self:GetScreenSize()
+    if not control or not width or type(x) ~= "number" or type(y) ~= "number" then
+        if Log then
+            Log:Warn("ApplyTopCentered skipped: missing control, position, or GuiRoot size")
+        end
+        return false
+    end
+
+    local snapshot = self:Capture(control)
+    if Platform and Platform.NeverMovable then
+        Platform:NeverMovable(control)
+    end
+
+    local clearOk, clearErr = Safe.Try(control, "ClearAnchors")
+    if not clearOk then
+        if Log then
+            Log:Warn("ClearAnchors failed: " .. Log:FormatValue(clearErr))
+        end
+        if snapshot then
+            self:Restore(control, snapshot)
+        end
+        return false
+    end
+
+    local _, controlHeight = self:GetControlSize(control)
+    local point = TOP
+    local relPoint = TOP
+    local offsetX = (x - 0.5) * width
+    local offsetY = y * height
+    if controlHeight and controlHeight > 1 then
+        offsetY = offsetY - (controlHeight * 0.5)
+    else
+        point = CENTER
+        relPoint = TOPLEFT
+        offsetX = x * width
+        offsetY = y * height
+    end
+
+    local setOk, setErr = Safe.Try(control, "SetAnchor", point, GuiRoot, relPoint, offsetX, offsetY)
+    if not setOk then
+        if Log then
+            Log:Warn("SetAnchor failed for " .. Log:FormatValue(control) .. ": " .. Log:FormatValue(setErr))
+        end
+        if snapshot then
+            self:Restore(control, snapshot)
+        end
+        return false
+    end
+
+    if Log then
+        Log:Debug(string.format(
+            "ApplyTopCentered %s %s -> (%.3f, %.3f) px=(%.0f, %.0f) screen=%.0fx%.0f",
+            Log:FormatValue(control),
+            Platform:PointName(point),
+            x,
+            y,
+            offsetX,
+            offsetY,
+            width,
+            height
+        ))
+    end
+    return true
+end
+
 function Adapter:Restore(control, anchor)
     if not control or type(anchor) ~= "table" then
         return false

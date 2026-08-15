@@ -51,7 +51,7 @@ ZO_CreateStringId("DA_SPELL_RESIST",        "呪文耐性増大")     -- Increas
 ZO_CreateStringId("DA_BREACH",              "侵害")             -- Breach                [jp.lang.csv] "156152165","0","8","xxxxxxxx"
 ZO_CreateStringId("DA_ARMOR",               "防御力増大")       -- Increase Armor        [jp.lang.csv] "156152165","0","9","xxxxxxxx"
 ZO_CreateStringId("DA_FRACTURE",            "破砕")             -- Fracture              [jp.lang.csv] "156152165","0","10","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_POWER",         "呪文攻撃力上昇")   -- Increase Spell Power  [jp.lang.csv] "156152165","0","11","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_POWER",         "攻撃力上昇")       -- Increase Power        [jp.lang.csv] "156152165","0","11","xxxxxxxx"
 ZO_CreateStringId("DA_COWARDICE",           "臆病")             -- Cowardice             [jp.lang.csv] "156152165","0","12","xxxxxxxx"
 ZO_CreateStringId("DA_WEAPON_POWER",        "武器攻撃力上昇")   -- Increase Weapon Power [jp.lang.csv] "156152165","0","13","xxxxxxxx"
 ZO_CreateStringId("DA_MAIM",                "不自由")           -- Maim                  [jp.lang.csv] "156152165","0","14","xxxxxxxx"
@@ -89,7 +89,7 @@ end
 function DailyAlchemy:ConvertedItemNames(itemName)
     local list = {
         {" ",    ""},
-        {"毒9",  "毒IX"},
+        --{"毒9",  "毒IX"},
         {"毒8",  "毒Ⅷ"},
         {"毒7",  "毒Ⅶ"},
         {"毒6",  "毒Ⅵ"},
@@ -110,7 +110,7 @@ end
 function DailyAlchemy:ConvertedJournalCondition(journalCondition)
     local list = {
         {" ",   ""},
-        {"毒9", "毒IX"},
+        --{"毒9", "毒IX"},
         {"毒8", "毒Ⅷ"},
         {"毒7", "毒Ⅶ"},
         {"毒6", "毒Ⅵ"},

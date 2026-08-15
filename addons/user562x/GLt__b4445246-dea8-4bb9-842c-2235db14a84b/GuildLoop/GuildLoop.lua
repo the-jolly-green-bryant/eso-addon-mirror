@@ -26,6 +26,7 @@ GL.favoritePrefix = "|t24:24:EsoUI/Art/Collections/Favorite_StarOnly.dds|t "
 
 GL.allowedAccounts = {
     ["@user562"] = true,
+    ["@Drlxzel"] = true,
 }
 
 local function IsTable(value)

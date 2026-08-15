@@ -48,10 +48,10 @@ ZO_CreateStringId("DA_RVG_MAGICKA",         "Devastar Magicka")                 
 ZO_CreateStringId("DA_STAMINA",             "Restaura Vigor")                       -- Restore Stamina       [br.lang.csv] "156152165","0","5","xxxxxxxx"
 ZO_CreateStringId("DA_RVG_STAMINA",         "Devastar Vigor")                       -- Ravage Stamina        [br.lang.csv] "156152165","0","6","xxxxxxxx"
 ZO_CreateStringId("DA_SPELL_RESIST",        "Aumenta a Resistência Mágica")         -- Increase Spell Resist [br.lang.csv] "156152165","0","7","xxxxxxxx"
-ZO_CreateStringId("DA_BREACH",              "O Rift")                               -- Breach                [br.lang.csv] "156152165","0","8","xxxxxxxx"
+ZO_CreateStringId("DA_BREACH",              "Brecha")                               -- Breach                [br.lang.csv] "156152165","0","8","xxxxxxxx"
 ZO_CreateStringId("DA_ARMOR",               "Aumenta Armadura")                     -- Increase Armor        [br.lang.csv] "156152165","0","9","xxxxxxxx"
 ZO_CreateStringId("DA_FRACTURE",            "Fracture")                             -- Fracture              [br.lang.csv] "156152165","0","10","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_POWER",         "Aumenta a Potência dos Feitiços")      -- Increase Spell Power  [br.lang.csv] "156152165","0","11","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_POWER",         "Aumenta a Potência dos Feitiços")      -- Increase Power        [br.lang.csv] "156152165","0","11","xxxxxxxx"
 ZO_CreateStringId("DA_COWARDICE",           "Covardia")                             -- Cowardice             [br.lang.csv] "156152165","0","12","xxxxxxxx"
 ZO_CreateStringId("DA_WEAPON_POWER",        "Aumenta a Potência das Armas")         -- Increase Weapon Power [br.lang.csv] "156152165","0","13","xxxxxxxx"
 ZO_CreateStringId("DA_MAIM",                "Mutilação")                            -- Maim                  [br.lang.csv] "156152165","0","14","xxxxxxxx"
@@ -196,10 +196,12 @@ function DailyAlchemy:ConvertedJournalCondition(journalCondition)
         -- Master Writ
         {".*fabrique u%w+ (essencia de devastar vigor) com .* propriedades: (vigor), (.*), (.*)",       "Fabrique |c88AAFF[%1]|r|cFFFFFF...vitalidade, %3, %4|r"},
         {".*fabrique u%w+ (essencia de devastar vigor) com .* tracos:• (vigor)• (.*)• (.*)%c.*",        "Fabrique |c88AAFF[%1]|r|cFFFFFF...vitalidade, %3, %4|r"},
+        {".*fabrique (essencia de devastar vigor) com .* tracos:.*• (vigor).*• (.*).*• (.*)%c.*",       "Fabrique |c88AAFF[%1]|r|cFFFFFF...vitalidade, %3, %4|r"},
         {".*fabrique u%w+ (veneno devastador de vigor ⅸ) com .* propriedades: (vigor), (.*), (.*)",    "Fabrique |c88AAFF[%1]|r|cFFFFFF...vitalidade, %3, %4|r"},
         {".*fabrique u%w+ (veneno devastador de vigor ⅸ) com .* tracos:• (vigor)• (.*)• (.*)%c.*",     "Fabrique |c88AAFF[%1]|r|cFFFFFF...vitalidade, %3, %4|r"},
-        {".*fabrique u%w+ (.*) com .* propriedades: (.*), (.*), (.*)",                                  "Fabrique |c88AAFF[%1]|r|cFFFFFF...%2, %3, %4|r"},
-        {".*fabrique u%w+ (.*) com .* tracos:• (.*)• (.*)• (.*)%c.*",                                   "Fabrique |c88AAFF[%1]|r|cFFFFFF...%2, %3, %4|r"},
+        {".*fabrique (.*) com .* propriedades: (.*), (.*), (.*)",                                       "Fabrique |c88AAFF[%1]|r|cFFFFFF...%2, %3, %4|r"},
+        {".*fabrique (.*) com .* tracos:• (.*)• (.*)• (.*)%c.*",                                        "Fabrique |c88AAFF[%1]|r|cFFFFFF...%2, %3, %4|r"},
+        {".*fabrique (.*) com .* tracos:%c• (.*)%c• (.*)%c• (.*)%c.*",                                  "Fabrique |c88AAFF[%1]|r|cFFFFFF...%2, %3, %4|r"},
 
         -- Dayly
         {".*craft (.*):.*",         "Fabrique |c88AAFF[%1]|r"},

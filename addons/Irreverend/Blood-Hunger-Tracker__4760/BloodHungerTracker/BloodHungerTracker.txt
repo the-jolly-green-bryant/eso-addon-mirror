@@ -1,7 +1,7 @@
 ## Title: |cAA3333Blood Hunger Tracker|r
 ## Author: Irreverend
-## Version: 1.0.3
-## AddOnVersion: 103
+## Version: 1.0.4
+## AddOnVersion: 104
 ## APIVersion: 101050
 ## SavedVariables: BloodHungerTrackerSavedVariables BloodHungerTrackerPosition
 ## DependsOn: LibAddonMenu-2.0>=43

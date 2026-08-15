@@ -129,8 +129,8 @@ function Lib:DefaultFor(id)
     return nil
 end
 
--- Guest API: whether an element supports RS resize. Host currently allows
--- resize for all registered pieces that store w/h; keep this for authors.
+-- Guest API: whether an element supports RS resize. Only Chat (and guests
+-- that set resizable=true) actually change size; native bars ignore it.
 function Lib:IsResizable(id)
     local entry = self.byId[id]
     return entry and entry.resizable == true

@@ -1,9 +1,9 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 19
+## AddOnVersion: 22
 ## Author: Skye-Forge
-## Description: Holodeck 0.0.19 — boss bar only; reticle path capture fixed. /hdsettings
-## Version: 0.0.19
+## Description: Holodeck 0.0.22 — flat save format, open/play pins. /hdsettings
+## Version: 0.0.22
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua

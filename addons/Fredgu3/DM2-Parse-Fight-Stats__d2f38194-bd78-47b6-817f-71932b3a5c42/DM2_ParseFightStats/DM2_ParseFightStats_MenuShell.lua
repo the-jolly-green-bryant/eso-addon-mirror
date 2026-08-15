@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.17.5"
+M.version = "3.17.6"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -1302,6 +1302,41 @@ local function isWeaponEnchantStatusDot(name)
   return false
 end
 
+-- Prefer running activeMs (3.17.6+) over sparse-tick gap math; newest-only tails undercounted.
+local function estimateDotUptimeEntry(entry, dur)
+  dur = tonumber(dur) or 0
+  if dur <= 0 or type(entry) ~= "table" then return 0, 0 end
+  local tickN = tonumber(entry.tickCount) or (type(entry.ticks) == "table" and #entry.ticks) or 0
+  local activeMs = tonumber(entry.activeMs)
+  if activeMs and activeMs > 0 then
+    local med = tonumber(entry.medianIntervalMs) or 0
+    if med <= 0 and type(entry.ticks) == "table" and #entry.ticks >= 2 then
+      local intervals = {}
+      for i = 2, #entry.ticks do intervals[#intervals + 1] = entry.ticks[i] - entry.ticks[i - 1] end
+      table.sort(intervals)
+      med = intervals[math.ceil(#intervals / 2)] or 2000
+    end
+    if med <= 0 then med = 2000 end
+    return math.min(1.0, (activeMs + med) / dur), tickN
+  end
+  local ticks = entry.ticks
+  if type(ticks) ~= "table" or #ticks < 2 then return 0, tickN end
+  local intervals = {}
+  for i = 2, #ticks do intervals[#intervals + 1] = ticks[i] - ticks[i - 1] end
+  table.sort(intervals)
+  local medianInterval = intervals[math.ceil(#intervals / 2)] or 2000
+  local maxGap = math.max(medianInterval * 2.5, 4000)
+  local coveredMs = 0
+  for i = 2, #ticks do
+    local gap = ticks[i] - ticks[i - 1]
+    if gap <= maxGap then coveredMs = coveredMs + gap end
+  end
+  coveredMs = coveredMs + medianInterval
+  local n = #ticks
+  if tickN < n then tickN = n end
+  return math.min(1.0, coveredMs / dur), tickN
+end
+
 local function buildDotUptimeModel(session, maxRows)
   maxRows = tonumber(maxRows) or 6
   local rows = {}
@@ -1311,25 +1346,15 @@ local function buildDotUptimeModel(session, maxRows)
   local arr = {}
   for id, entry in pairs(session.dotTicks) do
     local ticks = entry and entry.ticks
-    if type(ticks) == "table" and #ticks >= 2 then
-      local intervals = {}
-      for i = 2, #ticks do table.insert(intervals, ticks[i] - ticks[i - 1]) end
-      table.sort(intervals)
-      local medianInterval = intervals[math.ceil(#intervals / 2)] or 2000
-      local maxGap = math.max(medianInterval * 2.5, 4000)
-      local coveredMs = 0
-      for i = 2, #ticks do
-        local gap = ticks[i] - ticks[i - 1]
-        if gap <= maxGap then coveredMs = coveredMs + gap end
-      end
-      coveredMs = coveredMs + medianInterval
-      local uptimePct = math.min(1.0, coveredMs / dur)
+    local hasActive = entry and tonumber(entry.activeMs) and tonumber(entry.activeMs) > 0
+    if hasActive or (type(ticks) == "table" and #ticks >= 2) then
+      local uptimePct, tickN = estimateDotUptimeEntry(entry, dur)
       local dname = entry.name or "?"
       table.insert(arr, {
         id = tonumber(id) or tonumber(entry.id) or 0,
         name = dname,
         uptime = uptimePct,
-        ticks = #ticks,
+        ticks = tickN,
         isProc = isWeaponEnchantStatusDot(dname),
       })
     end
@@ -2285,9 +2310,38 @@ local function barSlotIds(session, barLabel)
   return ids
 end
 
+-- Prefer non-zero slot ids from start snapshot when end re-read is incomplete
+local function mergeBarSlotIds(primary, fallback)
+  local out = {}
+  for i = 1, 6 do
+    local a = tonumber(primary and primary[i]) or 0
+    local b = tonumber(fallback and fallback[i]) or 0
+    out[i] = (a > 0 and a) or b
+  end
+  return out
+end
+
+local function barSlotIdsFromBuild(build, side)
+  local ids = {}
+  local slots = build and build.bars and build.bars[side]
+  if type(slots) == "table" then
+    for _, s in ipairs(slots) do
+      ids[#ids + 1] = tonumber(s.id) or 0
+    end
+  end
+  while #ids < 6 do ids[#ids + 1] = 0 end
+  return ids
+end
+
 local function buildFingerprintParts(session, championList)
   local front = barSlotIds(session, "Front")
   local back = barSlotIds(session, "Back")
+  -- Stabilize against incomplete mid-fight re-captures: fill zeros from start snap
+  local startB = session and session.buildStart
+  if type(startB) == "table" then
+    front = mergeBarSlotIds(front, barSlotIdsFromBuild(startB, "front"))
+    back = mergeBarSlotIds(back, barSlotIdsFromBuild(startB, "back"))
+  end
   local setNames = {}
   if session and type(session.equippedSets) == "table" then
     for _, n in ipairs(session.equippedSets) do
@@ -2296,12 +2350,25 @@ local function buildFingerprintParts(session, championList)
     end
   end
   table.sort(setNames)
+  -- Union CP ids from live list + start snapshot (intermittent console misses)
   local cpIds = {}
-  for _, cp in ipairs(championList or {}) do
-    cpIds[#cpIds + 1] = tonumber(cp.id) or 0
+  local seenCp = {}
+  local function addCp(id)
+    id = tonumber(id) or 0
+    if id > 0 and not seenCp[id] then
+      seenCp[id] = true
+      cpIds[#cpIds + 1] = id
+    end
+  end
+  for _, cp in ipairs(championList or {}) do addCp(cp.id) end
+  if type(startB) == "table" and type(startB.champion) == "table" then
+    for _, cp in ipairs(startB.champion) do addCp(cp and cp.id) end
   end
   cpIds = sortedIdList(cpIds)
   local mundus = string.lower(tostring((session and session.mundus) or ""))
+  if mundus == "" and type(startB) == "table" and startB.mundus then
+    mundus = string.lower(tostring(startB.mundus))
+  end
   local parts = {
     "F:" .. table.concat(front, ","),
     "B:" .. table.concat(back, ","),
@@ -2336,23 +2403,61 @@ local function captureSessionBuild(session, phase)
   if not session then return nil end
   phase = phase or "end"
   local champion = collectSlottedChampionSkills(12)
+  -- Union with start-snapshot CP so intermittent console misses don't change ID
+  if phase == "end" and type(session.buildStart) == "table"
+      and type(session.buildStart.champion) == "table" then
+    local seen = {}
+    for _, cp in ipairs(champion) do
+      local id = tonumber(cp.id) or 0
+      if id > 0 then seen[id] = true end
+    end
+    for _, cp in ipairs(session.buildStart.champion) do
+      local id = tonumber(cp and cp.id) or 0
+      if id > 0 and not seen[id] then
+        champion[#champion + 1] = cp
+        seen[id] = true
+      end
+    end
+  end
   local canon, setNames = buildFingerprintParts(session, champion)
   local fp = simpleHashHex(canon)
   local label = fingerprintLabel(session, setNames, champion)
   local profile = getActiveContentProfile()
 
-  local function snapBars(barLabel)
+  local function snapBars(barLabel, sideKey)
     local slots = {}
+    local startSlots = nil
+    if type(session.buildStart) == "table" and type(session.buildStart.bars) == "table" then
+      startSlots = session.buildStart.bars[sideKey]
+    end
+    local startBySlot = {}
+    if type(startSlots) == "table" then
+      for _, s in ipairs(startSlots) do
+        startBySlot[tonumber(s.slot) or 0] = s
+      end
+    end
     if type(session.slottedAbilityBySlot) == "table" then
       for slot = 3, 8 do
         local entry = session.slottedAbilityBySlot[barLabel .. ":" .. slot]
-        if type(entry) == "table" then
-          slots[#slots + 1] = {
-            slot = slot,
-            id = tonumber(entry.id) or 0,
-            name = entry.name or "",
-          }
+        local id = (type(entry) == "table" and tonumber(entry.id)) or 0
+        local name = (type(entry) == "table" and entry.name) or ""
+        if id <= 0 and type(startBySlot[slot]) == "table" then
+          id = tonumber(startBySlot[slot].id) or 0
+          if name == "" then name = startBySlot[slot].name or "" end
         end
+        if id > 0 or name ~= "" then
+          slots[#slots + 1] = { slot = slot, id = id, name = name or "" }
+        end
+      end
+    end
+    -- If live map empty, fall back entirely to start snap
+    if #slots == 0 and type(startSlots) == "table" then
+      for _, s in ipairs(startSlots) do
+        slots[#slots + 1] = {
+          slot = tonumber(s.slot) or 0,
+          id = tonumber(s.id) or 0,
+          name = s.name or "",
+        }
       end
     end
     return slots
@@ -2376,11 +2481,12 @@ local function captureSessionBuild(session, phase)
     phase = phase,
     wallClock = (type(os) == "table" and type(os.time) == "function") and os.time() or 0,
     bars = {
-      front = snapBars("Front"),
-      back = snapBars("Back"),
+      front = snapBars("Front", "front"),
+      back = snapBars("Back", "back"),
     },
     sets = {},
-    mundus = session.mundus or (stats and stats.mundus) or nil,
+    mundus = session.mundus or (stats and stats.mundus)
+      or (session.buildStart and session.buildStart.mundus) or nil,
     food = food,
     champion = champion,
     attributes = {
@@ -2397,6 +2503,22 @@ local function captureSessionBuild(session, phase)
       build.sets[#build.sets + 1] = { name = tostring(n) }
     end
   end
+  -- Stable core key (bars/sets/Mundus, no CP) for experiments + A/B pairing
+  local frontIds, backIds = {}, {}
+  for _, s in ipairs(build.bars.front or {}) do frontIds[#frontIds + 1] = tonumber(s.id) or 0 end
+  for _, s in ipairs(build.bars.back or {}) do backIds[#backIds + 1] = tonumber(s.id) or 0 end
+  local setParts = {}
+  for _, n in ipairs(build.sets) do
+    local s = string.lower(tostring((type(n) == "table" and n.name) or n or ""))
+    if s ~= "" then setParts[#setParts + 1] = s end
+  end
+  table.sort(setParts)
+  build.coreKey = table.concat({
+    "F:" .. table.concat(frontIds, ","),
+    "B:" .. table.concat(backIds, ","),
+    "S:" .. table.concat(setParts, ","),
+    "M:" .. string.lower(tostring(build.mundus or "")),
+  }, "|")
   return build
 end
 M.CaptureSessionBuild = captureSessionBuild
@@ -3340,18 +3462,9 @@ local function buildPatternInsights(session)
     local durMs = tonumber(session.durationMs) or 0
     for id, entry in pairs(session.dotTicks) do
       local ticks = entry and entry.ticks
-      if type(ticks) == "table" and #ticks >= 3 and durMs > 0 then
-        local intervals = {}
-        for i = 2, #ticks do intervals[#intervals + 1] = ticks[i] - ticks[i - 1] end
-        table.sort(intervals)
-        local med = intervals[math.ceil(#intervals / 2)] or 2000
-        local covered = 0
-        for i = 2, #ticks do
-          local gap = ticks[i] - ticks[i - 1]
-          if gap <= math.max(med * 2.5, 4000) then covered = covered + gap end
-        end
-        covered = covered + med
-        local up = math.min(1, covered / durMs)
+      local tickN = tonumber(entry and entry.tickCount) or (type(ticks) == "table" and #ticks) or 0
+      if durMs > 0 and (tickN >= 3 or (type(ticks) == "table" and #ticks >= 3)) then
+        local up = select(1, estimateDotUptimeEntry(entry, durMs))
         local dname = entry.name or ("DoT " .. tostring(id))
         local aid = tonumber(entry.id) or tonumber(id) or 0
         if isWeaponEnchantStatusDot(dname) or not isPlayerSlottedDot(aid, dname) then
@@ -3605,28 +3718,32 @@ local function computeDotQuality(session)
     local aid = tonumber(id) or 0
     local ticks = entry and entry.ticks
     local name = (entry and entry.name) or "?"
+    local tickN = tonumber(entry and entry.tickCount) or (type(ticks) == "table" and #ticks) or 0
     if isWeaponEnchantStatusDot(name) or isUltimateAbility(aid, session, name) then
       -- skip
-    elseif type(ticks) == "table" and #ticks >= 3 then
-      local intervals = {}
-      for i = 2, #ticks do intervals[#intervals + 1] = ticks[i] - ticks[i - 1] end
-      table.sort(intervals)
-      local med = intervals[math.ceil(#intervals / 2)] or 2000
-      if med > 200 then
-        local maxGap = math.max(med * 1.6, med + 500)
-        local gapCount, gapMs, maxG = 0, 0, 0
-        local covered = 0
-        for i = 2, #ticks do
-          local g = ticks[i] - ticks[i - 1]
-          if g <= med * 2.5 then covered = covered + g end
-          if g > maxGap then
-            gapCount = gapCount + 1
-            gapMs = gapMs + g
-            if g > maxG then maxG = g end
+    elseif tickN >= 3 or (type(ticks) == "table" and #ticks >= 3) then
+      local med = tonumber(entry.medianIntervalMs) or 0
+      local gapCount, gapMs, maxG = 0, 0, 0
+      if type(ticks) == "table" and #ticks >= 2 then
+        local intervals = {}
+        for i = 2, #ticks do intervals[#intervals + 1] = ticks[i] - ticks[i - 1] end
+        table.sort(intervals)
+        if med <= 0 then med = intervals[math.ceil(#intervals / 2)] or 2000 end
+        if med > 200 then
+          local maxGap = math.max(med * 1.6, med + 500)
+          for i = 2, #ticks do
+            local g = ticks[i] - ticks[i - 1]
+            if g > maxGap then
+              gapCount = gapCount + 1
+              gapMs = gapMs + g
+              if g > maxG then maxG = g end
+            end
           end
         end
-        covered = covered + med
-        local up = math.min(1, covered / dur)
+      end
+      if med <= 0 then med = 2000 end
+      if med > 200 then
+        local up = select(1, estimateDotUptimeEntry(entry, dur))
         map[aid] = {
           id = aid,
           name = name,
@@ -3635,7 +3752,7 @@ local function computeDotQuality(session)
           gapMs = gapMs,
           maxGapMs = maxG,
           gapConf = "Calculated",
-          ticks = #ticks,
+          ticks = tickN,
         }
       end
     end
@@ -4382,9 +4499,15 @@ local function buildBuildSynergy(session)
     topSources[i] = srcArr[i]
   end
 
-  -- Slotted CP fit (live loadout — same source as Dashboard)
+  -- Prefer fight-time champion snapshot (stable A/B + history view); live as fallback
   -- Insights is combat-facing: skip Craft/world stars (riding, gathering, treasure, etc.)
-  local slotted = collectSlottedChampionSkills(12)
+  local slotted = nil
+  local b = session.build or session.buildEnd or session.buildStart
+  if type(b) == "table" and type(b.champion) == "table" and #b.champion > 0 then
+    slotted = b.champion
+  else
+    slotted = collectSlottedChampionSkills(12)
+  end
   local cps = {}
   local strongCount, softCount = 0, 0
   local isDummy = session.isDummy == true
@@ -4761,9 +4884,17 @@ end
 
 -- Bars + sets + mundus from stored build snapshot (excludes champion ids)
 local function coreBuildKey(session)
-  local b = session and (session.build or session.buildEnd or session.buildStart)
+  if not session then return "" end
+  -- Prefer precomputed stable key from capture
+  local b = session.build or session.buildEnd or session.buildStart
+  if type(b) == "table" and type(b.coreKey) == "string" and b.coreKey ~= "" then
+    return b.coreKey
+  end
+  if type(session.coreBuildKey) == "string" and session.coreBuildKey ~= "" then
+    return session.coreBuildKey
+  end
   if type(b) ~= "table" then
-    return tostring(session and session.buildFingerprint or "")
+    return tostring(session.buildFingerprint or "")
   end
   local function barIds(side)
     local arr = {}
@@ -5034,13 +5165,17 @@ M.StartExperimentFromNextTest = startExperimentFromNextTest
 M.GetActiveExperiment = getActiveExperiment
 
 -- Attach run to active experiment when hold constraints match
+-- Fingerprint can drift from noisy CP/bar re-reads; if core (bars/sets/Mundus)
+-- still matches, count the run so execution experiments are not stuck at 2/3.
 local function tryAttachExperimentRun(session)
   local exp = getActiveExperiment()
   if not exp or type(session) ~= "table" then return end
   if exp.completed then return end
   local fp = session.buildFingerprint or (session.build and session.build.fingerprint)
   local core = coreBuildKey(session)
+  if core ~= "" then session.coreBuildKey = core end
   local holdMode = exp.holdMode or "fingerprint"
+  local attachNote = nil
   if holdMode == "core" then
     if exp.holdCoreKey and core ~= "" and core ~= exp.holdCoreKey then
       session.experimentWarn = "Core build changed (bars/sets/Mundus) — not counted toward experiment"
@@ -5048,8 +5183,14 @@ local function tryAttachExperimentRun(session)
     end
   else
     if exp.baselineFingerprint and fp and fp ~= exp.baselineFingerprint then
-      session.experimentWarn = "Fingerprint changed — not counted toward active experiment"
-      return
+      if exp.holdCoreKey and core ~= "" and core == exp.holdCoreKey then
+        -- Same bars/sets/Mundus; fingerprint hash noise only — still count
+        attachNote = "core"
+        session.experimentWarn = "Build ID drifted but bars/sets/Mundus hold — counted"
+      else
+        session.experimentWarn = "Build fingerprint changed — not counted toward active experiment"
+        return
+      end
     end
   end
   -- Dedup: same completedAt already recorded
@@ -5072,6 +5213,7 @@ local function tryAttachExperimentRun(session)
     completedAt = doneAt,
     durationMs = session.durationMs,
     runIndex = runIndex,
+    attachNote = attachNote,
   }
   session.experimentRun = { experimentId = exp.id, runIndex = runIndex }
   if runIndex >= (tonumber(exp.targetRuns) or 3) then
@@ -9261,12 +9403,12 @@ end
 -- Rotation: summary + fine pulse + skill icons + pattern tips
 ---------------------------------------------------------------------
 local function createRotationUI(screen)
-  if screen.rotationUI and not screen.rotationUI._v3171 then screen.rotationUI = nil end
+  if screen.rotationUI and not screen.rotationUI._v3176 then screen.rotationUI = nil end
   if screen.rotationUI then return screen.rotationUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.rotation
   if not panel then return nil end
-  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v3171 = true }
+  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v3176 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuRotRootV8", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -9276,7 +9418,7 @@ local function createRotationUI(screen)
   ui.title:SetText("ROTATION DIAGNOSTICS")
   ui.meta = makeDashLabel(ui.root, "DM2StatsMenuRotMetaV8", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.meta:SetAnchor(TOPLEFT, ui.title, BOTTOMLEFT, 0, 2)
-  ui.meta:SetText("|c66FF66border = good|r  |cFFCC66late|r  |cFF6666missed|r  |c66AAFFtoo fast|r  ·  S swap · U ult · L late")
+  ui.meta:SetText("|c66FF66border = good|r  |cFFCC66late|r  |cFF6666missed|r  |c66AAFFtoo fast|r  ·  S swap · U ult under timeline (dummy)")
 
   ui.sumPanel = WM:CreateControl("DM2StatsMenuRotSumV8", ui.root, CT_CONTROL)
   local sbg = makeSectionFrame(ui.sumPanel, "DM2StatsMenuRotSumBGV8", true)
@@ -9285,12 +9427,9 @@ local function createRotationUI(screen)
   ui.sumLine1:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 8)
   ui.sumLine2 = makeDashLabel(ui.sumPanel, "DM2StatsMenuRotSum2V8", 14, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.sumLine2:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 30)
-  -- Phase 3 P0 marker strip + execution detail
-  ui.markerLine = makeDashLabel(ui.sumPanel, "DM2StatsMenuRotMarkV8", 13, 0.55, 0.92, 0.75, 1)
-  ui.markerLine:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 50)
-  ui.markerLine:SetMaxLineCount(1)
+  -- Exec detail only in header (marker strip lives under skill timeline, not duplicated here)
   ui.execLine = makeDashLabel(ui.sumPanel, "DM2StatsMenuRotExecV8", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.execLine:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 68)
+  ui.execLine:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 50)
   ui.execLine:SetMaxLineCount(2)
 
   ui.pulsePanel = WM:CreateControl("DM2StatsMenuRotPulsePanelV8", ui.root, CT_CONTROL)
@@ -9315,7 +9454,7 @@ local function createRotationUI(screen)
   ui.iconTitle:SetAnchor(TOPLEFT, ui.iconPanel, TOPLEFT, 10, 4)
   ui.iconTitle:SetText("SKILL TIMELINE  (icons · thick border = weave result · F/B/U on icons)")
   ui.iconWrap = WM:CreateControl("DM2StatsMenuRotIconWrapV8", ui.iconPanel, CT_CONTROL)
-  -- Marker timeline under icons (Phase 3 P0) — easier to see than header line alone
+  -- Marker timeline under icons: S swap / U ult (dummy parses only; drop L — borders already mark late weaves)
   ui.iconMarkerLine = makeDashLabel(ui.iconPanel, "DM2StatsMenuRotIconMarkV8", 12, 0.55, 0.92, 0.75, 1)
   ui.iconMarkerLine:SetMaxLineCount(2)
   for i = 1, ROT_TIMELINE_ICONS do
@@ -9371,13 +9510,16 @@ local function layoutRotationUI(ui, hostW, hostH)
   ui.title:SetWidth(W)
   ui.meta:SetWidth(W)
 
-  local sumH, pulseH = 96, 44
+  local sumH, pulseH = 78, 44
   ui.sumPanel:ClearAnchors()
   ui.sumPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 40)
   ui.sumPanel:SetDimensions(W, sumH)
   ui.sumLine1:SetWidth(W - 24)
   ui.sumLine2:SetWidth(W - 24)
-  if ui.markerLine then ui.markerLine:SetWidth(W - 24) end
+  if ui.markerLine then
+    ui.markerLine:SetHidden(true)
+    ui.markerLine:SetText("")
+  end
   if ui.execLine then ui.execLine:SetWidth(W - 24) end
 
   local pulseY = 40 + sumH + 4
@@ -9433,8 +9575,8 @@ local function refreshRotationUI(screen, session)
   if not session then
     ui.sumLine1:SetText("No fight selected")
     ui.sumLine2:SetText("")
-    if ui.markerLine then ui.markerLine:SetText("") end
-    if ui.iconMarkerLine then ui.iconMarkerLine:SetText("") end
+    if ui.markerLine then ui.markerLine:SetText(""); ui.markerLine:SetHidden(true) end
+    if ui.iconMarkerLine then ui.iconMarkerLine:SetText(""); ui.iconMarkerLine:SetHidden(true) end
     if ui.execLine then ui.execLine:SetText("") end
     for _, b in ipairs(ui.pulse) do b:SetHidden(true) end
     for _, ic in ipairs(ui.icons) do
@@ -9448,7 +9590,7 @@ local function refreshRotationUI(screen, session)
   local w = type(session.weave) == "table" and session.weave or {}
   ensurePhase3Summary(session)
   ui.meta:SetText(string.format(
-    "%s  ·  %s  ·  |c66FF66good|r  |cFFCC66late|r  |cFF6666miss|r  |c66AAFFfast|r · S/U/L markers",
+    "%s  ·  %s  ·  |c66FF66good|r  |cFFCC66late|r  |cFF6666miss|r  |c66AAFFfast|r · border = weave",
     truncateText(session.lastTargetName or "fight", 28), fmtDur(session.durationMs)
   ))
   ui.sumLine1:SetText(string.format(
@@ -9463,31 +9605,45 @@ local function refreshRotationUI(screen, session)
     tostring(tonumber(w.inputSkillPresses) or tonumber(w.skillEventCount) or 0),
     tostring(tonumber(w.barSwapCount) or 0)
   ))
-  -- Phase 3 P0: marker glyph strip + exec detail
+  -- Under-timeline S/U markers on dummy only (long trial/dungeon fights omit to save space).
+  -- No L (late phase) — icon borders already encode Good/Late/Miss.
   if ui.markerLine then
-    local pts = session.markers and session.markers.points
-    local glyphs = {}
-    local maxG = 48
-    if type(pts) == "table" and #pts > 0 then
-      local step = math.max(1, math.ceil(#pts / maxG))
-      for i = 1, #pts, step do
-        local p = pts[i]
-        local ch = "·"
-        if p.type == "swap" then ch = "|c88DDAAS|r"
-        elseif p.type == "ult" then ch = "|cFFAA66U|r"
-        elseif p.type == "late_phase" then ch = "|cAAAAFFL|r"
+    ui.markerLine:SetText("")
+    ui.markerLine:SetHidden(true)
+  end
+  if ui.iconMarkerLine then
+    local showMarkers = session.isDummy == true
+    if showMarkers then
+      local pts = session.markers and session.markers.points
+      local glyphs = {}
+      local maxG = 48
+      if type(pts) == "table" and #pts > 0 then
+        local step = math.max(1, math.ceil(#pts / maxG))
+        for i = 1, #pts, step do
+          local p = pts[i]
+          if p.type == "swap" then
+            glyphs[#glyphs + 1] = "|c88DDAAS|r"
+          elseif p.type == "ult" then
+            glyphs[#glyphs + 1] = "|cFFAA66U|r"
+          end
+          -- skip late_phase (L)
         end
-        glyphs[#glyphs + 1] = ch
       end
-    end
-    local markTxt
-    if #glyphs > 0 then
-      markTxt = "S/U/L: " .. table.concat(glyphs, " ") .. "   ·  |c88DDAAS|r swap · |cFFAA66U|r ult · |cAAAAFFL|r late"
+      if #glyphs > 0 then
+        ui.iconMarkerLine:SetHidden(false)
+        ui.iconMarkerLine:SetText(
+          table.concat(glyphs, " ") .. "   ·  |c88DDAAS|r bar swap · |cFFAA66U|r ult  (under timeline)"
+        )
+      else
+        ui.iconMarkerLine:SetHidden(false)
+        ui.iconMarkerLine:SetText(
+          "|c888888S/U under timeline: none this parse (need post-3.17 dummy with swaps/ults)|r"
+        )
+      end
     else
-      markTxt = "S/U/L markers: (none — need new parse after 3.17)  ·  S swap · U ult · L late"
+      ui.iconMarkerLine:SetText("")
+      ui.iconMarkerLine:SetHidden(true)
     end
-    ui.markerLine:SetText(markTxt)
-    if ui.iconMarkerLine then ui.iconMarkerLine:SetText(markTxt) end
   end
   if ui.execLine then
     local bs = session.barStats or {}
@@ -9612,7 +9768,7 @@ end
 local INSIGHT_DIAG_OPP = 3
 local INSIGHT_WASTE_LINES = 8
 local INSIGHT_BUILD_SRC = 6
-local INSIGHT_BUILD_CP = 6
+local INSIGHT_BUILD_CP = 8 -- match Build & Sets so Soft stars like Backstabber stay visible
 local INSIGHT_EXEC_LINES = 5 -- Phase 3 P0: exception lines + More: Rotation
 
 local function buildNextTestStub(session, diag, syn, profile)
@@ -9630,7 +9786,7 @@ local function createInsightsUI(screen, mode)
   -- mode: "dps" | "build" — split for readability / room to grow
   mode = (mode == "build") and "build" or "dps"
   local storeKey = (mode == "build") and "insightsBuildUI" or "insightsDpsUI"
-  if screen[storeKey] and not screen[storeKey]._v3170 then screen[storeKey] = nil end
+  if screen[storeKey] and not screen[storeKey]._v3176 then screen[storeKey] = nil end
   if screen[storeKey] then
     local existing = screen[storeKey]
     -- Lazy-add Next Test action line (2.5.3) without full rebuild
@@ -9653,7 +9809,7 @@ local function createInsightsUI(screen, mode)
     buildSrcs = {},
     buildCps = {},
     execLines = {},
-    _v3170 = true,
+    _v3176 = true,
   }
   local pfx = (mode == "build") and "DM2StatsMenuInBld" or "DM2StatsMenuInDps"
   local rootName = pfx .. "Root"
@@ -9922,6 +10078,7 @@ local function layoutInsightsUI(ui, hostW, hostH)
   local buildH = (mode == "build") and (H - y0 - 8) or (heights[3] or 200)
   -- History-style compact rows (tighter than sprawled 4-item lists)
   local srcH = math.max(28, math.min(40, math.floor((buildH - srcTop - 6) / INSIGHT_BUILD_SRC)))
+  local cpH = math.max(22, math.min(srcH, math.floor((buildH - srcTop - 6) / INSIGHT_BUILD_CP)))
   for i = 1, INSIGHT_BUILD_SRC do
     local r = ui.buildSrcs[i]
     r.row:ClearAnchors()
@@ -9944,8 +10101,8 @@ local function layoutInsightsUI(ui, hostW, hostH)
   for i = 1, INSIGHT_BUILD_CP do
     local r = ui.buildCps[i]
     r.row:ClearAnchors()
-    r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, srcTop + (i - 1) * srcH)
-    r.row:SetDimensions(rightW - 4, srcH - 3)
+    r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, srcTop + (i - 1) * cpH)
+    r.row:SetDimensions(rightW - 4, cpH - 2)
     r.fit:ClearAnchors()
     r.fit:SetAnchor(LEFT, r.row, LEFT, 6, 0)
     r.fit:SetWidth(48)
@@ -11596,7 +11753,7 @@ function DM2StatsMenuShell_Gamepad:RefreshHeader()
       and string.format("EXP DONE %d/%d", n, need)
       or string.format("EXP ON %d/%d", n, need)
   end
-  local subtitle = "v3.17.5  |  L2/R2 fights  |  " .. expBit .. "  |  "
+  local subtitle = "v3.17.6  |  L2/R2 fights  |  " .. expBit .. "  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",

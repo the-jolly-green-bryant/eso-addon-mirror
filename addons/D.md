@@ -8,7 +8,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | --- | --- | --- | --- |
 | [Daedric Trickery Tracker \[DTT\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IFreemz/Daedric-Trickery-Tracker-DTT__4080) | IFreemz | PC / Mac | 1.01 |
 | [Daedric's Endless Archive Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DaedricDoge/Daedric-s-Endless-Archive-Assistant__3757) | DaedricDoge | PC / Mac | 0.1 |
-| [Daily Alchemy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Daily-Alchemy__1899) | Marify | PC / Mac | 1.5.1 |
+| [Daily Alchemy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Daily-Alchemy__1899) | Marify | PC / Mac | 1.5.2 |
 | [Daily Crabs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/A5ha/Daily-Crabs__4350) | A5ha | PC / Mac | 3 |
 | [Daily Craft Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/czerepx/Daily-Craft-Status__2510) | czerepx | PC / Mac | 0.2.16 |
 | [Daily Deeds — Currency Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Daily-Deeds-Currency-Trackers__4504) | atharti | PC / Mac | 1.4 |

@@ -1,0 +1,16 @@
+## Title: Bound Armaments Counter
+## APIVersion: 101049 101050
+## SavedVariables: BoundArmamentsCounterVariables
+## Description: Fixed by |c9E11A6@Faint_One(NA)|r Displays stacks of Bound Armaments Counter.
+## Version: 1.2.3
+## AddOnVersion: 102030
+## Author: |cFFCCCC@g4rr3t|r (NA) & @Masel92 (EU) & |c9E11A6@Faint_One(NA)|r
+## DependsOn: LibAddonMenu-2.0>=40
+
+src/Main.lua
+src/Textures.lua
+src/Defaults.lua
+src/Abilities.lua
+src/Settings.lua
+src/Tracking.lua
+src/Interface.lua

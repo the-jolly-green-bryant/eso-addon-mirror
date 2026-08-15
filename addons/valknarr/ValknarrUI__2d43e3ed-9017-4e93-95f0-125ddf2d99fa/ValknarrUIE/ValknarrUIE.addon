@@ -2,8 +2,8 @@
 ## Author: valknarr
 ## Description: Gamepad grid editor for native HUD: resource bars, chat, action bar, compass, and more.
 ## APIVersion: 101049 101050
-## AddOnVersion: 22
-## Version: 0.9.1
+## AddOnVersion: 28
+## Version: 0.9.7
 ## SavedVariables: ValknarrUIElementsEditor_SavedVariables
 ## DependsOn: LibAddonMenu-2.0
 ## OptionalDependsOn: LibRadialMenu LibHarvensAddonSettings

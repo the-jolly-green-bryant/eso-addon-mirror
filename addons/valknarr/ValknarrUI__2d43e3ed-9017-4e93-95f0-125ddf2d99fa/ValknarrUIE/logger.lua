@@ -8,8 +8,21 @@ Log.enabled = false
 Log.hudVisible = false
 Log.hudLines = {}
 
+local persistSink
+
+function Log:SetPersistSink(fn)
+    persistSink = type(fn) == "function" and fn or nil
+end
+
+local function Persist(text)
+    if persistSink then
+        pcall(persistSink, text)
+    end
+end
+
 local function ChatPrint(message)
     local text = PREFIX .. tostring(message)
+    Persist(text)
     if type(d) == "function" then
         d(text)
         return
@@ -168,6 +181,26 @@ function Log:FormatValue(value)
         return "userdata"
     end
     return valueType
+end
+
+-- Stable "key=value key=value" line for /uiedit diag and debug snapshots.
+function Log:FormatPairs(tbl)
+    if type(tbl) ~= "table" then
+        return self:FormatValue(tbl)
+    end
+    local keys = {}
+    for key in pairs(tbl) do
+        keys[#keys + 1] = key
+    end
+    table.sort(keys, function(a, b)
+        return tostring(a) < tostring(b)
+    end)
+    local parts = {}
+    for index = 1, #keys do
+        local key = keys[index]
+        parts[#parts + 1] = tostring(key) .. "=" .. self:FormatValue(tbl[key])
+    end
+    return table.concat(parts, " ")
 end
 
 function Log:Dump(label, tbl)

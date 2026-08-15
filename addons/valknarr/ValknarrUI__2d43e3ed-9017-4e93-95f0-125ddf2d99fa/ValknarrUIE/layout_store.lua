@@ -30,6 +30,14 @@ local defaults = {
 
 local GRID_DEFAULTS = defaults.grid
 
+-- Catalog ids we used to move and must never reapply. Experience/Level is
+-- the native progress bar; leftover SavedVars would keep teleporting it.
+local RETIRED_ELEMENT_IDS = {
+    exp = true,
+}
+
+local MAX_DEBUG_LOG_LINES = 80
+
 local function NormalizeGrid(source)
     local grid = type(source) == "table" and source or GRID_DEFAULTS
     local divisionsX = tonumber(grid.divisionsX) or GRID_DEFAULTS.divisionsX
@@ -110,7 +118,7 @@ local function CopyElements(source)
     end
     if type(source) == "table" then
         for name, position in pairs(source) do
-            if result[name] == nil and type(position) == "table" then
+            if result[name] == nil and type(position) == "table" and not RETIRED_ELEMENT_IDS[name] then
                 result[name] = SanitizePosition(position, nil)
             end
         end
@@ -197,6 +205,7 @@ function Store:Initialize()
     end
     self:EnsureGrid()
     self:EnsureSettings()
+    self:DropRetiredElements()
     if Log then
         if self.saved then
             Log:Info("SavedVars ready (" .. SAVED_VARS_NAME .. ")")
@@ -267,6 +276,52 @@ function Store:ToggleSetting(key)
     local nextValue = not self:GetSetting(key)
     self:SetSetting(key, nextValue)
     return nextValue
+end
+
+function Store:DropRetiredElements()
+    if not self.saved or type(self.saved.elements) ~= "table" then
+        return false
+    end
+    local dropped = false
+    for id in pairs(RETIRED_ELEMENT_IDS) do
+        if self.saved.elements[id] ~= nil then
+            self.saved.elements[id] = nil
+            dropped = true
+        end
+    end
+    return dropped
+end
+
+-- Ring buffer of chat debug lines. Addon Lua cannot write the engine Logs
+-- folder; this is flushed to SavedVariables on /reloadui or logout.
+function Store:AppendDebugLog(line)
+    if not self.saved then
+        return false
+    end
+    if type(line) ~= "string" or line == "" then
+        return false
+    end
+    local log = self.saved.debugLog
+    if type(log) ~= "table" then
+        log = {}
+        self.saved.debugLog = log
+    end
+    log[#log + 1] = line
+    while #log > MAX_DEBUG_LOG_LINES do
+        table.remove(log, 1)
+    end
+    return true
+end
+
+function Store:GetDebugLog()
+    if not self.saved or type(self.saved.debugLog) ~= "table" then
+        return {}
+    end
+    local copy = {}
+    for index = 1, #self.saved.debugLog do
+        copy[index] = self.saved.debugLog[index]
+    end
+    return copy
 end
 
 function Store:DescribeSettings()

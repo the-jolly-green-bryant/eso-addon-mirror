@@ -103,6 +103,24 @@ function Scene:IsShowing()
     return CurrentSceneName() == SCENE_NAME
 end
 
+function Scene:Describe()
+    local name = CurrentSceneName()
+    local state = nil
+    if self.scene and type(self.scene.GetState) == "function" then
+        local ok, value = pcall(self.scene.GetState, self.scene)
+        if ok then
+            state = SceneStateName(value)
+        end
+    end
+    return {
+        editorScene = SCENE_NAME,
+        current = name or "nil",
+        editorShowing = self:IsShowing() and true or false,
+        state = state or "nil",
+        hideRetries = self.hideRetries or 0,
+    }
+end
+
 function Scene:SetKeybindChromeVisible(visible)
     if not self.scene then
         return
@@ -248,8 +266,32 @@ function Scene:Hide()
     -- Never HideCurrentScene unless we are the current scene. After a
     -- zombie hide the current scene is hud; popping that would blank HUD.
     if CurrentSceneName() ~= SCENE_NAME then
+        self.hideRetries = 0
         return
     end
+    -- Push is still in SHOWING on a fast A/B (open, save, no stick move).
+    -- HideCurrentScene in that state fights the push and leaves the left
+    -- stick consumed for gameplay.
+    local showing = false
+    if SCENE_SHOWING and type(self.scene.GetState) == "function" then
+        local ok, state = pcall(self.scene.GetState, self.scene)
+        if ok and state == SCENE_SHOWING then
+            showing = true
+        end
+    end
+    if showing then
+        self.hideRetries = (self.hideRetries or 0) + 1
+        if self.hideRetries <= 20 and type(zo_callLater) == "function" then
+            if Log then
+                Log:Debug("Hide deferred: editor scene still SHOWING (attempt " .. tostring(self.hideRetries) .. ")")
+            end
+            zo_callLater(function()
+                Scene:Hide()
+            end, 50)
+            return
+        end
+    end
+    self.hideRetries = 0
     self.keybindBackdropAdded = false
     local hider = SCENE_MANAGER.HideCurrentScene or SCENE_MANAGER.Hide
     if type(hider) ~= "function" then

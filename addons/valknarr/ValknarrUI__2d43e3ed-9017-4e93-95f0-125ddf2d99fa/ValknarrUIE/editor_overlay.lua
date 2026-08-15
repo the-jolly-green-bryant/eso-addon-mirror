@@ -260,7 +260,10 @@ function Editor:UpdateBanner()
         end
     end
     local mode = self.precision and "PRECISION" or "GRID"
-    local axes = "move " .. AxisLabel(self.moveAxis) .. "  size " .. AxisLabel(self.resizeAxis)
+    local axes = "move " .. AxisLabel(self.moveAxis)
+    if self:IsResizable(self.selected) then
+        axes = axes .. "  size " .. AxisLabel(self.resizeAxis)
+    end
     local preview = self.cleanPreview and "CLEAN" or "EDIT"
     local found, total = CountFound(self.controls)
     local platform = (Platform and Platform.ModeLabel and Platform:ModeLabel()) or "?"
@@ -288,9 +291,17 @@ function Editor:UpdateBanner()
         self.bannerStatusText = text
         self.bannerStatus:SetText(text)
     end
-    if self.bannerHelp and not self.bannerHelpSet then
-        self.bannerHelp:SetText("LS move  ·  RS resize  ·  L3/R3 lock axis  ·  Y hides buttons  ·  A save  ·  B exit")
-        self.bannerHelpSet = true
+    if self.bannerHelp then
+        local help
+        if self:IsResizable(self.selected) then
+            help = "LS move  ·  RS resize  ·  L3/R3 lock axis  ·  Y hides buttons  ·  A save  ·  B exit"
+        else
+            help = "LS move  ·  L3 lock axis  ·  Y hides buttons  ·  A save  ·  B exit"
+        end
+        if self.bannerHelpText ~= help then
+            self.bannerHelpText = help
+            self.bannerHelp:SetText(help)
+        end
     end
 end
 

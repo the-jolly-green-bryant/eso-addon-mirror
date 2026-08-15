@@ -772,10 +772,16 @@ local function AutosaveTake()
             H.savedVars.saves[name] = data
             H.savedVars.lastSaveName = name
             H.workingName = name
+            local nFlat = tonumber(data.nFlat) or (data.flat and #data.flat) or 0
+            local nEnt = tonumber(data.nEnt) or 0
             dhd("Record autosaved:")
             dhd("  title: " .. (data.displayName or name))
             dhd("  id:    |cC0E0FF" .. name .. "|r")
-            dhd("  open:  |cC0E0FF/hd open last|r  or  |cC0E0FF/hd open 1|r  (after /hd saves)")
+            dhd(string.format("  data:  %d entities · %d flat keyframes", nEnt, nFlat))
+            if nFlat == 0 then
+                dhd("|cFF5555WARNING|r save has 0 keyframes — /hd save backup1 manually")
+            end
+            dhd("  open:  |cC0E0FF/hd open last|r  or  |cC0E0FF/hd open 1|r")
         end
     end
 end

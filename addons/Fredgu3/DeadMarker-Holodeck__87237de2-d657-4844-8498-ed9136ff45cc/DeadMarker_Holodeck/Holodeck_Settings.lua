@@ -27,7 +27,7 @@ function H.CreateSettingsMenu()
         name = "DeadMarker Holodeck",
         displayName = "DeadMarker Holodeck",
         author = "Skye-Forge",
-        version = H.version or "0.0.19",
+        version = H.version or "0.0.22",
         slashCommand = "/hdsettings",
         registerForRefresh = true,
         registerForDefaults = true,

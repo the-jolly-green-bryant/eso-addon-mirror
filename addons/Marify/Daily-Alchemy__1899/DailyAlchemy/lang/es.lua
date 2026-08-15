@@ -41,38 +41,38 @@ ZO_CreateStringId("DA_NOTHING_ITEM",        "No items in the backpack (<<1>>)")
 ZO_CreateStringId("DA_SHORT_OF",            "... Short of Materials(<<1>>)")
 ZO_CreateStringId("DA_MISMATCH_ITEM",       "... [Error]Name does not match (<<1>>)")
 
-ZO_CreateStringId("DA_HEALTH",              "Restauración de salud")                -- Restore Health        [es.lang.csv] "156152165","0","1","xxxxxxxx"
-ZO_CreateStringId("DA_RVG_HEALTH",          "Reducción de salud")                   -- Ravage Health         [es.lang.csv] "156152165","0","2","xxxxxxxx"
-ZO_CreateStringId("DA_MAGICKA",             "Restauración de magia")                -- Restore Magicka       [es.lang.csv] "156152165","0","3","xxxxxxxx"
-ZO_CreateStringId("DA_RVG_MAGICKA",         "Reducción de magia")                   -- Ravage Magicka        [es.lang.csv] "156152165","0","4","xxxxxxxx"
-ZO_CreateStringId("DA_STAMINA",             "Restauración de aguante")              -- Restore Stamina       [es.lang.csv] "156152165","0","5","xxxxxxxx"
-ZO_CreateStringId("DA_RVG_STAMINA",         "Reducción de aguante")                 -- Ravage Stamina        [es.lang.csv] "156152165","0","6","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_RESIST",        "Aumento de resistencia a hechizos")    -- Increase Spell Resist [es.lang.csv] "156152165","0","7","xxxxxxxx"
-ZO_CreateStringId("DA_BREACH",              "Fisura")                               -- Breach                [es.lang.csv] "156152165","0","8","xxxxxxxx"
-ZO_CreateStringId("DA_ARMOR",               "Aumento de armadura")                  -- Increase Armor        [es.lang.csv] "156152165","0","9","xxxxxxxx"
-ZO_CreateStringId("DA_FRACTURE",            "Fractura")                             -- Fracture              [es.lang.csv] "156152165","0","10","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_POWER",         "Aumento de potencia mágica")           -- Increase Spell Power  [es.lang.csv] "156152165","0","11","xxxxxxxx"
-ZO_CreateStringId("DA_COWARDICE",           "Cobardía")                             -- Cowardice             [es.lang.csv] "156152165","0","12","xxxxxxxx"
-ZO_CreateStringId("DA_WEAPON_POWER",        "Aumento del poder físico")             -- Increase Weapon Power [es.lang.csv] "156152165","0","13","xxxxxxxx"
-ZO_CreateStringId("DA_MAIM",                "Mutilación")                           -- Maim                  [es.lang.csv] "156152165","0","14","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_CRIT",          "Crítico mágico")                       -- Spell Critical        [es.lang.csv] "156152165","0","15","xxxxxxxx"
-ZO_CreateStringId("DA_UNCERTAINTY",         "Incertidumbre")                        -- Uncertainty           [es.lang.csv] "156152165","0","16","xxxxxxxx"
-ZO_CreateStringId("DA_WEAPON_CRIT",         "Crítico físico")                       -- Weapon Critical       [es.lang.csv] "156152165","0","17","xxxxxxxx"
-ZO_CreateStringId("DA_ENERVATE",            "Enervación")                           -- Enervation            [es.lang.csv] "156152165","0","18","xxxxxxxx"
-ZO_CreateStringId("DA_UNSTOP",              "Imparable")                            -- Unstoppable           [es.lang.csv] "156152165","0","19","xxxxxxxx"
-ZO_CreateStringId("DA_ENTRAPMENT",          "Captura")                              -- Entrapment            [es.lang.csv] "156152165","0","20","xxxxxxxx"
-ZO_CreateStringId("DA_DETECTION",           "Detección")                            -- Detection             [es.lang.csv] "156152165","0","21","xxxxxxxx"
-ZO_CreateStringId("DA_INVISIBLE",           "Invisible")                            -- Invisible             [es.lang.csv] "156152165","0","22","xxxxxxxx"
-ZO_CreateStringId("DA_SPEED",               "Velocidad")                            -- Speed                 [es.lang.csv] "156152165","0","23","xxxxxxxx"
-ZO_CreateStringId("DA_HINDRANCE",           "Torpeza")                              -- Hindrance             [es.lang.csv] "156152165","0","24","xxxxxxxx"
-ZO_CreateStringId("DA_PROTECTION",          "Protección")                           -- Protection            [es.lang.csv] "156152165","0","25","xxxxxxxx"
-ZO_CreateStringId("DA_VULNERABILITY",       "Vulnerabilidad")                       -- Vulnerability         [es.lang.csv] "156152165","0","26","xxxxxxxx"
-ZO_CreateStringId("DA_LGR_HEALTH",          "Salud prolongada")                     -- Lingering Health      [es.lang.csv] "156152165","0","27","xxxxxxxx"
-ZO_CreateStringId("DA_GR_RVG_HEALTH",       "Deterioro de salud gradual")           -- Gradual Ravage Health [es.lang.csv] "156152165","0","28","xxxxxxxx"
-ZO_CreateStringId("DA_VITALITY",            "Vitalidad")                            -- Vitality              [es.lang.csv] "156152165","0","29","xxxxxxxx"
-ZO_CreateStringId("DA_DEFILE",              "Profanación")                          -- Defile                [es.lang.csv] "156152165","0","30","xxxxxxxx"
-ZO_CreateStringId("DA_HEROISM",             "Heroísmo")                             -- Heroism               [es.lang.csv] "156152165","0","31","xxxxxxxx"
-ZO_CreateStringId("DA_TIMIDITY",            "Timidez")                              -- Timidity              [es.lang.csv] "156152165","0","32","xxxxxxxx"
+ZO_CreateStringId("DA_HEALTH",              "restauración de salud")                -- Restore Health        [es.lang.csv] "156152165","0","1","xxxxxxxx"
+ZO_CreateStringId("DA_RVG_HEALTH",          "estrago de salud")                     -- Ravage Health         [es.lang.csv] "156152165","0","2","xxxxxxxx"
+ZO_CreateStringId("DA_MAGICKA",             "restauración de magia")                -- Restore Magicka       [es.lang.csv] "156152165","0","3","xxxxxxxx"
+ZO_CreateStringId("DA_RVG_MAGICKA",         "estrago de magia")                     -- Ravage Magicka        [es.lang.csv] "156152165","0","4","xxxxxxxx"
+ZO_CreateStringId("DA_STAMINA",             "restauración de aguante")              -- Restore Stamina       [es.lang.csv] "156152165","0","5","xxxxxxxx"
+ZO_CreateStringId("DA_RVG_STAMINA",         "estrago de aguante")                   -- Ravage Stamina        [es.lang.csv] "156152165","0","6","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_RESIST",        "aumento de resistencia a hechizos")    -- Increase Spell Resist [es.lang.csv] "156152165","0","7","xxxxxxxx"
+ZO_CreateStringId("DA_BREACH",              "fisura")                               -- Breach                [es.lang.csv] "156152165","0","8","xxxxxxxx"
+ZO_CreateStringId("DA_ARMOR",               "aumento de armadura")                  -- Increase Armor        [es.lang.csv] "156152165","0","9","xxxxxxxx"
+ZO_CreateStringId("DA_FRACTURE",            "fractura")                             -- Fracture              [es.lang.csv] "156152165","0","10","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_POWER",         "Aumento de poder")                     -- Increase Power        [es.lang.csv] "156152165","0","11","xxxxxxxx"
+ZO_CreateStringId("DA_COWARDICE",           "cobardía")                             -- Cowardice             [es.lang.csv] "156152165","0","12","xxxxxxxx"
+ZO_CreateStringId("DA_WEAPON_POWER",        "aumento de poder de arma")             -- Increase Weapon Power [es.lang.csv] "156152165","0","13","xxxxxxxx"
+ZO_CreateStringId("DA_MAIM",                "mutilación")                           -- Maim                  [es.lang.csv] "156152165","0","14","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_CRIT",          "crítico de hechizo")                   -- Spell Critical        [es.lang.csv] "156152165","0","15","xxxxxxxx"
+ZO_CreateStringId("DA_UNCERTAINTY",         "incertidumbre")                        -- Uncertainty           [es.lang.csv] "156152165","0","16","xxxxxxxx"
+ZO_CreateStringId("DA_WEAPON_CRIT",         "crítico de arma")                      -- Weapon Critical       [es.lang.csv] "156152165","0","17","xxxxxxxx"
+ZO_CreateStringId("DA_ENERVATE",            "enervación*")                          -- Enervation            [es.lang.csv] "156152165","0","18","xxxxxxxx"
+ZO_CreateStringId("DA_UNSTOP",              "imparable")                            -- Unstoppable           [es.lang.csv] "156152165","0","19","xxxxxxxx"
+ZO_CreateStringId("DA_ENTRAPMENT",          "captura")                              -- Entrapment            [es.lang.csv] "156152165","0","20","xxxxxxxx"
+ZO_CreateStringId("DA_DETECTION",           "detección")                            -- Detection             [es.lang.csv] "156152165","0","21","xxxxxxxx"
+ZO_CreateStringId("DA_INVISIBLE",           "invisible")                            -- Invisible             [es.lang.csv] "156152165","0","22","xxxxxxxx"
+ZO_CreateStringId("DA_SPEED",               "velocidad")                            -- Speed                 [es.lang.csv] "156152165","0","23","xxxxxxxx"
+ZO_CreateStringId("DA_HINDRANCE",           "torpeza")                              -- Hindrance             [es.lang.csv] "156152165","0","24","xxxxxxxx"
+ZO_CreateStringId("DA_PROTECTION",          "protección")                           -- Protection            [es.lang.csv] "156152165","0","25","xxxxxxxx"
+ZO_CreateStringId("DA_VULNERABILITY",       "vulnerabilidad")                       -- Vulnerability         [es.lang.csv] "156152165","0","26","xxxxxxxx"
+ZO_CreateStringId("DA_LGR_HEALTH",          "salud prolongada")                     -- Lingering Health      [es.lang.csv] "156152165","0","27","xxxxxxxx"
+ZO_CreateStringId("DA_GR_RVG_HEALTH",       "estrago de salud gradual")             -- Gradual Ravage Health [es.lang.csv] "156152165","0","28","xxxxxxxx"
+ZO_CreateStringId("DA_VITALITY",            "vitalidad")                            -- Vitality              [es.lang.csv] "156152165","0","29","xxxxxxxx"
+ZO_CreateStringId("DA_DEFILE",              "profanación")                          -- Defile                [es.lang.csv] "156152165","0","30","xxxxxxxx"
+ZO_CreateStringId("DA_HEROISM",             "heroísmo")                             -- Heroism               [es.lang.csv] "156152165","0","31","xxxxxxxx"
+ZO_CreateStringId("DA_TIMIDITY",            "timidez")                              -- Timidity              [es.lang.csv] "156152165","0","32","xxxxxxxx"
 
 
 
@@ -174,9 +174,9 @@ function DailyAlchemy:ConvertedJournalCondition(journalCondition)
         {".*fabrica un%w? (.*) con .* propiedades: (.*)\.",                     "Fabrica |c88AAFF[%1]|r|cFFFFFF...%2|r"},
 
         -- Dayly
-        {".*prepara un%w? (.*)\.：.*",     "Prepara |c88AAFF[%1]|r"},
-        {".*prepara un%w? (.*)\.:.*",      "Prepara |c88AAFF[%1]|r"},
-        {".*prepara un%w? (.*)\.",         "Prepara |c88AAFF[%1]|r"},
+        {".*prepara un%w? (.*)：.*",       "Prepara |c88AAFF[%1]|r"},
+        {".*prepara un%w? (.*):.*",        "Prepara |c88AAFF[%1]|r"},
+        {".*prepara un%w? (.*)",           "Prepara |c88AAFF[%1]|r"},
 
         {".*consigue un%w? (.*)\.",        "Consigue |c88AAFF[%1]|r"},
         {".*consigue (.*)\.：.*",          "Consigue |c88AAFF[%1]|r"},

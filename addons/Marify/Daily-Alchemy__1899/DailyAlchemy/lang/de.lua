@@ -51,7 +51,7 @@ ZO_CreateStringId("DA_SPELL_RESIST",        "Erhöht Magieresistenz")     -- Inc
 ZO_CreateStringId("DA_BREACH",              "Bruch")                     -- Breach                [de.lang.csv] "156152165","0","8","xxxxxxxx"
 ZO_CreateStringId("DA_ARMOR",               "Erhöht Rüstung")            -- Increase Armor        [de.lang.csv] "156152165","0","9","xxxxxxxx"
 ZO_CreateStringId("DA_FRACTURE",            "Fraktur")                   -- Fracture              [de.lang.csv] "156152165","0","10","xxxxxxxx"
-ZO_CreateStringId("DA_SPELL_POWER",         "Erhöht Magiekraft")         -- Increase Spell Power  [de.lang.csv] "156152165","0","11","xxxxxxxx"
+ZO_CreateStringId("DA_SPELL_POWER",         "Erhöht Macht")              -- Increase Power        [de.lang.csv] "156152165","0","11","xxxxxxxx"
 ZO_CreateStringId("DA_COWARDICE",           "Feigheit")                  -- Cowardice             [de.lang.csv] "156152165","0","12","xxxxxxxx"
 ZO_CreateStringId("DA_WEAPON_POWER",        "Erhöht Waffenkraft")        -- Increase Weapon Power [de.lang.csv] "156152165","0","13","xxxxxxxx"
 ZO_CreateStringId("DA_MAIM",                "Verkrüppeln")               -- Maim                  [de.lang.csv] "156152165","0","14","xxxxxxxx"

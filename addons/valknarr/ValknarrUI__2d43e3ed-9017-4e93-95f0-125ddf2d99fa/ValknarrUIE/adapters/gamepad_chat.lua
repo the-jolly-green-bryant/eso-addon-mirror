@@ -278,21 +278,14 @@ function Chat:OnNativeReset(reason)
     if type(callback) ~= "function" then
         return
     end
-    local function run()
-        if Chat.reapplying then
-            return
-        end
-        Chat.reapplying = true
-        pcall(callback, reason or "chat-reset")
-        Chat.reapplying = false
-        if Chat.pinned then
-            Chat:KeepAlive()
-        end
-    end
-    if type(zo_callLater) == "function" then
-        zo_callLater(run, 50)
-    else
-        run()
+    -- Apply in the same stack as LoadSettings / ResetContainerPositionAndSize.
+    -- Those native methods run from events; delaying with zo_callLater can
+    -- drop the protected-attribute context and leave chat on XML defaults.
+    self.reapplying = true
+    pcall(callback, reason or "chat-reset")
+    self.reapplying = false
+    if self.pinned then
+        self:KeepAlive()
     end
 end
 

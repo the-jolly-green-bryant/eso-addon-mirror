@@ -141,10 +141,26 @@ Editor.SetLabelFont = SetLabelFont
 Editor.PROXY_COLORS = PROXY_COLORS
 
 
+function Editor:IsResizable(name)
+    local id = name or self.selected
+    local lib = LibValknarrUIE
+    if lib and type(lib.IsResizable) == "function" then
+        return lib:IsResizable(id)
+    end
+    return false
+end
+
 function Editor:ApplyPosition(name, control, position)
+    if type(position) ~= "table" then
+        return false
+    end
+    local apply = position
+    if not self:IsResizable(name) and (position.w ~= nil or position.h ~= nil) then
+        apply = { x = position.x, y = position.y }
+    end
     local entry = RegistryEntry(name)
     if entry and type(entry.apply) == "function" then
-        local ok, applied = pcall(entry.apply, control, position)
+        local ok, applied = pcall(entry.apply, control, apply)
         if ok then
             return applied and true or false
         end
@@ -153,7 +169,7 @@ function Editor:ApplyPosition(name, control, position)
         end
         return false
     end
-    return Adapter:Apply(control, position.x, position.y, position.w, position.h)
+    return Adapter:Apply(control, apply.x, apply.y, apply.w, apply.h)
 end
 
 function Editor:Apply(name, reason)
@@ -231,6 +247,9 @@ end
 
 function Editor:Resize(direction, precision)
     if not self.active or not self.pending or not self.selected then
+        return
+    end
+    if LibValknarrUIE and LibValknarrUIE.IsResizable and not self:IsResizable(self.selected) then
         return
     end
     local usePrecision = precision
@@ -376,6 +395,9 @@ function Editor:CycleMoveAxis()
 end
 
 function Editor:CycleResizeAxis()
+    if not self:IsResizable(self.selected) then
+        return
+    end
     self.resizeAxis = CycleAxis(self.resizeAxis)
     if Log then
         Log:Always("Resize axis = " .. AxisLabel(self.resizeAxis) .. " (R3)")
@@ -450,8 +472,10 @@ function Editor:OnStickUpdate()
         self:Nudge(moveDir, self.precision)
     end
     if resizeDir then
-        self:EnsureSize(self.selected)
-        self:Resize(resizeDir, self.precision)
+        if self:IsResizable(self.selected) then
+            self:EnsureSize(self.selected)
+            self:Resize(resizeDir, self.precision)
+        end
     end
     self:EndBatch()
 end
@@ -727,6 +751,7 @@ function Editor:Begin()
         Log:SetHudVisible(Store and Store.GetSetting and Store:GetSetting("showDebugLog"))
         Log:Info("Entering edit mode (v" .. ADDON_VERSION .. ")")
         Log:Dump("Environment", Adapter:DescribeEnvironment())
+        Editor:DebugSnapshot("begin")
     end
 
     local sources
@@ -775,6 +800,8 @@ function Editor:Begin()
     self.dirty = false
     self.recoverScheduled = false
     self.recovering = false
+    -- Drop delayed gameplay reapplies so they cannot fight this session.
+    self.reapplyGeneration = (self.reapplyGeneration or 0) + 1
     self.session = (self.session or 0) + 1
     local session = self.session
     self.active = true
@@ -849,6 +876,9 @@ function Editor:Begin()
     if Movement and Movement.ClaimSticks then
         Movement:ClaimSticks(self, self.root or GuiRoot)
     end
+    if Log then
+        Editor:DebugSnapshot("begin-claimed")
+    end
 
     if hadSaved then
         self:BeginBatch()
@@ -868,8 +898,8 @@ function Editor:Begin()
     end
 
     if Log then
-        Log:Always("Editor open. Left stick moves. Right stick resizes (width / height).")
-        Log:Always("Click L3 / R3 to lock move or resize to X, Y, or both. Y hides buttons. A saves. B exits.")
+        Log:Always("Editor open. Left stick moves. Right stick resizes Chat only.")
+        Log:Always("Click L3 to lock move to X, Y, or both. Y hides buttons. A saves. B exits.")
         if found == 0 then
             Log:Warn("No native controls found — silhouettes still move for UX validation.")
         elseif found < total then
@@ -890,6 +920,9 @@ function Editor:End()
     -- Drop active before Scene:Hide. Hide fires camera-UI events that used
     -- to HoldClaim again while active was still true (left stick stuck).
     self.active = false
+    if Log then
+        Editor:DebugSnapshot("end")
+    end
     if Scene then
         Scene.onHidden = nil
     end
@@ -917,17 +950,26 @@ function Editor:End()
     end
     self.sceneActive = false
 
-    local function finishGameplay()
-        -- Skip if a newer Begin()/Cancel()/End() invalidated this close.
+    -- Hide finishes over several frames; a fast A/B can still be in SHOWING.
+    -- Keep releasing until hud is current (or the timeout), then allow
+    -- saved-layout reapply. Camera/HUD events also ForceRelease while ending.
+    local CLOSE_RETRY_MS = { 30, 80, 200, 400, 750, 1100, 1600 }
+    local function closeTick(last)
         if Editor.session ~= endSession or Editor.active then
             return
+        end
+        if Movement and Movement.ForceRelease then
+            Movement:ForceRelease(self)
+        end
+        if Scene and Scene.Hide then
+            Scene:Hide()
         end
         if Scene and Scene.ReturnToGame then
             Scene:ReturnToGame()
         end
-        if Movement and Movement.ForceRelease then
-            -- Only if claimGeneration still matches the deferred release epoch.
-            Movement:ForceRelease(self)
+        if last then
+            Editor.ending = false
+            Editor:ScheduleReapply("editor-close")
         end
     end
 
@@ -937,26 +979,16 @@ function Editor:End()
         Movement:ForceRelease(self)
     end
 
-    -- Hide finishes over several frames; Show(hud) + stick release after that.
     if type(zo_callLater) == "function" then
-        zo_callLater(finishGameplay, 30)
-        zo_callLater(function()
-            finishGameplay()
-        end, 200)
-        zo_callLater(function()
-            if Editor.session ~= endSession then
-                return
-            end
-            if not Editor.active and Movement and Movement.ForceRelease then
-                Movement:ForceRelease(self)
-            end
-            if Editor.session == endSession then
-                self.ending = false
-            end
-        end, 750)
+        for index = 1, #CLOSE_RETRY_MS do
+            local delay = CLOSE_RETRY_MS[index]
+            local last = index == #CLOSE_RETRY_MS
+            zo_callLater(function()
+                closeTick(last)
+            end, delay)
+        end
     else
-        finishGameplay()
-        self.ending = false
+        closeTick(true)
     end
     if Log then
         Log:Info("Edit mode closed")
@@ -980,7 +1012,9 @@ function Editor:Save()
         return false
     end
     if Log then
-        Log:Always("Layout saved. It will reapply after reload or zoning.")
+        Log:Debug("Save dirty=" .. tostring(self.dirty and true or false))
+        Editor:DebugSnapshot("save")
+        Log:Always("Layout saved. It will reapply after reload, death, or zoning.")
     end
     self:End()
     return true
@@ -1013,6 +1047,10 @@ function Editor:Cancel()
     end
     -- Only restore native anchors if the player moved/resized something.
     -- Restoring after a no-op open makes the action bar jump for no reason.
+    if Log then
+        Log:Debug("Cancel dirty=" .. tostring(self.dirty and true or false))
+        Editor:DebugSnapshot("cancel")
+    end
     if self.dirty then
         for _, name in ipairs(ElementIds()) do
             Adapter:Restore(self.controls[name], self.nativeAnchors[name])
@@ -1049,12 +1087,57 @@ function Editor:Reset()
     self:ResetToDefaults()
 end
 
+function Editor:DescribeSession()
+    return {
+        active = self.active and true or false,
+        ending = self.ending and true or false,
+        dirty = self.dirty and true or false,
+        session = self.session or 0,
+        sceneActive = self.sceneActive and true or false,
+        stickPolling = self.stickPolling and true or false,
+        selected = tostring(self.selected or "nil"),
+        recoverScheduled = self.recoverScheduled and true or false,
+        recovering = self.recovering and true or false,
+        reapplyGeneration = self.reapplyGeneration or 0,
+    }
+end
+
+function Editor:DebugSnapshot(label)
+    if not Log then
+        return
+    end
+    local prefix = tostring(label or "state")
+    Log:Debug(prefix .. " session " .. Log:FormatPairs(self:DescribeSession()))
+    if Movement and Movement.Describe then
+        Log:Debug(prefix .. " sticks " .. Log:FormatPairs(Movement:Describe()))
+    end
+    if Scene and Scene.Describe then
+        Log:Debug(prefix .. " scene " .. Log:FormatPairs(Scene:Describe()))
+    end
+end
+
 function Editor:Diagnose()
     if Log then
         Log:SetHudVisible(true)
         Log:ClearHud()
         Log:Always("Running /uiedit diag")
+        -- Session / stick / scene always print so a console paste works with
+        -- Show debug logs off. Verbose dumps still need /uiedit log on.
+        Log:Always("Session " .. Log:FormatPairs(self:DescribeSession()))
+        if Movement and Movement.Describe then
+            Log:Always("Sticks " .. Log:FormatPairs(Movement:Describe()))
+        end
+        if Scene and Scene.Describe then
+            Log:Always("Scene " .. Log:FormatPairs(Scene:Describe()))
+        end
         Log:Dump("Environment", Adapter:DescribeEnvironment())
+        Log:Dump("Session", self:DescribeSession())
+        if Movement and Movement.Describe then
+            Log:Dump("Sticks", Movement:Describe())
+        end
+        if Scene and Scene.Describe then
+            Log:Dump("Scene", Scene:Describe())
+        end
     end
     local controls, sources = self:LocateAll()
     if Log then
@@ -1105,7 +1188,8 @@ function Editor:Diagnose()
             Log:Debug("ACTION_BAR global not present")
         end
         Log:Dump("Budget", Budget and Budget.Describe and Budget:Describe())
-        Log:Always("Diag complete — debug HUD is on. /uiedit log hud off to hide it.")
+        Log:Always("Diag complete. Session, Sticks, and Scene are in chat and in SavedVariables debugLog.")
+        Log:Always("After /reloadui, copy debugLog from SavedVariables/ValknarrUIElementsEditor_SavedVariables.lua. /uiedit log on for the full dump.")
     end
     self:ShowBudget()
 end
@@ -1127,7 +1211,7 @@ function Editor:ShowHelp()
     end
     Log:Always("Valknarr UI v" .. ADDON_VERSION)
     Log:Always("/uiedit              toggle editor")
-    Log:Always("/uiedit diag         dump diagnostics (shows log HUD)")
+    Log:Always("/uiedit diag         session, stick owner, scene (always); writes SavedVariables debugLog")
     Log:Always("/uiedit budget       memory, control count, and editor timing")
     Log:Always("/uiedit log on|off   verbose chat logging")
     Log:Always("/uiedit log hud      show on-canvas log HUD")
@@ -1137,7 +1221,7 @@ function Editor:ShowHelp()
     Log:Always("/uiedit preview      toggle clean preview (if editor is open)")
     Log:Always("/uiedit reset        default layout (editor must be open)")
     Log:Always("/uiedit help         this help")
-    Log:Always("In editor: LS moves, RS resizes, L3/R3 lock axis, Y hides buttons, A saves, B exits")
+    Log:Always("In editor: LS moves, RS resizes Chat, L3 lock axis, Y hides buttons, A saves, B exits")
 end
 
 local function TrimArgs(args)
@@ -1267,7 +1351,7 @@ function Editor:RegisterBuiltins()
             locate = function()
                 return Adapter:Find(item.id)
             end,
-            resizable = true,
+            resizable = false,
             default = { x = item.x, y = item.y },
         })
     end
@@ -1312,6 +1396,11 @@ function Editor:Initialize()
         Log:Always("Install LibAddonMenu-2.0. Config: /uiedit settings or Add-On Settings.")
     end
     Store:Initialize()
+    if Log and Log.SetPersistSink then
+        Log:SetPersistSink(function(line)
+            Store:AppendDebugLog(line)
+        end)
+    end
     if Log and Log.ApplyFromStore then
         Log:ApplyFromStore(true)
     end
@@ -1344,14 +1433,36 @@ function Editor:Initialize()
         end
     end
     self:RegisterEvents()
+    -- ADD_ON_LOADED is a valid SetAnchor context, and a /reloadui that
+    -- never sees another PLAYER_ACTIVATED still needs the saved HUD.
+    self:ScheduleReapply("init")
+end
+
+-- Native HUD fade is 250ms. Death hides PLAYER_ATTRIBUTE_BARS_FRAGMENT;
+-- zoning and inventory both hide/show the HUD after that. One delayed
+-- apply on PLAYER_ACTIVATED is too early and never runs on resurrect.
+-- Retry after the fade so we win the race with XML template re-anchors.
+local REAPPLY_DELAYS_MS = { 500, 1200 }
+
+function Editor:ApplyPendingLayout(reason)
+    self:Relocate()
+    local width, height = Adapter:GetScreenSize()
+    if Grid and Grid.LayoutLines then
+        Grid:LayoutLines(width, height)
+    end
+    self:BeginBatch()
+    for _, name in ipairs(ElementIds()) do
+        self:Apply(name, reason or "reapply-event")
+    end
+    self:EndBatch()
 end
 
 function Editor:ReapplySavedLayout(reason)
     if self.active then
-        return
+        return 0
     end
     if not Store:HasUserLayout() then
-        return
+        return 0
     end
     self:Relocate()
     local pending = Store:Load()
@@ -1367,6 +1478,181 @@ function Editor:ReapplySavedLayout(reason)
     if Log then
         Log:Info("Reapplied saved layout (" .. tostring(reason or "event") .. ") " .. applied .. "/" .. #ids)
     end
+    return applied
+end
+
+function Editor:ReapplyElement(name, reason)
+    if self.ending then
+        return false
+    end
+    if self.active then
+        return self:Apply(name, reason or "element") and true or false
+    end
+    if not Store or not Store.HasUserLayout or not Store:HasUserLayout() then
+        return false
+    end
+    if not self.controls or not self.controls[name] then
+        self:Relocate()
+    end
+    local pending = Store:Load()
+    local position = pending and pending[name]
+    local control = self.controls and self.controls[name]
+    if not position or not control then
+        return false
+    end
+    local applied = self:ApplyPosition(name, control, position)
+    if Log and applied then
+        Log:Debug("Reapplied " .. tostring(name) .. " (" .. tostring(reason or "event") .. ")")
+    end
+    return applied and true or false
+end
+
+function Editor:OnCameraUiEvent()
+    if self.ending then
+        if Log then
+            Log:Debug("CameraUI during close — ForceRelease")
+            Editor:DebugSnapshot("camera-ui")
+        end
+        if Movement and Movement.ForceRelease then
+            Movement:ForceRelease(self)
+        end
+        return
+    end
+    if self.active and Movement and Movement.HoldClaim then
+        Movement:HoldClaim()
+    end
+end
+
+-- HUD / action-layer events fire in a real event handler, which is the
+-- context SetGamepadLeftStickConsumedByUI needs. Use that to unlock the
+-- stick on close, and only reapply layout once teardown is done.
+function Editor:OnGameplayRestored(reason)
+    if self.ending then
+        if Log then
+            Log:Debug("GameplayRestored during close (" .. tostring(reason or "event") .. ") — ForceRelease")
+            Editor:DebugSnapshot("gameplay-restored")
+        end
+        if Movement and Movement.ForceRelease then
+            Movement:ForceRelease(self)
+        end
+        return
+    end
+    self:ScheduleReapply(reason or "hud-shown")
+end
+
+function Editor:ScheduleReapply(reason)
+    -- Teardown still owns the sticks. Re-anchoring HUD in the middle of
+    -- HideCurrentScene is how a no-op A/B leaves the left stick consumed.
+    if self.ending then
+        if Log then
+            Log:Debug("ScheduleReapply skipped while ending (" .. tostring(reason or "event") .. ")")
+        end
+        return
+    end
+    self.reapplyGeneration = (self.reapplyGeneration or 0) + 1
+    local generation = self.reapplyGeneration
+    local label = reason or "event"
+
+    local function run()
+        if Editor.reapplyGeneration ~= generation then
+            return
+        end
+        if Editor.active then
+            if Log then
+                Log:Debug("Reapply after " .. label)
+            end
+            Editor:ApplyPendingLayout("reapply-event")
+            return
+        end
+        Editor:ReapplySavedLayout(label)
+    end
+
+    -- Run now, in the event / native-hook stack. zo_callLater is not a
+    -- protected-attribute context, so a delay-only path can silently skip
+    -- SetAnchor and leave the HUD on XML defaults until /uiedit.
+    run()
+
+    if type(zo_callLater) ~= "function" then
+        return
+    end
+    for index = 1, #REAPPLY_DELAYS_MS do
+        local delay = REAPPLY_DELAYS_MS[index]
+        zo_callLater(function()
+            if Editor.reapplyGeneration ~= generation then
+                return
+            end
+            run()
+        end, delay)
+    end
+end
+
+local function HookAfter(object, methodName, flag, callback)
+    if not object or type(object[methodName]) ~= "function" or object[flag] then
+        return false
+    end
+    local original = object[methodName]
+    object[methodName] = function(this, ...)
+        local a, b, c, d, e = original(this, ...)
+        callback(this, ...)
+        return a, b, c, d, e
+    end
+    object[flag] = true
+    return true
+end
+
+function Editor:HookNativeResets()
+    local bars = _G.PLAYER_ATTRIBUTE_BARS
+    HookAfter(bars, "ApplyStyle", "ValknarrUIEReapplyHooked", function()
+        Editor:OnGameplayRestored("attribute-style")
+    end)
+
+    local fragmentNames = {
+        "PLAYER_ATTRIBUTE_BARS_FRAGMENT",
+        "ACTION_BAR_FRAGMENT",
+        "COMPASS_FRAME_FRAGMENT",
+        "FOCUSED_QUEST_TRACKER_FRAGMENT",
+        "BUFF_DEBUFF_FRAGMENT",
+        "PLAYER_PROGRESS_BAR_FRAGMENT",
+        "HUD_EQUIPMENT_STATUS_FRAGMENT",
+    }
+    for index = 1, #fragmentNames do
+        local fragment = _G[fragmentNames[index]]
+        HookAfter(fragment, "SetHiddenForReason", "ValknarrUIEReapplyHooked", function(_, _reason, hidden)
+            if not hidden then
+                Editor:OnGameplayRestored("fragment-shown")
+            end
+        end)
+    end
+
+    local function HookScene(scene, label)
+        if not scene or type(scene.RegisterCallback) ~= "function" or scene.ValknarrUIEReapplyHooked then
+            return
+        end
+        local ok = pcall(scene.RegisterCallback, scene, "StateChange", function(_, newState)
+            if newState == SCENE_SHOWN or newState == SCENE_SHOWING then
+                Editor:OnGameplayRestored(label)
+            end
+        end)
+        if ok then
+            scene.ValknarrUIEReapplyHooked = true
+        end
+    end
+    HookScene(_G.HUD_SCENE, "hud-scene")
+    HookScene(_G.HUD_UI_SCENE, "hudui-scene")
+
+    -- Native target updates rewrite name/level anchors and bar width after
+    -- our saved TOPLEFT+size apply. Re-pin position (not size) afterward.
+    if type(_G.ZO_UnitFrames_UpdateWindow) == "function" and not _G.ValknarrUIETargetUpdateHooked then
+        local original = _G.ZO_UnitFrames_UpdateWindow
+        _G.ZO_UnitFrames_UpdateWindow = function(unitTag, ...)
+            local a, b, c, d, e = original(unitTag, ...)
+            if unitTag == "reticleover" then
+                Editor:ReapplyElement("target", "reticle-update")
+            end
+            return a, b, c, d, e
+        end
+        _G.ValknarrUIETargetUpdateHooked = true
+    end
 end
 
 function Editor:RegisterEvents()
@@ -1377,50 +1663,38 @@ function Editor:RegisterEvents()
         return
     end
 
-    local function AfterDelay(callback)
-        if type(zo_callLater) == "function" then
-            zo_callLater(callback, 250)
-        else
-            callback()
+    local function Register(suffix, eventId, reason)
+        if not eventId or type(EVENT_MANAGER.RegisterForEvent) ~= "function" then
+            return
         end
-    end
-
-    -- Activation and resize need the same treatment: controls may have been
-    -- recreated, so relocate them and put the layout back.
-    local function OnRelocateEvent(reason)
-        AfterDelay(function()
-            if not Editor.active then
-                Editor:ReapplySavedLayout(reason)
-                return
-            end
-            if Log then
-                Log:Debug("Reapply after " .. reason)
-            end
-            Editor:Relocate()
-            local width, height = Adapter:GetScreenSize()
-            Grid:LayoutLines(width, height)
-            Editor:BeginBatch()
-            for _, name in ipairs(ElementIds()) do
-                Editor:Apply(name, "reapply-event")
-            end
-            Editor:EndBatch()
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. suffix, eventId, function()
+            Editor:OnGameplayRestored(reason)
         end)
     end
 
-    if EVENT_PLAYER_ACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Activated", EVENT_PLAYER_ACTIVATED, function()
-            OnRelocateEvent("player-activated")
+    -- PLAYER_ACTIVATED does not fire on in-zone death. HUD fragment hide/show
+    -- and EVENT_PLAYER_ALIVE do. Area doors often fire ZONE_CHANGED without a
+    -- long load. ApplyStyle rewrites platform templates (XML anchors).
+    Register("Activated", EVENT_PLAYER_ACTIVATED, "player-activated")
+    Register("Alive", EVENT_PLAYER_ALIVE, "player-alive")
+    Register("Zone", EVENT_ZONE_CHANGED, "zone-changed")
+    Register("Resized", EVENT_SCREEN_RESIZED, "screen-resized")
+    Register("GamepadMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, "gamepad-mode")
+    Register("LayerPop", EVENT_ACTION_LAYER_POPPED, "action-layer")
+    if EVENT_RETICLE_TARGET_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Reticle", EVENT_RETICLE_TARGET_CHANGED, function()
+            Editor:ReapplyElement("target", "reticle-target")
+            Editor:ReapplyElement("interact", "reticle-target")
         end)
     end
-    if EVENT_SCREEN_RESIZED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Resized", EVENT_SCREEN_RESIZED, function()
-            OnRelocateEvent("screen-resized")
+    if EVENT_DISPLAY_ACTIVE_COMBAT_TIP then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatTip", EVENT_DISPLAY_ACTIVE_COMBAT_TIP, function()
+            Editor:ReapplyElement("interact", "combat-tip")
         end)
     end
+
     local function OnCameraUi()
-        if Editor.active and not Editor.ending and Movement and Movement.HoldClaim then
-            Movement:HoldClaim()
-        end
+        Editor:OnCameraUiEvent()
     end
     if EVENT_GAME_CAMERA_UI_MODE_CHANGED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CameraUI", EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnCameraUi)
@@ -1428,6 +1702,7 @@ function Editor:RegisterEvents()
     if EVENT_GAME_CAMERA_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CameraOn", EVENT_GAME_CAMERA_ACTIVATED, OnCameraUi)
     end
+    self:HookNativeResets()
     if Log then
         Log:Debug("Event hooks registered")
     end

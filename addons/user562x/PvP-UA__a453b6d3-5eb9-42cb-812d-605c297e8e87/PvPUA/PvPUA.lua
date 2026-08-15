@@ -42,6 +42,7 @@ PvPUA.config.kdRightPad  = 4
 PvPUA.config.kdTextNudge = 2
 PvPUA.config.kdFontSize  = 20
 
+
 PvPUA.config.volendrungTintToHud = true
 PvPUA.config.height = PvPUA.config.entryHeight * 10
 PvPUA.config.backdropAlphaOdd = 0.25
@@ -68,17 +69,30 @@ PvPUA.constants.textures.BRIDGE_PASSABLE = "/esoui/art/mappins/ava_bridge_passab
 PvPUA.constants.textures.BRIDGE_NOT_PASSABLE = "/esoui/art/mappins/ava_bridge_not_passable.dds"
 PvPUA.constants.textures.MILEGATE_PASSABLE = "/esoui/art/mappins/ava_milegate_passable.dds"
 PvPUA.constants.textures.MILEGATE_NOT_PASSABLE = "/esoui/art/mappins/ava_milegate_not_passable.dds"
+PvPUA.constants.textures.DISTRICT = "/esoui/art/mappins/ava_imperialdistrict_neutral.dds"
+
+PvPUA.constants.emperorKeeps = {
+    { name = "Aleswell",  col = 0, row = 0 },
+    { name = "Chalman",   col = 1, row = 0 },
+    { name = "Ash",       col = 0, row = 1 },
+    { name = "Blue Road", col = 1, row = 1 },
+    { name = "Roebeck",   col = 0, row = 2 },
+    { name = "Alessia",   col = 1, row = 2 },
+}
 
 PvPUA.constants.userIcons = {
     ["@user562"]         = { texture = "PvPUA/Textures/icon_panda.dds", alpha = 0.65 },
-    ["@sir gilson7"]     = { texture = "PvPUA/Textures/icon_werewolf.dds" },
+    ["@sir gilson7"]     = { texture = "PvPUA/Textures/icon_werewolf.dds", heightOffset = 1.0 },
     ["@get em nala"]     = { texture = "PvPUA/Textures/icon_hedgehog.dds" },
     ["@suzyqboston3383"] = { texture = "PvPUA/Textures/icon_trinity.dds", heightOffset = 1.0 },
     ["@suzibrew"]        = { texture = "PvPUA/Textures/icon_elephant.dds" },
-    ["@im taiyo"]        = { texture = "PvPUA/Textures/icon_hello.dds" },
     ["@maddogmcree6157"] = { texture = "PvPUA/Textures/icon_devildog.dds" },
     ["@sgt bear78fh"]    = { texture = "PvPUA/Textures/icon_bear.dds", heightOffset = 1.0 },
 }
+
+PvPUA.defaults = { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true }
+
+PvPUA.charDefaults = { aiKeyword = "", aiEnabled = false, aiWhisper = true, aiSay = false, aiZone = false, aiGuild = false, aiGuildName = "", aiGuildToggles = {}, aiGuildMigrated = false, aiGuildMigrationRepair = false, aiKickOffline = false, aiKickMinutes = 5, aiPvP = true, aiPvE = true }
 
 PvPUA.state = {}
 PvPUA.state.visibleControls = {}
@@ -87,6 +101,7 @@ PvPUA.state.keeps = {}
 PvPUA.state.outposts = {}
 PvPUA.state.villages = {}
 PvPUA.state.destructibles = {}
+PvPUA.state.districts = {}
 
 PvPUA.controls = {}
 PvPUA.savedVariables = nil
@@ -122,8 +137,6 @@ end
 --------------------------------------------------
 -- Combat Tracking Locals
 --------------------------------------------------
-local pvpPlayerName         = nil
-local pvpRecentKBs          = { count = 0 }
 local pvpIsCombatRegistered = false
 
 local VOLENDRUNG_DESPAWN_GRACE = 10000
@@ -382,6 +395,33 @@ local function ToHex(r, g, b)
     return string.format("%02X%02X%02X", math.floor(r*255), math.floor(g*255), math.floor(b*255))
 end
 
+local function ColorText(text, r, g, b)
+    return "|c" .. ToHex(r, g, b) .. text .. "|r"
+end
+
+local rainbowPalette = { "FF2222", "FF9900", "FFEE00", "33DD33", "00CCCC", "3399FF", "BB44EE" }
+local function RainbowText(text)
+    local out = {}
+    local idx = 1
+    for i = 1, #text do
+        local ch = text:sub(i, i)
+        if ch == " " then
+            out[#out + 1] = ch
+        else
+            local color = rainbowPalette[((idx - 1) % #rainbowPalette) + 1]
+            out[#out + 1] = "|c" .. color .. ch .. "|r"
+            idx = idx + 1
+        end
+    end
+    return table.concat(out)
+end
+
+local function GetGuildAllianceColor(guildId)
+    if not guildId or guildId <= 0 then return noAllianceColor end
+    local alliance = GetGuildAlliance(guildId)
+    return GetColorForAlliance(alliance)
+end
+
 --------------------------------------------------
 -- Volendrung Helpers
 --------------------------------------------------
@@ -406,8 +446,19 @@ end
 --------------------------------------------------
 -- Zone Detection
 --------------------------------------------------
+local function IsInICCampaign()
+    if not (GetCurrentCampaignId and IsImperialCityCampaign) then return false end
+    local ok, result = pcall(function()
+        local id = GetCurrentCampaignId()
+        return id ~= 0 and IsImperialCityCampaign(id) == true
+    end)
+    return ok and result == true
+end
+
 local function IsInCyrodiilOrIC()
-    if IsInCyrodiil() == true then
+    if IsInICCampaign() == true then
+        return true
+    elseif IsInCyrodiil() == true then
         return true
     elseif IsInCyrodiil() == false and IsPlayerInAvAWorld() == true and IsInAvAZone() == true and IsInImperialCity() == false and IsActiveWorldBattleground() == false then
         return true
@@ -419,6 +470,12 @@ end
 --------------------------------------------------
 -- Name Helpers
 --------------------------------------------------
+local function AdjustDistrictName(name)
+    if name == nil then return "" end
+    name = name:gsub(" District", "")
+    return name
+end
+
 local function AdjustResourceName(name)
     name = name:gsub("Castle ", ""):gsub("[fF]ort ", ""):gsub("Keep ", ""):gsub("[Ll]umbermill", "Lumber")
     return name
@@ -503,6 +560,7 @@ function PvPUA:InitKeeps(gameTime)
         [ALLIANCE_EBONHEART_PACT]      = { "Arrius", "Blue Road", "Chalman", "Drakelowe", "Farragut", "Kingscrest" },
     }
     self.homeKeepIds = {}
+    self.emperorKeepIds = {}
     for i = 3, 20 do
         local rawName = zo_strformat("<<1>>", GetKeepName(i))
         for alliance, names in pairs(allianceHomeKeepNames) do
@@ -511,6 +569,13 @@ function PvPUA:InitKeeps(gameTime)
                     self.homeKeepIds[i] = alliance
                     break
                 end
+            end
+        end
+        for slot = 1, #PvPUA.constants.emperorKeeps do
+            if self.emperorKeepIds[slot] == nil
+               and rawName:find(PvPUA.constants.emperorKeeps[slot].name) then
+                self.emperorKeepIds[slot] = i
+                break
             end
         end
     end
@@ -582,12 +647,50 @@ function PvPUA:InitDestructibles(gameTime)
         self.state.destructibles[i].attackStatusLostAt = 0
         self.state.destructibles[i].underAttackFor = 0
         self.state.destructibles[i].isPassable = IsKeepPassable(i, BGQUERY_LOCAL)
-        self.state.destructibles[i].directionalAccess = GetKeepDirectionalAccess(i, BGQUERY)
+        self.state.destructibles[i].directionalAccess = GetKeepDirectionalAccess(i, BGQUERY_LOCAL)
     end
+end
+
+function PvPUA:InitDistricts(gameTime)
+    self.state.districts = {}
+    if not (GetNumKeeps and GetKeepKeysByIndex) then return end
+    pcall(function()
+        local n = GetNumKeeps() or 0
+        for i = 1, n do
+            local id = GetKeepKeysByIndex(i)
+            if id and id ~= 0 and GetKeepType(id) == KEEPTYPE_IMPERIAL_CITY_DISTRICT then
+                local d = {}
+                d.id = id
+                d.keepType = KEEPTYPE_IMPERIAL_CITY_DISTRICT
+                d.name = AdjustDistrictName(zo_strformat("<<1>>", GetKeepName(id)))
+                d.isUnderAttack = GetKeepUnderAttack(id, BGQUERY_LOCAL)
+                if d.isUnderAttack == true then d.interestingSince = gameTime end
+                d.attackStatusLostAt = 0
+                d.underAttackFor = 0
+                d.owningAlliance = GetKeepAlliance(id, BGQUERY_LOCAL)
+                d.objectives = { { id = nil, state = 100, holdingAlliance = d.owningAlliance } }
+                self.state.districts[id] = d
+            end
+        end
+    end)
 end
 
 function PvPUA:InitState(hadVolendrung)
     local gameTime = GetGameTimeMilliseconds()
+
+    if IsInICCampaign() then
+        self.state.resources = {}
+        self.state.keeps = {}
+        self.state.outposts = {}
+        self.state.villages = {}
+        self.state.destructibles = {}
+        self.homeKeepIds = {}
+        self:InitDistricts(gameTime)
+        self:AddObjectives()
+        return
+    end
+
+    self.state.districts = {}
     self:InitResources(gameTime)
     self:InitKeeps(gameTime)
     self:InitOutposts(gameTime)
@@ -612,7 +715,7 @@ function PvPUA:ScanForVolendrung()
     for i = 1, n do
         local keepId, objectiveId = GetObjectiveIdsForIndex(i)
         if keepId and objectiveId then
-            local objectiveName, objectiveType, objectiveState = GetObjectiveInfo(keepId, objectiveId, BGQUERY_LOCAL)
+            local _, objectiveType, objectiveState = GetObjectiveInfo(keepId, objectiveId, BGQUERY_LOCAL)
             if objectiveType == OBJECTIVE_DAEDRIC_WEAPON then
                 local objectiveControlEvent = GetLastObjectiveControlEvent(keepId, objectiveId, BGQUERY_LOCAL)
                 if objectiveState == OBJECTIVE_CONTROL_STATE_FLAG_DROPPED
@@ -662,7 +765,7 @@ local function GetScrollTexture(pinType)
 end
 
 --------------------------------------------------
--- Scroll display, poll-based
+-- Scroll Display
 --------------------------------------------------
 function PvPUA:RefreshScrolls()
     local ok = pcall(function()
@@ -746,7 +849,6 @@ function PvPUA:OnArtifactControlState(_, artifactName, keepId, characterName, pl
         end
         self.artifactHolders[key] = nm
         self.artifactHolderAlliance[key] = playerAlliance or 0
-    elseif objectiveControlEvent == OBJECTIVE_CONTROL_EVENT_FLAG_DROPPED then
     elseif objectiveControlEvent == OBJECTIVE_CONTROL_EVENT_FLAG_SPAWNED then
         self.artifactHolders[key] = ""
         self.artifactHolderAlliance[key] = 0
@@ -1242,6 +1344,12 @@ function PvPUA:AddObjectives()
                     self.state.outposts[keepId].objectives[2].state = 100
                     self.state.outposts[keepId].objectives[2].holdingAlliance = self.state.outposts[keepId].owningAlliance
                 end
+            elseif self.state.districts[keepId] ~= nil then
+                self.state.districts[keepId].objectives = self.state.districts[keepId].objectives or {}
+                self.state.districts[keepId].objectives[1] = {}
+                self.state.districts[keepId].objectives[1].id = objectiveId
+                self.state.districts[keepId].objectives[1].state = 100
+                self.state.districts[keepId].objectives[1].holdingAlliance = self.state.districts[keepId].owningAlliance
             elseif self.state.villages[keepId] ~= nil then
                 self.state.villages[keepId].objectives = self.state.villages[keepId].objectives or {}
                 if self.state.villages[keepId].objectives[1] == nil then
@@ -1284,6 +1392,7 @@ function PvPUA:ResetObjectives()
     self:ResetObjective(self.state.outposts)
     self:ResetObjective(self.state.resources)
     self:ResetObjective(self.state.villages)
+    self:ResetObjective(self.state.districts)
 end
 
 --------------------------------------------------
@@ -1295,6 +1404,7 @@ function PvPUA:GetItemByKeepId(keepId)
         elseif self.state.keeps[keepId] ~= nil then return self.state.keeps[keepId]
         elseif self.state.outposts[keepId] ~= nil then return self.state.outposts[keepId]
         elseif self.state.villages[keepId] ~= nil then return self.state.villages[keepId]
+        elseif self.state.districts[keepId] ~= nil then return self.state.districts[keepId]
         end
     end
     return nil
@@ -1351,9 +1461,10 @@ end
 local function AdjustKeepFlipping(keep)
     local flipTime = GetFlipConstant(keep.keepType)
     if flipTime > 0 then
-        if keep.flipsAt == nil and FlagsAtFlipState(keep.objectives, keep.owningAlliance) == true then
-            keep.flipsAt = GetGameTimeMilliseconds() + flipTime
-        elseif keep.flipsAt ~= nil and FlagsAtFlipState(keep.objectives, keep.owningAlliance) == true then
+        if FlagsAtFlipState(keep.objectives, keep.owningAlliance) == true then
+            if keep.flipsAt == nil then
+                keep.flipsAt = GetGameTimeMilliseconds() + flipTime
+            end
         else
             keep.flipsAt = nil
         end
@@ -1367,7 +1478,6 @@ local notifCooldowns = {}
 
 local function FireKeepUA(keepId, name, owningAlliance)
     if not PvPUA.savedVariables or not PvPUA.savedVariables.alertsEnabled then return end
-    if not CENTER_SCREEN_ANNOUNCE then return end
 
     local now = GetGameTimeMilliseconds()
     if notifCooldowns[keepId] and now - notifCooldowns[keepId] < 30000 then return end
@@ -1375,12 +1485,7 @@ local function FireKeepUA(keepId, name, owningAlliance)
 
     local ac = GetColorForAlliance(owningAlliance)
     local nameHex = ToHex(ac.r, ac.g, ac.b)
-    local msg = string.format("|c%s%s|r |cFF8C00UA!|r", nameHex, name)
-
-    local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT, SOUNDS.NONE)
-    params:SetText(msg)
-    params:SetLifespanMS((PvPUA.savedVariables.alertLifespan or 10) * 1000)
-    CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
+    PvPUA:HKPush(keepId, string.format("|c%s%s|r |cFF8C00UA!|r", nameHex, name))
 end
 
 function PvPUA:UpdateItem(items, gameTime)
@@ -1428,7 +1533,7 @@ function PvPUA:UpdateItem(items, gameTime)
                 item.underAttackFor = gameTime - item.interestingSince
             end
         end
-        if self.state.destructibles[key] == nil then
+        if self.state.destructibles[key] == nil and item.siegeWeapons ~= nil then
             item.siegeWeapons.AD = GetNumSieges(key, BGQUERY_LOCAL, ALLIANCE_ALDMERI_DOMINION)
             item.siegeWeapons.DC = GetNumSieges(key, BGQUERY_LOCAL, ALLIANCE_DAGGERFALL_COVENANT)
             item.siegeWeapons.EP = GetNumSieges(key, BGQUERY_LOCAL, ALLIANCE_EBONHEART_PACT)
@@ -1447,7 +1552,7 @@ function PvPUA:UpdateItem(items, gameTime)
         end
         if item.keepType == KEEPTYPE_BRIDGE or item.keepType == KEEPTYPE_MILEGATE then
             item.isPassable = IsKeepPassable(key, BGQUERY_LOCAL)
-            item.directionalAccess = GetKeepDirectionalAccess(key, BGQUERY)
+            item.directionalAccess = GetKeepDirectionalAccess(key, BGQUERY_LOCAL)
         end
         if itemOfInterest == true then
             local sv = PvPUA.savedVariables
@@ -1521,6 +1626,8 @@ local function GetTextureAndOffsetForItem(keepType, rType, isPassable)
         end
     elseif keepType == KEEPTYPE_TOWN then
         return PvPUA.constants.textures.VILLAGE, 2
+    elseif keepType == KEEPTYPE_IMPERIAL_CITY_DISTRICT then
+        return PvPUA.constants.textures.DISTRICT, 2
     elseif keepType == KEEPTYPE_BRIDGE then
         if isPassable == true then return PvPUA.constants.textures.BRIDGE_PASSABLE, -2
         else return PvPUA.constants.textures.BRIDGE_NOT_PASSABLE, -2 end
@@ -1687,8 +1794,8 @@ end
 function PvPUA:ApplyPosition()
     self.controls.TLW:ClearAnchors()
     self.controls.TLW:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
-        self.savedVariables.posX or 1600,
-        self.savedVariables.posY or 200)
+        self.savedVariables.posX or PvPUA.defaults.posX,
+        self.savedVariables.posY or PvPUA.defaults.posY)
 end
 
 function PvPUA:ApplyScale()
@@ -1749,6 +1856,7 @@ function PvPUA:CreateUI()
     self.controls.creditLabel:SetFont("EsoUI/Common/Fonts/univers67.otf|15|outline")
     self.controls.creditLabel:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT, 0, 0)
     self.controls.creditLabel:SetDimensions(self.config.width, 20)
+    self.controls.creditLabel.baseY = 0
     self.controls.creditLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.controls.creditLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.controls.creditLabel:SetText(CREDIT_STATES[0])
@@ -1758,6 +1866,7 @@ function PvPUA:CreateUI()
     self.controls.infoBg = wm:CreateControl(nil, self.controls.TLW, CT_BACKDROP)
     self.controls.infoBg:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT, 0, 20)
     self.controls.infoBg:SetDimensions(self.config.width, self.config.entryHeight)
+    self.controls.infoBg.baseX, self.controls.infoBg.baseY = 0, 20
     self.controls.infoBg:SetCenterColor(0, 0, 0, 0.5)
     self.controls.infoBg:SetEdgeColor(0, 0, 0, 0)
     self.controls.infoBg:SetDrawLayer(0)
@@ -1788,6 +1897,8 @@ function PvPUA:CreateUI()
     self.controls.infoRankIcon:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT,
         rankX - rankGrow,
         20 + math.floor((infoH - rankBase) / 2) - rankGrow)
+    self.controls.infoRankIcon.baseX = rankX - rankGrow
+    self.controls.infoRankIcon.baseY = 20 + math.floor((infoH - rankBase) / 2) - rankGrow
     self.controls.infoRankIcon:SetDimensions(rankIconSz, rankIconSz)
     self.controls.infoRankIcon:SetDrawLayer(2)
     self.controls.infoRankIcon:SetHidden(true)
@@ -1796,6 +1907,8 @@ function PvPUA:CreateUI()
     self.controls.infoBarBg = wm:CreateControl(nil, self.controls.TLW, CT_BACKDROP)
     self.controls.infoBarBg:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT, barLeft, 20 + math.floor((infoH - barH) / 2))
     self.controls.infoBarBg:SetDimensions(barW, barH)
+    self.controls.infoBarBg.baseX = barLeft
+    self.controls.infoBarBg.baseY = 20 + math.floor((infoH - barH) / 2)
     self.controls.infoBarBg:SetCenterColor(0.1, 0.1, 0.1, 0.9)
     self.controls.infoBarBg:SetEdgeColor(0, 0, 0, 1)
     self.controls.infoBarBg:SetDrawLayer(1)
@@ -1804,6 +1917,8 @@ function PvPUA:CreateUI()
     self.controls.infoBar = wm:CreateControl(nil, self.controls.TLW, CT_STATUSBAR)
     self.controls.infoBar:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT, barLeft + 1, 20 + math.floor((infoH - barH) / 2) + 1)
     self.controls.infoBar:SetDimensions(barW - 2, barH - 2)
+    self.controls.infoBar.baseX = barLeft + 1
+    self.controls.infoBar.baseY = 20 + math.floor((infoH - barH) / 2) + 1
     self.controls.infoBar:SetMinMax(0, 100)
     self.controls.infoBar:SetValue(0)
     self.controls.infoBar:SetDrawLayer(2)
@@ -1833,6 +1948,8 @@ function PvPUA:CreateUI()
     self.controls.infoKD:SetFont(killFont)
     self.controls.infoKD:SetAnchor(TOPRIGHT, self.controls.TLW, TOPRIGHT,
         -(self.config.kdRightPad or 0), 20 + (self.config.kdTextNudge or 0))
+    self.controls.infoKD.baseX = -(self.config.kdRightPad or 0)
+    self.controls.infoKD.baseY = 20 + (self.config.kdTextNudge or 0)
     self.controls.infoKD:SetDimensions(220, infoH)
     self.controls.infoKD:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.controls.infoKD:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -1840,7 +1957,6 @@ function PvPUA:CreateUI()
     self.controls.infoKD:SetHidden(true)
 
     local scoreFont = "EsoUI/Common/Fonts/FTN57.otf|20|outline"
-    local timerFont = PvPUA:GetFont()
     self.controls.scoreRow = wm:CreateControl(nil, self.controls.TLW, CT_CONTROL)
     self.controls.scoreRow:SetDimensions(self.config.width, self.config.entryHeight)
     self.controls.scoreRow:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT, 0, 20 + self.config.entryHeight)
@@ -1873,6 +1989,23 @@ function PvPUA:CreateUI()
     self.controls.infoEmpIcon:SetColor(0.35, 0.35, 0.35, 1)
     self.controls.infoEmpIcon:SetDrawLayer(1)
     self.controls.infoEmpIcon:SetHidden(true)
+
+    self.controls.empSlices = {}
+    local sliceW = empW / 2
+    local sliceH = empH / 3
+    for slot = 1, #PvPUA.constants.emperorKeeps do
+        local def = PvPUA.constants.emperorKeeps[slot]
+        local slice = wm:CreateControl(nil, self.controls.infoEmpIcon, CT_TEXTURE)
+        slice:SetTexture("esoui/art/campaign/gamepad/gp_overview_menuicon_emperor.dds")
+        slice:SetDimensions(sliceW, sliceH)
+        slice:SetAnchor(TOPLEFT, self.controls.infoEmpIcon, TOPLEFT,
+            def.col * sliceW, def.row * sliceH)
+        slice:SetTextureCoords(def.col * 0.5, def.col * 0.5 + 0.5,
+            def.row / 3, def.row / 3 + 1 / 3)
+        slice:SetColor(0.35, 0.35, 0.35, 1)
+        slice:SetDrawLayer(2)
+        self.controls.empSlices[slot] = slice
+    end
 
     local volW = PvPUA.config.imageWidth + 4 + 8
     local timerW = self.config.underAttackForWidth
@@ -1994,8 +2127,224 @@ function PvPUA:CreateUI()
 end
 
 --------------------------------------------------
+-- Campaign Queue
+--------------------------------------------------
+PvPUA.queue = { active = false }
+
+local QUEUE_SIDE_PAD   = 10
+local QUEUE_EDGE_PAD   = 6
+local QUEUE_MAX_ROWS   = 3
+local QUEUE_FONT       = "ZoFontGamepad27"
+local QUEUE_HEADER_H   = 33
+local QUEUE_ROW_H      = 35
+local QUEUE_SAFETY_TICK = 5000
+local QUEUE_RETRY_MS   = 3000
+
+function PvPUA:AnchorQueueWindow(height)
+    local tlw = self.controls.queueTLW
+    if not tlw then return end
+    local baseHeight = QUEUE_EDGE_PAD * 2 + QUEUE_HEADER_H + QUEUE_ROW_H
+    local grow = (height or baseHeight) - baseHeight
+    tlw:ClearAnchors()
+    if ZO_CompassFrame then
+        tlw:SetAnchor(LEFT, ZO_CompassFrame, RIGHT, 40, grow / 2)
+    else
+        tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 100, 100)
+    end
+end
+
+function PvPUA:CreateQueueUI()
+    if self.controls.queueTLW then return end
+
+    local tlw = wm:CreateTopLevelWindow("PvPUA_QueueTLW")
+    tlw:SetClampedToScreen(true)
+    tlw:SetDimensions(160, QUEUE_EDGE_PAD * 2 + QUEUE_HEADER_H + QUEUE_ROW_H)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawLevel(9000)
+    tlw:SetHidden(true)
+    self.controls.queueTLW = tlw
+
+    self:AnchorQueueWindow(QUEUE_EDGE_PAD * 2 + QUEUE_HEADER_H + QUEUE_ROW_H)
+
+    local bg = wm:CreateControl(nil, tlw, CT_BACKDROP)
+    bg:SetAnchor(TOPLEFT, tlw, TOPLEFT, 0, 0)
+    bg:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, 0, 0)
+    bg:SetCenterColor(0, 0, 0, 0.6)
+    bg:SetEdgeColor(0.6, 0.6, 0.6, 0.8)
+    bg:SetEdgeTexture(nil, 1, 1, 1, 0)
+    self.controls.queueBg = bg
+
+    local header = wm:CreateControl(nil, tlw, CT_LABEL)
+    header:SetFont(QUEUE_FONT)
+    header:SetAnchor(TOP, tlw, TOP, 0, QUEUE_EDGE_PAD)
+    header:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    header:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    header:SetColor(0, 1, 0, 1)
+    self.controls.queueHeader = header
+
+    self.controls.queueRows = {}
+    for i = 1, QUEUE_MAX_ROWS do
+        local row = wm:CreateControl(nil, tlw, CT_LABEL)
+        row:SetFont(QUEUE_FONT)
+        row:SetAnchor(TOP, tlw, TOP, 0,
+            QUEUE_EDGE_PAD + QUEUE_HEADER_H + QUEUE_ROW_H * (i - 1))
+        row:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        row:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        row:SetColor(1, 1, 1, 1)
+        row:SetHidden(true)
+        self.controls.queueRows[i] = row
+    end
+end
+
+local function QueueCampaignName(campaignId)
+    local name = ""
+    if GetCampaignName then
+        local ok, value = pcall(GetCampaignName, campaignId)
+        if ok and value then name = zo_strformat("<<1>>", value) end
+    end
+    if name == "" then name = "Campaign " .. tostring(campaignId) end
+    if #name > 14 then name = name:sub(1, 13) .. "." end
+    return name
+end
+
+local function QueueEntryIsDisplayable(entry)
+    if type(entry.position) ~= "number" or entry.position <= 0 then return false end
+    if entry.state ~= nil and CAMPAIGN_QUEUE_REQUEST_STATE_WAITING ~= nil then
+        if entry.state ~= CAMPAIGN_QUEUE_REQUEST_STATE_WAITING then return false end
+    end
+    return true
+end
+
+function PvPUA:GetQueueEntries()
+    local out = {}
+    if not (GetNumCampaignQueueEntries and GetCampaignQueueEntry) then return out end
+    local ok = pcall(function()
+        local n = GetNumCampaignQueueEntries() or 0
+        for i = 1, n do
+            local campaignId, queueAsGroup = GetCampaignQueueEntry(i)
+            if campaignId and campaignId ~= 0 then
+                local entry = { campaignId = campaignId, asGroup = queueAsGroup == true }
+                if GetCampaignQueuePosition then
+                    entry.position = GetCampaignQueuePosition(campaignId, entry.asGroup)
+                end
+                if GetCampaignQueueState then
+                    entry.state = GetCampaignQueueState(campaignId, entry.asGroup)
+                end
+                if QueueEntryIsDisplayable(entry) then
+                    out[#out + 1] = entry
+                end
+            end
+        end
+    end)
+    if not ok then return {} end
+    return out
+end
+
+function PvPUA:RefreshQueueWindow()
+    if not self.controls.queueTLW then return end
+
+    local entries = self:GetQueueEntries()
+    if #entries == 0 then
+        self.controls.queueTLW:SetHidden(true)
+        self.queue.active = false
+        return
+    end
+
+    local shown = #entries
+    if shown > QUEUE_MAX_ROWS then shown = QUEUE_MAX_ROWS end
+
+    self.controls.queueHeader:SetText(shown > 1 and "Queues" or "Queue")
+
+    local ac = GetColorForAlliance(GetUnitAlliance("player"))
+
+    for i = 1, QUEUE_MAX_ROWS do
+        local row = self.controls.queueRows[i]
+        local entry = entries[i]
+        if entry and i <= shown then
+            local positionText = "--"
+            if type(entry.position) == "number" and entry.position > 0 then
+                positionText = tostring(entry.position)
+            end
+            local groupTag = entry.asGroup and " |c9090A0(G)|r" or ""
+            row:SetText(ColorText(QueueCampaignName(entry.campaignId), ac.r, ac.g, ac.b) ..
+                " |c00FF00#|r" ..
+                ColorText(positionText, ac.r, ac.g, ac.b) .. groupTag)
+            row:SetHidden(false)
+        else
+            row:SetText("")
+            row:SetHidden(true)
+        end
+    end
+
+    local widest = self.controls.queueHeader:GetTextWidth() or 0
+    for i = 1, shown do
+        local w = self.controls.queueRows[i]:GetTextWidth() or 0
+        if w > widest then widest = w end
+    end
+
+    local width = math.ceil(widest) + QUEUE_SIDE_PAD * 2
+    local height = QUEUE_EDGE_PAD * 2 + QUEUE_HEADER_H + QUEUE_ROW_H * shown
+
+    self.controls.queueTLW:SetDimensions(width, height)
+    self:AnchorQueueWindow(height)
+
+    self.controls.queueTLW:SetHidden(false)
+    self.queue.active = true
+end
+
+function PvPUA:RefreshQueueSoon()
+    self:RefreshQueueWindow()
+    zo_callLater(function() PvPUA:RefreshQueueWindow() end, QUEUE_RETRY_MS)
+end
+
+function PvPUA:StartQueueSafetyPoll()
+    EVENT_MANAGER:UnregisterForUpdate(PvPUA.name .. "_QueueSafety")
+    EVENT_MANAGER:RegisterForUpdate(PvPUA.name .. "_QueueSafety", QUEUE_SAFETY_TICK,
+        function() PvPUA:RefreshQueueWindow() end)
+end
+
+function PvPUA:RegisterQueueEvents()
+    local pairsToBind = {
+        { EVENT_CAMPAIGN_QUEUE_JOINED,           "_QueueJoined" },
+        { EVENT_CAMPAIGN_QUEUE_LEFT,             "_QueueLeft" },
+        { EVENT_CAMPAIGN_QUEUE_POSITION_CHANGED, "_QueuePosition" },
+        { EVENT_CAMPAIGN_QUEUE_STATE_CHANGED,    "_QueueState" },
+    }
+    for i = 1, #pairsToBind do
+        local eventId, suffix = pairsToBind[i][1], pairsToBind[i][2]
+        if eventId ~= nil then
+            EVENT_MANAGER:RegisterForEvent(PvPUA.name .. suffix, eventId,
+                function() PvPUA:RefreshQueueWindow() end)
+        end
+    end
+end
+
+--------------------------------------------------
 -- UpdateHUDScenes
 --------------------------------------------------
+function PvPUA:ApplyHeaderLayout()
+    local c = self.controls
+    if not (c.TLW and c.creditLabel and c.infoBg) then return end
+
+    local shift = (self.initializedZone == "IC") and self.config.entryHeight or 0
+    if self.headerShift == shift then return end
+    self.headerShift = shift
+
+    local function place(control, point, relPoint)
+        if not control or control.baseY == nil then return end
+        control:ClearAnchors()
+        control:SetAnchor(point, c.TLW, relPoint, control.baseX or 0, control.baseY + shift)
+    end
+
+    place(c.creditLabel, TOPLEFT, TOPLEFT)
+    place(c.infoBg, TOPLEFT, TOPLEFT)
+    place(c.infoRankIcon, TOPLEFT, TOPLEFT)
+    place(c.infoBarBg, TOPLEFT, TOPLEFT)
+    place(c.infoBar, TOPLEFT, TOPLEFT)
+    place(c.infoKD, TOPRIGHT, TOPRIGHT)
+end
+
 function PvPUA:UpdateHUDScenes()
     if not self.controls.hudFragment then return end
     local scenes = { "hud", "hudui" }
@@ -2203,9 +2552,6 @@ function PvPUA:UpdateEntries(itemsOfInterest)
         control.flipStatus:SetFont(font)
         control.underAttackFor:SetFont(font)
 
-        if self.controls.scoreTimer then
-        end
-
         if item.siegeWeapons ~= nil then
             SetSiegeWeapons(control.dcSiege, item.siegeWeapons.DC)
             SetSiegeWeapons(control.adSiege, item.siegeWeapons.AD)
@@ -2263,7 +2609,7 @@ function PvPUA:UpdateEntries(itemsOfInterest)
                 control.progress.bar2.progress:SetColor(GetColorForAlliance(objectives[2].holdingAlliance).r, GetColorForAlliance(objectives[2].holdingAlliance).g, GetColorForAlliance(objectives[2].holdingAlliance).b)
                 control.progress.bar3.progress:SetColor(GetColorForAlliance(objectives[3].holdingAlliance).r, GetColorForAlliance(objectives[3].holdingAlliance).g, GetColorForAlliance(objectives[3].holdingAlliance).b)
             end
-        elseif item.keepType == KEEPTYPE_RESOURCE then
+        elseif item.keepType == KEEPTYPE_RESOURCE or item.keepType == KEEPTYPE_IMPERIAL_CITY_DISTRICT then
             control.progress.bar1:SetAnchor(TOPLEFT, control.progress, TOPLEFT, 0, self.config.entryHeight / 2 - self.config.flagHeight / 2)
             control.progress.bar1:SetHidden(false)
             control.progress.bar2:SetHidden(true)
@@ -2464,7 +2810,10 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
     self.controls.infoRankNum:SetHidden(false)
     self.controls.infoAPText:SetHidden(false)
     self.controls.infoKD:SetHidden(false)
-    self.controls.scoreRow:SetHidden(false)
+
+    local inIC = self.initializedZone == "IC"
+    self:ApplyHeaderLayout()
+    self.controls.scoreRow:SetHidden(inIC)
 
     local vetMode = self.savedVariables and self.savedVariables.barMode == "Veterancy"
     local vetIconShown = false
@@ -2498,10 +2847,10 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
         if rankIconTex ~= "" then
             self.controls.infoRankIcon:SetTexture(rankIconTex)
         end
-        if nextRankXP and nextRankXP > 0 then
-            local apEarned   = currentXP - lastRankXP
-            local apRequired = nextRankXP - lastRankXP
-            local barPct     = apRequired > 0 and (apEarned / apRequired * 100) or 100
+        local apEarned   = currentXP - lastRankXP
+        local apRequired = nextRankXP and (nextRankXP - lastRankXP) or 0
+        if nextRankXP and apRequired > 0 then
+            local barPct = (apEarned / apRequired * 100)
             self.controls.infoBar:SetValue(barPct)
             self.controls.infoAPText:SetText(
                 ZO_CommaDelimitNumber(apEarned) .. " / " .. ZO_CommaDelimitNumber(apRequired))
@@ -2521,15 +2870,29 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
 
     self:RefreshKDText()
 
+    if inIC then return end
+
     local campaignId = GetCurrentCampaignId()
 
-    if self.controls.infoEmpIcon then
+    if self.controls.empSlices then
         local empAlliance = GetCampaignEmperorInfo and GetCampaignEmperorInfo(campaignId) or 0
-        if empAlliance and empAlliance ~= 0 then
-            local ec = GetColorForAlliance(empAlliance)
-            self.controls.infoEmpIcon:SetColor(ec.r, ec.g, ec.b, 1)
-        else
-            self.controls.infoEmpIcon:SetColor(0.35, 0.35, 0.35, 1)
+        local hasEmperor = empAlliance ~= nil and empAlliance ~= 0
+        local ec = hasEmperor and GetColorForAlliance(empAlliance) or nil
+
+        for slot = 1, #self.controls.empSlices do
+            local slice = self.controls.empSlices[slot]
+            if hasEmperor then
+                slice:SetColor(ec.r, ec.g, ec.b, 1)
+            else
+                local keepId = self.emperorKeepIds and self.emperorKeepIds[slot]
+                local owner = keepId and GetKeepAlliance(keepId, BGQUERY_LOCAL) or 0
+                if owner ~= nil and owner ~= 0 then
+                    local kc = GetColorForAlliance(owner)
+                    slice:SetColor(kc.r, kc.g, kc.b, 1)
+                else
+                    slice:SetColor(0.35, 0.35, 0.35, 1)
+                end
+            end
         end
     end
 
@@ -2575,6 +2938,15 @@ function PvPUA:OnObjectiveControlState(eventCode, keepId, objectiveId, battlegro
                     break
                 end
             end
+            if objective == nil then
+                for i = 1, #objectives do
+                    if objectives[i].id == nil then
+                        objectives[i].id = objectiveId
+                        objective = objectives[i]
+                        break
+                    end
+                end
+            end
             if objective ~= nil then
                 objective.holdingAlliance = holdingAlliance
                 if objective.holdingAlliance == 0 then
@@ -2617,17 +2989,20 @@ function PvPUA:CyroUpdateLoop()
         addItems(self:UpdateItem(self.state.outposts, gameTime))
         addItems(self:UpdateItem(self.state.villages, gameTime))
         addItems(self:UpdateItem(self.state.destructibles, gameTime))
-        self:RefreshScrolls()
-        self:UpdateScrollCounts()
-        self:RefreshScrollTally()
-        self:RefreshScrollCarriers()
-        if not (self.savedVariables and self.savedVariables.showScrollCarriers == false) then
-            addItems(self:GetScrollCarrierItems())
-        end
-        self:RefreshVolendrungCarrier()
-        if not (self.savedVariables and self.savedVariables.showVolendrungRow == false) then
-            local volItem = self:GetVolendrungCarrierItem()
-            if volItem then addItems({ volItem }) end
+        addItems(self:UpdateItem(self.state.districts, gameTime))
+        if self.initializedZone ~= "IC" then
+            self:RefreshScrolls()
+            self:UpdateScrollCounts()
+            self:RefreshScrollTally()
+            self:RefreshScrollCarriers()
+            if not (self.savedVariables and self.savedVariables.showScrollCarriers == false) then
+                addItems(self:GetScrollCarrierItems())
+            end
+            self:RefreshVolendrungCarrier()
+            if not (self.savedVariables and self.savedVariables.showVolendrungRow == false) then
+                local volItem = self:GetVolendrungCarrierItem()
+                if volItem then addItems({ volItem }) end
+            end
         end
         if #itemsOfInterest > 1 then
             table.sort(itemsOfInterest, SortItemsOfInterest)
@@ -2741,11 +3116,13 @@ end
 --------------------------------------------------
 function PvPUA:ZoneCheck()
     if IsInCyrodiilOrIC() == true then
-        if self.initializedItems == false then
+        local zoneKind = IsInICCampaign() and "IC" or "CYRO"
+        if self.initializedItems == false or self.initializedZone ~= zoneKind then
             local hadVolendrung = self.volendrung
             self:InitState(hadVolendrung)
             self:ResetObjectives()
             self.initializedItems = true
+            self.initializedZone = zoneKind
         end
         if self.registeredCyroEvents == false then
             EVENT_MANAGER:RegisterForEvent(PvPUA.name, EVENT_OBJECTIVE_CONTROL_STATE,
@@ -2766,17 +3143,12 @@ function PvPUA:ZoneCheck()
                         end
                     end)
             end
-            pvpRecentKBs = { count = 0 }
             EVENT_MANAGER:RegisterForUpdate(PvPUA.name, PvPUA.constants.updateInterval,
                 function()
-                    local ok = pcall(function()
+                    pcall(function()
                         PvPUA:CyroUpdateLoop()
                         PvPUA:PollVolendrungDespawn()
                     end)
-                    if not ok then
-                        EVENT_MANAGER:UnregisterForUpdate(PvPUA.name)
-                        PvPUA.registeredCyroEvents = false
-                    end
                 end)
             self.registeredCyroEvents = true
         end
@@ -2786,8 +3158,11 @@ function PvPUA:ZoneCheck()
             EVENT_MANAGER:UnregisterForEvent(PvPUA.name, EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_SPAWNED_BUT_NOT_REVEALED)
             EVENT_MANAGER:UnregisterForEvent(PvPUA.name, EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED)
             EVENT_MANAGER:UnregisterForEvent(PvPUA.name, EVENT_ARTIFACT_SCROLL_STATE_CHANGED)
+            EVENT_MANAGER:UnregisterForEvent(PvPUA.name .. "_ArtifactCtrl", EVENT_ARTIFACT_CONTROL_STATE)
+            if EVENT_REWARD_TRACK_PROGRESS_GAINED then
+                EVENT_MANAGER:UnregisterForEvent(PvPUA.name .. "_VetTrack", EVENT_REWARD_TRACK_PROGRESS_GAINED)
+            end
             EVENT_MANAGER:UnregisterForUpdate(PvPUA.name)
-            pvpRecentKBs  = { count = 0 }
             self.registeredCyroEvents = false
         end
         self.initializedItems = false
@@ -2810,7 +3185,7 @@ end
 
 function PvPUA:OnPlayerActivated()
     PI.StartPolling()
-    pvpPlayerName = zo_strformat("<<1>>", GetUnitName("player"))
+    self:RefreshQueueSoon()
 
     self:ZoneCheck()
 
@@ -2926,6 +3301,58 @@ local function AIIsSelf(from, fromDisplayName)
     return false
 end
 
+local function AIIsPvPZoneName(zoneName)
+    if not zoneName or zoneName == "" then return nil end
+    if zoneName:find("Cyrodiil") then return true end
+    if zoneName:find("Imperial") then return true end
+    return false
+end
+
+local function AIResolveSenderZoneStatus(messageType, from)
+    local gIdx = AIGuildChannelToIndex(messageType)
+    if gIdx then
+        local guildId = GetGuildId(gIdx)
+        if guildId and guildId > 0 then
+            for i = 1, GetNumGuildMembers(guildId) do
+                local acct = GetGuildMemberInfo(guildId, i)
+                if acct == from then
+                    local hasChar, _, zoneName = GetGuildMemberCharacterInfo(guildId, i)
+                    if hasChar then return AIIsPvPZoneName(zoneName) end
+                    return nil
+                end
+            end
+        end
+        return nil
+    end
+
+    if messageType == CHAT_CHANNEL_WHISPER then
+        for g = 1, 5 do
+            local guildId = GetGuildId(g)
+            if guildId and guildId > 0 then
+                for i = 1, GetNumGuildMembers(guildId) do
+                    local acct = GetGuildMemberInfo(guildId, i)
+                    if acct == from then
+                        local hasChar, _, zoneName = GetGuildMemberCharacterInfo(guildId, i)
+                        if hasChar then return AIIsPvPZoneName(zoneName) end
+                        return nil
+                    end
+                end
+            end
+        end
+        for i = 1, GetNumFriends() do
+            local acct = GetFriendInfo(i)
+            if acct == from then
+                local hasChar, _, zoneName = GetFriendCharacterInfo(i)
+                if hasChar then return AIIsPvPZoneName(zoneName) end
+                return nil
+            end
+        end
+        return nil
+    end
+
+    return nil
+end
+
 local function AIOnWhisper(_, messageType, from, message, isCustomerService, fromDisplayName)
     local keywords = AIKeywordList()
     if not keywords then return end
@@ -2949,6 +3376,19 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
         end
     end
     if not allowed then return end
+
+    local aiPvP = PvPUA.charVariables.aiPvP
+    local aiPvE = PvPUA.charVariables.aiPvE
+    if not (aiPvP and aiPvE) then
+        local isPvPZone
+        if messageType == CHAT_CHANNEL_SAY or AIIsZoneChannel(messageType) then
+            isPvPZone = IsInCyrodiilOrIC()
+        else
+            isPvPZone = AIResolveSenderZoneStatus(messageType, from)
+        end
+        if isPvPZone == true and not aiPvP then return end
+        if isPvPZone == false and not aiPvE then return end
+    end
 
     local lowerMsg = string.lower(message)
     local matched = false
@@ -3220,13 +3660,16 @@ local function AIKickByName(name)
     PvPUA.aiKickTable[name] = nil
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
-        local tagName = GetUnitName(tag)
-        if tagName then tagName = tagName:gsub("%^.+", "") end
+        local tagName = nil
+        if tag and tag ~= "" then
+            tagName = GetUnitName(tag)
+            if tagName then tagName = tagName:gsub("%^.+", "") end
+        end
         if tag and tag ~= "" and tagName == name then
             local mins = PvPUA.charVariables.aiKickMinutes or 5
             local shown = GetUnitDisplayName(tag)
             if not shown or shown == "" then shown = name end
-            AIEcho("|cCC2222Kicked|r |c00FF00" .. shown .. "|r — offline " .. mins .. " min.")
+            AIEcho("|cCC2222Kicked|r |c00FF00" .. shown .. "|r - offline " .. mins .. " min.")
             GroupKick(tag)
             return
         end
@@ -3335,8 +3778,548 @@ function PvPUA:AIStop(internal)
 end
 
 --------------------------------------------------
+-- Screen Bounds
+--------------------------------------------------
+local function ScreenBounds()
+    local w, h
+    if GuiRoot and GuiRoot.GetDimensions then w, h = GuiRoot:GetDimensions() end
+    if type(w) ~= "number" or w < 640 then w = 1920 end
+    if type(h) ~= "number" or h < 480 then h = 1080 end
+    return math.ceil(w / 5) * 5, math.ceil(h / 5) * 5
+end
+
+--------------------------------------------------
+-- Effect Alerts
+--------------------------------------------------
+PvPUA.effectAlerts = {}
+
+local EA_DAMAGE_TIMEOUT_MS = 3000
+local EA_PANEL_WIDTH = 1200
+local HK_KEY = "homekeeps"
+local HK_TICK_MS = 250
+
+local EA_DEFS = {
+    { key = "homekeeps", label = "|cFF8800Home Keeps|r",
+      defaultText = "Home Keeps",
+      defaultColor = { r = 1, g = 1, b = 1, a = 1 },
+      defaultPosY = -335,
+      mode = "queue",
+      icon = "EsoUI/Art/Campaign/Gamepad/gp_overview_keepIcon.dds" },
+    { key = "negate",    label = "|c9B59D0Negate|r",
+      defaultText = "ENEMY NEGATE!",
+      defaultColor = { r = 0.61, g = 0.35, b = 0.82, a = 1 },
+      defaultPosY = -220,
+      mode = "effect",
+      icon = "EsoUI/Art/Options/Gamepad/gp_options_combat.dds",
+      names = { "Negate Magic", "Suppression Field", "Absorption Field" } },
+    { key = "corrosive", label = "|cCC2222Corrosive|r",
+      defaultText = "ENEMY CORROSIVE!",
+      defaultColor = { r = 1, g = 0.2, b = 0.2, a = 1 },
+      defaultPosY = -160,
+      mode = "damage",
+      icon = "EsoUI/Art/Options/Gamepad/gp_options_combat.dds",
+      abilityIds = { 17879 } },
+}
+
+local EA_NAME_LOOKUP = {}
+local EA_ID_LOOKUP = {}
+local EA_DEF_BY_KEY = {}
+for i = 1, #EA_DEFS do
+    EA_DEF_BY_KEY[EA_DEFS[i].key] = EA_DEFS[i]
+    if EA_DEFS[i].names then
+        for _, n in ipairs(EA_DEFS[i].names) do
+            EA_NAME_LOOKUP[n] = EA_DEFS[i].key
+        end
+    end
+    if EA_DEFS[i].abilityIds then
+        for _, id in ipairs(EA_DEFS[i].abilityIds) do
+            EA_ID_LOOKUP[id] = EA_DEFS[i].key
+        end
+    end
+end
+
+local EA_FONT_CHOICES = {
+    { name = "Gamepad Medium",  value = "EsoUI/Common/Fonts/FTN57.otf" },
+    { name = "Gamepad Bold",    value = "EsoUI/Common/Fonts/FTN87.otf" },
+    { name = "Gamepad Light",   value = "EsoUI/Common/Fonts/FTN47.otf" },
+    { name = "Univers Regular", value = "EsoUI/Common/Fonts/Univers57.otf" },
+    { name = "Univers Light",   value = "EsoUI/Common/Fonts/univers55.otf" },
+    { name = "Univers Bold",    value = "EsoUI/Common/Fonts/univers67.otf" },
+    { name = "Prose Antique",   value = "EsoUI/Common/Fonts/ProseAntiquePSMT.otf" },
+    { name = "Trajan Pro",      value = "EsoUI/Common/Fonts/TrajanPro-Regular.otf" },
+    { name = "Handwritten",     value = "EsoUI/Common/Fonts/Handwritten_Bold.otf" },
+    { name = "Arial Narrow",    value = "EsoUI/Common/Fonts/arialn.ttf" },
+    { name = "Consolas",        value = "EsoUI/Common/Fonts/consola.ttf" },
+}
+
+function PvPUA:EAVars(key)
+    local sv = self.savedVariables
+    if not sv then return nil end
+    sv.effectAlerts = sv.effectAlerts or {}
+    if not sv.effectAlerts[key] then
+        local def
+        for i = 1, #EA_DEFS do
+            if EA_DEFS[i].key == key then def = EA_DEFS[i] break end
+        end
+        local dc = def and def.defaultColor or { r = 1, g = 0.2, b = 0.2, a = 1 }
+        sv.effectAlerts[key] = {
+            enabled     = false,
+            messageText = def and def.defaultText or "ALERT",
+            posX        = 0,
+            posY        = def and def.defaultPosY or -160,
+            fontSize    = 45,
+            font        = "EsoUI/Common/Fonts/univers67.otf",
+            textColor   = { r = dc.r, g = dc.g, b = dc.b, a = 1 },
+            pulsate     = false,
+            pulseSpeed  = 3,
+        }
+    end
+    return sv.effectAlerts[key]
+end
+
+function PvPUA:EAFont(key)
+    local v = self:EAVars(key)
+    if not v then return "EsoUI/Common/Fonts/univers67.otf|45|outline" end
+    return (v.font or "EsoUI/Common/Fonts/univers67.otf") .. "|" .. tostring(v.fontSize or 45) .. "|outline"
+end
+
+function PvPUA:EAApplyPosition(key)
+    local a = self.effectAlerts[key]
+    local v = self:EAVars(key)
+    if not a or not v then return end
+    local def = EA_DEF_BY_KEY[key]
+    a.panel:ClearAnchors()
+    a.panel:SetAnchor(CENTER, GuiRoot, CENTER,
+        v.posX or 0,
+        v.posY or (def and def.defaultPosY) or -160)
+end
+
+function PvPUA:EAApplyMetrics(key)
+    local a = self.effectAlerts[key]
+    local v = self:EAVars(key)
+    if not a or not v then return end
+    local def = EA_DEF_BY_KEY[key]
+    if not def or def.mode ~= "queue" then return end
+    local size = v.fontSize or 45
+    a.panel:SetDimensions(EA_PANEL_WIDTH, math.ceil(size * 3))
+    a.label:SetWidth(EA_PANEL_WIDTH)
+end
+
+function PvPUA:EACreatePanel(key)
+    if self.effectAlerts[key] then return end
+    local panel = wm:CreateTopLevelWindow("PvPUA_Alert_" .. key)
+    panel:SetClampedToScreen(true)
+    panel:SetDrawLayer(DL_OVERLAY)
+    panel:SetDrawTier(DT_HIGH)
+    panel:SetDimensions(EA_PANEL_WIDTH, 120)
+    panel:SetHidden(true)
+
+    local label = wm:CreateControl(nil, panel, CT_LABEL)
+    label:SetAnchor(CENTER, panel, CENTER, 0, 0)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    self.effectAlerts[key] = { panel = panel, label = label, active = false, preview = false }
+    self:EAApplyMetrics(key)
+    self:EARefresh(key)
+    self:EAApplyPosition(key)
+end
+
+function PvPUA:EAIsPlayerDead()
+    if type(IsUnitDeadOrReincarnating) == "function" and IsUnitDeadOrReincarnating("player") then
+        return true
+    end
+    if type(IsUnitDead) == "function" and IsUnitDead("player") then
+        return true
+    end
+    return false
+end
+
+function PvPUA:EAClearAll()
+    for i = 1, #EA_DEFS do
+        local key = EA_DEFS[i].key
+        if EA_DEFS[i].mode ~= "queue" then
+            local a = self.effectAlerts[key]
+            if a then a.active = false end
+            self:EAStopExpiry(key)
+            self:EARefresh(key)
+        end
+    end
+end
+
+--------------------------------------------------
+-- Home Keep Queue
+--------------------------------------------------
+PvPUA.hkQueue = {}
+
+function PvPUA:HKText()
+    local q = self.hkQueue
+    local parts = {}
+    for i = 1, #q do parts[#parts + 1] = q[i].text end
+    return table.concat(parts, ", ")
+end
+
+function PvPUA:HKStopTick()
+    if not self.hkTicking then return end
+    self.hkTicking = false
+    EVENT_MANAGER:UnregisterForUpdate(PvPUA.name .. "_HKQueue")
+end
+
+function PvPUA:HKStartTick()
+    if self.hkTicking then return end
+    self.hkTicking = true
+    EVENT_MANAGER:RegisterForUpdate(PvPUA.name .. "_HKQueue", HK_TICK_MS, function()
+        local q = PvPUA.hkQueue
+        local now = GetGameTimeMilliseconds()
+        local changed = false
+        for i = #q, 1, -1 do
+            if now >= q[i].expires then
+                table.remove(q, i)
+                changed = true
+            end
+        end
+        if changed then PvPUA:EARefresh(HK_KEY) end
+        if #q == 0 then PvPUA:HKStopTick() end
+    end)
+end
+
+function PvPUA:HKPush(keepId, text)
+    if not self.savedVariables then return end
+    local q = self.hkQueue
+    local expires = GetGameTimeMilliseconds() + ((self.savedVariables.alertLifespan or 10) * 1000)
+    for i = 1, #q do
+        if q[i].id == keepId then
+            q[i].text = text
+            q[i].expires = expires
+            self:EARefresh(HK_KEY)
+            return
+        end
+    end
+    q[#q + 1] = { id = keepId, text = text, expires = expires }
+    self:EARefresh(HK_KEY)
+    self:HKStartTick()
+end
+
+function PvPUA:HKClear()
+    local q = self.hkQueue
+    for i = #q, 1, -1 do q[i] = nil end
+    self:HKStopTick()
+    self:EARefresh(HK_KEY)
+end
+
+function PvPUA:EARefresh(key)
+    local a = self.effectAlerts[key]
+    local v = self:EAVars(key)
+    if not a or not v then return end
+
+    local def = EA_DEF_BY_KEY[key]
+    if def and def.mode == "queue" then
+        local text
+        if a.preview then
+            text = def.defaultText
+        elseif self.savedVariables.alertsEnabled and #self.hkQueue > 0 then
+            text = self:HKText()
+        end
+
+        if not text or text == "" then
+            a.panel:SetHidden(true)
+            self:EAStopPulse(key)
+            a.label:SetAlpha(1)
+            return
+        end
+
+        self:EAApplyMetrics(key)
+        a.label:SetFont(self:EAFont(key))
+        a.label:SetText(text)
+        a.label:SetColor(1, 1, 1, 1)
+        a.panel:SetHidden(false)
+
+        if v.pulsate then
+            self:EAStartPulse(key)
+        else
+            self:EAStopPulse(key)
+            a.label:SetAlpha(1)
+        end
+        return
+    end
+
+    local show = a.preview or (v.enabled and a.active and not self:EAIsPlayerDead())
+    if not show then
+        a.panel:SetHidden(true)
+        self:EAStopPulse(key)
+        return
+    end
+
+    a.label:SetFont(self:EAFont(key))
+    a.label:SetText(v.messageText or "")
+
+    local c = v.textColor
+    local r, g, b = 1, 1, 1
+    if type(c) == "table" then r, g, b = c.r or 1, c.g or 1, c.b or 1 end
+    a.label:SetColor(r, g, b, 1)
+    a.panel:SetHidden(false)
+
+    if v.pulsate then self:EAStartPulse(key) else self:EAStopPulse(key) end
+end
+
+function PvPUA:EAStartPulse(key)
+    local a = self.effectAlerts[key]
+    if not a or a.pulsing then return end
+    a.pulsing = true
+    EVENT_MANAGER:RegisterForUpdate(PvPUA.name .. "_EAPulse_" .. key, 50, function()
+        local v = PvPUA:EAVars(key)
+        local ac = PvPUA.effectAlerts[key]
+        if not v or not ac or ac.panel:IsHidden() then return end
+        local t = GetGameTimeSeconds() * (v.pulseSpeed or 3)
+        local alpha = 0.45 + (0.55 * math.abs(math.sin(t * math.pi)))
+        local def = EA_DEF_BY_KEY[key]
+        if def and def.mode == "queue" then
+            ac.label:SetAlpha(alpha)
+            return
+        end
+        local c = v.textColor
+        local r, g, b = 1, 1, 1
+        if type(c) == "table" then r, g, b = c.r or 1, c.g or 1, c.b or 1 end
+        ac.label:SetColor(r, g, b, alpha)
+    end)
+end
+
+function PvPUA:EAStopPulse(key)
+    local a = self.effectAlerts[key]
+    if not a or not a.pulsing then return end
+    a.pulsing = false
+    EVENT_MANAGER:UnregisterForUpdate(PvPUA.name .. "_EAPulse_" .. key)
+    a.label:SetAlpha(1)
+end
+
+local function EAOnEffectChanged(_, changeType, _, effectName, unitTag)
+    if unitTag ~= "player" then return end
+    local key = EA_NAME_LOOKUP[effectName]
+    if not key then return end
+    local a = PvPUA.effectAlerts[key]
+    if not a then return end
+    if changeType == EFFECT_RESULT_FADED then
+        a.active = false
+    else
+        a.active = true
+    end
+    PvPUA:EARefresh(key)
+end
+
+function PvPUA:EAStartExpiry(key)
+    local a = self.effectAlerts[key]
+    if not a or a.expiring then return end
+    a.expiring = true
+    EVENT_MANAGER:RegisterForUpdate(PvPUA.name .. "_EAExpire_" .. key, 250, function()
+        local ac = PvPUA.effectAlerts[key]
+        if not ac then return end
+        if not ac.active or GetGameTimeMilliseconds() - (ac.lastHit or 0) > EA_DAMAGE_TIMEOUT_MS then
+            ac.active = false
+            PvPUA:EAStopExpiry(key)
+            PvPUA:EARefresh(key)
+        end
+    end)
+end
+
+function PvPUA:EAStopExpiry(key)
+    local a = self.effectAlerts[key]
+    if not a or not a.expiring then return end
+    a.expiring = false
+    EVENT_MANAGER:UnregisterForUpdate(PvPUA.name .. "_EAExpire_" .. key)
+end
+
+local function EAOnCombatEvent(_, _, isError, _, _, _, _, _, _, targetType, hitValue,
+                               _, _, _, _, _, abilityId)
+    if isError then return end
+    if targetType ~= COMBAT_UNIT_TYPE_PLAYER then return end
+    if not hitValue or hitValue <= 0 then return end
+    local key = EA_ID_LOOKUP[abilityId]
+    if not key then return end
+    local a = PvPUA.effectAlerts[key]
+    if not a then return end
+    a.lastHit = GetGameTimeMilliseconds()
+    if not a.active then
+        a.active = true
+        PvPUA:EARefresh(key)
+        PvPUA:EAStartExpiry(key)
+    end
+end
+
+function PvPUA:EAApplyCombatListener()
+    local wanted = false
+    for i = 1, #EA_DEFS do
+        if EA_DEFS[i].mode == "damage" and self:EAVars(EA_DEFS[i].key).enabled then
+            wanted = true
+            break
+        end
+    end
+
+    if wanted == self.eaCombatRegistered then return end
+    self.eaCombatRegistered = wanted
+
+    for id in pairs(EA_ID_LOOKUP) do
+        local name = PvPUA.name .. "_DamageAlert_" .. tostring(id)
+        EVENT_MANAGER:UnregisterForEvent(name, EVENT_COMBAT_EVENT)
+        if wanted then
+            EVENT_MANAGER:RegisterForEvent(name, EVENT_COMBAT_EVENT, EAOnCombatEvent)
+            if EVENT_MANAGER.AddFilterForEvent then
+                pcall(function()
+                    EVENT_MANAGER:AddFilterForEvent(name, EVENT_COMBAT_EVENT,
+                        REGISTER_FILTER_ABILITY_ID, id,
+                        REGISTER_FILTER_IS_ERROR, false)
+                end)
+            end
+        end
+    end
+
+    if not wanted then
+        for i = 1, #EA_DEFS do
+            if EA_DEFS[i].mode == "damage" then
+                local a = self.effectAlerts[EA_DEFS[i].key]
+                if a then a.active = false end
+                self:EAStopExpiry(EA_DEFS[i].key)
+                self:EARefresh(EA_DEFS[i].key)
+            end
+        end
+    end
+end
+
+function PvPUA:EAInit()
+    for i = 1, #EA_DEFS do
+        self:EACreatePanel(EA_DEFS[i].key)
+    end
+    EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_EffectAlert", EVENT_EFFECT_CHANGED, EAOnEffectChanged)
+    if EVENT_MANAGER.AddFilterForEvent then
+        pcall(function()
+            EVENT_MANAGER:AddFilterForEvent(PvPUA.name .. "_EffectAlert", EVENT_EFFECT_CHANGED,
+                REGISTER_FILTER_UNIT_TAG, "player")
+        end)
+    end
+    self.eaCombatRegistered = false
+    self:EAApplyCombatListener()
+end
+
+function PvPUA:HKBuildSettings(def)
+    local key = def.key
+    local screenW, screenH = ScreenBounds()
+    local halfW, halfH = math.ceil(screenW / 10) * 5, math.ceil(screenH / 10) * 5
+    return { type = "submenu", name = def.label, align = "left", indent = true, icon = def.icon, options = {
+        { type = "toggle", name = "Preview",
+          getFunc = function() return self.effectAlerts[key] and self.effectAlerts[key].preview or false end,
+          setFunc = function(v)
+              if self.effectAlerts[key] then self.effectAlerts[key].preview = v end
+              self:EARefresh(key)
+          end },
+        { type = "slider", name = "Horizontal Position", min = -halfW, max = halfW, step = 5,
+          getFunc = function() return self:EAVars(key).posX end,
+          setFunc = function(v) self:EAVars(key).posX = v; self:EAApplyPosition(key) end },
+        { type = "slider", name = "Vertical Position", min = -halfH, max = halfH, step = 5,
+          getFunc = function() return self:EAVars(key).posY end,
+          setFunc = function(v) self:EAVars(key).posY = v; self:EAApplyPosition(key) end },
+
+
+        { type = "toggle", name = "Enabled",
+          tooltip = "Shows an alert when a home keep comes under attack.",
+          default = PvPUA.defaults.alertsEnabled,
+          getFunc = function() return self.savedVariables.alertsEnabled end,
+          setFunc = function(v)
+              self.savedVariables.alertsEnabled = v
+              if not v then self:HKClear() end
+              self:EARefresh(key)
+          end },
+        { type = "slider", name = "Duration", min = 5, max = 30, step = 1,
+          tooltip = "How long each keep stays on screen (seconds).",
+          default = PvPUA.defaults.alertLifespan,
+          getFunc = function() return self.savedVariables.alertLifespan end,
+          setFunc = function(v) self.savedVariables.alertLifespan = v end },
+
+
+        { type = "header", name = "Message" },
+        { type = "slider", name = "Size", min = 25, max = 90, step = 1,
+          getFunc = function() return self:EAVars(key).fontSize end,
+          setFunc = function(v) self:EAVars(key).fontSize = v; self:EARefresh(key) end },
+        { type = "dropdown", name = "Font",
+          choices = EA_FONT_CHOICES,
+          getFunc = function() return self:EAVars(key).font end,
+          setFunc = function(v) self:EAVars(key).font = v; self:EARefresh(key) end },
+        { type = "toggle", name = "Pulsate",
+          getFunc = function() return self:EAVars(key).pulsate end,
+          setFunc = function(v) self:EAVars(key).pulsate = v; self:EARefresh(key) end },
+        { type = "slider", name = "Pulse Speed", min = 1, max = 10, step = 1,
+          disabled = function() return not self:EAVars(key).pulsate end,
+          getFunc = function() return self:EAVars(key).pulseSpeed end,
+          setFunc = function(v) self:EAVars(key).pulseSpeed = v; self:EARefresh(key) end },
+    } }
+end
+
+function PvPUA:EABuildSettings(def)
+    local key = def.key
+    local screenW, screenH = ScreenBounds()
+    local halfW, halfH = math.ceil(screenW / 10) * 5, math.ceil(screenH / 10) * 5
+    return { type = "submenu", name = def.label, align = "left", indent = true, icon = def.icon, options = {
+        { type = "toggle", name = "Preview",
+          getFunc = function() return self.effectAlerts[key] and self.effectAlerts[key].preview or false end,
+          setFunc = function(v)
+              if self.effectAlerts[key] then self.effectAlerts[key].preview = v end
+              self:EARefresh(key)
+          end },
+        { type = "slider", name = "Horizontal Position", min = -halfW, max = halfW, step = 5,
+          getFunc = function() return self:EAVars(key).posX end,
+          setFunc = function(v) self:EAVars(key).posX = v; self:EAApplyPosition(key) end },
+        { type = "slider", name = "Vertical Position", min = -halfH, max = halfH, step = 5,
+          getFunc = function() return self:EAVars(key).posY end,
+          setFunc = function(v) self:EAVars(key).posY = v; self:EAApplyPosition(key) end },
+
+
+        { type = "toggle", name = "Enabled",
+          getFunc = function() return self:EAVars(key).enabled end,
+          setFunc = function(v)
+              self:EAVars(key).enabled = v
+              self:EAApplyCombatListener()
+              self:EARefresh(key)
+          end },
+
+
+        { type = "header", name = "Message" },
+        { type = "editbox", name = "Text",
+          getFunc = function() return self:EAVars(key).messageText end,
+          setFunc = function(v)
+              if v == nil or v == "" then v = def.defaultText end
+              self:EAVars(key).messageText = v
+              self:EARefresh(key)
+          end },
+        { type = "slider", name = "Size", min = 25, max = 90, step = 1,
+          getFunc = function() return self:EAVars(key).fontSize end,
+          setFunc = function(v) self:EAVars(key).fontSize = v; self:EARefresh(key) end },
+        { type = "dropdown", name = "Font",
+          choices = EA_FONT_CHOICES,
+          getFunc = function() return self:EAVars(key).font end,
+          setFunc = function(v) self:EAVars(key).font = v; self:EARefresh(key) end },
+        { type = "colorpicker", name = RainbowText("Color"),
+          default = def.defaultColor,
+          getFunc = function()
+              local c = self:EAVars(key).textColor or def.defaultColor
+              return c.r, c.g, c.b, 1
+          end,
+          setFunc = function(r, g, b)
+              self:EAVars(key).textColor = { r = r, g = g, b = b, a = 1 }
+              self:EARefresh(key)
+          end },
+        { type = "toggle", name = "Pulsate",
+          getFunc = function() return self:EAVars(key).pulsate end,
+          setFunc = function(v) self:EAVars(key).pulsate = v; self:EARefresh(key) end },
+        { type = "slider", name = "Pulse Speed", min = 1, max = 10, step = 1,
+          disabled = function() return not self:EAVars(key).pulsate end,
+          getFunc = function() return self:EAVars(key).pulseSpeed end,
+          setFunc = function(v) self:EAVars(key).pulseSpeed = v; self:EARefresh(key) end },
+    } }
+end
+
+--------------------------------------------------
 -- Settings
 --------------------------------------------------
+PVPUA_ADDON_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_multiplayer.dds"
+
 PvPUA.AIGuildChoices = {}
 
 function PvPUA:AIRefreshGuildChoices()
@@ -3382,25 +4365,183 @@ function PvPUA:AIRefreshGuildChoices()
     end
 end
 
-function PvPUA:CreateSettings()
-    local LAM = LibAddonMenu2
-    self:AIRefreshGuildChoices()
-    local panel = LAM:RegisterAddonPanel("PvPUA_Settings", {
-        type = "panel", name = "PvPUA", displayName = "PvPUA",
-        author = "user562", version = "4.5", registerForRefresh = true,
-    })
-    if panel then
-        CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(openedPanel)
-            if openedPanel == panel then
-                PvPUA:AIRefreshGuildChoices()
+local function CopyDefaults(target, source)
+    for k, v in pairs(source) do
+        if type(v) == "table" then
+            target[k] = {}
+            CopyDefaults(target[k], v)
+        else
+            target[k] = v
+        end
+    end
+end
+
+function PvPUA:ResetAllSettings()
+    if self.savedVariables then
+        for k in pairs(self.savedVariables) do
+            if k ~= "version" and k ~= "lastSeenVersion" then self.savedVariables[k] = nil end
+        end
+        CopyDefaults(self.savedVariables, PvPUA.defaults)
+    end
+    if self.charVariables then
+        for k in pairs(self.charVariables) do
+            if k ~= "version" then self.charVariables[k] = nil end
+        end
+        CopyDefaults(self.charVariables, PvPUA.charDefaults)
+    end
+    self:InvalidateFontCache()
+    self:ApplyPosition()
+    self:ApplyScale()
+    self:RefreshBackdropColors()
+    self:UpdateHUDScenes()
+    self:HKClear()
+    for i = 1, #EA_DEFS do
+        self:EAApplyMetrics(EA_DEFS[i].key)
+        self:EAApplyPosition(EA_DEFS[i].key)
+        self:EARefresh(EA_DEFS[i].key)
+    end
+    self:EAApplyCombatListener()
+end
+
+function PvPUA:AIChannelChoices()
+    local choices = {
+        { name = ColorText("Whisper", 0.1725, 1, 0.9725),   value = "whisper" },
+        { name = ColorText("Say Chat", 1, 1, 1),            value = "say" },
+        { name = ColorText("Zone Chat", 0.7725, 0.7608, 0.6196), value = "zone" },
+    }
+    for i = 1, 5 do
+        local id = GetGuildId(i)
+        local label
+        if id and id > 0 then
+            local c = GetGuildAllianceColor(id)
+            label = ColorText("Guild: " .. GetGuildName(id), c.r, c.g, c.b)
+        else
+            label = "Guild " .. i
+        end
+        choices[#choices + 1] = { name = label, value = "guild" .. i }
+    end
+    return choices
+end
+
+PVPUA_MENU_TITLE_COLORED = "|c2A6FFFP|r|cE6C800v|r|cCC2222P|r |cFF8800UA!|r"
+PVPUA_TOOLTIP_AUTHOR_COLORED = "user|c2A6FFF5|r|cE6C8006|r|cCC22222|r"
+
+local function PvPUA_PaintMenuEntry(entry)
+    if not entry then return false end
+    local data = entry.data
+    local addon = data and data.addon
+    if not addon or addon.menuId ~= "PvPUA" then return false end
+    if entry.text == PVPUA_MENU_TITLE_COLORED then return false end
+
+    entry.text = PVPUA_MENU_TITLE_COLORED
+    if entry.SetText then entry:SetText(PVPUA_MENU_TITLE_COLORED) end
+    addon.displayTitle = PVPUA_MENU_TITLE_COLORED
+    return true
+end
+
+local function PvPUA_ApplyMenuEntryColor()
+    if not ZO_MENU_ENTRIES then return false end
+
+    local changed = false
+    for _, entry in ipairs(ZO_MENU_ENTRIES) do
+        local subMenu = entry.subMenu or (entry.data and entry.data.subMenu)
+        if subMenu then
+            for _, child in ipairs(subMenu) do
+                changed = PvPUA_PaintMenuEntry(child) or changed
+            end
+        end
+    end
+
+    if changed and MAIN_MENU_GAMEPAD and MAIN_MENU_GAMEPAD.RefreshMainList then
+        MAIN_MENU_GAMEPAD:RefreshMainList()
+    end
+    return changed
+end
+
+local function PvPUA_HookTooltipColor()
+    if type(LibConsoleMenu.GetAddonManifestMeta) ~= "function" or LibConsoleMenu.pvpuaTooltipColorHook then
+        return
+    end
+
+    LibConsoleMenu.pvpuaTooltipColorHook = LibConsoleMenu.GetAddonManifestMeta
+    LibConsoleMenu.GetAddonManifestMeta = function(addon, ...)
+        local meta = LibConsoleMenu.pvpuaTooltipColorHook(addon, ...)
+        if meta and type(addon) == "table" and addon.menuId == "PvPUA" then
+            if meta.title ~= "" then
+                meta.title = PVPUA_MENU_TITLE_COLORED
+            end
+            if meta.author ~= "" then
+                meta.author = PVPUA_TOOLTIP_AUTHOR_COLORED
+            end
+        end
+        return meta
+    end
+end
+
+local function PvPUA_HookMenuEntryColor()
+    PvPUA_HookTooltipColor()
+
+    if type(LibConsoleMenu.InjectIntoAddonsMenu) == "function" and not LibConsoleMenu.pvpuaTitleColorHook then
+        LibConsoleMenu.pvpuaTitleColorHook = LibConsoleMenu.InjectIntoAddonsMenu
+        LibConsoleMenu.InjectIntoAddonsMenu = function(libSelf, ...)
+            local result = LibConsoleMenu.pvpuaTitleColorHook(libSelf, ...)
+            pcall(PvPUA_ApplyMenuEntryColor)
+            return result
+        end
+    end
+
+    if MAIN_MENU_GAMEPAD_SCENE and not PvPUA.menuTitleColorSceneHooked then
+        PvPUA.menuTitleColorSceneHooked = true
+        MAIN_MENU_GAMEPAD_SCENE:RegisterCallback("StateChange", function(_, newState)
+            if newState == SCENE_SHOWING then
+                pcall(PvPUA_ApplyMenuEntryColor)
             end
         end)
     end
-    LAM:RegisterOptionControls("PvPUA_Settings", {
+end
+
+function PvPUA:CreateSettings()
+    if not LibConsoleMenu then return end
+    self:AIRefreshGuildChoices()
+
+    local screenW, screenH = ScreenBounds()
+
+    local addonCategory = MOD_BROWSER_CATEGORY_TYPE_PVP
+    if type(LibConsoleMenu.ResolveAddonMenuIcon) == "function" then
+        if not LibConsoleMenu.pvpuaIconHook then
+            LibConsoleMenu.pvpuaIconHook = LibConsoleMenu.ResolveAddonMenuIcon
+            LibConsoleMenu.ResolveAddonMenuIcon = function(category)
+                if category == PVPUA_ADDON_ICON then return PVPUA_ADDON_ICON end
+                return LibConsoleMenu.pvpuaIconHook(category)
+            end
+        end
+        local ok, resolved = pcall(LibConsoleMenu.ResolveAddonMenuIcon, PVPUA_ADDON_ICON)
+        if ok and resolved == PVPUA_ADDON_ICON then
+            addonCategory = PVPUA_ADDON_ICON
+        end
+    end
+
+    local menu = LibConsoleMenu:CreateAddonMenu("PvPUA", {
+        title          = "PvP UA!",
+        author         = "user562",
+        version        = "4.6",
+        category       = addonCategory,
+        enableDefaults = true,
+        enableReset    = true,
+        resetFunc      = function() PvPUA:ResetAllSettings() end,
+    })
+    if not menu then return end
+
+    PvPUA_HookMenuEntryColor()
+
+    menu:AddOptions({
         { type = "submenu",
           name = "|c2A6FFFAppearance|r",
-          controls = {
-        { type = "checkbox",
+          align = "left",
+          indent = true,
+          icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_uiGraphics.dds",
+          options = {
+        { type = "toggle",
           name = "Show List Now",
           getFunc = function() return self.showInMenu end,
           setFunc = function(v)
@@ -3408,19 +4549,53 @@ function PvPUA:CreateSettings()
               self:UpdateHUDScenes()
           end },
         { type = "slider", name = "Size", min = 80, max = 150, step = 5,
+          default = 100,
           getFunc = function() return math.floor((self.savedVariables.uiScale or 1.0) * 100 + 0.5) end,
           setFunc = function(v) self.savedVariables.uiScale = v / 100; self:ApplyScale() end },
-        { type = "slider", name = "Horizontal Position", min = 0, max = 3000, step = 5,
+        { type = "slider", name = "Horizontal Position", min = 0, max = screenW, step = 5,
+          default = PvPUA.defaults.posX,
           getFunc = function() return self.savedVariables.posX end,
           setFunc = function(v) self.savedVariables.posX = v; self:ApplyPosition() end },
-        { type = "slider", name = "Vertical Position", min = 0, max = 3000, step = 5,
+        { type = "slider", name = "Vertical Position", min = 0, max = screenH, step = 5,
+          default = PvPUA.defaults.posY,
           getFunc = function() return self.savedVariables.posY end,
           setFunc = function(v) self.savedVariables.posY = v; self:ApplyPosition() end },
-        { type = "divider" },
-        { type = "description",
-          title = "Rank Display",
-          text = "" },
-        { type = "dropdown", name = "",
+        { type = "checklist",
+          name = "Show in List",
+          noSelectionText = "None",
+          choices = {
+              { name = "Milegates", value = "showMilegates" },
+              { name = "Bridges", value = "showBridges" },
+              { name = "Towns", value = "showTowns" },
+              { name = "Resources", value = "showResources" },
+              { name = "Scroll Carriers", value = "showScrollCarriers" },
+              { name = "Volendrung", value = "showVolendrungRow" },
+          },
+          getFunc = function()
+              local sv = PvPUA.savedVariables
+              local sel = {}
+              if sv.showMilegates then sel[#sel + 1] = "showMilegates" end
+              if sv.showBridges then sel[#sel + 1] = "showBridges" end
+              if sv.showTowns then sel[#sel + 1] = "showTowns" end
+              if sv.showResources then sel[#sel + 1] = "showResources" end
+              if sv.showScrollCarriers then sel[#sel + 1] = "showScrollCarriers" end
+              if sv.showVolendrungRow then sel[#sel + 1] = "showVolendrungRow" end
+              return sel
+          end,
+          setFunc = function(values)
+              local on = {}
+              if type(values) == "table" then
+                  for _, v in ipairs(values) do on[v] = true end
+              end
+              local sv = PvPUA.savedVariables
+              sv.showMilegates = on.showMilegates == true
+              sv.showBridges = on.showBridges == true
+              sv.showTowns = on.showTowns == true
+              sv.showResources = on.showResources == true
+              sv.showScrollCarriers = on.showScrollCarriers == true
+              sv.showVolendrungRow = on.showVolendrungRow == true
+          end },
+        { type = "dropdown", name = "Rank Display",
           choices = { "AP Progress Bar", "Veterancy Progress Bar" },
           getFunc = function()
               return (self.savedVariables.barMode == "Veterancy")
@@ -3430,18 +4605,35 @@ function PvPUA:CreateSettings()
               self.savedVariables.barMode = (val == "Veterancy Progress Bar") and "Veterancy" or "AP"
               self:RefreshRankLabel()
           end },
-        { type = "divider" },
-        { type = "description",
-          title = "Background Color",
-          text = "" },
-        { type = "dropdown", name = "",
+        { type = "dropdown", name = "Font",
+          choices = EA_FONT_CHOICES,
+          default = PvPUA.defaults.font,
+          getFunc = function() return self.savedVariables.font end,
+          setFunc = function(val) self.savedVariables.font = val; self:InvalidateFontCache() end,
+        },
+        { type = "colorpicker", name = RainbowText("Timer Color"),
+          tooltip = "Changes the UA! timer color.",
+          default = { r = 1, g = 1, b = 1, a = 1 },
+          getFunc = function()
+              local c = self.savedVariables.timerColor
+              if type(c) == "table" then
+                  return c.r or 1, c.g or 1, c.b or 1, 1
+              end
+              return 1, 1, 1, 1
+          end,
+          setFunc = function(r, g, b, a)
+              self.savedVariables.timerColor = { r = r, g = g, b = b, a = a }
+          end,
+        },
+        { type = "dropdown", name = RainbowText("Background Color"),
           choices = { "Alliance", "Custom" },
+          default = PvPUA.defaults.backdropStyle,
           getFunc = function() return self.savedVariables.backdropStyle end,
           setFunc = function(val)
               self.savedVariables.backdropStyle = val
               self:RefreshBackdropColors()
           end },
-        { type = "colorpicker",
+        { type = "colorpicker", name = "",
           tooltip = "Can only be changed when set to Custom.",
           disabled = function() return self.savedVariables.backdropStyle ~= "Custom" end,
           default = { r = 0, g = 0, b = 0, a = 1 },
@@ -3457,110 +4649,50 @@ function PvPUA:CreateSettings()
               self:RefreshBackdropColors()
           end,
         },
-        { type = "divider" },
-        { type = "description",
-          title = "Font",
-          text = "" },
-        { type = "dropdown", name = "",
-          choices = {
-              "Gamepad Medium",
-              "Gamepad Bold",
-              "Gamepad Light",
-              "Univers Regular",
-              "Univers Bold",
-              "Prose Antique",
-              "Trajan Pro",
-              "Handwritten",
-          },
-          choicesValues = {
-              "EsoUI/Common/Fonts/FTN57.otf",
-              "EsoUI/Common/Fonts/FTN87.otf",
-              "EsoUI/Common/Fonts/FTN47.otf",
-              "EsoUI/Common/Fonts/Univers57.otf",
-              "EsoUI/Common/Fonts/univers67.otf",
-              "EsoUI/Common/Fonts/ProseAntiquePSMT.otf",
-              "EsoUI/Common/Fonts/TrajanPro-Regular.otf",
-              "EsoUI/Common/Fonts/Handwritten_Bold.otf",
-          },
-          getFunc = function() return self.savedVariables.font end,
-          setFunc = function(val) self.savedVariables.font = val; self:InvalidateFontCache() end,
-        },
-        { type = "divider" },
-        { type = "description",
-          title = "Timer Color",
-          text = "" },
-        { type = "colorpicker",
-          tooltip = "Changes the UA! timer color.",
-          default = { r = 1, g = 1, b = 1, a = 1 },
-          getFunc = function()
-              local c = self.savedVariables.timerColor
-              if type(c) == "table" then
-                  return c.r or 1, c.g or 1, c.b or 1, 1
-              end
-              return 1, 1, 1, 1
-          end,
-          setFunc = function(r, g, b, a)
-              self.savedVariables.timerColor = { r = r, g = g, b = b, a = a }
-          end,
-        },
-          } },
-        { type = "submenu",
-          name = "|cE6C800Show in List|r",
-          controls = {
-        { type = "checkbox", name = "Milegates",
-          getFunc = function() return self.savedVariables.showMilegates end,
-          setFunc = function(v) self.savedVariables.showMilegates = v end },
-        { type = "checkbox", name = "Bridges",
-          getFunc = function() return self.savedVariables.showBridges end,
-          setFunc = function(v) self.savedVariables.showBridges = v end },
-        { type = "checkbox", name = "Towns",
-          getFunc = function() return self.savedVariables.showTowns end,
-          setFunc = function(v) self.savedVariables.showTowns = v end },
-        { type = "checkbox", name = "Resources",
-          getFunc = function() return self.savedVariables.showResources end,
-          setFunc = function(v) self.savedVariables.showResources = v end },
-        { type = "checkbox", name = "Scroll Carriers",
-          getFunc = function() return self.savedVariables.showScrollCarriers end,
-          setFunc = function(v) self.savedVariables.showScrollCarriers = v end },
-        { type = "checkbox", name = "Volendrung",
-          getFunc = function() return self.savedVariables.showVolendrungRow end,
-          setFunc = function(v) self.savedVariables.showVolendrungRow = v end },
           } },
         { type = "submenu",
           name = "|c00FF00AP in Chat|r",
-          controls = {
-        { type = "checkbox", name = "Enabled",
+          align = "left",
+          indent = true,
+          icon = "EsoUI/Art/HUD/Gamepad/gp_HUDNotification_notification.dds",
+          options = {
+        { type = "toggle", name = "Enabled",
+          default = PvPUA.defaults.enableAPChat,
           getFunc = function() return self.savedVariables.enableAPChat end,
           setFunc = function(v) self.savedVariables.enableAPChat = v end },
-        { type = "checkbox", name = "Consolidate",
+        { type = "toggle", name = "Consolidate",
           tooltip = "Consolidates Repair and Combat AP instead of printing each one individually.\nPrints after the last gain of that type based on the duration set below.",
+          default = PvPUA.defaults.consolidateAPChat,
           getFunc = function() return self.savedVariables.consolidateAPChat end,
           setFunc = function(v) self.savedVariables.consolidateAPChat = v end },
         { type = "slider", name = "Repair Duration", min = 5, max = 60, step = 1,
           tooltip = "How long to wait before printing consolidated Repair AP (seconds).",
+          default = PvPUA.defaults.consolidateRepairDelay,
           getFunc = function() return self.savedVariables.consolidateRepairDelay end,
           setFunc = function(v) self.savedVariables.consolidateRepairDelay = v end },
         { type = "slider", name = "Combat Duration", min = 5, max = 60, step = 1,
           tooltip = "How long to wait before printing consolidated Combat AP (seconds).",
+          default = PvPUA.defaults.consolidateCombatDelay,
           getFunc = function() return self.savedVariables.consolidateCombatDelay end,
           setFunc = function(v) self.savedVariables.consolidateCombatDelay = v end },
           } },
         { type = "submenu",
-          name = "|cFF8800Alerts|r",
-          controls = {
-        { type = "checkbox", name = "Enabled",
-          tooltip = "Shows a center-screen alert when a home keep comes under attack.",
-          getFunc = function() return self.savedVariables.alertsEnabled end,
-          setFunc = function(v) self.savedVariables.alertsEnabled = v end },
-        { type = "slider", name = "Duration", min = 5, max = 30, step = 1,
-          tooltip = "How long the alert stays on screen (seconds).",
-          getFunc = function() return self.savedVariables.alertLifespan end,
-          setFunc = function(v) self.savedVariables.alertLifespan = v end },
+          name = "|cE6C800Alerts|r",
+          align = "left",
+          indent = true,
+          icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_communications.dds",
+          options = {
+        self:HKBuildSettings(EA_DEFS[1]),
+        self:EABuildSettings(EA_DEFS[2]),
+        self:EABuildSettings(EA_DEFS[3]),
           } },
         { type = "submenu",
           name = "|cCC2222Auto Invite|r",
-          controls = {
-        { type = "checkbox",
+          align = "left",
+          indent = true,
+          icon = "EsoUI/Art/HUD/Gamepad/gp_radialIcon_inviteGroup_down.dds",
+          options = {
+        { type = "toggle",
           name = "Enabled",
           tooltip = "Pauses automatically when the group is full and un-pauses when a spot opens.",
           getFunc = function() return PvPUA.charVariables.aiEnabled end,
@@ -3583,7 +4715,7 @@ function PvPUA:CreateSettings()
           end },
         { type = "editbox",
           name = "Keyword",
-          tooltip = "Words that trigger an invite. Separate multiple with commas (e.g., \"lfg, inv, x\"). Any ONE of them works on its own; a person is invited if their message is EXACTLY one of these words. Enable the channels below to choose where to listen.",
+          tooltip = "Words that trigger an invite. Separate multiple with commas (e.g., \"lfg, inv, x\"). Any ONE of them works on its own; a person is invited if their message is EXACTLY one of these words.",
           getFunc = function() return PvPUA.charVariables.aiKeyword end,
           setFunc = function(val)
               if val == PvPUA.charVariables.aiKeyword then return end
@@ -3592,83 +4724,254 @@ function PvPUA:CreateSettings()
                   AIEcho("Keyword(s) updated to: |c00FF00" .. val .. "|r")
               end
           end },
-        { type = "checkbox",
-          name = "Whisper",
-          getFunc = function() return PvPUA.charVariables.aiWhisper end,
-          setFunc = function(val) PvPUA.charVariables.aiWhisper = val end },
-        { type = "checkbox",
-          name = "Say Chat",
-          getFunc = function() return PvPUA.charVariables.aiSay end,
-          setFunc = function(val) PvPUA.charVariables.aiSay = val end },
-        { type = "checkbox",
-          name = "Zone Chat",
-          getFunc = function() return PvPUA.charVariables.aiZone end,
-          setFunc = function(val) PvPUA.charVariables.aiZone = val end },
-        { type = "checkbox",
-          name = function()
-              local id = GetGuildId(1)
-              return (id and id > 0) and ("Guild: " .. GetGuildName(id)) or "Guild 1"
+        { type = "checklist",
+          name = "Zones",
+          tooltip = "Where the sender must be for their message to trigger an invite.",
+          noSelectionText = "None",
+          choices = {
+              { name = "PvP", value = "pvp" },
+              { name = "PvE", value = "pve" },
+          },
+          getFunc = function()
+              local cv = PvPUA.charVariables
+              local sel = {}
+              if cv.aiPvP then sel[#sel + 1] = "pvp" end
+              if cv.aiPvE then sel[#sel + 1] = "pve" end
+              return sel
           end,
-          getFunc = function() return PvPUA.charVariables.aiGuildToggles[1] end,
-          setFunc = function(val) PvPUA.charVariables.aiGuildToggles[1] = val end,
-          disabled = function() local id = GetGuildId(1) return not (id and id > 0) end },
-        { type = "checkbox",
-          name = function()
-              local id = GetGuildId(2)
-              return (id and id > 0) and ("Guild: " .. GetGuildName(id)) or "Guild 2"
+          setFunc = function(values)
+              local on = {}
+              if type(values) == "table" then
+                  for _, v in ipairs(values) do on[v] = true end
+              end
+              PvPUA.charVariables.aiPvP = on.pvp == true
+              PvPUA.charVariables.aiPvE = on.pve == true
+          end },
+        { type = "checklist",
+          name = "Channels",
+          tooltip = "Channels the auto invite listens to for your keyword.",
+          noSelectionText = "None",
+          choices = PvPUA:AIChannelChoices(),
+          getFunc = function()
+              local cv = PvPUA.charVariables
+              local sel = {}
+              if cv.aiWhisper then sel[#sel + 1] = "whisper" end
+              if cv.aiSay then sel[#sel + 1] = "say" end
+              if cv.aiZone then sel[#sel + 1] = "zone" end
+              cv.aiGuildToggles = cv.aiGuildToggles or {}
+              for i = 1, 5 do
+                  if cv.aiGuildToggles[i] then sel[#sel + 1] = "guild" .. i end
+              end
+              return sel
           end,
-          getFunc = function() return PvPUA.charVariables.aiGuildToggles[2] end,
-          setFunc = function(val) PvPUA.charVariables.aiGuildToggles[2] = val end,
-          disabled = function() local id = GetGuildId(2) return not (id and id > 0) end },
-        { type = "checkbox",
-          name = function()
-              local id = GetGuildId(3)
-              return (id and id > 0) and ("Guild: " .. GetGuildName(id)) or "Guild 3"
-          end,
-          getFunc = function() return PvPUA.charVariables.aiGuildToggles[3] end,
-          setFunc = function(val) PvPUA.charVariables.aiGuildToggles[3] = val end,
-          disabled = function() local id = GetGuildId(3) return not (id and id > 0) end },
-        { type = "checkbox",
-          name = function()
-              local id = GetGuildId(4)
-              return (id and id > 0) and ("Guild: " .. GetGuildName(id)) or "Guild 4"
-          end,
-          getFunc = function() return PvPUA.charVariables.aiGuildToggles[4] end,
-          setFunc = function(val) PvPUA.charVariables.aiGuildToggles[4] = val end,
-          disabled = function() local id = GetGuildId(4) return not (id and id > 0) end },
-        { type = "checkbox",
-          name = function()
-              local id = GetGuildId(5)
-              return (id and id > 0) and ("Guild: " .. GetGuildName(id)) or "Guild 5"
-          end,
-          getFunc = function() return PvPUA.charVariables.aiGuildToggles[5] end,
-          setFunc = function(val) PvPUA.charVariables.aiGuildToggles[5] = val end,
-          disabled = function() local id = GetGuildId(5) return not (id and id > 0) end },
-        { type = "checkbox",
+          setFunc = function(values)
+              local on = {}
+              if type(values) == "table" then
+                  for _, v in ipairs(values) do on[v] = true end
+              end
+              local cv = PvPUA.charVariables
+              cv.aiWhisper = on.whisper == true
+              cv.aiSay = on.say == true
+              cv.aiZone = on.zone == true
+              cv.aiGuildToggles = cv.aiGuildToggles or {}
+              for i = 1, 5 do
+                  cv.aiGuildToggles[i] = on["guild" .. i] == true
+              end
+          end },
+        { type = "button",
+          name = "|cFF8800ReloadUI|r",
+          tooltip = "Guild names in the Channels list are read once when the addon loads. If you have joined or left a guild this session, reloadui to refresh them.",
+          func = function() ReloadUI("ingame") end },
+        { type = "header", name = "Auto Kick" },
+        { type = "toggle",
           name = "Kick Offline Members",
           tooltip = "Automatically removes group members who have been offline longer than the time below.",
+          default = PvPUA.charDefaults.aiKickOffline,
           getFunc = function() return PvPUA.charVariables.aiKickOffline end,
           setFunc = function(val)
               PvPUA.charVariables.aiKickOffline = val
               if val then PvPUA:AIKickStart() else PvPUA:AIKickStop() end
           end },
         { type = "slider", name = "Offline Minutes", min = 1, max = 30, step = 1,
+          default = PvPUA.charDefaults.aiKickMinutes,
           getFunc = function() return PvPUA.charVariables.aiKickMinutes end,
           setFunc = function(v) PvPUA.charVariables.aiKickMinutes = v end,
           disabled = function() return not PvPUA.charVariables.aiKickOffline end },
           } },
         { type = "submenu",
           name = "|c2A6FFFIcon|r",
-          controls = {
-        { type = "checkbox", name = "Show on Self",
-          tooltip = "BETA\nExclusive to certain players.",
-          getFunc = function() return PvPUA.savedVariables.iconShowSelf end,
-          setFunc = function(v) PvPUA.savedVariables.iconShowSelf = v end },
-        { type = "checkbox", name = "Show on Others",
-          getFunc = function() return PvPUA.savedVariables.iconShowOthers end,
-          setFunc = function(v) PvPUA.savedVariables.iconShowOthers = v end },
+          align = "left",
+          indent = true,
+          icon = "EsoUI/Art/Options/Gamepad/gp_options_nameplates.dds",
+          options = {
+        { type = "checklist",
+          name = "Show",
+          noSelectionText = "None",
+          choices = {
+              { name = "Self",   value = "self", tooltip = "Exclusive to certain players." },
+              { name = "Others", value = "others" },
+          },
+          getFunc = function()
+              local sv = PvPUA.savedVariables
+              local sel = {}
+              if sv.iconShowSelf then sel[#sel + 1] = "self" end
+              if sv.iconShowOthers then sel[#sel + 1] = "others" end
+              return sel
+          end,
+          setFunc = function(values)
+              local on = {}
+              if type(values) == "table" then
+                  for _, v in ipairs(values) do on[v] = true end
+              end
+              PvPUA.savedVariables.iconShowSelf = on.self == true
+              PvPUA.savedVariables.iconShowOthers = on.others == true
+          end },
           } },
     })
+end
+--------------------------------------------------
+-- Kill Feed
+--------------------------------------------------
+local KILL_FEED_EXPIRATION_MS = 10000
+local killFeedSeen = {}
+
+local function KFNormalize(name)
+    name = zo_strformat("<<1>>", name or "")
+    name = name:gsub("^@", "")
+    return name:lower()
+end
+
+local function KFPlayerIdentity()
+    local charName = KFNormalize(GetUnitName("player") or "")
+    local displayName = ""
+    local ok, dn = pcall(GetDisplayName)
+    if ok and dn then displayName = KFNormalize(dn) end
+    return charName, displayName
+end
+
+local function KFIsPlayer(displayName, characterName)
+    local playerChar, playerDisplay = KFPlayerIdentity()
+    local c = KFNormalize(characterName)
+    local d = KFNormalize(displayName)
+    if c ~= "" and playerChar ~= "" and c == playerChar then return true end
+    if d ~= "" and playerDisplay ~= "" and d == playerDisplay then return true end
+    if d ~= "" and playerChar ~= "" and d == playerChar then return true end
+    if c ~= "" and playerDisplay ~= "" and c == playerDisplay then return true end
+    return false
+end
+
+local function KFPreferredName(displayName, characterName)
+    local d = KFNormalize(displayName)
+    if d ~= "" then return d end
+    return KFNormalize(characterName)
+end
+
+local function KFShouldSuppress(killerName, victimName, isKillLocation)
+    local now = GetGameTimeMilliseconds()
+    for key, stamp in pairs(killFeedSeen) do
+        if now - stamp > KILL_FEED_EXPIRATION_MS then
+            killFeedSeen[key] = nil
+        end
+    end
+    local suffix = killerName .. "___" .. victimName
+    local ownKey = (isKillLocation and "B" or "L") .. suffix
+    local otherKey = (isKillLocation and "L" or "B") .. suffix
+    if killFeedSeen[otherKey] ~= nil then
+        killFeedSeen[otherKey] = nil
+        return true
+    end
+    killFeedSeen[ownKey] = now
+    return false
+end
+
+local function PvPUA_OnKillFeedDeath(eventCode, killLocation,
+        killerDisplayName, killerCharacterName, killerAlliance, killerRank,
+        victimDisplayName, victimCharacterName, victimAlliance, victimRank,
+        isKillLocation)
+    if not KFIsPlayer(killerDisplayName, killerCharacterName) then return end
+    if KFIsPlayer(victimDisplayName, victimCharacterName) then return end
+    local killerName = KFPreferredName(killerDisplayName, killerCharacterName)
+    local victimName = KFPreferredName(victimDisplayName, victimCharacterName)
+    if victimName == "" then return end
+    if KFShouldSuppress(killerName, victimName, isKillLocation == true) then return end
+    PvPUA.session.killingBlows = PvPUA.session.killingBlows + 1
+    UpdateKAD()
+end
+
+--------------------------------------------------
+-- Whats New
+--------------------------------------------------
+local WHATS_NEW_DIALOG = "PVPUA_WHATS_NEW"
+local whatsNewRegistered = false
+
+PvPUA.whatsNew = {
+    version = "1.1",
+    title = "PvP UA!",
+    message = table.concat({
+        "PvP UA! has been updated to version 4.6.",
+        "",
+        "- Home Keep alerts now use the on-screen alert panel instead of center screen text, with their own position, font, size and pulsate settings.",
+        "- Several home keeps under attack now show together, each clearing on its own timer.",
+        "- New Negate and Corrosive alerts.",
+        "- Settings rebuilt for console with nested menus, using LibConsoleMenu.",
+        "",
+        "Any bugs, message me:",
+        "Xbox: user562",
+        "Discord: user562.",
+        "",
+        "Thanks for using PvP UA!",
+    }, "\n"),
+}
+
+local function WhatsNewTitle()
+    return PvPUA.whatsNew.title or ""
+end
+
+local function WhatsNewMessage()
+    return PvPUA.whatsNew.message or ""
+end
+
+local function WhatsNewMarkSeen()
+    if PvPUA.savedVariables then
+        PvPUA.savedVariables.lastSeenVersion = PvPUA.whatsNew.version
+    end
+end
+
+local function WhatsNewRegisterDialog()
+    if whatsNewRegistered or not ZO_Dialogs_RegisterCustomDialog then return end
+    ZO_Dialogs_RegisterCustomDialog(WHATS_NEW_DIALOG, {
+        canQueue = true,
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.BASIC },
+        title = { text = WhatsNewTitle },
+        mainText = { text = WhatsNewMessage },
+        buttons = {
+            { keybind = "DIALOG_PRIMARY", text = SI_OK, callback = WhatsNewMarkSeen },
+        },
+    })
+    whatsNewRegistered = true
+end
+
+function PvPUA:ShowWhatsNew()
+    WhatsNewRegisterDialog()
+    if ZO_Dialogs_ShowGamepadDialog then
+        ZO_Dialogs_ShowGamepadDialog(WHATS_NEW_DIALOG)
+    elseif ZO_Dialogs_ShowPlatformDialog then
+        ZO_Dialogs_ShowPlatformDialog(WHATS_NEW_DIALOG)
+    elseif ZO_Dialogs_ShowDialog then
+        ZO_Dialogs_ShowDialog(WHATS_NEW_DIALOG)
+    end
+end
+
+function PvPUA:WhatsNewCheck(freshInstall)
+    local wn = PvPUA.whatsNew
+    if type(wn.version) ~= "string" or wn.version == "" then return end
+    if not self.savedVariables then return end
+    if freshInstall then
+        WhatsNewMarkSeen()
+        return
+    end
+    if self.savedVariables.lastSeenVersion == wn.version then return end
+    self:ShowWhatsNew()
 end
 
 --------------------------------------------------
@@ -3677,18 +4980,31 @@ end
 local function OnAddonLoaded(event, addonName)
     if addonName ~= PvPUA.name then return end
 
+    local freshInstall = (PvPUA_SavedVars == nil)
+
     PvPUA.savedVariables = ZO_SavedVars:NewAccountWide(
         "PvPUA_SavedVars", 27, nil,
-        { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true }
+        PvPUA.defaults
     )
 
     PvPUA.charVariables = ZO_SavedVars:NewCharacterIdSettings(
         "PvPUA_CharVars", 1, nil,
-        { aiKeyword = "", aiEnabled = false, aiWhisper = true, aiSay = false, aiZone = false, aiGuild = false, aiGuildName = "", aiGuildToggles = {}, aiGuildMigrated = false, aiGuildMigrationRepair = false, aiKickOffline = false, aiKickMinutes = 5 }
+        PvPUA.charDefaults
     )
 
     if type(PvPUA.charVariables.aiGuildToggles) ~= "table" then
         PvPUA.charVariables.aiGuildToggles = {}
+    end
+
+    if type(PvPUA.savedVariables.lastSeenVersion) ~= "string" then
+        PvPUA.savedVariables.lastSeenVersion = ""
+    end
+
+    if PvPUA.charVariables.aiPvP == nil then
+        PvPUA.charVariables.aiPvP = true
+    end
+    if PvPUA.charVariables.aiPvE == nil then
+        PvPUA.charVariables.aiPvE = true
     end
 
     if not PvPUA.charVariables.aiGuildMigrationRepair then
@@ -3708,7 +5024,12 @@ local function OnAddonLoaded(event, addonName)
 
     PvPUA:ApplyListSize()
     PvPUA:CreateUI()
+    PvPUA:CreateQueueUI()
+    PvPUA:RegisterQueueEvents()
+    PvPUA:StartQueueSafetyPoll()
+    PvPUA:RefreshQueueSoon()
     PvPUA:RefreshBackdropColors()
+    PvPUA:EAInit()
     PvPUA:CreateSettings()
 
     pcall(PI.Init)
@@ -3716,41 +5037,36 @@ local function OnAddonLoaded(event, addonName)
     EVENT_MANAGER:RegisterForEvent(PvPUA.name, EVENT_PLAYER_ACTIVATED,
         function() PvPUA:OnPlayerActivated() end)
 
+    EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_WhatsNew", EVENT_PLAYER_ACTIVATED,
+        function()
+            EVENT_MANAGER:UnregisterForEvent(PvPUA.name .. "_WhatsNew", EVENT_PLAYER_ACTIVATED)
+            PvPUA:WhatsNewCheck(freshInstall)
+        end)
+
     EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_ZoneChanged", EVENT_ZONE_CHANGED,
         function() PvPUA:ZoneCheck() end)
 
     if not pvpIsCombatRegistered then
 
-        EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_Combat", EVENT_COMBAT_EVENT,
-            function(eventCode, result, isError, abilityName, abilityGraphic,
-                     abilityActionSlotType, sourceName, sourceType,
-                     targetName, targetType, hitValue, powerType, damageType,
-                     log, sourceUnitId, targetUnitId, abilityId, overflow)
-
-                if isError then return end
-                if not (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) then return end
-                if result ~= ACTION_RESULT_KILLING_BLOW then return end
-                if GetUnitName("player") ~= zo_strformat("<<1>>", sourceName) then return end
-
-                local tName = zo_strformat("<<1>>", targetName)
-
-                if abilityName ~= "" and GetUnitName("player") ~= tName then
-                    PvPUA.session.killingBlows = PvPUA.session.killingBlows + 1
-                    UpdateKAD()
-                end
-            end)
+        if EVENT_PVP_KILL_FEED_DEATH ~= nil then
+            EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_KillFeed", EVENT_PVP_KILL_FEED_DEATH,
+                PvPUA_OnKillFeedDeath)
+        end
 
         EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_Death", EVENT_PLAYER_DEAD,
             function()
                 RSOnDeathStateChanged()
+                PvPUA:EAClearAll()
                 if not (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) then return end
                 PvPUA.session.deaths = PvPUA.session.deaths + 1
-                pvpRecentKBs = { count = 0 }
                 UpdateKAD()
             end)
 
         EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_Alive", EVENT_PLAYER_ALIVE,
-            function() RSOnDeathStateChanged() end)
+            function()
+                RSOnDeathStateChanged()
+                PvPUA:EAClearAll()
+            end)
 
         pvpIsCombatRegistered = true
     end
