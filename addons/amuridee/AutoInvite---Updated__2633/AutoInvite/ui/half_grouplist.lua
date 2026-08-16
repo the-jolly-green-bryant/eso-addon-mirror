@@ -201,14 +201,15 @@ function AI_SmallGroupListing:BuildMasterList()
         local tag = GetGroupUnitTagByIndex(i)
         local name = GetUnitDisplayName(tag)
         local entry = AI_GROUP_LIST_ENTRIES[name]
-        if entry then
+        if entry and name then
             entry.displayName = name
             entry.unitName = tag
             entry:Update()
-        else
+            seen[name] = true
+        elseif name then
             AI_GROUP_LIST_ENTRIES[name] = AI_SLG_Entry.New(name, tag)
+            seen[name] = true
         end
-        seen[name] = true
     end
 
     -- Drop rows that no longer belong to any of the three sources above

@@ -1,15 +1,15 @@
 --[[
     BlockPooky - Main Module
-    
+
     The core BlockPooky addon provides PvP awareness through block warnings and combat notifications.
     This is the main initialization and event handling module that coordinates all other components.
-    
+
     Key Features:
     - Detects incoming pull abilities and warns the player to block
     - Provides multiple notification channels (UI, sound, chat, CSA)
     - Group integration for pull warnings via LibGroupBroadcast
     - Customizable trigger abilities and notification settings
-    
+
     Event Flow:
     1. Monitors EVENT_COMBAT_EVENT for ACTION_RESULT_EFFECT_GAINED
     2. Checks if ability matches configured triggers
@@ -21,8 +21,8 @@
 --[[ basic initialization -------------------------------------------------------------------------------------------]]
 BlockPooky = BlockPooky or {}
 -- Addon version information
-BlockPooky.version = 2.19
-BlockPooky.svVersion = 1.8  -- SavedVariables version for config migration
+BlockPooky.version = 2.20
+BlockPooky.svVersion = 1.8 -- SavedVariables version for config migration
 BlockPooky.name = "BlockPooky"
 BlockPooky.msgText = "BLOCK Pooky!"
 -- Runtime state tracking
@@ -49,7 +49,7 @@ local BlockPooky = BlockPooky
 
 --[[
     Predefined Trigger Abilities
-    
+
     These arrays contain ability IDs that should trigger block warnings.
     Uses one representative ID per ability to get the localized name via GetAbilityName().
     ESO abilities often have multiple IDs for the same ability, so we pick one reliable ID.
@@ -59,16 +59,16 @@ BlockPooky.predefinedTriggerAbilities = {
     159279, -- Agonie
     159385, -- Konvergenz
     -- skills
-    20492, -- feuriger Griff (Fiery Grip)
-    20496, -- unerbittlicher Griff (Unreleting Grip)
-    20499, -- Ketten der Verwüstung (Chains of Devastation)
-    40336, -- Silberne Leine (silver leash)
-    18346, -- Teleportationsschlag (Teleport Strike)
-    25494, -- Lotusfächer (Lotus Fan)
-    25485, -- Hinterhalt (Ambush)
-    21061, -- krit. Toben (Stampede)
-    28448, -- krit. Stürmen (Critical Charge)
-    38782 -- krit. Preschen (Critical Rush)
+    20492,  -- feuriger Griff (Fiery Grip)
+    20496,  -- unerbittlicher Griff (Unreleting Grip)
+    20499,  -- Ketten der Verwüstung (Chains of Devastation)
+    40336,  -- Silberne Leine (silver leash)
+    18346,  -- Teleportationsschlag (Teleport Strike)
+    25494,  -- Lotusfächer (Lotus Fan)
+    25485,  -- Hinterhalt (Ambush)
+    21061,  -- krit. Toben (Stampede)
+    28448,  -- krit. Stürmen (Critical Charge)
+    38782   -- krit. Preschen (Critical Rush)
 }
 BlockPooky.predefinedPullAbilities = {
     -- effects
@@ -96,7 +96,6 @@ BlockPooky.groupMessagingNotices = {
     missingLGB = "LibGroupBroadcast is missing or disabled. Group sync is unavailable.",
     handlerRegisterFailed = "could not start group sync.",
     protocolFinalizeFailed = "group sync setup is incomplete.",
-    protocolDeclareFailed = "group sync setup failed (protocol ID/name conflict possible).",
 }
 
 local BlockPooky_chat = LibChatMessage(BlockPooky.name, "BP") -- long and short tag to identify who is printing the message
@@ -134,6 +133,14 @@ function BlockPooky.CleanAbilityName(id)
     return BlockPooky.CleanupName(GetAbilityName(id))
 end
 
+---Checks whether a lookup table maps the given key to true
+---@param set table the lookup table
+---@param element any the key to check
+---@return boolean true if the key is present with value true
+local function BlockPooky_IsIn(set, element)
+    return set[element] == true
+end
+
 function BlockPooky.NotifyGroupMessagingIssue(key, message)
     if BlockPooky_groupNoticeShown[key] then
         return
@@ -144,7 +151,7 @@ function BlockPooky.NotifyGroupMessagingIssue(key, message)
     end
 end
 
-function BlockPooky.SendWarning(warningType, abilityId, abilityName, sourceName, targetName)
+function BlockPooky.SendWarning(warningType, abilityId)
     if not BlockPooky_groupProtocol then
         BlockPooky.NotifyGroupMessagingIssue("noProtocol", BlockPooky.groupMessagingNotices.noProtocol)
         return false
@@ -158,9 +165,6 @@ function BlockPooky.SendWarning(warningType, abilityId, abilityName, sourceName,
     local success = BlockPooky_groupProtocol:Send({
         warningType = warningType or BlockPooky.groupMessagingNotices.defaultWarningType,
         abilityId = abilityId or 0,
-        abilityName = abilityName or "",
-        sourceName = sourceName or "",
-        targetName = targetName or "",
     })
     if not success then
         BlockPooky.NotifyGroupMessagingIssue("sendFailed", BlockPooky.groupMessagingNotices.sendFailed)
@@ -173,18 +177,23 @@ function BlockPooky.OnGroupPullWarning(unitTag, data)
         return
     end
     if GetGameTimeMilliseconds() - BlockPooky_lastPookyWarning > BlockPooky.config.cooldown then
-        local abilityName = BlockPooky.groupMessagingNotices.defaultWarningType
-        local sourceName = unitTag or BlockPooky.groupMessagingNotices.defaultSourceName
-        if data then
-            if data.abilityName and data.abilityName ~= "" then
-                abilityName = data.abilityName
-            elseif data.warningType and data.warningType ~= "" then
-                abilityName = data.warningType
-            end
-            if data.sourceName and data.sourceName ~= "" then
-                sourceName = data.sourceName
+        local abilityName
+        if data and data.abilityId and data.abilityId > 0 then
+            abilityName = BlockPooky.CleanAbilityName(data.abilityId)
+        end
+        if not abilityName or abilityName == "" then
+            abilityName = (data and data.warningType and data.warningType ~= "") and data.warningType
+                or BlockPooky.groupMessagingNotices.defaultWarningType
+        end
+
+        local sourceName = BlockPooky.groupMessagingNotices.defaultSourceName
+        if unitTag then
+            local senderName = GetUnitName(unitTag)
+            if senderName and senderName ~= "" then
+                sourceName = BlockPooky.CleanupName(senderName)
             end
         end
+
         BlockPooky_lastPookyWarning = GetGameTimeMilliseconds()
         BlockPooky.WarnThePooky(abilityName, sourceName)
     end
@@ -194,13 +203,13 @@ end
 
 
 function BlockPooky.SetColor()
-    if BlockPooky.config.color~=nil then
+    if BlockPooky.config.color ~= nil then
         BlockPookyIndicatorLabel:SetColor(unpack(BlockPooky.config.color))
     end
 end
 
 function BlockPooky.SetBlockingColor()
-    if BlockPooky.config.blocking.color~=nil then
+    if BlockPooky.config.blocking.color ~= nil then
         BlockingPookyIndicatorLabel:SetColor(unpack(BlockPooky.config.blocking.color))
     end
 end
@@ -218,13 +227,13 @@ function BlockPooky.InitUI()
     BlockPooky.setBlockPookyFont()
     BlockPooky.SetColor()
     BlockPooky.UpdateUILabels()
-    EVENT_MANAGER:RegisterForUpdate(BlockPooky.name.."TickUpdate", 1000, function(gameTimeMs)
-            BlockPooky.UpdateBlock(gameTimeMs)
-            BlockPooky.DcReadyHint(gameTimeMs)
-            BlockPooky.RoaReadyHint(gameTimeMs)
-            BlockPooky.UpdateCastVigorHint(gameTimeMs)
-            BlockPooky.UpdateHoTDisplay()
-        end)
+    EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "TickUpdate", 1000, function(gameTimeMs)
+        BlockPooky.UpdateBlock(gameTimeMs)
+        BlockPooky.DcReadyHint(gameTimeMs)
+        BlockPooky.RoaReadyHint(gameTimeMs)
+        BlockPooky.UpdateCastVigorHint(gameTimeMs)
+        BlockPooky.UpdateHoTDisplay()
+    end, false)
     BlockPooky.SetUseBlocking()
     BlockPooky.CallbackManager = ZO_CallbackObject:New()
     BlockPookyIndicator:SetHidden(not BlockPooky.config.lockedUI)
@@ -261,7 +270,6 @@ function BlockPooky.SetUiLock(locked)
         BlockPooky.negateWarning:SetHidden(not locked)
     end
 end
-
 
 --[[ Implementations ------------------------------------------------------------------------------------------------]]
 
@@ -326,36 +334,36 @@ function BlockPooky.ResetPosition()
 end
 
 function BlockPooky.RestorePosition()
-  local left = BlockPooky.config.left
-  local top = BlockPooky.config.top
-  if (left ~= nil and top ~= nil and left > 0 and top > 0) then
-    if BlockPookyIndicator:GetAnchor() ~= nil then
-        BlockPookyIndicator:ClearAnchors()
+    local left = BlockPooky.config.left
+    local top = BlockPooky.config.top
+    if (left ~= nil and top ~= nil and left > 0 and top > 0) then
+        if BlockPookyIndicator:GetAnchor() ~= nil then
+            BlockPookyIndicator:ClearAnchors()
+        end
+        BlockPookyIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    else
+        BlockPooky.ResetBlockPosition()
     end
-    BlockPookyIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
-  else
-    BlockPooky.ResetBlockPosition()
-  end
-  -- blocking
-  left = BlockPooky.config.blocking.left
-  top = BlockPooky.config.blocking.top
-  if (left ~= nil and top ~= nil and left > 0 and top > 0) then
-    if BlockingPookyIndicator:GetAnchor() ~= nil then
-        BlockingPookyIndicator:ClearAnchors()
+    -- blocking
+    left = BlockPooky.config.blocking.left
+    top = BlockPooky.config.blocking.top
+    if (left ~= nil and top ~= nil and left > 0 and top > 0) then
+        if BlockingPookyIndicator:GetAnchor() ~= nil then
+            BlockingPookyIndicator:ClearAnchors()
+        end
+        BlockingPookyIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    else
+        BlockPooky.ResetBlockingPosition()
     end
-    BlockingPookyIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
-  else
-    BlockPooky.ResetBlockingPosition()
-  end
-  -- others
-  BlockPooky.RestoreHintsPosition()
-  BlockPooky.RestoreCCBarPosition()
-  BlockPooky.RestoreCCDebuffPosition()
-  BlockPooky.RestoreCooldownBarsPosition()
-  BlockPooky.RestoreNegateWarningPosition()
-  if BlockPooky.LoadHoTBarPosition then
-      BlockPooky.LoadHoTBarPosition()
-  end
+    -- others
+    BlockPooky.RestoreHintsPosition()
+    BlockPooky.RestoreCCBarPosition()
+    BlockPooky.RestoreCCDebuffPosition()
+    BlockPooky.RestoreCooldownBarsPosition()
+    BlockPooky.RestoreNegateWarningPosition()
+    if BlockPooky.LoadHoTBarPosition then
+        BlockPooky.LoadHoTBarPosition()
+    end
 end
 
 function BlockPooky.setBlockPookyFont()
@@ -368,11 +376,11 @@ end
 function BlockPooky.Test()
     if GetGameTimeMilliseconds() - BlockPooky_lastPookyWarning > BlockPooky.config.cooldown then
         BlockPooky_lastPookyWarning = GetGameTimeMilliseconds()
-	    BlockPooky.WarnThePooky("TEST","ME")
+        BlockPooky.WarnThePooky("TEST", "ME")
     end
-	if BlockPooky.IsInGroup and BlockPooky.config.groupMessaging then
-        BlockPooky.SendWarning("pull", 0, "TEST", "me", "group")
-	end
+    if BlockPooky.IsInGroup and BlockPooky.config.groupMessaging then
+        BlockPooky.SendWarning("pull", 0)
+    end
 end
 
 --[[ addon initialization -------------------------------------------------------------------------------------------]]
@@ -417,50 +425,36 @@ function BlockPooky.InitGroupMessaging()
         BlockPooky_groupHandler = BlockPooky_LGB:RegisterHandler(BlockPooky.name)
     end
     if not BlockPooky_groupHandler then
-        BlockPooky.NotifyGroupMessagingIssue("handlerRegisterFailed", BlockPooky.groupMessagingNotices.handlerRegisterFailed)
+        BlockPooky.NotifyGroupMessagingIssue("handlerRegisterFailed",
+            BlockPooky.groupMessagingNotices.handlerRegisterFailed)
         return
     end
 
     if not BlockPooky_groupProtocol then
-        -- Keep this ID/name unique and reserve before publishing updates.
-        local ok, protocol = pcall(function()
-            return BlockPooky_groupHandler:DeclareProtocol(
-                BlockPooky_groupProtocolId,
-                BlockPooky_groupProtocolName
-            )
+        local protocol = BlockPooky_groupHandler:DeclareProtocol(
+            BlockPooky_groupProtocolId,
+            BlockPooky_groupProtocolName
+        )
+        -- Payload stays tiny: a 1-bit warning type + a 21-bit ability ID. The
+        -- receiver derives the localized ability name from the ID and the source
+        -- from the sender's unit tag, so no strings ever cross the wire.
+        protocol:AddField(BlockPooky_LGB.CreateEnumField("warningType", { "pull", "generic" }))
+        protocol:AddField(BlockPooky_LGB.CreateNumericField("abilityId", {
+            defaultValue = 0,
+            minValue = 0,
+            maxValue = 2000000,
+        }))
+        protocol:OnData(function(unitTag, data)
+            BlockPooky.OnGroupPullWarning(unitTag, data)
         end)
-        if ok and protocol then
-            protocol:AddField(BlockPooky_LGB.CreateEnumField("warningType", { "pull", "generic" }))
-            protocol:AddField(BlockPooky_LGB.CreateNumericField("abilityId", {
-                defaultValue = 0,
-                minValue = 0,
-                maxValue = 2000000,
-            }))
-            protocol:AddField(BlockPooky_LGB.CreateStringField("abilityName", {
-                defaultValue = "",
-                maxLength = 64,
-            }))
-            protocol:AddField(BlockPooky_LGB.CreateStringField("sourceName", {
-                defaultValue = "",
-                maxLength = 64,
-            }))
-            protocol:AddField(BlockPooky_LGB.CreateStringField("targetName", {
-                defaultValue = "",
-                maxLength = 64,
-            }))
-            protocol:OnData(function(unitTag, data)
-                BlockPooky.OnGroupPullWarning(unitTag, data)
-            end)
-            if protocol:Finalize({
+        if protocol:Finalize({
                 isRelevantInCombat = true,
                 replaceQueuedMessages = false,
             }) then
-                BlockPooky_groupProtocol = protocol
-            else
-                BlockPooky.NotifyGroupMessagingIssue("protocolFinalizeFailed", BlockPooky.groupMessagingNotices.protocolFinalizeFailed)
-            end
+            BlockPooky_groupProtocol = protocol
         else
-            BlockPooky.NotifyGroupMessagingIssue("protocolDeclareFailed", BlockPooky.groupMessagingNotices.protocolDeclareFailed)
+            BlockPooky.NotifyGroupMessagingIssue("protocolFinalizeFailed",
+                BlockPooky.groupMessagingNotices.protocolFinalizeFailed)
         end
     end
 
@@ -503,7 +497,8 @@ function BlockPooky.Initialize()
             BlockPooky.SetAOERGBState(true, true)
         end
         if BlockPooky.config.AOERGBDefaultColor and SetSetting then
-            SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_MONSTER_TELLS_ENEMY_COLOR, BlockPooky.config.AOERGBDefaultColor)
+            SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_MONSTER_TELLS_ENEMY_COLOR,
+                BlockPooky.config.AOERGBDefaultColor)
         end
         -- Speed and turbo are handled by SetAOERGBState if needed
     end
@@ -511,13 +506,18 @@ function BlockPooky.Initialize()
     -- [[register combat event]]
     EVENT_MANAGER:RegisterForEvent(BlockPooky.name, EVENT_COMBAT_EVENT, function(...) BlockPooky.OnCombat(...) end)
     -- Filter combat events at C level for performance: only ACTION_RESULT_EFFECT_GAINED, exclude errors
-    EVENT_MANAGER:AddFilterForEvent(BlockPooky.name, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED)
+    EVENT_MANAGER:AddFilterForEvent(BlockPooky.name, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT,
+        ACTION_RESULT_EFFECT_GAINED)
     EVENT_MANAGER:AddFilterForEvent(BlockPooky.name, EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
-    
-    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "GroupUpdate", EVENT_GROUP_UPDATE, function(...) BlockPooky.OnGroupUpdate(...) end)
-    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CombatNotification", EVENT_PLAYER_COMBAT_STATE, function(...)  BlockPooky.OnCombatNotification(...) end)
-    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CompanionActivated", EVENT_COMPANION_ACTIVATED, function() BlockPooky.companionName=GetUnitName("companion") end)
-    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CompanionDeactivated", EVENT_COMPANION_DEACTIVATED, function() BlockPooky.companionName="" end)
+
+    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "GroupUpdate", EVENT_GROUP_UPDATE,
+        function(...) BlockPooky.OnGroupUpdate(...) end)
+    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CombatNotification", EVENT_PLAYER_COMBAT_STATE,
+        function(...) BlockPooky.OnCombatNotification(...) end)
+    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CompanionActivated", EVENT_COMPANION_ACTIVATED,
+        function() BlockPooky.companionName = GetUnitName("companion") end)
+    EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CompanionDeactivated", EVENT_COMPANION_DEACTIVATED,
+        function() BlockPooky.companionName = "" end)
     if BlockPooky.config.CCImmunityHint then
         -- Single source of truth: CCEventRegisterUpdate() registers/unregisters ALL CC
         -- immunity events (effect watcher + potion consumption). Previously this block
@@ -581,7 +581,8 @@ function BlockPooky.WarnThePooky(abilityName, sourceName)
     end
     -- chat warning
     if BlockPooky.config.chatWarn then
-        BlockPooky_chat:Print(BlockPooky.groupMessagingNotices.incomingWarningPrefix .. abilityName .. BlockPooky.groupMessagingNotices.incomingWarningSuffix .. sourceName)
+        BlockPooky_chat:Print(BlockPooky.groupMessagingNotices.incomingWarningPrefix ..
+            abilityName .. BlockPooky.groupMessagingNotices.incomingWarningSuffix .. sourceName)
     end
 end
 
@@ -594,86 +595,86 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
     if addonName == BlockPooky.name then
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name, EVENT_ADD_ON_LOADED)
         local defaultConfig = {
-            lockedUI=false,
-            useCSA=true,
-            playSound=true,
-            useFrame=true,
-            chatWarn=true,
-            left=0,
-            top=0,
-            cooldown=5000,
-            color={0.627,0.129,0.157,1.0},
-            grpmsg_cooldown=2000,
-            msgLifeSpan=1000,
-            dcHint=false,
-            roaHint=false,
-            vigorHint=false,
-            triggerAbilities={},
-            customAbilityIds={},
-            fontSize=45,
-            bigFontSize =80,
-            blocking={
-                left=0,
-                top=0,
-                show=true,
-                color={0.980, 0.655, 0.0, 1.0}
+            lockedUI = false,
+            useCSA = true,
+            playSound = true,
+            useFrame = true,
+            chatWarn = true,
+            left = 0,
+            top = 0,
+            cooldown = 5000,
+            color = { 0.627, 0.129, 0.157, 1.0 },
+            grpmsg_cooldown = 2000,
+            msgLifeSpan = 1000,
+            dcHint = false,
+            roaHint = false,
+            vigorHint = false,
+            triggerAbilities = {},
+            customAbilityIds = {},
+            fontSize = 45,
+            bigFontSize = 80,
+            blocking = {
+                left = 0,
+                top = 0,
+                show = true,
+                color = { 0.980, 0.655, 0.0, 1.0 }
             },
-            vigorUI={
-                left=0,
-                top=0,
-                cooldown=4000,
-                color={0.0,0.533,1.0,1.0}
+            vigorUI = {
+                left = 0,
+                top = 0,
+                cooldown = 4000,
+                color = { 0.0, 0.533, 1.0, 1.0 }
             },
-            groupMessaging=true,
+            groupMessaging = true,
             ccBarPosition = {
                 left = 0,
                 top = 0
             },
-            ccBarColor= {0, 1, 0, 1},
-            ccBarSoftColor= {0, 0.75, 1, 1},
-            CCImmunityHint=true,
-            showCCDebuff=true,
-            ccDebuffCSA=true,
-            ccDebuffCSACooldown=2000,
+            ccBarColor = { 0, 1, 0, 1 },
+            ccBarSoftColor = { 0, 0.75, 1, 1 },
+            CCImmunityHint = true,
+            showCCDebuff = true,
+            ccDebuffCSA = true,
+            ccDebuffCSACooldown = 2000,
             ccDebuffPosition = {
                 left = 0,
                 top = 0
             },
             ccDebuffColors = {
-                stun      = {0.894, 0.133, 0.090, 1},
-                fear      = {0.561, 0.035, 0.925, 1},
-                disorient = {0.031, 0.627, 1.0,   1},
-                silence   = {0.0,   1.0,   1.0,   1},
-                stagger   = {1.0,   0.949, 0.129, 1},
+                stun      = { 0.894, 0.133, 0.090, 1 },
+                fear      = { 0.561, 0.035, 0.925, 1 },
+                disorient = { 0.031, 0.627, 1.0, 1 },
+                silence   = { 0.0, 1.0, 1.0, 1 },
+                stagger   = { 1.0, 0.949, 0.129, 1 },
             },
-            msgPullAbilitiesOnly=true,
-            pullAbilities={},
-            cooldownbar={},
-            investigate=false,
-            investigateEffects=false,
-            negate={
-                show=false,
-                left=0,
-                top=0,
-                color={1,0,0,1}
+            msgPullAbilitiesOnly = true,
+            pullAbilities = {},
+            cooldownbar = {},
+            investigate = false,
+            investigateEffects = false,
+            negate = {
+                show = false,
+                left = 0,
+                top = 0,
+                color = { 1, 0, 0, 1 }
             },
-            threatalert={
-                show=false,
-                pvpOnly=true,
-                texture="reddot.dds",
-                alpha=0.3,
-                color={1,0,0,0.12},
-                duration=8000,
-                cooldown=5000,
-                abilities={159385, 159279},  -- Dark Convergence, Rush of Agony (user can remove these)
-                customAbilities={}
+            threatalert = {
+                show = false,
+                pvpOnly = true,
+                texture = "reddot.dds",
+                alpha = 0.3,
+                color = { 1, 0, 0, 0.12 },
+                duration = 8000,
+                cooldown = 5000,
+                abilities = { 159385, 159279 }, -- Dark Convergence, Rush of Agony (user can remove these)
+                customAbilities = {}
             },
-            staminalow={
-                show=false,
-                threshold=5000,
-                minAlpha=0.3,
-                maxAlpha=0.72,
-                texture="staminawarn.dds"
+            staminalow = {
+                show = false,
+                threshold = 5000,
+                minAlpha = 0.3,
+                maxAlpha = 0.72,
+                texture = "staminawarn.dds"
             },
             -- Combat Visuals defaults
             combatVisualsEnabled = false,
@@ -725,11 +726,13 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
             defaultConfig.pullAbilities[BlockPooky.CleanAbilityName(BlockPooky.predefinedPullAbilities[idx])] = true
         end
         local defaultToonConfig = {
-            cooldownbar={}
+            cooldownbar = {}
         }
 
-        BlockPooky.toonConfig = ZO_SavedVars:New(BlockPooky.name .. "Config", BlockPooky.svVersion, "config", defaultToonConfig)
-        BlockPooky.config = ZO_SavedVars:NewAccountWide(BlockPooky.name .. "Config", BlockPooky.svVersion, "config", defaultConfig)
+        BlockPooky.toonConfig = ZO_SavedVars:New(BlockPooky.name .. "Config", BlockPooky.svVersion, "config",
+            defaultToonConfig)
+        BlockPooky.config = ZO_SavedVars:NewAccountWide(BlockPooky.name .. "Config", BlockPooky.svVersion, "config",
+            defaultConfig)
         BlockPooky.Initialize()
     end
 end
@@ -769,18 +772,14 @@ function BlockPooky.OnCombat(
         (7) Handle ROA uptimes
 
     --]]
-    local function isIn(set, element)
-        return set[element] == true
-    end
-
     -- (1)
     local cleanAbilityName = BlockPooky.CleanupName(abilityName)
     local cleanSourceName = BlockPooky.CleanupName(sourceName):lower()
-    if BlockPooky.config.investigate and cleanSourceName~='' then
+    if BlockPooky.config.investigate and cleanSourceName ~= '' then
         d(string.format("Ability? Name: %s | ID: %d | Source: %s", cleanAbilityName, abilityId, cleanSourceName))
     end
     -- (1)
-    if isIn(BlockPooky.config.triggerAbilities, cleanAbilityName) or isIn (BlockPooky.CustomTriggerAbilities, cleanAbilityName) then
+    if BlockPooky_IsIn(BlockPooky.config.triggerAbilities, cleanAbilityName) or BlockPooky_IsIn(BlockPooky.CustomTriggerAbilities, cleanAbilityName) then
         -- (2)
         if (cleanSourceName ~= "" and cleanSourceName ~= BlockPooky.player and cleanSourceName ~= BlockPooky.companionName) then
             -- (3)
@@ -794,14 +793,14 @@ function BlockPooky.OnCombat(
             end
             if BlockPooky.grouped then
                 local cleanTargetName = BlockPooky.CleanupName(targetName)
-                if BlockPooky.IsInGroup(cleanTargetName) and cleanTargetName~=BlockPooky.player then
+                if BlockPooky.IsInGroup(cleanTargetName) and cleanTargetName ~= BlockPooky.player then
                     if GetGameTimeMilliseconds() - BlockPooky_lastGroupMessage > BlockPooky.config.grpmsg_cooldown then
                         BlockPooky_chat:Print("Pooky " .. cleanTargetName .. " hit by (" .. cleanAbilityName .. ")")
                     end
                 end
                 if BlockPooky.config.groupMessaging and cleanTargetName == BlockPooky.player then
-                    if BlockPooky.config.msgPullAbilitiesOnly==false or isIn(BlockPooky.config.pullAbilities, cleanAbilityName) then
-                        BlockPooky.SendWarning("pull", abilityId, cleanAbilityName, cleanSourceName, cleanTargetName)
+                    if BlockPooky.config.msgPullAbilitiesOnly == false or BlockPooky_IsIn(BlockPooky.config.pullAbilities, cleanAbilityName) then
+                        BlockPooky.SendWarning("pull", abilityId)
                     end
                 end
             end
@@ -815,12 +814,13 @@ function BlockPooky.OnCombat(
                 BlockPooky.lastRoaCast = GetGameTimeMilliseconds()
             end
         end
-    elseif BlockPooky.config.vigorHint and abilityId==61506 and result==2240 then -- echoing vigor
+    elseif BlockPooky.config.vigorHint and abilityId == 61506 and result == 2240 then -- echoing vigor
         local cleanSourceName = BlockPooky.CleanupName(sourceName)
         if cleanSourceName == BlockPooky.player then
             if GetGameTimeMilliseconds() - BlockPooky.lastVigorCast > 1000 then
                 BlockPooky.lastVigorCast = GetGameTimeMilliseconds();
-                vigorHint_active = false
+                -- removed: 'vigorHint_active = false' here wrote a global that never
+                -- reached BlockPooky_hints.lua's file-local flag (dead write, no effect)
                 VigorIndicator:SetHidden(not BlockPooky.config.lockedUI)
             end
         end
@@ -838,7 +838,6 @@ function BlockPooky.OnCombatNotification(eventCode, inCombat)
         BlockPooky.lastMountReady = GetGameTimeMilliseconds()
     end
 end
-
 
 --[[ group mount notifications ---------------------------------------------------------------------------------------]]
 ---Group-wide mount status messages shown while the player is in a group.
@@ -869,7 +868,8 @@ function BlockPooky.UpdateMountPollRegistration()
     -- MOUNT!" reminder. It costs nothing when solo.
     local wantPoll = BlockPooky.grouped and BlockPooky.config ~= nil
     if wantPoll and not BlockPooky.mountPollRegistered then
-        EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "MountPoll", 500, function() BlockPooky.CheckGroupMountStates() end)
+        EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "MountPoll", 500,
+            function() BlockPooky.CheckGroupMountStates() end, false)
         BlockPooky.mountPollRegistered = true
     elseif not wantPoll and BlockPooky.mountPollRegistered then
         EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name .. "MountPoll")
@@ -897,7 +897,7 @@ function BlockPooky.CheckGroupMountStates()
     local playerCanMount = not IsMounted() and not IsUnitInCombat("player")
     if playerCanMount and BlockPooky.IsInCyro() then
         if BlockPooky.playerCanMountArmed
-           and GetGameTimeMilliseconds() - BlockPooky.lastMountReady > 1500 then
+            and GetGameTimeMilliseconds() - BlockPooky.lastMountReady > 1500 then
             BlockPooky.MessageThePooky(BlockPooky.config.messages.mountReady)
             BlockPooky.lastMountReady = GetGameTimeMilliseconds()
         end
@@ -933,8 +933,8 @@ function BlockPooky.CheckGroupMountStates()
                 else
                     -- A group member (not the player) just dismounted
                     if not isMe and wasMounted == true
-                       and BlockPooky.config.messages.pookyUnmounted
-                       and BlockPooky.config.messages.pookyUnmounted ~= "" then
+                        and BlockPooky.config.messages.pookyUnmounted
+                        and BlockPooky.config.messages.pookyUnmounted ~= "" then
                         BlockPooky.MessageThePooky(BlockPooky.config.messages.pookyUnmounted)
                     end
                 end
@@ -965,13 +965,13 @@ function BlockPooky.CheckGroupMountStates()
 
     -- Group-wide messages only while enabled
     if not BlockPooky.config.groupMountNotify then return end
-    if groupSize <= 1 then return end  -- no "all Pookies" with just yourself
+    if groupSize <= 1 then return end -- no "all Pookies" with just yourself
 
     -- "All Pookies Mounted" fires on the transition into all-mounted
     if activeMembers > 1 and allMounted and mountedCount == activeMembers then
         if BlockPooky.allMountedArmed
-           and BlockPooky.config.messages.allMounted
-           and BlockPooky.config.messages.allMounted ~= "" then
+            and BlockPooky.config.messages.allMounted
+            and BlockPooky.config.messages.allMounted ~= "" then
             BlockPooky.MessageThePooky(BlockPooky.config.messages.allMounted)
             BlockPooky.allMountedArmed = false
         end
@@ -982,8 +982,8 @@ function BlockPooky.CheckGroupMountStates()
     -- "All Pookies can Mount" fires on the transition into everyone-can-mount
     if activeMembers > 1 and allCanMount then
         if BlockPooky.allCanMountArmed
-           and BlockPooky.config.messages.allCanMount
-           and BlockPooky.config.messages.allCanMount ~= "" then
+            and BlockPooky.config.messages.allCanMount
+            and BlockPooky.config.messages.allCanMount ~= "" then
             BlockPooky.MessageThePooky(BlockPooky.config.messages.allCanMount)
             BlockPooky.allCanMountArmed = false
         end
@@ -991,7 +991,6 @@ function BlockPooky.CheckGroupMountStates()
         BlockPooky.allCanMountArmed = true
     end
 end
-
 
 --[[ mount traffic light ---------------------------------------------------------------------------------------------]]
 ---Optional single "traffic light" shown while grouped: one colored square that
@@ -1020,7 +1019,8 @@ function BlockPooky.InitMountLightUI()
     end
 
     if not BlockPooky.mountLightBackdrop then
-        BlockPooky.mountLightBackdrop = CreateControl(BlockPooky.name .. "MountLightBackdrop", BlockPooky.mountLight, CT_BACKDROP)
+        BlockPooky.mountLightBackdrop = CreateControl(BlockPooky.name .. "MountLightBackdrop", BlockPooky.mountLight,
+            CT_BACKDROP)
         if not BlockPooky.mountLightBackdrop then return end
         BlockPooky.mountLightBackdrop:SetAnchorFill(BlockPooky.mountLight)
         BlockPooky.mountLightBackdrop:SetEdgeColor(0, 0, 0, 0.8)
@@ -1033,7 +1033,7 @@ end
 function BlockPooky.SaveMountLightPosition()
     if BlockPooky.config and BlockPooky.mountLight then
         local left, top = BlockPooky.mountLight:GetLeft(), BlockPooky.mountLight:GetTop()
-        BlockPooky.config.mountLightPosition = {left = left, top = top}
+        BlockPooky.config.mountLightPosition = { left = left, top = top }
     end
 end
 
@@ -1043,7 +1043,8 @@ function BlockPooky.LoadMountLightPosition()
         BlockPooky.mountLight:ClearAnchors()
     end
     if BlockPooky.config and BlockPooky.config.mountLightPosition then
-        BlockPooky.mountLight:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.mountLightPosition.left, BlockPooky.config.mountLightPosition.top)
+        BlockPooky.mountLight:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.mountLightPosition.left,
+            BlockPooky.config.mountLightPosition.top)
     else
         BlockPooky.mountLight:SetAnchor(CENTER, GuiRoot, CENTER, 0, -80)
     end
@@ -1091,7 +1092,6 @@ function BlockPooky.SetMountLightState(state)
     BlockPooky.mountLightBackdrop:SetCenterColor(r, g, b, 0.95)
     BlockPooky.mountLight:SetHidden(false)
 end
-
 
 --[[ MAIN -----------------------------------------------------------------------------------------------------------]]
 

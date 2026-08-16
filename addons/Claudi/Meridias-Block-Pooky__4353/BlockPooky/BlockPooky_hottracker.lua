@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     BlockPooky HoT Tracker Module - Update 49 HoT Cap Support
 
     This module tracks Healing-over-Time effects on the player to monitor compliance
@@ -64,14 +64,14 @@ function BlockPooky.CountPlayerHoTs()
 
     for i = 1, numBuffs do
         local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename,
-              deprecatedBuffType, effectType, abilityType, statusEffectType, abilityId,
-              canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
+        deprecatedBuffType, effectType, abilityType, statusEffectType, abilityId,
+        canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
 
         -- A HoT is a buff (not debuff) with ABILITY_TYPE_HEAL and remaining duration
         if effectType == BUFF_EFFECT_TYPE_BUFF
-           and abilityType == ABILITY_TYPE_HEAL
-           and timeEnding > 0
-           and timeEnding > now then
+            and abilityType == ABILITY_TYPE_HEAL
+            and timeEnding > 0
+            and timeEnding > now then
             count = count + 1
         end
     end
@@ -94,13 +94,13 @@ function BlockPooky.GetHoTBreakdown()
 
     for i = 1, numBuffs do
         local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename,
-              deprecatedBuffType, effectType, abilityType, statusEffectType, abilityId,
-              canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
+        deprecatedBuffType, effectType, abilityType, statusEffectType, abilityId,
+        canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
 
         if effectType == BUFF_EFFECT_TYPE_BUFF
-           and abilityType == ABILITY_TYPE_HEAL
-           and timeEnding > 0
-           and timeEnding > now then
+            and abilityType == ABILITY_TYPE_HEAL
+            and timeEnding > 0
+            and timeEnding > now then
             breakdown[buffName] = (breakdown[buffName] or 0) + 1
         end
     end
@@ -136,7 +136,7 @@ function BlockPooky.InitHoTBarUI()
             return
         end
         BlockPooky.hotLabel:SetFont("ZoFontWinH4")
-        BlockPooky.hotLabel:SetColor(0, 1, 0, 1)  -- Green by default
+        BlockPooky.hotLabel:SetColor(0, 1, 0, 1) -- Green by default
         BlockPooky.hotLabel:SetText("")
         BlockPooky.hotLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         BlockPooky.hotLabel:SetAnchor(TOP, BlockPooky.hotBar, TOP, 0, 0)
@@ -151,9 +151,9 @@ function BlockPooky.InitHoTBarUI()
         end
         BlockPooky.hotStatusBar:SetDimensions(200, 20)
         BlockPooky.hotStatusBar:SetAnchor(BOTTOM, BlockPooky.hotBar, BOTTOM, 0, 0)
-        BlockPooky.hotStatusBar:SetMinMax(0, 1)  -- Will be updated dynamically
+        BlockPooky.hotStatusBar:SetMinMax(0, 1)      -- Will be updated dynamically
         BlockPooky.hotStatusBar:SetValue(0)
-        BlockPooky.hotStatusBar:SetColor(0, 1, 0, 1)  -- Green by default
+        BlockPooky.hotStatusBar:SetColor(0, 1, 0, 1) -- Green by default
         BlockPooky.hotStatusBar:SetHidden(false)
     end
 
@@ -167,7 +167,7 @@ end
 function BlockPooky.SaveHoTBarPosition()
     if BlockPooky.config and BlockPooky.hotBar then
         local left, top = BlockPooky.hotBar:GetLeft(), BlockPooky.hotBar:GetTop()
-        BlockPooky.config.hotBarPosition = {left = left, top = top}
+        BlockPooky.config.hotBarPosition = { left = left, top = top }
     end
 end
 
@@ -182,7 +182,8 @@ function BlockPooky.LoadHoTBarPosition()
 
     -- Load saved position if available, otherwise use default
     if BlockPooky.config and BlockPooky.config.hotBarPosition then
-        BlockPooky.hotBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.hotBarPosition.left, BlockPooky.config.hotBarPosition.top)
+        BlockPooky.hotBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.hotBarPosition.left,
+            BlockPooky.config.hotBarPosition.top)
     else
         -- Default position
         BlockPooky.hotBar:SetAnchor(CENTER, GuiRoot, CENTER, 0, -20)
@@ -235,11 +236,11 @@ function BlockPooky.UpdateHoTDisplay()
     -- Determine color based on count
     local color
     if total >= 8 then
-        color = {1, 0, 0, 1}  -- Red: at cap
+        color = { 1, 0, 0, 1 } -- Red: at cap
     elseif total >= 6 then
-        color = {1, 1, 0, 1}  -- Yellow: warning
+        color = { 1, 1, 0, 1 } -- Yellow: warning
     else
-        color = {0, 1, 0, 1}  -- Green: safe
+        color = { 0, 1, 0, 1 } -- Green: safe
     end
 
     -- Update label and status bar
@@ -289,13 +290,13 @@ function BlockPooky.PrintActiveHoTs()
 
     for i = 1, numBuffs do
         local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename,
-              deprecatedBuffType, effectType, abilityType, statusEffectType, abilityId,
-              canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
+        deprecatedBuffType, effectType, abilityType, statusEffectType, abilityId,
+        canClickOff, castByPlayer = GetUnitBuffInfo("player", i)
 
         if effectType == BUFF_EFFECT_TYPE_BUFF
-           and abilityType == ABILITY_TYPE_HEAL
-           and timeEnding > 0
-           and timeEnding > now then
+            and abilityType == ABILITY_TYPE_HEAL
+            and timeEnding > 0
+            and timeEnding > now then
             found = true
             local remaining = math.floor((timeEnding - now) * 10) / 10
             d(string.format("  %s (%ds remaining, stacks=%d)", buffName, remaining, stackCount))

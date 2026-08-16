@@ -1,14 +1,23 @@
 local strings = {
-    SI_QUICKEMOTEMENU_UNKNOWN_NAME         = "?",
-    SI_QUICKEMOTEMENU_CATEGORIES           = "Категорії",
-    SI_QUICKEMOTEMENU_FAVORITES            = "Обране",
-    SI_QUICKEMOTEMENU_NO_FAVORITES         = "(порожньо)",
-    SI_QUICKEMOTEMENU_BINDING_TOGGLE       = "Перемкнути",
-    SI_QUICKEMOTEMENU_OPTION_HOVER         = "Затримка наведення підменю (мс)",
-    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP = "0 = відкривати лише кліком",
-    SI_QUICKEMOTEMENU_OPTION_CLOSE         = "Закривати меню після емоції (ЛКМ)",
-    SI_QUICKEMOTEMENU_OPTION_RESET         = "Скинути позицію кнопки",
-    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION   = [[|c3399FFКЕРУВАННЯ|r
+    SI_QUICKEMOTEMENU_UNKNOWN_NAME          = "?",
+    SI_QUICKEMOTEMENU_CATEGORIES            = "Категорії",
+    SI_QUICKEMOTEMENU_FAVORITES             = "Обране",
+    SI_QUICKEMOTEMENU_NO_FAVORITES          = "(порожньо)",
+    SI_QUICKEMOTEMENU_BINDING_TOGGLE        = "Перемкнути",
+    SI_QUICKEMOTEMENU_OPTION_HOVER          = "Затримка наведення підменю (мс)",
+    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP  = "0 = відкривати лише кліком",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Показувати кнопку лише в режимі UI",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
+    "Показує головну кнопку лише коли курсор миші активний (режим UI). Вона приховується після повернення до звичайного режиму гри/взаємодії.",
+    SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Закривати меню після емоції (ЛКМ)",
+    SI_QUICKEMOTEMENU_OPTION_RESET          = "Скинути позицію кнопки",
+    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
+|c3399FFМОЖЛИВОСТІ|r
+• Швидкий доступ до емоцій за допомогою категорій та обраного
+• Категорії та емоції завантажуються безпосередньо з даних гри
+• Нові емоції, додані до гри, автоматично з'являтимуться у списку
+
+|c3399FFКЕРУВАННЯ|r
 • ЛКМ по кнопці — відкрити або закрити меню
 • ПКМ і перетягування — перемістити кнопку
 • ЛКМ по емоції — відтворити
@@ -23,7 +32,8 @@ local strings = {
 |c3399FFПОРАДИ|r
 • Використовуйте прив’язку клавіш для перемикання меню
 • /qempanel відкриває цю панель налаштувань
-• Обране зберігається на весь акаунт]],
+• Обране зберігається на весь акаунт
+]],
 }
 
 for stringId, stringValue in pairs(strings) do

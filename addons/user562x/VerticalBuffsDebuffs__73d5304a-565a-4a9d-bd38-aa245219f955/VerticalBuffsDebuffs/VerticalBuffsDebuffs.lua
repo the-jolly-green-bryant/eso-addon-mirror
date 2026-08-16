@@ -17,6 +17,16 @@ VerticalBuffsDebuffs.defaults = {
     showDebuffs        = true,
     showBuffText       = true,
     showDebuffText     = true,
+    buffCap            = 0,
+    debuffCap          = 0,
+}
+
+VerticalBuffsDebuffs.capChoices = {
+    { name = "All", value = 0  },
+    { name = "5",   value = 5  },
+    { name = "10",  value = 10 },
+    { name = "15",  value = 15 },
+    { name = "20",  value = 20 },
 }
 
 local activeBuffs   = {}
@@ -26,6 +36,14 @@ local buffBoxes   = {}
 local debuffBoxes = {}
 
 local boxCounter = 0
+
+local fontCache   = {}
+local numberFonts = {}
+local timerTexts  = {}
+local entryPool   = {}
+local buffList    = {}
+local debuffList  = {}
+local previewList = nil
 
 local SIDE_MARGIN    = 8
 local BOX_GAP        = 6
@@ -40,6 +58,7 @@ local PERMANENT_MS   = 3600000
 
 local MOVE_TIMEOUT   = 30000
 local MOVE_SNAP      = 10
+local MOVE_DIM_ALPHA = 0.35
 
 local ORANGE_THRESHOLD = 0.50
 local RED_THRESHOLD    = 0.25
@@ -75,17 +94,36 @@ end
 -- Font / Size
 --------------------------------------------------
 function VerticalBuffsDebuffs:GetFont(size)
-    return string.format(
-        "EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick",
-        size
-    )
+    local font = fontCache[size]
+    if not font then
+        font = string.format("EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick", size)
+        fontCache[size] = font
+    end
+    return font
 end
 
 function VerticalBuffsDebuffs:GetNumberFont(iconSize)
-    return string.format(
-        "EsoUI/Common/Fonts/univers67.otf|%d|outline",
-        math.max(12, math.floor(iconSize * 0.5))
-    )
+    local font = numberFonts[iconSize]
+    if not font then
+        font = string.format(
+            "EsoUI/Common/Fonts/univers67.otf|%d|outline",
+            math.max(12, math.floor(iconSize * 0.5))
+        )
+        numberFonts[iconSize] = font
+    end
+    return font
+end
+
+local function GetTimerText(remaining)
+    local tenths = math.floor(remaining * 10)
+    if tenths < 0 then tenths = 0 end
+
+    local text = timerTexts[tenths]
+    if not text then
+        text = string.format("%.1f", tenths / 10)
+        timerTexts[tenths] = text
+    end
+    return text
 end
 
 function VerticalBuffsDebuffs:GetNameFontSize(size)
@@ -108,6 +146,13 @@ function VerticalBuffsDebuffs:GetPanelOverflow(isDebuff)
         return self.savedVariables.debuffScaleOverflow
     end
     return self.savedVariables.buffScaleOverflow
+end
+
+function VerticalBuffsDebuffs:GetPanelCap(isDebuff)
+    if isDebuff then
+        return self.savedVariables.debuffCap or 0
+    end
+    return self.savedVariables.buffCap or 0
 end
 
 function VerticalBuffsDebuffs:GetPanelShowText(isDebuff)
@@ -187,17 +232,26 @@ end
 -- Size Effect Box
 --------------------------------------------------
 function VerticalBuffsDebuffs:SizeBox(box, iconSize, nameFont)
-    local ringSize  = iconSize + RING_PAD
     local frameSize = iconSize + FRAME_PAD
 
-    box:SetDimensions(frameSize, frameSize)
-    box.frame:SetDimensions(frameSize, frameSize)
-    box.radial:SetDimensions(ringSize, ringSize)
-    box.inner:SetDimensions(iconSize, iconSize)
-    box.icon:SetDimensions(iconSize, iconSize)
-    box.number:SetDimensions(iconSize, iconSize)
-    box.number:SetFont(self:GetNumberFont(iconSize))
-    box.nameLabel:SetFont(nameFont)
+    if box.sizedFor ~= iconSize then
+        local ringSize = iconSize + RING_PAD
+
+        box:SetDimensions(frameSize, frameSize)
+        box.frame:SetDimensions(frameSize, frameSize)
+        box.radial:SetDimensions(ringSize, ringSize)
+        box.inner:SetDimensions(iconSize, iconSize)
+        box.icon:SetDimensions(iconSize, iconSize)
+        box.number:SetDimensions(iconSize, iconSize)
+        box.number:SetFont(self:GetNumberFont(iconSize))
+
+        box.sizedFor = iconSize
+    end
+
+    if box.sizedFont ~= nameFont then
+        box.nameLabel:SetFont(nameFont)
+        box.sizedFont = nameFont
+    end
 
     return frameSize
 end
@@ -246,12 +300,16 @@ function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
 
     local scaleOverflow = self:GetPanelOverflow(isDebuff)
     local showText      = self:GetPanelShowText(isDebuff)
+    local cap           = self:GetPanelCap(isDebuff)
 
     local visible = 0
     local yOffset = 0
 
     for i, box in ipairs(boxPool) do
         local entry = effectsList[i]
+        if cap > 0 and i > cap then
+            entry = nil
+        end
         if entry then
             local isSmall  = scaleOverflow and (i > 10)
             local iconSize = isSmall and smallIcon or fullIcon
@@ -271,15 +329,16 @@ function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
 
             box.radial:SetFillColor(ringR, ringG, ringB, 1)
 
-            if box.cdKey ~= entry.key or now >= box.cdEnd then
-                box.cdKey = entry.key
+            if box.cdSlot ~= entry.slot or box.cdStamp ~= entry.stamp or now >= box.cdExpire then
+                box.cdSlot  = entry.slot
+                box.cdStamp = entry.stamp
                 if entry.fx.isPermanent then
-                    box.cdEnd = now + (PERMANENT_MS / 1000)
+                    box.cdExpire = now + (PERMANENT_MS / 1000)
                     box.radial:StartCooldown(PERMANENT_MS, PERMANENT_MS, CD_TYPE_RADIAL, CD_TIME_TYPE_TIME_UNTIL, false)
                 else
                     local remainingMs = math.max(entry.remaining, 0) * 1000
                     local totalMs     = math.max(entry.fx.totalDuration, entry.remaining) * 1000
-                    box.cdEnd = now + math.max(entry.remaining, 0)
+                    box.cdExpire = now + math.max(entry.remaining, 0)
                     box.radial:StartCooldown(remainingMs, totalMs, CD_TYPE_RADIAL, CD_TIME_TYPE_TIME_UNTIL, false)
                 end
             end
@@ -288,7 +347,7 @@ function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
                 box.number:SetText("∞")
                 box.number:SetColor(ringR, ringG, ringB, 1)
             else
-                box.number:SetText(string.format("%.1f", math.max(entry.remaining, 0)))
+                box.number:SetText(GetTimerText(entry.remaining))
                 local tr, tg, tb = GetTimerColor(entry.remaining, entry.fx.totalDuration)
                 box.number:SetColor(tr, tg, tb, 1)
             end
@@ -305,8 +364,9 @@ function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
             visible = visible + 1
             yOffset = yOffset + frameSize + BOX_GAP
         else
-            box.cdKey = nil
-            box.cdEnd = 0
+            box.cdSlot   = nil
+            box.cdStamp  = nil
+            box.cdExpire = 0
             box:SetHidden(true)
         end
     end
@@ -317,54 +377,78 @@ end
 --------------------------------------------------
 -- Refresh Display
 --------------------------------------------------
-local function BuildPreviewList()
-    local list = {}
-    for i, fx in ipairs(PREVIEW_EFFECTS) do
-        table.insert(list, {
-            remaining = fx.duration - fx.elapsed,
-            key       = "preview" .. i,
-            fx = {
-                name          = fx.name,
-                icon          = fx.icon,
-                isPermanent   = false,
-                totalDuration = fx.duration,
-            },
-        })
-    end
-    return list
+local function SortByRemaining(a, b)
+    return a.remaining < b.remaining
 end
 
-local function BuildActiveList(source, now)
-    local list = {}
+local function GetPreviewList()
+    if not previewList then
+        previewList = {}
+        for i, fx in ipairs(PREVIEW_EFFECTS) do
+            previewList[i] = {
+                remaining = fx.duration - fx.elapsed,
+                slot      = -i,
+                stamp     = fx.duration,
+                fx = {
+                    name          = fx.name,
+                    icon          = fx.icon,
+                    isPermanent   = false,
+                    totalDuration = fx.duration,
+                },
+            }
+        end
+    end
+    return previewList
+end
+
+local function BuildActiveList(source, now, list)
+    for i = #list, 1, -1 do
+        entryPool[#entryPool + 1] = list[i]
+        list[i] = nil
+    end
+
+    local count = 0
     for slot, fx in pairs(source) do
         local remaining = fx.endTime - now
         if remaining > 0 and remaining <= SHOW_THRESHOLD then
-            table.insert(list, {
-                remaining = remaining,
-                key       = slot .. ":" .. fx.endTime,
-                fx        = fx,
-            })
+            local pooled = #entryPool
+            local entry
+            if pooled > 0 then
+                entry = entryPool[pooled]
+                entryPool[pooled] = nil
+            else
+                entry = {}
+            end
+
+            entry.remaining = remaining
+            entry.slot      = slot
+            entry.stamp     = fx.endTime
+            entry.fx        = fx
+
+            count = count + 1
+            list[count] = entry
         end
     end
-    table.sort(list, function(a, b) return a.remaining < b.remaining end)
+
+    table.sort(list, SortByRemaining)
     return list
 end
 
 function VerticalBuffsDebuffs:RefreshDisplay()
     local now = GetGameTimeSeconds()
 
-    local buffsToShow, debuffsToShow
-
+    local buffsToShow
     if self.previewBuffs then
-        buffsToShow = BuildPreviewList()
+        buffsToShow = GetPreviewList()
     else
-        buffsToShow = BuildActiveList(activeBuffs, now)
+        buffsToShow = BuildActiveList(activeBuffs, now, buffList)
     end
 
+    local debuffsToShow
     if self.previewDebuffs then
-        debuffsToShow = BuildPreviewList()
+        debuffsToShow = GetPreviewList()
     else
-        debuffsToShow = BuildActiveList(activeDebuffs, now)
+        debuffsToShow = BuildActiveList(activeDebuffs, now, debuffList)
     end
 
     local buffVisible,   buffHeight   = self:RenderBoxes(buffBoxes,   buffsToShow,   false)
@@ -423,8 +507,14 @@ end
 --------------------------------------------------
 function VerticalBuffsDebuffs:ScanExistingEffects()
     local numEffects = GetNumBuffs("player")
+
+    if numEffects > 0 then
+        activeBuffs   = {}
+        activeDebuffs = {}
+    end
+
     for i = 1, numEffects do
-        local name, startTime, endTime, stackCount, effectType, iconName =
+        local name, startTime, endTime, buffSlot, stackCount, iconName, buffType, effectType =
             GetUnitBuffInfo("player", i)
         if name and name ~= "" then
             local isPermanent   = (endTime == 0)
@@ -436,10 +526,13 @@ function VerticalBuffsDebuffs:ScanExistingEffects()
                 isPermanent   = isPermanent,
                 totalDuration = totalDuration,
             }
+            local slot = buffSlot or i
             if effectType == BUFF_EFFECT_TYPE_DEBUFF then
-                activeDebuffs[i] = entry
+                activeDebuffs[slot] = entry
+                activeBuffs[slot]   = nil
             else
-                activeBuffs[i] = entry
+                activeBuffs[slot]   = entry
+                activeDebuffs[slot] = nil
             end
         end
     end
@@ -470,6 +563,82 @@ function VerticalBuffsDebuffs:InitializeSceneHiding()
 end
 
 --------------------------------------------------
+-- Profile
+--------------------------------------------------
+function VerticalBuffsDebuffs:GetAccountProfile()
+    if not self.accountVars then
+        self.accountVars = ZO_SavedVars:NewAccountWide(
+            "VerticalBuffsDebuffs_SavedVars",
+            2,
+            nil,
+            self.defaults
+        )
+    end
+    return self.accountVars
+end
+
+function VerticalBuffsDebuffs:GetCharacterProfile()
+    if not self.characterVars then
+        self.characterVars = ZO_SavedVars:NewCharacterIdSettings(
+            "VerticalBuffsDebuffs_SavedVars",
+            2,
+            nil,
+            self.defaults
+        )
+    end
+    return self.characterVars
+end
+
+function VerticalBuffsDebuffs:MigrateProfile(sv)
+    if sv.fontSize then
+        sv.buffSize   = sv.fontSize
+        sv.debuffSize = sv.fontSize
+        sv.fontSize   = nil
+    end
+    if sv.scaleOverflow ~= nil then
+        sv.buffScaleOverflow   = sv.scaleOverflow
+        sv.debuffScaleOverflow = sv.scaleOverflow
+        sv.scaleOverflow       = nil
+    end
+end
+
+function VerticalBuffsDebuffs:LoadProfile()
+    local account = self:GetAccountProfile()
+    self:MigrateProfile(account)
+
+    if self.profileVars.useCharacterSettings then
+        local character = self:GetCharacterProfile()
+        self:MigrateProfile(character)
+
+        if not character.seeded then
+            for key in pairs(self.defaults) do
+                character[key] = account[key]
+            end
+            character.seeded = true
+        end
+
+        self.savedVariables = character
+    else
+        self.savedVariables = account
+    end
+end
+
+function VerticalBuffsDebuffs:SetUseCharacterSettings(value)
+    if self.profileVars.useCharacterSettings == value then return end
+
+    self.profileVars.useCharacterSettings = value
+    self:LoadProfile()
+
+    self:ApplyBuffPosition()
+    self:ApplyDebuffPosition()
+    self:RefreshDisplay()
+
+    if self.menu and self.menu.UpdateControls then
+        self.menu:UpdateControls()
+    end
+end
+
+--------------------------------------------------
 -- Reset
 --------------------------------------------------
 function VerticalBuffsDebuffs:ResetSettings()
@@ -483,7 +652,6 @@ function VerticalBuffsDebuffs:ResetSettings()
     self.previewDebuffs = false
     self:ApplyBuffPosition()
     self:ApplyDebuffPosition()
-    self:BuildBoxPools()
     self:RefreshDisplay()
 end
 
@@ -530,6 +698,30 @@ function VerticalBuffsDebuffs:EnsureKeybind()
             keybind  = "UI_SHORTCUT_NEGATIVE",
             callback = function() VerticalBuffsDebuffs:StopMove() end,
         },
+        {
+            name = function()
+                if VerticalBuffsDebuffs.moveTarget then
+                    return "Move |c33FF33Buffs|r"
+                end
+                return "Move |cFF3333Debuffs|r"
+            end,
+            keybind                 = "UI_SHORTCUT_INPUT_LEFT",
+            gamepadPreferredKeybind = "UI_SHORTCUT_LEFT_SHOULDER",
+            alignment               = KEYBIND_STRIP_ALIGN_RIGHT,
+            callback                = function() VerticalBuffsDebuffs:SwitchMoveTarget() end,
+        },
+        {
+            name = function()
+                if VerticalBuffsDebuffs.moveTarget then
+                    return "Move |c33FF33Buffs|r"
+                end
+                return "Move |cFF3333Debuffs|r"
+            end,
+            keybind                 = "UI_SHORTCUT_INPUT_RIGHT",
+            gamepadPreferredKeybind = "UI_SHORTCUT_RIGHT_SHOULDER",
+            alignment               = KEYBIND_STRIP_ALIGN_RIGHT,
+            callback                = function() VerticalBuffsDebuffs:SwitchMoveTarget() end,
+        },
     }
 end
 
@@ -552,6 +744,22 @@ function VerticalBuffsDebuffs:AddKeybind()
     end
 end
 
+function VerticalBuffsDebuffs:UpdateMoveFocus()
+    if not self.moveActive then
+        self.buffPanel:SetAlpha(1)
+        self.debuffPanel:SetAlpha(1)
+        return
+    end
+
+    if self.moveTarget then
+        self.buffPanel:SetAlpha(MOVE_DIM_ALPHA)
+        self.debuffPanel:SetAlpha(1)
+    else
+        self.buffPanel:SetAlpha(1)
+        self.debuffPanel:SetAlpha(MOVE_DIM_ALPHA)
+    end
+end
+
 function VerticalBuffsDebuffs:ExitMoveMode()
     if self.keybindActive then
         KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindDescriptor)
@@ -566,15 +774,17 @@ function VerticalBuffsDebuffs:ExitMoveMode()
         self.keybindFragmentScene = nil
     end
 
+    self.moveActive     = false
     self.movingBuffs    = false
     self.movingDebuffs  = false
     self.previewBuffs   = false
     self.previewDebuffs = false
 
+    self:UpdateMoveFocus()
     self:RefreshDisplay()
 end
 
-function VerticalBuffsDebuffs:OnMoveStopped(isDebuff)
+function VerticalBuffsDebuffs:SaveMoverPosition(isDebuff)
     local panel = isDebuff and self.debuffPanel or self.buffPanel
 
     local x = math.max(0, math.floor(panel:GetLeft()))
@@ -589,8 +799,14 @@ function VerticalBuffsDebuffs:OnMoveStopped(isDebuff)
         self.savedVariables.buffPosY = y
         self:ApplyBuffPosition()
     end
+end
 
-    self:ExitMoveMode()
+function VerticalBuffsDebuffs:OnMoveStopped(isDebuff)
+    self:SaveMoverPosition(isDebuff)
+
+    if not self.switchingTarget then
+        self:ExitMoveMode()
+    end
 end
 
 function VerticalBuffsDebuffs:StopMove()
@@ -604,22 +820,44 @@ function VerticalBuffsDebuffs:StopMove()
     self:ExitMoveMode()
 end
 
-function VerticalBuffsDebuffs:StartMove(isDebuff)
-    local mover = self:GetMover(isDebuff)
+function VerticalBuffsDebuffs:SwitchMoveTarget()
+    if not self.moveActive then return end
+
+    local current = self:GetMover(self.moveTarget)
+
+    self.switchingTarget = true
+    if current then
+        current:ToggleGamepadMove(false)
+    end
+    self.switchingTarget = false
+
+    self.moveTarget = not self.moveTarget
+
+    local nextMover = self:GetMover(self.moveTarget)
+    if nextMover then
+        nextMover:ToggleGamepadMove(true, MOVE_TIMEOUT)
+    end
+
+    self:UpdateMoveFocus()
+    KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindDescriptor)
+end
+
+function VerticalBuffsDebuffs:StartMove()
+    local mover = self:GetMover(false)
     if not mover then return end
 
     self:StopMove()
 
     SCENE_MANAGER:ShowBaseScene()
 
-    if isDebuff then
-        self.movingDebuffs  = true
-        self.previewDebuffs = true
-    else
-        self.movingBuffs  = true
-        self.previewBuffs = true
-    end
+    self.moveActive     = true
+    self.moveTarget     = false
+    self.movingBuffs    = true
+    self.movingDebuffs  = true
+    self.previewBuffs   = true
+    self.previewDebuffs = true
 
+    self:UpdateMoveFocus()
     self:RefreshDisplay()
 
     zo_callLater(function()
@@ -631,9 +869,18 @@ end
 --------------------------------------------------
 -- Settings
 --------------------------------------------------
+function VerticalBuffsDebuffs:HasConsoleMenu()
+    return type(LibConsoleMenu) == "table"
+       and type(LibConsoleMenu.CreateAddonMenu) == "function"
+end
+
 function VerticalBuffsDebuffs:CreateSettings()
+    if not self:HasConsoleMenu() then
+        VerticalBuffsDebuffs.settingsUnavailable = true
+        return
+    end
+
     local LCM = LibConsoleMenu
-    if not LCM then return end
 
     local menu = LCM:CreateAddonMenu("VerticalBuffsDebuffs", {
         title          = "Vertical Buffs Debuffs",
@@ -647,7 +894,23 @@ function VerticalBuffsDebuffs:CreateSettings()
 
     if not menu then return end
 
+    self.menu = menu
+
     local options = {
+
+        {
+            type    = "toggle",
+            name    = "Character Settings",
+            tooltip = "Off uses one layout for the whole account. On gives this character its own, starting as a copy of the account layout.",
+            getFunc = function() return self.profileVars.useCharacterSettings end,
+            setFunc = function(val) self:SetUseCharacterSettings(val) end,
+        },
+
+        {
+            type    = "button",
+            name    = "Move |c33FF33Buffs|r / |cFF3333Debuffs|r",
+            func    = function() self:StartMove() end,
+        },
 
         {
             type    = "submenu",
@@ -664,12 +927,6 @@ function VerticalBuffsDebuffs:CreateSettings()
                         self.previewBuffs = val
                         self:RefreshDisplay()
                     end,
-                },
-                {
-                    type    = "button",
-                    name    = "Move |c33FF33Buffs|r",
-                    tooltip = "Move with the right stick. Press B to save and exit.",
-                    func    = function() self:StartMove(false) end,
                 },
                 {
                     type    = "toggle",
@@ -712,6 +969,17 @@ function VerticalBuffsDebuffs:CreateSettings()
                         self:RefreshDisplay()
                     end,
                 },
+                {
+                    type    = "dropdown",
+                    name    = "Cap At",
+                    choices = self.capChoices,
+                    default = 0,
+                    getFunc = function() return self.savedVariables.buffCap end,
+                    setFunc = function(val)
+                        self.savedVariables.buffCap = val
+                        self:RefreshDisplay()
+                    end,
+                },
             },
         },
 
@@ -730,12 +998,6 @@ function VerticalBuffsDebuffs:CreateSettings()
                         self.previewDebuffs = val
                         self:RefreshDisplay()
                     end,
-                },
-                {
-                    type    = "button",
-                    name    = "Move |cFF3333Debuffs|r",
-                    tooltip = "Move with the right stick. Press B to save and exit.",
-                    func    = function() self:StartMove(true) end,
                 },
                 {
                     type    = "toggle",
@@ -778,6 +1040,17 @@ function VerticalBuffsDebuffs:CreateSettings()
                         self:RefreshDisplay()
                     end,
                 },
+                {
+                    type    = "dropdown",
+                    name    = "Cap At",
+                    choices = self.capChoices,
+                    default = 0,
+                    getFunc = function() return self.savedVariables.debuffCap end,
+                    setFunc = function(val)
+                        self.savedVariables.debuffCap = val
+                        self:RefreshDisplay()
+                    end,
+                },
             },
         },
     }
@@ -791,28 +1064,23 @@ end
 local function OnAddonLoaded(event, addonName)
     if addonName == VerticalBuffsDebuffs.name then
 
-        VerticalBuffsDebuffs.savedVariables = ZO_SavedVars:NewAccountWide(
+        VerticalBuffsDebuffs.profileVars = ZO_SavedVars:NewAccountWide(
             "VerticalBuffsDebuffs_SavedVars",
             2,
-            nil,
-            VerticalBuffsDebuffs.defaults
+            "Profile",
+            { useCharacterSettings = false }
         )
 
-        local sv = VerticalBuffsDebuffs.savedVariables
-        if sv.fontSize then
-            sv.buffSize   = sv.fontSize
-            sv.debuffSize = sv.fontSize
-            sv.fontSize   = nil
-        end
-        if sv.scaleOverflow ~= nil then
-            sv.buffScaleOverflow   = sv.scaleOverflow
-            sv.debuffScaleOverflow = sv.scaleOverflow
-            sv.scaleOverflow       = nil
-        end
+        VerticalBuffsDebuffs:LoadProfile()
 
         VerticalBuffsDebuffs:CreatePanels()
         VerticalBuffsDebuffs:BuildBoxPools()
-        VerticalBuffsDebuffs:CreateSettings()
+        local settingsOk, settingsErr = pcall(function() VerticalBuffsDebuffs:CreateSettings() end)
+        if not settingsOk then
+            VerticalBuffsDebuffs.settingsUnavailable = true
+            VerticalBuffsDebuffs.settingsError = tostring(settingsErr)
+        end
+
         VerticalBuffsDebuffs:InitializeSceneHiding()
 
         EVENT_MANAGER:RegisterForEvent(

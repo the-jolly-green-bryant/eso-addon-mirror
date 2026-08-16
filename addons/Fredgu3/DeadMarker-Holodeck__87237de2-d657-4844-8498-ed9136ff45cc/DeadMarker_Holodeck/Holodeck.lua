@@ -1,15 +1,16 @@
 --=====================================================================
--- Holodeck.lua — v0.0.22
+-- Holodeck.lua — v0.0.25
 --
 -- Versioning (DM2 suite): human Version = M.m.p
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
---   0.0.22 → 22
+--   0.0.25 → 25
 --
+-- 0.0.25: Boss/elite multi-keyframe paths — map-relative NPC pos when Raw freezes
+-- 0.0.24: House-fit at trial scale (~50m, 22m ring) not 6m living-room
+-- 0.0.23: House-fit open (pins were ~900m away); record origin = player in-zone
 -- 0.0.22: Flat SV save format + hard open/play pin placement
 -- 0.0.21: Fix faint/empty role+spot textures; open always re-centers + delayed pin place
 -- 0.0.20: Full SPACE_WORLD texture pack (DXT5) for all kinds + path gfx
--- 0.0.19: Boss bar only (no reticle-as-boss); path collapse keeps movement
--- 0.0.18: Saved fight load/play (SavedVars keyframe rebuild + entities format)
 -- 0.0.8: Stock ESO textures; snap playback flag
 --
 -- plant = coordinate ZERO (room anchor), NOT automatic boss spawn.
@@ -19,7 +20,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.22"
+Holodeck.version     = "0.0.25"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -1890,20 +1891,129 @@ local function IngestLegacyStopsMap(stopsMap, typesMap)
     return SpanFromStops()
 end
 
-local function MaybeRecenterStops(minX, maxX, minZ, maxZ, force)
-    if minX > 1e8 then return 0, 0, 0, 0, false end
-    local cx = (minX + maxX) * 0.5
-    local cz = (minZ + maxZ) * 0.5
-    local dist = math.sqrt(cx * cx + cz * cz)
-    if not force and dist < 3 then return minX, maxX, minZ, maxZ, false end
-    for _, list in pairs(Holodeck.stops) do
-        for i = 1, #(list or {}) do
-            local s = list[i]
-            s.x = (s.x or 0) - cx
-            s.z = (s.z or 0) - cz
+-- House layout scale (meters). Trial boss rooms are often 40–60m+;
+-- melee ~7m, ranged often 28–40m — 6m was far too tight for review.
+local HOUSE_OK_DIAMETER_M = 70      -- if path already fits, keep relative layout
+local HOUSE_TARGET_DIAMETER_M = 50  -- when we must rebuild/scale, aim for this
+local HOUSE_ENTITY_PATH_MAX_M = 40  -- max extent of one entity's motion after fit
+local HOUSE_RING_RADIUS_M = 22      -- non-player bases (past melee, into mid-range)
+
+-- Make loaded paths visible near plant without crushing to "living room only".
+-- Good takes (sane relative meters): translate so player@t0 is plant, keep spacing.
+-- Broken takes (|coords| hundreds of m): self-normalize + ring layout at trial scale.
+local function FitStopsForHouseDisplay()
+    local names = {}
+    for name, list in pairs(Holodeck.stops) do
+        if list and #list > 0 then names[#names + 1] = name end
+    end
+    table.sort(names)
+    if #names == 0 then return 0, 0, 0, 0, false, 0 end
+
+    local function diameterOf(lists)
+        local minX, maxX, minZ, maxZ = 1e9, -1e9, 1e9, -1e9
+        for _, list in pairs(lists) do
+            for i = 1, #list do
+                local x, z = list[i].x or 0, list[i].z or 0
+                if x < minX then minX = x end
+                if x > maxX then maxX = x end
+                if z < minZ then minZ = z end
+                if z > maxZ then maxZ = z end
+            end
+        end
+        if minX > 1e8 then return 0 end
+        local dx, dz = maxX - minX, maxZ - minZ
+        return math.sqrt(dx * dx + dz * dz)
+    end
+
+    -- Snapshot raw diameter before any transform
+    local rawDiam = diameterOf(Holodeck.stops)
+
+    -- Anchor: player first keyframe → plant (0,0) when possible
+    local anchorX, anchorZ = 0, 0
+    local pl = Holodeck.stops["player"]
+    if pl and pl[1] then
+        anchorX, anchorZ = pl[1].x or 0, pl[1].z or 0
+    else
+        -- centroid of all first keyframes
+        local sx, sz, c = 0, 0, 0
+        for _, name in ipairs(names) do
+            local s0 = Holodeck.stops[name][1]
+            sx = sx + (s0.x or 0)
+            sz = sz + (s0.z or 0)
+            c = c + 1
+        end
+        if c > 0 then anchorX, anchorZ = sx / c, sz / c end
+    end
+    for _, name in ipairs(names) do
+        local list = Holodeck.stops[name]
+        for i = 1, #list do
+            list[i].x = (list[i].x or 0) - anchorX
+            list[i].z = (list[i].z or 0) - anchorZ
         end
     end
-    return minX - cx, maxX - cx, minZ - cz, maxZ - cz, true
+
+    local diam = diameterOf(Holodeck.stops)
+    local fitted = false
+
+    if diam > HOUSE_OK_DIAMETER_M then
+        -- Garbage / wrong-origin take: rebuild at trial-like scale
+        fitted = true
+        local ring = {}
+        local ri = 0
+        for _, name in ipairs(names) do
+            if name ~= "player" then
+                ri = ri + 1
+                ring[name] = ri
+            end
+        end
+        local nRing = math.max(ri, 1)
+
+        for _, name in ipairs(names) do
+            local list = Holodeck.stops[name]
+            local x0, z0 = list[1].x or 0, list[1].z or 0
+            for i = 1, #list do
+                list[i].x = (list[i].x or 0) - x0
+                list[i].z = (list[i].z or 0) - z0
+            end
+            local entExt = 0
+            for i = 1, #list do
+                local e = math.sqrt((list[i].x or 0)^2 + (list[i].z or 0)^2)
+                if e > entExt then entExt = e end
+            end
+            if entExt > HOUSE_ENTITY_PATH_MAX_M then
+                local sc = HOUSE_ENTITY_PATH_MAX_M / entExt
+                for i = 1, #list do
+                    list[i].x = (list[i].x or 0) * sc
+                    list[i].z = (list[i].z or 0) * sc
+                end
+            end
+            local bx, bz = 0, 0
+            if name ~= "player" and ring[name] then
+                local ang = (ring[name] - 1) / nRing * math.pi * 2
+                bx = HOUSE_RING_RADIUS_M * math.cos(ang)
+                bz = HOUSE_RING_RADIUS_M * math.sin(ang)
+            end
+            for i = 1, #list do
+                list[i].x = (list[i].x or 0) + bx
+                list[i].z = (list[i].z or 0) + bz
+            end
+        end
+    elseif diam > HOUSE_TARGET_DIAMETER_M then
+        -- Large but plausible room: scale whole formation to ~50m diameter
+        fitted = true
+        local sc = HOUSE_TARGET_DIAMETER_M / diam
+        for _, name in ipairs(names) do
+            local list = Holodeck.stops[name]
+            for i = 1, #list do
+                list[i].x = (list[i].x or 0) * sc
+                list[i].z = (list[i].z or 0) * sc
+            end
+        end
+    end
+    -- else: diam already in a good range — player@plant, keep relative layout
+
+    local _, _, minX, maxX, minZ, maxZ = SpanFromStops()
+    return minX, maxX, minZ, maxZ, fitted, rawDiam
 end
 
 local function LoadSerialized(data, name)
@@ -1954,8 +2064,10 @@ local function LoadSerialized(data, name)
         return false
     end
 
-    local recentered
-    minX, maxX, minZ, maxZ, recentered = MaybeRecenterStops(minX, maxX, minZ, maxZ, true)
+    -- Always fit near plant for house (handles ~900m trial garbage coords)
+    local fitted, rawExtent
+    minX, maxX, minZ, maxZ, fitted, rawExtent = FitStopsForHouseDisplay()
+    nEnt, nStops, minX, maxX, minZ, maxZ = SpanFromStops()
 
     Holodeck.workingName = name or data.name or "sandbox"
     Holodeck.clock = PathEndTime()
@@ -2008,15 +2120,16 @@ local function LoadSerialized(data, name)
 
     dhd(string.format("Opened |cC0E0FF%d|r tracks · %d stops · %d pins · clock=%.1fs",
         nEnt, nStops, nPins, Holodeck.clock or 0))
-    dhd(string.format("  span x=[%.1f..%.1f] z=[%.1f..%.1f]%s",
-        minX, maxX, minZ, maxZ, recentered and "  re-centered→plant" or ""))
+    dhd(string.format("  house-fit span x=[%.1f..%.1f] z=[%.1f..%.1f]%s",
+        minX, maxX, minZ, maxZ,
+        fitted and string.format(" (raw ~%.0fm → trial-scale near plant)", rawExtent or 0) or " (relative layout kept)"))
     if nFail > 0 then
         dhd("|cFF5555Pin create failed|r for " .. tostring(nFail) .. " tracks")
     end
     if nPins == 0 then
         dhd("|cFF5555No pins|r — /hd sheet on · try /hd load house_demo to confirm plant")
     else
-        dhd("/hd play once  ·  stand at yellow origin — markers within ~span meters")
+        dhd("/hd play once  ·  |cC0E0FFstand at yellow origin|r — pins in ~50m arena (not 6m)")
     end
     -- Rewrite save in flat format so next open is reliable
     if name and Holodeck.savedVars and Holodeck.savedVars.saves and nStops > 0 then

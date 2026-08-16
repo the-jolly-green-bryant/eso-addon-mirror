@@ -7,7 +7,7 @@
 ## Description: Make icons great again!
 ## APIVersion: 101049
 ## Author: |ce6202dKwiebe-Kwibus|r & Asquart
-## AddOnVersion: 156
+## AddOnVersion: 160
 ## SavedVariables: AbilityIconsFramework_SavedVariables AbilityIconsFramework_Globals AbilityIconsFramework_Settings
 ## DependsOn: LibAddonMenu-2.0>=41 LibAddonMenuOrderListBox>=13
 
@@ -17,7 +17,6 @@ AbilityIconsFramework.lua
 Config.lua
 Util.lua
 AddonSettings.lua
-InactiveActionBarFAB.lua
 SlashCommands.lua
 HeroismPotions.lua
 

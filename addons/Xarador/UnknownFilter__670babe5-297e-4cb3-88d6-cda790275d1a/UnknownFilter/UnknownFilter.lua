@@ -1,38 +1,53 @@
--- UnknownFilter.lua  (v0.2.7, API 101046)
--- Console/Gamepad (PS5/Xbox)
--- Auto-armed on load
+-- UnknownFilter.lua
+-- ESO Update 50 / API 101050
 
 UnknownFilter = UnknownFilter or {}
 local UF = UnknownFilter
 
-UF.name, UF.version = "UnknownFilter", "0.2.7"
+UF.name = "UnknownFilter"
+UF.version = "0.3.2"
+UF.apiVersion = 101050
+UF.settingsVersion = 302
 
--- Modes
-UF.MODE_OFF     = 0
-UF.MODE_GEAR    = 1
-UF.MODE_LEARN   = 2
-UF.MODE_MOTIF   = 3
+UF.MODE_OFF = 0
+UF.MODE_GEAR = 1
+UF.MODE_LEARN = 2
+UF.MODE_MOTIF = 3
 UF.MODE_COLLECT = 4
 
 UF.defaults = {
-    mode           = UF.MODE_OFF, -- default OFF
-    -- Chat/Debug: silent by default. Output only on commands (EchoOnce).
-    echo           = false,       -- persistent echo (you can toggle via /ufecho), default OFF
-    debug          = false,
-    debugScan      = false,
-    keepIfNoLink   = false,
-    autoPage       = false,
+    settingsVersion = 0,
+    mode = UF.MODE_OFF,
+    echo = false,
+    debug = false,
+    debugScan = false,
+    keepIfNoLink = false,
+    autoPage = false,
     skipEmptyPages = true,
-    skipMaxHops    = 6,
-    debugCap       = 80,
+    skipMaxHops = 6,
+    debugCap = 80,
 }
 
-UF.TARGET_LIST_NAME = "ZO_TradingHouse_BrowseResults_GamepadContainerList"
-
-UF._armed, UF._eventsRegistered, UF._hooksInstalled, UF._sceneWired = false,false,false,false
+UF._armed = false
+UF._eventsRegistered = false
+UF._sceneWired = false
+UF._uiHooksInstalled = false
+UF._pagingHooksInstalled = false
+UF._runtimeAttempts = 0
 UF._kbGroup = nil
-UF._lastCount, UF._lastPage, UF._lastHasMore, UF._autoStep = 0,0,false,0
 
-UF._passByIndex, UF._passByLink, UF._passTotal = {}, {}, 0
+UF._serverItemCount = 0
+UF._visibleItemCount = 0
+UF._filteredPageEmpty = false
+
+UF._autoHops = 0
+UF._autoToken = 0
+UF._focusToken = 0
+UF._lastCompletedPage = nil
+UF._autoRequestPending = false
+
+UF._passByIndex = {}
+UF._passByLink = {}
+UF._passTotal = 0
 
 _G.UnknownFilter = UF

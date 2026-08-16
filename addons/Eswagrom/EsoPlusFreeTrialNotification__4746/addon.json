@@ -18,12 +18,12 @@
     "EsoPlusFreeTrialNotification"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4746/",
-  "fingerprint": "c0fdfe9d41194407d8f3163cef387d91397c4b58fa522af207ea25cc395bc853",
+  "fingerprint": "03d8a6538face2b97057d7d1ab4b48102729e89f2822051e6bf3814bfd58f6e6",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16955.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16964.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16956.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16957.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16987.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16988.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16989.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16990.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16887.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16888.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16889.jpg",
@@ -36,11 +36,11 @@
   "source_id": "4746",
   "source_url": "https://www.esoui.com/downloads/info4746-EsoPlusFreeTrialNotification.html",
   "stats": {
-    "downloads": 18,
+    "downloads": 28,
     "favorites": 0,
-    "monthly_downloads": 16
+    "monthly_downloads": 28
   },
   "title": "EsoPlusFreeTrialNotification",
-  "updated_at": 1786383354000,
-  "version": "1.2"
+  "updated_at": 1786784036000,
+  "version": "1.3"
 }

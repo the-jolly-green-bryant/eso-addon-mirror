@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/user562x/GLt__b4445246-dea8-4bb9-842c-2235db14a84b",
+  "archive_path": "addons/user562x/GL__b4445246-dea8-4bb9-842c-2235db14a84b",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "user562x",
   "canonical_id": "bethesda:b4445246-dea8-4bb9-842c-2235db14a84b",
   "content_id": "b4445246-dea8-4bb9-842c-2235db14a84b",
   "deleted": false,
-  "fingerprint": "4ee669f4dee751e07f8c7e5933e73c0754273f2751b613f63311b0153e9d0718",
+  "fingerprint": "6e3cf17922b0b21b321c34a2fca58fa2ab6154231c7925ee6d17b33171b7910f",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "b4445246-dea8-4bb9-842c-2235db14a84b",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/b4445246-dea8-4bb9-842c-2235db14a84b",
-  "title": "GLt"
+  "title": "GL"
 }

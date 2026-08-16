@@ -6,7 +6,7 @@
 Roomba = {
     name = "Roomba",
     author = "|c3CB371@Masteroshi430|r, Wobin, CrazyDutchGuy, Ayantir & silvereyes",
-    version = "2026.08.12",
+    version = "2026.08.15",
     website = "http://www.esoui.com/downloads/info402-Roomba.html",
     debugMode = false,
 }
@@ -1060,7 +1060,7 @@ local function InitialiseSettings()
                 GetString("ROOMBA_POSITION_CHOICE", KEYBIND_STRIP_ALIGN_CENTER),
                 GetString("ROOMBA_POSITION_CHOICE", KEYBIND_STRIP_ALIGN_RIGHT),
             },
-            default = defaults.RoombaPosition,
+            default = GetString("ROOMBA_POSITION_CHOICE", defaults.RoombaPosition),
             warning = GetString(SI_ADDON_MANAGER_RELOAD),
             getFunc = function() return GetString("ROOMBA_POSITION_CHOICE", db.RoombaPosition) end,
             setFunc = function(choice)
@@ -1073,14 +1073,6 @@ local function InitialiseSettings()
                 elseif choice == GetString("ROOMBA_POSITION_CHOICE", KEYBIND_STRIP_ALIGN_CENTER) then
                     db.RoombaPosition = KEYBIND_STRIP_ALIGN_CENTER
                     keybindCheck = "centerButtons"
-                elseif IsInGamepadPreferredMode() then
-                    -- When user click on LAM reinit button
-                    db.RoombaPosition = defaults.RoombaPosition
-                    keybindCheck = "centerButtons"
-                else
-                -- When user click on LAM reinit button
-                    db.RoombaPosition = defaults.RoombaPosition
-                    keybindCheck = "leftButtons"
                 end
                 
                 if IsConsoleUI() then

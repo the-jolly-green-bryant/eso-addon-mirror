@@ -8,16 +8,16 @@
   "category_id": "96",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
     {
       "name": "Season Zero",
       "version": "11.3.0"
-    },
-    {
-      "name": "Seasons of the Worm Cult Pt2",
-      "version": "11.2.0"
     }
   ],
   "content_id": "esoui:4353",
@@ -26,7 +26,7 @@
     "BlockPooky"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4353/",
-  "fingerprint": "bbdab9290b720cd9238074bfdb665991c9a9e04495fbd0733d0235722cec1fb0",
+  "fingerprint": "0eeae57e1ff70aa90cb54fb3347638b8eb519a7050a1f5c80077f7b1bff0ed79",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15056.png",
     "https://cdn-eso.mmoui.com/preview/pvw15057.png",
@@ -40,11 +40,11 @@
   "source_id": "4353",
   "source_url": "https://www.esoui.com/downloads/info4353-MeridiasBlockPooky.html",
   "stats": {
-    "downloads": 1425,
+    "downloads": 1528,
     "favorites": 5,
-    "monthly_downloads": 313
+    "monthly_downloads": 398
   },
   "title": "Meridias Block Pooky",
-  "updated_at": 1786426525000,
-  "version": "2.19"
+  "updated_at": 1786808967000,
+  "version": "2.20"
 }

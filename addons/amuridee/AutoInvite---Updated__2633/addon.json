@@ -8,8 +8,8 @@
   "category_id": "95",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:2633",
@@ -18,7 +18,7 @@
     "AutoInvite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2633/",
-  "fingerprint": "e51f0dc1110c53ad3a64393adc2423ee14c50af254ab9ac7a62f0f7002056355",
+  "fingerprint": "c0655fb96b401e2bbfa23d25862db17db0add500b95a0ac54e4af2872d29c5d9",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8963.png",
     "https://cdn-eso.mmoui.com/preview/pvw8964.jpg"
@@ -29,11 +29,11 @@
   "source_id": "2633",
   "source_url": "https://www.esoui.com/downloads/info2633-AutoInvite-Updated.html",
   "stats": {
-    "downloads": 236129,
+    "downloads": 238558,
     "favorites": 119,
-    "monthly_downloads": 3584
+    "monthly_downloads": 5240
   },
   "title": "AutoInvite - Updated",
-  "updated_at": 1786308712000,
-  "version": "2026.08.08"
+  "updated_at": 1786823009000,
+  "version": "2026.08.15"
 }

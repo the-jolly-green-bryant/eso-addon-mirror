@@ -16,8 +16,13 @@ local DEFAULTS = { isi = {
     showLocationTags = true,
     columnSpacing = 45,
     tagSpacing = 40,
+    nameSpacing = 180,
     showInMenus = true,
     hideInCombat = false,
+    bgOpacity = 25,
+    colorMonster = { 1, 1, 1 },
+    colorMythic = { 1, 1, 1 },
+    colorRegular = { 1, 1, 1 },
 } }
 
 KRT.ISI = {
@@ -248,7 +253,7 @@ function KRT.ISI:GetEquippedSets()
         e.frontBarNum = e.frontBarNum or e.num
         e.backBarNum = e.backBarNum or e.num
 
-        -- Categorize the set for sorting
+        -- Categorize the set for sorting & coloring
         if (e.max or 0) == 1 then
             e.sortCategory = 2 -- Mythic
         elseif (e.max or 0) == 2 and (e.hasHead or e.hasShoulder) then
@@ -328,10 +333,9 @@ function KRT.ISI:EnsureOverlay()
 
     local bg = WM:CreateControl(nil, win, CT_BACKDROP)
     bg:SetAnchorFill()
-    bg:SetCenterColor(0, 0, 0, 0.5)
-    bg:SetEdgeColor(1, 1, 1, 0.5)
+    bg:SetCenterColor(0, 0, 0, 0.25)
+    bg:SetEdgeColor(0, 0, 0, 0)
     bg:SetEdgeTexture("", 1, 1, 1)
-    bg:SetHidden(true)
     self.bg = bg
 
     local wLight = WM:CreateControl(nil, win, CT_LABEL)
@@ -384,7 +388,6 @@ function KRT.ISI:EnsureOverlay()
         nameLabel:SetAnchor(LEFT, tagLabel, RIGHT, 0, 0)
 
         nameLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-        nameLabel:SetWidth(180)
 
         self.labels[i] = {
             count = countLabel,
@@ -436,7 +439,17 @@ function KRT.ISI:UpdateOverlay()
         self.ui:SetHidden(false)
     end
 
-    self.bg:SetHidden(not SV().enableReposition)
+    -- Apply background opacity (0 = transparent, 100 = full black)
+    local opacity = (SV().bgOpacity ~= nil) and SV().bgOpacity or 25
+    local alpha = math.max(0, math.min(1, opacity / 100))
+    self.bg:SetCenterColor(0, 0, 0, alpha)
+
+    -- Show green border when repositioning is active as a visual hitbox
+    if SV().enableReposition then
+        self.bg:SetEdgeColor(0, 1, 0, 0.8)
+    else
+        self.bg:SetEdgeColor(0, 0, 0, 0)
+    end
 
     local y = 0
     local invalidFront, invalidBack = false, false
@@ -643,17 +656,25 @@ function KRT.ISI:UpdateOverlay()
             tagLabel:SetText(tagStr)
             tagLabel:SetHidden(false)
 
+            -- Determine set name color based on sortCategory (1 = Monster, 2 = Mythic, 3+ = Regular)
+            local nameColor = SV().colorRegular or { 1, 1, 1 }
+            if entry.sortCategory == 1 then
+                nameColor = SV().colorMonster or { 1, 1, 1 }
+            elseif entry.sortCategory == 2 then
+                nameColor = SV().colorMythic or { 1, 1, 1 }
+            end
+
             nameLabel:SetText(entry.name or "")
-            nameLabel:SetColor(unpack(STAT_COLOR))
+            nameLabel:SetColor(unpack(nameColor))
             nameLabel:SetHidden(false)
             
-            countLabel:SetWidth(SV().columnSpacing or 45)
-            
-            if SV().showLocationTags ~= false then
-                tagLabel:SetWidth(SV().tagSpacing or 40)
-            else
-                tagLabel:SetWidth(0)
-            end
+            local colWidth = SV().columnSpacing or 45
+            local tagWidth = (SV().showLocationTags ~= false) and (SV().tagSpacing or 40) or 0
+            local nameWidth = SV().nameSpacing or 180
+
+            countLabel:SetWidth(colWidth)
+            tagLabel:SetWidth(tagWidth)
+            nameLabel:SetWidth(nameWidth)
 
             y = y + ROW_H
         else
@@ -662,7 +683,11 @@ function KRT.ISI:UpdateOverlay()
             nameLabel:SetHidden(true)
         end
     end
-    self.ui:SetHeight(y)
+
+    -- Option A: Calculate backdrop width from column settings + 10px padding
+    local totalWidth = (SV().columnSpacing or 45) + ((SV().showLocationTags ~= false) and (SV().tagSpacing or 40) or 0) + (SV().nameSpacing or 180) + 10
+    self.ui:SetDimensions(totalWidth, y)
+    self.bg:SetDimensions(totalWidth, y)
 end
 
 function KRT.ISI:Initialize()
@@ -720,6 +745,20 @@ function KRT.ISI:GetLAMSubmenu()
                 setFunc = function(value) 
                     SV().uiScale = value / 100.0
                     self:ApplyAnchor()
+                end,
+                disabled = function() return not SV().enabled end,
+            },
+            {
+                type = "slider",
+                name = "Background Opacity (%)",
+                tooltip = "Adjusts background opacity from 0 (fully transparent) to 100 (solid black).",
+                min = 0,
+                max = 100,
+                step = 1,
+                getFunc = function() return (SV().bgOpacity ~= nil) and SV().bgOpacity or 25 end,
+                setFunc = function(value) 
+                    SV().bgOpacity = value 
+                    self:UpdateOverlay() 
                 end,
                 disabled = function() return not SV().enabled end,
             },
@@ -783,13 +822,24 @@ function KRT.ISI:GetLAMSubmenu()
             },
             {
                 type = "slider",
-                name = "Set Name Column Width",
-                tooltip = "Adjusts the width of the tags column, changing where the set name starts.",
+                name = "Tag Column Width",
+                tooltip = "Adjusts the width of the location tags column.",
                 min = 10,
                 max = 50,
                 step = 1,
                 getFunc = function() return SV().tagSpacing or 40 end,
                 setFunc = function(value) SV().tagSpacing = value; self:UpdateOverlay() end,
+                disabled = function() return not SV().enabled end,
+            },
+            {
+                type = "slider",
+                name = "Set Name Column Width",
+                tooltip = "Adjusts the max width allowed for set names before truncation.",
+                min = 100,
+                max = 200,
+                step = 1,
+                getFunc = function() return SV().nameSpacing or 180 end,
+                setFunc = function(value) SV().nameSpacing = value; self:UpdateOverlay() end,
                 disabled = function() return not SV().enabled end,
             },
             {
@@ -833,6 +883,45 @@ function KRT.ISI:GetLAMSubmenu()
                 end,
                 width = "half",
                 disabled = function() return not SV().enabled or not SV().enableReposition end,
+            },
+            {
+                type = "submenu",
+                name = "Color Options",
+                controls = {
+                    {
+                        type = "colorpicker",
+                        name = "Monster Set Color",
+                        tooltip = "Color for Monster set names (Head / Shoulders).",
+                        getFunc = function() return unpack(SV().colorMonster or { 1, 1, 1 }) end,
+                        setFunc = function(r, g, b) 
+                            SV().colorMonster = { r, g, b } 
+                            self:UpdateOverlay() 
+                        end,
+                        disabled = function() return not SV().enabled end,
+                    },
+                    {
+                        type = "colorpicker",
+                        name = "Mythic Item Color",
+                        tooltip = "Color for Mythic item names.",
+                        getFunc = function() return unpack(SV().colorMythic or { 1, 1, 1 }) end,
+                        setFunc = function(r, g, b) 
+                            SV().colorMythic = { r, g, b } 
+                            self:UpdateOverlay() 
+                        end,
+                        disabled = function() return not SV().enabled end,
+                    },
+                    {
+                        type = "colorpicker",
+                        name = "Regular Set Color",
+                        tooltip = "Color for standard 3-piece and 5-piece set names.",
+                        getFunc = function() return unpack(SV().colorRegular or { 1, 1, 1 }) end,
+                        setFunc = function(r, g, b) 
+                            SV().colorRegular = { r, g, b } 
+                            self:UpdateOverlay() 
+                        end,
+                        disabled = function() return not SV().enabled end,
+                    },
+                },
             },
         }
     }

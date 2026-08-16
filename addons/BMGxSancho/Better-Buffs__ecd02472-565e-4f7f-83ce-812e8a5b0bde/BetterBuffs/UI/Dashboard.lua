@@ -47,6 +47,7 @@ end
 function UI:CreateDashboard(effectType,titleText)
     local suffix=effectType=="BUFF" and "Buffs" or "Debuffs"
     local panel=WM:CreateTopLevelWindow("BetterBuffs"..suffix.."Dashboard")
+    panel:SetHidden(true)
     panel:SetDimensions(C.PANEL_WIDTH,100)
     panel:SetClampedToScreen(true)
     panel:SetMouseEnabled(false)
@@ -319,7 +320,7 @@ end
 function UI:GetDefinitions(effectType)
     local source=effectType=="BUFF" and BB.Registry.buffs or BB.Registry.debuffs
     local result={}
-    for _,definition in ipairs(source) do if BB:IsEffectRelevant(definition.key) then result[#result+1]=definition end end
+    for _,definition in ipairs(source) do if BB:IsEffectVisible(definition.key) then result[#result+1]=definition end end
     local saved=self:GetSaved(effectType)
     local order=saved.sortOrder or "PRIORITY"
     if saved.compactLayout=="CRESCENT" and order=="TIME" then order="PRIORITY" end
@@ -394,7 +395,7 @@ function UI:RefreshDetailed(effectType)
         self:SetBarColor(row,percent,state.active or state.availability=="COOLDOWN")
         y=y+rowHeight; count=count+1
     end
-    for key,row in pairs(self.rows[effectType]) do if not BB:IsEffectRelevant(key) then row.control:SetHidden(true) end end
+    for key,row in pairs(self.rows[effectType]) do if not BB:IsEffectVisible(key) then row.control:SetHidden(true) end end
     panel.control:SetDimensions(C.PANEL_WIDTH,math.max(50,y+8))
     return count
 end
@@ -488,7 +489,7 @@ function UI:LayoutCompact(effectType,definitions)
             self:UpdateTile(definition,tile,self:GetState(definition),size)
         end
     end
-    for key,tile in pairs(self.tiles[effectType]) do if not BB:IsEffectRelevant(key) then tile.control:SetHidden(true) end end
+    for key,tile in pairs(self.tiles[effectType]) do if not BB:IsEffectVisible(key) then tile.control:SetHidden(true) end end
     panel.control:SetDimensions(math.max(1,width),math.max(1,height))
     return n
 end
@@ -498,6 +499,7 @@ function UI:RefreshPanel(effectType,force)
     local saved=self:GetSaved(effectType)
     if not BB.saved.enabled or saved.enabled==false then
         panel.fragment:SetHiddenForReason("BetterBuffsContent",true,0,0)
+        panel.control:SetHidden(true)
         return
     end
     local compact=(saved.style or "DETAILED")=="COMPACT"
@@ -508,7 +510,9 @@ function UI:RefreshPanel(effectType,force)
     for _,tile in pairs(self.tiles[effectType]) do tile.control:SetHidden(true) end
     local definitions=self:GetDefinitions(effectType)
     local count=compact and self:LayoutCompact(effectType,definitions) or self:RefreshDetailed(effectType)
-    panel.fragment:SetHiddenForReason("BetterBuffsContent",count==0,0,0)
+    local hideContent = count == 0
+    panel.fragment:SetHiddenForReason("BetterBuffsContent",hideContent,0,0)
+    panel.control:SetHidden(hideContent)
 end
 
 function UI:RefreshAll(force)
@@ -520,7 +524,7 @@ function UI:BuildPreview(effectType)
     local shown=0
     local samples={"ACTIVE","COOLDOWN","READY","ACTIVE","ACTIVE","INACTIVE"}
     for _,definition in ipairs(definitions) do
-        if BB:IsEffectRelevant(definition.key) and shown<8 then
+        if BB:IsEffectVisible(definition.key) and shown<8 then
             shown=shown+1
             local availability=samples[((shown-1)%#samples)+1]
             if definition.intelligenceMode~="RECIPIENT_COOLDOWN" and availability=="COOLDOWN" then availability="ACTIVE" end

@@ -1,7 +1,7 @@
 ## Title: Rotation Trainer - Route Planner
 ## Description: Character-specific ESO rotation trainer with switchable Dynamic and Static rotation planning
 ## Author: Satuve / OpenAI; rotation concepts inspired by @helixanon
-## Version: 0.6.26-clean-moving-icons
+## Version: 0.6.29-no-detect-box
 ## APIVersion: 101050
 ## SavedVariables: SatuveRotationTrainerSavedVariables
 

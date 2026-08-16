@@ -8,8 +8,28 @@
   "category_id": "163",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
     }
   ],
   "content_id": "esoui:4702",
@@ -20,7 +40,7 @@
     "EsoUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4702/",
-  "fingerprint": "1acf606c88405aae723171b437acbcebca7221fa33750b76b488f6f616c24fd3",
+  "fingerprint": "463e4f282bc3e05c315293a9d2214297bca50cfab6875af861be933658eb656e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16677.png"
   ],
@@ -30,11 +50,11 @@
   "source_id": "4702",
   "source_url": "https://www.esoui.com/downloads/info4702-GoA_ESO_UA.html",
   "stats": {
-    "downloads": 287,
+    "downloads": 321,
     "favorites": 1,
-    "monthly_downloads": 287
+    "monthly_downloads": 301
   },
   "title": "GoA_ESO_UA",
-  "updated_at": 1786432359000,
-  "version": "43.97"
+  "updated_at": 1786829055000,
+  "version": "44.07"
 }

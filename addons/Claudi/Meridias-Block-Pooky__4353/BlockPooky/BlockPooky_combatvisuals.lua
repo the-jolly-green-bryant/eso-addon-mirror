@@ -1,7 +1,6 @@
-
 --[[
     BlockPooky Combat Visuals Module
-    
+
     This module provides advanced UI controls and logic for customizing combat visuals in ESO:
     - Adjust maximum AOE brightness, outline thickness, and target outline intensity
     - Enable RGB color cycling for AOE indicators (with speed and turbo controls)
@@ -17,8 +16,8 @@ local min = math.min
 local max = math.max
 
 --[[ combat visuals settings ----------------------------------------------------------------------------------------]]
-local aoeDefault = 50
-local aoeFactor  = 10
+local aoeDefault     = 50
+local aoeFactor      = 10
 local outlineDefault = 100
 local outlineFactor  = 20
 
@@ -27,10 +26,12 @@ local outlineFactor  = 20
 function BlockPooky.SetMaxAOEBrightness(maxValue)
     local brightness = maxValue or (aoeDefault * aoeFactor)
     if ZO_SharedOptions_SettingsData[SETTING_PANEL_GAMEPLAY][SETTING_TYPE_COMBAT][COMBAT_SETTING_MONSTER_TELLS_FRIENDLY_BRIGHTNESS] then
-        ZO_SharedOptions_SettingsData[SETTING_PANEL_GAMEPLAY][SETTING_TYPE_COMBAT][COMBAT_SETTING_MONSTER_TELLS_FRIENDLY_BRIGHTNESS].maxValue = brightness
+        ZO_SharedOptions_SettingsData[SETTING_PANEL_GAMEPLAY][SETTING_TYPE_COMBAT][COMBAT_SETTING_MONSTER_TELLS_FRIENDLY_BRIGHTNESS].maxValue =
+        brightness
     end
     if ZO_SharedOptions_SettingsData[SETTING_PANEL_GAMEPLAY][SETTING_TYPE_COMBAT][COMBAT_SETTING_MONSTER_TELLS_ENEMY_BRIGHTNESS] then
-        ZO_SharedOptions_SettingsData[SETTING_PANEL_GAMEPLAY][SETTING_TYPE_COMBAT][COMBAT_SETTING_MONSTER_TELLS_ENEMY_BRIGHTNESS].maxValue = brightness
+        ZO_SharedOptions_SettingsData[SETTING_PANEL_GAMEPLAY][SETTING_TYPE_COMBAT][COMBAT_SETTING_MONSTER_TELLS_ENEMY_BRIGHTNESS].maxValue =
+        brightness
     end
 end
 
@@ -44,8 +45,10 @@ end
 function BlockPooky.SetMaxOutlineThickness(maxValue)
     local thickness = maxValue or outlineDefault * outlineFactor
     if ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_GLOW_THICKNESS] then
-        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_GLOW_THICKNESS].showValueMax = thickness
-        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_GLOW_THICKNESS].maxValue = outlineFactor
+        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_GLOW_THICKNESS].showValueMax =
+        thickness
+        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_GLOW_THICKNESS].maxValue =
+        outlineFactor
     end
 end
 
@@ -59,8 +62,10 @@ end
 function BlockPooky.SetMaxTargetOutlineIntensity(maxValue)
     local intensity = maxValue or outlineDefault * outlineFactor
     if ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_TARGET_GLOW_INTENSITY] then
-        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_TARGET_GLOW_INTENSITY].showValueMax = intensity
-        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_TARGET_GLOW_INTENSITY].maxValue = outlineFactor
+        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_TARGET_GLOW_INTENSITY].showValueMax =
+        intensity
+        ZO_SharedOptions_SettingsData[SETTING_PANEL_NAMEPLATES][SETTING_TYPE_IN_WORLD][IN_WORLD_UI_SETTING_TARGET_GLOW_INTENSITY].maxValue =
+        outlineFactor
     end
 end
 
@@ -68,7 +73,6 @@ end
 function BlockPooky.ResetMaxTargetOutlineIntensity()
     BlockPooky.SetMaxTargetOutlineIntensity(outlineDefault * outlineFactor)
 end
-
 
 -- RGB cycling state
 BlockPooky.rgbRed = 255
@@ -83,18 +87,18 @@ function BlockPooky.CycleAOEColor()
     local red = BlockPooky.rgbRed
     local green = BlockPooky.rgbGreen
     local blue = BlockPooky.rgbBlue
-    if ( red == 255 ) and ( green < 255) and ( blue == 0 ) then
-        green = min((green + (5*turbo)), 255)
-    elseif ( red > 0 ) and ( green == 255) and ( blue == 0 ) then
-        red = max((red - (5*turbo)), 0)
-    elseif ( red == 0 ) and ( green == 255 ) and ( blue < 255 ) then
-        blue = min((blue + (5*turbo)), 255)
-    elseif ( red == 0 ) and ( green > 0 ) and ( blue == 255 ) then
-        green = max((green - (5*turbo)), 0)
-    elseif ( red < 255 ) and ( green == 0 ) and ( blue == 255 ) then
-        red = min((red + (5*turbo)), 255)
-    elseif (red == 255 ) and ( green == 0 ) and ( blue > 0 ) then
-        blue = max((blue - (5*turbo)), 0)
+    if (red == 255) and (green < 255) and (blue == 0) then
+        green = min((green + (5 * turbo)), 255)
+    elseif (red > 0) and (green == 255) and (blue == 0) then
+        red = max((red - (5 * turbo)), 0)
+    elseif (red == 0) and (green == 255) and (blue < 255) then
+        blue = min((blue + (5 * turbo)), 255)
+    elseif (red == 0) and (green > 0) and (blue == 255) then
+        green = max((green - (5 * turbo)), 0)
+    elseif (red < 255) and (green == 0) and (blue == 255) then
+        red = min((red + (5 * turbo)), 255)
+    elseif (red == 255) and (green == 0) and (blue > 0) then
+        blue = max((blue - (5 * turbo)), 0)
     end
     BlockPooky.rgbRed = red
     BlockPooky.rgbGreen = green
@@ -108,13 +112,15 @@ end
 function BlockPooky.SetAOERGBState(state, showMsg)
     if state then
         if showMsg then d("BlockPooky RGB AOE Enabled") end
-        EM:RegisterForUpdate(BlockPooky.name.."AOECycle", BlockPooky.config.AOERGBSpeed or 50, function() BlockPooky.CycleAOEColor() end)
+        EM:RegisterForUpdate(BlockPooky.name .. "AOECycle", BlockPooky.config.AOERGBSpeed or 50,
+            function() BlockPooky.CycleAOEColor() end, false)
         BlockPooky.rgbCycleActive = true
     else
         if showMsg then d("BlockPooky RGB AOE Disabled") end
-        EM:UnregisterForUpdate(BlockPooky.name.."AOECycle")
+        EM:UnregisterForUpdate(BlockPooky.name .. "AOECycle")
         BlockPooky.rgbCycleActive = false
-        SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_MONSTER_TELLS_ENEMY_COLOR, BlockPooky.config.AOERGBDefaultColor or format("%02x%02x%02x", 255, 0, 0))
+        SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_MONSTER_TELLS_ENEMY_COLOR,
+            BlockPooky.config.AOERGBDefaultColor or format("%02x%02x%02x", 255, 0, 0))
     end
 end
 
@@ -123,7 +129,6 @@ function BlockPooky.ToggleAOERGB()
     BlockPooky.config.AOERGBEnabled = not BlockPooky.config.AOERGBEnabled
     BlockPooky.SetAOERGBState(BlockPooky.config.AOERGBEnabled, true)
 end
-
 
 ---Register slash command for toggling RGB AOE cycling
 SLASH_COMMANDS["/blockpookyrgb"] = function() BlockPooky.ToggleAOERGB() end

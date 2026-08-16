@@ -6,7 +6,7 @@
 
 ## APIVersion: 101050 101051
 ## Title: AutoInvite
-## Version: 2026.08.08
+## Version: 2026.08.15
 ## Author: |c3CB371@Masteroshi430|r, |cFFC300@amuridee|r, Ayantir, Sasky, silentgecko
 ## SavedVariables: AutoInviteSettings
 ## DependsOn: LibAddonMenu-2.0>=41 LibChatMenuButton>=1006

@@ -2,22 +2,52 @@
 -- Export
 -- Builds self-contained binary export streams for online sharing.
 --
--- Wire format v3 (bytes, before URL transport):
---   u8  wireVersion (3; v1 lacked the facts bytes, v2 the shared-entry flags)
+-- Wire format v4 (bytes, before URL transport):
+--   u8  wireVersion (4; v3 lacked member setups/instance meta and collapsed
+--       the view profile's group damage, v2 the shared-entry flags, v1 the
+--       facts bytes)
 --   u8  flags: bit0 = body is raw-DEFLATE compressed, bit1 = archive profile
 --   body (compressed when bit0 is set):
---     varint createdAtS
+--     varint createdAtS               (export time)
 --     string instanceName             (string = varint byte length + bytes)
+--     varint instanceTimestampS       (when the run started)
+--     u8 instanceFlags: bit0 overland, bit1 house, bit2 PvP,
+--        bit3 adventure zone
 --     varint abilityCount, varint abilityId ...
---     u8 factsByte x abilityCount     (per-ability classification from the
---       instance's recorded abilityInfo: damageType in bits 0-3 (0 = unknown
---       or ambiguous), dot class in bits 4-5: 0 unknown, 1 direct, 2 dot,
---       3 mixed. Scoped to this export's own combat recordings.)
+--     3 bytes x abilityCount          (per-ability classification from the
+--       instance's recorded abilityInfo, scoped to this export's own combat
+--       recordings):
+--         u8  deliveryFlags: bit0 direct, bit1 over time, bit2 shield,
+--             bit3 regen, bit4 heal absorption
+--         u16 damageTypeMask (LE): bit N = DAMAGE_TYPE N was recorded
 --     varint nameCount, string name ...
+--     varint memberSetupCount, then per pooled member setup the CompactSetup
+--       struct (the lossy group-broadcast build summary, deduped across
+--       encounters; shared entries reference it by 1-based index):
+--         u8 flags: bit0 vengeance, bit1 hasFront, bit2 hasBack,
+--                   bit3 hasWerewolf, bit4 hasClassMastery
+--         varint raceId, varint classId
+--         per present bar: 6x varint abilityId
+--         varint setCount, per: varint setId, varint frontCount,
+--           varint backCount
+--         3x varint armorWeights (light, medium, heavy)
+--         4x varint weaponTypes (frontMH, frontOH, backMH, backOH)
+--         armorTraits, armorEnchants, jewelryTraits, jewelryEnchants:
+--           varint count, per: varint id, varint count
+--         4x varint weaponTraits, 4x varint weaponEnchants
+--         12x varint champion skillId (positional, 4 per discipline)
+--         foods, mundus, classSkillLines: varint count + varint ids
+--         when hasClassMastery: varint count + varint abilityIds
+--         varint scribedCount, per: varint abilityId, 3x varint scriptId
+--         u8 poisonMask: bit0 frontItemId, bit1 backItemId,
+--            bit2 frontEffect, bit3 backEffect; then the present varints
+--         when vengeance: varint loadoutSkillLineId, 3x varint perkDefId
 --     varint encounterCount
 --     per encounter:
---       u8 metaFlags: bit0 = boss fight
+--       u8 metaFlags: bit0 boss fight, bit1 player fight (duel),
+--          bit2 dummy fight
 --       string displayName
+--       string gameVersion            ("" when unknown)
 --       varint timestampS
 --       varint durationMs
 --       varint bossUnitCount, varint unitId ...            (bossesUnits)
@@ -30,6 +60,7 @@
 --       per entry: u8 entryFlags (bit0 = the uploader's own entry),
 --         string displayName, varint role, varint payloadVersion,
 --         varint timestampS, varint durationMs,
+--         varint setupRef (0 = none, else 1-based member-setup pool index),
 --         varint payloadLen, then payload bytes (binary shared entry;
 --         timestamp/duration live OUTSIDE the payload in storage too)
 --       u8 hasSetup; when 1, the compact setup struct:
@@ -56,10 +87,11 @@
 -- The compact equip slots replace the ~70-char itemLinks: name, set, weight
 -- and equip slot resolve from the item database by itemId on the viewer side.
 --
--- The view profile collapses damageByUnitIdGroup to per-source/per-target
--- aggregates under pseudo-ability id 0 before encoding: the UI consumes only
--- totals from that section (arithmancer groupTotalDamage/groupDamageByBoss),
--- and the ability-level rows are the bulk of a full-group encounter.
+-- Both profiles carry identical per-encounter fidelity (the view profile
+-- used to collapse group damage to per-source/target totals; it no longer
+-- does - web parity beats the ~1 extra URL part on full-group fights).
+-- The profiles differ only in encounter selection: view = one encounter,
+-- archive = the whole instance.
 -----------------------------------------------------------
 
 if not SemisPlaygroundCheckAccess() then
@@ -72,7 +104,7 @@ BattleScrolls = BattleScrolls or {}
 local export = {}
 BattleScrolls.export = export
 
-export.WIRE_VERSION = 3
+export.WIRE_VERSION = 4
 export.PROFILE_VIEW = 1
 export.PROFILE_ARCHIVE = 2
 
@@ -221,46 +253,6 @@ end
 ---@return string
 function ByteWriter:finish()
     return table.concat(self._parts)
-end
-
--- =============================================================================
--- VIEW-PROFILE TRANSFORM
--- =============================================================================
-
----Collapses source -> target -> ability -> breakdown to a single aggregated
----breakdown per source/target pair, stored under pseudo-ability id 0. Sums are
----exact; min/max ticks are the extremes across abilities.
----@param damageGroup table<number, table<number, table<number, DamageBreakdown>>>
----@return table<number, table<number, table<number, DamageBreakdown>>>
-local function collapseGroupDamage(damageGroup)
-    local out = {}
-    for sourceUnitId, byTarget in pairs(damageGroup) do
-        local outByTarget = {}
-        for targetUnitId, byAbility in pairs(byTarget) do
-            local total, rawTotal, ticks, critTicks = 0, 0, 0, 0
-            local minTick, maxTick = nil, 0
-            for _, breakdown in pairs(byAbility) do
-                total = total + (breakdown.total or 0)
-                rawTotal = rawTotal + (breakdown.rawTotal or breakdown.total or 0)
-                ticks = ticks + (breakdown.ticks or 0)
-                critTicks = critTicks + (breakdown.critTicks or 0)
-                local bMin = breakdown.minTick or 0
-                if minTick == nil or bMin < minTick then
-                    minTick = bMin
-                end
-                local bMax = breakdown.maxTick or 0
-                if bMax > maxTick then
-                    maxTick = bMax
-                end
-            end
-            outByTarget[targetUnitId] = {
-                [0] = BattleScrolls.structures.makeDamageBreakdown(
-                    total, rawTotal, ticks, critTicks, minTick or 0, maxTick),
-            }
-        end
-        out[sourceUnitId] = outByTarget
-    end
-    return out
 end
 
 -- =============================================================================
@@ -421,14 +413,126 @@ local function writeExportSetup(body, exportSetup)
 end
 
 -- =============================================================================
+-- MEMBER SETUP (wire form of CompactSetup - the lossy group-broadcast build)
+-- =============================================================================
+
+---@param body ExportByteWriter
+---@param entries CompactTraitEntry[]|CompactEnchantEntry[]|nil
+---@param idField string "traitType"|"enchantId"
+local function writeGroupedCounts(body, entries, idField)
+    entries = entries or {}
+    body:writeVarUInt(#entries)
+    for _, entry in ipairs(entries) do
+        body:writeVarUInt(entry[idField] or 0)
+        body:writeVarUInt(entry.count or 0)
+    end
+end
+
+---@param body ExportByteWriter
+---@param ids number[]|nil
+local function writeIdList(body, ids)
+    ids = ids or {}
+    body:writeVarUInt(#ids)
+    for _, id in ipairs(ids) do
+        body:writeVarUInt(id)
+    end
+end
+
+---Serializes a group member's CompactSetup (received over LibGroupBroadcast
+---and stored by setupshare). Layout documented in the header comment.
+---@param body ExportByteWriter
+---@param compact CompactSetup
+local function writeMemberSetup(body, compact)
+    body:writeByte((compact.isVengeance and 1 or 0)
+        + (compact.frontAbilities and 2 or 0)
+        + (compact.backAbilities and 4 or 0)
+        + (compact.werewolfAbilities and 8 or 0)
+        + (compact.classMasteryAbilityIds and 16 or 0))
+    body:writeVarUInt(compact.raceId or 0)
+    body:writeVarUInt(compact.classId or 0)
+    local function writeBar(bar)
+        for i = 1, 6 do
+            body:writeVarUInt(bar[i] or 0)
+        end
+    end
+    if compact.frontAbilities then writeBar(compact.frontAbilities) end
+    if compact.backAbilities then writeBar(compact.backAbilities) end
+    if compact.werewolfAbilities then writeBar(compact.werewolfAbilities) end
+    local sets = compact.sets or {}
+    body:writeVarUInt(#sets)
+    for _, set in ipairs(sets) do
+        body:writeVarUInt(set.setId or 0)
+        body:writeVarUInt(set.frontCount or 0)
+        body:writeVarUInt(set.backCount or 0)
+    end
+    local weights = compact.armorWeights or {}
+    for i = 1, 3 do
+        body:writeVarUInt(weights[i] or 0)
+    end
+    local weaponTypes = compact.weaponTypes or {}
+    for i = 1, 4 do
+        body:writeVarUInt(weaponTypes[i] or 0)
+    end
+    writeGroupedCounts(body, compact.armorTraits, "traitType")
+    writeGroupedCounts(body, compact.armorEnchants, "enchantId")
+    writeGroupedCounts(body, compact.jewelryTraits, "traitType")
+    writeGroupedCounts(body, compact.jewelryEnchants, "enchantId")
+    local weaponTraits = compact.weaponTraits or {}
+    for i = 1, 4 do
+        body:writeVarUInt(weaponTraits[i] or 0)
+    end
+    local weaponEnchants = compact.weaponEnchants or {}
+    for i = 1, 4 do
+        body:writeVarUInt(weaponEnchants[i] or 0)
+    end
+    local champion = compact.champion or {}
+    for i = 1, 12 do
+        body:writeVarUInt(champion[i] or 0)
+    end
+    writeIdList(body, compact.foodAbilityIds)
+    writeIdList(body, compact.mundusAbilityIds)
+    writeIdList(body, compact.classSkillLineIds)
+    if compact.classMasteryAbilityIds then
+        writeIdList(body, compact.classMasteryAbilityIds)
+    end
+    local scribed = compact.scribedAbilities or {}
+    body:writeVarUInt(#scribed)
+    for _, ability in ipairs(scribed) do
+        body:writeVarUInt(ability.abilityId or 0)
+        local scripts = ability.scriptIds or {}
+        for i = 1, 3 do
+            body:writeVarUInt(scripts[i] or 0)
+        end
+    end
+    body:writeByte((compact.frontPoisonItemId and 1 or 0)
+        + (compact.backPoisonItemId and 2 or 0)
+        + (compact.frontPoisonEffect and 4 or 0)
+        + (compact.backPoisonEffect and 8 or 0))
+    if compact.frontPoisonItemId then body:writeVarUInt(compact.frontPoisonItemId) end
+    if compact.backPoisonItemId then body:writeVarUInt(compact.backPoisonItemId) end
+    if compact.frontPoisonEffect then body:writeVarUInt(compact.frontPoisonEffect) end
+    if compact.backPoisonEffect then body:writeVarUInt(compact.backPoisonEffect) end
+    if compact.isVengeance then
+        body:writeVarUInt(compact.loadoutSkillLineId or 0)
+        local perks = compact.vengeancePerkDefIds or {}
+        for i = 1, 3 do
+            body:writeVarUInt(perks[i] or 0)
+        end
+    end
+end
+
+-- =============================================================================
 -- STREAM BUILDER
 -- =============================================================================
 
 ---@class ExportEncounterEntry
 ---@field displayName string
+---@field gameVersion string Patch string at recording time; "" when unknown
 ---@field timestampS number
 ---@field durationMs number
 ---@field isBoss boolean
+---@field isPlayerFight boolean
+---@field isDummyFight boolean
 ---@field bossesUnits number[]
 ---@field bossTagSeqByUnitId table<number, string>
 ---@field bossSeqNames table<string, string>
@@ -443,6 +547,8 @@ end
 ---@field payloadVersion number
 ---@field timestampS number
 ---@field durationMs number
+---@field setupHash number 16-bit build hash from the broadcast; 0 = none
+---@field setupRef number 1-based member-setup pool index; 0 = none
 ---@field payloadBytes string
 
 ---@class ExportResult
@@ -477,43 +583,34 @@ local function collectSharedEntries(encounter, decoded)
             payloadVersion = compact.v or 17,
             timestampS = compact.t or 0,
             durationMs = compact.u or 0,
+            setupHash = compact.h or 0,
             payloadBytes = export.chunksToBytes(compact.c),
         }
     end
     return entries
 end
 
----Wire facts byte for one ability: damage type + dot/direct class from the
----delivery flags and damage-type set the combat recorder stored per instance.
----An ability recorded with several damage types encodes 0 (unknown) - the
----component model says that should not happen, so ambiguity is not guessed at.
+---Wire facts for one ability, from the delivery flags and damage-type set the
+---combat recorder stored per instance: a delivery-flags byte plus a 16-bit
+---mask of every damage type recorded (lossless - multi-type abilities keep
+---their full type list instead of collapsing to "unknown").
+---@param body ExportByteWriter
 ---@param info AbilityInfo|nil
----@return number
-local function factsByte(info)
-    if not info then
-        return 0
-    end
-    local delivery = info.deliveryType or {}
-    local class = 0
-    if delivery.overTime and delivery.direct then
-        class = 3
-    elseif delivery.overTime then
-        class = 2
-    elseif delivery.direct then
-        class = 1
-    end
-    local damageType = 0
-    for dt in pairs(info.damageTypes or {}) do
-        if damageType ~= 0 then
-            damageType = 0
-            break
+local function writeFacts(body, info)
+    local delivery = info and info.deliveryType or {}
+    body:writeByte((delivery.direct and 1 or 0)
+        + (delivery.overTime and 2 or 0)
+        + (delivery.shield and 4 or 0)
+        + (delivery.regen and 8 or 0)
+        + (delivery.healAbsorption and 16 or 0))
+    local mask = 0
+    for dt in pairs(info and info.damageTypes or {}) do
+        if dt >= 0 and dt <= 15 then
+            mask = BitOr(mask, BitLShift(1, dt))
         end
-        damageType = dt
     end
-    if damageType > 15 then
-        damageType = 0
-    end
-    return damageType + class * 16
+    body:writeByte(mask % 256)
+    body:writeByte(math.floor(mask / 256))
 end
 
 ---Decodes and re-encodes the given stored encounters against a fresh export
@@ -542,31 +639,57 @@ local function buildStreamAsync(instance, encounters, profile)
         ---@type ExportEncounterEntry[]
         local entries = {}
         local skipped = 0
+        -- Member builds pool: unique CompactSetups referenced by shared
+        -- entries, deduped by (member, hash) so a build repeated across the
+        -- instance's encounters ships once
+        ---@type CompactSetup[]
+        local memberSetups = {}
+        ---@type table<string, number>
+        local memberSetupIndex = {}
 
         for _, encounter in ipairs(encounters) do
             ---@type Encounter|nil
             local decoded = BattleScrolls.storage.DecodeEncounterAsync(encounter, instance)
                 :Recover(function() return nil end):Await()
             if decoded then
-                if profile == export.PROFILE_VIEW
-                    and next(decoded.damageByUnitIdGroup or {}) ~= nil then
-                    decoded.damageByUnitIdGroup = collapseGroupDamage(decoded.damageByUnitIdGroup)
-                end
                 -- The build travels as the compact wire struct, not the
                 -- bit-packed blob: strip it before encoding the encounter
                 local exportSetup = decoded.setup and buildExportSetup(decoded.setup) or nil
                 decoded.setup = nil
                 local compact = binaryStorage.encodeEncounterAsync(decoded, false, registry):Await()
+                local shared = collectSharedEntries(encounter, decoded)
+                for _, entry in ipairs(shared) do
+                    entry.setupRef = 0
+                    if not entry.isSelf and entry.setupHash > 0 then
+                        local key = entry.displayName .. ":" .. entry.setupHash
+                        local ref = memberSetupIndex[key]
+                        if ref == nil then
+                            local memberSetup = BattleScrolls.setupShare:getSetup(
+                                entry.displayName, entry.setupHash)
+                            if memberSetup then
+                                memberSetups[#memberSetups + 1] = memberSetup
+                                ref = #memberSetups
+                            else
+                                ref = 0
+                            end
+                            memberSetupIndex[key] = ref
+                        end
+                        entry.setupRef = ref
+                    end
+                end
                 entries[#entries + 1] = {
                     displayName = encounter.displayName or "",
+                    gameVersion = encounter.gameVersion or "",
                     timestampS = encounter.timestampS or 0,
                     durationMs = encounter.durationMs or 0,
                     isBoss = next(encounter.bossesUnits or {}) ~= nil,
+                    isPlayerFight = encounter.isPlayerFight == true,
+                    isDummyFight = encounter.isDummyFight == true,
                     bossesUnits = encounter.bossesUnits or {},
                     bossTagSeqByUnitId = encounter.bossTagSeqByUnitId or {},
                     bossSeqNames = encounter.bossSeqNames or {},
                     dataBytes = export.chunksToBytes(compact._data),
-                    shared = collectSharedEntries(encounter, decoded),
+                    shared = shared,
                     exportSetup = exportSetup,
                 }
             else
@@ -584,6 +707,11 @@ local function buildStreamAsync(instance, encounters, profile)
         -- The journal titles instances by zone; instanceName on the wire is
         -- the same string ("Earthen Root Enclave", "Sunspire", ...)
         body:writeString(instance.zone or "")
+        body:writeVarUInt(instance.timestampS or 0)
+        body:writeByte((instance.isOverland and 1 or 0)
+            + (instance.isHouse and 2 or 0)
+            + (instance.isPvP and 4 or 0)
+            + (instance.isAdventureZone and 8 or 0))
         body:writeVarUInt(#registry.abilityIds)
         for i = 1, #registry.abilityIds do
             body:writeVarUInt(registry.abilityIds[i])
@@ -592,16 +720,23 @@ local function buildStreamAsync(instance, encounters, profile)
         -- saw every registry id's combat events in this very instance, so
         -- coverage is exact - and a bad actor can only mislabel their own share
         for i = 1, #registry.abilityIds do
-            body:writeByte(factsByte(abilityInfo[registry.abilityIds[i]]))
+            writeFacts(body, abilityInfo[registry.abilityIds[i]])
         end
         body:writeVarUInt(#registry.names)
         for i = 1, #registry.names do
             body:writeString(registry.names[i])
         end
+        body:writeVarUInt(#memberSetups)
+        for _, memberSetup in ipairs(memberSetups) do
+            writeMemberSetup(body, memberSetup)
+        end
         body:writeVarUInt(#entries)
         for _, entry in ipairs(entries) do
-            body:writeByte(entry.isBoss and 1 or 0)
+            body:writeByte((entry.isBoss and 1 or 0)
+                + (entry.isPlayerFight and 2 or 0)
+                + (entry.isDummyFight and 4 or 0))
             body:writeString(entry.displayName)
+            body:writeString(entry.gameVersion)
             body:writeVarUInt(entry.timestampS)
             body:writeVarUInt(entry.durationMs)
             body:writeVarUInt(#entry.bossesUnits)
@@ -636,6 +771,7 @@ local function buildStreamAsync(instance, encounters, profile)
                 body:writeVarUInt(shared.payloadVersion)
                 body:writeVarUInt(shared.timestampS)
                 body:writeVarUInt(shared.durationMs)
+                body:writeVarUInt(shared.setupRef)
                 body:writeVarUInt(#shared.payloadBytes)
                 body:writeBytes(shared.payloadBytes)
             end
@@ -664,8 +800,8 @@ local function buildStreamAsync(instance, encounters, profile)
     end)
 end
 
----Builds a single-encounter share (view profile: group damage collapsed to
----per-source/per-target totals).
+---Builds a single-encounter share (view profile; same per-encounter fidelity
+---as the archive).
 ---@param instance InstanceStorage
 ---@param encounter CompactEncounter
 ---@return Effect Effect resolving to ExportResult

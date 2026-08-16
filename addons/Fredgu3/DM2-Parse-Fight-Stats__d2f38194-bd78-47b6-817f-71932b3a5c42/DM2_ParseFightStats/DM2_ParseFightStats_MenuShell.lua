@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.17.6"
+M.version = "3.17.10"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -3315,11 +3315,76 @@ local function buildTimelineIconEvents(session, maxIcons)
         bar = bar,
         isUltimate = isUlt,
         abilityId = abilityId,
+        tMs = tonumber(item.tMs) or nil,
       }
       if #events >= maxIcons then break end
     end
   end
   return events
+end
+
+-- Map S (swap) / U (ult) markers onto skill-icon columns by time.
+-- Prefer nearest skill tMs; fall back to fight-duration fraction for older parses.
+local function buildIconMarkerTags(session, events)
+  local tags = {} -- [iconIndex] = "S" / "U" / "SU" / ...
+  if type(session) ~= "table" or type(events) ~= "table" or #events == 0 then return tags end
+  local pts = session.markers and session.markers.points
+  if type(pts) ~= "table" or #pts == 0 then return tags end
+  local startMs = tonumber(session.startMs) or 0
+  local dur = tonumber(session.durationMs) or 0
+  local n = #events
+  local hasTimes = false
+  for i = 1, n do
+    if tonumber(events[i].tMs) then hasTimes = true break end
+  end
+  for _, p in ipairs(pts) do
+    if type(p) == "table" and (p.type == "swap" or p.type == "ult") then
+      local ch = (p.type == "swap") and "S" or "U"
+      local mt = tonumber(p.tMs)
+      local idx = nil
+      if hasTimes and mt then
+        local bestDist, bestI = nil, 1
+        for i = 1, n do
+          local et = tonumber(events[i].tMs)
+          if et then
+            local d = math.abs(et - mt)
+            if not bestDist or d < bestDist then bestDist, bestI = d, i end
+          end
+        end
+        idx = bestI
+      elseif mt and dur > 0 and startMs > 0 then
+        local frac = (mt - startMs) / dur
+        if frac < 0 then frac = 0 end
+        if frac > 1 then frac = 1 end
+        idx = math.floor(frac * (n - 1) + 0.5) + 1
+      elseif mt and dur > 0 then
+        -- startMs missing: use marker offset from first marker-less estimate
+        local frac = mt / (startMs + dur)
+        if frac < 0 then
+          frac = 0
+        elseif frac > 1 then
+          frac = 1
+        end
+        idx = math.floor(frac * (n - 1) + 0.5) + 1
+      end
+      if idx then
+        if idx < 1 then idx = 1 end
+        if idx > n then idx = n end
+        local cur = tags[idx] or ""
+        -- avoid "SSS" spam: max 2 of same letter
+        local count = 0
+        for i = 1, #cur do
+          if string.sub(cur, i, i) == ch then
+            count = count + 1
+          end
+        end
+        if count < 2 then
+          tags[idx] = cur .. ch
+        end
+      end
+    end
+  end
+  return tags
 end
 
 -- Pattern / coaching insights (Rotation footer + Insights page).
@@ -4391,7 +4456,7 @@ local function buildBuildSynergy(session)
     strongCount = 0,
     softCount = 0,
     cpTotal = 0,
-    disclaimer = "Fit estimates from CP names + this parse’s damage mix — not A/B tested.",
+    disclaimer = "Fit estimates from CP names + this parse damage mix - not A/B tested.",
   }
   if not session then return empty end
 
@@ -4512,116 +4577,125 @@ local function buildBuildSynergy(session)
   local strongCount, softCount = 0, 0
   local isDummy = session.isDummy == true
 
-  for _, cp in ipairs(slotted) do
+  for _, cp in ipairs(slotted or {}) do
     local constellation = cp.constellation or "unknown"
-    if constellation == "craft" then
-      -- Dashboard may still list Craft; Insights Build Fit does not
-    else
-    local cat, catLabel = classifyChampionCategory(cp.name, cp.desc)
-    -- Extra name filter if constellation API missed a world star
-    local nlow = string.lower(tostring(cp.name or "") .. " " .. tostring(cp.desc or ""))
-    if string.find(nlow, "rider", 1, true) or string.find(nlow, "gather", 1, true)
-        or string.find(nlow, "treasure", 1, true) or string.find(nlow, "merchant", 1, true)
-        or string.find(nlow, "inspiration", 1, true) or string.find(nlow, "liquid efficiency", 1, true)
-        or string.find(nlow, "steed", 1, true) or string.find(nlow, "out of sight", 1, true)
-        or string.find(nlow, "fleet", 1, true) or string.find(nlow, "breakfall", 1, true)
-        or string.find(nlow, "soul reservoir", 1, true) or string.find(nlow, "rationer", 1, true)
-        or string.find(nlow, "homemaker", 1, true) or string.find(nlow, "professional upkeep", 1, true)
-        or string.find(nlow, "gifted rider", 1, true) or string.find(nlow, "master gatherer", 1, true)
-        or string.find(nlow, "plentiful harvest", 1, true) or string.find(nlow, "wanderer", 1, true)
-        or string.find(nlow, "angler's instinct", 1, true) or string.find(nlow, "cutpurse", 1, true) then
-      -- skip craft/utility world stars on Insights
-    else
-    local score = 45 -- baseline mixed
-    local reason = "general damage star"
-    local impact = "mixed combat"
+    -- Craft tree stars are not combat-facing on Insights
+    if constellation ~= "craft" then
+      local cat, catLabel = classifyChampionCategory(cp.name, cp.desc)
+      -- Extra name filter if constellation API missed a world star
+      local nlow = string.lower(tostring(cp.name or "") .. " " .. tostring(cp.desc or ""))
+      local isWorldUtil = string.find(nlow, "rider", 1, true)
+        or string.find(nlow, "gather", 1, true)
+        or string.find(nlow, "treasure", 1, true)
+        or string.find(nlow, "merchant", 1, true)
+        or string.find(nlow, "inspiration", 1, true)
+        or string.find(nlow, "liquid efficiency", 1, true)
+        or string.find(nlow, "steed", 1, true)
+        or string.find(nlow, "out of sight", 1, true)
+        or string.find(nlow, "fleet", 1, true)
+        or string.find(nlow, "breakfall", 1, true)
+        or string.find(nlow, "soul reservoir", 1, true)
+        or string.find(nlow, "rationer", 1, true)
+        or string.find(nlow, "homemaker", 1, true)
+        or string.find(nlow, "professional upkeep", 1, true)
+        or string.find(nlow, "gifted rider", 1, true)
+        or string.find(nlow, "master gatherer", 1, true)
+        or string.find(nlow, "plentiful harvest", 1, true)
+        or string.find(nlow, "wanderer", 1, true)
+        or string.find(nlow, "angler", 1, true)
+        or string.find(nlow, "cutpurse", 1, true)
 
-    if cat == "dot" then
-      score = 20 + dotPct * 100
-      reason = string.format("DoT · parse DoT %s", fmtPct(dotPct))
-      impact = string.format("aligns with DoT %s of dmg", fmtPct(dotPct))
-      if dotPct >= 0.50 then score = score + 10; impact = "strong DoT parse match" end
-      if dotPct < 0.25 then score = score - 12; impact = "DoT star · parse is direct-heavy" end
-    elseif cat == "direct" then
-      score = 20 + directPct * 100
-      reason = string.format("Direct · parse direct %s", fmtPct(directPct))
-      impact = string.format("aligns with direct %s of dmg", fmtPct(directPct))
-      if directPct >= 0.55 then score = score + 10; impact = "strong direct parse match" end
-      if directPct < 0.30 then score = score - 10; impact = "direct star · parse is DoT-heavy" end
-    elseif cat == "crit" then
-      score = 25 + critPct * 85
-      reason = string.format("Crit · parse crit %s", fmtPct(critPct))
-      impact = string.format("crit rate this parse %s", fmtPct(critPct))
-      if critPct >= 0.58 then score = score + 8; impact = "high crit parse · star pays" end
-      if critPct < 0.42 then score = score - 8; impact = "crit star · low crit this parse" end
-    elseif cat == "ult" then
-      score = 18 + ultPct * 140
-      if ultPct < 0.04 then
-        reason = "Ult · low ult damage this parse"
-        impact = "ult share low · soft on this parse"
-      else
-        reason = string.format("Ult · ult share %s", fmtPct(ultPct))
-        impact = string.format("ult %s of dmg this parse", fmtPct(ultPct))
-      end
-    elseif cat == "pen" then
-      score = 55
-      reason = "Penetration star"
-      impact = "pen always relevant on dummy; trial may @cap"
-      if setPct >= 0.15 then score = score + 4 end
-    elseif cat == "aoe" then
-      score = isDummy and 30 or 52
-      reason = isDummy and "AoE · dummy is single-target" or "AoE star"
-      impact = isDummy and "little ST parse impact" or "helps multi-target"
-    elseif cat == "utility" then
-      score = isDummy and 20 or 40
-      reason = isDummy and "Utility · soft on pure dummy DPS" or "Utility"
-      impact = isDummy and "not parse-visible" or "less visible on dummy"
-    else
-      score = 40 + skillPct * 30 + setPct * 20
-      reason = "Mixed / general combat"
-      impact = string.format("skills %s · sets %s", fmtPct(skillPct), fmtPct(setPct))
-    end
+      if not isWorldUtil then
+        local score = 45 -- baseline mixed
+        local reason = "general damage star"
+        local impact = "mixed combat"
 
-    -- Bonus when category matches dominant damage shape / set share
-    if cat == "dot" and dotPct >= 0.45 then score = score + 8 end
-    if cat == "direct" and directPct >= 0.55 then score = score + 8 end
-    if cat == "crit" and critPct >= 0.55 then score = score + 6 end
-    if setPct >= 0.12 and (cat == "direct" or cat == "crit") then
-      score = score + 4
-      if cat == "direct" then impact = impact .. " · set-heavy" end
-    end
-    if laPct >= 0.12 and cat == "direct" then
-      score = score + 3
-    end
+        if cat == "dot" then
+          score = 20 + dotPct * 100
+          reason = string.format("DoT · parse DoT %s", fmtPct(dotPct))
+          impact = string.format("aligns with DoT %s of dmg", fmtPct(dotPct))
+          if dotPct >= 0.50 then score = score + 10; impact = "strong DoT parse match" end
+          if dotPct < 0.25 then score = score - 12; impact = "DoT star · parse is direct-heavy" end
+        elseif cat == "direct" then
+          score = 20 + directPct * 100
+          reason = string.format("Direct · parse direct %s", fmtPct(directPct))
+          impact = string.format("aligns with direct %s of dmg", fmtPct(directPct))
+          if directPct >= 0.55 then score = score + 10; impact = "strong direct parse match" end
+          if directPct < 0.30 then score = score - 10; impact = "direct star · parse is DoT-heavy" end
+        elseif cat == "crit" then
+          score = 25 + critPct * 85
+          reason = string.format("Crit · parse crit %s", fmtPct(critPct))
+          impact = string.format("crit rate this parse %s", fmtPct(critPct))
+          if critPct >= 0.58 then score = score + 8; impact = "high crit parse · star pays" end
+          if critPct < 0.42 then score = score - 8; impact = "crit star · low crit this parse" end
+        elseif cat == "ult" then
+          score = 18 + ultPct * 140
+          if ultPct < 0.04 then
+            reason = "Ult · low ult damage this parse"
+            impact = "ult share low · soft on this parse"
+          else
+            reason = string.format("Ult · ult share %s", fmtPct(ultPct))
+            impact = string.format("ult %s of dmg this parse", fmtPct(ultPct))
+          end
+        elseif cat == "pen" then
+          score = 55
+          reason = "Penetration star"
+          impact = "pen always relevant on dummy; trial may @cap"
+          if setPct >= 0.15 then score = score + 4 end
+        elseif cat == "aoe" then
+          score = isDummy and 30 or 52
+          reason = isDummy and "AoE · dummy is single-target" or "AoE star"
+          impact = isDummy and "little ST parse impact" or "helps multi-target"
+        elseif cat == "utility" then
+          score = isDummy and 20 or 40
+          reason = isDummy and "Utility · soft on pure dummy DPS" or "Utility"
+          impact = isDummy and "not parse-visible" or "less visible on dummy"
+        else
+          score = 40 + skillPct * 30 + setPct * 20
+          reason = "Mixed / general combat"
+          impact = string.format("skills %s · sets %s", fmtPct(skillPct), fmtPct(setPct))
+        end
 
-    if score > 100 then score = 100 end
-    if score < 0 then score = 0 end
+        -- Bonus when category matches dominant damage shape / set share
+        if cat == "dot" and dotPct >= 0.45 then score = score + 8 end
+        if cat == "direct" and directPct >= 0.55 then score = score + 8 end
+        if cat == "crit" and critPct >= 0.55 then score = score + 6 end
+        if setPct >= 0.12 and (cat == "direct" or cat == "crit") then
+          score = score + 4
+          if cat == "direct" then impact = impact .. " · set-heavy" end
+        end
+        if laPct >= 0.12 and cat == "direct" then
+          score = score + 3
+        end
 
-    local fitLabel, fitKey
-    if score >= 62 then
-      fitLabel, fitKey = "Strong", "strong"
-      strongCount = strongCount + 1
-    elseif score >= 42 then
-      fitLabel, fitKey = "OK", "ok"
-    else
-      fitLabel, fitKey = "Soft", "soft"
-      softCount = softCount + 1
-    end
+        if score > 100 then score = 100 end
+        if score < 0 then score = 0 end
 
-    cps[#cps + 1] = {
-      name = cp.name or "?",
-      id = cp.id,
-      cat = cat,
-      catLabel = catLabel,
-      score = score,
-      fitLabel = fitLabel,
-      fitKey = fitKey,
-      reason = reason,
-      impact = impact,
-      constellation = constellation,
-    }
-    end -- name filter
-    end -- craft constellation skip
+        local fitLabel, fitKey
+        if score >= 62 then
+          fitLabel, fitKey = "Strong", "strong"
+          strongCount = strongCount + 1
+        elseif score >= 42 then
+          fitLabel, fitKey = "OK", "ok"
+        else
+          fitLabel, fitKey = "Soft", "soft"
+          softCount = softCount + 1
+        end
+
+        cps[#cps + 1] = {
+          name = cp.name or "?",
+          id = cp.id,
+          cat = cat,
+          catLabel = catLabel,
+          score = score,
+          fitLabel = fitLabel,
+          fitKey = fitKey,
+          reason = reason,
+          impact = impact,
+          constellation = constellation,
+        }
+      end -- not world util
+    end -- not craft constellation
   end
 
   table.sort(cps, function(a, b)
@@ -4637,7 +4711,7 @@ local function buildBuildSynergy(session)
     headline = "Top damage sources ranked · no champion bar stars read (check CP slots / reload)"
   else
     headline = string.format(
-      "%d Strong · %d Soft of %d slotted CP  ·  ranked vs this parse’s damage shape",
+      "%d Strong · %d Soft of %d slotted CP  ·  ranked vs this parse's damage shape",
       strongCount, softCount, #cps
     )
   end
@@ -4660,10 +4734,16 @@ local function buildBuildSynergy(session)
     elseif cat == "pen" then
       elig, eligNote = totalDmg, "all damage (pen)"
     elseif cat == "aoe" then
-      elig, eligNote = isDummy and (totalDmg * 0.15) or (totalDmg * 0.55),
-        isDummy and "limited on single-target dummy" or "multi-target proxy"
+      if isDummy then
+        elig = totalDmg * 0.15
+        eligNote = "limited on single-target dummy"
+      else
+        elig = totalDmg * 0.55
+        eligNote = "multi-target proxy"
+      end
     else
-      elig, eligNote = totalDmg * (0.35 + skillPct * 0.4), "mixed combat proxy"
+      elig = totalDmg * (0.35 + skillPct * 0.4)
+      eligNote = "mixed combat proxy"
     end
     c.eligibleDmg = elig
     c.eligiblePct = totalDmg > 0 and (elig / totalDmg) or 0
@@ -9403,12 +9483,12 @@ end
 -- Rotation: summary + fine pulse + skill icons + pattern tips
 ---------------------------------------------------------------------
 local function createRotationUI(screen)
-  if screen.rotationUI and not screen.rotationUI._v3176 then screen.rotationUI = nil end
+  if screen.rotationUI and not screen.rotationUI._v3177 then screen.rotationUI = nil end
   if screen.rotationUI then return screen.rotationUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.rotation
   if not panel then return nil end
-  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v3176 = true }
+  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v3177 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuRotRootV8", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -9418,7 +9498,7 @@ local function createRotationUI(screen)
   ui.title:SetText("ROTATION DIAGNOSTICS")
   ui.meta = makeDashLabel(ui.root, "DM2StatsMenuRotMetaV8", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.meta:SetAnchor(TOPLEFT, ui.title, BOTTOMLEFT, 0, 2)
-  ui.meta:SetText("|c66FF66border = good|r  |cFFCC66late|r  |cFF6666missed|r  |c66AAFFtoo fast|r  ·  S swap · U ult under timeline (dummy)")
+  ui.meta:SetText("|c66FF66border = good|r  |cFFCC66late|r  |cFF6666missed|r  |c66AAFFtoo fast|r  ·  |c88DDAAS|r swap / |cFFAA66U|r ult under icons")
 
   ui.sumPanel = WM:CreateControl("DM2StatsMenuRotSumV8", ui.root, CT_CONTROL)
   local sbg = makeSectionFrame(ui.sumPanel, "DM2StatsMenuRotSumBGV8", true)
@@ -9427,7 +9507,7 @@ local function createRotationUI(screen)
   ui.sumLine1:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 8)
   ui.sumLine2 = makeDashLabel(ui.sumPanel, "DM2StatsMenuRotSum2V8", 14, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.sumLine2:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 30)
-  -- Exec detail only in header (marker strip lives under skill timeline, not duplicated here)
+  -- Exec detail only in header (S/U sit under each skill icon)
   ui.execLine = makeDashLabel(ui.sumPanel, "DM2StatsMenuRotExecV8", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.execLine:SetAnchor(TOPLEFT, ui.sumPanel, TOPLEFT, 12, 50)
   ui.execLine:SetMaxLineCount(2)
@@ -9452,11 +9532,11 @@ local function createRotationUI(screen)
   ibg:SetAnchorFill(ui.iconPanel)
   ui.iconTitle = makeDashLabel(ui.iconPanel, "DM2StatsMenuRotIconTitleV8", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
   ui.iconTitle:SetAnchor(TOPLEFT, ui.iconPanel, TOPLEFT, 10, 4)
-  ui.iconTitle:SetText("SKILL TIMELINE  (icons · thick border = weave result · F/B/U on icons)")
+  ui.iconTitle:SetText("SKILL TIMELINE  ·  |c88DDAAS|r bar swap · |cFFAA66U|r ult under icon = when it happened")
   ui.iconWrap = WM:CreateControl("DM2StatsMenuRotIconWrapV8", ui.iconPanel, CT_CONTROL)
-  -- Marker timeline under icons: S swap / U ult (dummy parses only; drop L — borders already mark late weaves)
-  ui.iconMarkerLine = makeDashLabel(ui.iconPanel, "DM2StatsMenuRotIconMarkV8", 12, 0.55, 0.92, 0.75, 1)
-  ui.iconMarkerLine:SetMaxLineCount(2)
+  -- Legend line only (per-icon S/U tags are under each halo)
+  ui.iconMarkerLine = makeDashLabel(ui.iconPanel, "DM2StatsMenuRotIconMarkV8", 11, 0.55, 0.75, 0.70, 1)
+  ui.iconMarkerLine:SetMaxLineCount(1)
   for i = 1, ROT_TIMELINE_ICONS do
     -- Outer halo (thick colored ring) + inner plate so result color is obvious.
     local halo = WM:CreateControl("DM2StatsMenuRotIconHaloV9_" .. i, ui.iconWrap, CT_BACKDROP)
@@ -9483,7 +9563,11 @@ local function createRotationUI(screen)
     local barTag = makeDashLabel(halo, "DM2StatsMenuRotIconBarV9_" .. i, 10, 1, 1, 1, 1)
     barTag:SetAnchor(TOPLEFT, halo, TOPLEFT, 1, -1)
     barTag:SetHidden(true)
-    ui.icons[i] = { halo = halo, slot = slot, tex = tex, fall = fall, barTag = barTag }
+    -- S/U swap/ult marker under this icon (aligned to fight timing)
+    local markTag = makeDashLabel(ui.iconWrap, "DM2StatsMenuRotIconMkV9_" .. i, 11, 0.55, 0.92, 0.75, 1)
+    markTag:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    markTag:SetHidden(true)
+    ui.icons[i] = { halo = halo, slot = slot, tex = tex, fall = fall, barTag = barTag, markTag = markTag }
   end
 
   ui.patPanel = WM:CreateControl("DM2StatsMenuRotPatPanelV8", ui.root, CT_CONTROL)
@@ -9543,10 +9627,11 @@ local function layoutRotationUI(ui, hostW, hostH)
   ui.iconTitle:SetWidth(W - 16)
   ui.iconWrap:ClearAnchors()
   ui.iconWrap:SetAnchor(TOPLEFT, ui.iconPanel, TOPLEFT, 8, 22)
-  ui.iconWrap:SetDimensions(W - 16, math.max(40, iconH - 52))
+  -- Leave room under last icon row for per-icon S/U tags (~14px)
+  ui.iconWrap:SetDimensions(W - 16, math.max(40, iconH - 40))
   if ui.iconMarkerLine then
     ui.iconMarkerLine:ClearAnchors()
-    ui.iconMarkerLine:SetAnchor(BOTTOMLEFT, ui.iconPanel, BOTTOMLEFT, 12, -6)
+    ui.iconMarkerLine:SetAnchor(BOTTOMLEFT, ui.iconPanel, BOTTOMLEFT, 12, -4)
     ui.iconMarkerLine:SetWidth(W - 24)
   end
 
@@ -9582,6 +9667,8 @@ local function refreshRotationUI(screen, session)
     for _, ic in ipairs(ui.icons) do
       if ic.halo then ic.halo:SetHidden(true)
       elseif ic.slot then ic.slot:SetHidden(true) end
+      if ic.markTag then ic.markTag:SetHidden(true) end
+      if ic.barTag then ic.barTag:SetHidden(true) end
     end
     for i, line in ipairs(ui.patterns) do line:SetText(i == 1 and "Parse a fight to unlock patterns." or "") end
     return
@@ -9605,45 +9692,9 @@ local function refreshRotationUI(screen, session)
     tostring(tonumber(w.inputSkillPresses) or tonumber(w.skillEventCount) or 0),
     tostring(tonumber(w.barSwapCount) or 0)
   ))
-  -- Under-timeline S/U markers on dummy only (long trial/dungeon fights omit to save space).
-  -- No L (late phase) — icon borders already encode Good/Late/Miss.
   if ui.markerLine then
     ui.markerLine:SetText("")
     ui.markerLine:SetHidden(true)
-  end
-  if ui.iconMarkerLine then
-    local showMarkers = session.isDummy == true
-    if showMarkers then
-      local pts = session.markers and session.markers.points
-      local glyphs = {}
-      local maxG = 48
-      if type(pts) == "table" and #pts > 0 then
-        local step = math.max(1, math.ceil(#pts / maxG))
-        for i = 1, #pts, step do
-          local p = pts[i]
-          if p.type == "swap" then
-            glyphs[#glyphs + 1] = "|c88DDAAS|r"
-          elseif p.type == "ult" then
-            glyphs[#glyphs + 1] = "|cFFAA66U|r"
-          end
-          -- skip late_phase (L)
-        end
-      end
-      if #glyphs > 0 then
-        ui.iconMarkerLine:SetHidden(false)
-        ui.iconMarkerLine:SetText(
-          table.concat(glyphs, " ") .. "   ·  |c88DDAAS|r bar swap · |cFFAA66U|r ult  (under timeline)"
-        )
-      else
-        ui.iconMarkerLine:SetHidden(false)
-        ui.iconMarkerLine:SetText(
-          "|c888888S/U under timeline: none this parse (need post-3.17 dummy with swaps/ults)|r"
-        )
-      end
-    else
-      ui.iconMarkerLine:SetText("")
-      ui.iconMarkerLine:SetHidden(true)
-    end
   end
   if ui.execLine then
     local bs = session.barStats or {}
@@ -9682,21 +9733,27 @@ local function refreshRotationUI(screen, session)
     end
   end
 
-  -- Icon timeline — thick colored halo behind each skill
+  -- Icon timeline — thick colored halo behind each skill; S/U under icons by time
   local events = buildTimelineIconEvents(session, ROT_TIMELINE_ICONS)
+  -- Dummy: full S/U alignment. Long trial/dungeon: still show but only if markers exist.
+  local markTags = buildIconMarkerTags(session, events)
   local wrapWW = ui.iconWrap:GetWidth() or textW
   if wrapWW < 50 then wrapWW = textW end
   local cellSize, iconGap = 36, 6
+  local markH = 12
   local perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
+  local markCount = 0
   for i, ic in ipairs(ui.icons) do
     local ev = events[i]
     local host = ic.halo or ic.slot
     if ev and host then
       local col = (i - 1) % perRow
       local row = math.floor((i - 1) / perRow)
+      local x = col * (cellSize + iconGap)
+      local y = row * (cellSize + iconGap + markH)
       host:ClearAnchors()
       host:SetDimensions(cellSize, cellSize)
-      host:SetAnchor(TOPLEFT, ui.iconWrap, TOPLEFT, col * (cellSize + iconGap), row * (cellSize + iconGap))
+      host:SetAnchor(TOPLEFT, ui.iconWrap, TOPLEFT, x, y)
       local er, eg, eb = ev.edgeR or 0.5, ev.edgeG or 0.5, ev.edgeB or 0.5
       if ic.halo then
         ic.halo:SetCenterColor(er, eg, eb, 1)
@@ -9719,7 +9776,6 @@ local function refreshRotationUI(screen, session)
       else
         ic.tex:SetHidden(true)
         if ic.fall then
-          -- Initials when icon missing so user can still identify the skill
           local initials = ev.initials or shortSkillInitials(ev.name)
           ic.fall:SetText(initials)
           ic.fall:SetHidden(false)
@@ -9727,7 +9783,6 @@ local function refreshRotationUI(screen, session)
       end
       if ic.barTag then
         local tag = ""
-        -- Black (near-black) letters on icon for readability over bright skill art
         local tr, tg, tb = 0.05, 0.05, 0.06
         if ev.isUltimate then
           tag = "U"
@@ -9744,9 +9799,46 @@ local function refreshRotationUI(screen, session)
           ic.barTag:SetHidden(true)
         end
       end
+      -- Per-icon S/U under the box (when swap/ult happened near this skill)
+      if ic.markTag then
+        local mk = markTags[i]
+        if mk and mk ~= "" then
+          local colored = ""
+          for ci = 1, #mk do
+            local ch = string.sub(mk, ci, ci)
+            if ch == "S" then colored = colored .. "|c88DDAAS|r"
+            elseif ch == "U" then colored = colored .. "|cFFAA66U|r"
+            else colored = colored .. ch end
+          end
+          ic.markTag:ClearAnchors()
+          ic.markTag:SetAnchor(TOP, host, BOTTOM, 0, 0)
+          ic.markTag:SetWidth(cellSize + 4)
+          ic.markTag:SetText(colored)
+          ic.markTag:SetHidden(false)
+          markCount = markCount + 1
+        else
+          ic.markTag:SetText("")
+          ic.markTag:SetHidden(true)
+        end
+      end
     elseif host then
       host:SetHidden(true)
       if ic.barTag then ic.barTag:SetHidden(true) end
+      if ic.markTag then ic.markTag:SetHidden(true) end
+    end
+  end
+  if ui.iconMarkerLine then
+    if markCount > 0 then
+      ui.iconMarkerLine:SetHidden(false)
+      ui.iconMarkerLine:SetText(
+        string.format("|c88DDAAS|r = bar swap · |cFFAA66U|r = ult under the skill when it fired  (%d markers)", markCount)
+      )
+    elseif session.isDummy then
+      ui.iconMarkerLine:SetHidden(false)
+      ui.iconMarkerLine:SetText("|c888888No S/U markers this parse (need post-3.17 dummy with bar swaps / ults)|r")
+    else
+      ui.iconMarkerLine:SetText("")
+      ui.iconMarkerLine:SetHidden(true)
     end
   end
 
@@ -11753,7 +11845,7 @@ function DM2StatsMenuShell_Gamepad:RefreshHeader()
       and string.format("EXP DONE %d/%d", n, need)
       or string.format("EXP ON %d/%d", n, need)
   end
-  local subtitle = "v3.17.6  |  L2/R2 fights  |  " .. expBit .. "  |  "
+  local subtitle = "v3.17.10  |  L2/R2 fights  |  " .. expBit .. "  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",
@@ -11870,18 +11962,33 @@ function DM2StatsMenuShell_Gamepad:CycleHistory(delta)
   if delta == 0 then return end
   local count = historyCount()
   if count <= 0 then
-    d("|cFFAA00DM2 Stats Menu|r: no fight history yet.")
+    -- Quiet: spamming when empty is noise
     return
   end
   local nextOffset = clampHistoryOffset((historyOffset or 0) + delta, count)
   if nextOffset == historyOffset then
-    if delta > 0 then d("|cFFAA00DM2 Stats Menu|r: oldest fight.")
-    else d("|cFFAA00DM2 Stats Menu|r: already on latest fight.") end
+    -- Edge of list — silent (R2 on #1 used to spam "already on latest fight")
     return
   end
   historyOffset = nextOffset
   self:_RefreshContentLight()
   M.RefreshKeybindStrip()
+end
+
+-- Called from main after a successful history save (keep menu on newest parse)
+function M.OnFightSaved()
+  historyOffset = 0
+  if screenObject and type(SCENE_MANAGER) == "table"
+      and SCENE_MANAGER:IsShowing(SCENE_NAME) then
+    pcall(function()
+      if type(screenObject._RefreshContentLight) == "function" then
+        screenObject:_RefreshContentLight()
+      elseif type(screenObject.RefreshContent) == "function" then
+        screenObject:RefreshContent()
+      end
+      M.RefreshKeybindStrip()
+    end)
+  end
 end
 
 function DM2StatsMenuShell_Gamepad:OnBackButtonPressed()

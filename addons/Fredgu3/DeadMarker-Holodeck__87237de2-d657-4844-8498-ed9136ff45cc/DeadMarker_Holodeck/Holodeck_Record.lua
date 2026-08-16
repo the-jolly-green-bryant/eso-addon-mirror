@@ -1,8 +1,10 @@
 --=====================================================================
--- Holodeck_Record.lua — arm / record / sample (v0.0.19)
+-- Holodeck_Record.lua — arm / record / sample (v0.0.25)
 --
 -- Bosses = boss1–8 bar only (never reticle-as-boss).
 -- Elites = reticle soft-aim → mini/elite tracks.
+-- NPC positions: map-relative fallback when Raw world pos is frozen/zero
+-- (ESO often only updates world XYZ for player/group; reticle map still moves).
 -- Collapse uses path fidelity so continuous reticle samples keep movement.
 --=====================================================================
 
@@ -131,31 +133,184 @@ local function GetUnitMaxHealthSafe(unitTag)
     return 0
 end
 
--- World XYZ for any unit tag. Tries Raw then World; tolerates 3- or 4-return APIs.
-local function GetUnitWorldXYZ(unitTag)
-    local function unpackPos(a, b, c, d)
-        if type(b) == "number" and type(d) == "number" then
-            return b, c, d -- zoneIndex, x, y, z
-        end
-        if type(a) == "number" and type(c) == "number" and d == nil then
-            return a, b, c -- x, y, z
-        end
-        return nil, nil, nil
+-- ---------------------------------------------------------------------------
+-- World XYZ (centimeters)
+--
+-- Player/group: GetUnitRawWorldPosition is reliable and updates every frame.
+-- Boss / reticle / NPCs: ZOS often returns 0, a spawn anchor, or a frozen first
+-- pose (QA: elites stuck at origin while player path has many ticks). Map
+-- normalized coords (GetMapPlayerPosition) still update for reticle NPCs.
+-- Strategy:
+--   1) Read Raw (+ World fallback).
+--   2) Self-calibrate map→meters from the player's own movement.
+--   3) For non-player tags, prefer map-relative world when Raw is missing,
+--      equals player, near-zero, or frozen while the map pos is moving.
+-- ---------------------------------------------------------------------------
+local function UnpackWorldPos(ok, a, b, c, d)
+    if not ok then return nil, nil, nil end
+    -- Normal: zoneIndex, worldX, worldY, worldZ
+    if type(b) == "number" and type(d) == "number" then
+        return b, c, d
     end
+    -- Rare: x, y, z (no zone)
+    if type(a) == "number" and type(c) == "number" and d == nil then
+        return a, b, c
+    end
+    return nil, nil, nil
+end
+
+local function ReadRawWorld(unitTag)
     if type(GetUnitRawWorldPosition) == "function" then
-        local ok, a, b, c, d = pcall(GetUnitRawWorldPosition, unitTag)
-        if ok then
-            local x, y, z = unpackPos(a, b, c, d)
-            if x then return x, y, z end
-        end
+        local wx, wy, wz = UnpackWorldPos(pcall(GetUnitRawWorldPosition, unitTag))
+        if wx then return wx, wy, wz end
     end
     if type(GetUnitWorldPosition) == "function" then
-        local ok, a, b, c, d = pcall(GetUnitWorldPosition, unitTag)
-        if ok then
-            local x, y, z = unpackPos(a, b, c, d)
-            if x then return x, y, z end
+        local wx, wy, wz = UnpackWorldPos(pcall(GetUnitWorldPosition, unitTag))
+        if wx then return wx, wy, wz end
+    end
+    return nil, nil, nil
+end
+
+local function ReadMapXZ(unitTag)
+    if type(GetMapPlayerPosition) ~= "function" then return nil, nil end
+    local ok, mx, my = pcall(GetMapPlayerPosition, unitTag)
+    if not ok then return nil, nil end
+    if type(mx) ~= "number" or type(my) ~= "number" then return nil, nil end
+    -- (0,0) is almost always "no position" for NPCs on the current map
+    if mx == 0 and my == 0 then return nil, nil end
+    return mx, my
+end
+
+local function Dist2(ax, az, bx, bz)
+    local dx, dz = (ax or 0) - (bx or 0), (az or 0) - (bz or 0)
+    return dx * dx + dz * dz
+end
+
+-- Player walk calibrates meters-per-map-unit (full 0..1 map span).
+local function UpdateMapScaleFromPlayer(px, pz)
+    local mx, my = ReadMapXZ("player")
+    if not mx or not px then return end
+    local prev = H.record._mapCal
+    if prev and prev.mx and prev.wx then
+        local md = math.sqrt(Dist2(mx, my, prev.mx, prev.my))
+        local wd = math.sqrt(Dist2(px, pz, prev.wx, prev.wz)) / 100 -- meters
+        if md > 0.00005 and wd > 0.4 then
+            local s = wd / md
+            -- Sanity: dungeon maps ~ 50–800 m across; overland larger
+            if s > 20 and s < 20000 then
+                local old = H.record.mapScaleM
+                if old and old > 0 then
+                    H.record.mapScaleM = old * 0.65 + s * 0.35
+                else
+                    H.record.mapScaleM = s
+                end
+            end
         end
     end
+    H.record._mapCal = { mx = mx, my = my, wx = px, wz = pz }
+end
+
+local function MapRelativeWorld(unitTag, px, py, pz)
+    local pmx, pmy = ReadMapXZ("player")
+    local tmx, tmy = ReadMapXZ(unitTag)
+    if not pmx or not tmx or not px then return nil, nil, nil end
+    local scale = H.record.mapScaleM
+    if not scale or scale <= 0 then
+        -- Uncalibrated: dungeon-ish default (~200 m map). Better after player walks.
+        scale = 200
+    end
+    local wx = px + (tmx - pmx) * scale * 100
+    local wz = pz + (tmy - pmy) * scale * 100
+    return wx, py or 0, wz
+end
+
+local function IsPlayerLikeTag(unitTag)
+    if unitTag == "player" then return true end
+    if type(IsUnitPlayer) == "function" then
+        local ok, p = pcall(IsUnitPlayer, unitTag)
+        if ok and p then return true end
+    end
+    if type(IsUnitGrouped) == "function" then
+        local ok, g = pcall(IsUnitGrouped, unitTag)
+        if ok and g then return true end
+    end
+    return false
+end
+
+local function GetUnitWorldXYZ(unitTag)
+    if not unitTag then return nil, nil, nil end
+
+    local rx, ry, rz = ReadRawWorld(unitTag)
+
+    -- Player / group: always trust Raw/World (updates every frame).
+    if IsPlayerLikeTag(unitTag) then
+        if rx then return rx, ry, rz end
+        return nil, nil, nil
+    end
+
+    local px, py, pz = ReadRawWorld("player")
+    if px then UpdateMapScaleFromPlayer(px, pz) end
+
+    local mapWx, mapWy, mapWz = MapRelativeWorld(unitTag, px, py, pz)
+
+    -- Track raw freeze vs map motion (diagnostics + stuck flag)
+    H.record._lastRaw = H.record._lastRaw or {}
+    H.record._lastMap = H.record._lastMap or {}
+    local tmx, tmy = ReadMapXZ(unitTag)
+    local mapMoved = false
+    if tmx then
+        local prevM = H.record._lastMap[unitTag]
+        if prevM and Dist2(tmx, tmy, prevM.mx, prevM.my) > (0.00002 * 0.00002) then
+            mapMoved = true
+        end
+        H.record._lastMap[unitTag] = { mx = tmx, my = tmy }
+    end
+    local rawStuck = false
+    if rx then
+        local prevR = H.record._lastRaw[unitTag]
+        if prevR and Dist2(rx, rz, prevR.x, prevR.z) < 1 and mapMoved then
+            rawStuck = true
+            H.record._rawStuckTags = H.record._rawStuckTags or {}
+            H.record._rawStuckTags[unitTag] = true
+        end
+        H.record._lastRaw[unitTag] = { x = rx, z = rz }
+    end
+    -- Once Raw freezes for a tag this take, keep preferring map for that tag
+    if H.record._rawStuckTags and H.record._rawStuckTags[unitTag] then
+        rawStuck = true
+    end
+
+    -- Raw "looks real"?
+    local rawOk = false
+    if rx and rz and type(rx) == "number" and type(rz) == "number" then
+        local nearZero = (math.abs(rx) < 1 and math.abs(rz) < 1)
+        local sameAsPlayer = px and Dist2(rx, rz, px, pz) < (50 * 50) -- <0.5 m
+        -- Frozen at record origin while player walked away (classic QA elite@0,0)
+        local sameAsOrigin = false
+        if H.record.origin and H.record.origin.x then
+            sameAsOrigin = Dist2(rx, rz, H.record.origin.x, H.record.origin.z) < (50 * 50)
+            if sameAsOrigin and px and Dist2(px, pz, H.record.origin.x, H.record.origin.z) > (200 * 200) then
+                sameAsOrigin = true -- player left origin; raw still there → bad
+            else
+                sameAsOrigin = false
+            end
+        end
+        rawOk = (not nearZero) and (not sameAsPlayer) and (not sameAsOrigin) and (not rawStuck)
+    end
+
+    -- Prefer map-relative for NPCs whenever we have a calibrated scale (or Raw is bad).
+    -- Map coords update for reticle NPCs; Raw often freezes on spawn/first pose.
+    local calibrated = H.record.mapScaleM and H.record.mapScaleM > 0
+    if mapWx and (calibrated or not rawOk or rawStuck) then
+        return mapWx, mapWy, mapWz
+    end
+    if rawOk then
+        return rx, ry, rz
+    end
+    if mapWx then
+        return mapWx, mapWy, mapWz
+    end
+    if rx then return rx, ry, rz end
     return nil, nil, nil
 end
 
@@ -228,6 +383,15 @@ local function IsHostileNpc(unitTag)
     if type(IsUnitPlayer) == "function" then
         local ok, p = pcall(IsUnitPlayer, unitTag)
         if ok and p then return false end
+    end
+    -- Companions / pets (QA: Zerith-var captured as "elite")
+    if type(IsUnitCompanion) == "function" then
+        local ok, c = pcall(IsUnitCompanion, unitTag)
+        if ok and c then return false end
+    end
+    if type(IsUnitFriendlyFollower) == "function" then
+        local ok, c = pcall(IsUnitFriendlyFollower, unitTag)
+        if ok and c then return false end
     end
     if type(IsUnitDead) == "function" then
         local ok, dead = pcall(IsUnitDead, unitTag)
@@ -382,10 +546,21 @@ local function ProbeReticle()
     p.rank = DifficultyRank(p.difficulty)
     p.maxHealth = GetUnitMaxHealthSafe(tag) or 0
     p.unitId = GetUnitIdSafe(tag)
+    local rawX, _, rawZ = ReadRawWorld(tag)
+    local px, _, pz = ReadRawWorld("player")
+    if px then UpdateMapScaleFromPlayer(px, pz) end
+    local mapX, _, mapZ = MapRelativeWorld(tag, px, nil, pz)
     local x, _, z = GetUnitWorldXYZ(tag)
     if x then
         p.hasPos = true
         p.x, p.z = x, z
+    end
+    p.rawX, p.rawZ = rawX, rawZ
+    p.mapX, p.mapZ = mapX, mapZ
+    p.mapScale = H.record.mapScaleM
+    if rawX and mapX then
+        local d = math.sqrt(Dist2(rawX, rawZ, mapX, mapZ)) / 100
+        p.rawMapDeltaM = d
     end
     local classKey, _, rank2 = ClassifyEnemy(p.unitId, {
         name = p.name, difficulty = p.difficulty, maxHealth = p.maxHealth,
@@ -428,6 +603,19 @@ local function DumpProbe(p)
     if p.maxHealth and p.maxHealth > 0 then
         dhd(string.format("  hp=%.0f rank=%s", p.maxHealth, tostring(p.rank)))
     end
+    if p.hasPos and p.x then
+        local lx, lz = nil, nil
+        if H.origin and H.origin.x then
+            lx = (p.x - H.origin.x) / 100
+            lz = (p.z - H.origin.z) / 100
+        end
+        dhd(string.format("  world xz=%.0f,%.0f  local=%.1f,%.1f  scale=%s",
+            p.x or 0, p.z or 0, lx or 0, lz or 0,
+            p.mapScale and string.format("%.0fm", p.mapScale) or "uncalibrated"))
+    end
+    if p.rawX and p.mapX and p.rawMapDeltaM and p.rawMapDeltaM > 0.5 then
+        dhd(string.format("  raw vs map-rel differ by %.1fm (using best for path)", p.rawMapDeltaM))
+    end
     dhd("  → " .. tostring(p.reason))
     if not p.exists or p.reason:find("no reticle", 1, true) then
         dhd("  Tip: soft-aim the crosshair onto the mob — hard-target not required.")
@@ -441,18 +629,30 @@ local function RawToLocal(rx, rz)
     return (rx - H.origin.x) / 100, (rz - H.origin.z) / 100
 end
 
-local function EnsureOriginFromPlayerIfNeeded()
-    if H.origin then return true end
-    if sv().recordRequirePlant then
-        dhd("Record blocked: |cC0E0FF/hd plant|r first (require plant is ON in settings).")
-        return false
+-- Recording origin is ALWAYS the player in the current zone at record start.
+-- Never reuse a house plant origin (that produced ~900m garbage coords in QA).
+local function BindRecordOriginToPlayer(force)
+    H.record = H.record or {}
+    if not force and H.record.origin and H.record.origin.x then
+        H.origin = H.record.origin
+        return true
+    end
+    if sv().recordRequirePlant and not force and not (H.record.origin and H.record.origin.x) then
+        -- require plant only blocks when we have no record origin yet
+        if not H.origin then
+            dhd("Record blocked: |cC0E0FF/hd plant|r first (require plant is ON in settings).")
+            return false
+        end
     end
     local x, y, z = GetUnitWorldXYZ("player")
     if not x then return false end
-    H.origin = { x = x, y = y, z = z }
-    dhd("Record: no plant — origin at player (relative take). Prefer /hd plant at a landmark.")
-    if type(H.EnsureOriginMarker) == "function" then pcall(H.EnsureOriginMarker) end
+    H.record.origin = { x = x, y = y, z = z }
+    H.origin = H.record.origin
     return true
+end
+
+local function EnsureOriginFromPlayerIfNeeded()
+    return BindRecordOriginToPlayer(false)
 end
 
 local function CollectUnitsNow()
@@ -512,12 +712,24 @@ local function CollectUnitsNow()
         if IsHostileNpc("reticleover") then
             local keyId, info = CaptureReticleTarget()
             local name = (info and info.name) or (GetUnitName and GetUnitName("reticleover")) or "enemy"
-            local unitId = keyId or GetUnitIdSafe("reticleover")
+            local unitId = GetUnitIdSafe("reticleover") or keyId
             local onBossBar = unitId and H.record.activeBossIds[unitId]
+            -- Name match: unitId APIs often fail on reticle → same boss was dual-tracked
+            if not onBossBar and name and name ~= "" and GetUnitName then
+                local nlow = string.lower(name)
+                for i = 1, 8 do
+                    local bn = GetUnitName("boss" .. i)
+                    if bn and bn ~= "" and string.lower(bn) == nlow then
+                        onBossBar = true
+                        break
+                    end
+                end
+            end
             if not onBossBar and info and EliteAllowedByTier(info) then
                 local kind = info.kind or "mini"
                 if kind == "boss" then kind = "mini" end -- reticle path never "boss"
-                local ekey = "elite_" .. SanitizeKey(name) .. "_" .. tostring(unitId or SanitizeKey(name))
+                local idPart = unitId or SanitizeKey(name)
+                local ekey = "elite_" .. SanitizeKey(name) .. "_" .. tostring(idPart)
                 if add("reticleover", kind, name, ekey) then
                     if not H.record.primaryTarget then H.record.primaryTarget = name end
                 end
@@ -547,6 +759,10 @@ local function PushSample()
     end
     RefreshActiveBossIds()
     CaptureReticleTarget()
+
+    -- Always calibrate map scale from player motion (even before any NPC is tagged)
+    local px, _, pz = ReadRawWorld("player")
+    if px then UpdateMapScaleFromPlayer(px, pz) end
 
     local now = GetFrameTimeMilliseconds() or 0
     local interval = tonumber(sv().recordIntervalMs) or 400
@@ -590,6 +806,8 @@ end
 --   "lean"  = sparse (manual-style); NOT used for live reticle capture anymore
 --
 -- BUG FIX: old lean thresh 1.25m collapsed continuous walks into 1 start pose + hold.
+-- Path mode uses distance from last *keyframe* (not last raw) with a low thresh so
+-- slow boss walks survive. Always keep first + last pose.
 local function CollapseTrack(points, mode)
     if not points or #points == 0 then return {} end
     if #points == 1 then
@@ -599,11 +817,10 @@ local function CollapseTrack(points, mode)
 
     local dense = (mode == true or mode == "dense")
     local path = (mode == "path") or (not dense and mode ~= "lean")
-    -- path (default for elite/boss record): 0.45m — walk steps survive collapse
-    -- dense: 0.35m  ·  lean: 1.25m (manual packs only)
-    local moveThresh = dense and 0.35 or (path and 0.45 or 1.25)
+    -- path (boss/elite): 0.25m — slow tank walks survive
+    -- dense: 0.20m  ·  lean: 1.25m (manual packs only)
+    local moveThresh = dense and 0.20 or (path and 0.25 or 1.25)
     local snapDist = dense and 12 or (path and 10 or 8)
-    local stillSec = dense and 0.5 or (path and 0.6 or 1.25)
 
     local out = {}
     local cur = {
@@ -660,6 +877,28 @@ local function CollapseTrack(points, mode)
     return out
 end
 
+local function RawTrackSpan(pts)
+    if not pts or #pts == 0 then return 0, 0, 0 end
+    local minX, maxX = pts[1].x or 0, pts[1].x or 0
+    local minZ, maxZ = pts[1].z or 0, pts[1].z or 0
+    local uniq = 1
+    local lastX, lastZ = pts[1].x, pts[1].z
+    for i = 2, #pts do
+        local x, z = pts[i].x or 0, pts[i].z or 0
+        if x < minX then minX = x end
+        if x > maxX then maxX = x end
+        if z < minZ then minZ = z end
+        if z > maxZ then maxZ = z end
+        local d = math.sqrt((x - (lastX or 0)) ^ 2 + (z - (lastZ or 0)) ^ 2)
+        if d >= 0.15 then
+            uniq = uniq + 1
+            lastX, lastZ = x, z
+        end
+    end
+    local span = math.sqrt((maxX - minX) ^ 2 + (maxZ - minZ) ^ 2)
+    return span, uniq, #pts
+end
+
 local function ApplyRecordingToSandbox()
     local samples = H.record.samples
     if not samples or #samples == 0 then
@@ -714,12 +953,21 @@ local function ApplyRecordingToSandbox()
     for _ in pairs(tracks) do entCount = entCount + 1 end
     dhd(string.format("Record applied: %d entities · %d keyframes (%s collapse) · %d raw frames",
         entCount, kfTotal, collapseMode, #samples))
-    -- Hint if collapse still looks flat
+    if H.record.mapScaleM then
+        dhd(string.format("  map scale ~%.0fm/map (walk to calibrate; used for boss/elite pos)",
+            H.record.mapScaleM))
+    end
+    -- Per-entity raw span: distinguishes stuck API vs truly stationary unit
     for key, pts in pairs(raw) do
         local tr = tracks[key]
-        if pts and #pts >= 5 and tr and #tr <= 2 then
-            dhd(string.format("  note: %s had %d samples → %d keys (little XY change while on reticle?)",
-                tostring(names[key] or key), #pts, #tr))
+        local span, uniq, n = RawTrackSpan(pts)
+        local nk = tr and #tr or 0
+        dhd(string.format("  %s: raw=%d uniq~%d span=%.1fm → %d keys",
+            tostring(names[key] or key), n, uniq, span, nk))
+        if n >= 5 and span < 0.5 and (kinds[key] == "boss" or kinds[key] == "mini") then
+            dhd("    → almost no movement in samples (unit still, or aim was lost). Walk around while soft-aiming a *moving* mob to test paths.")
+        elseif n >= 5 and span >= 1.0 and nk <= 2 then
+            dhd("    → span ok but collapse flattened — report this (bug)")
         end
     end
     return true
@@ -821,10 +1069,22 @@ function H.RecordStart(silent)
     H.record.framesWithUnits = 0
     H.record.primaryTarget = nil
     H.record.unitInfoById = H.record.unitInfoById or {}
-    if not EnsureOriginFromPlayerIfNeeded() then
+    -- Fresh map-scale calibration + stuck-raw trackers each take
+    H.record.mapScaleM = nil
+    H.record._mapCal = nil
+    H.record._lastRaw = {}
+    H.record._lastMap = {}
+    H.record._rawStuckTags = {}
+    -- Critical: origin = player HERE (trial), not leftover house plant
+    if not BindRecordOriginToPlayer(true) then
         H.record.state = "armed"
+        dhd("Record: could not read player position.")
         return
     end
+    dhd("Record origin bound to player (this zone) — house plant ignored for capture.")
+    -- Seed map scale from a few steps of player movement once available
+    local px, _, pz = ReadRawWorld("player")
+    if px then UpdateMapScaleFromPlayer(px, pz) end
     RefreshActiveBossIds()
     StartRecordTick()
     PushSample()

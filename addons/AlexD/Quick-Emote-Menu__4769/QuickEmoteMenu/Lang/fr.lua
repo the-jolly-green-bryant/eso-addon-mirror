@@ -1,14 +1,23 @@
 local strings = {
-    SI_QUICKEMOTEMENU_UNKNOWN_NAME         = "?",
-    SI_QUICKEMOTEMENU_CATEGORIES           = "Catégories",
-    SI_QUICKEMOTEMENU_FAVORITES            = "Favoris",
-    SI_QUICKEMOTEMENU_NO_FAVORITES         = "(vide)",
-    SI_QUICKEMOTEMENU_BINDING_TOGGLE       = "Basculer",
-    SI_QUICKEMOTEMENU_OPTION_HOVER         = "Délai survol sous-menu (ms)",
-    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP = "0 = ouvrir uniquement au clic",
-    SI_QUICKEMOTEMENU_OPTION_CLOSE         = "Fermer le menu après emote (clic gauche)",
-    SI_QUICKEMOTEMENU_OPTION_RESET         = "Réinitialiser position du bouton",
-    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION   = [[|c3399FFCONTRÔLES|r
+    SI_QUICKEMOTEMENU_UNKNOWN_NAME          = "?",
+    SI_QUICKEMOTEMENU_CATEGORIES            = "Catégories",
+    SI_QUICKEMOTEMENU_FAVORITES             = "Favoris",
+    SI_QUICKEMOTEMENU_NO_FAVORITES          = "(vide)",
+    SI_QUICKEMOTEMENU_BINDING_TOGGLE        = "Basculer",
+    SI_QUICKEMOTEMENU_OPTION_HOVER          = "Délai survol sous-menu (ms)",
+    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP  = "0 = ouvrir uniquement au clic",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Afficher le bouton uniquement en mode UI",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
+    "Affiche le bouton principal uniquement lorsque le curseur de la souris est actif (mode UI). Il se masque en revenant au mode normal de jeu/interaction.",
+    SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Fermer le menu après emote (clic gauche)",
+    SI_QUICKEMOTEMENU_OPTION_RESET          = "Réinitialiser position du bouton",
+    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
+|c3399FFFONCTIONNALITÉS|r
+• Accès rapide aux emotes avec catégories et favoris
+• Les catégories et les emotes sont chargés directement depuis les données du jeu
+• Les nouveaux emotes ajoutés par le jeu apparaîtront automatiquement dans la liste
+
+|c3399FFCONTRÔLES|r
 • Clic gauche sur le bouton pour ouvrir ou fermer le menu
 • Clic droit et glisser le bouton pour le déplacer
 • Clic gauche sur une emote pour la jouer
@@ -23,7 +32,8 @@ local strings = {
 |c3399FFASTUCES|r
 • Utilisez le raccourci pour basculer le menu
 • /qempanel ouvre ce panneau de paramètres
-• Les Favoris sont sauvegardés sur tout le compte]],
+• Les Favoris sont sauvegardés sur tout le compte
+]],
 }
 
 for stringId, stringValue in pairs(strings) do

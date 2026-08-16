@@ -202,7 +202,7 @@ function Context:OnCombatEvent(result, isError, abilityName, abilityGraphic, abi
     end
 end
 
-function Context:CanTrackEffect(definition, unitTag, unitId, unitName)
+function Context:CanTrackEffect(definition, unitTag, unitId, unitName, allowCorrelatedPreCombatTarget)
     if definition.effectType == "BUFF" then
         local isSelf = self:IsLocalPlayer(unitTag,unitId,unitName)
         if definition.targetType == "SELF" then
@@ -212,7 +212,14 @@ function Context:CanTrackEffect(definition, unitTag, unitId, unitName)
         if self:IsGroupedPlayer(unitTag,unitId,unitName) then return true,"GROUP" end
         return false,"UNGROUPED_PLAYER"
     end
-    if not self.inCombat then return false,"OUT_OF_COMBAT" end
+    -- A locally verified target proc may itself be the action that starts combat.
+    -- EVENT_EFFECT_CHANGED can arrive a frame before EVENT_PLAYER_COMBAT_STATE, so
+    -- allow only that already-correlated RETICLE_HOSTILE target through the narrow
+    -- startup race. All ordinary hostile debuffs remain combat-gated.
+    local allowPreCombatTarget = allowCorrelatedPreCombatTarget == true
+        and definition.targetType == "RETICLE_HOSTILE"
+        and definition.requiresLocalProviderEffect == true
+    if not self.inCombat and not allowPreCombatTarget then return false,"OUT_OF_COMBAT" end
 
     -- Some player-owned target effects (notably Huntsman's Warmask / Mark of
     -- Hircine) are exposed by ESO as a Reticle Target effect. They must be

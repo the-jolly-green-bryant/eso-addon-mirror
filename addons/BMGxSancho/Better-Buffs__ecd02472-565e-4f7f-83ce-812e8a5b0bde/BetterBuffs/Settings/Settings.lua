@@ -6,6 +6,7 @@ local STYLE_ITEMS={{name="Detailed",data="DETAILED"},{name="Compact",data="COMPA
 local LAYOUT_ITEMS={{name="Crescent",data="CRESCENT"},{name="Grid",data="GRID"},{name="Column",data="COLUMN"}}
 local SIDE_ITEMS={{name="Left",data="LEFT"},{name="Right",data="RIGHT"}}
 local SORT_ITEMS={{name="Priority",data="PRIORITY"},{name="Alphabetical",data="ALPHABETICAL"},{name="Time Remaining",data="TIME"}}
+local VISIBILITY_ITEMS={{name="Auto",data="AUTO"},{name="Always",data="ALWAYS"},{name="Hidden",data="HIDDEN"}}
 
 local function LeaveDisplayPositioning()
     if BB.UI then BB.UI:HideAllPositioningPreviews() end
@@ -24,9 +25,10 @@ local function AddEffectSettings(panel,effects)
     for _,effect in ipairs(effects) do
         local key=effect.key
         local tooltip=(effect.timer and "Tracks remaining duration. " or "")..(effect.coverage and "Tracks group coverage. " or "")
-        if effect.intelligenceMode=="RECIPIENT_COOLDOWN" then tooltip=tooltip.."Tracks recipient eligibility/cooldown from verified combat events." end
-        if effect.autoTrackWhenEquipped then tooltip=tooltip.." Automatically appears while the required item is equipped; this checkbox remains your manual preference." end
-        rows[#rows+1]={type=LHAS.ST_CHECKBOX,label=effect.name,tooltip=tooltip,getFunction=function() return BB:IsEffectEnabled(key) end,setFunction=function(value) BB:SetEffectEnabled(key,value) end}
+        if effect.intelligenceMode=="RECIPIENT_COOLDOWN" then tooltip=tooltip.."Tracks recipient eligibility/cooldown from verified combat events. " end
+        tooltip=tooltip.."Visibility: Auto lets Better Buffs show the effect when its registry confirms it is relevant to your current setup. Always keeps it visible. Hidden never shows it on the dashboard."
+        if effect.autoTrackWhenEquipped or #(effect.autoProviderSets or {})>0 or #(effect.autoProviderAbilityIds or {})>0 or #(effect.autoProviderAbilityNames or {})>0 or effect.autoGroupEffect then tooltip=tooltip.." Auto can use equipped providers, slotted skills, and live group-effect relevance for this effect." end
+        rows[#rows+1]={type=LHAS.ST_DROPDOWN,label=effect.name,tooltip=tooltip,items=function() return VISIBILITY_ITEMS end,getFunction=function() return {data=BB:GetEffectVisibilityMode(key)} end,setFunction=function(_,_,data) BB:SetEffectVisibilityMode(key,data.data) end}
     end
     panel:AddSettings(rows)
 end
@@ -80,9 +82,9 @@ function Settings:Initialize()
         {type=LHAS.ST_LABEL,label="Version "..BB.version},
         {type=LHAS.ST_CHECKBOX,label="Enable Better Buffs",getFunction=function() return BB.saved.enabled end,setFunction=function(v) BB:SetEnabled(v) end},
     })
-    panel:AddSettings({{type=LHAS.ST_SECTION,label="Buffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose the buffs and support-effect intelligence shown by Better Buffs.")}})
+    panel:AddSettings({{type=LHAS.ST_SECTION,label="Buffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each buff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
     AddEffectSettings(panel,BB.Registry.buffs)
-    panel:AddSettings({{type=LHAS.ST_SECTION,label="Debuffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose the target-aware enemy debuffs shown by Better Debuffs.")}})
+    panel:AddSettings({{type=LHAS.ST_SECTION,label="Debuffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each debuff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
     AddEffectSettings(panel,BB.Registry.debuffs)
     AddDisplaySettings(panel,"BUFF","Buff Display")
     AddDisplaySettings(panel,"DEBUFF","Debuff Display")

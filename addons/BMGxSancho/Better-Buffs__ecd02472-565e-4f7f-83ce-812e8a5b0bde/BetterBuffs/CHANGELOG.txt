@@ -1,3 +1,37 @@
+Better Buffs v0.3.10
+- Startup Auto relevance correction: initialize the canonical Effect Runtime before UI construction so Auto group-state queries cannot access uninitialized runtime tables.
+- Added a defensive pre-initialization guard to HasAutoGroupState().
+
+- Expanded Auto visibility from the Warmask proof-of-concept into registry-driven provider intelligence. Auto can now become relevant from equipped gear sets, slotted skills, or a live group effect.
+- Added an event-driven local capability snapshot. Worn gear is refreshed from BAG_WORN equipment events; slotted abilities are refreshed from ESO action-slot events across primary, backup, and Werewolf hotbars. No recurring loadout scanner was added.
+- Major Courage Auto now recognizes Ferocious Roar through its verified provider IDs (39113/42155/42156/42157) and the Werewolf hotbar. Spell Power Cure and Olorime are also registered as local gear providers.
+- Group-effect relevance is now independent from local capability. A supported raid effect can appear in Auto when the canonical runtime confirms the group/boss effect is actually active, even when another player supplied it.
+- Added registry provider metadata for current high-value raid effects including Major Force, Major Slayer, Major Courage, Minor Courage, Powerful Assault, Pillager, Major Vulnerability, Major/Minor Breach, Off Balance, Z'en, Alkosh, Elemental Catalyst, Martial Knowledge, Morag Tong, and supported Mythics.
+- Hidden remains an absolute HUD override; Always remains permanently visible; Auto now resolves local provider capability OR registry-defined live group relevance.
+- Runtime observation was separated from Auto presentation so a first application can make an Auto tile appear instead of being discarded before relevance is known.
+- Provider-only state is cleared when the corresponding gear/skill capability disappears, preventing stale self-proc state from resurfacing after a later gear swap.
+- Existing Warmask ownership/lifecycle, Aura reconciliation, Courage coverage reconciliation, Off Balance lifecycle, analytics, and scene management are unchanged.
+
+Better Buffs v0.3.08
+
+- Aura of Pride: recipient names and coverage are now reconciled from the current group-unit aura state after Aura effect changes. The canonical recipient set is authoritative, so leaving or re-entering Spaulder range removes/restores both the name and coverage count together.
+- Huntsman's Warmask: fixed the opening-pull race where Mark of Hircine could start combat before EVENT_PLAYER_COMBAT_STATE reached Combat Context. Only a locally verified, correlated Warmask reticle target can bypass that narrow pre-combat gate.
+- Master Enable is now character-specific. Existing initialized characters inherit their previous account-wide enable state once; genuinely new characters default enabled.
+- New character first-use defaults: Major Berserk, Major Force, Major Slayer, Powerful Assault, Off Balance, Roar of Alkosh, and Touch of Z'en are set to Always. Existing character visibility selections are preserved.
+- Dashboard top-level controls are explicitly born hidden and remain hidden while disabled or empty, preventing empty Buff/Debuff containers during login, ReloadUI, or character changes.
+- No new polling loops, effect caches, or specialist trackers were added.
+
+Better Buffs v0.3.07
+
+- Replaced the old per-effect ON/OFF preference with three visibility modes: Auto, Always, and Hidden.
+- Auto allows registry-owned loadout intelligence to decide when an effect belongs on the HUD. Huntsman's Warmask remains the first fully equipment-aware effect and appears/disappears automatically as the Mythic is equipped or removed.
+- Always preserves the previous ON behavior: the effect remains visible even when the player cannot currently provide it.
+- Hidden is an absolute presentation override: the effect never appears in Detailed or Compact dashboards, even when an automatic relevance rule is true.
+- Presentation and runtime observation are now separated. A Hidden auto-relevant effect may remain internally observable without being rendered, preserving future analytics/intelligence correctness without adding another tracker.
+- Existing character preferences migrate without visual regressions: legacy ON becomes Always and legacy OFF becomes Auto.
+- The legacy tracked boolean remains synchronized for downgrade/compatibility safety.
+- No new event owner, cache, gear scanner, polling loop, or renderer was introduced.
+
 Better Buffs v0.3.06
 
 Loadout-aware Warmask display release.

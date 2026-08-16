@@ -1,14 +1,23 @@
 local strings = {
-    SI_QUICKEMOTEMENU_UNKNOWN_NAME         = "?",
-    SI_QUICKEMOTEMENU_CATEGORIES           = "分类",
-    SI_QUICKEMOTEMENU_FAVORITES            = "收藏",
-    SI_QUICKEMOTEMENU_NO_FAVORITES         = "(空)",
-    SI_QUICKEMOTEMENU_BINDING_TOGGLE       = "切换",
-    SI_QUICKEMOTEMENU_OPTION_HOVER         = "子菜单悬停延迟 (毫秒)",
-    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP = "0 = 仅点击时打开",
-    SI_QUICKEMOTEMENU_OPTION_CLOSE         = "播放表情后关闭菜单 (左键)",
-    SI_QUICKEMOTEMENU_OPTION_RESET         = "重置按钮位置",
-    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION   = [[|c3399FF操作|r
+    SI_QUICKEMOTEMENU_UNKNOWN_NAME          = "?",
+    SI_QUICKEMOTEMENU_CATEGORIES            = "分类",
+    SI_QUICKEMOTEMENU_FAVORITES             = "收藏",
+    SI_QUICKEMOTEMENU_NO_FAVORITES          = "(空)",
+    SI_QUICKEMOTEMENU_BINDING_TOGGLE        = "切换",
+    SI_QUICKEMOTEMENU_OPTION_HOVER          = "子菜单悬停延迟 (毫秒)",
+    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP  = "0 = 仅点击时打开",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE         = "仅在UI模式显示按钮",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
+    "仅在鼠标光标处于活动状态（UI模式）时显示主按钮。返回正常游戏/交互模式后会再次隐藏。",
+    SI_QUICKEMOTEMENU_OPTION_CLOSE          = "播放表情后关闭菜单 (左键)",
+    SI_QUICKEMOTEMENU_OPTION_RESET          = "重置按钮位置",
+    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
+|c3399FF功能|r
+• 通过分类和收藏快速访问表情动作
+• 分类和表情动作直接从游戏数据中加载
+• 游戏新增的表情动作会自动显示在列表中
+
+|c3399FF操作|r
 • 左键点击按钮打开或关闭菜单
 • 右键拖动按钮移动位置
 • 左键点击表情播放
@@ -23,7 +32,8 @@ local strings = {
 |c3399FF提示|r
 • 使用快捷键切换菜单
 • /qempanel 打开此设置面板
-• 收藏账号通用]],
+• 收藏账号通用
+]],
 }
 
 for stringId, stringValue in pairs(strings) do

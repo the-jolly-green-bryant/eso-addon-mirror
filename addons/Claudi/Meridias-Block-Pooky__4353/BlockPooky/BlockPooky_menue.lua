@@ -1,13 +1,13 @@
 --[[
     BlockPooky Menu System - LibAddonMenu Integration
-    
+
     This module handles the in-game settings menu for BlockPooky using LibAddonMenu-2.0.
     It provides a comprehensive UI for configuring all addon features including:
     - Block warning settings and triggers
     - Custom cooldown bars configuration
     - UI customization options
     - Debug tools for ability/effect investigation
-    
+
     The menu is accessible via the slash command: /blockpooky
 --]]
 
@@ -29,7 +29,8 @@ local BlockPooky_CooldownBars = {}
 ---Validates if a cooldown bar is currently selected and valid
 ---@return boolean true if a valid cooldown bar is selected
 function BlockPooky.ValidSelectedCooldownBar()
-    return BlockPooky_selectedCooldownBar~=nil and BlockPooky_selectedCooldownBar~="" and BlockPooky_selectedCooldownBar~='<none>'
+    return BlockPooky_selectedCooldownBar ~= nil and BlockPooky_selectedCooldownBar ~= "" and
+        BlockPooky_selectedCooldownBar ~= '<none>'
 end
 
 ---Gets the ability ID for the currently selected cooldown bar
@@ -37,7 +38,7 @@ end
 function BlockPooky.ValidCooldownAbilityId()
     if BlockPooky.ValidSelectedCooldownBar() then
         local abilityId = BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].abilityId
-        if abilityId~="" then
+        if abilityId ~= "" then
             return abilityId
         end
     end
@@ -57,7 +58,7 @@ end
 ---@return string ability name or empty string if invalid
 function BlockPooky.ValidCooldownAbilityName()
     local abilityId = BlockPooky.ValidCooldownAbilityId()
-    if abilityId~=nil then
+    if abilityId ~= nil then
         return BlockPooky.CleanAbilityName(abilityId)
     end
     return ''
@@ -75,7 +76,7 @@ end
 function BlockPooky.UpdateCooldownBarDropdown(name)
     BlockPooky_selectedCooldownBar = name
     local cooldownBarDropdown = BlockPooky_WM:GetControlByName('CooldownBarDropdown')
-    if cooldownBarDropdown~=nil then
+    if cooldownBarDropdown ~= nil then
         cooldownBarDropdown:UpdateChoices(BlockPooky_CooldownBars)
     end
 end
@@ -131,7 +132,9 @@ local function AddPositionSliders(controls, label, getPos, setPos, getControl)
         min     = 0,
         max     = screenW,
         step    = 1,
-        getFunc = function() local l, t = Current(); return ClampX(l) end,
+        getFunc = function()
+            local l, t = Current(); return ClampX(l)
+        end,
         setFunc = function(value)
             local l, t = Current()
             setPos(value, t)
@@ -145,7 +148,9 @@ local function AddPositionSliders(controls, label, getPos, setPos, getControl)
         min     = 0,
         max     = screenH,
         step    = 1,
-        getFunc = function() local l, t = Current(); return ClampY(t) end,
+        getFunc = function()
+            local l, t = Current(); return ClampY(t)
+        end,
         setFunc = function(value)
             local l, t = Current()
             setPos(l, value)
@@ -155,11 +160,11 @@ local function AddPositionSliders(controls, label, getPos, setPos, getControl)
 end
 
 function BlockPooky.UpdateCooldownAbilityName()
-	local cooldownAbilityName = BlockPooky_WM:GetControlByName('CooldownAbilityName')
-	if cooldownAbilityName ~= nil and cooldownAbilityName.data ~= nil then
-		cooldownAbilityName.data.text = BlockPooky.ValidCooldownAbilityName()
-		cooldownAbilityName:UpdateValue()
-	end
+    local cooldownAbilityName = BlockPooky_WM:GetControlByName('CooldownAbilityName')
+    if cooldownAbilityName ~= nil and cooldownAbilityName.data ~= nil then
+        cooldownAbilityName.data.text = BlockPooky.ValidCooldownAbilityName()
+        cooldownAbilityName:UpdateValue()
+    end
 end
 
 function BlockPooky.GetCooldownBarControls()
@@ -176,14 +181,14 @@ function BlockPooky.GetCooldownBarControls()
             tooltip = "Type a name and press Enter to add a new cooldown bar.",
             getFunc = function() return "" end,
             setFunc = function(name)
-                    if name~="" and name~='<none>' then
-                        -- d("ADD Bar" .. tostring(name))
-                        local config = BlockPooky.AddCooldownBar(name)
-                        BlockPooky.InitCooldownBarUI(name)
-                        table.insert(BlockPooky_CooldownBars, name)
-                        BlockPooky.UpdateCooldownBarDropdown(name)
-                    end
-                end,
+                if name ~= "" and name ~= '<none>' then
+                    -- d("ADD Bar" .. tostring(name))
+                    local config = BlockPooky.AddCooldownBar(name)
+                    BlockPooky.InitCooldownBarUI(name)
+                    table.insert(BlockPooky_CooldownBars, name)
+                    BlockPooky.UpdateCooldownBarDropdown(name)
+                end
+            end,
             isMultiline = false
         },
         {
@@ -192,11 +197,11 @@ function BlockPooky.GetCooldownBarControls()
             choices = BlockPooky_CooldownBars,
             getFunc = function() return BlockPooky.ValidSelectedCooldownBarName() end,
             setFunc = function(value)
-                    if value~='<none>' and value~="" then
-                        BlockPooky_selectedCooldownBar = value
-                        BlockPooky.UpdateCooldownAbilityName()
-                    end
-                end,
+                if value ~= '<none>' and value ~= "" then
+                    BlockPooky_selectedCooldownBar = value
+                    BlockPooky.UpdateCooldownAbilityName()
+                end
+            end,
             reference = 'CooldownBarDropdown'
         },
         {
@@ -210,68 +215,68 @@ function BlockPooky.GetCooldownBarControls()
             name    = "Show Cooldown Bar",
             default = false,
             getFunc = function() return BlockPooky.ValidCooldownShow() end,
-            setFunc =  function( newValue )
-                    if BlockPooky.ValidSelectedCooldownBar() and newValue~=BlockPooky.GetShowCooldownBar(BlockPooky_selectedCooldownBar) then
-                        if newValue then
-                            BlockPooky.InitCooldownBarUI(BlockPooky_selectedCooldownBar)
-                        end
-                        BlockPooky.UpdateCooldownBarUsage(BlockPooky_selectedCooldownBar, newValue)
+            setFunc = function(newValue)
+                if BlockPooky.ValidSelectedCooldownBar() and newValue ~= BlockPooky.GetShowCooldownBar(BlockPooky_selectedCooldownBar) then
+                    if newValue then
+                        BlockPooky.InitCooldownBarUI(BlockPooky_selectedCooldownBar)
                     end
+                    BlockPooky.UpdateCooldownBarUsage(BlockPooky_selectedCooldownBar, newValue)
                 end
+            end
         },
         {
             type = "dropdown",
             name = "Cooldown Bar Type",
-            choices = {"ability","effect"},
+            choices = { "ability", "effect" },
             getFunc = function()
-                    if BlockPooky.ValidSelectedCooldownBar() then
-                        local type = BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].type
-                        if type == nil then type = "ability" end
-                        return type
-                    else
-                        return "ability"
-                    end
-                end,
-            setFunc = function(newValue)
-                    if BlockPooky.ValidSelectedCooldownBar() and newValue~=BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].type then
-                        BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].type = newValue
-                    end
+                if BlockPooky.ValidSelectedCooldownBar() then
+                    local type = BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].type
+                    if type == nil then type = "ability" end
+                    return type
+                else
+                    return "ability"
                 end
+            end,
+            setFunc = function(newValue)
+                if BlockPooky.ValidSelectedCooldownBar() and newValue ~= BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].type then
+                    BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].type = newValue
+                end
+            end
         },
         {
             type = "editbox",
             name = "Ability ID",
             getFunc = function()
-                    if BlockPooky.ValidSelectedCooldownBar() then
-                        return BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].abilityId 
-                    end
-                    return '<none>'
-                end,
-            setFunc = function(value)
-                    if BlockPooky.ValidSelectedCooldownBar() and value ~= '<none>' then
-                        BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].abilityId = value
-                        BlockPooky.UpdateCooldownAbilityName()
-                    end
+                if BlockPooky.ValidSelectedCooldownBar() then
+                    return BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].abilityId
                 end
+                return '<none>'
+            end,
+            setFunc = function(value)
+                if BlockPooky.ValidSelectedCooldownBar() and value ~= '<none>' then
+                    BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].abilityId = value
+                    BlockPooky.UpdateCooldownAbilityName()
+                end
+            end
         },
         {
             type = "colorpicker",
             name = "Cooldown Bar Color",
             tooltip = "Set the color for this cooldown bar.",
             getFunc = function()
-                    if BlockPooky.ValidSelectedCooldownBar() then
-                        if BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].color~=nil then
-                            return unpack(BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].color)
-                        end
-                    end
-                    return 1, 0, 1, 1
-                end,
-            setFunc = function(r, g, b, a)
-                    if BlockPooky.ValidSelectedCooldownBar() then
-                        BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].color = {r, g, b, a}
-                        BlockPooky.SetCooldownBarColour(BlockPooky_selectedCooldownBar)
+                if BlockPooky.ValidSelectedCooldownBar() then
+                    if BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].color ~= nil then
+                        return unpack(BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].color)
                     end
                 end
+                return 1, 0, 1, 1
+            end,
+            setFunc = function(r, g, b, a)
+                if BlockPooky.ValidSelectedCooldownBar() then
+                    BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].color = { r, g, b, a }
+                    BlockPooky.SetCooldownBarColour(BlockPooky_selectedCooldownBar)
+                end
+            end
         },
         {
             type = "slider",
@@ -281,16 +286,16 @@ function BlockPooky.GetCooldownBarControls()
             max = 50,
             step = 0.5,
             getFunc = function()
-                    if BlockPooky.ValidSelectedCooldownBar() then
-                        return BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].cooldown
-                    end
-                    return 0
-                end,
+                if BlockPooky.ValidSelectedCooldownBar() then
+                    return BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].cooldown
+                end
+                return 0
+            end,
             setFunc = function(value)
-                    if BlockPooky.ValidSelectedCooldownBar() and value ~= '<none>' then
-                        BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].cooldown = value
-                    end
-                end,
+                if BlockPooky.ValidSelectedCooldownBar() and value ~= '<none>' then
+                    BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar].cooldown = value
+                end
+            end,
             default = 1000,
             warning = "ignored when based on an effect"
         },
@@ -299,18 +304,18 @@ function BlockPooky.GetCooldownBarControls()
             name = "Remove Cooldown Bar",
             tooltip = "Delete this cooldown bar permanently.",
             func = function()
-                    if BlockPooky.ValidSelectedCooldownBar() then
-                        -- d("remove bar: " .. tostring(BlockPooky_selectedCooldownBar))
-                        BlockPooky.RemoveCooldownBar(BlockPooky_selectedCooldownBar)
-                        for i, choice in ipairs(BlockPooky_CooldownBars) do
-                            if choice == BlockPooky_selectedCooldownBar then
-                                table.remove(BlockPooky_CooldownBars, i)
-                                break
-                            end
+                if BlockPooky.ValidSelectedCooldownBar() then
+                    -- d("remove bar: " .. tostring(BlockPooky_selectedCooldownBar))
+                    BlockPooky.RemoveCooldownBar(BlockPooky_selectedCooldownBar)
+                    for i, choice in ipairs(BlockPooky_CooldownBars) do
+                        if choice == BlockPooky_selectedCooldownBar then
+                            table.remove(BlockPooky_CooldownBars, i)
+                            break
                         end
-                        BlockPooky.UpdateCooldownBarDropdown(BlockPooky_CooldownBars[1])
                     end
-                end,
+                    BlockPooky.UpdateCooldownBarDropdown(BlockPooky_CooldownBars[1])
+                end
+            end,
             warning = "This action cannot be undone!",
         }
     }
@@ -367,23 +372,30 @@ function BlockPooky.GetElementPositionControls()
         {
             type = "description",
             title = "Element Positions",
-            text = "Position values are in pixels from the top-left screen corner. Use these sliders as an alternative to dragging - especially useful when an element has moved off-screen.",
+            text =
+            "Position values are in pixels from the top-left screen corner. Use these sliders as an alternative to dragging - especially useful when an element has moved off-screen.",
         },
     }
 
     AddPositionSliders(controls, "Block Pooky",
         function() return BlockPooky.config end,
-        function(left, top) BlockPooky.config.left = left; BlockPooky.config.top = top end,
+        function(left, top)
+            BlockPooky.config.left = left; BlockPooky.config.top = top
+        end,
         function() return BlockPookyIndicator end)
 
     AddPositionSliders(controls, "Pooky Blocking",
         function() return BlockPooky.config.blocking end,
-        function(left, top) BlockPooky.config.blocking.left = left; BlockPooky.config.blocking.top = top end,
+        function(left, top)
+            BlockPooky.config.blocking.left = left; BlockPooky.config.blocking.top = top
+        end,
         function() return BlockingPookyIndicator end)
 
     AddPositionSliders(controls, "Vigor Hint",
         function() return BlockPooky.config.vigorUI end,
-        function(left, top) BlockPooky.config.vigorUI.left = left; BlockPooky.config.vigorUI.top = top end,
+        function(left, top)
+            BlockPooky.config.vigorUI.left = left; BlockPooky.config.vigorUI.top = top
+        end,
         function() return VigorIndicator end)
 
     AddPositionSliders(controls, "CC Immunity Bar",
@@ -425,7 +437,6 @@ function BlockPooky.GetElementPositionControls()
     return controls
 end
 
-
 ---Build the color pickers for the Active CC Bar (one per CC type)
 ---@return table LAM control list
 function BlockPooky.GetCCDebuffColorControls()
@@ -444,7 +455,7 @@ function BlockPooky.GetCCDebuffColorControls()
             end,
             setFunc = function(r, g, b, a)
                 if not BlockPooky.config.ccDebuffColors then BlockPooky.config.ccDebuffColors = {} end
-                BlockPooky.config.ccDebuffColors[typeKey] = {r, g, b, a}
+                BlockPooky.config.ccDebuffColors[typeKey] = { r, g, b, a }
                 if BlockPooky.GetActiveCCDebuffType() == typeKey then
                     BlockPooky.SetCCDebuffBarColor(typeKey)
                 end
@@ -453,7 +464,6 @@ function BlockPooky.GetCCDebuffColorControls()
     end
     return controls
 end
-
 
 ---intialize the addon settings menue
 function BlockPooky.InitAddonMenu()
@@ -470,7 +480,7 @@ function BlockPooky.InitAddonMenu()
     local function GenerateNumberListText()
         if #BlockPooky.config.customAbilityIds == 0 then
             return "No values added yet."
-        end 
+        end
         local texts = {}
         for _, abilityId in ipairs(BlockPooky.config.customAbilityIds) do
             local abilityName = BlockPooky.CleanAbilityName(abilityId)
@@ -507,58 +517,58 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Settings for block warning notifications.",
         },
         {
-			type    = "checkbox",
-			name    = "Show Central Screen Message",
+            type    = "checkbox",
+            name    = "Show Central Screen Message",
             tooltip = "Display a message in the center of the screen.",
-			default = false,
-			getFunc = function() return BlockPooky.config.useCSA end,
-			setFunc = function( newValue ) BlockPooky.config.useCSA=newValue end,
-		},
+            default = false,
+            getFunc = function() return BlockPooky.config.useCSA end,
+            setFunc = function(newValue) BlockPooky.config.useCSA = newValue end,
+        },
         {
-			type    = "checkbox",
-			name    = "Play Sound",
-			default = true,
-			getFunc = function() return BlockPooky.config.playSound end,
-			setFunc = function( newValue ) BlockPooky.config.playSound=newValue end,
-		},
+            type    = "checkbox",
+            name    = "Play Sound",
+            default = true,
+            getFunc = function() return BlockPooky.config.playSound end,
+            setFunc = function(newValue) BlockPooky.config.playSound = newValue end,
+        },
         {
-			type    = "checkbox",
-			name    = "Show UI Frame",
-			default = true,
-			getFunc = function() return BlockPooky.config.useFrame end,
-			setFunc = function( newValue ) BlockPooky.config.useFrame=newValue end,
-		},
+            type    = "checkbox",
+            name    = "Show UI Frame",
+            default = true,
+            getFunc = function() return BlockPooky.config.useFrame end,
+            setFunc = function(newValue) BlockPooky.config.useFrame = newValue end,
+        },
         {
-			type    = "checkbox",
-			name    = "Show Game Chat Warning",
+            type    = "checkbox",
+            name    = "Show Game Chat Warning",
             tooltip = "Show warning messages in the game chat.",
-			default = true,
-			getFunc = function() return BlockPooky.config.chatWarn end,
-			setFunc = function( newValue ) BlockPooky.config.chatWarn=newValue end,
-		},
+            default = true,
+            getFunc = function() return BlockPooky.config.chatWarn end,
+            setFunc = function(newValue) BlockPooky.config.chatWarn = newValue end,
+        },
         {
-			type    = "checkbox",
-			name    = "|cFF0000! Send Pull Warning to Group|r",
+            type    = "checkbox",
+            name    = "|cFF0000! Send Pull Warning to Group|r",
             tooltip = "Send a warning to your group when you are pulled. This feature uses LibGroupBroadcast.",
-			default = true,
-			getFunc = function() return BlockPooky.config.groupMessaging end,
-			setFunc = function( newValue )
-                    BlockPooky.config.groupMessaging=newValue
-                    if newValue then
-                        BlockPooky.InitGroupMessaging()
-                    else
-                        BlockPooky.StopGroupMessaging()
-                    end
-                end,
-		},
+            default = true,
+            getFunc = function() return BlockPooky.config.groupMessaging end,
+            setFunc = function(newValue)
+                BlockPooky.config.groupMessaging = newValue
+                if newValue then
+                    BlockPooky.InitGroupMessaging()
+                else
+                    BlockPooky.StopGroupMessaging()
+                end
+            end,
+        },
         {
-			type    = "checkbox",
-			name    = "Send Pull Warning Only for ROA/DC",
+            type    = "checkbox",
+            name    = "Send Pull Warning Only for ROA/DC",
             tooltip = "Only send group messages for Rush of Agony or Dark Convergence pulls.",
-			default = true,
-			getFunc = function() return BlockPooky.config.msgPullAbilitiesOnly end,
-			setFunc = function( newValue ) BlockPooky.config.msgPullAbilitiesOnly=newValue end,
-		},
+            default = true,
+            getFunc = function() return BlockPooky.config.msgPullAbilitiesOnly end,
+            setFunc = function(newValue) BlockPooky.config.msgPullAbilitiesOnly = newValue end,
+        },
         {
             type = "submenu",
             name = "Notification Durations",
@@ -590,7 +600,7 @@ function BlockPooky.InitAddonMenu()
         },
         {
             type = "submenu",
-            name = "Select Trigger Abilities",            
+            name = "Select Trigger Abilities",
             tooltip = "Choose which abilities will trigger block warnings.",
             controls = BlockPooky.GetTriggerAbilityControls()
         },
@@ -641,51 +651,51 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Settings for hint notifications.",
         },
         {
-			type    = "checkbox",
-			name    = "Show DC Ready Hint",
-			default = false,
+            type    = "checkbox",
+            name    = "Show DC Ready Hint",
+            default = false,
             tooltip = "Show a CSA message when Dark Convergence is ready.",
-			getFunc = function() return BlockPooky.config.dcHint end,
-			setFunc = function( newValue ) BlockPooky.config.dcHint=newValue end,
-		},
+            getFunc = function() return BlockPooky.config.dcHint end,
+            setFunc = function(newValue) BlockPooky.config.dcHint = newValue end,
+        },
         {
-			type    = "checkbox",
-			name    = "Show ROA Ready Hint",
+            type    = "checkbox",
+            name    = "Show ROA Ready Hint",
             tooltip = "Show a CSA message when Rush of Agony is ready.",
-			default = false,
-			getFunc = function() return BlockPooky.config.roaHint end,
-			setFunc = function( newValue ) BlockPooky.config.roaHint=newValue end,
-		},
+            default = false,
+            getFunc = function() return BlockPooky.config.roaHint end,
+            setFunc = function(newValue) BlockPooky.config.roaHint = newValue end,
+        },
         {
-			type    = "checkbox",
-			name    = "Show Blocking Hint",
+            type    = "checkbox",
+            name    = "Show Blocking Hint",
             tooltip = "Show a UI frame message when you are blocking.",
-			default = true,
-			getFunc = function() return BlockPooky.config.blocking.show end,
-			setFunc = function( newValue )
-                BlockPooky.config.blocking.show=newValue
+            default = true,
+            getFunc = function() return BlockPooky.config.blocking.show end,
+            setFunc = function(newValue)
+                BlockPooky.config.blocking.show = newValue
                 BlockPooky.SetUseBlocking()
-                end,
-		},
+            end,
+        },
         {
-			type    = "checkbox",
-			name    = "Show Vigor Recast Hint",
+            type    = "checkbox",
+            name    = "Show Vigor Recast Hint",
             tooltip = "Show a Vigor hint after 8 seconds and a blinking hint after 16 seconds if not recast.",
-			default = false,
-			getFunc = function() return BlockPooky.config.vigorHint end,
-			setFunc = function( newValue )
-                BlockPooky.config.vigorHint=newValue
-                end
-		},
+            default = false,
+            getFunc = function() return BlockPooky.config.vigorHint end,
+            setFunc = function(newValue)
+                BlockPooky.config.vigorHint = newValue
+            end
+        },
         {
-			type    = "checkbox",
-			name    = "Show Negate Warning",
+            type    = "checkbox",
+            name    = "Show Negate Warning",
             tooltip = "Warn when standing in an enemy Negate Magic field.",
-			default = false,
-			getFunc = function() return BlockPooky.config.negate.show end,
-			setFunc = function( newValue )
+            default = false,
+            getFunc = function() return BlockPooky.config.negate.show end,
+            setFunc = function(newValue)
                 if newValue ~= BlockPooky.config.negate.show then
-                    BlockPooky.config.negate.show=newValue
+                    BlockPooky.config.negate.show = newValue
                     if newValue then
                         BlockPooky.RegisterNegateWarning()
                     else
@@ -693,7 +703,7 @@ function BlockPooky.InitAddonMenu()
                     end
                 end
             end
-		},
+        },
         {
             type = "divider",
         },
@@ -706,12 +716,13 @@ function BlockPooky.InitAddonMenu()
         {
             type = "checkbox",
             name = "Show Active CC Bar",
-            tooltip = "Display a bar showing the highest-priority crowd control currently affecting you (Stun > Fear > Disorient > Silence > Stagger).",
+            tooltip =
+            "Display a bar showing the highest-priority crowd control currently affecting you (Stun > Fear > Disorient > Silence > Stagger).",
             default = true,
             getFunc = function() return BlockPooky.config.showCCDebuff end,
-            setFunc = function( newValue )
-                if newValue~=BlockPooky.config.showCCDebuff then
-                    BlockPooky.config.showCCDebuff=newValue
+            setFunc = function(newValue)
+                if newValue ~= BlockPooky.config.showCCDebuff then
+                    BlockPooky.config.showCCDebuff = newValue
                     BlockPooky.CCDebuffEventRegisterUpdate()
                     if not newValue then
                         BlockPooky.HideCCDebuffBar()
@@ -722,10 +733,11 @@ function BlockPooky.InitAddonMenu()
         {
             type = "checkbox",
             name = "Show Active CC Bar CSA",
-            tooltip = "Display a center screen message (e.g. \"STUNNED!\") when a hard CC (stun/fear/disorient) lands on you, so you notice it even if you miss the bar.",
+            tooltip =
+            "Display a center screen message (e.g. \"STUNNED!\") when a hard CC (stun/fear/disorient) lands on you, so you notice it even if you miss the bar.",
             default = true,
             getFunc = function() return BlockPooky.config.ccDebuffCSA end,
-            setFunc = function( newValue )
+            setFunc = function(newValue)
                 BlockPooky.config.ccDebuffCSA = newValue
             end,
         },
@@ -749,31 +761,32 @@ function BlockPooky.InitAddonMenu()
             controls = BlockPooky.GetCCDebuffColorControls(),
         },
         {
-			type    = "checkbox",
-			name    = "Show CC Immunity Bar",
+            type    = "checkbox",
+            name    = "Show CC Immunity Bar",
             tooltip = "Display a bar when you have CC immunity.",
-			default = false,
-			getFunc = function() return BlockPooky.config.CCImmunityHint end,
-			setFunc = function( newValue )
-                if newValue~=BlockPooky.config.CCImmunityHint then
-                    BlockPooky.config.CCImmunityHint=newValue
+            default = false,
+            getFunc = function() return BlockPooky.config.CCImmunityHint end,
+            setFunc = function(newValue)
+                if newValue ~= BlockPooky.config.CCImmunityHint then
+                    BlockPooky.config.CCImmunityHint = newValue
                     BlockPooky.CCEventRegisterUpdate()
                 end
             end,
-		},
+        },
         {
-			type    = "checkbox",
-			name    = "Show HoT Counter",
-            tooltip = "Display counter for active Healing-over-Time effects (Update 49 cap: 8). Counted live from the game's buff list, so all HoT sources are covered automatically.",
-			default = false,
-			getFunc = function() return BlockPooky.config.showHoTCounter end,
-			setFunc = function( newValue )
-                if newValue~=BlockPooky.config.showHoTCounter then
-                    BlockPooky.config.showHoTCounter=newValue
+            type    = "checkbox",
+            name    = "Show HoT Counter",
+            tooltip =
+            "Display counter for active Healing-over-Time effects (Update 49 cap: 8). Counted live from the game's buff list, so all HoT sources are covered automatically.",
+            default = false,
+            getFunc = function() return BlockPooky.config.showHoTCounter end,
+            setFunc = function(newValue)
+                if newValue ~= BlockPooky.config.showHoTCounter then
+                    BlockPooky.config.showHoTCounter = newValue
                     BlockPooky.HoTEventRegisterUpdate()
                 end
             end,
-		},
+        },
         {
             type = "submenu",
             name = "Custom Cooldown Bars",
@@ -795,7 +808,7 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Show a full-screen overlay when dangerous threat abilities are cast.",
             default = false,
             getFunc = function() return BlockPooky.config.threatalert.show end,
-            setFunc = function( newValue )
+            setFunc = function(newValue)
                 if newValue ~= BlockPooky.config.threatalert.show then
                     BlockPooky.config.threatalert.show = newValue
                     if newValue then
@@ -812,18 +825,18 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Only show overlay during PvP combat.",
             default = true,
             getFunc = function() return BlockPooky.config.threatalert.pvpOnly end,
-            setFunc = function( newValue ) BlockPooky.config.threatalert.pvpOnly = newValue end,
+            setFunc = function(newValue) BlockPooky.config.threatalert.pvpOnly = newValue end,
         },
         {
             type = "dropdown",
             name = "Overlay Texture",
             tooltip = "Choose the texture/color for the overlay. Requires addon reload (/reloadui) to apply.",
-            choices = {"reddot.dds", "explosion.dds", "gold.dds", "Indigo.dds", "lemon.dds", "red.dds"},
+            choices = { "reddot.dds", "explosion.dds", "gold.dds", "Indigo.dds", "lemon.dds", "red.dds" },
             getFunc = function() return BlockPooky.config.threatalert.texture or "reddot.dds" end,
             setFunc = function(value)
-                    BlockPooky.config.threatalert.texture = value
-                    d("Texture changed to: " .. value .. " (will apply on next addon reload)")
-                end,
+                BlockPooky.config.threatalert.texture = value
+                d("Texture changed to: " .. value .. " (will apply on next addon reload)")
+            end,
             warning = "Reload the addon with /reloadui to apply texture changes"
         },
         {
@@ -835,9 +848,9 @@ function BlockPooky.InitAddonMenu()
             step = 0.05,
             getFunc = function() return BlockPooky.config.threatalert.alpha or 0.3 end,
             setFunc = function(value)
-                    BlockPooky.config.threatalert.alpha = value
-                    BlockPooky.UpdateThreatAlertAlpha()
-                end,
+                BlockPooky.config.threatalert.alpha = value
+                BlockPooky.UpdateThreatAlertAlpha()
+            end,
             default = 0.3,
         },
         {
@@ -856,14 +869,14 @@ function BlockPooky.InitAddonMenu()
                     tooltip = "Enter an ability ID and press Enter to add it.",
                     getFunc = function() return "" end,
                     setFunc = function(value)
-                            local id = tonumber(value)
-                            if id and id > 0 then
-                                BlockPooky.AddThreatAbility(id)
-                                d("Added ability ID: " .. id)
-                            else
-                                d("Invalid ability ID. Please enter a number.")
-                            end
-                        end,
+                        local id = tonumber(value)
+                        if id and id > 0 then
+                            BlockPooky.AddThreatAbility(id)
+                            d("Added ability ID: " .. id)
+                        else
+                            d("Invalid ability ID. Please enter a number.")
+                        end
+                    end,
                     isMultiline = false,
                 },
                 {
@@ -875,8 +888,8 @@ function BlockPooky.InitAddonMenu()
                     step = 0.5,
                     getFunc = function() return (BlockPooky.config.threatalert.duration or 8000) / 1000 end,
                     setFunc = function(value)
-                            BlockPooky.config.threatalert.duration = value * 1000
-                        end,
+                        BlockPooky.config.threatalert.duration = value * 1000
+                    end,
                     default = 8,
                 },
                 {
@@ -888,53 +901,53 @@ function BlockPooky.InitAddonMenu()
                     step = 0.5,
                     getFunc = function() return (BlockPooky.config.threatalert.cooldown or 5000) / 1000 end,
                     setFunc = function(value)
-                            BlockPooky.config.threatalert.cooldown = value * 1000
-                        end,
+                        BlockPooky.config.threatalert.cooldown = value * 1000
+                    end,
                     default = 5,
                 },
                 {
                     type = "description",
                     title = "Current Threat Abilities:",
                     text = function()
-                            -- Ensure threat abilities are initialized
-                            if not BlockPooky.THREAT_ABILITY_IDS then
-                                return "Threat alerts not initialized yet."
-                            end
-                            if #BlockPooky.THREAT_ABILITY_IDS == 0 then
-                                return "No abilities configured."
-                            end
-                            local duration = (BlockPooky.config.threatalert.duration or 8000) / 1000
-                            local texts = {"Duration: " .. duration .. "s\n"}
-                            for _, id in ipairs(BlockPooky.THREAT_ABILITY_IDS) do
-                                local name = BlockPooky.CleanAbilityName(id)
-                                table.insert(texts, name .. " (" .. id .. ")")
-                            end
-                            return table.concat(texts, "\n")
+                        -- Ensure threat abilities are initialized
+                        if not BlockPooky.THREAT_ABILITY_IDS then
+                            return "Threat alerts not initialized yet."
                         end
+                        if #BlockPooky.THREAT_ABILITY_IDS == 0 then
+                            return "No abilities configured."
+                        end
+                        local duration = (BlockPooky.config.threatalert.duration or 8000) / 1000
+                        local texts = { "Duration: " .. duration .. "s\n" }
+                        for _, id in ipairs(BlockPooky.THREAT_ABILITY_IDS) do
+                            local name = BlockPooky.CleanAbilityName(id)
+                            table.insert(texts, name .. " (" .. id .. ")")
+                        end
+                        return table.concat(texts, "\n")
+                    end
                 },
                 {
                     type = "button",
                     name = "Remove Last Ability",
                     tooltip = "Remove the most recently added ability (including defaults).",
                     func = function()
-                            if BlockPooky.config.threatalert.abilities and #BlockPooky.config.threatalert.abilities > 0 then
-                                table.remove(BlockPooky.config.threatalert.abilities)
-                                BlockPooky.RebuildThreatAbilityList()
-                                d("Ability removed.")
-                            else
-                                d("No abilities to remove.")
-                            end
-                        end,
+                        if BlockPooky.config.threatalert.abilities and #BlockPooky.config.threatalert.abilities > 0 then
+                            table.remove(BlockPooky.config.threatalert.abilities)
+                            BlockPooky.RebuildThreatAbilityList()
+                            d("Ability removed.")
+                        else
+                            d("No abilities to remove.")
+                        end
+                    end,
                 },
                 {
                     type = "button",
                     name = "Clear All Abilities",
                     tooltip = "Remove ALL threat abilities (default and custom).",
                     func = function()
-                            BlockPooky.config.threatalert.abilities = {}
-                            BlockPooky.RebuildThreatAbilityList()
-                            d("All abilities cleared.")
-                        end,
+                        BlockPooky.config.threatalert.abilities = {}
+                        BlockPooky.RebuildThreatAbilityList()
+                        d("All abilities cleared.")
+                    end,
                     warning = "This will remove ALL abilities including Dark Convergence and Rush of Agony!",
                 }
             }
@@ -954,7 +967,7 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Show a full-screen overlay when stamina drops below threshold.",
             default = false,
             getFunc = function() return BlockPooky.config.staminalow.show end,
-            setFunc = function( newValue )
+            setFunc = function(newValue)
                 if newValue ~= BlockPooky.config.staminalow.show then
                     BlockPooky.config.staminalow.show = newValue
                     if newValue then
@@ -973,7 +986,7 @@ function BlockPooky.InitAddonMenu()
             max     = 20000,
             step    = 500,
             getFunc = function() return BlockPooky.config.staminalow.threshold or 5000 end,
-            setFunc = function( newValue ) BlockPooky.config.staminalow.threshold = newValue end,
+            setFunc = function(newValue) BlockPooky.config.staminalow.threshold = newValue end,
         },
         {
             type    = "slider",
@@ -983,7 +996,7 @@ function BlockPooky.InitAddonMenu()
             max     = 1.0,
             step    = 0.05,
             getFunc = function() return BlockPooky.config.staminalow.minAlpha or 0.3 end,
-            setFunc = function( newValue ) BlockPooky.config.staminalow.minAlpha = newValue end,
+            setFunc = function(newValue) BlockPooky.config.staminalow.minAlpha = newValue end,
         },
         {
             type    = "slider",
@@ -993,7 +1006,7 @@ function BlockPooky.InitAddonMenu()
             max     = 1.0,
             step    = 0.05,
             getFunc = function() return BlockPooky.config.staminalow.maxAlpha or 0.72 end,
-            setFunc = function( newValue ) BlockPooky.config.staminalow.maxAlpha = newValue end,
+            setFunc = function(newValue) BlockPooky.config.staminalow.maxAlpha = newValue end,
         },
         {
             type = "button",
@@ -1020,18 +1033,19 @@ function BlockPooky.InitAddonMenu()
                     name    = "Lock UI (to move it)",
                     default = false,
                     getFunc = function() return BlockPooky.config.lockedUI end,
-                    setFunc = function( newValue ) BlockPooky.SetUiLock(newValue) end,
+                    setFunc = function(newValue) BlockPooky.SetUiLock(newValue) end,
                 },
                 {
                     type    = "button",
                     name    = "Reset to default position",
                     tooltip = "Reset all UI elements to their default positions.",
-                    func = function() BlockPooky.ResetPosition()  end,
+                    func    = function() BlockPooky.ResetPosition() end,
                 },
                 {
                     type = "submenu",
                     name = "Element Positions",
-                    tooltip = "Set element positions via sliders (alternative to dragging). Useful if elements moved off-screen.",
+                    tooltip =
+                    "Set element positions via sliders (alternative to dragging). Useful if elements moved off-screen.",
                     controls = BlockPooky.GetElementPositionControls(),
                 },
                 {
@@ -1045,7 +1059,9 @@ function BlockPooky.InitAddonMenu()
                     max = 100,
                     step = 1,
                     getFunc = function() return BlockPooky.config.fontSize end,
-                    setFunc = function(value) BlockPooky.config.fontSize = value; BlockPooky.setBlockPookyFont() end,
+                    setFunc = function(value)
+                        BlockPooky.config.fontSize = value; BlockPooky.setBlockPookyFont()
+                    end,
                     default = 45,
                 },
                 {
@@ -1060,7 +1076,9 @@ function BlockPooky.InitAddonMenu()
                     max = 100,
                     step = 1,
                     getFunc = function() return BlockPooky.config.bigFontSize end,
-                    setFunc = function(value) BlockPooky.config.bigFontSize = value; BlockPooky.setBlockPookyFont() end,
+                    setFunc = function(value)
+                        BlockPooky.config.bigFontSize = value; BlockPooky.setBlockPookyFont()
+                    end,
                     default = 45,
                 },
                 {
@@ -1075,10 +1093,10 @@ function BlockPooky.InitAddonMenu()
                         if BlockPooky.config.color then
                             return unpack(BlockPooky.config.color)
                         end
-                        return 0.627,0.129,0.157,1.0
+                        return 0.627, 0.129, 0.157, 1.0
                     end,
                     setFunc = function(r, g, b, a)
-                        BlockPooky.config.color = {r, g, b, a}
+                        BlockPooky.config.color = { r, g, b, a }
                         BlockPooky.SetColor()
                     end
                 },
@@ -1093,7 +1111,7 @@ function BlockPooky.InitAddonMenu()
                         return 0.980, 0.655, 0.0, 1.0
                     end,
                     setFunc = function(r, g, b, a)
-                        BlockPooky.config.blocking.color = {r, g, b, a}
+                        BlockPooky.config.blocking.color = { r, g, b, a }
                         BlockPooky.SetBlockingColor()
                     end
                 },
@@ -1105,17 +1123,18 @@ function BlockPooky.InitAddonMenu()
                         if BlockPooky.config.vigorUI.color then
                             return unpack(BlockPooky.config.vigorUI.color)
                         end
-                        return 0.0,0.533,1.0,1.0
+                        return 0.0, 0.533, 1.0, 1.0
                     end,
                     setFunc = function(r, g, b, a)
-                        BlockPooky.config.vigorUI.color = {r, g, b, a}
+                        BlockPooky.config.vigorUI.color = { r, g, b, a }
                         BlockPooky.SetVigorHintColor()
                     end
                 },
                 {
                     type = "colorpicker",
                     name = "CC Immunity Bar Color (Hard CC)",
-                    tooltip = "Set the color for HARD CC immunity (stun/knockdown/fear/disorient) on the CC Immunity bar.",
+                    tooltip =
+                    "Set the color for HARD CC immunity (stun/knockdown/fear/disorient) on the CC Immunity bar.",
                     getFunc = function()
                         if BlockPooky.config.ccBarColor then
                             return unpack(BlockPooky.config.ccBarColor)
@@ -1123,14 +1142,15 @@ function BlockPooky.InitAddonMenu()
                         return 0, 1, 0, 1
                     end,
                     setFunc = function(r, g, b, a)
-                        BlockPooky.config.ccBarColor = {r, g, b, a}
+                        BlockPooky.config.ccBarColor = { r, g, b, a }
                         BlockPooky.SetCCBarColor()
                     end
                 },
                 {
                     type = "colorpicker",
                     name = "CC Immunity Bar Color (Soft CC)",
-                    tooltip = "Set the color for SOFT CC immunity (snares/immobilizes) on the CC Immunity bar. The bar blends both colors while hard and soft immunity are active at the same time.",
+                    tooltip =
+                    "Set the color for SOFT CC immunity (snares/immobilizes) on the CC Immunity bar. The bar blends both colors while hard and soft immunity are active at the same time.",
                     getFunc = function()
                         if BlockPooky.config.ccBarSoftColor then
                             return unpack(BlockPooky.config.ccBarSoftColor)
@@ -1138,7 +1158,7 @@ function BlockPooky.InitAddonMenu()
                         return 0, 0.75, 1, 1
                     end,
                     setFunc = function(r, g, b, a)
-                        BlockPooky.config.ccBarSoftColor = {r, g, b, a}
+                        BlockPooky.config.ccBarSoftColor = { r, g, b, a }
                         BlockPooky.SetCCBarSoftColor()
                     end
                 },
@@ -1153,7 +1173,7 @@ function BlockPooky.InitAddonMenu()
                         return 1, 0, 0, 1
                     end,
                     setFunc = function(r, g, b, a)
-                        BlockPooky.config.negate.color = {r, g, b, a}
+                        BlockPooky.config.negate.color = { r, g, b, a }
                         BlockPooky.SetNegateWarningColor()
                     end
                 }
@@ -1167,7 +1187,8 @@ function BlockPooky.InitAddonMenu()
                 {
                     type = "checkbox",
                     name = "Enable Custom Combat Visuals",
-                    tooltip = "Enable to use custom values for AOE brightness and outlines. Disable to reset to defaults.",
+                    tooltip =
+                    "Enable to use custom values for AOE brightness and outlines. Disable to reset to defaults.",
                     getFunc = function() return BlockPooky.config.combatVisualsEnabled or false end,
                     setFunc = function(newValue)
                         BlockPooky.config.combatVisualsEnabled = newValue
@@ -1176,7 +1197,8 @@ function BlockPooky.InitAddonMenu()
                             if newValue then
                                 BlockPooky.SetMaxAOEBrightness(BlockPooky.config.MaxAOEBrightness or 500)
                                 BlockPooky.SetMaxOutlineThickness(BlockPooky.config.MaxOutlineThickness or 2000)
-                                BlockPooky.SetMaxTargetOutlineIntensity(BlockPooky.config.MaxTargetOutlineIntensity or 2000)
+                                BlockPooky.SetMaxTargetOutlineIntensity(BlockPooky.config.MaxTargetOutlineIntensity or
+                                    2000)
                             else
                                 BlockPooky.ResetMaxAOEBrightness()
                                 BlockPooky.ResetMaxOutlineThickness()
@@ -1191,7 +1213,8 @@ function BlockPooky.InitAddonMenu()
                 {
                     type = "slider",
                     name = "Max AOE Brightness",
-                    tooltip = "Sets the maximum AOE brightness. This controls the slider found in Settings > Gameplay > Combat > Friendly/Enemy Monster Tells Brightness.",
+                    tooltip =
+                    "Sets the maximum AOE brightness. This controls the slider found in Settings > Gameplay > Combat > Friendly/Enemy Monster Tells Brightness.",
                     min = 50,
                     max = 2000,
                     step = 10,
@@ -1207,7 +1230,8 @@ function BlockPooky.InitAddonMenu()
                 {
                     type = "slider",
                     name = "Max Outline Thickness",
-                    tooltip = "Sets the maximum outline thickness. This controls the slider found in Settings > Nameplates > In-World > Glow Thickness.",
+                    tooltip =
+                    "Sets the maximum outline thickness. This controls the slider found in Settings > Nameplates > In-World > Glow Thickness.",
                     min = 100,
                     max = 4000,
                     step = 10,
@@ -1223,7 +1247,8 @@ function BlockPooky.InitAddonMenu()
                 {
                     type = "slider",
                     name = "Max Target Outline Intensity",
-                    tooltip = "Sets the maximum target outline intensity. This controls the slider found in Settings > Nameplates > In-World > Target Glow Intensity.",
+                    tooltip =
+                    "Sets the maximum target outline intensity. This controls the slider found in Settings > Nameplates > In-World > Target Glow Intensity.",
                     min = 100,
                     max = 4000,
                     step = 10,
@@ -1277,10 +1302,11 @@ function BlockPooky.InitAddonMenu()
                     warning = "Disable RGB AOE (above) before changing this or it may act weirdly.",
                     getFunc = function()
                         local c = BlockPooky.config.AOERGBDefaultColor or string.format("%02x%02x%02x", 255, 0, 0)
-                        return tonumber("0x" .. c:sub(1, 2)) / 255, tonumber("0x" .. c:sub(3, 4)) / 255, tonumber("0x" .. c:sub(5, 6)) / 255
+                        return tonumber("0x" .. c:sub(1, 2)) / 255, tonumber("0x" .. c:sub(3, 4)) / 255,
+                            tonumber("0x" .. c:sub(5, 6)) / 255
                     end,
                     setFunc = function(red, green, blue, a)
-                        local newColor = string.format("%02x%02x%02x", red*255, green*255, blue*255)
+                        local newColor = string.format("%02x%02x%02x", red * 255, green * 255, blue * 255)
                         BlockPooky.config.AOERGBDefaultColor = newColor
                         SetSetting(SETTING_TYPE_COMBAT, COMBAT_SETTING_MONSTER_TELLS_ENEMY_COLOR, newColor)
                     end,
@@ -1309,7 +1335,7 @@ function BlockPooky.InitAddonMenu()
                         BlockPooky.config.AOERGBTurbo = value and 2 or 1
                     end,
                 },
-           }
+            }
         },
         {
             type = "divider",
@@ -1499,17 +1525,19 @@ function BlockPooky.InitAddonMenu()
                 {
                     type = "description",
                     title = "Group Mount Notifications",
-                    text = "Simple group-wide mount messages shown while you are in a group. No extra UI is added \226\128\148 they reuse the existing mount notification style. Leave a message empty to disable that message.",
+                    text =
+                    "Simple group-wide mount messages shown while you are in a group. No extra UI is added \226\128\148 they reuse the existing mount notification style. Leave a message empty to disable that message.",
                 },
                 {
                     type    = "checkbox",
                     name    = "Enable Group Mount Messages",
-                    tooltip = "Show group-wide mount messages while grouped. The lightweight poll only runs while grouped (it also powers the personal \"Pooky you can MOUNT!\" reminder), so it costs nothing when solo.",
+                    tooltip =
+                    "Show group-wide mount messages while grouped. The lightweight poll only runs while grouped (it also powers the personal \"Pooky you can MOUNT!\" reminder), so it costs nothing when solo.",
                     default = false,
                     getFunc = function() return BlockPooky.config.groupMountNotify end,
-                    setFunc = function( newValue )
-                        if newValue~=BlockPooky.config.groupMountNotify then
-                            BlockPooky.config.groupMountNotify=newValue
+                    setFunc = function(newValue)
+                        if newValue ~= BlockPooky.config.groupMountNotify then
+                            BlockPooky.config.groupMountNotify = newValue
                             BlockPooky.UpdateMountPollRegistration()
                         end
                     end,
@@ -1517,12 +1545,13 @@ function BlockPooky.InitAddonMenu()
                 {
                     type    = "checkbox",
                     name    = "Show Mount Traffic Light (beta)",
-                    tooltip = "Shows a small single light while grouped: green = all mounted, yellow = all can mount, red = at least one Pooky unmounted. Drag to reposition.",
+                    tooltip =
+                    "Shows a small single light while grouped: green = all mounted, yellow = all can mount, red = at least one Pooky unmounted. Drag to reposition.",
                     default = false,
                     getFunc = function() return BlockPooky.config.showMountLight end,
-                    setFunc = function( newValue )
-                        if newValue~=BlockPooky.config.showMountLight then
-                            BlockPooky.config.showMountLight=newValue
+                    setFunc = function(newValue)
+                        if newValue ~= BlockPooky.config.showMountLight then
+                            BlockPooky.config.showMountLight = newValue
                         end
                     end,
                 },
@@ -1545,7 +1574,8 @@ function BlockPooky.InitAddonMenu()
                 {
                     type = "editbox",
                     name = "All Can Mount Message",
-                    tooltip = "Shown when every online group member in your zone is off mount and out of combat. Leave empty to disable.",
+                    tooltip =
+                    "Shown when every online group member in your zone is off mount and out of combat. Leave empty to disable.",
                     getFunc = function() return BlockPooky.config.messages.allCanMount end,
                     setFunc = function(value)
                         BlockPooky.config.messages.allCanMount = value
@@ -1578,19 +1608,19 @@ function BlockPooky.InitAddonMenu()
                     name    = "Enable Ability Investigation",
                     default = false,
                     getFunc = function() return BlockPooky.config.investigate end,
-                    setFunc = function( newValue ) BlockPooky.config.investigate = newValue end,
+                    setFunc = function(newValue) BlockPooky.config.investigate = newValue end,
                 },
                 {
                     type    = "checkbox",
                     name    = "Enable Effect Investigation",
                     default = false,
                     getFunc = function() return BlockPooky.config.investigateEffects end,
-                    setFunc = function( newValue ) BlockPooky.config.investigateEffects = newValue end,
+                    setFunc = function(newValue) BlockPooky.config.investigateEffects = newValue end,
                 }
             }
         }
     }
-    -- 
+    --
     BlockPooky.panel = BlockPooky_LAM:RegisterAddonPanel(BlockPooky.name .. "Options", menuOptions)
     BlockPooky_LAM:RegisterOptionControls(BlockPooky.name .. "Options", dataTable)
 end

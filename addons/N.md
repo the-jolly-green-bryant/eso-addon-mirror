@@ -91,4 +91,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [NumbersOnDummyOnly](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/NumbersOnDummyOnly__7dd87315-5f9a-4644-887f-a38632d7f70e) | Masteroshi430 | Console | — |
 | [NumbersOnDummyOnly](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/NumbersOnDummyOnly__3573) | Masteroshi430 | PC / Mac | 2026.07.09 |
 | [Nvk3´s Ultimate Tracker (beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nvk3/Nvk3-s-Ultimate-Tracker-beta__4311) | Nvk3 | PC / Mac | v0.17.5 |
+| [NW AimCam - Zoom action](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/natosz/NW-AimCam---Zoom-action__4772) | natosz | PC / Mac | 1.0 |
+| [NWUI - Unlocked](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/natosz/NWUI---Unlocked__4773) | natosz | PC / Mac | 1.8 |
 | [Nyghts Notebook](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nyght/Nyghts-Notebook__3454) | Nyght | PC / Mac | 1.0 |

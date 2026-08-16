@@ -1,13 +1,16 @@
 ## Title: UnknownFilter
-## Description: Hides known items in Gamepad Guild Store results.
+## Description: Hides known items in Gamepad Guild Store results while preserving native paging.
 ## Author: Xarador
-## Version: 0.2.7
-## APIVersion: 101046
+## Version: 0.3.2
+## AddOnVersion: 302
+## APIVersion: 101050
 ## SavedVariables: UnknownFilterSavedVars
 
 UnknownFilter.lua
+UF_Localization.lua
 UF_Chat.lua
 UF_Filters.lua
 UF_Scan.lua
 UF_GUI.lua
+UF_Paging.lua
 UF_Events.lua

@@ -4315,6 +4315,567 @@ function PvPUA:EABuildSettings(def)
     } }
 end
 
+local P = {}
+PvPUA.Potion = P
+
+P.previewMode = false
+
+local POTION_DEFAULTS = {
+    potionEnabled     = false,
+    potionText        = "USE POTION NOW!",
+    potionPosX        = 0,
+    potionPosY        = -220,
+    potionFontSize    = 45,
+    potionFont        = "EsoUI/Common/Fonts/univers67.otf",
+    potionColor       = { r = 1, g = 0.2, b = 0.2, a = 1 },
+    potionPulsate     = false,
+    potionPulseSpeed  = 3,
+    potionAlwaysOn    = false,
+    potionHealthGate  = false,
+    potionHealthPct   = 60,
+    potionMagickaGate = false,
+    potionMagickaPct  = 60,
+    potionStaminaGate = false,
+    potionStaminaPct  = 60,
+}
+
+for key, value in pairs(POTION_DEFAULTS) do
+    if PvPUA.defaults[key] == nil then
+        PvPUA.defaults[key] = value
+    end
+end
+
+local potionInCombat       = false
+local potionVisible      = false
+local potionIsReady    = true
+local potionCooldownEnds = 0
+
+local POTION_GATES = {
+    { label = "health",  enable = "potionHealthGate",  threshold = "potionHealthPct",
+      consts = { "COMBAT_MECHANIC_FLAGS_HEALTH",  "POWERTYPE_HEALTH"  } },
+    { label = "magicka", enable = "potionMagickaGate", threshold = "potionMagickaPct",
+      consts = { "COMBAT_MECHANIC_FLAGS_MAGICKA", "POWERTYPE_MAGICKA" } },
+    { label = "stamina", enable = "potionStaminaGate", threshold = "potionStaminaPct",
+      consts = { "COMBAT_MECHANIC_FLAGS_STAMINA", "POWERTYPE_STAMINA" } },
+}
+
+local potionPowerPct = {}
+
+local POTION_FONT_CHOICES = {
+    { name = "Gamepad Medium",  value = "EsoUI/Common/Fonts/FTN57.otf" },
+    { name = "Gamepad Bold",    value = "EsoUI/Common/Fonts/FTN87.otf" },
+    { name = "Gamepad Light",   value = "EsoUI/Common/Fonts/FTN47.otf" },
+    { name = "Univers Regular", value = "EsoUI/Common/Fonts/Univers57.otf" },
+    { name = "Univers Bold",    value = "EsoUI/Common/Fonts/univers67.otf" },
+    { name = "Prose Antique",   value = "EsoUI/Common/Fonts/ProseAntiquePSMT.otf" },
+    { name = "Trajan Pro",      value = "EsoUI/Common/Fonts/TrajanPro-Regular.otf" },
+    { name = "Handwritten",     value = "EsoUI/Common/Fonts/Handwritten_Bold.otf" },
+}
+
+function P:SV()
+    return PvPUA.savedVariables
+end
+
+function P:GetFont()
+    local sv = self:SV()
+    return string.format("%s|%d|%s", sv.potionFont, sv.potionFontSize, "outline")
+end
+
+function P:InvalidateFont()
+    if self.label then
+        self.label:SetFont(self:GetFont())
+    end
+    self:RefreshDisplay()
+end
+
+function P:ApplyPosition()
+    if not self.panel then return end
+    local sv = self:SV()
+    self.panel:ClearAnchors()
+    self.panel:SetAnchor(CENTER, GuiRoot, CENTER, sv.potionPosX, sv.potionPosY)
+end
+
+function P:CreatePanel()
+    if self.panel then return end
+
+    self.panel = WINDOW_MANAGER:CreateTopLevelWindow("PvPUA_PotionPanel")
+    self.panel:SetClampedToScreen(true)
+    self.panel:SetDrawLayer(DL_OVERLAY)
+    self.panel:SetDrawTier(DT_HIGH)
+    self.panel:SetDimensions(1200, 120)
+    self.panel:SetHidden(true)
+    self:ApplyPosition()
+
+    local label = WINDOW_MANAGER:CreateControl("PvPUA_PotionLabel", self.panel, CT_LABEL)
+    label:SetAnchor(CENTER, self.panel, CENTER, 0, 0)
+    label:SetFont(self:GetFont())
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.label = label
+end
+
+function P:OnPotionUsed(_, sound)
+    if sound ~= ITEM_SOUND_CATEGORY_POTION then return end
+
+    potionIsReady = false
+    self:RefreshDisplay()
+
+    EVENT_MANAGER:RegisterForUpdate(PvPUA.name .. "_PotionDrink", 10, function()
+        local slotIndex = GetCurrentQuickslot()
+        local remain, duration, global = GetSlotCooldownInfo(slotIndex, HOTBAR_CATEGORY_QUICKSLOT_WHEEL)
+
+        if not global then
+            EVENT_MANAGER:UnregisterForUpdate(PvPUA.name .. "_PotionDrink")
+
+            remain = remain or 0
+            potionCooldownEnds = GetGameTimeMilliseconds() + remain
+        end
+    end)
+end
+
+function P:IsPotionReady()
+    if potionIsReady then return true end
+
+    if potionCooldownEnds > 0 and GetGameTimeMilliseconds() >= potionCooldownEnds then
+        potionIsReady    = true
+        potionCooldownEnds = 0
+        return true
+    end
+
+    return false
+end
+
+function P:ResolvePowerTypes()
+    for _, gate in ipairs(POTION_GATES) do
+        gate.power = nil
+
+        for _, name in ipairs(gate.consts) do
+            local value = _G[name]
+            if type(value) == "number" then
+                gate.power = value
+                break
+            end
+        end
+
+        if gate.power then
+            potionPowerPct[gate.power] = 100
+        end
+    end
+end
+
+function P:RefreshPowerPercents()
+    for _, gate in ipairs(POTION_GATES) do
+        if gate.power then
+            local current, maxVal, effectiveMax = GetUnitPower("player", gate.power)
+            local capacity = effectiveMax or maxVal
+
+            if current and capacity and capacity > 0 then
+                potionPowerPct[gate.power] = (current / capacity) * 100
+            end
+        end
+    end
+end
+
+function P.OnPowerUpdate(_, unitTag, _, powerType, powerValue, powerMax)
+    if unitTag ~= "player" then return end
+    if powerType == nil or potionPowerPct[powerType] == nil then return end
+    if not powerMax or powerMax <= 0 then return end
+
+    potionPowerPct[powerType] = (powerValue / powerMax) * 100
+
+    P:RefreshDisplay()
+end
+
+function P:ResourceGatesPassed()
+    local sv = self:SV()
+
+    if sv.potionAlwaysOn then return true end
+
+    for _, gate in ipairs(POTION_GATES) do
+        if sv[gate.enable] then
+            local pct = potionPowerPct[gate.power] or 100
+            if pct <= sv[gate.threshold] then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+function P:IsPlayerDead()
+    if type(IsUnitDead) == "function" and IsUnitDead("player") then
+        return true
+    end
+
+    if type(IsUnitReincarnating) == "function" and IsUnitReincarnating("player") then
+        return true
+    end
+
+    return false
+end
+
+function P:OnPlayerDead()
+    potionInCombat  = false
+    potionVisible = false
+    if self.panel then self.panel:SetHidden(true) end
+    self:RefreshDisplay()
+end
+
+function P:OnPlayerAlive()
+    potionInCombat = IsUnitInCombat("player")
+    self:RefreshPowerPercents()
+    self:RefreshDisplay()
+end
+
+function P:ShouldShow()
+    if self.previewMode then return true end
+    if not self:SV().potionEnabled then return false end
+    if self:IsPlayerDead() then return false end
+    if not potionInCombat then return false end
+    if not self:IsPotionReady() then return false end
+    if not self:ResourceGatesPassed() then return false end
+
+    return true
+end
+
+function P:RefreshDisplay()
+    if not self.panel then return end
+
+    local sv = self:SV()
+    local show = self:ShouldShow()
+
+    if not show then
+        if potionVisible then
+            potionVisible = false
+        end
+        self.panel:SetHidden(true)
+        return
+    end
+
+    if not potionVisible then
+        potionVisible = true
+    end
+
+    self.label:SetText(sv.potionText)
+
+    local c = sv.potionColor
+    local r, g, b = 1, 1, 1
+    if type(c) == "table" then
+        r, g, b = c.r or 1, c.g or 1, c.b or 1
+    end
+
+    local alpha = 1
+    if sv.potionPulsate then
+        local t = GetGameTimeSeconds() * sv.potionPulseSpeed
+        alpha = 0.45 + (0.55 * math.abs(math.sin(t * math.pi)))
+    end
+
+    self.label:SetColor(r, g, b, alpha)
+    self.panel:SetHidden(false)
+end
+
+function P:OnCombatState(eventCode, combatState)
+    potionInCombat = combatState
+
+    if not potionInCombat then
+        potionVisible = false
+        if self.panel then self.panel:SetHidden(true) end
+    else
+        self:IsPotionReady()
+    end
+
+    self:RefreshDisplay()
+end
+
+function P:InitializeSceneHiding()
+    local function OnSceneStateChange(oldState, newState)
+        if newState == SCENE_SHOWING then
+            if P.panel then P.panel:SetHidden(true) end
+        elseif newState == SCENE_HIDDEN then
+            P:RefreshDisplay()
+        end
+    end
+
+    local scenes = { "worldMap", "gameMenuInGame", "inventory", "gamepad_inventory_root" }
+    for _, sceneName in ipairs(scenes) do
+        local scene = SCENE_MANAGER:GetScene(sceneName)
+        if scene then
+            scene:RegisterCallback("StateChange", OnSceneStateChange)
+        end
+    end
+end
+
+function P:GetOptions()
+    return {
+        {
+            type    = "toggle",
+            name    = "Preview",
+            getFunc = function() return P.previewMode end,
+            setFunc = function(val)
+                P.previewMode = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type    = "slider",
+            name    = "Horizontal Position",
+            min     = -1200, max = 1200, step = 5,
+            default = POTION_DEFAULTS.potionPosX,
+            getFunc = function() return P:SV().potionPosX end,
+            setFunc = function(val)
+                P:SV().potionPosX = val
+                P:ApplyPosition()
+            end,
+        },
+        {
+            type    = "slider",
+            name    = "Vertical Position",
+            min     = -800, max = 800, step = 5,
+            default = POTION_DEFAULTS.potionPosY,
+            getFunc = function() return P:SV().potionPosY end,
+            setFunc = function(val)
+                P:SV().potionPosY = val
+                P:ApplyPosition()
+            end,
+        },
+        {
+            type    = "toggle",
+            name    = "Enable",
+            default = POTION_DEFAULTS.potionEnabled,
+            getFunc = function() return P:SV().potionEnabled end,
+            setFunc = function(val)
+                P:SV().potionEnabled = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type    = "toggle",
+            name    = "Always On",
+            tooltip = "Show the alert whenever you are in combat with a potion ready, ignoring the resource options below.",
+            default = POTION_DEFAULTS.potionAlwaysOn,
+            getFunc = function() return P:SV().potionAlwaysOn end,
+            setFunc = function(val)
+                P:SV().potionAlwaysOn = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "toggle",
+            name     = "|cCC2222Health|r",
+            tooltip  = "Show the alert when you are in combat with a potion ready and your health has dropped to or below the threshold.",
+            default  = POTION_DEFAULTS.potionHealthGate,
+            disabled = function() return P:SV().potionAlwaysOn end,
+            getFunc  = function() return P:SV().potionHealthGate end,
+            setFunc  = function(val)
+                P:SV().potionHealthGate = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "slider",
+            name     = "Threshold",
+            min      = 10, max = 100, step = 5,
+            default  = POTION_DEFAULTS.potionHealthPct,
+            disabled = function()
+                return P:SV().potionAlwaysOn or not P:SV().potionHealthGate
+            end,
+            getFunc  = function() return P:SV().potionHealthPct end,
+            setFunc  = function(val)
+                P:SV().potionHealthPct = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "toggle",
+            name     = "|c2A6FFFMagicka|r",
+            tooltip  = "Show the alert when you are in combat with a potion ready and your magicka has dropped to or below the threshold.",
+            default  = POTION_DEFAULTS.potionMagickaGate,
+            disabled = function() return P:SV().potionAlwaysOn end,
+            getFunc  = function() return P:SV().potionMagickaGate end,
+            setFunc  = function(val)
+                P:SV().potionMagickaGate = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "slider",
+            name     = "Threshold",
+            min      = 10, max = 100, step = 5,
+            default  = POTION_DEFAULTS.potionMagickaPct,
+            disabled = function()
+                return P:SV().potionAlwaysOn or not P:SV().potionMagickaGate
+            end,
+            getFunc  = function() return P:SV().potionMagickaPct end,
+            setFunc  = function(val)
+                P:SV().potionMagickaPct = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "toggle",
+            name     = "|c00CC44Stamina|r",
+            tooltip  = "Show the alert when you are in combat with a potion ready and your stamina has dropped to or below the threshold.",
+            default  = POTION_DEFAULTS.potionStaminaGate,
+            disabled = function() return P:SV().potionAlwaysOn end,
+            getFunc  = function() return P:SV().potionStaminaGate end,
+            setFunc  = function(val)
+                P:SV().potionStaminaGate = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "slider",
+            name     = "Threshold",
+            min      = 10, max = 100, step = 5,
+            default  = POTION_DEFAULTS.potionStaminaPct,
+            disabled = function()
+                return P:SV().potionAlwaysOn or not P:SV().potionStaminaGate
+            end,
+            getFunc  = function() return P:SV().potionStaminaPct end,
+            setFunc  = function(val)
+                P:SV().potionStaminaPct = val
+                P:RefreshDisplay()
+            end,
+        },
+        { type = "header", name = "Message" },
+        {
+            type    = "editbox",
+            name    = "Text",
+            getFunc = function() return P:SV().potionText end,
+            setFunc = function(val)
+                if val == nil or val == "" then val = "USE POTION NOW!" end
+                P:SV().potionText = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type    = "slider",
+            name    = "Size",
+            min     = 25, max = 90, step = 1,
+            default = POTION_DEFAULTS.potionFontSize,
+            getFunc = function() return P:SV().potionFontSize end,
+            setFunc = function(val)
+                P:SV().potionFontSize = val
+                P:InvalidateFont()
+            end,
+        },
+        {
+            type    = "dropdown",
+            name    = "Font",
+            choices = POTION_FONT_CHOICES,
+            default = POTION_DEFAULTS.potionFont,
+            getFunc = function() return P:SV().potionFont end,
+            setFunc = function(val)
+                P:SV().potionFont = val
+                P:InvalidateFont()
+            end,
+        },
+        {
+            type    = "colorpicker",
+            name    = "Color",
+            default = POTION_DEFAULTS.potionColor,
+            getFunc = function()
+                local c = P:SV().potionColor
+                if type(c) == "table" then
+                    return c.r or 1, c.g or 1, c.b or 1, 1
+                end
+                return 1, 1, 1, 1
+            end,
+            setFunc = function(r, g, b, a)
+                P:SV().potionColor = { r = r, g = g, b = b, a = a }
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type    = "toggle",
+            name    = "Pulsate",
+            default = POTION_DEFAULTS.potionPulsate,
+            getFunc = function() return P:SV().potionPulsate end,
+            setFunc = function(val)
+                P:SV().potionPulsate = val
+                P:RefreshDisplay()
+            end,
+        },
+        {
+            type     = "slider",
+            name     = "Pulse Speed",
+            min      = 1, max = 10, step = 1,
+            default  = POTION_DEFAULTS.potionPulseSpeed,
+            disabled = function() return not P:SV().potionPulsate end,
+            getFunc  = function() return P:SV().potionPulseSpeed end,
+            setFunc  = function(val) P:SV().potionPulseSpeed = val end,
+        },
+    }
+end
+
+function P:Initialize()
+    if self.initialized then return end
+    self.initialized = true
+
+    self:ResolvePowerTypes()
+    self:RefreshPowerPercents()
+    self:CreatePanel()
+    self:InitializeSceneHiding()
+
+    EVENT_MANAGER:RegisterForEvent(
+        PvPUA.name .. "_PotionUsed",
+        EVENT_INVENTORY_ITEM_USED,
+        function(...) P:OnPotionUsed(...) end
+    )
+
+    if EVENT_POWER_UPDATE ~= nil then
+        EVENT_MANAGER:RegisterForEvent(
+            PvPUA.name .. "_PotionPower",
+            EVENT_POWER_UPDATE,
+            P.OnPowerUpdate
+        )
+
+        EVENT_MANAGER:AddFilterForEvent(
+            PvPUA.name .. "_PotionPower",
+            EVENT_POWER_UPDATE,
+            REGISTER_FILTER_UNIT_TAG, "player"
+        )
+    end
+
+    EVENT_MANAGER:RegisterForEvent(
+        PvPUA.name .. "_PotionCombat",
+        EVENT_PLAYER_COMBAT_STATE,
+        function(...) P:OnCombatState(...) end
+    )
+
+    if EVENT_PLAYER_DEAD ~= nil then
+        EVENT_MANAGER:RegisterForEvent(
+            PvPUA.name .. "_PotionDead",
+            EVENT_PLAYER_DEAD,
+            function() P:OnPlayerDead() end
+        )
+    end
+
+    if EVENT_PLAYER_ALIVE ~= nil then
+        EVENT_MANAGER:RegisterForEvent(
+            PvPUA.name .. "_PotionAlive",
+            EVENT_PLAYER_ALIVE,
+            function() P:OnPlayerAlive() end
+        )
+    end
+
+    EVENT_MANAGER:RegisterForUpdate(
+        PvPUA.name .. "_PotionTick",
+        100,
+        function() P:RefreshDisplay() end
+    )
+
+    EVENT_MANAGER:RegisterForEvent(
+        PvPUA.name .. "_PotionActivated",
+        EVENT_PLAYER_ACTIVATED,
+        function()
+            potionInCombat = IsUnitInCombat("player")
+            P:RefreshDisplay()
+        end
+    )
+end
+
 --------------------------------------------------
 -- Settings
 --------------------------------------------------
@@ -4500,8 +5061,16 @@ local function PvPUA_HookMenuEntryColor()
     end
 end
 
+function PvPUA:HasConsoleMenu()
+    return type(LibConsoleMenu) == "table"
+       and type(LibConsoleMenu.CreateAddonMenu) == "function"
+end
+
 function PvPUA:CreateSettings()
-    if not LibConsoleMenu then return end
+    if not self:HasConsoleMenu() then
+        PvPUA.settingsUnavailable = true
+        return
+    end
     self:AIRefreshGuildChoices()
 
     local screenW, screenH = ScreenBounds()
@@ -4524,7 +5093,7 @@ function PvPUA:CreateSettings()
     local menu = LibConsoleMenu:CreateAddonMenu("PvPUA", {
         title          = "PvP UA!",
         author         = "user562",
-        version        = "4.6",
+        version        = "4.7",
         category       = addonCategory,
         enableDefaults = true,
         enableReset    = true,
@@ -4685,6 +5254,9 @@ function PvPUA:CreateSettings()
         self:HKBuildSettings(EA_DEFS[1]),
         self:EABuildSettings(EA_DEFS[2]),
         self:EABuildSettings(EA_DEFS[3]),
+        { type = "submenu", name = "Potions", align = "left", indent = true,
+          icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
+          options = PvPUA.Potion and PvPUA.Potion:GetOptions() or {} },
           } },
         { type = "submenu",
           name = "|cCC2222Auto Invite|r",
@@ -4905,15 +5477,13 @@ local WHATS_NEW_DIALOG = "PVPUA_WHATS_NEW"
 local whatsNewRegistered = false
 
 PvPUA.whatsNew = {
-    version = "1.1",
+    version = "1.2",
     title = "PvP UA!",
     message = table.concat({
-        "PvP UA! has been updated to version 4.6.",
+        "PvP UA! has been updated to version 4.7.",
         "",
-        "- Home Keep alerts now use the on-screen alert panel instead of center screen text, with their own position, font, size and pulsate settings.",
-        "- Several home keeps under attack now show together, each clearing on its own timer.",
-        "- New Negate and Corrosive alerts.",
-        "- Settings rebuilt for console with nested menus, using LibConsoleMenu.",
+        "- New Potion alert, found under Alerts.",
+        "- Now works on XBPA (PC).",
         "",
         "Any bugs, message me:",
         "Xbox: user562",
@@ -5014,6 +5584,10 @@ local function OnAddonLoaded(event, addonName)
 
     PvPUA.savedVariables.listSize = "Default"
 
+    if PvPUA.Potion then
+        pcall(function() PvPUA.Potion:Initialize() end)
+    end
+
     local style = PvPUA.savedVariables.backdropStyle
     if style == "Alliance Colored" then
         PvPUA.savedVariables.backdropStyle = "Alliance"
@@ -5030,7 +5604,11 @@ local function OnAddonLoaded(event, addonName)
     PvPUA:RefreshQueueSoon()
     PvPUA:RefreshBackdropColors()
     PvPUA:EAInit()
-    PvPUA:CreateSettings()
+    local settingsOk, settingsErr = pcall(function() PvPUA:CreateSettings() end)
+    if not settingsOk then
+        PvPUA.settingsUnavailable = true
+        PvPUA.settingsError = tostring(settingsErr)
+    end
 
     pcall(PI.Init)
 

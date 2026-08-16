@@ -6,6 +6,7 @@ local ADDON_NAME = KRT.name
 local DEFAULTS = {
     kws = {
         enabled = true,
+        debug = false,
         profiles = {},
         lastProfile = "",
         offsetX = 150,
@@ -18,6 +19,10 @@ KRT.KWS = {
     ui = nil,
     rows = {},
     selectedPlayers = {},
+    selectedKicker = "",
+    selectedLead = "",
+    kickerComboBox = nil,
+    leadComboBox = nil,
     comboBox = nil,
     editBox = nil,
     kickBtn = nil,
@@ -26,6 +31,8 @@ KRT.KWS = {
     pendingKicksCount = 0,
     inviteTimeoutTimer = nil,
     isProcessing = false,
+    isPopulating = false,
+    myDisplayNameLower = "",
 }
 local self = KRT.KWS
 
@@ -34,7 +41,152 @@ local function SV()
     if not KRT.sv.kws then
         KRT.sv.kws = ZO_DeepTableCopy(DEFAULTS.kws)
     end
+    if KRT.sv.kws.debug == nil then
+        KRT.sv.kws.debug = DEFAULTS.kws.debug
+    end
     return KRT.sv.kws
+end
+
+local function SyncKALSettings(kicker, lead)
+    if self.isPopulating then return end
+
+    if not KRT.sv then return end
+    if not KRT.sv.kal then
+        KRT.sv.kal = {}
+    end
+
+    local changed = false
+
+    if kicker and kicker ~= "" then
+        KRT.sv.kal.kickingPerson = kicker
+        if KRT.sv.kal.knownAccounts then
+            KRT.sv.kal.knownAccounts[kicker] = true
+        end
+        changed = true
+    end
+
+    if lead and lead ~= "" then
+        KRT.sv.kal.actualLead = lead
+        if KRT.sv.kal.knownAccounts then
+            KRT.sv.kal.knownAccounts[lead] = true
+        end
+        changed = true
+    end
+
+    if changed and LibAddonMenu2 and LibAddonMenu2.UpdatePanelControls then
+        local panel = _G[ADDON_NAME .. "_Panel"]
+        if panel then
+            LibAddonMenu2:UpdatePanelControls(panel)
+        end
+    end
+end
+
+local function SaveProfileData(pName)
+    SV().profiles[pName] = {
+        selectedPlayers = ZO_DeepTableCopy(self.selectedPlayers),
+        kicker = self.selectedKicker,
+        lead = self.selectedLead,
+    }
+    SV().lastProfile = pName
+    self:UpdateProfileDropdown()
+    if self.editBox then
+        self.editBox:SetText("")
+    end
+end
+
+local function RegisterOverwriteDialog()
+    ESO_Dialogs["KWS_CONFIRM_OVERWRITE"] = {
+        title = { text = "Overwrite Profile?" },
+        mainText = { text = "A profile named '<<1>>' already exists. Do you want to overwrite it?" },
+        buttons = {
+            [1] = {
+                text = SI_DIALOG_YES,
+                callback = function(dialog)
+                    if dialog.data and dialog.data.profileName then
+                        SaveProfileData(dialog.data.profileName)
+                    end
+                end,
+            },
+            [2] = {
+                text = SI_DIALOG_NO,
+            },
+        },
+    }
+end
+
+function KRT.KWS:PopulateLeadKickerDropdowns(members)
+    if not self.kickerComboBox or not self.leadComboBox or not members then return end
+
+    KRT.DebounceNextFrame(ADDON_NAME .. "_PopulateDropdowns", function()
+        if not self.kickerComboBox or not self.leadComboBox then return end
+
+        self.isPopulating = true
+
+        self.kickerComboBox:ClearItems()
+        self.leadComboBox:ClearItems()
+
+        local kickerIndex = 1
+        local leadIndex = 1
+        local index = 1
+
+        local noneEntry1 = self.kickerComboBox:CreateItemEntry("None", function()
+            self.selectedKicker = ""
+            if self.kickerComboBox and self.kickerComboBox.HideDropdown then
+                self.kickerComboBox:HideDropdown()
+            end
+        end)
+        self.kickerComboBox:AddItem(noneEntry1, ZO_COMBOBOX_SUPPRESS_UPDATE)
+
+        local noneEntry2 = self.leadComboBox:CreateItemEntry("None", function()
+            self.selectedLead = ""
+            if self.leadComboBox and self.leadComboBox.HideDropdown then
+                self.leadComboBox:HideDropdown()
+            end
+        end)
+        self.leadComboBox:AddItem(noneEntry2, ZO_COMBOBOX_SUPPRESS_UPDATE)
+
+        for i = 1, #members do
+            local displayName = members[i].displayName
+            if displayName and displayName ~= "" then
+                index = index + 1
+                local displayNameLower = string.lower(displayName)
+
+                local kickerEntry = self.kickerComboBox:CreateItemEntry(displayName, function()
+                    self.selectedKicker = displayName
+                    SyncKALSettings(displayName, nil)
+                    if self.kickerComboBox and self.kickerComboBox.HideDropdown then
+                        self.kickerComboBox:HideDropdown()
+                    end
+                end)
+                self.kickerComboBox:AddItem(kickerEntry, ZO_COMBOBOX_SUPPRESS_UPDATE)
+
+                if string.lower(self.selectedKicker) == displayNameLower then
+                    kickerIndex = index
+                end
+
+                local leadEntry = self.leadComboBox:CreateItemEntry(displayName, function()
+                    self.selectedLead = displayName
+                    SyncKALSettings(nil, displayName)
+                    if self.leadComboBox and self.leadComboBox.HideDropdown then
+                        self.leadComboBox:HideDropdown()
+                    end
+                end)
+                self.leadComboBox:AddItem(leadEntry, ZO_COMBOBOX_SUPPRESS_UPDATE)
+
+                if string.lower(self.selectedLead) == displayNameLower then
+                    leadIndex = index
+                end
+            end
+        end
+
+        self.kickerComboBox:UpdateItems()
+        self.leadComboBox:UpdateItems()
+
+        self.kickerComboBox:SelectItemByIndex(kickerIndex)
+        self.leadComboBox:SelectItemByIndex(leadIndex)
+
+        self.isPopulating = false
+    end)
 end
 
 function KRT.KWS:CreateUI()
@@ -47,7 +199,7 @@ function KRT.KWS:CreateUI()
         win = WM:CreateTopLevelWindow("KwibusSpaulderUI")
     end
 
-    win:SetDimensions(350, 520)
+    win:SetDimensions(320, 650)
     win:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV().offsetX or 150, SV().offsetY or 150)
     win:SetMouseEnabled(true)
     win:SetMovable(true)
@@ -76,7 +228,7 @@ function KRT.KWS:CreateUI()
         local row = self.rows[i]
         if not row or not (row.cb and row.role and row.nameLabel and row.zoneIcon) then
             row = WM:CreateControl(nil, win, CT_CONTROL)
-            row:SetDimensions(330, 26)
+            row:SetDimensions(300, 26)
             row:SetAnchor(TOPLEFT, win, TOPLEFT, 10, 40 + ((i - 1) * 26))
 
             local cb = WM:CreateControl(nil, row, CT_BUTTON)
@@ -98,7 +250,7 @@ function KRT.KWS:CreateUI()
             local nameLabel = WM:CreateControl(nil, row, CT_LABEL)
             nameLabel:SetFont("ZoFontGame")
             nameLabel:SetAnchor(LEFT, role, RIGHT, 5, 0)
-            nameLabel:SetDimensions(220, 24)
+            nameLabel:SetDimensions(190, 24)
 
             local zoneIcon = WM:CreateControl(nil, row, CT_TEXTURE)
             zoneIcon:SetDimensions(24, 24)
@@ -131,10 +283,53 @@ function KRT.KWS:CreateUI()
         local kickBtn = WM:CreateControlFromVirtual(nil, win, "ZO_DefaultButton")
         if kickBtn then
             kickBtn:SetAnchor(TOP, win, TOP, 0, 360)
-            kickBtn:SetWidth(250)
+            kickBtn:SetWidth(230)
             kickBtn:SetText("Kick & Re-invite Selected")
             kickBtn:SetHandler("OnClicked", function() self:KickAndReinvite() end)
             self.kickBtn = kickBtn
+        end
+    end
+
+    if not self.kickerComboBox then
+        local leadHeader = WM:CreateControl("$(parent)LeadHeader", win, CT_LABEL)
+        if leadHeader then
+            leadHeader:SetFont("ZoFontWinH3")
+            leadHeader:SetText("Lead Passing Settings")
+            leadHeader:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 400)
+        end
+
+        local kickerLabel = WM:CreateControl("$(parent)KickerLabel", win, CT_LABEL)
+        if kickerLabel then
+            kickerLabel:SetFont("ZoFontGame")
+            kickerLabel:SetText("Kicker:")
+            kickerLabel:SetAnchor(TOPLEFT, leadHeader, BOTTOMLEFT, 0, 8)
+        end
+
+        local kickerCtrl = WM:CreateControlFromVirtual("KwibusKickerComboBox", win, "ZO_ComboBox")
+        if kickerCtrl and kickerLabel then
+            kickerCtrl:SetDimensions(210, 24)
+            kickerCtrl:SetAnchor(LEFT, kickerLabel, RIGHT, 10, 0)
+            self.kickerComboBox = ZO_ComboBox_ObjectFromContainer(kickerCtrl)
+            if self.kickerComboBox then
+                self.kickerComboBox:SetSortsItems(false)
+            end
+        end
+
+        local leadLabel = WM:CreateControl("$(parent)LeadLabel", win, CT_LABEL)
+        if leadLabel and kickerLabel then
+            leadLabel:SetFont("ZoFontGame")
+            leadLabel:SetText("Lead:")
+            leadLabel:SetAnchor(TOPLEFT, kickerLabel, BOTTOMLEFT, 0, 12)
+        end
+
+        local leadCtrl = WM:CreateControlFromVirtual("KwibusLeadComboBox", win, "ZO_ComboBox")
+        if leadCtrl and leadLabel then
+            leadCtrl:SetDimensions(210, 24)
+            leadCtrl:SetAnchor(LEFT, leadLabel, RIGHT, 22, 0)
+            self.leadComboBox = ZO_ComboBox_ObjectFromContainer(leadCtrl)
+            if self.leadComboBox then
+                self.leadComboBox:SetSortsItems(false)
+            end
         end
     end
 
@@ -143,13 +338,13 @@ function KRT.KWS:CreateUI()
         if pTitle then
             pTitle:SetFont("ZoFontWinH3")
             pTitle:SetText("Profiles")
-            pTitle:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 400)
+            pTitle:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 510)
         end
 
         local editBg = WM:CreateControlFromVirtual(nil, win, "ZO_EditBackdrop")
         if editBg then
-            editBg:SetDimensions(200, 26)
-            editBg:SetAnchor(TOPLEFT, pTitle, BOTTOMLEFT, 0, 10)
+            editBg:SetDimensions(190, 26)
+            editBg:SetAnchor(TOPLEFT, pTitle, BOTTOMLEFT, 0, 8)
             self.editBox = WM:CreateControlFromVirtual(nil, editBg, "ZO_DefaultEditForBackdrop")
         end
 
@@ -162,18 +357,19 @@ function KRT.KWS:CreateUI()
                 if self.editBox then
                     local pName = self.editBox:GetText()
                     if pName and pName ~= "" then
-                        SV().profiles[pName] = ZO_DeepTableCopy(self.selectedPlayers)
-                        SV().lastProfile = pName
-                        self:UpdateProfileDropdown()
-                        self.editBox:SetText("")
+                        if SV().profiles and SV().profiles[pName] ~= nil then
+                            ZO_Dialogs_ShowDialog("KWS_CONFIRM_OVERWRITE", { profileName = pName }, { mainTextParams = { pName } })
+                        else
+                            SaveProfileData(pName)
+                        end
                     end
                 end
             end)
         end
 
-        local comboCtrl = WM:CreateControlFromVirtual(nil, win, "ZO_ComboBox")
+        local comboCtrl = WM:CreateControlFromVirtual("KwibusProfileComboBox", win, "ZO_ComboBox")
         if comboCtrl and editBg then
-            comboCtrl:SetDimensions(140, 26)
+            comboCtrl:SetDimensions(130, 26)
             comboCtrl:SetAnchor(TOPLEFT, editBg, BOTTOMLEFT, 0, 15)
             self.comboBox = ZO_ComboBox_ObjectFromContainer(comboCtrl)
             if self.comboBox then
@@ -191,9 +387,23 @@ function KRT.KWS:CreateUI()
                     local selected = self.comboBox:GetSelectedItemData()
                     if selected and selected.name then
                         SV().lastProfile = selected.name
-                        local prof = SV().profiles and SV().profiles[selected.name]
-                        if prof then
-                            self.selectedPlayers = ZO_DeepTableCopy(prof)
+                        local profData = SV().profiles and SV().profiles[selected.name]
+                        if profData then
+                            if profData.selectedPlayers then
+                                self.selectedPlayers = ZO_DeepTableCopy(profData.selectedPlayers)
+                            else
+                                self.selectedPlayers = ZO_DeepTableCopy(profData)
+                            end
+
+                            if profData.kicker and profData.kicker ~= "" then
+                                self.selectedKicker = profData.kicker
+                            end
+
+                            if profData.lead and profData.lead ~= "" then
+                                self.selectedLead = profData.lead
+                            end
+
+                            SyncKALSettings(self.selectedKicker, self.selectedLead)
                             self:RefreshRows()
                         end
                     end
@@ -282,17 +492,18 @@ function KRT.KWS:RefreshRows()
 
     if not self.ui or self.ui:IsHidden() then return end
 
+    local isLeader = IsUnitGroupLeader("player")
     if self.kickBtn then
-        self.kickBtn:SetEnabled(IsUnitGroupLeader("player") and not self.isProcessing)
+        self.kickBtn:SetEnabled((isLeader or SV().debug) and not self.isProcessing)
     end
 
-    local groupSize = IsUnitGrouped("player") and GetGroupSize() or 1
+    local isGrouped = IsUnitGrouped("player")
+    local groupSize = isGrouped and GetGroupSize() or 1
     local myZoneId = GetUnitZoneIndex("player")
-    local myDisplayName = string.lower(GetDisplayName() or "")
     local members = {}
 
     for i = 1, groupSize do
-        local tag = IsUnitGrouped("player") and GetGroupUnitTagByIndex(i) or "player"
+        local tag = isGrouped and GetGroupUnitTagByIndex(i) or "player"
         local displayName = GetUnitDisplayName(tag)
         local role = GetGroupMemberSelectedRole(tag)
         local unitZoneId = GetUnitZoneIndex(tag)
@@ -306,7 +517,7 @@ function KRT.KWS:RefreshRows()
             roleWeight = 3
         end
 
-        local isSelf = AreUnitsEqual(tag, "player") or (displayName and string.lower(displayName) == myDisplayName)
+        local isSelf = AreUnitsEqual(tag, "player") or (displayName and string.lower(displayName) == self.myDisplayNameLower)
 
         table.insert(members, {
             tag = tag,
@@ -320,6 +531,8 @@ function KRT.KWS:RefreshRows()
     end
 
     table.sort(members, SortGroupMembers)
+
+    self:PopulateLeadKickerDropdowns(members)
 
     for i = 1, 12 do
         local row = self.rows[i]
@@ -425,7 +638,7 @@ function KRT.KWS:KickAndReinvite()
         return
     end
 
-    if not IsUnitGroupLeader("player") then
+    if not IsUnitGroupLeader("player") and not SV().debug then
         d("[Kwibus Spaulder] You must be the group leader to kick players!")
         return
     end
@@ -473,7 +686,7 @@ function KRT.KWS:ToggleFragment()
     local groupScene = SCENE_MANAGER and SCENE_MANAGER:GetScene("groupMenuKeyboard")
     if groupScene and self.fragment then
         local groupSize = IsUnitGrouped("player") and GetGroupSize() or 0
-        local shouldShow = SV().enabled and (groupSize >= 5)
+        local shouldShow = SV().enabled and (SV().debug or groupSize >= 5)
 
         if shouldShow then
             if not groupScene:HasFragment(self.fragment) then
@@ -489,6 +702,9 @@ end
 
 function KRT.KWS:Initialize()
     SV()
+    self.myDisplayNameLower = string.lower(GetDisplayName() or "")
+
+    RegisterOverwriteDialog()
     self:CreateUI()
 
     self.ui = _G["KwibusSpaulderUI"] or self.ui
@@ -557,6 +773,18 @@ function KRT.KWS:GetLAMSubmenu()
                 end,
                 setFunc = function(value)
                     SV().enabled = value
+                    self:ToggleFragment()
+                end,
+            },
+            {
+                type = "checkbox",
+                name = "Debug Mode (Force UI Visible)",
+                tooltip = "Force UI overlay to show in group menu regardless of group status or group size.",
+                getFunc = function()
+                    return SV().debug or false
+                end,
+                setFunc = function(value)
+                    SV().debug = value
                     self:ToggleFragment()
                 end,
             },

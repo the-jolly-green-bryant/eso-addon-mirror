@@ -25,11 +25,11 @@ BlockPooky.ccDebuffOrder = { "stun", "fear", "disorient", "silence", "stagger" }
 
 -- Per-CC-type display info (text + default color). Colors are customizable in the menu.
 BlockPooky.ccDebuffInfo = {
-    stun      = { text = "STUNNED",     color = {0.894, 0.133, 0.090, 1} }, -- red
-    fear      = { text = "FEARED",      color = {0.561, 0.035, 0.925, 1} }, -- purple
-    disorient = { text = "DISORIENTED", color = {0.031, 0.627, 1.0,   1} }, -- blue
-    silence   = { text = "SILENCED",    color = {0.0,   1.0,   1.0,   1} }, -- cyan
-    stagger   = { text = "STAGGER",     color = {1.0,   0.949, 0.129, 1} }, -- yellow
+    stun      = { text = "STUNNED", color = { 0.894, 0.133, 0.090, 1 } },   -- red
+    fear      = { text = "FEARED", color = { 0.561, 0.035, 0.925, 1 } },    -- purple
+    disorient = { text = "DISORIENTED", color = { 0.031, 0.627, 1.0, 1 } }, -- blue
+    silence   = { text = "SILENCED", color = { 0.0, 1.0, 1.0, 1 } },        -- cyan
+    stagger   = { text = "STAGGER", color = { 1.0, 0.949, 0.129, 1 } },     -- yellow
 }
 
 -- Negate Magic ability IDs -> silence while standing in the field
@@ -66,11 +66,11 @@ end
 ---init the active CC bar UI
 function BlockPooky.initCCDebuffUI()
     if not BlockPooky.ccDebuffBar then
-        BlockPooky.ccDebuffBar = CreateControl(BlockPooky.name.."CCDebuffBar", GuiRoot, CT_TOPLEVELCONTROL)
+        BlockPooky.ccDebuffBar = CreateControl(BlockPooky.name .. "CCDebuffBar", GuiRoot, CT_TOPLEVELCONTROL)
         BlockPooky.ccDebuffBar:SetDimensions(200, 40)
         BlockPooky.ccDebuffBar:SetAnchor(CENTER, GuiRoot, CENTER, 0, -165)
         BlockPooky.ccDebuffBar:SetHidden(true)
-        BlockPooky.ccDebuffBar:SetMovable(true) -- Verschiebbar machen
+        BlockPooky.ccDebuffBar:SetMovable(true)      -- Verschiebbar machen
         BlockPooky.ccDebuffBar:SetMouseEnabled(true) -- Mausinteraktionen erlauben
 
         -- Event für das Loslassen nach dem Bewegen
@@ -80,7 +80,7 @@ function BlockPooky.initCCDebuffUI()
     end
 
     if not BlockPooky.ccDebuffLabel then
-        BlockPooky.ccDebuffLabel = CreateControl(BlockPooky.name.."CCDebuffLabel", BlockPooky.ccDebuffBar, CT_LABEL)
+        BlockPooky.ccDebuffLabel = CreateControl(BlockPooky.name .. "CCDebuffLabel", BlockPooky.ccDebuffBar, CT_LABEL)
         BlockPooky.ccDebuffLabel:SetFont("ZoFontWinH4")
         BlockPooky.ccDebuffLabel:SetColor(1, 1, 1, 1)
         BlockPooky.ccDebuffLabel:SetText("")
@@ -89,7 +89,8 @@ function BlockPooky.initCCDebuffUI()
     end
 
     if not BlockPooky.ccDebuffStatusBar then
-        BlockPooky.ccDebuffStatusBar = CreateControl(BlockPooky.name.."CCDebuffStatus", BlockPooky.ccDebuffBar, CT_STATUSBAR)
+        BlockPooky.ccDebuffStatusBar = CreateControl(BlockPooky.name .. "CCDebuffStatus", BlockPooky.ccDebuffBar,
+            CT_STATUSBAR)
         BlockPooky.ccDebuffStatusBar:SetDimensions(200, 20)
         BlockPooky.ccDebuffStatusBar:SetAnchor(BOTTOM, BlockPooky.ccDebuffBar, BOTTOM, 0, 0)
         BlockPooky.ccDebuffStatusBar:SetMinMax(0, 1)
@@ -102,7 +103,7 @@ end
 function BlockPooky.SaveCCDebuffPosition()
     if not BlockPooky.ccDebuffBar then return end
     local left, top = BlockPooky.ccDebuffBar:GetLeft(), BlockPooky.ccDebuffBar:GetTop()
-    BlockPooky.config.ccDebuffPosition = {left = left, top = top}
+    BlockPooky.config.ccDebuffPosition = { left = left, top = top }
 end
 
 function BlockPooky.LoadCCDebuffPosition()
@@ -111,7 +112,8 @@ function BlockPooky.LoadCCDebuffPosition()
         if BlockPooky.ccDebuffBar:GetAnchor() ~= nil then
             BlockPooky.ccDebuffBar:ClearAnchors()
         end
-        BlockPooky.ccDebuffBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.ccDebuffPosition.left, BlockPooky.config.ccDebuffPosition.top)
+        BlockPooky.ccDebuffBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.ccDebuffPosition.left,
+            BlockPooky.config.ccDebuffPosition.top)
     else
         BlockPooky.ResetCCDebuffPosition()
     end
@@ -181,7 +183,7 @@ end
 function BlockPooky.StartCCDebuffUpdate()
     if not ccDebuffUpdateRegistered then
         ccDebuffUpdateRegistered = true
-        EVENT_MANAGER:RegisterForUpdate(BlockPooky.name.."UpdateCCDebuff", 50, BlockPooky.UpdateCCDebuff)
+        EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "UpdateCCDebuff", 50, BlockPooky.UpdateCCDebuff, false)
     end
     BlockPooky.UpdateCCDebuff()
 end
@@ -213,7 +215,7 @@ function BlockPooky.UpdateCCDebuff()
         ccDebuffActiveType = nil
         if ccDebuffUpdateRegistered then
             ccDebuffUpdateRegistered = false
-            EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name.."UpdateCCDebuff")
+            EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name .. "UpdateCCDebuff")
         end
         return
     end
@@ -294,7 +296,6 @@ function BlockPooky.OnCCDebuffCombat(
     eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType,
     sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType,
     combatLog, sourceUnitId, targetUnitId, abilityId)
-
     -- Debug: log every CC-relevant combat event BEFORE any filtering so we can verify what
     -- the game actually sends (turn on with /blockpookyccdebug, then get stunned/feared).
     if ccDebuffDebug and ccDebuffValidResults[result] then
@@ -369,13 +370,18 @@ function BlockPooky.CCDebuffEventRegisterUpdate()
         -- result filters were found to silently drop CC events, and the player-target
         -- filter is applied in the handler via IsPlayerName. The handler gates results
         -- with the cheap ccDebuffValidResults lookup.
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuff", EVENT_COMBAT_EVENT, function(...) BlockPooky.OnCCDebuffCombat(...) end)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCDebuff", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
+        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuff", EVENT_COMBAT_EVENT,
+            function(...) BlockPooky.OnCCDebuffCombat(...) end)
+        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCDebuff", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR,
+            false)
 
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuffStunState", EVENT_PLAYER_STUNNED_STATE_CHANGED, function(...) BlockPooky.OnCCDebuffStunState(...) end)
+        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuffStunState", EVENT_PLAYER_STUNNED_STATE_CHANGED,
+            function(...) BlockPooky.OnCCDebuffStunState(...) end)
 
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuffDeath", EVENT_UNIT_DEATH_STATE_CHANGED, function(...) BlockPooky.OnCCDebuffDeath(...) end)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCDebuffDeath", EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuffDeath", EVENT_UNIT_DEATH_STATE_CHANGED,
+            function(...) BlockPooky.OnCCDebuffDeath(...) end)
+        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCDebuffDeath", EVENT_UNIT_DEATH_STATE_CHANGED,
+            REGISTER_FILTER_UNIT_TAG, "player")
     else
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "CCDebuff")
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "CCDebuffStunState")

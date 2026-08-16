@@ -19,7 +19,7 @@ BetterCharacterOverview = {}
 local BCO = BetterCharacterOverview
 
 BCO.name = "BetterCharacterOverview"
-BCO.version = "1.6.8"
+BCO.version = "1.8.0"
 BCO.savedVarVersion = 2
 
 BCO.CATEGORY_DESCRIPTOR = "bcoCategoryList"
@@ -31,6 +31,8 @@ BCO.defaults = {
     shared = {
         bank = { items = {}, updated = 0 },
         storage = {},
+        houses = {},
+        guildListings = {},
         currencies = {
             bank = {},
             updated = 0,
@@ -81,6 +83,10 @@ BCO.installAttempts = 0
 BCO.bankOpen = false
 BCO.activeBankBag = nil
 BCO.scanPending = false
+BCO.houseScanToken = 0
+BCO.houseScanScheduled = false
+BCO.tradingHouseOpen = false
+BCO.listingScanScheduled = false
 BCO.indexToken = 0
 BCO.indexReady = false
 BCO.aggregatedItems = {}
@@ -127,7 +133,9 @@ BCO.collapsedLocationBodyRows = 3
 
 -- Square cycles the source used by the read-only account inventory list.
 -- Character Items includes both backpack and equipped locations.
--- Storage includes housing storage chests/coffers and the Furnishing Vault.
+-- Storage includes housing storage chests/coffers, the Furnishing Vault,
+-- and furnishings placed in owned houses.
+-- Listed shows the player's own guild store sell listings per guild.
 BCO.inventoryFilters = {
     {
         key = "all",
@@ -144,6 +152,10 @@ BCO.inventoryFilters = {
     {
         key = "storage",
         keybindName = "Storage",
+    },
+    {
+        key = "listings",
+        keybindName = "Listed",
     },
 }
 BCO.inventoryFilterIndex = 1
@@ -931,6 +943,450 @@ function BCO:ScheduleIndexRebuild(delayMs)
     end, delayMs or 0)
 end
 
+local function GetCurrentOwnedHouseId()
+    if type(GetCurrentZoneHouseId) ~= "function" then
+        return nil
+    end
+
+    local ok, houseId = pcall(GetCurrentZoneHouseId)
+
+    if not ok or not houseId or houseId == 0 then
+        return nil
+    end
+
+    -- Only catalog houses the account owns. Visited houses would create
+    -- misleading locations for items the player cannot retrieve.
+    if type(IsOwnerOfCurrentHouse) == "function" then
+        local okOwner, isOwner = pcall(IsOwnerOfCurrentHouse)
+
+        if not okOwner or isOwner ~= true then
+            return nil
+        end
+    end
+
+    return houseId
+end
+
+-- Uses the standard house name from the collectible, matching how the base
+-- game labels houses (e.g. the housing preview UI). Player-set nicknames
+-- are intentionally ignored so locations read consistently.
+local function GetHouseDisplayName(houseId)
+    local collectibleId = 0
+
+    if type(GetCollectibleIdForHouse) == "function" then
+        local ok, id = pcall(
+            GetCollectibleIdForHouse,
+            houseId
+        )
+
+        if ok and id then
+            collectibleId = id
+        end
+    end
+
+    if collectibleId ~= 0 then
+        if type(GetCollectibleName) == "function" then
+            local ok, collectibleName = pcall(
+                GetCollectibleName,
+                collectibleId
+            )
+
+            collectibleName = ok
+                and FormatStorageName(collectibleName)
+                or ""
+
+            if collectibleName ~= "" then
+                return collectibleName
+            end
+        end
+    end
+
+    return string.format("House %d", houseId)
+end
+
+-- Builds an item snapshot from a bare item link (no bag slot). Used for
+-- placed house furnishings and guild store listings. count starts at 0 and
+-- is accumulated by the caller.
+local function ReadItemLinkSnapshot(itemLink)
+    if not itemLink or itemLink == "" then
+        return nil
+    end
+
+    local itemType, specializedItemType = 0, 0
+
+    if GetItemLinkItemType then
+        itemType, specializedItemType =
+            GetItemLinkItemType(itemLink)
+    end
+
+    return {
+        itemLink = itemLink,
+        itemId = GetItemLinkItemId and
+            GetItemLinkItemId(itemLink) or 0,
+        name = FormatItemName(
+            GetItemLinkName and
+                GetItemLinkName(itemLink) or
+                "Unknown Furnishing"
+        ),
+        count = 0,
+        icon = GetItemLinkIcon and
+            GetItemLinkIcon(itemLink) or "",
+        quality = GetLinkDisplayQuality(
+            itemLink,
+            ITEM_DISPLAY_QUALITY_NORMAL
+        ),
+        itemType = itemType or 0,
+        specializedItemType = specializedItemType or 0,
+        equipType = GetItemLinkEquipType and
+            GetItemLinkEquipType(itemLink) or
+            EQUIP_TYPE_INVALID,
+        filterData = GetFilterData(
+            itemLink,
+            nil,
+            nil
+        ),
+        setName = "",
+    }
+end
+
+-- Walks every furnishing placed in the current owned house in small chunks
+-- so large houses (700+ placed items) never stall a frame. Duplicate
+-- furnishings collapse into one snapshot entry with a count, which keeps
+-- SavedVariables small and the link-derived reads to one per unique item.
+function BCO:ScanCurrentHouse()
+    local houseId = GetCurrentOwnedHouseId()
+
+    if not houseId
+        or type(GetNextPlacedHousingFurnitureId)
+            ~= "function"
+    then
+        return false
+    end
+
+    self.houseScanToken = self.houseScanToken + 1
+    local token = self.houseScanToken
+
+    local aggregate = {}
+    local items = {}
+    local furnitureId = nil
+
+    local function ProcessChunk()
+        if token ~= BCO.houseScanToken then
+            return
+        end
+
+        -- Abandon the scan if the player left the house mid-walk; a fresh
+        -- scan starts on the next activation inside an owned house.
+        if GetCurrentOwnedHouseId() ~= houseId then
+            return
+        end
+
+        local processed = 0
+        local done = false
+
+        while processed < 40 do
+            local ok, nextId = pcall(
+                GetNextPlacedHousingFurnitureId,
+                furnitureId
+            )
+
+            if not ok or not nextId then
+                done = true
+                break
+            end
+
+            furnitureId = nextId
+
+            local itemLink = ""
+
+            if type(GetPlacedFurnitureLink) == "function" then
+                local okLink, link = pcall(
+                    GetPlacedFurnitureLink,
+                    furnitureId,
+                    LINK_STYLE_DEFAULT
+                )
+
+                if okLink then
+                    itemLink = link or ""
+                end
+            end
+
+            -- Collectible-based furnishings return no item link. They are
+            -- not inventory items, so they stay out of the item catalog.
+            if itemLink ~= "" then
+                local snapshot = aggregate[itemLink]
+
+                if not snapshot then
+                    snapshot = ReadItemLinkSnapshot(itemLink)
+
+                    if snapshot then
+                        aggregate[itemLink] = snapshot
+                        items[#items + 1] = snapshot
+                    end
+                end
+
+                if snapshot then
+                    snapshot.count = snapshot.count + 1
+                end
+            end
+
+            processed = processed + 1
+        end
+
+        if not done then
+            zo_callLater(ProcessChunk, 0)
+            return
+        end
+
+        BCO.savedVars.shared.houses =
+            BCO.savedVars.shared.houses or {}
+
+        BCO.savedVars.shared.houses[tostring(houseId)] = {
+            houseId = houseId,
+            name = GetHouseDisplayName(houseId),
+            items = items,
+            updated = Now(),
+        }
+
+        BCO:ScheduleIndexRebuild(50)
+    end
+
+    ProcessChunk()
+    return true
+end
+
+function BCO:ScheduleHouseScan(delayMs)
+    if self.houseScanScheduled then
+        return
+    end
+
+    self.houseScanScheduled = true
+
+    zo_callLater(function()
+        BCO.houseScanScheduled = false
+        BCO:ScanCurrentHouse()
+    end, delayMs or 750)
+end
+
+local function GetActiveTradingHouseGuild()
+    local guildId, guildName = nil, ""
+
+    if type(GetCurrentTradingHouseGuildDetails)
+        == "function"
+    then
+        local ok, id, name = pcall(
+            GetCurrentTradingHouseGuildDetails
+        )
+
+        if ok and id and id ~= 0 then
+            guildId = id
+            guildName = name or ""
+        end
+    end
+
+    if not guildId
+        and type(GetSelectedTradingHouseGuildId)
+            == "function"
+    then
+        local ok, id = pcall(
+            GetSelectedTradingHouseGuildId
+        )
+
+        if ok and id and id ~= 0 then
+            guildId = id
+        end
+    end
+
+    if not guildId then
+        return nil, ""
+    end
+
+    guildName = FormatStorageName(guildName)
+
+    if guildName == ""
+        and type(GetGuildName) == "function"
+    then
+        local ok, name = pcall(GetGuildName, guildId)
+
+        if ok then
+            guildName = FormatStorageName(name)
+        end
+    end
+
+    if guildName == "" then
+        guildName = string.format(
+            "Guild %d",
+            guildId
+        )
+    end
+
+    return guildId, guildName
+end
+
+-- Snapshots the player's own sell listings for the guild currently selected
+-- at the trading house. A player can hold at most 30 listings per guild, so
+-- this scan runs synchronously. An empty result still overwrites the stored
+-- snapshot, which clears out sold or canceled listings on the next visit.
+function BCO:ScanTradingHouseListings()
+    if not self.tradingHouseOpen
+        or type(GetNumTradingHouseListings)
+            ~= "function"
+        or type(GetTradingHouseListingItemLink)
+            ~= "function"
+    then
+        return false
+    end
+
+    local guildId, guildName =
+        GetActiveTradingHouseGuild()
+
+    if not guildId then
+        return false
+    end
+
+    local aggregate = {}
+    local items = {}
+    local okCount, listingCount = pcall(
+        GetNumTradingHouseListings
+    )
+
+    if not okCount then
+        return false
+    end
+
+    for index = 1, listingCount or 0 do
+        local okLink, itemLink = pcall(
+            GetTradingHouseListingItemLink,
+            index,
+            LINK_STYLE_DEFAULT
+        )
+
+        if okLink and itemLink and itemLink ~= "" then
+            local stackCount = 1
+
+            if type(GetTradingHouseListingItemInfo)
+                == "function"
+            then
+                local okInfo, _, _, _, listingStack =
+                    pcall(
+                        GetTradingHouseListingItemInfo,
+                        index
+                    )
+
+                if okInfo
+                    and listingStack
+                    and listingStack > 0
+                then
+                    stackCount = listingStack
+                end
+            end
+
+            local snapshot = aggregate[itemLink]
+
+            if not snapshot then
+                snapshot =
+                    ReadItemLinkSnapshot(itemLink)
+
+                if snapshot then
+                    aggregate[itemLink] = snapshot
+                    items[#items + 1] = snapshot
+                end
+            end
+
+            if snapshot then
+                snapshot.count =
+                    snapshot.count + stackCount
+            end
+        end
+    end
+
+    self.savedVars.shared.guildListings =
+        self.savedVars.shared.guildListings or {}
+
+    local listings =
+        self.savedVars.shared.guildListings
+
+    listings[tostring(guildId)] = {
+        guildId = guildId,
+        name = guildName,
+        items = items,
+        updated = Now(),
+    }
+
+    -- Drop snapshots for guilds the account has since left; their listings
+    -- were returned by mail and no longer exist.
+    if type(IsPlayerInGuild) == "function" then
+        for key, listing in pairs(listings) do
+            local listedGuildId =
+                type(listing) == "table"
+                and listing.guildId
+                or tonumber(key)
+
+            if listedGuildId then
+                local ok, inGuild = pcall(
+                    IsPlayerInGuild,
+                    listedGuildId
+                )
+
+                if ok and inGuild == false then
+                    listings[key] = nil
+                end
+            end
+        end
+    end
+
+    self:ScheduleIndexRebuild(50)
+    return true
+end
+
+function BCO:ScheduleListingScan(delayMs)
+    if self.listingScanScheduled then
+        return
+    end
+
+    self.listingScanScheduled = true
+
+    zo_callLater(function()
+        BCO.listingScanScheduled = false
+        BCO:ScanTradingHouseListings()
+    end, delayMs or 250)
+end
+
+-- The trading house allows one pending request at a time and enforces a
+-- cooldown, so the listings request politely waits its turn. The open flag
+-- stops the retry chain once the player leaves the trader.
+function BCO:RequestListingsWhenReady()
+    if not self.tradingHouseOpen
+        or type(RequestTradingHouseListings)
+            ~= "function"
+    then
+        return
+    end
+
+    local cooldown = 0
+
+    if type(GetTradingHouseCooldownRemaining)
+        == "function"
+    then
+        local ok, remaining = pcall(
+            GetTradingHouseCooldownRemaining
+        )
+
+        if ok then
+            cooldown = remaining or 0
+        end
+    end
+
+    if cooldown > 0 then
+        zo_callLater(function()
+            BCO:RequestListingsWhenReady()
+        end, cooldown + 100)
+        return
+    end
+
+    pcall(RequestTradingHouseListings)
+end
+
 function BCO:ScanSharedCurrencies()
     self.savedVars.shared =
         self.savedVars.shared or {}
@@ -1364,6 +1820,95 @@ function BCO:CollectSources()
         )
     end
 
+    local houseRows = {}
+
+    for houseKey, house in pairs(
+        self.savedVars.shared.houses or {}
+    ) do
+        if type(house) == "table" then
+            local houseId = house.houseId
+                or tonumber(houseKey)
+                or 0
+
+            -- Recompute from the live API so snapshots saved under an old
+            -- nickname show the standard house name without a revisit.
+            local name = houseId ~= 0
+                and GetHouseDisplayName(houseId)
+                or house.name
+                or "House"
+
+            houseRows[#houseRows + 1] = {
+                items = house.items or {},
+                name = name,
+                updated = house.updated or 0,
+                houseId = houseId,
+            }
+        end
+    end
+
+    table.sort(houseRows, function(left, right)
+        if Lower(left.name) ~= Lower(right.name) then
+            return Lower(left.name) < Lower(right.name)
+        end
+
+        return left.houseId < right.houseId
+    end)
+
+    for index = 1, #houseRows do
+        local house = houseRows[index]
+
+        AddSource(
+            house.items,
+            house.name,
+            "house",
+            house.updated,
+            string.format("House %d", house.houseId)
+        )
+    end
+
+    local listingRows = {}
+
+    for listingKey, listing in pairs(
+        self.savedVars.shared.guildListings or {}
+    ) do
+        if type(listing) == "table" then
+            listingRows[#listingRows + 1] = {
+                items = listing.items or {},
+                name = listing.name or "Guild",
+                updated = listing.updated or 0,
+                guildId = listing.guildId
+                    or tonumber(listingKey)
+                    or 0,
+            }
+        end
+    end
+
+    table.sort(listingRows, function(left, right)
+        if Lower(left.name) ~= Lower(right.name) then
+            return Lower(left.name) < Lower(right.name)
+        end
+
+        return left.guildId < right.guildId
+    end)
+
+    for index = 1, #listingRows do
+        local listing = listingRows[index]
+
+        AddSource(
+            listing.items,
+            string.format(
+                "%s (Listed)",
+                listing.name
+            ),
+            "guildStore",
+            listing.updated,
+            string.format(
+                "Guild %d",
+                listing.guildId
+            )
+        )
+    end
+
     return sources
 end
 
@@ -1628,6 +2173,9 @@ local function LocationMatchesInventoryFilter(
             or locationKind == "equipped"
     elseif filterKey == "storage" then
         return locationKind == "storage"
+            or locationKind == "house"
+    elseif filterKey == "listings" then
+        return locationKind == "guildStore"
     end
 
     return true
@@ -1689,6 +2237,30 @@ function BCO:HasStorageSnapshots()
     ) do
         if type(storage) == "table"
             and (storage.updated or 0) > 0
+        then
+            return true
+        end
+    end
+
+    for _, house in pairs(
+        self.savedVars.shared.houses or {}
+    ) do
+        if type(house) == "table"
+            and (house.updated or 0) > 0
+        then
+            return true
+        end
+    end
+
+    return false
+end
+
+function BCO:HasListingSnapshots()
+    for _, listing in pairs(
+        self.savedVars.shared.guildListings or {}
+    ) do
+        if type(listing) == "table"
+            and (listing.updated or 0) > 0
         then
             return true
         end
@@ -2120,12 +2692,104 @@ local function GetFallbackSectionName(item)
     return FormatSectionHeader("Items")
 end
 
+-- ESO's native inventory groups furnishings by furniture category (Lighting,
+-- Seating, Structures, ...). BCO items come from snapshots without live bag
+-- slots, so the category is resolved from the item link instead. The result
+-- is cached on the aggregated item because section names are recomputed on
+-- every list refresh.
+local function GetFurnishingSectionName(item)
+    if item.bcoFurnishingSection ~= nil then
+        return item.bcoFurnishingSection or nil
+    end
+
+    item.bcoFurnishingSection = false
+
+    if not IsFurnishing(item)
+        or type(GetItemLinkFurnitureDataId)
+            ~= "function"
+        or type(GetFurnitureCategoryInfo)
+            ~= "function"
+    then
+        return nil
+    end
+
+    local itemLink = item.itemLink
+
+    if not itemLink or itemLink == "" then
+        return nil
+    end
+
+    local ok, furnitureDataId = pcall(
+        GetItemLinkFurnitureDataId,
+        itemLink
+    )
+
+    if not ok
+        or not furnitureDataId
+        or furnitureDataId == 0
+    then
+        return nil
+    end
+
+    local categoryId = nil
+
+    if type(GetFurnitureDataCategoryInfo)
+        == "function"
+    then
+        local okCategory, id = pcall(
+            GetFurnitureDataCategoryInfo,
+            furnitureDataId
+        )
+
+        if okCategory then
+            categoryId = id
+        end
+    elseif type(GetFurnitureDataInfo) == "function" then
+        local okCategory, id = pcall(
+            GetFurnitureDataInfo,
+            furnitureDataId
+        )
+
+        if okCategory then
+            categoryId = id
+        end
+    end
+
+    if not categoryId or categoryId == 0 then
+        return nil
+    end
+
+    local okName, categoryName = pcall(
+        GetFurnitureCategoryInfo,
+        categoryId
+    )
+
+    if okName
+        and type(categoryName) == "string"
+        and categoryName ~= ""
+    then
+        item.bcoFurnishingSection =
+            FormatSectionHeader(categoryName)
+
+        return item.bcoFurnishingSection
+    end
+
+    return nil
+end
+
 local function GetItemSectionInfo(item, categoryKey)
     local weaponSection =
         GetWeaponSectionName(item)
 
     if weaponSection then
         return weaponSection, 100
+    end
+
+    local furnishingSection =
+        GetFurnishingSectionName(item)
+
+    if furnishingSection then
+        return furnishingSection, 300
     end
 
     if categoryKey == "apparel"
@@ -4299,7 +4963,20 @@ function BCO:RefreshCategoryList(
     then
         if list.SetNoItemText then
             list:SetNoItemText(
-                "Open each housing storage container once to add it to All Inventories."
+                "Open each housing storage container or visit an owned house once to add it to All Inventories."
+            )
+        end
+
+        list:Commit()
+        return
+    end
+
+    if self:GetInventoryFilterKey() == "listings"
+        and not self:HasListingSnapshots()
+    then
+        if list.SetNoItemText then
+            list:SetNoItemText(
+                "Visit a guild trader or banker once to record your guild store listings."
             )
         end
 
@@ -4519,11 +5196,21 @@ function BCO:RefreshItemList(
             and not self:HasStorageSnapshots()
         then
             list:SetNoItemText(
-                "Open each housing storage container once to add it to All Inventories."
+                "Open each housing storage container or visit an owned house once to add it to All Inventories."
             )
         elseif self:GetInventoryFilterKey() == "storage" then
             list:SetNoItemText(
                 "No saved storage items in this category."
+            )
+        elseif self:GetInventoryFilterKey() == "listings"
+            and not self:HasListingSnapshots()
+        then
+            list:SetNoItemText(
+                "Visit a guild trader or banker once to record your guild store listings."
+            )
+        elseif self:GetInventoryFilterKey() == "listings" then
+            list:SetNoItemText(
+                "No guild store listings in this category."
             )
         else
             list:SetNoItemText(
@@ -6088,6 +6775,8 @@ local function RegisterCommands()
         BCO.savedVars.shared = {
             bank = { items = {}, updated = 0 },
             storage = {},
+            houses = {},
+            guildListings = {},
             currencies = {
                 bank = {},
                 updated = 0,
@@ -6284,14 +6973,50 @@ local function RegisterCommands()
             return Lower(left.name) < Lower(right.name)
         end)
 
+        local houseRows = {}
+
+        for houseKey, house in pairs(
+            BCO.savedVars.shared.houses or {}
+        ) do
+            houseRows[#houseRows + 1] = {
+                name = house.name or "House",
+                items = #(house.items or {}),
+                updated = house.updated or 0,
+                key = houseKey,
+            }
+        end
+
+        table.sort(houseRows, function(left, right)
+            return Lower(left.name) < Lower(right.name)
+        end)
+
+        local listingRows = {}
+
+        for listingKey, listing in pairs(
+            BCO.savedVars.shared.guildListings or {}
+        ) do
+            listingRows[#listingRows + 1] = {
+                name = listing.name or "Guild",
+                items = #(listing.items or {}),
+                updated = listing.updated or 0,
+                key = listingKey,
+            }
+        end
+
+        table.sort(listingRows, function(left, right)
+            return Lower(left.name) < Lower(right.name)
+        end)
+
         Msg(string.format(
-            "Saved characters=%d Bank=%d Storage=%d CurrencyBank=%s",
+            "Saved characters=%d Bank=%d Storage=%d Houses=%d Listings=%d CurrencyBank=%s",
             totalCharacters,
             #(
                 BCO.savedVars.shared.bank.items
                 or {}
             ),
             #storageRows,
+            #houseRows,
+            #listingRows,
             tostring(
                 BCO.savedVars.shared.currencies
                     ~= nil
@@ -6316,6 +7041,28 @@ local function RegisterCommands()
 
             Msg(string.format(
                 "%s items=%d updated=%d",
+                row.name,
+                row.items,
+                row.updated
+            ))
+        end
+
+        for index = 1, #houseRows do
+            local row = houseRows[index]
+
+            Msg(string.format(
+                "%s furnishings=%d updated=%d",
+                row.name,
+                row.items,
+                row.updated
+            ))
+        end
+
+        for index = 1, #listingRows do
+            local row = listingRows[index]
+
+            Msg(string.format(
+                "%s listings=%d updated=%d",
                 row.name,
                 row.items,
                 row.updated
@@ -6409,6 +7156,60 @@ local function OnPlayerActivated()
     zo_callLater(function()
         BCO:ScanCurrentCharacter()
     end, 1500)
+
+    -- No-op outside an owned house. Delayed so placed furniture has loaded
+    -- and the character scans above have already run.
+    BCO:ScheduleHouseScan(2500)
+end
+
+local function OnHouseFurnitureChanged()
+    BCO:ScheduleHouseScan()
+end
+
+local function OnTradingHouseOpened()
+    BCO.tradingHouseOpen = true
+
+    -- Delayed so the native trading house UI finishes its own opening
+    -- requests before this one queues up behind the shared cooldown.
+    zo_callLater(function()
+        BCO:RequestListingsWhenReady()
+    end, 1000)
+end
+
+local function OnTradingHouseClosed()
+    BCO.tradingHouseOpen = false
+end
+
+local function OnTradingHouseResponse(
+    _,
+    responseType,
+    result
+)
+    if result ~= TRADING_HOUSE_RESULT_SUCCESS then
+        return
+    end
+
+    if responseType
+        == TRADING_HOUSE_RESULT_LISTINGS_PENDING
+    then
+        BCO:ScheduleListingScan()
+    elseif responseType
+            == TRADING_HOUSE_RESULT_POST_PENDING
+        or responseType
+            == TRADING_HOUSE_RESULT_CANCEL_SALE_PENDING
+    then
+        -- Posting or canceling a listing changes the set, so fetch the
+        -- updated listings for the fresh snapshot.
+        zo_callLater(function()
+            BCO:RequestListingsWhenReady()
+        end, 500)
+    end
+end
+
+local function OnTradingHouseGuildChanged()
+    zo_callLater(function()
+        BCO:RequestListingsWhenReady()
+    end, 500)
 end
 
 local function OnPlayerDeactivated()
@@ -6445,6 +7246,10 @@ local function OnAddOnLoaded(_, addonName)
     }
     BCO.savedVars.shared.storage =
         BCO.savedVars.shared.storage or {}
+    BCO.savedVars.shared.houses =
+        BCO.savedVars.shared.houses or {}
+    BCO.savedVars.shared.guildListings =
+        BCO.savedVars.shared.guildListings or {}
     BCO.savedVars.shared.currencies =
         BCO.savedVars.shared.currencies or {
             bank = {},
@@ -6512,6 +7317,54 @@ local function OnAddOnLoaded(_, addonName)
             BCO.name,
             EVENT_CLOSE_BANK,
             OnBankClose
+        )
+    end
+
+    if EVENT_HOUSING_FURNITURE_PLACED then
+        EVENT_MANAGER:RegisterForEvent(
+            BCO.name,
+            EVENT_HOUSING_FURNITURE_PLACED,
+            OnHouseFurnitureChanged
+        )
+    end
+
+    if EVENT_HOUSING_FURNITURE_REMOVED then
+        EVENT_MANAGER:RegisterForEvent(
+            BCO.name,
+            EVENT_HOUSING_FURNITURE_REMOVED,
+            OnHouseFurnitureChanged
+        )
+    end
+
+    if EVENT_OPEN_TRADING_HOUSE then
+        EVENT_MANAGER:RegisterForEvent(
+            BCO.name,
+            EVENT_OPEN_TRADING_HOUSE,
+            OnTradingHouseOpened
+        )
+    end
+
+    if EVENT_CLOSE_TRADING_HOUSE then
+        EVENT_MANAGER:RegisterForEvent(
+            BCO.name,
+            EVENT_CLOSE_TRADING_HOUSE,
+            OnTradingHouseClosed
+        )
+    end
+
+    if EVENT_TRADING_HOUSE_RESPONSE_RECEIVED then
+        EVENT_MANAGER:RegisterForEvent(
+            BCO.name,
+            EVENT_TRADING_HOUSE_RESPONSE_RECEIVED,
+            OnTradingHouseResponse
+        )
+    end
+
+    if EVENT_TRADING_HOUSE_SELECTED_GUILD_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(
+            BCO.name,
+            EVENT_TRADING_HOUSE_SELECTED_GUILD_CHANGED,
+            OnTradingHouseGuildChanged
         )
     end
 end

@@ -13,6 +13,13 @@ BlockPooky.NEGATE_IDS = {
 }
 BlockPooky.NEGATE_NAMES = nil
 
+---Checks if an effect name is one of the configured Negate Magic abilities
+---@param element string the effect name to check
+---@return boolean true if it is a Negate Magic effect
+local function BlockPooky_IsNegate(element)
+    return BlockPooky.NEGATE_NAMES[element] == true
+end
+
 
 --[[ negate warning implementation ----------------------------------------------------------------------------------]]
 
@@ -36,24 +43,25 @@ function BlockPooky.LoadNegateWarningPosition()
             if BlockPooky.negateWarning:GetAnchor() ~= nil then
                 BlockPooky.negateWarning:ClearAnchors()
             end
-            BlockPooky.negateWarning:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.negate.left, BlockPooky.config.negate.top)
+            BlockPooky.negateWarning:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, BlockPooky.config.negate.left,
+                BlockPooky.config.negate.top)
         else
             BlockPooky.ResetNegateWarningPosition()
         end
     end
 end
 
-function BlockPooky.CreateNegateWarningLabel() 
+function BlockPooky.CreateNegateWarningLabel()
     if BlockPooky.negateWarning == nil then
         --d("CREATE negateWarningLabel")
-        BlockPooky.negateWarning = CreateControl(BlockPooky.name.."NegateWarning", GuiRoot, CT_TOPLEVELCONTROL)
+        BlockPooky.negateWarning = CreateControl(BlockPooky.name .. "NegateWarning", GuiRoot, CT_TOPLEVELCONTROL)
         local control = BlockPooky.negateWarning
         control:SetDimensions(350, 30)
         control:SetAnchor(CENTER, GuiRoot, CENTER, 0, -120)
-        control:SetMovable(true) -- Verschiebbar machen
+        control:SetMovable(true)      -- Verschiebbar machen
         control:SetMouseEnabled(true) -- Mausinteraktionen erlauben
         control:SetHidden(true)
-        BlockPooky.negateWarningLabel = CreateControl(BlockPooky.name.."NegateWarningLabel", control, CT_LABEL)
+        BlockPooky.negateWarningLabel = CreateControl(BlockPooky.name .. "NegateWarningLabel", control, CT_LABEL)
         local label = BlockPooky.negateWarningLabel
         label:SetFont("BlockPookyBigFont")
         label:SetText(BlockPooky.config.messages.negateWarning)
@@ -90,8 +98,10 @@ end
 function BlockPooky.RegisterNegateWarning()
     --d("REGISTER negateWarningLabel")
     if BlockPooky.config.negate.show then
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED, function(...) BlockPooky.OnNegateChanged(...) end)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED,
+            function(...) BlockPooky.OnNegateChanged(...) end)
+        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED,
+            REGISTER_FILTER_UNIT_TAG, "player")
     end
 end
 
@@ -125,25 +135,20 @@ function BlockPooky.InitNegateWarning()
     BlockPooky.RegisterNegateWarning()
 end
 
-
 --[[ event handling -------------------------------------------------------------------------------------------------]]
 
 function BlockPooky.OnNegateChanged(
-        eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, 
-        iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
-
-    local function isNegate(element)
-        return BlockPooky.NEGATE_NAMES[element] == true
-    end
+    eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount,
+    iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
     --d("UT: " .. unitTag .." changeType: " .. changeType .. "=" .. EFFECT_RESULT_GAINED .. " sourceType: " .. sourceType .. "=" .. BUFF_EFFECT_TYPE_DEBUFF)
-    --d(" isNegate: " .. tostring(isNegate(BlockPooky.CleanupName(effectName))) .. " EN: " .. BlockPooky.CleanupName(effectName))
+    --d(" isNegate: " .. tostring(isNegate(BlockPooky.CleanAbilityName(effectName))) .. " EN: " .. BlockPooky.CleanAbilityName(effectName))
     --d(" active? " .. tostring(BlockPooky_negateWarningActive))
     if unitTag == "player" then
         if changeType == EFFECT_RESULT_GAINED -- and sourceType == 5
-                and not BlockPooky_negateWarningActive and isNegate(BlockPooky.CleanupName(effectName)) then
+            and not BlockPooky_negateWarningActive and BlockPooky_IsNegate(BlockPooky.CleanupName(effectName)) then
             BlockPooky.ShowNegateWarning()
-        elseif changeType == EFFECT_RESULT_FADED  and BlockPooky_negateWarningActive
-                and isNegate(BlockPooky.CleanupName(effectName)) then
+        elseif changeType == EFFECT_RESULT_FADED and BlockPooky_negateWarningActive
+            and BlockPooky_IsNegate(BlockPooky.CleanupName(effectName)) then
             BlockPooky.HideNegateWarning()
         end
     end

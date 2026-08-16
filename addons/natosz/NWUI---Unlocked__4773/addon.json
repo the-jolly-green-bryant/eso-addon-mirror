@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/natosz/NWUI---Unlocked__4773",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "natosz",
+  "canonical_id": "esoui:4773",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4773",
+  "deleted": false,
+  "directories": [
+    "NWUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4773/",
+  "fingerprint": "94dfa726c89e2313cdd558d0638ed2c97edbff0f323eb357321752a1983f1d24",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16994.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4773",
+  "source_url": "https://www.esoui.com/downloads/info4773-NWUI-Unlocked.html",
+  "stats": {
+    "downloads": 14,
+    "favorites": 1,
+    "monthly_downloads": 0
+  },
+  "title": "NWUI - Unlocked",
+  "updated_at": 1786851497000,
+  "version": "1.8"
+}

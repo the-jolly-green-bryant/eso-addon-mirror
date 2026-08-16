@@ -1,8 +1,8 @@
 ## Title: AutoConsume
 ## Author: user562
-## Version: 3.2
-## APIVersion: 101048 101049 101050
+## Version: 3.3
+## APIVersion: 101048 101049 101050 101051
 ## SavedVariables: AutoConsume_SavedVars
-## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibConsoleMenu LibCombatAlerts AAAConsoleUIShim
 
 AutoConsume.lua

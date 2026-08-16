@@ -1,166 +1,161 @@
--- UF_Events.lua (v0.2.8)
+-- UF_Events.lua
 local UF = UnknownFilter
 
--- ===== Helpers (wie 0.2.7) ==================================================
+local MAX_RUNTIME_ATTEMPTS = 20
+local RUNTIME_RETRY_MS = 250
 
-local function IsTradingSceneShown()
-    local sc = SCENE_MANAGER and SCENE_MANAGER:GetScene("gamepad_trading_house")
-    if not sc then return false end
-    if sc.IsShowing and sc:IsShowing() then return true end
-    if sc.GetState and sc:GetState() == SCENE_SHOWN then return true end
-    return false
-end
-
-local function IsBrowseMode()
-    if TRADING_HOUSE_GAMEPAD and TRADING_HOUSE_GAMEPAD.GetCurrentMode then
-        local m = TRADING_HOUSE_GAMEPAD:GetCurrentMode()
-        if type(ZO_TRADING_HOUSE_MODE_BROWSE) == "number" then
-            return m == ZO_TRADING_HOUSE_MODE_BROWSE
-        end
-        return m == 1
-    end
-    return false
-end
-
--- ===== Neue kleine Guards / Safe Wrapper ====================================
-
-local function SafeCall(fn, ...)
-    if type(fn) ~= "function" then return false end
-    local ok, err = pcall(fn, ...)
-    if not ok and err then
-        d(("[UnknownFilter] SafeCall error: %s"):format(tostring(err)))
-    end
-    return ok
-end
-
--- Flüchtige UI-Referenzen (falls in GUI gecacht wird) aggressiv löschen
-function UF:ClearTransientUIRefs()
-    self._lastBrowseData = nil
-    self._lastScrollList = nil
-end
-
--- Nur Guarding (Hooks/Prune bleiben in UF_GUI.lua)
-local function WireSceneGuards()
-    local sm = SCENE_MANAGER
-    if not sm then return end
-
-    -- Beim Verlassen der Browse-Results Szene alles Vergängliche vergessen.
-    local gpBrowse = sm:GetScene("gamepad_tradinghouse_browse_results")
-    if gpBrowse and not UF._gpBrowseGuard then
-        UF._gpBrowseGuard = true
-        gpBrowse:RegisterCallback("StateChange", function(_, newState)
-            if newState == SCENE_HIDING or newState == SCENE_HIDDEN then
-                SafeCall(UF.ClearTransientUIRefs, UF)
-            end
-        end)
+function UF:ApplySettingsMigration()
+    if not self.saved then
+        return
     end
 
-    -- Optional: Keyboard-Browse ebenfalls absichern
-    local kbBrowse = sm:GetScene("tradinghousebrowse")
-    if kbBrowse and not UF._kbBrowseGuard then
-        UF._kbBrowseGuard = true
-        kbBrowse:RegisterCallback("StateChange", function(_, newState)
-            if newState == SCENE_HIDING or newState == SCENE_HIDDEN then
-                SafeCall(UF.ClearTransientUIRefs, UF)
-            end
-        end)
+    local savedVersion = tonumber(self.saved.settingsVersion) or 0
+    if savedVersion < 301 then
+        -- Version 0.3.1 changes these runtime conveniences to opt-in. Reset them
+        -- once so stale 0.3.0 SavedVariables cannot silently keep them enabled.
+        self.saved.autoPage = false
+        self.saved.debug = false
+        self.saved.debugScan = false
+        self.saved.echo = false
     end
+    self.saved.settingsVersion = self.settingsVersion
 end
 
--- ===== Trading-House Ergebnis-Callback (wie 0.2.7, mit SafeCall) ============
-
-function UF:OnResults(_, guildId, numItemsOnPage, currentPage, hasMorePages)
-    if not self._armed then return end
-
-    self._lastCount   = numItemsOnPage or 0
-    self._lastPage    = currentPage or 0
-    self._lastHasMore = hasMorePages and true or false
-    if (currentPage or 0) == 0 then self._autoStep = 0 end
-
-    self:Say(string.format("---- RESULTS ---- page=%d more=%s count=%d mode=%s",
-        self._lastPage, tostring(self._lastHasMore), self._lastCount,
-        self:ModeShort((self.saved and self.saved.mode) or self.MODE_OFF)))
-
-    local kept = 0
-    if IsTradingSceneShown() and IsBrowseMode() then
-        kept = select(1, SafeCall(self.PruneResultList, self)) or 0
+function UF:InitializeRuntime()
+    if not self._armed then
+        return
     end
 
-    if (self.saved and self.saved.skipEmptyPages)
-        and ((self.saved.mode or self.MODE_OFF) ~= self.MODE_OFF)
-        and (kept or 0) == 0
-        and self._lastHasMore
-    then
-        self._skipHops = (self._skipHops or 0) + 1
-        if self._skipHops <= (self.saved.skipMaxHops or 6) then
-            self:Say(string.format("Empty page (%d) → requesting next…", self._lastPage))
-            SafeCall(self.RequestPage, self, (self._lastPage or 0) + 1)
-            return
-        else
-            self:Say("Stop skipping: safety limit reached")
-        end
-    else
-        self._skipHops = 0
+    local browseReady = self:InstallBrowseResultsHook()
+    local results = self:GetBrowseResultsObject()
+    local pagingReady = browseReady and self:InstallPagingHooks(results)
+    local sceneReady = self:WireSceneKeybind()
+
+    if browseReady and pagingReady and sceneReady then
+        self._runtimeAttempts = 0
+        return
+    end
+
+    self._runtimeAttempts = (self._runtimeAttempts or 0) + 1
+    if self._runtimeAttempts < MAX_RUNTIME_ATTEMPTS then
+        zo_callLater(function()
+            UF:InitializeRuntime()
+        end, RUNTIME_RETRY_MS)
     end
 end
-
--- ===== Events registrieren ===================================================
 
 local function EnsureEvents()
-    if UF._eventsRegistered then return end
+    if UF._eventsRegistered then
+        return
+    end
 
-    EVENT_MANAGER:RegisterForEvent(
-        UF.name,
-        EVENT_TRADING_HOUSE_SEARCH_RESULTS_RECEIVED,
-        function(...) SafeCall(UF.OnResults, UF, ...) end
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        UF.name,
-        EVENT_PLAYER_ACTIVATED,
-        function()
-            if UF._armed then
-                zo_callLater(function()
-                    SafeCall(WireSceneGuards)
-                    SafeCall(UF.WireSceneKeybind, UF) -- bleibt in UF_GUI.lua
-                end, 150)
-            end
+    EVENT_MANAGER:RegisterForEvent(UF.name, EVENT_PLAYER_ACTIVATED, function()
+        if UF._armed then
+            UF:InitializeRuntime()
         end
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        UF.name,
-        EVENT_OPEN_STORE,
-        function() SafeCall(UF.ClearTransientUIRefs, UF) end
-    )
+    end)
 
     UF._eventsRegistered = true
 end
 
--- ===== Armierung / OnLoaded / Slash-Commands ================================
-
 local function ArmAddon()
-    if UF._armed then return end
+    if UF._armed then
+        return
+    end
+
+    UF.saved = UF.saved or ZO_SavedVars:NewAccountWide(
+        "UnknownFilterSavedVars",
+        1,
+        nil,
+        UF.defaults
+    )
+    UF:ApplySettingsMigration()
     UF._armed = true
-    UF.saved = UF.saved or ZO_SavedVars:NewAccountWide("UnknownFilterSavedVars", 1, nil, UF.defaults)
+
     EnsureEvents()
-    SafeCall(WireSceneGuards)
-    SafeCall(UF.WireSceneKeybind, UF)
+    UF:InitializeRuntime()
 end
 
-local function OnLoaded(_, addon)
-    if addon ~= UF.name then return end
+local function OnAddonLoaded(_, addonName)
+    if addonName ~= UF.name then
+        return
+    end
+
     EVENT_MANAGER:UnregisterForEvent(UF.name, EVENT_ADD_ON_LOADED)
-    UF.saved = ZO_SavedVars:NewAccountWide("UnknownFilterSavedVars", 1, nil, UF.defaults)
+    UF.saved = ZO_SavedVars:NewAccountWide(
+        "UnknownFilterSavedVars",
+        1,
+        nil,
+        UF.defaults
+    )
     ArmAddon()
 end
-EVENT_MANAGER:RegisterForEvent(UF.name, EVENT_ADD_ON_LOADED, OnLoaded)
 
-SLASH_COMMANDS["/ufmode"]  = function() SafeCall(UF.Slash_mode,  UF) end
-SLASH_COMMANDS["/ufdebug"] = function(arg) SafeCall(UF.Slash_debug, UF, arg) end
-SLASH_COMMANDS["/ufscan"]  = function(arg) SafeCall(UF.Slash_scan,  UF, arg) end
-SLASH_COMMANDS["/ufdump"]  = function() SafeCall(UF.Slash_dump,  UF) end
-SLASH_COMMANDS["/ufprobe"] = function() SafeCall(UF.Slash_probe, UF) end
-SLASH_COMMANDS["/ufforce"] = function() SafeCall(UF.Slash_force, UF) end
-SLASH_COMMANDS["/ufauto"]  = function(arg) SafeCall(UF.Slash_auto,  UF, arg) end
-SLASH_COMMANDS["/ufpage"]  = function(arg) SafeCall(UF.Slash_page,  UF, arg) end
+EVENT_MANAGER:RegisterForEvent(UF.name, EVENT_ADD_ON_LOADED, OnAddonLoaded)
+
+SLASH_COMMANDS["/uf"] = function(argument)
+    local command, rest = tostring(argument or ""):match("^%s*(%S*)%s*(.-)%s*$")
+    command = tostring(command or ""):lower()
+
+    if command == "debug" then
+        UF:Slash_debug(rest)
+    elseif command == "auto" then
+        UF:Slash_auto(rest)
+    elseif command == "mode" then
+        UF:Slash_mode()
+    elseif command == "probe" then
+        UF:Slash_probe()
+    elseif command == "force" or command == "recheck" then
+        UF:Slash_force()
+    elseif command == "page" then
+        UF:Slash_page(rest)
+    elseif command == "skip" then
+        UF:Slash_skip(rest)
+    elseif command == "scan" then
+        UF:Slash_scan(rest)
+    elseif command == "dump" then
+        UF:Slash_dump()
+    elseif command == "echo" then
+        UF:Slash_echo(rest)
+    else
+        UF:EchoOnce()
+        UF:Say(UF:T("usage") .. ": /uf debug|auto|mode|probe|force|page|skip|scan|dump|echo")
+    end
+end
+
+SLASH_COMMANDS["/ufmode"] = function()
+    UF:Slash_mode()
+end
+SLASH_COMMANDS["/ufdebug"] = function(argument)
+    UF:Slash_debug(argument)
+end
+SLASH_COMMANDS["/ufscan"] = function(argument)
+    UF:Slash_scan(argument)
+end
+SLASH_COMMANDS["/ufdump"] = function()
+    UF:Slash_dump()
+end
+SLASH_COMMANDS["/ufprobe"] = function()
+    UF:Slash_probe()
+end
+SLASH_COMMANDS["/ufforce"] = function()
+    UF:Slash_force()
+end
+SLASH_COMMANDS["/ufauto"] = function(argument)
+    UF:Slash_auto(argument)
+end
+SLASH_COMMANDS["/ufskip"] = function(argument)
+    UF:Slash_skip(argument)
+end
+SLASH_COMMANDS["/ufpage"] = function(argument)
+    UF:Slash_page(argument)
+end
+SLASH_COMMANDS["/ufecho"] = function(argument)
+    UF:Slash_echo(argument)
+end
+SLASH_COMMANDS["/uflimit"] = function(argument)
+    UF:Slash_limit(argument)
+end
+SLASH_COMMANDS["/ufrecheck"] = function()
+    UF:Slash_force()
+end

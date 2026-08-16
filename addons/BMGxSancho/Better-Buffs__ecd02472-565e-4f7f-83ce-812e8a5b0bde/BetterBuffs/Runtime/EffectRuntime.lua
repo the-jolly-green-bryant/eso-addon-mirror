@@ -5,6 +5,7 @@ local EVENT_NAME = "BetterBuffsEffectRuntime"
 local UPDATE_NAME = "BetterBuffsActiveEffects"
 local PLAYER_EVENT_NAME = "BetterBuffsPlayerEffectSync"
 local EQUIPMENT_EVENT_NAME = "BetterBuffsEquipmentSync"
+local ACTION_SLOT_EVENT_NAME = "BetterBuffsActionSlotSync"
 
 local function EffectNow() return GetFrameTimeSeconds() end
 local function NewIntelligence() return { recipientCooldowns={}, targetCooldowns={} } end
@@ -15,6 +16,9 @@ function Runtime:Initialize()
     self.intelligence = {}
     self.missingVisibleUntil = {}
     self.lastSnapshots = {}
+    self.autoCapabilities = { setsById={}, setsByName={}, abilitiesById={}, abilitiesByName={} }
+    self.autoCapabilityGeneration = 0
+    self.autoVisibilityGeneration = 0
     for key in pairs(BB.Registry.byKey) do
         self.active[key] = {}
         self.intelligence[key] = NewIntelligence()
@@ -23,7 +27,7 @@ end
 
 
 function Runtime:IsObserved(key)
-    if BB:IsEffectRelevant(key) then return true end
+    if BB:ShouldObserveEffect(key) then return true end
     return key == "MAJOR_SLAYER" and BB.saved and BB.saved.ui and BB.saved.ui.slayerMissAlert and BB.saved.ui.slayerMissAlert.enabled == true
 end
 
@@ -39,18 +43,161 @@ function Runtime:SetEnabled(value)
         EVENT_MANAGER:RegisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId, slotId, ...)
             if bagId == BAG_WORN then Runtime:OnEquipmentChanged(slotId) end
         end)
-        zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects() end end, 250)
+        EVENT_MANAGER:RegisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOT_UPDATED, function() Runtime:ScheduleAutoProviderRefresh() end)
+        EVENT_MANAGER:RegisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, function() Runtime:ScheduleAutoProviderRefresh() end)
+        EVENT_MANAGER:RegisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED, function() Runtime:ScheduleAutoProviderRefresh() end)
+        self:RefreshAutoProviderCapabilities()
+        zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects(); Runtime:RefreshAutoProviderCapabilities() end end, 250)
         if BB.Context and BB.Context.inCombat then self:StartEncounter() end
     else
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAME, EVENT_EFFECT_CHANGED)
         EVENT_MANAGER:UnregisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED)
         EVENT_MANAGER:UnregisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+        EVENT_MANAGER:UnregisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOT_UPDATED)
+        EVENT_MANAGER:UnregisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED)
+        EVENT_MANAGER:UnregisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED)
         self:StopUpdate()
         if BB.Analytics then BB.Analytics.encounter = nil end
         self:ClearAll()
     end
 end
 
+
+local function NormalizeProviderName(value)
+    return BB:NormalizeText(value or "")
+end
+
+function Runtime:RefreshAutoProviderCapabilities()
+    local cache = { setsById={}, setsByName={}, abilitiesById={}, abilitiesByName={} }
+
+    -- Worn gear: one item from a set is enough to ask ESO for the full equipped
+    -- count. This is event-driven from BAG_WORN updates and never polled.
+    if GetBagSize and GetItemLink and GetItemLinkSetInfo then
+        local bagSize = tonumber(GetBagSize(BAG_WORN)) or 0
+        for slotId=0,math.max(0,bagSize-1) do
+            local itemLink = GetItemLink(BAG_WORN, slotId, LINK_STYLE_DEFAULT)
+            if itemLink and itemLink ~= "" then
+                local hasSet, setName, _, normalEquipped, _, setId, perfectedEquipped = GetItemLinkSetInfo(itemLink, true)
+                if hasSet then
+                    local equipped = (tonumber(normalEquipped) or 0) + (tonumber(perfectedEquipped) or 0)
+                    local id = tonumber(setId)
+                    if id and id > 0 then cache.setsById[id] = math.max(cache.setsById[id] or 0, equipped) end
+                    local nameKey = NormalizeProviderName(setName)
+                    if nameKey ~= "" then cache.setsByName[nameKey] = math.max(cache.setsByName[nameKey] or 0, equipped) end
+                end
+            end
+        end
+    end
+
+    -- Slotted skills: inspect the player's normal front/back bars plus the
+    -- dedicated Werewolf bar. GetSlotBoundId supports explicit hotbar categories,
+    -- so Ferocious Roar can be recognized without requiring a separate Werewolf
+    -- tracker or waiting for the buff to proc.
+    if GetSlotBoundId then
+        local startSlot = ACTION_BAR_FIRST_NORMAL_SLOT_INDEX or 3
+        local endSlot = ACTION_BAR_ULTIMATE_SLOT_INDEX or 8
+        if GetAssignableAbilityBarStartAndEndSlots then
+            local a,b = GetAssignableAbilityBarStartAndEndSlots()
+            if tonumber(a) and tonumber(b) then startSlot,endSlot = a,b end
+        end
+        local categories = { HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP, HOTBAR_CATEGORY_WEREWOLF }
+        for _,category in ipairs(categories) do
+            if category ~= nil then
+                for slotIndex=startSlot,endSlot do
+                    local abilityId = tonumber(GetSlotBoundId(slotIndex, category)) or 0
+                    if abilityId > 0 then
+                        cache.abilitiesById[abilityId] = true
+                        if GetEffectiveAbilityIdForAbilityOnHotbar then
+                            local effectiveId = tonumber(GetEffectiveAbilityIdForAbilityOnHotbar(abilityId, category)) or 0
+                            if effectiveId > 0 then cache.abilitiesById[effectiveId] = true end
+                        end
+                    end
+                    if GetSlotName then
+                        local nameKey = NormalizeProviderName(GetSlotName(slotIndex, category))
+                        if nameKey ~= "" then cache.abilitiesByName[nameKey] = true end
+                    end
+                end
+            end
+        end
+    end
+
+    self.autoCapabilities = cache
+
+    -- Provider removal must also remove provider-only runtime state. Otherwise an
+    -- expired self proc could remain dormant in the canonical table and reappear
+    -- if the same item is equipped again later. Group-awareness definitions stay
+    -- observed independently and therefore retain valid live group state.
+    for key in pairs(BB.Registry.byKey) do
+        if not self:IsObserved(key) then self:ClearEffect(key) end
+    end
+    if BB.UI then BB.UI:RefreshAll(true) end
+end
+
+function Runtime:ScheduleAutoProviderRefresh()
+    if not self.enabled then return end
+    self.autoCapabilityGeneration = (self.autoCapabilityGeneration or 0) + 1
+    local generation = self.autoCapabilityGeneration
+    zo_callLater(function()
+        if not Runtime.enabled or Runtime.autoCapabilityGeneration ~= generation then return end
+        Runtime:RefreshAutoProviderCapabilities()
+    end, 75)
+end
+
+function Runtime:HasLocalProviderCapability(definition)
+    if not definition then return false end
+
+    if definition.autoTrackWhenEquipped and definition.requiredWornItemId and definition.requiredEquipSlot ~= nil then
+        local itemId = GetItemId and GetItemId(BAG_WORN, definition.requiredEquipSlot) or 0
+        if tonumber(itemId) == tonumber(definition.requiredWornItemId) then return true end
+    end
+
+    local cache = self.autoCapabilities or {}
+    for _,provider in ipairs(definition.autoProviderSets or {}) do
+        local minimum = tonumber(provider.minPieces) or 5
+        local setId = tonumber(provider.setId)
+        if setId and setId > 0 and (cache.setsById and (cache.setsById[setId] or 0) >= minimum) then return true end
+        local nameKey = NormalizeProviderName(provider.name)
+        if nameKey ~= "" and cache.setsByName and (cache.setsByName[nameKey] or 0) >= minimum then return true end
+    end
+
+    for _,abilityId in ipairs(definition.autoProviderAbilityIds or {}) do
+        if cache.abilitiesById and cache.abilitiesById[tonumber(abilityId)] then return true end
+    end
+    for _,abilityName in ipairs(definition.autoProviderAbilityNames or {}) do
+        local nameKey = NormalizeProviderName(abilityName)
+        if nameKey ~= "" and cache.abilitiesByName and cache.abilitiesByName[nameKey] then return true end
+    end
+    return false
+end
+
+function Runtime:HasAutoGroupState(key)
+    local definition = BB.Registry and BB.Registry.byKey[key]
+    if not definition or definition.autoGroupEffect ~= true then return false end
+    -- Defensive invariant: Auto relevance can be queried during UI construction.
+    -- A pre-initialization query must resolve to not relevant rather than error.
+    if type(self.active) ~= "table" or type(self.intelligence) ~= "table" then return false end
+    local now = EffectNow()
+    for _,data in pairs(self.active[key] or {}) do
+        local endTime = tonumber(data.endTime) or 0
+        if definition.activeUntilFade or endTime == math.huge or endTime > now then return true end
+    end
+    local intel = self.intelligence[key]
+    if intel then
+        for _,untilTime in pairs(intel.recipientCooldowns or {}) do if (tonumber(untilTime) or 0) > now then return true end end
+        for _,cooldown in pairs(intel.targetCooldowns or {}) do if (tonumber(cooldown.untilTime) or 0) > now then return true end end
+    end
+    return false
+end
+
+function Runtime:ScheduleAutoVisibilityRefresh(definition)
+    if not definition or definition.autoGroupEffect ~= true or not BB.UI then return end
+    self.autoVisibilityGeneration = (self.autoVisibilityGeneration or 0) + 1
+    local generation = self.autoVisibilityGeneration
+    zo_callLater(function()
+        if not Runtime.enabled or Runtime.autoVisibilityGeneration ~= generation then return end
+        BB.UI:RefreshAll(true)
+    end, 50)
+end
 
 function Runtime:IsRequiredItemEquipped(definition)
     if not definition or not definition.requiredWornItemId then return true end
@@ -81,6 +228,7 @@ end
 
 function Runtime:OnEquipmentChanged(slotId)
     if not self.enabled then return end
+    self:ScheduleAutoProviderRefresh()
     local now = EffectNow()
     local changed = false
     for _,definition in pairs(BB.Registry.byKey) do
@@ -115,7 +263,8 @@ function Runtime:SynchronizeLocalProviderTarget(definition, now)
     local unitTag = "reticleover"
     local unitId = GetUnitId and GetUnitId(unitTag) or nil
     local unitName = GetUnitName(unitTag) or ""
-    local allowed = BB.Context:CanTrackEffect(definition, unitTag, unitId, unitName)
+    local allowPreCombatTarget = (intel.awaitingLocalTargetUntil or 0) >= now
+    local allowed = BB.Context:CanTrackEffect(definition, unitTag, unitId, unitName, allowPreCombatTarget)
     if not allowed then return false end
     local targetKey, displayTarget = BB.Context:GetTargetKey(unitTag, unitId, unitName, definition.effectType)
     if not targetKey then return false end
@@ -178,7 +327,7 @@ function Runtime:OnLocalProviderEffect(definition, changeType, unitTag, unitName
 end
 
 function Runtime:ScheduleCoverageReconcile(definition)
-    if not definition or not definition.reconcileCoverageOnTrigger then return end
+    if not definition or (not definition.reconcileCoverageOnTrigger and not definition.reconcileCoverageOnEffectChange) then return end
     self.coverageReconcileGeneration = self.coverageReconcileGeneration or {}
     local generation = (self.coverageReconcileGeneration[definition.key] or 0) + 1
     self.coverageReconcileGeneration[definition.key] = generation
@@ -191,6 +340,7 @@ end
 function Runtime:ReconcileGroupBuff(definition)
     if not definition or definition.effectType ~= "BUFF" or not GetNumBuffs or not GetUnitBuffInfo then return end
     local now = EffectNow()
+    local seen = {}
     local function scan(unitTag)
         if not unitTag or unitTag == "" or not DoesUnitExist(unitTag) then return end
         local unitId = GetUnitId and GetUnitId(unitTag) or nil
@@ -203,6 +353,7 @@ function Runtime:ReconcileGroupBuff(definition)
             local effectName, beginTime, endTime, _, stackCount, iconName, _, _, _, _, abilityId = GetUnitBuffInfo(unitTag, index)
             local resolved = BB.Registry:Resolve(effectName, abilityId)
             if resolved and resolved.key == definition.key then
+                seen[targetKey] = true
                 self:UpsertEffect(definition, targetKey, displayTarget, unitTag, unitName, unitId, beginTime, endTime, stackCount, abilityId, now, iconName)
                 break
             end
@@ -210,6 +361,17 @@ function Runtime:ReconcileGroupBuff(definition)
     end
     scan("player")
     for index=1,(tonumber(GetGroupSize()) or 0) do scan(GetGroupUnitTagByIndex(index)) end
+
+    -- For effects such as Aura of Pride, the current group-unit buff state is the
+    -- authoritative recipient set. Remove canonical recipients that no longer have
+    -- the aura so coverage and displayed names can never diverge.
+    if definition.authoritativeGroupRecipients then
+        local targets = self.active[definition.key] or {}
+        for targetKey in pairs(targets) do
+            if not seen[targetKey] then targets[targetKey] = nil end
+        end
+    end
+
     self:RefreshEffect(definition.key, now)
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
@@ -511,7 +673,10 @@ function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, be
         self:RefreshLocalProviderEquipment(definition, EffectNow())
         if not intel.providerEquipped or not intel.localProviderActive then return end
     end
-    local allowed = BB.Context:CanTrackEffect(definition,unitTag,unitId,unitName)
+    local now = EffectNow()
+    local allowPreCombatTarget = definition.requiresLocalProviderEffect
+        and (intel.awaitingLocalTargetUntil or 0) >= now
+    local allowed = BB.Context:CanTrackEffect(definition,unitTag,unitId,unitName,allowPreCombatTarget)
     if not allowed and changeType ~= EFFECT_RESULT_FADED then return end
     local baseTargetKey,displayTarget = BB.Context:GetTargetKey(unitTag,unitId,unitName,definition.effectType)
     if not baseTargetKey then return end
@@ -519,7 +684,6 @@ function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, be
     local compositeChild = BB.Registry:GetCompositeChild(definition, effectName)
     if compositeChild then targetKey = baseTargetKey .. "::child:" .. tostring(compositeChild) end
 
-    local now = EffectNow()
     local targets = self.active[definition.key] or {}
     self.active[definition.key] = targets
     local application = false
@@ -587,6 +751,7 @@ function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, be
     end
 
     self:RefreshEffect(definition.key,now,application)
+    if definition.reconcileCoverageOnEffectChange then self:ScheduleCoverageReconcile(definition) end
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
 
@@ -857,6 +1022,7 @@ function Runtime:RefreshEffect(key,now,application)
         if BB.UI then BB.UI:UpdateEffect(definition,snapshot) end
         if BB.API then BB.API:Fire(application and "EFFECT_ACTIVATED" or "EFFECT_CHANGED", key, snapshot) end
     end
+    self:ScheduleAutoVisibilityRefresh(definition)
 end
 
 function Runtime:Update()

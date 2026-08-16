@@ -221,6 +221,19 @@ local pending = {
     apItemID = nil,
 }
 
+local ICON_GENERIC = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds"
+
+local MOVE_TIMEOUT = 30000
+local MOVE_SNAP    = 10
+
+local function BuildChoices(names, values)
+    local out = {}
+    for i = 1, #names do
+        out[i] = { name = names[i], value = values[i] }
+    end
+    return out
+end
+
 --------------------------------------------------
 -- FOOD
 --------------------------------------------------
@@ -340,9 +353,29 @@ end
 -- SETTINGS
 --------------------------------------------------
 
+function AC:ScanBagAndReload()
+    ScanBag()
+    pending.foodID   = AC.savedVariables.foodID
+    pending.xpItemID = AC.savedVariables.xpItemID
+    pending.apItemID = AC.savedVariables.apItemID
+    AC.savedVariables.bagScanned = true
+    zo_callLater(function()
+        ReloadUI()
+    end, 500)
+end
+
+function AC:HasConsoleMenu()
+    return type(LibConsoleMenu) == "table"
+       and type(LibConsoleMenu.CreateAddonMenu) == "function"
+end
+
 function AC:CreateSettings()
-    local LAM = LibAddonMenu2
-    if not LAM then return end
+    if not self:HasConsoleMenu() then
+        AC.settingsUnavailable = true
+        return
+    end
+
+    local LCM = LibConsoleMenu
 
     ScanBag()
 
@@ -350,220 +383,223 @@ function AC:CreateSettings()
     pending.xpItemID = AC.savedVariables.xpItemID
     pending.apItemID = AC.savedVariables.apItemID
 
-    local panelData = {
-        type                = "panel",
-        name                = "AutoConsume",
-        displayName         = "AutoConsume",
-        author              = "user562",
-        version             = "3.2",
-        registerForRefresh  = true,
-        registerForDefaults = true,
-    }
+    local menu = LCM:CreateAddonMenu("AutoConsume", {
+        title          = "AutoConsume",
+        author         = "user562",
+        version        = "3.3",
+        category       = MOD_BROWSER_CATEGORY_TYPE_BUFFS_AND_DEBUFFS,
+        enableDefaults = true,
+        enableReset    = true,
+        resetFunc      = function() AC:ResetSettings() end,
+    })
 
-    AC.lamPanel = LAM:RegisterAddonPanel("AutoConsume_Settings", panelData)
+    if not menu then return end
 
     local options = {
 
         {
-            type    = "button",
-            name    = "|cff8800Scan Bag|r",
-            tooltip = "Will ReloadUI",
-            func    = function()
-                ScanBag()
-                pending.foodID   = AC.savedVariables.foodID
-                pending.xpItemID = AC.savedVariables.xpItemID
-                pending.apItemID = AC.savedVariables.apItemID
-                AC.savedVariables.bagScanned = true
-                zo_callLater(function()
-                    ReloadUI()
-                end, 500)
-            end,
+            type    = "submenu",
+            name    = "Food/Drink",
+            align   = "left",
+            indent  = true,
+            icon    = ICON_GENERIC,
+            options = {
+                {
+                    type    = "toggle",
+                    name    = "Auto-consume",
+                    default = DEFAULTS.autoFood,
+                    getFunc = function() return AC.savedVariables.autoFood end,
+                    setFunc = function(val)
+                        AC.savedVariables.autoFood = val
+                        if val then AC:ForceCheckFood() end
+                    end,
+                },
+                {
+                    type    = "slider",
+                    name    = "Minutes remaining before re-eating",
+                    min     = 1,
+                    max     = 30,
+                    step    = 1,
+                    default = DEFAULTS.foodMinutes,
+                    getFunc = function() return AC.savedVariables.foodMinutes end,
+                    setFunc = function(val)
+                        AC.savedVariables.foodMinutes = val
+                    end,
+                },
+                {
+                    type    = "dropdown",
+                    name    = "Food/Drink",
+                    tooltip = "Scroll to pick your food/drink. Press Scan Bag first if your item is missing.",
+                    choices = BuildChoices(cachedFoodChoices, cachedFoodVals),
+                    default = 0,
+                    getFunc = function() return pending.foodID or 0 end,
+                    setFunc = function(val)
+                        pending.foodID = (val == 0) and nil or val
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "|c00ff00Confirm|r",
+                    func    = function()
+                        AC.savedVariables.foodID = pending.foodID
+                        Notify("Food/Drink set to: |c00ff00" .. GetItemNameByID(pending.foodID))
+                        AC:ForceCheckFood()
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "|cff8800Scan Bag|r",
+                    tooltip = "Will ReloadUI",
+                    func    = function() AC:ScanBagAndReload() end,
+                },
+            },
         },
 
-        { type = "divider" },
-
-        { type = "header", name = "Food/Drink" },
-
         {
-            type    = "checkbox",
-            name    = "Auto-consume",
-            getFunc = function() return AC.savedVariables.autoFood end,
-            setFunc = function(val)
-                AC.savedVariables.autoFood = val
-                if val then AC:ForceCheckFood() end
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Minutes remaining before re-eating",
-            min     = 1,
-            max     = 30,
-            step    = 1,
-            getFunc = function() return AC.savedVariables.foodMinutes end,
-            setFunc = function(val)
-                AC.savedVariables.foodMinutes = val
-            end,
-        },
-        {
-            type          = "dropdown",
-            name          = "Food/Drink",
-            tooltip       = "Scroll to pick your food/drink. Press Scan Bag first if your item is missing.",
-            choices       = cachedFoodChoices,
-            choicesValues = cachedFoodVals,
-            getFunc       = function() return pending.foodID or 0 end,
-            setFunc       = function(val)
-                pending.foodID = (val == 0) and nil or val
-            end,
-        },
-        {
-            type    = "button",
-            name    = "|c00ff00Confirm|r",
-            func    = function()
-                AC.savedVariables.foodID = pending.foodID
-                Notify("Food/Drink set to: |c00ff00" .. GetItemNameByID(pending.foodID))
-                AC:ForceCheckFood()
-            end,
-        },
-
-        { type = "divider" },
-
-        { type = "header", name = "XP Bonus" },
-
-        {
-            type    = "checkbox",
-            name    = "Auto-Use",
-            getFunc = function() return AC.savedVariables.autoXP end,
-            setFunc = function(val)
-                AC.savedVariables.autoXP = val
-                if val then AC:CheckXP() end
-            end,
-        },
-        {
-            type          = "dropdown",
-            name          = "XP Item",
-            tooltip       = "Scroll to pick your XP bonus. Press Scan Bag first if your item is missing.",
-            choices       = cachedXPChoices,
-            choicesValues = cachedXPVals,
-            getFunc       = function() return pending.xpItemID or 0 end,
-            setFunc       = function(val)
-                pending.xpItemID = (val == 0) and nil or val
-            end,
-        },
-        {
-            type    = "button",
-            name    = "|c00ff00Confirm|r",
-            func    = function()
-                AC.savedVariables.xpItemID = pending.xpItemID
-                Notify("XP Item set to: |c00ff00" .. GetItemNameByID(pending.xpItemID))
-                AC:CheckXP()
-            end,
+            type    = "submenu",
+            name    = "|cE6C800XP Bonus|r",
+            align   = "left",
+            indent  = true,
+            icon    = ICON_GENERIC,
+            options = {
+                {
+                    type    = "toggle",
+                    name    = "Auto-Use",
+                    default = DEFAULTS.autoXP,
+                    getFunc = function() return AC.savedVariables.autoXP end,
+                    setFunc = function(val)
+                        AC.savedVariables.autoXP = val
+                        if val then AC:CheckXP() end
+                    end,
+                },
+                {
+                    type    = "dropdown",
+                    name    = "XP Item",
+                    tooltip = "Scroll to pick your XP bonus. Press Scan Bag first if your item is missing.",
+                    choices = BuildChoices(cachedXPChoices, cachedXPVals),
+                    default = 0,
+                    getFunc = function() return pending.xpItemID or 0 end,
+                    setFunc = function(val)
+                        pending.xpItemID = (val == 0) and nil or val
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "|c00ff00Confirm|r",
+                    func    = function()
+                        AC.savedVariables.xpItemID = pending.xpItemID
+                        Notify("XP Item set to: |c00ff00" .. GetItemNameByID(pending.xpItemID))
+                        AC:CheckXP()
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "|cff8800Scan Bag|r",
+                    tooltip = "Will ReloadUI",
+                    func    = function() AC:ScanBagAndReload() end,
+                },
+            },
         },
 
-        { type = "divider" },
+        {
+            type    = "submenu",
+            name    = "|c00FF00AP Bonus|r",
+            align   = "left",
+            indent  = true,
+            icon    = ICON_GENERIC,
+            options = {
+                {
+                    type    = "toggle",
+                    name    = "Auto-Use",
+                    default = DEFAULTS.autoAP,
+                    getFunc = function() return AC.savedVariables.autoAP end,
+                    setFunc = function(val)
+                        AC.savedVariables.autoAP = val
+                        if val then AC:CheckAP() end
+                    end,
+                },
+                {
+                    type    = "dropdown",
+                    name    = "AP Item",
+                    tooltip = "Scroll to pick your AP bonus item. Press Scan Bag first if your item is missing.",
+                    choices = BuildChoices(cachedAPChoices, cachedAPVals),
+                    default = 0,
+                    getFunc = function() return pending.apItemID or 0 end,
+                    setFunc = function(val)
+                        pending.apItemID = (val == 0) and nil or val
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "|c00ff00Confirm|r",
+                    func    = function()
+                        AC.savedVariables.apItemID = pending.apItemID
+                        Notify("AP Item set to: |c00ff00" .. GetItemNameByID(pending.apItemID))
+                        AC:CheckAP()
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "|cff8800Scan Bag|r",
+                    tooltip = "Will ReloadUI",
+                    func    = function() AC:ScanBagAndReload() end,
+                },
+            },
+        },
 
-        { type = "header", name = "AP Bonus" },
-
         {
-            type    = "checkbox",
-            name    = "Auto-Use",
-            getFunc = function() return AC.savedVariables.autoAP end,
-            setFunc = function(val)
-                AC.savedVariables.autoAP = val
-                if val then AC:CheckAP() end
-            end,
-        },
-        {
-            type          = "dropdown",
-            name          = "AP Item",
-            tooltip       = "Scroll to pick your AP bonus item. Press Scan Bag first if your item is missing.",
-            choices       = cachedAPChoices,
-            choicesValues = cachedAPVals,
-            getFunc       = function() return pending.apItemID or 0 end,
-            setFunc       = function(val)
-                pending.apItemID = (val == 0) and nil or val
-            end,
-        },
-        {
-            type    = "button",
-            name    = "|c00ff00Confirm|r",
-            func    = function()
-                AC.savedVariables.apItemID = pending.apItemID
-                Notify("AP Item set to: |c00ff00" .. GetItemNameByID(pending.apItemID))
-                AC:CheckAP()
-            end,
-        },
-
-        { type = "divider" },
-
-        { type = "header", name = "Show Buffs" },
-        {
-            type    = "checkbox",
-            name    = "Enable",
-            getFunc = function() return AC.savedVariables.hudEnabled end,
-            setFunc = function(val)
-                AC.savedVariables.hudEnabled = val
-                if AC_HUD.updateScenes then
-                    AC_HUD.updateScenes()
-                elseif AC_HUD.panel then
-                    AC_HUD.panel:SetHidden(not val)
-                end
-            end,
-        },
-        {
-            type          = "dropdown",
-            name          = "Layout",
-            choices       = { "Vertical", "Horizontal" },
-            getFunc       = function() return AC.savedVariables.hudHorizontal and "Horizontal" or "Vertical" end,
-            setFunc       = function(val)
-                AC.savedVariables.hudHorizontal = (val == "Horizontal")
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Icon Size",
-            min     = 20,
-            max     = 100,
-            step    = 2,
-            getFunc = function() return AC.savedVariables.hudIconSize end,
-            setFunc = function(val)
-                AC.savedVariables.hudIconSize = val
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Horizontal Position",
-            min     = 0,
-            max     = 3000,
-            step    = 10,
-            getFunc = function() return AC.savedVariables.hudPosX end,
-            setFunc = function(val)
-                AC.savedVariables.hudPosX = val
-                if AC_HUD.panel then
-                    AC_HUD.panel:ClearAnchors()
-                    AC_HUD.panel:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
-                        AC.savedVariables.hudPosX, AC.savedVariables.hudPosY)
-                end
-            end,
-        },
-        {
-            type    = "slider",
-            name    = "Vertical Position",
-            min     = 0,
-            max     = 2000,
-            step    = 10,
-            getFunc = function() return AC.savedVariables.hudPosY end,
-            setFunc = function(val)
-                AC.savedVariables.hudPosY = val
-                if AC_HUD.panel then
-                    AC_HUD.panel:ClearAnchors()
-                    AC_HUD.panel:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
-                        AC.savedVariables.hudPosX, AC.savedVariables.hudPosY)
-                end
-            end,
+            type    = "submenu",
+            name    = "Show Buffs",
+            align   = "left",
+            indent  = true,
+            icon    = ICON_GENERIC,
+            options = {
+                {
+                    type    = "toggle",
+                    name    = "Enable",
+                    default = DEFAULTS.hudEnabled,
+                    getFunc = function() return AC.savedVariables.hudEnabled end,
+                    setFunc = function(val)
+                        AC.savedVariables.hudEnabled = val
+                        if AC_HUD.updateScenes then
+                            AC_HUD.updateScenes()
+                        elseif AC_HUD.panel then
+                            AC_HUD.panel:SetHidden(not val)
+                        end
+                    end,
+                },
+                {
+                    type    = "button",
+                    name    = "Move",
+                    func    = function() AC:StartMove() end,
+                },
+                {
+                    type    = "dropdown",
+                    name    = "Layout",
+                    choices = { "Vertical", "Horizontal" },
+                    default = "Vertical",
+                    getFunc = function() return AC.savedVariables.hudHorizontal and "Horizontal" or "Vertical" end,
+                    setFunc = function(val)
+                        AC.savedVariables.hudHorizontal = (val == "Horizontal")
+                    end,
+                },
+                {
+                    type    = "slider",
+                    name    = "Icon Size",
+                    min     = 20,
+                    max     = 100,
+                    step    = 2,
+                    default = DEFAULTS.hudIconSize,
+                    getFunc = function() return AC.savedVariables.hudIconSize end,
+                    setFunc = function(val)
+                        AC.savedVariables.hudIconSize = val
+                    end,
+                },
+            },
         },
     }
 
-    LAM:RegisterOptionControls("AutoConsume_Settings", options)
+    menu:AddOptions(options)
 end
 
 --------------------------------------------------
@@ -619,7 +655,12 @@ local function OnAddonLoaded(event, addonName)
         DEFAULTS
     )
 
-    AC:CreateSettings()
+    local settingsOk, settingsErr = pcall(function() AC:CreateSettings() end)
+    if not settingsOk then
+        AC.settingsUnavailable = true
+        AC.settingsError = tostring(settingsErr)
+    end
+
     AC:HUDInit()
 
     EVENT_MANAGER:RegisterForEvent(
@@ -786,6 +827,127 @@ function AC:HUDInit()
     end
 end
 
+function AC:GetMover()
+    local LCA = LibCombatAlerts
+    if not LCA then return nil end
+
+    if not AC.mover then
+        AC.mover = LCA.MoveableControl:New(AC_HUD.panel, { color = 0xFF8800FF, size = 2 })
+        AC.mover:SetSnap(MOVE_SNAP)
+        AC.mover:RegisterCallback(
+            "AutoConsume_MoveStop",
+            LCA.EVENT_CONTROL_MOVE_STOP,
+            function() AC:OnMoveStopped() end
+        )
+    end
+    return AC.mover
+end
+
+function AC:EnsureKeybind()
+    if AC.keybindDescriptor then return end
+
+    AC.actionLayerName = GetString(SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS)
+
+    AC.keybindDescriptor = {
+        {
+            name     = "Save & Exit",
+            keybind  = "UI_SHORTCUT_NEGATIVE",
+            callback = function() AC:StopMove() end,
+        },
+    }
+end
+
+function AC:AddKeybind()
+    AC:EnsureKeybind()
+
+    local scene = SCENE_MANAGER:GetCurrentScene()
+    if KEYBIND_STRIP_GAMEPAD_FRAGMENT and scene
+       and not scene:HasFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT) then
+        scene:AddFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT)
+        AC.keybindFragmentScene = scene
+    end
+
+    if AC.keybindActive then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(AC.keybindDescriptor)
+    else
+        KEYBIND_STRIP:AddKeybindButtonGroup(AC.keybindDescriptor)
+        PushActionLayerByName(AC.actionLayerName)
+        AC.keybindActive = true
+    end
+end
+
+function AC:ExitMoveMode()
+    if AC.keybindActive then
+        KEYBIND_STRIP:RemoveKeybindButtonGroup(AC.keybindDescriptor)
+        RemoveActionLayerByName(AC.actionLayerName)
+        AC.keybindActive = false
+    end
+
+    if AC.keybindFragmentScene then
+        if KEYBIND_STRIP_GAMEPAD_FRAGMENT then
+            AC.keybindFragmentScene:RemoveFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT)
+        end
+        AC.keybindFragmentScene = nil
+    end
+
+    AC.movingPanel = false
+    AC:HUDRefresh()
+end
+
+function AC:OnMoveStopped()
+    AC.savedVariables.hudPosX = math.max(0, math.floor(AC_HUD.panel:GetLeft()))
+    AC.savedVariables.hudPosY = math.max(0, math.floor(AC_HUD.panel:GetTop()))
+
+    AC_HUD.panel:ClearAnchors()
+    AC_HUD.panel:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
+        AC.savedVariables.hudPosX,
+        AC.savedVariables.hudPosY)
+
+    AC:ExitMoveMode()
+end
+
+function AC:StopMove()
+    if AC.mover then
+        AC.mover:ToggleGamepadMove(false)
+    end
+    AC:ExitMoveMode()
+end
+
+function AC:StartMove()
+    local mover = AC:GetMover()
+    if not mover then return end
+
+    AC:StopMove()
+
+    SCENE_MANAGER:ShowBaseScene()
+
+    AC.movingPanel = true
+    AC:HUDRefresh()
+
+    zo_callLater(function()
+        AC:AddKeybind()
+        mover:ToggleGamepadMove(true, MOVE_TIMEOUT)
+    end, 250)
+end
+
+function AC:ResetSettings()
+    if not AC.savedVariables then return end
+
+    for key, value in pairs(DEFAULTS) do
+        AC.savedVariables[key] = value
+    end
+
+    if AC_HUD.panel then
+        AC_HUD.panel:ClearAnchors()
+        AC_HUD.panel:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
+            AC.savedVariables.hudPosX,
+            AC.savedVariables.hudPosY)
+    end
+
+    if AC_HUD.updateScenes then AC_HUD.updateScenes() end
+    AC:HUDRefresh()
+end
+
 function AC:HUDScan()
     AC_HUD.active = {}
     if not AC.savedVariables.hudEnabled then return end
@@ -844,7 +1006,8 @@ end
 
 function AC:HUDRefresh()
     if not AC_HUD.panel then return end
-    if not AC.savedVariables.hudEnabled then
+
+    if not AC.movingPanel and not AC.savedVariables.hudEnabled then
         AC_HUD.panel:SetHidden(true)
         return
     end

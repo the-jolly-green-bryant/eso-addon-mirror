@@ -8,6 +8,10 @@
   "category_id": "27",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "KwibusRandomThings"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4450/",
-  "fingerprint": "4487971f9e34c0078f9c11497df36ebba776eabd79ac5338ee23acc8c4aba6ed",
+  "fingerprint": "553d3e5880f32181d66c66841c223cdee6ce0340cddeb05f7feb8f4f5ec7d79a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15486.png",
     "https://cdn-eso.mmoui.com/preview/pvw15487.png",
@@ -35,11 +39,11 @@
   "source_id": "4450",
   "source_url": "https://www.esoui.com/downloads/info4450-KwibusRandomThingsKRT.html",
   "stats": {
-    "downloads": 278,
-    "favorites": 2,
-    "monthly_downloads": 68
+    "downloads": 320,
+    "favorites": 3,
+    "monthly_downloads": 98
   },
   "title": "Kwibus Random Things (KRT)",
-  "updated_at": 1785537290000,
-  "version": "1.2.9"
+  "updated_at": 1786805734000,
+  "version": "1.3.0"
 }

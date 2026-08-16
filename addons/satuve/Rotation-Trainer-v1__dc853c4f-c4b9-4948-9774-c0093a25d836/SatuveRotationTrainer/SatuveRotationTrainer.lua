@@ -2,7 +2,7 @@ SatuveRotationTrainer = SatuveRotationTrainer or {}
 local SRT = SatuveRotationTrainer
 
 SRT.name = "SatuveRotationTrainer"
-SRT.version = "0.6.26"
+SRT.version = "0.6.29"
 SRT.maxPriorities = 10
 SRT.routeLength = 2
 
@@ -46,9 +46,6 @@ local defaults = {
     pressVisualHoldMs = 200,       -- fixed visual hold duration; toggleable in menu
     ahkColorMarkersEnabled = false, -- legacy; recognition now uses the separate white image box
     ahkDataCodeEnabled = false, -- legacy data-code disabled in v0.6.25
-    recognitionBoxEnabled = true,
-    recognitionLeadMs = 300,   -- show action image this many ms before PRESS
-    recognitionHoldMs = 350,   -- keep it visible for at least this long
     fixedFlowSpeed = false,    -- false = existing easing/slowdown, true = constant movement speed
     swapLeadMs = 250,         -- BAR SWAP: spacing before SWAP, expressed as travel-time at normal skill speed
     swapTrailMs = 200,        -- BAR SWAP: spacing after SWAP, expressed as travel-time at normal skill speed
@@ -1583,14 +1580,6 @@ function SRT:CreateMain()
     local ztxt = label(w, "SRT_HitZoneText", self.sv.hitZoneX - 35, 4, 70, 20, FONT_HEADER, "")
     ztxt:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
-    -- Separate machine-readable action image. It is static, white and uses the
-    -- exact same source artwork as the PNG templates shipped with the AHK script.
-    local recognition = WM:CreateControl("SRT_RecognitionBox", w, CT_TEXTURE)
-    recognition:SetDimensions(72, 42)
-    recognition:SetAnchor(BOTTOM, zone, TOP, 0, -4)
-    recognition:SetHidden(true)
-    self.recognitionBox = recognition
-
     self.flowIcons = {}
     for i = 1, 3 do
         local holder = WM:CreateControl("SRT_FlowHolder" .. i, w, CT_CONTROL)
@@ -1627,14 +1616,12 @@ function SRT:UpdateFlow()
         self.main:SetHidden(false)
         self:UpdateMoveInput()
         for _, holder in ipairs(self.flowIcons) do holder:SetHidden(true) end
-        self:HideRecognitionBox()
         self.status:SetText("")
         return
     end
 
     if not self.sv.enabled or (not self.inCombat and not self.testMode) then
         self.main:SetHidden(true)
-        self:HideRecognitionBox()
         if self.SetAhkDataCode then self:SetAhkDataCode(nil, false) end
         return
     end
@@ -1659,7 +1646,6 @@ function SRT:UpdateFlow()
 
     if #route == 0 then
         for _, holder in ipairs(self.flowIcons) do holder:SetHidden(true) end
-        self:HideRecognitionBox()
         self.status:SetText("")
         return
     end
@@ -1688,7 +1674,7 @@ function SRT:UpdateFlow()
         if item.type == "swap" then
             holder.icon:SetHidden(true)
             holder.slot:SetFont(FONT_FLOW_SWAP)
-            holder.slot:SetText("")
+            holder.slot:SetText("SWAP")
             holder.frame:SetCenterColor(green and 0.08 or 0.10, green and 0.08 or 0.18, green and 0.08 or 0.55, green and 0.62 or 0.62)
             holder.frame:SetEdgeColor(green and 0.65 or 0.35, green and 0.65 or 0.65, green and 0.65 or 1.0, 1.0)
             return
@@ -1697,10 +1683,14 @@ function SRT:UpdateFlow()
         holder.icon:SetHidden(false)
         holder.icon:SetTexture(abilityIcon(item.abilityId))
         holder.slot:SetFont(FONT_FLOW_KEY)
-        -- v0.6.26: Moving skill cards no longer show 1-5/ULT text.
-        -- Recognition is handled exclusively by the white DETECT BOX above PRESS.
+        -- v0.6.28: visible slot labels restored on moving cards.
+        -- Proc changes may alter the icon, but the configured stable slot label remains.
         local stableLabel = self:GetStableDisplayLabel(item)
-        holder.slot:SetText("")
+        if item.type == "ultimate" then
+            holder.slot:SetText("ULT")
+        else
+            holder.slot:SetText(stableLabel)
+        end
         holder.frame:SetCenterColor(green and 0.08 or 0, green and 0.08 or 0, green and 0.08 or 0, green and 0.48 or 0)
         holder.frame:SetEdgeColor(green and 0.65 or 0.75, green and 0.65 or 0.75, green and 0.65 or 0.75, green and 1 or 0.85)
         holder.icon:SetColor(1, 1, 1, 1)
@@ -1866,9 +1856,6 @@ function SRT:UpdateFlow()
     local currentX = self.currentVisualX
     self.currentHeldX = currentX
 
-    -- v0.6.25: static white recognition image appears before PRESS and remains
-    -- visible for the configured minimum hold time.
-    self:UpdateRecognitionBox(visualCurrent, visualKey, currentX, pressX, basePxPerMs, tNow)
 
     -- NEXT follows continuously behind CURRENT instead of being pinned to a midpoint.
     -- It starts one runway length to the right and inherits the same physical motion.
@@ -2466,93 +2453,6 @@ function SRT:SetAhkDataCode(actionLabel, active)
 end
 
 
-local RECOGNITION_TEXTURES = {
-    ["1"]    = "SatuveRotationTrainer/textures/1.dds",
-    ["2"]    = "SatuveRotationTrainer/textures/2.dds",
-    ["3"]    = "SatuveRotationTrainer/textures/3.dds",
-    ["4"]    = "SatuveRotationTrainer/textures/4.dds",
-    ["5"]    = "SatuveRotationTrainer/textures/5.dds",
-    ["SWAP"] = "SatuveRotationTrainer/textures/swap.dds",
-    ["ULT"]  = "SatuveRotationTrainer/textures/ulti.dds",
-}
-
-function SRT:ToggleRecognitionBox()
-    self.sv.recognitionBoxEnabled = not (self.sv.recognitionBoxEnabled == true)
-    if not self.sv.recognitionBoxEnabled and self.recognitionBox then
-        self.recognitionBox:SetHidden(true)
-    end
-    msg("Recognition box: " .. ((self.sv.recognitionBoxEnabled == true) and "ON" or "OFF"))
-    self:RefreshConfig()
-end
-
-function SRT:AdjustRecognitionTiming(which, delta)
-    if which == "lead" then
-        self.sv.recognitionLeadMs = zo_clamp((tonumber(self.sv.recognitionLeadMs) or 300) + delta, 50, 1000)
-    else
-        self.sv.recognitionHoldMs = zo_clamp((tonumber(self.sv.recognitionHoldMs) or 350) + delta, 100, 1500)
-    end
-    self:RefreshConfig()
-end
-
-function SRT:ToggleFixedFlowSpeed()
-    self.sv.fixedFlowSpeed = not (self.sv.fixedFlowSpeed == true)
-    msg("Flow speed: " .. ((self.sv.fixedFlowSpeed == true) and "FIXED" or "ADAPTIVE"))
-    self:RefreshConfig()
-end
-
-function SRT:GetRecognitionActionLabel(item)
-    if not item then return nil end
-    if item.type == "swap" then return "SWAP" end
-    if item.type == "ultimate" then return "ULT" end
-    local stable = self:GetStableDisplayLabel(item)
-    if stable == "ULT" then return "ULT" end
-    if stable == "1" or stable == "2" or stable == "3" or stable == "4" or stable == "5" then
-        return stable
-    end
-    return nil
-end
-
-function SRT:HideRecognitionBox()
-    if self.recognitionBox then self.recognitionBox:SetHidden(true) end
-end
-
-function SRT:UpdateRecognitionBox(item, visualKey, currentX, pressX, basePxPerMs, tNow)
-    if not self.recognitionBox then return end
-    if not (self.sv.recognitionBoxEnabled == true) then
-        self:HideRecognitionBox()
-        self.recognitionDisplayKey = nil
-        return
-    end
-
-    local action = self:GetRecognitionActionLabel(item)
-    local texture = action and RECOGNITION_TEXTURES[action] or nil
-    if not texture then
-        self:HideRecognitionBox()
-        return
-    end
-
-    local leadMs = zo_clamp(tonumber(self.sv.recognitionLeadMs) or 300, 50, 1000)
-    local holdMs = zo_clamp(tonumber(self.sv.recognitionHoldMs) or 350, 100, 1500)
-    local triggerX = pressX + (basePxPerMs * leadMs)
-
-    -- Trigger exactly once per CURRENT item as it approaches PRESS.
-    if self.recognitionTriggeredKey ~= visualKey and currentX <= triggerX then
-        self.recognitionTriggeredKey = visualKey
-        self.recognitionDisplayKey = visualKey
-        self.recognitionHideAtMs = tNow + holdMs
-        self.recognitionBox:SetTexture(texture)
-        self.recognitionBox:SetHidden(false)
-    end
-
-    -- Minimum hold duration: old image stays stable even if CURRENT changes shortly after PRESS.
-    if self.recognitionDisplayKey and self.recognitionHideAtMs then
-        if tNow >= self.recognitionHideAtMs then
-            self:HideRecognitionBox()
-            self.recognitionDisplayKey = nil
-            self.recognitionHideAtMs = nil
-        end
-    end
-end
 
 function SRT:ToggleAhkColorMarkers()
     self.sv.ahkColorMarkersEnabled = not (self.sv.ahkColorMarkersEnabled == true)
@@ -2649,19 +2549,6 @@ function SRT:CreateConfig()
     label(w, "SRT_AhkColorTitle", 610, 154, 145, 30, FONT_HEADER, "AHK COLORS:")
     self.ahkColorButton = button(w, "SRT_AhkColorButton", 755, 154, 120, 30, "ON", function() self:ToggleAhkColorMarkers() end)
     label(w, "SRT_AhkColorHint", 885, 154, 150, 30, FONT_SMALL, "fixed RGB")
-
-    label(w, "SRT_RecognitionTitle", 18, 186, 150, 30, FONT_HEADER, "DETECT BOX:")
-    self.recognitionButton = button(w, "SRT_RecognitionButton", 168, 186, 110, 30, "ON", function() self:ToggleRecognitionBox() end)
-
-    label(w, "SRT_RecognitionLeadTitle", 300, 186, 95, 30, FONT_TEXT, "LEAD")
-    self.recognitionLeadLabel = label(w, "SRT_RecognitionLeadValue", 395, 186, 80, 30, FONT_HEADER, "")
-    button(w, "SRT_RecognitionLeadMinus", 480, 186, 48, 30, "-50", function() self:AdjustRecognitionTiming("lead", -50) end)
-    button(w, "SRT_RecognitionLeadPlus", 532, 186, 48, 30, "+50", function() self:AdjustRecognitionTiming("lead", 50) end)
-
-    label(w, "SRT_RecognitionHoldTitle", 600, 186, 95, 30, FONT_TEXT, "HOLD")
-    self.recognitionHoldLabel = label(w, "SRT_RecognitionHoldValue", 690, 186, 80, 30, FONT_HEADER, "")
-    button(w, "SRT_RecognitionHoldMinus", 775, 186, 48, 30, "-50", function() self:AdjustRecognitionTiming("hold", -50) end)
-    button(w, "SRT_RecognitionHoldPlus", 827, 186, 48, 30, "+50", function() self:AdjustRecognitionTiming("hold", 50) end)
 
     label(w, "SRT_FixedSpeedTitle", 895, 186, 75, 30, FONT_TEXT, "SPEED")
     self.fixedSpeedButton = button(w, "SRT_FixedSpeedButton", 970, 186, 90, 30, "ADAPT", function() self:ToggleFixedFlowSpeed() end)
@@ -2813,15 +2700,6 @@ function SRT:RefreshConfig()
     end
     if self.ahkColorButton then
         self.ahkColorButton:SetText((self.sv.ahkColorMarkersEnabled == true) and "ON" or "OFF")
-    end
-    if self.recognitionButton then
-        self.recognitionButton:SetText((self.sv.recognitionBoxEnabled == true) and "ON" or "OFF")
-    end
-    if self.recognitionLeadLabel then
-        self.recognitionLeadLabel:SetText(tostring(zo_clamp(tonumber(self.sv.recognitionLeadMs) or 300, 50, 1000)) .. " ms")
-    end
-    if self.recognitionHoldLabel then
-        self.recognitionHoldLabel:SetText(tostring(zo_clamp(tonumber(self.sv.recognitionHoldMs) or 350, 100, 1500)) .. " ms")
     end
     if self.fixedSpeedButton then
         self.fixedSpeedButton:SetText((self.sv.fixedFlowSpeed == true) and "FIXED" or "ADAPT")

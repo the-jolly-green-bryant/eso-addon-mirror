@@ -17,7 +17,7 @@
 
 AutoInvite = AutoInvite or {}
 AutoInvite.AddonId = "AutoInvite"
-AutoInvite.Version = "2026.08.08"
+AutoInvite.Version = "2026.08.15"
 
 ------------------------------------------------
 --- Utility functions

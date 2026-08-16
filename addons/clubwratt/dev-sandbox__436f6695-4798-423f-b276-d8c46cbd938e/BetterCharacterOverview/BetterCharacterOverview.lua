@@ -967,6 +967,9 @@ local function GetCurrentOwnedHouseId()
     return houseId
 end
 
+-- Uses the standard house name from the collectible, matching how the base
+-- game labels houses (e.g. the housing preview UI). Player-set nicknames
+-- are intentionally ignored so locations read consistently.
 local function GetHouseDisplayName(houseId)
     local collectibleId = 0
 
@@ -982,21 +985,6 @@ local function GetHouseDisplayName(houseId)
     end
 
     if collectibleId ~= 0 then
-        if type(GetCollectibleNickname) == "function" then
-            local ok, nickname = pcall(
-                GetCollectibleNickname,
-                collectibleId
-            )
-
-            nickname = ok
-                and FormatStorageName(nickname)
-                or ""
-
-            if nickname ~= "" then
-                return nickname
-            end
-        end
-
         if type(GetCollectibleName) == "function" then
             local ok, collectibleName = pcall(
                 GetCollectibleName,
@@ -1838,13 +1826,22 @@ function BCO:CollectSources()
         self.savedVars.shared.houses or {}
     ) do
         if type(house) == "table" then
+            local houseId = house.houseId
+                or tonumber(houseKey)
+                or 0
+
+            -- Recompute from the live API so snapshots saved under an old
+            -- nickname show the standard house name without a revisit.
+            local name = houseId ~= 0
+                and GetHouseDisplayName(houseId)
+                or house.name
+                or "House"
+
             houseRows[#houseRows + 1] = {
                 items = house.items or {},
-                name = house.name or "House",
+                name = name,
                 updated = house.updated or 0,
-                houseId = house.houseId
-                    or tonumber(houseKey)
-                    or 0,
+                houseId = houseId,
             }
         end
     end

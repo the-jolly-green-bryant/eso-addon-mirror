@@ -40,19 +40,19 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GGN Dialog2Clipboard](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gigon/GGN-Dialog2Clipboard__926) | Gigon | PC / Mac | 1.31 |
 | [GhostwheelAI Shortcuts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GhostwheelAI/GhostwheelAI-Shortcuts__2675) | GhostwheelAI | PC / Mac | 1.0.3 |
 | [Gilded UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fluazinam/Gilded-UI__5dce8bc1-61a1-4273-a23e-f74372f36b40) | Fluazinam | Console | — |
+| [GL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/GL__b4445246-dea8-4bb9-842c-2235db14a84b) | user562x | Console | — |
 | [GLA Farm Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/blubaxp/GLA-Farm-Manager__2948) | blubaxp | PC / Mac | 0.2 |
 | [Global Cooldown (GCD) Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Global-Cooldown-GCD-Bar__2322) | Wheels | PC / Mac | 2.6 |
 | [Global Cooldown Monitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Armodeniz/Global-Cooldown-Monitor__2627) | Armodeniz | PC / Mac | 1.7 |
 | [Global Cooldown Monitor Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/Global-Cooldown-Monitor-Revised__2fd5ce0c-10fd-49de-9d22-2de4052785b3) | CaffeinatedMayhem | Console | — |
 | [GlossFreeAttribute](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarkasion/GlossFreeAttribute__2316) | Tarkasion | PC / Mac | 1.04 |
-| [GLt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/GLt__b4445246-dea8-4bb9-842c-2235db14a84b) | user562x | Console | — |
 | [Glyphic Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cerbin/Glyphic-Tracker__3653) | Cerbin | PC / Mac | 1.0.0 |
 | [GMen - Guild Roster Dumper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/GMen---Guild-Roster-Dumper__1137) | Ayantir | PC / Mac | 0.1 |
 | [GnolamsGuildhall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sityDJVEN25/GnolamsGuildhall__3357) | sityDJVEN25 | PC / Mac | 1.0 |
 | [Go Fast Don't Die](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drezzek/Go-Fast-Don-t-Die__3332) | Drezzek | PC / Mac | 1.4 |
 | [Go Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/static_recharge/Go-Home__1604) | static_recharge | PC / Mac | 8.0.0 |
 | [GoA_DolgubonsLazyWritCreatorUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_DolgubonsLazyWritCreatorUAPatch__4703) | Iriya_Altmer | PC / Mac | 1.7 |
-| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 43.97 |
+| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 44.07 |
 | [GoA_FCOLockpickerUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733) | Iriya_Altmer | PC / Mac | 1.0 |
 | [GoA_HarvestMapUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707) | Iriya_Altmer | PC / Mac | 1.1 |
 | [GoA_TamrielTradeCentreUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705) | Iriya_Altmer | PC / Mac | 1.2 |

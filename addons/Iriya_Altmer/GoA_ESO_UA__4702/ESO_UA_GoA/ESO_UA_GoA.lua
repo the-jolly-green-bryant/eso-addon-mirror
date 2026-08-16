@@ -97,3 +97,11 @@ function ESO_UA_GoA:registerEvents(state)
 end
 
 EVENT_MANAGER:RegisterForEvent(ESO_UA_GoA.name, EVENT_ADD_ON_LOADED , function(_event, _name) ESO_UA_GoA:OnInit(_event, _name) end)
+
+-- Фікс: "Скриня" -> "Тулуб" лише для назв слота броні (не для скринь-контейнерів у світі,
+-- бо ті беруть назву з окремого джерела і цей override їх не зачіпає)
+SafeAddString(SI_EQUIPSLOT2, "Тулуб", 0)
+SafeAddString(SI_EQUIPTYPE3, "Тулуб", 0)
+SafeAddString(SI_OUTFITSLOT1, "Тулуб", 0)
+SafeAddString(SI_GAMEPADITEMCATEGORY6, "Тулуб", 0)
+SafeAddString(SI_GAMEPADITEMCATEGORY43, "Тулуб супутника", 0)

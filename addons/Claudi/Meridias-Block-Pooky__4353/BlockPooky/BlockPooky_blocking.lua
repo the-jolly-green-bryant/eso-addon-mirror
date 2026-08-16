@@ -1,15 +1,15 @@
 --[[
     BlockPooky Block Detection Module
-    
+
     This module provides "Am I Blocking?" awareness by detecting when the player
     is actively blocking and showing a visual indicator.
-    
+
     Detection Logic:
     - Uses IsBlockActive() to check block state
     - Validates stamina/magicka regeneration is 0 (blocking drains resources)
     - Excludes running while holding block (not true blocking)
     - Shows/hides indicator based on actual blocking state
-    
+
     Features:
     - Real-time block state monitoring via update loop
     - Movable UI indicator with position persistence
@@ -35,7 +35,7 @@ function BlockPooky.UpdateBlocking(gameTimeMs)
     local inCombat = IsUnitInCombat("player")
     local stamReg = 0
     local magReg = 0
-    
+
     -- Get appropriate regeneration stats based on combat state
     if inCombat then
         stamReg = GetPlayerStat(STAT_STAMINA_REGEN_COMBAT, STAT_BONUS_OPTION_APPLY_BONUS)
@@ -44,7 +44,7 @@ function BlockPooky.UpdateBlocking(gameTimeMs)
         stamReg = GetPlayerStat(STAT_STAMINA_REGEN_IDLE, STAT_BONUS_OPTION_APPLY_BONUS)
         magReg = GetPlayerStat(STAT_MAGICKA_REGEN_IDLE, STAT_BONUS_OPTION_APPLY_BONUS)
     end
-    
+
     -- True blocking: block active, not running, and resource regen is 0
     if IsBlockActive() and not isRunning and (stamReg == 0 or magReg == 0) then
         is_block_active = true
@@ -62,14 +62,14 @@ end
 function BlockPooky.SetUseBlocking()
     if BlockPooky.config.blocking.show then
         if not BlockPooky.blockingregistered then
-            EVENT_MANAGER:RegisterForUpdate(BlockPooky.name.."BlockingTickUpdate", 100, function(gameTimeMs)
+            EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "BlockingTickUpdate", 100, function(gameTimeMs)
                 BlockPooky.UpdateBlocking(gameTimeMs)
-            end)
+            end, false)
         end
         BlockPooky.config.blocking.registered = true
     else
         if BlockPooky.config.blocking.registered then
-            EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name.."BlockingTickUpdate")
+            EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name .. "BlockingTickUpdate")
             BlockPooky.blockingregistered = false
         end
     end

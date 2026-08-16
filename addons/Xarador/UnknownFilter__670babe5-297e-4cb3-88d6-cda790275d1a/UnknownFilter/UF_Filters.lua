@@ -1,109 +1,140 @@
--- UF_Filters.lua (robust, rückwärtskompatibel)
+-- UF_Filters.lua
 local UF = UnknownFilter
 
--- Safe wrapper
-local function SafeGetItemLinkItemType(link)
-    if not (link and GetItemLinkItemType) then return nil,nil end
-    local ok, t, st = pcall(GetItemLinkItemType, link)
-    if ok then return t, st end
+local function SafeGetItemType(link)
+    if not (link and GetItemLinkItemType) then
+        return nil, nil
+    end
+
+    local ok, itemType, specializedItemType = pcall(GetItemLinkItemType, link)
+    if ok then
+        return itemType, specializedItemType
+    end
     return nil, nil
 end
 
--- Learnables (Rezepte / Pläne)
 local function LearnableStatus(link)
-    if not link or link=="" then return false,nil,"-" end
-    local itemType = select(1, SafeGetItemLinkItemType(link))
+    if not link or link == "" then
+        return false, nil, "no-link"
+    end
+
+    local itemType = SafeGetItemType(link)
     if itemType == ITEMTYPE_RECIPE and IsItemLinkRecipeKnown then
         local ok, known = pcall(IsItemLinkRecipeKnown, link)
-        if ok then return true, (known==true), "Recipe/Plan" end
-    end
-    return false,nil,"-"
-end
-
--- Motif / Buch
-local function MotifBookStatus(link)
-    if not link or link=="" then return false,nil,"-" end
-    local itemType = select(1, SafeGetItemLinkItemType(link))
-    if (itemType == ITEMTYPE_RACIAL_STYLE_MOTIF or itemType == ITEMTYPE_BOOK) and IsItemLinkBookKnown then
-        local ok, known = pcall(IsItemLinkBookKnown, link)
-        if ok then return true, (known==true), "Motif/Book" end
-    end
-    return false,nil,"-"
-end
-
--- Collectible Container (Runebox, Style Page)
-local function CollectibleContainerStatus(link)
-    if not link or link=="" then return false,nil,"-" end
-    if not (GetItemLinkContainerCollectibleId and IsCollectibleUnlocked) then return false,nil,"-" end
-    local ok, cid = pcall(GetItemLinkContainerCollectibleId, link)
-    if ok and type(cid)=="number" and cid>0 then
-        local ok2, known = pcall(IsCollectibleUnlocked, cid)
-        if ok2 then return true, (known==true), "CollectibleId" end
-    end
-    return false,nil,"-"
-end
-
--- Gear (Set Sammlung)
-local function IsSetPieceUnlocked_Strict(link)
-    if not link or link=="" then return false, "no-link" end
-
-    -- 1) direkter Link
-    if IsItemSetCollectionPieceUnlockedByItemLink then
-        local ok, res = pcall(IsItemSetCollectionPieceUnlockedByItemLink, link)
-        if ok and type(res)=="boolean" then return res, "piece-by-link" end
-    end
-
-    -- 2) PieceInfo APIs
-    local setId, slotId, pieceId
-    if GetItemLinkSetCollectionPieceInfo then
-        local ok,a,b,c = pcall(GetItemLinkSetCollectionPieceInfo, link)
-        if ok then setId,slotId,pieceId = a,b,c end
-    elseif GetItemLinkSetCollectionInfo then
-        local ok,a,b,c = pcall(GetItemLinkSetCollectionInfo, link)
-        if ok then setId,slotId,pieceId = a,b,c end
-    end
-
-    if pieceId and IsItemSetCollectionPieceUnlocked then
-        local ok, unlocked = pcall(IsItemSetCollectionPieceUnlocked, pieceId)
-        if ok and type(unlocked)=="boolean" then return unlocked, "pieceId" end
-    end
-
-    if setId and slotId and IsItemSetCollectionSlotUnlocked then
-        local ok, unlocked = pcall(IsItemSetCollectionSlotUnlocked, setId, slotId)
-        if ok and type(unlocked)=="boolean" then return unlocked, "slot" end
-    end
-
-    -- 3) Fallback: ItemId
-    if GetItemLinkItemId and IsItemSetCollectionPieceUnlocked then
-        local okId, id = pcall(GetItemLinkItemId, link)
-        if okId and type(id)=="number" and id>0 then
-            local okU, un = pcall(IsItemSetCollectionPieceUnlocked, id)
-            if okU and type(un)=="boolean" then return un, "fallback-itemId" end
+        if ok then
+            return true, known == true, "recipe"
         end
+    end
+
+    return false, nil, "not-learnable"
+end
+
+local function MotifBookStatus(link)
+    if not link or link == "" then
+        return false, nil, "no-link"
+    end
+
+    local itemType = SafeGetItemType(link)
+    if (itemType == ITEMTYPE_RACIAL_STYLE_MOTIF or itemType == ITEMTYPE_BOOK)
+        and IsItemLinkBookKnown
+    then
+        local ok, known = pcall(IsItemLinkBookKnown, link)
+        if ok then
+            return true, known == true, "motif-book"
+        end
+    end
+
+    return false, nil, "not-motif"
+end
+
+local function CollectibleContainerStatus(link)
+    if not link or link == "" then
+        return false, nil, "no-link"
+    end
+    if not (GetItemLinkContainerCollectibleId and IsCollectibleUnlocked) then
+        return false, nil, "unsupported"
+    end
+
+    local ok, collectibleId = pcall(GetItemLinkContainerCollectibleId, link)
+    if ok and type(collectibleId) == "number" and collectibleId > 0 then
+        local unlockedOk, unlocked = pcall(IsCollectibleUnlocked, collectibleId)
+        if unlockedOk then
+            return true, unlocked == true, "collectible"
+        end
+    end
+
+    return false, nil, "not-collectible"
+end
+
+local function GetSetCollectionStatus(link)
+    if not (GetItemLinkSetInfo
+        and GetItemLinkItemSetCollectionSlot
+        and IsItemSetCollectionSlotUnlocked)
+    then
+        return false, "unsupported"
+    end
+
+    local setInfo = { pcall(GetItemLinkSetInfo, link, false) }
+    if not setInfo[1] or setInfo[2] ~= true then
+        return false, "no-set"
+    end
+
+    -- pcall adds its success flag at index 1; GetItemLinkSetInfo returns setId sixth.
+    local itemSetId = setInfo[7]
+    local slotOk, collectionSlot = pcall(GetItemLinkItemSetCollectionSlot, link)
+    if type(itemSetId) ~= "number" or itemSetId <= 0 or not slotOk or not collectionSlot then
+        return false, "undetermined"
+    end
+
+    local unlockedOk, unlocked = pcall(IsItemSetCollectionSlotUnlocked, itemSetId, collectionSlot)
+    if unlockedOk and type(unlocked) == "boolean" then
+        return unlocked, "collection-slot"
     end
 
     return false, "undetermined"
 end
 
 local function GearStatus(link)
-    if not link or link=="" then return false,nil,"-" end
-    local t = select(1, SafeGetItemLinkItemType(link))
-    if not (t==ITEMTYPE_WEAPON or t==ITEMTYPE_ARMOR or t==ITEMTYPE_JEWELRY) then
-        return false,nil,"not-gear"
+    if not link or link == "" then
+        return false, nil, "no-link"
     end
-    if not (IsItemLinkSetCollectionPiece and IsItemLinkSetCollectionPiece(link)) then
-        return false,nil,"not-set"
+
+    local itemType = SafeGetItemType(link)
+    if itemType ~= ITEMTYPE_WEAPON and itemType ~= ITEMTYPE_ARMOR and itemType ~= ITEMTYPE_JEWELRY then
+        return false, nil, "not-gear"
     end
-    local unlocked, how = IsSetPieceUnlocked_Strict(link)
-    return true, unlocked, how
+
+    if not IsItemLinkSetCollectionPiece then
+        return false, nil, "unsupported"
+    end
+
+    local isPieceOk, isCollectionPiece = pcall(IsItemLinkSetCollectionPiece, link)
+    if not isPieceOk or not isCollectionPiece then
+        return false, nil, "not-set-piece"
+    end
+
+    local unlocked, method = GetSetCollectionStatus(link)
+    return true, unlocked, method
 end
 
--- Public API
 function UF:Passes(link, mode)
-    if not link or link=="" then return false,"no-link" end
-    if     mode==self.MODE_GEAR    then local isSet, unlocked, how = GearStatus(link);              return (isSet and unlocked==false), how
-    elseif mode==self.MODE_LEARN   then local isL, known,   how = LearnableStatus(link);            return (isL and known==false),      how
-    elseif mode==self.MODE_MOTIF   then local isM, known,   how = MotifBookStatus(link);            return (isM and known==false),      how
-    elseif mode==self.MODE_COLLECT then local isC, known,   how = CollectibleContainerStatus(link); return (isC and known==false),      how
-    else return true, "off" end
+    if not link or link == "" then
+        return false, "no-link"
+    end
+
+    if mode == self.MODE_GEAR then
+        local applies, known, method = GearStatus(link)
+        return applies and known == false, method
+    elseif mode == self.MODE_LEARN then
+        local applies, known, method = LearnableStatus(link)
+        return applies and known == false, method
+    elseif mode == self.MODE_MOTIF then
+        local applies, known, method = MotifBookStatus(link)
+        return applies and known == false, method
+    elseif mode == self.MODE_COLLECT then
+        local applies, known, method = CollectibleContainerStatus(link)
+        return applies and known == false, method
+    end
+
+    return true, "off"
 end

@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.06"
+BB.version = "0.3.10"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -24,13 +24,15 @@ local displayDefaults = {
 }
 
 local accountDefaults = {
-    enabled = true,
+    enabled = true, -- legacy migration source; live master enable is character-specific
     uptime = { enabled=true, minimumCombatSeconds=5, showAdvanced=true },
     advanced = { readyAnimation=true },
+    _characterProfileMigrationComplete = false,
 }
 
 local characterDefaults = {
     tracked = {},
+    visibility = {},
     ui = {
         buffs = {},
         debuffs = {},
@@ -87,41 +89,113 @@ function BB:GetGroupTargetCount()
     return math.max(1, tonumber(GetGroupSize()) or 0)
 end
 
-function BB:IsEffectEnabled(key)
-    if not self.saved or not self.saved.enabled then return false end
-    local value = self.saved.tracked[key]
-    if value == nil then
-        local effect = self.Registry and self.Registry.byKey[key]
-        return effect and effect.defaultTracked == true or false
-    end
-    return value == true
+local VISIBILITY_AUTO = "AUTO"
+local VISIBILITY_ALWAYS = "ALWAYS"
+local VISIBILITY_HIDDEN = "HIDDEN"
+
+local function IsVisibilityMode(value)
+    return value == VISIBILITY_AUTO or value == VISIBILITY_ALWAYS or value == VISIBILITY_HIDDEN
 end
 
--- Manual tracking preference and temporary loadout relevance are intentionally
--- separate. Auto-tracked effects appear while their required item is equipped
--- without rewriting the character's saved checkbox.
-function BB:IsEffectAutoTracked(key)
-    if not self.saved or not self.saved.enabled then return false end
+function BB:GetEffectVisibilityMode(key)
+    if not self.saved then return VISIBILITY_AUTO end
+    local mode = self.saved.visibility and self.saved.visibility[key]
+    if IsVisibilityMode(mode) then return mode end
+
+    -- Backward-compatible interpretation of the old checkbox. ON becomes ALWAYS
+    -- and OFF becomes AUTO. Untouched defaults keep their previous visible state.
+    local legacy = self.saved.tracked and self.saved.tracked[key]
+    if legacy ~= nil then return legacy == true and VISIBILITY_ALWAYS or VISIBILITY_AUTO end
     local effect = self.Registry and self.Registry.byKey[key]
-    if not effect or effect.autoTrackWhenEquipped ~= true then return false end
-    if not effect.requiredWornItemId or effect.requiredEquipSlot == nil then return false end
-    local itemId = GetItemId and GetItemId(BAG_WORN, effect.requiredEquipSlot) or 0
-    return tonumber(itemId) == tonumber(effect.requiredWornItemId)
+    return effect and effect.defaultTracked == true and VISIBILITY_ALWAYS or VISIBILITY_AUTO
 end
 
-function BB:IsEffectRelevant(key)
-    return self:IsEffectEnabled(key) or self:IsEffectAutoTracked(key)
-end
+function BB:SetEffectVisibilityMode(key, mode)
+    if not IsVisibilityMode(mode) then return end
+    self.saved.visibility[key] = mode
 
-function BB:SetEffectEnabled(key, value)
-    self.saved.tracked[key] = value == true
+    -- Keep the legacy boolean synchronized for downgrade/compatibility safety.
+    -- AUTO and HIDDEN both correspond to the old unchecked state.
+    self.saved.tracked[key] = mode == VISIBILITY_ALWAYS
+
     if self.Runtime then self.Runtime:OnTrackingChanged(key) end
     if self.UI then self.UI:RefreshAll(true) end
 end
 
+-- Compatibility helpers for older call sites/API consumers. In the new model,
+-- "enabled" means the user explicitly requested ALWAYS visibility.
+function BB:IsEffectEnabled(key)
+    return self.saved and self.saved.enabled and self:GetEffectVisibilityMode(key) == VISIBILITY_ALWAYS or false
+end
+
+function BB:SetEffectEnabled(key, value)
+    self:SetEffectVisibilityMode(key, value == true and VISIBILITY_ALWAYS or VISIBILITY_AUTO)
+end
+
+-- Automatic relevance is registry-owned and event-driven. The runtime maintains a
+-- lightweight capability snapshot from worn gear and slotted skills, while live
+-- group-effect relevance comes from the existing canonical effect state. No
+-- periodic gear/skill scanner or second effect cache is used.
+function BB:IsEffectAutoTracked(key)
+    if not self.saved or not self.saved.enabled then return false end
+    local effect = self.Registry and self.Registry.byKey[key]
+    if not effect or not self.Runtime then return false end
+    return self.Runtime:HasLocalProviderCapability(effect)
+end
+
+function BB:IsEffectAutoRelevant(key)
+    if not self.saved or not self.saved.enabled then return false end
+    local effect = self.Registry and self.Registry.byKey[key]
+    if not effect then return false end
+    if self:IsEffectAutoTracked(key) then return true end
+    return effect.autoGroupEffect == true and self.Runtime and self.Runtime:HasAutoGroupState(key) or false
+end
+
+-- Observation is broader than presentation. AUTO group-awareness effects must be
+-- observed even before the first application so the application itself can make
+-- the tile relevant. HIDDEN remains an absolute HUD override but may still be
+-- observed internally for analytics/intelligence.
+function BB:ShouldObserveEffect(key)
+    if not self.saved or not self.saved.enabled then return false end
+    local mode = self:GetEffectVisibilityMode(key)
+    if mode == VISIBILITY_ALWAYS then return true end
+    local effect = self.Registry and self.Registry.byKey[key]
+    if not effect then return false end
+    if effect.autoGroupEffect == true then return true end
+    return self:IsEffectAutoTracked(key)
+end
+
+-- Presentation preference and runtime observation are deliberately separate.
+-- HIDDEN is absolute for the HUD, while the runtime may still observe an
+-- automatically relevant provider so analytics/intelligence can remain correct.
+function BB:IsEffectVisible(key)
+    if not self.saved or not self.saved.enabled then return false end
+    local mode = self:GetEffectVisibilityMode(key)
+    if mode == VISIBILITY_HIDDEN then return false end
+    if mode == VISIBILITY_ALWAYS then return true end
+    return self:IsEffectAutoRelevant(key)
+end
+
+function BB:IsEffectTracked(key)
+    if not self.saved or not self.saved.enabled then return false end
+    local mode = self:GetEffectVisibilityMode(key)
+    if mode == VISIBILITY_ALWAYS then return true end
+    return self:IsEffectAutoRelevant(key)
+end
+
+-- Compatibility alias: "relevant" remains presentation relevance for UI and
+-- analytics call sites that historically consumed this function.
+function BB:IsEffectRelevant(key)
+    return self:IsEffectVisible(key)
+end
+
 function BB:SetEnabled(value)
-    self.accountSaved.enabled = value == true
-    self.saved.enabled = self.accountSaved.enabled
+    -- The user-facing master enable state is character-specific. This preserves
+    -- independent character HUD profiles while allowing every genuinely new
+    -- character to start enabled. accountSaved.enabled remains legacy migration
+    -- data only and is no longer the live visibility owner.
+    self.characterSaved.enabled = value == true
+    self.saved.enabled = self.characterSaved.enabled
     if self.Runtime then self.Runtime:SetEnabled(self.saved.enabled) end
     if self.UI then self.UI:RefreshAll(true) end
 end
@@ -134,15 +208,59 @@ function BB:Initialize()
     DeepDefaults(self.accountSaved, accountDefaults)
     DeepDefaults(self.characterSaved, characterDefaults)
 
-    -- One-time, per-character migration. Existing v0.2.x users keep their
-    -- account-wide setup as the seed for each character the first time it logs in.
-    if self.characterSaved._profileInitialized ~= true then
-        if HasValues(self.accountSaved.tracked) then self.characterSaved.tracked = DeepCopy(self.accountSaved.tracked) end
-        if HasValues(self.accountSaved.ui) then self.characterSaved.ui = DeepCopy(self.accountSaved.ui) end
+    -- One-time, per-character migration. Existing characters keep their previous
+    -- account-wide enable state and legacy v0.2.x setup. A genuinely new character
+    -- starts enabled and receives the curated first-use visibility defaults below.
+    local profileWasInitialized = self.characterSaved._profileInitialized == true
+    local legacyProfileSeedAvailable = self.accountSaved._characterProfileMigrationComplete ~= true
+    local seededLegacyProfile = false
+    if not profileWasInitialized then
+        -- Only the first character encountered during a direct upgrade from the old
+        -- account-wide profile model inherits that legacy layout. Once character
+        -- profiles have been established, genuinely new characters use clean
+        -- first-use defaults instead of cloning stale account-wide selections.
+        if legacyProfileSeedAvailable and HasValues(self.accountSaved.tracked) then
+            self.characterSaved.tracked = DeepCopy(self.accountSaved.tracked)
+            seededLegacyProfile = true
+        end
+        if legacyProfileSeedAvailable and HasValues(self.accountSaved.ui) then
+            self.characterSaved.ui = DeepCopy(self.accountSaved.ui)
+            seededLegacyProfile = true
+        end
+        self.characterSaved.enabled = true
         self.characterSaved._profileInitialized = true
+    elseif self.characterSaved.enabled == nil then
+        -- v0.3.07 and earlier stored the master switch account-wide. Preserve the
+        -- established state once for already-initialized character profiles.
+        self.characterSaved.enabled = self.accountSaved.enabled ~= false
     end
+    self.accountSaved._characterProfileMigrationComplete = true
 
     self.characterSaved.tracked = type(self.characterSaved.tracked) == "table" and self.characterSaved.tracked or {}
+    self.characterSaved.visibility = type(self.characterSaved.visibility) == "table" and self.characterSaved.visibility or {}
+    -- Migrate explicit legacy checkbox choices once without altering their behavior:
+    -- ON -> ALWAYS, OFF -> AUTO. Nil/default choices are resolved lazily so newly
+    -- added registry effects inherit the correct default semantics.
+    for key, value in pairs(self.characterSaved.tracked) do
+        if self.characterSaved.visibility[key] == nil then
+            self.characterSaved.visibility[key] = value == true and VISIBILITY_ALWAYS or VISIBILITY_AUTO
+        end
+    end
+    if not profileWasInitialized and not seededLegacyProfile then
+        local firstUseAlways = {
+            MAJOR_BERSERK=true,
+            MAJOR_FORCE=true,
+            MAJOR_SLAYER=true,
+            POWERFUL_ASSAULT=true,
+            OFF_BALANCE=true,
+            ALKOSH_RESISTANCE_REDUCTION=true,
+            ZEN_DAMAGE_TAKEN=true,
+        }
+        for key in pairs(firstUseAlways) do
+            self.characterSaved.visibility[key] = VISIBILITY_ALWAYS
+            self.characterSaved.tracked[key] = true
+        end
+    end
     self.characterSaved.ui = type(self.characterSaved.ui) == "table" and self.characterSaved.ui or {}
     self.characterSaved.ui.buffs = type(self.characterSaved.ui.buffs) == "table" and self.characterSaved.ui.buffs or {}
     self.characterSaved.ui.debuffs = type(self.characterSaved.ui.debuffs) == "table" and self.characterSaved.ui.debuffs or {}
@@ -154,10 +272,11 @@ function BB:Initialize()
     -- Compatibility facade for the existing runtime/settings code. Nested tables
     -- are direct references to their authoritative SavedVariables owners.
     self.saved = {
-        enabled = self.accountSaved.enabled,
+        enabled = self.characterSaved.enabled ~= false,
         uptime = self.accountSaved.uptime,
         advanced = self.accountSaved.advanced,
         tracked = self.characterSaved.tracked,
+        visibility = self.characterSaved.visibility,
         ui = self.characterSaved.ui,
     }
 
@@ -169,8 +288,10 @@ function BB:Initialize()
     self.Registry:Initialize()
     self.Context:Initialize()
     self.Analytics:Initialize()
-    self.UI:Initialize()
+    -- Runtime owns canonical effect and Auto-relevance state. Initialize it before
+    -- the UI, because dashboard construction may query Auto group relevance.
     self.Runtime:Initialize()
+    self.UI:Initialize()
     self.API:Initialize()
     self.Settings:Initialize()
     self:SetEnabled(self.saved.enabled)

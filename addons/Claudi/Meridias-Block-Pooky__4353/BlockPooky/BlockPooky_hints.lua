@@ -74,8 +74,8 @@ end
 
 function BlockPooky.RestoreHintsPosition()
     -- vigorHint
-    left = BlockPooky.config.vigorUI.left
-    top = BlockPooky.config.vigorUI.top
+    local left = BlockPooky.config.vigorUI.left
+    local top = BlockPooky.config.vigorUI.top
     if (left ~= nil and top ~= nil and left > 0 and top > 0) then
         if VigorIndicator:GetAnchor() ~= nil then
             VigorIndicator:ClearAnchors()

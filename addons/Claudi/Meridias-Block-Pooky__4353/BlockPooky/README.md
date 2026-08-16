@@ -197,6 +197,17 @@ This addon is released under standard ESO addon terms. See individual library li
 
 ## Changelog
 
+### Version 2.20 - Code Cleanup & Developer Tooling
+- **ESO Globals validation**: Added developer test scripts (`testing/Run-ESOGlobals.ps1` / `.bat`) that run votan's ESOGlobals syntax & global-leak validator over the addon source (auto-detects the Lua 5.1 compiler); also fixed the validator's compiler-path handling bug
+- **Removed accidental global variables** (namespace leaks) flagged by the validator — no behavior change:
+  - Hints: `left` / `top` in the position restore are now locals
+  - Cooldown bars: `inner` update closure, `OnCooldownAbilityEvent` / `OnCooldownEffectEvent` factory closures, and `beginTime` / `endTime` are now locals
+  - Removed a dead `vigorHint_active` write in the combat handler that could never reach the hints module's own flag
+- **Fixed UTF-8 BOM** in `BlockPooky_hottracker.lua` (harmless to ESO, but breaks external Lua compilers/tools like luac)
+- **Removed `pcall` wrappers**: `InitGroupMessaging` declares the group protocol directly and `UnRegisterThreatAlert` unregisters directly (no silent error swallowing)
+- **Slimmed group message payload**: The LibGroupBroadcast protocol no longer transmits `abilityName` / `sourceName` / `targetName` strings — it now sends only a 1-bit warning type + a 21-bit ability ID (~3 bytes instead of ~198 bytes); receivers derive the ability name from the ID and the source from the sender's unit tag
+- **Hoisted per-event closures**: `OnCombat`, `OnNegateChanged` and `OnThreatAlert` no longer allocate a closure on every event — their lookup helpers are now file-local functions (less GC pressure in combat)
+
 ### Version 2.19 - Active CC Bar CSA Notifications
 - **Center screen alerts when hard CCs land**: You now notice being CC'd even if you miss the bar
   - **Stun** → "STUNNED!", **Fear** → "FEARED!", **Disorient** → "DISORIENTED!" (big CSA text)

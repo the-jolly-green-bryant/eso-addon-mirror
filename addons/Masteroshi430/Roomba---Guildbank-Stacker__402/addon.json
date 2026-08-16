@@ -8,8 +8,8 @@
   "category_id": "20",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:402",
@@ -18,7 +18,7 @@
     "Roomba"
   ],
   "download_url": "https://www.esoui.com/downloads/dl402/",
-  "fingerprint": "1795d9e958467676c38ef4edd7183c6b8147180aded8824a3b138675cb7ec2bd",
+  "fingerprint": "b86e4264d3423322dba68874f5f12b8bdb3b450fa36db359987aa8caf0c9dcdf",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw2880.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw2881.jpg"
@@ -29,11 +29,11 @@
   "source_id": "402",
   "source_url": "https://www.esoui.com/downloads/info402-Roomba-GuildbankStacker.html",
   "stats": {
-    "downloads": 690165,
+    "downloads": 692527,
     "favorites": 470,
-    "monthly_downloads": 5218
+    "monthly_downloads": 7246
   },
   "title": "Roomba - Guildbank Stacker",
-  "updated_at": 1786512830000,
-  "version": "2026.08.12"
+  "updated_at": 1786771336000,
+  "version": "2026.08.15"
 }

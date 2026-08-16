@@ -19,20 +19,47 @@ for ESOUI changes:
                                 v1.2
 -------------------------------------------------------------------------
 
-**1. Single Global Table (Unified Namespace)**
-✅ Correctly implemented.
+**1). Single Global Table (Unified Namespace)**
+*   **Correctly implemented.
 Only one global table is used: `ESOPLUSFREETRIALNOTIFICATION_ESWAGROM`, with a local alias `EPFTN`.
 
-**2. Access Optimization (_G optimization)**
-✅ Using `local EPFTN = ...` is considered very good coding style. It speeds up access to the table at the micro-level by caching the reference in the Lua stack, avoiding repeated lookups in the slow global `_G` table on every function call.
+**2). Access Optimization (_G optimization)**
+*   **Using `local EPFTN = ...` is considered very good coding style. It speeds up access to the table at the micro-level by caching the reference in the Lua stack, avoiding repeated lookups in the slow global `_G` table on every function call.
 
-**3.
-✅   **Integrated Settings Menu:** The external `.xml` settings file has been completely removed. All configuration and records is now handled internally and have all records using the modern LibAddonMenu-2.0 library for a seamless user experience.
+**3).
+*   **Integrated Settings Menu:** The external `.xml` settings file has been completely removed. All configuration and records is now handled internally and have all records using the modern LibAddonMenu-2.0 library for a seamless user experience.
 
-**4. Changed
-✅   **Code Optimization:**
+**4). Changed
+*   **Code Optimization:**
 *   Removed all unused settings and purged approximately mostly lines of obsolete code to significantly reduce code size.
 *   Heavily optimized the remaining codebase; logic is now minimal, clean, and easy to maintain.
 
-**5. Fixed
-✅*   **Scrollable Table UI:** Resolved an issue with the internal data table. A fully functional vertical scrollbar has been implemented, allowing users to navigate through entries smoothly.
+**5). Fixed
+*   **Scrollable Table UI:** Resolved an issue with the internal data table. A fully functional vertical scrollbar has been implemented, allowing users to navigate through entries smoothly.
+
+-------------------------------------------------------------------------
+                                v1.3
+-------------------------------------------------------------------------
+
+**1). History Table Optimization
+*   **What's Changed:
+The logic for displaying records in the history table has been completely overhauled. Previously, each row was a separate UI element with individual formatting, which caused visual bugs and delays when handling large amounts of data.
+
+Fixed text color merging issues.
+Eliminated the one-second delay when opening the addon window.
+Why Did This Happen?
+This is a classic game interface optimization problem:
+
+Memory Optimization: Every color change adds extra load on the CPU and RAM. The engine groups elements with identical styles to reduce the number of objects being rendered.
+Engine Limit (ZO_ScrollList): The ESO API has a limit on the number of unique text formats within a single scrollable list. After a threshold of approximately 128 lines, the engine stops processing individual color tags (|c...) and starts applying the previous group's style to all subsequent entries.
+Default Merging: Since many rows had identical formatting, the UI treated them as a single logical block and applied a unified style from bottom to top.
+The New Solution:
+The history now stores only the last 20 periods of EsoPlus available/unavailable. This provides sufficient information while ensuring the table opens instantly without any lag.
+
+Important Note: The amount of data in the SavedVariables file (even if it contains 2,000–5,000 records) does not affect in-game performance at all. The limitation applies exclusively to the user interface rendering.
+
+**2). Safe Localization Loading
+*   **The language translation system has been improved. English now serves as a "safe" base anchor (main language), after which the user's selected localization is loaded on top. This makes the text initialization process more stable and predictable.
+
+**3). Code Cleanup
+*   **All unused functions and variables have been removed from the main modification file. The codebase is now cleaner, lighter, and easier to maintain.

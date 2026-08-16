@@ -8,6 +8,10 @@
   "category_id": "24",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "LoreLibrary"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4756/",
-  "fingerprint": "02b2a24427524f362e8f622e2fbeb297a21610b5c26719042c6f7580f783ac27",
+  "fingerprint": "f297392853408aad6a054e1008d781df2c683e20619fa85afc58ee862da2126a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16926.png",
     "https://cdn-eso.mmoui.com/preview/pvw16928.png",
@@ -30,11 +34,11 @@
   "source_id": "4756",
   "source_url": "https://www.esoui.com/downloads/info4756-LoreBookLocations3DCompassMapPins.html",
   "stats": {
-    "downloads": 442,
+    "downloads": 561,
     "favorites": 5,
-    "monthly_downloads": 403
+    "monthly_downloads": 556
   },
   "title": "Lore Book Locations (3D, Compass, Map Pins)",
-  "updated_at": 1786510802000,
-  "version": "1.0.21"
+  "updated_at": 1786770001000,
+  "version": "1.0.24"
 }

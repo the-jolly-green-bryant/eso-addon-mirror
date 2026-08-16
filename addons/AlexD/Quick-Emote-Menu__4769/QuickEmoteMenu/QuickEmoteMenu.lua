@@ -1,7 +1,7 @@
 local ADDON_TITLE   = "Quick Emote Menu"
 local ADDON_NAME    = "QuickEmoteMenu"
 local ADDON_AUTHOR  = "@AlexD"
-local ADDON_VERSION = "1.0.0"
+local ADDON_VERSION = "1.1.0"
 local ADDON_WEBSITE = "https://www.esoui.com/downloads/info4769-QuickEmoteMenu.html"
 local SV_VERSION    = 1
 
@@ -22,14 +22,15 @@ local SOUND_CLICK = SOUNDS.DEFAULT_CLICK
 local BTN_LEFT    = MOUSE_BUTTON_INDEX_LEFT
 local BTN_RIGHT   = MOUSE_BUTTON_INDEX_RIGHT
 local CURSOR_TYPE = {
-    DEFAULT = 0,
-    DRAG    = 12
-}
+                        DEFAULT = MOUSE_CURSOR_DEFAULT_CURSOR,
+                        DRAG    = MOUSE_CURSOR_PAN,
+                    }
 
 -- Cached locals
 local CreateControl              = CreateControl
 local CreateControlFromVirtual   = CreateControlFromVirtual
 local CreateTopLevelWindow       = CreateTopLevelWindow
+local IsGameCameraUIModeActive   = IsGameCameraUIModeActive
 local PlaySound                  = PlaySound
 local PlayEmoteByIndex           = PlayEmoteByIndex
 local GetInterfaceColor          = GetInterfaceColor
@@ -117,16 +118,18 @@ ua	Ukrainian
 local STRINGS = {}
 
 local function CacheLocalizedStrings()
-    STRINGS.UNKNOWN_NAME         = GetString(SI_QUICKEMOTEMENU_UNKNOWN_NAME)
-    STRINGS.CATEGORIES           = GetString(SI_QUICKEMOTEMENU_CATEGORIES)
-    STRINGS.FAVORITES            = GetString(SI_QUICKEMOTEMENU_FAVORITES)
-    STRINGS.NO_FAVORITES         = GetString(SI_QUICKEMOTEMENU_NO_FAVORITES)
-    STRINGS.BINDING_TOGGLE       = GetString(SI_QUICKEMOTEMENU_BINDING_TOGGLE)
-    STRINGS.OPTION_HOVER         = GetString(SI_QUICKEMOTEMENU_OPTION_HOVER)
-    STRINGS.OPTION_HOVER_TOOLTIP = GetString(SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP)
-    STRINGS.OPTION_CLOSE         = GetString(SI_QUICKEMOTEMENU_OPTION_CLOSE)
-    STRINGS.OPTION_RESET         = GetString(SI_QUICKEMOTEMENU_OPTION_RESET)
-    STRINGS.OPTION_DESCRIPTION   = GetString(SI_QUICKEMOTEMENU_OPTION_DESCRIPTION)
+    STRINGS.UNKNOWN_NAME           = GetString(SI_QUICKEMOTEMENU_UNKNOWN_NAME)
+    STRINGS.CATEGORIES             = GetString(SI_QUICKEMOTEMENU_CATEGORIES)
+    STRINGS.FAVORITES              = GetString(SI_QUICKEMOTEMENU_FAVORITES)
+    STRINGS.NO_FAVORITES           = GetString(SI_QUICKEMOTEMENU_NO_FAVORITES)
+    STRINGS.BINDING_TOGGLE         = GetString(SI_QUICKEMOTEMENU_BINDING_TOGGLE)
+    STRINGS.OPTION_HOVER           = GetString(SI_QUICKEMOTEMENU_OPTION_HOVER)
+    STRINGS.OPTION_HOVER_TOOLTIP   = GetString(SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP)
+    STRINGS.OPTION_UIMODE          = GetString(SI_QUICKEMOTEMENU_OPTION_UIMODE)
+    STRINGS.OPTION_UIMODE_TOOLTIP  = GetString(SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP)
+    STRINGS.OPTION_CLOSE           = GetString(SI_QUICKEMOTEMENU_OPTION_CLOSE)
+    STRINGS.OPTION_RESET           = GetString(SI_QUICKEMOTEMENU_OPTION_RESET)
+    STRINGS.OPTION_DESCRIPTION     = GetString(SI_QUICKEMOTEMENU_OPTION_DESCRIPTION)
 end
 
 ----------------------------------------------------------------------
@@ -134,11 +137,12 @@ end
 ----------------------------------------------------------------------
 local function InitSettings()
     local defaults = {
-        buttonX               = nil,
-        buttonY               = nil,
-        submenuDelay          = 100,   -- 0 = only on click
-        closeOnPlay           = true,  -- leave UI mode after LMB play
-        favorites             = {},    -- list of emoteId
+        buttonX             = nil,
+        buttonY             = nil,
+        submenuDelay        = 100,   -- 0 = only on click
+        closeOnPlay         = true,  -- leave UI mode after LMB play
+        showOnlyInUIMode    = false, -- only show the main button while the cursor is visible
+        favorites           = {},    -- list of emoteId
     }
 
     local SV = ZO_SavedVars:NewAccountWide(ADDON_NAME .. "_SV", SV_VERSION, "Settings", defaults)
@@ -175,6 +179,17 @@ local function InitSettings()
             getFunc = function() return SV.closeOnPlay end,
             setFunc = function(v) SV.closeOnPlay = v end,
             default = defaults.closeOnPlay,
+        },
+        {
+            type    = "checkbox",
+            name    = STRINGS.OPTION_UIMODE,
+            tooltip = STRINGS.OPTION_UIMODE_TOOLTIP,
+            getFunc = function() return SV.showOnlyInUIMode end,
+            setFunc = function(v)
+                SV.showOnlyInUIMode = v
+                if QEM.UpdateButtonCursorVisibility then QEM.UpdateButtonCursorVisibility() end
+            end,
+            default = defaults.showOnlyInUIMode,
         },
         {
             type    = "button",
@@ -358,7 +373,7 @@ local function CreateUI()
     button:SetHandler("OnMouseUp", function(self, button, upInside)
         if button == BTN_LEFT then
             if upInside then
-                QEM:ToggleMainMenu()
+                QEM:ToggleMainMenu(false)
             end
         elseif button == BTN_RIGHT then
             StopDragging()
@@ -390,6 +405,21 @@ local function CreateUI()
     local buttonFragment = ZO_SimpleSceneFragment:New(tlw)
     SM:GetScene("hud"):AddFragment(buttonFragment)
     SM:GetScene("hudui"):AddFragment(buttonFragment)
+
+    -- Optional: only show the button while the mouse cursor (UI mode) is active,
+    -- i.e. hide it again once back in normal gameplay/interaction mode.
+    -- Uses alpha/mouse-enable instead of SetHidden so it doesn't fight with the
+    -- HUD scene fragment above, which already controls the button's hidden state.
+    local function UpdateButtonCursorVisibility()
+        local showButton = (not QEM.SV.showOnlyInUIMode) or IsGameCameraUIModeActive()
+        tlw:SetAlpha(showButton and 1 or 0)
+        tlw:SetMouseEnabled(showButton)
+        button:SetMouseEnabled(showButton)
+    end
+    QEM.UpdateButtonCursorVisibility = UpdateButtonCursorVisibility
+
+    EM:RegisterForEvent(ADDON_NAME .. "_CursorVisibility", EVENT_GAME_CAMERA_UI_MODE_CHANGED, UpdateButtonCursorVisibility)
+    UpdateButtonCursorVisibility()
 
     -- Main menu -------------------------------------------------------
     local mainMenu = CreatePopup(ADDON_NAME .. "_Main", button)
@@ -1022,7 +1052,7 @@ local function CreateUI()
         end
     end
 
-    function QEM:ToggleMainMenu()
+    function QEM:ToggleMainMenu(leaveUIModeOnClose)
         if mainMenu:IsHidden() then
             self:RefreshMainMenu()
             AnchorMainMenuToButton()
@@ -1031,7 +1061,9 @@ local function CreateUI()
             PlaySound(SOUND_OPEN)
         else
             self:CloseAll()
-            LeaveUIMode()
+            if leaveUIModeOnClose then
+                LeaveUIMode()
+            end
         end
     end
 
@@ -1044,10 +1076,20 @@ local function CreateUI()
         self:RegisterForEvent(EVENT_ACTION_LAYER_POPPED, function()
             if not self:IsHidden() then QEM:CloseAll() end
         end)
+        -- More reliable than EVENT_ACTION_LAYER_POPPED: fires directly off the
+        -- camera's UI-mode/cursor state, so it closes the menu consistently
+        -- whether it was opened by clicking the button or via the keybind.
+        self:RegisterForEvent(EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
+            if not self:IsHidden() and not IsGameCameraUIModeActive() then
+                QEM:CloseAll()
+                LeaveUIMode()
+            end
+        end)
     end)
     mainMenu:SetHandler("OnHide", function(self)
         self:UnregisterForEvent(EVENT_GLOBAL_MOUSE_UP)
         self:UnregisterForEvent(EVENT_ACTION_LAYER_POPPED)
+        self:UnregisterForEvent(EVENT_GAME_CAMERA_UI_MODE_CHANGED)
         HideCatMenu()
         HideFavMenu()
     end)
@@ -1066,7 +1108,7 @@ end
 
 -- Keybind handler (bind in Controls → User Interface)
 function QEM_Toggle()
-    if QEM.ToggleMainMenu then QEM:ToggleMainMenu() end
+    if QEM.ToggleMainMenu then QEM:ToggleMainMenu(true) end
 end
 
 ----------------------------------------------------------------------

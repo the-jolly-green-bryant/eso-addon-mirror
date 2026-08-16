@@ -136,3 +136,23 @@ v0.6.26:
 - ULT-Text aus dem bewegten Ultimate-Element entfernt.
 - Die weiße DETECT BOX über PRESS ist jetzt die einzige Text-/Bildanzeige für 1-5, SWAP und ULT.
 - Skill-Icons selbst bleiben sichtbar.
+
+v0.6.27:
+- DETECT BOX komplett auf native ESO-UI umgestellt.
+- Keine DDS-Dateien / externen Texturen mehr.
+- Weißes CT_BACKDROP, schwarzer ESO-UI-Rahmen und schwarzer nativer CT_LABEL-Text.
+- 1-5, SWAP und ULT werden direkt durch ESO gerendert.
+- Box bleibt 72x42 px groß.
+- Standard weiterhin: 300 ms vor PRESS einblenden, mindestens 350 ms sichtbar.
+- FIXED/ADAPT Geschwindigkeitsumschaltung bleibt erhalten.
+
+v0.6.28:
+- Zahlen 1-5 wieder auf den bewegten Skill-Icons eingeblendet.
+- SWAP-Text wieder auf dem bewegten SWAP-Element eingeblendet.
+- ULT-Text wieder auf dem bewegten Ultimate-Element eingeblendet.
+- Die native ESO-UI DETECT BOX bleibt unverändert vorhanden.
+
+v0.6.29:
+- Die weiße/native DETECT BOX wurde komplett entfernt.
+- Zahlen 1-5, SWAP und ULT bleiben wieder direkt auf den bewegten Elementen sichtbar.
+- FIXED/ADAPT Geschwindigkeitsumschaltung bleibt erhalten.

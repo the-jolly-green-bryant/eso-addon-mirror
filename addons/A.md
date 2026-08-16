@@ -16,7 +16,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AA_Profiler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/spoqster/AA_Profiler__66400ef3-3d78-4737-a158-c48633706a83) | spoqster | Console | — |
 | [Abah's Appraiser - Auto Sell Junk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Abah-s-Appraiser---Auto-Sell-Junk__2d6ff530-edbc-4425-be68-daadbc3c0afa) | xbutch | Console | — |
 | [Ability Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jultzy94/Ability-Frames__1714) | jultzy94 | PC / Mac | 1.1 |
-| [Ability Icons Framework (AIF)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wicked_prophet/Ability-Icons-Framework-AIF__4061) | wicked_prophet | PC / Mac | 1.5.6 |
+| [Ability Icons Framework (AIF)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wicked_prophet/Ability-Icons-Framework-AIF__4061) | wicked_prophet | PC / Mac | 1.6.0 |
 | [ABnC Gold Manager - revisited](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dbojan/ABnC-Gold-Manager---revisited__2890) | dbojan | PC / Mac | 1.3.100009a rv3 |
 | [Above Me Icon Browser](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Above-Me-Icon-Browser__c1746be9-5c6a-4516-aa21-e54bd8e5a25e) | BMGxSancho | Console | — |
 | [Accept or Decline Group Invites](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TwinLamps/Accept-or-Decline-Group-Invites__4371) | TwinLamps | PC / Mac | 1.1 |
@@ -37,6 +37,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Activity Finder Plus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FirewoodDoge/Activity-Finder-Plus__4676) | FirewoodDoge | PC / Mac | 1.0.2 |
 | [Acuity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Acuity__1950) | Wheels | PC / Mac | 2.4 |
 | [Acuity Deadland Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lunafreya/Acuity-Deadland-Fix__3288) | Lunafreya | PC / Mac | 2.4 |
+| [ACUS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/ACUS__35468315-d34f-4779-b62b-ccb35919ce0f) | user562x | Console | — |
 | [AdBlock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/AdBlock__2862) | peniku8 | PC / Mac | 1.3.7 |
 | [AdBlock Plus - Block Chat Advertisements, Spam, & More!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/scorpius2k1/AdBlock-Plus---Block-Chat-Advertisements-Spam-More__3032) | scorpius2k1 | PC / Mac | 1.7 |
 | [Added Info - Friend List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Added-Info---Friend-List__2629) | MrPikPik | PC / Mac | 1.3.1 |
@@ -335,7 +336,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AutoGuildWelcome Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/AutoGuildWelcome-Revised__3995) | CaffeinatedMayhem | PC / Mac | 1.21 |
 | [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Squid.Meat/AutoInteract__ddf1a1e2-b627-4cb5-a40a-a3ece40c609c) | Squid.Meat | Console | — |
 | [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SquidMeat/AutoInteract__4093) | SquidMeat | PC / Mac | 1.8.6 |
-| [AutoInvite - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/amuridee/AutoInvite---Updated__2633) | amuridee | PC / Mac | 2026.08.08 |
+| [AutoInvite - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/amuridee/AutoInvite---Updated__2633) | amuridee | PC / Mac | 2026.08.15 |
 | [AutoInvite RU Patch (for v2.4.1)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/AutoInvite-RU-Patch-for-v2.4.1__1336) | ForgottenLight | PC / Mac | 2.4.1.1 |
 | [AutoInviteWholeWord](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/AutoInviteWholeWord__2251) | Coorbin | PC / Mac | 2.6.5 |
 | [AutoLootKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goemaat/AutoLootKey__1125) | Goemaat | PC / Mac | 0.1 |

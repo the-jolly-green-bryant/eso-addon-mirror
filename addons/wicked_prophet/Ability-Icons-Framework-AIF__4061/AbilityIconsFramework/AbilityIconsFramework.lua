@@ -7,7 +7,7 @@ local AbilityIconsFramework = AbilityIconsFramework
 -- Declarations --
 ------------------
 
-local ADDON_VERSION = "156"
+local ADDON_VERSION = "160"
 
 AbilityIconsFramework.version = ADDON_VERSION
 AbilityIconsFramework.name = "AbilityIconsFramework"
@@ -104,25 +104,26 @@ function AbilityIconsFramework.AddCustomIconPack(PackDirectory, PackIcons)
         packExampleTexture = PackDirectory .. PackIcons[1],
     }
 end
-	-- Auto confirm logic
+
+-- Auto confirm logic
 function AbilityIconsFramework.InitializeAutoConfirm()
     if AbilityIconsFramework._autoConfirmHooked then return end
     AbilityIconsFramework._autoConfirmHooked = true
 	
-	--- Applies or removes the vAS 64x64 dimension constraints to the combat tips icon.
-function AbilityIconsFramework.ApplyFixVas()
-    if AbilityIconsFramework.GetSettings == nil then return end
-    local settings = AbilityIconsFramework:GetSettings()
-    
-    if ZO_ActiveCombatTipsTipIcon then
-        if settings and settings.fixVas then
-            ZO_ActiveCombatTipsTipIcon:SetDimensionConstraints(64, 64, 64, 64)
-        else
-            -- 0 removes the constraint, restoring default UI behavior
-            ZO_ActiveCombatTipsTipIcon:SetDimensionConstraints(0, 0, 0, 0) 
+    --- Applies or removes the vAS 64x64 dimension constraints to the combat tips icon.
+    function AbilityIconsFramework.ApplyFixVas()
+        if AbilityIconsFramework.GetSettings == nil then return end
+        local settings = AbilityIconsFramework:GetSettings()
+        
+        if ZO_ActiveCombatTipsTipIcon then
+            if settings and settings.fixVas then
+                ZO_ActiveCombatTipsTipIcon:SetDimensionConstraints(64, 64, 64, 64)
+            else
+                -- 0 removes the constraint, restoring default UI behavior
+                ZO_ActiveCombatTipsTipIcon:SetDimensionConstraints(0, 0, 0, 0) 
+            end
         end
     end
-end
 
     local function hook(...)
         zo_callLater(function()
@@ -175,20 +176,6 @@ function AbilityIconsFramework.UpdateAllSlots()
         -- Update base game action bars
         AbilityIconsFramework.HandleSlotChanged(slotIndex, activeHotbarCategory)
         AbilityIconsFramework.HandleSlotChanged(slotIndex, inactiveHotbarCategory)
-
-        -- If we got FAB, update FAB back bar slots separately, since those are addon generated duplicates of the base game back bar
-        if FancyActionBar ~= nil then
-            local inactiveAbilityId = GetSlotBoundId(slotIndex, inactiveHotbarCategory)
-            local abilityType = GetSlotType(slotIndex, inactiveHotbarCategory)
-            if abilityType == ACTION_TYPE_CRAFTED_ABILITY then
-                inactiveAbilityId = GetAbilityIdForCraftedAbilityId(inactiveAbilityId)
-            end
-
-            local btnBack = FancyActionBar.GetActionButton(slotIndex + AbilityIconsFramework.SLOT_INDEX_OFFSET)
-            if btnBack ~= nil then
-                btnBack.icon:SetTexture(GetAbilityIcon(inactiveAbilityId))
-            end
-        end
     end
 end
 
@@ -212,13 +199,6 @@ function AbilityIconsFramework.OnAddOnLoaded(eventCode, addOnName)
         end)
     end
 end
-
-----------
--- Main --
-----------
-
-EVENT_MANAGER:RegisterForEvent(AbilityIconsFramework.name, EVENT_ADD_ON_LOADED, AbilityIconsFramework.OnAddOnLoaded)
-
 
 ----------
 -- Main --

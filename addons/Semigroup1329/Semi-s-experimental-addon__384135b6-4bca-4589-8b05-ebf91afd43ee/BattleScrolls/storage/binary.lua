@@ -2293,6 +2293,7 @@ function binaryStorage.decodeEncounterAsync(binaryEncounter, registry)
             sharedData = binaryEncounter.sharedData,
             bossSeqNames = binaryEncounter.bossSeqNames,
             bossTagSeqByUnitId = binaryEncounter.bossTagSeqByUnitId,
+            gameVersion = binaryEncounter.gameVersion,
         }
 
         -- v17+: shared entries are stored binary in _shared; decode them into

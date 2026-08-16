@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/natosz/NW-AimCam---Zoom-action__4772",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "natosz",
+  "canonical_id": "esoui:4772",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4772",
+  "deleted": false,
+  "directories": [
+    "NWAimCam"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4772/",
+  "fingerprint": "66dd71f92d63bdc3ba159b4d38fadf0c55fa83a753b3152c53648c9dbb7a75c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16991.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16992.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4772",
+  "source_url": "https://www.esoui.com/downloads/info4772-NWAimCam-Zoomaction.html",
+  "stats": {
+    "downloads": 3,
+    "favorites": 1,
+    "monthly_downloads": 0
+  },
+  "title": "NW AimCam - Zoom action",
+  "updated_at": 1786842464000,
+  "version": "1.0"
+}

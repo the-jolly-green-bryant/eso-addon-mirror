@@ -87,7 +87,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESOPager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Minceraft/ESOPager__1007) | Minceraft | PC / Mac | 1.0 |
 | [ESOPie - Extensive Quickslots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiveStar/ESOPie---Extensive-Quickslots__3132) | FiveStar | PC / Mac | 0.2.9 |
 | [EsoPL - Spolszczenie](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomkolp/EsoPL---Spolszczenie__10a87c9d-556d-4389-8952-629b42b5a3bc) | tomkolp | Console | — |
-| [EsoPlusFreeTrialNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eswagrom/EsoPlusFreeTrialNotification__4746) | Eswagrom | PC / Mac | 1.2 |
+| [EsoPlusFreeTrialNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eswagrom/EsoPlusFreeTrialNotification__4746) | Eswagrom | PC / Mac | 1.3 |
 | [EsoRP - Communicative roleplay addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Connor/EsoRP---Communicative-roleplay-addon__1957) | Connor | PC / Mac | Alpha 5.2.6 |
 | [EsoSets - Set Search](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dr_Swizz/EsoSets---Set-Search__1999) | Dr_Swizz | PC / Mac | 1.6 |
 | [esoTestAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/esoTestAddon__e60b762b-efc6-4d5b-bfc6-d9b02453c067) | codeWarrior82 | Console | — |

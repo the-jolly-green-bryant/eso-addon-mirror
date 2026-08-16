@@ -1,14 +1,23 @@
 local strings = {
-    SI_QUICKEMOTEMENU_UNKNOWN_NAME         = "?",
-    SI_QUICKEMOTEMENU_CATEGORIES           = "หมวดหมู่",
-    SI_QUICKEMOTEMENU_FAVORITES            = "รายการโปรด",
-    SI_QUICKEMOTEMENU_NO_FAVORITES         = "(ว่าง)",
-    SI_QUICKEMOTEMENU_BINDING_TOGGLE       = "สลับ",
-    SI_QUICKEMOTEMENU_OPTION_HOVER         = "หน่วงเวลาเมนูย่อยเมื่อชี้ (ms)",
-    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP = "0 = เปิดเฉพาะเมื่อคลิก",
-    SI_QUICKEMOTEMENU_OPTION_CLOSE         = "ปิดเมนูหลังเล่นอีโมต (คลิกซ้าย)",
-    SI_QUICKEMOTEMENU_OPTION_RESET         = "รีเซ็ตตำแหน่งปุ่ม",
-    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION   = [[|c3399FFการควบคุม|r
+    SI_QUICKEMOTEMENU_UNKNOWN_NAME          = "?",
+    SI_QUICKEMOTEMENU_CATEGORIES            = "หมวดหมู่",
+    SI_QUICKEMOTEMENU_FAVORITES             = "รายการโปรด",
+    SI_QUICKEMOTEMENU_NO_FAVORITES          = "(ว่าง)",
+    SI_QUICKEMOTEMENU_BINDING_TOGGLE        = "สลับ",
+    SI_QUICKEMOTEMENU_OPTION_HOVER          = "หน่วงเวลาเมนูย่อยเมื่อชี้ (ms)",
+    SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP  = "0 = เปิดเฉพาะเมื่อคลิก",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE         = "แสดงปุ่มเฉพาะในโหมด UI",
+    SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
+    "แสดงปุ่มหลักเฉพาะเมื่อเคอร์เซอร์เมาส์ทำงานอยู่ (โหมด UI) ปุ่มจะถูกซ่อนเมื่อกลับสู่โหมดการเล่น/การโต้ตอบปกติ.",
+    SI_QUICKEMOTEMENU_OPTION_CLOSE          = "ปิดเมนูหลังเล่นอีโมต (คลิกซ้าย)",
+    SI_QUICKEMOTEMENU_OPTION_RESET          = "รีเซ็ตตำแหน่งปุ่ม",
+    SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
+|c3399FFฟีเจอร์|r
+• เข้าถึงอีโมตได้อย่างรวดเร็วด้วยหมวดหมู่และรายการโปรด
+• หมวดหมู่และอีโมตโหลดโดยตรงจากข้อมูลเกม
+• อีโมตใหม่ที่เพิ่มเข้ามาในเกมจะแสดงในรายการโดยอัตโนมัติ
+
+|c3399FFการควบคุม|r
 • คลิกซ้ายที่ปุ่มเพื่อเปิดหรือปิดเมนู
 • คลิกขวาและลากปุ่มเพื่อย้าย
 • คลิกซ้ายที่อีโมตเพื่อเล่น
@@ -23,7 +32,8 @@ local strings = {
 |c3399FFเคล็ดลับ|r
 • ใช้ปุ่มลัดเพื่อสลับเมนู
 • /qempanel เปิดแผงการตั้งค่านี้
-• รายการโปรดบันทึกทั้งบัญชี]],
+• รายการโปรดบันทึกทั้งบัญชี
+]],
 }
 
 for stringId, stringValue in pairs(strings) do

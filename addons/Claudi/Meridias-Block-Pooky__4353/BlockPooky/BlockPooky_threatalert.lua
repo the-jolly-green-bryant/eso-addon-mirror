@@ -8,6 +8,13 @@ local BlockPooky_lastThreatAlert = 0
 
 BlockPooky.THREAT_ABILITY_NAMES = nil
 
+---Checks if an ability ID is one of the configured threat abilities
+---@param id number the ability ID to check
+---@return boolean true if it is a tracked threat ability
+local function BlockPooky_IsThreatAbility(id)
+    return BlockPooky.THREAT_ABILITY_NAMES[BlockPooky.CleanAbilityName(id)] ~= nil
+end
+
 
 --[[ Threat Alert implementation --------------------------------------------------------------------------------------]]
 
@@ -17,12 +24,12 @@ function BlockPooky.SetThreatAlertTexture()
         local screenWidth, screenHeight = GuiRoot:GetDimensions()
         BlockPookyThreatAlert:SetDimensions(screenWidth, screenHeight)
         BlockPookyThreatAlertTexture:SetDimensions(screenWidth, screenHeight)
-        
+
         -- Set texture from config
         local textureFile = BlockPooky.config.threatalert.texture or "red.dds"
         local texturePath = "BlockPooky/textures/" .. textureFile
         BlockPookyThreatAlertTexture:SetTexture(texturePath)
-        
+
         -- Ensure overlay starts hidden
         BlockPookyThreatAlert:SetAlpha(0.0)
         BlockPookyThreatAlertTexture:SetAlpha(0.0)
@@ -37,12 +44,12 @@ function BlockPooky.ShowThreatAlert(duration)
         BlockPookyThreatAlert:SetAlpha(alpha)
         BlockPookyThreatAlertTexture:SetAlpha(alpha)
         BlockPooky_threatAlertActive = true
-        
+
         -- Clear any existing timer
         if BlockPooky_threatAlertTimer then
             zo_removeCallLater(BlockPooky_threatAlertTimer)
         end
-        
+
         -- Use actual effect duration (in milliseconds from event) or default to 8 seconds
         local hideDuration = duration or 8000
         BlockPooky_threatAlertTimer = zo_callLater(function() BlockPooky.HideThreatAlert() end, hideDuration)
@@ -54,7 +61,7 @@ function BlockPooky.HideThreatAlert()
         BlockPookyThreatAlert:SetAlpha(0.0)
         BlockPookyThreatAlertTexture:SetAlpha(0.0)
         BlockPooky_threatAlertActive = false
-        
+
         -- Clear timer if active
         if BlockPooky_threatAlertTimer then
             zo_removeCallLater(BlockPooky_threatAlertTimer)
@@ -90,7 +97,7 @@ function BlockPooky.RebuildThreatAbilityList()
     if not BlockPooky.config.threatalert.abilities or #BlockPooky.config.threatalert.abilities == 0 then
         BlockPooky.config.threatalert.abilities = {}
     end
-    
+
     -- Rebuild the name map
     BlockPooky.THREAT_ABILITY_NAMES = {}
     for _, id in ipairs(BlockPooky.config.threatalert.abilities) do
@@ -115,9 +122,11 @@ end
 function BlockPooky.RegisterThreatAlert()
     if LibCombat then
         -- Register for DAMAGE_IN events (incoming damage from enemies)
-        BlockPooky.threatAlertCallback = function(eventType, timems, result, sourceUnitId, targetUnitId, abilityId, hitValue, damageType, overflow) 
+        BlockPooky.threatAlertCallback = function(eventType, timems, result, sourceUnitId, targetUnitId, abilityId,
+                                                  hitValue, damageType, overflow)
             -- d("BlockPooky: DAMAGE_IN fired! sourceId=" .. tostring(sourceUnitId) .. " abilityId=" .. tostring(abilityId) .. " hitValue=" .. tostring(hitValue))
-            BlockPooky.OnThreatAlert(timems, result, sourceUnitId, targetUnitId, abilityId, hitValue, damageType, overflow)
+            BlockPooky.OnThreatAlert(timems, result, sourceUnitId, targetUnitId, abilityId, hitValue, damageType,
+                overflow)
         end
         LibCombat:RegisterCallbackType(LIBCOMBAT_EVENT_DAMAGE_IN, BlockPooky.threatAlertCallback, "BlockPooky")
         BlockPooky.threatAlertRegistered = true
@@ -130,7 +139,7 @@ end
 
 function BlockPooky.UnRegisterThreatAlert()
     if LibCombat and BlockPooky.threatAlertRegistered and BlockPooky.threatAlertCallback then
-        pcall(function() LibCombat:UnregisterCallbackType(LIBCOMBAT_EVENT_DAMAGE_IN, BlockPooky.threatAlertCallback, "BlockPooky") end)
+        LibCombat:UnregisterCallbackType(LIBCOMBAT_EVENT_DAMAGE_IN, BlockPooky.threatAlertCallback, "BlockPooky")
         BlockPooky.threatAlertCallback = nil
         BlockPooky.threatAlertRegistered = false
         d("BlockPooky: Threat alert unregistered")
@@ -145,7 +154,6 @@ function BlockPooky.InitThreatAlert()
     end
 end
 
-
 --[[ event handling -------------------------------------------------------------------------------------------------]]
 
 function BlockPooky.OnThreatAlert(timems, result, sourceUnitId, targetUnitId, abilityId, hitValue, damageType, overflow)
@@ -153,22 +161,17 @@ function BlockPooky.OnThreatAlert(timems, result, sourceUnitId, targetUnitId, ab
     if BlockPooky.config.threatalert.pvpOnly and not BlockPooky.IsInCyro() then
         return
     end
-    
-    local function isThreatAbility(id)
-        return BlockPooky.THREAT_ABILITY_NAMES[BlockPooky.CleanAbilityName(id)] ~= nil
-    end
-    
-    if isThreatAbility(abilityId) and not BlockPooky_threatAlertActive then
+
+    if BlockPooky_IsThreatAbility(abilityId) and not BlockPooky_threatAlertActive then
         -- Apply cooldown to prevent spam
         local now = GetGameTimeMilliseconds()
         if (now - BlockPooky_lastThreatAlert) < (BlockPooky.config.threatalert.cooldown or 5000) then
             return
         end
         BlockPooky_lastThreatAlert = now
-        
+
         -- Get duration from config or use default
         local duration = BlockPooky.config.threatalert.duration or 8000 -- 8 seconds default
         BlockPooky.ShowThreatAlert(duration)
     end
 end
-

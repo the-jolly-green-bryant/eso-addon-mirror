@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.6"
+R.version     = "3.17.10"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -77,7 +77,7 @@ R.defaults = {
     resultsPopupDelaySecs = 2, -- delay stats popup after fight ends (0-5)
     autoCloseSecs = 0,    -- 0 = never (menu uses O/back; legacy overlay optional timer)
 
-    historyMax = 12,        -- PS5 SV memory: full sessions are heavy; 12 is enough for A/B
+    historyMax = 20,        -- ring buffer 1..20; newest is always #1, oldest rolls off
     bucketMs = 2000,
 
     -- Heuristics
@@ -394,8 +394,24 @@ R._announcements = {
     title = "Parse QA: fingerprint, DoT uptime, rotation",
     body = "Testing fixes:\n\n• Build ID more stable (merge bar slots on swap; CP union start+end)\n• Experiment X: if fingerprint drifts but bars/sets/Mundus match, still count (no more stuck 2/3)\n• DoT uptime: running activeMs — Stampede/LL/Hurricane no longer undercount after tick caps\n• Rotation: S/U under timeline on dummy only; drop duplicate header strip + L marker\n• Late weave window slightly wider (1.2–2.2s); skill→skill still Missed\n• Insights CP list: 8 rows + fight-time champion snapshot for A/B impact lines\n\nNew dummy parses recommended for uptime + experiment counter.",
   },
+  ["3.17.7"] = {
+    title = "Critical: fight history save fix",
+    body = "New dummy parses were not writing into History.\n\n• Combat-end finalize is now fully error-hardened (a single Lua error can no longer drop the parse)\n• History ring write still happens even if compact fails\n• Console-safe wall clock for fight timestamps\n• Rotation: S (swap) / U (ult) markers sit under the skill icon where they occurred\n\nReload, then complete one dummy — it should appear as #1 in History. Chat will show an error line only if something still fails.",
+  },
+  ["3.17.8"] = {
+    title = "History still stuck — combat capture fix",
+    body = "• Combat enter no longer wipes an in-progress parse (mid-dummy combat re-fire bug)\n• Combat flag accepts 1/0 (console), not only true/false\n• Watchdog polls IsUnitInCombat as backup when combat-state event is missed\n• Chat confirms every save: target · DPS · history N/max\n• Or explains why a fight was skipped (too short / no damage)\n• R2 on #1 no longer spams \"already on latest fight\"\n\nAfter reload: kill one dummy and look for green \"DM2 Parse: saved …\" in chat.",
+  },
+  ["3.17.9"] = {
+    title = "History: 20-fight ring (newest = #1)",
+    body = "• History holds up to 20 fights (settings slider 5–20, default 20)\n• Newest parse is always #1; at the limit the oldest rolls off\n• Same combat-save + chat confirmation as 3.17.8\n\nReload, parse one dummy — chat should say saved … history N/20.",
+  },
+  ["3.17.10"] = {
+    title = "Dummy capture with open-world OFF",
+    body = "Fixed: with Track open-world OFF, the first combat event with an empty/non-dummy name permanently blocked the whole pull (\"no parse was captured\").\n\n• No more sticky skip — dummy name or housing can start on a later hit\n• Stronger dummy name list (Iron Atronach / Trial / dummy / atronach)\n• You can turn Track open-world OFF again for dummy-only parses\n\nReload + one dummy. Expect green saved … in chat.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.6"
+R._latestAnnouncementVersion = "3.17.10"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -802,16 +818,24 @@ local DUMMY_KEYWORDS = {
   "trial dummy",
   "iron atronach",
   "training dummy",
-  "target",
+  "practice dummy",
+  "target dummy",
+  "atronach",
+  "dummy",
   "serpent",
+  "ra'ka",
+  "raka",
 }
 
 local function isDummyName(targetName)
   local n = safeLower(zo_strformat("<<1>>", targetName or ""))
   if n == "" then return false end
 
-  -- extra heuristic: many trial dummies include both "target" and "trial"
+  -- Trial dummy naming: "Target Iron Atronach, Trial" etc.
   if string.find(n, "target", 1, true) and string.find(n, "trial", 1, true) then
+    return true
+  end
+  if string.find(n, "target", 1, true) and string.find(n, "dummy", 1, true) then
     return true
   end
   for _, kw in ipairs(DUMMY_KEYWORDS) do
@@ -820,14 +844,24 @@ local function isDummyName(targetName)
   return false
 end
 
+-- Labeling for history badges / auto-popup (strict = name AND housing when enabled)
 local function isDummyParseConfidence(targetName)
   local nameHit = isDummyName(targetName)
   local inHouse = isInHousingHeuristic()
-
-  if SV.settings.dummyStrict then
+  local strict = SV and SV.settings and SV.settings.dummyStrict
+  if strict then
     return nameHit and inHouse
   end
   return nameHit or inHouse
+end
+
+-- Whether to START capturing this pull when "Track open-world" is OFF.
+-- IMPORTANT: do not use sticky skip — first event often has empty/wrong name.
+-- Name match alone is enough (even if housing API is flaky on console).
+local function shouldStartDummyOnlyCapture(targetName)
+  if isDummyName(targetName) then return true end
+  if isInHousingHeuristic() then return true end
+  return false
 end
 
 -- ----------------------------
@@ -1869,10 +1903,13 @@ local function pushTimelineToken(session, label, symbol, result, meta)
     label = label or "?",
     symbol = symbol or "",
     result = result or "Info",
+    tMs = NowMs(), -- for S/U marker alignment under skill icons
   }
   if meta then
     for k,v in pairs(meta) do item[k] = v end
   end
+  -- meta.tMs wins if caller passed an explicit stamp
+  if not item.tMs then item.tMs = NowMs() end
   tl[#tl + 1] = item
 end
 
@@ -2755,6 +2792,26 @@ local function prepareSessionForHistory(session)
   return session
 end
 
+-- History capacity: hard ceiling 20. Newest is always fight #1 (offset 0).
+-- Ring buffer: when full, the next save overwrites the oldest slot.
+local HISTORY_HARD_MAX = 20
+local HISTORY_HARD_MIN = 5
+
+local function clampHistoryMax(v)
+  v = tonumber(v) or HISTORY_HARD_MAX
+  if v < HISTORY_HARD_MIN then v = HISTORY_HARD_MIN end
+  if v > HISTORY_HARD_MAX then v = HISTORY_HARD_MAX end
+  return v
+end
+
+local function historyMaxSetting()
+  if not SV then return HISTORY_HARD_MAX end
+  SV.settings = SV.settings or {}
+  local max = clampHistoryMax(SV.settings.historyMax)
+  SV.settings.historyMax = max
+  return max
+end
+
 -- Re-compact every history slot (call on load — fixes already-bloated SVs).
 -- Preserves fights: only strips bulk fields; does not wipe history.
 local function sanitizeHistoryInPlace()
@@ -2766,50 +2823,79 @@ local function sanitizeHistoryInPlace()
       n = n + 1
     end
   end
-  -- Hard ceiling only: never force-down a user's 12–20 preference to 12
-  local max = tonumber(SV.settings and SV.settings.historyMax) or 12
-  if max < 1 then max = 12 end
-  if max > 20 then
-    max = 20
-    if SV.settings then SV.settings.historyMax = 20 end
-  end
-  -- Trim slots above current max (and hard ceiling 20). Stale slots from a
-  -- former higher historyMax must not live forever as invisible SV bulk.
-  local trimMax = max
-  if trimMax < 1 then trimMax = 12 end
-  if trimMax > 20 then trimMax = 20 end
+  local max = historyMaxSetting()
+  -- Drop slots above current max (stale from a former higher historyMax)
   for slot, _ in pairs(SV.history) do
     local i = tonumber(slot)
-    if i and i > trimMax then SV.history[slot] = nil end
+    if i and i > max then
+      SV.history[slot] = nil
+      SV.history[tostring(slot)] = nil
+    end
   end
   return n
 end
 
+-- Push newest fight into ring. Slot math:
+--   lastIndex++ ; slot = ((lastIndex-1) % max) + 1
+-- Read path maps offset 0 → that slot, so #1 is always newest.
+-- When lastIndex exceeds max, the write overwrites the oldest slot (roll-off).
 local function pushHistory(session)
-  if not SV then return end
-  local max = tonumber(SV.settings.historyMax) or 12
-  if max < 1 then max = 12 end
-  if max > 20 then max = 20 end
+  if not SV then return false end
+  if type(session) ~= "table" then return false end
+  local max = historyMaxSetting()
 
-  prepareSessionForHistory(session)
+  -- Compact may fail on odd tables; never skip the ring write.
+  local okPrep, prepErr = pcall(prepareSessionForHistory, session)
+  if not okPrep then
+    d("|cFF6666DM2 Parse|r: history compact error: " .. tostring(prepErr))
+    session.coach = nil
+    session._coachTok = nil
+  end
 
-  -- ring buffer at 1..max
-  SV.lastIndex = (SV.lastIndex or 0) + 1
+  SV.history = SV.history or {}
+  SV.lastIndex = (tonumber(SV.lastIndex) or 0) + 1
   local slot = ((SV.lastIndex - 1) % max) + 1
   SV.history[slot] = session
+  -- Avoid string-key twins after SV reload
+  SV.history[tostring(slot)] = nil
+  if R then R.SV = SV end
+  return true, slot, tonumber(SV.lastIndex) or 0, max
+end
+
+local function historySlotGet(history, slot)
+  if type(history) ~= "table" then return nil end
+  local s = history[slot]
+  if type(s) == "table" then return s end
+  s = history[tostring(slot)]
+  if type(s) == "table" then return s end
+  return nil
 end
 
 local function getHistoryCount()
-  local max = tonumber(SV.settings.historyMax) or 12
-  if max > 20 then max = 20 end
+  if not SV then return 0 end
+  local max = historyMaxSetting()
   local idx = tonumber(SV.lastIndex) or 0
+  if idx <= 0 then
+    -- Repair: recount filled slots if lastIndex was lost on SV load
+    local n = 0
+    if type(SV.history) == "table" then
+      for k, v in pairs(SV.history) do
+        if type(v) == "table" and (tonumber(k) or 0) > 0 then n = n + 1 end
+      end
+    end
+    if n > 0 then
+      SV.lastIndex = n
+      idx = n
+    end
+  end
   return math.min(idx, max)
 end
 
+-- offset 0 = newest (#1), offset 1 = one older (#2), …
 local function getHistoryAt(offsetFromLatest)
   offsetFromLatest = tonumber(offsetFromLatest) or 0
-  local max = tonumber(SV.settings.historyMax) or 12
-  if max > 20 then max = 20 end
+  if not SV or type(SV.history) ~= "table" then return nil end
+  local max = historyMaxSetting()
   local idx = tonumber(SV.lastIndex) or 0
   if idx <= 0 then return nil end
 
@@ -2817,7 +2903,7 @@ local function getHistoryAt(offsetFromLatest)
   local slot = latestSlot - offsetFromLatest
   while slot < 1 do slot = slot + max end
   while slot > max do slot = slot - max end
-  return SV.history[slot]
+  return historySlotGet(SV.history, slot)
 end
 
 -- Public history API for experimental gamepad menu shell (MenuShell.lua).
@@ -5692,15 +5778,14 @@ end
 
 local function startIfNeeded(session, tMs, targetName)
   if session.started then return end
-  -- Optional: skip open-world skirmishes (trial/dummy still captured when trackOpenWorld true)
+  -- When open-world tracking is OFF: only start on dummy name or housing.
+  -- Never sticky-skip the session — first hits often have empty target names;
+  -- a later "Target Iron Atronach, Trial" event must still be allowed to start.
   if SV and SV.settings and SV.settings.trackOpenWorld == false then
-    local name = targetName or ""
-    if not isDummyParseConfidence(name) then
-      session._skipCapture = true
+    if not shouldStartDummyOnlyCapture(targetName) then
       return
     end
   end
-  if session._skipCapture then return end
   session.started = true
   session.startMs = tMs
   session.lastTargetName = targetName
@@ -5742,27 +5827,46 @@ local function startIfNeeded(session, tMs, targetName)
 end
 
 local function closeActiveBuffs(session)
+  if type(session) ~= "table" then return end
   -- close any active buff windows at endMs
-  for _,b in pairs(session.buffs) do
-    if b.activeStartMs then
-      b.activeMs = (b.activeMs or 0) + math.max(0, session.endMs - b.activeStartMs)
-      b.activeStartMs = nil
+  if type(session.buffs) == "table" then
+    for _, b in pairs(session.buffs) do
+      if type(b) == "table" and b.activeStartMs then
+        b.activeMs = (b.activeMs or 0) + math.max(0, (session.endMs or 0) - b.activeStartMs)
+        b.activeStartMs = nil
+      end
     end
   end
   -- close open enemy debuff windows
   if type(session.targetDebuffs) == "table" then
     for _, d in pairs(session.targetDebuffs) do
       if type(d) == "table" and d.activeStartMs then
-        d.activeMs = (d.activeMs or 0) + math.max(0, session.endMs - d.activeStartMs)
+        d.activeMs = (d.activeMs or 0) + math.max(0, (session.endMs or 0) - d.activeStartMs)
         d.activeStartMs = nil
       end
     end
   end
 end
 
+-- Wall-clock for history stamps (console-safe; os may be restricted)
+local function safeWallClock()
+  if type(GetTimeStamp) == "function" then
+    local ok, ts = pcall(GetTimeStamp)
+    if ok and tonumber(ts) and tonumber(ts) > 0 then return tonumber(ts) end
+  end
+  if type(os) == "table" and type(os.time) == "function" then
+    local ok, ts = pcall(os.time)
+    if ok and tonumber(ts) and tonumber(ts) > 0 then return tonumber(ts) end
+  end
+  return 0
+end
+
+-- Core finalize must never throw — enrichment is all pcall'd. A single Lua error
+-- on combat-end previously dropped the entire parse from history.
 local function finalizeSession(session)
+  if type(session) ~= "table" then return nil end
   session.endMs = NowMs()
-  session.durationMs = math.max(0, session.endMs - session.startMs)
+  session.durationMs = math.max(0, session.endMs - (tonumber(session.startMs) or session.endMs))
   -- Cheap reject before gear/build/Phase-3 snapshots (open-world trash fights)
   do
     local minMs = tonumber(SV and SV.settings and SV.settings.minFightMs) or 0
@@ -5771,21 +5875,24 @@ local function finalizeSession(session)
       return nil
     end
   end
-  closeActiveBuffs(session)
-  finalizePendingWeave(session, true)
+
+  pcall(closeActiveBuffs, session)
+  pcall(finalizePendingWeave, session, true)
   if session.weave and session.weave.pendingPostChannel then
-    pushTimelineToken(session, session.weave.pendingPostChannel, SYM_POST_MISS, "Missed", { kind = "postchannel", skillName = session.weave.pendingPostChannel, missed = true })
+    pcall(pushTimelineToken, session, session.weave.pendingPostChannel, SYM_POST_MISS, "Missed",
+      { kind = "postchannel", skillName = session.weave.pendingPostChannel, missed = true })
     session.weave.pendingPostChannel = nil
   end
-  retryAbilityNames(session)
-  reconcileWeaveTimelineNames(session)
-  reconcileSetContributions(session)
+  pcall(retryAbilityNames, session)
+  pcall(reconcileWeaveTimelineNames, session)
+  pcall(reconcileSetContributions, session)
   if session.weave then
-    session.weave.skillBarByName = buildWeaveSkillBarMap(session)
+    local okMap, map = pcall(buildWeaveSkillBarMap, session)
+    if okMap and type(map) == "table" then session.weave.skillBarByName = map end
   end
 
   session.isDummy = isDummyParseConfidence(session.lastTargetName)
-  session.completedAt = os.time()
+  session.completedAt = safeWallClock()
 
   -- Snapshot character stats (Sheet vs Temp) at fight end for Dashboard / Build
   if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
@@ -5815,7 +5922,7 @@ local function finalizeSession(session)
     end
   end
   -- Phase 2.5.1: if mid-fight sheet samples were empty, try end-of-fight sheet once
-  do
+  pcall(function()
     local cds = session.critDmgStats
     if type(cds) == "table" and (tonumber(cds.samples) or 0) <= 0 then
       local sheetPct = 0
@@ -5843,7 +5950,7 @@ local function finalizeSession(session)
         end
       end
     end
-  end
+  end)
   -- Finalize exposure onto session (coach re-runs too; this persists for history)
   if DM2StatsMenuShell and type(DM2StatsMenuShell.FinalizeCritDmgExposure) == "function" then
     local okE, exp = pcall(DM2StatsMenuShell.FinalizeCritDmgExposure, session)
@@ -5853,7 +5960,7 @@ local function finalizeSession(session)
   end
 
   -- Phase 3 P0: close bar dwell + finalize windows / gaps / exec summary
-  p3AccrueBarDwell(session, session.endMs or NowMs())
+  pcall(p3AccrueBarDwell, session, session.endMs or NowMs())
   if DM2StatsMenuShell and type(DM2StatsMenuShell.FinalizePhase3Execution) == "function" then
     pcall(DM2StatsMenuShell.FinalizePhase3Execution, session)
   end
@@ -5865,41 +5972,158 @@ local function finalizeSession(session)
 
   -- Never leave coach/analysis caches on the session (SV write-back hazard)
   session.coach = nil
+  session._coachTok = nil
 
   return session
 end
 
-function R:OnCombatState(_, inCombat)
-  self.inCombat = (inCombat == true)
+-- Normalize combat flag (console may pass 1/0 instead of boolean)
+local function combatFlagIsIn(inCombat)
+  if inCombat == true or inCombat == 1 then return true end
+  if inCombat == false or inCombat == 0 or inCombat == nil then return false end
+  return not not inCombat
+end
 
-  if inCombat then
+local function notifyHistorySaved(session, pathNote)
+  if type(session) ~= "table" then return end
+  local dps = 0
+  local dur = tonumber(session.durationMs) or 0
+  local dmg = tonumber(session.totalDamage) or 0
+  if dur > 0 then dps = dmg / (dur / 1000) end
+  local n = getHistoryCount()
+  local tgt = tostring(session.lastTargetName or "fight")
+  if #tgt > 40 then tgt = string.sub(tgt, 1, 37) .. "..." end
+  local max = historyMaxSetting()
+  d(string.format(
+    "|c88ff88DM2 Parse|r: saved %s · %.0fk DPS · %0.0fs · history %d/%d (#1=newest)%s",
+    tgt,
+    dps / 1000,
+    dur / 1000,
+    n,
+    max,
+    pathNote and (" · " .. pathNote) or ""
+  ))
+  -- Menu open: jump to newest fight so History isn't stuck on stale view
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.OnFightSaved) == "function" then
+    pcall(DM2StatsMenuShell.OnFightSaved)
+  end
+end
+
+function R:OnCombatState(_, inCombat)
+  local nowIn = combatFlagIsIn(inCombat)
+  local wasIn = self.inCombat == true
+  self.inCombat = nowIn
+
+  if nowIn then
     cancelQueuedResultsPopup()
-    -- reset runtime capture (lightweight until first qualifying hit)
-    self.session = newSession()
+    -- Do NOT wipe a capture already in progress (combat-state can re-fire mid-dummy).
+    if not (self.session and self.session.started) then
+      self.session = newSession()
+    end
     return
   end
 
   -- combat ended — hide any active weave flash
   hideWeaveFlash()
-  if not self.session or not self.session.started then
+
+  -- Guard against double end (event + watchdog)
+  if self._finalizingCombat then return end
+  local live = self.session
+  if not live or not live.started then
     self.session = nil
+    -- Helpful when capture never started (filters / enable / open-world skip)
+    if wasIn and SV and SV.settings and SV.settings.enable then
+      local t = GetFrameTimeSeconds and GetFrameTimeSeconds() or 0
+      if (t - (self._lastNoStartWarn or 0)) > 8 then
+        self._lastNoStartWarn = t
+        d("|cFFAA00DM2 Parse|r: combat ended but no parse started (open-world OFF and target not seen as dummy/housing — or no damage events).")
+      end
+    end
     return
   end
 
-  local s = finalizeSession(self.session)
+  self._finalizingCombat = true
+
+  -- Never let a finalize error eat the parse
+  local okFin, sOrErr = pcall(finalizeSession, live)
+  local s = nil
+  if okFin then
+    s = sOrErr
+  else
+    -- Salvage: stamp duration and force-save raw session
+    d("|cFF6666DM2 Parse|r: finalize error (saving raw parse): " .. tostring(sOrErr))
+    live.endMs = live.endMs or NowMs()
+    live.durationMs = math.max(0, (live.endMs or 0) - (tonumber(live.startMs) or 0))
+    live.completedAt = live.completedAt or safeWallClock()
+    live.isDummy = isDummyParseConfidence(live.lastTargetName)
+    live.coach = nil
+    live._coachTok = nil
+    local minMs = tonumber(SV and SV.settings and SV.settings.minFightMs) or 0
+    local minDmg = tonumber(SV and SV.settings and SV.settings.minDamage) or 0
+    if live.durationMs >= minMs and (tonumber(live.totalDamage) or 0) >= minDmg then
+      s = live
+    end
+  end
+
   if not s then
+    local minMs = tonumber(SV and SV.settings and SV.settings.minFightMs) or 0
+    local minDmg = tonumber(SV and SV.settings and SV.settings.minDamage) or 0
+    local dur = tonumber(live.durationMs) or 0
+    local dmg = tonumber(live.totalDamage) or 0
+    d(string.format(
+      "|cFFAA00DM2 Parse|r: fight not saved (duration %0.1fs / dmg %s — need ≥%0.0fs and ≥%s dmg).",
+      dur / 1000,
+      tostring(math.floor(dmg)),
+      minMs / 1000,
+      tostring(minDmg)
+    ))
     self.session = nil
+    self._finalizingCombat = false
     return
   end
 
-  pushHistory(s)
+  local okPush, retOrErr = pcall(pushHistory, s)
+  if okPush and retOrErr then
+    notifyHistorySaved(s, nil)
+  else
+    if not okPush then
+      d("|cFF6666DM2 Parse|r: history save error: " .. tostring(retOrErr))
+    else
+      d("|cFF6666DM2 Parse|r: history save returned false (SV missing?).")
+    end
+    -- Last-ditch: assign into ring without compact
+    if SV and type(SV.history) == "table" then
+      local max = historyMaxSetting()
+      SV.lastIndex = (tonumber(SV.lastIndex) or 0) + 1
+      local slot = ((SV.lastIndex - 1) % max) + 1
+      s.coach = nil
+      s._coachTok = nil
+      SV.history[slot] = s
+      SV.history[tostring(slot)] = nil
+      if R then R.SV = SV end
+      notifyHistorySaved(s, "emergency")
+    end
+  end
 
   -- auto-popup only for dummy parses
-  if SV.settings.enable and SV.settings.autoPopupAfterParse and s.isDummy then
-    queueResultsPopup()
+  if SV and SV.settings and SV.settings.enable and SV.settings.autoPopupAfterParse and s.isDummy then
+    pcall(queueResultsPopup)
   end
 
   self.session = nil
+  self._finalizingCombat = false
+end
+
+-- Backup: some housing/dummy setups flicker or miss EVENT_PLAYER_COMBAT_STATE.
+-- Poll IsUnitInCombat and drive the same enter/leave path.
+function R:CombatWatchTick()
+  if not SV or not SV.settings or not SV.settings.enable then return end
+  if type(IsUnitInCombat) ~= "function" then return end
+  local ok, inCombat = pcall(IsUnitInCombat, "player")
+  if not ok then return end
+  local nowIn = combatFlagIsIn(inCombat)
+  if nowIn == (self.inCombat == true) then return end
+  self:OnCombatState(nil, nowIn)
 end
 
 -- ----------------------------
@@ -6249,6 +6473,7 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
         }
       end
       local e = dt[abilityId]
+      if type(e.ticks) ~= "table" then e.ticks = {} end
       e.tickCount = (tonumber(e.tickCount) or 0) + 1
       local last = tonumber(e.lastTickMs)
       if last and tMs > last then
@@ -6680,11 +6905,11 @@ local function initLAM()
     },
     {
       type = "slider",
-      name = "History size (console: keep low)",
-      tooltip = "Fights stored in SavedVariables. High values + full captures can crash PS5 (shared addon memory). Max 20.",
+      name = "History size (max 20)",
+      tooltip = "How many fights to keep (5–20). Newest is always #1. When full, the oldest fight rolls off. Compact sessions keep console memory safe at 20.",
       min = 5, max = 20, step = 1,
-      getFunc = function() return math.min(20, tonumber(SV.settings.historyMax) or 12) end,
-      setFunc = function(v) SV.settings.historyMax = math.min(20, math.max(5, tonumber(v) or 12)) end,
+      getFunc = function() return clampHistoryMax(SV.settings.historyMax) end,
+      setFunc = function(v) SV.settings.historyMax = clampHistoryMax(v) end,
       default = R.defaults.settings.historyMax,
     },
     {
@@ -6707,14 +6932,15 @@ local function initLAM()
     {
       type = "checkbox",
       name = "Track open-world fights",
-      tooltip = "When OFF, only dummy/housing-style parses start a capture (less open-world overhead). Trials still need this ON.",
+      tooltip = "When OFF, capture starts only on dummy names (e.g. Target Iron Atronach, Trial) or while in housing. First empty-name hits no longer block the pull. Turn ON for trials/dungeons/open world.",
       getFunc = function() return SV.settings.trackOpenWorld ~= false end,
       setFunc = function(v) SV.settings.trackOpenWorld = v and true or false end,
       default = R.defaults.settings.trackOpenWorld,
     },
     {
       type = "checkbox",
-      name = "Dummy detection strict (name AND housing)",
+      name = "Dummy badge strict (name AND housing)",
+      tooltip = "Only affects the Dummy badge / auto-popup labeling after the fight. Capture start uses name OR housing when open-world is OFF (not this strict gate).",
       getFunc = function() return SV.settings.dummyStrict end,
       setFunc = function(v) SV.settings.dummyStrict = v end,
       default = R.defaults.settings.dummyStrict,
@@ -6850,8 +7076,15 @@ function R:Initialize()
   -- Auto-compact every load: preserve fights, drop bulk tables that bloat SV / console memory.
   -- Do NOT wipe history. Cap size only at hard ceiling (20); default soft target 12 for new installs.
   do
-    local max = tonumber(SV.settings.historyMax) or 12
-    if max > 20 then SV.settings.historyMax = 20 end -- never allow 50-slot bloat again
+    -- 3.17.9: raise old default 12 → 20 once (still hard-capped at 20)
+    if not SV._historyMax20_3179 then
+      SV._historyMax20_3179 = true
+      local cur = tonumber(SV.settings.historyMax)
+      if cur == nil or cur == 12 then
+        SV.settings.historyMax = HISTORY_HARD_MAX
+      end
+    end
+    SV.settings.historyMax = clampHistoryMax(SV.settings.historyMax)
     local compactN = 0
     pcall(function() compactN = sanitizeHistoryInPlace() or 0 end)
     if not SV._historyCompact_3174 then
@@ -6878,6 +7111,14 @@ function R:Initialize()
   end, 1500)
 
   EM:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, function(...) self:OnCombatState(...) end)
+
+  -- Backup combat edge detection (housing dummy / missed combat-state events)
+  if type(EM.RegisterForUpdate) == "function" then
+    EM:UnregisterForUpdate(self.name .. "_CombatWatch")
+    EM:RegisterForUpdate(self.name .. "_CombatWatch", 400, function()
+      self:CombatWatchTick()
+    end)
+  end
 
   -- Combat events: C-side filter to player + pet only (open-world CPU). Two registrations.
   local function combatHandler(...) self:OnCombatEvent(...) end
