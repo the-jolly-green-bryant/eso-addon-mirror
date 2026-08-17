@@ -43,7 +43,7 @@ local TREND_SPARK_BAR_MAX_H = 36
 local TREND_HIST_LINES = 7
 local COMP_COLS = 4
 local COMP_METRICS = 9 -- includes Build ID + vs #2 notes (Phase 2)
-local ROT_TIMELINE_ICONS = 42   -- icon chips (not text names)
+local ROT_TIMELINE_ICONS = 48   -- icon chips per page (paged with Y when more skills)
 local PULSE_BLOCKS = 72        -- finer pulse (smaller blocks)
 local BUFF_MAIN_ROWS = 12       -- Always-on (left pane)
 local BUFF_SIDE_ROWS = 10       -- Sustained + Situational combined (right pane)
@@ -1020,11 +1020,17 @@ local function classifyBuffSourceDetailed(session, b)
     end
   end
   if b.fromGroup then return "Group", "Group" end
-  if b.fromExternal then return "External", "Ally/Other" end
+  if b.fromDummy then return "Dummy", "Trial dummy" end
+  if b.fromExternal then return "External", "Dummy/ally" end
   if b.fromPet then return "Pet", "Your pet" end
   if string.find(nlow, "food", 1, true) or string.find(nlow, "drink", 1, true)
       or string.find(nlow, "meal", 1, true) or string.find(nlow, "gourmet", 1, true) then
     return "Consumable", "Food/Drink"
+  end
+  -- Common dummy-granted power buffs (when sourceType missing)
+  if string.find(nlow, "major courage", 1, true) or string.find(nlow, "minor courage", 1, true)
+      or string.find(nlow, "major slayer", 1, true) or string.find(nlow, "major berserk", 1, true) then
+    if not b.fromSelf then return "Dummy", "Trial dummy / external" end
   end
   if string.find(nlow, "potion", 1, true) or string.find(nlow, "essence of", 1, true) then
     return "Consumable", "Potion"
@@ -2334,23 +2340,52 @@ local function barSlotIdsFromBuild(build, side)
 end
 
 local function buildFingerprintParts(session, championList)
+  -- Build ID = bars + sets + Mundus + slotted CP ids ONLY.
+  -- Food, potions, temporary Major/Minor, and attributes are intentionally excluded
+  -- so food expiring mid-session does NOT force a new fingerprint.
   local front = barSlotIds(session, "Front")
   local back = barSlotIds(session, "Back")
   -- Stabilize against incomplete mid-fight re-captures: fill zeros from start snap
   local startB = session and session.buildStart
+  local endB = session and (session.buildEnd or session.build)
   if type(startB) == "table" then
     front = mergeBarSlotIds(front, barSlotIdsFromBuild(startB, "front"))
     back = mergeBarSlotIds(back, barSlotIdsFromBuild(startB, "back"))
   end
+  if type(endB) == "table" and endB ~= startB then
+    front = mergeBarSlotIds(front, barSlotIdsFromBuild(endB, "front"))
+    back = mergeBarSlotIds(back, barSlotIdsFromBuild(endB, "back"))
+  end
   local setNames = {}
+  local function addSetName(n)
+    local s = string.lower(tostring(n or ""))
+    s = s:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+    if s ~= "" then setNames[#setNames + 1] = s end
+  end
   if session and type(session.equippedSets) == "table" then
-    for _, n in ipairs(session.equippedSets) do
-      local s = string.lower(tostring(n or ""))
-      if s ~= "" then setNames[#setNames + 1] = s end
+    for _, n in ipairs(session.equippedSets) do addSetName(n) end
+  end
+  -- Fallback: build snap sets if live equippedSets empty/partial
+  if #setNames == 0 and type(startB) == "table" and type(startB.sets) == "table" then
+    for _, n in ipairs(startB.sets) do
+      addSetName(type(n) == "table" and n.name or n)
+    end
+  end
+  if #setNames == 0 and type(endB) == "table" and type(endB.sets) == "table" then
+    for _, n in ipairs(endB.sets) do
+      addSetName(type(n) == "table" and n.name or n)
     end
   end
   table.sort(setNames)
-  -- Union CP ids from live list + start snapshot (intermittent console misses)
+  -- Dedupe after sort
+  do
+    local uniq, prev = {}, nil
+    for _, s in ipairs(setNames) do
+      if s ~= prev then uniq[#uniq + 1] = s; prev = s end
+    end
+    setNames = uniq
+  end
+  -- Union CP ids from live list + start + end snapshot (intermittent console misses)
   local cpIds = {}
   local seenCp = {}
   local function addCp(id)
@@ -2364,10 +2399,16 @@ local function buildFingerprintParts(session, championList)
   if type(startB) == "table" and type(startB.champion) == "table" then
     for _, cp in ipairs(startB.champion) do addCp(cp and cp.id) end
   end
+  if type(endB) == "table" and type(endB.champion) == "table" then
+    for _, cp in ipairs(endB.champion) do addCp(cp and cp.id) end
+  end
   cpIds = sortedIdList(cpIds)
   local mundus = string.lower(tostring((session and session.mundus) or ""))
   if mundus == "" and type(startB) == "table" and startB.mundus then
     mundus = string.lower(tostring(startB.mundus))
+  end
+  if mundus == "" and type(endB) == "table" and endB.mundus then
+    mundus = string.lower(tostring(endB.mundus))
   end
   local parts = {
     "F:" .. table.concat(front, ","),
@@ -3277,8 +3318,8 @@ local function shortSkillInitials(name)
   return out
 end
 
-local function buildTimelineIconEvents(session, maxIcons)
-  maxIcons = tonumber(maxIcons) or ROT_TIMELINE_ICONS
+-- Collect ALL skill presses (no LA) for rotation timeline. Optional page window.
+local function collectSkillTimelineEvents(session)
   local events = {}
   if not session or type(session.weave) ~= "table" or type(session.weave.timeline) ~= "table" then
     return events
@@ -3317,74 +3358,108 @@ local function buildTimelineIconEvents(session, maxIcons)
         abilityId = abilityId,
         tMs = tonumber(item.tMs) or nil,
       }
-      if #events >= maxIcons then break end
     end
   end
   return events
 end
 
+local function buildTimelineIconEvents(session, maxIcons, pageIndex)
+  maxIcons = tonumber(maxIcons) or ROT_TIMELINE_ICONS
+  pageIndex = math.max(1, tonumber(pageIndex) or 1)
+  local all = collectSkillTimelineEvents(session)
+  local total = #all
+  if total == 0 then return {}, 0, 1, 0 end
+  local pages = math.max(1, math.ceil(total / maxIcons))
+  if pageIndex > pages then pageIndex = pages end
+  local startI = (pageIndex - 1) * maxIcons + 1
+  local events = {}
+  for i = startI, math.min(total, startI + maxIcons - 1) do
+    events[#events + 1] = all[i]
+  end
+  return events, total, pages, pageIndex
+end
+
 -- Map S (swap) / U (ult) markers onto skill-icon columns by time.
--- Prefer nearest skill tMs; fall back to fight-duration fraction for older parses.
+-- Prefer nearest skill tMs on THIS page; show counts (S3) when several map to one icon.
 local function buildIconMarkerTags(session, events)
-  local tags = {} -- [iconIndex] = "S" / "U" / "SU" / ...
-  if type(session) ~= "table" or type(events) ~= "table" or #events == 0 then return tags end
+  local tags = {} -- [iconIndex] = display string e.g. "S" "SU" "S3"
+  local swapPlaced, ultPlaced = 0, 0
+  if type(session) ~= "table" or type(events) ~= "table" or #events == 0 then
+    return tags, swapPlaced, ultPlaced
+  end
   local pts = session.markers and session.markers.points
-  if type(pts) ~= "table" or #pts == 0 then return tags end
-  local startMs = tonumber(session.startMs) or 0
-  local dur = tonumber(session.durationMs) or 0
+  -- Prefer live marker list; fall back to barStats.swaps if points were compacted away
+  if type(pts) ~= "table" then pts = {} end
   local n = #events
   local hasTimes = false
+  local tMin, tMax = nil, nil
   for i = 1, n do
-    if tonumber(events[i].tMs) then hasTimes = true break end
-  end
-  for _, p in ipairs(pts) do
-    if type(p) == "table" and (p.type == "swap" or p.type == "ult") then
-      local ch = (p.type == "swap") and "S" or "U"
-      local mt = tonumber(p.tMs)
-      local idx = nil
-      if hasTimes and mt then
-        local bestDist, bestI = nil, 1
-        for i = 1, n do
-          local et = tonumber(events[i].tMs)
-          if et then
-            local d = math.abs(et - mt)
-            if not bestDist or d < bestDist then bestDist, bestI = d, i end
-          end
-        end
-        idx = bestI
-      elseif mt and dur > 0 and startMs > 0 then
-        local frac = (mt - startMs) / dur
-        if frac < 0 then frac = 0 end
-        if frac > 1 then frac = 1 end
-        idx = math.floor(frac * (n - 1) + 0.5) + 1
-      elseif mt and dur > 0 then
-        -- startMs missing: use marker offset from first marker-less estimate
-        local frac = mt / (startMs + dur)
-        if frac < 0 then
-          frac = 0
-        elseif frac > 1 then
-          frac = 1
-        end
-        idx = math.floor(frac * (n - 1) + 0.5) + 1
-      end
-      if idx then
-        if idx < 1 then idx = 1 end
-        if idx > n then idx = n end
-        local cur = tags[idx] or ""
-        -- avoid "SSS" spam: max 2 of same letter
-        local count = 0
-        for i = 1, #cur do
-          if string.sub(cur, i, i) == ch then
-            count = count + 1
-          end
-        end
-        if count < 2 then
-          tags[idx] = cur .. ch
-        end
-      end
+    local et = tonumber(events[i].tMs)
+    if et then
+      hasTimes = true
+      if not tMin or et < tMin then tMin = et end
+      if not tMax or et > tMax then tMax = et end
     end
   end
-  return tags
+  -- Pad window so swaps slightly before first / after last skill on page still attach
+  local pad = 1500
+  if tMin then tMin = tMin - pad end
+  if tMax then tMax = tMax + pad end
+
+  local sCount, uCount = {}, {} -- per icon index
+
+  local function placeMarker(mtype, mt)
+    local ch = (mtype == "swap") and "S" or "U"
+    local idx = nil
+    if hasTimes and mt then
+      -- Only place markers that fall near this page's time window
+      if tMin and tMax and (mt < tMin or mt > tMax) then return end
+      local bestDist, bestI = nil, 1
+      for i = 1, n do
+        local et = tonumber(events[i].tMs)
+        if et then
+          local d = math.abs(et - mt)
+          if not bestDist or d < bestDist then bestDist, bestI = d, i end
+        end
+      end
+      idx = bestI
+    end
+    if not idx then return end
+    if idx < 1 then idx = 1 end
+    if idx > n then idx = n end
+    if ch == "S" then
+      sCount[idx] = (sCount[idx] or 0) + 1
+      swapPlaced = swapPlaced + 1
+    else
+      uCount[idx] = (uCount[idx] or 0) + 1
+      ultPlaced = ultPlaced + 1
+    end
+  end
+
+  for _, p in ipairs(pts) do
+    if type(p) == "table" and (p.type == "swap" or p.type == "ult") then
+      placeMarker(p.type, tonumber(p.tMs))
+    end
+  end
+  -- If markers.points empty but barStats still has swap times (pre-compact path)
+  if swapPlaced == 0 and type(session.barStats) == "table" and type(session.barStats.swaps) == "table" then
+    for _, sw in ipairs(session.barStats.swaps) do
+      if type(sw) == "table" then placeMarker("swap", tonumber(sw.tMs)) end
+    end
+  end
+
+  for i = 1, n do
+    local sc, uc = sCount[i] or 0, uCount[i] or 0
+    if sc > 0 or uc > 0 then
+      local s = ""
+      if sc == 1 then s = s .. "S"
+      elseif sc > 1 then s = s .. "S" .. tostring(sc) end
+      if uc == 1 then s = s .. "U"
+      elseif uc > 1 then s = s .. "U" .. tostring(uc) end
+      tags[i] = s
+    end
+  end
+  return tags, swapPlaced, ultPlaced
 end
 
 -- Pattern / coaching insights (Rotation footer + Insights page).
@@ -9733,16 +9808,37 @@ local function refreshRotationUI(screen, session)
     end
   end
 
-  -- Icon timeline — thick colored halo behind each skill; S/U under icons by time
-  local events = buildTimelineIconEvents(session, ROT_TIMELINE_ICONS)
+  -- Icon timeline — all skill presses (paged); S/U under icons by time
+  M._rotTimelinePage = M._rotTimelinePage or 1
+  local events, totalSkills, pages, pageIndex = buildTimelineIconEvents(session, ROT_TIMELINE_ICONS, M._rotTimelinePage)
+  M._rotTimelinePage = pageIndex
+  M._rotTimelinePages = pages
+  M._rotTimelineTotal = totalSkills
   -- Dummy: full S/U alignment. Long trial/dungeon: still show but only if markers exist.
-  local markTags = buildIconMarkerTags(session, events)
+  local markTags, swapPlaced, ultPlaced = buildIconMarkerTags(session, events)
+  local totalSwaps = (session.weave and tonumber(session.weave.barSwapCount))
+    or (session.barStats and tonumber(session.barStats.swapCount)) or 0
   local wrapWW = ui.iconWrap:GetWidth() or textW
   if wrapWW < 50 then wrapWW = textW end
-  local cellSize, iconGap = 36, 6
+  local cellSize, iconGap = 34, 5
   local markH = 12
   local perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
   local markCount = 0
+  local startIdx = (pageIndex - 1) * ROT_TIMELINE_ICONS + 1
+  local endIdx = math.min(totalSkills, startIdx + #events - 1)
+  if ui.iconTitle then
+    if pages > 1 then
+      ui.iconTitle:SetText(string.format(
+        "SKILL TIMELINE  ·  presses %d–%d of %d  ·  page %d/%d  ·  |c88DDAAS|r swap · |cFFAA66U|r ult  ·  Y next page",
+        startIdx, endIdx, totalSkills, pageIndex, pages
+      ))
+    else
+      ui.iconTitle:SetText(string.format(
+        "SKILL TIMELINE  ·  %d skill press(es)  ·  |c88DDAAS|r bar swap · |cFFAA66U|r ult under icon",
+        totalSkills
+      ))
+    end
+  end
   for i, ic in ipairs(ui.icons) do
     local ev = events[i]
     local host = ic.halo or ic.slot
@@ -9803,16 +9899,19 @@ local function refreshRotationUI(screen, session)
       if ic.markTag then
         local mk = markTags[i]
         if mk and mk ~= "" then
-          local colored = ""
-          for ci = 1, #mk do
-            local ch = string.sub(mk, ci, ci)
-            if ch == "S" then colored = colored .. "|c88DDAAS|r"
-            elseif ch == "U" then colored = colored .. "|cFFAA66U|r"
-            else colored = colored .. ch end
-          end
+          -- Support S, S3, SU, S2U1 etc.
+          local colored = mk
+            :gsub("S(%d*)", function(n)
+              if n == "" then return "|c88DDAAS|r" end
+              return "|c88DDAAS" .. n .. "|r"
+            end)
+            :gsub("U(%d*)", function(n)
+              if n == "" then return "|cFFAA66U|r" end
+              return "|cFFAA66U" .. n .. "|r"
+            end)
           ic.markTag:ClearAnchors()
           ic.markTag:SetAnchor(TOP, host, BOTTOM, 0, 0)
-          ic.markTag:SetWidth(cellSize + 4)
+          ic.markTag:SetWidth(cellSize + 8)
           ic.markTag:SetText(colored)
           ic.markTag:SetHidden(false)
           markCount = markCount + 1
@@ -9828,14 +9927,15 @@ local function refreshRotationUI(screen, session)
     end
   end
   if ui.iconMarkerLine then
-    if markCount > 0 then
-      ui.iconMarkerLine:SetHidden(false)
-      ui.iconMarkerLine:SetText(
-        string.format("|c88DDAAS|r = bar swap · |cFFAA66U|r = ult under the skill when it fired  (%d markers)", markCount)
-      )
+    ui.iconMarkerLine:SetHidden(false)
+    if totalSkills > 0 then
+      ui.iconMarkerLine:SetText(string.format(
+        "This page: %d S · %d U under icons  ·  fight total bar swaps %d  ·  skill presses %d%s",
+        swapPlaced or 0, ultPlaced or 0, totalSwaps, totalSkills,
+        pages > 1 and "  ·  Y = next page" or ""
+      ))
     elseif session.isDummy then
-      ui.iconMarkerLine:SetHidden(false)
-      ui.iconMarkerLine:SetText("|c888888No S/U markers this parse (need post-3.17 dummy with bar swaps / ults)|r")
+      ui.iconMarkerLine:SetText("|c888888No skill presses captured this parse|r")
     else
       ui.iconMarkerLine:SetText("")
       ui.iconMarkerLine:SetHidden(true)
@@ -11845,7 +11945,7 @@ function DM2StatsMenuShell_Gamepad:RefreshHeader()
       and string.format("EXP DONE %d/%d", n, need)
       or string.format("EXP ON %d/%d", n, need)
   end
-  local subtitle = "v3.17.10  |  L2/R2 fights  |  " .. expBit .. "  |  "
+  local subtitle = "v3.17.12  |  L2/R2 fights  |  " .. expBit .. "  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",
@@ -11971,6 +12071,7 @@ function DM2StatsMenuShell_Gamepad:CycleHistory(delta)
     return
   end
   historyOffset = nextOffset
+  M._rotTimelinePage = 1 -- reset skill-timeline page when walking history
   self:_RefreshContentLight()
   M.RefreshKeybindStrip()
 end
@@ -11978,6 +12079,7 @@ end
 -- Called from main after a successful history save (keep menu on newest parse)
 function M.OnFightSaved()
   historyOffset = 0
+  M._rotTimelinePage = 1
   if screenObject and type(SCENE_MANAGER) == "table"
       and SCENE_MANAGER:IsShowing(SCENE_NAME) then
     pcall(function()
@@ -12195,6 +12297,10 @@ local function ensureKeybindGroup()
     if getActiveExperiment() then return true end
     return screenObject and screenObject.currentTab == TAB.INSIGHTS_DPS
   end
+  local function rotationPageVisible()
+    return sceneIsShowing() and screenObject and screenObject.currentTab == TAB.ROTATION
+      and (tonumber(M._rotTimelinePages) or 1) > 1
+  end
   keybindGroup = {
     alignment = KEYBIND_STRIP_ALIGN_CENTER,
     {
@@ -12250,6 +12356,29 @@ local function ensureKeybindGroup()
       end,
       visible = experimentVisible,
       enabled = experimentKeybindEnabled,
+    },
+    {
+      -- Rotation skill timeline pages (Y / Secondary)
+      name = function()
+        local p = tonumber(M._rotTimelinePage) or 1
+        local pages = tonumber(M._rotTimelinePages) or 1
+        return string.format("Timeline page %d/%d", p, pages)
+      end,
+      keybind = "UI_SHORTCUT_SECONDARY",
+      order = 160,
+      callback = function()
+        local pages = math.max(1, tonumber(M._rotTimelinePages) or 1)
+        M._rotTimelinePage = ((tonumber(M._rotTimelinePage) or 1) % pages) + 1
+        local session = historyAt(historyOffset)
+        if screenObject then
+          refreshActiveContentTab(screenObject, TAB.ROTATION, session)
+        end
+        if type(KEYBIND_STRIP) == "table" and type(KEYBIND_STRIP.UpdateKeybindButtonGroup) == "function" and keybindGroup then
+          pcall(function() KEYBIND_STRIP:UpdateKeybindButtonGroup(keybindGroup) end)
+        end
+      end,
+      visible = rotationPageVisible,
+      enabled = rotationPageVisible,
     },
     {
       name = "Back",

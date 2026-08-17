@@ -12,6 +12,7 @@ local Module = {
 
     isAiming = false,
     previewEffectId = nil,
+    lastLoadedShape = nil,
 
     Broadcast = {
         LUT.CIRCLE,
@@ -360,7 +361,19 @@ function Module:GetMenuOptions()
         end
     end
 
+    -- TEXTURE CHOICES
+    local function GetCurrentTextureChoices()
+        if self.SV.shapeType == LUT.RECTANGLE then
+            return CC.SQUARE_CHOICES, CC.SQUARE_VALUES
+        else
+            return CC.CIRCLE_CHOICES, CC.CIRCLE_VALUES
+        end
+    end
+
+    local initChoices, initValues = GetCurrentTextureChoices()
     local menuIcon = string.format("|t%d:%d:%s|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM, self.iconPath)
+
+    self.lastLoadedShape = self.SV.shapeType
 
     return {
         type = "submenu",
@@ -382,6 +395,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "button",
@@ -390,6 +404,7 @@ function Module:GetMenuOptions()
                     self:PlaceOnSelf()
                 end,
                 width = "half",
+                disabled = function() return not CC.SV.enableAddon end,
             },
             { type = "header", name = CC.ColorString("VISUALS", "tier3") },
             {
@@ -401,9 +416,16 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.shapeType end,
                 setFunc = function(value)
                     self.SV.shapeType = value
+                    self.lastLoadedShape = value
+                    if CC_DrawShape_Dropdown_Texture then
+                        local Choices, Values = GetCurrentTextureChoices()
+                        CC_DrawShape_Dropdown_Texture:UpdateChoices(Choices, Values)
+                        CC_DrawShape_Dropdown_Texture:UpdateValue()
+                    end
                     UpdatePreview()
                 end,
                 default = self.Default.shapeType,
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "description",
@@ -418,6 +440,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.width / 100 end,
                 setFunc = function(value) self.SV.width = value * 100 end,
                 default = self.Default.width / 100,
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "slider",
@@ -427,7 +450,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.height / 100 end,
                 setFunc = function(value) self.SV.height = value * 100 end,
                 default = self.Default.height / 100,
-                disabled = function() return self.SV.shapeType == LUT.CIRCLE end,
+                disabled = function() return not CC.SV.enableAddon or self.SV.shapeType == LUT.CIRCLE end,
             },
             {
                 type = "colorpicker",
@@ -438,30 +461,33 @@ function Module:GetMenuOptions()
                     UpdatePreview()
                 end,
                 default = CC.GetRgbaFromArray(self.Default.Color),
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "dropdown",
-                name = "Texture (Circle)",
-                choices = CC.CIRCLE_CHOICES,
-                choicesValues = CC.CIRCLE_VALUES,
-                getFunc = function() return self.SV.textureCircle end,
-                setFunc = function(value)
-                    self.SV.textureCircle = value
-                    UpdatePreview()
+                name = "Texture",
+                choices = initChoices,
+                choicesValues = initValues,
+                getFunc = function()
+                    if self.lastLoadedShape ~= self.SV.shapeType then
+                        if CC_DrawShape_Dropdown_Texture then
+                            local Choices, Values = GetCurrentTextureChoices()
+                            CC_DrawShape_Dropdown_Texture:UpdateChoices(Choices, Values)
+                            self.lastLoadedShape = self.SV.shapeType
+                        end
+                    end
+                    return self.SV.shapeType == LUT.RECTANGLE and self.SV.textureRectangle or self.SV.textureCircle
                 end,
-                default = self.Default.textureCircle,
-            },
-            {
-                type = "dropdown",
-                name = "Texture (Rectangle)",
-                choices = CC.SQUARE_CHOICES,
-                choicesValues = CC.SQUARE_VALUES,
-                getFunc = function() return self.SV.textureRectangle end,
                 setFunc = function(value)
+                    if self.SV.shapeType == LUT.RECTANGLE then
                     self.SV.textureRectangle = value
+                    else
+                        self.SV.textureCircle = value
+                    end
                     UpdatePreview()
                 end,
-                default = self.Default.textureRectangle,
+                reference = "CC_DrawShape_Dropdown_Texture",
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "custom",

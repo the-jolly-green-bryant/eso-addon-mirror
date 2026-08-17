@@ -88,6 +88,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f) | sshogrin | Console | — |
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__3527) | sshogrin | PC / Mac | 1.1.7 |
 | [Shopkeeper (Improved, Fixed and Updated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dopiate/Shopkeeper-Improved-Fixed-and-Updated__864) | dopiate | PC / Mac | 1.0 (dOpiate Fix).7b |
+| [Shopping List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gravvy/Shopping-List__4775) | Gravvy | PC / Mac | 0.15.2 |
 | [Show CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Show-CP__e6bacf32-d124-4c92-bc87-b477e7611861) | BMGxSancho | Console | — |
 | [Show Equips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Show-Equips__7d3a20ff-160a-4988-b8d0-991681394db8) | Shienar | Console | — |
 | [Show Global Cooldown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Show-Global-Cooldown__3035) | iiJonno | PC / Mac | 2.0.1 |

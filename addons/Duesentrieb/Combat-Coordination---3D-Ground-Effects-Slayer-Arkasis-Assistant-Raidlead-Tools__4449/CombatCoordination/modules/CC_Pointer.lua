@@ -303,6 +303,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "button",
@@ -311,6 +312,7 @@ function Module:GetMenuOptions()
                     self:PlaceOnSelf()
                 end,
                 width = "half",
+                disabled = function() return not CC.SV.enableAddon end,
             },
 
             ----------------------------------------------------------------------------------------------------
@@ -380,6 +382,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.width / 100 end,
                 setFunc = function(value) self.SV.width = value * 100 end,
                 default = self.Default.width / 100,
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "slider",
@@ -388,6 +391,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.height / 100 end,
                 setFunc = function(value) self.SV.height = value * 100 end,
                 default = self.Default.height / 100,
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "dropdown",
@@ -403,6 +407,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.texture,
+                disabled = function() return not CC.SV.enableAddon end,
             },
             {
                 type = "custom",

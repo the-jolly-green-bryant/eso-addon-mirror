@@ -55,7 +55,8 @@ function Module:RequestBreak(breakMinutes)
         return
     end
 
-    local cleanMinutes = math.floor(breakMinutes or 0)
+    -- 0 TO STOP
+    local cleanMinutes = math.floor(breakMinutes or self.SV.breakMinutes)
 
     -- CANCEL IF PRESSED AGAIN
     if cleanMinutes > 0 and CC.DisplayNotification.breakEndTime > GetGameTimeSeconds() then
@@ -80,7 +81,8 @@ function Module:RequestPull(pullSeconds)
         return
     end
 
-    local cleanSeconds = math.floor(pullSeconds or 0)
+    -- 0 TO STOP
+    local cleanSeconds = math.floor(pullSeconds or self.SV.pullSeconds)
 
     -- CANCEL IF PRESSED AGAIN
     if cleanSeconds > 0 and CC.DisplayNotification.pullEndTime > GetGameTimeSeconds() then
@@ -488,16 +490,20 @@ table.insert(CC.Modules, Module)
 ----------------------------------------------------------------------------------------------------
 SLASH_COMMANDS["/cc_pull"] = function(arg)
     local rawTime = tonumber(arg)
-    local time = rawTime or CC.RaidleadTools.SV.pullSeconds
-    if rawTime == 0 then time = 0 end
+    local time = rawTime
+    if rawTime == nil then
+        time = CC.RaidleadTools.SV.pullSeconds
+    end
     time = math.max(0, math.min(30, time))
     CC.RaidleadTools:RequestPull(time)
 end
 
 SLASH_COMMANDS["/cc_break"] = function(arg)
     local rawTime = tonumber(arg)
-    local time = rawTime or CC.RaidleadTools.SV.breakMinutes
-    if rawTime == 0 then time = 0 end
+    local time = rawTime
+    if rawTime == nil then
+        time = CC.RaidleadTools.SV.breakMinutes
+    end
     time = math.max(0, math.min(60, time))
     CC.RaidleadTools:RequestBreak(time)
 end

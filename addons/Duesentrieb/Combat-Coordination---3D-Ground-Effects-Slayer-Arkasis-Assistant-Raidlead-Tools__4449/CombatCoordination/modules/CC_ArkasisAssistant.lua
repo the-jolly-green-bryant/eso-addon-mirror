@@ -90,10 +90,10 @@ end
 ----------------------------------------------------------------------------------------------------
 -- BROADCAST WRAP
 ----------------------------------------------------------------------------------------------------
-function Module:BroadcastMessage(message, RX, RY, RZ, TX, TY, TZ)
-    if not message then return end
+function Module:BroadcastMessage(ID, TX, TY, TZ, RX, RY, RZ)
+    if not ID then return end
 
-    local Data = { ID = message, TX = TX or 0, TY = TY or 0, TZ = TZ or 0, RX = RX or 0, RY = RY or 0, RZ = RZ or 0 }
+    local Data = { ID = ID, TX = TX or 0, TY = TY or 0, TZ = TZ or 0, RX = RX or 0, RY = RY or 0, RZ = RZ or 0 }
 
     if not IsUnitGrouped("player") then
         self:HandleBroadcast("player", Data)
@@ -195,8 +195,7 @@ function Module:SendAssignmentRequest()
 
     d(string.format("%s Arkasis assignment request transmitted.", CC.CHAT))
 
-    -- RX = 1 (MY ZONE FLAG BECAUSE WHY NOT)
-    self:BroadcastMessage(LUT.ASSIGNMENT_REQUEST, 1, 0, 0)
+    self:BroadcastMessage(LUT.ASSIGNMENT_REQUEST)
 end
 SLASH_COMMANDS["/cc_arkasis_assignment"] = function() CC.ArkasisAssistant:SendAssignmentRequest() end
 
@@ -218,9 +217,7 @@ function Module:SendTargetedAssignment(unitTag, sideId)
 
     local TX, TY, TZ = targetGroupIndex, targetGroupIndex, targetGroupIndex
 
-    local targetZoneId = self.menuSelectedZone or 0
-    local RX = (targetZoneId == 0) and 1 or (CC.ZoneSyncMap[targetZoneId] or 1)
-
+    local targetZoneId = CC.GetCleanZoneId()
     local targetName = GetUnitDisplayName(unitTag) or unitTag
     local playerLink = CC.GetPlayerLinkFromDisplayName(targetName) or targetName
     local sideName = self:GetSideNameFromSideId(sideId)
@@ -228,7 +225,7 @@ function Module:SendTargetedAssignment(unitTag, sideId)
 
     d(string.format("%s Assignment for %s - New: %s for [%s]", CC.CHAT, playerLink, sideName, zoneName))
 
-    self:BroadcastMessage(LUT.ASSIGNMENT_TARGETED, RX, sideId, 0, TX, TY, TZ)
+    self:BroadcastMessage(LUT.ASSIGNMENT_TARGETED, TX, TY, TZ, 0, sideId, 0)
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -254,7 +251,7 @@ function Module:ArkasisTrigger(isManual, customTimeSec)
         end
     end
 
-    self:BroadcastMessage(LUT.ARKASIS_TRIGGER, 0, 0, timeEnc)
+    self:BroadcastMessage(LUT.ARKASIS_TRIGGER, 0, 0, 0, 0, 0, timeEnc)
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -515,7 +512,8 @@ function Module:HandleBroadcast(unitTag, Data)
     -- INC SYNC REQUEST (OPEN DIALOG)
     ----------------------------------------------------------------------------------------------------
     if Data.ID == LUT.ASSIGNMENT_REQUEST then
-        local zoneId = CC.GetZoneIdFromFlag(Data.RX, unitTag)
+        local senderZoneId = GetUnitRawWorldPosition(unitTag)
+        local zoneId = CC.GetCleanZoneId(senderZoneId)
         local zoneName = self:GetZoneNameFromZoneId(zoneId)
         local sideId = self:GetSideIdFromZoneId(zoneId)
         local sideName = self:GetSideNameFromSideId(sideId)
@@ -538,7 +536,8 @@ function Module:HandleBroadcast(unitTag, Data)
         end
 
         if targetIndex == playerGroupIndex and targetIndex >= 0 then
-            local targetZoneId = CC.GetZoneIdFromFlag(Data.RX, unitTag)
+            local senderZoneId = GetUnitRawWorldPosition(unitTag)
+            local targetZoneId = CC.GetCleanZoneId(senderZoneId)
 
             local senderName = GetUnitDisplayName(unitTag) or "Unknown"
             local playerLink = CC.GetPlayerLinkFromDisplayName(senderName) or senderName
@@ -662,6 +661,10 @@ function Module:GetMenuOptions()
                 setFunc = function(value)
                     self.menuSelectedZone = value
                     self:UpdatePreview()
+                    if CC_ArkasisAssistant_Dropdown_SavedSide then
+                        CC_ArkasisAssistant_Dropdown_SavedSide:UpdateValue()
+                        CC_ArkasisAssistant_Dropdown_SavedSide.label:SetText(CC_ArkasisAssistant_Dropdown_SavedSide.data.name())
+                    end
                 end,
                 disabled = function() return not CC.SV.enableAddon end,
             },

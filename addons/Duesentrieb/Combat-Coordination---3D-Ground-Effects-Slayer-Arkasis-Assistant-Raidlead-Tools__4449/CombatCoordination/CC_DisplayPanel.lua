@@ -72,6 +72,7 @@ local Module = {
         isOpenSlayerAssistant  = false,
         isOpenArkasisAssistant = false,
         isOpenPointer          = false,
+        isOpenLaunchPad        = false,
         isOpenRaidleadTools    = false,
         isOpenDrawShape        = false,
     },
@@ -217,11 +218,12 @@ function Module:CreatePanel()
     self.LabelAuthor:SetColor(unpack(self.ESO_MUTED))
     self.LabelAuthor:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.LabelAuthor:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    self.LabelAuthor:SetText("CC " .. tostring(CC.VERSION) .. " - @Duesentrieb [PC/EU]")
+    self.LabelAuthor:SetText(string.format("CC %s-%04d - @Duesentrieb [PC/EU]", CC.VERSION, CC.ADDON))
 
     -- BUILD CONTS
     self:BuildAddonUsersContainer()
     self:BuildDrawShapeContainer()
+    self:BuildLaunchPadContainer()
     self:BuildPointerContainer()
     self:BuildRaidleadToolsContainer()
     self:BuildSlayerAssistantContainer()
@@ -308,7 +310,7 @@ function Module:CreateContainer(name, SVKey)
     -- ARROW THINGITHING
     local Icon = WINDOW_MANAGER:CreateControl(name .. "_Icon", Header, CT_TEXTURE)
     Icon:SetDimensions(10, 10)
-    Icon:SetTexture(self.SV[SVKey] and "CombatCoordination/icons/down-arrow.dds" or "CombatCoordination/icons/right-arrow.dds")
+    Icon:SetTexture(self.SV[SVKey] and "CombatCoordination/icons/arrow_down.dds" or "CombatCoordination/icons/arrow_right.dds")
     Icon:SetColor(unpack(self.ESO_MUTED))
     Icon:SetAnchor(LEFT, Header, LEFT, self.Layout.padding, 0)
     Header.StateIcon = Icon
@@ -437,14 +439,41 @@ function Module:BuildDrawShapeContainer()
     self.DrawShapeInfoLabel:SetText("Synchronized via LibGroupBroadcast.\nNote: Parameter specifies diameter.\nDuration: 10s (auto-hides).\n[Block]: Draw - [Menu/Key]: Cancel")
 
     -- SHAPE TOGGLE
-    self.DrawShapeButtonToggle = self:CreateButton("CC_DisplayPanel_DrawShapeButtonToggle", Content, "CUR. SHAPE: CIRCLE", function()
-        if CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.CIRCLE then
-            CC.DrawShape.SV.shapeType = LUT.DRAW_SHAPE.RECTANGLE
+    local function ChangeDrawShape(action)
+        local Shapes = { LUT.DRAW_SHAPE.CIRCLE, LUT.DRAW_SHAPE.RECTANGLE }
+        local currentIndex = 1
+        for i, shape in ipairs(Shapes) do
+            if CC.DrawShape.SV.shapeType == shape then
+                currentIndex = i
+                break
+            end
+        end
+
+        if action == "FIRST" then
+            CC.DrawShape.SV.shapeType = Shapes[1]
+        elseif action == "LAST" then
+            CC.DrawShape.SV.shapeType = Shapes[#Shapes]
         else
-            CC.DrawShape.SV.shapeType = LUT.DRAW_SHAPE.CIRCLE
+            local nextIndex = currentIndex + action
+            if nextIndex > #Shapes then nextIndex = 1 end
+            if nextIndex < 1 then nextIndex = #Shapes end
+            CC.DrawShape.SV.shapeType = Shapes[nextIndex]
         end
         self:UpdateData()
-    end)
+    end
+
+    -- SHAPE TOGGLE
+    self.DrawShapeButtonFirst = self:CreateButton("CC_DisplayPanel_DrawShapeButtonFirst", Content, "||<", function() ChangeDrawShape("FIRST") end)
+    self.DrawShapeButtonPrev  = self:CreateButton("CC_DisplayPanel_DrawShapeButtonPrev", Content, "<", function() ChangeDrawShape(-1) end)
+
+    self.DrawShapeLabelToggle = WINDOW_MANAGER:CreateControl("CC_DisplayPanel_DrawShapeLabelToggle", Content, CT_LABEL)
+    self.DrawShapeLabelToggle:SetFont(self.Font.Normal)
+    self.DrawShapeLabelToggle:SetColor(unpack(self.ESO_NORMAL))
+    self.DrawShapeLabelToggle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.DrawShapeLabelToggle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    self.DrawShapeButtonNext = self:CreateButton("CC_DisplayPanel_DrawShapeButtonNext", Content, ">", function() ChangeDrawShape(1) end)
+    self.DrawShapeButtonLast = self:CreateButton("CC_DisplayPanel_DrawShapeButtonLast", Content, ">||", function() ChangeDrawShape("LAST") end)
 
     -- CHANGE THE SVS
     local function ChangeSize(dimension, amount)
@@ -486,6 +515,153 @@ function Module:BuildDrawShapeContainer()
 
     self.DrawShapeButtonSelf = self:CreateButton("CC_DisplayPanel_DrawShapeButtonSelf", Content, "ON SELF", function()
         CC.DrawShape:PlaceOnSelf()
+    end)
+end
+
+----------------------------------------------------------------------------------------------------
+-- [L] LAUNCH PAD
+----------------------------------------------------------------------------------------------------
+function Module:BuildLaunchPadContainer()
+    self.ContainerLaunchPad = self:CreateContainer("CC_DisplayPanel_LaunchPadContainer", "isOpenLaunchPad")
+    local Content = self.ContainerLaunchPad.Content
+
+    -- INFO LABEL
+    self.LaunchPadInfoLabel = WINDOW_MANAGER:CreateControl("CC_DisplayPanel_LaunchPadInfoLabel", Content, CT_LABEL)
+    self.LaunchPadInfoLabel:SetFont(self.Font.Small)
+    self.LaunchPadInfoLabel:SetColor(unpack(self.ESO_NORMAL))
+    self.LaunchPadInfoLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    self.LaunchPadInfoLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.LaunchPadInfoLabel:SetText("Place permanent trigger pads on the ground.\nPads trigger tools when stepped on.")
+
+    -- CATEGORIES
+    local function GetLaunchPadCategories()
+        local CategoriesMap = {}
+        local CategoryChoices = {}
+        for id, Data in pairs(CC.LaunchPad.TriggerData) do
+            local category = Data.category or "Other"
+            if not CategoriesMap[category] then
+                CategoriesMap[category] = {}
+                table.insert(CategoryChoices, category)
+            end
+            table.insert(CategoriesMap[category], id)
+        end
+        table.sort(CategoryChoices)
+        for _, ids in pairs(CategoriesMap) do
+            table.sort(ids)
+        end
+        return CategoryChoices, CategoriesMap
+    end
+
+    -- CATEGORY TOGGLE
+    local function ChangeLaunchPadCategory(action)
+        local Choices, Maps = GetLaunchPadCategories()
+        local currentCategory = CC.LaunchPad.menuSelectedCategory or Choices[1]
+        local currentIndex = 1
+
+        for i, category in ipairs(Choices) do
+            if category == currentCategory then
+                currentIndex = i
+                break
+            end
+        end
+
+        if action == "FIRST" then
+            currentIndex = 1
+        elseif action == "LAST" then
+            currentIndex = #Choices
+        else
+            currentIndex = currentIndex + action
+            if currentIndex > #Choices then currentIndex = 1 end
+            if currentIndex < 1 then currentIndex = #Choices end
+        end
+
+        local newCategory = Choices[currentIndex]
+        CC.LaunchPad.menuSelectedCategory = newCategory
+        CC.LaunchPad.SV.activeTrigger = Maps[newCategory][1]
+        self:UpdateData()
+
+        if CC_LaunchPad_Dropdown_Trigger then
+            CC_LaunchPad_Dropdown_Trigger:UpdateValue()
+        end
+    end
+
+    -- TRIGGER TOGGLE
+    local function ChangeLaunchPadTrigger(action)
+        local Choices, Maps = GetLaunchPadCategories()
+        local currentCategory = CC.LaunchPad.menuSelectedCategory
+
+        if not currentCategory or not Maps[currentCategory] then
+            local activeData = CC.LaunchPad.TriggerData[CC.LaunchPad.SV.activeTrigger]
+            currentCategory = (activeData and activeData.category) or Choices[1]
+            CC.LaunchPad.menuSelectedCategory = currentCategory
+        end
+
+        local SortedIds = Maps[currentCategory]
+        local currentIndex = 1
+
+        for i, id in ipairs(SortedIds) do
+            if id == CC.LaunchPad.SV.activeTrigger then
+                currentIndex = i
+                break
+            end
+        end
+
+        if action == "FIRST" then
+            currentIndex = 1
+        elseif action == "LAST" then
+            currentIndex = #SortedIds
+        else
+            currentIndex = currentIndex + action
+            if currentIndex > #SortedIds then currentIndex = 1 end
+            if currentIndex < 1 then currentIndex = #SortedIds end
+        end
+
+        CC.LaunchPad.SV.activeTrigger = SortedIds[currentIndex]
+        self:UpdateData()
+
+        if CC_LaunchPad_Dropdown_Trigger then
+            CC_LaunchPad_Dropdown_Trigger:UpdateValue()
+        end
+    end
+
+    -- CATEGORY
+    self.LaunchPadCatButtonFirst = self:CreateButton("CC_DisplayPanel_LaunchPadCatButtonFirst", Content, "||<", function() ChangeLaunchPadCategory("FIRST") end)
+    self.LaunchPadCatButtonPrev  = self:CreateButton("CC_DisplayPanel_LaunchPadCatButtonPrev", Content, "<", function() ChangeLaunchPadCategory(-1) end)
+
+    self.LaunchPadCatLabelToggle = WINDOW_MANAGER:CreateControl("CC_DisplayPanel_LaunchPadCatLabelToggle", Content, CT_LABEL)
+    self.LaunchPadCatLabelToggle:SetFont(self.Font.Normal)
+    self.LaunchPadCatLabelToggle:SetColor(unpack(self.ESO_NORMAL))
+    self.LaunchPadCatLabelToggle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.LaunchPadCatLabelToggle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    self.LaunchPadCatButtonNext = self:CreateButton("CC_DisplayPanel_LaunchPadCatButtonNext", Content, ">", function() ChangeLaunchPadCategory(1) end)
+    self.LaunchPadCatButtonLast = self:CreateButton("CC_DisplayPanel_LaunchPadCatButtonLast", Content, ">||", function() ChangeLaunchPadCategory("LAST") end)
+
+    -- TRIGGER
+    self.LaunchPadButtonFirst = self:CreateButton("CC_DisplayPanel_LaunchPadButtonFirst", Content, "||<", function() ChangeLaunchPadTrigger("FIRST") end)
+    self.LaunchPadButtonPrev  = self:CreateButton("CC_DisplayPanel_LaunchPadButtonPrev", Content, "<", function() ChangeLaunchPadTrigger(-1) end)
+
+    self.LaunchPadLabelToggle = WINDOW_MANAGER:CreateControl("CC_DisplayPanel_LaunchPadLabelToggle", Content, CT_LABEL)
+    self.LaunchPadLabelToggle:SetFont(self.Font.Normal)
+    self.LaunchPadLabelToggle:SetColor(unpack(self.ESO_NORMAL))
+    self.LaunchPadLabelToggle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.LaunchPadLabelToggle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    self.LaunchPadButtonNext = self:CreateButton("CC_DisplayPanel_LaunchPadButtonNext", Content, ">", function() ChangeLaunchPadTrigger(1) end)
+    self.LaunchPadButtonLast = self:CreateButton("CC_DisplayPanel_LaunchPadButtonLast", Content, ">||", function() ChangeLaunchPadTrigger("LAST") end)
+
+    -- BUTTONS
+    self.LaunchPadButtonCursor = self:CreateButton("CC_DisplayPanel_LaunchPadButtonCursor", Content, "AT CURSOR", function()
+        SCENE_MANAGER:SetInUIMode(false)
+        CC.LaunchPad:StartAiming(false)
+    end)
+
+    self.LaunchPadButtonSelf = self:CreateButton("CC_DisplayPanel_LaunchPadButtonSelf", Content, "ON SELF", function()
+        CC.LaunchPad:PlaceOnSelf()
+    end)
+
+    self.LaunchPadButtonDeleteClosest = self:CreateButton("CC_DisplayPanel_LaunchPadButtonDeleteClosest", Content, "DELETE CLOSEST", function()
+        CC.LaunchPad:DeleteClosestPad()
     end)
 end
 
@@ -790,7 +966,7 @@ function Module:UpdateData()
 
     self:HideUnusedLabels(self.AddonUserLabels, self.activeAddonUserLabels)
 
-    local AddonUsersIcon = { iconPath = CC.NAME .. "/icons/combatcoordination.dds" }
+    local AddonUsersIcon = { iconPath = CC.NAME .. "/icons/logo_cc.dds" }
     local expectedSize = math.max(1, GetGroupSize())
     self.ContainerAddonUsers.Title:SetText(self:GetTitleWithIcon(AddonUsersIcon, string.format("ADDON USERS: |cFFFFFF%d/%d|r", countAddonUsers, expectedSize)))
 
@@ -798,13 +974,31 @@ function Module:UpdateData()
     -- [D] DRAW SHAPE
     ----------------------------------------------------------------------------------------------------
     self.DrawShapeContainer.Title:SetText(self:GetTitleWithIcon(CC.DrawShape, "DRAW SHAPE"))
-    local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
 
-    self.DrawShapeButtonToggle:SetText(isRectangle and "CUR. SHAPE: RECTANGLE" or "CUR. SHAPE: CIRCLE")
+    local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
+    self.DrawShapeLabelToggle:SetText(isRectangle and "Shape: Rectangle" or "Shape: Circle")
 
     local labelX = isRectangle and "Width" or "Diameter"
     self.DrawShapeLabelValueX:SetText(string.format("%s: %dm", labelX, CC.DrawShape.SV.width / 100))
     self.DrawShapeLabelValueZ:SetText(string.format("Height: %dm", CC.DrawShape.SV.height / 100))
+
+    ----------------------------------------------------------------------------------------------------
+    -- [L] LAUNCH PAD
+    ----------------------------------------------------------------------------------------------------
+    self.ContainerLaunchPad.Title:SetText(self:GetTitleWithIcon(CC.LaunchPad, "LAUNCH PAD"))
+
+    local activeTrigger = CC.LaunchPad.SV.activeTrigger
+    local TriggerData = CC.LaunchPad.TriggerData[activeTrigger]
+    local triggerName = TriggerData and TriggerData.name or "UNKNOWN"
+
+    local currentCategory = CC.LaunchPad.menuSelectedCategory
+    if not currentCategory or currentCategory == "" then
+        currentCategory = TriggerData and TriggerData.category or "Other"
+        CC.LaunchPad.menuSelectedCategory = currentCategory
+    end
+
+    self.LaunchPadCatLabelToggle:SetText(currentCategory)
+    self.LaunchPadLabelToggle:SetText(triggerName)
 
     ----------------------------------------------------------------------------------------------------
     -- [P] POINTER
@@ -991,6 +1185,7 @@ function Module:UpdateDimensions()
     if self.SV.isMinimized then
         self.ContainerAddonUsers.Control:SetHidden(true)
         self.DrawShapeContainer.Control:SetHidden(true)
+        self.ContainerLaunchPad.Control:SetHidden(true)
         self.PointerContainer.Control:SetHidden(true)
         if self.ContainerRaidleadTools then self.ContainerRaidleadTools.Control:SetHidden(true) end
         self.ContainerSlayerAssistant.Control:SetHidden(true)
@@ -1003,6 +1198,7 @@ function Module:UpdateDimensions()
     else
         self.ContainerAddonUsers.Control:SetHidden(false)
         self.DrawShapeContainer.Control:SetHidden(false)
+        self.ContainerLaunchPad.Control:SetHidden(false)
         self.PointerContainer.Control:SetHidden(false)
         self.ContainerSlayerAssistant.Control:SetHidden(false)
         self.ContainerArkasisAssistant.Control:SetHidden(false)
@@ -1018,7 +1214,7 @@ function Module:UpdateDimensions()
         Container.Control:SetAnchor(TOPRIGHT, self.Parent, TOPRIGHT, -Layout.margin, currentY)
 
         local isOpen = self.SV[Container.SVKey]
-        Container.Icon:SetTexture(isOpen and "CombatCoordination/icons/down-arrow.dds" or "CombatCoordination/icons/right-arrow.dds")
+        Container.Icon:SetTexture(isOpen and "CombatCoordination/icons/arrow_down.dds" or "CombatCoordination/icons/arrow_right.dds")
 
         if isOpen then
             Container.Content:SetHidden(false)
@@ -1057,12 +1253,11 @@ function Module:UpdateDimensions()
     ProcessContainer(self.DrawShapeContainer, function(Content, width)
         local innerY = Layout.paddingTopText
         local buttonHalf = (width - (2 * Layout.padding) - Layout.elementSpacing) / 2
-        local buttonFull = width - (2 * Layout.padding)
 
-        -- 5 BUTTONS
         local widthArrowSingle = Layout.elementHeight * 1.0
         local widthArrowDouble = Layout.elementHeight * 1.0
         local widthCenterLabel = width - (2 * Layout.padding) - (4 * Layout.elementSpacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
+        local widthToggle = widthCenterLabel
 
         local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
 
@@ -1071,9 +1266,22 @@ function Module:UpdateDimensions()
         self.DrawShapeInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
         innerY = innerY + self.DrawShapeInfoLabel:GetTextHeight() + Layout.elementSpacing
 
-        -- TOGGLE SHAPE
-        self.DrawShapeButtonToggle:SetDimensions(buttonFull, Layout.elementHeight)
-        self.DrawShapeButtonToggle:SetAnchor(TOP, Content, TOP, 0, innerY)
+        -- SHAPE TOGGLE
+        self.DrawShapeButtonFirst:SetDimensions(widthArrowDouble, Layout.elementHeight)
+        self.DrawShapeButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+        self.DrawShapeButtonPrev:SetDimensions(widthArrowSingle, Layout.elementHeight)
+        self.DrawShapeButtonPrev:SetAnchor(TOPLEFT, self.DrawShapeButtonFirst, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.DrawShapeLabelToggle:SetDimensions(widthToggle, Layout.elementHeight)
+        self.DrawShapeLabelToggle:SetAnchor(TOPLEFT, self.DrawShapeButtonPrev, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.DrawShapeButtonNext:SetDimensions(widthArrowSingle, Layout.elementHeight)
+        self.DrawShapeButtonNext:SetAnchor(TOPLEFT, self.DrawShapeLabelToggle, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.DrawShapeButtonLast:SetDimensions(widthArrowDouble, Layout.elementHeight)
+        self.DrawShapeButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
         innerY = innerY + Layout.elementHeight + Layout.elementSpacing
 
         -- ROW X (WIDTH / DIAMETER)
@@ -1136,6 +1344,72 @@ function Module:UpdateDimensions()
         return innerY + Layout.elementHeight
     end)
 
+    -- [L] LAUNCH PAD
+    ProcessContainer(self.ContainerLaunchPad, function(Content, width)
+        local innerY = Layout.paddingTopText
+        local buttonHalf = (width - (2 * Layout.padding) - Layout.elementSpacing) / 2
+        local buttonFull = width - (2 * Layout.padding)
+
+        local widthArrowSingle = Layout.elementHeight * 1.0
+        local widthArrowDouble = Layout.elementHeight * 1.0
+        local widthToggle = width - (2 * Layout.padding) - (4 * Layout.elementSpacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
+
+        -- INFO
+        self.LaunchPadInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
+        self.LaunchPadInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+        innerY = innerY + self.LaunchPadInfoLabel:GetTextHeight() + Layout.elementSpacing
+
+        -- CATEGORY TOGGLE
+        self.LaunchPadCatButtonFirst:SetDimensions(widthArrowDouble, Layout.elementHeight)
+        self.LaunchPadCatButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+        self.LaunchPadCatButtonPrev:SetDimensions(widthArrowSingle, Layout.elementHeight)
+        self.LaunchPadCatButtonPrev:SetAnchor(TOPLEFT, self.LaunchPadCatButtonFirst, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.LaunchPadCatLabelToggle:SetDimensions(widthToggle, Layout.elementHeight)
+        self.LaunchPadCatLabelToggle:SetAnchor(TOPLEFT, self.LaunchPadCatButtonPrev, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.LaunchPadCatButtonNext:SetDimensions(widthArrowSingle, Layout.elementHeight)
+        self.LaunchPadCatButtonNext:SetAnchor(TOPLEFT, self.LaunchPadCatLabelToggle, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.LaunchPadCatButtonLast:SetDimensions(widthArrowDouble, Layout.elementHeight)
+        self.LaunchPadCatButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+        innerY = innerY + Layout.elementHeight + Layout.elementSpacing
+
+        -- TRIGGER TOGGLE
+        self.LaunchPadButtonFirst:SetDimensions(widthArrowDouble, Layout.elementHeight)
+        self.LaunchPadButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+        self.LaunchPadButtonPrev:SetDimensions(widthArrowSingle, Layout.elementHeight)
+        self.LaunchPadButtonPrev:SetAnchor(TOPLEFT, self.LaunchPadButtonFirst, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.LaunchPadLabelToggle:SetDimensions(widthToggle, Layout.elementHeight)
+        self.LaunchPadLabelToggle:SetAnchor(TOPLEFT, self.LaunchPadButtonPrev, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.LaunchPadButtonNext:SetDimensions(widthArrowSingle, Layout.elementHeight)
+        self.LaunchPadButtonNext:SetAnchor(TOPLEFT, self.LaunchPadLabelToggle, TOPRIGHT, Layout.elementSpacing, 0)
+
+        self.LaunchPadButtonLast:SetDimensions(widthArrowDouble, Layout.elementHeight)
+        self.LaunchPadButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+        innerY = innerY + Layout.elementHeight + Layout.elementSpacing
+
+        -- AT CURSOR / ON SELF
+        self.LaunchPadButtonCursor:SetDimensions(buttonHalf, Layout.elementHeight)
+        self.LaunchPadButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+        self.LaunchPadButtonSelf:SetDimensions(buttonHalf, Layout.elementHeight)
+        self.LaunchPadButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+        innerY = innerY + Layout.elementHeight + Layout.elementSpacing
+
+        -- DELETE CLOSEST
+        self.LaunchPadButtonDeleteClosest:SetDimensions(buttonFull, Layout.elementHeight)
+        self.LaunchPadButtonDeleteClosest:SetAnchor(TOP, Content, TOP, 0, innerY)
+
+        return innerY + Layout.elementHeight
+    end)
+
     -- [P] POINTER
     ProcessContainer(self.PointerContainer, function(Content, width)
         local innerY = Layout.paddingTopText -- TEXT
@@ -1163,8 +1437,6 @@ function Module:UpdateDimensions()
         ProcessContainer(self.ContainerRaidleadTools, function(Content, width)
             local innerY = Layout.paddingTopText
             local buttonHalf = (width - (2 * Layout.padding) - Layout.elementSpacing) / 2
-
-            -- 5 BUTTONS
             local widthArrowSingle = Layout.elementHeight * 1.0
             local widthArrowDouble = Layout.elementHeight * 1.0
             local widthToggle = width - (2 * Layout.padding) - (4 * Layout.elementSpacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
@@ -1195,50 +1467,39 @@ function Module:UpdateDimensions()
             self.ButtonVoteStart:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
             innerY = innerY + Layout.elementHeight + (Layout.elementSpacing * 2)
 
-            ----------------------------------------------------------------------------------------------------
             -- BREAK
-            ----------------------------------------------------------------------------------------------------
             self.BreakTimerButtonMinus5:SetDimensions(widthArrowDouble, Layout.elementHeight)
             self.BreakTimerButtonMinus5:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
             self.BreakTimerButtonMinus1:SetDimensions(widthArrowSingle, Layout.elementHeight)
             self.BreakTimerButtonMinus1:SetAnchor(TOPLEFT, self.BreakTimerButtonMinus5, TOPRIGHT, Layout.elementSpacing, 0)
-
             self.BreakTimerButtonToggle:SetDimensions(widthToggle, Layout.elementHeight)
             self.BreakTimerButtonToggle:SetAnchor(TOPLEFT, self.BreakTimerButtonMinus1, TOPRIGHT, Layout.elementSpacing, 0)
-
             self.BreakTimerButtonPlus1:SetDimensions(widthArrowSingle, Layout.elementHeight)
             self.BreakTimerButtonPlus1:SetAnchor(TOPLEFT, self.BreakTimerButtonToggle, TOPRIGHT, Layout.elementSpacing, 0)
-
             self.BreakTimerButtonPlus5:SetDimensions(widthArrowDouble, Layout.elementHeight)
             self.BreakTimerButtonPlus5:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
             innerY = innerY + Layout.elementHeight + (Layout.elementSpacing * 2)
 
-            ----------------------------------------------------------------------------------------------------
             -- PULL TOGGLE
-            ----------------------------------------------------------------------------------------------------
             self.PullTimerButtonMinus5:SetDimensions(widthArrowDouble, Layout.elementHeight)
             self.PullTimerButtonMinus5:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
             self.PullTimerButtonMinus1:SetDimensions(widthArrowSingle, Layout.elementHeight)
             self.PullTimerButtonMinus1:SetAnchor(TOPLEFT, self.PullTimerButtonMinus5, TOPRIGHT, Layout.elementSpacing, 0)
-
             self.PullTimerButtonToggle:SetDimensions(widthToggle, Layout.elementHeight)
             self.PullTimerButtonToggle:SetAnchor(TOPLEFT, self.PullTimerButtonMinus1, TOPRIGHT, Layout.elementSpacing, 0)
-
             self.PullTimerButtonPlus1:SetDimensions(widthArrowSingle, Layout.elementHeight)
             self.PullTimerButtonPlus1:SetAnchor(TOPLEFT, self.PullTimerButtonToggle, TOPRIGHT, Layout.elementSpacing, 0)
-
             self.PullTimerButtonPlus5:SetDimensions(widthArrowDouble, Layout.elementHeight)
             self.PullTimerButtonPlus5:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
             innerY = innerY + Layout.elementHeight + Layout.elementSpacing
 
             return innerY
         end)
     else
-        self.ContainerRaidleadTools.Control:SetHidden(true)
+        if self.ContainerRaidleadTools then
+            self.ContainerRaidleadTools.Control:SetHidden(true)
+            self.ContainerRaidleadTools.Control:SetHeight(0)
+        end
     end
 
     -- [S] SLAYER ASSSISTANT
@@ -1405,6 +1666,7 @@ function Module:CloseAll()
     self.SV.isOpenSlayerAssistant  = false
     self.SV.isOpenArkasisAssistant = false
     self.SV.isOpenPointer          = false
+    self.SV.isOpenLaunchPad        = false
     self.SV.isOpenRaidleadTools    = false
     self.SV.isOpenDrawShape        = false
 end

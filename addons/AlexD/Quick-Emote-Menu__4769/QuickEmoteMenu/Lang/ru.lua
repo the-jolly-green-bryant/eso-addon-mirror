@@ -9,6 +9,13 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Показывать кнопку только в режиме UI",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "Показывать главную кнопку только при активном курсоре мыши (режим UI). Она скрывается при возврате к обычному режиму игры/взаимодействия.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "Открепить кнопку от чата",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP =
+    "Перемещает кнопку за пределы окна чата. Кнопку можно свободно перетаскивать.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "Настройки",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "Прикрепить кнопку",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "Открепить кнопку",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Показать панель настроек",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Закрывать меню после эмоции (ЛКМ)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Сбросить позицию кнопки",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

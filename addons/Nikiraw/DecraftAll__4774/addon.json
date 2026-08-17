@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Nikiraw/DecraftAll__4774",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Nikiraw",
+  "canonical_id": "esoui:4774",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4774",
+  "deleted": false,
+  "directories": [
+    "DecraftAll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4774/",
+  "fingerprint": "31c3d86723886928e6b56e6d0fcd7b4707378c651a3d1997dd69150c7a1ca3ed",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16995.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16996.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16997.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4774",
+  "source_url": "https://www.esoui.com/downloads/info4774-DecraftAll.html",
+  "stats": {
+    "downloads": 3,
+    "favorites": 1,
+    "monthly_downloads": 3
+  },
+  "title": "DecraftAll",
+  "updated_at": 1786873048000,
+  "version": "1.0.0"
+}

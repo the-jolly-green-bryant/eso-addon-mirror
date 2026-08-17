@@ -52,6 +52,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Deconstruction Assistant (Scions of Ithelia)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CodeStripper/Deconstruction-Assistant-Scions-of-Ithelia__1718) | CodeStripper | PC / Mac | 2.0.4 |
 | [Deconstruction Junk Marker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Deconstruction-Junk-Marker__1388) | code65536 | PC / Mac | 1.0.21 |
 | [DecoTrack](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/DecoTrack__2100) | Cardinal05 | PC / Mac | 2.7 |
+| [DecraftAll](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nikiraw/DecraftAll__4774) | Nikiraw | PC / Mac | 1.0.0 |
 | [Default Guild Bank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AssemblerManiac/Default-Guild-Bank__1747) | AssemblerManiac | PC / Mac | 1.07 |
 | [Default Language Ninja - Language Selector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinntarou/Default-Language-Ninja---Language-Selector__2692) | Shinntarou | PC / Mac | 1.0.3 |
 | [DELET NEED](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SiameseCat/DELET-NEED__2926) | SiameseCat | PC / Mac | 0.0.1 |

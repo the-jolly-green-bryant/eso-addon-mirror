@@ -10,10 +10,6 @@
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
-    },
-    {
-      "name": "Season Zero",
-      "version": "11.3.0"
     }
   ],
   "content_id": "esoui:2373",
@@ -22,7 +18,7 @@
     "CombatMetronome"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2373/",
-  "fingerprint": "ea3016ef14f8e7d0bdb8f96e036d8b5a385dc5e3d5876ae72125cc89954e0648",
+  "fingerprint": "00de77b20aad9658b8603550ce98c6ccd7e841d6c46b5015d6cb50201fc9631f",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8189.png",
     "https://cdn-eso.mmoui.com/preview/pvw12876.png",
@@ -34,11 +30,11 @@
   "source_id": "2373",
   "source_url": "https://www.esoui.com/downloads/info2373-CombatMetronomeGCDTracker.html",
   "stats": {
-    "downloads": 490134,
-    "favorites": 175,
-    "monthly_downloads": 3281
+    "downloads": 494955,
+    "favorites": 178,
+    "monthly_downloads": 7906
   },
   "title": "Combat Metronome (GCD Tracker)",
-  "updated_at": 1786395418000,
-  "version": "1.7.5"
+  "updated_at": 1786875700000,
+  "version": "1.7.6"
 }

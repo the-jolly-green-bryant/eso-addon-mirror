@@ -8,9 +8,10 @@ local Module = {
     Parent = nil,
     Label = nil,
     Background = nil,
-    Timeline = nil,
-    ScaleUp = nil,
-    ScaleDown = nil,
+
+    TimelineScale = nil,
+    AnimScale = nil,
+
     isAnimationActive = false,
     currentTrigger = nil,
 
@@ -27,7 +28,7 @@ local Module = {
 }
 
 ----------------------------------------------------------------------------------------------------
--- CREATE UI ELEMENTS
+-- CREATE
 ----------------------------------------------------------------------------------------------------
 function Module:Create()
     if self.Parent then return end
@@ -64,14 +65,14 @@ function Module:Create()
 end
 
 ----------------------------------------------------------------------------------------------------
--- ENABLE MODULE
+-- CUSTOM ENABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
     if not self.Parent then self:Create() end
 end
 
 ----------------------------------------------------------------------------------------------------
--- DISABLE MODULE
+-- CUSTOM DISABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomDisable()
     if self.Parent then
@@ -83,45 +84,45 @@ end
 -- ANIMATION GROW
 ----------------------------------------------------------------------------------------------------
 function Module:PlayAnimationGrow()
-    if not self.Timeline then
-        self.Timeline = ANIMATION_MANAGER:CreateTimeline()
-        self.Animation = self.Timeline:InsertAnimation(ANIMATION_SCALE, self.Parent, 0)
+    if not self.TimelineScale then
+        self.TimelineScale = ANIMATION_MANAGER:CreateTimeline()
+        self.AnimScale = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Parent, 0)
     end
 
-    if self.Timeline:IsPlaying() then self.Timeline:Stop() end
+    if self.TimelineScale:IsPlaying() then self.TimelineScale:Stop() end
 
-    self.Timeline:SetHandler('OnStop', nil)
+    self.TimelineScale:SetHandler('OnStop', nil)
     self.Parent:SetHidden(false)
 
     local durationGrow = self.SV.animationMs
     local currentScale = self.Parent:GetScale()
 
-    self.Animation:SetScaleValues(currentScale, 1.0)
-    self.Animation:SetDuration(durationGrow)
-    self.Animation:SetEasingFunction(ZO_EaseOutQuadratic)
-    self.Timeline:PlayFromStart()
+    self.AnimScale:SetScaleValues(currentScale, 1.0)
+    self.AnimScale:SetDuration(durationGrow)
+    self.AnimScale:SetEasingFunction(ZO_EaseOutQuadratic)
+    self.TimelineScale:PlayFromStart()
 end
 
 ----------------------------------------------------------------------------------------------------
 -- ANIMATION SHRINK
 ----------------------------------------------------------------------------------------------------
 function Module:PlayAnimationShrink()
-    if not self.Timeline then return end
-    if self.Timeline:IsPlaying() then self.Timeline:Stop() end
+    if not self.TimelineScale then return end
+    if self.TimelineScale:IsPlaying() then self.TimelineScale:Stop() end
 
     local durationShrink = self.SV.animationMs
     local currentScale = self.Parent:GetScale()
 
-    self.Animation:SetScaleValues(currentScale, 0.0)
-    self.Animation:SetDuration(durationShrink)
-    self.Animation:SetEasingFunction(ZO_EaseInQuadratic)
+    self.AnimScale:SetScaleValues(currentScale, 0.0)
+    self.AnimScale:SetDuration(durationShrink)
+    self.AnimScale:SetEasingFunction(ZO_EaseInQuadratic)
 
-    self.Timeline:SetHandler('OnStop', function()
+    self.TimelineScale:SetHandler('OnStop', function()
         if self.Parent:GetScale() < 0.1 then
             self.Parent:SetHidden(true)
         end
     end)
-    self.Timeline:PlayFromStart()
+    self.TimelineScale:PlayFromStart()
 end
 
 ----------------------------------------------------------------------------------------------------

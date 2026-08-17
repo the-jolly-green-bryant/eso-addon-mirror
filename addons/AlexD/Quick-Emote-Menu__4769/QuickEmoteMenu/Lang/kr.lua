@@ -9,6 +9,12 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "UI 모드에서만 버튼 표시",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "마우스 커서가 활성화된 경우(UI 모드)에만 메인 버튼을 표시합니다. 일반 게임/상호작용 모드로 돌아가면 숨겨집니다.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "채팅에서 버튼 분리",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP = "채팅 창 밖으로 버튼을 이동합니다. 버튼을 자유롭게 드래그하여 이동할 수 있습니다.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "설정",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "버튼 연결",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "버튼 분리",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "설정 패널 표시",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "이모트 재생 후 메뉴 닫기 (좌클릭)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "버튼 위치 초기화",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

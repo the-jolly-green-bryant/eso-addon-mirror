@@ -117,8 +117,6 @@ function Module:Draw3DEffect(Config)
     -- INJECT SPECIAL SNOWFLAKE DATA
     local Data = {}
     if Config.unitTag        then Data.unitTag        = Config.unitTag end
-    if Config.ColorEnd       then Data.ColorEnd       = Config.ColorEnd end
-    if Config.ColorFlash     then Data.ColorFlash     = Config.ColorFlash end
     if Config.animationEndMs then Data.animationEndMs = Config.animationEndMs end
     if Config.rotateY        then Data.rotateY        = Config.rotateY end
     if Config.isFastUpdate   then Data.isFastUpdate   = Config.isFastUpdate end
@@ -153,16 +151,62 @@ function Module:Draw3DEffect(Config)
     --     Control:Set3DRenderSpaceUsesDepthBuffer(true)
     -- end
 
-    -- TIMELINE / ANIMATION
-    if Effect.Timeline:IsPlaying() then Effect.Timeline:Stop() end
+    -- STOP PREV ANIMATION
+    if Effect.TimelineScale:IsPlaying() then Effect.TimelineScale:Stop() end
+    if Effect.TimelineRotation:IsPlaying() then Effect.TimelineRotation:Stop() end
+    if Effect.TimelineColor:IsPlaying() then Effect.TimelineColor:Stop() end
 
+    Effect.baseRY = Effect.RY
+
+    -- PLAY ROTATION ANIMATION
+    if Config.rotateY and Config.rotateY ~= 0 then
+        local durationMs = math.max(1, math.abs(60000 / Config.rotateY))
+        Effect.rotateDir = (Config.rotateY < 0) and -1 or 1
+
+        Effect.AnimRotation:SetDuration(durationMs)
+        Effect.TimelineRotation:PlayFromStart()
+    end
+
+    -- PLAY COLOR ANIMATION
+    if Config.ColorEnd and Effect.durationMs > 0 then
+        local r1, g1, b1, a1 = unpack(Effect.ColorStart)
+        local r2, g2, b2, a2 = unpack(Config.ColorEnd)
+
+        local hasFlash = (Config.ColorFlash and self.SV.durationFlashMs > 0)
+        local durationFlashMs = self.SV.durationFlashMs
+
+        if hasFlash and Effect.durationMs > durationFlashMs then
+            local fadeDuration = Effect.durationMs - durationFlashMs
+            local r3, g3, b3, a3 = unpack(Config.ColorFlash)
+
+            Effect.AnimColorFade:SetColorValues(r1, g1, b1, a1, r2, g2, b2, a2)
+            Effect.AnimColorFade:SetDuration(fadeDuration)
+            Effect.AnimColorFade:SetEasingFunction(ZO_LinearEase)
+
+            Effect.AnimColorFlash:SetColorValues(r2, g2, b2, a2, r3, g3, b3, a3)
+            Effect.AnimColorFlash:SetDuration(durationFlashMs)
+            Effect.AnimColorFlash:SetEasingFunction(ZO_LinearEase)
+
+            Effect.TimelineColor:SetAnimationOffset(Effect.AnimColorFlash, fadeDuration)
+        else
+            Effect.AnimColorFade:SetColorValues(r1, g1, b1, a1, r2, g2, b2, a2)
+            Effect.AnimColorFade:SetDuration(Effect.durationMs)
+            Effect.AnimColorFade:SetEasingFunction(ZO_LinearEase)
+
+            Effect.AnimColorFlash:SetDuration(0)
+        end
+
+        Effect.TimelineColor:PlayFromStart()
+    end
+
+    -- PLAY SCALE ANIMATION
     if not Config.isHidden then
         local animationStartMs = math.max(0, math.min(Effect.durationMs, Config.animationStartMs or Config.animationMs or self.SV.animationMs))
 
         if animationStartMs > 0 then
-            Effect.Animation:SetDuration(animationStartMs)
-            Effect.Animation:SetEasingFunction(ZO_LinearEase) -- ZO_EaseOutQuadratic)
-            Effect.Timeline:PlayFromStart()
+            Effect.AnimScale:SetDuration(animationStartMs)
+            Effect.AnimScale:SetEasingFunction(ZO_LinearEase)
+            Effect.TimelineScale:PlayFromStart()
         else
             Effect.currentScale = Effect.endScale
             Control:Set3DLocalDimensions(Effect.widthMeter * Effect.endScale, Effect.heightMeter * Effect.endScale)
@@ -198,10 +242,9 @@ function Module:StopEffectTracking()
 end
 
 ----------------------------------------------------------------------------------------------------
--- EFFECT TRACKING UPDATE - COLORS, POSITION ETC
+-- EFFECT TRACKING UPDATE - POSITION ETC
 ----------------------------------------------------------------------------------------------------
 function Module:OnUpdate()
-    local currentTime = GetGameTimeMilliseconds()
     local activeTrackers = 0
     local isFastUpdate = false
 
@@ -235,20 +278,10 @@ function Module:OnUpdate()
                     isFastUpdate = true
                 end
 
-                -- ROTATE Y (RPM) -- TODO: ANIMATION TIMELINE?
-                if Data.rotateY and Data.rotateY ~= 0 then
-                    isFastUpdate = true
-                    local passedTime = currentTime - Effect.startTime
-                    local radiansPerMs = (Data.rotateY * 2 * math.pi) / 60000
-                    local rotationAngle = (passedTime * radiansPerMs) % (2 * math.pi)
-                    RY = RY + rotationAngle
-                    needsTransform = true
-                end
-
                 -- ANIMATION OFFSET CORRECTION
                 if Effect.offsetTY and Effect.offsetTY ~= 0 then
                     offsetTY = Effect.offsetTY
-                    if Effect.Timeline and Effect.Timeline:IsPlaying() then
+                    if Effect.TimelineScale and Effect.TimelineScale:IsPlaying() then
                         local currentScale = Effect.currentScale or Effect.startScale or 0
                         offsetTY = Effect.offsetTY * currentScale
                     end
@@ -279,43 +312,19 @@ function Module:OnUpdate()
                         end
                     end
                 end
-
-                -- COLORS
-                if Data.ColorEnd then
-                    if Effect.durationMs > 0 then
-                        local passedTime = currentTime - Effect.startTime
-                        local progress = passedTime / Effect.durationMs
-                        local durationFlashMs = self.SV.durationFlashMs
-                        local hasFlash = (Data.ColorFlash and durationFlashMs > 0)
-
-                        progress = math.max(0, math.min(1, progress))
-
-                        local Color = nil
-                        if Data.ColorFlash and passedTime > (Effect.durationMs - durationFlashMs) then
-                            local flashProgress = (passedTime - (Effect.durationMs - durationFlashMs)) / durationFlashMs
-                            flashProgress = math.max(0, math.min(1, flashProgress))
-
-                            local flashFactor = 1 - flashProgress
-                            Color = CC.GetLinearColor(flashFactor, Data.ColorEnd, Data.ColorFlash)
-                        else
-                            local fadeDuration = hasFlash and (Effect.durationMs - durationFlashMs) or Effect.durationMs
-                            local fadeProgress = passedTime / math.max(1, fadeDuration)
-                            fadeProgress = math.max(0, math.min(1, fadeProgress))
-
-                            local fadeFactor = 1 - fadeProgress
-                            Color = CC.GetLinearColor(fadeFactor, Effect.ColorStart, Data.ColorEnd)
-                        end
-
-                        Effect.Control:SetColor(unpack(Color or { 1, 1, 1, 1 }))
-                    end
-                end
             end
 
+            -- TRANSFORM
             if needsTransform then
                 activeTrackers = activeTrackers + 1
                 local renderX, renderY, renderZ = WorldPositionToGuiRender3DPosition(TX, TY, TZ)
                 Effect.Control:Set3DRenderSpaceOrigin(renderX, renderY, renderZ)
-                Effect.Control:Set3DRenderSpaceOrientation(RX, RY, RZ)
+
+                -- ONLY RX RY RZ WHEN NOT ANIM ROTATION
+                local isAnimatedRotation = (Effect.Data and Effect.Data.rotateY and Effect.Data.rotateY ~= 0)
+                if not isAnimatedRotation then
+                    Effect.Control:Set3DRenderSpaceOrientation(RX, RY, RZ)
+                end
             end
         end
     end
@@ -388,9 +397,19 @@ function Module:GetRecycledEffect()
     Control:SetDrawLayer(DL_OVERLAY)
     --Control:SetDrawLevel(0)
 
-    -- ANIMATION
-    local Timeline = ANIMATION_MANAGER:CreateTimeline()
-    local Animation = Timeline:InsertAnimation(ANIMATION_CUSTOM, Control, 0)
+    -- ANIMATION SCALE
+    local TimelineScale = ANIMATION_MANAGER:CreateTimeline()
+    local AnimScale = TimelineScale:InsertAnimation(ANIMATION_CUSTOM, Control, 0)
+
+    -- ANIMATION ROTATION
+    local TimelineRotation = ANIMATION_MANAGER:CreateTimeline()
+    TimelineRotation:SetPlaybackType(ANIMATION_PLAYBACK_LOOP, LOOP_INDEFINITELY)
+    local AnimRotation = TimelineRotation:InsertAnimation(ANIMATION_CUSTOM, Control, 0)
+
+    -- ANIMATION COLOR
+    local TimelineColor = ANIMATION_MANAGER:CreateTimeline()
+    local AnimColorFade = TimelineColor:InsertAnimation(ANIMATION_COLOR, Control, 0)
+    local AnimColorFlash = TimelineColor:InsertAnimation(ANIMATION_COLOR, Control, 0)
 
     local NewEffect = {
         Control = Control,
@@ -404,17 +423,36 @@ function Module:GetRecycledEffect()
         Data = nil,
 
         -- ANIMATION PROPERTIES
-        Timeline = Timeline,
-        Animation = Animation,
+        TimelineScale = TimelineScale,
+        AnimScale = AnimScale,
 
         startScale = 0,
         currentScale = 0,
         endScale = 1,
+
+        TimelineRotation = TimelineRotation,
+        AnimRotation = AnimRotation,
+
+        TimelineColor = TimelineColor,
+        AnimColorFade = AnimColorFade,
+        AnimColorFlash = AnimColorFlash,
+
+        baseRX = 0, baseRY = 0, baseRZ = 0,
+        rotateDir = 1,
     }
 
-    Animation:SetUpdateFunction(function(animation, progress)
+    -- SET SCALE UPDATE FUNCTION
+    AnimScale:SetUpdateFunction(function(animation, progress)
         NewEffect.currentScale = NewEffect.startScale + (NewEffect.endScale - NewEffect.startScale) * progress
         NewEffect.Control:Set3DLocalDimensions(NewEffect.widthMeter * NewEffect.currentScale, NewEffect.heightMeter * NewEffect.currentScale)
+    end)
+
+    -- SET ROTATION UPDATE FUNCTION
+    AnimRotation:SetUpdateFunction(function(animation, progress)
+        if NewEffect.isActive and NewEffect.Control then
+            local currentRY = NewEffect.baseRY + (progress * 2 * math.pi * NewEffect.rotateDir)
+            NewEffect.Control:Set3DRenderSpaceOrientation(NewEffect.RX, currentRY, NewEffect.RZ)
+        end
     end)
 
     table.insert(self.RegisteredEffects, NewEffect)
@@ -427,10 +465,19 @@ end
 ----------------------------------------------------------------------------------------------------
 function Module:ClearAllEffects()
     for _, Effect in ipairs(self.RegisteredEffects) do
-        if Effect.Timeline and Effect.Timeline:IsPlaying() then
-            Effect.Timeline:SetHandler("OnStop", nil)
-            Effect.Timeline:Stop()
+        if Effect.TimelineScale and Effect.TimelineScale:IsPlaying() then
+            Effect.TimelineScale:SetHandler("OnStop", nil)
+            Effect.TimelineScale:Stop()
         end
+
+        if Effect.TimelineRotation and Effect.TimelineRotation:IsPlaying() then
+            Effect.TimelineRotation:Stop()
+        end
+
+        if Effect.TimelineColor and Effect.TimelineColor:IsPlaying() then
+            Effect.TimelineColor:Stop()
+        end
+
         Effect.isActive = false
         Effect.isFading = false
         if Effect.Control then
@@ -472,7 +519,7 @@ function Module:RemoveTrackedEffect(effectId)
 
     if Effect and Effect.Control and Effect.isActive and not Effect.isFading then
         Effect.isFading = true
-        if Effect.Timeline:IsPlaying() then Effect.Timeline:Stop() end
+        if Effect.TimelineScale:IsPlaying() then Effect.TimelineScale:Stop() end
 
         Effect.startScale = Effect.currentScale
         Effect.endScale = 0
@@ -483,12 +530,20 @@ function Module:RemoveTrackedEffect(effectId)
         end
 
         if animationMs > 0 then
-            Effect.Animation:SetDuration(animationMs)
-            Effect.Animation:SetEasingFunction(ZO_LinearEase) --ZO_EaseInQuadratic)
+            Effect.AnimScale:SetDuration(animationMs)
+            Effect.AnimScale:SetEasingFunction(ZO_LinearEase)
 
-            Effect.Timeline:SetHandler("OnStop", function(EffectTimeline)
+            Effect.TimelineScale:SetHandler("OnStop", function(EffectTimeline)
                 EffectTimeline:SetHandler("OnStop", nil)
                 if Effect and Effect.isFading then
+                    -- STOP ROTATION & COLOR
+                    if Effect.TimelineRotation and Effect.TimelineRotation:IsPlaying() then
+                        Effect.TimelineRotation:Stop()
+                    end
+                    if Effect.TimelineColor and Effect.TimelineColor:IsPlaying() then
+                        Effect.TimelineColor:Stop()
+                    end
+
                     Effect.isActive = false
                     Effect.isFading = false
                     if Effect.Control then
@@ -498,8 +553,16 @@ function Module:RemoveTrackedEffect(effectId)
                 end
             end)
 
-            Effect.Timeline:PlayFromStart()
+            Effect.TimelineScale:PlayFromStart()
         else
+            -- STOP ROTATION & COLOR
+            if Effect.TimelineRotation and Effect.TimelineRotation:IsPlaying() then
+                Effect.TimelineRotation:Stop()
+            end
+            if Effect.TimelineColor and Effect.TimelineColor:IsPlaying() then
+                Effect.TimelineColor:Stop()
+            end
+
             Effect.isActive = false
             Effect.isFading = false
             Effect.Control:SetHidden(true)

@@ -803,15 +803,15 @@ function GR.InitializeFooterControls()
 		},
 		{
 			id = 2,
-			text = "< 1"
+			text = "← 1"
 		},
 		{
 			id = 3,
-			text = "< 2"
+			text = "← 2"
 		},
 		{
 			id = 4,
-			text = "< 3"
+			text = "← 3"
 		},
 		{
 			id = 5,

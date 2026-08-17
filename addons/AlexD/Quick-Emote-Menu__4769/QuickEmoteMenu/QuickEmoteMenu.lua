@@ -1,11 +1,12 @@
 local ADDON_TITLE   = "Quick Emote Menu"
 local ADDON_NAME    = "QuickEmoteMenu"
 local ADDON_AUTHOR  = "@AlexD"
-local ADDON_VERSION = "1.1.0"
+local ADDON_VERSION = "1.2.0"
 local ADDON_WEBSITE = "https://www.esoui.com/downloads/info4769-QuickEmoteMenu.html"
 local SV_VERSION    = 1
 
 local SLASH_COMMAND_PANEL  = "/qempanel"
+local SLASH_COMMAND_DETACH = "/qemdetach"
 
 QuickEmoteMenu = QuickEmoteMenu or {}
 local QEM = QuickEmoteMenu
@@ -14,6 +15,7 @@ local QEM = QuickEmoteMenu
 local SM  = SCENE_MANAGER
 local EM  = EVENT_MANAGER
 local WM  = WINDOW_MANAGER
+local WMS = WORLD_MAP_SCENE
 local PEM = PLAYER_EMOTE_MANAGER
 local MIO = MouseIsOver
 
@@ -38,6 +40,8 @@ local GetString                  = GetString
 local GetUIMousePosition         = GetUIMousePosition
 local GuiRoot                    = GuiRoot
 local ZO_ClearTable              = ZO_ClearTable
+local ZO_ChatWindow              = ZO_ChatWindow
+local ZO_ChatWindowOptions       = ZO_ChatWindowOptions
 local ZO_ObjectPool              = ZO_ObjectPool
 local ZO_SavedVars               = ZO_SavedVars
 local ZO_SimpleSceneFragment     = ZO_SimpleSceneFragment
@@ -57,10 +61,18 @@ local ROW_W                 = 50
 local ROW_H                 = 24
 local ALPHA_ON, ALPHA_OFF   = 1, 0.35
 local BG_ALPHA              = 0.85
-local MAX_VISIBLE           = 20     -- TODO: max rows before scrollbar
+local BORDER_ALPHA          = 0      -- TODO: testing hidden border
+local MAX_VISIBLE_ROWS      = 20     -- TODO: max rows before scrollbar
 local TLW_BUTTON_SIZE       = 36
+local CHAT_BUTTON_SIZE      = 32
+local CHAT_BUTTON_GAP       = 5  -- gap between the button and the chat window options button
 local TEXTURE_ARROW_SCALE   = 0.8
 local SUBMENU_GAP           = 13
+local DRAW_LEVEL_TLW        = 200
+local DRAW_LEVEL_FAV        = 202
+
+-- TODO: when true, the in-menu Settings entry is not shown on the main emote menu.
+local hideSettingsMenu      = false
 
 -- Emote-row layout
 local ROW_LEFT_PAD          = 4
@@ -81,8 +93,7 @@ local COLORS = {
 
 -- Font & text style
 local FONT_ROW      = "$(MEDIUM_FONT)|18|shadow"
--- optional
-local FONT_HEADER   = "$(BOLD_FONT)|18|soft-shadow-thick" -- TODO
+local FONT_HEADER   = "$(BOLD_FONT)|18|soft-shadow-thick"
 
 -- Textures
 local TEX = {
@@ -127,9 +138,15 @@ local function CacheLocalizedStrings()
     STRINGS.OPTION_HOVER_TOOLTIP   = GetString(SI_QUICKEMOTEMENU_OPTION_HOVER_TOOLTIP)
     STRINGS.OPTION_UIMODE          = GetString(SI_QUICKEMOTEMENU_OPTION_UIMODE)
     STRINGS.OPTION_UIMODE_TOOLTIP  = GetString(SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP)
+    STRINGS.OPTION_DETACH          = GetString(SI_QUICKEMOTEMENU_OPTION_DETACH)
+    STRINGS.OPTION_DETACH_TOOLTIP  = GetString(SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP)
     STRINGS.OPTION_CLOSE           = GetString(SI_QUICKEMOTEMENU_OPTION_CLOSE)
     STRINGS.OPTION_RESET           = GetString(SI_QUICKEMOTEMENU_OPTION_RESET)
     STRINGS.OPTION_DESCRIPTION     = GetString(SI_QUICKEMOTEMENU_OPTION_DESCRIPTION)
+    STRINGS.SETTINGS               = GetString(SI_QUICKEMOTEMENU_OPTION_SETTINGS)
+    STRINGS.ATTACH_BUTTON          = GetString(SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON)
+    STRINGS.DETACH_BUTTON          = GetString(SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON)
+    STRINGS.SHOW_SETTINGS_PANEL    = GetString(SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL)
 end
 
 ----------------------------------------------------------------------
@@ -137,12 +154,15 @@ end
 ----------------------------------------------------------------------
 local function InitSettings()
     local defaults = {
-        buttonX             = nil,
-        buttonY             = nil,
-        submenuDelay        = 100,   -- 0 = only on click
-        closeOnPlay         = true,  -- leave UI mode after LMB play
-        showOnlyInUIMode    = false, -- only show the main button while the cursor is visible
-        favorites           = {},    -- list of emoteId
+        buttonX              = nil,
+        buttonY              = nil,
+        favWindowX           = nil,
+        favWindowY           = nil,
+        submenuDelay         = 100,   -- 0 = only on click
+        closeOnPlay          = true,  -- leave UI mode after LMB play
+        showOnlyInUIMode     = false, -- only show the main button while the cursor is visible
+        detachButtonFromChat = false, -- false = dock button next to the chat window options button; true = free-floating (draggable) button
+        favorites            = {},    -- list of emoteId
     }
 
     local SV = ZO_SavedVars:NewAccountWide(ADDON_NAME .. "_SV", SV_VERSION, "Settings", defaults)
@@ -192,11 +212,22 @@ local function InitSettings()
             default = defaults.showOnlyInUIMode,
         },
         {
+            type    = "checkbox",
+            name    = STRINGS.OPTION_DETACH,
+            tooltip = STRINGS.OPTION_DETACH_TOOLTIP,
+            getFunc = function() return SV.detachButtonFromChat end,
+            setFunc = function(v)
+                SV.detachButtonFromChat = v
+                if QEM.UpdateButtonAttachment then QEM.UpdateButtonAttachment() end
+            end,
+            default = defaults.detachButtonFromChat,
+        }, -- toggle also available via /qemdetach and the in-menu Settings entry
+        {
             type    = "button",
             name    = STRINGS.OPTION_RESET,
             func    = function()
                 SV.buttonX, SV.buttonY = nil, nil
-                if QEM.button then
+                if SV.detachButtonFromChat and QEM.button then
                     QEM.button:ClearAnchors()
                     QEM.button:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
                 end
@@ -239,6 +270,9 @@ end
 -- Create UI
 ----------------------------------------------------------------------
 local function CreateUI()
+    -- local saved variables
+    local sv = QEM.SV
+
     -- Permanent measure label
     local measure = CreateControl(ADDON_NAME .. "_Measure", GuiRoot, CT_LABEL)
     measure:SetFont(FONT_ROW)
@@ -251,7 +285,7 @@ local function CreateUI()
         end
     end
 
-    local function CreatePopup(name, parent)
+    local function AcquirePopup(name, parent)
         local menu = CreateControl(name, parent or GuiRoot, CT_CONTROL)
         menu:SetInheritAlpha(false)
         menu:SetMouseEnabled(true)
@@ -287,50 +321,137 @@ local function CreateUI()
         end
     end
 
-    -- Floating movable button (TopLevelWindow)
+    -- Floating movable button (TopLevelWindow) -- only used in DETACHED mode.
+    -- In ATTACHED mode the single clickable button is reparented under the
+    -- chat window host so it fades/hides with chat.
     local tlw = CreateTopLevelWindow(ADDON_NAME .. "_ButtonTLW")
-    tlw:SetDimensions(TLW_BUTTON_SIZE, TLW_BUTTON_SIZE)
-    tlw:SetMouseEnabled(true)
-    tlw:SetMovable(false)           -- engine auto-drag is hardwired to LMB, so we
-                                    -- drive dragging manually (right mouse only) below
-    tlw:SetClampedToScreen(true)
-    tlw:SetDrawTier(DT_HIGH)
-    tlw:SetDrawLayer(DL_OVERLAY)
-    tlw:SetDrawLevel(200)
+    tlw:SetHidden(true)
 
-    -- Background
-    local bg = CreateControl("$(parent)Bg", tlw, CT_BACKDROP)
-    bg:SetAnchorFill(tlw)
-    bg:SetCenterColor(0.12, 0.12, 0.15, 0.92)
-    bg:SetEdgeColor(0.40, 0.55, 0.70, 1)
-    bg:SetEdgeTexture(nil, 1, 1, 1.5, 0)
-    bg:SetMouseEnabled(false)            -- must be false so TLW receives drag
+    -- Thin host under the chat window so the button inherits chat
+    -- alpha/fade/hide like a native chat icon.
+    local chatHost
+    local function SetChatHostAnchorAndDimensions(isVisible)
+        if not chatHost then return end
+        if isVisible then
+            chatHost:SetAnchor(RIGHT, ZO_ChatWindowOptions, LEFT, -CHAT_BUTTON_GAP, 0)
+            chatHost:SetDimensions(CHAT_BUTTON_SIZE, CHAT_BUTTON_SIZE)
+        else
+            chatHost:SetAnchor(RIGHT, ZO_ChatWindowOptions, LEFT, 0, 0)
+            chatHost:SetDimensions(0, 0)
+        end
+    end
+    QEM.SetChatHostAnchorAndDimensions = SetChatHostAnchorAndDimensions
+    if ZO_ChatWindow then
+        chatHost = CreateControl(ADDON_NAME .. "_ChatHost", ZO_ChatWindow, CT_CONTROL)
+        QEM.SetChatHostAnchorAndDimensions(false);
+        chatHost:SetMouseEnabled(false)
+        chatHost:SetHidden(false)
+    end
+    QEM.chatHost = chatHost
 
-    -- Clickable button (engine handles normal / pressed / over textures)
-    local button = CreateControl("$(parent)Btn", tlw, CT_BUTTON)
-    button:SetAnchorFill(tlw)
+    -- One clickable button for both modes -- only parent/anchor/dimensions change.
+    local button = CreateControl(ADDON_NAME .. "_Btn", GuiRoot, CT_BUTTON)
     button:SetMouseEnabled(true)
     button:EnableMouseButton(BTN_RIGHT, true)
     button:SetNormalTexture(TEX.EMOTES)
     button:SetPressedTexture(TEX.EMOTES_DOWN)
     button:SetMouseOverTexture(TEX.EMOTES_OVER)
     button:SetClickSound(SOUND_CLICK)
+    button:SetDimensions(0, 0)
+    button:SetHidden(true)
 
-    -- Position
-    local sv = QEM.SV
-    tlw:ClearAnchors()
-    if sv.buttonX and sv.buttonY
-        and sv.buttonX > 0 and sv.buttonY > 0
-        and sv.buttonX < GuiRoot:GetWidth() - TLW_BUTTON_SIZE
-        and sv.buttonY < GuiRoot:GetHeight() - TLW_BUTTON_SIZE then
-        tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, sv.buttonX, sv.buttonY)
-    else
-        tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
-        sv.buttonX, sv.buttonY = nil, nil
+    -- Background frame -- lazily created the first time the button is detached.
+    local tlwChromeInitialized = false
+    local function InitTLWChrome()
+        if tlwChromeInitialized then return end
+        tlwChromeInitialized = true
+
+        tlw:SetDimensions(TLW_BUTTON_SIZE, TLW_BUTTON_SIZE)
+        tlw:SetMouseEnabled(true)
+        tlw:SetMovable(false)           -- engine auto-drag is hardwired to LMB, so we
+                                        -- drive dragging manually (right mouse only) below
+        tlw:SetClampedToScreen(true)
+        tlw:SetDrawTier(DT_HIGH)
+        tlw:SetDrawLayer(DL_OVERLAY)
+        tlw:SetDrawLevel(DRAW_LEVEL_TLW)
+
+        local bg = CreateControl("$(parent)Bg", tlw, CT_BACKDROP)
+        bg:SetAnchorFill(tlw)
+        bg:SetCenterColor(0.12, 0.12, 0.15, 0.92)
+        bg:SetEdgeColor(0.40, 0.55, 0.70, 1)
+        bg:SetEdgeTexture(nil, 1, 1, 1.5, 0)
+        bg:SetMouseEnabled(false)            -- must be false so TLW receives drag
+        bg:SetHidden(false)
     end
 
+    -- Auto-hide free-floating TLW with HUD (map, inventory, etc.).
+    -- Only active in DETACHED mode. In ATTACHED mode the fragment must not
+    -- be registered or it will re-show the empty TLW when the HUD returns
+    -- (e.g. after closing the map).
+    local buttonFragment = ZO_SimpleSceneFragment:New(tlw)
+    local buttonFragmentAdded = false
+
+    local function SetButtonFragmentEnabled(enabled)
+        if enabled and not buttonFragmentAdded then
+            SM:GetScene("hud"):AddFragment(buttonFragment)
+            SM:GetScene("hudui"):AddFragment(buttonFragment)
+            buttonFragmentAdded = true
+        elseif not enabled and buttonFragmentAdded then
+            SM:GetScene("hud"):RemoveFragment(buttonFragment)
+            SM:GetScene("hudui"):RemoveFragment(buttonFragment)
+            buttonFragmentAdded = false
+            -- Fragment removal can leave the control shown; force hide when attached.
+            tlw:SetHidden(true)
+        end
+    end
+
+    local function ApplyButtonAttachment()
+        tlw:ClearAnchors()
+        button:ClearAnchors()
+        button:SetHidden(false)
+
+        if not QEM.SV.detachButtonFromChat and ZO_ChatWindowOptions and chatHost then
+
+            -- Attached: reparent under chat host. Drop HUD fragment so it
+            -- cannot re-show the empty TLW after map/inventory closes.
+            SetButtonFragmentEnabled(false)
+            tlw:SetHidden(true)
+
+            if ZO_ChatWindowOptions and chatHost then
+                QEM.SetChatHostAnchorAndDimensions(true)
+                button:SetDimensions(CHAT_BUTTON_SIZE, CHAT_BUTTON_SIZE)
+                button:SetParent(chatHost)
+                button:SetAnchorFill(chatHost)
+            end
+        else
+            QEM.SetChatHostAnchorAndDimensions(false)
+            button:SetDimensions(TLW_BUTTON_SIZE, TLW_BUTTON_SIZE)
+
+            -- Detached: free-floating, draggable button with its own frame.
+            InitTLWChrome()
+            SetButtonFragmentEnabled(true)
+            tlw:SetHidden(false)
+
+            button:SetParent(tlw)
+            button:SetAnchorFill(tlw)
+
+            if sv.buttonX and sv.buttonY
+                and sv.buttonX > 0 and sv.buttonY > 0
+                and sv.buttonX < GuiRoot:GetWidth() - TLW_BUTTON_SIZE
+                and sv.buttonY < GuiRoot:GetHeight() - TLW_BUTTON_SIZE then
+                tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, sv.buttonX, sv.buttonY)
+            else
+                tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+                sv.buttonX, sv.buttonY = nil, nil
+            end
+        end
+    end
+    QEM.ApplyButtonAttachment = ApplyButtonAttachment
+    ApplyButtonAttachment()
+
     -- Manual right-mouse-button dragging (engine's built-in SetMovable drag
-    -- only responds to the left button, so we can't use it for this)
+    -- only responds to the left button, so we can't use it for this).
+    -- Only ever active in detached mode -- see StartDragging below.
     local DRAG_UPDATE_NAME = ADDON_NAME .. "_ButtonDrag"
     local isDragging = false
     local dragStartMouseX, dragStartMouseY, dragStartLeft, dragStartTop
@@ -344,6 +465,7 @@ local function CreateUI()
     end
 
     local function StartDragging()
+        if not QEM.SV.detachButtonFromChat then return end -- docked to chat, not movable
         if isDragging then return end -- already dragging?
         isDragging = true
         WM:SetMouseCursor(CURSOR_TYPE.DRAG)
@@ -380,12 +502,18 @@ local function CreateUI()
         end
     end)
 
-    QEM.button = tlw          -- store the TLW (for show/hide & position)
-    QEM.buttonClick = button
+    QEM.button = tlw          -- store the TLW (for show/hide & position when detached)
+    QEM.buttonClick = button  -- the actual visible/clickable control in either mode
+    QEM.UpdateButtonAttachment = function()
+        if QEM.ApplyButtonAttachment then QEM.ApplyButtonAttachment() end
+        if QEM.UpdateButtonCursorVisibility then QEM.UpdateButtonCursorVisibility() end
+    end
 
-    -- Anchor submenu to button depending on button position
+    -- Anchor submenu to button depending on button position. Uses `button`
+    -- (not `tlw`) since that's the control that's actually visible and
+    -- correctly positioned in both attached and detached mode.
     local function ShouldOpenSubmenusLeft()
-        local buttonCenterX = tlw:GetLeft() + tlw:GetWidth() / 2
+        local buttonCenterX = button:GetLeft() + button:GetWidth() / 2
         return buttonCenterX > (GuiRoot:GetWidth() / 2)
     end
 
@@ -400,20 +528,18 @@ local function CreateUI()
         end
     end
 
-    -- Auto-hide alongside other HUD elements (map, inventory, dialogues, etc.)
-    -- by tying the button to the same scenes the regular HUD uses.
-    local buttonFragment = ZO_SimpleSceneFragment:New(tlw)
-    SM:GetScene("hud"):AddFragment(buttonFragment)
-    SM:GetScene("hudui"):AddFragment(buttonFragment)
-
-    -- Optional: only show the button while the mouse cursor (UI mode) is active,
+    -- Only show the button while the mouse cursor (UI mode) is active,
     -- i.e. hide it again once back in normal gameplay/interaction mode.
     -- Uses alpha/mouse-enable instead of SetHidden so it doesn't fight with the
-    -- HUD scene fragment above, which already controls the button's hidden state.
+    -- HUD scene fragment (detached) or the chat window's own fade (attached).
     local function UpdateButtonCursorVisibility()
         local showButton = (not QEM.SV.showOnlyInUIMode) or IsGameCameraUIModeActive()
-        tlw:SetAlpha(showButton and 1 or 0)
-        tlw:SetMouseEnabled(showButton)
+        if QEM.SV.detachButtonFromChat then
+            tlw:SetAlpha(showButton and 1 or 0)
+            tlw:SetMouseEnabled(showButton)
+        else
+            -- button:SetAlpha(showButton and 1 or 0) -- TODO: any use?
+        end
         button:SetMouseEnabled(showButton)
     end
     QEM.UpdateButtonCursorVisibility = UpdateButtonCursorVisibility
@@ -422,16 +548,16 @@ local function CreateUI()
     UpdateButtonCursorVisibility()
 
     -- Main menu -------------------------------------------------------
-    local mainMenu = CreatePopup(ADDON_NAME .. "_Main", button)
+    local mainMenu = AcquirePopup(ADDON_NAME .. "_Main", button)
     mainMenu:SetAnchor(BOTTOM, button, TOP, 0, -4)
     QEM.mainMenu = mainMenu
 
     -- Category submenu ------------------------------------------------
-    local catMenu = CreatePopup(ADDON_NAME .. "_CatMenu", mainMenu.bg)
+    local catMenu = AcquirePopup(ADDON_NAME .. "_CatMenu", mainMenu.bg)
     QEM.catMenu = catMenu
 
     -- Emote submenu ---------------------------------------------------
-    local emoteMenu = CreatePopup(ADDON_NAME .. "_EmoteMenu", catMenu.bg)
+    local emoteMenu = AcquirePopup(ADDON_NAME .. "_EmoteMenu", catMenu.bg)
     QEM.emoteMenu = emoteMenu
 
     local emoteScroll = CreateControlFromVirtual("$(parent)Scroll", emoteMenu, "ZO_ScrollContainer")
@@ -444,7 +570,7 @@ local function CreateUI()
     emoteMenu.scrollChild = emoteChild
 
     -- Favorites submenu ------------------------------------------------
-    local favMenu = CreatePopup(ADDON_NAME .. "_FavMenu", mainMenu.bg)
+    local favMenu = AcquirePopup(ADDON_NAME .. "_FavMenu", mainMenu.bg)
     QEM.favMenu = favMenu
 
     local favScroll = CreateControlFromVirtual("$(parent)Scroll", favMenu, "ZO_ScrollContainer")
@@ -456,6 +582,11 @@ local function CreateUI()
     favChild:SetResizeToFitDescendents(false)
     favMenu.scrollChild = favChild
 
+    -- Settings submenu (Attach/Detach + open LAM panel) ----------------
+    local settingsMenu = AcquirePopup(ADDON_NAME .. "_SettingsMenu", mainMenu.bg)
+    QEM.settingsMenu = settingsMenu
+
+    local settingsRows = {}
     local activeEmoteRows = {}
     local activeFavRows = {}
     local seenSlash = {}
@@ -476,7 +607,7 @@ local function CreateUI()
     end
 
     -- Row pool for emotes
-    local function CreateEmoteRow(pool)
+    local function AcquireEmoteRow(pool)
         local id = pool:GetNextControlId()
         local row = CreateControl("$(parent)ERow" .. id, emoteChild, CT_BUTTON)
         row:SetMouseEnabled(true)
@@ -540,10 +671,10 @@ local function CreateUI()
         c.data = nil
     end
 
-    emoteMenu.rowPool = ZO_ObjectPool:New(CreateEmoteRow, ResetEmoteRow)
+    emoteMenu.rowPool = ZO_ObjectPool:New(AcquireEmoteRow, ResetEmoteRow)
 
     -- Row pool for favorites submenu (play / unfavorite)
-    local function CreateFavListRow(pool)
+    local function AcquireFavListRow(pool)
         local id = pool:GetNextControlId()
         local row = CreateControl("$(parent)FRow" .. id, favChild, CT_BUTTON)
         row:SetMouseEnabled(true)
@@ -587,7 +718,7 @@ local function CreateUI()
         c.data = nil
     end
 
-    favMenu.rowPool = ZO_ObjectPool:New(CreateFavListRow, ResetFavListRow)
+    favMenu.rowPool = ZO_ObjectPool:New(AcquireFavListRow, ResetFavListRow)
 
     -- Helpers to show/hide submenus -----------------------------------
     local function HideEmoteMenu()
@@ -610,6 +741,14 @@ local function CreateUI()
         mainMenu.selectedFavRow = nil
     end
 
+    local function HideSettingsMenu()
+        settingsMenu:SetHidden(true)
+        if mainMenu.selectedSettingsRow and mainMenu.selectedSettingsRow.arrow then
+            mainMenu.selectedSettingsRow.arrow:SetAlpha(ALPHA_OFF)
+        end
+        mainMenu.selectedSettingsRow = nil
+    end
+
     local function HideCatMenu()
         catMenu:SetHidden(true)
         HideEmoteMenu()
@@ -621,6 +760,7 @@ local function CreateUI()
 
     function QEM.ShowFavorites(anchorRow)
         HideCatMenu()
+        HideSettingsMenu()
         AnchorSubmenu(favMenu, anchorRow)
         favMenu.rowPool:ReleaseAllObjects()
         ZO_ClearTable(activeFavRows)
@@ -703,7 +843,7 @@ local function CreateUI()
         end
 
         local contentH = mmax(count * ROW_H, 1)
-        local visH     = mmin(mmax(count, 1), MAX_VISIBLE) * ROW_H
+        local visH     = mmin(mmax(count, 1), MAX_VISIBLE_ROWS) * ROW_H
         favChild:SetHeight(contentH)
         favScroll:SetHeight(visH)
         favMenu:SetHeight(visH)
@@ -717,6 +857,7 @@ local function CreateUI()
 
     local function ShowEmotesForCategory(category, anchorRow)
         HideFavMenu()
+        HideSettingsMenu()
         HideEmoteMenu()
         selectedCategoryRow = anchorRow
         if anchorRow.arrow then anchorRow.arrow:SetAlpha(ALPHA_ON) end
@@ -780,7 +921,7 @@ local function CreateUI()
         end
 
         local contentH = mmax(count * ROW_H, 1)
-        local visH     = mmin(mmax(count, 1), MAX_VISIBLE) * ROW_H
+        local visH     = mmin(mmax(count, 1), MAX_VISIBLE_ROWS) * ROW_H
         emoteChild:SetHeight(contentH)
         emoteScroll:SetHeight(visH)
         emoteMenu:SetHeight(visH)
@@ -877,7 +1018,7 @@ local function CreateUI()
         ZO_ClearTable(mainRows)
     end
 
-    local function CreateMainRow()
+    local function AcquireMainRow()
         local idx = #mainRows + 1
         local row = mainMenu["row" .. idx]
         if not row then
@@ -912,6 +1053,7 @@ local function CreateUI()
 
     local function OpenCategoriesMenu(row)
         HideFavMenu()
+        HideSettingsMenu()
         AnchorSubmenu(catMenu, row)
         catMenu:SetHidden(false)
         row.arrow:SetAlpha(ALPHA_ON)
@@ -921,19 +1063,118 @@ local function CreateUI()
 
     local function OpenFavoritesMenu(row)
         HideCatMenu()
+        HideSettingsMenu()
         mainMenu.selectedFavRow = row
         row.arrow:SetAlpha(ALPHA_ON)
         QEM.ShowFavorites(row)
     end
 
+    local function BuildSettingsMenu()
+        -- Rebuild fixed rows so Attach/Detach label matches current state
+        for _, r in ipairs(settingsRows) do
+            r:SetHidden(true)
+            r:ClearAnchors()
+        end
+        ZO_ClearTable(settingsRows)
+
+        local function AcquireSettingsRow()
+            local idx = #settingsRows + 1
+            local row = settingsMenu["srow" .. idx]
+            if not row then
+                row = CreateControl("$(parent)SRow" .. idx, settingsMenu, CT_BUTTON)
+                row:SetMouseEnabled(true)
+                row:SetDimensions(ROW_W, ROW_H)
+                local label = CreateControl("$(parent)Label", row, CT_LABEL)
+                label:SetAnchor(LEFT, row, LEFT, ROW_LEFT_PAD, 0)
+                label:SetAnchor(RIGHT, row, RIGHT, -ROW_RIGHT_PAD, 0)
+                label:SetMaxLineCount(1)
+                label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+                label:SetFont(FONT_ROW)
+                StyleLabel(label, false)
+                row.label = label
+                row:SetHandler("OnMouseEnter", function(self) StyleLabel(self.label, true) end)
+                row:SetHandler("OnMouseExit",  function(self) StyleLabel(self.label, false) end)
+                settingsMenu["srow" .. idx] = row
+            end
+            settingsRows[idx] = row
+            return row
+        end
+
+        local maxW = ROW_W
+        local count = 0
+
+        -- 1. Show Settings Panel (only if LibAddonMenu2 is available)
+        if LibAddonMenu2 then
+            local row = AcquireSettingsRow()
+            count = count + 1
+            row.label:SetText(STRINGS.SHOW_SETTINGS_PANEL)
+            row:SetHandler("OnMouseUp", function(self, btn, upInside)
+                if btn == BTN_LEFT and upInside then
+                    QEM:CloseAll()
+                    -- QEM.OpenSettingsPanel() -- This doesn't work! use the slash command
+                    SLASH_COMMANDS[SLASH_COMMAND_PANEL]()
+                end
+            end)
+            measure:SetText(STRINGS.SHOW_SETTINGS_PANEL)
+            maxW = mmax(maxW, measure:GetTextWidth() + ROW_LEFT_PAD + ROW_RIGHT_PAD + 8)
+        end
+
+        -- 2. Attach / Detach Button
+        do
+            local row = AcquireSettingsRow()
+            count = count + 1
+            local text = QEM.SV.detachButtonFromChat and STRINGS.ATTACH_BUTTON or STRINGS.DETACH_BUTTON
+            row.label:SetText(text)
+            row:SetHandler("OnMouseUp", function(self, btn, upInside)
+                if btn == BTN_LEFT and upInside then
+                    QEM.ToggleDetachFromChat()
+                    -- Rebuild so the Attach/Detach label reflects the new state
+                    if mainMenu.selectedSettingsRow then
+                        BuildSettingsMenu()
+                    end
+                end
+            end)
+            measure:SetText(text)
+            maxW = mmax(maxW, measure:GetTextWidth() + ROW_LEFT_PAD + ROW_RIGHT_PAD + 8)
+        end
+
+        local finalW = mmax(maxW, ROW_W)
+        for i = 1, count do
+            local row = settingsRows[i]
+            row:ClearAnchors()
+            row:SetDimensions(finalW, ROW_H)
+            row:SetHidden(false)
+            if i == 1 then
+                row:SetAnchor(TOPLEFT, settingsMenu, TOPLEFT, 0, 0)
+            else
+                row:SetAnchor(TOPLEFT, settingsRows[i - 1], BOTTOMLEFT, 0, 0)
+            end
+        end
+        settingsMenu:SetWidth(finalW)
+        settingsMenu:SetHeight(mmax(count, 1) * ROW_H)
+    end
+
+    local function OpenSettingsMenu(row)
+        HideCatMenu()
+        HideFavMenu()
+        BuildSettingsMenu()
+        AnchorSubmenu(settingsMenu, row)
+        settingsMenu:SetHidden(false)
+        row.arrow:SetAlpha(ALPHA_ON)
+        mainMenu.selectedSettingsRow = row
+        PlaySound(SOUND_OPEN)
+    end
+
     function QEM:RefreshMainMenu(keepSubmenuOpen)
         local keepCatSelected = keepSubmenuOpen and mainMenu.selectedCatRow ~= nil
         local keepFavSelected = keepSubmenuOpen and mainMenu.selectedFavRow ~= nil
+        local keepSettingsSelected = keepSubmenuOpen and mainMenu.selectedSettingsRow ~= nil
 
         ClearMainRows()
         if not keepSubmenuOpen then
             HideCatMenu()
             HideFavMenu()
+            HideSettingsMenu()
         end
 
         local maxW = ROW_W
@@ -941,7 +1182,7 @@ local function CreateUI()
 
         -- Categories (same look as category list rows)
         do
-            local row = CreateMainRow()
+            local row = AcquireMainRow()
             count = count + 1
             row.label:SetText(STRINGS.CATEGORIES)
             -- row.arrow:SetHidden(false)
@@ -978,7 +1219,7 @@ local function CreateUI()
 
         -- Favorites (same look as category list rows)
         do
-            local row = CreateMainRow()
+            local row = AcquireMainRow()
             count = count + 1
             row.label:SetText(STRINGS.FAVORITES)
             -- row.arrow:SetHidden(false)
@@ -1013,6 +1254,42 @@ local function CreateUI()
             maxW = mmax(maxW, measure:GetTextWidth() + ROW_H * TEXTURE_ARROW_SCALE + 16)
         end
 
+        -- Settings (same look; optional via hideSettingsMenu)
+        if not hideSettingsMenu then
+            local row = AcquireMainRow()
+            count = count + 1
+            row.label:SetText(STRINGS.SETTINGS)
+            row.arrow:SetAlpha(keepSettingsSelected and ALPHA_ON or ALPHA_OFF)
+            row.data = nil
+            if keepSettingsSelected then
+                mainMenu.selectedSettingsRow = row
+            end
+
+            row:SetHandler("OnMouseUp", function(self, btn, upInside)
+                if btn == BTN_LEFT and upInside then
+                    OpenSettingsMenu(self)
+                end
+            end)
+            row:SetHandler("OnMouseEnter", function(self)
+                StyleLabel(self.label, true)
+                if QEM.SV.submenuDelay > 0 then
+                    EM:RegisterForUpdate("qem_main_settings", QEM.SV.submenuDelay, function()
+                        EM:UnregisterForUpdate("qem_main_settings")
+                        if MIO(self) then
+                            OpenSettingsMenu(self)
+                        end
+                    end)
+                end
+            end)
+            row:SetHandler("OnMouseExit", function(self)
+                StyleLabel(self.label, false)
+                EM:UnregisterForUpdate("qem_main_settings")
+            end)
+
+            measure:SetText(STRINGS.SETTINGS)
+            maxW = mmax(maxW, measure:GetTextWidth() + ROW_H * TEXTURE_ARROW_SCALE + 16)
+        end
+
         local finalW = mmax(maxW, ROW_W)
 
         for i = 1, count do
@@ -1035,25 +1312,29 @@ local function CreateUI()
         mainMenu:SetHidden(true)
         HideCatMenu()
         HideFavMenu()
+        HideSettingsMenu()
     end
 
-    -- Anchor main menu to button depending on button position
+    -- Anchor main menu to button depending on button position. Uses `button`
+    -- (not `tlw`) since that's the control that's actually visible and
+    -- correctly positioned in both attached and detached mode.
     local function AnchorMainMenuToButton()
         mainMenu:ClearAnchors()
-        local buttonCenterY = tlw:GetTop() + tlw:GetHeight() / 2
+        local buttonCenterY = button:GetTop() + button:GetHeight() / 2
         local screenCenterY = GuiRoot:GetHeight() / 2
 
         if buttonCenterY < screenCenterY then
             -- Button in upper half → open menu below it
-            mainMenu:SetAnchor(TOP, tlw, BOTTOM, 0, 4)
+            mainMenu:SetAnchor(TOP, button, BOTTOM, 0, 4)
         else
             -- Button in lower half → open menu above it
-            mainMenu:SetAnchor(BOTTOM, tlw, TOP, 0, -4)
+            mainMenu:SetAnchor(BOTTOM, button, TOP, 0, -4)
         end
     end
 
     function QEM:ToggleMainMenu(leaveUIModeOnClose)
         if mainMenu:IsHidden() then
+            if self.HideFavoritesWindow then self:HideFavoritesWindow(false) end
             self:RefreshMainMenu()
             AnchorMainMenuToButton()
             mainMenu:SetHidden(false)
@@ -1070,7 +1351,7 @@ local function CreateUI()
     -- Close when clicking outside
     mainMenu:SetHandler("OnShow", function(self)
         self:RegisterForEvent(EVENT_GLOBAL_MOUSE_UP, function()
-            if MIO(self) or MIO(button) or MIO(catMenu) or MIO(emoteMenu) or MIO(favMenu) then return end
+            if MIO(self) or MIO(button) or MIO(catMenu) or MIO(emoteMenu) or MIO(favMenu) or MIO(settingsMenu) then return end
             QEM:CloseAll()
         end)
         self:RegisterForEvent(EVENT_ACTION_LAYER_POPPED, function()
@@ -1092,13 +1373,303 @@ local function CreateUI()
         self:UnregisterForEvent(EVENT_GAME_CAMERA_UI_MODE_CHANGED)
         HideCatMenu()
         HideFavMenu()
+        HideSettingsMenu()
     end)
+
+    ----------------------------------------------------------------------
+    -- Standalone Favorites Window
+    -- Opened only via its own keybind (QEM_ToggleFavoritesWindow). Shows the
+    -- current favorites list, is scrollable, movable by its header, and is
+    -- read-only (no right-click removal here — manage favorites from the
+    -- main button's menu instead).
+    --
+    -- Layout matches the fav submenu: explicit width/height, no padding
+    -- inset that fights scroll anchors, same backdrop style as AcquirePopup.
+    ----------------------------------------------------------------------
+    local FAV_WIN_HEADER_MARGIN = 5 -- extra space between header and content
+    local FAV_WIN_HEADER_H = ROW_H + FAV_WIN_HEADER_MARGIN
+
+    local favWindow = CreateTopLevelWindow(ADDON_NAME .. "_FavWindow")
+    favWindow:SetMouseEnabled(true)
+    favWindow:SetMovable(true) -- required for StartMoving()/StopMovingOrResizing()
+    favWindow:SetClampedToScreen(true)
+    favWindow:SetDrawTier(DT_HIGH)
+    favWindow:SetDrawLayer(DL_OVERLAY)
+    favWindow:SetDrawLevel(DRAW_LEVEL_FAV)
+    favWindow:SetHidden(true)
+    favWindow:SetInheritAlpha(false)
+    favWindow:SetDimensions(ROW_W, FAV_WIN_HEADER_H + ROW_H)
+
+    -- Same backdrop style as AcquirePopup / fav submenu
+    local favWinBg = CreateControl("$(parent)Bg", favWindow, CT_BACKDROP)
+    favWinBg:SetAnchor(TOPLEFT, favWindow, TOPLEFT, -5, -5)
+    favWinBg:SetAnchor(BOTTOMRIGHT, favWindow, BOTTOMRIGHT, 5, 5)
+    favWinBg:SetCenterColor(12/255, 12/255, 12/255, BG_ALPHA)
+    favWinBg:SetEdgeTexture(nil, 1, 1, 1, 0)
+    favWinBg:SetEdgeColor(70/255, 70/255, 70/255, BORDER_ALPHA) -- TODO: transparent
+    favWinBg:SetInsets(-1, -1, 1, 1)
+    favWinBg:SetExcludeFromResizeToFitExtents(true)
+    favWinBg:SetMouseEnabled(false)
+
+    -- Header: full-width drag handle + centered title
+    local favWinHeader = CreateControl("$(parent)Header", favWindow, CT_CONTROL)
+    favWinHeader:SetAnchor(TOPLEFT, favWindow, TOPLEFT, 0, 0)
+    favWinHeader:SetAnchor(TOPRIGHT, favWindow, TOPRIGHT, 0, 0)
+    favWinHeader:SetHeight(FAV_WIN_HEADER_H - FAV_WIN_HEADER_MARGIN)
+    favWinHeader:SetMouseEnabled(true)
+
+    local favWinHeaderBg = CreateControl("$(parent)Bg", favWinHeader, CT_BACKDROP)
+    favWinHeaderBg:SetAnchorFill(favWinHeader)
+    favWinHeaderBg:SetCenterColor(12/255, 12/255, 12/255, 0.35)
+    favWinHeaderBg:SetEdgeTexture(nil, 1, 1, 0, 0)
+    favWinHeaderBg:SetEdgeColor(70 / 255, 70 / 255, 70 / 255, BORDER_ALPHA) -- TODO: transparent
+    favWinHeaderBg:SetMouseEnabled(false)
+
+    local favWinTitle = CreateControl("$(parent)Title", favWinHeader, CT_LABEL)
+    favWinTitle:SetAnchor(LEFT, favWinHeader, LEFT, ROW_LEFT_PAD, 0)
+    favWinTitle:SetAnchor(RIGHT, favWinHeader, RIGHT, -ROW_LEFT_PAD, 0)
+    favWinTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    favWinTitle:SetMaxLineCount(1)
+    favWinTitle:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    favWinTitle:SetFont(FONT_HEADER)
+    favWinTitle:SetText(STRINGS.FAVORITES)
+    StyleLabel(favWinTitle, false)
+    favWinTitle:SetMouseEnabled(false)
+
+    -- Drag only via the header so row clicks never move the window
+    favWinHeader:SetHandler("OnMouseEnter", function()
+        WM:SetMouseCursor(CURSOR_TYPE.DRAG)
+    end)
+    favWinHeader:SetHandler("OnMouseExit", function()
+        WM:SetMouseCursor(CURSOR_TYPE.DEFAULT)
+    end)
+    favWinHeader:SetHandler("OnMouseDown", function(_, btn)
+        if btn == BTN_LEFT or btn == BTN_RIGHT then
+            favWindow:StartMoving()
+        end
+    end)
+    favWinHeader:SetHandler("OnMouseUp", function(_, btn)
+        if btn == BTN_LEFT or btn == BTN_RIGHT then
+            favWindow:StopMovingOrResizing()
+            QEM.SV.favWindowX = favWindow:GetLeft()
+            QEM.SV.favWindowY = favWindow:GetTop()
+        end
+    end)
+
+    -- Scrollable body — same pattern as favMenu / emoteMenu
+    local favWinScroll = CreateControlFromVirtual("$(parent)Scroll", favWindow, "ZO_ScrollContainer")
+    favWinScroll:SetAnchor(TOPLEFT, favWindow, TOPLEFT, 0, FAV_WIN_HEADER_H)
+    favWinScroll:SetAnchor(BOTTOMRIGHT, favWindow, BOTTOMRIGHT, 0, 0)
+    ZO_Scroll_Initialize(favWinScroll)
+    local favWinChild = favWinScroll:GetNamedChild("ScrollChild")
+    favWinChild:SetResizeToFitDescendents(false)
+
+    local activeFavWinRows = {}
+
+    local function AcquireFavWindowRow(pool)
+        local id = pool:GetNextControlId()
+        local row = CreateControl("$(parent)WRow" .. id, favWinChild, CT_BUTTON)
+        row:SetMouseEnabled(true)
+        row:SetDimensions(ROW_W, ROW_H)
+        row:SetHidden(true)
+
+        local label = CreateControl("$(parent)Label", row, CT_LABEL)
+        label:SetAnchor(LEFT, row, LEFT, ROW_LEFT_PAD, 0)
+        label:SetAnchor(RIGHT, row, RIGHT, -ROW_RIGHT_PAD, 0)
+        label:SetMaxLineCount(1)
+        label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+        label:SetFont(FONT_ROW)
+        StyleLabel(label, false)
+        row.label = label
+
+        row:SetHandler("OnMouseEnter", function(self) StyleLabel(self.label, true) end)
+        row:SetHandler("OnMouseExit",  function(self) StyleLabel(self.label, false) end)
+
+        -- Play only; no right-click unfavorite (manage favorites from main menu)
+        row:SetHandler("OnMouseUp", function(self, btn, upInside)
+            if not upInside or not self.data or not self.data.emoteIndex then return end
+            if btn == BTN_LEFT then
+                PlayEmoteByIndex(self.data.emoteIndex)
+                if QEM.SV.closeOnPlay then
+                    QEM:HideFavoritesWindow(true)
+                end
+            end
+        end)
+        return row
+    end
+
+    local function ResetFavWindowRow(c)
+        c:SetHidden(true)
+        c:ClearAnchors()
+        c.data = nil
+    end
+
+    favWindow.rowPool = ZO_ObjectPool:New(AcquireFavWindowRow, ResetFavWindowRow)
+
+    function QEM:RefreshFavoritesWindow()
+        favWindow.rowPool:ReleaseAllObjects()
+        ZO_ClearTable(activeFavWinRows)
+
+        local favs = QEM.SV.favorites
+        local favTemp = {}
+        for i = #favs, 1, -1 do
+            local emoteId = favs[i]
+            local info = PEM:GetEmoteItemInfo(emoteId)
+            if info and info.emoteIndex then
+                tinsert(favTemp, info)
+            else
+                tremove(favs, i)
+            end
+        end
+        tsort(favTemp, function(a, b)
+            local na = a.displayName or a.emoteSlashName or ""
+            local nb = b.displayName or b.emoteSlashName or ""
+            return na < nb
+        end)
+
+        local maxW = 0
+        local count = 0
+
+        if #favTemp == 0 then
+            local row = favWindow.rowPool:AcquireObject()
+            row.data = nil
+            row.label:SetText(STRINGS.NO_FAVORITES)
+            measure:SetText(STRINGS.NO_FAVORITES)
+            maxW = mmax(maxW, measure:GetTextWidth() + ROW_LEFT_PAD + ROW_RIGHT_PAD_EMOTES)
+            count = 1
+            activeFavWinRows[1] = row
+        else
+            for _, info in ipairs(favTemp) do
+                local row = favWindow.rowPool:AcquireObject()
+                row.data = info
+                local slash = info.emoteSlashName or ""
+                local name  = info.displayName or STRINGS.UNKNOWN_NAME
+                local text  = strformat("%s :: %s", name, slash)
+                row.label:SetText(text)
+                measure:SetText(text)
+                maxW = mmax(maxW, measure:GetTextWidth() + ROW_LEFT_PAD + ROW_RIGHT_PAD_EMOTES)
+                count = count + 1
+                activeFavWinRows[count] = row
+            end
+        end
+
+        -- Never shrink below the centered title width
+        measure:SetText(STRINGS.FAVORITES)
+        local headerMinW = measure:GetTextWidth() + ROW_LEFT_PAD * 2
+        local finalW = mmax(maxW, headerMinW, ROW_W)
+
+        local contentH = mmax(count * ROW_H, 1)
+        local visH     = mmin(mmax(count, 1), MAX_VISIBLE_ROWS) * ROW_H
+
+        -- Size window first, then children (same order as fav/emote submenus)
+        favWindow:SetDimensions(finalW, visH + FAV_WIN_HEADER_H)
+        favWinScroll:SetWidth(finalW)
+        favWinScroll:SetHeight(visH)
+        favWinChild:SetWidth(finalW)
+        favWinChild:SetHeight(contentH)
+
+        for i = 1, count do
+            local row = activeFavWinRows[i]
+            row:ClearAnchors()
+            row:SetDimensions(finalW, ROW_H)
+            row:SetHidden(false)
+            if i == 1 then
+                row:SetAnchor(TOPLEFT, favWinChild, TOPLEFT, 0, 0)
+            else
+                row:SetAnchor(TOPLEFT, activeFavWinRows[i - 1], BOTTOMLEFT, 0, 0)
+            end
+        end
+
+        if ZO_Scroll_UpdateScrollBar then ZO_Scroll_UpdateScrollBar(favWinScroll) end
+        if ZO_Scroll_ResetToTop then ZO_Scroll_ResetToTop(favWinScroll) end
+    end
+
+    function QEM:ShowFavoritesWindow()
+        if self.CloseAll then self:CloseAll() end
+        self:RefreshFavoritesWindow()
+        favWindow:SetHidden(false)
+        SM:SetInUIMode(true)
+        PlaySound(SOUND_OPEN)
+    end
+
+    function QEM:HideFavoritesWindow(leaveUIMode)
+        if favWindow:IsHidden() then return end
+        favWindow:SetHidden(true)
+        if leaveUIMode then
+            LeaveUIMode()
+        end
+    end
+
+    function QEM:ToggleFavoritesWindow()
+        if favWindow:IsHidden() then
+            self:ShowFavoritesWindow()
+        else
+            self:HideFavoritesWindow(true)
+        end
+    end
+
+    -- Force-close popup menus/windows as soon as the HUD scenes start hiding
+    -- (map, inventory, dialogues, etc.). The main menu is only a child of the
+    -- button control — it is NOT a scene fragment — so when the detached TLW
+    -- is re-shown after the map closes the menu would still be open unless we
+    -- explicitly CloseAll here. Same for the standalone favorites window.
+    local function ForceHidePopupsOnHudHide(oldState, newState)
+        if newState == SCENE_HIDING or newState == SCENE_HIDDEN then
+            if not mainMenu:IsHidden() then
+                QEM:CloseAll()
+            end
+            if not favWindow:IsHidden() then
+                QEM:HideFavoritesWindow(false)
+            end
+        end
+    end
+    SM:GetScene("hud"):RegisterCallback("StateChange", ForceHidePopupsOnHudHide)
+    SM:GetScene("hudui"):RegisterCallback("StateChange", ForceHidePopupsOnHudHide)
+
+    -- Extra safety for the world map specifically
+    if WMS then -- WORLD_MAP_SCENE
+        WMS:RegisterCallback("StateChange", function(oldState, newState)
+            if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                if not mainMenu:IsHidden() then
+                    QEM:CloseAll()
+                end
+                if not favWindow:IsHidden() then
+                    QEM:HideFavoritesWindow(false)
+                end
+            end
+        end)
+    end
+
+    -- Also close when leaving UI mode / cursor (movement, etc.)
+    favWindow:SetHandler("OnShow", function(self)
+        self:RegisterForEvent(EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
+            if not self:IsHidden() and not IsGameCameraUIModeActive() then
+                QEM:HideFavoritesWindow(false)
+            end
+        end)
+    end)
+    favWindow:SetHandler("OnHide", function(self)
+        self:UnregisterForEvent(EVENT_GAME_CAMERA_UI_MODE_CHANGED)
+    end)
+
+    -- Position (independent of the main button)
+    favWindow:ClearAnchors()
+    if sv.favWindowX and sv.favWindowY
+        and sv.favWindowX > 0 and sv.favWindowY > 0
+        and sv.favWindowX < GuiRoot:GetWidth()
+        and sv.favWindowY < GuiRoot:GetHeight() then
+        favWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, sv.favWindowX, sv.favWindowY)
+    else
+        favWindow:SetAnchor(TOPLEFT, GuiRoot, CENTER, 50, 0) -- default position
+    end
+
+    QEM.favWindow = favWindow
 end
 
 ----------------------------------------------------------------------
--- Slash + Keybind
+-- Shared helpers (slash commands + in-menu Settings)
 ----------------------------------------------------------------------
-SLASH_COMMANDS[SLASH_COMMAND_PANEL] = function()
+function QEM.OpenSettingsPanel()
     if LibAddonMenu2 then
         LibAddonMenu2:OpenToPanel(ADDON_NAME .. "Panel")
     else
@@ -1106,9 +1677,33 @@ SLASH_COMMANDS[SLASH_COMMAND_PANEL] = function()
     end
 end
 
+function QEM.ToggleDetachFromChat()
+    if not QEM.SV then return end
+    QEM.SV.detachButtonFromChat = not QEM.SV.detachButtonFromChat
+    if QEM.UpdateButtonAttachment then
+        QEM.UpdateButtonAttachment()
+    end
+end
+
+----------------------------------------------------------------------
+-- Slash + Keybind
+----------------------------------------------------------------------
+SLASH_COMMANDS[SLASH_COMMAND_PANEL] = function()
+    QEM.OpenSettingsPanel()
+end
+
+SLASH_COMMANDS[SLASH_COMMAND_DETACH] = function()
+    QEM.ToggleDetachFromChat()
+end
+
 -- Keybind handler (bind in Controls → User Interface)
 function QEM_Toggle()
     if QEM.ToggleMainMenu then QEM:ToggleMainMenu(true) end
+end
+
+-- Keybind handler for the standalone favorites window
+function QEM_ToggleFavoritesWindow()
+    if QEM.ToggleFavoritesWindow then QEM:ToggleFavoritesWindow() end
 end
 
 ----------------------------------------------------------------------
@@ -1123,6 +1718,7 @@ local function OnLoaded(_, name)
 
     -- Bindings
     ZO_CreateStringId("SI_BINDING_NAME_QUICK_EMOTE_MENU", STRINGS.BINDING_TOGGLE .. " " .. ADDON_TITLE)
+    ZO_CreateStringId("SI_BINDING_NAME_QUICK_EMOTE_MENU_FAVORITES", STRINGS.BINDING_TOGGLE .. " " .. STRINGS.FAVORITES .. " " .. ADDON_TITLE)
 
     -- Init
     InitSettings()

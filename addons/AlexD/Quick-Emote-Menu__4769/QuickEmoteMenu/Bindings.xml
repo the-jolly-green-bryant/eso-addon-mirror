@@ -4,6 +4,9 @@
             <Action name="QUICK_EMOTE_MENU">
                 <Down>QEM_Toggle()</Down>
             </Action>
+            <Action name="QUICK_EMOTE_MENU_FAVORITES">
+                <Down>QEM_ToggleFavoritesWindow()</Down>
+            </Action>
         </Category>
     </Layer>
 </Bindings>

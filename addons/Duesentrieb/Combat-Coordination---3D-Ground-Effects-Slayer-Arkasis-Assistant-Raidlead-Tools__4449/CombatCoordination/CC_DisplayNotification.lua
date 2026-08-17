@@ -42,6 +42,10 @@ local Module = {
     pullFinishedEndTime = 0,
     pullTotalTimeSec = 0,
 
+    TimelineScale = nil,
+    AnimScaleUp = nil,
+    AnimScaleDown = nil,
+
     Default = {
         fontSize = 50,
         fontStyle = "$(BOLD_FONT)",
@@ -116,7 +120,6 @@ end
 -- UPDATE DIMENSIONS (AND FONTS)
 ----------------------------------------------------------------------------------------------------
 function Module:UpdateDimensions()
-
     local fontSize1 = self.SV.fontSize
     local fontSize2 = math.floor(self.SV.fontSize * 2/3)
     local fontSize3 = math.floor(self.SV.fontSize * 1/3)
@@ -135,7 +138,7 @@ function Module:UpdateDimensions()
 end
 
 ----------------------------------------------------------------------------------------------------
--- TOGGLE ALPHA
+-- TOGGLE TRANSPARENCY
 ----------------------------------------------------------------------------------------------------
 function Module:ToggleTransparency()
     if not self.Container then return end
@@ -149,6 +152,9 @@ function Module:ToggleTransparency()
     end
 end
 
+----------------------------------------------------------------------------------------------------
+-- RESET TRANSPARENCY
+----------------------------------------------------------------------------------------------------
 function Module:ResetTransparency()
     self.isTransparent = false
     if self.Container then
@@ -191,7 +197,7 @@ function Module:TriggerCustom(timeSec, line1, line2, playSound)
 end
 
 ----------------------------------------------------------------------------------------------------
--- UPDATE SEC
+-- UPDATE TICK
 ----------------------------------------------------------------------------------------------------
 function Module:UpdateTick()
     if not self.Parent then return end
@@ -301,7 +307,6 @@ function Module:UpdateTick()
             self.lastTickSec = currentSec
             CC.PlaySound(SOUNDS.COUNTDOWN_TICK, 2)
 
-            -- 100% -> 125% -> 100%
             self:PlayAnimation(1.0, 1.25, 1.0)
         end
 
@@ -456,7 +461,6 @@ function Module:UpdateTick()
             self:PlayAnimation(0.0, 1.25, 1.0)
         end
     else
-        -- 100% -> 0
         if self.isShowing or (not self.Parent:IsHidden() and not self.isHiding) then
             self.isShowing = false
             self.isHiding = true
@@ -482,47 +486,47 @@ end
 function Module:PlayAnimation(startScale, peakScale, endScale)
     if not self.Parent then return end
 
-    if not self.Timeline then
-        self.Timeline = ANIMATION_MANAGER:CreateTimeline()
+    if not self.TimelineScale then
+        self.TimelineScale = ANIMATION_MANAGER:CreateTimeline()
 
-        self.ScaleUp = self.Timeline:InsertAnimation(ANIMATION_SCALE, self.Parent, 0)
-        self.ScaleUp:SetEasingFunction(ZO_LinearEase)
+        self.AnimScaleUp = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Parent, 0)
+        self.AnimScaleUp:SetEasingFunction(ZO_LinearEase)
 
-        self.ScaleDown = self.Timeline:InsertAnimation(ANIMATION_SCALE, self.Parent, 0)
-        self.ScaleDown:SetEasingFunction(ZO_LinearEase)
+        self.AnimScaleDown = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Parent, 0)
+        self.AnimScaleDown:SetEasingFunction(ZO_LinearEase)
     end
 
-    if self.Timeline:IsPlaying() then self.Timeline:Stop() end
+    if self.TimelineScale:IsPlaying() then self.TimelineScale:Stop() end
 
     -- 100% -> 0%
     if peakScale == 0 and endScale == 0 then
-        self.ScaleUp:SetScaleValues(startScale, 0)
-        self.ScaleUp:SetDuration(200)
-        self.ScaleDown:SetDuration(0)
+        self.AnimScaleUp:SetScaleValues(startScale, 0)
+        self.AnimScaleUp:SetDuration(200)
+        self.AnimScaleDown:SetDuration(0)
 
-        self.Timeline:SetHandler('OnStop', function()
+        self.TimelineScale:SetHandler('OnStop', function()
             self.Parent:SetHidden(true)
             self:ResetTransparency()
             self.isHiding = false
             self.isShowing = false
         end)
-        self.Timeline:PlayFromStart()
+        self.TimelineScale:PlayFromStart()
         return
     end
 
     -- 0 -> 2.0 -> 1.0 OR 1.0 -> 1.5 -> 1.0
-    self.Timeline:SetHandler('OnStop', nil)
+    self.TimelineScale:SetHandler('OnStop', nil)
     self.Parent:SetHidden(false)
     self.isHiding = false
 
-    self.ScaleUp:SetScaleValues(startScale, peakScale)
-    self.ScaleUp:SetDuration(150)
+    self.AnimScaleUp:SetScaleValues(startScale, peakScale)
+    self.AnimScaleUp:SetDuration(150)
 
-    self.ScaleDown:SetScaleValues(peakScale, endScale)
-    self.ScaleDown:SetDuration(150)
-    self.Timeline:SetAnimationOffset(self.ScaleDown, 150)
+    self.AnimScaleDown:SetScaleValues(peakScale, endScale)
+    self.AnimScaleDown:SetDuration(150)
+    self.TimelineScale:SetAnimationOffset(self.AnimScaleDown, 150)
 
-    self.Timeline:PlayFromStart()
+    self.TimelineScale:PlayFromStart()
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -731,7 +735,7 @@ function Module:TriggerBreak(timeSec, sourceName, isRestore)
 end
 
 ----------------------------------------------------------------------------------------------------
--- ENABLE / DISABLE / HIDE
+-- HIDE
 ----------------------------------------------------------------------------------------------------
 function Module:Hide()
     self:ResetTransparency()
@@ -766,7 +770,7 @@ function Module:Hide()
     self.lastTickSec = 0
 
     if self.Parent then
-        if self.Timeline and self.Timeline:IsPlaying() then self.Timeline:Stop() end
+        if self.TimelineScale and self.TimelineScale:IsPlaying() then self.TimelineScale:Stop() end
         self.Parent:SetScale(1.0)
         self.isHiding = false
 
@@ -776,6 +780,9 @@ function Module:Hide()
     EVENT_MANAGER:UnregisterForUpdate(CC.NAME .. "Notification_UpdateLoop")
 end
 
+----------------------------------------------------------------------------------------------------
+-- CUSTOM ENABLE
+----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
     if not self.Parent then self:Create() end
     self:Hide()
@@ -790,9 +797,15 @@ function Module:CustomEnable()
     end
 end
 
+----------------------------------------------------------------------------------------------------
+-- CUSTOM DISABLE
+----------------------------------------------------------------------------------------------------
 function Module:CustomDisable()
     self:Hide()
 end
 
+----------------------------------------------------------------------------------------------------
+-- REGISTER MODULE
+----------------------------------------------------------------------------------------------------
 CC[Module.name] = Module
 table.insert(CC.Modules, Module)

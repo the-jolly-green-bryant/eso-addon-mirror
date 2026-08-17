@@ -8,8 +8,8 @@
   "category_id": "94",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4685",
@@ -18,7 +18,7 @@
     "GoldRush"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4685/",
-  "fingerprint": "13582f757576a6fe8b5e13d5397d6345f5b3f54e79e4078b5369c3c9b43905a0",
+  "fingerprint": "161ba42b066b89f45158630a0bbca98962d235fffab0edb36431db0a22641948",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16590.png",
     "https://cdn-eso.mmoui.com/preview/pvw16591.png"
@@ -29,11 +29,11 @@
   "source_id": "4685",
   "source_url": "https://www.esoui.com/downloads/info4685-GoldRushTradingPricing.html",
   "stats": {
-    "downloads": 373,
-    "favorites": 5,
-    "monthly_downloads": 174
+    "downloads": 444,
+    "favorites": 6,
+    "monthly_downloads": 217
   },
   "title": "Gold Rush \u2014 Trading & Pricing",
-  "updated_at": 1786532197000,
-  "version": "2.0"
+  "updated_at": 1786882858000,
+  "version": "2.1"
 }

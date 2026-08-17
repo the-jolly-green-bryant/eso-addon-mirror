@@ -14,7 +14,8 @@ local Module = {
 
     startTime = 0,
     timeoutMs = 5000,
-    isReceiving = false,
+    isReceivingSync = false,
+    isReceivingVersion = false,
 
     Default = { enableDebugOnData = false, },
     ---@type table|any
@@ -29,7 +30,8 @@ function Module:CustomEnable()
 end
 
 function Module:CustomDisable()
-    self.isReceiving = false
+    self.isReceivingSync = false
+    self.isReceivingVersion = false
     self.startTime = 0
 end
 
@@ -71,7 +73,7 @@ function Module:BroadcastStatusUpdate()
     self:UpdateAddonUsers("player", 0, CC.IsRaidlead(), RY, RZ)
 
     if IsUnitGrouped("player") then
-        self:Send({ ID = LUT.PING_REPLY, TX = 0, TY = 0, TZ = 0, RX = RX, RY = RY, RZ = RZ })
+        self:Send({ ID = LUT.STATUS_REPLY, TX = 0, TY = 0, TZ = 0, RX = RX, RY = RY, RZ = RZ })
     end
 end
 
@@ -91,13 +93,13 @@ function Module:HandleSynchronization(unitTag, Data)
     local arkasisEnc = Data.RZ or 0
 
     -- CALC PING
-    if self.isReceiving and self.startTime > 0 then
+    if self.isReceivingSync and self.startTime > 0 then
         currentPing = (currentTime - self.startTime)
         if not isPlayer then currentPing = currentPing / 2 end
     end
 
     -- INCOMING REQUEST -> SEND REPLY
-    if Data.ID == LUT.PING_REQUEST and not isPlayer then
+    if Data.ID == LUT.STATUS_REQUEST and not isPlayer then
         self:UpdateAddonUsers(unitTag, nil, isSenderRaidlead, slayerEnc, arkasisEnc)
 
         local playerZoneId = CC.GetCleanZoneId()
@@ -111,14 +113,42 @@ function Module:HandleSynchronization(unitTag, Data)
         local playerRY = (slayerSide * 10) + slayerSet
         local playerRZ = (arkasisSide * 10) + arkasisSet
 
-        self:Send({ ID = LUT.PING_REPLY, TX = 0, TY = 0, TZ = 0, RX = playerRX, RY = playerRY, RZ = playerRZ })
+        self:Send({ ID = LUT.STATUS_REPLY, TX = 0, TY = 0, TZ = 0, RX = playerRX, RY = playerRY, RZ = playerRZ })
     end
 
     -- INCOMING REPLY OR SELF PING
-    if Data.ID == LUT.PING_REPLY or (Data.ID == LUT.PING_REQUEST and isPlayer) then
+    if Data.ID == LUT.STATUS_REPLY or (Data.ID == LUT.STATUS_REQUEST and isPlayer) then
         self:UpdateAddonUsers(unitTag, currentPing, isSenderRaidlead, slayerEnc, arkasisEnc)
-        if self.isReceiving then
+        if self.isReceivingSync then
             self:PrintReply(unitTag, currentPing, isSenderRaidlead, slayerEnc, arkasisEnc)
+        end
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- HANDLE VERSION CHECK
+----------------------------------------------------------------------------------------------------
+function Module:HandleVersionCheck(unitTag, Data)
+    if not CC.SV.enableAddon then return end
+
+    local isPlayer = AreUnitsEqual(unitTag, "player")
+
+    -- INCOMING REQUEST -> SEND REPLY
+    if Data.ID == LUT.VERSION_REQUEST and not isPlayer then
+        self:Send({ ID = LUT.VERSION_REPLY, TX = 0, TY = 0, TZ = 0, RX = CC.ADDON or 0, RY = 0, RZ = 0 })
+    end
+
+    -- INCOMING REPLY
+    if Data.ID == LUT.VERSION_REPLY then
+        local displayName = GetUnitDisplayName(unitTag)
+        if not displayName or displayName == "" then return end
+
+        CC.UserData[displayName] = CC.UserData[displayName] or {}
+        CC.UserData[displayName].version = Data.RX or 0
+
+        if self.isReceivingVersion then
+            local playerLink = CC.GetPlayerLinkFromDisplayName(displayName) or displayName
+            d(string.format("%s Version check: %s - %04d", CC.CHAT, playerLink, Data.RX or 0))
         end
     end
 end
@@ -199,9 +229,12 @@ function Module:OnData(unitTag, Data)
         Data.TY = (lsbTY + deltaY) * 2
     end
 
-    -- PING
-    if Data.ID == LUT.PING_REPLY or Data.ID == LUT.PING_REQUEST then
+    -- PING AND VERSION CHECK
+    if Data.ID == LUT.STATUS_REPLY or Data.ID == LUT.STATUS_REQUEST then
         self:HandleSynchronization(unitTag, Data)
+        return
+    elseif Data.ID == LUT.VERSION_REPLY or Data.ID == LUT.VERSION_REQUEST then
+        self:HandleVersionCheck(unitTag, Data)
         return
     end
 
@@ -337,7 +370,7 @@ end
 -- SEND REQUEST (PING GROUP)
 ----------------------------------------------------------------------------------------------------
 function Module:SendPingRequest(isManual)
-    if self.isReceiving then
+    if self.isReceivingSync then
         if isManual then CC.Debug("Still receiving..") end
         return
     end
@@ -364,32 +397,68 @@ function Module:SendPingRequest(isManual)
     if not self.Handler or not self.Handler:IsFinalized() then return end
 
     self.startTime = GetGameTimeMilliseconds()
-    self.isReceiving = (isManual == true)
+    self.isReceivingSync = (isManual == true)
 
     if isManual then
         CC.Debug("Ping request sent. Receiving..")
     end
 
-    local timerName = CC.NAME .. self.name .. "PING_REQUEST_TIMEOUT"
+    local timerName = CC.NAME .. self.name .. "STATUS_REQUEST_TIMEOUT"
     EVENT_MANAGER:UnregisterForUpdate(timerName)
     EVENT_MANAGER:RegisterForUpdate(timerName, 5000, function()
         EVENT_MANAGER:UnregisterForUpdate(timerName)
-        if self.isReceiving then
+        if self.isReceivingSync then
             self.startTime = 0
-            self.isReceiving = false
+            self.isReceivingSync = false
             CC.DisplayStatus:Update()
             if isManual then CC.Debug("Ping request end!") end
         end
     end)
 
-    self:Send({ ID = LUT.PING_REQUEST, TX = 0, TY = 0, TZ = 0, RX = RX, RY = RY, RZ = RZ })
+    self:Send({ ID = LUT.STATUS_REQUEST, TX = 0, TY = 0, TZ = 0, RX = RX, RY = RY, RZ = RZ })
+end
+
+----------------------------------------------------------------------------------------------------
+-- SEND REQUEST (VERSION CHECK)
+----------------------------------------------------------------------------------------------------
+function Module:SendVersionRequest()
+    self.isReceivingVersion = true
+
+    -- RESET VERSIONS
+    for _, User in pairs(CC.UserData) do
+        User.version = 0
+    end
+
+    -- SET OWN VERSION
+    local playerName = GetUnitDisplayName("player")
+    CC.UserData[playerName] = CC.UserData[playerName] or {}
+    CC.UserData[playerName].version = CC.ADDON or 0
+
+    d(string.format("%s Version request sent.", CC.CHAT))
+    d(string.format("%s Your version: %04d", CC.CHAT, CC.ADDON or 0))
+
+    if not IsUnitGrouped("player") then
+        self.isReceivingVersion = false
+        return
+    end
+
+    if not self.Handler or not self.Handler:IsFinalized() then return end
+
+    local timerName = CC.NAME .. self.name .. "VERSION_REQUEST_TIMEOUT"
+    EVENT_MANAGER:UnregisterForUpdate(timerName)
+    EVENT_MANAGER:RegisterForUpdate(timerName, 5000, function()
+        EVENT_MANAGER:UnregisterForUpdate(timerName)
+        self.isReceivingVersion = false
+    end)
+
+    self:Send({ ID = LUT.VERSION_REQUEST, TX = 0, TY = 0, TZ = 0, RX = 0, RY = 0, RZ = 0 })
 end
 
 ----------------------------------------------------------------------------------------------------
 -- PRINT PING REPLY TO CHAT
 ----------------------------------------------------------------------------------------------------
 function Module:PrintReply(unitTag, currentPing, isRaidlead, slayerEnc, arkasisEnc)
-    if not self.isReceiving then return end
+    if not self.isReceivingSync then return end
     if not unitTag or unitTag == "" then return end
 
     local displayName = GetUnitDisplayName(unitTag)
@@ -448,6 +517,10 @@ end
 ----------------------------------------------------------------------------------------------------
 SLASH_COMMANDS["/cc_ping"] = function()
     Module:SendPingRequest(true)
+end
+
+SLASH_COMMANDS["/cc_version"] = function()
+    Module:SendVersionRequest()
 end
 
 SLASH_COMMANDS["/cc_debug_ondata"] = function()

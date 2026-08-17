@@ -4,7 +4,8 @@
 CombatCoordination = {
     NAME    = "CombatCoordination",
     AUTHOR  = "@Duesentrieb",
-    VERSION = "20260811-0001",
+    ADDON   = 0003,
+    VERSION = "20260816",
     CHAT    = "|cFF7F00[CC]|r",
 
     ----------------------------------------------------------------------------------------------------
@@ -13,7 +14,7 @@ CombatCoordination = {
     Default = {
         enableAddon = true,
         enableDebug = false,
-        areTexturesVisible = false,
+        isTextureVisible = false,
     },
 
     ---@type table|any
@@ -107,8 +108,9 @@ CombatCoordination = {
     TIMER_CHOICES       = { "Enabled: Floating", "Enabled: Ground", "Disabled", },
     TIMER_VALUES        = { 2, 1, 0, },
     ----------------------------------------------------------------------------------------------------
-    CIRCLE_CHOICES = { "Circle 4 Clean", "Circle 8 Clean", "Circle 16 Clean", "Circle 32 Clean", "Circle 48 Clean", "Circle 64 Clean", "Circle ESO", "Circle Red John", },
+    CIRCLE_CHOICES = { "Circle CC", "Circle 4 Clean", "Circle 8 Clean", "Circle 16 Clean", "Circle 32 Clean", "Circle 48 Clean", "Circle 64 Clean", "Circle ESO", "Circle Red John", },
     CIRCLE_VALUES = {
+        "/textures/circle_cc.dds",
         "/textures/circle_4_clean.dds",
         "/textures/circle_8_clean.dds",
         "/textures/circle_16_clean.dds",

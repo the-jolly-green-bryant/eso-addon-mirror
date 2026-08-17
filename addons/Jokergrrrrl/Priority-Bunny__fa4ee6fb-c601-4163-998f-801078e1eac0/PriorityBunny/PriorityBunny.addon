@@ -1,0 +1,10 @@
+## Title: Priority Bunny
+## Description: Clear priority numbers for both ability bars, plus an unmistakable NOW alert when a tracked action-slot effect expires.
+## Author: Savannah & Virgil
+## Version: 0.4.0
+## AddOnVersion: 400
+## APIVersion: 101050
+## SavedVariables: PriorityBunnySavedVariablesV4
+## DependsOn: LibAddonMenu-2.0 LibGamepad
+
+PriorityBunny.lua

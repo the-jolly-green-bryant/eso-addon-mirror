@@ -8,8 +8,8 @@
   "category_id": "18",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4764",
@@ -18,7 +18,7 @@
     "NirncruxMiner"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4764/",
-  "fingerprint": "2730fad361ed94f4bc6aaf0837c78e08e084e389f0ce09f9d3d62aa769afa025",
+  "fingerprint": "9bd0263cb84d82f3abf48d0ff10910a18cf836da88a73d7df11bcfd57f64f501",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16946.png"
   ],
@@ -28,9 +28,9 @@
   "source_id": "4764",
   "source_url": "https://www.esoui.com/downloads/info4764-NirncruxMiner.html",
   "stats": {
-    "downloads": 57,
-    "favorites": 3,
-    "monthly_downloads": 56
+    "downloads": 77,
+    "favorites": 4,
+    "monthly_downloads": 77
   },
   "title": "Nirncrux Miner",
   "updated_at": 1786455932000,

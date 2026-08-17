@@ -9,6 +9,13 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Afficher le bouton uniquement en mode UI",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "Affiche le bouton principal uniquement lorsque le curseur de la souris est actif (mode UI). Il se masque en revenant au mode normal de jeu/interaction.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "Détacher le bouton du chat",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP =
+    "Déplace le bouton hors de la fenêtre de chat. Le bouton devient flottant et déplaçable.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "Paramètres",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "Attacher le bouton",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "Détacher le bouton",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Afficher le panneau de paramètres",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Fermer le menu après emote (clic gauche)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Réinitialiser position du bouton",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

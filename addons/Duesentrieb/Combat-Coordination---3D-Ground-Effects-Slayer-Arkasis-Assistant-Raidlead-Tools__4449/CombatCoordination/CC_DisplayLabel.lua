@@ -152,13 +152,13 @@ function Module:Draw3DLabel(Config)
     Control:SetHidden(Config.isHidden or false)
 
     -- PLAY ANIMATION
-    if Label.Timeline:IsPlaying() then Label.Timeline:Stop() end
+    if Label.TimelineScale:IsPlaying() then Label.TimelineScale:Stop() end
 
     local animationMs = math.max(0, math.min(Label.durationMs, Config.animationMs or self.SV.animationMs))
-    if animationMs > 0 then
-        Label.Animation:SetDuration(animationMs)
-        Label.Animation:SetEasingFunction(ZO_LinearEase)--ZO_EaseOutQuadratic)
-        Label.Timeline:PlayFromStart()
+    if animationMs > 0 and not Config.isHidden then
+        Label.AnimScale:SetDuration(animationMs)
+        Label.AnimScale:SetEasingFunction(ZO_LinearEase)
+        Label.TimelineScale:PlayFromStart()
     else
         Control:SetTransformScale(1)
         Label.currentScale = 1
@@ -229,8 +229,8 @@ function Module:GetRecycledLabel()
     --Control:SetDrawLevel(1)
 
     -- ANIMATION
-    local Timeline = ANIMATION_MANAGER:CreateTimeline()
-    local Animation = Timeline:InsertAnimation(ANIMATION_CUSTOM, Control, 0)
+    local TimelineScale = ANIMATION_MANAGER:CreateTimeline()
+    local AnimScale = TimelineScale:InsertAnimation(ANIMATION_CUSTOM, Control, 0)
 
     local NewLabel = {
         Control = Control,
@@ -244,18 +244,18 @@ function Module:GetRecycledLabel()
 
         offsetRotation = 0,
 
-        Data = nil, --{},
+        Data = nil,
 
         -- ANIMATION PROPERTIES
-        Timeline = Timeline,
-        Animation = Animation,
+        TimelineScale = TimelineScale,
+        AnimScale = AnimScale,
 
         startScale = 0,
         currentScale = 0,
         endScale = 1,
     }
 
-    Animation:SetUpdateFunction(function(animation, progress)
+    AnimScale:SetUpdateFunction(function(animation, progress)
         NewLabel.currentScale = NewLabel.startScale + (NewLabel.endScale - NewLabel.startScale) * progress
         Control:SetTransformScale(NewLabel.currentScale)
     end)
@@ -271,8 +271,9 @@ end
 function Module:ClearAllLabels()
     -- ACTIVE LABELS
     for _, Label in ipairs(self.RegisteredLabels) do
-        if Label.Timeline and Label.Timeline:IsPlaying() then
-            Label.Timeline:Stop()
+        if Label.TimelineScale and Label.TimelineScale:IsPlaying() then
+            Label.TimelineScale:SetHandler("OnStop", nil)
+            Label.TimelineScale:Stop()
         end
         Label.isActive = false
         Label.isFading = false
@@ -295,30 +296,41 @@ end
 function Module:RemoveTrackedLabel(labelId)
     local TrackedLabel = self.TrackedLabels[labelId]
 
-    if TrackedLabel then
-        if TrackedLabel.Control and not TrackedLabel.isFading then
-            TrackedLabel.isFading = true
-            if TrackedLabel.Timeline:IsPlaying() then TrackedLabel.Timeline:Stop() end
+    if TrackedLabel and TrackedLabel.Control and TrackedLabel.isActive and not TrackedLabel.isFading then
+        TrackedLabel.isFading = true
+
+        if TrackedLabel.TimelineScale:IsPlaying() then TrackedLabel.TimelineScale:Stop() end
 
             TrackedLabel.startScale = TrackedLabel.currentScale
             TrackedLabel.endScale = 0
 
             local animationMs = math.max(0, self.SV.animationMs)
-            TrackedLabel.Animation:SetDuration(animationMs)
-            TrackedLabel.Animation:SetEasingFunction(ZO_LinearEase)--ZO_EaseInQuadratic)
 
-            zo_callLater(function()
-                if TrackedLabel.isFading then
+        if animationMs > 0 then
+            TrackedLabel.AnimScale:SetDuration(animationMs)
+            TrackedLabel.AnimScale:SetEasingFunction(ZO_LinearEase)
+
+            TrackedLabel.TimelineScale:SetHandler("OnStop", function(TimelineScale)
+                TimelineScale:SetHandler("OnStop", nil)
+                if TrackedLabel and TrackedLabel.isFading then
                     TrackedLabel.isActive = false
                     TrackedLabel.isFading = false
+                    if TrackedLabel.Control then
                     TrackedLabel.Control:SetHidden(true)
                 end
-            end, animationMs)
+                    self.TrackedLabels[labelId] = nil
+                    self.activeCounter = math.max(0, self.activeCounter - 1)
+                end
+            end)
 
-            TrackedLabel.Timeline:PlayFromStart()
+            TrackedLabel.TimelineScale:PlayFromStart()
+        else
+            TrackedLabel.isActive = false
+            TrackedLabel.isFading = false
+            TrackedLabel.Control:SetHidden(true)
+            self.TrackedLabels[labelId] = nil
+            self.activeCounter = math.max(0, self.activeCounter - 1)
         end
-        self.TrackedLabels[labelId] = nil
-        self.activeCounter = math.max(0, self.activeCounter - 1)
     end
 end
 
@@ -349,7 +361,7 @@ function Module:OnUpdate()
     local isFastUpdate = false
 
     for _, Label in pairs(self.TrackedLabels) do
-        if Label.isActive then --and not Label.isFading then -- TODO: TEST WITHOUT CUTOFF BY ISFADING
+        if Label.isActive then
             activeTrackers = activeTrackers + 1
 
             -- STRING / TIMER UPDATE
@@ -409,7 +421,6 @@ function Module:OnUpdate()
             if Label.FY then rotationY = cameraYaw end
             if Label.FZ then rotationZ = 0 end
 
-            -- GIMBAL LOCK!
             local finalRotationX = rotationX * math.cos(rotationZ) + rotationY * math.sin(rotationZ)
             local finalRotationY = rotationY * math.cos(rotationZ) - rotationX * math.sin(rotationZ)
 

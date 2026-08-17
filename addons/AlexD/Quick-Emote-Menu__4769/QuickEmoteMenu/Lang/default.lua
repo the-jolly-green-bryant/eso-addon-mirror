@@ -9,6 +9,12 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Show button only in UI mode",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "Only show the main button while the mouse cursor is active (UI mode). It will hide again once you return to normal gameplay/interaction mode.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "Detach Button from Chat",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP = "Move the button outside the chat window. The button becomes free-floating and draggable.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "Settings",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "Attach Button",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "Detach Button",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Show Settings Panel",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Close menu after playing emote (left-click)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Reset button position",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

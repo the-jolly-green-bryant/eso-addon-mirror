@@ -9,6 +9,13 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Button nur im UI-Modus anzeigen",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "Zeigt die Hauptschaltfläche nur an, wenn der Mauszeiger aktiv ist (UI-Modus). Sie wird im normalen Spiel-/Interaktionsmodus wieder ausgeblendet.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "Button vom Chat lösen",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP =
+    "Verschiebt den Button außerhalb des Chatfensters. Der Button kann frei verschoben werden.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "Einstellungen",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "Button anheften",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "Button lösen",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Einstellungspanel anzeigen",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Menü nach Emote schließen (Linksklick)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Button-Position zurücksetzen",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

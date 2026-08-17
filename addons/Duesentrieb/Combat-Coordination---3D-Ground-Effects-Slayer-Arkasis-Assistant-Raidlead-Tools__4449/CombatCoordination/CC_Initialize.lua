@@ -15,6 +15,8 @@ function CC.Enable()
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_JOINED", EVENT_GROUP_MEMBER_JOINED, function(...) CC.Events:OnGroupMemberJoined(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_LEFT", EVENT_GROUP_MEMBER_LEFT, function(...) CC.Events:OnGroupMemberLeft(...) end)
     EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_UNIT_DEATH_STATE_CHANGED", EVENT_UNIT_DEATH_STATE_CHANGED, function(...) CC.DeathMarker:OnDeathStateChanged(...) end)
+    EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_CONNECTED_STATUS", EVENT_GROUP_MEMBER_CONNECTED_STATUS, function(...) CC.Events:OnGroupMemberConnectedStatus(...) end)
+    EVENT_MANAGER:RegisterForEvent(CC.NAME .. "EVENT_LEADER_UPDATE", EVENT_LEADER_UPDATE, function(...) CC.Events:OnLeaderUpdate(...) end)
 
     -- COMBAT EVENT
     for abilityId, _ in pairs(CC.Events.SkillModules) do
@@ -57,6 +59,8 @@ function CC.Disable()
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_JOINED", EVENT_GROUP_MEMBER_JOINED)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_LEFT", EVENT_GROUP_MEMBER_LEFT)
     EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_UNIT_DEATH_STATE_CHANGED", EVENT_UNIT_DEATH_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_GROUP_MEMBER_CONNECTED_STATUS", EVENT_GROUP_MEMBER_CONNECTED_STATUS)
+    EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_LEADER_UPDATE", EVENT_LEADER_UPDATE)
 
     -- COMBAT EVENT
     for abilityId, _ in pairs(CC.Events.SkillModules) do
@@ -211,7 +215,7 @@ function CC.CreateChatButton()
     -- YEAH YEAH I KNOW.. IT'S IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
     if not LibChatMenuButton or CC.ChatButton then return end
 
-    local icon = CC.NAME .. "/icons/combatcoordination_border.dds"
+    local icon = CC.NAME .. "/icons/logo_cc_border.dds"
     local tooltip = "Combat Coordination Info Panel"
 
     -- REGISTER BUTTOON

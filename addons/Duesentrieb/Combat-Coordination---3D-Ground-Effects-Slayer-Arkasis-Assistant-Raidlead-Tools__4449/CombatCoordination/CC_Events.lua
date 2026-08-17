@@ -12,7 +12,12 @@ local Module = {
     counterCombatEventGained = 0,
     counterCombatEventFaded = 0,
 
+    trackedLeaderName = nil,
+    offlineLeaderName = nil,
+    offlineLeaderTime = 0,
+
     Default = {
+        enableAutoPromote = true,
         enableDebugOnCombatEvent = false,
         enableDebugOnActionSlotAbilityUsed = false,
         enableDebugCacheUnitNames = false,
@@ -31,9 +36,87 @@ CC.LastCast = {
 }
 
 ----------------------------------------------------------------------------------------------------
+-- UPDATE TRACKED LEADER
+----------------------------------------------------------------------------------------------------
+function Module:UpdateTrackedLeader()
+    if IsUnitGrouped("player") then
+        local leaderTag = GetGroupLeaderUnitTag()
+        if leaderTag and leaderTag ~= "" then
+            self.trackedLeaderName = GetUnitDisplayName(leaderTag)
+        end
+    else
+        self.trackedLeaderName = nil
+        self.offlineLeaderName = nil
+        self.offlineLeaderTime = 0
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- ON GROUP LEADER CHANGED
+----------------------------------------------------------------------------------------------------
+function Module:OnLeaderUpdate(eventCode, leaderTag)
+    if not CC.SV.enableAddon then return end
+    if not IsUnitGrouped("player") then return end
+
+    local newLeaderName = GetUnitDisplayName(leaderTag)
+
+    -- JUST GOT CROWN
+    if self.SV.enableAutoPromote and AreUnitsEqual(leaderTag, "player") then
+        if self.trackedLeaderName and self.trackedLeaderName ~= newLeaderName then
+            -- PREV LEADER OFFLINE??
+            local oldLeaderTag = nil
+            for i = 1, GetGroupSize() do
+                local groupTag = GetGroupUnitTagByIndex(i)
+                if GetUnitDisplayName(groupTag) == self.trackedLeaderName then
+                    oldLeaderTag = groupTag
+                    break
+                end
+            end
+
+            if oldLeaderTag and not IsUnitOnline(oldLeaderTag) then
+                self.offlineLeaderName = self.trackedLeaderName
+                self.offlineLeaderTime = GetGameTimeSeconds()
+            end
+        end
+    end
+
+    self.trackedLeaderName = newLeaderName
+end
+
+----------------------------------------------------------------------------------------------------
+-- ON GROUP MEMBER CONNECTED STATUS CHANGED
+----------------------------------------------------------------------------------------------------
+function Module:OnGroupMemberConnectedStatus(eventCode, unitTag, isOnline)
+    if not CC.SV.enableAddon then return end
+
+    if isOnline and self.SV.enableAutoPromote and self.offlineLeaderName then
+        local unitName = GetUnitDisplayName(unitTag)
+        if unitName == self.offlineLeaderName then
+            if IsUnitGroupLeader("player") then
+                local timePassed = GetGameTimeSeconds() - self.offlineLeaderTime
+                if timePassed <= 600 then -- 10 MINUTES = 600 SECONDS
+                    CC.Debug("Leader returned. Returning crown.")
+                    local playerLink = CC.GetPlayerLinkFromDisplayName(unitName) or unitName
+                    zo_callLater(function()
+                        if IsUnitGroupLeader("player") and IsUnitOnline(unitTag) then
+                            GroupPromote(unitTag)
+                            d(string.format("%s |c00FF00Returned crown to:|r %s", CC.CHAT, playerLink))
+                        end
+                    end, 2500)
+                end
+            end
+            -- RESET
+            self.offlineLeaderName = nil
+            self.offlineLeaderTime = 0
+        end
+    end
+end
+
+----------------------------------------------------------------------------------------------------
 -- GROUP MEMBER JOINED
 ----------------------------------------------------------------------------------------------------
 function Module:OnGroupMemberJoined(eventCode, memberCharacterName, memberDisplayName, isLocalPlayer)
+    self:UpdateTrackedLeader()
     EVENT_MANAGER:UnregisterForUpdate(CC.NAME .. "CC_OnGroupMemberJoined_Delay")
 
     local randomDelay = math.random(2000, 3000)
@@ -47,6 +130,7 @@ end
 -- GROUP MEMBER LEFT
 ----------------------------------------------------------------------------------------------------
 function Module:OnGroupMemberLeft(eventCode, memberCharacterName, reason, isLocalPlayer, isLeader, memberDisplayName, actionRequired)
+    self:UpdateTrackedLeader()
     if GetGroupSize() <= 1 then
         -- KEEP MYSELF
         local playerName = GetUnitDisplayName("player")
@@ -79,6 +163,7 @@ end
 -- ZONE CHANGE / GO THROUGH DOOR? / PORT
 ----------------------------------------------------------------------------------------------------
 function Module:OnPlayerActivated()
+    self:UpdateTrackedLeader()
     CC.DisplayEffect:ClearAllEffects()
 
     for _, Effect in ipairs(CC.DisplayEffect.RegisteredEffects) do
@@ -89,6 +174,7 @@ function Module:OnPlayerActivated()
     end
 
     CC.SkillBlocker:UpdateEquippedSkills()
+    CC.LaunchPad:LoadPadsForCurrentZone()
 
     -- CHECK ASSIGNMENT ON PORT TO INSTANCE
     local zoneId = CC.GetCleanZoneId()
@@ -112,7 +198,7 @@ function Module:OnPlayerActivated()
 
     -- INSTALLATION CHECK
     zo_callLater(function()
-        if CC.SV.areTexturesVisible == false then
+        if CC.SV.isTextureVisible == false then
             CC.DisplayDialog:RequestInstallCheck()
         end
     end, 2500)
@@ -473,7 +559,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- TEST AND DEBUG
 ----------------------------------------------------------------------------------------------------
-function Module:ToggleDebugCombatEventToggle()
+function Module:ToggleDebugCombatEvent()
     self.SV.enableDebugOnCombatEvent = not self.SV.enableDebugOnCombatEvent
 
     if self.SV.enableDebugOnCombatEvent then
@@ -486,7 +572,7 @@ function Module:ToggleDebugCombatEventToggle()
         d(string.format("%s DEBUG COMBAT EVENT DISABLED. Duration: %.3fs - |c00FF00Gained: %d|r - |cFF0000Faded: %d|r", CC.CHAT, time, self.counterCombatEventGained, self.counterCombatEventFaded))
     end
 end
-SLASH_COMMANDS["/cc_debug_combatevent"] = function() CC.Events:ToggleDebugCombatEventToggle() end
+SLASH_COMMANDS["/cc_debug_combatevent"] = function() CC.Events:ToggleDebugCombatEvent() end
 
 ----------------------------------------------------------------------------------------------------
 -- CASTS / ABILITYIDS

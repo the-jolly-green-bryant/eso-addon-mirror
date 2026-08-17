@@ -1,3 +1,7 @@
+2026-08-15 v1.7.6
+!  Fix for toggle abilities on toggle off
+!  UI fix for canceled abilities and make-it-fancy mode
+
 2026-05-12 v1.7.5
 !  Fixed execute reminder being shown on allies/non attackable units
 !  Eliminated some user irrelevant code
@@ -5,6 +9,7 @@
 !  Fixed some tracking issues. Ability/GCD tracking should now be more precise than ever
 !  Fixed heavy one handed attacks not being tracked
 !  Fixed progress being slightly off when 'make it fancy' and 'dynamic expansion' was on
+!  Fixes for StackTracker UI in unlocked mode
 +  Added option to choose execute reminder target difficulty to prevent "EXECUTE!" spamming on normal mobs
 +  StackTracker can now be set to show only in combat
 +  Added option to show heavy attack details such as remaining time, ability name and icon

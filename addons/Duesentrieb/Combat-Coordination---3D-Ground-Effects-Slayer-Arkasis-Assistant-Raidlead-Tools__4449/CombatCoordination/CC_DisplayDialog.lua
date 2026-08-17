@@ -274,10 +274,11 @@ function Module:BuildInstallCheckContainer()
     self.InstallInfoLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
 
     self.InstallTexture = WINDOW_MANAGER:CreateControl("CC_DisplayDialog_InstallTexture", Content, CT_TEXTURE)
-    self.InstallTexture:SetTexture("CombatCoordination/icons/combatcoordination.dds")
+    self.InstallTexture:SetTexture("CombatCoordination/textures/circle_cc.dds")
+    --self.InstallTexture:SetTexture("CombatCoordination/icons/logo_cc.dds")
 
     self.ButtonInstallYes = self:CreateButton("CC_DisplayDialog_ButtonInstallYes", Content, "YES, I SEE IT", function()
-        CC.SV.areTexturesVisible = true
+        CC.SV.isTextureVisible = true
         d(string.format("%s Installation verified. Welcome to Combat Coordination!", CC.CHAT))
         self.isInstallCheckRequested = false
         self:UpdateDimensions()
@@ -285,7 +286,7 @@ function Module:BuildInstallCheckContainer()
     self.ButtonInstallYes:SetCustomColors(self.GN_NORMAL)
 
     self.ButtonInstallNo = self:CreateButton("CC_DisplayDialog_ButtonInstallNo", Content, "NO, IT'S INVISIBLE", function()
-        CC.SV.areTexturesVisible = false
+        CC.SV.isTextureVisible = false
         self.installCheckState = 1 -- ERROR STATUS
         self:UpdateDimensions()
         d(string.format("%s |cFF0000ERROR:|r Please restart the game to load missing textures.", CC.CHAT))
@@ -293,7 +294,7 @@ function Module:BuildInstallCheckContainer()
     self.ButtonInstallNo:SetCustomColors(self.RD_NORMAL)
 
     self.ButtonInstallClose = self:CreateButton("CC_DisplayDialog_ButtonInstallClose", Content, "CLOSE & RESTART LATER", function()
-        CC.SV.areTexturesVisible = false
+        CC.SV.isTextureVisible = false
         self.isInstallCheckRequested = false
         self:UpdateDimensions()
     end)

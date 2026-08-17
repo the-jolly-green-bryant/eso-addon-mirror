@@ -9,6 +9,12 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Pokazuj przycisk tylko w trybie UI",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "Pokazuje główny przycisk tylko wtedy, gdy kursor myszy jest aktywny (tryb UI). Zostanie ukryty po powrocie do normalnego trybu gry/interakcji.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "Odłącz przycisk od czatu",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP = "Przenosi przycisk poza okno czatu. Przycisk można swobodnie przeciągać.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "Ustawienia",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "Przypnij przycisk",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "Odłącz przycisk",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Pokaż panel ustawień",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Zamknij menu po emote (LPM)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Resetuj pozycję przycisku",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

@@ -4,7 +4,7 @@ local FancyActionBar = FancyActionBar
 -----------------------------[    Constants   ]--------------------------------
 -------------------------------------------------------------------------------
 local NAME = "FancyActionBar+"
-local VERSION = "2.19.5"
+local VERSION = "2.19.6"
 local slashCommand = "/fab" or "/FAB"
 local EM = GetEventManager()
 local WM = GetWindowManager()
@@ -3499,7 +3499,7 @@ function FancyActionBar.OnEffectGainedFromAlly(eventCode, change, effectSlot, ef
                     and endTime > t + FancyActionBar.durationMin
                     and endTime < t + FancyActionBar.durationMax
                 then
-                    if endTime > we.endTime then
+                    if endTime > (we.endTime or 0) then
                         we.endTime = endTime
                     end
                 end
@@ -5244,7 +5244,7 @@ local function InstallActionButtonHooks()
         if slot and slot >= MIN_INDEX and slot <= MAX_INDEX then
             FancyActionBar.SetupButtonText(self, style, slot)
         end
-        if self:GetSlot() == QUICK_SLOT then
+        if self:GetHotbarCategory() == HOTBAR_CATEGORY_QUICKSLOT_WHEEL then
             FancyActionBar.ApplyQuickSlotFont()
         end
     end)

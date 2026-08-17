@@ -118,14 +118,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             type = "colorpicker",
             name = hasDrawGroup and "Color (Your Cast)" or "Color",
             getFunc = function()
-                local Color = self.SV.ColorSelf
-                zo_callLater(function()
-                    local Preview = CC.Menu.Previews[self.name]
-                    if Preview then
-                        Preview:SetColor(unpack(Color))
-                    end
-                end, 100)
-                return unpack(Color)
+                return unpack(self.SV.ColorSelf)
             end,
             setFunc = function(r, g, b, a)
                 self.SV.ColorSelf = {r, g, b, a}
@@ -135,7 +128,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                 end
             end,
             default = CC.GetRgbaFromArray(self.Default.ColorSelf),
-            disabled = function() return self.SV.enableGameAoeFriendlyColor end,
+            disabled = function() return self.SV.enableGameAoeFriendlyColor or (not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup)) end,
         })
     end
 
@@ -146,7 +139,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return unpack(self.SV.ColorGroup) end,
             setFunc = function(r, g, b, a) self.SV.ColorGroup = {r, g, b, a} end,
             default = CC.GetRgbaFromArray(self.Default.ColorGroup),
-            disabled = function() return self.SV.enableGameAoeFriendlyColor end,
+            disabled = function() return self.SV.enableGameAoeFriendlyColor or (not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup)) end,
         })
     end
 
@@ -271,8 +264,8 @@ end
 function CC.CreateSettings()
     if not LAM2 then return end
 
-    --"/icons/combatcoordination.dds"
-    local panelIcon = string.format("|t%d:%d:%s/icons/combatcoordination.dds|t", CC.SIZE_ICON_LAM_PANEL, CC.SIZE_ICON_LAM_PANEL, CC.NAME)
+    --"/icons/logo_cc.dds"
+    local panelIcon = string.format("|t%d:%d:%s/icons/logo_cc.dds|t", CC.SIZE_ICON_LAM_PANEL, CC.SIZE_ICON_LAM_PANEL, CC.NAME)
     local settingsIcon = string.format("|t%d:%d:esoui/art/icons/ability_scrying_05a.dds|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM)
     local raidleadIcon = string.format("|t%d:%d:/esoui/art/icons/ability_dragonknight_032.dds|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM)
     local panelName = "Combat Coordination " .. panelIcon
@@ -281,7 +274,7 @@ function CC.CreateSettings()
     local PanelData = {
         type = "panel",
         name = panelName,
-        displayName = CC.ColorString("Combat", "tier1") .. " " .. CC.ColorString("Coordination", "WH") .. string.format(" |t%d:%d:%s/icons/combatcoordination.dds|t", CC.SIZE_ICON_LAM_PANEL, CC.SIZE_ICON_LAM_PANEL, CC.NAME),
+        displayName = CC.ColorString("Combat", "tier1") .. " " .. CC.ColorString("Coordination", "WH") .. string.format(" |t%d:%d:%s/icons/logo_cc.dds|t", CC.SIZE_ICON_LAM_PANEL, CC.SIZE_ICON_LAM_PANEL, CC.NAME),
         author = CC.ColorString(CC.AUTHOR, "tier1") .. " " .. CC.ColorString("[PC/EU]", "WH"),
         version = CC.VERSION,
         registerForRefresh = true,
@@ -408,8 +401,10 @@ function CC.CreateSettings()
                     setFunc = function(value)
                         local newScale = value / 100
                         CC.DisplayPanel.SV.panelScale = newScale
-                        if CC.DisplayPanel.Parent then CC.DisplayPanel.Parent:SetScale(newScale) end
-                        if CC.DisplayStatus.Parent then CC.DisplayStatus.Parent:SetScale(newScale) end
+                        if CC.DisplayPanel.Parent then
+                            CC.DisplayPanel.Parent:SetScale(newScale)
+                            CC.DisplayPanel:Show()
+                        end
                     end,
                     default = 100,
                     disabled = function() return not CC.SV.enableAddon end,
@@ -465,7 +460,7 @@ function CC.CreateSettings()
 
                 {
                     type = "description",
-                    text = CC.ColorString("Command:", "tier2") .. " Use " .. CC.ColorString("[/cc_panel]", "tier3") .. " or status icon to toggle UI.",
+                    text = CC.ColorString("Command:", "tier2") .. " Use " .. CC.ColorString("[/cc_panel]", "tier3") .. " or click on status icon to toggle.",
                     width = "full",
                 },
                 {
@@ -474,16 +469,16 @@ function CC.CreateSettings()
                     tooltip = "Reset panel position to default.",
                     func = function()
                         CC.DisplayPanel:ResetPosition()
+                        CC.DisplayPanel:Show()
                     end,
                     width = "half",
                     disabled = function() return not CC.SV.enableAddon end,
                 },
                 {
                     type = "button",
-                    name = "TOGGLE PANEL",
-                    tooltip = "Toggle panel window.",
+                    name = "SHOW PANEL",
                     func = function()
-                        CC.DisplayPanel:Toggle()
+                        CC.DisplayPanel:Show()
                     end,
                     width = "half"
                 },
@@ -493,14 +488,76 @@ function CC.CreateSettings()
                 ----------------------------------------------------------------------------------------------------
                 { type = "header", name = CC.ColorString("STATUS ICON", "tier3") },
                 {
+                    type = "checkbox",
+                    name = "Enable Status Display",
+                    tooltip = "Show small CC status icon.",
+                    getFunc = function() return CC.DisplayStatus.SV.enableStatus end,
+                    setFunc = function(value)
+                        CC.DisplayStatus.SV.enableStatus = value
+                        if value then
+                            CC.DisplayStatus:CustomEnable()
+                            CC.DisplayStatus:Show()
+                        else
+                            CC.DisplayStatus:CustomDisable()
+                        end
+                    end,
+                    default = CC.DisplayStatus.Default.enableStatus,
+                    disabled = function() return not CC.SV.enableAddon end,
+                },
+                {
+                    type = "slider",
+                    name = "Status Display Scale [%]",
+                    min = 75, max = 125, step = 1,
+                    getFunc = function() return (CC.DisplayStatus.SV.statusScale) * 100 end,
+                    setFunc = function(value)
+                        local newScale = value / 100
+                        CC.DisplayStatus.SV.statusScale = newScale
+                        if CC.DisplayStatus.Parent then
+                            CC.DisplayStatus.Parent:SetScale(newScale)
+                            CC.DisplayStatus:Show()
+                        end
+                    end,
+                    default = 100,
+                    disabled = function() return not CC.SV.enableAddon or not CC.DisplayStatus.SV.enableStatus end,
+                },
+                {
                     type = "button",
                     name = "RESET POSITION",
                     tooltip = "Reset status icon position to default.",
                     func = function()
                         CC.DisplayStatus:ResetPosition()
+                        CC.DisplayStatus:Show()
                     end,
                     width = "half",
-                    disabled = function() return not CC.SV.enableAddon end,
+                    disabled = function() return not CC.SV.enableAddon or not CC.DisplayStatus.SV.enableStatus end,
+                },
+                {
+                    type = "button",
+                    name = "SHOW STATUS",
+                    func = function()
+                        CC.DisplayStatus:Show()
+                        CC.DisplayStatus:PlayAnimation(2.0)
+                    end,
+                    width = "half",
+                    disabled = function() return not CC.SV.enableAddon or not CC.DisplayStatus.SV.enableStatus end,
+                },
+
+                ----------------------------------------------------------------------------------------------------
+                -- GROUP LEADER AUTO-PROMOTE
+                ----------------------------------------------------------------------------------------------------
+                { type = "header", name = CC.ColorString("AUTO RETURN CROWN", "tier3") },
+                {
+                    type = "description",
+                    text = "Returns group leader crown to the previous leader upon reconnecting..\n" .. CC.ColorString("Note:", "tier2") .. " Active timeout is 10 minutes.",
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
+                    name = "Enable Auto Return Crown",
+                    getFunc = function() return CC.Events.SV.enableAutoPromote end,
+                    setFunc = function(value) CC.Events.SV.enableAutoPromote = value end,
+                    default = CC.Events.Default.enableAutoPromote,
+                    disabled = true, --function() return not CC.SV.enableAddon end,
                 },
             },
         },
@@ -553,9 +610,17 @@ function CC.CreateSettings()
                 },
 
                 ----------------------------------------------------------------------------------------------------
+                -- TOOLS & ASSIGNMENTS
+                ----------------------------------------------------------------------------------------------------
+                {
+                    type = "description",
+                    text = CC.ColorString("Note:", "tier2") .. " The following tools can also be accessed via the Panel: " .. CC.ColorString("[/cc_panel]", "tier3"),
+                    width = "full",
+                },
+                ----------------------------------------------------------------------------------------------------
                 -- BREAK TIMER
                 ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("BREAK TIMER", "tier3") },
+                { type = "header", name = CC.ColorString("BREAK TIMER ", "tier3") .. CC.ColorString("[LGB]", "GN") },
                 {
                     type = "slider",
                     name = "Break Duration [Minutes]",
@@ -586,7 +651,7 @@ function CC.CreateSettings()
                 ----------------------------------------------------------------------------------------------------
                 -- PULL TIMER
                 ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("PULL TIMER", "tier3") },
+                { type = "header", name = CC.ColorString("PULL TIMER ", "tier3") .. CC.ColorString("[LGB]", "GN") },
                 {
                     type = "slider",
                     name = "Pull Duration [Seconds]",
@@ -615,9 +680,9 @@ function CC.CreateSettings()
                     disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },
                 ----------------------------------------------------------------------------------------------------
-                -- TOOLS & ASSIGNMENTS
+                -- TRIGGER NOTIFICATIONS
                 ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("TOOLS & ASSIGNMENTS", "tier3") },
+                { type = "header", name = CC.ColorString("TRIGGER NOTIFICATIONS ", "tier3") .. CC.ColorString("[LGB]", "GN") },
                 {
                     type = "button",
                     name = "WIPE PLEASE",
@@ -628,17 +693,21 @@ function CC.CreateSettings()
                 },
                 {
                     type = "button",
-                    name = "GROUP P-T-E",
-                    tooltip = "Broadcasts exit instance request to group members.",
-                    func = function() CC.RaidleadTools:RequestExitInstance() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
                     name = "PORT IN PLEASE",
                     tooltip = "Broadcasts port-in request to group members.",
                     func = function() CC.RaidleadTools:RequestPortIn() end,
+                    width = "half",
+                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                },
+                ----------------------------------------------------------------------------------------------------
+                -- OPEN DIALOG
+                ----------------------------------------------------------------------------------------------------
+                { type = "header", name = CC.ColorString("OPEN DIALOG ", "tier3") .. CC.ColorString("[LGB]", "GN") },
+                {
+                    type = "button",
+                    name = "GROUP P-T-E",
+                    tooltip = "Broadcasts exit instance request to group members.",
+                    func = function() CC.RaidleadTools:RequestExitInstance() end,
                     width = "half",
                     disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
                 },

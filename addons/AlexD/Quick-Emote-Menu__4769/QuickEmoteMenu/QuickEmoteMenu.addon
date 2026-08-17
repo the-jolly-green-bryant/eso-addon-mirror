@@ -1,8 +1,8 @@
 ## Title: Quick Emote Menu
 ## Description: Fast access to emotes with categories and favorites.
 ## Author: @AlexD
-## Version: 1.1.0
-## AddOnVersion: 1786792639
+## Version: 1.2.0
+## AddOnVersion: 1786907456
 ## APIVersion: 101050
 ## OptionalDependsOn: LibAddonMenu-2.0>=43
 ## SavedVariables: QuickEmoteMenu_SV

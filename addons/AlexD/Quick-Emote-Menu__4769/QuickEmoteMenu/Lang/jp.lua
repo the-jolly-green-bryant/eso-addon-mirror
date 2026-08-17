@@ -9,6 +9,12 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "UIモードでのみボタンを表示",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "マウスカーソルが有効なとき（UIモード）のみメインボタンを表示します。通常のゲーム/操作モードに戻ると非表示になります。",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "チャットからボタンを切り離す",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP = "ボタンをチャットウィンドウの外に移動します。ボタンを自由にドラッグして移動できます。",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "設定",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "ボタンをチャットに戻す",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "ボタンをチャットから切り離す",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "設定パネルを表示",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "エモート再生後にメニューを閉じる (左クリック)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "ボタン位置をリセット",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

@@ -9,6 +9,13 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "Mostra pulsante solo in modalità UI",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "Mostra il pulsante principale solo quando il cursore del mouse è attivo (modalità UI). Viene nascosto tornando alla normale modalità di gioco/interazione.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "Scollega pulsante dalla chat",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP =
+    "Sposta il pulsante fuori dalla finestra della chat. Il pulsante diventa mobile e trascinabile.",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "Impostazioni",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "Collega pulsante",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "Scollega pulsante",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Mostra pannello impostazioni",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Chiudi menu dopo emote (clic sinistro)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Reimposta posizione pulsante",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

@@ -10,9 +10,11 @@ local Module = {
     Icon = nil,
     Background = nil,
     Fragment = nil,
-    Timeline = nil,
-    ScaleUp = nil,
-    ScaleDown = nil,
+
+    TimelineScale = nil,
+    AnimScaleUp = nil,
+    AnimScaleDown = nil,
+
     isAnimationActive = false,
 
     Default = {
@@ -22,6 +24,10 @@ local Module = {
         height = 30,
 
         animationMs = 500,
+
+        enableStatus = true,
+        statusScale = 1.0,
+        isVisible = true,
     },
     ---@type table|any
     SV = {},
@@ -47,26 +53,21 @@ function Module:Create()
             if math.max(deltaX, deltaY) <= 1 then
                 self:PlayAnimation(1.5)
 
-                local isOpening = not CC.DisplayPanel.SV.isVisible
-
                 if not CC.DisplayPanel.SV.isVisible then
                     CC.DisplayPanel:Toggle()
                 end
-                -- if isOpening then
-                --     CC.Broadcast:SendPingRequest(true)
-                -- end
             end
         end
     end
 
     self.Parent = WINDOW_MANAGER:CreateTopLevelWindow("CC_DisplayStatus_Parent")
     self.Parent:SetDimensions(self.SV.width, self.SV.height)
-    self.Parent:SetScale(CC.DisplayPanel.SV.panelScale)
+    self.Parent:SetScale(self.SV.statusScale)
     self.Parent:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.SV.offsetX or 0, self.SV.offsetY or 0)
     self.Parent:SetClampedToScreen(true)
     self.Parent:SetMouseEnabled(true)
     self.Parent:SetMovable(true)
-    self.Parent:SetHidden(false)
+    self.Parent:SetHidden(true)
     self.Parent:SetDrawTier(DT_HIGH)
     self.Parent:SetHandler("OnMoveStop", function() self:OnMoveStop() end)
     self.Parent:SetHandler("OnMouseUp", HandleMouseUp)
@@ -91,16 +92,12 @@ function Module:Create()
 end
 
 ----------------------------------------------------------------------------------------------------
--- CUSTOM ENABLE / DISABLE
+-- SHOW / HIDE / TOGGLE
 ----------------------------------------------------------------------------------------------------
-function Module:CustomEnable()
+function Module:Show()
     if not self.Parent then self:Create() end
 
-    if not CC.SV.enableAddon then
-        self:CustomDisable()
-        return
-    end
-
+    self.SV.isVisible = true
     self.Parent:SetHidden(false)
 
     if self.Fragment then
@@ -113,10 +110,11 @@ function Module:CustomEnable()
     end
 end
 
-function Module:CustomDisable()
-    if self.Parent then
+function Module:Hide()
+    if not self.Parent then return end
+
+    self.SV.isVisible = false
         self.Parent:SetHidden(true)
-    end
 
     if self.Fragment then
         if HUD_SCENE:HasFragment(self.Fragment) then
@@ -126,6 +124,44 @@ function Module:CustomDisable()
             HUD_UI_SCENE:RemoveFragment(self.Fragment)
         end
     end
+end
+
+function Module:Toggle()
+    if not CC.SV.enableAddon or not self.SV.enableStatus then
+        d(CC.CHAT .. " |cFF0000Status icon is disabled.|r")
+        return
+    end
+
+    if self.SV.isVisible then
+        self:Hide()
+    else
+        self:Show()
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- CUSTOM ENABLE
+----------------------------------------------------------------------------------------------------
+function Module:CustomEnable()
+    if not self.Parent then self:Create() end
+
+    if not CC.SV.enableAddon or not self.SV.enableStatus then
+        self:CustomDisable()
+        return
+    end
+
+    if self.SV.isVisible then
+        self:Show()
+    else
+        self:Hide()
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- CUSTOM DISABLE
+----------------------------------------------------------------------------------------------------
+function Module:CustomDisable()
+    self:Hide()
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -154,34 +190,34 @@ function Module:PlayAnimation(endScale)
     endScale = math.max(1, endScale or 1.5)
 
     -- CREATE TIMELINE AND ANIMATION IF NOT YET CREATE
-    if not self.Timeline then
-        self.Timeline = ANIMATION_MANAGER:CreateTimeline()
+    if not self.TimelineScale then
+        self.TimelineScale = ANIMATION_MANAGER:CreateTimeline()
 
-        self.ScaleUp = self.Timeline:InsertAnimation(ANIMATION_SCALE, self.Label, 0)
-        self.ScaleUp:SetEasingFunction(ZO_LinearEase) -- ZO_EaseInQuadratic)
+        self.AnimScaleUp = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Label, 0)
+        self.AnimScaleUp:SetEasingFunction(ZO_LinearEase)
 
-        self.ScaleDown = self.Timeline:InsertAnimation(ANIMATION_SCALE, self.Label, 0)
-        self.ScaleDown:SetEasingFunction(ZO_LinearEase) -- ZO_EaseOutQuadratic)
+        self.AnimScaleDown = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Label, 0)
+        self.AnimScaleDown:SetEasingFunction(ZO_LinearEase)
 
         -- RESET ON STOP
-        self.Timeline:SetHandler('OnStop', function()
+        self.TimelineScale:SetHandler('OnStop', function()
             self.Label:SetScale(1.0)
         end)
     end
 
-    if self.Timeline:IsPlaying() then
-        self.Timeline:Stop()
+    if self.TimelineScale:IsPlaying() then
+        self.TimelineScale:Stop()
     end
 
     -- SET NEW VALS
-    self.ScaleUp:SetScaleValues(1.0, endScale)
-    self.ScaleUp:SetDuration(durationGrow)
+    self.AnimScaleUp:SetScaleValues(1.0, endScale)
+    self.AnimScaleUp:SetDuration(durationGrow)
 
-    self.ScaleDown:SetScaleValues(endScale, 1.0)
-    self.ScaleDown:SetDuration(durationShrink)
-    self.Timeline:SetAnimationOffset(self.ScaleDown, durationGrow)
+    self.AnimScaleDown:SetScaleValues(endScale, 1.0)
+    self.AnimScaleDown:SetDuration(durationShrink)
+    self.TimelineScale:SetAnimationOffset(self.AnimScaleDown, durationGrow)
 
-    self.Timeline:PlayFromStart()
+    self.TimelineScale:PlayFromStart()
 end
 
 ----------------------------------------------------------------------------------------------------

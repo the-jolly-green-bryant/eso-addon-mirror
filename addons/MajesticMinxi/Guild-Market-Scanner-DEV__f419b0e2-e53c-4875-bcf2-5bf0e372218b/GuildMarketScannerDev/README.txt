@@ -1,41 +1,47 @@
-Guild Market Scanner DEV — v0.2.4 RECOVERY
+Guild Market Scanner DEV — v0.4.4
 Author: MajesticMinxi
 
-RECOVERY-ONLY BUILD
+BUILD 044 — FINAL EXPORT MEASURER
 
-Purpose
--------
-GMS reached the console add-on memory ceiling at login. This build is NOT
-for scanning. It exists only to recover the existing market database safely.
+This build is intentionally ADD-ONLY.
 
-On startup it:
-1. Loads the existing GMS SavedVariables.
-2. Immediately deletes any lingering saved export cache.
-3. Clears transient exporter/scanner references.
-4. Runs garbage collection twice.
-5. Counts the existing flat permanent database.
-6. Reports memory.
-7. Does NOT register trader events or enable scanning/exporting.
+UNCHANGED:
+- Scan Trader
+- scanner paging
+- compact DB
+- pricing
+- current Price export
+- current Supply export
+- Cloudflare transport
 
-TEST
-----
-1. Keep normal addons enabled.
-2. Install/update GMS to v0.2.4.
-3. At Character Select, enable GMS.
-4. Log in.
-5. If ESO stays loaded, open chat and photograph the [GMS] RECOVERY lines.
-6. If the message says the export was removed, run /reloadui ONCE so that
-   deletion is committed to SavedVariables.
-7. After reload, photograph the recovery memory lines again.
+NEW:
+/gmsmeasurefinal
 
-DO NOT:
-- scan traders
-- run /gmsexport
-- uninstall GMS
-- delete ESO saved data
+It DOES NOT upload anything.
 
-If enabling this recovery build still causes ESO to disable all addons before
-the recovery messages can appear, leave GMS disabled. That would indicate the
-permanent SavedVariables themselves are already too expensive to load alongside
-the user's normal addon set, and the next step must be a storage migration
-strategy rather than an export fix.
+It measures a proposed final weekly format:
+
+PRICE:
+- one deterministic item ID
+- suggested price
+- trusted low/high range encoded as compact percentage deviations
+- confidence
+- all stats packed into one base62 number
+
+OPPORTUNITY:
+- uses all scanned guilds
+- excludes materially underpriced guilds
+- detects meaningful low-supply opportunities
+- keeps only top 3 strong selling guilds per item
+- same sparse records can be inverted server-side for:
+  Best Guild to Sell
+  What Should I Sell in This Guild?
+
+It reports estimated safe ~4000-character PS5 browser pages for both layers.
+
+TEST:
+1. Install v0.4.4.
+2. Confirm Scan Trader still appears.
+3. Run /gmsmeasurefinal
+4. Send screenshot of the three FINAL ... lines.
+5. Do NOT export anything.

@@ -9,6 +9,12 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "仅在UI模式显示按钮",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "仅在鼠标光标处于活动状态（UI模式）时显示主按钮。返回正常游戏/交互模式后会再次隐藏。",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "将按钮从聊天中分离",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP = "将按钮移到聊天窗口外。按钮可自由拖动。",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "设置",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "附加按钮",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "分离按钮",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "显示设置面板",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "播放表情后关闭菜单 (左键)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "重置按钮位置",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[

@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.10"
+R.version     = "3.17.12"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -410,8 +410,16 @@ R._announcements = {
     title = "Dummy capture with open-world OFF",
     body = "Fixed: with Track open-world OFF, the first combat event with an empty/non-dummy name permanently blocked the whole pull (\"no parse was captured\").\n\n• No more sticky skip — dummy name or housing can start on a later hit\n• Stronger dummy name list (Iron Atronach / Trial / dummy / atronach)\n• You can turn Track open-world OFF again for dummy-only parses\n\nReload + one dummy. Expect green saved … in chat.",
   },
+  ["3.17.11"] = {
+    title = "Buffs · DPS · fingerprint · full rotation",
+    body = "• Buffs: seed always-on at pull start + FULL_REFRESH (dummy Major Courage etc. no longer vanish)\n• DPS: duration ends at last damage hit (aligns with Simple DPS / chat)\n• Fingerprint: food is NOT in build ID — expiring food will not force a new fingerprint\n• Rotation: keep full skill timeline (not last 64 only); page with Y · all S/U markers\n\nNew dummy parse recommended for buffs + DPS + full rotation.",
+  },
+  ["3.17.12"] = {
+    title = "DPS accuracy restore (lean combat path)",
+    body = "Parse totals drifted low after combat-event path got heavy (DoT sampling, debuffs, build snaps on first hit) and combat-end flicker cut pulls short.\n\n• Damage counted first like Simple DPS / older Parse (3.7.x) — hitValue + overflow\n• Heavy start snapshots deferred off the combat tick\n• Combat-end grace while damage still landing (housing dummy flicker)\n• Chat save line shows total damage + duration for cross-check\n\nNew dummy required. Compare Total Dmg / DPS to Simple DPS.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.10"
+R._latestAnnouncementVersion = "3.17.12"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -880,6 +888,7 @@ local function newSession()
     dotDamage = 0,
     totalHealing = 0,
     effectiveHealing = 0,
+    lastDamageMs = 0,   -- last outgoing damage tick (DPS duration end)
 
     hitCount = 0,
     critCount = 0,
@@ -1520,6 +1529,16 @@ end
 
 local function isOutgoingDamageEvent(result)
   return isDirectDamageResult(result) or isDotResult(result)
+end
+
+-- Same core set Simple DPS uses for fight totals (shielded/blocked still counted via isOutgoing).
+-- Prefer raw hitValue; add overflow when present (large hits on some clients).
+local function combatHitDamage(hitValue, overflow)
+  local dmg = tonumber(hitValue) or 0
+  local ov = tonumber(overflow) or 0
+  if ov > 0 then dmg = dmg + ov end
+  if dmg < 0 then dmg = 0 end
+  return dmg
 end
 
 -- Combat-log results that mean an effect was applied/removed (not pure damage)
@@ -2715,7 +2734,8 @@ local function prepareSessionForHistory(session)
     w.pendingPostChannel = nil
     w.skillBarByName = nil
     if type(w.timeline) == "table" then
-      capArrayTail(w.timeline, 64) -- enough icons for Rotation review
+      -- Keep full skill timeline for Rotation (was 64 = only late fight + few S markers)
+      capArrayTail(w.timeline, 400)
     end
   end
 
@@ -2756,10 +2776,10 @@ local function prepareSessionForHistory(session)
     bs.lastChangeMs = nil
   end
   if type(session.markers) == "table" and type(session.markers.points) == "table" then
-    capArrayTail(session.markers.points, 32)
+    capArrayTail(session.markers.points, 80) -- swaps + ults for full rotation page
   end
   if type(session.ultEconomy) == "table" and type(session.ultEconomy.castTimes) == "table" then
-    capArrayTail(session.ultEconomy.castTimes, 12)
+    capArrayTail(session.ultEconomy.castTimes, 16)
   end
 
   -- Coach recompute is fine; NEVER persist coach (may hold cross-history refs)
@@ -5634,9 +5654,9 @@ end
 -- Phase 3 P0 capture helpers (must sit above startIfNeeded / combat handlers)
 -- ----------------------------
 local P3_SWAP_DELAY_THRESHOLD_MS = 400
-local P3_MAX_SWAPS = 40
-local P3_MAX_MARKERS = 40
-local P3_MAX_ULT_CASTS = 12
+local P3_MAX_SWAPS = 64
+local P3_MAX_MARKERS = 80
+local P3_MAX_ULT_CASTS = 16
 
 local function p3BarLabelFromCategory(cat)
   if cat == nil then return nil end
@@ -5776,6 +5796,90 @@ local function ensureSession()
   return R.session
 end
 
+-- Seed buffs already active when the pull starts (Major Courage from dummy, food,
+-- always-on Major/Minor, etc.). EVENT_EFFECT_CHANGED only fires on change — without
+-- this, dummy-contributing buffs never appear on the Buffs page.
+local function seedPlayerBuffsAtStart(session, tMs)
+  if type(session) ~= "table" then return end
+  if type(GetNumBuffs) ~= "function" or type(GetUnitBuffInfo) ~= "function" then return end
+  session.buffs = session.buffs or {}
+  local okN, n = pcall(GetNumBuffs, "player")
+  n = okN and (tonumber(n) or 0) or 0
+  if n <= 0 then return end
+  for i = 1, n do
+    local ok, buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename,
+      buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff,
+      castByPlayer = pcall(GetUnitBuffInfo, "player", i)
+    if not ok then
+      -- Some clients return fewer values; try name + abilityId only
+      ok, buffName = pcall(function() return select(1, GetUnitBuffInfo("player", i)) end)
+      abilityId = 0
+      if ok then
+        local ok2, id2 = pcall(function() return select(11, GetUnitBuffInfo("player", i)) end)
+        if ok2 then abilityId = tonumber(id2) or 0 end
+      end
+    end
+    abilityId = tonumber(abilityId) or 0
+    if ok and type(buffName) == "string" and buffName ~= "" then
+      local name = zo_strformat and zo_strformat("<<1>>", buffName) or buffName
+      -- Prefer abilityId key; fall back to stable name key so abilityId==0 still tracks
+      local key = abilityId > 0 and abilityId or ("n:" .. string.lower(name))
+      if not session.buffs[key] then
+        session.buffs[key] = {
+          id = abilityId,
+          name = name,
+          applied = 1,
+          activeMs = 0,
+          activeStartMs = tMs,
+          seededAtStart = true,
+        }
+      else
+        local b = session.buffs[key]
+        if not b.activeStartMs then
+          b.activeStartMs = tMs
+          b.applied = (b.applied or 0) + 1
+        end
+      end
+    end
+  end
+end
+
+-- Expensive gear/build/buff snapshots MUST NOT run inside EVENT_COMBAT_EVENT.
+-- Doing so on the first hit (3.15–3.17) could drop subsequent combat events on
+-- console and under-count multi‑million damage vs Simple DPS.
+local function runDeferredStartSnapshots(session, tMs)
+  if type(session) ~= "table" or session._startSnapDone then return end
+  session._startSnapDone = true
+  pcall(function()
+    local sets, setMap = captureEquippedSets()
+    session.equippedSets = sets
+    session.equippedSetMap = setMap
+    local slotIds, slotNames, slotBars, slotBarsByName, slotBySlot = captureSlottedAbilities()
+    session.slottedAbilityIds = slotIds or session.slottedAbilityIds or {}
+    session.slottedAbilityNames = slotNames or session.slottedAbilityNames or {}
+    session.slottedAbilityBar = slotBars or session.slottedAbilityBar or {}
+    session.slottedAbilityBarByName = slotBarsByName or session.slottedAbilityBarByName or {}
+    session.slottedAbilityBySlot = slotBySlot or session.slottedAbilityBySlot or {}
+    seedPlayerBuffsAtStart(session, tMs or session.startMs or NowMs())
+    if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
+      local okSnap, snap = pcall(DM2StatsMenuShell.CapturePlayerStats)
+      if okSnap and type(snap) == "table" then session.playerStatsStart = snap end
+    end
+    if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureActiveMundus) == "function" then
+      local okM, mundus = pcall(DM2StatsMenuShell.CaptureActiveMundus)
+      if okM and mundus and mundus ~= "" then session.mundus = session.mundus or mundus end
+    end
+    if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureSessionBuild) == "function" then
+      local okB, build = pcall(DM2StatsMenuShell.CaptureSessionBuild, session, "start")
+      if okB and type(build) == "table" then
+        session.buildStart = build
+        session.build = session.build or build
+      end
+    end
+    p3InitBarAtCombatStart(session, tMs or session.startMs or NowMs())
+  end)
+end
+
 local function startIfNeeded(session, tMs, targetName)
   if session.started then return end
   -- When open-world tracking is OFF: only start on dummy name or housing.
@@ -5787,43 +5891,23 @@ local function startIfNeeded(session, tMs, targetName)
     end
   end
   session.started = true
-  session.startMs = tMs
+  -- Prefer first damage timestamp if hits arrived before dummy name was recognized
+  session.startMs = tonumber(session.firstDamageMs) or tMs
   session.lastTargetName = targetName
+  session.lastDamageMs = tonumber(session.lastDamageMs) or tMs
+  session._startSnapDone = false
 
-  -- snapshot currently equipped sets (for swap detection + proc attribution fallback)
-  local sets, setMap = captureEquippedSets()
-  session.equippedSets = sets
-  session.equippedSetMap = setMap
-  local slotIds, slotNames, slotBars, slotBarsByName, slotBySlot = captureSlottedAbilities()
-  session.slottedAbilityIds = slotIds
-  session.slottedAbilityNames = slotNames
-  session.slottedAbilityBar = slotBars or {}
-  session.slottedAbilityBarByName = slotBarsByName or {}
-  session.slottedAbilityBySlot = slotBySlot or {}
-
-  -- Character stats at fight start (Sheet/Temp baseline for Dashboard)
-  if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
-    local okSnap, snap = pcall(DM2StatsMenuShell.CapturePlayerStats)
-    if okSnap and type(snap) == "table" then
-      session.playerStatsStart = snap
-    end
+  -- Lean start only. Defer gear/build/buff capture to next frame so combat events
+  -- keep flowing (matches older Parse / Simple DPS accuracy priority).
+  if type(zo_callLater) == "function" then
+    zo_callLater(function()
+      if R.session == session and session.started then
+        runDeferredStartSnapshots(session, tMs)
+      end
+    end, 0)
+  else
+    runDeferredStartSnapshots(session, tMs)
   end
-  if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureActiveMundus) == "function" then
-    local okM, mundus = pcall(DM2StatsMenuShell.CaptureActiveMundus)
-    if okM and mundus and mundus ~= "" then
-      session.mundus = session.mundus or mundus
-    end
-  end
-  -- Phase 1: parse-time build snapshot + fingerprint (start)
-  if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureSessionBuild) == "function" then
-    local okB, build = pcall(DM2StatsMenuShell.CaptureSessionBuild, session, "start")
-    if okB and type(build) == "table" then
-      session.buildStart = build
-      session.build = build
-    end
-  end
-  -- Phase 3 P0: start bar dwell clock
-  p3InitBarAtCombatStart(session, tMs)
 end
 
 local function closeActiveBuffs(session)
@@ -5865,8 +5949,22 @@ end
 -- on combat-end previously dropped the entire parse from history.
 local function finalizeSession(session)
   if type(session) ~= "table" then return nil end
-  session.endMs = NowMs()
-  session.durationMs = math.max(0, session.endMs - (tonumber(session.startMs) or session.endMs))
+  -- Ensure deferred start snaps finished before fingerprint/build end work
+  if not session._startSnapDone then
+    pcall(runDeferredStartSnapshots, session, session.startMs)
+  end
+  local combatEndMs = NowMs()
+  -- DPS duration: end at last outgoing damage (matches DM2 Simple DPS / chat parse).
+  -- Combat-end alone includes post-pull idle and under-reports DPS ~5–15%.
+  local lastDmg = tonumber(session.lastDamageMs) or 0
+  local startMs = tonumber(session.startMs) or combatEndMs
+  if lastDmg > startMs then
+    session.endMs = lastDmg
+  else
+    session.endMs = combatEndMs
+  end
+  session.combatEndMs = combatEndMs
+  session.durationMs = math.max(0, session.endMs - startMs)
   -- Cheap reject before gear/build/Phase-3 snapshots (open-world trash fights)
   do
     local minMs = tonumber(SV and SV.settings and SV.settings.minFightMs) or 0
@@ -5994,10 +6092,12 @@ local function notifyHistorySaved(session, pathNote)
   local tgt = tostring(session.lastTargetName or "fight")
   if #tgt > 40 then tgt = string.sub(tgt, 1, 37) .. "..." end
   local max = historyMaxSetting()
+  -- Include raw total damage so you can cross-check Simple DPS Fight Total
   d(string.format(
-    "|c88ff88DM2 Parse|r: saved %s · %.0fk DPS · %0.0fs · history %d/%d (#1=newest)%s",
+    "|c88ff88DM2 Parse|r: saved %s · %.0fk DPS · total %s · %0.1fs · history %d/%d (#1=newest)%s",
     tgt,
     dps / 1000,
+    fmtInt(dmg),
     dur / 1000,
     n,
     max,
@@ -6017,9 +6117,14 @@ function R:OnCombatState(_, inCombat)
   if nowIn then
     cancelQueuedResultsPopup()
     -- Do NOT wipe a capture already in progress (combat-state can re-fire mid-dummy).
-    if not (self.session and self.session.started) then
-      self.session = newSession()
+    -- Also keep unstarted session if it already has damage (dummy name lag).
+    if self.session and self.session.started then
+      return
     end
+    if self.session and (tonumber(self.session.totalDamage) or 0) > 0 then
+      return -- preserve damage while waiting for dummy-name start
+    end
+    self.session = newSession()
     return
   end
 
@@ -6028,8 +6133,50 @@ function R:OnCombatState(_, inCombat)
 
   -- Guard against double end (event + watchdog)
   if self._finalizingCombat then return end
+
   local live = self.session
+
+  -- Housing dummy: combat flag can drop briefly while DoTs still tick.
+  -- Defer finalize until 2.1s after last damage (same idea as Simple DPS last-hit end).
+  if live and live.started and not self._forceCombatEnd then
+    local last = tonumber(live.lastDamageMs) or 0
+    local gap = (last > 0) and (NowMs() - last) or 99999
+    if gap < 2000 then
+      if type(zo_callLater) == "function" and not self._deferredCombatEnd then
+        self._deferredCombatEnd = true
+        local wait = math.max(100, 2100 - gap)
+        zo_callLater(function()
+          self._deferredCombatEnd = false
+          -- Re-entered combat for real → abort deferred end
+          if type(IsUnitInCombat) == "function" then
+            local ok, ic = pcall(IsUnitInCombat, "player")
+            if ok and combatFlagIsIn(ic) then
+              self.inCombat = true
+              return
+            end
+          end
+          local still = self.session
+          if still and still.started then
+            local last2 = tonumber(still.lastDamageMs) or 0
+            if last2 > 0 and (NowMs() - last2) < 2000 then
+              -- still dealing damage; wait again
+              self.inCombat = false
+              self:OnCombatState(nil, false)
+              return
+            end
+          end
+          self._forceCombatEnd = true
+          self.inCombat = false
+          self:OnCombatState(nil, false)
+          self._forceCombatEnd = false
+        end, wait)
+      end
+      return
+    end
+  end
+
   if not live or not live.started then
+    -- If we had damage but never started (filters), drop quietly
     self.session = nil
     -- Helpful when capture never started (filters / enable / open-world skip)
     if wasIn and SV and SV.settings and SV.settings.enable then
@@ -6052,7 +6199,9 @@ function R:OnCombatState(_, inCombat)
   else
     -- Salvage: stamp duration and force-save raw session
     d("|cFF6666DM2 Parse|r: finalize error (saving raw parse): " .. tostring(sOrErr))
-    live.endMs = live.endMs or NowMs()
+    local salvageEnd = tonumber(live.lastDamageMs) or 0
+    if salvageEnd <= (tonumber(live.startMs) or 0) then salvageEnd = NowMs() end
+    live.endMs = live.endMs or salvageEnd
     live.durationMs = math.max(0, (live.endMs or 0) - (tonumber(live.startMs) or 0))
     live.completedAt = live.completedAt or safeWallClock()
     live.isDummy = isDummyParseConfidence(live.lastTargetName)
@@ -6116,6 +6265,8 @@ end
 
 -- Backup: some housing/dummy setups flicker or miss EVENT_PLAYER_COMBAT_STATE.
 -- Poll IsUnitInCombat and drive the same enter/leave path.
+-- Grace: if damage still landed recently, do NOT end the parse (false "out of combat"
+-- mid-dummy was cutting multi‑million damage off the total).
 function R:CombatWatchTick()
   if not SV or not SV.settings or not SV.settings.enable then return end
   if type(IsUnitInCombat) ~= "function" then return end
@@ -6123,6 +6274,12 @@ function R:CombatWatchTick()
   if not ok then return end
   local nowIn = combatFlagIsIn(inCombat)
   if nowIn == (self.inCombat == true) then return end
+  if not nowIn and self.session and self.session.started then
+    local last = tonumber(self.session.lastDamageMs) or 0
+    if last > 0 and (NowMs() - last) < 2000 then
+      return -- still dealing damage; wait for real combat end
+    end
+  end
   self:OnCombatState(nil, nowIn)
 end
 
@@ -6387,169 +6544,155 @@ end
 function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType,
                           sourceName, sourceType, targetName, targetType, hitValue, powerType,
                           damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-  if not SV.settings.enable then return end
+  if not SV or not SV.settings or not SV.settings.enable then return end
   if isError then return end
 
-  -- player's (and player's pet/summon) outgoing healing (best-effort effective
-  -- heal capture). This is your TOTAL contribution, so a matriarch's / companion's
-  -- heals count toward your healing just like ESO credits them to you.
-  if (sourceType == COMBAT_UNIT_TYPE_PLAYER or sourceType == COMBAT_UNIT_TYPE_PLAYER_PET)
-     and (result == ACTION_RESULT_HEAL or result == ACTION_RESULT_CRITICAL_HEAL) then
-    local heal = tonumber(hitValue) or 0
+  -- Filter already limits to player/pet when AddFilterForEvent works; keep Lua
+  -- guard for fallback unfiltered registration (matches Simple DPS + older Parse).
+  local isPlayer = (sourceType == COMBAT_UNIT_TYPE_PLAYER)
+  local isPet = (type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET)
+  if not isPlayer and not isPet then return end
+
+  ------------------------------------------------------------------
+  -- Healing (secondary) — keep out of the damage hot path shape
+  ------------------------------------------------------------------
+  if result == ACTION_RESULT_HEAL or result == ACTION_RESULT_CRITICAL_HEAL then
+    local heal = combatHitDamage(hitValue, overflow)
     if heal > 0 then
       local session = ensureSession()
       startIfNeeded(session, NowMs(), targetName)
-      session.totalHealing = (session.totalHealing or 0) + heal
-      session.effectiveHealing = (session.effectiveHealing or 0) + heal
+      if session.started then
+        session.totalHealing = (session.totalHealing or 0) + heal
+        session.effectiveHealing = (session.effectiveHealing or 0) + heal
+      end
     end
     return
   end
 
-  -- only player's (and player's pet/summon) outgoing damage.
-  -- ESO's official parse credits your pet/summon damage (sorc familiar/matriarch,
-  -- atronachs, Warden bear, companion, etc.) to you. Dropping PLAYER_PET made
-  -- totals read a few % low whenever a pet was active — same accuracy fix shipped
-  -- in DM2 Simple DPS 1.0.10. COMBAT_UNIT_TYPE_PLAYER_PET is YOUR pets only, not
-  -- groupmates'. Pet hits flow through the same damage/skill/bucket accounting, so
-  -- the breakdown still sums to the total and matches the in-game posted DPS.
-  if sourceType ~= COMBAT_UNIT_TYPE_PLAYER and sourceType ~= COMBAT_UNIT_TYPE_PLAYER_PET then
+  ------------------------------------------------------------------
+  -- DAMAGE HOT PATH (priority: match Simple DPS / Parse 3.7 totals)
+  -- Count damage FIRST. All coaching/debuff/DoT detail is secondary and
+  -- must never block or delay totalDamage updates.
+  ------------------------------------------------------------------
+  if not isOutgoingDamageEvent(result) then
+    -- Non-damage combat rows: light debuff hooks only (no name resolve unless needed)
+    if isEffectApplyResult(result) then
+      local session = self.session
+      if session and session.started then
+        local tMs = NowMs()
+        local name = resolveAbilityName(abilityId, abilityName)
+        if type(ACTION_RESULT_EFFECT_FADED) == "number" and result == ACTION_RESULT_EFFECT_FADED then
+          recordTargetDebuffFade(session, abilityId, name, tMs)
+        else
+          recordTargetDebuffApply(session, abilityId, name, tMs, targetName)
+        end
+      end
+    end
     return
   end
+
+  local dmg = combatHitDamage(hitValue, overflow)
+  if dmg <= 0 then return end
 
   local tMs = NowMs()
   local session = ensureSession()
+  -- Always accumulate while session object lives; startIfNeeded may lag dummy name
+  -- recognition, but damage must not be dropped (open-world OFF).
+  if not session.firstDamageMs then session.firstDamageMs = tMs end
+  session.totalDamage = (tonumber(session.totalDamage) or 0) + dmg
+  session.lastDamageMs = tMs
+  if targetName and targetName ~= "" then
+    session.lastTargetName = targetName
+  end
   startIfNeeded(session, tMs, targetName)
-  session.lastTargetName = targetName or session.lastTargetName
+
+  -- If pull never officially started (dummy-only filter), keep totals on the
+  -- unstarted session until a valid start — do not run skill breakdown yet.
+  if not session.started then return end
+
   local resolvedAbilityName = resolveAbilityName(abilityId, abilityName)
-
-  -- Enemy status / debuff applications (Off Balance, Concussed, Major Breach, …)
-  -- Track before the damage-only early-out so pure effect events are kept.
-  if isEffectApplyResult(result) then
-    if type(ACTION_RESULT_EFFECT_FADED) == "number" and result == ACTION_RESULT_EFFECT_FADED then
-      recordTargetDebuffFade(session, abilityId, resolvedAbilityName, tMs)
-    else
-      recordTargetDebuffApply(session, abilityId, resolvedAbilityName, tMs, targetName)
-    end
-    -- Effect-only events stop here (no damage accounting)
-    if not isOutgoingDamageEvent(result) then return end
-  elseif classifyTargetStatusKind(resolvedAbilityName) then
-    -- Some clients only emit status as named combat events (0 or small hitValue)
-    local dmgProbe = tonumber(hitValue) or 0
-    if dmgProbe <= 0 or not isOutgoingDamageEvent(result) then
-      recordTargetDebuffApply(session, abilityId, resolvedAbilityName, tMs, targetName)
-      if not isOutgoingDamageEvent(result) then return end
-    end
-  end
-
-  -- v3.0.25: rotation capture is now driven by EVENT_ACTION_SLOT_ABILITY_USED (input-based).
-  if not isOutgoingDamageEvent(result) then
-    return
-  end
-
-  local dmg = tonumber(hitValue) or 0
-  if dmg <= 0 then return end
-
   local dot = isDotResult(result)
-  local crit = (result == ACTION_RESULT_CRITICAL_DAMAGE) or (result == ACTION_RESULT_DOT_TICK_CRITICAL) or (result == ACTION_RESULT_DAMAGE_SHIELDED_CRITICAL) or (result == ACTION_RESULT_BLOCKED_DAMAGE_CRITICAL)
+  local crit = (result == ACTION_RESULT_CRITICAL_DAMAGE)
+    or (result == ACTION_RESULT_DOT_TICK_CRITICAL)
+    or (result == ACTION_RESULT_DAMAGE_SHIELDED_CRITICAL)
+    or (result == ACTION_RESULT_BLOCKED_DAMAGE_CRITICAL)
 
-  session.totalDamage = session.totalDamage + dmg
   if dot then
-    session.dotDamage = session.dotDamage + dmg
-    -- v3.2.2: Record DOT tick for uptime tracking (exclude set procs)
-    -- DOT ticks often use different abilityIds than the slotted skill, so we track all
-    -- player DOTs EXCEPT known set procs (which have their own tracking).
+    session.dotDamage = (tonumber(session.dotDamage) or 0) + dmg
+    -- LEAN DoT uptime: running activeMs only (no per-tick array rebuild on hot path)
     if not resolveSetName(session, abilityId, resolvedAbilityName) then
       local dt = session.dotTicks
-      if not dt[abilityId] then
-        dt[abilityId] = {
-          name = resolveAbilityName(abilityId, abilityName),
+      local e = dt[abilityId]
+      if not e then
+        e = {
+          name = resolvedAbilityName or resolveAbilityName(abilityId, abilityName),
           ticks = {},
           tickCount = 0,
           activeMs = 0,
           lastTickMs = nil,
           intervalSum = 0,
           intervalN = 0,
-          medianIntervalMs = 0,
+          medianIntervalMs = 2000,
         }
+        dt[abilityId] = e
       end
-      local e = dt[abilityId]
-      if type(e.ticks) ~= "table" then e.ticks = {} end
       e.tickCount = (tonumber(e.tickCount) or 0) + 1
       local last = tonumber(e.lastTickMs)
       if last and tMs > last then
         local gap = tMs - last
-        -- Multi-target same pulse: ignore sub-80ms gaps for coverage/interval
-        if gap >= 80 then
-          if gap < 8000 then
-            e.intervalSum = (tonumber(e.intervalSum) or 0) + gap
-            e.intervalN = (tonumber(e.intervalN) or 0) + 1
-            e.medianIntervalMs = e.intervalSum / math.max(1, e.intervalN)
-          end
+        if gap >= 80 and gap < 8000 then
+          e.intervalSum = (tonumber(e.intervalSum) or 0) + gap
+          e.intervalN = (tonumber(e.intervalN) or 0) + 1
+          e.medianIntervalMs = e.intervalSum / math.max(1, e.intervalN)
           local med = tonumber(e.medianIntervalMs) or 2000
           if med < 200 then med = 200 end
-          local maxGap = math.max(med * 2.5, 4000)
-          if gap <= maxGap then
+          if gap <= math.max(med * 2.5, 4000) then
             e.activeMs = (tonumber(e.activeMs) or 0) + gap
           end
-          -- Sparse full-span samples (not newest-only — that destroyed uptime)
-          local ticks = e.ticks
-          ticks[#ticks + 1] = tMs
-          if #ticks > 48 then
-            local n = #ticks
-            local keep = { ticks[1] }
-            local step = (n - 1) / 47
-            for i = 1, 46 do
-              local idx = 1 + math.floor(i * step + 0.5)
-              if idx < 1 then idx = 1 end
-              if idx > n then idx = n end
-              if keep[#keep] ~= ticks[idx] then keep[#keep + 1] = ticks[idx] end
-            end
-            if keep[#keep] ~= ticks[n] then keep[#keep + 1] = ticks[n] end
-            e.ticks = keep
-          end
-          e.lastTickMs = tMs
         end
-        -- else: multi-hit same pulse — count already bumped, keep lastTickMs
-      else
-        -- First tick (or same-ms): seed sample list
-        e.ticks[#e.ticks + 1] = tMs
-        e.lastTickMs = tMs
+      end
+      e.lastTickMs = tMs
+      -- Sparse samples only (cap 24; no O(n) rebuild every tick)
+      local ticks = e.ticks
+      if type(ticks) ~= "table" then ticks = {}; e.ticks = ticks end
+      if #ticks < 24 then
+        ticks[#ticks + 1] = tMs
+      elseif (tMs - (tonumber(ticks[#ticks]) or 0)) >= 500 then
+        ticks[#ticks] = tMs -- refresh last only
       end
     end
   else
-    session.directDamage = session.directDamage + dmg
+    session.directDamage = (tonumber(session.directDamage) or 0) + dmg
   end
 
-  session.hitCount = session.hitCount + 1
-  if crit then session.critCount = session.critCount + 1 end
+  session.hitCount = (session.hitCount or 0) + 1
+  if crit then session.critCount = (session.critCount or 0) + 1 end
   if dmg > (session.maxHit or 0) then session.maxHit = dmg end
 
-  -- Phase 2.5.1: crit-damage exposure sampling (sheet proxy every ~2s)
-  -- Cap/overcap recomputed at finalize with content-profile ceiling from sampleSeries.
+  -- Crit exposure: cheap running totals every hit; sheet sample at most every 2s
   do
     local cds = session.critDmgStats
     if type(cds) == "table" then
       cds.eligibleDmg = (cds.eligibleDmg or 0) + dmg
       if crit then cds.critHitDmg = (cds.critHitDmg or 0) + dmg end
-      cds.sampleSeries = cds.sampleSeries or {}
-      local sampleEvery = 2000
       local last = tonumber(cds.lastSampleMs) or 0
-      local series = cds.sampleSeries
-      if (tMs - last) >= sampleEvery or last == 0 then
-        local sheetPct = 0
-        if DM2StatsMenuShell and type(DM2StatsMenuShell.ReadSheetCritDamagePercent) == "function" then
+      if (tMs - last) >= 2000 or last == 0 then
+        cds.lastSampleMs = tMs
+        local sheetPct = tonumber(cds.lastSheetCritPct) or 0
+        if sheetPct <= 0 and DM2StatsMenuShell
+            and type(DM2StatsMenuShell.ReadSheetCritDamagePercent) == "function" then
           local okS, v = pcall(DM2StatsMenuShell.ReadSheetCritDamagePercent)
           if okS and tonumber(v) and tonumber(v) > 0 then sheetPct = tonumber(v) end
         end
-        cds.lastSampleMs = tMs
-        cds.lastSheetCritPct = sheetPct
         if sheetPct > 0 then
+          cds.lastSheetCritPct = sheetPct
           cds.source = "sheet_sample"
           cds.samples = (cds.samples or 0) + 1
           cds.sampleWeight = (cds.sampleWeight or 0) + dmg
           cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
-          -- Cap series length (console memory): merge tiny tails
-          if #series >= 48 then
+          cds.sampleSeries = cds.sampleSeries or {}
+          local series = cds.sampleSeries
+          if #series >= 24 then
             local lastE = series[#series]
             lastE.dmg = (tonumber(lastE.dmg) or 0) + dmg
             lastE.pct = sheetPct
@@ -6561,12 +6704,6 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
         local sheetPct = tonumber(cds.lastSheetCritPct) or 0
         cds.sampleWeight = (cds.sampleWeight or 0) + dmg
         cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
-        local lastE = series[#series]
-        if lastE then
-          lastE.dmg = (tonumber(lastE.dmg) or 0) + dmg
-        else
-          series[1] = { dmg = dmg, pct = sheetPct }
-        end
       end
     end
   end
@@ -6587,9 +6724,7 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   if crit then s.crit = s.crit + 1 end
   if dmg > (s.max or 0) then s.max = dmg end
   if dot then s.dot = s.dot + dmg else s.direct = s.direct + dmg end
-  -- ST vs multi/AoE: distinct targets this fight + radius later at display
   noteSkillTarget(s, targetUnitId, targetName)
-  -- Damage type totals (Physical / Magic / Flame / …) for subtype column
   local dt = tonumber(damageType)
   if dt then
     s.damageTypes = s.damageTypes or {}
@@ -6597,11 +6732,8 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   end
 
   local bar = getSkillBar(session, abilityId, resolvedAbilityName)
-  if bar then
-    recordSkillBar(session, abilityId, bar, resolvedAbilityName)
-  end
+  if bar then recordSkillBar(session, abilityId, bar, resolvedAbilityName) end
 
-  -- armor/weapon set proc grouping (abilityId map or equipped set-name match)
   local setName = resolveSetName(session, abilityId, resolvedAbilityName)
   if setName then
     local ps = ensureSet(session, setName)
@@ -6613,14 +6745,12 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
     end
   end
 
-  -- LA hit confirmation: count server-confirmed LA hits for summary stats.
-  -- v3.0.25: weave timing is now fully input-based (OnActionSlotAbilityUsed handles
-  -- both LA presses and skill presses). This section only counts confirmed hits.
-  local la = isLightAttack(abilityId, abilityName, abilityActionSlotType)
-  if la then
+  if isLightAttack(abilityId, abilityName, abilityActionSlotType) then
     local w = session.weave
-    w.laCount = (w.laCount or 0) + 1
-    w.lastLaHitMs = tMs
+    if w then
+      w.laCount = (w.laCount or 0) + 1
+      w.lastLaHitMs = tMs
+    end
   end
 end
 
@@ -6668,12 +6798,27 @@ function R:OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, begin
   ------------------------------------------------------------------
   -- Player buffs (existing path)
   ------------------------------------------------------------------
-  if abilityId == 0 then return end
+  local resolvedName = resolvedEffectName
+  if (not resolvedName or resolvedName == "") and effectName and effectName ~= "" then
+    resolvedName = zo_strformat("<<1>>", effectName)
+  end
+  -- abilityId can be 0 on some dummy/external effects — still track by name
+  if abilityId == 0 and (not resolvedName or resolvedName == "") then return end
 
-  local b = session.buffs[abilityId]
+  local key = abilityId > 0 and abilityId or ("n:" .. string.lower(tostring(resolvedName or "")))
+  local b = session.buffs[key]
   if not b then
-    b = { id=abilityId, name = (effectName and effectName ~= "") and zo_strformat("<<1>>", effectName) or ("Buff "..tostring(abilityId)), applied=0, activeMs=0, activeStartMs=nil }
-    session.buffs[abilityId] = b
+    b = {
+      id = abilityId,
+      name = (resolvedName and resolvedName ~= "") and resolvedName
+        or ((effectName and effectName ~= "") and zo_strformat("<<1>>", effectName) or ("Buff " .. tostring(abilityId))),
+      applied = 0,
+      activeMs = 0,
+      activeStartMs = nil,
+    }
+    session.buffs[key] = b
+  elseif (not b.name or b.name == "") and resolvedName and resolvedName ~= "" then
+    b.name = resolvedName
   end
 
   -- sourceType: COMBAT_UNIT_TYPE_PLAYER / GROUP / OTHER / … (when API provides it)
@@ -6688,19 +6833,30 @@ function R:OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, begin
       b.fromGroup = true
     elseif type(COMBAT_UNIT_TYPE_OTHER) == "number" and sourceType == COMBAT_UNIT_TYPE_OTHER then
       b.fromExternal = true
+      b.fromDummy = true -- trial dummy / world units often report OTHER
+    elseif type(COMBAT_UNIT_TYPE_NONE) == "number" and sourceType == COMBAT_UNIT_TYPE_NONE then
+      -- Some clients use NONE for environment/dummy auras
+      b.fromExternal = true
     end
   end
 
-  -- changeType: EFFECT_RESULT_GAINED, EFFECT_RESULT_FADED, EFFECT_RESULT_UPDATED
-  if changeType == EFFECT_RESULT_GAINED then
+  -- changeType: GAINED / FADED / UPDATED / FULL_REFRESH (dummy re-applies use refresh)
+  local isGain = (changeType == EFFECT_RESULT_GAINED)
+  local isFade = (changeType == EFFECT_RESULT_FADED)
+  local isUpd = (changeType == EFFECT_RESULT_UPDATED)
+  local isRefresh = (type(EFFECT_RESULT_FULL_REFRESH) == "number" and changeType == EFFECT_RESULT_FULL_REFRESH)
+  if isGain or isRefresh then
     b.applied = (b.applied or 0) + 1
-    b.activeStartMs = tMs
-  elseif changeType == EFFECT_RESULT_FADED then
+    if not b.activeStartMs then b.activeStartMs = tMs end
+    if isRefresh and b.activeStartMs then
+      -- keep window open; count reapply
+    end
+  elseif isFade then
     if b.activeStartMs then
       b.activeMs = (b.activeMs or 0) + math.max(0, tMs - b.activeStartMs)
       b.activeStartMs = nil
     end
-  elseif changeType == EFFECT_RESULT_UPDATED then
+  elseif isUpd then
     if b.activeStartMs then
       b.activeMs = (b.activeMs or 0) + math.max(0, tMs - b.activeStartMs)
     end

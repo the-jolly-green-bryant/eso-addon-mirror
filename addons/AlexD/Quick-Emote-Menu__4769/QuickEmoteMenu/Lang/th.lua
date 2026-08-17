@@ -9,6 +9,12 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_UIMODE         = "แสดงปุ่มเฉพาะในโหมด UI",
     SI_QUICKEMOTEMENU_OPTION_UIMODE_TOOLTIP =
     "แสดงปุ่มหลักเฉพาะเมื่อเคอร์เซอร์เมาส์ทำงานอยู่ (โหมด UI) ปุ่มจะถูกซ่อนเมื่อกลับสู่โหมดการเล่น/การโต้ตอบปกติ.",
+    SI_QUICKEMOTEMENU_OPTION_DETACH         = "แยกปุ่มออกจากแชต",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_TOOLTIP = "ย้ายปุ่มออกนอกหน้าต่างแชต สามารถลากปุ่มไปวางได้อย่างอิสระ",
+    SI_QUICKEMOTEMENU_OPTION_SETTINGS       = "การตั้งค่า",
+    SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON  = "แนบปุ่ม",
+    SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON  = "แยกปุ่ม",
+    SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "แสดงแผงการตั้งค่า",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "ปิดเมนูหลังเล่นอีโมต (คลิกซ้าย)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "รีเซ็ตตำแหน่งปุ่ม",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
