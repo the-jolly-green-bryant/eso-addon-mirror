@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Geltungsdrang/GrimFocusCounter-U51__4776",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Geltungsdrang",
+  "canonical_id": "esoui:4776",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4776",
+  "deleted": false,
+  "directories": [
+    "GrimFocusCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4776/",
+  "fingerprint": "5940ecc9ef9a9e0b6461e69f910edbaad3f616c6020d667298760735fea4e466",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17021.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17022.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17023.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4776",
+  "source_url": "https://www.esoui.com/downloads/info4776-GrimFocusCounterU51.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 2
+  },
+  "title": "GrimFocusCounter U51 ",
+  "updated_at": 1786986731000,
+  "version": "1.8.1"
+}

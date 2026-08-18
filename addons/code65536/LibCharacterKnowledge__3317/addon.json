@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "LibCharacterKnowledge"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3317/",
-  "fingerprint": "f64b38f3d350cd9e296a8b64281da39d80315cc36671459bb067b97a2405f74f",
+  "fingerprint": "424dbb500e98368cafd177c3e9c90833092ee2940cd1ba7292f697c30e7260f4",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -78,9 +82,9 @@
   "source_id": "3317",
   "source_url": "https://www.esoui.com/downloads/info3317-LibCharacterKnowledge.html",
   "stats": {
-    "downloads": 1857665,
-    "favorites": 370,
-    "monthly_downloads": 41282
+    "downloads": 1879699,
+    "favorites": 373,
+    "monthly_downloads": 49971
   },
   "title": "LibCharacterKnowledge",
   "updated_at": 1785798208000,

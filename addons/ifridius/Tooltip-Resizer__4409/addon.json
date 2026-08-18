@@ -1,11 +1,20 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/ifridius/Tooltip-Resizer__4409",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "ifridius",
   "canonical_id": "esoui:4409",
   "category_id": "98",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
     {
       "name": "Season Zero",
       "version": "11.3.0"
@@ -17,7 +26,7 @@
     "TooltipResizer"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4409/",
-  "fingerprint": "55038e70c536ab6ae26a9643f2324935e13cdfdd0c19839538dc0cb6fc5e073f",
+  "fingerprint": "35d0776b82361eb4c8f6c3813ac60933c2a9992f7c8235c5cbad39e3852908dc",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15285.png",
     "https://cdn-eso.mmoui.com/preview/pvw15286.png"
@@ -28,11 +37,11 @@
   "source_id": "4409",
   "source_url": "https://www.esoui.com/downloads/info4409-TooltipResizer.html",
   "stats": {
-    "downloads": 196,
-    "favorites": 1,
-    "monthly_downloads": 19
+    "downloads": 207,
+    "favorites": 2,
+    "monthly_downloads": 14
   },
   "title": "Tooltip Resizer",
-  "updated_at": 1771776156000,
-  "version": "2.1"
+  "updated_at": 1786992245000,
+  "version": "2.2"
 }

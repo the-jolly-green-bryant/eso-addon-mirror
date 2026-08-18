@@ -10,6 +10,30 @@ Log.hudLines = {}
 
 local persistSink
 
+local function FormatLogTime()
+    if type(GetTimeString) == "function" then
+        local ok, clock = pcall(GetTimeString)
+        if ok and type(clock) == "string" and clock ~= "" then
+            return clock
+        end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, ms = pcall(GetGameTimeMilliseconds)
+        if ok and type(ms) == "number" then
+            return string.format("%.3fs", ms / 1000)
+        end
+    end
+    return nil
+end
+
+local function Stamp(message)
+    local clock = FormatLogTime()
+    if clock then
+        return clock .. " " .. tostring(message)
+    end
+    return tostring(message)
+end
+
 function Log:SetPersistSink(fn)
     persistSink = type(fn) == "function" and fn or nil
 end
@@ -21,18 +45,27 @@ local function Persist(text)
 end
 
 local function ChatPrint(message)
-    local text = PREFIX .. tostring(message)
+    local text = PREFIX .. Stamp(message)
     Persist(text)
-    if type(d) == "function" then
-        d(text)
-        return
-    end
+    -- One chat destination. Writing CHAT_ROUTER + CHAT_SYSTEM +
+    -- GAMEPAD_CHAT_SYSTEM + d() duplicated every /uiedit diag line on
+    -- Play Anywhere. `d()` exists on console but does not show in the
+    -- gamepad chat window; engine Logs/ is not addon output.
     if CHAT_ROUTER and type(CHAT_ROUTER.AddSystemMessage) == "function" then
         pcall(CHAT_ROUTER.AddSystemMessage, CHAT_ROUTER, text)
         return
     end
     if CHAT_SYSTEM and type(CHAT_SYSTEM.AddMessage) == "function" then
         pcall(CHAT_SYSTEM.AddMessage, CHAT_SYSTEM, text)
+        return
+    end
+    local gamepad = _G.GAMEPAD_CHAT_SYSTEM
+    if gamepad and type(gamepad.AddMessage) == "function" then
+        pcall(gamepad.AddMessage, gamepad, text)
+        return
+    end
+    if type(d) == "function" then
+        d(text)
         return
     end
     if type(print) == "function" then
@@ -130,7 +163,7 @@ function Log:Write(level, message)
     if not self.enabled then
         return
     end
-    self.hudLines[#self.hudLines + 1] = line
+    self.hudLines[#self.hudLines + 1] = Stamp(line)
     while #self.hudLines > MAX_HUD_LINES do
         table.remove(self.hudLines, 1)
     end

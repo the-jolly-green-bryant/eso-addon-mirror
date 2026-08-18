@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Irreverend/Dark-Convergence-Tracker__4770",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Irreverend",
+  "canonical_id": "esoui:4770",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4770",
+  "deleted": false,
+  "directories": [
+    "DarkConvergenceTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4770/",
+  "fingerprint": "752beebf7bde3bd59b46f8fe17440e81340f8fd4eb6c158c2e27f0f04b7a44fd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16980.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16978.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16979.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4770",
+  "source_url": "https://www.esoui.com/downloads/info4770-DarkConvergenceTracker.html",
+  "stats": {
+    "downloads": 31,
+    "favorites": 1,
+    "monthly_downloads": 30
+  },
+  "title": "Dark Convergence Tracker",
+  "updated_at": 1787004799000,
+  "version": "1.0.0"
+}

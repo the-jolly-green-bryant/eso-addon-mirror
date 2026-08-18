@@ -8,8 +8,8 @@
   "category_id": "25",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4628",
@@ -18,7 +18,7 @@
     "InsatiableHungerBlocker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4628/",
-  "fingerprint": "5b19821282cfc4c07fdeffa43a1bd21c201b1d88e7438a89b75c4b373bf3e70e",
+  "fingerprint": "68a25a0ceddc1be79883cb23e4f23aa6a58ebf1d6c17b787561693d45e5db948",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16290.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4628",
   "source_url": "https://www.esoui.com/downloads/info4628-InsatiableHungerBlocker.html",
   "stats": {
-    "downloads": 611,
+    "downloads": 691,
     "favorites": 0,
-    "monthly_downloads": 199
+    "monthly_downloads": 252
   },
   "title": "Insatiable Hunger Blocker",
-  "updated_at": 1786300720000,
-  "version": "1.12"
+  "updated_at": 1786997005000,
+  "version": "1.13"
 }

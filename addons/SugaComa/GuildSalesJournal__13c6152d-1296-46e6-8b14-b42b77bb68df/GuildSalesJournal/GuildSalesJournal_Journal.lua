@@ -1373,48 +1373,56 @@ function GuildSalesJournal_Gamepad:ClassifyMailEvidence(evidence)
     end
     if attachedMoney <= 0 then return nil, nil end
 
-    local match = self:FindGuildSaleForMail(evidence)
-    if match then
-        evidence.matchedSaleEventId = tostring(match.sale.eventId)
-        local label = match.itemName ~= "" and ("Guild sale: " .. match.itemName) or "Guild sale"
-        return "guildSales", label
-    end
-
-    local combinedText = table.concat({
-        tostring(evidence.senderDisplayName or ""),
-        tostring(evidence.senderCharacterName or ""),
-        tostring(evidence.subject or ""),
-        tostring(evidence.body or ""),
-    }, " ")
-
-    if evidence.fromSystem and ContainsAny(combinedText,
-            "rewards for the worthy",
-            "reward for the worthy",
-            "our thanks, warrior",
-            "campaign loyalty reward",
-            "for the pact",
-            "for the dominion",
-            "for the covenant",
-            "battlemaster rivyn",
-            "battleground",
-            "whitestrake",
-            "pelinal") then
-        return "combatIncome", evidence.subject ~= "" and evidence.subject or "PvP mail reward"
-    end
-
     if evidence.returned then
         return "mailIncome", "Returned mail funds"
     elseif evidence.fromCustomerService then
         return "mailIncome", "Customer service mail"
-    elseif evidence.category == MAIL_CATEGORY_PLAYER_MAIL then
-        if ContainsAny(combinedText, "cash on delivery", "cod", "payment") then
-            return "mailIncome", "COD proceeds"
-        end
-        return "mailIncome", "Player mail"
-    elseif evidence.fromSystem then
-        return "mailIncome", evidence.subject ~= "" and evidence.subject or "System mail"
     end
-    return "mailIncome", evidence.subject ~= "" and evidence.subject or "Mail income"
+
+    local subject = tostring(evidence.subject or "")
+    local normalizedSubject = NormalizeMailText(subject)
+    local paddedSubject = " " .. normalizedSubject .. " "
+    local isSystemMail = evidence.fromSystem
+        or (MAIL_CATEGORY_SYSTEM_MAIL and evidence.category == MAIL_CATEGORY_SYSTEM_MAIL)
+
+    local isGuildSaleSubject = ContainsAny(normalizedSubject,
+            "guild store item sold",
+            "item sold",
+            "item sold in guild store",
+            "item sold in the guild store",
+            "guild store sale",
+            "sale complete")
+        or (ContainsAny(normalizedSubject, "guild store", "guild trader")
+            and ContainsAny(normalizedSubject, "sold", "sale"))
+    if isSystemMail and isGuildSaleSubject then
+        return "guildSales", subject ~= "" and subject or "Guild Store sale"
+    end
+
+    if isSystemMail and ContainsAny(normalizedSubject,
+            "rewards for the worthy",
+            "reward for the worthy",
+            "campaign loyalty reward",
+            "battleground reward",
+            "whitestrake",
+            "pelinal") then
+        return "combatIncome", subject ~= "" and subject or "PvP mail reward"
+    end
+
+    if isSystemMail and ContainsAny(normalizedSubject, "reward", "rewards") then
+        return "mailRewards", subject ~= "" and subject or "Mail reward"
+    end
+
+    if ContainsAny(normalizedSubject, "cash on delivery", "payment received")
+        or ContainsAny(paddedSubject, " cod ", " c o d ") then
+        return "privateSales", subject ~= "" and subject or "CoD proceeds"
+    end
+
+    if evidence.category == MAIL_CATEGORY_PLAYER_MAIL then
+        return "mailIncome", "Player mail"
+    elseif isSystemMail then
+        return "mailIncome", subject ~= "" and subject or "System mail"
+    end
+    return "mailIncome", subject ~= "" and subject or "Mail income"
 end
 
 function GuildSalesJournal_Gamepad:CaptureMailEvidence(mailId)
@@ -1739,7 +1747,7 @@ function GuildSalesJournal_Gamepad:ClassifyCurrencyTransaction(delta, reason)
         local incomeContext = self:ConsumeIncomeContext(delta)
         if incomeContext then
             self.pendingLootContext = nil
-            return "income", incomeContext.category, nil, incomeContext.label or "Guild sale"
+            return "income", incomeContext.category, nil, incomeContext.label or "Mail income"
         end
 
         if reason == CURRENCY_CHANGE_REASON_QUESTREWARD then
@@ -1882,7 +1890,7 @@ function GuildSalesJournal_Gamepad:SetSessionSummaryRow(rowNumber, direction, am
     if direction == "expense" then
         if amount > 0 then
             spent:SetText("|cC56B6B-" .. FormatNumber(amount) .. "|r" .. coin)
-            balance:SetText("|cC56B6B" .. FormatNumber(balanceValue) .. " ↓|r" .. coin)
+            balance:SetText("|cC56B6B" .. FormatNumber(balanceValue) .. " â|r" .. coin)
         else
             spent:SetText("|cB8B8B80|r")
             balance:SetText("")
@@ -1890,7 +1898,7 @@ function GuildSalesJournal_Gamepad:SetSessionSummaryRow(rowNumber, direction, am
     else
         if amount > 0 then
             earned:SetText("|c78D878+" .. FormatNumber(amount) .. "|r" .. coin)
-            balance:SetText("|c78D878" .. FormatNumber(balanceValue) .. " ↑|r" .. coin)
+            balance:SetText("|c78D878" .. FormatNumber(balanceValue) .. " â|r" .. coin)
         else
             earned:SetText("|cB8B8B80|r")
             balance:SetText("")
@@ -1917,8 +1925,10 @@ end
 function GuildSalesJournal_Gamepad:GetCategorySummary()
     local summary = {
         guildSales = { count = 0, total = 0 },
+        privateSales = { count = 0, total = 0 },
         merchantSales = { count = 0, total = 0 },
         questRewards = { count = 0, total = 0 },
+        mailRewards = { count = 0, total = 0 },
         lootedGold = { count = 0, total = 0 },
         combatIncome = { count = 0, total = 0 },
         fencing = { count = 0, total = 0 },
@@ -2014,8 +2024,10 @@ function GuildSalesJournal_Gamepad:RefreshCategoryPage(subpageIndex)
         self.categoryView:GetNamedChild("Heading"):SetText("INCOME BY CATEGORY")
         rows = {
             { "Guild Sales", summary.guildSales, true },
+            { "Private / CoD Sales", summary.privateSales, true },
             { "Merchant Sales", summary.merchantSales, true },
             { "Quest Rewards", summary.questRewards, true },
+            { "Mail Rewards", summary.mailRewards, true },
             { "Looted Gold", summary.lootedGold, true },
             { "Combat Income", summary.combatIncome, true },
             { "Fencing", summary.fencing, true },
@@ -2773,7 +2785,7 @@ end
 function GuildSalesJournal_Gamepad:FormatListingRemaining(expiresAt)
     local now = GetTimeStamp and GetTimeStamp() or 0
     local remaining = math.floor((tonumber(expiresAt) or 0) - now)
-    if remaining <= 0 then return "|cD86A6AExpired — refresh|r" end
+    if remaining <= 0 then return "|cD86A6AExpired â refresh|r" end
 
     local days = math.floor(remaining / 86400)
     local hours = math.floor((remaining % 86400) / 3600)

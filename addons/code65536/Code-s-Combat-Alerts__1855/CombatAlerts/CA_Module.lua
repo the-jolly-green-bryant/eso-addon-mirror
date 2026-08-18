@@ -212,6 +212,9 @@ function CA_Module:ProcessStandardAlerts( result, isError, abilityName, abilityG
 			if (options[3] and LCA.IsUnitIdValid(sourceUnitId)) then
 				self.castSources[sourceUnitId] = id
 			end
+			if (options.cutthroat) then
+				CA2.SetNightbladeCutthroatExclusion(GetGameTimeMilliseconds() + hitValue + offset)
+			end
 		end
 	elseif (LCA.INTERRUPT_EVENTS[result] and self.castSources[targetUnitId]) then
 		CA1.CastAlertsStop(self.castSources[targetUnitId])

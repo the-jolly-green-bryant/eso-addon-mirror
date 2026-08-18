@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Shadowfen/Auto-Category---Revised__2300",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Shadowfen",
   "canonical_id": "esoui:2300",
   "category_id": "33",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -69,7 +74,7 @@
     "AutoCategory"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2300/",
-  "fingerprint": "8107b279e01d51ca92f05457eb588cca1985962f639c8d029132ad83800a18e4",
+  "fingerprint": "9052dde8a5d4ae7066a4f29f7247903ed88dd6bf5bf60ee0c20e77708ecd6e28",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8077.png",
     "https://cdn-eso.mmoui.com/preview/pvw8078.png",
@@ -87,11 +92,11 @@
   "source_id": "2300",
   "source_url": "https://www.esoui.com/downloads/info2300-AutoCategory-Revised.html",
   "stats": {
-    "downloads": 1194782,
+    "downloads": 1200144,
     "favorites": 412,
-    "monthly_downloads": 8182
+    "monthly_downloads": 10677
   },
   "title": "Auto Category - Revised",
-  "updated_at": 1785198643000,
-  "version": "4.6.12"
+  "updated_at": 1787008114000,
+  "version": "4.6.13"
 }

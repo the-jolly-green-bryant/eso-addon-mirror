@@ -11,7 +11,7 @@ CrutchAlerts = {
     InfoPanel = {},
 
     name = "CrutchAlerts",
-    version = "2.23.0",
+    version = "2.24.0",
 
     unlock = false,
 }
@@ -217,6 +217,7 @@ local defaultOptions = {
         alertVolatileStacks = true,
         volatileThreshold = 6,
         showArcingCleave = false,
+        lureSound = true,
 
         infoPanel = {
             showMaelstrom = true,
@@ -320,6 +321,9 @@ local defaultOptions = {
         showArcticShred = true,
         showAnsuulIcon = true,
         ansuulIconSize = 150,
+        showSplitHp = true,
+        showPoisonedMindIcons = true,
+        poisonedMindIconsSize = 150,
 
         infoPanel = {
             showFrostBomb = true,
@@ -650,6 +654,8 @@ local function Initialize()
     PrintTime("ability overlays done")
     Crutch.InitializeInfoPanel()
     PrintTime("info panel done")
+    Crutch.Drawing.Model.InitializeGrave()
+    PrintTime("grave done")
 
     -- Boss health bar
     Crutch.BossHealthBar.Initialize()

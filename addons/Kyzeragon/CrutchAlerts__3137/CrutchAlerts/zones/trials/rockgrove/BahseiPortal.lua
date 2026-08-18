@@ -6,13 +6,12 @@ local C = Crutch.Constants
 ---------------------------------------------------------------------
 -- Bahsei
 ---------------------------------------------------------------------
-local effectResults = {
-    [EFFECT_RESULT_FADED] = "FADED",
-    [EFFECT_RESULT_FULL_REFRESH] = "FULL_REFRESH",
-    [EFFECT_RESULT_GAINED] = "|cb95effGAINED",
-    [EFFECT_RESULT_TRANSFER] = "TRANSFER",
-    [EFFECT_RESULT_UPDATED] = "UPDATED",
-}
+-- 20s to start
+-- 50s after previous finished
+local nextPortal = 1
+local nextPortalTimer = 20
+
+local effectResults = C.EFFECT_RESULTS
 
 local groupBitterMarrow = {}
 
@@ -26,11 +25,10 @@ local function UpdatePlayersInPortal()
             names = string.format("%s%s ", names, GetUnitDisplayName(unitTag))
         end
     end
-    Crutch.InfoPanel.SetLine(RG.PANEL_PORTAL_COUNT_INDEX, "|c9999ff" .. count .. " in portal")
+    Crutch.InfoPanel.SetLine(RG.PANEL_PORTAL_COUNT_INDEX, "|c9999ff" .. count .. " in portal " .. nextPortal)
     Crutch.InfoPanel.SetLine(RG.PANEL_PORTAL_PLAYERS_INDEX, "|c9999ff" .. names, 0.4)
 end
 
--- EVENT_EFFECT_CHANGED (number eventCode, MsgEffectResult changeType, number effectSlot, string effectName, string unitTag, number beginTime, number endTime, number stackCount, string iconName, string buffType, BuffEffectType effectType, AbilityType abilityType, StatusEffectType statusEffectType, string unitName, number unitId, number abilityId, CombatUnitType sourceType)
 local function OnBitterMarrowChanged(_, changeType, _, _, unitTag, _, _, stackCount, _, _, _, _, _, _, _, abilityId)
     Crutch.dbgOther(string.format("|c8C00FF%s(%s): %d %s|r", GetUnitDisplayName(unitTag), unitTag, stackCount, effectResults[changeType]))
 
@@ -76,10 +74,6 @@ end
 ---------------------------------------------------------------------
 -- Pre-portal ability icons & portal timers
 ---------------------------------------------------------------------
--- 20s to start
--- 50s after previous finished
-local nextPortal = 1
-local nextPortalTimer = 20
 local function OnPortalSummoned(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, abilityId)
     Crutch.InfoPanel.StopCount(RG.PANEL_PORTAL_TIMER_INDEX)
     UpdatePlayersInPortal()

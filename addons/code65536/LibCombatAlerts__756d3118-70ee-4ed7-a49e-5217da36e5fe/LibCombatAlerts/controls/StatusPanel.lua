@@ -1,4 +1,5 @@
 local LCA = LibCombatAlerts
+local Internal = LibCombatAlertsInternal
 
 
 --------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ local DEFAULT_OPTIONS = {
 -- LCA_StatusPanel
 --------------------------------------------------------------------------------
 
-local LCA_StatusPanel = LCA.BaseControlObject:Subclass()
+local LCA_StatusPanel = Internal.BaseControlObject:Subclass()
 LCA.StatusPanel = LCA_StatusPanel
 
 local nextOwnerId = 1 -- Yes, we do want this to be shared across instances
@@ -42,7 +43,7 @@ local GuiRoot = GuiRoot
 --------------------------------------------------------------------------------
 
 function LCA_StatusPanel:New( )
-	local obj = LCA.BaseControlObject.New(self, "LCA_StatusPanel")
+	local obj = Internal.BaseControlObject.New(self, "LCA_StatusPanel")
 
 	obj.ownerId = nil
 	obj.polling = false
@@ -113,10 +114,10 @@ function LCA_StatusPanel:Enable( options )
 	self:Reset()
 	if (type(options.rowLabels) == "table") then
 		for i, label in ipairs(options.rowLabels) do
-			self:ModifyCell(i, 1, { text = label })
+			self:SetCellText(i, 1, label)
 		end
 	elseif (type(options.rowLabels) == "string") then
-		self:ModifyCell(1, 1, { text = options.rowLabels })
+		self:SetCellText(1, 1, options.rowLabels)
 	end
 
 	-- Additional initialization
@@ -196,8 +197,12 @@ function LCA_StatusPanel:SetRowHidden( r, hidden )
 	end
 end
 
-function LCA_StatusPanel:ModifyCell( r, c, params )
-	if (self.ownerId and type(params) == "table" and self:GetCell(r, c)) then
+function LCA_StatusPanel:ModifyCell( r, c, ... )
+	if (self.ownerId and self:GetCell(r, c)) then
+		local params = ...
+		if (type(params) ~= "table") then
+			params = LCA.UpdateOptions(Internal.GetScratchTable(), ...)
+		end
 		if (c == 0) then
 			-- These fields are not supported for the sub-cell
 			params.alignment = nil

@@ -8,6 +8,10 @@
   "category_id": "18",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "CharacterKnowledge"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2938/",
-  "fingerprint": "678e9eaf79598b74fb48a161b4c3765b513694d2cfa521acb6ed12a8ec37e4f7",
+  "fingerprint": "5e720d47b6984d1a19f232c5ece1f3ac68c31da913d5a2ca13ebbe43e0cf59ec",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15692.png",
     "https://cdn-eso.mmoui.com/preview/pvw13225.png",
@@ -89,9 +93,9 @@
   "source_id": "2938",
   "source_url": "https://www.esoui.com/downloads/info2938-CharacterKnowledgeResearchMotifRecipeFurnishingPlanandScribingTracker.html",
   "stats": {
-    "downloads": 769222,
-    "favorites": 458,
-    "monthly_downloads": 17189
+    "downloads": 778563,
+    "favorites": 463,
+    "monthly_downloads": 21440
   },
   "title": "Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)",
   "updated_at": 1785798229000,

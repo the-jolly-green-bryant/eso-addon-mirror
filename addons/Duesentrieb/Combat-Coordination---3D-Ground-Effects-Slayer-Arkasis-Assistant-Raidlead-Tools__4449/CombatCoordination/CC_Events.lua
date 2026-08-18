@@ -566,10 +566,10 @@ function Module:ToggleDebugCombatEvent()
         self.startTimeCombatEvent = GetGameTimeSeconds()
         self.counterCombatEventGained = 0
         self.counterCombatEventFaded = 0
-        d(CC.CHAT .. " DEBUG COMBAT EVENT |c00FF00ENABLED|r")
+        d(CC.CHAT .. " |c00FF00Combat event debug enabled.|r")
     else
         local time = GetGameTimeSeconds() - self.startTimeCombatEvent
-        d(string.format("%s DEBUG COMBAT EVENT DISABLED. Duration: %.3fs - |c00FF00Gained: %d|r - |cFF0000Faded: %d|r", CC.CHAT, time, self.counterCombatEventGained, self.counterCombatEventFaded))
+        d(string.format("%s |cFF0000Combat event debug disabled.|r Duration: %.3fs - |c00FF00Gained: %d|r - |cFF0000Faded: %d|r", CC.CHAT, time, self.counterCombatEventGained, self.counterCombatEventFaded))
     end
 end
 SLASH_COMMANDS["/cc_debug_combatevent"] = function() CC.Events:ToggleDebugCombatEvent() end

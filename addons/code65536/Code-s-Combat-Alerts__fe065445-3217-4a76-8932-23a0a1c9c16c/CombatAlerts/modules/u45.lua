@@ -119,10 +119,10 @@ function Module:Initialize( )
 
 		if (Vars.condemnEnd > currentTime) then
 			local remaining = Vars.condemnEnd - currentTime
-			CA2.StatusModifyCell(1, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
-				color = COLOR_HEAL_CHECK,
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
+				"color", COLOR_HEAL_CHECK
+			)
 		else
 			CA2.StatusSetRowHidden(1, true)
 		end
@@ -132,10 +132,10 @@ function Module:Initialize( )
 		local currentTime = GetGameTimeMilliseconds()
 		if (Vars.blackspine.stop > currentTime) then
 			local remaining = Vars.blackspine.stop - currentTime
-			CA2.StatusModifyCell(1, 2, {
-				text = string.format("%s [%s]", Vars.blackspine.target, LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT)),
-				color = COLOR_HEAL_CHECK,
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", string.format("%s [%s]", Vars.blackspine.target, LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT)),
+				"color", COLOR_HEAL_CHECK
+			)
 		else
 			CA2.StatusSetRowHidden(1, true)
 		end
@@ -155,35 +155,35 @@ function Module:Initialize( )
 		-- Venom Eruption
 		local elapsed = ""
 		if (Vars.venomEruption.stop > currentTime) then
-			CA2.StatusModifyCell(1, 2, {
-				text = string.format("%s [%s]", GetString(SI_LCA_ACTIVE), LCA.FormatTime(Vars.venomEruption.stop - currentTime, LCA.TIME_FORMAT_SHORT)),
-				color = 0x00CC00FF,
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", string.format("%s [%s]", GetString(SI_LCA_ACTIVE), LCA.FormatTime(Vars.venomEruption.stop - currentTime, LCA.TIME_FORMAT_SHORT)),
+				"color", 0x00CC00FF
+			)
 		else
 			local remaining = Vars.venomEruption.next - currentTime
 			local threshold = 15000
-			CA2.StatusModifyCell(1, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
-				color = (remaining >= threshold) and
+			CA2.StatusModifyCell(1, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
+				"color", (remaining >= threshold) and
 					0xFFFFFF99 or
-					LCA.PackRGBA(LCA.HSLToRGB(zo_clamp(remaining / threshold, 0, 1) / 6, 1, 0.5, 1)),
-			})
+					LCA.PackRGBA(LCA.HSLToRGB(zo_clamp(remaining / threshold, 0, 1) / 6, 1, 0.5, 1))
+			)
 			if (Vars.venomEruption.prev > 0) then
 				elapsed = string.format("%s: %s", self:GetString("elapsed"), LCA.FormatTime(currentTime - Vars.venomEruption.prev, LCA.TIME_FORMAT_SHORT))
 			end
 		end
-		CA2.StatusModifyCell(1, 0, {
-			text = elapsed,
-			color = 0xCCCC99FF,
-		})
+		CA2.StatusModifyCell(1, 0,
+			"text", elapsed,
+			"color", 0xCCCC99FF
+		)
 
 		-- Wild Spores
 		if (Vars.sporesEnd > currentTime) then
 			local remaining = Vars.sporesEnd - currentTime
-			CA2.StatusModifyCell(2, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
-				color = COLOR_HEAL_CHECK,
-			})
+			CA2.StatusModifyCell(2, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
+				"color", COLOR_HEAL_CHECK
+			)
 		else
 			CA2.StatusSetRowHidden(2, true)
 		end
@@ -209,10 +209,10 @@ function Module:Initialize( )
 		local remaining = zo_max(health - trigger, 0)
 		local threshold = 10
 		if (remaining < threshold) then
-			CA2.StatusModifyCell(1, 2, {
-				text = string.format("%.1f%%", remaining),
-				color = LCA.PackRGBA(LCA.HSLToRGB(zo_clamp(remaining / threshold, 0, 1) / 6, 1, 0.5, 1)),
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", string.format("%.1f%%", remaining),
+				"color", LCA.PackRGBA(LCA.HSLToRGB(zo_clamp(remaining / threshold, 0, 1) / 6, 1, 0.5, 1))
+			)
 		else
 			CA2.StatusSetRowHidden(1, true)
 		end

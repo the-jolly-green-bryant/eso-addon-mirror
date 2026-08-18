@@ -48,7 +48,7 @@ local function OnAddOnLoaded(event, name)
             name = "Tooltip Resizer",
             displayName = "Tooltip Resizer Settings\n|cC0C0C0Live changes apply instantly|r",
             author = "DanScallion",
-            version = "2.1",
+            version = "2.2",
             slashCommand = "/tooltipresizer"
         }
         LAM:RegisterAddonPanel(panelName, panelData)

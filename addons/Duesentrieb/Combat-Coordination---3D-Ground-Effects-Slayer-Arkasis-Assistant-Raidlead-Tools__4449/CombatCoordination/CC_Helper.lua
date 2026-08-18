@@ -33,7 +33,7 @@ end
 
 SLASH_COMMANDS["/cc_debug"] = function()
     CC.SV.enableDebug = not CC.SV.enableDebug
-    d(CC.CHAT .. (CC.SV.enableDebug and " |c00FF00Enable Debug|r" or " |cFF0000Disable Debug|r"))
+    d(CC.CHAT .. (CC.SV.enableDebug and " |c00FF00Debug enabled.|r" or " |cFF0000Debug disabled.|r"))
 end
 
 ----------------------------------------------------------------------------------------------------

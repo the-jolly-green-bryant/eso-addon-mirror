@@ -14,6 +14,8 @@ Register("SI_CA_SETTINGS_SUPPRESS"              , "Suppress module load and unlo
 Register("SI_CA_SETTINGS_DISABLE_ANNOYING"      , "Suppress annoying base-game messages")
 Register("SI_CA_SETTINGS_BYPASS_PURGE_CHECK"    , "Always track purgeable effects")
 Register("SI_CA_SETTINGS_BYPASS_PURGE_CHECK_TT" , "By default, the group-wide tracking of purgeable effects is disabled if the player does not have an AoE purge ability slotted; enabling this option will bypass that requirement.")
+Register("SI_CA_SETTINGS_CUTTHROAT"             , "Prevent accidental Cutthroat's Focus")
+Register("SI_CA_SETTINGS_CUTTHROAT_TT"          , "If the Cutthroat's Focus passive is active, this will block class abilities in a 0.4s window before the hit of a select few enemy abilities that have catastrophic missed-attack consequences.")
 Register("SI_CA_SETTINGS_NEARBY"                , "Show nearby players")
 
 Register("SI_CA_SETTINGS_MODULES"               , "Modules")

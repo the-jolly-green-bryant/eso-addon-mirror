@@ -229,13 +229,13 @@ function Public.GetDistanceSquared( x1, y1, z1, x2, y2, z2 )
 end
 
 function Public.GetDistance( unitTag1, unitTag2, useHeight, validate )
-	local zone1, x1, y1, z1 = GetUnitWorldPosition(unitTag1)
+	local zone1, x1, y1, z1 = GetUnitRawWorldPosition(unitTag1)
 	local zone2, x2, y2, z2
 
 	if (type(unitTag2) == "table") then
 		x2, y2, z2 = unpack(unitTag2)
 	else
-		zone2, x2, y2, z2 = GetUnitWorldPosition(unitTag2)
+		zone2, x2, y2, z2 = GetUnitRawWorldPosition(unitTag2)
 	end
 
 	if (validate and (zone1 == 0 or zone1 ~= zone2)) then
@@ -256,8 +256,25 @@ function Public.PopulateOptions( options, defaults, populateExistingSubtables )
 	return Public.MergeTables(options, defaults, populateExistingSubtables and 1 or 0)
 end
 
-function Public.UpdateOptions( options, changes )
-	return Public.MergeTables(options, changes, 2)
+-- Valid parameter formats:
+-- options, changesTable
+-- options, "key1", value1, "key2", value2, etc.
+function Public.UpdateOptions( options, ... )
+	local changes = ...
+	if (type(changes) == "table") then
+		return Public.MergeTables(options, changes, 2)
+	else
+		if (type(options) ~= "table") then
+			options = { }
+		end
+		for i = 1, select("#", ...), 2 do
+			local key, value = select(i, ...)
+			if (key ~= nil) then
+				options[key] = value
+			end
+		end
+		return options
+	end
 end
 
 
@@ -479,9 +496,9 @@ do
 	end
 
 	function Public.ResetUnitIdTracking( )
-		groupTags = { }
-		groupIds = { }
-		bossIds = { }
+		ZO_ClearTable(groupTags)
+		ZO_ClearTable(groupIds)
+		ZO_ClearTable(bossIds)
 		playerId = nil
 	end
 
@@ -561,9 +578,6 @@ do
 	end
 
 	local function enableHook( )
-		if (isHooked) then return end
-		isHooked = true
-
 		-- Hooking RETICLE:TryHandlingInteraction produces a cosmetic result: the prompt is hidden, but player input is still accepted
 		ZO_PreHook(RETICLE, "TryHandlingInteraction", function( _, interactionPossible )
 			if (interactionPossible and shouldBlock()) then
@@ -593,13 +607,87 @@ do
 
 		if (name and callback) then
 			rules[id] = { action = action, name = name, callback = callback }
-			enableHook()
+			if (not isHooked) then
+				isHooked = true
+				enableHook()
+			end
 		else
 			rules[id] = nil
 		end
 	end
 
 	function Public.UnregisterAllInteractionBlocks( )
-		rules = { }
+		ZO_ClearTable(rules)
+	end
+end
+
+
+--------------------------------------------------------------------------------
+-- Skill blocking
+-- callback params: actionId, slotIndex, hotbarCategory
+-- hotbarCategory is non-nil for relevance check, nil for should-block check
+--------------------------------------------------------------------------------
+
+do
+	local NAME = "LCA_SkillBlocker"
+	local HOTBARS = { HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }
+
+	local registrants = { }
+	local registered = false
+	local isHooked = false
+	local eligible = false
+
+	local function hasRelevantAbilitySlotted( )
+		for _, hotbarCategory in ipairs(HOTBARS) do
+			for slotIndex = 3, 8 do
+				for _, callback in pairs(registrants) do
+					if (callback(GetSlotBoundId(slotIndex, hotbarCategory), slotIndex, hotbarCategory)) then
+						return true
+					end
+				end
+			end
+		end
+		return false
+	end
+
+	local function enableHook( )
+		ZO_PreHook("ZO_ActionBar_CanUseActionSlots", function( )
+			if (eligible) then
+				local slotIndex = tonumber(debug.traceback():match("ACTION_BUTTON_(%d)"))
+				for _, callback in pairs(registrants) do
+					if (callback(GetSlotBoundId(slotIndex), slotIndex)) then
+						ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NEGATIVE_CLICK, SI_RESPECRESULT6)
+						ZO_ActionBar_OnActionButtonUp(slotIndex)
+						return true
+					end
+				end
+			end
+		end)
+	end
+
+	local function combatStateChange( _, inCombat )
+		eligible = inCombat and hasRelevantAbilitySlotted()
+		if (eligible and not isHooked) then
+			isHooked = true
+			enableHook()
+		end
+	end
+
+	-- Omit callback to unregister
+	function Public.RegisterInCombatSkillBlock( name, callback )
+		if (type(callback) == "function") then
+			registrants[name] = callback
+		else
+			registrants[name] = nil
+		end
+		if (not registered and next(registrants)) then
+			registered = true
+			EVENT_MANAGER:RegisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE, combatStateChange)
+			combatStateChange(nil, IsUnitInCombat("player"))
+		elseif (registered and not next(registrants)) then
+			registered = false
+			EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE)
+			eligible = false
+		end
 	end
 end

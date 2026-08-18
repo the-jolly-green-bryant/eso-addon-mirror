@@ -2,10 +2,14 @@ GuildMarketScannerDev = GuildMarketScannerDev or {}
 local GMS = GuildMarketScannerDev
 
 GMS.name = "GuildMarketScannerDev"
-GMS.version = "0.4.4"
-GMS.schemaVersion = 8
+GMS.version = "0.5.2"
+GMS.schemaVersion = 10
 GMS.maxGuildSnapshotsPerItem = 20
 GMS.maxPricesPerItemDuringScan = 24
+GMS.snapshotFields = 9
+GMS.memoryHardLimitMB = 118
+GMS.memoryMaxScanGrowthMB = 22
+GMS.scanStartMemoryMB = 0
 
 GMS.saved=nil
 GMS.isTraderOpen=false
@@ -51,7 +55,7 @@ GMS.cloudExportMode="price"
 GMS.cloudOpportunityMode=false
 
 local defaults={
-    schemaVersion=8,
+    schemaVersion=10,
     items={},
     totalItems=0,
     totalGuildSnapshots=0,
@@ -73,6 +77,34 @@ local function MemoryMB()
         return (collectgarbage("count") or 0)/1024
     end
     return 0
+end
+
+local SNAP62="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+local function PackNum(n)
+    n=math.floor(math.max(0,tonumber(n) or 0)+0.5)
+    if n<=0 then return "0" end
+    local out={}
+    while n>0 do
+        local r=(n%62)+1
+        out[#out+1]=string.sub(SNAP62,r,r)
+        n=math.floor(n/62)
+    end
+    local rev={}
+    for i=#out,1,-1 do rev[#rev+1]=out[i] end
+    return table.concat(rev)
+end
+
+local function UnpackNum(s)
+    s=tostring(s or "")
+    local n=0
+    for i=1,#s do
+        local ch=string.sub(s,i,i)
+        local p=string.find(SNAP62,ch,1,true)
+        if not p then return 0 end
+        n=n*62+(p-1)
+    end
+    return n
 end
 
 local function Median(a)
@@ -104,6 +136,49 @@ local function BuildMedian(prices)
     return math.floor((Median(p) or 0)+0.5)
 end
 
+local function BuildLocalPriceSummary(prices)
+    if not prices or #prices==0 then return nil,nil,nil,nil,nil end
+
+    local p={}
+    for i=1,#prices do
+        local v=tonumber(prices[i])
+        if v and v>0 then p[#p+1]=v end
+    end
+    if #p==0 then return nil,nil,nil,nil,nil end
+
+    table.sort(p)
+
+    local rawMin=math.floor((p[1] or 0)+0.5)
+    local rawMax=math.floor((p[#p] or 0)+0.5)
+
+    if #p<4 then
+        local med=math.floor((Median(p) or p[1])+0.5)
+        local low=math.floor((p[1] or med)+0.5)
+        local high=math.floor((p[#p] or med)+0.5)
+        return low,med,high,rawMin,rawMax
+    end
+
+    local rawMedian=Median(p)
+    local q1=Percentile(p,0.25)
+    local q3=Percentile(p,0.75)
+    local iqr=math.max((q3 or rawMedian)-(q1 or rawMedian),1)
+    local lowFence=math.max(0,(q1 or rawMedian)-1.5*iqr)
+    local highFence=(q3 or rawMedian)+1.5*iqr
+
+    local clean={}
+    for i=1,#p do
+        if p[i]>=lowFence and p[i]<=highFence then
+            clean[#clean+1]=p[i]
+        end
+    end
+    if #clean==0 then clean=p end
+
+    local low=math.floor((Percentile(clean,0.25) or clean[1])+0.5)
+    local med=math.floor((Median(clean) or rawMedian)+0.5)
+    local high=math.floor((Percentile(clean,0.75) or clean[#clean])+0.5)
+
+    return low,med,high,rawMin,rawMax
+end
 
 local function Escape(s)
     s=tostring(s or "")
@@ -162,24 +237,91 @@ local function ParseRecord(record)
     end
 
     for row in string.gmatch(data,"([^;]+)") do
-        local g,c,m,u=string.match(row,"^([^,]+),([^,]+),([^,]+),([^,]+)$")
-        if g then
-            flat[#flat+1]=tonumber(g) or g
-            flat[#flat+1]=tonumber(c) or 0
-            flat[#flat+1]=tonumber(m) or 0
-            flat[#flat+1]=tonumber(u) or 0
+        if string.sub(row,1,1)=="~" then
+            local body=string.sub(row,2)
+
+            -- v10 packed row: guild,count,units,low,median,high,rawMin,rawMax,time
+            local g,c,u,l,m,h,rmin,rmax,t=
+                string.match(body,
+                    "^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$"
+                )
+
+            if g then
+                flat[#flat+1]=UnpackNum(g)
+                flat[#flat+1]=UnpackNum(c)
+                flat[#flat+1]=UnpackNum(u)
+                flat[#flat+1]=UnpackNum(l)
+                flat[#flat+1]=UnpackNum(m)
+                flat[#flat+1]=UnpackNum(h)
+                flat[#flat+1]=UnpackNum(rmin)
+                flat[#flat+1]=UnpackNum(rmax)
+                flat[#flat+1]=UnpackNum(t)
+            else
+                -- v9 packed row: guild,count,units,low,median,high,time
+                local g9,c9,u9,l9,m9,h9,t9=
+                    string.match(body,
+                        "^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$"
+                    )
+
+                if g9 then
+                    local guild=UnpackNum(g9)
+                    local count=UnpackNum(c9)
+                    local units=UnpackNum(u9)
+                    local low=UnpackNum(l9)
+                    local med=UnpackNum(m9)
+                    local high=UnpackNum(h9)
+                    local upd=UnpackNum(t9)
+
+                    flat[#flat+1]=guild
+                    flat[#flat+1]=count
+                    flat[#flat+1]=units
+                    flat[#flat+1]=low
+                    flat[#flat+1]=med
+                    flat[#flat+1]=high
+                    flat[#flat+1]=low
+                    flat[#flat+1]=high
+                    flat[#flat+1]=upd
+                end
+            end
+        else
+            -- v8 decimal row: guild,count,median,time
+            local g,c,m,t=
+                string.match(row,"^([^,]+),([^,]+),([^,]+),([^,]+)$")
+            if g then
+                local guild=tonumber(g) or 0
+                local count=tonumber(c) or 0
+                local median=tonumber(m) or 0
+                local updated=tonumber(t) or 0
+
+                flat[#flat+1]=guild
+                flat[#flat+1]=count
+                flat[#flat+1]=count
+                flat[#flat+1]=median
+                flat[#flat+1]=median
+                flat[#flat+1]=median
+                flat[#flat+1]=median
+                flat[#flat+1]=median
+                flat[#flat+1]=updated
+            end
         end
     end
+
     return name,flat
 end
 
 local function SerializeRecord(name,flat)
     local rows={}
-    for i=1,#flat,4 do
-        rows[#rows+1]=tostring(flat[i] or 0)..","..
-                     tostring(flat[i+1] or 0)..","..
-                     tostring(flat[i+2] or 0)..","..
-                     tostring(flat[i+3] or 0)
+    for i=1,#flat,9 do
+        rows[#rows+1]="~"..
+            PackNum(flat[i] or 0)..","..
+            PackNum(flat[i+1] or 0)..","..
+            PackNum(flat[i+2] or 0)..","..
+            PackNum(flat[i+3] or 0)..","..
+            PackNum(flat[i+4] or 0)..","..
+            PackNum(flat[i+5] or 0)..","..
+            PackNum(flat[i+6] or 0)..","..
+            PackNum(flat[i+7] or 0)..","..
+            PackNum(flat[i+8] or 0)
     end
     return Escape(name or "").."|"..table.concat(rows,";")
 end
@@ -222,44 +364,59 @@ function GMS:GetOrCreateItem(key,name)
 end
 
 function GMS:FindGuildOffset(flat,guildId)
-    for i=1,#flat,4 do
+    for i=1,#flat,9 do
         if tostring(flat[i])==tostring(guildId) then return i end
     end
     return nil
 end
 
 function GMS:PruneOldestGuildSnapshot(flat)
-    while (#flat/4)>self.maxGuildSnapshotsPerItem do
+    while (#flat/9)>self.maxGuildSnapshotsPerItem do
         local oldestOffset=nil
         local oldestTime=nil
-        for i=1,#flat,4 do
-            local t=flat[i+3] or 0
+
+        for i=1,#flat,9 do
+            local t=flat[i+8] or 0
             if oldestTime==nil or t<oldestTime then
                 oldestTime=t
                 oldestOffset=i
             end
         end
+
         if not oldestOffset then break end
-        for _=1,4 do table.remove(flat,oldestOffset) end
+        for _=1,9 do table.remove(flat,oldestOffset) end
     end
 end
 
-function GMS:SetGuildSnapshot(key,name,guildId,count,median,updated)
+function GMS:SetGuildSnapshot(
+    key,name,guildId,count,totalUnits,localLow,median,localHigh,rawMin,rawMax,updated
+)
     local oldRecord=self.saved.items[key]
     local oldName,flat=ParseRecord(oldRecord)
     if oldName~="" then name=oldName end
 
-    local oldCount=#flat/4
+    local oldCount=#flat/9
     local offset=self:FindGuildOffset(flat,guildId)
+
     if offset then
         flat[offset]=guildId
         flat[offset+1]=count
-        flat[offset+2]=median
-        flat[offset+3]=updated
+        flat[offset+2]=totalUnits
+        flat[offset+3]=localLow
+        flat[offset+4]=median
+        flat[offset+5]=localHigh
+        flat[offset+6]=rawMin
+        flat[offset+7]=rawMax
+        flat[offset+8]=updated
     else
         flat[#flat+1]=guildId
         flat[#flat+1]=count
+        flat[#flat+1]=totalUnits
+        flat[#flat+1]=localLow
         flat[#flat+1]=median
+        flat[#flat+1]=localHigh
+        flat[#flat+1]=rawMin
+        flat[#flat+1]=rawMax
         flat[#flat+1]=updated
     end
 
@@ -270,9 +427,13 @@ function GMS:SetGuildSnapshot(key,name,guildId,count,median,updated)
     end
 
     self.saved.items[key]=SerializeRecord(name or "",flat)
-    local newCount=#flat/4
+
+    local newCount=#flat/9
     self.saved.totalGuildSnapshots=
-        math.max(0,(self.saved.totalGuildSnapshots or 0)+(newCount-oldCount))
+        math.max(
+            0,
+            (self.saved.totalGuildSnapshots or 0)+(newCount-oldCount)
+        )
 end
 
 function GMS:Recount()
@@ -292,19 +453,35 @@ function GMS:AnalyzeItem(record)
     local medians={}
     local counts={}
     local totalListings=0
+    local totalUnits=0
     local newest=0
+    local observedMin=nil
+    local observedMax=nil
 
-    for i=1,#flat,4 do
+    for i=1,#flat,9 do
         local cnt=tonumber(flat[i+1]) or 1
-        local med=tonumber(flat[i+2])
-        local upd=tonumber(flat[i+3]) or 0
+        local units=tonumber(flat[i+2]) or cnt
+        local med=tonumber(flat[i+4])
+        local rmin=tonumber(flat[i+6])
+        local rmax=tonumber(flat[i+7])
+        local upd=tonumber(flat[i+8]) or 0
+
         if med and med>0 then
             medians[#medians+1]=med
             counts[#counts+1]=cnt
             totalListings=totalListings+cnt
+            totalUnits=totalUnits+units
             newest=math.max(newest,upd)
+
+            if rmin and rmin>0 then
+                observedMin=observedMin and math.min(observedMin,rmin) or rmin
+            end
+            if rmax and rmax>0 then
+                observedMax=observedMax and math.max(observedMax,rmax) or rmax
+            end
         end
     end
+
     if #medians==0 then return nil end
 
     local sorted={}
@@ -351,9 +528,13 @@ function GMS:AnalyzeItem(record)
     local target=totalWeight/2
     local running=0
     local suggested=pairsList[#pairsList][1]
+
     for i=1,#pairsList do
         running=running+pairsList[i][2]
-        if running>=target then suggested=pairsList[i][1];break end
+        if running>=target then
+            suggested=pairsList[i][1]
+            break
+        end
     end
 
     local confidence=0
@@ -365,8 +546,16 @@ function GMS:AnalyzeItem(record)
         p=math.floor((suggested or rawMedian)+0.5),
         l=math.floor((Percentile(clusterPrices,0.25) or clusterPrices[1])+0.5),
         h=math.floor((Percentile(clusterPrices,0.75) or clusterPrices[#clusterPrices])+0.5),
-        g=#medians,c=#clusterPrices,o=totalListings,
-        lo=lowOut,hi=highOut,cf=confidence,u=newest
+        mn=observedMin or math.floor((clusterPrices[1] or suggested)+0.5),
+        mx=observedMax or math.floor((clusterPrices[#clusterPrices] or suggested)+0.5),
+        g=#medians,
+        c=#clusterPrices,
+        o=totalListings,
+        v=totalUnits,
+        lo=lowOut,
+        hi=highOut,
+        cf=confidence,
+        u=newest
     }
 end
 
@@ -441,26 +630,42 @@ function GMS:PrintPriceByName(query)
     process()
 end
 
-function GMS:MigrateToV7()
-    self.saved.schemaVersion=8
-    self.saved.items={}
-    self.saved.totalItems=0
-    self.saved.totalGuildSnapshots=0
-    self.saved.lastScan=nil
-    self.saved.guildScans={}
-    self.saved.export=nil
-    if collectgarbage then collectgarbage("collect") end
-    Chat("GMS STRING-DB initialized with clean schema v8.")
-end
+function GMS:MigrateToV10()
+    self.saved.items=self.saved.items or {}
+    self.saved.guildScans=self.saved.guildScans or {}
+    self.saved.totalItems=self.saved.totalItems or 0
+    self.saved.totalGuildSnapshots=self.saved.totalGuildSnapshots or 0
+    self.saved.schemaVersion=10
 
-function GMS:BufferListing(link,name,unitPrice)
+    self:Recount()
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+
+    Chat("GMS schema v10 enabled without deleting the existing market database.")
+    Chat("Old v8/v9 snapshots remain readable and convert to compact v10 when rescanned.")
+end
+function GMS:BufferListing(link,name,unitPrice,quantity)
     if not link or link=="" or not unitPrice or unitPrice<=0 then return end
+
     local key=ItemKey(link)
     local b=self.scanBuffer[key]
+
     if not b then
-        b={n=name or "",p={}}
+        b={
+            n=name or "",
+            p={},
+            c=0,
+            u=0,
+        }
         self.scanBuffer[key]=b
     end
+
+    b.c=(b.c or 0)+1
+    b.u=(b.u or 0)+math.max(1,tonumber(quantity) or 1)
+
+    -- Prices are only a temporary bounded sample for the local cluster.
     if #b.p<self.maxPricesPerItemDuringScan then
         b.p[#b.p+1]=unitPrice
     end
@@ -477,7 +682,7 @@ function GMS:CaptureCurrentPage()
         if (not unit or unit<=0) and stack and stack>0 and total then
             unit=total/stack
         end
-        self:BufferListing(link,name,unit)
+        self:BufferListing(link,name,unit,stack)
     end
 
     self.scanLoaded=self.scanLoaded+n
@@ -493,55 +698,103 @@ function GMS:CaptureCurrentPage()
     return page,more==true
 end
 
-function GMS:CommitScanBuffer()
-    local guildId=self.scanGuildId or 0
-    local now=GetTimeStamp()
-    local itemCount=0
+function GMS:BeginCommitScanBuffer(reason)
+    if self.isCommitting then return end
 
-    for key,b in pairs(self.scanBuffer) do
-        if #b.p>0 then
-            local med=BuildMedian(b.p)
+    self.isCommitting=true
+    self.commitReason=reason or "SCAN COMPLETE"
+    self.commitGuildId=self.scanGuildId or 0
+    self.commitNow=GetTimeStamp()
+    self.commitItemCount=0
+    self.commitKeys={}
+    self.commitIndex=1
+
+    for key,_ in pairs(self.scanBuffer or {}) do
+        self.commitKeys[#self.commitKeys+1]=key
+    end
+
+    Chat(string.format(
+        "Finalizing scan in frame-safe batches: %d temporary item buffers...",
+        #self.commitKeys
+    ))
+
+    zo_callLater(function()
+        GMS:CommitScanBufferBatch()
+    end,25)
+end
+
+function GMS:CommitScanBufferBatch()
+    if not self.isCommitting then return end
+
+    local keys=self.commitKeys or {}
+    local startIndex=self.commitIndex or 1
+    local batchSize=35
+    local stopIndex=math.min(startIndex+batchSize-1,#keys)
+
+    for i=startIndex,stopIndex do
+        local key=keys[i]
+        local b=self.scanBuffer and self.scanBuffer[key]
+
+        if b and b.p and #b.p>0 then
+            local low,med,high,rawMin,rawMax=BuildLocalPriceSummary(b.p)
+
             if med then
-                self:SetGuildSnapshot(key,b.n,guildId,#b.p,med,now)
-                itemCount=itemCount+1
+                self:SetGuildSnapshot(
+                    key,
+                    b.n,
+                    self.commitGuildId or 0,
+                    b.c or #b.p,
+                    b.u or (b.c or #b.p),
+                    low or med,
+                    med,
+                    high or med,
+                    rawMin or low or med,
+                    rawMax or high or med,
+                    self.commitNow or GetTimeStamp()
+                )
+                self.commitItemCount=(self.commitItemCount or 0)+1
             end
+        end
+
+        -- Release each temporary item buffer as soon as it is committed.
+        if self.scanBuffer then
+            self.scanBuffer[key]=nil
         end
     end
 
+    self.commitIndex=stopIndex+1
+
+    if self.commitIndex<=#keys then
+        zo_callLater(function()
+            GMS:CommitScanBufferBatch()
+        end,25)
+        return
+    end
+
+    local committed=self.commitItemCount or 0
+
     self.scanBuffer={}
-    if collectgarbage then collectgarbage("collect") end
+    self.commitKeys=nil
+    self.commitIndex=nil
+    self.commitItemCount=nil
+    self.commitGuildId=nil
+    self.commitNow=nil
+    self.isCommitting=false
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+
     self:MemoryReport("after scan cleanup",false)
-    return itemCount
+    self:FinalizeStoppedScan(self.commitReason or "SCAN COMPLETE",committed,true)
+    self.commitReason=nil
 end
 
-function GMS:RecordCompletedGuildScan()
-    self.saved.guildScans=self.saved.guildScans or {}
-    if not self.scanGuildId or self.scanGuildId==0 then return end
-    self.saved.guildScans[tostring(self.scanGuildId)]=
-        Escape(self.scanGuildName or "").."|"..
-        tostring(GetTimeStamp()).."|"..
-        tostring(self.scanLoaded or 0)
-end
+function GMS:FinalizeStoppedScan(reason,committed,recordGuild)
+    committed=committed or 0
 
-function GMS:GuildScanCount()
-    local n=0
-    for _ in pairs(self.saved.guildScans or {}) do n=n+1 end
-    return n
-end
-
-function GMS:StopScan(reason,commit)
-    if not self.isScanning then return end
-
-    self.isScanning=false
-    self.waitingForSearch=false
-
-    local committed=0
-    if commit then
-        committed=self:CommitScanBuffer()
+    if recordGuild then
         self:RecordCompletedGuildScan()
-    else
-        self.scanBuffer={}
-        if collectgarbage then collectgarbage("collect") end
     end
 
     self.saved.lastScan={
@@ -565,6 +818,71 @@ function GMS:StopScan(reason,commit)
     end
 end
 
+function GMS:RecordCompletedGuildScan()
+    self.saved.guildScans=self.saved.guildScans or {}
+    if not self.scanGuildId or self.scanGuildId==0 then return end
+    self.saved.guildScans[tostring(self.scanGuildId)]=
+        Escape(self.scanGuildName or "").."|"..
+        tostring(GetTimeStamp()).."|"..
+        tostring(self.scanLoaded or 0)
+end
+
+function GMS:GuildScanCount()
+    local n=0
+    for _ in pairs(self.saved.guildScans or {}) do n=n+1 end
+    return n
+end
+
+function GMS:StopScan(reason,commit)
+    if not self.isScanning then return end
+
+    self.isScanning=false
+    self.waitingForSearch=false
+
+    if commit then
+        self:BeginCommitScanBuffer(reason or "SCAN COMPLETE")
+        return
+    end
+
+    self.scanBuffer={}
+    if collectgarbage then collectgarbage("collect") end
+
+    self:FinalizeStoppedScan(reason or "Stopped",0,false)
+end
+
+function GMS:CheckScanMemory()
+    if not self.isScanning then return true end
+
+    local current=MemoryMB()
+    local growth=current-(self.scanStartMemoryMB or current)
+
+    if current<(self.memoryHardLimitMB or 118) and
+       growth<(self.memoryMaxScanGrowthMB or 22) then
+        return true
+    end
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+
+    current=MemoryMB()
+    growth=current-(self.scanStartMemoryMB or current)
+
+    if current>=(self.memoryHardLimitMB or 118) or
+       growth>=(self.memoryMaxScanGrowthMB or 22) then
+
+        Chat(string.format(
+            "MEMORY SAFETY: scan stopped at %.1f MB Lua (scan growth %.1f MB). No partial guild scan will be committed.",
+            current,
+            math.max(0,growth)
+        ))
+
+        return false
+    end
+
+    return true
+end
+
 function GMS:RequestPage(page)
     if not self.isScanning or not self.isTraderOpen or self.waitingForSearch then return end
 
@@ -580,6 +898,11 @@ function GMS:RequestPage(page)
 end
 
 function GMS:StartScan()
+    if self.isCommitting then
+        Chat("Previous trader scan is still finalizing. Please wait for SCAN COMPLETE.")
+        return
+    end
+
     if self.isScanning then
         self:StopScan("Scan cancelled",false)
         return
@@ -598,8 +921,13 @@ function GMS:StartScan()
     self.scanGuildId=guildId
     self.scanGuildName=guildName
     self.scanBuffer={}
+    self.scanStartMemoryMB=MemoryMB()
 
-    Chat("Starting FLAT compact market scan: "..tostring(guildName))
+    Chat(string.format(
+        "Starting COMPACT v9 market scan: %s | start memory %.1f MB",
+        tostring(guildName),
+        self.scanStartMemoryMB or 0
+    ))
     self:RequestPage(0)
 
     if KEYBIND_STRIP and self.keybindGroup then
@@ -626,6 +954,12 @@ function GMS:OnTradingHouseResponse(responseType,result)
     end
 
     local page,more=self:CaptureCurrentPage()
+
+    if not self:CheckScanMemory() then
+        self:StopScan("MEMORY SAFETY STOP",false)
+        return
+    end
+
     if more then
         local cd=GetTradingHouseCooldownRemaining() or 0
         zo_callLater(function()
@@ -669,7 +1003,7 @@ local function ExportLine(key,record)
         tostring(a.p or 0),tostring(a.l or 0),tostring(a.h or 0),
         tostring(a.cf or 0),tostring(a.g or 0),tostring(a.o or 0),
         tostring(a.u or 0),snapshots
-    },"|"), math.floor(#flat/4)
+    },"|"), math.floor(#flat/9)
 end
 
 function GMS:BuildGuildExportHeader()
@@ -967,7 +1301,7 @@ end
 
 function GMS:CompactCloudItem(key,record,guildMap)
     local _,flat=ParseRecord(record)
-    local guildCount=math.floor(#flat/4)
+    local guildCount=math.floor(#flat/9)
 
     if guildCount<(self.cloudExportMinGuilds or 3) then
         return nil,0
@@ -989,9 +1323,9 @@ function GMS:CompactCloudItem(key,record,guildMap)
     local prices={}
     local totalSupply=0
 
-    for i=1,#flat,4 do
+    for i=1,#flat,9 do
         local count=tonumber(flat[i+1]) or 0
-        local price=tonumber(flat[i+2]) or 0
+        local price=tonumber(flat[i+4]) or 0
         if price>0 then
             prices[#prices+1]=price
             totalSupply=totalSupply+count
@@ -1096,12 +1430,12 @@ function GMS:CompactOpportunityItem(key,record,guildMap)
     end
 
     local rows={}
-    for i=1,#flat,4 do
+    for i=1,#flat,9 do
         local gid=tostring(flat[i])
         local idx=guildMap[gid]
         if idx then
             local count=tonumber(flat[i+1]) or 0
-            local price=tonumber(flat[i+2]) or 0
+            local price=tonumber(flat[i+4]) or 0
             if price>0 then
                 rows[#rows+1]={
                     idx=idx,
@@ -1521,11 +1855,11 @@ function GMS:BuildFinalOpportunityRecord(key,record,guildMap)
     local supplies={}
     local candidates={}
 
-    for i=1,#flat,4 do
+    for i=1,#flat,9 do
         local gid=tostring(flat[i])
         local idx=guildMap[gid]
         local count=tonumber(flat[i+1]) or 0
-        local price=tonumber(flat[i+2]) or 0
+        local price=tonumber(flat[i+4]) or 0
 
         if idx and price>0 then
             supplies[#supplies+1]=count
@@ -1631,14 +1965,938 @@ function GMS:MeasureFinalExport()
     Chat("Nothing was uploaded. Existing Price/Supply exports are unchanged.")
 end
 
+
+function GMS:PrintSnapshotByName(query)
+    query=string.lower(query or "")
+    if query=="" then
+        Chat("Usage: /gmssnapshot item name")
+        return
+    end
+
+    for key,record in pairs(self.saved.items or {}) do
+        local name=RecordName(record)
+
+        if string.find(string.lower(name or ""),query,1,true) then
+            local _,flat=ParseRecord(record)
+
+            Chat(string.format(
+                "SNAPSHOT %s | %d guild rows",
+                tostring(name),
+                math.floor(#flat/9)
+            ))
+
+            local shown=0
+            for i=1,#flat,9 do
+                Chat(string.format(
+                    "Guild %s | listings %d | units %d | trusted %d-%d-%d | observed %d-%d | updated %d",
+                    tostring(flat[i] or 0),
+                    tonumber(flat[i+1]) or 0,
+                    tonumber(flat[i+2]) or 0,
+                    tonumber(flat[i+3]) or 0,
+                    tonumber(flat[i+4]) or 0,
+                    tonumber(flat[i+5]) or 0,
+                    tonumber(flat[i+6]) or 0,
+                    tonumber(flat[i+7]) or 0,
+                    tonumber(flat[i+8]) or 0
+                ))
+                shown=shown+1
+                if shown>=5 then break end
+            end
+
+            return
+        end
+    end
+
+    Chat("No stored item matched: "..tostring(query))
+end
+
+function GMS:FindAllMatchingRecords(query)
+    query=string.lower(query or "")
+    if query=="" then
+        Chat("Usage: /gmsfind item name")
+        return
+    end
+
+    local matches={}
+
+    for key,record in pairs(self.saved.items or {}) do
+        local name=RecordName(record)
+        if string.find(string.lower(name or ""),query,1,true) then
+            local _,flat=ParseRecord(record)
+            matches[#matches+1]={
+                key=key,
+                name=name,
+                rows=math.floor(#flat/9),
+                flat=flat
+            }
+        end
+    end
+
+    table.sort(matches,function(a,b)
+        if a.name~=b.name then return tostring(a.name)<tostring(b.name) end
+        return tostring(a.key)<tostring(b.key)
+    end)
+
+    Chat(string.format(
+        "IDENTITY FIND '%s': %d separate DB record(s).",
+        tostring(query),
+        #matches
+    ))
+
+    if #matches==0 then return end
+
+    local maxRecords=10
+    for r=1,math.min(#matches,maxRecords) do
+        local m=matches[r]
+
+        Chat(string.format(
+            "#%d %s | key %s | %d guild rows",
+            r,
+            tostring(m.name),
+            tostring(m.key),
+            m.rows
+        ))
+
+        local shown=0
+        for i=1,#m.flat,9 do
+            Chat(string.format(
+                "  guild %s | listings %d | units %d | trusted %d-%d-%d | observed %d-%d",
+                tostring(m.flat[i] or 0),
+                tonumber(m.flat[i+1]) or 0,
+                tonumber(m.flat[i+2]) or 0,
+                tonumber(m.flat[i+3]) or 0,
+                tonumber(m.flat[i+4]) or 0,
+                tonumber(m.flat[i+5]) or 0,
+                tonumber(m.flat[i+6]) or 0,
+                tonumber(m.flat[i+7]) or 0
+            ))
+            shown=shown+1
+            if shown>=5 then break end
+        end
+    end
+
+    if #matches>maxRecords then
+        Chat(string.format(
+            "... %d additional matching DB records not printed.",
+            #matches-maxRecords
+        ))
+    end
+end
+
+
+
+local function MeasurePages(chars)
+    if not chars or chars<=0 then return 0 end
+    return math.ceil(chars/4000)
+end
+
+local function ClampInt(v,lo,hi)
+    v=math.floor((tonumber(v) or 0)+0.5)
+    if v<lo then return lo end
+    if v>hi then return hi end
+    return v
+end
+
+local function GetGuildSnapshotV10(flat,guildId)
+    for i=1,#flat,9 do
+        if tostring(flat[i])==tostring(guildId) then
+            return {
+                listings=tonumber(flat[i+1]) or 0,
+                units=tonumber(flat[i+2]) or 0,
+                trustedLow=tonumber(flat[i+3]) or 0,
+                trustedMedian=tonumber(flat[i+4]) or 0,
+                trustedHigh=tonumber(flat[i+5]) or 0,
+                observedMin=tonumber(flat[i+6]) or 0,
+                observedMax=tonumber(flat[i+7]) or 0,
+                updated=tonumber(flat[i+8]) or 0
+            }
+        end
+    end
+    return nil
+end
+
+function GMS:BuildDenseMeasuredPriceRecord(key,record)
+    local a=self:AnalyzeItem(record)
+    if not a or (a.g or 0)<3 or not a.p or a.p<=0 then
+        return nil
+    end
+
+    local p=ClampInt(a.p,0,67108863)
+    if p<=0 then return nil end
+
+    -- Trusted range stored as % deviation from recommendation.
+    local lowPct=ClampInt(((p-(a.l or p))/p)*100,0,63)
+    local highPct=ClampInt((((a.h or p)-p)/p)*100,0,63)
+    local conf=ClampInt(a.cf or 0,0,3)
+
+    -- 40-bit exact integer:
+    -- 26-bit price + 6-bit low% + 6-bit high% + 2-bit confidence
+    local packA=(((p*64+lowPct)*64+highPct)*4+conf)
+
+    -- Observed min/max deviations get a separate compact pack.
+    -- 0..255% is plenty for display; larger extremes clamp at 255%.
+    local obsLowPct=ClampInt(((p-(a.mn or p))/p)*100,0,255)
+    local obsHighPct=ClampInt((((a.mx or p)-p)/p)*100,0,255)
+
+    local packB=obsLowPct*256+obsHighPct
+
+    return self:FinalShortItemId(key).."~"..
+        B64Num(packA).."."..B64Num(packB)
+end
+
+local function InsertTopCandidate(list,candidate,maxKeep)
+    list[#list+1]=candidate
+    table.sort(list,function(x,y)
+        if x.score~=y.score then return x.score>y.score end
+        return tostring(x.key)<tostring(y.key)
+    end)
+    if #list>maxKeep then
+        table.remove(list)
+    end
+end
+
+function GMS:ScoreOpportunityForGuild(key,a,flat,guildId)
+    local snap=GetGuildSnapshotV10(flat,guildId)
+
+    local listings=0
+    local units=0
+    local localLow=0
+    local localMedian=0
+    local localHigh=0
+    local absent=false
+
+    if snap then
+        listings=snap.listings or 0
+        units=snap.units or 0
+        localLow=snap.trustedLow or 0
+        localMedian=snap.trustedMedian or 0
+        localHigh=snap.trustedHigh or 0
+    else
+        absent=true
+    end
+
+    local relevance=
+        math.min(45,(a.g or 0)*6)+
+        math.min(25,(a.cf or 0)*8)+
+        math.min(30,math.floor(math.log(math.max(2,a.p or 1))*4))
+
+    local scarcity
+    if absent then
+        scarcity=100
+    else
+        local listingPenalty=math.min(70,listings*7)
+        local unitPenalty=math.min(30,math.floor(units/25))
+        scarcity=100-listingPenalty-unitPenalty
+    end
+
+    local priceSafety=20
+    if localMedian>0 and (a.l or a.p)>0 then
+        if localMedian < (a.l or a.p)*0.70 then
+            priceSafety=-80
+        elseif localMedian > (a.h or a.p)*1.60 then
+            priceSafety=-20
+        end
+    end
+
+    local score=relevance+scarcity+priceSafety
+    if score<=80 then return nil end
+
+    return {
+        key=key,
+        score=score,
+        listings=listings,
+        units=units,
+        localLow=localLow,
+        localMedian=localMedian,
+        localHigh=localHigh,
+        absent=absent
+    }
+end
+
+function GMS:MeasureOpportunityChars(list,cap)
+    local chars=0
+    local take=math.min(cap,#list)
+
+    for i=1,take do
+        local c=list[i]
+
+        -- Dense opportunity record:
+        -- itemId~listings.units.localMedian
+        -- We intentionally do NOT repeat full low/high here.
+        -- The opportunity list only needs scarcity + a sane local reference price.
+        local rec=
+            self:FinalShortItemId(c.key).."~"..
+            B64Num(c.listings or 0).."."..
+            B64Num(c.units or 0).."."..
+            B64Num(c.localMedian or 0)
+
+        chars=chars+#rec+1
+    end
+
+    return chars,take
+end
+
+function GMS:FinishAsyncTransportMeasure()
+    local s=self.transportMeasure
+    if not s then return end
+
+    local pricePages=MeasurePages(s.priceChars)
+
+    Chat(string.format(
+        "DENSE GLOBAL PRICE: %d items / ~%d chars / ~%d safe 4K pages.",
+        s.priceItems,s.priceChars,pricePages
+    ))
+
+    local dictKnownPages=MeasurePages(s.dictKnownChars)
+    local dictBootstrapPages=MeasurePages(s.dictBootstrapChars)
+
+    Chat(string.format(
+        "DICT WEEKLY PRICE: %d items / ~%d chars / ~%d safe 4K pages.",
+        s.priceItems,s.dictKnownChars,dictKnownPages
+    ))
+
+    Chat(string.format(
+        "DICT FIRST-TIME/ALL-NEW: ~%d chars / ~%d safe 4K pages.",
+        s.dictBootstrapChars,dictBootstrapPages
+    ))
+
+    local caps={25,50,100}
+
+    for ci=1,#caps do
+        local cap=caps[ci]
+        local oppChars=0
+        local oppRows=0
+
+        for gi=1,#s.guildIds do
+            local guildId=s.guildIds[gi]
+            local list=s.topByGuild[guildId] or {}
+
+            -- compact guild header
+            oppChars=oppChars+#B64Num(tonumber(guildId) or 0)+2
+
+            local c,r=self:MeasureOpportunityChars(list,cap)
+            oppChars=oppChars+c
+            oppRows=oppRows+r
+        end
+
+        local oppPages=MeasurePages(oppChars)
+        local totalNow=pricePages+oppPages
+
+        local avgGuildChars=0
+        if #s.guildIds>0 then
+            avgGuildChars=oppChars/#s.guildIds
+        end
+
+        local projectedOppPages50=MeasurePages(avgGuildChars*50)
+        local projectedTotal50=pricePages+projectedOppPages50
+
+        Chat(string.format(
+            "TOP %d/GUILD NOW: %d rows / ~%d chars / ~%d opp pages / ~%d TOTAL.",
+            cap,oppRows,oppChars,oppPages,totalNow
+        ))
+
+        Chat(string.format(
+            "TOP %d/GUILD -> 50 GUILDS: ~%d opp pages + %d price pages = ~%d confirmations.",
+            cap,projectedOppPages50,pricePages,projectedTotal50
+        ))
+
+        Chat(string.format(
+            "DICT TOP %d -> 50 GUILDS: ~%d opp + %d dict price = ~%d confirmations.",
+            cap,projectedOppPages50,dictKnownPages,
+            projectedOppPages50+dictKnownPages
+        ))
+    end
+
+    Chat("TARGET: about 5-10 confirmations total at ~50 guilds.")
+    Chat("Measurement complete. Nothing was uploaded or changed.")
+
+    self.transportMeasure=nil
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+end
+
+function GMS:ProcessAsyncTransportBatch()
+    local s=self.transportMeasure
+    if not s then return end
+
+    local batchSize=120
+    local stopAt=math.min(s.index+batchSize-1,#s.keys)
+
+    for n=s.index,stopAt do
+        local key=s.keys[n]
+        local record=self.saved.items[key]
+
+        if record then
+            local a=self:AnalyzeItem(record)
+
+            if a and (a.g or 0)>=3 and (a.p or 0)>0 then
+                local priceRec=self:BuildDenseMeasuredPriceRecord(key,record)
+
+                if priceRec then
+                    s.priceChars=s.priceChars+#priceRec+1
+                    s.priceItems=s.priceItems+1
+
+                    -- Persistent Cloudflare dictionary measurement:
+                    -- normal weekly update sends only compact dictionary index
+                    -- plus the two packed price integers.
+                    local sep=string.find(priceRec,"~",1,true)
+                    local packed=sep and string.sub(priceRec,sep+1) or ""
+                    local idx=B64Num(s.nextDictIndex)
+
+                    s.dictKnownChars=s.dictKnownChars+
+                        #idx+1+#packed+1
+
+                    -- One-time bootstrap/new-item cost additionally carries
+                    -- the short scanner item identity so Cloudflare can bind
+                    -- the permanent index.
+                    local shortId=self:FinalShortItemId(key)
+                    s.dictBootstrapChars=s.dictBootstrapChars+
+                        #idx+1+#shortId+1+#packed+1
+
+                    s.nextDictIndex=s.nextDictIndex+1
+                end
+
+                local _,flat=ParseRecord(record)
+
+                for gi=1,#s.guildIds do
+                    local guildId=s.guildIds[gi]
+                    local c=self:ScoreOpportunityForGuild(
+                        key,a,flat,guildId
+                    )
+
+                    if c then
+                        InsertTopCandidate(
+                            s.topByGuild[guildId],
+                            c,
+                            100
+                        )
+                    end
+                end
+            end
+        end
+    end
+
+    s.index=stopAt+1
+
+    if s.index>#s.keys then
+        self:FinishAsyncTransportMeasure()
+        return
+    end
+
+    if (s.index%960)<120 then
+        Chat(string.format(
+            "Transport measure progress: %d/%d items...",
+            math.min(s.index-1,#s.keys),
+            #s.keys
+        ))
+    end
+
+    zo_callLater(function()
+        GMS:ProcessAsyncTransportBatch()
+    end,25)
+end
+
+function GMS:MeasureFinalWeeklyTransportAsync()
+    if self.transportMeasure then
+        Chat("Transport measurement already running.")
+        return
+    end
+
+    local guildIds={}
+    for guildId,_ in pairs(self.saved.guildScans or {}) do
+        guildIds[#guildIds+1]=tostring(guildId)
+    end
+    table.sort(guildIds)
+
+    local keys={}
+    for key,_ in pairs(self.saved.items or {}) do
+        keys[#keys+1]=key
+    end
+
+    local topByGuild={}
+    for i=1,#guildIds do
+        topByGuild[guildIds[i]]={}
+    end
+
+    self.transportMeasure={
+        keys=keys,
+        index=1,
+        guildIds=guildIds,
+        topByGuild=topByGuild,
+        priceChars=0,
+        priceItems=0,
+        dictKnownChars=0,
+        dictBootstrapChars=0,
+        nextDictIndex=1
+    }
+
+    Chat(string.format(
+        "ASYNC DENSE TRANSPORT MEASURE STARTED: %d DB items / %d registered guilds.",
+        #keys,#guildIds
+    ))
+    Chat("Nothing will be uploaded or changed. Processing in small frame-safe batches.")
+
+    zo_callLater(function()
+        GMS:ProcessAsyncTransportBatch()
+    end,25)
+end
+
+
+GMS.weeklyChunkTargetBytes = 3900
+GMS.weeklyOpportunityCap = 25
+GMS.weeklyBuildBatchSize = 100
+
+local function WeeklyPages(chars)
+    if not chars or chars<=0 then return 0 end
+    return math.ceil(chars/(GMS.weeklyChunkTargetBytes or 3900))
+end
+
+local function WeeklyGetGuildSnapshot(flat,guildId)
+    for i=1,#flat,9 do
+        if tostring(flat[i])==tostring(guildId) then
+            return {
+                listings=tonumber(flat[i+1]) or 0,
+                units=tonumber(flat[i+2]) or 0,
+                trustedLow=tonumber(flat[i+3]) or 0,
+                trustedMedian=tonumber(flat[i+4]) or 0,
+                trustedHigh=tonumber(flat[i+5]) or 0,
+                observedMin=tonumber(flat[i+6]) or 0,
+                observedMax=tonumber(flat[i+7]) or 0,
+                updated=tonumber(flat[i+8]) or 0
+            }
+        end
+    end
+    return nil
+end
+
+function GMS:WeeklyBuildPricePacked(key,record)
+    local a=self:AnalyzeItem(record)
+    if not a or (a.g or 0)<3 or not a.p or a.p<=0 then
+        return nil,nil
+    end
+
+    local p=math.floor((a.p or 0)+0.5)
+    if p<=0 then return nil,nil end
+
+    local function Clamp(v,lo,hi)
+        v=math.floor((tonumber(v) or 0)+0.5)
+        if v<lo then return lo end
+        if v>hi then return hi end
+        return v
+    end
+
+    local lowPct=Clamp(((p-(a.l or p))/p)*100,0,63)
+    local highPct=Clamp((((a.h or p)-p)/p)*100,0,63)
+    local conf=Clamp(a.cf or 0,0,3)
+
+    local packA=(((p*64+lowPct)*64+highPct)*4+conf)
+
+    local obsLowPct=Clamp(((p-(a.mn or p))/p)*100,0,255)
+    local obsHighPct=Clamp((((a.mx or p)-p)/p)*100,0,255)
+    local packB=obsLowPct*256+obsHighPct
+
+    return B64Num(packA).."."..B64Num(packB),a
+end
+
+function GMS:WeeklyScoreOpportunity(key,a,flat,guildId)
+    local snap=WeeklyGetGuildSnapshot(flat,guildId)
+
+    local listings=0
+    local units=0
+    local localMedian=0
+    local absent=false
+
+    if snap then
+        listings=snap.listings or 0
+        units=snap.units or 0
+        localMedian=snap.trustedMedian or 0
+    else
+        absent=true
+    end
+
+    local relevance=
+        math.min(45,(a.g or 0)*6)+
+        math.min(25,(a.cf or 0)*8)+
+        math.min(30,math.floor(math.log(math.max(2,a.p or 1))*4))
+
+    local scarcity
+    if absent then
+        scarcity=100
+    else
+        local listingPenalty=math.min(70,listings*7)
+        local unitPenalty=math.min(30,math.floor(units/25))
+        scarcity=100-listingPenalty-unitPenalty
+    end
+
+    local priceSafety=20
+    if localMedian>0 and (a.l or a.p)>0 then
+        if localMedian < (a.l or a.p)*0.70 then
+            priceSafety=-80
+        elseif localMedian > (a.h or a.p)*1.60 then
+            priceSafety=-20
+        end
+    end
+
+    local score=relevance+scarcity+priceSafety
+    if score<=80 then return nil end
+
+    return {
+        key=key,
+        score=score,
+        listings=listings,
+        units=units,
+        localMedian=localMedian,
+        absent=absent
+    }
+end
+
+local function WeeklyInsertTop(list,candidate,maxKeep)
+    list[#list+1]=candidate
+    table.sort(list,function(x,y)
+        if x.score~=y.score then return x.score>y.score end
+        return tostring(x.key)<tostring(y.key)
+    end)
+    if #list>maxKeep then table.remove(list) end
+end
+
+function GMS:WeeklyReset()
+    self.weeklyState=nil
+    self.weeklyPrepared=nil
+    self.weeklySendIndex=0
+end
+
+local function WeeklyFlushPricePart(s)
+    if not s.currentPriceRecords or #s.currentPriceRecords==0 then return end
+
+    s.parts[#s.parts+1]={
+        layer="price",
+        data=table.concat(s.currentPriceRecords,"-"),
+        rows=#s.currentPriceRecords,
+        bytes=s.currentPriceBytes or 0
+    }
+
+    s.currentPriceRecords={}
+    s.currentPriceBytes=0
+end
+
+local function WeeklyAppendPriceRecord(s,record,target)
+    local extra=#record+1
+
+    if #s.currentPriceRecords>0 and
+       (s.currentPriceBytes or 0)+extra>target then
+        WeeklyFlushPricePart(s)
+    end
+
+    s.currentPriceRecords[#s.currentPriceRecords+1]=record
+    s.currentPriceBytes=(s.currentPriceBytes or 0)+extra
+end
+
+function GMS:WeeklyPrepareStart()
+    if self.weeklyState then
+        Chat("Weekly export preparation is already running.")
+        return
+    end
+
+    -- IMPORTANT:
+    -- Do NOT build a 28k-key array and do NOT retain one Lua table per price item.
+    -- The previous design duplicated the weekly dataset several times in memory
+    -- and could trigger ESO's low-memory protection on large real scans.
+    local guildIds={}
+    for guildId,_ in pairs(self.saved.guildScans or {}) do
+        guildIds[#guildIds+1]=tostring(guildId)
+    end
+    table.sort(guildIds)
+
+    local topByGuild={}
+    for i=1,#guildIds do
+        topByGuild[guildIds[i]]={}
+    end
+
+    self.weeklyState={
+        cursor=nil,
+        processed=0,
+        total=self.saved.totalItems or 0,
+        guildIds=guildIds,
+        topByGuild=topByGuild,
+        parts={},
+        currentPriceRecords={},
+        currentPriceBytes=0,
+        priceCount=0,
+        opportunityRows=0,
+        donePrices=false,
+    }
+
+    Chat(string.format(
+        "GMA WEEKLY PREP START: %d DB items / %d completed guild scans.",
+        self.weeklyState.total,#guildIds
+    ))
+    Chat("Streaming Price + Guild Opportunity data in low-memory frame-safe batches...")
+
+    zo_callLater(function()
+        GMS:WeeklyPrepareBatch()
+    end,25)
+end
+
+function GMS:WeeklyPrepareBatch()
+    local s=self.weeklyState
+    if not s then return end
+
+    local batchSize=self.weeklyBuildBatchSize or 100
+    local target=self.weeklyChunkTargetBytes or 3900
+    local processedThisBatch=0
+    local key=s.cursor
+
+    while processedThisBatch<batchSize do
+        local nextKey,record=next(self.saved.items or {},key)
+
+        if not nextKey then
+            s.donePrices=true
+            break
+        end
+
+        key=nextKey
+        s.cursor=nextKey
+        s.processed=(s.processed or 0)+1
+        processedThisBatch=processedThisBatch+1
+
+        if record then
+            local packed,a=self:WeeklyBuildPricePacked(nextKey,record)
+
+            if packed and a then
+                local priceRecord=self:FinalShortItemId(nextKey).."~"..packed
+                WeeklyAppendPriceRecord(s,priceRecord,target)
+                s.priceCount=s.priceCount+1
+
+                local _,flat=ParseRecord(record)
+
+                for gi=1,#s.guildIds do
+                    local guildId=s.guildIds[gi]
+                    local c=self:WeeklyScoreOpportunity(
+                        nextKey,a,flat,guildId
+                    )
+
+                    if c then
+                        WeeklyInsertTop(
+                            s.topByGuild[guildId],
+                            c,
+                            self.weeklyOpportunityCap or 25
+                        )
+                    end
+                end
+            end
+        end
+    end
+
+    if s.donePrices then
+        WeeklyFlushPricePart(s)
+        zo_callLater(function()
+            GMS:WeeklyFinalizePrepared()
+        end,25)
+        return
+    end
+
+    if ((s.processed or 0)%800)<batchSize then
+        Chat(string.format(
+            "Weekly prep progress: %d/%d items... | price parts so far: %d",
+            math.min(s.processed or 0,s.total or 0),
+            s.total or 0,
+            #s.parts
+        ))
+    end
+
+    zo_callLater(function()
+        GMS:WeeklyPrepareBatch()
+    end,25)
+end
+
+function GMS:WeeklyFinalizePrepared()
+    local s=self.weeklyState
+    if not s then return end
+
+    local target=self.weeklyChunkTargetBytes or 3900
+
+    -- Opportunities are intentionally tiny: at most Top-25 per scanned guild.
+    -- Build only this compact section at finalization.
+    local current={}
+    local bytes=0
+    local oppCount=0
+
+    local function FlushOpp()
+        if #current==0 then return end
+        s.parts[#s.parts+1]={
+            layer="opp",
+            data=table.concat(current,"-"),
+            rows=#current,
+            bytes=bytes
+        }
+        current={}
+        bytes=0
+    end
+
+    local function AppendOpp(rec)
+        local extra=#rec+1
+        if #current>0 and bytes+extra>target then
+            FlushOpp()
+        end
+        current[#current+1]=rec
+        bytes=bytes+extra
+    end
+
+    for gi=1,#s.guildIds do
+        local guildId=s.guildIds[gi]
+        local list=s.topByGuild[guildId] or {}
+
+        AppendOpp("G~"..B64Num(tonumber(guildId) or 0))
+
+        for i=1,#list do
+            local c=list[i]
+            AppendOpp(
+                self:FinalShortItemId(c.key).."~"..
+                B64Num(c.listings or 0).."."..
+                B64Num(c.units or 0).."."..
+                B64Num(c.localMedian or 0)
+            )
+            oppCount=oppCount+1
+        end
+    end
+    FlushOpp()
+
+    local sid=
+        "weekly-"..tostring(GetTimeStamp()).."-"..
+        tostring(self.saved.totalItems or 0)
+
+    -- Keep only the already-packed browser chunks, never a second copy of all
+    -- item rows. This is the only live weekly payload retained for sending.
+    self.weeklyPrepared={
+        sid=sid,
+        parts=s.parts,
+        priceItems=s.priceCount,
+        opportunityRows=oppCount,
+        guildCount=#s.guildIds,
+        preparedAt=GetTimeStamp()
+    }
+
+    self.weeklyState=nil
+    self.weeklySendIndex=0
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+
+    Chat(string.format(
+        "GMA WEEKLY READY: %d price items / %d opportunity rows / %d guilds / %d browser parts.",
+        self.weeklyPrepared.priceItems,
+        self.weeklyPrepared.opportunityRows,
+        self.weeklyPrepared.guildCount,
+        #self.weeklyPrepared.parts
+    ))
+    Chat("Use /gmsweeklynext to send Part 1.")
+    self:MemoryReport("after weekly prep",false)
+end
+
+function GMS:WeeklySendPart(partIndex)
+    local w=self.weeklyPrepared
+
+    if not w then
+        Chat("No prepared weekly export. Use /gmsweekly first.")
+        return
+    end
+
+    partIndex=math.floor(tonumber(partIndex) or 0)
+    if partIndex<1 or partIndex>#w.parts then
+        Chat(string.format("Weekly part must be between 1 and %d.",#w.parts))
+        return
+    end
+
+    local part=w.parts[partIndex]
+    local world=GetWorldName and GetWorldName() or "unknown"
+    local done=(partIndex==#w.parts)
+
+    local url=
+        "https://gma-data-receiver.guildmarketassistant.workers.dev/weekly"..
+        "?v=6"..
+        "&sid="..UrlEncode(w.sid)..
+        "&world="..UrlEncode(world)..
+        "&part="..tostring(partIndex)..
+        "&total="..tostring(#w.parts)..
+        "&layer="..UrlEncode(part.layer)..
+        "&done="..(done and "1" or "0")..
+        "&priceItems="..tostring(w.priceItems or 0)..
+        "&oppRows="..tostring(w.opportunityRows or 0)..
+        "&guilds="..tostring(w.guildCount or 0)..
+        "&data="..part.data
+
+    Chat(string.format(
+        "Reopening GMA WEEKLY Part %d/%d [%s] ~%d chars.",
+        partIndex,#w.parts,string.upper(part.layer or "?"),part.bytes or 0
+    ))
+
+    RequestOpenUnsafeURL(url)
+    -- Intentionally do NOT change weeklySendIndex here. A manual resend must
+    -- never disturb the normal /gmsweeklynext sequence.
+end
+
+function GMS:WeeklySendNext()
+    local w=self.weeklyPrepared
+
+    if not w then
+        Chat("No prepared weekly export. Use /gmsweekly first.")
+        return
+    end
+
+    local nextIndex=(self.weeklySendIndex or 0)+1
+    local part=w.parts[nextIndex]
+
+    if not part then
+        Chat("Weekly export already complete.")
+        return
+    end
+
+    local world=GetWorldName and GetWorldName() or "unknown"
+    local done=(nextIndex==#w.parts)
+
+    local url=
+        "https://gma-data-receiver.guildmarketassistant.workers.dev/weekly"..
+        "?v=6"..
+        "&sid="..UrlEncode(w.sid)..
+        "&world="..UrlEncode(world)..
+        "&part="..tostring(nextIndex)..
+        "&total="..tostring(#w.parts)..
+        "&layer="..UrlEncode(part.layer)..
+        "&done="..(done and "1" or "0")..
+        "&priceItems="..tostring(w.priceItems or 0)..
+        "&oppRows="..tostring(w.opportunityRows or 0)..
+        "&guilds="..tostring(w.guildCount or 0)..
+        "&data="..part.data
+
+    Chat(string.format(
+        "Opening GMA WEEKLY Part %d/%d [%s] ~%d chars.",
+        nextIndex,
+        #w.parts,
+        string.upper(part.layer or "?"),
+        part.bytes or 0
+    ))
+
+    RequestOpenUnsafeURL(url)
+    self.weeklySendIndex=nextIndex
+
+    if done then
+        Chat("This is the FINAL weekly part. Confirm the browser page shows WEEKLY UPDATE COMPLETE.")
+    else
+        Chat("After confirmation, return to ESO and use /gmsweeklynext.")
+    end
+end
+
 function GMS:Initialize()
     self.saved=ZO_SavedVars:NewAccountWide(
         "GuildMarketScannerSavedVariables",
         1,nil,defaults
     )
 
-    if (self.saved.schemaVersion or 0)~=8 then
-        self:MigrateToV7()
+    if (self.saved.schemaVersion or 0)~=10 then
+        self:MigrateToV10()
     else
         self.saved.items=self.saved.items or {}
         self.saved.guildScans=self.saved.guildScans or {}
@@ -1702,6 +2960,35 @@ function GMS:Initialize()
         GMS:MeasureFinalExport()
     end
 
+    SLASH_COMMANDS["/gmssnapshot"]=function(text)
+        GMS:PrintSnapshotByName(text)
+    end
+
+    SLASH_COMMANDS["/gmsfind"]=function(text)
+        GMS:FindAllMatchingRecords(text)
+    end
+
+    SLASH_COMMANDS["/gmsmeasuretransport"]=function()
+        GMS:MeasureFinalWeeklyTransportAsync()
+    end
+
+    SLASH_COMMANDS["/gmsweekly"]=function()
+        GMS:WeeklyPrepareStart()
+    end
+
+    SLASH_COMMANDS["/gmsweeklynext"]=function()
+        GMS:WeeklySendNext()
+    end
+
+    SLASH_COMMANDS["/gmsweeklypart"]=function(text)
+        GMS:WeeklySendPart(text)
+    end
+
+    SLASH_COMMANDS["/gmsweeklyreset"]=function()
+        GMS:WeeklyReset()
+        Chat("GMA weekly export reset.")
+    end
+
     EVENT_MANAGER:RegisterForEvent(
         self.name.."_Open",
         EVENT_OPEN_TRADING_HOUSE,
@@ -1734,8 +3021,8 @@ function GMS:Initialize()
 
     if collectgarbage then collectgarbage("collect") end
 
-    Chat("BUILD 044 FINAL EXPORT MEASURER")
-    Chat("Guild Market Scanner DEV v0.4.4 loaded.")
+    Chat("BUILD 0502 STREAMING WEEKLY PREP")
+    Chat("Guild Market Scanner DEV v0.5.2 loaded.")
     Chat(string.format(
         "DB: %d items / %d guild snapshots / %d registered guild scans.",
         self.saved.totalItems or 0,

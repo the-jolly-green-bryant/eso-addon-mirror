@@ -1,4 +1,5 @@
 local LCA = LibCombatAlerts
+local Internal = LibCombatAlertsInternal
 
 
 --------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ local EVENT_STOP = 2
 -- LCA_MoveableControl
 --------------------------------------------------------------------------------
 
-local LCA_MoveableControl = LCA.BaseControlObject:Subclass()
+local LCA_MoveableControl = Internal.BaseControlObject:Subclass()
 LCA.MoveableControl = LCA_MoveableControl
 
 -- Preserve GuiRoot to guard against redefinition
@@ -152,7 +153,7 @@ LCA.EVENT_CONTROL_MOVE_START = EVENT_START
 LCA.EVENT_CONTROL_MOVE_STOP = EVENT_STOP
 
 function LCA_MoveableControl:New( control, options )
-	local obj = LCA.BaseControlObject.New(self, "LCA_MoveableControl")
+	local obj = Internal.BaseControlObject.New(self, "LCA_MoveableControl")
 
 	obj.control = control
 	obj.options = LCA.PopulateOptions(options, DEFAULT_OPTIONS)

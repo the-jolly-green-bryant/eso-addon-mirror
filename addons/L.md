@@ -90,7 +90,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibCombat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/LibCombat__2528) | Solinur | PC / Mac | 89 |
 | [LibCombat2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SolinurAddons/LibCombat2__96103ec3-3c4e-4865-be32-cc3b57df04d0) | SolinurAddons | Console | — |
 | [LibCombatAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCombatAlerts__756d3118-70ee-4ed7-a49e-5217da36e5fe) | code65536 | Console | — |
-| [LibCombatAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCombatAlerts__4225) | code65536 | PC / Mac | 0.7.10 |
+| [LibCombatAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCombatAlerts__4225) | code65536 | PC / Mac | 0.8.0 |
 | [LibCombatSkills](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/LibCombatSkills__4500daea-ed3f-4071-822c-24329a5831e3) | SugaComa | Console | — |
 | [LibConsoleDialogs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan/LibConsoleDialogs__4106) | votan | PC / Mac | 1.0.4.2 |
 | [LibConsoleDialogs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan73/LibConsoleDialogs__73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b) | votan73 | Console | — |
@@ -106,7 +106,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibCustomMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mYoda01/LibCustomMenu__fff7f7e3-b518-4545-9e96-a4f6c2a28dea) | mYoda01 | Console | — |
 | [LibCustomMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan/LibCustomMenu__1146) | votan | PC / Mac | 7.3.0 |
 | [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__5eaa0d91-47f8-4c5e-8673-db3ab518a752) | m00nyONE | Console | — |
-| [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__4155) | m00nyONE | PC / Mac | 2026-08-09 |
+| [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__4155) | m00nyONE | PC / Mac | 2026-08-17 |
 | [LibDailyReset](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/LibDailyReset__4424) | atharti | PC / Mac | 1.8 |
 | [LibDataEncode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/LibDataEncode__3980) | Solinur | PC / Mac | 2 |
 | [LibDataPacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibDataPacker__4082) | imPDA | PC / Mac | v5 |
@@ -247,7 +247,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibServerResetTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibServerResetTime__4427) | code65536 | PC / Mac | 2.0.0 |
 | [LibSetDetection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/LibSetDetection__3338) | ExoY | PC / Mac | 5.0 |
 | [LibSets (All set items ingame & preview. lua API + excel sheet)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibSets-All-set-items-ingame-preview.-lua-API-excel-sheet__2241) | Baertram | PC / Mac | 0.9.3 |
-| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 75 |
+| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 76 |
 | [LibShifterBox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klingo/LibShifterBox__2444) | Klingo | PC / Mac | 0.7.0 |
 | [LibSimpleArrow](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/LibSimpleArrow__4251) | sshogrin | PC / Mac | 1.0.0 |
 | [LibSimpleSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibSimpleSavedVars__2805) | zelenin | PC / Mac | 0.0.3 |

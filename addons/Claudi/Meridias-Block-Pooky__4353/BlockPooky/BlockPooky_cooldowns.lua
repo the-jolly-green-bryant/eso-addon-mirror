@@ -229,7 +229,7 @@ end
 
 function BlockPooky.UpdateCooldownBarUsage(name, useCooldownBar)
     if BlockPooky.toonConfig.cooldownbar[name] == nil then
-        BlockPooky.toonConfig.cooldownbar[name] { show = false }
+        BlockPooky.toonConfig.cooldownbar[name] = { show = false }
     end
     if useCooldownBar ~= BlockPooky.toonConfig.cooldownbar[name].show then
         if useCooldownBar then

@@ -21,13 +21,12 @@
 --[[ basic initialization -------------------------------------------------------------------------------------------]]
 BlockPooky = BlockPooky or {}
 -- Addon version information
-BlockPooky.version = 2.20
+BlockPooky.version = 2.21
 BlockPooky.svVersion = 1.8 -- SavedVariables version for config migration
 BlockPooky.name = "BlockPooky"
 BlockPooky.msgText = "BLOCK Pooky!"
 -- Runtime state tracking
 BlockPooky.isActive = false
-BlockPooky.blockingregistered = false
 -- Message templates for customization
 BlockPooky.defaultMessages = {
     blockWarning = "BLOCK Pooky!",
@@ -229,9 +228,6 @@ function BlockPooky.InitUI()
     BlockPooky.UpdateUILabels()
     EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "TickUpdate", 1000, function(gameTimeMs)
         BlockPooky.UpdateBlock(gameTimeMs)
-        BlockPooky.DcReadyHint(gameTimeMs)
-        BlockPooky.RoaReadyHint(gameTimeMs)
-        BlockPooky.UpdateCastVigorHint(gameTimeMs)
         BlockPooky.UpdateHoTDisplay()
     end, false)
     BlockPooky.SetUseBlocking()
@@ -537,6 +533,8 @@ function BlockPooky.Initialize()
     BlockPooky.InitHoTBarUI()
     BlockPooky.InitHoTTracker()
     BlockPooky.InitMountLightUI()
+    -- DC/ROA/Vigor hints have their own self-registered events; sync them to the toggles.
+    BlockPooky.HintsEventRegisterUpdate()
     -- Synchronize ALL UI elements (including bars) to the saved lock state.
     -- Without this, only the text indicators are shown on load while bars like the
     -- HoT counter stay hidden even though the UI is in repositioning (lock) mode.
@@ -635,7 +633,6 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
             CCImmunityHint = true,
             showCCDebuff = true,
             ccDebuffCSA = true,
-            ccDebuffCSACooldown = 2000,
             ccDebuffPosition = {
                 left = 0,
                 top = 0
@@ -762,14 +759,16 @@ function BlockPooky.OnCombat(
 )
     --[[ Warn the Pooky to block!
         Note: Event is pre-filtered to ACTION_RESULT_EFFECT_GAINED and non-errors at C level via AddFilterForEvent.
+        Note: DC/ROA/Vigor cast tracking does NOT live here anymore - those hints have
+        their own dedicated EVENT_COMBAT_EVENT handlers in BlockPooky_hints.lua
+        (registered only while the respective hint toggle is on).
 
         (1) check if it is one of the "pull abilities"
         (2) check source is not the player himself
         (3) check source is not a known group member
         (4) use a message cooldown
         (5) Warn the Pooky to BLOCK!
-        (6) Handle DC uptimes
-        (7) Handle ROA uptimes
+        (6) send group warnings to grouped players
 
     --]]
     -- (1)
@@ -803,25 +802,6 @@ function BlockPooky.OnCombat(
                         BlockPooky.SendWarning("pull", abilityId)
                     end
                 end
-            end
-        end
-        if cleanAbilityName == BlockPooky.dcAbilityName then
-            if cleanSourceName == BlockPooky.player then
-                BlockPooky.lastDcCast = GetGameTimeMilliseconds()
-            end
-        elseif cleanAbilityName == BlockPooky.roaAbilityName then
-            if cleanSourceName == BlockPooky.player then
-                BlockPooky.lastRoaCast = GetGameTimeMilliseconds()
-            end
-        end
-    elseif BlockPooky.config.vigorHint and abilityId == 61506 and result == 2240 then -- echoing vigor
-        local cleanSourceName = BlockPooky.CleanupName(sourceName)
-        if cleanSourceName == BlockPooky.player then
-            if GetGameTimeMilliseconds() - BlockPooky.lastVigorCast > 1000 then
-                BlockPooky.lastVigorCast = GetGameTimeMilliseconds();
-                -- removed: 'vigorHint_active = false' here wrote a global that never
-                -- reached BlockPooky_hints.lua's file-local flag (dead write, no effect)
-                VigorIndicator:SetHidden(not BlockPooky.config.lockedUI)
             end
         end
     end

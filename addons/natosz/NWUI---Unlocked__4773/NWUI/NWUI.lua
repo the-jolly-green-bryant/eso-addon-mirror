@@ -1,8 +1,9 @@
 local ADDON_NAME = "NWUI"
 local PLAYER_UNIT_TAG = "player"
 
-NWUI = NWUI or {}
-local addon = NWUI
+-- Correcao do Moderador: Variavel global mais longa e referencia local
+NewWorldUI = NewWorldUI or {}
+local addon = NewWorldUI
 
 addon.name = ADDON_NAME
 addon.initialized = false
@@ -55,6 +56,13 @@ local RESOURCE_BARS =
         label = "HP",
         color = HEALTH_FULL_COLOR,
     },
+}
+
+-- Correcao do Moderador: Tabela para loop de visibilidade
+local SUPPORTED_POWER_TYPES = {
+    [COMBAT_MECHANIC_FLAGS_HEALTH] = "hideHealth",
+    [COMBAT_MECHANIC_FLAGS_MAGICKA] = "hideMagicka",
+    [COMBAT_MECHANIC_FLAGS_STAMINA] = "hideStamina",
 }
 
 local SKILL_SLOT_INDEXES =
@@ -1781,6 +1789,7 @@ function addon:UpdateEquipmentDisplay()
     self:UpdateWeaponIcons()
 end
 
+-- Correcao do Moderador: Loop simplificado para visibilidade
 function addon:UpdateVisibility()
     local isCameraUI = IsGameCameraUIModeActive() and not self:GetSettingValue("unlockUI")
 
@@ -1794,18 +1803,10 @@ function addon:UpdateVisibility()
         self.skillSlotContainer:SetHidden(isCameraUI or self:GetSettingValue("hideSkills")) 
     end
 
-    local hideHealth = self:GetSettingValue("hideHealth")
-    local hideMagicka = self:GetSettingValue("hideMagicka")
-    local hideStamina = self:GetSettingValue("hideStamina")
-
-    if self.powerBars[COMBAT_MECHANIC_FLAGS_HEALTH] then
-        self.powerBars[COMBAT_MECHANIC_FLAGS_HEALTH]:SetHidden(isCameraUI or hideHealth)
-    end
-    if self.powerBars[COMBAT_MECHANIC_FLAGS_MAGICKA] then
-        self.powerBars[COMBAT_MECHANIC_FLAGS_MAGICKA]:SetHidden(isCameraUI or hideMagicka)
-    end
-    if self.powerBars[COMBAT_MECHANIC_FLAGS_STAMINA] then
-        self.powerBars[COMBAT_MECHANIC_FLAGS_STAMINA]:SetHidden(isCameraUI or hideStamina)
+    for powerType, svPowerTypeShowFlag in pairs(SUPPORTED_POWER_TYPES) do
+        if self.powerBars[powerType] then
+            self.powerBars[powerType]:SetHidden(isCameraUI or self:GetSettingValue(svPowerTypeShowFlag))
+        end   
     end
 end
 
@@ -2236,16 +2237,16 @@ function addon:RegisterSettingsPanel()
     self.settingsPanelRegistered = true
 end
 
-local function OnVisualUpdate(_, unitTag, visualType)
-    if unitTag == PLAYER_UNIT_TAG and visualType == ATTRIBUTE_VISUAL_POWER_SHIELDING then
+-- Correcao do Moderador: Removido if unitTag desnecessario porque o filtro nativo ja cuida disso
+local function OnVisualUpdate(_, _, visualType)
+    if visualType == ATTRIBUTE_VISUAL_POWER_SHIELDING then
         addon:UpdateShields()
     end
 end
 
-local function OnPowerUpdate(_, unitTag, _, powerType, current, maxValue)
-    if unitTag == PLAYER_UNIT_TAG then
-        addon:UpdatePower(powerType, current, maxValue)
-    end
+-- Correcao do Moderador: Removido if unitTag desnecessario porque o filtro nativo ja cuida disso
+local function OnPowerUpdate(_, _, _, powerType, current, maxValue)
+    addon:UpdatePower(powerType, current, maxValue)
 end
 
 local function RegisterPowerEvent(eventName, powerType)
@@ -2259,9 +2260,15 @@ function addon:RegisterEvents()
         addon:RefreshAll()
     end)
 
+    -- Correcao do Moderador: Adicionados os EventFilters nas 3 chamadas
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ShieldAdded", EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, OnVisualUpdate)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "ShieldAdded", EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, REGISTER_FILTER_UNIT_TAG, PLAYER_UNIT_TAG)
+
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ShieldUpdated", EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED, OnVisualUpdate)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "ShieldUpdated", EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED, REGISTER_FILTER_UNIT_TAG, PLAYER_UNIT_TAG)
+
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ShieldRemoved", EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED, OnVisualUpdate)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "ShieldRemoved", EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED, REGISTER_FILTER_UNIT_TAG, PLAYER_UNIT_TAG)
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Experience", EVENT_EXPERIENCE_UPDATE, function()
         addon:UpdateExperience()
@@ -2324,12 +2331,12 @@ function addon:RegisterEvents()
         addon:UpdateEquipmentDisplay()
     end)
 
-    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "InventorySingle", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId)
+    -- Correcao do Moderador: Removido o if bagId de dentro e colocado o filtro na raiz
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "InventorySingle", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function()
         addon:UpdateQuickSlots()
-        if bagId == BAG_WORN then
-            addon:UpdateEquipmentDisplay()
-        end
+        addon:UpdateEquipmentDisplay()
     end)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "InventorySingle", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_WORN)
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CameraMode", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
         addon:UpdateVisibility()

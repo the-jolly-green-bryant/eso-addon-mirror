@@ -2,7 +2,7 @@
 ## Description: Wider/shorter tooltips + scale
 ## APIVersion: 101048
 ## Author: Custom
-## Version: 2.1
+## Version: 2.2
 ## DependsOn: LibAddonMenu-2.0
-
+## SavedVariables: TooltipResizerSavedVariables
 TooltipResizer.lua

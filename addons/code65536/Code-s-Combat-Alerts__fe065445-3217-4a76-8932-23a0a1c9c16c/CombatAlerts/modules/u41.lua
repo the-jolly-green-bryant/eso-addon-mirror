@@ -82,15 +82,15 @@ function Module:Initialize( )
 		if (Vars.impale.earliest >= currentTime) then
 			local remaining = Vars.impale.earliest - currentTime
 			local ratio = zo_clamp(remaining / Vars.impale.duration, 0, 1)
-			CA2.StatusModifyCell(1, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_COUNTDOWN),
-				color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1)),
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_COUNTDOWN),
+				"color", LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1))
+			)
 		elseif (Vars.impale.latest + DATA.impale.offset >= currentTime) then
-			CA2.StatusModifyCell(1, 2, {
-				text = self:GetString("erupting"),
-				color = 0xFF0000FF,
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", self:GetString("erupting"),
+				"color", 0xFF0000FF
+			)
 		else
 			CA2.StatusSetRowHidden(1, true)
 		end

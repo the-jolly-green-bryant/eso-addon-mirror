@@ -1,3 +1,11 @@
+Version 2.5.2 (2026/08/17)
+* Added optional protection against the accidental use of Cutthroat's Focus for
+  the following scenarios:
+  - Obliterate in Coral Aerie
+  - Smite in Lucent Citadel
+  - Spark Smash, Blazing Smash, Spark Surge Bolt, and Forge Fire Bolt in Ossein
+    Cage
+
 Version 2.5.1 (2026/08/10)
 * Fixed a bug introduced in 2.5.0 that caused modules to fail to load after
   having been unloaded earlier

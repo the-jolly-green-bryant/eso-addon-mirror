@@ -1,11 +1,12 @@
 local LCA = LibCombatAlerts
+local Internal = LibCombatAlertsInternal
 
 
 --------------------------------------------------------------------------------
 -- LCA_ScreenBorder
 --------------------------------------------------------------------------------
 
-local LCA_ScreenBorder = LCA.BaseControlObject:Subclass()
+local LCA_ScreenBorder = Internal.BaseControlObject:Subclass()
 LCA.ScreenBorder = LCA_ScreenBorder
 
 local nextBorderId = 1 -- Global so that border IDs are unique even across border instances
@@ -22,7 +23,7 @@ local GuiRoot = GuiRoot
 --------------------------------------------------------------------------------
 
 function LCA_ScreenBorder:New( )
-	local obj = LCA.BaseControlObject.New(self, "LCA_ScreenBorder")
+	local obj = Internal.BaseControlObject.New(self, "LCA_ScreenBorder")
 
 	obj.control = WINDOW_MANAGER:CreateControlFromVirtual(obj.ID, GuiRoot, "LCA_ScreenBorder")
 	obj.control:SetHidden(true)

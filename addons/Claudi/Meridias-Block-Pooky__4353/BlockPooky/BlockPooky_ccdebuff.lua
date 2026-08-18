@@ -250,10 +250,6 @@ local ccDebuffIncoming = {}
 -- Debug: print raw CC combat events to chat (toggle with /blockpookyccdebug)
 local ccDebuffDebug = false
 
--- Last CSA timestamp PER CC TYPE (for the anti-spam cooldown). Per-type so a fear
--- right after a stun is not swallowed by the stun's cooldown.
-local ccDebuffLastCSATimes = {}
-
 ---Player's raw name as used in combat events (cached; may include ^Mx/^Fx markers).
 ---@return string
 function BlockPooky.GetRawPlayerName()
@@ -276,19 +272,13 @@ function BlockPooky.IsPlayerName(name)
     return false
 end
 
----Show a center screen CC alert, throttled PER CC TYPE by ccDebuffCSACooldown to avoid
----spam during chain CCs. Does nothing if the CSA toggle is off.
----@param typeKey string
+---Show a center screen CC alert. No throttling: the game's CC immunity already prevents
+---chain-CC spam, and the CSA is emitted from a single detection path (the effect watcher),
+---so each CC is announced exactly once. Does nothing if the CSA toggle is off.
 ---@param message string
-function BlockPooky.ShowCCDebuffCSA(typeKey, message)
+function BlockPooky.ShowCCDebuffCSA(message)
     if not BlockPooky.config.ccDebuffCSA then return end
-    local cooldown = BlockPooky.config.ccDebuffCSACooldown or 2000
-    local now = GetGameTimeMilliseconds()
-    local last = ccDebuffLastCSATimes[typeKey] or 0
-    if now - last >= cooldown then
-        ccDebuffLastCSATimes[typeKey] = now
-        BlockPooky.MessageThePooky(message)
-    end
+    BlockPooky.MessageThePooky(message)
 end
 
 ---EVENT_COMBAT_EVENT handler for CC debuffs affecting the player.
@@ -296,33 +286,32 @@ function BlockPooky.OnCCDebuffCombat(
     eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType,
     sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType,
     combatLog, sourceUnitId, targetUnitId, abilityId)
-    -- Debug: log every CC-relevant combat event BEFORE any filtering so we can verify what
-    -- the game actually sends (turn on with /blockpookyccdebug, then get stunned/feared).
-    if ccDebuffDebug and ccDebuffValidResults[result] then
-        d(string.format("[CCBar] result=%d ability=%s(%d) src=%s tgt=%s tType=%d hit=%d",
-            result, tostring(abilityName), abilityId or 0, tostring(sourceName),
-            tostring(targetName), targetType or 0, hitValue or 0))
-    end
-
     if not ccDebuffValidResults[result] then return end
     if targetType ~= COMBAT_UNIT_TYPE_PLAYER then return end
     if not BlockPooky.IsPlayerName(targetName) then return end
 
+    -- Debug: log only CCs that actually landed on the PLAYER (after the target guards), so
+    -- your own casts on enemies are never shown (turn on with /blockpookyccdebug).
+    if ccDebuffDebug and result ~= ACTION_RESULT_EFFECT_GAINED_DURATION then
+        d(string.format("[CCBar] result=%d ability=%s(%d) src=%s hit=%d",
+            result, tostring(abilityName), abilityId or 0, tostring(sourceName), hitValue or 0))
+    end
+
     local now = GetGameTimeSeconds()
     local dur = BlockPooky.CCDebuffDuration
 
+    -- The combat event path only drives the bar (stun/fear/disorient/stagger/silence).
+    -- Center screen alerts are emitted by the effect watcher only, so each CC is announced
+    -- exactly once - no cooldown needed (same approach as CrowdControlTracker).
     if result == ACTION_RESULT_STUNNED then
         ccDebuffIncoming[ACTION_RESULT_STUNNED] = abilityId
         BlockPooky.SetCCDebuff("stun", now + dur(hitValue, BlockPooky.ccDebuffDefaults.stun))
-        BlockPooky.ShowCCDebuffCSA("stun", BlockPooky.config.messages.ccStun)
     elseif result == ACTION_RESULT_FEARED then
         ccDebuffIncoming[ACTION_RESULT_FEARED] = abilityId
         BlockPooky.SetCCDebuff("fear", now + dur(hitValue, BlockPooky.ccDebuffDefaults.fear))
-        BlockPooky.ShowCCDebuffCSA("fear", BlockPooky.config.messages.ccFear)
     elseif result == ACTION_RESULT_DISORIENTED then
         ccDebuffIncoming[ACTION_RESULT_DISORIENTED] = abilityId
         BlockPooky.SetCCDebuff("disorient", now + dur(hitValue, BlockPooky.ccDebuffDefaults.disorient))
-        BlockPooky.ShowCCDebuffCSA("disorient", BlockPooky.config.messages.ccDisorient)
     elseif result == ACTION_RESULT_STAGGERED then
         BlockPooky.SetCCDebuff("stagger", now + dur(hitValue, BlockPooky.ccDebuffDefaults.stagger))
     elseif result == ACTION_RESULT_EFFECT_GAINED_DURATION then
@@ -344,14 +333,53 @@ function BlockPooky.OnCCDebuffCombat(
     end
 end
 
----EVENT_PLAYER_STUNNED_STATE_CHANGED handler.
----Sets the stun on the bar when a stun/knockdown begins (fallback in case the combat
----event is missed), and clears it the moment it ends (break free) so the bar switches
----to the next active CC immediately.
-function BlockPooky.OnCCDebuffStunState(eventCode, playerStunned)
-    if playerStunned then
-        BlockPooky.SetCCDebuff("stun", GetGameTimeSeconds() + BlockPooky.ccDebuffDefaults.stun)
+---EVENT_EFFECT_CHANGED handler - authoritative detection for stun/fear/disorient debuffs
+---on the player via their status effect type, with real begin/end times and auto-clear
+---on fade (break free / cleanse). Some CCs (notably fears) are NOT reliably delivered as
+---ACTION_RESULT_* combat events, so this is the robust path for those.
+function BlockPooky.OnCCDebuffEffectChanged(
+    eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount,
+    iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
+    local typeKey
+    if statusEffectType == STATUS_EFFECT_TYPE_STUN or statusEffectType == STATUS_EFFECT_TYPE_KNOCKBACK then
+        typeKey = "stun"
+    elseif statusEffectType == STATUS_EFFECT_TYPE_FEAR then
+        typeKey = "fear"
+    elseif statusEffectType == STATUS_EFFECT_TYPE_DISORIENT then
+        typeKey = "disorient"
     else
+        return
+    end
+
+    if ccDebuffDebug and changeType == EFFECT_RESULT_GAINED then
+        d(string.format("[CCBarFX] status=%d type=%s effect=%s(%d) bt=%s et=%s",
+            statusEffectType, typeKey, tostring(effectName), abilityId or 0,
+            tostring(beginTime), tostring(endTime)))
+    end
+
+    if changeType == EFFECT_RESULT_GAINED then
+        BlockPooky.SetCCDebuff(typeKey, endTime)
+        -- The effect watcher is the single CSA source for hard CCs - each CC is announced
+        -- exactly once, no cooldown needed (same approach as CrowdControlTracker).
+        if typeKey == "stun" then
+            BlockPooky.ShowCCDebuffCSA(BlockPooky.config.messages.ccStun)
+        elseif typeKey == "fear" then
+            BlockPooky.ShowCCDebuffCSA(BlockPooky.config.messages.ccFear)
+        else
+            BlockPooky.ShowCCDebuffCSA(BlockPooky.config.messages.ccDisorient)
+        end
+    elseif changeType == EFFECT_RESULT_FADED then
+        BlockPooky.ClearCCDebuff(typeKey)
+    end
+end
+
+---EVENT_PLAYER_STUNNED_STATE_CHANGED handler.
+---Only clears the stun the moment it ends (break free) so the bar switches to the next
+---active CC immediately. Setting the stun is handled by the combat event + the status
+---effect watcher, which are more reliable - the stunned-state event can fire spuriously
+---(e.g. around mounting) and would otherwise show a false STUN.
+function BlockPooky.OnCCDebuffStunState(eventCode, playerStunned)
+    if not playerStunned then
         BlockPooky.ClearCCDebuff("stun")
     end
 end
@@ -366,14 +394,19 @@ end
 ---Registers or unregisters the active CC bar events based on configuration.
 function BlockPooky.CCDebuffEventRegisterUpdate()
     if BlockPooky.config.showCCDebuff then
-        -- Registered WITHOUT result/target filters (like CrowdControlTracker): C-level
-        -- result filters were found to silently drop CC events, and the player-target
-        -- filter is applied in the handler via IsPlayerName. The handler gates results
-        -- with the cheap ccDebuffValidResults lookup.
+        -- Registered with NO filters at all (exactly like CrowdControlTracker): C-level
+        -- filters - including REGISTER_FILTER_IS_ERROR - were found to silently drop CC
+        -- events. All filtering is done in the handler via the ccDebuffValidResults lookup.
         EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuff", EVENT_COMBAT_EVENT,
             function(...) BlockPooky.OnCCDebuffCombat(...) end)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCDebuff", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR,
-            false)
+
+        -- Authoritative detection for stun/fear/disorient via the debuff effects on the
+        -- player (some CCs, notably fears, are not delivered as ACTION_RESULT_* events).
+        -- Filtered to the player only; the status effect type is checked in the handler.
+        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuffWatcher", EVENT_EFFECT_CHANGED,
+            function(...) BlockPooky.OnCCDebuffEffectChanged(...) end)
+        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCDebuffWatcher", EVENT_EFFECT_CHANGED,
+            REGISTER_FILTER_UNIT_TAG, "player")
 
         EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCDebuffStunState", EVENT_PLAYER_STUNNED_STATE_CHANGED,
             function(...) BlockPooky.OnCCDebuffStunState(...) end)
@@ -384,6 +417,7 @@ function BlockPooky.CCDebuffEventRegisterUpdate()
             REGISTER_FILTER_UNIT_TAG, "player")
     else
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "CCDebuff")
+        EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "CCDebuffWatcher")
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "CCDebuffStunState")
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "CCDebuffDeath")
     end

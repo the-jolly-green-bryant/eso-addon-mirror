@@ -12,17 +12,16 @@ local function SceneStateName(state)
     return tostring(state)
 end
 
-local function IsHiddenState(state)
+-- Only HIDDEN. HIDING still has HUD fragments in this scene; unconsuming
+-- there lets them put consume back, and a no-op A/B never unlocks.
+local function IsFullyHiddenState(state)
     if state == nil then
         return false
     end
     if SCENE_HIDDEN and state == SCENE_HIDDEN then
         return true
     end
-    if SCENE_HIDING and state == SCENE_HIDING then
-        return true
-    end
-    return state == "hidden" or state == "hiding"
+    return state == "hidden"
 end
 
 local function CurrentSceneName()
@@ -82,6 +81,10 @@ function Scene:AddEditorRootFragment(root)
     return false
 end
 
+function Scene:CurrentSceneName()
+    return CurrentSceneName()
+end
+
 function Scene:IsShowing()
     if self.scene and type(self.scene.IsShowing) == "function" then
         local ok, showing = pcall(self.scene.IsShowing, self.scene)
@@ -101,6 +104,47 @@ function Scene:IsShowing()
         end
     end
     return CurrentSceneName() == SCENE_NAME
+end
+
+function Scene:IsHiding()
+    if self.scene and type(self.scene.GetState) == "function" then
+        local ok, state = pcall(self.scene.GetState, self.scene)
+        if ok then
+            if SCENE_HIDING and state == SCENE_HIDING then
+                return true
+            end
+            if state == "hiding" then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- Overlay-only (no scene manager) and the real gameplay HUD both count as
+-- "HUD is back". Map / inventory are not HUD, but they also mean the editor
+-- scene is gone — see HasLeftEditor.
+function Scene:IsGameplayHud()
+    local name = CurrentSceneName()
+    if name == nil then
+        return true
+    end
+    return name == "hud" or name == "hudui"
+end
+
+-- True once the editor scene is fully gone (not SHOWING/SHOWN/HIDING).
+-- HIDING still owns HUD fragments; unlocking there is the no-op A/B miss.
+function Scene:HasLeftEditor()
+    if self:IsShowing() or self:IsHiding() then
+        return false
+    end
+    return CurrentSceneName() ~= SCENE_NAME
+end
+
+-- A real ZO_Scene was created. Unconsume must run inside a game event
+-- handler (camera / action-layer / HUD). zo_callLater is not that context.
+function Scene:NeedsHudUnlockEvent()
+    return self.scene ~= nil
 end
 
 function Scene:Describe()
@@ -197,7 +241,7 @@ function Scene:Ensure(root)
             if Log then
                 Log:Debug("Scene " .. SceneStateName(oldState) .. " -> " .. SceneStateName(newState))
             end
-            if IsHiddenState(newState) and type(self.onHidden) == "function" then
+            if IsFullyHiddenState(newState) and type(self.onHidden) == "function" then
                 self.onHidden()
             end
         end)
@@ -308,9 +352,9 @@ function Scene:Hide()
     end
 end
 
--- After hide, ensure gameplay HUD if we did not already land there.
--- Do not Show(hud) while the editor scene is still current — that fights
--- HideCurrentScene and can shove the action bar / eat left stick.
+-- After hide, Show(hud) only when there is no current scene. Do not Show(hud)
+-- while the editor is still current (fights HideCurrentScene) and do not yank
+-- the player out of map / inventory if they opened one during close.
 function Scene:ReturnToGame()
     if not SCENE_MANAGER or type(SCENE_MANAGER.Show) ~= "function" then
         return
@@ -320,6 +364,9 @@ function Scene:ReturnToGame()
         return
     end
     if current == SCENE_NAME then
+        return
+    end
+    if current ~= nil then
         return
     end
     local ok, err = pcall(SCENE_MANAGER.Show, SCENE_MANAGER, "hud")

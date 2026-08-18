@@ -380,7 +380,7 @@ local PLATFORM_FALL_ID = 167702
 local WINTER_STORM_PREFIX = zo_strformat("|c00CCCC<<C:1>>: ", GetAbilityName(WINTER_STORM_CW_ID)) -- color matching CCA
 
 local function OnWinterStorm()
-    Crutch.InfoPanel.CountDownDuration(PANEL_WINTER_STORM_INDEX, WINTER_STORM_PREFIX, 110000) -- TODO
+    Crutch.InfoPanel.CountDownDuration(PANEL_WINTER_STORM_INDEX, WINTER_STORM_PREFIX, 110000)
 end
 
 
@@ -408,6 +408,13 @@ local SIREN_PREFIX = zo_strformat("|c9966FF<<C:1>>: ", GetAbilityName(SIREN_ID))
 local function OnSirenSummoned()
     -- 97.997, 103, 102, 106, 99, 103
     Crutch.InfoPanel.CountDownDuration(PANEL_SIREN_INDEX, SIREN_PREFIX, 98000) -- TODO
+end
+
+local function OnLureOfTheSea()
+    -- 163952
+    PlaySound(SOUNDS.JUSTICE_NOW_KOS)
+    PlaySound(SOUNDS.JUSTICE_NOW_KOS)
+    PlaySound(SOUNDS.JUSTICE_NOW_KOS)
 end
 
 
@@ -511,6 +518,7 @@ function Crutch.RegisterDreadsailReef()
 
     -- Taleria cleave
     Crutch.RegisterBossChangedListener("CrutchDreadsailReef", TryEnablingTaleriaCleave)
+    TryEnablingTaleriaCleave()
 
     -- Taleria info panel
     if (Crutch.savedOptions.dreadsailreef.infoPanel.showMaelstrom) then
@@ -527,7 +535,11 @@ function Crutch.RegisterDreadsailReef()
         Crutch.RegisterForCombatEvent("DSRSiren", OnSirenSummoned, ACTION_RESULT_BEGIN, SIREN_ID)
     end
     if (Crutch.savedOptions.dreadsailreef.infoPanel.showSirenSpawn or Crutch.savedOptions.dreadsailreef.infoPanel.showWinterStorm) then
-        Crutch.RegisterForCombatEvent("DSRPlatformFall", OnPlatformFall, ACTION_RESULT_EFFECT_GAINED, PLATFORM_FALL_ID) -- TODO: what action result?
+    end
+
+    -- Lure of the Sea sound
+    if (Crutch.savedOptions.dreadsailreef.lureSound) then
+        Crutch.RegisterForCombatEvent("DSRLureOfTheSea", OnLureOfTheSea, ACTION_RESULT_BEGIN, 163952, nil, COMBAT_UNIT_TYPE_PLAYER)
     end
 
     Crutch.dbgOther("|c88FFFF[CT]|r Registered Dreadsail Reef")
@@ -579,6 +591,9 @@ function Crutch.UnregisterDreadsailReef()
     Crutch.UnregisterForCombatEvent("DSRWinterStormCCW")
     Crutch.UnregisterForCombatEvent("DSRSiren")
     Crutch.UnregisterForCombatEvent("DSRPlatformFall")
+
+    -- Lure of the Sea sound
+    Crutch.UnregisterForCombatEvent("DSRLureOfTheSea")
 
     Crutch.dbgOther("|c88FFFF[CT]|r Unregistered Dreadsail Reef")
 end

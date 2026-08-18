@@ -1807,6 +1807,18 @@ function Crutch:CreateSettingsMenu()
                     width = "full",
                 },
                 {
+                    type = "checkbox",
+                    name = "Play sound for Lure of the Sea",
+                    tooltip = "Plays a sound when an Enthralling Matron (siren) starts casting the charm on you",
+                    default = true,
+                    getFunc = function() return Crutch.savedOptions.dreadsailreef.lureSound end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.dreadsailreef.lureSound = value
+                        Crutch.OnPlayerActivated()
+                    end,
+                    width = "full",
+                },
+                {
                     type = "description",
                     title = "|c08BD1DInfo Panel|r",
                     text = "Shows timers or other info in a consolidated panel. Unlock the UI or |c99FF99/crutch unlock|r to reposition the info panel.",
@@ -2793,7 +2805,7 @@ function Crutch:CreateSettingsMenu()
                 },
                 {
                     type = "slider",
-                    name = "Chimera icons size",
+                    name = "    Chimera icons size",
                     min = 20,
                     max = 300,
                     step = 10,
@@ -2820,7 +2832,7 @@ function Crutch:CreateSettingsMenu()
                 },
                 {
                     type = "slider",
-                    name = "Ansuul icon size",
+                    name = "    Ansuul icon size",
                     min = 20,
                     max = 300,
                     step = 10,
@@ -2832,6 +2844,46 @@ function Crutch:CreateSettingsMenu()
                         Crutch.OnPlayerActivated()
                     end,
                     disabled = function() return not Crutch.savedOptions.sanitysedge.showAnsuulIcon end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Show Poisoned Mind icons",
+                    tooltip = "In the Ansuul fight, shows icons above players who have Poisoned Mind",
+                    default = true,
+                    getFunc = function() return Crutch.savedOptions.sanitysedge.showPoisonedMindIcons end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.sanitysedge.showPoisonedMindIcons = value
+                        Crutch.OnPlayerActivated()
+                    end,
+                    width = "full",
+                },
+                {
+                    type = "slider",
+                    name = "    Poisoned Mind icons size",
+                    min = 20,
+                    max = 300,
+                    step = 10,
+                    default = 150,
+                    width = "full",
+                    getFunc = function() return Crutch.savedOptions.sanitysedge.poisonedMindIconsSize end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.sanitysedge.poisonedMindIconsSize = value
+                        Crutch.OnPlayerActivated()
+                    end,
+                    disabled = function() return not Crutch.savedOptions.sanitysedge.showPoisonedMindIcons end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Show Breakdown health bars",
+                    tooltip = "Shows the health of the clones during the split phase of the Ansuul fight, using the vertical boss health bars",
+                    default = true,
+                    getFunc = function() return Crutch.savedOptions.sanitysedge.showSplitHp end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.sanitysedge.showSplitHp = value
+                        Crutch.OnPlayerActivated()
+                    end,
+                    width = "full",
+                    disabled = function() return not Crutch.savedOptions.bossHealthBar.enabled end,
                 },
                 {
                     type = "description",

@@ -80,10 +80,10 @@ function Module:Initialize( )
 	self.StatusPoll_B2 = function( )
 		local results = { }
 		for i = 1, 2 do
-			table.insert(results, string.format("|c%06X%d%%|r", BitRShift(DATA.boss2Colors[i], 8), zo_floor(LCA.GetUnitHealthPercent("boss" .. i))))
+			table.insert(results, string.format("|c%06X%d%%|r", LCA.RemoveAlpha(DATA.boss2Colors[i]), zo_floor(LCA.GetUnitHealthPercent("boss" .. i))))
 		end
 		CA2.StatusSetCellText(1, 2, table.concat(results, " / "))
-		CA2.StatusModifyCell(2, 2, { text = Vars.aspect.name, color = Vars.aspect.color })
+		CA2.StatusModifyCell(2, 2, "text", Vars.aspect.name, "color", Vars.aspect.color)
 	end
 
 	self.StatusInit_B3 = function( )
@@ -134,11 +134,9 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (DATA.aspects[abilityId] and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
 			local params = DATA.aspects[abilityId]
-			Vars.aspect = {
-				id = abilityId,
-				color = params[1],
-				name = LCA.GetAbilityName(abilityId),
-			}
+			Vars.aspect.id = abilityId
+			Vars.aspect.color = params[1]
+			Vars.aspect.name = LCA.GetAbilityName(abilityId)
 			if (params[2]) then
 				CA1.Alert(nil, Vars.aspect.name, Vars.aspect.color, SOUNDS.OBJECTIVE_DISCOVERED, hitValue)
 			else

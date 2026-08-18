@@ -1,4 +1,5 @@
 local LCA = LibCombatAlerts
+local Internal = LibCombatAlertsInternal
 
 
 --[[ Texture Paramaters --------------------------------------------------------
@@ -56,7 +57,7 @@ LCA.DIRECTIONS = {
 
 local BASE = { }
 
-local LCA_WorldDrawing = LCA.BaseControlObject:Subclass()
+local LCA_WorldDrawing = Internal.BaseControlObject:Subclass()
 LCA.WorldDrawing = LCA_WorldDrawing
 
 -- Preserve GuiRoot to guard against redefinition
@@ -68,7 +69,7 @@ local GuiRoot = GuiRoot
 --------------------------------------------------------------------------------
 
 function LCA_WorldDrawing:New( )
-	local obj = LCA.BaseControlObject.New(self, "LCA_WorldDrawing")
+	local obj = Internal.BaseControlObject.New(self, "LCA_WorldDrawing")
 	obj.base = BASE.Initialize()
 	obj.elements = { }
 	return obj
@@ -81,11 +82,12 @@ function LCA_WorldDrawing:PlaceTexture( params )
 	return elementId
 end
 
-function LCA_WorldDrawing:UpdateTexture( elementId, params )
+function LCA_WorldDrawing:UpdateTexture( elementId, ... )
 	local element = self:GetElement(elementId)
 	if (element) then
-		LCA.UpdateOptions(element.params, params)
-		BASE.UpdateTextureElement(elementId, element, type(params.elevation) == "number", true)
+		local elevationOrig = element.params.elevation
+		LCA.UpdateOptions(element.params, ...)
+		BASE.UpdateTextureElement(elementId, element, elevationOrig ~= element.params.elevation, true)
 	end
 end
 
@@ -117,24 +119,27 @@ function LCA_WorldDrawing:PlaceGrowingCircularTelegraph( target, radius, duratio
 		elevation = tonumber(string.match(target, "^group(%d+)$"))
 	end
 
+	local groundOverlay = {
+		texture = "world-circle",
+		color = color,
+		size = 0,
+	}
+
 	self:PlaceTexture({
 		pos = target,
 		texture = "world-ring",
 		color = color,
 		size = radius * 2,
 		elevation = elevation and (2 * elevation + DEFAULT_ELEVATION_GROUND),
-		groundOverlay = {
-			texture = "world-circle",
-			color = color,
-			size = 0,
-		},
+		groundOverlay = groundOverlay,
 		disableDepthBuffers = useClipping ~= true,
 		update = function( elementId, startTime )
 			local elapsed = GetGameTimeMilliseconds() - startTime
 			if (elapsed >= duration) then
 				self:RemoveElement(elementId)
 			else
-				self:UpdateTexture(elementId, { groundOverlay = { size = elapsed * radius * 2 / duration } })
+				groundOverlay.size = elapsed * radius * 2 / duration
+				self:UpdateTexture(elementId, "groundOverlay", groundOverlay)
 			end
 			return true
 		end,
@@ -291,7 +296,7 @@ do
 		if (type(p.pos) == "table") then
 			x, y, z = unpack(p.pos)
 		elseif (type(p.pos) == "string") then
-			_, x, y, z = GetUnitWorldPosition(p.pos)
+			_, x, y, z = GetUnitRawWorldPosition(p.pos)
 		else
 			x, y, z = 0, 0, 0
 		end

@@ -1,47 +1,39 @@
-Guild Market Scanner DEV — v0.4.4
+Guild Market Scanner DEV — v0.5.2
 Author: MajesticMinxi
 
-BUILD 044 — FINAL EXPORT MEASURER
+BUILD 0502 — STREAMING WEEKLY PREP
 
-This build is intentionally ADD-ONLY.
+FIX
+---
+Large real-world scans (28k+ items / 93k+ guild snapshots) exposed a
+low-memory failure when /gmsweekly was run.
 
-UNCHANGED:
-- Scan Trader
-- scanner paging
-- compact DB
-- pricing
-- current Price export
-- current Supply export
-- Cloudflare transport
+Cause in v0.5.1:
+- copied every item key into a temporary array
+- retained one Lua table for every exportable price item
+- duplicated those rows again into final price records/sections
+- then created browser chunks
+This temporarily held several copies of the weekly dataset at once.
 
-NEW:
-/gmsmeasurefinal
+v0.5.2:
+- walks SavedVariables incrementally with next()
+- never builds the giant key list
+- never retains per-item price-row tables
+- packs each price record immediately into ~3.9K browser chunks
+- keeps only compact Top-25 opportunity candidates per guild
+- finalization builds only the small opportunity section
+- runs frame-safe batches and GC after preparation
 
-It DOES NOT upload anything.
+UNCHANGED
+---------
+- scan database and saved market data
+- frame-safe trader scan finalization
+- price calculations
+- guild opportunity scoring
+- Cloudflare/D1 URL and transport format
+- /gmsweekly, /gmsweeklynext, /gmsweeklypart workflow
 
-It measures a proposed final weekly format:
-
-PRICE:
-- one deterministic item ID
-- suggested price
-- trusted low/high range encoded as compact percentage deviations
-- confidence
-- all stats packed into one base62 number
-
-OPPORTUNITY:
-- uses all scanned guilds
-- excludes materially underpriced guilds
-- detects meaningful low-supply opportunities
-- keeps only top 3 strong selling guilds per item
-- same sparse records can be inverted server-side for:
-  Best Guild to Sell
-  What Should I Sell in This Guild?
-
-It reports estimated safe ~4000-character PS5 browser pages for both layers.
-
-TEST:
-1. Install v0.4.4.
-2. Confirm Scan Trader still appears.
-3. Run /gmsmeasurefinal
-4. Send screenshot of the three FINAL ... lines.
-5. Do NOT export anything.
+IMPORTANT
+---------
+Do not run /gmsweekly on v0.5.1 again with the large stress-test database.
+Install v0.5.2 first, re-enable add-ons, reload/login, then run /gmsweekly.

@@ -88,7 +88,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f) | sshogrin | Console | — |
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__3527) | sshogrin | PC / Mac | 1.1.7 |
 | [Shopkeeper (Improved, Fixed and Updated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dopiate/Shopkeeper-Improved-Fixed-and-Updated__864) | dopiate | PC / Mac | 1.0 (dOpiate Fix).7b |
-| [Shopping List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gravvy/Shopping-List__4775) | Gravvy | PC / Mac | 0.15.2 |
+| [Shopping List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gravvy/Shopping-List__4775) | Gravvy | PC / Mac | 0.16.3 |
 | [Show CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Show-CP__e6bacf32-d124-4c92-bc87-b477e7611861) | BMGxSancho | Console | — |
 | [Show Equips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Show-Equips__7d3a20ff-160a-4988-b8d0-991681394db8) | Shienar | Console | — |
 | [Show Global Cooldown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Show-Global-Cooldown__3035) | iiJonno | PC / Mac | 2.0.1 |
@@ -176,7 +176,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Slash Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Circuitous/Slash-Home__2113) | Circuitous | PC / Mac | 1.0.101047 |
 | [Slash Mate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Circuitous/Slash-Mate__2638) | Circuitous | PC / Mac | 1.0.101047-1 |
 | [Slash Shop, Fence, and Bank (and More)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Circuitous/Slash-Shop-Fence-and-Bank-and-More__2469) | Circuitous | PC / Mac | 1.27.101049 |
-| [Slasher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Slasher__1887) | Shadowfen | PC / Mac | 2.48 |
+| [Slasher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Slasher__1887) | Shadowfen | PC / Mac | 2.49 |
 | [SlashVivec](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/damage_1/SlashVivec__3260) | damage_1 | PC / Mac | 0.6.9 |
 | [Slayer Tracker (PC & Console) + Buff Uptime and Statistics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Slayer-Tracker-PC-Console-Buff-Uptime-and-Statistics__4680) | Duesentrieb | PC / Mac | 20260709-0001 |
 | [Slightly Improved™ Attribute Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L8Knight/Slightly-ImprovedTM-Attribute-Bars__72) | L8Knight | PC / Mac | 2.2.2 |

@@ -8,6 +8,10 @@
   "category_id": "95",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "Raidificator"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1101/",
-  "fingerprint": "2ba1670f327aa19894a1baeb263e2db4baac2c9d97b522dc171059f6cfcbccde",
+  "fingerprint": "7acf66f6b2011d08c8bb34e7f0c8da5852fdf62bd2aba4facc85156a6aed686c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13337.png",
     "https://cdn-eso.mmoui.com/preview/pvw12621.png",
@@ -89,11 +93,11 @@
   "source_id": "1101",
   "source_url": "https://www.esoui.com/downloads/info1101-RaidificatorDungeonTrialandArenaTracker.html",
   "stats": {
-    "downloads": 153824,
-    "favorites": 114,
-    "monthly_downloads": 3851
+    "downloads": 155717,
+    "favorites": 115,
+    "monthly_downloads": 3911
   },
   "title": "Raidificator (Dungeon, Trial, and Arena Tracker)",
-  "updated_at": 1786011461000,
-  "version": "4.7.1"
+  "updated_at": 1786976919000,
+  "version": "4.7.2"
 }

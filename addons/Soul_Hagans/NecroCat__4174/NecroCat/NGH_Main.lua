@@ -1,8 +1,9 @@
 local AddonName="NecroCat"
 local lang=GetCVar("language.2")
 local Settings={
-    Guilds={
-        [839248]=true,	--Castle of Necro-Cat
+Guilds={
+        [839248] = "NecroCat/imgs/GuildHall.dds",         -- Castle of Necro-Cat
+        [698160] = "NecroCat/imgs/GardenOfSouls.dds",   -- Garden of Souls
     },
     Logo=true,
     Label={en="Guildhalls",ru="|c66f2ffГильд Холлы|r"},
@@ -143,18 +144,67 @@ local function UI_Init()
     end
 end
 
+-- Глобальная функция обновления видимости кнопок (улучшенная версия)
+function ZO_GuildHome_NecroCat_UpdateVisibility()
+    if not ZO_GuildHome_NecroCat then return end
+
+    -- Получаем текущий режим из настроек
+    local mode = 1
+    if NecroCat and NecroCat.savedVars then
+        mode = NecroCat.savedVars.guildHomeVisibility or 1
+    end
+
+    local currentGuildId = GUILD_SELECTOR.guildId
+    
+    -- 1. Получаем путь к картинке для логотипа текущей гильдии
+    local guildTexture = Settings.Guilds[currentGuildId] 
+    local isOurGuild = (guildTexture ~= nil) 
+
+    local isMainGuild = (currentGuildId == 839248)
+
+    -- 2. ЛОГИКА ДЛЯ ДЕКОРАТИВНОГО ФОНА (ЛОГОТИПА)
+    local hideBackground = true
+    if mode ~= 3 and isOurGuild then
+        hideBackground = false
+        
+        -- Меняем картинку подложки на ту, которая привязана к открытой гильдии
+        if ZO_GuildHome_Castle then
+            ZO_GuildHome_Castle:SetTexture(guildTexture)
+        end
+    end
+
+    -- 3. ЛОГИКА ДЛЯ КНОПОК ТЕЛЕПОРТА
+    local hideButtons = true
+    if mode == 1 then
+        hideButtons = false -- Показывать всегда (на экранах всех гильдий)
+    elseif mode == 2 then
+        hideButtons = not isMainGuild 
+    else
+        hideButtons = true -- Скрыть полностью (mode == 3)
+    end
+
+    -- Применяем результаты к элементам интерфейса
+    ZO_GuildHome_NecroCat:SetHidden(hideBackground) 
+    if ZO_GuildHome_NecroCat_V then ZO_GuildHome_NecroCat_V:SetHidden(hideButtons) end 
+    if ZO_GuildHome_NecroCat_H then ZO_GuildHome_NecroCat_H:SetHidden(hideButtons) end 
+end
+
+-- Функция инициализации при загрузке
 local function OnAddOnLoaded(_,addonName)
-	if addonName~=AddonName then return end
-	EVENT_MANAGER:UnregisterForEvent("NGH_Event", EVENT_ADD_ON_LOADED)
---	NGH_Vars=ZO_SavedVars:NewAccountWide("NGH_Settings", 3, nil, Defaults)
-	ZO_PreHookHandler(ZO_GuildHome,"OnEffectivelyShown",function()
-		ZO_GuildHome_NecroCat:SetHidden(not Settings.Guilds[GUILD_SELECTOR.guildId])
-	end)
---	ZO_PreHookHandler(ZO_GuildHome,'OnEffectivelyHidden',function() end)
-	CALLBACK_MANAGER:RegisterCallback("OnGuildSelected",function()
-		ZO_GuildHome_NecroCat:SetHidden(not Settings.Guilds[GUILD_SELECTOR.guildId])
-	end)
-	UI_Init()
+    if addonName ~= AddonName then return end
+    EVENT_MANAGER:UnregisterForEvent("NGH_Event", EVENT_ADD_ON_LOADED)
+
+    -- При показе экрана гильдии вызываем обновление видимости
+    ZO_PreHookHandler(ZO_GuildHome, "OnEffectivelyShown", function()
+        ZO_GuildHome_NecroCat_UpdateVisibility()
+    end)
+
+    -- При переключении гильдий в списке вызываем обновление видимости
+    CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function()
+        ZO_GuildHome_NecroCat_UpdateVisibility()
+    end)
+
+    UI_Init()
 end
 
 EVENT_MANAGER:RegisterForEvent("NGH_Event", EVENT_ADD_ON_LOADED, OnAddOnLoaded)

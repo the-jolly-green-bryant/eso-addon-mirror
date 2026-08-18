@@ -8,6 +8,10 @@
   "category_id": "20",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "LootLog"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1455/",
-  "fingerprint": "f9e41db9f220ffebf7851db2da2bdbf4600147302bc3c7240271e7214541c956",
+  "fingerprint": "79fe18eac55edc53df852e8ad3b8733ec102b6c9487701333f79e3e6541913a7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9816.png",
     "https://cdn-eso.mmoui.com/preview/pvw9817.png",
@@ -88,9 +92,9 @@
   "source_id": "1455",
   "source_url": "https://www.esoui.com/downloads/info1455-LootLog.html",
   "stats": {
-    "downloads": 1622083,
-    "favorites": 500,
-    "monthly_downloads": 6372
+    "downloads": 1629267,
+    "favorites": 501,
+    "monthly_downloads": 12493
   },
   "title": "Loot Log",
   "updated_at": 1785938220000,

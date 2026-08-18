@@ -1,7 +1,7 @@
 GuildTraderActivity = {
 	name = "GTA",
 	author = "@sinnereso",
-	version = "2026.08.01",
+	version = "2026.08.17",
 	svName = "GTAVars",
 	svVersion = 1,
 }
@@ -305,7 +305,7 @@ GTASalesLabel:SetAnchor(BOTTOMRIGHT, GTASalesList, TOPRIGHT, -16, 0)
 GTASalesLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 GTASalesLabel:SetFont("ZoFontGameMedium")
 GTASalesLabel:SetColor(0.3, 0.3, 0.2, 0.9)
-GTASalesLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t SALES")
+GTASalesLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t SOLD")
 GTASalesLabel:SetMouseEnabled(true)
 GTASalesLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
@@ -333,7 +333,7 @@ GTAPurchaseLabel:SetAnchor(BOTTOMRIGHT, GTAPurchaseList, TOPRIGHT, -16, 0)
 GTAPurchaseLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 GTAPurchaseLabel:SetFont("ZoFontGameMedium")
 GTAPurchaseLabel:SetColor(0.3, 0.3, 0.2, 0.9)
-GTAPurchaseLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t PURCH")
+GTAPurchaseLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t BUYS")
 GTAPurchaseLabel:SetMouseEnabled(true)
 GTAPurchaseLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
@@ -728,8 +728,8 @@ local CenterAlignedHeader = Label(combine(combine(defaultStyle, alignCenter), he
 local columnsForGuildList = {
 	Column('Rank',       30,  0, 		RankCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t',   		   CenterAlignedHeader,  	SORTABLE),
 	Column('Name',      270,  0, LeftAlignedCell, 'Name |t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t',	 	 LeftAlignedHeader,  	SORTABLE),
-	Column('Sales',     140,  0,   	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t Sales',			   SalesHeader, 	SORTABLE),
-	Column('Purch',     140,  0,  	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t Purch', 			   SalesHeader,  	SORTABLE),
+	Column('Sales',     140,  0,   	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t SOLD',			   SalesHeader, 	SORTABLE),
+	Column('Purch',     140,  0,  	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t BUYS', 			   SalesHeader,  	SORTABLE),
 	Column('Activity',  140,  0, 	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t Activity',      	   SalesHeader,  	SORTABLE),
 	Column('Notes',      20, 10,        NoteCell, '|t20:20:/esoui/art/contacts/social_note_up.dds|t',                    CenterAlignedCell, NOT_SORTABLE),
 }

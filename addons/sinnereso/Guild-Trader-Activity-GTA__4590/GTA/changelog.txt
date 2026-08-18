@@ -1,9 +1,8 @@
-2026.08.01
-- FIX for main view sorting and guild selection delayed audio feedback.
+2026.08.17
+- Minor cosmetic tweaks.
 
 ** POSSIBLE FUTURE OPTIONS **
-- Save default guild list sorting
-- Add ability to accept guild invites.
+
 
 
 

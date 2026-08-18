@@ -9,6 +9,13 @@ local DEADZONE = 0.40
 local INITIAL_REPEAT_MS = 220
 local REPEAT_MS = 90
 local FRAME_CLAIM_NAME = "ValknarrUIEFrameClaim"
+local HUD_UNLOCK_NAME = "ValknarrUIEHudUnlock"
+-- Full ForceRelease (UI mode off + drain layers) only for the scene
+-- handoff. After that, keep clearing consume-by-UI on HUD until Begin.
+-- A timed burst always lost: walk worked for a couple of seconds after
+-- A/B (no-op or save), then HUD re-consumed with no camera/HUD event
+-- (WASD still worked).
+local HUD_UNLOCK_FULL_FRAMES = 30
 
 -- Only used if grid.lua somehow did not load; the grid owns the real values.
 local FALLBACK_STEP_X, FALLBACK_STEP_Y = 0.025, 0.045
@@ -60,26 +67,108 @@ local function ClaimOwnerName(owner)
     return "other"
 end
 
--- Resolve claim/release API presence once. Avoid type()+pcall probes every frame.
-function Movement:ResolveClaimApis()
-    if self.apisResolved then
+function Movement:IsGameplayHud()
+    if not SCENE_MANAGER then
+        return true
+    end
+    local scene = SCENE_MANAGER.currentScene
+    if not scene then
+        return true
+    end
+    local name
+    if type(scene.GetName) == "function" then
+        local ok, value = pcall(scene.GetName, scene)
+        if ok then
+            name = value
+        end
+    end
+    if type(name) ~= "string" or name == "" then
+        return true
+    end
+    local lower = string.lower(name)
+    return lower == "hud" or lower == "hudui" or lower == "hud_ui"
+end
+
+-- After close, HUD fragments can SetGamepadLeftStickConsumedByUI(true)
+-- later in the same frame than our unlock tick. Refuse that while the
+-- editor's post-close unlock is armed and gameplay HUD is current.
+-- Inventory / map are not HUD, so they can still consume.
+function Movement:ShouldBlockPostCloseConsume()
+    if self.claimed then
+        return false
+    end
+    local editor = ValknarrUIEEditor
+    if not editor or not editor.postCloseUnlock then
+        return false
+    end
+    if editor.active or editor.ending or editor.finishingExit then
+        return false
+    end
+    return self:IsGameplayHud()
+end
+
+function Movement:InstallConsumeGuard()
+    if self.consumeGuardInstalled then
         return
     end
-    self.apiLeftConsume = type(SetGamepadLeftStickConsumedByUI) == "function" and SetGamepadLeftStickConsumedByUI or nil
-    self.apiRightConsume = type(SetGamepadRightStickConsumedByUI) == "function" and SetGamepadRightStickConsumedByUI or nil
-    self.apiCameraUI = type(SetGameCameraUIMode) == "function" and SetGameCameraUIMode or nil
-    self.apiSetInUIMode = (SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function") and SCENE_MANAGER.SetInUIMode or nil
-    if type(LockCameraRotation) == "function" then
-        self.apiLockCamera = LockCameraRotation
-    elseif type(LockGameCameraRotation) == "function" then
-        self.apiLockCamera = LockGameCameraRotation
-    else
-        self.apiLockCamera = nil
+    local rawLeft = self.rawLeftConsume
+    if rawLeft then
+        local guarded = function(consumed)
+            if consumed and Movement:ShouldBlockPostCloseConsume() then
+                Movement.blockedHudConsume = (Movement.blockedHudConsume or 0) + 1
+                return rawLeft(false)
+            end
+            return rawLeft(consumed)
+        end
+        self.guardedLeft = guarded
+        _G.SetGamepadLeftStickConsumedByUI = guarded
+        self.apiLeftConsume = rawLeft
     end
-    self.apiPushLayer = type(PushActionLayerByName) == "function" and PushActionLayerByName or nil
-    self.apiRemoveLayer = type(RemoveActionLayerByName) == "function" and RemoveActionLayerByName or nil
-    self.apiConsume = (DIRECTIONAL_INPUT and type(DIRECTIONAL_INPUT.Consume) == "function") and DIRECTIONAL_INPUT.Consume or nil
-    self.apisResolved = true
+    local rawRight = self.rawRightConsume
+    if rawRight then
+        local guarded = function(consumed)
+            if consumed and Movement:ShouldBlockPostCloseConsume() then
+                Movement.blockedHudConsume = (Movement.blockedHudConsume or 0) + 1
+                return rawRight(false)
+            end
+            return rawRight(consumed)
+        end
+        self.guardedRight = guarded
+        _G.SetGamepadRightStickConsumedByUI = guarded
+        self.apiRightConsume = rawRight
+    end
+    self.consumeGuardInstalled = true
+end
+
+-- Resolve claim/release API presence once. Avoid type()+pcall probes every frame.
+function Movement:ResolveClaimApis()
+    if not self.apisResolved then
+        local left = type(SetGamepadLeftStickConsumedByUI) == "function" and SetGamepadLeftStickConsumedByUI or nil
+        if left and left ~= self.guardedLeft then
+            self.rawLeftConsume = left
+        end
+        self.apiLeftConsume = self.rawLeftConsume
+        local right = type(SetGamepadRightStickConsumedByUI) == "function" and SetGamepadRightStickConsumedByUI or nil
+        if right and right ~= self.guardedRight then
+            self.rawRightConsume = right
+        end
+        self.apiRightConsume = self.rawRightConsume
+        self.apiCameraUI = type(SetGameCameraUIMode) == "function" and SetGameCameraUIMode or nil
+        self.apiSetInUIMode = (SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function") and SCENE_MANAGER.SetInUIMode or nil
+        if type(LockCameraRotation) == "function" then
+            self.apiLockCamera = LockCameraRotation
+        elseif type(LockGameCameraRotation) == "function" then
+            self.apiLockCamera = LockGameCameraRotation
+        else
+            self.apiLockCamera = nil
+        end
+        self.apiPushLayer = type(PushActionLayerByName) == "function" and PushActionLayerByName or nil
+        self.apiRemoveLayer = type(RemoveActionLayerByName) == "function" and RemoveActionLayerByName or nil
+        self.apiConsume = (DIRECTIONAL_INPUT and type(DIRECTIONAL_INPUT.Consume) == "function") and DIRECTIONAL_INPUT.Consume or nil
+        self.apisResolved = true
+        self.consumeGuardInstalled = false
+    end
+    self:InstallConsumeGuard()
 end
 
 function Movement:BumpClaimGeneration()
@@ -134,6 +223,96 @@ function Movement:StopFrameClaim()
     self.frameClaim = false
 end
 
+function Movement:StopHudUnlock()
+    if EVENT_MANAGER and type(EVENT_MANAGER.UnregisterForUpdate) == "function" then
+        pcall(EVENT_MANAGER.UnregisterForUpdate, EVENT_MANAGER, HUD_UNLOCK_NAME)
+    end
+    self.hudUnlockActive = false
+    self.hudUnlockFrames = 0
+end
+
+function Movement:DrainUiShortcuts()
+    local remove = self.apiRemoveLayer
+    if not remove then
+        return
+    end
+    local isActive = type(IsActionLayerActiveByName) == "function" and IsActionLayerActiveByName or nil
+    if isActive then
+        for _ = 1, 4 do
+            local ok, active = pcall(isActive, "UIShortcuts")
+            if not ok or not active then
+                break
+            end
+            pcall(remove, "UIShortcuts")
+        end
+    else
+        pcall(remove, "UIShortcuts")
+        pcall(remove, "UIShortcuts")
+        pcall(remove, "UIShortcuts")
+    end
+end
+
+-- Clear consume-by-UI only. Do not drain UIShortcuts or slam camera UI
+-- here: that ran every frame after 1.0.0 close and left keys/minimap dead
+-- until /reloadui. ForceRelease still drains during the short handoff.
+function Movement:UnconsumeHudSticks()
+    self:ResolveClaimApis()
+    if self.apiLeftConsume then
+        self.apiLeftConsume(false)
+    end
+    if self.apiRightConsume then
+        self.apiRightConsume(false)
+    end
+end
+
+-- After HUD is back: ForceRelease for a short handoff, then stop the
+-- tick. The consume guard stays until Begin so HUD consume-true cannot
+-- stick the left stick. An endless tick that drained UIShortcuts left
+-- keys and the minimap dead until /reloadui.
+function Movement:StartHudUnlock(owner)
+    self:StopHudUnlock()
+    local gen = self.claimGeneration or 0
+    self:ForceRelease(owner)
+    if not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForUpdate) ~= "function" then
+        return
+    end
+    self.hudUnlockFrames = HUD_UNLOCK_FULL_FRAMES
+    self.hudUnlockActive = true
+    local ok = pcall(
+        EVENT_MANAGER.RegisterForUpdate,
+        EVENT_MANAGER,
+        HUD_UNLOCK_NAME,
+        0,
+        function()
+            if Movement.claimed or (Movement.claimGeneration or 0) ~= gen then
+                Movement:StopHudUnlock()
+                return
+            end
+            local editor = ValknarrUIEEditor
+            if editor and (not editor.postCloseUnlock or editor.active or editor.ending) then
+                Movement:StopHudUnlock()
+                return
+            end
+            if not Movement:IsGameplayHud() then
+                return
+            end
+            if (Movement.hudUnlockFrames or 0) > 0 then
+                Movement:ForceRelease(owner)
+                Movement.hudUnlockFrames = (Movement.hudUnlockFrames or 0) - 1
+                if (Movement.hudUnlockFrames or 0) <= 0 then
+                    Movement:StopHudUnlock()
+                end
+            else
+                Movement:StopHudUnlock()
+            end
+        end
+    )
+    if not ok then
+        self.hudUnlockActive = false
+        self.hudUnlockFrames = 0
+    end
+end
+
 function Movement:ClaimSticks(owner, control)
     if not owner then
         return
@@ -141,6 +320,7 @@ function Movement:ClaimSticks(owner, control)
     self:ResolveClaimApis()
     -- Invalidate any deferred ForceRelease from a previous End/Cancel.
     self:BumpClaimGeneration()
+    self:StopHudUnlock()
     local already = self.claimed == owner
     -- Teardown ledger: record what this claim session owns so release only
     -- undoes our mutations (and stale deferred callbacks can no-op).
@@ -189,6 +369,10 @@ function Movement:Describe()
         claimGeneration = self.claimGeneration or 0,
         actionLayerPushed = self.actionLayerPushed and true or false,
         frameClaim = self.frameClaim and true or false,
+        hudUnlockFrames = self.hudUnlockFrames or 0,
+        hudUnlockActive = self.hudUnlockActive and true or false,
+        blockedHudConsume = self.blockedHudConsume or 0,
+        consumeGuard = self.consumeGuardInstalled and true or false,
         ledgerActive = ledger and ledger.active and true or false,
         ledgerOwner = ClaimOwnerName(ledger and ledger.owner),
         ledgerGeneration = ledger and ledger.generation or 0,
@@ -200,8 +384,24 @@ function Movement:Describe()
     }
 end
 
+-- Stop per-frame consume without unconsuming engine flags. A/B must not
+-- SetGamepadLeftStickConsumedByUI(false) while the editor scene is still
+-- tearing down — HUD fragments put consume back. ForceRelease later, once
+-- HUD is current.
+function Movement:StopClaim(owner)
+    self:StopFrameClaim()
+    local target = owner or self.claimed
+    self.claimed = nil
+    if target and type(target) == "table" then
+        target.UpdateDirectionalInput = function() end
+    end
+    if DIRECTIONAL_INPUT and type(DIRECTIONAL_INPUT.Deactivate) == "function" and target then
+        pcall(DIRECTIONAL_INPUT.Deactivate, DIRECTIONAL_INPUT, target)
+    end
+end
+
 function Movement:HoldClaim()
-    -- After A/B close, never re-claim once ForceRelease cleared self.claimed.
+    -- After A/B close, never re-claim once StopClaim/ForceRelease cleared claimed.
     if not self.claimed then
         return
     end
@@ -221,17 +421,9 @@ function Movement:HoldClaim()
     if self.apiLockCamera then
         self.apiLockCamera(true)
     end
-    -- Keep face buttons on the UI layer so A/B/bumpers do not cast
-    -- when the keybind-strip scene is briefly gone.
-    if not self.actionLayerPushed and self.apiPushLayer then
-        local ok = pcall(self.apiPushLayer, "UIShortcuts")
-        if ok then
-            self.actionLayerPushed = true
-            if self.ledger then
-                self.ledger.pushedLayer = true
-            end
-        end
-    end
+    -- Do not PushActionLayerByName("UIShortcuts"): the editor scene already
+    -- has UI_SHORTCUTS_ACTION_LAYER_FRAGMENT. An extra Push left a leftover
+    -- layer after hide, which eats the left stick while WASD still moves.
     self:ConsumeSticks()
 end
 
@@ -276,13 +468,9 @@ function Movement:ForceRelease(owner)
     if self.apiLockCamera then
         self.apiLockCamera(false)
     end
-    local shouldRemoveLayer = self.actionLayerPushed
-    if ledger and ledger.active then
-        shouldRemoveLayer = ledger.pushedLayer and true or false
-    end
-    if shouldRemoveLayer and self.apiRemoveLayer then
-        pcall(self.apiRemoveLayer, "UIShortcuts")
-    end
+    -- Drain leftover UIShortcuts pushes (ours plus any hide leftover). Extra
+    -- Remove is a no-op if the layer is already gone.
+    self:DrainUiShortcuts()
     self.actionLayerPushed = false
     if ledger then
         ledger.active = false

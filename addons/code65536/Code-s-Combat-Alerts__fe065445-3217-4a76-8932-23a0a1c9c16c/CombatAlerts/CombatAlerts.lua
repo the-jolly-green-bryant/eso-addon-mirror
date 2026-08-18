@@ -3,10 +3,9 @@ local LCA = LibCombatAlerts
 CombatAlerts2 = {
 	ID = "CombatAlerts2",
 	NAME = "CombatAlerts",
-	EXPECTED_VERSION = 205010,
+	EXPECTED_VERSION = 205020,
 	URL = "https://www.esoui.com/downloads/info1855.html",
 
-	currentModules = { },
 	registeredModules = { },
 	registeredZones = { },
 	devModule = nil,
@@ -21,6 +20,9 @@ local CA2 = CombatAlerts2
 --------------------------------------------------------------------------------
 -- Bootstrap, modules, and legacy mode
 --------------------------------------------------------------------------------
+
+local NO_MODULES = { }
+CA2.currentModules = NO_MODULES
 
 EVENT_MANAGER:RegisterForEvent(CA2.ID, EVENT_ADD_ON_LOADED, function( eventCode, addonName )
 	if (addonName ~= CA2.NAME) then return end
@@ -63,6 +65,7 @@ function CA2.OnZoneChange( zoneId )
 		end
 		CA2.CleanupControls()
 		CA2.DisablePurgeTracker()
+		CA2.SetNightbladeCutthroatExclusion(0)
 	end
 
 	local modules = CA2.registeredZones[zoneId]
@@ -71,7 +74,7 @@ function CA2.OnZoneChange( zoneId )
 		CA2.currentModules = modules
 		CA2.LoadModulesForCurrentZone()
 	else
-		CA2.currentModules = { }
+		CA2.currentModules = NO_MODULES
 		CA2.ToggleLegacy(true)
 	end
 end
@@ -82,6 +85,15 @@ function CA2.LoadModulesForCurrentZone( )
 			module:Load()
 		end
 	end
+end
+
+function CA2.GetModule( moduleId )
+	return CA2.registeredModules[moduleId]
+end
+
+function CA2.IsModuleLoaded( moduleId )
+	local module = CA2.GetModule(moduleId)
+	return (module and module.loaded) == true
 end
 
 function CA2.RegisterModule( template, minVersion )

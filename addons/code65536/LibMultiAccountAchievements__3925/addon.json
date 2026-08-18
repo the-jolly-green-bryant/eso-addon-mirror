@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -50,7 +54,7 @@
     "LibMultiAccountAchievements"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3925/",
-  "fingerprint": "1661277a3864e033a6f3d91fd86823504b46cf16af5f9432e984fd5a80c8f83a",
+  "fingerprint": "78f418885c19263ffb793b4279ba2cbf44c6f8e46e7152e1c6c92f9b5ffa2065",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -58,9 +62,9 @@
   "source_id": "3925",
   "source_url": "https://www.esoui.com/downloads/info3925-LibMultiAccountAchievements.html",
   "stats": {
-    "downloads": 33851,
+    "downloads": 35215,
     "favorites": 25,
-    "monthly_downloads": 2061
+    "monthly_downloads": 2368
   },
   "title": "LibMultiAccountAchievements",
   "updated_at": 1785798125000,

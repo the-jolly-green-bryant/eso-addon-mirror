@@ -90,10 +90,10 @@ function Module:Initialize( )
 				rowsUsed = rowsUsed + 1
 				local ratio = zo_clamp(remaining / 10000, 0, 1)
 				CA2.StatusSetCellText(rowsUsed, 1, LCA.GetAbilityName(abilityId))
-				CA2.StatusModifyCell(rowsUsed, 2, {
-					text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_COUNTDOWN),
-					color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1)),
-				})
+				CA2.StatusModifyCell(rowsUsed, 2,
+					"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_COUNTDOWN),
+					"color", LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1))
+				)
 			else
 				Vars.traverse[abilityId] = nil
 			end

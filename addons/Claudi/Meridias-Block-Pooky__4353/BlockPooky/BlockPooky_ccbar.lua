@@ -257,7 +257,7 @@ function BlockPooky.CCEventRegisterUpdate()
         -- Fallback: Item cooldown events (currently broken for custom potions in ESO API)
         -- EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "ItemCooldown", EVENT_ITEM_ON_COOLDOWN, function(...) BlockPooky.OnItemUsed(...) end)
 
-        -- Fallback: Inventory slot updates (currently broken for custom potions in ESO API)
+        -- Working, primary method for potion detection: inventory slot updates (OnSlotUpdate)
         -- Register for backpack item consumption (potions)
         EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "InventoryUpdateBackpack", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
             function(...) BlockPooky.OnSlotUpdate(...) end)

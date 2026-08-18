@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -22,7 +26,7 @@
     "LibQuestStatus"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4573/",
-  "fingerprint": "e0cdb75a15ebea70e8e59aa5b19a0705d85bc0cc00a31c1e86c24739e779610e",
+  "fingerprint": "c102a7ea342c1935f3feccacb49d983a5a1f03c039a3317f70ddf1bf083145ad",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,9 +34,9 @@
   "source_id": "4573",
   "source_url": "https://www.esoui.com/downloads/info4573-LibQuestStatus.html",
   "stats": {
-    "downloads": 2894,
+    "downloads": 3414,
     "favorites": 7,
-    "monthly_downloads": 1036
+    "monthly_downloads": 1332
   },
   "title": "LibQuestStatus",
   "updated_at": 1786011430000,

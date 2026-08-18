@@ -197,6 +197,11 @@ This addon is released under standard ESO addon terms. See individual library li
 
 ## Changelog
 
+### Version 2.21
+- **refactor**: remove CC alert cooldown to simplify message handling; update related comments
+- **refactor**: enhance event registration patterns for hints and blocking; improve state management
+- **refactor**: implement authoritative detection for CC debuffs; enhance event handling and improve reliability
+
 ### Version 2.20 - Code Cleanup & Developer Tooling
 - **ESO Globals validation**: Added developer test scripts (`testing/Run-ESOGlobals.ps1` / `.bat`) that run votan's ESOGlobals syntax & global-leak validator over the addon source (auto-detects the Lua 5.1 compiler); also fixed the validator's compiler-path handling bug
 - **Removed accidental global variables** (namespace leaks) flagged by the validator — no behavior change:

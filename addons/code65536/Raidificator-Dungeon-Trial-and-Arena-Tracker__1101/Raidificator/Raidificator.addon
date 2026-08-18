@@ -7,13 +7,12 @@
 ## Title: Raidificator
 ## Description: Tracks and records the time, score, and vitality of PvE content
 ## Author: @code65536; original concept by @Olivierko
-## Version: 4.7.1
-## AddOnVersion: 407010
+## Version: 4.7.2
+## AddOnVersion: 407020
 ## APIVersion: 101050 101051
-## SavedVariables: RaidificatorSavedVariables RaidificatorSavedVariablesEx RaidificatorHistory
+## SavedVariables: RaidificatorSavedVariables RaidificatorSavedVariablesEx RaidificatorHistory ACACUpdateCheckDisabled ACACUC_Raidificator
 ## DependsOn: LibExtendedJournal>=205030
-## ConsoleDependsOn: LibCombatAlerts>=7010
-## OptionalDependsOn: LibMultiAccountAchievements LibUndauntedPledges LibQuestStatus LibAddonMenu-2.0 LibQRCode
+## OptionalDependsOn: LibCombatAlerts LibMultiAccountAchievements LibUndauntedPledges LibQuestStatus LibAddonMenu-2.0 LibQRCode
 
 l10n/default.lua
 l10n/$(language).lua
@@ -31,3 +30,5 @@ Pledges.lua
 TrialQuestTracking.lua
 ESOClearsBot.lua
 Bindings.xml
+
+pc/AntiClankerAddonConsortiumUpdateChecker.lua

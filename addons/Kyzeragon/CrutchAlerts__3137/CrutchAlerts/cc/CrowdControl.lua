@@ -1,4 +1,5 @@
 local Crutch = CrutchAlerts
+local C = Crutch.Constants
 
 local MECHANIC_FLAGS = {
     [COMBAT_MECHANIC_FLAGS_DAEDRIC] = "DAEDRIC",
@@ -10,15 +11,7 @@ local MECHANIC_FLAGS = {
     [COMBAT_MECHANIC_FLAGS_WEREWOLF] = "WEREWOLF",
 }
 
-local UNIT_TYPES = {
-    [COMBAT_UNIT_TYPE_GROUP] = "GROUP",
-    [COMBAT_UNIT_TYPE_NONE] = "NONE",
-    [COMBAT_UNIT_TYPE_OTHER] = "OTHER",
-    [COMBAT_UNIT_TYPE_PLAYER] = "PLAYER",
-    [COMBAT_UNIT_TYPE_PLAYER_COMPANION] = "PLAYER_COMPANION",
-    [COMBAT_UNIT_TYPE_PLAYER_PET] = "PLAYER_PET",
-    [COMBAT_UNIT_TYPE_TARGET_DUMMY] = "TARGET_DUMMY",
-}
+local UNIT_TYPES = C.UNIT_TYPES
 
 local HARD = "hard"
 local IMMOB = "immobilize"
@@ -75,7 +68,7 @@ local CC_ABILITY_DATA = {
 
 ---------------------------------------------------------------------
 local function IsInPvP()
-    return IsUnitPvPFlagged("player") -- TODO: seems to work
+    return IsUnitPvPFlagged("player")
 end
 
 
@@ -186,10 +179,8 @@ end
 ---------------------------------------------------------------------
 local function OnStunnedChanged(_, playerStunned)
     if (playerStunned) then
-        -- Crutch.dbgSpam("player stunned")
         Crutch.OnStunned()
     else
-        -- Crutch.dbgSpam("player no longer stunned")
         Crutch.OnNotStunned()
     end
 end
@@ -200,9 +191,6 @@ end
 -- Init
 ---------------------------------------------------------------------
 function Crutch.InitializeCC()
-    -- EVENT_MANAGER:RegisterForEvent(Crutch.name .. "CC", EVENT_EFFECT_CHANGED, OnEffectChanged)
-    -- EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "CC", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-
     EVENT_MANAGER:RegisterForEvent(Crutch.name .. "CC", EVENT_COMBAT_EVENT, OnCombatEvent)
     EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "CC", EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 

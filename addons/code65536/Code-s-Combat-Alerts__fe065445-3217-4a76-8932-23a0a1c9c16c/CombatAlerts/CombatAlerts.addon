@@ -7,11 +7,11 @@
 ## Title: Code's Combat Alerts
 ## Description: Combat alerts for select PvE mechanics
 ## Author: @code65536
-## Version: 2.5.1
-## AddOnVersion: 205010
+## Version: 2.5.2
+## AddOnVersion: 205020
 ## APIVersion: 101050 101051
-## SavedVariables: CombatAlertsSavedVariables CombatAlertsSettings CombatAlertsModules
-## DependsOn: LibCombatAlerts>=7100
+## SavedVariables: CombatAlertsSavedVariables CombatAlertsSettings CombatAlertsModules ACACUpdateCheckDisabled ACACUC_CombatAlerts
+## DependsOn: LibCombatAlerts>=8000
 ## OptionalDependsOn: LibAddonMenu-2.0
 
 legacy/GetFormattedAbilityName.lua
@@ -30,6 +30,7 @@ PurgeTracker.lua
 Nearby.lua
 DisableAnnoyingMessages.lua
 ReformGroup.lua
+NightbladeCutthroat.lua
 Settings.lua
 
 modules/dev.lua
@@ -50,3 +51,5 @@ modules/u45.lua
 modules/u46.lua
 modules/u47.lua
 modules/u49.lua
+
+pc/AntiClankerAddonConsortiumUpdateChecker.lua

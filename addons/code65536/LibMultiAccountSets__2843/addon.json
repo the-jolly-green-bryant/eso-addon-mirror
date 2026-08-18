@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "LibMultiAccountSets"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2843/",
-  "fingerprint": "a7bb7ea252ce3338bcd78420feac8f76a4661a1f11c1f48b53a472e01647805a",
+  "fingerprint": "bb7942adbe378e513a3d2b20c96c9b57e9e1e648040ce154f63258f6c9fdf2ef",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9638.png"
   ],
@@ -80,9 +84,9 @@
   "source_id": "2843",
   "source_url": "https://www.esoui.com/downloads/info2843-LibMultiAccountSets.html",
   "stats": {
-    "downloads": 435695,
+    "downloads": 440260,
     "favorites": 148,
-    "monthly_downloads": 7291
+    "monthly_downloads": 8280
   },
   "title": "LibMultiAccountSets",
   "updated_at": 1785798156000,

@@ -1,14 +1,14 @@
 
-local localizedNames = {
-    ["de"] = "unersättlicher Hunger",
-    ["en"] = "Insatiable Hunger",
-    ["es"] = "hambre insaciable",
-    ["fr"] = "Faim insatiable",
-    ["jp"] = "満たされぬ飢え",
-    ["ru"] = "Ненасытный голод",
-    ["zh"] = "无尽渴求",
-    ["ze"] = "无尽渴求",
-}
+-- local localizedNames = {
+--     ["de"] = "unersättlicher Hunger",
+--     ["en"] = "Insatiable Hunger",
+--     ["es"] = "hambre insaciable",
+--     ["fr"] = "Faim insatiable",
+--     ["jp"] = "満たされぬ飢え",
+--     ["ru"] = "Ненасытный голод",
+--     ["zh"] = "无尽渴求",
+--     ["ze"] = "无尽渴求",
+-- }
 
 local addonName = "InsatiableHungerBlocker"
 local hungerIconFilename = "/esoui/art/icons/ability_werewolf_007.dds"
@@ -43,7 +43,8 @@ local function RestoreInsatiableHungeSynergyrInfo()
         SHARED_INFORMATION_AREA:SetHidden(SYNERGY, isCombatActive)
         if not isCombatActive then
             -- the value of synergy info could be empty or wrong since they are hidden when they should be updated, so we need to set the text and icon back
-            SYNERGY.action:SetText(localizedNames[GetCVar("language.2")] or localizedNames["en"])
+            -- SYNERGY.action:SetText(localizedNames[GetCVar("language.2")] or localizedNames["en"])
+            SYNERGY.action:SetText(LocalizeString("<<1>>", GetAbilityName(hungerSkillId)))
             SYNERGY.icon:SetTexture(hungerIconFilename)
         end
     end
@@ -120,6 +121,15 @@ local function PrintUsage()
     CHAT_ROUTER:AddSystemMessage("/ihb feedingpriority")
 end
 
+local function PrintSettings()
+    CHAT_ROUTER:AddSystemMessage(GetString(IHB_SETTINGS_STATUS))
+    CHAT_ROUTER:AddSystemMessage(string.format("%s: %dms", GetString(IHB_TIMEOUT), db.timeout))
+    CHAT_ROUTER:AddSystemMessage(string.format("%s: %s", GetString(IHB_DUNGEON_ONLY), GetString(db.dungeonOnly and IHB_ENABLED or IHB_DISABLED)))
+    CHAT_ROUTER:AddSystemMessage(string.format("%s: %s", GetString(IHB_BLOCK_POUNCE), GetString(db.pounceEnabled and IHB_ENABLED or IHB_DISABLED)))
+    CHAT_ROUTER:AddSystemMessage(string.format("/ %s: %s", GetString(IHB_POUNCE_BOSS_ONLY), GetString(db.pounceBossOnly and IHB_ENABLED or IHB_DISABLED)))
+    CHAT_ROUTER:AddSystemMessage(string.format("%s: %s", GetString(IHB_FEEDING_PRIORITY), GetString(db.feedingpriority and IHB_ENABLED or IHB_DISABLED)))
+end
+
 local function CreateMenu()
     if not LibAddonMenu2 then return end
 
@@ -128,7 +138,7 @@ local function CreateMenu()
         name = "Insatiable Hunger Blocker",
         displayName = "|c215895Insatiable Hunger |cCC922FBlocker|r",
         author = "|c215895Lykeion|r",
-        version = "|ccc922f1.11|r",
+        version = "|ccc922f1.13|r",
         slashCommand = "/ihb",
         registerForRefresh = true,
         registerForDefaults = true,
@@ -232,6 +242,7 @@ local function OnLoaded(_, name)
 
         if #args == 0 then
             PrintUsage()
+            PrintSettings()
             return
         end
 

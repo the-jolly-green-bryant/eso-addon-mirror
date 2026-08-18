@@ -286,18 +286,18 @@ function Module:Initialize( )
 		ZO_ClearTable(Vars.rescueUnits)
 		for _, data in pairs(DATA.dome) do
 			local r = data % 2 + 1
-			CA2.StatusModifyCell(r, 0, {
-				text = "",
-				color = 0xCC0000FF,
-			})
-			CA2.StatusModifyCell(r, 1, {
-				color = BitRShift(data, 1)
-			})
-			CA2.StatusModifyCell(r, 2, {
-				text = "",
-				alignment = TEXT_ALIGN_RIGHT,
-				minWidth = "00×",
-			})
+			CA2.StatusModifyCell(r, 0,
+				"text", "",
+				"color", 0xCC0000FF
+			)
+			CA2.StatusModifyCell(r, 1,
+				"color", BitRShift(data, 1)
+			)
+			CA2.StatusModifyCell(r, 2,
+				"text", "",
+				"alignment", TEXT_ALIGN_RIGHT,
+				"minWidth", "00×"
+			)
 		end
 		CA2.StatusSetRowAlpha(4, 0)
 	end
@@ -317,7 +317,7 @@ function Module:Initialize( )
 		-- Boss health
 		local results = { }
 		for i = 1, 2 do
-			table.insert(results, string.format("|c%06X%d%%|r", BitRShift(DATA.twinsColors[i], 8), zo_floor(LCA.GetUnitHealthPercent("boss" .. i))))
+			table.insert(results, string.format("|c%06X%d%%|r", LCA.RemoveAlpha(DATA.twinsColors[i]), zo_floor(LCA.GetUnitHealthPercent("boss" .. i))))
 		end
 		CA2.StatusSetCellText(3, 2, table.concat(results, " / "))
 
@@ -345,10 +345,10 @@ function Module:Initialize( )
 				else
 					color = 0xFFFFFF99
 				end
-				CA2.StatusModifyCell(r, 2, {
-					text = string.format("%d×", stackCount),
-					color = color,
-				})
+				CA2.StatusModifyCell(r, 2,
+					"text", string.format("%d×", stackCount),
+					"color", color
+				)
 				CA2.StatusSetCellText(r, 3, name)
 			end
 			Vars.domeHolder[r] = unitTag
@@ -376,16 +376,16 @@ function Module:Initialize( )
 		Vars.guardians.hearts = 0
 		ZO_ClearTable(Vars.guardians.units)
 		ZO_ClearTable(Vars.guardians.statuses)
-		CA2.StatusModifyCell(1, 2, {
-			text = "",
-			alignment = TEXT_ALIGN_CENTER,
-			minWidth = "M2",
-		})
-		CA2.StatusModifyCell(1, 3, {
-			text = "",
-			alignment = TEXT_ALIGN_RIGHT,
-			minWidth = "100%",
-		})
+		CA2.StatusModifyCell(1, 2,
+			"text", "",
+			"alignment", TEXT_ALIGN_CENTER,
+			"minWidth", "M2"
+		)
+		CA2.StatusModifyCell(1, 3,
+			"text", "",
+			"alignment", TEXT_ALIGN_RIGHT,
+			"minWidth", "100%"
+		)
 	end
 
 	self.StatusPoll_B2 = function( )
@@ -474,7 +474,7 @@ function Module:Initialize( )
 			if (channel.time) then
 				local remaining = channel.time - currentTime
 				if (channel.time == 0 or remaining > -2000) then
-					table.insert(results, string.format("#%d: |c%06X%s|r%s", i, BitRShift(channel.color, 8), channel.name, channel.time > 0 and string.format(" (%s)", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT)) or ""))
+					table.insert(results, string.format("#%d: |c%06X%s|r%s", i, LCA.RemoveAlpha(channel.color), channel.name, channel.time > 0 and string.format(" (%s)", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT)) or ""))
 				end
 			end
 		end

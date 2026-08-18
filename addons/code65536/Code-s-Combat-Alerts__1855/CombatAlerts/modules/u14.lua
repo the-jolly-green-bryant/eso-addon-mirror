@@ -145,20 +145,20 @@ function Module:Initialize( )
 
 		if (Vars.simulacra) then
 			local elapsed = currentTime - Vars.simulacra
-			CA2.StatusModifyCell(2, 2, {
-				text = zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(elapsed, LCA.TIME_FORMAT_SHORT)),
-				color = (elapsed >= 40000) and 0x33CCFFFF or 0xFFFFFFFF,
-			})
+			CA2.StatusModifyCell(2, 2,
+				"text", zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(elapsed, LCA.TIME_FORMAT_SHORT)),
+				"color", (elapsed >= 40000) and 0x33CCFFFF or 0xFFFFFFFF
+			)
 		else
 			CA2.StatusSetRowHidden(2, true)
 		end
 
 		if (Vars.scalded.stacks > 0 and Vars.scalded.stop > 0) then
 			local ratio = zo_clamp(1 - Vars.scalded.stacks / DATA.scaldedMax, 0, 1)
-			CA2.StatusModifyCell(3, 2, {
-				text = string.format(self:GetString("stackTime"), Vars.scalded.stacks, LCA.FormatTime(Vars.scalded.stop - currentTime, LCA.TIME_FORMAT_SHORT)),
-				color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1)),
-			})
+			CA2.StatusModifyCell(3, 2,
+				"text", string.format(self:GetString("stackTime"), Vars.scalded.stacks, LCA.FormatTime(Vars.scalded.stop - currentTime, LCA.TIME_FORMAT_SHORT)),
+				"color", LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1))
+			)
 		else
 			CA2.StatusSetRowHidden(3, true)
 		end
@@ -179,10 +179,10 @@ function Module:Initialize( )
 		ZO_ClearTable(Vars.overchargeHealth)
 		ZO_ClearTable(Vars.overchargeTether)
 		for i = 1, 3 do
-			CA2.StatusModifyCell(i, 2, {
-				alignment = TEXT_ALIGN_RIGHT,
-				minWidth = "00%",
-			})
+			CA2.StatusModifyCell(i, 2,
+				"alignment", TEXT_ALIGN_RIGHT,
+				"minWidth", "00%"
+			)
 		end
 	end
 
@@ -205,34 +205,34 @@ function Module:Initialize( )
 				color = 0xCC0000FF
 			end
 
-			CA2.StatusModifyCell(i, 2, {
-				text = string.format("%d%%", health),
-				color = color,
-			})
+			CA2.StatusModifyCell(i, 2,
+				"text", string.format("%d%%", health),
+				"color", color
+			)
 		end
 
 		if (Vars.limbs > 0) then
 			local elapsed = currentTime - Vars.limbs
-			CA2.StatusModifyCell(4, 2, {
-				text = zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(elapsed, LCA.TIME_FORMAT_SHORT)),
-				color = (elapsed >= 25000) and 0x33CCFFFF or 0xFFFFFFFF,
-			})
+			CA2.StatusModifyCell(4, 2,
+				"text", zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(elapsed, LCA.TIME_FORMAT_SHORT)),
+				"color", (elapsed >= 25000) and 0x33CCFFFF or 0xFFFFFFFF
+			)
 		else
 			CA2.StatusSetCellText(4, 2, "")
 		end
 
 		if (LCA.isVet and (LCA.DoesPlayerHaveTauntSlotted() or self:GetSetting("raidLeadMode"))) then
 			if (Vars.swap.stop > currentTime) then
-				CA2.StatusModifyCell(5, 2, {
-					text = zo_strformat(SI_LCA_TIME_REMAINING, LCA.FormatTime(Vars.swap.stop - currentTime, LCA.TIME_FORMAT_SHORT)),
-					color = 0xFF0000FF,
-				})
+				CA2.StatusModifyCell(5, 2,
+					"text", zo_strformat(SI_LCA_TIME_REMAINING, LCA.FormatTime(Vars.swap.stop - currentTime, LCA.TIME_FORMAT_SHORT)),
+					"color", 0xFF0000FF
+				)
 			else
 				local elapsed = currentTime - Vars.swap.previous
-				CA2.StatusModifyCell(5, 2, {
-					text = zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(elapsed, LCA.TIME_FORMAT_SHORT)),
-					color = (elapsed >= 25000) and 0xFFCC00FF or 0xFFFFFFFF,
-				})
+				CA2.StatusModifyCell(5, 2,
+					"text", zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(elapsed, LCA.TIME_FORMAT_SHORT)),
+					"color", (elapsed >= 25000) and 0xFFCC00FF or 0xFFFFFFFF
+				)
 			end
 		else
 			CA2.StatusSetRowHidden(5, true)

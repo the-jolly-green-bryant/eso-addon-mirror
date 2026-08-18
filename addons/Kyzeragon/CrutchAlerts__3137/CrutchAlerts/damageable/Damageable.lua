@@ -81,15 +81,13 @@ local SUBTITLE_TIMES = {
 -- HoF
     [GetNameStr(CRUTCH_BHB_ASSEMBLY_GENERAL)] = {
         -- Triplets
-        ["Reprocessing yard contamination critical. Disassembly status suspended. Mass reactivation initiated."] = 10.2, -- TODO
-        ["Kritische Kontamination auf dem Wertstoffhof. Ausschlachtung wird ausgesetzt. Massenreaktivierung eingeleitet."] = 10.2, -- TODO
+        [GetSubtitleStr(CRUTCH_DMG_REPROCESSING_YARD_CONTAMINATION_CRITICAL)] = 10.2,
     },
-    ["Divayth Fyr"] = {
+    [GetNameStr(CRUTCH_DMG_DIVAYTH_FYR)] = {
         -- Pinnacle
-        ["Interesting. These devices have all reset themselves. I didn't do that."] = 16.0,
-        ["Interessant. Diese Maschinen haben sich alle zurückgesetzt. Das war nicht ich."] = 16.0,
+        [GetSubtitleStr(CRUTCH_DMG_INTERESTING_THESE_DEVICES_HAVE_ALL_RESET)] = 16.0,
         -- Assembly General
-        ["Well, well. Now that's the second largest construct I've ever seen. Inactive, at the moment."] = 26.4,  -- TODO: I was given 19.2, but I think it's 26.4... need testing
+        [GetSubtitleStr(CRUTCH_DMG_WELL_WELL_NOW_THATS_THE_SECOND_LARGEST)] = 26.4,
     },
 
 -- KA
@@ -110,20 +108,13 @@ local SUBTITLE_TIMES = {
     },
 
 -- MoL
-    ["Mirarro"] = {
+    [GetNameStr(CRUTCH_DMG_MIRARRO)] = {
         -- Zhaj'hassa
-        ["Don't …. It's … trap. He's coming!"] = 16.8,
-        ["Nicht*… Eine*… Falle."] = 16.8,
-        ["Er kommt!"] = 16.8,
+        [GetSubtitleStr(CRUTCH_DMG_DONT_ITS_TRAP_HES_COMING)] = 16.8,
     },
-    ["Kulan-Dro"] = {
+    [GetNameStr(CRUTCH_DMG_KULANDRO)] = {
         -- Rakkhat
-        ["Have you not heard me? Have I not made your choice plain? You will listen, mortals ... even if it means peeling the ears from your scalps and shouting Namiira's will into whatever's left of your broken skulls!"] = 26.4, -- TODO: probably fix the ...
-        ["Have you not heard me? Have I not made your choice plain? You will listen, mortals"] = 26.4,
-    },
-    ["Kulan-dro"] = {
-        -- Rakkhat
-        ["Habt Ihr mich nicht gehört? Hatte ich mich nicht klar ausgedrückt? Ihr werdet zuhören, Sterbliche"] = 26.4,
+        [GetSubtitleStr(CRUTCH_DMG_HAVE_YOU_NOT_HEARD_ME_HAVE_I_NOT_MADE_YOUR_CHOICE)] = 26.4,
     },
 
 -- OC
@@ -208,13 +199,13 @@ local SUBTITLE_TIMES = {
     },
 
 -- Blessed Crucible
-    ["Snagg gro-Mashul"] = {
-        ["Congratulations. You've passed the first trial."] = 15.1,
+    [GetNameStr(CRUTCH_DMG_SNAGG_GROMASHUL)] = {
+        [GetSubtitleStr(CRUTCH_DMG_CONGRATULATIONS_YOUVE_PASSED_THE_FIRST_TRIAL)] = 15.1,
     },
-    ["The Beast Master"] = {
-        ["And there we have it! The winners of the Grand Melee!"] = {time = 43.4, displayFormat = "INCINERATION BEETLES!!! in "},
-        ["These challengers are surprisingly fierce! But here's the real reason you've come today!"] = 25.5, -- Stinger
-        ["What? Impossible? How did you win?"] = 19.7, -- Troll King
+    [GetNameStr(CRUTCH_DMG_THE_BEAST_MASTER)] = {
+        [GetSubtitleStr(CRUTCH_DMG_AND_THERE_WE_HAVE_IT_THE_WINNERS_OF_THE_GRAND)] = {time = 41.2, displayFormat = "INCINERATION BEETLES!!! in "},
+        [GetSubtitleStr(CRUTCH_DMG_THESE_CHALLENGERS_ARE_SURPRISINGLY_FIERCE_BUT)] = 25.2, -- Stinger
+        [GetSubtitleStr(CRUTCH_DMG_WHAT_IMPOSSIBLE_HOW_DID_YOU_WIN)] = 19.7, -- Troll King
     },
 
 -- Castle Thorn
@@ -280,13 +271,13 @@ local SUBTITLE_TIMES = {
     },
 
 -- Fang Lair
-    ["Orryn the Black"] = {
+    [GetNameStr(CRUTCH_DMG_ORRYN_THE_BLACK)] = {
         -- Cadaverous Bear
-        ["You're still here? If you must admire my work, at least allow me to put my best fossil forward."] = 10.9,
+        [GetSubtitleStr(CRUTCH_DMG_YOURE_STILL_HERE_IF_YOU_MUST_ADMIRE_MY_WORK_AT)] = 10.9,
         -- Caluurion
-        ["Caluurion. See that our uninvited guests are made comfortable for a very long stay."] = 14.2,
+        [GetSubtitleStr(CRUTCH_DMG_CALUURION_SEE_THAT_OUR_UNINVITED_GUESTS_ARE_MADE)] = 14.2,
         -- Ulfnor and Sabina
-        ["So many of the things you've broken I can easily replace, but Caluurion … he was a unique specimen. He'll never be the same."] = 17.5,
+        [GetSubtitleStr(CRUTCH_DMG_SO_MANY_OF_THE_THINGS_YOUVE_BROKEN_I_CAN_EASILY)] = 17.5,
     },
 
 -- Icereach
@@ -439,8 +430,8 @@ local SUBTITLE_TIMES = {
         ["Now the real challenge begins, my honored contestants. My champion has been silenced so that I may congratulate you personally for making it this far. From this point on, you will be pushed to your limits."] = {time = 40.1, displayFormat = "Portal spawns in "},
         -- 8
         ["Your strength knows no bounds. Rarely have I seen a group that works so well together. The last time must have been, oh, those poor Mages Guild members I found in the Dwemer ruins years ago."] = {time = 36.0, displayFormat = "Portal spawns in "},
-        -- 10 TODO: precise time unknown; 39 from Cas for now
-        ["And so the final challenge begins. Those who would represent me as champion now stand in this arena, deep within my realm. Only those who remain standing will receive my highest honor."] = 40.0,
+        -- 10
+        ["And so the final challenge begins. Those who would represent me as champion now stand in this arena, deep within my realm. Only those who remain standing will receive my highest honor."] = 40.1,
     },
 
 -----------

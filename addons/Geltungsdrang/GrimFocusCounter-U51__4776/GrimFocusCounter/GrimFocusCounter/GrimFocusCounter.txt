@@ -1,0 +1,16 @@
+## Title: |cFF0000Grim|cCCFF00 Foc|c00FF66us C|c0066FFoun|cCC00FFter|r
+## APIVersion: 101051
+## SavedVariables: GrimFocusCounterVariables
+## Description: Displays stacks of Grim Focus from 0 to 10.
+## Version: 1.8.1
+## AddOnVersion: 10801
+## Author: |cfce303@Geltungsdrang|r (EU)
+## DependsOn: LibAddonMenu-2.0>=28
+
+src/Main.lua
+src/Textures.lua
+src/Defaults.lua
+src/Abilities.lua
+src/Settings.lua
+src/Tracking.lua
+src/Interface.lua

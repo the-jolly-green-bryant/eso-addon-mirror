@@ -182,7 +182,7 @@ CombatAlertsData = {
 			[162905] = { -2, 2 }, -- Coral Aerie -- Power Bash
 			[158346] = { -2, 2 }, -- Coral Aerie -- Brand
 			[159864] = { -2, 2 }, -- Coral Aerie -- Monstrous Claw
-			[158778] = { 0, 0, false, { 1, 0, 0.6, 0.8 } }, -- Coral Aerie -- Obliterate
+			[158778] = { 0, 0, false, { 1, 0, 0.6, 0.8 }, cutthroat = true }, -- Coral Aerie -- Obliterate
 
 		--	[112995] = { -2, 0 }, -- Graven Deep -- Hammer (Duplicate of Frostvault)
 			[168375] = { -2, 0 }, -- Graven Deep -- Lacerate

@@ -266,7 +266,7 @@ function Module:CreepingEye( textId, orientation, groundTextureId, lrArrow )
 				if (elapsed >= duration) then
 					CA2.WorldElementRemove(elementId)
 				else
-					CA2.WorldTextureUpdate(elementId, { groundAngle = -orientation * (elapsed / duration) * ZO_TWO_PI / 3 })
+					CA2.WorldTextureUpdate(elementId, "groundAngle", -orientation * (elapsed / duration) * ZO_TWO_PI / 3)
 				end
 				return true
 			end,
@@ -321,7 +321,7 @@ function Module:VolatileShellLabels( )
 		},
 	}
 
-	local elevP = select(3, GetUnitWorldPosition("player"))
+	local elevP = select(3, GetUnitRawWorldPosition("player"))
 
 	for _, floor in ipairs(FLOORS) do
 		local elevF, distance, offset = floor.elevation, floor.distance, floor.offset

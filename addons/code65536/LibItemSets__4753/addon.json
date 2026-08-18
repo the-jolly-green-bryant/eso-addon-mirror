@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "LibItemSets"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4753/",
-  "fingerprint": "e5174691b27916aa331e6310b179cc4c63d3ccf1bbd1299b57c29d27f19c3dbd",
+  "fingerprint": "cbfb57e8faf227f0fcc4c6fac487e1180ff3ab74c1b5ab5b8a0d2aef5e1c38dd",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -26,9 +30,9 @@
   "source_id": "4753",
   "source_url": "https://www.esoui.com/downloads/info4753-LibItemSets.html",
   "stats": {
-    "downloads": 88,
-    "favorites": 1,
-    "monthly_downloads": 61
+    "downloads": 394,
+    "favorites": 2,
+    "monthly_downloads": 393
   },
   "title": "LibItemSets",
   "updated_at": 1785856451000,

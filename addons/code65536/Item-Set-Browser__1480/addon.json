@@ -8,6 +8,10 @@
   "category_id": "26",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "ItemBrowser"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1480/",
-  "fingerprint": "60e5cceddb30d66b5262bccfc091beebb1ec2d678f820d32a3f9c0a98ae364c0",
+  "fingerprint": "b54b36eae4a3a90389123e106e46eb1e15d59b003186a28105ebe3996a5d04cb",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9635.png",
     "https://cdn-eso.mmoui.com/preview/pvw4789.png",
@@ -89,9 +93,9 @@
   "source_id": "1480",
   "source_url": "https://www.esoui.com/downloads/info1480-ItemSetBrowser.html",
   "stats": {
-    "downloads": 1903207,
-    "favorites": 750,
-    "monthly_downloads": 4862
+    "downloads": 1908573,
+    "favorites": 751,
+    "monthly_downloads": 9134
   },
   "title": "Item Set Browser",
   "updated_at": 1785855089000,

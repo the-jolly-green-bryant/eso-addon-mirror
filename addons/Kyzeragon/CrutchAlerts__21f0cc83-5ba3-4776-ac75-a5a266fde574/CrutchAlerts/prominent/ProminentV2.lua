@@ -196,6 +196,69 @@ local prominentData = {
                 default = true,
             },
         },
+        -- Crush
+        [164158] = {
+            event = EVENT_COMBAT_EVENT,
+            filters = {
+                [REGISTER_FILTER_COMBAT_RESULT] = ACTION_RESULT_BEGIN,
+                [REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE] = COMBAT_UNIT_TYPE_PLAYER,
+                filterFunction = function() return GetSelectedLFGRole() ~= LFG_ROLE_TANK end,
+            },
+            text = "BONK",
+            color = {1, 0, 0},
+            slot = 1,
+            playSound = true,
+            millis = 1000,
+            settings = {
+                name = "prominentDSRBonk",
+                title = "Alert bonks",
+                description = "Shows a prominent alert when you are not a tank and a Sea Behemoth tries to light attack you",
+                checkOldForDefault = true,
+                default = true,
+            },
+        },
+        -- Strike
+        [164160] = {
+            event = EVENT_COMBAT_EVENT,
+            filters = {
+                [REGISTER_FILTER_COMBAT_RESULT] = ACTION_RESULT_BEGIN,
+                [REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE] = COMBAT_UNIT_TYPE_PLAYER,
+                filterFunction = function() return GetSelectedLFGRole() ~= LFG_ROLE_TANK end,
+            },
+            text = "BONK",
+            color = {1, 0, 0},
+            slot = 1,
+            playSound = true,
+            millis = 1000,
+            settings = {
+                name = "prominentDSRBonk",
+                title = "Alert bonks",
+                description = "Shows a prominent alert when you are not a tank and a Sea Behemoth tries to light attack you",
+                checkOldForDefault = true,
+                default = true,
+            },
+        },
+        -- Hack
+        [164162] = {
+            event = EVENT_COMBAT_EVENT,
+            filters = {
+                [REGISTER_FILTER_COMBAT_RESULT] = ACTION_RESULT_BEGIN,
+                [REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE] = COMBAT_UNIT_TYPE_PLAYER,
+                filterFunction = function() return GetSelectedLFGRole() ~= LFG_ROLE_TANK end,
+            },
+            text = "BONK",
+            color = {1, 0, 0},
+            slot = 1,
+            playSound = true,
+            millis = 1000,
+            settings = {
+                name = "prominentDSRBonk",
+                title = "Alert bonks",
+                description = "Shows a prominent alert when you are not a tank and a Sea Behemoth tries to light attack you",
+                checkOldForDefault = true,
+                default = true,
+            },
+        },
     },
 
     -----------------------
@@ -580,7 +643,7 @@ local prominentData = {
             millis = 1000,
             settings = {
                 name = "prominentBonk",
-                title = "Alert Bonks",
+                title = "Alert bonks",
                 description = "Shows a prominent alert when you are not a tank and a Flesh Abomination or Fire Behemoth tries to light attack you",
                 checkOldForDefault = true,
                 default = true,
@@ -601,7 +664,7 @@ local prominentData = {
             millis = 1000,
             settings = {
                 name = "prominentBonk",
-                title = "Alert Bonks",
+                title = "Alert bonks",
                 description = "Shows a prominent alert when you are not a tank and a Flesh Abomination or Fire Behemoth tries to light attack you",
                 checkOldForDefault = true,
                 default = true,
@@ -622,7 +685,7 @@ local prominentData = {
             millis = 1000,
             settings = {
                 name = "prominentBonk",
-                title = "Alert Bonks",
+                title = "Alert bonks",
                 description = "Shows a prominent alert when you are not a tank and a Flesh Abomination or Fire Behemoth tries to light attack you",
                 checkOldForDefault = true,
                 default = true,
@@ -643,7 +706,7 @@ local prominentData = {
             millis = 1000,
             settings = {
                 name = "prominentBonk",
-                title = "Alert Bonks",
+                title = "Alert bonks",
                 description = "Shows a prominent alert when you are not a tank and a Flesh Abomination or Fire Behemoth tries to light attack you",
                 checkOldForDefault = true,
                 default = true,
@@ -680,7 +743,6 @@ local prominentData = {
             event = EVENT_COMBAT_EVENT,
             filters = {
                 [REGISTER_FILTER_COMBAT_RESULT] = ACTION_RESULT_BEGIN,
-                -- TODO: only show if in portal (has gotten attunement?)
                 filterFunction = function() return Crutch.IsInVantonPortal(Crutch.playerGroupTag) end,
             },
             text = "INTERRUPT",
@@ -701,7 +763,6 @@ local prominentData = {
             event = EVENT_COMBAT_EVENT,
             filters = {
                 [REGISTER_FILTER_COMBAT_RESULT] = ACTION_RESULT_BEGIN,
-                -- TODO: only show if not in portal?
                 filterFunction = function() return not Crutch.IsInVantonPortal(Crutch.playerGroupTag) end,
             },
             text = "INTERRUPT",
@@ -1222,13 +1283,7 @@ end
 
 
 -----------------------------------------------------------
-local resultStrings = {
-    [ACTION_RESULT_BEGIN] = "BEGIN",
-    [ACTION_RESULT_EFFECT_GAINED] = "GAIN",
-    [ACTION_RESULT_EFFECT_GAINED_DURATION] = "DUR",
-    [ACTION_RESULT_EFFECT_FADED] = "FADED",
-    [ACTION_RESULT_DAMAGE] = "DAMAGE",
-}
+local resultStrings = C.ACTION_RESULTS
 
 -----------------------------------------------------------
 -- Called whenever we enter a zone

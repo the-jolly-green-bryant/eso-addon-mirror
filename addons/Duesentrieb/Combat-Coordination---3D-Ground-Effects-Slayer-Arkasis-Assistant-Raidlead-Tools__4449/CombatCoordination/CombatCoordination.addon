@@ -1,7 +1,7 @@
 ## Title: |cFF7F00Combat|r |cFFFFFFCoordination|r
 ## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[PC/EU]|r
-## ADDON: 0003
-## Version: 20260816
+## ADDON: 0004
+## Version: 20260817
 ## APIVersion: 101050
 ## DependsOn: LibAddonMenu-2.0>=43 LibGroupBroadcast>=91 LibCustomMenu>=730 LibSkillBlocker>=110 LibChatMenuButton>=1006
 ## OptionalDependsOn: HodorReflexes

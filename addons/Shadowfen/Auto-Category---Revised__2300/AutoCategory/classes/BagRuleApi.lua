@@ -1,6 +1,9 @@
 local SF = LibSFUtils
 local L = GetString
 
+AutoCategory.BagRuleMetatable = {
+    __index = AutoCategory.BagRuleApiMixin,
+}
 
 -- --------------------------------------------
 -- Create a new Bag Entry (factory)
@@ -31,7 +34,7 @@ function AutoCategory.CreateBagRule(rule, runpriority, showprior)
 		runpriority = ruleRunprior,
 		showpriority = showprior,
 	}
-    setmetatable(bagrule,{__index = AutoCategory.BagRuleApiMixin})
+    setmetatable(bagrule, AutoCategory.BagRuleMetatable)
     return bagrule
 end
 
@@ -58,13 +61,21 @@ local bagRuleApiMixin = {
 			end
 		end,
 
-	isValid = function (self)
-			if not self.name or self.name == "" then
-				return false
-			end
-			if not self.runpriority then return false end
-			return true
-		end,
+	isValid = function(self)
+		if type(self.name) ~= "string" or self.name == "" then
+			return false
+		end
+
+		if type(self.runpriority) ~= "number" then
+			return false
+		end
+
+		if type(self.showpriority) ~= "number" then
+			return false
+		end
+
+		return true
+	end,
 
     formatValue = function (self)
 			return self.name
@@ -80,8 +91,8 @@ local bagRuleApiMixin = {
             local general = AutoCategory.saved.general
             local appearance = AutoCategory.saved.appearance
 
-			local rule = self:getBackingRule()
 			self:convertPriority()
+			local rule = self:getBackingRule()
 
 			local sn
 			if not rule then

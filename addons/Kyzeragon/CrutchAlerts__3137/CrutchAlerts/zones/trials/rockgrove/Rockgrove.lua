@@ -14,7 +14,6 @@ local C = Crutch.Constants
 ---------------------------------------------------------------------
 -- Bahsei
 ---------------------------------------------------------------------
--- EVENT_COMBAT_EVENT (number eventCode, number ActionResult result, boolean isError, string abilityName, number abilityGraphic, number ActionSlotType abilityActionSlotType, string sourceName, number CombatUnitType sourceType, string targetName, number CombatUnitType targetType, number hitValue, number CombatMechanicType powerType, number DamageType damageType, boolean log, number sourceUnitId, number targetUnitId, number abilityId, number overflow)
 local function OnKissOfDeath(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, targetUnitId)
     local unitTag = Crutch.groupIdToTag[targetUnitId]
     Crutch.msg(zo_strformat("Kiss of Death |cFF00FF<<1>>", GetUnitDisplayName(unitTag)))
@@ -42,6 +41,9 @@ local function DrawConfirmedCurseLines(x, y, z, angle, color, duration)
         false,
         {-math.pi/2, angle, 0},
         LineCallback)
+
+    -- Needed immediately, otherwise it flashes
+    Crutch.Drawing.activeIcons[key]:SetTextureHidden(RG.linesHidden)
 
     -- Natural expiry
     zo_callLater(function()
@@ -257,7 +259,6 @@ Crutch.OnDeathTouch = OnDeathTouch
 ------------------------------------------------------------
 -- Bleeding
 ------------------------------------------------------------
--- EVENT_EFFECT_CHANGED (number eventCode, MsgEffectResult changeType, number effectSlot, string effectName, string unitTag, number beginTime, number endTime, number stackCount, string iconName, string buffType, BuffEffectType effectType, AbilityType abilityType, StatusEffectType statusEffectType, string unitName, number unitId, number abilityId, CombatUnitType sourceType)
 local numBleeds = 0
 local function OnBleeding(_, changeType, _, _, unitTag, beginTime, endTime)
     local atName = GetUnitDisplayName(unitTag)
@@ -294,7 +295,6 @@ local function OnScythe()
     Crutch.InfoPanel.CountDownDuration(RG.PANEL_SCYTHE_INDEX, string.format("|c64c200%s: ", GetAbilityName(150067)), 15000)
 end
 
--- TODO: get initial values
 local function OnEnteredCombat()
     -- Check that it's Bahsei
     local _, maxHp = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)

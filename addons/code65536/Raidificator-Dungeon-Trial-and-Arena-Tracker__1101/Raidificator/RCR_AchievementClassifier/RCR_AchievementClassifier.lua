@@ -396,7 +396,7 @@ end
 
 local function CheckGroup( data, flags, expected, desc, zoneId )
 	local group = data[Hex(flags)]
-	local count = group and LCCC.CountTable(group) or 0
+	local count = group and NonContiguousCount(group) or 0
 	expected = ExpectedCounts[flags][zoneId] or expected
 	if (count ~= expected) then
 		RCR.Msg(string.format("[WARNING] Incorrect %s count: %s (%d found, %d expected)", desc, LCCC.GetZoneName(zoneId), count, expected))

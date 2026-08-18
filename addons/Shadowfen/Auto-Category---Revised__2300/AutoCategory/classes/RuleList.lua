@@ -4,7 +4,9 @@ local SF = LibSFUtils
 -- collected (wrapper) functions to be applied to a rule list
 --
 AutoCategory.RuleList = ZO_Object:Subclass()
-
+AutoCategory.RuleMetatable = {
+    __index = AutoCategory.RuleApiMixin,
+}
 -- creates a rule list wrapper with a numeric-sequenced list of rules (not under a .rules!)
 function AutoCategory.RuleList:New(...)
     local obj = ZO_Object.New(self)
@@ -22,7 +24,7 @@ function AutoCategory.RuleList:Initialize(rules)
 			self.ruleNames[arrules[k].name] = k
 		end
         if not arrules[k].compile then 
-            setmetatable(arrules[k],{__index = AutoCategory.RuleApiMixin})
+            setmetatable(arrules[k], AutoCategory.RuleMetatable)
         end
 	end
 end
@@ -34,6 +36,9 @@ end
 
 function AutoCategory.RuleList:AddRule(newRule, overwriteFlag)
 	if not newRule or not newRule.name then return end	-- bad rule
+	if not newRule.compile then
+		setmetatable(newRule, AutoCategory.RuleMetatable)
+	end
 	local rulename = newRule.name
 
 	local ndx = self.ruleNames[rulename]
@@ -49,29 +54,34 @@ function AutoCategory.RuleList:AddRule(newRule, overwriteFlag)
 	self.ruleNames[rulename] = #self.ruleList
 end
 
--- remove a rule from the ruleList
-function AutoCategory.RuleList.removeRuleByName(self, ruleName)
-	if not ruleName then return end
+function AutoCategory.RuleList:rebuildLookup()
+    SF.safeClearTable(self.ruleNames)
 
-	local ndx = self.ruleNames[ruleName]
-	if ndx then
-		self.ruleNames[ruleName] = nil
-		table.remove(self.ruleList, ndx)
-	end
+    for k = #self.ruleList, 1, -1 do
+        local name = self.ruleList[k].name
+        if name and not self.ruleNames[name] then
+            self.ruleNames[name] = k
+        end
+    end
+end
+
+-- remove a rule from the ruleList
+function AutoCategory.RuleList:removeRuleByName(ruleName)
+    if not ruleName then return end
+
+    local ndx = self.ruleNames[ruleName]
+    if not ndx then return end
+
+    table.remove(self.ruleList, ndx)
+    self:rebuildLookup()
 end
 
 -- remove a rule from the ruleList by position (index) in the ruleList
-function AutoCategory.RuleList.removeRule(self, ndx)
-	if not ndx then return end
+function AutoCategory.RuleList:removeRule(ndx)
+    if not ndx or not self.ruleList[ndx] then return end
 
-	local rl = self.ruleList[ndx]
-	if not rl then return end
-        
-	local name = rl.name
-	if name then
-		self.ruleNames[name] = nil
-	end
-	table.remove(self.ruleList, ndx)
+    table.remove(self.ruleList, ndx)
+    self:rebuildLookup()
 end
 
 -- returns a rule from the ruleList as specified by name
@@ -84,8 +94,9 @@ function AutoCategory.RuleList.getRuleByName(self, ruleName)
 end
 
 -- clear the contents of the ruleList
-function AutoCategory.RuleList.clear(self)
-	SF.safeClearTable(self.ruleList)
+function AutoCategory.RuleList:clear()
+    SF.safeClearTable(self.ruleList)
+    SF.safeClearTable(self.ruleNames)
 end
 
 -- returns the name lookup table used by the wrapper (temporary measure)
@@ -94,17 +105,9 @@ function AutoCategory.RuleList.getLookup(self)
 end
 
 -- sort the contents of the ruleList using sortfn
-function AutoCategory.RuleList.sort(self, sortfn)
-	if type(sortfn ~= "function") then return end
+function AutoCategory.RuleList:sort(sortfn)
+    if type(sortfn) ~= "function" then return end
 
-	SF.safeClearTable(ruleNames)
-	table.sort(self.ruleList, sortfn)
-
-	-- rebuild name lookup
-	local arrules = self.ruleList
-	for k = #arrules,1,-1 do
-		if not self.ruleNames[arrules[k].name ] then
-			self.ruleNames[arrules[k].name] = k
-		end
-	end
+    table.sort(self.ruleList, sortfn)
+    self:rebuildLookup()
 end

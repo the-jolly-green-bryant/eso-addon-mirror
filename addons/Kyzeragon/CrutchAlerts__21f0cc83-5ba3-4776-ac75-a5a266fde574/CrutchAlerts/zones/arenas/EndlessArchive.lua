@@ -5,7 +5,6 @@ local Crutch = CrutchAlerts
 ---------------------------------------------------------------------
 Crutch.majorCowardiceUnitIds = {}
 
--- EVENT_EFFECT_CHANGED (number eventCode, MsgEffectResult changeType, number effectSlot, string effectName, string unitTag, number beginTime, number endTime, number stackCount, string iconName, string buffType, BuffEffectType effectType, AbilityType abilityType, StatusEffectType statusEffectType, string unitName, number unitId, number abilityId, CombatUnitType sourceType)
 local function OnMajorCowardice(_, changeType, _, _, _, _, _, _, _, _, _, _, _, unitName, unitId)
     if (changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED) then
         Crutch.majorCowardiceUnitIds[unitId] = true
@@ -140,7 +139,6 @@ end
 ---------------------------------------------------------------------
 -- Icon for Elixir of Diminishing
 ---------------------------------------------------------------------
--- EVENT_COMBAT_EVENT (number eventCode, number ActionResult result, boolean isError, string abilityName, number abilityGraphic, number ActionSlotType abilityActionSlotType, string sourceName, number CombatUnitType sourceType, string targetName, number CombatUnitType targetType, number hitValue, number CombatMechanicType powerType, number DamageType damageType, boolean log, number sourceUnitId, number targetUnitId, number abilityId, number overflow)
 local function OnElixir(_, _, _, _, _, _, _, _, targetName, _, _, _, _, _, _, targetUnitId)
     local unitTag = Crutch.groupIdToTag[targetUnitId]
 
@@ -221,7 +219,7 @@ local puzzleSolutions = {
 local function OnPuzzleSolution(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, abilityId)
     if (puzzleSolutions[abilityId]) then
         Crutch.msg(puzzleSolutions[abilityId])
-        EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "Puzzle", EVENT_COMBAT_EVENT)
+        Crutch.UnregisterForCombatEvent("Puzzle")
     end
 end
 
@@ -233,22 +231,18 @@ function Crutch.RegisterEndlessArchive()
 
     EVENT_MANAGER:RegisterForEvent(Crutch.name .. "EACombatState", EVENT_PLAYER_COMBAT_STATE, OnCombatStateChanged)
 
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "IAMajorCowardice", EVENT_EFFECT_CHANGED, OnMajorCowardice)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "IAMajorCowardice", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 147643)
+    Crutch.RegisterForEffectChanged("IAMajorCowardice", OnMajorCowardice, 147643)
 
     if (Crutch.savedOptions.endlessArchive.markFabled or Crutch.savedOptions.endlessArchive.markNegate) then
         EVENT_MANAGER:RegisterForEvent(Crutch.name .. "EAReticle", EVENT_RETICLE_TARGET_CHANGED, OnReticleChanged)
     end
 
     if (Crutch.savedOptions.endlessArchive.potionIcon) then
-        EVENT_MANAGER:RegisterForEvent(Crutch.name .. "IAElixir", EVENT_COMBAT_EVENT, OnElixir)
-        EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "IAElixir", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 221794)
-        EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "IAElixir", EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED)
+        Crutch.RegisterForCombatEvent("IAElixir", OnElixir, ACTION_RESULT_EFFECT_GAINED, 221794)
     end
 
     if (Crutch.savedOptions.endlessArchive.printPuzzleSolution) then
-        EVENT_MANAGER:RegisterForEvent(Crutch.name .. "Puzzle", EVENT_COMBAT_EVENT, OnPuzzleSolution)
-        EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "Puzzle", EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED_DURATION)
+        Crutch.RegisterForCombatEvent("Puzzle", OnPuzzleSolution, ACTION_RESULT_EFFECT_GAINED_DURATION)
     end
 
     Crutch.dbgOther("|c88FFFF[CT]|r Registered Endless Archive")
@@ -256,10 +250,10 @@ end
 
 function Crutch.UnregisterEndlessArchive()
     EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "EACombatState", EVENT_PLAYER_COMBAT_STATE, OnCombatStateChanged)
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "IAMajorCowardice", EVENT_EFFECT_CHANGED)
+    Crutch.UnregisterForEffectChanged("IAMajorCowardice")
     EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "EAReticle", EVENT_RETICLE_TARGET_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "IAElixir", EVENT_COMBAT_EVENT)
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "Puzzle", EVENT_COMBAT_EVENT)
+    Crutch.UnregisterForCombatEvent("IAElixir")
+    Crutch.UnregisterForCombatEvent("Puzzle")
 
     Crutch.dbgOther("|c88FFFF[CT]|r Unregistered Endless Archive")
 end

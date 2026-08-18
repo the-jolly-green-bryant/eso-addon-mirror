@@ -355,6 +355,22 @@ local function InitializeMenu()
             getFunc = function() return NC.savedVars.guildBankDefaultIndex or 0 end,
             setFunc = function(v) NC.savedVars.guildBankDefaultIndex = v end,
         },
+        { type = "header", name = "Отображение кнопок Гильдхолла" },
+        {
+            type = "dropdown",
+            name = "Режим отображения кнопок",
+            tooltip = "Выберите, где показывать кнопки быстрого перемещения на экране гильдии",
+            choices = {"Показывать всегда", "Только в своей гильдии", "Скрыть полностью"},
+            choicesValues = {1, 2, 3},
+            getFunc = function() return NC.savedVars.guildHomeVisibility or 1 end,
+            setFunc = function(v) 
+                NC.savedVars.guildHomeVisibility = v 
+                -- Если окно гильдии сейчас открыто, мы сразу обновим видимость кнопок
+                if ZO_GuildHome_NecroCat_UpdateVisibility then 
+                    ZO_GuildHome_NecroCat_UpdateVisibility() 
+                end
+            end,
+        },
         { type = "header", name = "Взаимодействие (F)" },
         {
             type = "checkbox",
@@ -628,6 +644,7 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.savedVars = ZO_SavedVars:NewAccountWide("NecroCat_SV", 1, nil, {
         vrxCoord        = 136,
         showIcon        = true,
+        guildHomeVisibility = 1,
         pinned          = {},
         whisperAlert    = false,
         whisperLocked   = true,

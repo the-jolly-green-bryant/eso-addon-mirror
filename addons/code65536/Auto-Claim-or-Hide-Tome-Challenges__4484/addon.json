@@ -8,6 +8,10 @@
   "category_id": "20",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -22,7 +26,7 @@
     "AutoClaimTomePoints"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4484/",
-  "fingerprint": "6c7095515be1c8f3218e0a02ae9bd212ea21053444449103b897c4d36b610305",
+  "fingerprint": "c57d32b142c49375d89e9bd16d7217e67c35dd354eb70e36fc465f46903b62da",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15640.png"
   ],
@@ -32,9 +36,9 @@
   "source_id": "4484",
   "source_url": "https://www.esoui.com/downloads/info4484-Auto-ClaimorHideTomeChallenges.html",
   "stats": {
-    "downloads": 7242,
+    "downloads": 8264,
     "favorites": 26,
-    "monthly_downloads": 539
+    "monthly_downloads": 1456
   },
   "title": "Auto-Claim or Hide Tome Challenges",
   "updated_at": 1785798872000,

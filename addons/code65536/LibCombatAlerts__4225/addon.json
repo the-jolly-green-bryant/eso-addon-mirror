@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -34,7 +38,7 @@
     "LibCombatAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4225/",
-  "fingerprint": "0f80083b938f355facaa40de27933aa3599b7fc60894285a26ac81e270197a72",
+  "fingerprint": "4fd01524ef104de73557f11c5bec8685691c0cce92f2a03691b0d9433161772c",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -42,11 +46,11 @@
   "source_id": "4225",
   "source_url": "https://www.esoui.com/downloads/info4225-LibCombatAlerts.html",
   "stats": {
-    "downloads": 45249,
-    "favorites": 20,
-    "monthly_downloads": 5409
+    "downloads": 48692,
+    "favorites": 21,
+    "monthly_downloads": 6077
   },
   "title": "LibCombatAlerts",
-  "updated_at": 1786311077000,
-  "version": "0.7.10"
+  "updated_at": 1786976875000,
+  "version": "0.8.0"
 }

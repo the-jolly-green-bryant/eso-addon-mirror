@@ -12,6 +12,7 @@ local DEFAULTS = {
 	suppressModuleMessages = false,
 	disableAnnoyingMessages = true,
 	bypassPurgeSlotCheck = false,
+	cutthroatProtection = true,
 	nearby = 0,
 }
 
@@ -86,6 +87,14 @@ function CA2.RegisterSettingsPanel( )
 				tooltip = SI_CA_SETTINGS_BYPASS_PURGE_CHECK_TT,
 				getFunc = function() return CA2.sv.bypassPurgeSlotCheck end,
 				setFunc = function(enabled) CA2.sv.bypassPurgeSlotCheck = enabled end,
+			},
+			--------------------
+			{
+				type = "checkbox",
+				name = SI_CA_SETTINGS_CUTTHROAT,
+				tooltip = SI_CA_SETTINGS_CUTTHROAT_TT,
+				getFunc = function() return CA2.sv.cutthroatProtection end,
+				setFunc = function(enabled) CA2.sv.cutthroatProtection = enabled end,
 			},
 			--------------------
 			{

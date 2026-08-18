@@ -155,33 +155,46 @@ end
 -- DRAW PAD
 ----------------------------------------------------------------------------------------------------
 function Module:DrawPad(index, PadData)
-    local heading = PadData.RY
-    local TriggerData = self.TriggerData[PadData.TRG]
+    self.ActivePads[index] = {
+        effectId = nil,
+        labelId = nil,
+        Data = PadData,
+        isCooldown = false,
+        hasTriggered = false,
+        cooldownEndTime = 0,
+        isHidden = true,
+    }
+end
+
+----------------------------------------------------------------------------------------------------
+-- CREATE PAD VISUALS (DYNAMISCHES NACHLADEN)
+----------------------------------------------------------------------------------------------------
+function Module:CreatePadVisuals(index, PadCache)
+    local heading = PadCache.Data.RY
+    local TriggerData = self.TriggerData[PadCache.Data.TRG]
     local PadColor = TriggerData and TriggerData.Color or { 1, 1, 1, 0.75 }
 
-    local effectId = CC.DisplayEffect:Draw3DEffect({
-        TX = PadData.TX, TY = PadData.TY, TZ = PadData.TZ,
-            RX = -(math.pi / 2), RY = heading, RZ = 0,
-            offsetTY = 0,
-            width = self.SV.width, height = self.SV.height,
-            texture = self.SV.texture,
-            ColorStart = PadColor,
-            durationMs = 0,
-            rotateY = -5,
-        })
+    PadCache.effectId = CC.DisplayEffect:Draw3DEffect({
+        TX = PadCache.Data.TX, TY = PadCache.Data.TY, TZ = PadCache.Data.TZ,
+        RX = -(math.pi / 2), RY = heading, RZ = 0,
+        offsetTY = 0,
+        width = self.SV.width, height = self.SV.height,
+        texture = self.SV.texture,
+        ColorStart = PadColor,
+        durationMs = 0,
+        rotateY = -5,
+    })
 
-    local labelId = nil
     if self.SV.enableDrawName then
         local font = string.format("%s|%d|%s", self.SV.fontStyle, self.SV.fontSize, self.SV.fontWeight)
-
         local shortName = TriggerData and TriggerData.shortName or "PAD"
         local labelColor = self.SV.useStaticLabelColor and self.SV.LabelColor or { PadColor[1], PadColor[2], PadColor[3], 1 }
 
-        labelId = CC.DisplayLabel:Draw3DLabel({
+        PadCache.labelId = CC.DisplayLabel:Draw3DLabel({
             ID = "CC_LaunchPad_Label_" .. index,
-            TX = PadData.TX, RX = 0,       FX = false,
-            TY = PadData.TY, RY = heading, FY = true,
-            TZ = PadData.TZ, RZ = 0,       FZ = false,
+            TX = PadCache.Data.TX, RX = 0,       FX = false,
+            TY = PadCache.Data.TY, RY = heading, FY = true,
+            TZ = PadCache.Data.TZ, RZ = 0,       FZ = false,
             offsetTY = self.SV.offsetTY,
             font = font,
             displayText = shortName,
@@ -189,16 +202,6 @@ function Module:DrawPad(index, PadData)
             durationMs = 0,
         })
     end
-
-    self.ActivePads[index] = {
-        effectId = effectId,
-        labelId = labelId,
-        Data = PadData,
-        isCooldown = false,
-        hasTriggered = false,
-        cooldownEndTime = 0,
-        isHidden = false,
-    }
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -215,7 +218,7 @@ function Module:StartTriggerLoop()
         local safeRadiusSquared = (self.SV.width / 2 + 100) ^ 2
         local visibilityDistSquared = (self.SV.visibilityDistance * 100) ^ 2
 
-        for _, PadCache in pairs(self.ActivePads) do
+        for index, PadCache in pairs(self.ActivePads) do
             local deltaX = playerX - PadCache.Data.TX
             local deltaZ = playerZ - PadCache.Data.TZ
             local distanceSquared = (deltaX * deltaX) + (deltaZ * deltaZ)
@@ -223,7 +226,15 @@ function Module:StartTriggerLoop()
 
             -- PROXIMITY
             local shouldHide = (distanceSquared > visibilityDistSquared)
+            local visualExists = PadCache.effectId and CC.DisplayEffect.TrackedEffects[PadCache.effectId]
+            if not shouldHide and not visualExists then
+                self:CreatePadVisuals(index, PadCache)
+                if not PadCache.effectId then
+                    shouldHide = true
+                end
+            end
 
+            -- VISIBILITY TOGGLE
             if shouldHide ~= PadCache.isHidden then
                 PadCache.isHidden = shouldHide
 
@@ -255,7 +266,7 @@ function Module:StartTriggerLoop()
 
             -- TRIGGER
             if not PadCache.isCooldown then
-                if distanceSquared <= radiusSquared and heightDifference < 300 then
+                if distanceSquared <= radiusSquared and heightDifference < 500 then
                     PadCache.hasTriggered = true
                     PadCache.cooldownEndTime = currentTime + 1000
                     PadCache.isCooldown = true

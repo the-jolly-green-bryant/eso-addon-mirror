@@ -4,6 +4,7 @@ local BlockPooky = BlockPooky
 
 BlockPooky.negateWarningLabel = nil
 local BlockPooky_negateWarningActive = false
+local BlockPooky_negateRegistered = false
 
 -- Fähigkeit-IDs für "Negate Magic" und Morphs
 BlockPooky.NEGATE_IDS = {
@@ -95,19 +96,22 @@ function BlockPooky.HideNegateWarning()
     end
 end
 
-function BlockPooky.RegisterNegateWarning()
-    --d("REGISTER negateWarningLabel")
+---(Re)sync the negate warning event registration with its menu toggle.
+---Registers EVENT_EFFECT_CHANGED (player) while negate.show is ON and fully unregisters
+---it when toggled OFF. Single guarded entry point, replacing the old asymmetric
+---RegisterNegateWarning/UnRegisterNegateWarning pair.
+function BlockPooky.NegateEventRegisterUpdate()
     if BlockPooky.config.negate.show then
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED,
-            function(...) BlockPooky.OnNegateChanged(...) end)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED,
-            REGISTER_FILTER_UNIT_TAG, "player")
-    end
-end
-
-function BlockPooky.UnRegisterNegateWarning()
-    if not BlockPooky.config.negate.show then
+        if not BlockPooky_negateRegistered then
+            EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED,
+                function(...) BlockPooky.OnNegateChanged(...) end)
+            EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "NegateWarning", EVENT_EFFECT_CHANGED,
+                REGISTER_FILTER_UNIT_TAG, "player")
+            BlockPooky_negateRegistered = true
+        end
+    elseif BlockPooky_negateRegistered then
         EVENT_MANAGER:UnregisterForEvent(BlockPooky.name .. "NegateWarning")
+        BlockPooky_negateRegistered = false
     end
 end
 
@@ -132,7 +136,7 @@ function BlockPooky.InitNegateWarning()
         end
     end
     BlockPooky.CreateNegateWarningLabel()
-    BlockPooky.RegisterNegateWarning()
+    BlockPooky.NegateEventRegisterUpdate()
 end
 
 --[[ event handling -------------------------------------------------------------------------------------------------]]

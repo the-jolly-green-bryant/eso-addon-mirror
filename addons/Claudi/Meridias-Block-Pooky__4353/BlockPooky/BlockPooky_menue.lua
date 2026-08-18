@@ -548,7 +548,7 @@ function BlockPooky.InitAddonMenu()
         },
         {
             type    = "checkbox",
-            name    = "|cFF0000! Send Pull Warning to Group|r",
+            name    = "Send Pull Warning to Group",
             tooltip = "Send a warning to your group when you are pulled. This feature uses LibGroupBroadcast.",
             default = true,
             getFunc = function() return BlockPooky.config.groupMessaging end,
@@ -560,6 +560,20 @@ function BlockPooky.InitAddonMenu()
                     BlockPooky.StopGroupMessaging()
                 end
             end,
+        },
+        {
+            type = "description",
+            title = "Note",
+            text =
+            "Toggling this off/on stops/starts sending and showing group warnings immediately, but the LibGroupBroadcast registration is only fully removed after a UI reload (/reloadui).",
+        },
+        {
+            type = "button",
+            name = "Reload UI to Fully Apply",
+            tooltip =
+            "Runs /reloadui so the group messaging registration is fully removed (when disabled) or freshly registered (when enabled).",
+            func = function() ReloadUI("ingame") end,
+            warning = "This reloads the UI and closes your current menu.",
         },
         {
             type    = "checkbox",
@@ -656,7 +670,10 @@ function BlockPooky.InitAddonMenu()
             default = false,
             tooltip = "Show a CSA message when Dark Convergence is ready.",
             getFunc = function() return BlockPooky.config.dcHint end,
-            setFunc = function(newValue) BlockPooky.config.dcHint = newValue end,
+            setFunc = function(newValue)
+                BlockPooky.config.dcHint = newValue
+                BlockPooky.HintsEventRegisterUpdate()
+            end,
         },
         {
             type    = "checkbox",
@@ -664,7 +681,10 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Show a CSA message when Rush of Agony is ready.",
             default = false,
             getFunc = function() return BlockPooky.config.roaHint end,
-            setFunc = function(newValue) BlockPooky.config.roaHint = newValue end,
+            setFunc = function(newValue)
+                BlockPooky.config.roaHint = newValue
+                BlockPooky.HintsEventRegisterUpdate()
+            end,
         },
         {
             type    = "checkbox",
@@ -685,6 +705,7 @@ function BlockPooky.InitAddonMenu()
             getFunc = function() return BlockPooky.config.vigorHint end,
             setFunc = function(newValue)
                 BlockPooky.config.vigorHint = newValue
+                BlockPooky.HintsEventRegisterUpdate()
             end
         },
         {
@@ -696,11 +717,7 @@ function BlockPooky.InitAddonMenu()
             setFunc = function(newValue)
                 if newValue ~= BlockPooky.config.negate.show then
                     BlockPooky.config.negate.show = newValue
-                    if newValue then
-                        BlockPooky.RegisterNegateWarning()
-                    else
-                        BlockPooky.UnRegisterNegateWarning()
-                    end
+                    BlockPooky.NegateEventRegisterUpdate()
                 end
             end
         },
@@ -739,19 +756,6 @@ function BlockPooky.InitAddonMenu()
             getFunc = function() return BlockPooky.config.ccDebuffCSA end,
             setFunc = function(newValue)
                 BlockPooky.config.ccDebuffCSA = newValue
-            end,
-        },
-        {
-            type = "slider",
-            name = "Active CC Bar CSA Cooldown (ms)",
-            tooltip = "Minimum time between Active CC Bar center screen messages, to avoid spam during chain CCs.",
-            min = 0,
-            max = 10000,
-            step = 100,
-            default = 2000,
-            getFunc = function() return BlockPooky.config.ccDebuffCSACooldown end,
-            setFunc = function(newValue)
-                BlockPooky.config.ccDebuffCSACooldown = newValue
             end,
         },
         {

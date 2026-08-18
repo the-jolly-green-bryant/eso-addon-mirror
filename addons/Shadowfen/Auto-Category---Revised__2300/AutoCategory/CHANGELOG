@@ -1,6 +1,12 @@
+[COLOR="DeepSkyBlue"] 4.6.13 (153)[/COLOR]:
+[LIST]
+[*] Performance improvements.
+[*] Fixed subtle sorting errors.
+[/LIST]
+
 [COLOR="DeepSkyBlue"] 4.6.12 (152)[/COLOR]:
 [LIST]
-[*] Fix corrupted AutoCategory zip file that was released.
+[*] Fix corrupted (missing an entire directory) AutoCategory zip file that was released.
 [/LIST]
 
 [COLOR="DeepSkyBlue"] 4.6.11 (151)[/COLOR]:

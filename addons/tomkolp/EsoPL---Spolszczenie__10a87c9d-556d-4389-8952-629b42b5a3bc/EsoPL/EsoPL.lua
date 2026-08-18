@@ -1,6 +1,6 @@
 local ADDON_NAME = "EsoPL"
 EsoPL = EsoPL or {}
-EsoPL.Version = "1.0.21"
+EsoPL.Version = "1.0.22"
 
 local defaultSettings = {
     lastLang = "en",

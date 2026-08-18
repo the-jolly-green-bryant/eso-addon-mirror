@@ -3,6 +3,13 @@ ValknarrUIEEditor = ValknarrUIEEditor or {}
 local Editor = ValknarrUIEEditor
 local ADDON_NAME = "ValknarrUIE"
 local ADDON_VERSION = ValknarrUIEVersion or "0.0.0"
+local UNLOCK_UPDATE_NAME = ADDON_NAME .. "Unlock"
+
+local function StopUnlockUpdate()
+    if EVENT_MANAGER and type(EVENT_MANAGER.UnregisterForUpdate) == "function" then
+        pcall(EVENT_MANAGER.UnregisterForUpdate, EVENT_MANAGER, UNLOCK_UPDATE_NAME)
+    end
+end
 local Log = ValknarrUIELog
 local Budget = ValknarrUIEBudget
 local Platform = ValknarrUIEPlatform
@@ -736,8 +743,16 @@ function Editor:Begin()
         return
     end
 
-    -- Clear leftover End() state so a reopen within ~750ms is a clean session.
+    -- Clear leftover End() state so a reopen during the HUD unlock tick
+    -- is a clean session.
     self.ending = false
+    self.unlockPoked = false
+    self.finishingExit = false
+    self.postCloseUnlock = false
+    StopUnlockUpdate()
+    if Movement and Movement.StopHudUnlock then
+        Movement:StopHudUnlock()
+    end
     if Movement and Movement.BumpClaimGeneration then
         Movement:BumpClaimGeneration()
     end
@@ -813,7 +828,12 @@ function Editor:Begin()
     end
 
     Scene.onHidden = function()
-        if not Editor.active or Editor.ending or Editor.session ~= session then
+        if Editor.session ~= session then
+            return
+        end
+        -- Close owns this callback after End() replaces it. Keep the
+        -- session guard so a stale recover cannot ClaimSticks again.
+        if Editor.ending or not Editor.active then
             return
         end
         -- Long debounce. Stick leak used to dismiss the scene every few
@@ -908,11 +928,165 @@ function Editor:Begin()
     end
 end
 
+-- Unconsume only from a real event handler after the editor scene is gone.
+-- A no-op A/B never hides HUD_SCENE (HUD fragments stay in the editor scene),
+-- so HUD_SCENE SHOWN does not fire. zo_callLater cannot clear
+-- SetGamepadLeftStickConsumedByUI — that is why walk stayed dead after an
+-- unchanged save/exit, and worked after move-then-save (those generate
+-- fragment/camera events). Keep ending until camera, action-layer, or
+-- scene-HIDDEN runs FinishExit. If HUD is already current, poke a layer pop
+-- so EVENT_ACTION_LAYER_POPPED provides that handler.
+local HUD_EXIT_POLL_MS = 50
+local HUD_EXIT_MAX_TICKS = 60
+
+function Editor:PokeUnlockEvent()
+    if self.unlockPoked then
+        return
+    end
+    self.unlockPoked = true
+    -- A no-change A/B never Apply()s, so HUD fragments and HUD_SCENE stay
+    -- shown. StopClaim also leaves camera-UI mode on. Nothing in the game
+    -- will fire CAMERA_UI / HUD_SHOWN on its own — that is the missing
+    -- no-op path. Drop UI camera mode and pop a layer so the already
+    -- registered event handlers run FinishExit in a real consume context.
+    if type(SetGameCameraUIMode) == "function" then
+        pcall(SetGameCameraUIMode, false)
+    end
+    if type(LockCameraRotation) == "function" then
+        pcall(LockCameraRotation, false)
+    elseif type(LockGameCameraRotation) == "function" then
+        pcall(LockGameCameraRotation, false)
+    end
+    if SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function" then
+        pcall(SCENE_MANAGER.SetInUIMode, SCENE_MANAGER, false)
+    end
+    local push = type(PushActionLayerByName) == "function" and PushActionLayerByName or nil
+    local remove = type(RemoveActionLayerByName) == "function" and RemoveActionLayerByName or nil
+    if push then
+        pcall(push, "UIShortcuts")
+    end
+    if remove then
+        pcall(remove, "UIShortcuts")
+    end
+    if not self.ending then
+        return
+    end
+    -- Next game tick is a valid consume context if the nested events did not
+    -- already finish. zo_callLater is not.
+    if EVENT_MANAGER and type(EVENT_MANAGER.RegisterForUpdate) == "function" then
+        StopUnlockUpdate()
+        pcall(
+            EVENT_MANAGER.RegisterForUpdate,
+            EVENT_MANAGER,
+            UNLOCK_UPDATE_NAME,
+            0,
+            function()
+                StopUnlockUpdate()
+                if Editor.ending then
+                    Editor:TryFinishExit(Editor.session, true)
+                end
+            end
+        )
+    end
+    if Log then
+        Log:Debug("Poked camera-UI off and action-layer pop for no-op close")
+    end
+end
+
+function Editor:FinishExit(endSession)
+    if self.session ~= endSession or not self.ending then
+        return
+    end
+    -- ForceRelease toggles camera UI off, which fires CAMERA_UI_MODE_CHANGED
+    -- and would re-enter TryFinishExit while ending is still true.
+    if self.finishingExit then
+        return
+    end
+    self.finishingExit = true
+    if Scene and Scene.ReturnToGame then
+        Scene:ReturnToGame()
+    end
+    self.ending = false
+    self.unlockPoked = false
+    -- HUD fragments can re-consume the left stick after this returns.
+    -- Refuse consume-by-UI until Begin. Do not keep draining action layers.
+    self.postCloseUnlock = true
+    StopUnlockUpdate()
+    if Movement and Movement.StartHudUnlock then
+        Movement:StartHudUnlock(self)
+    elseif Movement and Movement.ForceRelease then
+        Movement:ForceRelease(self)
+    elseif Movement and Movement.ReleaseSticks then
+        Movement:ReleaseSticks(self)
+    end
+    -- Keep finishingExit until after ForceRelease so CAMERA_UI does not
+    -- re-enter TryFinishExit or nest another post-close unlock.
+    self.finishingExit = false
+    self:ScheduleReapply("editor-close")
+end
+
+function Editor:TryFinishExit(endSession, fromEvent)
+    if self.session ~= endSession then
+        return true
+    end
+    if self.finishingExit then
+        return true
+    end
+    if not self.ending then
+        return true
+    end
+    if Scene and Scene.HasLeftEditor and not Scene:HasLeftEditor() then
+        if Scene.Hide then
+            Scene:Hide()
+        end
+        return false
+    end
+    -- Overlay-only (no ZO_Scene) can unlock from the close stack. A real
+    -- editor scene must wait for camera / layer / HIDDEN — a timer unconsume
+    -- is the no-op A/B miss.
+    if not fromEvent and Scene and Scene.NeedsHudUnlockEvent and Scene:NeedsHudUnlockEvent() then
+        self:PokeUnlockEvent()
+        if not self.ending then
+            return true
+        end
+        return false
+    end
+    self:FinishExit(endSession)
+    return true
+end
+
+function Editor:WaitForHudThenExit(endSession)
+    if self:TryFinishExit(endSession, false) then
+        return
+    end
+    if type(zo_callLater) ~= "function" then
+        self:TryFinishExit(endSession, true)
+        return
+    end
+    local ticks = 0
+    local function tick()
+        if Editor:TryFinishExit(endSession, false) then
+            return
+        end
+        ticks = ticks + 1
+        if ticks >= HUD_EXIT_MAX_TICKS then
+            if Log then
+                Log:Debug("HUD wait timed out — finishing exit")
+            end
+            Editor:TryFinishExit(endSession, true)
+            return
+        end
+        zo_callLater(tick, HUD_EXIT_POLL_MS)
+    end
+    zo_callLater(tick, HUD_EXIT_POLL_MS)
+end
+
 function Editor:End()
     if self.ending then
         return
     end
     self.ending = true
+    self.unlockPoked = false
     self.session = (self.session or 0) + 1
     local endSession = self.session
     self.recoverScheduled = false
@@ -923,14 +1097,19 @@ function Editor:End()
     if Log then
         Editor:DebugSnapshot("end")
     end
+    -- Keep onHidden as the HUD-return waiter. Nilling it threw away the
+    -- scene-HIDDEN context SetGamepadLeftStickConsumedByUI needs.
     if Scene then
-        Scene.onHidden = nil
+        Scene.onHidden = function()
+            if Editor.session ~= endSession or not Editor.ending then
+                return
+            end
+            Editor:TryFinishExit(endSession, true)
+        end
     end
     self:StopStickPolling()
-    if Movement and Movement.ForceRelease then
-        Movement:ForceRelease(self)
-    elseif Movement and Movement.ReleaseSticks then
-        Movement:ReleaseSticks(self)
+    if Movement and Movement.StopClaim then
+        Movement:StopClaim(self)
     end
     self:RemoveKeybinds()
     -- Do not SetKeybindChromeVisible(true) here: adding KEYBIND_STRIP
@@ -949,47 +1128,7 @@ function Editor:End()
         Scene:Hide()
     end
     self.sceneActive = false
-
-    -- Hide finishes over several frames; a fast A/B can still be in SHOWING.
-    -- Keep releasing until hud is current (or the timeout), then allow
-    -- saved-layout reapply. Camera/HUD events also ForceRelease while ending.
-    local CLOSE_RETRY_MS = { 30, 80, 200, 400, 750, 1100, 1600 }
-    local function closeTick(last)
-        if Editor.session ~= endSession or Editor.active then
-            return
-        end
-        if Movement and Movement.ForceRelease then
-            Movement:ForceRelease(self)
-        end
-        if Scene and Scene.Hide then
-            Scene:Hide()
-        end
-        if Scene and Scene.ReturnToGame then
-            Scene:ReturnToGame()
-        end
-        if last then
-            Editor.ending = false
-            Editor:ScheduleReapply("editor-close")
-        end
-    end
-
-    if Movement and Movement.ReleaseSticksDeferred then
-        Movement:ReleaseSticksDeferred(self)
-    elseif Movement and Movement.ForceRelease then
-        Movement:ForceRelease(self)
-    end
-
-    if type(zo_callLater) == "function" then
-        for index = 1, #CLOSE_RETRY_MS do
-            local delay = CLOSE_RETRY_MS[index]
-            local last = index == #CLOSE_RETRY_MS
-            zo_callLater(function()
-                closeTick(last)
-            end, delay)
-        end
-    else
-        closeTick(true)
-    end
+    self:WaitForHudThenExit(endSession)
     if Log then
         Log:Info("Edit mode closed")
     end
@@ -1016,6 +1155,7 @@ function Editor:Save()
         Editor:DebugSnapshot("save")
         Log:Always("Layout saved. It will reapply after reload, death, or zoning.")
     end
+    -- dirty does not skip close. A no-op save still has to unlock the stick.
     self:End()
     return true
 end
@@ -1025,28 +1165,15 @@ function Editor:Cancel()
         return
     end
     if not self.active then
-        if Movement and Movement.ReleaseSticksDeferred then
-            Movement:ReleaseSticksDeferred(self)
-        elseif Movement and Movement.ForceRelease then
+        if Movement and Movement.ForceRelease then
             Movement:ForceRelease(self)
+        elseif Movement and Movement.ReleaseSticks then
+            Movement:ReleaseSticks(self)
         end
         return
     end
-    -- B is Exit and scene Back. Kill input before restoring anchors so a
-    -- mid-cancel scene hide cannot ClaimSticks again.
-    self.session = (self.session or 0) + 1
-    self.active = false
-    if Scene then
-        Scene.onHidden = nil
-    end
-    self:StopStickPolling()
-    if Movement and Movement.ForceRelease then
-        Movement:ForceRelease(self)
-    elseif Movement and Movement.ReleaseSticks then
-        Movement:ReleaseSticks(self)
-    end
-    -- Only restore native anchors if the player moved/resized something.
-    -- Restoring after a no-op open makes the action bar jump for no reason.
+    -- Restore dirty anchors first. End() owns the HUD wait and the one
+    -- stick release — do not unconsume while the editor scene is current.
     if Log then
         Log:Debug("Cancel dirty=" .. tostring(self.dirty and true or false))
         Editor:DebugSnapshot("cancel")
@@ -1061,6 +1188,8 @@ function Editor:Cancel()
     elseif Log then
         Log:Always("Cancelled — nothing moved, nothing saved.")
     end
+    -- dirty only controls native restore. No-op B still goes through End()
+    -- so the stick unlocks even though nothing in the HUD moved.
     self:End()
 end
 
@@ -1091,6 +1220,8 @@ function Editor:DescribeSession()
     return {
         active = self.active and true or false,
         ending = self.ending and true or false,
+        unlockPoked = self.unlockPoked and true or false,
+        postCloseUnlock = self.postCloseUnlock and true or false,
         dirty = self.dirty and true or false,
         session = self.session or 0,
         sceneActive = self.sceneActive and true or false,
@@ -1188,8 +1319,8 @@ function Editor:Diagnose()
             Log:Debug("ACTION_BAR global not present")
         end
         Log:Dump("Budget", Budget and Budget.Describe and Budget:Describe())
-        Log:Always("Diag complete. Session, Sticks, and Scene are in chat and in SavedVariables debugLog.")
-        Log:Always("After /reloadui, copy debugLog from SavedVariables/ValknarrUIElementsEditor_SavedVariables.lua. /uiedit log on for the full dump.")
+        Log:Always("Diag complete. Paste the [UIE] Session / Sticks / Scene lines from chat.")
+        Log:Always("Those lines are also in SavedVariables/ValknarrUIElementsEditor_SavedVariables.lua debugLog after /reloadui. The engine Logs folder is not addon output.")
     end
     self:ShowBudget()
 end
@@ -1507,34 +1638,151 @@ function Editor:ReapplyElement(name, reason)
     return applied and true or false
 end
 
+-- HUD fragments can SetGamepadLeftStickConsumedByUI(true) after FinishExit
+-- (ending is already false, hudUnlockFrames may already be 0). Keep
+-- unconsuming from camera / HUD / action-layer handlers until Begin.
+-- Not fragment-shown: that would SetInUIMode(false) on inventory, etc.
+local POST_CLOSE_UNLOCK_REASONS = {
+    ["hud-scene"] = true,
+    ["hudui-scene"] = true,
+    ["action-layer"] = true,
+}
+
+local HUD_SCENE_NAMES = {
+    hud = true,
+    hudui = true,
+}
+-- Menu hide, HUD SHOWING, HUD SHOWN, and HUD_UI can all fire on one ESC.
+-- One pin, no 500/1200 retries — those were the hitch.
+local MENU_EXIT_DEBOUNCE_MS = 750
+
+local function SceneNameOf(scene)
+    if not scene then
+        return nil
+    end
+    if type(scene) == "string" then
+        return string.lower(scene)
+    end
+    if type(scene.GetName) == "function" then
+        local ok, name = pcall(scene.GetName, scene)
+        if ok and type(name) == "string" and name ~= "" then
+            return string.lower(name)
+        end
+    end
+    return nil
+end
+
+function Editor:PreviousSceneName()
+    local manager = SCENE_MANAGER
+    if not manager then
+        return nil
+    end
+    local scene
+    if type(manager.GetPreviousScene) == "function" then
+        local ok, value = pcall(manager.GetPreviousScene, manager)
+        if ok then
+            scene = value
+        end
+    end
+    if scene == nil then
+        scene = manager.previousScene
+    end
+    return SceneNameOf(scene)
+end
+
+-- HUD_SCENE SHOWING also fires while walking. Only re-pin when coming back
+-- from a real menu (ESC / gamepad menu / map), not from hud <-> hudui.
+function Editor:PinOnceAfterMenu(reason)
+    if self.active or self.ending or self.finishingExit then
+        return false
+    end
+    local now = 0
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok and type(value) == "number" then
+            now = value
+        end
+    end
+    local last = self.lastMenuExitReapplyMs
+    if last ~= nil and (now - last) < MENU_EXIT_DEBOUNCE_MS then
+        return false
+    end
+    self.lastMenuExitReapplyMs = now
+    self:ReapplySavedLayout(reason or "menu-exit")
+    return true
+end
+
+function Editor:TryReapplyAfterMenu()
+    if self.active or self.ending or self.finishingExit then
+        return false
+    end
+    local previous = self:PreviousSceneName()
+    if not previous or HUD_SCENE_NAMES[previous] then
+        return false
+    end
+    return self:PinOnceAfterMenu("menu-exit")
+end
+
+function Editor:TryPostCloseUnlock()
+    if not self.postCloseUnlock then
+        return false
+    end
+    if self.active or self.ending or self.finishingExit then
+        return false
+    end
+    if Movement and Movement.claimed and Movement.claimed ~= self then
+        return false
+    end
+    if Movement and Movement.UnconsumeHudSticks then
+        Movement:UnconsumeHudSticks()
+        return true
+    end
+    return false
+end
+
 function Editor:OnCameraUiEvent()
+    if self.finishingExit then
+        return
+    end
     if self.ending then
         if Log then
-            Log:Debug("CameraUI during close — ForceRelease")
+            Log:Debug("CameraUI during close — try finish exit")
             Editor:DebugSnapshot("camera-ui")
         end
-        if Movement and Movement.ForceRelease then
-            Movement:ForceRelease(self)
-        end
+        self:TryFinishExit(self.session, true)
         return
     end
     if self.active and Movement and Movement.HoldClaim then
         Movement:HoldClaim()
+        return
     end
+    self:TryPostCloseUnlock()
 end
 
 -- HUD / action-layer events fire in a real event handler, which is the
--- context SetGamepadLeftStickConsumedByUI needs. Use that to unlock the
--- stick on close, and only reapply layout once teardown is done.
+-- context SetGamepadLeftStickConsumedByUI needs. A no-op A/B never gets
+-- HUD_SCENE SHOWN (HUD fragments stayed visible in the editor scene), so
+-- EVENT_ACTION_LAYER_POPPED / camera UI is the unlock. Only reapply layout
+-- once teardown is done.
 function Editor:OnGameplayRestored(reason)
+    if self.finishingExit then
+        return
+    end
     if self.ending then
         if Log then
-            Log:Debug("GameplayRestored during close (" .. tostring(reason or "event") .. ") — ForceRelease")
+            Log:Debug("GameplayRestored during close (" .. tostring(reason or "event") .. ") — try finish exit")
             Editor:DebugSnapshot("gameplay-restored")
         end
-        if Movement and Movement.ForceRelease then
-            Movement:ForceRelease(self)
-        end
+        self:TryFinishExit(self.session, true)
+        return
+    end
+    if POST_CLOSE_UNLOCK_REASONS[tostring(reason or "")] then
+        self:TryPostCloseUnlock()
+    end
+    -- Noisy while moving or fighting: fragment show, HUD scenes, subzone
+    -- ZONE_CHANGED. Death / editor-close / leaving a menu still reapply.
+    local label = tostring(reason or "")
+    if label == "action-layer" or label == "fragment-shown" or label == "hudui-scene" or label == "hud-scene" or label == "zone-changed" then
         return
     end
     self:ScheduleReapply(reason or "hud-shown")
@@ -1632,6 +1880,10 @@ function Editor:HookNativeResets()
             if newState == SCENE_SHOWN or newState == SCENE_SHOWING then
                 Editor:OnGameplayRestored(label)
             end
+            -- SHOWN only: SHOWING + SHOWN + HUD_UI was four full reapplies.
+            if (label == "hud-scene" or label == "hudui-scene") and newState == SCENE_SHOWN then
+                Editor:TryReapplyAfterMenu()
+            end
         end)
         if ok then
             scene.ValknarrUIEReapplyHooked = true
@@ -1640,19 +1892,24 @@ function Editor:HookNativeResets()
     HookScene(_G.HUD_SCENE, "hud-scene")
     HookScene(_G.HUD_UI_SCENE, "hudui-scene")
 
-    -- Native target updates rewrite name/level anchors and bar width after
-    -- our saved TOPLEFT+size apply. Re-pin position (not size) afterward.
-    if type(_G.ZO_UnitFrames_UpdateWindow) == "function" and not _G.ValknarrUIETargetUpdateHooked then
-        local original = _G.ZO_UnitFrames_UpdateWindow
-        _G.ZO_UnitFrames_UpdateWindow = function(unitTag, ...)
-            local a, b, c, d, e = original(unitTag, ...)
-            if unitTag == "reticleover" then
-                Editor:ReapplyElement("target", "reticle-update")
-            end
-            return a, b, c, d, e
+    -- ESC / gamepad menu / map: hide is the leave-menu signal if previous-scene
+    -- is missing on console. HUD SHOWING still skips walking bounces.
+    local function HookMenuExit(scene)
+        if not scene or type(scene.RegisterCallback) ~= "function" or scene.ValknarrUIEMenuExitHooked then
+            return
         end
-        _G.ValknarrUIETargetUpdateHooked = true
+        local ok = pcall(scene.RegisterCallback, scene, "StateChange", function(_, newState)
+            if newState == SCENE_HIDDEN then
+                Editor:PinOnceAfterMenu("menu-exit")
+            end
+        end)
+        if ok then
+            scene.ValknarrUIEMenuExitHooked = true
+        end
     end
+    HookMenuExit(_G.MAIN_MENU_KEYBOARD)
+    HookMenuExit(_G.MAIN_MENU_GAMEPAD)
+    HookMenuExit(_G.WORLD_MAP_SCENE)
 end
 
 function Editor:RegisterEvents()
@@ -1672,24 +1929,21 @@ function Editor:RegisterEvents()
         end)
     end
 
-    -- PLAYER_ACTIVATED does not fire on in-zone death. HUD fragment hide/show
-    -- and EVENT_PLAYER_ALIVE do. Area doors often fire ZONE_CHANGED without a
-    -- long load. ApplyStyle rewrites platform templates (XML anchors).
+    -- PLAYER_ACTIVATED does not fire on in-zone death. EVENT_PLAYER_ALIVE does.
+    -- ZONE_CHANGED also fires for named subzones while walking; do not reapply.
+    -- ApplyStyle rewrites platform templates (XML anchors).
     Register("Activated", EVENT_PLAYER_ACTIVATED, "player-activated")
     Register("Alive", EVENT_PLAYER_ALIVE, "player-alive")
-    Register("Zone", EVENT_ZONE_CHANGED, "zone-changed")
     Register("Resized", EVENT_SCREEN_RESIZED, "screen-resized")
     Register("GamepadMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, "gamepad-mode")
     Register("LayerPop", EVENT_ACTION_LAYER_POPPED, "action-layer")
-    if EVENT_RETICLE_TARGET_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Reticle", EVENT_RETICLE_TARGET_CHANGED, function()
-            Editor:ReapplyElement("target", "reticle-target")
-            Editor:ReapplyElement("interact", "reticle-target")
-        end)
-    end
-    if EVENT_DISPLAY_ACTIVE_COMBAT_TIP then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatTip", EVENT_DISPLAY_ACTIVE_COMBAT_TIP, function()
-            Editor:ReapplyElement("interact", "combat-tip")
+    if EVENT_ACTION_LAYER_PUSHED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "LayerPush", EVENT_ACTION_LAYER_PUSHED, function()
+            if Editor.postCloseUnlock and not Editor.active and not Editor.ending then
+                if Movement and Movement.UnconsumeHudSticks and Movement.IsGameplayHud and Movement:IsGameplayHud() then
+                    Movement:UnconsumeHudSticks()
+                end
+            end
         end)
     end
 

@@ -362,9 +362,16 @@ function RCR.RegisterSettingsPanel( )
 			table.insert(questActionLabels, GetString("SI_RCR_SETTING_QUEST_ACTION", i))
 		end
 
-		local blockedAbilityNames = { }
-		for _, abilityId in ipairs(LCCC.GetSortedKeys(RCR.CB.BLOCKED_IDS)) do
-			table.insert(blockedAbilityNames, zo_strformat(SI_ABILITY_TOOLTIP_NAME, GetAbilityName(abilityId)))
+		local castBlockerDescription, castBlockerNotAvailable
+		if (RCR.CB) then
+			local blockedAbilityNames = { }
+			for _, abilityId in ipairs(LCCC.GetSortedKeys(RCR.CB.BLOCKED_IDS)) do
+				table.insert(blockedAbilityNames, zo_strformat(SI_ABILITY_TOOLTIP_NAME, GetAbilityName(abilityId)))
+			end
+			castBlockerDescription = zo_strformat(SI_RCR_SETTING_CASTS_TEXT, ZO_GenerateCommaSeparatedListWithAnd(blockedAbilityNames))
+		else
+			castBlockerDescription = zo_strformat("<<1>> <<2>>", GetString(SI_ADDON_MANAGER_DEPENDENCIES), zo_strformat(LibCombatAlerts and SI_ADDON_MANAGER_DEPENDENCY_TOO_LOW_VERSION or SI_ADDON_MANAGER_DEPENDENCY_MISSING, "LibCombatAlerts"))
+			castBlockerNotAvailable = true
 		end
 
 		LAM:RegisterOptionControls(panelId, {
@@ -452,17 +459,18 @@ function RCR.RegisterSettingsPanel( )
 			--------------------
 			{
 				type = "description",
-				text = zo_strformat(SI_RCR_SETTING_CASTS_TEXT, ZO_GenerateCommaSeparatedListWithAnd(blockedAbilityNames)),
+				text = castBlockerDescription,
 			},
 			--------------------
 			{
 				type = "checkbox",
 				name = SI_ADDON_MANAGER_ENABLED,
 				getFunc = function() return RCR.vars.castBlocker end,
-				setFunc = function(enabled)
+				setFunc = function( enabled )
 					RCR.vars.castBlocker = enabled
-					RCR.CB.CheckHookStatus()
+					RCR.CB.RefreshEnablementState()
 				end,
+				disabled = castBlockerNotAvailable,
 			},
 
 			--------------------------------------------------------------------

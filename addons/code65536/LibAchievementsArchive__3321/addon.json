@@ -8,6 +8,10 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "LibAchievementsArchive"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3321/",
-  "fingerprint": "0bf906935603832f53286daf057b65ffea667a14d5acc655dbac743bcb118e54",
+  "fingerprint": "49b06b41912310cfb5159faae06ccfdb94331e62983a94446f2dfed7aad69d2d",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -78,9 +82,9 @@
   "source_id": "3321",
   "source_url": "https://www.esoui.com/downloads/info3321-LibAchievementsArchive.html",
   "stats": {
-    "downloads": 119782,
-    "favorites": 26,
-    "monthly_downloads": 2781
+    "downloads": 121540,
+    "favorites": 27,
+    "monthly_downloads": 3133
   },
   "title": "LibAchievementsArchive",
   "updated_at": 1785798104000,

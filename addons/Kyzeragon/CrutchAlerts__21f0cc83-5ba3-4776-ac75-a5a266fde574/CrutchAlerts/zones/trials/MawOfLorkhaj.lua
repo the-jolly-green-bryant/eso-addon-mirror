@@ -172,8 +172,7 @@ local function RegisterZhajhassa()
     end)
 
     -- Jone's Blessing (57525) fires when a pad's buff is restored, with the target unit ID as the pad's ID
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "JonesBlessing", EVENT_EFFECT_CHANGED, OnPadChanged)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "JonesBlessing", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 57525) -- Jone's Blessing
+    Crutch.RegisterForEffectChanged("JonesBlessing", OnPadChanged, 57525)
 end
 
 local function UnregisterZhajhassa()
@@ -181,7 +180,7 @@ local function UnregisterZhajhassa()
 
     Crutch.UnregisterBossChangedListener("CrutchMawOfLorkhaj")
 
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "JonesBlessing", EVENT_EFFECT_CHANGED)
+    Crutch.UnregisterForEffectChanged("JonesBlessing")
 end
 
 
@@ -296,23 +295,28 @@ local function RefreshAllAspectIcons()
     end
 end
 
+local function CleanUp()
+    Crutch.RemoveAllAttachedIcons(ASPECT_UNIQUE_NAME)
+    for i = 1, MAX_GROUP_SIZE_THRESHOLD do
+        Crutch.Drawing.OverrideDeadColor("group" .. i, nil)
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if (unitTag and GetUnitDisplayName(unitTag)) then
+            currentlyDisplayingAbility[GetUnitDisplayName(unitTag)] = nil
+        end
+    end
+end
+
 local origOSIGetIconDataForPlayer = nil
 local function RegisterTwins()
+    Crutch.RegisterExitedGroupCombatListener("CrutchMoLExitedCombat", CleanUp)
+
     Crutch.RegisterUnitTagListener("CrutchAlertsMoLAspectRefresh", RefreshAllAspectIcons)
 
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "TwinsShadow", EVENT_EFFECT_CHANGED, OnAspect)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "TwinsShadow", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 59639) -- Shadow Aspect (duration)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "TwinsShadow", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+    Crutch.RegisterForEffectChanged("TwinsShadow", OnAspect, 59639, "group") -- Shadow Aspect (duration)
+    Crutch.RegisterForEffectChanged("TwinsLunar", OnAspect, 59640, "group") -- Lunar Aspect (duration)
 
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "TwinsLunar", EVENT_EFFECT_CHANGED, OnAspect)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "TwinsLunar", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 59640) -- Lunar Aspect (duration)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "TwinsLunar", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
-
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "TwinsShadowConversion", EVENT_COMBAT_EVENT, OnConversion)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "TwinsShadowConversion", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 59699) -- Conversion (to shadow)
-
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "TwinsLunarConversion", EVENT_COMBAT_EVENT, OnConversion)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "TwinsLunarConversion", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 75460) -- Conversion (to lunar)
+    Crutch.RegisterForCombatEvent("TwinsShadowConversion", OnConversion, nil, 59699) -- Conversion (to shadow)
+    Crutch.RegisterForCombatEvent("TwinsLunarConversion", OnConversion, nil, 75460) -- Conversion (to lunar)
 
     if (OSI and OSI.GetIconDataForPlayer) then
         -- Override the dead icon to be whichever color
@@ -341,11 +345,15 @@ local function RegisterTwins()
 end
 
 local function UnregisterTwins()
+    Crutch.UnregisterExitedGroupCombatListener("CrutchMoLExitedCombat")
+    CleanUp()
+
     Crutch.UnregisterUnitTagListener("CrutchAlertsMoLAspectRefresh")
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "TwinsShadow", EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "TwinsLunar", EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "TwinsShadowConversion", EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "TwinsLunarConversion", EVENT_EFFECT_CHANGED)
+
+    Crutch.UnregisterForEffectChanged("TwinsShadow")
+    Crutch.UnregisterForEffectChanged("TwinsLunar")
+    Crutch.UnregisterForCombatEvent("TwinsShadowConversion")
+    Crutch.UnregisterForCombatEvent("TwinsLunarConversion")
 
     if (OSI and origOSIGetIconDataForPlayer) then
         Crutch.dbgOther("|c88FFFF[CT]|r Restoring OSI.GetIconDataForPlayer")
@@ -362,14 +370,11 @@ end
 
 local function RegisterRakkhat()
     -- Void Shackle
-    EVENT_MANAGER:RegisterForEvent(Crutch.name .. "RakkhatVoidShackle", EVENT_COMBAT_EVENT, OnVoidShackleDamage)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "RakkhatVoidShackle", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 75507) -- Void Shackle (tether)
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "RakkhatVoidShackle", EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER) -- Self
-    EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "RakkhatVoidShackle", EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_DAMAGE)
+    Crutch.RegisterForCombatEvent("RakkhatVoidShackle", OnVoidShackleDamage, ACTION_RESULT_DAMAGE, 75507, nil, COMBAT_UNIT_TYPE_PLAYER) -- Void Shackle (tether)
 end
 
 local function UnregisterRakkhat()
-    EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "RakkhatVoidShackle", EVENT_COMBAT_EVENT)
+    Crutch.UnregisterForCombatEvent("RakkhatVoidShackle")
 end
 
 

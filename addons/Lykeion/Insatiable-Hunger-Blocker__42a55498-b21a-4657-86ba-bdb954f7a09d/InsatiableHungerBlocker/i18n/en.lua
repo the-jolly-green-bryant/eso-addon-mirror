@@ -9,6 +9,7 @@ ZO_CreateStringId("IHB_POUNCE_BOSS_ONLY", "Only Block Pounce when a Boss is pres
 ZO_CreateStringId("IHB_FEEDING_PRIORITY", "Prioritize Feeding Frenzy")
 ZO_CreateStringId("IHB_FEEDING_PRIORITY_TOOLTIP", "Allow the addon to raise Feeding Frenzy's priority to the highest")
 ZO_CreateStringId("IHB_USAGE", "IHB Usage:")
+ZO_CreateStringId("IHB_SETTINGS_STATUS", "IHB: Current Settings:")
 ZO_CreateStringId("IHB_INVALID_NUMBER", "IHB: %s is not a valid number, use /ihb timeout {milliseconds}")
 ZO_CreateStringId("IHB_TIMEOUT_TOO_SHORT", "IHB: Timeout given is too short. Please set it to at least 500ms")
 ZO_CreateStringId("IHB_TIMEOUT_SET", "IHB: Timeout set to %dms")

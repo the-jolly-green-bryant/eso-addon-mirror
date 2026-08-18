@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Group-Buff-Panels__4226",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:4226",
   "category_id": "22",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -29,7 +34,7 @@
     "GroupBuffPanels"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4226/",
-  "fingerprint": "65ac305cf848a39d59b0510d73546718f29ca91f096e9e05cd65fd9dc4c0903c",
+  "fingerprint": "d234c4500bccf8fc474aa8be2c63cba629a274f62f7a23e68ea39791ea16b76a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14434.png",
     "https://cdn-eso.mmoui.com/preview/pvw14535.png",
@@ -45,9 +50,9 @@
   "source_id": "4226",
   "source_url": "https://www.esoui.com/downloads/info4226-GroupBuffPanels.html",
   "stats": {
-    "downloads": 5551,
-    "favorites": 19,
-    "monthly_downloads": 876
+    "downloads": 5811,
+    "favorites": 18,
+    "monthly_downloads": 667
   },
   "title": "Group Buff Panels",
   "updated_at": 1785345289000,

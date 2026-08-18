@@ -117,7 +117,55 @@ end
 
 
 ---------------------------------------------------------------------
--- Ansuul
+-- Ansuul split spoofing
+---------------------------------------------------------------------
+-- all of them get 188771 but also their own IDs
+local BREAKDOWN_DATA = {
+    [188766] = {
+        name = "Red",
+        unitTag = "boss2",
+        fgColor = C.FELMS_FG,
+        bgColor = C.FELMS_BG,
+    },
+    [188768] = {
+        name = "Blue",
+        unitTag = "boss3",
+        fgColor = {7/255, 87/255, 179/255}, -- TODO: combine with titans
+        bgColor = {1/255, 11/255, 23/255},
+    },
+    [188769] = {
+        name = "Green",
+        unitTag = "boss4",
+        fgColor = C.LLOTHIS_FG,
+        bgColor = C.LLOTHIS_BG,
+    },
+}
+
+local ANSUUL_TO_CLONE_HP = {
+    [40899072] = 1136086,
+    [69858576] = 3881032,
+    [160674720] = 8926374,
+}
+
+local trackedUnits = {} -- for cleanup {[id] = true}
+local function OnBreakdownSplits(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, targetUnitId, abilityId)
+    local options = BREAKDOWN_DATA[abilityId]
+    trackedUnits[targetUnitId] = true
+    local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
+    local maxHealth = ANSUUL_TO_CLONE_HP[powerMax]
+    Crutch.TrackUnitForSpoofing(targetUnitId, options.name, options.unitTag, maxHealth, options.fgColor, options.bgColor)
+end
+
+local function UntrackAll()
+    for unitId, _ in pairs(trackedUnits) do
+        Crutch.UntrackUnitForSpoofing(unitId)
+        trackedUnits[unitId] = nil
+    end
+end
+
+
+---------------------------------------------------------------------
+-- Ansuul info panel
 ---------------------------------------------------------------------
 local PANEL_WRATHSTORM_INDEX = 6
 local WRATHSTORM_ID = 198759
@@ -191,6 +239,25 @@ end
 
 
 ---------------------------------------------------------------------
+-- Poisoned Mind icons
+---------------------------------------------------------------------
+local POISONED_MIND_UNIQUE_NAME = "CrutchAlertsSEPoisonedMind"
+
+local function OnPoisonedMind(_, changeType, _, _, unitTag)
+    if (changeType == EFFECT_RESULT_GAINED) then
+        Crutch.SetAttachedIconForUnit(
+            unitTag,
+            POISONED_MIND_UNIQUE_NAME,
+            C.PRIORITY.MECHANIC_1_PRIORITY,
+            "/esoui/art/icons/visions/vision_utility_viciouspoisons.dds",
+            Crutch.savedOptions.sanitysedge.poisonedMindIconsSize)
+    elseif (changeType == EFFECT_RESULT_FADED) then
+        Crutch.RemoveAttachedIconForUnit(unitTag, POISONED_MIND_UNIQUE_NAME)
+    end
+end
+
+
+---------------------------------------------------------------------
 -- Register/Unregister
 ---------------------------------------------------------------------
 local function CleanUp()
@@ -200,6 +267,10 @@ local function CleanUp()
     Crutch.InfoPanel.StopCount(PANEL_WRATHSTORM_INDEX)
     Crutch.InfoPanel.StopCount(PANEL_CALAMITY_INDEX)
     ZO_ClearTable(attuned)
+
+    Crutch.RemoveAllAttachedIcons(POISONED_MIND_UNIQUE_NAME)
+
+    UntrackAll()
 end
 
 function Crutch.RegisterSanitysEdge()
@@ -236,6 +307,17 @@ function Crutch.RegisterSanitysEdge()
         Crutch.RegisterForCombatEvent("SECalamityRitual", OnCalamityRitual, ACTION_RESULT_BEGIN, 183855)
     end
 
+    if (Crutch.savedOptions.bossHealthBar.enabled and Crutch.savedOptions.sanitysedge.showSplitHp) then
+        Crutch.RegisterForCombatEvent("SEBreakdownFadedSplits", UntrackAll, ACTION_RESULT_EFFECT_FADED, 188760)
+        for abilityId, _ in pairs(BREAKDOWN_DATA) do
+            Crutch.RegisterForCombatEvent("SEBreakdownSplits" .. abilityId, OnBreakdownSplits, ACTION_RESULT_EFFECT_GAINED, abilityId)
+        end
+    end
+
+    if (Crutch.savedOptions.sanitysedge.showPoisonedMindIcons) then
+        Crutch.RegisterForEffectChanged("SEPoisonedMind", OnPoisonedMind, 184710, "group")
+    end
+
     Crutch.RegisterForCombatEvent("SEAttunement", OnAttunement, ACTION_RESULT_EFFECT_GAINED, ATTUNEMENT_ID)
     Crutch.RegisterForCombatEvent("SEUnattuned", OnUnattuned, ACTION_RESULT_EFFECT_FADED, UNATTUNED_ID)
 end
@@ -261,6 +343,13 @@ function Crutch.UnregisterSanitysEdge()
 
     Crutch.UnregisterForCombatEvent("SECalamity")
     Crutch.UnregisterForCombatEvent("SECalamityRitual")
+
+    Crutch.UnregisterForCombatEvent("SEBreakdownFadedSplits")
+    for abilityId, _ in pairs(BREAKDOWN_DATA) do
+        Crutch.UnregisterForCombatEvent("SEBreakdownSplits" .. abilityId)
+    end
+
+    Crutch.UnregisterForEffectChanged("SEPoisonedMind")
 
     Crutch.UnregisterForCombatEvent("SEAttunement")
     Crutch.UnregisterForCombatEvent("SEUnattuned")

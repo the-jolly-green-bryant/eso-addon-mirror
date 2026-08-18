@@ -1,8 +1,8 @@
 ## Title: Guild Market Scanner DEV
-## Description: Adds a non-destructive final export measurement engine. It estimates safe 4K PS5 pages for a denser Price format and selective precomputed Guild Opportunity recommendations without changing the confirmed-working scanner or current cloud pipeline.
+## Description: Low-memory streaming weekly preparation for large PS-EU market scans. Prevents the weekly exporter from duplicating tens of thousands of item rows in Lua memory, while keeping frame-safe trader commits, trusted/observed prices, Top-25 guild opportunities, D1 transport, and the existing weekly browser workflow.
 ## Author: MajesticMinxi
-## Version: 0.4.4
-## AddOnVersion: 44
+## Version: 0.5.2
+## AddOnVersion: 62
 ## APIVersion: 101050
 ## SavedVariables: GuildMarketScannerSavedVariables
 

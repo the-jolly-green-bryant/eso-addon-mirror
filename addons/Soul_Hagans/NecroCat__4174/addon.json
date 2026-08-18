@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Soul_Hagans/NecroCat__4174",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Soul_Hagans",
   "canonical_id": "esoui:4174",
   "category_id": "95",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -26,7 +31,7 @@
     "NecroCatIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4174/",
-  "fingerprint": "0f9bcbd5d4281f1fc37bc7aa1bf661c8bfe27c42b3e87b52d1ddc4dc5102561c",
+  "fingerprint": "6d2487eda7a1b2e2fd5450cfb680bdd8432d110dfb30af7dfdc28f2cb489170d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16393.png"
   ],
@@ -36,11 +41,11 @@
   "source_id": "4174",
   "source_url": "https://www.esoui.com/downloads/info4174-NecroCat.html",
   "stats": {
-    "downloads": 1001,
+    "downloads": 1016,
     "favorites": 0,
     "monthly_downloads": 42
   },
   "title": "NecroCat",
-  "updated_at": 1785049286000,
-  "version": "1.9.1"
+  "updated_at": 1786991661000,
+  "version": "1.9.2"
 }

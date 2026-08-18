@@ -235,7 +235,7 @@ function Module:Initialize( )
 		[218967] = { -2, 2 }, -- Uppercut
 		[219030] = { -2, 2 }, -- Power Bash
 		[219139] = { -2, 2 }, -- Smite
-		[219420] = { 0, 0, false, { 1, 0, 0.6, 0.8 } }, -- Smite
+		[219420] = { 0, 0, false, { 1, 0, 0.6, 0.8 }, cutthroat = true }, -- Smite
 		[219793] = { -2, 2 }, -- Crushing Shards
 		[221863] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Heavy Attack
 		[221881] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Frenzy
@@ -336,12 +336,12 @@ function Module:Initialize( )
 	self.StatusInit_B1 = function( )
 		for i = 1, 2 do
 			for j = 2, 3 do
-				CA2.StatusModifyCell(i, j, {
-					text = "",
-					alignment = TEXT_ALIGN_RIGHT,
-					minWidth = "100%",
-					color = (j == 2) and COLOR_L32 or COLOR_D32,
-				})
+				CA2.StatusModifyCell(i, j,
+					"text", "",
+					"color", (j == 2) and COLOR_L32 or COLOR_D32,
+					"alignment", TEXT_ALIGN_RIGHT,
+					"minWidth", "100%"
+				)
 			end
 		end
 		CA2.StatusSetRowAlpha(2, 0)
@@ -358,15 +358,15 @@ function Module:Initialize( )
 			end
 			local alpha = Vars.mirrorSide[DATA.boss1Reverse[i]] and DATA.boss1DimAlpha[i] or 1
 
-			CA2.StatusModifyCell(1, i + 1, {
-				text = string.format("%d%%", zo_floor(LCA.GetUnitHealthPercent(unitTag))),
-				alpha = alpha,
-			})
+			CA2.StatusModifyCell(1, i + 1,
+				"text", string.format("%d%%", zo_floor(LCA.GetUnitHealthPercent(unitTag))),
+				"alpha", alpha
+			)
 
-			CA2.StatusModifyCell(2, i + 1, {
-				text = (remaining > 0) and LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT) or "",
-				alpha = alpha,
-			})
+			CA2.StatusModifyCell(2, i + 1,
+				"text", (remaining > 0) and LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT) or "",
+				"alpha", alpha
+			)
 		end
 
 		if (showVuln) then
@@ -380,15 +380,15 @@ function Module:Initialize( )
 		if (currentTime > Vars.radianceActive) then
 			local remaining = Vars.radianceNext - currentTime
 			local ratio = zo_clamp(remaining / DATA.radiance.interval, 0, 1)
-			CA2.StatusModifyCell(1, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
-				color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1)),
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
+				"color", LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1))
+			)
 		else
-			CA2.StatusModifyCell(1, 2, {
-				text = string.format("%s [%s]", GetString(SI_LCA_ACTIVE), LCA.FormatTime(Vars.radianceActive - currentTime, LCA.TIME_FORMAT_SHORT)),
-				color = 0xFFFFFFFF,
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", string.format("%s [%s]", GetString(SI_LCA_ACTIVE), LCA.FormatTime(Vars.radianceActive - currentTime, LCA.TIME_FORMAT_SHORT)),
+				"color", 0xFFFFFFFF
+			)
 		end
 	end
 
@@ -400,16 +400,16 @@ function Module:Initialize( )
 	self.StatusPoll_B2 = function( )
 		if (Vars.currentImmunity) then
 			local data = DATA.immunity[Vars.currentImmunity]
-			CA2.StatusModifyCell(1, 2, {
-				text = LCA.GetAbilityName(data[1]),
-				color = data[2],
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", LCA.GetAbilityName(data[1]),
+				"color", data[2]
+			)
 			local immune = GetUnitAttributeVisualizerEffectInfo("boss1", ATTRIBUTE_VISUAL_UNWAVERING_POWER, STAT_MITIGATION, ATTRIBUTE_HEALTH, COMBAT_MECHANIC_FLAGS_HEALTH)
 			if (immune and immune > 0) then
-				CA2.StatusModifyCell(1, 0, {
-					text = self:GetString("254784612-0-28"),
-					color = 0xFFCC00FF,
-				})
+				CA2.StatusModifyCell(1, 0,
+					"text", self:GetString("254784612-0-28"),
+					"color", 0xFFCC00FF
+				)
 			else
 				CA2.StatusSetCellText(1, 0, "")
 			end
@@ -418,10 +418,10 @@ function Module:Initialize( )
 		if (Vars.nextJump > 0) then
 			local remaining = Vars.nextJump - GetGameTimeMilliseconds()
 			local ratio = zo_clamp(remaining / DATA.jump.cooldown, 0, 1)
-			CA2.StatusModifyCell(2, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
-				color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1)),
-			})
+			CA2.StatusModifyCell(2, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
+				"color", LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1))
+			)
 		elseif (Vars.nextJump == -1) then
 			CA2.StatusSetCellText(2, 2, "")
 		else
@@ -431,10 +431,10 @@ function Module:Initialize( )
 
 	self.StatusInit_B3 = function( )
 		for i = 1, 3 do
-			CA2.StatusModifyCell(i, 2, {
-				alignment = TEXT_ALIGN_RIGHT,
-				minWidth = "00s",
-			})
+			CA2.StatusModifyCell(i, 2,
+				"alignment", TEXT_ALIGN_RIGHT,
+				"minWidth", "00s"
+			)
 			if (i < 3) then
 				CA2.StatusSetCellText(i, 0, "")
 			end
@@ -451,16 +451,16 @@ function Module:Initialize( )
 			local remaining = Vars.knot.carryEnd - currentTime
 			local ratio = zo_clamp(remaining / Vars.knot.duration, 0, 1)
 			local _, name = LCA.IdentifyGroupUnitId(Vars.knot.unitId, true)
-			CA2.StatusModifyCell(1, 2, {
-				text = LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
-				color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1)),
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", LCA.FormatTime(remaining, LCA.TIME_FORMAT_SHORT),
+				"color", LCA.PackRGBA(LCA.HSLToRGB(ratio / 3, 1, 0.5, 1))
+			)
 			CA2.StatusSetCellText(1, 3, name)
 		else
-			CA2.StatusModifyCell(1, 2, {
-				text = string.format("%s [%s]", self:GetString("noCarrier"), LCA.FormatTime(currentTime - Vars.knot.lastDrop, LCA.TIME_FORMAT_SHORT)),
-				color = 0xFF0000FF,
-			})
+			CA2.StatusModifyCell(1, 2,
+				"text", string.format("%s [%s]", self:GetString("noCarrier"), LCA.FormatTime(currentTime - Vars.knot.lastDrop, LCA.TIME_FORMAT_SHORT)),
+				"color", 0xFF0000FF
+			)
 			CA2.StatusSetCellText(1, 3, "")
 		end
 
@@ -472,10 +472,10 @@ function Module:Initialize( )
 				cdText = string.format("%s: %s", LCA.GetAbilityName(DATA.knot.passage.id), LCA.FormatTime(cdRemaining, LCA.TIME_FORMAT_LONG))
 			end
 		end
-		CA2.StatusModifyCell(1, 0, {
-			text = cdText,
-			color = 0xCC0000FF,
-		})
+		CA2.StatusModifyCell(1, 0,
+			"text", cdText,
+			"color", 0xCC0000FF
+		)
 
 		if (Vars.flux.state) then
 			if (Vars.flux.state == 1) then
@@ -499,10 +499,10 @@ function Module:Initialize( )
 					cdText = string.format("%s: %s", LCA.GetAbilityName(DATA.flux.overloaded), LCA.FormatTime(cdRemaining, LCA.TIME_FORMAT_LONG))
 				end
 			end
-			CA2.StatusModifyCell(2, 0, {
-				text = cdText,
-				color = 0xCC0000FF,
-			})
+			CA2.StatusModifyCell(2, 0,
+				"text", cdText,
+				"color", 0xCC0000FF
+			)
 
 			if (currentTime > Vars.tempestActive) then
 				CA2.StatusSetCellText(3, 2, LCA.FormatTime(Vars.tempestNext - currentTime, LCA.TIME_FORMAT_SHORT))
@@ -1090,7 +1090,7 @@ do
 
 	local function updateDim( elementId, threshold )
 		if (Vars.boss2Spawned and LCA.GetUnitHealthPercent("boss1") < threshold) then
-			CA2.WorldTextureUpdate(elementId, { color = colorLit, update = false })
+			CA2.WorldTextureUpdate(elementId, "color", colorLit, "update", false)
 			return true
 		end
 	end

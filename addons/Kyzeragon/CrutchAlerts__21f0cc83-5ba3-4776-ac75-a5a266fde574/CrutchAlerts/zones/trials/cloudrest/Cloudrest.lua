@@ -44,13 +44,7 @@ end
 ---------------------------------------------------------------------
 -- Portal
 ---------------------------------------------------------------------
-local effectResults = {
-    [EFFECT_RESULT_FADED] = "FADED",
-    [EFFECT_RESULT_FULL_REFRESH] = "FULL_REFRESH",
-    [EFFECT_RESULT_GAINED] = "GAINED",
-    [EFFECT_RESULT_TRANSFER] = "TRANSFER",
-    [EFFECT_RESULT_UPDATED] = "UPDATED",
-}
+local effectResults = C.EFFECT_RESULTS
 
 local groupShadowWorld = {}
 
@@ -379,41 +373,6 @@ local function OnAmplificationChanged(_, changeType, _, _, unitTag, _, _, stackC
     end
 end
 
----------------------------------------------------------------------
--- Boss health bar thresholds
----------------------------------------------------------------------
-local knownHealths = {[1] = {50}, [2] = {65, 35}, [3] = {75, 50, 25}}
-local foundMiniShades = {} -- Key by unit id just in case there are dupes?
-local zmajaThresholds = {}
-local foundMinis = false
-
-local function OverrideBHBThresholds()
-    EVENT_MANAGER:UnregisterForUpdate(Crutch.name .. "CRBossSpeedTimeout")
-
-    foundMinis = true
-    local numMinis = NonContiguousCount(foundMiniShades)
-    ZO_ClearTable(zmajaThresholds)
-
-    -- Add each threshold
-    for _, threshold in ipairs(knownHealths[numMinis]) do
-        zmajaThresholds[threshold] = "Mini"
-    end
-
-    Crutch.dbgOther("Inferred " .. numMinis .. " minis, overriding thresholds...")
-    Crutch.BossHealthBar.AddThresholdOverride(Crutch.GetCapitalizedString(CRUTCH_BHB_ZMAJA), zmajaThresholds)
-end
-
-local function OnMiniBoss(_, _, _, _, _, _, _, _, _, _, _, _, _, _, sourceUnitId, targetUnitId)
-    if (foundMinis) then return end
-
-    -- We don't get the target names for this >:[
-    Crutch.dbgSpam("detected a mini, unit ID " .. targetUnitId)
-    foundMiniShades[targetUnitId] = true
-
-    -- Since we've found a new shade, set a short timeout to wait for
-    -- other shades to be found
-    EVENT_MANAGER:RegisterForUpdate(Crutch.name .. "CRBossSpeedTimeout", 500, OverrideBHBThresholds)
-end
 
 ---------------------------------------------------------------------
 -- Reset/cleanup
@@ -430,11 +389,6 @@ local function ResetValuesOnWipe()
     nextPortal = 1
     portalActive = false
     Crutch.InfoPanel.StopCount(PANEL_PORTAL_INDEX)
-
-    -- mini detection
-    foundMinis = false
-    ZO_ClearTable(foundMiniShades)
-    Crutch.BossHealthBar.RemoveThresholdOverride(Crutch.GetCapitalizedString(CRUTCH_BHB_ZMAJA))
 end
 
 ---------------------------------------------------------------------
@@ -452,6 +406,7 @@ function Crutch.RegisterCloudrest()
     Crutch.dbgOther("|c88FFFF[CT]|r Registered Cloudrest")
 
     CR.RegisterGrapes()
+    CR.RegisterMinis()
 
     Crutch.RegisterExitedGroupCombatListener("ExitedCombatCloudrest", ResetValuesOnWipe)
 
@@ -524,11 +479,6 @@ function Crutch.RegisterCloudrest()
         Crutch.RegisterForEffectChanged("AmplificationDiag", OnAmplificationChanged, 109022, "group")
     end
 
-    -- Listen for mini shades to determine Z'Maja thresholds
-    if (Crutch.savedOptions.bossHealthBar.enabled) then
-        Crutch.RegisterForCombatEvent("CRMiniBossDetect", OnMiniBoss, ACTION_RESULT_EFFECT_GAINED_DURATION, 105541)
-    end
-
     -- Override OdySupportIcons to also check whether the group member is in the same portal vs not portal
     if (OSI and OSI.UnitErrorCheck and OSI.GetIconDataForPlayer) then
         Crutch.dbgOther("|c88FFFF[CT]|r Overriding OSI.UnitErrorCheck and OSI.GetIconDataForPlayer")
@@ -565,6 +515,7 @@ end
 
 function Crutch.UnregisterCloudrest()
     CR.UnregisterGrapes()
+    CR.UnregisterMinis()
 
     Crutch.UnregisterForCombatEvent("CRPortalCast")
     for _, id in ipairs(PORTAL_DONE_IDS) do
@@ -593,7 +544,6 @@ function Crutch.UnregisterCloudrest()
     Crutch.UnregisterForCombatEvent("ShadowRealmCast")
     Crutch.UnregisterForCombatEvent("ShedHoarfrost")
     Crutch.UnregisterForEffectChanged("AmplificationDiag")
-    Crutch.UnregisterForCombatEvent("CRMiniBossDetect")
 
     if (OSI and origOSIUnitErrorCheck) then
         Crutch.dbgOther("|c88FFFF[CT]|r Restoring OSI.UnitErrorCheck and OSI.GetIconDataForPlayer")

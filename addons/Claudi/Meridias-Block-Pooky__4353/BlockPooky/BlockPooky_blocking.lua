@@ -25,6 +25,11 @@ local BlockPooky = BlockPooky
 -- Previous blocking state for change detection
 local BlockPooky_old_is_block_active = false
 
+-- Registration state for the blocking hint update loop (single source of truth).
+-- Tracked file-local so it never leaks into SavedVariables (the old code persisted a
+-- stale `config.blocking.registered` flag).
+local BlockPooky_blockingRegistered = false
+
 ---Updates the blocking detection state and UI indicator
 ---This function is called every 100ms to monitor blocking state in real-time
 ---@param gameTimeMs number current game time in milliseconds
@@ -61,17 +66,15 @@ end
 
 function BlockPooky.SetUseBlocking()
     if BlockPooky.config.blocking.show then
-        if not BlockPooky.blockingregistered then
+        if not BlockPooky_blockingRegistered then
             EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "BlockingTickUpdate", 100, function(gameTimeMs)
                 BlockPooky.UpdateBlocking(gameTimeMs)
             end, false)
+            BlockPooky_blockingRegistered = true
         end
-        BlockPooky.config.blocking.registered = true
-    else
-        if BlockPooky.config.blocking.registered then
-            EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name .. "BlockingTickUpdate")
-            BlockPooky.blockingregistered = false
-        end
+    elseif BlockPooky_blockingRegistered then
+        EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name .. "BlockingTickUpdate")
+        BlockPooky_blockingRegistered = false
     end
 end
 

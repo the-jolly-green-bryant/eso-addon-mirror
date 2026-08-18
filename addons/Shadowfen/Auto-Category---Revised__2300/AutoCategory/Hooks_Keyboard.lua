@@ -79,11 +79,6 @@ local function NilOrLessThan(value1, value2)
     end
 end
 
--- build a colon delimited string of whatever was passed in
-local function buildHashString(...)
-	return SF.dstr(":",...)
-end
-
 -- ---------------------------------------------------
 -- Category Header functions
 
@@ -108,12 +103,13 @@ end
 -- By doing this, we are no longer fetching the font
 -- every single time that we create a category header.
 local function getHeaderFace()
-	if header_face ~= nil then
-		return header_face
-	end
-	local appearance = AutoCategory.acctSaved.appearance
-	--logDebug("[Keyboard] Fetching face ", appearance["CATEGORY_FONT_NAME"], " from LMP:Fetch")
-	return LMP:Fetch('font',  appearance["CATEGORY_FONT_NAME"] )
+    if header_face ~= nil then
+        return header_face
+    end
+
+    local appearance = AutoCategory.acctSaved.appearance
+    header_face = LMP:Fetch("font", appearance["CATEGORY_FONT_NAME"])
+    return header_face
 end
 
 -- setup function for category header type to be added to the scroll list
@@ -330,7 +326,7 @@ local function constructEntryHash(itemEntry)
 
     -- Early exit if FCOIS not available - skip the table allocation
     if not fcoisAvailable then
-        return buildHashString(data.isPlayerLocked, data.isGemmable, data.stolen, 
+		return SF.dstr(":", data.isPlayerLocked, data.isGemmable, data.stolen, 
             data.isBoPTradeable, data.isInArmory, data.brandNew, data.bagId, 
             data.stackCount, data.uniqueId, data.slotIndex, data.meetsUsageRequirement,
             data.locked, data.isJunk)
@@ -354,7 +350,7 @@ local function constructEntryHash(itemEntry)
         end
     end
  
-    return buildHashString(data.isPlayerLocked, data.isGemmable, data.stolen, data.isBoPTradeable, data.isInArmory,
+    return SF.dstr(":", data.isPlayerLocked, data.isGemmable, data.stolen, data.isBoPTradeable, data.isInArmory,
         data.brandNew, data.bagId, data.stackCount, data.uniqueId, data.slotIndex, data.meetsUsageRequirement,
         data.locked, data.isJunk, hashFCOIS
     )
@@ -431,7 +427,7 @@ end
 -- The categoryList info is collected and then each entry is passed
 -- to createHeaderEntry() to make a header row
 local cnsd_categoryList = {} -- [name] {AC_catCount, AC_sortPriorityName,
-                        --         AC_categoryName, AC_bagTypeId }
+                        	 --         AC_categoryName, AC_bagTypeId }
 --- Create list with visible items and headers (performs category count).
 local function createNewScrollData(scrollData)
 	local newScrollData = {} --- output, entries sorted with category headers
@@ -447,7 +443,7 @@ local function createNewScrollData(scrollData)
 		cnsd_categoryList[name].AC_catCount = SF.nilDefault(cnsd_categoryList[name].AC_catCount, 0) + 1
 	end
 
-	local function setCount(bagTypeId, name, count)
+	local function setCount(name, count)
 		cnsd_categoryList[name] = safeTable(cnsd_categoryList[name])
 		cnsd_categoryList[name].AC_catCount = count
 	end
@@ -458,7 +454,7 @@ local function createNewScrollData(scrollData)
 		if not isHiddenEntry(itemEntry) then
 			if itemEntry.typeId ~= CATEGORY_HEADER and not isCollapsed(itemEntry) then 
 				-- add item if visible
-				table.insert(newScrollData, itemEntry)
+				newScrollData[#newScrollData + 1] = itemEntry
 			end
 		end
 
@@ -466,13 +462,17 @@ local function createNewScrollData(scrollData)
 		-- or else create an entry with count = 1
 		local data = itemEntry.data
 		local AC_categoryName = data.AC_categoryName
+		if not AC_categoryName then
+			AC_categoryName = AutoCategory.acctSaved.appearance["CATEGORY_OTHER_TEXT"]
+			data.AC_categoryName = AC_categoryName
+		end
 		if not cnsd_categoryList[AC_categoryName] then
 			-- keep track of categories and required data
 			cnsd_categoryList[AC_categoryName] =  {
 				AC_sortPriorityName = data.AC_sortPriorityName,
-				AC_categoryName = AC_categoryName,
-				AC_bagTypeId = data.AC_bagTypeId,
-				AC_catCount = 0,
+				AC_categoryName 	= AC_categoryName,
+				AC_bagTypeId 		= data.AC_bagTypeId,
+				AC_catCount 		= 0,
 			}
 		end
 
@@ -480,11 +480,10 @@ local function createNewScrollData(scrollData)
 			-- this is an item, start new count
 			addCount(AC_categoryName)
 
-		elseif itemEntry.typeId == CATEGORY_HEADER 
-			and AutoCategory.IsCategoryCollapsed(data.AC_bagTypeId, AC_categoryName) then
+		elseif AutoCategory.IsCategoryCollapsed(data.AC_bagTypeId, AC_categoryName) then
 			-- this is a collapsed category --> reuse previous count, since
 			--   the content is not available in scrollData
-			setCount(data.AC_bagTypeId, AC_categoryName, data.AC_catCount)
+			setCount(AC_categoryName, data.AC_catCount)
 		end	
 	end
 
@@ -495,7 +494,7 @@ local function createNewScrollData(scrollData)
 			local headerEntry = createHeaderEntry(catInfo)
 			logDebug("[Keyboard] hdr: ", ". ", headerEntry.data.AC_sortPriorityName)
 			if headerEntry then
-				table.insert(newScrollData, headerEntry)
+				newScrollData[#newScrollData + 1] = headerEntry
 			end
 		end
 	end
@@ -503,24 +502,26 @@ local function createNewScrollData(scrollData)
 	-- Ensure all entries have required sort fields to prevent nil errors
 	for _, entry in ipairs(newScrollData) do
 		if entry.data then
-			if entry.data.AC_isHeader then
+			local edata = entry.data
+			if edata.AC_isHeader then
 				-- Headers need all sort fields since any could be used as primary sort or tiebreaker
-				if entry.data.statusSortOrder == nil then entry.data.statusSortOrder = 0 end
-				if entry.data.age == nil then entry.data.age = 0 end
-				if entry.data.name == nil then entry.data.name = entry.data.AC_categoryName or "" end
-				if entry.data.stackCount == nil then entry.data.stackCount = 0 end
-				if entry.data.slotIndex == nil then entry.data.slotIndex = 0 end
-				if entry.data.quality == nil then entry.data.quality = 0 end
-				if entry.data.displayQuality == nil then entry.data.displayQuality = 0 end
-				if entry.data.stackSellPrice == nil then entry.data.stackSellPrice = 0 end
-				if entry.data.statValue == nil then entry.data.statValue = 0 end
-				if entry.data.traitInformationSortOrder == nil then entry.data.traitInformationSortOrder = 0 end
-				if entry.data.sellInformationSortOrder == nil then entry.data.sellInformationSortOrder = 0 end
-				if entry.data.ptValue == nil then entry.data.ptValue = 0 end
+				if edata.statusSortOrder == nil 			then edata.statusSortOrder = 0 end
+				if edata.age == nil 						then edata.age = 0 end
+				if edata.name == nil 						then edata.name = edata.AC_categoryName or "" end
+				if edata.stackCount == nil 					then edata.stackCount = 0 end
+				if edata.slotIndex == nil 					then edata.slotIndex = 0 end
+				if edata.quality == nil 					then edata.quality = 0 end
+				if edata.displayQuality == nil 				then edata.displayQuality = 0 end
+				if edata.stackSellPrice == nil 				then edata.stackSellPrice = 0 end
+				if edata.statValue == nil 					then edata.statValue = 0 end
+				if edata.traitInformationSortOrder == nil 	then edata.traitInformationSortOrder = 0 end
+				if edata.sellInformationSortOrder == nil 	then edata.sellInformationSortOrder = 0 end
+				if edata.ptValue == nil 					then edata.ptValue = 0 end
+
 			else
 				-- Ensure regular items also have these fields if missing
-				if entry.data.statusSortOrder == nil then entry.data.statusSortOrder = 0 end
-				if entry.data.age == nil then entry.data.age = 0 end
+				if edata.statusSortOrder == nil 			then edata.statusSortOrder = 0 end
+				if edata.age == nil 						then edata.age = 0 end
 			end
 		end
 	end
@@ -692,7 +693,6 @@ local function updateHook(zo_inventory)
     pendingUpdates = SF.safeClearTable(pendingUpdates)
 
     rebuildScrollData(zo_inventory)
-
 end
 
 
@@ -746,7 +746,7 @@ function AutoCategory.HookKeyboardMode()
 	AutoCategory.evtmgr:registerEvt(EVENT_STACKED_ALL_ITEMS_IN_BAG, onStackItems)
 
     pendingUpdates = SF.safeClearTable(pendingUpdates)
-    callLater = SF.CallLater:NewSingle(updateHook, 50)
+    callLater = SF.CallLater:NewSingle(updateHook, 50):Start()
 
 end
 

@@ -8,15 +8,15 @@
 ## Description: Combat alerts, boss health bars with mechanic thresholds, time until boss spawn, and more!
 ## Author: Kyzeragon
 ## Contributors: @M0R_Gaming and @Ooki42 for Bahsei curse lines
-## Version: 2.23.0
-## AddOnVersion: 22300
+## Version: 2.24.0
+## AddOnVersion: 22400
 ## APIVersion: 101050
 
 ## PCDependsOn: LibAddonMenu-2.0>=43
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20108
 ## OptionalDependsOn: OdySupportIcons LibFilteredChatPanel LibGroupBroadcast>=91 LibCustomIcons
 
-## SavedVariables: CrutchAlertsSavedVariables
+## SavedVariables: CrutchAlertsSavedVariables ACACUpdateCheckDisabled ACACUC_CrutchAlerts
 
 ; Obsolete, but special thanks to Smaxx, oumu, Keldorem, nikepiko,
 ; and more for language translations and other data!
@@ -32,6 +32,8 @@ main/Utils.lua
 main/Commands.lua
 main/AbilityOverlay.lua
 main/Bindings.xml
+
+PC/AntiClankerAddonConsortiumUpdateChecker.lua
 
 sharing/BroadcastHandler.lua
 
@@ -58,6 +60,7 @@ zones/trials/asylumsanctorium/MiniHealthBars.lua
 zones/trials/asylumsanctorium/MiniPanel.lua
 zones/trials/cloudrest/Cloudrest.lua
 zones/trials/cloudrest/Grapes.lua
+zones/trials/cloudrest/Minis.lua
 zones/trials/dreadsailreef/DreadsailReef.lua
 zones/trials/dreadsailreef/ReefGuardian.lua
 zones/trials/HallsOfFabrication.lua
@@ -92,6 +95,7 @@ zones/dungeons/CoralAerie.lua
 zones/dungeons/ShipwrightsRegret.lua
 
 bosshealthbar/BossHealthBar.lua
+bosshealthbar/BossSpoofing.lua
 bosshealthbar/BossHealthBarAPI.lua
 bosshealthbar/BossHealthBar.xml
 bosshealthbar/AttributeVisualizers.lua
@@ -127,3 +131,6 @@ drawing/RenderSpaceDrawing.lua
 drawing/SpaceDrawing.xml
 drawing/SpaceDrawing.lua
 drawing/SpaceAnimations.lua
+
+drawing/model/Model.xml
+drawing/model/Model.lua

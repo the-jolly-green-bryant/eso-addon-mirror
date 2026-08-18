@@ -39,10 +39,17 @@ do
 	end
 end
 
+do
+	local scratch = { }
+	function Internal.GetScratchTable( )
+		ZO_ClearTable(scratch)
+		return scratch
+	end
+end
+
 
 --------------------------------------------------------------------------------
 -- Base Object for Controls
--- Even though it is "Public", it should only be used internally by LCA controls
 --------------------------------------------------------------------------------
 
 do
@@ -60,5 +67,5 @@ do
 		return self.ID
 	end
 
-	Public.BaseControlObject = BaseControlObject
+	Internal.BaseControlObject = BaseControlObject
 end

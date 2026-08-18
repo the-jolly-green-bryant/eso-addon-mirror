@@ -24,20 +24,21 @@ function AutoCategory.BaseUI:getControlName()
 end
 
 function AutoCategory.BaseUI:updateValue()
-	if not self.controlName then return end
-	local val = self:getValue()
-	if not val then return end
+    if not self.controlName then return end
+
+    local val = self:getValue()
+    if val == nil then return end
 
     local name = self.controlName
 
-	logDebug("[AC_Classes] updateControl: getting control for ", name)
-	local uiCtrl = WINDOW_MANAGER:GetControlByName(name)
-    if uiCtrl == nil then
+    logDebug("[AC_Classes] updateControl: getting control for ", name)
+    local uiCtrl = WINDOW_MANAGER:GetControlByName(name)
+    if not uiCtrl then
         return
     end
 
-	logDebug("[AC_Classes] updateValue: value changed - need to update ", name)
-	uiCtrl:UpdateValue(false, val)
+    logDebug("[AC_Classes] updateValue: value changed - need to update ", name)
+    uiCtrl:UpdateValue(false, val)
 end
 
 -- --------------------------------------------
@@ -58,7 +59,7 @@ function AutoCategory.BaseDD:getControlName()
 end
 
 function AutoCategory.BaseDD:select(val)
-	self.cvt:select(val)
+	return self.cvt:select(val)
 end
 
 function AutoCategory.BaseDD:clearIndex()
@@ -82,7 +83,7 @@ function AutoCategory.BaseDD:updateControl()
         return
     end
 
-	if self.cvt.dirty == 1 then		-- only do this if cvt lists have been modified
+	if self.cvt.dirty == true then		-- only do this if cvt lists have been modified
 		logDebug("[AC_Classes] updateControl: dropdown lists changed - updating ", self.cvt.controlName)
 		-- only update the choices if we know that the lists contents changed
 		self.cvt.dirty = nil
@@ -97,7 +98,7 @@ function AutoCategory.BaseDD:updateControl()
 			self.cvt.choicesTooltips)
 	end
 
-	if self.cvt.indexValue then
+	if self.cvt.indexValue ~= nil then
 		logDebug("[AC_Classes] updateControl: value changed - need to update ", self.cvt.controlName)
 		dropdownCtrl:UpdateValue(false, self.cvt.indexValue)
 	end
@@ -112,4 +113,14 @@ function AutoCategory.BaseDD:getValue()
   return self.cvt.indexValue
 end
 
+function AutoCategory.BaseDD:append(choice, value, tooltip)
+    return self.cvt:append(choice, value, tooltip)
+end
 
+function AutoCategory.BaseDD:removeItemChoice(choice)
+    return self.cvt:removeItemChoice(choice)
+end
+
+function AutoCategory.BaseDD:removeItemChoiceValue(value)
+    return self.cvt:removeItemChoiceValue(value)
+end

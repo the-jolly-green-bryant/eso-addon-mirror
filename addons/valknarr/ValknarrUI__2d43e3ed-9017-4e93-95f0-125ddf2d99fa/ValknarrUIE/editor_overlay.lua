@@ -99,16 +99,44 @@ function Editor:CreateOverlay()
 
     self.catalog = WINDOW_MANAGER:CreateControl("ValknarrUIECatalog", self.root, CT_BACKDROP)
     local ids = ElementIds()
-    local rowH = 26
+    local rowH = 30
+    local rowTop = 14
+    self.catalogRowHeight = rowH
+    self.catalogRowTop = rowTop
     local catalogH = math.max(214, 72 + (#ids * rowH))
     -- Mid-left: clear of top compass and bottom action bar.
     self.catalog:SetAnchor(LEFT, self.root, LEFT, 28, 0)
     self.catalog:SetDimensions(400, catalogH)
-    self.catalog:SetCenterColor(0, 0, 0, 0.78)
-    self.catalog:SetEdgeColor(1, 0.75, 0.15, 0.9)
+    self.catalog:SetCenterColor(0.015, 0.02, 0.035, 0.86)
+    -- Keep the frame quiet so the active row, not the whole panel, owns the
+    -- selection color.
+    self.catalog:SetEdgeColor(0.58, 0.43, 0.10, 0.9)
     self.catalog:SetEdgeTexture(nil, 1, 1, 1, 0)
     self.catalog:SetDrawLayer(DL_OVERLAY)
     self.catalog:SetDrawTier(DT_HIGH)
+
+    self.catalogSelection = WINDOW_MANAGER:CreateControl(
+        "ValknarrUIECatalogSelection", self.catalog, CT_BACKDROP
+    )
+    self.catalogSelection:SetDimensions(384, rowH)
+    self.catalogSelection:SetCenterColor(1, 0.72, 0.10, 0.20)
+    self.catalogSelection:SetEdgeColor(1, 0.84, 0.28, 0.98)
+    self.catalogSelection:SetEdgeTexture(nil, 1, 1, 1, 0)
+    self.catalogSelection:SetDrawLayer(DL_OVERLAY)
+    self.catalogSelection:SetDrawTier(DT_MEDIUM)
+    self.catalogSelection:SetHidden(true)
+    self.catalogSelection:SetMouseEnabled(false)
+
+    self.catalogSelectionBar = WINDOW_MANAGER:CreateControl(
+        "ValknarrUIECatalogSelectionBar", self.catalog, CT_BACKDROP
+    )
+    self.catalogSelectionBar:SetDimensions(5, rowH - 6)
+    self.catalogSelectionBar:SetCenterColor(1, 0.78, 0.12, 1)
+    self.catalogSelectionBar:SetEdgeColor(1, 0.92, 0.48, 1)
+    self.catalogSelectionBar:SetDrawLayer(DL_OVERLAY)
+    self.catalogSelectionBar:SetDrawTier(DT_HIGH)
+    self.catalogSelectionBar:SetHidden(true)
+    self.catalogSelectionBar:SetMouseEnabled(false)
 
     self.catalogTitle = WINDOW_MANAGER:CreateControl("ValknarrUIECatalogTitle", self.catalog, CT_LABEL)
     self.catalogTitle:SetAnchor(TOPLEFT, self.catalog, TOPLEFT, 12, 6)
@@ -119,9 +147,11 @@ function Editor:CreateOverlay()
     self.catalogRows = {}
     for index, name in ipairs(ids) do
         local row = WINDOW_MANAGER:CreateControl("ValknarrUIECatalogRow" .. SafeControlName(name), self.catalog, CT_LABEL)
-        row:SetAnchor(TOPLEFT, self.catalog, TOPLEFT, 12, 14 + (index * rowH))
-        row:SetDimensions(376, 24)
+        row:SetAnchor(TOPLEFT, self.catalog, TOPLEFT, 18, rowTop + (index * rowH))
+        row:SetDimensions(370, 28)
         SetLabelFont(row, "ZoFontGamepad27")
+        row:SetDrawLayer(DL_OVERLAY)
+        row:SetDrawTier(DT_HIGH)
         row:SetColor(1, 1, 1, 1)
         self.catalogRows[name] = row
     end
@@ -181,6 +211,7 @@ function Editor:CreateOverlay()
     self.catalogTextCache = {}
     self.catalogColorCache = {}
     self.labelTextCache = {}
+    self.catalogSelectionIndex = nil
     self.bannerStatusText = nil
     self.bannerHelpSet = false
     self.guideBuffer = {}
@@ -203,7 +234,7 @@ function Editor:SetChromeVisible(visible)
     end
     Grid:SetVisible(visible)
     for _, name in ipairs(ElementIds()) do
-        local label = self.labels[name]
+        local label = self.labels and self.labels[name]
         if label then
             label:SetHidden(hide)
         end
@@ -218,10 +249,14 @@ function Editor:UpdateCatalog()
     local colors = self.catalogColorCache or {}
     self.catalogTextCache = texts
     self.catalogColorCache = colors
-    for _, name in ipairs(ElementIds()) do
+    local selectedIndex
+    for index, name in ipairs(ElementIds()) do
         local row = self.catalogRows and self.catalogRows[name]
         if row then
             local selected = name == self.selected
+            if selected then
+                selectedIndex = index
+            end
             local marker = selected and "> " or "  "
             local status = self.status and self.status[name]
             local text = marker .. LabelOf(name) .. "   " .. StatusLabel(status)
@@ -233,10 +268,28 @@ function Editor:UpdateCatalog()
             if colors[name] ~= colorKey then
                 colors[name] = colorKey
                 if selected then
-                    row:SetColor(1, 0.85, 0.25, 1)
+                    row:SetColor(1, 1, 1, 1)
                 else
                     row:SetColor(StatusColor(status))
                 end
+            end
+        end
+    end
+
+    if self.catalogSelection and self.catalogSelectionIndex ~= selectedIndex then
+        self.catalogSelectionIndex = selectedIndex
+        if selectedIndex then
+            local rowTop = (self.catalogRowTop or 14) + (selectedIndex * (self.catalogRowHeight or 30))
+            self.catalogSelection:SetAnchor(TOPLEFT, self.catalog, TOPLEFT, 8, rowTop)
+            self.catalogSelection:SetHidden(false)
+            if self.catalogSelectionBar then
+                self.catalogSelectionBar:SetAnchor(TOPLEFT, self.catalog, TOPLEFT, 8, rowTop + 3)
+                self.catalogSelectionBar:SetHidden(false)
+            end
+        else
+            self.catalogSelection:SetHidden(true)
+            if self.catalogSelectionBar then
+                self.catalogSelectionBar:SetHidden(true)
             end
         end
     end

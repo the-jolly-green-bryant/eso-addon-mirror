@@ -1,4 +1,5 @@
 local LCA = LibCombatAlerts
+local Internal = LibCombatAlertsInternal
 
 
 --------------------------------------------------------------------------------
@@ -104,7 +105,7 @@ end
 -- LCA_GroupPanel
 --------------------------------------------------------------------------------
 
-local LCA_GroupPanel = LCA.BaseControlObject:Subclass()
+local LCA_GroupPanel = Internal.BaseControlObject:Subclass()
 LCA.GroupPanel = LCA_GroupPanel
 
 -- Preserve GuiRoot to guard against redefinition
@@ -123,7 +124,7 @@ LCA.GROUP_PANEL_SHOW_OTHER = SHOW_OTHER
 LCA.GROUP_PANEL_SHOW_ALL = SHOW_ALL
 
 function LCA_GroupPanel:New( )
-	local obj = LCA.BaseControlObject.New(self, "LCA_GroupPanel")
+	local obj = Internal.BaseControlObject.New(self, "LCA_GroupPanel")
 
 	obj.enabled = false
 	obj.listening = false

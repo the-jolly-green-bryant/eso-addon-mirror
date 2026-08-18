@@ -18,7 +18,7 @@
     "NWUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4773/",
-  "fingerprint": "94dfa726c89e2313cdd558d0638ed2c97edbff0f323eb357321752a1983f1d24",
+  "fingerprint": "f0b4acdb2a2eb000686a86b9741e896874b4817d41b44c247dc29b72ebb15bd5",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16994.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4773",
   "source_url": "https://www.esoui.com/downloads/info4773-NWUI-Unlocked.html",
   "stats": {
-    "downloads": 14,
-    "favorites": 1,
-    "monthly_downloads": 0
+    "downloads": 29,
+    "favorites": 2,
+    "monthly_downloads": 28
   },
   "title": "NWUI - Unlocked",
-  "updated_at": 1786851497000,
-  "version": "1.8"
+  "updated_at": 1786981629000,
+  "version": "1.9"
 }

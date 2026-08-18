@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/LibExtendedJournal__4031",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:4031",
   "category_id": "53",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -41,7 +46,7 @@
     "LibExtendedJournal"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4031/",
-  "fingerprint": "9ed1f554c17ba1ec4dd8aedc4d4619a2d0db632cd62a85f88fef503abcc54491",
+  "fingerprint": "6bd6479bf23ea399a1ecc430557150b675ac7827b73d7a10ce23fbb11b409ba6",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -49,9 +54,9 @@
   "source_id": "4031",
   "source_url": "https://www.esoui.com/downloads/info4031-LibExtendedJournal.html",
   "stats": {
-    "downloads": 38637,
-    "favorites": 14,
-    "monthly_downloads": 3689
+    "downloads": 39747,
+    "favorites": 15,
+    "monthly_downloads": 2655
   },
   "title": "LibExtendedJournal",
   "updated_at": 1785258795000,

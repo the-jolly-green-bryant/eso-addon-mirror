@@ -301,94 +301,58 @@ local TITAN_ATTACKS = {
 
 local TITANS = {
     ["Myrinax"] = {
-        tag = "boss3",
         fgColor = {7/255, 87/255, 179/255},
         bgColor = {1/255, 11/255, 23/255},
     },
     ["Valneer"] = {
-        tag = "boss4",
         fgColor = {230/255, 129/255, 34/255},
         bgColor = {18/255, 9/255, 1/255},
     }
 }
 
-local titanMaxHp = 0
 local titanIds = {} -- { 12345 = {name = "Myrinax", hp = 3213544},}
 local myrinaxFound = false
 local valneerFound = false
 
-local function SpoofTitans()
-    -- Fake each boss for BHB
-    for name, data in pairs(TITANS) do
-        Crutch.SpoofBoss(data.tag, name, function()
-            -- This probably isn't worth a reverse lookup, just iterate and find the right one
-            for _, titan in pairs(titanIds) do
-                if (titan.name == name) then
-                    return titan.hp, titanMaxHp, titanMaxHp
-                end
-            end
-            Crutch.dbgOther("|cFF0000Couldn't find titans (end of encounter?)|r")
-            return 0.5, 1, 1
-        end,
-        data.fgColor,
-        data.bgColor)
-    end
-end
-Crutch.SpoofTitans = SpoofTitans
-
 local function UnspoofTitans()
-    for name, data in pairs(TITANS) do
-        Crutch.UnspoofBoss(data.tag)
+    for id, _ in pairs(titanIds) do
+        Crutch.UntrackUnitForSpoofing(id)
     end
-end
-
-function CrutchAlerts.TestSpoof()
-    UnspoofTitans()
     ZO_ClearTable(titanIds)
-    SpoofTitans()
 end
 
-
--- Listen for incoming damage on the titans and subtract it from the max health
+-- TODO: change this to just first cast or buff or something
 local function OnTitanDamage(_, _, _, _, _, _, _, _, _, _, hitValue, _, _, _, sourceUnitId, targetUnitId, abilityId)
-    -- Store the unit ids if not already known
     -- Source shows as 0, so we can't do both at once
     if (not valneerFound) then
         if (TITAN_ATTACKS[abilityId] == "Myrinax") then
-            local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
-            titanMaxHp = TITAN_MAX_HPS[powerMax]
-            titanIds[targetUnitId] = {name = "Valneer", hp = titanMaxHp}
+            titanIds[targetUnitId] = true
             Crutch.dbgOther(string.format("Identified Valneer %d", targetUnitId))
             valneerFound = true
 
-            -- Both found, initialize
+            local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
+            Crutch.TrackUnitForSpoofing(targetUnitId, "Valneer", "boss4", TITAN_MAX_HPS[powerMax], TITANS.Valneer.fgColor, TITANS.Valneer.bgColor)
+
             if (myrinaxFound) then
-                SpoofTitans()
+                Crutch.UnregisterForCombatEvent("OCTitanDamage")
             end
         end
     end
 
     if (not myrinaxFound) then
         if (TITAN_ATTACKS[abilityId] == "Valneer") then
-            local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
-            titanMaxHp = TITAN_MAX_HPS[powerMax]
-            titanIds[targetUnitId] = {name = "Myrinax", hp = titanMaxHp}
+            titanIds[targetUnitId] = true
             Crutch.dbgOther(string.format("Identified Myrinax %d", targetUnitId))
             myrinaxFound = true
 
-            -- Both found, initialize
+            local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
+            Crutch.TrackUnitForSpoofing(targetUnitId, "Myrinax", "boss3", TITAN_MAX_HPS[powerMax], TITANS.Myrinax.fgColor, TITANS.Myrinax.bgColor)
+
             if (valneerFound) then
-                SpoofTitans()
+                Crutch.UnregisterForCombatEvent("OCTitanDamage")
             end
         end
     end
-
-    local targetTitan = titanIds[targetUnitId]
-    if (not targetTitan) then return end
-
-    targetTitan.hp = targetTitan.hp - hitValue
-
-    Crutch.UpdateSpoofedBossHealth(TITANS[targetTitan.name].tag, targetTitan.hp, titanMaxHp)
 end
 
 local exitKey
@@ -396,7 +360,6 @@ local exitKey
 local function UnregisterTwins()
     UnspoofTitans()
     Crutch.UnregisterForCombatEvent("OCTitanDamage")
-    Crutch.UnregisterForCombatEvent("OCTitanDotTick")
 
     Crutch.DisableIconGroup("OCAOCH")
     Crutch.DisableIconGroup("OCAlt")
@@ -419,9 +382,6 @@ local function RegisterTwins()
         -- Player damage ticks for only 1 each, so imo it's negligible enough to
         -- not do that extra processing. So it should be fine to ignore crits
         Crutch.RegisterForCombatEvent("OCTitanDamage", OnTitanDamage, ACTION_RESULT_DAMAGE, nil, nil,  COMBAT_UNIT_TYPE_NONE)
-
-        -- The atro surges count as dots though
-        Crutch.RegisterForCombatEvent("OCTitanDotTick", OnTitanDamage, ACTION_RESULT_DOT_TICK, nil, nil,  COMBAT_UNIT_TYPE_NONE)
     end
 
     -- Positioning icons
@@ -501,6 +461,19 @@ local function UpdateEnfeeblementIcon(atName, unitTag)
 
     Crutch.dbgSpam(string.format("Setting |t100%%:100%%:%s|t for %s", icon, atName))
     Crutch.SetAttachedIconForUnit(unitTag, ENFEEBLEMENT_UNIQUE_NAME, C.PRIORITY.MECHANIC_1_PRIORITY, icon, 100, color, false, callback, spaceOptions)
+end
+
+-- To be called when unit tags change
+local function RefreshAllEnfeeblementIcons()
+    Crutch.dbgOther("|cFF0000REFRESHING ALL ENFEEBLEMENT ICONS!")
+    Crutch.RemoveAllAttachedIcons(ENFEEBLEMENT_UNIQUE_NAME)
+    for i = 1, GetGroupSize() do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if (unitTag and DoesUnitExist(unitTag)) then
+            local atName = GetUnitDisplayName(unitTag)
+            UpdateEnfeeblementIcon(atName, unitTag)
+        end
+    end
 end
 
 local function OnEnfeeblement(enfeeblementStruct, changeType, unitTag, durationMs)
@@ -608,11 +581,10 @@ function OC.RegisterOCZoneTwins()
     Crutch.RegisterExitedGroupCombatListener("CrutchOsseinCageJynorahExitedCombat", CleanUp)
 
     Crutch.RegisterExitedGroupCombatListener("ExitedCombatOsseinCageTwins", function()
-        ZO_ClearTable(titanIds)
-        titanMaxHp = 0
         myrinaxFound = false
         valneerFound = false
         UnspoofTitans()
+        ZO_ClearTable(titanIds)
         ZO_ClearTable(sparking)
         ZO_ClearTable(blazing)
     end)
@@ -634,6 +606,8 @@ function OC.RegisterOCZoneTwins()
     end)
     EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "OCHealthUpdate", EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG_PREFIX, "boss1")
     EVENT_MANAGER:AddFilterForEvent(Crutch.name .. "OCHealthUpdate", EVENT_POWER_UPDATE, REGISTER_FILTER_POWER_TYPE, COMBAT_MECHANIC_FLAGS_HEALTH)
+
+    Crutch.RegisterUnitTagListener("CrutchAlertsOCEnfeeblementRefresh", RefreshAllEnfeeblementIcons)
 end
 
 function OC.UnregisterOCZoneTwins()
@@ -645,6 +619,8 @@ function OC.UnregisterOCZoneTwins()
     Crutch.UnregisterBossChangedListener("CrutchOsseinCage")
 
     EVENT_MANAGER:UnregisterForEvent(Crutch.name .. "OCHealthUpdate", EVENT_POWER_UPDATE)
+
+    Crutch.UnregisterUnitTagListener("CrutchAlertsOCEnfeeblementRefresh")
 
     MaybeRegisterTwins()
 end

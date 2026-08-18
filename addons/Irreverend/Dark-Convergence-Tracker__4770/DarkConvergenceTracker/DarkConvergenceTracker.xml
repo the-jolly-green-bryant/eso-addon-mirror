@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="DarkConvergenceTracker_Window" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="12">
+            <Dimensions x="80" y="80" />
+            <DimensionConstraints minX="61" minY="61" maxX="120" maxY="120" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="220" />
+            <Controls>
+                <!-- Backdrop -->
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                <!-- Title -->
+                <Label name="$(parent)Title" font="ZoFontWinT1" text="DC" color="871111" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="4" />
+                </Label>
+                <!-- Countdown / "DC Ready!" flash, centered in the box below the title.
+                     Font is ZoFontWinT1's own family/weight ($(BOLD_FONT), soft-shadow-thin)
+                     at size 36 -- double ZoFontWinT1's own confirmed size of 18. -->
+                <Label name="$(parent)CountdownText" font="$(BOLD_FONT)|36|soft-shadow-thin" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions x="150" y="50" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="10" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
+

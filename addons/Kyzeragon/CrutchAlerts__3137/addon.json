@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Kyzeragon/CrutchAlerts__3137",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Kyzeragon",
   "canonical_id": "esoui:3137",
   "category_id": "45",
@@ -17,7 +18,7 @@
     "CrutchAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3137/",
-  "fingerprint": "721ef2768367e7986f6160c46d4c83d8bf78a017d6b4f4f03a082ce44990e622",
+  "fingerprint": "bae1effc219b7ad705febfcd1c5ba96d1eacbfe3f09f8270f59fd6981078575a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10631.png",
     "https://cdn-eso.mmoui.com/preview/pvw12589.png",
@@ -34,11 +35,11 @@
   "source_id": "3137",
   "source_url": "https://www.esoui.com/downloads/info3137-CrutchAlerts.html",
   "stats": {
-    "downloads": 953596,
+    "downloads": 959909,
     "favorites": 157,
-    "monthly_downloads": 21580
+    "monthly_downloads": 12609
   },
   "title": "CrutchAlerts",
-  "updated_at": 1784354018000,
-  "version": "2.23.0"
+  "updated_at": 1786951955000,
+  "version": "2.24.0"
 }

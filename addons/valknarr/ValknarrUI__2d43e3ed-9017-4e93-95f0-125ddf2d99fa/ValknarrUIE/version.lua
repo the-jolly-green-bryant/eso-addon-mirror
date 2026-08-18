@@ -4,6 +4,6 @@
 -- tools/validate_addon_manifests.sh fails the build if they drift. Everything
 -- else in the add-on reads ValknarrUIEVersion rather than repeating a literal.
 
-ValknarrUIEVersion = "0.9.7"
+ValknarrUIEVersion = "1.0.7"
 
 return ValknarrUIEVersion

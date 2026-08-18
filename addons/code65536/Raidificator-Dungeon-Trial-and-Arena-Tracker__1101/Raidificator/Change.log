@@ -1,3 +1,7 @@
+Version 4.7.2 (2026/08/17)
+* The accidental cast blocking feature now requires LibCombatAlerts 0.8.0 or
+  newer
+
 Version 4.7.1 (2026/08/06)
 * Fixed an issue where the coffer cooldown for the Sanctum Ophidia quest item
   was not being tracked due to an incorrect quest ID on UESP's wiki

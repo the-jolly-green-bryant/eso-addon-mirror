@@ -8,6 +8,10 @@
   "category_id": "25",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -70,7 +74,7 @@
     "CombatAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1855/",
-  "fingerprint": "af8cb6daa659cc648d8b1ac20e19f110e47d9780a905532f3860bda80c1235d3",
+  "fingerprint": "49dbbd656fd2966f48a0cb8576b346f6f6b4c6292e5ff31fb615c895926e20f8",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw7044.png",
     "https://cdn-eso.mmoui.com/preview/pvw7048.png",
@@ -85,11 +89,11 @@
   "source_id": "1855",
   "source_url": "https://www.esoui.com/downloads/info1855-CodesCombatAlerts.html",
   "stats": {
-    "downloads": 4510946,
+    "downloads": 4527117,
     "favorites": 711,
-    "monthly_downloads": 41892
+    "monthly_downloads": 40637
   },
   "title": "Code's Combat Alerts",
-  "updated_at": 1786349213000,
-  "version": "2.5.1"
+  "updated_at": 1786976896000,
+  "version": "2.5.2"
 }

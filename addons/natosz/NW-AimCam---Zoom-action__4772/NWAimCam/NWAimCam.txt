@@ -1,8 +1,8 @@
 ## Title: NWAimCam Zoom Action
 ## Author: Natosz
-## Version: 1.2
-## APIVersion: 101041 101042
+## Version: 1.4
+## APIVersion: 101043 101044
 ## SavedVariables: NWAimCamVariables
-## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibAddonMenu-2.0>=35
 
 NWAimCam.lua

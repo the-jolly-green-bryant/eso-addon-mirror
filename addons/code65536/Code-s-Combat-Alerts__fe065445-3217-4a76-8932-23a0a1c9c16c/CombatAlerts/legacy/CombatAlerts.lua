@@ -383,6 +383,9 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			if (options[3] and LCA.IsUnitIdValid(sourceUnitId)) then
 				CombatAlerts.castAlerts.sources[sourceUnitId] = id
 			end
+			if (options.cutthroat) then
+				CombatAlerts2.SetNightbladeCutthroatExclusion(GetGameTimeMilliseconds() + hitValue + offset)
+			end
 		end
 	elseif (CombatAlertsData.dodge.interrupts[result] and CombatAlerts.castAlerts.sources[targetUnitId]) then
 		CombatAlerts.CastAlertsStop(CombatAlerts.castAlerts.sources[targetUnitId])
