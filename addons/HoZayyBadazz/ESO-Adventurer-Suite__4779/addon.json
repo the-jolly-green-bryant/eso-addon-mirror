@@ -1,0 +1,52 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/HoZayyBadazz/ESO-Adventurer-Suite__4779",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "HoZayyBadazz",
+  "canonical_id": "esoui:4779",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4779",
+  "deleted": false,
+  "directories": [
+    "ESOAdventurerSuite"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4779/",
+  "fingerprint": "3055c9af81ea98f9588a0a6901702c2554725e9e8ffd7151a1bc1b363e0d8d66",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17033.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17034.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17035.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17036.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17037.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17038.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17039.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17040.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17041.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17042.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4779",
+  "source_url": "https://www.esoui.com/downloads/info4779-ESOAdventurerSuite.html",
+  "stats": {
+    "downloads": 5,
+    "favorites": 1,
+    "monthly_downloads": 1
+  },
+  "title": "ESO Adventurer Suite",
+  "updated_at": 1787115701000,
+  "version": "0.24.6"
+}

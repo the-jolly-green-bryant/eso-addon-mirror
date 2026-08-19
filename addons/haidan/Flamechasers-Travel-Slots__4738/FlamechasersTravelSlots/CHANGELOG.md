@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.7.17
+- Reduced the Travel Command Center outer border thickness from two pixels to one pixel while keeping it aligned to the visible window edge.
+
+## 0.7.16
+- Moved the outer frame onto the visible window edge, removing the transparent gap.
+- Increased the signature-blue frame thickness from one pixel to two pixels.
+
+## 0.7.15
+- Added a thin signature-blue frame around the complete main window.
+- Added live recall prices to every slot whose current travel action costs currency.
+- Refreshes visible recall prices twice per second while the window is open.
+- Keeps recall prices hidden for wayshrine-origin travel and free destinations
+  such as player houses and the group leader.
+- Marks unaffordable recall prices in red without changing ESO's confirmation flow.
+
+## 0.7.14
+- Travel Slots now closes automatically when its associated full-map scene closes.
+- Pressing ESC while using Travel Slots over the map now dismisses both the map
+  and the addon window.
+- Used map-scene state detection instead of intercepting ESC, preserving normal
+  wayshrine interactions and standalone keybind behavior.
+- Included picker, editor, and icon-selection windows in the same map-close flow.
+
+## 0.7.13
+- Added an optional Auto-open with Map checkbox in the main-window footer.
+- Travel Slots can now open automatically with ESO's full map, whether opened
+  with M or through a wayshrine.
+- Completing travel from an ordinary M-opened map now closes both Travel Slots
+  and the world map.
+- Preserved the wayshrine map during wayshrine travel so the existing free-travel
+  interaction remains intact.
+- Kept automatic opening exclusive to ESO's full world-map scenes, preventing
+  minimap addons from triggering it.
+
 ## 0.7.12
 - Rebuilt the main header into a compact Potion Maker-style layout.
 - Replaced the CLOSE label with a standard X button.

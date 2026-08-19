@@ -20,6 +20,7 @@ if ZO_CreateStringId then
     ZO_CreateStringId("SI_BINDING_NAME_PBT_TOGGLE_BOSS_TIMERS", "Team Shadows Manager: ON / OFF timer boss")
     ZO_CreateStringId("SI_BINDING_NAME_PBT_TOGGLE_GROUP_COUNTDOWN", "Team Shadows Manager: ON / OFF decompte")
     ZO_CreateStringId("SI_BINDING_NAME_PBT_RENDEZVOUS", "Team Shadows Manager: placer marker")
+    ZO_CreateStringId("SI_BINDING_NAME_PBT_BAHSEI_CALL_REINFORCEMENTS", "Team Shadows Manager: Bahsei, appeler les renforts portail")
 end
 
 PBT.isRunning = false
@@ -57,12 +58,12 @@ PBT.currentZoneId = nil
 PBT.narrationLog = {}
 PBT.hpThresholdState = {}
 PBT.activeDisplayOffset = 0
-PBT.settingsPreviewControls = {}
 PBT.lastGroupCountdownSentMs = 0
 PBT.savedMarkerIcons = {}
 PBT.markerCameraProbe = nil
 
 local function Chat(message)
+    if PBT.LocalizeChatMessage then message = PBT.LocalizeChatMessage(message) end
     d(string.format("|cFF3333%s|r: %s", PBT.displayName, tostring(message)))
 end
 
@@ -186,6 +187,65 @@ end
 
 function PBT.GetCurrentTrialKey()
     return GetCurrentTrialKey()
+end
+
+local function ResolveTimerBossKey(zoneKey, bossNameOrKey)
+    local wanted = NormalizeName(bossNameOrKey)
+    if not zoneKey or not wanted then return nil end
+
+    for _, boss in ipairs((PBT.timerBossDefinitions and PBT.timerBossDefinitions[zoneKey]) or {}) do
+        local candidates = { boss.key, boss.fr, boss.en }
+        for _, alias in ipairs(boss.aliases or {}) do
+            table.insert(candidates, alias)
+        end
+        for _, candidate in ipairs(candidates) do
+            local normalized = NormalizeName(candidate)
+            if normalized and (wanted == normalized or wanted:find(normalized, 1, true) or normalized:find(wanted, 1, true)) then
+                return boss.key
+            end
+        end
+    end
+
+    return nil
+end
+
+function PBT.GetTimerBossDefinitions(zoneKey)
+    return (PBT.timerBossDefinitions and PBT.timerBossDefinitions[zoneKey]) or {}
+end
+
+function PBT.IsInstanceTimerEnabled(zoneKey)
+    if not zoneKey then return true end
+    local settings = PBT.savedVars and PBT.savedVars.instanceTimerEnabled
+    return not settings or settings[zoneKey] ~= false
+end
+
+function PBT.SetInstanceTimerEnabled(zoneKey, enabled)
+    if not PBT.savedVars or not zoneKey then return end
+    PBT.savedVars.instanceTimerEnabled = PBT.savedVars.instanceTimerEnabled or {}
+    PBT.savedVars.instanceTimerEnabled[zoneKey] = enabled == true
+end
+
+function PBT.IsBossTimerEnabled(zoneKey, bossNameOrKey)
+    if not zoneKey then return true end
+    local bossKey = ResolveTimerBossKey(zoneKey, bossNameOrKey)
+    if not bossKey then return true end
+    local settings = PBT.savedVars and PBT.savedVars.bossTimerEnabled
+    return not settings or settings[zoneKey .. "|" .. bossKey] ~= false
+end
+
+function PBT.SetBossTimerEnabled(zoneKey, bossNameOrKey, enabled)
+    if not PBT.savedVars or not zoneKey then return end
+    local bossKey = ResolveTimerBossKey(zoneKey, bossNameOrKey)
+    if not bossKey then return end
+    PBT.savedVars.bossTimerEnabled = PBT.savedVars.bossTimerEnabled or {}
+    PBT.savedVars.bossTimerEnabled[zoneKey .. "|" .. bossKey] = enabled == true
+end
+
+local function AutomaticTimerSelectionEnabled(zoneKey, bossNameOrKey)
+    if not BossSpawnTimersEnabled() then return false end
+    if zoneKey and not PBT.IsInstanceTimerEnabled(zoneKey) then return false end
+    if zoneKey and bossNameOrKey and not PBT.IsBossTimerEnabled(zoneKey, bossNameOrKey) then return false end
+    return true
 end
 
 local function PlayTickSound(secondsRemaining)
@@ -502,9 +562,6 @@ local function BuildSavedMarkerOptions(marker)
     }
 end
 
-local function IsGrouped()
-    return IsUnitGrouped and IsUnitGrouped("player")
-end
 
 local function BuildBeaconMarker(zone, wX, wY, wZ, textureId, options)
     if not zone or not wX or not wY or not wZ then return nil end
@@ -750,7 +807,22 @@ for _, entry in ipairs(raidMarkerDirectory) do
     raidMarkerDirectoryByKey[entry.zoneKey] = entry
 end
 
+local function IsValidMarkerDirectoryKey(zoneKey)
+    zoneKey = tostring(zoneKey or "")
+    return raidMarkerDirectoryByKey[zoneKey] ~= nil or zoneKey:match("^zone_%d+$") ~= nil
+end
+
+local function GetCurrentMarkerDirectoryKey()
+    local currentTrialKey = GetCurrentTrialKey and GetCurrentTrialKey() or nil
+    if currentTrialKey and raidMarkerDirectoryByKey[currentTrialKey] then return currentTrialKey end
+    local zoneId = GetCurrentZoneId()
+    if zoneId then return "zone_" .. tostring(zoneId) end
+    return "free"
+end
+
 local function GetPrimaryZoneIdForKey(zoneKey)
+    local dynamicZoneId = tostring(zoneKey or ""):match("^zone_(%d+)$")
+    if dynamicZoneId then return dynamicZoneId end
     if zoneKey == "free" then return nil end
     local ids = PBT.zoneIds and PBT.zoneIds[zoneKey]
     if type(ids) ~= "table" then return nil end
@@ -762,30 +834,15 @@ end
 
 local function GetSelectedMarkerDirectoryKey()
     local selected = PBT.savedVars and PBT.savedVars.groupBeaconDirectoryKey
-    if selected and selected ~= "" and raidMarkerDirectoryByKey[selected] then
+    if selected and selected ~= "" and IsValidMarkerDirectoryKey(selected) then
         return selected
     end
 
-    local currentTrialKey = GetCurrentTrialKey and GetCurrentTrialKey() or nil
-    if currentTrialKey and raidMarkerDirectoryByKey[currentTrialKey] then
-        if PBT.savedVars then
-            PBT.savedVars.groupBeaconDirectoryKey = currentTrialKey
-        end
-        return currentTrialKey
-    end
-
-    if PBT.savedVars then
-        PBT.savedVars.groupBeaconDirectoryKey = "free"
-    end
-    return "free"
+    local currentKey = GetCurrentMarkerDirectoryKey()
+    if PBT.savedVars then PBT.savedVars.groupBeaconDirectoryKey = currentKey end
+    return currentKey
 end
 
-local function GetMarkerSetZoneKey(zone)
-    if PBT.savedVars and PBT.savedVars.groupBeaconDirectoryKey and PBT.savedVars.groupBeaconDirectoryKey ~= "" then
-        return GetSelectedMarkerDirectoryKey()
-    end
-    return tostring(zone or GetCurrentZoneId() or "global")
-end
 
 local function GetMarkerSetForRead(zoneKey, slot)
     local sets = PBT.savedVars and PBT.savedVars.groupBeaconMarkerSets
@@ -855,14 +912,6 @@ local function GetMarkerPackName(slot)
     return CleanMarkerSetName(slot, set and set.name or key)
 end
 
-local function GetMarkerPackKey(slot)
-    slot = zo_clamp(tonumber(slot) or GetMarkerSetSlot(), 1, 3)
-    local zoneKey = GetSelectedMarkerDirectoryKey()
-    local storage = GetMarkerSetZoneStorage(zoneKey)
-    local name = storage and storage.slots and storage.slots[slot]
-    if name and name ~= "" then return name end
-    return CleanMarkerSetName(slot, nil)
-end
 
 function PBT.SaveCurrentMarkerSet(name)
     if not PBT.savedVars then return false, "variables non pretes" end
@@ -896,6 +945,7 @@ end
 -- pack over the working list.
 function PBT.SyncActiveMarkerSet()
     if not PBT.savedVars then return end
+    if PBT.temporaryGroupMarkerShare then return end
 
     local slot = GetMarkerSetSlot()
     local zoneKey = GetSelectedMarkerDirectoryKey()
@@ -926,6 +976,11 @@ end
 
 function PBT.ActivateCurrentMarkerSet(slot)
     if not PBT.savedVars then return false, "variables non pretes" end
+
+    if PBT.temporaryGroupMarkerShare then
+        PBT.temporaryGroupMarkerShare = nil
+        PBT.savedVars.groupShareTemporaryBackup = nil
+    end
 
     slot = zo_clamp(tonumber(slot) or GetMarkerSetSlot(), 1, 3)
     PBT.savedVars.groupBeaconMarkerSetSlot = slot
@@ -1049,7 +1104,7 @@ function PBT.GetMarkerDirectoryEntries()
 end
 
 function PBT.SetMarkerDirectory(zoneKey)
-    if not PBT.savedVars or not raidMarkerDirectoryByKey[zoneKey] then return false end
+    if not PBT.savedVars or not IsValidMarkerDirectoryKey(zoneKey) then return false end
     PBT.savedVars.groupBeaconDirectoryKey = zoneKey
     return true
 end
@@ -1060,18 +1115,64 @@ end
 
 function PBT.GetMarkerDirectoryName()
     local key = GetSelectedMarkerDirectoryKey()
+    local dynamicZoneId = tostring(key):match("^zone_(%d+)$")
+    if dynamicZoneId then
+        local zoneName = GetZoneNameById and zo_strformat("<<1>>", GetZoneNameById(tonumber(dynamicZoneId)) or "") or ""
+        return zoneName ~= "" and zoneName or ("Zone " .. dynamicZoneId)
+    end
     if key == "free" then
         local zoneId = GetCurrentZoneId()
         if zoneId and GetZoneNameById then
             local zoneName = zo_strformat("<<1>>", GetZoneNameById(zoneId) or "")
             if zoneName and zoneName ~= "" then
-                return "Libre - " .. zoneName
+                return PBT.GetString and PBT.GetString("free_zone_prefix", zoneName) or ("Libre - " .. zoneName)
             end
         end
-        return "Zone libre / actuelle"
+        return PBT.GetLocalizedZoneName and PBT.GetLocalizedZoneName("free", "Zone libre / actuelle") or "Zone libre / actuelle"
     end
     local entry = raidMarkerDirectoryByKey[key]
-    return entry and entry.name or "Raid"
+    local fallback = entry and entry.name or "Raid"
+    return PBT.GetLocalizedZoneName and PBT.GetLocalizedZoneName(key, fallback) or fallback
+end
+
+function PBT.GetMarkerDirectoryNameForKey(zoneKey)
+    local dynamicZoneId = tostring(zoneKey or ""):match("^zone_(%d+)$")
+    if dynamicZoneId then
+        local zoneName = GetZoneNameById and zo_strformat("<<1>>", GetZoneNameById(tonumber(dynamicZoneId)) or "") or ""
+        return zoneName ~= "" and zoneName or ("Zone " .. dynamicZoneId)
+    end
+    local entry = raidMarkerDirectoryByKey[tostring(zoneKey or "")]
+    local fallback = entry and entry.name or "Zone inconnue"
+    return PBT.GetLocalizedZoneName and PBT.GetLocalizedZoneName(zoneKey, fallback) or fallback
+end
+
+function PBT.SelectMarkerDirectoryForCurrentZone()
+    if not PBT.savedVars then return nil, false end
+    RefreshPlayerZone()
+    local targetKey = GetCurrentMarkerDirectoryKey()
+    local currentKey = GetSelectedMarkerDirectoryKey()
+    if currentKey == targetKey then return targetKey, false end
+
+    if PBT.SyncActiveMarkerSet then PBT.SyncActiveMarkerSet() end
+    if targetKey:match("^zone_%d+$") and PBT.savedVars.groupBeaconMarkerSets[targetKey] == nil then
+        local legacyStorage = PBT.savedVars.groupBeaconMarkerSets.free
+        local currentZoneId = tonumber(targetKey:match("^zone_(%d+)$"))
+        local legacyMatches = false
+        if legacyStorage and legacyStorage.markers then
+            for _, set in pairs(legacyStorage.markers) do
+                if set.markers and set.markers[1] and tonumber(set.markers[1].zone) == currentZoneId then
+                    legacyMatches = true
+                    break
+                end
+            end
+        end
+        if legacyMatches then PBT.savedVars.groupBeaconMarkerSets[targetKey] = CopyTable(legacyStorage) end
+    end
+    PBT.savedVars.groupBeaconDirectoryKey = targetKey
+    if PBT.ActivateCurrentMarkerSet then
+        PBT.ActivateCurrentMarkerSet(PBT.savedVars.groupBeaconMarkerSetSlot)
+    end
+    return targetKey, true
 end
 
 local function GetElmsMarkerStyle(iconKey)
@@ -1145,11 +1246,10 @@ local function ImportElmsMarkers(text)
     return imported
 end
 
-function PBT.ImportSavedMarkers(text)
-    if not PBT.savedVars then return false, "variables non pretes" end
-    if type(text) ~= "string" or text == "" then return false, "texte vide" end
-
+local function ParseTSMMarkerCode(text, strict)
     local imported = {}
+    if type(text) ~= "string" or text == "" then return nil, "texte vide" end
+    if strict and (#text > 6000 or not text:find("^TSM1[;]")) then return nil, "code TSM1 invalide" end
 
     if text:find("^TSM1") then
         local first = true
@@ -1164,12 +1264,15 @@ function PBT.ImportSavedMarkers(text)
                     if #fields >= 13 then break end
                 end
 
+                local separatorCount = select(2, chunk:gsub(",", ""))
+                if strict and (#fields ~= 13 or separatorCount ~= 12) then return nil, "marker incomplet" end
+
                 local marker = {
                     zone = tonumber(fields[1]),
                     x = tonumber(fields[2]),
                     y = tonumber(fields[3]),
                     z = tonumber(fields[4]),
-                textureId = zo_clamp(tonumber(fields[5]) or 1, 1, 23),
+                    textureId = zo_clamp(tonumber(fields[5]) or 1, 1, 23),
                     labelId = tonumber(fields[6]) or 1,
                     size = zo_clamp(tonumber(fields[7]) or PBT.defaults.groupBeaconSize, 24, 160),
                     heightOffset = zo_clamp(tonumber(fields[8]) or PBT.defaults.groupBeaconHeight, -40, 80),
@@ -1187,21 +1290,189 @@ function PBT.ImportSavedMarkers(text)
                 end
 
                 if marker.zone and marker.x and marker.y and marker.z then
+                    if strict then
+                        local numbers = { marker.zone, marker.x, marker.y, marker.z, marker.textureId, marker.labelId, marker.size, marker.heightOffset, marker.durationMs }
+                        for _, value in ipairs(numbers) do
+                            if value ~= value or value == math.huge or value == -math.huge then return nil, "valeur numerique invalide" end
+                        end
+                        if marker.zone < 1 or marker.zone > 100000 or math.abs(marker.x) > 10000000 or math.abs(marker.y) > 10000000 or math.abs(marker.z) > 10000000 then
+                            return nil, "position invalide"
+                        end
+                        if tonumber(fields[5]) ~= marker.textureId or marker.textureId % 1 ~= 0 or marker.labelId < 1 or marker.labelId > 14 or marker.labelId % 1 ~= 0 then
+                            return nil, "style de marker invalide"
+                        end
+                        local rawSize, rawHeight, rawDuration = tonumber(fields[7]), tonumber(fields[8]), tonumber(fields[9])
+                        if not rawSize or rawSize < 24 or rawSize > 160 or not rawHeight or rawHeight < -40 or rawHeight > 80 or
+                            not rawDuration or rawDuration < 1000 or rawDuration > 60000 then
+                            return nil, "reglage de marker invalide"
+                        end
+                        if marker.customLabel and (#marker.customLabel > 24 or marker.customLabel:find("[,;\r\n]")) then
+                            return nil, "nom personnalise invalide"
+                        end
+                        if (fields[11] == "") ~= (fields[12] == "") or (fields[12] == "") ~= (fields[13] == "") then
+                            return nil, "couleur incomplete"
+                        end
+                        if fields[11] ~= "" and (not cr or not cg or not cb) then return nil, "couleur invalide" end
+                        if cr and (cr < 0 or cr > 1 or cg < 0 or cg > 1 or cb < 0 or cb > 1) then
+                            return nil, "couleur invalide"
+                        end
+                    end
                     imported[#imported + 1] = marker
+                    if strict and #imported > 100 then return nil, "trop de markers" end
+                elseif strict then
+                    return nil, "position manquante"
                 end
             end
         end
+    end
+
+    if #imported == 0 then return nil, "aucun marker trouve" end
+    return imported
+end
+
+function PBT.ValidateMarkerShareCode(text)
+    local markers, message = ParseTSMMarkerCode(text, true)
+    if not markers then return false, message end
+    return true, markers
+end
+
+function PBT.ImportSavedMarkers(text)
+    if not PBT.savedVars then return false, "variables non pretes" end
+    if type(text) ~= "string" or text == "" then return false, "texte vide" end
+
+    local imported, message
+    if text:find("^TSM1") then
+        imported, message = ParseTSMMarkerCode(text, false)
     else
         imported = ImportElmsMarkers(text)
     end
 
-    if #imported == 0 then return false, "aucun marker trouve" end
+    if not imported or #imported == 0 then return false, message or "aucun marker trouve" end
 
     PBT.savedVars.groupBeaconSavedMarkers = imported
     PBT.savedVars.groupBeaconNextNumber = (#imported % 10) + 1
     PBT.savedVars.groupBeaconImportedName = PBT.GetSavedMarkerSetName()
     PBT.RefreshSavedMarkers()
     return true, tostring(#imported) .. " markers importes"
+end
+
+function PBT.GetCurrentMarkerShareData()
+    if not PBT.savedVars then return nil, "variables non pretes" end
+    local slot = GetMarkerSetSlot()
+    local code = PBT.ExportCurrentMarkerSet(slot)
+    local valid = PBT.ValidateMarkerShareCode(code)
+    if not valid then return nil, "le pack selectionne est vide ou invalide" end
+    return {
+        directoryKey = GetSelectedMarkerDirectoryKey(),
+        packName = GetMarkerPackName(slot),
+        code = code,
+    }
+end
+
+local function FindMatchingMarkerSet(directoryKey, code)
+    if type(code) ~= "string" then return nil end
+    for slot = 1, 3 do
+        local set = GetMarkerSetForRead(directoryKey, slot)
+        if set and set.markers and SerializeMarkers(set.markers) == code then return slot, set end
+    end
+    return nil
+end
+
+function PBT.GetGroupMarkerShareDestination(directoryKey, code)
+    if not IsValidMarkerDirectoryKey(directoryKey) then return nil, false end
+    local matchingSlot = FindMatchingMarkerSet(directoryKey, code)
+    if matchingSlot then return matchingSlot, false, true end
+    for slot = 1, 3 do
+        if not GetMarkerSetForRead(directoryKey, slot) then return slot, false, false end
+    end
+    return 1, true, false
+end
+
+local function CleanReceivedPackName(name, slot)
+    name = tostring(name or ""):gsub("[%c]", " "):sub(1, 40)
+    name = name:gsub("^%s+", ""):gsub("%s+$", "")
+    return CleanMarkerSetName(slot, name)
+end
+
+function PBT.AcceptGroupMarkerShare(share, persist, replacementConfirmed)
+    if not PBT.savedVars or type(share) ~= "table" then return false, "partage invalide" end
+    local directoryKey = tostring(share.directoryKey or "")
+    if not IsValidMarkerDirectoryKey(directoryKey) then return false, "destination incompatible" end
+    local valid, markers = PBT.ValidateMarkerShareCode(share.code)
+    if not valid then return false, markers end
+
+    if persist then
+        local slot, replaces, alreadyStored = PBT.GetGroupMarkerShareDestination(directoryKey, share.code)
+        if not slot then return false, "destination incompatible" end
+        if replaces and not replacementConfirmed then return false, "confirmation de remplacement requise" end
+
+        if alreadyStored then
+            local set = GetMarkerSetForRead(directoryKey, slot)
+            PBT.savedVars.groupBeaconDirectoryKey = directoryKey
+            PBT.savedVars.groupBeaconMarkerSetSlot = slot
+            PBT.savedVars.groupBeaconSavedMarkers = CopyTable(set.markers)
+            PBT.savedVars.groupBeaconImportedName = set.name
+            PBT.savedVars.groupBeaconMarkerSetName = CleanMarkerSetName(slot, set.name)
+            PBT.savedVars.groupBeaconNextNumber = (#set.markers % 10) + 1
+            PBT.temporaryGroupMarkerShare = nil
+            PBT.savedVars.groupShareTemporaryBackup = nil
+            PBT.RefreshSavedMarkers()
+            return true, "pack deja enregistre dans l'emplacement " .. tostring(slot)
+        end
+
+        local storage = GetMarkerSetZoneStorage(directoryKey)
+        local oldKey = storage.slots[slot]
+        if oldKey and storage.markers then storage.markers[oldKey] = nil end
+        local name = CleanReceivedPackName(share.packName, slot)
+        if storage.markers[name] and storage.slots[slot] ~= name then
+            name = CleanReceivedPackName(name .. " (" .. tostring(slot) .. ")", slot)
+        end
+        storage.markers[name] = { name = name, slot = slot, zone = markers[1].zone, markers = CopyTable(markers) }
+        storage.slots[slot] = name
+        storage[slot] = nil
+        PBT.savedVars.groupBeaconDirectoryKey = directoryKey
+        PBT.savedVars.groupBeaconMarkerSetSlot = slot
+        PBT.savedVars.groupBeaconSavedMarkers = CopyTable(markers)
+        PBT.savedVars.groupBeaconImportedName = name
+        PBT.savedVars.groupBeaconMarkerSetName = name
+        PBT.savedVars.groupBeaconNextNumber = (#markers % 10) + 1
+        PBT.temporaryGroupMarkerShare = nil
+        PBT.savedVars.groupShareTemporaryBackup = nil
+        PBT.RefreshSavedMarkers()
+        return true, "pack accepte et enregistre dans l'emplacement " .. tostring(slot)
+    end
+
+    if not PBT.temporaryGroupMarkerShare then
+        PBT.temporaryGroupMarkerShare = {
+            directoryKey = PBT.savedVars.groupBeaconDirectoryKey,
+            slot = PBT.savedVars.groupBeaconMarkerSetSlot,
+            markers = CopyTable(PBT.savedVars.groupBeaconSavedMarkers or {}),
+            importedName = PBT.savedVars.groupBeaconImportedName,
+            markerSetName = PBT.savedVars.groupBeaconMarkerSetName,
+            nextNumber = PBT.savedVars.groupBeaconNextNumber,
+        }
+        PBT.savedVars.groupShareTemporaryBackup = CopyTable(PBT.temporaryGroupMarkerShare)
+    end
+    PBT.savedVars.groupBeaconDirectoryKey = directoryKey
+    PBT.savedVars.groupBeaconSavedMarkers = CopyTable(markers)
+    PBT.savedVars.groupBeaconImportedName = CleanReceivedPackName(share.packName, 1)
+    PBT.savedVars.groupBeaconMarkerSetName = PBT.savedVars.groupBeaconImportedName
+    PBT.savedVars.groupBeaconNextNumber = (#markers % 10) + 1
+    PBT.RefreshSavedMarkers()
+    return true, "pack accepte jusqu'a la deconnexion"
+end
+
+function PBT.RestoreTemporaryGroupMarkerShare()
+    local backup = PBT.temporaryGroupMarkerShare or (PBT.savedVars and PBT.savedVars.groupShareTemporaryBackup)
+    if not backup or not PBT.savedVars then return end
+    PBT.savedVars.groupBeaconDirectoryKey = backup.directoryKey
+    PBT.savedVars.groupBeaconMarkerSetSlot = backup.slot
+    PBT.savedVars.groupBeaconSavedMarkers = CopyTable(backup.markers or {})
+    PBT.savedVars.groupBeaconImportedName = backup.importedName
+    PBT.savedVars.groupBeaconMarkerSetName = backup.markerSetName
+    PBT.savedVars.groupBeaconNextNumber = backup.nextNumber
+    PBT.savedVars.groupShareTemporaryBackup = nil
+    PBT.temporaryGroupMarkerShare = nil
 end
 
 function PBT.ShareSavedMarker(index)
@@ -1364,6 +1635,15 @@ function PBT.TryStartForName(name)
         if trigger.manualOnly == true then
             return false
         end
+        -- A name alone is never sufficient: it must belong to the current
+        -- instance. This prevents common names such as Frost Atronach from
+        -- starting an Infinite Archive timer elsewhere.
+        if trigger.zoneKey and not IsInZoneKey(trigger.zoneKey) then
+            return false
+        end
+        if not AutomaticTimerSelectionEnabled(trigger.zoneKey, trigger.key or trigger.bossName) then
+            return false
+        end
         if PBT.savedVars and PBT.savedVars.useSamuraiTimers and trigger.key == "z'maja" then
             return false
         end
@@ -1382,6 +1662,7 @@ local function TrySpecificBossUnitTimer(name)
     local trigger = FindBossTrigger(name)
     if not trigger or trigger.bossUnitTrigger ~= true then return false end
     if trigger.zoneKey and not IsInZoneKey(trigger.zoneKey) then return false end
+    if not AutomaticTimerSelectionEnabled(trigger.zoneKey, trigger.key or trigger.bossName) then return false end
 
     PBT.StartCountdown(ApplyTimerOverride(trigger))
     return true
@@ -1419,9 +1700,6 @@ local monsterChannels = {
     [CHAT_CHANNEL_MONSTER_YELL] = true,
 }
 
-local groupCountdownChannels = {
-    [CHAT_CHANNEL_PARTY] = true,
-}
 
 local function DialogueMatches(text, data)
     if not data or type(text) ~= "string" then return false end
@@ -1475,7 +1753,10 @@ local function OnMonsterChat(_, channelType, _, text)
     if not BossSpawnTimersEnabled() or not PBT.savedVars.useSamuraiTimers then return end
 
     for index, data in ipairs(PBT.samuraiNarrationTimers or {}) do
-        if (not data.zoneKey or IsInZoneKey(data.zoneKey)) and DialogueMatches(text, data) then
+        if (not data.zoneKey or IsInZoneKey(data.zoneKey))
+            and AutomaticTimerSelectionEnabled(data.zoneKey, data.displayName)
+            and DialogueMatches(text, data)
+        then
             PBT.StartCountdown({
                 bossName = data.displayName,
                 seconds = data.seconds,
@@ -1487,15 +1768,6 @@ local function OnMonsterChat(_, channelType, _, text)
     end
 end
 
-local function IsZmajaActive()
-    if not DoesUnitExist("boss1") then return false end
-
-    local bossName = NormalizeName(GetUnitName("boss1"))
-    if bossName ~= "z'maja" and bossName ~= "zmaja" then return false end
-
-    local current, max = GetUnitPower("boss1", POWERTYPE_HEALTH)
-    return max and max > 0, current, max
-end
 
 local function TrySamuraiAbilityTimer(result, abilityId, hitValue)
     local data = PBT.samuraiAbilityTimers and PBT.samuraiAbilityTimers[abilityId]
@@ -1503,6 +1775,7 @@ local function TrySamuraiAbilityTimer(result, abilityId, hitValue)
     if not BossSpawnTimersEnabled() then return false end
     if data.setting and not PBT.savedVars[data.setting] then return false end
     if data.zoneKey and not IsInZoneKey(data.zoneKey) then return false end
+    if not AutomaticTimerSelectionEnabled(data.zoneKey, data.displayName) then return false end
     if data.results and not data.results[result] then return false end
     if data.maxHitValue and tonumber(hitValue or 0) > data.maxHitValue then return false end
     if data.minHitValue and tonumber(hitValue or 0) < data.minHitValue then return false end
@@ -1532,6 +1805,7 @@ local CLOUDREST_ZMAJA_INIT_ID = 105890
 local CLOUDREST_ZMAJA_PLUS_ID = 105541
 local CLOUDREST_ZMAJA_PORTAL_CAST_ID = 103946
 local CLOUDREST_ZMAJA_SHADOW_REALM_ID = 108045
+local CLOUDREST_ZMAJA_DIALOGUE_ID = 109077
 local CLOUDREST_ZMAJA_PORTAL_DONE_IDS = {
     [104057] = true, -- Remove Shadow Realm
     [104792] = true, -- PC Win Shadow Realm
@@ -1539,9 +1813,14 @@ local CLOUDREST_ZMAJA_PORTAL_DONE_IDS = {
 
 local function TryCloudrestZmajaPortalTimer(result, abilityId)
     if not abilityId or not PBT.savedVars then return false end
-    if not BossSpawnTimersEnabled() or not IsInZoneKey("cloudrest") then return false end
+    if not IsInZoneKey("cloudrest") or not AutomaticTimerSelectionEnabled("cloudrest", "zmaja") then return false end
 
     local nowMs = NowMs()
+
+    if abilityId == CLOUDREST_ZMAJA_DIALOGUE_ID and result == ACTION_RESULT_EFFECT_GAINED and not IsUnitInCombat("player") then
+        PBT.StartNamedCountdown("Z'Maja", 7.840, "zmajaInitialDialogue")
+        return true
+    end
 
     if abilityId == CLOUDREST_ZMAJA_INIT_ID then
         PBT.cloudrestInitMs = nowMs
@@ -1586,6 +1865,7 @@ local function TrySamuraiDeathNameTimer(targetName)
     for index, data in ipairs(PBT.samuraiDeathNameTimers or {}) do
         if (not data.setting or PBT.savedVars[data.setting])
             and (not data.zoneKey or IsInZoneKey(data.zoneKey))
+            and AutomaticTimerSelectionEnabled(data.zoneKey, data.displayName)
             and (not data.requireState or PBT[data.requireState] == true)
         then
             for _, name in ipairs(data.names or {}) do
@@ -1660,6 +1940,7 @@ end
 local function TryAsOlmsFourthLanding(result, abilityId)
     if not PBT.savedVars or not PBT.savedVars.asOlmsFourthLanding then return false end
     if not IsInZoneKey("asylumSanctorium") then return false end
+    if not AutomaticTimerSelectionEnabled("asylumSanctorium", "olms") then return false end
     if result ~= ACTION_RESULT_BEGIN and result ~= ACTION_RESULT_EFFECT_GAINED then return false end
 
     local phase = AS_OLMS_PHASES[abilityId]
@@ -1691,21 +1972,54 @@ local function TryAsOlmsFourthLanding(result, abilityId)
     return false
 end
 
+local function IsInsidePlayerHouse()
+    if not GetCurrentZoneHouseId then return false end
+    return (tonumber(GetCurrentZoneHouseId()) or 0) > 0
+end
+
+local trainingDummyNameFragments = {
+    -- Generic English and French names.
+    "target dummy",
+    "training dummy",
+    "trial dummy",
+    "entrainement",
+    "mannequin",
+    "cible d'entrainement",
+
+    -- All target families observed in Encounter.log.
+    "target skeleton",
+    "target iron atronach",
+    "target bone goliath",
+    "target centurion",
+    "target ogrim",
+    "target tho'at replicanum",
+    "the precursor",
+
+    -- Localized equivalents and legacy names.
+    "atronach de fer",
+    "squelette cible",
+    "goliath d'os cible",
+    "centurion cible",
+    "ogrim cible",
+    "tho'at cible",
+    "replique de tho'at",
+    "réplique de tho'at",
+    "le precurseur",
+    "le précurseur",
+}
+
 local function IsTrainingDummyName(name)
     local normalized = NormalizeName(name)
     if not normalized then return false end
 
-    return normalized:find("target dummy", 1, true)
-        or normalized:find("training dummy", 1, true)
-        or normalized:find("trial dummy", 1, true)
-        or normalized:find("iron atronach", 1, true)
-        or normalized:find("entrainement", 1, true)
-        or normalized:find("atronach de fer", 1, true)
-        or normalized:find("mannequin", 1, true)
-        or normalized:find("cible d'entrainement", 1, true)
+    for _, fragment in ipairs(trainingDummyNameFragments) do
+        if normalized:find(fragment, 1, true) then return true end
+    end
+    return false
 end
 
 local function MarkDummyCombatFromName(name)
+    if not IsInsidePlayerHouse() then return end
     if not IsTrainingDummyName(name) then return end
 
     PBT.lastDummySeenMs = NowMs()
@@ -1803,6 +2117,11 @@ function PBT.TryGenericCinematicTimer(unitTag, name)
         return false
     end
 
+    local currentTrialKey = GetCurrentTrialKey()
+    if currentTrialKey and not PBT.IsInstanceTimerEnabled(currentTrialKey) then
+        return false
+    end
+
     local key = NormalizeName(name)
     if not key then return false end
 
@@ -1837,6 +2156,11 @@ end
 
 local function StartPracticeFromDummyReset()
     local nowMs = NowMs()
+
+    if not IsInsidePlayerHouse() then
+        PBT.dummyWasInCombat = false
+        return false
+    end
 
     if not PBT.savedVars
         or not PBT.savedVars.autoPracticeOnDummyReset
@@ -1978,6 +2302,7 @@ end
 
 local function StartNahvPortalStatus()
     if not PBT.savedVars or not PBT.savedVars.nahvPortalHpWarning then return end
+    if not AutomaticTimerSelectionEnabled("sunspire", "nahviintaas") then return end
 
     PBT.nahvPortalActive = true
     PBT.nahvPortalSkipOk = false
@@ -2052,7 +2377,10 @@ local function TryHpThresholdAnnouncement(unitTag, powerValue, powerMax)
 
     local percent = (powerValue / powerMax) * 100
     for _, data in ipairs(PBT.hpThresholdAnnouncements or {}) do
-        if (not data.zoneKey or IsInZoneKey(data.zoneKey)) and UnitNameMatchesList(unitName, data.bossNames) then
+        if (not data.zoneKey or IsInZoneKey(data.zoneKey))
+            and AutomaticTimerSelectionEnabled(data.zoneKey, unitName)
+            and UnitNameMatchesList(unitName, data.bossNames)
+        then
             for _, threshold in ipairs(data.thresholds or {}) do
                 local key = string.format("%s:%s:%s", data.zoneKey or "zone", NormalizeName(unitName) or unitName, tostring(threshold.percent))
                 if percent <= threshold.percent and not PBT.hpThresholdState[key] then
@@ -2137,41 +2465,8 @@ local function OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
         end
     end
 end
-local function ToggleUnlock()
-    local unlocked = not (PBT.savedVars and PBT.savedVars.unlocked == true)
-    PBT.UI:SetUnlocked(unlocked)
-    Chat(unlocked and "fenetre deverrouillee." or "fenetre verrouillee.")
-end
 
-local function HandleScale(args)
-    local value = tonumber(args)
-    if not value then
-        Chat("utilisation: /pbtscale 1.0  (min 0.5, max 2.5)")
-        return
-    end
 
-    local ok, scale = PBT.SetScale(value)
-    if ok then
-        Chat(string.format("taille reglee sur %.2f.", scale))
-    end
-end
-
-local function HandleColor(args)
-    local r, g, b = zo_strsplit(" ", args or "")
-    if not tonumber(r) or not tonumber(g) or not tonumber(b) then
-        Chat("utilisation: /pbtcolor 1 0 0  (valeurs RGB entre 0 et 1)")
-        return
-    end
-
-    local ok, color = PBT.SetColor(tonumber(r), tonumber(g), tonumber(b))
-
-    if not ok or not color then
-        Chat("utilisation: /pbtcolor 1 0 0  (valeurs RGB entre 0 et 1)")
-        return
-    end
-
-    Chat(string.format("couleur reglee sur %.2f %.2f %.2f.", color.r, color.g, color.b))
-end
 
 local function PrintTimerList()
     local currentTrialKey = GetCurrentTrialKey()
@@ -2209,13 +2504,13 @@ local function HandleTimer(args)
     local seconds = tonumber(secondsText)
 
     if not bossName or not seconds then
-        Chat("utilisation: /pbttimer z'maja 21")
+        Chat("utilisation: /tsm timer z'maja 21")
         return
     end
 
     local bossKey = ResolveBossKey(bossName)
     if not bossKey then
-        Chat("boss inconnu. Utilise /pbtlist pour voir les cles, ou /pbtalias pour ajouter un nom.")
+        Chat("boss inconnu. Utilise /tsm timers pour voir les cles, ou /tsm alias pour ajouter un nom.")
         return
     end
 
@@ -2250,7 +2545,7 @@ local function HandleInfiniteArchive(args)
     local bossKey = ResolveBossKey(args)
 
     if not bossKey or not PBT.bossLookup[bossKey] or PBT.bossLookup[bossKey].trialName ~= "Infinite Archive" then
-        Chat("utilisation: /pbtia tho'at replicanum | frost atronach | mantikora | dragon | marauder bittog")
+        Chat("utilisation: /tsm ia tho'at replicanum | frost atronach | mantikora | dragon | marauder bittog")
         return
     end
 
@@ -2266,7 +2561,7 @@ local function HandleAlias(args)
     end
 
     if not bossKeyText or not alias then
-        Chat("utilisation: /pbtalias z'maja = Nom exact vu en jeu")
+        Chat("utilisation: /tsm alias z'maja = Nom exact vu en jeu")
         return
     end
 
@@ -2282,40 +2577,9 @@ local function HandleAlias(args)
     Chat(string.format("alias ajoute: %s -> %s.", alias, PBT.bossLookup[bossKey].bossName))
 end
 
-local function HandlePractice(args)
-    local seconds = tonumber(args)
 
-    if seconds then
-        PBT.savedVars.practiceSeconds = zo_clamp(seconds, 1, 60)
-    end
 
-    PBT.StartPracticeTimer()
-end
 
-local function HandlePracticeTime(args)
-    local seconds = tonumber(args)
-    if not seconds then
-        Chat("utilisation: /pbtpracticetime 6")
-        return
-    end
-
-    PBT.savedVars.practiceSeconds = zo_clamp(seconds, 1, 60)
-    Chat(string.format("timer mannequin regle sur %ss.", PBT.savedVars.practiceSeconds))
-end
-
-local function HandleGroupCountdown(args)
-    local seconds = GetGroupCountdownSeconds(args)
-    PBT.savedVars.groupCountdownSeconds = seconds
-    PBT.StartGroupCountdown(seconds, true)
-end
-
-local function HandleGroupCountdownTest(args)
-    local seconds = GetGroupCountdownSeconds(args)
-    PBT.savedVars.groupCountdownBroadcast = true
-    PBT.savedVars.groupCountdownEnabled = true
-    PBT.StartGroupCountdown(seconds, true)
-    Chat(string.format("test decompte groupe envoye: %ss", seconds))
-end
 
 local function ResetMenuButton()
     if not PBT.savedVars or not PBT.UI or not PBT.UI.ApplyMenuButtonSettings then return end
@@ -2331,7 +2595,7 @@ end
 local function HandleGeneric(args)
     local seconds = tonumber(args)
     if not seconds then
-        Chat("utilisation: /pbtgeneric 8")
+        Chat("utilisation: /tsm generic 8")
         return
     end
 
@@ -2342,7 +2606,7 @@ end
 local function HandleAsOlms(args)
     local seconds = tonumber(args)
     if not seconds then
-        Chat("utilisation: /pbtolms 10")
+        Chat("utilisation: /tsm olms 10")
         return
     end
 
@@ -2381,62 +2645,8 @@ local function PrintZoneName()
     Chat(string.format("zone ESO: %s / id %s", GetPlayerZoneName() or "inconnue", tostring(PBT.currentZoneId or "?")))
 end
 
-local function RefreshSettingsPreviewControls()
-    if not PBT.settingsPreviewControls or not PBT.savedVars then return end
 
-    local color = PBT.savedVars.color or PBT.defaults.color
-    local scale = tonumber(PBT.savedVars.scale) or PBT.defaults.scale
 
-    for _, control in ipairs(PBT.settingsPreviewControls) do
-        if control and control.label then
-            control.label:SetColor(color.r or 1, color.g or 0.12, color.b or 0.08, color.a or 1)
-            control.label:SetScale(zo_clamp(scale, 0.5, 2.5))
-        end
-    end
-end
-
-local function CreateSettingsPreview(control)
-    if not control then return end
-
-    local wm = WINDOW_MANAGER
-    local preview = wm:CreateControl(nil, control, CT_LABEL)
-    preview:SetAnchor(LEFT, control, LEFT, 14, 0)
-    preview:SetDimensions(160, 48)
-    preview:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    preview:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    preview:SetFont("ZoFontWinH1")
-    preview:SetText("7")
-
-    control.label = preview
-    table.insert(PBT.settingsPreviewControls, control)
-    RefreshSettingsPreviewControls()
-end
-
-local function CreateSettingsHeaderIcon(control)
-    if not control then return end
-
-    local wm = WINDOW_MANAGER
-    control:SetDimensions(650, 70)
-
-    local icon = wm:CreateControl(nil, control, CT_TEXTURE)
-    icon:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 4)
-    icon:SetDimensions(48, 48)
-    icon:SetTexture("TeamShadowsManager/TeamShadowsManagerIcon.dds")
-
-    local title = wm:CreateControl(nil, control, CT_LABEL)
-    title:SetAnchor(TOPLEFT, icon, TOPRIGHT, 14, 6)
-    title:SetDimensions(560, 24)
-    title:SetFont("ZoFontWinH4")
-    title:SetColor(1, 1, 1, 0.95)
-    title:SetText("Team Shadows Manager")
-
-    local author = wm:CreateControl(nil, control, CT_LABEL)
-    author:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 2)
-    author:SetDimensions(560, 20)
-    author:SetFont("ZoFontGameSmall")
-    author:SetColor(0.8, 0.8, 0.8, 0.9)
-    author:SetText("TeamFky - EyrOn")
-end
 
 local function TestVisualAnnouncement()
     if not PBT.UI then return end
@@ -2481,6 +2691,7 @@ local nativeRaidTimers = {
     { zoneKey = "kynesAegis", name = "Kyne's Aegis", cases = "Falgravn retour sous-sol" },
     { zoneKey = "dreadsailReef", name = "Dreadsail Reef", cases = "Taleria execute" },
     { zoneKey = "sanitysEdge", name = "Sanity's Edge", cases = "Yaseyla HP" },
+    { zoneKey = "rockgrove", name = "Rockgrove", cases = "Bahsei HM: /tsm bahsei" },
     { zoneKey = "infiniteArchive", name = "Infinite Archive", cases = "Timers manuels" },
 }
 
@@ -2505,63 +2716,6 @@ function PBT.GetNativeRaidTimersForCurrentInstance()
     return GetNativeRaidTimersForCurrentInstance()
 end
 
-local function CreateNativeRaidGrid(control)
-    if not control then return end
-
-    local wm = WINDOW_MANAGER
-    local raids = GetNativeRaidTimersForCurrentInstance()
-    local columns = 3
-    local cellWidth = 205
-    local rowHeight = 42
-    local rows = math.max(1, zo_ceil(#raids / columns))
-
-    control:SetDimensions(650, 32 + (rows * rowHeight))
-
-    local title = wm:CreateControl(nil, control, CT_LABEL)
-    title:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 0)
-    title:SetDimensions(640, 26)
-    title:SetFont("ZoFontGameBold")
-    title:SetColor(1, 1, 1, 0.95)
-    title:SetText("Timers boss natifs de l'instance")
-
-    if #raids == 0 then
-        local empty = wm:CreateControl(nil, control, CT_LABEL)
-        empty:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 34)
-        empty:SetDimensions(620, 24)
-        empty:SetFont("ZoFontGame")
-        empty:SetColor(0.78, 0.78, 0.78, 0.9)
-        empty:SetText("Instance non reconnue ici : aucun timer boss appele.")
-        return
-    end
-
-    for index, raid in ipairs(raids) do
-        local column = (index - 1) % columns
-        local row = zo_floor((index - 1) / columns)
-        local x = column * cellWidth
-        local y = 32 + (row * rowHeight)
-
-        local check = wm:CreateControl(nil, control, CT_LABEL)
-        check:SetAnchor(TOPLEFT, control, TOPLEFT, x, y + 2)
-        check:SetDimensions(24, 24)
-        check:SetFont("ZoFontGameBold")
-        check:SetColor(0.35, 1, 0.35, 1)
-        check:SetText("âœ“")
-
-        local name = wm:CreateControl(nil, control, CT_LABEL)
-        name:SetAnchor(TOPLEFT, control, TOPLEFT, x + 25, y)
-        name:SetDimensions(cellWidth - 30, 22)
-        name:SetFont("ZoFontGameBold")
-        name:SetColor(1, 1, 1, 0.95)
-        name:SetText(raid.name)
-
-        local detail = wm:CreateControl(nil, control, CT_LABEL)
-        detail:SetAnchor(TOPLEFT, control, TOPLEFT, x + 25, y + 19)
-        detail:SetDimensions(cellWidth - 30, 18)
-        detail:SetFont("ZoFontGameSmall")
-        detail:SetColor(0.78, 0.78, 0.78, 0.9)
-        detail:SetText(raid.cases or "")
-    end
-end
 
 local function ResetEncounterState()
     PBT.zmajaAddKills = 0
@@ -2584,14 +2738,6 @@ local function ResetEncounterState()
     StopNahvPortalStatus(false)
 end
 
-local function GetBossSeconds(normalizedName, data)
-    local overrides = PBT.savedVars and PBT.savedVars.timerOverrides
-    if overrides and tonumber(overrides[normalizedName]) then
-        return tonumber(overrides[normalizedName])
-    end
-
-    return data.seconds
-end
 
 local function RegisterSettingsPanel()
     local LAM = LibAddonMenu2
@@ -2601,10 +2747,9 @@ local function RegisterSettingsPanel()
         type = "panel",
         name = PBT.displayName,
         displayName = PBT.displayName,
-        author = "TeamFky - EyrOn",
+        author = "TeamFF - EyrOn",
         version = PBT.version,
-        slashCommand = "/pbtsettings",
-        registerForRefresh = false,
+        registerForRefresh = true,
         registerForDefaults = true,
     }
 
@@ -2615,7 +2760,10 @@ local function RegisterSettingsPanel()
         },
         {
             type = "description",
-            text = "Version " .. tostring(PBT.version) .. "  -  Auteur: TeamFky - EyrOn",
+            text = function()
+                local authorLabel = PBT.GetLanguage and PBT.GetLanguage() == "en" and "Author" or "Auteur"
+                return "Version " .. tostring(PBT.version) .. "  -  " .. authorLabel .. ": TeamFF - EyrOn"
+            end,
             width = "full",
         },
         {
@@ -2685,12 +2833,69 @@ local function RegisterSettingsPanel()
                 },
                 {
                     type = "header",
+                    name = function() return PBT.GetString("bahsei_settings") end,
+                },
+                {
+                    type = "checkbox",
+                    name = function() return PBT.GetString("bahsei_wall_arrows") end,
+                    tooltip = function() return PBT.GetString("bahsei_wall_arrows_tooltip") end,
+                    getFunc = function() return PBT.savedVars.bahseiWallArrows ~= false end,
+                    setFunc = function(value)
+                        PBT.savedVars.bahseiWallArrows = value
+                        if not value and PBT.BahseiPortal then PBT.BahseiPortal:RemoveWallArrows() end
+                    end,
+                    default = PBT.defaults.bahseiWallArrows,
+                },
+                {
+                    type = "checkbox",
+                    name = function() return PBT.GetString("bahsei_ghost_call") end,
+                    tooltip = function() return PBT.GetString("bahsei_ghost_call_tooltip") end,
+                    getFunc = function() return PBT.savedVars.bahseiGhostCall ~= false end,
+                    setFunc = function(value) PBT.savedVars.bahseiGhostCall = value end,
+                    default = PBT.defaults.bahseiGhostCall,
+                },
+                {
+                    type = "checkbox",
+                    name = function() return PBT.GetString("bahsei_ghost_receive") end,
+                    getFunc = function() return PBT.savedVars.bahseiGhostReceive ~= false end,
+                    setFunc = function(value) PBT.savedVars.bahseiGhostReceive = value end,
+                    default = PBT.defaults.bahseiGhostReceive,
+                },
+                {
+                    type = "slider",
+                    name = function() return PBT.GetString("bahsei_ghost_total") end,
+                    min = 6,
+                    max = 20,
+                    step = 1,
+                    getFunc = function() return PBT.savedVars.bahseiGhostTotal end,
+                    setFunc = function(value)
+                        PBT.savedVars.bahseiGhostTotal = value
+                        if PBT.savedVars.bahseiGhostThreshold >= value then
+                            PBT.savedVars.bahseiGhostThreshold = value - 1
+                        end
+                    end,
+                    default = PBT.defaults.bahseiGhostTotal,
+                },
+                {
+                    type = "slider",
+                    name = function() return PBT.GetString("bahsei_ghost_threshold") end,
+                    min = 1,
+                    max = 10,
+                    step = 1,
+                    getFunc = function() return PBT.savedVars.bahseiGhostThreshold end,
+                    setFunc = function(value)
+                        PBT.savedVars.bahseiGhostThreshold = math.min(value, PBT.savedVars.bahseiGhostTotal - 1)
+                    end,
+                    default = PBT.defaults.bahseiGhostThreshold,
+                },
+                {
+                    type = "header",
                     name = "Décompte personnalisé",
                 },
                 {
                     type = "checkbox",
                     name = "ON / OFF décompte personnalisé",
-                    tooltip = "Active le décompte groupe lancé par raccourci ou par /pbtpull.",
+                    tooltip = "Active le décompte groupe lancé par raccourci ou depuis le gestionnaire.",
                     getFunc = function() return PBT.savedVars.groupCountdownEnabled end,
                     setFunc = function(value) PBT.savedVars.groupCountdownEnabled = value end,
                     default = PBT.defaults.groupCountdownEnabled,
@@ -2832,7 +3037,6 @@ local function RegisterSettingsPanel()
                     getFunc = function() return zo_round((PBT.savedVars.scale or 1) * 100) end,
                     setFunc = function(value)
                         PBT.SetScale(value / 100)
-                        RefreshSettingsPreviewControls()
                     end,
                     default = PBT.defaults.scale * 100,
                 },
@@ -2856,7 +3060,6 @@ local function RegisterSettingsPanel()
                     setFunc = function(value)
                         local color = PBT.savedVars.color
                         PBT.SetColor(value / 100, color.g, color.b)
-                        RefreshSettingsPreviewControls()
                     end,
                     default = PBT.defaults.color.r * 100,
                 },
@@ -2876,7 +3079,6 @@ local function RegisterSettingsPanel()
                     setFunc = function(value)
                         local color = PBT.savedVars.color
                         PBT.SetColor(color.r, value / 100, color.b)
-                        RefreshSettingsPreviewControls()
                     end,
                     default = PBT.defaults.color.g * 100,
                 },
@@ -2890,7 +3092,6 @@ local function RegisterSettingsPanel()
                     name = "Remettre rouge par defaut",
                     func = function()
                         PBT.SetColor(PBT.defaults.color.r, PBT.defaults.color.g, PBT.defaults.color.b)
-                        RefreshSettingsPreviewControls()
                     end,
                     width = "full",
                 },
@@ -2923,38 +3124,90 @@ local function RegisterSettingsPanel()
         },
         {
             type = "description",
-            text = "|c55FF55Pris en compte|r\nCloudrest : Z'Maja pull apres Shadow Realm\nHalls of Fabrication : Hunter-Killer Fabricants / Pinnacle Factotum / Triplets\nAsylum Sanctorium : Saint Olms / 4e atterrissage apres jumps\nMaw of Lorkhaj : Zhaj'hassa / Rakkhat\nAetherian Archive : Varlariel\nSunspire : Lokkestiiz / Yolnahkriin / Nahviintaas / portail HP Nahviintaas\nKyne's Aegis : Lord Falgravn / retour apres mort des 3 adds sous-sol\nDreadsail Reef : Taleria / annonce execute uniquement\nSanity's Edge : Exarchanic Yaseyla / phases HP\nInfinite Archive : timers manuels uniquement, pops aleatoires non forces\nMannequin : reset/sortie combat apres mannequin actif",
+            text = function() return PBT.GetString("boss_timer_details") end,
             width = "full",
         },
     }
+
+    local function LocalizeOptionFields(entries)
+        for _, option in ipairs(entries or {}) do
+            if option.name == "Icone marker" then
+                PBT.markerTextureDropdownOption = option
+                option.choices = PBT.MarkerTextureLabels and PBT.MarkerTextureLabels[PBT.GetLanguage()] or option.choices
+            end
+            for _, field in ipairs({ "name", "tooltip", "text", "warning" }) do
+                local source = option[field]
+                if type(source) == "string" and PBT.HasLocalizedLiteral and PBT.HasLocalizedLiteral(source) then
+                    option[field] = function() return PBT.LocalizeLiteral(source) end
+                end
+            end
+        end
+    end
+    LocalizeOptionFields(options)
 
     PBT.settingsPanel = LAM:RegisterAddonPanel("TeamShadowsManagerOptions", panelData)
     LAM:RegisterOptionControls("TeamShadowsManagerOptions", options)
 end
 
+-- /tsm seul ouvre le manager ; les sous-commandes redonnent accès aux outils
+-- texte (overrides de timers, alias, debug narration...) qui n'avaient plus
+-- aucun point d'entrée depuis le passage à l'interface custom.
+local function HandleManagerSlash(args)
+    args = tostring(args or "")
+    local command, rest = args:match("^(%S*)%s*(.-)$")
+    command = string.lower(command or "")
+
+    if command == "" then
+        PBT.OpenManagerWindow()
+    elseif command == "timers" or command == "list" then
+        PrintTimerList()
+    elseif command == "timer" then
+        HandleTimer(rest)
+    elseif command == "alias" then
+        HandleAlias(rest)
+    elseif command == "ia" then
+        HandleInfiniteArchive(rest)
+    elseif command == "generic" then
+        HandleGeneric(rest)
+    elseif command == "bahsei" or command == "portail" or command == "portal" then
+        local bahseiAction = string.lower(tostring(rest or "")):gsub("^%s+", ""):gsub("%s+$", "")
+        if bahseiAction == "test" or bahseiAction == "preview" or bahseiAction == "apercu" then
+            if PBT.BahseiPortal then PBT.BahseiPortal:ShowPreviewArrows() end
+        elseif PBT.BahseiPortal then
+            PBT.BahseiPortal:ManualCall()
+        end
+    elseif command == "olms" then
+        HandleAsOlms(rest)
+    elseif command == "narration" then
+        ToggleNarrationDebug()
+    elseif command == "narrationlog" then
+        PrintNarrationLog()
+    elseif command == "boss" then
+        PrintBossUnits()
+    elseif command == "zone" then
+        PrintZoneName()
+    elseif command == "resetbouton" or command == "resetbutton" then
+        ResetMenuButton()
+    else
+        Chat("commandes: /tsm (manager) | timers | timer <boss> <s> | alias <boss> = <nom> | ia <boss> | generic <s> | olms <s> | bahsei | bahsei test | narration | narrationlog | boss | zone | resetbouton")
+    end
+end
+
 local function RegisterSlashCommands()
-    SLASH_COMMANDS["/pbtunlock"] = ToggleUnlock
-    SLASH_COMMANDS["/pbtscale"] = HandleScale
-    SLASH_COMMANDS["/pbtcolor"] = HandleColor
-    SLASH_COMMANDS["/pbtia"] = HandleInfiniteArchive
-    SLASH_COMMANDS["/pbtboss"] = PrintBossUnits
-    SLASH_COMMANDS["/pbtzone"] = PrintZoneName
-    SLASH_COMMANDS["/pbtpractice"] = HandlePractice
-    SLASH_COMMANDS["/pbtpracticetime"] = HandlePracticeTime
-    SLASH_COMMANDS["/pbtpull"] = HandleGroupCountdown
-    SLASH_COMMANDS["/pbttestpull"] = HandleGroupCountdownTest
-    SLASH_COMMANDS["/pbtbutton"] = ResetMenuButton
-    SLASH_COMMANDS["/pbtmarker"] = PBT.PlaceMarkerFromReticle
-    SLASH_COMMANDS["/pbtfanal"] = PBT.PlaceMarkerFromReticle
-    SLASH_COMMANDS["/pbtnarration"] = ToggleNarrationDebug
-    SLASH_COMMANDS["/pbtnarrationlog"] = PrintNarrationLog
-    SLASH_COMMANDS["/shadows"] = PBT.OpenManagerWindow
+    SLASH_COMMANDS["/tsm"] = HandleManagerSlash
 end
 
 local function RegisterEvents()
     EM:RegisterForEvent(ADDON_NAME .. "Zone", EVENT_PLAYER_ACTIVATED, function()
         RefreshPlayerZone()
+        if not IsInsidePlayerHouse() then
+            PBT.dummyWasInCombat = false
+        end
         zo_callLater(function()
+            if PBT.UI and PBT.UI.managerWindow and not PBT.UI.managerWindow:IsHidden() and PBT.SelectMarkerDirectoryForCurrentZone then
+                PBT.SelectMarkerDirectoryForCurrentZone()
+                PBT.UI:RefreshManagerWindow()
+            end
             if PBT.RefreshSavedMarkers then
                 PBT.RefreshSavedMarkers()
             end
@@ -3005,8 +3258,14 @@ local function OnAddonLoaded(_, addonName)
         worldName
     )
 
+    PBT.savedVars.language = PBT.savedVars.language == "en" and "en" or "fr"
+    PBT.pendingLanguage = PBT.savedVars.language
+    if PBT.RefreshBindingStrings then PBT.RefreshBindingStrings() end
+
     PBT.savedVars.timerOverrides = PBT.savedVars.timerOverrides or {}
     PBT.savedVars.customAliases = PBT.savedVars.customAliases or {}
+    PBT.savedVars.instanceTimerEnabled = type(PBT.savedVars.instanceTimerEnabled) == "table" and PBT.savedVars.instanceTimerEnabled or {}
+    PBT.savedVars.bossTimerEnabled = type(PBT.savedVars.bossTimerEnabled) == "table" and PBT.savedVars.bossTimerEnabled or {}
     PBT.savedVars.goColor = PBT.savedVars.goColor or PBT.defaults.goColor
     PBT.savedVars.practiceSeconds = tonumber(PBT.savedVars.practiceSeconds) or PBT.defaults.practiceSeconds
     if PBT.savedVars.practiceLogCalibrationApplied ~= true then
@@ -3054,6 +3313,11 @@ local function OnAddonLoaded(_, addonName)
     PBT.savedVars.groupBeaconMarkerSets = PBT.savedVars.groupBeaconMarkerSets or {}
     PBT.savedVars.groupBeaconMarkerSetSlot = zo_clamp(tonumber(PBT.savedVars.groupBeaconMarkerSetSlot) or 1, 1, 3)
     PBT.savedVars.groupBeaconMarkerSetName = tostring(PBT.savedVars.groupBeaconMarkerSetName or "")
+    if type(PBT.savedVars.groupShareTemporaryBackup) == "table" then
+        PBT.RestoreTemporaryGroupMarkerShare()
+    else
+        PBT.savedVars.groupShareTemporaryBackup = nil
+    end
     if PBT.savedVars.groupBeaconDisplayMode ~= "filter" then
         PBT.savedVars.groupBeaconDisplayMode = "all"
     end
@@ -3121,6 +3385,17 @@ local function OnAddonLoaded(_, addonName)
     if PBT.savedVars.nahvPortalHpWarning == nil then
         PBT.savedVars.nahvPortalHpWarning = PBT.defaults.nahvPortalHpWarning
     end
+    if PBT.savedVars.bahseiWallArrows == nil then
+        PBT.savedVars.bahseiWallArrows = PBT.defaults.bahseiWallArrows
+    end
+    if PBT.savedVars.bahseiGhostCall == nil then
+        PBT.savedVars.bahseiGhostCall = PBT.defaults.bahseiGhostCall
+    end
+    if PBT.savedVars.bahseiGhostReceive == nil then
+        PBT.savedVars.bahseiGhostReceive = PBT.defaults.bahseiGhostReceive
+    end
+    PBT.savedVars.bahseiGhostTotal = zo_clamp(tonumber(PBT.savedVars.bahseiGhostTotal) or PBT.defaults.bahseiGhostTotal, 6, 20)
+    PBT.savedVars.bahseiGhostThreshold = zo_clamp(tonumber(PBT.savedVars.bahseiGhostThreshold) or PBT.defaults.bahseiGhostThreshold, 1, PBT.savedVars.bahseiGhostTotal - 1)
     if PBT.savedVars.narrationDebug == nil then
         PBT.savedVars.narrationDebug = false
     end
@@ -3163,6 +3438,12 @@ local function OnAddonLoaded(_, addonName)
     RegisterEvents()
     RefreshLibTeamShadowsOptions()
     RegisterLibTeamShadowsHandlers()
+    if PBT.GroupShare and PBT.GroupShare.Initialize then
+        PBT.GroupShare:Initialize()
+    end
+    if PBT.BahseiPortal and PBT.BahseiPortal.Initialize then
+        PBT.BahseiPortal:Initialize()
+    end
     zo_callLater(function()
         if PBT.RefreshSavedMarkers then
             PBT.RefreshSavedMarkers()
@@ -3187,13 +3468,3 @@ local function OnAddonLoaded(_, addonName)
 end
 
 EM:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)
-
-
-
-
-
-
-
-
-
-

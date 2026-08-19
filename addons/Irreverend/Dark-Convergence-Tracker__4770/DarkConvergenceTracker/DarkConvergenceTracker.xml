@@ -15,7 +15,7 @@
                 </Label>
                 <!-- Countdown / "DC Ready!" flash, centered in the box below the title.
                      Font is ZoFontWinT1's own family/weight ($(BOLD_FONT), soft-shadow-thin)
-                     at size 36 -- double ZoFontWinT1's own confirmed size of 18. -->
+                     at size 36, double ZoFontWinT1's own confirmed size of 18. -->
                 <Label name="$(parent)CountdownText" font="$(BOLD_FONT)|36|soft-shadow-thin" horizontalAlignment="CENTER" verticalAlignment="CENTER">
                     <Dimensions x="150" y="50" />
                     <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="10" />

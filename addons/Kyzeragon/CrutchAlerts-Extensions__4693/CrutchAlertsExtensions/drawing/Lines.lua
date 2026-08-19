@@ -5,7 +5,7 @@ local Crutch = CrutchAlerts
 ---------------------------------------------------------------------
 -- Profile data
 ---------------------------------------------------------------------
-function CAE.AddLineToProfile(player1, player2, color, showDistance)
+function CAE.AddLineToProfile(player1, player2, color, showDistance, useGradient, secondColor)
     local profile = CAE.profiles[CAE.csvs.currentProfile]
 
     local index = CAE.FindFreeId(profile.lines)
@@ -14,6 +14,8 @@ function CAE.AddLineToProfile(player1, player2, color, showDistance)
         player2 = player2,
         color = color,
         showDistance = showDistance,
+        useGradient = useGradient,
+        secondColor = secondColor,
     }
 
     CAE.msg(zo_strformat("Added line between <<1>> and <<2>> to profile <<3>>", player1, player2, profile.profileName))
@@ -56,7 +58,24 @@ local function UpdateLines()
         if (tag1 and tag2 and tag1 ~= tag2 and GetUnitZoneIndex(tag1) == GetUnitZoneIndex(tag2)) then
             local lineNum = "CAELine" .. id
             local color = lineData.color
-            Crutch.DrawLineBetweenPlayers(tag1, tag2, nil, lineNum)
+
+            local distanceCallback
+            if (lineData.useGradient) then
+                distanceCallback = function(distance)
+                    -- 28 is end
+                    local normalizedDist = zo_clamp(distance, 0, 28) / 28
+                    Crutch.SetLineColor(
+                        zo_lerp(color[1], lineData.secondColor[1], normalizedDist),
+                        zo_lerp(color[2], lineData.secondColor[2], normalizedDist),
+                        zo_lerp(color[3], lineData.secondColor[3], normalizedDist),
+                        zo_lerp(color[4], lineData.secondColor[4], normalizedDist),
+                        zo_lerp(color[4], lineData.secondColor[4], normalizedDist),
+                        lineData.showDistance,
+                        lineNum)
+                end
+            end
+
+            Crutch.DrawLineBetweenPlayers(tag1, tag2, distanceCallback, lineNum)
             Crutch.SetLineColor(color[1], color[2], color[3], color[4], color[4], lineData.showDistance, lineNum)
             table.insert(activeLines, lineNum)
         end

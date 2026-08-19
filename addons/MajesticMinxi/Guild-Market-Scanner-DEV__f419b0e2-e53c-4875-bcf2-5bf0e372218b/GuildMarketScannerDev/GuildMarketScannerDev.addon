@@ -1,8 +1,8 @@
 ## Title: Guild Market Scanner DEV
-## Description: Low-memory streaming weekly preparation for large PS-EU market scans. Prevents the weekly exporter from duplicating tens of thousands of item rows in Lua memory, while keeping frame-safe trader commits, trusted/observed prices, Top-25 guild opportunities, D1 transport, and the existing weekly browser workflow.
+## Description: Console-safe Market Sync URL size. Reduces only the unified sync page target from ~13.5K to ~6K so ESO/PlayStation can open the browser URL reliably. Incremental guild-only sync, pending guilds, current-snapshot filtering, compact v10 storage, trusted/observed prices, Top-25 opportunities, retry/confirm workflow, Worker v0.9 protocol, and D1 merge logic are unchanged.
 ## Author: MajesticMinxi
-## Version: 0.5.2
-## AddOnVersion: 62
+## Version: 0.7.3
+## AddOnVersion: 83
 ## APIVersion: 101050
 ## SavedVariables: GuildMarketScannerSavedVariables
 

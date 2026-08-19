@@ -27,6 +27,7 @@ function CAE.CreateProfile()
         iconsForKnownPets = false,
         iconsForPets = false,
         iconsForCompanions = false,
+        damagedEnemies = false,
     }
 
     -- Select new

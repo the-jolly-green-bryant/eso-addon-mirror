@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/teamfky/TeamShadowBuff__4673",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "teamfky",
   "canonical_id": "esoui:4673",
   "category_id": "22",
@@ -17,9 +18,12 @@
     "TeamShadowsBuffs"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4673/",
-  "fingerprint": "cd222bdeee4fd12b346430a0d0887e8123d676140f4170d1e245c90f2fcddff0",
+  "fingerprint": "d635e080ca8fe50a77d9a9040a95782fba3fa6ba83c3b3d08a07088c5d8a69d6",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16503.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16503.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17028.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17029.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17030.png"
   ],
   "platform": "pc",
   "published": true,
@@ -27,11 +31,11 @@
   "source_id": "4673",
   "source_url": "https://www.esoui.com/downloads/info4673-TeamShadowBuff.html",
   "stats": {
-    "downloads": 45,
+    "downloads": 57,
     "favorites": 0,
-    "monthly_downloads": 42
+    "monthly_downloads": 18
   },
   "title": "TeamShadowBuff",
-  "updated_at": 1782896802000,
-  "version": "1.0"
+  "updated_at": 1787052184000,
+  "version": "1.1.8"
 }

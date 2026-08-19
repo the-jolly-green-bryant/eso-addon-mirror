@@ -23,10 +23,14 @@ local function MyOnSynergyChanged(self)
         and iconFilename == HUNGER_TEXTURE
         and not modifyDown) then
         SHARED_INFORMATION_AREA:SetHidden(self, true)
-        hintUI:SetHidden(false)
+        if (hintUI) then
+            hintUI:SetHidden(false)
+        end
     else
-        hintUI:SetHidden(true)
-        origOnSynergyAbilityChanged(self)
+        if (hintUI) then -- might not be initialized if starting in gamepad mode
+            hintUI:SetHidden(true)
+            origOnSynergyAbilityChanged(self)
+        end
     end
 end
 
@@ -43,6 +47,7 @@ local function HookSynergy()
         CrutchAlertsExtensionsContainer,
         "CAEWWSynergy_Template",
         "")
+    MyOnSynergyChanged(SYNERGY)
     -- hintUI:SetAnchor(CENTER, ZO_SynergyTopLevelContainer, CENTER)
 end
 
@@ -82,7 +87,13 @@ end
 local function InitializeSynergy()
     HookSynergy()
 
+    EVENT_MANAGER:UnregisterForEvent(CAE.name .. "SynPlayerActivated", EVENT_PLAYER_ACTIVATED)
     EVENT_MANAGER:RegisterForEvent(CAE.name .. "SynPlayerActivated", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
+
+    -- Since we're not doing the modifier key in gamepad mode, the hook doesn't get initialized when starting
+    -- in gamepad. Need to listen for mode change and initialize hook if user changes to M+KB later.
+    EVENT_MANAGER:UnregisterForEvent(CAE.name .. "SynGamepadChanged", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED)
+    EVENT_MANAGER:RegisterForEvent(CAE.name .. "SynGamepadChanged", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, HookSynergy)
 end
 CAE.InitializeSynergy = InitializeSynergy
 

@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Shadowfen/Slasher__1887",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Shadowfen",
   "canonical_id": "esoui:1887",
   "category_id": "159",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -69,7 +74,7 @@
     "Slasher"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1887/",
-  "fingerprint": "f86920516d2082112a7404d4643f01f445bb162d0cfd72c2cdec53978e9e39a2",
+  "fingerprint": "65972762f619a2f5f52f8297f977f1359572c638e230024f83b4090f4fb52291",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10884.png",
     "https://cdn-eso.mmoui.com/preview/pvw10883.png",
@@ -83,11 +88,11 @@
   "source_id": "1887",
   "source_url": "https://www.esoui.com/downloads/info1887-Slasher.html",
   "stats": {
-    "downloads": 25030,
+    "downloads": 25128,
     "favorites": 34,
-    "monthly_downloads": 196
+    "monthly_downloads": 188
   },
   "title": "Slasher",
-  "updated_at": 1785347125000,
-  "version": "2.48"
+  "updated_at": 1787028780000,
+  "version": "2.49"
 }

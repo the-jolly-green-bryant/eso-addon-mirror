@@ -232,7 +232,7 @@ local function LoadCurrentProfile(forceChange)
     prevProfile = CAE.csvs.currentProfile
 
     if (not isSame) then
-        CAE.msg("Loaded profile " .. profile.profileName)
+        Crutch.dbgOther("Loaded profile " .. profile.profileName)
     end
 
     if (forceChange) then

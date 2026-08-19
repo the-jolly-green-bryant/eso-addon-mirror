@@ -134,7 +134,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CobbDialogueLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DavidJCobb/CobbDialogueLogger__2560) | DavidJCobb | PC / Mac | 1 |
 | [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__fe065445-3217-4a76-8932-23a0a1c9c16c) | code65536 | Console | — |
 | [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.5.2 |
-| [Cogs Assistants](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coginthemachine/Cogs-Assistants__4687) | coginthemachine | PC / Mac | 0.1.3 |
+| [Cogs Assistants](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coginthemachine/Cogs-Assistants__4687) | coginthemachine | PC / Mac | 0.1.4 |
 | [Collect Them All](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97) | Springpeace2575 | Console | — |
 | [CollectablesTesting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970) | brossin13 | Console | — |
 | [Collectible Toggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Collectible-Toggler__2699) | MrPikPik | PC / Mac | 1.2 |
@@ -146,7 +146,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Combat Alerts Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DrSova/Combat-Alerts-Extended__3439) | DrSova | PC / Mac | 1.0.5 |
 | [Combat Auras (Ability Timers)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Darianopolis/Combat-Auras-Ability-Timers__2408) | Darianopolis | PC / Mac | v1.5.2 |
 | [Combat Cloud Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2Weak2Live/Combat-Cloud-Updated__2568) | 2Weak2Live | PC / Mac | 0.96 |
-| [Combat Coordination - 3D Ground Effects, Slayer & Arkasis Assistant, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-Slayer-Arkasis-Assistant-Raidlead-Tools__4449) | Duesentrieb | PC / Mac | 20260817-0004 |
+| [Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-LaunchPad-Slayer-Arkasis-Raidlead-Tools__4449) | Duesentrieb | PC / Mac | 20260818-0005 |
 | [Combat Crosshair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Combat-Crosshair__2760) | Turbo1 | PC / Mac | 1.5 |
 | [Combat Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Combat-Indicator__1543) | Crabby654 | PC / Mac | 1.8.7 |
 | [Combat Metrics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Combat-Metrics__1360) | Solinur | PC / Mac | 1.7.8 |
@@ -217,6 +217,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Courage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Courage__2746) | iiJonno | PC / Mac | 1.5 |
 | [Courteous Dungeoneer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ancillae_Secretorum/Courteous-Dungeoneer__4160) | Ancillae_Secretorum | PC / Mac | 0.52 |
 | [Coveted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Coveted__3011) | kawamonkey | PC / Mac | 1.0 |
+| [Covetous Countess Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Covetous-Countess-Assistant__4778) | AlexD | PC / Mac | 1.0.0 |
 | [CovetousCountess - Abah's Watch farming helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/CovetousCountess---Abah-s-Watch-farming-helper__1372) | Shinni | PC / Mac | 5 |
 | [CovetousCountess ZH](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NeiL978/CovetousCountess-ZH__3600) | NeiL978 | PC / Mac | 1.0 |
 | [Cowl - helm/hat toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Binary-Heart/Cowl---helm-hat-toggle__1913) | Binary Heart | PC / Mac | 1.1.4.4.3 |
@@ -265,7 +266,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CroZone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Obijovi/CroZone__4641) | Obijovi | PC / Mac | 1.1.0 |
 | [CrutchAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts__21f0cc83-5ba3-4776-ac75-a5a266fde574) | Kyzeragon | Console | — |
 | [CrutchAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts__3137) | Kyzeragon | PC / Mac | 2.24.0 |
-| [CrutchAlerts Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts-Extensions__4693) | Kyzeragon | PC / Mac | 0.2.2 |
+| [CrutchAlerts Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts-Extensions__4693) | Kyzeragon | PC / Mac | 0.3.0 |
 | [CrutchAlerts-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/CrutchAlerts-KR__4517) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Crux Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Crux-Counter__3639) | g4rr3t | PC / Mac | 1.3.0 |
 | [CruxTracker-2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akbosser/CruxTracker-2.0__aef7e9f0-ed11-4b67-99f7-c500cdc0b343) | akbosser | Console | — |

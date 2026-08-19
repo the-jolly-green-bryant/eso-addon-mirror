@@ -1,0 +1,168 @@
+Shopping List Public API
+========================
+
+Shopping List 0.16.3 introduces API version 1. Other add-ons can use it to add
+item links or plain item names to any active shopping list without accessing
+Shopping List's saved variables or internal UI objects.
+
+## Loading the API
+
+Add Shopping List as an optional dependency in your add-on manifest if your
+integration can run without it:
+
+```text
+## OptionalDependsOn: GravvyShoppingList
+```
+
+Use `## DependsOn: GravvyShoppingList` instead if your add-on cannot function
+without Shopping List. Both the manifest dependency name and Lua API namespace
+use `GravvyShoppingList`. Check for the API after your add-on has loaded:
+
+```lua
+local api = GravvyShoppingList and GravvyShoppingList.API
+if not api or api:GetVersion() < 1 then
+    return
+end
+```
+
+Declaring the dependency ensures Shopping List is loaded first when it is
+enabled. Calls made before Shopping List has initialized fail safely with
+`NOT_READY`.
+
+## API version
+
+```lua
+local version = GravvyShoppingList.API:GetVersion()
+```
+
+Returns the public API version as a number. This is independent of Shopping
+List's add-on release version. The initial API version is `1`.
+
+## Discover active lists
+
+```lua
+local lists, errorCode = GravvyShoppingList.API:GetLists()
+```
+
+On success, `lists` is a new array containing copies of the active list IDs and
+names:
+
+```lua
+{
+    { id = 1, name = "Crafting Materials" },
+    { id = 4, name = "Items to Resell" },
+}
+```
+
+The returned tables are snapshots. Changing them does not change Shopping List
+data. Archived lists are not returned. Before initialization, the method
+returns `nil, "NOT_READY"`.
+
+## Add an item
+
+```lua
+local success, itemIdOrError = GravvyShoppingList.API:AddItem(
+    itemLinkOrName,
+    quantity,
+    options
+)
+```
+
+Parameters:
+
+- `itemLinkOrName`: A complete ESO item link or a non-empty plain item name.
+- `quantity`: A whole number from 1 through 1,000,000. Numeric strings are
+  accepted.
+- `options`: Optional table described below.
+
+Available options:
+
+- `listId`: ID of an active list returned by `GetLists()`.
+- `listName`: Name of an active list. Matching is case-insensitive.
+- `note`: Optional item note. Shopping List applies its normal 2,000-character
+  note limit.
+- `silent`: Set to `true` to suppress Shopping List's status-line update.
+
+Pass either `listId` or `listName`, not both. When neither is supplied, the item
+is added to the player's currently selected list. Targeting another list does
+not change the selected list.
+
+On success, the method returns `true, itemId`. On failure, it returns
+`false, errorCode`.
+
+```lua
+local success, result = GravvyShoppingList.API:AddItem(itemLink, 5)
+if success then
+    local itemId = result
+else
+    local errorCode = result
+end
+```
+
+An item link preserves its exact item identity and lets Shopping List initialize
+set, trait, quality, level, and Champion Point matching information. A plain
+name creates an unrestricted name-based entry.
+
+Every successful call creates a new shopping-list entry. Entries are not
+automatically combined because links with the same displayed name can have
+different traits, qualities, or levels.
+
+The API refreshes Shopping List after adding an item. It never opens the main
+window or item editor and never writes a message to chat.
+
+### Target the current list
+
+```lua
+local success, result = GravvyShoppingList.API:AddItem(itemLink, 10)
+```
+
+### Target a list by name and include a note
+
+```lua
+local success, result = GravvyShoppingList.API:AddItem("Rubedite Ingot", 200, {
+    listName = "Crafting Materials",
+    note = "Needed for the next equipment set",
+})
+```
+
+### Target a list by ID without updating the status line
+
+```lua
+local lists, errorCode = GravvyShoppingList.API:GetLists()
+if lists then
+    for _, list in ipairs(lists) do
+        if list.name == "Items to Resell" then
+            GravvyShoppingList.API:AddItem(itemLink, 1, {
+                listId = list.id,
+                silent = true,
+            })
+            break
+        end
+    end
+end
+```
+
+## Error codes
+
+Stable error strings are also exposed through `GravvyShoppingList.API.ERROR`:
+
+| Error | Meaning |
+| --- | --- |
+| `NOT_READY` | Shopping List has not finished initializing. |
+| `INVALID_ITEM` | The item name or item link is empty, malformed, or not an item link. |
+| `INVALID_QUANTITY` | Quantity is not a whole number from 1 through 1,000,000. |
+| `INVALID_OPTIONS` | The options table or one of its supported values is invalid. |
+| `LIST_NOT_FOUND` | The requested active list does not exist. |
+
+Example without hard-coding the string:
+
+```lua
+if not success and result == GravvyShoppingList.API.ERROR.LIST_NOT_FOUND then
+    -- Ask the player to select another list.
+end
+```
+
+Only the functions and constants documented here are public. Add-ons should not
+read or modify `GravvyShoppingList.data`, saved variables, or returned internal
+item tables. Those implementation details may change without an API-version
+change.

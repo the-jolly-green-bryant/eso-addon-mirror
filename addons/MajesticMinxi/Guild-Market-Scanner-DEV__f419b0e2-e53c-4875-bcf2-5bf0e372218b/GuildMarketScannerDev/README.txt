@@ -1,39 +1,34 @@
-Guild Market Scanner DEV — v0.5.2
+Guild Market Scanner DEV — v0.7.3
 Author: MajesticMinxi
 
-BUILD 0502 — STREAMING WEEKLY PREP
+BUILD 0703 — CONSOLE-SAFE SYNC URL SIZE
+
+WHY
+---
+v0.7.2 correctly generated real Market Sync data, but a ~13.2K browser URL
+did not open on ESO/PlayStation.
 
 FIX
 ---
-Large real-world scans (28k+ items / 93k+ guild snapshots) exposed a
-low-memory failure when /gmsweekly was run.
-
-Cause in v0.5.1:
-- copied every item key into a temporary array
-- retained one Lua table for every exportable price item
-- duplicated those rows again into final price records/sections
-- then created browser chunks
-This temporarily held several copies of the weekly dataset at once.
-
-v0.5.2:
-- walks SavedVariables incrementally with next()
-- never builds the giant key list
-- never retains per-item price-row tables
-- packs each price record immediately into ~3.9K browser chunks
-- keeps only compact Top-25 opportunity candidates per guild
-- finalization builds only the small opportunity section
-- runs frame-safe batches and GC after preparation
+- syncChunkTargetBytes reduced from 13,500 to 6,000
+- no other scanner or sync logic changed
 
 UNCHANGED
 ---------
-- scan database and saved market data
-- frame-safe trader scan finalization
-- price calculations
-- guild opportunity scoring
-- Cloudflare/D1 URL and transport format
-- /gmsweekly, /gmsweeklynext, /gmsweeklypart workflow
+- incremental guild-only Market Sync
+- pending guild tracking
+- v0.7.2 current-snapshot timestamp fix
+- compact v10 scanner storage
+- trusted / observed price calculations
+- Top-25 guild opportunities
+- unified Market Sync pages
+- /gmssyncretry and /gmssyncconfirm
+- Worker v0.9 protocol
+- D1 selective merge behavior
 
-IMPORTANT
----------
-Do not run /gmsweekly on v0.5.1 again with the large stress-test database.
-Install v0.5.2 first, re-enable add-ons, reload/login, then run /gmsweekly.
+TEST
+----
+Keep the same 7 pending guilds.
+Start /gmssync and generate Page 1 only.
+Confirm the PlayStation browser actually opens and the Worker reports
+non-zero Price updates.

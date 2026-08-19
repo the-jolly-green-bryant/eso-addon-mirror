@@ -8,7 +8,7 @@ local SAVED_VARIABLES_NAME = "FlamechasersTravelSlotsSavedVariables"
 local SAVED_VARIABLES_VERSION = 3
 local SV
 
-FTS.version = "0.7.12"
+FTS.version = "0.7.17"
 FTS.resultRows = {}
 FTS.resultOffset = 0
 
@@ -148,6 +148,28 @@ local function MakeBackdrop(parent, name, fill)
     return c
 end
 
+local function MakeWindowStroke(
+    parent, name, width, height, thickness, inset, color)
+    local frame = WM:CreateControl(name, parent, CT_CONTROL)
+    local frameWidth = width - (inset * 2)
+    local frameHeight = height - (inset * 2)
+    frame:SetDimensions(frameWidth, frameHeight)
+    frame:SetAnchor(TOPLEFT, parent, TOPLEFT, inset, inset)
+
+    local function Line(suffix, lineWidth, lineHeight, point, relativePoint)
+        local line = WM:CreateControl(name .. suffix, frame, CT_TEXTURE)
+        line:SetDimensions(lineWidth, lineHeight)
+        line:SetAnchor(point, frame, relativePoint, 0, 0)
+        line:SetColor(unpack(color))
+        line:SetDrawLayer(DL_OVERLAY)
+        line:SetDrawLevel(250)
+    end
+    Line("Top", frameWidth, thickness, TOP, TOP)
+    Line("Bottom", frameWidth, thickness, BOTTOM, BOTTOM)
+    Line("Left", thickness, frameHeight, LEFT, LEFT)
+    Line("Right", thickness, frameHeight, RIGHT, RIGHT)
+end
+
 local function MakeEdit(parent, name, hint, width, maxChars)
     local bg = MakeBackdrop(parent, name .. "Backdrop", false)
     bg:SetDimensions(width or 650, 42)
@@ -203,14 +225,28 @@ end
 function FTS.Open()
     FTS.CreateWindow()
     FTS.RefreshSlots()
+    local worldMapShowing = ZO_WorldMap_IsWorldMapShowing()
+    -- A normal world map has no active fast-travel interaction node. Remember
+    -- that distinction so completing a slot can dismiss an M-opened map while
+    -- leaving a wayshrine map alone for ESO's free-travel flow.
+    FTS.closeWorldMapAfterTravel = worldMapShowing
+        and ZO_Map_GetFastTravelNode() == nil
+    -- Do not intercept ESC. Instead, remember when this window belongs to the
+    -- full-map session and close it after ESO has dismissed that map itself.
+    FTS.closeWhenWorldMapCloses = worldMapShowing
     FTS.cursorWasActive = IsGameCameraUIModeActive()
     FTS.window:SetHidden(false)
     FTS.window:BringWindowToTop()
     FTS.HoldCursorMode()
+    FTS.RefreshTravelCosts()
     local maintainCursor = function(_, time)
         if not FTS.nextCursorCheck or time >= FTS.nextCursorCheck then
             FTS.nextCursorCheck = time + 0.1
             FTS.HoldCursorMode()
+        end
+        if not FTS.nextRecallCostCheck or time >= FTS.nextRecallCostCheck then
+            FTS.nextRecallCostCheck = time + 0.5
+            FTS.RefreshTravelCosts()
         end
     end
     FTS.window:SetHandler("OnUpdate", maintainCursor)
@@ -221,16 +257,30 @@ end
 
 function FTS.Close(forceCursorOff)
     if not FTS.window then return end
+    FTS.closeWhenWorldMapCloses = false
+    FTS.closeWorldMapAfterTravel = false
     if FTS.picker then FTS.picker:SetHidden(true) end
     if FTS.slotEditor then FTS.slotEditor:SetHidden(true) end
     if FTS.iconPicker then FTS.iconPicker:SetHidden(true) end
     FTS.window:SetHandler("OnUpdate", nil)
+    FTS.nextRecallCostCheck = nil
     if FTS.picker then FTS.picker:SetHandler("OnUpdate", nil) end
     if FTS.slotEditor then FTS.slotEditor:SetHandler("OnUpdate", nil) end
     if FTS.iconPicker then FTS.iconPicker:SetHandler("OnUpdate", nil) end
     FTS.window:SetHidden(true)
     if forceCursorOff or not FTS.cursorWasActive then
         SetGameCameraUIMode(false)
+    end
+end
+
+function FTS.CloseAfterTravel(directKeybind)
+    if directKeybind then return end
+    local closeWorldMap = FTS.closeWorldMapAfterTravel
+        and ZO_WorldMap_IsWorldMapShowing()
+        and ZO_Map_GetFastTravelNode() == nil
+    FTS.Close(true)
+    if closeWorldMap then
+        ZO_WorldMap_HideWorldMap()
     end
 end
 
@@ -366,6 +416,87 @@ function FTS.RefreshSlots()
             FTS.slotCards[i]:SetAlpha(0.58)
         end
     end
+    FTS.RefreshTravelCosts()
+end
+
+local function GetFocusedQuestRecallNode()
+    local questIndex = FTS.GetFocusedQuestIndex()
+    if not questIndex then return nil end
+
+    local nodeIndex = FTS.FindExactQuestNode(questIndex)
+    if nodeIndex then return nodeIndex end
+
+    local _, _, zoneIndex = GetJournalQuestLocationInfo(questIndex)
+    return FTS.FindKnownWayshrineInZone(zoneIndex)
+end
+
+function FTS.RefreshTravelCosts()
+    if not FTS.slotCostBackdrops then return end
+
+    -- ZO_Map_GetFastTravelNode() is set while using an actual wayshrine.
+    -- With no origin wayshrine, FastTravelToNode performs a paid recall.
+    local showRecallCosts = ZO_Map_GetFastTravelNode() == nil
+    local focusedQuestNode
+    local focusedQuestNodeResolved = false
+
+    for index = 1, 16 do
+        local destination = SV.slots[index]
+        local nodeIndex
+
+        if showRecallCosts and destination then
+            if destination.kind == "node" then
+                nodeIndex = destination.id
+            elseif destination.kind == "focusedQuest" then
+                if not focusedQuestNodeResolved then
+                    focusedQuestNode = GetFocusedQuestRecallNode()
+                    focusedQuestNodeResolved = true
+                end
+                nodeIndex = focusedQuestNode
+            end
+        end
+
+        local cost, currency
+        if nodeIndex and nodeIndex >= 1
+            and nodeIndex <= GetNumFastTravelNodes() then
+            local known, _, _, _, _, _, _, _, locked =
+                GetFastTravelNodeInfo(nodeIndex)
+            if known and not locked then
+                cost = GetRecallCost(nodeIndex)
+                if cost > 0 then currency = GetRecallCurrency(nodeIndex) end
+            end
+        end
+
+        local costBackdrop = FTS.slotCostBackdrops[index]
+        if cost and currency then
+            local canAfford = cost <= GetCurrencyAmount(
+                currency, CURRENCY_LOCATION_CHARACTER)
+            local color = canAfford
+                and { 0.88, 0.72, 0.32, 1 }
+                or { 1.00, 0.38, 0.40, 1 }
+            FTS.slotCosts[index]:SetText(tostring(cost))
+            FTS.slotCosts[index]:SetColor(unpack(color))
+            FTS.slotCostIcons[index]:SetTexture(
+                ZO_Currency_GetKeyboardCurrencyIcon(currency))
+            FTS.slotCostIcons[index]:SetColor(unpack(color))
+            costBackdrop:SetEdgeColor(
+                color[1], color[2], color[3], 0.62)
+            costBackdrop:SetHidden(false)
+            FTS.slotDetails[index]:SetDimensions(92, 20)
+        else
+            costBackdrop:SetHidden(true)
+            FTS.slotDetails[index]:SetDimensions(150, 20)
+        end
+    end
+end
+
+function FTS.RefreshAutoOpenToggle()
+    if not FTS.autoOpenMapCheck then return end
+    FTS.autoOpenMapCheck:SetTexture(SV.autoOpenWithMap
+        and "EsoUI/Art/Buttons/checkbox_checked.dds"
+        or "EsoUI/Art/Buttons/checkbox_unchecked.dds")
+    FTS.autoOpenMapCheck:SetColor(SV.autoOpenWithMap
+        and 0.35 or 0.48, SV.autoOpenWithMap and 0.75 or 0.55,
+        SV.autoOpenWithMap and 1 or 0.62, SV.autoOpenWithMap and 1 or 0.86)
 end
 
 function FTS.Assign(destination)
@@ -534,7 +665,7 @@ function FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind)
         FTS.SetStatus("Travelling near the focused quest via " ..
             zo_strformat("<<C:1>>", nodeName or "wayshrine") .. ".")
     end
-    if not directKeybind then FTS.Close(true) end
+    FTS.CloseAfterTravel(directKeybind)
     return true
 end
 
@@ -725,11 +856,11 @@ function FTS.Travel(index, directKeybind)
             FTS.SetStatus(name .. " has not been discovered on this character.", true)
         else
             FastTravelToNode(destination.id)
-            if not directKeybind then FTS.Close(true) end
+            FTS.CloseAfterTravel(directKeybind)
         end
     elseif destination.kind == "ownedHouse" then
         RequestJumpToHouse(destination.id, false)
-        if not directKeybind then FTS.Close(true) end
+        FTS.CloseAfterTravel(directKeybind)
     elseif destination.kind == "playerHouse" then
         if IsOwnAccount(destination.owner) then
             -- Visiting your own account through JumpToSpecificHouse is treated
@@ -740,7 +871,7 @@ function FTS.Travel(index, directKeybind)
         else
             JumpToSpecificHouse(destination.owner, destination.id, false)
         end
-        if not directKeybind then FTS.Close(true) end
+        FTS.CloseAfterTravel(directKeybind)
     elseif destination.kind == "primaryHouse" then
         if IsOwnAccount(destination.owner) then
             local houseId = GetHousingPrimaryHouse()
@@ -752,18 +883,18 @@ function FTS.Travel(index, directKeybind)
                 destination.zone = HouseZoneName(houseId)
                 destination.icon = HouseIcon(houseId)
                 RequestJumpToHouse(houseId, false)
-                if not directKeybind then FTS.Close(true) end
+                FTS.CloseAfterTravel(directKeybind)
             else
                 FTS.SetStatus("No primary residence is currently set.", true)
             end
         else
             JumpToHouse(destination.owner)
-            if not directKeybind then FTS.Close(true) end
+            FTS.CloseAfterTravel(directKeybind)
         end
     elseif destination.kind == "leader" then
         if IsUnitGrouped("player") then
             JumpToGroupLeader()
-            if not directKeybind then FTS.Close(true) end
+            FTS.CloseAfterTravel(directKeybind)
         else FTS.SetStatus("You are not currently grouped.", true) end
     elseif destination.kind == "focusedQuest" then
         FTS.TravelToFocusedQuest(directKeybind)
@@ -1525,6 +1656,11 @@ function FTS.CreateWindow()
     mainBackdrop:SetCenterColor(0.018, 0.026, 0.04, 1)
     FTS.window = w
 
+    -- The visible backdrop begins eight pixels inside the top-level control.
+    -- Anchor the frame to that real edge so no transparent gap surrounds it.
+    MakeWindowStroke(w, "FTSMainWindowStroke", 820, 628, 1, 8,
+        { 0.25, 0.64, 0.88, 0.82 })
+
     -- The tooltip center texture used by the outer frame is intentionally
     -- translucent. This independent layer provides predictable map dimming
     -- without changing the frame texture or the controls above it.
@@ -1580,6 +1716,7 @@ function FTS.CreateWindow()
 
     FTS.slotNames, FTS.slotNotes, FTS.slotDetails, FTS.slotIcons, FTS.slotAccents,
         FTS.slotCards = {}, {}, {}, {}, {}, {}
+    FTS.slotCosts, FTS.slotCostBackdrops, FTS.slotCostIcons = {}, {}, {}
     for i = 1, 16 do
         local col = (i - 1) % 4
         local row = math.floor((i - 1) / 4)
@@ -1613,7 +1750,30 @@ function FTS.CreateWindow()
         local detail = MakeLabel(card, "FTSSlotDetail" .. i, "", "ZoFontGameSmall")
         detail:SetDimensions(150, 20)
         detail:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        detail:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         detail:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 18, -13)
+
+        local costBackdrop = WM:CreateControl(
+            "FTSSlotCostBackdrop" .. i, card, CT_BACKDROP)
+        costBackdrop:SetDimensions(66, 22)
+        costBackdrop:SetAnchor(BOTTOMRIGHT, card, BOTTOMRIGHT, -9, -8)
+        costBackdrop:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+        costBackdrop:SetCenterColor(0.020, 0.018, 0.012, 0.94)
+        costBackdrop:SetEdgeTexture(
+            "EsoUI/Art/Tooltips/UI-Tooltip-Border.dds", 128, 8)
+        costBackdrop:SetInsets(2, 2, -2, -2)
+        costBackdrop:SetEdgeColor(0.62, 0.50, 0.22, 0.62)
+        costBackdrop:SetHidden(true)
+        local costIcon = WM:CreateControl(
+            "FTSSlotCostIcon" .. i, costBackdrop, CT_TEXTURE)
+        costIcon:SetDimensions(14, 14)
+        costIcon:SetAnchor(RIGHT, costBackdrop, RIGHT, -5, 0)
+        local cost = MakeLabel(
+            costBackdrop, "FTSSlotCost" .. i, "", "ZoFontGameSmall")
+        cost:SetDimensions(40, 18)
+        cost:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        cost:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        cost:SetAnchor(RIGHT, costIcon, LEFT, -3, 0)
         local hit = MakeButton(card, "FTSSlotHit" .. i, "")
         hit:SetAnchorFill(card)
         hit:SetHandler("OnMouseEnter", function()
@@ -1639,6 +1799,8 @@ function FTS.CreateWindow()
         FTS.slotNames[i], FTS.slotNotes[i], FTS.slotDetails[i] = name, note, detail
         FTS.slotIcons[i], FTS.slotAccents[i] = icon, accent
         FTS.slotCards[i] = card
+        FTS.slotCosts[i], FTS.slotCostBackdrops[i], FTS.slotCostIcons[i] =
+            cost, costBackdrop, costIcon
     end
     local footer = WM:CreateControl("FTSFooter", w, CT_BACKDROP)
     footer:SetDimensions(804, 42)
@@ -1648,7 +1810,42 @@ function FTS.CreateWindow()
     FTS.status = MakeLabel(w, "FlamechasersTravelStatus",
         COLOR.gray .. "Left-click travels. Right-click edits name, note, destination, or clears.|r",
         "ZoFontGameSmall")
+    FTS.status:SetDimensions(500, 38)
+    FTS.status:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    FTS.status:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     FTS.status:SetAnchor(LEFT, footer, LEFT, 15, 0)
+
+    local autoOpen = WM:CreateControl("FTSAutoOpenMapToggle", footer, CT_BUTTON)
+    autoOpen:SetDimensions(184, 30)
+    autoOpen:SetAnchor(RIGHT, footer, RIGHT, -72, 0)
+    local autoOpenCheck = WM:CreateControl(
+        "FTSAutoOpenMapCheck", autoOpen, CT_TEXTURE)
+    autoOpenCheck:SetDimensions(20, 20)
+    autoOpenCheck:SetAnchor(LEFT, autoOpen, LEFT, 0, 0)
+    local autoOpenLabel = MakeLabel(autoOpen, "FTSAutoOpenMapLabel",
+        "AUTO-OPEN WITH MAP", "ZoFontGameSmall")
+    autoOpenLabel:SetDimensions(158, 24)
+    autoOpenLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    autoOpenLabel:SetAnchor(LEFT, autoOpenCheck, RIGHT, 5, 0)
+    autoOpenLabel:SetColor(0.45, 0.54, 0.63, 0.94)
+    autoOpen:SetHandler("OnMouseEnter", function()
+        autoOpenLabel:SetColor(0.66, 0.78, 0.88, 1)
+        autoOpenCheck:SetAlpha(1)
+    end)
+    autoOpen:SetHandler("OnMouseExit", function()
+        autoOpenLabel:SetColor(0.45, 0.54, 0.63, 0.94)
+        autoOpenCheck:SetAlpha(0.92)
+    end)
+    autoOpen:SetHandler("OnClicked", function()
+        SV.autoOpenWithMap = not SV.autoOpenWithMap
+        FTS.RefreshAutoOpenToggle()
+        FTS.SetStatus(SV.autoOpenWithMap
+            and "Travel Slots will open with the world map."
+            or "Automatic map opening disabled.")
+    end)
+    FTS.autoOpenMapCheck = autoOpenCheck
+    FTS.RefreshAutoOpenToggle()
+
     local version = MakeLabel(w, "FTSVersion", "v" .. FTS.version, "ZoFontGameSmall")
     version:SetColor(0.32, 0.46, 0.56, 1)
     version:SetAnchor(RIGHT, footer, RIGHT, -14, 0)
@@ -1757,8 +1954,50 @@ function FTS.CreateMapButton()
     end
     RefreshMapButtonVisibility()
 
-    WORLD_MAP_SCENE:RegisterCallback("StateChange", RefreshMapButtonVisibility)
-    GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", RefreshMapButtonVisibility)
+    local function AnyTravelWindowIsShowing()
+        return (FTS.window and not FTS.window:IsHidden())
+            or (FTS.picker and not FTS.picker:IsHidden())
+            or (FTS.slotEditor and not FTS.slotEditor:IsHidden())
+            or (FTS.iconPicker and not FTS.iconPicker:IsHidden())
+    end
+
+    local function OnWorldMapStateChange(_, newState)
+        RefreshMapButtonVisibility()
+
+        if newState == SCENE_HIDDEN then
+            -- A zero-delay check lets keyboard/gamepad map transitions settle
+            -- before deciding the full map is truly gone. This follows ESO's
+            -- scene change after ESC and never consumes or replaces ESC.
+            zo_callLater(function()
+                if FTS.closeWhenWorldMapCloses
+                    and not ZO_WorldMap_IsWorldMapShowing()
+                    and AnyTravelWindowIsShowing() then
+                    FTS.Close(true)
+                end
+            end, 0)
+            return
+        end
+        if newState ~= SCENE_SHOWN then return end
+
+        if AnyTravelWindowIsShowing() then
+            FTS.closeWorldMapAfterTravel = ZO_Map_GetFastTravelNode() == nil
+            FTS.closeWhenWorldMapCloses = true
+        end
+        if not SV.autoOpenWithMap or AnyTravelWindowIsShowing() then return end
+
+        -- Let the world-map scene finish laying out first, then put Travel
+        -- Slots above it. Scene callbacks keep this exclusive to the full map;
+        -- minimap addons that reuse ZO_WorldMap do not trigger it.
+        zo_callLater(function()
+            if SV.autoOpenWithMap and ZO_WorldMap_IsWorldMapShowing()
+                and not AnyTravelWindowIsShowing() then
+                FTS.Open()
+            end
+        end, 50)
+    end
+
+    WORLD_MAP_SCENE:RegisterCallback("StateChange", OnWorldMapStateChange)
+    GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", OnWorldMapStateChange)
 
     FTS.mapButton = button
 end
@@ -1788,6 +2027,7 @@ local function InitializeSavedVariables()
         left = 500,
         top = 220,
         slots = {},
+        autoOpenWithMap = false,
         serverDataInitialized = false,
     }
     local worldName = GetWorldName()

@@ -2,7 +2,7 @@ GuildMarketScannerDev = GuildMarketScannerDev or {}
 local GMS = GuildMarketScannerDev
 
 GMS.name = "GuildMarketScannerDev"
-GMS.version = "0.5.2"
+GMS.version = "0.7.3"
 GMS.schemaVersion = 10
 GMS.maxGuildSnapshotsPerItem = 20
 GMS.maxPricesPerItemDuringScan = 24
@@ -61,6 +61,9 @@ local defaults={
     totalGuildSnapshots=0,
     lastScan=nil,
     guildScans={},
+    pendingGuilds={},
+    marketSyncVersion=1,
+    marketSyncBootstrapVersion=0,
     export=nil,
 }
 
@@ -820,11 +823,20 @@ end
 
 function GMS:RecordCompletedGuildScan()
     self.saved.guildScans=self.saved.guildScans or {}
+    self.saved.pendingGuilds=self.saved.pendingGuilds or {}
+
     if not self.scanGuildId or self.scanGuildId==0 then return end
-    self.saved.guildScans[tostring(self.scanGuildId)]=
+
+    local guildId=tostring(self.scanGuildId)
+    local now=GetTimeStamp()
+
+    self.saved.guildScans[guildId]=
         Escape(self.scanGuildName or "").."|"..
-        tostring(GetTimeStamp()).."|"..
+        tostring(now).."|"..
         tostring(self.scanLoaded or 0)
+
+    -- A completed rescan replaces this guild in the next Market Sync.
+    self.saved.pendingGuilds[guildId]=now
 end
 
 function GMS:GuildScanCount()
@@ -2553,340 +2565,906 @@ function GMS:WeeklyScoreOpportunity(key,a,flat,guildId)
 end
 
 local function WeeklyInsertTop(list,candidate,maxKeep)
-    list[#list+1]=candidate
-    table.sort(list,function(x,y)
-        if x.score~=y.score then return x.score>y.score end
-        return tostring(x.key)<tostring(y.key)
-    end)
-    if #list>maxKeep then table.remove(list) end
-end
+    local n=#list
 
-function GMS:WeeklyReset()
-    self.weeklyState=nil
-    self.weeklyPrepared=nil
-    self.weeklySendIndex=0
-end
-
-local function WeeklyFlushPricePart(s)
-    if not s.currentPriceRecords or #s.currentPriceRecords==0 then return end
-
-    s.parts[#s.parts+1]={
-        layer="price",
-        data=table.concat(s.currentPriceRecords,"-"),
-        rows=#s.currentPriceRecords,
-        bytes=s.currentPriceBytes or 0
-    }
-
-    s.currentPriceRecords={}
-    s.currentPriceBytes=0
-end
-
-local function WeeklyAppendPriceRecord(s,record,target)
-    local extra=#record+1
-
-    if #s.currentPriceRecords>0 and
-       (s.currentPriceBytes or 0)+extra>target then
-        WeeklyFlushPricePart(s)
-    end
-
-    s.currentPriceRecords[#s.currentPriceRecords+1]=record
-    s.currentPriceBytes=(s.currentPriceBytes or 0)+extra
-end
-
-function GMS:WeeklyPrepareStart()
-    if self.weeklyState then
-        Chat("Weekly export preparation is already running.")
+    if n<maxKeep then
+        list[n+1]=candidate
         return
     end
 
-    -- IMPORTANT:
-    -- Do NOT build a 28k-key array and do NOT retain one Lua table per price item.
-    -- The previous design duplicated the weekly dataset several times in memory
-    -- and could trigger ESO's low-memory protection on large real scans.
-    local guildIds={}
-    for guildId,_ in pairs(self.saved.guildScans or {}) do
-        guildIds[#guildIds+1]=tostring(guildId)
+    -- Keep the Top-N unsorted while scanning. Finding the current worst
+    -- among 25 entries is cheaper and more predictable than sorting on
+    -- every qualifying item/guild comparison.
+    local worstIndex=1
+    local worst=list[1]
+
+    for i=2,n do
+        local v=list[i]
+        if v.score<worst.score or
+           (v.score==worst.score and tostring(v.key)>tostring(worst.key)) then
+            worst=v
+            worstIndex=i
+        end
     end
-    table.sort(guildIds)
 
-    local topByGuild={}
-    for i=1,#guildIds do
-        topByGuild[guildIds[i]]={}
+    if candidate.score>worst.score or
+       (candidate.score==worst.score and tostring(candidate.key)<tostring(worst.key)) then
+        list[worstIndex]=candidate
     end
-
-    self.weeklyState={
-        cursor=nil,
-        processed=0,
-        total=self.saved.totalItems or 0,
-        guildIds=guildIds,
-        topByGuild=topByGuild,
-        parts={},
-        currentPriceRecords={},
-        currentPriceBytes=0,
-        priceCount=0,
-        opportunityRows=0,
-        donePrices=false,
-    }
-
-    Chat(string.format(
-        "GMA WEEKLY PREP START: %d DB items / %d completed guild scans.",
-        self.weeklyState.total,#guildIds
-    ))
-    Chat("Streaming Price + Guild Opportunity data in low-memory frame-safe batches...")
-
-    zo_callLater(function()
-        GMS:WeeklyPrepareBatch()
-    end,25)
 end
 
-function GMS:WeeklyPrepareBatch()
-    local s=self.weeklyState
-    if not s then return end
 
-    local batchSize=self.weeklyBuildBatchSize or 100
-    local target=self.weeklyChunkTargetBytes or 3900
-    local processedThisBatch=0
-    local key=s.cursor
 
-    while processedThisBatch<batchSize do
-        local nextKey,record=next(self.saved.items or {},key)
+-- ============================================================================
+-- v0.7.0 INCREMENTAL MARKET SYNC
+-- ============================================================================
+--
+-- GMS is a collector. D1 is the persistent market.
+--
+-- A completed trader scan marks only that guild as pending.
+-- /gmssync snapshots the pending guild list.
+-- /gmssyncnext generates ONE bounded unified browser page at a time.
+--
+-- A page can contain:
+--   P<item>~<price-pack>          global price update
+--   G~<guild-index>               opportunity guild header
+--   O<item>~<listings>.<units>.<localMedian>
+--
+-- The Worker stages every page. The current market is changed only when the
+-- final page succeeds. At finalize:
+--   * price rows in this sync are UPSERTED; other market prices stay untouched
+--   * opportunity rows are REPLACED only for the guilds in this sync
+--   * every other guild remains untouched
+--
+-- This is intentionally not a "whole market replacement".
+-- ============================================================================
 
-        if not nextKey then
-            s.donePrices=true
-            break
+GMS.syncChunkTargetBytes = 6000
+GMS.syncOpportunityCap = 25
+
+local function SyncCandidateBetter(a,b)
+    if not b then return true end
+    if a.score~=b.score then return a.score>b.score end
+    return tostring(a.key)<tostring(b.key)
+end
+
+local function SyncCandidateWorse(a,b)
+    if not b then return true end
+    if a.score~=b.score then return a.score<b.score end
+    return tostring(a.key)>tostring(b.key)
+end
+
+local function SyncKeepTop(list,candidate,cap)
+    local n=#list
+    if n<cap then
+        list[n+1]=candidate
+        return
+    end
+
+    local worstIndex=1
+    local worst=list[1]
+
+    for i=2,n do
+        local v=list[i]
+        if SyncCandidateWorse(v,worst) then
+            worst=v
+            worstIndex=i
         end
+    end
 
-        key=nextKey
-        s.cursor=nextKey
-        s.processed=(s.processed or 0)+1
-        processedThisBatch=processedThisBatch+1
+    if SyncCandidateBetter(candidate,worst) then
+        list[worstIndex]=candidate
+    end
+end
 
-        if record then
-            local packed,a=self:WeeklyBuildPricePacked(nextKey,record)
+local function ParseGuildScanMeta(value)
+    value=tostring(value or "")
+    local p1=string.find(value,"|",1,true)
+    if not p1 then return Unescape(value),0,0 end
+    local p2=string.find(value,"|",p1+1,true)
 
-            if packed and a then
-                local priceRecord=self:FinalShortItemId(nextKey).."~"..packed
-                WeeklyAppendPriceRecord(s,priceRecord,target)
-                s.priceCount=s.priceCount+1
+    if not p2 then
+        return Unescape(string.sub(value,1,p1-1)),
+               tonumber(string.sub(value,p1+1)) or 0,
+               0
+    end
 
-                local _,flat=ParseRecord(record)
+    return
+        Unescape(string.sub(value,1,p1-1)),
+        tonumber(string.sub(value,p1+1,p2-1)) or 0,
+        tonumber(string.sub(value,p2+1)) or 0
+end
 
-                for gi=1,#s.guildIds do
-                    local guildId=s.guildIds[gi]
-                    local c=self:WeeklyScoreOpportunity(
-                        nextKey,a,flat,guildId
-                    )
+function GMS:SyncLatestGuildTimes()
+    local out={}
+    for guildId,value in pairs(self.saved.guildScans or {}) do
+        local _,ts=ParseGuildScanMeta(value)
+        out[tostring(guildId)]=ts or 0
+    end
+    return out
+end
 
-                    if c then
-                        WeeklyInsertTop(
-                            s.topByGuild[guildId],
-                            c,
-                            self.weeklyOpportunityCap or 25
-                        )
-                    end
-                end
+function GMS:SyncParseCurrentRecord(record,latestTimes)
+    local name,flat=ParseRecord(record)
+    if #flat==0 then return name,{},{} end
+
+    local current={}
+    local allByGuild={}
+
+    for i=1,#flat,9 do
+        local gid=tostring(flat[i])
+        local row={
+            guildId=gid,
+            listings=tonumber(flat[i+1]) or 0,
+            units=tonumber(flat[i+2]) or 0,
+            low=tonumber(flat[i+3]) or 0,
+            median=tonumber(flat[i+4]) or 0,
+            high=tonumber(flat[i+5]) or 0,
+            rawMin=tonumber(flat[i+6]) or 0,
+            rawMax=tonumber(flat[i+7]) or 0,
+            updated=tonumber(flat[i+8]) or 0
+        }
+
+        allByGuild[gid]=row
+
+        local latest=tonumber(latestTimes[gid]) or 0
+
+        -- Snapshot rows are stamped at the BEGINNING of frame-safe commit,
+        -- while guildScans is stamped a few seconds later after commit ends.
+        -- v0.7.1 compared these timestamps exactly and therefore rejected
+        -- every freshly committed row as "old".
+        --
+        -- Allow a small commit-completion tolerance. Truly old rows from a
+        -- previous scan are normally minutes/hours/days older and remain
+        -- excluded, while rows from the just-completed scan stay current.
+        local currentFloor=latest>0 and math.max(0,latest-30) or 0
+
+        if latest<=0 or row.updated>=currentFloor then
+            current[#current+1]=row
+        end
+    end
+
+    return name,current,allByGuild
+end
+
+function GMS:SyncAnalyzeCurrentRows(rows)
+    if not rows or #rows==0 then return nil end
+
+    local medians={}
+    local counts={}
+    local totalListings=0
+    local totalUnits=0
+    local newest=0
+    local observedMin=nil
+    local observedMax=nil
+
+    for i=1,#rows do
+        local row=rows[i]
+        local med=tonumber(row.median)
+
+        if med and med>0 then
+            local cnt=tonumber(row.listings) or 1
+            local units=tonumber(row.units) or cnt
+
+            medians[#medians+1]=med
+            counts[#counts+1]=cnt
+            totalListings=totalListings+cnt
+            totalUnits=totalUnits+units
+            newest=math.max(newest,tonumber(row.updated) or 0)
+
+            local rmin=tonumber(row.rawMin)
+            local rmax=tonumber(row.rawMax)
+
+            if rmin and rmin>0 then
+                observedMin=observedMin and math.min(observedMin,rmin) or rmin
+            end
+
+            if rmax and rmax>0 then
+                observedMax=observedMax and math.max(observedMax,rmax) or rmax
             end
         end
     end
 
-    if s.donePrices then
-        WeeklyFlushPricePart(s)
-        zo_callLater(function()
-            GMS:WeeklyFinalizePrepared()
-        end,25)
+    if #medians==0 then return nil end
+
+    local sorted={}
+    for i=1,#medians do sorted[i]=medians[i] end
+    table.sort(sorted)
+
+    local rawMedian=Median(sorted)
+    local q1=Percentile(sorted,0.25)
+    local q3=Percentile(sorted,0.75)
+    local iqr=math.max((q3 or rawMedian)-(q1 or rawMedian),1)
+    local lowFence=math.max(0,(q1 or rawMedian)-1.5*iqr)
+    local highFence=(q3 or rawMedian)+1.5*iqr
+
+    local pairsList={}
+    local clusterPrices={}
+    local lowOut,highOut,totalWeight=0,0,0
+
+    for i=1,#medians do
+        local price=medians[i]
+
+        if price<lowFence then
+            lowOut=lowOut+1
+        elseif price>highFence then
+            highOut=highOut+1
+        else
+            local w=math.max(1,math.min(counts[i] or 1,20))
+            pairsList[#pairsList+1]={price,w}
+            clusterPrices[#clusterPrices+1]=price
+            totalWeight=totalWeight+w
+        end
+    end
+
+    if #pairsList==0 then
+        for i=1,#medians do
+            local w=math.max(1,math.min(counts[i] or 1,20))
+            pairsList[#pairsList+1]={medians[i],w}
+            clusterPrices[#clusterPrices+1]=medians[i]
+            totalWeight=totalWeight+w
+        end
+    end
+
+    table.sort(pairsList,function(a,b) return a[1]<b[1] end)
+    table.sort(clusterPrices)
+
+    local target=totalWeight/2
+    local running=0
+    local suggested=pairsList[#pairsList][1]
+
+    for i=1,#pairsList do
+        running=running+pairsList[i][2]
+        if running>=target then
+            suggested=pairsList[i][1]
+            break
+        end
+    end
+
+    local confidence=0
+    if #clusterPrices>=8 then confidence=3
+    elseif #clusterPrices>=4 then confidence=2
+    elseif #clusterPrices>=2 then confidence=1 end
+
+    return {
+        p=math.floor((suggested or rawMedian)+0.5),
+        l=math.floor((Percentile(clusterPrices,0.25) or clusterPrices[1])+0.5),
+        h=math.floor((Percentile(clusterPrices,0.75) or clusterPrices[#clusterPrices])+0.5),
+        mn=observedMin or math.floor((clusterPrices[1] or suggested)+0.5),
+        mx=observedMax or math.floor((clusterPrices[#clusterPrices] or suggested)+0.5),
+        g=#medians,
+        c=#clusterPrices,
+        o=totalListings,
+        v=totalUnits,
+        lo=lowOut,
+        hi=highOut,
+        cf=confidence,
+        u=newest
+    }
+end
+
+function GMS:SyncBuildPricePacked(a)
+    if not a or (a.g or 0)<3 or not a.p or a.p<=0 then
+        return nil
+    end
+
+    local p=math.floor((a.p or 0)+0.5)
+    if p<=0 then return nil end
+
+    local function C(v,lo,hi)
+        v=math.floor((tonumber(v) or 0)+0.5)
+        if v<lo then return lo end
+        if v>hi then return hi end
+        return v
+    end
+
+    local lowPct=C(((p-(a.l or p))/p)*100,0,63)
+    local highPct=C((((a.h or p)-p)/p)*100,0,63)
+    local conf=C(a.cf or 0,0,3)
+    local packA=(((p*64+lowPct)*64+highPct)*4+conf)
+
+    local obsLowPct=C(((p-(a.mn or p))/p)*100,0,255)
+    local obsHighPct=C((((a.mx or p)-p)/p)*100,0,255)
+    local packB=obsLowPct*256+obsHighPct
+
+    return B64Num(packA).."."..B64Num(packB)
+end
+
+function GMS:SyncScoreOpportunity(key,a,currentByGuild,guildId)
+    if not a or (a.g or 0)<3 or not a.p or a.p<=0 then return nil end
+
+    local row=currentByGuild[tostring(guildId)]
+    local listings=0
+    local units=0
+    local localMedian=0
+    local absent=true
+
+    if row then
+        listings=tonumber(row.listings) or 0
+        units=tonumber(row.units) or 0
+        localMedian=tonumber(row.median) or 0
+        absent=false
+    end
+
+    local relevance=
+        math.min(45,(a.g or 0)*6)+
+        math.min(25,(a.cf or 0)*8)+
+        math.min(30,math.floor(math.log(math.max(2,a.p or 1))*4))
+
+    local scarcity
+    if absent then
+        scarcity=100
+    else
+        scarcity=100-
+            math.min(70,listings*7)-
+            math.min(30,math.floor(units/25))
+    end
+
+    local priceSafety=20
+
+    if localMedian>0 and (a.l or a.p)>0 then
+        if localMedian < (a.l or a.p)*0.70 then
+            priceSafety=-80
+        elseif localMedian > (a.h or a.p)*1.60 then
+            priceSafety=-20
+        end
+    end
+
+    local score=relevance+scarcity+priceSafety
+    if score<=80 then return nil end
+
+    return {
+        key=key,
+        score=score,
+        listings=listings,
+        units=units,
+        localMedian=localMedian,
+        absent=absent
+    }
+end
+
+function GMS:SyncPendingCount()
+    local n=0
+    for _ in pairs(self.saved.pendingGuilds or {}) do n=n+1 end
+    return n
+end
+
+function GMS:SyncResetRuntime()
+    self.syncSession=nil
+    self.syncWork=nil
+end
+
+function GMS:SyncStart()
+    if self.syncWork then
+        Chat("Market Sync work is already running.")
         return
     end
 
-    if ((s.processed or 0)%800)<batchSize then
-        Chat(string.format(
-            "Weekly prep progress: %d/%d items... | price parts so far: %d",
-            math.min(s.processed or 0,s.total or 0),
-            s.total or 0,
-            #s.parts
-        ))
+    local ids={}
+    for guildId,_ in pairs(self.saved.pendingGuilds or {}) do
+        ids[#ids+1]=tostring(guildId)
+    end
+    table.sort(ids)
+
+    if #ids==0 then
+        Chat("MARKET SYNC: no guild scans are pending.")
+        return
     end
 
-    zo_callLater(function()
-        GMS:WeeklyPrepareBatch()
-    end,25)
+    local pendingSet={}
+    local guildIndex={}
+    local guildMeta={}
+    local topByGuild={}
+    local latestTimes=self:SyncLatestGuildTimes()
+
+    for i=1,#ids do
+        local gid=ids[i]
+        pendingSet[gid]=true
+        guildIndex[gid]=i
+        topByGuild[gid]={}
+
+        local name,ts,loaded=ParseGuildScanMeta(
+            (self.saved.guildScans or {})[gid]
+        )
+
+        guildMeta[#guildMeta+1]={
+            index=i,
+            guildId=gid,
+            name=name or "",
+            scannedAt=ts or 0,
+            loaded=loaded or 0
+        }
+    end
+
+    self.syncSession={
+        sid="sync-"..tostring(GetTimeStamp()).."-"..tostring(#ids),
+        world=GetWorldName and GetWorldName() or "unknown",
+        guildIds=ids,
+        pendingSet=pendingSet,
+        guildIndex=guildIndex,
+        guildMeta=guildMeta,
+        latestTimes=latestTimes,
+        topByGuild=topByGuild,
+
+        phase="items",
+        cursor=nil,
+        page=1,
+        processed=0,
+        matchedItems=0,
+        priceRows=0,
+        opportunityRows=0,
+
+        awaitingConfirm=false,
+        lastPage=nil,
+        nextCursor=nil,
+        nextPhase=nil,
+        finalOpened=false
+    }
+
+    Chat(string.format(
+        "MARKET SYNC STARTED: %d pending guild%s. No whole-market replacement.",
+        #ids,#ids==1 and "" or "s"
+    ))
+    Chat("Use /gmssyncnext to generate Sync Page 1.")
 end
 
-function GMS:WeeklyFinalizePrepared()
-    local s=self.weeklyState
+function GMS:SyncGuildMetaString()
+    local s=self.syncSession
+    if not s then return "" end
+
+    local out={}
+    for i=1,#s.guildMeta do
+        local g=s.guildMeta[i]
+        out[#out+1]=
+            tostring(g.index).."~"..
+            tostring(g.guildId).."~"..
+            tostring(g.scannedAt or 0).."~"..
+            tostring(g.loaded or 0).."~"..
+            UrlEncode(g.name or "")
+    end
+    return table.concat(out,";")
+end
+
+function GMS:SyncOpenPage(page)
+    local s=self.syncSession
+    if not s or not page then return end
+
+    local base="https://gma-data-receiver.guildmarketassistant.workers.dev/market-sync"
+
+    local url=
+        base..
+        "?v=9"..
+        "&sid="..UrlEncode(s.sid)..
+        "&world="..UrlEncode(s.world)..
+        "&page="..tostring(page.page)..
+        "&done="..(page.done and "1" or "0")..
+        "&prices="..tostring(page.priceRows or 0)..
+        "&opps="..tostring(page.oppRows or 0)
+
+    if page.page==1 then
+        url=url.."&gmeta="..UrlEncode(self:SyncGuildMetaString())
+    end
+
+    url=url.."&data="..UrlEncode(page.data or "")
+
+    Chat(string.format(
+        "Opening MARKET SYNC PAGE %d | %d price updates / %d opportunities | ~%d chars | DB inspected %d/%d%s",
+        page.page,
+        page.priceRows or 0,
+        page.oppRows or 0,
+        #(page.data or ""),
+        s.processed or 0,
+        self.saved.totalItems or 0,
+        page.done and " | FINAL PAGE" or ""
+    ))
+
+    RequestOpenUnsafeURL(url)
+end
+
+function GMS:SyncRetry()
+    local s=self.syncSession
+    if not s or not s.lastPage then
+        Chat("No Market Sync page is waiting for retry.")
+        return
+    end
+
+    Chat("Reopening the same Market Sync page. No cursor was advanced.")
+    self:SyncOpenPage(s.lastPage)
+end
+
+function GMS:SyncAcceptPreviousPage()
+    local s=self.syncSession
+    if not s or not s.awaitingConfirm then return true end
+
+    if s.lastPage and s.lastPage.done then
+        Chat("Final Market Sync page is waiting for confirmation. If browser succeeded, use /gmssyncconfirm. If it failed, use /gmssyncretry.")
+        return false
+    end
+
+    s.cursor=s.nextCursor
+    s.phase=s.nextPhase or s.phase
+    s.page=(s.lastPage and s.lastPage.page or s.page)+1
+    s.awaitingConfirm=false
+    s.lastPage=nil
+    s.nextCursor=nil
+    s.nextPhase=nil
+
+    if collectgarbage then collectgarbage("collect") end
+    return true
+end
+
+function GMS:SyncNext()
+    local s=self.syncSession
+
+    if not s then
+        Chat("No Market Sync session. Use /gmssync.")
+        return
+    end
+
+    if self.syncWork then
+        Chat("Market Sync page generation is already running.")
+        return
+    end
+
+    if not self:SyncAcceptPreviousPage() then return end
+
+    if s.phase=="items" then
+        self:SyncBeginItemPage()
+        return
+    end
+
+    if s.phase=="opportunities" then
+        self:SyncBeginOpportunityPage()
+        return
+    end
+
+    if s.phase=="error" then
+        Chat("Market Sync is stopped in safety state. Pending guilds were NOT cleared. Start a new sync with /gmssync.")
+        return
+    end
+
+    Chat("Market Sync final page already opened. Use /gmssyncconfirm after browser success.")
+end
+
+function GMS:SyncBeginItemPage()
+    local s=self.syncSession
     if not s then return end
 
-    local target=self.weeklyChunkTargetBytes or 3900
+    self.syncWork={
+        phase="items",
+        cursor=s.cursor,
+        records={},
+        bytes=0,
+        priceRows=0,
+        oppRows=0,
+        reachedEnd=false
+    }
 
-    -- Opportunities are intentionally tiny: at most Top-25 per scanned guild.
-    -- Build only this compact section at finalization.
-    local current={}
-    local bytes=0
-    local oppCount=0
+    Chat(string.format("Generating MARKET SYNC PAGE %d...",s.page))
+    zo_callLater(function() GMS:SyncItemBatch() end,20)
+end
 
-    local function FlushOpp()
-        if #current==0 then return end
-        s.parts[#s.parts+1]={
-            layer="opp",
-            data=table.concat(current,"-"),
-            rows=#current,
-            bytes=bytes
-        }
-        current={}
-        bytes=0
-    end
+function GMS:SyncItemBatch()
+    local s=self.syncSession
+    local w=self.syncWork
+    if not s or not w or w.phase~="items" then return end
 
-    local function AppendOpp(rec)
-        local extra=#rec+1
-        if #current>0 and bytes+extra>target then
-            FlushOpp()
+    local target=self.syncChunkTargetBytes or 13500
+    local batchSize=8
+    local processed=0
+    local key=w.cursor
+
+    while processed<batchSize do
+        local nextKey,record=next(self.saved.items or {},key)
+
+        if not nextKey then
+            w.reachedEnd=true
+            break
         end
-        current[#current+1]=rec
-        bytes=bytes+extra
+
+        local _,currentRows,allByGuild=
+            self:SyncParseCurrentRecord(record,s.latestTimes)
+
+        local currentByGuild={}
+        for i=1,#currentRows do
+            currentByGuild[currentRows[i].guildId]=currentRows[i]
+        end
+
+        local affected=false
+
+        -- A current OR older row for a pending guild means this item's
+        -- contribution changed when that guild was rescanned.
+        for gi=1,#s.guildIds do
+            if allByGuild[s.guildIds[gi]] then
+                affected=true
+                break
+            end
+        end
+
+        local a=self:SyncAnalyzeCurrentRows(currentRows)
+
+        -- Opportunity selection sees every current item, including items
+        -- absent from a pending guild. Only 25 candidates per pending guild
+        -- are retained.
+        if a and (a.g or 0)>=3 then
+            for gi=1,#s.guildIds do
+                local gid=s.guildIds[gi]
+                local c=self:SyncScoreOpportunity(
+                    nextKey,a,currentByGuild,gid
+                )
+
+                if c then
+                    SyncKeepTop(
+                        s.topByGuild[gid],
+                        c,
+                        self.syncOpportunityCap or 25
+                    )
+                end
+            end
+        end
+
+        if affected and a then
+            local packed=self:SyncBuildPricePacked(a)
+
+            if packed then
+                local rec=
+                    "P"..self:FinalShortItemId(nextKey).."~"..packed
+
+                local extra=#rec+1
+
+                if #w.records>0 and w.bytes+extra>target then
+                    -- Leave this item for the next page.
+                    break
+                end
+
+                w.records[#w.records+1]=rec
+                w.bytes=w.bytes+extra
+                w.priceRows=w.priceRows+1
+                s.matchedItems=s.matchedItems+1
+            end
+        end
+
+        key=nextKey
+        w.cursor=nextKey
+        s.processed=s.processed+1
+        processed=processed+1
+
+        -- Long sync walks create temporary parsing/analysis tables. Do not
+        -- allow them to accumulate until ESO's low-memory watchdog fires.
+        if (s.processed or 0)%64==0 and collectgarbage then
+            collectgarbage("collect")
+        end
     end
+
+    if w.reachedEnd then
+        self:SyncFinishItemPage(true)
+        return
+    end
+
+    if processed<batchSize and #w.records>0 then
+        self:SyncFinishItemPage(false)
+        return
+    end
+
+    if w.bytes>=target-256 then
+        self:SyncFinishItemPage(false)
+        return
+    end
+
+    zo_callLater(function() GMS:SyncItemBatch() end,20)
+end
+
+function GMS:SyncFinishItemPage(reachedEnd)
+    local s=self.syncSession
+    local w=self.syncWork
+    if not s or not w then return end
+
+    self.syncWork=nil
+
+    if #w.records==0 and reachedEnd then
+        s.cursor=w.cursor
+        s.phase="opportunities"
+        self:SyncBeginOpportunityPage()
+        return
+    end
+
+    local nextPhase=reachedEnd and "opportunities" or "items"
+
+    local page={
+        page=s.page,
+        data=table.concat(w.records,"-"),
+        priceRows=w.priceRows,
+        oppRows=0,
+        done=false
+    }
+
+    s.lastPage=page
+    s.awaitingConfirm=true
+    s.nextCursor=w.cursor
+    s.nextPhase=nextPhase
+    s.priceRows=s.priceRows+(w.priceRows or 0)
+
+    self:SyncOpenPage(page)
+end
+
+function GMS:SyncBuildOpportunityRecords()
+    local s=self.syncSession
+    if not s then return {} end
+
+    local records={}
 
     for gi=1,#s.guildIds do
-        local guildId=s.guildIds[gi]
-        local list=s.topByGuild[guildId] or {}
+        local gid=s.guildIds[gi]
+        local list=s.topByGuild[gid] or {}
 
-        AppendOpp("G~"..B64Num(tonumber(guildId) or 0))
+        table.sort(list,function(a,b)
+            return SyncCandidateBetter(a,b)
+        end)
+
+        records[#records+1]="G~"..B64Num(s.guildIndex[gid] or gi)
 
         for i=1,#list do
             local c=list[i]
-            AppendOpp(
-                self:FinalShortItemId(c.key).."~"..
+            records[#records+1]=
+                "O"..self:FinalShortItemId(c.key).."~"..
                 B64Num(c.listings or 0).."."..
                 B64Num(c.units or 0).."."..
                 B64Num(c.localMedian or 0)
-            )
-            oppCount=oppCount+1
         end
     end
-    FlushOpp()
 
-    local sid=
-        "weekly-"..tostring(GetTimeStamp()).."-"..
-        tostring(self.saved.totalItems or 0)
+    return records
+end
 
-    -- Keep only the already-packed browser chunks, never a second copy of all
-    -- item rows. This is the only live weekly payload retained for sending.
-    self.weeklyPrepared={
-        sid=sid,
-        parts=s.parts,
-        priceItems=s.priceCount,
-        opportunityRows=oppCount,
-        guildCount=#s.guildIds,
-        preparedAt=GetTimeStamp()
+function GMS:SyncBeginOpportunityPage()
+    local s=self.syncSession
+    if not s then return end
+
+    if not s.oppRecords then
+        s.oppRecords=self:SyncBuildOpportunityRecords()
+        s.oppIndex=1
+    end
+
+    -- Safety guard: an empty sync must NEVER be sent as a successful final
+    -- update. Keep all guilds pending and stop instead.
+    if (s.priceRows or 0)==0 and #(s.oppRecords or {})==0 then
+        s.phase="error"
+        s.awaitingConfirm=false
+        s.lastPage=nil
+
+        if collectgarbage then collectgarbage("collect") end
+
+        Chat("MARKET SYNC STOPPED: generated 0 price rows and 0 opportunity rows.")
+        Chat("Nothing was sent/finalized and all pending guilds remain pending.")
+        return
+    end
+
+    local target=self.syncChunkTargetBytes or 13500
+    local records={}
+    local bytes=0
+    local oppRows=0
+    local i=s.oppIndex or 1
+    local currentHeader=nil
+
+    while i<=#s.oppRecords do
+        local rec=s.oppRecords[i]
+        local isHeader=string.sub(rec,1,2)=="G~"
+        local extra=#rec+1
+
+        if isHeader then
+            currentHeader=rec
+        end
+
+        if #records>0 and bytes+extra>target then
+            break
+        end
+
+        records[#records+1]=rec
+        bytes=bytes+extra
+
+        if not isHeader then oppRows=oppRows+1 end
+
+        i=i+1
+    end
+
+    local reachedEnd=i>#s.oppRecords
+
+    -- If an opportunity page starts in the middle of one guild, repeat its
+    -- header so the Worker can decode the page independently.
+    if #records>0 and string.sub(records[1],1,2)~="G~" then
+        local back=(s.oppIndex or 1)-1
+        while back>=1 do
+            local prev=s.oppRecords[back]
+            if string.sub(prev,1,2)=="G~" then
+                table.insert(records,1,prev)
+                bytes=bytes+#prev+1
+                break
+            end
+            back=back-1
+        end
+    end
+
+    local page={
+        page=s.page,
+        data=table.concat(records,"-"),
+        priceRows=0,
+        oppRows=oppRows,
+        done=reachedEnd
     }
 
-    self.weeklyState=nil
-    self.weeklySendIndex=0
+    s.lastPage=page
+    s.awaitingConfirm=true
+    s.nextCursor=s.cursor
+    s.nextPhase=reachedEnd and "finished" or "opportunities"
+    s.nextOppIndex=i
+    s.opportunityRows=s.opportunityRows+oppRows
 
-    if collectgarbage then
-        collectgarbage("collect")
-    end
+    -- Advance oppIndex only after the user confirms this page by asking next.
+    page._nextOppIndex=i
 
-    Chat(string.format(
-        "GMA WEEKLY READY: %d price items / %d opportunity rows / %d guilds / %d browser parts.",
-        self.weeklyPrepared.priceItems,
-        self.weeklyPrepared.opportunityRows,
-        self.weeklyPrepared.guildCount,
-        #self.weeklyPrepared.parts
-    ))
-    Chat("Use /gmsweeklynext to send Part 1.")
-    self:MemoryReport("after weekly prep",false)
+    self:SyncOpenPage(page)
 end
 
-function GMS:WeeklySendPart(partIndex)
-    local w=self.weeklyPrepared
+function GMS:SyncAcceptPreviousPage()
+    local s=self.syncSession
+    if not s or not s.awaitingConfirm then return true end
 
-    if not w then
-        Chat("No prepared weekly export. Use /gmsweekly first.")
-        return
+    if s.lastPage and s.lastPage.done then
+        Chat("Final Market Sync page is waiting for confirmation. If browser succeeded, use /gmssyncconfirm. If it failed, use /gmssyncretry.")
+        return false
     end
 
-    partIndex=math.floor(tonumber(partIndex) or 0)
-    if partIndex<1 or partIndex>#w.parts then
-        Chat(string.format("Weekly part must be between 1 and %d.",#w.parts))
-        return
+    s.cursor=s.nextCursor
+
+    if s.lastPage and s.lastPage._nextOppIndex then
+        s.oppIndex=s.lastPage._nextOppIndex
     end
 
-    local part=w.parts[partIndex]
-    local world=GetWorldName and GetWorldName() or "unknown"
-    local done=(partIndex==#w.parts)
+    s.phase=s.nextPhase or s.phase
+    s.page=(s.lastPage and s.lastPage.page or s.page)+1
+    s.awaitingConfirm=false
+    s.lastPage=nil
+    s.nextCursor=nil
+    s.nextPhase=nil
 
-    local url=
-        "https://gma-data-receiver.guildmarketassistant.workers.dev/weekly"..
-        "?v=6"..
-        "&sid="..UrlEncode(w.sid)..
-        "&world="..UrlEncode(world)..
-        "&part="..tostring(partIndex)..
-        "&total="..tostring(#w.parts)..
-        "&layer="..UrlEncode(part.layer)..
-        "&done="..(done and "1" or "0")..
-        "&priceItems="..tostring(w.priceItems or 0)..
-        "&oppRows="..tostring(w.opportunityRows or 0)..
-        "&guilds="..tostring(w.guildCount or 0)..
-        "&data="..part.data
-
-    Chat(string.format(
-        "Reopening GMA WEEKLY Part %d/%d [%s] ~%d chars.",
-        partIndex,#w.parts,string.upper(part.layer or "?"),part.bytes or 0
-    ))
-
-    RequestOpenUnsafeURL(url)
-    -- Intentionally do NOT change weeklySendIndex here. A manual resend must
-    -- never disturb the normal /gmsweeklynext sequence.
+    if collectgarbage then collectgarbage("collect") end
+    return true
 end
 
-function GMS:WeeklySendNext()
-    local w=self.weeklyPrepared
-
-    if not w then
-        Chat("No prepared weekly export. Use /gmsweekly first.")
+function GMS:SyncConfirm()
+    local s=self.syncSession
+    if not s or not s.lastPage or not s.lastPage.done then
+        Chat("No final Market Sync page is waiting for confirmation.")
         return
     end
 
-    local nextIndex=(self.weeklySendIndex or 0)+1
-    local part=w.parts[nextIndex]
-
-    if not part then
-        Chat("Weekly export already complete.")
-        return
+    for i=1,#s.guildIds do
+        self.saved.pendingGuilds[s.guildIds[i]]=nil
     end
 
-    local world=GetWorldName and GetWorldName() or "unknown"
-    local done=(nextIndex==#w.parts)
+    local guildCount=#s.guildIds
+    local pages=s.page
+    local prices=s.priceRows or 0
+    local opps=s.opportunityRows or 0
 
-    local url=
-        "https://gma-data-receiver.guildmarketassistant.workers.dev/weekly"..
-        "?v=6"..
-        "&sid="..UrlEncode(w.sid)..
-        "&world="..UrlEncode(world)..
-        "&part="..tostring(nextIndex)..
-        "&total="..tostring(#w.parts)..
-        "&layer="..UrlEncode(part.layer)..
-        "&done="..(done and "1" or "0")..
-        "&priceItems="..tostring(w.priceItems or 0)..
-        "&oppRows="..tostring(w.opportunityRows or 0)..
-        "&guilds="..tostring(w.guildCount or 0)..
-        "&data="..part.data
+    self:SyncResetRuntime()
+
+    if collectgarbage then collectgarbage("collect") end
 
     Chat(string.format(
-        "Opening GMA WEEKLY Part %d/%d [%s] ~%d chars.",
-        nextIndex,
-        #w.parts,
-        string.upper(part.layer or "?"),
-        part.bytes or 0
+        "MARKET SYNC CONFIRMED: %d guilds / %d pages / %d price updates / %d opportunity rows. Pending flags cleared.",
+        guildCount,pages,prices,opps
     ))
+end
 
-    RequestOpenUnsafeURL(url)
-    self.weeklySendIndex=nextIndex
-
-    if done then
-        Chat("This is the FINAL weekly part. Confirm the browser page shows WEEKLY UPDATE COMPLETE.")
-    else
-        Chat("After confirmation, return to ESO and use /gmsweeklynext.")
-    end
+function GMS:SyncStatus()
+    local pending=self:SyncPendingCount()
+    Chat(string.format(
+        "MARKET SYNC STATUS: %d pending guild%s | DB %d items / %d guild snapshots.",
+        pending,pending==1 and "" or "s",
+        self.saved.totalItems or 0,
+        self.saved.totalGuildSnapshots or 0
+    ))
 end
 
 function GMS:Initialize()
@@ -2901,6 +3479,34 @@ function GMS:Initialize()
         self.saved.items=self.saved.items or {}
         self.saved.guildScans=self.saved.guildScans or {}
         self:Recount()
+    end
+
+    self.saved.pendingGuilds=self.saved.pendingGuilds or {}
+
+    -- v0.7.1 bootstrap fix:
+    -- v0.7.0 accidentally defaulted marketSyncVersion to 1 before the
+    -- existing-scan migration ran, so existing scans were not marked pending.
+    -- Use a NEW dedicated bootstrap flag that did not exist in v0.7.0.
+    -- Therefore every installation upgrading from v0.7.0 gets exactly one
+    -- safe bootstrap of its already-completed guild scans.
+    if (self.saved.marketSyncBootstrapVersion or 0)<1 then
+        local bootstrapped=0
+
+        for guildId,value in pairs(self.saved.guildScans or {}) do
+            local _,ts=ParseGuildScanMeta(value)
+            self.saved.pendingGuilds[tostring(guildId)]=ts or GetTimeStamp()
+            bootstrapped=bootstrapped+1
+        end
+
+        self.saved.marketSyncBootstrapVersion=1
+
+        if bootstrapped>0 then
+            Chat(string.format(
+                "Market Sync bootstrap: %d existing guild scan%s marked pending.",
+                bootstrapped,
+                bootstrapped==1 and "" or "s"
+            ))
+        end
     end
 
     -- Any unfinished blank export shell is safe to discard at startup.
@@ -2972,22 +3578,35 @@ function GMS:Initialize()
         GMS:MeasureFinalWeeklyTransportAsync()
     end
 
+    SLASH_COMMANDS["/gmssync"]=function()
+        GMS:SyncStart()
+    end
+
+    SLASH_COMMANDS["/gmssyncnext"]=function()
+        GMS:SyncNext()
+    end
+
+    SLASH_COMMANDS["/gmssyncretry"]=function()
+        GMS:SyncRetry()
+    end
+
+    SLASH_COMMANDS["/gmssyncconfirm"]=function()
+        GMS:SyncConfirm()
+    end
+
+    SLASH_COMMANDS["/gmssyncstatus"]=function()
+        GMS:SyncStatus()
+    end
+
+    -- Old command kept only as a friendly redirect; it no longer performs a
+    -- whole-market weekly export.
     SLASH_COMMANDS["/gmsweekly"]=function()
-        GMS:WeeklyPrepareStart()
+        Chat("Weekly whole-market export was retired in v0.7.0. Use /gmssync.")
     end
 
-    SLASH_COMMANDS["/gmsweeklynext"]=function()
-        GMS:WeeklySendNext()
-    end
 
-    SLASH_COMMANDS["/gmsweeklypart"]=function(text)
-        GMS:WeeklySendPart(text)
-    end
 
-    SLASH_COMMANDS["/gmsweeklyreset"]=function()
-        GMS:WeeklyReset()
-        Chat("GMA weekly export reset.")
-    end
+
 
     EVENT_MANAGER:RegisterForEvent(
         self.name.."_Open",
@@ -3021,8 +3640,8 @@ function GMS:Initialize()
 
     if collectgarbage then collectgarbage("collect") end
 
-    Chat("BUILD 0502 STREAMING WEEKLY PREP")
-    Chat("Guild Market Scanner DEV v0.5.2 loaded.")
+    Chat("BUILD 0703 CONSOLE-SAFE SYNC URL SIZE")
+    Chat("Guild Market Scanner DEV v0.7.3 loaded.")
     Chat(string.format(
         "DB: %d items / %d guild snapshots / %d registered guild scans.",
         self.saved.totalItems or 0,

@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.7.18
+- Moved the outer frame onto the visible window edge, removing the transparent gap.
+- Increased the signature-lavender frame thickness from one pixel to two pixels.
+
+## 0.7.17
+- Added a thin muted-lavender frame around the complete main window.
+- Matched the grounded outer-window treatment used across the Flamechasers suite
+  while preserving Pledge Queue's distinct signature color.
+
+## 0.7.16
+- Cropped dungeon artwork to ESO's official Activity Finder texture region.
+- Removed the transparent atlas padding that caused artwork to end abruptly
+  inside pledge cards.
+- Rebuilt the darkening as a full-width horizontal fade into the card background.
+- Forced Normal and Veteran checkbox controls above the artwork layer so every
+  pledge row remains fully visible and interactive.
+
+## 0.7.15
+- Fixed dungeon artwork retaining its native width instead of filling the
+  complete pledge card on some clients.
+- Added a smooth horizontal fade from dungeon artwork into the card's black
+  background.
+- Preserved the existing darkening, text contrast, and three artwork controls.
+
+## 0.7.14
+- Added dungeon-specific artwork behind each active pledge card.
+- Reused ESO's own Activity Finder textures instead of bundling additional images.
+- Cropped, tinted, and darkened the artwork to preserve text and checkbox readability.
+- Resolved artwork only for detected pledges and kept the UI limited to three
+  artwork texture controls.
+
 ## 0.7.13
 - Added verification of ESO's active group role immediately after selection and
   again before every queue starts.

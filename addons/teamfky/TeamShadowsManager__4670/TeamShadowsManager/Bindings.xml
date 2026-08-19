@@ -16,6 +16,9 @@
             <Action name="PBT_RENDEZVOUS">
                 <Down>TeamShadowsManager.SendGroupRendezvous()</Down>
             </Action>
+            <Action name="PBT_BAHSEI_CALL_REINFORCEMENTS">
+                <Down>TeamShadowsManager.BahseiPortal:ManualCall()</Down>
+            </Action>
         </Category>
     </Layer>
 </Bindings>

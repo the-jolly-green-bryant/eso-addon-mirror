@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/teamfky/TeamShadowsManager__4670",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "teamfky",
   "canonical_id": "esoui:4670",
   "category_id": "27",
@@ -17,7 +18,7 @@
     "TeamShadowsManager"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4670/",
-  "fingerprint": "1675fa9da726d8df7c97f873d41034c209a69a614fe314f9cbb4e5cfb193263d",
+  "fingerprint": "035e6e7cfd95701547e4ddcbd6ac38896af6e14cbfd9a3a0b6125d5c3c5110e3",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16494.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4670",
   "source_url": "https://www.esoui.com/downloads/info4670-TeamShadowsManager.html",
   "stats": {
-    "downloads": 37,
+    "downloads": 56,
     "favorites": 1,
-    "monthly_downloads": 35
+    "monthly_downloads": 27
   },
   "title": "TeamShadowsManager",
-  "updated_at": 1783517055000,
-  "version": "1.0.8"
+  "updated_at": 1787051010000,
+  "version": "1.1.18"
 }

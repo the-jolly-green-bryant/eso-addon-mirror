@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.17.10"
+M.version = "3.17.14"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -43,7 +43,7 @@ local TREND_SPARK_BAR_MAX_H = 36
 local TREND_HIST_LINES = 7
 local COMP_COLS = 4
 local COMP_METRICS = 9 -- includes Build ID + vs #2 notes (Phase 2)
-local ROT_TIMELINE_ICONS = 48   -- icon chips per page (paged with Y when more skills)
+local ROT_TIMELINE_ICONS = 64   -- icon chips per page (paged with Y when more skills)
 local PULSE_BLOCKS = 72        -- finer pulse (smaller blocks)
 local BUFF_MAIN_ROWS = 12       -- Always-on (left pane)
 local BUFF_SIDE_ROWS = 10       -- Sustained + Situational combined (right pane)
@@ -581,12 +581,59 @@ local function isUltimateAbility(abilityId, session, abilityName)
   return false
 end
 
+-- Match combat ability name to a snapshotted bar skill (DoT ticks often use a
+-- different abilityId than the slotted cast — e.g. Stampede ticks).
+local function barFromSlottedName(session, name)
+  local nlow = string.lower(tostring(name or ""))
+  if nlow == "" or not session then return nil end
+  if type(session.slottedAbilityBarByName) == "table" then
+    local b = session.slottedAbilityBarByName[nlow]
+    if b == "Front" or b == "Back" then return b end
+  end
+  if type(session.slottedAbilityBySlot) == "table" then
+    for _, entry in pairs(session.slottedAbilityBySlot) do
+      if type(entry) == "table" and entry.name then
+        local en = string.lower(tostring(entry.name))
+        if en ~= "" and (en == nlow or string.find(nlow, en, 1, true) or string.find(en, nlow, 1, true)) then
+          -- Infer bar from which key held this entry when possible
+          break
+        end
+      end
+    end
+    -- Prefer explicit Front:/Back: keys
+    for _, barLabel in ipairs({ "Front", "Back" }) do
+      for slot = 3, 8 do
+        local entry = session.slottedAbilityBySlot[barLabel .. ":" .. tostring(slot)]
+        if type(entry) == "table" and entry.name then
+          local en = string.lower(tostring(entry.name))
+          if en ~= "" and (en == nlow or string.find(nlow, en, 1, true) or string.find(en, nlow, 1, true)) then
+            return barLabel
+          end
+        end
+      end
+    end
+  end
+  if type(session.slottedAbilityNames) == "table" then
+    for slottedName, _ in pairs(session.slottedAbilityNames) do
+      local en = string.lower(tostring(slottedName))
+      if en ~= "" and (en == nlow or string.find(nlow, en, 1, true) or string.find(en, nlow, 1, true)) then
+        return "Front" -- bar unknown; still primary Skill for left panel
+      end
+    end
+  end
+  return nil
+end
+
 -- Classify: LA → Ultimate → bar Skill → Set → Effect.
+-- Left Skills panel = rotation skills (F/B), LA/HA, Ult — like the old single list.
 local function classifyDamageSource(session, abilityId, name, bar)
   abilityId = tonumber(abilityId) or 0
   local nlow = name and string.lower(tostring(name)) or ""
   if nlow ~= "" and string.find(nlow, "light attack", 1, true) then
     return "Light attack", "LA"
+  end
+  if nlow ~= "" and string.find(nlow, "heavy attack", 1, true) then
+    return "Heavy attack", "HA"
   end
   if isUltimateAbility(abilityId, session, name) then
     return "Ultimate", "U"
@@ -596,7 +643,13 @@ local function classifyDamageSource(session, abilityId, name, bar)
   end
   if session and type(session.slottedAbilityIds) == "table" and abilityId > 0
       and session.slottedAbilityIds[abilityId] then
-    return "Skill", ""
+    local b = getSkillBar(session, abilityId)
+    return "Skill", barChipLabel(b)
+  end
+  -- DoT / morph tick id ≠ slotted cast id — still a bar skill if name matches
+  local nameBar = barFromSlottedName(session, name)
+  if nameBar then
+    return "Skill", barChipLabel(nameBar)
   end
   if session and type(session.sets) == "table" and nlow ~= "" then
     for _, ps in pairs(session.sets) do
@@ -7075,9 +7128,9 @@ end
 ---------------------------------------------------------------------
 -- Damage: dual panel — Skills (F/B/LA/HA/U) | Effects (E/S)
 ---------------------------------------------------------------------
-local DMG_SKILL_ROWS = 16
-local DMG_FX_ROWS = 16
-local DMG_MAX_ROWS = 40 -- fetch budget for both panels
+local DMG_SKILL_ROWS = 22
+local DMG_FX_ROWS = 22
+local DMG_MAX_ROWS = 80 -- fetch budget before split into Skills / Effects panels
 local DMG_ROW_H = 26
 
 local function makeDamageRow(parent, pfx, i, compact)
@@ -7108,13 +7161,13 @@ local function makeDamageRow(parent, pfx, i, compact)
 end
 
 local function createDamageUI(screen)
-  if screen.damageUI and not screen.damageUI._v3140 then screen.damageUI = nil end
+  if screen.damageUI and not screen.damageUI._v31714 then screen.damageUI = nil end
   if screen.damageUI then return screen.damageUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.damage
   if not panel then return nil end
 
-  local ui = { panel = panel, skillRows = {}, fxRows = {}, _v3140 = true }
+  local ui = { panel = panel, skillRows = {}, fxRows = {}, _v31714 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuDmgRootV3", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 6, 2)
@@ -7398,16 +7451,26 @@ local function refreshDamageUI(screen, session)
       end
     end
   end
+  local skillShown = math.min(DMG_SKILL_ROWS, #skills)
+  local fxShown = math.min(DMG_FX_ROWS, #effects)
   ui.meta:SetText(string.format(
-    "%s  ·  %s DPS  ·  total %s  ·  %d skills / %d effects\n|cC0A060Contribution:|r %s",
+    "%s  ·  %s DPS  ·  total %s  ·  %d skills / %d effects (showing %d / %d)\n|cC0A060Contribution:|r %s",
     truncateText(session.lastTargetName or "fight", 48),
     fmtDps(sessionAvgDps(session)),
     fmtInt(session.totalDamage),
-    #skills, #effects,
+    #skills, #effects, skillShown, fxShown,
     (#cBits > 0) and table.concat(cBits, "  ·  ") or "—"
   ))
-  ui.skillTitle:SetText(string.format("SKILLS  ·  F / B / LA / HA / ULT  (%d)", #skills))
-  ui.fxTitle:SetText(string.format("EFFECTS  ·  E / S  (%d)", #effects))
+  ui.skillTitle:SetText(string.format(
+    "SKILLS  ·  F / B / LA / HA / ULT  (%d%s)",
+    #skills,
+    (#skills > DMG_SKILL_ROWS) and (" · top " .. tostring(DMG_SKILL_ROWS)) or ""
+  ))
+  ui.fxTitle:SetText(string.format(
+    "EFFECTS  ·  E / S  (%d%s)",
+    #effects,
+    (#effects > DMG_FX_ROWS) and (" · top " .. tostring(DMG_FX_ROWS)) or ""
+  ))
 
   for i = 1, DMG_SKILL_ROWS do
     fillDamageRow(ui.skillRows[i], skills[i], 34)
@@ -9558,12 +9621,12 @@ end
 -- Rotation: summary + fine pulse + skill icons + pattern tips
 ---------------------------------------------------------------------
 local function createRotationUI(screen)
-  if screen.rotationUI and not screen.rotationUI._v3177 then screen.rotationUI = nil end
+  if screen.rotationUI and not screen.rotationUI._v31714 then screen.rotationUI = nil end
   if screen.rotationUI then return screen.rotationUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.rotation
   if not panel then return nil end
-  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v3177 = true }
+  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v31714 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuRotRootV8", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -9814,39 +9877,58 @@ local function refreshRotationUI(screen, session)
   M._rotTimelinePage = pageIndex
   M._rotTimelinePages = pages
   M._rotTimelineTotal = totalSkills
+  local pressCount = tonumber(w.inputSkillPresses) or tonumber(w.skillEventCount) or totalSkills
   -- Dummy: full S/U alignment. Long trial/dungeon: still show but only if markers exist.
   local markTags, swapPlaced, ultPlaced = buildIconMarkerTags(session, events)
   local totalSwaps = (session.weave and tonumber(session.weave.barSwapCount))
     or (session.barStats and tonumber(session.barStats.swapCount)) or 0
   local wrapWW = ui.iconWrap:GetWidth() or textW
+  local wrapHH = ui.iconWrap:GetHeight() or 120
   if wrapWW < 50 then wrapWW = textW end
-  local cellSize, iconGap = 34, 5
-  local markH = 12
+  if wrapHH < 40 then wrapHH = 120 end
+  -- Fit as many icons as possible without clipping the last row (S/U tags need ~10px)
+  local cellSize, iconGap, markH = 32, 4, 10
   local perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
+  local rowStride = cellSize + iconGap + markH
+  local maxRowsFit = math.max(1, math.floor((wrapHH + iconGap) / rowStride))
+  local maxFit = perRow * maxRowsFit
+  -- If this page's events exceed what fits, shrink cells slightly once
+  if #events > maxFit and maxFit > 0 then
+    cellSize = 28
+    iconGap = 3
+    markH = 9
+    perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
+    rowStride = cellSize + iconGap + markH
+    maxRowsFit = math.max(1, math.floor((wrapHH + iconGap) / rowStride))
+    maxFit = perRow * maxRowsFit
+  end
   local markCount = 0
   local startIdx = (pageIndex - 1) * ROT_TIMELINE_ICONS + 1
   local endIdx = math.min(totalSkills, startIdx + #events - 1)
+  local clipped = (#events > maxFit)
   if ui.iconTitle then
-    if pages > 1 then
+    if pages > 1 or clipped then
       ui.iconTitle:SetText(string.format(
-        "SKILL TIMELINE  ·  presses %d–%d of %d  ·  page %d/%d  ·  |c88DDAAS|r swap · |cFFAA66U|r ult  ·  Y next page",
-        startIdx, endIdx, totalSkills, pageIndex, pages
+        "SKILL TIMELINE  ·  icons %d–%d of %d timeline  ·  presses %d  ·  page %d/%d  ·  Y next page",
+        startIdx, math.min(endIdx, startIdx + math.min(#events, maxFit) - 1), totalSkills,
+        pressCount, pageIndex, pages
       ))
     else
       ui.iconTitle:SetText(string.format(
-        "SKILL TIMELINE  ·  %d skill press(es)  ·  |c88DDAAS|r bar swap · |cFFAA66U|r ult under icon",
-        totalSkills
+        "SKILL TIMELINE  ·  %d timeline icons  ·  %d skill presses  ·  |c88DDAAS|r swap · |cFFAA66U|r ult",
+        totalSkills, pressCount
       ))
     end
   end
   for i, ic in ipairs(ui.icons) do
     local ev = events[i]
     local host = ic.halo or ic.slot
-    if ev and host then
+    local row = math.floor((i - 1) / perRow)
+    local fits = (row < maxRowsFit)
+    if ev and host and fits then
       local col = (i - 1) % perRow
-      local row = math.floor((i - 1) / perRow)
       local x = col * (cellSize + iconGap)
-      local y = row * (cellSize + iconGap + markH)
+      local y = row * rowStride
       host:ClearAnchors()
       host:SetDimensions(cellSize, cellSize)
       host:SetAnchor(TOPLEFT, ui.iconWrap, TOPLEFT, x, y)
@@ -9921,6 +10003,7 @@ local function refreshRotationUI(screen, session)
         end
       end
     elseif host then
+      -- No event on this chip, or row would clip below iconWrap
       host:SetHidden(true)
       if ic.barTag then ic.barTag:SetHidden(true) end
       if ic.markTag then ic.markTag:SetHidden(true) end
@@ -9929,10 +10012,16 @@ local function refreshRotationUI(screen, session)
   if ui.iconMarkerLine then
     ui.iconMarkerLine:SetHidden(false)
     if totalSkills > 0 then
+      local note = ""
+      if pages > 1 then note = "  ·  Y = next page"
+      elseif clipped then note = "  ·  layout clipped — open wider / Y if paged"
+      elseif pressCount > totalSkills then
+        note = string.format("  ·  %d presses vs %d timeline tokens", pressCount, totalSkills)
+      end
       ui.iconMarkerLine:SetText(string.format(
-        "This page: %d S · %d U under icons  ·  fight total bar swaps %d  ·  skill presses %d%s",
-        swapPlaced or 0, ultPlaced or 0, totalSwaps, totalSkills,
-        pages > 1 and "  ·  Y = next page" or ""
+        "Visible icons %d  ·  S %d · U %d  ·  bar swaps %d  ·  presses %d / timeline %d%s",
+        math.min(#events, maxFit), swapPlaced or 0, ultPlaced or 0, totalSwaps,
+        pressCount, totalSkills, note
       ))
     elseif session.isDummy then
       ui.iconMarkerLine:SetText("|c888888No skill presses captured this parse|r")
@@ -11945,7 +12034,7 @@ function DM2StatsMenuShell_Gamepad:RefreshHeader()
       and string.format("EXP DONE %d/%d", n, need)
       or string.format("EXP ON %d/%d", n, need)
   end
-  local subtitle = "v3.17.12  |  L2/R2 fights  |  " .. expBit .. "  |  "
+  local subtitle = "v3.17.14  |  L2/R2 fights  |  " .. expBit .. "  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",

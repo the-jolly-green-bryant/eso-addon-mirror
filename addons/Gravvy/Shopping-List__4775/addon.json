@@ -1,9 +1,8 @@
 {
-  "archive_error": "ESOUI returned an empty response",
+  "archive_format": "zip",
   "archive_path": "addons/Gravvy/Shopping-List__4775",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
+  "archived": true,
   "author": "Gravvy",
   "canonical_id": "esoui:4775",
   "category_id": "94",
@@ -16,15 +15,16 @@
   "content_id": "esoui:4775",
   "deleted": false,
   "directories": [
-    "ShoppingList"
+    "GravvyShoppingList"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4775/",
-  "fingerprint": "e6f5201a0c2af47ad128f0b8394485996a20292eac9803123a0a7119e84ed354",
+  "fingerprint": "5c48c410bb576b8bd227b8c89a380bec0618cc0cd8530adb97e3a7394a60821d",
   "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17025.png",
     "https://cdn-eso.mmoui.com/preview/pvw17012.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw17013.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw17014.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17015.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17024.png",
     "https://cdn-eso.mmoui.com/preview/pvw17016.png",
     "https://cdn-eso.mmoui.com/preview/pvw17017.png",
     "https://cdn-eso.mmoui.com/preview/pvw17018.png",
@@ -37,11 +37,11 @@
   "source_id": "4775",
   "source_url": "https://www.esoui.com/downloads/info4775-ShoppingList.html",
   "stats": {
-    "downloads": 1,
-    "favorites": 0,
-    "monthly_downloads": 0
+    "downloads": 292,
+    "favorites": 3,
+    "monthly_downloads": 281
   },
   "title": "Shopping List",
-  "updated_at": 1786943143000,
-  "version": "0.15.2"
+  "updated_at": 1787023475000,
+  "version": "0.16.3"
 }

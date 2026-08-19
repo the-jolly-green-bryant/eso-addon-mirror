@@ -1,0 +1,47 @@
+## Title: |cFFAA33Shopping List|r
+## Description: A compact shopping list for guild store trips.
+## Author: Gravvy
+## Version: 0.16.3
+## APIVersion: 101050
+## AddOnVersion: 28
+## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0
+## OptionalDependsOn: AwesomeGuildStore LibCustomMenu
+## SavedVariables: ShoppingList_Data
+
+# The manifest filename is the internal add-on identifier. Keep it unique from
+# the discontinued Master Merchant ShoppingList importer.
+# Release versions are maintained in ## Version above and at the top of ChangeLog.
+# Increment ## AddOnVersion for each published build; the settings panel reads it automatically.
+
+# DISCLAIMER:
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+
+Localization/en.lua
+
+Accessibility.lua
+AGSAdapter.lua
+Archive.lua
+Bindings.xml
+ContextMenu.lua
+Data.lua
+Editor.lua
+Gamepad.lua
+Gamepad.xml
+GamepadManagement.lua
+Help.lua
+History.lua
+ListTools.lua
+MainMenu.lua
+Matcher.lua
+Inventory.lua
+PurchaseTracker.lua
+Settings.lua
+Share.lua
+Backup.lua
+GravvyShoppingList.lua
+PublicAPI.lua
+UI.lua

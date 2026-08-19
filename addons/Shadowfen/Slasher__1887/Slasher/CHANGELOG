@@ -1,3 +1,8 @@
+[COLOR="DeepSkyBlue"]2.49 (79)[/COLOR]:
+[LIST]
+[*] Fix /f so that if you have Cambio Zammes selected as default then he will appear - not Pirharri.
+[/LIST]
+
 [COLOR="DeepSkyBlue"]2.48 (78)[/COLOR]:
 [LIST]
 [*] Added [COLOR="MediumSeaGreen"]/apiversion[/COLOR] that will print the current ESO API version number into chat. (Useful for developers)

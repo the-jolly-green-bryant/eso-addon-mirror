@@ -4,11 +4,12 @@ local PBT = TeamShadowsManager
 
 PBT.name = "TeamShadowsManager"
 PBT.displayName = "Team Shadows Manager"
-PBT.version = "1.0.8"
+PBT.version = "1.1.18"
 PBT.savedVariableName = "TeamShadowsManagerSavedVariables"
 PBT.savedVariableVersion = 1
 
 PBT.defaults = {
+    language = "fr",
     enabled = true,
     unlocked = false,
     scale = 1.0,
@@ -25,11 +26,18 @@ PBT.defaults = {
     soundEnabled = true,
     lockoutSeconds = 30,
     timerOverrides = {},
+    instanceTimerEnabled = {},
+    bossTimerEnabled = {},
     customAliases = {},
     bossSpawnTimers = true,
     useSamuraiTimers = true,
     showMechanicTimers = true,
     nahvPortalHpWarning = true,
+    bahseiWallArrows = true,
+    bahseiGhostCall = true,
+    bahseiGhostReceive = true,
+    bahseiGhostTotal = 10,
+    bahseiGhostThreshold = 5,
     narrationDebug = false,
     practiceSeconds = 10,
     groupCountdownEnabled = true,
@@ -187,7 +195,6 @@ PBT.trials = {
         bosses = {
             ["exarchanic yaseyla"] = { displayName = "Exarchanic Yaseyla", seconds = 12, aliases = { "exarchanique yaseyla" } },
             ["archwizard twelvane"] = { displayName = "Archwizard Twelvane", seconds = 14 },
-            ["anusuul the tormentor"] = { displayName = "Ansuul the Tormentor", seconds = 18, aliases = { "ansuul la tormentrice" } },
             ["ansuul the tormentor"] = { displayName = "Ansuul the Tormentor", seconds = 18, aliases = { "ansuul la tormentrice" } },
         },
     },
@@ -220,7 +227,7 @@ PBT.trials = {
         bosses = {
             ["tho'at replicanum"] = { displayName = "Tho'at Replicanum", seconds = 8, aliases = { "thoat replicanum", "tho'at replicanum" } },
             ["tho'at shard"] = { displayName = "Tho'at Shard", seconds = 5, aliases = { "thoat shard", "tho'at shard", "fragment de tho'at" } },
-            ["tho'at frost atronach"] = { displayName = "Tho'at Frost Atronach", seconds = 5, aliases = { "thoat frost atronach", "frost atronach", "ice atronach", "atronach de glace" } },
+            ["tho'at frost atronach"] = { displayName = "Tho'at Frost Atronach", seconds = 5, aliases = { "thoat frost atronach", "tho'at frost atronach", "atronach de glace de tho'at" } },
             ["tho'at mantikora"] = { displayName = "Tho'at Mantikora", seconds = 5, aliases = { "thoat mantikora", "mantikora", "manti" } },
             ["tho'at dragon"] = { displayName = "Tho'at Dragon", seconds = 5, aliases = { "thoat dragon", "dragon" } },
             ["marauder bittog"] = { displayName = "Marauder Bittog", seconds = 6, aliases = { "maraudeur bittog" } },
@@ -230,6 +237,43 @@ PBT.trials = {
             ["marauder zulfimbul"] = { displayName = "Marauder Zulfimbul", seconds = 6, aliases = { "maraudeur zulfimbul" } },
             ["gw the pilferer"] = { displayName = "Gw the Pilferer", seconds = 4, aliases = { "gw le chapardeur", "gw le voleur" } },
         },
+    },
+}
+
+-- Stable, localized list of automatic timers shown in the Manager. The keys
+-- are intentionally independent from localized NPC names and SavedVariables.
+PBT.timerBossDefinitions = {
+    cloudrest = {
+        { key = "zmaja", fr = "Z'Maja", en = "Z'Maja", aliases = { "z'maja", "zmaja" } },
+    },
+    hallsOfFabrication = {
+        { key = "hunterKillers", fr = "Fabricants chasseurs-tueurs", en = "Hunter-Killer Fabricants", aliases = { "hunter-killer", "hunter killer", "chasseur-tueur" } },
+        { key = "pinnacle", fr = "Factotum du Pinacle", en = "Pinnacle Factotum", aliases = { "pinnacle", "pinacle" } },
+        { key = "triplets", fr = "Récupérateur / Réducteur / Réacteur", en = "Reclaimer / Reducer / Reactor", aliases = { "triplets", "reclaimer", "reducer", "reactor", "recuperateur", "reducteur", "reacteur", "hof triplets" } },
+    },
+    asylumSanctorium = {
+        { key = "olms", fr = "Saint Olms le Juste", en = "Saint Olms the Just", aliases = { "olms" } },
+    },
+    mawOfLorkhaj = {
+        { key = "zhajhassa", fr = "Zhaj'hassa l'Oublié", en = "Zhaj'hassa the Forgotten", aliases = { "zhaj'hassa", "zhajhassa" } },
+        { key = "rakkhat", fr = "Rakkhat", en = "Rakkhat", aliases = { "rakkhat" } },
+    },
+    aetherianArchive = {
+        { key = "varlariel", fr = "Varlariel", en = "Varlariel", aliases = { "varlariel" } },
+    },
+    sunspire = {
+        { key = "lokkestiiz", fr = "Lokkestiiz", en = "Lokkestiiz", aliases = { "lokkestiiz" } },
+        { key = "yolnahkriin", fr = "Yolnahkriin", en = "Yolnahkriin", aliases = { "yolnahkriin" } },
+        { key = "nahviintaas", fr = "Nahviintaas", en = "Nahviintaas", aliases = { "nahviintaas" } },
+    },
+    kynesAegis = {
+        { key = "falgravn", fr = "Seigneur Falgravn", en = "Lord Falgravn", aliases = { "falgravn" } },
+    },
+    dreadsailReef = {
+        { key = "taleria", fr = "Taleria Née-des-marées", en = "Tideborn Taleria", aliases = { "taleria" } },
+    },
+    sanitysEdge = {
+        { key = "yaseyla", fr = "Yaseyla l'Exarchanique", en = "Exarchanic Yaseyla", aliases = { "yaseyla" } },
     },
 }
 
@@ -358,6 +402,11 @@ PBT.samuraiNarrationTimers = {
     { pattern = "Vous vous invitez dans les appartements d'une dame", displayName = "Taleria", seconds = 23.5, plain = true, zoneKey = "dreadsailReef", lockoutKey = "dsrTaleriaIntro", lockoutSeconds = 600, source = "CrutchAlerts" },
 }
 PBT.samuraiAbilityTimers = {
+    -- Maw of Lorkhaj: Rakkhat's spawn/theater events -> boss becomes hostile.
+    -- Both events occur together; the shared lockout prevents a duplicate countdown.
+    [59245] = { displayName = "Rakkhat", seconds = 11.1, setting = "useSamuraiTimers", zoneKey = "mawOfLorkhaj", results = { [ACTION_RESULT_STUNNED] = true }, lockoutKey = "molRakkhatSpawn", lockoutSeconds = 600, source = "EncounterLog" },
+    [74217] = { displayName = "Rakkhat", seconds = 11.1, setting = "useSamuraiTimers", zoneKey = "mawOfLorkhaj", results = { [ACTION_RESULT_STUNNED] = true }, lockoutKey = "molRakkhatSpawn", lockoutSeconds = 600, source = "EncounterLog" },
+
     -- Halls of Fabrication: overhead rail -> spider becomes damageable.
     [94805] = { displayName = "Hunter-Killer Fabricants", seconds = 23.2, setting = "useSamuraiTimers", zoneKey = "hallsOfFabrication", lockoutSeconds = 600, source = "CrutchAlerts" },
 

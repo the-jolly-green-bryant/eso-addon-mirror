@@ -82,8 +82,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
 | [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.58 |
 | [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.3.11 |
-| [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.13 |
-| [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.7.12 |
+| [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.18 |
+| [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.7.17 |
 | [Flappy Nord – Mini Game](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Traybair/Flappy-Nord-Mini-Game__4492) | Traybair | PC / Mac | 1.0.5 |
 | [FlapRider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awamani/FlapRider__4503) | awamani | PC / Mac | 1.0.1 |
 | [FlatUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/FlatUI__3758) | DakJaniels | PC / Mac | 1.0.0 |
@@ -126,6 +126,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Furnishing Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Furnishing-Tracker__c49eb98c-6821-47de-9cb2-10b972d1a55f) | Eldibabalo | Console | — |
 | [Furnishings placed 2 Nickname](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/remosito/Furnishings-placed-2-Nickname__3579) | remosito | PC / Mac | 37.0 |
 | [Furniture Catalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Catalogue__1617) | manavortex | PC / Mac | 6.3.0 |
+| [Furniture Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Finder__2b591c30-b518-46da-978a-c1a788963735) | killerkev77 | Console | — |
 | [Furniture Grouper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/datael/Furniture-Grouper__1799) | datael | PC / Mac | 1.0.6a |
 | [Furniture Preview modified by Teva](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Teva/Furniture-Preview-modified-by-Teva__2970) | Teva | PC / Mac | 2.60 |
 | [Furniture Shopping List (FurC 2.0 patch)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Shopping-List-FurC-2.0-patch__1865) | manavortex | PC / Mac | 1.4.11 |

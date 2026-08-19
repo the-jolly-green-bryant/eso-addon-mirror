@@ -435,7 +435,7 @@ SLASH_COMMANDS["/check"] = SL.readyCheck
 
 -- Assistant slash commands
 SLASH_COMMANDS["/b"] = function() SL.summon_banker(SL.saved.banker, SLASHER_SERVICE_BANKER) end
-SLASH_COMMANDS["/f"] = function() SL.summon_fence(ASST.FENCE) end
+SLASH_COMMANDS["/f"] = function() SL.summon_fence(SL.saved.fence) end
 SLASH_COMMANDS["/of"] = SLASH_COMMANDS["/f"]
 SLASH_COMMANDS["/m"] = function() SL.summon_merchant(SL.saved.merchant, SLASHER_SERVICE_MERCHANT) end
 SLASH_COMMANDS["/d"] = function() SL.summon_decon(SL.saved.decon, SLASHER_SERVICE_DECON) end

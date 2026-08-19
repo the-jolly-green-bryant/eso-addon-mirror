@@ -1,0 +1,27 @@
+## Title: Furniture Finder
+## Author: @Aldimar77
+## Version: 0.1.0
+## AddOnVersion: 1
+## APIVersion: 101040
+## Description: Adds source, item ID, quality, and collection info to furnishing tooltips (inventory, bank, and Housing Editor). UI-only, console-safe: no external network calls, no gameplay changes.
+## SavedVariables: FurnitureFinder_SavedVars
+## IsLibrary: false
+
+FurnitureFinderData.lua
+FurnitureFinder.lua
+
+; -----------------------------------------------------------------------------
+; NOTE:
+;
+; 1) APIVersion above (101040) was pulled from another currently-listed
+;    console addon's manifest as of this build. If the addon still fails
+;    to load in-game, this is the first thing to re-check -- ESO refuses
+;    to load addons with a mismatched APIVersion, silently (no error).
+;
+; 2) Console submission goes through the official Developer Uploader Tool
+;    (help.elderscrollsonline.com -> "ESO Console Add-ons - Developer
+;    Uploader Tool"). Console builds are UI-only and get reviewed before
+;    they appear in the in-game browse menu -- this file as written already
+;    respects that (no LibHttp-style network access exists in ESO's Lua
+;    sandbox on any platform, so there's nothing to strip out).
+; -----------------------------------------------------------------------------

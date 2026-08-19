@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 CrutchAlertsExtensions = {
     name = "CrutchAlertsExtensions",
-    version = "0.2.2",
+    version = "0.3.0",
 
     CIRCLE = "Circle",
     RECTANGLE = "Rectangle",
@@ -26,6 +26,8 @@ local defaultGlobalOptions = {
             iconsForKnownPets = false, -- hardcoded ones
             iconsForPets = false, -- fallback poop
             iconsForCompanions = false,
+            damagedEnemies = false,
+            shadowImageWireframe = false,
         },
     },
 }
@@ -78,6 +80,15 @@ local function FillMissingDefaults()
         if (profileData.lines == nil) then
             profileData.lines = {}
         end
+        -- Line stuff
+        for _, lineData in pairs(profileData.lines) do
+            if (lineData.useGradient == nil) then
+                lineData.useGradient = false
+            end
+            if (lineData.secondColor == nil) then
+                lineData.secondColor = {1, 1, 1, 1}
+            end
+        end
         -- Shape types, forward offset, ?
         for _, shapeData in pairs(profileData.circles) do
             if (shapeData.type == nil) then
@@ -106,6 +117,8 @@ local function Initialize()
     CAE.InitializeConditionalChecker()
     CAE.InitializeSynergy()
     CAE.InitializeUnitIcons()
+    CAE.InitializeUnitDrawing()
+    CAE.InitializeDamagedEnemies()
 
     EVENT_MANAGER:RegisterForEvent(CAE.name .. "ActivatedFirstTime", EVENT_PLAYER_ACTIVATED, OnPlayerActivatedFirstTime)
 

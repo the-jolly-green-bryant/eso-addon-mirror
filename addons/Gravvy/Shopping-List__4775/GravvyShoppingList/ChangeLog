@@ -1,0 +1,58 @@
+0.16.3
+• Added a versioned public API that allows other add-ons to add linked or name-only items to active shopping lists.
+• Added safe list discovery, current-list defaults, optional notes, and stable API error codes.
+• Added developer integration documentation and ESOUI-ready BBCode examples.
+• Distinguished same-named weapon, armor, and jewelry traits in item-editor dropdowns.
+• Renamed the manifest and Lua namespaces to GravvyShoppingList to avoid Master Merchant's legacy ShoppingList importer warning.
+
+0.16.2
+• Added an option to add linked chat items to the current shopping list from their right-click menu.
+
+0.16.1
+• Restored the Trait, Quality Rule, Quality, and Level Rule dropdowns in the keyboard item editor.
+• Corrected Craft Bag quantities by enumerating virtual bag slots with their sparse slot IDs.
+
+0.16.0
+• Added live owned quantities from the backpack, bank, subscriber bank, and craft bag without changing purchase progress.
+• Added persistent notes for lists and individual items.
+• Added full-data SLB1 backup and restore codes while keeping lightweight SL1 list-sharing codes unchanged.
+• Added font scaling, stronger contrast, and optional non-color-only status indicators.
+• Added keyboard and gamepad workflows for notes and full-data backup and restore.
+
+0.15.4
+• Completed gamepad list management with create, rename, duplicate, delete, reorder, budget, and clear-completed actions.
+• Added persistent Undo for deleted items, deleted lists, and batches cleared with Clear Completed.
+• Added bulk item entry with support for pasted item and quantity lines.
+• Added All, Needed, Completed, Over Price Target, and Rule-Restricted item filters.
+• Added optional merged shopping trips across selected active lists while keeping inactive lists untouched.
+• Kept the mouse cursor active after closing the item-removal confirmation while the shopping list remains open.
+• Corrected the Active Shopping Lists description layout so the full text wraps inside the window.
+• Restored the shopping-list cursor when returning to ESO after switching to another application.
+
+0.15.3
+• Minor bug fixes and improvements.
+
+0.15.2
+• Added an in-game chat warning that names any required libraries that are missing.
+
+0.15.1
+• Lists can now be archived whether they are unfinished, completed, or empty.
+• Corrected the Archive button appearing unresponsive for unfinished lists.
+
+0.15.0
+• Added in-game help and recent release notes for keyboard and gamepad.
+• Added the /shoppinglisthelp command and a ? button in the main window.
+
+0.14.0
+• Added the gamepad Manage menu.
+• Added controller editing for matching rules and price targets.
+• Added controller archive, restore, share, and import workflows.
+
+0.13.6
+• Corrected Import dialog layering above the Share window.
+
+0.13.5
+• Added the optional NA-only in-game donation-mail shortcut.
+
+0.13.4
+• Added a dedicated import paste dialog and item-removal confirmation.

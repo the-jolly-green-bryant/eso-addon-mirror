@@ -6,7 +6,7 @@
 
 local ADDON_NAME = "DarkConvergenceTracker"
 local ADDON_VERSION = 1
-local ADDON_DISPLAY_VERSION = "1.0.0"
+local ADDON_DISPLAY_VERSION = "1.0.1"
 
 local DCTracker = {}
 local addon = DCTracker
@@ -265,27 +265,20 @@ end
 -- Event handlers
 --------------------------------------------------------------------------------
 
--- ESO appends a grammar/gender-code suffix to unit names in some contexts
--- (e.g. "Eindick^Mx"), but not in others (GetUnitName can return the plain
--- name). Strip anything from "^" onward before comparing so formatting
--- differences between the two sources can't cause a false mismatch.
-local function StripGenderSuffix(name)
-    if not name then return name end
-    return string.match(name, "^([^%^]*)") or name
-end
-
 local function OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-    -- Guard against picking up another player's Dark Convergence proc (e.g.
-    -- a group member's) in addition to our own. There's no clean API to turn
-    -- a raw combat-event sourceUnitId into a comparable value, so we instead
-    -- compare the source's name against our own, normalized to strip the
-    -- gender-grammar suffix ESO inconsistently appends.
-    if StripGenderSuffix(sourceName) ~= StripGenderSuffix(GetUnitName("player")) then return end
+    -- No self-check needed here: REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE with
+    -- COMBAT_UNIT_TYPE_PLAYER (set up below) already restricts this callback
+    -- to events sourced specifically by the local player. COMBAT_UNIT_TYPE_PLAYER,
+    -- COMBAT_UNIT_TYPE_GROUP, and COMBAT_UNIT_TYPE_PLAYER_PET are distinct
+    -- categories, so a group member's proc would never reach this callback
+    -- in the first place -- an earlier version of this code redundantly
+    -- re-checked the source name here, which was both unnecessary and wasteful.
     StartCountdown()
 end
 
 local function OnGearChanged(eventCode, bagId, slotIndex)
-    if bagId ~= BAG_WORN then return end
+    -- No bagId check needed here: REGISTER_FILTER_BAG_ID with BAG_WORN (set
+    -- up below) already restricts this callback to worn-equipment changes.
     -- A gear swap can't start or stop the underlying ICD, but it can change
     -- whether we're allowed to *display* an in-progress countdown, so just
     -- re-evaluate rather than touching icdEndTime here.
@@ -381,8 +374,11 @@ end
 --------------------------------------------------------------------------------
 
 function addon:InitializeSettings()
+    -- No existence check needed here: LibAddonMenu-2.0 is a required
+    -- dependency (## DependsOn in the manifest), so this addon cannot load
+    -- at all unless LAM2 is already present -- checking for it here was
+    -- dead code.
     local LAM = LibAddonMenu2
-    if not LAM then return end
 
     local panelData = {
         type = "panel",
@@ -489,7 +485,7 @@ local function OnAddonLoaded(eventCode, loadedAddonName)
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
 
     addon.savedVariables = ZO_SavedVars:NewAccountWide(ADDON_NAME .. "SavedVariables", ADDON_VERSION, nil, defaults, GetWorldName())
-    addon.positionVariables = ZO_SavedVars:NewCharacterIdSettings(ADDON_NAME .. "Position", ADDON_VERSION, nil, positionDefaults, GetWorldName())
+    addon.positionVariables = ZO_SavedVars:NewCharacterIdSettings(ADDON_NAME .. "Position", ADDON_VERSION, nil, positionDefaults)
     addon.icdEndTime = nil
     addon.showingReadyMessage = false
     addon.previewEnabled = false
@@ -513,6 +509,8 @@ local function OnAddonLoaded(eventCode, loadedAddonName)
         REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnGearChanged)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+        REGISTER_FILTER_BAG_ID, BAG_WORN)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
 
     RefreshDisplay()

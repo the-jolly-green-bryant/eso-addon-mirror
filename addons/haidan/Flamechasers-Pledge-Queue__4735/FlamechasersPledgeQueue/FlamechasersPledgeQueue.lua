@@ -2,7 +2,7 @@ FlamechasersPledgeQueue = {}
 local FPQ = FlamechasersPledgeQueue
 local WM = WINDOW_MANAGER
 local ADDON_NAME = "FlamechasersPledgeQueue"
-FPQ.version = "0.7.13"
+FPQ.version = "0.7.18"
 local SAVED_VARIABLES_NAME = "FlamechasersPledgeQueueSavedVariables"
 -- Keep the wrapper version unchanged so existing data is never reset merely
 -- because the active namespace is now server-specific.
@@ -156,6 +156,28 @@ function FPQ.FindRandomActivitySet(activityType)
     end
 end
 
+local function GetActivityArtwork(activity)
+    if activity.artTexture == false then return nil end
+    if activity.artTexture then return activity.artTexture end
+
+    local activityId = activity.normalId or activity.veteranId
+    if not activityId then
+        activity.artTexture = false
+        return nil
+    end
+
+    local smallTexture, largeTexture =
+        GetActivityKeyboardDescriptionTextures(activityId)
+    if smallTexture and smallTexture ~= "" then
+        activity.artTexture = smallTexture
+    elseif largeTexture and largeTexture ~= "" then
+        activity.artTexture = largeTexture
+    else
+        activity.artTexture = false
+    end
+    return activity.artTexture or nil
+end
+
 function FPQ.FindPledges()
     if not FPQ.activityList then FPQ.BuildActivityCatalog() end
     local pledges, used = {}, {}
@@ -181,6 +203,7 @@ function FPQ.FindPledges()
                             normalId = activity.normalId,
                             veteranId = activity.veteranId,
                             zoneId = activity.zoneId,
+                            artTexture = GetActivityArtwork(activity),
                         }
                         used[activity.key] = true
                         break
@@ -201,9 +224,13 @@ end
 function FPQ.CreateCheck(parent, name, labelText, field)
     local hit = WM:CreateControl(name, parent, CT_BUTTON)
     hit:SetDimensions(144, 46)
+    hit:SetDrawLayer(DL_OVERLAY)
+    hit:SetDrawLevel(30)
 
     local pill = Panel(hit, name .. "Pill", { 0.026, 0.020, 0.036, 0.98 })
     pill:SetAnchorFill(hit)
+    pill:SetDrawLayer(DL_OVERLAY)
+    pill:SetDrawLevel(31)
     pill:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Tooltip-Border.dds", 128, 8)
     pill:SetInsets(2, 2, -2, -2)
     pill:SetEdgeColor(0.27, 0.22, 0.34, 1)
@@ -212,9 +239,13 @@ function FPQ.CreateCheck(parent, name, labelText, field)
     indicator:SetDimensions(22, 22)
     indicator:SetAnchor(LEFT, hit, LEFT, 13, 0)
     indicator:SetTexture("EsoUI/Art/Buttons/checkbox_unchecked.dds")
+    indicator:SetDrawLayer(DL_OVERLAY)
+    indicator:SetDrawLevel(32)
 
     local text = Label(hit, name .. "Text", labelText, "ZoFontGameBold")
     text:SetAnchor(LEFT, indicator, RIGHT, 10, 0)
+    text:SetDrawLayer(DL_OVERLAY)
+    text:SetDrawLevel(32)
 
     hit.pill, hit.indicator, hit.text, hit.field = pill, indicator, text, field
     hit:SetHandler("OnMouseEnter", function(control)
@@ -406,6 +437,14 @@ function FPQ.Refresh()
         row:SetHidden(pledge == nil)
         if pledge then
             row.pledge = pledge
+            if pledge.artTexture then
+                row.art:SetTexture(pledge.artTexture)
+                row.art:SetHidden(false)
+                row.artShade:SetHidden(false)
+            else
+                row.art:SetHidden(true)
+                row.artShade:SetHidden(true)
+            end
             row.name:SetText(pledge.name)
             row.quest:SetText(pledge.questName)
             local selection = FPQ.GetSelection(pledge.key)
@@ -413,6 +452,9 @@ function FPQ.Refresh()
             row.veteran.pledge, row.veteran.activityId = pledge, pledge.veteranId
             FPQ.UpdateCheck(row.normal, selection.normal, pledge.normalId ~= nil)
             FPQ.UpdateCheck(row.veteran, selection.veteran, pledge.veteranId ~= nil)
+        else
+            row.art:SetHidden(true)
+            row.artShade:SetHidden(true)
         end
     end
     FPQ.empty:SetHidden(#FPQ.pledges > 0)
@@ -617,6 +659,20 @@ function FPQ.CreateWindow()
     opacityLayer:SetCenterColor(0.008, 0.005, 0.012, 0.54)
     opacityLayer:SetEdgeColor(0, 0, 0, 0)
 
+    -- The visible backdrop begins four pixels inside the top-level control.
+    -- Frame that real edge so no transparent gap surrounds the interface.
+    local strokeFrame = WM:CreateControl(
+        "FlamechasersPledgeWindowStrokeFrame", window, CT_CONTROL)
+    strokeFrame:SetDimensions(752, 678)
+    strokeFrame:SetAnchor(TOPLEFT, window, TOPLEFT, 4, 4)
+    local windowStroke = CreateOutline(
+        strokeFrame, "FlamechasersPledgeWindowStroke",
+        752, 678, 2, { 0.60, 0.48, 0.70, 0.84 })
+    for _, line in ipairs(windowStroke) do
+        line:SetDrawLayer(DL_OVERLAY)
+        line:SetDrawLevel(250)
+    end
+
     local header = Panel(window, "FlamechasersPledgeHeader", { 0.040, 0.030, 0.050, 1 })
     header:SetDimensions(752, 58)
     header:SetAnchor(TOP, window, TOP, 0, 4)
@@ -734,6 +790,44 @@ function FPQ.CreateWindow()
             { 0.026, 0.019, 0.036, 0.94 })
         row:SetDimensions(710, 86)
         row:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 214 + ((index - 1) * 94))
+        row:SetDrawLayer(DL_BACKGROUND)
+        row:SetDrawLevel(0)
+
+        -- ESO already exposes Activity Finder art for every dungeon. Reuse
+        -- that client texture as a cropped, darkened card background instead
+        -- of bundling image files or decoding artwork ourselves.
+        local art = WM:CreateControl(
+            "FlamechasersPledgeRowArt" .. index, row, CT_TEXTURE)
+        -- Activity Finder's small keyboard artwork lives inside a padded
+        -- atlas. ESO's own tooltip template crops that atlas at u=0.6836.
+        -- Use the same right edge, then take a wide central slice so the art
+        -- fills this card without distortion or transparent padding.
+        art:SetResizeToFitFile(false)
+        art:SetDimensions(710, 86)
+        art:SetAnchor(TOPLEFT, row, TOPLEFT, 0, 0)
+        art:SetTextureCoords(0, 0.6836, 0.41, 0.575)
+        art:SetColor(0.62, 0.56, 0.68, 0.56)
+        art:SetDrawLayer(DL_BACKGROUND)
+        art:SetDrawLevel(1)
+        art:SetHidden(true)
+
+        -- A real colorable texture is required for the gradient to render.
+        -- Fade the full-width artwork into the card's near-black base while
+        -- keeping the entire overlay below labels and checkbox controls.
+        local artShade = WM:CreateControl(
+            "FlamechasersPledgeRowArtShade" .. index, row, CT_TEXTURE)
+        artShade:SetResizeToFitFile(false)
+        artShade:SetDimensions(710, 86)
+        artShade:SetAnchor(TOPLEFT, row, TOPLEFT, 0, 0)
+        artShade:SetTexture("EsoUI/Art/Miscellaneous/listItem_backdrop_white.dds")
+        artShade:SetTextureCoords(0, 1, 0, 1)
+        artShade:SetGradientColors(ORIENTATION_HORIZONTAL,
+            0.008, 0.005, 0.012, 0.20,
+            0.008, 0.005, 0.012, 0.92)
+        artShade:SetDrawLayer(DL_BACKGROUND)
+        artShade:SetDrawLevel(2)
+        artShade:SetHidden(true)
+
         CreateOutline(row, "FlamechasersPledgeRowOutline" .. index,
             710, 86, 1, { 0.18, 0.14, 0.22, 0.82 })
         local highlight = WM:CreateControl("FlamechasersPledgeRowHighlight" .. index,
@@ -772,7 +866,9 @@ function FPQ.CreateWindow()
         local veteran = FPQ.CreateCheck(row,
             "FlamechasersPledgeVeteran" .. index, "VETERAN", "veteran")
         veteran:SetAnchor(RIGHT, row, RIGHT, -55, 0)
-        row.name, row.quest, row.normal, row.veteran = name, quest, normal, veteran
+        row.art, row.artShade = art, artShade
+        row.name, row.quest = name, quest
+        row.normal, row.veteran = normal, veteran
         FPQ.rows[index] = row
     end
 

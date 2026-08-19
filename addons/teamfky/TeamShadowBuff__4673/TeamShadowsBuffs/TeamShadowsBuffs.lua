@@ -153,10 +153,12 @@ local function ToggleModule(moduleName)
 end
 
 local function OpenSettings()
-    if TSB.OpenSettingsPanel then
+    if TSB.OpenManager then
+        TSB.SafeCall("Manager", "OpenManager", TSB.OpenManager)
+    elseif TSB.OpenSettingsPanel then
         TSB.SafeCall("Settings", "OpenSettingsPanel", TSB.OpenSettingsPanel)
     else
-        Chat("reglages indisponibles: installe LibAddonMenu-2.0 via Minion.")
+        Chat("fenetre de gestion indisponible.")
     end
 end
 
@@ -197,18 +199,24 @@ local function HandleSlash(args)
     elseif command == "effects" and TSB.modules.MajorEffects and TSB.modules.MajorEffects.PrintStatus then
         TSB.SafeCall("MajorEffects", "PrintStatus", TSB.modules.MajorEffects.PrintStatus, TSB.modules.MajorEffects)
     else
-        Chat("commandes: /shadowsBuff | /tsbuffs on | off | status | effects | unlock | toggle MajorEffects | debug")
+        Chat("commandes: /tsb (manager) | /tsbuffs on | off | status | settings | effects | unlock | toggle MajorEffects | debug")
     end
 end
 
-local function HandleOpenSettingsSlash()
-    OpenSettings()
+local function HandleOpenManagerSlash()
+    if TSB.OpenManager then
+        TSB.OpenManager()
+    elseif TSB.Manager and TSB.Manager.Show then
+        TSB.Manager:Show()
+    else
+        Chat("interface du manager indisponible. Fais /reloadui puis reessaie.")
+    end
 end
 
 local function RegisterSlashCommands()
+    SLASH_COMMANDS["/tsb"] = HandleOpenManagerSlash
+    -- commandes texte (debug, on/off, unlock...) : etaient orphelines, re-branchees ici
     SLASH_COMMANDS["/tsbuffs"] = HandleSlash
-    SLASH_COMMANDS["/tsb"] = HandleSlash
-    SLASH_COMMANDS["/shadowsBuff"] = HandleOpenSettingsSlash
 end
 
 function TSB.NormalizeLayout(value)
@@ -227,12 +235,124 @@ local function OnAddonLoaded(_, addonName)
 
     EM:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
 
-    TSB.savedVars = ZO_SavedVars:NewAccountWide(
+    local accountVars = ZO_SavedVars:NewAccountWide(
         TSB.savedVariableName,
         TSB.savedVariableVersion,
         nil,
         TSB.defaults
     )
+
+    local characterVars = ZO_SavedVars:NewCharacterIdSettings(
+        TSB.savedVariableName,
+        TSB.savedVariableVersion,
+        nil,
+        TSB.characterDefaults or {}
+    )
+
+    local characterFields = {
+        effectSettings = true,
+        panelSettings = true,
+        playerOrder = true,
+        bossOrder = true,
+        trackerPositions = true,
+        groupTrackerPositions = true,
+        panels = true,
+    }
+    local function DeepCopy(value, seen)
+        if type(value) ~= "table" then return value end
+        seen = seen or {}
+        if seen[value] then return seen[value] end
+        local copy = {}
+        seen[value] = copy
+        for key, child in pairs(value) do copy[DeepCopy(key, seen)] = DeepCopy(child, seen) end
+        return copy
+    end
+
+    -- Au premier chargement de cette version, le personnage actuellement joue
+    -- recupere l'ancien profil global. Les autres personnages commencent vides.
+    if characterVars.profileInitialized ~= true then
+        local characterId = GetCurrentCharacterId and tostring(GetCurrentCharacterId()) or "unknown"
+        if accountVars.trackerProfileMigrationCharacterId == nil then
+            for key in pairs(characterFields) do
+                if accountVars[key] ~= nil then characterVars[key] = DeepCopy(accountVars[key]) end
+            end
+            accountVars.trackerProfileMigrationCharacterId = characterId
+        end
+        characterVars.effectSettings = characterVars.effectSettings or {}
+        characterVars.panelSettings = characterVars.panelSettings or {}
+        characterVars.playerOrder = characterVars.playerOrder or TSB.defaults.playerOrder
+        characterVars.bossOrder = characterVars.bossOrder or TSB.defaults.bossOrder
+        characterVars.trackerPositions = characterVars.trackerPositions or {}
+        characterVars.groupTrackerPositions = characterVars.groupTrackerPositions or {}
+        characterVars.panels = characterVars.panels or {}
+        characterVars.profileInitialized = true
+    end
+
+    -- Vue commune pour ne modifier aucune logique existante : chaque lecture ou
+    -- ecriture d'un champ de profil est dirigee vers le personnage, le reste vers
+    -- les donnees du compte.
+    TSB.accountSavedVars = accountVars
+    accountVars.itemSetCollectionScans = nil
+    TSB.characterSavedVars = characterVars
+    TSB.savedVars = setmetatable({}, {
+        __index = function(_, key)
+            if characterFields[key] then return characterVars[key] end
+            return accountVars[key]
+        end,
+        __newindex = function(_, key, value)
+            if characterFields[key] then characterVars[key] = value else accountVars[key] = value end
+        end,
+    })
+
+    -- Les anciennes fiches "proc" et "cooldown" deviennent une fiche unique.
+    -- On conserve destinations, couleurs et positions déjà choisies par le joueur.
+    local mergedTrackerKeys = {
+        crimson_oath_proc = "crimson_oath",
+        tremorscale_proc = "tremorscale",
+        pillagers_profit_cd = "pillagers_profit",
+    }
+    local function MergeTrackerSettings(oldKey, newKey)
+        local all = characterVars.effectSettings or {}
+        local old = all[oldKey]
+        if not old then return end
+        local current = all[newKey] or {}
+        current.destinations = current.destinations or {}
+        local hasCurrentDestination = current.destination ~= nil or next(current.destinations) ~= nil
+        if not hasCurrentDestination then
+            if old.destination then
+                current.destination = old.destination
+                current.destinations[old.destination] = old.enabled ~= false
+            end
+            for destination, enabled in pairs(old.destinations or {}) do
+                current.destinations[destination] = enabled
+            end
+        end
+        for key, value in pairs(old) do
+            if key ~= "destination" and key ~= "destinations" and key ~= "name" and key ~= "shortName" and current[key] == nil then
+                current[key] = DeepCopy(value)
+            end
+        end
+        all[newKey] = current
+        all[oldKey] = nil
+        for _, positions in ipairs({ characterVars.trackerPositions, characterVars.groupTrackerPositions }) do
+            if positions and positions[oldKey] and not positions[newKey] then positions[newKey] = positions[oldKey] end
+            if positions then positions[oldKey] = nil end
+        end
+    end
+    local function ReplaceKeysInOrder(orderText)
+        local result, seen = {}, {}
+        for key in tostring(orderText or ""):gmatch("[^,%s]+") do
+            key = mergedTrackerKeys[key] or key
+            if not seen[key] then result[#result + 1], seen[key] = key, true end
+        end
+        return table.concat(result, ",")
+    end
+    for oldKey, newKey in pairs(mergedTrackerKeys) do MergeTrackerSettings(oldKey, newKey) end
+    characterVars.playerOrder = ReplaceKeysInOrder(characterVars.playerOrder)
+    characterVars.bossOrder = ReplaceKeysInOrder(characterVars.bossOrder)
+    for _, panel in pairs(characterVars.panelSettings or {}) do
+        if type(panel.order) == "string" then panel.order = ReplaceKeysInOrder(panel.order) end
+    end
 
     for key, value in pairs(TSB.defaults or {}) do
         if key ~= "modules" and TSB.savedVars[key] == nil then
@@ -253,6 +373,8 @@ local function OnAddonLoaded(_, addonName)
     if TSB.EnsureEffectSettingsDefaults then
         TSB.SafeCall("MajorEffects", "EnsureEffectSettingsDefaults", TSB.EnsureEffectSettingsDefaults)
     end
+    TSB.savedVars.modules.GroupSetCoverage = nil
+    TSB.savedVars.groupTrackerPositions = TSB.savedVars.groupTrackerPositions or {}
     TSB.savedVars.layout = TSB.NormalizeLayout(TSB.savedVars.layout)
     if type(TSB.savedVars.bossOrder) == "string" and not TSB.savedVars.bossOrder:find("off_balance", 1, true) then
         TSB.savedVars.bossOrder = TSB.savedVars.bossOrder .. ",off_balance"
@@ -289,6 +411,9 @@ local function OnAddonLoaded(_, addonName)
     if TSB.savedVars.acronymTextColor == nil then
         TSB.savedVars.acronymTextColor = TSB.defaults.acronymTextColor
     end
+    if TSB.savedVars.cooldownColor == nil then
+        TSB.savedVars.cooldownColor = TSB.defaults.cooldownColor
+    end
     if TSB.savedVars.showNames == nil then
         TSB.savedVars.showNames = TSB.defaults.showNames
     end
@@ -298,8 +423,21 @@ local function OnAddonLoaded(_, addonName)
     if TSB.savedVars.showAcronyms == nil then
         TSB.savedVars.showAcronyms = TSB.defaults.showAcronyms
     end
+    if TSB.savedVars.showStacks == nil then
+        TSB.savedVars.showStacks = TSB.defaults.showStacks
+    end
     if TSB.savedVars.showBar == nil then
         TSB.savedVars.showBar = TSB.defaults.showBar
+    end
+    if TSB.savedVars.stackTextColor == nil then
+        TSB.savedVars.stackTextColor = TSB.defaults.stackTextColor
+    end
+    if TSB.savedVars.catalogLanguage ~= "en" then
+        TSB.savedVars.catalogLanguage = "fr"
+    end
+    TSB.savedVars.catalogNamesByLanguage = TSB.savedVars.catalogNamesByLanguage or {}
+    if TSB.CaptureCatalogLanguageNames then
+        TSB.SafeCall("Catalog", "CaptureCatalogLanguageNames", TSB.CaptureCatalogLanguageNames)
     end
 
     RegisterSlashCommands()
@@ -309,6 +447,9 @@ local function OnAddonLoaded(_, addonName)
     end
     if TSB.RegisterSettingsPanel then
         TSB.SafeCall("Settings", "RegisterSettingsPanel", TSB.RegisterSettingsPanel)
+    end
+    if TSB.Manager and TSB.Manager.InitializeLauncher then
+        TSB.SafeCall("Manager", "InitializeLauncher", TSB.Manager.InitializeLauncher, TSB.Manager)
     end
     TSB.LoadModules()
 end

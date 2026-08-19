@@ -1,8 +1,8 @@
 ## Title: Flamechasers Pledge Queue
 ## Description: Pledge-only dungeon queue with automatic pledge tracking.
 ## Author: Flamechasers
-## Version: 0.7.13
-## AddOnVersion: 713
+## Version: 0.7.18
+## AddOnVersion: 718
 ## APIVersion: 101050
 ## SavedVariables: FlamechasersPledgeQueueSavedVariables
 

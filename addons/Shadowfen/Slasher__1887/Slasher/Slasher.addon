@@ -1,11 +1,11 @@
 ## Title: Slasher
 ## Author: Shadowfen
-## Version: 2.48
-## AddOnVersion: 78
+## Version: 2.49
+## AddOnVersion: 79
 ## IsLibrary: false
 ## APIVersion: 101050 101051
 ## SavedVariables: SlasherVar
-## DependsOn: LibSFUtils>=71 LibAddonMenu-2.0>=43
+## DependsOn: LibSFUtils>=75 LibAddonMenu-2.0>=43
 ## OptionalDependsOn: LuiExtended
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax

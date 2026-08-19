@@ -1,0 +1,49 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/aLi3nZ/Ultivite__4777",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "aLi3nZ",
+  "canonical_id": "esoui:4777",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4777",
+  "deleted": false,
+  "directories": [
+    "Ultivite"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4777/",
+  "fingerprint": "2026ceb40bf5d3d070a57286d02ede1f331ba2ac9bef4acca1c0288d7db1acd0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4777",
+  "source_url": "https://www.esoui.com/downloads/info4777-Ultivite.html",
+  "stats": {
+    "downloads": 3,
+    "favorites": 0,
+    "monthly_downloads": 3
+  },
+  "title": "Ultivite",
+  "updated_at": 1787107493000,
+  "version": "1.072"
+}

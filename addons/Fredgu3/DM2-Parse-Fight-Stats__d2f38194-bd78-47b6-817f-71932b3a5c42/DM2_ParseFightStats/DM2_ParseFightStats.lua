@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.12"
+R.version     = "3.17.14"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -418,8 +418,16 @@ R._announcements = {
     title = "DPS accuracy restore (lean combat path)",
     body = "Parse totals drifted low after combat-event path got heavy (DoT sampling, debuffs, build snaps on first hit) and combat-end flicker cut pulls short.\n\n• Damage counted first like Simple DPS / older Parse (3.7.x) — hitValue + overflow\n• Heavy start snapshots deferred off the combat tick\n• Combat-end grace while damage still landing (housing dummy flicker)\n• Chat save line shows total damage + duration for cross-check\n\nNew dummy required. Compare Total Dmg / DPS to Simple DPS.",
   },
+  ["3.17.13"] = {
+    title = "DPS match Simple meter (same duration, higher total)",
+    body = "QA: Simple 111.9k / 4.70M vs Parse 91k / 3.80M at identical 42.0s — missing ~900k damage, not clock skew.\n\n• Combat registration copied from Simple DPS (player+pet filters only; no IS_ERROR filter)\n• No Lua sourceType re-check (console filtered events can omit type and were dropped)\n• Damage results = Simple’s four (DAMAGE / CRIT / DOT / DOT CRIT) for totals\n• Hot path: totalDamage += hitValue only, then lean skill/bucket — no set-name resolve on every tick\n\nReload + new dummy. Chat total should match Simple Fight Total.",
+  },
+  ["3.17.14"] = {
+    title = "Damage list + Rotation icon count",
+    body = "• Damage page: 22 skill + 22 effect rows (was 16) — shows counts / top-N when more exist\n• Do not add damage to totals before capture starts (fixes empty skill rows vs inflated total)\n• Rotation: 64 icons/page, fit-to-panel layout (no clipped last row), clearer presses vs timeline counts\n\nNew dummy recommended.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.12"
+R._latestAnnouncementVersion = "3.17.14"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -1531,12 +1539,23 @@ local function isOutgoingDamageEvent(result)
   return isDirectDamageResult(result) or isDotResult(result)
 end
 
--- Same core set Simple DPS uses for fight totals (shielded/blocked still counted via isOutgoing).
--- Prefer raw hitValue; add overflow when present (large hits on some clients).
+-- EXACT result set Simple DPS uses for Fight Total / Fight Avg.
+-- (Shielded/blocked kept available via isOutgoingDamageEvent for other analytics,
+-- but DPS totals use this table so we cannot diverge from the meter.)
+local DPS_DAMAGE_RESULTS = {
+  [ACTION_RESULT_DAMAGE] = true,
+  [ACTION_RESULT_CRITICAL_DAMAGE] = true,
+  [ACTION_RESULT_DOT_TICK] = true,
+  [ACTION_RESULT_DOT_TICK_CRITICAL] = true,
+}
+
+local function isDpsTotalDamageResult(result)
+  return DPS_DAMAGE_RESULTS[result] == true
+end
+
+-- Match Simple DPS: use hitValue as-is (do not invent overflow math).
 local function combatHitDamage(hitValue, overflow)
   local dmg = tonumber(hitValue) or 0
-  local ov = tonumber(overflow) or 0
-  if ov > 0 then dmg = dmg + ov end
   if dmg < 0 then dmg = 0 end
   return dmg
 end
@@ -6545,18 +6564,25 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
                           sourceName, sourceType, targetName, targetType, hitValue, powerType,
                           damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
   if not SV or not SV.settings or not SV.settings.enable then return end
-  if isError then return end
-
-  -- Filter already limits to player/pet when AddFilterForEvent works; keep Lua
-  -- guard for fallback unfiltered registration (matches Simple DPS + older Parse).
-  local isPlayer = (sourceType == COMBAT_UNIT_TYPE_PLAYER)
-  local isPet = (type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET)
-  if not isPlayer and not isPet then return end
 
   ------------------------------------------------------------------
-  -- Healing (secondary) — keep out of the damage hot path shape
+  -- Mirror Simple DPS hot path. C-side filters already restrict to
+  -- PLAYER + PLAYER_PET. Do NOT re-check sourceType in Lua — on console
+  -- filtered events sometimes omit/alter sourceType and we were dropping
+  -- ~20% of damage (e.g. 4.70M Simple vs 3.80M Parse at identical 42.0s).
+  -- Fallback unfiltered registration still needs a soft Lua gate below.
   ------------------------------------------------------------------
+  if self._combatNeedsLuaSourceGate then
+    if sourceType ~= COMBAT_UNIT_TYPE_PLAYER
+        and not (type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number"
+                 and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET) then
+      return
+    end
+  end
+
+  -- Healing (not part of DPS total)
   if result == ACTION_RESULT_HEAL or result == ACTION_RESULT_CRITICAL_HEAL then
+    if isError then return end
     local heal = combatHitDamage(hitValue, overflow)
     if heal > 0 then
       local session = ensureSession()
@@ -6569,13 +6595,8 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
     return
   end
 
-  ------------------------------------------------------------------
-  -- DAMAGE HOT PATH (priority: match Simple DPS / Parse 3.7 totals)
-  -- Count damage FIRST. All coaching/debuff/DoT detail is secondary and
-  -- must never block or delay totalDamage updates.
-  ------------------------------------------------------------------
-  if not isOutgoingDamageEvent(result) then
-    -- Non-damage combat rows: light debuff hooks only (no name resolve unless needed)
+  -- Non-DPS combat rows (effect apply etc.) — keep out of total path
+  if not isDpsTotalDamageResult(result) then
     if isEffectApplyResult(result) then
       local session = self.session
       if session and session.started then
@@ -6591,75 +6612,68 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
     return
   end
 
+  -- === Simple DPS equivalent gates ===
+  if isError then return end
   local dmg = combatHitDamage(hitValue, overflow)
   if dmg <= 0 then return end
 
   local tMs = NowMs()
   local session = ensureSession()
-  -- Always accumulate while session object lives; startIfNeeded may lag dummy name
-  -- recognition, but damage must not be dropped (open-world OFF).
-  if not session.firstDamageMs then session.firstDamageMs = tMs end
-  session.totalDamage = (tonumber(session.totalDamage) or 0) + dmg
-  session.lastDamageMs = tMs
   if targetName and targetName ~= "" then
     session.lastTargetName = targetName
   end
+  -- Start gate BEFORE tallying — otherwise open-world-OFF rejects still inflate
+  -- totalDamage with no skill rows (Damage page looks "empty" vs Simple total).
   startIfNeeded(session, tMs, targetName)
-
-  -- If pull never officially started (dummy-only filter), keep totals on the
-  -- unstarted session until a valid start — do not run skill breakdown yet.
   if not session.started then return end
+  if not session.firstDamageMs then session.firstDamageMs = tMs end
+  -- TOTAL — same as Simple fightDamage += hitValue (once capture is live)
+  session.totalDamage = (tonumber(session.totalDamage) or 0) + dmg
+  session.lastDamageMs = tMs
 
-  local resolvedAbilityName = resolveAbilityName(abilityId, abilityName)
+  -- --- Lean breakdown (must stay cheap; never call resolveSetName / sheet APIs) ---
   local dot = isDotResult(result)
-  local crit = (result == ACTION_RESULT_CRITICAL_DAMAGE)
-    or (result == ACTION_RESULT_DOT_TICK_CRITICAL)
-    or (result == ACTION_RESULT_DAMAGE_SHIELDED_CRITICAL)
-    or (result == ACTION_RESULT_BLOCKED_DAMAGE_CRITICAL)
-
+  local crit = (result == ACTION_RESULT_CRITICAL_DAMAGE) or (result == ACTION_RESULT_DOT_TICK_CRITICAL)
   if dot then
     session.dotDamage = (tonumber(session.dotDamage) or 0) + dmg
-    -- LEAN DoT uptime: running activeMs only (no per-tick array rebuild on hot path)
-    if not resolveSetName(session, abilityId, resolvedAbilityName) then
-      local dt = session.dotTicks
-      local e = dt[abilityId]
-      if not e then
-        e = {
-          name = resolvedAbilityName or resolveAbilityName(abilityId, abilityName),
-          ticks = {},
-          tickCount = 0,
-          activeMs = 0,
-          lastTickMs = nil,
-          intervalSum = 0,
-          intervalN = 0,
-          medianIntervalMs = 2000,
-        }
-        dt[abilityId] = e
-      end
-      e.tickCount = (tonumber(e.tickCount) or 0) + 1
-      local last = tonumber(e.lastTickMs)
-      if last and tMs > last then
-        local gap = tMs - last
-        if gap >= 80 and gap < 8000 then
-          e.intervalSum = (tonumber(e.intervalSum) or 0) + gap
-          e.intervalN = (tonumber(e.intervalN) or 0) + 1
-          e.medianIntervalMs = e.intervalSum / math.max(1, e.intervalN)
-          local med = tonumber(e.medianIntervalMs) or 2000
-          if med < 200 then med = 200 end
-          if gap <= math.max(med * 2.5, 4000) then
-            e.activeMs = (tonumber(e.activeMs) or 0) + gap
-          end
+    local dt = session.dotTicks
+    abilityId = tonumber(abilityId) or 0
+    local e = dt[abilityId]
+    if not e then
+      e = {
+        name = (abilityName and abilityName ~= "" and zo_strformat("<<1>>", abilityName)) or ("DoT " .. tostring(abilityId)),
+        ticks = {},
+        tickCount = 0,
+        activeMs = 0,
+        lastTickMs = nil,
+        intervalSum = 0,
+        intervalN = 0,
+        medianIntervalMs = 2000,
+      }
+      dt[abilityId] = e
+    end
+    e.tickCount = (tonumber(e.tickCount) or 0) + 1
+    local last = tonumber(e.lastTickMs)
+    if last and tMs > last then
+      local gap = tMs - last
+      if gap >= 80 and gap < 8000 then
+        e.intervalSum = (tonumber(e.intervalSum) or 0) + gap
+        e.intervalN = (tonumber(e.intervalN) or 0) + 1
+        e.medianIntervalMs = e.intervalSum / math.max(1, e.intervalN)
+        local med = tonumber(e.medianIntervalMs) or 2000
+        if med < 200 then med = 200 end
+        if gap <= math.max(med * 2.5, 4000) then
+          e.activeMs = (tonumber(e.activeMs) or 0) + gap
         end
       end
-      e.lastTickMs = tMs
-      -- Sparse samples only (cap 24; no O(n) rebuild every tick)
-      local ticks = e.ticks
-      if type(ticks) ~= "table" then ticks = {}; e.ticks = ticks end
-      if #ticks < 24 then
-        ticks[#ticks + 1] = tMs
-      elseif (tMs - (tonumber(ticks[#ticks]) or 0)) >= 500 then
-        ticks[#ticks] = tMs -- refresh last only
-      end
+    end
+    e.lastTickMs = tMs
+    local ticks = e.ticks
+    if type(ticks) ~= "table" then ticks = {}; e.ticks = ticks end
+    if #ticks < 16 then
+      ticks[#ticks + 1] = tMs
+    else
+      ticks[#ticks] = tMs
     end
   else
     session.directDamage = (tonumber(session.directDamage) or 0) + dmg
@@ -6669,80 +6683,38 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   if crit then session.critCount = (session.critCount or 0) + 1 end
   if dmg > (session.maxHit or 0) then session.maxHit = dmg end
 
-  -- Crit exposure: cheap running totals every hit; sheet sample at most every 2s
+  -- Crit exposure: running totals only (sheet sample deferred to finalize)
   do
     local cds = session.critDmgStats
     if type(cds) == "table" then
       cds.eligibleDmg = (cds.eligibleDmg or 0) + dmg
       if crit then cds.critHitDmg = (cds.critHitDmg or 0) + dmg end
-      local last = tonumber(cds.lastSampleMs) or 0
-      if (tMs - last) >= 2000 or last == 0 then
-        cds.lastSampleMs = tMs
-        local sheetPct = tonumber(cds.lastSheetCritPct) or 0
-        if sheetPct <= 0 and DM2StatsMenuShell
-            and type(DM2StatsMenuShell.ReadSheetCritDamagePercent) == "function" then
-          local okS, v = pcall(DM2StatsMenuShell.ReadSheetCritDamagePercent)
-          if okS and tonumber(v) and tonumber(v) > 0 then sheetPct = tonumber(v) end
-        end
-        if sheetPct > 0 then
-          cds.lastSheetCritPct = sheetPct
-          cds.source = "sheet_sample"
-          cds.samples = (cds.samples or 0) + 1
-          cds.sampleWeight = (cds.sampleWeight or 0) + dmg
-          cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
-          cds.sampleSeries = cds.sampleSeries or {}
-          local series = cds.sampleSeries
-          if #series >= 24 then
-            local lastE = series[#series]
-            lastE.dmg = (tonumber(lastE.dmg) or 0) + dmg
-            lastE.pct = sheetPct
-          else
-            series[#series + 1] = { dmg = dmg, pct = sheetPct }
-          end
-        end
-      elseif (tonumber(cds.lastSheetCritPct) or 0) > 0 then
-        local sheetPct = tonumber(cds.lastSheetCritPct) or 0
-        cds.sampleWeight = (cds.sampleWeight or 0) + dmg
-        cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
-      end
     end
   end
 
-  -- bucket
   local idx = bucketIndexFor(session, tMs)
   local b = ensureBucket(session, idx)
   b.dmg = b.dmg + dmg
   if dot then b.dot = b.dot + dmg else b.direct = b.direct + dmg end
   b.hits = b.hits + 1
   if crit then b.crit = b.crit + 1 end
+  abilityId = tonumber(abilityId) or 0
   b.skills[abilityId] = (b.skills[abilityId] or 0) + dmg
 
-  -- skill
+  local resolvedAbilityName = abilityName
+  if resolvedAbilityName and resolvedAbilityName ~= "" and zo_strformat then
+    resolvedAbilityName = zo_strformat("<<1>>", resolvedAbilityName)
+  end
   local s = ensureSkill(session, abilityId, resolvedAbilityName)
   s.dmg = s.dmg + dmg
   s.hits = s.hits + 1
   if crit then s.crit = s.crit + 1 end
   if dmg > (s.max or 0) then s.max = dmg end
   if dot then s.dot = s.dot + dmg else s.direct = s.direct + dmg end
-  noteSkillTarget(s, targetUnitId, targetName)
   local dt = tonumber(damageType)
   if dt then
     s.damageTypes = s.damageTypes or {}
     s.damageTypes[dt] = (s.damageTypes[dt] or 0) + dmg
-  end
-
-  local bar = getSkillBar(session, abilityId, resolvedAbilityName)
-  if bar then recordSkillBar(session, abilityId, bar, resolvedAbilityName) end
-
-  local setName = resolveSetName(session, abilityId, resolvedAbilityName)
-  if setName then
-    local ps = ensureSet(session, setName)
-    if ps then
-      ps.dmg = ps.dmg + dmg
-      ps.hits = ps.hits + 1
-      if crit then ps.crit = ps.crit + 1 end
-      if dot then ps.dot = ps.dot + dmg else ps.direct = ps.direct + dmg end
-    end
   end
 
   if isLightAttack(abilityId, abilityName, abilityActionSlotType) then
@@ -7276,31 +7248,36 @@ function R:Initialize()
     end)
   end
 
-  -- Combat events: C-side filter to player + pet only (open-world CPU). Two registrations.
+  -- Combat events: COPY Simple DPS registration exactly.
+  -- One subscription per source unit type (PLAYER, PLAYER_PET). Do NOT add
+  -- REGISTER_FILTER_IS_ERROR — that combo was implicated in under-counts vs Simple.
+  self._combatNeedsLuaSourceGate = true
   local function combatHandler(...) self:OnCombatEvent(...) end
-  EM:RegisterForEvent(self.name .. "_CombatP", EVENT_COMBAT_EVENT, combatHandler)
   if type(EM.AddFilterForEvent) == "function" and type(REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE) ~= "nil"
       and type(COMBAT_UNIT_TYPE_PLAYER) == "number" then
-    pcall(function()
-      EM:AddFilterForEvent(self.name .. "_CombatP", EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-      if type(REGISTER_FILTER_IS_ERROR) ~= "nil" then
-        EM:AddFilterForEvent(self.name .. "_CombatP", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
-      end
-    end)
+    local sourceTypes = { COMBAT_UNIT_TYPE_PLAYER }
     if type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" then
-      EM:RegisterForEvent(self.name .. "_CombatPet", EVENT_COMBAT_EVENT, combatHandler)
-      pcall(function()
-        EM:AddFilterForEvent(self.name .. "_CombatPet", EVENT_COMBAT_EVENT,
-          REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER_PET)
-        if type(REGISTER_FILTER_IS_ERROR) ~= "nil" then
-          EM:AddFilterForEvent(self.name .. "_CombatPet", EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
-        end
+      sourceTypes[#sourceTypes + 1] = COMBAT_UNIT_TYPE_PLAYER_PET
+    end
+    local okAll = true
+    for i = 1, #sourceTypes do
+      local regName = self.name .. "_Combat" .. i
+      local ok = pcall(function()
+        EM:RegisterForEvent(regName, EVENT_COMBAT_EVENT, combatHandler)
+        EM:AddFilterForEvent(regName, EVENT_COMBAT_EVENT,
+          REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, sourceTypes[i])
       end)
+      if not ok then okAll = false end
+    end
+    -- Filters active → trust C-side; skip Lua sourceType re-check
+    self._combatNeedsLuaSourceGate = not okAll
+    if not okAll then
+      EM:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, combatHandler)
+      self._combatNeedsLuaSourceGate = true
     end
   else
-    -- Fallback: unfiltered (old clients)
     EM:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, combatHandler)
+    self._combatNeedsLuaSourceGate = true
   end
 
   -- v3.0.25: Input-based rotation capture — fires the instant a skill button is pressed.

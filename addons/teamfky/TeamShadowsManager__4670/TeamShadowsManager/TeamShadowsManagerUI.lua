@@ -5,13 +5,21 @@ local PBT = TeamShadowsManager
 local UI = {}
 PBT.UI = UI
 
+local function L(text)
+    return PBT.LocalizeLiteral and PBT.LocalizeLiteral(text) or text
+end
+local function S(key, ...)
+    return PBT.GetString and PBT.GetString(key, ...) or tostring(key or "")
+end
+
 local WINDOW_NAME = "TeamShadowsManagerWindow"
 local MENU_BUTTON_NAME = "TeamShadowsManagerMenuButton"
 local MANAGER_WINDOW_NAME = "TeamShadowsManagerPanel"
 local CURSOR_PLACEMENT_UPDATE_NAME = "TeamShadowsManagerCursorPlacement"
+local MARKER_DISTANCE_UPDATE_NAME = "TeamShadowsManagerMarkerDistances"
 local LEFT_MOUSE_BUTTON = MOUSE_BUTTON_INDEX_LEFT or 1
 local RIGHT_MOUSE_BUTTON = MOUSE_BUTTON_INDEX_RIGHT or 2
-local MENU_BUTTON_TEXTURE = "TeamShadowsManager/TeamShadowsManagerIcon.dds"
+local MENU_BUTTON_TEXTURE = "TeamShadowsManager/TeamShadowsManagerHeaderLogo.dds"
 
 local function TextureHasNativeText(textureId)
     textureId = tonumber(textureId) or 0
@@ -197,14 +205,14 @@ function UI:Initialize()
     self.menuButton = wm:CreateTopLevelWindow(MENU_BUTTON_NAME)
     self.menuButton:SetClampedToScreen(true)
     self.menuButton:SetMouseEnabled(true)
-    self.menuButton:SetMovable(false)
+    self.menuButton:SetMovable(true)
     self.menuButton:SetHidden(true)
     self.menuButton:SetDrawTier(DT_HIGH)
 
     self.menuButtonBackdrop = wm:CreateControl(nil, self.menuButton, CT_BACKDROP)
     self.menuButtonBackdrop:SetAnchorFill(self.menuButton)
-    self.menuButtonBackdrop:SetCenterColor(0, 0, 0, 0.82)
-    self.menuButtonBackdrop:SetEdgeColor(1, 1, 1, 0.55)
+    self.menuButtonBackdrop:SetCenterColor(0, 0, 0, 0)
+    self.menuButtonBackdrop:SetEdgeColor(0, 0, 0, 0)
     self.menuButtonBackdrop:SetEdgeTexture("", 1, 1, 1)
 
     self.menuButtonTexture = wm:CreateControl(nil, self.menuButton, CT_TEXTURE)
@@ -225,13 +233,14 @@ function UI:Initialize()
 
     self.menuButtonHighlight = wm:CreateControl(nil, self.menuButton, CT_TEXTURE)
     self.menuButtonHighlight:SetAnchorFill(self.menuButton)
-    self.menuButtonHighlight:SetTexture("/esoui/art/actionbar/actionslot_toggledon.dds")
+    self.menuButtonHighlight:SetTexture(MENU_BUTTON_TEXTURE)
+    self.menuButtonHighlight:SetColor(0.30, 0.82, 1.00, 1)
     self.menuButtonHighlight:SetAlpha(0)
     self.menuButtonHighlight:SetMouseEnabled(false)
 
     self.menuButton:SetHandler("OnMouseEnter", function(control)
         if self.menuButtonHighlight then
-            self.menuButtonHighlight:SetAlpha(0.45)
+            self.menuButtonHighlight:SetAlpha(0.28)
         end
         if InitializeTooltip and SetTooltipText then
             InitializeTooltip(InformationTooltip, control, TOP, 0, -6)
@@ -248,10 +257,19 @@ function UI:Initialize()
         end
     end)
 
-    self.menuButton:SetHandler("OnMouseUp", function(_, button, upInside)
+    self.menuButton:SetHandler("OnMouseDown", function(control, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            control.dragStartLeft, control.dragStartTop = control:GetLeft(), control:GetTop()
+        end
+    end)
+
+    self.menuButton:SetHandler("OnMouseUp", function(control, button, upInside)
         if upInside == false then return end
         if button == MOUSE_BUTTON_INDEX_LEFT then
-            self:ToggleManagerWindow()
+            local startLeft, startTop = control.dragStartLeft, control.dragStartTop
+            local moved = startLeft and startTop and (math.abs(control:GetLeft() - startLeft) > 2 or math.abs(control:GetTop() - startTop) > 2)
+            control.dragStartLeft, control.dragStartTop = nil, nil
+            if not moved then self:ToggleManagerWindow() end
         end
     end)
 
@@ -310,8 +328,9 @@ function UI:ApplyMenuButtonSettings()
     self.menuButton:SetDimensions(size, size)
     self.menuButton:ClearAnchors()
     self.menuButton:SetAnchor(CENTER, GuiRoot, CENTER, saved.menuButtonX or 0, saved.menuButtonY or 0)
-    self.menuButton:SetMovable(saved.unlocked == true)
+    self.menuButton:SetMovable(true)
     self.menuButton:SetHidden(saved.menuButtonEnabled == false)
+    self:RefreshPermanentIconButton()
 end
 
 function UI:SetUnlocked(unlocked)
@@ -376,7 +395,7 @@ function UI:ShowPortalStatus(text, r, g, b)
 
     if not PBT.isRunning then
         self.bossLabel:SetText("Nahviintaas")
-        self.timerLabel:SetText("PORTAIL")
+        self.timerLabel:SetText(L("PORTAIL"))
         self.timerLabel:SetColor(1, 1, 1, 0.95)
     end
 
@@ -389,9 +408,9 @@ function UI:ShowMarkerReadyAlert()
     self:SetBackdropVisible(false)
     self.bossLabel:SetText("TEAM SHADOWS")
     self.timerLabel:SetColor(0.2, 0.9, 1, 1)
-    self.timerLabel:SetText("PLACER ICON")
+    self.timerLabel:SetText(L("PLACER ICON"))
     if self.portalLabel then
-        self.portalLabel:SetText("PRET")
+        self.portalLabel:SetText(L("PRET"))
         self.portalLabel:SetColor(0.3, 1, 0.3, 1)
     end
     self.window:SetHidden(false)
@@ -448,17 +467,17 @@ end
 --  FENETRE DE GESTION MODERNE (style BuffsManager)
 --  Reutilise les noms de methodes existants (CreateManagerWindow,
 --  ShowManagerWindow, ToggleManagerWindow, RefreshManagerWindow) et le
---  champ self.managerWindow : tous les appels existants (logo, /shadows,
+--  champ self.managerWindow : tous les appels existants (logo, /tsm,
 --  placement) ouvrent donc directement cette fenetre.
 -- =====================================================================
 local WM = WINDOW_MANAGER
 
 local MC = {
-    panel    = { 0.05, 0.06, 0.08, 0.97 }, card    = { 0.09, 0.10, 0.13, 0.95 },
-    cardEdge = { 0.16, 0.18, 0.22, 1.0 },  gold    = { 0.79, 0.63, 0.18, 1.0 },
-    cyan     = { 0.28, 0.68, 0.90, 1.0 },  blue    = { 0.18, 0.50, 0.93, 1.0 },
-    text     = { 0.86, 0.88, 0.92, 1.0 },  textDim = { 0.55, 0.58, 0.64, 1.0 },
-    track    = { 0.18, 0.20, 0.24, 1.0 },
+    panel    = { 0.012, 0.018, 0.028, 0.985 }, card    = { 0.026, 0.036, 0.050, 0.97 },
+    cardEdge = { 0.43, 0.34, 0.20, 1.0 },    gold    = { 0.83, 0.68, 0.40, 1.0 },
+    cyan     = { 0.27, 0.78, 1.00, 1.0 },    blue    = { 0.16, 0.55, 0.95, 1.0 },
+    text     = { 0.91, 0.91, 0.88, 1.0 },    textDim = { 0.64, 0.61, 0.55, 1.0 },
+    track    = { 0.12, 0.15, 0.19, 1.0 },    hover   = { 0.08, 0.12, 0.15, 1.0 },
 }
 local MF_TITLE, MF_HEADER, MF_LABEL, MF_SMALL = "ZoFontWinH2", "ZoFontWinH4", "ZoFontGameBold", "ZoFontGameSmall"
 
@@ -496,6 +515,45 @@ local function MarkerTexture(id) return (LibTeamShadows and LibTeamShadows.GetMa
 local function MLabelText(labelId) return (LibTeamShadows and LibTeamShadows.GetMarkerLabel and LibTeamShadows.GetMarkerLabel(labelId)) or tostring(labelId) end
 local function RefreshWorld() if PBT.RefreshSavedMarkers then PBT.RefreshSavedMarkers() end end
 
+local function OpenContactMail(recipient)
+    if not SCENE_MANAGER then return end
+    SCENE_MANAGER:Show("mailSend")
+    zo_callLater(function()
+        if ZO_MailSendToField then ZO_MailSendToField:SetText(recipient or "@TeamFF") end
+        if ZO_MailSendSubjectField then ZO_MailSendSubjectField:SetText("Team Shadows Manager") end
+        if ZO_MailSendBodyField then
+            ZO_MailSendBodyField:SetText("")
+            ZO_MailSendBodyField:TakeFocus()
+        end
+    end, 200)
+end
+
+local function TextureDisplayName(textureId, fallback)
+    textureId = tonumber(textureId) or 1
+    local language = PBT.GetLanguage and PBT.GetLanguage() or "fr"
+    local labels = PBT.MarkerTextureLabels and PBT.MarkerTextureLabels[language]
+    return labels and labels[textureId] or fallback or ("Icon " .. tostring(textureId))
+end
+
+local function QuickIconDisplayName(choice)
+    if not choice then return "" end
+    if choice.label then return tostring(choice.label) end
+    if choice.id >= 12 then return TextureDisplayName(choice.id, choice.name) end
+    return tostring(choice.name or TextureDisplayName(choice.id))
+end
+
+local function SavedMarkerIconName(marker)
+    if type(marker) ~= "table" then return "" end
+    local custom = tostring(marker.customLabel or "")
+    if custom ~= "" then return custom end
+    local textureId = tonumber(marker.textureId) or 1
+    if textureId == 1 and marker.labelId then return MLabelText(marker.labelId) end
+    for _, choice in ipairs(QUICK_ICONS) do
+        if choice.id == textureId and not choice.label then return QuickIconDisplayName(choice) end
+    end
+    return TextureDisplayName(textureId)
+end
+
 local function Backdrop(parent, color, edge)
     local b = WM:CreateControl(nil, parent, CT_BACKDROP)
     b:SetCenterColor(unpack4(color))
@@ -506,7 +564,13 @@ end
 local function MLabel(parent, font, color, text, align)
     local l = WM:CreateControl(nil, parent, CT_LABEL)
     l:SetFont(font); l:SetColor(unpack4(color))
-    if text then l:SetText(text) end
+    if text then
+        l:SetText(L(text))
+        if PBT.HasLocalizedLiteral and PBT.HasLocalizedLiteral(text) then
+            UI.localizedControls = UI.localizedControls or {}
+            UI.localizedControls[#UI.localizedControls + 1] = { control = l, source = text }
+        end
+    end
     if align then l:SetHorizontalAlignment(align) end
     return l
 end
@@ -517,7 +581,7 @@ local function FlatButton(parent, text, w, h, onClick, bgColor, txtColor)
     btn.label = MLabel(btn, MF_LABEL, txtColor or MC.text, text, TEXT_ALIGN_CENTER)
     btn.label:SetAnchor(CENTER, btn, CENTER, 0, 0)
     btn.baseColor = bgColor or MC.card
-    btn:SetHandler("OnMouseEnter", function() btn.bg:SetCenterColor(unpack4(MC.cardEdge)) end)
+    btn:SetHandler("OnMouseEnter", function() btn.bg:SetCenterColor(unpack4(MC.hover)) end)
     btn:SetHandler("OnMouseExit",  function() btn.bg:SetCenterColor(unpack4(btn.baseColor)) end)
     btn:SetHandler("OnMouseUp", function(_, _, upInside) if upInside and onClick then onClick() end end)
     return btn
@@ -525,10 +589,15 @@ end
 local function MakeCard(parent, title)
     local card = WM:CreateControl(nil, parent, CT_CONTROL)
     card.bg = Backdrop(card, MC.card, MC.cardEdge); card.bg:SetAnchorFill(card)
-    card.title = MLabel(card, MF_HEADER, MC.cyan, title)
-    card.title:SetAnchor(TOPLEFT, card, TOPLEFT, 18, 12)
+    card.title = MLabel(card, MF_HEADER, MC.gold, title, TEXT_ALIGN_CENTER)
+    card.title:SetAnchor(TOPLEFT, card, TOPLEFT, 18, 10)
+    card.title:SetAnchor(TOPRIGHT, card, TOPRIGHT, -18, 10)
+    card.titleLine = Backdrop(card, { MC.gold[1], MC.gold[2], MC.gold[3], 0.45 })
+    card.titleLine:SetAnchor(TOPLEFT, card, TOPLEFT, 18, 38)
+    card.titleLine:SetAnchor(TOPRIGHT, card, TOPRIGHT, -18, 38)
+    card.titleLine:SetHeight(1)
     card.content = WM:CreateControl(nil, card, CT_CONTROL)
-    card.content:SetAnchor(TOPLEFT, card, TOPLEFT, 18, 42)
+    card.content:SetAnchor(TOPLEFT, card, TOPLEFT, 18, 46)
     card.content:SetAnchor(BOTTOMRIGHT, card, BOTTOMRIGHT, -18, -12)
     return card
 end
@@ -560,7 +629,7 @@ local function MakeSwatch(parent, getFunc, setFunc)
         if not upInside or not COLOR_PICKER then return end
         local c = getFunc() or {}
         COLOR_PICKER:Show(function(r, g, b, a) setFunc(r, g, b, a or 1); redraw() end,
-            c.r or c[1] or 1, c.g or c[2] or 1, c.b or c[3] or 1, c.a or 1, "Couleur")
+            c.r or c[1] or 1, c.g or c[2] or 1, c.b or c[3] or 1, c.a or 1, L("Couleur"))
     end)
     sw.Redraw = redraw; redraw()
     return sw
@@ -684,7 +753,9 @@ local function BuildMarkersTab(pane)
     local function track(w) table.insert(pane.widgets, w); return w end
 
     local cfg = MakeCard(pane, "MARKER ACTIF")
-    cfg:SetAnchor(TOPLEFT, pane, TOPLEFT, 0, 0); cfg:SetDimensions(416, 300)
+    -- One-pixel inset keeps the backdrop's left edge inside the tab clipping
+    -- area, so the first MARKERS panel is visibly closed on every UI scale.
+    cfg:SetAnchor(TOPLEFT, pane, TOPLEFT, 1, 0); cfg:SetDimensions(416, 300)
     local c = cfg.content
 
     pane.previewBg = Backdrop(c, { 0.015, 0.018, 0.022, 1 }, MC.cardEdge)
@@ -723,7 +794,7 @@ local function BuildMarkersTab(pane)
     end, { 0.30, 0.12, 0.12, 1 }, MC.text)):SetAnchor(TOPLEFT, c, TOPLEFT, 205, 210)
 
     local grid = MakeCard(pane, "ICÔNES")
-    grid:SetAnchor(TOPLEFT, cfg, TOPRIGHT, 14, 0); grid:SetDimensions(532, 300)
+    grid:SetAnchor(TOPLEFT, cfg, TOPRIGHT, 14, 0); grid:SetDimensions(531, 300)
     local g = grid.content
     pane.iconCells = {}
     local cols, cw, ch, gap = 9, 52, 50, 3
@@ -734,6 +805,8 @@ local function BuildMarkersTab(pane)
         cell.bg = Backdrop(cell, { 0.04, 0.05, 0.07, 1 }, MC.cardEdge); cell.bg:SetAnchorFill(cell)
         cell.tex = WM:CreateControl(nil, cell, CT_TEXTURE)
         cell.tex:SetDimensions(28, 28); cell.tex:SetAnchor(TOP, cell, TOP, 0, 4); cell.tex:SetTexture(MarkerTexture(choice.id))
+        cell.previewLbl = MLabel(cell, "ZoFontGameBold", { 1, 1, 1, 1 }, "", TEXT_ALIGN_CENTER)
+        cell.previewLbl:SetAnchor(CENTER, cell.tex, CENTER, 0, 0); cell.previewLbl:SetDimensions(34, 28)
         cell.lbl = MLabel(cell, MF_SMALL, MC.textDim, choice.name, TEXT_ALIGN_CENTER)
         cell.lbl:SetAnchor(BOTTOM, cell, BOTTOM, 0, -3); cell.lbl:SetWidth(cw)
         cell.choice = choice
@@ -758,7 +831,9 @@ local function BuildMarkersTab(pane)
         row:SetDimensions(380, 26); row:SetAnchor(TOPLEFT, lc, TOPLEFT, 0, 20 + (i - 1) * 30); row:SetMouseEnabled(true)
         row.bg = Backdrop(row, { 0.04, 0.05, 0.07, 1 }, MC.cardEdge); row.bg:SetAnchorFill(row)
         row.badge = WM:CreateControl(nil, row, CT_TEXTURE); row.badge:SetDimensions(20, 20); row.badge:SetAnchor(LEFT, row, LEFT, 8, 0)
-        row.txt = MLabel(row, MF_SMALL, MC.text, ""); row.txt:SetAnchor(LEFT, row.badge, RIGHT, 8, 0); row.txt:SetWidth(328)
+        row.txt = MLabel(row, MF_SMALL, MC.text, ""); row.txt:SetAnchor(LEFT, row.badge, RIGHT, 8, 0); row.txt:SetWidth(230)
+        row.distance = MLabel(row, MF_SMALL, MC.cyan, "", TEXT_ALIGN_RIGHT)
+        row.distance:SetAnchor(RIGHT, row, RIGHT, -8, 0); row.distance:SetWidth(92)
         row:SetHandler("OnMouseUp", function(_, _, upInside)
             if not upInside then return end
             local idx = ((markerPage - 1) * MARKER_ROWS) + i
@@ -790,7 +865,8 @@ local function BuildMarkersTab(pane)
     pane.delBtn:SetAnchor(LEFT, pane.doneBtn, RIGHT, 8, 0)
 
     local packCard = MakeCard(pane, "PACKS & PARTAGE")
-    packCard:SetAnchor(TOPLEFT, grid, BOTTOMLEFT, 0, 14); packCard:SetDimensions(532, 282)
+    packCard:SetAnchor(TOPLEFT, grid, BOTTOMLEFT, 0, 14); packCard:SetDimensions(531, 282)
+    pane.packCard = packCard
     local pc = packCard.content
     pane.packCells = {}
     for slot = 1, 3 do
@@ -809,41 +885,42 @@ local function BuildMarkersTab(pane)
         end)
     end
     pane.shareBox = MakeEditbox(pc, 470, function() return "" end, nil, 6000)
-    pane.shareBox:SetAnchor(TOPLEFT, pc, TOPLEFT, 0, 72); pane.shareBox:SetHeight(96)
+    pane.shareBox:SetAnchor(TOPLEFT, pc, TOPLEFT, 0, 72); pane.shareBox:SetHeight(76)
     if pane.shareBox.edit.SetMultiLine then pane.shareBox.edit:SetMultiLine(true) end
     FlatButton(pc, "EXPORTER", 118, 30, function()
         local slot = SV().groupBeaconMarkerSetSlot
         local code = (PBT.ExportCurrentMarkerSet and PBT.ExportCurrentMarkerSet(slot)) or (PBT.ExportSavedMarkers and PBT.ExportSavedMarkers()) or ""
         pane.shareBox.edit:SetText(code); pane.shareBox.edit:TakeFocus()
         if pane.shareBox.edit.SelectAll then pane.shareBox.edit:SelectAll() end
-    end, { 0.12, 0.30, 0.55, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 0, 180)
+    end, { 0.12, 0.30, 0.55, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 0, 156)
     FlatButton(pc, "IMPORTER", 118, 30, function()
         local txt = pane.shareBox.edit:GetText()
         if PBT.ImportCurrentMarkerSet then PBT.ImportCurrentMarkerSet(txt) elseif PBT.ImportSavedMarkers then PBT.ImportSavedMarkers(txt) end
         editIndex = nil; selectedIndex = nil; UI:RefreshManagerWindow()
-    end, { 0.12, 0.40, 0.20, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 126, 180)
+    end, { 0.12, 0.40, 0.20, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 126, 156)
     FlatButton(pc, "SAUVER PACK", 118, 30, function()
         editIndex = nil
         if PBT.SaveCurrentMarkerSet then
             local _, msg = PBT.SaveCurrentMarkerSet()
-            if msg then d("|c88ff88TSM:|r " .. tostring(msg)) end
+            if msg then d("|c88ff88TSM:|r " .. (PBT.LocalizeChatMessage and PBT.LocalizeChatMessage(msg) or tostring(msg))) end
         end
         UI:RefreshManagerWindow()
-    end, { 0.12, 0.40, 0.20, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 252, 180)
+    end, { 0.12, 0.40, 0.20, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 252, 156)
     local delPackBtn
     local delPackPending = false
     local function ResetDelPackBtn()
         delPackPending = false
         if delPackBtn then
-            delPackBtn.label:SetText("SUPPR. PACK")
+            delPackBtn.label:SetText(S("button_delete_pack"))
             delPackBtn.bg:SetCenterColor(unpack4(delPackBtn.baseColor))
         end
     end
+    pane.ResetDelPackBtn = ResetDelPackBtn
     delPackBtn = FlatButton(pc, "SUPPR. PACK", 118, 30, function()
         if not delPackPending then
             -- premiere pression: demande de confirmation pendant 3 s
             delPackPending = true
-            delPackBtn.label:SetText("CONFIRMER ?")
+            delPackBtn.label:SetText(S("button_confirm"))
             delPackBtn.bg:SetCenterColor(0.55, 0.10, 0.10, 1)
             zo_callLater(function() if delPackPending then ResetDelPackBtn() end end, 3000)
             return
@@ -852,11 +929,144 @@ local function BuildMarkersTab(pane)
         editIndex = nil; selectedIndex = nil
         if PBT.DeleteCurrentMarkerSet then
             local _, msg = PBT.DeleteCurrentMarkerSet()
-            if msg then d("|cff8888TSM:|r " .. tostring(msg)) end
+            if msg then d("|cff8888TSM:|r " .. (PBT.LocalizeChatMessage and PBT.LocalizeChatMessage(msg) or tostring(msg))) end
         end
         UI:RefreshManagerWindow()
     end, { 0.30, 0.12, 0.12, 1 }, MC.text)
-    delPackBtn:SetAnchor(TOPLEFT, pc, TOPLEFT, 378, 180)
+    delPackBtn:SetAnchor(TOPLEFT, pc, TOPLEFT, 378, 156)
+    FlatButton(pc, "ENVOYER AU GROUPE", 496, 28, function()
+        if PBT.GroupShare and PBT.GroupShare.SendCurrentSelection then
+            PBT.GroupShare:SendCurrentSelection()
+        elseif d then
+            local message = "partage indisponible : LibGroupBroadcast 91 ou superieur est requis."
+            d("|c66ccffTSM:|r " .. (PBT.LocalizeChatMessage and PBT.LocalizeChatMessage(message) or message))
+        end
+    end, { 0.16, 0.28, 0.48, 1 }, MC.text):SetAnchor(TOPLEFT, pc, TOPLEFT, 0, 194)
+end
+
+function UI:EnsureGroupShareDialog()
+    if self.groupShareDialog then return end
+
+    local dialog = WM:CreateTopLevelWindow("TeamShadowsManagerGroupShareDialog")
+    dialog:SetDimensions(620, 310)
+    dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    dialog:SetClampedToScreen(true)
+    dialog:SetMouseEnabled(true)
+    dialog:SetMovable(true)
+    dialog:SetDrawTier(DT_HIGH)
+    dialog:SetDrawLayer(DL_OVERLAY)
+    dialog:SetHidden(true)
+
+    dialog.bg = Backdrop(dialog, { 0.015, 0.02, 0.03, 0.98 }, MC.cyan)
+    dialog.bg:SetAnchorFill(dialog)
+    dialog.title = MLabel(dialog, "ZoFontWinH2", MC.cyan, "CONFIGURATION RECUE", TEXT_ALIGN_CENTER)
+    dialog.title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 20, 18)
+    dialog.title:SetDimensions(580, 34)
+
+    dialog.sender = MLabel(dialog, MF_LABEL, MC.text, "", TEXT_ALIGN_CENTER)
+    dialog.sender:SetAnchor(TOPLEFT, dialog, TOPLEFT, 24, 62)
+    dialog.sender:SetDimensions(572, 28)
+    dialog.kind = MLabel(dialog, MF_LABEL, MC.text, "", TEXT_ALIGN_CENTER)
+    dialog.kind:SetAnchor(TOPLEFT, dialog, TOPLEFT, 24, 94)
+    dialog.kind:SetDimensions(572, 28)
+    dialog.destination = MLabel(dialog, MF_SMALL, MC.textDim, "", TEXT_ALIGN_CENTER)
+    dialog.destination:SetAnchor(TOPLEFT, dialog, TOPLEFT, 24, 130)
+    dialog.destination:SetDimensions(572, 46)
+    dialog.warning = MLabel(dialog, MF_SMALL, { 1, 0.35, 0.28, 1 }, "", TEXT_ALIGN_CENTER)
+    dialog.warning:SetAnchor(TOPLEFT, dialog, TOPLEFT, 24, 174)
+    dialog.warning:SetDimensions(572, 36)
+
+    dialog.saveButton = FlatButton(dialog, "ACCEPTER ET ENREGISTRER", 190, 42, function()
+        UI:ResolveGroupMarkerShare("save")
+    end, { 0.10, 0.38, 0.20, 1 }, MC.text)
+    dialog.saveButton:SetAnchor(BOTTOMLEFT, dialog, BOTTOMLEFT, 14, -18)
+    dialog.saveButton.label:SetFont(MF_SMALL); dialog.saveButton.label:SetDimensions(186, 40)
+    dialog.sessionButton = FlatButton(dialog, "JUSQU'A DECONNEXION", 190, 42, function()
+        UI:ResolveGroupMarkerShare("session")
+    end, { 0.12, 0.30, 0.55, 1 }, MC.text)
+    dialog.sessionButton:SetAnchor(LEFT, dialog.saveButton, RIGHT, 10, 0)
+    dialog.sessionButton.label:SetFont(MF_SMALL); dialog.sessionButton.label:SetDimensions(186, 40)
+    dialog.refuseButton = FlatButton(dialog, "REFUSER", 190, 42, function()
+        UI:ResolveGroupMarkerShare("refuse")
+    end, { 0.38, 0.10, 0.10, 1 }, MC.text)
+    dialog.refuseButton:SetAnchor(LEFT, dialog.sessionButton, RIGHT, 10, 0)
+    dialog.refuseButton.label:SetFont(MF_SMALL); dialog.refuseButton.label:SetDimensions(186, 40)
+
+    self.groupShareDialog = dialog
+end
+
+function UI:ReceiveGroupMarkerShare(share)
+    if type(share) ~= "table" then return end
+    self.pendingGroupMarkerShares = self.pendingGroupMarkerShares or {}
+    self.pendingGroupMarkerShares[#self.pendingGroupMarkerShares + 1] = share
+    self:ShowNextGroupMarkerShare()
+end
+
+function UI:ShowNextGroupMarkerShare()
+    self:EnsureGroupShareDialog()
+    if self.currentGroupMarkerShare or not self.pendingGroupMarkerShares or #self.pendingGroupMarkerShares == 0 then return end
+
+    local share = table.remove(self.pendingGroupMarkerShares, 1)
+    -- [FIX] "cond and f()" ne renvoie qu'UNE valeur en Lua : replaces/alreadyStored
+    -- restaient toujours nil et le dialogue n'affichait jamais l'etat "remplace/deja stocke"
+    local slot, replaces, alreadyStored
+    if PBT.GetGroupMarkerShareDestination then
+        slot, replaces, alreadyStored = PBT.GetGroupMarkerShareDestination(share.directoryKey, share.code)
+    end
+    if not slot then return self:ShowNextGroupMarkerShare() end
+
+    share.destinationSlot = slot
+    share.requiresReplacement = replaces == true
+    share.alreadyStored = alreadyStored == true
+    self.currentGroupMarkerShare = share
+    self:RefreshGroupShareDialog()
+    self.groupShareDialog:SetHidden(false)
+end
+
+function UI:RefreshGroupShareDialog()
+    local share = self.currentGroupMarkerShare
+    if not share or not self.groupShareDialog then return end
+    local slot = tonumber(share.destinationSlot) or 1
+    local replaces = share.requiresReplacement == true
+    local alreadyStored = share.alreadyStored == true
+    local directoryName = PBT.GetMarkerDirectoryNameForKey and PBT.GetMarkerDirectoryNameForKey(share.directoryKey) or tostring(share.directoryKey)
+    local sender = tostring(share.sender or (PBT.GetLanguage and PBT.GetLanguage() == "en" and "Unknown player" or "Joueur inconnu"))
+    self.groupShareDialog.sender:SetText(S("sent_by", sender))
+    self.groupShareDialog.kind:SetText(tostring(L(share.typeName or S("share_type"))) .. " - " .. tostring(share.packName or S("pack")))
+    self.groupShareDialog.destination:SetText(S("destination", directoryName, slot))
+    if alreadyStored then
+        self.groupShareDialog.warning:SetText(S("already_saved_warning"))
+        self.groupShareDialog.saveButton.label:SetText(S("button_accept_present"))
+    elseif replaces then
+        self.groupShareDialog.warning:SetText(S("replacement_warning"))
+        self.groupShareDialog.saveButton.label:SetText(S("button_accept_replace"))
+    else
+        self.groupShareDialog.warning:SetText(S("waiting_choice"))
+        self.groupShareDialog.saveButton.label:SetText(S("button_accept_save"))
+    end
+end
+
+function UI:ResolveGroupMarkerShare(choice)
+    local share = self.currentGroupMarkerShare
+    if not share then return end
+
+    if choice == "save" or choice == "session" then
+        local ok, message = PBT.AcceptGroupMarkerShare(share, choice == "save", share.requiresReplacement)
+        if d then
+            local color = ok and "|c88ff88" or "|cff8888"
+            local output = tostring(message or (ok and "partage accepte" or "partage refuse"))
+            d(color .. "TSM:|r " .. (PBT.LocalizeChatMessage and PBT.LocalizeChatMessage(output) or output))
+        end
+        if not ok then return end
+    elseif d then
+        local output = "partage refuse."
+        d("|c66ccffTSM:|r " .. (PBT.LocalizeChatMessage and PBT.LocalizeChatMessage(output) or output))
+    end
+
+    self.groupShareDialog:SetHidden(true)
+    self.currentGroupMarkerShare = nil
+    self:RefreshManagerWindow()
+    zo_callLater(function() UI:ShowNextGroupMarkerShare() end, 50)
 end
 
 -- ---------------- onglet DECOMPTE & ANNONCE ----------------
@@ -874,7 +1084,7 @@ local function BuildPullTab(pane)
     end
 
     local pull = MakeCard(pane, "DÉCOMPTE GROUPE")
-    pull:SetAnchor(TOPLEFT, pane, TOPLEFT, 0, 0); pull:SetDimensions(470, 230)
+    pull:SetAnchor(TOPLEFT, pane, TOPLEFT, 0, 0); pull:SetDimensions(470, 250)
     local p = pull.content
     toggleRow(p, "Décompte activé", 0, 4, function() return SV().groupCountdownEnabled ~= false end, function(v) SV().groupCountdownEnabled = v end)
     toggleRow(p, "Diffuser au groupe", 240, 4, function() return SV().groupCountdownBroadcast ~= false end, function(v) SV().groupCountdownBroadcast = v end)
@@ -889,7 +1099,7 @@ local function BuildPullTab(pane)
     MLabel(p, MF_SMALL, MC.textDim, "Le décompte est commun au groupe. \"Mon délai\" ne change que ton écran."):SetAnchor(TOPLEFT, p, TOPLEFT, 0, 142)
 
     local ann = MakeCard(pane, "ANNONCE VISUELLE")
-    ann:SetAnchor(TOPLEFT, pull, TOPRIGHT, 16, 0); ann:SetDimensions(470, 230)
+    ann:SetAnchor(TOPLEFT, pull, TOPRIGHT, 16, 0); ann:SetDimensions(470, 250)
     local a = ann.content
     MLabel(a, MF_SMALL, MC.textDim, "Couleur décompte"):SetAnchor(TOPLEFT, a, TOPLEFT, 0, 4)
     track(MakeSwatch(a, function() return SV().color end, function(r, g, b) if PBT.SetColor then PBT.SetColor(r, g, b) end end)):SetAnchor(TOPLEFT, a, TOPLEFT, 0, 22)
@@ -914,14 +1124,44 @@ local function BuildTimersTab(pane)
     pane.widgets = {}
     local function track(w) table.insert(pane.widgets, w); return w end
     local boss = MakeCard(pane, "TIMERS BOSS")
-    boss:SetAnchor(TOPLEFT, pane, TOPLEFT, 0, 0); boss:SetDimensions(470, 230)
+    boss:SetAnchor(TOPLEFT, pane, TOPLEFT, 0, 0); boss:SetDimensions(470, 410)
     local b = boss.content
     local t = track(MakeToggle(b, function() return SV().bossSpawnTimers ~= false end,
-        function(v) SV().bossSpawnTimers = v; SV().useSamuraiTimers = v end)); t:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 4)
+        function(v) SV().bossSpawnTimers = v; SV().useSamuraiTimers = v; UI:RefreshForm() end)); t:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 4)
     MLabel(b, MF_SMALL, MC.text, "Timers boss automatiques"):SetAnchor(LEFT, t, RIGHT, 8, 0)
     pane.instanceLbl = MLabel(b, MF_LABEL, MC.cyan, "Instance non reconnue"); pane.instanceLbl:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 44); pane.instanceLbl:SetWidth(430)
-    pane.casesLbl = MLabel(b, MF_SMALL, MC.textDim, ""); pane.casesLbl:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 68); pane.casesLbl:SetWidth(430)
-    track(FlatButton(b, "OUVRIR LES RÉGLAGES ESO (détails)", 300, 32, function() if PBT.OpenSettings then PBT.OpenSettings() end end)):SetAnchor(TOPLEFT, b, TOPLEFT, 0, 150)
+    pane.instanceToggle = track(MakeToggle(b,
+        function()
+            return pane.currentTimerZone and PBT.IsInstanceTimerEnabled and PBT.IsInstanceTimerEnabled(pane.currentTimerZone) or false
+        end,
+        function(v)
+            if pane.currentTimerZone and PBT.SetInstanceTimerEnabled then PBT.SetInstanceTimerEnabled(pane.currentTimerZone, v) end
+        end))
+    pane.instanceToggle:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 72)
+    pane.instanceToggleLbl = MLabel(b, MF_SMALL, MC.text, "Timers de cette instance")
+    pane.instanceToggleLbl:SetAnchor(LEFT, pane.instanceToggle, RIGHT, 8, 0)
+    pane.bossHeading = MLabel(b, MF_SMALL, MC.gold, "Boss pris en compte")
+    pane.bossHeading:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 110)
+    pane.bossTimerRows = {}
+    for i = 1, 4 do
+        local row = WM:CreateControl(nil, b, CT_CONTROL)
+        row:SetDimensions(430, 28); row:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 132 + (i - 1) * 34)
+        row.data = nil
+        row.toggle = track(MakeToggle(row,
+            function()
+                return row.data and PBT.IsBossTimerEnabled and PBT.IsBossTimerEnabled(row.data.zoneKey, row.data.key) or false
+            end,
+            function(v)
+                if row.data and PBT.SetBossTimerEnabled then PBT.SetBossTimerEnabled(row.data.zoneKey, row.data.key, v) end
+            end))
+        row.toggle:SetAnchor(LEFT, row, LEFT, 0, 0)
+        row.label = MLabel(row, MF_SMALL, MC.text, "")
+        row.label:SetAnchor(LEFT, row.toggle, RIGHT, 8, 0); row.label:SetWidth(365)
+        pane.bossTimerRows[i] = row
+    end
+    pane.timerHelp = MLabel(b, MF_SMALL, MC.textDim, "")
+    pane.timerHelp:SetAnchor(TOPLEFT, b, TOPLEFT, 0, 276); pane.timerHelp:SetWidth(430)
+    track(FlatButton(b, "OUVRIR LES RÉGLAGES ESO (détails)", 300, 32, function() if PBT.OpenSettings then PBT.OpenSettings() end end)):SetAnchor(TOPLEFT, b, TOPLEFT, 0, 316)
 
     local dummy = MakeCard(pane, "MANNEQUIN")
     dummy:SetAnchor(TOPLEFT, boss, TOPRIGHT, 16, 0); dummy:SetDimensions(470, 230)
@@ -938,6 +1178,10 @@ function UI:RefreshForm()
     if not pane then return end
     if pane.widgets then for _, w in ipairs(pane.widgets) do if w.Redraw then w.Redraw() end end end
     local texId, label, col = GetTexId(), GetCurLabel(), GetColor()
+    if pane.packCard and pane.packCard.title then
+        local zoneName = PBT.GetMarkerDirectoryName and PBT.GetMarkerDirectoryName() or ""
+        pane.packCard.title:SetText(S("panel_packs_share_zone", zoneName))
+    end
     if pane.previewTex then pane.previewTex:SetTexture(MarkerTexture(texId)) end
     if pane.previewLbl then
         local list = SV().groupBeaconSavedMarkers or {}
@@ -947,11 +1191,18 @@ function UI:RefreshForm()
         local lum = r * 0.299 + gg * 0.587 + bl * 0.114
         pane.previewLbl:SetColor(lum > 0.5 and 0 or 1, lum > 0.5 and 0 or 1, lum > 0.5 and 0 or 1, 1)
     end
-    if pane.labelBtn then pane.labelBtn.label:SetText("Texte : " .. (label == "auto" and "Auto 1-10" or label)) end
-    if pane.editBanner then pane.editBanner:SetText(editIndex and ("MODIF #" .. editIndex) or "Valeurs par défaut") end
+    if pane.labelBtn then pane.labelBtn.label:SetText(S("text_value", label == "auto" and "Auto 1-10" or label)) end
+    if pane.editBanner then pane.editBanner:SetText(editIndex and S("edit_number", editIndex) or S("default_values")) end
     if pane.iconCells then
         for _, cell in ipairs(pane.iconCells) do
             local ch = cell.choice
+            cell.tex:SetTexture(MarkerTexture(ch.id))
+            cell.lbl:SetText(QuickIconDisplayName(ch))
+            local preview = ch.label or ""
+            cell.previewLbl:SetText(TextureHasNativeText(ch.id) and "" or tostring(preview))
+            local iconColor = ICON_COLORS[ch.id] or ICON_COLORS[1]
+            local luminance = iconColor.r * 0.299 + iconColor.g * 0.587 + iconColor.b * 0.114
+            cell.previewLbl:SetColor(luminance > 0.5 and 0 or 1, luminance > 0.5 and 0 or 1, luminance > 0.5 and 0 or 1, 1)
             local sel = (ch.id == texId) and ((ch.label == nil and (label == "auto")) or ch.label == label)
             cell.selected = sel
             cell.bg:SetEdgeColor(unpack4(sel and MC.cyan or MC.cardEdge))
@@ -960,10 +1211,61 @@ function UI:RefreshForm()
     end
     local tp = self.managerPanes and self.managerPanes.timers
     if tp and tp.instanceLbl then
+        if tp.widgets then for _, w in ipairs(tp.widgets) do if w.Redraw then w.Redraw() end end end
         local raids = PBT.GetNativeRaidTimersForCurrentInstance and PBT.GetNativeRaidTimersForCurrentInstance() or {}
         local raid = raids[1]
-        if raid then tp.instanceLbl:SetText(raid.name or "Instance"); tp.casesLbl:SetText("Pris en compte : " .. (raid.cases or ""))
-        else tp.instanceLbl:SetText("Instance non reconnue"); tp.casesLbl:SetText("Aucun timer boss appelé ici.") end
+        if raid then
+            local instanceName = PBT.GetLocalizedZoneName and PBT.GetLocalizedZoneName(raid.zoneKey, raid.name) or raid.name or "Instance"
+            tp.currentTimerZone = raid.zoneKey
+            tp.instanceLbl:SetText(instanceName)
+            tp.instanceToggle:SetHidden(false); tp.instanceToggleLbl:SetHidden(false)
+            if tp.instanceToggle.Redraw then tp.instanceToggle.Redraw() end
+            local definitions = PBT.GetTimerBossDefinitions and PBT.GetTimerBossDefinitions(raid.zoneKey) or {}
+            tp.bossHeading:SetHidden(#definitions == 0)
+            local language = PBT.GetLanguage and PBT.GetLanguage() or "fr"
+            for i, row in ipairs(tp.bossTimerRows or {}) do
+                local data = definitions[i]
+                row.data = data and { zoneKey = raid.zoneKey, key = data.key } or nil
+                row:SetHidden(not data)
+                if data then
+                    row.label:SetText(data[language] or data.fr or data.en or data.key)
+                    if row.toggle.Redraw then row.toggle.Redraw() end
+                end
+            end
+            if raid.zoneKey == "rockgrove" then
+                tp.timerHelp:SetText(S("bahsei_menu_instruction")); tp.timerHelp:SetHidden(false)
+            elseif #definitions == 0 then
+                tp.timerHelp:SetText(S("no_automatic_boss")); tp.timerHelp:SetHidden(false)
+            else
+                tp.timerHelp:SetText(""); tp.timerHelp:SetHidden(true)
+            end
+        else
+            tp.currentTimerZone = nil
+            tp.instanceLbl:SetText(S("unknown_instance"))
+            tp.instanceToggle:SetHidden(true); tp.instanceToggleLbl:SetHidden(true); tp.bossHeading:SetHidden(true)
+            for _, row in ipairs(tp.bossTimerRows or {}) do row.data = nil; row:SetHidden(true) end
+            tp.timerHelp:SetText(S("no_boss_timer")); tp.timerHelp:SetHidden(false)
+        end
+    end
+end
+
+function UI:RefreshMarkerDistances()
+    local pane = self.managerPanes and self.managerPanes.markers
+    if not pane or not pane.rows or not GetUnitRawWorldPosition then return end
+    local playerZone, playerX, _, playerZ = GetUnitRawWorldPosition("player")
+    playerZone, playerX, playerZ = tonumber(playerZone), tonumber(playerX), tonumber(playerZ)
+    for _, row in ipairs(pane.rows) do
+        local marker = row.marker
+        local distanceText = "—"
+        if marker and playerZone and playerX and playerZ and tonumber(marker.zone) == playerZone then
+            local markerX, markerZ = tonumber(marker.x), tonumber(marker.z)
+            if markerX and markerZ then
+                local dx, dz = markerX - playerX, markerZ - playerZ
+                local meters = math.sqrt((dx * dx) + (dz * dz)) / 100
+                distanceText = meters < 100 and string.format("%.1f m", meters) or string.format("%.0f m", meters)
+            end
+        end
+        if row.distance then row.distance:SetText(distanceText) end
     end
 end
 
@@ -978,7 +1280,7 @@ function UI:RefreshList()
     local maxPage = math.max(1, math.ceil(total / MARKER_ROWS))
     markerPage = mclamp(markerPage, 1, maxPage)
     local start = (markerPage - 1) * MARKER_ROWS
-    if pane.listInfo then pane.listInfo:SetText(string.format("%d marker%s — page %d/%d", total, total > 1 and "s" or "", markerPage, maxPage)) end
+    if pane.listInfo then pane.listInfo:SetText(S("marker_count", total, total > 1 and "s" or "", markerPage, maxPage)) end
     if pane.prevBtn then pane.prevBtn.label:SetColor(unpack4(markerPage > 1 and MC.text or MC.textDim)) end
     if pane.nextBtn then pane.nextBtn.label:SetColor(unpack4(markerPage < maxPage and MC.text or MC.textDim)) end
     if pane.editBtn then pane.editBtn.label:SetColor(unpack4(selectedIndex and MC.text or MC.textDim)) end
@@ -989,10 +1291,10 @@ function UI:RefreshList()
         local m = list[idx]
         if m then
             row:SetHidden(false)
+            row.marker = m
             row.badge:SetTexture(MarkerTexture(m.textureId or 1))
-            local lab = m.labelId and MLabelText(m.labelId) or "auto"
-            local mark = (idx == editIndex) and "MODIF " or ((idx == selectedIndex) and "> " or "")
-            row.txt:SetText(string.format("%s#%d  %s  •  zone %s  •  h%s", mark, idx, lab, tostring(m.zone or "?"), tostring(m.heightOffset or 0)))
+            local mark = (idx == editIndex) and S("edit_prefix") or ((idx == selectedIndex) and "> " or "")
+            row.txt:SetText(mark .. SavedMarkerIconName(m))
             if idx == editIndex then
                 row.bg:SetEdgeColor(unpack4(MC.gold)); row.bg:SetCenterColor(0.12, 0.09, 0.02, 1)
             elseif idx == selectedIndex then
@@ -1001,9 +1303,11 @@ function UI:RefreshList()
                 row.bg:SetEdgeColor(unpack4(MC.cardEdge)); row.bg:SetCenterColor(0.04, 0.05, 0.07, 1)
             end
         else
+            row.marker = nil
             row:SetHidden(true)
         end
     end
+    self:RefreshMarkerDistances()
     if pane.packCells then
         local active = mclamp(SV().groupBeaconMarkerSetSlot, 1, 3)
         for slot, cell in ipairs(pane.packCells) do
@@ -1022,45 +1326,147 @@ function UI:SetTab(id)
     activeManagerTab = id
     for _, t in ipairs(self.managerTabs or {}) do
         local on = (t.id == id)
-        t.bg:SetCenterColor(on and 0.12 or 0.07, on and 0.16 or 0.08, on and 0.20 or 0.10, 1)
+        t.bg:SetCenterColor(on and 0.04 or 0.02, on and 0.10 or 0.03, on and 0.14 or 0.05, 1)
         t.bg:SetEdgeColor(unpack4(on and MC.cyan or MC.cardEdge))
-        t.label:SetColor(unpack4(on and MC.cyan or MC.textDim))
+        t.label:SetColor(unpack4(on and MC.cyan or MC.gold))
     end
     for name, pane in pairs(self.managerPanes or {}) do pane:SetHidden(name ~= id) end
     self:RefreshForm(); self:RefreshList()
 end
 
+function UI:RefreshLanguageButtons()
+    local language = PBT.GetLanguage and PBT.GetLanguage() or "fr"
+    for code, button in pairs(self.languageButtons or {}) do
+        local selected = code == language
+        button.bg:SetCenterColor(selected and 0.04 or 0.02, selected and 0.10 or 0.03, selected and 0.14 or 0.05, 1)
+        button.bg:SetEdgeColor(unpack4(selected and MC.cyan or MC.cardEdge))
+        button.label:SetColor(unpack4(selected and MC.cyan or MC.gold))
+    end
+end
+
+function UI:RefreshPermanentIconButton()
+    local button = self.permanentIconButton
+    if not button then return end
+    local visible = not PBT.savedVars or PBT.savedVars.menuButtonEnabled ~= false
+    button.label:SetText(S(visible and "button_hide_icon" or "button_show_icon"))
+    button.bg:SetEdgeColor(unpack4(visible and MC.cyan or MC.cardEdge))
+    button.label:SetColor(unpack4(visible and MC.cyan or MC.gold))
+end
+
+function UI:ApplyLanguage()
+    for _, entry in ipairs(self.localizedControls or {}) do
+        if entry.control and entry.control.SetText then
+            entry.control:SetText(L(entry.source))
+        end
+    end
+    for _, control in ipairs({ self.bossLabel, self.timerLabel, self.portalLabel }) do
+        if control and control.GetText and control.SetText then control:SetText(L(control:GetText())) end
+    end
+    self:RefreshLanguageButtons()
+    self:RefreshPermanentIconButton()
+    local markerPane = self.managerPanes and self.managerPanes.markers
+    if markerPane and markerPane.ResetDelPackBtn then markerPane.ResetDelPackBtn() end
+    self:RefreshForm()
+    self:RefreshList()
+    self:RefreshGroupShareDialog()
+end
+
 -- ---------------- construction / affichage ----------------
+local MANAGER_BASE_W, MANAGER_BASE_H = 1050, 744
+local MANAGER_MIN_SCALE, MANAGER_MAX_SCALE = 0.6, 1.6
+
+function UI:ApplyManagerScale(scale)
+    scale = Clamp(tonumber(scale) or 1, MANAGER_MIN_SCALE, MANAGER_MAX_SCALE)
+    if PBT.savedVars then PBT.savedVars.managerScale = scale end
+    if self.managerWindow then self.managerWindow:SetScale(scale) end
+    return scale
+end
+
 function UI:CreateManagerWindow()
     if self.managerWindow then return self.managerWindow end
     local M = WM:CreateTopLevelWindow(MANAGER_WINDOW_NAME)
-    M:SetDimensions(1010, 712); M:SetAnchor(CENTER, GuiRoot, CENTER, 0, -10)
+    M:SetDimensions(MANAGER_BASE_W, MANAGER_BASE_H); M:SetAnchor(CENTER, GuiRoot, CENTER, 0, -10)
     M:SetMovable(true); M:SetMouseEnabled(true); M:SetClampedToScreen(true); M:SetHidden(true); M:SetDrawTier(DT_HIGH)
+    -- [UI] fenêtre redimensionnable : tirer un bord/coin agrandit ou rétrécit.
+    -- Le redimensionnement est converti en zoom uniforme (mise en page intacte)
+    -- et mémorisé dans les SavedVariables.
     M.bg = Backdrop(M, MC.panel, MC.gold); M.bg:SetAnchorFill(M)
+    M.innerBorder = Backdrop(M, { 0, 0, 0, 0 }, { 0.30, 0.24, 0.14, 1 })
+    M.innerBorder:SetAnchor(TOPLEFT, M, TOPLEFT, 5, 5)
+    M.innerBorder:SetAnchor(BOTTOMRIGHT, M, BOTTOMRIGHT, -5, -5)
     self.managerWindow = M
 
     M.titleBar = WM:CreateControl(nil, M, CT_CONTROL)
-    M.titleBar:SetAnchor(TOPLEFT, M, TOPLEFT, 0, 0); M.titleBar:SetAnchor(TOPRIGHT, M, TOPRIGHT, 0, 0); M.titleBar:SetHeight(50); M.titleBar:SetMouseEnabled(true)
+    M.titleBar:SetAnchor(TOPLEFT, M, TOPLEFT, 0, 0); M.titleBar:SetAnchor(TOPRIGHT, M, TOPRIGHT, 0, 0); M.titleBar:SetHeight(60); M.titleBar:SetMouseEnabled(true)
     M.titleBar:SetHandler("OnMouseDown", function() M:StartMoving() end)
     M.titleBar:SetHandler("OnMouseUp", function()
         M:StopMovingOrResizing()
         if PBT.savedVars then
-            PBT.savedVars.managerWindowX = M:GetLeft() + (M:GetWidth() / 2) - GuiRoot:GetWidth() / 2
-            PBT.savedVars.managerWindowY = M:GetTop() + (M:GetHeight() / 2) - GuiRoot:GetHeight() / 2
+            -- centre reel = dimensions de base x zoom (GetWidth renvoie les unites locales)
+            local zs = M:GetScale() or 1
+            PBT.savedVars.managerWindowX = M:GetLeft() + (MANAGER_BASE_W * zs / 2) - GuiRoot:GetWidth() / 2
+            PBT.savedVars.managerWindowY = M:GetTop() + (MANAGER_BASE_H * zs / 2) - GuiRoot:GetHeight() / 2
         end
     end)
-    M.title = MLabel(M, MF_TITLE, MC.cyan, "TEAM SHADOWS MANAGER", TEXT_ALIGN_CENTER); M.title:SetAnchor(TOP, M, TOP, 0, 12); M.title:SetWidth(1010)
-    MLabel(M, MF_SMALL, MC.textDim, "TeamFky - EyrOn"):SetAnchor(TOPLEFT, M, TOPLEFT, 22, 18)
-    local close = FlatButton(M, "X", 30, 30, function() self.managerWindow:SetHidden(true) end, MC.panel, MC.gold)
-    close:SetAnchor(TOPRIGHT, M, TOPRIGHT, -14, 12)
+    M.headerLine = Backdrop(M, { MC.gold[1], MC.gold[2], MC.gold[3], 0.40 })
+    M.headerLine:SetAnchor(TOPLEFT, M, TOPLEFT, 9, 59); M.headerLine:SetAnchor(TOPRIGHT, M, TOPRIGHT, -9, 59); M.headerLine:SetHeight(1)
+
+    M.headerLogo = WM:CreateControl(nil, M, CT_TEXTURE)
+    M.headerLogo:SetDimensions(180, 180); M.headerLogo:SetAnchor(TOPLEFT, M, TOPLEFT, -46, -48)
+    M.headerLogo:SetTexture("TeamShadowsManager/TeamShadowsManagerHeaderLogo.dds")
+    M.headerLogo:SetDrawLayer(DL_OVERLAY); M.headerLogo:SetDrawLevel(3)
+
+    M.title = MLabel(M, MF_TITLE, MC.gold, "TEAM SHADOWS MANAGER", TEXT_ALIGN_CENTER)
+    M.title:SetAnchor(TOPLEFT, M, TOPLEFT, 160, 12); M.title:SetAnchor(TOPRIGHT, M, TOPRIGHT, -260, 12)
+    local author = MLabel(M, MF_SMALL, MC.textDim, "TeamFF - EyrOn", TEXT_ALIGN_CENTER)
+    author:SetAnchor(TOPLEFT, M, TOPLEFT, 160, 39); author:SetAnchor(TOPRIGHT, M, TOPRIGHT, -490, 39)
+    local contactTeam = MLabel(M, MF_SMALL, MC.cyan, "CONTACT : @TeamFF", TEXT_ALIGN_CENTER)
+    contactTeam:SetAnchor(TOPLEFT, M, TOPLEFT, 570, 39); contactTeam:SetAnchor(TOPRIGHT, M, TOPRIGHT, -350, 39)
+    contactTeam:SetMouseEnabled(true)
+    contactTeam:SetHandler("OnMouseUp", function(_, _, upInside) if upInside then OpenContactMail("@TeamFF") end end)
+    contactTeam:SetHandler("OnMouseEnter", function(control)
+        control:SetColor(unpack4(MC.gold))
+        ZO_Tooltips_ShowTextTooltip(control, BOTTOM, "Ouvrir un courrier pour @TeamFF")
+    end)
+    contactTeam:SetHandler("OnMouseExit", function(control)
+        control:SetColor(unpack4(MC.cyan))
+        ZO_Tooltips_HideTextTooltip()
+    end)
+    local contactEyron = MLabel(M, MF_SMALL, MC.cyan, "@Eyr0n", TEXT_ALIGN_CENTER)
+    contactEyron:SetAnchor(TOPLEFT, M, TOPLEFT, 705, 39); contactEyron:SetAnchor(TOPRIGHT, M, TOPRIGHT, -260, 39)
+    contactEyron:SetMouseEnabled(true)
+    contactEyron:SetHandler("OnMouseUp", function(_, _, upInside) if upInside then OpenContactMail("@Eyr0n") end end)
+    contactEyron:SetHandler("OnMouseEnter", function(control)
+        control:SetColor(unpack4(MC.gold))
+        ZO_Tooltips_ShowTextTooltip(control, BOTTOM, "Ouvrir un courrier pour @Eyr0n")
+    end)
+    contactEyron:SetHandler("OnMouseExit", function(control)
+        control:SetColor(unpack4(MC.cyan))
+        ZO_Tooltips_HideTextTooltip()
+    end)
+    local close = FlatButton(M, "X", 32, 32, function() self.managerWindow:SetHidden(true) end, MC.panel, MC.gold)
+    close:SetAnchor(TOPRIGHT, M, TOPRIGHT, -18, 13)
+
+    self.languageButtons = {}
+    local frButton = FlatButton(M, "FR", 34, 28, function() if PBT.SetLanguage then PBT.SetLanguage("fr") end end, MC.panel, MC.gold)
+    frButton:SetAnchor(TOPRIGHT, M, TOPRIGHT, -96, 15); self.languageButtons.fr = frButton
+    local enButton = FlatButton(M, "EN", 34, 28, function() if PBT.SetLanguage then PBT.SetLanguage("en") end end, MC.panel, MC.gold)
+    enButton:SetAnchor(TOPRIGHT, M, TOPRIGHT, -58, 15); self.languageButtons.en = enButton
+    self.permanentIconButton = FlatButton(M, "", 112, 28, function()
+        if not PBT.savedVars then return end
+        PBT.savedVars.menuButtonEnabled = PBT.savedVars.menuButtonEnabled == false
+        self:ApplyMenuButtonSettings()
+    end, MC.panel, MC.gold)
+    self.permanentIconButton:SetAnchor(TOPRIGHT, M, TOPRIGHT, -138, 15)
+    self.permanentIconButton.label:SetFont(MF_SMALL); self.permanentIconButton.label:SetDimensions(108, 26)
 
     self.managerTabs = {}
-    local tabW = 312
+    local tabW = 275
     for i, t in ipairs(MTABS) do
         local tab = WM:CreateControl(nil, M, CT_CONTROL)
-        tab:SetDimensions(tabW, 32); tab:SetAnchor(TOPLEFT, M, TOPLEFT, 24 + (i - 1) * (tabW + 8), 54); tab:SetMouseEnabled(true)
-        tab.bg = Backdrop(tab, { 0.07, 0.08, 0.10, 1 }, MC.cardEdge); tab.bg:SetAnchorFill(tab)
-        tab.label = MLabel(tab, MF_LABEL, MC.textDim, t.label, TEXT_ALIGN_CENTER); tab.label:SetAnchor(CENTER, tab, CENTER, 0, 0)
+        tab:SetDimensions(tabW, 40); tab:SetAnchor(TOPLEFT, M, TOPLEFT, 185 + (i - 1) * (tabW + 8), 70); tab:SetMouseEnabled(true)
+        tab.bg = Backdrop(tab, { 0.02, 0.03, 0.05, 1 }, MC.cardEdge); tab.bg:SetAnchorFill(tab)
+        tab.label = MLabel(tab, MF_LABEL, MC.gold, t.label, TEXT_ALIGN_CENTER); tab.label:SetAnchor(CENTER, tab, CENTER, 0, 0)
         tab.id = t.id
         tab:SetHandler("OnMouseUp", function(_, _, upInside) if upInside then self:SetTab(t.id) end end)
         self.managerTabs[i] = tab
@@ -1068,7 +1474,7 @@ function UI:CreateManagerWindow()
 
     self.managerPanes = {}
     self.managerContent = WM:CreateControl(nil, M, CT_CONTROL)
-    self.managerContent:SetAnchor(TOPLEFT, M, TOPLEFT, 24, 100); self.managerContent:SetDimensions(962, 596)
+    self.managerContent:SetAnchor(TOPLEFT, M, TOPLEFT, 44, 124); self.managerContent:SetDimensions(962, 596)
     for _, t in ipairs(MTABS) do
         local pane = WM:CreateControl(nil, self.managerContent, CT_CONTROL)
         pane:SetAnchorFill(self.managerContent); pane:SetHidden(true)
@@ -1077,16 +1483,112 @@ function UI:CreateManagerWindow()
     BuildMarkersTab(self.managerPanes.markers)
     BuildPullTab(self.managerPanes.pull)
     BuildTimersTab(self.managerPanes.timers)
+    EVENT_MANAGER:RegisterForUpdate(MARKER_DISTANCE_UPDATE_NAME, 500, function()
+        if self.managerWindow and not self.managerWindow:IsHidden() and activeManagerTab == "markers" then
+            self:RefreshMarkerDistances()
+        end
+    end)
+    -- [UI] BORDS ZOOMABLES : attraper le bord gauche, droit, bas ou un coin bas
+    -- et tirer — comme un redimensionnement classique, converti en zoom uniforme.
+    local zoomDragging = false
+    local function StartZoomDrag(mode)
+        if zoomDragging or not GetUIMousePosition then return end
+        zoomDragging = true
+        local left0, top0 = M:GetLeft() or 0, M:GetTop() or 0
+        local right0 = left0 + MANAGER_BASE_W * (M:GetScale() or 1)
+        M:ClearAnchors()
+        M:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left0, top0)
+        EVENT_MANAGER:RegisterForUpdate("TeamShadowsManagerZoomDrag", 15, function()
+            local mx, my = GetUIMousePosition()
+            local s
+            if mode == "left" then
+                s = (right0 - mx) / MANAGER_BASE_W
+            elseif mode == "right" then
+                s = (mx - left0) / MANAGER_BASE_W
+            elseif mode == "bottom" then
+                s = (my - top0) / MANAGER_BASE_H
+            elseif mode == "bottomleft" then
+                s = math.max((right0 - mx) / MANAGER_BASE_W, (my - top0) / MANAGER_BASE_H)
+            else -- bottomright
+                s = math.max((mx - left0) / MANAGER_BASE_W, (my - top0) / MANAGER_BASE_H)
+            end
+            s = Clamp(s, MANAGER_MIN_SCALE, MANAGER_MAX_SCALE)
+            M:SetScale(s)
+            if mode == "left" or mode == "bottomleft" then
+                M:ClearAnchors()
+                M:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, right0 - MANAGER_BASE_W * s, top0)
+            end
+        end)
+    end
+    local function StopZoomDrag()
+        if not zoomDragging then return end
+        zoomDragging = false
+        EVENT_MANAGER:UnregisterForUpdate("TeamShadowsManagerZoomDrag")
+        local s = M:GetScale() or 1
+        -- retour à l'ancrage CENTRE (convention de restauration de la fenêtre TSM)
+        local cx = (M:GetLeft() or 0) + (MANAGER_BASE_W * s) / 2 - GuiRoot:GetWidth() / 2
+        local cy = (M:GetTop() or 0) + (MANAGER_BASE_H * s) / 2 - GuiRoot:GetHeight() / 2
+        M:ClearAnchors()
+        M:SetAnchor(CENTER, GuiRoot, CENTER, cx, cy)
+        UI:ApplyManagerScale(s)
+        if PBT.savedVars then
+            PBT.savedVars.managerWindowX = cx
+            PBT.savedVars.managerWindowY = cy
+        end
+    end
+    local function MakeZoomEdge(mode)
+        local edge = WM:CreateControl(nil, M, CT_CONTROL)
+        edge:SetMouseEnabled(true)
+        edge.glow = WM:CreateControl(nil, edge, CT_TEXTURE)
+        edge.glow:SetAnchorFill(edge)
+        edge.glow:SetColor(0.96, 0.76, 0.13, 0)
+        edge:SetHandler("OnMouseEnter", function(c)
+            c.glow:SetColor(0.96, 0.76, 0.13, 0.30)
+            ZO_Tooltips_ShowTextTooltip(c, TOP, "Tirer pour zoomer la fenêtre")
+        end)
+        edge:SetHandler("OnMouseExit", function(c)
+            c.glow:SetColor(0.96, 0.76, 0.13, 0)
+            ZO_Tooltips_HideTextTooltip()
+        end)
+        edge:SetHandler("OnMouseDown", function() ZO_Tooltips_HideTextTooltip(); StartZoomDrag(mode) end)
+        edge:SetHandler("OnMouseUp", StopZoomDrag)
+        return edge
+    end
+    local eL = MakeZoomEdge("left")
+    eL:SetWidth(10); eL:SetAnchor(TOPLEFT, M, TOPLEFT, 0, 64); eL:SetAnchor(BOTTOMLEFT, M, BOTTOMLEFT, 0, -28)
+    local eR = MakeZoomEdge("right")
+    eR:SetWidth(10); eR:SetAnchor(TOPRIGHT, M, TOPRIGHT, 0, 64); eR:SetAnchor(BOTTOMRIGHT, M, BOTTOMRIGHT, 0, -28)
+    local eB = MakeZoomEdge("bottom")
+    eB:SetHeight(10); eB:SetAnchor(BOTTOMLEFT, M, BOTTOMLEFT, 28, 0); eB:SetAnchor(BOTTOMRIGHT, M, BOTTOMRIGHT, -28, 0)
+    local eBL = MakeZoomEdge("bottomleft")
+    eBL:SetDimensions(28, 28); eBL:SetAnchor(BOTTOMLEFT, M, BOTTOMLEFT, 0, 0)
+    local eBR = MakeZoomEdge("bottomright")
+    eBR:SetDimensions(28, 28); eBR:SetAnchor(BOTTOMRIGHT, M, BOTTOMRIGHT, 0, 0)
+    for _, d in ipairs({ { -4, -4 }, { -11, -4 }, { -4, -11 }, { -18, -4 }, { -11, -11 }, { -4, -18 } }) do
+        local px = WM:CreateControl(nil, eBR, CT_TEXTURE)
+        px:SetDimensions(4, 4)
+        px:SetAnchor(BOTTOMRIGHT, eBR, BOTTOMRIGHT, d[1], d[2])
+        px:SetColor(0.96, 0.76, 0.13, 0.9)
+    end
+
+    self:RefreshLanguageButtons()
+    self:RefreshPermanentIconButton()
     return M
 end
 
 function UI:ShowManagerWindow()
     if not self.managerWindow then self:CreateManagerWindow() end
+    if PBT.SelectMarkerDirectoryForCurrentZone then
+        local _, changed = PBT.SelectMarkerDirectoryForCurrentZone()
+        if changed then markerPage, editIndex, selectedIndex = 1, nil, nil end
+    end
     local saved = PBT.savedVars or {}
     self.managerWindow:ClearAnchors()
     self.managerWindow:SetAnchor(CENTER, GuiRoot, CENTER, saved.managerWindowX or 0, saved.managerWindowY or -10)
+    self:ApplyManagerScale(saved.managerScale or 1)
     self.managerWindow:SetHidden(false)
     self:SetTab(activeManagerTab)
+    self:ApplyLanguage()
 end
 
 function UI:ToggleManagerWindow()
@@ -1101,5 +1603,3 @@ function UI:RefreshManagerWindow()
     if not self.managerWindow then return end
     self:RefreshForm(); self:RefreshList()
 end
-
-SLASH_COMMANDS["/shadowsui"] = function() UI:ToggleManagerWindow() end
