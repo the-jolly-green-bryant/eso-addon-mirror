@@ -156,7 +156,7 @@ function WE.GetSettings()
         {
             type = "checkbox",
             name = "Track time since DE ended",
-            tooltip = "Similar to boss spawn timers, tracks the time since a dynamic encounter ended in your current zone. The respawn time is approximately 30 minutes. Note that this timer is per-instance, so if you port away and back, you might not be in the same instance anymore. Requires Boss Timer to be enabled because I'm lazy",
+            tooltip = "Similar to boss spawn timers, tracks the time since a dynamic encounter ended in your current zone. The respawn time is between 15~18 minutes depending on which zone it is. Note that this timer is per-instance, so if you port away and back, you might not be in the same instance anymore. Requires Boss Timer to be enabled because I'm lazy",
             default = false,
             getFunc = function() return KD.savedOptions.overland.dynamicEventSpawnTimer end,
             setFunc = function(value)

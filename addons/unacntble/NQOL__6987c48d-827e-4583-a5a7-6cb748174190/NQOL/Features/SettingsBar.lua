@@ -1810,6 +1810,15 @@ function PlayerBars.SetShowNqolGroupFrame(value)
     PlayerBars.Group.QueueRefresh()
 end
 
+function PlayerBars.GetGroupShowOnlyInCombat()
+    return PlayerBars.Group.GetSettings().showOnlyInCombat
+end
+
+function PlayerBars.SetGroupShowOnlyInCombat(value)
+    PlayerBars.Group.GetSettings().showOnlyInCombat = value == true
+    PlayerBars.Group.QueueRefresh()
+end
+
 function PlayerBars.GetGroupShowCustomNames()
     return PlayerBars.Group.GetSettings().showCustomNames
 end

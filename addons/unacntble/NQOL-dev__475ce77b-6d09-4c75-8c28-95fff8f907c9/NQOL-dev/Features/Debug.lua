@@ -32,6 +32,15 @@ local EXPORT_CATEGORIES = {
         activityTypeName = "LFG_ACTIVITY_DUNGEON",
     },
     {
+        savedKey = "soloDungeons",
+        categoryName = "Solo Dungeons",
+        sectionName = "Solo Dungeons",
+        parentCategoryName = "Recent Seasons",
+        subCategoryName = "Solo Dungeons",
+        zoneDisplayTypeName = "ZONE_DISPLAY_TYPE_SOLO_DUNGEON",
+        groupAchievementsByZoneName = true,
+    },
+    {
         savedKey = "trials",
         categoryName = "Trials",
         sectionName = "Trials",
@@ -207,7 +216,7 @@ local function BuildActivityLookup(categoryConfig)
     return lookup
 end
 
-local function BuildZoneLookup()
+local function BuildAllZoneLookup()
     if type(GetNumZones) ~= "function" or type(GetZoneId) ~= "function" or type(GetZoneNameById) ~= "function" then
         return nil
     end
@@ -230,6 +239,56 @@ local function BuildZoneLookup()
     return lookup
 end
 
+local function FindZoneByNodeName(allZones, nodeName)
+    local normalizedNodeName = NormalizeText(nodeName)
+    local zone = allZones[normalizedNodeName]
+    if zone then
+        return zone, normalizedNodeName
+    end
+
+    local longestMatchLength = 0
+    for normalizedZoneName, candidate in pairs(allZones) do
+        if #normalizedZoneName > longestMatchLength
+            and string.find(normalizedNodeName, normalizedZoneName, 1, true)
+        then
+            zone = candidate
+            longestMatchLength = #normalizedZoneName
+        end
+    end
+    return zone, normalizedNodeName
+end
+
+local function BuildZoneLookup(categoryConfig)
+    if not categoryConfig.zoneDisplayTypeName then
+        return BuildAllZoneLookup()
+    end
+
+    if type(GetNumFastTravelNodes) ~= "function"
+        or type(GetFastTravelNodeInfo) ~= "function"
+        or type(GetFastTravelNodeZoneDisplayType) ~= "function"
+    then
+        return nil
+    end
+
+    local targetZoneDisplayType = GetGlobalNumber(categoryConfig.zoneDisplayTypeName)
+    local allZones = BuildAllZoneLookup()
+    if not targetZoneDisplayType or not allZones then
+        return nil
+    end
+
+    local lookup = {}
+    for nodeIndex = 1, GetNumFastTravelNodes() do
+        if GetFastTravelNodeZoneDisplayType(nodeIndex) == targetZoneDisplayType then
+            local nodeName = select(2, GetFastTravelNodeInfo(nodeIndex)) or ""
+            local zone, normalizedNodeName = FindZoneByNodeName(allZones, nodeName)
+            if zone and normalizedNodeName ~= "" then
+                lookup[normalizedNodeName] = zone
+            end
+        end
+    end
+    return lookup
+end
+
 local function ApplyEntryInfoToSubCategory(subCategory, activityLookup, zoneLookup)
     local normalizedName = NormalizeText(subCategory.subCategoryName)
     local activity = activityLookup and activityLookup[normalizedName]
@@ -240,25 +299,104 @@ local function ApplyEntryInfoToSubCategory(subCategory, activityLookup, zoneLook
         subCategory.activityName = activity.activityName
         subCategory.activityType = activity.activityType
         subCategory.activityTypeName = activity.activityTypeName
-        if not zone and activity.zoneId and activity.zoneId > 0 then
+        if activity.zoneId and activity.zoneId > 0 then
             subCategory.entryId = activity.zoneId
             subCategory.zoneId = activity.zoneId
             subCategory.zoneName = activity.activityName
         end
     end
 
-    if zone then
+    local hasActivityZone = activity and activity.zoneId and activity.zoneId > 0
+    if zone and not hasActivityZone then
         subCategory.entryId = zone.entryId
         subCategory.zoneId = zone.zoneId
         subCategory.zoneName = zone.zoneName
         subCategory.zoneIndex = zone.zoneIndex
+    elseif zone and activity and zone.zoneId == activity.zoneId then
+        subCategory.zoneIndex = zone.zoneIndex
+    end
+end
+
+local function BuildUniqueZoneEntries(zoneLookup)
+    local entriesById = {}
+    for _, zone in pairs(zoneLookup or {}) do
+        if zone.zoneId and zone.zoneId > 0 and not entriesById[zone.zoneId] then
+            entriesById[zone.zoneId] = zone
+        end
+    end
+
+    local entries = {}
+    for _, zone in pairs(entriesById) do
+        entries[#entries + 1] = zone
+    end
+    table.sort(entries, function(left, right)
+        return NormalizeText(left.zoneName) < NormalizeText(right.zoneName)
+    end)
+    return entries
+end
+
+local function FindAchievementZone(achievement, zoneEntries)
+    local searchableText = NormalizeText((achievement.name or "") .. " " .. (achievement.description or ""))
+    local matchedZone
+    for _, zone in ipairs(zoneEntries) do
+        local zoneName = NormalizeText(zone.zoneName)
+        if zoneName ~= "" and string.find(searchableText, zoneName, 1, true) then
+            if matchedZone then
+                return nil
+            end
+            matchedZone = zone
+        end
+    end
+    return matchedZone
+end
+
+local function GroupAchievementsByZoneName(export, zoneLookup)
+    local zoneEntries = BuildUniqueZoneEntries(zoneLookup)
+    local exportEntriesById = {}
+    export.matchedSubCategories = {}
+    export.achievementRefsByEntry = {}
+
+    for _, zone in ipairs(zoneEntries) do
+        local exportEntry = {
+            categoryName = export.categoryName,
+            subCategoryName = zone.zoneName,
+            numAchievements = 0,
+            entryId = zone.entryId,
+            zoneId = zone.zoneId,
+            zoneName = zone.zoneName,
+            zoneIndex = zone.zoneIndex,
+        }
+        exportEntriesById[zone.zoneId] = exportEntry
+        export.matchedSubCategories[#export.matchedSubCategories + 1] = exportEntry
+    end
+
+    for exportIndex, achievement in ipairs(export.achievements or {}) do
+        local zone = FindAchievementZone(achievement, zoneEntries)
+        local entryName = zone and zone.zoneName or "General"
+        achievement.sectionEntryName = entryName
+        export.achievementRefsByEntry[entryName] = export.achievementRefsByEntry[entryName] or {}
+        export.achievementRefsByEntry[entryName][#export.achievementRefsByEntry[entryName] + 1] = {
+            id = achievement.id,
+            exportIndex = exportIndex,
+            name = achievement.name,
+        }
+
+        if zone then
+            local exportEntry = exportEntriesById[zone.zoneId]
+            exportEntry.numAchievements = exportEntry.numAchievements + 1
+        end
     end
 end
 
 local function ApplyEntryInfo(export, categoryConfig)
     local activityLookup = BuildActivityLookup(categoryConfig)
-    local zoneLookup = BuildZoneLookup()
+    local zoneLookup = BuildZoneLookup(categoryConfig)
     if not activityLookup and not zoneLookup then
+        return
+    end
+
+    if categoryConfig.groupAchievementsByZoneName and zoneLookup then
+        GroupAchievementsByZoneName(export, zoneLookup)
         return
     end
 
@@ -416,10 +554,16 @@ local function GetAchievementExportData(categoryIndex, categoryName, subCategory
 end
 
 local function BuildCategoryExport(categoryConfig)
+    local parentCategoryName = categoryConfig.parentCategoryName or categoryConfig.categoryName
+    local filter = parentCategoryName .. " achievement category"
+    if categoryConfig.subCategoryName then
+        filter = filter .. " / " .. categoryConfig.subCategoryName .. " subcategory"
+    end
+
     local export = {
         exportedAt = GetTimeStamp and GetTimeStamp() or 0,
         source = "Journal / Achievements",
-        filter = categoryConfig.categoryName .. " achievement category",
+        filter = filter,
         sectionName = categoryConfig.sectionName,
         categoryName = categoryConfig.categoryName,
         achievements = {},
@@ -430,7 +574,7 @@ local function BuildCategoryExport(categoryConfig)
 
     for categoryIndex = 1, GetNumAchievementCategories() do
         local categoryName, numSubCategories = GetAchievementCategoryInfo(categoryIndex)
-        if IsCategoryMatch(categoryName, categoryConfig.categoryName) then
+        if IsCategoryMatch(categoryName, parentCategoryName) then
             local _, _, numAchievements = GetAchievementCategoryInfo(categoryIndex)
             numAchievements = tonumber(numAchievements) or 0
             numSubCategories = tonumber(numSubCategories) or 0
@@ -442,7 +586,7 @@ local function BuildCategoryExport(categoryConfig)
             }
             export.categories[#export.categories + 1] = categoryExport
 
-            if numAchievements > 0 then
+            if not categoryConfig.subCategoryName and numAchievements > 0 then
                 export.matchedSubCategories[#export.matchedSubCategories + 1] = {
                     categoryIndex = categoryIndex,
                     categoryName = categoryName or "",
@@ -468,31 +612,33 @@ local function BuildCategoryExport(categoryConfig)
             for subCategoryIndex = 1, numSubCategories do
                 local subCategoryName, numAchievements = GetAchievementSubCategoryInfo(categoryIndex, subCategoryIndex)
                 numAchievements = tonumber(numAchievements) or 0
-                categoryExport.subCategories[#categoryExport.subCategories + 1] = {
-                    subCategoryIndex = subCategoryIndex,
-                    subCategoryName = subCategoryName or "",
-                    numAchievements = numAchievements or 0,
-                }
+                if not categoryConfig.subCategoryName or IsCategoryMatch(subCategoryName, categoryConfig.subCategoryName) then
+                    categoryExport.subCategories[#categoryExport.subCategories + 1] = {
+                        subCategoryIndex = subCategoryIndex,
+                        subCategoryName = subCategoryName or "",
+                        numAchievements = numAchievements or 0,
+                    }
 
-                export.matchedSubCategories[#export.matchedSubCategories + 1] = {
-                    categoryIndex = categoryIndex,
-                    categoryName = categoryName or "",
-                    subCategoryIndex = subCategoryIndex,
-                    subCategoryName = subCategoryName or "",
-                    numAchievements = numAchievements or 0,
-                }
+                    export.matchedSubCategories[#export.matchedSubCategories + 1] = {
+                        categoryIndex = categoryIndex,
+                        categoryName = categoryName or "",
+                        subCategoryIndex = subCategoryIndex,
+                        subCategoryName = subCategoryName or "",
+                        numAchievements = numAchievements or 0,
+                    }
 
-                for achievementIndex = 1, numAchievements do
-                    local achievement = GetAchievementExportData(categoryIndex, categoryName, subCategoryIndex, subCategoryName, achievementIndex)
-                    if achievement then
-                        export.achievements[#export.achievements + 1] = achievement
-                        local entryName = subCategoryName or "Unknown"
-                        export.achievementRefsByEntry[entryName] = export.achievementRefsByEntry[entryName] or {}
-                        export.achievementRefsByEntry[entryName][#export.achievementRefsByEntry[entryName] + 1] = {
-                            id = achievement.id,
-                            exportIndex = #export.achievements,
-                            name = achievement.name,
-                        }
+                    for achievementIndex = 1, numAchievements do
+                        local achievement = GetAchievementExportData(categoryIndex, categoryName, subCategoryIndex, subCategoryName, achievementIndex)
+                        if achievement then
+                            export.achievements[#export.achievements + 1] = achievement
+                            local entryName = subCategoryName or "Unknown"
+                            export.achievementRefsByEntry[entryName] = export.achievementRefsByEntry[entryName] or {}
+                            export.achievementRefsByEntry[entryName][#export.achievementRefsByEntry[entryName] + 1] = {
+                                id = achievement.id,
+                                exportIndex = #export.achievements,
+                                name = achievement.name,
+                            }
+                        end
                     end
                 end
             end
@@ -631,7 +777,7 @@ function Debug.GetExportAchievementSectionsLabel()
 end
 
 function Debug.GetExportAchievementSectionsTooltip()
-    return "Stores Dungeons, DLC Dungeons, Trials, and Arenas achievement details in separate NQOL saved-variable sections."
+    return "Stores Dungeons, DLC Dungeons, Solo Dungeons, Trials, and Arenas achievement details in separate NQOL saved-variable sections."
 end
 
 function Debug.GetPrintAnnotationTestItemLinksLabel()

@@ -1,0 +1,23 @@
+STARS COMPLETE 0.6.11
+
+GAMEPAD
+[ ] STARS appears beneath Journal.
+[ ] Existing page navigation and footer controls are unchanged.
+[ ] L1/R1 changes Chronicle memories.
+[ ] Back closes the Journal.
+[ ] No STARS keybind remains on another ESO screen.
+
+KEYBOARD AND MOUSE
+[ ] The STARS binding opens the keyboard scene.
+[ ] /stars opens and closes the keyboard scene.
+[ ] All six section buttons show the correct page.
+[ ] Previous and Next appear only for Chronicle with multiple memories.
+[ ] Mouse wheel changes Chronicle memories.
+[ ] Close returns to the previous ESO screen.
+
+SHARED DATA
+[ ] Both interfaces show the same character totals and Chronicle entries.
+[ ] Switching input mode does not reset or duplicate SavedVariables.
+[ ] Heraldry matches the approved gamepad build.
+[ ] BG flags, resources and IC districts do not increment keep totals.
+[ ] A literal Cyrodiil keep can still be credited after the AP correlation.

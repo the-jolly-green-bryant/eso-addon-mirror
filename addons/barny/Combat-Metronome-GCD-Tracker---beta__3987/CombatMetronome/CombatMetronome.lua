@@ -10,7 +10,7 @@ CombatMetronome = {
     version = {
 		["patch"] = 1,
 		["major"] = 7,
-		["minor"] = 6,
+		["minor"] = 7,
 	},
 	API = GetAPIVersion(),
 	beta = beta,
@@ -77,6 +77,9 @@ function CombatMetronome:Init()
     self.inCombat = IsUnitInCombat("player")
     self.currentEvent = nil
 	self.gcdEvent = {finished = 0}
+	
+	self.currentEventIdentifier = 0
+	self.lastEventIdentifier = 0
 
     self.gcd = 1000
 
@@ -90,6 +93,11 @@ function CombatMetronome:Init()
 	self.Progressbar.collectibleInUse = nil
 	self.Progressbar.synergy = {}
     self.Progressbar.UI = self:BuildUI()
+	
+	
+	-- to prevent triggering on initial load
+	self.Progressbar.soundTickPlayed = true
+	self.Progressbar.soundTockPlayed = true
     -- CombatMetronome:BuildMenu()
 	-- CombatMetronome:UpdateAdjustChoices()
 

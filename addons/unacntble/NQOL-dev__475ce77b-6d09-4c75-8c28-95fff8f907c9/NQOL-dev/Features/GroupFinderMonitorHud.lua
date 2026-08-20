@@ -143,6 +143,8 @@ end
 local function GetStatusValues()
     if Monitor.IsSettingsPanelVisible() and not Monitor.GetEnabled() then
         return NQOL.L("features.group_finder_monitor.status_preview"), 0.55, 0.72, 0.88
+    elseif Monitor.IsPausedForDisabledZone() then
+        return NQOL.L("features.group_finder_monitor.status_paused"), 0.82, 0.57, 0.24
     elseif not Monitor.HasSelectedCategories() then
         return NQOL.L("features.group_finder_monitor.status_paused"), 0.82, 0.57, 0.24
     elseif Monitor.IsScanning() then
@@ -172,7 +174,9 @@ local function RefreshStatus()
     status:SetText(Upper(statusText))
     status:SetColor(red, green, blue, 0.92)
     if empty and not empty:IsHidden() then
-        if not Monitor.HasSelectedCategories() then
+        if Monitor.IsPausedForDisabledZone() then
+            empty:SetText(NQOL.L("features.group_finder_monitor.status_paused"))
+        elseif not Monitor.HasSelectedCategories() then
             empty:SetText(NQOL.L("features.group_finder_monitor.no_categories"))
         elseif Monitor.IsRestoringFilter() then
             empty:SetText(NQOL.L("features.group_finder_monitor.status_restoring_filter"))
@@ -355,7 +359,9 @@ local function Render()
     local contentTop = C.PADDING + C.HEADER_HEIGHT
     if visibleRows == 0 then
         empty:SetFont(GetFont(-3, fontChoice))
-        if not Monitor.HasSelectedCategories() then
+        if Monitor.IsPausedForDisabledZone() then
+            empty:SetText(NQOL.L("features.group_finder_monitor.status_paused"))
+        elseif not Monitor.HasSelectedCategories() then
             empty:SetText(NQOL.L("features.group_finder_monitor.no_categories"))
         elseif Monitor.IsRestoringFilter() then
             empty:SetText(NQOL.L("features.group_finder_monitor.status_restoring_filter"))

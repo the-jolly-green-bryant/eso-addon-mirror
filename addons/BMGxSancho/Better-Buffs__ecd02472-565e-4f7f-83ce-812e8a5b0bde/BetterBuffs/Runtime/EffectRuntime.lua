@@ -1020,6 +1020,7 @@ function Runtime:RefreshEffect(key,now,application)
     if self:IsObserved(key) then
         if BB.Analytics then BB.Analytics:Observe(key,snapshot,now,application) end
         if BB.UI then BB.UI:UpdateEffect(definition,snapshot) end
+        if BB.Stats and (definition.affectsPenetration or definition.criticalDamageTaken or definition.criticalDamagePerStack) then BB.Stats:Refresh() end
         if BB.API then BB.API:Fire(application and "EFFECT_ACTIVATED" or "EFFECT_CHANGED", key, snapshot) end
     end
     self:ScheduleAutoVisibilityRefresh(definition)

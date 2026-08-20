@@ -8,6 +8,10 @@
   "category_id": "27",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "KyzderpsDerps"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2427/",
-  "fingerprint": "50e06b36946aecaf8590d592dfdbd73cfc18888ccb89bb8dc1ef7bd9933ee300",
+  "fingerprint": "c24b4cae4a6e2bd46f2c3875d7da8e54bf29289e0096855a0482594e4573c305",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8255.png",
     "https://cdn-eso.mmoui.com/preview/pvw8256.png",
@@ -37,11 +41,11 @@
   "source_id": "2427",
   "source_url": "https://www.esoui.com/downloads/info2427-KyzderpsDerps.html",
   "stats": {
-    "downloads": 64783,
-    "favorites": 50,
-    "monthly_downloads": 2093
+    "downloads": 65561,
+    "favorites": 51,
+    "monthly_downloads": 2236
   },
   "title": "Kyzderp's Derps",
-  "updated_at": 1786410908000,
-  "version": "1.50.1"
+  "updated_at": 1787125847000,
+  "version": "1.51.0"
 }

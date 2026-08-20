@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/SugaComa/STARS-Gamepad__4784",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "esoui:4784",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4784",
+  "deleted": false,
+  "directories": [
+    "STARS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4784/",
+  "fingerprint": "fbc9ab36f19607f6c473db3771a2f4eedff231c064234a83e63c2eb4311443f7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4784",
+  "source_url": "https://www.esoui.com/downloads/info4784-STARS-Gamepad.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "STARS-Gamepad",
+  "updated_at": 1787153888000,
+  "version": "0.6.11-Gamepad"
+}

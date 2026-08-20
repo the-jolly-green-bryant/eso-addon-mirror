@@ -97,6 +97,7 @@ local settingsPanelVisible = false
 local mounted = false
 local inCombat = false
 local pinSizeHookInstalled = false
+local nativeMapResizeGuardInstalled = false
 local nearestWayshrineX
 local nearestWayshrineY
 local currentOffsetX
@@ -346,6 +347,23 @@ local function InstallPinSizeHook()
 
     pinSizeHookInstalled = true
     SecurePostHook(ZO_MapPin, "UpdateSize", ApplyMinimapPinScale)
+end
+
+local function InstallNativeMapResizeGuard()
+    if nativeMapResizeGuardInstalled
+        or not ZO_PreHook
+        or not WORLD_MAP_MANAGER
+        or type(WORLD_MAP_MANAGER.ResizeAndReanchorMap) ~= "function"
+    then
+        return
+    end
+
+    nativeMapResizeGuardInstalled = true
+    -- Native map refreshes target the full world-map window. While its container
+    -- belongs to the minimap, NQOL applies the final dimensions itself.
+    ZO_PreHook(WORLD_MAP_MANAGER, "ResizeAndReanchorMap", function()
+        return containerAttached
+    end)
 end
 
 local function RefreshPlayerPinSize()
@@ -747,12 +765,7 @@ local function RenderWayshrineRoute()
     HideRouteDots(usedDots + 1)
 end
 
-local function ApplyContainerLayout()
-    if not containerAttached then
-        return
-    end
-
-    SetViewportUpdateActive(false)
+local function ApplyContainerDimensions()
     local mapContentSize = GetMapContentSize()
     activeZoom = GetActiveZoom()
     ZO_MAP_CONSTANTS.MAP_WIDTH = mapContentSize
@@ -763,13 +776,24 @@ local function ApplyContainerLayout()
     if ZO_WorldMapContainerBackground then
         ZO_WorldMapContainerBackground:SetDimensions(mapContentSize * 2, mapContentSize * 2)
     end
+end
+
+local function ApplyContainerLayout(mapTilesAlreadyLaidOut)
+    if not containerAttached then
+        return
+    end
+
+    SetViewportUpdateActive(false)
+    ApplyContainerDimensions()
 
     lastAppliedOffsetX = nil
     lastAppliedOffsetY = nil
     lastAppliedPlayerPinControl = nil
     lastAppliedPlayerPinX = nil
     lastAppliedPlayerPinY = nil
-    WORLD_MAP_TILES_MANAGER:LayoutTiles()
+    if not mapTilesAlreadyLaidOut then
+        WORLD_MAP_TILES_MANAGER:LayoutTiles()
+    end
     pinManager:UpdatePinsForMapSizeChange()
     pinManager:UpdateMovingPins()
     UpdatePlayerPinTarget(true)
@@ -788,24 +812,31 @@ local function FlushNativeMapRefreshQueue()
     end
 end
 
-local function RefreshPlayerMap()
+local function RefreshPlayerMap(forceRefresh)
     if not containerAttached then
-        return
+        return false
     end
 
-    ZO_WorldMapContainer:SetHidden(true)
     local mapChanged = false
     if not DoesCurrentMapMatchMapForPlayerLocation() then
         mapChanged = SetMapToPlayerLocation() == SET_MAP_RESULT_MAP_CHANGED
     end
+    if not mapChanged and forceRefresh ~= true then
+        return false
+    end
+
+    ZO_WorldMapContainer:SetHidden(true)
+    -- UpdateTextures can now lay out the new tiles once at their final size.
+    ApplyContainerDimensions()
     if mapChanged then
         CALLBACK_MANAGER:FireCallbacks("OnWorldMapChanged")
     else
         ZO_WorldMap_UpdateMap()
     end
     FlushNativeMapRefreshQueue()
-    ApplyContainerLayout()
+    ApplyContainerLayout(true)
     ZO_WorldMapContainer:SetHidden(false)
+    return true
 end
 
 local function AttachContainer()
@@ -832,7 +863,7 @@ local function AttachContainer()
     lastAppliedPlayerPinY = nil
     ApplyCurrentMinimapDrawOrder()
     UpdateHarvestMapCompatibility()
-    RefreshPlayerMap()
+    RefreshPlayerMap(true)
     return true
 end
 
@@ -900,7 +931,7 @@ local function UpdateMinimap()
     if nowMs - lastMapCheckMs >= MAP_CHECK_INTERVAL_MS then
         lastMapCheckMs = nowMs
         if not DoesCurrentMapMatchMapForPlayerLocation() then
-            RefreshPlayerMap()
+            RefreshPlayerMap(false)
             return
         end
         UpdateNearestWayshrine()
@@ -1058,7 +1089,7 @@ local function OnSubzoneChanged()
     if zo_callLater then
         zo_callLater(RefreshPlayerMap, 0)
     else
-        RefreshPlayerMap()
+        RefreshPlayerMap(false)
     end
 end
 
@@ -1250,6 +1281,7 @@ function Minimap.Initialize()
     activeUpdateIntervalMs = GetUpdateIntervalMs()
     pinManager = ZO_WorldMap_GetPinManager()
     InstallPinSizeHook()
+    InstallNativeMapResizeGuard()
     CreateViewport()
     RefreshRuntime()
 end
@@ -1347,7 +1379,7 @@ function Minimap.SetHarvestMapCompatibility(value)
     if initialized then
         UpdateHarvestMapCompatibility()
         if containerAttached then
-            RefreshPlayerMap()
+            RefreshPlayerMap(true)
         end
     end
 end

@@ -55,6 +55,8 @@ local GetVerticalReverseForResource = Shared.GetVerticalReverseForResource
 local GetVerticalCurrentValueForResource = Shared.GetVerticalCurrentValueForResource
 local GetChangeDirection = Shared.GetChangeDirection
 local ApplyRootPosition = Shared.ApplyRootPosition
+local SetFrameVisibilityImmediate = Shared.SetFrameVisibilityImmediate
+local SetFrameCombatVisibility = Shared.SetFrameCombatVisibility
 
 local initialized = false
 local sceneCallbackInstalled = false
@@ -1301,7 +1303,22 @@ end
 local function HidePlayerBars()
     for _, preset in pairs(presets) do
         if preset.root then
-            preset.root:SetHidden(true)
+            SetFrameVisibilityImmediate(preset.root, false)
+        end
+
+        local widgets = preset.controls and preset.controls.widgets
+        if widgets then
+            for _, widget in pairs(widgets) do
+                HideClassicChangeLabels(widget)
+            end
+        end
+    end
+end
+
+local function HidePlayerBarsForCombat()
+    for _, preset in pairs(presets) do
+        if preset.root then
+            SetFrameCombatVisibility(preset.root, false)
         end
 
         local widgets = preset.controls and preset.controls.widgets
@@ -1318,12 +1335,17 @@ local function Refresh()
 
     local settings = GetSettings()
     local previewVisible = IsPreviewVisible()
-    local shouldShow = (settings.showNqolPlayerFrame == true or previewVisible)
+    local shouldShowFrame = (settings.showNqolPlayerFrame == true or previewVisible)
         and ShouldShowForCurrentScene()
-        and (previewVisible or settings.showOnlyInCombat ~= true or (IsUnitInCombat and IsUnitInCombat("player") == true))
+    local combatOnly = not previewVisible and settings.showOnlyInCombat == true
 
-    if not shouldShow then
+    if not shouldShowFrame then
         HidePlayerBars()
+        return
+    end
+
+    if combatOnly and not (IsUnitInCombat and IsUnitInCombat("player") == true) then
+        HidePlayerBarsForCombat()
         return
     end
 
@@ -1353,7 +1375,11 @@ local function Refresh()
     if previewVisible then
         Shared.SetSettingsPreviewDrawOrder(preset.root)
     end
-    preset.root:SetHidden(false)
+    if combatOnly then
+        SetFrameCombatVisibility(preset.root, true)
+    else
+        SetFrameVisibilityImmediate(preset.root, true)
+    end
 end
 
 local function QueueRefresh()
@@ -1662,6 +1688,7 @@ InstallEvents = function()
         EVENT_MANAGER:RegisterForEvent(C.EVENT_NAMESPACE .. "_CombatState", EVENT_PLAYER_COMBAT_STATE, function()
             QueueRefresh()
             COMPANION.QueueRefresh()
+            PlayerBars.Group.QueueRefresh()
         end)
     end
     EVENT_MANAGER:RegisterForEvent(PlayerBars.Group.EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()

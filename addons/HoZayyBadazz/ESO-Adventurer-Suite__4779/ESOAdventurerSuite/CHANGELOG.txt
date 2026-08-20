@@ -1,0 +1,741 @@
+0.24.52 - Minimap duplicate cleanup
+- Removed custom stable learning and all previously saved stable-service records.
+- Added one-time cleanup for duplicate learned merchants, services, and POIs.
+- Increased save-once matching tolerance so revisiting the same location does not add another pin.
+- Prefer live ESO POIs over remembered copies to prevent stacked duplicate icons.
+- Prevent remembered POIs from duplicating learned merchant/service pins at the same location.
+
+0.24.51
+- Minimap: learned merchants, crafting stations, services, and POIs now use save-once deduplication with wider location tolerances; revisiting the same place will not create another saved pin.
+- Minimap: stable saving now uses the active minimap map context again, avoiding stale cached-map buckets.
+- Minimap: stable pins prefer the actual ESO POI horse/stable texture when exposed by the map API; the packaged horse icon is only a fallback.
+- Minimap: live ESO POIs whose name/texture identifies a stable are promoted directly to the stable service layer.
+
+0.24.49 - Stable icon match
+- Replaced the learned Stable Master marker with the supplied white horse-head map icon.
+- Packaged the marker as a transparent 64x64 ARGB8888 DDS for reliable ESO rendering.
+- Stable locations remain learn-once; revisiting an already learned stable does not add another pin.
+
+0.24.48 - 2026-08-19
+- Restored the complete minimap implementation accidentally truncated in 0.24.47, which caused the minimap not to appear.
+- Rolled the minimap rendering code back to the last known-visible 0.24.46 implementation while preserving the rest of the suite.
+
+0.24.47 - 2026-08-19
+- Stable pins now store mapId + zoneIndex and can be recovered across ESO map-context switches caused by stable interactions.
+- Stable rendering uses a built-in ESO mount icon instead of the custom DDS fallback.
+- Added /esosuite mapdebug to print live map/service/stable state for deterministic troubleshooting.
+
+0.24.46
+- Normalizes legacy minimap visual settings once so upgraded installs match fresh installs.
+- Preserves learned merchants, stable/service locations, learned POIs, and the user's minimap position.
+- Keeps all current minimap layers enabled after migration to avoid stale profile/layer state hiding learned services.
+
+0.24.43
+- Mini Map now learns and permanently remembers crafting/service locations when used, including Enchanting, Blacksmithing, Clothing, Woodworking, Alchemy, Provisioning, Jewelry Crafting, Scribing, and Stables where supported.
+- Learned services reuse the nearest ESO POI texture when available so each station/store keeps its specific in-game icon.
+- Discovered/nearby POIs are now saved per map and merged back into the minimap on future visits.
+- Increased persistent town/service pin capacity for dense cities.
+
+0.24.31
+- Fixed merchant store detection crash caused by helper functions being referenced before their local declarations.
+- Store identity/icon detection now safely falls back when optional ESO store APIs are unavailable.
+- Fixed duplicated ability/buff icons caused by the Suite enabling ESO's native buff/debuff HUD while also rendering its own integrated aura rows.
+- Keeps scrolling combat status/taunt feedback enabled without duplicating the stock buff display.
+- Automatically turns the native buff/debuff containers off when Suite Player/Target frames own aura rendering.
+
+0.24.27
+- Fixed merchant minimap pins not appearing because ESO merchant NPCs are not reliably exposed through the normal POI API.
+- The minimap now learns and permanently remembers a merchant's map position whenever you open that merchant's store.
+- Learned merchant/sell locations are always rendered as high-priority gold pins, independent of normal POI filtering.
+
+Version 0.24.27
+- Added optional taunt/combat status visibility.
+- Enables ESO outgoing and incoming scrolling status-effect text.
+- Keeps target debuffs visible so taunts and other applied effects are easier to read.
+- Added a World Combat Visibility toggle for taunts & status effects.
+
+Version 0.24.23
+- Added always-visible hostile NPC/player overhead health bars using ESO nameplate settings.
+- Enabled outgoing scrolling combat damage for direct hits, DoTs, and pet damage.
+- Added settings toggles for both world-combat visibility features.
+
+Version 0.24.22
+- Alliance AP/XP progress bar now uses the exact same native symmetric ESO frame geometry as the Suite Player and Target resource bars.
+- Uses native left/right arrow caps, center frame, mirrored status-bar fills, and matching gloss layering so the fill stays inside the sculpted frame.
+- Removed the height override that distorted the native frame.
+
+Version 0.24.12
+- Redesigned Alliance Rank overlay as a compact horizontal HUD element instead of a large rectangular panel.
+- Removed the oversized crest backing rectangle; keeps the alliance crest, rank badge, rank name/level, and AP progress in a smaller footprint.
+
+Version 0.24.11
+- Active Quest overlay applies a final line-level progress sanitizer: every rendered row can contain at most one x/y counter, eliminating repeated 1/3 1/3 and 2/9 2/9 output regardless of the source string.
+- Mini Map keeps POIs and wayshrines visible across all map profiles, including SMART combat navigation.
+- Removed POI clustering so dense towns can display all nearby ESO-exposed landmark/service icons.
+- Increased Mini Map POI capacity to 160 with a new default of 120.
+
+Version 0.24.10
+- Rebuilt the Active Quest objective renderer around one authoritative source: incomplete visible journal conditions.
+- Removed mixed rendering of condition rows plus tracker/step overrides, which was the main cause of repeated objective names and repeated x/y counters.
+- Deduplicates objectives by normalized objective name and keeps only the strongest progress value for each objective.
+- Standardized Active Quest output into one quest title followed by a clean bullet list of unique objectives.
+
+Version 0.24.9
+- Active Quest overlay now normalizes duplicate progress counters on every rendered tracker row, including resource/item tracker overrides such as 2/9  2/9.
+- Preserves one progress counter when ESO supplies repeated x/y or x of y text without separate condition values.
+
+Version 0.24.8
+- Active Quest overlay now deduplicates repeated quest objectives/condition names exposed across multiple journal steps.
+- Prevents duplicated objective progress counters when ESO already includes x/y progress in the tracker text.
+- Filters objective lines that simply repeat the active quest title.
+
+Version 0.24.5
+- Gear optimizer now verifies requested equipment swaps after ESO processes them.
+- Added a visible GEAR UPDATED / NO UPGRADES / NO GEAR CHANGES CONFIRMED notification.
+- Added before/after optimizer loadout score with signed score delta.
+- Added per-slot chat summaries showing the old item and the newly equipped item for each confirmed change.
+- Optimizer now distinguishes requested swaps from swaps ESO actually confirms.
+
+Version 0.24.4
+- Endgame Gear Optimizer now treats currently equipped gear as part of the candidate loadout instead of considering only backpack replacements.
+- Strong worn pieces remain equipped when they already score best for the selected preset.
+- Ring optimization evaluates both worn rings and backpack rings as one two-slot pool.
+- Front and back bar optimization now explicitly starts from the weapons currently equipped on each bar.
+- Optimizer results now report that the worn loadout and backpack candidates were compared before requesting changes.
+
+0.24.1
+- Added Gear optimizer presets: Single Target, AoE / Trash, Solo, and Trial.
+- Added preset-aware armor, jewelry, and weapon trait scoring.
+- Added separate front-bar and back-bar weapon optimization, including Infused back-bar preference and AoE Charged front-bar preference.
+- Strengthened complete Target Set protection for organized PvE presets; Solo can operate with one configured Target Set.
+- Added preset selectors directly to the Gear & Sets Codex spread.
+
+0.24.0
+- Fixed the Tamriel Codex Gear & Sets spread so EQUIP BEST RECOMMENDED appears directly on the right-hand page above the routing actions.
+- The optimizer button is now available even before selecting an item set.
+
+0.23.5
+- Reduced and moved the Ultimate charge percentage to the lower-right corner so it no longer obscures the Ultimate icon.
+- Reworked the Gear page layout so EQUIP BEST is displayed on its own visible action row instead of being squeezed between overlapping bottom controls.
+
+0.23.4
+- Added live Ultimate charge percentage over the movable Ultimate icon, reaching 100% when the slotted Ultimate is ready.
+- Added an explicit EQUIP BEST button to the Gear page. It scores backpack upgrades, prioritizes configured target sets, preserves the current weapon family, and requests gear changes only from a direct user click while out of combat.
+
+0.23.3
+- Golden Pursuits / Tamriel Tomes HUD tracker can now be moved in Suite HUD layout mode.
+- Golden Pursuits position is saved per account and re-applied after ESO refreshes the native tracker anchors.
+- Keeps the 0.23.2 minimap edge-clamping behavior so map tiles no longer expose empty space at map boundaries.
+
+0.23.2
+- HUD: ESO's top compass now hides automatically while menus/UI scenes are open and returns immediately in gameplay.
+- Minimap: Suite interaction mode remains independent, so the custom minimap can stay visible/interactive while the top compass is suppressed.
+
+0.23.0
+- Prepared a clean ESOUI public-beta release candidate and synchronized the add-on version metadata.
+- Refined the custom Mini Map with smoother follow movement, a tighter 0.70-1.35 zoom range, smaller wheel-zoom steps, and less aggressive raster-map magnification to reduce visible pixelation.
+- Kept ESO's normal top compass visible; the custom Mini Map is an additional HUD element rather than a compass replacement.
+- Mini Map stays visible and mouse-usable while Suite Interaction Mode is active; movement remains limited to explicit Mini Map Move Mode.
+- Added the missing Interact with Suite action to Controls > Keybindings and wired it to toggle Suite Interaction Mode.
+- Travel pages in the Tamriel Codex use the full eight-row book capacity while compact travel views keep their smaller pagination.
+- Fixed Quest Finder INDEX control layering so it reliably receives mouse input.
+- Expanded Alliance Rank presentation with Alliance identity, rank name/number, AP progress, rank badge, and native Alliance crest lookup/fallback handling.
+- Preserved the v0.22.x native ESO resource-bar geometry and all prior Codex, HUD, checkpoint, companion, repair/recharge, and ability-overlay fixes.
+
+0.22.6
+- Fixed movable ability overlay slot mapping to use ESO's physical action-slot indices.
+- Skills 1-5 now map in the correct order using ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + 1 through +5.
+- Ultimate now maps to ACTION_BAR_ULTIMATE_SLOT_INDEX + 1, matching ZOS's live action bar implementation.
+
+0.22.5
+- Rebuilt all ESO-style resource bars with the same split left/right shaped StatusBar geometry used by ESO's native Health bar.
+- Health/Magicka/Stamina now fill the actual ornate bar silhouette instead of a rectangular interior track.
+- Applied the true shaped fill to Player, Target, Group, Raid, and Companion bars.
+
+0.22.4
+- Removed the rectangular color-track backdrop that could show behind the sculpted ESO resource-bar frame.
+- Player/Target Health, Magicka, and Stamina now use ESO native attribute-bar background art for the empty track so it matches the fill/frame silhouette.
+- Group, Raid, and Companion Health bars use the same shape-matched native underlay.
+- Kept the v0.22.2 draw-order fix so full resources stay behind the decorative end caps instead of painting over them.
+
+0.22.3
+- Removed the visible GROUP title/header from the Group frame.
+- Removed the header/rule spacing so the first member row starts at the top of the frame.
+- Kept hidden compatibility controls so existing refresh logic remains safe.
+
+0.22.2
+- Fixed ESO-style Player/Target resource bar draw order so Health, Magicka, and Stamina fills remain underneath the decorative end-cap/frame art instead of covering the left-side styling.
+- Applied the same frame-over-fill layering fix to Group, Raid, and Companion Health bars.
+- Full bars still visually reach the styled edges; this patch changes draw order rather than reintroducing the old empty side gutters.
+
+0.22.1
+- Repair / Recharge Estimate visibility now offers Always or Tamriel Codex Only instead of Combat Only.
+- Opening/closing the Tamriel Codex immediately shows/hides the estimate when Codex Only is selected.
+- Reworked Group and Raid member rows with ESO native-style framed Health bars and a cleaner gold/dark roster treatment while preserving compact sizing and conditional companions.
+- Player/Target Health, Magicka, and Stamina fills now extend underneath the decorative ESO end caps so full resources no longer leave empty side gutters.
+
+0.22.0
+- Restored the Ultimate icon to the movable ability overlays while continuing to exclude passive/non-normal action slots.
+- The Group frame now reliably associates the local player group tag with the active companion.
+- A solo player with an active companion can now use the Group frame as a player + companion unit display; no companion row appears when none is active.
+- Added a movable/scalable Repair / Recharge Estimate overlay.
+- The estimate lists each equipped armor/shield piece with current condition and vendor repair gold cost, shows weapon charge status, totals the shown repair cost, and displays current character gold.
+- The repair estimate is informational only and never spends gold or repairs/recharges items.
+- Added Always / Combat Only visibility control for the repair estimate.
+
+0.21.5
+- Ability overlays now show only the five normal slotted skills in positions 1-5.
+- Removed the Ultimate slot from the movable ability overlay set.
+- Explicitly excludes non-normal/passive-style action slots from the overlay.
+
+0.21.4
+- Fixed square/missing glyphs in Tamriel Codex pages caused by unsupported Unicode symbols in ESO fonts.
+- Replaced bidirectional arrows, fancy arrows, special dashes, bullets/checkmarks used by Codex-generated text with ESO-safe plain-text equivalents.
+- Crafting Codex Alchemy effect pairs now render with readable separators such as Restore Health / Ravage Health.
+
+0.21.3
+- Checkpoints now resolve and display the nearest discovered wayshrine for the saved checkpoint map.
+- Added a manual TRAVEL TO WAYSHRINE button on the checkpoint detail page.
+- Shows wayshrine travel cost/status and keeps SET EXACT CHECKPOINT WAYPOINT as a separate action.
+- Newly saved checkpoints cache their nearest wayshrine; older checkpoints resolve it when selected.
+
+0.21.2
+- Group companion rows now appear only when ESO reports an active companion for that member.
+- Player-only Group rows collapse to compact height with no blank companion area reserved.
+- HUD Layout preview also avoids showing a fake companion unless the player currently has an active companion.
+
+0.21.1
+- Reduced Group frame width and row height so member name cards no longer dominate the HUD.
+- Tightened player name/role spacing and Health bar height while keeping labels readable.
+- Tightened companion name/level and Health spacing to retain the player-like companion presentation in a much smaller footprint.
+- Updated dynamic Group container sizing to match the new compact member rows.
+
+0.21.0
+- Player frame no longer shows player name/level; Target frame now shows Health only.
+- Buffs remain above Health and debuffs below Health; zero active debuffs reserve no empty gap.
+- Group companions now render as a second player-style entry with companion level and Health bar.
+- Added six individually movable active-hotbar ability overlays with icon, cooldown/effect timing, size/scale controls, and Always/Combat Only visibility.
+- Alliance Rank and all existing persistent overlays keep independent Always/Combat Only visibility settings.
+
+0.20.0
+- Rebuilt Player and Target frames as matching ESO-style scalable unit frames using ESO attribute-bar art.
+- Player and Target buffs now render above Health; debuffs render below Health; Magicka and Stamina follow below the effects.
+- Added independent Player and Target frame size controls.
+- Added a movable/scalable ESO-style Alliance Rank overlay with rank icon and AP progress.
+- Added Always / Combat Only visibility modes for every persistent gameplay overlay: Player, Target, Group, Raid, Live Stats, Mini Map, Stable, Clock, Active Quest, Combat HUD, and Alliance Rank.
+- Retired the separate Player Effects overlay because effects are integrated into the unit frames.
+
+0.19.4
+- Fixed Notes so both TITLE and the multiline NOTES body explicitly accept mouse/keyboard focus and can be edited.
+- Fixed Checkpoints so the custom name field is editable; SAVE / UPDATE HERE now renames and relocates the selected checkpoint in place.
+- Retired the legacy standalone tabbed menu from normal use; Tamriel Codex is now the only main interface and the old root is forced hidden.
+- Reworked Utilities into a deliberate two-page layout so Utility Priorities and the final hint text remain readable instead of clipping below the page.
+- Added vertical text fitting on wrapped book labels for improved readability across dense Codex pages.
+
+0.19.3
+- Reworked Notes into an explicit TITLE field with the note body directly beneath it.
+- Made checkpoint naming prominent with NAME THIS CHECKPOINT and examples such as XP Farm.
+- Anchored INDEX, PREV, NEXT, THEME, CLOSE, and page numbers inside the actual native lore-book pages so they remain readable across UI scales.
+- Removed ellipsis from interactive book rows and strengthened book-wide word wrapping/readability for dense text.
+
+0.19.2
+- Removed the persistent chapter/index tabs from the far left and far right edges of the Tamriel Codex.
+- The opening INDEX spread is now the dedicated table of contents; chapter navigation lives there instead of around every page.
+- Added one small INDEX control at the top so readers can return to the table of contents from any chapter.
+- Preserved v0.19.1 interactive Quest, Travel, Gear, and Activity selection/action behavior.
+
+- Restored direct menu-style interaction inside the Tamriel Codex book. Gear, Quest Finder, Travel, and Activities now use clickable rows on the left page with selected details/actions on the right page.
+- Quest rows can be clicked directly and routed; Travel destinations can be clicked directly and traveled to; Gear sets and Activities likewise select directly instead of cycling with a generic SELECT button.
+- Added in-book filters, modes, search/page controls, selected-state highlighting, and right-page action buttons while preserving the two-page lore-book presentation.
+
+0.19.0
+- Rebuilt Tamriel Codex as a true two-page book spread using both left and right pages.
+- Added a two-page clickable INDEX as the opening chapter.
+- Added physical chapter-style bookmark tabs down both outer book edges.
+- Notes now browse on the left page and edit/read on the right page.
+- Checkpoints now browse on the left page with details and waypoint actions on the right page.
+- Build, Gear, Skills, Combat, Activities, Quest Finder, Travel, Utilities, Achievements, Stats, Crafting, and Dice now use both pages rather than a single content page.
+- Dynamic chapter text is split and wrapped across both pages while retaining the native ESO lore-book background.
+
+0.18.1
+- Tamriel Codex is now the primary addon interface; the old standalone tab window is retained only as a legacy fallback via /esosuite menu.
+- Moved Build, Gear & Sets, Skills & Champion, Combat, Activities, Quest Finder, Map/Travel, and Utilities into Codex book chapters.
+- Added context actions inside the book for set filters/search/paging/routing, quest filters/paging/routing, travel modes/paging/travel, activity goals/routing, and utility modes.
+- Added real multi-line wrapping to Codex labels and dynamic book text so long descriptions and lists wrap to page width instead of running off the page.
+- Existing notes, checkpoints, achievements, stats, crafting codex, dice, overlays, SavedVariables, and legacy commands remain available.
+
+0.17.2
+- Renamed the custom Adventurer Journal user experience to TAMRIEL CODEX for a more ESO/Tamriel-themed identity.
+- Replaced the cursive lore-book script in custom Codex content with clearer ESO UI fonts for easier reading.
+- Keybind now reads Open / Close Tamriel Codex; /esosuite codex is the primary command while /esosuite journal and /esosuite notes remain compatibility aliases.
+- Existing notes, checkpoints, themes, and SavedVariables are preserved.
+
+0.17.1
+- Fixed the Adventurer Journal hotkey/window open regression introduced by the native Lore Reader rebuild.
+- Journal creation now stores the top-level window on the Journal module before layout/setup, allowing Show(), Toggle(), page-turn logic, and theme application to operate normally.
+- Named Custom Checkpoints and all v0.17.0 features remain unchanged.
+
+0.17.0
+- Added named custom Checkpoints to the Journal for XP farms, material routes, fishing spots, bosses, and other places players want to revisit.
+- Checkpoints save the current ESO map ID/index and normalized coordinates, draw as custom map pins on matching maps, and can restore a normal player waypoint later.
+- Added Journal > Checkpoints naming, paging, save/update, waypoint, and delete controls.
+- Added /esosuite checkpoint save <name>, go <name>, delete <name>, list, and open commands.
+- Saving an existing checkpoint name updates that checkpoint to the player current location.
+
+0.16.1
+- Removed the visible BUFFS and DEBUFFS captions from the movable player-effects overlay.
+- Player effect icons now pack from the top with a small gap between positive and negative effect groups, keeping the overlay background-free and compact.
+- Renamed the settings section to Player Effects.
+
+0.16.0
+- Rebuilt the custom Adventurer Journal around ESO's native Lore Reader book medium instead of simulated backdrop rectangles.
+- Journal now uses the game's own ornate two-page book background and aligns content to the native lore-page geometry returned by GetBookMediumInfo.
+- Left page now acts as the chapter/navigation page; right page contains the active journal page and compact New/Save/Delete/Read/Theme/Close controls.
+- Added lore-style book fonts, native book open/close/page-turn sounds, adaptive scaling for shorter displays, and a fallback parchment layout if the native medium is unavailable.
+- Existing notes, autosave, map pins, dice/coin, quest documents, achievements, statistics, crafting codex, HUD overlays, Active Quest resizing, stable timer, maintenance, and prior fixes are preserved.
+
+0.15.0
+- Fixed Active Quest text wrapping by removing ellipsis clipping and giving quest names/objectives responsive label widths.
+- Active Quest overlay is now resizable in HUD Layout Mode using ESO resize handles; custom width/height persist across reloads.
+- Added Active Quest width/height sliders and a Reset Quest Size control under Settings.
+- Fixed Journal startup crash caused by invalid 3x3 backdrop edge dimensions; book/cover edges now use valid 4x4 power-of-two dimensions.
+- Removed the surrounding background, shadow, and accent panel from the movable Player Effects overlay; effect tiles remain icon-first and their centers are transparent.
+- Removed the Active Quest backdrop/accent so the tracker renders as text/objectives only; it remains independently movable in HUD Layout Mode.
+
+0.14.0
+- Rebuilt the custom Journal as a two-page themed book with leather/metal framing, center spine, bookmark tabs, and animated page turns.
+- Player buffs/debuffs moved into a separate movable target-style icon overlay; all effects remain visible with no +N collapsing.
+- Stable overlay simplified to only STABLE + riding-training cooldown (0 means ready).
+- Added movable Active Quest overlay with focused quest name and current incomplete objectives.
+- Fixed Journal quest/achievement/stat document page body targeting.
+
+ESO Adventurer Suite 0.13.0
+
+0.13.0 - Adventurer Journal + Movable Clock
+- Added a standalone custom Adventurer Journal opened by its own user-assignable keybind.
+- Added categorized personal notes with auto-save when changing entries/tabs or closing.
+- Added Read Mode / Edit Mode and selectable Parchment, Midnight, Daedric, and Frost themes.
+- Added personal custom map pins saved from the player's current map location, with World Map pin rendering where the ESO custom-pin API is available, plus waypoint/delete actions.
+- Added roleplay d4/d6/d8/d10/d12/d20/d100 rolls and coin toss history.
+- Added Quest, Achievement, Game Statistics, and Crafting Codex journal pages.
+- Added a simple draggable 12-hour AM/PM clock overlay with saved position.
+- Clock participates in HUD layout mode and can be shown/hidden/reset from settings or slash commands.
+- Preserved v0.12.0 Equipment Set Journal, expanded quest discovery, Stable Training timer, full player buff/debuff display, automatic gear maintenance, minimap, combat analytics, and prior UI fixes.
+
+ESO Adventurer Suite - Changelog
+
+0.12.0
+- Renamed the public addon to ESO Adventurer Suite to reflect its broader progression, combat, travel, journal, HUD, utility, and maintenance feature set.
+- Added an Equipment Set Journal on GEAR using ESO's live Item Set Collection, with source filters, collection progress, source routing, and matching-zone quest leads.
+- Replaced the old 20-entry quest discovery catalog with an asynchronous best-effort runtime quest index, including NOT STARTED / ACTIVE / ALL filtering and zone routing.
+- Added a movable Stable Training timer based on ESO's riding-training cooldown; 0 - READY means a new mount/stable stat upgrade is available.
+- Player unit frame now renders all buffs/debuffs exposed by ESO instead of collapsing extra player effects into +N. Target aura overflow behavior remains compact.
+- Added /esosuite as the primary slash command while retaining /esocoach as a legacy compatibility alias.
+- Kept ESOProgressionCoachSavedVars and the internal Lua namespace for upgrade continuity.
+- Preserved automatic recharge/repair, Quest/footer fixes, Session Play responsiveness, minimap/tools, Live Combat Stats fixes, and HoZayyBadazz ownership protection.
+
+
+0.11.2
+- Fixed Live Combat Stats penetration reads by combining ESO derived-stat and advanced-stat flat-value paths.
+- Fixed Critical Damage showing 0.0% when the live client exposes its usable value through the advanced stat flat-value channel.
+- Added the aggregate critical-percent API as a fallback when the Critical Damage percentage channel is empty.
+- Preserved auto recharge/repair, Quest/footer fixes, Session Play responsiveness, HUD/minimap/tools, and HoZayyBadazz ownership protection.
+
+0.11.1
+- Removed the dedicated Lore Library / Lorebook tab and /esocoach lore commands.
+- Kept automatic weapon recharge and armor repair, including combat entry/exit checks, configurable thresholds, Crown repair-kit protection, settings controls, and /esocoach maintain.
+- Preserved all prior Quest, footer, Session Play, HUD, minimap, utility, and protection updates.
+
+0.11.0
+- Added a complete Lore Library tab backed by ESO API 101050: every exposed lore category, collection, book title, and known/missing state.
+- Added MISSING / ALL BOOKS / KNOWN filters, mouse-wheel browsing, selected-row highlighting, and /esocoach lore <query> search across titles, collections, and categories.
+- Added lore detail output and clear messaging that ESO does not expose individual lore-book world coordinates through the addon API.
+- Added automatic weapon recharge using filled soul gems when equipped weapon charge falls below a configurable threshold.
+- Added automatic armor repair using backpack repair kits when equipped armor condition falls below a configurable threshold.
+- Maintenance checks can run on combat entry and combat exit, avoid Crown repair kits by default, and can be triggered manually with /esocoach maintain.
+- Added LibAddonMenu controls for maintenance enablement, thresholds, transition triggers, Crown-kit preference, and chat messages.
+- Updated compatibility probes for Lore Library and equipment-maintenance APIs.
+
+Version 0.10.3
+- Made Session Play duration buttons update their selected state and status label immediately.
+- Continuous, 30, 60, 120, and Custom session switches no longer wait for the full throttled planner refresh to show feedback.
+- Kept the heavier snapshot/planner rebuild deferred to preserve performance.
+
+0.10.2
+- Fixed severe overlap between the Quest tab's Route to Starter/hint area and the global footer/navigation.
+- Increased the Quest-tab expanded window height so the quest action footer ends above the global footer hint and tabs with clear spacing.
+- Preserved the v0.10.1 quest-row spacing and selected-quest highlight behavior.
+
+0.10.1
+- Fixed Quest tab layout overlap between the final quest row and the bottom hint/action footer.
+- Fixed horizontal overlap between long quest titles and the right-aligned quest status/access label.
+- Added persistent selected-row styling so clicking a quest visibly highlights the selected quest.
+- Selected quest title/detail/status now use stronger contrast while preserving DLC/Chapter status coloring.
+
+0.10.0
+- Added proprietary All Rights Reserved distribution terms and source ownership notices.
+- Added NOTICE.txt and copyright headers to distributed Lua/XML source files.
+- No gameplay behavior changed as part of this packaging/legal-notice update.
+- Added QUESTS browser with scrollable known not-started quest discovery catalog.
+- Added DLC/Chapter access labels and starter/zone details.
+- Added quest selection -> MAP routing handoff; acceptance still requires normal ESO interaction.
+- Added /esocoach quest <name or zone>.
+- XP/GOLD/BALANCED Activity goal switches now reuse cached source entries for instant reranking.
+- Fixed Critical Damage -0.0% normalization.
+- Group frame only appears in a real group, removes GROUP title, and companion identity includes health where exposed.
+
+ESO Progression Coach v0.9.5
+
+- Removed the redundant PLAYER + COMPANION status text from the solo companion Group frame.
+- The Group frame now keeps only the GROUP title plus the actual player/companion rows in solo-companion mode.
+- Preserved dynamic Group/Raid sizing, menu suppression, dark HUD panels, contextual Player frame, and intelligent Mini Map behavior.
+
+ESO Progression Coach v0.9.4
+
+- Group frame now resizes vertically to exactly the number of visible member rows.
+- Solo player + companion mode no longer leaves space reserved for four group rows.
+- Raid frame now recalculates its active grid dimensions from the current roster size.
+- Visible raid rows are reflowed into balanced columns so inactive slots do not create large empty areas.
+- Layout mode still exposes a useful preview area for repositioning frames.
+
+ESO Progression Coach v0.9.3
+- Player frame is contextual by default: hidden while idle/full; visible in combat, while Health is damaged, or while Magicka/Stamina are below full; stays visible while those resources recover.
+- Live Combat Stats (PEN/PWR/SR/PR/CC/CD) are combat-only by default, with Layout Mode still providing a move preview.
+- Added immediate combat-state refresh plus a lightweight contextual visibility pulse for responsive show/hide behavior.
+- Strengthened gameplay-only suppression: Pause, Character, Inventory, Journal, Settings, Store, Crafting, Collections, and World Map scenes override EPC interaction/layout modes.
+- Dark HUD backgrounds are more opaque/readable by default; old near-transparent saved settings migrate once to 72% panel opacity.
+- Player aura slots now receive the same dark readable styling as target aura slots.
+- Preserves v0.9.2 companion-level hotfix, v0.9.1 group deduplication, and v0.9.0 intelligent minimap/navigation features.
+
+ESO Progression Coach v0.9.2
+- Fixed live-client crash: bad argument #2 to tonumber (base out of range) in UnitFrames:GetCompanionForMember.
+- GetActiveCompanionLevelInfo returns multiple values; numeric conversion now collapses ESO API results to the first value before tonumber.
+- Added safeNumber wrappers in UnitFrames.lua and MiniMap.lua and migrated direct tonumber(safe(...)) call sites to prevent the same class of multi-return bug.
+- Preserves v0.9.1 group deduplication/native-frame suppression and all v0.9.0 minimap/HUD features.
+
+ESO Progression Coach v0.9.1
+- Fixed duplicate group-member/name rendering by deduplicating group unit tags by ESO unit identity and display/name fallback.
+- Added a defensive companion identity guard so a member can never be rendered again as its own companion line.
+- Strengthened replacement of ESO native group/raid frames by applying the same hidden reason to already-created group, raid, and companion-raid frame objects.
+- Refreshes ESO native subgroup anchor labels after replacement state changes so leftover native GROUP/raid labels do not remain beneath EPC.
+- Preserves all v0.9.0 Player aura, minimap, menu suppression, combat, progression, travel, and utility features.
+
+ESO Progression Coach v0.9.0
+================================
+
+- Added compact self BUFFS and DEBUFFS to the Player frame without adding frame height.
+- Self auras prioritize timed combat effects, then locally cast effects and soonest expiry; overflow is summarized as +N.
+- Rebuilt the Mini Map as an intelligent navigation layer with SMART, QUEST, EXPLORE, GROUP, MINIMAL, and CUSTOM modes.
+- Added adaptive zoom that widens while mounted and tightens during combat without overwriting the user's base zoom.
+- Added off-screen edge guidance for quest, waypoint, rally, and group-leader destinations.
+- Added live current-map POI prioritization, configurable density, and simple spatial clustering to reduce pin spam.
+- Added rally-point and emphasized group-leader navigation.
+- Added a short fading movement breadcrumb trail, cardinal labels, live normalized coordinates, and context/bearing text.
+- SMART mode automatically hides lower-priority POIs, wayshrines, and breadcrumbs during combat.
+- Improved POI ordering as the player moves without repeatedly re-enumerating the full POI API.
+- The full World Map now suppresses the EPC HUD before interaction/layout exemptions are considered.
+- Preserved independent Mini Map drag/lock/reset, gameplay-only HUD behavior, default ESO frame replacement, Target Builds, combat analytics, travel, TOOLS caching, and all advisory-only safety boundaries.
+
+ESO Progression Coach 0.8.5
+
+0.8.5 - Gameplay-Only Replacement HUD
+- Player frame now contains only three resource bars/values; Health/Magicka/Stamina text labels are removed.
+- Group frame now shows player/member name, level/CP, role/status, and companion name + level where ESO exposes it.
+- Solo player + active companion can use the Group frame as an identity/health panel.
+- Group/Raid resource clutter reduced to Health-focused rows.
+- Optional default-on replacement mode reason-scope-hides ESO native player resource bars, target frame, group/raid frames, and local companion frame while EPC replacements are enabled.
+- All EPC persistent HUD elements, including Mini Map and compact Combat HUD, hide in Pause, Character, Inventory, World Map, Journal, Crafting, Store, Collections, and similar UI scenes, then restore in gameplay.
+- Existing independent Mini Map drag surface and saved positioning retained.
+
+
+0.8.4 - Resource-Only Player Frame + Reliable Mini Map Drag
+- Player frame now shows only Health, Magicka, and Stamina.
+- Removed player name, level/CP, and companion text from the persistent Player frame.
+- Reduced Player frame height from 132 to 88 UI units.
+- Added a dedicated full-size Mini Map drag surface in Move Mode so map tiles, pins, and labels cannot intercept clicks.
+- Added drag start/stop fallbacks plus OnMoveStop position saving for more reliable persistence.
+- Mouse-wheel zoom continues to work while Mini Map Move Mode is active.
+- Preserved the Health-only Target frame, compact target auras, menu-aware minimap hiding, and all prior systems.
+
+0.8.3 - Compact Target Resource Layout
+- Removed Magicka and Stamina bars from the Target frame.
+- Target frame now focuses on name/level, Health, and compact priority buffs/debuffs.
+- Reduced Target frame height from 166 to 120 UI units to reclaim screen space.
+- Player frame still shows Health, Magicka, Stamina, player level/CP, and companion level.
+- Preserved independent movable minimap and all v0.8.2 functionality.
+
+0.8.2 - Independent Mini Map Move Mode
+- Added a dedicated Mini Map move state separate from the Player/Target/Group/Raid/Stats layout mode.
+- /esocoach minimap move now unlocks only the Mini Map; other HUD frames remain locked.
+- /esocoach minimap lock saves the current position and returns the map to non-interactive gameplay behavior.
+- /esocoach minimap reset now resets only the Mini Map through a dedicated helper.
+- Added Move Mini Map, Lock Mini Map, and Reset Mini Map buttons to addon settings.
+- Mini Map Move Mode keeps the map visible even though mouse/UI mode is active, so menu auto-hide does not prevent repositioning.
+- Pressing the Interact with Coach keybind while moving the Mini Map locks it immediately.
+- Preserved v0.8.1 compact target auras, menu-aware minimap hiding, soft translucent HUD backgrounds, and all prior progression systems.
+
+ESO Progression Coach v0.8.1
+
+- Mini Map is now gameplay-only by default: it temporarily hides in character, inventory, crafting, store, journal, collections, and other UI/menu screens, then restores itself automatically on return to gameplay.
+- Added a Hide mini map in menus setting; the full World Map continues to suppress the mini map regardless.
+- Rebuilt the Target aura area into a compact two-column strip: BUFFS on the left and DEBUFFS on the right in the same horizontal band.
+- Reduced Target frame height from 234 to 166 UI units while preserving Health, Magicka, Stamina, target name, level/CP info, timers, stacks, and player-prioritized debuffs.
+- Aura icons are now 28px and configurable from 3-6 per type; additional auras are summarized in the header as +N instead of expanding the frame.
+- Preserved the soft translucent HUD style, movable frames, combat meter, minimap markers, Player/Companion levels, and all v0.8.0 progression features.
+
+0.8.0 - Integrated Mini Map
+- Added a persistent, independently movable Mini Map integrated with the HUD layout system.
+- Added a tile-based current-map renderer using ESO-exposed map tile data; no third-party map database is bundled.
+- Added a centered rotating player arrow on a north-up map.
+- Added optional current-map markers for the player waypoint, focused quest objective, discovered/unlocked wayshrines, group members, and active companion.
+- Added Mini Map size, zoom, overall opacity, map-art opacity, and marker visibility settings.
+- Added /esocoach minimap show|hide|move|lock|reset and /esocoach minimap zoom <0.70-2.00>.
+- Added mouse-wheel Mini Map zoom while HUD Layout Mode is active.
+- Mini Map hides while ESO's full World Map is open and re-syncs afterward to reduce shared-map-state conflicts.
+- Added MINI_MAP compatibility diagnostics and kept all Mini Map behavior read-only/advisory.
+- Preserved the v0.7.2 soft translucent Player/Target/Group/Raid/Stats HUD, aura layout, player/companion levels, and all prior progression systems.
+
+0.7.2 - Unit-frame polish
+- Added light translucent HUD backgrounds by default with an independent 8-45% background-opacity setting.
+- Kept the stronger old panel style optional; soft backgrounds do not increase frame footprint.
+- Expanded the Live Combat Stats panel so the title and stat values no longer clip at normal scale.
+- Reflowed Target BUFFS and DEBUFFS into separately labeled rows with additional vertical spacing to prevent overlap.
+- Player header now shows both character level and Champion Points when available.
+- Player frame now shows the active companion name and companion level using ESO companion APIs when a companion is active.
+- Increased Player/Target frame height only enough to fit the companion line and separated aura rows.
+
+0.7.1 - Frameless floating HUD
+- Player, Target, Group, Raid, and Live Stats frames now default to no large panel backgrounds.
+- Group/raid member row backgrounds and stat-cell backgrounds are transparent in normal gameplay.
+- Target aura tiles use transparent centers with thin status edges.
+- Resource bar tracks remain lightly shaded for readability while using far less visual mass.
+- Layout Mode temporarily shows faint drag surfaces so transparent frames remain easy to move.
+- Added an optional Show HUD panel backgrounds setting for players who prefer the previous framed style.
+- Preserves all v0.7.0 unit-frame, aura, group/raid, stat, movement, and combat-coach functionality.
+
+0.7.0 - Persistent advanced HUD / unit-frame suite
+- Added persistent Player frame with Health, Magicka, and Stamina values/percentages.
+- Added Target frame with target name, Health/Magicka/Stamina, and configurable live buff/debuff icon rows with timers and stack counts.
+- Target debuffs cast by the local player are prioritized in the visible debuff row.
+- Added automatic small Group frame for groups up to 4 and multi-column Raid frame for larger groups.
+- Group/Raid rows include member names, Group Finder roles, leader/local-player emphasis, dead/offline/range status, Health percentage, and compact Magicka/Stamina bars when ESO exposes those power pools.
+- Added a persistent Live Combat Stats panel for PEN, PWR, Spell Resistance, Physical Resistance, Critical Chance, and Critical Damage.
+- Added /esocoach frames move|lock|reset|show|hide and a preview layout mode so all persistent HUD frames can be positioned independently.
+- Added LibAddonMenu controls for per-frame visibility, Player/Target scale, Group/Raid scale, Stats scale, HUD opacity, target aura count, layout mode, and position reset.
+- Added compatibility probes for unit frames and advanced stats.
+- Persistent unit frames remain display-only; no automatic targeting, combat, group, or inventory actions were added.
+
+0.6.3 - Instant TOOLS navigation / performance pass
+- TOOLS sub-tabs now switch from cached views immediately instead of forcing a full Engine/Advisor character evaluation on every click.
+- Added independent short-lived caches for Inventory, Research, Zone/Collections, Dailies, and rendered utility views.
+- Utility data is pre-warmed after player activation in staggered passes so expensive reads do not stack on the same frame.
+- Removed full virtual Craft Bag enumeration from normal utility UI refreshes; it was unused by current cards and could require thousands of API calls.
+- Inventory/loot events now invalidate only affected utility caches and use a debounced utility-only refresh when TOOLS is visible.
+- Research and zone changes invalidate only the relevant caches.
+- Preserved advisory-only behavior; no item, crafting, combat, or travel automation added.
+
+0.6.2 - Movable full combat HUD
+- Compact combat HUD is now independently draggable and remembers its own screen position.
+- Default compact HUD location moved from top-center to the upper-right to stay out of the player's view.
+- Added /esocoach hud move, /esocoach hud lock, and /esocoach hud reset.
+- Added LibAddonMenu controls to move, lock, reset, scale, and change opacity of the combat HUD.
+- Hidden combat HUD now always shows the complete personal combat metric set regardless of role: DPS, total damage, damage crit rate, outgoing hit count, HPS, total healing, heal crit rate, heal count, DTPS, damage taken, block rate, and incoming-hit count.
+- Damage/Healer/Tank role awareness now highlights the most relevant metric row instead of hiding the other metrics.
+- Added LIVE/LAST FIGHT duration status to the compact meter.
+- No combat actions are automated.
+
+0.6.1 - Compact combat HUD hotfix
+- Fixed a live-client crash in UI.lua when the hidden compact combat HUD attempted to call an undefined UI-local number formatter.
+- Added a self-contained formatNumber helper to UI.lua so Damage, Healer, and Tank HUD branches no longer depend on private helpers from other modules.
+- Verified all nine combat-HUD numeric formatting calls now resolve to the local helper.
+- No gameplay automation or behavioral changes were added.
+
+0.6.0 - Adaptive Utility Command Center / premium UI expansion
+- Added a seventh TOOLS module with OVERVIEW, INVENTORY, RESEARCH, COLLECTIONS, and DAILIES views.
+- Added local account inventory snapshots and case-insensitive cross-character item search through /esocoach find.
+- Added backpack/bank pressure, craft-bag summary, NPC sell-value estimate, research-candidate count, and Target Set item count.
+- Added Blacksmithing, Clothier, Woodworking, and Jewelry trait research progress, active slots, timers, and researchable-backpack-item guidance.
+- Added current-zone POI completion, skyshard progress, nearest unfinished skyshard hint, account lore summary, and Target Set Sticker Book progress.
+- Added set-name collection search through /esocoach set.
+- Added daily/repeatable dashboard for accepted repeatable quests and supported daily reward eligibility signals.
+- Added advisory smart-loot tags for Target Set, learnable, researchable, and uncollected set pieces.
+- Integrated exploration hints into MAP and inventory/research pressure into Next Best Move.
+- Added role-aware premium UI accents, hover/pressed button feedback, wider layout, dedicated Utility Command Center cards, and seven-tab navigation.
+- Preserved the user's requested hidden-state behavior: only the compact combat meter may appear while the main coach is hidden.
+- Expanded compatibility probes for inventory, research, collections, zone completion, and skyshards.
+- Increased inventory-scan caching and suppresses utility scans during combat to reduce UI overhead.
+- Fixed an inherited AUTO-context syntax defect in Advisor.lua that could prevent the file from loading.
+- No automatic sell, destroy, deconstruct, research, learn, equip, or inventory-mutation actions were added.
+
+0.5.1
+- Added Compatibility.lua with runtime ESO API detection.
+- Added /esocoach compat diagnostics for core, gear, activities, travel, Champion, combat, role, and UI-mode capabilities.
+- Added one-time warning when the game API differs from the API validated for this release.
+- Added guarded module initialization and render/build calls so a changed API is less likely to crash the entire addon.
+- Added compatibility status to LibAddonMenu settings.
+- No network updater or self-modifying code; releases still update through ESOUI/Minion.
+
+0.5.0
+- Added Target Build profiles: Auto, Damage, Healer, Tank, and Solo.
+- Added 0-100 target-build completion tracking.
+- Added optional exact target-set tracking for two named sets.
+- BUILD now shows a Target Build roadmap and the next concrete gap.
+- Next Best Move can prioritize incomplete target-build gaps for gear/group/DPS goals.
+- Added optional TARGET KEEP chat alerts when new loot matches a named target set.
+- Added Target Build controls to LibAddonMenu and slash commands.
+- Target-loot analysis remains advisory; no automatic inventory actions were added.
+
+ESO Progression Coach 0.4.1
+
+- Session Planner now defaults to CONTINUOUS coaching and never imposes a time limit on the addon.
+- Added CONTINUOUS, 30, 60, 120, and CUSTOM controls directly to ACTIVITY.
+- Added custom session lengths from 15-240 minutes through settings or /esocoach session <minutes>.
+- Timed plans show remaining time and automatically fall back to continuous coaching when the plan window expires.
+- Added /esocoach session continuous and /esocoach session custom.
+- Session-plan expiration never disables BUILD, GEAR, SKILLS, COMBAT, ACTIVITY, MAP, AUTO focus, travel, or combat tracking.
+
+ESO Progression Coach 0.4.0
+
+- Added intelligent Next Best Move engine.
+- Added AUTO endgame focus that adapts to group size, instance context, role, and assisted quests.
+- Added 30/60/120 minute session planner to ACTIVITY.
+- Added persistent combat personal bests by role.
+- BUILD now surfaces one context-aware next action and explains why it was selected.
+- Activity ranking understands AUTO focus.
+- Added /esocoach session 30|60|120 and /esocoach focus auto.
+- Preserved role-aware combat, Champion, travel, quest routing, XP/gold planning, and all player-confirmed gameplay actions.
+
+0.3.2
+- Added role-aware coaching across BUILD, GEAR, SKILLS, COMBAT, ACTIVITY hints, and the hidden combat HUD.
+- Auto role follows ESO preferred Group Finder role when available; manual Damage/Healer/Tank override added.
+- Added tank-oriented incoming-damage and blocked-hit telemetry when ESO exposes the relevant combat events.
+- Hidden HUD now changes its four metrics by role.
+
+ESO Progression Coach v0.3.1
+================================
+
+- Added a compact live combat HUD that appears only when the main coach is hidden.
+- Compact HUD shows personal DPS, total damage, critical-damage event rate, and HPS, with a short post-fight result window.
+- Added personal outgoing-healing and HPS tracking to combat analysis.
+- Added best-effort observed group/raid contributor tracking for exposed group combat events.
+- COMBAT can show observed damage leader, healing leader, and your own DPS/HPS when teammate events are available.
+- Group/raid rankings are explicitly labeled observed estimates because ESO can omit or anonymize other players' combat events.
+- Added a setting to disable the compact hidden-state combat HUD.
+- No combat actions are automated and no group data is transmitted externally.
+
+ESO Progression Coach v0.3.0
+================================
+
+- Added endgame focus modes: DPS, GOLD, XP / CP, GEAR, DUNGEONS, TRIALS, SOLO, and QUESTING.
+- Added a two-row interactive focus selector to the BUILD tab for level-50 characters.
+- Added a dedicated COMBAT tab.
+- Added local post-combat DPS, total-damage, critical-event, DoT, pet-damage, target-count, and top-ability analysis.
+- Added Champion Point slottable auditing using ESO's read-only Champion/action-slot APIs.
+- Added endgame preparation scores for DPS, dungeons, trials, solo play, gear, and progression goals.
+- Expanded gear analysis with equipped set detection, complete-set counts, traits, enchants, quality, and set-piece summaries.
+- ACTIVITY rankings now receive an additional bias from the selected endgame focus.
+- GOLD focus automatically selects GOLD activity ranking; XP / CP focus automatically selects XP ranking.
+- Added /esocoach focus commands.
+- Added optional LibAddonMenu setting for endgame focus and a button to clear the last combat sample.
+- Expanded the minimum coach width and tab bar for the new COMBAT module.
+- Kept author/version metadata out of the visible in-game coach UI.
+- Champion Point analysis and combat coaching are read-only; no build or combat actions are automated.
+
+ESO Progression Coach v0.2.1
+
+- Fixed ACTIVITY rows not reliably receiving clicks by giving each row a dedicated button hit target.
+- Fixed MAP destination rows the same way.
+- Activity selection now refreshes immediately so ROUTE QUEST enables on the same click.
+- Explicitly enables mouse input on standard addon buttons.
+- Interaction hotkey now prefers ESO's direct game-camera UI mode API for more reliable mid-game mouse control.
+- Removed author and version text from the visible coach header.
+- Author/version metadata remain in the addon manifest for ESOUI/Minion publishing.
+
+CHANGELOG
+=========
+
+0.2.0 - Advanced UI, interaction mode, and endgame activity planner
+- Rebuilt the overlay with a premium dark/gold card-based visual system, stronger hierarchy, character badge, active-tab underline, interaction state styling, and improved compact mode.
+- Added ACTIVITY as a fifth full module alongside BUILD, GEAR, SKILLS, and MAP.
+- Added automatic leveling/endgame presentation based on level and Champion Point progression.
+- Added XP, GOLD, and BALANCED planner goals.
+- Added current-journal quest scanning for location, repeatability, visible direct-money rewards, and routing.
+- Added account-local quest completion learning for observed XP and quest-reward gold, using capped running averages instead of external telemetry.
+- Added session timing for newly accepted quests so repeat completions can learn personal XP/hour and gold/hour observations; history is capped/pruned to avoid unbounded SavedVariables growth.
+- Added curated repeatable activity guidance including random dungeon daily reward eligibility, Battleground daily reward guidance, crafting writs, Undaunted Pledges, Trial weekly objectives, Infinite Archive, and Tamriel Tome progression.
+- Added ROUTE QUEST to assist a selected journal quest and hand it to the existing quest-aware MAP router.
+- Added a second rebindable hotkey, Interact with Coach, that enters ESO UI mode so the player can operate the addon with the mouse during gameplay.
+- Interact mode automatically opens the coach and can expand a minimized panel; the same hotkey or Esc returns to normal camera mode.
+- Retained the separate Show / Hide Coach hotkey for simple visibility toggling.
+- Added /esocoach interact and /esocoach goal xp|gold|balanced commands.
+- Added endgame-oriented build and skill language so max-level players are not treated as leveling characters.
+- Preserved player-initiated-only travel and the existing focused-quest wayshrine ranking.
+
+0.1.6 - Quest-aware routing, character branding, and hotkey
+- Replaced the static overlay title with the current character's name.
+- Set the public add-on author to HoZayyBadazz in metadata, settings, and documentation.
+- Added a standard user-configurable ESO keybinding to show or hide the coach window.
+- Added /esocoach toggle and centralized visibility state so settings, slash commands, and the hotkey remain synchronized.
+- Added focused/assisted quest detection through ESO's tracked-quest API.
+- Added asynchronous current-objective position requests through ESO's documented quest assistance API.
+- Ranked discovered wayshrines by straight-line map distance when objective and shrine coordinates are directly comparable.
+- Added quest-zone-first fallback ranking when exact objective coordinates are unavailable.
+- Added a QUEST BEST marker, focused-quest route summary, and best-shrine status in MAP.
+- Reset the wayshrine browser to page one when the focused quest changes or exact position data arrives.
+- Added quest, tracking, objective, zone, and player-activation refresh handling.
+- Kept all travel player initiated; quest focus changes only the ranking and never starts travel.
+
+0.1.5 - Wayshrine and social travel
+- Rebuilt MAP as a selectable travel browser.
+- Added discovered and unlocked wayshrine listing with current-zone-first sorting.
+- Added recall cost, availability, selection status, and paginated destinations.
+- Added online FRIENDS, GUILD, and GROUP travel modes through ESO's documented Travel to Player functions.
+- Added guild-member deduplication for players shared across multiple guilds.
+- Added ESO access, combat, location, offline, and affordability checks before enabling TRAVEL.
+- Kept travel explicitly player initiated: select a row, then click TRAVEL.
+- Added full selected-destination details below the list when a row is shortened.
+- Shortened the level-15 Sorcerer weapon-bar explanation.
+- Updated security and privacy documentation to describe the narrow travel-action exception.
+
+0.1.4 - Text wrapping and weapon-bar clarity
+- Replaced one-line ellipsis behavior with deterministic word wrapping for titles, explanations, and all priority rows.
+- Increased the minimum panel width and expanded layout height so wrapped text has room to display.
+- Added multi-line limits and safe overflow ellipses instead of letting text collide with later controls.
+- Reworded the confusing "each active bar" instruction as "both weapon bars."
+- Explained front/main and back/backup weapon-bar terminology directly in the SKILLS view.
+- Added a read-only active weapon-bar indicator using GetActiveWeaponPairInfo.
+- Updated Sorcerer and general build guidance to use consistent front/back bar language.
+- Preserved existing position, scale, opacity, minimized state, and selected tab settings.
+
+0.1.3 - Functional tab modules
+- Replaced the placeholder recommendation filter with four complete tab-specific view models.
+- BUILD now shows role, primary resource, health, score, and build priorities.
+- GEAR now shows armor mix, equipped weapon types, average quality, and gear priorities.
+- SKILLS now shows unspent points, class, second-bar status, and skill priorities.
+- MAP now shows the current zone and non-automated exploration guidance.
+- Reclassified Sorcerer advice so BUILD and SKILLS provide genuinely different priorities.
+- Fixed tabs that previously went blank or reused unrelated recommendations.
+- Replaced the overlapping multi-line stats label with four independent stat rows.
+- Switched item-quality reading to GetItemLinkDisplayQuality with a defensive fallback.
+- Added jewelry to the equipped-item quality summary.
+- Adjusted Build Score so unspent skill points reduce readiness instead of increasing it.
+- Added zone-change refresh support.
+
+0.1.2 - UI runtime hotfix
+- Fixed the repeated UI.lua:186 error caused by calling GetText on a ButtonControl.
+- Added defensive validation for saved tab selections.
+- Increased panel spacing so recommendation text no longer overlaps the tab row.
+- Made tab widths adapt to the saved panel width.
+- Replaced unsupported header symbols with ESO-font-safe text.
+
+0.1.1 - Public beta release candidate
+- Added the ZeniMax-required distribution disclaimer.
+- Added transparent AI-development disclosure.
+- Added AddOnVersion metadata for ESO/Minion tooling.
+- Updated optional LibAddonMenu-2.0 minimum metadata to AddOnVersion 43.
+- Added an equipped-bag event filter to reduce unnecessary inventory callbacks.
+- Added security, privacy, support, and public-release documentation.
+- Removed nonessential Markdown documentation from the distributable package.
+
+0.1.0 - Initial prototype
+- Added movable progression overlay, saved settings, scoring, and recommendations.

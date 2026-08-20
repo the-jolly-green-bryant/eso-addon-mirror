@@ -2049,6 +2049,11 @@ function BUI.Menu.Initialize()
 	local AdvancedMenu=true
 	--Setup the menu
 	MenuOptions_Init()
+
+	-- Build the option pages first. With LAM/LibGamepad we expose ONE panel named
+	-- "Bandit UI" and place all former pages below it as submenus. The legacy BUI
+	-- menu is kept unchanged as the fallback when LAM is not installed.
+	local prepared={}
 	for index,data in pairs(MenuOptions) do
 		local Options={}
 		for i=1, #data do
@@ -2066,12 +2071,43 @@ function BUI.Menu.Initialize()
 				end
 			end
 		end
-		MenuPanel[index].name=MenuNumber[index].."|t32:32:"..MenuIcon[index].."|t"..BUI.Loc(MenuPanel[index].name)
---		LAMb:RegisterAddonPanel("BUI_"..index, MenuPanel[index])
-		BUI.Menu.RegisterPanel("BUI_"..index, MenuPanel[index])
-		if MenuHandlers[index] then for event,handler in pairs(MenuHandlers[index]) do _G["BUI_"..index]:SetHandler(event, handler) end end
---		LAMb:RegisterOptionControls("BUI_"..index, Options)
-		BUI.Menu.RegisterOptions("BUI_"..index, Options)
+
+		local pageName=MenuNumber[index].."|t32:32:"..MenuIcon[index].."|t"..BUI.Loc(MenuPanel[index].name)
+		table.insert(prepared, {
+			index=index,
+			name=pageName,
+			options=Options,
+			order=tonumber(string.match(MenuNumber[index] or "999", "%d+")) or 999,
+		})
+	end
+
+	table.sort(prepared,function(a,b)
+		if a.order==b.order then return a.index<b.index end
+		return a.order<b.order
+	end)
+
+	local useGroupedLAM=BUI.SettingsBridge and BUI.SettingsBridge.Available and BUI.SettingsBridge.Available() and BUI.SettingsBridge.RegisterGrouped
+	if useGroupedLAM then
+		local sections={}
+		for _,entry in ipairs(prepared) do
+			table.insert(sections,{id=entry.index,name=entry.name,options=entry.options})
+		end
+		BUI.SettingsBridge.RegisterGrouped("BUI_BanditUI",{
+			name="Bandit UI",
+			displayName="Bandit UI",
+			author="Satuve",
+			version=tostring(BUI.Version or ""),
+		},sections)
+	else
+		for _,entry in ipairs(prepared) do
+			local index=entry.index
+			MenuPanel[index].name=entry.name
+			local panel=BUI.Menu.RegisterPanel("BUI_"..index, MenuPanel[index])
+			BUI.Menu.RegisterOptions("BUI_"..index, entry.options)
+			if MenuHandlers[index] and panel and panel.SetHandler then
+				for event,handler in pairs(MenuHandlers[index]) do panel:SetHandler(event, handler) end
+			end
+		end
 	end
 	BUI.init.Menu=true
 end

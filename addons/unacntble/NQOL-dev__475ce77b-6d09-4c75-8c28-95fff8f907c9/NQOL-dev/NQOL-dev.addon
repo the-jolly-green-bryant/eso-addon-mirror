@@ -1,9 +1,9 @@
 ## Title: NQOL-dev
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 298
-## LastProdVersionCommitID: a4b4312
-## LastDevVersionCommitID: b9ed919
+## AddOnVersion: 302
+## LastProdVersionCommitID: e5a0110
+## LastDevVersionCommitID: 68a3bb6
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariablesDev NQOLLanguageSettingsDev
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames
@@ -76,9 +76,11 @@ Features/Progress.lua
 Features/ProgressGold.lua
 Data/DungeonAchievements/dungeons.lua
 Data/DungeonAchievements/dlc-dungeons.lua
+Data/DungeonAchievements/solo-dungeons.lua
 Data/DungeonAchievements/trials.lua
 Data/DungeonAchievements/arenas.lua
 Features/ProgressDungeons.lua
+Features/ProgressSoloDungeons.lua
 Features/ProgressTrials.lua
 Features/ProgressArenas.lua
 Features/ProgressInfiniteArchive.lua

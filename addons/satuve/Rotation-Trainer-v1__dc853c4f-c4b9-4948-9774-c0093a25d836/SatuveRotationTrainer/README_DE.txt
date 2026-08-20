@@ -156,3 +156,12 @@ v0.6.29:
 - Die weiße/native DETECT BOX wurde komplett entfernt.
 - Zahlen 1-5, SWAP und ULT bleiben wieder direkt auf den bewegten Elementen sichtbar.
 - FIXED/ADAPT Geschwindigkeitsumschaltung bleibt erhalten.
+
+v0.6.30 - LibAddonMenu / Controller
+- Komplettes Setup als LibAddonMenu-2.0 Panel eingebunden.
+- LibGamepad wird optional unterstuetzt und macht die Standard-LAM-Regler/Dropdowns/Buttons im Gamepad-Menue bedienbar.
+- Keine zweite einzelne Rotation-Trainer-Seite mehr ueber ZO_GameMenu_AddSettingPanel.
+- Spammable, Execute, Ultimate und Priority 1-10 koennen direkt ueber Front-/Backbar-Slots zugewiesen werden.
+- GCD, Execute-HP, Swap Before/After, PRESS Hold, Fixed Flow Speed, AHK Colors, Recast und Early Window sind im LAM-Menue.
+- /srt oder /srt config oeffnet das LAM-Menue; /srt legacy oeffnet die bisherige grosse Setup-Oberflaeche.
+- Benötigt LibAddonMenu-2.0. Fuer echte Controller-Navigation im Gamepad-Menue LibGamepad installieren/aktivieren.

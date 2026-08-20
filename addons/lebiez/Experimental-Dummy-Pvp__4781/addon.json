@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/lebiez/Experimental-Dummy-Pvp__4781",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "lebiez",
+  "canonical_id": "esoui:4781",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4781",
+  "deleted": false,
+  "directories": [
+    "ExperimentalDummyPvp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4781/",
+  "fingerprint": "7da47423292c7af1a145226c6c8d3d9bf5bc8633693b5a0330e6447f878c5d87",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17044.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17045.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4781",
+  "source_url": "https://www.esoui.com/downloads/info4781-ExperimentalDummyPvp.html",
+  "stats": {
+    "downloads": 3,
+    "favorites": 0,
+    "monthly_downloads": 3
+  },
+  "title": "Experimental Dummy Pvp",
+  "updated_at": 1787129175000,
+  "version": "1.0"
+}

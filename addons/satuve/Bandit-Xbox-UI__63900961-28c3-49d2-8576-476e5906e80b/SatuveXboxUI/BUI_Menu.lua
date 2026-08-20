@@ -207,6 +207,19 @@ local function SettingsWindow_Init()
 end
 
 function BUI.Menu.Open()
+	-- When LibAddonMenu is active, open its registered Satuve panel. LibGamepad
+	-- can expose that same panel inside ESO's controller UI.
+	if BUI.SettingsBridge and BUI.SettingsBridge.UsingLAM and BUI.SettingsBridge.UsingLAM() then
+		local lam = rawget(_G, "LibAddonMenu2")
+		if not lam and rawget(_G, "LibStub") then
+			local ok, found = pcall(LibStub, "LibAddonMenu-2.0")
+			if ok then lam = found end
+		end
+		if lam and BUI.SettingsBridge.firstPanel and lam.OpenToPanel then
+			lam:OpenToPanel(BUI.SettingsBridge.firstPanel)
+			return
+		end
+	end
 --	SCENE_MANAGER:SetInUIMode(false)
 	local function SettingsMenu()
 		local inGameMenu = rawget(_G, "ZO_GameMenu_InGame")

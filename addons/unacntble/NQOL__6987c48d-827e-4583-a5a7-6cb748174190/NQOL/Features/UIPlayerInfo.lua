@@ -19,7 +19,9 @@ local XP_BAR_GAP = 2
 local XP_BAR_INSET = 2
 local XP_BAR_MIN_HEIGHT = 16
 local XP_BAR_BOTTOM_PADDING = 4
-local ENLIGHTENMENT_BAR_HEIGHT = 4
+local THIN_BAR_HEIGHT_PIXELS_MIN = 1
+local THIN_BAR_HEIGHT_PIXELS_MAX = 10
+local THIN_BAR_HEIGHT_PIXELS_DEFAULT = 4
 local ENLIGHTENMENT_PREVIEW_PROGRESS = 0.65
 local ENLIGHTENMENT_POOL_MAX_XP = 4800000
 local XP_BAR_TEXTURE = "EsoUI/Art/Miscellaneous/white.dds"
@@ -96,12 +98,16 @@ local defaults = {
             iconColor = { r = 1, g = 1, b = 1, a = 1 },
             backgroundOpacity = 90,
             xpBar = false,
+            xpBarColor = { r = 0.08, g = 0.72, b = 0.82, a = 1 },
+            xpBarHeightPixels = THIN_BAR_HEIGHT_PIXELS_DEFAULT,
+            xpBarProgress = true,
             xpBarBackgroundOpacity = 100,
             xpBarFont = NQOL.Util.GetDefaultFont(),
             xpBarFontSize = 12,
             xpBarTextColor = { r = 1, g = 1, b = 1, a = 1 },
             enlightenmentBar = false,
             enlightenmentBarColor = { r = 0.86, g = 0.72, b = 0.28, a = 1 },
+            enlightenmentBarHeightPixels = THIN_BAR_HEIGHT_PIXELS_DEFAULT,
             fields = {
                 playerId = PLACEMENT_OFF,
                 characterName = "L2",
@@ -131,6 +137,15 @@ local textureControls = {}
 local Clamp = NQOL.Util.Clamp
 local Round = NQOL.Util.Round
 
+local function GetThinBarHeight(pixelHeight)
+    local uiScale = GetUIGlobalScale and tonumber(GetUIGlobalScale()) or 1
+    if uiScale <= 0 then
+        uiScale = 1
+    end
+
+    return pixelHeight / uiScale
+end
+
 local function NormalizeColor(settings, defaultSettings, key)
     if type(settings[key]) ~= "table" then
         settings[key] = {}
@@ -152,18 +167,20 @@ local function GetSettings()
     NQOL.Settings.Boolean(settings, defaultSettings, "enabled")
     NQOL.Settings.Boolean(settings, defaultSettings, "showInSettings")
     NQOL.Settings.Boolean(settings, defaultSettings, "xpBar")
+    NQOL.Settings.Boolean(settings, defaultSettings, "xpBarProgress")
     NQOL.Settings.Boolean(settings, defaultSettings, "enlightenmentBar")
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "horizontalPosition", 0, 100)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "verticalPosition", 0, 100)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "separation", SEPARATION_MIN, SEPARATION_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "fontSize", FONT_SIZE_MIN, FONT_SIZE_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "backgroundOpacity", BACKGROUND_OPACITY_MIN, BACKGROUND_OPACITY_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaultSettings, "xpBarHeightPixels", THIN_BAR_HEIGHT_PIXELS_MIN, THIN_BAR_HEIGHT_PIXELS_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaultSettings, "enlightenmentBarHeightPixels", THIN_BAR_HEIGHT_PIXELS_MIN, THIN_BAR_HEIGHT_PIXELS_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "xpBarBackgroundOpacity", BACKGROUND_OPACITY_MIN, BACKGROUND_OPACITY_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "xpBarFontSize", FONT_SIZE_MIN, FONT_SIZE_MAX, true)
     settings.width = nil
     settings.height = nil
     settings.backgroundColor = nil
-    settings.xpBarColor = nil
     settings.enlightenmentBarBackgroundOpacity = nil
 
     if not NQOL.Util.IsFontChoice(settings.font) then
@@ -178,6 +195,7 @@ local function GetSettings()
     NormalizeColor(settings, defaultSettings, "championPointsColor")
     NormalizeColor(settings, defaultSettings, "cpIconColor")
     NormalizeColor(settings, defaultSettings, "iconColor")
+    NormalizeColor(settings, defaultSettings, "xpBarColor")
     NormalizeColor(settings, defaultSettings, "xpBarTextColor")
     NormalizeColor(settings, defaultSettings, "enlightenmentBarColor")
 
@@ -286,6 +304,24 @@ local function GetHud()
     backdrop:SetMouseEnabled(false)
     hud.backdrop = backdrop
 
+    local xpBarTrack = WINDOW_MANAGER:CreateControl(nil, hud, CT_BACKDROP)
+    xpBarTrack:SetCenterColor(0, 0, 0, 0.95)
+    xpBarTrack:SetEdgeColor(0, 0, 0, 0)
+    xpBarTrack:SetEdgeTexture("", 1, 1, 0, 0)
+    xpBarTrack:SetPixelRoundingEnabled(true)
+    xpBarTrack:SetMouseEnabled(false)
+    xpBarTrack:SetDrawLevel(2)
+    xpBarTrack:SetHidden(true)
+    hud.xpBarTrack = xpBarTrack
+
+    local xpBarFill = WINDOW_MANAGER:CreateControl(nil, xpBarTrack, CT_BACKDROP)
+    xpBarFill:SetEdgeColor(0, 0, 0, 0)
+    xpBarFill:SetEdgeTexture("", 1, 1, 0, 0)
+    xpBarFill:SetPixelRoundingEnabled(true)
+    xpBarFill:SetDrawLevel(3)
+    xpBarFill:SetHidden(true)
+    hud.xpBarFill = xpBarFill
+
     local xpTrack = WINDOW_MANAGER:CreateControl(nil, hud, CT_BACKDROP)
     xpTrack:SetCenterColor(0, 0, 0, 0.95)
     xpTrack:SetEdgeColor(0.86, 0.72, 0.28, 0.95)
@@ -315,6 +351,7 @@ local function GetHud()
     enlightenmentTrack:SetCenterColor(0, 0, 0, 0.95)
     enlightenmentTrack:SetEdgeColor(0, 0, 0, 0)
     enlightenmentTrack:SetEdgeTexture("", 1, 1, 0, 0)
+    enlightenmentTrack:SetPixelRoundingEnabled(true)
     enlightenmentTrack:SetMouseEnabled(false)
     enlightenmentTrack:SetDrawLevel(2)
     enlightenmentTrack:SetHidden(true)
@@ -323,6 +360,7 @@ local function GetHud()
     local enlightenmentFill = WINDOW_MANAGER:CreateControl(nil, enlightenmentTrack, CT_BACKDROP)
     enlightenmentFill:SetEdgeColor(0, 0, 0, 0)
     enlightenmentFill:SetEdgeTexture("", 1, 1, 0, 0)
+    enlightenmentFill:SetPixelRoundingEnabled(true)
     enlightenmentFill:SetDrawLevel(3)
     enlightenmentFill:SetHidden(true)
     hud.enlightenmentFill = enlightenmentFill
@@ -528,11 +566,19 @@ end
 
 local function GetHudHeight(settings)
     local height = GetRowHeight(settings)
+    local xpBarHeight = GetThinBarHeight(settings.xpBarHeightPixels)
+    local enlightenmentBarHeight = GetThinBarHeight(settings.enlightenmentBarHeightPixels)
+    if settings.xpBar or settings.xpBarProgress or settings.enlightenmentBar then
+        height = height + XP_BAR_GAP + XP_BAR_BOTTOM_PADDING
+    end
+    if settings.enlightenmentBar then
+        height = height + enlightenmentBarHeight
+    end
     if settings.xpBar then
-        height = height + XP_BAR_GAP + GetXpBarHeight(settings) + XP_BAR_BOTTOM_PADDING
-        if settings.enlightenmentBar then
-            height = height + ENLIGHTENMENT_BAR_HEIGHT
-        end
+        height = height + xpBarHeight
+    end
+    if settings.xpBarProgress then
+        height = height + GetXpBarHeight(settings)
     end
 
     return height
@@ -688,7 +734,7 @@ local function GetEnlightenmentProgress()
     return Clamp(remainingXp, 0, ENLIGHTENMENT_POOL_MAX_XP), ENLIGHTENMENT_POOL_MAX_XP
 end
 
-local function RenderEnlightenmentBar(width, y, settings)
+local function RenderEnlightenmentBar(width, y, height, settings)
     if not settings.enlightenmentBar then
         hud.enlightenmentTrack:SetHidden(true)
         return
@@ -702,7 +748,7 @@ local function RenderEnlightenmentBar(width, y, settings)
     local color = settings.enlightenmentBarColor
     hud.enlightenmentTrack:ClearAnchors()
     hud.enlightenmentTrack:SetAnchor(TOPLEFT, hud, TOPLEFT, 0, y)
-    hud.enlightenmentTrack:SetDimensions(width, ENLIGHTENMENT_BAR_HEIGHT)
+    hud.enlightenmentTrack:SetDimensions(width, height)
     hud.enlightenmentTrack:SetCenterColor(0, 0, 0, 0.95)
     hud.enlightenmentTrack:SetHidden(false)
 
@@ -714,41 +760,80 @@ local function RenderEnlightenmentBar(width, y, settings)
 
     hud.enlightenmentFill:ClearAnchors()
     hud.enlightenmentFill:SetAnchor(TOPLEFT, hud.enlightenmentTrack, TOPLEFT, 0, 0)
-    hud.enlightenmentFill:SetDimensions(fillWidth, ENLIGHTENMENT_BAR_HEIGHT)
+    hud.enlightenmentFill:SetDimensions(fillWidth, height)
     hud.enlightenmentFill:SetCenterColor(color.r, color.g, color.b, color.a)
     hud.enlightenmentFill:SetHidden(fillWidth <= 0)
 end
 
-local function RenderXpBar(width, rowHeight, settings)
+local function RenderXpBar(width, y, height, currentXp, totalXp, settings)
     if not settings.xpBar then
-        hud.xpTrack:SetHidden(true)
-        hud.enlightenmentTrack:SetHidden(true)
+        hud.xpBarTrack:SetHidden(true)
         return
     end
 
-    local barHeight = GetXpBarHeight(settings)
-    local currentXp, totalXp, text = GetXpProgress()
+    hud.xpBarTrack:ClearAnchors()
+    hud.xpBarTrack:SetAnchor(TOPLEFT, hud, TOPLEFT, 0, y)
+    hud.xpBarTrack:SetDimensions(width, height)
+    hud.xpBarTrack:SetCenterColor(0, 0, 0, 0.95)
+    hud.xpBarTrack:SetHidden(false)
+
+    local progress = Clamp(currentXp / totalXp, 0, 1)
+    local fillWidth = math.floor(width * progress + 0.5)
+    if currentXp > 0 then
+        fillWidth = math.max(fillWidth, 1)
+    end
+
+    local color = settings.xpBarColor
+    hud.xpBarFill:ClearAnchors()
+    hud.xpBarFill:SetAnchor(TOPLEFT, hud.xpBarTrack, TOPLEFT, 0, 0)
+    hud.xpBarFill:SetDimensions(fillWidth, height)
+    hud.xpBarFill:SetCenterColor(color.r, color.g, color.b, color.a)
+    hud.xpBarFill:SetHidden(fillWidth <= 0)
+end
+
+local function RenderProgressBars(width, rowHeight, settings)
     local y = rowHeight + XP_BAR_GAP
-    local enlightenmentHeight = settings.enlightenmentBar and ENLIGHTENMENT_BAR_HEIGHT or 0
+    local xpBarHeight = GetThinBarHeight(settings.xpBarHeightPixels)
+    local enlightenmentBarHeight = GetThinBarHeight(settings.enlightenmentBarHeightPixels)
 
-    RenderEnlightenmentBar(width, y, settings)
+    local currentXp
+    local totalXp
+    local text
+    if settings.xpBar or settings.xpBarProgress then
+        currentXp, totalXp, text = GetXpProgress()
+    end
 
-    hud.xpTrack:ClearAnchors()
-    hud.xpTrack:SetAnchor(TOPLEFT, hud, TOPLEFT, 0, y + enlightenmentHeight)
-    hud.xpTrack:SetDimensions(width, barHeight)
-    hud.xpTrack:SetCenterColor(0, 0, 0, settings.xpBarBackgroundOpacity * 0.0095)
-    hud.xpTrack:SetHidden(false)
+    RenderXpBar(width, y, xpBarHeight, currentXp, totalXp, settings)
+    if settings.xpBar then
+        y = y + xpBarHeight
+    end
 
-    hud.xpStatus:ClearAnchors()
-    hud.xpStatus:SetAnchor(TOPLEFT, hud.xpTrack, TOPLEFT, XP_BAR_INSET, XP_BAR_INSET)
-    hud.xpStatus:SetAnchor(BOTTOMRIGHT, hud.xpTrack, BOTTOMRIGHT, -XP_BAR_INSET, -XP_BAR_INSET)
-    hud.xpStatus:SetColor(0.08, 0.72, 0.82, 1)
-    hud.xpStatus:SetMinMax(0, totalXp)
-    hud.xpStatus:SetValue(currentXp)
+    if settings.xpBarProgress then
+        local barHeight = GetXpBarHeight(settings)
 
-    hud.xpLabel:SetFont(GetXpFont(settings))
-    hud.xpLabel:SetText(text)
-    hud.xpLabel:SetColor(settings.xpBarTextColor.r, settings.xpBarTextColor.g, settings.xpBarTextColor.b, settings.xpBarTextColor.a)
+        hud.xpTrack:ClearAnchors()
+        hud.xpTrack:SetAnchor(TOPLEFT, hud, TOPLEFT, 0, y)
+        hud.xpTrack:SetDimensions(width, barHeight)
+        hud.xpTrack:SetCenterColor(0, 0, 0, settings.xpBarBackgroundOpacity * 0.0095)
+        hud.xpTrack:SetHidden(false)
+
+        hud.xpStatus:ClearAnchors()
+        hud.xpStatus:SetAnchor(TOPLEFT, hud.xpTrack, TOPLEFT, XP_BAR_INSET, XP_BAR_INSET)
+        hud.xpStatus:SetAnchor(BOTTOMRIGHT, hud.xpTrack, BOTTOMRIGHT, -XP_BAR_INSET, -XP_BAR_INSET)
+        hud.xpStatus:SetColor(0.08, 0.72, 0.82, 1)
+        hud.xpStatus:SetMinMax(0, totalXp)
+        hud.xpStatus:SetValue(currentXp)
+
+        hud.xpLabel:SetFont(GetXpFont(settings))
+        hud.xpLabel:SetText(text)
+        hud.xpLabel:SetColor(settings.xpBarTextColor.r, settings.xpBarTextColor.g, settings.xpBarTextColor.b, settings.xpBarTextColor.a)
+
+        y = y + barHeight
+    else
+        hud.xpTrack:SetHidden(true)
+    end
+
+    RenderEnlightenmentBar(width, y, enlightenmentBarHeight, settings)
 end
 
 local function ApplyHud()
@@ -792,7 +877,7 @@ local function ApplyHud()
     labelIndex, textureIndex = RenderItems(leftItems, PADDING, false, labelIndex, textureIndex, font, settings, rowHeight)
     labelIndex, textureIndex = RenderItems(rightItems, width - PADDING, true, labelIndex, textureIndex, font, settings, rowHeight)
     HideUnusedControls(labelIndex, textureIndex)
-    RenderXpBar(width, rowHeight, settings)
+    RenderProgressBars(width, rowHeight, settings)
 end
 
 local function QueueApply()
@@ -835,7 +920,8 @@ local function RegisterRefreshEvents()
 
     if EVENT_EXPERIENCE_UPDATE then
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_EXPERIENCE_UPDATE, function(_, unitTag)
-            if unitTag == "player" and GetSettings().xpBar then
+            local settings = GetSettings()
+            if unitTag == "player" and (settings.xpBar or settings.xpBarProgress or settings.enlightenmentBar) then
                 QueueApply()
             end
         end)
@@ -846,7 +932,8 @@ local function RegisterRefreshEvents()
 
     if EVENT_CHAMPION_XP_UPDATE then
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHAMPION_XP_UPDATE, function()
-            if GetSettings().xpBar then
+            local settings = GetSettings()
+            if settings.xpBar or settings.xpBarProgress or settings.enlightenmentBar then
                 QueueApply()
             end
         end)
@@ -854,8 +941,7 @@ local function RegisterRefreshEvents()
 
     if EVENT_ENLIGHTENED_STATE_GAINED then
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_ENLIGHTENED_STATE_GAINED, function()
-            local settings = GetSettings()
-            if settings.xpBar and settings.enlightenmentBar then
+            if GetSettings().enlightenmentBar then
                 QueueApply()
             end
         end)
@@ -863,8 +949,7 @@ local function RegisterRefreshEvents()
 
     if EVENT_ENLIGHTENED_STATE_LOST then
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_ENLIGHTENED_STATE_LOST, function()
-            local settings = GetSettings()
-            if settings.xpBar and settings.enlightenmentBar then
+            if GetSettings().enlightenmentBar then
                 QueueApply()
             end
         end)
@@ -971,6 +1056,9 @@ function PlayerInfo.SetShowInSettings(value) GetSettings().showInSettings = valu
 function PlayerInfo.GetXpBar() return GetSettings().xpBar end
 function PlayerInfo.SetXpBar(value) GetSettings().xpBar = value == true; QueueApply() end
 function PlayerInfo.GetXpBarDefault() return defaults.ui.playerInfo.xpBar end
+function PlayerInfo.GetXpBarProgress() return GetSettings().xpBarProgress end
+function PlayerInfo.SetXpBarProgress(value) GetSettings().xpBarProgress = value == true; QueueApply() end
+function PlayerInfo.GetXpBarProgressDefault() return defaults.ui.playerInfo.xpBarProgress end
 function PlayerInfo.GetXpBarFont() return GetSettings().xpBarFont end
 function PlayerInfo.SetXpBarFont(value) if not NQOL.Util.IsFontChoice(value) then value = defaults.ui.playerInfo.xpBarFont end; GetSettings().xpBarFont = value; xpFontString = nil; QueueApply() end
 function PlayerInfo.GetXpBarFontSize() return GetSettings().xpBarFontSize end
@@ -1056,6 +1144,23 @@ function PlayerInfo.SetXpBarTextColor(red, green, blue, alpha)
     QueueApply()
 end
 
+function PlayerInfo.GetXpBarColor()
+    local color = GetSettings().xpBarColor
+    return color.r, color.g, color.b, color.a
+end
+
+function PlayerInfo.SetXpBarColor(red, green, blue, alpha)
+    local color = GetSettings().xpBarColor
+    color.r = Clamp(red, 0, 1)
+    color.g = Clamp(green, 0, 1)
+    color.b = Clamp(blue, 0, 1)
+    color.a = Clamp(alpha, 0, 1)
+    QueueApply()
+end
+
+function PlayerInfo.GetXpBarHeightPixels() return GetSettings().xpBarHeightPixels end
+function PlayerInfo.SetXpBarHeightPixels(value) GetSettings().xpBarHeightPixels = Clamp(Round(value), THIN_BAR_HEIGHT_PIXELS_MIN, THIN_BAR_HEIGHT_PIXELS_MAX); QueueApply() end
+
 function PlayerInfo.GetXpBarBackgroundOpacity() return GetSettings().xpBarBackgroundOpacity end
 function PlayerInfo.SetXpBarBackgroundOpacity(value) GetSettings().xpBarBackgroundOpacity = Clamp(Round(value), BACKGROUND_OPACITY_MIN, BACKGROUND_OPACITY_MAX); QueueApply() end
 
@@ -1077,6 +1182,9 @@ function PlayerInfo.SetEnlightenmentBarColor(red, green, blue, alpha)
     QueueApply()
 end
 
+function PlayerInfo.GetEnlightenmentBarHeightPixels() return GetSettings().enlightenmentBarHeightPixels end
+function PlayerInfo.SetEnlightenmentBarHeightPixels(value) GetSettings().enlightenmentBarHeightPixels = Clamp(Round(value), THIN_BAR_HEIGHT_PIXELS_MIN, THIN_BAR_HEIGHT_PIXELS_MAX); QueueApply() end
+
 function PlayerInfo.GetBackgroundOpacity() return GetSettings().backgroundOpacity end
 function PlayerInfo.SetBackgroundOpacity(value) GetSettings().backgroundOpacity = Clamp(Round(value), BACKGROUND_OPACITY_MIN, BACKGROUND_OPACITY_MAX); QueueApply() end
 function PlayerInfo.GetFieldPlacement(fieldKey) return GetSettings().fields[fieldKey] or PLACEMENT_OFF end
@@ -1095,6 +1203,8 @@ function PlayerInfo.GetBarBackgroundOpacityMin() return BACKGROUND_OPACITY_MIN e
 function PlayerInfo.GetBarBackgroundOpacityMax() return BACKGROUND_OPACITY_MAX end
 function PlayerInfo.GetXpBarFontSizeMin() return FONT_SIZE_MIN end
 function PlayerInfo.GetXpBarFontSizeMax() return FONT_SIZE_MAX end
+function PlayerInfo.GetThinBarHeightPixelsMin() return THIN_BAR_HEIGHT_PIXELS_MIN end
+function PlayerInfo.GetThinBarHeightPixelsMax() return THIN_BAR_HEIGHT_PIXELS_MAX end
 
 function PlayerInfo.GetEnabledLabel() return NQOL.L("features.ui_player_info.enabled_label") end
 function PlayerInfo.GetEnabledTooltip() return NQOL.L("features.ui_player_info.enabled_tooltip") end
@@ -1102,6 +1212,12 @@ function PlayerInfo.GetShowInSettingsLabel() return NQOL.L("features.ui_player_i
 function PlayerInfo.GetShowInSettingsTooltip() return NQOL.L("features.ui_player_info.show_in_settings_tooltip") end
 function PlayerInfo.GetXpBarLabel() return NQOL.L("features.ui_player_info.xp_bar_label") end
 function PlayerInfo.GetXpBarTooltip() return NQOL.L("features.ui_player_info.xp_bar_tooltip") end
+function PlayerInfo.GetXpBarColorLabel() return NQOL.L("features.ui_player_info.xp_bar_color_label") end
+function PlayerInfo.GetXpBarColorTooltip() return NQOL.L("features.ui_player_info.xp_bar_color_tooltip") end
+function PlayerInfo.GetXpBarHeightLabel() return NQOL.L("features.ui_player_info.xp_bar_height_label") end
+function PlayerInfo.GetXpBarHeightTooltip() return NQOL.L("features.ui_player_info.xp_bar_height_tooltip") end
+function PlayerInfo.GetXpBarProgressLabel() return NQOL.L("features.ui_player_info.xp_bar_progress_label") end
+function PlayerInfo.GetXpBarProgressTooltip() return NQOL.L("features.ui_player_info.xp_bar_progress_tooltip") end
 function PlayerInfo.GetXpBarBackgroundOpacityLabel() return NQOL.L("features.ui_player_info.xp_bar_background_opacity_label") end
 function PlayerInfo.GetXpBarBackgroundOpacityTooltip() return NQOL.L("features.ui_player_info.xp_bar_background_opacity_tooltip") end
 function PlayerInfo.GetXpBarFontLabel() return NQOL.L("features.ui_player_info.xp_bar_font_label") end
@@ -1114,6 +1230,8 @@ function PlayerInfo.GetEnlightenmentBarLabel() return NQOL.L("features.ui_player
 function PlayerInfo.GetEnlightenmentBarTooltip() return NQOL.L("features.ui_player_info.enlightenment_bar_tooltip") end
 function PlayerInfo.GetEnlightenmentBarColorLabel() return NQOL.L("features.ui_player_info.enlightenment_bar_color_label") end
 function PlayerInfo.GetEnlightenmentBarColorTooltip() return NQOL.L("features.ui_player_info.enlightenment_bar_color_tooltip") end
+function PlayerInfo.GetEnlightenmentBarHeightLabel() return NQOL.L("features.ui_player_info.enlightenment_bar_height_label") end
+function PlayerInfo.GetEnlightenmentBarHeightTooltip() return NQOL.L("features.ui_player_info.enlightenment_bar_height_tooltip") end
 function PlayerInfo.GetHorizontalPositionLabel() return NQOL.L("features.ui_player_info.horizontal_position_label") end
 function PlayerInfo.GetHorizontalPositionTooltip() return NQOL.L("features.ui_player_info.horizontal_position_tooltip") end
 function PlayerInfo.GetVerticalPositionLabel() return NQOL.L("features.ui_player_info.vertical_position_label") end

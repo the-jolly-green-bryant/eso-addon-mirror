@@ -1061,18 +1061,6 @@ function CombatMetronome:BuildMenu()
 				controls = {
 					{
 						type = "checkbox",
-						name = "Show permanently",
-						tooltip = "If you don't want to hide the cast bar when it's unused, it will display the background color.",
-						disabled = function() return CombatMetronome.Progressbar.showSample end,
-						getFunc = function() return CombatMetronome.SV.Progressbar.dontHide end,
-						setFunc = function(value)
-							CombatMetronome.SV.Progressbar.dontHide = value
-							self.Progressbar.UI.HiddenStates()
-							-- self:BuildUI()
-						end,
-					},
-					{
-						type = "checkbox",
 						name = "Make it fancy",
 						tooltip = "Have fancy effects and stuff",
 						getFunc = function() return CombatMetronome.SV.Progressbar.makeItFancy, CombatMetronome.SV.Progressbar.lastBackgroundColor, CombatMetronome.SV.Progressbar.backgroundColor end,
@@ -1091,6 +1079,9 @@ function CombatMetronome:BuildMenu()
 							self.Progressbar.UI.BarColors()
 							-- self:BuildUI()
 						end,
+					},
+					{
+						type = "divider"
 					},
 					{
 						type = "colorpicker",
@@ -1221,6 +1212,21 @@ function CombatMetronome:BuildMenu()
 				name = "Behavior",
 				disabled = function() return CombatMetronome.SV.Progressbar.hide end,
 				controls = {
+					{
+						type = "checkbox",
+						name = "Show permanently",
+						tooltip = "If you don't want to hide the cast bar when it's unused, it will display the background color.",
+						disabled = function() return CombatMetronome.Progressbar.showSample end,
+						getFunc = function() return CombatMetronome.SV.Progressbar.dontHide end,
+						setFunc = function(value)
+							CombatMetronome.SV.Progressbar.dontHide = value
+							self.Progressbar.UI.HiddenStates()
+							-- self:BuildUI()
+						end,
+					},
+					{
+						type = "divider"
+					},					
 					{
 						type = "slider",
 						name = "Max latency",
@@ -1577,7 +1583,7 @@ function CombatMetronome:BuildMenu()
 						type = "checkbox",
 						name = "Sound 'tock'",
 						tooltip = "This sound cue marks the end of an ability",
-						warning = "If you don't hear this cue, you either have perfect weave or, and chances for that are much much higher, missed a light attack ¯\\_(ツ)_/¯",
+						-- warning = "If you don't hear this cue, you either have perfect weave or, and chances for that are much much higher, missed a light attack ¯\\_(ツ)_/¯",
 						width = "half",
 						getFunc = function() return CombatMetronome.SV.Progressbar.soundTockEnabled end,
 						setFunc = function(state)
@@ -1612,7 +1618,9 @@ function CombatMetronome:BuildMenu()
 						getFunc = function() return CombatMetronome.SV.Progressbar.soundTockEffect end,
 						setFunc = function(value)
 							CombatMetronome.SV.Progressbar.soundTockEffect = value
-							PlaySound(value)
+							for i = 1, math.min(CombatMetronome.SV.Progressbar.tickVolume, 30) do
+								PlaySound(value)
+							end
 						end,
 					},
 					-- {
@@ -1660,8 +1668,8 @@ function CombatMetronome:BuildMenu()
 					{
 						type = "checkbox",
 						name = "Play 'tick' at the start of an ability",
-						tooltip = "Have the tick mark the start of your ability",
-						disabled = function() return not CombatMetronome.SV.Progressbar.soundTickEnabled end,
+						tooltip = "Toggle having the 'tick' sound at the start or mid ability",
+						disabled = function() return not CombatMetronome.SV.Progressbar.soundTickEnabled or CombatMetronome.SV.Progressbar.forceTickMSBeforeEnd end,
 						getFunc = function() return not CombatMetronome.SV.Progressbar.soundTickMidAbility end,
 						setFunc = function(value)
 							CombatMetronome.SV.Progressbar.soundTickMidAbility = not value
@@ -1669,9 +1677,37 @@ function CombatMetronome:BuildMenu()
 					},
 					{
 						type = "checkbox",
-						name = "Don't play 'tick' on heavy attacks",
+						name = "Force 'tick' at a certain point",
+						tooltip = "Forces the 'tick' sound a set amount of ms before the ability ends. This is especially useful for abilities with a longer cast/channel time than 1000ms",
+						width = "half",
+						disabled = function() return not CombatMetronome.SV.Progressbar.soundTickEnabled end,
+						getFunc = function() return CombatMetronome.SV.Progressbar.forceTickMSBeforeEnd end,
+						setFunc = function(value)
+							CombatMetronome.SV.Progressbar.forceTickMSBeforeEnd = value
+						end,
+					},
+					{
+						type = "slider",
+						name = "Sound 'tick' force offset",
+						disabled = function()
+							return not CombatMetronome.SV.Progressbar.forceTickMSBeforeEnd -- and CombatMetronome.SV.Progressbar.soundOffsets)
+						end,
+						default = 500,
+						width = "half",
+						min = 0,
+						max = 1000,
+						step =  1,
+						decimals = 0,
+						getFunc = function() return CombatMetronome.SV.Progressbar.forceTickTime end,
+						setFunc = function(value)
+							CombatMetronome.SV.Progressbar.forceTickTime = value
+						end,
+					},
+					{
+						type = "checkbox",
+						name = "Don't play 'tick' and 'tock' on heavy attacks",
 						tooltip = "Since heavys are easily canceled, this is recommended to avoid annoying sound clutter",
-						disabled = function() return not (CombatMetronome.SV.Progressbar.soundTickMidAbility and CombatMetronome.SV.Progressbar.soundTickEnabled) end,
+						disabled = function() return not (CombatMetronome.SV.Progressbar.soundTickMidAbility and CombatMetronome.SV.Progressbar.soundTickEnabled) or CombatMetronome.SV.Progressbar.forceTickMSBeforeEnd end,
 						getFunc = function() return CombatMetronome.SV.Progressbar.noTickOnHeavy end,
 						setFunc = function(value)
 							CombatMetronome.SV.Progressbar.noTickOnHeavy = value

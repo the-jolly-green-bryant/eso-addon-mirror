@@ -2,7 +2,7 @@
 ## Author: @Aldimar77
 ## Version: 0.1.0
 ## AddOnVersion: 1
-## APIVersion: 101040
+## APIVersion: 101050
 ## Description: Adds source, item ID, quality, and collection info to furnishing tooltips (inventory, bank, and Housing Editor). UI-only, console-safe: no external network calls, no gameplay changes.
 ## SavedVariables: FurnitureFinder_SavedVars
 ## IsLibrary: false

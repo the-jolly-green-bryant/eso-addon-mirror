@@ -1,0 +1,39 @@
+<GuiXml>
+    <Controls>
+
+        <Control name="AutoConsume_HUDRow" virtual="true" mouseEnabled="false" hidden="true">
+            <Dimensions x="54" y="54"/>
+            <Controls>
+
+                <Backdrop name="$(parent)Frame" centerColor="FF000000" edgeColor="FF000000" tier="LOW" level="1">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="54" y="54"/>
+                    <Edge edgeSize="0"/>
+                </Backdrop>
+
+                <Cooldown name="$(parent)Radial" radialCooldownClockwise="true" fillColor="33ff33" tier="LOW" level="2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="50" y="50"/>
+                </Cooldown>
+
+                <Backdrop name="$(parent)Inner" centerColor="FF111111" edgeColor="FF111111" tier="MEDIUM" level="1">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="40" y="40"/>
+                    <Edge edgeSize="0"/>
+                </Backdrop>
+
+                <Texture name="$(parent)Icon" tier="MEDIUM" level="2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="40" y="40"/>
+                </Texture>
+
+                <Label name="$(parent)Timer" font="EsoUI/Common/Fonts/univers67.otf|12|soft-shadow-thick" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" tier="MEDIUM" level="3">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="40" y="40"/>
+                </Label>
+
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

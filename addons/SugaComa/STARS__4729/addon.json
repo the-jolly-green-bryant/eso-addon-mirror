@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/SugaComa/STARS__4729",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "SugaComa",
   "canonical_id": "esoui:4729",
   "category_id": "155",
@@ -14,10 +15,10 @@
   "content_id": "esoui:4729",
   "deleted": false,
   "directories": [
-    "STARS"
+    "STARS complete"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4729/",
-  "fingerprint": "8ee11b6b10f71e41743cad9c9ff929c173dca9cddc806473255607a7b643904c",
+  "fingerprint": "cf38a0ca620f59febfae6a89bc4207e2a6e2b4a53b2536e82cd0484627862964",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -25,11 +26,11 @@
   "source_id": "4729",
   "source_url": "https://www.esoui.com/downloads/info4729-STARS.html",
   "stats": {
-    "downloads": 11,
+    "downloads": 30,
     "favorites": 0,
-    "monthly_downloads": 10
+    "monthly_downloads": 30
   },
   "title": "STARS",
-  "updated_at": 1785101520000,
-  "version": "0.5.6"
+  "updated_at": 1787137884000,
+  "version": "0.6.11-complete"
 }

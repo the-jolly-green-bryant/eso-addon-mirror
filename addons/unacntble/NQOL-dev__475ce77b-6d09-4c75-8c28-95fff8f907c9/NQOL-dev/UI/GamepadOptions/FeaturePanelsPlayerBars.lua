@@ -26,6 +26,11 @@ function GamepadOptions.BuildCompanionShowOnlyInCombatOption()
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.COMPANION_FRAME_PANEL_ID, 1, playerBars.GetShowOnlyInCombatLabel(), playerBars.GetShowOnlyInCombatTooltip(), playerBars.GetCompanionShowOnlyInCombat, playerBars.SetCompanionShowOnlyInCombat)
 end
 
+function GamepadOptions.BuildGroupShowOnlyInCombatOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 1, playerBars.GetShowOnlyInCombatLabel(), playerBars.GetShowOnlyInCombatTooltip(), playerBars.GetGroupShowOnlyInCombat, playerBars.SetGroupShowOnlyInCombat)
+end
+
 function GamepadOptions.BuildGroupShowCustomNamesOption()
     local playerBars = NQOL.Features.PlayerBars
     local option = GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 34, playerBars.GetGroupShowCustomNamesLabel(), playerBars.GetGroupShowCustomNamesTooltip(), playerBars.GetGroupShowCustomNames, playerBars.SetGroupShowCustomNames, playerBars.Group.IsLibCustomNamesAvailable, playerBars.GetGroupShowCustomNamesDefault)

@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/SugaComa/STARS-MODULE-Console-Tested--no-longer-required__4728",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "esoui:4728",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4728",
+  "deleted": false,
+  "directories": [
+    "STARS_MODULE_TEMPLATE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4728/",
+  "fingerprint": "9c2c60282f0f93d9972dea6bc79d75038c2d5958dc89b542bbfc0d0374579981",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4728",
+  "source_url": "https://www.esoui.com/downloads/info4728-STARSMODULEConsoleTested-nolongerrequired.html",
+  "stats": {
+    "downloads": 35,
+    "favorites": 0,
+    "monthly_downloads": 35
+  },
+  "title": "STARS MODULE (Console Tested)-no longer required",
+  "updated_at": 1785100692000,
+  "version": "1.0"
+}

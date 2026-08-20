@@ -337,6 +337,7 @@ function GamepadOptions.BuildDefaultFramesOptionsData()
     return {
         GamepadOptions.BuildActiveCombatTipsEntry(),
         GamepadOptions.BuildActiveQuestEntry(),
+        GamepadOptions.BuildAnnouncementsEntry(),
         GamepadOptions.BuildCenterScreenAnnounceEntry(),
         GamepadOptions.BuildInfiniteArchiveFrameEntry(),
         GamepadOptions.BuildPlayerInteractionEntry(),
@@ -378,12 +379,16 @@ function GamepadOptions.BuildPlayerInfoOptionsData()
         GamepadOptions.BuildPlayerInfoIconColorOption(),
         GamepadOptions.BuildPlayerInfoBackgroundOpacityOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildPlayerInfoXpBarOption(), NQOL.L("features.ui_player_info.xp_bar_section")),
+        GamepadOptions.BuildPlayerInfoXpBarColorOption(),
+        GamepadOptions.BuildPlayerInfoXpBarHeightOption(),
+        GamepadOptions.BuildPlayerInfoXpBarProgressOption(),
         GamepadOptions.BuildPlayerInfoXpBarBackgroundOpacityOption(),
         GamepadOptions.BuildPlayerInfoXpBarFontOption(),
         GamepadOptions.BuildPlayerInfoXpBarFontSizeOption(),
         GamepadOptions.BuildPlayerInfoXpBarTextColorOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildPlayerInfoEnlightenmentBarOption(), NQOL.L("features.ui_player_info.enlightenment_bar_section")),
         GamepadOptions.BuildPlayerInfoEnlightenmentBarColorOption(),
+        GamepadOptions.BuildPlayerInfoEnlightenmentBarHeightOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildPlayerInfoFieldOption(21, "playerId"), NQOL.L("ui.headers.fields_e8b6852")),
         GamepadOptions.BuildPlayerInfoFieldOption(22, "characterName"),
         GamepadOptions.BuildPlayerInfoFieldOption(23, "championPoints"),
@@ -425,6 +430,15 @@ function GamepadOptions.BuildCenterScreenAnnounceOptionsData()
         GamepadOptions.BuildCenterScreenAnnounceDrawBordersOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildCenterScreenAnnounceHorizontalOffsetOption(), NQOL.L("ui.headers.position_cf1c85a")),
         GamepadOptions.BuildCenterScreenAnnounceVerticalOffsetOption(),
+    }
+end
+
+function GamepadOptions.BuildAnnouncementsOptionsData()
+    return {
+        GamepadOptions.BuildAnnouncementsEnabledOption(),
+        GamepadOptions.BuildAnnouncementsDrawBordersOption(),
+        GamepadOptions.WithHeader(GamepadOptions.BuildAnnouncementsHorizontalOffsetOption(), NQOL.L("ui.headers.position_cf1c85a")),
+        GamepadOptions.BuildAnnouncementsVerticalOffsetOption(),
     }
 end
 
@@ -493,6 +507,7 @@ end
 function GamepadOptions.BuildGroupFrameOptionsData()
     return {
         GamepadOptions.WithHeader(GamepadOptions.BuildShowNqolGroupFrameOption(), NQOL.L("ui.headers.frame_91b0658")),
+        GamepadOptions.BuildGroupShowOnlyInCombatOption(),
         GamepadOptions.BuildGroupShowCustomNamesOption(),
         GamepadOptions.BuildGroupShowInSettingsOption(),
         GamepadOptions.BuildGroupShowTraumaOption(),

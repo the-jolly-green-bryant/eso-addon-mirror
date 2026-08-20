@@ -1,0 +1,235 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="STARSJournalGamepad" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true">
+      <AnchorFill />
+      <Controls>
+        <Control name="$(parent)ContentFrame" mouseEnabled="false">
+
+          <Controls>
+            <Control name="$(parent)ChroniclePage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="-42" />
+                </Label>
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="4" />
+                </Label>
+
+                <Backdrop name="$(parent)MemoryBackdrop" inherits="ZO_DefaultBackdrop" alpha="0.72" />
+                <Backdrop name="$(parent)StoryBackdrop" inherits="ZO_DefaultBackdrop" alpha="0.72" />
+
+                <Texture name="$(parent)MemoryIcon" hidden="true">
+                  <Dimensions x="350" y="350" />
+                </Texture>
+                <Label name="$(parent)MemoryKicker" font="ZoFontGamepad42" />
+                <Label name="$(parent)MemoryCardName" font="ZoFontGamepad42" />
+                <Label name="$(parent)MemoryName" font="ZoFontGamepad54" />
+                <Label name="$(parent)MemoryMeta" font="ZoFontGamepad34" />
+                <Label name="$(parent)MemoryDescription" font="ZoFontGamepad36" />
+                <Label name="$(parent)MemoryRewardHeader" font="ZoFontGamepad36" />
+                <Label name="$(parent)MemoryReward" font="ZoFontGamepad36" />
+                <Label name="$(parent)PageIndicator" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+
+                <Label name="$(parent)StoryHeader" font="ZoFontGamepad42" />
+                <Label name="$(parent)StoryBody" font="ZoFontGamepad34" />
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)CampaignPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad27">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="4" />
+                </Label>
+
+                <Backdrop name="$(parent)Col1Backdrop" inherits="ZO_DefaultBackdrop" alpha="0.66" />
+                <Backdrop name="$(parent)Col2Backdrop" inherits="ZO_DefaultBackdrop" alpha="0.66" />
+
+                <Texture name="$(parent)RankIcon" hidden="true">
+                  <Dimensions x="170" y="170" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="0" />
+                </Texture>
+
+                <Label name="$(parent)Col1Header" font="ZoFontGamepad36" horizontalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="120" />
+                </Label>
+                <Label name="$(parent)Col1Body" font="ZoFontGamepad36" horizontalAlignment="CENTER">
+                  <Dimensions x="315" y="470" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col1Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+
+                <Label name="$(parent)Col2Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="365" offsetY="120" />
+                </Label>
+                <Label name="$(parent)Col2Body" font="ZoFontGamepad34">
+                  <Dimensions x="315" y="470" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col2Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+
+                <Label name="$(parent)Col3Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="720" offsetY="120" />
+                </Label>
+                <Label name="$(parent)Col3Body" font="ZoFontGamepad42">
+                  <Dimensions x="315" y="470" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col3Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)HistoryPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad42">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+
+                <Label name="$(parent)Col1Header" font="ZoFontGamepad36">
+                  <Dimensions x="315" y="55" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="90" />
+                </Label>
+                <Label name="$(parent)Col1Body" font="ZoFontGamepad34">
+                  <Dimensions x="315" y="500" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col1Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15" />
+                </Label>
+
+                <Label name="$(parent)Col2Header" font="ZoFontGamepad36">
+                  <Dimensions x="315" y="55" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="365" offsetY="90" />
+                </Label>
+                <Label name="$(parent)Col2Body" font="ZoFontGamepad34">
+                  <Dimensions x="315" y="500" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col2Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15" />
+                </Label>
+
+                <Label name="$(parent)Col3Header" font="ZoFontGamepad36">
+                  <Dimensions x="315" y="55" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="720" offsetY="90" />
+                </Label>
+                <Label name="$(parent)Col3Body" font="ZoFontGamepad34">
+                  <Dimensions x="315" y="500" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col3Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="15" />
+                </Label>
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)LegacyPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad27">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="4" />
+                </Label>
+
+                <Label name="$(parent)Col1Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="130" />
+                </Label>
+                <Label name="$(parent)Col1Body" font="ZoFontGamepad42">
+                  <Dimensions x="315" y="450" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col1Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+
+                <Label name="$(parent)Col2Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="365" offsetY="130" />
+                </Label>
+                <Label name="$(parent)Col2Body" font="ZoFontGamepad42">
+                  <Dimensions x="315" y="450" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col2Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+
+                <Label name="$(parent)Col3Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="720" offsetY="130" />
+                </Label>
+                <Label name="$(parent)Col3Body" font="ZoFontGamepad42">
+                  <Dimensions x="315" y="450" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col3Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)UnderworldPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad27">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="4" />
+                </Label>
+
+                <Label name="$(parent)Col1Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="130" />
+                </Label>
+                <Label name="$(parent)Col1Body" font="ZoFontGamepad42">
+                  <Dimensions x="315" y="450" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col1Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+
+                <Label name="$(parent)Col2Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="365" offsetY="130" />
+                </Label>
+                <Label name="$(parent)Col2Body" font="ZoFontGamepad42">
+                  <Dimensions x="315" y="450" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col2Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+
+                <Label name="$(parent)Col3Header" font="ZoFontGamepad36">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="720" offsetY="130" />
+                </Label>
+                <Label name="$(parent)Col3Body" font="ZoFontGamepad34">
+                  <Dimensions x="315" y="450" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Col3Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="18" />
+                </Label>
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)PrestigePage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)BookHeading" font="ZoFontGamepad27" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Title" font="ZoFontGamepad54" horizontalAlignment="CENTER" wrapMode="ELLIPSIS" />
+
+                <Texture name="$(parent)VeterancyIcon" hidden="true" />
+                <Label name="$(parent)Tier" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Details" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Texture name="$(parent)WarRankIcon" hidden="true" />
+
+                <Label name="$(parent)LegacyHeader" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Texture name="$(parent)ClassIcon" hidden="true" />
+                <Label name="$(parent)LegacyDetails" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
+                <Label name="$(parent)PrestigeLevel" font="ZoFontGamepad27" horizontalAlignment="CENTER" />
+
+                <Texture name="$(parent)Badge" hidden="true">
+                  <Dimensions x="190" y="190" />
+                </Texture>
+                <Control name="$(parent)HeraldryBadge" hidden="true" mouseEnabled="false">
+                  <Dimensions x="190" y="190" />
+                  <Controls>
+                    <Texture name="$(parent)Shield"><AnchorFill /></Texture>
+                    <Texture name="$(parent)Field"><AnchorFill /></Texture>
+                    <Texture name="$(parent)Rim"><AnchorFill /></Texture>
+                    <Texture name="$(parent)ChargeA"><AnchorFill /></Texture>
+                    <Texture name="$(parent)ChargeB"><AnchorFill /></Texture>
+                    <Texture name="$(parent)LegacyA"><AnchorFill /></Texture>
+                    <Texture name="$(parent)LegacyB"><AnchorFill /></Texture>
+                  </Controls>
+                </Control>
+
+                <Label name="$(parent)CoverRecord" font="ZoFontGamepad27" horizontalAlignment="CENTER" />
+                <Label name="$(parent)CoverHighlights" font="ZoFontGamepad27" horizontalAlignment="CENTER" />
+                <Label name="$(parent)CoverTracking" font="ZoFontGamepad27" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Footer" font="ZoFontGamepad22" horizontalAlignment="CENTER" />
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

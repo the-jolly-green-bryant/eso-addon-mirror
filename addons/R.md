@@ -31,7 +31,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [RaidNotifierZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/RaidNotifierZHPatch__3912) | FusRoDah | PC / Mac | 2.28.1 |
 | [RaidTimer Continued](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silentgecko/RaidTimer-Continued__996) | silentgecko | PC / Mac | 1.4.0 |
 | [RaidTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/apfelstrudellq/RaidTools__1969) | apfelstrudellq | PC / Mac | 1.2 |
-| [Rainbow AOE](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Velothhh/Rainbow-AOE__f74afae1-50fc-4e7f-8883-573992187a63) | Velothhh | Console | — |
+| [Rainbow AOE](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Alpha-AC/Rainbow-AOE__f74afae1-50fc-4e7f-8883-573992187a63) | Alpha-AC | Console | — |
 | [Rainbow Reticle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/calia1120/Rainbow-Reticle__1421) | calia1120 | PC / Mac | 1.7 |
 | [Rajines Exp Left](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rajine/Rajines-Exp-Left__4636) | Rajine | PC / Mac | 1.0 |
 | [Rakkis Guild Points](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/arkais_troumaan/Rakkis-Guild-Points__2605) | arkais_troumaan | PC / Mac | 1.15 |

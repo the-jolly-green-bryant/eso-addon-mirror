@@ -51,6 +51,11 @@ local function E(key, name, effectType, timer, coverage, defaultTracked, aliases
         autoProviderAbilityIds=options.autoProviderAbilityIds or {},
         autoProviderAbilityNames=options.autoProviderAbilityNames or {},
         autoGroupEffect=options.autoGroupEffect == true,
+        menuCategory=options.menuCategory or "EFFECT",
+        resistanceReduction=tonumber(options.resistanceReduction),
+        affectsPenetration=options.affectsPenetration == true,
+        criticalDamageTaken=tonumber(options.criticalDamageTaken),
+        criticalDamagePerStack=tonumber(options.criticalDamagePerStack),
         providerCooldownFromLocalEffect=options.providerCooldownFromLocalEffect == true,
         requiresLocalProviderEffect=options.requiresLocalProviderEffect == true,
         coverageTriggerIds=options.coverageTriggerIds or {},
@@ -75,7 +80,7 @@ Registry.definitions = {
     E("MINOR_SLAYER","Minor Slayer","BUFF",false,true,false,nil,{displayPriority=75,icon=I("ability_buff_minor_slayer")}),
     E("MAJOR_COURAGE","Major Courage","BUFF",true,true,true,nil,{displayPriority=15,icon=I("ability_buff_major_courage"),coverageTriggerIds={39113,42155,42156,42157},reconcileCoverageOnTrigger=true,autoGroupEffect=true,autoProviderSets={{name="Spell Power Cure",minPieces=5},{name="Vestment of Olorime",minPieces=5},{name="Perfected Vestment of Olorime",minPieces=5}},autoProviderAbilityIds={39113,42155,42156,42157},autoProviderAbilityNames={"Ferocious Roar"}}),
     E("MINOR_COURAGE","Minor Courage","BUFF",false,true,true,nil,{displayPriority=25,icon=I("ability_buff_minor_courage"),autoGroupEffect=true,autoProviderSets={{name="Claw of Yolnahkriin",minPieces=5},{name="Perfected Claw of Yolnahkriin",minPieces=5}},autoProviderAbilityNames={"Arcanist's Domain","Zenas' Empowering Disc","Reconstructive Domain","Pack Leader"}}),
-    E("AURA_OF_PRIDE","Aura of Pride","BUFF",false,true,true,{"Spaulder of Ruin"},{coveragePerProvider=6,observedProviderCapacity=true,targetType="GROUP",activeUntilFade=true,recipientDisplay="ACTIVE",reconcileCoverageOnEffectChange=true,authoritativeGroupRecipients=true,displayPriority=20,icon=I("ability_mage_065"),autoGroupEffect=true,autoProviderSets={{name="Spaulder of Ruin",minPieces=1}}}),
+    E("AURA_OF_PRIDE","Aura of Pride","BUFF",false,true,true,{"Spaulder of Ruin"},{coveragePerProvider=6,observedProviderCapacity=true,targetType="GROUP",activeUntilFade=true,recipientDisplay="ACTIVE",reconcileCoverageOnEffectChange=true,authoritativeGroupRecipients=true,displayPriority=20,icon=I("ability_mage_065"),autoGroupEffect=true,autoProviderSets={{name="Spaulder of Ruin",minPieces=1}},menuCategory="GEAR"}),
     E("MAJOR_MENDING","Major Mending","BUFF",true,false,true,nil,{targetType="SELF",displayPriority=45,icon=I("ability_buff_major_mending"),autoProviderAbilityNames={"Igneous Shield","Fragmented Shield","Obsidian Shield","Vengeance Lotus","Essence Drain"}}),
     E("MAJOR_RESOLVE","Major Resolve","BUFF",false,true,true,nil,{displayPriority=55,icon=I("ability_buff_major_resolve")}),
     E("MINOR_RESOLVE","Minor Resolve","BUFF",false,true,true,nil,{displayPriority=40,icon=I("ability_buff_minor_resolve"),autoGroupEffect=true,autoProviderAbilityNames={"Combat Prayer","Blessing of Protection","Blessing of Restoration"}}),
@@ -101,34 +106,43 @@ Registry.definitions = {
     E("MINOR_FORTITUDE","Minor Fortitude","BUFF",false,true,false,nil,{icon=I("ability_buff_minor_fortitude")}),
     E("MINOR_VITALITY","Minor Vitality","BUFF",false,true,false,nil,{icon=I("ability_buff_minor_vitality")}),
     E("MAJOR_VITALITY","Major Vitality","BUFF",true,true,false,nil,{icon=I("ability_buff_major_vitality")}),
-    E("POWERFUL_ASSAULT","Powerful Assault","BUFF",true,true,true,nil,{showMissingPlayers=true,missingWindow=5,displayPriority=18,icon=I("ability_healer_019"),autoGroupEffect=true,autoProviderSets={{name="Powerful Assault",minPieces=5}}}),
+    E("POWERFUL_ASSAULT","Powerful Assault","BUFF",true,true,true,nil,{showMissingPlayers=true,missingWindow=5,displayPriority=18,icon=I("ability_healer_019"),autoGroupEffect=true,autoProviderSets={{name="Powerful Assault",minPieces=5}},menuCategory="GEAR"}),
 
     -- Pillager recipient eligibility is a real group-member cooldown state. 172056
     -- is consumed through EVENT_COMBAT_EVENT and does not create a second tracker.
-    E("PILLAGERS_PROFIT","Pillager's Profit","BUFF",false,true,true,{"Pillagers Profit"},{combatEventIds={172056},recipientCooldown=45,intelligenceMode="RECIPIENT_COOLDOWN",showReady=true,readyRequiresObservedProvider=true,preserveRecipientCooldownOnEncounterEnd=true,lifecycle="RECIPIENT_COOLDOWN",displayPriority=8,iconAbilityId=172055,autoGroupEffect=true,autoProviderSets={{name="Pillager's Profit",minPieces=5},{name="Perfected Pillager's Profit",minPieces=5}}}),
+    E("PILLAGERS_PROFIT","Pillager's Profit","BUFF",false,true,true,{"Pillagers Profit"},{combatEventIds={172056},recipientCooldown=45,intelligenceMode="RECIPIENT_COOLDOWN",showReady=true,readyRequiresObservedProvider=true,preserveRecipientCooldownOnEncounterEnd=true,lifecycle="RECIPIENT_COOLDOWN",displayPriority=8,iconAbilityId=172055,autoGroupEffect=true,autoProviderSets={{name="Pillager's Profit",minPieces=5},{name="Perfected Pillager's Profit",minPieces=5}},menuCategory="GEAR"}),
 
     -- Mythic effect intelligence. Entries without a verified numeric ID resolve by
     -- the exact ESO effect name instead of inventing an ID. This keeps the runtime
     -- event-driven and lets the live icon reported by ESO remain authoritative.
-    E("HARPOONERS_WADING_KILT","Harpooner's Wading Kilt","BUFF",true,false,false,{"Hunter's Focus"},{targetType="SELF",showStacks=true,displayPriority=76,activeUntilFade=true,autoProviderSets={{name="Harpooner's Wading Kilt",minPieces=1}}}),
-    E("DEATH_DEALERS_FETE","Death Dealer's Fete","BUFF",false,false,false,{"Escalating Fete"},{targetType="SELF",showStacks=true,displayPriority=77,activeUntilFade=true,icon=I("antiquities_u30_mythic_ring02"),autoProviderSets={{name="Death Dealer's Fete",minPieces=1}}}),
-    E("BELHARZAS_BAND","Belharza's Band","BUFF",true,false,false,{"Belharza's Temper"},{targetType="SELF",showStacks=true,displayPriority=78,autoProviderSets={{name="Belharza's Band",minPieces=1}}}),
-    E("DOV_RHA_SABATONS","Dov-Rha Sabatons","BUFF",true,false,false,{"Draconic Scales"},{targetType="SELF",showStacks=true,displayPriority=79,activeUntilFade=true,autoProviderSets={{name="Dov-Rha Sabatons",minPieces=1}}}),
-    E("THRASSIAN_STRANGLERS","Thrassian Stranglers","BUFF",false,false,false,{"Sload's Call"},{abilityIds={136123},targetType="SELF",showStacks=true,displayPriority=80,activeUntilFade=true,icon=I("gear_thrassianstranglers_a"),autoProviderSets={{name="Thrassian Stranglers",minPieces=1}}}),
-    E("ROURKEN_STEAMGUARDS","Rourken Steamguards","BUFF",true,false,false,{"Steam Guardian"},{targetType="SELF",displayPriority=81,autoProviderSets={{name="Rourken Steamguards",minPieces=1}}}),
+    E("HARPOONERS_WADING_KILT","Harpooner's Wading Kilt","BUFF",true,false,false,{"Hunter's Focus"},{targetType="SELF",showStacks=true,displayPriority=76,activeUntilFade=true,autoProviderSets={{name="Harpooner's Wading Kilt",minPieces=1}},menuCategory="GEAR"}),
+    E("DEATH_DEALERS_FETE","Death Dealer's Fete","BUFF",false,false,false,{"Escalating Fete"},{targetType="SELF",showStacks=true,displayPriority=77,activeUntilFade=true,icon=I("antiquities_u30_mythic_ring02"),autoProviderSets={{name="Death Dealer's Fete",minPieces=1}},menuCategory="GEAR"}),
+    E("BELHARZAS_BAND","Belharza's Band","BUFF",true,false,false,{"Belharza's Temper"},{targetType="SELF",showStacks=true,displayPriority=78,autoProviderSets={{name="Belharza's Band",minPieces=1}},menuCategory="GEAR"}),
+    E("DOV_RHA_SABATONS","Dov-Rha Sabatons","BUFF",true,false,false,{"Draconic Scales"},{targetType="SELF",showStacks=true,displayPriority=79,activeUntilFade=true,autoProviderSets={{name="Dov-Rha Sabatons",minPieces=1}},menuCategory="GEAR"}),
+    E("THRASSIAN_STRANGLERS","Thrassian Stranglers","BUFF",false,false,false,{"Sload's Call"},{abilityIds={136123},targetType="SELF",showStacks=true,displayPriority=80,activeUntilFade=true,icon=I("gear_thrassianstranglers_a"),autoProviderSets={{name="Thrassian Stranglers",minPieces=1}},menuCategory="GEAR"}),
+    E("ROURKEN_STEAMGUARDS","Rourken Steamguards","BUFF",true,false,false,{"Steam Guardian"},{targetType="SELF",displayPriority=81,autoProviderSets={{name="Rourken Steamguards",minPieces=1}},menuCategory="GEAR"}),
 
     -- Huntsman's Warmask uses the local self effect (252050) as ownership and
     -- application authority, while 252048 is used only to identify the marked
     -- hostile target. This prevents another player's Mark from driving our tile.
-    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},localProviderAbilityIds={252050},requiredWornItemId=223189,requiredEquipSlot=EQUIP_SLOT_HEAD,autoTrackWhenEquipped=true,autoGroupEffect=false,providerCooldownFromLocalEffect=true,requiresLocalProviderEffect=true,targetType="RETICLE_HOSTILE",providerCooldown=10,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048}),
+    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},localProviderAbilityIds={252050},requiredWornItemId=223189,requiredEquipSlot=EQUIP_SLOT_HEAD,autoTrackWhenEquipped=true,autoGroupEffect=false,providerCooldownFromLocalEffect=true,requiresLocalProviderEffect=true,targetType="RETICLE_HOSTILE",providerCooldown=10,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048,menuCategory="GEAR"}),
+
+    -- Update 50 Werewolf unique synergy buff. 131353 is the community-verified
+    -- 30-second Feeding Frenzy player effect and carries the unique 6% damage buff.
+    E("FEEDING_FRENZY","Feeding Frenzy","BUFF",true,false,false,nil,{abilityIds={131353},targetType="SELF",displayPriority=16,iconAbilityId=131353,autoGroupEffect=true,autoProviderAbilityNames={"Ferocious Roar"}}),
+
+    -- Sul-Xan's Torment testing path. 154737 is the current community-supplied
+    -- candidate for the collected-soul 30-second player buff. Keeping this ID in
+    -- registry data lets live testing confirm or replace it without runtime changes.
+    E("SUL_XANS_TORMENT","Sul-Xan's Torment","BUFF",true,false,false,{"Sul-Xan's Torment"},{abilityIds={154737},targetType="SELF",displayPriority=74,iconAbilityId=154737,autoProviderSets={{name="Sul-Xan's Torment",minPieces=5},{name="Perfected Sul-Xan's Torment",minPieces=5}},menuCategory="GEAR"}),
 
     E("MAJOR_VULNERABILITY","Major Vulnerability","DEBUFF",true,false,true,nil,{abilityIds={106754},displayPriority=5,icon=I("ability_debuff_major_vulnerability"),autoGroupEffect=true,autoProviderSets={{name="Turning Tide",minPieces=5},{name="Archdruid Devyric",minPieces=2}},autoProviderAbilityNames={"Glacial Colossus","Frozen Colossus","Pestilent Colossus"}}),
     E("MINOR_VULNERABILITY","Minor Vulnerability","DEBUFF",true,false,true,nil,{displayPriority=55,icon=I("ability_debuff_minor_vulnerability")}),
-    E("MAJOR_BRITTLE","Major Brittle","DEBUFF",true,false,true,nil,{displayPriority=12,icon=I("ability_debuff_major_brittle"),autoGroupEffect=true}),
-    E("MINOR_BRITTLE","Minor Brittle","DEBUFF",true,false,true,nil,{displayPriority=60,icon=I("ability_debuff_minor_brittle")}),
-    E("MAJOR_BREACH","Major Breach","DEBUFF",true,false,true,nil,{displayPriority=20,icon=I("ability_debuff_major_breach"),autoGroupEffect=true,autoProviderAbilityNames={"Pierce Armor","Elemental Susceptibility","Razor Caltrops","Deep Fissure","Unnerving Boneyard"}}),
-    E("MINOR_BREACH","Minor Breach","DEBUFF",true,false,true,nil,{displayPriority=25,icon=I("ability_debuff_minor_breach"),autoGroupEffect=true,autoProviderAbilityNames={"Pierce Armor","Power of the Light","Deep Fissure"}}),
-    E("CRUSHER","Crusher","DEBUFF",true,false,true,{"Crusher Enchantment"},{displayPriority=10,icon=I("ability_armor_001"),autoGroupEffect=true}),
+    E("MAJOR_BRITTLE","Major Brittle","DEBUFF",true,false,true,nil,{displayPriority=12,icon=I("ability_debuff_major_brittle"),autoGroupEffect=true,criticalDamageTaken=20}),
+    E("MINOR_BRITTLE","Minor Brittle","DEBUFF",true,false,true,nil,{displayPriority=60,icon=I("ability_debuff_minor_brittle"),criticalDamageTaken=10}),
+    E("MAJOR_BREACH","Major Breach","DEBUFF",true,false,true,nil,{displayPriority=20,icon=I("ability_debuff_major_breach"),autoGroupEffect=true,autoProviderAbilityNames={"Pierce Armor","Elemental Susceptibility","Razor Caltrops","Deep Fissure","Unnerving Boneyard"},resistanceReduction=5948,affectsPenetration=true}),
+    E("MINOR_BREACH","Minor Breach","DEBUFF",true,false,true,nil,{displayPriority=25,icon=I("ability_debuff_minor_breach"),autoGroupEffect=true,autoProviderAbilityNames={"Pierce Armor","Power of the Light","Deep Fissure"},resistanceReduction=2974,affectsPenetration=true}),
+    E("CRUSHER","Crusher","DEBUFF",true,false,true,{"Crusher Enchantment"},{displayPriority=10,icon=I("ability_armor_001"),autoGroupEffect=true,affectsPenetration=true}),
     E("MAJOR_MAIM","Major Maim","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_major_maim")}),
     E("MINOR_MAIM","Minor Maim","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_minor_maim")}),
     E("MAJOR_COWARDICE","Major Cowardice","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_major_cowardice")}),
@@ -143,18 +157,18 @@ Registry.definitions = {
     E("BURNING","Burning","DEBUFF",true,false,false,nil,{icon=I("ability_dragonknight_003_b")}),
     E("POISONED","Poisoned","DEBUFF",true,false,false,nil,{icon=I("ability_dragonknight_004_a")}),
     E("DISEASED","Diseased","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_major_defile")}),
-    E("ZEN_DAMAGE_TAKEN","Touch of Z'en","DEBUFF",true,false,false,{"Touch of Zen","Z'en's Redress"},{displayPriority=16,iconAbilityId=126597,autoGroupEffect=true,autoProviderSets={{name="Z'en's Redress",minPieces=5}}}),
-    E("ALKOSH_RESISTANCE_REDUCTION","Roar of Alkosh","DEBUFF",true,false,true,{"Roar of Alkosh"},{targetType="HOSTILE_ENCOUNTER_UNIT",displayPriority=14,icon=I("gear_dromathra_medium_head_a"),autoGroupEffect=true,autoProviderSets={{name="Roar of Alkosh",minPieces=5}}}),
-    E("MORAG_TONG_AMPLIFICATION","Morag Tong","DEBUFF",true,false,false,{"The Morag Tong"},{icon=I("ability_armor_001"),autoGroupEffect=true,autoProviderSets={{name="The Morag Tong",minPieces=5}}}),
-    E("ELEMENTAL_CATALYST_AMPLIFICATION","Elemental Catalyst","DEBUFF",true,false,false,{"Flame Weakness","Frost Weakness","Shock Weakness"},{showStacks=true,lifecycle="COMPOSITE_TARGET",compositeChildren={ ["Flame Weakness"]="FLAME", ["Frost Weakness"]="FROST", ["Shock Weakness"]="SHOCK" },displayPriority=22,icon=I("ability_mage_065"),autoGroupEffect=true,autoProviderSets={{name="Elemental Catalyst",minPieces=5}}}),
-    E("MARTIAL_KNOWLEDGE_AMPLIFICATION","Martial Knowledge","DEBUFF",true,false,false,{"Way of Martial Knowledge"},{displayPriority=24,icon=I("ability_armor_001"),autoGroupEffect=true,autoProviderSets={{name="Way of Martial Knowledge",minPieces=5}}}),
+    E("ZEN_DAMAGE_TAKEN","Touch of Z'en","DEBUFF",true,false,false,{"Touch of Zen","Z'en's Redress"},{displayPriority=16,iconAbilityId=126597,autoGroupEffect=true,autoProviderSets={{name="Z'en's Redress",minPieces=5}},menuCategory="GEAR"}),
+    E("ALKOSH_RESISTANCE_REDUCTION","Roar of Alkosh","DEBUFF",true,false,true,{"Roar of Alkosh"},{targetType="HOSTILE_ENCOUNTER_UNIT",displayPriority=14,icon=I("gear_dromathra_medium_head_a"),autoGroupEffect=true,autoProviderSets={{name="Roar of Alkosh",minPieces=5}},menuCategory="GEAR",affectsPenetration=true}),
+    E("MORAG_TONG_AMPLIFICATION","Morag Tong","DEBUFF",true,false,false,{"The Morag Tong"},{icon=I("ability_armor_001"),autoGroupEffect=true,autoProviderSets={{name="The Morag Tong",minPieces=5}},menuCategory="GEAR"}),
+    E("ELEMENTAL_CATALYST_AMPLIFICATION","Elemental Catalyst","DEBUFF",true,false,false,{"Flame Weakness","Frost Weakness","Shock Weakness"},{showStacks=true,lifecycle="COMPOSITE_TARGET",compositeChildren={ ["Flame Weakness"]="FLAME", ["Frost Weakness"]="FROST", ["Shock Weakness"]="SHOCK" },displayPriority=22,icon=I("ability_mage_065"),autoGroupEffect=true,autoProviderSets={{name="Elemental Catalyst",minPieces=5}},menuCategory="GEAR",criticalDamagePerStack=5}),
+    E("MARTIAL_KNOWLEDGE_AMPLIFICATION","Martial Knowledge","DEBUFF",true,false,false,{"Way of Martial Knowledge"},{displayPriority=24,icon=I("ability_armor_001"),autoGroupEffect=true,autoProviderSets={{name="Way of Martial Knowledge",minPieces=5}},menuCategory="GEAR"}),
     E("HEMORRHAGING","Hemorrhaging","DEBUFF",true,false,false,nil,{icon=I("ability_dualwield_001_b")}),
     E("SUNDERED","Sundered","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_minor_fracture")}),
     E("OVERCHARGED","Overcharged","DEBUFF",true,false,false,nil,{icon=I("ability_mage_065")}),
 }
 
 function Registry:Initialize()
-    self.byKey, self.byName, self.byAbilityId, self.byCombatEventId, self.releaseByAbilityId, self.localProviderByAbilityId, self.coverageTriggerByAbilityId, self.buffs, self.debuffs = {}, {}, {}, {}, {}, {}, {}, {}, {}
+    self.byKey, self.byName, self.byAbilityId, self.byCombatEventId, self.releaseByAbilityId, self.localProviderByAbilityId, self.coverageTriggerByAbilityId, self.buffs, self.debuffs, self.gearSets = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     for _, effect in ipairs(self.definitions) do
         self.byKey[effect.key] = effect
         self.byName[BB:NormalizeText(effect.name)] = effect
@@ -172,10 +186,12 @@ function Registry:Initialize()
         end
         local list = effect.effectType == "BUFF" and self.buffs or self.debuffs
         list[#list + 1] = effect
+        if effect.menuCategory == "GEAR" then self.gearSets[#self.gearSets + 1] = effect end
     end
     local function byName(a,b) return a.name < b.name end
     table.sort(self.buffs, byName)
     table.sort(self.debuffs, byName)
+    table.sort(self.gearSets, byName)
 end
 
 function Registry:Resolve(effectName, abilityId)

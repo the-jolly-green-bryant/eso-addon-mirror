@@ -2,7 +2,7 @@ SatuveRotationTrainer = SatuveRotationTrainer or {}
 local SRT = SatuveRotationTrainer
 
 SRT.name = "SatuveRotationTrainer"
-SRT.version = "0.6.29"
+SRT.version = "0.6.37"
 SRT.maxPriorities = 10
 SRT.routeLength = 2
 
@@ -120,24 +120,51 @@ end
 local ULTIMATE_SLOT = 8 -- ESO action-bar ultimate slot; keep distinct from normal slots 3-7
 local ULTIMATE_LOCKOUT_MS = 10000 -- hard 10 second lock after any ultimate cast
 
-local function slotInputLabel(slot)
-    -- Use ESO's actual action binding when available. This keeps the trainer
-    -- correct for keyboard/controller remaps instead of exposing internal slots 3-7.
-    if GetActionBindingInfo and GetKeyName then
-        local ok, keyCode = pcall(function()
-            return GetActionBindingInfo(1, 2, slot + 7, 1)
-        end)
-        if ok and keyCode and keyCode ~= 0 then
-            local okName, keyName = pcall(GetKeyName, keyCode)
-            if okName and keyName and keyName ~= "" then return keyName end
-        end
-    end
-    local numericSlot = tonumber(slot)
-    if numericSlot and numericSlot >= 3 and numericSlot <= 7 then return tostring(numericSlot - 2) end
-    if numericSlot and numericSlot == ULTIMATE_SLOT then return "ULT" end
-    return numericSlot and tostring(numericSlot) or "?"
+-- Controller-native pseudo action. Heavy Attack is not a normal action-bar ability,
+-- so the trainer represents it as its own rotation item.
+local HEAVY_ATTACK_ID = -900001
+local HEAVY_ATTACK_CHANNEL_MS = 2200
+local HEAVY_ATTACK_ICON = "SatuveRotationTrainer/Textures/HeavyAttack.dds"
+
+local function isHeavyAttackSkill(skill)
+    return skill and (skill.isHeavyAttack == true or tonumber(skill.abilityId) == HEAVY_ATTACK_ID)
 end
 
+local function validRotationSkill(skill)
+    return skill and (isHeavyAttackSkill(skill) or (tonumber(skill.abilityId) or 0) > 0)
+end
+
+local function isGamepadInputMode()
+    return IsInGamepadPreferredMode and IsInGamepadPreferredMode() == true
+end
+
+local function slotInputLabel(slot)
+    local numericSlot = tonumber(slot)
+    if not numericSlot then return "?" end
+    if numericSlot == ULTIMATE_SLOT then return "ULT" end
+
+    -- Follow ESO's active preferred input mode live. In gamepad mode show
+    -- controller buttons; in keyboard/mouse mode show the familiar 1-5 slots.
+    if isGamepadInputMode() then
+        local controllerLabels = {
+            [3] = "X",
+            [4] = "Y",
+            [5] = "B",
+            [6] = "LB",
+            [7] = "RB",
+        }
+        return controllerLabels[numericSlot] or tostring(numericSlot)
+    end
+
+    if numericSlot >= 3 and numericSlot <= 7 then
+        return tostring(numericSlot - 2)
+    end
+    return tostring(numericSlot)
+end
+
+local function heavyAttackInputLabel()
+    return isGamepadInputMode() and "HOLD RT" or "HOLD LMB"
+end
 local function hotbarSlots()
     return {3, 4, 5, 6, 7}
 end
@@ -172,11 +199,13 @@ local function getUltimateCost(abilityId, hotbar)
 end
 
 local function abilityName(id)
+    if tonumber(id) == HEAVY_ATTACK_ID then return "Heavy Attack" end
     local n = GetAbilityName(id or 0)
     return (n and n ~= "") and n or ("Ability " .. tostring(id or 0))
 end
 
 local function abilityIcon(id)
+    if tonumber(id) == HEAVY_ATTACK_ID then return HEAVY_ATTACK_ICON end
     local i = GetAbilityIcon(id or 0)
     return (i and i ~= "") and i or "/esoui/art/icons/icon_missing.dds"
 end
@@ -203,13 +232,15 @@ local function button(parent, name, x, y, w, h, text, cb)
 end
 
 local function copySkill(s)
-    if not s or not s.abilityId or s.abilityId == 0 then return nil end
+    if not validRotationSkill(s) then return nil end
     return {
         abilityId = s.abilityId,
         slotIndex = s.slotIndex,
         hotbar = s.hotbar,
         earlyMs = s.earlyMs,
         manualDurationMs = s.manualDurationMs,
+        isHeavyAttack = s.isHeavyAttack == true,
+        channelMs = s.channelMs,
     }
 end
 
@@ -444,6 +475,9 @@ end
 
 function SRT:GetStableDisplayPlacement(item)
     if not item then return nil, nil end
+    if item.type == "heavyAttack" or isHeavyAttackSkill(item.skill) or tonumber(item.abilityId) == HEAVY_ATTACK_ID then
+        return currentBar(), nil
+    end
     local sourceId = item.sourceAbilityId or item.abilityId
     local skill = item.skill
 
@@ -467,6 +501,7 @@ end
 function SRT:GetStableDisplayLabel(item)
     if not item then return "?" end
     if item.type == "ultimate" then return "ULT" end
+    if item.type == "heavyAttack" or isHeavyAttackSkill(item.skill) or tonumber(item.abilityId) == HEAVY_ATTACK_ID then return heavyAttackInputLabel() end
     local sourceId = item.sourceAbilityId or item.abilityId
     local skill = item.skill
 
@@ -476,7 +511,11 @@ function SRT:GetStableDisplayLabel(item)
         if not entry and item.abilityId and PROC_BASE_BY_PROC[item.abilityId] then
             entry = self.combatDisplayMap[PROC_BASE_BY_PROC[item.abilityId]]
         end
-        if entry and entry.inputLabel and entry.inputLabel ~= "" then return entry.inputLabel end
+        if entry and entry.slotIndex then
+            -- Input labels must stay live so switching between keyboard/mouse
+            -- and controller immediately changes 1-5 <-> X/Y/B/LB/RB.
+            return slotInputLabel(entry.slotIndex)
+        end
     end
 
     local _, slot = self:GetStableDisplayPlacement(item)
@@ -582,8 +621,8 @@ function SRT:IsEarlyAcceptable(id, pressTime)
 
     if role == "priority" then
         local remaining = self:GetRemainingMs(sourceId)
-        local configuredEarlyMs = zo_clamp(tonumber(skill.earlyMs) or 0, 0, 2000)
-        local plannedEarlyMs = (priority == 1) and 0 or math.max(1000, configuredEarlyMs)
+        local configuredEarlyMs = zo_clamp(tonumber(skill.earlyMs) or 0, 0, 5000)
+        local plannedEarlyMs = configuredEarlyMs
         local dueIn = math.max(0, remaining - plannedEarlyMs)
         return dueIn <= window
     end
@@ -623,6 +662,7 @@ end
 
 function SRT:GetRotationDurationMs(id)
     id = tonumber(id) or 0
+    if id == HEAVY_ATTACK_ID then return HEAVY_ATTACK_CHANNEL_MS end
 
     -- Manual RECAST always wins. This restores exact per-skill timing control.
     local manual = self:GetManualDurationMs(id)
@@ -767,6 +807,48 @@ function SRT:GetRemainingMs(id)
         return 0
     end
     return remaining
+end
+
+function SRT:SyncConfiguredSkillsToSavedSlots()
+    -- Configuration is slot based: if the player changes the skill occupying an
+    -- assigned hotbar slot, follow that new skill automatically. Do this only
+    -- outside combat so temporary proc replacements can never rewrite settings.
+    if self.inCombat then return false end
+
+    local changed = false
+    for _, skill in ipairs(self:GetAllConfiguredSkills()) do
+        if not isHeavyAttackSkill(skill) and skill and skill.hotbar and skill.slotIndex then
+            local liveId = GetSlotBoundId(tonumber(skill.slotIndex), skill.hotbar) or 0
+            local oldId = tonumber(skill.abilityId) or 0
+            if liveId ~= oldId then
+                local isRuntimeProc = false
+                if liveId > 0 then
+                    isRuntimeProc = (PROC_BASE_BY_PROC[liveId] == oldId)
+                        or (self.runtimeProcBaseByProc and self.runtimeProcBaseByProc[liveId] == oldId)
+                end
+                if not isRuntimeProc then
+                    skill.abilityId = liveId
+                    changed = true
+                end
+            end
+        end
+    end
+    return changed
+end
+
+function SRT:QueueHotbarRefresh()
+    local updateName = self.name .. "_DeferredHotbarRefresh"
+    EVENT_MANAGER:UnregisterForUpdate(updateName)
+    EVENT_MANAGER:RegisterForUpdate(updateName, 150, function()
+        EVENT_MANAGER:UnregisterForUpdate(updateName)
+        local changed = self:SyncConfiguredSkillsToSavedSlots()
+        self:RefreshBarMap()
+        self:RefreshHotbarPicker()
+        self:RefreshConfig()
+        if changed then
+            self:ResetFlow()
+        end
+    end)
 end
 
 function SRT:RefreshBarMap()
@@ -1038,7 +1120,7 @@ function SRT:GetPriorityState()
     self:RefreshProcState()
     for i = 1, self.maxPriorities do
         local s = self.sv.priorities[i]
-        if s and s.abilityId and s.abilityId > 0 then
+        if validRotationSkill(s) then
             local id = s.abilityId
             -- Class-agnostic proc resolution: if this configured base skill currently
             -- has a ready proc variant, recommend the proc immediately.
@@ -1046,17 +1128,22 @@ function SRT:GetPriorityState()
             if readyProc then id = readyProc end
 
             local remaining
-            if readyProc then
+            if isHeavyAttackSkill(s) then
+                -- Heavy Attack is a channel action, not a maintained effect. It is ready
+                -- again after its 2.2 s channel completes.
+                remaining = self:GetRemainingMs(HEAVY_ATTACK_ID)
+            elseif readyProc then
                 -- A ready proc is immediately actionable.
                 remaining = 0
             else
                 -- Recast state belongs to the configured base skill and survives bar swaps.
                 remaining = self:GetRemainingMs(s.abilityId)
             end
-            local configuredEarlyMs = zo_clamp(tonumber(s.earlyMs) or 0, 0, 2000)
-            -- Priority 1 is the anchor and should be refreshed as close to expiry as possible.
-            -- Priorities 2-10 are deliberately refreshed a little early rather than late.
-            local earlyMs = (i == 1) and 0 or math.max(1000, configuredEarlyMs)
+            local configuredEarlyMs = zo_clamp(tonumber(s.earlyMs) or 0, 0, 5000)
+            -- Respect the user-defined early-refresh window for every maintained effect.
+            -- 0 ms means wait until the effect actually expires; larger values allow
+            -- an intentional early recast without forcing the rotation to cycle buffs.
+            local earlyMs = configuredEarlyMs
             states[i] = {
                 abilityId = id,
                 sourceAbilityId = s.abilityId,
@@ -1077,13 +1164,14 @@ function SRT:GetStaticSequence()
     local seq = {}
     for i = 1, self.maxPriorities do
         local s = self.sv.priorities[i]
-        if s and s.abilityId and s.abilityId > 0 then
+        if validRotationSkill(s) then
             table.insert(seq, {
                 abilityId = s.abilityId,
                 sourceAbilityId = s.abilityId,
                 priority = i,
-                type = "priority",
+                type = isHeavyAttackSkill(s) and "heavyAttack" or "priority",
                 skill = s,
+                channelMs = isHeavyAttackSkill(s) and HEAVY_ATTACK_CHANNEL_MS or nil,
             })
         end
     end
@@ -1117,8 +1205,9 @@ function SRT:BuildStaticRoute(requestedLength)
             abilityId = base.abilityId,
             sourceAbilityId = base.sourceAbilityId,
             priority = base.priority,
-            type = "priority",
+            type = base.type or "priority",
             skill = base.skill,
+            channelMs = base.channelMs,
             staticSequenceIndex = idx,
             scheduledMs = (n - 1) * gcd,
         })
@@ -1150,8 +1239,8 @@ function SRT:BuildDynamicRouteRaw(requestedLength)
 
     local hp = self:GetTargetHpPercent()
     local executeThreshold = (tonumber(self.sv.executeHp) or 25) / 100
-    local executeConfigured = self.sv.execute and self.sv.execute.abilityId and self.sv.execute.abilityId > 0
-    local spamConfigured = self.sv.spammable and self.sv.spammable.abilityId and self.sv.spammable.abilityId > 0
+    local executeConfigured = validRotationSkill(self.sv.execute)
+    local spamConfigured = validRotationSkill(self.sv.spammable)
     local executeActive = executeConfigured and hp <= executeThreshold
     local filler = executeActive and self.sv.execute or (spamConfigured and self.sv.spammable or nil)
 
@@ -1194,8 +1283,9 @@ function SRT:BuildDynamicRouteRaw(requestedLength)
             sourceAbilityId = st.sourceAbilityId,
             priority = p,
             scheduledMs = scheduledMs,
-            type = "priority",
+            type = isHeavyAttackSkill(st.skill) and "heavyAttack" or "priority",
             skill = st.skill,
+            channelMs = isHeavyAttackSkill(st.skill) and HEAVY_ATTACK_CHANNEL_MS or nil,
         }
     end
 
@@ -1238,7 +1328,7 @@ function SRT:BuildDynamicRouteRaw(requestedLength)
             ultimateUsed = true
         end
 
-        if not chosen and filler and filler.abilityId and filler.abilityId > 0 then
+        if not chosen and validRotationSkill(filler) then
             -- Filler is allowed only when a complete GCD is genuinely free.  If a
             -- priority would become due before the filler GCD finishes, cast the
             -- priority early instead.  Priority 1 stays exact through earlyMs=0;
@@ -1252,13 +1342,17 @@ function SRT:BuildDynamicRouteRaw(requestedLength)
                     sourceAbilityId = filler.abilityId,
                     priority = 99,
                     scheduledMs = virtualMs,
-                    type = executeActive and "execute" or "spammable",
+                    type = isHeavyAttackSkill(filler) and "heavyAttack" or (executeActive and "execute" or "spammable"),
                     skill = filler,
+                    channelMs = isHeavyAttackSkill(filler) and HEAVY_ATTACK_CHANNEL_MS or nil,
                 }
             end
         end
 
-        -- No filler configured: show the chronologically next priority.
+        -- No filler configured: during live coaching, WAIT until a maintained
+        -- priority is genuinely inside its configured refresh window. Do not rotate
+        -- through already-active buffs just because one of them is next chronologically.
+        -- Long route previews may still show future scheduled casts.
         if not chosen then
             local bestP, bestDue = nil, nil
             for pp = 1, self.maxPriorities do
@@ -1269,8 +1363,15 @@ function SRT:BuildDynamicRouteRaw(requestedLength)
                 end
             end
             if bestP then
-                local bst = states[bestP]
-                chosen = commitPriority(bestP, bst, math.max(virtualMs, bestDue))
+                local previewMode = tonumber(requestedLength) and tonumber(requestedLength) > 3
+                if previewMode then
+                    local bst = states[bestP]
+                    chosen = commitPriority(bestP, bst, math.max(virtualMs, bestDue))
+                else
+                    -- Nothing is due yet. Return the route built so far and let the
+                    -- next update pick the skill when its remaining time reaches earlyMs.
+                    break
+                end
             end
         end
 
@@ -1311,8 +1412,18 @@ function SRT:RefreshDynamicLockQueue()
     for i = #self.dynamicLockQueue, 1, -1 do
         local item = self.dynamicLockQueue[i]
         local sourceId = item and (item.sourceAbilityId or item.abilityId)
+        local staleMaintainedPriority = false
+        if item and item.type == "priority" and sourceId and self:IsConfiguredAbility(sourceId) then
+            local _, pIndex, pSkill = self:GetConfiguredRoleForAbility(sourceId)
+            local remaining = self:GetRemainingMs(sourceId)
+            local earlyMs = pSkill and zo_clamp(tonumber(pSkill.earlyMs) or 0, 0, 5000) or 0
+            -- If ESO reports the effect as active beyond the user's refresh window,
+            -- a previously locked recommendation is stale and must disappear.
+            staleMaintainedPriority = remaining > earlyMs
+        end
         if not sourceId
             or (item.type == "priority" and not self:IsConfiguredAbility(sourceId))
+            or staleMaintainedPriority
             or (item.type == "ultimate" and self:IsUltimateLocked()) then
             table.remove(self.dynamicLockQueue, i)
         end
@@ -1928,6 +2039,32 @@ function SRT:UpdateFlow()
         end
         if visualNext then setHolder(h2, visualNext, nextX, false, 1) else h2:SetHidden(true) end
         if visualThird and thirdX then setHolder(h3, visualThird, thirdX, false, 1) else h3:SetHidden(true) end
+    end
+
+    -- Heavy Attack is a 2.2 s controller channel. Because it is not an action-bar
+    -- slot event, advance it by channel time once it reaches PRESS. This keeps the
+    -- coach on HOLD RT for the full channel instead of waiting for a keyboard/mouse event.
+    if visualCurrent and visualCurrent.type == "heavyAttack" and self.currentVisualX then
+        if math.abs(self.currentVisualX - pressX) <= 3 and not self.heavyAttackChannelStartMs then
+            self.heavyAttackChannelStartMs = tNow
+            self.currentVisualX = pressX
+        end
+        if self.heavyAttackChannelStartMs then
+            self.currentVisualX = pressX
+            if (tNow - self.heavyAttackChannelStartMs) >= (tonumber(visualCurrent.channelMs) or HEAVY_ATTACK_CHANNEL_MS) then
+                local doneAt = tNow
+                self:SetTimer(HEAVY_ATTACK_ID, HEAVY_ATTACK_CHANNEL_MS, doneAt)
+                self:RemoveFromDynamicLockQueueByAbility(HEAVY_ATTACK_ID)
+                self.lastActionMs = doneAt
+                if self.sv.rotationMode == "static" then self:AdvanceStaticStep() end
+                self:StartFadeRecommendation(self.heldRecommendation, doneAt)
+                self:ClearHeldRecommendation()
+                self.heavyAttackChannelStartMs = nil
+                return
+            end
+        end
+    else
+        self.heavyAttackChannelStartMs = nil
     end
 
     -- The code is only visible while CURRENT is actually at PRESS.
@@ -2755,21 +2892,22 @@ function SRT:CloseConfig()
 end
 
 function SRT:RegisterGameMenuPanel()
-    if self.gameMenuRegistered then return end
-    if type(ZO_GameMenu_AddSettingPanel) ~= "function" then return end
-    local panelData = {
-        name = "Rotation Trainer",
-        visible = function() return true end,
-        callback = function() self:OpenConfig() end,
-        unselectedCallback = function() self:CloseConfig() end,
-        }
-    local ok = pcall(ZO_GameMenu_AddSettingPanel, panelData)
-    if ok then self.gameMenuRegistered = true end
+    -- v0.6.30: settings live in LibAddonMenu. LibGamepad mirrors that LAM panel
+    -- into ESO's controller UI, so we intentionally avoid a second native entry.
+    if self.RegisterLAMPanel then self:RegisterLAMPanel() end
 end
 
 function SRT:Slash(text)
     text = zo_strlower(text or "")
     if text == "" or text == "config" then
+        if self.OpenLAMSettings then
+            self:OpenLAMSettings()
+        elseif self.config:IsHidden() then
+            self:OpenConfig()
+        else
+            self:CloseConfig()
+        end
+    elseif text == "legacy" then
         if self.config:IsHidden() then self:OpenConfig() else self:CloseConfig() end
     elseif text == "move" then
         if self.moveMode then self:ExitMoveMode() else self:EnterMoveMode() end
@@ -2798,7 +2936,7 @@ function SRT:Slash(text)
         self.main:ClearAnchors()
         self.main:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.sv.x, self.sv.y)
     else
-        msg("Commands: /srt move, /srt test, /srt config, /srt dynamic, /srt static, /srt on, /srt off, /srt reset")
+        msg("Commands: /srt config, /srt legacy, /srt move, /srt test, /srt dynamic, /srt static, /srt on, /srt off, /srt reset")
     end
 end
 
@@ -2833,12 +2971,12 @@ function SRT:Initialize()
     EM:RegisterForEvent(self.name, EVENT_ACTION_SLOT_ABILITY_USED,
         function(_, slot) self:OnAbilityUsed(slot) end)
     EM:RegisterForEvent(self.name .. "_Hotbar", EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED,
-        function() self:RefreshBarMap(); self:RefreshHotbarPicker(); self:RefreshConfig() end)
+        function() self:QueueHotbarRefresh() end)
     if EVENT_ACTION_SLOT_UPDATED then
         EM:RegisterForEvent(self.name .. "_ProcSlots", EVENT_ACTION_SLOT_UPDATED,
             function()
                 self:RefreshRuntimeProcAliases()
-                self:RefreshBarMap()
+                self:QueueHotbarRefresh()
             end)
     end
     EM:RegisterForEvent(self.name .. "_Player", EVENT_PLAYER_ACTIVATED,
@@ -2849,6 +2987,15 @@ function SRT:Initialize()
         end)
     EM:RegisterForEvent(self.name .. "_Combat", EVENT_PLAYER_COMBAT_STATE,
         function(_, inCombat) self:SetCombatState(inCombat) end)
+    if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then
+        EM:RegisterForEvent(self.name .. "_InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED,
+            function()
+                -- ESO can switch preferred input mode while the trainer is open
+                -- or during combat. Labels are computed live; force visible config
+                -- controls to refresh as well.
+                self:RefreshConfig()
+            end)
+    end
     if EVENT_POWER_UPDATE then
         EM:RegisterForEvent(self.name .. "_UltimatePower", EVENT_POWER_UPDATE,
             function(_, unitTag, powerIndex, powerType, powerValue, powerMax, powerEffectiveMax)

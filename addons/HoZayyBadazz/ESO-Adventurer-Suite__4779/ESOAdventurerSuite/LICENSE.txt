@@ -1,0 +1,63 @@
+ESO ADVENTURER SUITE - PROPRIETARY LICENSE
+=============================================
+
+Copyright (c) 2026 HoZayyBadazz. All Rights Reserved.
+
+This software, including its Lua/XML source code, documentation, structure,
+original text, and other original project materials (collectively, the
+"Software"), is owned by HoZayyBadazz except for third-party names, trademarks,
+APIs, game assets, or other materials owned by their respective rights holders.
+
+PERSONAL USE PERMISSION
+-----------------------
+Permission is granted to download and use the Software free of charge for
+personal, non-commercial use with an authorized copy of The Elder Scrolls Online,
+subject to all applicable ZeniMax/Bethesda and ESOUI rules and terms.
+
+You may make private modifications to your own local copy for personal use.
+
+RESTRICTIONS
+------------
+Except with prior written permission from HoZayyBadazz, you may not:
+
+- redistribute, mirror, re-upload, republish, or otherwise distribute the
+  Software or substantial portions of it;
+- publish or distribute modified versions, forks, ports, or derivative versions
+  of the Software;
+- copy substantial portions of the source code into another public add-on,
+  project, repository, package, or product;
+- remove, hide, replace, or alter copyright, authorship, attribution, license,
+  or ownership notices;
+- claim authorship or ownership of the Software or substantial portions of it;
+- sell, rent, sublicense, monetize, bundle for consideration, place behind a
+  paywall, or commercially exploit the Software;
+- use the Software, its name, or its branding in a way that falsely suggests an
+  official association with HoZayyBadazz, ZeniMax, Bethesda, or ESOUI.
+
+No permission is granted to use the source code as the basis of a competing
+publicly distributed add-on without written authorization from HoZayyBadazz.
+
+OFFICIAL DISTRIBUTION
+---------------------
+Authorized public releases are those published by HoZayyBadazz, or by a party
+explicitly authorized in writing by HoZayyBadazz. The intended public distribution
+channel for this project is ESOUI/Minion under the author name HoZayyBadazz.
+
+THIRD-PARTY RIGHTS
+------------------
+The Elder Scrolls Online, The Elder Scrolls, ZeniMax, Bethesda, and related names,
+marks, game content, and APIs are property of their respective owners. This add-on
+is an independent community project and is not created by, affiliated with,
+endorsed by, or sponsored by ZeniMax Media Inc., Bethesda Softworks, or their
+affiliates.
+
+NO WARRANTY
+-----------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT. TO THE MAXIMUM EXTENT PERMITTED BY LAW,
+THE COPYRIGHT OWNER SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY
+ARISING FROM THE SOFTWARE OR ITS USE.
+
+Questions or permission requests should be directed to the project's official
+author account/profile operated by HoZayyBadazz.

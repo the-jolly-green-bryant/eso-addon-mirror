@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/SugaComa/STARS-KBM__4783",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "esoui:4783",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4783",
+  "deleted": false,
+  "directories": [
+    "STARS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4783/",
+  "fingerprint": "184795660521fb6e9c2f2aa20f2cf8764671edf025d7bb016980f9aec69adea6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4783",
+  "source_url": "https://www.esoui.com/downloads/info4783-STARS-KBM.html",
+  "stats": {
+    "downloads": 1,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "STARS-KBM",
+  "updated_at": 1787153404000,
+  "version": "0.6.11-KBM"
+}

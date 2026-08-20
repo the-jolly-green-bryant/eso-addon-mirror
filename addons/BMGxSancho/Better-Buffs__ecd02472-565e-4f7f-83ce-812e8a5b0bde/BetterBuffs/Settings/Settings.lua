@@ -7,6 +7,7 @@ local LAYOUT_ITEMS={{name="Crescent",data="CRESCENT"},{name="Grid",data="GRID"},
 local SIDE_ITEMS={{name="Left",data="LEFT"},{name="Right",data="RIGHT"}}
 local SORT_ITEMS={{name="Priority",data="PRIORITY"},{name="Alphabetical",data="ALPHABETICAL"},{name="Time Remaining",data="TIME"}}
 local VISIBILITY_ITEMS={{name="Auto",data="AUTO"},{name="Always",data="ALWAYS"},{name="Hidden",data="HIDDEN"}}
+local STATS_VISIBILITY_ITEMS={{name="Self",data="SELF"},{name="Group (Future)",data="GROUP"},{name="Hidden",data="HIDDEN"}}
 
 local function LeaveDisplayPositioning()
     if BB.UI then BB.UI:HideAllPositioningPreviews() end
@@ -19,16 +20,18 @@ local function SectionIntro(text)
     end
 end
 
-local function AddEffectSettings(panel,effects)
+local function AddEffectSettings(panel,effects,predicate)
     local LHAS=LibHarvensAddonSettings
     local rows={}
     for _,effect in ipairs(effects) do
+        if not predicate or predicate(effect) then
         local key=effect.key
         local tooltip=(effect.timer and "Tracks remaining duration. " or "")..(effect.coverage and "Tracks group coverage. " or "")
         if effect.intelligenceMode=="RECIPIENT_COOLDOWN" then tooltip=tooltip.."Tracks recipient eligibility/cooldown from verified combat events. " end
         tooltip=tooltip.."Visibility: Auto lets Better Buffs show the effect when its registry confirms it is relevant to your current setup. Always keeps it visible. Hidden never shows it on the dashboard."
         if effect.autoTrackWhenEquipped or #(effect.autoProviderSets or {})>0 or #(effect.autoProviderAbilityIds or {})>0 or #(effect.autoProviderAbilityNames or {})>0 or effect.autoGroupEffect then tooltip=tooltip.." Auto can use equipped providers, slotted skills, and live group-effect relevance for this effect." end
         rows[#rows+1]={type=LHAS.ST_DROPDOWN,label=effect.name,tooltip=tooltip,items=function() return VISIBILITY_ITEMS end,getFunction=function() return {data=BB:GetEffectVisibilityMode(key)} end,setFunction=function(_,_,data) BB:SetEffectVisibilityMode(key,data.data) end}
+        end
     end
     panel:AddSettings(rows)
 end
@@ -71,25 +74,35 @@ function Settings:Initialize()
         panel.CleanUp=function(self,...)
             LeaveDisplayPositioning()
             if BB.UI then BB.UI:HideSlayerMissAlert() end
+            if BB.Stats then BB.Stats:HidePreview() end
             return originalCleanUp(self,...)
         end
     end
     panel:AddSettings({
-        {type=LHAS.ST_LABEL,label="|cFFD447BETTER BUFFS|r"},
-        {type=LHAS.ST_LABEL,label="|cFFD447Created by BMGxSancho|r"},
-        {type=LHAS.ST_LABEL,label="Raid Effect Intelligence for organized PvE."},
-        {type=LHAS.ST_LABEL,label="Effect selections and HUD layouts are saved separately for each character."},
-        {type=LHAS.ST_LABEL,label="Version "..BB.version},
+        {type=LHAS.ST_SECTION,label="BETTER BUFFS"},
+        {type=LHAS.ST_LABEL,label="|cFFD447Created by BMGxSancho|r\nRaid Effect Intelligence for organized PvE.\nEffect selections and HUD layouts are saved separately for each character.\nVersion "..BB.version},
         {type=LHAS.ST_CHECKBOX,label="Enable Better Buffs",getFunction=function() return BB.saved.enabled end,setFunction=function(v) BB:SetEnabled(v) end},
     })
-    panel:AddSettings({{type=LHAS.ST_SECTION,label="Buffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each buff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
-    AddEffectSettings(panel,BB.Registry.buffs)
-    panel:AddSettings({{type=LHAS.ST_SECTION,label="Debuffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each debuff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
-    AddEffectSettings(panel,BB.Registry.debuffs)
+    panel:AddSettings({{type=LHAS.ST_SECTION,label="Buffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each non-gear buff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
+    AddEffectSettings(panel,BB.Registry.buffs,function(effect) return effect.menuCategory ~= "GEAR" end)
+    panel:AddSettings({{type=LHAS.ST_SECTION,label="Debuffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each non-gear debuff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
+    AddEffectSettings(panel,BB.Registry.debuffs,function(effect) return effect.menuCategory ~= "GEAR" end)
+    panel:AddSettings({{type=LHAS.ST_SECTION,label="Gear Sets"},{type=LHAS.ST_LABEL,label=SectionIntro("Gear-set and Mythic effects live here. Auto uses Better Buffs' existing loadout intelligence when a supported set is equipped or its effect becomes relevant.")}})
+    AddEffectSettings(panel,BB.Registry.gearSets)
     AddDisplaySettings(panel,"BUFF","Buff Display")
     AddDisplaySettings(panel,"DEBUFF","Debuff Display")
     panel:AddSettings({
         {type=LHAS.ST_SECTION,label="Analytics"},
+        {type=LHAS.ST_DROPDOWN,label="Stats Module",tooltip="Self shows your live Current Pen, Crit Chance, and Crit Damage. Group is reserved for future Better Buffs-to-Better Buffs stat sharing and does not display group data in this release. Hidden disables the module.",items=function() return STATS_VISIBILITY_ITEMS end,getFunction=function() return {data=BB.Stats:GetVisibility()} end,setFunction=function(_,_,data) BB.Stats:SetVisibility(data.data); if data.data=="SELF" then BB.Stats:ShowPreview() else BB.Stats:HidePreview() end end},
+        {type=LHAS.ST_LABEL,label="Stats colors: yellow = below the useful cap, green = within +/-5% of cap, red = above that range. Current Pen is personal penetration plus verified resistance reductions active on the current boss. An asterisk means a variable-strength reduction such as Crusher or Alkosh is active, so Better Buffs will not guess the missing amount."},
+        {type=LHAS.ST_SLIDER,label="Stats Module Scale",min=60,max=160,step=5,unit="%",getFunction=function() return zo_round((BB.saved.ui.stats.scale or 1)*100) end,setFunction=function(v) BB.Stats:SetScale(v/100) end},
+        {type=LHAS.ST_SLIDER,label="Stats Module Opacity",min=5,max=90,step=5,unit="%",getFunction=function() return zo_round((BB.saved.ui.stats.opacity or .34)*100) end,setFunction=function(v) BB.Stats:SetOpacity(v/100) end},
+        {type=LHAS.ST_BUTTON,buttonText="Preview Stats Module",clickHandler=function() BB.Stats:ShowPreview() end},
+        {type=LHAS.ST_BUTTON,buttonText="Stats Module Up",clickHandler=function() BB.Stats:Nudge(0,-BB.Constants.POSITION_STEP) end},
+        {type=LHAS.ST_BUTTON,buttonText="Stats Module Down",clickHandler=function() BB.Stats:Nudge(0,BB.Constants.POSITION_STEP) end},
+        {type=LHAS.ST_BUTTON,buttonText="Stats Module Left",clickHandler=function() BB.Stats:Nudge(-BB.Constants.POSITION_STEP,0) end},
+        {type=LHAS.ST_BUTTON,buttonText="Stats Module Right",clickHandler=function() BB.Stats:Nudge(BB.Constants.POSITION_STEP,0) end},
+        {type=LHAS.ST_BUTTON,buttonText="Restore Stats Module Position",clickHandler=function() BB.Stats:ResetPosition() end},
         {type=LHAS.ST_CHECKBOX,label="Show Encounter Results in Chat",tooltip="Prints event-driven uptime, applications, longest gap, and coverage metrics after encounters lasting at least five seconds.",getFunction=function() if IsInGamepadPreferredMode and IsInGamepadPreferredMode() then LeaveDisplayPositioning() end; return BB.saved.uptime.enabled~=false end,setFunction=function(v) BB.saved.uptime.enabled=v==true end},
         {type=LHAS.ST_CHECKBOX,label="Show Advanced Coverage Metrics",getFunction=function() return BB.saved.uptime.showAdvanced~=false end,setFunction=function(v) BB.saved.uptime.showAdvanced=v==true end},
         {type=LHAS.ST_CHECKBOX,label="Personal Major Slayer Miss Alert",tooltip="After a new Major Slayer application settles, shows YOU DID NOT GET SLAYER only if your character did not receive that application.",getFunction=function() return BB.saved.ui.slayerMissAlert.enabled==true end,setFunction=function(v) BB.saved.ui.slayerMissAlert.enabled=v==true; if not BB.saved.ui.slayerMissAlert.enabled and BB.UI then BB.UI:HideSlayerMissAlert() end; if BB.Runtime then BB.Runtime:OnTrackingChanged("MAJOR_SLAYER") end end},

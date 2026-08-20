@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Alpha-AC/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Alpha-AC",
+  "canonical_id": "bethesda:643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+  "content_id": "643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+  "deleted": false,
+  "fingerprint": "2c30047360a8f1610d2a3b674bee6087f966cd719ee7aa7dd34cb8fc67a025ac",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/643e39fa-2b3f-46f8-aef4-eee9ff92360d",
+  "title": "PVP Buddy"
+}

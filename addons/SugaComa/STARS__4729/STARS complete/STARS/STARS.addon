@@ -1,0 +1,23 @@
+## Title: STARS
+## Description: SugaComa's Tenacious Aeon Reward System - Chronicle memories, character legacy, prestige, Veterancy, PvP and underworld history.
+## APIVersion: 101049 101050
+## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
+## Version: 0.6.11
+## SavedVariables: STARS_SV
+## OptionalDependsOn: LibHarvensAddonSettings
+
+; DISCLAIMER:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder ScrollsÂ® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+Bindings.xml
+Gamepad/STARS_Journal_Gamepad.xml
+Keyboard/STARS_Journal_Keyboard.xml
+STARS_Badges.lua
+Gamepad/STARS_Journal_Gamepad.lua
+Keyboard/STARS_Journal_Keyboard.lua
+STARS.lua

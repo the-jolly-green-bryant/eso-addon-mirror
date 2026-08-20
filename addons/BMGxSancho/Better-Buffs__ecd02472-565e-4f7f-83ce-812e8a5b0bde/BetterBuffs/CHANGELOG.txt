@@ -1,129 +1,19 @@
+Better Buffs v0.3.11
+
+- Added Feeding Frenzy tracking using ability ID 131353 for the Werewolf unique 6% damage buff.
+- Added Sul-Xan's Torment testing support using community-supplied candidate ability ID 154737 for the 30-second collected-soul player buff.
+- Added a dedicated Gear Sets settings category for gear-specific and Mythic effect tiles while preserving their existing runtime BUFF/DEBUFF behavior.
+- Added the Analytics Stats Module with Self / Group (Future) / Hidden visibility.
+- Stats Module displays Current Pen, Crit Chance, and Crit Damage from ESO-native stat APIs. During boss encounters Crit Damage also includes tracked target-side Major Brittle, Minor Brittle, and Elemental Catalyst stack modifiers.
+- Current Pen adds only verified fixed resistance reductions that Better Buffs confirms are active on the current boss. Major Breach (5948) and Minor Breach (2974) are included.
+- Variable-strength penetration effects such as Crusher and Roar of Alkosh are never guessed. When one is active, Current Pen is marked with an asterisk and held yellow until an authoritative magnitude can be derived.
+- Stats colors: yellow below the useful target, green within +/-5% of the cap, red above the +/-5% window.
+- Caps used by the module: 18,200 penetration, 100% critical chance, 125% critical damage.
+- Stats Module is independently movable and supports scale and opacity controls.
+- Group Stats remains explicitly future-facing and does not introduce networking in this build.
+- Reworked the settings header into a proper Better Buffs section so credits have stable spacing at the top of the LibHarvens settings list.
+- Preserved v0.3.10 Runtime-before-UI initialization and the single canonical Effect Runtime/cache architecture.
+
 Better Buffs v0.3.10
-- Startup Auto relevance correction: initialize the canonical Effect Runtime before UI construction so Auto group-state queries cannot access uninitialized runtime tables.
-- Added a defensive pre-initialization guard to HasAutoGroupState().
-
-- Expanded Auto visibility from the Warmask proof-of-concept into registry-driven provider intelligence. Auto can now become relevant from equipped gear sets, slotted skills, or a live group effect.
-- Added an event-driven local capability snapshot. Worn gear is refreshed from BAG_WORN equipment events; slotted abilities are refreshed from ESO action-slot events across primary, backup, and Werewolf hotbars. No recurring loadout scanner was added.
-- Major Courage Auto now recognizes Ferocious Roar through its verified provider IDs (39113/42155/42156/42157) and the Werewolf hotbar. Spell Power Cure and Olorime are also registered as local gear providers.
-- Group-effect relevance is now independent from local capability. A supported raid effect can appear in Auto when the canonical runtime confirms the group/boss effect is actually active, even when another player supplied it.
-- Added registry provider metadata for current high-value raid effects including Major Force, Major Slayer, Major Courage, Minor Courage, Powerful Assault, Pillager, Major Vulnerability, Major/Minor Breach, Off Balance, Z'en, Alkosh, Elemental Catalyst, Martial Knowledge, Morag Tong, and supported Mythics.
-- Hidden remains an absolute HUD override; Always remains permanently visible; Auto now resolves local provider capability OR registry-defined live group relevance.
-- Runtime observation was separated from Auto presentation so a first application can make an Auto tile appear instead of being discarded before relevance is known.
-- Provider-only state is cleared when the corresponding gear/skill capability disappears, preventing stale self-proc state from resurfacing after a later gear swap.
-- Existing Warmask ownership/lifecycle, Aura reconciliation, Courage coverage reconciliation, Off Balance lifecycle, analytics, and scene management are unchanged.
-
-Better Buffs v0.3.08
-
-- Aura of Pride: recipient names and coverage are now reconciled from the current group-unit aura state after Aura effect changes. The canonical recipient set is authoritative, so leaving or re-entering Spaulder range removes/restores both the name and coverage count together.
-- Huntsman's Warmask: fixed the opening-pull race where Mark of Hircine could start combat before EVENT_PLAYER_COMBAT_STATE reached Combat Context. Only a locally verified, correlated Warmask reticle target can bypass that narrow pre-combat gate.
-- Master Enable is now character-specific. Existing initialized characters inherit their previous account-wide enable state once; genuinely new characters default enabled.
-- New character first-use defaults: Major Berserk, Major Force, Major Slayer, Powerful Assault, Off Balance, Roar of Alkosh, and Touch of Z'en are set to Always. Existing character visibility selections are preserved.
-- Dashboard top-level controls are explicitly born hidden and remain hidden while disabled or empty, preventing empty Buff/Debuff containers during login, ReloadUI, or character changes.
-- No new polling loops, effect caches, or specialist trackers were added.
-
-Better Buffs v0.3.07
-
-- Replaced the old per-effect ON/OFF preference with three visibility modes: Auto, Always, and Hidden.
-- Auto allows registry-owned loadout intelligence to decide when an effect belongs on the HUD. Huntsman's Warmask remains the first fully equipment-aware effect and appears/disappears automatically as the Mythic is equipped or removed.
-- Always preserves the previous ON behavior: the effect remains visible even when the player cannot currently provide it.
-- Hidden is an absolute presentation override: the effect never appears in Detailed or Compact dashboards, even when an automatic relevance rule is true.
-- Presentation and runtime observation are now separated. A Hidden auto-relevant effect may remain internally observable without being rendered, preserving future analytics/intelligence correctness without adding another tracker.
-- Existing character preferences migrate without visual regressions: legacy ON becomes Always and legacy OFF becomes Auto.
-- The legacy tracked boolean remains synchronized for downgrade/compatibility safety.
-- No new event owner, cache, gear scanner, polling loop, or renderer was introduced.
-
-Better Buffs v0.3.06
-
-Loadout-aware Warmask display release.
-
-- Huntsman's Warmask now automatically becomes a tracked/displayed effect while item ID 223189 is equipped in the head slot.
-- Removing Warmask immediately removes its automatic HUD relevance and clears its provider/Mark state through the existing equipment event path.
-- The automatic state does not rewrite the character's saved checkbox. Manually enabled effects remain visible regardless of equipment; an otherwise-disabled Warmask tile appears only while the Mythic is actually equipped.
-- Reused the existing EVENT_INVENTORY_SINGLE_SLOT_UPDATE subscription. No gear polling loop, secondary cache, or separate loadout tracker was added.
-- Runtime, UI, preview, and timer update gates now consume the same manual-or-loadout relevance decision so the tile can appear/disappear immediately on gear swaps.
-
-Better Buffs v0.3.05
-
-Warmask ownership + group-coverage reconciliation release.
-
-- Huntsman's Warmask now verifies the actual equipped mythic (item ID 223189) and consumes the verified local player effect 252050 as the authoritative owner/application state.
-- Mark of Hircine 252048 is now target identity only. Another group member's Mark can no longer start your cooldown, drive your timer, or make your tile show READY.
-- Warmask's 10-second application cooldown now starts from a genuine new local 252050 application, not from target-effect refreshes, eliminating the repeating 9-second cooldown loop.
-- The local 252050 effect owns the 60-second Mark duration; 252048 supplies the marked target identity.
-- Target death removes the target state while preserving only a still-valid local 10-second cooldown. Local 252050 fade clears the Mark for phase transitions/expiration.
-- Equipment changes are handled by ESO's inventory-slot event. Unequipping Warmask immediately clears its local provider state without polling.
-- Generic stale-FADE protection prevents an older group-buff application from deleting a newer recipient record that has already refreshed.
-- Ferocious Roar combat events (ability IDs 39113/42155/42156/42157) trigger a one-shot Major Courage roster reconciliation after application. The reconciliation adds confirmed live Courage recipients without erasing still-valid recipients from another Courage source.
-- Major Courage remains one normalized effect. No Werewolf-specific tracker, second cache, or periodic group scan was added.
-- No additional EVENT_EFFECT_CHANGED or EVENT_COMBAT_EVENT owner was added.
-
-Better Buffs v0.3.04
-
-Lifecycle correctness audit release.
-
-- Off Balance now uses the correct two-stage target lifecycle: active effect, then a 15-second target immunity cooldown only if that target survives the fade. Target death clears both immediately.
-- Hostile debuff presentation now gives active bosses strict priority over previously cached trash targets. Existing trash state cannot take over a boss-fight tile.
-- Reticle-target effects such as Mark of Hircine obey the same boss-priority rule during boss encounters.
-- Encounter end now clears hostile target state without indiscriminately erasing real player/group buffs that are still active.
-- Provider and recipient cooldown intelligence is preserved only according to registry ownership rules.
-- Pillager READY is now affirmative: it does not glow READY until a real Pillager recipient event has established a provider in the current runtime.
-- Elemental Catalyst is represented as one composite tile backed by Flame Weakness, Frost Weakness, and Shock Weakness child states. The stack badge represents active elemental weaknesses (0-3).
-- Hostile target death clears target-owned cooldown state as well as active debuffs.
-- No new tracker, cache, EVENT_COMBAT_EVENT owner, EVENT_EFFECT_CHANGED owner, or recurring update loop was added.
-
-Better Buffs v0.3.03
-- Corrected Huntsman's Warmask dual-timer state at the canonical Effect Runtime.
-- First 10 seconds now display the application cooldown even while Mark of Hircine is active.
-- After the 10-second lockout, a living marked target resumes the remaining 60-second Mark timer (normally ~50s).
-- Marked-target death clears only the target record; any remaining 10-second application cooldown continues to zero and then becomes READY.
-- Warmask provider cooldown survives encounter-end cleanup only until its natural expiration.
-- A new Mark application replaces the previous Warmask target in the canonical cache and restarts the application cooldown.
-- No new trackers, caches, events, or update loops were added.
-
-Better Buffs v0.3.02
-
-- Fixed Personal Major Slayer Miss Alert initialization so it never appears on login, ReloadUI, or character switch while disabled.
-- Disabling the Slayer miss alert now immediately cancels and hides any live or preview alert.
-- Major Slayer miss checks now require an actual Major Slayer application while the local client is in combat.
-- Corrected Huntsman's Warmask target acceptance at the Combat Context source: verified Mark of Hircine ID 252048 can now be accepted from ESO's Reticle Target path before generic trash registration occurs.
-- Preserved the existing 10-second provider lockout and target-death cleanup in the canonical effect state.
-- Buff and Debuff display positioning pages now attach the existing HUD fragment to the settings scene when opened on gamepad/console, and release it when leaving the display page/settings.
-- No new effect cache, tracker, polling loop, or alternate visibility system was added.
-
-Better Buffs v0.3.01
-- New installations default to Compact Grid while preserving existing character profiles.
-- Added Compact icon legend explaining duration ring, center countdown, cooldown, READY, and inactive states.
-- Added optional personal Major Slayer miss alert with character-specific scale and positioning.
-- Corrected group identity resolution by unit ID/name so Aura of Pride coverage and displayed recipient names share one authoritative identity source.
-- Deduplicated buff coverage by recipient identity; Aura active-recipient counts now match resolvable displayed names.
-- Corrected Mark of Hircine target cleanup on death and modeled its 10-second reapplication lockout through the existing provider cooldown state.
-- Positioning controls now temporarily expose the relevant Buff or Debuff HUD fragment in settings using the existing scene-fragment path.
-
-Better Buffs v0.3.00
-
-QUALITY OF LIFE
-- Effect toggles and complete Buff/Debuff HUD layouts are now character-specific.
-- Existing v0.2.x account-wide layouts seed each character once on first login after update.
-- General addon enablement, analytics, and advanced preferences remain account-wide.
-- Better Buffs and Better Debuffs now use ESO HUD scene fragments so they hide naturally behind game menus and other scenes.
-- Preview Display temporarily attaches the existing HUD fragment to the active settings scene, then cleanly returns visibility ownership to ESO.
-
-MYTHIC EFFECT INTELLIGENCE
-- Huntsman's Warmask: verified Mark of Hircine target effect (252048).
-- Harpooner's Wading Kilt: Hunter's Focus stacks/duration via live ESO effect name.
-- Death Dealer's Fete: Escalating Fete stacks via live ESO effect name.
-- Belharza's Band: Belharza's Temper stacks/duration via live ESO effect name.
-- Dov-Rha Sabatons: Draconic Scales stacks/duration via live ESO effect name.
-- Thrassian Stranglers: Sload's Call registered with verified ability ID 136123 and native Mythic artwork; live console event-path validation remains part of this release's test gate.
-- Rourken Steamguards: Steam Guardian active duration via live ESO effect name.
-- The Saint and the Seducer is represented through its normalized Major/Minor effects; Major Evasion has been added to complete the five Major-buff rotation.
-- Spaulder of Ruin remains represented by Aura of Pride.
-- Pearls of Ehlnofey remains represented by normalized Major Heroism.
-
-RESEARCH-GATED MYTHICS
-Prowler's Talisman and Mad God's Dancing Shoes are intentionally not given speculative dedicated tiles until their current live effect IDs/states are verified. Rourken cooldown reduction is likewise not guessed; this release tracks Steam Guardian itself without claiming an incorrect READY timer. The name-resolved Kilt, Fete, Belharza, Dov-Rha, and Rourken entries are implemented for live testing but are not declared fully validated until their PlayStation event streams are confirmed.
-
-ARCHITECTURE
-- No new polling loops.
-- No duplicate effect cache or Mythic tracker.
-- All new effects consume the existing Effect Runtime and canonical cache.
+- Startup regression correction: Runtime initializes before UI so Auto group-state queries are safe during dashboard construction.
+- HasAutoGroupState remains defensively nil-safe.

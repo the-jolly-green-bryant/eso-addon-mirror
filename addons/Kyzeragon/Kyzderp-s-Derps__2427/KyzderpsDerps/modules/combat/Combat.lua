@@ -14,7 +14,19 @@ function KDC.Initialize()
 end
 
 function KDC.GetSettings()
-    return {
+    local settings = {
+        {
+            type = "checkbox",
+            name = "Automatic repair kit",
+            tooltip = "Automatically use a repair kit to repair gear that drops to 1% durability",
+            default = true,
+            getFunc = function() return KyzderpsDerps.savedOptions.misc.repair end,
+            setFunc = function(value)
+                KyzderpsDerps.savedOptions.misc.repair = value
+                KyzderpsDerps.AutoRepair.Initialize()
+            end,
+            width = "full",
+        },
         {
             type = "checkbox",
             name = "Lower Insatiable Hunger priority",
@@ -32,4 +44,10 @@ function KDC.GetSettings()
             width = "full",
         },
     }
+
+    for _, setting in ipairs(KyzderpsDerps.ScoreFormat.GetSettings()) do
+        table.insert(settings, setting)
+    end
+
+    return settings
 end

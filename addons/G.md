@@ -52,7 +52,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Go Fast Don't Die](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drezzek/Go-Fast-Don-t-Die__3332) | Drezzek | PC / Mac | 1.4 |
 | [Go Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/static_recharge/Go-Home__1604) | static_recharge | PC / Mac | 8.0.0 |
 | [GoA_DolgubonsLazyWritCreatorUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_DolgubonsLazyWritCreatorUAPatch__4703) | Iriya_Altmer | PC / Mac | 1.7 |
-| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 44.37 |
+| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 44.47 |
 | [GoA_FCOLockpickerUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733) | Iriya_Altmer | PC / Mac | 1.0 |
 | [GoA_HarvestMapUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707) | Iriya_Altmer | PC / Mac | 1.1 |
 | [GoA_TamrielTradeCentreUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705) | Iriya_Altmer | PC / Mac | 1.2 |
@@ -149,6 +149,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Guild Events Improved - Kith's Build](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitherel/Guild-Events-Improved---Kith-s-Build__2029) | kitherel | PC / Mac | 1 |
 | [Guild Events Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Othric/Guild-Events-Revised__2052) | Othric | PC / Mac | 1.3.2 |
 | [Guild Events Revised (hotfix)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/turbo112/Guild-Events-Revised-hotfix__3152) | turbo112 | PC / Mac | 1.3.3 b |
+| [Guild Events Sorted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/klarix/Guild-Events-Sorted__4780) | klarix | PC / Mac | 1.1.5 |
 | [Guild Hall Button](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BoarGules/Guild-Hall-Button__1970) | BoarGules | PC / Mac | 2.3.22 |
 | [Guild Hall List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Guild-Hall-List__1720) | sirinsidiator | PC / Mac | 1.2 |
 | [Guild History Exact Time](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/Guild-History-Exact-Time__4631) | DakJaniels | PC / Mac | 1 |

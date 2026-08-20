@@ -16,6 +16,7 @@ local C = {
     TEXTURE_WHITE = "EsoUI/Art/Miscellaneous/white.dds",
     TEXTURE_FILL = "EsoUI/Art/Miscellaneous/progressbar_genericFill.dds",
     APPLY_DELAY_MS = 50,
+    FRAME_VISIBILITY_TRANSITION_MS = 500,
     DEFAULT_WIDTH = 470,
     HEALTH_HEIGHT = 24,
     RESOURCE_HEIGHT = 17,
@@ -439,6 +440,7 @@ local defaults = {
             },
             groupFrame = {
                 showNqolGroupFrame = false,
+                showOnlyInCombat = false,
                 showCustomNames = false,
                 showInSettings = true,
                 showTrauma = false,
@@ -875,6 +877,7 @@ function PlayerBars.Group.GetSettings()
     local groupDefaults = defaults.ui.customFrames.groupFrame
 
     NQOL.Settings.Boolean(settings, groupDefaults, "showNqolGroupFrame")
+    NQOL.Settings.Boolean(settings, groupDefaults, "showOnlyInCombat")
     NQOL.Settings.Boolean(settings, groupDefaults, "showCustomNames")
     NQOL.Settings.Boolean(settings, groupDefaults, "showInSettings")
     NQOL.Settings.Boolean(settings, groupDefaults, "showTrauma")
@@ -1333,6 +1336,92 @@ local function CreateRootControl(controlName)
     return control
 end
 
+local function StopFrameVisibilityTransition(root)
+    local timeline = root and root.nqolVisibilityTimeline
+    if not timeline then
+        return
+    end
+
+    timeline:SetHandler("OnStop", nil)
+    timeline:Stop()
+    root.nqolVisibilityTimeline = nil
+end
+
+local function SetFrameVisibilityImmediate(root, visible)
+    if not root then
+        return
+    end
+
+    StopFrameVisibilityTransition(root)
+    root.nqolVisibilityTarget = visible == true
+    root:SetAlpha(1)
+    root:SetHidden(visible ~= true)
+end
+
+local function SetFrameCombatVisibility(root, visible)
+    if not root then
+        return
+    end
+
+    visible = visible == true
+    local currentTimeline = root.nqolVisibilityTimeline
+    if root.nqolVisibilityTarget == visible and currentTimeline and currentTimeline:IsPlaying() then
+        return
+    end
+
+    local wasHidden = root:IsHidden()
+    local currentAlpha = wasHidden and 0 or root:GetAlpha()
+    local targetAlpha = visible and 1 or 0
+    if not ANIMATION_MANAGER or not ANIMATION_ALPHA then
+        SetFrameVisibilityImmediate(root, visible)
+        return
+    end
+
+    StopFrameVisibilityTransition(root)
+    root.nqolVisibilityTarget = visible
+    if visible then
+        root:SetHidden(false)
+        if wasHidden then
+            root:SetAlpha(0)
+        end
+    elseif wasHidden then
+        root:SetAlpha(1)
+        return
+    end
+
+    if math.abs(currentAlpha - targetAlpha) < 0.001 then
+        root:SetAlpha(targetAlpha)
+        root:SetHidden(not visible)
+        return
+    end
+
+    local timeline = ANIMATION_MANAGER:CreateTimeline()
+    local fade = timeline:InsertAnimation(ANIMATION_ALPHA, root, 0)
+    fade:SetAlphaValues(currentAlpha, targetAlpha)
+    fade:SetDuration(math.max(1, C.FRAME_VISIBILITY_TRANSITION_MS * math.abs(targetAlpha - currentAlpha)))
+    local easingFunction = visible and ZO_EaseOutQuadratic or ZO_EaseInQuadratic
+    if easingFunction then
+        fade:SetEasingFunction(easingFunction)
+    end
+
+    root.nqolVisibilityTimeline = timeline
+    timeline:SetHandler("OnStop", function(stoppedTimeline, completedPlaying)
+        if root.nqolVisibilityTimeline ~= stoppedTimeline then
+            return
+        end
+
+        root.nqolVisibilityTimeline = nil
+        if not completedPlaying then
+            return
+        end
+
+        local targetVisible = root.nqolVisibilityTarget == true
+        root:SetAlpha(targetVisible and 1 or 0)
+        root:SetHidden(not targetVisible)
+    end)
+    timeline:PlayFromStart()
+end
+
 ApplyRootPosition = function(root, settings)
     if not settings then
         root:ClearAnchors()
@@ -1669,16 +1758,10 @@ local function HideClassicChangeLabels(widget)
         return
     end
 
-    if widget.changeTimelines then
-        for index, timeline in pairs(widget.changeTimelines) do
-            if timeline then
-                timeline:Stop()
-                widget.changeTimelines[index] = nil
-            end
-        end
-    end
-
     for _, changeLabel in ipairs(widget.changeLabels) do
+        if changeLabel.changeTimeline then
+            changeLabel.changeTimeline:Stop()
+        end
         HideClassicChangeLabel(changeLabel)
     end
 end
@@ -1695,14 +1778,39 @@ local function AcquireClassicChangeLabel(widget)
         widget.nextChangeLabelIndex = 1
     end
 
-    widget.changeTimelines = widget.changeTimelines or {}
-    local previousTimeline = widget.changeTimelines[index]
-    if previousTimeline then
-        previousTimeline:Stop()
-        widget.changeTimelines[index] = nil
+    if label.changeTimeline then
+        label.changeTimeline:Stop()
     end
 
-    return label, index
+    return label
+end
+
+local function EnsureClassicChangeTimeline(label)
+    if label.changeTimeline then
+        return label.changeTimeline, label.changeTranslate
+    end
+
+    local timeline = ANIMATION_MANAGER:CreateTimeline()
+    local translate = timeline:InsertAnimation(ANIMATION_TRANSLATE, label, 0)
+    translate:SetDuration(C.CLASSIC_CHANGE_ANIMATION_MS)
+    if ZO_EaseOutCubic then
+        translate:SetEasingFunction(ZO_EaseOutCubic)
+    end
+
+    local fade = timeline:InsertAnimation(ANIMATION_ALPHA, label, C.CLASSIC_CHANGE_FADE_DELAY_MS)
+    fade:SetDuration(C.CLASSIC_CHANGE_ANIMATION_MS - C.CLASSIC_CHANGE_FADE_DELAY_MS)
+    fade:SetAlphaValues(1, 0)
+    if ZO_EaseInQuadratic then
+        fade:SetEasingFunction(ZO_EaseInQuadratic)
+    end
+
+    timeline:SetHandler("OnStop", function()
+        HideClassicChangeLabel(label)
+    end)
+
+    label.changeTimeline = timeline
+    label.changeTranslate = translate
+    return timeline, translate
 end
 
 local function PlayChangeNumber(widget, amount, settings, direction)
@@ -1715,7 +1823,7 @@ local function PlayChangeNumber(widget, amount, settings, direction)
         return
     end
 
-    local label, labelIndex = AcquireClassicChangeLabel(widget)
+    local label = AcquireClassicChangeLabel(widget)
     if not label then
         return
     end
@@ -1743,9 +1851,7 @@ local function PlayChangeNumber(widget, amount, settings, direction)
     label:SetHidden(false)
 
     if ANIMATION_MANAGER then
-        local timeline = ANIMATION_MANAGER:CreateTimeline()
-        local translate = timeline:InsertAnimation(ANIMATION_TRANSLATE, label, 0)
-        translate:SetDuration(C.CLASSIC_CHANGE_ANIMATION_MS)
+        local timeline, translate = EnsureClassicChangeTimeline(label)
         if direction == "left" then
             translate:SetTranslateOffsets(sideOffset, verticalOffset, sideOffset - C.CLASSIC_CHANGE_FLOAT_DISTANCE, verticalOffset)
         elseif direction == "right" then
@@ -1754,25 +1860,6 @@ local function PlayChangeNumber(widget, amount, settings, direction)
             local floatDistance = direction == "down" and C.CLASSIC_CHANGE_FLOAT_DISTANCE or -C.CLASSIC_CHANGE_FLOAT_DISTANCE
             translate:SetTranslateOffsets(sideOffset, verticalOffset, sideOffset, verticalOffset + floatDistance)
         end
-        if ZO_EaseOutCubic then
-            translate:SetEasingFunction(ZO_EaseOutCubic)
-        end
-
-        local fade = timeline:InsertAnimation(ANIMATION_ALPHA, label, C.CLASSIC_CHANGE_FADE_DELAY_MS)
-        fade:SetDuration(C.CLASSIC_CHANGE_ANIMATION_MS - C.CLASSIC_CHANGE_FADE_DELAY_MS)
-        fade:SetAlphaValues(1, 0)
-        if ZO_EaseInQuadratic then
-            fade:SetEasingFunction(ZO_EaseInQuadratic)
-        end
-
-        timeline:SetHandler("OnStop", function()
-            HideClassicChangeLabel(label)
-            if widget.changeTimelines then
-                widget.changeTimelines[labelIndex] = nil
-            end
-        end)
-
-        widget.changeTimelines[labelIndex] = timeline
         timeline:PlayFromStart()
     elseif zo_callLater then
         zo_callLater(function()
@@ -1971,6 +2058,8 @@ Shared.CreateClassicLabel = CreateClassicLabel
 Shared.CreateClassicChangeLabel = CreateClassicChangeLabel
 Shared.CreateCompanionNameLabel = CreateCompanionNameLabel
 Shared.CreateRootControl = CreateRootControl
+Shared.SetFrameVisibilityImmediate = SetFrameVisibilityImmediate
+Shared.SetFrameCombatVisibility = SetFrameCombatVisibility
 Shared.CreateResourceWidget = CreateResourceWidget
 Shared.CreateFlatResourceWidgets = CreateFlatResourceWidgets
 Shared.CreateClassicResourceWidget = CreateClassicResourceWidget

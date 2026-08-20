@@ -83,8 +83,10 @@ local settingsPanelVisible = false
 local searchCallbackRegistered = false
 local sceneCallbackInstalled = false
 local groupJoinEventRegistered = false
+local groupFinderStatusEventsRegistered = false
 local keybindHooksInstalled = false
 local startImmediatelyAfterGroupFinderCloses = false
+local pausedForDisabledZone = false
 local scanActive = false
 local stopRequested = false
 local scanPhase = "idle"
@@ -183,6 +185,12 @@ local function IsGroupFinderShowing()
     local scene = SCENE_MANAGER and SCENE_MANAGER.GetCurrentScene and SCENE_MANAGER:GetCurrentScene()
     local name = scene and scene.GetName and scene:GetName()
     return name == "GroupFinderGamepad" or name == "group_finder_gamepad_list"
+end
+
+local function IsGroupFinderDisabledInZone()
+    return GetGroupFinderStatusReason
+        and GROUP_FINDER_ACTION_RESULT_FAILED_DISABLED_IN_ZONE
+        and GetGroupFinderStatusReason() == GROUP_FINDER_ACTION_RESULT_FAILED_DISABLED_IN_ZONE
 end
 
 local function CaptureFilterState()
@@ -584,7 +592,7 @@ end
 
 local function TryStartScan()
     local settings = GetSettings()
-    if settings.enabled ~= true or scanActive or IsGroupFinderShowing() then return false end
+    if settings.enabled ~= true or pausedForDisabledZone or scanActive or IsGroupFinderShowing() then return false end
     if HasGroupListingForUserType
         and HasGroupListingForUserType(GROUP_FINDER_GROUP_LISTING_USER_TYPE_CREATED_GROUP_LISTING) then return false end
     local manager = GROUP_FINDER_SEARCH_MANAGER
@@ -633,7 +641,7 @@ end
 ScheduleNextScan = function(delayMs)
     StopTimer()
     local settings = GetSettings()
-    if settings.enabled ~= true or scanActive or not EVENT_MANAGER then return end
+    if settings.enabled ~= true or pausedForDisabledZone or scanActive or not EVENT_MANAGER then return end
     scanTimerScheduled = true
     nextScanAtMilliseconds = GetNowMilliseconds() + delayMs
     EVENT_MANAGER:RegisterForUpdate(C.EVENT_NAMESPACE .. C.TIMER_SUFFIX, delayMs, function()
@@ -662,6 +670,23 @@ local function StopMonitoring()
         end
     end
     NotifyHudStatus()
+end
+
+local function PauseForDisabledZone()
+    StopTimer()
+    StopSearchTimeout()
+    if scanActive then
+        local filterState = savedFilterState
+        ResetScanState()
+        ApplyFilterState(filterState)
+        local manager = GROUP_FINDER_SEARCH_MANAGER
+        if manager and manager.SetSearchState and ZO_GROUP_FINDER_SEARCH_STATES.NONE then
+            manager:SetSearchState(ZO_GROUP_FINDER_SEARCH_STATES.NONE)
+        end
+    end
+    ClearArray(rows)
+    hasCompletedScan = false
+    NotifyHudResults()
 end
 
 local function AbortScanForGroupFinder()
@@ -737,6 +762,42 @@ local function UnregisterGroupJoinEvent()
     EVENT_MANAGER:UnregisterForEvent(C.EVENT_NAMESPACE, EVENT_GROUP_MEMBER_JOINED)
 end
 
+local function OnGroupFinderAvailabilityChanged()
+    local disabledInZone = IsGroupFinderDisabledInZone() == true
+    local wasPaused = pausedForDisabledZone
+    pausedForDisabledZone = disabledInZone
+    if disabledInZone then
+        PauseForDisabledZone()
+    elseif wasPaused and GetSettings().enabled == true then
+        StopTimer()
+        StartTimer(true)
+        NotifyHudResults()
+    end
+end
+
+local function RegisterGroupFinderStatusEvents()
+    if groupFinderStatusEventsRegistered or not EVENT_MANAGER then return end
+    groupFinderStatusEventsRegistered = true
+    if EVENT_GROUP_FINDER_STATUS_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(C.EVENT_NAMESPACE, EVENT_GROUP_FINDER_STATUS_UPDATED, OnGroupFinderAvailabilityChanged)
+    end
+    if EVENT_PLAYER_ACTIVATED then
+        EVENT_MANAGER:RegisterForEvent(C.EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, OnGroupFinderAvailabilityChanged)
+    end
+    OnGroupFinderAvailabilityChanged()
+end
+
+local function UnregisterGroupFinderStatusEvents()
+    if not groupFinderStatusEventsRegistered or not EVENT_MANAGER then return end
+    groupFinderStatusEventsRegistered = false
+    if EVENT_GROUP_FINDER_STATUS_UPDATED then
+        EVENT_MANAGER:UnregisterForEvent(C.EVENT_NAMESPACE, EVENT_GROUP_FINDER_STATUS_UPDATED)
+    end
+    if EVENT_PLAYER_ACTIVATED then
+        EVENT_MANAGER:UnregisterForEvent(C.EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
+    end
+end
+
 local function RefreshRuntime(immediate)
     local settings = GetSettings()
     local hud = NQOL.Features.GroupFinderMonitorHud
@@ -749,6 +810,7 @@ local function RefreshRuntime(immediate)
     if settings.enabled == true then
         RegisterSearchCallback()
         RegisterSceneCallback()
+        RegisterGroupFinderStatusEvents()
         if settings.closeOnJoin == true then RegisterGroupJoinEvent() else UnregisterGroupJoinEvent() end
         StartTimer(immediate)
     else
@@ -757,6 +819,7 @@ local function RefreshRuntime(immediate)
         UnregisterSearchCallback()
         UnregisterSceneCallback()
         UnregisterGroupJoinEvent()
+        UnregisterGroupFinderStatusEvents()
     end
     NotifyHudResults()
 end
@@ -867,6 +930,7 @@ end
 
 function Monitor.GetRows() return rows end
 function Monitor.IsScanning() return scanActive end
+function Monitor.IsPausedForDisabledZone() return pausedForDisabledZone end
 function Monitor.IsRestoringFilter() return scanActive and scanPhase == "restore" end
 function Monitor.GetCurrentScanCategoryLabel()
     if not scanActive or scanPhase ~= "monitor" then return nil end

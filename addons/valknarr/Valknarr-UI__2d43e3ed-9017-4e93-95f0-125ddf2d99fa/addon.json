@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/valknarr/Valknarr-UI__2d43e3ed-9017-4e93-95f0-125ddf2d99fa",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "valknarr",
+  "canonical_id": "bethesda:2d43e3ed-9017-4e93-95f0-125ddf2d99fa",
+  "content_id": "2d43e3ed-9017-4e93-95f0-125ddf2d99fa",
+  "deleted": false,
+  "fingerprint": "3293af333a3476bfaf16ff29de7c919ed7c8c3e05360ff6b789fd60d25a2de7e",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "2d43e3ed-9017-4e93-95f0-125ddf2d99fa",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/2d43e3ed-9017-4e93-95f0-125ddf2d99fa",
+  "title": "Valknarr UI"
+}

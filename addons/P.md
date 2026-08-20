@@ -178,7 +178,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Purge Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Purge-Tracker__1803) | code65536 | PC / Mac | 1.3.2 |
 | [PUt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/PUt__8f749129-7ffe-4951-a1f9-bf3ac664788f) | user562x | Console | — |
 | [PvDoor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/skineh/PvDoor__3098) | skineh | PC / Mac | 1.0.2 |
-| [PVP Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Velothhh/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d) | Velothhh | Console | — |
+| [PVP Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Alpha-AC/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d) | Alpha-AC | Console | — |
 | [PvP FPS 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/PvP-FPS-2018__2011) | Phuein | PC / Mac | 1.22 |
 | [PvP QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/PvP-QoL__4358) | atharti | PC / Mac | 4.3 |
 | [PvP Ranks (patch for Update 28 - Markarth)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/PvP-Ranks-patch-for-Update-28---Markarth__2824) | ForgottenLight | PC / Mac | 2.5d |

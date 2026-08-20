@@ -20,6 +20,7 @@ local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 local SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
 local CENTER_SCREEN_ANNOUNCE_PANEL_ID = PanelIds.CENTER_SCREEN_ANNOUNCE
+local ANNOUNCEMENTS_PANEL_ID = PanelIds.ANNOUNCEMENTS
 local INFINITE_ARCHIVE_FRAME_PANEL_ID = PanelIds.INFINITE_ARCHIVE_FRAME
 local LOOT_LOG_PANEL_ID = PanelIds.LOOT_LOG
 local PLAYER_INFO_PANEL_ID = PanelIds.PLAYER_INFO
@@ -904,6 +905,26 @@ function GamepadOptions.BuildArenasEntry()
     }
 end
 
+function GamepadOptions.BuildSoloDungeonsEntry()
+    return {
+        panel = PROGRESS_PANEL_ID,
+        system = PROGRESS_PANEL_ID,
+        settingId = 8,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = NQOL.L("ui.navigation.solo_dungeons"),
+        gamepadTextOverride = NQOL.L("ui.navigation.solo_dungeons"),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.solo_dungeons_tooltip"))
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(GamepadOptions.SOLO_DUNGEONS_PANEL_ID)
+        end,
+    }
+end
+
 function GamepadOptions.BuildInfiniteArchiveEntry()
     return {
         panel = PROGRESS_PANEL_ID,
@@ -1021,6 +1042,26 @@ function GamepadOptions.BuildActiveQuestEntry()
         end,
         callback = function()
             GamepadOptions.ShowPanel(ACTIVE_QUEST_PANEL_ID)
+        end,
+    }
+end
+
+function GamepadOptions.BuildAnnouncementsEntry()
+    return {
+        panel = DEFAULT_FRAMES_PANEL_ID,
+        system = DEFAULT_FRAMES_PANEL_ID,
+        settingId = 4,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = NQOL.L("features.ui.announcements"),
+        gamepadTextOverride = NQOL.L("features.ui.announcements"),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("features.ui.announcements_navigation_tooltip"))
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(ANNOUNCEMENTS_PANEL_ID)
         end,
     }
 end

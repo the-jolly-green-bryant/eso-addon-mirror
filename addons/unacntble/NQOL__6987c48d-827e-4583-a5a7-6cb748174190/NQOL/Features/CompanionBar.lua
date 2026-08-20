@@ -19,6 +19,8 @@ local ApplyRootPosition = Shared.ApplyRootPosition
 local FormatNumber = Shared.FormatNumber
 local FormatCompactNumber = Shared.FormatCompactNumber
 local FormatCurrentValue = Shared.FormatCurrentValue
+local SetFrameVisibilityImmediate = Shared.SetFrameVisibilityImmediate
+local SetFrameCombatVisibility = Shared.SetFrameCombatVisibility
 local runtimeActive = false
 
 function COMPANION.ShouldShowForCurrentScene()
@@ -83,7 +85,7 @@ end
 
 function COMPANION.HideFrame()
     if COMPANION.root then
-        COMPANION.root:SetHidden(true)
+        SetFrameVisibilityImmediate(COMPANION.root, false)
     end
 end
 
@@ -431,13 +433,18 @@ function COMPANION.RefreshFrame()
 
     local settings = GetCompanionSettings()
     local previewVisible = COMPANION.IsPreviewVisible()
-    local shouldShow = (settings.showNqolCompanionFrame == true or previewVisible)
+    local shouldShowFrame = (settings.showNqolCompanionFrame == true or previewVisible)
         and COMPANION.ShouldShowForCurrentScene()
-        and (previewVisible or settings.showOnlyInCombat ~= true or (IsUnitInCombat and IsUnitInCombat("player") == true))
         and (COMPANION.DoesExist() or previewVisible)
+    local combatOnly = not previewVisible and settings.showOnlyInCombat == true
 
-    if not shouldShow then
+    if not shouldShowFrame then
         COMPANION.HideFrame()
+        return
+    end
+
+    if combatOnly and not (IsUnitInCombat and IsUnitInCombat("player") == true) then
+        SetFrameCombatVisibility(COMPANION.root, false)
         return
     end
 
@@ -456,7 +463,11 @@ function COMPANION.RefreshFrame()
     if previewVisible then
         Shared.SetSettingsPreviewDrawOrder(COMPANION.root)
     end
-    COMPANION.root:SetHidden(false)
+    if combatOnly then
+        SetFrameCombatVisibility(COMPANION.root, true)
+    else
+        SetFrameVisibilityImmediate(COMPANION.root, true)
+    end
 end
 
 function COMPANION.QueueRefresh()

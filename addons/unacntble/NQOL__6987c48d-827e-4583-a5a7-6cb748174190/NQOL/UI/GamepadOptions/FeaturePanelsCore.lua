@@ -17,6 +17,7 @@ local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 local SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
 local CENTER_SCREEN_ANNOUNCE_PANEL_ID = PanelIds.CENTER_SCREEN_ANNOUNCE
+local ANNOUNCEMENTS_PANEL_ID = PanelIds.ANNOUNCEMENTS
 local INFINITE_ARCHIVE_FRAME_PANEL_ID = PanelIds.INFINITE_ARCHIVE_FRAME
 local LOOT_LOG_PANEL_ID = PanelIds.LOOT_LOG
 local PLAYER_INFO_PANEL_ID = PanelIds.PLAYER_INFO
@@ -304,6 +305,26 @@ function GamepadOptions.BuildCenterScreenAnnounceEnabledOption()
     return GamepadOptions.BuildCheckboxOption(CENTER_SCREEN_ANNOUNCE_PANEL_ID, 1, ui.GetCenterScreenAnnounceEnabledLabel(), ui.GetCenterScreenAnnounceEnabledTooltip(), ui.GetCenterScreenAnnounceEnabled, ui.SetCenterScreenAnnounceEnabled, nil, ui.GetCenterScreenAnnounceEnabledDefault)
 end
 
+function GamepadOptions.BuildAnnouncementsHorizontalOffsetOption()
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildPositionSliderOption(ANNOUNCEMENTS_PANEL_ID, 3, ui.GetAnnouncementsHorizontalOffsetLabel(), ui.GetAnnouncementsHorizontalOffsetTooltip(), ui.GetAnnouncementsHorizontalOffsetMin(), ui.GetAnnouncementsHorizontalOffsetMax(), "%.0f", ui.GetAnnouncementsHorizontalOffset, ui.SetAnnouncementsHorizontalOffset)
+end
+
+function GamepadOptions.BuildAnnouncementsVerticalOffsetOption()
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildPositionSliderOption(ANNOUNCEMENTS_PANEL_ID, 4, ui.GetAnnouncementsVerticalOffsetLabel(), ui.GetAnnouncementsVerticalOffsetTooltip(), ui.GetAnnouncementsVerticalOffsetMin(), ui.GetAnnouncementsVerticalOffsetMax(), "%.0f", ui.GetAnnouncementsVerticalOffset, ui.SetAnnouncementsVerticalOffset, nil, ui.GetAnnouncementsVerticalOffsetDefault)
+end
+
+function GamepadOptions.BuildAnnouncementsDrawBordersOption()
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildCheckboxOption(ANNOUNCEMENTS_PANEL_ID, 2, ui.GetAnnouncementsDrawBordersLabel(), ui.GetAnnouncementsDrawBordersTooltip(), ui.GetAnnouncementsDrawBorders, ui.SetAnnouncementsDrawBorders)
+end
+
+function GamepadOptions.BuildAnnouncementsEnabledOption()
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildCheckboxOption(ANNOUNCEMENTS_PANEL_ID, 1, ui.GetAnnouncementsEnabledLabel(), ui.GetAnnouncementsEnabledTooltip(), ui.GetAnnouncementsEnabled, ui.SetAnnouncementsEnabled, nil, ui.GetAnnouncementsEnabledDefault)
+end
+
 function GamepadOptions.BuildInfiniteArchiveFrameHorizontalOffsetOption()
     local ui = NQOL.Features.UI
     return GamepadOptions.BuildPositionSliderOption(INFINITE_ARCHIVE_FRAME_PANEL_ID, 3, ui.GetInfiniteArchiveHorizontalOffsetLabel(), ui.GetInfiniteArchiveHorizontalOffsetTooltip(), ui.GetInfiniteArchiveHorizontalOffsetMin(), ui.GetInfiniteArchiveHorizontalOffsetMax(), "%.0f", ui.GetInfiniteArchiveHorizontalOffset, ui.SetInfiniteArchiveHorizontalOffset)
@@ -494,6 +515,21 @@ function GamepadOptions.BuildPlayerInfoXpBarOption()
     return GamepadOptions.BuildCheckboxOption(PLAYER_INFO_PANEL_ID, 13, playerInfo.GetXpBarLabel(), playerInfo.GetXpBarTooltip(), playerInfo.GetXpBar, playerInfo.SetXpBar, nil, playerInfo.GetXpBarDefault)
 end
 
+function GamepadOptions.BuildPlayerInfoXpBarColorOption()
+    local playerInfo = NQOL.Features.UIPlayerInfo
+    return GamepadOptions.BuildColorOption(PLAYER_INFO_PANEL_ID, 26, playerInfo.GetXpBarColorLabel(), playerInfo.GetXpBarColorTooltip(), playerInfo.GetXpBarColor, playerInfo.SetXpBarColor)
+end
+
+function GamepadOptions.BuildPlayerInfoXpBarHeightOption()
+    local playerInfo = NQOL.Features.UIPlayerInfo
+    return GamepadOptions.BuildValueStepSliderOption(PLAYER_INFO_PANEL_ID, 27, playerInfo.GetXpBarHeightLabel(), playerInfo.GetXpBarHeightTooltip(), playerInfo.GetThinBarHeightPixelsMin(), playerInfo.GetThinBarHeightPixelsMax(), "%.0f", playerInfo.GetXpBarHeightPixels, playerInfo.SetXpBarHeightPixels, 1)
+end
+
+function GamepadOptions.BuildPlayerInfoXpBarProgressOption()
+    local playerInfo = NQOL.Features.UIPlayerInfo
+    return GamepadOptions.BuildCheckboxOption(PLAYER_INFO_PANEL_ID, 14, playerInfo.GetXpBarProgressLabel(), playerInfo.GetXpBarProgressTooltip(), playerInfo.GetXpBarProgress, playerInfo.SetXpBarProgress, nil, playerInfo.GetXpBarProgressDefault)
+end
+
 function GamepadOptions.BuildPlayerInfoXpBarBackgroundOpacityOption()
     local playerInfo = NQOL.Features.UIPlayerInfo
     return GamepadOptions.BuildSliderOption(PLAYER_INFO_PANEL_ID, 15, playerInfo.GetXpBarBackgroundOpacityLabel(), playerInfo.GetXpBarBackgroundOpacityTooltip(), playerInfo.GetBarBackgroundOpacityMin(), playerInfo.GetBarBackgroundOpacityMax(), "%.0f", playerInfo.GetXpBarBackgroundOpacity, playerInfo.SetXpBarBackgroundOpacity, 1)
@@ -522,6 +558,11 @@ end
 function GamepadOptions.BuildPlayerInfoEnlightenmentBarColorOption()
     local playerInfo = NQOL.Features.UIPlayerInfo
     return GamepadOptions.BuildColorOption(PLAYER_INFO_PANEL_ID, 20, playerInfo.GetEnlightenmentBarColorLabel(), playerInfo.GetEnlightenmentBarColorTooltip(), playerInfo.GetEnlightenmentBarColor, playerInfo.SetEnlightenmentBarColor)
+end
+
+function GamepadOptions.BuildPlayerInfoEnlightenmentBarHeightOption()
+    local playerInfo = NQOL.Features.UIPlayerInfo
+    return GamepadOptions.BuildValueStepSliderOption(PLAYER_INFO_PANEL_ID, 28, playerInfo.GetEnlightenmentBarHeightLabel(), playerInfo.GetEnlightenmentBarHeightTooltip(), playerInfo.GetThinBarHeightPixelsMin(), playerInfo.GetThinBarHeightPixelsMax(), "%.0f", playerInfo.GetEnlightenmentBarHeightPixels, playerInfo.SetEnlightenmentBarHeightPixels, 1)
 end
 
 function GamepadOptions.BuildPlayerInfoFieldOption(settingId, fieldKey)

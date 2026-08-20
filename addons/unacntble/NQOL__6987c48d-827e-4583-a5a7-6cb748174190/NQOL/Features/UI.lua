@@ -33,6 +33,16 @@ local ACTIVE_COMBAT_TIPS_PREVIEW_HEIGHT = 20
 local SYNERGY_PROMPTS_PREVIEW_WIDTH = 200
 local SYNERGY_PROMPTS_PREVIEW_HEIGHT = 50
 local MOVABLE_UI_FRAMES = {
+    announcements = {
+        controlName = "ZO_AlertTextNotificationGamepad",
+        wrapperName = "NQOL_UI_Announcements",
+        previewName = "Announcements",
+        label = NQOL.L("features.ui.announcements"),
+        width = 500,
+        height = 90,
+        defaultHorizontalPosition = 100,
+        defaultVerticalPosition = 0,
+    },
     infiniteArchive = {
         controlName = "ZO_EndDunHUDTrackerContainer",
         wrapperName = "NQOL_UI_InfiniteArchive",
@@ -84,6 +94,7 @@ local MOVABLE_UI_FRAMES = {
 }
 local PREVIEW_BORDER_LABELS = {
     ActiveCombatTips = NQOL.L("features.ui.active_combat_tips"),
+    Announcements = NQOL.L("features.ui.announcements"),
     InfiniteArchive = NQOL.L("features.ui.infinite_archive"),
     PlayerInteraction = NQOL.L("features.ui.player_interaction"),
     SynergyPrompts = NQOL.L("features.ui.synergy_prompts"),
@@ -91,10 +102,12 @@ local PREVIEW_BORDER_LABELS = {
     CenterScreenAnnounce = NQOL.L("features.ui.center_screen_announce"),
 }
 NQOL.Lexicon.RegisterRefreshCallback(function()
+    MOVABLE_UI_FRAMES.announcements.label = NQOL.L("features.ui.announcements")
     MOVABLE_UI_FRAMES.infiniteArchive.label = NQOL.L("features.ui.infinite_archive_frame_53d0c3a")
     MOVABLE_UI_FRAMES.playerInteraction.label = NQOL.L("features.ui.player_interaction_e138127")
     MOVABLE_UI_FRAMES.subtitles.label = NQOL.L("features.ui.subtitles_1777047")
     PREVIEW_BORDER_LABELS.ActiveCombatTips = NQOL.L("features.ui.active_combat_tips")
+    PREVIEW_BORDER_LABELS.Announcements = NQOL.L("features.ui.announcements")
     PREVIEW_BORDER_LABELS.InfiniteArchive = NQOL.L("features.ui.infinite_archive")
     PREVIEW_BORDER_LABELS.PlayerInteraction = NQOL.L("features.ui.player_interaction")
     PREVIEW_BORDER_LABELS.SynergyPrompts = NQOL.L("features.ui.synergy_prompts")
@@ -134,6 +147,12 @@ local defaults = {
             enabled = false,
             horizontalPosition = 50,
             verticalPosition = 27,
+            drawBorders = false,
+        },
+        announcements = {
+            enabled = false,
+            horizontalPosition = 100,
+            verticalPosition = 0,
             drawBorders = false,
         },
         infiniteArchive = {
@@ -443,6 +462,31 @@ local function GetGlobalControl(name)
     return _G[name]
 end
 
+local function ApplyAnnouncementsFrameAnchor(control, relativeTo, rootOffsetY, bufferOffsetY, offsetX)
+    control:ClearAnchors()
+    control:SetAnchor(TOPRIGHT, relativeTo, TOPRIGHT, offsetX, rootOffsetY)
+
+    local buffer = ALERT_MESSAGES_GAMEPAD and ALERT_MESSAGES_GAMEPAD.alerts
+    if not buffer or not ZO_Anchor then
+        return
+    end
+
+    buffer.anchor = ZO_Anchor:New(TOPRIGHT, relativeTo, TOPRIGHT, offsetX, bufferOffsetY)
+
+    local activeEntries = buffer.activeEntries
+    if not activeEntries then
+        return
+    end
+
+    for index = 1, #activeEntries do
+        buffer.anchor:Set(activeEntries[index])
+    end
+
+    if #activeEntries > 0 and buffer.MoveEntriesOrLines then
+        buffer:MoveEntriesOrLines(activeEntries)
+    end
+end
+
 local function GetMovableUiFrameWrapper(key)
     local frame = MOVABLE_UI_FRAMES[key]
     if not frame or not GuiRoot or not WINDOW_MANAGER then
@@ -463,8 +507,12 @@ local function GetMovableUiFrameWrapper(key)
     wrapper:SetDimensions(frame.width, frame.height)
     wrapper:SetDrawLayer(DL_CONTROLS)
 
-    control:ClearAnchors()
-    control:SetAnchor(CENTER, wrapper, CENTER, 0, 0)
+    if key == "announcements" then
+        ApplyAnnouncementsFrameAnchor(control, wrapper, 0, 0, 0)
+    else
+        control:ClearAnchors()
+        control:SetAnchor(CENTER, wrapper, CENTER, 0, 0)
+    end
     control:SetInheritScale(true)
 
     return wrapper
@@ -481,9 +529,13 @@ local function RestoreMovableUiFrameDefaultPosition(key)
         return
     end
 
-    control:ClearAnchors()
-    if type(frame.defaultAnchor) == "function" then
-        frame.defaultAnchor(control)
+    if key == "announcements" then
+        ApplyAnnouncementsFrameAnchor(control, GuiRoot, 10, 4, -15)
+    else
+        control:ClearAnchors()
+        if type(frame.defaultAnchor) == "function" then
+            frame.defaultAnchor(control)
+        end
     end
 end
 
@@ -1726,6 +1778,10 @@ function UI.SetSubtitlesSettingsPanelVisible(visible)
     SetMovableUiFrameSettingsPanelVisible("subtitles", visible)
 end
 
+function UI.SetAnnouncementsSettingsPanelVisible(visible)
+    SetMovableUiFrameSettingsPanelVisible("announcements", visible)
+end
+
 local function RegisterMovableUiFrameApi(key, prefix)
     local frame = MOVABLE_UI_FRAMES[key]
 
@@ -1836,6 +1892,7 @@ end
 RegisterMovableUiFrameApi("playerInteraction", "PlayerInteraction")
 RegisterMovableUiFrameApi("infiniteArchive", "InfiniteArchive")
 RegisterMovableUiFrameApi("subtitles", "Subtitles")
+RegisterMovableUiFrameApi("announcements", "Announcements")
 
 function UI.GetActiveQuestHorizontalOffset()
     return GetActiveQuestSettings().horizontalPosition

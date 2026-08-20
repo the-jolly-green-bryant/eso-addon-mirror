@@ -103,5 +103,16 @@ function UIE.GetSettings()
             end,
             width = "full",
         },
+        {
+            type = "checkbox",
+            name = "In-combat reticle",
+            tooltip = "Turn the reticle red while you are in combat",
+            default = false,
+            getFunc = function() return KyzderpsDerps.savedOptions.misc.combatReticle end,
+            setFunc = function(value)
+                KyzderpsDerps.savedOptions.misc.combatReticle = value
+            end,
+            width = "full",
+        },
     }
 end

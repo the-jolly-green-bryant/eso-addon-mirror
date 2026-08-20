@@ -294,6 +294,7 @@ function GamepadOptions.BuildProgressOptionsData()
         GamepadOptions.BuildArenasEntry(),
         GamepadOptions.BuildBaseDungeonsEntry(),
         GamepadOptions.BuildDlcDungeonsEntry(),
+        GamepadOptions.BuildSoloDungeonsEntry(),
         {
             panel = PROGRESS_PANEL_ID,
             system = PROGRESS_PANEL_ID,
@@ -370,6 +371,21 @@ function GamepadOptions.BuildArenasOptionsData()
         GamepadOptions.WithHeader(GamepadOptions.BuildFiniteListOption(GamepadOptions.ARENAS_PANEL_ID, 9, arenas.GetArenasFontLabel(), arenas.GetArenasFontTooltip(), arenas.GetArenasFontChoices(), arenas.GetArenasFontChoiceNames(), arenas.GetArenasFont, arenas.SetArenasFont), NQOL.L("ui.headers.appearance_41def7a")),
         GamepadOptions.BuildValueStepSliderOption(GamepadOptions.ARENAS_PANEL_ID, 10, arenas.GetArenasFontSizeLabel(), arenas.GetArenasFontSizeTooltip(), arenas.GetArenasFontSizeMin(), arenas.GetArenasFontSizeMax(), "%.0f", arenas.GetArenasFontSize, arenas.SetArenasFontSize, 1),
         GamepadOptions.BuildSliderOption(GamepadOptions.ARENAS_PANEL_ID, 11, arenas.GetArenasBackgroundOpacityLabel(), arenas.GetArenasBackgroundOpacityTooltip(), arenas.GetArenasBackgroundOpacityMin(), arenas.GetArenasBackgroundOpacityMax(), "%.0f", arenas.GetArenasBackgroundOpacity, arenas.SetArenasBackgroundOpacity, 1, nil, arenas.GetArenasBackgroundOpacityDefault),
+    }
+end
+
+function GamepadOptions.BuildSoloDungeonsOptionsData()
+    local soloDungeons = NQOL.Features.ProgressSoloDungeons
+    local panelId = GamepadOptions.SOLO_DUNGEONS_PANEL_ID
+
+    return {
+        GamepadOptions.BuildFiniteListOption(panelId, 3, soloDungeons.GetSoloDungeonsDetailLevelLabel(), soloDungeons.GetSoloDungeonsDetailLevelTooltip(), soloDungeons.GetSoloDungeonsDetailLevelChoices(), soloDungeons.GetSoloDungeonsDetailLevelChoiceNames(), soloDungeons.GetSoloDungeonsDetailLevel, soloDungeons.SetSoloDungeonsDetailLevel),
+        GamepadOptions.BuildCheckboxOption(panelId, 4, soloDungeons.GetSoloDungeonsShowWatermarkLabel(), soloDungeons.GetSoloDungeonsShowWatermarkTooltip(), soloDungeons.GetSoloDungeonsShowWatermark, soloDungeons.SetSoloDungeonsShowWatermark, nil, soloDungeons.GetSoloDungeonsShowWatermarkDefault),
+        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(panelId, 6, soloDungeons.GetSoloDungeonsHorizontalPositionLabel(), soloDungeons.GetSoloDungeonsHorizontalPositionTooltip(), 0, 100, "%.0f", soloDungeons.GetSoloDungeonsHorizontalPosition, soloDungeons.SetSoloDungeonsHorizontalPosition), NQOL.L("ui.headers.position_cf1c85a")),
+        GamepadOptions.BuildPositionSliderOption(panelId, 7, soloDungeons.GetSoloDungeonsVerticalPositionLabel(), soloDungeons.GetSoloDungeonsVerticalPositionTooltip(), 0, 100, "%.0f", soloDungeons.GetSoloDungeonsVerticalPosition, soloDungeons.SetSoloDungeonsVerticalPosition),
+        GamepadOptions.WithHeader(GamepadOptions.BuildFiniteListOption(panelId, 9, soloDungeons.GetSoloDungeonsFontLabel(), soloDungeons.GetSoloDungeonsFontTooltip(), soloDungeons.GetSoloDungeonsFontChoices(), soloDungeons.GetSoloDungeonsFontChoiceNames(), soloDungeons.GetSoloDungeonsFont, soloDungeons.SetSoloDungeonsFont), NQOL.L("ui.headers.appearance_41def7a")),
+        GamepadOptions.BuildValueStepSliderOption(panelId, 10, soloDungeons.GetSoloDungeonsFontSizeLabel(), soloDungeons.GetSoloDungeonsFontSizeTooltip(), soloDungeons.GetSoloDungeonsFontSizeMin(), soloDungeons.GetSoloDungeonsFontSizeMax(), "%.0f", soloDungeons.GetSoloDungeonsFontSize, soloDungeons.SetSoloDungeonsFontSize, 1),
+        GamepadOptions.BuildSliderOption(panelId, 11, soloDungeons.GetSoloDungeonsBackgroundOpacityLabel(), soloDungeons.GetSoloDungeonsBackgroundOpacityTooltip(), soloDungeons.GetSoloDungeonsBackgroundOpacityMin(), soloDungeons.GetSoloDungeonsBackgroundOpacityMax(), "%.0f", soloDungeons.GetSoloDungeonsBackgroundOpacity, soloDungeons.SetSoloDungeonsBackgroundOpacity, 1, nil, soloDungeons.GetSoloDungeonsBackgroundOpacityDefault),
     }
 end
 

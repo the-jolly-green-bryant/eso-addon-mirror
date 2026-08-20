@@ -67,6 +67,8 @@ local DUNGEON_ZONEIDS = {
     ["1562"] = true,  -- Gossamer Crypt (Night Market)
     ["1563"] = true,  -- Mournful Catacomb (Night Market)
     ["1564"] = true,  -- Timeless Wallow (Night Market)
+    ["1592"] = true,  -- March of Sacrifices (solo)
+    ["1593"] = true,  -- Moon Hunter Keep (solo)
 }
 KyzderpsDerps.DUNGEON_ZONEIDS = DUNGEON_ZONEIDS
 

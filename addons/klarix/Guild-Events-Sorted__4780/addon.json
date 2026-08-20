@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/klarix/Guild-Events-Sorted__4780",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "klarix",
+  "canonical_id": "esoui:4780",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4780",
+  "deleted": false,
+  "directories": [
+    "GuildEventsSorted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4780/",
+  "fingerprint": "8bb4f01417b1b16484ba545ffdd298545674517853423d5c1948e3cef7845a03",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17043.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4780",
+  "source_url": "https://www.esoui.com/downloads/info4780-GuildEventsSorted.html",
+  "stats": {
+    "downloads": 8,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Guild Events Sorted",
+  "updated_at": 1787127224000,
+  "version": "1.1.5"
+}

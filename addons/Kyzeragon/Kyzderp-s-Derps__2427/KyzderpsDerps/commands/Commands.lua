@@ -211,32 +211,4 @@ function KyzderpsDerps.InitializeCommands()
     end
 
     SLASH_COMMANDS["/refreshsurvey"] = KyzderpsDerps.Loot.RefreshSurvey
-
-    -- Shortcut commands
-    -- TODO: change to a table... and probably add /bank /merchant
-    SLASH_COMMANDS["/bastian"] = function() UseCollectible(9245) end
-    SLASH_COMMANDS["/mirri"] = function() UseCollectible(9353) end
-    SLASH_COMMANDS["/ember"] = function() UseCollectible(9911) end
-    SLASH_COMMANDS["/isobel"] = function() UseCollectible(9912) end
-    SLASH_COMMANDS["/sharp"] = function() UseCollectible(11113) end
-    SLASH_COMMANDS["/azandar"] = function() UseCollectible(11114) end
-    SLASH_COMMANDS["/tanlorin"] = function() UseCollectible(12172) end
-    SLASH_COMMANDS["/zerith"] = function() UseCollectible(12173) end
-
-    SLASH_COMMANDS["/tythis"] = function() UseCollectible(267) end
-    SLASH_COMMANDS["/nuzhimeh"] = function() UseCollectible(301) end
-    SLASH_COMMANDS["/ezabi"] = function() UseCollectible(6376) end
-    SLASH_COMMANDS["/fezez"] = function() UseCollectible(6378) end
-    SLASH_COMMANDS["/jangleplume"] = function() UseCollectible(8994) end
-    SLASH_COMMANDS["/peddler"] = function() UseCollectible(8995) end
-    SLASH_COMMANDS["/steward"] = function() UseCollectible(9743) end
-    SLASH_COMMANDS["/delegate"] = function() UseCollectible(9744) end
-    SLASH_COMMANDS["/pyroclast"] = function() UseCollectible(11097) end
-    SLASH_COMMANDS["/xyn"] = function() UseCollectible(12414) end
-
-    SLASH_COMMANDS["/armory"] = function() UseCollectible(9745) end
-    SLASH_COMMANDS["/ghrasharog"] = function() UseCollectible(9745) end
-
-    SLASH_COMMANDS["/decon"] = function() UseCollectible(10184) end
-    SLASH_COMMANDS["/giladil"] = function() UseCollectible(10184) end
 end

@@ -53,7 +53,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.24.6 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.24.55 |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
 | [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.2.0 |
@@ -127,6 +127,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ExoYsProcSetTimerZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/ExoYsProcSetTimerZHPatch__3914) | FusRoDah | PC / Mac | 2.12.1 |
 | [ExpenseReport](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Whiskers/ExpenseReport__4715) | Whiskers | PC / Mac | 1.1 |
 | [experiment](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/experiment__2b323144-77d2-41bc-9e3e-d016c4dd0f30) | Vixen_Hunny | Console | — |
+| [Experimental Dummy Pvp](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/Experimental-Dummy-Pvp__4781) | lebiez | PC / Mac | 1.0 |
 | [Extended Achievement Credit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Extended-Achievement-Credit__3339) | code65536 | PC / Mac | 2.2.2 |
 | [Extended Friendlist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/Extended-Friendlist__3692) | akamatsu02 | PC / Mac | 1.1 |
 | [Extended Ignore List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Extended-Ignore-List__3939) | Masteroshi430 | PC / Mac | 2026.07.09 |

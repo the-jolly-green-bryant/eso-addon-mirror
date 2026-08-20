@@ -7,6 +7,10 @@ local Kyzerg = Sync.Kyzerg
 ---------------------------------------------------------------------
 -- Known accounts
 ---------------------------------------------------------------------
+local function FormatName(name)
+    return zo_strformat("<<1>>", name)
+end
+
 local function NameIsUnit(name, unitTag)
     return GetUnitName(unitTag) == name or GetUnitDisplayName(unitTag) == name
 end
@@ -49,6 +53,20 @@ local function GetGroupMemberAccountName(name)
     end
 end
 
+-- get both names from guild
+local function GetGuildMemberAccountAndCharName(name)
+    for i = 1, GetNumGuilds() do
+        local guildId = GetGuildId(i)
+        for j = 1, GetNumGuildMembers(guildId) do
+            local atName = GetGuildMemberInfo(guildId, j)
+            local _, characterName = GetGuildMemberCharacterInfo(guildId, j)
+            if (name == atName or name == characterName) then
+                return atName, characterName
+            end
+        end
+    end
+end
+
 local KYZ = {
     ["@Kyzeragon"] = true,
     ["@Kyzeragone"] = true,
@@ -69,6 +87,11 @@ end
 
 local function IsJWPD2(name)
     local atName = GetGroupMemberAccountName(name)
+    return KYZ[atName] or JWPD2[atName]
+end
+
+local function IsJWPD2FromGuild(name)
+    local atName, characterName = GetGuildMemberAccountAndCharName(name)
     return KYZ[atName] or JWPD2[atName]
 end
 
@@ -205,7 +228,7 @@ local COMMANDS = {
     -- TODO: port to crown
 
     -- Port to house
-    khouse = function(_, text)
+    khouse = function(fromName, text)
         if (not IsSelfOrJWPD2(fromName)) then
             KD:msg("Unauthorized khouse from " .. fromName)
             return
@@ -251,7 +274,7 @@ local COMMANDS = {
         if (not NameIsPlayer(fromName)) then return end
         for name, _ in pairs(GetSVTable()) do
             if (name ~= GetUnitDisplayName("player")) then
-                KyzderpsDerps:msg("Inviting " .. name)
+                KD:msg("Inviting " .. name)
                 GroupInviteByName(name)
             end
         end
@@ -355,7 +378,7 @@ local COMMANDS = {
     end,
 
     -- ktp
-    ktp = function(_, text)
+    ktp = function(fromName, text)
         if (not IsSelfOrJWPD2(fromName)) then
             KD:msg("Unauthorized ktp from " .. fromName)
             return
@@ -384,8 +407,23 @@ end
 -- Chat handler
 ---------------------------------------------------------------------
 local validChannels = {}
+local attnChannel
 
 local function OnChatMessage(_, channelType, fromName, text)
+    -- jwpd2 autoinvite
+    if (attnChannel == channelType and text == "jwpd2") then
+        if (NameIsPlayer(fromName)) then return end
+        -- Only invite if jwpd2 and self available
+        if (IsJWPD2FromGuild(fromName) and GetPlayerStatus() == PLAYER_STATUS_ONLINE) then
+            -- and is group leader or not in group
+            if (GetGroupSize() < 2 or IsUnitGroupLeader("player")) then
+                local atName, characterName = GetGuildMemberAccountAndCharName(fromName)
+                GroupInviteByName(FormatName(characterName))
+            end
+        end
+        return
+    end
+
     if (not validChannels[channelType]) then return end
 
     local cmd
@@ -439,6 +477,15 @@ function Kyzerg.Initialize()
         KD:dbg("    Initializing Kyzerg module...")
 
         EVENT_MANAGER:RegisterForEvent(KD.name .. "KyzergChatMessage", EVENT_CHAT_MESSAGE_CHANNEL, OnChatMessage)
+
+        -- Add attn for jwpd2
+        if (IsPlayerJWPD2()) then
+            for i = 1, GetNumGuilds() do
+                if (GetGuildId(i) == 555581) then
+                    attnChannel = _G["CHAT_CHANNEL_GUILD_" .. tostring(i)]
+                end
+            end
+        end
 
         if (KD.savedOptions.general.experimental) then
             -- Stop moving when tabbing back in

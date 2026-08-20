@@ -15,6 +15,7 @@ GamepadOptions.PanelIds = {
     ACTIVE_COMBAT_TIPS = 9142,
     SYNERGY_PROMPTS = 9143,
     CENTER_SCREEN_ANNOUNCE = 9144,
+    ANNOUNCEMENTS = 9187,
     CHAT = 9115,
     CHAT_GUILD_COLORS = 9147,
     CHAT_REMINDERS = 9157,
@@ -40,6 +41,7 @@ GamepadOptions.PanelIds = {
     TRIALS = 9133,
     ARENAS = 9159,
     DLC_DUNGEONS = 9160,
+    SOLO_DUNGEONS = 9188,
     FRAME_STYLING = 9134,
     PLAYER_FRAME = 9135,
     PLAYER_FRAME_CLASSIC = 9136,
@@ -91,6 +93,7 @@ local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 local SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
 local CENTER_SCREEN_ANNOUNCE_PANEL_ID = PanelIds.CENTER_SCREEN_ANNOUNCE
+local ANNOUNCEMENTS_PANEL_ID = PanelIds.ANNOUNCEMENTS
 local INFINITE_ARCHIVE_FRAME_PANEL_ID = PanelIds.INFINITE_ARCHIVE_FRAME
 local LOOT_LOG_PANEL_ID = PanelIds.LOOT_LOG
 local PLAYER_INFO_PANEL_ID = PanelIds.PLAYER_INFO
@@ -129,6 +132,7 @@ GamepadOptions.DUNGEONS_PANEL_ID = PanelIds.DUNGEONS
 GamepadOptions.DLC_DUNGEONS_PANEL_ID = PanelIds.DLC_DUNGEONS
 GamepadOptions.TRIALS_PANEL_ID = PanelIds.TRIALS
 GamepadOptions.ARENAS_PANEL_ID = PanelIds.ARENAS
+GamepadOptions.SOLO_DUNGEONS_PANEL_ID = PanelIds.SOLO_DUNGEONS
 GamepadOptions.INFINITE_ARCHIVE_PANEL_ID = PanelIds.INFINITE_ARCHIVE
 GamepadOptions.FRAME_STYLING_PANEL_ID = PanelIds.FRAME_STYLING
 GamepadOptions.PLAYER_FRAME_PANEL_ID = PanelIds.PLAYER_FRAME
@@ -142,6 +146,7 @@ GamepadOptions.GROUP_FRAME_PANEL_ID = PanelIds.GROUP_FRAME
 GamepadOptions.ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 GamepadOptions.SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
 GamepadOptions.CENTER_SCREEN_ANNOUNCE_PANEL_ID = PanelIds.CENTER_SCREEN_ANNOUNCE
+GamepadOptions.ANNOUNCEMENTS_PANEL_ID = PanelIds.ANNOUNCEMENTS
 GamepadOptions.FISHING_PANEL_ID = PanelIds.FISHING
 GamepadOptions.FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
 GamepadOptions.CAMERA_PANEL_ID = PanelIds.CAMERA
@@ -408,6 +413,7 @@ local SUBPANEL_PARENT_IDS = {
     [ACTIVE_COMBAT_TIPS_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
     [SYNERGY_PROMPTS_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
     [CENTER_SCREEN_ANNOUNCE_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
+    [ANNOUNCEMENTS_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
     [INFINITE_ARCHIVE_FRAME_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
     [LOOT_LOG_PANEL_ID] = UI_PANEL_ID,
     [PLAYER_INFO_PANEL_ID] = UI_PANEL_ID,
@@ -444,6 +450,7 @@ local SUBPANEL_PARENT_IDS = {
     [GamepadOptions.DLC_DUNGEONS_PANEL_ID] = PROGRESS_PANEL_ID,
     [GamepadOptions.TRIALS_PANEL_ID] = PROGRESS_PANEL_ID,
     [GamepadOptions.ARENAS_PANEL_ID] = PROGRESS_PANEL_ID,
+    [GamepadOptions.SOLO_DUNGEONS_PANEL_ID] = PROGRESS_PANEL_ID,
     [GamepadOptions.INFINITE_ARCHIVE_PANEL_ID] = PROGRESS_PANEL_ID,
 }
 
@@ -470,12 +477,13 @@ PANEL_RESET_PATHS = {
     [FISHING_TRACKER_PANEL_ID] = { { "fishing", "tracker" } },
     [UI_PANEL_ID] = { { "ui" } },
     [CAMERA_PANEL_ID] = { { "ui", "camera" } },
-    [DEFAULT_FRAMES_PANEL_ID] = { { "ui", "activeQuest" }, { "ui", "activeCombatTips" }, { "ui", "synergyPrompts" }, { "ui", "centerScreenAnnounce" }, { "ui", "infiniteArchive" }, { "ui", "playerInteraction" }, { "ui", "subtitles" } },
+    [DEFAULT_FRAMES_PANEL_ID] = { { "ui", "activeQuest" }, { "ui", "activeCombatTips" }, { "ui", "synergyPrompts" }, { "ui", "centerScreenAnnounce" }, { "ui", "announcements" }, { "ui", "infiniteArchive" }, { "ui", "playerInteraction" }, { "ui", "subtitles" } },
     [COMBAT_RETICLE_PANEL_ID] = { { "ui", "combatReticle" } },
     [ACTIVE_QUEST_PANEL_ID] = { { "ui", "activeQuest" } },
     [ACTIVE_COMBAT_TIPS_PANEL_ID] = { { "ui", "activeCombatTips" } },
     [SYNERGY_PROMPTS_PANEL_ID] = { { "ui", "synergyPrompts" } },
     [CENTER_SCREEN_ANNOUNCE_PANEL_ID] = { { "ui", "centerScreenAnnounce" } },
+    [ANNOUNCEMENTS_PANEL_ID] = { { "ui", "announcements" } },
     [INFINITE_ARCHIVE_FRAME_PANEL_ID] = { { "ui", "infiniteArchive" } },
     [LOOT_LOG_PANEL_ID] = { { "ui", "lootLog" } },
     [PLAYER_INFO_PANEL_ID] = { { "ui", "playerInfo" } },
@@ -530,6 +538,7 @@ PANEL_RESET_PATHS = {
     },
     [GamepadOptions.TRIALS_PANEL_ID] = { { "progress", "trials" } },
     [GamepadOptions.ARENAS_PANEL_ID] = { { "progress", "arenas" } },
+    [GamepadOptions.SOLO_DUNGEONS_PANEL_ID] = { { "progress", "soloDungeons" } },
     [GamepadOptions.INFINITE_ARCHIVE_PANEL_ID] = {
         { "progress", "infiniteArchive", "detailLevel" },
         { "progress", "infiniteArchive", "showWatermark" },
@@ -589,6 +598,7 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
         NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(panelId == ACTIVE_COMBAT_TIPS_PANEL_ID)
         NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(panelId == SYNERGY_PROMPTS_PANEL_ID)
         NQOL.Features.UI.SetCenterScreenAnnounceSettingsPanelVisible(panelId == CENTER_SCREEN_ANNOUNCE_PANEL_ID)
+        NQOL.Features.UI.SetAnnouncementsSettingsPanelVisible(panelId == ANNOUNCEMENTS_PANEL_ID)
         NQOL.Features.UI.SetInfiniteArchiveSettingsPanelVisible(panelId == INFINITE_ARCHIVE_FRAME_PANEL_ID)
         NQOL.Features.UI.SetPlayerInteractionSettingsPanelVisible(panelId == PLAYER_INTERACTION_PANEL_ID)
         NQOL.Features.UI.SetSubtitlesSettingsPanelVisible(panelId == SUBTITLES_PANEL_ID)
@@ -656,6 +666,10 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
 
     if NQOL.Features and NQOL.Features.ProgressArenas then
         NQOL.Features.ProgressArenas.SetSettingsPanelVisible(panelId == GamepadOptions.ARENAS_PANEL_ID)
+    end
+
+    if NQOL.Features and NQOL.Features.ProgressSoloDungeons then
+        NQOL.Features.ProgressSoloDungeons.SetSettingsPanelVisible(panelId == GamepadOptions.SOLO_DUNGEONS_PANEL_ID)
     end
 
     if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
@@ -1676,6 +1690,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. CENTER_SCREEN_ANNOUNCE_PANEL_ID, NQOL.L("ui.gamepad_options.center_screen_announce_9b7d2b5"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. CENTER_SCREEN_ANNOUNCE_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. ANNOUNCEMENTS_PANEL_ID, NQOL.L("features.ui.announcements"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. ANNOUNCEMENTS_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. INFINITE_ARCHIVE_FRAME_PANEL_ID, NQOL.L("ui.gamepad_options.infinite_archive_52c9059"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. INFINITE_ARCHIVE_FRAME_PANEL_ID, 1)
 
@@ -1792,6 +1809,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
 
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.ARENAS_PANEL_ID, NQOL.L("ui.gamepad_options.arenas_05bb528"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.ARENAS_PANEL_ID, 1)
+
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.SOLO_DUNGEONS_PANEL_ID, NQOL.L("ui.gamepad_options.solo_dungeons"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.SOLO_DUNGEONS_PANEL_ID, 1)
 
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.INFINITE_ARCHIVE_PANEL_ID, NQOL.L("ui.gamepad_options.infinite_archive_52c9059"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.INFINITE_ARCHIVE_PANEL_ID, 1)
@@ -1968,6 +1988,10 @@ function GamepadOptions.RegisterPanels()
         GamepadOptions.RegisterPanel(CENTER_SCREEN_ANNOUNCE_PANEL_ID, GamepadOptions.BuildCenterScreenAnnounceOptionsData())
     end
 
+    if not GAMEPAD_SETTINGS_DATA[ANNOUNCEMENTS_PANEL_ID] then
+        GamepadOptions.RegisterPanel(ANNOUNCEMENTS_PANEL_ID, GamepadOptions.BuildAnnouncementsOptionsData())
+    end
+
     if not GAMEPAD_SETTINGS_DATA[INFINITE_ARCHIVE_FRAME_PANEL_ID] then
         GamepadOptions.RegisterPanel(INFINITE_ARCHIVE_FRAME_PANEL_ID, GamepadOptions.BuildInfiniteArchiveFrameOptionsData())
     end
@@ -2104,6 +2128,10 @@ function GamepadOptions.RegisterPanels()
         GamepadOptions.RegisterPanel(GamepadOptions.ARENAS_PANEL_ID, GamepadOptions.BuildArenasOptionsData())
     end
 
+    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.SOLO_DUNGEONS_PANEL_ID] then
+        GamepadOptions.RegisterPanel(GamepadOptions.SOLO_DUNGEONS_PANEL_ID, GamepadOptions.BuildSoloDungeonsOptionsData())
+    end
+
     if not GAMEPAD_SETTINGS_DATA[GamepadOptions.INFINITE_ARCHIVE_PANEL_ID] then
         GamepadOptions.RegisterPanel(GamepadOptions.INFINITE_ARCHIVE_PANEL_ID, GamepadOptions.BuildInfiniteArchiveOptionsData())
     end
@@ -2123,6 +2151,7 @@ local function OpenRootPanel()
         NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(false)
         NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(false)
         NQOL.Features.UI.SetCenterScreenAnnounceSettingsPanelVisible(false)
+        NQOL.Features.UI.SetAnnouncementsSettingsPanelVisible(false)
         NQOL.Features.UI.SetInfiniteArchiveSettingsPanelVisible(false)
         NQOL.Features.UI.SetPlayerInteractionSettingsPanelVisible(false)
         NQOL.Features.UI.SetSubtitlesSettingsPanelVisible(false)
@@ -2167,6 +2196,9 @@ local function OpenRootPanel()
     end
     if NQOL.Features and NQOL.Features.ProgressArenas then
         NQOL.Features.ProgressArenas.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ProgressSoloDungeons then
+        NQOL.Features.ProgressSoloDungeons.SetSettingsPanelVisible(false)
     end
     if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
         NQOL.Features.ProgressInfiniteArchive.SetSettingsPanelVisible(false)
@@ -2410,6 +2442,7 @@ function GamepadOptions.InstallSubpanelBackOverride()
                 NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(false)
                 NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(false)
                 NQOL.Features.UI.SetCenterScreenAnnounceSettingsPanelVisible(false)
+                NQOL.Features.UI.SetAnnouncementsSettingsPanelVisible(false)
                 NQOL.Features.UI.SetInfiniteArchiveSettingsPanelVisible(false)
                 NQOL.Features.UI.SetPlayerInteractionSettingsPanelVisible(false)
                 NQOL.Features.UI.SetSubtitlesSettingsPanelVisible(false)
@@ -2445,6 +2478,9 @@ function GamepadOptions.InstallSubpanelBackOverride()
             end
             if NQOL.Features and NQOL.Features.ProgressArenas then
                 NQOL.Features.ProgressArenas.SetSettingsPanelVisible(false)
+            end
+            if NQOL.Features and NQOL.Features.ProgressSoloDungeons then
+                NQOL.Features.ProgressSoloDungeons.SetSettingsPanelVisible(false)
             end
             if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
                 NQOL.Features.ProgressInfiniteArchive.SetSettingsPanelVisible(false)

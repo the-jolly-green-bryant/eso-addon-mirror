@@ -75,6 +75,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Hide Action Bar Labels (Lost Depths)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CodeStripper/Hide-Action-Bar-Labels-Lost-Depths__3475) | CodeStripper | PC / Mac | 1.0.1 |
 | [Hide Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/init3/Hide-Group-Frames__2159) | init3 | PC / Mac | 1.0 |
 | [Hide Performance Meter Background](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zinival/Hide-Performance-Meter-Background__1567) | Zinival | PC / Mac | 1.1 |
+| [Hide Scrying Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beacze/Hide-Scrying-Tooltips__4782) | Beacze | PC / Mac | 1.0.0 |
 | [Hide Smugger Fee](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Hide-Smugger-Fee__3000) | kawamonkey | PC / Mac | 1.0 |
 | [Hide Some Things](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zinival/Hide-Some-Things__1574) | Zinival | PC / Mac | 1.2 |
 | [Hide UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mgsnakes/Hide-UI__4083) | mgsnakes | PC / Mac | 1.0 |

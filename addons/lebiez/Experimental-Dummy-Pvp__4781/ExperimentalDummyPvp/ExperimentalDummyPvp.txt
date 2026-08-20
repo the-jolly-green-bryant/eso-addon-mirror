@@ -1,0 +1,10 @@
+## Title: Experimental Dummy PvP
+## Author: Bièz
+## Description: Estimates PvP damage while attacking a PvE training dummy.
+## Version: 0.1.9
+## APIVersion: 101045 101046 101047
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ExperimentalDummyPvpSavedVariables
+
+ExperimentalDummyPvp.lua
+ExperimentalDummyPvp_Settings.lua

@@ -1890,7 +1890,7 @@ function GuildSalesJournal_Gamepad:SetSessionSummaryRow(rowNumber, direction, am
     if direction == "expense" then
         if amount > 0 then
             spent:SetText("|cC56B6B-" .. FormatNumber(amount) .. "|r" .. coin)
-            balance:SetText("|cC56B6B" .. FormatNumber(balanceValue) .. " â|r" .. coin)
+            balance:SetText("|cC56B6B" .. FormatNumber(balanceValue) .. "|r" .. coin)
         else
             spent:SetText("|cB8B8B80|r")
             balance:SetText("")
@@ -1898,7 +1898,7 @@ function GuildSalesJournal_Gamepad:SetSessionSummaryRow(rowNumber, direction, am
     else
         if amount > 0 then
             earned:SetText("|c78D878+" .. FormatNumber(amount) .. "|r" .. coin)
-            balance:SetText("|c78D878" .. FormatNumber(balanceValue) .. " â|r" .. coin)
+            balance:SetText("|c78D878" .. FormatNumber(balanceValue) .. "|r" .. coin)
         else
             earned:SetText("|cB8B8B80|r")
             balance:SetText("")
@@ -2785,7 +2785,7 @@ end
 function GuildSalesJournal_Gamepad:FormatListingRemaining(expiresAt)
     local now = GetTimeStamp and GetTimeStamp() or 0
     local remaining = math.floor((tonumber(expiresAt) or 0) - now)
-    if remaining <= 0 then return "|cD86A6AExpired â refresh|r" end
+    if remaining <= 0 then return "|cD86A6AExpired - refresh|r" end
 
     local days = math.floor(remaining / 86400)
     local hours = math.floor((remaining % 86400) / 3600)

@@ -424,6 +424,11 @@ function AC:CreateSettings()
                     getFunc = function() return AC.savedVariables.foodMinutes end,
                     setFunc = function(val)
                         AC.savedVariables.foodMinutes = val
+                        EVENT_MANAGER:UnregisterForUpdate("AutoConsume_FoodMinsChanged")
+                        EVENT_MANAGER:RegisterForUpdate("AutoConsume_FoodMinsChanged", 1000, function()
+                            EVENT_MANAGER:UnregisterForUpdate("AutoConsume_FoodMinsChanged")
+                            AC:CheckFood()
+                        end)
                     end,
                 },
                 {
@@ -661,7 +666,7 @@ local function OnAddonLoaded(event, addonName)
         AC.settingsError = tostring(settingsErr)
     end
 
-    AC:HUDInit()
+    pcall(function() AC:HUDInit() end)
 
     EVENT_MANAGER:RegisterForEvent(
         AC.name,
@@ -678,8 +683,8 @@ local function OnAddonLoaded(event, addonName)
     EVENT_MANAGER:RegisterForEvent(AC.name, EVENT_PLAYER_ACTIVATED, function()
         AC.ready = true
         AC:CheckAll()
-        AC:HUDInit()
-        AC:HUDScan()
+        pcall(function() AC:HUDInit() end)
+        pcall(function() AC:HUDScan() end)
         EVENT_MANAGER:RegisterForUpdate("AutoConsume_HUDRefresh", 500, function()
             AC:HUDRefresh()
         end)
@@ -704,6 +709,11 @@ local AC_HUD_PLACEHOLDER = nil
 
 local HUD_ICON_SIZE = 40
 local HUD_SIDE_MARGIN = 4
+local HUD_RING_PAD = 10
+local HUD_FRAME_PAD = 14
+local HUD_RING_WINDOW = 60
+
+local hudRowCounter = 0
 
 local HUD_ORANGE_THRESHOLD = 0.50
 local HUD_RED_THRESHOLD    = 0.25
@@ -752,25 +762,77 @@ local function AcHudIsDelve(abilityId)
 end
 
 local function AcHudCreateRow(parent, index)
-    local iconSize = 40
-    local row = WINDOW_MANAGER:CreateControl(nil, parent, CT_CONTROL)
-    row:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
-    row:SetDimensions(iconSize, iconSize)
+    hudRowCounter = hudRowCounter + 1
 
-    local icon = WINDOW_MANAGER:CreateControl(nil, row, CT_TEXTURE)
-    icon:SetDimensions(iconSize, iconSize)
-    icon:SetAnchor(LEFT, row, LEFT, 0, 0)
-    row.icon = icon
+    local row = WINDOW_MANAGER:CreateControlFromVirtual(
+        "AutoConsume_HUDRow" .. hudRowCounter,
+        parent,
+        "AutoConsume_HUDRow"
+    )
 
-    local timer = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
-    timer:SetFont(string.format("EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick", 12))
-    timer:SetAnchor(BOTTOM, row, BOTTOM, 0, 0)
-    timer:SetColor(1, 1, 1, 1)
-    timer:SetHidden(true)
-    row.timer = timer
+    row.frame  = row:GetNamedChild("Frame")
+    row.radial = row:GetNamedChild("Radial")
+    row.inner  = row:GetNamedChild("Inner")
+    row.icon   = row:GetNamedChild("Icon")
+    row.timer  = row:GetNamedChild("Timer")
+
+    row.timer:SetColor(1, 1, 1, 1)
+    row.timer:SetHidden(true)
+    row.radial:SetHidden(true)
 
     row:SetHidden(true)
     return row
+end
+
+local function AcHudSizeRow(row, iconSize)
+    local frameSize = iconSize + HUD_FRAME_PAD
+
+    if row.sizedFor ~= iconSize then
+        row:SetDimensions(frameSize, frameSize)
+        row.frame:SetDimensions(frameSize, frameSize)
+        row.radial:SetDimensions(iconSize + HUD_RING_PAD, iconSize + HUD_RING_PAD)
+        row.inner:SetDimensions(iconSize, iconSize)
+        row.icon:SetDimensions(iconSize, iconSize)
+        row.timer:SetDimensions(iconSize, iconSize)
+        row.timer:SetFont(string.format("EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick",
+            math.max(10, math.floor(iconSize * 0.55))))
+        row.sizedFor = iconSize
+    end
+
+    return frameSize
+end
+
+local function AcHudRingSeconds(entry, now)
+    local remaining = entry.endTime - now
+
+    if entry.buffType == "food" and AC.savedVariables.autoFood then
+        return remaining - (AC.savedVariables.foodMinutes * 60), "eat"
+    end
+
+    return remaining, "end"
+end
+
+local function AcHudUpdateRing(row, entry, now)
+    local seconds, mode = AcHudRingSeconds(entry, now)
+
+    if seconds <= 0 or seconds > HUD_RING_WINDOW then
+        row.ringActive = false
+        row.ringKey    = nil
+        row.radial:SetHidden(true)
+        return false
+    end
+
+    local key = entry.buffType .. ":" .. entry.endTime .. ":" .. mode
+
+    if not row.ringActive or row.ringKey ~= key then
+        row.ringKey    = key
+        row.ringActive = true
+        row.radial:StartCooldown(seconds * 1000, HUD_RING_WINDOW * 1000,
+            CD_TYPE_RADIAL, CD_TIME_TYPE_TIME_UNTIL, false)
+    end
+
+    row.radial:SetHidden(false)
+    return true
 end
 
 function AC:HUDInit()
@@ -780,7 +842,8 @@ function AC:HUDInit()
     AC_HUD.panel:SetClampedToScreen(true)
     AC_HUD.panel:SetDrawLayer(DL_BACKGROUND)
     AC_HUD.panel:SetDrawTier(DT_LOW)
-    AC_HUD.panel:SetDimensions(HUD_ICON_SIZE, HUD_ICON_SIZE * 4 + HUD_SIDE_MARGIN * 3)
+    AC_HUD.panel:SetDimensions(HUD_ICON_SIZE + HUD_FRAME_PAD,
+        (HUD_ICON_SIZE + HUD_FRAME_PAD) * 4 + HUD_SIDE_MARGIN * 3)
     AC_HUD.panel:ClearAnchors()
     AC_HUD.panel:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
         AC.savedVariables.hudPosX,
@@ -1045,16 +1108,15 @@ function AC:HUDRefresh()
             else
                 row:SetAnchor(TOPLEFT, AC_HUD.panel, TOPLEFT, 0, offset)
             end
-            row:SetDimensions(iconSize, iconSize)
-            row.icon:SetDimensions(iconSize, iconSize)
+            local frameSize = AcHudSizeRow(row, iconSize)
             row.icon:SetTexture(entry.icon)
             row.icon:SetHidden(false)
+
+            AcHudUpdateRing(row, entry, now)
 
             if remaining <= 60 then
                 local totalDur = entry.endTime - entry.startTime
                 local tr, tg, tb = GetHUDTimerColor(remaining, totalDur)
-                row.timer:SetFont(string.format("EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thick",
-                    math.max(10, math.floor(iconSize * 0.55))))
                 row.timer:SetText(string.format("%ds", math.ceil(remaining)))
                 row.timer:SetColor(tr, tg, tb, 1)
                 row.timer:SetHidden(false)
@@ -1063,17 +1125,21 @@ function AC:HUDRefresh()
             end
 
             row:SetHidden(false)
-            offset = offset + iconSize + HUD_SIDE_MARGIN
+            offset = offset + frameSize + HUD_SIDE_MARGIN
         else
+            row.ringActive = false
+            row.ringKey    = nil
+            row.radial:SetHidden(true)
             row:SetHidden(true)
         end
     end
 
     if #entries > 0 then
+        local frameSize = iconSize + HUD_FRAME_PAD
         if horizontal then
-            AC_HUD.panel:SetDimensions(offset, iconSize)
+            AC_HUD.panel:SetDimensions(offset, frameSize)
         else
-            AC_HUD.panel:SetDimensions(iconSize, offset)
+            AC_HUD.panel:SetDimensions(frameSize, offset)
         end
         if AC_HUD.hadEntries == false then
             AC_HUD.hadEntries = true

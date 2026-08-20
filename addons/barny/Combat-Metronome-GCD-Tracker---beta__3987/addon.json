@@ -18,7 +18,7 @@
     "CombatMetronome"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3987/",
-  "fingerprint": "099de9ccf0e32d55d511c668ed81d34b029f68c072abafad29f15c98f8ac3e46",
+  "fingerprint": "e93fe370c14c9eb2aa5cf9533959e3cb15ac0d902b54910a7d6ab90c4f49a224",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13515.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "3987",
   "source_url": "https://www.esoui.com/downloads/info3987-CombatMetronomeGCDTracker-beta.html",
   "stats": {
-    "downloads": 5746,
+    "downloads": 5784,
     "favorites": 4,
-    "monthly_downloads": 265
+    "monthly_downloads": 273
   },
   "title": "Combat Metronome (GCD Tracker) - beta",
-  "updated_at": 1786875633000,
-  "version": "1.7.6 - beta"
+  "updated_at": 1787166970000,
+  "version": "1.7.7 - beta"
 }

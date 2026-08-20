@@ -18,6 +18,8 @@ local GetGroupLabelFont = Shared.GetGroupLabelFont
 local FormatCurrentValue = Shared.FormatCurrentValue
 local GetScreenWidth = Shared.GetScreenWidth
 local GetScreenHeight = Shared.GetScreenHeight
+local SetFrameVisibilityImmediate = Shared.SetFrameVisibilityImmediate
+local SetFrameCombatVisibility = Shared.SetFrameCombatVisibility
 local runtimeActive = false
 
 function PlayerBars.Group.ShouldShowForCurrentScene()
@@ -149,7 +151,7 @@ end
 
 function PlayerBars.Group.HideFrame()
     if PlayerBars.Group.root then
-        PlayerBars.Group.root:SetHidden(true)
+        SetFrameVisibilityImmediate(PlayerBars.Group.root, false)
     end
 
     if PlayerBars.Group.StopAllResurrectingMonitors then
@@ -1467,12 +1469,21 @@ function PlayerBars.Group.RefreshFrame()
 
     local settings = PlayerBars.Group.GetSettings()
     local previewVisible = PlayerBars.Group.IsPreviewVisible()
-    local shouldShow = (settings.showNqolGroupFrame == true or previewVisible)
+    local shouldShowFrame = (settings.showNqolGroupFrame == true or previewVisible)
         and PlayerBars.Group.ShouldShowForCurrentScene()
         and (GetGroupSizeValue() > 0 or previewVisible)
+    local combatOnly = not previewVisible and settings.showOnlyInCombat == true
 
-    if not shouldShow then
+    if not shouldShowFrame then
         PlayerBars.Group.HideFrame()
+        return
+    end
+
+    if combatOnly and not (IsUnitInCombat and IsUnitInCombat("player") == true) then
+        SetFrameCombatVisibility(PlayerBars.Group.root, false)
+        if PlayerBars.Group.StopAllResurrectingMonitors then
+            PlayerBars.Group.StopAllResurrectingMonitors(true)
+        end
         return
     end
 
@@ -1488,7 +1499,11 @@ function PlayerBars.Group.RefreshFrame()
     if previewVisible then
         Shared.SetSettingsPreviewDrawOrder(PlayerBars.Group.root)
     end
-    PlayerBars.Group.root:SetHidden(false)
+    if combatOnly then
+        SetFrameCombatVisibility(PlayerBars.Group.root, true)
+    else
+        SetFrameVisibilityImmediate(PlayerBars.Group.root, true)
+    end
     PlayerBars.Group.RefreshResurrectingMonitors()
 end
 

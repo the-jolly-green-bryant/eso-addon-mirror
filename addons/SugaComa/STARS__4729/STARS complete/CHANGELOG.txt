@@ -1,0 +1,21 @@
+STARS 0.6.11 - COMPLETE INPUT BUILD
+
+- Added separate gamepad and keyboard/mouse Journal scenes.
+- Preserved the approved gamepad controller, layout and keybind lifecycle.
+- Added a native mouse-driven keyboard Journal root with clickable navigation.
+- Shared one STARS tracking core, SavedVariables set and approved badge renderer.
+- Added input-mode routing so STARS opens the correct scene automatically.
+- Added /stars as a PC keyboard-mode open/close command.
+- Added mouse-wheel Chronicle memory navigation.
+- Corrected keep counting to accept only KEEPTYPE_KEEP in Cyrodiil.
+- Excluded battleground objectives, resources and Imperial City districts from
+  Keeps Captured and Keeps Defended.
+
+TEST PRIORITIES
+
+1. Open STARS in gamepad mode and run the existing console regression.
+2. Switch to keyboard mode and open STARS using its binding or /stars.
+3. Verify every mouse navigation button and Chronicle mouse-wheel paging.
+4. Switch input modes, reopen STARS and confirm the correct scene is selected.
+5. Confirm STARS controls do not leak onto ESO-owned screens.
+6. Confirm approved Legacy, Bronze, Silver and Gold heraldry still renders.

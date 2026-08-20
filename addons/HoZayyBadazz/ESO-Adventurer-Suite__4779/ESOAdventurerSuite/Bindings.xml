@@ -1,0 +1,31 @@
+<!--
+  ESO Adventurer Suite
+  Copyright (c) 2026 HoZayyBadazz. All Rights Reserved.
+  Proprietary source. Unauthorized redistribution or public derivative
+  distribution is prohibited. See LICENSE.txt.
+-->
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_NAME_ESO_PROGRESSION_COACH_CATEGORY">
+            <Action name="ESO_PROGRESSION_COACH_TOGGLE">
+                <Down>ESOProgressionCoach_Toggle()</Down>
+            </Action>
+            <Action name="ESO_PROGRESSION_COACH_INTERACT">
+                <Down>ESOProgressionCoach_Interact()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
+    <!--
+      The Codex explicitly pushes this action layer while open. The hidden
+      action inherits the user's normal Codex key, so the same key closes it
+      even while ESO is in UI mode.
+    -->
+    <Layer name="ESOAdventurerSuiteCodexLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_PROGRESSION_COACH_TOGGLE_CODEX" hideAction="true" inheritsBindFrom="ESO_PROGRESSION_COACH_TOGGLE">
+                <Down>ESOProgressionCoach_Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

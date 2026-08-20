@@ -1,9 +1,8 @@
 {
-  "archive_error": "ESOUI returned an empty response",
+  "archive_format": "zip",
   "archive_path": "addons/HoZayyBadazz/ESO-Adventurer-Suite__4779",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
+  "archived": true,
   "author": "HoZayyBadazz",
   "canonical_id": "esoui:4779",
   "category_id": "18",
@@ -23,7 +22,7 @@
     "ESOAdventurerSuite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4779/",
-  "fingerprint": "3055c9af81ea98f9588a0a6901702c2554725e9e8ffd7151a1bc1b363e0d8d66",
+  "fingerprint": "559c180d8d1a7084cd863776aaf3ddc9e8805bdd8f1a7bcd26f1894353da8439",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17033.png",
     "https://cdn-eso.mmoui.com/preview/pvw17034.png",
@@ -42,11 +41,11 @@
   "source_id": "4779",
   "source_url": "https://www.esoui.com/downloads/info4779-ESOAdventurerSuite.html",
   "stats": {
-    "downloads": 5,
-    "favorites": 1,
-    "monthly_downloads": 1
+    "downloads": 19,
+    "favorites": 2,
+    "monthly_downloads": 18
   },
   "title": "ESO Adventurer Suite",
-  "updated_at": 1787115701000,
-  "version": "0.24.6"
+  "updated_at": 1787122634000,
+  "version": "0.24.55"
 }

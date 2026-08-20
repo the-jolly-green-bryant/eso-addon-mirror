@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 KyzderpsDerps = {
     name = "KyzderpsDerps",
-    version = "1.50.1",
+    version = "1.51.0",
 }
 local KD = KyzderpsDerps
 
@@ -13,6 +13,7 @@ local defaultOptions = {
     general = {
         debug = false,
         experimental = false,
+        assistantCommands = true,
     },
     ui = {
         reposition = false,
@@ -386,6 +387,7 @@ local function Initialize()
     KyzderpsDerps:dbg("Initializing Kyzderp's Derps...")
 
     KyzderpsDerps.InitializeCommands()
+    KD.InitializeAssistantCommands()
 
     -- Initialize modules
     KyzderpsDerps.InitializeCustomTargetName()

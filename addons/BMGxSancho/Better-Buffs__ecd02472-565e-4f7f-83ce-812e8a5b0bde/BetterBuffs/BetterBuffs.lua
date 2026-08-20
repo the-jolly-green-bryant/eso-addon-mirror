@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.10"
+BB.version = "0.3.11"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -42,6 +42,13 @@ local characterDefaults = {
             offsetX = 0,
             offsetY = -180,
             durationMs = 2500,
+        },
+        stats = {
+            visibility = "SELF",
+            scale = 1.0,
+            opacity = 0.34,
+            offsetX = 0,
+            offsetY = 120,
         },
     },
     _profileInitialized = false,
@@ -198,6 +205,7 @@ function BB:SetEnabled(value)
     self.saved.enabled = self.characterSaved.enabled
     if self.Runtime then self.Runtime:SetEnabled(self.saved.enabled) end
     if self.UI then self.UI:RefreshAll(true) end
+    if self.Stats then self.Stats:Refresh() end
 end
 
 function BB:Initialize()
@@ -265,9 +273,11 @@ function BB:Initialize()
     self.characterSaved.ui.buffs = type(self.characterSaved.ui.buffs) == "table" and self.characterSaved.ui.buffs or {}
     self.characterSaved.ui.debuffs = type(self.characterSaved.ui.debuffs) == "table" and self.characterSaved.ui.debuffs or {}
     self.characterSaved.ui.slayerMissAlert = type(self.characterSaved.ui.slayerMissAlert) == "table" and self.characterSaved.ui.slayerMissAlert or {}
+    self.characterSaved.ui.stats = type(self.characterSaved.ui.stats) == "table" and self.characterSaved.ui.stats or {}
     DeepDefaults(self.characterSaved.ui.buffs, displayDefaults)
     DeepDefaults(self.characterSaved.ui.debuffs, displayDefaults)
     DeepDefaults(self.characterSaved.ui.slayerMissAlert, characterDefaults.ui.slayerMissAlert)
+    DeepDefaults(self.characterSaved.ui.stats, characterDefaults.ui.stats)
 
     -- Compatibility facade for the existing runtime/settings code. Nested tables
     -- are direct references to their authoritative SavedVariables owners.
@@ -292,6 +302,7 @@ function BB:Initialize()
     -- the UI, because dashboard construction may query Auto group relevance.
     self.Runtime:Initialize()
     self.UI:Initialize()
+    self.Stats:Initialize()
     self.API:Initialize()
     self.Settings:Initialize()
     self:SetEnabled(self.saved.enabled)

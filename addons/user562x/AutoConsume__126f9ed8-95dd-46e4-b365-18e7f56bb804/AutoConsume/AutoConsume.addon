@@ -5,4 +5,5 @@
 ## SavedVariables: AutoConsume_SavedVars
 ## DependsOn: LibConsoleMenu LibCombatAlerts AAAConsoleUIShim
 
+AutoConsume.xml
 AutoConsume.lua

@@ -244,6 +244,16 @@ local function CreateMiscSettings()
             width = "full",
         },
         {
+            type = "checkbox",
+            name = "Enable ally summon commands",
+            tooltip = "Adds commands such as /ezabi and /xyn to summon or desummon allies. Also adds the /banker, /merchant, /decon, /armory, /fence, and /companion commands, which randomly chooses one of your unlocked allies of that type",
+            default = true,
+            getFunc = function() return KyzderpsDerps.savedOptions.general.assistantCommands end,
+            setFunc = function(value) KyzderpsDerps.savedOptions.general.assistantCommands = value end,
+            width = "full",
+            requiresReload = true,
+        },
+        {
             type = "dropdown",
             name = "Use collectible on login",
             tooltip = "Specify a collectible to use when you first load into a character",
@@ -278,38 +288,11 @@ local function CreateMiscSettings()
             end,
             width = "full",
         },
-        {
-            type = "checkbox",
-            name = "In-combat reticle",
-            tooltip = "Turn the reticle red while you are in combat",
-            default = false,
-            getFunc = function() return KyzderpsDerps.savedOptions.misc.combatReticle end,
-            setFunc = function(value)
-                KyzderpsDerps.savedOptions.misc.combatReticle = value
-            end,
-            width = "full",
-        },
-        {
-            type = "checkbox",
-            name = "Automatic repair kit",
-            tooltip = "Automatically use a repair kit to repair gear that drops to 1% durability",
-            default = true,
-            getFunc = function() return KyzderpsDerps.savedOptions.misc.repair end,
-            setFunc = function(value)
-                KyzderpsDerps.savedOptions.misc.repair = value
-                KyzderpsDerps.AutoRepair.Initialize()
-            end,
-            width = "full",
-        },
     }
 
     table.insert(controls, KyzderpsDerps.Loot.GetSettings())
     table.insert(controls, KyzderpsDerps.GroupLoot.GetSettings())
     table.insert(controls, KyzderpsDerps.Tribute.GetSettings())
-    local scoreFormatSettings = KyzderpsDerps.ScoreFormat.GetSettings()
-    for _, setting in ipairs(scoreFormatSettings) do
-        table.insert(controls, setting)
-    end
     table.insert(controls, KyzderpsDerps.Tomes.GetSettings())
     table.insert(controls, {
         type = "description",

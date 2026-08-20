@@ -1,6 +1,6 @@
 STARS = {}
 STARS.name = "STARS"
-STARS.version = "0.5.38-test16"
+STARS.version = "0.6.10"
 STARS.sv = nil
 
 STARS.CP_MILESTONES = {160,300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600}
@@ -33,6 +33,22 @@ STARS.PRESTIGE_BADGES_PER_TIER = 11
 STARS.PRESTIGE_TIER_SIZE = STARS.PRESTIGE_BADGE_STEP * STARS.PRESTIGE_BADGES_PER_TIER
 STARS.PRESTIGE_TIER_NAMES = { "Bronze", "Silver", "Gold" }
 
+--[[
+DEVELOPER HERALDRY PREVIEW (disabled for the spoiler-free build)
+
+Keep this runtime-only state with the matching LHAS controls below. Uncomment
+both blocks if the full Legacy/Prestige artwork review rig is needed again.
+
+STARS.heraldryPreview = {
+    enabled = false,
+    mode = "legacy",
+    rankKey = "wayfarer",
+    stage = 1,
+    prestigeTier = "bronze",
+    prestigeRankKey = "wayfarer",
+}
+]]
+
 local DEFAULTS = {
     options = {
         enabled = true,
@@ -46,6 +62,11 @@ local DEFAULTS = {
     },
     prestige = { baselineCP = 0, level = 0, session = 0, lastCP = 0, postCapRanks = nil, postCapXP = nil, xpPerRank = nil },
     stats = {
+        -- One authoritative boundary for every non-achievement record shown by
+        -- the memory book.  Achievement dates come from ESO and can be older;
+        -- this timestamp is created on install/upgrade and renewed only by
+        -- Clear All Data.
+        trackingStarted = 0,
         pvp = {
             kills = 0, deaths = 0, revives = 0,
             keepsTaken = 0, keepsDefended = 0, apEarned = 0,
@@ -143,12 +164,8 @@ function STARS:GetFinalChampionPointXP()
 end
 
 function STARS:GetPrestigeTierName(tierNumber)
-    tierNumber = math.max(1, math.floor(tonumber(tierNumber) or 1))
-    local known = self.PRESTIGE_TIER_NAMES[tierNumber]
-    if known then return known end
-    -- We only name the first three tiers until the visual language beyond Gold
-    -- is designed. The numeric fallback keeps the progression engine unlimited.
-    return "Prestige Tier " .. tostring(tierNumber)
+    tierNumber = math.max(1, math.min(3, math.floor(tonumber(tierNumber) or 1)))
+    return self.PRESTIGE_TIER_NAMES[tierNumber] or "Bronze"
 end
 
 function STARS:GetPrestigeProgression()
@@ -186,12 +203,25 @@ function STARS:GetPrestigeProgression()
     end
 
     local totalRanks = math.max(0, math.floor(tonumber(p.postCapRanks) or tonumber(p.level) or 0))
-    -- Permanent Prestige mirrors the zero-based Legacy bands: Bronze 0-109,
-    -- Silver 0-109, Gold 0-109, etc. Each ten ranks selects the next of the
-    -- eleven badge states, so rank 110 cleanly becomes Silver 0.
-    local tierNumber = math.floor(totalRanks / self.PRESTIGE_TIER_SIZE) + 1
-    local tierLevel = totalRanks % self.PRESTIGE_TIER_SIZE
-    local badgeStage = math.floor(tierLevel / self.PRESTIGE_BADGE_STEP) + 1
+    -- Permanent Prestige has three visual tiers. Bronze covers ranks 0-109,
+    -- Silver 110-219, and Gold begins at 220 and remains the final unlimited
+    -- tier. Every ten ranks reveals the next shield; Gold holds its eleventh
+    -- shield once the complete family has been earned.
+    local tierNumber
+    local tierLevel
+    if totalRanks < self.PRESTIGE_TIER_SIZE then
+        tierNumber = 1
+        tierLevel = totalRanks
+    elseif totalRanks < self.PRESTIGE_TIER_SIZE * 2 then
+        tierNumber = 2
+        tierLevel = totalRanks - self.PRESTIGE_TIER_SIZE
+    else
+        tierNumber = 3
+        tierLevel = totalRanks - (self.PRESTIGE_TIER_SIZE * 2)
+    end
+    local badgeStage = math.min(
+        self.PRESTIGE_BADGES_PER_TIER,
+        math.floor(tierLevel / self.PRESTIGE_BADGE_STEP) + 1)
 
     return {
         phase = "prestige",
@@ -1134,59 +1164,20 @@ function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, ol
     if delta <= 0 then return end
     self:IncrementPvpLifetime("apEarned", delta)
     self:IncrementCampaign("apEarned", delta)
-    self.lastApGainTime = Now()
-    self:ConfirmPendingKeepContribution()
-end
 
-function STARS:QueueKeepContribution(kind, keepId)
-    if not self:IsInCyrodiil() then return end
-    self.pendingKeepContribution = { kind = kind, keepId = keepId, time = Now() }
-    -- AP can sometimes arrive just before the keep state event.
-    if self.lastApGainTime and (Now() - self.lastApGainTime) <= 20 then
-        self:ConfirmPendingKeepContribution()
-    end
-end
-
-function STARS:ConfirmPendingKeepContribution()
-    local p = self.pendingKeepContribution
-    if not p then return end
-    if (Now() - (p.time or 0)) > 30 then self.pendingKeepContribution = nil return end
-    if p.kind == "capture" then
+    -- The currency reason is the same authoritative signal used for the
+    -- offensive/defensive keep reward announcement. Unlike the global keep
+    -- state events, it is only delivered when this player receives the reward.
+    if CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
+        and reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD then
         self:IncrementPvpLifetime("keepsTaken", 1)
         self:IncrementCampaign("keepsTaken", 1)
-        Debug("Keep capture credited: " .. tostring(p.keepId))
-    elseif p.kind == "defence" then
+        Debug("Offensive keep reward credited")
+    elseif CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
+        and reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD then
         self:IncrementPvpLifetime("keepsDefended", 1)
         self:IncrementCampaign("keepsDefended", 1)
-        Debug("Keep defence credited: " .. tostring(p.keepId))
-    end
-    self.pendingKeepContribution = nil
-end
-
-function STARS:OnKeepAllianceOwnerChanged(_, keepId, battlegroundContext, owningAlliance, oldOwningAlliance)
-    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
-    local myAlliance = GetUnitAlliance and GetUnitAlliance("player") or 0
-    if owningAlliance == myAlliance and oldOwningAlliance ~= myAlliance then
-        self:QueueKeepContribution("capture", keepId)
-    end
-    self.keepUnderAttack = self.keepUnderAttack or {}
-    self.keepUnderAttack[keepId] = nil
-end
-
-function STARS:OnKeepUnderAttackChanged(_, keepId, battlegroundContext, underAttack)
-    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
-    self.keepUnderAttack = self.keepUnderAttack or {}
-    if underAttack then
-        self.keepUnderAttack[keepId] = { started = Now() }
-        return
-    end
-    local tracked = self.keepUnderAttack[keepId]
-    self.keepUnderAttack[keepId] = nil
-    if not tracked then return end
-    if GetKeepAlliance then
-        local ok, owner = pcall(GetKeepAlliance, keepId, battlegroundContext)
-        local myAlliance = GetUnitAlliance and GetUnitAlliance("player") or 0
-        if ok and owner == myAlliance then self:QueueKeepContribution("defence", keepId) end
+        Debug("Defensive keep reward credited")
     end
 end
 
@@ -1207,11 +1198,43 @@ end
 
 function STARS:GetCharacterProfile()
     local name = GetUnitName and GetUnitName("player") or "Character"
+    local title = GetUnitTitle and GetUnitTitle("player") or ""
     local race = GetUnitRace and GetUnitRace("player") or ""
     local className = ""
     if GetUnitClass then className = GetUnitClass("player") or "" end
     local alliance = GetUnitAlliance and GetUnitAlliance("player") or 0
     local allianceName = GetAllianceName and GetAllianceName(alliance) or tostring(alliance)
+    local level = GetUnitLevel and GetUnitLevel("player") or 0
+    local gender = GetUnitGender and GetUnitGender("player") or GENDER_NEUTER
+    local avaRank, avaSubRank = 0, 0
+    if GetUnitAvARank then
+        avaRank, avaSubRank = SafeApiCall(GetUnitAvARank, "player")
+        avaRank = tonumber(avaRank) or 0
+        avaSubRank = tonumber(avaSubRank) or 0
+    end
+    local avaRankName = "Unranked"
+    if avaRank > 0 and GetAvARankName then
+        avaRankName = SafeApiCall(GetAvARankName, gender, avaRank) or avaRankName
+    end
+    local avaRankIcon = ""
+    if avaRank > 0 then
+        if GetLargeAvARankIcon then
+            avaRankIcon = SafeApiCall(GetLargeAvARankIcon, avaRank) or ""
+        end
+        if avaRankIcon == "" and GetAvARankIcon then
+            avaRankIcon = SafeApiCall(GetAvARankIcon, avaRank) or ""
+        end
+    end
+
+    local classIcon = ""
+    local classId = GetUnitClassId and (tonumber(SafeApiCall(GetUnitClassId, "player")) or 0) or 0
+    if classId > 0 and GetClassIndexById and GetClassInfo then
+        local classIndex = tonumber(SafeApiCall(GetClassIndexById, classId)) or 0
+        if classIndex > 0 then
+            local _, _, _, _, _, _, _, ingameIconGamepad = SafeApiCall(GetClassInfo, classIndex)
+            classIcon = ingameIconGamepad or ""
+        end
+    end
     local health, magicka, stamina = 0,0,0
     if GetUnitPower then
         local _, mh = GetUnitPower("player", POWERTYPE_HEALTH); health = mh or 0
@@ -1226,7 +1249,12 @@ function STARS:GetCharacterProfile()
         return 0
     end
     return {
-        name = name, race = race, className = className, allianceName = allianceName,
+        name = name, title = title, race = race, className = className,
+        classId = classId, classIcon = classIcon,
+        allianceId = alliance, allianceName = allianceName,
+        avaRank = avaRank, avaSubRank = avaSubRank,
+        avaRankName = avaRankName, avaRankIcon = avaRankIcon,
+        level = tonumber(level) or 0,
         cp = self:GetPlayerCP(), prestige = tonumber(self.sv.prestige.level) or 0,
         health = health, magicka = magicka, stamina = stamina,
         weaponDamage = stat(STAT_WEAPON_AND_SPELL_DAMAGE), spellDamage = stat(STAT_WEAPON_AND_SPELL_DAMAGE),
@@ -1237,6 +1265,7 @@ end
 
 function STARS:ResetAllStats()
     self.sv.stats = {
+        trackingStarted=Now(),
         pvp = {
             kills=0,deaths=0,revives=0,keepsTaken=0,keepsDefended=0,apEarned=0,
             battlegrounds={kills=0,deaths=0,assists=0,matches=0},
@@ -1250,7 +1279,11 @@ function STARS:ResetAllStats()
     self:EnsureCampaign()
     self:EnsureVeterancySeason()
     self:TouchSV()
-    if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage then STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage or 1) end
+    if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage then
+        -- Page 6 is the memory-book cover. Profile formerly occupied page 1
+        -- and no longer exists after the Veterancy merge.
+        STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage or 6)
+    end
 end
 
 function STARS:UpgradeSavedVars()
@@ -1305,6 +1338,15 @@ function STARS:UpgradeSavedVars()
         underworld.trackingStarted = Now()
     end
     if underworld.bladeOfWoeAbilityIds == nil then underworld.bladeOfWoeAbilityIds = {} end
+
+    -- Migrate the old Underworld-only boundary into the single memory-book
+    -- boundary.  This preserves the earliest trustworthy date already stored
+    -- by existing installations instead of pretending this build saw older
+    -- PvP, Veterancy or criminal activity.
+    if self.sv.stats.trackingStarted == nil or tonumber(self.sv.stats.trackingStarted) == 0 then
+        local previousBoundary = tonumber(underworld.trackingStarted) or 0
+        self.sv.stats.trackingStarted = previousBoundary > 0 and previousBoundary or Now()
+    end
 
     self.sv.stats.campaigns = self.sv.stats.campaigns or {current=nil,history={}}
     if self.sv.stats.campaigns.history == nil then self.sv.stats.campaigns.history = {} end
@@ -1393,6 +1435,13 @@ function STARS:InitSettingsMenu()
         })
     end
 
+    local function RefreshCurrentJournalPage()
+        if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage
+            and STARS_JOURNAL_GAMEPAD.currentPage then
+            STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage)
+        end
+    end
+
     AddCategoryHeader("GENERAL")
     settings:AddSetting({type=HAS.ST_SECTION,label="STARS"})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Enable STARS",getFunction=function() return self.sv.options.enabled end,setFunction=function(v) self.sv.options.enabled=v; self:TouchSV() end})
@@ -1408,11 +1457,149 @@ function STARS:InitSettingsMenu()
         setFunction=function(v)
             self.sv.options.heraldryEnabled = v == true
             self:TouchSV()
-            if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage and STARS_JOURNAL_GAMEPAD.currentPage then
-                STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage)
+            RefreshCurrentJournalPage()
+        end,
+    })
+    --[[
+    DEVELOPER HERALDRY PREVIEW CONTROLS (disabled for spoiler-free builds)
+
+    Uncomment this block together with STARS.heraldryPreview near the top of
+    this file to restore the complete 12 Legacy / 33 Prestige review menu.
+
+    settings:AddSetting({type=HAS.ST_SECTION,label="Development Preview"})
+    settings:AddSetting({
+        type=HAS.ST_LABEL,
+        label="Artwork review only - removed before release",
+        tooltip="Temporarily previews Legacy emblems or any Bronze, Silver or Gold Prestige shield without changing Champion Points, ranks, XP, unlocks, or saved progression. Preview state resets after /reloadui.",
+    })
+    settings:AddSetting({
+        type=HAS.ST_CHECKBOX,
+        label="Enable Heraldry Preview",
+        tooltip="Overrides only the badge artwork shown on the Prestige page. All text and progression remain live and unchanged.",
+        getFunction=function() return self.heraldryPreview.enabled == true end,
+        setFunction=function(v)
+            self.heraldryPreview.enabled = v == true
+            RefreshCurrentJournalPage()
+        end,
+    })
+
+    local previewModeItems = {
+        {name="Legacy Emblems", data="legacy"},
+        {name="Prestige Shields", data="prestige"},
+    }
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Artwork",
+        items=previewModeItems,
+        getFunction=function()
+            for _, item in ipairs(previewModeItems) do
+                if item.data == self.heraldryPreview.mode then return item.name end
+            end
+            return previewModeItems[1].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.mode = item.data
+                RefreshCurrentJournalPage()
             end
         end,
     })
+
+    local previewRankItems = {}
+    for _, rank in ipairs(self.LEGACY_RANKS) do
+        previewRankItems[#previewRankItems + 1] = { name=rank.name, data=rank.key }
+    end
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Legacy Rank",
+        items=previewRankItems,
+        getFunction=function()
+            for _, item in ipairs(previewRankItems) do
+                if item.data == self.heraldryPreview.rankKey then return item.name end
+            end
+            return previewRankItems[1].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.rankKey = item.data
+                RefreshCurrentJournalPage()
+            end
+        end,
+    })
+
+    local previewStageItems = {
+        {name="Stage 1 (50)", data=1},
+        {name="Stage 2 (100)", data=2},
+        {name="Stage 3 (150)", data=3},
+        {name="Stage 4 (200)", data=4},
+        {name="Stage 5 (250)", data=5},
+    }
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Colour Stage",
+        items=previewStageItems,
+        getFunction=function()
+            local stage = math.max(1, math.min(5, math.floor(tonumber(self.heraldryPreview.stage) or 1)))
+            return previewStageItems[stage].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.stage = item.data
+                RefreshCurrentJournalPage()
+            end
+        end,
+    })
+
+    local previewPrestigeTierItems = {
+        {name="Bronze", data="bronze"},
+        {name="Silver", data="silver"},
+        {name="Gold", data="gold"},
+    }
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Prestige Tier",
+        items=previewPrestigeTierItems,
+        getFunction=function()
+            for _, item in ipairs(previewPrestigeTierItems) do
+                if item.data == self.heraldryPreview.prestigeTier then return item.name end
+            end
+            return previewPrestigeTierItems[1].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.prestigeTier = item.data
+                RefreshCurrentJournalPage()
+            end
+        end,
+    })
+
+    local previewPrestigeRankItems = {}
+    for index, rank in ipairs(self.LEGACY_RANKS) do
+        if index <= self.PRESTIGE_BADGES_PER_TIER then
+            previewPrestigeRankItems[#previewPrestigeRankItems + 1] = {
+                name=rank.name,
+                data=rank.key,
+            }
+        end
+    end
+    settings:AddSetting({
+        type=HAS.ST_DROPDOWN,
+        label="Preview Prestige Shield",
+        items=previewPrestigeRankItems,
+        getFunction=function()
+            for _, item in ipairs(previewPrestigeRankItems) do
+                if item.data == self.heraldryPreview.prestigeRankKey then return item.name end
+            end
+            return previewPrestigeRankItems[1].name
+        end,
+        setFunction=function(_, _, item)
+            if item and item.data then
+                self.heraldryPreview.prestigeRankKey = item.data
+                RefreshCurrentJournalPage()
+            end
+        end,
+    })
+    ]]
     settings:AddSetting({type=HAS.ST_SECTION,label="Notifications"})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Sound",getFunction=function() return self.sv.options.sound end,setFunction=function(v) self.sv.options.sound=v; self:TouchSV() end})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Center Screen Announce",getFunction=function() return self.sv.options.csa end,setFunction=function(v) self.sv.options.csa=v; self:TouchSV() end})
@@ -1448,7 +1635,7 @@ function STARS:InitSettingsMenu()
     settings:AddSetting({
         type = HAS.ST_SECTION,
         subMenu = false,
-        label = "|cFFD700Built on tea, toast and ADHD – tested live on PS5.|r\n" ..
+        label = "|cFFD700Built on tea, toast and ADHD - tested live on PS5.|r\n" ..
                 "|cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r",
     })
     settings:AddSetting({
@@ -1481,8 +1668,6 @@ function STARS:RegisterEvents()
     end
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RESURRECT_RESULT, function(...) self:OnResurrectResult(...) end)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CURRENCY_UPDATE, function(...) self:OnCurrencyUpdate(...) end)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function(...) self:OnKeepAllianceOwnerChanged(...) end)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_KEEP_UNDER_ATTACK_CHANGED, function(...) self:OnKeepUnderAttackChanged(...) end)
     if EVENT_REWARD_TRACK_PROGRESS_GAINED then
         EVENT_MANAGER:RegisterForEvent(self.name, EVENT_REWARD_TRACK_PROGRESS_GAINED, function(...) self:OnRewardTrackProgressGained(...) end)
     end
@@ -1511,6 +1696,9 @@ function STARS:Initialize()
     self:EnsureCampaign()
     self:EnsureVeterancySeason()
     if STARS_JOURNAL and STARS_JOURNAL.Initialize then STARS_JOURNAL:Initialize() end
+    if STARS_JOURNAL_KEYBOARD and STARS_JOURNAL_KEYBOARD.Initialize then
+        STARS_JOURNAL_KEYBOARD:Initialize()
+    end
     self:RegisterResetDialogs()
     self:InitSettingsMenu()
     self:RegisterEvents()
