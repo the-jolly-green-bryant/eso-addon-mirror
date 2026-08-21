@@ -1,11 +1,24 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Soul_Hagans/ZoneAchievements__4262",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Soul_Hagans",
   "canonical_id": "esoui:4262",
   "category_id": "155",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
     {
       "name": "Seasons of the Worm Cult Pt2",
       "version": "11.2.0"
@@ -17,8 +30,11 @@
     "ZoneAchievements"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4262/",
-  "fingerprint": "5cafd98cb0ee41b2c0c93d232c5ba2fe3e627e334abe6e0c4de83181b94a996b",
+  "fingerprint": "0a24b2203bd9e00b4a33cf94a001b7271e1b8129073567b475c18d9471b0ce11",
   "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17051.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17052.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17050.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw14620.png",
     "https://cdn-eso.mmoui.com/preview/pvw14621.png",
     "https://cdn-eso.mmoui.com/preview/pvw14622.png",
@@ -30,11 +46,11 @@
   "source_id": "4262",
   "source_url": "https://www.esoui.com/downloads/info4262-ZoneAchievements.html",
   "stats": {
-    "downloads": 526,
+    "downloads": 605,
     "favorites": 2,
-    "monthly_downloads": 21
+    "monthly_downloads": 80
   },
   "title": "ZoneAchievements",
-  "updated_at": 1768291754000,
-  "version": "1.0.2"
+  "updated_at": 1787237980000,
+  "version": "2.0.2"
 }

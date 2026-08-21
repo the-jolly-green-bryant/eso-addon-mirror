@@ -1,11 +1,28 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/GalacticWar/Sprint-Sensitivity-Fix__3676",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "GalacticWar",
   "canonical_id": "esoui:3676",
   "category_id": "159",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
     {
       "name": "Feast of Shadows",
       "version": "11.1.0"
@@ -54,12 +71,12 @@
   "content_id": "esoui:3676",
   "deleted": false,
   "directories": [
-    "SprintSens"
+    "SprintSensitivityFix"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3676/",
-  "fingerprint": "a0dc1acf1eecabd5a01b4f4d03d23e819aca31f3d51696dd4060aa41499a3442",
+  "fingerprint": "4561d6bbfd155e7c6c71330caf0fa90265427f1a33ba3918e0d0e342e5c52302",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw13825.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17055.png"
   ],
   "platform": "pc",
   "published": true,
@@ -67,11 +84,11 @@
   "source_id": "3676",
   "source_url": "https://www.esoui.com/downloads/info3676-SprintSensitivityFix.html",
   "stats": {
-    "downloads": 6760,
+    "downloads": 6830,
     "favorites": 7,
-    "monthly_downloads": 59
+    "monthly_downloads": 62
   },
   "title": "Sprint Sensitivity Fix",
-  "updated_at": 1754176780000,
-  "version": "5.6"
+  "updated_at": 1787274023000,
+  "version": "6.0.0"
 }

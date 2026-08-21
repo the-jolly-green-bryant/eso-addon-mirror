@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/SugaComa/STARS-MODULE-Console-Tested--no-longer-required__4728",
+  "archive_path": "addons/SugaComa/no-longer-required__4728",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "SugaComa",
@@ -18,19 +18,19 @@
     "STARS_MODULE_TEMPLATE"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4728/",
-  "fingerprint": "9c2c60282f0f93d9972dea6bc79d75038c2d5958dc89b542bbfc0d0374579981",
+  "fingerprint": "44630f90bb432478c1e70b974afb6c4dce9c5ba2a416631218435dbf5ab52986",
   "images": [],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4728",
-  "source_url": "https://www.esoui.com/downloads/info4728-STARSMODULEConsoleTested-nolongerrequired.html",
+  "source_url": "https://www.esoui.com/downloads/info4728-nolongerrequired.html",
   "stats": {
-    "downloads": 35,
+    "downloads": 41,
     "favorites": 0,
-    "monthly_downloads": 35
+    "monthly_downloads": 39
   },
-  "title": "STARS MODULE (Console Tested)-no longer required",
+  "title": "no longer required",
   "updated_at": 1785100692000,
   "version": "1.0"
 }

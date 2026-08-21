@@ -955,6 +955,11 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_CANCEL] = "取消分享",
     [BATTLESCROLLS_SHARE_FAILED] = "无法准备分享。",
     [BATTLESCROLLS_SHARE_CANCELLED] = "分享已取消。",
+    [BATTLESCROLLS_SHARE_RESEND_PART] = "重新发送第 <<1>> 部分",
+    [BATTLESCROLLS_SHARE_PART_RESENDING] = "第 <<1>> 部分 — 重新发送中…",
+    [BATTLESCROLLS_SHARE_FINISH] = "完成分享",
+    [BATTLESCROLLS_SHARE_DONE_RESEND_HINT] = "如果浏览器页面提示缺少部分，请在上方选中并重新发送。",
+    [BATTLESCROLLS_SHARE_DIAG_HEADER] = "诊断",
 }
 for id, str in pairs(shareStrings) do
     SafeAddString(id, str, 1)

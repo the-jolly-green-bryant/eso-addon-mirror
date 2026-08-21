@@ -772,6 +772,10 @@ function Debug.PrintAnnotationTestItemLinks()
     end
 end
 
+function Debug.GenerateBenignLuaError()
+    error("NQOL benign test Lua error. This error is intentional and safe to dismiss.")
+end
+
 function Debug.GetExportAchievementSectionsLabel()
     return "Export dungeon/trial/arena achievements"
 end
@@ -786,6 +790,14 @@ end
 
 function Debug.GetPrintAnnotationTestItemLinksTooltip()
     return "Emulates separate Say messages containing recipes, plans, motifs, collectibles, weapons, armor, and jewelry, with the missing-item icon beside each link."
+end
+
+function Debug.GetGenerateBenignLuaErrorLabel()
+    return "Generate benign Lua error"
+end
+
+function Debug.GetGenerateBenignLuaErrorTooltip()
+    return "Raises an intentional Lua error for testing the Errors dismissal setting."
 end
 
 NQOL.Features.Debug = Debug

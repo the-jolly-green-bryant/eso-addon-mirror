@@ -72,6 +72,7 @@ GamepadOptions.PanelIds = {
     MAP_OPTIONS = 9184,
     TRIAL_TIMER = 9185,
     CAMERA = 9186,
+    GPS = 9189,
 }
 
 local PanelIds = GamepadOptions.PanelIds
@@ -83,6 +84,7 @@ local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
 local MAP_PANEL_ID = PanelIds.MAP
 local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
+local GPS_PANEL_ID = PanelIds.GPS
 local FISHING_PANEL_ID = PanelIds.FISHING
 local FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
 local UI_PANEL_ID = PanelIds.UI
@@ -402,6 +404,7 @@ local SUBPANEL_PARENT_IDS = {
     [MAP_PANEL_ID] = ROOT_PANEL_ID,
     [MAP_OPTIONS_PANEL_ID] = MAP_PANEL_ID,
     [MINIMAP_PANEL_ID] = MAP_PANEL_ID,
+    [GPS_PANEL_ID] = MAP_PANEL_ID,
     [FISHING_PANEL_ID] = ROOT_PANEL_ID,
     [FISHING_TRACKER_PANEL_ID] = FISHING_PANEL_ID,
     [AUTO_BOUND_PANEL_ID] = GEAR_PANEL_ID,
@@ -470,9 +473,10 @@ PANEL_RESET_PATHS = {
     [ULTIMATE_COUNTDOWN_FRONT_PANEL_ID] = { { "ultimateCountdown", "frontBar" } },
     [ULTIMATE_COUNTDOWN_BACK_PANEL_ID] = { { "ultimateCountdown", "backBar" } },
     [PROVISIONING_PANEL_ID] = { { "provisioning" } },
-    [MAP_PANEL_ID] = { { "map" }, { "minimap" } },
+    [MAP_PANEL_ID] = { { "map" }, { "minimap" }, { "gps" } },
     [MAP_OPTIONS_PANEL_ID] = { { "map" } },
     [MINIMAP_PANEL_ID] = { { "minimap" } },
+    [GPS_PANEL_ID] = { { "gps" } },
     [FISHING_PANEL_ID] = { { "fishing" } },
     [FISHING_TRACKER_PANEL_ID] = { { "fishing", "tracker" } },
     [UI_PANEL_ID] = { { "ui" } },
@@ -610,6 +614,10 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
 
     if NQOL.Features and NQOL.Features.Minimap then
         NQOL.Features.Minimap.SetSettingsPanelVisible(panelId == MINIMAP_PANEL_ID)
+    end
+
+    if NQOL.Features and NQOL.Features.GPS then
+        NQOL.Features.GPS.SetSettingsPanelVisible(panelId == GPS_PANEL_ID)
     end
 
     if NQOL.Features and NQOL.Features.PlayerBars then
@@ -1660,6 +1668,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. MINIMAP_PANEL_ID, NQOL.L("ui.gamepad_options.minimap_03000e5"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. MINIMAP_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GPS_PANEL_ID, NQOL.Features.GPS.GetName())
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GPS_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. FISHING_PANEL_ID, NQOL.L("ui.gamepad_options.fishing_cadfb5b"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. FISHING_PANEL_ID, 1)
 
@@ -1948,6 +1959,10 @@ function GamepadOptions.RegisterPanels()
         GamepadOptions.RegisterPanel(MINIMAP_PANEL_ID, GamepadOptions.BuildMinimapOptionsData())
     end
 
+    if not GAMEPAD_SETTINGS_DATA[GPS_PANEL_ID] then
+        GamepadOptions.RegisterPanel(GPS_PANEL_ID, GamepadOptions.BuildGPSOptionsData())
+    end
+
     if not GAMEPAD_SETTINGS_DATA[FISHING_PANEL_ID] then
         GamepadOptions.RegisterPanel(FISHING_PANEL_ID, GamepadOptions.BuildFishingOptionsData())
     end
@@ -2161,6 +2176,9 @@ local function OpenRootPanel()
     end
     if NQOL.Features and NQOL.Features.Minimap then
         NQOL.Features.Minimap.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.GPS then
+        NQOL.Features.GPS.SetSettingsPanelVisible(false)
     end
     if NQOL.Features and NQOL.Features.PlayerBars then
         NQOL.Features.PlayerBars.SetSettingsPanelVisible(false)
@@ -2454,6 +2472,9 @@ function GamepadOptions.InstallSubpanelBackOverride()
             end
             if NQOL.Features and NQOL.Features.Minimap then
                 NQOL.Features.Minimap.SetSettingsPanelVisible(false)
+            end
+            if NQOL.Features and NQOL.Features.GPS then
+                NQOL.Features.GPS.SetSettingsPanelVisible(false)
             end
             if NQOL.Features and NQOL.Features.Chat then
                 NQOL.Features.Chat.SetSettingsPanelVisible(false)

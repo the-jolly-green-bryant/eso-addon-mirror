@@ -32,10 +32,17 @@
                   relativePoint="BOTTOMLEFT"
                   offsetY="6" />
         </Button>
+        <Button name="$(parent)ShowColorPickerCheck"
+                inherits="ZO_HUDInfoBoxCheckButton_Keyboard">
+          <Anchor point="TOPLEFT"
+                  relativeTo="$(parent)ShowGridCheck"
+                  relativePoint="BOTTOMLEFT"
+                  offsetY="6" />
+        </Button>
         <Control name="$(parent)GridSizeRow"
                  resizeToFitDescendents="true">
           <Anchor point="TOPLEFT"
-                  relativeTo="$(parent)ShowGridCheck"
+                  relativeTo="$(parent)ShowColorPickerCheck"
                   relativePoint="BOTTOMLEFT"
                   offsetY="10" />
           <Controls>

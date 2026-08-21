@@ -127,8 +127,15 @@ function Runtime:RefreshAutoProviderCapabilities()
     -- expired self proc could remain dormant in the canonical table and reappear
     -- if the same item is equipped again later. Group-awareness definitions stay
     -- observed independently and therefore retain valid live group state.
-    for key in pairs(BB.Registry.byKey) do
-        if not self:IsObserved(key) then self:ClearEffect(key) end
+    local now = EffectNow()
+    for key,definition in pairs(BB.Registry.byKey) do
+        if not self:IsObserved(key) then
+            self:ClearEffect(key)
+        elseif definition.showReady then
+            -- READY-capable gear effects should immediately reflect a newly
+            -- equipped provider without waiting for the first proc event.
+            self:RefreshEffect(key, now)
+        end
     end
     if BB.UI then BB.UI:RefreshAll(true) end
 end
@@ -674,6 +681,33 @@ function Runtime:OnEffectChanged(changeType, effectSlot, effectName, unitTag, be
         if not intel.providerEquipped or not intel.localProviderActive then return end
     end
     local now = EffectNow()
+
+    -- Some provider cooldowns are exposed as real group-member auras rather than
+    -- combat-event-only records. Normalize those auras into the same canonical
+    -- recipient eligibility table used by Pillager instead of creating another
+    -- tracker. Roaring Opportunist cooldown IDs 135924/137985 use this path.
+    if definition.intelligenceMode == "RECIPIENT_COOLDOWN" and definition.recipientCooldown then
+        local isGroupRecipient = BB.Context:IsGroupedPlayer(unitTag, unitId, unitName)
+        if isGroupRecipient then
+            local account = BB.Context:ResolveAccount(unitTag, unitName, unitId)
+            if account ~= "" then
+                intel.recipientCooldowns = intel.recipientCooldowns or {}
+                if changeType == EFFECT_RESULT_FADED then
+                    intel.recipientCooldowns[account] = nil
+                else
+                    local untilTime = tonumber(endTime) or 0
+                    if untilTime <= now then untilTime = now + definition.recipientCooldown end
+                    intel.recipientCooldowns[account] = untilTime
+                    intel.providerObserved = true
+                    intel.lastApplication = now
+                end
+                self:RefreshEffect(definition.key, now, changeType ~= EFFECT_RESULT_FADED)
+                if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
+                return
+            end
+        end
+    end
+
     local allowPreCombatTarget = definition.requiresLocalProviderEffect
         and (intel.awaitingLocalTargetUntil or 0) >= now
     local allowed = BB.Context:CanTrackEffect(definition,unitTag,unitId,unitName,allowPreCombatTarget)
@@ -966,7 +1000,8 @@ function Runtime:GetSnapshot(key,now)
 
     local availability = "INACTIVE"
     local providerCooldownActive = (intel.providerCooldownUntil or 0) > now
-    local providerKnown = definition.requiredWornItemId and intel.providerEquipped == true or (not definition.readyRequiresObservedProvider or intel.providerObserved == true)
+    local localCapability = self:HasLocalProviderCapability(definition)
+    local providerKnown = localCapability or (definition.requiredWornItemId and intel.providerEquipped == true) or (not definition.readyRequiresObservedProvider or intel.providerObserved == true)
     if definition.intelligenceMode == "RECIPIENT_COOLDOWN" then
         if locked == 0 then
             availability = providerKnown and "READY" or "INACTIVE"

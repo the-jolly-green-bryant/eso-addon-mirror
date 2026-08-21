@@ -1,3 +1,36 @@
+Better Buffs v0.3.14
+
+- Performance-only optimization pass; no new gameplay features or effect definitions.
+- Reduced the single active-effect presentation update cadence from 100 ms to 200 ms while preserving immediate ESO event ingestion into the canonical cache.
+- Compact Grid/Column/Crescent layouts now re-anchor tiles only when structural layout inputs change instead of on every timer tick.
+- Compact perimeter ring anchors are recalculated only when tile size changes.
+- Compact icon textures, desaturation, dimensions, and countdown fonts are now updated only when their underlying values change.
+- Preserved one Effect Runtime, one canonical cache, event-driven Stats modules, Off Balance lifecycle, RO tracking, and all v0.3.13 functionality.
+
+Better Buffs v0.3.13
+
+- Corrected Roaring Opportunist proc detection by consuming the actual Major Slayer application combat-event IDs 135923 (normal) and 137986 (perfected) through the existing canonical recipient-cooldown path.
+- Preserved RO cooldown aura IDs 135924 / 137985 as native effect-change confirmation/fallback data.
+- Weapon & Spell Damage now uses the same Better Buffs branded backdrop and gold border as the Current Pen / Crit module.
+- Tank Resistance now uses the same Better Buffs branded backdrop and gold border as the Current Pen / Crit module.
+- Added independent scale and opacity controls for Weapon & Spell Damage.
+- Added independent scale and opacity controls for Tank Resistance.
+- No new effect cache, tracker, polling loop, or event owner.
+
+Better Buffs v0.3.12
+
+- Added a dedicated Roaring Opportunist Gear Sets tracker.
+- RO tracks the normal/perfected 22-second recipient cooldown auras (135924 / 137985) through the canonical Effect Runtime.
+- RO AUTO appears from local equipped-set relevance; ALWAYS and HIDDEN use the existing visibility system.
+- Preserved Off Balance as ACTIVE -> 15s target COOLDOWN -> inactive, with target death clearing both states.
+- Added a separate Weapon & Spell Damage HUD under Analytics.
+- Added a separate Tank Resistance HUD under Analytics.
+- Tank resistance uses 33,100 as the PvE cap target: yellow below 31,445, green 31,445-34,755, red above 34,755.
+- Both new stat HUDs update from ESO stat events rather than a polling loop and have independent positioning controls.
+- Restored the Better Buffs credits/header to the top of the main menu rather than its own settings section.
+- Global Enable Better Buffs now immediately follows the credits block.
+- Preserved v0.3.11 runtime ownership, SavedVariables migration, Compact/Detailed renderers, Stats Module, and scene-fragment behavior.
+
 Better Buffs v0.3.11
 
 - Added Feeding Frenzy tracking using ability ID 131353 for the Werewolf unique 6% damage buff.

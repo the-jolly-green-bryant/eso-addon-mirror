@@ -1,9 +1,8 @@
 {
-  "archive_error": "ESOUI returned an empty response",
+  "archive_format": "zip",
   "archive_path": "addons/aLi3nZ/Ultivite__4777",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
+  "archived": true,
   "author": "aLi3nZ",
   "canonical_id": "esoui:4777",
   "category_id": "19",
@@ -31,7 +30,7 @@
     "Ultivite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4777/",
-  "fingerprint": "2026ceb40bf5d3d070a57286d02ede1f331ba2ac9bef4acca1c0288d7db1acd0",
+  "fingerprint": "9c6937d48c9ec9d935ba424fc59bd2c2ac8a9f545ccf6092cf42d0268a06cbe2",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -39,11 +38,11 @@
   "source_id": "4777",
   "source_url": "https://www.esoui.com/downloads/info4777-Ultivite.html",
   "stats": {
-    "downloads": 3,
+    "downloads": 28,
     "favorites": 0,
-    "monthly_downloads": 3
+    "monthly_downloads": 28
   },
   "title": "Ultivite",
-  "updated_at": 1787107493000,
-  "version": "1.072"
+  "updated_at": 1787226181000,
+  "version": "1.125"
 }

@@ -1,34 +1,69 @@
--- ZoneAchievements.lua (исправленное ядро + кэш)
+-- ZoneAchievements.lua (полная версия с вкладками и историей)
 local ADDON_NAME = "ZoneAchievements"
 local ZA = {}
 ZA.Cache = {}
+ZA.RecentUpdates = {}
+ZA.CurrentTab = "zone" -- Активная вкладка по умолчанию
+
+-- ================= ЛОКАЛИЗАЦИЯ (СЛОВАРЬ) =================
+local lang = GetCVar("language.2")
+local L = {}
+
+if lang == "ru" then
+    L.lockedZone = "Заблокированная зона"
+    L.unknown = "Неизвестно"
+    L.recentTag = "  |cFFD700[НОВОЕ]|r"
+    L.completed = "|c00FF00Достижение выполнено!|r"
+    L.progress = "Прогресс: |cFFFF00%d / %d|r"
+    L.testTitle = "|c39DB92[ZA-Test] Перетащи меня!|r"
+    L.dragMe = "Зажми левую кнопку мыши для переноса"
+    -- Новые строки истории
+    L.tabZone = "Зона"
+    L.tabHistory = "История"
+    L.historyTitle = "История активности (24ч)"
+    L.justNow = "Только что"
+    L.minutesAgo = "%d мин. назад"
+    L.hoursAgo = "%d ч. назад"
+else
+    -- Английский по умолчанию
+    L.lockedZone = "Locked Zone"
+    L.unknown = "Unknown"
+    L.recentTag = "  |cFFD700[NEW]|r"
+    L.completed = "|c00FF00Achievement Completed!|r"
+    L.progress = "Progress: |cFFFF00%d / %d|r"
+    L.testTitle = "|c39DB92[ZA-Test] Drag Me!|r"
+    L.dragMe = "Hold Left Mouse Button to drag"
+    -- Новые строки истории
+    L.tabZone = "Zone"
+    L.tabHistory = "History"
+    L.historyTitle = "Activity History (24h)"
+    L.justNow = "Just now"
+    L.minutesAgo = "%d m ago"
+    L.hoursAgo = "%d h ago"
+end
 local ZA_EXPECTED = _G["ZA_Names"] or {}
 
 ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_ZONEACH_WINDOW", "Открыть/закрыть окно ZoneAchievements")
 
--- вспомогательный массив для отслеживания созданных строк (чтобы безопасно удалять)
+-- Вспомогательный массив для отслеживания созданных строк
 local createdRows = {}
 
 -- Получаем ID и название зоны
 function ZA:GetCurrentZoneInfo()
-    local zoneIndex = GetCurrentMapZoneIndex() or 0
-    local zoneId = (zoneIndex > 0 and GetZoneId(zoneIndex)) or GetZoneId(0) or 0
-    local zoneName = (zoneId > 0 and GetZoneNameById(zoneId)) or GetUnitZone('player') or "Неизвестно"
+    local zoneId
+    local rawZoneName
 
-    local mapId = (GetCurrentMapId and GetCurrentMapId()) or 0
-
-    -- Если для конкретного mapId есть запись в таблице ачивок и mapId отличается от zoneId — используем его
-    if mapId > 0 and mapId ~= zoneId and ZONE_ACHIEVEMENTS and ZONE_ACHIEVEMENTS[mapId] and #ZONE_ACHIEVEMENTS[mapId] > 0 then
-        d(string.format("ZoneAchievements: используем mapId %d (zoneId=%d)", mapId, zoneId))
-        return mapId, zoneName
+    if self.DevLockedZoneId and self.DevLockedZoneId > 0 then
+        zoneId = self.DevLockedZoneId
+        rawZoneName = GetZoneNameById(zoneId) or "Заблокированная зона"
+    else
+        zoneId = GetUnitWorldPosition("player") or 0
+        rawZoneName = (zoneId > 0 and GetZoneNameById(zoneId)) or GetUnitZone('player') or "Неизвестно"
     end
 
-    return zoneId, zoneName
+    local cleanZoneName = zo_strformat("<<1>>", rawZoneName)
+    return zoneId, cleanZoneName
 end
-
-
-
-
 
 -- Получаем информацию об ачивке
 function ZA:GetAchievementInfo(achievementId)
@@ -63,7 +98,7 @@ end
 -- ================= Окно =================
 local DEFAULT_WIDTH, DEFAULT_HEIGHT = 500, 520
 
-local ZAWindow = WINDOW_MANAGER:CreateTopLevelWindow("ZAWindow")
+local ZAWindow = WINDOW_MANAGER:CreateTopLevelWindow("ZoneAchievements_Window")
 ZAWindow:SetDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT)
 ZAWindow:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
 ZAWindow:SetMovable(true)
@@ -88,8 +123,15 @@ bg:SetEdgeColor(0.7, 0.7, 0.7, 1)
 -- Заголовок
 local title = WINDOW_MANAGER:CreateControl(nil, ZAWindow, CT_LABEL)
 title:SetFont("ZoFontWinH1")
-title:SetAnchor(TOP, ZAWindow, TOP, 0, 12)
+title:SetAnchor(TOP, ZAWindow, TOP, 0, 10)
 title:SetText("|c39DB92Zone Achievements|r")
+
+-- ПОДЗАГОЛОВОК ЗОНЫ
+local zoneLabel = WINDOW_MANAGER:CreateControl(nil, ZAWindow, CT_LABEL)
+zoneLabel:SetFont("ZoFontGameLargeBold")
+zoneLabel:SetAnchor(TOP, title, BOTTOM, 0, 2)
+zoneLabel:SetColor(1, 1, 1, 1)
+ZA.ZoneLabel = zoneLabel
 
 -- Кнопка закрытия
 local closeBtn = WINDOW_MANAGER:CreateControl(nil, ZAWindow, CT_BUTTON)
@@ -99,19 +141,96 @@ closeBtn:SetNormalTexture("EsoUI/Art/Buttons/closebutton_up.dds")
 closeBtn:SetPressedTexture("EsoUI/Art/Buttons/closebutton_down.dds")
 closeBtn:SetHandler("OnClicked", function() ZAWindow:SetHidden(true) end)
 
--- Скролл-контейнер
-local scroll = WINDOW_MANAGER:CreateControlFromVirtual("ZA_Scroll", ZAWindow, "ZO_ScrollContainer")
-scroll:SetAnchor(TOPLEFT, ZAWindow, TOPLEFT, 14, 50)
-scroll:SetDimensions(DEFAULT_WIDTH - 28, DEFAULT_HEIGHT - 72)
+-- == КОНТЕЙНЕР ВКЛАДОК ==
+local tabContainer = WINDOW_MANAGER:CreateControl("ZoneAchievements_TabContainer", ZAWindow, CT_CONTROL)
+tabContainer:SetDimensions(250, 30)
+tabContainer:SetAnchor(TOP, zoneLabel, BOTTOM, 0, 6)
+
+local tabZone = WINDOW_MANAGER:CreateControlFromVirtual("ZoneAchievements_TabZone", tabContainer, "ZO_DefaultTextButton")
+tabZone:SetText(L.tabZone)
+tabZone:SetDimensions(110, 25)
+tabZone:SetAnchor(LEFT, tabContainer, LEFT, 0, 0)
+
+local tabHistory = WINDOW_MANAGER:CreateControlFromVirtual("ZoneAchievements_TabHistory", tabContainer, "ZO_DefaultTextButton")
+tabHistory:SetText(L.tabHistory)
+tabHistory:SetDimensions(110, 25)
+tabHistory:SetAnchor(RIGHT, tabContainer, RIGHT, 0, 0)
+
+-- Функция обновления подсветки вкладок
+function ZA:UpdateTabVisuals()
+    if self.CurrentTab == "history" then
+        tabZone:SetNormalFontColor(0.6, 0.6, 0.6, 1)
+        tabHistory:SetNormalFontColor(0.9, 0.7, 0.2, 1) -- Золотой
+    else
+        tabZone:SetNormalFontColor(0.9, 0.7, 0.2, 1) -- Золотой
+        tabHistory:SetNormalFontColor(0.6, 0.6, 0.6, 1)
+    end
+end
+
+tabZone:SetHandler("OnClicked", function()
+    ZA.CurrentTab = "zone"
+    ZA:UpdateTabVisuals()
+    ZA:ShowZoneAchievementsWindow()
+end)
+
+tabHistory:SetHandler("OnClicked", function()
+    ZA.CurrentTab = "history"
+    ZA:UpdateTabVisuals()
+    ZA:ShowZoneAchievementsWindow()
+end)
+
+
+-- ================= ВСПЛЫВАЮЩЕЕ ОКНО (TOAST HUD) =================
+local ZAToast = WINDOW_MANAGER:CreateTopLevelWindow("ZoneAchievements_Toast")
+ZAToast:SetDimensions(360, 60)
+ZAToast:SetAnchor(TOP, GuiRoot, TOP, 0, 150)
+ZAToast:SetHidden(true)
+ZAToast:SetClampedToScreen(true)
+ZAToast:SetMovable(true)
+ZAToast:SetMouseEnabled(true)
+
+-- Фон карточки
+local toastBg = WINDOW_MANAGER:CreateControl(nil, ZAToast, CT_BACKDROP)
+toastBg:SetAnchorFill()
+toastBg:SetCenterColor(0, 0, 0, 0.85)
+toastBg:SetEdgeColor(0.9, 0.7, 0.2, 1)
+toastBg:SetEdgeTexture(nil, 1, 1, 1, 1)
+
+-- Иконка ачивки
+local toastIcon = WINDOW_MANAGER:CreateControl(nil, ZAToast, CT_TEXTURE)
+toastIcon:SetDimensions(44, 44)
+toastIcon:SetAnchor(LEFT, ZAToast, LEFT, 8, 0)
+toastIcon:SetTexture("/esoui/art/icons/icon_missing.dds")
+
+-- Название ачивки
+local toastTitle = WINDOW_MANAGER:CreateControl(nil, ZAToast, CT_LABEL)
+toastTitle:SetFont("ZoFontWinH4")
+toastTitle:SetAnchor(TOPLEFT, toastIcon, TOPRIGHT, 10, 2)
+toastTitle:SetColor(1, 1, 1, 1)
+
+-- Прогресс
+local toastProgress = WINDOW_MANAGER:CreateControl(nil, ZAToast, CT_LABEL)
+toastProgress:SetFont("ZoFontGameSmall")
+toastProgress:SetAnchor(BOTTOMLEFT, toastIcon, BOTTOMRIGHT, 10, -2)
+toastProgress:SetColor(0.7, 0.7, 0.7, 1)
+
+ZAToast:SetHandler("OnMoveStop", function()
+    ZA.SavedVars.toastLeft, ZA.SavedVars.toastTop = ZAToast:GetLeft(), ZAToast:GetTop()
+end)
+
+-- Скролл-контейнер (Сдвинут на 115, чтобы поместились вкладки)
+local scroll = WINDOW_MANAGER:CreateControlFromVirtual("ZoneAchievements_Scroll", ZAWindow, "ZO_ScrollContainer")
+scroll:SetAnchor(TOPLEFT, ZAWindow, TOPLEFT, 14, 115)
+scroll:SetDimensions(DEFAULT_WIDTH - 28, DEFAULT_HEIGHT - 135)
+
 local scrollChild = scroll:GetNamedChild("ScrollChild")
 scrollChild:SetAnchor(TOPLEFT, scrollChild:GetParent(), TOPLEFT, 0, 0)
 scrollChild:SetWidth(scroll:GetWidth() - 10)
 
--- Очистка (надёжно удаляем старые элементы)
+-- Очистка
 local function ClearScrollChild()
     if not scrollChild then return end
 
-    -- Если доступен быстрый метод - используем
     if type(scrollChild.RemoveAllChildren) == "function" then
         scrollChild:RemoveAllChildren()
     else
@@ -129,7 +248,6 @@ local function ClearScrollChild()
         end
     end
 
-    -- также попробуем избавиться от всех сохранённых строк
     for i = #createdRows, 1, -1 do
         local r = createdRows[i]
         if r then
@@ -167,7 +285,7 @@ local function BuildZoneCache(zoneId)
 end
 
 -- =======================
--- Глобальная функция пересчёта (доступна из OnResizeStop и из кнопки)
+-- Глобальные функции
 -- =======================
 function ZA:RecalculateAll()
     if not self.rows or not self.scrollChild or not self.scroll or not self.header then return end
@@ -177,7 +295,6 @@ function ZA:RecalculateAll()
     local scrollChildLocal = self.scrollChild
     local scrollLocal = self.scroll
 
-    -- пересчёт высот строк
     for _, r in ipairs(rows) do
         if r.criteriaContainer then
             if r.criteriaContainer:IsHidden() then
@@ -190,7 +307,6 @@ function ZA:RecalculateAll()
         end
     end
 
-    -- перевязка строк одна под другой
     local prev = header
     for _, r in ipairs(rows) do
         r:ClearAnchors()
@@ -198,7 +314,6 @@ function ZA:RecalculateAll()
         prev = r
     end
 
-    -- корректируем высоту scrollChild по реальной нижней границе последнего элемента
     local top = scrollChildLocal:GetTop()
     local lastBottom = prev and prev:GetBottom() or top
     local newHeight = lastBottom - top + 30
@@ -214,7 +329,7 @@ end
 function ZA:UpdateRowWidths(newWidth)
     if not self.rows then return end
     for _, r in ipairs(self.rows) do
-        local scrollbarReserve = 20 -- запас справа под скролл
+        local scrollbarReserve = 20
         if r.desc then
             r.desc:SetWidth(newWidth - 90 - scrollbarReserve)
             r.desc:SetText(r.desc:GetText())
@@ -222,6 +337,10 @@ function ZA:UpdateRowWidths(newWidth)
         if r.nameLabel then
             r.nameLabel:SetWidth(newWidth - 120 - scrollbarReserve)
             r.nameLabel:SetText(r.nameLabel:GetText())
+        end
+        if r.barFrame then
+            local newBarWidth = math.max(newWidth - 180 - scrollbarReserve, 120)
+            r.barFrame:SetWidth(newBarWidth + 4)
         end
         if r.criteriaContainer and r.criteriaContainer:GetNumChildren() > 0 then
             for i = 1, r.criteriaContainer:GetNumChildren() do
@@ -239,26 +358,126 @@ function ZA:UpdateRowWidths(newWidth)
     zo_callLater(function() ZA:RecalculateAll() end, 50)
 end
 
+-- ================== ЛОГИКА ИСТОРИИ (НОВАЯ) ==================
+
+-- Функция добавления "чиха" в историю
+function ZA:AddSneezeToHistory(achievementId)
+    if not self.SavedVars then return end
+    self.SavedVars.History = self.SavedVars.History or {}
+    
+    local done, total = self:GetAchievementProgress(achievementId)
+    local completed = select(5, GetAchievementInfo(achievementId))
+    local _, zoneName = self:GetCurrentZoneInfo()
+    local timestamp = GetTimeStamp() -- Получаем точное время в секундах
+
+    -- Ищем, нет ли уже этой ачивки в истории
+    local foundIndex = nil
+    for i, entry in ipairs(self.SavedVars.History) do
+        if entry.achievementId == achievementId then
+            foundIndex = i
+            break
+        end
+    end
+
+    if foundIndex then
+        -- Если нашли, обновляем её данные и переносим в самое начало (свежак)
+        local entry = self.SavedVars.History[foundIndex]
+        entry.timestamp = timestamp
+        entry.done = done
+        entry.total = total
+        entry.completed = completed
+        entry.zoneName = zoneName
+
+        table.remove(self.SavedVars.History, foundIndex)
+        table.insert(self.SavedVars.History, 1, entry)
+    else
+        -- Если новая, просто вставляем на первое место
+        table.insert(self.SavedVars.History, 1, {
+            achievementId = achievementId,
+            timestamp = timestamp,
+            zoneName = zoneName,
+            done = done,
+            total = total,
+            completed = completed
+        })
+    end
+end
+
+-- Очистка истории старше 24 часов (86400 секунд)
+function ZA:CleanupHistory()
+    if not self.SavedVars or not self.SavedVars.History then return end
+    local now = GetTimeStamp()
+    local history = self.SavedVars.History
+
+    for i = #history, 1, -1 do
+        local entry = history[i]
+        if (now - entry.timestamp) > 86400 then
+            table.remove(history, i)
+        end
+    end
+end
+
+-- Перевод времени в человеческий вид
+function ZA:FormatTimeElapsed(timestamp)
+    local now = GetTimeStamp()
+    local elapsed = now - timestamp
+    if elapsed < 0 then elapsed = 0 end
+
+    if elapsed < 60 then
+        return L.justNow
+    elseif elapsed < 3600 then
+        local mins = math.floor(elapsed / 60)
+        return string.format(L.minutesAgo, mins)
+    else
+        local hours = math.floor(elapsed / 3600)
+        return string.format(L.hoursAgo, hours)
+    end
+end
+
+
 -- ================== Показ ==================
 function ZA:ShowZoneAchievementsWindow()
-    local zoneId, zoneName = self:GetCurrentZoneInfo()
+    -- Очищаем старую историю перед показом вкладки
+    if self.CurrentTab == "history" then
+        self:CleanupHistory()
+    end
 
-    -- Берём из кэша или строим заново
-    local cache = self.Cache[zoneId]
-    if not cache then
+    local zoneId, zoneName = self:GetCurrentZoneInfo()
+    local cache = {}
+
+    -- ОБНОВЛЯЕМ ПОДЗАГОЛОВОК ЗОНЫ НА ЭКРАНЕ В ЗАВИСИМОСТИ ОТ ВКЛАДКИ
+    if self.ZoneLabel then
+        if self.CurrentTab == "history" then
+            self.ZoneLabel:SetText("|cFFFF00" .. L.historyTitle .. "|r")
+        else
+            self.ZoneLabel:SetText(string.format("|cFFFF00%s|r |cAAAAAA(ID: %d)|r", zoneName, zoneId))
+        end
+    end
+
+    -- Наполняем кэш данными в зависимости от выбранной вкладки
+    if self.CurrentTab == "history" then
+        local historyList = self.SavedVars.History or {}
+        for _, entry in ipairs(historyList) do
+            local achInfo = self:GetAchievementInfo(entry.achievementId)
+            table.insert(cache, {
+                info = achInfo,
+                done = entry.done,
+                total = entry.total,
+                isHistoryEntry = true,
+                timestamp = entry.timestamp,
+                zoneName = entry.zoneName
+            })
+        end
+    else
         cache = BuildZoneCache(zoneId)
     end
 
-    -- Полная очистка и сброс UI
     ClearScrollChild()
 
     local leftPadding = 6
     local blockWidth = scrollChild:GetWidth()
-
-    -- массив строк (локальный для перестройки)
     local rows = {}
 
-    -- helper: обновление скролла (fallback-safe)
     local function RefreshScroll()
         if type(ZO_Scroll_UpdateScrollBar) == "function" then
             ZO_Scroll_UpdateScrollBar(scroll)
@@ -267,12 +486,10 @@ function ZA:ShowZoneAchievementsWindow()
         end
     end
 
-    -- Заголовок зоны: убран визуально, но нужен невидимый якорь для строк/сообщений
     local header = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
     header:SetAnchor(TOPLEFT, scrollChild, TOPLEFT, leftPadding, 10)
     header:SetHidden(true)
 
-    -- Если нет ачивок для этой зоны
     if #cache == 0 then
         ZA.rows = {}
         ZA.header = header
@@ -283,20 +500,32 @@ function ZA:ShowZoneAchievementsWindow()
         return
     end
 
-    -- Сохраняем порядок, но группируем: сначала выполненные, затем невыполненные
-    local completedList, incompleteList = {}, {}
-    for _, entry in ipairs(cache) do
-        if entry.info and entry.info.completed then
-            table.insert(completedList, entry)
-        else
-            table.insert(incompleteList, entry)
-        end
-    end
+    -- Сортировка
     local ordered = {}
-    for _, e in ipairs(completedList) do table.insert(ordered, e) end
-    for _, e in ipairs(incompleteList) do table.insert(ordered, e) end
+    if self.CurrentTab == "history" then
+        -- История уже идет в хронологическом порядке в нашей таблице
+        ordered = cache
+    else
+        -- Группируем для вкладки "Зона"
+        local recentList, completedList, incompleteList = {}, {}, {}
+        for _, entry in ipairs(cache) do
+            local lastUpdate = self.RecentUpdates[entry.info.id]
+            local isRecent = lastUpdate and (GetFrameTimeSeconds() - lastUpdate <= (self.SavedVars.recentDuration or 300))
+            
+            if isRecent then
+                table.insert(recentList, entry)
+            elseif entry.info and entry.info.completed then
+                table.insert(completedList, entry)
+            else
+                table.insert(incompleteList, entry)
+            end
+        end
+        for _, e in ipairs(recentList) do table.insert(ordered, e) end
+        for _, e in ipairs(completedList) do table.insert(ordered, e) end
+        for _, e in ipairs(incompleteList) do table.insert(ordered, e) end
+    end
 
-    -- === цикл по ачивкам (по ordered) ===
+    -- === Цикл по ачивкам ===
     for _, entry in ipairs(ordered) do
         local achInfo = entry.info
         local done, total = entry.done, entry.total
@@ -305,11 +534,9 @@ function ZA:ShowZoneAchievementsWindow()
         local statusColor = achInfo.completed and "00FF00" or "FF0000"
 
         local row = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
-        -- временная привязка, потом RecalculateAll её скорректирует
         row:SetAnchor(TOPLEFT, scrollChild, TOPLEFT, leftPadding, 0)
         row:SetWidth(blockWidth - 10)
 
-        -- фон (для hover)
         local rowBg = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
         rowBg:SetAnchorFill(row)
         rowBg:SetCenterColor(0, 0, 0, 0)
@@ -331,24 +558,40 @@ function ZA:ShowZoneAchievementsWindow()
         icon:SetTexture(achInfo.icon)
         icon:SetColor(achInfo.completed and 1 or 0.35, achInfo.completed and 1 or 0.35, achInfo.completed and 1 or 0.35, 1)
 
-        -- Название + дата (в одну строку)
+        -- Название + дата/время
         local nameLabel = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
         nameLabel:SetFont("ZoFontWinH4")
         nameLabel:SetAnchor(TOPLEFT, icon, TOPRIGHT, 10, 0)
-        nameLabel:SetWidth(blockWidth - 180) -- оставляем запас под прогресс/отступы
+        nameLabel:SetWidth(blockWidth - 180)
         nameLabel:SetWrapMode(TEXT_WRAP_MODE_WORD)
         nameLabel:SetMaxLineCount(2)
         nameLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
 
-        local earnedDate = ""
-        if achInfo.completed and achInfo.earned and achInfo.earned ~= "" then
-            earnedDate = " |cAAAAAA" .. achInfo.earned .. "|r"
+        local nameText = "|c" .. statusColor .. achInfo.name .. "|r"
+
+        if entry.isHistoryEntry then
+            -- Если это история, выводим время "чиха" и название зоны
+            local timeStr = self:FormatTimeElapsed(entry.timestamp)
+            local zoneStr = entry.zoneName or L.unknown
+            nameText = string.format("%s  |cAAAAAA(%s - %s)|r", nameText, timeStr, zoneStr)
+        else
+            -- Если это стандартная вкладка зоны
+            local earnedDate = ""
+            if achInfo.completed and achInfo.earned and achInfo.earned ~= "" then
+                earnedDate = " |cAAAAAA" .. achInfo.earned .. "|r"
+            end
+
+            local lastUpdate = self.RecentUpdates[achInfo.id]
+            local isRecent = lastUpdate and (GetFrameTimeSeconds() - lastUpdate <= (self.SavedVars.recentDuration or 300))
+            local recentTag = isRecent and L.recentTag or ""
+
+            nameText = nameText .. recentTag .. "  (" .. percent .. "%)" .. earnedDate
         end
 
-        nameLabel:SetText("|c" .. statusColor .. achInfo.name .. "|r  (" .. percent .. "%)" .. earnedDate)
+        nameLabel:SetText(nameText)
         row.nameLabel = nameLabel
 
-        -- Кнопка развертывания (плюс/минус)
+        -- Кнопка развертывания
         local toggleBtn = WINDOW_MANAGER:CreateControl(nil, row, CT_BUTTON)
         toggleBtn:SetDimensions(24, 24)
         toggleBtn:ClearAnchors()
@@ -366,7 +609,7 @@ function ZA:ShowZoneAchievementsWindow()
         barFrame:SetEdgeTexture(nil, 1, 1, 1, 1)
         barFrame:SetEdgeColor(0.9, 0.7, 0.2, 1)
 
-        -- Прогресс-бар внутри рамки
+        -- Прогресс-бар
         local bar = WINDOW_MANAGER:CreateControl(nil, barFrame, CT_STATUSBAR)
         bar:SetAnchor(TOPLEFT, barFrame, TOPLEFT, 2, 2)
         bar:SetAnchor(BOTTOMRIGHT, barFrame, BOTTOMRIGHT, -2, -2)
@@ -374,7 +617,7 @@ function ZA:ShowZoneAchievementsWindow()
         bar:SetValue(done)
         bar:SetColor(achInfo.completed and 0 or 0.7, achInfo.completed and 0.7 or 0.2, 0.2, 1)
 
-        -- Цифры по центру
+        -- Цифры
         local progLabel = WINDOW_MANAGER:CreateControl(nil, bar, CT_LABEL)
         progLabel:SetFont("ZoFontGameSmall")
         progLabel:SetAnchor(CENTER, bar, CENTER, 0, 0)
@@ -390,10 +633,9 @@ function ZA:ShowZoneAchievementsWindow()
         desc:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
         desc:SetText(achInfo.desc)
 
-        -- Контейнер критериев (скрываемый)
+        -- Контейнер критериев
         local criteriaContainer = WINDOW_MANAGER:CreateControl(nil, row, CT_CONTROL)
         criteriaContainer:SetAnchor(TOPLEFT, desc, BOTTOMLEFT, 0, 6)
-        -- Используем ширину окна за вычетом отступов, а не GetWidth() контейнера
         local criteriaWidth = ZAWindow:GetWidth() - 80 
         criteriaContainer:SetWidth(criteriaWidth)
         criteriaContainer:SetResizeToFitDescendents(true)
@@ -407,9 +649,8 @@ function ZA:ShowZoneAchievementsWindow()
 
                 local critRow = WINDOW_MANAGER:CreateControl(nil, criteriaContainer, CT_CONTROL)
                 critRow:SetAnchor(TOPLEFT, previousCrit or criteriaContainer, previousCrit and BOTTOMLEFT or TOPLEFT, 0, previousCrit and 4 or 0)
-                -- Указываем конкретную ширину явно
                 critRow:SetWidth(criteriaWidth) 
-                critRow:SetHeight(25) -- Немного увеличим высоту для надежности
+                critRow:SetHeight(25)
 
                 local critIcon = WINDOW_MANAGER:CreateControl(nil, critRow, CT_TEXTURE)
                 critIcon:SetDimensions(18, 18)
@@ -420,11 +661,9 @@ function ZA:ShowZoneAchievementsWindow()
                 local critLabel = WINDOW_MANAGER:CreateControl(nil, critRow, CT_LABEL)
                 critLabel:SetFont("ZoFontGame")
                 critLabel:SetAnchor(LEFT, critIcon, RIGHT, 8, 0)
-                -- Устанавливаем правую границу, чтобы текст мог переноситься
                 critLabel:SetAnchor(RIGHT, critRow, RIGHT, 0, 0)
                 critLabel:SetWrapMode(TEXT_WRAP_MODE_WORD)
                 critLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-                -- ПРИНУДИТЕЛЬНО задаем белый цвет
                 critLabel:SetColor(1, 1, 1, 1) 
                 
                 local displayText = max and max > 1 and string.format("%s (%d/%d)", critDesc, cur or 0, max) or critDesc
@@ -434,17 +673,15 @@ function ZA:ShowZoneAchievementsWindow()
             end
         end
 
-        -- Скрываем по умолчанию
         criteriaContainer:SetHidden(true)
 
-        -- сохраняем ссылки/высоты в row, чтобы RecalculateAll мог работать
         local collapsedHeight = desc:GetBottom() - row:GetTop() + 10
         row.collapsedHeight = collapsedHeight
         row.desc = desc
         row.criteriaContainer = criteriaContainer
+        row.barFrame = barFrame
         row:SetHeight(collapsedHeight)
 
-        -- обработчик кнопки: переключаем видимость criteriaContainer и пересчитываем всё через небольшой delay
         toggleBtn:SetHandler("OnClicked", function()
             local wasHidden = criteriaContainer:IsHidden()
             criteriaContainer:SetHidden(not wasHidden)
@@ -460,27 +697,33 @@ function ZA:ShowZoneAchievementsWindow()
         table.insert(createdRows, row)
     end
 
-    -- сохраняем ссылки для глобального пересчёта
     ZA.rows = rows
     ZA.header = header
     ZA.scrollChild = scrollChild
     ZA.scroll = scroll
 
-    -- Финальный пересчёт позиций и размеров
     ZA:RecalculateAll()
     ZAWindow:SetHidden(false)
 end
 
--- ================== Сохранение позиции и размера ==================
 local function InitializeSavedVars()
-    ZA.SavedVars = ZO_SavedVars:NewAccountWide("ZA_SavedVars", 1, nil, {
+    ZA.SavedVars = ZO_SavedVars:NewAccountWide("ZoneAchievements_SavedVars", 1, nil, {
         left = nil,
         top = nil,
         width = DEFAULT_WIDTH,
         height = DEFAULT_HEIGHT,
-        Snapshots = {}, -- тут будем хранить снапшоты
-    })
-
+        Snapshots = {}, 
+        devMode = false,
+        DevDumpRaw = {},
+        DevDumpFormatted = {},
+        DevZoneOrder = {},
+        toastLeft = nil,
+        toastTop = nil,
+        recentDuration = 300,
+        toastDuration = 5000,
+        showToast = true,
+        History = {}, -- Наша новая табличка в сохраненках
+    }, GetWorldName())
 
     if ZA.SavedVars.left and ZA.SavedVars.top then
         ZAWindow:ClearAnchors()
@@ -490,10 +733,24 @@ local function InitializeSavedVars()
         ZAWindow:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     end
 
+    if ZAToast then
+        if ZA.SavedVars.toastLeft and ZA.SavedVars.toastTop then
+            ZAToast:ClearAnchors()
+            ZAToast:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, ZA.SavedVars.toastLeft, ZA.SavedVars.toastTop)
+        else
+            ZAToast:ClearAnchors()
+            ZAToast:SetAnchor(TOP, GuiRoot, TOP, 0, 150)
+        end
+    end
+
     ZAWindow:SetDimensions(ZA.SavedVars.width, ZA.SavedVars.height)
     local w, h = ZAWindow:GetDimensions()
-    scroll:SetDimensions(w - 28, h - 72)
+    scroll:SetAnchor(TOPLEFT, ZAWindow, TOPLEFT, 14, 115) -- Сдвиг скролла вниз под вкладки
+    scroll:SetDimensions(w - 28, h - 135)
     scrollChild:SetWidth(scroll:GetWidth() - 10)
+
+    -- Принудительно очищаем просроченную историю при старте игры
+    ZA:CleanupHistory()
 end
 
 local function SnapshotAchievements()
@@ -531,18 +788,91 @@ local function CheckAchievementNames()
 end
 
 local function RegisterSlashCommands()
-    SLASH_COMMANDS["/za"] = function()
-        ZA:ShowZoneAchievementsWindow()
+    local function SlashCommandParser(extra)
+        local args = {}
+        for word in string.gmatch(extra, "%S+") do
+            table.insert(args, string.lower(word))
+        end
+
+        local cmd = args[1] or ""
+
+        if cmd == "dev" then
+            if ZA.SavedVars then
+                ZA.SavedVars.devMode = not ZA.SavedVars.devMode
+                local status = ZA.SavedVars.devMode and "|c00FF00ENABLED|r" or "|cFF0000DISABLED|r"
+                d(string.format("|c39DB92[ZA]|r Developer Mode is now: %s", status))
+            end
+
+        elseif cmd == "test" then
+            if ZAToast:IsHidden() then
+                ZA:ShowTestToast()
+                d("|c39DB92[ZA-Dev]|r Test window is shown. Left-click and drag it anywhere. Type |cFFFF00/za test|r again to hide and save position.")
+            else
+                ZAToast:SetHidden(true)
+                d("|c39DB92[ZA-Dev]|r Position saved, test window hidden.")
+            end
+
+        elseif cmd == "recent" then
+            local mins = tonumber(args[2])
+            if mins and mins > 0 then
+                ZA.SavedVars.recentDuration = mins * 60
+                d(string.format("|c39DB92[ZA]|r [NEW] display duration set to |cFFFF00%d|r min. (Default: 5 min.)", mins))
+            else
+                local curMins = (ZA.SavedVars.recentDuration or 300) / 60
+                d(string.format("|c39DB92[ZA]|r Current [NEW] timer: |cFFFF00%d|r min. (Default: 5 min.). To change, enter: |cFFFF00/za recent <minutes>|r", curMins))
+            end
+
+        elseif cmd == "toast" then
+            local arg = args[2] or ""
+            
+            if arg == "off" or arg == "disable" then
+                ZA.SavedVars.showToast = false
+                d("|c39DB92[ZA]|r Screen notifications are now |cFF0000DISABLED|r.")
+                
+            elseif arg == "on" or arg == "enable" then
+                ZA.SavedVars.showToast = true
+                local curSecs = (ZA.SavedVars.toastDuration or 4000) / 1000
+                d(string.format("|c39DB92[ZA]|r Screen notifications are now |c00FF00ENABLED|r (Duration: |cFFFF00%d|r sec.).", curSecs))
+                
+            else
+                local secs = tonumber(arg)
+                if secs and secs > 0 then
+                    ZA.SavedVars.showToast = true
+                    ZA.SavedVars.toastDuration = secs * 1000
+                    d(string.format("|c39DB92[ZA]|r Screen notifications |c00FF00ENABLED|r, duration set to |cFFFF00%d|r sec.", secs))
+                else
+                    local status = (ZA.SavedVars.showToast ~= false) and "|c00FF00ENABLED|r" or "|cFF0000DISABLED|r"
+                    local curSecs = (ZA.SavedVars.toastDuration or 4000) / 1000
+                    d(string.format("|c39DB92[ZA]|r Screen notifications are currently: %s (Duration: |cFFFF00%d|r sec.).\nTo disable: |cFFFF00/za toast off|r. To change duration: |cFFFF00/za toast <seconds>|r", status, curSecs))
+                end
+            end
+
+        elseif cmd == "id" then
+            local zoneId, zoneName = ZA:GetCurrentZoneInfo()
+            d(string.format("|c39DB92[ZA-Dev]|r Current Location: |cFFFF00%s|r (Zone ID: |cFFFF00%d|r)", zoneName, zoneId))
+
+        elseif cmd == "lock" then
+            local targetId = tonumber(args[2])
+            if targetId and targetId > 0 then
+                ZA.DevLockedZoneId = targetId
+                local zoneName = GetZoneNameById(targetId) or "Unknown Zone"
+                d(string.format("|c39DB92[ZA-Dev]|r Target zone LOCKED to: |cFFFF00%s|r (ID: |cFFFF00%d|r). All updates will save here!", zoneName, targetId))
+            else
+                d("|cFF0000[ZA-Dev] Error:|r Please specify a valid Zone ID. Example: /za lock 1552")
+            end
+
+        elseif cmd == "unlock" or cmd == "reset" then
+            ZA.DevLockedZoneId = nil
+            local zoneId, zoneName = ZA:GetCurrentZoneInfo()
+            d(string.format("|c39DB92[ZA-Dev]|r Lock removed. Back to real location: |cFFFF00%s|r (ID: |cFFFF00%d|r)", zoneName, zoneId))
+
+        else
+            ZoneAchievements_ToggleWindow()
+        end
     end
-    SLASH_COMMANDS["/zoneach"] = function()
-        ZA:ShowZoneAchievementsWindow()
-    end
----    SLASH_COMMANDS["/zasnap"] = function()
----        SnapshotAchievements()
----    end
---    SLASH_COMMANDS["/zacheck"] = function()
---        CheckAchievementNames()
---   end
+
+    SLASH_COMMANDS["/za"] = SlashCommandParser
+    SLASH_COMMANDS["/zoneach"] = SlashCommandParser
 end
 
 ZAWindow:SetHandler("OnMoveStop", function()
@@ -552,13 +882,190 @@ end)
 ZAWindow:SetHandler("OnResizeStop", function()
     local w, h = ZAWindow:GetDimensions()
     ZA.SavedVars.width, ZA.SavedVars.height = w, h
-    scroll:SetDimensions(w - 28, h - 72)
+    scroll:SetDimensions(w - 28, h - 135) -- Пересчитываем высоту скролла под вкладки
     scrollChild:SetWidth(scroll:GetWidth() - 10)
 
     zo_callLater(function()
         ZA:UpdateRowWidths(w)
     end, 50)
 end)
+
+local function OnPlayerActivated(event)
+    if ZA.SavedVars and ZA.SavedVars.devMode then
+        local zoneId, zoneName = ZA:GetCurrentZoneInfo()
+        d(string.format("|c39DB92[ZA-Dev]|r Entered: |cFFFF00%s|r (Zone ID: |cFFFF00%d|r)", zoneName, zoneId))
+    end
+end
+
+function ZA:ToggleAchievementInDump(zoneId, zoneName, achievementId)
+    self.SavedVars.DevDumpRaw = self.SavedVars.DevDumpRaw or {}
+    self.SavedVars.DevDumpFormatted = self.SavedVars.DevDumpFormatted or {}
+    self.SavedVars.DevZoneOrder = self.SavedVars.DevZoneOrder or {}
+
+    self.SavedVars.DevDumpRaw[zoneId] = self.SavedVars.DevDumpRaw[zoneId] or {}
+    local dumpList = self.SavedVars.DevDumpRaw[zoneId]
+
+    local foundIndex = nil
+    for i, id in ipairs(dumpList) do
+        if id == achievementId then
+            foundIndex = i
+            break
+        end
+    end
+
+    local achName = select(1, GetAchievementInfo(achievementId)) or "Unknown Achievement"
+
+    if foundIndex then
+        table.remove(dumpList, foundIndex)
+        PlaySound(SOUNDS.DEFAULT_CLICK)
+        d(string.format("|c39DB92[ZA-Dev]|r |cFF0000[-] Removed:|r %s (ID: %d) from zone %s", achName, achievementId, zoneName))
+    else
+        table.insert(dumpList, achievementId)
+        PlaySound(SOUNDS.BOOK_ACQUIRED)
+        d(string.format("|c39DB92[ZA-Dev]|r |c00FF00[+] Added:|r %s (ID: %d) to zone %s", achName, achievementId, zoneName))
+    end
+
+    local orderIndex = nil
+    for i, id in ipairs(self.SavedVars.DevZoneOrder) do
+        if id == zoneId then
+            orderIndex = i
+            break
+        end
+    end
+
+    if #dumpList > 0 then
+        if not orderIndex then
+            table.insert(self.SavedVars.DevZoneOrder, zoneId)
+        end
+    else
+        self.SavedVars.DevDumpRaw[zoneId] = nil
+        if orderIndex then
+            table.remove(self.SavedVars.DevZoneOrder, orderIndex)
+        end
+    end
+
+    self.SavedVars.DevDumpFormatted = {}
+
+    for _, zId in ipairs(self.SavedVars.DevZoneOrder) do
+        local rawList = self.SavedVars.DevDumpRaw[zId]
+        if rawList and #rawList > 0 then
+            table.sort(rawList)
+            local idsString = table.concat(rawList, ", ")
+            local rawName = GetZoneNameById(zId) or "Unknown Zone"
+            local cleanName = zo_strformat("<<1>>", rawName)
+            local line = string.format("[%d] = {%s}, -- %s", zId, idsString, cleanName)
+            table.insert(self.SavedVars.DevDumpFormatted, line)
+        end
+    end
+end
+
+ZA.LastProcessedId = 0
+ZA.LastProcessedTime = 0
+
+local function OnChatMessage(eventCode, channelType, fromName, text, isCustomerService, fromDisplayName)
+    if not (ZA.SavedVars and ZA.SavedVars.devMode) then return end
+    if fromDisplayName ~= GetDisplayName() then return end
+
+    local achievementIdStr = string.match(text, "|H%d+:achievement:(%d+):")
+    if achievementIdStr then
+        local achievementId = tonumber(achievementIdStr)
+        if achievementId and achievementId > 0 then
+            
+            local now = GetGameTimeMilliseconds()
+            if achievementId == ZA.LastProcessedId and (now - ZA.LastProcessedTime) < 1000 then
+                return
+            end
+            
+            ZA.LastProcessedId = achievementId
+            ZA.LastProcessedTime = now
+
+            local zoneId, zoneName = ZA:GetCurrentZoneInfo()
+            if zoneId and zoneId > 0 then
+                ZA:ToggleAchievementInDump(zoneId, zoneName, achievementId)
+            end
+        end
+    end
+end
+
+function ZA:ShowTestToast()
+    EVENT_MANAGER:UnregisterForUpdate("ZA_Toast_Hide_Timer")
+    toastIcon:SetTexture("/esoui/art/icons/icon_missing.dds")
+    toastTitle:SetText("|c39DB92[ZA-Test] Перетащи меня!|r")
+    toastProgress:SetText("hold left LKM for to move")
+    ZAToast:SetHidden(false)
+end
+
+function ZA:ShowToastNotification(achievementId, isCompleted)
+    if self.SavedVars and self.SavedVars.showToast == false then return end
+    if not achievementId or achievementId <= 0 then return end
+
+    local name, _, _, icon, completed = GetAchievementInfo(achievementId)
+    if not name or name == "" then return end
+
+    local done, total = self:GetAchievementProgress(achievementId)
+
+    toastIcon:SetTexture(icon)
+    toastTitle:SetText(zo_strformat("<<1>>", name))
+
+    if isCompleted or completed then
+        toastProgress:SetText(L.completed)
+    else
+        toastProgress:SetText(string.format(L.progress, done, total))
+    end
+
+    ZAToast:SetHidden(false)
+
+    local timerName = "ZA_Toast_Hide_Timer"
+    EVENT_MANAGER:UnregisterForUpdate(timerName)
+    EVENT_MANAGER:RegisterForUpdate(timerName, self.SavedVars.toastDuration or 4000, function()
+        EVENT_MANAGER:UnregisterForUpdate(timerName)
+        ZAToast:SetHidden(true)
+    end)
+end
+
+function ZA:RecordRecentUpdate(achievementId)
+    if not achievementId or achievementId <= 0 then return end
+
+    local zoneId, zoneName = self:GetCurrentZoneInfo()
+    if not zoneId or zoneId <= 0 then return end
+
+    local zoneAchievements = ZONE_ACHIEVEMENTS[zoneId]
+    if not zoneAchievements then return end
+
+    local belongsToZone = false
+    for _, id in ipairs(zoneAchievements) do
+        if id == achievementId then
+            belongsToZone = true
+            break
+        end
+    end
+
+    if belongsToZone then
+        self.RecentUpdates[achievementId] = GetFrameTimeSeconds()
+
+        if self.SavedVars and self.SavedVars.devMode then
+            d(string.format("|c39DB92[ZA-Recent]|r Recorded fresh update for achievement ID: %d", achievementId))
+        end
+
+        if not ZAWindow:IsHidden() then
+            self:ShowZoneAchievementsWindow()
+        end
+    end
+end
+
+-- Событие изменения прогресса ачивки
+local function OnAchievementUpdated(eventCode, achievementId)
+    ZA:RecordRecentUpdate(achievementId)
+    ZA:AddSneezeToHistory(achievementId) -- Записываем чих в дневную историю!
+    ZA:ShowToastNotification(achievementId, false)
+end
+
+-- Событие полного выполнения ачивки
+local function OnAchievementAwarded(eventCode, name, points, achievementId, link)
+    ZA:RecordRecentUpdate(achievementId)
+    ZA:AddSneezeToHistory(achievementId) -- Записываем чих в дневную историю!
+    ZA:ShowToastNotification(achievementId, true)
+end
 
 -- Автозагрузка
 local function OnAddOnLoaded(event, addonName)
@@ -568,11 +1075,19 @@ local function OnAddOnLoaded(event, addonName)
 
     InitializeSavedVars()
     RegisterSlashCommands()
+    
+    ZA.CurrentTab = "zone" -- Инициализируем вкладку по умолчанию
+    ZA:UpdateTabVisuals() -- И вешаем на кнопки нужные цвета
+    
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_CHAT_MESSAGE_CHANNEL, OnChatMessage)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ACHIEVEMENT_UPDATED, OnAchievementUpdated)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ACHIEVEMENT_AWARDED, OnAchievementAwarded)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
+    
     d("|cFF00FFZoneAchievements загружен!|r Используй |cFFFF00/za|r")
 end
 
 EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
-
 
 -- ================== Глобальная функция для биндинга ==================
 function ZoneAchievements_ToggleWindow()

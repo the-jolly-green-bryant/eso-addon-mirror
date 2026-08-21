@@ -40,10 +40,12 @@ local function RefreshInfoBoxControlState()
     local sv = HT.SV
     local snapCheck = infoBoxSection:GetNamedChild("SnapCheck")
     local showGridCheck = infoBoxSection:GetNamedChild("ShowGridCheck")
+    local showColorPickerCheck = infoBoxSection:GetNamedChild("ShowColorPickerCheck")
     local editBox = infoBoxSection:GetNamedChild("GridSizeRow"):GetNamedChild("Backdrop"):GetNamedChild("Edit")
 
     ZO_CheckButton_SetCheckState(snapCheck, sv.gridSnap)
     ZO_CheckButton_SetCheckState(showGridCheck, sv.showGrid)
+    ZO_CheckButton_SetCheckState(showColorPickerCheck, sv.showColorPicker)
     editBox:SetText(tostring(sv.gridSize))
 end
 
@@ -80,6 +82,7 @@ local function CreateInfoBoxSection()
 
     local snapCheck = infoBoxSection:GetNamedChild("SnapCheck")
     local showGridCheck = infoBoxSection:GetNamedChild("ShowGridCheck")
+    local showColorPickerCheck = infoBoxSection:GetNamedChild("ShowColorPickerCheck")
     local editBox = infoBoxSection:GetNamedChild("GridSizeRow"):GetNamedChild("Backdrop"):GetNamedChild("Edit")
 
     ZO_CheckButton_SetLabelText(snapCheck, "Snap to Grid")
@@ -91,6 +94,11 @@ local function CreateInfoBoxSection()
     ZO_CheckButton_SetToggleFunction(showGridCheck, function (_, checked)
         HT.SV.showGrid = checked
         HT.RefreshGridOverlay()
+    end)
+
+    ZO_CheckButton_SetLabelText(showColorPickerCheck, "Show color picker")
+    ZO_CheckButton_SetToggleFunction(showColorPickerCheck, function (_, checked)
+        HT.SetColorPickerVisible(checked)
     end)
 
     editBox:SetHandler("OnFocusLost", ApplyGridSizeFromEdit)

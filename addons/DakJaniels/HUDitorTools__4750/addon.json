@@ -8,8 +8,8 @@
   "category_id": "27",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4750",
@@ -18,7 +18,7 @@
     "HUDitorTools"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4750/",
-  "fingerprint": "f2fbeeb9534575aa869d2268fb8b3d97c50103007e18ba7468975fdeba68d3f2",
+  "fingerprint": "4d72721142fe701ebe4d2b867200bbb1a5e3da7ab82fb1cc130fcb726386374b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16914.png",
     "https://cdn-eso.mmoui.com/preview/pvw16968.png",
@@ -32,11 +32,11 @@
   "source_id": "4750",
   "source_url": "https://www.esoui.com/downloads/info4750-HUDitorTools.html",
   "stats": {
-    "downloads": 25,
-    "favorites": 0,
-    "monthly_downloads": 24
+    "downloads": 83,
+    "favorites": 2,
+    "monthly_downloads": 81
   },
   "title": "HUDitorTools",
-  "updated_at": 1786481415000,
-  "version": "1.01"
+  "updated_at": 1787223863000,
+  "version": "1.0.2"
 }

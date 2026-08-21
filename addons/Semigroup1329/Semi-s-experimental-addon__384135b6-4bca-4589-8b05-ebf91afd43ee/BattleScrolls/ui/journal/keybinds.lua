@@ -15,32 +15,100 @@ journal.keybinds = keybinds
 -- =============================================================================
 -- BROWSER-EXIT LEAK GUARD
 -- =============================================================================
--- Closing the console browser with B resumes the game with that same B
--- delivered to our keybind strip (the app-switcher return path delivers
--- nothing), which used to fire Back on the share stepper. A wall-clock
--- heartbeat spots the suspend: game time freezes while wall time keeps
--- moving, so a share keybind press landing right after a multi-second
--- heartbeat gap belongs to the browser exit, not to the user.
+-- Closing the console browser with B can deliver that same B to our keybind
+-- strip as the game returns (the app-switcher return path delivers nothing).
+-- The delivery path is platform-dependent and has to be measured in situ,
+-- so three independent detectors run and every verdict lands in the share
+-- trace (rendered on the stepper screen):
+--   1. Suspend gap: a wall-clock heartbeat spots frozen update ticks. Only
+--      works if the console actually suspends the game while the browser is
+--      up - if it merely constrains it, no clock ever looks anomalous.
+--   2. Focus: EVENT_GAME_FOCUS_CHANGED brackets the browser trip when the
+--      engine reports it; a press while unfocused or right after regaining
+--      focus belongs to the exit, not the user.
+--   3. First-B-after-trip: once a part's URL confirm has come and gone, the
+--      next B is presumed the browser exit until some press passes the
+--      other guards (that press proves the user is back). Covers the case
+--      where neither clock nor focus shows anything. Cost: returning via
+--      the app switcher and immediately pressing Back eats one press.
 local RESUME_GAP_S = 2
 local RESUME_GUARD_MS = 300
+local GAME_GAP_MS = 1500
+local FOCUS_GUARD_MS = 1000
 local lastBeatWallS = GetTimeStamp()
+local lastBeatGameMs = GetGameTimeMilliseconds()
 local resumeGuardUntilMs = 0
+local hasGameFocus = true
+local focusGuardUntilMs = 0
 
 EVENT_MANAGER:RegisterForUpdate("BattleScrollsShareResumeBeat", 100, function()
     local nowWallS = GetTimeStamp()
-    if nowWallS - lastBeatWallS >= RESUME_GAP_S then
-        resumeGuardUntilMs = GetGameTimeMilliseconds() + RESUME_GUARD_MS
+    local nowMs = GetGameTimeMilliseconds()
+    local wallGap = nowWallS - lastBeatWallS
+    local gameGap = nowMs - lastBeatGameMs
+    if wallGap >= RESUME_GAP_S or gameGap >= GAME_GAP_MS then
+        resumeGuardUntilMs = nowMs + RESUME_GUARD_MS
+        BattleScrolls.shareTrace.record(string.format(
+            "beat gap wall=%ds game=%dms", wallGap, gameGap))
     end
     lastBeatWallS = nowWallS
+    lastBeatGameMs = nowMs
 end)
 
----True while a keybind press is attributable to the app resume itself:
----either the heartbeat has not caught up with the suspend gap yet (the
----press was processed before the first post-resume tick), or it caught up
----moments ago.
-local function justResumed()
-    return GetTimeStamp() - lastBeatWallS >= RESUME_GAP_S
-        or GetGameTimeMilliseconds() < resumeGuardUntilMs
+EVENT_MANAGER:RegisterForEvent("BattleScrollsShareFocus", EVENT_GAME_FOCUS_CHANGED, function(_, hasFocus)
+    hasGameFocus = hasFocus
+    if hasFocus then
+        focusGuardUntilMs = GetGameTimeMilliseconds() + FOCUS_GUARD_MS
+    end
+    if BattleScrolls.shareUrl.isBusy() then
+        BattleScrolls.shareTrace.record(hasFocus and "focus gained" or "focus lost")
+    end
+end)
+
+---Returns the reason a share-strip press must be discarded as part of the
+---browser-exit return path, or nil for a genuine user press. isNegative
+---marks the Back keybind - the one the browser exit leaks.
+---@param isNegative boolean
+---@return string|nil
+local function pressLeakReason(isNegative)
+    local nowMs = GetGameTimeMilliseconds()
+    if GetTimeStamp() - lastBeatWallS >= RESUME_GAP_S then
+        return "pre-beat gap"
+    end
+    if nowMs < resumeGuardUntilMs then
+        return "resume window"
+    end
+    if not hasGameFocus then
+        return "unfocused"
+    end
+    if nowMs < focusGuardUntilMs then
+        return "focus window"
+    end
+    if isNegative and BattleScrolls.shareUrl.consumeBrowserReturnGuard() then
+        return "first B after browser trip"
+    end
+    return nil
+end
+
+---Guard wrapper for share-strip callbacks: swallows and traces presses that
+---belong to the browser-exit return. A press that passes clears the
+---one-shot - the user is demonstrably back and interacting.
+---@param keybindLabel string
+---@param isNegative boolean
+---@return boolean swallowed
+local function swallowLeakedPress(keybindLabel, isNegative)
+    local reason = pressLeakReason(isNegative)
+    if reason then
+        if isNegative then
+            -- The leaked B has been accounted for either way
+            BattleScrolls.shareUrl.consumeBrowserReturnGuard()
+        end
+        BattleScrolls.shareTrace.record(keybindLabel .. " swallowed: " .. reason)
+        return true
+    end
+    BattleScrolls.shareUrl.clearBrowserReturnGuard()
+    BattleScrolls.shareTrace.record(keybindLabel .. " ok")
+    return false
 end
 
 ---Initializes all keybind strip descriptors and assigns them to the journalUI
@@ -94,29 +162,58 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
     end
     journalUI.enterShareStepper = enterShareStepper
 
+    ---Selected part row eligible for a resend, or nil. Any already-sent
+    ---part can be re-fired (a crashed browser tab loses its chunk; the
+    ---upload page reports which ones are missing).
+    ---@return number|nil
+    local function resendableTargetSeq()
+        local state = BattleScrolls.shareUrl.getState()
+        local target = journalUI.shareList:GetTargetData()
+        if target and target.partSeq and target.partSeq <= state.sentCount then
+            return target.partSeq
+        end
+        return nil
+    end
+
     journalUI.shareKeybindStripDescriptor = {
         alignment = KEYBIND_STRIP_ALIGN_LEFT,
         {
             keybind = "UI_SHORTCUT_PRIMARY",
             name = function()
+                local resendSeq = resendableTargetSeq()
+                if resendSeq then
+                    return zo_strformat(GetString(BATTLESCROLLS_SHARE_RESEND_PART), resendSeq)
+                end
                 local state = BattleScrolls.shareUrl.getState()
                 return zo_strformat(GetString(BATTLESCROLLS_SHARE_SEND_PART),
                     state.sentCount + 1, state.total)
             end,
             callback = function()
-                if justResumed() or BattleScrolls.shareUrl.isSendBlocked() then
+                if BattleScrolls.shareUrl.isSendBlocked()
+                    or swallowLeakedPress("A", false) then
                     return
                 end
-                BattleScrolls.shareUrl.sendNextPart()
+                local resendSeq = resendableTargetSeq()
+                if resendSeq then
+                    BattleScrolls.shareUrl.resendPart(resendSeq)
+                elseif BattleScrolls.shareUrl.getState().phase == "sending" then
+                    BattleScrolls.shareUrl.sendNextPart()
+                else
+                    return
+                end
                 -- The URL confirm lives in another GUI environment: it draws
                 -- its own keybind strip over this spot and its buttons can
-                -- reach ours. Pull the strip while the part is in flight; the
-                -- share observer in journal.lua re-arms it once the outcome
-                -- settles (reopening the journal restores it too).
-                journalUI:SetActiveKeybinds(nil)
+                -- reach ours. Swap in the B sink while the part is in
+                -- flight; the share observer in journal.lua restores the
+                -- real strip once the outcome settles.
+                journalUI:SetActiveKeybinds(journalUI.shareInFlightKeybindStripDescriptor)
             end,
             visible = function()
-                return BattleScrolls.shareUrl.getState().phase == "sending"
+                local state = BattleScrolls.shareUrl.getState()
+                if state.phase == "sending" then
+                    return true
+                end
+                return state.phase == "done" and resendableTargetSeq() ~= nil
             end,
             sound = SOUNDS.DIALOG_ACCEPT,
         },
@@ -124,7 +221,7 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             keybind = "UI_SHORTCUT_NEGATIVE",
             name = GetString(SI_GAMEPAD_BACK_OPTION),
             callback = function()
-                if justResumed() or dialogOwnsInput() then
+                if dialogOwnsInput() or swallowLeakedPress("B", true) then
                     return
                 end
                 leaveShareStepper()
@@ -133,9 +230,13 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         },
         {
             keybind = "UI_SHORTCUT_SECONDARY",
-            name = GetString(BATTLESCROLLS_SHARE_CANCEL),
+            name = function()
+                return BattleScrolls.shareUrl.getState().phase == "done"
+                    and GetString(BATTLESCROLLS_SHARE_FINISH)
+                    or GetString(BATTLESCROLLS_SHARE_CANCEL)
+            end,
             callback = function()
-                if justResumed() or dialogOwnsInput() then
+                if dialogOwnsInput() or swallowLeakedPress("X", false) then
                     return
                 end
                 BattleScrolls.shareUrl.stop()
@@ -147,6 +248,45 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             sound = SOUNDS.DIALOG_DECLINE,
         },
     }
+
+    -- While a part's URL confirm round trip is unsettled the real strip is
+    -- swapped for this sink. The cross-environment dialog's buttons can
+    -- reach our strip (the reason the strip used to be pulled entirely),
+    -- but a bare do-nothing Back leaves A/X nothing to double-fire AND
+    -- catches a browser-exit B that arrives before the round trip settles -
+    -- with no strip at all, that B would dispatch to whatever else listens.
+    journalUI.shareInFlightKeybindStripDescriptor = {
+        alignment = KEYBIND_STRIP_ALIGN_LEFT,
+        {
+            keybind = "UI_SHORTCUT_NEGATIVE",
+            name = GetString(SI_GAMEPAD_BACK_OPTION),
+            callback = function()
+                BattleScrolls.shareTrace.record("B sunk (in flight)")
+            end,
+        },
+    }
+
+    -- Every keybind press attempt while the stepper is on screen goes into
+    -- the trace - including ones no descriptor of ours handles. The leak's
+    -- delivery path (which button, when relative to resume/focus, whether
+    -- our strip was armed) is exactly the unknown being measured.
+    ZO_PreHook(KEYBIND_STRIP, "TryHandlingKeybindDown", function(_, keybind)
+        if journalUI.mode == NAVIGATION_MODE.SHARE
+            and SCENE_MANAGER:IsShowing("battleScrollsJournalGamepad") then
+            BattleScrolls.shareTrace.record("press " .. tostring(keybind))
+        end
+    end)
+
+    -- Scene teardown while a chain is alive is leak evidence too (the
+    -- pre-guard bug closed the whole journal via a remote base-scene kick)
+    local journalScene = SCENE_MANAGER:GetScene("battleScrollsJournalGamepad")
+    if journalScene then
+        journalScene:RegisterCallback("StateChange", function(_, newState)
+            if BattleScrolls.shareUrl.isBusy() then
+                BattleScrolls.shareTrace.record("scene " .. tostring(newState))
+            end
+        end)
+    end
 
     -- Instance list keybinds
     journalUI.instanceKeybindStripDescriptor = {
@@ -318,12 +458,19 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         {
             keybind = "UI_SHORTCUT_SECONDARY",
             name = function()
-                return BattleScrolls.shareUrl.isBusy()
+                -- "Continue" only for THIS instance's upload; a chain left
+                -- over from anything else reads (and behaves) like no share
+                return BattleScrolls.shareUrl.isChainForInstance(journalUI.selectedInstance)
                     and GetString(BATTLESCROLLS_SHARE_CONTINUE)
                     or GetString(BATTLESCROLLS_SHARE_INSTANCE)
             end,
             callback = function()
-                if not BattleScrolls.shareUrl.isBusy() and journalUI.selectedInstance then
+                if not journalUI.selectedInstance then
+                    return
+                end
+                if not BattleScrolls.shareUrl.isChainForInstance(journalUI.selectedInstance) then
+                    -- Silently supersede whatever other chain is lingering
+                    BattleScrolls.shareUrl.stop()
                     BattleScrolls.shareUrl.uploadInstance(journalUI.selectedInstance)
                 end
                 enterShareStepper(NAVIGATION_MODE.ENCOUNTERS)
@@ -459,13 +606,21 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         {
             keybind = "UI_SHORTCUT_LEFT_STICK",
             name = function()
-                return BattleScrolls.shareUrl.isBusy()
+                -- "Continue" only for THIS fight's share; a chain left over
+                -- from anything else reads (and behaves) like no share
+                return BattleScrolls.shareUrl.isChainForEncounter(
+                        journalUI.selectedInstance, journalUI.selectedEncounter)
                     and GetString(BATTLESCROLLS_SHARE_CONTINUE)
                     or GetString(BATTLESCROLLS_SHARE_FIGHT)
             end,
             callback = function()
-                if not BattleScrolls.shareUrl.isBusy()
-                    and journalUI.selectedInstance and journalUI.selectedEncounter then
+                if not journalUI.selectedInstance or not journalUI.selectedEncounter then
+                    return
+                end
+                if not BattleScrolls.shareUrl.isChainForEncounter(
+                        journalUI.selectedInstance, journalUI.selectedEncounter) then
+                    -- Silently supersede whatever other chain is lingering
+                    BattleScrolls.shareUrl.stop()
                     BattleScrolls.shareUrl.shareEncounter(
                         journalUI.selectedInstance, journalUI.selectedEncounter)
                 end

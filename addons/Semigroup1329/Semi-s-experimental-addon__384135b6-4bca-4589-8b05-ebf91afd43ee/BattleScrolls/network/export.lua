@@ -75,7 +75,9 @@
 --         varint foodCount, per: varint abilityId, varint uptimeMs+1 (0=none)
 --         varint classSkillLineCount, per: varint skillLineId
 --         varint masteryCount, per: varint abilityId
---         varint equipCount, per slot: u8 slotIndex(1-14), varint itemId,
+--         varint equipCount, per slot: u8 slotIndex(1-14; capture position
+--           in combat/setup.lua's EQUIP_SLOTS order, NOT EQUIP_SLOT_* -
+--           HAND sits between WAIST and LEGS there), varint itemId,
 --           varint traitType+1 (0=unknown; from GetItemLinkTraitType, so
 --           retrait truth survives - itemId alone would lie for retraits),
 --           varint enchantId, varint quality (GetItemLinkDisplayQuality:

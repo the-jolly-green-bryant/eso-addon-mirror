@@ -1,7 +1,7 @@
 local ADDON_TITLE   = "Quick Emote Menu"
 local ADDON_NAME    = "QuickEmoteMenu"
 local ADDON_AUTHOR  = "@AlexD"
-local ADDON_VERSION = "1.2.0"
+local ADDON_VERSION = "1.2.2"
 local ADDON_WEBSITE = "https://www.esoui.com/downloads/info4769-QuickEmoteMenu.html"
 local SV_VERSION    = 1
 
@@ -870,7 +870,7 @@ local function CreateUI()
 
         if emoteIds then
             for _, emoteId in ipairs(emoteIds) do
-                local info = PEM:GetEmoteItemInfo(emoteId) 
+                local info = PEM:GetEmoteItemInfo(emoteId)
                 if info and info.emoteIndex then
                     local slash = info.emoteSlashName or ""
                     if slash ~= "" and not seenSlash[slash] then
@@ -1111,8 +1111,10 @@ local function CreateUI()
             row:SetHandler("OnMouseUp", function(self, btn, upInside)
                 if btn == BTN_LEFT and upInside then
                     QEM:CloseAll()
-                    -- QEM.OpenSettingsPanel() -- This doesn't work! use the slash command
-                    SLASH_COMMANDS[SLASH_COMMAND_PANEL]()
+                    local cmd = SLASH_COMMANDS[SLASH_COMMAND_PANEL]
+                    if cmd then
+                        cmd()
+                    end
                 end
             end)
             measure:SetText(STRINGS.SHOW_SETTINGS_PANEL)
@@ -1669,14 +1671,6 @@ end
 ----------------------------------------------------------------------
 -- Shared helpers (slash commands + in-menu Settings)
 ----------------------------------------------------------------------
-function QEM.OpenSettingsPanel()
-    if LibAddonMenu2 then
-        LibAddonMenu2:OpenToPanel(ADDON_NAME .. "Panel")
-    else
-        d("[" .. ADDON_NAME .. "] LibAddonMenu-2.0 not found. Settings unavailable.")
-    end
-end
-
 function QEM.ToggleDetachFromChat()
     if not QEM.SV then return end
     QEM.SV.detachButtonFromChat = not QEM.SV.detachButtonFromChat
@@ -1688,14 +1682,6 @@ end
 ----------------------------------------------------------------------
 -- Slash + Keybind
 ----------------------------------------------------------------------
-SLASH_COMMANDS[SLASH_COMMAND_PANEL] = function()
-    QEM.OpenSettingsPanel()
-end
-
-SLASH_COMMANDS[SLASH_COMMAND_DETACH] = function()
-    QEM.ToggleDetachFromChat()
-end
-
 -- Keybind handler (bind in Controls → User Interface)
 function QEM_Toggle()
     if QEM.ToggleMainMenu then QEM:ToggleMainMenu(true) end
@@ -1723,6 +1709,11 @@ local function OnLoaded(_, name)
     -- Init
     InitSettings()
     CreateUI()
+
+    -- Slash
+    SLASH_COMMANDS[SLASH_COMMAND_DETACH] = function()
+        QEM.ToggleDetachFromChat()
+    end
 end
 
 EM:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnLoaded)

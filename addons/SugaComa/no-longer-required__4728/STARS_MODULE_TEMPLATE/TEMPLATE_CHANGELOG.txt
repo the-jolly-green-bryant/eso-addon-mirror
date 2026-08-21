@@ -1,0 +1,59 @@
+PROJECT:                         
+BUILD / VERSION:                 
+TEST NUMBER:                     
+DATE:                            
+STATUS: Prototype / Test / RC / Release
+======================================================================
+
+BASELINE
+--------
+Stable addon/library versions included in this build:
+
+
+FILES INCLUDED
+--------------
+List every file added, replaced, renamed or removed:
+
+
+WHAT CHANGED
+------------
+User-visible changes and behaviour changes:
+
+
+FIXES
+-----
+Defects corrected in this build:
+
+
+CURRENT PROTOTYPE FEATURES
+--------------------------
+Experimental behaviour that is intentionally included for testing:
+
+
+INTENTIONALLY DEFERRED
+----------------------
+Known work that is not part of this build:
+
+
+TEST FLOW
+---------
+1.
+2.
+3.
+
+EXPECTED RESULT
+---------------
+What the tester should see when the build works correctly:
+
+
+KNOWN ISSUES / IMPORTANT NOTES
+------------------------------
+Warnings, compatibility notes, data-reset requirements or rollback details:
+
+
+UAT RESULTS
+-----------
+Tester:
+Platform / server:
+Result: PASS / FAIL / PARTIAL
+Notes:

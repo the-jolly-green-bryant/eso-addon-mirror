@@ -7,8 +7,8 @@
 ## Title: Better Buffs
 ## Description: Raid Effect Intelligence: group buff coverage, target-aware debuffs, proc state, compact HUD layouts, and encounter analytics.
 ## Author: BMGxSancho
-## Version: 0.3.11
-## AddOnVersion: 311
+## Version: 0.3.14
+## AddOnVersion: 314
 ## APIVersion: 101050
 ## SavedVariables: BetterBuffsSavedVariables
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20007

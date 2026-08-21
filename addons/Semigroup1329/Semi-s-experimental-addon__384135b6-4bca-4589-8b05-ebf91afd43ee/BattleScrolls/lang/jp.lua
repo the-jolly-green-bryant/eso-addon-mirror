@@ -955,6 +955,11 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_CANCEL] = "共有を中止",
     [BATTLESCROLLS_SHARE_FAILED] = "共有を準備できませんでした。",
     [BATTLESCROLLS_SHARE_CANCELLED] = "共有を中止しました。",
+    [BATTLESCROLLS_SHARE_RESEND_PART] = "パート<<1>>を再送",
+    [BATTLESCROLLS_SHARE_PART_RESENDING] = "パート<<1>> — 再送中…",
+    [BATTLESCROLLS_SHARE_FINISH] = "共有を完了",
+    [BATTLESCROLLS_SHARE_DONE_RESEND_HINT] = "ブラウザのページに足りないパートが表示されたら、上から選択して再送してください。",
+    [BATTLESCROLLS_SHARE_DIAG_HEADER] = "診断",
 }
 for id, str in pairs(shareStrings) do
     SafeAddString(id, str, 1)

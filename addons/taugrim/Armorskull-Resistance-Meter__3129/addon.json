@@ -1,18 +1,19 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/taugrim/Armorskull-Resistance-Meter__3129",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "taugrim",
   "canonical_id": "esoui:3129",
   "category_id": "25",
   "compatibility": [
     {
-      "name": " Seasons of the Worm Cult Pt1",
-      "version": "11.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     },
     {
-      "name": "Fallen Banners",
-      "version": "10.3.5"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:3129",
@@ -21,7 +22,7 @@
     "Armorskull"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3129/",
-  "fingerprint": "10d605045e2e56d2803e55470766dce1adcd5e34642098f79144e80482b1c2e6",
+  "fingerprint": "21e4e8c961dc11939b58735b2f83060c81cd2673930d1599c12e3a9991f3528d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10602.png"
   ],
@@ -31,11 +32,11 @@
   "source_id": "3129",
   "source_url": "https://www.esoui.com/downloads/info3129-ArmorskullResistanceMeter.html",
   "stats": {
-    "downloads": 34156,
+    "downloads": 34405,
     "favorites": 27,
-    "monthly_downloads": 214
+    "monthly_downloads": 263
   },
   "title": "Armorskull: Resistance Meter",
-  "updated_at": 1749738487000,
-  "version": "1.9"
+  "updated_at": 1787263915000,
+  "version": "1.11"
 }

@@ -239,7 +239,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Arkays Donation Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/Arkays-Donation-Reminder__2679) | @DeadSoon | PC / Mac | 2.0.6 |
 | [Armitage's Skyshards Off](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fessolin/Armitage-s-Skyshards-Off__3368) | Fessolin | PC / Mac | 1.0 |
 | [ArmorHUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dankin0815/ArmorHUD__1006) | Dankin0815 | PC / Mac | 1.3.3 |
-| [Armorskull: Resistance Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/taugrim/Armorskull-Resistance-Meter__3129) | taugrim | PC / Mac | 1.9 |
+| [Armorskull: Resistance Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/taugrim/Armorskull-Resistance-Meter__3129) | taugrim | PC / Mac | 1.11 |
 | [Armory Build Display](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tes4p00ner/Armory-Build-Display__3221) | tes4p00ner | PC / Mac | 1.0.8 |
 | [Armory Style Manager (for Update 44)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/loosej/Armory-Style-Manager-for-Update-44__3949) | loosej | PC / Mac | 0.15.1 |
 | [ArmoryLocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KrykiZZ/ArmoryLocker__3748) | KrykiZZ | PC / Mac | 1.0.0 |

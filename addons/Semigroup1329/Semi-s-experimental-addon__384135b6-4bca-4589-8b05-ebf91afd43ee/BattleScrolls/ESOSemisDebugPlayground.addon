@@ -1,8 +1,8 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 472
-## Version: 0.0.472
+## AddOnVersion: 473
+## Version: 0.0.473
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
@@ -60,6 +60,7 @@ network/dpsshare.lua
 network/dpssender.lua
 network/encountershare.lua
 network/setupshare.lua
+network/sharetrace.lua
 network/export.lua
 network/shareurl.lua
 

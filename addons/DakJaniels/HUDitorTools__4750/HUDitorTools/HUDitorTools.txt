@@ -1,8 +1,8 @@
 ## Title: HUDditor Tools
 ## Author: @dack_janiels[PC], Baertram[PC]
 ## APIVersion: 101051
-## Version: 1.0.1
-## AddOnVersion: 10100
+## Version: 1.0.2
+## AddOnVersion: 10200
 ## Description: HUD editor tools: grid overlay and snap-to-grid, colored borders for hidden elements & other features.
 ## SavedVariables: HUDitorToolsSV
 ## DependsOn: LibAddonMenu-2.0>=43 LibScrollableMenu>=020405
@@ -19,6 +19,10 @@ GridOverlay.lua
 ;HUD Editor InfoBox additions
 InfoBoxControls.xml
 InfoBoxControls.lua
+
+;HUD Editor color picker
+ColorPicker.xml
+ColorPicker.lua
 
 
 # This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.

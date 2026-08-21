@@ -9,6 +9,7 @@ local GEAR_PANEL_ID = PanelIds.GEAR
 local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
 local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
+local GPS_PANEL_ID = PanelIds.GPS
 local FISHING_PANEL_ID = PanelIds.FISHING
 local UI_PANEL_ID = PanelIds.UI
 local CAMERA_PANEL_ID = PanelIds.CAMERA
@@ -74,6 +75,94 @@ end
 function GamepadOptions.BuildMinimapEnabledOption()
     local minimap = NQOL.Features.Minimap
     return GamepadOptions.BuildCheckboxOption(MINIMAP_PANEL_ID, 1, minimap.GetEnabledLabel(), minimap.GetEnabledTooltip(), minimap.GetEnabled, minimap.SetEnabled, minimap.CanEnable, minimap.GetEnabledDefault)
+end
+
+function GamepadOptions.BuildGPSEnabledOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildCheckboxOption(GPS_PANEL_ID, 1, gps.GetEnabledLabel(), gps.GetEnabledTooltip(), gps.GetEnabled, gps.SetEnabled, gps.IsAvailable, gps.GetEnabledDefault)
+end
+
+function GamepadOptions.BuildGPSDisplayFormatOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildFiniteListOption(GPS_PANEL_ID, 2, gps.GetDisplayFormatLabel(), gps.GetDisplayFormatTooltip(), gps.GetDisplayFormatChoices(), gps.GetDisplayFormatChoiceNames(), gps.GetDisplayFormat, function(value)
+        gps.SetDisplayFormat(value)
+        GamepadOptions.RefreshCurrentOptionsList()
+    end, gps.GetDisplayFormatDefault)
+end
+
+function GamepadOptions.BuildGPSUpdateFrequencyOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildValueStepSliderOption(GPS_PANEL_ID, 12, gps.GetUpdateFrequencyLabel(), gps.GetUpdateFrequencyTooltip(), gps.GetUpdateFrequencyMin(), gps.GetUpdateFrequencyMax(), gps.GetUpdateFrequencyValueFormat(), gps.GetUpdateFrequency, gps.SetUpdateFrequency, gps.GetUpdateFrequencyStep(), nil, gps.GetUpdateFrequencyDefault)
+end
+
+function GamepadOptions.BuildGPSHorizontalPositionOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildPositionSliderOption(GPS_PANEL_ID, 3, gps.GetHorizontalPositionLabel(), gps.GetHorizontalPositionTooltip(), 0, 100, "%.0f", gps.GetHorizontalPosition, gps.SetHorizontalPosition, nil, gps.GetHorizontalPositionDefault)
+end
+
+function GamepadOptions.BuildGPSVerticalPositionOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildPositionSliderOption(GPS_PANEL_ID, 4, gps.GetVerticalPositionLabel(), gps.GetVerticalPositionTooltip(), 0, 100, "%.0f", gps.GetVerticalPosition, gps.SetVerticalPosition, nil, gps.GetVerticalPositionDefault)
+end
+
+function GamepadOptions.BuildGPSOpacityOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildValueStepSliderOption(GPS_PANEL_ID, 5, gps.GetOpacityLabel(), gps.GetOpacityTooltip(), 0, 100, "%.0f%%", gps.GetOpacity, gps.SetOpacity, 1, nil, gps.GetOpacityDefault)
+end
+
+function GamepadOptions.BuildGPSColorOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildColorOption(GPS_PANEL_ID, 6, gps.GetColorLabel(), gps.GetColorTooltip(), gps.GetColor, gps.SetColor)
+end
+
+function GamepadOptions.BuildGPSShowInSettingsOption()
+    local gps = NQOL.Features.GPS
+    return GamepadOptions.BuildCheckboxOption(GPS_PANEL_ID, 7, gps.GetShowInSettingsLabel(), gps.GetShowInSettingsTooltip(), gps.GetShowInSettings, gps.SetShowInSettings, nil, gps.GetShowInSettingsDefault)
+end
+
+function GamepadOptions.BuildGPSTextOrientationOption()
+    local gps = NQOL.Features.GPS
+    local option = GamepadOptions.BuildFiniteListOption(GPS_PANEL_ID, 8, gps.GetTextOrientationLabel(), gps.GetTextOrientationTooltip(), gps.GetTextOrientationChoices(), gps.GetTextOrientationChoiceNames(), gps.GetTextOrientation, gps.SetTextOrientation, gps.GetTextOrientationDefault)
+    option.enabled = function()
+        return gps.GetDisplayFormat() == "text"
+    end
+    return option
+end
+
+function GamepadOptions.BuildGPSFontOption()
+    local gps = NQOL.Features.GPS
+    local option = GamepadOptions.BuildFiniteListOption(GPS_PANEL_ID, 9, gps.GetFontLabel(), gps.GetFontTooltip(), gps.GetFontChoices(), gps.GetFontChoiceNames(), gps.GetFont, gps.SetFont)
+    option.enabled = function()
+        return gps.GetDisplayFormat() ~= "qr"
+    end
+    return option
+end
+
+function GamepadOptions.BuildGPSFontSizeOption()
+    local gps = NQOL.Features.GPS
+    local option = GamepadOptions.BuildValueStepSliderOption(GPS_PANEL_ID, 10, gps.GetFontSizeLabel(), gps.GetFontSizeTooltip(), gps.GetFontSizeMin(), gps.GetFontSizeMax(), "%.0f", gps.GetFontSize, gps.SetFontSize, 1, nil, gps.GetFontSizeDefault)
+    option.enabled = function()
+        return gps.GetDisplayFormat() ~= "qr"
+    end
+    return option
+end
+
+function GamepadOptions.BuildGPSQRCodeSizeOption()
+    local gps = NQOL.Features.GPS
+    local option = GamepadOptions.BuildValueStepSliderOption(GPS_PANEL_ID, 11, gps.GetQRCodeSizeLabel(), gps.GetQRCodeSizeTooltip(), gps.GetQRCodeSizeMin(), gps.GetQRCodeSizeMax(), "%.0f", gps.GetQRCodeSize, gps.SetQRCodeSize, 10, nil, gps.GetQRCodeSizeDefault)
+    option.enabled = function()
+        return gps.GetDisplayFormat() == "qr" and gps.IsQRCAvailable()
+    end
+    return option
+end
+
+function GamepadOptions.BuildGPSAdvancedDataOption()
+    local gps = NQOL.Features.GPS
+    local option = GamepadOptions.BuildCheckboxOption(GPS_PANEL_ID, 13, gps.GetAdvancedDataLabel(), gps.GetAdvancedDataTooltip(), gps.GetAdvancedData, gps.SetAdvancedData, nil, gps.GetAdvancedDataDefault)
+    option.enabled = function()
+        return gps.GetDisplayFormat() == "qr" and gps.IsQRCAvailable()
+    end
+    return option
 end
 
 function GamepadOptions.BuildMinimapZoneZoomOption()

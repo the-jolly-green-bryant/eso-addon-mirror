@@ -433,6 +433,11 @@ function GamepadOptions.BuildSkipLogoutConfirmationOption()
     return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 5, skipLogoutConfirmation.GetEnabledLabel(), skipLogoutConfirmation.GetEnabledTooltip(), skipLogoutConfirmation.GetEnabled, skipLogoutConfirmation.SetEnabled)
 end
 
+function GamepadOptions.BuildErrorsDismissalOption()
+    local errorsDismissal = NQOL.Features.ErrorsDismissal
+    return GamepadOptions.BuildFiniteListOption(UTILITY_PANEL_ID, 7, errorsDismissal.GetModeLabel(), errorsDismissal.GetModeTooltip(), errorsDismissal.GetModeChoices(), errorsDismissal.GetModeChoiceNames(), errorsDismissal.GetMode, errorsDismissal.SetMode, errorsDismissal.GetModeDefault())
+end
+
 function GamepadOptions.BuildLuaGcOption()
     local luaGc = NQOL.Features.LuaGc
     return GamepadOptions.BuildCheckboxOption(LUA_GC_PANEL_ID, 1, luaGc.GetEnabledLabel(), luaGc.GetEnabledTooltip(), luaGc.GetEnabled, luaGc.SetEnabled)

@@ -74,13 +74,12 @@ function Settings:Initialize()
         panel.CleanUp=function(self,...)
             LeaveDisplayPositioning()
             if BB.UI then BB.UI:HideSlayerMissAlert() end
-            if BB.Stats then BB.Stats:HidePreview() end
+            if BB.Stats then BB.Stats:HideAllPreviews() end
             return originalCleanUp(self,...)
         end
     end
     panel:AddSettings({
-        {type=LHAS.ST_SECTION,label="BETTER BUFFS"},
-        {type=LHAS.ST_LABEL,label="|cFFD447Created by BMGxSancho|r\nRaid Effect Intelligence for organized PvE.\nEffect selections and HUD layouts are saved separately for each character.\nVersion "..BB.version},
+        {type=LHAS.ST_LABEL,label="|cFFD447BETTER BUFFS|r\n|cFFD447Created by BMGxSancho|r\nRaid Effect Intelligence for organized PvE.\nEffect selections and HUD layouts are saved separately for each character.\nVersion "..BB.version},
         {type=LHAS.ST_CHECKBOX,label="Enable Better Buffs",getFunction=function() return BB.saved.enabled end,setFunction=function(v) BB:SetEnabled(v) end},
     })
     panel:AddSettings({{type=LHAS.ST_SECTION,label="Buffs"},{type=LHAS.ST_LABEL,label=SectionIntro("Choose how each non-gear buff appears: Auto shows it when Better Buffs can confirm it is relevant to your current setup, Always keeps it visible, and Hidden never displays it.")}})
@@ -103,6 +102,30 @@ function Settings:Initialize()
         {type=LHAS.ST_BUTTON,buttonText="Stats Module Left",clickHandler=function() BB.Stats:Nudge(-BB.Constants.POSITION_STEP,0) end},
         {type=LHAS.ST_BUTTON,buttonText="Stats Module Right",clickHandler=function() BB.Stats:Nudge(BB.Constants.POSITION_STEP,0) end},
         {type=LHAS.ST_BUTTON,buttonText="Restore Stats Module Position",clickHandler=function() BB.Stats:ResetPosition() end},
+
+        {type=LHAS.ST_LABEL,label="|cFFD447WEAPON & SPELL DAMAGE|r"},
+        {type=LHAS.ST_CHECKBOX,label="Show Weapon & Spell Damage",tooltip="Shows your current Weapon Damage and Spell Damage in a Better Buffs branded movable HUD panel.",getFunction=function() return BB.saved.ui.damageStats.enabled==true end,setFunction=function(v) BB.Stats:SetDamageEnabled(v); if v then BB.Stats:ShowDamagePreview() else BB.Stats:HideDamagePreview() end end},
+        {type=LHAS.ST_SLIDER,label="Weapon & Spell Damage Scale",min=60,max=160,step=5,unit="%",getFunction=function() return zo_round((BB.saved.ui.damageStats.scale or 1)*100) end,setFunction=function(v) BB.Stats:SetDamageScale(v/100) end},
+        {type=LHAS.ST_SLIDER,label="Weapon & Spell Damage Opacity",min=5,max=90,step=5,unit="%",getFunction=function() return zo_round((BB.saved.ui.damageStats.opacity or .34)*100) end,setFunction=function(v) BB.Stats:SetDamageOpacity(v/100) end},
+        {type=LHAS.ST_BUTTON,buttonText="Preview Weapon & Spell Damage",clickHandler=function() BB.Stats:ShowDamagePreview() end},
+        {type=LHAS.ST_BUTTON,buttonText="Damage Module Up",clickHandler=function() BB.Stats:NudgeDamage(0,-BB.Constants.POSITION_STEP) end},
+        {type=LHAS.ST_BUTTON,buttonText="Damage Module Down",clickHandler=function() BB.Stats:NudgeDamage(0,BB.Constants.POSITION_STEP) end},
+        {type=LHAS.ST_BUTTON,buttonText="Damage Module Left",clickHandler=function() BB.Stats:NudgeDamage(-BB.Constants.POSITION_STEP,0) end},
+        {type=LHAS.ST_BUTTON,buttonText="Damage Module Right",clickHandler=function() BB.Stats:NudgeDamage(BB.Constants.POSITION_STEP,0) end},
+        {type=LHAS.ST_BUTTON,buttonText="Restore Damage Module Position",clickHandler=function() BB.Stats:ResetDamagePosition() end},
+
+        {type=LHAS.ST_LABEL,label="|cFFD447TANK RESISTANCE|r"},
+        {type=LHAS.ST_CHECKBOX,label="Show Tank Resistance",tooltip="Shows current Physical and Spell Resistance in a Better Buffs branded movable HUD panel. Yellow is more than 5% below the 33,100 PvE resistance cap, green is within +/-5%, and red is more than 5% above it.",getFunction=function() return BB.saved.ui.resistanceStats.enabled==true end,setFunction=function(v) BB.Stats:SetResistanceEnabled(v); if v then BB.Stats:ShowResistancePreview() else BB.Stats:HideResistancePreview() end end},
+        {type=LHAS.ST_LABEL,label="Resistance cap target: 33,100. Yellow < 31,445. Green 31,445-34,755. Red > 34,755."},
+        {type=LHAS.ST_SLIDER,label="Tank Resistance Scale",min=60,max=160,step=5,unit="%",getFunction=function() return zo_round((BB.saved.ui.resistanceStats.scale or 1)*100) end,setFunction=function(v) BB.Stats:SetResistanceScale(v/100) end},
+        {type=LHAS.ST_SLIDER,label="Tank Resistance Opacity",min=5,max=90,step=5,unit="%",getFunction=function() return zo_round((BB.saved.ui.resistanceStats.opacity or .34)*100) end,setFunction=function(v) BB.Stats:SetResistanceOpacity(v/100) end},
+        {type=LHAS.ST_BUTTON,buttonText="Preview Tank Resistance",clickHandler=function() BB.Stats:ShowResistancePreview() end},
+        {type=LHAS.ST_BUTTON,buttonText="Resistance Module Up",clickHandler=function() BB.Stats:NudgeResistance(0,-BB.Constants.POSITION_STEP) end},
+        {type=LHAS.ST_BUTTON,buttonText="Resistance Module Down",clickHandler=function() BB.Stats:NudgeResistance(0,BB.Constants.POSITION_STEP) end},
+        {type=LHAS.ST_BUTTON,buttonText="Resistance Module Left",clickHandler=function() BB.Stats:NudgeResistance(-BB.Constants.POSITION_STEP,0) end},
+        {type=LHAS.ST_BUTTON,buttonText="Resistance Module Right",clickHandler=function() BB.Stats:NudgeResistance(BB.Constants.POSITION_STEP,0) end},
+        {type=LHAS.ST_BUTTON,buttonText="Restore Resistance Module Position",clickHandler=function() BB.Stats:ResetResistancePosition() end},
+
         {type=LHAS.ST_CHECKBOX,label="Show Encounter Results in Chat",tooltip="Prints event-driven uptime, applications, longest gap, and coverage metrics after encounters lasting at least five seconds.",getFunction=function() if IsInGamepadPreferredMode and IsInGamepadPreferredMode() then LeaveDisplayPositioning() end; return BB.saved.uptime.enabled~=false end,setFunction=function(v) BB.saved.uptime.enabled=v==true end},
         {type=LHAS.ST_CHECKBOX,label="Show Advanced Coverage Metrics",getFunction=function() return BB.saved.uptime.showAdvanced~=false end,setFunction=function(v) BB.saved.uptime.showAdvanced=v==true end},
         {type=LHAS.ST_CHECKBOX,label="Personal Major Slayer Miss Alert",tooltip="After a new Major Slayer application settles, shows YOU DID NOT GET SLAYER only if your character did not receive that application.",getFunction=function() return BB.saved.ui.slayerMissAlert.enabled==true end,setFunction=function(v) BB.saved.ui.slayerMissAlert.enabled=v==true; if not BB.saved.ui.slayerMissAlert.enabled and BB.UI then BB.UI:HideSlayerMissAlert() end; if BB.Runtime then BB.Runtime:OnTrackingChanged("MAJOR_SLAYER") end end},

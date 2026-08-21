@@ -54,6 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Battleground Coffers & Alliance Tier & Rewards of the Worthy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kafeijao/Battleground-Coffers-Alliance-Tier-Rewards-of-the-Worthy__2073) | kafeijao | PC / Mac | 1.8 |
 | [Battleground Mode Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/badcompany309/Battleground-Mode-Saver__4015) | badcompany309 | PC / Mac | 1.4.1 |
 | [BattlegroundHudMover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/BattlegroundHudMover__2900) | ShadowMau | PC / Mac | 1.0.6 |
+| [BattleScrollBV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/BattleScrollBV__242aa937-0c55-4d1f-b667-0716e81eb4e7) | SugaComa | Console | — |
 | [BeamMeUp](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/beammeupbot/BeamMeUp__d2c9bb50-7161-423e-ab74-38b8353ace04) | beammeupbot | Console | — |
 | [BeamMeUp - Teleporter (Fast Travel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/BeamMeUp---Teleporter-Fast-Travel__2143) | @DeadSoon | PC / Mac | 4.0.4 |
 | [Bear Synergies](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bjørn/Bear-Synergies__2519) | Bjørn | PC / Mac | 1.1.4 |

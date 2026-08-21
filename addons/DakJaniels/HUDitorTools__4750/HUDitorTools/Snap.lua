@@ -3,7 +3,7 @@
 -- -----------------------------------------------------------------------------
 
 local zo_floor = zo_floor
-local HT       = HUDitorTools
+local HT = HUDitorTools
 
 
 function HT.SnapToGrid(position, gridSize)
@@ -13,6 +13,7 @@ function HT.SnapToGrid(position, gridSize)
     end
     return position - (position % gridSize)
 end
+
 local snapToGrid = HT.SnapToGrid
 
 function HT.ApplySnap(left, top, gridSize)

@@ -1,0 +1,310 @@
+[SIZE=5][B]Dependencies[/B][/SIZE]
+
+[B]Required[/B]
+
+[LIST]
+[*][URL=https://www.esoui.com/downloads/info7-LibAddonMenu-2.0.html][B]LibAddonMenu-2.0[/B][/URL]
+[*][URL=https://www.esoui.com/downloads/info3938-FancyActionBar.html][B]Fancy Action Bar+[/B][/URL]
+[/LIST]
+
+[B]Both required dependencies must be installed and enabled for Ultivite.[/B]
+
+[B]Optional Bandits Integration[/B]
+
+[URL=https://www.esoui.com/downloads/info1643-BanditsUserInterface.html][B]Bandits User Interface[/B][/URL] is [B]NOT[/B] a dependency and is not required to install or run Ultivite. If Bandits is already installed, Ultivite can expose an optional Quick Menu toggle for the existing Bandits minimap.
+
+Azurah and LuiExtended are also [B]NOT dependencies[/B]. Ultivite contains passive compatibility checks if either happens to be installed, but neither addon is required or declared in the manifest.
+
+[SIZE=5][B]Quick Menu[/B][/SIZE]
+
+[IMG]https://i.imgur.com/CFsqrM9.jpeg[/IMG]
+
+Ultivite includes a compact Quick Menu for the settings I am most likely to change while actually playing.
+
+Press [B]Enter[/B] to open ESO chat and the Quick Menu appears. It closes when chat closes, or you can use the [B]X[/B] in the top right.
+
+You can also open it directly from [B]Settings > Addons > Ultivite > Quick Access[/B].
+
+The Quick Menu provides direct controls for combat information, navigation, warnings, world UI, graphics profiles and core HUD options. Champion Points are always shown on Champion player group frames and player target frames; Ultivite does not provide an option to disable them.
+
+If you do not want Ultivite controlling target frames, use [B]RESTORE VANILLA TARGET FRAMES[/B] in the Quick Menu. This is a one click return to ESO's normal stock target frame.
+
+[LIST]
+[*][B]Preview[/B] shows supported Ultivite HUD elements directly where they actually appear on screen
+[*][B]Resize[/B] is separate from movement and enables mouse wheel resizing for supported elements
+[*]Weapon / Spell Damage is always directly draggable while visible
+[*]Front Resistance is always directly draggable while visible
+[*]Back Resistance is always directly draggable while visible
+[*]Damage Shield strength is always directly draggable while visible
+[*]The PvP K/D counter is always directly draggable while visible
+[*]The CC immunity / immovability icon can be unlocked and dragged directly
+[*]Fancy Action Bar can be moved and resized through Preview and Resize using its supported controls
+[/LIST]
+
+The Quick Menu is grouped into the same sections described below.
+
+[SIZE=5][B]Ultivite[/B][/SIZE]
+
+I originally made Ultivite for myself, based around the sets I use and the information I actually wanted visible while playing ESO.
+
+It ended up growing into a much more feature filled addon, so I decided to share it.
+
+I built and tested it on a [B]4K monitor[/B], so I am still interested in feedback from people using lower resolutions.
+
+[SIZE=5][B]Combat Information[/B][/SIZE]
+
+Ultivite is designed to show useful combat information without covering the screen in large permanent windows.
+
+[SIZE=4][B]Simple PvP K/D Tracker[/B][/SIZE]
+
+A compact kills and deaths counter for supported PvP areas.
+
+It can be toggled from the Quick Menu and dragged directly whenever it is visible.
+
+[IMG]https://i.imgur.com/iDIEVH4.jpeg[/IMG]
+
+[SIZE=4][B]Live Damage, Resistance and Shield Stats[/B][/SIZE]
+
+Optional clean text displays for:
+
+[LIST]
+[*]Weapon / Spell Damage
+[*]Front bar Resistance
+[*]Back bar Resistance
+[*]Current Damage Shield strength
+[/LIST]
+
+There is no large background window around these stats. They are intended to be small values you can place exactly where you want them.
+
+[SIZE=4][B]Debuffs Affecting You and Your Target[/B][/SIZE]
+
+Ultivite can show timed negative effects currently affecting your character and important debuffs active on your selected target.
+
+The Quick Menu can cycle between:
+
+[LIST]
+[*]Off
+[*]Debuffs on me
+[*]Target debuffs
+[*]Both
+[/LIST]
+
+[SIZE=4][B]CC Immunity[/B][/SIZE]
+
+An optional CC immunity tracker shows the remaining immunity window when ESO exposes the active effect.
+
+[SIZE=5][B]Navigation[/B][/SIZE]
+
+[SIZE=4][B]Feet Compass[/B][/SIZE]
+
+A ground style compass positioned beneath the player with:
+
+[LIST]
+[*]N
+[*]NE
+[*]E
+[*]SE
+[*]S
+[*]SW
+[*]W
+[*]NW
+[/LIST]
+
+It can be moved and resized through Ultivite's Preview and Resize controls.
+
+[SIZE=4][B]Crown Direction Arrow[/B][/SIZE]
+
+An optional direction marker points toward the current group leader. The gold crown is built into the base of the rotating arrow marker so it remains attached regardless of direction.
+
+[SIZE=4][B]Bandits Minimap Integration[/B][/SIZE]
+
+If Bandits User Interface is already installed, Ultivite can toggle the Bandits minimap directly from the Quick Menu.
+
+[B]Bandits remains completely optional.[/B]
+
+[SIZE=5][B]Warnings[/B][/SIZE]
+
+[SIZE=4][B]No Food Warning[/B][/SIZE]
+
+If Ultivite cannot detect an active food or drink buff, [B]NO FOOD BUFF[/B] can remain visible until one is active.
+
+[IMG]https://i.imgur.com/9DjC4O9.png[/IMG]
+
+[SIZE=4][B]No Major Resolve Warning[/B][/SIZE]
+
+If Major Resolve drops during combat, Ultivite can display a clear warning.
+
+Normal Major Resolve effects and common sources such as Hurricane, Boundless Storm, Lightning Form, Werewolf and Oakensoul are handled.
+
+[SIZE=4][B]Major Breach Target Indicator[/B][/SIZE]
+
+Shows a small dot near the centre of the screen for your currently selected target.
+
+[LIST]
+[*][COLOR=red]Red[/COLOR] = Major Breach is active
+[*]White = Major Breach is not active
+[/LIST]
+
+This makes it easy to see when Major Breach needs to be reapplied without searching through debuff icons.
+
+[SIZE=4][B]Enemy Ultimate Alerts[/B][/SIZE]
+
+Ultivite includes optional PvP awareness for dangerous enemy Ultimate windows.
+
+[LIST]
+[*][B]Corrosive Armor[/B] uses the same incoming-damage detection approach as DKcorrosiveAlert: when Corrosive periodic damage reaches you, Ultivite warns and tracks that source
+[*][B]Onslaught[/B] uses the established incoming-hit IDs and starts an 8 second warning when an enemy Onslaught hits you
+[*]While you mouse over a detected source, Ultivite adds the matching Ultimate icon above that enemy
+[*]The icon enhancement is mouseover-only. It does not attach to a stale selected target after you move the reticle away
+[*]A compact warning remains available when PvP API restrictions prevent reliable enemy world positioning
+[/LIST]
+
+[SIZE=4][B]Other Combat Warnings[/B][/SIZE]
+
+[LIST]
+[*]Burst damage warning
+[*]Execute danger warning
+[*]Shield Broken warning
+[*]Shield Broken can be enabled without showing the shield strength number
+[/LIST]
+
+[SIZE=5][B]World UI[/B][/SIZE]
+
+Ultivite provides quick visibility controls for ESO interface elements including:
+
+[LIST]
+[*]Group frames, with native Champion Point number and Champion icon always shown for Champion players
+[*]Target frames, with Champion Points always shown for Champion player targets
+[*]Champion Point progress bar
+[*]NPC names
+[*]ESO compass
+[*]Quest tracker
+[*]Queue and status UI
+[*]Crosshair / reticle
+[*]Chat visibility, including Normal and Auto Hide modes
+[*]Mount stamina
+[*]Werewolf resource meter
+[*]Enemy health bars
+[/LIST]
+
+Many visibility controls cycle through useful states such as [B]On[/B], [B]Hide in Combat[/B], [B]Hide in PvP[/B] and [B]Off[/B].
+
+[SIZE=4][B]Target Frames, Champion Points and Vanilla Mode[/B][/SIZE]
+
+Ultivite makes it deliberately easy to stop using its target frame.
+
+Use [B]RESTORE VANILLA TARGET FRAMES[/B] in the Quick Menu, or [B]Vanilla / Default Target Frames[/B] under [B]Profiles & Core HUD[/B]. This disables Ultivite's custom target frame, disables its native overhead target replacement and releases target frame suppression so ESO owns the normal target frame again.
+
+The enemy health bar control also includes a [B]Vanilla[/B] mode.
+
+Champion Point display is intentionally not optional:
+
+[LIST]
+[*]Champion player targets always show their CP in Ultivite target frames
+[*]Champion group members always show ESO's native CP number and Champion icon in stock group and raid frames
+[*]Non Champion players keep their normal level display
+[*]There is no Ultivite setting that turns group-frame or target-frame CP off
+[/LIST]
+
+When you choose Vanilla / Default Target Frames, ESO's own stock target frame presentation is left under base game control.
+
+[SIZE=5][B]Graphics Profiles[/B][/SIZE]
+
+The Quick Menu includes two clear one-click graphics actions:
+
+[LIST]
+[*][B]Apply PvE Graphics[/B]
+[*][B]Apply PvP Graphics[/B]
+[/LIST]
+
+There is no separate profile selector. Press the profile you want and Ultivite applies it immediately.
+
+Only the seven settings listed below are changed.
+
+[B]PvE Graphics Profile[/B]
+
+[LIST]
+[*]Shadows: Ultra
+[*]Screen Space Water Reflections: Ultra
+[*]Distortion: On
+[*]Bloom: On
+[*]Grass / Clutter: Ultra
+[*]Ambient Occlusion: Screen Space GI
+[*]Sunlight Rays: On
+[/LIST]
+
+[B]PvP Graphics Profile[/B]
+
+The same seven settings are switched Off, including Ambient Occlusion and Sunlight Rays.
+
+No other ESO graphics settings are changed by these profiles.
+
+[SIZE=5][B]Profiles and Core HUD[/B][/SIZE]
+
+[SIZE=4][B]Dark Souls Style HUD[/B][/SIZE]
+
+Ultivite lets you use:
+
+[LIST]
+[*]Normal ESO style player bars
+[*]Dark Souls style player health, magicka and stamina bars
+[*]A large Dark Souls style selected enemy health bar
+[*]Your own Dark Souls bars without the enemy bar
+[*]The enemy bar without changing your own HUD
+[*]A full Dark Souls style preset
+[*]Action bar plus enemy health layouts
+[*]Action bar plus self health layouts
+[/LIST]
+
+The Quick Menu uses a single [B]Dark Souls Profile[/B] button that cycles through the available layouts rather than filling the screen with separate preset buttons.
+
+[B]Vanilla / Default UI preset:[/B]
+
+[IMG]https://i.imgur.com/i6rwQoj.jpeg[/IMG]
+[IMG]https://i.imgur.com/Ym3F1vi.jpeg[/IMG]
+
+[B]Dark Souls UI preset:[/B]
+
+[IMG]https://i.imgur.com/FMqliSx.jpeg[/IMG]
+
+Combat HUD visibility and Action Bar visibility can also be controlled independently. A dedicated [B]Vanilla / Default Target Frames[/B] button is available here as well, so returning to ESO's stock target frame does not require manually reversing several Ultivite settings.
+
+[SIZE=5][B]Set, Proc and Ability Tracking[/B][/SIZE]
+
+Ultivite includes tracking for several sets and abilities I personally use.
+
+Current tracking includes things such as:
+
+[LIST]
+[*][B]Onslaught[/B] active window tracking
+[*][B]Balorgh[/B] active timer
+[*][B]Kjalnar's Nightmare[/B] target stack tracking
+[*][B]Goretheif[/B] proc tracking
+[*][B]Wretched Vitality[/B] active state tracking
+[*][B]Dragon's Appetite[/B] stack tracking
+[*][B]Tarnished Nightmare[/B] proc tracking
+[*]Additional effect, stack and ability tracking
+[/LIST]
+
+The addon has largely grown around information I personally wanted available while playing, but I am open to adding more useful set trackers.
+
+[SIZE=5][B]Sound Recorder and Sound Blocker[/B][/SIZE]
+
+Ultivite includes a sound identification and blocking system.
+
+You can:
+
+[LIST]
+[*]Start sound capture
+[*]Make the unwanted sound occur in game
+[*]Identify the ESO sound being played
+[*]Add it to the persistent suppression list
+[/LIST]
+
+I originally added this because there are several set, ability and interface sounds in ESO that I personally do not like hearing repeatedly.
+
+[SIZE=5][B]Account Wide or Character Settings[/B][/SIZE]
+
+Ultivite supports account wide or per character settings.
+
+Normal addon updates preserve existing SavedVariables, HUD positions, scales, visibility choices, trackers and sound suppression settings.

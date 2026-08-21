@@ -55,6 +55,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [No Green Incap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/No-Green-Incap__2110) | Ace'r | PC / Mac | 1 |
 | [No Interact](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/No-Interact__1623) | Rhyono | PC / Mac | 1.36 |
 | [No Logout Confirmation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/No-Logout-Confirmation__3551) | kawamonkey | PC / Mac | 1.0 |
+| [no longer required](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/no-longer-required__4728) | SugaComa | PC / Mac | 1.0 |
 | [No Mail Deletion Confirmation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/No-Mail-Deletion-Confirmation__2986) | code65536 | PC / Mac | 1.2.0 |
 | [No More Antiquity Comparisons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/No-More-Antiquity-Comparisons__4719) | M0R | PC / Mac | 1.0 |
 | [No More Errors](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/No-More-Errors__91c0799a-d1f2-46e3-9ef6-2c470d6869f6) | M0R | Console | — |

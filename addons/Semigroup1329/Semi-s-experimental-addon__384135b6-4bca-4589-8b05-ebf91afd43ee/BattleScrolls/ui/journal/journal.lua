@@ -517,18 +517,23 @@ function BattleScrolls_Journal_Gamepad:InitializeLists()
     end)
 
     -- The share stepper re-renders on every transport transition (part fired,
-    -- part settled, build finished/failed). It also re-arms the keybind strip
-    -- that the send keybind pulls while a part's URL confirm is in flight.
+    -- part settled, build finished/failed). It also restores the real keybind
+    -- strip that the send keybind swaps for the in-flight B sink while a
+    -- part's URL confirm is in flight.
     BattleScrolls.shareUrl.onStateChanged = function()
         if self.mode ~= NAVIGATION_MODE.SHARE
             or not SCENE_MANAGER:IsShowing("battleScrollsJournalGamepad") then
             return
         end
         self:RefreshList()
-        if self.keybindStripDescriptor then
-            KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
-        elseif not ZO_DIALOG_SYNC_OBJECT:IsShown() then
+        if BattleScrolls.shareUrl.isSendBlocked() then
+            -- Part still in flight (or a dialog owns input): keep the sink
+            return
+        end
+        if self.keybindStripDescriptor ~= self.shareKeybindStripDescriptor then
             self:SetActiveKeybinds(self.shareKeybindStripDescriptor)
+        else
+            KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
         end
     end
 
@@ -567,6 +572,19 @@ end
 -- Keybind Management
 -------------------------
 function BattleScrolls_Journal_Gamepad:SetActiveKeybinds(keybindDescriptor)
+    -- The stepper strip's armed/sink/pulled timeline is part of the
+    -- browser-exit leak evidence: what a press can reach depends on it
+    if self.mode == BattleScrolls.journal.NavigationMode.SHARE then
+        local label = "strip pulled"
+        if keybindDescriptor == self.shareKeybindStripDescriptor then
+            label = "strip armed"
+        elseif keybindDescriptor == self.shareInFlightKeybindStripDescriptor then
+            label = "strip sink"
+        elseif keybindDescriptor then
+            label = "strip other"
+        end
+        BattleScrolls.shareTrace.record(label)
+    end
     if self.keybindStripDescriptor then
         KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindStripDescriptor)
     end

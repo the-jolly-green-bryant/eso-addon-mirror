@@ -17,7 +17,12 @@ local PAID_FALLBACK_DIALOG_NAME = "NQOL_FREEPORT_PAID_FALLBACK_CONFIRM"
 
 local hookAttempts = 0
 local hooksInstalled = false
-local keybindStripHooked = false
+local mainMapHookInstalled = false
+local mainMapDescriptor
+local mainMapRightStickDescriptor
+local originalMainMapKeybindName
+local originalMainMapKeybindCallback
+local mainMapOverrideInstalled = false
 local availabilityEventsRegistered = false
 local guildScanRunning = false
 local paidFallbackDialogRegistered = false
@@ -389,7 +394,14 @@ local function TravelToWayshrine(runId, target)
     local nodeIndex = target.nodeIndex or FindFirstWayshrineNode(target.mapIndex)
 
     if nodeIndex then
-        FastTravelToNode(nodeIndex)
+        if type(IsProtectedFunction) == "function"
+            and IsProtectedFunction("FastTravelToNode")
+            and type(CallSecureProtected) == "function"
+        then
+            CallSecureProtected("FastTravelToNode", nodeIndex)
+        else
+            FastTravelToNode(nodeIndex)
+        end
         return
     end
 
@@ -722,62 +734,121 @@ local function IsMainMapDescriptor(descriptor)
     return hasSelectPin and hasOptions
 end
 
-local function AddMainMapFreeportKeybind(descriptor)
-    if not IsMainMapDescriptor(descriptor) then
-        return
+local function FindMainMapDescriptor()
+    if mainMapDescriptor and mainMapRightStickDescriptor then
+        return mainMapDescriptor, mainMapRightStickDescriptor
     end
 
-    for _, keybindDescriptor in ipairs(descriptor) do
-        if keybindDescriptor.nqolFreeportMainMap then
-            return
-        end
+    if not KEYBIND_STRIP or type(KEYBIND_STRIP.keybindGroups) ~= "table" then
+        return nil
     end
 
-    for _, keybindDescriptor in ipairs(descriptor) do
-        if keybindDescriptor.keybind == "UI_SHORTCUT_RIGHT_STICK" then
-            local originalName = keybindDescriptor.name
-            local originalCallback = keybindDescriptor.callback
-
-            keybindDescriptor.name = function(...)
-                if ShouldShowMainMapKeybind() then
-                    return FREEPORT_LABEL
-                end
-
-                if type(originalName) == "function" then
-                    return originalName(...)
-                end
-
-                return originalName
-            end
-
-            keybindDescriptor.callback = function(...)
-                if ShouldShowMainMapKeybind() then
-                    StartFocusedWayshrineFreeport()
-                    return
-                end
-
-                if originalCallback then
-                    return originalCallback(...)
+    for descriptor in pairs(KEYBIND_STRIP.keybindGroups) do
+        if IsMainMapDescriptor(descriptor) then
+            for _, keybindDescriptor in ipairs(descriptor) do
+                if keybindDescriptor.keybind == "UI_SHORTCUT_RIGHT_STICK" then
+                    mainMapDescriptor = descriptor
+                    mainMapRightStickDescriptor = keybindDescriptor
+                    return descriptor, keybindDescriptor
                 end
             end
-
-            keybindDescriptor.nqolFreeportMainMap = true
-            return
         end
     end
 end
 
-local function InstallKeybindStripHook()
-    if keybindStripHooked or not KEYBIND_STRIP or not KEYBIND_STRIP.AddKeybindButtonGroup then
+local function GetMainMapKeybindName(...)
+    if ShouldShowMainMapKeybind() then
+        return FREEPORT_LABEL
+    end
+
+    if type(originalMainMapKeybindName) == "function" then
+        return originalMainMapKeybindName(...)
+    end
+
+    return originalMainMapKeybindName
+end
+
+local function RunMainMapKeybind(...)
+    if ShouldShowMainMapKeybind() then
+        StartFocusedWayshrineFreeport()
         return
     end
 
-    keybindStripHooked = true
-    local originalAddKeybindButtonGroup = KEYBIND_STRIP.AddKeybindButtonGroup
-    KEYBIND_STRIP.AddKeybindButtonGroup = function(self, descriptor, ...)
-        AddMainMapFreeportKeybind(descriptor)
-        return originalAddKeybindButtonGroup(self, descriptor, ...)
+    if originalMainMapKeybindCallback then
+        return originalMainMapKeybindCallback(...)
     end
+end
+
+local function RestoreMainMapKeybind()
+    if not mainMapOverrideInstalled or not mainMapRightStickDescriptor then
+        return
+    end
+
+    if mainMapRightStickDescriptor.name == GetMainMapKeybindName then
+        mainMapRightStickDescriptor.name = originalMainMapKeybindName
+    end
+    if mainMapRightStickDescriptor.callback == RunMainMapKeybind then
+        mainMapRightStickDescriptor.callback = originalMainMapKeybindCallback
+    end
+
+    originalMainMapKeybindName = nil
+    originalMainMapKeybindCallback = nil
+    mainMapOverrideInstalled = false
+end
+
+local function RefreshMainMapKeybindGroup()
+    if KEYBIND_STRIP
+        and mainMapDescriptor
+        and type(KEYBIND_STRIP.keybindGroups) == "table"
+        and KEYBIND_STRIP.keybindGroups[mainMapDescriptor]
+        and type(KEYBIND_STRIP.UpdateKeybindButtonGroup) == "function"
+    then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(mainMapDescriptor)
+    end
+end
+
+local function ApplyMainMapKeybind()
+    if not IsFreeportAvailable() then
+        RestoreMainMapKeybind()
+        RefreshMainMapKeybindGroup()
+        return false
+    end
+
+    local descriptor, keybindDescriptor = FindMainMapDescriptor()
+    if not descriptor or not keybindDescriptor then
+        return false
+    end
+
+    if not mainMapOverrideInstalled then
+        originalMainMapKeybindName = keybindDescriptor.name
+        originalMainMapKeybindCallback = keybindDescriptor.callback
+        keybindDescriptor.name = GetMainMapKeybindName
+        keybindDescriptor.callback = RunMainMapKeybind
+        mainMapOverrideInstalled = true
+    end
+
+    RefreshMainMapKeybindGroup()
+    return true
+end
+
+local function InstallMainMapHook()
+    if mainMapHookInstalled then
+        return true
+    end
+    if type(SecurePostHook) ~= "function"
+        or type(ZO_WorldMap_SetGamepadKeybindsShown) ~= "function"
+    then
+        return false
+    end
+
+    SecurePostHook(_G, "ZO_WorldMap_SetGamepadKeybindsShown", function(enabled)
+        if enabled then
+            ApplyMainMapKeybind()
+        end
+    end)
+    mainMapHookInstalled = true
+    ApplyMainMapKeybind()
+    return true
 end
 
 local function InstallHooks()
@@ -785,7 +856,9 @@ local function InstallHooks()
         return
     end
 
-    if not GAMEPAD_WORLD_MAP_LOCATIONS or not GAMEPAD_WORLD_MAP_LOCATIONS.keybindStripDescriptor then
+    local locationsReady = GAMEPAD_WORLD_MAP_LOCATIONS and GAMEPAD_WORLD_MAP_LOCATIONS.keybindStripDescriptor
+    local mainMapReady = InstallMainMapHook()
+    if not locationsReady or not mainMapReady then
         hookAttempts = hookAttempts + 1
         if hookAttempts < MAX_HOOK_ATTEMPTS then
             zo_callLater(InstallHooks, HOOK_DELAY_MS)
@@ -794,7 +867,6 @@ local function InstallHooks()
     end
 
     AddFreeportKeybind(GAMEPAD_WORLD_MAP_LOCATIONS)
-    InstallKeybindStripHook()
     hooksInstalled = true
 end
 
@@ -837,7 +909,6 @@ end
 function Freeport.Initialize()
     localDisplayName = GetDisplayName and GetDisplayName() or nil
     Freeport.RefreshAvailabilityEvents()
-    InstallKeybindStripHook()
     InstallHooks()
 end
 
@@ -849,6 +920,8 @@ function Freeport.Cancel()
 end
 
 function Freeport.RefreshKeybinds()
+    ApplyMainMapKeybind()
+
     if GAMEPAD_WORLD_MAP_LOCATIONS and GAMEPAD_WORLD_MAP_LOCATIONS.RefreshKeybind then
         GAMEPAD_WORLD_MAP_LOCATIONS:RefreshKeybind()
     elseif KEYBIND_STRIP and GAMEPAD_WORLD_MAP_LOCATIONS and GAMEPAD_WORLD_MAP_LOCATIONS.keybindStripDescriptor then

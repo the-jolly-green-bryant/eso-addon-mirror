@@ -36,6 +36,8 @@ function UI:Initialize()
     self.previewScene={BUFF=nil,DEBUFF=nil}
     self.previewGeneration={BUFF=0,DEBUFF=0}
     self.positionPreviewGeneration={BUFF=0,DEBUFF=0}
+    self.layoutSignatures={BUFF=nil,DEBUFF=nil}
+    self.panelModes={BUFF=nil,DEBUFF=nil}
     self:CreateDashboard("BUFF","Better Buffs")
     self:CreateDashboard("DEBUFF","Better Debuffs")
     self:CreateSlayerMissAlert()
@@ -266,7 +268,7 @@ function UI:EnsureTile(definition)
     local tiles=self.tiles[definition.effectType]
     if tiles[definition.key] then return tiles[definition.key] end
     local panel=self:GetPanel(definition.effectType).control
-    local tile={control=WM:CreateControl(nil,panel,CT_CONTROL), lastAvailability=nil}
+    local tile={control=WM:CreateControl(nil,panel,CT_CONTROL), lastAvailability=nil, lastSize=nil, lastIcon=nil, lastFont=nil, ringSize=nil}
     tile.control:SetDimensions(C.COMPACT_TILE_SIZE,C.COMPACT_TILE_SIZE)
     tile.bg=Backdrop(tile.control)
     tile.bg:SetCenterColor(0.015,0.02,0.035,0.70)
@@ -401,50 +403,73 @@ function UI:RefreshDetailed(effectType)
 end
 
 function UI:UpdateTile(definition,tile,state,tileSize)
-    tile.control:SetDimensions(tileSize,tileSize)
-    tile.icon:SetDimensions(math.max(22,tileSize-14),math.max(22,tileSize-14))
-    tile.icon:SetTexture(state.icon or BB.Registry:GetIcon(definition))
-    if tile.icon.SetDesaturation then tile.icon:SetDesaturation((state.availability=="COOLDOWN" or state.availability=="INACTIVE") and 1 or 0) end
-    local radius=(tileSize/2)-2
-    for i,dot in ipairs(tile.ring) do
-        local angle=((i-1)/C.COMPACT_RING_SEGMENTS)*(math.pi*2)-(math.pi/2)
-        dot:ClearAnchors(); dot:SetAnchor(CENTER,tile.control,CENTER,math.cos(angle)*radius,math.sin(angle)*radius)
+    if tile.lastSize ~= tileSize then
+        tile.control:SetDimensions(tileSize,tileSize)
+        tile.icon:SetDimensions(math.max(22,tileSize-14),math.max(22,tileSize-14))
+        tile.lastSize = tileSize
+    end
+    local icon = state.icon or BB.Registry:GetIcon(definition)
+    if tile.lastIcon ~= icon then
+        tile.icon:SetTexture(icon)
+        tile.lastIcon = icon
+    end
+    local desaturation=(state.availability=="COOLDOWN" or state.availability=="INACTIVE") and 1 or 0
+    if tile.lastDesaturation ~= desaturation and tile.icon.SetDesaturation then
+        tile.icon:SetDesaturation(desaturation)
+        tile.lastDesaturation = desaturation
+    end
+    if tile.ringSize ~= tileSize then
+        local radius=(tileSize/2)-2
+        for i,dot in ipairs(tile.ring) do
+            local angle=((i-1)/C.COMPACT_RING_SEGMENTS)*(math.pi*2)-(math.pi/2)
+            dot:ClearAnchors(); dot:SetAnchor(CENTER,tile.control,CENTER,math.cos(angle)*radius,math.sin(angle)*radius)
+        end
+        tile.ringSize = tileSize
     end
     local percent=state.percent or 0
     local visible=math.ceil(zo_clamp(percent,0,100)/100*C.COMPACT_RING_SEGMENTS)
     local r,g,b,a=StateColor(percent,state.active or state.availability=="COOLDOWN")
     if state.availability=="READY" then r,g,b,a=unpack(C.READY_GOLD); visible=C.COMPACT_RING_SEGMENTS end
-    for i,dot in ipairs(tile.ring) do dot:SetHidden(i>visible and state.availability~="READY"); dot:SetColor(r,g,b,a or 1) end
+    local ringColorKey=string.format("%.3f:%.3f:%.3f:%.3f",r or 0,g or 0,b or 0,a or 1)
+    for i,dot in ipairs(tile.ring) do
+        local hidden=i>visible and state.availability~="READY"
+        if tile.lastRingHidden == nil then tile.lastRingHidden={} end
+        if tile.lastRingHidden[i] ~= hidden then dot:SetHidden(hidden); tile.lastRingHidden[i]=hidden end
+        if tile.lastRingColorKey ~= ringColorKey then dot:SetColor(r,g,b,a or 1) end
+    end
+    tile.lastRingColorKey=ringColorKey
 
     if state.availability=="READY" then
-        tile.countdown:SetText("READY")
-        tile.countdown:SetFont("$(BOLD_FONT)|13|thick-outline")
+        if tile.lastCountdown ~= "READY" then tile.countdown:SetText("READY"); tile.lastCountdown="READY" end
+        if tile.lastFont ~= "READY" then tile.countdown:SetFont("$(BOLD_FONT)|13|thick-outline"); tile.lastFont = "READY" end
         tile.bg:SetEdgeColor(unpack(C.READY_GOLD))
         if tile.lastAvailability~="READY" and BB.saved.advanced.readyAnimation~=false then
             tile.bg:SetCenterColor(0.24,0.18,0.02,0.92)
             zo_callLater(function() if tile.lastAvailability=="READY" then tile.bg:SetCenterColor(0.015,0.02,0.035,0.70) end end,C.READY_PULSE_MS)
         end
     elseif state.availability=="PARTIAL" then
-        tile.countdown:SetFont("$(BOLD_FONT)|20|thick-outline")
-        tile.countdown:SetText((state.remaining or 0)>0 and tostring(math.ceil(state.remaining)) or "")
+        if tile.lastFont ~= "COUNTDOWN" then tile.countdown:SetFont("$(BOLD_FONT)|20|thick-outline"); tile.lastFont = "COUNTDOWN" end
+        local text=(state.remaining or 0)>0 and tostring(math.ceil(state.remaining)) or ""; if tile.lastCountdown ~= text then tile.countdown:SetText(text); tile.lastCountdown=text end
         tile.bg:SetEdgeColor(unpack(C.YELLOW))
     elseif state.availability=="COOLDOWN" then
-        tile.countdown:SetFont("$(BOLD_FONT)|20|thick-outline")
-        tile.countdown:SetText((state.remaining or 0)>0 and tostring(math.ceil(state.remaining)) or "")
+        if tile.lastFont ~= "COUNTDOWN" then tile.countdown:SetFont("$(BOLD_FONT)|20|thick-outline"); tile.lastFont = "COUNTDOWN" end
+        local text=(state.remaining or 0)>0 and tostring(math.ceil(state.remaining)) or ""; if tile.lastCountdown ~= text then tile.countdown:SetText(text); tile.lastCountdown=text end
         tile.bg:SetEdgeColor(0.35,0.35,0.42,0.90)
     elseif state.active then
-        tile.countdown:SetFont("$(BOLD_FONT)|20|thick-outline")
-        tile.countdown:SetText(definition.timer and (state.remaining or 0)>0 and tostring(math.ceil(state.remaining)) or "")
+        if tile.lastFont ~= "COUNTDOWN" then tile.countdown:SetFont("$(BOLD_FONT)|20|thick-outline"); tile.lastFont = "COUNTDOWN" end
+        local text=definition.timer and (state.remaining or 0)>0 and tostring(math.ceil(state.remaining)) or ""; if tile.lastCountdown ~= text then tile.countdown:SetText(text); tile.lastCountdown=text end
         tile.bg:SetEdgeColor(r,g,b,0.95)
     else
-        tile.countdown:SetText("")
+        if tile.lastCountdown ~= "" then tile.countdown:SetText(""); tile.lastCountdown="" end
         tile.bg:SetEdgeColor(0.28,0.28,0.34,0.70)
     end
     tile.lastAvailability=state.availability
     local badgeValue=state.covered or 0
     if definition.intelligenceMode=="RECIPIENT_COOLDOWN" then badgeValue=state.ready or 0 end
-    tile.coverage:SetText(definition.showCoverage and state.target and state.target>0 and (tostring(badgeValue).."/"..tostring(state.target)) or "")
-    tile.stack:SetText(definition.showStacks and (state.stackCount or 0)>0 and tostring(state.stackCount) or "")
+    local coverageText=definition.showCoverage and state.target and state.target>0 and (tostring(badgeValue).."/"..tostring(state.target)) or ""
+    if tile.lastCoverage ~= coverageText then tile.coverage:SetText(coverageText); tile.lastCoverage=coverageText end
+    local stackText=definition.showStacks and (state.stackCount or 0)>0 and tostring(state.stackCount) or ""
+    if tile.lastStack ~= stackText then tile.stack:SetText(stackText); tile.lastStack=stackText end
 end
 
 function UI:LayoutCompact(effectType,definitions)
@@ -454,6 +479,11 @@ function UI:LayoutCompact(effectType,definitions)
     local spacing=zo_clamp(tonumber(saved.tileSpacing) or C.COMPACT_TILE_SPACING,0,30)
     local layout=saved.compactLayout or "GRID"
     local n=#definitions
+    local keys={}
+    for i,definition in ipairs(definitions) do keys[i]=definition.key end
+    local layoutSignature=table.concat(keys,"|")..":"..layout..":"..tostring(size)..":"..tostring(spacing)..":"..tostring(saved.iconsPerRow or "")..":"..tostring(saved.curveDepth or "")..":"..tostring(saved.verticalSpread or "")..":"..tostring(saved.crescentSide or "")
+    local structuralChanged = self.layoutSignatures[effectType] ~= layoutSignature
+    self.layoutSignatures[effectType] = layoutSignature
     local width,height=size,size
     if layout=="GRID" then
         local perRow=zo_clamp(tonumber(saved.iconsPerRow) or 4,1,8)
@@ -462,14 +492,16 @@ function UI:LayoutCompact(effectType,definitions)
         height=math.max(size,rows*size+math.max(0,rows-1)*spacing)
         for i,definition in ipairs(definitions) do
             local tile=self:EnsureTile(definition); local col=(i-1)%perRow; local row=math.floor((i-1)/perRow)
-            tile.control:ClearAnchors(); tile.control:SetAnchor(TOPLEFT,panel.control,TOPLEFT,col*(size+spacing),row*(size+spacing)); tile.control:SetHidden(false)
+            if structuralChanged then tile.control:ClearAnchors(); tile.control:SetAnchor(TOPLEFT,panel.control,TOPLEFT,col*(size+spacing),row*(size+spacing)) end
+            tile.control:SetHidden(false)
             self:UpdateTile(definition,tile,self:GetState(definition),size)
         end
     elseif layout=="COLUMN" then
         height=math.max(size,n*size+math.max(0,n-1)*spacing)
         for i,definition in ipairs(definitions) do
             local tile=self:EnsureTile(definition)
-            tile.control:ClearAnchors(); tile.control:SetAnchor(TOPLEFT,panel.control,TOPLEFT,0,(i-1)*(size+spacing)); tile.control:SetHidden(false)
+            if structuralChanged then tile.control:ClearAnchors(); tile.control:SetAnchor(TOPLEFT,panel.control,TOPLEFT,0,(i-1)*(size+spacing)) end
+            tile.control:SetHidden(false)
             self:UpdateTile(definition,tile,self:GetState(definition),size)
         end
     else
@@ -485,12 +517,13 @@ function UI:LayoutCompact(effectType,definitions)
             local t=n<=1 and 0 or (((i-1)/(n-1))*2-1)
             local x=baseX + sign*(depth*(t*t))
             local y=(i-1)*spread
-            tile.control:ClearAnchors(); tile.control:SetAnchor(TOPLEFT,panel.control,TOPLEFT,x,y); tile.control:SetHidden(false)
+            if structuralChanged then tile.control:ClearAnchors(); tile.control:SetAnchor(TOPLEFT,panel.control,TOPLEFT,x,y) end
+            tile.control:SetHidden(false)
             self:UpdateTile(definition,tile,self:GetState(definition),size)
         end
     end
     for key,tile in pairs(self.tiles[effectType]) do if not BB:IsEffectVisible(key) then tile.control:SetHidden(true) end end
-    panel.control:SetDimensions(math.max(1,width),math.max(1,height))
+    if structuralChanged then panel.control:SetDimensions(math.max(1,width),math.max(1,height)) end
     return n
 end
 
@@ -503,11 +536,16 @@ function UI:RefreshPanel(effectType,force)
         return
     end
     local compact=(saved.style or "DETAILED")=="COMPACT"
+    local modeChanged=self.panelModes[effectType] ~= compact
+    self.panelModes[effectType]=compact
     panel.bg:SetHidden(compact)
     panel.title:SetHidden(compact)
     panel.line:SetHidden(compact)
-    for _,row in pairs(self.rows[effectType]) do row.control:SetHidden(true) end
-    for _,tile in pairs(self.tiles[effectType]) do tile.control:SetHidden(true) end
+    if force or modeChanged then
+        for _,row in pairs(self.rows[effectType]) do row.control:SetHidden(true) end
+        for _,tile in pairs(self.tiles[effectType]) do tile.control:SetHidden(true) end
+        self.layoutSignatures[effectType]=nil
+    end
     local definitions=self:GetDefinitions(effectType)
     local count=compact and self:LayoutCompact(effectType,definitions) or self:RefreshDetailed(effectType)
     local hideContent = count == 0

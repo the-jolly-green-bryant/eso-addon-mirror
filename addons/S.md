@@ -88,7 +88,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f) | sshogrin | Console | — |
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__3527) | sshogrin | PC / Mac | 1.1.7 |
 | [Shopkeeper (Improved, Fixed and Updated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dopiate/Shopkeeper-Improved-Fixed-and-Updated__864) | dopiate | PC / Mac | 1.0 (dOpiate Fix).7b |
-| [Shopping List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gravvy/Shopping-List__4775) | Gravvy | PC / Mac | 0.16.4 |
+| [Shopping List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gravvy/Shopping-List__4775) | Gravvy | PC / Mac | 0.17.0 |
 | [Show CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Show-CP__e6bacf32-d124-4c92-bc87-b477e7611861) | BMGxSancho | Console | — |
 | [Show Equips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Show-Equips__7d3a20ff-160a-4988-b8d0-991681394db8) | Shienar | Console | — |
 | [Show Global Cooldown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Show-Global-Cooldown__3035) | iiJonno | PC / Mac | 2.0.1 |
@@ -245,7 +245,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Splats Encounter Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Splats-Encounter-Log__3687) | Splat | PC / Mac | 1.20 |
 | [Spree Killer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/fireundubh/Spree-Killer__2592) | fireundubh | PC / Mac | 1.0.1 |
 | [SpringPeace (Dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/SpringPeace-Dev__992e3a70-4653-4937-9089-bfee29417439) | Springpeace2575 | Console | — |
-| [Sprint Sensitivity Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GalacticWar/Sprint-Sensitivity-Fix__3676) | GalacticWar | PC / Mac | 5.6 |
+| [Sprint Sensitivity Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GalacticWar/Sprint-Sensitivity-Fix__3676) | GalacticWar | PC / Mac | 6.0.0 |
 | [Sprint Weapon Sensitivity Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeVpressed/Sprint-Weapon-Sensitivity-Fix__4534) | DeVpressed | PC / Mac | 1.5.0 |
 | [SprintSens](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hocuz/SprintSens__2252) | hocuz | PC / Mac | 1.7 |
 | [Squirrel Killer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aaxc/Squirrel-Killer__2927) | Aaxc | PC / Mac | 1.0.2 |
@@ -261,8 +261,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Stamasaurus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmp/Stamasaurus__3935) | tmp | PC / Mac | 1.0 |
 | [Standardised Treasure Map Names](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Standardised-Treasure-Map-Names__2999) | kawamonkey | PC / Mac | 1.0 |
 | [Star Names](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DonjaZero/Star-Names__3462) | DonjaZero | PC / Mac | 1.2.1 |
-| [STARS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/STARS__4729) | SugaComa | PC / Mac | 0.6.11-complete |
-| [STARS MODULE (Console Tested)-no longer required](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/STARS-MODULE-Console-Tested--no-longer-required__4728) | SugaComa | PC / Mac | 1.0 |
+| [STARS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/STARS__4729) | SugaComa | PC / Mac | 0.6.13 |
 | [STARS-Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/STARS-Gamepad__4784) | SugaComa | PC / Mac | 0.6.11-Gamepad |
 | [STARS-KBM](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/STARS-KBM__4783) | SugaComa | PC / Mac | 0.6.11-KBM |
 | [Stash 'n Dash](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Downehr/Stash-n-Dash__4133) | Downehr | PC / Mac | 1.0.3 |

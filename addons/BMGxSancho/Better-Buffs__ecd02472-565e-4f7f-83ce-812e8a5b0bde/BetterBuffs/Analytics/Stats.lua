@@ -8,6 +8,7 @@ local PEN_CAP = 18200
 local CRIT_DAMAGE_CAP = 125
 local CRIT_CHANCE_CAP = 100
 local TOLERANCE = 0.05
+local RESISTANCE_CAP = 33100
 
 local function CreateLabel(parent, font)
     local label = WM:CreateControl(nil, parent, CT_LABEL)
@@ -63,8 +64,34 @@ local function ReadCriticalDamage()
     return tonumber(percent) or 0
 end
 
+local function ReadWeaponDamage()
+    local stat = STAT_POWER or STAT_WEAPON_POWER or STAT_WEAPON_AND_SPELL_DAMAGE
+    return stat and (tonumber(GetPlayerStat(stat, STAT_BONUS_OPTION_APPLY_BONUS)) or 0) or 0
+end
+
+local function ReadSpellDamage()
+    local stat = STAT_SPELL_POWER or STAT_WEAPON_AND_SPELL_DAMAGE
+    return stat and (tonumber(GetPlayerStat(stat, STAT_BONUS_OPTION_APPLY_BONUS)) or 0) or 0
+end
+
+local function ReadPhysicalResistance()
+    return STAT_PHYSICAL_RESIST and (tonumber(GetPlayerStat(STAT_PHYSICAL_RESIST, STAT_BONUS_OPTION_APPLY_BONUS)) or 0) or 0
+end
+
+local function ReadSpellResistance()
+    return STAT_SPELL_RESIST and (tonumber(GetPlayerStat(STAT_SPELL_RESIST, STAT_BONUS_OPTION_APPLY_BONUS)) or 0) or 0
+end
+
 function Stats:GetSaved()
     return BB.saved and BB.saved.ui and BB.saved.ui.stats
+end
+
+function Stats:GetDamageSaved()
+    return BB.saved and BB.saved.ui and BB.saved.ui.damageStats
+end
+
+function Stats:GetResistanceSaved()
+    return BB.saved and BB.saved.ui and BB.saved.ui.resistanceStats
 end
 
 function Stats:GetVisibility()
@@ -117,15 +144,19 @@ end
 
 function Stats:Initialize()
     self:CreateDisplay()
+    self:CreateDamageDisplay()
+    self:CreateResistanceDisplay()
     self:ApplySettings()
+    self:ApplyDamageSettings()
+    self:ApplyResistanceSettings()
 
     EVENT_MANAGER:RegisterForEvent("BetterBuffsStats", EVENT_STATS_UPDATED, function(_, unitTag)
-        if unitTag == "player" then Stats:Refresh() end
+        if unitTag == "player" then Stats:RefreshAll() end
     end)
     EVENT_MANAGER:AddFilterForEvent("BetterBuffsStats", EVENT_STATS_UPDATED, REGISTER_FILTER_UNIT_TAG, "player")
-    EVENT_MANAGER:RegisterForEvent("BetterBuffsStatsCombat", EVENT_PLAYER_COMBAT_STATE, function() Stats:Refresh() end)
-    EVENT_MANAGER:RegisterForEvent("BetterBuffsStatsActivated", EVENT_PLAYER_ACTIVATED, function() Stats:Refresh() end)
-    self:Refresh()
+    EVENT_MANAGER:RegisterForEvent("BetterBuffsStatsCombat", EVENT_PLAYER_COMBAT_STATE, function() Stats:RefreshAll() end)
+    EVENT_MANAGER:RegisterForEvent("BetterBuffsStatsActivated", EVENT_PLAYER_ACTIVATED, function() Stats:RefreshAll() end)
+    self:RefreshAll()
 end
 
 function Stats:ApplySettings()
@@ -279,3 +310,236 @@ function Stats:SetOpacity(value)
     saved.opacity = value
     self:ShowPreview()
 end
+
+local function CreateSimpleStatsDisplay(name, labels, reason)
+    local control = WM:CreateTopLevelWindow(name)
+    control:SetHidden(true)
+    control:SetDimensions(292, 68)
+    control:SetClampedToScreen(true)
+    control:SetMouseEnabled(false)
+    control:SetMovable(false)
+
+    local bg = WM:CreateControl(nil, control, CT_BACKDROP)
+    bg:SetAnchorFill()
+    bg:SetCenterColor(0.02, 0.025, 0.05, 0.34)
+    bg:SetEdgeColor(0.8, 0.62, 0.18, 0.70)
+    bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-SliderBackdrop.dds", 1, 1, 2)
+
+    local rows = {}
+    for i, text in ipairs(labels) do
+        local y = 7 + (i - 1) * 27
+        local label = CreateLabel(control, "$(BOLD_FONT)|18|outline")
+        label:SetAnchor(TOPLEFT, control, TOPLEFT, 12, y)
+        label:SetDimensions(170, 24)
+        label:SetColor(unpack(C.WHITE))
+        label:SetText(text)
+
+        local value = CreateLabel(control, "$(BOLD_FONT)|20|outline")
+        value:SetAnchor(TOPRIGHT, control, TOPRIGHT, -12, y)
+        value:SetDimensions(100, 24)
+        value:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        value:SetColor(unpack(C.WHITE))
+        rows[i] = value
+    end
+
+    local fragment = ZO_HUDFadeSceneFragment:New(control, nil, 0)
+    HUD_SCENE:AddFragment(fragment)
+    HUD_UI_SCENE:AddFragment(fragment)
+    fragment:SetHiddenForReason(reason, true, 0, 0)
+    return { control=control, bg=bg, rows=rows, fragment=fragment, previewScene=nil, reason=reason }
+end
+
+function Stats:CreateDamageDisplay()
+    self.damageDisplay = CreateSimpleStatsDisplay("BetterBuffsDamageStatsModule", {"WEAPON DAMAGE", "SPELL DAMAGE"}, "BetterBuffsDamageStats")
+end
+
+function Stats:CreateResistanceDisplay()
+    self.resistanceDisplay = CreateSimpleStatsDisplay("BetterBuffsResistanceStatsModule", {"PHYSICAL RESIST", "SPELL RESIST"}, "BetterBuffsResistanceStats")
+end
+
+local function ApplySimpleDisplay(display, saved, defaultY)
+    if not display or not saved then return end
+    display.control:ClearAnchors()
+    display.control:SetAnchor(CENTER, GuiRoot, CENTER, saved.offsetX or 0, saved.offsetY or defaultY)
+    display.control:SetScale(saved.scale or 1)
+    if display.bg then
+        display.bg:SetCenterColor(0.02, 0.025, 0.05, saved.opacity or 0.34)
+    end
+end
+
+function Stats:ApplyDamageSettings()
+    ApplySimpleDisplay(self.damageDisplay, self:GetDamageSaved(), 230)
+    self:RefreshDamage()
+end
+
+function Stats:ApplyResistanceSettings()
+    ApplySimpleDisplay(self.resistanceDisplay, self:GetResistanceSaved(), 310)
+    self:RefreshResistance()
+end
+
+function Stats:RefreshDamage()
+    if not self.damageDisplay then return end
+    local saved = self:GetDamageSaved()
+    local visible = BB.saved and BB.saved.enabled and saved and saved.enabled == true
+    self.damageDisplay.fragment:SetHiddenForReason(self.damageDisplay.reason, not visible, 0, 0)
+    self.damageDisplay.control:SetHidden(not visible)
+    if not visible then return end
+    self.damageDisplay.rows[1]:SetText(FormatInteger(ReadWeaponDamage()))
+    self.damageDisplay.rows[2]:SetText(FormatInteger(ReadSpellDamage()))
+    self.damageDisplay.rows[1]:SetColor(unpack(C.WHITE))
+    self.damageDisplay.rows[2]:SetColor(unpack(C.WHITE))
+end
+
+function Stats:RefreshResistance()
+    if not self.resistanceDisplay then return end
+    local saved = self:GetResistanceSaved()
+    local visible = BB.saved and BB.saved.enabled and saved and saved.enabled == true
+    self.resistanceDisplay.fragment:SetHiddenForReason(self.resistanceDisplay.reason, not visible, 0, 0)
+    self.resistanceDisplay.control:SetHidden(not visible)
+    if not visible then return end
+    local physical = ReadPhysicalResistance()
+    local spell = ReadSpellResistance()
+    self.resistanceDisplay.rows[1]:SetText(FormatInteger(physical))
+    self.resistanceDisplay.rows[2]:SetText(FormatInteger(spell))
+    self.resistanceDisplay.rows[1]:SetColor(MetricColor(physical, RESISTANCE_CAP, true))
+    self.resistanceDisplay.rows[2]:SetColor(MetricColor(spell, RESISTANCE_CAP, true))
+end
+
+function Stats:RefreshAll()
+    self:Refresh()
+    self:RefreshDamage()
+    self:RefreshResistance()
+end
+
+local function AttachSimpleToSettingsScene(display)
+    if not display then return end
+    local currentScene = SCENE_MANAGER and SCENE_MANAGER:GetCurrentScene() or nil
+    local previous = display.previewScene
+    if previous and previous ~= currentScene and previous ~= HUD_SCENE and previous ~= HUD_UI_SCENE then
+        previous:RemoveFragment(display.fragment)
+        display.previewScene = nil
+    end
+    if currentScene and currentScene ~= HUD_SCENE and currentScene ~= HUD_UI_SCENE and display.previewScene ~= currentScene then
+        currentScene:AddFragment(display.fragment)
+        display.previewScene = currentScene
+    end
+end
+
+local function HideSimplePreview(display, refreshFunction)
+    if not display then return end
+    local scene = display.previewScene
+    display.previewScene = nil
+    if scene and scene ~= HUD_SCENE and scene ~= HUD_UI_SCENE then scene:RemoveFragment(display.fragment) end
+    refreshFunction()
+end
+
+function Stats:ShowDamagePreview()
+    if not self.damageDisplay then return end
+    AttachSimpleToSettingsScene(self.damageDisplay)
+    ApplySimpleDisplay(self.damageDisplay, self:GetDamageSaved(), 230)
+    self.damageDisplay.control:SetHidden(false)
+    self.damageDisplay.fragment:SetHiddenForReason(self.damageDisplay.reason, false, 0, 0)
+    self.damageDisplay.rows[1]:SetText(FormatInteger(ReadWeaponDamage()))
+    self.damageDisplay.rows[2]:SetText(FormatInteger(ReadSpellDamage()))
+    self.damageDisplay.rows[1]:SetColor(unpack(C.WHITE))
+    self.damageDisplay.rows[2]:SetColor(unpack(C.WHITE))
+end
+
+function Stats:ShowResistancePreview()
+    if not self.resistanceDisplay then return end
+    AttachSimpleToSettingsScene(self.resistanceDisplay)
+    ApplySimpleDisplay(self.resistanceDisplay, self:GetResistanceSaved(), 310)
+    self.resistanceDisplay.control:SetHidden(false)
+    self.resistanceDisplay.fragment:SetHiddenForReason(self.resistanceDisplay.reason, false, 0, 0)
+    local physical = ReadPhysicalResistance()
+    local spell = ReadSpellResistance()
+    self.resistanceDisplay.rows[1]:SetText(FormatInteger(physical))
+    self.resistanceDisplay.rows[2]:SetText(FormatInteger(spell))
+    self.resistanceDisplay.rows[1]:SetColor(MetricColor(physical, RESISTANCE_CAP, true))
+    self.resistanceDisplay.rows[2]:SetColor(MetricColor(spell, RESISTANCE_CAP, true))
+end
+
+function Stats:HideDamagePreview()
+    HideSimplePreview(self.damageDisplay, function() Stats:RefreshDamage() end)
+end
+
+function Stats:HideResistancePreview()
+    HideSimplePreview(self.resistanceDisplay, function() Stats:RefreshResistance() end)
+end
+
+function Stats:HideAllPreviews()
+    self:HidePreview()
+    self:HideDamagePreview()
+    self:HideResistancePreview()
+end
+
+function Stats:SetDamageEnabled(value)
+    local saved = self:GetDamageSaved()
+    if not saved then return end
+    saved.enabled = value == true
+    self:RefreshDamage()
+end
+
+function Stats:SetResistanceEnabled(value)
+    local saved = self:GetResistanceSaved()
+    if not saved then return end
+    saved.enabled = value == true
+    self:RefreshResistance()
+end
+
+local function NudgeSimple(saved, defaultY, dx, dy)
+    saved.offsetX = zo_clamp((saved.offsetX or 0) + dx, -1600, 1600)
+    saved.offsetY = zo_clamp((saved.offsetY or defaultY) + dy, -900, 900)
+end
+
+function Stats:NudgeDamage(dx, dy)
+    local saved = self:GetDamageSaved()
+    NudgeSimple(saved, 230, dx, dy)
+    self:ShowDamagePreview()
+end
+
+function Stats:NudgeResistance(dx, dy)
+    local saved = self:GetResistanceSaved()
+    NudgeSimple(saved, 310, dx, dy)
+    self:ShowResistancePreview()
+end
+
+function Stats:ResetDamagePosition()
+    local saved = self:GetDamageSaved()
+    saved.offsetX, saved.offsetY = 0, 230
+    self:ShowDamagePreview()
+end
+
+function Stats:ResetResistancePosition()
+    local saved = self:GetResistanceSaved()
+    saved.offsetX, saved.offsetY = 0, 310
+    self:ShowResistancePreview()
+end
+function Stats:SetDamageScale(value)
+    local saved = self:GetDamageSaved()
+    if not saved then return end
+    saved.scale = value
+    self:ShowDamagePreview()
+end
+
+function Stats:SetDamageOpacity(value)
+    local saved = self:GetDamageSaved()
+    if not saved then return end
+    saved.opacity = value
+    self:ShowDamagePreview()
+end
+
+function Stats:SetResistanceScale(value)
+    local saved = self:GetResistanceSaved()
+    if not saved then return end
+    saved.scale = value
+    self:ShowResistancePreview()
+end
+
+function Stats:SetResistanceOpacity(value)
+    local saved = self:GetResistanceSaved()
+    if not saved then return end
+    saved.opacity = value
+    self:ShowResistancePreview()
+end
+

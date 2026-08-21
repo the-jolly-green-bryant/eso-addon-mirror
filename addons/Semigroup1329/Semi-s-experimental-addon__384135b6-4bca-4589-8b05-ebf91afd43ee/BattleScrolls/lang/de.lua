@@ -953,6 +953,11 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_CANCEL] = "Teilen abbrechen",
     [BATTLESCROLLS_SHARE_FAILED] = "Die Freigabe konnte nicht vorbereitet werden.",
     [BATTLESCROLLS_SHARE_CANCELLED] = "Freigabe abgebrochen.",
+    [BATTLESCROLLS_SHARE_RESEND_PART] = "Teil <<1>> erneut senden",
+    [BATTLESCROLLS_SHARE_PART_RESENDING] = "Teil <<1>> — wird erneut gesendet…",
+    [BATTLESCROLLS_SHARE_FINISH] = "Freigabe abschließen",
+    [BATTLESCROLLS_SHARE_DONE_RESEND_HINT] = "Meldet die Browserseite fehlende Teile, wähle sie oben aus und sende sie erneut.",
+    [BATTLESCROLLS_SHARE_DIAG_HEADER] = "Diagnose",
 }
 for id, str in pairs(shareStrings) do
     SafeAddString(id, str, 1)

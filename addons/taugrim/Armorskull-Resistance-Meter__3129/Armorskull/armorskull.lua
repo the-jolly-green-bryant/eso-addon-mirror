@@ -6,7 +6,7 @@ local panelData = {
   type = "panel",
   name = "Armorskull",
   author = 'taugrim',
-  version = '1.6'
+  version = '1.11'
 }
 
 local db = {}
@@ -18,21 +18,13 @@ local defaults = {
   settings = {
     customScale = 20,
     backgroundColor={0,0,0,0.8},
+    -- Shared thresholds used for BOTH Physical and Spell Resistance
     levels = {
-      physical = {
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 }
-      },
-      spell = {
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 },
-        { color={1,1,1,1}, level = 0 }
-      }
+      { color={1,1,1,1}, level = 0 },
+      { color={1,1,1,1}, level = 0 },
+      { color={1,1,1,1}, level = 0 },
+      { color={1,1,1,1}, level = 0 },
+      { color={1,1,1,1}, level = 0 }
     },
     renderTick = 500
   },
@@ -91,13 +83,13 @@ function Armorskull.Render(initial)
 
   local physicalResistColor = {1,1,1,1}
   local physicalResistLevel = GetPlayerStat(STAT_DAMAGE_RESIST_PHYSICAL)
-  local physicalResistGroup = db.settings.levels.physical
+  local sharedLevels = db.settings.levels
 
-  for i in pairs(physicalResistGroup) do
-    local alertLevel = tonumber(physicalResistGroup[i].level)
+  for i in pairs(sharedLevels) do
+    local alertLevel = tonumber(sharedLevels[i].level)
 
     if alertLevel ~= 0 and physicalResistLevel >= alertLevel then
-      physicalResistColor = physicalResistGroup[i].color
+      physicalResistColor = sharedLevels[i].color
     end
   end
 
@@ -111,13 +103,12 @@ function Armorskull.Render(initial)
   
   local spellResistColor = {1,1,1,1}
   local spellResistLevel = GetPlayerStat(STAT_DAMAGE_RESIST_MAGIC)
-  local spellResistGroup = db.settings.levels.spell
 
-  for i in pairs(spellResistGroup) do
-    local alertLevel = tonumber(spellResistGroup[i].level)
+  for i in pairs(sharedLevels) do
+    local alertLevel = tonumber(sharedLevels[i].level)
 
     if alertLevel ~= 0 and spellResistLevel >= alertLevel then
-      spellResistColor = spellResistGroup[i].color
+      spellResistColor = sharedLevels[i].color
     end
   end
   
@@ -193,66 +184,37 @@ optionsData[#optionsData+1] = {
 
 optionsData[#optionsData+1] = {
   type = "description",
-  text = [[You can set a value for Physical Resistance or for Spell Resistance and assign it a color. Whenever your Resistance is at or above this value, your meter will change to this color.
+  text = [[Set up to 5 resistance thresholds and assign each a color. These 5 levels apply to BOTH Physical Resistance and Spell Resistance -- whichever stat crosses a threshold will switch to that color.
   ]]
 }
 
-local physicalResistOptions = {}
+local resistOptions = {}
 
-for i in pairs(defaults.settings.levels.physical) do
-  physicalResistOptions[#physicalResistOptions+1] = {
+for i in pairs(defaults.settings.levels) do
+  resistOptions[#resistOptions+1] = {
     type = "editbox",
-    name = "Physical Resist Level #"..i,
+    name = "Resist Level #"..i,
     tooltip = "Resist level for Level #"..i,
-    getFunc = function() return db.settings.levels.physical[i].level end,
-    setFunc = function(level) db.settings.levels.physical[i].level = level end,
-    default = defaults.settings.levels.physical[i].level,
+    getFunc = function() return db.settings.levels[i].level end,
+    setFunc = function(level) db.settings.levels[i].level = level end,
+    default = defaults.settings.levels[i].level,
     width = 'half'
   }
-  physicalResistOptions[#physicalResistOptions+1] = {
+  resistOptions[#resistOptions+1] = {
     type = "colorpicker",
     tooltip = "Color for Level #"..i,
-    getFunc = function() return unpack(db.settings.levels.physical[i].color) end,
-    setFunc = function(r,g,b,a) db.settings.levels.physical[i].color = {r,g,b,a} end,
-    default = unpack(defaults.settings.levels.physical[i].color),
+    getFunc = function() return unpack(db.settings.levels[i].color) end,
+    setFunc = function(r,g,b,a) db.settings.levels[i].color = {r,g,b,a} end,
+    default = unpack(defaults.settings.levels[i].color),
     width = 'half'
   }
 end
 
 optionsData[#optionsData + 1] = {
   type = "submenu",
-  name = 'Physical Resist Alerts',
-  reference = "Physical_Resist_Options_Submenu",
-  controls = physicalResistOptions
-}
-
-local spellResistOptions = {}
-
-for i in pairs(defaults.settings.levels.spell) do
-  spellResistOptions[#spellResistOptions+1] = {
-    type = "editbox",
-    name = "Spell Resist Level #"..i,
-    tooltip = "Resist level for Level #"..i,
-    getFunc = function() return db.settings.levels.spell[i].level end,
-    setFunc = function(level) db.settings.levels.spell[i].level = level end,
-    default = defaults.settings.levels.spell[i].level,
-    width = 'half'
-  }
-  spellResistOptions[#spellResistOptions+1] = {
-    type = "colorpicker",
-    tooltip = "Color for Level #"..i,
-    getFunc = function() return unpack(db.settings.levels.spell[i].color) end,
-    setFunc = function(r,g,b,a) db.settings.levels.spell[i].color = {r,g,b,a} end,
-    default = unpack(defaults.settings.levels.spell[i].color),
-    width = 'half'
-  }
-end
-
-optionsData[#optionsData + 1] = {
-  type = "submenu",
-  name = 'Spell Resist Alerts',
-  reference = "Spell_Resist_Options_Submenu",
-  controls = spellResistOptions
+  name = 'Resist Alerts',
+  reference = "Resist_Options_Submenu",
+  controls = resistOptions
 }
 
 optionsData[#optionsData+1] = {
@@ -292,7 +254,7 @@ end
 
 function Armorskull.OnAddOnLoaded(event, addOnName)
   if addOnName == Armorskull.name then
-    db = ZO_SavedVars:New("ArmorskullSettings", 2, nil, defaults)
+    db = ZO_SavedVars:New("ArmorskullSettings", 3, nil, defaults)
     LAM2:RegisterAddonPanel("ArmorskullOptions", panelData)
     LAM2:RegisterOptionControls("ArmorskullOptions", optionsData)
 

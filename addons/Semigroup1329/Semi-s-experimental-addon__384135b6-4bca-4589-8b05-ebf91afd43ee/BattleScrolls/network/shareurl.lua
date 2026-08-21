@@ -34,8 +34,16 @@
 -- indistinguishable from confirming (both just close the dialog); that
 -- residual gap surfaces as a missing part on the upload page.
 --
+-- Parts can also vanish AFTER a clean hand-off: the console browser crashes
+-- under tab load and a part's tab never posts its chunk. The game cannot
+-- observe that - only the upload page knows which parts arrived - so the
+-- chain survives "done" in full: the upload page lists missing parts and
+-- any already-fired part can be re-fired (resendPart) until the user
+-- explicitly finishes the chain (stop).
+--
 -- This module is presentation-free: it owns the chain state machine and
--- notifies an observer (the journal) on every transition.
+-- notifies an observer (the journal) on every transition. Transitions are
+-- also recorded in BattleScrolls.shareTrace (see network/sharetrace.lua).
 -----------------------------------------------------------
 
 if not SemisPlaygroundCheckAccess() then
@@ -45,7 +53,9 @@ end
 BattleScrolls = BattleScrolls or {}
 
 ---@class BattleScrollsShareUrl
----@field _doneTotal number|nil Part count of the last completed chain
+---@field _browserTripPending boolean|nil One-shot: a URL confirm round trip completed and no press has passed the leak guard since (ui/journal/keybinds.lua consumes it)
+---@field _sourceInstance InstanceStorage|nil What the active chain/build was started for; "Continue" is offered only on an exact source match, any other share entry point silently supersedes the chain
+---@field _sourceEncounter CompactEncounter|nil Set for encounter shares, nil for instance uploads
 local shareUrl = {}
 BattleScrolls.shareUrl = shareUrl
 
@@ -62,13 +72,14 @@ local SESSION_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 ---@field parts string[] Base64 data parts
 ---@field session string Upload session id
 ---@field lang string Game client language (drives the upload page's texts)
----@field nextSeq number Next part to fire (1-based)
+---@field nextSeq number Next unfired part (1-based; total+1 once every part has been fired)
 ---@field total number
 
 ---@class ShareState
 ---@field phase SharePhase
 ---@field sentCount number Parts already fired
 ---@field total number Part count (0 while building)
+---@field resendingSeq number|nil Already-sent part currently re-firing
 
 ---@type ShareChain|nil
 local chain = nil
@@ -85,6 +96,7 @@ local NO_DIALOG_TIMEOUT_MS = 4000
 local SETTLE_GRACE_MS = 400
 ---@type number|nil
 local inFlightSeq = nil
+local inFlightIsResend = false
 local confirmDialogSeen = false
 local declineSeen = false
 local firedAtMs = 0
@@ -94,6 +106,7 @@ local settleAtMs = nil
 local function clearInFlight()
     EVENT_MANAGER:UnregisterForUpdate(WATCH_NAMESPACE)
     inFlightSeq = nil
+    inFlightIsResend = false
     confirmDialogSeen = false
     declineSeen = false
     firedAtMs = 0
@@ -126,19 +139,20 @@ end
 function shareUrl.getState()
     return {
         phase = phase,
-        sentCount = chain and (chain.nextSeq - 1) or (phase == "done" and shareUrl._doneTotal or 0),
-        total = chain and chain.total or (phase == "done" and shareUrl._doneTotal or 0),
+        sentCount = chain and math.min(chain.nextSeq - 1, chain.total) or 0,
+        total = chain and chain.total or 0,
+        resendingSeq = inFlightIsResend and inFlightSeq or nil,
     }
 end
 
----True while a build or an unfinished chain is active ("done"/"failed" are
----resting states, not busy).
+---True while a build or a chain is alive. A "done" chain still counts: it
+---is kept for part resends until the user explicitly finishes it.
 ---@return boolean
 function shareUrl.isBusy()
     return chain ~= nil or buildFiber ~= nil
 end
 
----Cancels any build or send in progress.
+---Cancels any build or send in progress and discards a kept "done" chain.
 ---@return boolean hadWork
 function shareUrl.stop()
     local hadWork = chain ~= nil or buildFiber ~= nil
@@ -148,8 +162,54 @@ function shareUrl.stop()
     end
     chain = nil
     clearInFlight()
+    shareUrl._browserTripPending = nil
+    shareUrl._sourceInstance = nil
+    shareUrl._sourceEncounter = nil
+    if hadWork then
+        BattleScrolls.shareTrace.record("chain stopped")
+    end
     setPhase("idle")
     return hadWork
+end
+
+---True when the active chain (or build) is exactly this instance-wide
+---upload - the only case the journal offers "Continue" for it.
+---@param instance InstanceStorage|nil
+---@return boolean
+function shareUrl.isChainForInstance(instance)
+    return shareUrl.isBusy() and instance ~= nil
+        and shareUrl._sourceInstance == instance
+        and shareUrl._sourceEncounter == nil
+end
+
+---True when the active chain (or build) is exactly this encounter's share.
+---@param instance InstanceStorage|nil
+---@param encounter CompactEncounter|nil
+---@return boolean
+function shareUrl.isChainForEncounter(instance, encounter)
+    return shareUrl.isBusy() and instance ~= nil and encounter ~= nil
+        and shareUrl._sourceInstance == instance
+        and shareUrl._sourceEncounter == encounter
+end
+
+-- =============================================================================
+-- BROWSER-RETURN ONE-SHOT (leak-guard support, see ui/journal/keybinds.lua)
+-- =============================================================================
+
+---Consumes the one-shot browser-return marker. True means a URL confirm
+---round trip completed and no press has passed the leak guard since - the
+---caller should treat the current B press as the browser-exit press.
+---@return boolean
+function shareUrl.consumeBrowserReturnGuard()
+    local was = shareUrl._browserTripPending
+    shareUrl._browserTripPending = nil
+    return was == true
+end
+
+---Clears the marker: a press passed the guard, so the user is provably back
+---and interacting.
+function shareUrl.clearBrowserReturnGuard()
+    shareUrl._browserTripPending = nil
 end
 
 -- =============================================================================
@@ -177,21 +237,35 @@ end
 ---moves the chain forward. Runs a beat after the confirm dialog goes away.
 local function settleInFlight()
     local seq = inFlightSeq
+    local wasResend = inFlightIsResend
     local wasDeclined = declineSeen
+    local sawDialog = confirmDialogSeen
     clearInFlight()
     if not chain or not seq then
         return
     end
+    if sawDialog and not wasDeclined then
+        -- The browser really opened: the next B on the stepper may be the
+        -- press that closes it
+        shareUrl._browserTripPending = true
+    end
     if wasDeclined then
         -- The part never reached the browser: leave it pending so the next
-        -- press fires the same part again
+        -- press fires the same part again (a declined resend stays counted
+        -- as sent - it already went out once)
+        BattleScrolls.shareTrace.record(string.format(
+            "part %d not sent (%s)", seq, sawDialog and "declined" or "no dialog"))
+        notify()
+    elseif wasResend then
+        BattleScrolls.shareTrace.record(string.format("part %d resent", seq))
         notify()
     elseif seq >= chain.total then
-        shareUrl._doneTotal = chain.total
-        chain = nil
+        chain.nextSeq = chain.total + 1
+        BattleScrolls.shareTrace.record(string.format("part %d sent - all parts fired", seq))
         setPhase("done")
     else
         chain.nextSeq = seq + 1
+        BattleScrolls.shareTrace.record(string.format("part %d sent", seq))
         notify()
     end
 end
@@ -204,6 +278,9 @@ local function watchInFlight()
     end
     if ZO_DIALOG_SYNC_OBJECT:IsShown()
         and ZO_DIALOG_SYNC_OBJECT:GetState() == "CONFIRM_UNSAFE_URL" then
+        if not confirmDialogSeen then
+            BattleScrolls.shareTrace.record("url confirm shown")
+        end
         confirmDialogSeen = true
         settleAtMs = nil
         return
@@ -224,22 +301,42 @@ local function watchInFlight()
     end
 end
 
----Fires the next pending part's browser link. The caller (stepper keybind)
----invokes this once per user press; the part stays pending until its confirm
----dialog resolves without decline evidence.
-function shareUrl.sendNextPart()
-    if not chain or inFlightSeq then
-        return
-    end
-    local seq = chain.nextSeq
+---Fires one part's browser link and starts the in-flight watch.
+---@param seq number
+---@param isResend boolean
+local function firePart(seq, isResend)
     RequestOpenUnsafeURL(partUrl(seq))
     inFlightSeq = seq
+    inFlightIsResend = isResend
     confirmDialogSeen = false
     declineSeen = false
     firedAtMs = GetGameTimeMilliseconds()
     settleAtMs = nil
+    BattleScrolls.shareTrace.record(string.format(
+        isResend and "part %d re-fired" or "part %d fired", seq))
     EVENT_MANAGER:RegisterForUpdate(WATCH_NAMESPACE, WATCH_INTERVAL_MS, watchInFlight)
     notify()
+end
+
+---Fires the next pending part's browser link. The caller (stepper keybind)
+---invokes this once per user press; the part stays pending until its confirm
+---dialog resolves without decline evidence.
+function shareUrl.sendNextPart()
+    if not chain or inFlightSeq or chain.nextSeq > chain.total then
+        return
+    end
+    firePart(chain.nextSeq, false)
+end
+
+---Re-fires an already-sent part: the upload page reported it missing (its
+---browser tab crashed before posting the chunk). Valid any time after the
+---part's first send, including at "done".
+---@param seq number
+function shareUrl.resendPart(seq)
+    if not chain or inFlightSeq or seq < 1 or seq >= chain.nextSeq then
+        return
+    end
+    firePart(seq, true)
 end
 
 ---True while the stepper must not fire another URL: a part's confirmation
@@ -253,10 +350,14 @@ end
 -- environment kick the ingame scene manager to the base scene
 EVENT_MANAGER:RegisterForEvent("BattleScrollsShareUrlDecline", EVENT_REMOTE_SCENE_REQUEST,
     function(_, messageOrigin, requestType)
-        if inFlightSeq
-            and messageOrigin == SCENE_MANAGER_MESSAGE_ORIGIN_INTERNAL
-            and requestType == REMOTE_SCENE_REQUEST_TYPE_SHOW_BASE_SCENE then
+        if messageOrigin ~= SCENE_MANAGER_MESSAGE_ORIGIN_INTERNAL then
+            return
+        end
+        if inFlightSeq and requestType == REMOTE_SCENE_REQUEST_TYPE_SHOW_BASE_SCENE then
             declineSeen = true
+            BattleScrolls.shareTrace.record("decline evidence (base scene request)")
+        elseif shareUrl.isBusy() then
+            BattleScrolls.shareTrace.record("remote scene request type=" .. tostring(requestType))
         end
     end)
 
@@ -274,6 +375,8 @@ local function startChain(exportResult)
         nextSeq = 1,
         total = #parts,
     }
+    BattleScrolls.shareTrace.record(string.format(
+        "chain %s started: %d parts", chain.session, chain.total))
     setPhase("sending")
 end
 
@@ -292,6 +395,7 @@ local function runShare(buildEffect)
         startChain(result)
     end):Recover(function()
         chain = nil
+        BattleScrolls.shareTrace.record("build failed")
         setPhase("failed")
         return nil
     end):Ensure(function()
@@ -303,12 +407,22 @@ end
 ---@param instance InstanceStorage
 ---@param encounter CompactEncounter
 function shareUrl.shareEncounter(instance, encounter)
+    if shareUrl.isBusy() then
+        return
+    end
+    shareUrl._sourceInstance = instance
+    shareUrl._sourceEncounter = encounter
     runShare(BattleScrolls.export.buildEncounterShareAsync(instance, encounter))
 end
 
 ---Uploads a whole instance (archive profile, full fidelity) via the browser.
 ---@param instance InstanceStorage
 function shareUrl.uploadInstance(instance)
+    if shareUrl.isBusy() then
+        return
+    end
+    shareUrl._sourceInstance = instance
+    shareUrl._sourceEncounter = nil
     runShare(BattleScrolls.export.buildInstanceArchiveAsync(instance))
 end
 
@@ -316,6 +430,13 @@ SLASH_COMMANDS["/bsshare"] = function(args)
     if args:match("^%s*stop%s*$") then
         if shareUrl.stop() then
             d("[" .. GetString(BATTLESCROLLS_UI_NAME) .. "] " .. GetString(BATTLESCROLLS_SHARE_CANCELLED))
+        end
+    elseif args:match("^%s*trace%s*$") then
+        local entries = BattleScrolls.shareTrace.list()
+        local nowMs = GetGameTimeMilliseconds()
+        d("[" .. GetString(BATTLESCROLLS_UI_NAME) .. "] share trace:")
+        for _, e in ipairs(entries) do
+            d(string.format("  -%.1fs  %s", (nowMs - e.gameMs) / 1000, e.text))
         end
     end
 end

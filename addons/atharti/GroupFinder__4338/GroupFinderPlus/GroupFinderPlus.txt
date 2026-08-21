@@ -1,7 +1,7 @@
 ## Title: |cFFD700GroupFinder+|r
 ## Author: |cFFD700@Atharti|r
-## Description: Group finder on the tip of your fingers.
-## Version: 6.3
+## Description: Group Finder on the tip of your fingers.
+## Version: 6.4
 ## APIVersion: 101050
 ## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730
 ## SavedVariables: GroupFinderPlus_SavedVariables
@@ -11,5 +11,3 @@ GroupFinderPlus_Settings.lua
 GroupFinderPlus_UI.lua
 GroupFinderPlus_Extras.lua
 Bindings.xml
-
-

@@ -7,6 +7,7 @@ local MY_TEXTURES = {
     "KattsCryptIcons/icons/KCCHICKEN.dds",
     "KattsCryptIcons/icons/KCCozy.dds",
     "KattsCryptIcons/icons/KCDLJ.dds",
+    "KattsCryptIcons/icons/KCDonja.dds",
     "KattsCryptIcons/icons/KCDank.dds",
     "KattsCryptIcons/icons/KCFart.dds",
     "KattsCryptIcons/icons/KCFine.dds",

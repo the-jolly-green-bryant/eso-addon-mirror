@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/DonjaZero/Katt-s-Crypt-Icons-for-OdySupportIcons__3818",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "DonjaZero",
   "canonical_id": "esoui:3818",
   "category_id": "95",
@@ -69,7 +70,7 @@
     "KattsCryptIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3818/",
-  "fingerprint": "a8f05b38233ffab090ebbc87f875f8ed7598f5defa85f75f9ce001b04890907c",
+  "fingerprint": "b4f36a2b108057914e5471de6091ed34facdb5baf6d667d1df9fbe386702705f",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw12981.png"
   ],
@@ -79,11 +80,11 @@
   "source_id": "3818",
   "source_url": "https://www.esoui.com/downloads/info3818-KattsCryptIconsforOdySupportIcons.html",
   "stats": {
-    "downloads": 5971,
-    "favorites": 9,
-    "monthly_downloads": 214
+    "downloads": 6030,
+    "favorites": 10,
+    "monthly_downloads": 85
   },
   "title": "Katt's Crypt Icons for OdySupportIcons",
-  "updated_at": 1783377853000,
-  "version": "1.7.1"
+  "updated_at": 1787265655000,
+  "version": "1.7.2"
 }

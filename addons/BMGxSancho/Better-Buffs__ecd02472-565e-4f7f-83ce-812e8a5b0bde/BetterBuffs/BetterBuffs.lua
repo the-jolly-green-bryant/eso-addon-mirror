@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.11"
+BB.version = "0.3.14"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -49,6 +49,20 @@ local characterDefaults = {
             opacity = 0.34,
             offsetX = 0,
             offsetY = 120,
+        },
+        damageStats = {
+            enabled = false,
+            scale = 1.0,
+            opacity = 0.34,
+            offsetX = 0,
+            offsetY = 230,
+        },
+        resistanceStats = {
+            enabled = false,
+            scale = 1.0,
+            opacity = 0.34,
+            offsetX = 0,
+            offsetY = 310,
         },
     },
     _profileInitialized = false,
@@ -205,7 +219,7 @@ function BB:SetEnabled(value)
     self.saved.enabled = self.characterSaved.enabled
     if self.Runtime then self.Runtime:SetEnabled(self.saved.enabled) end
     if self.UI then self.UI:RefreshAll(true) end
-    if self.Stats then self.Stats:Refresh() end
+    if self.Stats then self.Stats:RefreshAll() end
 end
 
 function BB:Initialize()
@@ -274,10 +288,14 @@ function BB:Initialize()
     self.characterSaved.ui.debuffs = type(self.characterSaved.ui.debuffs) == "table" and self.characterSaved.ui.debuffs or {}
     self.characterSaved.ui.slayerMissAlert = type(self.characterSaved.ui.slayerMissAlert) == "table" and self.characterSaved.ui.slayerMissAlert or {}
     self.characterSaved.ui.stats = type(self.characterSaved.ui.stats) == "table" and self.characterSaved.ui.stats or {}
+    self.characterSaved.ui.damageStats = type(self.characterSaved.ui.damageStats) == "table" and self.characterSaved.ui.damageStats or {}
+    self.characterSaved.ui.resistanceStats = type(self.characterSaved.ui.resistanceStats) == "table" and self.characterSaved.ui.resistanceStats or {}
     DeepDefaults(self.characterSaved.ui.buffs, displayDefaults)
     DeepDefaults(self.characterSaved.ui.debuffs, displayDefaults)
     DeepDefaults(self.characterSaved.ui.slayerMissAlert, characterDefaults.ui.slayerMissAlert)
     DeepDefaults(self.characterSaved.ui.stats, characterDefaults.ui.stats)
+    DeepDefaults(self.characterSaved.ui.damageStats, characterDefaults.ui.damageStats)
+    DeepDefaults(self.characterSaved.ui.resistanceStats, characterDefaults.ui.resistanceStats)
 
     -- Compatibility facade for the existing runtime/settings code. Nested tables
     -- are direct references to their authoritative SavedVariables owners.

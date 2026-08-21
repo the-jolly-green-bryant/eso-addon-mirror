@@ -15,10 +15,10 @@
   "content_id": "esoui:4729",
   "deleted": false,
   "directories": [
-    "STARS complete"
+    "STARS"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4729/",
-  "fingerprint": "cf38a0ca620f59febfae6a89bc4207e2a6e2b4a53b2536e82cd0484627862964",
+  "fingerprint": "4e1c73d1b4caa31170c2a588cd7aa63f0215f0f0abd8b107ac5116be336a8e96",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -26,11 +26,11 @@
   "source_id": "4729",
   "source_url": "https://www.esoui.com/downloads/info4729-STARS.html",
   "stats": {
-    "downloads": 30,
+    "downloads": 34,
     "favorites": 0,
-    "monthly_downloads": 30
+    "monthly_downloads": 32
   },
   "title": "STARS",
-  "updated_at": 1787137884000,
-  "version": "0.6.11-complete"
+  "updated_at": 1787246371000,
+  "version": "0.6.13"
 }

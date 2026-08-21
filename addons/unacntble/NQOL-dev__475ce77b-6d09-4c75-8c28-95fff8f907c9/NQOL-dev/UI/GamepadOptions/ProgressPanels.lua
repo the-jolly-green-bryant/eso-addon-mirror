@@ -589,6 +589,7 @@ function GamepadOptions.BuildUtilityOptionsData()
         GamepadOptions.BuildAutoClaimVeterancyRewardsOption(),
         GamepadOptions.BuildTransmuteWatchOption(),
         GamepadOptions.BuildSkipLogoutConfirmationOption(),
+        GamepadOptions.BuildErrorsDismissalOption(),
         GamepadOptions.BuildLuaGcEntry(),
     }
 end
