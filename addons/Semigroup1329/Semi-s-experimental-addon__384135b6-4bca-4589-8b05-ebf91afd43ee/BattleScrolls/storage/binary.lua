@@ -12,7 +12,10 @@ BattleScrolls = BattleScrolls or {}
 local binaryStorage = {}
 BattleScrolls.binaryStorage = binaryStorage
 
-local CURRENT_VERSION = 17
+local CURRENT_VERSION = 18
+-- Exposed for the migration's legacy scan; the wire version signals this to
+-- the web decoder (wire v5 frames v18 blobs, v4 framed v17)
+binaryStorage.CURRENT_VERSION = CURRENT_VERSION
 
 -- Import BitEncoder/BitDecoder from bitcodec module
 local BitEncoder = BattleScrolls.bitcodec.BitEncoder
@@ -245,11 +248,13 @@ local function readAbilityRef(decoder, registry)
     return abilityId
 end
 
----Writes a name/string reference as a 0-based varint registry index.
----@param encoder BitEncoder
+---Interns a string into the registry name pool, returning its 1-based index.
+---Also used by the export framing: wire v5 shared-entry display names
+---reference the name pool instead of shipping inline strings.
 ---@param registry EncounterRegistry
 ---@param name string|nil
-local function writeNameRef(encoder, registry, name)
+---@return number index 1-based pool index
+function binaryStorage.internName(registry, name)
     name = name or ""
     local index = registry.nameIndex[name]
     if not index then
@@ -257,7 +262,15 @@ local function writeNameRef(encoder, registry, name)
         registry.names[index] = name
         registry.nameIndex[name] = index
     end
-    encoder:writeVarUInt(index - 1)
+    return index
+end
+
+---Writes a name/string reference as a 0-based varint registry index.
+---@param encoder BitEncoder
+---@param registry EncounterRegistry
+---@param name string|nil
+local function writeNameRef(encoder, registry, name)
+    encoder:writeVarUInt(binaryStorage.internName(registry, name) - 1)
 end
 
 ---@param decoder BitDecoder
@@ -270,6 +283,53 @@ local function readNameRef(decoder, registry)
         error("Corrupt name registry reference: " .. tostring(index))
     end
     return name
+end
+
+-- =============================================================================
+-- v18 SORTED ABILITY-KEYED MAPS
+-- =============================================================================
+-- v18 writes every abilityId-keyed inner map sorted by registry index with
+-- gap-encoded refs: sorted, the gaps are small (one byte where an absolute
+-- ref of a busy registry often needs two). Interning still happens in
+-- pairs() order - exactly where v17 assigned indices - so registry contents
+-- are unaffected; only the entry order inside each map changes, which the
+-- decoded hash tables never exposed anyway.
+
+---Interns every ability key of the map, then returns the entries sorted
+---ascending by their 1-based registry index for gap encoding.
+---@param registry EncounterRegistry
+---@param byAbility table<number, any>
+---@return {index: number, value: any}[] entries
+local function sortedAbilityEntries(registry, byAbility)
+    local entries = {}
+    for abilityId, value in pairs(byAbility) do
+        local index = registry.abilityIndex[abilityId]
+        if not index then
+            index = #registry.abilityIds + 1
+            registry.abilityIds[index] = abilityId
+            registry.abilityIndex[abilityId] = index
+        end
+        entries[#entries + 1] = { index = index, value = value }
+    end
+    table.sort(entries, function(a, b) return a.index < b.index end)
+    return entries
+end
+
+---Reads one v18 gap-encoded ability ref. Refs are written as the distance
+---to the previous entry minus one (the first as its absolute 0-based
+---index), so the caller threads prevIndex through the loop.
+---@param decoder BitDecoder
+---@param registry RegistryArrays
+---@param prevIndex number 1-based index of the previous entry (0 before the first)
+---@return number abilityId
+---@return number index The new 1-based index to thread as prevIndex
+local function readDeltaAbilityRef(decoder, registry, prevIndex)
+    local index = prevIndex + 1 + decoder:readVarUInt()
+    local abilityId = registry.abilityIds[index]
+    if not abilityId then
+        error("Corrupt ability registry reference: " .. tostring(index))
+    end
+    return abilityId, index
 end
 
 -- Number of encoded items (breakdowns, healing breakdowns, effect stats, etc.)
@@ -372,10 +432,16 @@ local function writeDamageBreakdown(encoder, breakdown)
         encoder:writeVarUInt(total * 2 + 1)
         encoder:writeVarUInt(rawTotal - total)
     end
-    encoder:writeVarUInt(breakdown.ticks or 0)
+    -- v18: single hits (and empty rows) have minTick == maxTick == total -
+    -- the redundancy flag rides in bit 0 of the ticks varint, eliding both
+    -- tick varints for the ~40% of breakdowns that are one hit
+    local ticksSame = minTick == total and maxTick == total
+    encoder:writeVarUInt((breakdown.ticks or 0) * 2 + (ticksSame and 1 or 0))
     encoder:writeVarUInt(breakdown.critTicks or 0)
-    encoder:writeVarUInt(minTick)
-    encoder:writeVarUInt(maxTick - minTick)
+    if not ticksSame then
+        encoder:writeVarUInt(minTick)
+        encoder:writeVarUInt(maxTick - minTick)
+    end
 end
 
 ---Reads a DamageBreakdown from decoder
@@ -390,10 +456,23 @@ local function readDamageBreakdown(decoder, version)
         if packed % 2 == 1 then
             rawTotal = total + decoder:readVarUInt()
         end
-        local ticks = decoder:readVarUInt()
+        local ticks, ticksSame
+        if version >= 18 then
+            local ticksPacked = decoder:readVarUInt()
+            ticks = math.floor(ticksPacked / 2)
+            ticksSame = ticksPacked % 2 == 1
+        else
+            ticks = decoder:readVarUInt()
+            ticksSame = false
+        end
         local critTicks = decoder:readVarUInt()
-        local minTick = decoder:readVarUInt()
-        local maxTick = minTick + decoder:readVarUInt()
+        local minTick, maxTick
+        if ticksSame then
+            minTick, maxTick = total, total
+        else
+            minTick = decoder:readVarUInt()
+            maxTick = minTick + decoder:readVarUInt()
+        end
         return BattleScrolls.structures.makeDamageBreakdown(
             total, rawTotal, ticks, critTicks, minTick, maxTick)
     end
@@ -439,13 +518,18 @@ end
 local function writeHealingBreakdown(encoder, breakdown)
     local minTick = breakdown.minTick or 0
     local maxTick = breakdown.maxTick or 0
+    local raw = (breakdown.real or 0) + (breakdown.overheal or 0)
     -- raw = real + overheal, derived on read
     encoder:writeVarUInt(breakdown.real or 0)
     encoder:writeVarUInt(breakdown.overheal or 0)
-    encoder:writeVarUInt(breakdown.ticks or 0)
+    -- v18: same single-tick elision as damage - min/max equal the raw total
+    local ticksSame = minTick == raw and maxTick == raw
+    encoder:writeVarUInt((breakdown.ticks or 0) * 2 + (ticksSame and 1 or 0))
     encoder:writeVarUInt(breakdown.critTicks or 0)
-    encoder:writeVarUInt(minTick)
-    encoder:writeVarUInt(maxTick - minTick)
+    if not ticksSame then
+        encoder:writeVarUInt(minTick)
+        encoder:writeVarUInt(maxTick - minTick)
+    end
 end
 
 ---Reads a HealingBreakdown from decoder
@@ -456,10 +540,23 @@ local function readHealingBreakdown(decoder, version)
     if version >= 17 then
         local real = decoder:readVarUInt()
         local overheal = decoder:readVarUInt()
-        local ticks = decoder:readVarUInt()
+        local ticks, ticksSame
+        if version >= 18 then
+            local ticksPacked = decoder:readVarUInt()
+            ticks = math.floor(ticksPacked / 2)
+            ticksSame = ticksPacked % 2 == 1
+        else
+            ticks = decoder:readVarUInt()
+            ticksSame = false
+        end
         local critTicks = decoder:readVarUInt()
-        local minTick = decoder:readVarUInt()
-        local maxTick = minTick + decoder:readVarUInt()
+        local minTick, maxTick
+        if ticksSame then
+            minTick, maxTick = real + overheal, real + overheal
+        else
+            minTick = decoder:readVarUInt()
+            maxTick = minTick + decoder:readVarUInt()
+        end
         return BattleScrolls.structures.makeHealingBreakdown(
             real + overheal, real, overheal, ticks, critTicks, minTick, maxTick)
     end
@@ -474,10 +571,11 @@ local function readHealingBreakdown(decoder, version)
     )
 end
 
----Writes an EffectStats to encoder
+---Writes an EffectStats to encoder. v18: the ability ref is written by the
+---caller (gap-encoded in sorted map order), not here.
 ---@param encoder BitEncoder
 ---@param stats EffectStats
-local function writeEffectStats(encoder, stats, registry, abilityId)
+local function writeEffectStats(encoder, stats)
     local totalActive = stats.totalActiveTimeMs or 0
     local timeAtMax = stats.timeAtMaxStacksMs or 0
     local applications = stats.applications or 0
@@ -490,28 +588,32 @@ local function writeEffectStats(encoder, stats, registry, abilityId)
         maxStacks = 15
     end
 
-    writeAbilityRef(encoder, registry, abilityId or stats.abilityId)
-
     -- Equality flags: the common cases (non-stacking effects, self-applied
     -- effects, no concurrent instances) duplicate fields exactly. Packed with
     -- the effect type into one byte to keep the stream byte-aligned.
+    -- v18 adds bit 0: another player's effect the local player never touched
+    -- carries three literal zero player fields - the overwhelmingly common
+    -- case in group effect tables.
     local timeAtMaxSame = timeAtMax == totalActive
     local playerSame = playerActive == totalActive
         and playerTimeAtMax == timeAtMax
         and playerApplications == applications
+    local playerZero = not playerSame
+        and playerActive == 0 and playerTimeAtMax == 0 and playerApplications == 0
     local peakOne = peak == 1
     encoder:writeUInt(
         (stats.effectType or 0) % 16 * 16
         + (timeAtMaxSame and 8 or 0)
         + (playerSame and 4 or 0)
-        + (peakOne and 2 or 0), 8)
+        + (peakOne and 2 or 0)
+        + (playerZero and 1 or 0), 8)
 
     encoder:writeVarUInt(totalActive)
     encoder:writeVarUInt(applications * 16 + maxStacks)
     if not timeAtMaxSame then
         encoder:writeVarUInt(timeAtMax)
     end
-    if not playerSame then
+    if not playerSame and not playerZero then
         encoder:writeVarUInt(playerActive)
         encoder:writeVarUInt(playerTimeAtMax)
         encoder:writeVarUInt(playerApplications)
@@ -521,18 +623,27 @@ local function writeEffectStats(encoder, stats, registry, abilityId)
     end
 end
 
----Reads an EffectStats from decoder
+---Reads an EffectStats from decoder. v18: the ability ref was gap-encoded
+---by the caller, which passes the resolved id in.
 ---@param decoder BitDecoder
 ---@param version number
+---@param registry RegistryArrays|nil
+---@param v18AbilityId number|nil The caller-resolved ability id (v18 only)
 ---@return EffectStats
-local function readEffectStats(decoder, version, registry)
+local function readEffectStats(decoder, version, registry, v18AbilityId)
     if version >= 17 then
-        local abilityId = readAbilityRef(decoder, registry)
+        local abilityId
+        if version >= 18 then
+            abilityId = v18AbilityId
+        else
+            abilityId = readAbilityRef(decoder, registry)
+        end
         local packed = decoder:readUInt(8)
         local effectType = math.floor(packed / 16)
         local timeAtMaxSame = packed % 16 >= 8
         local playerSame = packed % 8 >= 4
         local peakOne = packed % 4 >= 2
+        local playerZero = version >= 18 and packed % 2 >= 1
 
         local totalActive = decoder:readVarUInt()
         local appsPacked = decoder:readVarUInt()
@@ -547,6 +658,8 @@ local function readEffectStats(decoder, version, registry)
         local playerActive, playerTimeAtMax, playerApplications
         if playerSame then
             playerActive, playerTimeAtMax, playerApplications = totalActive, timeAtMax, applications
+        elseif playerZero then
+            playerActive, playerTimeAtMax, playerApplications = 0, 0, 0
         else
             playerActive = decoder:readVarUInt()
             playerTimeAtMax = decoder:readVarUInt()
@@ -602,14 +715,15 @@ local function writeDamageMap(encoder, damageMap, registry, progress)
             encoder:writeVarUInt(targetId)
 
             local byAbility = damageDone.byAbilityId or damageDone
-            local abilityCount = writeTableVarCount(encoder, byAbility)
+            local entries = sortedAbilityEntries(registry, byAbility)
+            local abilityCount = writeVarCount(encoder, #entries)
 
-            local abilitiesWritten = 0
-            for abilityId, breakdown in pairs(byAbility) do
-                if abilitiesWritten >= abilityCount then break end
-                abilitiesWritten = abilitiesWritten + 1
-                writeAbilityRef(encoder, registry, abilityId)
-                writeDamageBreakdown(encoder, breakdown)
+            local prevIndex = 0
+            for i = 1, abilityCount do
+                local entry = entries[i]
+                encoder:writeVarUInt(entry.index - prevIndex - 1)
+                prevIndex = entry.index
+                writeDamageBreakdown(encoder, entry.value)
                 countAndMaybeYield(progress)
             end
         end
@@ -634,9 +748,12 @@ local function readDamageMap(decoder, version, registry)
             result[sourceId][targetId] = {}
 
             local abilityCount = readMapCount(decoder, version)
+            local prevIndex = 0
             for _ = 1, abilityCount do
                 local abilityId
-                if version >= 17 then
+                if version >= 18 then
+                    abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+                elseif version >= 17 then
                     abilityId = readAbilityRef(decoder, registry)
                 else
                     abilityId = decoder:readUInt(BITS.ABILITY_ID)
@@ -669,14 +786,15 @@ local function writeHealingDoneDiffSource(encoder, healing, registry, progress)
         sourcesWritten = sourcesWritten + 1
         encoder:writeVarUInt(sourceId)
 
-        local abilityCount = writeTableVarCount(encoder, byAbility)
+        local entries = sortedAbilityEntries(registry, byAbility)
+        local abilityCount = writeVarCount(encoder, #entries)
 
-        local abilitiesWritten = 0
-        for abilityId, breakdown in pairs(byAbility) do
-            if abilitiesWritten >= abilityCount then break end
-            abilitiesWritten = abilitiesWritten + 1
-            writeAbilityRef(encoder, registry, abilityId)
-            writeHealingBreakdown(encoder, breakdown)
+        local prevIndex = 0
+        for i = 1, abilityCount do
+            local entry = entries[i]
+            encoder:writeVarUInt(entry.index - prevIndex - 1)
+            prevIndex = entry.index
+            writeHealingBreakdown(encoder, entry.value)
             countAndMaybeYield(progress)
         end
     end
@@ -698,9 +816,12 @@ local function readHealingDoneDiffSource(decoder, version, registry)
         result.bySourceUnitIdByAbilityId[sourceId] = {}
 
         local abilityCount = readMapCount(decoder, version)
+        local prevIndex = 0
         for _ = 1, abilityCount do
             local abilityId
-            if version >= 17 then
+            if version >= 18 then
+                abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+            elseif version >= 17 then
                 abilityId = readAbilityRef(decoder, registry)
             else
                 abilityId = decoder:readUInt(BITS.ABILITY_ID)
@@ -720,14 +841,15 @@ local function writeHealingDone(encoder, healing, registry, progress)
     writeHealingTotals(encoder, healing.total)
     -- v6+: byHotVsDirect computed on-demand from byAbilityId + abilityInfo
 
-    local abilityCount = writeTableVarCount(encoder, healing.byAbilityId or {})
+    local entries = sortedAbilityEntries(registry, healing.byAbilityId or {})
+    local abilityCount = writeVarCount(encoder, #entries)
 
-    local abilitiesWritten = 0
-    for abilityId, breakdown in pairs(healing.byAbilityId or {}) do
-        if abilitiesWritten >= abilityCount then break end
-        abilitiesWritten = abilitiesWritten + 1
-        writeAbilityRef(encoder, registry, abilityId)
-        writeHealingBreakdown(encoder, breakdown)
+    local prevIndex = 0
+    for i = 1, abilityCount do
+        local entry = entries[i]
+        encoder:writeVarUInt(entry.index - prevIndex - 1)
+        prevIndex = entry.index
+        writeHealingBreakdown(encoder, entry.value)
         countAndMaybeYield(progress)
     end
 end
@@ -743,9 +865,12 @@ local function readHealingDone(decoder, version, registry)
     }
 
     local abilityCount = readMapCount(decoder, version)
+    local prevIndex = 0
     for _ = 1, abilityCount do
         local abilityId
-        if version >= 17 then
+        if version >= 18 then
+            abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+        elseif version >= 17 then
             abilityId = readAbilityRef(decoder, registry)
         else
             abilityId = decoder:readUInt(BITS.ABILITY_ID)
@@ -988,14 +1113,17 @@ end
 ---@param effectsOnPlayer table<number, EffectStats>|nil
 ---@param progress EncodeProgress
 local function writeEffectsOnPlayer(encoder, effectsOnPlayer, registry, progress)
-    local count = writeTableVarCount(encoder, effectsOnPlayer or {})
+    -- v18: sorted map with gap-encoded refs (the map key IS the ability ref;
+    -- pre-v17 stored the key twice, v17 stored it inside the stats row)
+    local entries = sortedAbilityEntries(registry, effectsOnPlayer or {})
+    local count = writeVarCount(encoder, #entries)
 
-    local written = 0
-    for abilityId, stats in pairs(effectsOnPlayer or {}) do
-        if written >= count then break end
-        written = written + 1
-        -- v17: the map key is carried inside the stats row (pre-v17 stored it twice)
-        writeEffectStats(encoder, stats, registry, abilityId)
+    local prevIndex = 0
+    for i = 1, count do
+        local entry = entries[i]
+        encoder:writeVarUInt(entry.index - prevIndex - 1)
+        prevIndex = entry.index
+        writeEffectStats(encoder, entry.value)
         countAndMaybeYield(progress)
     end
 end
@@ -1008,12 +1136,15 @@ local function readEffectsOnPlayer(decoder, version, registry)
     if count == 0 then return nil end
 
     local result = {}
+    local prevIndex = 0
     for _ = 1, count do
         local abilityId
-        if version < 17 then
+        if version >= 18 then
+            abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+        elseif version < 17 then
             abilityId = decoder:readUInt(BITS.ABILITY_ID)
         end
-        local stats = readEffectStats(decoder, version, registry)
+        local stats = readEffectStats(decoder, version, registry, abilityId)
         abilityId = abilityId or stats.abilityId
         result[abilityId] = stats
         result[abilityId].abilityId = abilityId  -- Ensure abilityId is set
@@ -1034,13 +1165,15 @@ local function writeEffectsOnBosses(encoder, effectsOnBosses, registry, progress
         unitsWritten = unitsWritten + 1
         writeNameRef(encoder, registry, unitTag)
 
-        local abilityCount = writeTableVarCount(encoder, byAbility)
+        local entries = sortedAbilityEntries(registry, byAbility)
+        local abilityCount = writeVarCount(encoder, #entries)
 
-        local abilitiesWritten = 0
-        for abilityId, stats in pairs(byAbility) do
-            if abilitiesWritten >= abilityCount then break end
-            abilitiesWritten = abilitiesWritten + 1
-            writeEffectStats(encoder, stats, registry, abilityId)
+        local prevIndex = 0
+        for i = 1, abilityCount do
+            local entry = entries[i]
+            encoder:writeVarUInt(entry.index - prevIndex - 1)
+            prevIndex = entry.index
+            writeEffectStats(encoder, entry.value)
             countAndMaybeYield(progress)
         end
     end
@@ -1064,12 +1197,15 @@ local function readEffectsOnBosses(decoder, version, registry)
         result[unitTag] = {}
 
         local abilityCount = readMapCount(decoder, version)
+        local prevIndex = 0
         for _ = 1, abilityCount do
             local abilityId
-            if version < 17 then
+            if version >= 18 then
+                abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+            elseif version < 17 then
                 abilityId = decoder:readUInt(BITS.ABILITY_ID)
             end
-            local stats = readEffectStats(decoder, version, registry)
+            local stats = readEffectStats(decoder, version, registry, abilityId)
             abilityId = abilityId or stats.abilityId
             result[unitTag][abilityId] = stats
             result[unitTag][abilityId].abilityId = abilityId
@@ -1091,13 +1227,15 @@ local function writeEffectsOnGroup(encoder, effectsOnGroup, registry, progress)
         membersWritten = membersWritten + 1
         writeNameRef(encoder, registry, displayName)
 
-        local abilityCount = writeTableVarCount(encoder, byAbility)
+        local entries = sortedAbilityEntries(registry, byAbility)
+        local abilityCount = writeVarCount(encoder, #entries)
 
-        local abilitiesWritten = 0
-        for abilityId, stats in pairs(byAbility) do
-            if abilitiesWritten >= abilityCount then break end
-            abilitiesWritten = abilitiesWritten + 1
-            writeEffectStats(encoder, stats, registry, abilityId)
+        local prevIndex = 0
+        for i = 1, abilityCount do
+            local entry = entries[i]
+            encoder:writeVarUInt(entry.index - prevIndex - 1)
+            prevIndex = entry.index
+            writeEffectStats(encoder, entry.value)
             countAndMaybeYield(progress)
         end
     end
@@ -1121,12 +1259,15 @@ local function readEffectsOnGroup(decoder, version, registry)
         result[displayName] = {}
 
         local abilityCount = readMapCount(decoder, version)
+        local prevIndex = 0
         for _ = 1, abilityCount do
             local abilityId
-            if version < 17 then
+            if version >= 18 then
+                abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+            elseif version < 17 then
                 abilityId = decoder:readUInt(BITS.ABILITY_ID)
             end
-            local stats = readEffectStats(decoder, version, registry)
+            local stats = readEffectStats(decoder, version, registry, abilityId)
             abilityId = abilityId or stats.abilityId
             result[displayName][abilityId] = stats
             result[displayName][abilityId].abilityId = abilityId
@@ -2093,6 +2234,267 @@ function binaryStorage.decodeSharedEntry(compactEntry)
 end
 
 -- =============================================================================
+-- WIRE (EXPORT) COLUMN-ORIENTED SECTION WRITERS
+-- =============================================================================
+-- Export streams re-encode decoded encounters against a fresh registry
+-- (network/export.lua). Wire blobs keep the v18 section set, but the three
+-- heavy section families trade the interleaved layout for column-oriented
+-- writes: the same varints grouped by field compress measurably better under
+-- deflate (like values sit next to each other). Effect times are additionally
+-- stored as permille of the encounter duration - the viewer renders 0.1%
+-- steps, so the quantization sits below display precision - and
+-- playerTimeAtMaxStacksMs is dropped (the viewer never reads it). The addon
+-- never decodes wire blobs; web/src/shared/decoder.ts holds the only reader.
+
+---Quantizes a millisecond time to permille of the encounter duration.
+---@param timeMs number
+---@param durationMs number
+---@return number
+local function permille(timeMs, durationMs)
+    if durationMs <= 0 then
+        return 0
+    end
+    return math.floor(timeMs * 1000 / durationMs + 0.5)
+end
+
+---Writes a damage map in the wire layout: the source/target/ref skeleton
+---first (identical to v18), then every breakdown field as a column across
+---the whole map. Field semantics match writeDamageBreakdown exactly.
+---@param encoder BitEncoder
+---@param damageMap table<number, table<number, DamageDone|DamageByAbility>>|nil
+---@param registry EncounterRegistry
+---@param progress EncodeProgress
+local function writeDamageMapWire(encoder, damageMap, registry, progress)
+    ---@type DamageBreakdown[]
+    local pool = {}
+    local sourceCount = writeTableVarCount(encoder, damageMap or {})
+
+    local sourcesWritten = 0
+    for sourceId, byTarget in pairs(damageMap or {}) do
+        if sourcesWritten >= sourceCount then break end
+        sourcesWritten = sourcesWritten + 1
+        encoder:writeVarUInt(sourceId)
+
+        local targetCount = writeTableVarCount(encoder, byTarget)
+
+        local targetsWritten = 0
+        for targetId, damageDone in pairs(byTarget) do
+            if targetsWritten >= targetCount then break end
+            targetsWritten = targetsWritten + 1
+            encoder:writeVarUInt(targetId)
+
+            local byAbility = damageDone.byAbilityId or damageDone
+            local entries = sortedAbilityEntries(registry, byAbility)
+            local abilityCount = writeVarCount(encoder, #entries)
+
+            local prevIndex = 0
+            for i = 1, abilityCount do
+                local entry = entries[i]
+                encoder:writeVarUInt(entry.index - prevIndex - 1)
+                prevIndex = entry.index
+                pool[#pool + 1] = entry.value
+            end
+        end
+    end
+
+    -- Columns: totalPacked | rawTotal delta (flagged rows) | ticksPacked |
+    -- critTicks | minTick (non-elided rows) | maxTick delta (non-elided rows)
+    for i = 1, #pool do
+        local breakdown = pool[i]
+        local total = breakdown.total or 0
+        local rawTotal = breakdown.rawTotal or total
+        encoder:writeVarUInt(total * 2 + (rawTotal ~= total and 1 or 0))
+        countAndMaybeYield(progress)
+    end
+    for i = 1, #pool do
+        local breakdown = pool[i]
+        local total = breakdown.total or 0
+        local rawTotal = breakdown.rawTotal or total
+        if rawTotal ~= total then
+            encoder:writeVarUInt(rawTotal - total)
+        end
+    end
+    for i = 1, #pool do
+        local breakdown = pool[i]
+        local total = breakdown.total or 0
+        local ticksSame = (breakdown.minTick or 0) == total and (breakdown.maxTick or 0) == total
+        encoder:writeVarUInt((breakdown.ticks or 0) * 2 + (ticksSame and 1 or 0))
+    end
+    for i = 1, #pool do
+        encoder:writeVarUInt(pool[i].critTicks or 0)
+        countAndMaybeYield(progress)
+    end
+    for i = 1, #pool do
+        local breakdown = pool[i]
+        local total = breakdown.total or 0
+        if not ((breakdown.minTick or 0) == total and (breakdown.maxTick or 0) == total) then
+            encoder:writeVarUInt(breakdown.minTick or 0)
+        end
+    end
+    for i = 1, #pool do
+        local breakdown = pool[i]
+        local total = breakdown.total or 0
+        if not ((breakdown.minTick or 0) == total and (breakdown.maxTick or 0) == total) then
+            encoder:writeVarUInt((breakdown.maxTick or 0) - (breakdown.minTick or 0))
+        end
+        countAndMaybeYield(progress)
+    end
+end
+
+---@class WireEffectRecord
+---@field flags number Packed byte: effectType*16 + timeAtMaxSame*8 + playerSame*4 + peakOne*2 + playerZero
+---@field totalActive number Permille of the encounter duration
+---@field appsPacked number applications*16 + maxStacks
+---@field timeAtMax number|nil Permille; present when not timeAtMaxSame
+---@field playerActive number|nil Permille; present when player fields are explicit
+---@field playerApplications number|nil Present when player fields are explicit
+---@field peak number|nil Present when peakConcurrentInstances > 1
+
+---Precomputes one effect row's wire fields. Flag semantics match
+---writeEffectStats; times are permille, playerTimeAtMaxStacksMs is dropped.
+---@param stats EffectStats
+---@param durationMs number
+---@return WireEffectRecord
+local function buildWireEffectRecord(stats, durationMs)
+    local totalActive = stats.totalActiveTimeMs or 0
+    local timeAtMax = stats.timeAtMaxStacksMs or 0
+    local applications = stats.applications or 0
+    local playerActive = stats.playerActiveTimeMs or 0
+    local playerTimeAtMax = stats.playerTimeAtMaxStacksMs or 0
+    local playerApplications = stats.playerApplications or 0
+    local peak = stats.peakConcurrentInstances or 1
+    local maxStacks = stats.maxStacks or 0
+    if maxStacks > 15 then
+        maxStacks = 15
+    end
+    local timeAtMaxSame = timeAtMax == totalActive
+    local playerSame = playerActive == totalActive
+        and playerTimeAtMax == timeAtMax
+        and playerApplications == applications
+    local playerZero = not playerSame
+        and playerActive == 0 and playerTimeAtMax == 0 and playerApplications == 0
+    local peakOne = peak == 1
+
+    ---@type WireEffectRecord
+    local record = {
+        flags = (stats.effectType or 0) % 16 * 16
+            + (timeAtMaxSame and 8 or 0)
+            + (playerSame and 4 or 0)
+            + (peakOne and 2 or 0)
+            + (playerZero and 1 or 0),
+        totalActive = permille(totalActive, durationMs),
+        appsPacked = applications * 16 + maxStacks,
+    }
+    if not timeAtMaxSame then
+        record.timeAtMax = permille(timeAtMax, durationMs)
+    end
+    if not playerSame and not playerZero then
+        record.playerActive = permille(playerActive, durationMs)
+        record.playerApplications = playerApplications
+    end
+    if not peakOne then
+        record.peak = peak
+    end
+    return record
+end
+
+---Writes pooled effect records column by column.
+---@param encoder BitEncoder
+---@param records WireEffectRecord[]
+---@param progress EncodeProgress
+local function writeWireEffectColumns(encoder, records, progress)
+    for i = 1, #records do
+        encoder:writeUInt(records[i].flags, 8)
+    end
+    for i = 1, #records do
+        encoder:writeVarUInt(records[i].totalActive)
+        countAndMaybeYield(progress)
+    end
+    for i = 1, #records do
+        encoder:writeVarUInt(records[i].appsPacked)
+    end
+    for i = 1, #records do
+        local timeAtMax = records[i].timeAtMax
+        if timeAtMax then
+            encoder:writeVarUInt(timeAtMax)
+        end
+    end
+    for i = 1, #records do
+        local playerActive = records[i].playerActive
+        if playerActive then
+            encoder:writeVarUInt(playerActive)
+        end
+        countAndMaybeYield(progress)
+    end
+    for i = 1, #records do
+        local playerApplications = records[i].playerApplications
+        if playerApplications then
+            encoder:writeVarUInt(playerApplications)
+        end
+    end
+    for i = 1, #records do
+        local peak = records[i].peak
+        if peak then
+            encoder:writeVarUInt(peak)
+        end
+    end
+end
+
+---Wire form of effectsOnPlayer: gap-encoded refs up front, fields as columns.
+---@param encoder BitEncoder
+---@param effectsOnPlayer table<number, EffectStats>|nil
+---@param registry EncounterRegistry
+---@param durationMs number
+---@param progress EncodeProgress
+local function writeEffectsOnPlayerWire(encoder, effectsOnPlayer, registry, durationMs, progress)
+    ---@type WireEffectRecord[]
+    local records = {}
+    local entries = sortedAbilityEntries(registry, effectsOnPlayer or {})
+    local count = writeVarCount(encoder, #entries)
+
+    local prevIndex = 0
+    for i = 1, count do
+        local entry = entries[i]
+        encoder:writeVarUInt(entry.index - prevIndex - 1)
+        prevIndex = entry.index
+        records[#records + 1] = buildWireEffectRecord(entry.value, durationMs)
+    end
+    writeWireEffectColumns(encoder, records, progress)
+end
+
+---Wire form of effectsOnBosses/effectsOnGroup: the outer key + ref skeleton
+---first, then one column run spanning every member's records.
+---@param encoder BitEncoder
+---@param effectsByName table<string, table<number, EffectStats>>|nil
+---@param registry EncounterRegistry
+---@param durationMs number
+---@param progress EncodeProgress
+local function writeEffectsByNameWire(encoder, effectsByName, registry, durationMs, progress)
+    ---@type WireEffectRecord[]
+    local records = {}
+    local outerCount = writeTableVarCount(encoder, effectsByName or {})
+
+    local written = 0
+    for key, byAbility in pairs(effectsByName or {}) do
+        if written >= outerCount then break end
+        written = written + 1
+        writeNameRef(encoder, registry, key)
+
+        local entries = sortedAbilityEntries(registry, byAbility)
+        local abilityCount = writeVarCount(encoder, #entries)
+
+        local prevIndex = 0
+        for i = 1, abilityCount do
+            local entry = entries[i]
+            encoder:writeVarUInt(entry.index - prevIndex - 1)
+            prevIndex = entry.index
+            records[#records + 1] = buildWireEffectRecord(entry.value, durationMs)
+        end
+    end
+    writeWireEffectColumns(encoder, records, progress)
+end
+
+-- =============================================================================
 -- MAIN ENCODE/DECODE FUNCTIONS
 -- =============================================================================
 
@@ -2121,13 +2523,15 @@ local function healingIsEmpty(healingStats)
     return true
 end
 
----Encodes an encounter to binary format asynchronously.
----Returns an Effect that resolves to the binary-encoded encounter.
+---Shared encode body for storage and wire streams. wireDurationMs selects
+---the wire layout for the damage/effect sections (column-oriented, permille
+---effect times); nil produces the storage layout.
 ---@param encounter Encounter The encounter to encode (includes unitNames for v7+)
 ---@param setupPooled boolean|nil When true the setup build lives in the own-setup pool (caller sets _setupHash on the result); the section stores only the per-fight food uptime overlay
 ---@param registry EncounterRegistry The instance's ability/name registry; interns new entries during encoding
+---@param wireDurationMs number|nil Encounter duration for permille times; nil = storage layout
 ---@return Effect Effect that resolves to binaryEncounter
-function binaryStorage.encodeEncounterAsync(encounter, setupPooled, registry)
+local function encodeEncounterImpl(encounter, setupPooled, registry, wireDurationMs)
     return LibEffect.Async(function()
         local encoder = BitEncoder.new()
         local progress = { count = 0 }
@@ -2161,16 +2565,17 @@ function binaryStorage.encodeEncounterAsync(encounter, setupPooled, registry)
         -- Heavy sections: damage maps and healing (yield based on data volume).
         -- Every section is byte-aligned so varint/string ops stay on the
         -- bitcodec fast path (setup is the only internally bit-packed section).
+        local damageWriter = wireDurationMs and writeDamageMapWire or writeDamageMap
         if present[SECTION.DAMAGE] then
-            writeDamageMap(encoder, encounter.damageByUnitId, registry, progress)
+            damageWriter(encoder, encounter.damageByUnitId, registry, progress)
             encoder:alignToByte()
         end
         if present[SECTION.DAMAGE_GROUP] then
-            writeDamageMap(encoder, encounter.damageByUnitIdGroup, registry, progress)
+            damageWriter(encoder, encounter.damageByUnitIdGroup, registry, progress)
             encoder:alignToByte()
         end
         if present[SECTION.DAMAGE_TAKEN] then
-            writeDamageMap(encoder, encounter.damageTakenByUnitId, registry, progress)
+            damageWriter(encoder, encounter.damageTakenByUnitId, registry, progress)
             encoder:alignToByte()
         end
         if present[SECTION.HEALING] then
@@ -2187,15 +2592,27 @@ function binaryStorage.encodeEncounterAsync(encounter, setupPooled, registry)
 
         -- Effects (yield based on data volume, consistent with damage/healing)
         if present[SECTION.EFFECTS_PLAYER] then
-            writeEffectsOnPlayer(encoder, encounter.effectsOnPlayer, registry, progress)
+            if wireDurationMs then
+                writeEffectsOnPlayerWire(encoder, encounter.effectsOnPlayer, registry, wireDurationMs, progress)
+            else
+                writeEffectsOnPlayer(encoder, encounter.effectsOnPlayer, registry, progress)
+            end
             encoder:alignToByte()
         end
         if present[SECTION.EFFECTS_BOSSES] then
-            writeEffectsOnBosses(encoder, encounter.effectsOnBosses, registry, progress)
+            if wireDurationMs then
+                writeEffectsByNameWire(encoder, encounter.effectsOnBosses, registry, wireDurationMs, progress)
+            else
+                writeEffectsOnBosses(encoder, encounter.effectsOnBosses, registry, progress)
+            end
             encoder:alignToByte()
         end
         if present[SECTION.EFFECTS_GROUP] then
-            writeEffectsOnGroup(encoder, encounter.effectsOnGroup, registry, progress)
+            if wireDurationMs then
+                writeEffectsByNameWire(encoder, encounter.effectsOnGroup, registry, wireDurationMs, progress)
+            else
+                writeEffectsOnGroup(encoder, encounter.effectsOnGroup, registry, progress)
+            end
             encoder:alignToByte()
         end
         flushProgress(progress)
@@ -2259,8 +2676,31 @@ function binaryStorage.encodeEncounterAsync(encounter, setupPooled, registry)
             bossSeqNames = encounter.bossSeqNames,
             bossTagSeqByUnitId = encounter.bossTagSeqByUnitId,
             gameVersion = encounter.gameVersion,
+            playerUnitId = encounter.playerUnitId,
         }
     end)
+end
+
+---Encodes an encounter to binary format asynchronously (storage layout).
+---Returns an Effect that resolves to the binary-encoded encounter.
+---@param encounter Encounter The encounter to encode (includes unitNames for v7+)
+---@param setupPooled boolean|nil When true the setup build lives in the own-setup pool (caller sets _setupHash on the result); the section stores only the per-fight food uptime overlay
+---@param registry EncounterRegistry The instance's ability/name registry; interns new entries during encoding
+---@return Effect Effect that resolves to binaryEncounter
+function binaryStorage.encodeEncounterAsync(encounter, setupPooled, registry)
+    return encodeEncounterImpl(encounter, setupPooled, registry, nil)
+end
+
+---Wire variant for export streams: column-oriented damage/effect sections,
+---permille effect times, playerTimeAtMaxStacksMs dropped. Storage must never
+---use this - the addon has no reader for the wire layout (the web decoder
+---is the only one).
+---@param encounter Encounter The decoded encounter (setup already stripped by the exporter)
+---@param registry EncounterRegistry The export stream's fresh registry
+---@param durationMs number Encounter duration, the permille time base
+---@return Effect Effect that resolves to binaryEncounter
+function binaryStorage.encodeEncounterWireAsync(encounter, registry, durationMs)
+    return encodeEncounterImpl(encounter, false, registry, durationMs)
 end
 
 ---Decodes a binary-encoded encounter asynchronously.
@@ -2294,6 +2734,7 @@ function binaryStorage.decodeEncounterAsync(binaryEncounter, registry)
             bossSeqNames = binaryEncounter.bossSeqNames,
             bossTagSeqByUnitId = binaryEncounter.bossTagSeqByUnitId,
             gameVersion = binaryEncounter.gameVersion,
+            playerUnitId = binaryEncounter.playerUnitId,
         }
 
         -- v17+: shared entries are stored binary in _shared; decode them into

@@ -29,9 +29,18 @@ local C = {
     stamina = {0.16, 0.58, 0.27, 1},
 }
 
-local POWER_HEALTH = COMBAT_MECHANIC_FLAGS_HEALTH or POWERTYPE_HEALTH
-local POWER_MAGICKA = COMBAT_MECHANIC_FLAGS_MAGICKA or POWERTYPE_MAGICKA
-local POWER_STAMINA = COMBAT_MECHANIC_FLAGS_STAMINA or POWERTYPE_STAMINA
+-- GetUnitPower() and EVENT_POWER_UPDATE filters use different constant families.
+-- GetUnitPower() must receive POWERTYPE_* constants.  REGISTER_FILTER_POWER_TYPE
+-- receives COMBAT_MECHANIC_FLAGS_* on current ESO clients.  Keep them separate:
+-- reusing the filter constants for GetUnitPower() can map a Health read to another
+-- resource (observed as Stamina in the custom Group frame).
+local POWER_HEALTH = POWERTYPE_HEALTH
+local POWER_MAGICKA = POWERTYPE_MAGICKA
+local POWER_STAMINA = POWERTYPE_STAMINA
+
+local FILTER_POWER_HEALTH = COMBAT_MECHANIC_FLAGS_HEALTH or POWERTYPE_HEALTH
+local FILTER_POWER_MAGICKA = COMBAT_MECHANIC_FLAGS_MAGICKA or POWERTYPE_MAGICKA
+local FILTER_POWER_STAMINA = COMBAT_MECHANIC_FLAGS_STAMINA or POWERTYPE_STAMINA
 
 local function safe(fn, fallback, ...)
     if type(fn) ~= "function" then return fallback end
@@ -1527,12 +1536,102 @@ function F:RefreshUnitTag(unitTag)
     end
 end
 
+-- Update group health directly from EVENT_POWER_UPDATE's fresh values.
+-- Re-reading GetUnitPower() inside the event can lag one state behind for
+-- remote group units, making the custom group bar visibly trail the player.
+function F:UpdateGroupHealthFromEvent(unitTag, powerValue, powerMax)
+    if not unitTag or unitTag == "" then return false end
+    local current = tonumber(powerValue)
+    local maximum = tonumber(powerMax)
+    if current == nil or maximum == nil or maximum <= 0 then return false end
+
+    -- ESO reports the local character's immediate power changes with the
+    -- "player" unit tag.  In an actual group, however, our roster row stores
+    -- that same character as group1/group2/etc.  Update both identities from
+    -- the player event so the Group frame moves on the exact same event as the
+    -- Player frame instead of waiting for the periodic roster refresh.
+    local localGroupTag = nil
+    if unitTag == "player" and type(GetLocalPlayerGroupUnitTag) == "function" then
+        localGroupTag = safe(GetLocalPlayerGroupUnitTag, "")
+        if localGroupTag == "" then localGroupTag = nil end
+    end
+
+    local isGroupEvent = string.sub(unitTag, 1, 5) == "group"
+    if unitTag ~= "player" and not isGroupEvent then return false end
+
+    local function rowMatches(row)
+        if not row or not row.epcUnitTag then return false end
+        if row.epcUnitTag == unitTag then return true end
+        if unitTag == "player" then
+            if localGroupTag and row.epcUnitTag == localGroupTag then return true end
+            if type(AreUnitsEqual) == "function" and safe(AreUnitsEqual, false, row.epcUnitTag, "player") == true then
+                return true
+            end
+        end
+        return false
+    end
+
+    local function updateRows(frame)
+        if not frame or frame:IsHidden() or not frame.epcRows then return false end
+        local updated = false
+        for i = 1, #frame.epcRows do
+            local row = frame.epcRows[i]
+            if rowMatches(row) and row.epcBars and row.epcBars.health then
+                updateFillBar(row.epcBars.health, current, maximum, "")
+                updated = true
+            end
+        end
+        return updated
+    end
+
+    local groupUpdated = updateRows(self.groupFrame)
+    local raidUpdated = updateRows(self.raidFrame)
+    return groupUpdated or raidUpdated
+end
+
 function F:RegisterEvents()
     local prefix = EPC.name .. "_UnitFrames"
     if EVENT_POWER_UPDATE then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Power", EVENT_POWER_UPDATE, function(_, unitTag)
-            self:RefreshUnitTag(unitTag)
-        end)
+        local function registerPower(suffix, unitFilterType, unitFilterValue, powerType, syncGroupHealth)
+            local registration = prefix .. "_Power_" .. suffix
+            EVENT_MANAGER:RegisterForEvent(registration, EVENT_POWER_UPDATE, function(_, unitTag, powerIndex, eventPowerType, powerValue, powerMax)
+                -- Feed group/raid rows the event payload immediately. For the local
+                -- player we must ALSO refresh the Player frame; the same "player"
+                -- event drives both displays.
+                -- Only HEALTH registrations may drive the group/raid health bars.
+                -- Player Magicka/Stamina events use the same callback shape, and feeding
+                -- those values into UpdateGroupHealthFromEvent would overwrite Health
+                -- with the wrong resource (most visibly Stamina).
+                local groupUpdated = false
+                if syncGroupHealth == true then
+                    groupUpdated = self:UpdateGroupHealthFromEvent(unitTag, powerValue, powerMax)
+                end
+                if unitTag == "player" or unitTag == "reticleover" or not groupUpdated then
+                    self:RefreshUnitTag(unitTag)
+                end
+            end)
+            if unitFilterType and unitFilterValue ~= nil then
+                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_POWER_UPDATE, unitFilterType, unitFilterValue)
+            end
+            if REGISTER_FILTER_POWER_TYPE and powerType ~= nil then
+                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_POWER_UPDATE, REGISTER_FILTER_POWER_TYPE, powerType)
+            end
+        end
+        if REGISTER_FILTER_UNIT_TAG then
+            registerPower("PlayerHealth", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_HEALTH, true)
+            registerPower("PlayerMagicka", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_MAGICKA, false)
+            registerPower("PlayerStamina", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_STAMINA, false)
+            registerPower("TargetHealth", REGISTER_FILTER_UNIT_TAG, "reticleover", FILTER_POWER_HEALTH, false)
+            -- Group health: register each concrete group unit tag separately.
+            -- This avoids relying on UNIT_TAG_PREFIX matching for EVENT_POWER_UPDATE,
+            -- while still keeping the high-volume event natively filtered before Lua.
+            for i = 1, 12 do
+                local groupTag = "group" .. tostring(i)
+                registerPower("GroupHealth" .. tostring(i), REGISTER_FILTER_UNIT_TAG, groupTag, FILTER_POWER_HEALTH, true)
+            end
+        else
+            registerPower("Fallback", nil, nil, nil, false)
+        end
     end
     if EVENT_PLAYER_COMBAT_STATE then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_CombatState", EVENT_PLAYER_COMBAT_STATE, function()
@@ -1546,10 +1645,21 @@ function F:RegisterEvents()
         end)
     end
     if EVENT_EFFECT_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Effects", EVENT_EFFECT_CHANGED, function(_, changeType, effectSlot, effectName, unitTag)
-            if unitTag == "reticleover" then self:RefreshTargetAuras(false)
-            elseif unitTag == "player" then self:RefreshPlayerAuras(false) end
+        local playerEffectsRegistration = prefix .. "_Effects_Player"
+        EVENT_MANAGER:RegisterForEvent(playerEffectsRegistration, EVENT_EFFECT_CHANGED, function()
+            self:RefreshPlayerAuras(false)
         end)
+        if REGISTER_FILTER_UNIT_TAG then
+            EVENT_MANAGER:AddFilterForEvent(playerEffectsRegistration, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+        end
+
+        local targetEffectsRegistration = prefix .. "_Effects_Target"
+        EVENT_MANAGER:RegisterForEvent(targetEffectsRegistration, EVENT_EFFECT_CHANGED, function()
+            self:RefreshTargetAuras(false)
+        end)
+        if REGISTER_FILTER_UNIT_TAG then
+            EVENT_MANAGER:AddFilterForEvent(targetEffectsRegistration, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "reticleover")
+        end
     end
     if EVENT_EFFECTS_FULL_UPDATE then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_EffectsFull", EVENT_EFFECTS_FULL_UPDATE, function()
@@ -1626,14 +1736,7 @@ function F:RegisterEvents()
         end
     end
 
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_AuraTick", 500, function()
-        if self.playerEffectsFrame and not self.playerEffectsFrame:IsHidden() then self:RefreshPlayerAuras(self.layoutMode) end
-        if self.targetFrame and not self.targetFrame:IsHidden() then self:RefreshTargetAuras(self.layoutMode) end
-        if (self.groupFrame and not self.groupFrame:IsHidden()) or (self.raidFrame and not self.raidFrame:IsHidden()) then
-            self:RefreshGroupFrames()
-        end
-    end)
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 100, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 250, function()
         local suppressed = self:IsHudSuppressed()
         if suppressed ~= self.lastHudSuppressed then
             self.lastHudSuppressed = suppressed

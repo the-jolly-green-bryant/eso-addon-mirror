@@ -10,6 +10,7 @@ local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
 local MAP_PANEL_ID = PanelIds.MAP
 local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
+local GPS_PANEL_ID = PanelIds.GPS
 local FISHING_PANEL_ID = PanelIds.FISHING
 local FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
 local UI_PANEL_ID = PanelIds.UI
@@ -353,6 +354,26 @@ function GamepadOptions.BuildPrintAnnotationTestItemLinksOption()
     }
 end
 
+function GamepadOptions.BuildGenerateBenignLuaErrorOption()
+    local debugFeature = NQOL.Features.Debug
+
+    return {
+        panel = DEBUG_PANEL_ID,
+        system = DEBUG_PANEL_ID,
+        settingId = 5,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = debugFeature.GetGenerateBenignLuaErrorLabel(),
+        gamepadTextOverride = debugFeature.GetGenerateBenignLuaErrorLabel(),
+        onInitializeFunction = GamepadOptions.InitializeDecorativeEntry,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, debugFeature.GetGenerateBenignLuaErrorTooltip())
+        end,
+        callback = function()
+            debugFeature.GenerateBenignLuaError()
+        end,
+    }
+end
+
 function GamepadOptions.BuildAutoBoundEntry()
     return {
         panel = GEAR_PANEL_ID,
@@ -514,6 +535,27 @@ function GamepadOptions.BuildMapSettingsEntry()
         end,
         callback = function()
             GamepadOptions.ShowPanel(MAP_OPTIONS_PANEL_ID)
+        end,
+    }
+end
+
+function GamepadOptions.BuildGPSEntry()
+    local gps = NQOL.Features.GPS
+    return {
+        panel = MAP_PANEL_ID,
+        system = MAP_PANEL_ID,
+        settingId = 3,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = gps.GetName(),
+        gamepadTextOverride = gps.GetName(),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, gps.GetEntryTooltip())
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(GPS_PANEL_ID)
         end,
     }
 end

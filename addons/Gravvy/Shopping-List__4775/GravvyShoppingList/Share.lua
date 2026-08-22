@@ -1,15 +1,41 @@
 ShoppingListShare = {}
 
 local Share = ShoppingListShare
-local PREFIX = "SL1:"
-local FORMAT_VERSION = 1
+local PREFIX_V1 = "SL1:"
+local PREFIX_V2 = "SL2:"
+local FORMAT_VERSION_V1 = 1
+local FORMAT_VERSION_V2 = 2
 local MAX_ITEMS = 500
 local MAX_NAME_BYTES = 512
+local MAX_NOTE_BYTES = 2000
+local MAX_LINK_BYTES = 2048
 local MAX_CODE_LENGTH = 20000
+local MAX_U16 = 65535
+local MAX_U32 = 4294967295
 local ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 local DECODE = {}
 
+local QUALITY_MODE_VALUE = {
+    any = 0,
+    minimum = 1,
+    exact = 2,
+}
+local QUALITY_MODE_NAME = {
+    [0] = "any",
+    [1] = "minimum",
+    [2] = "exact",
+}
+local LEVEL_MODE_VALUE = {
+    any = 0,
+    exact = 1,
+}
+local LEVEL_MODE_NAME = {
+    [0] = "any",
+    [1] = "exact",
+}
+
 Share.MAX_CODE_LENGTH = MAX_CODE_LENGTH
+Share.PREFIX = PREFIX_V2
 
 for index = 1, #ALPHABET do
     DECODE[string.sub(ALPHABET, index, index)] = index - 1
@@ -105,84 +131,65 @@ local function appendU32(parts, value)
     )
 end
 
-function Share.EncodeList(list)
-    if not list then
-        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_NO_LIST)
+local function appendString(parts, value)
+    appendU16(parts, #value)
+    if value ~= "" then
+        parts[#parts + 1] = value
     end
-    local listName = trim(list.name)
-    if listName == "" or #listName > MAX_NAME_BYTES then
-        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_NAME_LONG)
-    end
-    if #list.items > MAX_ITEMS then
-        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_TOO_MANY_ITEMS)
-    end
-
-    local parts = { string.char(FORMAT_VERSION) }
-    appendU16(parts, #listName)
-    parts[#parts + 1] = listName
-    appendU16(parts, #list.items)
-
-    for _, item in ipairs(list.items) do
-        local itemName = trim(item.name)
-        local quantity = math.floor(tonumber(item.desired) or 0)
-        if itemName == "" or #itemName > MAX_NAME_BYTES then
-            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_NAME_LONG)
-        end
-        if quantity < 1 or quantity > 1000000 then
-            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_QUANTITY)
-        end
-        appendU16(parts, #itemName)
-        appendU32(parts, quantity)
-        parts[#parts + 1] = itemName
-    end
-
-    local code = PREFIX .. encodeBase64(table.concat(parts))
-    if #code > MAX_CODE_LENGTH then
-        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_LONG)
-    end
-    return code
 end
 
-function Share.DecodeCode(code)
-    code = trim(code)
-    if #code > MAX_CODE_LENGTH then
-        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_CODE_LONG)
+local function checksum(value)
+    local first = 1
+    local second = 0
+    for index = 1, #value do
+        first = (first + string.byte(value, index)) % 65521
+        second = (second + first) % 65521
     end
-    if string.sub(code, 1, #PREFIX) ~= PREFIX then
-        return nil, zo_strformat(GetString(SI_SHOPPING_LIST_SHARE_ERROR_PREFIX), PREFIX)
-    end
+    return (second * 65536) + first
+end
 
-    local payload = decodeBase64(string.sub(code, #PREFIX + 1))
-    if not payload then
-        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_INVALID)
+local function wholeNumber(value, minimum, maximum)
+    value = tonumber(value)
+    if not value or value ~= math.floor(value)
+        or value < minimum or value > maximum
+    then
+        return nil
     end
+    return value
+end
 
+local function makeReader(payload)
     local position = 1
-    local function readByte()
+    local reader = {}
+
+    function reader:Byte()
         local value = string.byte(payload, position)
         position = position + 1
         return value
     end
-    local function readU16()
-        local first = readByte()
-        local second = readByte()
+
+    function reader:U16()
+        local first = self:Byte()
+        local second = self:Byte()
         if first == nil or second == nil then
             return nil
         end
         return (first * 256) + second
     end
-    local function readU32()
-        local first = readByte()
-        local second = readByte()
-        local third = readByte()
-        local fourth = readByte()
+
+    function reader:U32()
+        local first = self:Byte()
+        local second = self:Byte()
+        local third = self:Byte()
+        local fourth = self:Byte()
         if first == nil or second == nil or third == nil or fourth == nil then
             return nil
         end
         return (first * 16777216) + (second * 65536) + (third * 256) + fourth
     end
-    local function readString(length)
-        if not length or length < 1 or length > MAX_NAME_BYTES
+
+    function reader:Bytes(length, maxLength, allowEmpty)
+        if not length or length > maxLength or (length == 0 and not allowEmpty)
             or position + length - 1 > #payload
         then
             return nil
@@ -192,20 +199,33 @@ function Share.DecodeCode(code)
         return value
     end
 
-    if readByte() ~= FORMAT_VERSION then
+    function reader:String(maxLength, allowEmpty)
+        return self:Bytes(self:U16(), maxLength, allowEmpty)
+    end
+
+    function reader:IsDone()
+        return position == #payload + 1
+    end
+
+    return reader
+end
+
+local function decodeV1(payload)
+    local reader = makeReader(payload)
+    if reader:Byte() ~= FORMAT_VERSION_V1 then
         return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_VERSION)
     end
-    local listName = readString(readU16())
-    local itemCount = readU16()
+    local listName = reader:String(MAX_NAME_BYTES, false)
+    local itemCount = reader:U16()
     if not listName or trim(listName) == "" or not itemCount or itemCount > MAX_ITEMS then
         return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_DATA)
     end
 
     local items = {}
     for _ = 1, itemCount do
-        local itemNameLength = readU16()
-        local quantity = readU32()
-        local itemName = readString(itemNameLength)
+        local itemNameLength = reader:U16()
+        local quantity = reader:U32()
+        local itemName = reader:Bytes(itemNameLength, MAX_NAME_BYTES, false)
         if not itemName or trim(itemName) == ""
             or not quantity or quantity < 1 or quantity > 1000000
         then
@@ -213,10 +233,253 @@ function Share.DecodeCode(code)
         end
         items[#items + 1] = { name = itemName, desired = quantity }
     end
-    if position ~= #payload + 1 then
+    if not reader:IsDone() then
         return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_EXTRA_DATA)
     end
-    return { name = listName, items = items }
+    return { name = listName, note = "", items = items, formatVersion = 1 }
+end
+
+local function encodeOptionalU16(value)
+    if value == nil then
+        return 0
+    end
+    value = wholeNumber(value, 0, MAX_U16 - 1)
+    return value and value + 1 or nil
+end
+
+local function encodeOptionalU32(value)
+    if value == nil then
+        return 0
+    end
+    value = wholeNumber(value, 0, MAX_U32 - 1)
+    return value and value + 1 or nil
+end
+
+local function decodeOptional(value)
+    if value == 0 then
+        return nil
+    end
+    return value and value - 1 or nil
+end
+
+function Share.EncodeList(list)
+    if not list then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_NO_LIST)
+    end
+
+    local listName = trim(list.name)
+    local listNote = tostring(list.note or "")
+    if listName == "" or #listName > MAX_NAME_BYTES then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_NAME_LONG)
+    end
+    if #listNote > MAX_NOTE_BYTES then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_DATA)
+    end
+    if type(list.items) ~= "table" or #list.items > MAX_ITEMS then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_TOO_MANY_ITEMS)
+    end
+
+    local parts = { string.char(FORMAT_VERSION_V2) }
+    appendString(parts, listName)
+    appendString(parts, listNote)
+    appendU16(parts, #list.items)
+
+    for _, item in ipairs(list.items) do
+        if type(item) ~= "table" or type(item.match or {}) ~= "table" then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+        end
+        local itemName = trim(item.name)
+        local itemLink = tostring(item.itemLink or "")
+        local itemNote = tostring(item.note or "")
+        local quantity = wholeNumber(item.desired, 1, 1000000)
+        local match = item.match or {}
+        local setName = trim(match.setName)
+        local setId = match.setId == nil and 0
+            or wholeNumber(match.setId, 1, MAX_U32)
+        local traitType = encodeOptionalU16(match.traitType)
+        local qualityMode = QUALITY_MODE_VALUE[match.qualityMode or "any"]
+        local quality = encodeOptionalU16(match.quality)
+        local levelMode = LEVEL_MODE_VALUE[match.levelMode or "any"]
+        local level = encodeOptionalU16(match.level)
+        local championPoints = encodeOptionalU32(match.championPoints)
+        local maxUnitPrice = item.maxUnitPrice == nil and 0
+            or wholeNumber(item.maxUnitPrice, 1, MAX_U32)
+
+        if itemName == "" or #itemName > MAX_NAME_BYTES then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_NAME_LONG)
+        end
+        if #itemLink > MAX_LINK_BYTES or #itemNote > MAX_NOTE_BYTES
+            or #setName > MAX_NAME_BYTES
+        then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+        end
+        if itemLink ~= "" then
+            local _, _, linkType = ZO_LinkHandler_ParseLink(itemLink)
+            if linkType ~= ITEM_LINK_TYPE or trim(GetItemLinkName(itemLink) or "") == "" then
+                return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+            end
+        end
+        if setName == "" and setId ~= 0 then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+        end
+        if not quantity then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_QUANTITY)
+        end
+        if setId == nil or traitType == nil or qualityMode == nil
+            or quality == nil or levelMode == nil or level == nil
+            or championPoints == nil or maxUnitPrice == nil
+        then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+        end
+
+        appendString(parts, itemName)
+        appendU32(parts, quantity)
+        appendString(parts, itemLink)
+        appendString(parts, itemNote)
+        appendString(parts, setName)
+        appendU32(parts, setId)
+        appendU16(parts, traitType)
+        parts[#parts + 1] = string.char(qualityMode)
+        appendU16(parts, quality)
+        parts[#parts + 1] = string.char(levelMode)
+        appendU16(parts, level)
+        appendU32(parts, championPoints)
+        appendU32(parts, maxUnitPrice)
+    end
+
+    local body = table.concat(parts)
+    local payload = { body }
+    appendU32(payload, checksum(body))
+    local code = PREFIX_V2 .. encodeBase64(table.concat(payload))
+    if #code > MAX_CODE_LENGTH then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_LONG)
+    end
+    return code
+end
+
+local function decodeV2(payload)
+    if #payload < 5 then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_INVALID)
+    end
+
+    local body = string.sub(payload, 1, #payload - 4)
+    local checksumReader = makeReader(string.sub(payload, #payload - 3))
+    if checksumReader:U32() ~= checksum(body) then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_INVALID)
+    end
+
+    local reader = makeReader(body)
+    if reader:Byte() ~= FORMAT_VERSION_V2 then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_VERSION)
+    end
+
+    local listName = reader:String(MAX_NAME_BYTES, false)
+    local listNote = reader:String(MAX_NOTE_BYTES, true)
+    local itemCount = reader:U16()
+    if not listName or trim(listName) == "" or listNote == nil
+        or not itemCount or itemCount > MAX_ITEMS
+    then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_DATA)
+    end
+
+    local items = {}
+    for _ = 1, itemCount do
+        local itemName = reader:String(MAX_NAME_BYTES, false)
+        local quantity = reader:U32()
+        local itemLink = reader:String(MAX_LINK_BYTES, true)
+        local itemNote = reader:String(MAX_NOTE_BYTES, true)
+        local setName = reader:String(MAX_NAME_BYTES, true)
+        local setId = reader:U32()
+        local traitType = decodeOptional(reader:U16())
+        local qualityMode = QUALITY_MODE_NAME[reader:Byte()]
+        local quality = decodeOptional(reader:U16())
+        local levelMode = LEVEL_MODE_NAME[reader:Byte()]
+        local level = decodeOptional(reader:U16())
+        local championPoints = decodeOptional(reader:U32())
+        local maxUnitPrice = reader:U32()
+
+        if not itemName or trim(itemName) == ""
+            or not quantity or quantity < 1 or quantity > 1000000
+            or itemLink == nil or itemNote == nil or setName == nil
+            or setId == nil or not qualityMode or not levelMode
+            or maxUnitPrice == nil
+            or (qualityMode ~= "any" and quality == nil)
+            or (levelMode == "exact" and (level == nil or championPoints == nil))
+        then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+        end
+
+        if itemLink ~= "" then
+            local _, _, linkType = ZO_LinkHandler_ParseLink(itemLink)
+            if linkType ~= ITEM_LINK_TYPE or trim(GetItemLinkName(itemLink) or "") == "" then
+                return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+            end
+        end
+        if setName == "" and setId ~= 0 then
+            return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_ITEM_DATA)
+        end
+
+        local match = {
+            qualityMode = qualityMode,
+            quality = quality,
+            levelMode = levelMode,
+            level = level,
+            championPoints = championPoints,
+            traitType = traitType,
+        }
+        if setName ~= "" then
+            match.setName = setName
+            match.normalizedSetName = ShoppingListData.NormalizeName(setName)
+            match.setId = setId ~= 0 and setId or nil
+        end
+
+        items[#items + 1] = {
+            name = itemName,
+            desired = quantity,
+            itemLink = itemLink,
+            note = itemNote,
+            maxUnitPrice = maxUnitPrice ~= 0 and maxUnitPrice or nil,
+            match = match,
+        }
+    end
+
+    if not reader:IsDone() then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_EXTRA_DATA)
+    end
+    return {
+        name = listName,
+        note = listNote,
+        items = items,
+        formatVersion = 2,
+    }
+end
+
+function Share.DecodeCode(code)
+    code = trim(code)
+    if #code > MAX_CODE_LENGTH then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_CODE_LONG)
+    end
+
+    local prefix
+    local decoder
+    if string.sub(code, 1, #PREFIX_V2) == PREFIX_V2 then
+        prefix = PREFIX_V2
+        decoder = decodeV2
+    elseif string.sub(code, 1, #PREFIX_V1) == PREFIX_V1 then
+        prefix = PREFIX_V1
+        decoder = decodeV1
+    else
+        return nil, zo_strformat(
+            GetString(SI_SHOPPING_LIST_SHARE_ERROR_PREFIX),
+            PREFIX_V1 .. " or " .. PREFIX_V2
+        )
+    end
+
+    local payload = decodeBase64(string.sub(code, #prefix + 1))
+    if not payload then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_INVALID)
+    end
+    return decoder(payload)
 end
 
 function Share:New(owner)
@@ -446,7 +709,11 @@ function Share:ImportCode()
         return
     end
 
-    local list, importMessage = self.owner.data:ImportList(decoded.name, decoded.items)
+    local list, importMessage = self.owner.data:ImportList(
+        decoded.name,
+        decoded.items,
+        decoded.note
+    )
     if not list then
         self:SetImportStatus(importMessage, true)
         return

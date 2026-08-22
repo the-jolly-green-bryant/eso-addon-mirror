@@ -16,12 +16,41 @@ local COLORS = {
     muted = {0.68, 0.72, 0.78, 1},
     gold = {0.91, 0.70, 0.28, 1},
     cyan = {0.30, 0.78, 0.94, 1},
+    blue = {0.30, 0.55, 0.96, 1},
     purple = {0.69, 0.46, 0.94, 1},
     green = {0.34, 0.82, 0.48, 1},
     red = {0.90, 0.28, 0.28, 1},
 }
 
 local PLAYER_TEXTURE = "EsoUI/Art/MapPins/UI-WorldMapPlayerPip.dds"
+local GROUP_TEXTURE = "EsoUI/Art/MapPins/UI-WorldMapGroupPip.dds"
+
+local function headingFromMapDelta(dx, dy)
+    dx, dy = tonumber(dx), tonumber(dy)
+    if not dx or not dy then return nil end
+    if math.abs(dx) < 0.000001 and math.abs(dy) < 0.000001 then return nil end
+
+    -- ESO map Y increases downward. Convert movement into the same clockwise
+    -- radians used by SetTextureRotation/GetMapPlayerPosition: 0 = north.
+    local x = -dy
+    local y = dx
+    local angle
+    if x > 0 then
+        angle = math.atan(y / x)
+    elseif x < 0 and y >= 0 then
+        angle = math.atan(y / x) + math.pi
+    elseif x < 0 and y < 0 then
+        angle = math.atan(y / x) - math.pi
+    elseif x == 0 and y > 0 then
+        angle = math.pi * 0.5
+    elseif x == 0 and y < 0 then
+        angle = -math.pi * 0.5
+    else
+        angle = 0
+    end
+    if angle < 0 then angle = angle + (math.pi * 2) end
+    return angle
+end
 local WAYPOINT_TEXTURE = "EsoUI/Art/MapPins/UI_Worldmap_pin_customDestination_white.dds"
 local COMPANION_TEXTURE = "EsoUI/Art/MapPins/activeCompanion_pin.dds"
 local POI_FALLBACK_TEXTURE = WAYPOINT_TEXTURE
@@ -85,6 +114,16 @@ local function safe(fn, fallback, ...)
     local ok, a, b, c, d, e, f, g, h, i = pcall(fn, ...)
     if not ok then return fallback end
     return a, b, c, d, e, f, g, h, i
+end
+
+local function getGroupRoleDotColor(unitTag)
+    if type(GetGroupMemberSelectedRole) == "function" then
+        local role = safe(GetGroupMemberSelectedRole, LFG_ROLE_INVALID, unitTag)
+        if LFG_ROLE_TANK ~= nil and role == LFG_ROLE_TANK then return COLORS.blue end
+        if LFG_ROLE_HEAL ~= nil and role == LFG_ROLE_HEAL then return COLORS.green end
+        if LFG_ROLE_DPS ~= nil and role == LFG_ROLE_DPS then return COLORS.red end
+    end
+    return COLORS.cyan
 end
 
 -- Collapse multi-return ESO APIs before numeric conversion. This avoids
@@ -730,7 +769,11 @@ end
 function M:EnsureGroupPins(count)
     self.groupPins = self.groupPins or {}
     for i = #self.groupPins + 1, count do
-        self.groupPins[i] = self:CreatePin("EPC_MiniMap_Group_" .. tostring(i), 16, PLAYER_TEXTURE, COLORS.cyan)
+        local pin = self:CreatePin("EPC_MiniMap_Group_" .. tostring(i), 16, GROUP_TEXTURE, COLORS.cyan)
+        if type(pin.SetTextureCoords) == "function" then pin:SetTextureCoords(0, 1, 0, 1) end
+        if type(pin.SetBlendMode) == "function" then pin:SetBlendMode(TEX_BLEND_MODE_ALPHA) end
+        pin:SetDrawLevel(75)
+        self.groupPins[i] = pin
     end
 end
 
@@ -1623,6 +1666,7 @@ end
 
 function M:RefreshGroupPins()
     self.groupLeaderPosition = nil
+    self.groupPinState = self.groupPinState or {}
     if not self:LayerEnabled("group") then
         if self.groupPins then for i = 1, #self.groupPins do self.groupPins[i]:SetHidden(true) end end
         return
@@ -1639,18 +1683,49 @@ function M:RefreshGroupPins()
             local isSelf = safe(AreUnitsEqual, false, unitTag, "player") == true
             if exists and not isSelf then
                 local x, y, heading, shown = safe(GetMapPlayerPosition, nil, unitTag)
-                if shown == true then
+                x, y = tonumber(x), tonumber(y)
+                if shown == true and x and y then
                     local leader = safe(IsUnitGroupLeader, false, unitTag) == true
-                    if leader then self.groupLeaderPosition = { x=tonumber(x), y=tonumber(y) } end
-                    pin:SetDimensions(leader and 21 or 16, leader and 21 or 16)
-                    if leader then pin:SetColor(unpack(COLORS.gold)) else pin:SetColor(unpack(COLORS.cyan)) end
-                    if type(pin.SetTextureRotation) == "function" and tonumber(heading) then
-                        pin:SetTextureRotation(tonumber(heading), 0.5, 0.5)
+                    if leader then self.groupLeaderPosition = { x=x, y=y } end
+                    local dotColor = getGroupRoleDotColor(unitTag)
+                    pin:SetDimensions(leader and 20 or 16, leader and 20 or 16)
+                    pin:SetColor(unpack(dotColor))
+                    if type(pin.SetTextureRotation) == "function" then pin:SetTextureRotation(0, 0.5, 0.5) end
+
+                    -- ESO does not always provide a useful live facing angle for remote
+                    -- group members. Derive it from their map movement when possible,
+                    -- and fall back to the API heading while they are stationary.
+                    local state = self.groupPinState[i] or {}
+                    local drawHeading = tonumber(heading)
+                    if state.x and state.y then
+                        local dx, dy = x - state.x, y - state.y
+                        local movementHeading = headingFromMapDelta(dx, dy)
+                        local moved2 = (dx * dx) + (dy * dy)
+                        if movementHeading and moved2 > 0.0000000025 then
+                            drawHeading = movementHeading
+                        elseif state.heading ~= nil and drawHeading == nil then
+                            drawHeading = state.heading
+                        end
                     end
-                    self:PlacePin(pin, x, y, leader and 21 or 16, leader)
-                else pin:SetHidden(true) end
-            else pin:SetHidden(true) end
-        else pin:SetHidden(true) end
+                    if drawHeading ~= nil then
+                        state.heading = drawHeading
+                    end
+                    state.x, state.y = x, y
+                    self.groupPinState[i] = state
+
+                    self:PlacePin(pin, x, y, leader and 20 or 16, leader)
+                else
+                    pin:SetHidden(true)
+                    self.groupPinState[i] = nil
+                end
+            else
+                pin:SetHidden(true)
+                self.groupPinState[i] = nil
+            end
+        else
+            pin:SetHidden(true)
+            self.groupPinState[i] = nil
+        end
     end
 end
 
@@ -1976,7 +2051,7 @@ function M:RegisterEvents()
     register(EVENT_QUEST_CONDITION_COUNTER_CHANGED, false)
 
     if not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForUpdate) ~= "function" then return end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 16, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 33, function()
         if not self.frame or not EPC.saved then return end
         self:SyncESOCompassVisibility()
         local show = EPC.saved.showMiniMap ~= false or self.layoutMode == true
@@ -2038,7 +2113,7 @@ function M:RegisterEvents()
         -- Poll crafting interactions as a fallback for clients where a dedicated
         -- crafting event is absent. Learned locations are save-once and deduped.
         local t = nowSeconds()
-        if t - (self.lastServiceLearnCheck or 0) >= 1.0 then
+        if t - (self.lastServiceLearnCheck or 0) >= 2.0 then
             self.lastServiceLearnCheck = t
             self:RememberCurrentCraftingStation()
         end

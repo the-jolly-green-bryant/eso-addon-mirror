@@ -1,3 +1,16 @@
+0.17.0
+• Expanded the public API with atomic named-list creation and batch item addition.
+• Added optional set, trait, quality, level, and Champion Point matching overrides for integrations.
+• Added explicit list-name conflict handling, stable API v2 errors, and failing-item indexes.
+• Added checksummed SL2 sharing for item links, notes, matching rules, and price targets while retaining SL1 imports.
+• Kept API v1 item addition and active-list discovery compatible.
+
+0.16.4
+• Added complete Spanish and French localizations with English fallback.
+• Corrected localization files not loading because ESO manifests do not expand wildcard paths.
+• Kept the main list selector label independent from the item-filter dropdown.
+• Prevented runtime-only SavedVariables metadata from invalidating full backup generation.
+
 0.16.3
 • Added a versioned public API that allows other add-ons to add linked or name-only items to active shopping lists.
 • Added safe list discovery, current-list defaults, optional notes, and stable API error codes.

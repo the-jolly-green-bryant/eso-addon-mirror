@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.17.14"
+M.version = "3.17.16"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -43,7 +43,7 @@ local TREND_SPARK_BAR_MAX_H = 36
 local TREND_HIST_LINES = 7
 local COMP_COLS = 4
 local COMP_METRICS = 9 -- includes Build ID + vs #2 notes (Phase 2)
-local ROT_TIMELINE_ICONS = 64   -- icon chips per page (paged with Y when more skills)
+local ROT_TIMELINE_ICONS = 192  -- pool/page cap; dummy parses usually fit on one screen
 local PULSE_BLOCKS = 72        -- finer pulse (smaller blocks)
 local BUFF_MAIN_ROWS = 12       -- Always-on (left pane)
 local BUFF_SIDE_ROWS = 10       -- Sustained + Situational combined (right pane)
@@ -329,11 +329,23 @@ local function getSlotTextureFor(slot, cat)
 end
 
 -- Prefer session bar snapshot / skill table when GetAbilityIcon is empty/? on console.
-local function resolveSkillIcon(session, abilityId, abilityName)
+local function resolveSkillIcon(session, abilityId, abilityName, slot, bar)
   abilityId = tonumber(abilityId) or 0
   local tex = getAbilityIcon(abilityId)
   if tex then return tex end
   local nameKey = abilityName and string.lower(tostring(abilityName)) or ""
+  -- Direct slot snapshot (channel skills / console GetAbilityIcon misses).
+  if session and type(session.slottedAbilityBySlot) == "table" and slot and bar then
+    local entry = session.slottedAbilityBySlot[tostring(bar) .. ":" .. tostring(tonumber(slot) or 0)]
+    if type(entry) == "table" then
+      if entry.icon and not isBadIconTex(entry.icon) then return entry.icon end
+      local eid = tonumber(entry.id) or 0
+      if eid > 0 then
+        local t = getAbilityIcon(eid)
+        if t then return t end
+      end
+    end
+  end
   -- Fuzzy-ish name match: exact, or either contains the other (morph/post labels).
   local function nameMatches(entryName)
     if not entryName or nameKey == "" then return false end
@@ -1029,6 +1041,8 @@ end
 local function fitBadgeColor(fitKey)
   if fitKey == "strong" then return 0.45, 0.92, 0.55, 1 end
   if fitKey == "soft" then return 0.90, 0.52, 0.38, 1 end
+  if fitKey == "na" then return 0.55, 0.62, 0.72, 1 end
+  if fitKey == "surv" then return 0.36, 0.61, 0.84, 1 end
   return 0.95, 0.82, 0.40, 1 -- ok
 end
 
@@ -3378,7 +3392,9 @@ local function collectSkillTimelineEvents(session)
     return events
   end
   for _, item in ipairs(session.weave.timeline) do
-    if item and item.kind ~= "la" and item.kind ~= "light" and item.kind ~= "swap" and item.kind ~= "barswap" then
+    -- Post-channel recovery tokens are weave results, not skill presses.
+    if item and item.kind ~= "la" and item.kind ~= "light" and item.kind ~= "swap"
+        and item.kind ~= "barswap" and item.kind ~= "postchannel" then
       local abilityId = tonumber(item.abilityId) or 0
       local rawName = item.skillName or item.label or ""
       local name = resolveDisplaySkillName(session, abilityId, rawName, item.slot, item.bar)
@@ -3396,12 +3412,17 @@ local function collectSkillTimelineEvents(session)
       if r == "good" then edgeR, edgeG, edgeB = 0.35, 0.92, 0.45
       elseif r == "late" then edgeR, edgeG, edgeB = 0.95, 0.78, 0.30
       elseif r == "missed" then edgeR, edgeG, edgeB = 0.95, 0.35, 0.30
-      elseif r == "too fast" then edgeR, edgeG, edgeB = 0.40, 0.65, 0.95 end
+      elseif r == "too fast" then edgeR, edgeG, edgeB = 0.40, 0.65, 0.95
+      elseif r == "channel" then edgeR, edgeG, edgeB = 0.55, 0.72, 0.88 end
       local bar = item.bar
       if not bar and abilityId > 0 then bar = getSkillBar(session, abilityId) end
       local isUlt = isUltimateAbility(abilityId, session, name)
+      local icon = item.icon
+      if isBadIconTex(icon) then
+        icon = resolveSkillIcon(session, abilityId, name, item.slot, bar)
+      end
       events[#events + 1] = {
-        icon = resolveSkillIcon(session, abilityId, name),
+        icon = icon,
         name = name,
         initials = shortSkillInitials(name),
         result = r,
@@ -4703,12 +4724,41 @@ local function buildBuildSynergy(session)
   end
   local cps = {}
   local strongCount, softCount = 0, 0
+  local fitnessCount, warfareCount = 0, 0
   local isDummy = session.isDummy == true
 
   for _, cp in ipairs(slotted or {}) do
     local constellation = cp.constellation or "unknown"
     -- Craft tree stars are not combat-facing on Insights
     if constellation ~= "craft" then
+      -- Fitness: dummy does not hit back. Do not Strong/Soft-rate survivability
+      -- stars against this parse's damage mix (Boundless, Fortified, HP-on-hit, etc.).
+      if constellation == "fitness" then
+        fitnessCount = fitnessCount + 1
+        local fitLabel, fitKey, reason, impact
+        if isDummy then
+          fitLabel, fitKey = "N/A", "na"
+          reason = "Fitness · dummy does not test incoming damage"
+          impact = "survivability / sustain — dummy does not hit back"
+        else
+          fitLabel, fitKey = "Surv", "surv"
+          reason = "Fitness · survivability (not DPS-scored)"
+          impact = "HP / mitigation / resource on being hit — not measured as DPS"
+        end
+        cps[#cps + 1] = {
+          name = cp.name or "?",
+          id = cp.id,
+          cat = "survivability",
+          catLabel = "Fitness",
+          score = -1,
+          fitLabel = fitLabel,
+          fitKey = fitKey,
+          reason = reason,
+          impact = impact,
+          constellation = constellation,
+          rankTxt = "—",
+        }
+      else
       local cat, catLabel = classifyChampionCategory(cp.name, cp.desc)
       -- Extra name filter if constellation API missed a world star
       local nlow = string.lower(tostring(cp.name or "") .. " " .. tostring(cp.desc or ""))
@@ -4822,25 +4872,44 @@ local function buildBuildSynergy(session)
           impact = impact,
           constellation = constellation,
         }
+        warfareCount = warfareCount + 1
       end -- not world util
+      end -- not fitness
     end -- not craft constellation
   end
 
   table.sort(cps, function(a, b)
+    local af = (a.constellation == "fitness") and 1 or 0
+    local bf = (b.constellation == "fitness") and 1 or 0
+    if af ~= bf then return af < bf end
     if (a.score or 0) ~= (b.score or 0) then return (a.score or 0) > (b.score or 0) end
     return tostring(a.name or "") < tostring(b.name or "")
   end)
-  for i, c in ipairs(cps) do
-    c.rankTxt = tostring(i)
+  local warfareRank = 0
+  for _, c in ipairs(cps) do
+    if c.constellation == "fitness" then
+      c.rankTxt = "—"
+    else
+      warfareRank = warfareRank + 1
+      c.rankTxt = tostring(warfareRank)
+    end
   end
 
   local headline
   if #cps == 0 then
     headline = "Top damage sources ranked · no champion bar stars read (check CP slots / reload)"
   else
+    local fitnessBit = ""
+    if fitnessCount > 0 then
+      if isDummy then
+        fitnessBit = string.format("  ·  %d Fitness not dummy-rated", fitnessCount)
+      else
+        fitnessBit = string.format("  ·  %d Fitness (survivability, not DPS-scored)", fitnessCount)
+      end
+    end
     headline = string.format(
-      "%d Strong · %d Soft of %d slotted CP  ·  ranked vs this parse's damage shape",
-      strongCount, softCount, #cps
+      "%d Strong · %d Soft of %d Warfare%s",
+      strongCount, softCount, warfareCount, fitnessBit
     )
   end
 
@@ -4851,7 +4920,15 @@ local function buildBuildSynergy(session)
   for _, c in ipairs(cps) do
     local elig, eligNote = 0, ""
     local cat = c.cat or "mixed"
-    if cat == "dot" then
+    if cat == "survivability" or c.constellation == "fitness" then
+      c.eligibleDmg = 0
+      c.eligiblePct = 0
+      c.eligibleNote = isDummy and "not dummy-measurable" or "survivability (not DPS)"
+      c.eligibleConf = CONFIDENCE.INSUFFICIENT
+      c.marginalConf = CONFIDENCE.INSUFFICIENT
+      c.marginalNote = "Fitness stars are not scored as dummy DPS"
+      -- keep the survivability impact line set above
+    elseif cat == "dot" then
       elig, eligNote = dotDmg, "DoT damage"
     elseif cat == "direct" then
       elig, eligNote = directDmg, "direct damage"
@@ -4873,19 +4950,20 @@ local function buildBuildSynergy(session)
       elig = totalDmg * (0.35 + skillPct * 0.4)
       eligNote = "mixed combat proxy"
     end
-    c.eligibleDmg = elig
-    c.eligiblePct = totalDmg > 0 and (elig / totalDmg) or 0
-    c.eligibleNote = eligNote
-    c.eligibleConf = CONFIDENCE.ESTIMATED
-    c.marginalConf = CONFIDENCE.INSUFFICIENT
-    c.marginalNote = "Marginal DPS needs other damage-done bonuses — not claimed"
-    -- Enrich impact line with eligible %
-    c.impact = string.format(
-      "Eligible %s (%s) · %s",
-      fmtPct(c.eligiblePct),
-      eligNote,
-      c.impact or c.reason or ""
-    )
+    if cat ~= "survivability" and c.constellation ~= "fitness" then
+      c.eligibleDmg = elig
+      c.eligiblePct = totalDmg > 0 and (elig / totalDmg) or 0
+      c.eligibleNote = eligNote
+      c.eligibleConf = CONFIDENCE.ESTIMATED
+      c.marginalConf = CONFIDENCE.INSUFFICIENT
+      c.marginalNote = "Marginal DPS needs other damage-done bonuses — not claimed"
+      c.impact = string.format(
+        "Eligible %s (%s) · %s",
+        fmtPct(c.eligiblePct),
+        eligNote,
+        c.impact or c.reason or ""
+      )
+    end
   end
 
   return {
@@ -8477,7 +8555,7 @@ local function refreshProcsUI(screen, session)
       ))
     else
       ui.cpNote:SetText(
-        "Fit = mix heuristic · Eligible % = category share · A/B ΔDPS appears after two dummies with same bars/sets and one CP swap"
+        "Warfare Fit = mix vs this parse · Fitness is survivability (dummy N/A — dummy does not hit back) · A/B ΔDPS after two dummies + one CP swap"
       )
     end
   end
@@ -8506,7 +8584,9 @@ local function refreshProcsUI(screen, session)
         end
         r.name:SetText(formatAbilityDisplay(cp.name, cp.id, 36))
         local impactTxt
-        if cp.marginalDps ~= nil then
+        if cp.fitKey == "na" or cp.fitKey == "surv" then
+          impactTxt = string.format("#%s  %s", cp.rankTxt or "—", cp.impact or cp.eligibleNote or "")
+        elseif cp.marginalDps ~= nil then
           impactTxt = string.format(
             "#%s Eligible %s · A/B ΔDPS %s %s",
             cp.rankTxt or tostring(i),
@@ -9621,12 +9701,12 @@ end
 -- Rotation: summary + fine pulse + skill icons + pattern tips
 ---------------------------------------------------------------------
 local function createRotationUI(screen)
-  if screen.rotationUI and not screen.rotationUI._v31714 then screen.rotationUI = nil end
+  if screen.rotationUI and not screen.rotationUI._v31716 then screen.rotationUI = nil end
   if screen.rotationUI then return screen.rotationUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.rotation
   if not panel then return nil end
-  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v31714 = true }
+  local ui = { panel = panel, pulse = {}, icons = {}, patterns = {}, _v31716 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuRotRootV8", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -9675,38 +9755,46 @@ local function createRotationUI(screen)
   -- Legend line only (per-icon S/U tags are under each halo)
   ui.iconMarkerLine = makeDashLabel(ui.iconPanel, "DM2StatsMenuRotIconMarkV8", 11, 0.55, 0.75, 0.70, 1)
   ui.iconMarkerLine:SetMaxLineCount(1)
-  for i = 1, ROT_TIMELINE_ICONS do
-    -- Outer halo (thick colored ring) + inner plate so result color is obvious.
-    local halo = WM:CreateControl("DM2StatsMenuRotIconHaloV9_" .. i, ui.iconWrap, CT_BACKDROP)
-    halo:SetDimensions(36, 36)
-    halo:SetCenterColor(0.35, 0.92, 0.45, 0.95)
-    halo:SetEdgeColor(0, 0, 0, 0)
-    halo:SetHidden(true)
-    stampBackground(halo, 3)
-    local slot = WM:CreateControl("DM2StatsMenuRotIconSlotV9_" .. i, halo, CT_BACKDROP)
-    slot:SetDimensions(28, 28)
-    slot:SetCenterColor(0.06, 0.06, 0.07, 1)
-    slot:SetEdgeColor(0.15, 0.15, 0.16, 0.9)
-    slot:SetAnchor(CENTER, halo, CENTER, 0, 0)
-    stampBackground(slot, 4)
-    local tex = WM:CreateControl("DM2StatsMenuRotIconTexV9_" .. i, slot, CT_TEXTURE)
-    tex:SetDimensions(24, 24)
-    tex:SetAnchor(CENTER, slot, CENTER, 0, 0)
-    stampForeground(tex, 110)
-    local fall = makeDashLabel(slot, "DM2StatsMenuRotIconFallV9_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
-    fall:SetAnchor(CENTER, slot, CENTER, 0, 0)
-    fall:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    fall:SetHidden(true)
-    -- F / B / U bar chip overlaid on icon (not junky — small top-left tag)
-    local barTag = makeDashLabel(halo, "DM2StatsMenuRotIconBarV9_" .. i, 10, 1, 1, 1, 1)
-    barTag:SetAnchor(TOPLEFT, halo, TOPLEFT, 1, -1)
-    barTag:SetHidden(true)
-    -- S/U swap/ult marker under this icon (aligned to fight timing)
-    local markTag = makeDashLabel(ui.iconWrap, "DM2StatsMenuRotIconMkV9_" .. i, 11, 0.55, 0.92, 0.75, 1)
-    markTag:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    markTag:SetHidden(true)
-    ui.icons[i] = { halo = halo, slot = slot, tex = tex, fall = fall, barTag = barTag, markTag = markTag }
+  -- Nested: avoid extra main-chunk locals (ESO 200-local cap).
+  ui.ensurePool = function(needed)
+    local wrap = ui.iconWrap
+    if not wrap then return 0 end
+    ui.icons = ui.icons or {}
+    needed = tonumber(needed) or 96
+    if needed < 1 then needed = 1 end
+    if needed > ROT_TIMELINE_ICONS then needed = ROT_TIMELINE_ICONS end
+    for i = #ui.icons + 1, needed do
+      local halo = WM:CreateControl("DM2StatsMenuRotIconHaloV10_" .. i, wrap, CT_BACKDROP)
+      halo:SetDimensions(36, 36)
+      halo:SetCenterColor(0.35, 0.92, 0.45, 0.95)
+      halo:SetEdgeColor(0, 0, 0, 0)
+      halo:SetHidden(true)
+      stampBackground(halo, 3)
+      local slot = WM:CreateControl("DM2StatsMenuRotIconSlotV10_" .. i, halo, CT_BACKDROP)
+      slot:SetDimensions(28, 28)
+      slot:SetCenterColor(0.06, 0.06, 0.07, 1)
+      slot:SetEdgeColor(0.15, 0.15, 0.16, 0.9)
+      slot:SetAnchor(CENTER, halo, CENTER, 0, 0)
+      stampBackground(slot, 4)
+      local tex = WM:CreateControl("DM2StatsMenuRotIconTexV10_" .. i, slot, CT_TEXTURE)
+      tex:SetDimensions(24, 24)
+      tex:SetAnchor(CENTER, slot, CENTER, 0, 0)
+      stampForeground(tex, 110)
+      local fall = makeDashLabel(slot, "DM2StatsMenuRotIconFallV10_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+      fall:SetAnchor(CENTER, slot, CENTER, 0, 0)
+      fall:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+      fall:SetHidden(true)
+      local barTag = makeDashLabel(halo, "DM2StatsMenuRotIconBarV10_" .. i, 10, 1, 1, 1, 1)
+      barTag:SetAnchor(TOPLEFT, halo, TOPLEFT, 1, -1)
+      barTag:SetHidden(true)
+      local markTag = makeDashLabel(wrap, "DM2StatsMenuRotIconMkV10_" .. i, 11, 0.55, 0.92, 0.75, 1)
+      markTag:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+      markTag:SetHidden(true)
+      ui.icons[i] = { halo = halo, slot = slot, tex = tex, fall = fall, barTag = barTag, markTag = markTag }
+    end
+    return #ui.icons
   end
+  ui.ensurePool(96)
 
   ui.patPanel = WM:CreateControl("DM2StatsMenuRotPatPanelV8", ui.root, CT_CONTROL)
   local patBg = makeSectionFrame(ui.patPanel, "DM2StatsMenuRotPatBGV8", true)
@@ -9871,51 +9959,69 @@ local function refreshRotationUI(screen, session)
     end
   end
 
-  -- Icon timeline — all skill presses (paged); S/U under icons by time
-  M._rotTimelinePage = M._rotTimelinePage or 1
-  local events, totalSkills, pages, pageIndex = buildTimelineIconEvents(session, ROT_TIMELINE_ICONS, M._rotTimelinePage)
-  M._rotTimelinePage = pageIndex
-  M._rotTimelinePages = pages
-  M._rotTimelineTotal = totalSkills
-  local pressCount = tonumber(w.inputSkillPresses) or tonumber(w.skillEventCount) or totalSkills
-  -- Dummy: full S/U alignment. Long trial/dungeon: still show but only if markers exist.
-  local markTags, swapPlaced, ultPlaced = buildIconMarkerTags(session, events)
-  local totalSwaps = (session.weave and tonumber(session.weave.barSwapCount))
-    or (session.barStats and tonumber(session.barStats.swapCount)) or 0
+  -- Icon timeline — paint the whole dummy on one screen when the panel can hold it.
+  -- Chips are GUI objects (halo+slot+tex+labels). We grow a pool up to the cap, then page.
   local wrapWW = ui.iconWrap:GetWidth() or textW
   local wrapHH = ui.iconWrap:GetHeight() or 120
   if wrapWW < 50 then wrapWW = textW end
   if wrapHH < 40 then wrapHH = 120 end
-  -- Fit as many icons as possible without clipping the last row (S/U tags need ~10px)
-  local cellSize, iconGap, markH = 32, 4, 10
-  local perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
-  local rowStride = cellSize + iconGap + markH
-  local maxRowsFit = math.max(1, math.floor((wrapHH + iconGap) / rowStride))
-  local maxFit = perRow * maxRowsFit
-  -- If this page's events exceed what fits, shrink cells slightly once
-  if #events > maxFit and maxFit > 0 then
-    cellSize = 28
-    iconGap = 3
-    markH = 9
-    perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
-    rowStride = cellSize + iconGap + markH
-    maxRowsFit = math.max(1, math.floor((wrapHH + iconGap) / rowStride))
-    maxFit = perRow * maxRowsFit
+  local function gridMetrics(cellSize, iconGap, markH)
+    local perRow = math.max(1, math.floor((wrapWW + iconGap) / (cellSize + iconGap)))
+    local rowStride = cellSize + iconGap + markH
+    local maxRows = math.max(1, math.floor((wrapHH + iconGap) / rowStride))
+    return perRow, maxRows, perRow * maxRows, rowStride
   end
+  local function pickCell(count)
+    local tries = { {32,4,10}, {28,3,9}, {24,3,8}, {22,2,8} }
+    local best = { cellSize=32, iconGap=4, markH=10, perRow=1, maxRows=1, maxFit=1, rowStride=46 }
+    count = tonumber(count) or 0
+    for _, t in ipairs(tries) do
+      local perRow, maxRows, maxFit, stride = gridMetrics(t[1], t[2], t[3])
+      best = { cellSize=t[1], iconGap=t[2], markH=t[3], perRow=perRow, maxRows=maxRows, maxFit=maxFit, rowStride=stride }
+      if count > 0 and count <= maxFit then return best end
+    end
+    return best
+  end
+  local allEvents = collectSkillTimelineEvents(session)
+  local totalSkills = #allEvents
+  local gridAll = pickCell(math.min(totalSkills, ROT_TIMELINE_ICONS))
+  local pageCap = math.min(gridAll.maxFit, ROT_TIMELINE_ICONS)
+  if pageCap < 1 then pageCap = 1 end
+  if type(ui.ensurePool) == "function" then
+    ui.ensurePool(math.min(math.max(totalSkills, 1), pageCap))
+  end
+  local pages = 1
+  if totalSkills > pageCap then pages = math.ceil(totalSkills / pageCap) end
+  M._rotTimelinePage = math.max(1, tonumber(M._rotTimelinePage) or 1)
+  if M._rotTimelinePage > pages then M._rotTimelinePage = pages end
+  local pageIndex = M._rotTimelinePage
+  M._rotTimelinePages = pages
+  M._rotTimelineTotal = totalSkills
+  local startIdx = (pageIndex - 1) * pageCap + 1
+  local events = {}
+  for i = startIdx, math.min(totalSkills, startIdx + pageCap - 1) do
+    events[#events + 1] = allEvents[i]
+  end
+  local endIdx = startIdx + #events - 1
+  -- Size cells for this page (last page of 20 icons stays readable, not tiny)
+  local grid = pickCell(#events)
+  local cellSize, iconGap, markH = grid.cellSize, grid.iconGap, grid.markH
+  local perRow, maxRowsFit, maxFit, rowStride = grid.perRow, grid.maxRows, grid.maxFit, grid.rowStride
+  local pressCount = tonumber(w.inputSkillPresses) or tonumber(w.skillEventCount) or totalSkills
+  local markTags, swapPlaced, ultPlaced = buildIconMarkerTags(session, events)
+  local totalSwaps = (session.weave and tonumber(session.weave.barSwapCount))
+    or (session.barStats and tonumber(session.barStats.swapCount)) or 0
   local markCount = 0
-  local startIdx = (pageIndex - 1) * ROT_TIMELINE_ICONS + 1
-  local endIdx = math.min(totalSkills, startIdx + #events - 1)
   local clipped = (#events > maxFit)
   if ui.iconTitle then
-    if pages > 1 or clipped then
+    if pages > 1 then
       ui.iconTitle:SetText(string.format(
-        "SKILL TIMELINE  ·  icons %d–%d of %d timeline  ·  presses %d  ·  page %d/%d  ·  Y next page",
-        startIdx, math.min(endIdx, startIdx + math.min(#events, maxFit) - 1), totalSkills,
-        pressCount, pageIndex, pages
+        "SKILL TIMELINE  ·  icons %d–%d of %d  ·  presses %d  ·  page %d/%d  ·  footer Next page",
+        startIdx, endIdx, totalSkills, pressCount, pageIndex, pages
       ))
     else
       ui.iconTitle:SetText(string.format(
-        "SKILL TIMELINE  ·  %d timeline icons  ·  %d skill presses  ·  |c88DDAAS|r swap · |cFFAA66U|r ult",
+        "SKILL TIMELINE  ·  %d skills this parse  ·  %d presses  ·  |c88DDAAS|r swap · |cFFAA66U|r ult",
         totalSkills, pressCount
       ))
     end
@@ -10013,8 +10119,8 @@ local function refreshRotationUI(screen, session)
     ui.iconMarkerLine:SetHidden(false)
     if totalSkills > 0 then
       local note = ""
-      if pages > 1 then note = "  ·  Y = next page"
-      elseif clipped then note = "  ·  layout clipped — open wider / Y if paged"
+      if pages > 1 then note = "  ·  footer Next page (Square / Y)"
+      elseif clipped then note = "  ·  layout clipped — icons shrunk to fit"
       elseif pressCount > totalSkills then
         note = string.format("  ·  %d presses vs %d timeline tokens", pressCount, totalSkills)
       end
@@ -10621,7 +10727,9 @@ local function refreshInsightsUI(screen, session, mode)
       r.fit:SetColor(fr, fg, fb, fa or 1)
       r.name:SetText(formatAbilityDisplay(c.name, c.id, 42))
       local impactTxt
-      if c.marginalDps ~= nil then
+      if c.fitKey == "na" or c.fitKey == "surv" then
+        impactTxt = c.impact or c.eligibleNote or c.reason or ""
+      elseif c.marginalDps ~= nil then
         impactTxt = string.format(
           "Eligible %s · A/B ΔDPS %s %s",
           fmtPct(c.eligiblePct or 0),
@@ -12034,7 +12142,7 @@ function DM2StatsMenuShell_Gamepad:RefreshHeader()
       and string.format("EXP DONE %d/%d", n, need)
       or string.format("EXP ON %d/%d", n, need)
   end
-  local subtitle = "v3.17.14  |  L2/R2 fights  |  " .. expBit .. "  |  "
+  local subtitle = "v3.17.16  |  L2/R2 fights  |  " .. expBit .. "  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",
@@ -12447,11 +12555,11 @@ local function ensureKeybindGroup()
       enabled = experimentKeybindEnabled,
     },
     {
-      -- Rotation skill timeline pages (Y / Secondary)
+      -- Rotation skill timeline pages (Square on PS / Y on Xbox) — only if fight overflows panel
       name = function()
         local p = tonumber(M._rotTimelinePage) or 1
         local pages = tonumber(M._rotTimelinePages) or 1
-        return string.format("Timeline page %d/%d", p, pages)
+        return string.format("Next page %d/%d", p, pages)
       end,
       keybind = "UI_SHORTCUT_SECONDARY",
       order = 160,

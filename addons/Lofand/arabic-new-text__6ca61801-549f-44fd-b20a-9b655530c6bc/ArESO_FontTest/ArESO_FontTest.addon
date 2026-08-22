@@ -1,0 +1,7 @@
+## Title: ArESO Font Test
+## Author: ArESO Project
+## Description: Proof-of-concept: verifies Arabic text rendering in ESO. Type /aresotest
+## Version: 0.1.0
+## APIVersion: 101050 101051
+
+ArESO_FontTest.lua

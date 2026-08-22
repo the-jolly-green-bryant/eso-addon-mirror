@@ -4,7 +4,7 @@ local CogsAssistants = CogsAssistants
 local ADDON_NAME = "CogsAssistants"
 local DEV_ADDON_NAME = "cogs-assistants"
 local EVENT_NAMESPACE = "CogsAssistants"
-local ADDON_VERSION = "0.1.3"
+local ADDON_VERSION = "0.1.5"
 local SAVED_VARIABLES_NAME = "CogsAssistantsSavedVariables"
 local SAVED_VARIABLES_VERSION = 1
 local PREFERENCES_NAMESPACE = "Preferences"
@@ -13,6 +13,11 @@ local RANDOM_MODE = "random"
 local STATIC_MODE = "static"
 local RANDOM_CHOICE = "Random"
 local CLEAR_CHOICE = "Clear"
+local CROW_COLLECTIBLE_IDS =
+{
+    [8994] = true,
+    [8995] = true,
+}
 
 local TYPE_ORDER =
 {
@@ -408,30 +413,41 @@ end
 
 function CogsAssistants:GetRandomCollectible(typeKey)
     local list = CogsAssistants.collectibles[typeKey] or {}
-    if #list == 0 then
+    local candidates = list
+
+    if IsWerewolf() then
+        candidates = {}
+        for _, collectibleId in ipairs(list) do
+            if not CROW_COLLECTIBLE_IDS[collectibleId] then
+                candidates[#candidates + 1] = collectibleId
+            end
+        end
+    end
+
+    if #candidates == 0 then
         return nil
     end
 
-    if #list == 1 then
-        return list[1]
+    if #candidates == 1 then
+        return candidates[1]
     end
 
     local activeCollectibleId = GetActiveCollectibleByType(typeKey == "companion" and COLLECTIBLE_CATEGORY_TYPE_COMPANION or COLLECTIBLE_CATEGORY_TYPE_ASSISTANT, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
     if activeCollectibleId and activeCollectibleId ~= 0 and CogsAssistants.savedVariables.dismissActiveOnReuse then
-        for _, collectibleId in ipairs(list) do
+        for _, collectibleId in ipairs(candidates) do
             if collectibleId == activeCollectibleId then
                 return activeCollectibleId
             end
         end
     end
 
-    local pick = list[zo_random(1, #list)]
+    local pick = candidates[zo_random(1, #candidates)]
     if activeCollectibleId and activeCollectibleId ~= 0 then
         for _ = 1, 5 do
             if pick ~= activeCollectibleId then
                 break
             end
-            pick = list[zo_random(1, #list)]
+            pick = candidates[zo_random(1, #candidates)]
         end
     end
     return pick

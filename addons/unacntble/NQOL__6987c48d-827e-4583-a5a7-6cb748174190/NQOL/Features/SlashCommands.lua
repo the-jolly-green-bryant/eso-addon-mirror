@@ -6,6 +6,8 @@ local SlashCommands = {}
 local FEATURE_NAME = NQOL.L("features.slash_commands.feature_name")
 local HELP_COMMAND = "/nqol"
 local COMMAND_PREFIX = "/nqol:"
+local GPS_LOG_COMMAND = "gpslog"
+local gpsLogDescription = NQOL.L("features.slash_commands.gps_log")
 
 local COMMANDS = {
     { "remount", NQOL.L("features.slash_commands.remain_mounted"), "Mounts", "GetRemainMounted", "SetRemainMounted" },
@@ -24,10 +26,12 @@ local COMMANDS = {
     { "gold", NQOL.L("features.slash_commands.gold"), "ProgressGold", "GetGoldEnabled", "SetGoldEnabled" },
     { "buffs", NQOL.L("features.slash_commands.buffs"), "BuffsDebuffs", "GetEnabled", "SetEnabled" },
     { "ultfront", NQOL.L("features.slash_commands.ult_front"), "UltimateCountdown", "GetEnabled", "SetEnabled", "frontBar" },
-    { "ultback", NQOL.L("features.slash_commands.ult_back"), "UltimateCountdown", "GetEnabled", "SetEnabled", "backBar" }
+    { "ultback", NQOL.L("features.slash_commands.ult_back"), "UltimateCountdown", "GetEnabled", "SetEnabled", "backBar" },
+    { "gps", NQOL.L("features.slash_commands.gps"), "GPS", "GetEnabled", "SetEnabled", nil, "IsAvailable" }
 }
 NQOL.Lexicon.RegisterRefreshCallback(function()
     FEATURE_NAME = NQOL.L("features.slash_commands.feature_name")
+    gpsLogDescription = NQOL.L("features.slash_commands.gps_log")
     local keys = {
         "features.slash_commands.remain_mounted", "features.slash_commands.auto_eye",
         "features.slash_commands.auto_charge", "features.slash_commands.auto_repair",
@@ -35,7 +39,7 @@ NQOL.Lexicon.RegisterRefreshCallback(function()
         "features.slash_commands.reel", "features.slash_commands.bait", "features.slash_commands.chat",
         "features.slash_commands.reminders", "features.slash_commands.friends", "features.slash_commands.ticker",
         "features.slash_commands.xp", "features.slash_commands.gold", "features.slash_commands.buffs",
-        "features.slash_commands.ult_front", "features.slash_commands.ult_back",
+        "features.slash_commands.ult_front", "features.slash_commands.ult_back", "features.slash_commands.gps",
     }
     for index, key in ipairs(keys) do COMMANDS[index][2] = NQOL.L(key) end
 end)
@@ -80,6 +84,10 @@ local function MakeHandler(entry)
             Chat(NQOL.L("features.slash_commands.unavailable", entry[2]))
             return
         end
+        if entry[7] ~= nil and (type(feature[entry[7]]) ~= "function" or feature[entry[7]]() ~= true) then
+            Chat(NQOL.L("features.slash_commands.unavailable", entry[2]))
+            return
+        end
 
         if tostring(args or ""):match("%S") then
             Chat(NQOL.L("features.slash_commands.current", COMMAND_PREFIX, entry[1], FormatState(CallGetter(feature, entry))))
@@ -98,6 +106,28 @@ local function ShowHelp()
     for _, entry in ipairs(COMMANDS) do
         Chat(NQOL.L("features.slash_commands.help_entry", COMMAND_PREFIX, entry[1], entry[2]))
     end
+
+    Chat(NQOL.L("features.slash_commands.help_entry", COMMAND_PREFIX, GPS_LOG_COMMAND, gpsLogDescription))
+end
+
+local function LogGPSCoordinates()
+    local gps = NQOL.Features and NQOL.Features.GPS
+    if not gps or type(gps.IsAvailable) ~= "function" or gps.IsAvailable() ~= true then
+        Chat(NQOL.L("features.slash_commands.unavailable", NQOL.L("features.slash_commands.gps")))
+        return
+    end
+    if type(gps.GetCoordinateValues) ~= "function" then
+        Chat(NQOL.L("features.slash_commands.unavailable", gpsLogDescription))
+        return
+    end
+
+    local xText, yText, zText = gps.GetCoordinateValues()
+    if not xText then
+        NQOL.Chat.Message(NQOL.L("features.gps.location_unavailable"), gps.GetName())
+        return
+    end
+
+    NQOL.Chat.Message(NQOL.L("features.gps.plain_text_horizontal_format", xText, yText, zText), gps.GetName())
 end
 
 local function Register(command, handler)
@@ -114,6 +144,8 @@ function SlashCommands.Initialize()
     for _, entry in ipairs(COMMANDS) do
         Register(COMMAND_PREFIX .. entry[1], MakeHandler(entry))
     end
+
+    Register(COMMAND_PREFIX .. GPS_LOG_COMMAND, LogGPSCoordinates)
 end
 
 NQOL.Features.SlashCommands = SlashCommands

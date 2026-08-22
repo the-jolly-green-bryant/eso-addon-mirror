@@ -180,6 +180,9 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
         {
             keybind = "UI_SHORTCUT_PRIMARY",
             name = function()
+                if BattleScrolls.shareUrl.getState().phase == "choosing" then
+                    return GetString(SI_GAMEPAD_SELECT_OPTION)
+                end
                 local resendSeq = resendableTargetSeq()
                 if resendSeq then
                     return zo_strformat(GetString(BATTLESCROLLS_SHARE_RESEND_PART), resendSeq)
@@ -191,6 +194,16 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             callback = function()
                 if BattleScrolls.shareUrl.isSendBlocked()
                     or swallowLeakedPress("A", false) then
+                    return
+                end
+                if BattleScrolls.shareUrl.getState().phase == "choosing" then
+                    local target = journalUI.shareList:GetTargetData()
+                    if target and target.shareVariant then
+                        -- Starts the chain; the observer re-renders the
+                        -- stepper in "sending" with part 1 selected. No B
+                        -- sink needed - nothing has been fired yet.
+                        BattleScrolls.shareUrl.chooseVariant(target.shareVariant)
+                    end
                     return
                 end
                 local resendSeq = resendableTargetSeq()
@@ -210,6 +223,10 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             end,
             visible = function()
                 local state = BattleScrolls.shareUrl.getState()
+                if state.phase == "choosing" then
+                    local target = journalUI.shareList:GetTargetData()
+                    return target ~= nil and target.shareVariant ~= nil
+                end
                 if state.phase == "sending" then
                     return true
                 end
@@ -255,11 +272,14 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
     -- but a bare do-nothing Back leaves A/X nothing to double-fire AND
     -- catches a browser-exit B that arrives before the round trip settles -
     -- with no strip at all, that B would dispatch to whatever else listens.
+    -- Ethereal: handled but never rendered, so it cannot overlay the URL
+    -- confirm dialog's own keybind bar (the name is debug-only by contract).
     journalUI.shareInFlightKeybindStripDescriptor = {
         alignment = KEYBIND_STRIP_ALIGN_LEFT,
         {
             keybind = "UI_SHORTCUT_NEGATIVE",
-            name = GetString(SI_GAMEPAD_BACK_OPTION),
+            ethereal = true,
+            name = "BattleScrolls Share B Sink",
             callback = function()
                 BattleScrolls.shareTrace.record("B sunk (in flight)")
             end,

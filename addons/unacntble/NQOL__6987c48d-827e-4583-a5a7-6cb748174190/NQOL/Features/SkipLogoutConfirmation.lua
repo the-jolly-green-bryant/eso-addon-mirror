@@ -14,7 +14,8 @@ local defaults = {
 
 local savedVariables
 local initialized = false
-local originalShowGamepadDialog
+local originalLogoutCallback
+local hookedLogoutEntry
 
 local function GetSettings()
     local settings = NQOL.Settings.GetSection(savedVariables, defaults, "utility")
@@ -27,29 +28,64 @@ local function IsEnabled()
     return GetSettings().skipLogoutConfirmation == true
 end
 
-local function ShouldSkipGamepadDialog(dialogName, data)
-    return IsEnabled()
-        and dialogName == "GAMEPAD_LOG_OUT"
-        and data
-        and data.quit == false
-        and type(Logout) == "function"
+local function GetLogoutMenuEntry()
+    if not MENU_ENTRY_DATA or not MENU_MAIN_ENTRIES then
+        return nil
+    end
+
+    local entry = MENU_ENTRY_DATA[MENU_MAIN_ENTRIES.LOG_OUT]
+    if type(entry) ~= "table" or type(entry.activatedCallback) ~= "function" then
+        return nil
+    end
+
+    return entry
 end
 
-local function HookLogoutDialog()
-    if originalShowGamepadDialog or type(ZO_Dialogs_ShowGamepadDialog) ~= "function" then
+local function LogoutWithoutConfirmation()
+    if type(IsProtectedFunction) == "function"
+        and IsProtectedFunction("Logout")
+        and type(CallSecureProtected) == "function"
+    then
+        return CallSecureProtected("Logout")
+    end
+
+    if type(Logout) == "function" then
+        return Logout()
+    end
+end
+
+local function RestoreLogoutMenuEntry()
+    if not hookedLogoutEntry then
         return
     end
 
-    originalShowGamepadDialog = ZO_Dialogs_ShowGamepadDialog
-
-    ZO_Dialogs_ShowGamepadDialog = function(dialogName, data, ...)
-        if ShouldSkipGamepadDialog(dialogName, data) then
-            Logout()
-            return nil
-        end
-
-        return originalShowGamepadDialog(dialogName, data, ...)
+    if hookedLogoutEntry.activatedCallback == LogoutWithoutConfirmation then
+        hookedLogoutEntry.activatedCallback = originalLogoutCallback
     end
+
+    hookedLogoutEntry = nil
+    originalLogoutCallback = nil
+end
+
+local function ApplyLogoutSetting()
+    if not IsEnabled() then
+        RestoreLogoutMenuEntry()
+        return true
+    end
+
+    if hookedLogoutEntry then
+        return true
+    end
+
+    local entry = GetLogoutMenuEntry()
+    if not entry then
+        return false
+    end
+
+    hookedLogoutEntry = entry
+    originalLogoutCallback = entry.activatedCallback
+    entry.activatedCallback = LogoutWithoutConfirmation
+    return true
 end
 
 function SkipLogoutConfirmation.InitializeSavedVariables()
@@ -63,7 +99,7 @@ function SkipLogoutConfirmation.Initialize()
     end
 
     initialized = true
-    HookLogoutDialog()
+    ApplyLogoutSetting()
 end
 
 function SkipLogoutConfirmation.GetEnabled()
@@ -72,6 +108,7 @@ end
 
 function SkipLogoutConfirmation.SetEnabled(value)
     GetSettings().skipLogoutConfirmation = value == true
+    ApplyLogoutSetting()
 end
 
 function SkipLogoutConfirmation.GetEnabledLabel()

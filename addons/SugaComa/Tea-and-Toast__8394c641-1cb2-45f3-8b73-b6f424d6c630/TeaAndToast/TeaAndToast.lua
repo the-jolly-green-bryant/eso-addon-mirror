@@ -1,5 +1,5 @@
 --------------------------------------------------------------
--- Tea & Toast — v2.2.0-test1 "Nan Says + Fishing Banter"
+-- Tea & Toast — v2.2.3 "Restored Fish-On Cue"
 -- Author: SugaComa (Rik Sprint)
 --
 -- Nan watches for AFK, grows steadily more concerned,
@@ -27,12 +27,15 @@ local CHAT_TAG = "[Nan Says]"
 --------------------------------------------------------------
 local SV_DEFAULTS = {
     nanEnabled    = true,
+    afkTalk       = true,      -- Nan's AFK comments can be disabled independently
     subtleSounds  = true,
     afkThreshold  = 120,     -- seconds idle → AFK
     pulseInterval = 60,      -- seconds between Nan lines
     checkInterval = 10,      -- seconds between activity checks
     debug         = false,
-    fishingBanter = true,      -- Nan comments on casts and fishing results
+    fishingBanter = true,      -- Nan comments while fishing
+    fishingReactionDelay = 650, -- milliseconds before Nan reacts
+    crabSlaughterCraneSeen = false, -- one-time account-wide special reaction
 }
 TT.SV = TT.SV or nil
 
@@ -40,6 +43,7 @@ TT.SV = TT.SV or nil
 -- Helpers
 --------------------------------------------------------------
 local COL_TEA, COL_NAN, COL_WARN = "C3B091", "92B0D9", "FFCC66"
+local COL_GREEN, COL_BLUE, COL_PURPLE = "2DC50E", "3A92FF", "A02EF7"
 local function c(hex, txt) return ("|c%s%s|r"):format(hex, txt) end
 local function fmtTime(sec) return string.format("%dm %02ds", math.floor(sec/60), sec%60) end
 
@@ -148,27 +152,55 @@ TT.Libs = {
         "Cyrodiil waits for no one — least of all you!",
     },
     fishingCast = {
-        "There goes another worm. Try not to feed the entire lake.",
-        "Off it goes. Perhaps this one has better taste in bait.",
-        "Another cast? I admire the optimism, if nothing else.",
-        "Right, line’s in. Wake me when something with fins shows up.",
-        "You’ve thrown perfectly good bait into the water again. Bold strategy.",
-        "Go on then, impress me. Catch something that isn’t disappointment.",
+        "I still hate fishing.",
+        "Do we have to?",
+        "Fine. One more cast.",
+        "Fish, then. I’ll make tea.",
+        "Again? Lovely.",
+        "More fishing. Wonderful.",
+        "Go on, feed the lake.",
+        "I’ll put the kettle on.",
     },
-    fishingCatch = {
-        "Well, look at that—you caught %s. I take back at least one thing I said.",
-        "%s! Finally. I was starting to think the fish had formed a union.",
-        "Oh, a %s. Put it somewhere sensible, not next to the biscuits.",
-        "You actually caught %s. Don’t look so surprised, dear.",
-        "%s. Lovely. Now do it again before I finish my tea.",
+    fishingHook = {
+        "Hooked!",
+        "Reel it in!",
+        "You've got one!",
+        "Fish on—reel!",
+        "Bite—reel!",
+        "Now, love—reel!",
+        "Quick—reel!",
+        "It’s hooked!",
+        "Pull it in!",
+        "Got one—reel!",
+        "Rod up!",
+        "Reel, love!",
+        "There’s one—pull!",
+        "One’s hooked—reel!",
+        "Got a bite—reel!",
+        "Reel now!",
+        "One’s on—reel!",
+        "Pull, dear!",
+        "Catch it—reel!",
+        "Reel now, love!",
     },
-    fishingFail = {
-        "And it’s gone. The fish sends its regards.",
-        "Missed it. Even I saw that one coming, and I’m not holding the rod.",
-        "Nothing. Again. Perhaps try asking the fish nicely.",
-        "Well, that was an expensive way to feed a worm to a lake.",
-        "Gone. At least the bait had a nice day out.",
-        "You had one job, dear. The fish appears to have won.",
+    fishingWhite = {
+        "Ten white fish. You’re a bad fisherman, aren’t you?",
+        "Ten ordinary fish. Not your finest work.",
+        "Ten plain fish. The lake’s showing you up.",
+        "Ten whites. Call yourself a fisherman?",
+        "That’s ten ordinary ones. Bit rubbish, love.",
+        "Ten common fish. Do try harder.",
+    },
+    fishingGreen = {
+        "That'll make a decent tea.",
+        "Not bad. Still smells, mind.",
+    },
+    fishingBlue = {
+        "That'll make a decent stew.",
+        "Oh! That's a lovely one!",
+    },
+    fishingCrabSlaughterCrane = {
+        "I'd throw that back before it throws you back... and eats me!",
     },
 }
 
@@ -245,6 +277,11 @@ TT.fishingResolveToken = 0
 TT.lastLureIndex = nil
 TT.lastLureStack = nil
 TT.fishingLeaveToken = 0
+TT.fishingSayGeneration = 0
+TT.fishingSayTokens = {}
+TT.whiteSilentSinceComment = 0
+TT.whiteCommentGap = 5
+TT.lastFishingLineIndices = {}
 
 local function QueryInteractInfo()
     if type(GetGameCameraInteractableActionInfo) ~= "function" then
@@ -280,12 +317,76 @@ end
 
 local function FishingSay(lib, colorHex, value)
     if not FishingBanterEnabled() or not lib or #lib == 0 then return end
-    local line = lib[math.random(#lib)]
+    local lineIndex = math.random(#lib)
+    local lastIndex = TT.lastFishingLineIndices[lib]
+    if #lib > 1 and lineIndex == lastIndex then
+        lineIndex = (lineIndex % #lib) + 1
+    end
+    TT.lastFishingLineIndices[lib] = lineIndex
+    local line = lib[lineIndex]
     if value ~= nil then
-        line = string.format(line, tostring(value))
+        if line:find("%s", 1, true) then
+            line = string.format(line, tostring(value))
+        else
+            -- Keep the recovered Nan line unchanged while naming only the
+            -- green, blue, and purple catch that prompted it.
+            line = tostring(value) .. ". " .. line
+        end
     end
     Print(c(colorHex or COL_TEA, line))
     softPing()
+end
+
+local function QueueFishingSay(lib, colorHex, value, channel, delayOverride)
+    if not FishingBanterEnabled() or not lib or #lib == 0 then return end
+    channel = channel or "catch"
+    TT.fishingSayTokens[channel] = (TT.fishingSayTokens[channel] or 0) + 1
+    local token = TT.fishingSayTokens[channel]
+    local generation = TT.fishingSayGeneration
+    local delay = math.max(0, tonumber(delayOverride) or tonumber(TT.SV.fishingReactionDelay) or 650)
+    zo_callLater(function()
+        if generation == TT.fishingSayGeneration
+            and token == TT.fishingSayTokens[channel]
+            and FishingBanterEnabled() then
+            FishingSay(lib, colorHex, value)
+        end
+    end, delay)
+end
+
+local function QueueCatchReveal(lib, colorHex, value)
+    QueueFishingSay(lib, colorHex, value, "catch", math.random(1000, 3000))
+end
+
+local function BuildItemLink(itemId)
+    if type(itemId) ~= "number" or itemId <= 0 then return nil end
+    return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId)
+end
+
+local function GetLootDisplayQuality(itemName, itemId)
+    if type(GetItemLinkDisplayQuality) ~= "function" then return nil end
+    local itemLink = nil
+    if type(itemName) == "string" and itemName:find("|H%d*:item:") then
+        itemLink = itemName
+    else
+        itemLink = BuildItemLink(itemId)
+    end
+    if not itemLink then return nil end
+    local ok, quality = pcall(GetItemLinkDisplayQuality, itemLink)
+    return ok and quality or nil
+end
+
+local function GetCatchTier(quality)
+    if quality == nil then return nil end
+    if _G.ITEM_DISPLAY_QUALITY_NORMAL and quality == ITEM_DISPLAY_QUALITY_NORMAL then return "white" end
+    if _G.ITEM_DISPLAY_QUALITY_MAGIC and quality == ITEM_DISPLAY_QUALITY_MAGIC then return "green" end
+    if _G.ITEM_DISPLAY_QUALITY_ARCANE and quality == ITEM_DISPLAY_QUALITY_ARCANE then return "blue" end
+    if _G.ITEM_DISPLAY_QUALITY_ARTIFACT and quality == ITEM_DISPLAY_QUALITY_ARTIFACT then return "purple" end
+    return nil
+end
+
+local function IsCrabSlaughterCrane(caught)
+    if type(caught) ~= "string" then return false end
+    return caught:lower():find("crab-slaughter-crane", 1, true) ~= nil
 end
 
 function TT:ResetFishingAttempt()
@@ -294,33 +395,54 @@ function TT:ResetFishingAttempt()
     self.fishingResolveToken = (self.fishingResolveToken or 0) + 1
 end
 
-function TT:ResolveFishingFail()
+function TT:ResolveFishingCatch(itemName, itemId)
     if not self.fishingAttemptActive then return end
-    self:ResetFishingAttempt()
-    FishingSay(TT.Libs.fishingFail, COL_WARN)
-end
-
-function TT:ResolveFishingCatch(itemName)
-    if not self.fishingAttemptActive then return end
+    local quality = GetLootDisplayQuality(itemName, itemId)
+    local tier = GetCatchTier(quality)
     local caught = itemName
     if not caught or caught == "" then caught = "something" end
     if zo_strformat and _G.SI_TOOLTIP_ITEM_NAME then
         caught = zo_strformat(SI_TOOLTIP_ITEM_NAME, caught)
     end
     self:ResetFishingAttempt()
-    FishingSay(TT.Libs.fishingCatch, COL_NAN, caught)
+    Debug(string.format("Fishing catch itemId=%s quality=%s tier=%s", tostring(itemId), tostring(quality), tostring(tier)))
+
+    if tier == "green" then
+        QueueCatchReveal(TT.Libs.fishingGreen, COL_GREEN, caught)
+    elseif tier == "blue" then
+        QueueCatchReveal(TT.Libs.fishingBlue, COL_BLUE, caught)
+    elseif tier == "purple" or IsCrabSlaughterCrane(caught) then
+        -- Crab-Slaughter-Crane is the game's sole purple fishing catch.
+        -- Nan's throw-it-back reaction therefore applies every time.
+        QueueCatchReveal(TT.Libs.fishingCrabSlaughterCrane, COL_PURPLE)
+    elseif tier == "white" then
+        self.whiteSilentSinceComment = (self.whiteSilentSinceComment or 0) + 1
+        local requiredGap = self.whiteCommentGap or 5
+        if self.whiteSilentSinceComment > requiredGap then
+            self.whiteSilentSinceComment = 0
+            self.whiteCommentGap = math.random(5, 7)
+            QueueCatchReveal(TT.Libs.fishingWhite, COL_TEA)
+        end
+    end
 end
 
 function TT:OnFishingCast()
-    -- A new cast conclusively ends any unresolved previous attempt without loot.
-    -- This is also our conservative fallback if ESO never exposed a reel-result event.
-    if self.fishingAttemptActive then
-        self:ResolveFishingFail()
+    -- Starting a fresh cast silently clears any unresolved previous attempt.
+    self:ResetFishingAttempt()
+    if math.random(5) == 1 then
+        QueueFishingSay(TT.Libs.fishingCast, COL_TEA, nil, "cast", 350)
     end
+end
+
+function TT:OnFishingHooked()
+    if not FishingBanterEnabled() or self.fishingReelSeen then return end
     self.fishingAttemptActive = true
-    self.fishingReelSeen = false
+    self.fishingReelSeen = true
     self.fishingResolveToken = (self.fishingResolveToken or 0) + 1
-    FishingSay(TT.Libs.fishingCast, COL_TEA)
+
+    -- The fish-on warning is the accessibility feature. Speak immediately;
+    -- do not delay it behind the later catch reveal.
+    FishingSay(TT.Libs.fishingHook, COL_WARN)
 end
 
 function TT:TrackFishingLureStack()
@@ -336,7 +458,9 @@ function TT:TrackFishingLureStack()
     if type(stackCount) ~= "number" then return end
 
     if self.lastLureIndex == lureIndex and type(self.lastLureStack) == "number" and stackCount < self.lastLureStack then
-        self:OnFishingCast()
+        -- ESO consumes one bait when a fish is properly on the hook. This was
+        -- the dependable detector in the working version and is the primary cue.
+        self:OnFishingHooked()
     end
 
     self.lastLureIndex = lureIndex
@@ -379,22 +503,29 @@ end
 
 local function StopFishingPoll()
     EM:UnregisterForUpdate(ADDON.."_FishPoll")
+    TT.fishingSayGeneration = (TT.fishingSayGeneration or 0) + 1
+    TT.fishingSayTokens = {}
     TT.isFishing = false
     TT.lastLureIndex = nil
     TT.lastLureStack = nil
     TT:ResetFishingAttempt()
 end
 
--- Fishing-specific chatter exposes the reel-in prompt. When that prompt closes,
--- allow loot a short grace period to arrive; no loot means the reel attempt failed.
+-- Fishing chatter is a backup for the bait-stack detector. A nibble is not a
+-- real hook and must remain silent; BITE and REEL_IN both confirm fish-on.
 local function OnChatterBegin(_, optionCount)
-    if not FishingBanterEnabled() or not TT.fishingAttemptActive then return end
-    local count = optionCount or (GetChatterOptionCount and GetChatterOptionCount()) or 0
+    if not FishingBanterEnabled() then return end
+    local count = tonumber(optionCount) or 0
+    if type(GetChatterOptionCount) == "function" then
+        count = math.max(count, tonumber(GetChatterOptionCount()) or 0)
+    end
     if type(GetChatterOption) ~= "function" then return end
     for i = 1, count do
         local _, optionType = GetChatterOption(i)
-        if _G.CHATTER_FISH_REEL_IN and optionType == CHATTER_FISH_REEL_IN then
-            TT.fishingReelSeen = true
+        local isBite = _G.CHATTER_FISH_BITE and optionType == CHATTER_FISH_BITE
+        local isReelIn = _G.CHATTER_FISH_REEL_IN and optionType == CHATTER_FISH_REEL_IN
+        if isBite or isReelIn then
+            TT:OnFishingHooked()
             return
         end
     end
@@ -405,22 +536,25 @@ local function OnChatterEnd()
     local token = TT.fishingResolveToken
     zo_callLater(function()
         if TT.fishingAttemptActive and TT.fishingReelSeen and TT.fishingResolveToken == token then
-            TT:ResolveFishingFail()
+            -- No loot arrived, so silently forget the missed fish. Misses do
+            -- not need another line after the accessibility cue.
+            TT:ResetFishingAttempt()
         end
     end, 2500)
 end
 
-local function OnLootReceived(_, _, itemName, _, _, _, isSelf)
+local function OnLootReceived(_, _, itemName, _, _, _, isSelf, _, _, itemId)
     if not FishingBanterEnabled() or not isSelf or not TT.fishingAttemptActive then return end
     -- Only accept loot as a fishing result while a fishing attempt is active and
     -- either the reel prompt was seen or the player still appears to be fishing.
     if TT.fishingReelSeen or TT:IsFishingNow() then
-        TT:ResolveFishingCatch(itemName)
+        TT:ResolveFishingCatch(itemName, itemId)
     end
 end
 
 local function OnFishingLureSet(_, lureIndex)
     if type(GetFishingLureInfo) ~= "function" then return end
+    TT:OnFishingCast()
     local _, _, stackCount = GetFishingLureInfo(lureIndex)
     TT.lastLureIndex = lureIndex
     TT.lastLureStack = stackCount
@@ -443,16 +577,75 @@ EM:RegisterForEvent(ADDON.."_FishLureClear", EVENT_FISHING_LURE_CLEARED, OnFishi
 --------------------------------------------------------------
 -- Activity Detection
 --------------------------------------------------------------
+local function AFKTalkEnabled()
+    return TT.SV and TT.SV.nanEnabled and TT.SV.afkTalk
+end
+
+local function IsUIActivity()
+    if type(IsGameCameraUIModeActive) == "function" and IsGameCameraUIModeActive() then
+        return true
+    end
+    if SCENE_MANAGER then
+        if SCENE_MANAGER.IsInUIMode and SCENE_MANAGER:IsInUIMode() then
+            return true
+        end
+        -- A non-base scene covers console/gamepad menus that do not reliably
+        -- report camera UI mode during every scene transition.
+        if SCENE_MANAGER.IsShowingBaseScene and not SCENE_MANAGER:IsShowingBaseScene() then
+            return true
+        end
+    end
+    return false
+end
+
+local function IsInteractionActive()
+    if type(GetInteractionType) ~= "function" or not _G.INTERACTION_NONE then return false end
+    return GetInteractionType() ~= INTERACTION_NONE
+end
+
 local function IsPlayerActive()
     local fishing = TT:IsFishingNow()
     TT.isFishing = fishing
-    return IsPlayerMoving() or IsUnitInCombat("player") or fishing or SCENE_MANAGER:IsInUIMode()
+    local recentAction = TT.lastExplicitActivity
+        and (GetFrameTimeSeconds() - TT.lastExplicitActivity) < 15
+    return IsPlayerMoving()
+        or IsUnitInCombat("player")
+        or fishing
+        or IsUIActivity()
+        or IsInteractionActive()
+        or recentAction
+end
+
+function TT:MarkActivity()
+    self.lastExplicitActivity = GetFrameTimeSeconds()
+    self.lastActive = self.lastExplicitActivity
+    if AFKTalkEnabled() and self.state == "afk" and self.ExitAFK then
+        self:ExitAFK()
+    end
+end
+
+local ACTIVITY_EVENTS = {
+    CameraUI     = _G.EVENT_GAME_CAMERA_UI_MODE_CHANGED,
+    CraftStart   = _G.EVENT_CRAFT_STARTED,
+    CraftDone    = _G.EVENT_CRAFT_COMPLETED,
+    Inventory    = _G.EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+    Mail         = _G.EVENT_MAIL_OPEN_MAILBOX,
+    Bank         = _G.EVENT_OPEN_BANK,
+    GuildBank    = _G.EVENT_OPEN_GUILD_BANK,
+    Store        = _G.EVENT_OPEN_STORE,
+    TradingHouse = _G.EVENT_OPEN_TRADING_HOUSE,
+}
+for suffix, eventCode in pairs(ACTIVITY_EVENTS) do
+    if eventCode then
+        EM:RegisterForEvent(ADDON.."_Activity_"..suffix, eventCode, function() TT:MarkActivity() end)
+    end
 end
 
 --------------------------------------------------------------
 -- Core Logic
 --------------------------------------------------------------
 function TT:EnterAFK()
+    if not AFKTalkEnabled() then return end
     if self.state == "afk" then return end
     self.state = "afk"
     self.afkSince = GetFrameTimeSeconds()
@@ -477,6 +670,11 @@ end
 
 function TT:ExitAFK()
     if self.state ~= "afk" then return end
+    if not AFKTalkEnabled() then
+        self.state, self.afkSince, self.currentMoodIndex, self.currentLineIndex = "active", nil, 1, 1
+        self.isPvP = false
+        return
+    end
     local moodKey = self.isPvP and "pvp" or moodOrder[self.currentMoodIndex]
     local moodData = TT.Moods[moodKey] or TT.Moods.cozy
     Print(c(COL_NAN, moodData.returnLine))
@@ -486,6 +684,7 @@ function TT:ExitAFK()
 end
 
 function TT:PulseWhileAFK()
+    if not AFKTalkEnabled() then return end
     if not self.afkSince or self.state ~= "afk" then return end
     local elapsed = fmtElapsed(self.afkSince)
     if self.isPvP then
@@ -519,6 +718,12 @@ end
 
 function TT:CheckActivity()
     if not self.SV.nanEnabled then return end
+    if not self.SV.afkTalk then
+        self.state, self.afkSince, self.currentMoodIndex, self.currentLineIndex = "active", nil, 1, 1
+        self.isPvP = false
+        self.lastActive = GetFrameTimeSeconds()
+        return
+    end
     local active = false
     local ok = pcall(function() active = IsPlayerActive() end)
     if not ok then active = true end
@@ -540,6 +745,10 @@ function TT:Start()
     local SV = self.SV
     if not SV.nanEnabled then self:Stop() return end
     self.state, self.lastActive, self.afkSince = "active", GetFrameTimeSeconds(), nil
+    self.lastExplicitActivity = self.lastActive
+    self.whiteSilentSinceComment = 0
+    self.whiteCommentGap = math.random(5, 7)
+    self.lastFishingLineIndices = {}
     self.currentMoodIndex, self.currentLineIndex = 1, 1
     zo_callLater(function() Print(c(COL_TEA, "I’m here, love. Tea’s on. Try not to do anything too daft.")) end, 4000)
     EM:RegisterForUpdate(ADDON.."_Activity", (SV.checkInterval or 10)*1000, function() self:CheckActivity() end)
@@ -570,9 +779,24 @@ local function TryCreateSettings()
     settings:AddSetting({ type = LHA.ST_SECTION, label = "Nan Mode" })
     settings:AddSetting({
         type = LHA.ST_CHECKBOX, label = "Enable Nan’s Watchful Eye",
-        tooltip = "Toggle Nan’s automatic AFK monitoring.",
+        tooltip = "Master switch for Nan’s AFK monitoring and fishing commentary.",
         getFunction = function() return TT.SV.nanEnabled end,
         setFunction = function(v) TT.SV.nanEnabled = v if v then TT:Start() else TT:Stop() end end,
+    })
+
+    settings:AddSetting({ type = LHA.ST_SECTION, label = "AFK Commentary" })
+    settings:AddSetting({
+        type = LHA.ST_CHECKBOX, label = "Enable Nan’s AFK Commentary",
+        tooltip = "Turn AFK comments on or off without disabling Nan’s fishing commentary.",
+        getFunction = function() return TT.SV.afkTalk end,
+        setFunction = function(v)
+            TT.SV.afkTalk = v
+            TT.lastActive = GetFrameTimeSeconds()
+            if not v then
+                TT.state, TT.afkSince, TT.currentMoodIndex, TT.currentLineIndex = "active", nil, 1, 1
+                TT.isPvP = false
+            end
+        end,
     })
 
     settings:AddSetting({ type = LHA.ST_SECTION, label = "Timing Options" })
@@ -600,14 +824,17 @@ local function TryCreateSettings()
     settings:AddSetting({ type = LHA.ST_SECTION, label = "Fishing Banter" })
     settings:AddSetting({
         type = LHA.ST_CHECKBOX, label = "Enable Nan’s Fishing Commentary",
-        tooltip = "Let Nan comment when you cast, catch something, or miss a reel-in. Fishing still prevents AFK reminders when this is off.",
+        tooltip = "Nan occasionally complains when you cast, always warns when a fish is truly hooked, then reveals notable catches after a short pause. White-fish disappointment is spaced by at least five to seven quiet whites. Fishing still prevents AFK reminders when this is off.",
         getFunction = function() return TT.SV.fishingBanter end,
         setFunction = function(v)
             TT.SV.fishingBanter = v
-            if not v then TT:ResetFishingAttempt() end
+            if not v then
+                TT.fishingSayGeneration = (TT.fishingSayGeneration or 0) + 1
+                TT.fishingSayTokens = {}
+                TT:ResetFishingAttempt()
+            end
         end,
     })
-
     settings:AddSetting({ type = LHA.ST_SECTION, label = "Sound Options" })
     settings:AddSetting({
         type = LHA.ST_CHECKBOX, label = "Gentle Sound Alerts",
@@ -642,6 +869,10 @@ local function OnAddOnLoaded(_, name)
         math.randomseed(os.time())
     end
     TT.SV = ZO_SavedVars:NewAccountWide("TeaAndToast_SV", 13, nil, SV_DEFAULTS)
+    -- Explicit migration guards for existing v13 SavedVariables.
+    if TT.SV.afkTalk == nil then TT.SV.afkTalk = true end
+    if TT.SV.fishingReactionDelay == nil then TT.SV.fishingReactionDelay = 650 end
+    if TT.SV.crabSlaughterCraneSeen == nil then TT.SV.crabSlaughterCraneSeen = false end
     SafeCreateSettings()
     if TT.SV.nanEnabled then TT:Start() end
     Print(c(COL_TEA, "I’m watching. And yes, I still hate fishing."))

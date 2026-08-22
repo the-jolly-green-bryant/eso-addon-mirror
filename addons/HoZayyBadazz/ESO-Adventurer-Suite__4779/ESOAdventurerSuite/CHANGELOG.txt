@@ -1,3 +1,83 @@
+0.24.70
+- Replaced invisible custom/label group dots with ESO's built-in UI-WorldMapGroupPip.dds texture.
+- Group markers remain role-colored: Tank blue, Healer green, Damage red, Unknown cyan.
+- Group leader remains larger while preserving role color; own player marker is unchanged.
+
+0.24.69
+- Replaced custom DDS group-role dots with native ESO label-based dot markers so group members render reliably on the minimap.
+- Role colors remain Tank blue, Healer green, Damage red, Unknown cyan; leaders use a larger dot.
+- Own player marker remains unchanged.
+
+0.24.68
+- Fixed invisible role-colored group dots on the minimap by replacing the compressed DXT5 dot texture with an uncompressed ARGB DDS texture for ESO UI compatibility.
+- Role colors and larger group-leader dot are unchanged.
+
+0.24.67
+- Fixed MiniMap.lua role-color crash caused by getGroupRoleDotColor being declared before the local safe() helper.
+- Role-colored group dots remain Tank blue, Healer green, DPS red, and Unknown cyan.
+
+0.24.66
+- Changed group-member minimap dots to role colors: Tank = blue, Healer = green, Damage = red, Unknown = cyan.
+- Group leaders keep their role color and now use a slightly larger dot for easier identification.
+- Own player marker remains unchanged.
+
+0.24.65
+- Changed other group-member minimap markers from rotating arrows to colored dots.
+- Group leader uses a larger gold dot; other group members use cyan dots.
+- Own player marker remains unchanged.
+
+0.24.64
+- Fixed minimap rotation for other group members.
+- Added movement-derived heading fallback for group1-group12 when ESO does not provide a usable remote heading.
+- Local player minimap rotation behavior is unchanged.
+
+0.24.63
+- Fixed Group/Raid Health being overwritten by Player Stamina or Magicka power events.
+- Only Health-filtered EVENT_POWER_UPDATE registrations can now drive group health bars.
+- Player Health still synchronizes the local player's group row immediately.
+
+0.24.62
+- Fixed Group-frame Health reading Stamina by separating GetUnitPower POWERTYPE_* constants from EVENT_POWER_UPDATE filter constants.
+- Player/Target/Group resource reads now use POWERTYPE_HEALTH/MAGICKA/STAMINA; native event filters continue to use COMBAT_MECHANIC_FLAGS_*.
+
+v0.24.61
+- Fixed the local player's Group-frame health row lagging behind the Player frame.
+- Player health EVENT_POWER_UPDATE values now immediately update the matching local group unit row (group1/group2/etc.) as well as the Player frame.
+- Uses GetLocalPlayerGroupUnitTag/AreUnitsEqual matching so damage and healing stay synchronized without restoring full-group polling.
+
+0.24.60
+- Group/raid health bars now consume EVENT_POWER_UPDATE health/max values directly instead of immediately re-reading GetUnitPower().
+- Removes the visible group-health delay so group rows track health loss and healing on the same event as the player frame.
+
+0.24.59
+- Fixed group/raid health bars not updating reliably from EVENT_POWER_UPDATE.
+- Replaced the group unit-tag-prefix health filter with explicit native-filtered registrations for group1 through group12.
+- Preserves ESOUI event-filter best practices while ensuring damage and healing updates reach the correct group row.
+
+0.24.58 - group health power-filter fix
+- Fixed group/raid Health bars not refilling after healing.
+- EVENT_POWER_UPDATE power filters now use COMBAT_MECHANIC_FLAGS_HEALTH/MAGICKA/STAMINA, which are the values expected by REGISTER_FILTER_POWER_TYPE.
+- Preserved native unit-tag/prefix filtering and the v0.24.57 performance cleanup.
+
+0.24.57 - performance and event-filter cleanup
+- Reduced the minimap master update from 16 ms (~62.5 Hz) to 33 ms (~30 Hz) while preserving smooth player-centered movement.
+- Reduced the minimap crafting-station fallback poll from once per second to once every two seconds; dedicated interaction events remain preferred.
+- Added native unit-tag and power-type filtering to high-volume EVENT_POWER_UPDATE registrations: player Health/Magicka/Stamina, target Health, and group Health where supported.
+- Split EVENT_EFFECT_CHANGED into player and reticle-target registrations filtered by unit tag, preventing unrelated effects from entering Lua.
+- Removed the legacy duplicate UnitFrames aura/group 500 ms polling loop; the current integrated aura ticker remains active.
+- Reduced the legacy HUD suppression visibility check from 100 ms to 250 ms; contextual frame updates remain event-driven.
+- Added REGISTER_FILTER_BAG_ID/BAG_WORN to the repair overlay inventory-slot event.
+- Removed the repair overlay's permanent 1-second refresh poll; inventory, money, combat, activation, and explicit UI refreshes now drive updates.
+- Kept existing visible behavior and saved settings intact; this release focuses on ESOUI-style filtering and lower idle CPU use.
+
+0.24.56 - ESOUI review compliance
+- Removed the unsupported >= version qualifier from OptionalDependsOn; LibAddonMenu-2.0 remains optional.
+- Moved EVENT_COMBAT_EVENT damage/heal/incoming-result selection into EVENT_MANAGER combat-result filters instead of broad Lua result classification.
+- Added error=false filters to filtered combat registrations.
+- Split account-wide SavedVariables by GetWorldName() so NA, EU, and PTS no longer overwrite world-specific suite data.
+- Added one-time migration from the legacy Default account-wide SavedVariables namespace.
+- Moved the AI-development disclosure to the beginning of the packaged README and refreshed credits/release metadata.
+
 0.24.52 - Minimap duplicate cleanup
 - Removed custom stable learning and all previously saved stable-service records.
 - Added one-time cleanup for duplicate learned merchants, services, and POIs.

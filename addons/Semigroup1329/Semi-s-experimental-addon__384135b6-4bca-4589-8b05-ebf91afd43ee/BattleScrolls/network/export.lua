@@ -2,10 +2,13 @@
 -- Export
 -- Builds self-contained binary export streams for online sharing.
 --
--- Wire format v4 (bytes, before URL transport):
---   u8  wireVersion (4; v3 lacked member setups/instance meta and collapsed
---       the view profile's group damage, v2 the shared-entry flags, v1 the
---       facts bytes)
+-- Wire format v5 (bytes, before URL transport):
+--   u8  wireVersion (5; the only supported version - the pre-release v4
+--       generation was retired before the addon shipped. Encounter _data
+--       blobs ship the wire layout of storage v18 semantics:
+--       column-oriented damage/effect sections, permille effect times,
+--       playerTimeAtMaxStacksMs dropped (see storage/binary.lua's wire
+--       writers; web/src/shared/decoder.ts is the only reader))
 --   u8  flags: bit0 = body is raw-DEFLATE compressed, bit1 = archive profile
 --   body (compressed when bit0 is set):
 --     varint createdAtS               (export time)
@@ -14,9 +17,12 @@
 --     u8 instanceFlags: bit0 overland, bit1 house, bit2 PvP,
 --        bit3 adventure zone
 --     varint abilityCount, varint abilityId ...
---     3 bytes x abilityCount          (per-ability classification from the
---       instance's recorded abilityInfo, scoped to this export's own combat
---       recordings):
+--     sparse per-ability classification from the instance's recorded
+--       abilityInfo, scoped to this export's own combat recordings (most
+--       rows are zero, so only the nonzero ones ship):
+--       varint presentCount, then per nonzero row:
+--         varint indexDelta (first row = absolute 0-based registry index,
+--           then the gap to the previous row's index)
 --         u8  deliveryFlags: bit0 direct, bit1 over time, bit2 shield,
 --             bit3 regen, bit4 heal absorption
 --         u16 damageTypeMask (LE): bit N = DAMAGE_TYPE N was recorded
@@ -50,16 +56,25 @@
 --       string gameVersion            ("" when unknown)
 --       varint timestampS
 --       varint durationMs
+--       varint playerUnitId           (the unit id the recorder attributed
+--         personal rows to; 0 = unknown (pre-v18 recordings))
 --       varint bossUnitCount, varint unitId ...            (bossesUnits)
 --       varint tagSeqCount, (varint unitId, string key) ...(bossTagSeqByUnitId)
 --       varint seqNameCount, (string key, string name) ... (bossSeqNames)
---       varint dataLen, then dataLen bytes of v17 _data
+--       varint dataLen, then dataLen bytes of wire-layout _data
 --         (re-encoded against the export registry, WITHOUT the setup
 --         section - the build ships as the compact struct below)
 --       varint sharedCount
---       per entry: u8 entryFlags (bit0 = the uploader's own entry),
---         string displayName, varint role, varint payloadVersion,
---         varint timestampS, varint durationMs,
+--       per entry: u8 entryFlags (bit0 = the uploader's own entry, bit1 =
+--           explicit payloadVersion follows),
+--         varint nameRef (0-based name-pool index of the member's
+--           displayName; interned during the build),
+--         varint role,
+--         when entryFlags bit1: varint payloadVersion (absent = the
+--           storage version this build ships, i.e. binary.lua's
+--           CURRENT_VERSION),
+--         zigzag timestampS  - encounter timestampS,
+--         zigzag durationMs  - encounter durationMs,
 --         varint setupRef (0 = none, else 1-based member-setup pool index),
 --         varint payloadLen, then payload bytes (binary shared entry;
 --         timestamp/duration live OUTSIDE the payload in storage too)
@@ -106,7 +121,7 @@ BattleScrolls = BattleScrolls or {}
 local export = {}
 BattleScrolls.export = export
 
-export.WIRE_VERSION = 4
+export.WIRE_VERSION = 5
 export.PROFILE_VIEW = 1
 export.PROFILE_ARCHIVE = 2
 
@@ -236,6 +251,16 @@ function ByteWriter:writeVarUInt(value)
         value = math.floor(value / 128)
     end
     self:writeByte(value)
+end
+
+---Zigzag varint for signed wire-level deltas
+---@param value number
+function ByteWriter:writeZigZag(value)
+    if value >= 0 then
+        self:writeVarUInt(value * 2)
+    else
+        self:writeVarUInt(-value * 2 - 1)
+    end
 end
 
 ---@param bytes string
@@ -532,6 +557,7 @@ end
 ---@field gameVersion string Patch string at recording time; "" when unknown
 ---@field timestampS number
 ---@field durationMs number
+---@field playerUnitId number Unit id the recorder attributed personal rows to; 0 = unknown (pre-v18 recording)
 ---@field isBoss boolean
 ---@field isPlayerFight boolean
 ---@field isDummyFight boolean
@@ -545,6 +571,7 @@ end
 ---@class ExportSharedEntry
 ---@field isSelf boolean True when this is the uploader's own entry
 ---@field displayName string
+---@field nameRef number 1-based name-pool index of displayName (interned at collect time, before the frame writes the pool)
 ---@field role number
 ---@field payloadVersion number
 ---@field timestampS number
@@ -560,11 +587,15 @@ end
 ---@field skipped number Encounters that failed to decode (archive only)
 
 ---Extracts binary shared entries for one encounter. Reuses the stored binary
----payloads when present (v17); legacy plain sharedData is encoded fresh.
+---payloads when present (v17+); legacy plain sharedData is encoded fresh.
+---Display names are interned into the export registry's name pool here -
+---during the encounter loop, before the frame writes the pool - so the
+---frame can reference them instead of shipping inline strings.
 ---@param encounter CompactEncounter
 ---@param decoded Encounter
+---@param registry EncounterRegistry
 ---@return ExportSharedEntry[]
-local function collectSharedEntries(encounter, decoded)
+local function collectSharedEntries(encounter, decoded, registry)
     local binaryStorage = BattleScrolls.binaryStorage
     -- The uploader's own broadcast entry is marked explicitly: the viewer
     -- must not have to guess which member the personal data belongs to
@@ -580,6 +611,7 @@ local function collectSharedEntries(encounter, decoded)
     for i, compact in ipairs(compactEntries or {}) do
         entries[i] = {
             displayName = compact.d or "",
+            nameRef = binaryStorage.internName(registry, compact.d or ""),
             isSelf = compact.d == ownName,
             role = compact.r or 0,
             payloadVersion = compact.v or 17,
@@ -596,23 +628,24 @@ end
 ---combat recorder stored per instance: a delivery-flags byte plus a 16-bit
 ---mask of every damage type recorded (lossless - multi-type abilities keep
 ---their full type list instead of collapsing to "unknown").
----@param body ExportByteWriter
 ---@param info AbilityInfo|nil
-local function writeFacts(body, info)
+---@return number delivery Delivery-flags byte
+---@return number maskLo Damage-type mask low byte
+---@return number maskHi Damage-type mask high byte
+local function factsBytes(info)
     local delivery = info and info.deliveryType or {}
-    body:writeByte((delivery.direct and 1 or 0)
+    local deliveryByte = (delivery.direct and 1 or 0)
         + (delivery.overTime and 2 or 0)
         + (delivery.shield and 4 or 0)
         + (delivery.regen and 8 or 0)
-        + (delivery.healAbsorption and 16 or 0))
+        + (delivery.healAbsorption and 16 or 0)
     local mask = 0
     for dt in pairs(info and info.damageTypes or {}) do
         if dt >= 0 and dt <= 15 then
             mask = BitOr(mask, BitLShift(1, dt))
         end
     end
-    body:writeByte(mask % 256)
-    body:writeByte(math.floor(mask / 256))
+    return deliveryByte, mask % 256, math.floor(mask / 256)
 end
 
 ---Decodes and re-encodes the given stored encounters against a fresh export
@@ -658,8 +691,9 @@ local function buildStreamAsync(instance, encounters, profile)
                 -- bit-packed blob: strip it before encoding the encounter
                 local exportSetup = decoded.setup and buildExportSetup(decoded.setup) or nil
                 decoded.setup = nil
-                local compact = binaryStorage.encodeEncounterAsync(decoded, false, registry):Await()
-                local shared = collectSharedEntries(encounter, decoded)
+                local compact = binaryStorage.encodeEncounterWireAsync(
+                    decoded, registry, encounter.durationMs or 0):Await()
+                local shared = collectSharedEntries(encounter, decoded, registry)
                 for _, entry in ipairs(shared) do
                     entry.setupRef = 0
                     if not entry.isSelf and entry.setupHash > 0 then
@@ -684,6 +718,7 @@ local function buildStreamAsync(instance, encounters, profile)
                     gameVersion = encounter.gameVersion or "",
                     timestampS = encounter.timestampS or 0,
                     durationMs = encounter.durationMs or 0,
+                    playerUnitId = encounter.playerUnitId or 0,
                     isBoss = next(encounter.bossesUnits or {}) ~= nil,
                     isPlayerFight = encounter.isPlayerFight == true,
                     isDummyFight = encounter.isDummyFight == true,
@@ -720,9 +755,26 @@ local function buildStreamAsync(instance, encounters, profile)
         end
         -- Per-ability classification, scoped to this export: the recorder
         -- saw every registry id's combat events in this very instance, so
-        -- coverage is exact - and a bad actor can only mislabel their own share
+        -- coverage is exact - and a bad actor can only mislabel their own
+        -- share. Sparse: most registry ids carry no classification, so only
+        -- nonzero rows ship, delta-indexed
+        ---@type {index: number, delivery: number, maskLo: number, maskHi: number}[]
+        local factRows = {}
         for i = 1, #registry.abilityIds do
-            writeFacts(body, abilityInfo[registry.abilityIds[i]])
+            local delivery, maskLo, maskHi = factsBytes(abilityInfo[registry.abilityIds[i]])
+            if delivery ~= 0 or maskLo ~= 0 or maskHi ~= 0 then
+                factRows[#factRows + 1] =
+                    { index = i - 1, delivery = delivery, maskLo = maskLo, maskHi = maskHi }
+            end
+        end
+        body:writeVarUInt(#factRows)
+        local prevFactIndex = 0
+        for _, row in ipairs(factRows) do
+            body:writeVarUInt(row.index - prevFactIndex)
+            prevFactIndex = row.index
+            body:writeByte(row.delivery)
+            body:writeByte(row.maskLo)
+            body:writeByte(row.maskHi)
         end
         body:writeVarUInt(#registry.names)
         for i = 1, #registry.names do
@@ -741,6 +793,7 @@ local function buildStreamAsync(instance, encounters, profile)
             body:writeString(entry.gameVersion)
             body:writeVarUInt(entry.timestampS)
             body:writeVarUInt(entry.durationMs)
+            body:writeVarUInt(entry.playerUnitId)
             body:writeVarUInt(#entry.bossesUnits)
             for _, unitId in ipairs(entry.bossesUnits) do
                 body:writeVarUInt(unitId)
@@ -767,12 +820,21 @@ local function buildStreamAsync(instance, encounters, profile)
             body:writeBytes(entry.dataBytes)
             body:writeVarUInt(#entry.shared)
             for _, shared in ipairs(entry.shared) do
-                body:writeByte(shared.isSelf and 1 or 0)
-                body:writeString(shared.displayName)
+                -- payloadVersion ships only when it differs from the build's
+                -- storage version (it never does today - every stored entry
+                -- is re-encoded at CURRENT_VERSION - but the escape hatch
+                -- keeps old web decoders honest against future bumps)
+                local explicitVersion =
+                    shared.payloadVersion ~= binaryStorage.CURRENT_VERSION
+                body:writeByte((shared.isSelf and 1 or 0)
+                    + (explicitVersion and 2 or 0))
+                body:writeVarUInt(shared.nameRef - 1)
                 body:writeVarUInt(shared.role)
-                body:writeVarUInt(shared.payloadVersion)
-                body:writeVarUInt(shared.timestampS)
-                body:writeVarUInt(shared.durationMs)
+                if explicitVersion then
+                    body:writeVarUInt(shared.payloadVersion)
+                end
+                body:writeZigZag(shared.timestampS - entry.timestampS)
+                body:writeZigZag(shared.durationMs - entry.durationMs)
                 body:writeVarUInt(shared.setupRef)
                 body:writeVarUInt(#shared.payloadBytes)
                 body:writeBytes(shared.payloadBytes)
@@ -783,10 +845,13 @@ local function buildStreamAsync(instance, encounters, profile)
         local bodyBytes = body:finish()
         local flags = profile == export.PROFILE_ARCHIVE and FLAG_ARCHIVE or 0
 
-        -- Optional compression: only when the module is present and it wins
+        -- Optional compression: only when the module is present and it wins.
+        -- Level 6: on a measured real archive it beats the LibDeflate default
+        -- (level 1) by 4.2% and drops a whole URL part; the compressor yields
+        -- across frames, so the extra CPU spreads out instead of hitching.
         local deflate = BattleScrolls.deflate
         if deflate and #bodyBytes >= COMPRESS_MIN_BYTES then
-            local compressed = deflate.compressAsync(bodyBytes):Await()
+            local compressed = deflate.compressAsync(bodyBytes, 6):Await()
             if compressed and #compressed < #bodyBytes then
                 bodyBytes = compressed
                 flags = flags + FLAG_DEFLATE
@@ -811,9 +876,22 @@ function export.buildEncounterShareAsync(instance, encounter)
     return buildStreamAsync(instance, { encounter }, export.PROFILE_VIEW)
 end
 
----Builds a whole-instance archive (full fidelity, every encounter).
+---Builds a whole-instance archive (full fidelity). bossesOnly keeps just the
+---encounters with boss units - trash pulls dominate archive size (group
+---effect tables scale with members x effects, not fight length), so this
+---variant typically needs far fewer URL parts.
 ---@param instance InstanceStorage
+---@param bossesOnly boolean|nil
 ---@return Effect Effect resolving to ExportResult
-function export.buildInstanceArchiveAsync(instance)
-    return buildStreamAsync(instance, instance.encounters, export.PROFILE_ARCHIVE)
+function export.buildInstanceArchiveAsync(instance, bossesOnly)
+    local encounters = instance.encounters
+    if bossesOnly then
+        encounters = {}
+        for _, encounter in ipairs(instance.encounters) do
+            if next(encounter.bossesUnits or {}) ~= nil then
+                encounters[#encounters + 1] = encounter
+            end
+        end
+    end
+    return buildStreamAsync(instance, encounters, export.PROFILE_ARCHIVE)
 end

@@ -1,168 +1,218 @@
 Shopping List Public API
 ========================
 
-Shopping List 0.16.3 introduces API version 1. Other add-ons can use it to add
-item links or plain item names to any active shopping list without accessing
-Shopping List's saved variables or internal UI objects.
+Add-ons can create and populate
+shopping lists without reading saved variables or touching Shopping List UI
+objects. The API version 1 GetLists and AddItem calls remain compatible.
 
-## Loading the API
+Loading the API
+---------------
 
-Add Shopping List as an optional dependency in your add-on manifest if your
-integration can run without it:
+Add Shopping List as an optional dependency when the integration is optional:
 
-```text
-## OptionalDependsOn: GravvyShoppingList
-```
+    ## OptionalDependsOn: GravvyShoppingList
 
-Use `## DependsOn: GravvyShoppingList` instead if your add-on cannot function
-without Shopping List. Both the manifest dependency name and Lua API namespace
-use `GravvyShoppingList`. Check for the API after your add-on has loaded:
+Use DependsOn instead if your add-on cannot function without Shopping List.
+Check the API after your add-on has loaded:
 
-```lua
-local api = GravvyShoppingList and GravvyShoppingList.API
-if not api or api:GetVersion() < 1 then
-    return
-end
-```
+    local api = GravvyShoppingList and GravvyShoppingList.API
+    if not api or api:GetVersion() < 2 then
+        return
+    end
 
-Declaring the dependency ensures Shopping List is loaded first when it is
-enabled. Calls made before Shopping List has initialized fail safely with
-`NOT_READY`.
+The manifest dependency ensures Shopping List loads first when it is enabled.
+Calls made before Shopping List initializes fail safely with NOT_READY.
 
-## API version
+Create and populate a list
+--------------------------
 
-```lua
-local version = GravvyShoppingList.API:GetVersion()
-```
+    local success, result, itemIndex = api:CreateList({
+        name = "Stamina Warden - Base Light",
+        note = "Gear from the base light setup",
+        onNameConflict = "unique",
+        select = true,
+        items = {
+            {
+                itemLink = beltItemLink,
+                quantity = 1,
+                note = "Waist - Divines - Maximum Stamina",
+                match = {
+                    traitType = ITEM_TRAIT_TYPE_ARMOR_DIVINES,
+                    qualityMode = "minimum",
+                    quality = ITEM_QUALITY_ARTIFACT,
+                    levelMode = "exact",
+                    level = 50,
+                    championPoints = 160,
+                },
+            },
+            {
+                name = "Truly Superb Glyph of Stamina",
+                quantity = 1,
+            },
+        },
+    })
 
-Returns the public API version as a number. This is independent of Shopping
-List's add-on release version. The initial API version is `1`.
+CreateList accepts one specification table:
 
-## Discover active lists
+- name: Required non-empty list name, up to 512 bytes.
+- note: Optional list note. The normal 2,000-character limit applies.
+- items: Optional array of item specifications. At most 500 items.
+- onNameConflict: "error" by default, or "unique" to append a number.
+- select: Select the new list when true or omitted. Set false to keep the
+  player's current list selected.
+- silent: Set true to suppress the Shopping List status-line message.
 
-```lua
-local lists, errorCode = GravvyShoppingList.API:GetLists()
-```
+On success, result is a new snapshot:
 
-On success, `lists` is a new array containing copies of the active list IDs and
+    {
+        id = 7,
+        name = "Stamina Warden - Base Light",
+        itemIds = { 42, 43 },
+    }
+
+When an item is invalid, CreateList returns false, an error code, and the
+one-based index of the failing item. Shopping List validates the complete
+specification before making changes. A failed call does not leave a partial
+list behind.
+
+Add several items to an existing list
+-------------------------------------
+
+    local success, itemIdsOrError, itemIndex = api:AddItems({
+        { itemLink = firstItemLink, quantity = 1, note = "Head" },
+        { itemLink = secondItemLink, quantity = 1, note = "Shoulders" },
+    }, {
+        listName = "Stamina Warden - Base Light",
+        silent = true,
+    })
+
+The options table accepts listId, listName, and silent. Pass either listId or
+listName, not both. When neither is supplied, the currently selected list is
+used. Targeting another list does not select it.
+
+On success, AddItems returns true and a new array of created item IDs. On an
+item validation failure, the third return value identifies the failing entry.
+All entries are validated before any are added.
+
+Item specifications
+-------------------
+
+Each CreateList or AddItems entry accepts:
+
+- Exactly one of item, itemLink, or name. item accepts either a complete ESO
+  item link or a non-empty plain item name. itemLink must be an item link, and
+  name is intended for name-only entries.
+- quantity: Optional whole number from 1 through 1,000,000. Defaults to 1.
+- note: Optional item note.
+- match: Optional matching-rule overrides described below.
+
+Every specification creates a separate shopping-list entry. Entries are not
+combined because links with the same displayed name can represent different
+sets, traits, qualities, or levels.
+
+Matching rules
+--------------
+
+A complete item link initializes item identity, set, trait, quality, level,
+and Champion Point information. Set and trait matching are enabled by the
+link. Quality and level are recorded but remain unrestricted until their mode
+is changed.
+
+The optional match table accepts:
+
+- setName: Set-name restriction. An empty string removes the restriction.
+- traitType: ESO item trait constant. ITEM_TRAIT_TYPE_NONE removes the trait
+  restriction.
+- qualityMode: "any", "minimum", or "exact".
+- quality: ESO ITEM_QUALITY_* constant. Required when a non-any quality mode
+  cannot be inferred from an item link.
+- levelMode: "any" or "exact".
+- level: Required item level.
+- championPoints: Required Champion Point value.
+
+For exact level matching, both level and championPoints must be available from
+the item link or provided by the caller. Enchantments are not guild-store
+matching rules; integrations should add a required glyph as its own item when
+appropriate.
+
+Add one item
+------------
+
+    local success, itemIdOrError = api:AddItem(
+        itemLinkOrName,
+        quantity,
+        options
+    )
+
+AddItem remains compatible with API version 1. Its options table accepts
+listId, listName, note, silent, and the API version 2 match table.
+
+    local success, result = api:AddItem(itemLink, 1, {
+        listName = "Stamina Warden - Base Light",
+        note = "Waist",
+        match = {
+            qualityMode = "minimum",
+            quality = ITEM_QUALITY_ARTIFACT,
+        },
+    })
+
+On success, AddItem returns true and the created item ID. It refreshes Shopping
+List but never opens its window or item editor and never writes to chat.
+
+Discover active lists
+---------------------
+
+    local lists, errorCode = api:GetLists()
+
+On success, lists is a new array containing copies of active list IDs and
 names:
 
-```lua
-{
-    { id = 1, name = "Crafting Materials" },
-    { id = 4, name = "Items to Resell" },
-}
-```
+    {
+        { id = 1, name = "Crafting Materials" },
+        { id = 4, name = "Items to Resell" },
+    }
 
-The returned tables are snapshots. Changing them does not change Shopping List
-data. Archived lists are not returned. Before initialization, the method
-returns `nil, "NOT_READY"`.
+Archived lists are not returned. Changing these snapshots does not change
+Shopping List data.
 
-## Add an item
+Fallback sharing without Shopping List
+--------------------------------------
 
-```lua
-local success, itemIdOrError = GravvyShoppingList.API:AddItem(
-    itemLinkOrName,
-    quantity,
-    options
-)
-```
+A companion add-on can show an SL2 code when Shopping List is not installed.
+SL2 preserves the list note plus each item's link, note, desired quantity,
+matching rules, and maximum unit price. Shopping List 0.17.0 can import that
+code after it is installed and the UI is reloaded.
 
-Parameters:
+The complete language-neutral binary contract is included in ShareFormat.txt.
+Companion add-ons should implement that contract directly rather than copying
+Shopping List internal functions. SL1 remains importable, but new integrations
+should generate SL2. SLB1 is a full-account backup format and must not be used
+for companion exports.
 
-- `itemLinkOrName`: A complete ESO item link or a non-empty plain item name.
-- `quantity`: A whole number from 1 through 1,000,000. Numeric strings are
-  accepted.
-- `options`: Optional table described below.
+Error codes
+-----------
 
-Available options:
+Stable strings are also exposed through GravvyShoppingList.API.ERROR:
 
-- `listId`: ID of an active list returned by `GetLists()`.
-- `listName`: Name of an active list. Matching is case-insensitive.
-- `note`: Optional item note. Shopping List applies its normal 2,000-character
-  note limit.
-- `silent`: Set to `true` to suppress Shopping List's status-line update.
+- NOT_READY: Shopping List has not finished initializing.
+- INVALID_ITEM: An item is empty, malformed, ambiguous, or not an item link
+  when supplied through itemLink.
+- INVALID_QUANTITY: Quantity is not a whole number from 1 through 1,000,000.
+- INVALID_OPTIONS: A specification, options table, or supported value is invalid.
+- INVALID_MATCH: A matching rule is invalid or incomplete.
+- INVALID_LIST_NAME: The requested list name is empty, invalid, or too long.
+- INVALID_ITEMS: The batch is not a sequential item array.
+- TOO_MANY_ITEMS: The batch contains more than 500 items.
+- LIST_NOT_FOUND: The requested active list does not exist.
+- LIST_EXISTS: The requested list name is already in use.
+- BATCH_FAILED: A validated operation could not be committed.
 
-Pass either `listId` or `listName`, not both. When neither is supplied, the item
-is added to the player's currently selected list. Targeting another list does
-not change the selected list.
+Example without hard-coding the error value:
 
-On success, the method returns `true, itemId`. On failure, it returns
-`false, errorCode`.
-
-```lua
-local success, result = GravvyShoppingList.API:AddItem(itemLink, 5)
-if success then
-    local itemId = result
-else
-    local errorCode = result
-end
-```
-
-An item link preserves its exact item identity and lets Shopping List initialize
-set, trait, quality, level, and Champion Point matching information. A plain
-name creates an unrestricted name-based entry.
-
-Every successful call creates a new shopping-list entry. Entries are not
-automatically combined because links with the same displayed name can have
-different traits, qualities, or levels.
-
-The API refreshes Shopping List after adding an item. It never opens the main
-window or item editor and never writes a message to chat.
-
-### Target the current list
-
-```lua
-local success, result = GravvyShoppingList.API:AddItem(itemLink, 10)
-```
-
-### Target a list by name and include a note
-
-```lua
-local success, result = GravvyShoppingList.API:AddItem("Rubedite Ingot", 200, {
-    listName = "Crafting Materials",
-    note = "Needed for the next equipment set",
-})
-```
-
-### Target a list by ID without updating the status line
-
-```lua
-local lists, errorCode = GravvyShoppingList.API:GetLists()
-if lists then
-    for _, list in ipairs(lists) do
-        if list.name == "Items to Resell" then
-            GravvyShoppingList.API:AddItem(itemLink, 1, {
-                listId = list.id,
-                silent = true,
-            })
-            break
-        end
+    if not success and result == api.ERROR.LIST_EXISTS then
+        -- Ask the player to choose another name.
     end
-end
-```
 
-## Error codes
-
-Stable error strings are also exposed through `GravvyShoppingList.API.ERROR`:
-
-| Error | Meaning |
-| --- | --- |
-| `NOT_READY` | Shopping List has not finished initializing. |
-| `INVALID_ITEM` | The item name or item link is empty, malformed, or not an item link. |
-| `INVALID_QUANTITY` | Quantity is not a whole number from 1 through 1,000,000. |
-| `INVALID_OPTIONS` | The options table or one of its supported values is invalid. |
-| `LIST_NOT_FOUND` | The requested active list does not exist. |
-
-Example without hard-coding the string:
-
-```lua
-if not success and result == GravvyShoppingList.API.ERROR.LIST_NOT_FOUND then
-    -- Ask the player to select another list.
-end
-```
-
-Only the functions and constants documented here are public. Add-ons should not
-read or modify `GravvyShoppingList.data`, saved variables, or returned internal
-item tables. Those implementation details may change without an API-version
-change.
+Only the functions and constants documented here are public. Add-ons should
+not read or modify GravvyShoppingList.data, saved variables, or returned
+internal item tables.

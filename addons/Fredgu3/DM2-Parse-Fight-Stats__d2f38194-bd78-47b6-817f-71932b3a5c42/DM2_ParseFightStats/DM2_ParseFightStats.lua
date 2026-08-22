@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.14"
+R.version     = "3.17.16"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -426,8 +426,16 @@ R._announcements = {
     title = "Damage list + Rotation icon count",
     body = "• Damage page: 22 skill + 22 effect rows (was 16) — shows counts / top-N when more exist\n• Do not add damage to totals before capture starts (fixes empty skill rows vs inflated total)\n• Rotation: 64 icons/page, fit-to-panel layout (no clipped last row), clearer presses vs timeline counts\n\nNew dummy recommended.",
   },
+  ["3.17.15"] = {
+    title = "Full rotation on one screen · Fitness CP",
+    body = "• Rotation: the whole dummy skill timeline draws on one screen (shrink-to-fit).\n  Square/Y only appears if a fight is longer than the panel can hold.\n• Skill icons: channel skills (Stampede etc.) keep their real icon, not initials.\n• Fitness CP: still listed, but dummy parses no longer rate them Strong/Soft.\n  Dummy does not hit back — survivability stars are N/A on a dummy.\n\nNew dummy recommended for rotation icons.",
+  },
+  ["3.17.16"] = {
+    title = "Rotation on one screen · Fitness CP not dummy-rated",
+    body = "• Rotation: whole dummy skill timeline on one screen (icons shrink to fit).\n  Square/Y only if the fight is longer than the panel can hold.\n• Channel skills keep real icons (not initials). New dummy for this.\n• Fitness CP still listed, but dummy parses no longer rate them Strong/Soft.\n  Dummy does not hit back — survivability stars show N/A.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.14"
+R._latestAnnouncementVersion = "3.17.16"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -2066,7 +2074,10 @@ local function finalizePendingWeave(session, forcedMiss)
   if not session or not session.weave or not session.weave.pendingSkill then return end
   local pending = session.weave.pendingSkill
   if forcedMiss then
-    pushTimelineToken(session, pending.label, SYM_MISS, "Missed", { skillName = pending.skillName or pending.label, kind = "skill", missed = true })
+    pushTimelineToken(session, pending.label, SYM_MISS, "Missed", {
+      skillName = pending.skillName or pending.label, kind = "skill", missed = true,
+      abilityId = pending.abilityId, slot = pending.slot, bar = pending.bar, icon = pending.icon,
+    })
   end
   session.weave.pendingSkill = nil
 end
@@ -6352,7 +6363,7 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
         { kind = "skill", skillName = w.pendingSkill.skillName or w.pendingSkill.label,
           gapMs = gap, missed = (symbol == SYM_MISS),
           slot = w.pendingSkill.slot, bar = w.pendingSkill.bar,
-          abilityId = w.pendingSkill.abilityId })
+          abilityId = w.pendingSkill.abilityId, icon = w.pendingSkill.icon })
       w.pendingSkill = nil
       flashWeaveResult(resultLabel)
     end
@@ -6406,6 +6417,15 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
 
   abilityName = resolveAbilityName(abilityId)
   if not abilityName or abilityName == "" then abilityName = "Ability " .. tostring(abilityId) end
+  -- Snapshot the slot texture now (console/scribed). GetAbilityIcon often fails later.
+  local iconTex = nil
+  if type(GetSlotTexture) == "function" then
+    local okT, tex
+    if barCategory ~= nil then okT, tex = pcall(GetSlotTexture, actionSlotIndex, barCategory)
+    else okT, tex = pcall(GetSlotTexture, actionSlotIndex) end
+    if okT and tex and tex ~= "" and not isBadAbilityIconTex(tex) then iconTex = tex end
+  end
+  if not iconTex then iconTex = getAbilityIcon(abilityId) end
 
   -- Determine bar label for debug
   local barLabel = "?"
@@ -6445,7 +6465,8 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
   if w.pendingSkill then
     pushTimelineToken(session, w.pendingSkill.label, SYM_MISS, "Missed",
       { kind = "skill", skillName = w.pendingSkill.skillName or w.pendingSkill.label, missed = true,
-        abilityId = w.pendingSkill.abilityId, slot = w.pendingSkill.slot, bar = w.pendingSkill.bar })
+        abilityId = w.pendingSkill.abilityId, slot = w.pendingSkill.slot, bar = w.pendingSkill.bar,
+        icon = w.pendingSkill.icon })
     w.missedCount = (w.missedCount or 0) + 1
     w.pendingSkill = nil
     flashWeaveResult("Missed")
@@ -6456,7 +6477,8 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
     if not w.pendingPostChannel then
       local channelLabel = trimSkillLabel(abilityName)
       pushTimelineToken(session, channelLabel, "", "Channel",
-        { kind = "channel", skillName = abilityName, dashes = getChannelDashCount(abilityName), bar = barLabel })
+        { kind = "channel", skillName = abilityName, dashes = getChannelDashCount(abilityName),
+          bar = barLabel, abilityId = abilityId, slot = actionSlotIndex, icon = iconTex })
       w.pendingPostChannel = "Post-" .. trimSkillLabel(abilityName, 14)
     end
   else
@@ -6467,6 +6489,7 @@ function R:OnActionSlotAbilityUsed(_, actionSlotIndex)
       tMs = tMs,
       slot = actionSlotIndex,
       bar = barLabel,
+      icon = iconTex,
     }
   end
 

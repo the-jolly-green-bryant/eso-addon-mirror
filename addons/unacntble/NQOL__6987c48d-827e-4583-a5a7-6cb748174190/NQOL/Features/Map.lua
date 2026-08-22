@@ -23,7 +23,10 @@ local FREEPORT_FALLBACK_ALLOWED = {
 
 local savedVariables
 local initialized = false
-local fastTravelConfirmationHooked = false
+local wayshrineHandlers
+local originalRecallCallback
+local originalFastTravelCallback
+local bypassCallbacksInstalled = false
 
 local function GetSettings()
     local settings = NQOL.Settings.GetSection(savedVariables, defaults, "map")
@@ -47,35 +50,129 @@ local function GetSettings()
     return settings
 end
 
-local function ShouldBypassTravelConfirmation(dialogName, data)
-    return (dialogName == "FAST_TRAVEL_CONFIRM" or dialogName == "RECALL_CONFIRM")
-        and GetSettings().bypassFastTravelConfirmation == true
-        and data
-        and type(data.nodeIndex) == "number"
-        and type(FastTravelToNode) == "function"
+local function GetWayshrineHandlers()
+    local clickHandlers = ZO_MapPin
+        and ZO_MapPin.PIN_CLICK_HANDLERS
+        and ZO_MapPin.PIN_CLICK_HANDLERS[MOUSE_BUTTON_INDEX_LEFT]
+    local handlers = clickHandlers and clickHandlers[MAP_PIN_TYPE_FAST_TRAVEL_WAYSHRINE]
+    if type(handlers) ~= "table"
+        or type(handlers[1]) ~= "table"
+        or type(handlers[2]) ~= "table"
+        or type(handlers[1].callback) ~= "function"
+        or type(handlers[2].callback) ~= "function"
+    then
+        return nil
+    end
+
+    return handlers
 end
 
-local function BypassTravelConfirmation(data)
-    FastTravelToNode(data.nodeIndex)
+local function ReleaseTravelDialogs()
+    if type(ZO_Dialogs_ReleaseDialog) ~= "function" then
+        return
+    end
+
+    ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
+    ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
+    ZO_Dialogs_ReleaseDialog("TRAVEL_TO_HOUSE_CONFIRM")
+end
+
+local function TravelToNode(nodeIndex)
+    if type(nodeIndex) ~= "number" or type(FastTravelToNode) ~= "function" then
+        return false
+    end
+
+    ReleaseTravelDialogs()
+
+    if type(IsProtectedFunction) == "function"
+        and IsProtectedFunction("FastTravelToNode")
+        and type(CallSecureProtected) == "function"
+    then
+        CallSecureProtected("FastTravelToNode", nodeIndex)
+    else
+        FastTravelToNode(nodeIndex)
+    end
 
     if SCENE_MANAGER and SCENE_MANAGER.ShowBaseScene then
         SCENE_MANAGER:ShowBaseScene()
     end
+
+    return true
 end
 
-local function InstallFastTravelConfirmationHook()
-    if fastTravelConfirmationHooked or type(ZO_PreHook) ~= "function" or type(ZO_Dialogs_ShowPlatformDialog) ~= "function" then
+local function BypassRecall(pin)
+    if not pin or not pin.GetFastTravelNodeIndex or not GetRecallCooldown then
+        return originalRecallCallback and originalRecallCallback(pin)
+    end
+
+    if pin.IsLockedByLinkedCollectible and pin:IsLockedByLinkedCollectible() then
+        return originalRecallCallback and originalRecallCallback(pin)
+    end
+
+    local _, premiumTimeLeft = GetRecallCooldown()
+    if premiumTimeLeft ~= 0 then
+        return originalRecallCallback and originalRecallCallback(pin)
+    end
+
+    if not TravelToNode(pin:GetFastTravelNodeIndex()) and originalRecallCallback then
+        return originalRecallCallback(pin)
+    end
+end
+
+local function BypassFastTravel(pin)
+    if not pin or not pin.GetFastTravelNodeIndex then
+        return originalFastTravelCallback and originalFastTravelCallback(pin)
+    end
+
+    if pin.IsLockedByLinkedCollectible and pin:IsLockedByLinkedCollectible() then
+        return originalFastTravelCallback and originalFastTravelCallback(pin)
+    end
+
+    if not TravelToNode(pin:GetFastTravelNodeIndex()) and originalFastTravelCallback then
+        return originalFastTravelCallback(pin)
+    end
+end
+
+local function RestoreWayshrineCallbacks()
+    if not bypassCallbacksInstalled or not wayshrineHandlers then
         return
     end
 
-    fastTravelConfirmationHooked = true
+    if wayshrineHandlers[1].callback == BypassRecall then
+        wayshrineHandlers[1].callback = originalRecallCallback
+    end
+    if wayshrineHandlers[2].callback == BypassFastTravel then
+        wayshrineHandlers[2].callback = originalFastTravelCallback
+    end
 
-    ZO_PreHook("ZO_Dialogs_ShowPlatformDialog", function(dialogName, data)
-        if ShouldBypassTravelConfirmation(dialogName, data) then
-            BypassTravelConfirmation(data)
-            return true
-        end
-    end)
+    wayshrineHandlers = nil
+    originalRecallCallback = nil
+    originalFastTravelCallback = nil
+    bypassCallbacksInstalled = false
+end
+
+local function ApplyFastTravelConfirmationSetting()
+    if not GetSettings().bypassFastTravelConfirmation then
+        RestoreWayshrineCallbacks()
+        return true
+    end
+
+    if bypassCallbacksInstalled then
+        return true
+    end
+
+    local handlers = GetWayshrineHandlers()
+    if not handlers then
+        return false
+    end
+
+    wayshrineHandlers = handlers
+    originalRecallCallback = handlers[1].callback
+    originalFastTravelCallback = handlers[2].callback
+    handlers[1].callback = BypassRecall
+    handlers[2].callback = BypassFastTravel
+    bypassCallbacksInstalled = true
+    return true
 end
 
 function Map.InitializeSavedVariables()
@@ -89,7 +186,7 @@ function Map.Initialize()
     end
 
     initialized = true
-    InstallFastTravelConfirmationHook()
+    ApplyFastTravelConfirmationSetting()
 end
 
 function Map.GetFreeport()
@@ -142,6 +239,7 @@ end
 
 function Map.SetBypassFastTravelConfirmation(value)
     GetSettings().bypassFastTravelConfirmation = value == true
+    ApplyFastTravelConfirmationSetting()
 end
 
 function Map.GetShowDungeons()

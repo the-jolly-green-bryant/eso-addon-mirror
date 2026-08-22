@@ -90,6 +90,7 @@ function GamepadOptions.BuildDebugOptionsData()
         GamepadOptions.BuildResetWelcomeMessageOption(),
         GamepadOptions.BuildResetWhatsNewMessageOption(),
         GamepadOptions.BuildPrintAnnotationTestItemLinksOption(),
+        GamepadOptions.BuildGenerateBenignLuaErrorOption(),
     }
 end
 
@@ -267,8 +268,27 @@ end
 
 function GamepadOptions.BuildMapOptionsData()
     return {
+        GamepadOptions.BuildGPSEntry(),
         GamepadOptions.BuildMapSettingsEntry(),
         GamepadOptions.BuildMinimapEntry(),
+    }
+end
+
+function GamepadOptions.BuildGPSOptionsData()
+    return {
+        GamepadOptions.BuildGPSEnabledOption(),
+        GamepadOptions.BuildGPSShowInSettingsOption(),
+        GamepadOptions.BuildGPSDisplayFormatOption(),
+        GamepadOptions.BuildGPSUpdateFrequencyOption(),
+        GamepadOptions.WithHeader(GamepadOptions.BuildGPSHorizontalPositionOption(), NQOL.L("ui.headers.position_and_appearance_346f660")),
+        GamepadOptions.BuildGPSVerticalPositionOption(),
+        GamepadOptions.BuildGPSOpacityOption(),
+        GamepadOptions.BuildGPSColorOption(),
+        GamepadOptions.WithHeader(GamepadOptions.BuildGPSTextOrientationOption(), NQOL.Features.GPS.GetTextSectionLabel()),
+        GamepadOptions.BuildGPSFontOption(),
+        GamepadOptions.BuildGPSFontSizeOption(),
+        GamepadOptions.WithHeader(GamepadOptions.BuildGPSQRCodeSizeOption(), NQOL.Features.GPS.GetQRCodeSectionLabel()),
+        GamepadOptions.BuildGPSAdvancedDataOption(),
     }
 end
 

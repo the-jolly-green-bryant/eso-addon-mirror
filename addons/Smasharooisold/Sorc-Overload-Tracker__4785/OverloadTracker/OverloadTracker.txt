@@ -1,0 +1,9 @@
+## Title: Overload Tracker
+## APIVersion: 101042
+## Author: Smash
+## Description: Displays an indicator when Sorcerer Overload is active.
+## Version: 1.0.0
+## SavedVariables: OverloadTrackerSV
+
+
+OverloadTracker.lua

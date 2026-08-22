@@ -775,41 +775,91 @@ function EPC:RegisterEvents()
     end
 
     if EVENT_COMBAT_EVENT and self.Combat then
-        local function handler(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, returnedSourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-            local isPlayer = returnedSourceType == COMBAT_UNIT_TYPE_PLAYER
-            local isPet = COMBAT_UNIT_TYPE_PLAYER_PET ~= nil and returnedSourceType == COMBAT_UNIT_TYPE_PLAYER_PET
-            local isGroup = COMBAT_UNIT_TYPE_GROUP ~= nil and returnedSourceType == COMBAT_UNIT_TYPE_GROUP
-            if isPlayer or isPet or isGroup then
-                self.Combat:OnCombatEvent(result, abilityName, sourceName, returnedSourceType, targetName, targetType, hitValue, abilityId)
+        -- Filter noisy combat traffic in ESO's event manager (C-side) instead of
+        -- classifying every EVENT_COMBAT_EVENT result in Lua. A unique event
+        -- namespace is required for each result/source combination because
+        -- multiple values of the same filter type are ANDed, not ORed.
+        local damageResults = {
+            ACTION_RESULT_DAMAGE,
+            ACTION_RESULT_CRITICAL_DAMAGE,
+            ACTION_RESULT_DOT_TICK,
+            ACTION_RESULT_DOT_TICK_CRITICAL,
+            ACTION_RESULT_DAMAGE_SHIELDED,
+        }
+        local healResults = {
+            ACTION_RESULT_HEAL,
+            ACTION_RESULT_CRITICAL_HEAL,
+            ACTION_RESULT_HOT_TICK,
+            ACTION_RESULT_HOT_TICK_CRITICAL,
+        }
+        local incomingDamageResults = {
+            ACTION_RESULT_DAMAGE,
+            ACTION_RESULT_CRITICAL_DAMAGE,
+            ACTION_RESULT_DOT_TICK,
+            ACTION_RESULT_DOT_TICK_CRITICAL,
+            ACTION_RESULT_DAMAGE_SHIELDED,
+            ACTION_RESULT_BLOCKED_DAMAGE,
+            ACTION_RESULT_BLOCKED,
+        }
+
+        local function combatHandler(eventKind)
+            return function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, returnedSourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
+                self.Combat:OnCombatEvent(eventKind, result, abilityName, sourceName, returnedSourceType, targetName, targetType, hitValue, abilityId)
             end
         end
 
-        local function incomingHandler(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, returnedSourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-            local fromPlayer = returnedSourceType == COMBAT_UNIT_TYPE_PLAYER
-            local fromPet = COMBAT_UNIT_TYPE_PLAYER_PET ~= nil and returnedSourceType == COMBAT_UNIT_TYPE_PLAYER_PET
-            local fromGroup = COMBAT_UNIT_TYPE_GROUP ~= nil and returnedSourceType == COMBAT_UNIT_TYPE_GROUP
-            if not fromPlayer and not fromPet and not fromGroup then
-                self.Combat:OnCombatEvent(result, abilityName, sourceName, returnedSourceType, targetName, targetType, hitValue, abilityId)
+        local handlers = {
+            DAMAGE = combatHandler("DAMAGE"),
+            HEAL = combatHandler("HEAL"),
+            INCOMING_DAMAGE = combatHandler("INCOMING_DAMAGE"),
+        }
+
+        local function addFilters(registration, result, filterType, filterValue)
+            if REGISTER_FILTER_COMBAT_RESULT then
+                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, result)
+            end
+            if REGISTER_FILTER_IS_ERROR then
+                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
+            end
+            if filterType and filterValue ~= nil then
+                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_COMBAT_EVENT, filterType, filterValue)
             end
         end
 
-        if REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE then
-            local function registerCombatSource(suffix, unitType)
-                if unitType == nil then return end
-                local registration = self.name .. "_Combat_" .. suffix
-                EVENT_MANAGER:RegisterForEvent(registration, EVENT_COMBAT_EVENT, handler)
-                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, unitType)
+        local function registerFiltered(kind, suffix, result, filterType, filterValue)
+            if result == nil then return end
+            local registration = string.format("%s_Combat_%s_%s_%s", self.name, kind, suffix, tostring(result))
+            EVENT_MANAGER:RegisterForEvent(registration, EVENT_COMBAT_EVENT, handlers[kind])
+            addFilters(registration, result, filterType, filterValue)
+        end
+
+        local sourceTypes = {
+            { "Player", COMBAT_UNIT_TYPE_PLAYER },
+            { "Pet", COMBAT_UNIT_TYPE_PLAYER_PET },
+            { "Group", COMBAT_UNIT_TYPE_GROUP },
+        }
+
+        -- All currently supported ESO clients expose these combat filters.
+        -- If a future/unsupported client does not, skip combat analytics rather
+        -- than fall back to processing the full unfiltered combat-event stream.
+        if REGISTER_FILTER_COMBAT_RESULT and REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE then
+            for _, source in ipairs(sourceTypes) do
+                local suffix, unitType = source[1], source[2]
+                if unitType ~= nil then
+                    for _, result in ipairs(damageResults) do
+                        registerFiltered("DAMAGE", suffix, result, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, unitType)
+                    end
+                    for _, result in ipairs(healResults) do
+                        registerFiltered("HEAL", suffix, result, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, unitType)
+                    end
+                end
             end
-            registerCombatSource("Player", COMBAT_UNIT_TYPE_PLAYER)
-            registerCombatSource("Pet", COMBAT_UNIT_TYPE_PLAYER_PET)
-            registerCombatSource("Group", COMBAT_UNIT_TYPE_GROUP)
-            if REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE and COMBAT_UNIT_TYPE_PLAYER then
-                local registration = self.name .. "_Combat_TargetPlayer"
-                EVENT_MANAGER:RegisterForEvent(registration, EVENT_COMBAT_EVENT, incomingHandler)
-                EVENT_MANAGER:AddFilterForEvent(registration, EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+
+            if REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE and COMBAT_UNIT_TYPE_PLAYER ~= nil then
+                for _, result in ipairs(incomingDamageResults) do
+                    registerFiltered("INCOMING_DAMAGE", "TargetPlayer", result, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+                end
             end
-        else
-            EVENT_MANAGER:RegisterForEvent(self.name .. "_Combat_All", EVENT_COMBAT_EVENT, handler)
         end
     end
 
@@ -893,7 +943,54 @@ function EPC:RegisterEvents()
 end
 
 function EPC:Initialize()
-    self.saved = ZO_SavedVars:NewAccountWide("ESOProgressionCoachSavedVars", self.savedVersion, nil, self.defaults)
+    -- Account-wide data includes learned map/services, inventory snapshots,
+    -- progression state and other world-specific information. Namespace it by
+    -- megaserver so NA, EU and PTS cannot overwrite one another.
+    local worldName = (type(GetWorldName) == "function" and GetWorldName()) or "Default"
+    local displayName = (type(GetDisplayName) == "function" and GetDisplayName()) or nil
+    local rawSaved = rawget(_G, "ESOProgressionCoachSavedVars")
+    local legacyData
+    local worldDataAlreadyExists = false
+
+    if type(rawSaved) == "table" and displayName then
+        local worldTable = rawSaved[worldName]
+        worldDataAlreadyExists = type(worldTable) == "table"
+            and type(worldTable[displayName]) == "table"
+            and type(worldTable[displayName]["$AccountWide"]) == "table"
+
+        local legacyDefault = rawSaved["Default"]
+        if type(legacyDefault) == "table"
+            and type(legacyDefault[displayName]) == "table"
+            and type(legacyDefault[displayName]["$AccountWide"]) == "table" then
+            legacyData = legacyDefault[displayName]["$AccountWide"]
+        end
+    end
+
+    self.saved = ZO_SavedVars:NewAccountWide("ESOProgressionCoachSavedVars", self.savedVersion, worldName, self.defaults)
+
+    -- One-time compatibility migration for users upgrading from the old global
+    -- account-wide namespace. Copy plain SavedVariables data into the first
+    -- world-specific profile without sharing nested table references.
+    if not worldDataAlreadyExists and type(legacyData) == "table" and self.saved.serverSavedVarsMigration02456 ~= true then
+        local function copyPlain(value, seen)
+            if type(value) ~= "table" then return value end
+            seen = seen or {}
+            if seen[value] then return nil end
+            seen[value] = true
+            local out = {}
+            for key, child in pairs(value) do
+                local copiedKey = copyPlain(key, seen)
+                local copiedValue = copyPlain(child, seen)
+                if copiedKey ~= nil then out[copiedKey] = copiedValue end
+            end
+            seen[value] = nil
+            return out
+        end
+        for key, value in pairs(legacyData) do
+            self.saved[key] = copyPlain(value)
+        end
+        self.saved.serverSavedVarsMigration02456 = true
+    end
 
     -- v0.24.46 minimap visual-state migration. Long-running installs can carry
     -- old minimap presentation values from earlier beta builds while a fresh

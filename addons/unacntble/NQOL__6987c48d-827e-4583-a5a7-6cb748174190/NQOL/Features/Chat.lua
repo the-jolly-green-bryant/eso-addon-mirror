@@ -4,6 +4,21 @@ NQOL.Features = NQOL.Features or {}
 local ChatFeature = {}
 
 local DEFAULT_TIMESTAMP_FORMAT = "HH:mm"
+local TIMESTAMP_MODE = {
+    NQOL = "nqol",
+    DEFAULT = "default",
+    OFF = "off",
+}
+TIMESTAMP_MODE.CHOICES = {
+    TIMESTAMP_MODE.NQOL,
+    TIMESTAMP_MODE.DEFAULT,
+    TIMESTAMP_MODE.OFF,
+}
+TIMESTAMP_MODE.VALID = {
+    [TIMESTAMP_MODE.NQOL] = true,
+    [TIMESTAMP_MODE.DEFAULT] = true,
+    [TIMESTAMP_MODE.OFF] = true,
+}
 local DEFAULT_MISSING_ITEM_WHISPER_MESSAGE = NQOL.L("features.chat.annotate_missing_items_whisper_message_default")
 local EVENT_NAMESPACE = "NQOL_Chat"
 local SAVED_MESSAGES_NONE = 0
@@ -51,11 +66,16 @@ local SAVED_MESSAGE_CHOICE_NAMES = NQOL.Lexicon.LocalizedList({
     { "features.chat.last_messages", 25 },
     { "features.chat.last_messages", 50 },
 })
+local TIMESTAMP_MODE_CHOICE_NAMES = NQOL.Lexicon.LocalizedList({
+    "features.chat.timestamp_mode_nqol",
+    "features.chat.timestamp_mode_default",
+    "features.chat.timestamp_mode_off",
+})
 local Unpack = unpack or table.unpack
 
 local defaults = {
     chat = {
-        addTimestamp = false,
+        timestampMode = TIMESTAMP_MODE.NQOL,
         timestampFormat = DEFAULT_TIMESTAMP_FORMAT,
         savedMessages = SAVED_MESSAGES_NONE,
         messageHistory = {},
@@ -86,9 +106,12 @@ local defaults = {
 local savedVariables
 local initialized = false
 local messageHookInstalled = false
+local deliveryHookInstalled = false
 local channelHookInstalled = false
 local routerHookInstalled = false
 local originalAddMessage
+local originalOnFormattedChatMessage
+local originalChatMenuAddMessage
 local originalRegisterMessageFormatter
 local hookAttempts = 0
 local hudHookAttempts = 0
@@ -120,7 +143,8 @@ local function GetSettings()
     local settings = NQOL.Settings.GetSection(savedVariables, defaults, "chat")
     local defaultSettings = defaults.chat
 
-    NQOL.Settings.Default(settings, defaultSettings, "addTimestamp")
+    NQOL.Settings.Choice(settings, defaultSettings, "timestampMode", TIMESTAMP_MODE.VALID)
+    settings.addTimestamp = nil
 
     if settings.timestampFormat == nil or settings.timestampFormat == "" then
         settings.timestampFormat = defaultSettings.timestampFormat
@@ -161,6 +185,37 @@ local function GetSettings()
     NQOL.Settings.EnsureTable(guildMessageColors, "officerColorsByGuildId")
 
     return settings
+end
+
+local function GetActiveChatSystem()
+    return GAMEPAD_CHAT_SYSTEM or CHAT_SYSTEM
+end
+
+local function SyncNativeTimestampState()
+    local chatSystem = GetActiveChatSystem()
+    if not chatSystem or type(chatSystem.containers) ~= "table" then
+        return
+    end
+
+    local suppressNativeTimestamp = GetSettings().timestampMode ~= TIMESTAMP_MODE.DEFAULT
+
+    for containerIndex, container in ipairs(chatSystem.containers) do
+        local containerId = container.id or containerIndex
+        for tabIndex, window in ipairs(container.windows or {}) do
+            local combatLog = window.combatLog
+            if combatLog and combatLog.SetTimestampsEnabled then
+                local timestampsEnabled = false
+                if not suppressNativeTimestamp and GetChatContainerTabInfo then
+                    local _, _, _, _, savedTimestampsEnabled = GetChatContainerTabInfo(containerId, tabIndex)
+                    timestampsEnabled = savedTimestampsEnabled == true
+                end
+
+                if not combatLog.AreTimestampsEnabled or combatLog:AreTimestampsEnabled() ~= timestampsEnabled then
+                    combatLog:SetTimestampsEnabled(timestampsEnabled)
+                end
+            end
+        end
+    end
 end
 
 local function IsMissingCollectible(itemLink)
@@ -632,20 +687,62 @@ local function FormatTimestamp(format)
     return timestamp
 end
 
-local function HasTimestamp(message)
-    return type(message) == "string" and string.match(message, "^|c%x%x%x%x%x%x%[%d%d?:%d%d")
+local function IsTimestampText(text)
+    return type(text) == "string"
+        and string.match(text, "^%d%d?:%d%d:?%d*[%s%a%.]*$") ~= nil
 end
 
-local function AddTimestamp(message)
-    if restoringHistory or not ChatFeature.GetAddTimestamp() or message == nil or HasTimestamp(message) then
+local function StripLeadingTimestamps(message)
+    local text = tostring(message or "")
+
+    while true do
+        local timestampText, remainder = string.match(text, "^|c%x%x%x%x%x%x%x%x%[([^%]]+)%]|r%s*(.*)$")
+        if not timestampText then
+            timestampText, remainder = string.match(text, "^|c%x%x%x%x%x%x%[([^%]]+)%]|r%s*(.*)$")
+        end
+        if not timestampText then
+            timestampText, remainder = string.match(text, "^%[([^%]]+)%]%s*(.*)$")
+        end
+
+        if IsTimestampText(timestampText) then
+            text = remainder
+        else
+            local colorTag, coloredTimestampText, coloredRemainder = string.match(text, "^(|c%x%x%x%x%x%x%x%x)%[([^%]]+)%]%s*(.*)$")
+            if not colorTag then
+                colorTag, coloredTimestampText, coloredRemainder = string.match(text, "^(|c%x%x%x%x%x%x)%[([^%]]+)%]%s*(.*)$")
+            end
+
+            if not colorTag or not IsTimestampText(coloredTimestampText) then
+                break
+            end
+
+            text = colorTag .. coloredRemainder
+        end
+    end
+
+    return text
+end
+
+local function ApplyTimestampMode(message)
+    if restoringHistory or message == nil then
         return message
     end
 
-    return string.format("|c999999[%s]|r %s", FormatTimestamp(ChatFeature.GetTimestampFormat()), tostring(message))
+    local mode = ChatFeature.GetTimestampMode()
+    if mode == TIMESTAMP_MODE.DEFAULT then
+        return message
+    end
+
+    local text = StripLeadingTimestamps(message)
+    if mode == TIMESTAMP_MODE.OFF then
+        return text
+    end
+
+    return string.format("|c999999[%s]|r %s", FormatTimestamp(ChatFeature.GetTimestampFormat()), text)
 end
 
-function ChatFeature.AddTimestamp(message)
-    return AddTimestamp(message)
+function ChatFeature.ApplyTimestampMode(message)
+    return ApplyTimestampMode(message)
 end
 
 local StripChatMarkup = NQOL.Util.StripChatMarkup
@@ -828,7 +925,7 @@ local function GetChatChannelOverrideColorDef(messageType)
 end
 
 local function FormatChatChannelMessage(messageType, message)
-    local timestampedMessage = AddTimestamp(message)
+    local timestampedMessage = ApplyTimestampMode(message)
     local timestampPrefix, messageText = string.match(timestampedMessage or "", "^(|c999999%[[^%]]+%]|r%s+)(.*)$")
 
     if timestampPrefix and messageText then
@@ -969,6 +1066,23 @@ local function StripChatColorMarkup(message)
     return string.gsub(text, "|r", "")
 end
 
+local function ApplyRestoredTimestampMode(message)
+    local text = tostring(message or "")
+    local mode = ChatFeature.GetTimestampMode()
+    if mode == TIMESTAMP_MODE.DEFAULT then
+        return text
+    end
+
+    local timestampText = string.match(text, "^%[([^%]]+)%]%s+.*$")
+    local timestamp = IsTimestampText(timestampText) and "[" .. timestampText .. "]" or nil
+    local strippedText = StripLeadingTimestamps(text)
+    if mode == TIMESTAMP_MODE.OFF or not timestamp then
+        return strippedText
+    end
+
+    return timestamp .. " " .. strippedText
+end
+
 local function GetRestoredRecord(historyEntry)
     if type(historyEntry) == "string" then
         return { message = historyEntry }
@@ -1030,7 +1144,7 @@ local function GetRestoredDisplayMessage(record)
         message = AnnotateMissingItemLinks(message)
     end
 
-    return StripChatColorMarkup(message)
+    return ApplyRestoredTimestampMode(StripChatColorMarkup(message))
 end
 
 local function AddRestoredMessageToContainer(container, record)
@@ -1075,11 +1189,12 @@ local function AddRestoredMessage(historyEntry)
         return
     end
 
-    if CHAT_SYSTEM and CHAT_SYSTEM.containers then
-        for _, container in ipairs(CHAT_SYSTEM.containers) do
+    local chatSystem = GetActiveChatSystem()
+    if chatSystem and chatSystem.containers then
+        for _, container in ipairs(chatSystem.containers) do
             AddRestoredMessageToContainer(container, record)
         end
-    else
+    elseif originalAddMessage and CHAT_SYSTEM then
         originalAddMessage(CHAT_SYSTEM, GetRestoredDisplayMessage(record))
     end
 
@@ -1087,7 +1202,10 @@ local function AddRestoredMessage(historyEntry)
 end
 
 local function RestoreMessageHistory()
-    if historyRestored or restoringHistory or not CHAT_SYSTEM or not originalAddMessage then
+    local chatSystem = GetActiveChatSystem()
+    if historyRestored or restoringHistory or not chatSystem
+        or (not chatSystem.containers and not originalAddMessage)
+    then
         return
     end
 
@@ -1111,6 +1229,7 @@ local function InstallMessageHook()
     end
 
     if not CHAT_SYSTEM or not CHAT_SYSTEM.AddMessage then
+        messageHookInstalled = true
         return
     end
 
@@ -1124,10 +1243,35 @@ local function InstallMessageHook()
             return
         end
 
-        return originalAddMessage(self, AddTimestamp(message), ...)
+        return originalAddMessage(self, ApplyTimestampMode(message), ...)
     end
 
     messageHookInstalled = true
+end
+
+local function InstallDeliveryHook()
+    if deliveryHookInstalled then
+        return
+    end
+
+    local chatSystem = GetActiveChatSystem()
+    if not chatSystem or not chatSystem.OnFormattedChatMessage
+        or not CHAT_MENU_GAMEPAD or not CHAT_MENU_GAMEPAD.AddMessage
+    then
+        return
+    end
+
+    originalOnFormattedChatMessage = chatSystem.OnFormattedChatMessage
+    chatSystem.OnFormattedChatMessage = function(self, message, ...)
+        return originalOnFormattedChatMessage(self, ApplyTimestampMode(message), ...)
+    end
+
+    originalChatMenuAddMessage = CHAT_MENU_GAMEPAD.AddMessage
+    CHAT_MENU_GAMEPAD.AddMessage = function(self, message, ...)
+        return originalChatMenuAddMessage(self, ApplyTimestampMode(message), ...)
+    end
+
+    deliveryHookInstalled = true
 end
 
 local function InstallChannelHook()
@@ -1189,7 +1333,7 @@ local function InstallChannelHook()
                     return
                 end
 
-                results[1] = AddTimestamp(results[1])
+                results[1] = ApplyTimestampMode(results[1])
             end
 
             return Unpack(results)
@@ -1214,9 +1358,10 @@ end
 local function InstallChatHooks()
     InstallRouterHook()
     InstallMessageHook()
+    InstallDeliveryHook()
     InstallChannelHook()
 
-    if not routerHookInstalled or not messageHookInstalled or not channelHookInstalled then
+    if not routerHookInstalled or not messageHookInstalled or not deliveryHookInstalled or not channelHookInstalled then
         hookAttempts = hookAttempts + 1
         if hookAttempts < 10 and zo_callLater then
             zo_callLater(InstallChatHooks, 1000)
@@ -1225,6 +1370,7 @@ local function InstallChatHooks()
     end
 
     hookAttempts = 0
+    SyncNativeTimestampState()
     if zo_callLater then
         zo_callLater(RestoreMessageHistory, 1000)
     else
@@ -1243,20 +1389,29 @@ function ChatFeature.Initialize()
     end
 
     initialized = true
+    SyncNativeTimestampState()
+    if EVENT_MANAGER and EVENT_PLAYER_ACTIVATED then
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_TimestampState", EVENT_PLAYER_ACTIVATED, SyncNativeTimestampState)
+    end
     InstallChatHooks()
     RefreshHud()
 end
 
-function ChatFeature.GetAddTimestamp()
+function ChatFeature.GetTimestampMode()
     if not savedVariables then
-        return defaults.chat.addTimestamp
+        return defaults.chat.timestampMode
     end
 
-    return GetSettings().addTimestamp
+    return GetSettings().timestampMode
 end
 
-function ChatFeature.SetAddTimestamp(value)
-    GetSettings().addTimestamp = value == true
+function ChatFeature.SetTimestampMode(value)
+    if not TIMESTAMP_MODE.VALID[value] then
+        value = defaults.chat.timestampMode
+    end
+
+    GetSettings().timestampMode = value
+    SyncNativeTimestampState()
 end
 
 function ChatFeature.GetSavedMessages()
@@ -1514,11 +1669,23 @@ function ChatFeature.GetHudHeightMax()
     return HUD_HEIGHT_MAX
 end
 
-function ChatFeature.GetAddTimestampLabel()
+function ChatFeature.GetTimestampModeChoices()
+    return TIMESTAMP_MODE.CHOICES
+end
+
+function ChatFeature.GetTimestampModeChoiceNames()
+    return TIMESTAMP_MODE_CHOICE_NAMES
+end
+
+function ChatFeature.GetTimestampModeDefault()
+    return defaults.chat.timestampMode
+end
+
+function ChatFeature.GetTimestampModeLabel()
     return NQOL.L("features.chat.add_timestamp_label")
 end
 
-function ChatFeature.GetAddTimestampTooltip()
+function ChatFeature.GetTimestampModeTooltip()
     return NQOL.L("features.chat.timestamp_tooltip", DEFAULT_TIMESTAMP_FORMAT)
 end
 

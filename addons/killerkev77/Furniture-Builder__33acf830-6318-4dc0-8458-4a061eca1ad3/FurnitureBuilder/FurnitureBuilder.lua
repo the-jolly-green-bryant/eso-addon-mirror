@@ -149,6 +149,32 @@ SLASH_COMMANDS["/fbgrid"] = ToggleGrid
 -- ---------------------------------------------------------------------------
 
 local markerWindow = nil
+local markerAnchor = nil
+local markerUpdateRegistered = false
+local FB_MARKER_UPDATE_ID = "FurnitureBuilder_MarkerUpdate"
+
+local function UpdateMarkerPosition()
+    if not markerAnchor then return end
+    local ok, zoneId, wx, wy, wz = pcall(GetUnitWorldPosition, "player")
+    if not ok then return end
+
+    local ok3, rx, ry, rz = pcall(WorldPositionToGuiRender3DPosition, wx, wy, wz)
+    if not ok3 or not rx then return end
+
+    -- Update the MIDDLE layer (the 3D anchor) every frame -- not the plain
+    -- toplevel window, and not the icon (which stays at a fixed small
+    -- local offset from the anchor).
+    pcall(function()
+        markerAnchor:Set3DRenderSpaceOrigin(rx, ry + 2, rz)
+    end)
+end
+
+local function StartMarkerUpdateLoop()
+    if markerUpdateRegistered then return end
+    EVENT_MANAGER:RegisterForUpdate(FB_MARKER_UPDATE_ID, 0, UpdateMarkerPosition)
+    markerUpdateRegistered = true
+    d("[FurnitureBuilder] marker update loop started")
+end
 
 local function TestWorldMarker()
     if not GetUnitWorldPosition then
@@ -160,50 +186,59 @@ local function TestWorldMarker()
         return
     end
 
-    local ok, zoneId, wx, wy, wz = pcall(GetUnitWorldPosition, "player")
-    if not ok then
-        d("[FurnitureBuilder] GetUnitWorldPosition FAILED: " .. tostring(zoneId))
-        return
-    end
-    d("[FurnitureBuilder] player world pos: zone=" .. tostring(zoneId) .. " x=" .. tostring(wx) .. " y=" .. tostring(wy) .. " z=" .. tostring(wz))
-
     if not markerWindow then
         local ok2, err = pcall(function()
+            -- LEVEL 1: plain 2D top-level window. NOT 3D-spaced. Just a
+            -- scene-registration container, matching real Lib3DArrow's
+            -- explicit avoidance of Create3DRenderSpace on the toplevel.
             markerWindow = WINDOW_MANAGER:CreateTopLevelWindow("FurnitureBuilder_Marker")
             markerWindow:SetDimensions(40, 40)
-            markerWindow:Create3DRenderSpace()
-            local box = WINDOW_MANAGER:CreateControl(nil, markerWindow, CT_BACKDROP)
-            box:SetAnchorFill(markerWindow)
-            box:SetCenterColor(0, 1, 1, 1)
+            markerWindow:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+
+            -- LEVEL 2: CT_CONTROL anchor, 3D-spaced, origin updated every
+            -- frame to track world position. This is what "parent.marker"
+            -- is in the real source.
+            markerAnchor = WINDOW_MANAGER:CreateControl(nil, markerWindow, CT_CONTROL)
+            markerAnchor:Create3DRenderSpace()
+            markerAnchor:Set3DRenderSpaceUsesDepthBuffer(false)
+            markerAnchor:Set3DRenderSpaceOrigin(0, 0, 0)
+
+            -- LEVEL 3: CT_TEXTURE icon, ALSO its own 3D space, but with a
+            -- FIXED small local origin (0,0,0) relative to the anchor --
+            -- matches CreateMarkerPart() in real marker.lua exactly.
+            local icon = WINDOW_MANAGER:CreateControl(nil, markerAnchor, CT_TEXTURE)
+            icon:Create3DRenderSpace()
+            icon:Set3DRenderSpaceUsesDepthBuffer(false)
+            icon:Set3DLocalDimensions(1.5, 1.5)
+            icon:Set3DRenderSpaceOrigin(0, 0, 0)
+            icon:SetTexture("/esoui/art/icons/heraldrycrests_misc_blank_01.dds")
+            icon:SetColor(0, 1, 1, 1)
+
+            -- NEW HYPOTHESIS: 3D render space content might specifically
+            -- need scene fragment registration to actually composite into
+            -- the 3D world view, even though plain 2D overlays render fine
+            -- without it once using a top-level window. Same fragment
+            -- pattern that made the original /fbtest box work.
+            local fragment = ZO_FadeSceneFragment:New(markerWindow)
+            local sceneHud = SCENE_MANAGER:GetScene("hud")
+            local sceneHudUI = SCENE_MANAGER:GetScene("hudui")
+            local sceneHousingEditor = SCENE_MANAGER:GetScene("housingEditorHud")
+            if sceneHud then sceneHud:AddFragment(fragment) end
+            if sceneHudUI then sceneHudUI:AddFragment(fragment) end
+            if sceneHousingEditor then sceneHousingEditor:AddFragment(fragment) end
         end)
         if not ok2 then
             d("[FurnitureBuilder] marker create FAILED: " .. tostring(err))
             markerWindow = nil
+            markerAnchor = nil
             return
         end
-    end
-
-    local ok3, rx, ry, rz = pcall(WorldPositionToGuiRender3DPosition, wx, wy, wz)
-    if not ok3 then
-        d("[FurnitureBuilder] WorldPositionToGuiRender3DPosition FAILED: " .. tostring(rx))
-        return
-    end
-    if not rx then
-        d("[FurnitureBuilder] WorldPositionToGuiRender3DPosition returned nil (out of range / wrong zone?)")
-        return
-    end
-    d("[FurnitureBuilder] converted render pos: " .. tostring(rx) .. "," .. tostring(ry) .. "," .. tostring(rz))
-
-    local ok4, err4 = pcall(function()
-        markerWindow:Set3DRenderSpaceOrigin(rx, ry, rz)
-    end)
-    if not ok4 then
-        d("[FurnitureBuilder] Set3DRenderSpaceOrigin FAILED: " .. tostring(err4))
-        return
+        d("[FurnitureBuilder] 3-level marker structure created")
     end
 
     markerWindow:SetHidden(false)
-    d("[FurnitureBuilder] marker placed -- look for a small cyan box. Should be exactly where you're standing.")
+    StartMarkerUpdateLoop()
+    d("[FurnitureBuilder] marker placed -- look for a small cyan icon. Should be exactly where you're standing.")
 end
 
 SLASH_COMMANDS["/fbmark"] = TestWorldMarker

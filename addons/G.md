@@ -52,7 +52,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Go Fast Don't Die](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drezzek/Go-Fast-Don-t-Die__3332) | Drezzek | PC / Mac | 1.4 |
 | [Go Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/static_recharge/Go-Home__1604) | static_recharge | PC / Mac | 8.0.0 |
 | [GoA_DolgubonsLazyWritCreatorUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_DolgubonsLazyWritCreatorUAPatch__4703) | Iriya_Altmer | PC / Mac | 1.7 |
-| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 44.55 |
+| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 44.60 |
 | [GoA_FCOLockpickerUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733) | Iriya_Altmer | PC / Mac | 1.0 |
 | [GoA_HarvestMapUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707) | Iriya_Altmer | PC / Mac | 1.1 |
 | [GoA_TamrielTradeCentreUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705) | Iriya_Altmer | PC / Mac | 1.2 |
@@ -120,6 +120,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Group UI Mover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/Group-UI-Mover__4b9ce0b1-712c-4e43-9b41-d913d2772634) | Gamer_sa22 | Console | — |
 | [Group User ID](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jarva/Group-User-ID__2589) | Jarva | PC / Mac | 2026.07.09 |
 | [GroupBuffTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tenshiraito/GroupBuffTracker__4120) | Tenshiraito | PC / Mac | 2.8 |
+| [GroupEncore](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/GroupEncore__6a072e95-965d-4368-9c0f-196d198ad5dd) | SugaComa | Console | — |
 | [GroupFinder+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/GroupFinder__4338) | atharti | PC / Mac | 6.4 |
 | [GroupHealth](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ckau/GroupHealth__2527) | Ckau | PC / Mac | 1.2 |
 | [GroupRegenTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2ch/GroupRegenTracker__1422) | 2ch | PC / Mac | 6.2 |

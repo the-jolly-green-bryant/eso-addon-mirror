@@ -68,8 +68,13 @@ local function makeNoteEdit(parent, width, height)
     return backdrop, edit
 end
 
-local function makeCombo(parent, width)
-    local container = WINDOW_MANAGER:CreateControlFromVirtual(nil, parent, "ZO_ComboBox")
+local function makeCombo(parent, name, width)
+    local controlName = parent:GetName() .. name .. "Combo"
+    local container = WINDOW_MANAGER:CreateControlFromVirtual(
+        controlName,
+        parent,
+        "ZO_ComboBox"
+    )
     container:SetDimensions(width, 30)
     local combo = ZO_ComboBox_ObjectFromContainer(container)
     combo:SetSortsItems(false)
@@ -190,7 +195,7 @@ function UI:Initialize()
     self.page:SetAnchor(BOTTOMRIGHT, window, BOTTOMRIGHT, -14, -82)
     self.page:SetDimensions(160, 20)
 
-    local filterContainer, filterCombo = makeCombo(window, 142)
+    local filterContainer, filterCombo = makeCombo(window, "ItemFilter", 142)
     filterContainer:SetAnchor(BOTTOMLEFT, window, BOTTOMLEFT, 14, -78)
     local filterChoices = {
         { label = GetString(SI_SHOPPING_LIST_FILTER_ALL), value = "all" },
@@ -297,7 +302,7 @@ function UI:InitializeDialogs()
 end
 
 function UI:CreateListControls()
-    local container, combo = makeCombo(self.window, 175)
+    local container, combo = makeCombo(self.window, "ListSelector", 175)
     container:SetAnchor(TOPLEFT, self.window, TOPLEFT, 14, 45)
     self.listContainer = container
     self.listCombo = combo

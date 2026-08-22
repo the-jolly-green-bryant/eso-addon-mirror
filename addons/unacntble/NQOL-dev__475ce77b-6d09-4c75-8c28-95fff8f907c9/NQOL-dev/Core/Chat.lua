@@ -42,9 +42,9 @@ local function AddToGamepadHud(message)
     end
 end
 
-local function AddTimestamp(message)
-    if NQOL.Features and NQOL.Features.Chat and NQOL.Features.Chat.AddTimestamp then
-        return NQOL.Features.Chat.AddTimestamp(message)
+local function ApplyTimestampMode(message)
+    if NQOL.Features and NQOL.Features.Chat and NQOL.Features.Chat.ApplyTimestampMode then
+        return NQOL.Features.Chat.ApplyTimestampMode(message)
     end
 
     return message
@@ -72,7 +72,7 @@ end
 
 function Chat.Message(message, featureName)
     local formattedMessage = Chat.Format(ToText(message), featureName)
-    formattedMessage = AddTimestamp(formattedMessage)
+    formattedMessage = ApplyTimestampMode(formattedMessage)
 
     if CHAT_ROUTER and CHAT_ROUTER.AddSystemMessage then
         CHAT_ROUTER:AddSystemMessage(formattedMessage)

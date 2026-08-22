@@ -82,6 +82,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field deaths EncounterDeaths|nil Death recap data (nil if player never died)
 ---@field bossTagSeqByUnitId table<number, string>|nil Maps boss unitId to "tag:seq" key for local player boss damage mapping
 ---@field gameVersion string|nil Game patch version at time of encounter (e.g. "11.3.5")
+---@field playerUnitId number|nil The player's own source unit id in this encounter's damage maps (nil on encounters recorded before it was captured)
 
 ---@class Encounter
 ---@field isPlayerFight boolean|nil True when a player/duel fight
@@ -110,6 +111,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field setup PlayerSetup|nil  -- Player build snapshot (v9+)
 ---@field weaving WeavingData|nil Weaving/rotation activity data (v12+)
 ---@field gameVersion string|nil Game patch version at time of encounter (e.g. "11.3.5")
+---@field playerUnitId number|nil The player's own source unit id in this encounter's damage maps (nil on encounters recorded before it was captured)
 
 -- Instance types distinguish between live state (during combat) and storage format.
 -- InstanceState: Live instance with uncompressed abilityInfo and unitNames
@@ -197,7 +199,8 @@ BattleScrolls = BattleScrolls or {}
 ---@field settings StorageSettings User settings
 ---@field sharedSetups table<string, table<number, CompactSetup>>|nil Shared player setups from group members
 ---@field ownSetups table<number, OwnSetupPoolEntry>|nil Player's own full setups deduplicated by 16-bit setup hash (v17+; referenced by CompactEncounter._setupHash)
----@field migrationDone boolean|nil True once no encounter (live instance included) is left in a pre-v17 format; lets migration skip even its startup scan. Never in defaults: ZO_SavedVars would apply it to existing installations
+---@field migrationDone boolean|nil Retired v17-era flag; migration:Initialize clears it (superseded by migrationDoneV18)
+---@field migrationDoneV18 boolean|nil True once no encounter (live instance included) is left in a pre-v18 format; lets migration skip even its startup scan. Never in defaults: ZO_SavedVars would apply it to existing installations
 
 ---@class SizePreset
 ---@field key string Preset key

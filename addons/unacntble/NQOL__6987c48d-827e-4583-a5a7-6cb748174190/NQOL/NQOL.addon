@@ -1,12 +1,12 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 303
-## LastProdVersionCommitID: 2979fdd
-## LastDevVersionCommitID: fe0d833
+## AddOnVersion: 319
+## LastProdVersionCommitID: b35f82f
+## LastDevVersionCommitID: a2f622e
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariables NQOLLanguageSettings
-## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames
+## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibGPS>=73 LibQRC>=046
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax
 ; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
@@ -36,6 +36,7 @@ Features/Map.lua
 UI/MapTravelTabs.xml
 Features/MapTravelTabs.lua
 Features/Minimap.lua
+Features/GPS.lua
 Features/Fishing.lua
 Features/Freeport.lua
 Features/Camera.lua
@@ -62,6 +63,7 @@ Features/TomePoints.lua
 Features/VeterancyRewards.lua
 Features/TransmuteWatch.lua
 Features/SkipLogoutConfirmation.lua
+Features/ErrorsDismissal.lua
 Features/Positioning.lua
 Features/LuaGc.lua
 Features/UltimateCountdown.lua

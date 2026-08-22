@@ -199,7 +199,7 @@ end
 
 function GamepadOptions.BuildChatOptionsData()
     return {
-        GamepadOptions.BuildChatAddTimestampOption(),
+        GamepadOptions.BuildChatTimestampModeOption(),
         GamepadOptions.BuildChatSavedMessagesOption(),
         GamepadOptions.BuildChatKeepHudOpenOption(),
         GamepadOptions.BuildChatHudHorizontalPositionOption(),

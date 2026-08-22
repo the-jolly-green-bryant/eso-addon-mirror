@@ -7,6 +7,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
 | [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562/t__f275dcc8-b6ab-4c05-b554-4091a83eaf58) | user562 | Console | — |
+| [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/t__bbe159f8-5b9f-4b54-aa51-36d94bab4683) | user562x | Console | — |
 | [TABEPHA BOPOH CEBEPA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BOPOH-CEBEPA/TABEPHA-BOPOH-CEBEPA__4076) | BOPOH CEBEPA | PC / Mac | 1.0 |
 | [Tagarn's Hard Mode Reminders (In Development)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tagarn/Tagarn-s-Hard-Mode-Reminders-In-Development__4310) | Tagarn | PC / Mac | 0.51 |
 | [Tagarn's Skill Point Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tagarn/Tagarn-s-Skill-Point-Alerts__3989) | Tagarn | PC / Mac | 1.29 |
@@ -180,7 +181,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TSC Price Fetcher 2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SavageTSC/TSC-Price-Fetcher-2__2a88cc14-8e8c-4b73-9605-2e1d7c764e23) | SavageTSC | Console | — |
 | [TTC Loot Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Leahcim70/TTC-Loot-Alert__4369) | Leahcim70 | PC / Mac | 1.0.10 |
 | [TTCmac](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/TTCmac__3067) | tdenc | PC / Mac | 0.4.0 |
-| [TTCPrice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/TTCPrice__4539) | NPViral | PC / Mac | 1.3 |
+| [TTCPrice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/TTCPrice__4539) | NPViral | PC / Mac | 1.4 |
 | [TTCTooltip](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GlandePas/TTCTooltip__4508) | GlandePas | PC / Mac | 1 |
 | [TTDungeon (ToolTip for Dungeons)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Koro.Sensei/TTDungeon-ToolTip-for-Dungeons__4042) | Koro.Sensei | PC / Mac | 2.0 |
 | [TTMP: Merge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirAndy/TTMP-Merge__1437) | SirAndy | PC / Mac | 3.5.0 |

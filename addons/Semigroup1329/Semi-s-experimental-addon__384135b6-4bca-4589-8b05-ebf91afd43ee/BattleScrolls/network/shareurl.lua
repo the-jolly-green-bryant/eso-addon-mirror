@@ -66,7 +66,7 @@ local BASE_URL = "https://bs.sheludchenkov.com/u"
 local CHUNK_DATA_CHARS = 32000
 local SESSION_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
----@alias SharePhase "idle"|"building"|"sending"|"done"|"failed"
+---@alias SharePhase "idle"|"building"|"choosing"|"sending"|"done"|"failed"
 
 ---@class ShareChain
 ---@field parts string[] Base64 data parts
@@ -75,11 +75,17 @@ local SESSION_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 ---@field nextSeq number Next unfired part (1-based; total+1 once every part has been fired)
 ---@field total number
 
+---@class ShareVariantInfo
+---@field parts number URL parts this variant needs
+---@field encounterCount number Encounters it contains
+
 ---@class ShareState
 ---@field phase SharePhase
 ---@field sentCount number Parts already fired
 ---@field total number Part count (0 while building)
 ---@field resendingSeq number|nil Already-sent part currently re-firing
+---@field choiceFull ShareVariantInfo|nil Offered while phase is "choosing"
+---@field choiceBosses ShareVariantInfo|nil Offered while phase is "choosing"
 
 ---@type ShareChain|nil
 local chain = nil
@@ -87,6 +93,16 @@ local chain = nil
 local buildFiber = nil
 ---@type SharePhase
 local phase = "idle"
+
+-- Archive variant choice: a mixed instance (bosses + trash) is built both
+-- ways; when the part counts differ the user picks before sending starts
+---@class ShareVariant
+---@field result ExportResult
+---@field parts number
+---@type ShareVariant|nil
+local choiceFull = nil
+---@type ShareVariant|nil
+local choiceBosses = nil
 
 -- In-flight part settlement (see header): the fired part whose confirm
 -- dialog has not resolved yet, plus the evidence gathered while watching it
@@ -142,25 +158,36 @@ function shareUrl.getState()
         sentCount = chain and math.min(chain.nextSeq - 1, chain.total) or 0,
         total = chain and chain.total or 0,
         resendingSeq = inFlightIsResend and inFlightSeq or nil,
+        choiceFull = choiceFull and {
+            parts = choiceFull.parts,
+            encounterCount = choiceFull.result.encounterCount,
+        } or nil,
+        choiceBosses = choiceBosses and {
+            parts = choiceBosses.parts,
+            encounterCount = choiceBosses.result.encounterCount,
+        } or nil,
     }
 end
 
----True while a build or a chain is alive. A "done" chain still counts: it
----is kept for part resends until the user explicitly finishes it.
+---True while a build, a pending variant choice or a chain is alive. A
+---"done" chain still counts: it is kept for part resends until the user
+---explicitly finishes it.
 ---@return boolean
 function shareUrl.isBusy()
-    return chain ~= nil or buildFiber ~= nil
+    return chain ~= nil or buildFiber ~= nil or choiceFull ~= nil
 end
 
 ---Cancels any build or send in progress and discards a kept "done" chain.
 ---@return boolean hadWork
 function shareUrl.stop()
-    local hadWork = chain ~= nil or buildFiber ~= nil
+    local hadWork = shareUrl.isBusy()
     if buildFiber then
         buildFiber:Cancel()
         buildFiber = nil
     end
     chain = nil
+    choiceFull = nil
+    choiceBosses = nil
     clearInFlight()
     shareUrl._browserTripPending = nil
     shareUrl._sourceInstance = nil
@@ -361,6 +388,16 @@ EVENT_MANAGER:RegisterForEvent("BattleScrollsShareUrlDecline", EVENT_REMOTE_SCEN
         end
     end)
 
+---URL parts a byte stream will need once base64-coded (4 chars per 3 bytes,
+---padded) and split at CHUNK_DATA_CHARS. Used to compare archive variants
+---without materializing their base64.
+---@param byteCount number
+---@return number
+local function partsForBytes(byteCount)
+    local b64Len = math.ceil(byteCount / 3) * 4
+    return math.max(1, math.ceil(b64Len / CHUNK_DATA_CHARS))
+end
+
 ---@param exportResult ExportResult
 local function startChain(exportResult)
     local b64 = BattleScrolls.export.bytesToBase64(exportResult.bytes)
@@ -384,17 +421,15 @@ end
 -- PUBLIC ENTRY POINTS
 -- =============================================================================
 
----@param buildEffect Effect Effect resolving to ExportResult
-local function runShare(buildEffect)
-    if shareUrl.isBusy() then
-        return
-    end
+---Runs a build body on the shared build fiber with the common failure and
+---cleanup handling.
+---@param body fun()
+local function runBuildFiber(body)
     setPhase("building")
-    buildFiber = BattleScrolls.Effect.Async(function()
-        local result = buildEffect:Await()
-        startChain(result)
-    end):Recover(function()
+    buildFiber = BattleScrolls.Effect.Async(body):Recover(function()
         chain = nil
+        choiceFull = nil
+        choiceBosses = nil
         BattleScrolls.shareTrace.record("build failed")
         setPhase("failed")
         return nil
@@ -412,10 +447,16 @@ function shareUrl.shareEncounter(instance, encounter)
     end
     shareUrl._sourceInstance = instance
     shareUrl._sourceEncounter = encounter
-    runShare(BattleScrolls.export.buildEncounterShareAsync(instance, encounter))
+    runBuildFiber(function()
+        startChain(BattleScrolls.export.buildEncounterShareAsync(instance, encounter):Await())
+    end)
 end
 
----Uploads a whole instance (archive profile, full fidelity) via the browser.
+---Uploads a whole instance (archive profile) via the browser. A mixed
+---instance (bosses + trash) is built both full and bosses-only; when the
+---URL part counts differ the chain waits in "choosing" for chooseVariant -
+---trash usually dominates archive size, so the difference can be several
+---browser round trips.
 ---@param instance InstanceStorage
 function shareUrl.uploadInstance(instance)
     if shareUrl.isBusy() then
@@ -423,7 +464,48 @@ function shareUrl.uploadInstance(instance)
     end
     shareUrl._sourceInstance = instance
     shareUrl._sourceEncounter = nil
-    runShare(BattleScrolls.export.buildInstanceArchiveAsync(instance))
+    local bossCount, total = 0, 0
+    for _, encounter in ipairs(instance.encounters or {}) do
+        total = total + 1
+        if next(encounter.bossesUnits or {}) ~= nil then
+            bossCount = bossCount + 1
+        end
+    end
+    runBuildFiber(function()
+        local export = BattleScrolls.export
+        local full = export.buildInstanceArchiveAsync(instance):Await()
+        if bossCount == 0 or bossCount == total then
+            startChain(full)
+            return
+        end
+        local bosses = export.buildInstanceArchiveAsync(instance, true):Await()
+        local fullParts = partsForBytes(#full.bytes)
+        local bossParts = partsForBytes(#bosses.bytes)
+        if bossParts == fullParts then
+            startChain(full)
+            return
+        end
+        choiceFull = { result = full, parts = fullParts }
+        choiceBosses = { result = bosses, parts = bossParts }
+        BattleScrolls.shareTrace.record(string.format(
+            "variant choice: full %d parts / bosses %d parts", fullParts, bossParts))
+        setPhase("choosing")
+    end)
+end
+
+---Starts the chain for one of the offered archive variants.
+---@param which "full"|"bosses"
+function shareUrl.chooseVariant(which)
+    if phase ~= "choosing" then
+        return
+    end
+    local chosen = which == "bosses" and choiceBosses or choiceFull
+    choiceFull = nil
+    choiceBosses = nil
+    if chosen then
+        BattleScrolls.shareTrace.record("variant chosen: " .. which)
+        startChain(chosen.result)
+    end
 end
 
 SLASH_COMMANDS["/bsshare"] = function(args)

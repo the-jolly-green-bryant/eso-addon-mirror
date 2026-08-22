@@ -5,7 +5,7 @@ Project: ESO Adventurer Suite
 Internal compatibility namespace: ESOProgressionCoach
 Author / Copyright Owner: HoZayyBadazz
 Copyright: (c) 2026 HoZayyBadazz. All Rights Reserved.
-Release: 0.23.2
+Release: 0.24.56
 
 This package is source-visible because ESO add-ons must be installed locally for
 the game client to load them. Source visibility is not permission to copy,
@@ -19,3 +19,5 @@ The legacy internal namespace and SavedVariables name are retained so upgrades
 from pre-0.12 builds can keep existing settings.
 
 See LICENSE.txt for the complete license terms.
+
+Development assistance: OpenAI (AI-assisted code generation and review).

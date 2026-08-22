@@ -126,10 +126,11 @@ end
 ---@param encounter CompactEncounter
 ---@return boolean
 local function encounterIsLegacy(encounter)
-    return (encounter._v or 0) < 17 or encounter.sharedData ~= nil
+    return (encounter._v or 0) < BattleScrolls.binaryStorage.CURRENT_VERSION
+        or encounter.sharedData ~= nil
 end
 
----Conservative check backing the persistent savedVariables.migrationDone
+---Conservative check backing the persistent savedVariables.migrationDoneV18
 ---flag: no encounter anywhere may be legacy, INCLUDING the live instance
 ---(which the migration run itself skips - it must stay reachable in a later
 ---session). Failed instances are excluded: they intentionally stay legacy
@@ -409,7 +410,7 @@ local function runMigrationAsync()
         end
 
         if everythingMigrated() then
-            BattleScrolls.storage.savedVariables.migrationDone = true
+            BattleScrolls.storage.savedVariables.migrationDoneV18 = true
         end
 
         BattleScrolls.gc:RequestGC(2)
@@ -417,19 +418,22 @@ local function runMigrationAsync()
 end
 
 ---Schedules the migration when legacy encounters exist. Once the persistent
----migrationDone flag is set this is a no-op forever. Until then, the first
----activation decides for the whole session (the scan is a couple of field
----reads per stored encounter, no decoding); remaining legacy instances
----(interrupted session, live instance, failed ones excluded) are picked up
----on later loads.
+---migrationDoneV18 flag is set this is a no-op forever. Until then, the
+---first activation decides for the whole session (the scan is a couple of
+---field reads per stored encounter, no decoding); remaining legacy
+---instances (interrupted session, live instance, failed ones excluded) are
+---picked up on later loads. The flag is versioned so a format bump only
+---has to introduce a fresh flag name to re-arm the whole pipeline (the v17
+---run's flag was migrationDone; its stale key is cleared below).
 function migration:Initialize()
-    if BattleScrolls.storage.savedVariables.migrationDone then
+    BattleScrolls.storage.savedVariables.migrationDone = nil
+    if BattleScrolls.storage.savedVariables.migrationDoneV18 then
         return
     end
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
         if everythingMigrated() then
-            BattleScrolls.storage.savedVariables.migrationDone = true
+            BattleScrolls.storage.savedVariables.migrationDoneV18 = true
             return
         end
         for _, instance in ipairs(BattleScrolls.storage.savedVariables.history) do

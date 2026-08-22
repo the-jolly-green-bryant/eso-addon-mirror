@@ -10,15 +10,23 @@
     {
       "name": "Season One",
       "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
     }
   ],
   "content_id": "esoui:4687",
   "deleted": false,
   "directories": [
-    "cogs-assistants-0.1.4"
+    "CogsAssistants"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4687/",
-  "fingerprint": "06b0928f21402dc123a5f4789e51c6a9883e74de62d9f2c67a1801c485deaae8",
+  "fingerprint": "4f958be31bd1987ebd69fe343b7bcea5bf8a857e8e07c89345868a1af87d98fb",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16592.png"
   ],
@@ -28,11 +36,11 @@
   "source_id": "4687",
   "source_url": "https://www.esoui.com/downloads/info4687-CogsAssistants.html",
   "stats": {
-    "downloads": 60,
+    "downloads": 66,
     "favorites": 2,
-    "monthly_downloads": 27
+    "monthly_downloads": 31
   },
   "title": "Cogs Assistants",
-  "updated_at": 1787108508000,
-  "version": "0.1.4"
+  "updated_at": 1787286602000,
+  "version": "0.1.5"
 }

@@ -220,6 +220,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Soldatii La Dreptate Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/animalu/Soldatii-La-Dreptate-Guildhalls__3037) | animalu | PC / Mac | 0.0.6 |
 | [Soloists of Tamriel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptivAzn/Soloists-of-Tamriel__3873) | CaptivAzn | PC / Mac | 1.70 |
 | [Sora Ultimate Pair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sora0v0/Sora-Ultimate-Pair__4583) | sora0v0 | PC / Mac | 1.0.61 |
+| [Sorc Overload Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Smasharooisold/Sorc-Overload-Tracker__4785) | Smasharooisold | PC / Mac | 1.0 |
 | [Sorcerer Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vahrokh/Sorcerer-Helper__2576) | Vahrokh | PC / Mac | 3.2.1 |
 | [Sorry, Not Sorry!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/worb13/Sorry-Not-Sorry__2434) | worb13 | PC / Mac | 0.1.0 |
 | [Sort By Quantity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PacificOshie/Sort-By-Quantity__2305) | PacificOshie | PC / Mac | 21 |

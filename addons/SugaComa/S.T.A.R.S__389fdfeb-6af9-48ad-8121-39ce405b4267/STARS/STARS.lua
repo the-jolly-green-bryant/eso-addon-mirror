@@ -1,8 +1,14 @@
 STARS = STARS or {}
 local STARS = STARS
 STARS.name = "STARS"
-STARS.version = "0.6.13"
+STARS.version = "0.6.14"
 STARS.sv = nil
+
+STARS.UNDERWORLD_ABILITY_IDS = {
+    BLADE_OF_WOE = 101214,
+    VAMPIRE_FEED = 40358,
+    WEREWOLF_SLAUGHTER = 58868,
+}
 
 STARS.CP_MILESTONES = {160,300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600}
 
@@ -76,8 +82,10 @@ local DEFAULTS = {
         underworld = {
             pickpockets = 0,
             bladeOfWoeKills = 0,
+            vampireFeeds = 0,
+            werewolfSlaughters = 0,
             trackingStarted = 0,
-            bladeOfWoeAbilityIds = {},
+            bladeOfWoeAbilityIds = {[101214] = true},
         },
         campaigns = { current = nil, history = {} }, -- retained for backwards compatibility
         veterancy = { current = nil, history = {} },
@@ -279,11 +287,15 @@ function STARS:ResetUnderworldStats()
     self.sv.stats.underworld = {
         pickpockets = 0,
         bladeOfWoeKills = 0,
+        vampireFeeds = 0,
+        werewolfSlaughters = 0,
         trackingStarted = Now(),
-        bladeOfWoeAbilityIds = {},
+        bladeOfWoeAbilityIds = {[self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE] = true},
     }
     self.lastPickpocketSuccessMs = nil
     self.lastBladeOfWoeKillMs = nil
+    self.lastVampireFeedMs = nil
+    self.lastWerewolfSlaughterMs = nil
     self.pendingAssassinationCandidate = nil
     self:TouchSV()
     self:RefreshJournal()
@@ -1002,6 +1014,9 @@ end
 function STARS:IsBladeOfWoeAbility(abilityId, abilityName)
     local underworld = self:GetUnderworldStats()
     local numericId = tonumber(abilityId) or 0
+    if numericId == self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE then
+        return true
+    end
     if underworld and numericId > 0 and underworld.bladeOfWoeAbilityIds
         and underworld.bladeOfWoeAbilityIds[numericId] == true then
         return true
@@ -1023,22 +1038,35 @@ function STARS:IsBladeOfWoeAbility(abilityId, abilityName)
     return false
 end
 
-function STARS:RecordBladeOfWoeKill(abilityId, abilityName)
+function STARS:GetUnderworldExecution(abilityId, abilityName)
+    local numericId = tonumber(abilityId) or 0
+    if numericId == self.UNDERWORLD_ABILITY_IDS.VAMPIRE_FEED then
+        return "vampireFeeds", "Vampire Feed", "lastVampireFeedMs"
+    elseif numericId == self.UNDERWORLD_ABILITY_IDS.WEREWOLF_SLAUGHTER then
+        return "werewolfSlaughters", "Werewolf Slaughter", "lastWerewolfSlaughterMs"
+    elseif self:IsBladeOfWoeAbility(numericId, abilityName) then
+        return "bladeOfWoeKills", "Blade of Woe", "lastBladeOfWoeKillMs"
+    end
+    return nil
+end
+
+function STARS:RecordUnderworldExecution(counterKey, displayName, timestampKey, abilityId, abilityName)
     if not self:IsEnabled() then return end
     local underworld = self:GetUnderworldStats()
-    if not underworld then return end
+    if not underworld or not counterKey or not timestampKey then return end
 
     -- Combat events may report more than one terminal result for the same kill.
     local nowMs = FrameMs()
-    if self.lastBladeOfWoeKillMs and (nowMs - self.lastBladeOfWoeKillMs) < 1500 then
+    if self[timestampKey] and (nowMs - self[timestampKey]) < 1500 then
         return
     end
-    self.lastBladeOfWoeKillMs = nowMs
+    self[timestampKey] = nowMs
 
-    underworld.bladeOfWoeKills = (tonumber(underworld.bladeOfWoeKills) or 0) + 1
+    underworld[counterKey] = (tonumber(underworld[counterKey]) or 0) + 1
     self:TouchSV()
-    Debug(string.format("Blade of Woe kill recorded: %s (ability=%s, id=%s)",
-        tostring(underworld.bladeOfWoeKills), tostring(abilityName or ""), tostring(abilityId or 0)))
+    Debug(string.format("%s recorded: %s (ability=%s, id=%s)",
+        tostring(displayName), tostring(underworld[counterKey]),
+        tostring(abilityName or ""), tostring(abilityId or 0)))
 end
 
 function STARS:OnGameCameraEvent(kind)
@@ -1166,12 +1194,13 @@ function STARS:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
         or result == ACTION_RESULT_DIED
         or result == ACTION_RESULT_DIED_XP
 
-    -- Underworld tracking is zone-independent. Blade of Woe is detected first
-    -- by its exposed ability name/learned ID; Debug Mode also records the
-    -- camera/XP fingerprint of other player killing blows for console testing.
+    -- Underworld executions are zone-independent. Fixed ability IDs are used
+    -- for all three actions; Blade of Woe retains its learned/localized-name
+    -- fallback for compatibility with older clients.
     if sourceIsLocalPlayer and not playerTarget and terminalKill then
-        if self:IsBladeOfWoeAbility(abilityId, abilityName) then
-            self:RecordBladeOfWoeKill(abilityId, abilityName)
+        local counterKey, displayName, timestampKey = self:GetUnderworldExecution(abilityId, abilityName)
+        if counterKey then
+            self:RecordUnderworldExecution(counterKey, displayName, timestampKey, abilityId, abilityName)
         elseif result == ACTION_RESULT_KILLING_BLOW then
             self:DebugAssassinationCandidate(abilityId, abilityName, targetName)
         end
@@ -1305,7 +1334,14 @@ function STARS:ResetAllStats()
             kills=0,deaths=0,revives=0,keepsTaken=0,keepsDefended=0,apEarned=0,
             battlegrounds={kills=0,deaths=0,assists=0,matches=0},
         },
-        underworld = {pickpockets=0,bladeOfWoeKills=0,trackingStarted=Now(),bladeOfWoeAbilityIds={}},
+        underworld = {
+            pickpockets=0,
+            bladeOfWoeKills=0,
+            vampireFeeds=0,
+            werewolfSlaughters=0,
+            trackingStarted=Now(),
+            bladeOfWoeAbilityIds={[self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE]=true},
+        },
         campaigns = {current=nil,history={}},
         veterancy = {current=nil,history={}},
     }
@@ -1369,10 +1405,13 @@ function STARS:UpgradeSavedVars()
     local underworld = self.sv.stats.underworld
     if underworld.pickpockets == nil then underworld.pickpockets = 0 end
     if underworld.bladeOfWoeKills == nil then underworld.bladeOfWoeKills = 0 end
+    if underworld.vampireFeeds == nil then underworld.vampireFeeds = 0 end
+    if underworld.werewolfSlaughters == nil then underworld.werewolfSlaughters = 0 end
     if underworld.trackingStarted == nil or underworld.trackingStarted == 0 then
         underworld.trackingStarted = Now()
     end
     if underworld.bladeOfWoeAbilityIds == nil then underworld.bladeOfWoeAbilityIds = {} end
+    underworld.bladeOfWoeAbilityIds[self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE] = true
 
     -- Migrate the old Underworld-only boundary into the single memory-book
     -- boundary.  This preserves the earliest trustworthy date already stored
@@ -1418,7 +1457,7 @@ function STARS:RegisterResetDialogs()
     RegisterResetDialog(
         "STARS_RESET_UNDERWORLD",
         "Reset Underworld?",
-        "This clears tracked pickpockets and Blade of Woe kills. PvP and Prestige are unchanged.",
+        "This clears tracked pickpockets, Blade of Woe kills, Vampire Feeds and Werewolf Slaughters. PvP and Prestige are unchanged.",
         "Reset Underworld",
         function() STARS:ResetUnderworldStats() end)
 
@@ -1446,6 +1485,84 @@ function STARS:ShowResetDialog(dialogName)
 end
 
 
+
+function STARS:AbilityLookupChat(message, colour)
+    local text = string.format("|c%s[STARS]|r %s", colour or "79C8FF", tostring(message or ""))
+    if CHAT_ROUTER and type(CHAT_ROUTER.AddSystemMessage) == "function" then
+        CHAT_ROUTER:AddSystemMessage(text)
+    elseif CHAT_SYSTEM and type(CHAT_SYSTEM.AddMessage) == "function" then
+        CHAT_SYSTEM:AddMessage(text)
+    elseif type(d) == "function" then
+        d(text)
+    end
+end
+
+function STARS:CancelAbilitySearch()
+    EVENT_MANAGER:UnregisterForUpdate("STARS_AbilitySearch")
+    self.abilitySearchJob = nil
+end
+
+function STARS:SearchAbilities(value)
+    self:CancelAbilitySearch()
+
+    local query = tostring(value or "")
+    query = query:gsub("^%s+", ""):gsub("%s+$", "")
+    if query == "" then
+        self:AbilityLookupChat("Enter an ability ID or part of an ability name.", "FF6666")
+        return
+    end
+
+    local numericId = tonumber(query)
+    if numericId and query:match("^%d+$") then
+        numericId = math.floor(numericId)
+        local name = GetAbilityName(numericId)
+        if name and name ~= "" then
+            self:AbilityLookupChat(string.format("Ability %d: %s", numericId, name), "66FF99")
+        else
+            self:AbilityLookupChat(string.format("No ability found for ID %d.", numericId), "FF6666")
+        end
+        return
+    end
+
+    local lower = type(zo_strlower) == "function" and zo_strlower or string.lower
+    local search = lower(query)
+    self.abilitySearchJob = {query=query, search=search, nextId=1, matches=0, shown=0}
+    self:AbilityLookupChat(string.format("Searching ability names for '%s'...", query), "AAAFFF")
+
+    EVENT_MANAGER:RegisterForUpdate("STARS_AbilitySearch", 20, function()
+        local job = self.abilitySearchJob
+        if not job then
+            self:CancelAbilitySearch()
+            return
+        end
+
+        local lastId = math.min(200000, job.nextId + 999)
+        for abilityId = job.nextId, lastId do
+            local name = GetAbilityName(abilityId)
+            if name and name ~= "" and string.find(lower(name), job.search, 1, true) then
+                job.matches = job.matches + 1
+                if job.shown < 40 then
+                    job.shown = job.shown + 1
+                    self:AbilityLookupChat(string.format("%s - ID %d", name, abilityId), "66FF99")
+                end
+            end
+        end
+        job.nextId = lastId + 1
+
+        if job.nextId > 200000 then
+            local matches = job.matches
+            local shown = job.shown
+            self:CancelAbilitySearch()
+            if matches == 0 then
+                self:AbilityLookupChat(string.format("No ability names contain '%s'.", query), "FF6666")
+            elseif matches > shown then
+                self:AbilityLookupChat(string.format("Search complete: %d matches; first %d shown.", matches, shown), "AAAFFF")
+            else
+                self:AbilityLookupChat(string.format("Search complete: %d match%s.", matches, matches == 1 and "" or "es"), "AAAFFF")
+            end
+        end
+    end)
+end
 
 function STARS:InitSettingsMenu()
     if not LibHarvensAddonSettings then return end
@@ -1633,6 +1750,19 @@ function STARS:InitSettingsMenu()
         end,
     })
     ]]
+    AddCategoryHeader("TOOLS")
+    settings:AddSetting({type=HAS.ST_SECTION,label="Ability Lookup"})
+    settings:AddSetting({
+        type=HAS.ST_EDIT,
+        label="Ability Search",
+        tooltip="Enter an ability ID for an immediate lookup, or enter part of an ability name to search IDs 1 to 200000. Results are written to chat.",
+        getFunction=function() return self.abilitySearchText or "" end,
+        setFunction=function(value)
+            self.abilitySearchText = tostring(value or "")
+            self:SearchAbilities(self.abilitySearchText)
+        end,
+    })
+
     settings:AddSetting({type=HAS.ST_SECTION,label="Notifications"})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Sound",getFunction=function() return self.sv.options.sound end,setFunction=function(v) self.sv.options.sound=v; self:TouchSV() end})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Center Screen Announce",getFunction=function() return self.sv.options.csa end,setFunction=function(v) self.sv.options.csa=v; self:TouchSV() end})

@@ -1,12 +1,12 @@
--- TTC Price v1.3
+-- TTC Price v1.4
 -- Author: @NPViral
--- Adds automatic TTC pricing and quick undercut controls to the AwesomeGuildStore sell tab.
+-- Core pricing, quick undercut controls, settings, and AwesomeGuildStore integration.
 
 TTCPrice = TTCPrice or {}
 
 local TP = TTCPrice
 TP.name    = "TTCPrice"
-TP.version = "1.3"
+TP.version = "1.4"
 
 -- ─── Defaults ────────────────────────────────────────────────────────────────
 
@@ -16,6 +16,9 @@ local defaults = {
     minEntryCount   = 5,          -- skip items with fewer listings than this
     autoPrice       = true,       -- price selected AGS items automatically
     showPriceButton = false,      -- optional manual baseline-price button
+    listingInspectorEnabled = true, -- show own-listing status icons
+    listingDriftPercent = 5,        -- review listing when this far above TTC SaleAvg
+    listingWaitingDays = 3,          -- non-drifted listing becomes Still Waiting after this many days
 }
 
 -- ─── State ───────────────────────────────────────────────────────────────────
@@ -24,6 +27,25 @@ local sv
 local priceButton
 local quickButtons = {}
 local agsHookRegistered = false
+
+function TP.GetListingInspectorSettings()
+    if not sv then
+        return defaults.listingInspectorEnabled, defaults.listingDriftPercent, defaults.listingWaitingDays
+    end
+    return sv.listingInspectorEnabled, sv.listingDriftPercent, sv.listingWaitingDays
+end
+
+local function CallListingInspector(methodName)
+    local inspector = TP.ListingInspector
+    local method = inspector and inspector[methodName]
+    if type(method) == "function" then
+        pcall(method, inspector)
+    end
+end
+
+local function RefreshListingInspector()
+    CallListingInspector("Refresh")
+end
 
 -- ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -235,6 +257,8 @@ local function AddPriceButton()
 end
 
 local function OnAGSFilterSetup()
+    CallListingInspector("TryInstallRowHook")
+
     if agsHookRegistered then return end
     if not AwesomeGuildStore.class
         or not AwesomeGuildStore.class.SellTabWrapper
@@ -288,13 +312,13 @@ local function BuildSettingsPanel()
         },
         {
             type    = "description",
-            text    = "The baseline undercut is used by Auto Price and the optional manual TTC button. Quick buttons add 1%, 2%, or 3% to the baseline without changing the saved setting.",
+            text    = "Auto Price uses the baseline undercut. Quick buttons add +1%, +2%, or +3%.",
             width   = "full",
         },
         {
             type          = "dropdown",
             name          = "Price Source",
-            tooltip       = "Which TTC price to use as the base before applying the baseline undercut.",
+            tooltip       = "TTC value used for pricing.",
             choices       = { "SaleAvg", "SuggestedPrice", "Avg" },
             choicesValues = { "SaleAvg", "SuggestedPrice", "Avg" },
             getFunc       = function() return sv.priceSource end,
@@ -304,7 +328,7 @@ local function BuildSettingsPanel()
         {
             type    = "slider",
             name    = "Baseline Undercut (%)",
-            tooltip = "The normal undercut used by Auto Price and the optional manual TTC button. Quick buttons add +1%, +2%, or +3% to this value.",
+            tooltip = "Default undercut for Auto Price and the manual TTC button.",
             min     = 0,
             max     = 20,
             step    = 1,
@@ -318,7 +342,7 @@ local function BuildSettingsPanel()
         {
             type    = "checkbox",
             name    = "Auto Price Selected Item",
-            tooltip = "Automatically fills the AGS price field when you select an item, using the current baseline price. It never lists or sells the item. If TTCPrice cannot produce a valid price, the AGS price is left unchanged.",
+            tooltip = "Fills the AGS price when TTC data is sufficient. Never posts.",
             getFunc = function() return sv.autoPrice end,
             setFunc = function(v) sv.autoPrice = v end,
             default = defaults.autoPrice,
@@ -330,7 +354,7 @@ local function BuildSettingsPanel()
         {
             type    = "slider",
             name    = "Minimum Listings",
-            tooltip = "Do not apply a TTCPrice value when TTC reports fewer active listings than this.",
+            tooltip = "Minimum active TTC listings required for pricing.",
             min     = 0,
             max     = 50,
             step    = 1,
@@ -340,12 +364,60 @@ local function BuildSettingsPanel()
         },
         {
             type = "header",
+            name = "Listing Inspector",
+        },
+        {
+            type  = "description",
+            text  = "Shows Looks Good, Price Drift, or Still Waiting on your own listings.",
+            width = "full",
+        },
+        {
+            type    = "checkbox",
+            name    = "Show Listing Status",
+            tooltip = "Show status icons on your own listings with enough TTC sales data.",
+            getFunc = function() return sv.listingInspectorEnabled end,
+            setFunc = function(v)
+                sv.listingInspectorEnabled = v
+                RefreshListingInspector()
+            end,
+            default = defaults.listingInspectorEnabled,
+        },
+        {
+            type    = "slider",
+            name    = "Price Drift Threshold (%)",
+            tooltip = "Price Drift requires this % above TTC Sale Avg; TTC range is also checked when available.",
+            min     = 5,
+            max     = 30,
+            step    = 1,
+            getFunc = function() return sv.listingDriftPercent end,
+            setFunc = function(v)
+                sv.listingDriftPercent = v
+                RefreshListingInspector()
+            end,
+            default = defaults.listingDriftPercent,
+        },
+        {
+            type    = "slider",
+            name    = "Still Waiting After (days)",
+            tooltip = "Still Waiting after this many days when Price Drift is not detected.",
+            min     = 3,
+            max     = 10,
+            step    = 1,
+            getFunc = function() return sv.listingWaitingDays end,
+            setFunc = function(v)
+                sv.listingWaitingDays = v
+                RefreshListingInspector()
+            end,
+            default = defaults.listingWaitingDays,
+        },
+        {
+            type = "header",
             name = "Sell Tab",
         },
         {
             type    = "checkbox",
             name    = "Show Manual TTC Price Button",
-            tooltip = "Show the original TTC Price button in the AGS sell form. It reapplies the current baseline price and is optional when Auto Price is enabled.",
+            tooltip = "Show the TTC Price button in the AGS sell form.",
             getFunc = function() return sv.showPriceButton end,
             setFunc = function(v)
                 sv.showPriceButton = v
@@ -395,6 +467,7 @@ local function OnAddonLoaded(_, addonName)
 
     BuildSettingsPanel()
     RegisterAGSCallback()
+    CallListingInspector("Initialize")
 end
 
 EVENT_MANAGER:RegisterForEvent(TP.name, EVENT_ADD_ON_LOADED, OnAddonLoaded)

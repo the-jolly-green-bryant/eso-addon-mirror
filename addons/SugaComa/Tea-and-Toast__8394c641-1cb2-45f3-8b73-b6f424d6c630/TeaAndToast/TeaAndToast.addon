@@ -1,8 +1,8 @@
 ## Title: Tea And Toast
-## Description: Nan keeps an eye on inactivity, heckles you in PvP, and now provides live fishing banter for casts, catches, and missed reel-ins. All chat is identified as [Nan Says] for VCAP2 filtering. Console-safe and standalone.
+## Description: Nan keeps an eye on inactivity, heckles you in PvP, reliably warns when a fish is hooked, and gives delayed rarity-aware catch reactions. AFK and fishing commentary can be toggled independently. Console-safe and standalone.
 ## APIVersion: 101049 101050
 ## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
-## Version: 2.2.0-test1
+## Version: 2.2.3
 ## OptionalDependsOn: LibHarvensAddonSettings
 ## SavedVariables: TeaAndToast_SV
 

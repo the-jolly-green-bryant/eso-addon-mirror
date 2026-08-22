@@ -15,9 +15,19 @@ local BUFFS_DEBUFFS_TRACKERS_PANEL_ID = PanelIds.BUFFS_DEBUFFS_TRACKERS
 local XP_TRACKER_PANEL_ID = PanelIds.XP_TRACKER
 local XP_TIMERS_PANEL_ID = PanelIds.XP_TIMERS
 
-function GamepadOptions.BuildChatAddTimestampOption()
+function GamepadOptions.BuildChatTimestampModeOption()
     local chat = NQOL.Features.Chat
-    return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 1, chat.GetAddTimestampLabel(), chat.GetAddTimestampTooltip(), chat.GetAddTimestamp, chat.SetAddTimestamp)
+    return GamepadOptions.BuildFiniteListOption(
+        CHAT_PANEL_ID,
+        1,
+        chat.GetTimestampModeLabel(),
+        chat.GetTimestampModeTooltip(),
+        chat.GetTimestampModeChoices(),
+        chat.GetTimestampModeChoiceNames(),
+        chat.GetTimestampMode,
+        chat.SetTimestampMode,
+        chat.GetTimestampModeDefault
+    )
 end
 
 function GamepadOptions.BuildChatGuildColorsEntry()
@@ -431,6 +441,11 @@ end
 function GamepadOptions.BuildSkipLogoutConfirmationOption()
     local skipLogoutConfirmation = NQOL.Features.SkipLogoutConfirmation
     return GamepadOptions.BuildCheckboxOption(UTILITY_PANEL_ID, 5, skipLogoutConfirmation.GetEnabledLabel(), skipLogoutConfirmation.GetEnabledTooltip(), skipLogoutConfirmation.GetEnabled, skipLogoutConfirmation.SetEnabled)
+end
+
+function GamepadOptions.BuildErrorsDismissalOption()
+    local errorsDismissal = NQOL.Features.ErrorsDismissal
+    return GamepadOptions.BuildFiniteListOption(UTILITY_PANEL_ID, 7, errorsDismissal.GetModeLabel(), errorsDismissal.GetModeTooltip(), errorsDismissal.GetModeChoices(), errorsDismissal.GetModeChoiceNames(), errorsDismissal.GetMode, errorsDismissal.SetMode, errorsDismissal.GetModeDefault())
 end
 
 function GamepadOptions.BuildLuaGcOption()

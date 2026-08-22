@@ -291,11 +291,18 @@ function R:Initialize()
     self.layoutMode = false
     self:Create()
     local prefix = EPC.name .. "_RepairCostOverlay"
-    if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Slot", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId) if bagId == BAG_WORN then self:Refresh() end end) end
+    if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then
+        local slotRegistration = prefix .. "_Slot"
+        EVENT_MANAGER:RegisterForEvent(slotRegistration, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function()
+            self:Refresh()
+        end)
+        if REGISTER_FILTER_BAG_ID and BAG_WORN then
+            EVENT_MANAGER:AddFilterForEvent(slotRegistration, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_WORN)
+        end
+    end
     if EVENT_INVENTORY_FULL_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Inventory", EVENT_INVENTORY_FULL_UPDATE, function() self:Refresh() end) end
     if EVENT_MONEY_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Money", EVENT_MONEY_UPDATE, function() self:Refresh() end) end
     if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end) end
     if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end) end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 1000, function() self:Refresh() end)
     self:Refresh()
 end

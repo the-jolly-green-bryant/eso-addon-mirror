@@ -1,0 +1,8 @@
+## Title: DungeonOrder
+## Version: 1.2.0
+## AddOnVersion: 18
+## APIVersion: 101050
+## Author: KrykiZZ
+## Description: Sorts Activity Finder dungeons alphabetically and highlights DLC dungeons.
+
+DungeonOrder.lua

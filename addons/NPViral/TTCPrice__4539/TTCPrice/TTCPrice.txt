@@ -1,10 +1,11 @@
 ## Title: TTC Price
-## Description: Adds automatic TTC pricing and quick undercut controls to the AwesomeGuildStore sell tab.
+## Description: Adds TTC pricing, quick undercut controls, and own-listing status to AwesomeGuildStore.
 ## Author: @NPViral
-## Version: 1.3
-## AddOnVersion: 10300
+## Version: 1.4
+## AddOnVersion: 10400
 ## APIVersion: 101050
 ## SavedVariables: TTCPriceSavedVars
-## DependsOn: TamrielTradeCentre AwesomeGuildStore LibAddonMenu-2.0>=43
+## DependsOn: TamrielTradeCentre AwesomeGuildStore>=3282 LibAddonMenu-2.0>=43
 
 TTCPrice.lua
+ListingInspector.lua

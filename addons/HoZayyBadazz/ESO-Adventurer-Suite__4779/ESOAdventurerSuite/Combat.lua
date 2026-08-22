@@ -22,14 +22,6 @@ local function safeNumber(value, fallback)
     return value
 end
 
-local function isDamageResult(result)
-    return (ACTION_RESULT_DAMAGE ~= nil and result == ACTION_RESULT_DAMAGE)
-        or (ACTION_RESULT_CRITICAL_DAMAGE ~= nil and result == ACTION_RESULT_CRITICAL_DAMAGE)
-        or (ACTION_RESULT_DOT_TICK ~= nil and result == ACTION_RESULT_DOT_TICK)
-        or (ACTION_RESULT_DOT_TICK_CRITICAL ~= nil and result == ACTION_RESULT_DOT_TICK_CRITICAL)
-        or (ACTION_RESULT_DAMAGE_SHIELDED ~= nil and result == ACTION_RESULT_DAMAGE_SHIELDED)
-end
-
 local function isCriticalDamageResult(result)
     return (ACTION_RESULT_CRITICAL_DAMAGE ~= nil and result == ACTION_RESULT_CRITICAL_DAMAGE)
         or (ACTION_RESULT_DOT_TICK_CRITICAL ~= nil and result == ACTION_RESULT_DOT_TICK_CRITICAL)
@@ -40,20 +32,9 @@ local function isBlockedDamageResult(result)
         or (ACTION_RESULT_BLOCKED ~= nil and result == ACTION_RESULT_BLOCKED)
 end
 
-local function isIncomingDamageResult(result)
-    return isDamageResult(result) or isBlockedDamageResult(result)
-end
-
 local function isDotResult(result)
     return (ACTION_RESULT_DOT_TICK ~= nil and result == ACTION_RESULT_DOT_TICK)
         or (ACTION_RESULT_DOT_TICK_CRITICAL ~= nil and result == ACTION_RESULT_DOT_TICK_CRITICAL)
-end
-
-local function isHealResult(result)
-    return (ACTION_RESULT_HEAL ~= nil and result == ACTION_RESULT_HEAL)
-        or (ACTION_RESULT_CRITICAL_HEAL ~= nil and result == ACTION_RESULT_CRITICAL_HEAL)
-        or (ACTION_RESULT_HOT_TICK ~= nil and result == ACTION_RESULT_HOT_TICK)
-        or (ACTION_RESULT_HOT_TICK_CRITICAL ~= nil and result == ACTION_RESULT_HOT_TICK_CRITICAL)
 end
 
 local function isCriticalHealResult(result)
@@ -136,20 +117,26 @@ function C:GetOrCreateContributor(name, isSelf)
     return contributor
 end
 
-function C:OnCombatEvent(result, abilityName, sourceName, sourceType, targetName, targetType, hitValue, abilityId)
+function C:OnCombatEvent(eventKind, result, abilityName, sourceName, sourceType, targetName, targetType, hitValue, abilityId)
     if not self.inCombat or not self.current then return end
-    local damageEvent = isDamageResult(result)
-    local healEvent = isHealResult(result)
-    local incomingDamageEvent = targetType == COMBAT_UNIT_TYPE_PLAYER and isIncomingDamageResult(result)
-    if not damageEvent and not healEvent and not incomingDamageEvent then return end
+
     local value = math.max(0, safeNumber(hitValue, 0))
     if value <= 0 then return end
 
-    if incomingDamageEvent then
+    -- EVENT_COMBAT_EVENT result filtering is performed by EVENT_MANAGER before
+    -- this Lua callback runs. Keep incoming damage separate from outgoing/group
+    -- damage and healing so the same combat event can feed different metrics
+    -- without repeating broad result classification in Lua.
+    if eventKind == "INCOMING_DAMAGE" then
         self.current.incomingDamage = self.current.incomingDamage + value
         self.current.incomingHits = self.current.incomingHits + 1
         if isBlockedDamageResult(result) then self.current.blockedHits = self.current.blockedHits + 1 end
+        return
     end
+
+    local damageEvent = eventKind == "DAMAGE"
+    local healEvent = eventKind == "HEAL"
+    if not damageEvent and not healEvent then return end
 
     local isPlayer = sourceType == COMBAT_UNIT_TYPE_PLAYER
     local isPet = COMBAT_UNIT_TYPE_PLAYER_PET ~= nil and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET

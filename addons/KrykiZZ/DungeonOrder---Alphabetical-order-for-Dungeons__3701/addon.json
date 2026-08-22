@@ -1,11 +1,24 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/KrykiZZ/DungeonOrder---Alphabetical-order-for-Dungeons__3701",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "KrykiZZ",
   "canonical_id": "esoui:3701",
   "category_id": "27",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
     {
       "name": "base-game patch",
       "version": "9.1.5"
@@ -21,9 +34,9 @@
     "DungeonOrder"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3701/",
-  "fingerprint": "ec4b666ca5fbca5e520be56693c414a7fb187ed09fb84fb767d01ab1b4e4ffb2",
+  "fingerprint": "0e94db4b2f367ef5e957ed65cfe8290e3ab9c67a297c2d1a8cda776d23efee57",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw12567.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17046.png"
   ],
   "platform": "pc",
   "published": true,
@@ -31,11 +44,11 @@
   "source_id": "3701",
   "source_url": "https://www.esoui.com/downloads/info3701-DungeonOrder-AlphabeticalorderforDungeons.html",
   "stats": {
-    "downloads": 2173,
-    "favorites": 5,
-    "monthly_downloads": 22
+    "downloads": 2241,
+    "favorites": 6,
+    "monthly_downloads": 63
   },
   "title": "DungeonOrder - Alphabetical order for Dungeons!",
-  "updated_at": 1691693924000,
-  "version": "1.0.0"
+  "updated_at": 1787320540000,
+  "version": "1.2.0"
 }

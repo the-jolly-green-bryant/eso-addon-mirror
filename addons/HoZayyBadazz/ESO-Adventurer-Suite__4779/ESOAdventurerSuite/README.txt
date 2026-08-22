@@ -1,4 +1,8 @@
-ESO ADVENTURER SUITE 0.24.0 - PROTECTED DISTRIBUTION
+AI DEVELOPMENT DISCLOSURE
+=========================
+ESO Adventurer Suite was developed with assistance from OpenAI, including AI-assisted code generation and review. The author, HoZayyBadazz, is responsible for publishing, testing, maintaining, and responding to issues in the addon.
+
+ESO ADVENTURER SUITE 0.24.56 - PROTECTED DISTRIBUTION
 =================================================================
 
 Version 0.24.8 is the public-beta release candidate for the refreshed minimap, Codex travel/Quest Finder fixes, Alliance Rank presentation, and interaction/keybinding cleanup. The minimap keeps ESO's normal top compass, uses smoother movement and a less destructive zoom range, and remains usable while Suite Interaction Mode is active. All prior Codex, unit-frame, ability, repair/recharge, checkpoint, companion, and progression features remain.

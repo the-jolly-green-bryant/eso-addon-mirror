@@ -1221,10 +1221,12 @@ function GamepadJournalScreen:ShowPage(page)
             "Successful Pickpockets\n%s",
             FormatNumber(underworld.pickpockets)))
 
-        SetLabel(self.underworldPage, "Col2Header", "BLADE OF WOE")
+        SetLabel(self.underworldPage, "Col2Header", "STEALTH EXECUTIONS")
         SetLabel(self.underworldPage, "Col2Body", string.format(
-            "Assassinations\n%s",
-            FormatNumber(underworld.bladeOfWoeKills)))
+            "Blade of Woe\n%s\n\nVampire Feeds\n%s\n\nWerewolf Slaughters\n%s",
+            FormatNumber(underworld.bladeOfWoeKills),
+            FormatNumber(underworld.vampireFeeds),
+            FormatNumber(underworld.werewolfSlaughters)))
 
         local col3Header = self.underworldPage:GetNamedChild("Col3Header")
         local col3Body = self.underworldPage:GetNamedChild("Col3Body")
