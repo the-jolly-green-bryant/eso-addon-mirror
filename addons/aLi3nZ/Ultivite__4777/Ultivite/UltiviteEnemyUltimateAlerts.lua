@@ -8,9 +8,16 @@ local Combat = U.Combat
 local EVENT_PREFIX = "UltiviteEnemyUltimateAlert"
 local UPDATE_NAME = EVENT_PREFIX .. "Update"
 local RETICLE_EVENT_NAME = EVENT_PREFIX .. "Reticle"
+local PLAYER_EVENT_NAME = EVENT_PREFIX .. "PlayerActivated"
 local UPDATE_MS = 50
-local CORROSIVE_SKILL_ID = 33852
-local CORROSIVE_DURATION_MS = 10000
+-- Corrosive Armor's public skill/effect is 33852, but the hostile periodic
+-- damage received by the player is emitted as ability 17879. The latter is the
+-- live combat-event signature used by the maintained DKCorrosiveAlert addon.
+local CORROSIVE_EFFECT_ID = 33852
+local CORROSIVE_DURATION_MS = 3000
+local CORROSIVE_DAMAGE_IDS = {
+    [17879] = true,
+}
 local ONSLAUGHT_DURATION_MS = 8000
 local ONSLAUGHT_ABILITY_IDS = {
     [83229] = true,
@@ -28,6 +35,13 @@ A.globalRoot = nil
 A.targetRoot = nil
 A.globalRows = A.globalRows or {}
 A.targetSlots = A.targetSlots or {}
+A.listenerRegistered = false
+A.registrationFilter = "none"
+A.lastRegistrationAtMs = 0
+A.eventsSeen = 0
+A.eventsRejected = 0
+A.lastRejectedReason = "none"
+A.lastAcceptedEvent = nil
 
 local function nowMs()
     if GetFrameTimeMilliseconds then return GetFrameTimeMilliseconds() end
@@ -71,8 +85,22 @@ local function diagnostic(message)
     if Combat and Combat.DiagnosticChat then Combat.DiagnosticChat(message) end
 end
 
+local function getTargetOffsets()
+    local sv = getSettings()
+    local x = tonumber(sv and sv.enemyUltimateAlertTargetX) or 0
+    local y = tonumber(sv and sv.enemyUltimateAlertTargetY) or -115
+    return zo_clamp(x, -800, 800), zo_clamp(y, -500, 500)
+end
+
+local function getGlobalOffsets()
+    local sv = getSettings()
+    local x = tonumber(sv and sv.enemyUltimateAlertGlobalX) or 0
+    local y = tonumber(sv and sv.enemyUltimateAlertGlobalY) or 165
+    return zo_clamp(x, -800, 800), zo_clamp(y, 0, 500)
+end
+
 local function resolveIcon(kind)
-    local abilityId = kind == "corrosive" and CORROSIVE_SKILL_ID or 83229
+    local abilityId = kind == "corrosive" and CORROSIVE_EFFECT_ID or 83229
     if GetAbilityIcon then
         local ok, icon = pcall(GetAbilityIcon, abilityId)
         if ok and icon and icon ~= "" then return icon end
@@ -139,16 +167,34 @@ function A.ApplyLayout()
         A.targetRoot:SetDimensions((size * 2) + 8, size + 6)
     end
 
-    for _, row in pairs(A.globalRows or {}) do
+    local globalX, globalY = getGlobalOffsets()
+
+    local rootWidth = 500
+    if GuiRoot and GuiRoot.GetWidth then
+        rootWidth = math.max(320, math.min(500, (tonumber(GuiRoot:GetWidth()) or 500) - 32))
+    end
+    local nextY = 0
+    for _, kind in ipairs({ "corrosive", "onslaught" }) do
+        local row = A.globalRows and A.globalRows[kind]
+        if row then
         local rowSize = zo_clamp(math.floor(size * 0.86), 34, 72)
-        row:SetDimensions(480, rowSize + 6)
+        row:ClearAnchors()
+        row:SetAnchor(TOP, A.globalRoot, TOP, 0, nextY)
+        row:SetDimensions(rootWidth - 20, rowSize + 6)
         row.icon:SetDimensions(rowSize, rowSize)
         row.icon:ClearAnchors()
         row.icon:SetAnchor(LEFT, row, LEFT, 0, 0)
         row.label:ClearAnchors()
         row.label:SetAnchor(LEFT, row.icon, RIGHT, 10, 0)
-        row.label:SetDimensions(410, rowSize)
+        row.label:SetDimensions(math.max(210, rootWidth - rowSize - 42), rowSize)
         row.label:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", zo_clamp(math.floor(rowSize * 0.42), 18, 28)))
+        nextY = nextY + rowSize + 8
+        end
+    end
+    if A.globalRoot then
+        A.globalRoot:SetDimensions(rootWidth, math.max(90, nextY))
+        A.globalRoot:ClearAnchors()
+        A.globalRoot:SetAnchor(TOP, GuiRoot, TOP, globalX, globalY)
     end
 end
 
@@ -245,7 +291,7 @@ end
 
 local function isCorrosiveEvent(abilityName, abilityGraphic, abilityId)
     local ability, graphic, id = resolveAbilityMetadata(abilityId, abilityName, abilityGraphic)
-    if id == CORROSIVE_SKILL_ID or A.learnedCorrosiveIds[id] == true then return true end
+    if CORROSIVE_DAMAGE_IDS[id] or A.learnedCorrosiveIds[id] == true then return true end
 
     local matched = ability:find("corrosive armor", 1, true) ~= nil
         or graphic:find("ability_dragonknight_018_b", 1, true) ~= nil
@@ -271,11 +317,9 @@ local function recordAlert(kind, sourceName, sourceUnitId, abilityId)
     local bucket = A.active[kind]
     local existing = bucket[key]
 
-    -- Corrosive ticks arrive every second. The original DKcorrosiveAlert logic
-    -- treats those hits as proof that the nearby source currently has Corrosive
-    -- active. Keep the first activation window instead of adding ten seconds on
-    -- every tick. Onslaught is a one-hit trigger, so a repeated valid hit may
-    -- safely refresh its eight-second window.
+    -- Corrosive ticks arrive every second. Each valid tick is fresh proof that
+    -- the source still has Corrosive active, so mirror DKCorrosiveAlert's short
+    -- three-second rolling window. Onslaught remains an eight-second window.
     if not existing or now > (tonumber(existing.expiresAtMs) or 0) + 1200 then
         existing = {
             key = key,
@@ -294,7 +338,7 @@ local function recordAlert(kind, sourceName, sourceUnitId, abilityId)
         if existing.sourceName == "" then existing.sourceName = cleanName(sourceName) end
         if existing.sourceNameKey == "" then existing.sourceNameKey = nameKey(sourceName) end
         if not existing.sourceUnitId then existing.sourceUnitId = validUnitId(sourceUnitId) end
-        if kind == "onslaught" then existing.expiresAtMs = now + duration end
+        existing.expiresAtMs = now + duration
     end
 
     diagnostic(string.format("Enemy ultimate %s source=%s id=%s ability=%s", kind, tostring(existing.sourceName), tostring(existing.sourceUnitId), tostring(abilityId)))
@@ -307,7 +351,7 @@ local function eventTargetsLocalPlayer(targetName, targetType)
     -- are normally COMBAT_UNIT_TYPE_OTHER in PvP. The previous Ultivite build
     -- incorrectly required the SOURCE to be COMBAT_UNIT_TYPE_PLAYER, which
     -- discarded the hostile events before an alert could ever be created.
-    if COMBAT_UNIT_TYPE_PLAYER ~= nil and targetType ~= nil then
+    if targetType ~= nil then
         return targetType == COMBAT_UNIT_TYPE_PLAYER
     end
 
@@ -322,132 +366,71 @@ local function eventTargetsLocalPlayer(targetName, targetType)
     return targetKey == playerName or targetKey == displayName
 end
 
-local function onCorrosiveCombatEvent(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-    if isError then return end
-    if not eventTargetsLocalPlayer(targetName, targetType) then return end
-    if tonumber(hitValue) and tonumber(hitValue) <= 0 then return end
-    if not isCorrosiveEvent(abilityName, abilityGraphic, abilityId) then return end
-    recordAlert("corrosive", sourceName, sourceUnitId, abilityId)
-end
-
-local function onOnslaughtCombatEvent(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-    if isError then return end
-    if not eventTargetsLocalPlayer(targetName, targetType) then return end
-    if tonumber(hitValue) and tonumber(hitValue) <= 0 then return end
-    if not isOnslaughtEvent(abilityName, abilityId) then return end
-    recordAlert("onslaught", sourceName, sourceUnitId, abilityId)
-end
-
-local function onDiscoveryCombatEvent(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-    -- Reliability fallback based on the original addon behaviour: inspect only
-    -- real incoming damage to the local player. This catches internal ZOS damage
-    -- IDs that differ from the public skill ID while keeping normal outgoing and
-    -- non-damage combat traffic out of Lua.
-    if isError then return end
-    if not eventTargetsLocalPlayer(targetName, targetType) then return end
-    if tonumber(hitValue) and tonumber(hitValue) <= 0 then return end
-
-    local sv = getSettings()
-    if not sv then return end
-    local id = tonumber(abilityId) or 0
-
-    if sv.showEnemyCorrosiveAlert ~= false
-        and id ~= CORROSIVE_SKILL_ID
-        and A.learnedCorrosiveIds[id] ~= true
-        and isCorrosiveEvent(abilityName, abilityGraphic, id) then
-        recordAlert("corrosive", sourceName, sourceUnitId, id)
-        return
-    end
-
-    if sv.showEnemyOnslaughtAlert ~= false
-        and not ONSLAUGHT_ABILITY_IDS[id]
-        and not (A.learnedOnslaughtIds and A.learnedOnslaughtIds[id] == true)
-        and isOnslaughtEvent(abilityName, id) then
-        recordAlert("onslaught", sourceName, sourceUnitId, id)
-    end
-end
-
 local function buildDamageResults()
-    local results, seen = {}, {}
-    local function add(result)
-        if result ~= nil and not seen[result] then
-            seen[result] = true
-            results[#results + 1] = result
-        end
-    end
     -- These are the result types used by DKcorrosiveAlert / the longstanding
     -- Onslaught combat-event approach. Shielded and blocked damage are retained
     -- as well so the alert still fires when the hit is absorbed.
-    add(ACTION_RESULT_DAMAGE)
-    add(ACTION_RESULT_CRITICAL_DAMAGE)
-    add(ACTION_RESULT_DOT_TICK)
-    add(ACTION_RESULT_DOT_TICK_CRITICAL)
-    add(ACTION_RESULT_DAMAGE_SHIELDED)
-    add(ACTION_RESULT_BLOCKED_DAMAGE)
-    return results
+    return {
+        ACTION_RESULT_DAMAGE,
+        ACTION_RESULT_CRITICAL_DAMAGE,
+        ACTION_RESULT_DOT_TICK,
+        ACTION_RESULT_DOT_TICK_CRITICAL,
+        ACTION_RESULT_DAMAGE_SHIELDED,
+        ACTION_RESULT_BLOCKED_DAMAGE,
+    }
 end
 
-local function registerCombatEvent(uniqueName, result, abilityId, callback)
-    EVENT_MANAGER:RegisterForEvent(uniqueName, EVENT_COMBAT_EVENT, callback)
-
-    -- Match the original warning addon's proven incoming-player registration
-    -- path: UNIT_TAG "player" + one combat result + (when known) ability ID.
-    -- Never filter SOURCE combat unit type. In PvP the hostile source is not
-    -- COMBAT_UNIT_TYPE_PLAYER; that constant identifies the local player/self.
-    local hasUnitTag = REGISTER_FILTER_UNIT_TAG ~= nil
-    local hasTargetType = REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE ~= nil and COMBAT_UNIT_TYPE_PLAYER ~= nil
-    local hasError = REGISTER_FILTER_IS_ERROR ~= nil
-    local hasAbility = abilityId ~= nil and REGISTER_FILTER_ABILITY_ID ~= nil
-
-    if hasUnitTag and hasError and hasAbility then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_UNIT_TAG, "player",
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_IS_ERROR, false,
-            REGISTER_FILTER_ABILITY_ID, abilityId)
-    elseif hasUnitTag and hasAbility then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_UNIT_TAG, "player",
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_ABILITY_ID, abilityId)
-    elseif hasUnitTag and hasError then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_UNIT_TAG, "player",
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_IS_ERROR, false)
-    elseif hasUnitTag then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_UNIT_TAG, "player",
-            REGISTER_FILTER_COMBAT_RESULT, result)
-    elseif hasTargetType and hasError and hasAbility then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_IS_ERROR, false,
-            REGISTER_FILTER_ABILITY_ID, abilityId)
-    elseif hasTargetType and hasAbility then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_ABILITY_ID, abilityId)
-    elseif hasTargetType and hasError then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_IS_ERROR, false)
-    elseif hasTargetType then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
-            REGISTER_FILTER_COMBAT_RESULT, result)
-    elseif hasAbility then
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_COMBAT_RESULT, result,
-            REGISTER_FILTER_ABILITY_ID, abilityId)
-    else
-        EVENT_MANAGER:AddFilterForEvent(uniqueName, EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_COMBAT_RESULT, result)
+local damageResultLookup = nil
+local function isDamageResult(result)
+    if not damageResultLookup then
+        damageResultLookup = {}
+        for _, allowed in ipairs(buildDamageResults()) do damageResultLookup[allowed] = true end
     end
-    A.registeredEvents[#A.registeredEvents + 1] = uniqueName
+    return damageResultLookup[result] == true
+end
+
+local function rejectEvent(reason)
+    A.eventsRejected = (tonumber(A.eventsRejected) or 0) + 1
+    A.lastRejectedReason = tostring(reason or "unknown")
+    return false
+end
+
+local function onIncomingCombatEvent(...)
+    local eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType,
+        sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType,
+        log, sourceUnitId, targetUnitId, abilityId = ...
+
+    A.eventsSeen = (tonumber(A.eventsSeen) or 0) + 1
+    if isError == true then return rejectEvent("isError") end
+    if not isDamageResult(result) then return rejectEvent("not damage") end
+    if not eventTargetsLocalPlayer(targetName, targetType) then return rejectEvent("not local player") end
+    if (tonumber(hitValue) or 0) <= 0 then return rejectEvent("zero hit") end
+
+    local sv = getSettings()
+    if not sv then return rejectEvent("settings unavailable") end
+    if sv.showEnemyCorrosiveAlert ~= false and isCorrosiveEvent(abilityName, abilityGraphic, abilityId) then
+        A.lastAcceptedEvent = {
+            kind = "corrosive",
+            abilityId = tonumber(abilityId) or 0,
+            sourceName = cleanName(sourceName),
+            sourceUnitId = validUnitId(sourceUnitId),
+            atMs = nowMs(),
+        }
+        recordAlert("corrosive", sourceName, sourceUnitId, abilityId)
+        return true
+    end
+    if sv.showEnemyOnslaughtAlert ~= false and isOnslaughtEvent(abilityName, abilityId) then
+        A.lastAcceptedEvent = {
+            kind = "onslaught",
+            abilityId = tonumber(abilityId) or 0,
+            sourceName = cleanName(sourceName),
+            sourceUnitId = validUnitId(sourceUnitId),
+            atMs = nowMs(),
+        }
+        recordAlert("onslaught", sourceName, sourceUnitId, abilityId)
+        return true
+    end
+    return rejectEvent("unmatched ability " .. tostring(abilityId or 0))
 end
 
 function A.RefreshEventRegistration()
@@ -455,44 +438,26 @@ function A.RefreshEventRegistration()
         EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_COMBAT_EVENT)
     end
     A.registeredEvents = {}
+    A.listenerRegistered = false
+    A.registrationFilter = "none"
 
     local sv = getSettings()
     if not sv then return end
-    local results = buildDamageResults()
-
-    if sv.showEnemyCorrosiveAlert ~= false then
-        local exactIds = { [CORROSIVE_SKILL_ID] = true }
-        for learnedId in pairs(A.learnedCorrosiveIds) do
-            learnedId = tonumber(learnedId)
-            if learnedId and learnedId > 0 then exactIds[learnedId] = true end
-        end
-        for abilityId in pairs(exactIds) do
-            for _, result in ipairs(results) do
-                registerCombatEvent(EVENT_PREFIX .. "Corrosive" .. tostring(abilityId) .. "_" .. tostring(result), result, abilityId, onCorrosiveCombatEvent)
-            end
-        end
-    end
-
-    if sv.showEnemyOnslaughtAlert ~= false then
-        local exactIds = {}
-        for abilityId in pairs(ONSLAUGHT_ABILITY_IDS) do exactIds[abilityId] = true end
-        for abilityId in pairs(A.learnedOnslaughtIds or {}) do
-            abilityId = tonumber(abilityId)
-            if abilityId and abilityId > 0 then exactIds[abilityId] = true end
-        end
-        for abilityId in pairs(exactIds) do
-            for _, result in ipairs(results) do
-                registerCombatEvent(EVENT_PREFIX .. "Onslaught" .. tostring(abilityId) .. "_" .. tostring(result), result, abilityId, onOnslaughtCombatEvent)
-            end
-        end
-    end
-
-    -- One narrow incoming-damage discovery path handles ZOS internal-ID changes
-    -- for both warnings. It is target/result filtered in C before Lua sees it.
     if sv.showEnemyCorrosiveAlert ~= false or sv.showEnemyOnslaughtAlert ~= false then
-        for _, result in ipairs(results) do
-            registerCombatEvent(EVENT_PREFIX .. "Discovery_" .. tostring(result), result, nil, onDiscoveryCombatEvent)
+        -- Register one engine-filtered listener per accepted result so unrelated
+        -- combat traffic never reaches Lua. Each AddFilterForEvent call combines
+        -- target ownership and result in the form recommended by ESOUI.
+        for index, resultCode in ipairs(buildDamageResults()) do
+            local eventName = EVENT_PREFIX .. "IncomingPlayer" .. tostring(index)
+            EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, onIncomingCombatEvent)
+            EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT,
+                REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
+                REGISTER_FILTER_COMBAT_RESULT, resultCode)
+            A.registeredEvents[#A.registeredEvents + 1] = eventName
         end
+        A.registrationFilter = "targetType=player + damage results"
+        A.listenerRegistered = true
+        A.lastRegistrationAtMs = nowMs()
     end
 end
 
@@ -538,7 +503,7 @@ local function refineCorrosiveFromReticle(entry)
     for i = 1, count do
         local effectName, beginTime, endTime, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId = GetUnitBuffInfo("reticleover", i)
         local id = tonumber(abilityId) or 0
-        if id == CORROSIVE_SKILL_ID or lower(effectName):find("corrosive armor", 1, true) then
+        if id == CORROSIVE_EFFECT_ID or lower(effectName):find("corrosive armor", 1, true) then
             local endingMs = (tonumber(endTime) or 0) * 1000
             if endingMs > now then entry.expiresAtMs = endingMs end
             return
@@ -556,38 +521,6 @@ local function getReticleTarget()
     }
 end
 
-local function projectReticleHead()
-    if not Combat or not Combat.CreateWorldTargetProbe or not GetUnitWorldPosition or not WorldPositionToGuiRender3DPosition then return nil, nil end
-    Combat.CreateWorldTargetProbe()
-    local probe = Combat.worldProbe
-    if not probe then return nil, nil end
-
-    local ok, zoneId, x, y, z = pcall(GetUnitWorldPosition, "reticleover")
-    if not ok or not zoneId or tonumber(zoneId) == 0 then return nil, nil end
-    x, y, z = tonumber(x), tonumber(y), tonumber(z)
-    if not x or not y or not z or (x == 0 and y == 0 and z == 0) then return nil, nil end
-
-    local headOffsetCm = tonumber(Combat and Combat.sv and Combat.sv.targetHeadOffsetCm) or 220
-    local okRender, rx, ry, rz = pcall(WorldPositionToGuiRender3DPosition, x, y + headOffsetCm, z)
-    if not okRender or not rx or not ry or not rz then return nil, nil end
-    local okOrigin = pcall(probe.Set3DRenderSpaceOrigin, probe, rx, ry, rz)
-    if not okOrigin then return nil, nil end
-
-    local sx, sy
-    if probe.ProjectToScreen then
-        local okProject, px, py = pcall(probe.ProjectToScreen, probe, 0.5, 0.5)
-        if okProject then sx, sy = tonumber(px), tonumber(py) end
-    elseif probe.ProjectRectToScreenAndComputeAABBPoint then
-        local okProject, px, py = pcall(probe.ProjectRectToScreenAndComputeAABBPoint, probe, CENTER)
-        if okProject then sx, sy = tonumber(px), tonumber(py) end
-    end
-    if not sx or not sy then return nil, nil end
-
-    local w, h = GuiRoot:GetDimensions()
-    if sx < -100 or sy < -100 or sx > (tonumber(w) or 0) + 100 or sy > (tonumber(h) or 0) + 100 then return nil, nil end
-    return sx, sy
-end
-
 local function updateTargetSlot(slot, entry, previewSeconds)
     if not slot then return false end
     if not entry and not previewSeconds then slot:SetHidden(true); return false end
@@ -603,22 +536,18 @@ function A.UpdateTargetMarker()
     if preview then
         local showCorrosive = preview == "corrosive"
         local showOnslaught = preview == "onslaught"
-        updateTargetSlot(A.targetSlots.corrosive, nil, showCorrosive and 10.0 or nil)
+        updateTargetSlot(A.targetSlots.corrosive, nil, showCorrosive and 3.0 or nil)
         updateTargetSlot(A.targetSlots.onslaught, nil, showOnslaught and 8.0 or nil)
+        local targetX, targetY = getTargetOffsets()
         A.targetRoot:ClearAnchors()
-        local target = getReticleTarget()
-        local sx, sy
-        if target then sx, sy = projectReticleHead() end
-        if sx and sy then
-            A.targetRoot:SetAnchor(BOTTOM, GuiRoot, TOPLEFT, sx, sy - 8)
-        else
-            A.targetRoot:SetAnchor(CENTER, GuiRoot, CENTER, 0, -115)
-        end
+        A.targetRoot:SetAnchor(CENTER, GuiRoot, CENTER, targetX, targetY)
+        A.targetRoot:SetMovable(true)
         A.targetRoot:SetHidden(false)
         A.targetRoot:SetMouseEnabled(true)
         return
     end
 
+    A.targetRoot:SetMovable(false)
     A.targetRoot:SetMouseEnabled(false)
     local target = getReticleTarget()
     if not target then
@@ -631,7 +560,7 @@ function A.UpdateTargetMarker()
     -- The warning detection itself deliberately mirrors the original addons and
     -- is based only on incoming damage. Ultivite's only extra presentation is
     -- this mouse-over marker: while your reticle is on the player who triggered
-    -- the warning, show the relevant ultimate icon above that player's body.
+    -- the warning, show the relevant ultimate icon at a fixed 2D reticle anchor.
     local corrosive = findForTarget("corrosive", target.unitId, target.charName, target.displayName)
     local onslaught = findForTarget("onslaught", target.unitId, target.charName, target.displayName)
     if corrosive then refineCorrosiveFromReticle(corrosive) end
@@ -643,16 +572,11 @@ function A.UpdateTargetMarker()
         return
     end
 
+    local targetX, targetY = getTargetOffsets()
     A.targetRoot:ClearAnchors()
-    local sx, sy = projectReticleHead()
-    if sx and sy then
-        A.targetRoot:SetAnchor(BOTTOM, GuiRoot, TOPLEFT, sx, sy - 8)
-    else
-        -- World projection is not always exposed for hostile players in PvP.
-        -- Keep the icon directly above the reticle only while that same player
-        -- is under the mouse, rather than attaching it to a different/stale UI.
-        A.targetRoot:SetAnchor(CENTER, GuiRoot, CENTER, 0, -115)
-    end
+    -- ESOUI forbids querying non-grouped/enemy world positions. Keep the icon
+    -- directly above the reticle only while that same player is under the mouse.
+    A.targetRoot:SetAnchor(CENTER, GuiRoot, CENTER, targetX, targetY)
     A.targetRoot:SetHidden(false)
 end
 
@@ -763,17 +687,117 @@ function A.SetPreviewKind(kind)
     A.Update(true)
 end
 
+function A.GetStatusText()
+    local sv = getSettings()
+    local listener = A.listenerRegistered and "REGISTERED" or "NOT REGISTERED"
+    local corrosive = sv and sv.showEnemyCorrosiveAlert ~= false and "on" or "off"
+    local onslaught = sv and sv.showEnemyOnslaughtAlert ~= false and "on" or "off"
+    local last = A.lastAcceptedEvent
+    local lastText = "none"
+    if last then
+        lastText = string.format(
+            "%s id=%s source=%s at=%sms",
+            tostring(last.kind or "unknown"),
+            tostring(last.abilityId or 0),
+            tostring(last.sourceName ~= "" and last.sourceName or last.sourceUnitId or "hidden"),
+            tostring(last.atMs or 0)
+        )
+    end
+    return string.format(
+        "Listener %s (%s). Corrosive %s, Onslaught %s. Events seen %d, rejected %d. Last accepted: %s. Last rejection: %s.",
+        listener,
+        tostring(A.registrationFilter or "none"),
+        corrosive,
+        onslaught,
+        tonumber(A.eventsSeen) or 0,
+        tonumber(A.eventsRejected) or 0,
+        lastText,
+        tostring(A.lastRejectedReason or "none")
+    )
+end
+
+function A.PrintStatus()
+    if d then d("[Ultivite] Enemy Ultimate alerts: " .. A.GetStatusText()) end
+    return A.GetStatusText()
+end
+
+function A.TestAlert(kind)
+    if kind ~= "corrosive" and kind ~= "onslaught" then return false end
+    local sv = getSettings()
+    if not sv then return false end
+    if kind == "corrosive" and sv.showEnemyCorrosiveAlert == false then return false end
+    if kind == "onslaught" and sv.showEnemyOnslaughtAlert == false then return false end
+
+    A.previewKind = nil
+    A.active[kind] = {}
+    local result = ACTION_RESULT_DAMAGE
+    if result == nil then return false end
+    local targetName = GetUnitName and GetUnitName("player") or "ULTIVITE PLAYER"
+    local abilityId = kind == "corrosive" and 17879 or 83229
+    -- Inject the test through the exact live classifier. A green test therefore
+    -- proves result filtering, local-player targeting, ability ID matching,
+    -- source tracking and both warning displays rather than bypassing detection.
+    return onIncomingCombatEvent(
+        EVENT_COMBAT_EVENT,
+        result,
+        false,
+        "",
+        "",
+        0,
+        "ULTIVITE TEST",
+        COMBAT_UNIT_TYPE_OTHER,
+        targetName,
+        COMBAT_UNIT_TYPE_PLAYER,
+        1,
+        0,
+        0,
+        false,
+        "ultivite-test-" .. kind,
+        "ultivite-test-player",
+        abilityId
+    ) == true
+end
+
 function A.Initialize()
     if A.initialized then return end
     A.initialized = true
     A.CreateUI()
     A.RefreshEventRegistration()
 
-    if EVENT_RETICLE_TARGET_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(RETICLE_EVENT_NAME, EVENT_RETICLE_TARGET_CHANGED, function() A.Update(true) end)
-    end
+    EVENT_MANAGER:RegisterForEvent(RETICLE_EVENT_NAME, EVENT_RETICLE_TARGET_CHANGED, function() A.Update(true) end)
+    EVENT_MANAGER:RegisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED, function()
+        A.RefreshEventRegistration()
+        A.Update(true)
+    end)
 
     if A.targetRoot then
+        A.targetRoot:SetHandler("OnMouseDown", function(self, button)
+            local q = U.QuickMenu
+            if button ~= MOUSE_BUTTON_INDEX_LEFT or not q or q.previewEnabled ~= true or not A.previewKind then return end
+            if q.BeginPreviewHudInteraction then q.BeginPreviewHudInteraction() end
+            self:SetMovable(true)
+            self:StartMoving()
+        end)
+        local function saveTargetPosition(self)
+            local q = U.QuickMenu
+            if q and q.previewEnabled == true and A.previewKind then
+                self:StopMovingOrResizing()
+                local sv = getSettings()
+                local cx, cy = self:GetCenter()
+                local gx, gy = GuiRoot:GetCenter()
+                if sv and cx and cy and gx and gy then
+                    sv.enemyUltimateAlertTargetX = zo_clamp(zo_round(cx - gx), -800, 800)
+                    sv.enemyUltimateAlertTargetY = zo_clamp(zo_round(cy - gy), -500, 500)
+                    requestSave()
+                end
+                if q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+                A.UpdateTargetMarker()
+            end
+        end
+        A.targetRoot:SetHandler("OnMouseUp", function(self, button)
+            if button == MOUSE_BUTTON_INDEX_LEFT then saveTargetPosition(self) end
+        end)
+        A.targetRoot:SetHandler("OnMoveStop", function(self) saveTargetPosition(self) end)
         A.targetRoot:SetHandler("OnMouseWheel", function(_, delta)
             local q = U.QuickMenu
             if not q or q.previewEnabled ~= true or q.resizeEnabled ~= true or not A.previewKind or delta == 0 then return end

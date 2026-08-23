@@ -42,6 +42,43 @@ function S:Initialize()
             default = EPC.defaults.enabled,
         },
         {
+            type = "header", name = "Cinematic Graphics",
+        },
+        {
+            type = "description",
+            title = "Cinematic Maximum (native ESO graphics)",
+            text = "Pushes ESO's own PC graphics settings to their highest cinematic values: Maximum preset, high-resolution textures/characters, Ultra shadows and water reflections, maximum view distance and particle distance, high ambient occlusion, Ultra clutter, bloom, distortion, god rays, and cinematic depth of field. Resolution, monitor, display mode, gamma, HDR, and frame-rate limits are not directly changed by the Suite. ESO's built-in Maximum preset may adjust other quality-linked values such as anti-aliasing/upscaling. This cannot add ray tracing, replacement textures, or external shaders. Expect a large FPS/GPU cost.",
+        },
+        {
+            type = "checkbox", name = "Enable Cinematic Maximum graphics",
+            tooltip = "Backs up the ESO graphics values touched by this preset, applies the native Maximum/cinematic settings, and restores that backup when disabled. Some changes may require /reloadui or a game restart to fully apply.",
+            getFunc = function() return EPC.saved.cinematicGraphicsEnabled == true end,
+            setFunc = function(v)
+                if EPC.GraphicsPreset and EPC.GraphicsPreset.SetEnabled then
+                    EPC.GraphicsPreset:SetEnabled(v == true)
+                else
+                    EPC.saved.cinematicGraphicsEnabled = false
+                end
+            end,
+            default = EPC.defaults.cinematicGraphicsEnabled,
+            disabled = function() return not (EPC.GraphicsPreset and EPC.GraphicsPreset.IsSupported and EPC.GraphicsPreset:IsSupported()) end,
+            warning = "Very GPU-intensive. ESO may require /reloadui or a restart for every native video setting to finish applying.",
+        },
+        {
+            type = "button", name = "Reapply Cinematic Maximum", buttonText = "Reapply Cinematic",
+            tooltip = "Reapplies the cinematic native graphics values without replacing the saved pre-cinematic backup.",
+            func = function() if EPC.GraphicsPreset then EPC.GraphicsPreset:ApplyCinematicMaximum(true) end end,
+            disabled = function() return not (EPC.GraphicsPreset and EPC.GraphicsPreset.IsSupported and EPC.GraphicsPreset:IsSupported()) end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Restore pre-cinematic graphics", buttonText = "Restore Graphics",
+            tooltip = "Restores the ESO graphics values captured immediately before Cinematic Maximum was first enabled.",
+            func = function() if EPC.GraphicsPreset then EPC.GraphicsPreset:RestorePrevious(true) end end,
+            disabled = function() return not (EPC.saved and type(EPC.saved.cinematicGraphicsBackup) == "table" and next(EPC.saved.cinematicGraphicsBackup) ~= nil) end,
+            width = "half",
+        },
+        {
             type = "dropdown", name = "Combat role awareness",
             tooltip = "Auto follows your ESO preferred Group Finder role when available. You can override it to Damage, Healer, or Tank so BUILD, GEAR, SKILLS, COMBAT, and the hidden combat HUD use role-specific priorities.",
             choices = { "Auto (Group Finder role)", "Damage", "Healer", "Tank" },
@@ -289,6 +326,29 @@ function S:Initialize()
             func = function() if EPC.Clock then EPC.Clock:ResetPosition() EPC.Clock:Refresh() end end,
         },
         {
+            type = "header", name = "Quest Tracking",
+        },
+        {
+            type = "dropdown", name = "Quest tracker source",
+            tooltip = "Choose the single authoritative quest source used by the Suite tracker and ESO assisted quest/compass. Active Quest follows your selected non-main Suite Quest Finder/journal quest. Golden Pursuits follows the journal quest linked to your selected Golden Pursuit. Main Quest follows the remembered Main Story quest. The selected Suite source takes priority over ESO native tracking; the other two selections are remembered but cannot intervene.",
+            choices = { "Active Quest", "Golden Pursuits", "Main Quest" },
+            choicesValues = { "ACTIVE_QUEST", "GOLDEN_PURSUITS", "MAIN_QUEST" },
+            getFunc = function()
+                if EPC.ActiveQuest and EPC.ActiveQuest.GetQuestTrackingSource2513 then
+                    return EPC.ActiveQuest:GetQuestTrackingSource2513()
+                end
+                return EPC.saved.questTrackingSource or "ACTIVE_QUEST"
+            end,
+            setFunc = function(v)
+                if EPC.ActiveQuest and EPC.ActiveQuest.SetQuestTrackingSource2513 then
+                    EPC.ActiveQuest:SetQuestTrackingSource2513(v)
+                else
+                    EPC.saved.questTrackingSource = v
+                end
+            end,
+            default = EPC.defaults.questTrackingSource or "ACTIVE_QUEST",
+        },
+        {
             type = "header", name = "Active Quest Overlay",
         },
         {
@@ -353,6 +413,40 @@ function S:Initialize()
         {
             type = "button", name = "Reset Alliance Rank position", buttonText = "Reset Alliance Rank",
             func = function() if EPC.AllianceRank then EPC.AllianceRank:ResetPosition() EPC.AllianceRank:Refresh() end end,
+        },
+        {
+            type = "header", name = "Champion Level Overlay",
+        },
+        {
+            type = "checkbox", name = "Show Champion overlay",
+            tooltip = "Shows the movable ESO-style Champion/level overlay with Craft, Warfare, and Fitness Champion Point symbols.",
+            getFunc = function() return EPC.saved.showChampionOverlay ~= false end,
+            setFunc = function(v)
+                EPC.saved.showChampionOverlay = v == true
+                if EPC.ChampionOverlay then EPC.ChampionOverlay:Refresh() end
+            end,
+            default = EPC.defaults.showChampionOverlay,
+        },
+        {
+            type = "dropdown", name = "Champion overlay visibility",
+            tooltip = "Always On keeps the Champion overlay visible during gameplay. Champion Point Gain Only shows it for 10 seconds whenever any Craft, Warfare, or Fitness Champion Point is earned, then hides it again.",
+            choices = { "Always On", "Champion Point Gain Only" },
+            choicesValues = { "ALWAYS", "GAIN" },
+            getFunc = function()
+                return (EPC.saved.championOverlayVisibility == "GAIN") and "GAIN" or "ALWAYS"
+            end,
+            setFunc = function(v)
+                if EPC.ChampionOverlay and EPC.ChampionOverlay.SetVisibilityMode2518 then
+                    EPC.ChampionOverlay:SetVisibilityMode2518(v)
+                else
+                    EPC.saved.championOverlayVisibility = (v == "GAIN") and "GAIN" or "ALWAYS"
+                end
+            end,
+            default = EPC.defaults.championOverlayVisibility or "ALWAYS",
+        },
+        {
+            type = "button", name = "Reset Champion overlay position", buttonText = "Reset Champion",
+            func = function() if EPC.ChampionOverlay then EPC.ChampionOverlay:ResetPosition() EPC.ChampionOverlay:Refresh() end end,
         },
         {
             type = "header", name = "Ability Overlays",

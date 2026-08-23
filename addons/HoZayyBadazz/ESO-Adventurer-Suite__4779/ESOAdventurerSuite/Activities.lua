@@ -8,7 +8,7 @@ local EPC = ESOProgressionCoach
 EPC.Activities = EPC.Activities or {}
 local A = EPC.Activities
 
-A.PAGE_SIZE = 4
+A.PAGE_SIZE = 10
 A.validGoals = { XP = true, GOLD = true, BALANCED = true }
 A.goalLabels = { XP = "XP", GOLD = "GOLD", BALANCED = "BALANCED" }
 

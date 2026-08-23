@@ -43,11 +43,7 @@ local function NormalizeReason(reason)
         return "-"
     end
 
-    if type(Log) == "table" and type(Log.LocalizeErrorReason) == "function" then
-        return Log.LocalizeErrorReason(reason)
-    end
-
-    return reason
+    return Log.LocalizeErrorReason(reason)
 end
 
 local function SetLabelText(label, text)

@@ -1,0 +1,36 @@
+[B]# AI DEVELOPMENT DISCLOSURE[/B]
+ESO Adventurer Suite was developed with assistance from OpenAI, including AI-assisted code generation and review. The author, HoZayyBadazz, is responsible for publishing, testing, maintaining, and responding to issues in the addon.
+
+[B]# ESO ADVENTURER SUITE[/B]
+Author: HoZayyBadazz
+Status: Public Beta
+
+ESO Adventurer Suite is an all-in-one Elder Scrolls Online gameplay and progression utility built around the Tamriel Codex and configurable HUD overlays. It includes quest and travel tools, Dungeon Finder utilities, gear/set tools, live equipment display, role-aware progression guidance, combat statistics, custom unit frames, minimap features, Golden Pursuits integration, and Active Quest tracking.
+
+[B]# QUEST TRACKING[/B]
+Settings > Quest Tracking lets you choose exactly one tracking source:
+- Active Quest: follows the selected non-main Quest Finder / ESO journal quest.
+- Golden Pursuits: follows the journal quest linked to the selected Golden Pursuit.
+- Main Quest: follows an accepted Main Story quest only.
+
+Only the chosen source drives the visible Suite quest tracker and ESO assisted quest/compass at a time. Active Quest, Golden Pursuits, and Main Quest are kept independent so one source does not overwrite another. The Suite uses ESO's native compass guidance for the selected quest; the custom direction-arrow HUD has been removed.
+
+[B]# DEPENDENCIES[/B]
+No required external dependencies.
+LibAddonMenu-2.0 is optional and enables the settings panel.
+
+[B]# ESOUI REVIEW / PERFORMANCE NOTES[/B]
+- OptionalDependsOn does not use an ineffective >= version check.
+- Account-wide SavedVariables are namespaced by GetWorldName() so NA, EU, and PTS data do not overwrite one another.
+- EVENT_COMBAT_EVENT analytics use EVENT_MANAGER:AddFilterForEvent combat-result/source/target filters rather than broad Lua-side result classification.
+- The manifest declares only two supported API versions: 101050 101051.
+- No executables, DLLs, telemetry upload, external network access, or arbitrary local file access are included.
+
+[B]# CREDITS[/B]
+Author / project owner: HoZayyBadazz
+AI-assisted development and review: OpenAI
+ESO UI API, game UI artwork, and game data exposed to addons: ZeniMax Online Studios / Bethesda Softworks.
+LibAddonMenu-2.0 is an optional external library and is not bundled with this package.
+
+[B]# DISCLAIMER[/B]
+This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related marks are property of their respective owners.

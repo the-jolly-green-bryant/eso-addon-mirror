@@ -30,7 +30,7 @@
     "Ultivite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4777/",
-  "fingerprint": "9c6937d48c9ec9d935ba424fc59bd2c2ac8a9f545ccf6092cf42d0268a06cbe2",
+  "fingerprint": "bf735cf15cfe3ef0874e055fc2d79481a3a1ee0b481fecce951dd265d00098c1",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -38,11 +38,11 @@
   "source_id": "4777",
   "source_url": "https://www.esoui.com/downloads/info4777-Ultivite.html",
   "stats": {
-    "downloads": 28,
+    "downloads": 47,
     "favorites": 0,
-    "monthly_downloads": 28
+    "monthly_downloads": 38
   },
   "title": "Ultivite",
-  "updated_at": 1787226181000,
-  "version": "1.125"
+  "updated_at": 1787399121000,
+  "version": "1.0.160"
 }

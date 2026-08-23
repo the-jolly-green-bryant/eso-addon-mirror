@@ -1,7 +1,8 @@
 {
-  "archive_path": "addons/haze068/FancyTitles__4355",
+  "archive_format": "zip",
+  "archive_path": "addons/haze068/Discontinued-FancyTitles__4355",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "haze068",
   "canonical_id": "esoui:4355",
   "category_id": "27",
@@ -21,7 +22,7 @@
     "FancyTitles"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4355/",
-  "fingerprint": "59c6d87c24d84bf834b1a92b4cee95758a0d54b56b8d37eb50c0a569130004f1",
+  "fingerprint": "8a7461d0bdd380903ee496745b2fe0601c0fba75a7b44745944e4f6ded1bfffa",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15374.png",
     "https://cdn-eso.mmoui.com/preview/pvw15086.png",
@@ -33,13 +34,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4355",
-  "source_url": "https://www.esoui.com/downloads/info4355-FancyTitles.html",
+  "source_url": "https://www.esoui.com/downloads/info4355-DiscontinuedFancyTitles.html",
   "stats": {
-    "downloads": 2068,
+    "downloads": 2130,
     "favorites": 4,
-    "monthly_downloads": 59
+    "monthly_downloads": 68
   },
-  "title": "FancyTitles",
+  "title": "(Discontinued) FancyTitles",
   "updated_at": 1781449243000,
   "version": "5.5"
 }

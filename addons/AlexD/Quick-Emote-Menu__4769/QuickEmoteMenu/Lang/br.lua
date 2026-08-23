@@ -18,6 +18,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Mostrar painel de configurações",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Fechar menu após emote (clique esquerdo)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Redefinir posição do botão",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "Deslocamento X do botão do chat",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "O deslocamento horizontal do botão em relação ao botão de opções da janela de chat. Aplica-se somente quando o botão está anexado à janela de chat.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFRECURSOS|r
 • Acesso rápido a emotes com categorias e favoritos

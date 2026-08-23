@@ -1,44 +1,7 @@
 local Addon = LarvalTearMod
 local SettingsPanel = Addon.Modules.SettingsPanel
-local SpSaverModes = Addon.Common.SpSaverModes
 
 local SETTINGS_PANEL_ID = "LarvalTearSettings"
-local ACTIVE_MODE_STRING_IDS = {
-    active_priority = "SI_LTM_SP_SAVER_ACTIVE_PRIORITY",
-    skip_skill_changes = "SI_LTM_SP_SAVER_SKIP_SKILL_CHANGES",
-}
-local PASSIVE_MODE_STRING_IDS = {
-    best_effort = "SI_LTM_SP_SAVER_BEST_EFFORT",
-    all_or_nothing = "SI_LTM_SP_SAVER_ALL_OR_NOTHING",
-    preserve_current = "SI_LTM_SP_SAVER_PRESERVE_CURRENT",
-}
-
-local function GetText(stringIdName, fallback)
-    -- NOTE:
-    -- Missing localization fallback is intentionally not forced here.
-    -- nil/empty labels help surface missing string IDs during testing.
-    if type(Addon.GetStringText) == "function" then
-        return Addon.GetStringText(stringIdName)
-    end
-
-    return fallback
-end
-
-local function BuildModeChoices(modeOrder, stringIds)
-    local choices = {}
-    for _, mode in ipairs(modeOrder) do
-        choices[#choices + 1] = GetText(stringIds[mode])
-    end
-    return choices
-end
-
-local function CopyModeOrder(modeOrder)
-    local values = {}
-    for _, mode in ipairs(modeOrder) do
-        values[#values + 1] = mode
-    end
-    return values
-end
 
 local function GetLibAddonMenu()
     local lam = rawget(_G, "LibAddonMenu2")
@@ -54,19 +17,11 @@ local function GetLibAddonMenu()
 end
 
 local function IsHudLauncherVisible()
-    if type(Addon.GetHudLauncherSettings) ~= "function" then
-        return true
-    end
-
     local settings = Addon:GetHudLauncherSettings(false)
     return type(settings) ~= "table" or settings.hidden ~= true
 end
 
 local function IsHudLauncherLocked()
-    if type(Addon.GetHudLauncherSettings) ~= "function" then
-        return false
-    end
-
     local settings = Addon:GetHudLauncherSettings(false)
     return type(settings) == "table" and settings.locked == true
 end
@@ -76,109 +31,51 @@ local function IsDebugModeEnabled()
 end
 
 local function IsPrintMessagesEnabled()
-    if type(Addon.IsPrintMessagesEnabled) == "function" then
-        return Addon:IsPrintMessagesEnabled()
-    end
-
-    return true
+    return Addon:IsPrintMessagesEnabled()
 end
 
 local function IsIgnoreCostumesEnabled()
-    if type(Addon.IsIgnoreCostumesEnabled) == "function" then
-        return Addon:IsIgnoreCostumesEnabled()
-    end
-
-    return false
+    return Addon:IsIgnoreCostumesEnabled()
 end
 
 local function IsAutoRefillQuickSlotEnabled()
-    if type(Addon.IsAutoRefillQuickSlotEnabled) == "function" then
-        return Addon:IsAutoRefillQuickSlotEnabled()
-    end
-
-    return false
+    return Addon:IsAutoRefillQuickSlotEnabled()
 end
 
 local function IsAutoRefillFoodHelperEnabled()
-    if type(Addon.IsAutoRefillFoodHelperEnabled) == "function" then
-        return Addon:IsAutoRefillFoodHelperEnabled()
-    end
-
-    return false
+    return Addon:IsAutoRefillFoodHelperEnabled()
 end
 
 local function GetEquipmentDepositCleanupScope()
-    if type(Addon.GetEquipmentDepositCleanupScope) == "function" then
-        return Addon:GetEquipmentDepositCleanupScope()
-    end
-
-    return "all_build_cards"
+    return Addon:GetEquipmentDepositCleanupScope()
 end
 
 local function SetEquipmentDepositCleanupScope(value)
-    if type(Addon.SetEquipmentDepositCleanupScope) == "function" then
-        Addon:SetEquipmentDepositCleanupScope(value)
-    end
+    Addon:SetEquipmentDepositCleanupScope(value)
 end
 
 local function GetEquipmentDepositItemFilter()
-    if type(Addon.GetEquipmentDepositItemFilter) == "function" then
-        return Addon:GetEquipmentDepositItemFilter()
-    end
-
-    return "saved_build_gear_only"
+    return Addon:GetEquipmentDepositItemFilter()
 end
 
 local function SetEquipmentDepositItemFilter(value)
-    if type(Addon.SetEquipmentDepositItemFilter) == "function" then
-        Addon:SetEquipmentDepositItemFilter(value)
-    end
+    Addon:SetEquipmentDepositItemFilter(value)
 end
 
 local function GetEquipmentDepositSafetyMode()
-    if type(Addon.GetEquipmentDepositSafetyMode) == "function" then
-        return Addon:GetEquipmentDepositSafetyMode()
-    end
-
-    return "normal"
+    return Addon:GetEquipmentDepositSafetyMode()
 end
 
 local function SetEquipmentDepositSafetyMode(value)
-    if type(Addon.SetEquipmentDepositSafetyMode) == "function" then
-        Addon:SetEquipmentDepositSafetyMode(value)
-    end
+    Addon:SetEquipmentDepositSafetyMode(value)
 end
 
 local function GetApplyUiMode()
-    if type(Addon.GetApplyUiMode) == "function" then
-        return Addon:GetApplyUiMode()
-    end
-
-    return "default"
+    return Addon:GetApplyUiMode()
 end
 
 local function SetApplyUiMode(value)
-    if type(Addon.SetApplyUiMode) == "function" then
-        Addon:SetApplyUiMode(value)
-    end
-end
-
-local function GetSpSaverActiveMode()
-    local settings = Addon:GetSpSaverSettings()
-    return settings.activeMode
-end
-
-local function SetSpSaverActiveMode(value)
-    Addon:SetSpSaverActiveMode(value)
-end
-
-local function GetSpSaverPassiveMode()
-    local settings = Addon:GetSpSaverSettings()
-    return settings.passiveMode
-end
-
-local function SetSpSaverPassiveMode(value)
-    Addon:SetSpSaverPassiveMode(value)
+    Addon:SetApplyUiMode(value)
 end
 
 function SettingsPanel:Register()
@@ -200,111 +97,99 @@ function SettingsPanel:Register()
     local optionsTable = {
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_HEADER", "LarvalTear Settings"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_HEADER"),
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_SHOW_ICON", "Show on-screen icon"),
-            tooltip = GetText("SI_LTM_SETTINGS_SHOW_ICON_TOOLTIP", "Show the LarvalTear launcher icon on the HUD."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_SHOW_ICON"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_SHOW_ICON_TOOLTIP"),
             getFunc = IsHudLauncherVisible,
             setFunc = function(value)
-                if type(Addon.SetHudLauncherHidden) == "function" then
-                    Addon:SetHudLauncherHidden(value ~= true)
-                end
+                Addon:SetHudLauncherHidden(value ~= true)
             end,
             default = true,
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_LOCK_ICON", "Lock icon movement"),
-            tooltip = GetText("SI_LTM_SETTINGS_LOCK_ICON_TOOLTIP", "Prevent dragging the on-screen icon."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_LOCK_ICON"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_LOCK_ICON_TOOLTIP"),
             getFunc = IsHudLauncherLocked,
             setFunc = function(value)
-                if type(Addon.SetHudLauncherLocked) == "function" then
-                    Addon:SetHudLauncherLocked(value == true)
-                end
+                Addon:SetHudLauncherLocked(value == true)
             end,
             default = false,
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_PRINT_MESSAGES", "Print messages"),
-            tooltip = GetText("SI_LTM_SETTINGS_PRINT_MESSAGES_TOOLTIP", "Show normal LarvalTear chat messages. Errors and warnings are still shown when this is off."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_PRINT_MESSAGES"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_PRINT_MESSAGES_TOOLTIP"),
             getFunc = IsPrintMessagesEnabled,
             setFunc = function(value)
-                if type(Addon.SetPrintMessagesEnabled) == "function" then
-                    Addon:SetPrintMessagesEnabled(value == true)
-                end
+                Addon:SetPrintMessagesEnabled(value == true)
             end,
             default = true,
         },
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_IGNORE_HEADER", "IGNORE"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_IGNORE_HEADER"),
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_IGNORE_COSTUMES", "Ignore Costumes"),
-            tooltip = GetText("SI_LTM_SETTINGS_IGNORE_COSTUMES_TOOLTIP", "Skip outfit and costume application during build apply while keeping saved outfit data unchanged."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_IGNORE_COSTUMES"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_IGNORE_COSTUMES_TOOLTIP"),
             getFunc = IsIgnoreCostumesEnabled,
             setFunc = function(value)
-                if type(Addon.SetIgnoreCostumesEnabled) == "function" then
-                    Addon:SetIgnoreCostumesEnabled(value == true)
-                end
+                Addon:SetIgnoreCostumesEnabled(value == true)
             end,
             default = false,
         },
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_AUTO_REFILL_HEADER", "AUTO REFILL"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_AUTO_REFILL_HEADER"),
         },
         {
             type = "description",
-            text = GetText("SI_LTM_SETTINGS_AUTO_REFILL_DESCRIPTION", "When opening a bank or chest, detect currently active Quick Slot and Food items and automatically refill their stacks to full."),
+            text = Addon.GetStringText("SI_LTM_SETTINGS_AUTO_REFILL_DESCRIPTION"),
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_AUTO_REFILL_QUICK_SLOT", "Quick Slot"),
-            tooltip = GetText("SI_LTM_SETTINGS_AUTO_REFILL_QUICK_SLOT_TOOLTIP", "Reserved setting for automatically refilling active Quick Slot items when a bank opens."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_AUTO_REFILL_QUICK_SLOT"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_AUTO_REFILL_QUICK_SLOT_TOOLTIP"),
             getFunc = IsAutoRefillQuickSlotEnabled,
             setFunc = function(value)
-                if type(Addon.SetAutoRefillQuickSlotEnabled) == "function" then
-                    Addon:SetAutoRefillQuickSlotEnabled(value == true)
-                end
+                Addon:SetAutoRefillQuickSlotEnabled(value == true)
             end,
             default = false,
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_AUTO_REFILL_FOOD_HELPER", "Food Helper"),
-            tooltip = GetText("SI_LTM_SETTINGS_AUTO_REFILL_FOOD_HELPER_TOOLTIP", "Reserved setting for automatically refilling the active Food Helper item when a bank opens."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_AUTO_REFILL_FOOD_HELPER"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_AUTO_REFILL_FOOD_HELPER_TOOLTIP"),
             getFunc = IsAutoRefillFoodHelperEnabled,
             setFunc = function(value)
-                if type(Addon.SetAutoRefillFoodHelperEnabled) == "function" then
-                    Addon:SetAutoRefillFoodHelperEnabled(value == true)
-                end
+                Addon:SetAutoRefillFoodHelperEnabled(value == true)
             end,
             default = false,
         },
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_DEPOSIT_HEADER", "BANK / CHEST DEPOSIT"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_HEADER"),
         },
         {
             type = "dropdown",
-            name = GetText("SI_LTM_SETTINGS_DEPOSIT_CLEANUP_SCOPE", "Inventory Cleanup Scope"),
-            tooltip = GetText("SI_LTM_SETTINGS_DEPOSIT_CLEANUP_SCOPE_TOOLTIP", "Controls which Build Card equipment is protected when depositing unused gear."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_CLEANUP_SCOPE"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_CLEANUP_SCOPE_TOOLTIP"),
             choices = {
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_CURRENT_BUILD", "Current Build only"),
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_ALL_BUILD_CARDS", "All Build Cards"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_CURRENT_BUILD"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_ALL_BUILD_CARDS"),
             },
             choicesValues = {
                 "current_build",
                 "all_build_cards",
             },
             choicesTooltips = {
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_CURRENT_BUILD_TOOLTIP", "Protects only the currently selected Build Card equipment. Frees more inventory space."),
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_ALL_BUILD_CARDS_TOOLTIP", "Protects equipment used by any saved Build Card. Reduces repeated withdraws."),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_CURRENT_BUILD_TOOLTIP"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SCOPE_ALL_BUILD_CARDS_TOOLTIP"),
             },
             getFunc = GetEquipmentDepositCleanupScope,
             setFunc = SetEquipmentDepositCleanupScope,
@@ -312,15 +197,15 @@ function SettingsPanel:Register()
         },
         {
             type = "description",
-            text = GetText("SI_LTM_SETTINGS_DEPOSIT_CLEANUP_SCOPE_DESCRIPTION", "All Build Cards protects all equipment registered in this addon and deposits other gear. Current Build only protects only the currently selected Build Card equipment and deposits other gear."),
+            text = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_CLEANUP_SCOPE_DESCRIPTION"),
         },
         {
             type = "dropdown",
-            name = GetText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER", "Deposit Target Items"),
-            tooltip = GetText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_TOOLTIP", "Controls which backpack equipment can become a deposit candidate."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_TOOLTIP"),
             choices = {
-                GetText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_ALL", "All Equipment"),
-                GetText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_SAVED_BUILD_ONLY", "Saved Build Gear Only"),
+                Addon.GetStringText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_ALL"),
+                Addon.GetStringText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_SAVED_BUILD_ONLY"),
             },
             choicesValues = {
                 "all_equipment",
@@ -332,16 +217,16 @@ function SettingsPanel:Register()
         },
         {
             type = "description",
-            text = GetText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_DESCRIPTION", "All Equipment makes all equipment outside Build Card protection deposit candidates, including unregistered drops. Saved Build Gear Only deposits only equipment saved in LarvalTear Build Cards and ignores unregistered loot, ornate gear, deconstruction items, and miscellaneous equipment."),
+            text = Addon.GetStringText("SI_LTM_SETTINGS_EQUIPMENT_DEPOSIT_ITEM_FILTER_DESCRIPTION"),
         },
         {
             type = "dropdown",
-            name = GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_MODE", "Deposit Safety Mode"),
-            tooltip = GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_MODE_TOOLTIP", "Controls additional protection for movable items when depositing unused gear."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_MODE"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_MODE_TOOLTIP"),
             choices = {
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_STRICT", "Strict"),
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_NORMAL", "Normal"),
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_AGGRESSIVE", "Aggressive"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_STRICT"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_NORMAL"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_AGGRESSIVE"),
             },
             choicesValues = {
                 "strict",
@@ -349,9 +234,9 @@ function SettingsPanel:Register()
                 "aggressive",
             },
             choicesTooltips = {
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_STRICT_TOOLTIP", "Protects locked, mythic, and bound items."),
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_NORMAL_TOOLTIP", "Protects locked items only."),
-                GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_AGGRESSIVE_TOOLTIP", "Protects only Build Card equipment and items that cannot be banked."),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_STRICT_TOOLTIP"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_NORMAL_TOOLTIP"),
+                Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_AGGRESSIVE_TOOLTIP"),
             },
             getFunc = GetEquipmentDepositSafetyMode,
             setFunc = SetEquipmentDepositSafetyMode,
@@ -359,27 +244,27 @@ function SettingsPanel:Register()
         },
         {
             type = "description",
-            text = GetText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_MODE_DESCRIPTION", "Strict does not deposit locked, mythic, or bound items. Normal does not deposit locked items, but can deposit mythic and bound items. Aggressive deposits all movable equipment except Build Card protected equipment and items that cannot be banked."),
+            text = Addon.GetStringText("SI_LTM_SETTINGS_DEPOSIT_SAFETY_MODE_DESCRIPTION"),
         },
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_APPLY_UI_HEADER", "APPLY UI"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_HEADER"),
         },
         {
             type = "dropdown",
-            name = GetText("SI_LTM_SETTINGS_APPLY_UI_MODE", "Apply UI Mode"),
-            tooltip = GetText("SI_LTM_SETTINGS_APPLY_UI_MODE_TOOLTIP", "Controls how LarvalTear is displayed while applying a build."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_MODE"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_MODE_TOOLTIP"),
             choices = {
-                GetText("SI_LTM_SETTINGS_APPLY_UI_MODE_DEFAULT", "Default"),
-                GetText("SI_LTM_SETTINGS_APPLY_UI_MODE_SMALL_PROGRESS", "Small Progress Window"),
+                Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_MODE_DEFAULT"),
+                Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_MODE_SMALL_PROGRESS"),
             },
             choicesValues = {
                 "default",
                 "small_progress",
             },
             choicesTooltips = {
-                GetText("SI_LTM_SETTINGS_APPLY_UI_MODE_DEFAULT_TOOLTIP", "Keep the existing main window behavior while applying."),
-                GetText("SI_LTM_SETTINGS_APPLY_UI_MODE_SMALL_PROGRESS_TOOLTIP", "Hide the main window and show a compact progress window while applying."),
+                Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_MODE_DEFAULT_TOOLTIP"),
+                Addon.GetStringText("SI_LTM_SETTINGS_APPLY_UI_MODE_SMALL_PROGRESS_TOOLTIP"),
             },
             getFunc = GetApplyUiMode,
             setFunc = SetApplyUiMode,
@@ -387,44 +272,23 @@ function SettingsPanel:Register()
         },
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_SP_SAVER_HEADER"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_SKILL_SETTINGS_HEADER"),
         },
         {
             type = "description",
-            text = GetText("SI_LTM_SETTINGS_SP_SAVER_DESCRIPTION"),
-        },
-        {
-            type = "dropdown",
-            name = GetText("SI_LTM_SP_SAVER_ACTIVE_MODE_LABEL"),
-            tooltip = GetText("SI_LTM_SP_SAVER_ACTIVE_NOTE"),
-            choices = BuildModeChoices(SpSaverModes.ActiveModes, ACTIVE_MODE_STRING_IDS),
-            choicesValues = CopyModeOrder(SpSaverModes.ActiveModes),
-            getFunc = GetSpSaverActiveMode,
-            setFunc = SetSpSaverActiveMode,
-            default = SpSaverModes.ActiveDefault,
-        },
-        {
-            type = "dropdown",
-            name = GetText("SI_LTM_SP_SAVER_PASSIVE_MODE_LABEL"),
-            choices = BuildModeChoices(SpSaverModes.PassiveModes, PASSIVE_MODE_STRING_IDS),
-            choicesValues = CopyModeOrder(SpSaverModes.PassiveModes),
-            getFunc = GetSpSaverPassiveMode,
-            setFunc = SetSpSaverPassiveMode,
-            default = SpSaverModes.PassiveDefault,
+            text = Addon.GetStringText("SI_LTM_SETTINGS_SKILL_SETTINGS_DESCRIPTION"),
         },
         {
             type = "header",
-            name = GetText("SI_LTM_SETTINGS_DEVELOPER_HEADER", "Developer"),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_DEVELOPER_HEADER"),
         },
         {
             type = "checkbox",
-            name = GetText("SI_LTM_SETTINGS_DEBUG_MODE", "Debug mode"),
-            tooltip = GetText("SI_LTM_SETTINGS_DEBUG_MODE_TOOLTIP", "Developer use. Same setting as /ltm_debug on|off."),
+            name = Addon.GetStringText("SI_LTM_SETTINGS_DEBUG_MODE"),
+            tooltip = Addon.GetStringText("SI_LTM_SETTINGS_DEBUG_MODE_TOOLTIP"),
             getFunc = IsDebugModeEnabled,
             setFunc = function(value)
-                if type(Addon.SetCompactDebugRunEnabled) == "function" then
-                    Addon:SetCompactDebugRunEnabled(value == true)
-                end
+                Addon:SetCompactDebugRunEnabled(value == true)
             end,
             default = false,
         },

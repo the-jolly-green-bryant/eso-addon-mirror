@@ -36,15 +36,12 @@ local function BuildActionBarRestoreConfig(config)
 end
 
 local function RunActionBarRestore(config, pipelineContext)
-    local routeBCompleted = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetRuntimeFlag) == "function"
-        and LTM_PIPELINE_CONTEXT:GetRuntimeFlag(pipelineContext, "routeBCompleted") == true
-        or false
+    local routeBCompleted = LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
+        pipelineContext,
+        "routeBCompleted"
+    ) == true
     local methodName = routeBCompleted and "RunRestoreOnly" or "Run"
-    local method = type(LTM_SKILL_RESTORE) == "table" and LTM_SKILL_RESTORE[methodName] or nil
-    if type(method) ~= "function" then
-        return false, "action_bar_restore_unavailable"
-    end
+    local method = LTM_SKILL_RESTORE[methodName]
 
     return method(LTM_SKILL_RESTORE, BuildActionBarRestoreConfig(config))
 end
@@ -55,29 +52,21 @@ end
 
 function LTM_SKILL_APPLY:SetLastResult(result, pipelineContext)
     self.lastResult = result
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.SetPhaseResult) == "function" then
-        LTM_PIPELINE_CONTEXT:SetPhaseResult(pipelineContext, "Skills", result)
-    end
+    LTM_PIPELINE_CONTEXT:SetPhaseResult(pipelineContext, "Skills", result)
 end
 
 function LTM_SKILL_APPLY:Log(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary("Skill apply routing summary", ...)
-    end
+    Log.LogDebugSummary("Skill apply routing summary", ...)
 end
 
 function LTM_SKILL_APPLY:ResolveRoute(config)
-    local plan = config and config._pipelinePlan or nil
-    if type(plan) ~= "table" or type(plan.route) ~= "string" then
-        return nil, "pipeline_route_missing"
-    end
+    local plan = config._pipelinePlan
 
     local pipelineContext = type(config) == "table" and config._pipelineContext or nil
-    local priorSkillRespecCommitted = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetRuntimeFlag) == "function"
-        and LTM_PIPELINE_CONTEXT:GetRuntimeFlag(pipelineContext, "priorSkillRespecCommitted") == true
-        or false
+    local priorSkillRespecCommitted = LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
+        pipelineContext,
+        "priorSkillRespecCommitted"
+    ) == true
     if plan.route == "B"
         and plan.needsSubclassChange == true
         and plan.needsPurchaseChange ~= true
@@ -98,19 +87,17 @@ function LTM_SKILL_APPLY:Run(config)
         local reason = type(config.reason) == "string" and config.reason or "insufficient_points_preflight"
         local actionBarRestoreResult = nil
         local actionBarRestoreError = nil
-        if reason == "sp_saver_skip_skill_changes" then
+        if reason == "skill_settings_skip_all" then
             local restoreOk, restoreErr = RunActionBarRestore(config, pipelineContext)
-            if restoreOk == true and type(LTM_SKILL_RESTORE.GetLastResult) == "function" then
+            if restoreOk == true then
                 actionBarRestoreResult = LTM_SKILL_RESTORE:GetLastResult()
             else
                 actionBarRestoreError = restoreErr or "action_bar_restore_failed"
             end
         end
-        if reason == "sp_saver_skip_skill_changes"
-            and config.spSaverSkipNormalSkillChanges == true
-            and type(LTM_PIPELINE_CONTEXT) == "table"
-            and type(LTM_PIPELINE_CONTEXT.RecordSpSaverSkip) == "function" then
-            LTM_PIPELINE_CONTEXT:RecordSpSaverSkip(
+        if reason == "skill_settings_skip_all"
+            and config.skillSettingsSkipNormalSkillChanges == true then
+            LTM_PIPELINE_CONTEXT:RecordSkillSettingsSkip(
                 pipelineContext,
                 "normal_skill_changes",
                 reason
@@ -126,17 +113,15 @@ function LTM_SKILL_APPLY:Run(config)
         return true
     end
 
-    local routeBCompleted = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetRuntimeFlag) == "function"
-        and LTM_PIPELINE_CONTEXT:GetRuntimeFlag(pipelineContext, "routeBCompleted") == true
-        or false
+    local routeBCompleted = LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
+        pipelineContext,
+        "routeBCompleted"
+    ) == true
     if routeBCompleted then
         Log.Debug("Skill apply called route=restore_only")
         local ok, err = LTM_SKILL_RESTORE:RunRestoreOnly(config)
         if ok == true then
-            local restoreResult = type(LTM_SKILL_RESTORE.GetLastResult) == "function"
-                and LTM_SKILL_RESTORE:GetLastResult()
-                or nil
+            local restoreResult = LTM_SKILL_RESTORE:GetLastResult()
             self:SetLastResult(CreateSuccessResult({
                 status = "restore_only",
                 sourcePhase = "Skills",
@@ -146,10 +131,7 @@ function LTM_SKILL_APPLY:Run(config)
         return ok, err
     end
 
-    local route, routeErr = self:ResolveRoute(config)
-    if route == nil then
-        return false, routeErr
-    end
+    local route = self:ResolveRoute(config)
 
     local plan = type(config) == "table" and config._pipelinePlan or nil
 
@@ -170,9 +152,7 @@ function LTM_SKILL_APPLY:Run(config)
     if route == "A" then
         local ok, err = LTM_SKILL_RESTORE:Run(config)
         if ok == true then
-            local restoreResult = type(LTM_SKILL_RESTORE.GetLastResult) == "function"
-                and LTM_SKILL_RESTORE:GetLastResult()
-                or nil
+            local restoreResult = LTM_SKILL_RESTORE:GetLastResult()
             self:SetLastResult(CreateSuccessResult({
                 status = "route_a",
                 sourcePhase = "Skills",
@@ -188,8 +168,7 @@ function LTM_SKILL_APPLY:Run(config)
         -- It should converge on a single commit, verify that result, then
         -- hand off to restore-only work equivalent to route A.
         local ok, err = LTM_SKILL_RESPEC_APPLY:Run(config)
-        if ok == true and type(LTM_SKILL_RESPEC_APPLY) == "table"
-            and type(LTM_SKILL_RESPEC_APPLY.GetLastResult) == "function" then
+        if ok == true then
             local result = LTM_SKILL_RESPEC_APPLY:GetLastResult()
             if type(result) == "table" then
                 self:SetLastResult(result, pipelineContext)

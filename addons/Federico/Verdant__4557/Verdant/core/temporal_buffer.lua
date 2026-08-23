@@ -21,7 +21,7 @@ function M.init(capacity)
   state.count    = 0
   state.data     = {}
   for i = 1, capacity do
-    state.data[i] = { t = 0, eHPS = 0, MPS = 0, crit = 0, noncrit = 0,
+    state.data[i] = { t = 0, eHPS = 0, MPS = 0, crit = 0, noncrit = 0, d = 0,
                       ehps_groups = { count = 0 }, mps_groups = { count = 0 },
                       ehps_abilities = { count = 0 }, mps_abilities = { count = 0 } }
   end
@@ -53,13 +53,14 @@ local function copy_abilities(dst, src)
 end
 
 
-function M.push(timestamp, eHPS, MPS, crit, noncrit, ehps_groups, mps_groups, ehps_abilities, mps_abilities)
+function M.push(timestamp, eHPS, MPS, crit, noncrit, ehps_groups, mps_groups, ehps_abilities, mps_abilities, d_group)
   local slot   = state.data[state.write]
   slot.t       = timestamp
   slot.eHPS    = eHPS
   slot.MPS     = MPS
   slot.crit    = crit or 0
   slot.noncrit = noncrit or 0
+  slot.d       = d_group or 0
   copy_groups(slot.ehps_groups, ehps_groups)
   copy_groups(slot.mps_groups,  mps_groups)
   copy_abilities(slot.ehps_abilities, ehps_abilities)
@@ -81,6 +82,20 @@ function M.iterate(fn)
   end
 end
 
+local markers = { n = 0 }
+local MARKER_CAP = 40
+
+function M.add_marker(t, is_death)
+  if markers.n >= MARKER_CAP then return end
+  markers.n = markers.n + 1
+  local m = markers[markers.n]
+  if not m then m = {}; markers[markers.n] = m end
+  m.t = t
+  m.death = is_death and true or false
+end
+
+function M.markers() return markers, markers.n end
+
 function M.count()        return state.count     end
 function M.capacity()     return state.capacity  end
 function M.is_recording() return state.recording end
@@ -95,8 +110,52 @@ function M.stop_recording()
   log:info("stop_recording: count=", state.count, "/", state.capacity)
 end
 
+local summary_scratch = {
+  count = 0, dur_ms = 0, avg_ems = 0, peak_ems = 0, peak_t_off = 0,
+  crit_pct = 0, active_pct = 0, total_heal = 0, total_shield = 0,
+}
+
+function M.summary()
+  local s = summary_scratch
+  s.count = state.count
+  s.dur_ms = 0; s.avg_ems = 0; s.peak_ems = 0; s.peak_t_off = 0
+  s.crit_pct = 0; s.active_pct = 0; s.total_heal = 0; s.total_shield = 0
+  if state.count == 0 then return s end
+
+  local t0, t_prev = 0, 0
+  local sum_ems, peak_ems, peak_t = 0, 0, 0
+  local sum_crit, sum_noncrit = 0, 0
+  local active_n = 0
+
+  M.iterate(function(i, sample)
+    local ems = sample.eHPS + sample.MPS
+    sum_ems = sum_ems + ems
+    if ems > peak_ems then peak_ems = ems; peak_t = sample.t end
+    sum_crit    = sum_crit    + sample.crit
+    sum_noncrit = sum_noncrit + sample.noncrit
+    if ems > 0 then active_n = active_n + 1 end
+    if i == 1 then t0 = sample.t end
+    if i > 1 then
+      local dt = (sample.t - t_prev) / 1000
+      s.total_heal   = s.total_heal   + sample.eHPS * dt
+      s.total_shield = s.total_shield + sample.MPS  * dt
+    end
+    t_prev = sample.t
+  end)
+
+  s.dur_ms     = t_prev - t0
+  s.avg_ems    = sum_ems / state.count
+  s.peak_ems   = peak_ems
+  s.peak_t_off = (peak_ems > 0) and (peak_t - t0) or 0
+  s.active_pct = active_n / state.count
+  local heal_total = sum_crit + sum_noncrit
+  if heal_total > 0 then s.crit_pct = sum_crit / heal_total end
+  return s
+end
+
 function M.clear()
   log:info("clear: discarding", state.count, "samples")
   state.write = 1
   state.count = 0
+  markers.n = 0
 end

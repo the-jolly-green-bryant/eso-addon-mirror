@@ -126,6 +126,8 @@ UI.CHROME = {
     HEADER_BAND = { 0.435, 0.796, 0.624, 0.07 },
     ACCENT_LINE = { 0.435, 0.796, 0.624, 0.55 },
     ROW_HOVER   = { 0.435, 0.796, 0.624, 0.10 },
+    CATEGORY_SHARE = { 0.435, 0.796, 0.624, 0.075 },
+    BADGE       = { 0.435, 0.796, 0.624, 0.10 },
     -- The accent at near-full strength: what a marker is drawn at when it must
     -- read as a hard edge rather than a wash -- the ring around the active filter
     -- button, the tick beside the leading category. Above ACCENT_LINE, because a
@@ -264,6 +266,8 @@ function UI.PaintRowFill(fill, state)
     local color = UI.CHROME.ROW_HOVER
     if state == "zebra" then
         color = UI.CHROME.ROW_ZEBRA
+    elseif state == "badge" then
+        color = UI.CHROME.BADGE
     end
     FlattenBackdrop(fill)
     fill:SetCenterColor(unpack(color))

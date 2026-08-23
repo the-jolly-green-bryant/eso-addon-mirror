@@ -79,10 +79,7 @@ local function LogPartialSuccessRejected(reason, branch)
 end
 
 local function EvaluateSkillsPartialSuccess(pipelineContext)
-    local result = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPhaseResult) == "function"
-        and LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "SkillRespec")
-        or nil
+    local result = LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "SkillRespec")
     if type(result) ~= "table" or result.ok ~= true then
         return nil, "skills_result_unavailable"
     end
@@ -92,65 +89,29 @@ local function EvaluateSkillsPartialSuccess(pipelineContext)
         return nil, "skills_result_details_missing"
     end
 
-    local restoreSummary = details.restoreSummary
-    local reasonCounts = type(restoreSummary) == "table" and restoreSummary.reasonCounts or nil
-    local skillNotPurchased = type(reasonCounts) == "table" and (reasonCounts.skill_not_purchased or 0) or 0
-    local alreadyMatches = type(reasonCounts) == "table" and (reasonCounts.already_matches or 0) or 0
-    local hasOnlyExpectedReasons = type(reasonCounts) == "table"
-    if hasOnlyExpectedReasons then
-        for reason in pairs(reasonCounts) do
-            if reason ~= "already_matches" and reason ~= "skill_not_purchased" then
-                hasOnlyExpectedReasons = false
-                break
-            end
-        end
-    end
+    local readiness = type(details.readiness) == "table" and details.readiness or {}
+    local expectedMissingPurchaseCount = readiness.expectedMissingPurchaseCount or 0
+    local expectedMissingMorphCount = readiness.expectedMissingMorphCount or 0
 
-    if details.route ~= "route_b" then
-        return nil, "route_not_route_b"
-    end
-    if details.degraded ~= true then
-        return nil, "degraded_flag_missing"
-    end
-    if details.resultCode ~= "route_b_degraded_insufficient_points" then
+    if details.resultCode ~= "route_b_active_priority_insufficient_points" then
         return nil, "result_code_not_partial_candidate"
     end
-    if details.subclassVerified ~= true then
-        return nil, "subclass_not_verified"
-    end
-    if details.commitPerformed == true then
-        return nil, "commit_performed"
-    end
-    if (details.unexpectedPurchaseCount or 0) > 0 then
+    if (readiness.unexpectedPurchaseCount or 0) > 0 then
         return nil, "unexpected_purchase_remaining"
     end
-    if type(details.readiness) == "table" and ((details.readiness.morphCount or 0) > 0 or (details.readiness.unresolvedCount or 0) > 0) then
-        return nil, "morph_or_unresolved_remaining"
+    if (readiness.unexpectedMorphCount or 0) > 0 or (readiness.unresolvedCount or 0) > 0 then
+        return nil, "unexpected_morph_or_unresolved_remaining"
     end
-    if type(restoreSummary) ~= "table" then
-        return nil, "restore_summary_missing"
+    if (readiness.reductionMismatchCount or 0) > 0 then
+        return nil, "reduction_mismatch"
     end
-    if hasOnlyExpectedReasons ~= true then
-        return nil, "restore_reason_unexpected"
-    end
-    if skillNotPurchased <= 0 then
-        return nil, "skill_not_purchased_absent"
-    end
-    if (restoreSummary.errors or 0) ~= skillNotPurchased then
-        return nil, "restore_error_mismatch"
-    end
-    if (details.expectedMissingPurchaseCount or 0) ~= skillNotPurchased then
-        return nil, "expected_missing_mismatch"
-    end
-
     return {
         sourcePhase = "Skills",
         resultCode = details.resultCode,
-        reasons = details.degradeReasons or { "insufficient_skill_points" },
+        reasons = { "insufficient_skill_points" },
         residualSummary = {
-            skillNotPurchased = skillNotPurchased,
-            alreadyMatches = alreadyMatches,
-            expectedMissingPurchaseCount = details.expectedMissingPurchaseCount or 0,
+            expectedMissingPurchaseCount = expectedMissingPurchaseCount,
+            expectedMissingMorphCount = expectedMissingMorphCount,
         },
     }
 end
@@ -170,7 +131,6 @@ end
 
 local function CollectActionBarRestoreResiduals(details, reasons, residual)
     local restoreResult = type(details) == "table" and details.actionBarRestoreResult or nil
-    local restoreSummary = type(restoreResult) == "table" and restoreResult.summary or nil
     residual = type(residual) == "table" and residual or {
         errorCount = 0,
         slots = {},
@@ -210,16 +170,11 @@ local function CollectActionBarRestoreResiduals(details, reasons, residual)
     if residual.errorCount <= 0 then
         return nil
     end
-    residual.summary = restoreSummary or residual.summary
-    residual.error = type(details) == "table" and details.actionBarRestoreError or residual.error
     return residual
 end
 
 local function EvaluateIntentionalSkillSkipSuccess(pipelineContext)
-    local result = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPhaseResult) == "function"
-        and LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "Skills")
-        or nil
+    local result = LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "Skills")
     local details = type(result) == "table" and type(result.details) == "table" and result.details or nil
     if type(result) ~= "table" or result.ok ~= true or type(details) ~= "table" then
         return nil, "skill_result_unavailable"
@@ -229,38 +184,36 @@ local function EvaluateIntentionalSkillSkipSuccess(pipelineContext)
         return nil, "skill_status_not_skipped"
     end
     if details.reason ~= "insufficient_points_preflight"
-        and details.reason ~= "sp_saver_skip_skill_changes" then
+        and details.reason ~= "skill_settings_skip_all" then
         return nil, "skill_skip_reason_not_supported"
     end
     if details.intentional ~= true then
         return nil, "skill_skip_not_intentional"
     end
 
-    local spSaverSkip = details.reason == "sp_saver_skip_skill_changes"
+    local skillSettingsSkip = details.reason == "skill_settings_skip_all"
     local reasons = {}
     local actualSkillSkip = false
-    if spSaverSkip
-        and type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverRuntimeSummary) == "function" then
-        local runtimeSummary = LTM_PIPELINE_CONTEXT:GetSpSaverRuntimeSummary(pipelineContext)
+    if skillSettingsSkip then
+        local runtimeSummary = LTM_PIPELINE_CONTEXT:GetSkillSettingsRuntimeSummary(pipelineContext)
         actualSkillSkip = type(runtimeSummary) == "table"
             and type(runtimeSummary.skippedTargets) == "table"
             and runtimeSummary.skippedTargets.normal_skill_changes == true
     end
-    if spSaverSkip and actualSkillSkip then
+    if skillSettingsSkip and actualSkillSkip then
         AppendUniqueReason(reasons, details.reason)
-    elseif not spSaverSkip then
+    elseif not skillSettingsSkip then
         AppendUniqueReason(reasons, "insufficient_skill_points")
     end
     local actionBarResidual = CollectActionBarRestoreResiduals(details, reasons)
     if type(actionBarResidual) == "table" then
         actionBarResidual._slotReasonSet = nil
     end
-    if spSaverSkip and not actualSkillSkip and actionBarResidual == nil then
-        return nil, "sp_saver_no_actual_skip_or_restore_residual"
+    if skillSettingsSkip and not actualSkillSkip and actionBarResidual == nil then
+        return nil, "skill_settings_no_actual_skip_or_restore_residual"
     end
 
-    local resultCode = spSaverSkip and reasons[1] or "skill_phase_skipped_insufficient_points"
+    local resultCode = skillSettingsSkip and reasons[1] or "skill_phase_skipped_insufficient_points"
     return {
         sourcePhase = "Skills",
         reason = details.reason,
@@ -268,17 +221,14 @@ local function EvaluateIntentionalSkillSkipSuccess(pipelineContext)
         reasons = reasons,
         residualSummary = {
             skillPhaseSkipped = true,
-            spSaver = spSaverSkip and actualSkillSkip or false,
+            skillSettings = skillSettingsSkip and actualSkillSkip or false,
             actionBarRestore = actionBarResidual,
         },
     }
 end
 
-local function BuildSpSaverPartialSuccess(pipelineContext)
-    local runtimeSummary = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverRuntimeSummary) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverRuntimeSummary(pipelineContext)
-        or nil
+local function BuildSkillSettingsPartialSuccess(pipelineContext)
+    local runtimeSummary = LTM_PIPELINE_CONTEXT:GetSkillSettingsRuntimeSummary(pipelineContext)
     local skippedTargets = type(runtimeSummary) == "table" and runtimeSummary.skippedTargets or nil
     if type(skippedTargets) ~= "table"
         or (skippedTargets.normal_skill_changes ~= true
@@ -297,13 +247,13 @@ local function BuildSpSaverPartialSuccess(pipelineContext)
         resultCode = primaryReason,
         reasons = reasons,
         residualSummary = {
-            spSaver = runtimeSummary,
+            skillSettings = runtimeSummary,
         },
     }
 end
 
-local function StoreSpSaverPartial(pipelineContext)
-    local partialResult = BuildSpSaverPartialSuccess(pipelineContext)
+local function StoreSkillSettingsPartial(pipelineContext)
+    local partialResult = BuildSkillSettingsPartialSuccess(pipelineContext)
     if type(partialResult) ~= "table" then
         return nil
     end
@@ -332,18 +282,12 @@ local function StoreSkillsPartial(pipelineContext)
 end
 
 local function StoreActionBarRestorePartial(pipelineContext)
-    local skillRespecResult = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPhaseResult) == "function"
-        and LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "SkillRespec")
-        or nil
+    local skillRespecResult = LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "SkillRespec")
     local skillRespecDetails = type(skillRespecResult) == "table"
         and type(skillRespecResult.details) == "table"
         and skillRespecResult.details
         or nil
-    local skillsResult = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPhaseResult) == "function"
-        and LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "Skills")
-        or nil
+    local skillsResult = LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "Skills")
     local skillsDetails = type(skillsResult) == "table"
         and type(skillsResult.details) == "table"
         and skillsResult.details
@@ -352,8 +296,7 @@ local function StoreActionBarRestorePartial(pipelineContext)
     local candidates = {}
     if type(skillRespecResult) == "table"
         and skillRespecResult.ok == true
-        and type(skillRespecDetails) == "table"
-        and skillRespecDetails.route == "route_b" then
+        and type(skillRespecDetails) == "table" then
         candidates[#candidates + 1] = {
             source = "skill_respec",
             details = skillRespecDetails,
@@ -399,7 +342,7 @@ end
 local function StoreTerminalPartialResults(pipelineContext)
     StoreIntentionalSkillSkipPartial(pipelineContext)
     StoreSkillsPartial(pipelineContext)
-    StoreSpSaverPartial(pipelineContext)
+    StoreSkillSettingsPartial(pipelineContext)
     StoreActionBarRestorePartial(pipelineContext)
 end
 
@@ -459,9 +402,7 @@ function LTM_PIPELINE_FINALIZE:Run(config)
 
         if context.attemptIndex >= FINALIZE_MAX_ATTEMPTS then
             local skipSuccess, skipRejectReason = EvaluateIntentionalSkillSkipSuccess(context.pipelineContext)
-            if type(skipSuccess) == "table"
-                and type(LTM_APPLY_START_STATE) == "table"
-                and type(LTM_APPLY_START_STATE.NormalizeToHudBaseline) == "function" then
+            if type(skipSuccess) == "table" then
                 local normalizeStarted, normalizeErr = LTM_APPLY_START_STATE:NormalizeToHudBaseline(function(ok, cleanReason, cleanSnapshot)
                     if context.finished then
                         return
@@ -491,16 +432,14 @@ function LTM_PIPELINE_FINALIZE:Run(config)
             end
 
             local partialResult, rejectReason = EvaluateSkillsPartialSuccess(context.pipelineContext)
-            if type(partialResult) == "table"
-                and type(LTM_APPLY_START_STATE) == "table"
-                and type(LTM_APPLY_START_STATE.NormalizeToHudBaseline) == "function" then
+            if type(partialResult) == "table" then
                 Log.Debug(
                     "Pipeline partial success reason="
                         .. tostring((partialResult.reasons and partialResult.reasons[1]) or "")
-                        .. " residualSummary=skillNotPurchased="
-                        .. tostring(type(partialResult.residualSummary) == "table" and partialResult.residualSummary.skillNotPurchased or 0)
-                        .. ",expectedMissingPurchaseCount="
+                        .. " residualSummary=expectedMissingPurchaseCount="
                         .. tostring(type(partialResult.residualSummary) == "table" and partialResult.residualSummary.expectedMissingPurchaseCount or 0)
+                        .. ",expectedMissingMorphCount="
+                        .. tostring(type(partialResult.residualSummary) == "table" and partialResult.residualSummary.expectedMissingMorphCount or 0)
                 )
                 local normalizeStarted, normalizeErr = LTM_APPLY_START_STATE:NormalizeToHudBaseline(function(ok, cleanReason, cleanSnapshot)
                     if context.finished then
@@ -528,19 +467,16 @@ function LTM_PIPELINE_FINALIZE:Run(config)
 
                     if ok == true and IsFinalizeSuccess(cleanSnapshot or {}) then
                         context.finished = true
-                        if type(context.pipelineContext) == "table" then
-                            LTM_PIPELINE_CONTEXT:RecordDomainResult(context.pipelineContext, partialResult)
-                        end
-                        StoreSpSaverPartial(context.pipelineContext)
+                        StoreTerminalPartialResults(context.pipelineContext)
                         Log.Debug(
                             "Pipeline partial success accepted phase="
                                 .. tostring(partialResult.sourcePhase)
                                 .. " resultCode="
                                 .. tostring(partialResult.resultCode)
-                                .. " skillNotPurchased="
-                                .. tostring(type(partialResult.residualSummary) == "table" and partialResult.residualSummary.skillNotPurchased or 0)
                                 .. " expectedMissingPurchaseCount="
                                 .. tostring(type(partialResult.residualSummary) == "table" and partialResult.residualSummary.expectedMissingPurchaseCount or 0)
+                                .. " expectedMissingMorphCount="
+                                .. tostring(type(partialResult.residualSummary) == "table" and partialResult.residualSummary.expectedMissingMorphCount or 0)
                         )
                         LogFinalizeSuccess("partial_success_clean_exit", context)
                         LTM_PIPELINE_FINALIZE:NotifyPipelineContinuation(context, true, nil)

@@ -36,6 +36,13 @@ local C_LINE_EMS  = { r = 1.00, g = 0.78, b = 0.90, a = 1.00 }  -- brighter pink
 
 local C_NONCRIT   = { r = 0.34, g = 0.55, b = 0.40, a = 0.90 }  -- muted green base
 local C_CRIT      = { r = 1.00, g = 0.85, b = 0.40, a = 0.96 }  -- bright gold (crit pops)
+local C_LINE_DMG  = { r = 0.93, g = 0.44, b = 0.38, a = 0.60 }
+local C_FILL_DMG  = { r = 0.90, g = 0.38, b = 0.32, a = 0.10 }
+local C_MARK_DEATH = { r = 0.92, g = 0.88, b = 0.84, a = 0.55 }
+local C_MARK_RES   = { r = 0.45, g = 1.00, b = 0.62, a = 0.55 }
+local TEX_SKULL    = "EsoUI/Art/TargetMarkers/Target_White_Skull_64.dds"
+local TEX_RES      = "EsoUI/Art/Notifications/notificationIcon_resurrect.dds"
+local MARK_ICON_SZ = 16
 
 local C_VIEWPORT  = { r = 0.78, g = 1.00, b = 0.86 }
 
@@ -57,7 +64,8 @@ local recording_start_ms = 0
 local VIEW_EMS    = 1
 local VIEW_SKILL  = 2
 local VIEW_CRIT   = 3
-local VIEW_LABELS = { "EMS", "SKILL", "CRIT" }
+local VIEW_BUFFS  = 4
+local VIEW_LABELS = { "EMS", "SKILL", "CRIT", "BUFFS" }
 local current_view = VIEW_EMS
 
 -- SKILL view shield orientation: false = shields grow UP from the subplot floor
@@ -74,6 +82,23 @@ local hover_key  = nil
 local hit_main = { cols = {}, n = 0 }
 local hit_top  = { cols = {}, n = 0 }
 local hit_bot  = { cols = {}, n = 0 }
+local buff_hit = { n = 0, y0 = {}, y1 = {}, rec = {}, lane_x = 0, lane_w = 0, t0 = 0, span = 0 }
+local buff_vis = {}
+local C_BUFF_FALLBACK = { r = 0.55, g = 0.92, b = 0.62, a = 0.95 }
+
+local function buff_color(rec)
+  if rec.group and rec.group ~= "other" then
+    return Verdant.SkillColors.group_color(rec.group)
+  end
+  return C_BUFF_FALLBACK
+end
+
+local function buff_description(rec)
+  local d = rec.desc
+  if d and d ~= "" then return d end
+  Verdant.Diagnostics.bump("buffs.desc_miss")
+  return nil
+end
 local C_DIM_BIAS = 0.05
 local render_current_view
 
@@ -92,7 +117,7 @@ local C_CARD_TIME   = { r = 0.64, g = 0.72, b = 0.66, a = 1.0 }
 local C_CROSSHAIR   = { r = 0.50, g = 1.00, b = 0.62, a = 0.50 }
 
 local function fmt_val(v)
-  return ZO_AbbreviateAndLocalizeNumber(math_floor(v), 0, false)
+  return ZO_AbbreviateAndLocalizeNumber(math_floor(v), NUMBER_ABBREVIATION_PRECISION_TENTHS, false)
 end
 
 local function fmt_secs(ms)
@@ -122,8 +147,13 @@ local function line_reset(line)
   line:ClearAnchors()
 end
 
-local function make_fill_pool(name_prefix)
-  return Pool.new(name_prefix, controls.canvas, CT_TEXTURE, fill_factory, fill_reset)
+local function make_fill_pool(name_prefix, draw_level)
+  return Pool.new(name_prefix, controls.canvas, CT_TEXTURE,
+    function(c)
+      fill_factory(c)
+      c:SetDrawLevel(draw_level or 2)
+    end,
+    fill_reset)
 end
 
 local function make_skill_fill_pool(name_prefix, canvas_key)
@@ -131,7 +161,12 @@ local function make_skill_fill_pool(name_prefix, canvas_key)
 end
 
 local function make_line_pool(name_prefix)
-  return Pool.new_virtual(name_prefix, controls.canvas, "VerdantGraphLineTemplate", line_factory, line_reset)
+  return Pool.new_virtual(name_prefix, controls.canvas, "VerdantGraphLineTemplate",
+    function(c)
+      line_factory(c)
+      c:SetDrawLevel(3)
+    end,
+    line_reset)
 end
 
 local function make_skill_line_pool(name_prefix, canvas_key)
@@ -171,6 +206,15 @@ local function create_grid(prefix, parent_ctrl)
     obj.vlines[i] = vl
   end
 
+  local ymax = WM:CreateControl(prefix .. "YMax", parent_ctrl, CT_LABEL)
+  ymax:SetFont("ZoFontGameSmall")
+  ymax:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+  ymax:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
+  ymax:SetColor(C_GRID_LBL.r, C_GRID_LBL.g, C_GRID_LBL.b, C_GRID_LBL.a)
+  ymax:SetDimensions(54, 10)
+  ymax:SetHidden(true)
+  obj.ymax = ymax
+
   local function make_time_lbl(name, align)
     local t = WM:CreateControl(name, parent_ctrl, CT_LABEL)
     t:SetFont("ZoFontGameSmall")
@@ -199,6 +243,7 @@ local function hide_grid(grid)
   grid.time_l:SetHidden(true)
   grid.time_m:SetHidden(true)
   grid.time_r:SetHidden(true)
+  grid.ymax:SetHidden(true)
 end
 
 local function draw_grid(grid, canvas, max_val, span_ms, flip)
@@ -237,11 +282,17 @@ local function draw_grid(grid, canvas, max_val, span_ms, flip)
       lbl:SetText(fmt_val(max_val * frac))
       lbl:SetHidden(false)
     end
+    local ymax_y = flip and (y_base + 2) or (y_base + ch_plot - 12)
+    grid.ymax:ClearAnchors()
+    grid.ymax:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, 2, -ymax_y)
+    grid.ymax:SetText(fmt_val(max_val))
+    grid.ymax:SetHidden(false)
   else
     for i = 1, N_HGRID do
       grid.hlines[i]:SetHidden(true)
       grid.ylabels[i]:SetHidden(true)
     end
+    grid.ymax:SetHidden(true)
   end
 
   for i = 1, N_VGRID do
@@ -278,10 +329,23 @@ local function draw_grid(grid, canvas, max_val, span_ms, flip)
 end
 
 local function release_all_pools()
+  if controls.pool_marker_line then
+    controls.pool_marker_line:ReleaseAllObjects()
+    controls.pool_marker_icon:ReleaseAllObjects()
+    controls.pool_marker_line_top:ReleaseAllObjects()
+    controls.pool_marker_icon_top:ReleaseAllObjects()
+  end
+  if controls.pool_buff_seg then
+    controls.pool_buff_seg:ReleaseAllObjects()
+    controls.pool_buff_icon:ReleaseAllObjects()
+    controls.pool_buff_lbl:ReleaseAllObjects()
+  end
   controls.pool_ehps:ReleaseAllObjects()
   controls.pool_mps:ReleaseAllObjects()
   controls.pool_line_ehps:ReleaseAllObjects()
   controls.pool_line_ems:ReleaseAllObjects()
+  controls.pool_line_dmg:ReleaseAllObjects()
+  controls.pool_dmg_fill:ReleaseAllObjects()
   controls.pool_skill_top:ReleaseAllObjects()
   controls.pool_skill_bot:ReleaseAllObjects()
   controls.pool_line_skill_top:ReleaseAllObjects()
@@ -334,6 +398,7 @@ local function layout_skill_area()
 end
 
 local r1_xs, r1_ehps_hs, r1_ems_hs = {}, {}, {}
+local r1_d_hs = {}
 local r2_xs_top, r2_colh_top       = {}, {}
 local r2_xs_bot, r2_colh_bot       = {}, {}
 local r3_xs, r3_top_hs             = {}, {}
@@ -363,6 +428,7 @@ local function decimate(cw)
       col.eHPS = s.eHPS; col.ehps_groups = s.ehps_groups; col.ehps_abilities = s.ehps_abilities
       col.noncrit = s.noncrit; col.crit = s.crit
       col.MPS = s.MPS; col.mps_groups = s.mps_groups; col.mps_abilities = s.mps_abilities
+      col.d = s.d or 0
       cur_c = c
     else
       if ems > col.ems_peak then col.ems_peak = ems; col.e1 = s.eHPS; col.m1 = s.MPS end
@@ -371,6 +437,7 @@ local function decimate(cw)
         col.noncrit = s.noncrit; col.crit = s.crit
       end
       if s.MPS > col.MPS then col.MPS = s.MPS; col.mps_groups = s.mps_groups; col.mps_abilities = s.mps_abilities end  -- MPS-peak
+      if (s.d or 0) > col.d then col.d = s.d end
       col.t = s.t
     end
   end)
@@ -477,6 +544,14 @@ local function build_hover_card()
   time:SetAnchor(TOPLEFT, root, TOPLEFT, 12, 40)
   time:SetDimensions(CARD_W - 20, 12)
 
+  local desc = WM:CreateControl("VerdantHoverCardDesc", root, CT_LABEL)
+  desc:SetFont("ZoFontGameSmall")
+  desc:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+  desc:SetVerticalAlignment(TEXT_ALIGN_TOP)
+  desc:SetMaxLineCount(0)
+  desc:SetColor(C_CARD_STAT.r, C_CARD_STAT.g, C_CARD_STAT.b, 0.92)
+  desc:SetHidden(true)
+
   local rows = {}
   for i = 1, CARD_MAX_ROWS do
     local y = CARD_ROWS_Y0 + (i - 1) * CARD_ROW_H
@@ -507,7 +582,7 @@ local function build_hover_card()
     rows[i] = { icon = icon, name = rn, val = rv }
   end
 
-  controls.card = { root = root, swatch = swatch, name = name, stat = stat, time = time, rows = rows }
+  controls.card = { root = root, swatch = swatch, name = name, stat = stat, time = time, desc = desc, rows = rows }
 end
 
 local function clear_card_rows(card)
@@ -517,6 +592,7 @@ local function clear_card_rows(card)
     local r = rows[i]
     r.icon:SetHidden(true); r.name:SetHidden(true); r.val:SetHidden(true)
   end
+  if card.desc then card.desc:SetHidden(true) end
 end
 
 local function position_card(mx, my)
@@ -613,6 +689,7 @@ local function hit_col(H, i, x, bw, s)
   if not col then col = { bands = {} }; H.cols[i] = col end
   col.x0 = x; col.x1 = x + bw; col.nb = 0; col.t = s.t
   col.ehps = s.e1; col.mps = s.m1; col.crit = s.crit; col.noncrit = s.noncrit
+  col.d = s.d or 0
   col.ehps_abilities = s.ehps_abilities; col.mps_abilities = s.mps_abilities
   return col
 end
@@ -642,6 +719,101 @@ local function probe(canvas, H, mx, my)
   return true, band, col
 end
 
+local function show_buff_card(rec, t_at, conc_at, mx, my)
+  local card = controls.card
+  if not card then return end
+  local BT  = Verdant.BuffTracker
+  local c   = buff_color(rec)
+  local dur = BT.session_end() - BT.session_start()
+  local pct = (dur > 0) and math_floor(rec.uptime_ms / dur * 100 + 0.5) or 0
+
+  card.swatch:SetColor(c.r, c.g, c.b, 1.0)
+  card.name:SetColor(c.r, c.g, c.b, 1.0)
+  card.name:SetText(rec.name or tostring(rec.id))
+  card.stat:SetText(string_format("%s %d%%  ·  %s", GetString(VERDANT_BUFFH_UPTIME), pct, fmt_secs(rec.uptime_ms)))
+  card.time:SetText(string_format("t  %s  ·  %d %s", fmt_secs(t_at), conc_at, GetString(VERDANT_BUFFH_HOLDERS)))
+
+  clear_card_rows(card)
+  local rows = {
+    { GetString(VERDANT_BUFFH_PLAYERS), tostring(rec.unique_units) },
+    { GetString(VERDANT_BUFFH_MAXC),    tostring(rec.max_conc) },
+    { GetString(VERDANT_BUFFH_AVGC),    string_format("%.1f", BT.avg_concurrency(rec)) },
+    { GetString(VERDANT_BUFFH_APPS),    tostring(rec.applications) },
+    { GetString(VERDANT_BUFFH_GAP),     fmt_secs(rec.longest_gap_ms) },
+  }
+  for i = 1, #rows do
+    local row = card.rows[i]
+    row.icon:SetHidden(true)
+    row.name:SetText(rows[i][1])
+    row.name:SetColor(C_CARD_STAT.r, C_CARD_STAT.g, C_CARD_STAT.b, 1.0)
+    row.name:SetHidden(false)
+    row.val:SetText(rows[i][2])
+    row.val:SetHidden(false)
+  end
+  local h = CARD_ROWS_Y0 + #rows * CARD_ROW_H + 4
+  local d = buff_description(rec)
+  if not d and rec.group == "item" then
+    d = GetString(VERDANT_BUFFH_SET_NO_TOOLTIP)
+  end
+  if d then
+    local desc = card.desc
+    desc:ClearAnchors()
+    desc:SetAnchor(TOPLEFT, card.root, TOPLEFT, 12, h + 2)
+    desc:SetWidth(CARD_W - 20)
+    desc:SetHeight(400)
+    desc:SetText(d)
+    desc:SetHidden(false)
+    local dh = desc:GetTextHeight()
+    if dh < 12 then dh = 12 end
+    desc:SetHeight(dh)
+    h = h + dh + 10
+  end
+  card.root:SetHeight(h)
+  position_card(mx, my)
+end
+
+local function buff_hover_poll(mx, my)
+  local canvas = controls.canvas
+  local rel_x  = mx - canvas:GetLeft()
+  local rel_y  = my - canvas:GetTop()
+  local cw, ch = canvas:GetWidth(), canvas:GetHeight()
+  local inside = rel_x >= 0 and rel_x <= cw and rel_y >= 0 and rel_y <= ch
+
+  local rec = nil
+  if inside then
+    for i = 1, buff_hit.n do
+      if rel_y >= buff_hit.y0[i] and rel_y <= buff_hit.y1[i] then
+        rec = buff_hit.rec[i]
+        break
+      end
+    end
+  end
+
+  local new = rec and rec.id or nil
+  if new ~= hover_key then hover_key = new; render_current_view() end
+
+  if not rec or buff_hit.span <= 0 then
+    hide_hover_ui()
+    return
+  end
+
+  local frac = (rel_x - buff_hit.lane_x) / buff_hit.lane_w
+  if frac < 0 then frac = 0 end
+  if frac > 1 then frac = 1 end
+  local t_abs = buff_hit.t0 + frac * buff_hit.span
+  local conc  = Verdant.BuffTracker.concurrency_at(rec, t_abs)
+
+  if controls.crosshair then
+    local cx = math_floor(rel_x)
+    controls.crosshair:ClearAnchors()
+    controls.crosshair:SetAnchor(TOPLEFT,    canvas, TOPLEFT,    cx, 0)
+    controls.crosshair:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, cx, 0)
+    fade_in(crosshair_fader)
+  end
+
+  show_buff_card(rec, t_abs - buff_hit.t0, conc, mx, my)
+end
+
 local function hover_poll()
   if not hover_allowed() then
     if hover_key ~= nil then hover_key = nil; render_current_view() end
@@ -649,6 +821,10 @@ local function hover_poll()
     return
   end
   local mx, my = GetUIMousePosition()
+  if current_view == VIEW_BUFFS then
+    buff_hover_poll(mx, my)
+    return
+  end
   local band, col, canvas, H, unit
   if current_view == VIEW_SKILL then
     local inside, b, c = probe(controls.ehps_canvas, hit_top, mx, my)
@@ -679,9 +855,13 @@ local function hover_poll()
   if band then
     show_card(band, col, unit or "HPS", mx, my, elapsed)
   elseif current_view == VIEW_EMS then
+    local dmg_part = ""
+    if (col.d or 0) > 0 then
+      dmg_part = string_format("  ·  |c%s%s dmg|r", hexc(C_LINE_DMG), fmt_val(col.d))
+    end
     show_moment_card(C_EHPS, "Healing",
-      string_format("|c%s%s HPS|r  ·  |c%s%s MPS|r",
-        hexc(C_EHPS), fmt_val(col.ehps or 0), hexc(C_MPS), fmt_val(col.mps or 0)),
+      string_format("|c%s%s HPS|r  ·  |c%s%s MPS|r%s",
+        hexc(C_EHPS), fmt_val(col.ehps or 0), hexc(C_MPS), fmt_val(col.mps or 0), dmg_part),
       elapsed, mx, my)
   elseif current_view == VIEW_CRIT then
     local tot = (col.crit or 0) + (col.noncrit or 0)
@@ -697,9 +877,10 @@ end
 local function update_hover_gate()
   local on    = hover_allowed()
   local skill = (current_view == VIEW_SKILL)
+  local main  = (current_view ~= VIEW_SKILL)
   if controls.hit_main then
-    controls.hit_main:SetMouseEnabled(on and not skill)
-    controls.hit_main:SetHidden(not (on and not skill))
+    controls.hit_main:SetMouseEnabled(on and main)
+    controls.hit_main:SetHidden(not (on and main))
   end
   if controls.hit_top then
     controls.hit_top:SetMouseEnabled(on and skill)
@@ -719,11 +900,41 @@ local function update_hover_gate()
   end
 end
 
+local function draw_markers(pool_line, pool_icon, canvas, t0, span, lane_x, lane_w)
+  if span <= 0 then return end
+  local ms, n = Verdant.TemporalBuffer.markers()
+  for i = 1, n do
+    local m = ms[i]
+    if m.t >= t0 and m.t <= t0 + span then
+      local x = lane_x + math_floor((m.t - t0) / span * lane_w + 0.5)
+      local c = m.death and C_MARK_DEATH or C_MARK_RES
+
+      local ln = pool_line:AcquireObject()
+      ln:ClearAnchors()
+      ln:SetAnchor(TOPLEFT,    canvas, TOPLEFT,    x, 0)
+      ln:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, x, 0)
+      ln:SetWidth(1)
+      ln:SetColor(c.r, c.g, c.b, c.a)
+      ln:SetHidden(false)
+
+      local ic = pool_icon:AcquireObject()
+      ic:ClearAnchors()
+      ic:SetTexture(m.death and TEX_SKULL or TEX_RES)
+      ic:SetDimensions(MARK_ICON_SZ, MARK_ICON_SZ)
+      ic:SetAnchor(TOPLEFT, canvas, TOPLEFT, x - math_floor(MARK_ICON_SZ / 2), 1)
+      ic:SetColor(c.r, c.g, c.b, 0.95)
+      ic:SetHidden(false)
+    end
+  end
+end
+
 local function render_view1()
   controls.pool_ehps:ReleaseAllObjects()
   controls.pool_mps:ReleaseAllObjects()
   controls.pool_line_ehps:ReleaseAllObjects()
   controls.pool_line_ems:ReleaseAllObjects()
+  controls.pool_line_dmg:ReleaseAllObjects()
+  controls.pool_dmg_fill:ReleaseAllObjects()
 
   local n = Verdant.TemporalBuffer.count()
   if n == 0 then
@@ -741,10 +952,12 @@ local function render_view1()
   local ch_plot = math_max(4, ch - TIME_STRIP_H)
 
   local max_ems = 0
+  local max_d   = 0
   local t_first, t_last = 0, 0
   Verdant.TemporalBuffer.iterate(function(i, s)
     local ems = s.eHPS + s.MPS
     if ems > max_ems then max_ems = ems end
+    if (s.d or 0) > max_d then max_d = s.d end
     if i == 1 then t_first = s.t end
     t_last = s.t
   end)
@@ -774,6 +987,17 @@ local function render_view1()
     xs[i]      = xc
     ehps_hs[i] = ehps_h
     ems_hs[i]  = ehps_h + mps_h
+    r1_d_hs[i] = (max_d > 0) and math_floor(ch_plot * 0.92 * (s.d / max_d) + 0.5) or 0
+
+    if r1_d_hs[i] > 0 then
+      local df = controls.pool_dmg_fill:AcquireObject()
+      df:ClearAnchors()
+      df:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, x, -TIME_STRIP_H)
+      df:SetWidth(bw)
+      df:SetHeight(r1_d_hs[i])
+      df:SetColor(C_FILL_DMG.r, C_FILL_DMG.g, C_FILL_DMG.b, C_FILL_DMG.a)
+      df:SetHidden(false)
+    end
 
     if ehps_h > 0 then
       local te = controls.pool_ehps:AcquireObject()
@@ -793,6 +1017,18 @@ local function render_view1()
       tm:SetHeight(mps_h)
       tm:SetColor(C_MPS.r, C_MPS.g, C_MPS.b, C_MPS.a)
       tm:SetHidden(false)
+    end
+  end
+
+  if col_w >= 3 and max_d > 0 then
+    for i = 2, m do
+      local ld = controls.pool_line_dmg:AcquireObject()
+      ld:ClearAnchors()
+      ld:SetAnchor(BOTTOMLEFT,  canvas, BOTTOMLEFT, xs[i-1], -(r1_d_hs[i-1] + TIME_STRIP_H))
+      ld:SetAnchor(BOTTOMRIGHT, canvas, BOTTOMLEFT, xs[i],   -(r1_d_hs[i]   + TIME_STRIP_H))
+      ld:SetColor(C_LINE_DMG.r, C_LINE_DMG.g, C_LINE_DMG.b, C_LINE_DMG.a)
+      ld:SetThickness(1)
+      ld:SetHidden(false)
     end
   end
 
@@ -817,6 +1053,9 @@ local function render_view1()
       lm:SetHidden(false)
     end
   end
+
+  draw_markers(controls.pool_marker_line, controls.pool_marker_icon,
+               canvas, t_first, t_last - t_first, 0, cw)
 end
 
 local function render_view2()
@@ -999,6 +1238,8 @@ local function render_view2()
       end
     end
   end
+  draw_markers(controls.pool_marker_line_top, controls.pool_marker_icon_top,
+               ec, t_first, span_ms, 0, cw)
 end
 
 local function render_view3()
@@ -1087,16 +1328,243 @@ local function render_view3()
       lt:SetHidden(false)
     end
   end
+  draw_markers(controls.pool_marker_line, controls.pool_marker_icon,
+               canvas, t_first, t_last - t_first, 0, cw)
+end
+
+local BUFF_MAX_ROW_H = 26
+local BUFF_GUTTER_W = 140
+local BUFF_ROW_GAP  = 3
+local BUFF_MIN_ROW  = 10
+local BUFF_PCT_W    = 34
+local C_BUFF_NAME   = { r = 0.86, g = 0.92, b = 0.88, a = 1.0 }
+local C_BUFF_MORE   = { r = 0.60, g = 0.66, b = 0.62, a = 0.90 }
+local C_BUFF_PCT    = { r = 0.64, g = 0.72, b = 0.66, a = 1.0 }
+local C_BUFF_LANE   = { r = 0.62, g = 1.00, b = 0.74, a = 0.05 }
+
+local function seg_alpha(conc, max_conc)
+  if max_conc <= 1 then return 0.90 end
+  return 0.40 + 0.55 * (conc / max_conc)
+end
+
+
+local function render_view4()
+  controls.pool_buff_seg:ReleaseAllObjects()
+  controls.pool_buff_icon:ReleaseAllObjects()
+  controls.pool_buff_lbl:ReleaseAllObjects()
+
+  local BT    = Verdant.BuffTracker
+  local n_all = BT.count()
+  local vis   = buff_vis
+  local n     = 0
+  for i = 1, n_all do
+    local rec = BT.get(i)
+    if not (rec.only_self and rec.desc == "" and rec.group ~= "item" and not rec.vetoed) then
+      n = n + 1
+      vis[n] = rec
+    end
+  end
+
+  if n == 0 then
+    controls.no_data:SetHidden(false)
+    hide_grid(controls.grid_ems)
+    return
+  end
+  controls.no_data:SetHidden(true)
+
+  local canvas = controls.canvas
+  local cw, ch = canvas:GetWidth(), canvas:GetHeight()
+  if cw <= BUFF_GUTTER_W + 40 or ch <= 4 then return end
+
+  local recording = Verdant.TemporalBuffer.is_recording()
+  local t0   = BT.session_start()
+  local t_hi = recording and GetGameTimeMilliseconds() or BT.session_end()
+  local span = t_hi - t0
+  if span <= 0 then return end
+
+  Verdant.Diagnostics.bump("graph.view_buffs.renders")
+  draw_grid(controls.grid_ems, canvas, 0, span)
+
+  local ch_plot = math_max(4, ch - TIME_STRIP_H)
+  local rows    = n
+  local extra   = 0
+  local row_h   = math_floor(ch_plot / rows) - BUFF_ROW_GAP
+  if row_h < BUFF_MIN_ROW then
+    rows  = math_max(1, math_floor(ch_plot / (BUFF_MIN_ROW + BUFF_ROW_GAP)) - 1)
+    if rows > n then rows = n end
+    extra = (n > rows) and 1 or 0
+    row_h = math_floor(ch_plot / (rows + extra)) - BUFF_ROW_GAP
+    if row_h < 6 then return end
+  elseif row_h > BUFF_MAX_ROW_H then
+    row_h = BUFF_MAX_ROW_H
+  end
+  if n > rows then Verdant.Diagnostics.bump("graph.view_buffs.overflow") end
+
+  local SC     = Verdant.SkillColors
+  local lane_x = BUFF_GUTTER_W
+  local lane_w = cw - BUFF_GUTTER_W
+  local isz    = (row_h < 20) and row_h or 20
+
+  local capture = not recording
+  buff_hit.n = capture and rows or 0
+  buff_hit.lane_x = lane_x
+  buff_hit.lane_w = lane_w
+  buff_hit.t0     = t0
+  buff_hit.span   = span
+  local hk = hover_key
+  local dur = capture and (BT.session_end() - BT.session_start()) or 0
+
+  for i = 1, rows do
+    local rec = vis[i]
+    local y   = (i - 1) * (row_h + BUFF_ROW_GAP)
+    local c   = buff_color(rec)
+    if capture then
+      buff_hit.y0[i]  = y
+      buff_hit.y1[i]  = y + row_h
+      buff_hit.rec[i] = rec
+    end
+
+    local lane = controls.pool_buff_seg:AcquireObject()
+    lane:ClearAnchors()
+    lane:SetAnchor(TOPLEFT, canvas, TOPLEFT, lane_x, y)
+    lane:SetWidth(lane_w)
+    lane:SetHeight(row_h)
+    lane:SetColor(C_BUFF_LANE.r, C_BUFF_LANE.g, C_BUFF_LANE.b, C_BUFF_LANE.a)
+    lane:SetHidden(false)
+
+    local icon = controls.pool_buff_icon:AcquireObject()
+    icon:ClearAnchors()
+    icon:SetTexture(SC.ability_icon(rec.id))
+    icon:SetDimensions(isz, isz)
+    icon:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, y + math_floor((row_h - isz) / 2))
+    icon:SetHidden(false)
+
+    local name_w = capture and (BUFF_GUTTER_W - isz - BUFF_PCT_W - 12)
+                            or (BUFF_GUTTER_W - isz - 10)
+    local lbl = controls.pool_buff_lbl:AcquireObject()
+    lbl:ClearAnchors()
+    lbl:SetText(rec.name or tostring(rec.id))
+    lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    if hk ~= nil and rec.id ~= hk then
+      lbl:SetColor(C_BUFF_NAME.r * 0.45, C_BUFF_NAME.g * 0.45, C_BUFF_NAME.b * 0.45, 0.6)
+    else
+      lbl:SetColor(C_BUFF_NAME.r, C_BUFF_NAME.g, C_BUFF_NAME.b, C_BUFF_NAME.a)
+    end
+    lbl:SetDimensions(name_w, row_h)
+    lbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, isz + 4, y)
+    lbl:SetHidden(false)
+
+    if capture and dur > 0 then
+      local pct = controls.pool_buff_lbl:AcquireObject()
+      pct:ClearAnchors()
+      pct:SetText(string_format("%d%%", math_floor(rec.uptime_ms / dur * 100 + 0.5)))
+      pct:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+      if hk ~= nil and rec.id ~= hk then
+        pct:SetColor(C_BUFF_PCT.r * 0.45, C_BUFF_PCT.g * 0.45, C_BUFF_PCT.b * 0.45, 0.6)
+      else
+        pct:SetColor(C_BUFF_PCT.r, C_BUFF_PCT.g, C_BUFF_PCT.b, C_BUFF_PCT.a)
+      end
+      pct:SetDimensions(BUFF_PCT_W, row_h)
+      pct:SetAnchor(TOPLEFT, canvas, TOPLEFT, BUFF_GUTTER_W - BUFF_PCT_W - 6, y)
+      pct:SetHidden(false)
+    end
+
+    local n_steps = rec.n_steps
+    for k = 1, n_steps do
+      local conc = rec.step_c[k]
+      if conc > 0 then
+        local st = rec.step_t[k]
+        local en = (k < n_steps) and rec.step_t[k + 1] or t_hi
+        if en > t_hi then en = t_hi end
+        if en > st then
+          local x0 = lane_x + math_floor((st - t0) / span * lane_w + 0.5)
+          local x1 = lane_x + math_floor((en - t0) / span * lane_w + 0.5)
+          local bw = math_max(1, x1 - x0)
+          local seg = controls.pool_buff_seg:AcquireObject()
+          seg:ClearAnchors()
+          seg:SetAnchor(TOPLEFT, canvas, TOPLEFT, x0, y)
+          seg:SetWidth(bw)
+          seg:SetHeight(row_h)
+          local a = seg_alpha(conc, rec.max_conc)
+          if hk ~= nil and rec.id ~= hk then
+            seg:SetColor(c.r * 0.30 + C_DIM_BIAS, c.g * 0.30 + C_DIM_BIAS,
+                         c.b * 0.30 + C_DIM_BIAS, 0.25)
+          else
+            seg:SetColor(c.r, c.g, c.b, a)
+          end
+          seg:SetHidden(false)
+        end
+      end
+    end
+  end
+
+  draw_markers(controls.pool_marker_line, controls.pool_marker_icon,
+               canvas, t0, span, lane_x, lane_w)
+
+  if n > rows then
+    local more = controls.pool_buff_lbl:AcquireObject()
+    more:ClearAnchors()
+    more:SetText(string_format(GetString(VERDANT_BUFFS_MORE), n - rows))
+    more:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    more:SetColor(C_BUFF_MORE.r, C_BUFF_MORE.g, C_BUFF_MORE.b, C_BUFF_MORE.a)
+    more:SetDimensions(cw, row_h)
+    more:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, rows * (row_h + BUFF_ROW_GAP))
+    more:SetHidden(false)
+  end
 end
 
 function render_current_view()
+  if controls.pool_marker_line then
+    controls.pool_marker_line:ReleaseAllObjects()
+    controls.pool_marker_icon:ReleaseAllObjects()
+    controls.pool_marker_line_top:ReleaseAllObjects()
+    controls.pool_marker_icon_top:ReleaseAllObjects()
+  end
   if current_view == VIEW_EMS then
     render_view1()
   elseif current_view == VIEW_CRIT then
     render_view3()
+  elseif current_view == VIEW_BUFFS then
+    render_view4()
   else
     layout_skill_area()
     render_view2()
+  end
+end
+
+local summary_text = nil
+
+local C_SUM_AVG  = C_LINE_EHPS
+local C_SUM_PEAK = C_LINE_EMS
+local C_SUM_CRIT = C_CRIT
+local C_SUM_VAL  = { r = 0.92, g = 0.95, b = 0.93 }
+
+local function build_summary_text()
+  local s = Verdant.TemporalBuffer.summary()
+  if s.count == 0 then return nil end
+  local vc = hexc(C_SUM_VAL)
+  local crit_pct = math_floor(s.crit_pct * 100 + 0.5)
+  return string_format(
+    "|c%s%s|r |c%s%s|r   |c%s%s|r |c%s%s|r   |c%s%s|r |c%s%d%%|r",
+    hexc(C_SUM_AVG),  GetString(VERDANT_SUMMARY_AVG),  vc, fmt_val(s.avg_ems),
+    hexc(C_SUM_PEAK), GetString(VERDANT_SUMMARY_PEAK), vc, fmt_val(s.peak_ems),
+    hexc(C_SUM_CRIT), GetString(VERDANT_SUMMARY_CRIT), vc, crit_pct)
+end
+
+local function update_summary_chip()
+  local chip = controls.summary
+  if not chip then return end
+  local show = summary_text ~= nil
+            and not Verdant.TemporalBuffer.is_recording()
+            and Verdant.TemporalBuffer.count() > 0
+  if show then
+    chip.label:SetText(summary_text)
+    chip.bg:SetWidth(chip.label:GetTextWidth() + 16)
+    chip.bg:SetHidden(false)
+    chip.label:SetHidden(false)
+  else
+    chip.bg:SetHidden(true)
+    chip.label:SetHidden(true)
   end
 end
 
@@ -1105,14 +1573,20 @@ local function refresh_button_colors()
   controls.btn_record:SetEnabled(not recording)
   controls.btn_stop:SetEnabled(recording)
   update_hover_gate()
+  update_summary_chip()
 end
 
 local function set_view(v)
   current_view = v
   controls.view_label:SetText(VIEW_LABELS[v])
   hover_key = nil
+  if v == VIEW_BUFFS then
+    controls.no_data:SetText(GetString(VERDANT_GRAPH_NO_BUFFS))
+  else
+    controls.no_data:SetText(GetString(VERDANT_GRAPH_NO_DATA))
+  end
 
-  local use_main_canvas = (v == VIEW_EMS or v == VIEW_CRIT)
+  local use_main_canvas = (v ~= VIEW_SKILL)
   controls.canvas:SetHidden(not use_main_canvas)
   controls.skill_area:SetHidden(use_main_canvas)
 
@@ -1145,12 +1619,15 @@ local function on_sample_update()
   Verdant.Metrics.MPS_by_group_into(sample_mps_groups, now)
   Verdant.Metrics.eHPS_by_ability_into(sample_ehps_abilities, now)
   Verdant.Metrics.MPS_by_ability_into(sample_mps_abilities, now)
+  local d_group = Verdant.Metrics.D_group(now)
   Verdant.TemporalBuffer.push(now, ehps, mps, crit, noncrit,
                               sample_ehps_groups, sample_mps_groups,
-                              sample_ehps_abilities, sample_mps_abilities)
+                              sample_ehps_abilities, sample_mps_abilities, d_group)
+  Verdant.BuffTracker.expire_stale(now)
 
   local elapsed = math_floor((now - recording_start_ms) / 1000)
-  controls.status:SetText(string_format("%d:%02d", math_floor(elapsed / 60), elapsed % 60))
+  local prefix  = Verdant.AutoRecord.is_auto_session() and "AUTO " or ""
+  controls.status:SetText(string_format("%s%d:%02d", prefix, math_floor(elapsed / 60), elapsed % 60))
 
   if not controls.window:IsHidden() then
     render_current_view()
@@ -1161,12 +1638,17 @@ end
 function M.on_record_click()
   if Verdant.TemporalBuffer.is_recording() then return end
   log:info("record click")
+  if not Verdant.AutoRecord.is_auto_active() then
+    Verdant.AutoRecord.notify_manual_record()
+  end
+  summary_text = nil
   Verdant.TemporalBuffer.clear()
   release_all_pools()
   hide_all_grids()
   controls.no_data:SetHidden(false)
   Verdant.TemporalBuffer.start_recording()
   recording_start_ms = GetGameTimeMilliseconds()
+  Verdant.BuffTracker.start_session(recording_start_ms)
   local sv       = Verdant.SavedVars
   local interval = (sv and sv.temporal and sv.temporal.sample_rate_ms)
                    or Verdant.Constants.TEMPORAL.SAMPLE_RATE_DEFAULT
@@ -1178,8 +1660,16 @@ end
 function M.on_stop_click()
   if not Verdant.TemporalBuffer.is_recording() then return end
   log:info("stop click")
+  Verdant.AutoRecord.notify_manual_stop()
   Verdant.TemporalBuffer.stop_recording()
   zev.unregister_update(Verdant.Constants.TEMPORAL.UPDATE_NAME)
+  Verdant.BuffTracker.finalize(GetGameTimeMilliseconds())
+  summary_text = build_summary_text()
+  local s = Verdant.TemporalBuffer.summary()
+  Verdant.Diagnostics.bump("graph.summary.computed")
+  log:info("session summary: samples=", s.count, "dur_ms=", s.dur_ms,
+           "avg_ems=", math_floor(s.avg_ems), "peak_ems=", math_floor(s.peak_ems),
+           "crit_pct=", math_floor(s.crit_pct * 100 + 0.5))
   refresh_button_colors()
   render_current_view()
 end
@@ -1189,6 +1679,8 @@ function M.on_flush_click()
     zev.unregister_update(Verdant.Constants.TEMPORAL.UPDATE_NAME)
     Verdant.TemporalBuffer.stop_recording()
   end
+  Verdant.BuffTracker.reset()
+  summary_text = nil
   Verdant.TemporalBuffer.clear()
   release_all_pools()
   hide_all_grids()
@@ -1227,14 +1719,14 @@ end
 
 function M.prev_view()
   local v = current_view - 1
-  if v < VIEW_EMS then v = VIEW_CRIT end
+  if v < VIEW_EMS then v = VIEW_BUFFS end
   release_all_pools()
   set_view(v)
 end
 
 function M.next_view()
   local v = current_view + 1
-  if v > VIEW_CRIT then v = VIEW_EMS end
+  if v > VIEW_BUFFS then v = VIEW_EMS end
   release_all_pools()
   set_view(v)
 end
@@ -1257,7 +1749,7 @@ function M.toggle()
   log:info("toggle ->", now_visible and "show" or "hide")
   Verdant.Visibility.set("graph", now_visible)
   if now_visible then
-    local use_main_canvas = (current_view == VIEW_EMS or current_view == VIEW_CRIT)
+    local use_main_canvas = (current_view ~= VIEW_SKILL)
     controls.canvas:SetHidden(not use_main_canvas)
     controls.skill_area:SetHidden(use_main_canvas)
     render_current_view()
@@ -1323,10 +1815,46 @@ function M.init()
   controls.pool_mps            = make_fill_pool("VerdantGraphFillMps")
   controls.pool_line_ehps      = make_line_pool("VerdantGraphLineEhps")
   controls.pool_line_ems       = make_line_pool("VerdantGraphLineEms")
+  controls.pool_line_dmg       = make_line_pool("VerdantGraphLineDmg")
+  controls.pool_dmg_fill       = make_fill_pool("VerdantGraphDmgFill", 1)
+  controls.pool_marker_line = Pool.new("VerdantMarkerLine", controls.canvas, CT_TEXTURE,
+    function(c)
+      fill_factory(c)
+      c:SetDrawLevel(4)
+    end, fill_reset)
+  controls.pool_marker_icon = Pool.new("VerdantMarkerIcon", controls.canvas, CT_TEXTURE,
+    function(c)
+      c:SetPixelRoundingEnabled(false)
+      c:SetDrawLevel(5)
+    end,
+    function(c) c:SetHidden(true) end)
+  controls.pool_marker_line_top = Pool.new("VerdantMarkerLineTop", controls.ehps_canvas, CT_TEXTURE,
+    function(c)
+      fill_factory(c)
+      c:SetDrawLevel(4)
+    end, fill_reset)
+  controls.pool_marker_icon_top = Pool.new("VerdantMarkerIconTop", controls.ehps_canvas, CT_TEXTURE,
+    function(c)
+      c:SetPixelRoundingEnabled(false)
+      c:SetDrawLevel(5)
+    end,
+    function(c) c:SetHidden(true) end)
   controls.pool_skill_top      = make_skill_fill_pool("VerdantSkillFillTop", "ehps_canvas")
   controls.pool_skill_bot      = make_skill_fill_pool("VerdantSkillFillBot", "mps_canvas")
   controls.pool_line_skill_top = make_skill_line_pool("VerdantSkillLineTop", "ehps_canvas")
   controls.pool_line_skill_bot = make_skill_line_pool("VerdantSkillLineBot", "mps_canvas")
+
+  controls.pool_buff_seg = make_fill_pool("VerdantBuffSeg")
+  controls.pool_buff_icon = Pool.new("VerdantBuffIcon", controls.canvas, CT_TEXTURE,
+    function(c) c:SetPixelRoundingEnabled(false) end,
+    function(c) c:SetHidden(true) end)
+  controls.pool_buff_lbl = Pool.new("VerdantBuffLbl", controls.canvas, CT_LABEL,
+    function(c)
+      c:SetFont("ZoFontGameSmall")
+      c:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+      c:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    end,
+    function(c) c:SetHidden(true) end)
 
   controls.title:SetText(GetString(VERDANT_GRAPH_TITLE))
   controls.title:SetColor(0.75, 0.75, 0.75, 1)
@@ -1359,6 +1887,26 @@ function M.init()
   controls.ehps_label:SetColor(C_LINE_EHPS.r, C_LINE_EHPS.g, C_LINE_EHPS.b, 0.80)
   controls.mps_label:SetText("MPS")
   controls.mps_label:SetColor(C_LINE_EMS.r, C_LINE_EMS.g, C_LINE_EMS.b, 0.80)
+
+  local sum_bg = WM:CreateControl("VerdantGraphSummaryBg", controls.window, CT_TEXTURE)
+  sum_bg:SetTexture(FILL_TEXTURE)
+  sum_bg:SetTextureCoords(0, 1, 0, 0.05)
+  sum_bg:SetColor(0.04, 0.09, 0.06, 0.55)
+  sum_bg:SetAnchor(TOPRIGHT, controls.window, TOPRIGHT, -14, 61)
+  sum_bg:SetHeight(20)
+  sum_bg:SetDrawLevel(11)
+  sum_bg:SetHidden(true)
+
+  local sum_label = WM:CreateControl("VerdantGraphSummaryLabel", controls.window, CT_LABEL)
+  sum_label:SetFont("ZoFontGameSmall")
+  sum_label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+  sum_label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+  sum_label:SetAnchor(TOPRIGHT, controls.window, TOPRIGHT, -22, 61)
+  sum_label:SetHeight(20)
+  sum_label:SetDrawLevel(12)
+  sum_label:SetHidden(true)
+
+  controls.summary = { bg = sum_bg, label = sum_label }
 
   build_hover_card()
   card_fader = make_fader(controls.card.root)

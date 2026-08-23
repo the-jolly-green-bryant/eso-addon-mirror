@@ -73,9 +73,7 @@ local function CloneConfigWithMeta(config, meta)
 end
 
 local function TracePipeline(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function NotifyPhaseUpdate(context, phaseName)
@@ -100,18 +98,6 @@ local function NotifyStatusUpdate(context, statusName, detail)
     if ok ~= true then
         Log.Debug("Pipeline status update callback failed error=" .. tostring(err))
     end
-end
-
-local function ResolvePipelineTimestamp()
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.GetFrameTimeMillisecondsSafe) == "function" then
-        return SHARED_UTIL:GetFrameTimeMillisecondsSafe()
-    end
-
-    if type(GetTimeStamp) == "function" then
-        return GetTimeStamp()
-    end
-
-    return 0
 end
 
 local function MarkPipelineAbortRequested(context, reason, phaseName)
@@ -184,19 +170,13 @@ local function AppendPhase(phases, name, module, config)
     }
 end
 
-local function GetPlannedPhaseConfig(plan, key, fallback)
-    if type(plan) == "table" and type(plan.configs) == "table" and plan.configs[key] ~= nil then
-        return plan.configs[key]
-    end
-
-    return fallback
+local function GetPlannedPhaseConfig(plan, key)
+    return plan.configs[key]
 end
 
-function LTM_PIPELINE:BuildPhases(build, continuation, context)
+function LTM_PIPELINE:BuildPhases(continuation, context)
     local phases = {}
-    local plan = type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.GetResolvedPlan) == "function"
-        and LTM_PIPELINE_CONTEXT:GetResolvedPlan(context)
-        or nil
+    local plan = LTM_PIPELINE_CONTEXT:GetResolvedPlan(context)
     local meta = {
         _pipelineContext = context,
         _pipelineContinuation = continuation,
@@ -207,52 +187,49 @@ function LTM_PIPELINE:BuildPhases(build, continuation, context)
             phaseName = "equipment_apply",
             displayName = "Equipment",
             module = LTM_EQUIPMENT_APPLY,
-            config = GetPlannedPhaseConfig(plan, "equipment", {
-                equipment = build.equipment,
-                outfit = build.outfit,
-            }),
+            config = GetPlannedPhaseConfig(plan, "equipment"),
         },
         {
             phaseName = "role_apply",
             displayName = "Role",
             module = LTM_ROLE_APPLY,
-            config = GetPlannedPhaseConfig(plan, "role", build.role),
+            config = GetPlannedPhaseConfig(plan, "role"),
         },
         {
             phaseName = "subclass_apply",
             displayName = "Subclass",
             module = LTM_SUBCLASS_APPLY,
-            config = GetPlannedPhaseConfig(plan, "subclass", build.subclass),
+            config = GetPlannedPhaseConfig(plan, "subclass"),
         },
         {
             phaseName = "skill_apply",
             displayName = "Skills",
             module = LTM_SKILL_APPLY,
-            config = GetPlannedPhaseConfig(plan, "skills", build.skills),
+            config = GetPlannedPhaseConfig(plan, "skills"),
         },
         {
             phaseName = "skill_passive_apply",
             displayName = "PassiveSkills",
             module = LTM_SKILL_PASSIVE_APPLY,
-            config = GetPlannedPhaseConfig(plan, "skillPassive", {}),
+            config = GetPlannedPhaseConfig(plan, "skillPassive"),
         },
         {
             phaseName = "class_mastery_apply",
             displayName = "ClassMastery",
             module = LTM_CLASS_MASTERY_APPLY,
-            config = GetPlannedPhaseConfig(plan, "classMastery", build.classMastery),
+            config = GetPlannedPhaseConfig(plan, "classMastery"),
         },
         {
             phaseName = "attribute_apply",
             displayName = "Attribute",
             module = LTM_ATTRIBUTE_APPLY,
-            config = GetPlannedPhaseConfig(plan, "attributes", build.attributes),
+            config = GetPlannedPhaseConfig(plan, "attributes"),
         },
         {
             phaseName = "champion_apply",
             displayName = "ChampionPoints",
             module = LTM_CHAMPION_APPLY,
-            config = GetPlannedPhaseConfig(plan, "championPoints", build.championPoints),
+            config = GetPlannedPhaseConfig(plan, "championPoints"),
         },
         {
             phaseName = "finalize",
@@ -262,16 +239,13 @@ function LTM_PIPELINE:BuildPhases(build, continuation, context)
         },
     }
 
-    local allowed = nil
-    if type(plan) == "table" and type(plan.phases) == "table" then
-        allowed = {}
-        for _, phaseName in ipairs(plan.phases) do
-            allowed[phaseName] = true
-        end
+    local allowed = {}
+    for _, phaseName in ipairs(plan.phases) do
+        allowed[phaseName] = true
     end
 
     for _, spec in ipairs(phaseSpecs) do
-        if allowed == nil or allowed[spec.phaseName] then
+        if allowed[spec.phaseName] then
             local phaseMeta = CloneConfigWithMeta(meta, {
                 _pipelinePhaseName = spec.displayName,
             })
@@ -346,19 +320,6 @@ local function RunSafeAbortCleanup(context, onComplete)
         end
     end
 
-    if type(LTM_APPLY_START_STATE) ~= "table"
-        or type(LTM_APPLY_START_STATE.NormalizeToHudBaseline) ~= "function" then
-        Log.Debug(
-            "Pipeline safe abort cleanup skipped reason=normalize_helper_unavailable"
-                .. " abortReason="
-                .. tostring(abortReason)
-                .. " runId="
-                .. tostring(context.runId)
-        )
-        finish(false, "normalize_helper_unavailable", nil)
-        return
-    end
-
     local started, startErr = LTM_APPLY_START_STATE:NormalizeToHudBaseline(function(ok, cleanReason, cleanSnapshot)
         finish(ok == true, cleanReason, cleanSnapshot)
     end)
@@ -425,12 +386,9 @@ end
 local function BuildTerminalDomainResults(context, success, err)
     local results = {}
     local domainIndex = {}
-    local sourceResults = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetDomainResults) == "function"
-        and LTM_PIPELINE_CONTEXT:GetDomainResults(context)
-        or (type(context) == "table" and context.domainResults or {})
+    local sourceResults = LTM_PIPELINE_CONTEXT:GetDomainResults(context)
 
-    for _, source in ipairs(sourceResults or {}) do
+    for _, source in ipairs(sourceResults) do
         local domain = type(source) == "table" and (source.domain or source.sourcePhase) or nil
         if type(domain) == "string" and domain ~= "" and domainIndex[domain] == nil then
             local entry = CloneTerminalDomainEntry(source, #results + 1)
@@ -515,18 +473,12 @@ local function BuildTerminalDomainResultTrace(results)
     return table.concat(entries, ",")
 end
 
-local function ResolveSpSaverRuntimeSummary(context)
-    return type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverRuntimeSummary) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverRuntimeSummary(context)
-        or nil
+local function ResolveSkillSettingsRuntimeSummary(context)
+    return LTM_PIPELINE_CONTEXT:GetSkillSettingsRuntimeSummary(context)
 end
 
-local function ResolveSpSaverExpectedSummary(context)
-    return type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverExpectedSummary) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverExpectedSummary(context)
-        or nil
+local function ResolveSkillSettingsExpectedSummary(context)
+    return LTM_PIPELINE_CONTEXT:GetSkillSettingsExpectedSummary(context)
 end
 
 local function NotifyPipelineCompletion(context, success, err)
@@ -547,15 +499,11 @@ local function NotifyPipelineCompletion(context, success, err)
     end
 
     context.pipelineCompletionNotified = true
-    if type(Log.LogEnd) == "function" and context.logBuildName ~= nil then
+    if context.logBuildName ~= nil then
         Log.LogEnd(context.logBuildName)
     end
-    if type(Log.LogDebugSaved) == "function" then
-        Log.LogDebugSaved()
-    end
-    if type(LTM_PIPELINE) == "table" and type(LTM_PIPELINE.FinishRun) == "function" then
-        LTM_PIPELINE:FinishRun(context.runId)
-    end
+    Log.LogDebugSaved()
+    LTM_PIPELINE:FinishRun(context.runId)
     local terminalDomainResults = BuildTerminalDomainResults(context, success, err)
     local finalResult = nil
     if success == true then
@@ -568,8 +516,8 @@ local function NotifyPipelineCompletion(context, success, err)
                 residualSummary = partialResult.residualSummary,
                 sourcePhase = partialResult.sourcePhase,
                 results = terminalDomainResults,
-                spSaver = ResolveSpSaverRuntimeSummary(context),
-                spSaverExpected = ResolveSpSaverExpectedSummary(context),
+                skillSettingsRuntime = ResolveSkillSettingsRuntimeSummary(context),
+                skillSettingsExpected = ResolveSkillSettingsExpectedSummary(context),
             }
         else
             finalResult = {
@@ -579,8 +527,8 @@ local function NotifyPipelineCompletion(context, success, err)
                 residualSummary = nil,
                 sourcePhase = nil,
                 results = terminalDomainResults,
-                spSaver = ResolveSpSaverRuntimeSummary(context),
-                spSaverExpected = ResolveSpSaverExpectedSummary(context),
+                skillSettingsRuntime = ResolveSkillSettingsRuntimeSummary(context),
+                skillSettingsExpected = ResolveSkillSettingsExpectedSummary(context),
             }
         end
     else
@@ -599,8 +547,8 @@ local function NotifyPipelineCompletion(context, success, err)
             isSafeAbort = isSafeAbort,
             safeAbortReason = isSafeAbort and context.cancelReason or nil,
             results = terminalDomainResults,
-            spSaver = ResolveSpSaverRuntimeSummary(context),
-            spSaverExpected = ResolveSpSaverExpectedSummary(context),
+            skillSettingsRuntime = ResolveSkillSettingsRuntimeSummary(context),
+            skillSettingsExpected = ResolveSkillSettingsExpectedSummary(context),
         }
     end
 
@@ -616,9 +564,7 @@ local function NotifyPipelineCompletion(context, success, err)
 end
 
 local function ResolveLogBuildName(build)
-    local defaultBuildName = type(LTM) == "table" and type(LTM.GetStringText) == "function"
-        and LTM.GetStringText("SI_LTM_COMMON_BUILD")
-        or "Build"
+    local defaultBuildName = LTM.GetStringText("SI_LTM_COMMON_BUILD")
     if type(build) ~= "table" then
         return defaultBuildName
     end
@@ -640,12 +586,10 @@ end
 
 local function ResolveUserPhaseName(phaseName)
     if phaseName == "ChampionPoints" then
-        return type(LTM) == "table" and type(LTM.GetStringText) == "function"
-            and LTM.GetStringText("SI_LTM_PHASE_NAME_CHAMPION_POINTS")
-            or "Champion Points"
+        return LTM.GetStringText("SI_LTM_PHASE_NAME_CHAMPION_POINTS")
     end
 
-    if phaseName == nil and type(LTM) == "table" and type(LTM.GetStringText) == "function" then
+    if phaseName == nil then
         return LTM.GetStringText("SI_LTM_COMMON_UNKNOWN")
     end
 
@@ -658,6 +602,8 @@ function LTM_PIPELINE:ResolvePhaseTargetLabel(phaseName)
         Subclass = "SI_LTM_PHASE_TARGET_SUBCLASS",
         Role = "SI_LTM_PHASE_TARGET_ROLE",
         Skills = "SI_LTM_PHASE_TARGET_SKILLS",
+        ActionBarRestore = "SI_LTM_PHASE_TARGET_ACTION_BAR_RESTORE",
+        TransformSkills = "SI_LTM_PHASE_TARGET_TRANSFORM_SKILLS",
         PassiveSkills = "SI_LTM_PHASE_TARGET_PASSIVE_SKILLS",
         ClassMastery = "SI_LTM_PHASE_TARGET_CLASS_MASTERY",
         Attribute = "SI_LTM_PHASE_TARGET_ATTRIBUTE",
@@ -666,18 +612,14 @@ function LTM_PIPELINE:ResolvePhaseTargetLabel(phaseName)
         Pipeline = "SI_LTM_PHASE_TARGET_INTERPHASE_RESET",
     }
 
-    if type(LTM) == "table" and type(LTM.GetStringText) == "function" then
-        local stringIdName = labels[phaseName]
-        if type(stringIdName) == "string" then
-            return LTM.GetStringText(stringIdName)
-        end
-
-        return LTM.GetStringText("SI_LTM_PHASE_TARGET_GENERIC", {
-            phase = tostring(phaseName or LTM.GetStringText("SI_LTM_COMMON_UNKNOWN")),
-        })
+    local stringIdName = labels[phaseName]
+    if type(stringIdName) == "string" then
+        return LTM.GetStringText(stringIdName)
     end
 
-    return tostring(phaseName or "Unknown")
+    return LTM.GetStringText("SI_LTM_PHASE_TARGET_GENERIC", {
+        phase = tostring(phaseName or LTM.GetStringText("SI_LTM_COMMON_UNKNOWN")),
+    })
 end
 
 local function RecordPhaseFailure(context, phaseName, reason, targetLabel)
@@ -699,14 +641,12 @@ local function RecordPhaseFailure(context, phaseName, reason, targetLabel)
         end
     end
 
-    if type(Log.LogError) == "function" then
-        Log.LogError(
-            type(context) == "table" and context.logBuildName or ResolveLogBuildName(nil),
-            normalizedPhaseName,
-            normalizedTarget,
-            normalizedReason
-        )
-    end
+    Log.LogError(
+        type(context) == "table" and context.logBuildName or ResolveLogBuildName(nil),
+        normalizedPhaseName,
+        normalizedTarget,
+        normalizedReason
+    )
 end
 
 local function ShouldAbortPipelineAfterFailure(reason)
@@ -774,48 +714,6 @@ local function ShouldAbortPipelineAfterPhaseFailure(phaseName, reason)
     end
 
     return false
-end
-
-local function ResolveDeferredPhaseMeta(phase)
-    if type(phase) ~= "table" or type(phase.module) ~= "table" then
-        return nil
-    end
-
-    if type(phase.module.GetLastResult) ~= "function" then
-        return nil
-    end
-
-    local result = phase.module:GetLastResult()
-    if type(result) ~= "table" or result.ok ~= true then
-        return nil
-    end
-
-    local details = type(result.details) == "table" and result.details or nil
-    if type(details) ~= "table" then
-        return nil
-    end
-
-    return {
-        lastMutatingCommitAt = details.commitAt,
-        lastMutatingAction = details.mutatingAction,
-    }
-end
-
-local function RefreshPendingContextMeta(pendingContext)
-    if type(pendingContext) ~= "table" or type(pendingContext.phases) ~= "table" then
-        return
-    end
-
-    for _, phase in ipairs(pendingContext.phases) do
-        if type(phase) == "table" and phase.name == pendingContext.deferredPhaseName then
-            local deferredMeta = ResolveDeferredPhaseMeta(phase)
-            if type(deferredMeta) == "table" then
-                pendingContext.lastMutatingCommitAt = deferredMeta.lastMutatingCommitAt
-                pendingContext.lastMutatingAction = deferredMeta.lastMutatingAction
-            end
-            return
-        end
-    end
 end
 
 local function GetInterphaseResetKey(pendingContext)
@@ -911,7 +809,7 @@ local function BuildInterphaseResetSnapshot(context)
     local pipelineContext = type(context) == "table" and context.context or nil
     local runtime = type(pipelineContext) == "table" and pipelineContext.runtime or nil
     local runOptions = type(pipelineContext) == "table" and pipelineContext.runOptions or nil
-    local spSaver = type(runOptions) == "table" and runOptions.spSaver or nil
+    local skillSettings = type(runOptions) == "table" and runOptions.skillSettings or nil
     local nextPhase = type(context) == "table"
         and type(context.phases) == "table"
         and type(context.nextPhaseIndex) == "number"
@@ -959,10 +857,9 @@ local function BuildInterphaseResetSnapshot(context)
         skillPhaseMode = type(runOptions) == "table" and runOptions.skillPhaseMode or nil,
         skillPhaseReason = type(runOptions) == "table" and runOptions.skillPhaseReason or nil,
         resolvedPreflightMode = type(pipelineContext) == "table" and pipelineContext.preflightMode or nil,
-        spSaverActiveAction = type(spSaver) == "table" and spSaver.activeAction or nil,
-        spSaverPassiveAction = type(spSaver) == "table" and spSaver.passiveAction or nil,
+        skillSettingsActiveAction = type(skillSettings) == "table" and skillSettings.activeAction or nil,
+        skillSettingsPassiveAction = type(skillSettings) == "table" and skillSettings.passiveAction or nil,
         routeBSubclassOnly = type(runtime) == "table" and runtime.routeBSubclassOnly == true,
-        routeBCompletionWaitSkipped = type(runtime) == "table" and runtime.routeBCompletionWaitSkipped == true,
     }
 end
 
@@ -972,9 +869,7 @@ local function LogInterphaseResetTimeoutSnapshotOnce(resetContext, snapshot)
     end
 
     resetContext.timeoutSnapshotLogged = true
-    if type(Log.IsSummaryDebugEnabled) ~= "function"
-        or Log.IsSummaryDebugEnabled() ~= true
-        or type(Log.LogDebugSummary) ~= "function" then
+    if Log.IsSummaryDebugEnabled() ~= true then
         return
     end
 
@@ -1000,10 +895,9 @@ local function LogInterphaseResetTimeoutSnapshotOnce(resetContext, snapshot)
         "skillPhaseMode=" .. tostring(snapshot.skillPhaseMode),
         "skillPhaseReason=" .. tostring(snapshot.skillPhaseReason),
         "resolvedPreflightMode=" .. tostring(snapshot.resolvedPreflightMode),
-        "spSaver.activeAction=" .. tostring(snapshot.spSaverActiveAction),
-        "spSaver.passiveAction=" .. tostring(snapshot.spSaverPassiveAction),
+        "skillSettings.activeAction=" .. tostring(snapshot.skillSettingsActiveAction),
+        "skillSettings.passiveAction=" .. tostring(snapshot.skillSettingsPassiveAction),
         "routeBSubclassOnly=" .. tostring(snapshot.routeBSubclassOnly),
-        "routeBCompletionWaitSkipped=" .. tostring(snapshot.routeBCompletionWaitSkipped),
         "attemptCount=" .. tostring(snapshot.attemptCount),
         "elapsedMs=" .. tostring(snapshot.elapsedMs)
     )
@@ -1029,18 +923,10 @@ function LTM_PIPELINE:ShouldResetBetweenPhases(pendingContext)
         return false
     end
 
-    if pendingContext.lastMutatingAction == "skill_respec" then
-        return true
-    end
-
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetRuntimeFlag) == "function"
-        and LTM_PIPELINE_CONTEXT:GetRuntimeFlag(pendingContext.context, "priorSkillRespecCommitted") == true then
-        return true
-    end
-
-    local runtime = type(pendingContext.context) == "table" and pendingContext.context.runtime or nil
-    return type(runtime) == "table" and runtime.priorSkillRespecCommitted == true
+    return LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
+        pendingContext.context,
+        "priorSkillRespecCommitted"
+    ) == true
 end
 
 function LTM_PIPELINE:ResetBeforePhaseIfNeeded(boundaryContext)
@@ -1180,7 +1066,7 @@ function LTM_PIPELINE:RunPhases(build, startIndex, phases, context)
         end
 
         self.currentPhaseName = phase.name
-        local phaseStartedAt = ResolvePipelineTimestamp()
+        local phaseStartedAt = SHARED_UTIL:GetFrameTimeMillisecondsSafe()
         NotifyPhaseUpdate(context, phase.name)
         local phaseOk, phaseErr = phase.module:Run(phase.config or {})
         if not phaseOk then
@@ -1222,7 +1108,7 @@ function LTM_PIPELINE:RunPhases(build, startIndex, phases, context)
                 "Pipeline phase end "
                     .. tostring(phase.name)
                     .. " elapsedMs="
-                    .. tostring(ResolvePipelineTimestamp() - phaseStartedAt)
+                    .. tostring(SHARED_UTIL:GetFrameTimeMillisecondsSafe() - phaseStartedAt)
             )
             self.currentPhaseName = nil
         end
@@ -1326,10 +1212,11 @@ function LTM_PIPELINE:ResumeDeferredPhase(success, err)
         "Pipeline phase end "
             .. tostring(pendingContext.deferredPhaseName)
             .. " elapsedMs="
-            .. tostring(ResolvePipelineTimestamp() - (tonumber(pendingContext.phaseStartedAt) or ResolvePipelineTimestamp()))
+            .. tostring(
+                SHARED_UTIL:GetFrameTimeMillisecondsSafe()
+                    - (tonumber(pendingContext.phaseStartedAt) or SHARED_UTIL:GetFrameTimeMillisecondsSafe())
+            )
     )
-    RefreshPendingContextMeta(pendingContext)
-
     if self:ResetBeforePhaseIfNeeded(pendingContext) then
         return true
     end
@@ -1354,19 +1241,7 @@ function LTM_PIPELINE:Run(build, completion, options)
     local partialScope = options.partialScope
     local buildLogName = ResolveLogBuildName(build)
 
-    local context = nil
-    if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.Create) == "function" then
-        context = LTM_PIPELINE_CONTEXT:Create(build, options)
-    else
-        context = {
-            cancelRequested = false,
-            cancelReason = nil,
-            cancelRequestedAtPhase = nil,
-            partialScope = partialScope,
-            onPhaseUpdate = type(options.onPhaseUpdate) == "function" and options.onPhaseUpdate or nil,
-            onStatusUpdate = type(options.onStatusUpdate) == "function" and options.onStatusUpdate or nil,
-        }
-    end
+    local context = LTM_PIPELINE_CONTEXT:Create(build, options)
     context.pipelineCompletion = completion
     context.runId = self.activeRunId
     context.logBuildName = buildLogName
@@ -1375,69 +1250,43 @@ function LTM_PIPELINE:Run(build, completion, options)
     context.firstError = nil
     self.activeContext = context
 
-    if type(Log.LogStart) == "function" then
-        Log.LogStart(buildLogName)
-    end
+    Log.LogStart(buildLogName)
 
     local continuation = function(success, continuationErr)
         return LTM_PIPELINE:ResumeDeferredPhase(success, continuationErr)
     end
 
     local currentState = {}
-    if type(LTM_SUBCLASS_SNAPSHOT) == "table"
-        and type(LTM_SUBCLASS_SNAPSHOT.CaptureCurrentSubclassState) == "function" then
-        currentState.subclass = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(context)
-        if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.SetCurrentState) == "function" then
-            LTM_PIPELINE_CONTEXT:SetCurrentState(context, "subclass", currentState.subclass)
-        end
-    end
+    currentState.subclass = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(context)
+    LTM_PIPELINE_CONTEXT:SetCurrentState(context, "subclass", currentState.subclass)
 
-    if type(LTM_ATTRIBUTE_SNAPSHOT) == "table"
-        and type(LTM_ATTRIBUTE_SNAPSHOT.CaptureCurrentAttributeState) == "function" then
-        currentState.attributes = LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(context)
-        if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.SetCurrentState) == "function" then
-            LTM_PIPELINE_CONTEXT:SetCurrentState(context, "attributes", currentState.attributes)
-        end
-    end
+    currentState.attributes = LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(context)
+    LTM_PIPELINE_CONTEXT:SetCurrentState(context, "attributes", currentState.attributes)
 
-    if type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.CaptureCurrentRoleState) == "function" then
-        currentState.role = LTM_ROLE_STATE:CaptureCurrentRoleState()
-        if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.SetCurrentState) == "function" then
-            LTM_PIPELINE_CONTEXT:SetCurrentState(context, "role", currentState.role)
-        end
-    end
+    currentState.role = LTM_ROLE_STATE:CaptureCurrentRoleState()
+    LTM_PIPELINE_CONTEXT:SetCurrentState(context, "role", currentState.role)
 
-    local plan = nil
-    if type(LTM_PIPELINE_PLANNER) == "table"
-        and type(LTM_PIPELINE_PLANNER.BuildPipelinePlan) == "function" then
-        plan = LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, build)
-    end
+    local plan = LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, build)
+    LTM_PIPELINE_CONTEXT:SetResolvedPlan(context, plan)
 
-    if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.SetResolvedPlan) == "function" then
-        LTM_PIPELINE_CONTEXT:SetResolvedPlan(context, plan)
-    end
-
-    if type(plan) == "table" then
-        local allowedPhases = BuildPartialScopePhaseSet(partialScope)
-        if type(allowedPhases) == "table" and type(plan.phases) == "table" then
-            local filteredPhases = {}
-            for _, phaseName in ipairs(plan.phases) do
-                if allowedPhases[phaseName] then
-                    filteredPhases[#filteredPhases + 1] = phaseName
-                else
-                    TracePipeline("Phase skipped by partial scope", "scope=" .. tostring(partialScope), "phase=" .. tostring(phaseName))
-                end
+    local allowedPhases = BuildPartialScopePhaseSet(partialScope)
+    if type(allowedPhases) == "table" then
+        local filteredPhases = {}
+        for _, phaseName in ipairs(plan.phases) do
+            if allowedPhases[phaseName] then
+                filteredPhases[#filteredPhases + 1] = phaseName
+            else
+                TracePipeline("Phase skipped by partial scope", "scope=" .. tostring(partialScope), "phase=" .. tostring(phaseName))
             end
-            plan.phases = filteredPhases
         end
-
-        if partialScope ~= nil then
-            TracePipeline("Partial apply started", "scope=" .. tostring(partialScope), "phases=" .. table.concat(plan.phases or {}, ","))
-        end
+        plan.phases = filteredPhases
     end
 
-    local phases = self:BuildPhases(build, continuation, context)
+    if partialScope ~= nil then
+        TracePipeline("Partial apply started", "scope=" .. tostring(partialScope), "phases=" .. table.concat(plan.phases, ","))
+    end
+
+    local phases = self:BuildPhases(continuation, context)
     return self:RunPhases(build, 1, phases, context)
 end
 

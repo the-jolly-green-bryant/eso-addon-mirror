@@ -164,7 +164,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AlignGrid](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/AlignGrid__1292) | Crabby654 | PC / Mac | 1.4.4 |
 | [Alik'r Dolmen Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haipahaipa/Alik-r-Dolmen-Helper__2399) | haipahaipa | PC / Mac | v0.1.0 |
 | [Alkosh Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Alkosh-Timer__e1b107d5-082e-4ed1-9cfc-81b9a42e0528) | Eldibabalo | Console | — |
-| [All The Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/All-The-Collectibles__4638) | DakJaniels | PC / Mac | 1.3 |
+| [All The Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/All-The-Collectibles__4638) | DakJaniels | PC / Mac | 2.0 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/AllAP__2086) | Ace'r | PC / Mac | 1.3.3 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace.r/AllAP__c0c82f16-9b5b-4707-bf96-be0f3c78a77a) | Ace.r | Console | — |
 | [AllCraft](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MethosFrost/AllCraft__2488) | MethosFrost | PC / Mac | 0.935Alpha |
@@ -186,7 +186,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Alternative Buffs/Debuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Buffs-Debuffs__3875) | buldezir | PC / Mac | 1.0.3 |
 | [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Group-Frames__3053) | buldezir | PC / Mac | 1.2.30 |
 | [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Alternative-Group-Frames__21f64968-c492-4b43-82ff-b7b1f25c7500) | Copper0 | Console | — |
-| [Always Logging](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eurymachos/Always-Logging__4081) | Eurymachos | PC / Mac | v3.1.12.0.0 |
+| [Always Logging](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eurymachos/Always-Logging__4081) | Eurymachos | PC / Mac | v3.1.12.1.0 |
 | [AlwaysCompass: Never Get Lost Again](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mouton/AlwaysCompass-Never-Get-Lost-Again__4107) | Mouton | PC / Mac | 0.0.2 |
 | [AlwaysExpandedAttributeBars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/partdark/AlwaysExpandedAttributeBars__2979) | partdark | PC / Mac | 2.6a |
 | [Am I Blocking+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Am-I-Blocking__3929) | Lykeion | PC / Mac | 3.14 |
@@ -225,6 +225,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__7b383e7f-a85f-491d-b950-dffc87bcec10) | tmbrinks | Console | — |
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__3473) | tmbrinks | PC / Mac | 1.1.0 |
 | [Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Archive-Helper__3772) | FlatBadger | PC / Mac | 1.4.2 |
+| [ArchiveAdvisor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/ArchiveAdvisor__4787) | NPViral | PC / Mac | 1.0.0 |
 | [ArcTech](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/ArcTech__fd28ddff-8837-4702-8beb-110fee70b432) | Scribe_Rob | Console | — |
 | [ArcTechv2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/ArcTechv2__798e2650-33dc-48bb-80c5-8c09cabc36b5) | Scribe_Rob | Console | — |
 | [Are We Mounted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DaWeedle/Are-We-Mounted__4134) | DaWeedle | PC / Mac | 1.0.0 |

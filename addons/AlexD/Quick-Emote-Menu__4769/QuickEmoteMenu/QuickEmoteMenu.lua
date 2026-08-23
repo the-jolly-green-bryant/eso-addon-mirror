@@ -1,12 +1,16 @@
 local ADDON_TITLE   = "Quick Emote Menu"
 local ADDON_NAME    = "QuickEmoteMenu"
 local ADDON_AUTHOR  = "@AlexD"
-local ADDON_VERSION = "1.2.2"
+local ADDON_VERSION = "1.3.0"
 local ADDON_WEBSITE = "https://www.esoui.com/downloads/info4769-QuickEmoteMenu.html"
 local SV_VERSION    = 1
 
 local SLASH_COMMAND_PANEL  = "/qempanel"
 local SLASH_COMMAND_DETACH = "/qemdetach"
+local SLASH_COMMAND_UIONLY = "/qemuimodeonly"
+local SLASH_COMMAND_RESET  = "/qemreset"
+local SLASH_COMMAND_OFFSET = "/qemoffset"
+local SLASH_COMMAND_STATUS = "/qemstatus"
 
 QuickEmoteMenu = QuickEmoteMenu or {}
 local QEM = QuickEmoteMenu
@@ -147,6 +151,8 @@ local function CacheLocalizedStrings()
     STRINGS.ATTACH_BUTTON          = GetString(SI_QUICKEMOTEMENU_OPTION_ATTACH_BUTTON)
     STRINGS.DETACH_BUTTON          = GetString(SI_QUICKEMOTEMENU_OPTION_DETACH_BUTTON)
     STRINGS.SHOW_SETTINGS_PANEL    = GetString(SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL)
+    STRINGS.CHAT_BUTTON_OFFSET_X   = GetString(SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X)
+    STRINGS.CHAT_BUTTON_OFFSET_X_TOOLTIP = GetString(SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP)
 end
 
 ----------------------------------------------------------------------
@@ -162,6 +168,7 @@ local function InitSettings()
         closeOnPlay          = true,  -- leave UI mode after LMB play
         showOnlyInUIMode     = false, -- only show the main button while the cursor is visible
         detachButtonFromChat = false, -- false = dock button next to the chat window options button; true = free-floating (draggable) button
+        chatButtonOffsetX    = 0,
         favorites            = {},    -- list of emoteId
     }
 
@@ -212,6 +219,23 @@ local function InitSettings()
             default = defaults.showOnlyInUIMode,
         },
         {
+            type    = "slider",
+            name    = STRINGS.CHAT_BUTTON_OFFSET_X,
+            tooltip = STRINGS.CHAT_BUTTON_OFFSET_X_TOOLTIP,
+            max     = 0,
+            min     = -250,
+            step    = 1,
+            getFunc = function() return SV.chatButtonOffsetX end,
+            setFunc = function(value)
+                SV.chatButtonOffsetX = value
+                -- Re-apply host anchor only while attached; detached mode ignores offset.
+                if not SV.detachButtonFromChat and QEM.SetChatHostAnchorAndDimensions then
+                    QEM.SetChatHostAnchorAndDimensions(true)
+                end
+            end,
+            default = defaults.chatButtonOffsetX,
+        },
+        {
             type    = "checkbox",
             name    = STRINGS.OPTION_DETACH,
             tooltip = STRINGS.OPTION_DETACH_TOOLTIP,
@@ -226,10 +250,14 @@ local function InitSettings()
             type    = "button",
             name    = STRINGS.OPTION_RESET,
             func    = function()
-                SV.buttonX, SV.buttonY = nil, nil
-                if SV.detachButtonFromChat and QEM.button then
-                    QEM.button:ClearAnchors()
-                    QEM.button:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+                if QEM.ResetButtonPosition then
+                    QEM.ResetButtonPosition()
+                else
+                    SV.buttonX, SV.buttonY = nil, nil
+                    if SV.detachButtonFromChat and QEM.button then
+                        QEM.button:ClearAnchors()
+                        QEM.button:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+                    end
                 end
             end,
         },
@@ -332,8 +360,10 @@ local function CreateUI()
     local chatHost
     local function SetChatHostAnchorAndDimensions(isVisible)
         if not chatHost then return end
+        chatHost:ClearAnchors()
         if isVisible then
-            chatHost:SetAnchor(RIGHT, ZO_ChatWindowOptions, LEFT, -CHAT_BUTTON_GAP, 0)
+            -- Offset moves the button left of the chat options button (negative X).
+            chatHost:SetAnchor(RIGHT, ZO_ChatWindowOptions, LEFT, -CHAT_BUTTON_GAP + sv.chatButtonOffsetX, 0)
             chatHost:SetDimensions(CHAT_BUTTON_SIZE, CHAT_BUTTON_SIZE)
         else
             chatHost:SetAnchor(RIGHT, ZO_ChatWindowOptions, LEFT, 0, 0)
@@ -1677,6 +1707,58 @@ function QEM.ToggleDetachFromChat()
     if QEM.UpdateButtonAttachment then
         QEM.UpdateButtonAttachment()
     end
+    d(strformat("[QEM] Button %s chat window.", QEM.SV.detachButtonFromChat and "detached from" or "attached to"))
+end
+
+function QEM.ToggleUIModeOnly()
+    if not QEM.SV then return end
+    QEM.SV.showOnlyInUIMode = not QEM.SV.showOnlyInUIMode
+    if QEM.UpdateButtonCursorVisibility then
+        QEM.UpdateButtonCursorVisibility()
+    end
+    d(strformat("[QEM] Show only in UI mode: %s", QEM.SV.showOnlyInUIMode and "ON" or "OFF"))
+end
+
+function QEM.ResetButtonPosition()
+    if not QEM.SV then return end
+    QEM.SV.buttonX, QEM.SV.buttonY = nil, nil
+    if QEM.SV.detachButtonFromChat and QEM.button then
+        QEM.button:ClearAnchors()
+        QEM.button:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+        d("[QEM] Detached button position reset to screen center.")
+    else
+        d("[QEM] Button position cleared (only applies when detached).")
+    end
+end
+
+function QEM.SetChatButtonOffset(value)
+    if not QEM.SV then return end
+    local n = tonumber(value)
+    if not n then
+        d(strformat("[QEM] Chat button offset X: %d  (use /qemoffset <number>, range -250..0)", QEM.SV.chatButtonOffsetX or 0))
+        return
+    end
+    -- Ignore sign: always store as negative (left of chat options)
+    n = -math.abs(n)
+    n = mmax(-250, mmin(0, n))
+    QEM.SV.chatButtonOffsetX = n
+    if not QEM.SV.detachButtonFromChat and QEM.SetChatHostAnchorAndDimensions then
+        QEM.SetChatHostAnchorAndDimensions(true)
+    end
+    d(strformat("[QEM] Chat button offset X set to %d%s", n,
+        QEM.SV.detachButtonFromChat and " (applied when attached to chat)" or ""))
+end
+
+function QEM.PrintStatus()
+    if not QEM.SV then
+        d("[QEM] Saved variables not loaded yet.")
+        return
+    end
+    local sv = QEM.SV
+    d("[QEM] Status:")
+    d(strformat("  detachButtonFromChat = %s", tostring(sv.detachButtonFromChat)))
+    d(strformat("  showOnlyInUIMode     = %s", tostring(sv.showOnlyInUIMode)))
+    d(strformat("  chatButtonOffsetX    = %s", tostring(sv.chatButtonOffsetX)))
 end
 
 ----------------------------------------------------------------------
@@ -1710,9 +1792,35 @@ local function OnLoaded(_, name)
     InitSettings()
     CreateUI()
 
-    -- Slash
+    -- Slash commands
     SLASH_COMMANDS[SLASH_COMMAND_DETACH] = function()
         QEM.ToggleDetachFromChat()
+    end
+    SLASH_COMMANDS[SLASH_COMMAND_UIONLY] = function()
+        QEM.ToggleUIModeOnly()
+    end
+    SLASH_COMMANDS[SLASH_COMMAND_RESET] = function()
+        QEM.ResetButtonPosition()
+    end
+    SLASH_COMMANDS[SLASH_COMMAND_OFFSET] = function(args)
+        if args then
+            args = args:match("^%s*(.-)%s*$")
+            if args == "" then args = nil end
+        end
+
+        -- No arg → usage help
+        if not args then
+            d(strformat(
+                "[QEM] Chat button offset X: %d  |  usage: /qemoffset <0..250>  (distance left of chat options)",
+                QEM.SV and QEM.SV.chatButtonOffsetX or 0
+            ))
+            return
+        end
+
+        QEM.SetChatButtonOffset(args)
+    end
+    SLASH_COMMANDS[SLASH_COMMAND_STATUS] = function()
+        QEM.PrintStatus()
     end
 end
 

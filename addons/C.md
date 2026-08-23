@@ -217,7 +217,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Courage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Courage__2746) | iiJonno | PC / Mac | 1.5 |
 | [Courteous Dungeoneer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ancillae_Secretorum/Courteous-Dungeoneer__4160) | Ancillae_Secretorum | PC / Mac | 0.52 |
 | [Coveted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Coveted__3011) | kawamonkey | PC / Mac | 1.0 |
-| [Covetous Countess Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Covetous-Countess-Assistant__4778) | AlexD | PC / Mac | 1.0.0 |
+| [Covetous Countess Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Covetous-Countess-Assistant__4778) | AlexD | PC / Mac | 1.1.1 |
 | [CovetousCountess - Abah's Watch farming helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/CovetousCountess---Abah-s-Watch-farming-helper__1372) | Shinni | PC / Mac | 5 |
 | [CovetousCountess ZH](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NeiL978/CovetousCountess-ZH__3600) | NeiL978 | PC / Mac | 1.0 |
 | [Cowl - helm/hat toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Binary-Heart/Cowl---helm-hat-toggle__1913) | Binary Heart | PC / Mac | 1.1.4.4.3 |
@@ -308,7 +308,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Cyrodiil Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Cyrodiil-Alerts__37bd7159-8611-4d29-8767-08434d4fe209) | codeWarrior82 | Console | — |
 | [Cyrodiil Ayleid Wells](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Odylon/Cyrodiil-Ayleid-Wells__3117) | Odylon | PC / Mac | 1.0.0 |
 | [Cyrodiil Map Labels (10.3.5)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Neurowise/Cyrodiil-Map-Labels-10.3.5__4065) | Neurowise | PC / Mac | 1.01 |
-| [Cyrodiil Map Labels (Fix: Season Zero)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361) | sshogrin | PC / Mac | 1.4 |
+| [Cyrodiil Map Labels (Fix: Season Zero)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361) | sshogrin | PC / Mac | 1.7 |
 | [Cyrodiil Mission Share](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Cyrodiil-Mission-Share__1836) | aldericon | PC / Mac | 12.0 |
 | [Cyrodiil Score Viewer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/Cyrodiil-Score-Viewer__3166) | tdenc | PC / Mac | 0.5.0 |
 | [CyroQuickslots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gerrit/CyroQuickslots__3134) | Gerrit | PC / Mac | 1.31.1 |

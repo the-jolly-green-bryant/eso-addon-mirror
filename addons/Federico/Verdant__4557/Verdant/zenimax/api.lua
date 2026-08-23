@@ -13,6 +13,8 @@ M.GetWorldName            = GetWorldName
 M.GetString = GetString
 
 M.IsUnitGrouped           = IsUnitGrouped
+M.IsUnitInCombat          = IsUnitInCombat
+M.DoesUnitExist           = DoesUnitExist
 M.GetGroupSize            = GetGroupSize
 M.GetUnitName             = GetUnitName
 M.GetUnitDisplayName      = GetUnitDisplayName
@@ -29,6 +31,11 @@ M.GetSlotName                            = GetSlotName
 M.GetSlotBoundId                         = GetSlotBoundId
 M.GetAbilityName                         = GetAbilityName
 M.GetAbilityIcon                         = GetAbilityIcon
+M.GetAbilityDescription                  = GetAbilityDescription
+M.IsAbilityPassive                       = IsAbilityPassive
+M.GetAbilityEffectDescription            = GetAbilityEffectDescription
+M.GetNumBuffs                            = GetNumBuffs
+M.GetUnitBuffInfo                        = GetUnitBuffInfo
 M.GetSpecificSkillAbilityKeysByAbilityId = GetSpecificSkillAbilityKeysByAbilityId
 M.GetSkillLineId                         = GetSkillLineId
 

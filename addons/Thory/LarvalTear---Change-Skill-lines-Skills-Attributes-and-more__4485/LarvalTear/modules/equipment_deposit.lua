@@ -161,10 +161,7 @@ local function AddProtectedEquipment(protectedState, equipment)
     end
 
     for _, slotEntry in pairs(equipment) do
-        local targetEntry = type(EquipmentChange) == "table"
-            and type(EquipmentChange.NormalizeTargetEntry) == "function"
-            and EquipmentChange:NormalizeTargetEntry(slotEntry)
-            or nil
+        local targetEntry = EquipmentChange:NormalizeTargetEntry(slotEntry)
         if type(targetEntry) == "table" then
             if type(targetEntry.uniqueId) == "string" and targetEntry.uniqueId ~= "" then
                 protectedState.uniqueIds[targetEntry.uniqueId] = true
@@ -181,31 +178,22 @@ local function BuildProtectedEquipmentState(scope, currentBuildId)
         fallbackTargets = {},
     }
 
-    if type(BuildStore) ~= "table" then
-        return protectedState
-    end
-
     if scope == CLEANUP_SCOPE_CURRENT_BUILD then
         local buildId = type(currentBuildId) == "string" and currentBuildId ~= "" and currentBuildId or nil
-        if buildId == nil
-            and type(BuildStore.GetSelectedPageId) == "function"
-            and type(BuildStore.GetSelectedBuildIdForPage) == "function" then
+        if buildId == nil then
             local pageId = BuildStore:GetSelectedPageId()
             buildId = type(pageId) == "string" and BuildStore:GetSelectedBuildIdForPage(pageId) or nil
         end
 
         local build = type(buildId) == "string"
-            and type(BuildStore.GetPreferredBuildById) == "function"
             and BuildStore:GetPreferredBuildById(buildId)
             or nil
         AddProtectedEquipment(protectedState, type(build) == "table" and build.equipment or nil)
         return protectedState
     end
 
-    local buildList = type(BuildStore.GetBuildListForCurrentCharacter) == "function"
-        and BuildStore:GetBuildListForCurrentCharacter()
-        or {}
-    for _, build in pairs(type(buildList) == "table" and buildList or {}) do
+    local buildList = BuildStore:GetBuildListForCurrentCharacter()
+    for _, build in pairs(buildList) do
         AddProtectedEquipment(protectedState, type(build) == "table" and build.equipment or nil)
     end
 
@@ -466,9 +454,7 @@ function EquipmentDeposit:BeginDeposit(options, completion)
         return false, "equipment_deposit_busy", nil
     end
 
-    if type(EquipmentFetch) == "table"
-        and type(EquipmentFetch.IsBusy) == "function"
-        and EquipmentFetch:IsBusy() == true then
+    if EquipmentFetch:IsBusy() == true then
         return false, "equipment_fetch_busy", nil
     end
 

@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Federico/Verdant__4557",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Federico",
   "canonical_id": "esoui:4557",
   "category_id": "150",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -17,7 +22,7 @@
     "Verdant"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4557/",
-  "fingerprint": "a98bd78d5d88d168b61ade4e7746ad7678620353e5c29ffd90dadab53f27de36",
+  "fingerprint": "5810ccd61751e56c1d3cf3a7baeee33d81998bc8b55c1d05bcfa0603bb2c466b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16234.png",
     "https://cdn-eso.mmoui.com/preview/pvw16239.png",
@@ -29,6 +34,7 @@
     "https://cdn-eso.mmoui.com/preview/pvw16241.png",
     "https://cdn-eso.mmoui.com/preview/pvw16248.png",
     "https://cdn-eso.mmoui.com/preview/pvw16247.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17059.png",
     "https://cdn-eso.mmoui.com/preview/pvw15949.png"
   ],
   "platform": "pc",
@@ -37,11 +43,11 @@
   "source_id": "4557",
   "source_url": "https://www.esoui.com/downloads/info4557-Verdant.html",
   "stats": {
-    "downloads": 211,
+    "downloads": 237,
     "favorites": 3,
-    "monthly_downloads": 76
+    "monthly_downloads": 30
   },
   "title": "Verdant",
-  "updated_at": 1782671367000,
-  "version": "2.2.0"
+  "updated_at": 1787373420000,
+  "version": "2.3.0"
 }

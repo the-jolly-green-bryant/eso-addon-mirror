@@ -73,3 +73,4 @@ function SelfTest:RunFullCheck()
     end
     return overall
 end
+

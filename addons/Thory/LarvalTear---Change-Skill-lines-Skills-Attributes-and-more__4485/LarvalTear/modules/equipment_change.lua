@@ -44,10 +44,6 @@ local function IsWeaponSlot(equipSlotId)
 end
 
 local function TraceEquipmentDebug(...)
-    if type(Log.LogDebugSummary) ~= "function" then
-        return
-    end
-
     Log.LogDebugSummary(...)
 end
 

@@ -27,11 +27,7 @@ function LTM_SUBCLASS_VERIFY:VerifySubclassState(context, targetState)
         }
     end
 
-    local latestState = nil
-    if type(LTM_SUBCLASS_SNAPSHOT) == "table"
-        and type(LTM_SUBCLASS_SNAPSHOT.CaptureCurrentSubclassState) == "function" then
-        latestState = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(context)
-    end
+    local latestState = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(context)
 
     if latestState == nil then
         return {

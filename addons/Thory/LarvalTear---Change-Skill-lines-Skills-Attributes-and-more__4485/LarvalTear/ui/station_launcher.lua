@@ -70,12 +70,9 @@ local function OpenLarvalTearFromSupportedSurface()
     if IsGamepadPreferredMode() then
         return
     end
-    if type(LTM_UI) ~= "table" or type(LTM_UI.ShowMainWindow) ~= "function" then
-        return
-    end
 
     LTM_UI:ShowMainWindow()
-    if ShouldOpenQuickSettings() and type(LTM_UI.SetMainTab) == "function" then
+    if ShouldOpenQuickSettings() then
         LTM_UI:SetMainTab("quick_settings")
     end
 end

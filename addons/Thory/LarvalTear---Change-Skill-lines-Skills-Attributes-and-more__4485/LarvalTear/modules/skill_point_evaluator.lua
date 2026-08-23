@@ -4,13 +4,9 @@ local Addon = LarvalTearMod
 local SkillPointEvaluator = Addon.Modules.SkillPointEvaluator
 
 local POLICY_NONE = "none"
-local POLICY_CLASS_ALL_PURCHASE = "class_all_purchase"
-local POLICY_CLASS_ONLY = "class_only"
-local POLICY_ALL = "all"
-local BASE_MORPH_SLOT = type(MORPH_SLOT_BASE) == "number" and MORPH_SLOT_BASE or 0
-local CRAFTED_ABILITY_ACTION_TYPE = type(ACTION_TYPE_CRAFTED_ABILITY) == "number"
-    and ACTION_TYPE_CRAFTED_ABILITY
-    or 3
+local POLICY_CLASS_ALL_PURCHASE = "class_purchase_all"
+local POLICY_CLASS_ONLY = "class_exact"
+local POLICY_ALL = "all_exact"
 
 local function AppendWarning(warnings, warningSet, warning)
     if type(warning) ~= "string" or warning == "" or warningSet[warning] == true then
@@ -96,116 +92,6 @@ local function BuildClassMasteryLineSet(build, lineById)
     end
 
     return lineSet
-end
-
-local function ResolveActiveMultiplier(resolved)
-    local isClassSkillLine = type(resolved) == "table"
-        and (resolved.isClassSkillLine == true or resolved.isPlayerClassSkillLine == true)
-        or false
-    if isClassSkillLine then
-        return resolved.isPlayerClassSkillLine == true and 1 or 2
-    end
-
-    return 1
-end
-
-local function IsCraftedTarget(resolved)
-    if type(resolved) ~= "table" then
-        return false
-    end
-
-    return resolved.isCraftedAbility == true
-        or (NormalizeNonNegativeInteger(resolved.craftedAbilityId) or 0) > 0
-        or (NormalizeNonNegativeInteger(resolved.craftSkillId) or 0) > 0
-        or NormalizeNonNegativeInteger(resolved.slotActionType) == CRAFTED_ABILITY_ACTION_TYPE
-end
-
-local function EvaluateActiveTargets(route, activeTargetStates, warnings, warningSet)
-    local required = 0
-    local refund = 0
-    local invalid = false
-    local seenProgressions = {}
-
-    for _, resolved in ipairs(type(activeTargetStates) == "table" and activeTargetStates or {}) do
-        local targetAbilityId = NormalizeNonNegativeInteger(
-            type(resolved) == "table" and resolved.targetAbilityId or nil
-        )
-        if type(resolved) ~= "table" then
-            invalid = true
-            AppendWarning(warnings, warningSet, "active_target_state_unavailable")
-        elseif resolved.excludedByTransformOwner == true then
-            -- Transform snapshot owns purchase/morph state for this progression.
-        elseif IsCraftedTarget(resolved) then
-            -- Crafted/Scribing targets use a separate point lane.
-        elseif targetAbilityId == nil then
-            invalid = true
-            AppendWarning(warnings, warningSet, "active_target_ability_invalid")
-        elseif targetAbilityId > 0 then
-            local progressionId = NormalizeNonNegativeInteger(resolved.progressionId)
-            local progressionKey = progressionId ~= nil and progressionId > 0
-                and tostring(progressionId)
-                or nil
-
-            if resolved.unresolved == true or resolved.nonSlottable == true then
-                invalid = true
-                AppendWarning(
-                    warnings,
-                    warningSet,
-                    "active_target_invalid:" .. tostring(resolved.reason or targetAbilityId)
-                )
-            elseif progressionKey == nil then
-                invalid = true
-                AppendWarning(warnings, warningSet, "active_progression_unavailable:" .. tostring(targetAbilityId))
-            elseif seenProgressions[progressionKey] ~= true then
-                seenProgressions[progressionKey] = true
-                local multiplier = ResolveActiveMultiplier(resolved)
-                if resolved.requiresPurchase == true then
-                    required = required + multiplier
-                end
-
-                local targetMorphSlot = NormalizeNonNegativeInteger(resolved.targetMorphSlot)
-                local currentMorphSlot = NormalizeNonNegativeInteger(resolved.currentMorphSlot)
-                local targetIsMorphed = targetMorphSlot ~= nil and targetMorphSlot ~= BASE_MORPH_SLOT
-                local currentIsMorphed = currentMorphSlot ~= nil and currentMorphSlot ~= BASE_MORPH_SLOT
-
-                if resolved.requiresPurchase == true and targetIsMorphed then
-                    required = required + multiplier
-                elseif resolved.requiresMorph == true and targetIsMorphed and not currentIsMorphed then
-                    required = required + multiplier
-                elseif resolved.requiresMorph == true and targetIsMorphed and currentIsMorphed then
-                    if route == "B" then
-                        required = required + multiplier
-                        refund = refund + multiplier
-                    else
-                        invalid = true
-                        AppendWarning(
-                            warnings,
-                            warningSet,
-                            "active_morph_reduction_route_b_only:" .. tostring(targetAbilityId)
-                        )
-                    end
-                elseif resolved.requiresMorph == true and not targetIsMorphed and currentIsMorphed then
-                    if route == "B" then
-                        refund = refund + multiplier
-                    else
-                        invalid = true
-                        AppendWarning(
-                            warnings,
-                            warningSet,
-                            "active_morph_reduction_route_b_only:" .. tostring(targetAbilityId)
-                        )
-                    end
-                elseif resolved.ready ~= true
-                    and resolved.requiresPurchase ~= true
-                    and resolved.requiresMorph ~= true then
-                    invalid = true
-                    AppendWarning(warnings, warningSet, "active_target_state_inconsistent:" .. tostring(targetAbilityId))
-                end
-            end
-        end
-    end
-
-    return required, refund, invalid
 end
 
 local function ResolveSubclassRefund(route, plan, lineById, masteryLineSet, warnings, warningSet)
@@ -425,8 +311,13 @@ function SkillPointEvaluator:BuildPlan(build, options)
     if availableBefore == nil then
         AppendWarning(warnings, warningSet, "available_points_invalid")
     end
-    if type(options.activeTargetStates) ~= "table" then
-        AppendWarning(warnings, warningSet, "active_target_states_invalid")
+    local activeRestorePlan = type(plan) == "table"
+        and type(plan.configs) == "table"
+        and type(plan.configs.skillRespec) == "table"
+        and plan.configs.skillRespec.activeRestorePlan
+        or nil
+    if type(activeRestorePlan) ~= "table" then
+        AppendWarning(warnings, warningSet, "active_restore_plan_invalid")
     end
     if #warnings > 0 then
         return BuildInvalidPlan(route, policy, availableBefore, warnings)
@@ -442,36 +333,19 @@ function SkillPointEvaluator:BuildPlan(build, options)
         warnings,
         warningSet
     )
-    local transformPlan = type(plan) == "table"
-        and type(plan.configs) == "table"
-        and type(plan.configs.skillRespec) == "table"
-        and plan.configs.skillRespec.transformPlan
-        or nil
-    local activeTargetStates = options.activeTargetStates
-    if type(transformPlan) == "table"
-        and (transformPlan.skippedBySpSaver == true or transformPlan.skippedBySkillPhase == true) then
-        activeTargetStates = {}
-        for _, targetState in ipairs(options.activeTargetStates) do
-            if type(targetState) ~= "table" or targetState.transformKind == nil then
-                activeTargetStates[#activeTargetStates + 1] = targetState
-            end
-        end
-    end
-    local activeRequired, activeRefund, activeInvalid = EvaluateActiveTargets(
-        route,
-        activeTargetStates,
-        warnings,
-        warningSet
-    )
-    if type(transformPlan) == "table" then
-        activeRefund = activeRefund + (NormalizeNonNegativeInteger(transformPlan.activeRefund) or 0)
-        if transformPlan.ok ~= true then
-            activeInvalid = true
-            AppendWarning(
-                warnings,
-                warningSet,
-                "transform_target_invalid:" .. tostring(transformPlan.blockReason or "unknown")
-            )
+    local activeRequired = NormalizeNonNegativeInteger(activeRestorePlan.activeRequired)
+    local activeRefund = NormalizeNonNegativeInteger(activeRestorePlan.activeRefund)
+    local activeInvalid = activeRestorePlan.ok ~= true
+        or activeRequired == nil
+        or activeRefund == nil
+    activeRequired = activeRequired or 0
+    activeRefund = activeRefund or 0
+    if activeInvalid then
+        local activeReasons = type(activeRestorePlan.reasons) == "table"
+            and activeRestorePlan.reasons
+            or { activeRestorePlan.blockReason or "active_restore_plan_invalid" }
+        for _, reason in ipairs(activeReasons) do
+            AppendWarning(warnings, warningSet, reason)
         end
     end
     local passiveRefund, passiveRequested, passiveInvalid, passiveUnreachable = EvaluatePassive(

@@ -2,7 +2,6 @@ local Addon = LarvalTearMod
 local LTM = Addon
 local Log = Addon.Common.Log
 local LTM_SKILL_RESTORE = Addon.Modules.SkillRestore
-local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 
 -- Route A restore-only lane.
 -- This module restores slots/action bar state and must not own any respec,
@@ -18,7 +17,7 @@ local CRYPT_CANON_ITEM_ID = 194509
 local CRYPT_CANON_SPECIAL_ULTIMATE_ID = 195031
 
 local function IsSummaryDebugEnabled()
-    return type(Log.IsSummaryDebugEnabled) == "function" and Log.IsSummaryDebugEnabled() == true
+    return Log.IsSummaryDebugEnabled() == true
 end
 
 local function ResolveDisplaySlot(slotIndex)
@@ -31,14 +30,6 @@ local function ResolveDisplaySlot(slotIndex)
     end
 
     return "invalid"
-end
-
-local function NormalizeTargets(config)
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.NormalizeSlotTargets) == "function" then
-        return SHARED_UTIL:NormalizeSlotTargets(config)
-    end
-
-    return {}
 end
 
 local function GetPendingSlotAbilityId(slotIndex, hotbarCategory)
@@ -385,12 +376,10 @@ function CloneScriptIds(scriptIds)
 end
 
 local function ResolveStoredCraftedAbilityId(target)
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.ResolveCraftedAbilityTarget) == "function" then
-        local craftedInfo = SHARED_UTIL:ResolveCraftedAbilityTarget(target)
-        local craftedAbilityId = type(craftedInfo) == "table" and tonumber(craftedInfo.craftedAbilityId) or nil
-        if craftedAbilityId ~= nil and craftedAbilityId > 0 then
-            return math.floor(craftedAbilityId), craftedInfo
-        end
+    local craftedInfo = SHARED_UTIL:ResolveCraftedAbilityTarget(target)
+    local craftedAbilityId = tonumber(craftedInfo.craftedAbilityId)
+    if craftedAbilityId ~= nil and craftedAbilityId > 0 then
+        return math.floor(craftedAbilityId), craftedInfo
     end
 
     return nil
@@ -401,12 +390,8 @@ local function IsCraftedSlotTarget(target)
         return false, nil
     end
 
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.ResolveCraftedAbilityTarget) == "function" then
-        local craftedInfo = SHARED_UTIL:ResolveCraftedAbilityTarget(target)
-        return type(craftedInfo) == "table" and craftedInfo.isCrafted == true, craftedInfo
-    end
-
-    return false, nil
+    local craftedInfo = SHARED_UTIL:ResolveCraftedAbilityTarget(target)
+    return craftedInfo.isCrafted == true, craftedInfo
 end
 
 local function ResolveCraftedActiveScriptIds(craftedAbilityId)
@@ -489,9 +474,7 @@ function LTM_SKILL_RESTORE:GetLastResult()
 end
 
 function LTM_SKILL_RESTORE:Log(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary("Skill restore summary", ...)
-    end
+    Log.LogDebugSummary("Skill restore summary", ...)
 end
 
 function LTM_SKILL_RESTORE:NotifyScriptMismatch(summary)
@@ -499,17 +482,11 @@ function LTM_SKILL_RESTORE:NotifyScriptMismatch(summary)
         return false
     end
 
-    if type(Log.WriteChat) == "function" and type(LTM) == "table" and type(LTM.GetStringText) == "function" then
-        Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_SCRIPT_MISMATCH"))
-        return true
-    end
-
-    return false
+    Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_SCRIPT_MISMATCH"))
+    return true
 end
 
-function LTM_SKILL_RESTORE:ResolveCryptCanonState(config)
-    local pipelineContext = type(config) == "table" and config._pipelineContext or nil
-    local targetBuild = type(pipelineContext) == "table" and pipelineContext.targetBuild or nil
+function LTM_SKILL_RESTORE:ResolveCryptCanonStateForBuild(targetBuild)
     local targetEquipment = type(targetBuild) == "table" and targetBuild.equipment or nil
     local targetChestItemId = ResolveEquipmentEntryItemId(type(targetEquipment) == "table" and targetEquipment[EQUIP_SLOT_CHEST] or nil)
     local state = {
@@ -523,15 +500,19 @@ function LTM_SKILL_RESTORE:ResolveCryptCanonState(config)
     return state
 end
 
+function LTM_SKILL_RESTORE:ResolveCryptCanonState(config)
+    local pipelineContext = type(config) == "table" and config._pipelineContext or nil
+    local targetBuild = type(pipelineContext) == "table" and pipelineContext.targetBuild or nil
+    return self:ResolveCryptCanonStateForBuild(targetBuild)
+end
+
 function LTM_SKILL_RESTORE:NotifyCryptCanonOverwriteRequired(state)
     if type(state) ~= "table" or state.overwriteNoticeShown == true then
         return
     end
 
     state.overwriteNoticeShown = true
-    if type(Log.WriteChat) == "function" and type(LTM) == "table" and type(LTM.GetStringText) == "function" then
-        Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_CRYPTCANON_OVERWRITE_REQUIRED"))
-    end
+    Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_CRYPTCANON_OVERWRITE_REQUIRED"))
 end
 
 function LTM_SKILL_RESTORE:LogTargetSummary(targets)
@@ -575,8 +556,6 @@ end
 function LTM_SKILL_RESTORE:RunInternal(config, mode)
     config = config or {}
     mode = mode or "normal"
-    local pipelineContext = type(config) == "table" and config._pipelineContext or nil
-
     if mode ~= "post_route_b" then
         local ok, err = self:ValidateA1Config(config)
         if not ok then
@@ -599,14 +578,8 @@ function LTM_SKILL_RESTORE:RunInternal(config, mode)
         return false, "skills_data_manager_unavailable"
     end
 
-    local targets = NormalizeTargets(config)
-    local deferredTargets, deferredResolveErrors =
-        LTM_TRANSFORM_SKILLS:ResolveDeferredSlotTargets(config.deferredTransformSlots)
-    for _, target in ipairs(deferredTargets or {}) do
-        targets[#targets + 1] = target
-    end
-
-    if #targets == 0 and #(deferredResolveErrors or {}) == 0 then
+    local targets = SHARED_UTIL:NormalizeSlotTargets(config)
+    if #targets == 0 then
         self.lastResult = {
             route = "route_a1",
             results = {},
@@ -621,18 +594,6 @@ function LTM_SKILL_RESTORE:RunInternal(config, mode)
     self._cryptCanonState = self:ResolveCryptCanonState(config)
 
     local results = {}
-    for _, target in ipairs(deferredResolveErrors or {}) do
-        results[#results + 1] = CreateResult(
-            target,
-            RESULT_ERROR,
-            target.resolveError or "transform_deferred_slot_resolve_failed",
-            {
-                assignInvoked = false,
-                assignSucceeded = nil,
-                alreadyMatched = false,
-            }
-        )
-    end
     for _, target in ipairs(targets) do
         local result = self:RestoreSingleSlot(target)
         results[#results + 1] = result
@@ -673,9 +634,6 @@ function LTM_SKILL_RESTORE:RunInternal(config, mode)
     end
     Log.Debug("Skill restore finished")
     self._cryptCanonState = nil
-    if config._suppressTransformDeferredPartial ~= true then
-        LTM_TRANSFORM_SKILLS:RecordDeferredRestoreResults(pipelineContext, results)
-    end
     return true
 end
 
@@ -1150,13 +1108,4 @@ end
 
 function LTM_SKILL_RESTORE:RunRestoreOnly(config)
     return self:RunInternal(config, "post_route_b")
-end
-
-function LTM_SKILL_RESTORE:RunDeferredTransformSlots(config, suppressPartial)
-    config = type(config) == "table" and config or {}
-    return self:RunInternal({
-        deferredTransformSlots = config.deferredTransformSlots,
-        _pipelineContext = config._pipelineContext,
-        _suppressTransformDeferredPartial = suppressPartial == true,
-    }, "post_route_b")
 end

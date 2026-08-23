@@ -7,7 +7,6 @@ local LTM_CHAMPION_CHANGE = Addon.Modules.ChampionChange
 local SHARED_UTIL = Addon.Common.Util
 
 local CHAMPION_APPLY_E_CONFIG_INVALID = "CHAMPION_APPLY_E_CONFIG_INVALID"
-local CHAMPION_APPLY_E_CHANGE_UNAVAILABLE = "CHAMPION_APPLY_E_CHANGE_UNAVAILABLE"
 local CHAMPION_APPLY_E_CHANGE_FAILED = "CHAMPION_APPLY_E_CHANGE_FAILED"
 local CHAMPION_APPLY_E_RUNTIME = "CHAMPION_APPLY_E_RUNTIME"
 local CHAMPION_APPLY_E_PURCHASE_RESULT = "CHAMPION_APPLY_E_PURCHASE_RESULT"
@@ -24,10 +23,6 @@ local CHAMPION_APPLY_E_PURCHASE_COOLDOWN = "champion_purchase_cooldown"
 local CHAMPION_APPLY_PARTIAL_SLOTTED_NOT_PURCHASED = "champion_slotted_not_purchased_skipped"
 
 function LTM_CHAMPION_APPLY:Log(...)
-    if type(Log.LogDebugSummary) ~= "function" then
-        return
-    end
-
     Log.LogDebugSummary(...)
 end
 
@@ -190,9 +185,7 @@ function LTM_CHAMPION_APPLY:IsCooldownError(err)
 end
 
 function LTM_CHAMPION_APPLY:NotifyCooldownRetry(context)
-    if type(LTM) == "table" and type(LTM.NotifyWaitStarted) == "function" then
-        LTM:NotifyWaitStarted(context, "cp_cooldown", self:GetCooldownRemainingSeconds())
-    end
+    LTM:NotifyWaitStarted(context, "cp_cooldown", self:GetCooldownRemainingSeconds())
 end
 
 function LTM_CHAMPION_APPLY:BeginCooldownRetry(context)
@@ -222,9 +215,7 @@ function LTM_CHAMPION_APPLY:BeginCooldownRetry(context)
         return false, CHAMPION_APPLY_E_TIMEOUT
     end
 
-    if type(LTM) == "table" and type(LTM.NotifyWaitStarted) == "function" then
-        LTM:NotifyWaitStarted(context, "cp_cooldown", CHAMPION_APPLY_SHORT_RETRY_DELAY_MS / 1000)
-    end
+    LTM:NotifyWaitStarted(context, "cp_cooldown", CHAMPION_APPLY_SHORT_RETRY_DELAY_MS / 1000)
 
     context.cooldownShortRetryGeneration = (context.cooldownShortRetryGeneration or 0) + 1
     local generation = context.cooldownShortRetryGeneration
@@ -289,9 +280,7 @@ function LTM_CHAMPION_APPLY:FinishDeferred(context, success, err)
         self:BuildLastResult(false, err, summary)
     end
 
-    if type(LTM) == "table" and type(LTM.ResetWaitNotification) == "function" then
-        LTM:ResetWaitNotification(context)
-    end
+    LTM:ResetWaitNotification(context)
 
     self:NotifyPipelineContinuation(context, success)
 end
@@ -320,9 +309,7 @@ function LTM_CHAMPION_APPLY:BeginChampionPurchase(context)
         return false, CHAMPION_APPLY_E_CHANGE_FAILED
     end
 
-    if type(LTM) == "table" and type(LTM.ResetWaitNotification) == "function" then
-        LTM:ResetWaitNotification(context)
-    end
+    LTM:ResetWaitNotification(context)
 
     self:Log(
         "Champion purchase sent",
@@ -420,9 +407,7 @@ function LTM_CHAMPION_APPLY:HandleChampionPurchaseResult(context, result)
     self:Log("Champion purchase result", "result=" .. tostring(result))
 
     local function verifyAndFinish()
-        local verifyOk = type(LTM_CHAMPION_CHANGE) == "table"
-            and type(LTM_CHAMPION_CHANGE.VerifyAppliedPlan) == "function"
-            and LTM_CHAMPION_CHANGE:VerifyAppliedPlan(context.plan)
+        local verifyOk = LTM_CHAMPION_CHANGE:VerifyAppliedPlan(context.plan)
         if verifyOk == true then
             self:FinishDeferred(context, true, nil)
         else
@@ -459,13 +444,6 @@ function LTM_CHAMPION_APPLY:Run(config)
     if type(config) ~= "table" then
         self:BuildLastResult(false, "champion_config_invalid", nil)
         return false, CHAMPION_APPLY_E_CONFIG_INVALID
-    end
-
-    if type(LTM_CHAMPION_CHANGE) ~= "table"
-        or type(LTM_CHAMPION_CHANGE.CreateApplyPlan) ~= "function"
-        or type(LTM_CHAMPION_CHANGE.QueueChampionPurchaseRequest) ~= "function" then
-        self:BuildLastResult(false, "champion_change_unavailable", nil)
-        return false, CHAMPION_APPLY_E_CHANGE_UNAVAILABLE
     end
 
     local targetChampionPoints, championOptions = NormalizeChampionApplyConfig(config)
@@ -518,21 +496,15 @@ function LTM_CHAMPION_APPLY:Run(config)
         return false, CHAMPION_APPLY_E_CHANGE_FAILED
     end
 
-    if type(LTM_CHAMPION_CHANGE.LogPlanDebug) == "function" then
-        LTM_CHAMPION_CHANGE:LogPlanDebug(plan)
-    end
+    LTM_CHAMPION_CHANGE:LogPlanDebug(plan)
 
-    if type(LTM_CHAMPION_CHANGE.HasUnresolvedChanges) == "function"
-        and LTM_CHAMPION_CHANGE:HasUnresolvedChanges(plan) then
-        local unresolvedMessage = type(LTM_CHAMPION_CHANGE.GetPlanErrorMessage) == "function"
-            and LTM_CHAMPION_CHANGE:GetPlanErrorMessage(plan)
-            or "champion_target_unresolved"
+    if LTM_CHAMPION_CHANGE:HasUnresolvedChanges(plan) then
+        local unresolvedMessage = LTM_CHAMPION_CHANGE:GetPlanErrorMessage(plan)
         self:BuildLastResult(false, unresolvedMessage, summary)
         return false, tostring(unresolvedMessage)
     end
 
-    if type(LTM_CHAMPION_CHANGE.HasPendingChanges) ~= "function"
-        or not LTM_CHAMPION_CHANGE:HasPendingChanges(plan) then
+    if not LTM_CHAMPION_CHANGE:HasPendingChanges(plan) then
         if self:HasSkippedResidual(summary) then
             return self:FinishPartial(config._pipelineContext, nil, summary)
         end

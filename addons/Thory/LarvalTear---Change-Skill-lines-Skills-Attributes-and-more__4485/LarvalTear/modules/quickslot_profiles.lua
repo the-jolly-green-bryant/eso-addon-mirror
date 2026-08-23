@@ -57,9 +57,7 @@ local function NormalizeProfileShape(profile)
     if type(profile.slots) == "table" then
         for slotIndex, entry in pairs(profile.slots) do
             if type(entry) == "table"
-                and (type(QuickslotSnapshot) ~= "table"
-                    or type(QuickslotSnapshot.IsEmptyEntry) ~= "function"
-                    or QuickslotSnapshot:IsEmptyEntry(entry) ~= true) then
+                and QuickslotSnapshot:IsEmptyEntry(entry) ~= true then
                 local normalizedEntry = Util:DeepCopy(entry)
                 normalizedEntry.slotIndex = tonumber(normalizedEntry.slotIndex) or tonumber(slotIndex)
                 normalizedEntry.actionTypeName = nil
@@ -261,10 +259,6 @@ function QuickslotProfiles:GenerateProfileName(characterKey)
 end
 
 function QuickslotProfiles:CreateFromCurrent(name, characterKey)
-    if type(QuickslotSnapshot) ~= "table" or type(QuickslotSnapshot.CaptureCurrent) ~= "function" then
-        return nil, "quickslot_snapshot_unavailable"
-    end
-
     characterKey = NormalizeCharacterKey(characterKey)
     if type(characterKey) ~= "string" or characterKey == "" then
         return nil, "character_id_unavailable"

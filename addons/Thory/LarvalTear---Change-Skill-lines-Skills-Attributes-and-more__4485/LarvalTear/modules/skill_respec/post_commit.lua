@@ -5,6 +5,7 @@ local SHARED_UTIL = Addon.Common.Util
 local logging = Addon.Modules.SkillRespecLogging
 local LTM_SKILL_RESPEC_APPLY = Addon.Modules.SkillRespecApply
 local LTM_SKILL_RESPEC_COMPLETION = Addon.Modules.SkillRespecCompletion
+local LTM_ACTIVE_SKILL_RESTORE = Addon.Modules.ActiveSkillRestore
 local LTM_PASSIVE_SNAPSHOT_APPLY = Addon.Modules.PassiveSnapshotApply
 local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 local CONSTANTS = Addon.Modules.SkillRespecConstants
@@ -79,9 +80,7 @@ function M:ScheduleCommitRetry(apply, context, reason, details)
 
     context.commitRetryScheduled = true
     context.commitRetryCount = apply:GetRouteBCommitRetryCount(context) + 1
-    if type(LTM) == "table" and type(LTM.NotifyWaitStarted) == "function" then
-        LTM:NotifyWaitStarted(context, "skill_cooldown", ROUTE_B_COMMIT_RETRY_DELAY_MS / 1000)
-    end
+    LTM:NotifyWaitStarted(context, "skill_cooldown", ROUTE_B_COMMIT_RETRY_DELAY_MS / 1000)
     logging.Log(
         "Route B commit retry scheduled",
         "delayMs=" .. tostring(ROUTE_B_COMMIT_RETRY_DELAY_MS),
@@ -166,38 +165,32 @@ end
 
 function M:VerifyPostCommitState(apply, context)
     local plan = apply:BuildRouteBSkillTargetPlan(context.routeBConfig)
+    local reductionVerify = LTM_ACTIVE_SKILL_RESTORE:VerifyCommittedReductions(
+        context.activeRestorePlan
+    )
 
-    local diagnostics = type(plan) == "table" and plan.diagnostics or {}
-    local verifyMode = type(apply) == "table"
-        and type(apply.ResolveRouteBVerifyMode) == "function"
-        and apply:ResolveRouteBVerifyMode(context)
-        or "strict"
-    local readiness = type(apply) == "table"
-        and type(apply.GetRouteBCommitReadiness) == "function"
-        and apply:GetRouteBCommitReadiness(plan, context, {
-            -- Transform exact mismatches are reported by VerifySnapshots as
-            -- partial results. They must not turn the shared commit into a
-            -- fatal retry exhaustion after other domains have committed.
-            ignoreTransformTargets = true,
-        })
-        or {
-            ok = type(apply) == "table" and type(apply.IsRouteBCommitReady) == "function"
-                and apply:IsRouteBCommitReady(plan, context)
-                or false,
-            expectedMissingPurchaseCount = 0,
-            unexpectedPurchaseCount = diagnostics.purchaseCount or 0,
-        }
-    context.postCommitVerifyMode = verifyMode
-    return readiness.ok == true, plan, readiness
+    local readiness = apply:GetRouteBCommitReadiness(plan, context)
+    readiness.reductionMismatchCount = reductionVerify.mismatchCount
+    readiness.reductionVerify = reductionVerify
+    readiness.ok = readiness.ok == true and reductionVerify.ok == true
+    if readiness.ok == true
+        and context.commitPerformed ~= true
+        and type(apply.ShouldBypassSubclassVerify) == "function"
+        and apply:ShouldBypassSubclassVerify(context) ~= true then
+        local subclassSnapshot, subclassErr = apply:CollectRouteBVerifySnapshot(context)
+        readiness.subclassVerify = subclassSnapshot
+        readiness.subclassVerifyError = subclassErr
+        readiness.subclassVerified = type(subclassSnapshot) == "table"
+            and subclassSnapshot.ok == true
+            and subclassSnapshot.matched == true
+        readiness.ok = readiness.subclassVerified == true
+    end
+    return readiness.ok, plan, readiness
 end
 
 function M:VerifyPassiveExactPostCommit(context)
     local passiveSummary = type(context) == "table" and context.passiveSummary or nil
     if type(passiveSummary) ~= "table" or passiveSummary.mode ~= "exact_restore" then
-        return nil
-    end
-    if type(LTM_PASSIVE_SNAPSHOT_APPLY) ~= "table"
-        or type(LTM_PASSIVE_SNAPSHOT_APPLY.VerifyPostCommitLiveRanks) ~= "function" then
         return nil
     end
 
@@ -227,46 +220,54 @@ function M:RunPostCommitVerifyRetry(apply, context)
     local verifyOk, verifyPlan, readiness = self:VerifyPostCommitState(apply, context)
     local diagnostics = type(verifyPlan) == "table" and verifyPlan.diagnostics or {}
 
+    local maxAttempts = context.commitPerformed == true
+        and ROUTE_B_POST_COMMIT_VERIFY_MAX_ATTEMPTS
+        or 1
+
     if not verifyOk
-        and attemptIndex < ROUTE_B_POST_COMMIT_VERIFY_MAX_ATTEMPTS
+        and attemptIndex < maxAttempts
         and ShouldLogPostCommitVerifyAttempt(attemptIndex) then
         logging.Log(
             "Route B post-commit verify retry attempt=" .. tostring(attemptIndex),
-            "verifyMode=" .. tostring(context.postCommitVerifyMode or "strict"),
+            "verifyMode=" .. tostring(readiness.verifyMode or "strict"),
             "purchase=" .. tostring(diagnostics.purchaseCount or 0),
             "expectedMissingPurchase=" .. tostring(type(readiness) == "table" and readiness.expectedMissingPurchaseCount or 0),
             "unexpectedPurchase=" .. tostring(type(readiness) == "table" and readiness.unexpectedPurchaseCount or 0),
             "morph=" .. tostring(diagnostics.morphCount or 0),
+            "expectedMissingMorph=" .. tostring(type(readiness) == "table" and readiness.expectedMissingMorphCount or 0),
+            "unexpectedMorph=" .. tostring(type(readiness) == "table" and readiness.unexpectedMorphCount or 0),
+            "reductionMismatch=" .. tostring(
+                type(readiness) == "table" and readiness.reductionMismatchCount or 0
+            ),
             "unresolved=" .. tostring(diagnostics.unresolvedCount or 0),
             "readyForRestore=" .. tostring(type(verifyPlan) == "table" and verifyPlan.readyForRestore == true)
         )
     end
 
     if verifyOk then
-        local passiveVerify = self:VerifyPassiveExactPostCommit(context)
-        logging.Log("Route B post-commit verify retry success attempt=" .. tostring(attemptIndex))
-        apply:FinalizeRouteBSuccess(context, "route_b_commit_confirmed", {
-            result = context.resultCode,
-            verifyState = context.verifiedState,
-            verify = context.verifyResult,
-            completion = context.completionSuccessSnapshot,
-            completionSuccessKind = context.completionSuccessKind,
-            verifyMode = context.postCommitVerifyMode,
+        self:VerifyPassiveExactPostCommit(context)
+        context.postMutationVerifySucceeded = true
+        local successPhase = context.commitPerformed == true
+            and "route_b_commit_confirmed"
+            or "route_b_no_commit_verified"
+        logging.Log(
+            "Route B post-commit verify retry success attempt=" .. tostring(attemptIndex),
+            "phase=" .. successPhase
+        )
+        apply:FinalizeRouteBSuccess(context, {
             readiness = readiness,
-            postCommitSkillTargetPlan = verifyPlan,
-            passivePostCommitVerify = passiveVerify,
         })
         return
     end
 
-    if attemptIndex >= ROUTE_B_POST_COMMIT_VERIFY_MAX_ATTEMPTS then
+    if attemptIndex >= maxAttempts then
         apply:LogRouteBSkillTargetPlan("Route B post-commit verify exhausted", verifyPlan)
         apply:FinalizeRouteBFailure(context, "route_b_verify_retry_exhausted", {
             result = context.resultCode,
             verify = context.verifyResult,
             completion = context.completionSuccessSnapshot,
             completionSuccessKind = context.completionSuccessKind,
-            verifyMode = context.postCommitVerifyMode,
+            verifyMode = readiness.verifyMode,
             readiness = readiness,
             postCommitSkillTargetPlan = verifyPlan,
             verifyRetryAttempts = attemptIndex,
@@ -290,10 +291,7 @@ function M:BeginPostCommitVerifyRetry(apply, context, snapshot, successKind)
 
     logging.Log(
         "Route B post-commit verify retry begin",
-        "verifyMode=" .. tostring(type(apply) == "table"
-            and type(apply.ResolveRouteBVerifyMode) == "function"
-            and apply:ResolveRouteBVerifyMode(context)
-            or "strict")
+        "verifyMode=" .. tostring(apply:ResolveRouteBVerifyMode(context))
     )
 
     zo_callLater(function()
@@ -303,15 +301,6 @@ end
 
 function M:KickOffPostCommitVerify(apply, context, source)
     if apply.pendingContext ~= context then
-        if type(context) ~= "table" then
-            return
-        end
-
-        local pendingRunId = type(apply.pendingContext) == "table" and apply.pendingContext.runId or nil
-        if pendingRunId ~= nil and context.runId ~= nil and pendingRunId ~= context.runId then
-            return
-        end
-
         return
     end
 
@@ -324,23 +313,6 @@ function M:KickOffPostCommitVerify(apply, context, source)
     end
 
     if context.completionArmed == true then
-        return
-    end
-
-    if type(context.plan) ~= "table" or type(context.targetState) ~= "table" then
-        logging.Log("Route B post-commit verify blocked", "reason=route_b_state_missing")
-        return
-    end
-
-    if context.pipelineContinuation == nil then
-        -- NOTE:
-        -- Verification should still run without a pipeline continuation.
-        -- NotifyPipelineContinuation safely skips nil continuations later.
-        logging.Log("Route B watchdog: continuation missing, proceeding without pipeline notify")
-    end
-
-    if type(SKILLS_AND_ACTION_BAR_MANAGER) ~= "table" then
-        logging.Log("Route B post-commit verify blocked", "reason=manager_unavailable")
         return
     end
 

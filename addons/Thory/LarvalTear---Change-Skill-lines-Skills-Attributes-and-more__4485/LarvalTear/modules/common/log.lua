@@ -112,16 +112,11 @@ local function EmitStructured(kind, level, message)
 end
 
 local function IsPrintMessagesEnabled()
-    if type(Addon.IsPrintMessagesEnabled) == "function" then
-        return Addon:IsPrintMessagesEnabled()
-    end
-
     if type(Addon.savedVars) ~= "table" then
         return true
     end
 
-    local settings = Addon.savedVars.settings
-    return type(settings) ~= "table" or settings.printMessages ~= false
+    return Addon:IsPrintMessagesEnabled()
 end
 
 local function IsErrorOrWarningMessage(message)

@@ -1,6 +1,15 @@
 local Addon = LarvalTearMod
 local M = Addon.Modules.SkillSnapshotAudit
 local Util = Addon.Common.Util
+local TransformSkills = Addon.Modules.TransformSkills
+
+local function NormalizePositiveInteger(value)
+    value = tonumber(value)
+    if value == nil or value <= 0 or math.floor(value) ~= value then
+        return nil
+    end
+    return math.floor(value)
+end
 
 local function ResolveAvailablePoints()
     if type(GetAvailableSkillPoints) == "function" then
@@ -79,6 +88,8 @@ local function BuildSkillEntry(skillData, skillIndex)
         currentRank = tonumber(Util:SafeCallMethod(skillData, "GetCurrentRank")) or 0,
         numRanks = tonumber(Util:SafeCallMethod(skillData, "GetNumRanks")) or 0,
         isAutoGrant = Util:SafeCallMethod(skillData, "IsAutoGrant") == true,
+        isUltimate = Util:SafeCallMethod(skillData, "IsUltimate") == true,
+        isCraftedAbility = Util:SafeCallMethod(skillData, "IsCraftedAbility") == true,
         costMultiplier = tonumber(Util:SafeCallMethod(skillData, "GetSkillPointCostMultiplier")) or nil,
     }
 
@@ -211,6 +222,75 @@ function M:CaptureCurrentSnapshot()
     end)
 
     return snapshot, nil
+end
+
+function M:CaptureCurrentActiveSnapshot()
+    local transformOwnerSkillLineIds, transformErr = TransformSkills:ResolveLiveOwnerSkillLineSet()
+    if type(transformOwnerSkillLineIds) ~= "table" then
+        return nil, transformErr or "transform_live_owner_resolution_failed"
+    end
+
+    local auditSnapshot, auditErr = self:CaptureCurrentSnapshot()
+    if auditErr ~= nil then
+        return nil, auditErr
+    end
+    if type(auditSnapshot) ~= "table" then
+        return nil, "skill_snapshot_capture_failed"
+    end
+    if type(GetProgressionSkillMorphSlotAbilityId) ~= "function"
+        or type(SKILLS_DATA_MANAGER) ~= "table"
+        or type(SKILLS_DATA_MANAGER.GetProgressionDataByAbilityId) ~= "function" then
+        return nil, "active_snapshot_ability_resolver_unavailable"
+    end
+
+    local abilityIds = {}
+    for _, lineEntry in ipairs(auditSnapshot.lines or {}) do
+        local skillLineId = NormalizePositiveInteger(lineEntry.skillLineId)
+        if lineEntry.isClassMastery ~= true
+            and transformOwnerSkillLineIds[skillLineId] ~= true then
+            for _, skillEntry in ipairs(lineEntry.skills or {}) do
+                if skillEntry.kind == "active"
+                    and skillEntry.purchased == true
+                    and skillEntry.isCraftedAbility ~= true then
+                    if skillLineId == nil then
+                        return nil, "active_snapshot_skill_line_unavailable"
+                    end
+                    local progressionId = NormalizePositiveInteger(skillEntry.progressionId)
+                    local morphSlot = tonumber(skillEntry.currentMorphSlot)
+                    if progressionId == nil
+                        or (morphSlot ~= MORPH_SLOT_BASE
+                            and morphSlot ~= MORPH_SLOT_MORPH_1
+                            and morphSlot ~= MORPH_SLOT_MORPH_2) then
+                        return nil, "active_snapshot_committed_state_unavailable"
+                    end
+
+                    local abilityId = NormalizePositiveInteger(Util:SafeCall(
+                        GetProgressionSkillMorphSlotAbilityId,
+                        progressionId,
+                        morphSlot
+                    ))
+                    local progressionData = abilityId ~= nil
+                        and Util:SafeCallMethod(SKILLS_DATA_MANAGER, "GetProgressionDataByAbilityId", abilityId)
+                        or nil
+                    local roundTripProgressionId = NormalizePositiveInteger(
+                        Util:SafeCallMethod(progressionData, "GetProgressionId")
+                    )
+                    if abilityId == nil or roundTripProgressionId ~= progressionId then
+                        return nil, "active_snapshot_round_trip_failed:" .. tostring(progressionId)
+                    end
+                    abilityIds[#abilityIds + 1] = abilityId
+                end
+            end
+        end
+    end
+
+    table.sort(abilityIds)
+    for index, abilityId in ipairs(abilityIds) do
+        abilityIds[index] = tostring(abilityId)
+    end
+    return {
+        a = table.concat(abilityIds, ","),
+    }, nil
 end
 
 function M:FormatSnapshot(snapshot)

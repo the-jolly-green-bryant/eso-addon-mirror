@@ -4,10 +4,23 @@ local U = Ultivite
 -- installed addon and mirrors safe FAB settings into Ultivite's menu.
 local B = {}
 U.FancyActionBar = B
+local COMBAT_VISIBILITY_OWNER = "CombatOnlyActionBar"
 
 local function getFab()
     return _G.FancyActionBar
 end
+
+-- Read-through compatibility for the small set of native FAB+ runtime methods
+-- Ultivite invokes from its mirrored controls. The bridge keeps its own wrapper
+-- methods when defined, while unknown fields resolve against the installed FAB+
+-- object. This also keeps dynamic fields such as style/constants current.
+setmetatable(B, {
+    __index = function(_, key)
+        local fab = getFab()
+        if type(fab) == "table" then return fab[key] end
+        return nil
+    end,
+})
 
 local function getVersion()
     local fab = getFab()
@@ -132,6 +145,15 @@ function B.RequestSave()
     end
 end
 
+function B.CommitMoverPosition()
+    local fab = getFab()
+    if not fab or type(fab.SaveMoverPosition) ~= "function" then return false end
+
+    local ok = pcall(fab.SaveMoverPosition)
+    if ok then B.RequestSave() end
+    return ok
+end
+
 local function getModeKey()
     local fab = getFab()
     return fab and fab.style == 2 and "gp" or "kb"
@@ -189,6 +211,20 @@ end
 -- Ultivite's strict combat-only rule remains an Ultivite HUD feature. FAB+
 -- uses ESO's ZO_ActionBar1 as its action-bar root, so this bridge owns only the
 -- root visibility state while FAB+ continues to own layout, slots and effects.
+local function scheduleCombatEntryHandoff(generation)
+    if type(zo_callLater) ~= "function" then return end
+    local function applyAfterEsoRefresh()
+        if generation ~= B.combatVisibilityGeneration then return end
+        if not (IsUnitInCombat and IsUnitInCombat("player")) then return end
+        local profile = U.GetActiveProfile and U.GetActiveProfile() or nil
+        local frames = profile and profile.frames
+        if not frames or frames.combatOnly ~= true or frames.hideActionBar == true then return end
+        B.ApplyCombatOnlyVisibility(true)
+    end
+    zo_callLater(applyAfterEsoRefresh, 0)
+    zo_callLater(applyAfterEsoRefresh, 100)
+end
+
 function B.ApplyCombatOnlyVisibility(forceVisible)
     local profile = U.GetActiveProfile and U.GetActiveProfile() or nil
     local frames = profile and profile.frames
@@ -197,30 +233,69 @@ function B.ApplyCombatOnlyVisibility(forceVisible)
     local bar = GetControl and GetControl("ZO_ActionBar1") or ZO_ActionBar1
     if not bar then return false end
 
-    -- The explicit Hide Action Bar option has higher priority than combat HUD
-    -- visibility. Do not accidentally reveal a deliberately hidden action bar.
-    if frames.hideActionBar == true then
-        if bar.SetHidden then bar:SetHidden(true) end
-        return true
-    end
-
-    local shouldShow
-    if forceVisible == true or frames.combatOnly ~= true then
-        -- This branch was missing before 1.0.90. Switching COMBAT HUD from
-        -- COMBAT ONLY back to ALWAYS must actively release the old hidden root.
-        shouldShow = true
-    else
-        shouldShow = IsUnitInCombat and IsUnitInCombat("player") or false
-    end
-
+    local ownership = U.Ownership
     local wasHidden = bar.IsHidden and bar:IsHidden() or false
-    if bar.SetHidden then
-        bar:SetHidden(not shouldShow)
+    local inCombat = IsUnitInCombat and IsUnitInCombat("player") or false
+    local shouldHideForCombat = forceVisible ~= true and frames.combatOnly == true and not inCombat
+    local firstVisibilityDecision = B.lastCombatOnlyEnabled == nil
+    local previousInCombat = B.lastCombatVisibilityInCombat
+    local enteringCombat = frames.combatOnly == true and inCombat and previousInCombat ~= true
+    local combatOnlyDisabled = frames.combatOnly ~= true and B.lastCombatOnlyEnabled == true
+    local combatOnlyEnabled = frames.combatOnly == true and B.lastCombatOnlyEnabled ~= true
+    if previousInCombat == nil or previousInCombat ~= inCombat then
+        B.combatVisibilityGeneration = (tonumber(B.combatVisibilityGeneration) or 0) + 1
+    end
+    B.lastCombatVisibilityInCombat = inCombat
+    B.lastCombatOnlyEnabled = frames.combatOnly == true
+    if enteringCombat and frames.hideActionBar ~= true then
+        scheduleCombatEntryHandoff(B.combatVisibilityGeneration)
+    end
+
+    if ownership and ownership.AcquireControl and ownership.ReleaseControl then
+        local releasedCombatOwner = false
+        if shouldHideForCombat then
+            ownership.AcquireControl(COMBAT_VISIBILITY_OWNER, bar)
+        else
+            releasedCombatOwner = ownership.ReleaseControl(COMBAT_VISIBILITY_OWNER, bar)
+        end
+
+        -- The explicit Hide Action Bar option and every temporary visibility
+        -- owner have priority over Combat HUD and edit visibility.
+        if frames.hideActionBar == true then
+            B.combatVisibilityWasBlocked = true
+            local enforced = ownership.EnforceControl and ownership.EnforceControl(bar)
+            if not enforced and bar.SetHidden then bar:SetHidden(true) end
+            return true
+        end
+        if ownership.EnforceControl and ownership.EnforceControl(bar) then
+            B.combatVisibilityWasBlocked = true
+            return true
+        end
+
+        local ownerJustReleased = B.combatVisibilityWasBlocked == true
+        B.combatVisibilityWasBlocked = false
+        local shouldShowOnce = forceVisible == true
+            or enteringCombat
+            or (releasedCombatOwner and frames.combatOnly ~= true)
+            or combatOnlyDisabled
+            or (combatOnlyEnabled and inCombat)
+            or (firstVisibilityDecision and frames.combatOnly ~= true)
+            or (ownerJustReleased and (frames.combatOnly ~= true or inCombat))
+
+        -- A transition into a visible state gets one deliberate show. Later
+        -- reconciliation leaves the root alone so ESO and FAB+ can manage scene
+        -- and presentation visibility without a competing periodic writer.
+        if shouldShowOnce and bar.SetHidden then bar:SetHidden(false) end
+    else
+        local shouldShow = forceVisible == true or not shouldHideForCombat
+        if frames.hideActionBar == true then shouldShow = false end
+        if bar.SetHidden then bar:SetHidden(not shouldShow) end
     end
 
     -- When Ultivite reveals a FAB root that was hidden out of combat, let FAB+
     -- immediately refresh the pieces it owns so the visible bar is fully live.
-    if shouldShow and wasHidden then
+    local isHidden = bar.IsHidden and bar:IsHidden() or false
+    if wasHidden and not isHidden then
         local fab = getFab()
         if fab then
             if type(fab.RefreshBarPosition) == "function" then

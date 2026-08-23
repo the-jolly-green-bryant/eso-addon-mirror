@@ -4,10 +4,10 @@ local Log = Addon.Common.Log
 local LTM_SKILL_RESPEC_APPLY = Addon.Modules.SkillRespecApply
 local LTM_APPLY_COOLDOWN_GATE = Addon.Modules.ApplyCooldownGate
 local SHARED_UTIL = Addon.Common.Util
+local LTM_ACTIVE_SKILL_RESTORE = Addon.Modules.ActiveSkillRestore
 local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 local LTM_SKILL_PASSIVE_APPLY = Addon.Modules.SkillPassiveApply
 local LTM_PASSIVE_SNAPSHOT_APPLY = Addon.Modules.PassiveSnapshotApply
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 local LTM_SKILL_RESTORE = Addon.Modules.SkillRestore
 local LTM_SKILL_RESPEC_CLASS_MASTERY_REDUCE = Addon.Modules.SkillRespecClassMasteryReduce
 local LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE = Addon.Modules.SkillRespecClassMasteryPurchase
@@ -20,7 +20,6 @@ local LTM_SKILL_RESPEC_POST_COMMIT = Addon.Modules.SkillRespecPostCommit
 local LTM_SKILL_RESPEC_PURCHASE = Addon.Modules.SkillRespecPurchase
 local LTM_SKILL_RESPEC_SUBCLASS_OPS = Addon.Modules.SkillRespecSubclassOps
 local LTM_SKILL_RESPEC_VERIFY = Addon.Modules.SkillRespecVerify
-local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 local Unpack = unpack or table.unpack
 
 local SKILL_RESPEC_READY_RETRY_DELAYS_MS = LTM_SKILL_RESPEC_CONSTANTS.SKILL_RESPEC_READY_RETRY_DELAYS_MS
@@ -33,7 +32,7 @@ local ROUTE_B_MORPH_MAX_PASSES = LTM_SKILL_RESPEC_CONSTANTS.ROUTE_B_MORPH_MAX_PA
 local ROUTE_B_PASSIVE_EXACT_RETRY_DELAY_MS = LTM_SKILL_RESPEC_CONSTANTS.ROUTE_B_PASSIVE_EXACT_RETRY_DELAY_MS
 
 local function IsSummaryDebugEnabled()
-    return type(Log.IsSummaryDebugEnabled) == "function" and Log.IsSummaryDebugEnabled() == true
+    return Log.IsSummaryDebugEnabled() == true
 end
 
 local function ShouldLogRouteBPollAttempt(attemptIndex, maxAttempts, force)
@@ -80,19 +79,8 @@ local function CreateSuccessResult(details)
     }
 end
 
-local function ResolveApplyCooldownGate()
-    if type(LTM_APPLY_COOLDOWN_GATE) == "table" then
-        return LTM_APPLY_COOLDOWN_GATE
-    end
-
-    return nil
-end
-
 local function RecordSharedCooldownMutation(kind, atMs)
-    local gate = ResolveApplyCooldownGate()
-    if gate and type(gate.RecordMutation) == "function" then
-        gate:RecordMutation(kind, atMs)
-    end
+    LTM_APPLY_COOLDOWN_GATE:RecordMutation(kind, atMs)
 end
 
 function LTM_SKILL_RESPEC_APPLY:GetLastResult()
@@ -101,19 +89,14 @@ end
 
 function LTM_SKILL_RESPEC_APPLY:SetLastResult(result, pipelineContext)
     self.lastResult = result
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.SetPhaseResult) == "function" then
-        LTM_PIPELINE_CONTEXT:SetPhaseResult(pipelineContext, "SkillRespec", result)
-    end
+    LTM_PIPELINE_CONTEXT:SetPhaseResult(pipelineContext, "SkillRespec", result)
 end
 
 function LTM_SKILL_RESPEC_APPLY:BeginSharedCooldownGateWait(config)
-    local gate = ResolveApplyCooldownGate()
-    if gate == nil or type(gate.GetRemainingDelayMs) ~= "function" then
-        return false
-    end
-
-    local remainingMs = gate:GetRemainingDelayMs("skill", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
+    local remainingMs = LTM_APPLY_COOLDOWN_GATE:GetRemainingDelayMs(
+        "skill",
+        SHARED_UTIL:GetFrameTimeMillisecondsSafe()
+    )
     if type(remainingMs) ~= "number" or remainingMs <= 0 then
         return false
     end
@@ -132,9 +115,7 @@ function LTM_SKILL_RESPEC_APPLY:BeginSharedCooldownGateWait(config)
     }
     self.pendingGateContext = waitContext
 
-    if type(LTM) == "table" and type(LTM.NotifyWaitStarted) == "function" then
-        LTM:NotifyWaitStarted(waitContext, "skill_cooldown", remainingMs / 1000)
-    end
+    LTM:NotifyWaitStarted(waitContext, "skill_cooldown", remainingMs / 1000)
     logging.Log("Skill shared cooldown gate wait", "delayMs=" .. tostring(remainingMs))
 
     zo_callLater(function()
@@ -144,9 +125,7 @@ function LTM_SKILL_RESPEC_APPLY:BeginSharedCooldownGateWait(config)
 
         waitContext.finished = true
         LTM_SKILL_RESPEC_APPLY.pendingGateContext = nil
-        if type(LTM) == "table" and type(LTM.ResetWaitNotification) == "function" then
-            LTM:ResetWaitNotification(waitContext)
-        end
+        LTM:ResetWaitNotification(waitContext)
         LTM_SKILL_RESPEC_APPLY:Run(config)
     end, remainingMs)
 
@@ -209,13 +188,7 @@ end
 
 function LTM_SKILL_RESPEC_APPLY:MarkSkillRespecCommitExecuted(context)
     local pipelineContext = context and context.pipelineContext or nil
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.SetRuntimeFlag) == "function" then
-        LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "priorSkillRespecCommitted", true)
-    elseif type(pipelineContext) == "table" then
-        pipelineContext.runtime = pipelineContext.runtime or {}
-        pipelineContext.runtime.priorSkillRespecCommitted = true
-    end
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "priorSkillRespecCommitted", true)
 end
 
 function LTM_SKILL_RESPEC_APPLY:ResolveRouteBSkillConfig(config)
@@ -353,9 +326,6 @@ function LTM_SKILL_RESPEC_APPLY:LogRouteBPurchaseTargetAuditSummary(context)
         "skippedCannotPurchase=" .. tostring(
             type(outcomeSummary) == "table" and outcomeSummary.skippedCannotPurchaseCount or 0
         ),
-        "degradedCandidates=" .. tostring(
-            type(outcomeSummary) == "table" and outcomeSummary.degradedCandidateCount or 0
-        ),
         "hardFailure=" .. tostring(type(outcomeSummary) == "table" and outcomeSummary.hardFailure == true),
         "hardFailureReason=" .. tostring(
             type(outcomeSummary) == "table" and outcomeSummary.hardFailureReason or ""
@@ -363,32 +333,52 @@ function LTM_SKILL_RESPEC_APPLY:LogRouteBPurchaseTargetAuditSummary(context)
     )
 end
 
-local function AppendUniqueNumber(targetList, targetSet, value)
-    if type(targetList) ~= "table" or type(targetSet) ~= "table" then
-        return
-    end
-
-    if type(value) ~= "number" or value <= 0 or targetSet[value] == true then
-        return
-    end
-
-    targetSet[value] = true
-    targetList[#targetList + 1] = value
+function LTM_SKILL_RESPEC_APPLY:IsActivePriorityShortagePolicy(context)
+    local skillSettings = LTM_PIPELINE_CONTEXT:GetSkillSettings(
+        type(context) == "table" and context.pipelineContext or nil
+    )
+    return skillSettings.activeShortage == "active_priority"
+        and skillSettings.activeAction ~= "skip_all"
 end
 
-function LTM_SKILL_RESPEC_APPLY:AppendRouteBDegradeReason(context, reason)
-    if type(context) ~= "table" or type(reason) ~= "string" or reason == "" then
+function LTM_SKILL_RESPEC_APPLY:RecordRouteBExpectedMissingTargets(context, kind, targets)
+    if type(context) ~= "table"
+        or (kind ~= "purchase" and kind ~= "morph")
+        or type(targets) ~= "table"
+        or not self:IsActivePriorityShortagePolicy(context) then
         return
     end
 
-    context.routeBDegradeReasonSet = context.routeBDegradeReasonSet or {}
-    if context.routeBDegradeReasonSet[reason] == true then
-        return
+    context.expectedMissingActiveTargets = context.expectedMissingActiveTargets or {
+        purchases = {},
+        morphs = {},
+        purchaseByProgression = {},
+        morphByProgression = {},
+    }
+    local records = kind == "purchase"
+        and context.expectedMissingActiveTargets.purchases
+        or context.expectedMissingActiveTargets.morphs
+    local recordSet = kind == "purchase"
+        and context.expectedMissingActiveTargets.purchaseByProgression
+        or context.expectedMissingActiveTargets.morphByProgression
+
+    for _, target in ipairs(targets) do
+        local progressionId = tonumber(type(target) == "table" and target.progressionId or nil)
+        if progressionId ~= nil and progressionId > 0 and recordSet[progressionId] == nil then
+            local record = {
+                progressionId = progressionId,
+                targetAbilityId = target.targetAbilityId,
+                targetMorphSlot = target.targetMorphSlot,
+                source = target.source,
+                owner = target.owner or target.source,
+                transformKind = target.transformKind,
+                shortageReason = "insufficient_skill_points",
+            }
+            recordSet[progressionId] = record
+            records[#records + 1] = record
+        end
     end
 
-    context.routeBDegradeReasonSet[reason] = true
-    context.routeBDegradeReasons = context.routeBDegradeReasons or {}
-    context.routeBDegradeReasons[#context.routeBDegradeReasons + 1] = reason
 end
 
 function LTM_SKILL_RESPEC_APPLY:ApplyRouteBPurchaseOutcomeSummary(context, summary)
@@ -397,56 +387,46 @@ function LTM_SKILL_RESPEC_APPLY:ApplyRouteBPurchaseOutcomeSummary(context, summa
     end
 
     context.purchaseOutcomeSummary = summary
-    context.expectedMissingDueToInsufficientPoints = context.expectedMissingDueToInsufficientPoints or {}
-    context.expectedMissingDueToInsufficientPointsSet = context.expectedMissingDueToInsufficientPointsSet or {}
-    context.expectedMissingProgressionIds = context.expectedMissingProgressionIds or {}
-    context.expectedMissingProgressionIdSet = context.expectedMissingProgressionIdSet or {}
-
-    for _, abilityId in ipairs(summary.expectedMissingAbilityIds or {}) do
-        AppendUniqueNumber(
-            context.expectedMissingDueToInsufficientPoints,
-            context.expectedMissingDueToInsufficientPointsSet,
-            abilityId
-        )
-    end
-
-    for _, progressionId in ipairs(summary.expectedMissingProgressionIds or {}) do
-        AppendUniqueNumber(
-            context.expectedMissingProgressionIds,
-            context.expectedMissingProgressionIdSet,
-            progressionId
-        )
-    end
-
-    if (summary.degradedCandidateCount or 0) > 0 or (summary.skippedInsufficientPointsCount or 0) > 0 then
-        context.routeBDegradedMode = true
-        self:AppendRouteBDegradeReason(context, "insufficient_skill_points")
-    end
+    self:RecordRouteBExpectedMissingTargets(context, "purchase", summary.expectedMissingTargets)
 end
 
-function LTM_SKILL_RESPEC_APPLY:IsExpectedMissingDueToInsufficientPoints(context, target)
+function LTM_SKILL_RESPEC_APPLY:ApplyRouteBMorphOutcomeSummary(context, summary)
+    if type(context) ~= "table" or type(summary) ~= "table" then
+        return
+    end
+    context.morphOutcomeSummary = summary
+    self:RecordRouteBExpectedMissingTargets(context, "morph", summary.expectedMissingTargets)
+end
+
+function LTM_SKILL_RESPEC_APPLY:IsExpectedMissingDueToInsufficientPoints(context, target, kind)
     if type(context) ~= "table" or type(target) ~= "table" then
         return false
     end
 
-    local abilityIdSet = context.expectedMissingDueToInsufficientPointsSet or {}
-    local progressionIdSet = context.expectedMissingProgressionIdSet or {}
-    local targetAbilityId = target.targetAbilityId or target.abilityId
-    local progressionId = target.progressionId
-
-    return (type(targetAbilityId) == "number" and abilityIdSet[targetAbilityId] == true)
-        or (type(progressionId) == "number" and progressionIdSet[progressionId] == true)
+    local expected = context.expectedMissingActiveTargets or {}
+    local recordSet = kind == "morph" and expected.morphByProgression
+        or kind == "purchase" and expected.purchaseByProgression
+        or nil
+    local progressionId = tonumber(target.progressionId)
+    return type(recordSet) == "table"
+        and progressionId ~= nil
+        and recordSet[progressionId] ~= nil
 end
 
 function LTM_SKILL_RESPEC_APPLY:ResolveRouteBVerifyMode(context)
-    return type(context) == "table" and context.routeBDegradedMode == true and "degraded" or "strict"
+    local expected = type(context) == "table" and context.expectedMissingActiveTargets or nil
+    local purchaseCount = type(expected) == "table" and type(expected.purchases) == "table"
+        and #expected.purchases
+        or 0
+    local morphCount = type(expected) == "table" and type(expected.morphs) == "table"
+        and #expected.morphs
+        or 0
+    return purchaseCount + morphCount > 0 and "degraded" or "strict"
 end
 
-function LTM_SKILL_RESPEC_APPLY:GetRouteBCommitReadiness(skillTargetPlan, context, options)
+function LTM_SKILL_RESPEC_APPLY:GetRouteBCommitReadiness(skillTargetPlan, context)
     local diagnostics = type(skillTargetPlan) == "table" and skillTargetPlan.diagnostics or nil
     local verifyMode = self:ResolveRouteBVerifyMode(context)
-    local ignoreTransformTargets = type(options) == "table"
-        and options.ignoreTransformTargets == true
     local readiness = {
         ok = false,
         verifyMode = verifyMode,
@@ -455,64 +435,43 @@ function LTM_SKILL_RESPEC_APPLY:GetRouteBCommitReadiness(skillTargetPlan, contex
         unresolvedCount = 0,
         expectedMissingPurchaseCount = 0,
         unexpectedPurchaseCount = 0,
+        expectedMissingMorphCount = 0,
+        unexpectedMorphCount = 0,
     }
 
     if type(diagnostics) ~= "table" then
         return readiness
     end
 
-    local function CountTargets(targets)
-        local count = 0
-        for _, target in ipairs(type(targets) == "table" and targets or {}) do
-            if not ignoreTransformTargets
-                or type(target) ~= "table"
-                or type(target.transformKind) ~= "string" then
-                count = count + 1
-            end
+    readiness.purchaseCount = diagnostics.purchaseCount or 0
+    readiness.morphCount = diagnostics.morphCount or 0
+    readiness.unresolvedCount = diagnostics.unresolvedCount or 0
+
+    for _, target in ipairs(type(skillTargetPlan.purchaseTargets) == "table" and skillTargetPlan.purchaseTargets or {}) do
+        if verifyMode == "degraded"
+            and self:IsExpectedMissingDueToInsufficientPoints(context, target, "purchase") then
+            readiness.expectedMissingPurchaseCount = readiness.expectedMissingPurchaseCount + 1
+        else
+            readiness.unexpectedPurchaseCount = readiness.unexpectedPurchaseCount + 1
         end
-        return count
+    end
+    for _, target in ipairs(type(skillTargetPlan.morphTargets) == "table" and skillTargetPlan.morphTargets or {}) do
+        if verifyMode == "degraded"
+            and self:IsExpectedMissingDueToInsufficientPoints(context, target, "morph") then
+            readiness.expectedMissingMorphCount = readiness.expectedMissingMorphCount + 1
+        else
+            readiness.unexpectedMorphCount = readiness.unexpectedMorphCount + 1
+        end
     end
 
-    readiness.purchaseCount = ignoreTransformTargets
-        and CountTargets(skillTargetPlan.purchaseTargets)
-        or diagnostics.purchaseCount
-        or 0
-    readiness.morphCount = ignoreTransformTargets
-        and CountTargets(skillTargetPlan.morphTargets)
-        or diagnostics.morphCount
-        or 0
-    readiness.unresolvedCount = ignoreTransformTargets
-        and CountTargets(skillTargetPlan.unresolvedTargets)
-        or diagnostics.unresolvedCount
-        or 0
-
-    if verifyMode == "degraded" then
-        for _, target in ipairs(type(skillTargetPlan.purchaseTargets) == "table" and skillTargetPlan.purchaseTargets or {}) do
-            if not ignoreTransformTargets or type(target.transformKind) ~= "string" then
-                if self:IsExpectedMissingDueToInsufficientPoints(context, target) then
-                    readiness.expectedMissingPurchaseCount = readiness.expectedMissingPurchaseCount + 1
-                else
-                    readiness.unexpectedPurchaseCount = readiness.unexpectedPurchaseCount + 1
-                end
-            end
-        end
-    else
-        readiness.unexpectedPurchaseCount = readiness.purchaseCount
-    end
-
-    -- Step2 only carries degraded purchase shortage information forward.
-    -- Commit readiness stays strict until partial continuation semantics are
-    -- designed end-to-end, otherwise we can enter a commit lane with no
-    -- pending changes and loop on acceptance timeout.
-    readiness.ok = readiness.purchaseCount == 0
-        and readiness.morphCount == 0
+    readiness.ok = readiness.unexpectedPurchaseCount == 0
+        and readiness.unexpectedMorphCount == 0
         and readiness.unresolvedCount == 0
 
     return readiness
 end
 
-function LTM_SKILL_RESPEC_APPLY:ResolveRouteBPreCommitBlockedCode(skillTargetPlan, context, fallbackCode)
-    local readiness = self:GetRouteBCommitReadiness(skillTargetPlan, context)
+function LTM_SKILL_RESPEC_APPLY:ResolveRouteBPreCommitBlockedCode(skillTargetPlan, readiness, fallbackCode)
     local code = fallbackCode or "route_b_morph_substep_only"
     local unresolvedTargets = type(skillTargetPlan) == "table" and skillTargetPlan.unresolvedTargets or nil
 
@@ -522,13 +481,7 @@ function LTM_SKILL_RESPEC_APPLY:ResolveRouteBPreCommitBlockedCode(skillTargetPla
         end
     end
 
-    if readiness.purchaseCount > 0
-        and readiness.expectedMissingPurchaseCount > 0
-        and readiness.unexpectedPurchaseCount == 0
-        and readiness.morphCount == 0
-        and readiness.unresolvedCount == 0 then
-        code = "route_b_purchase_insufficient_points_pending"
-    elseif readiness.unresolvedCount > 0 then
+    if readiness.unresolvedCount > 0 then
         code = "route_b_unresolved_slot_target_before_commit"
     end
 
@@ -545,9 +498,7 @@ function LTM_SKILL_RESPEC_APPLY:NotifyCryptCanonOverwriteRequired(context)
     end
 
     context.cryptCanonOverwriteNoticeShown = true
-    if type(Log.WriteChat) == "function" and type(LTM) == "table" and type(LTM.GetStringText) == "function" then
-        Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_CRYPTCANON_OVERWRITE_REQUIRED"))
-    end
+    Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_CRYPTCANON_OVERWRITE_REQUIRED"))
 end
 
 function LTM_SKILL_RESPEC_APPLY:GetRouteBPendingChangesState()
@@ -627,110 +578,6 @@ function LTM_SKILL_RESPEC_APPLY:CollectPendingRouteBAllocators(limit, includeSam
     return allocators
 end
 
-function LTM_SKILL_RESPEC_APPLY:CanAssumeNoCommitPendingForDegradedFinalize(context, readiness, pendingState)
-    pendingState = type(pendingState) == "table" and pendingState or self:GetRouteBPendingChangesState()
-    return pendingState.pendingChanges == false
-end
-
-function LTM_SKILL_RESPEC_APPLY:EvaluateRouteBDegradedFinalize(context, skillTargetPlan, readiness)
-    local diagnostics = type(skillTargetPlan) == "table" and skillTargetPlan.diagnostics or {}
-    local pendingState = self:GetRouteBPendingChangesState()
-    local candidate = false
-    local rejectReason = nil
-
-    if type(context) ~= "table" or context.routeBDegradedMode ~= true then
-        rejectReason = "degraded_mode_disabled"
-    elseif type(readiness) ~= "table" then
-        rejectReason = "readiness_missing"
-    elseif (readiness.expectedMissingPurchaseCount or 0) <= 0 then
-        rejectReason = "expected_missing_purchase_absent"
-    elseif (readiness.unexpectedPurchaseCount or 0) > 0 then
-        rejectReason = "unexpected_purchase_remaining"
-    elseif (diagnostics.morphCount or 0) > 0 then
-        rejectReason = "morph_remaining"
-    elseif (diagnostics.unresolvedCount or 0) > 0 then
-        rejectReason = "unresolved_remaining"
-    elseif not self:CanAssumeNoCommitPendingForDegradedFinalize(context, readiness, pendingState) then
-        rejectReason = pendingState.pendingChanges == true and "pending_changes_present" or "pending_changes_unknown"
-    end
-
-    local subclassSnapshot = nil
-    if rejectReason == nil then
-        subclassSnapshot = self:CollectRouteBVerifySnapshot(context)
-        if type(subclassSnapshot) ~= "table" then
-            rejectReason = "subclass_verify_snapshot_failed"
-        elseif subclassSnapshot.ok ~= true then
-            rejectReason = "subclass_verify_failed"
-        elseif subclassSnapshot.matched ~= true then
-            rejectReason = "subclass_verify_mismatch"
-        else
-            candidate = true
-        end
-    end
-
-    if candidate ~= true then
-        logging.Log(
-            "Route B degraded finalize rejected",
-            "expectedMissingPurchaseCount=" .. tostring(
-                type(readiness) == "table" and readiness.expectedMissingPurchaseCount or 0
-            ),
-            "unexpectedPurchaseCount=" .. tostring(
-                type(readiness) == "table" and readiness.unexpectedPurchaseCount or 0
-            ),
-            "morphCount=" .. tostring(diagnostics.morphCount or 0),
-            "unresolvedCount=" .. tostring(diagnostics.unresolvedCount or 0),
-            "pendingChanges=" .. tostring(pendingState.pendingChanges),
-            "subclassVerified=" .. tostring(
-                type(subclassSnapshot) == "table"
-                    and subclassSnapshot.ok == true
-                    and subclassSnapshot.matched == true
-            ),
-            "reason=" .. tostring(rejectReason)
-        )
-        return nil, rejectReason, {
-            readiness = readiness,
-            pendingState = pendingState,
-            subclassSnapshot = subclassSnapshot,
-        }
-    end
-
-    return {
-        readiness = readiness,
-        pendingState = pendingState,
-        subclassSnapshot = subclassSnapshot,
-        diagnostics = diagnostics,
-    }
-end
-
-function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBDegraded(context, candidate)
-    candidate = type(candidate) == "table" and candidate or {}
-    local readiness = type(candidate.readiness) == "table" and candidate.readiness or {}
-    local subclassSnapshot = type(candidate.subclassSnapshot) == "table" and candidate.subclassSnapshot or {}
-
-    logging.Log(
-        "Route B degraded finalize success",
-        "resultCode=route_b_degraded_insufficient_points",
-        "expectedMissingPurchaseCount=" .. tostring(readiness.expectedMissingPurchaseCount or 0),
-        "unexpectedPurchaseCount=" .. tostring(readiness.unexpectedPurchaseCount or 0)
-    )
-
-    self:FinalizeRouteBSuccess(context, "route_b_degraded_finalize", {
-        degraded = true,
-        resultCode = "route_b_degraded_insufficient_points",
-        degradeReasons = context.routeBDegradeReasons,
-        subclassChanged = true,
-        subclassVerified = subclassSnapshot.ok == true and subclassSnapshot.matched == true,
-        expectedMissingPurchaseCount = readiness.expectedMissingPurchaseCount or 0,
-        unexpectedPurchaseCount = readiness.unexpectedPurchaseCount or 0,
-        commitPerformed = false,
-        verifyMode = "degraded_finalize_without_commit",
-        readiness = readiness,
-        verify = subclassSnapshot.verifyResult,
-        currentSkillLineIds = subclassSnapshot.currentSkillLineIds,
-        targetSkillLineIds = subclassSnapshot.targetSkillLineIds,
-    })
-end
-
 function LTM_SKILL_RESPEC_APPLY:LogRouteBMorphTargetAuditSummary(context)
     local entries = type(context) == "table" and context.morphTargetAuditEntries or nil
     local progressionEntries = type(context) == "table" and context.morphProgressionAuditEntries or nil
@@ -800,13 +647,7 @@ function LTM_SKILL_RESPEC_APPLY:RevertRouteBPendingPreparation(context)
         pcall(SKILL_LINE_ASSIGNMENT_MANAGER.Reset, SKILL_LINE_ASSIGNMENT_MANAGER)
     end
 
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.SetRuntimeFlag) == "function" then
-        LTM_PIPELINE_CONTEXT:SetRuntimeFlag(context.pipelineContext, "priorSkillRespecCommitted", false)
-    elseif type(context.pipelineContext) == "table" then
-        context.pipelineContext.runtime = context.pipelineContext.runtime or {}
-        context.pipelineContext.runtime.priorSkillRespecCommitted = false
-    end
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(context.pipelineContext, "priorSkillRespecCommitted", false)
     -- NOTE:
     -- Current revert paths run before routeBCompleted=true.
     -- Revisit routeBCompleted reset if post-completion revert paths are added.
@@ -924,7 +765,7 @@ function LTM_SKILL_RESPEC_APPLY:BuildDirtyStatePrecheckSnapshot(config)
 end
 
 function LTM_SKILL_RESPEC_APPLY:LogDirtyStatePrecheck(result)
-    if type(Log.LogDebugSummary) ~= "function" or type(result) ~= "table" then
+    if type(result) ~= "table" then
         return
     end
 
@@ -1008,71 +849,37 @@ function LTM_SKILL_RESPEC_APPLY:ClearPendingContext()
     self.pendingContext = nil
 end
 
-function LTM_SKILL_RESPEC_APPLY:RestoreDeferredTransformSlotsAfterFailure(context)
-    if type(context) ~= "table" or context.deferredTransformFailureRestoreAttempted == true then
-        return nil
-    end
-    context.deferredTransformFailureRestoreAttempted = true
-    local routeBConfig = type(context.routeBConfig) == "table" and context.routeBConfig or nil
-    local pipelinePlan = type(routeBConfig) == "table" and routeBConfig._pipelinePlan or nil
-    local plannedSkillConfig = type(pipelinePlan) == "table"
-        and type(pipelinePlan.configs) == "table"
-        and pipelinePlan.configs.skills
-        or nil
-    local sourceConfig = type(plannedSkillConfig) == "table" and plannedSkillConfig or routeBConfig
-    local config = {}
-    for key, value in pairs(type(sourceConfig) == "table" and sourceConfig or {}) do
-        config[key] = value
-    end
-    config._pipelineContext = context.pipelineContext
-    if type(config.deferredTransformSlots) ~= "table"
-        or #config.deferredTransformSlots == 0
-        or type(LTM_SKILL_RESTORE) ~= "table"
-        or type(LTM_SKILL_RESTORE.RunDeferredTransformSlots) ~= "function" then
-        return nil
-    end
-
-    local ok, err = LTM_SKILL_RESTORE:RunDeferredTransformSlots(config, true)
-    local result = type(LTM_SKILL_RESTORE.GetLastResult) == "function"
-        and LTM_SKILL_RESTORE:GetLastResult()
-        or nil
-    return {
-        ok = ok == true,
-        error = err,
-        result = result,
-    }
-end
-
-function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, phase, extra)
+function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, extra)
     if type(context) == "table" and context.routeBFinalized == true then
         return
     end
 
-    local details = {
-        route = "route_b",
-        phase = phase,
-        commitAt = context.commitAt,
-        mutatingAction = context.commitAt and "skill_respec" or nil,
-        currentSkillLineIds = context.verifyCurrentSkillLineIds,
-        targetSkillLineIds = context.verifyTargetSkillLineIds,
-        orderedOperations = context.plan and context.plan.orderedOperations or nil,
-    }
+    local details = type(extra) == "table" and type(extra.readiness) == "table"
+        and { readiness = extra.readiness }
+        or {}
 
-    if type(extra) == "table" then
-        for key, value in pairs(extra) do
-            details[key] = value
-        end
+    local expectedMissing = type(context.expectedMissingActiveTargets) == "table"
+        and context.expectedMissingActiveTargets
+        or {}
+    local expectedMissingPurchases = type(expectedMissing.purchases) == "table"
+        and expectedMissing.purchases
+        or {}
+    local expectedMissingMorphs = type(expectedMissing.morphs) == "table"
+        and expectedMissing.morphs
+        or {}
+    local expectedMissingPurchaseCount = #expectedMissingPurchases
+    local expectedMissingMorphCount = #expectedMissingMorphs
+    if self:IsActivePriorityShortagePolicy(context)
+        and expectedMissingPurchaseCount + expectedMissingMorphCount > 0 then
+        details.resultCode = "route_b_active_priority_insufficient_points"
     end
 
     local pipelineContext = type(context) == "table" and context.pipelineContext or nil
 
     if type(context) == "table"
         and type(context.classMasteryPurchaseSummary) == "table"
-        and (context.classMasteryPurchaseSummary.attemptedCount or 0) > 0
-        and type(LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE) == "table"
-        and type(LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE.AuditCommittedTargets) == "function" then
+        and (context.classMasteryPurchaseSummary.attemptedCount or 0) > 0 then
         local committedAudit = LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE:AuditCommittedTargets(context)
-        details.classMasteryCommittedAudit = committedAudit
         if type(committedAudit) == "table" and committedAudit.ok ~= true then
             self:FinalizeRouteBFailure(context, "class_mastery_purchase_commit_mismatch", {
                 classMasteryPurchaseSummary = context.classMasteryPurchaseSummary,
@@ -1090,31 +897,16 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, phase, extra)
     context.finished = true
     RecordSharedCooldownMutation("skill", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
 
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.SetRuntimeFlag) == "function" then
-        LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "routeBCompleted", true)
-        LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
-            pipelineContext,
-            "routeBSubclassOnly",
-            context.routeBSubclassOnlyExecuted == true
-        )
-        LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
-            pipelineContext,
-            "routeBCompletionWaitSkipped",
-            context.completionWaitSkipped == true
-        )
-    elseif type(pipelineContext) == "table" then
-        pipelineContext.runtime = pipelineContext.runtime or {}
-        pipelineContext.runtime.routeBCompleted = true
-        pipelineContext.runtime.routeBSubclassOnly = context.routeBSubclassOnlyExecuted == true
-        pipelineContext.runtime.routeBCompletionWaitSkipped = context.completionWaitSkipped == true
-    end
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "routeBCompleted", true)
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
+        pipelineContext,
+        "routeBSubclassOnly",
+        context.routeBSubclassOnlyExecuted == true
+    )
 
     logging.Log("Route B restore handoff target=skill_restore mode=post_route_b")
 
-    if context.originPhase == "Skills"
-        and type(LTM_SKILL_RESTORE) == "table"
-        and type(LTM_SKILL_RESTORE.RunRestoreOnly) == "function" then
+    if context.originPhase == "Skills" then
         local restoreOk, restoreErr = LTM_SKILL_RESTORE:RunRestoreOnly(context.routeBConfig or {})
         if not restoreOk then
             context.failureCode = restoreErr or "route_b_restore_failed"
@@ -1125,41 +917,19 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, phase, extra)
             return
         end
 
-        if type(LTM_SKILL_RESTORE.GetLastResult) == "function" then
-            local restoreResult = LTM_SKILL_RESTORE:GetLastResult()
-            if type(restoreResult) == "table" then
-                details.actionBarRestoreResult = restoreResult
-                details.restoreSummary = restoreResult.summary
-                details.restoreReasonSummary = restoreResult.reasonSummary
-            end
+        local restoreResult = LTM_SKILL_RESTORE:GetLastResult()
+        if type(restoreResult) == "table" then
+            details.actionBarRestoreResult = restoreResult
         end
     end
 
-    local transformVerify = LTM_SKILL_RESPEC_VERIFY:VerifyTransformSnapshotsPostCommit(context)
-    if type(transformVerify) == "table" then
-        details.transformPostCommitVerify = transformVerify
-    end
+    LTM_SKILL_RESPEC_VERIFY:VerifyTransformSnapshotsPostCommit(context)
 
     if type(context) == "table" and context.passiveSummary ~= nil then
-        details.passiveSummary = context.passiveSummary
-        if type(LTM_SKILL_PASSIVE_APPLY) == "table"
-            and type(LTM_SKILL_PASSIVE_APPLY.RecordAutoFillPartialSuccess) == "function" then
-            details.passivePartialResult = LTM_SKILL_PASSIVE_APPLY:RecordAutoFillPartialSuccess(
-                pipelineContext,
-                context.passiveSummary
-            )
-        end
-    end
-    if type(context) == "table" and context.purchaseOutcomeSummary ~= nil then
-        details.purchaseOutcomeSummary = context.purchaseOutcomeSummary
-        details.routeBDegradedMode = context.routeBDegradedMode == true
-        details.routeBDegradeReasons = context.routeBDegradeReasons
-    end
-    if type(context) == "table" and context.classMasteryReductionSummary ~= nil then
-        details.classMasteryReductionSummary = context.classMasteryReductionSummary
-    end
-    if type(context) == "table" and context.classMasteryPurchaseSummary ~= nil then
-        details.classMasteryPurchaseSummary = context.classMasteryPurchaseSummary
+        LTM_SKILL_PASSIVE_APPLY:RecordAutoFillPartialSuccess(
+            pipelineContext,
+            context.passiveSummary
+        )
     end
 
     self:SetLastResult(CreateSuccessResult(details), pipelineContext)
@@ -1200,11 +970,6 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBFailure(context, code, details)
             end
         end
     end
-    if type(context) == "table" and (context.commitAttemptIndex or 0) > 0 then
-        details.deferredTransformRestore =
-            self:RestoreDeferredTransformSlotsAfterFailure(context)
-    end
-
     if type(context) == "table" then
         context.routeBFinalized = true
     end
@@ -1223,10 +988,6 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBFailure(context, code, details)
         )
     )
     self:NotifyPipelineContinuation(context, false)
-end
-
-function LTM_SKILL_RESPEC_APPLY:IsRouteBCommitReady(skillTargetPlan, context)
-    return self:GetRouteBCommitReadiness(skillTargetPlan, context).ok == true
 end
 
 -- Route B commit cooldown failure previously short-circuited into immediate
@@ -1345,13 +1106,15 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBGeneralPrecheck(config)
     end
 
     local pipelinePlan = type(config) == "table" and config._pipelinePlan or nil
-    local transformPlan = type(pipelinePlan) == "table"
+    local activeRestorePlan = type(pipelinePlan) == "table"
         and type(pipelinePlan.configs) == "table"
         and type(pipelinePlan.configs.skillRespec) == "table"
-        and pipelinePlan.configs.skillRespec.transformPlan
+        and pipelinePlan.configs.skillRespec.activeRestorePlan
         or nil
-    if type(transformPlan) == "table" and transformPlan.ok ~= true then
-        return false, transformPlan.blockReason or "transform_plan_invalid"
+    if type(activeRestorePlan) ~= "table" or activeRestorePlan.ok ~= true then
+        return false, type(activeRestorePlan) == "table"
+            and activeRestorePlan.blockReason
+            or "active_restore_plan_invalid"
     end
 
     return true, subclassPlan
@@ -1374,41 +1137,38 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBPassivePhase(context, completion)
         type(build) == "table" and type(build.subclass) == "table" and build.subclass.targetSkillLineIds or nil
     )
 
-    local passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(build) == "table" and build.passivePolicy or nil)
     local pipelineContext = type(context) == "table" and context.pipelineContext or nil
-    local spSaverReason = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverSkipReason) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverSkipReason(pipelineContext, "normal_passive_changes")
-        or nil
-    if spSaverReason ~= nil then
-        if type(LTM_PIPELINE_CONTEXT.RecordSpSaverSkip) == "function" then
-            LTM_PIPELINE_CONTEXT:RecordSpSaverSkip(
-                pipelineContext,
-                "normal_passive_changes",
-                spSaverReason
-            )
-        end
+    local skillSettings = LTM_PIPELINE_CONTEXT:GetSkillSettings(pipelineContext)
+    local passiveRestore = skillSettings.passiveRestore
+    local skillSettingsReason = LTM_PIPELINE_CONTEXT:GetSkillSettingsSkipReason(
+        pipelineContext,
+        "normal_passive_changes"
+    )
+    if skillSettingsReason ~= nil then
+        LTM_PIPELINE_CONTEXT:RecordSkillSettingsSkip(
+            pipelineContext,
+            "normal_passive_changes",
+            skillSettingsReason
+        )
         local summary = {
             ok = true,
             skipped = true,
-            policy = passivePolicy,
+            policy = passiveRestore,
             targetLineCount = #targetSkillLineIds,
             targetSkillLineIds = targetSkillLineIds,
             restoredCount = 0,
             skippedCount = 0,
             warningCount = 0,
             reasonCounts = {
-                [spSaverReason] = 1,
+                [skillSettingsReason] = 1,
             },
-            spSaverReason = spSaverReason,
+            skillSettingsReason = skillSettingsReason,
         }
         context.passiveSummary = summary
         return summary
     end
 
-    if (passivePolicy == "class_only" or passivePolicy == "all")
-        and type(LTM_PASSIVE_SNAPSHOT_APPLY) == "table"
-        and type(LTM_PASSIVE_SNAPSHOT_APPLY.RunExactRestore) == "function" then
+    if passiveRestore == "class_exact" or passiveRestore == "all_exact" then
         local function finish(success, err, result)
             if self.pendingContext ~= context or context.finished then
                 return
@@ -1456,6 +1216,7 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBPassivePhase(context, completion)
             retryDelayMs = ROUTE_B_PASSIVE_EXACT_RETRY_DELAY_MS,
             completionDelayMs = ROUTE_B_PASSIVE_EXACT_RETRY_DELAY_MS,
             pipelineContext = pipelineContext,
+            passiveRestore = passiveRestore,
             completion = type(completion) == "function" and finish or nil,
         })
 
@@ -1469,23 +1230,6 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBPassivePhase(context, completion)
 
         finish(ok == true, err, result)
         return result
-    end
-
-    if type(LTM_SKILL_PASSIVE_APPLY) ~= "table" or type(LTM_SKILL_PASSIVE_APPLY.RunPendingPhase) ~= "function" then
-        local summary = {
-            ok = false,
-            policy = passivePolicy,
-            targetLineCount = #targetSkillLineIds,
-            targetSkillLineIds = targetSkillLineIds,
-            restoredCount = 0,
-            skippedCount = 0,
-            warningCount = 1,
-            reasonCounts = {
-                passive_apply_module_unavailable = 1,
-            },
-        }
-        context.passiveSummary = summary
-        return summary
     end
 
     local summary = LTM_SKILL_PASSIVE_APPLY:RunPendingPhase({
@@ -1509,12 +1253,7 @@ end
 
 function LTM_SKILL_RESPEC_APPLY:ResolveRouteBTargetState(config)
     local context = config and config._pipelineContext or nil
-    if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.GetTargetSubclassState) == "function" then
-        return LTM_PIPELINE_CONTEXT:GetTargetSubclassState(context)
-    end
-
-    local plan = config and config._pipelinePlan or nil
-    return type(plan) == "table" and type(plan.configs) == "table" and plan.configs.subclass or nil
+    return LTM_PIPELINE_CONTEXT:GetTargetSubclassState(context)
 end
 
 function LTM_SKILL_RESPEC_APPLY:ExecuteRouteBPendingOperations(context)
@@ -1612,7 +1351,6 @@ function LTM_SKILL_RESPEC_APPLY:CheckRouteBConfirmationInner(context)
     if bypassSubclassVerify or snapshot.matched == true then
         if context.subclassOnlyMode == true then
             context.routeBSubclassOnlyExecuted = true
-            context.completionWaitSkipped = false
         end
 
         if self.pendingContext ~= context then
@@ -1678,18 +1416,11 @@ end
 
 function LTM_SKILL_RESPEC_APPLY:IsSubclassOnlyMode(config)
     local pipelineContext = type(config) == "table" and config._pipelineContext or nil
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverSkipReason) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverSkipReason(pipelineContext, "normal_skill_changes") ~= nil then
+    if LTM_PIPELINE_CONTEXT:GetSkillSettingsSkipReason(pipelineContext, "normal_skill_changes") ~= nil then
         return true
     end
 
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPreflightMode) == "function" then
-        return LTM_PIPELINE_CONTEXT:GetPreflightMode(pipelineContext) == "subclass_only"
-    end
-
-    return false
+    return LTM_PIPELINE_CONTEXT:GetPreflightMode(pipelineContext) == "subclass_only"
 end
 
 function LTM_SKILL_RESPEC_APPLY:RunRouteBPurchasePhase(context, skillTargetPlan)
@@ -1697,28 +1428,23 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBPurchasePhase(context, skillTargetPlan)
 end
 
 function LTM_SKILL_RESPEC_APPLY:RunRouteBClassMasteryReductionPhase(context)
-    if type(LTM_SKILL_RESPEC_CLASS_MASTERY_REDUCE) ~= "table"
-        or type(LTM_SKILL_RESPEC_CLASS_MASTERY_REDUCE.Execute) ~= "function" then
-        return false, "class_mastery_reduction_module_unavailable", nil
-    end
-
     return LTM_SKILL_RESPEC_CLASS_MASTERY_REDUCE:Execute(self, context)
 end
 
 function LTM_SKILL_RESPEC_APPLY:RunRouteBClassMasteryPurchasePhase(context)
-    if type(LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE) ~= "table"
-        or type(LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE.Execute) ~= "function" then
-        return false, "class_mastery_purchase_module_unavailable", nil
-    end
-
     return LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE:Execute(self, context)
 end
 
 function LTM_SKILL_RESPEC_APPLY:RunRouteBMorphPhase(context, postPurchasePlan)
     local preCommitPlan = postPurchasePlan
     local morphPassCount = 0
+    local finalReadiness = nil
 
-    while (preCommitPlan.diagnostics and preCommitPlan.diagnostics.morphCount or 0) > 0 do
+    while true do
+        finalReadiness = self:GetRouteBCommitReadiness(preCommitPlan, context)
+        if (finalReadiness.unexpectedMorphCount or 0) == 0 then
+            break
+        end
         morphPassCount = morphPassCount + 1
         if morphPassCount > ROUTE_B_MORPH_MAX_PASSES then
             return nil, "route_b_morph_substep_only", {
@@ -1728,10 +1454,12 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBMorphPhase(context, postPurchasePlan)
         end
 
         self:AuditRouteBMorphTargets(context, preCommitPlan)
-        local morphOk, morphErr, failedMorphTarget = self:ExecuteRouteBPendingMorphs(context)
+        local morphOk, morphErr, morphSummary = self:ExecuteRouteBPendingMorphs(context)
+        self:ApplyRouteBMorphOutcomeSummary(context, morphSummary)
         if not morphOk then
             return nil, morphErr, {
-                failedMorphTarget = failedMorphTarget,
+                failedMorphTarget = type(morphSummary) == "table" and morphSummary.hardFailureTarget or nil,
+                morphOutcomeSummary = morphSummary,
                 skillTargetPlanAfterMorph = preCommitPlan,
                 morphPassCount = morphPassCount,
             }
@@ -1742,9 +1470,12 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBMorphPhase(context, postPurchasePlan)
         self:LogRouteBSkillTargetPlan("Route B morph final summary", preCommitPlan)
     end
 
-    local finalReadiness = self:GetRouteBCommitReadiness(preCommitPlan, context)
     if finalReadiness.ok ~= true then
-        local blockedCode, readiness = self:ResolveRouteBPreCommitBlockedCode(preCommitPlan, context, "route_b_morph_substep_only")
+        local blockedCode, readiness = self:ResolveRouteBPreCommitBlockedCode(
+            preCommitPlan,
+            finalReadiness,
+            "route_b_morph_substep_only"
+        )
         if blockedCode == "cryptcanon_special_ultimate_requires_overwrite" then
             self:NotifyCryptCanonOverwriteRequired(context)
         end
@@ -1767,14 +1498,14 @@ function LTM_SKILL_RESPEC_APPLY:ContinueRouteBAfterPassivePhase(context)
 
     local pendingState = self:GetRouteBPendingChangesState()
     if pendingState.pendingChanges == false then
-        self:FinalizeRouteBSuccess(context, "route_b_no_pending_passive_changes", {
-            commitPerformed = false,
-            passiveSummary = context.passiveSummary,
-            pendingState = pendingState,
-        })
+        context.commitPerformed = false
+        context.noCommitPendingState = pendingState
+        context.postCommitVerifyRetryAttemptIndex = 0
+        LTM_SKILL_RESPEC_POST_COMMIT:RunPostCommitVerifyRetry(self, context)
         return
     end
 
+    context.commitPerformed = true
     local commitOk, commitErr = self:RunRouteBCommitPhase(context)
     if commitOk == nil then
         return
@@ -1825,14 +1556,12 @@ function LTM_SKILL_RESPEC_APPLY:CommitRouteBSubclassOnly(context)
         })
         return
     end
-    if type(context.transformPlan) == "table" and context.transformPlan.hasTarget == true then
-        local transformOk, transformErr =
-            LTM_TRANSFORM_SKILLS:ExecutePendingReductions(context.transformPlan, context)
-        if transformOk ~= true then
-            self:RevertRouteBPendingPreparation(context)
-            self:FinalizeRouteBFailure(context, transformErr or "transform_reduction_failed")
-            return
-        end
+    local reductionOk, reductionErr =
+        LTM_ACTIVE_SKILL_RESTORE:ExecutePendingReductions(context.activeRestorePlan, context)
+    if reductionOk ~= true then
+        self:RevertRouteBPendingPreparation(context)
+        self:FinalizeRouteBFailure(context, reductionErr or "active_reduction_failed")
+        return
     end
 
     local postSubclassPlan = self:BuildRouteBSkillTargetPlan(context.routeBConfig)
@@ -1863,15 +1592,12 @@ function LTM_SKILL_RESPEC_APPLY:CommitRouteBSubclassOnly(context)
 
     if context.subclassOnlyMode == true then
         context.preCommitSkillTargetPlan = postSubclassPlan
-        logging.Log("Route B subclass-only mode", "commit=true")
-        local commitOk, commitErr = self:RunRouteBCommitPhase(context)
-        if commitOk == nil then
-            return
-        end
-        if not commitOk then
-            self:FinalizeRouteBFailure(context, commitErr)
-            return
-        end
+        local pendingState = self:GetRouteBPendingChangesState()
+        logging.Log(
+            "Route B subclass-only mode",
+            "pendingChanges=" .. tostring(pendingState.pendingChanges)
+        )
+        self:ContinueRouteBAfterPassivePhase(context)
         return
     end
 
@@ -1891,15 +1617,6 @@ function LTM_SKILL_RESPEC_APPLY:CommitRouteBSubclassOnly(context)
     local postPurchasePlan = self:BuildRouteBSkillTargetPlan(context.routeBConfig)
     context.skillTargetPlan = postPurchasePlan
     self:LogRouteBSkillTargetPlan("Route B post-purchase target summary", postPurchasePlan)
-    local postPurchaseReadiness = self:GetRouteBCommitReadiness(postPurchasePlan, context)
-    if postPurchaseReadiness.ok ~= true then
-        local degradedCandidate = self:EvaluateRouteBDegradedFinalize(context, postPurchasePlan, postPurchaseReadiness)
-        if type(degradedCandidate) == "table" then
-            self:FinalizeRouteBDegraded(context, degradedCandidate)
-            return
-        end
-    end
-
     local preCommitPlan, morphErr, morphDetails = self:RunRouteBMorphPhase(context, postPurchasePlan)
     if preCommitPlan == nil then
         self:RevertRouteBPendingPreparation(context)
@@ -1915,6 +1632,10 @@ function LTM_SKILL_RESPEC_APPLY:CommitRouteBSubclassOnly(context)
     end
 
     context.preCommitSkillTargetPlan = preCommitPlan
+    if self:ResolveRouteBVerifyMode(context) == "degraded" then
+        self:ContinueRouteBAfterPassivePhase(context)
+        return
+    end
     local _, passiveState = self:RunRouteBPassivePhase(context, function(success, err)
         if success ~= true then
             self:RevertRouteBPendingPreparation(context)
@@ -1939,6 +1660,8 @@ function LTM_SKILL_RESPEC_APPLY:ShouldBypassSubclassVerify(context)
     local hasTransformTarget = type(context) == "table"
         and type(context.transformPlan) == "table"
         and context.transformPlan.hasTarget == true
+        and (type(context.activeRestorePlan) ~= "table"
+            or context.activeRestorePlan.neutralized ~= true)
     return type(diagnostics) == "table"
         and (diagnostics.subclassOpCount or 0) == 0
         and not hasTransformTarget
@@ -2018,6 +1741,11 @@ function LTM_SKILL_RESPEC_APPLY:CreateRouteBContext(config, subclassPlan)
         and type(pipelinePlan.configs.skillRespec) == "table"
         and pipelinePlan.configs.skillRespec.transformPlan
         or nil
+    local activeRestorePlan = type(pipelinePlan) == "table"
+        and type(pipelinePlan.configs) == "table"
+        and type(pipelinePlan.configs.skillRespec) == "table"
+        and pipelinePlan.configs.skillRespec.activeRestorePlan
+        or nil
     return {
         runId = (self.nextRouteBRunId or 0) + 1,
         plan = subclassPlan,
@@ -2025,7 +1753,6 @@ function LTM_SKILL_RESPEC_APPLY:CreateRouteBContext(config, subclassPlan)
         attemptIndex = 0,
         confirmAttemptIndex = 0,
         completionAttemptIndex = 0,
-        degradedVerifyAttemptIndex = 0,
         postCommitVerifyRetryAttemptIndex = 0,
         finished = false,
         routeBFinalized = false,
@@ -2051,20 +1778,21 @@ function LTM_SKILL_RESPEC_APPLY:CreateRouteBContext(config, subclassPlan)
         completionSuccessSnapshot = nil,
         completionSuccessKind = nil,
         resultWaitGeneration = 0,
-        routeBDegradedMode = false,
-        routeBDegradeReasons = {},
-        routeBDegradeReasonSet = {},
         purchaseOutcomeSummary = nil,
-        expectedMissingDueToInsufficientPoints = {},
-        expectedMissingDueToInsufficientPointsSet = {},
-        expectedMissingProgressionIds = {},
-        expectedMissingProgressionIdSet = {},
+        morphOutcomeSummary = nil,
+        expectedMissingActiveTargets = {
+            purchases = {},
+            morphs = {},
+            purchaseByProgression = {},
+            morphByProgression = {},
+        },
         subclassOnlyMode = self:IsSubclassOnlyMode(config),
         routeBConfig = config,
         pipelineContext = config._pipelineContext,
         pipelineContinuation = config._pipelineContinuation,
         originPhase = config._pipelinePhaseName,
         transformPlan = transformPlan,
+        activeRestorePlan = activeRestorePlan,
     }
 end
 

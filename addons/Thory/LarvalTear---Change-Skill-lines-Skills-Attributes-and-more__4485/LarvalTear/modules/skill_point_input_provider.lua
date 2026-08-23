@@ -7,6 +7,7 @@ local LTM_ATTRIBUTE_SNAPSHOT = Addon.Modules.AttributeSnapshot
 local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 local LTM_PIPELINE_PLANNER = Addon.Modules.PipelinePlanner
 local LTM_ROLE_STATE = Addon.Modules.RoleState
+local LTM_SKILL_RESTORE = Addon.Modules.SkillRestore
 local LTM_SKILL_SNAPSHOT_AUDIT = Addon.Modules.SkillSnapshotAudit
 local LTM_SUBCLASS_SNAPSHOT = Addon.Modules.SubclassSnapshot
 local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
@@ -23,11 +24,36 @@ local function CaptureSkillSnapshot(result)
         LTM_SKILL_SNAPSHOT_AUDIT.CaptureCurrentSnapshot,
         LTM_SKILL_SNAPSHOT_AUDIT
     )
-    if not ok or type(snapshot) ~= "table" then
+    if not ok or type(snapshot) ~= "table" or err ~= nil then
         AppendError(result, err or snapshot or "skill_snapshot_capture_failed")
         return nil
     end
     return snapshot
+end
+
+local function CaptureTransformOwnerSkillLineIds(result)
+    local ok, lineIds, err = pcall(
+        LTM_TRANSFORM_SKILLS.ResolveLiveOwnerSkillLineSet,
+        LTM_TRANSFORM_SKILLS
+    )
+    if not ok or type(lineIds) ~= "table" then
+        AppendError(result, err or lineIds or "transform_live_owner_resolution_failed")
+        return nil
+    end
+    return lineIds
+end
+
+local function ResolveCryptCanonActive(result, build)
+    local ok, state = pcall(
+        LTM_SKILL_RESTORE.ResolveCryptCanonStateForBuild,
+        LTM_SKILL_RESTORE,
+        build
+    )
+    if not ok or type(state) ~= "table" then
+        AppendError(result, state or "crypt_canon_state_resolution_failed")
+        return nil
+    end
+    return state.active == true
 end
 
 local function BuildCurrentState()
@@ -51,31 +77,6 @@ local function BuildActiveTargetStates(build)
             reason = "active_target_state_unavailable",
         }
     end
-    local transformPlan = LTM_TRANSFORM_SKILLS:BuildPlan(
-        type(build) == "table" and build.transforms or nil,
-        type(build) == "table" and build.skills or nil
-    )
-    for _, state in ipairs(states) do
-        local progressionId = type(state) == "table" and tonumber(state.progressionId) or nil
-        progressionId = progressionId ~= nil and math.floor(progressionId) or nil
-        if progressionId ~= nil
-            and type(transformPlan.transformOwnedProgressions) == "table"
-            and transformPlan.transformOwnedProgressions[progressionId] == true then
-            state.excludedByTransformOwner = true
-        end
-    end
-    for _, target in ipairs(transformPlan.targets or {}) do
-        local resolved = Util:ResolveActiveSkillTargetState(target)
-        if type(resolved) == "table" then
-            resolved.transformKind = target.transformKind
-        end
-        states[#states + 1] = type(resolved) == "table" and resolved or {
-            targetAbilityId = target.abilityId,
-            transformKind = target.transformKind,
-            unresolved = true,
-            reason = "transform_active_target_state_unavailable",
-        }
-    end
     return states
 end
 
@@ -87,7 +88,9 @@ local function CreatePlanningContext(build, options)
         preflightMode = options.preflightMode,
         skillPhaseMode = options.skillPhaseMode,
         skillPhaseReason = options.skillPhaseReason,
-        spSaver = options.spSaver,
+        skillSettings = options.skillSettings,
+        activeRestorePlan = options.activeRestorePlan,
+        transformPlan = options.transformPlan,
         forceChampionRespec = options.forceChampionRespec == true,
     }
     return LTM_PIPELINE_CONTEXT:Create(build, runOptions)
@@ -102,6 +105,9 @@ local function BuildPlanFromCapturedInputs(inputs, build, options)
         LTM_PIPELINE_CONTEXT:SetCurrentState(context, key, value)
     end
     context.skillPointActiveTargetStates = inputs.activeTargetStates
+    context.skillPointSnapshot = inputs.snapshot
+    context.skillPointTransformOwnerSkillLineIds = inputs.transformOwnerSkillLineIds
+    context.skillPointCryptCanonActive = inputs.cryptCanonActive
     return LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, inputs.currentState, build), nil
 end
 
@@ -118,6 +124,8 @@ function Provider:Build(build, options)
         plan = nil,
         currentState = nil,
         activeTargetStates = nil,
+        transformOwnerSkillLineIds = nil,
+        cryptCanonActive = nil,
         passiveAnalysis = nil,
         errors = {},
     }
@@ -128,6 +136,8 @@ function Provider:Build(build, options)
     end
 
     result.snapshot = CaptureSkillSnapshot(result)
+    result.transformOwnerSkillLineIds = CaptureTransformOwnerSkillLineIds(result)
+    result.cryptCanonActive = ResolveCryptCanonActive(result, build)
     local currentState = BuildCurrentState()
     result.currentState = currentState
     result.activeTargetStates = BuildActiveTargetStates(build)

@@ -5,7 +5,6 @@ local LTM_EQUIPMENT_CHANGE = Addon.Modules.EquipmentChange
 local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 
 local EQUIPMENT_APPLY_E_CONFIG_INVALID = "EQUIPMENT_APPLY_E_CONFIG_INVALID"
-local EQUIPMENT_APPLY_E_CHANGE_UNAVAILABLE = "EQUIPMENT_APPLY_E_CHANGE_UNAVAILABLE"
 local EQUIPMENT_APPLY_E_CHANGE_FAILED = "EQUIPMENT_APPLY_E_CHANGE_FAILED"
 local EQUIPMENT_APPLY_E_RUNTIME = "EQUIPMENT_APPLY_E_RUNTIME"
 local EQUIPMENT_APPLY_E_OUTFIT_FAILED = "EQUIPMENT_APPLY_E_OUTFIT_FAILED"
@@ -87,10 +86,6 @@ local function ApplyOutfitSelection(outfitConfig)
 end
 
 function LTM_EQUIPMENT_APPLY:Log(...)
-    if type(Log.LogDebugSummary) ~= "function" then
-        return
-    end
-
     Log.LogDebugSummary(...)
 end
 
@@ -181,7 +176,7 @@ function LTM_EQUIPMENT_APPLY:ApplyOutfitNow(config, summary)
         summary = {}
     end
 
-    if type(Addon.IsIgnoreCostumesEnabled) == "function" and Addon:IsIgnoreCostumesEnabled() then
+    if Addon:IsIgnoreCostumesEnabled() then
         summary.outfit = {
             status = "skipped",
             reason = "ignore_costumes_enabled",
@@ -247,12 +242,6 @@ function LTM_EQUIPMENT_APPLY:Run(config)
         return false, EQUIPMENT_APPLY_E_CONFIG_INVALID
     end
 
-    if type(LTM_EQUIPMENT_CHANGE) ~= "table" or type(LTM_EQUIPMENT_CHANGE.ApplyEquipment) ~= "function" then
-        self:BuildLastResult(false, "equipment_change_unavailable", nil)
-        self:Log("Equipment apply failed", "error=" .. EQUIPMENT_APPLY_E_CHANGE_UNAVAILABLE)
-        return false, EQUIPMENT_APPLY_E_CHANGE_UNAVAILABLE
-    end
-
     local continuation = config._pipelineContinuation
     local context = {
         config = config,
@@ -264,32 +253,30 @@ function LTM_EQUIPMENT_APPLY:Run(config)
             isMissingItemPartial = false,
         },
     }
-    if type(LTM_EQUIPMENT_CHANGE.BeginMythicPreclearIfNeeded) == "function" then
-        local equipmentConfig = SplitEquipmentConfig(config)
-        local preclearOk, preclearErr, preclearSummary = LTM_EQUIPMENT_CHANGE:BeginMythicPreclearIfNeeded(equipmentConfig, function(success, err)
-            if success ~= true then
-                LTM_EQUIPMENT_APPLY:BuildLastResult(false, err or "mythic_preclear_failed", preclearSummary)
-                LTM_EQUIPMENT_APPLY:Log("Equipment apply failed", "error=" .. tostring(err or "mythic_preclear_failed"))
-                LTM_EQUIPMENT_APPLY:NotifyPipelineContinuation(context, false, err or "mythic_preclear_failed")
-                return
-            end
-
-            context.equipmentVerifyMetadata.mythicPreclearPerformed = true
-            local beginOk, beginErr, beginSummary = LTM_EQUIPMENT_APPLY:BeginEquipmentChangeWait(config, context)
-            if not (beginOk == true and beginErr == "deferred") then
-                LTM_EQUIPMENT_APPLY:FinishDeferredApply(context, beginOk == true, beginErr, beginSummary)
-            end
-        end)
-
-        if preclearOk == true and preclearErr == "deferred" then
-            self:BuildLastResult(true, "deferred", preclearSummary)
-            self:Log("Equipment apply deferred", "reason=mythic_preclear")
-            return true, "deferred"
-        elseif preclearOk == false then
-            self:BuildLastResult(false, preclearErr, preclearSummary)
-            self:Log("Equipment apply failed", "error=" .. tostring(preclearErr))
-            return false, preclearErr or EQUIPMENT_APPLY_E_CHANGE_FAILED
+    local equipmentConfig = SplitEquipmentConfig(config)
+    local preclearOk, preclearErr, preclearSummary = LTM_EQUIPMENT_CHANGE:BeginMythicPreclearIfNeeded(equipmentConfig, function(success, err)
+        if success ~= true then
+            LTM_EQUIPMENT_APPLY:BuildLastResult(false, err or "mythic_preclear_failed", preclearSummary)
+            LTM_EQUIPMENT_APPLY:Log("Equipment apply failed", "error=" .. tostring(err or "mythic_preclear_failed"))
+            LTM_EQUIPMENT_APPLY:NotifyPipelineContinuation(context, false, err or "mythic_preclear_failed")
+            return
         end
+
+        context.equipmentVerifyMetadata.mythicPreclearPerformed = true
+        local beginOk, beginErr, beginSummary = LTM_EQUIPMENT_APPLY:BeginEquipmentChangeWait(config, context)
+        if not (beginOk == true and beginErr == "deferred") then
+            LTM_EQUIPMENT_APPLY:FinishDeferredApply(context, beginOk == true, beginErr, beginSummary)
+        end
+    end)
+
+    if preclearOk == true and preclearErr == "deferred" then
+        self:BuildLastResult(true, "deferred", preclearSummary)
+        self:Log("Equipment apply deferred", "reason=mythic_preclear")
+        return true, "deferred"
+    elseif preclearOk == false then
+        self:BuildLastResult(false, preclearErr, preclearSummary)
+        self:Log("Equipment apply failed", "error=" .. tostring(preclearErr))
+        return false, preclearErr or EQUIPMENT_APPLY_E_CHANGE_FAILED
     end
 
     local beginOk, beginErr, beginSummary = self:BeginEquipmentChangeWait(config, context)

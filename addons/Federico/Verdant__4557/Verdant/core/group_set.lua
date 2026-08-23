@@ -25,6 +25,10 @@ function M.set_player(unitId)
   end
 end
 
+function M.player_id()
+  return player_unit_id
+end
+
 function M.contains(unitId)
   if not unitId then return false end
   return members[unitId] == true or unitId == player_unit_id

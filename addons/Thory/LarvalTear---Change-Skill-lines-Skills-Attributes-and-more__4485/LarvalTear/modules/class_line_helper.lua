@@ -71,20 +71,17 @@ end
 
 function M:GetCurrentActiveClassLineIds()
     local subclassSnapshot = Addon.Modules.SubclassSnapshot
-    if type(subclassSnapshot) == "table"
-        and type(subclassSnapshot.CaptureCurrentSubclassState) == "function" then
-        local state = subclassSnapshot:CaptureCurrentSubclassState({})
-        local lineIds = type(state) == "table" and state.activeSkillLineIds or nil
-        local normalized = NormalizeLineIds(lineIds)
-        if #normalized > 0 then
-            return normalized, {
-                ok = #normalized == 3,
-                currentLineIds = normalized,
-                currentLineCount = #normalized,
-                source = "subclass_snapshot",
-                reason = #normalized == 3 and nil or "current_class_line_count_not_three",
-            }
-        end
+    local state = subclassSnapshot:CaptureCurrentSubclassState({})
+    local lineIds = type(state) == "table" and state.activeSkillLineIds or nil
+    local normalized = NormalizeLineIds(lineIds)
+    if #normalized > 0 then
+        return normalized, {
+            ok = #normalized == 3,
+            currentLineIds = normalized,
+            currentLineCount = #normalized,
+            source = "subclass_snapshot",
+            reason = #normalized == 3 and nil or "current_class_line_count_not_three",
+        }
     end
 
     local lineIds = {}

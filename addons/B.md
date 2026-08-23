@@ -171,9 +171,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [bugfixxxxx](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/bugfixxxxx__b057d22b-1ffd-455c-834a-af582e3e270a) | Vixen_Hunny | Console | — |
 | [Bulk buy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Bulk-buy__0ad00225-1c8b-4f4a-8e95-ca8986209a7f) | Copper0 | Console | — |
 | [Bunny's Dice Roller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheBunnynator1001/Bunny-s-Dice-Roller__2931) | TheBunnynator1001 | PC / Mac | 1.0.1.1a |
-| [Bureau of Acceptable Views](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-of-Acceptable-Views__4720) | maraud | PC / Mac | 3.6.064722 |
-| [Bureau Of Material Worth](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-Of-Material-Worth__4718) | maraud | PC / Mac | 4.1.223952 |
+| [Bureau of Acceptable Views](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-of-Acceptable-Views__4720) | maraud | PC / Mac | 3.7.105247 |
+| [Bureau Of Material Worth](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-Of-Material-Worth__4718) | maraud | PC / Mac | 4.2.112030 |
 | [Burning Language Selector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IBurningTV/Burning-Language-Selector__2869) | IBurningTV | PC / Mac | 1.2 |
+| [Burning Light Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Yaeg/Burning-Light-Tracker__4786) | Yaeg | PC / Mac | 1.2.1 |
 | [BurstSync](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eyr0n/BurstSync__4662) | Eyr0n | PC / Mac | 1.0.0 |
 | [Buy-In Bulk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Buy-In-Bulk__7b940de0-c594-4695-8235-c75c98259513) | Eldibabalo | Console | — |
 | [BuzzOff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Asaril/BuzzOff__3140) | Asaril | PC / Mac | 1.0 |

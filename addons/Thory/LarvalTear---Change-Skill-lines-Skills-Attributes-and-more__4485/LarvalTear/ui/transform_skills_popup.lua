@@ -29,10 +29,7 @@ local ACTION_BUTTON_WIDTH = 190
 local INTERACTIVE_DRAW_LEVEL = 28
 
 local function GetText(key, params)
-    if type(LTM_UI_STRINGS) == "table" and type(LTM_UI_STRINGS.GetText) == "function" then
-        return LTM_UI_STRINGS:GetText(key, params)
-    end
-    return key
+    return LTM_UI_STRINGS:GetText(key, params)
 end
 
 local function SetLabelText(control, text)
@@ -230,26 +227,18 @@ local function SetCheckButtonState(checkButton, checked, enabled)
 end
 
 local function RefreshExternalPanels()
-    if type(LTM_UI.RefreshCardList) == "function" then
-        LTM_UI:RefreshCardList()
-    end
-    if type(LTM_UI.RefreshRightPanePanel) == "function" then
-        LTM_UI:RefreshRightPanePanel()
-    end
+    LTM_UI:RefreshCardList()
+    LTM_UI:RefreshRightPanePanel()
 end
 
 local function RunMutation(actionKey, callback)
     local result, err = callback()
     if err ~= nil then
-        if type(LTM_UI.LogActionError) == "function" then
-            LTM_UI:LogActionError(actionKey, err)
-        end
+        LTM_UI:LogActionError(actionKey, err)
     else
         RefreshExternalPanels()
     end
-    if type(LTM_UI.RefreshTransformSkillsDialog) == "function" then
-        LTM_UI:RefreshTransformSkillsDialog()
-    end
+    LTM_UI:RefreshTransformSkillsDialog()
     if err ~= nil then
         return nil, err
     end
@@ -707,9 +696,7 @@ function LTM_UI:RefreshTransformSkillsDialog()
     context.viewModeByKind = type(context.viewModeByKind) == "table"
         and context.viewModeByKind
         or { werewolf = "target", vampire = "target" }
-    local state = type(LTM_UI_DISPATCH.GetTransformSkillsPopupState) == "function"
-        and LTM_UI_DISPATCH:GetTransformSkillsPopupState(context.cardId)
-        or {}
+    local state = LTM_UI_DISPATCH:GetTransformSkillsPopupState(context.cardId)
     local targetByKind = IndexEntries(state.targetEntries)
     local currentByKind = IndexEntries(state.currentEntries)
     for _, kind in ipairs(KIND_ORDER) do

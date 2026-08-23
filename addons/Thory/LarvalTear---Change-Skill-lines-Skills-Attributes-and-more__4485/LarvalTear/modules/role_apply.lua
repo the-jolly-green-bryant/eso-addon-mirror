@@ -11,9 +11,7 @@ local ROLE_APPLY_E_UPDATE_FAILED = "ROLE_APPLY_E_UPDATE_FAILED"
 local ROLE_APPLY_E_VERIFY_FAILED = "ROLE_APPLY_E_VERIFY_FAILED"
 
 local function LogSummary(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 function LTM_ROLE_APPLY:GetLastResult()
@@ -70,20 +68,14 @@ function LTM_ROLE_APPLY:Run(config)
     end
 
     local context = config._pipelineContext
-    local targetRole = type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.NormalizeRoleState) == "function"
-        and LTM_ROLE_STATE:NormalizeRoleState(config)
-        or nil
+    local targetRole = LTM_ROLE_STATE:NormalizeRoleState(config)
     if targetRole == nil then
         self:SetLastResult(true, "target_missing", nil)
         LogSummary("Role apply skipped", "reason=target_missing")
         return true
     end
 
-    local currentRole = type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.CaptureCurrentRoleState) == "function"
-        and LTM_ROLE_STATE:CaptureCurrentRoleState()
-        or nil
+    local currentRole = LTM_ROLE_STATE:CaptureCurrentRoleState()
     local summary = {
         currentRole = type(currentRole) == "table" and currentRole.selectedRole or nil,
         currentRoleKey = type(currentRole) == "table" and currentRole.roleKey or nil,
@@ -113,10 +105,7 @@ function LTM_ROLE_APPLY:Run(config)
         return self:FinishPartial(context, ROLE_APPLY_E_UPDATE_FAILED, summary)
     end
 
-    local verifiedRole = type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.CaptureCurrentRoleState) == "function"
-        and LTM_ROLE_STATE:CaptureCurrentRoleState()
-        or nil
+    local verifiedRole = LTM_ROLE_STATE:CaptureCurrentRoleState()
     summary.currentRole = type(verifiedRole) == "table" and verifiedRole.selectedRole or summary.currentRole
     summary.currentRoleKey = type(verifiedRole) == "table" and verifiedRole.roleKey or summary.currentRoleKey
 

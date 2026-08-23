@@ -9,19 +9,19 @@ EPC.Journal = EPC.Journal or {}
 local J = EPC.Journal
 local wm = WINDOW_MANAGER
 
-local TABS = {"NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
+local TABS = {"NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
 local TAB_LABELS = {
     NOTES="Notes", PINS="Checkpoints", BUILD="Build Guide", GEAR="Gear & Sets", SKILLS="Skills & CP",
-    COMBAT="Combat", ACTIVITY="Activities", QUESTS="Quest Finder", TRAVEL="Map / Travel", TOOLS="Utilities",
+    COMBAT="Combat", ACTIVITY="Activities", DUNGEONS="Dungeon Finder", QUESTS="Quest Finder", TRAVEL="Map / Travel", TOOLS="Utilities",
     ACHIEVEMENTS="Achievements", STATS="Character Stats", CODEX="Crafting Codex", DICE="Dice & Coin",
 }
 local TAB_TITLES = {
     NOTES="TAMRIEL CODEX", PINS="CHECKPOINTS", BUILD="BUILD GUIDE", GEAR="GEAR & SETS", SKILLS="SKILLS & CHAMPION",
-    COMBAT="COMBAT", ACTIVITY="ACTIVITIES", QUESTS="QUEST FINDER", TRAVEL="MAP & TRAVEL", TOOLS="UTILITIES",
+    COMBAT="COMBAT", ACTIVITY="ACTIVITIES", DUNGEONS="DUNGEON FINDER", QUESTS="QUEST FINDER", TRAVEL="MAP & TRAVEL", TOOLS="UTILITIES",
     ACHIEVEMENTS="ACHIEVEMENTS", STATS="CHARACTER STATS", CODEX="CRAFTING CODEX", DICE="DICE & COIN",
 }
 local TAB_PAGE_NUMBERS = { NOTES="01", PINS="02", BUILD="03", GEAR="04", SKILLS="05", COMBAT="06", ACTIVITY="07", QUESTS="08", TRAVEL="09", TOOLS="10", ACHIEVEMENTS="11", STATS="12", CODEX="13", DICE="14" }
-local SUITE_TABS = { BUILD=true, GEAR=true, SKILLS=true, COMBAT=true, ACTIVITY=true, QUESTS=true, TRAVEL=true, TOOLS=true }
+local SUITE_TABS = { BUILD=true, GEAR=true, SKILLS=true, COMBAT=true, ACTIVITY=true, DUNGEONS=true, QUESTS=true, TRAVEL=true, TOOLS=true }
 local CATEGORIES = {"ALL", "Adventure", "Quests", "Builds", "Crafting", "Roleplay", "Personal"}
 local THEMES = {
     PARCHMENT = { bg={0.0,0.0,0.0,0.0}, panel={0.93,0.88,0.76,0.08}, page={0.955,0.915,0.81,0.992}, page2={0.965,0.925,0.825,0.992}, cover={0.10,0.07,0.035,0.96}, edge={0.50,0.38,0.18,0.92}, text={0.15,0.09,0.04,1}, accent={0.32,0.18,0.08,1} },
@@ -1582,6 +1582,7 @@ function J:Create()
     self.pages.SKILLS = self:CreateSuitePage(content, "SKILLS")
     self.pages.COMBAT = self:CreateSuitePage(content, "COMBAT")
     self.pages.ACTIVITY = self:CreateSuitePage(content, "ACTIVITY")
+    self.pages.DUNGEONS = self:CreateSuitePage(content, "DUNGEONS")
     self.pages.QUESTS = self:CreateSuitePage(content, "QUESTS")
     self.pages.TRAVEL = self:CreateSuitePage(content, "TRAVEL")
     self.pages.TOOLS = self:CreateSuitePage(content, "TOOLS")
@@ -1589,7 +1590,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentPage(content, "STATS")
     self.pages.CODEX = self:CreateCodexPage(content)
     self.pages.DICE = self:CreateDicePage(content)
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0 }
 
     local prevPage = makeButton("EAS_CustomJournal_PrevPage", rightPage, "< PREV", 6, pageH-28, 88, 26, function() self:TurnPage(-1) end)
     local pageNumber = makeLabel("EAS_CustomJournal_PageNumber", rightPage, "Page 1 / 7", math.floor((pageW-150)/2), pageH-26, 150, 22, "ZoFontGameSmall")
@@ -1712,13 +1713,13 @@ end
     book layout with a true two-page spread plus an index and edge chapter tabs.
 ]]
 
-TABS = {"INDEX", "NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
+TABS = {"INDEX", "NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
 TAB_LABELS.INDEX = "Index"
 TAB_TITLES.INDEX = "TAMRIEL CODEX"
 
 local EAS_TAB_SHORT = {
     INDEX="INDEX", NOTES="NOTES", PINS="PINS", BUILD="BUILD", GEAR="GEAR", SKILLS="SKILLS", COMBAT="COMBAT",
-    ACTIVITY="ACTIVITY", QUESTS="QUESTS", TRAVEL="TRAVEL", TOOLS="TOOLS", ACHIEVEMENTS="ACHV", STATS="STATS",
+    ACTIVITY="ACTIVITY", DUNGEONS="DUNGEONS", QUESTS="QUESTS", TRAVEL="TRAVEL", TOOLS="TOOLS", ACHIEVEMENTS="ACHV", STATS="STATS",
     CODEX="CRAFT", DICE="DICE",
 }
 
@@ -1731,6 +1732,7 @@ local EAS_TAB_DESCRIPTIONS = {
     SKILLS="Skill points, bars, progression, and Champion Point guidance.",
     COMBAT="Role-aware combat information and recent fight analysis.",
     ACTIVITY="Activities for XP, gold, quests, and progression goals.",
+    DUNGEONS="All detected 4-player dungeons sorted alphabetically, with Base Game versus DLC / Chapter labeling.",
     QUESTS="Quest discovery and routing for active and not-yet-started quests.",
     TRAVEL="Wayshrines, group, guild, and social travel destinations.",
     TOOLS="Inventory, research, collections, daily tasks, and utility information.",
@@ -1813,7 +1815,7 @@ function J:CreateIndexSpread()
     self:AddSpreadHeader(spread, "TAMRIEL CODEX", "INDEX")
 
     local intro = makeLabel("EAS_CodexIndexIntro", spread.left,
-        "A field codex for your adventures across Tamriel. Choose a chapter from this opening index, then use PREV / NEXT to move through the book.",
+        "Your all-in-one Tamriel command center. Choose a workspace from the navigation rail or use the arrows to move between tools.",
         20, 58, self.pageW-40, 74, "ZoFontGame")
     self.themeLabels[#self.themeLabels+1] = intro
     setBookText(intro, intro:GetText(), intro:GetWidth())
@@ -1835,7 +1837,7 @@ function J:CreateIndexSpread()
     end
 
     local foot = makeLabel("EAS_CodexIndexFoot", spread.right,
-        "This opening spread is the table of contents. Each chapter uses both pages. Use PREV / NEXT to turn spreads, or INDEX to return here.",
+        "Use the left navigation to jump directly to any tool. The workspace keeps your current section, position, size, and interface preferences.",
         24, self.pageH-126, self.pageW-48, 78, "ZoFontGameSmall")
     self.themeLabels[#self.themeLabels+1] = foot
     setBookText(foot, foot:GetText(), foot:GetWidth())
@@ -2209,6 +2211,7 @@ function J:Create()
     self.pages.SKILLS = self:CreateSuiteSpread("SKILLS")
     self.pages.COMBAT = self:CreateSuiteSpread("COMBAT")
     self.pages.ACTIVITY = self:CreateSuiteSpread("ACTIVITY")
+    self.pages.DUNGEONS = self:CreateSuiteSpread("DUNGEONS")
     self.pages.QUESTS = self:CreateSuiteSpread("QUESTS")
     self.pages.TRAVEL = self:CreateSuiteSpread("TRAVEL")
     self.pages.TOOLS = self:CreateSuiteSpread("TOOLS")
@@ -2216,7 +2219,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentSpread("STATS")
     self.pages.CODEX = self:CreateCodexSpread()
     self.pages.DICE = self:CreateDiceSpread()
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0 }
 
     local prev = makeButton("EAS_CodexPrevSpread", window, "< PREV", 336, 894, 86, 26, function() self:TurnPage(-1) end)
     local spreadNo = makeLabel("EAS_CodexSpreadNumber", window, "1-2", 452, 896, 120, 22, "ZoFontGameSmall")
@@ -2278,7 +2281,7 @@ end
     Left page = filters + clickable rows. Right page = selected details + actions.
 ]]
 
-local EAS_INTERACTIVE_TABS = { GEAR=true, QUESTS=true, TRAVEL=true, ACTIVITY=true }
+local EAS_INTERACTIVE_TABS = { GEAR=true, QUESTS=true, TRAVEL=true, ACTIVITY=true, DUNGEONS=true }
 
 local function easSetEnabled(control, enabled)
     if not control then return end
@@ -2296,6 +2299,79 @@ local function easSetInk(label, selected, muted)
     else
         label:SetColor(t.text[1], t.text[2], t.text[3], 1)
     end
+end
+
+function J:RefreshInteractiveDungeons(page)
+    local v = EPC.DungeonFinder and EPC.DungeonFinder:BuildView() or {rows={},total=0,page=1,pageCount=1}
+    local D = EPC.DungeonFinder
+
+    local dungeonCtlWidths = {82, 82, 124, 102}
+    local dungeonCtlX = 14
+    for i=1,4 do
+        local b = page.controls[i]
+        if b then
+            b:ClearAnchors()
+            b:SetAnchor(TOPLEFT, page.left, TOPLEFT, dungeonCtlX, 54)
+            b:SetDimensions(dungeonCtlWidths[i], 25)
+            dungeonCtlX = dungeonCtlX + dungeonCtlWidths[i] + 4
+        end
+    end
+    page.controls[1]:SetHidden(false); page.controls[1]:SetText("NORMAL")
+    page.controls[2]:SetHidden(false); page.controls[2]:SetText("VETERAN")
+    page.controls[3]:SetHidden(false); page.controls[3]:SetText("ROLE: " .. tostring(v.role or "DPS"))
+    page.controls[4]:SetHidden(false); page.controls[4]:SetText(v.scanning and "SCAN..." or "REFRESH")
+    setButtonStyle(page.controls[1], v.difficulty == "NORMAL", self:GetTheme())
+    setButtonStyle(page.controls[2], v.difficulty == "VETERAN", self:GetTheme())
+    setButtonStyle(page.controls[3], false, self:GetTheme())
+    setButtonStyle(page.controls[4], false, self:GetTheme())
+
+    page.secondary[1]:SetText("< PREV")
+    page.secondary[2]:SetText("NEXT >")
+    page.secondary[3]:SetText("AUTO " .. ((v.autoAccept == true) and "ON" or "OFF"))
+    page.secondary[4]:SetText("ROLES " .. ((v.enforceRoles == true) and "ON" or "OFF"))
+    for i=1,4 do page.secondary[i]:SetHidden(false); setButtonStyle(page.secondary[i], (i==3 and v.autoAccept == true) or (i==4 and v.enforceRoles == true), self:GetTheme()) end
+    easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+    easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+
+    local selected = v.selected
+    for i,rowControl in ipairs(page.rows) do
+        local row = v.rows and v.rows[i]
+        if row then
+            rowControl:SetHidden(false)
+            local isSelected = selected and selected.activityId == row.activityId
+            rowControl.titleLabel:SetText(tostring(row.name or "Dungeon"))
+            local versions = ((row.normalActivityId and "N") or "-") .. "/" .. ((row.veteranActivityId and "V") or "-")
+            rowControl.detailLabel:SetText(string.format("%s   [%s]", tostring(row.source or "DLC / CHAPTER"), versions))
+            easSetInk(rowControl.titleLabel, isSelected, false)
+            easSetInk(rowControl.detailLabel, isSelected, true)
+        else rowControl:SetHidden(true) end
+    end
+    if v.scanning then
+        page.pageLabel:SetText(string.format("SCANNING ESO ACTIVITIES... %d FOUND", tonumber(v.total) or 0))
+    else
+        page.pageLabel:SetText(string.format("PAGE %d / %d  -  %d DUNGEONS  -  A-Z", tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+    end
+
+    if selected then
+        page.detailTitle:SetText(selected.name or "Dungeon")
+        local req = (tonumber(selected.championMin) or 0) > 0 and ("CP "..tostring(selected.championMin)) or ((tonumber(selected.levelMin) or 0) > 0 and ("Level "..tostring(selected.levelMin)) or "ESO requirements apply")
+        local queueState = v.queued and "QUEUED" or "NOT QUEUED"
+        local availability = string.format("Normal: %s   Veteran: %s", selected.normalActivityId and "YES" or "NO", selected.veteranActivityId and "YES" or "NO")
+        setBookText(page.detailBody, string.format("SOURCE\n%s\n\nREQUIREMENT\n%s\n\nMODE\n%s / %s\n\nHOST OPTIONS\nAuto Accept: %s\nEnforce Roles: %s\n1 Tank / 1 Healer / 2 DPS\n\nSTATUS\n%s\n%s\n\n%s", tostring(selected.source or "DLC / CHAPTER"), req, tostring(v.difficulty or "NORMAL"), tostring(v.role or "DPS"), v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF", queueState, availability, tostring(selected.description or "")), page.detailBody:GetWidth())
+    else
+        page.detailTitle:SetText(v.scanning and "Building Dungeon Index" or "Select a Dungeon")
+        setBookText(page.detailBody, "Select a dungeon on the left. Then choose Normal/Veteran and your role. QUEUE SELECTED uses ESO Activity Finder. HOST LISTING creates a Group Finder listing. FIND REPLACEMENT asks Activity Finder to fill an open slot in your current group.", page.detailBody:GetWidth())
+    end
+
+    page.action0:SetText(v.queued and "ALREADY QUEUED" or "QUEUE SELECTED")
+    page.action1:SetText("HOST / CREATE LISTING")
+    page.action2:SetText("FIND REPLACEMENT")
+    page.action3:SetText(v.queued and "CANCEL QUEUE" or "CANCEL QUEUE")
+    for _, b in ipairs({page.action0,page.action1,page.action2,page.action3}) do b:SetHidden(selected == nil); setButtonStyle(b, false, self:GetTheme()) end
+    easSetEnabled(page.action0, selected ~= nil and not v.queued)
+    easSetEnabled(page.action1, selected ~= nil and not v.queued)
+    easSetEnabled(page.action2, selected ~= nil)
+    easSetEnabled(page.action3, selected ~= nil and v.queued)
 end
 
 function J:CreateBookRow(parent, name, index, y, onClick)
@@ -2345,15 +2421,15 @@ function J:CreateInteractiveSuiteSpread(name)
         spread.secondary[i] = b
     end
 
-    local rowStart = 116
-    local rowCount = 8
+    local rowStart = 112
+    local rowCount = 10
     for i=1,rowCount do
-        spread.rows[i] = self:CreateBookRow(spread.left, name, i, rowStart + (i-1)*47, function(rowIndex)
+        spread.rows[i] = self:CreateBookRow(spread.left, name, i, rowStart + (i-1)*39, function(rowIndex)
             self:SelectInteractiveRow(name, rowIndex)
         end)
     end
 
-    spread.pageLabel = makeLabel("EAS_CodexInteractivePage_"..name, spread.left, "", 14, self.pageH-86, self.pageW-28, 20, "ZoFontGameSmall")
+    spread.pageLabel = makeLabel("EAS_CodexInteractivePage_"..name, spread.left, "", 14, self.pageH-70, self.pageW-28, 20, "ZoFontGame")
     spread.pageLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.themeLabels[#self.themeLabels+1] = spread.pageLabel
 
@@ -2365,14 +2441,46 @@ function J:CreateInteractiveSuiteSpread(name)
     self.themeLabels[#self.themeLabels+1] = spread.detailBody
 
     spread.optimizerModes = {}
+    spread.armorWeightButtons = {}
+    spread.loadoutButtons = {}
     if name == "GEAR" then
         local modeW = math.floor((self.pageW - 42) / 4)
         for i=1,4 do
-            spread.optimizerModes[i] = makeButton("EAS_CodexOptimizerMode_"..i, spread.right, "", 10 + (i-1)*(modeW+2), self.pageH-244, modeW, 26, function()
+            spread.optimizerModes[i] = makeButton("EAS_CodexOptimizerMode_"..i, spread.right, "", 10 + (i-1)*(modeW+2), self.pageH-256, modeW, 26, function()
                 if EPC.GearOptimizer and EPC.GearOptimizer.PRESET_ORDER then
                     EPC.GearOptimizer:SetPreset(EPC.GearOptimizer.PRESET_ORDER[i])
                     self:RefreshSuitePage("GEAR")
                 end
+            end)
+        end
+        local loadoutActions = {
+            {"WEAPONS", "EquipBestWeapons"},
+            {"JEWELRY", "EquipBestJewelry"},
+            {"ABILITIES", "EquipBestAbilities"},
+            {"POTIONS", "EquipBestPotions"},
+        }
+        -- v0.24.93: give the four loadout actions enough room to display
+        -- their complete labels. The old four-column row clipped WEAPONS,
+        -- JEWELRY, ABILITIES, and POTIONS on the Figma page width.
+        local loadoutGap = 8
+        local loadoutW = math.floor((self.pageW - 28 - loadoutGap) / 2)
+        local loadoutY = self.pageH - 326
+        for i,entry in ipairs(loadoutActions) do
+            local col = (i - 1) % 2
+            local row = math.floor((i - 1) / 2)
+            spread.loadoutButtons[i] = makeButton("EAS_CodexBest"..entry[1], spread.right, "BEST "..entry[1], 10 + col*(loadoutW+loadoutGap), loadoutY + row*34, loadoutW, 28, function()
+                local optimizer = EPC.GearOptimizer
+                local fn = optimizer and optimizer[entry[2]]
+                if type(fn) == "function" then fn(optimizer) end
+                self:RefreshSuitePage("GEAR")
+            end)
+        end
+        local weights = {"LIGHT","MEDIUM","HEAVY"}
+        local weightW = math.floor((self.pageW - 44) / 3)
+        for i,key in ipairs(weights) do
+            spread.armorWeightButtons[i] = makeButton("EAS_CodexArmorWeight_"..key, spread.right, "BEST "..key, 10 + (i-1)*(weightW+2), self.pageH-222, weightW, 28, function()
+                if EPC.GearOptimizer and EPC.GearOptimizer.EquipBestArmorWeight then EPC.GearOptimizer:EquipBestArmorWeight(key) end
+                self:RefreshSuitePage("GEAR")
             end)
         end
     end
@@ -2380,6 +2488,46 @@ function J:CreateInteractiveSuiteSpread(name)
     spread.action1 = makeButton("EAS_CodexInteractiveAction1_"..name, spread.right, "ACTION", 18, self.pageH-168, self.pageW-36, 32, function() self:RunInteractivePrimary(name) end)
     spread.action2 = makeButton("EAS_CodexInteractiveAction2_"..name, spread.right, "", 18, self.pageH-128, self.pageW-36, 30, function() self:RunInteractiveSecondaryAction(name) end)
     spread.action3 = makeButton("EAS_CodexInteractiveAction3_"..name, spread.right, "", 18, self.pageH-88, self.pageW-36, 30, function() self:RunInteractiveTertiaryAction(name) end)
+
+    -- v0.24.93: clean selected Gear layout. Keep the detail copy above the
+    -- controls, then give every control row its own vertical band.
+    if name == "GEAR" then
+        spread.detailBody:ClearAnchors()
+        spread.detailBody:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, 124)
+        spread.detailBody:SetDimensions(self.pageW-36, 150)
+
+        local gearActionY = self.pageH - 192
+        local gearActionGap = 38
+        for i, button in ipairs({spread.action0, spread.action1, spread.action2, spread.action3}) do
+            button:ClearAnchors()
+            button:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, gearActionY + (i-1)*gearActionGap)
+            button:SetDimensions(self.pageW-36, i <= 2 and 32 or 30)
+        end
+    end
+
+    -- v0.24.88: Dungeon Finder needs more breathing room on the selected side.
+    -- The generic interactive layout let the detail body extend underneath the
+    -- four queue/host buttons. Give DUNGEONS its own stacked action layout so
+    -- every control has a dedicated vertical band and nothing overlaps.
+    if name == "DUNGEONS" then
+        spread.detailTitle:ClearAnchors()
+        spread.detailTitle:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, 54)
+        spread.detailTitle:SetDimensions(self.pageW-36, 42)
+
+        spread.detailBody:ClearAnchors()
+        spread.detailBody:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, 102)
+        spread.detailBody:SetDimensions(self.pageW-36, 220)
+        spread.detailBody:SetFont("ZoFontGameSmall")
+
+        local actionY = 338
+        local actionGap = 38
+        for i, button in ipairs({spread.action0, spread.action1, spread.action2, spread.action3}) do
+            button:ClearAnchors()
+            button:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, actionY + (i-1)*actionGap)
+            button:SetDimensions(self.pageW-36, 32)
+        end
+    end
+
     spread.action0:SetHidden(true)
     spread.action2:SetHidden(true)
     spread.action3:SetHidden(true)
@@ -2418,6 +2566,11 @@ function J:RunInteractiveControl(tab, index)
     elseif tab == "ACTIVITY" and EPC.Activities then
         local goals = {"BALANCED","XP","GOLD"}
         if index <= 3 then EPC.Activities:SetGoal(goals[index]) end
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        if index == 1 then EPC.DungeonFinder:SetDifficulty("NORMAL")
+        elseif index == 2 then EPC.DungeonFinder:SetDifficulty("VETERAN")
+        elseif index == 3 then EPC.DungeonFinder:CycleRole()
+        elseif index == 4 then EPC.DungeonFinder:StartScan(true) end
     end
     self:RefreshSuitePage(tab)
 end
@@ -2440,6 +2593,11 @@ function J:RunInteractiveSecondary(tab, index)
         elseif index == 3 and EPC.RefreshNow then EPC:RefreshNow("codex-travel-refresh") end
     elseif tab == "ACTIVITY" and EPC.RefreshNow then
         EPC:RefreshNow("codex-activity-refresh")
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        if index == 1 then EPC.DungeonFinder:ChangePage(-1)
+        elseif index == 2 then EPC.DungeonFinder:ChangePage(1)
+        elseif index == 3 then EPC.DungeonFinder.autoAccept = not (EPC.DungeonFinder.autoAccept == true)
+        elseif index == 4 then EPC.DungeonFinder.enforceRoles = not (EPC.DungeonFinder.enforceRoles == true) end
     end
     self:RefreshSuitePage(tab)
 end
@@ -2448,13 +2606,16 @@ function J:SelectInteractiveRow(tab, index)
     if tab == "GEAR" and EPC.SetJournal then EPC.SetJournal:SelectRow(index)
     elseif tab == "QUESTS" and EPC.QuestFinder then EPC.QuestFinder:SelectRow(index)
     elseif tab == "TRAVEL" and EPC.Travel then EPC.Travel:SelectVisibleRow(index, EPC.Travel.BOOK_PAGE_SIZE or 8)
-    elseif tab == "ACTIVITY" and EPC.Activities then EPC.Activities:SelectVisibleRow(index) end
+    elseif tab == "ACTIVITY" and EPC.Activities then EPC.Activities:SelectVisibleRow(index)
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:SelectRow(index) end
     self:RefreshSuitePage(tab)
 end
 
 function J:RunInteractiveGearOptimizer(tab)
     if tab == "GEAR" and EPC.GearOptimizer and EPC.GearOptimizer.EquipBestRecommended then
         EPC.GearOptimizer:EquipBestRecommended()
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        EPC.DungeonFinder:QueueSelected()
     end
     self:RefreshSuitePage(tab)
 end
@@ -2463,13 +2624,16 @@ function J:RunInteractivePrimary(tab)
     if tab == "GEAR" and EPC.SetJournal then EPC.SetJournal:FastTravelSelected()
     elseif tab == "QUESTS" and EPC.QuestFinder then EPC.QuestFinder:RouteSelected()
     elseif tab == "TRAVEL" and EPC.Travel then EPC.Travel:TravelSelected()
-    elseif tab == "ACTIVITY" and EPC.Activities then EPC.Activities:ActivateSelected() end
+    elseif tab == "ACTIVITY" and EPC.Activities then EPC.Activities:ActivateSelected()
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:CreateHostListing() end
     self:RefreshSuitePage(tab)
 end
 
 function J:RunInteractiveSecondaryAction(tab)
     if tab == "GEAR" and EPC.SetJournal and EPC.SetJournal.RouteSelected then
         EPC.SetJournal:RouteSelected()
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        EPC.DungeonFinder:FindReplacement()
     end
     self:RefreshSuitePage(tab)
 end
@@ -2477,6 +2641,8 @@ end
 function J:RunInteractiveTertiaryAction(tab)
     if tab == "GEAR" and EPC.SetJournal and EPC.SetJournal.OpenSourceQuests then
         EPC.SetJournal:OpenSourceQuests()
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        EPC.DungeonFinder:CancelQueue()
     end
     self:RefreshSuitePage(tab)
 end
@@ -2491,6 +2657,14 @@ function J:RefreshInteractiveGear(page)
             b:SetHidden(false)
             b:SetText(preset and preset.label or key)
             setButtonStyle(b, key == active, self:GetTheme())
+        end
+    end
+    if page.loadoutButtons and EPC.GearOptimizer then
+        local methods = {"EquipBestWeapons","EquipBestJewelry","EquipBestAbilities","EquipBestPotions"}
+        for i,b in ipairs(page.loadoutButtons) do
+            b:SetHidden(false)
+            setButtonStyle(b, false, self:GetTheme())
+            easSetEnabled(b, type(EPC.GearOptimizer[methods[i]]) == "function")
         end
     end
     if page.action0 then
@@ -2700,7 +2874,8 @@ function J:RefreshSuitePage(tab)
         if tab == "GEAR" then self:RefreshInteractiveGear(page)
         elseif tab == "QUESTS" then self:RefreshInteractiveQuests(page)
         elseif tab == "TRAVEL" then self:RefreshInteractiveTravel(page)
-        elseif tab == "ACTIVITY" then self:RefreshInteractiveActivity(page) end
+        elseif tab == "ACTIVITY" then self:RefreshInteractiveActivity(page)
+        elseif tab == "DUNGEONS" then self:RefreshInteractiveDungeons(page) end
         return
     end
     return easOldRefreshSuitePage_v191(self, tab)
@@ -2860,12 +3035,12 @@ end
 function J:CreateBookRow(parent, name, index, y, onClick)
     local row = wm:CreateControl("EAS_CodexInteractive_v193_"..name.."_"..index, parent, CT_BUTTON)
     row:SetAnchor(TOPLEFT, parent, TOPLEFT, 14, y)
-    row:SetDimensions(self.pageW-28, 44)
+    row:SetDimensions(self.pageW-28, 37)
     row:SetMouseEnabled(true)
     row:SetHandler("OnClicked", function() onClick(index) end)
 
-    local title = makeLabel("EAS_CodexInteractiveTitle_v193_"..name.."_"..index, row, "", 4, 0, self.pageW-36, 20, "ZoFontGameBold")
-    local detail = makeLabel("EAS_CodexInteractiveDetail_v193_"..name.."_"..index, row, "", 4, 20, self.pageW-36, 22, "ZoFontGameSmall")
+    local title = makeLabel("EAS_CodexInteractiveTitle_v193_"..name.."_"..index, row, "", 4, 0, self.pageW-36, 18, "ZoFontGameBold")
+    local detail = makeLabel("EAS_CodexInteractiveDetail_v193_"..name.."_"..index, row, "", 4, 17, self.pageW-36, 19, "ZoFontGame")
     local rule = wm:CreateControl("EAS_CodexInteractiveRule_v193_"..name.."_"..index, row, CT_BACKDROP)
     rule:SetAnchor(BOTTOMLEFT, row, BOTTOMLEFT, 4, 0)
     rule:SetDimensions(self.pageW-38, 1)
@@ -3080,4 +3255,1899 @@ function J:Create()
 
     -- Keep the obsolete menu window inaccessible even if an older saved variable says enabled.
     if EPC.UI and EPC.UI.root then EPC.UI.root:SetHidden(true) end
+end
+
+-- ============================================================================
+-- v0.24.78 - Advanced glass/Figma-style Codex shell
+-- Replaces the lore-book presentation while preserving all existing Codex data
+-- pages and actions. The top-level window is movable/resizable and remembers
+-- its size/position. Internal content scales as one workspace when resized.
+-- ============================================================================
+
+local EAS_FIGMA_BASE_W = 1180
+local EAS_FIGMA_BASE_H = 760
+local EAS_FIGMA_MIN_W = 620
+local EAS_FIGMA_MIN_H = 400
+local EAS_FIGMA_MAX_W = 1680
+local EAS_FIGMA_MAX_H = 1080
+
+local function easFigmaBackdrop(name, parent, left, top, right, bottom, centerAlpha, edgeAlpha)
+    local p = wm:CreateControl(name, parent, CT_BACKDROP)
+    if left ~= nil then
+        p:SetAnchor(TOPLEFT, parent, TOPLEFT, left, top)
+        p:SetAnchor(BOTTOMRIGHT, parent, BOTTOMRIGHT, right, bottom)
+    else
+        p:SetAnchorFill(parent)
+    end
+    p:SetEdgeTexture(nil, 1, 1, 1)
+    p:SetCenterColor(0.025, 0.032, 0.045, centerAlpha or 0.70)
+    p:SetEdgeColor(0.32, 0.39, 0.50, edgeAlpha or 0.55)
+    return p
+end
+
+function J:UpdateFigmaScale()
+    if not self.window or not self.figmaCanvas then return end
+    local w, h = self.window:GetDimensions()
+    w, h = tonumber(w) or EAS_FIGMA_BASE_W, tonumber(h) or EAS_FIGMA_BASE_H
+    local scale = math.min(w / EAS_FIGMA_BASE_W, h / EAS_FIGMA_BASE_H)
+    scale = math.max(0.52, math.min(1.35, scale))
+    self.figmaCanvas:SetScale(scale)
+    self.figmaCanvas:ClearAnchors()
+    self.figmaCanvas:SetAnchor(CENTER, self.window, CENTER, 0, 0)
+end
+
+local easLegacyApplyTheme_2478 = J.ApplyTheme
+function J:ApplyTheme()
+    if not self.figmaMode then
+        return easLegacyApplyTheme_2478(self)
+    end
+    if not self.window then return end
+
+    local t = self:GetTheme()
+    local accent = t.accent or {0.43, 0.68, 0.96, 1}
+    local text = {0.92, 0.95, 0.99, 1}
+    local muted = {0.58, 0.64, 0.73, 1}
+
+    if self.bg then
+        self.bg:SetCenterColor(0.020, 0.026, 0.038, 0.72)
+        self.bg:SetEdgeColor(accent[1], accent[2], accent[3], 0.62)
+    end
+    if self.figmaTopBar then
+        self.figmaTopBar:SetCenterColor(0.030, 0.038, 0.052, 0.82)
+        self.figmaTopBar:SetEdgeColor(0.25, 0.31, 0.40, 0.55)
+    end
+    if self.figmaSidebar then
+        self.figmaSidebar:SetCenterColor(0.025, 0.032, 0.046, 0.76)
+        self.figmaSidebar:SetEdgeColor(0.22, 0.28, 0.36, 0.48)
+    end
+    if self.figmaLeftCard then
+        self.figmaLeftCard:SetCenterColor(0.040, 0.050, 0.068, 0.68)
+        self.figmaLeftCard:SetEdgeColor(0.28, 0.34, 0.43, 0.58)
+    end
+    if self.figmaRightCard then
+        self.figmaRightCard:SetCenterColor(0.040, 0.050, 0.068, 0.68)
+        self.figmaRightCard:SetEdgeColor(0.28, 0.34, 0.43, 0.58)
+    end
+    if self.figmaAccent then
+        self.figmaAccent:SetCenterColor(accent[1], accent[2], accent[3], 0.95)
+        self.figmaAccent:SetEdgeColor(0,0,0,0)
+    end
+    if self.figmaBrand then self.figmaBrand:SetColor(text[1], text[2], text[3], 1) end
+    if self.figmaSubtitle then self.figmaSubtitle:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.figmaResizeHint then self.figmaResizeHint:SetColor(muted[1], muted[2], muted[3], 0.95) end
+
+    for _, l in pairs(self.themeLabels or {}) do
+        if l and l.SetColor then l:SetColor(text[1], text[2], text[3], 1) end
+    end
+    if self.noteTitleEdit then self.noteTitleEdit:SetColor(text[1],text[2],text[3],1) end
+    if self.noteBodyEdit then self.noteBodyEdit:SetColor(text[1],text[2],text[3],1) end
+    if self.checkpointNameEdit then self.checkpointNameEdit:SetColor(text[1],text[2],text[3],1) end
+
+    for name, b in pairs(self.tabButtons or {}) do
+        if b and b.SetNormalFontColor then
+            local selected = name == self.activeTab
+            if selected then b:SetNormalFontColor(accent[1],accent[2],accent[3],1)
+            else b:SetNormalFontColor(text[1],text[2],text[3],0.88) end
+            b:SetMouseOverFontColor(1,1,1,1)
+            b:SetPressedFontColor(accent[1],accent[2],accent[3],1)
+        end
+        if b and b.figmaBg then
+            if name == self.activeTab then
+                b.figmaBg:SetCenterColor(accent[1],accent[2],accent[3],0.16)
+                b.figmaBg:SetEdgeColor(accent[1],accent[2],accent[3],0.50)
+                if b.figmaRail then b.figmaRail:SetColor(accent[1],accent[2],accent[3],1) end
+            else
+                b.figmaBg:SetCenterColor(0.05,0.06,0.08,0.16)
+                b.figmaBg:SetEdgeColor(0.20,0.24,0.31,0.16)
+                if b.figmaRail then b.figmaRail:SetColor(0,0,0,0) end
+            end
+        end
+    end
+    for name, b in pairs(self.categoryButtons or {}) do setButtonStyle(b, name == self.category, {text=text, accent=accent}) end
+    for mode, b in pairs(self.codexButtons or {}) do setButtonStyle(b, mode == (self.codexMode or "ALCHEMY"), {text=text, accent=accent}) end
+    for _, b in ipairs(self.topButtons or {}) do setButtonStyle(b, false, {text=text, accent=accent}) end
+    for _, b in ipairs(self.iconButtons or {}) do styleIconButton(b, {page={0.08,0.10,0.13,1}, edge=accent, text=text}) end
+    if self.modeButton then setButtonStyle(self.modeButton, self.readMode ~= true, {text=text, accent=accent}) end
+    if self.themeButton then setButtonStyle(self.themeButton, false, {text=text, accent=accent}) end
+    if self.closeButton then setButtonStyle(self.closeButton, false, {text=text, accent=accent}) end
+    if self.prevPageButton then setButtonStyle(self.prevPageButton, false, {text=text, accent=accent}) end
+    if self.nextPageButton then setButtonStyle(self.nextPageButton, false, {text=text, accent=accent}) end
+    if self.diceResultPanel then
+        self.diceResultPanel:SetCenterColor(0.05,0.065,0.09,0.62)
+        self.diceResultPanel:SetEdgeColor(accent[1],accent[2],accent[3],0.45)
+    end
+    if self.diceResultValue then self.diceResultValue:SetColor(accent[1],accent[2],accent[3],1) end
+end
+
+local easLegacyCreateSpreadShell_2478 = J.CreateSpreadShell
+function J:CreateSpreadShell(name)
+    if not self.figmaMode then return easLegacyCreateSpreadShell_2478(self, name) end
+    local parent = self.figmaWorkspace or self.window
+    local spread = wm:CreateControl("EAS_CodexSpread_"..name, parent, CT_CONTROL)
+    spread:SetAnchorFill(parent)
+
+    local left = wm:CreateControl("EAS_CodexSpread_"..name.."_Left", spread, CT_CONTROL)
+    left:SetAnchor(TOPLEFT, self.leftPageHost, TOPLEFT, 0, 0)
+    left:SetDimensions(self.pageW, self.pageH)
+
+    local right = wm:CreateControl("EAS_CodexSpread_"..name.."_Right", spread, CT_CONTROL)
+    right:SetAnchor(TOPLEFT, self.rightPageHost, TOPLEFT, 0, 0)
+    right:SetDimensions(self.pageW, self.pageH)
+
+    spread.left, spread.right = left, right
+    spread.key = name
+    return spread
+end
+
+function J:Create()
+    self.figmaMode = true
+    local s = self:EnsureSaved()
+    if s.figmaGlassUpgrade ~= true then
+        s.theme = "MIDNIGHT"
+        s.activeTab = s.activeTab or "INDEX"
+        s.figmaGlassUpgrade = true
+    end
+
+    local window = wm:CreateTopLevelWindow("EAS_CustomJournal")
+    self.window = window
+    local savedW = math.max(EAS_FIGMA_MIN_W, math.min(EAS_FIGMA_MAX_W, tonumber(s.figmaWidth) or EAS_FIGMA_BASE_W))
+    local savedH = math.max(EAS_FIGMA_MIN_H, math.min(EAS_FIGMA_MAX_H, tonumber(s.figmaHeight) or EAS_FIGMA_BASE_H))
+    window:SetDimensions(savedW, savedH)
+    window:SetDimensionConstraints(EAS_FIGMA_MIN_W, EAS_FIGMA_MIN_H, EAS_FIGMA_MAX_W, EAS_FIGMA_MAX_H)
+    window:SetResizeHandleSize(24)
+    window:SetAnchor(CENTER, GuiRoot, CENTER, 0, -8)
+    window:SetClampedToScreen(true)
+    window:SetMovable(true)
+    window:SetMouseEnabled(true)
+    window:SetHidden(true)
+    window:SetDrawLayer(DL_OVERLAY)
+    window:SetDrawTier(DT_HIGH)
+
+    if tonumber(s.left) and tonumber(s.top) and s.left >= 0 and s.top >= 0 then
+        window:ClearAnchors()
+        window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, s.left, s.top)
+    end
+
+    local canvas = wm:CreateControl("EAS_FigmaCanvas", window, CT_CONTROL)
+    canvas:SetDimensions(EAS_FIGMA_BASE_W, EAS_FIGMA_BASE_H)
+    canvas:SetAnchor(CENTER, window, CENTER, 0, 0)
+    self.figmaCanvas = canvas
+
+    local bg = easFigmaBackdrop("EAS_CustomJournal_BG", canvas, nil, nil, nil, nil, 0.72, 0.62)
+    self.bg = bg
+    self.nativeBook = nil
+    self.bookTexture = nil
+
+    local topBar = wm:CreateControl("EAS_FigmaTopBar", canvas, CT_BACKDROP)
+    topBar:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, 0)
+    topBar:SetAnchor(TOPRIGHT, canvas, TOPRIGHT, 0, 0)
+    topBar:SetHeight(64)
+    topBar:SetEdgeTexture(nil, 1, 1, 1)
+    self.figmaTopBar = topBar
+
+    local accent = wm:CreateControl("EAS_FigmaAccent", canvas, CT_BACKDROP)
+    accent:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, 0)
+    accent:SetDimensions(4, EAS_FIGMA_BASE_H)
+    accent:SetEdgeTexture(nil, 1, 1, 1)
+    self.figmaAccent = accent
+
+    local brand = makeLabel("EAS_FigmaBrand", canvas, "ESO ADVENTURER SUITE", 24, 12, 320, 24, "ZoFontWinH2")
+    brand:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    local subtitle = makeLabel("EAS_FigmaSubtitle", canvas, "COMMAND CENTER  /  TAMRIEL WORKSPACE", 25, 37, 360, 18, "ZoFontGameSmall")
+    self.figmaBrand, self.figmaSubtitle = brand, subtitle
+
+    local sidebar = wm:CreateControl("EAS_FigmaSidebar", canvas, CT_BACKDROP)
+    sidebar:SetAnchor(TOPLEFT, canvas, TOPLEFT, 12, 76)
+    sidebar:SetDimensions(206, 664)
+    sidebar:SetEdgeTexture(nil, 1, 1, 1)
+    self.figmaSidebar = sidebar
+
+    local sideTitle = makeLabel("EAS_FigmaSideTitle", sidebar, "WORKSPACE", 16, 12, 174, 20, "ZoFontGameBold")
+    sideTitle:SetColor(0.62,0.68,0.78,1)
+
+    self.panels, self.themeLabels, self.tabButtons, self.pages, self.topButtons = {}, {}, {}, {}, {}
+    self.categoryButtons = {}
+
+    local function addNav(key, label, y)
+        local b = wm:CreateControl("EAS_FigmaNav_"..key, sidebar, CT_BUTTON)
+        b:SetAnchor(TOPLEFT, sidebar, TOPLEFT, 10, y)
+        b:SetDimensions(186, 31)
+        b:SetFont("ZoFontGame")
+        b:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        b:SetText("    " .. tostring(label or key))
+        b:SetHandler("OnClicked", function() self:SetTab(key) end)
+        local nb = wm:CreateControl("EAS_FigmaNavBG_"..key, b, CT_BACKDROP)
+        nb:SetAnchorFill(b)
+        nb:SetEdgeTexture(nil, 1, 1, 1)
+        nb:SetDrawLevel(0)
+        b.figmaBg = nb
+        local rail = wm:CreateControl("EAS_FigmaNavRail_"..key, b, CT_TEXTURE)
+        rail:SetAnchor(LEFT, b, LEFT, 4, 0)
+        rail:SetDimensions(3, 19)
+        b.figmaRail = rail
+        self.tabButtons[key] = b
+        return b
+    end
+
+    addNav("INDEX", "Dashboard", 40)
+    local navY = 74
+    local navIndex = 0
+    for _, tab in ipairs(TABS) do
+        if tab ~= "INDEX" then
+            navIndex = navIndex + 1
+            addNav(tab, TAB_LABELS[tab] or tab, navY + (navIndex-1)*35)
+        end
+    end
+
+    local workspace = wm:CreateControl("EAS_FigmaWorkspace", canvas, CT_CONTROL)
+    workspace:SetAnchor(TOPLEFT, canvas, TOPLEFT, 232, 76)
+    workspace:SetDimensions(932, 664)
+    self.figmaWorkspace = workspace
+
+    local leftCard = easFigmaBackdrop("EAS_FigmaLeftCard", workspace, 0, 0, -474, -8, 0.68, 0.58)
+    local rightCard = easFigmaBackdrop("EAS_FigmaRightCard", workspace, 474, 0, -8, -8, 0.68, 0.58)
+    self.figmaLeftCard, self.figmaRightCard = leftCard, rightCard
+
+    local pageW, pageH = 430, 610
+    self.pageW, self.pageH = pageW, pageH
+    local leftHost = wm:CreateControl("EAS_CodexLeftPageHost", workspace, CT_CONTROL)
+    leftHost:SetAnchor(TOPLEFT, workspace, TOPLEFT, 14, 18)
+    leftHost:SetDimensions(pageW, pageH)
+    self.leftPageHost = leftHost
+    self.leftNavigation = leftHost
+
+    local rightHost = wm:CreateControl("EAS_CodexRightPageHost", workspace, CT_CONTROL)
+    rightHost:SetAnchor(TOPLEFT, workspace, TOPLEFT, 488, 18)
+    rightHost:SetDimensions(pageW, pageH)
+    self.rightPageHost = rightHost
+    self.rightContent = rightHost
+
+    local navPrev = makeButton("EAS_FigmaPrev", canvas, "<", 946, 17, 38, 30, function() self:TurnPage(-1) end)
+    local navNext = makeButton("EAS_FigmaNext", canvas, ">", 990, 17, 38, 30, function() self:TurnPage(1) end)
+    local theme = makeButton("EAS_CodexTheme", canvas, "ACCENT", 1036, 17, 68, 30, function() self:CycleTheme() end)
+    local close = makeButton("EAS_CodexClose", canvas, "X", 1112, 17, 40, 30, function() self:Hide() end)
+    self.prevPageButton, self.nextPageButton = navPrev, navNext
+    self.themeButton, self.closeButton = theme, close
+    self.topButtons[#self.topButtons+1] = navPrev
+    self.topButtons[#self.topButtons+1] = navNext
+    self.topButtons[#self.topButtons+1] = theme
+    self.topButtons[#self.topButtons+1] = close
+
+    self.pages.INDEX = self:CreateIndexSpread()
+    self.pages.NOTES = self:CreateNotesSpread()
+    self.pages.PINS = self:CreatePinsSpread()
+    self.pages.BUILD = self:CreateSuiteSpread("BUILD")
+    self.pages.GEAR = self:CreateSuiteSpread("GEAR")
+    self.pages.SKILLS = self:CreateSuiteSpread("SKILLS")
+    self.pages.COMBAT = self:CreateSuiteSpread("COMBAT")
+    self.pages.ACTIVITY = self:CreateSuiteSpread("ACTIVITY")
+    self.pages.DUNGEONS = self:CreateSuiteSpread("DUNGEONS")
+    self.pages.QUESTS = self:CreateSuiteSpread("QUESTS")
+    self.pages.TRAVEL = self:CreateSuiteSpread("TRAVEL")
+    self.pages.TOOLS = self:CreateSuiteSpread("TOOLS")
+    self.pages.ACHIEVEMENTS = self:CreateDocumentSpread("ACHIEVEMENTS")
+    self.pages.STATS = self:CreateDocumentSpread("STATS")
+    self.pages.CODEX = self:CreateCodexSpread()
+    self.pages.DICE = self:CreateDiceSpread()
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0 }
+
+    local spreadNo = makeLabel("EAS_CodexSpreadNumber", canvas, "", 852, 22, 86, 22, "ZoFontGameSmall")
+    spreadNo:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    self.pageNumber = spreadNo
+    self.themeLabels[#self.themeLabels+1] = spreadNo
+
+    local leftNum = makeLabel("EAS_CodexLeftPageNumber", leftHost, "", math.floor((pageW-40)/2), pageH-20, 40, 18, "ZoFontGameSmall")
+    leftNum:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    local rightNum = makeLabel("EAS_CodexRightPageNumber", rightHost, "", math.floor((pageW-40)/2), pageH-20, 40, 18, "ZoFontGameSmall")
+    rightNum:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.leftPageNumber, self.rightPageNumber = leftNum, rightNum
+    self.themeLabels[#self.themeLabels+1] = leftNum
+    self.themeLabels[#self.themeLabels+1] = rightNum
+
+    local flip = wm:CreateControl("EAS_CustomJournal_FlipPage", workspace, CT_BACKDROP)
+    flip:SetDimensions(pageW, pageH-60)
+    flip:SetAnchor(TOPLEFT, rightHost, TOPLEFT, 0, 44)
+    flip:SetEdgeTexture(nil, 1, 1, 1)
+    flip:SetDrawLayer(DL_OVERLAY)
+    flip:SetCenterColor(0.04,0.05,0.07,0.92)
+    flip:SetHidden(true)
+    self.flipPage = flip
+    local flipMark = makeLabel("EAS_CodexFlipMark", flip, "ESO ADVENTURER SUITE", 18, math.floor((pageH-110)/2), pageW-36, 30, "ZoFontWinH2")
+    flipMark:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.themeLabels[#self.themeLabels+1] = flipMark
+
+    local resizeHint = makeLabel("EAS_FigmaResizeHint", canvas, "DRAG WINDOW  /  RESIZE FROM EDGES", 816, 734, 330, 18, "ZoFontGameSmall")
+    resizeHint:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    self.figmaResizeHint = resizeHint
+
+    window:SetHandler("OnMoveStop", function(control)
+        local sv = self:EnsureSaved()
+        sv.left, sv.top = control:GetLeft(), control:GetTop()
+    end)
+    window:SetHandler("OnResizeStop", function(control)
+        local sv = self:EnsureSaved()
+        local w, h = control:GetDimensions()
+        sv.figmaWidth = math.floor((tonumber(w) or EAS_FIGMA_BASE_W) + 0.5)
+        sv.figmaHeight = math.floor((tonumber(h) or EAS_FIGMA_BASE_H) + 0.5)
+        self:UpdateFigmaScale()
+    end)
+
+    self.category = s.category or "ALL"
+    self.activeTab = s.activeTab or "INDEX"
+    self.readMode = s.readMode == true
+    self.codexMode = "ALCHEMY"
+    self:SetEditorEnabled(not self.readMode)
+    self:SetTab(self.activeTab)
+    self:RegisterMapPins()
+
+    -- Preserve the final Codex keyboard-close and editable-field behavior from
+    -- the previous shell while using the new glass workspace.
+    if self.window.SetKeyboardEnabled then self.window:SetKeyboardEnabled(true) end
+    self.window:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+        if not self.window or self.window:IsHidden() then return end
+        if self:RawKeyMatchesAction("ESO_PROGRESSION_COACH_TOGGLE", key, ctrl, alt, shift, command) then
+            self:Hide()
+        end
+    end)
+    easConfigureEditable(self.noteTitleEdit, false)
+    easConfigureEditable(self.noteBodyEdit, true)
+    easConfigureEditable(self.checkpointNameEdit, false)
+    self:SetEditorEnabled(not self.readMode)
+    if EPC.UI and EPC.UI.root then EPC.UI.root:SetHidden(true) end
+
+    self:UpdateFigmaScale()
+    self:ApplyTheme()
+end
+
+
+-- ============================================================================
+-- v0.24.79 - Premium Figma polish pass
+-- Pushes the glass Codex closer to a modern design-tool dashboard with
+-- sharper button chrome, floating toolbars, sidebar hero card, section chips,
+-- and stronger visual hierarchy while preserving existing behavior.
+-- ============================================================================
+
+local easLegacySetButtonStyle_2479 = setButtonStyle
+local function easEnsurePremiumButtonSkin(button)
+    if not button or button.easPremiumSkin then return end
+    local bg = wm:CreateControl((button:GetName() or tostring(button)).."_PremiumBG", button, CT_BACKDROP)
+    bg:SetAnchorFill(button)
+    bg:SetEdgeTexture(nil, 1, 1, 1)
+    bg:SetDrawLevel(0)
+    local glow = wm:CreateControl((button:GetName() or tostring(button)).."_PremiumGlow", button, CT_BACKDROP)
+    glow:SetAnchor(TOPLEFT, button, TOPLEFT, -1, -1)
+    glow:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, 1, 1)
+    glow:SetEdgeTexture(nil, 1, 1, 1)
+    glow:SetDrawLevel(0)
+    glow:SetDrawTier(DT_HIGH)
+    button.easPremiumSkin = {bg=bg, glow=glow}
+end
+
+setButtonStyle = function(button, selected, theme)
+    easLegacySetButtonStyle_2479(button, selected, theme)
+    if not button then return end
+    local t = theme or THEMES.MIDNIGHT
+    easEnsurePremiumButtonSkin(button)
+    if button.easPremiumSkin then
+        local bg, glow = button.easPremiumSkin.bg, button.easPremiumSkin.glow
+        local a = t.accent or {0.43, 0.68, 0.96, 1}
+        if selected then
+            bg:SetCenterColor(a[1], a[2], a[3], 0.18)
+            bg:SetEdgeColor(a[1], a[2], a[3], 0.58)
+            glow:SetCenterColor(a[1], a[2], a[3], 0.02)
+            glow:SetEdgeColor(a[1], a[2], a[3], 0.32)
+        else
+            bg:SetCenterColor(0.055, 0.065, 0.085, 0.36)
+            bg:SetEdgeColor(0.19, 0.24, 0.31, 0.26)
+            glow:SetCenterColor(0,0,0,0)
+            glow:SetEdgeColor(0.10, 0.12, 0.16, 0.06)
+        end
+    end
+end
+
+local easLegacyStyleIconButton_2479 = styleIconButton
+styleIconButton = function(button, theme)
+    easLegacyStyleIconButton_2479(button, theme)
+    if not button then return end
+    local t = theme or THEMES.MIDNIGHT or {}
+    -- Some legacy Codex callers pass a lightweight theme table containing
+    -- page/edge/text but no accent. Premium styling must support both forms.
+    local accent = t.accent or t.edge or (THEMES.MIDNIGHT and THEMES.MIDNIGHT.accent) or {0.43, 0.68, 0.96, 1}
+    local ar = tonumber(accent[1]) or 0.43
+    local ag = tonumber(accent[2]) or 0.68
+    local ab = tonumber(accent[3]) or 0.96
+    if button.bg then
+        button.bg:SetCenterColor(0.060, 0.075, 0.098, 0.48)
+        button.bg:SetEdgeColor(ar, ag, ab, 0.34)
+    end
+    if not button.easPremiumIconGlow then
+        local glow = wm:CreateControl((button:GetName() or tostring(button)).."_IconGlow", button, CT_BACKDROP)
+        glow:SetAnchor(TOPLEFT, button, TOPLEFT, -1, -1)
+        glow:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, 1, 1)
+        glow:SetEdgeTexture(nil, 1, 1, 1)
+        glow:SetDrawLevel(0)
+        button.easPremiumIconGlow = glow
+    end
+    if button.easPremiumIconGlow then
+        button.easPremiumIconGlow:SetCenterColor(0,0,0,0)
+        button.easPremiumIconGlow:SetEdgeColor(ar, ag, ab, 0.16)
+    end
+end
+
+function J:EnhanceFigmaPremiumVisuals()
+    if not self.figmaMode or not self.window or self.figmaPremium2479 then return end
+    self.figmaPremium2479 = true
+
+    local orderedTabs = {"INDEX"}
+    for _, tab in ipairs(TABS) do
+        if tab ~= "INDEX" then orderedTabs[#orderedTabs+1] = tab end
+    end
+
+    if self.figmaSidebar then
+        local hero = wm:CreateControl("EAS_FigmaHeroCard", self.figmaSidebar, CT_BACKDROP)
+        hero:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 38)
+        hero:SetDimensions(186, 92)
+        hero:SetEdgeTexture(nil, 1, 1, 1)
+        self.figmaHeroCard = hero
+
+        local heroStripe = wm:CreateControl("EAS_FigmaHeroStripe", hero, CT_BACKDROP)
+        heroStripe:SetAnchor(TOPLEFT, hero, TOPLEFT, 0, 0)
+        heroStripe:SetDimensions(186, 4)
+        heroStripe:SetEdgeTexture(nil, 1, 1, 1)
+        self.figmaHeroStripe = heroStripe
+
+        local heroLabel = makeLabel("EAS_FigmaHeroLabel", hero, "TACTICAL DASHBOARD", 14, 12, 158, 18, "ZoFontGameBold")
+        local heroSub = makeLabel("EAS_FigmaHeroSub", hero, "Glass workspace for builds, sets, dungeons, travel and combat tools.", 14, 34, 158, 36, "ZoFontGameSmall")
+        heroSub:SetVerticalAlignment(TEXT_ALIGN_TOP)
+        self.figmaHeroLabel, self.figmaHeroSub = heroLabel, heroSub
+        table.insert(self.themeLabels, heroLabel)
+        table.insert(self.themeLabels, heroSub)
+
+        local chip1 = wm:CreateControl("EAS_FigmaHeroChip1", hero, CT_BACKDROP)
+        chip1:SetAnchor(TOPLEFT, hero, TOPLEFT, 14, 70)
+        chip1:SetDimensions(56, 16)
+        chip1:SetEdgeTexture(nil, 1, 1, 1)
+        local chip1Text = makeLabel("EAS_FigmaHeroChipText1", hero, "LIVE", 14, 70, 56, 16, "ZoFontGameSmall")
+        chip1Text:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        local chip2 = wm:CreateControl("EAS_FigmaHeroChip2", hero, CT_BACKDROP)
+        chip2:SetAnchor(TOPLEFT, hero, TOPLEFT, 78, 70)
+        chip2:SetDimensions(92, 16)
+        chip2:SetEdgeTexture(nil, 1, 1, 1)
+        local chip2Text = makeLabel("EAS_FigmaHeroChipText2", hero, "SCALABLE UI", 78, 70, 92, 16, "ZoFontGameSmall")
+        chip2Text:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        self.figmaHeroChip1, self.figmaHeroChip2 = chip1, chip2
+        table.insert(self.themeLabels, chip1Text)
+        table.insert(self.themeLabels, chip2Text)
+
+        if self.figmaSideTitle then self.figmaSideTitle:ClearAnchors(); self.figmaSideTitle:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 16, 12) end
+        for index, key in ipairs(orderedTabs) do
+            local b = self.tabButtons and self.tabButtons[key]
+            if b then
+                b:ClearAnchors()
+                b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 142 + ((index - 1) * 31))
+                b:SetDimensions(186, 27)
+                if not b.figmaIconBadge then
+                    local badge = wm:CreateControl((b:GetName() or key).."_Badge", b, CT_BACKDROP)
+                    badge:SetAnchor(LEFT, b, LEFT, 8, 0)
+                    badge:SetDimensions(18, 18)
+                    badge:SetEdgeTexture(nil, 1, 1, 1)
+                    b.figmaIconBadge = badge
+                    local iconText = makeLabel((b:GetName() or key).."_BadgeText", b, string.sub(tostring(TAB_LABELS[key] or key),1,1), 8, 4, 18, 12, "ZoFontGameSmall")
+                    iconText:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+                    b.figmaIconText = iconText
+                    table.insert(self.themeLabels, iconText)
+                end
+            end
+        end
+    end
+
+    if self.figmaTopBar then
+        local toolbar = wm:CreateControl("EAS_FigmaFloatingToolbar", self.figmaCanvas, CT_BACKDROP)
+        toolbar:SetAnchor(TOPRIGHT, self.figmaCanvas, TOPRIGHT, -14, 11)
+        toolbar:SetDimensions(216, 42)
+        toolbar:SetEdgeTexture(nil, 1, 1, 1)
+        self.figmaFloatingToolbar = toolbar
+        if self.prevPageButton then self.prevPageButton:SetDrawTier(DT_HIGH) end
+        if self.nextPageButton then self.nextPageButton:SetDrawTier(DT_HIGH) end
+        if self.themeButton then self.themeButton:SetDrawTier(DT_HIGH) end
+        if self.closeButton then self.closeButton:SetDrawTier(DT_HIGH) end
+
+        local searchShell = wm:CreateControl("EAS_FigmaSearchShell", self.figmaCanvas, CT_BACKDROP)
+        searchShell:SetAnchor(TOPLEFT, self.figmaCanvas, TOPLEFT, 410, 14)
+        searchShell:SetDimensions(302, 36)
+        searchShell:SetEdgeTexture(nil, 1, 1, 1)
+        self.figmaSearchShell = searchShell
+        local searchIcon = makeLabel("EAS_FigmaSearchIcon", self.figmaCanvas, "Q", 422, 22, 12, 12, "ZoFontGameBold")
+        local searchText = makeLabel("EAS_FigmaSearchText", self.figmaCanvas, "Quick view: builds, sets, quests, dungeons", 444, 20, 248, 16, "ZoFontGameSmall")
+        self.figmaSearchIcon, self.figmaSearchText = searchIcon, searchText
+        table.insert(self.themeLabels, searchIcon)
+        table.insert(self.themeLabels, searchText)
+    end
+
+    if self.leftPageHost and self.rightPageHost then
+        self.leftPageHost:ClearAnchors()
+        self.leftPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 14, 44)
+        self.rightPageHost:ClearAnchors()
+        self.rightPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 488, 44)
+
+        local leftHeader = wm:CreateControl("EAS_FigmaLeftHeader", self.figmaWorkspace, CT_BACKDROP)
+        leftHeader:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 14, 14)
+        leftHeader:SetDimensions(430, 24)
+        leftHeader:SetEdgeTexture(nil, 1, 1, 1)
+        self.figmaLeftHeader = leftHeader
+        local leftHeaderText = makeLabel("EAS_FigmaLeftHeaderText", self.figmaWorkspace, "NAVIGATOR", 28, 19, 150, 16, "ZoFontGameBold")
+        self.figmaLeftHeaderText = leftHeaderText
+        table.insert(self.themeLabels, leftHeaderText)
+
+        local rightHeader = wm:CreateControl("EAS_FigmaRightHeader", self.figmaWorkspace, CT_BACKDROP)
+        rightHeader:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 488, 14)
+        rightHeader:SetDimensions(430, 24)
+        rightHeader:SetEdgeTexture(nil, 1, 1, 1)
+        self.figmaRightHeader = rightHeader
+        local rightHeaderText = makeLabel("EAS_FigmaRightHeaderText", self.figmaWorkspace, "DETAIL PANEL", 502, 19, 160, 16, "ZoFontGameBold")
+        self.figmaRightHeaderText = rightHeaderText
+        table.insert(self.themeLabels, rightHeaderText)
+    end
+
+    local footer = wm:CreateControl("EAS_FigmaFooterRail", self.figmaCanvas, CT_BACKDROP)
+    footer:SetAnchor(BOTTOMLEFT, self.figmaCanvas, BOTTOMLEFT, 232, -6)
+    footer:SetDimensions(932, 20)
+    footer:SetEdgeTexture(nil, 1, 1, 1)
+    self.figmaFooterRail = footer
+    local footerText = makeLabel("EAS_FigmaFooterText", self.figmaCanvas, "MOVE  /  RESIZE  /  REVIEW BUILDS  /  EQUIP LOADOUTS  /  ROUTE CONTENT", 248, 739, 700, 14, "ZoFontGameSmall")
+    table.insert(self.themeLabels, footerText)
+
+    self:ApplyTheme()
+end
+
+local easLegacyApplyTheme_2479 = J.ApplyTheme
+function J:ApplyTheme()
+    easLegacyApplyTheme_2479(self)
+    if not self.figmaMode then return end
+    local t = self:GetTheme()
+    local accent = t.accent or {0.43, 0.68, 0.96, 1}
+    local text = t.text or {0.92, 0.95, 0.99, 1}
+    local muted = {0.62, 0.70, 0.80, 1}
+
+    if self.bg then self.bg:SetCenterColor(0.014, 0.018, 0.028, 0.76) self.bg:SetEdgeColor(accent[1], accent[2], accent[3], 0.40) end
+    if self.figmaTopBar then self.figmaTopBar:SetCenterColor(0.024, 0.028, 0.040, 0.88) self.figmaTopBar:SetEdgeColor(0.16, 0.20, 0.28, 0.48) end
+    if self.figmaSidebar then self.figmaSidebar:SetCenterColor(0.020, 0.026, 0.038, 0.82) self.figmaSidebar:SetEdgeColor(0.18, 0.24, 0.31, 0.46) end
+    if self.figmaLeftCard then self.figmaLeftCard:SetCenterColor(0.042, 0.052, 0.070, 0.82) self.figmaLeftCard:SetEdgeColor(0.24, 0.32, 0.40, 0.54) end
+    if self.figmaRightCard then self.figmaRightCard:SetCenterColor(0.042, 0.052, 0.070, 0.82) self.figmaRightCard:SetEdgeColor(0.24, 0.32, 0.40, 0.54) end
+    if self.figmaAccent then self.figmaAccent:SetCenterColor(accent[1], accent[2], accent[3], 1) self.figmaAccent:SetEdgeColor(0,0,0,0) end
+    if self.figmaFloatingToolbar then self.figmaFloatingToolbar:SetCenterColor(0.045, 0.055, 0.076, 0.90) self.figmaFloatingToolbar:SetEdgeColor(accent[1], accent[2], accent[3], 0.28) end
+    if self.figmaSearchShell then self.figmaSearchShell:SetCenterColor(0.032, 0.040, 0.056, 0.84) self.figmaSearchShell:SetEdgeColor(0.17, 0.22, 0.30, 0.40) end
+    if self.figmaHeroCard then self.figmaHeroCard:SetCenterColor(0.038, 0.046, 0.064, 0.88) self.figmaHeroCard:SetEdgeColor(accent[1], accent[2], accent[3], 0.28) end
+    if self.figmaHeroStripe then self.figmaHeroStripe:SetCenterColor(accent[1], accent[2], accent[3], 0.96) self.figmaHeroStripe:SetEdgeColor(0,0,0,0) end
+    if self.figmaHeroChip1 then self.figmaHeroChip1:SetCenterColor(accent[1], accent[2], accent[3], 0.20) self.figmaHeroChip1:SetEdgeColor(accent[1], accent[2], accent[3], 0.36) end
+    if self.figmaHeroChip2 then self.figmaHeroChip2:SetCenterColor(0.07, 0.09, 0.12, 0.62) self.figmaHeroChip2:SetEdgeColor(0.20, 0.25, 0.34, 0.34) end
+    if self.figmaLeftHeader then self.figmaLeftHeader:SetCenterColor(0.050, 0.060, 0.082, 0.72) self.figmaLeftHeader:SetEdgeColor(0.20, 0.24, 0.31, 0.34) end
+    if self.figmaRightHeader then self.figmaRightHeader:SetCenterColor(0.050, 0.060, 0.082, 0.72) self.figmaRightHeader:SetEdgeColor(0.20, 0.24, 0.31, 0.34) end
+    if self.figmaFooterRail then self.figmaFooterRail:SetCenterColor(0.028, 0.032, 0.048, 0.72) self.figmaFooterRail:SetEdgeColor(0.16, 0.20, 0.28, 0.30) end
+    if self.figmaBrand then self.figmaBrand:SetColor(text[1], text[2], text[3], 1) end
+    if self.figmaSubtitle then self.figmaSubtitle:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.figmaHeroLabel then self.figmaHeroLabel:SetColor(text[1], text[2], text[3], 1) end
+    if self.figmaHeroSub then self.figmaHeroSub:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.figmaSearchIcon then self.figmaSearchIcon:SetColor(accent[1], accent[2], accent[3], 1) end
+    if self.figmaSearchText then self.figmaSearchText:SetColor(muted[1], muted[2], muted[3], 1) end
+
+    if self.tabButtons then
+        for key, b in pairs(self.tabButtons) do
+            if b and b.figmaIconBadge then
+                local active = key == self.activeTab
+                if active then
+                    b.figmaIconBadge:SetCenterColor(accent[1], accent[2], accent[3], 0.24)
+                    b.figmaIconBadge:SetEdgeColor(accent[1], accent[2], accent[3], 0.44)
+                    if b.figmaIconText then b.figmaIconText:SetColor(accent[1], accent[2], accent[3], 1) end
+                else
+                    b.figmaIconBadge:SetCenterColor(0.07, 0.09, 0.12, 0.62)
+                    b.figmaIconBadge:SetEdgeColor(0.18, 0.24, 0.31, 0.20)
+                    if b.figmaIconText then b.figmaIconText:SetColor(text[1], text[2], text[3], 0.86) end
+                end
+            end
+            setButtonStyle(b, key == self.activeTab, t)
+        end
+    end
+    for _, b in ipairs(self.topButtons or {}) do setButtonStyle(b, false, t) end
+    for _, b in ipairs(self.iconButtons or {}) do styleIconButton(b, t) end
+    if EPC.GearLoadoutOverlay and type(EPC.GearLoadoutOverlay.ApplyTheme) == "function" then
+        EPC.GearLoadoutOverlay:ApplyTheme()
+    end
+end
+
+local easLegacyCreate_2479 = J.Create
+function J:Create()
+    easLegacyCreate_2479(self)
+    self:EnhanceFigmaPremiumVisuals()
+end
+
+
+-- ============================================================================
+-- v0.24.80 - Figma duplicate navigation control fix
+-- INDEX is excluded from the dynamic TABS loop because an earlier compatibility
+-- upgrade adds INDEX to TABS. This prevents EAS_FigmaNav_INDEX from being
+-- created twice during startup.
+-- ============================================================================
+
+
+-- ============================================================================
+-- v0.24.82 - Clean Figma layout + full-border live resizing
+-- Reduces decorative crowding, restores more usable workspace, and enlarges
+-- the native resize hit area around all four sides/corners. The canvas scales
+-- continuously while resizing so controls do not bunch together mid-drag.
+-- ============================================================================
+
+function J:ApplyFigmaCleanLayout2482()
+    if not self.figmaMode or not self.window or self.figmaClean2482 then return end
+    self.figmaClean2482 = true
+
+    -- Keep the advanced glass shell, but remove decorative overlays that were
+    -- competing with functional controls for space.
+    local hideList = {
+        self.figmaHeroCard, self.figmaHeroStripe, self.figmaHeroChip1, self.figmaHeroChip2,
+        self.figmaHeroLabel, self.figmaHeroSub,
+        self.figmaSearchShell, self.figmaSearchIcon, self.figmaSearchText,
+        self.figmaLeftHeader, self.figmaRightHeader,
+        self.figmaLeftHeaderText, self.figmaRightHeaderText,
+        self.figmaFooterRail,
+    }
+    for _, control in ipairs(hideList) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+
+    -- Give the two functional work panels the full vertical space again.
+    if self.leftPageHost and self.figmaWorkspace then
+        self.leftPageHost:ClearAnchors()
+        self.leftPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 14, 18)
+    end
+    if self.rightPageHost and self.figmaWorkspace then
+        self.rightPageHost:ClearAnchors()
+        self.rightPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 488, 18)
+    end
+
+    -- Compact, evenly-spaced sidebar. INDEX appears only once.
+    local orderedTabs = {"INDEX"}
+    for _, key in ipairs(TABS) do
+        if key ~= "INDEX" then orderedTabs[#orderedTabs+1] = key end
+    end
+    for index, key in ipairs(orderedTabs) do
+        local b = self.tabButtons and self.tabButtons[key]
+        if b and self.figmaSidebar then
+            b:ClearAnchors()
+            b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 42 + ((index - 1) * 37))
+            b:SetDimensions(186, 32)
+            b:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+            b:SetText("        " .. tostring(TAB_LABELS[key] or key))
+        end
+    end
+
+    -- Larger native hit area: ESO applies this around all sides and corners
+    -- of a resizable TopLevelControl.
+    if self.window.SetResizeHandleSize then self.window:SetResizeHandleSize(48) end
+
+    -- Update scaling continuously while the user drags any resize side/corner.
+    self.figmaResizeActive2482 = false
+    self.window:SetHandler("OnResizeStart", function()
+        self.figmaResizeActive2482 = true
+    end)
+    self.window:SetHandler("OnUpdate", function()
+        if self.figmaResizeActive2482 then self:UpdateFigmaScale() end
+    end)
+    self.window:SetHandler("OnResizeStop", function(control)
+        self.figmaResizeActive2482 = false
+        local sv = self:EnsureSaved()
+        local w, h = control:GetDimensions()
+        sv.figmaWidth = math.floor((tonumber(w) or EAS_FIGMA_BASE_W) + 0.5)
+        sv.figmaHeight = math.floor((tonumber(h) or EAS_FIGMA_BASE_H) + 0.5)
+        self:UpdateFigmaScale()
+    end)
+
+    if self.figmaResizeHint then
+        self.figmaResizeHint:SetText("RESIZE FROM ANY SIDE OR CORNER")
+        self.figmaResizeHint:ClearAnchors()
+        self.figmaResizeHint:SetAnchor(BOTTOMRIGHT, self.figmaCanvas, BOTTOMRIGHT, -16, -8)
+        self.figmaResizeHint:SetDimensions(320, 18)
+    end
+end
+
+local easLegacyCreate_2482 = J.Create
+function J:Create()
+    easLegacyCreate_2482(self)
+    self:ApplyFigmaCleanLayout2482()
+    self:ApplyTheme()
+end
+
+
+-- ============================================================================
+-- v0.24.83 - Clean header/title collision fix
+-- Decorative Figma column labels are hidden independently from their backdrop
+-- controls so they cannot overlap real Codex section titles.
+-- ============================================================================
+
+function J:ApplyFigmaHeaderCollisionFix2483()
+    if not self.figmaMode then return end
+    local controls = {
+        self.figmaLeftHeader, self.figmaRightHeader,
+        self.figmaLeftHeaderText, self.figmaRightHeaderText,
+    }
+    for _, control in ipairs(controls) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+end
+
+local easLegacyCreate_2483 = J.Create
+function J:Create()
+    easLegacyCreate_2483(self)
+    self:ApplyFigmaHeaderCollisionFix2483()
+end
+
+
+-- ============================================================================
+-- v0.24.84 - Toolbar centering + clean workspace labels
+-- Centers the top navigation/action controls inside their glass container and
+-- removes the decorative single-letter workspace badges from the sidebar.
+-- ============================================================================
+function J:ApplyFigmaToolbarAndNavCleanup2484()
+    if not self.figmaMode then return end
+
+    if self.figmaFloatingToolbar then
+        self.figmaFloatingToolbar:ClearAnchors()
+        self.figmaFloatingToolbar:SetAnchor(TOPRIGHT, self.figmaCanvas, TOPRIGHT, -14, 11)
+        self.figmaFloatingToolbar:SetDimensions(220, 42)
+
+        local controls = {
+            {self.prevPageButton, 8, 6, 36, 30},
+            {self.nextPageButton, 48, 6, 36, 30},
+            {self.themeButton, 88, 6, 76, 30},
+            {self.closeButton, 168, 6, 44, 30},
+        }
+        for _, data in ipairs(controls) do
+            local c = data[1]
+            if c then
+                c:ClearAnchors()
+                c:SetAnchor(TOPLEFT, self.figmaFloatingToolbar, TOPLEFT, data[2], data[3])
+                c:SetDimensions(data[4], data[5])
+            end
+        end
+    end
+
+    local orderedTabs = {"INDEX"}
+    for _, key in ipairs(TABS) do if key ~= "INDEX" then orderedTabs[#orderedTabs+1] = key end end
+    for _, key in ipairs(orderedTabs) do
+        local b = self.tabButtons and self.tabButtons[key]
+        if b then
+            if b.figmaIconBadge then b.figmaIconBadge:SetHidden(true) end
+            if b.figmaIconText then b.figmaIconText:SetHidden(true) end
+            b:SetText("    " .. tostring(TAB_LABELS[key] or key))
+        end
+    end
+end
+
+local easLegacyCreate_2484 = J.Create
+function J:Create()
+    easLegacyCreate_2484(self)
+    self:ApplyFigmaToolbarAndNavCleanup2484()
+    self:ApplyTheme()
+end
+
+
+-- ============================================================================
+-- v0.24.86 - Smaller Figma minimum size
+-- The command-center can now shrink to roughly half-scale while preserving
+-- the all-sides/all-corners resize behavior from the clean Figma shell.
+-- ============================================================================
+
+
+-- v0.24.89 - live Gear & Sets equipment overlay bridge
+local easSetTab_2489 = J.SetTab
+function J:SetTab(tab)
+    easSetTab_2489(self, tab)
+    if EPC.GearLoadoutOverlay and EPC.GearLoadoutOverlay.OnGearTabChanged then
+        EPC.GearLoadoutOverlay:OnGearTabChanged(self.activeTab == "GEAR")
+    end
+end
+
+local easShow_2489 = J.Show
+function J:Show()
+    easShow_2489(self)
+    if EPC.GearLoadoutOverlay then
+        if EPC.GearLoadoutOverlay.OnGearTabChanged then EPC.GearLoadoutOverlay:OnGearTabChanged(self.activeTab == "GEAR") end
+        if EPC.GearLoadoutOverlay.SetJournalVisible then EPC.GearLoadoutOverlay:SetJournalVisible(true) end
+    end
+end
+
+local easHide_2489 = J.Hide
+function J:Hide()
+    if EPC.GearLoadoutOverlay and EPC.GearLoadoutOverlay.SetJournalVisible then
+        EPC.GearLoadoutOverlay:SetJournalVisible(false)
+    end
+    easHide_2489(self)
+end
+
+-- ============================================================================
+-- v0.24.92 - Clean expanded list rows
+-- Keep the 10-row Codex lists, but remove secondary row metadata from the
+-- selectable list itself. Full metadata remains in the selected-detail panel.
+-- Shorter single-line rows leave a clearer gap between each selection.
+-- ============================================================================
+function J:CreateBookRow(parent, name, index, y, onClick)
+    local row = wm:CreateControl("EAS_CodexInteractive_v2492_"..name.."_"..index, parent, CT_BUTTON)
+    row:SetAnchor(TOPLEFT, parent, TOPLEFT, 14, y)
+    row:SetDimensions(self.pageW-28, 32)
+    row:SetMouseEnabled(true)
+    row:SetHandler("OnClicked", function() onClick(index) end)
+
+    -- Selection rows are intentionally name-only. The right-hand Selected
+    -- panel already contains source, status, collection, cost, zone, etc.
+    local title = makeLabel("EAS_CodexInteractiveTitle_v2492_"..name.."_"..index, row, "", 6, 4, self.pageW-40, 23, "ZoFontGameBold")
+    if title.SetVerticalAlignment then title:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+
+    -- Keep a hidden compatibility label because the existing refresh paths
+    -- still write secondary metadata to detailLabel.
+    local detail = makeLabel("EAS_CodexInteractiveDetail_v2492_"..name.."_"..index, row, "", 6, 0, self.pageW-40, 1, "ZoFontGameSmall")
+    detail:SetHidden(true)
+
+    local rule = wm:CreateControl("EAS_CodexInteractiveRule_v2492_"..name.."_"..index, row, CT_BACKDROP)
+    rule:SetAnchor(BOTTOMLEFT, row, BOTTOMLEFT, 6, 0)
+    rule:SetDimensions(self.pageW-42, 1)
+    rule:SetCenterColor(0.26, 0.17, 0.08, 0.14)
+    rule:SetEdgeColor(0, 0, 0, 0)
+
+    row.titleLabel = title
+    row.detailLabel = detail
+    row.rule = rule
+    row.rowIndex = index
+    return row
+end
+
+-- ============================================================================
+-- v0.24.94 - Golden Pursuits workspace + dynamic index + gear border cleanup
+-- Adds Golden Pursuits to the shared TABS registry so both the Figma nav and
+-- the Index pick it up automatically. Also keeps future registered tabs in the
+-- Index by continuing to build that spread directly from TABS.
+-- ============================================================================
+
+do
+    local found = false
+    for _, key in ipairs(TABS) do
+        if key == "PURSUITS" then found = true break end
+    end
+    if not found then
+        local insertAt = #TABS + 1
+        for i, key in ipairs(TABS) do
+            if key == "ACHIEVEMENTS" then insertAt = i break end
+        end
+        table.insert(TABS, insertAt, "PURSUITS")
+    end
+end
+
+TAB_LABELS.PURSUITS = "Golden Pursuits"
+TAB_TITLES.PURSUITS = "GOLDEN PURSUITS"
+TAB_PAGE_NUMBERS.PURSUITS = "GP"
+EAS_TAB_SHORT.PURSUITS = "PURSUITS"
+EAS_TAB_DESCRIPTIONS.PURSUITS = "Live Golden Pursuits campaigns, task progress, campaign progress, and time remaining."
+
+local function easSafeMethod2494(object, methodName, fallback, ...)
+    if not object then return fallback end
+    local fn = object[methodName]
+    if type(fn) ~= "function" then return fallback end
+    local ok, a, b, c, d = pcall(fn, object, ...)
+    if not ok then return fallback end
+    if a == nil then return fallback end
+    return a, b, c, d
+end
+
+local function easFormatPursuitTime2494(seconds)
+    seconds = math.max(0, tonumber(seconds) or 0)
+    if seconds <= 0 then return "Ending soon / unavailable" end
+    if type(ZO_FormatTime) == "function" and TIME_FORMAT_STYLE_SHOW_LARGEST_TWO_UNITS and TIME_FORMAT_PRECISION_TWENTY_FOUR_HOUR then
+        local ok, text = pcall(ZO_FormatTime, seconds, TIME_FORMAT_STYLE_SHOW_LARGEST_TWO_UNITS, TIME_FORMAT_PRECISION_TWENTY_FOUR_HOUR)
+        if ok and text and text ~= "" then return tostring(text) end
+    end
+    local days = math.floor(seconds / 86400)
+    local hours = math.floor((seconds % 86400) / 3600)
+    if days > 0 then return string.format("%dd %dh", days, hours) end
+    local minutes = math.floor((seconds % 3600) / 60)
+    return string.format("%dh %dm", hours, minutes)
+end
+
+function J:BuildGoldenPursuitsView2494()
+    local view = { rows = {}, campaigns = {}, total = 0 }
+    local manager = PROMOTIONAL_EVENT_MANAGER
+    if not manager or type(manager.GetNumActiveCampaigns) ~= "function" or type(manager.GetCampaignDataByIndex) ~= "function" then
+        view.status = "Golden Pursuits data is not available yet."
+        return view
+    end
+
+    local countRaw = easSafeMethod2494(manager, "GetNumActiveCampaigns", 0)
+    local count = tonumber(countRaw) or 0
+    for campaignIndex = 1, count do
+        local campaign = easSafeMethod2494(manager, "GetCampaignDataByIndex", nil, campaignIndex)
+        if campaign then
+            local visible = easSafeMethod2494(campaign, "ShouldCampaignBeVisible", true) ~= false
+            local returning = easSafeMethod2494(campaign, "IsReturningPlayerCampaign", false) == true
+            if visible and not returning then
+                local campaignName = tostring(easSafeMethod2494(campaign, "GetDisplayName", "Golden Pursuit"))
+                local completedRaw = easSafeMethod2494(campaign, "GetNumActivitiesCompleted", 0)
+                local thresholdRaw = easSafeMethod2494(campaign, "GetCapstoneRewardThreshold", 0)
+                local secondsRemainingRaw = easSafeMethod2494(campaign, "GetSecondsRemaining", 0)
+                local completed = tonumber(completedRaw) or 0
+                local threshold = tonumber(thresholdRaw) or 0
+                local secondsRemaining = tonumber(secondsRemainingRaw) or 0
+                local campaignInfo = {
+                    data = campaign,
+                    name = campaignName,
+                    completed = completed,
+                    threshold = threshold,
+                    secondsRemaining = secondsRemaining,
+                    allRewardsClaimed = easSafeMethod2494(campaign, "AreAllRewardsClaimed", false) == true,
+                }
+                view.campaigns[#view.campaigns + 1] = campaignInfo
+
+                local activities = easSafeMethod2494(campaign, "GetActivities", {}) or {}
+                for activityIndex, activity in ipairs(activities) do
+                    -- Some promotional-event methods return multiple values. Passing
+                    -- those returns directly to tonumber makes Lua treat return #2 as
+                    -- the numeric base. Capture the first value before conversion.
+                    local progressRaw = easSafeMethod2494(activity, "GetProgress", 0)
+                    local goalRaw = easSafeMethod2494(activity, "GetCompletionThreshold", 0)
+                    local progress = tonumber(progressRaw) or 0
+                    local goal = tonumber(goalRaw) or 0
+                    local complete = easSafeMethod2494(activity, "IsComplete", false) == true
+                    local rewardClaimed = easSafeMethod2494(activity, "IsRewardClaimed", false) == true
+                    local rewardData = easSafeMethod2494(activity, "GetRewardData", nil)
+                    local rewardName = ""
+                    if rewardData then rewardName = tostring(easSafeMethod2494(rewardData, "GetFormattedName", "")) end
+                    view.rows[#view.rows + 1] = {
+                        campaign = campaign,
+                        campaignName = campaignName,
+                        campaignCompleted = completed,
+                        campaignThreshold = threshold,
+                        secondsRemaining = secondsRemaining,
+                        activity = activity,
+                        activityIndex = activityIndex,
+                        name = tostring(easSafeMethod2494(activity, "GetDisplayName", "Golden Pursuit Task")),
+                        progress = progress,
+                        goal = goal,
+                        complete = complete,
+                        rewardClaimed = rewardClaimed,
+                        rewardName = rewardName,
+                    }
+                end
+            end
+        end
+    end
+
+    view.total = #view.rows
+    if #view.campaigns == 0 then
+        view.status = "No active Golden Pursuits campaign is currently available."
+    elseif view.total == 0 then
+        view.status = "Golden Pursuits is active, but no task rows are currently exposed."
+    end
+    return view
+end
+
+function J:CreateGoldenPursuitsSpread2494()
+    local spread = self:CreateSpreadShell("PURSUITS")
+    self:AddSpreadHeader(spread, "GOLDEN PURSUITS", "SELECTED PURSUIT")
+    spread.pageSize = 10
+    spread.page = 1
+    spread.selectedGlobalIndex = nil
+    spread.rows = {}
+
+    spread.prevButton = makeButton("EAS_GoldenPursuitsPrev2494", spread.left, "< PREV", 14, 54, 94, 28, function()
+        spread.page = math.max(1, (tonumber(spread.page) or 1) - 1)
+        spread.selectedGlobalIndex = nil
+        self:RefreshGoldenPursuitsPage2494()
+    end)
+    spread.nextButton = makeButton("EAS_GoldenPursuitsNext2494", spread.left, "NEXT >", self.pageW - 108, 54, 94, 28, function()
+        spread.page = (tonumber(spread.page) or 1) + 1
+        spread.selectedGlobalIndex = nil
+        self:RefreshGoldenPursuitsPage2494()
+    end)
+
+    local rowStart = 94
+    for i = 1, spread.pageSize do
+        spread.rows[i] = self:CreateBookRow(spread.left, "PURSUITS", i, rowStart + (i - 1) * 39, function(rowIndex)
+            local globalIndex = ((tonumber(spread.page) or 1) - 1) * spread.pageSize + rowIndex
+            spread.selectedGlobalIndex = globalIndex
+            self:RefreshGoldenPursuitsPage2494()
+        end)
+    end
+
+    spread.pageLabel = makeLabel("EAS_GoldenPursuitsPage2494", spread.left, "", 14, self.pageH - 64, self.pageW - 28, 22, "ZoFontGame")
+    spread.pageLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.themeLabels[#self.themeLabels + 1] = spread.pageLabel
+
+    spread.detailTitle = makeLabel("EAS_GoldenPursuitsDetailTitle2494", spread.right, "Golden Pursuits", 18, 58, self.pageW - 36, 48, "ZoFontWinH2")
+    spread.detailTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    spread.detailBody = makeLabel("EAS_GoldenPursuitsDetailBody2494", spread.right, "", 18, 116, self.pageW - 36, self.pageH - 220, "ZoFontGame")
+    spread.detailBody:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    self.themeLabels[#self.themeLabels + 1] = spread.detailTitle
+    self.themeLabels[#self.themeLabels + 1] = spread.detailBody
+
+    if self.topButtons then
+        self.topButtons[#self.topButtons + 1] = spread.prevButton
+        self.topButtons[#self.topButtons + 1] = spread.nextButton
+    end
+
+    -- v0.24.98: this action is intentionally a quest/travel action rather than
+    -- a shortcut into ESO's native Golden Pursuits scene. Row selection still
+    -- activates/routs immediately; this button lets the user retry the same
+    -- selected pursuit action from the detail panel.
+    spread.openButton = makeButton("EAS_GoldenPursuitsOpen2494", spread.right, "TRAVEL / QUEST", 18, self.pageH - 82, self.pageW - 36, 34, function()
+        local view = spread.view or self:BuildGoldenPursuitsView2494()
+        local globalIndex = spread.selectedGlobalIndex
+        if not globalIndex and view.rows and view.rows[1] then
+            globalIndex = 1
+            spread.selectedGlobalIndex = 1
+        end
+        if globalIndex and type(self.ActivateGoldenPursuit2497) == "function" then
+            self:ActivateGoldenPursuit2497(globalIndex)
+        elseif EPC and EPC.Print then
+            EPC:Print("Select a Golden Pursuit first.")
+        end
+    end)
+    if self.topButtons then self.topButtons[#self.topButtons + 1] = spread.openButton end
+    return spread
+end
+
+function J:RefreshGoldenPursuitsPage2494()
+    local page = self.pages and self.pages.PURSUITS
+    if not page then return end
+    local view = self:BuildGoldenPursuitsView2494()
+    page.view = view
+
+    local pageSize = page.pageSize or 10
+    local pageCount = math.max(1, math.ceil((tonumber(view.total) or 0) / pageSize))
+    page.page = math.max(1, math.min(tonumber(page.page) or 1, pageCount))
+    local first = (page.page - 1) * pageSize + 1
+
+    for i, rowControl in ipairs(page.rows or {}) do
+        local globalIndex = first + i - 1
+        local row = view.rows[globalIndex]
+        if row then
+            rowControl:SetHidden(false)
+            local suffix = row.complete and " [DONE]" or ""
+            rowControl.titleLabel:SetText(tostring(row.name or "Golden Pursuit") .. suffix)
+            local selected = page.selectedGlobalIndex == globalIndex
+            easSetInk(rowControl.titleLabel, selected, row.complete)
+        else
+            rowControl:SetHidden(true)
+        end
+    end
+
+    local last = math.min(view.total or 0, first + pageSize - 1)
+    if (view.total or 0) > 0 then
+        page.pageLabel:SetText(string.format("%d-%d OF %d  -  PAGE %d / %d", first, last, view.total, page.page, pageCount))
+    else
+        page.pageLabel:SetText("NO ACTIVE TASKS")
+    end
+    easSetEnabled(page.prevButton, page.page > 1)
+    easSetEnabled(page.nextButton, page.page < pageCount)
+    setButtonStyle(page.prevButton, false, self:GetTheme())
+    setButtonStyle(page.nextButton, false, self:GetTheme())
+    setButtonStyle(page.openButton, false, self:GetTheme())
+    easSetEnabled(page.openButton, (tonumber(view.total) or 0) > 0)
+
+    local selected = page.selectedGlobalIndex and view.rows[page.selectedGlobalIndex] or nil
+    if not selected and view.rows[first] then
+        selected = view.rows[first]
+        page.selectedGlobalIndex = first
+    end
+
+    if selected then
+        page.detailTitle:SetText(selected.name or "Golden Pursuit")
+        local progressText = string.format("%d / %d", tonumber(selected.progress) or 0, tonumber(selected.goal) or 0)
+        local campaignProgress = string.format("%d / %d", tonumber(selected.campaignCompleted) or 0, tonumber(selected.campaignThreshold) or 0)
+        local rewardText = selected.rewardName ~= "" and selected.rewardName or "Reward shown in ESO Golden Pursuits"
+        local state = selected.complete and "COMPLETE" or "IN PROGRESS"
+        local claimed = selected.rewardClaimed and "YES" or "NO"
+        local text = string.format(
+            "CAMPAIGN\n%s\n\nTASK PROGRESS\n%s\n\nCAMPAIGN PROGRESS\n%s\n\nTIME REMAINING\n%s\n\nSTATUS\n%s\n\nREWARD\n%s\n\nREWARD CLAIMED\n%s",
+            tostring(selected.campaignName or "Golden Pursuits"), progressText, campaignProgress,
+            easFormatPursuitTime2494(selected.secondsRemaining), state, rewardText, claimed)
+        setBookText(page.detailBody, text, page.detailBody:GetWidth())
+    else
+        page.detailTitle:SetText("Golden Pursuits")
+        setBookText(page.detailBody, view.status or "No active Golden Pursuits tasks are available right now.", page.detailBody:GetWidth())
+    end
+end
+
+function J:RegisterGoldenPursuitsRefresh2494()
+    if self.goldenPursuitsRegistered2494 then return end
+    self.goldenPursuitsRegistered2494 = true
+    local function refresh()
+        if self.pages and self.pages.PURSUITS and self.activeTab == "PURSUITS" then
+            self:RefreshGoldenPursuitsPage2494()
+        end
+    end
+    if PROMOTIONAL_EVENT_MANAGER and type(PROMOTIONAL_EVENT_MANAGER.RegisterCallback) == "function" then
+        pcall(PROMOTIONAL_EVENT_MANAGER.RegisterCallback, PROMOTIONAL_EVENT_MANAGER, "ActivityProgressUpdated", refresh)
+        pcall(PROMOTIONAL_EVENT_MANAGER.RegisterCallback, PROMOTIONAL_EVENT_MANAGER, "RewardsClaimed", refresh)
+    end
+    if EVENT_MANAGER and EVENT_PROMOTIONAL_EVENTS_ACTIVITY_TRACKING_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(EPC.name .. "_GoldenPursuitsCodex2494", EVENT_PROMOTIONAL_EVENTS_ACTIVITY_TRACKING_UPDATED, refresh)
+    end
+end
+
+function J:FixGearLoadoutBorders2494(page)
+    if not page or not page.loadoutButtons then return end
+    for _, button in ipairs(page.loadoutButtons) do
+        local skin = button and button.easPremiumSkin
+        if skin then
+            if skin.bg then
+                skin.bg:ClearAnchors()
+                skin.bg:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+                skin.bg:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+            end
+            if skin.glow then
+                -- The old glow extended one pixel beyond the CT_BUTTON and ESO
+                -- clipped the top edge. Keep the glow inside the button bounds.
+                skin.glow:ClearAnchors()
+                skin.glow:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+                skin.glow:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+            end
+        end
+    end
+end
+
+local easLegacyRefreshInteractiveGear_2494 = J.RefreshInteractiveGear
+function J:RefreshInteractiveGear(page)
+    easLegacyRefreshInteractiveGear_2494(self, page)
+    self:FixGearLoadoutBorders2494(page)
+end
+
+local easLegacySetTab_2494 = J.SetTab
+function J:SetTab(tab)
+    easLegacySetTab_2494(self, tab)
+    if self.activeTab == "PURSUITS" then self:RefreshGoldenPursuitsPage2494() end
+end
+
+local easLegacyCreate_2494 = J.Create
+function J:Create()
+    easLegacyCreate_2494(self)
+    if not self.pages.PURSUITS then
+        self.pages.PURSUITS = self:CreateGoldenPursuitsSpread2494()
+    end
+
+    -- Re-fit all sidebar entries after adding a new workspace. This keeps the
+    -- final tab completely inside the rail instead of letting it clip at bottom.
+    if self.figmaSidebar and self.tabButtons then
+        local orderedTabs = {"INDEX"}
+        for _, key in ipairs(TABS) do if key ~= "INDEX" then orderedTabs[#orderedTabs + 1] = key end end
+        local step = (#orderedTabs > 16) and 36 or 37
+        for index, key in ipairs(orderedTabs) do
+            local b = self.tabButtons[key]
+            if b then
+                b:ClearAnchors()
+                b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 42 + ((index - 1) * step))
+                b:SetDimensions(186, 31)
+                b:SetText("    " .. tostring(TAB_LABELS[key] or key))
+            end
+        end
+    end
+
+    self:RegisterGoldenPursuitsRefresh2494()
+    self:SetTab(self.activeTab or "INDEX")
+    self:ApplyTheme()
+end
+
+-- ============================================================================
+-- v0.24.95 - Alliance theme labels + readable Dungeon selected status
+-- The Figma accent selector now cycles only the three ESO alliances and labels
+-- the active alliance directly. Dungeon availability/status is rendered as
+-- separate lines instead of one compressed sentence.
+-- ============================================================================
+
+local EAS_ALLIANCE_THEME_ORDER_2495 = {"PARCHMENT", "MIDNIGHT", "DAEDRIC"}
+local EAS_ALLIANCE_THEME_LABELS_2495 = {
+    PARCHMENT = "ALDMERI",
+    MIDNIGHT = "DAGGERFALL",
+    DAEDRIC = "EBONHEART",
+}
+
+-- Make the former parchment accent read as Aldmeri gold in the glass shell.
+if THEMES and THEMES.PARCHMENT then
+    THEMES.PARCHMENT.edge = {0.78, 0.60, 0.14, 1}
+    THEMES.PARCHMENT.accent = {0.95, 0.74, 0.16, 1}
+end
+
+function J:GetAllianceThemeLabel2495()
+    local s = self:EnsureSaved()
+    return EAS_ALLIANCE_THEME_LABELS_2495[s.theme] or "ALDMERI"
+end
+
+function J:UpdateAllianceThemeButton2495()
+    if not self.themeButton then return end
+    self.themeButton:SetText(self:GetAllianceThemeLabel2495())
+    if self.themeButton.SetFont then self.themeButton:SetFont("ZoFontGameSmall") end
+end
+
+function J:CycleTheme()
+    local s = self:EnsureSaved()
+    local current = 0
+    for i, key in ipairs(EAS_ALLIANCE_THEME_ORDER_2495) do
+        if key == s.theme then current = i break end
+    end
+    current = current + 1
+    if current > #EAS_ALLIANCE_THEME_ORDER_2495 then current = 1 end
+    s.theme = EAS_ALLIANCE_THEME_ORDER_2495[current]
+    self:ApplyTheme()
+end
+
+local easLegacyApplyTheme_2495 = J.ApplyTheme
+function J:ApplyTheme()
+    easLegacyApplyTheme_2495(self)
+    self:UpdateAllianceThemeButton2495()
+end
+
+local easLegacyRefreshInteractiveDungeons_2495 = J.RefreshInteractiveDungeons
+function J:RefreshInteractiveDungeons(page)
+    easLegacyRefreshInteractiveDungeons_2495(self, page)
+
+    local v = EPC.DungeonFinder and EPC.DungeonFinder:BuildView() or nil
+    local selected = v and v.selected or nil
+    if not selected or not page or not page.detailBody then return end
+
+    local req = (tonumber(selected.championMin) or 0) > 0 and ("CP " .. tostring(selected.championMin))
+        or ((tonumber(selected.levelMin) or 0) > 0 and ("LEVEL " .. tostring(selected.levelMin)) or "ESO REQUIREMENTS APPLY")
+    local queueState = v.queued and "QUEUED" or "NOT QUEUED"
+    local normalState = selected.normalActivityId and "YES" or "NO"
+    local veteranState = selected.veteranActivityId and "YES" or "NO"
+
+    local text = string.format(
+        "SOURCE\n%s\nREQUIREMENT\n%s\nMODE\n%s\nROLE\n%s\nSTATUS\n%s\nNORMAL\n%s\nVETERAN\n%s\nHOST\nAuto Accept: %s\nEnforce Roles: %s\n1 Tank / 1 Healer / 2 DPS",
+        tostring(selected.source or "DLC / CHAPTER"), req,
+        tostring(v.difficulty or "NORMAL"), tostring(v.role or "DPS"),
+        queueState, normalState, veteranState,
+        v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF")
+    setBookText(page.detailBody, text, page.detailBody:GetWidth())
+end
+
+local easLegacyCreate_2495 = J.Create
+function J:Create()
+    -- Old Frost was a fourth non-alliance accent. Migrate it into the three-
+    -- alliance selector before the final theme pass.
+    local sv = self:EnsureSaved()
+    if sv.theme == "FROST" then sv.theme = "PARCHMENT" end
+
+    easLegacyCreate_2495(self)
+
+    if self.figmaFloatingToolbar then
+        self.figmaFloatingToolbar:SetDimensions(220, 42)
+        local controls = {
+            {self.prevPageButton, 8, 6, 30, 30},
+            {self.nextPageButton, 42, 6, 30, 30},
+            {self.themeButton, 76, 6, 98, 30},
+            {self.closeButton, 178, 6, 34, 30},
+        }
+        for _, data in ipairs(controls) do
+            local c = data[1]
+            if c then
+                c:ClearAnchors()
+                c:SetAnchor(TOPLEFT, self.figmaFloatingToolbar, TOPLEFT, data[2], data[3])
+                c:SetDimensions(data[4], data[5])
+            end
+        end
+    end
+
+    self:ApplyTheme()
+end
+
+
+-- ============================================================================
+-- v0.24.96 - Golden Pursuits numeric fix + two-column Dungeon details +
+-- alliance-aware Index styling
+-- ============================================================================
+
+function J:ApplyIndexAllianceTheme2496()
+    if not self.figmaMode then return end
+    local t = self:GetTheme()
+    local accent = t.accent or t.edge or {0.43, 0.68, 0.96, 1}
+    local text = t.text or {0.92, 0.95, 0.99, 1}
+    for _, key in ipairs(TABS) do
+        if key ~= "INDEX" then
+            local b = _G["EAS_CodexIndex_" .. tostring(key)]
+            if b then
+                -- Make Index entries visibly follow the selected alliance, not
+                -- just their hover/pressed state.
+                if b.SetNormalFontColor then
+                    b:SetNormalFontColor(accent[1], accent[2], accent[3], 1)
+                    b:SetMouseOverFontColor(1, 1, 1, 1)
+                    b:SetPressedFontColor(accent[1], accent[2], accent[3], 1)
+                end
+                easEnsurePremiumButtonSkin(b)
+                if b.easPremiumSkin then
+                    local bg, glow = b.easPremiumSkin.bg, b.easPremiumSkin.glow
+                    if bg then
+                        bg:SetCenterColor(accent[1], accent[2], accent[3], 0.075)
+                        bg:SetEdgeColor(accent[1], accent[2], accent[3], 0.38)
+                    end
+                    if glow then
+                        glow:SetCenterColor(0, 0, 0, 0)
+                        glow:SetEdgeColor(accent[1], accent[2], accent[3], 0.12)
+                    end
+                end
+            end
+        end
+    end
+    -- Keep Index headers/body readable while the entries carry the alliance color.
+    if self.pages and self.pages.INDEX then
+        local p = self.pages.INDEX
+        if p.leftTitle and p.leftTitle.SetColor then p.leftTitle:SetColor(text[1], text[2], text[3], 1) end
+        if p.rightTitle and p.rightTitle.SetColor then p.rightTitle:SetColor(text[1], text[2], text[3], 1) end
+    end
+end
+
+local easLegacyApplyTheme_2496 = J.ApplyTheme
+function J:ApplyTheme()
+    easLegacyApplyTheme_2496(self)
+    self:ApplyIndexAllianceTheme2496()
+end
+
+function J:SetupDungeonTwoColumn2496(page)
+    if not page or page.dungeonTwoColumn2496 then return end
+    page.dungeonTwoColumn2496 = true
+
+    local gap = 12
+    local colW = math.floor((self.pageW - 36 - gap) / 2)
+    page.dungeonColumnW2496 = colW
+
+    page.detailTitle:ClearAnchors()
+    page.detailTitle:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18, 54)
+    page.detailTitle:SetDimensions(self.pageW - 36, 42)
+
+    page.detailBody:ClearAnchors()
+    page.detailBody:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18, 104)
+    page.detailBody:SetDimensions(colW, 214)
+    page.detailBody:SetFont("ZoFontGame")
+
+    local right = wm:CreateControl("EAS_DungeonSelectedRight2496", page.right, CT_LABEL)
+    right:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18 + colW + gap, 104)
+    right:SetDimensions(colW, 214)
+    right:SetFont("ZoFontGame")
+    right:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    if right.SetMaxLineCount then right:SetMaxLineCount(0) end
+    page.detailBodyRight2496 = right
+    self.themeLabels[#self.themeLabels + 1] = right
+
+    -- Queue/host actions are also a 2x2 grid so the selected side is balanced.
+    local actionGap = 8
+    local actionW = math.floor((self.pageW - 36 - actionGap) / 2)
+    local actionY = 338
+    for i, button in ipairs({page.action0, page.action1, page.action2, page.action3}) do
+        local col = (i - 1) % 2
+        local row = math.floor((i - 1) / 2)
+        button:ClearAnchors()
+        button:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18 + col * (actionW + actionGap), actionY + row * 42)
+        button:SetDimensions(actionW, 34)
+        if button.SetFont then button:SetFont("ZoFontGameBold") end
+    end
+end
+
+local easLegacyRefreshInteractiveDungeons_2496 = J.RefreshInteractiveDungeons
+function J:RefreshInteractiveDungeons(page)
+    easLegacyRefreshInteractiveDungeons_2496(self, page)
+    if not page then return end
+    self:SetupDungeonTwoColumn2496(page)
+
+    local v = EPC.DungeonFinder and EPC.DungeonFinder:BuildView() or nil
+    local selected = v and v.selected or nil
+    local right = page.detailBodyRight2496
+    local colW = page.dungeonColumnW2496 or math.floor((self.pageW - 48) / 2)
+
+    if not selected then
+        if right then right:SetHidden(true) right:SetText("") end
+        page.detailBody:SetDimensions(self.pageW - 36, 214)
+        page.detailBody:SetFont("ZoFontGame")
+        setBookText(page.detailBody,
+            "Select a dungeon on the left. Choose Normal or Veteran and your role, then queue the selected dungeon or create a Group Finder listing.",
+            page.detailBody:GetWidth())
+        return
+    end
+
+    if right then right:SetHidden(false) end
+    page.detailBody:SetDimensions(colW, 214)
+
+    local req = (tonumber(selected.championMin) or 0) > 0 and ("CP " .. tostring(selected.championMin))
+        or ((tonumber(selected.levelMin) or 0) > 0 and ("LEVEL " .. tostring(selected.levelMin)) or "ESO REQUIREMENTS APPLY")
+    local queueState = v.queued and "QUEUED" or "NOT QUEUED"
+    local normalState = selected.normalActivityId and "YES" or "NO"
+    local veteranState = selected.veteranActivityId and "YES" or "NO"
+
+    local leftText = string.format(
+        "STATUS\n%s\n\nAVAILABILITY\nNORMAL  %s\nVETERAN  %s\n\nSOURCE\n%s",
+        queueState, normalState, veteranState, tostring(selected.source or "DLC / CHAPTER"))
+    local rightText = string.format(
+        "MODE\n%s\n\nROLE\n%s\n\nREQUIREMENT\n%s\n\nHOST OPTIONS\nAUTO ACCEPT  %s\nENFORCE ROLES  %s",
+        tostring(v.difficulty or "NORMAL"), tostring(v.role or "DPS"), req,
+        v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF")
+
+    setBookText(page.detailBody, leftText, colW)
+    if right then setBookText(right, rightText, colW) end
+end
+
+local easLegacyCreate_2496 = J.Create
+function J:Create()
+    easLegacyCreate_2496(self)
+    if self.pages and self.pages.DUNGEONS then
+        self:SetupDungeonTwoColumn2496(self.pages.DUNGEONS)
+    end
+    self:ApplyTheme()
+end
+
+-- ============================================================================
+-- v0.24.98 - Golden Pursuits detail action
+-- Replaces the native "Open ESO Golden Pursuits" shortcut with a direct
+-- TRAVEL / QUEST action for the currently selected pursuit.
+-- ============================================================================
+
+-- ============================================================================
+-- v0.24.97 - Golden Pursuits select-to-track + quest/wayshrine routing
+-- Selecting a pursuit makes it ESO's tracked Golden Pursuit activity. If the
+-- pursuit maps to an accepted journal quest, assist that quest and travel to
+-- the best discovered wayshrine ESO exposes for its current objective. When a
+-- task names a place directly, fall back to a matching discovered wayshrine.
+-- All travel still originates from the user's row click.
+-- ============================================================================
+
+local function easNormalizePursuitText2497(value)
+    local text = tostring(value or "")
+    if type(zo_strlower) == "function" then text = zo_strlower(text) else text = string.lower(text) end
+    text = string.gsub(text, "|c%x%x%x%x%x%x", " ")
+    text = string.gsub(text, "|r", " ")
+    text = string.gsub(text, "[^%w%s']", " ")
+    text = string.gsub(text, "%s+", " ")
+    text = string.gsub(text, "^%s+", "")
+    text = string.gsub(text, "%s+$", "")
+    return text
+end
+
+local function easPursuitCampaignKey2497(row)
+    if not row then return nil end
+    local key = easSafeMethod2494(row.campaign, "GetKey", nil)
+    if key ~= nil then return key end
+    if row.campaign and row.campaign.campaignKey ~= nil then return row.campaign.campaignKey end
+    return nil
+end
+
+local easLegacyBuildGoldenPursuitsView_2497 = J.BuildGoldenPursuitsView2494
+function J:BuildGoldenPursuitsView2494()
+    local view = easLegacyBuildGoldenPursuitsView_2497(self)
+    for _, row in ipairs(view.rows or {}) do
+        row.campaignKey = easPursuitCampaignKey2497(row)
+        row.tracked = easSafeMethod2494(row.activity, "IsTracked", false) == true
+        row.description = ""
+        if row.campaignKey ~= nil and type(GetPromotionalEventCampaignActivityDescription) == "function" then
+            local ok, description = pcall(GetPromotionalEventCampaignActivityDescription, row.campaignKey, row.activityIndex)
+            if ok and description then row.description = tostring(description) end
+        end
+    end
+    return view
+end
+
+function J:FindJournalQuestForPursuit2497(row)
+    if not row or type(GetJournalQuestName) ~= "function" then return nil end
+    local pursuitName = easNormalizePursuitText2497(row.name)
+    local pursuitDescription = easNormalizePursuitText2497(row.description)
+    local haystack = " " .. pursuitName .. " " .. pursuitDescription .. " "
+    local max = MAX_JOURNAL_QUESTS or 25
+    local bestIndex, bestName, bestLength = nil, nil, 0
+
+    for questIndex = 1, max do
+        local ok, questName = pcall(GetJournalQuestName, questIndex)
+        questName = ok and tostring(questName or "") or ""
+        local normalizedQuest = easNormalizePursuitText2497(questName)
+        -- Avoid matching generic very short quest names into unrelated pursuit text.
+        if #normalizedQuest >= 5 and string.find(haystack, normalizedQuest, 1, true) then
+            if #normalizedQuest > bestLength then
+                bestIndex, bestName, bestLength = questIndex, questName, #normalizedQuest
+            end
+        end
+    end
+    return bestIndex, bestName
+end
+
+function J:TrackGoldenPursuit2497(row)
+    if not row then return false end
+    local campaignKey = row.campaignKey or easPursuitCampaignKey2497(row)
+    if campaignKey == nil or type(TrackPromotionalEventActivity) ~= "function" then
+        return false
+    end
+    local ok = pcall(TrackPromotionalEventActivity, campaignKey, row.activityIndex)
+    return ok == true
+end
+
+function J:FindPursuitTextWayshrine2497(row)
+    if not row or not EPC.Travel or type(EPC.Travel.GetWayshrines) ~= "function" then return nil end
+    local haystack = " " .. easNormalizePursuitText2497(row.name) .. " " .. easNormalizePursuitText2497(row.description) .. " "
+    local entries = EPC.Travel:GetWayshrines(EPC.lastSnapshot or {})
+    local best, bestScore = nil, 0
+
+    for _, entry in ipairs(entries or {}) do
+        if entry.canTravel then
+            local shrineName = easNormalizePursuitText2497(entry.name)
+            shrineName = string.gsub(shrineName, "%s+wayshrine%s*$", "")
+            local zoneName = easNormalizePursuitText2497(entry.zoneName)
+            local score = 0
+            if #shrineName >= 5 and string.find(haystack, " " .. shrineName .. " ", 1, true) then
+                score = 120 + #shrineName
+            elseif #zoneName >= 5 and zoneName ~= "unknown zone" and string.find(haystack, " " .. zoneName .. " ", 1, true) then
+                score = 70 + #zoneName
+            end
+            if score > 0 and entry.isCurrentZone then score = score + 20 end
+            if score > bestScore then
+                best, bestScore = entry, score
+            end
+        end
+    end
+    return best
+end
+
+function J:TravelTrackedPursuitQuest2497(row, questIndex, questName, attempt)
+    attempt = tonumber(attempt) or 1
+    if not row or not questIndex or not EPC.Travel then return false end
+
+    local snapshot = EPC.lastSnapshot or (EPC.Engine and EPC.Engine.BuildSnapshot and EPC.Engine:BuildSnapshot()) or {}
+    local entries, focusedQuest, bestQuestShrine = nil, nil, nil
+    if type(EPC.Travel.GetWayshrines) == "function" then
+        entries, focusedQuest, bestQuestShrine = EPC.Travel:GetWayshrines(snapshot)
+    end
+
+    local exactPositionReady = focusedQuest and focusedQuest.position and focusedQuest.position.available == true
+    if bestQuestShrine and (exactPositionReady or attempt >= 6) then
+        self.goldenPursuitRouteStatus2497 = string.format("ACTIVE QUEST: %s\nWAYSHRINE: %s", tostring(questName or focusedQuest.name or "Quest"), tostring(bestQuestShrine.name or "Wayshrine"))
+        if self.pages and self.pages.PURSUITS then self:RefreshGoldenPursuitsPage2494() end
+        if type(EPC.Travel.TravelToWayshrineNode) == "function" then
+            return EPC.Travel:TravelToWayshrineNode(bestQuestShrine.nodeIndex, bestQuestShrine.name)
+        end
+        return false
+    end
+
+    if attempt < 6 and type(zo_callLater) == "function" then
+        zo_callLater(function()
+            self:TravelTrackedPursuitQuest2497(row, questIndex, questName, attempt + 1)
+        end, 120)
+        return true
+    end
+
+    if bestQuestShrine and type(EPC.Travel.TravelToWayshrineNode) == "function" then
+        self.goldenPursuitRouteStatus2497 = string.format("ACTIVE QUEST: %s\nWAYSHRINE: %s", tostring(questName or "Quest"), tostring(bestQuestShrine.name or "Wayshrine"))
+        if self.pages and self.pages.PURSUITS then self:RefreshGoldenPursuitsPage2494() end
+        return EPC.Travel:TravelToWayshrineNode(bestQuestShrine.nodeIndex, bestQuestShrine.name)
+    end
+
+    self.goldenPursuitRouteStatus2497 = "Pursuit tracked. No discovered wayshrine matched this quest objective."
+    EPC:Print(self.goldenPursuitRouteStatus2497)
+    if self.pages and self.pages.PURSUITS then self:RefreshGoldenPursuitsPage2494() end
+    return false
+end
+
+function J:ActivateGoldenPursuit2497(globalIndex)
+    local page = self.pages and self.pages.PURSUITS
+    if not page then return end
+    local view = self:BuildGoldenPursuitsView2494()
+    page.view = view
+    local row = view.rows and view.rows[globalIndex] or nil
+    if not row then return end
+
+    page.selectedGlobalIndex = globalIndex
+    self.goldenPursuitRouteStatus2497 = ""
+
+    if self:TrackGoldenPursuit2497(row) then
+        self.goldenPursuitRouteStatus2497 = "ACTIVE GOLDEN PURSUIT: YES"
+    else
+        self.goldenPursuitRouteStatus2497 = "Selected in Codex; ESO pursuit tracking API unavailable."
+    end
+
+    local questIndex, questName = self:FindJournalQuestForPursuit2497(row)
+    if questIndex then
+        if type(SetMapToQuestZone) == "function" then pcall(SetMapToQuestZone, questIndex) end
+        local allowGoldenAssist2516 = EPC.ActiveQuest
+            and EPC.ActiveQuest.GetQuestTrackingSource2513
+            and EPC.ActiveQuest:GetQuestTrackingSource2513() == "GOLDEN_PURSUITS"
+        if allowGoldenAssist2516 and TRACK_TYPE_QUEST ~= nil and type(SetTrackedIsAssisted) == "function" then
+            if type(SetTracked) == "function" then pcall(SetTracked, TRACK_TYPE_QUEST, true, questIndex, 0) end
+            pcall(SetTrackedIsAssisted, TRACK_TYPE_QUEST, true, questIndex, 0)
+        end
+        if EPC.Travel.InvalidateQuestPositionCache then EPC.Travel:InvalidateQuestPositionCache() end
+        if EPC.Travel.GetFocusedQuest then EPC.Travel:GetFocusedQuest(EPC.lastSnapshot or {}) end
+        self.goldenPursuitRouteStatus2497 = string.format("ACTIVE GOLDEN PURSUIT: YES\nACTIVE QUEST: %s\nFinding nearest discovered wayshrine...", tostring(questName or "Quest"))
+        self:RefreshGoldenPursuitsPage2494()
+        self:TravelTrackedPursuitQuest2497(row, questIndex, questName, 1)
+        return
+    end
+
+    -- Many Golden Pursuits are activities rather than journal quests. If ESO's
+    -- activity text explicitly names a city/zone, use the matching discovered
+    -- wayshrine instead of inventing a quest association.
+    local shrine = self:FindPursuitTextWayshrine2497(row)
+    if shrine and EPC.Travel and type(EPC.Travel.TravelToWayshrineNode) == "function" then
+        self.goldenPursuitRouteStatus2497 = string.format("ACTIVE GOLDEN PURSUIT: YES\nDESTINATION: %s", tostring(shrine.name or "Wayshrine"))
+        self:RefreshGoldenPursuitsPage2494()
+        EPC.Travel:TravelToWayshrineNode(shrine.nodeIndex, shrine.name)
+        return
+    end
+
+    self.goldenPursuitRouteStatus2497 = "ACTIVE GOLDEN PURSUIT: YES\nNo journal quest or explicit wayshrine target was exposed for this activity."
+    EPC:Print("Golden Pursuit tracked. No safe quest/wayshrine target could be matched for automatic routing.")
+    self:RefreshGoldenPursuitsPage2494()
+end
+
+function J:WireGoldenPursuitRows2497(page)
+    if not page or page.goldenPursuitRows2497 then return end
+    page.goldenPursuitRows2497 = true
+    for rowIndex, rowControl in ipairs(page.rows or {}) do
+        rowControl:SetHandler("OnClicked", function()
+            local globalIndex = ((tonumber(page.page) or 1) - 1) * (page.pageSize or 10) + rowIndex
+            self:ActivateGoldenPursuit2497(globalIndex)
+        end)
+    end
+end
+
+local easLegacyRefreshGoldenPursuitsPage_2497 = J.RefreshGoldenPursuitsPage2494
+function J:RefreshGoldenPursuitsPage2494()
+    easLegacyRefreshGoldenPursuitsPage_2497(self)
+    local page = self.pages and self.pages.PURSUITS
+    if not page then return end
+    local view = page.view or self:BuildGoldenPursuitsView2494()
+
+    for i, rowControl in ipairs(page.rows or {}) do
+        local globalIndex = ((tonumber(page.page) or 1) - 1) * (page.pageSize or 10) + i
+        local row = view.rows and view.rows[globalIndex] or nil
+        if row and rowControl.titleLabel then
+            local suffix = row.complete and " [DONE]" or (row.tracked and " [ACTIVE]" or "")
+            rowControl.titleLabel:SetText(tostring(row.name or "Golden Pursuit") .. suffix)
+        end
+    end
+
+    local selected = page.selectedGlobalIndex and view.rows and view.rows[page.selectedGlobalIndex] or nil
+    if selected and page.detailBody then
+        local progressText = string.format("%d / %d", tonumber(selected.progress) or 0, tonumber(selected.goal) or 0)
+        local campaignProgress = string.format("%d / %d", tonumber(selected.campaignCompleted) or 0, tonumber(selected.campaignThreshold) or 0)
+        local rewardText = selected.rewardName ~= "" and selected.rewardName or "Reward shown in ESO Golden Pursuits"
+        local state = selected.complete and "COMPLETE" or "IN PROGRESS"
+        local claimed = selected.rewardClaimed and "YES" or "NO"
+        local tracked = selected.tracked and "YES" or "NO"
+        local route = self.goldenPursuitRouteStatus2497 or ""
+        local text = string.format(
+            "CAMPAIGN\n%s\n\nTASK PROGRESS\n%s\n\nCAMPAIGN PROGRESS\n%s\n\nTIME REMAINING\n%s\n\nSTATUS\n%s\n\nACTIVE PURSUIT\n%s\n\nREWARD\n%s\n\nREWARD CLAIMED\n%s%s",
+            tostring(selected.campaignName or "Golden Pursuits"), progressText, campaignProgress,
+            easFormatPursuitTime2494(selected.secondsRemaining), state, tracked, rewardText, claimed,
+            route ~= "" and ("\n\nROUTE\n" .. route) or "")
+        setBookText(page.detailBody, text, page.detailBody:GetWidth())
+    end
+end
+
+local easLegacyCreate_2497 = J.Create
+function J:Create()
+    easLegacyCreate_2497(self)
+    if self.pages and self.pages.PURSUITS then
+        self:WireGoldenPursuitRows2497(self.pages.PURSUITS)
+        self:RefreshGoldenPursuitsPage2494()
+    end
+end
+
+
+-- v0.24.99: keep completed Golden Pursuits separate from active tasks.
+-- The default list contains only unfinished tasks. A dedicated toggle shows
+-- completed tasks in their own view, so completed and active rows never mix.
+local easLegacyBuildGoldenPursuitsView_2499 = J.BuildGoldenPursuitsView2494
+function J:BuildGoldenPursuitsView2494()
+    local view = easLegacyBuildGoldenPursuitsView_2499(self)
+    local allRows = view.rows or {}
+    local activeRows, completedRows = {}, {}
+
+    for _, row in ipairs(allRows) do
+        if row.complete then
+            completedRows[#completedRows + 1] = row
+        else
+            activeRows[#activeRows + 1] = row
+        end
+    end
+
+    view.allRows = allRows
+    view.activeRows = activeRows
+    view.completedRows = completedRows
+    view.activeTotal = #activeRows
+    view.completedTotal = #completedRows
+
+    local page = self.pages and self.pages.PURSUITS
+    local showCompleted = page and page.showCompleted2499 == true
+    view.showCompleted = showCompleted
+    view.rows = showCompleted and completedRows or activeRows
+    view.total = #view.rows
+
+    if showCompleted then
+        if view.completedTotal == 0 then
+            view.status = "No completed Golden Pursuits tasks yet."
+        end
+    elseif view.activeTotal == 0 and view.completedTotal > 0 then
+        view.status = "All current Golden Pursuits tasks are complete."
+    end
+
+    return view
+end
+
+local easLegacyCreateGoldenPursuitsSpread_2499 = J.CreateGoldenPursuitsSpread2494
+function J:CreateGoldenPursuitsSpread2494()
+    local spread = easLegacyCreateGoldenPursuitsSpread_2499(self)
+    spread.showCompleted2499 = false
+
+    spread.modeButton2499 = makeButton(
+        "EAS_GoldenPursuitsMode2499",
+        spread.left,
+        "COMPLETED",
+        122,
+        54,
+        self.pageW - 244,
+        28,
+        function()
+            spread.showCompleted2499 = not spread.showCompleted2499
+            spread.page = 1
+            spread.selectedGlobalIndex = nil
+            self.goldenPursuitRouteStatus2497 = ""
+            self:RefreshGoldenPursuitsPage2494()
+        end
+    )
+
+    if self.topButtons then
+        self.topButtons[#self.topButtons + 1] = spread.modeButton2499
+    end
+    return spread
+end
+
+local easLegacyActivateGoldenPursuit_2499 = J.ActivateGoldenPursuit2497
+function J:ActivateGoldenPursuit2497(globalIndex)
+    local page = self.pages and self.pages.PURSUITS
+    if page then
+        local view = page.view or self:BuildGoldenPursuitsView2494()
+        local row = view.rows and view.rows[globalIndex] or nil
+        if row and row.complete then
+            page.selectedGlobalIndex = globalIndex
+            self.goldenPursuitRouteStatus2497 = "COMPLETED TASK - no travel needed."
+            self:RefreshGoldenPursuitsPage2494()
+            return
+        end
+    end
+    return easLegacyActivateGoldenPursuit_2499(self, globalIndex)
+end
+
+function J:WireGoldenPursuitRows2497(page)
+    if not page or page.goldenPursuitRows2499 then return end
+    page.goldenPursuitRows2499 = true
+    page.goldenPursuitRows2497 = true
+
+    for rowIndex, rowControl in ipairs(page.rows or {}) do
+        rowControl:SetHandler("OnClicked", function()
+            local globalIndex = ((tonumber(page.page) or 1) - 1) * (page.pageSize or 10) + rowIndex
+            local view = page.view or self:BuildGoldenPursuitsView2494()
+            local row = view.rows and view.rows[globalIndex] or nil
+            if row and row.complete then
+                page.selectedGlobalIndex = globalIndex
+                self.goldenPursuitRouteStatus2497 = ""
+                self:RefreshGoldenPursuitsPage2494()
+            else
+                self:ActivateGoldenPursuit2497(globalIndex)
+            end
+        end)
+    end
+end
+
+local easLegacyRefreshGoldenPursuitsPage_2499 = J.RefreshGoldenPursuitsPage2494
+function J:RefreshGoldenPursuitsPage2494()
+    easLegacyRefreshGoldenPursuitsPage_2499(self)
+    local page = self.pages and self.pages.PURSUITS
+    if not page then return end
+    local view = page.view or self:BuildGoldenPursuitsView2494()
+
+    if page.modeButton2499 then
+        if page.showCompleted2499 then
+            page.modeButton2499:SetText(string.format("ACTIVE (%d)", tonumber(view.activeTotal) or 0))
+        else
+            page.modeButton2499:SetText(string.format("COMPLETED (%d)", tonumber(view.completedTotal) or 0))
+        end
+        setButtonStyle(page.modeButton2499, page.showCompleted2499 == true, self:GetTheme())
+        easSetEnabled(page.modeButton2499, true)
+    end
+
+    local pageSize = page.pageSize or 10
+    local total = tonumber(view.total) or 0
+    local pageCount = math.max(1, math.ceil(total / pageSize))
+    local first = ((tonumber(page.page) or 1) - 1) * pageSize + 1
+    local last = math.min(total, first + pageSize - 1)
+    local modeName = page.showCompleted2499 and "COMPLETED" or "ACTIVE TASKS"
+
+    if page.pageLabel then
+        if total > 0 then
+            page.pageLabel:SetText(string.format("%s  %d-%d OF %d  -  PAGE %d / %d", modeName, first, last, total, tonumber(page.page) or 1, pageCount))
+        else
+            page.pageLabel:SetText(page.showCompleted2499 and "NO COMPLETED TASKS" or "NO ACTIVE TASKS")
+        end
+    end
+
+    if page.openButton then
+        if page.showCompleted2499 then
+            page.openButton:SetText("COMPLETED")
+            easSetEnabled(page.openButton, false)
+        else
+            page.openButton:SetText("TRAVEL / QUEST")
+            easSetEnabled(page.openButton, total > 0)
+        end
+        setButtonStyle(page.openButton, false, self:GetTheme())
+    end
+end
+
+-- ============================================================================
+-- v0.25.04 - Golden Pursuits HUD selection sync
+-- Mirror the active Codex pursuit (and matched journal quest, when available)
+-- into the gameplay Golden Pursuits overlay after the user selects it.
+-- ============================================================================
+local easLegacyActivateGoldenPursuit_2504 = J.ActivateGoldenPursuit2497
+function J:ActivateGoldenPursuit2497(globalIndex)
+    local page = self.pages and self.pages.PURSUITS
+    local view = page and (page.view or self:BuildGoldenPursuitsView2494()) or nil
+    local row = view and view.rows and view.rows[globalIndex] or nil
+
+    if row and not row.complete and EPC.GoldenPursuits and EPC.GoldenPursuits.SetSelectedPursuitQuest2504 then
+        local questIndex, questName = self:FindJournalQuestForPursuit2497(row)
+        EPC.GoldenPursuits:SetSelectedPursuitQuest2504(row.name, questIndex and questName or nil)
+    end
+
+    return easLegacyActivateGoldenPursuit_2504(self, globalIndex)
+end
+
+-- v0.25.12: a Golden Pursuit-linked journal quest can drive the same Active
+-- Quest HUD / native assisted-quest sync. Whichever menu selection the player makes
+-- most recently becomes the Suite's displayed/navigation quest.
+local easLegacyActivateGoldenPursuit_2512 = J.ActivateGoldenPursuit2497
+function J:ActivateGoldenPursuit2497(globalIndex)
+    local page = self.pages and self.pages.PURSUITS
+    local view = page and (page.view or self:BuildGoldenPursuitsView2494()) or nil
+    local row = view and view.rows and view.rows[globalIndex] or nil
+    if row and not row.complete then
+        local questIndex, questName = self:FindJournalQuestForPursuit2497(row)
+        if questIndex and EPC.ActiveQuest and EPC.ActiveQuest.SetSelectedQuest2512 then
+            local questId = 0
+            if type(GetJournalQuestId) == "function" then
+                local ok, value = pcall(GetJournalQuestId, questIndex)
+                if ok then questId = tonumber(value) or 0 end
+            end
+            EPC.ActiveQuest:SetSelectedQuest2512(questIndex, questId, questName, "GOLDEN_PURSUIT")
+        end
+    end
+    return easLegacyActivateGoldenPursuit_2512(self, globalIndex)
+end
+
+
+-- v0.25.16: whichever source is chosen in Quest Tracking Settings is
+-- authoritative even after Golden Pursuits runs its legacy routing logic.
+local easLegacyActivateGoldenPursuit_2516 = J.ActivateGoldenPursuit2497
+function J:ActivateGoldenPursuit2497(globalIndex)
+    local result = easLegacyActivateGoldenPursuit_2516(self, globalIndex)
+    if EPC.ActiveQuest and EPC.ActiveQuest.ApplySelectedSourceToESO2516 then
+        EPC.ActiveQuest:ApplySelectedSourceToESO2516()
+    end
+    return result
 end

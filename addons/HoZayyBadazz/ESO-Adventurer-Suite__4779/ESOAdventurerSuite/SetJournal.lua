@@ -8,7 +8,7 @@ local EPC = ESOProgressionCoach
 EPC.SetJournal = EPC.SetJournal or {}
 local J = EPC.SetJournal
 
-J.PAGE_SIZE = 6
+J.PAGE_SIZE = 10
 J.validFilters = { ALL=true, OVERLAND=true, DUNGEON=true, TRIAL=true }
 
 local function lower(v) return string.lower(tostring(v or "")) end

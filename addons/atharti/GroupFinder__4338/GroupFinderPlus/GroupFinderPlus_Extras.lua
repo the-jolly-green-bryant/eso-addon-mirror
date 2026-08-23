@@ -1,7 +1,7 @@
 local GF = GroupFinderPlus
 
 function GF.AllowAllRoles()
-	if not GF.Settings.AllowAllRoles then return end
+	if not GF.SV.AllowAllRoles then return end
 
 	ZO_PreHook(GROUP_FINDER_SEARCH_MANAGER, 'ExecuteSearch', function()
 		SetGroupFinderFilterEnforceRoles(false)
@@ -9,7 +9,7 @@ function GF.AllowAllRoles()
 end
 
 function GF.FixAchievements()
-	if not GF.Settings.FullAchievements then return end
+	if not GF.SV.FullAchievements then return end
 
 	ZO_PreHook(Achievement, 'ApplyCollapsedDescriptionConstraints', function(self)
 		if self.IsInstanceOf and self:IsInstanceOf(PopupAchievement) then

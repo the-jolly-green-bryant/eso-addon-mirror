@@ -16,6 +16,8 @@ local EVENT_GROUP_MEMBER_JOINED   = C.EVENT_GROUP_MEMBER_JOINED
 local EVENT_GROUP_MEMBER_LEFT     = C.EVENT_GROUP_MEMBER_LEFT
 local EVENT_GROUP_UPDATE          = C.EVENT_GROUP_UPDATE
 local EVENT_PLAYER_ACTIVATED      = C.EVENT_PLAYER_ACTIVATED
+local EVENT_UNIT_DEATH_STATE_CHANGED = C.EVENT_UNIT_DEATH_STATE_CHANGED
+local REGISTER_FILTER_UNIT_TAG    = C.REGISTER_FILTER_UNIT_TAG
 local REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE = C.REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE
 local REGISTER_FILTER_COMBAT_RESULT           = C.REGISTER_FILTER_COMBAT_RESULT
 local REGISTER_FILTER_IS_ERROR                = C.REGISTER_FILTER_IS_ERROR
@@ -182,9 +184,10 @@ function M.dispatch_group_damage(_result, isError, _name, _g, _slot,
   prof_exit("pipeline.combat_event")
 end
 
-function M.dispatch_effect_player_src(changeType, _slot, _name, _tag, _bt, endTime,
-                                       _stack, _icon, _depBuff, _et, _at,
+function M.dispatch_effect_player_src(changeType, _slot, _name, unitTag, _bt, endTime,
+                                       _stack, _icon, _depBuff, effectType, abilityType,
                                        _stat, _uname, unitId, abilityId, sourceType)
+  prof_enter("pipeline.effect")
   bump("engine.effect.in_player_src")
   if changeType == EFFECT_RESULT_GAINED then
     bump("engine.effect.gained")
@@ -192,6 +195,16 @@ function M.dispatch_effect_player_src(changeType, _slot, _name, _tag, _bt, endTi
     bump("engine.effect.faded")
   end
   Verdant.ShieldRegistry.on_effect(changeType, abilityId, unitId, sourceType, endTime)
+  Verdant.BuffTracker.on_effect(changeType, abilityId, unitId, endTime, now(), unitTag, effectType, abilityType)
+  prof_exit("pipeline.effect")
+end
+
+function M.dispatch_death_state(_unitTag, isDead)
+  bump(isDead and "engine.death.player_died" or "engine.death.player_res")
+  if Verdant.TemporalBuffer.is_recording() then
+    Verdant.TemporalBuffer.add_marker(now(), isDead)
+    Log:info(isDead and "death marker" or "res marker")
+  end
 end
 
 function M.dispatch_group_change()
@@ -251,6 +264,14 @@ function M.init()
   E.register("Verdant_E_EffectPlayer", EVENT_EFFECT_CHANGED, M.dispatch_effect_player_src)
   E.add_filter("Verdant_E_EffectPlayer", EVENT_EFFECT_CHANGED,
     REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+
+  E.register("Verdant_E_WeaponPair", C.EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function()
+    Verdant.BuffTracker.on_bars_changed()
+  end)
+
+  E.register("Verdant_E_Death", EVENT_UNIT_DEATH_STATE_CHANGED, M.dispatch_death_state)
+  E.add_filter("Verdant_E_Death", EVENT_UNIT_DEATH_STATE_CHANGED,
+    REGISTER_FILTER_UNIT_TAG, "player")
 
   E.register("Verdant_E_GroupJ", EVENT_GROUP_MEMBER_JOINED, M.dispatch_group_change)
   E.register("Verdant_E_GroupL", EVENT_GROUP_MEMBER_LEFT,   M.dispatch_group_left)

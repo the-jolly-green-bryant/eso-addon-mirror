@@ -9,7 +9,6 @@ local LTM_PASSIVE_SNAPSHOT_APPLY = Addon.Modules.PassiveSnapshotApply
 local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 local LTM_SKILL_SNAPSHOT_AUDIT = Addon.Modules.SkillSnapshotAudit
 local LTM_SKILL_PASSIVE = Addon.Modules.SkillPassive
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 
 local PASSIVE_READY_RETRY_MS = 200
 local PASSIVE_READY_MAX_ATTEMPTS = 20
@@ -48,14 +47,6 @@ local function CreateSkippedResult(code, details)
         code = code,
         details = details,
     }
-end
-
-local function NormalizeLineIdList(lineIds)
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.NormalizeLineIdList) == "function" then
-        return SHARED_UTIL:NormalizeLineIdList(lineIds)
-    end
-
-    return type(lineIds) == "table" and lineIds or {}
 end
 
 local function HasPendingSkillChanges()
@@ -109,11 +100,6 @@ local function IsActionBarOnlyPendingSkillChanges(snapshot)
 end
 
 local function CapturePassiveSnapshot()
-    if type(LTM_SKILL_SNAPSHOT_AUDIT) ~= "table"
-        or type(LTM_SKILL_SNAPSHOT_AUDIT.CaptureCurrentSnapshot) ~= "function" then
-        return nil
-    end
-
     local ok, snapshot = pcall(LTM_SKILL_SNAPSHOT_AUDIT.CaptureCurrentSnapshot, LTM_SKILL_SNAPSHOT_AUDIT)
     if ok and type(snapshot) == "table" then
         return snapshot
@@ -254,37 +240,35 @@ local function ResolveTargetSkillLineIds(build, fallbackLineIds)
         and type(build.subclass) == "table"
         and build.subclass.targetSkillLineIds
         or nil
-    return NormalizeLineIdList(explicitLineIds or fallbackLineIds)
+    return SHARED_UTIL:NormalizeLineIdList(explicitLineIds or fallbackLineIds)
 end
 
-local function IsExactPassivePolicy(policy)
-    return policy == "class_only" or policy == "all"
+local function IsExactPassiveRestore(policy)
+    return policy == "class_exact" or policy == "all_exact"
 end
 
-local function ResolveSpSaverPassiveSkip(pipelineContext)
-    local reason = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverSkipReason) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverSkipReason(pipelineContext, "normal_passive_changes")
-        or nil
+local function ResolvePassiveRestore(pipelineContext)
+    return LTM_PIPELINE_CONTEXT:GetSkillSettings(pipelineContext).passiveRestore
+end
+
+local function ResolveSkillSettingsPassiveSkip(pipelineContext)
+    local reason = LTM_PIPELINE_CONTEXT:GetSkillSettingsSkipReason(pipelineContext, "normal_passive_changes")
     return reason ~= nil, reason
 end
 
-local function RecordSpSaverPassiveSkip(pipelineContext, reason)
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.RecordSpSaverSkip) == "function" then
-        LTM_PIPELINE_CONTEXT:RecordSpSaverSkip(
-            pipelineContext,
-            "normal_passive_changes",
-            reason
-        )
-    end
+local function RecordSkillSettingsPassiveSkip(pipelineContext, reason)
+    LTM_PIPELINE_CONTEXT:RecordSkillSettingsSkip(
+        pipelineContext,
+        "normal_passive_changes",
+        reason
+    )
 end
 
-local function BuildSpSaverSkippedSummary(build, targetSkillLineIds, reason)
+local function BuildSkillSettingsSkippedSummary(passiveRestore, targetSkillLineIds, reason)
     return {
         ok = true,
         skipped = true,
-        policy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(build) == "table" and build.passivePolicy or nil),
+        policy = passiveRestore,
         targetLineCount = #(targetSkillLineIds or {}),
         targetSkillLineIds = targetSkillLineIds,
         restoredCount = 0,
@@ -293,7 +277,7 @@ local function BuildSpSaverSkippedSummary(build, targetSkillLineIds, reason)
         reasonCounts = {
             [reason] = 1,
         },
-        spSaverReason = reason,
+        skillSettingsReason = reason,
     }
 end
 
@@ -309,7 +293,7 @@ local function BuildAutoFillPartialSuccessResult(summary)
         and (tonumber(reasonCounts.insufficient_skill_points) or 0)
         or 0
 
-    if policy ~= "class_all_purchase"
+    if policy ~= "class_purchase_all"
         or skippedCount <= 0
         or insufficientSkillPointCount <= 0 then
         return nil
@@ -359,32 +343,22 @@ function M:RecordAutoFillPartialSuccess(pipelineContext, summary)
 end
 
 function M:Log(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
-function M:ResolvePassiveOnlyEligibility(build, pipelinePlan)
-    local passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(build) == "table" and build.passivePolicy or nil)
+function M:ResolvePassiveOnlyEligibility(build, pipelinePlan, passiveRestore)
     local targetSkillLineIds = ResolveTargetSkillLineIds(build)
 
-    if passivePolicy ~= "class_all_purchase" then
+    if passiveRestore ~= "class_purchase_all" then
         return false, "policy_none", {
-            passivePolicy = passivePolicy,
+            passiveRestore = passiveRestore,
             targetSkillLineIds = targetSkillLineIds,
         }
     end
 
     if #targetSkillLineIds == 0 then
         return false, "no_target_lines", {
-            passivePolicy = passivePolicy,
-            targetSkillLineIds = targetSkillLineIds,
-        }
-    end
-
-    if type(pipelinePlan) ~= "table" then
-        return false, "pipeline_plan_unavailable", {
-            passivePolicy = passivePolicy,
+            passiveRestore = passiveRestore,
             targetSkillLineIds = targetSkillLineIds,
         }
     end
@@ -401,7 +375,7 @@ function M:ResolvePassiveOnlyEligibility(build, pipelinePlan)
     end
 
     return eligible, reason, {
-        passivePolicy = passivePolicy,
+        passiveRestore = passiveRestore,
         targetSkillLineIds = targetSkillLineIds,
         plan = pipelinePlan,
     }
@@ -409,7 +383,6 @@ end
 
 function M:RunPendingPhase(input)
     local build = type(input) == "table" and input.build or nil
-    local passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(build) == "table" and build.passivePolicy or nil)
     local targetSkillLineIds = ResolveTargetSkillLineIds(build, type(input) == "table" and input.targetSkillLineIds or nil)
     local modifiedAllocators = {}
     local seenAllocators = {}
@@ -418,35 +391,17 @@ function M:RunPendingPhase(input)
     if type(pipelineContext) ~= "table" and type(pendingContext) == "table" then
         pipelineContext = pendingContext.pipelineContext
     end
-    local skipForSpSaver, spSaverReason = ResolveSpSaverPassiveSkip(pipelineContext)
-    if skipForSpSaver then
-        RecordSpSaverPassiveSkip(pipelineContext, spSaverReason)
-        return BuildSpSaverSkippedSummary(build, targetSkillLineIds, spSaverReason), modifiedAllocators, nil
-    end
-
-    if type(LTM_SKILL_PASSIVE) ~= "table" or type(LTM_SKILL_PASSIVE.Run) ~= "function" then
-        local summary = {
-            ok = false,
-            policy = passivePolicy,
-            targetLineCount = #targetSkillLineIds,
-            targetSkillLineIds = targetSkillLineIds,
-            restoredCount = 0,
-            skippedCount = 0,
-            warningCount = 1,
-            reasonCounts = {
-                passive_module_unavailable = 1,
-            },
-        }
-        self:SetLastResult(CreateFailureResult("passive_module_unavailable", {
-            passiveSummary = summary,
-        }))
-        return summary, modifiedAllocators, "passive_module_unavailable"
+    local passiveRestore = ResolvePassiveRestore(pipelineContext)
+    local skipForSkillSettings, skillSettingsReason = ResolveSkillSettingsPassiveSkip(pipelineContext)
+    if skipForSkillSettings then
+        RecordSkillSettingsPassiveSkip(pipelineContext, skillSettingsReason)
+        return BuildSkillSettingsSkippedSummary(passiveRestore, targetSkillLineIds, skillSettingsReason), modifiedAllocators, nil
     end
 
     local summary = LTM_SKILL_PASSIVE:Run({
         context = type(input) == "table" and input.context or nil,
         build = build,
-        passivePolicy = passivePolicy,
+        passiveRestore = passiveRestore,
         targetSkillLineIds = targetSkillLineIds,
         pendingActivatedSkillLinesById = type(input) == "table" and input.pendingActivatedSkillLinesById or nil,
         onAllocatorModified = function(allocator)
@@ -485,8 +440,7 @@ function M:Finalize(context, success, err, result)
 
     self:SetLastResult(result)
 
-    if success == true and type(LTM_APPLY_COOLDOWN_GATE) == "table"
-        and type(LTM_APPLY_COOLDOWN_GATE.RecordMutation) == "function" then
+    if success == true then
         LTM_APPLY_COOLDOWN_GATE:RecordMutation("skill", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
     end
 
@@ -539,22 +493,17 @@ local function BuildExactPipelinePhaseResult(success, result, targetSkillLineIds
 end
 
 function M:RunExactRestorePhase(build, targetSkillLineIds, continuation, pipelineContext)
-    local skipForSpSaver, spSaverReason = ResolveSpSaverPassiveSkip(pipelineContext)
-    if skipForSpSaver then
-        RecordSpSaverPassiveSkip(pipelineContext, spSaverReason)
-        local summary = BuildSpSaverSkippedSummary(build, targetSkillLineIds, spSaverReason)
-        self:SetLastResult(CreateSkippedResult(spSaverReason, {
+    local passiveRestore = ResolvePassiveRestore(pipelineContext)
+    local skipForSkillSettings, skillSettingsReason = ResolveSkillSettingsPassiveSkip(pipelineContext)
+    if skipForSkillSettings then
+        RecordSkillSettingsPassiveSkip(pipelineContext, skillSettingsReason)
+        local summary = BuildSkillSettingsSkippedSummary(passiveRestore, targetSkillLineIds, skillSettingsReason)
+        self:SetLastResult(CreateSkippedResult(skillSettingsReason, {
             mode = "exact_restore",
             passiveSummary = summary,
             targetSkillLineIds = targetSkillLineIds,
         }))
         return true
-    end
-
-    if type(LTM_PASSIVE_SNAPSHOT_APPLY) ~= "table"
-        or type(LTM_PASSIVE_SNAPSHOT_APPLY.RunExactRestore) ~= "function" then
-        self:SetLastResult(BuildExactPipelinePhaseResult(false, nil, targetSkillLineIds, "passive_snapshot_apply_unavailable"))
-        return false, "passive_snapshot_apply_unavailable"
     end
 
     local context = {
@@ -564,6 +513,7 @@ function M:RunExactRestorePhase(build, targetSkillLineIds, continuation, pipelin
         mode = "exact_restore",
         targetSkillLineIds = targetSkillLineIds,
         pipelineContext = pipelineContext,
+        passiveRestore = passiveRestore,
     }
     self.pendingContext = context
 
@@ -603,10 +553,14 @@ function M:CommitExactRestore(context)
         end
     end
 
-    local skipForSpSaver, spSaverReason = ResolveSpSaverPassiveSkip(context.pipelineContext)
-    if skipForSpSaver then
-        RecordSpSaverPassiveSkip(context.pipelineContext, spSaverReason)
-        finish(true, nil, BuildSpSaverSkippedSummary(context.build, context.targetSkillLineIds, spSaverReason))
+    local skipForSkillSettings, skillSettingsReason = ResolveSkillSettingsPassiveSkip(context.pipelineContext)
+    if skipForSkillSettings then
+        RecordSkillSettingsPassiveSkip(context.pipelineContext, skillSettingsReason)
+        finish(true, nil, BuildSkillSettingsSkippedSummary(
+            context.passiveRestore,
+            context.targetSkillLineIds,
+            skillSettingsReason
+        ))
         return
     end
 
@@ -620,6 +574,7 @@ function M:CommitExactRestore(context)
         retryDelayMs = PASSIVE_EXACT_RETRY_DELAY_MS,
         completionDelayMs = PASSIVE_EXACT_COMPLETION_DELAY_MS,
         pipelineContext = context.pipelineContext,
+        passiveRestore = context.passiveRestore,
         completion = finish,
     })
 
@@ -801,17 +756,18 @@ function M:Run(config)
     local build = type(pipelineContext) == "table" and pipelineContext.targetBuild
         or (type(config) == "table" and config.build or nil)
     local targetSkillLineIds = ResolveTargetSkillLineIds(build, type(config) == "table" and config.targetSkillLineIds or nil)
+    local passiveRestore = ResolvePassiveRestore(pipelineContext)
 
     if type(build) ~= "table" then
         self:SetLastResult(BuildPipelinePhaseResult(false, nil, targetSkillLineIds, "build_missing"))
         return false, "build_missing"
     end
 
-    local skipForSpSaver, spSaverReason = ResolveSpSaverPassiveSkip(pipelineContext)
-    if skipForSpSaver then
-        RecordSpSaverPassiveSkip(pipelineContext, spSaverReason)
-        local summary = BuildSpSaverSkippedSummary(build, targetSkillLineIds, spSaverReason)
-        self:SetLastResult(BuildPipelinePhaseResult(true, summary, targetSkillLineIds, spSaverReason, true))
+    local skipForSkillSettings, skillSettingsReason = ResolveSkillSettingsPassiveSkip(pipelineContext)
+    if skipForSkillSettings then
+        RecordSkillSettingsPassiveSkip(pipelineContext, skillSettingsReason)
+        local summary = BuildSkillSettingsSkippedSummary(passiveRestore, targetSkillLineIds, skillSettingsReason)
+        self:SetLastResult(BuildPipelinePhaseResult(true, summary, targetSkillLineIds, skillSettingsReason, true))
         return true
     end
 
@@ -826,12 +782,12 @@ function M:Run(config)
         return false, "skill_pending_changes_blocking_apply"
     end
 
-    if IsExactPassivePolicy(build.passivePolicy) then
+    if IsExactPassiveRestore(passiveRestore) then
         return self:RunExactRestorePhase(build, targetSkillLineIds, continuation, pipelineContext)
     end
 
     local pipelinePlan = type(config) == "table" and config._pipelinePlan or nil
-    local eligible, eligibilityErr = self:ResolvePassiveOnlyEligibility(build, pipelinePlan)
+    local eligible, eligibilityErr = self:ResolvePassiveOnlyEligibility(build, pipelinePlan, passiveRestore)
     if not eligible then
         self:SetLastResult(BuildPipelinePhaseResult(true, nil, targetSkillLineIds, eligibilityErr or "passive_only_requires_matching_skill_state", true))
         return true
@@ -850,13 +806,14 @@ function M:Run(config)
         readyAttemptIndex = 0,
         pipelineContext = pipelineContext,
         targetSkillLineIds = targetSkillLineIds,
+        passiveRestore = passiveRestore,
     }
     self.pendingContext = context
 
     self:Log(
         "Passive pipeline phase begin",
         "targetSkillLineIds=" .. tostring(table.concat(context.targetSkillLineIds or {}, ",")),
-        "policy=" .. tostring(build.passivePolicy or "class_all_purchase")
+        "policy=" .. tostring(passiveRestore)
     )
 
     if IsReadyForPassiveApply() then

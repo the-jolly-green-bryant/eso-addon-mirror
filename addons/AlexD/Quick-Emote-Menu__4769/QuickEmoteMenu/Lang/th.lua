@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "แสดงแผงการตั้งค่า",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "ปิดเมนูหลังเล่นอีโมต (คลิกซ้าย)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "รีเซ็ตตำแหน่งปุ่ม",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "ออฟเซ็ต X ของปุ่มแชต",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "ระยะเลื่อนแนวนอนของปุ่มเมื่อเทียบกับปุ่มตัวเลือกของหน้าต่างแชต ใช้เฉพาะเมื่อปุ่มถูกแนบกับหน้าต่างแชตเท่านั้น",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFฟีเจอร์|r
 • เข้าถึงอีโมตได้อย่างรวดเร็วด้วยหมวดหมู่และรายการโปรด

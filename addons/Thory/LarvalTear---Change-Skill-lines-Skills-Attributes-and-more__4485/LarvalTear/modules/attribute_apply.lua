@@ -48,41 +48,14 @@ local BeginAttributeResultWait
 local RegisterAttributeResultWait
 local IsActivityDisallowedResult
 
-local function ResolveAttributeScene()
-    if type(LTM_ATTRIBUTE_SCENE) == "table" then
-        return LTM_ATTRIBUTE_SCENE
-    end
-
-    return nil
-end
-
-local function ResolveAttributeRetry()
-    if type(LTM_ATTRIBUTE_RETRY) == "table" then
-        return LTM_ATTRIBUTE_RETRY
-    end
-
-    return nil
-end
-
-local function ResolveRespecObserver()
-    if type(LTM_RESPEC_OBSERVER) == "table" then
-        return LTM_RESPEC_OBSERVER
-    end
-
-    return nil
-end
-
 -- Logging / error helpers
 -- Trace messages are debug-only and can be as verbose as needed for probes.
 local function TraceStep(...)
-    if type(Log.IsSummaryDebugEnabled) ~= "function" or not Log.IsSummaryDebugEnabled() then
+    if not Log.IsSummaryDebugEnabled() then
         return
     end
 
-    if type(Log.Debug) == "function" then
-        Log.Debug(...)
-        return
-    end
+    Log.Debug(...)
 end
 
 local function LogStep(...)
@@ -94,9 +67,7 @@ local function LogCommitTrace(...)
 end
 
 local function LogDebugSummary(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function LogAttributeRetrySummary(status, ...)
@@ -193,18 +164,8 @@ local function SucceedContext(context)
 end
 
 local function ClearResultWaitRegistration(context)
-    local observer = ResolveRespecObserver()
-    if observer and type(observer.UnregisterAttributeEvents) == "function" then
-        observer:UnregisterAttributeEvents(context)
-        observer:ClearAttributeObservationSignature(context)
-        return
-    end
-
-    if context then
-        context.resultEventRegistered = false
-        context.castEventRegistered = false
-        context.attributeObserverSnapshotSignature = nil
-    end
+    LTM_RESPEC_OBSERVER:UnregisterAttributeEvents(context)
+    LTM_RESPEC_OBSERVER:ClearAttributeObservationSignature(context)
 end
 
 function LTM_ATTRIBUTE_APPLY:ClearPendingContext()
@@ -263,19 +224,8 @@ local function FailStartAttributeExecution(context, errorCode, fallbackCode)
     return FailContext(context, normalized, nil, "start")
 end
 
-local function ResolveApplyCooldownGate()
-    if type(LTM_APPLY_COOLDOWN_GATE) == "table" then
-        return LTM_APPLY_COOLDOWN_GATE
-    end
-
-    return nil
-end
-
 local function RecordSharedCooldownMutation(kind, atMs)
-    local gate = ResolveApplyCooldownGate()
-    if gate and type(gate.RecordMutation) == "function" then
-        gate:RecordMutation(kind, atMs)
-    end
+    LTM_APPLY_COOLDOWN_GATE:RecordMutation(kind, atMs)
 end
 
 function LTM_ATTRIBUTE_APPLY:NotifyPipelineContinuation(context, success)
@@ -294,25 +244,11 @@ end
 
 local function BuildCompletionSnapshot(context)
     local statsManager = context and context.statsManager or nil
-    local sceneHelper = ResolveAttributeScene()
-    local observer = ResolveRespecObserver()
-    if observer and type(observer.BuildAttributeSnapshot) == "function" then
-        return observer:BuildAttributeSnapshot(context, statsManager, sceneHelper)
-    end
-
-    return {
-        resultReceived = context and context.resultReceived or false,
-        resultCode = context and context.resultCode or nil,
-        commitSent = context and context.commitSent or false,
-        commitAttempt = context and context.commitAttempt or 0,
-    }
+    return LTM_RESPEC_OBSERVER:BuildAttributeSnapshot(context, statsManager, LTM_ATTRIBUTE_SCENE)
 end
 
 local function LogCompletionPoll(context, snapshot)
-    local observer = ResolveRespecObserver()
-    if observer and type(observer.LogAttributeSnapshotIfChanged) == "function" then
-        observer:LogAttributeSnapshotIfChanged(context, "poll", snapshot)
-    end
+    LTM_RESPEC_OBSERVER:LogAttributeSnapshotIfChanged(context, "poll", snapshot)
 end
 
 local function ResolveCompletionSuccess(context, snapshot)
@@ -338,17 +274,14 @@ local function ScheduleCommitAttempt(context, delayMs, reason)
     context.commitTimerGeneration = (context.commitTimerGeneration or 0) + 1
     local generation = context.commitTimerGeneration
     context.retryScheduled = true
-    if type(LTM) == "table" and type(LTM.NotifyWaitStarted) == "function" then
-        local waitSeconds = type(delayMs) == "number" and (delayMs / 1000) or nil
-        if reason == "retry" then
-            LTM:NotifyWaitStarted(context, "attribute_retry", waitSeconds)
-        else
-            LTM:NotifyWaitStarted(context, "server_busy", waitSeconds)
-        end
+    local waitSeconds = type(delayMs) == "number" and (delayMs / 1000) or nil
+    if reason == "retry" then
+        LTM:NotifyWaitStarted(context, "attribute_retry", waitSeconds)
+    else
+        LTM:NotifyWaitStarted(context, "server_busy", waitSeconds)
     end
 
-    local retryHelper = ResolveAttributeRetry()
-    local retrySummary = retryHelper and retryHelper:BuildRetrySummary(reason, context, delayMs) or nil
+    local retrySummary = LTM_ATTRIBUTE_RETRY:BuildRetrySummary(reason, context, delayMs)
     if retrySummary then
         if retrySummary.nextAttempt ~= nil then
             LogAttributeRetrySummary(
@@ -382,8 +315,7 @@ local function ScheduleCommitAttempt(context, delayMs, reason)
 end
 
 local function ScheduleRetryAfterBusyResult(context)
-    local retryHelper = ResolveAttributeRetry()
-    if retryHelper and retryHelper:IsRetrySchedulingBlocked(context) then
+    if LTM_ATTRIBUTE_RETRY:IsRetrySchedulingBlocked(context) then
         return true
     end
 
@@ -391,7 +323,7 @@ local function ScheduleRetryAfterBusyResult(context)
         return true
     end
 
-    if retryHelper and retryHelper:IsRetryExhausted(context) then
+    if LTM_ATTRIBUTE_RETRY:IsRetryExhausted(context) then
         Log.Debug(string.format(
             "Attribute commit retry exhausted runId=%s attempts=%s",
             tostring(context.runId),
@@ -403,7 +335,7 @@ local function ScheduleRetryAfterBusyResult(context)
     context.resultReceived = false
     context.resultCode = nil
     InvalidateResultWait(context)
-    local retryDelayMs = retryHelper and retryHelper:GetCommitRetryIntervalMs() or 1000
+    local retryDelayMs = LTM_ATTRIBUTE_RETRY:GetCommitRetryIntervalMs()
     return ScheduleCommitAttempt(context, retryDelayMs, "retry")
 end
 
@@ -424,9 +356,7 @@ local function OnAttributeRespecCastEvent(context, generation)
     context.castStartedAt = SHARED_UTIL:GetFrameTimeMillisecondsSafe()
     context.retryScheduled = false
     context.commitTimerGeneration = (context.commitTimerGeneration or 0) + 1
-    if type(LTM) == "table" and type(LTM.ResetWaitNotification) == "function" then
-        LTM:ResetWaitNotification(context)
-    end
+    LTM:ResetWaitNotification(context)
     LogDebugSummary("Attribute cast/result summary", "kind=cast", "attempt=" .. tostring(context.commitAttempt or 0))
 end
 
@@ -436,8 +366,7 @@ local function HandleAttributeResultCode(context, result)
 
     LogDebugSummary("Attribute cast/result summary", "kind=result", "result=" .. tostring(result), "attempt=" .. tostring(context.commitAttempt or 0))
 
-    local retryHelper = ResolveAttributeRetry()
-    if retryHelper and retryHelper:IsBusyRetryableResult(result) then
+    if LTM_ATTRIBUTE_RETRY:IsBusyRetryableResult(result) then
         if context.castStarted then
             return true
         end
@@ -445,9 +374,7 @@ local function HandleAttributeResultCode(context, result)
     end
 
     if IsActivityDisallowedResult(result) then
-        if type(LTM) == "table" and type(LTM.NotifyActivityDisallowed) == "function" then
-            LTM:NotifyActivityDisallowed("attributes")
-        end
+        LTM:NotifyActivityDisallowed("attributes")
         return FinishAsyncContext(context, false, "activity_disallowed")
     end
 
@@ -490,8 +417,7 @@ local function OnAttributeResultWaitReady(context, generation)
         end
     end
 
-    local retryHelper = ResolveAttributeRetry()
-    if retryHelper and retryHelper:IsBusyRetryableResult(snapshot.resultCode) then
+    if LTM_ATTRIBUTE_RETRY:IsBusyRetryableResult(snapshot.resultCode) then
         return ScheduleRetryAfterBusyResult(context)
     end
 
@@ -565,19 +491,14 @@ local function StartAttributeResultWaitPolling(context, generation)
 end
 
 RegisterAttributeResultWait = function(context, generation)
-    local observer = ResolveRespecObserver()
-    if observer and type(observer.RegisterAttributeEvents) == "function" then
-        return observer:RegisterAttributeEvents(context, generation, {
-            onResult = function(result)
-                OnAttributeRespecResultEvent(context, generation, result)
-            end,
-            onCast = function()
-                OnAttributeRespecCastEvent(context, generation)
-            end,
-        })
-    end
-
-    return false, "respec_observer_unavailable"
+    return LTM_RESPEC_OBSERVER:RegisterAttributeEvents(context, generation, {
+        onResult = function(result)
+            OnAttributeRespecResultEvent(context, generation, result)
+        end,
+        onCast = function()
+            OnAttributeRespecCastEvent(context, generation)
+        end,
+    })
 end
 
 local function IsWholeNumber(value)
@@ -693,12 +614,7 @@ end
 
 -- Debug probe helpers
 local function SnapshotAttributeState(statsManager)
-    local sceneHelper = ResolveAttributeScene()
-    if sceneHelper and type(sceneHelper.SnapshotAttributeState) == "function" then
-        return sceneHelper:SnapshotAttributeState(statsManager)
-    end
-
-    return nil
+    return LTM_ATTRIBUTE_SCENE:SnapshotAttributeState(statsManager)
 end
 
 -- Protected call helper
@@ -743,8 +659,7 @@ local function ContinueAttributeRespecEntry(context, startAttemptIndex, waitAtte
 
     local snapshot = SnapshotAttributeState(statsManager)
 
-    local sceneHelper = ResolveAttributeScene()
-    if sceneHelper and sceneHelper:IsAttributeRespecReady(snapshot) then
+    if LTM_ATTRIBUTE_SCENE:IsAttributeRespecReady(snapshot) then
         LogStep("Attribute auto-entry async continuing to core")
         local dispatchOk, dispatchErr = DispatchAttributeApplyCore(context, "async-ready")
         if dispatchOk == nil and dispatchErr == "deferred" then
@@ -759,7 +674,7 @@ local function ContinueAttributeRespecEntry(context, startAttemptIndex, waitAtte
     end
 
     if waitAttemptIndex == 1 then
-        if not (sceneHelper and sceneHelper:CanInvokeAttributeRespecStart(snapshot)) then
+        if not LTM_ATTRIBUTE_SCENE:CanInvokeAttributeRespecStart(snapshot) then
             if startAttemptIndex >= context.maxStartAttempts then
                 FinishAsyncContext(context, false, ATTR_E_RESPEC_ENTRY_TIMEOUT)
                 return
@@ -895,12 +810,10 @@ local function BeginSharedCooldownGateWait(context, continuation)
         return false
     end
 
-    local gate = ResolveApplyCooldownGate()
-    if gate == nil or type(gate.GetRemainingDelayMs) ~= "function" then
-        return false
-    end
-
-    local remainingMs = gate:GetRemainingDelayMs("attribute", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
+    local remainingMs = LTM_APPLY_COOLDOWN_GATE:GetRemainingDelayMs(
+        "attribute",
+        SHARED_UTIL:GetFrameTimeMillisecondsSafe()
+    )
     if type(remainingMs) ~= "number" or remainingMs <= 0 then
         return false
     end
@@ -913,9 +826,7 @@ local function BeginSharedCooldownGateWait(context, continuation)
     local generation = context.sharedCooldownWaitGeneration
     LTM_ATTRIBUTE_APPLY.pendingContext = context
 
-    if type(LTM) == "table" and type(LTM.NotifyWaitStarted) == "function" then
-        LTM:NotifyWaitStarted(context, "attribute_retry", remainingMs / 1000)
-    end
+    LTM:NotifyWaitStarted(context, "attribute_retry", remainingMs / 1000)
     LogAttributeRetrySummary("gate_wait", "delayMs=" .. tostring(remainingMs))
 
     zo_callLater(function()
@@ -933,9 +844,7 @@ local function BeginSharedCooldownGateWait(context, continuation)
             return
         end
 
-        if type(LTM) == "table" and type(LTM.ResetWaitNotification) == "function" then
-            LTM:ResetWaitNotification(context)
-        end
+        LTM:ResetWaitNotification(context)
         continuation(context)
     end, remainingMs)
 
@@ -944,15 +853,14 @@ end
 
 local function EnsureStatsSceneReadyOrDefer(context)
     local snapshot = SnapshotAttributeState(context.statsManager)
-    local sceneHelper = ResolveAttributeScene()
-    if sceneHelper and sceneHelper:IsStatsSceneReady(snapshot) then
+    if LTM_ATTRIBUTE_SCENE:IsStatsSceneReady(snapshot) then
         return true
     end
 
-    local candidates = sceneHelper and sceneHelper:BuildStatsSceneOpenCandidates() or {}
+    local candidates = LTM_ATTRIBUTE_SCENE:BuildStatsSceneOpenCandidates()
     local openInvoked = false
     for _, candidate in ipairs(candidates) do
-        if sceneHelper and sceneHelper:InvokeStatsSceneOpenCandidate(candidate) then
+        if LTM_ATTRIBUTE_SCENE:InvokeStatsSceneOpenCandidate(candidate) then
             openInvoked = true
             break
         end
@@ -983,7 +891,7 @@ local function EnsureStatsSceneReadyOrDefer(context)
         end
 
         local currentSnapshot = SnapshotAttributeState(statsManager)
-        if sceneHelper and sceneHelper:IsStatsSceneReady(currentSnapshot) then
+        if LTM_ATTRIBUTE_SCENE:IsStatsSceneReady(currentSnapshot) then
             LogAttributeAutoEntrySummary("stats_scene_ready")
             local interactionOk, interactionErr = EnsureRespecInteractionOrDefer(context)
             if interactionOk == nil and interactionErr == "deferred" then
@@ -1080,9 +988,7 @@ FinishAsyncContext = function(context, ok, err)
     ClearResultWaitRegistration(context)
     LTM_ATTRIBUTE_APPLY.pendingContext = nil
     context.retryScheduled = false
-    if type(LTM) == "table" and type(LTM.ResetWaitNotification) == "function" then
-        LTM:ResetWaitNotification(context)
-    end
+    LTM:ResetWaitNotification(context)
 
     if ok then
         local resultOk, resultErr = SucceedContext(context)
@@ -1243,20 +1149,15 @@ end
 
 EnsureRespecInteractionOrDefer = function(context)
     local beforeContext = SnapshotAttributeState(context.statsManager)
-    local sceneHelper = ResolveAttributeScene()
 
-    local interactionOk = sceneHelper and sceneHelper:GetCurrentRespecInteractionState() or false
+    local interactionOk = LTM_ATTRIBUTE_SCENE:GetCurrentRespecInteractionState()
     if interactionOk then
         LogStep("Entered attribute respec interaction")
         return true
     end
 
-    if sceneHelper and sceneHelper:IsAttributeRespecReady(beforeContext) then
+    if LTM_ATTRIBUTE_SCENE:IsAttributeRespecReady(beforeContext) then
         return true
-    end
-
-    if not sceneHelper then
-        return false, ATTR_E_RESPEC_ENTRY_TIMEOUT
     end
 
     context.waitDelaysMs = AUTO_ENTRY_RETRY_DELAYS_MS
@@ -1302,27 +1203,11 @@ EnableBatchMode = function(statsManager)
 end
 
 FindKeyboardSpinner = function(statsManager, attributeType)
-    local sceneHelper = ResolveAttributeScene()
-    if sceneHelper and type(sceneHelper.FindKeyboardSpinner) == "function" then
-        return sceneHelper:FindKeyboardSpinner(statsManager, attributeType)
-    end
-
-    return nil, nil
+    return LTM_ATTRIBUTE_SCENE:FindKeyboardSpinner(statsManager, attributeType)
 end
 
 SearchClearCandidates = function(statsManager)
-    local sceneHelper = ResolveAttributeScene()
-    if sceneHelper and type(sceneHelper.SearchClearCandidates) == "function" then
-        return sceneHelper:SearchClearCandidates(statsManager)
-    end
-
-    return {
-        keyboard_controls = false,
-        gamepad_data = false,
-        reset_added_points = false,
-        set_added_points_by_total = false,
-        set_gamepad_added_points = false,
-    }
+    return LTM_ATTRIBUTE_SCENE:SearchClearCandidates(statsManager)
 end
 
 ClearCurrentAllocation = function(statsManager)

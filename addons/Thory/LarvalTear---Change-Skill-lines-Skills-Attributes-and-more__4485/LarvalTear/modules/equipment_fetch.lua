@@ -14,10 +14,6 @@ local FETCH_POLL_INTERVAL_MS = 100
 local FETCH_POLL_MAX_ATTEMPTS = 30
 
 local function TraceFetchDebug(...)
-    if type(Log.LogDebugSummary) ~= "function" then
-        return
-    end
-
     Log.LogDebugSummary(...)
 end
 
@@ -123,15 +119,6 @@ end
 local function BuildFetchPlan(targetEquipment)
     if type(targetEquipment) ~= "table" then
         return false, "equipment_config_invalid", nil
-    end
-
-    if type(LTM_EQUIPMENT_CHANGE) ~= "table"
-        or type(LTM_EQUIPMENT_CHANGE.NormalizeTargetEntry) ~= "function"
-        or type(LTM_EQUIPMENT_CHANGE.CreateReservationState) ~= "function"
-        or type(LTM_EQUIPMENT_CHANGE.FindMatchingWornItemAtSlot) ~= "function"
-        or type(LTM_EQUIPMENT_CHANGE.FindMatchingItemInBags) ~= "function"
-        or type(LTM_EQUIPMENT_CHANGE.ReserveItemState) ~= "function" then
-        return false, "equipment_change_unavailable", nil
     end
 
     local sourceBagIds, sourceErr, bankingBag = BuildSourceBagList()
@@ -244,9 +231,7 @@ function LTM_EQUIPMENT_FETCH:BeginFetch(targetEquipment, completion)
         return false, "equipment_fetch_busy", nil
     end
 
-    if type(LTM_EQUIPMENT_DEPOSIT) == "table"
-        and type(LTM_EQUIPMENT_DEPOSIT.IsBusy) == "function"
-        and LTM_EQUIPMENT_DEPOSIT:IsBusy() == true then
+    if LTM_EQUIPMENT_DEPOSIT:IsBusy() == true then
         return false, "equipment_deposit_busy", nil
     end
 

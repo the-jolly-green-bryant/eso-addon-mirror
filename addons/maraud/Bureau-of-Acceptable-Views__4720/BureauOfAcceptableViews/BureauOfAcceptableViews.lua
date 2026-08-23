@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.6.064722",
+    version = "3.7.105247",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -519,7 +519,7 @@ end
 
 -- Check if player is in a state where zoom is normally limited
 local function IsZoomLimited()
-    return IsMounted() or IsWerewolf() or IsUnitSwimming("player")
+    return IsMounted() or IsPlayerInWerewolfForm() or IsUnitSwimming("player")
 end
 
 -- Record a REAL view flip (FPV<->third person) observed through our own hook and
@@ -934,7 +934,7 @@ local function GetStateDescription()
     local state = {
         isFPV = zoom <= ZOOM_FPV,
         isMounted = IsMounted(),
-        isWerewolf = IsWerewolf(),
+        isWerewolf = IsPlayerInWerewolfForm(),
         isSwimming = IsUnitSwimming("player"),
         isSiege = IsGameCameraSiegeControlled(),
         isLimited = IsZoomLimited(),

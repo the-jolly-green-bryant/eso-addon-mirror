@@ -9,7 +9,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Labyrinthe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/D-Lord/Labyrinthe__3841) | D Lord | PC / Mac | 0.8.2 |
 | [Landslide Tracker - Earthen Heart Passive](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Landslide-Tracker---Earthen-Heart-Passive__4470) | Duesentrieb | PC / Mac | 20260320-0002 |
 | [LanguageChanger for 1.5.5](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hiiko/LanguageChanger-for-1.5.5__827) | Hiiko | PC / Mac | 0.1 |
-| [LarvalTear - Change Skill lines, Skills, Attributes, and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485) | Thory | PC / Mac | 1.3.0.0 |
+| [LarvalTear - Change Skill lines, Skills, Attributes, and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485) | Thory | PC / Mac | 1.4.0.0 |
 | [Latency Statistics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tactitocalon/Latency-Statistics__1869) | Tactitocalon | PC / Mac | 1.0 |
 | [Lawful Necromancy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/muh/Lawful-Necromancy__2388) | muh | PC / Mac | 1.1 |
 | [Lazarus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0dpain/Lazarus__3123) | g0dpain | PC / Mac | 0.1.0 |

@@ -3,14 +3,13 @@ local M = Addon.Modules.PassiveSnapshotApply
 local Log = Addon.Common.Log
 local ClassLineHelper = Addon.Modules.ClassLineHelper
 local PipelineContext = Addon.Modules.PipelineContext
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 local Util = Addon.Common.Util
 
 local SNAPSHOT_VERSION = 1
 local POLICY_NONE = "none"
-local POLICY_CLASS_ALL_PURCHASE = "class_all_purchase"
-local POLICY_CLASS_ONLY = "class_only"
-local POLICY_ALL = "all"
+local POLICY_CLASS_ALL_PURCHASE = "class_purchase_all"
+local POLICY_CLASS_ONLY = "class_exact"
+local POLICY_ALL = "all_exact"
 local EXACT_APPLY_RETRY_DELAY_MS = 50
 local EXACT_APPLY_MAX_ATTEMPTS = 5
 local EXACT_APPLY_COMPLETION_DELAY_MS = 50
@@ -206,14 +205,7 @@ local function SortedSnapshotSkillIndexes(lineEntries)
 end
 
 local function ResolveSkillLineData(skillLineId)
-    if type(ClassLineHelper) == "table" and type(ClassLineHelper.ResolveSkillLineData) == "function" then
-        return ClassLineHelper:ResolveSkillLineData(skillLineId)
-    end
-    if type(SKILLS_DATA_MANAGER) ~= "table"
-        or type(SKILLS_DATA_MANAGER.GetSkillLineDataById) ~= "function" then
-        return nil
-    end
-    return RefreshSkillLineData(SKILLS_DATA_MANAGER:GetSkillLineDataById(skillLineId))
+    return ClassLineHelper:ResolveSkillLineData(skillLineId)
 end
 
 local function ResolveSnapshotState(snapshot)
@@ -384,9 +376,7 @@ local function AppendUnique(list, seen, value)
 end
 
 local function LogExactRestoreDebug(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary("Passive exact restore", ...)
-    end
+    Log.LogDebugSummary("Passive exact restore", ...)
 end
 
 local function IsSkillSceneShowing()
@@ -796,8 +786,7 @@ local function CreateExactApplyResult(build, analysis, options)
     local requestedMaxAttempts = tonumber(type(options) == "table" and options.maxAttempts or nil) or EXACT_APPLY_MAX_ATTEMPTS
     return {
         ok = true,
-        policy = type(analysis) == "table" and analysis.policy
-            or LTM_BUILD_CODEC:NormalizePassivePolicy(type(build) == "table" and build.passivePolicy or nil),
+        policy = type(analysis) == "table" and analysis.policy or options.passiveRestore,
         mode = "exact_restore",
         operationMode = type(options) == "table" and options.operationMode or "standalone",
         attempts = 0,
@@ -827,25 +816,20 @@ local function CreateExactApplyResult(build, analysis, options)
     }
 end
 
-local function ResolveSpSaverPassiveSkip(pipelineContext)
-    local reason = type(PipelineContext) == "table"
-        and type(PipelineContext.GetSpSaverSkipReason) == "function"
-        and PipelineContext:GetSpSaverSkipReason(pipelineContext, "normal_passive_changes")
-        or nil
+local function ResolveSkillSettingsPassiveSkip(pipelineContext)
+    local reason = PipelineContext:GetSkillSettingsSkipReason(pipelineContext, "normal_passive_changes")
     return reason ~= nil, reason
 end
 
-local function RecordSpSaverPassiveSkip(pipelineContext, reason)
-    if type(PipelineContext) == "table" and type(PipelineContext.RecordSpSaverSkip) == "function" then
-        PipelineContext:RecordSpSaverSkip(
-            pipelineContext,
-            "normal_passive_changes",
-            reason
-        )
-    end
+local function RecordSkillSettingsPassiveSkip(pipelineContext, reason)
+    PipelineContext:RecordSkillSettingsSkip(
+        pipelineContext,
+        "normal_passive_changes",
+        reason
+    )
 end
 
-local function MarkExactResultSkippedForSpSaver(result, reason)
+local function MarkExactResultSkippedForSkillSettings(result, reason)
     result.ok = true
     result.skipped = true
     result.code = reason
@@ -1417,10 +1401,7 @@ local function CaptureAvailableSnapshot(skipClassLines)
 
     IterateManagedSkillLines(function(skillLineData, skillLineId)
         if IsAvailableSkillLine(skillLineData) then
-            local isClassLine = type(ClassLineHelper) == "table"
-                and type(ClassLineHelper.IsClassSkillLine) == "function"
-                and ClassLineHelper:IsClassSkillLine(skillLineData, skillLineId)
-                or false
+            local isClassLine = ClassLineHelper:IsClassSkillLine(skillLineData, skillLineId)
             if skipClassLines ~= true or isClassLine ~= true then
                 local entries = CapturePassiveLineEntries(skillLineData)
                 local hasEntry = false
@@ -1456,11 +1437,7 @@ function M:CaptureCurrentSnapshot(options)
         and type(build.subclass) == "table"
         and build.subclass.targetSkillLineIds
         or nil
-    local classChanged = false
-    local classDiagnostics = nil
-    if type(ClassLineHelper) == "table" and type(ClassLineHelper.HasClassCompositionChanged) == "function" then
-        classChanged, classDiagnostics = ClassLineHelper:HasClassCompositionChanged(build)
-    end
+    local classChanged, classDiagnostics = ClassLineHelper:HasClassCompositionChanged(build)
 
     local snapshot = CaptureAvailableSnapshot(classChanged == true)
     local captureState = "full"
@@ -1472,18 +1449,16 @@ function M:CaptureCurrentSnapshot(options)
     end
 
     local lineCount, entryCount, zeroCount = CountSnapshotEntries(snapshot)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(
-            "Passive snapshot capture summary",
-            "overwriteType=" .. tostring(options.overwriteType),
-            "buildId=" .. tostring(options.buildId),
-            "captureState=" .. tostring(captureState),
-            "lineCount=" .. tostring(lineCount),
-            "entryCount=" .. tostring(entryCount),
-            "rankZeroCount=" .. tostring(zeroCount),
-            "classComparisonReason=" .. tostring(type(classDiagnostics) == "table" and classDiagnostics.reason or nil)
-        )
-    end
+    Log.LogDebugSummary(
+        "Passive snapshot capture summary",
+        "overwriteType=" .. tostring(options.overwriteType),
+        "buildId=" .. tostring(options.buildId),
+        "captureState=" .. tostring(captureState),
+        "lineCount=" .. tostring(lineCount),
+        "entryCount=" .. tostring(entryCount),
+        "rankZeroCount=" .. tostring(zeroCount),
+        "classComparisonReason=" .. tostring(type(classDiagnostics) == "table" and classDiagnostics.reason or nil)
+    )
 
     return snapshot, {
         ok = true,
@@ -1497,7 +1472,7 @@ function M:CaptureCurrentSnapshot(options)
 end
 
 function M:AnalyzeBuild(build, options)
-    local policy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(build) == "table" and build.passivePolicy or nil)
+    local policy = options.passiveRestore
     local analysis = CreateAnalysis(build, policy)
 
     if policy == POLICY_NONE then
@@ -1518,12 +1493,12 @@ function M:AnalyzeBuild(build, options)
 end
 
 function M:VerifyPostCommitLiveRanks(build, result, options)
-    result = type(result) == "table" and result or CreateExactApplyResult(build, nil, {})
     options = type(options) == "table" and options or {}
     local verifyEntries = type(result.targetEntries) == "table" and result.targetEntries or nil
 
     local analysis = self:AnalyzeBuild(build, {
         source = options.source or "passive_exact_post_commit_verify",
+        passiveRestore = result.policy,
     })
     result.postCommitAnalysis = analysis
     result.finalAnalysis = analysis
@@ -1624,7 +1599,7 @@ function M:VerifyPostCommitLiveRanks(build, result, options)
     end
 
     result.postCommitVerify = verify
-    if type(Log.LogDebugSummary) == "function" and options.suppressSummaryLog ~= true then
+    if options.suppressSummaryLog ~= true then
         local mode = type(result) == "table" and result.operationMode or nil
         local parts = {
             "Passive exact post-commit verify",
@@ -1643,19 +1618,17 @@ function M:VerifyPostCommitLiveRanks(build, result, options)
 
     if verify.mismatchCount > 0 and options.suppressMismatchDetailLog ~= true then
         for _, detail in ipairs(verify.mismatchEntries) do
-            if type(Log.LogDebugSummary) == "function" then
-                Log.LogDebugSummary(
-                    "Passive exact post-commit verify mismatch",
-                    "line=" .. tostring(detail.skillLineId),
-                    "skillIndex=" .. tostring(detail.skillIndex),
-                    "savedRank=" .. tostring(detail.savedRank),
-                    "expectedRank=" .. tostring(detail.expectedRank),
-                    "actualRank=" .. tostring(detail.actualRank),
-                    "pendingRank=" .. tostring(detail.pendingRank),
-                    "classification=" .. tostring(detail.classification),
-                    "reason=" .. tostring(detail.reason)
-                )
-            end
+            Log.LogDebugSummary(
+                "Passive exact post-commit verify mismatch",
+                "line=" .. tostring(detail.skillLineId),
+                "skillIndex=" .. tostring(detail.skillIndex),
+                "savedRank=" .. tostring(detail.savedRank),
+                "expectedRank=" .. tostring(detail.expectedRank),
+                "actualRank=" .. tostring(detail.actualRank),
+                "pendingRank=" .. tostring(detail.pendingRank),
+                "classification=" .. tostring(detail.classification),
+                "reason=" .. tostring(detail.reason)
+            )
         end
     end
 
@@ -1760,10 +1733,6 @@ function FinalizePassiveExactResultStatus(result)
 end
 
 local function LogStandaloneVerifyWait(verify, retryIndex)
-    if type(Log.LogDebugSummary) ~= "function" then
-        return
-    end
-
     Log.LogDebugSummary(
         "Passive exact standalone verify wait",
         "checked=" .. tostring(type(verify) == "table" and verify.checkedCount or 0),
@@ -1846,12 +1815,12 @@ function M:RunExactRestore(build, options)
     options = type(options) == "table" and options or {}
     local completion = type(options.completion) == "function" and options.completion or nil
     local pipelineContext = options.pipelineContext
-    local skipForSpSaver, spSaverReason = ResolveSpSaverPassiveSkip(pipelineContext)
-    if skipForSpSaver then
-        RecordSpSaverPassiveSkip(pipelineContext, spSaverReason)
-        local skippedResult = MarkExactResultSkippedForSpSaver(
+    local skipForSkillSettings, skillSettingsReason = ResolveSkillSettingsPassiveSkip(pipelineContext)
+    if skipForSkillSettings then
+        RecordSkillSettingsPassiveSkip(pipelineContext, skillSettingsReason)
+        local skippedResult = MarkExactResultSkippedForSkillSettings(
             CreateExactApplyResult(build, nil, options),
-            spSaverReason
+            skillSettingsReason
         )
         if completion ~= nil then
             CompleteExactApply(completion, true, nil, skippedResult, 0)
@@ -1862,6 +1831,7 @@ function M:RunExactRestore(build, options)
 
     local initialAnalysis = self:AnalyzeBuild(build, {
         source = "passive_exact_apply",
+        passiveRestore = options.passiveRestore,
     })
     local result = CreateExactApplyResult(build, initialAnalysis, options)
     result.maxAttempts = math.max(result.maxAttempts, ResolveRequiredAttemptCount(initialAnalysis))
@@ -1924,10 +1894,10 @@ function M:RunExactRestore(build, options)
     end
 
     runner = function()
-        local retrySkipForSpSaver, retrySpSaverReason = ResolveSpSaverPassiveSkip(pipelineContext)
-        if retrySkipForSpSaver then
-            RecordSpSaverPassiveSkip(pipelineContext, retrySpSaverReason)
-            MarkExactResultSkippedForSpSaver(result, retrySpSaverReason)
+        local retrySkipForSkillSettings, retrySkillSettingsReason = ResolveSkillSettingsPassiveSkip(pipelineContext)
+        if retrySkipForSkillSettings then
+            RecordSkillSettingsPassiveSkip(pipelineContext, retrySkillSettingsReason)
+            MarkExactResultSkippedForSkillSettings(result, retrySkillSettingsReason)
             if completion ~= nil then
                 CompleteExactApply(completion, true, nil, result, 0)
             end
@@ -1938,6 +1908,7 @@ function M:RunExactRestore(build, options)
         local analysis = M:AnalyzeBuild(build, {
             source = "passive_exact_apply_retry",
             attempt = result.attempts,
+            passiveRestore = result.policy,
         })
         result.analysis = analysis
         result.targetEntries = type(analysis) == "table" and analysis.targetEntries or result.targetEntries

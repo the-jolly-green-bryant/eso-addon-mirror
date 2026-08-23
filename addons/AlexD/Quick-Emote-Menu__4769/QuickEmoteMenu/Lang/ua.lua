@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Показати панель налаштувань",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Закривати меню після емоції (ЛКМ)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Скинути позицію кнопки",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "Зміщення кнопки чату по X",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "Горизонтальне зміщення кнопки відносно кнопки параметрів вікна чату. Застосовується лише коли кнопку прикріплено до вікна чату.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFМОЖЛИВОСТІ|r
 • Швидкий доступ до емоцій за допомогою категорій та обраного

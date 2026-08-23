@@ -2,17 +2,8 @@ MasterThief = MasterThief or {}
 MasterThief.name = "MasterThief"
 
 -- Security & Password Configuration
-MasterThief.isUnlocked = false
-MasterThief.password = "wiz0214"
-
--- Session Tracking Variables
-MasterThief.session = {
-    goldStolen = 0,
-    itemsStolen = 0,
-    motifsFound = 0,
-    plansFound = 0,
-    startTime = GetTimeStamp()
-}
+MasterThief.savedVars = MasterThief.savedVars or {}
+MasterThief.unlockPassword = "wiz0214"
 
 -- Default Saved Variables Configuration
 MasterThief.defaultSettings = {
@@ -20,89 +11,150 @@ MasterThief.defaultSettings = {
     showMotifs = true,
     showPlans = true,
     hideCompleted = false,
-    autoZoneOnly = false,
     fontSize = 11,
     posX = 60,
     posY = 100,
+    isUnlocked = false,
     completedZones = {
         ["Vvardenfell"] = false,
-        ["Clockwork"] = false,
+        ["Clockwork City"] = false,
         ["Summerset"] = false,
         ["Murkmire"] = false,
         ["Gold Coast"] = false,
         ["Hew's Bane"] = false,
         ["Wrothgar"] = false,
-        ["N. Elsweyr"] = false,
-        ["S. Elsweyr"] = false,
+        ["Northern Elsweyr"] = false,
+        ["Southern Elsweyr"] = false,
         ["Blackwood"] = false,
-        ["W. Skyrim"] = false,
+        ["Western Skyrim"] = false,
         ["Blackreach"] = false,
         ["The Reach"] = false,
-        ["Arkthzand"] = false,
+        ["Arkthzand Cavern"] = false,
         ["High Isle"] = false,
         ["Galen"] = false,
-        ["Deadlands"] = false,
-        ["Telvanni Pen."] = false,
+        ["The Deadlands"] = false,
+        ["Telvanni Peninsula"] = false,
         ["West Weald"] = false,
         ["Solstice"] = false,
         ["Craglorn"] = false,
         ["Apocrypha"] = false,
         ["Fargrave"] = false,
         ["Orcrest"] = false,
+        ["Imperial City"] = false,
+        -- Dungeons
+        ["Coral Aerie"] = false,
+        ["Shipwright's Regret"] = false,
+        ["Dread Cellar"] = false,
+        ["Red Petal Bastion"] = false,
+        ["Earthen Root Enclave"] = false,
+        ["Graven Deep"] = false,
+        ["Bal Sunnar"] = false,
+        ["Scrivener's Hall"] = false,
+        ["Oathsworn Pit"] = false,
+        ["Bedlam Veil"] = false,
+        -- Trials
+        ["Maw of Lorkhaj"] = false,
+        ["Halls of Fabrication"] = false,
+        ["Asylum Sanctorium"] = false,
+        ["Cloudrest"] = false,
+        ["Sunspire"] = false,
+        ["Kyne's Aegis"] = false,
+        ["Rockgrove"] = false,
+        ["Dreadsail Reef"] = false,
+        ["Sanity's Edge"] = false,
+        ["Lucent Citadel"] = false,
     }
 }
 
--- Comprehensive Routes with Explicit Stealing vs Container Methods
+-- Comprehensive High-End Elite Routes (Overland, Dungeons, and Trials)
 MasterThief.Routes = {
-    -- Chapters & Major Zones
-    { id = "Vvardenfell", zone = "Vvardenfell", spot = "Vivec City", target = "Nobles & Priests", loot = "Hlaalu/Redoran Motifs", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "Summerset", zone = "Summerset", spot = "Illumination Acad.", target = "Scholars & Desks", loot = "Alinor Motifs & Plans", method = "Container Looting", type = "plan" },
-    { id = "N. Elsweyr", zone = "Northern Elsweyr", spot = "Rimmen Bazaar", target = "Vendors & Nobles", loot = "Elsweyr Motifs & Plans", method = "Pickpocketing & Containers", type = "plan" },
-    { id = "W. Skyrim", zone = "Western Skyrim", spot = "Solitude Courtyard", target = "Nobles & Bards", loot = "Ancestral Nord Plans", method = "Container Looting", type = "plan" },
-    { id = "High Isle", zone = "High Isle", spot = "Gonfalon Docks", target = "Sailors & Wealthy", loot = "Ascendant Order Motifs", method = "Pickpocketing & Safeboxes", type = "plan" },
-    { id = "Galen", zone = "Galen", spot = "Vastyr Streets", target = "House Mornard & Locals", loot = "Druidic Plans", method = "Container Looting", type = "plan" },
-    { id = "Telvanni Pen.", zone = "Telvanni Peninsula", spot = "Necrom Streets", target = "Scholars & Priests", loot = "Apocrypha Styles", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "West Weald", zone = "West Weald", spot = "Skingrad Outskirts", target = "Locals & Nobles", loot = "Colovian Plans", method = "Container Looting", type = "plan" },
-    { id = "Solstice", zone = "Solstice", spot = "Sunport Interiors", target = "Local Homes & Coffers", loot = "Tide-Born Plans", method = "Container Looting & Dailies", type = "plan" },
-
-    -- DLC Zones & Sub-Zones
-    { id = "Hew's Bane", zone = "Hew's Bane", spot = "Abah's Landing", target = "Outlaws & Merchants", loot = "Abah's Watch Styles", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "Gold Coast", zone = "Gold Coast", spot = "Anvil Refuge Area", target = "Wealthy Citizens", loot = "Assassin Guild Motifs", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "Wrothgar", zone = "Wrothgar", spot = "Orsinium Upper City", target = "Orc Nobles & Homes", loot = "Ancient Orc Plans", method = "Container Looting", type = "plan" },
-    { id = "Clockwork", zone = "Clockwork City", spot = "Brass Fortress", target = "Factotums & Citizens", loot = "Apostle Motifs", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "Murkmire", zone = "Murkmire", spot = "Lilmoth Market", target = "Saxhleel Locals", loot = "Murkmire Plans", method = "Container Looting", type = "plan" },
-    { id = "S. Elsweyr", zone = "Southern Elsweyr", spot = "Senchal Docks", target = "Scoundrels & Sailors", loot = "Dragonguard Motifs", method = "Pickpocketing & Safeboxes", type = "plan" },
-    { id = "Blackwood", zone = "Blackwood", spot = "Leyawiin Streets", target = "Townspeople & Nobles", loot = "Leyawiin Plans", method = "Container Looting", type = "plan" },
-    { id = "Blackreach", zone = "Blackreach", spot = "Greymoor Caverns", target = "Cavern Inhabitants", loot = "Greymoor Styles", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "The Reach", zone = "The Reach", spot = "Markarth Undercity", target = "Reachmen", loot = "Reach Wizard Motifs", method = "Pickpocketing & Safeboxes", type = "motif" },
-    { id = "Arkthzand", zone = "Arkthzand Cavern", spot = "Arkthzand Library", target = "Explorers & Desks", loot = "Dwemer Plans", method = "Container Looting", type = "plan" },
-    { id = "Deadlands", zone = "The Shambles", spot = "Fargrave", target = "Dremora & Locals", loot = "Fargrave Styles & Plans", method = "Pickpocketing & Containers", type = "motif" },
-    { id = "Craglorn", zone = "Craglorn", spot = "Belkarth Outskirts", target = "Merchants & Nobles", loot = "Craglorn Furnishing Plans", method = "Container Looting", type = "plan" },
-    { id = "Apocrypha", zone = "Telvanni Peninsula", spot = "Fringe Archives", target = "Seekers & Cultists", loot = "Apocrypha Furnishing Plans", method = "Container Looting", type = "plan" },
-    { id = "Fargrave", zone = "The Deadlands", spot = "The Shambles", target = "Dremora Locals", loot = "Fargrave Furnishing Plans", method = "Container Looting", type = "plan" },
-    { id = "Orcrest", zone = "Northern Elsweyr", spot = "Orcrest Ruins", target = "Undead & Looters", loot = "Moon-Singer Plans", method = "Container Looting", type = "plan" },
+    { id = "Vvardenfell", zone = "Vvardenfell", spot = "Sadrith Mora", target = "Wealthy Targets", loot = "Triptych Paintings,Hlaalu, Redoran, and Telvanni Motifs and Indoril Furnishings", method = "Safebox,Pickpocketing and Container", type = "motif" },
+    { id = "Summerset", zone = "Summerset", spot = "Alinor Academies", target = "Desks & Nightstands", loot = "Alinor Furnishing Plans", method = "Container Looting", type = "plan" },
+    { id = "Northern Elsweyr", zone = "Northern Elsweyr", spot = "Rimmen Palaces", target = "Royal Containers", loot = "Elsweyr Furnishing Plans", method = "Pickpocketing and Container", type = "plan" },
+    { id = "Western Skyrim", zone = "Western Skyrim", spot = "Solitude Manors", target = "High-Class Desks", loot = "Vampiric Furnishing Plans and Solitude Epic Plans", method = "Container,Pickpocketing and Safebox", type = "plan" },
+    { id = "High Isle", zone = "High Isle", spot = "Mandre Manor", target = "Estate Containers", loot = "Breton / High Isle furnishing plans", method = "Pickpocketing Stealing and Container", type = "plan" },
+    { id = "Galen", zone = "Galen", spot = "Volcanic Vents (Volcanic Caches)", target = "House Mornard Homes", loot = "Druidic Furnishing Plans and Firesong Style Motif", method = "Pickpocketing Safebox Or Stealing", type = "plan" },
+    { id = "Telvanni Peninsula", zone = "Telvanni Peninsula", spot = "Necrom Archives", target = "Magisters & Scholars", loot = "Necrom & Telvanni Furnishing Plans", method = "Pickpocketing,Safeboxes and Container", type = "motif" },
+    { id = "West Weald", zone = "West Weald", spot = "Skingrad Manors", target = "Colovian Nobles", loot = "Colovian / West Weald Furnishing Plans", method = "Container Looting", type = "plan" },
+    { id = "Solstice", zone = "Solstice", spot = "Sunport High-Rollers", target = "Luxury Coffers", loot = "Solstice Tide-Born Style and Stone-Nest", method = "Container and Safebox", type = "plan" },
+    { id = "Hew's Bane", zone = "Hew's Bane", spot = "Abah's Landing Vaults", target = "Thief Lords", loot = "Redguard & Thieves Guild Furnishing Plans Thieves Guild Motif Chapters", method = "Pickpocketing & Safeboxes", type = "motif" },
+    { id = "Gold Coast", zone = "Gold Coast", spot = "None", target = "None", loot = "None", method = "None", type = "motif" },
+    { id = "Wrothgar", zone = "Wrothgar", spot = "Old Orsinium Stronghold", target = "Ancient Chests", loot = "Ancient Orc & Trinimac Epic Plans", method = "Container Looting", type = "plan" },
+    { id = "Clockwork City", zone = "Clockwork City", spot = "Brass Fortress Enclave", target = "Factotums & High Citizens", loot = "Clockwork Blueprint and Diagram Furnishing Plans", method = "Pickpocketing & Safeboxes", type = "plan" },
+    { id = "Murkmire", zone = "Murkmire", spot = "Lilmoth Trader Hubs", target = "Saxhleel Strongboxes", loot = "Murkmire Furnishing Plans", method = "Pickpocketing", type = "plan" },
+    { id = "Southern Elsweyr", zone = "Southern Elsweyr", spot = "Senchal Vaults", target = "Dragonguard Quarters", loot = "Elsweyr Furnishing Plans", method = "Pickpocketing,Safeboxes or Stolen Containers", type = "plan" },
+    { id = "Blackwood", zone = "Blackwood", spot = "Leyawiin Castles", target = "Noble Quarters", loot = "Leyawiin Epic Blueprints & Diagrams", method = "Container and Safebox", type = "plan" },
+    { id = "Blackreach", zone = "Blackreach", spot = "Greymoor caverns", target = "Vampire Lords", loot = "Nothing Important", method = "None", type = "motif" },
+    { id = "The Reach", zone = "The Reach", spot = "Markarth Chieftain Quarters", target = "Reach Masters", loot = "Vampiric & Reach-Style", method = "Pickpocketing,Safeboxes and Container", type = "plan" },
+    { id = "Arkthzand Cavern", zone = "Arkthzand Cavern", spot = "Anywhere", target = "Ancient Desks", loot = "Markarth / Solitude / Dwarven furnishing plans", method = "Container Looting", type = "plan" },
+    { id = "The Deadlands", zone = "The Deadlands", spot = "Fargrave Shambles Elite", target = "Dremora Lords", loot = "Deadlands Furnishing Plans", method = "pickpocketing and Container", type = "plan" },
+    { id = "Fargrave", zone = "Fargrave", spot = "The Shambles", target = "Luxury Containers", loot = "Fargrave-themed Furnishing Plans", method = "Stealing from standard or containers", type = "plan" },
+    { id = "Craglorn", zone = "Craglorn", spot = "Upper Craglorn Vaults", target = "Ancient Guardians", loot = "Nothing Important", method = "None", type = "plan" },
+    { id = "Apocrypha", zone = "Apocrypha", spot = "Fringe Archives Deep", target = "Seeker Tomes", loot = "Apocrypha Master Epic Plans", method = "Container Looting", type = "plan" },
+    { id = "Orcrest", zone = "Northern Elsweyr", spot = "Orcrest Deep Ruins", target = "Plague Vaults", loot = "Moon-Singer Epic Plans", method = "Container Looting", type = "plan" },
+    { id = "Imperial City", zone = "Imperial City", spot = "Noble Districts", target = "Xivkyn Generals", loot = "Xivkyn Master Motifs", method = "Elite Vault Chests", type = "motif" },
+    -- Group Dungeon Motifs
+    { id = "Coral Aerie", zone = "Coral Aerie", spot = "Final Boss Encounters", target = "Dungeon Bosses", loot = "Ascendant Order Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Shipwright's Regret", zone = "Shipwright's Regret", spot = "Captain's Quarters", target = "Dungeon Bosses", loot = "Dreadsails Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Dread Cellar", zone = "Dread Cellar", spot = "Magister Vaults", target = "Dungeon Bosses", loot = "Crimson Oath Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Red Petal Bastion", zone = "Red Petal Bastion", spot = "Knight Sanctum", target = "Dungeon Bosses", loot = "Silver Rose Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Earthen Root Enclave", zone = "Earthen Root Enclave", spot = "Grove Depths", target = "Dungeon Bosses", loot = "Y'ffre's Will Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Graven Deep", zone = "Graven Deep", spot = "Maormer Vaults", target = "Dungeon Bosses", loot = "Drowned Mariner Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Bal Sunnar", zone = "Bal Sunnar", spot = "Telvanni Sanctorium", target = "Dungeon Bosses", loot = "Blessed Inheritor Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Scrivener's Hall", zone = "Scrivener's Hall", spot = "Scribe Archives", target = "Dungeon Bosses", loot = "Scribes of Mora Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Oathsworn Pit", zone = "Oathsworn Pit", spot = "Clan Strongholds", target = "Dungeon Bosses", loot = "The Recollection Motif Chapters", method = "Group Dungeon", type = "motif" },
+    { id = "Bedlam Veil", zone = "Bedlam Veil", spot = "Vault of Memories", target = "Dungeon Bosses", loot = "Blind Path Cultist Motif Chapters", method = "Group Dungeon", type = "motif" },
+    -- Trial Motifs
+    { id = "Maw of Lorkhaj", zone = "Maw of Lorkhaj", spot = "Trial Lair", target = "Rajarh / Bosses", loot = "Dro-m'Athra Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Halls of Fabrication", zone = "Halls of Fabrication", spot = "The Refabricated Factory", target = "Assembly General", loot = "Refabricated Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Asylum Sanctorium", zone = "Asylum Sanctorium", spot = "Sanctorium Core", target = "Saint Olms", loot = "Asylum Saint Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Cloudrest", zone = "Cloudrest", spot = "Aerie Peak", target = "Z'Maja", loot = "O JSC - Welkynar Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Sunspire", zone = "Sunspire", spot = "Temple Roof", target = "Nahviintaas", loot = "Sunspire Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Kyne's Aegis", zone = "Kyne's Aegis", spot = "Keep Bastion", target = "Lord Falgravn", loot = "Sea Giant Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Rockgrove", zone = "Rockgrove", spot = "Sacrificial Pit", target = "Kalagrak / Xalvakka", loot = "True-Sworn Motif Chapters", method = "12-Player Trial", type = "motif" },
+    { id = "Dreadsail Reef", zone = "Dreadsail Reef", spot = "Fleet Flagship", target = "Lylanar / Turlassil", loot = "Dreadsail Reef / Syrabanic Marine motif", method = "12-Player Trial", type = "motif" },
+    { id = "Sanity's Edge", zone = "Sanity's Edge", spot = "Mind Fortress", target = "Ansuul the Tormentor", loot = "Sul-Xan / Disciples of Torment Motifs", method = "12-Player Trial", type = "motif" },
+    { id = "Lucent Citadel", zone = "Lucent Citadel", spot = "Riven Vaults", target = "Xoryn", loot = "Lucent Consortium Motif Chapters", method = "12-Player Trial", type = "motif" },
 }
 
 -- Comprehensive Map Sub-Zone & Alias Mapping
 MasterThief.ZoneAlias = {
     ["vivec city"] = "vvardenfell", ["vardenfell"] = "vvardenfell", ["sadrith mora"] = "vvardenfell", ["gnisis"] = "vvardenfell", ["balmora"] = "vvardenfell",
-    ["summerset"] = "summerset", ["shimmerene"] = "summerset", ["alaxon"] = "summerset", ["psijic"] = "summerset",
-    ["northern elsweyr"] = "n. elsweyr", ["rimmen"] = "n. elsweyr", ["southern elsweyr"] = "s. elsweyr", ["senchal"] = "s. elsweyr", ["pelitine"] = "s. elsweyr",
-    ["western skyrim"] = "w. skyrim", ["skyrim"] = "w. skyrim", ["solitude"] = "w. skyrim", 
+    ["summerset"] = "summerset", ["shimmerene"] = "summerset", ["alaxon"] = "summerset", ["psijic"] = "summerset", ["artaeum"] = "summerset",
+    ["northern elsweyr"] = "northern elsweyr", ["rimmen"] = "northern elsweyr", ["southern elsweyr"] = "southern elsweyr", ["senchal"] = "southern elsweyr", ["pelitine"] = "southern elsweyr",
+    ["western skyrim"] = "western skyrim", ["skyrim"] = "western skyrim", ["solitude"] = "western skyrim", 
     ["blackreach"] = "blackreach", ["greymoor caverns"] = "blackreach", ["blackreach: greymoor caverns"] = "blackreach",
     ["the reach"] = "the reach", ["markarth"] = "the reach",
-    ["arkthzand cavern"] = "arkthzand", ["arkthzand"] = "arkthzand", ["blackreach: arkthzand cavern"] = "arkthzand",
-    ["high isle"] = "high isle", ["gonfalon bay"] = "high isle", ["amenos"] = "high isle", ["galen"] = "galen", ["y'ffelon"] = "galen", ["vastyr"] = "galen",
-    ["telvanni peninsula"] = "telvanni pen.", ["necrom"] = "telvanni pen.", ["apocrypha"] = "telvanni pen.",
+    ["arkthzand cavern"] = "arkthzand cavern", ["arkthzand"] = "arkthzand cavern", ["blackreach: arkthzand cavern"] = "arkthzand cavern",
+    ["high isle"] = "high isle", ["gonfalon bay"] = "high isle", ["amenos"] = "high isle",
+    ["galen"] = "galen", ["y'ffelon"] = "galen", ["vastyr"] = "galen",
+    ["telvanni peninsula"] = "telvanni peninsula", ["necrom"] = "telvanni peninsula", 
+    ["apocrypha"] = "apocrypha", ["fringe archives"] = "apocrypha",
     ["west weald"] = "west weald", ["skingrad"] = "west weald",
     ["solstice"] = "solstice", ["sunport"] = "solstice", ["shell-tide village"] = "solstice", ["shor's stand"] = "solstice",
     ["hew's bane"] = "hew's bane", ["abah's landing"] = "hew's bane", ["thieves guild"] = "hew's bane",
     ["gold coast"] = "gold coast", ["anvil"] = "gold coast", ["kvatch"] = "gold coast",
     ["wrothgar"] = "wrothgar", ["orsinium"] = "wrothgar",
-    ["clockwork city"] = "clockwork", ["brass fortress"] = "clockwork",
+    ["clockwork city"] = "clockwork city", ["brass fortress"] = "clockwork city",
     ["murkmire"] = "murkmire", ["lilmoth"] = "murkmire",
     ["blackwood"] = "blackwood", ["leyawiin"] = "blackwood", ["gideon"] = "blackwood",
-    ["the deadlands"] = "deadlands", ["fargrave"] = "deadlands", ["deadlands"] = "deadlands", ["the shambles"] = "deadlands",
+    ["the deadlands"] = "the deadlands", ["deadlands"] = "deadlands", 
+    ["fargrave"] = "fargrave", ["the shambles"] = "fargrave",
+    ["craglorn"] = "craglorn", ["belkarth"] = "craglorn",
+    ["orcrest"] = "orcrest",
+    ["imperial city"] = "imperial city", ["imperial city prison"] = "imperial city",
+    -- Dungeons
+    ["coral aerie"] = "coral aerie", ["shipwright's regret"] = "shipwright's regret",
+    ["dread cellar"] = "dread cellar", ["red petal bastion"] = "red petal bastion",
+    ["earthen root enclave"] = "earthen root enclave", ["graven deep"] = "graven deep",
+    ["bal sunnar"] = "bal sunnar", ["scrivener's hall"] = "scrivener's hall",
+    ["oathsworn pit"] = "oathsworn pit", ["bedlam veil"] = "bedlam veil",
+    -- Trials
+    ["maw of lorkhaj"] = "maw of lorkhaj", ["halls of fabrication"] = "halls of fabrication",
+    ["asylum sanctorium"] = "asylum sanctorium", ["cloudrest"] = "cloudrest",
+    ["sunspire"] = "sunspire", ["kyne's aegis"] = "kyne's aegis",
+    ["rockgrove"] = "rockgrove", ["dreadsail reef"] = "dreadsail reef",
+    ["sanity's edge"] = "sanity's edge", ["lucent citadel"] = "lucent citadel",
 }
 
 -----------------------------------------------------------
@@ -113,31 +165,7 @@ function MasterThief.GetCustomFont(size)
 end
 
 -----------------------------------------------------------
--- 2. INVENTORY & LOOT MONITORING (SESSION TRACKER)
------------------------------------------------------------
-function MasterThief.OnInventorySingleSlotUpdate(bagId, slotId, isNewItem, itemSoundCategory, updateReason, stackCountChange)
-    if not MasterThief.isUnlocked then return end
-    if bagId ~= BAG_BACKPACK then return end
-    
-    local itemLink = GetItemLink(bagId, slotId)
-    if not itemLink or itemLink == "" then return end
-
-    local itemType = GetItemLinkItemType(itemLink)
-    local itemText = string.lower(itemLink)
-
-    if isNewItem or updateReason == CURRENCY_UPDATE_REASON_STOLEN_ITEM then
-        if itemType == ITEMTYPE_RACIAL_STYLE_MOTIF or string.find(itemText, "motif") or string.find(itemText, "style") then
-            MasterThief.session.motifsFound = MasterThief.session.motifsFound + (stackCountChange > 0 and stackCountChange or 1)
-        elseif itemType == ITEMTYPE_FURNISHING or string.find(itemText, "plan") or string.find(itemText, "blueprint") or string.find(itemText, "diagram") or string.find(itemText, "praxis") then
-            MasterThief.session.plansFound = MasterThief.session.plansFound + (stackCountChange > 0 and stackCountChange or 1)
-        else
-            MasterThief.session.itemsStolen = MasterThief.session.itemsStolen + 1
-        end
-    end
-end
-
------------------------------------------------------------
--- 3. UI HUD DISPLAY & POSITIONING
+-- 2. UI HUD DISPLAY & POSITIONING
 -----------------------------------------------------------
 function MasterThief.ApplyPosition()
     if not MasterThief.hudFrame then return end
@@ -181,19 +209,11 @@ function MasterThief.CreateHUD()
     MasterThief.UpdateHUDContent()
     MasterThief.ApplyPosition()
     
-    if not MasterThief.isUnlocked then
-        MasterThief.hudFrame:SetHidden(true)
-    else
-        MasterThief.hudFrame:SetHidden(not MasterThief.savedVars.showHUD)
-    end
+    MasterThief.hudFrame:SetHidden(not MasterThief.savedVars.showHUD)
 end
 
 function MasterThief.UpdateHUDContent()
     if not MasterThief.contentLabel or not MasterThief.hudFrame then return end
-    if not MasterThief.isUnlocked then
-        MasterThief.hudFrame:SetHidden(true)
-        return
-    end
 
     local currentSize = MasterThief.savedVars.fontSize or 11
     MasterThief.contentLabel:SetFont(MasterThief.GetCustomFont(currentSize))
@@ -201,58 +221,56 @@ function MasterThief.UpdateHUDContent()
     local boxWidth = 410
     MasterThief.contentLabel:SetWidth(boxWidth)
 
-    local currentZoneName = ""
-    if GetMapName then currentZoneName = GetMapName() end
-    if (not currentZoneName or currentZoneName == "" or currentZoneName == "Tamriel") and GetZoneText then
-        currentZoneName = GetZoneText()
-    end
-    if not currentZoneName or currentZoneName == "" then currentZoneName = "Unknown" end
+    local textBuffer = ""
 
-    local lookupZone = string.lower(currentZoneName)
-    local matchedRouteId = MasterThief.ZoneAlias[lookupZone]
+    -- Check if locked (No password shown on HUD)
+    if not MasterThief.savedVars.isUnlocked then
+        textBuffer = "|cFF5555[ MASTER THIEF: LOCKED ]|r\n\n|cFFFFFFAddon is locked.|r\n|cAAAAAAType your unlock command|r\n|cAAAAAAto access the elite guide.|r"
+    else
+        local currentZoneName = ""
+        if GetMapName then currentZoneName = GetMapName() end
+        if (not currentZoneName or currentZoneName == "" or currentZoneName == "Tamriel") and GetZoneText then
+            currentZoneName = GetZoneText()
+        end
+        if not currentZoneName or currentZoneName == "" then currentZoneName = "Unknown" end
 
-    local textBuffer = zo_strformat("|cFFD700[ MASTER THIEF ]|r\n", "")
-    local displayedCount = 0
-    
-    for _, r in ipairs(MasterThief.Routes) do
-        local isCompleted = MasterThief.savedVars.completedZones[r.id]
+        local lookupZone = string.lower(currentZoneName)
+        local matchedRouteId = MasterThief.ZoneAlias[lookupZone]
+
+        textBuffer = zo_strformat("|cFFD700[ MASTER THIEF: ELITE ]|r\n", "")
+        local foundMatch = false
         
-        local passCategory = false
-        if r.type == "motif" and MasterThief.savedVars.showMotifs then passCategory = true
-        elseif r.type == "plan" and MasterThief.savedVars.showPlans then passCategory = true end
+        for _, r in ipairs(MasterThief.Routes) do
+            local isCompleted = MasterThief.savedVars.completedZones[r.id]
+            
+            local passCategory = false
+            if r.type == "motif" and MasterThief.savedVars.showMotifs then passCategory = true
+            elseif r.type == "plan" and MasterThief.savedVars.showPlans then passCategory = true end
 
-        local passCompletion = true
-        if MasterThief.savedVars.hideCompleted and isCompleted then passCompletion = false end
+            local passCompletion = true
+            if MasterThief.savedVars.hideCompleted and isCompleted then passCompletion = false end
 
-        local passZone = true
-        if MasterThief.savedVars.autoZoneOnly then
+            local passZone = false
             if matchedRouteId then
-                if string.lower(r.id) ~= matchedRouteId then passZone = false end
+                if string.lower(r.id) == matchedRouteId then passZone = true end
             else
-                if not string.find(string.lower(r.zone), lookupZone) and not string.find(lookupZone, string.lower(r.zone)) then passZone = false end
+                if string.find(string.lower(r.zone), lookupZone) or string.find(lookupZone, string.lower(r.zone)) then passZone = true end
+            end
+
+            if passCategory and passCompletion and passZone then
+                foundMatch = true
+                local zoneColor = isCompleted and "|c00FF00" or "|c00BFFF"
+                local lineTemplate = zo_strformat("<<1>><<2>> |cAAAAAA(<<3>>)|r\n  |cFFD700->>|r |cFFFFFF<<4>>|r\n  |cFF99FF[Method: <<5>>]|r\n", 
+                    zoneColor, r.zone, r.spot, r.loot, r.method)
+                textBuffer = textBuffer .. lineTemplate
+                break 
             end
         end
 
-        if passCategory and passCompletion and passZone then
-            displayedCount = displayedCount + 1
-            local zoneColor = isCompleted and "|c00FF00" or "|c00BFFF"
-            -- Displays Zone, Spot, Loot, and Method clearly on the HUD
-            local lineTemplate = zo_strformat("<<1>><<2>> |cAAAAAA(<<3>>)|r\n  |cFFD700->>|r |cFFFFFF<<4>>|r\n  |cFF99FF[Method: <<5>>]|r\n", 
-                zoneColor, r.zone, r.spot, r.loot, r.method)
-            textBuffer = textBuffer .. lineTemplate
+        if not foundMatch then
+            textBuffer = zo_strformat("|cFFD700[ MASTER THIEF: ELITE ]|r\n\n|c888888No active route for:\n|cFF5555<<1>>|r", currentZoneName)
         end
     end
-
-    if displayedCount == 0 then
-        if MasterThief.savedVars.autoZoneOnly then
-            textBuffer = zo_strformat("|cFFD700[ MASTER THIEF ]|r\n\n|c888888No active route for:\n|cFF5555<<1>>|r", currentZoneName)
-        else
-            textBuffer = textBuffer .. "\n|cFF0000No zones match filters.|r\n"
-        end
-    end
-
-    textBuffer = textBuffer .. string.format("\n|cFFD700--- Session Heist Stats ---|r\n|cFFFFFFItems Stolen:|r %d  |cFFFFFFMotifs/Plans:|r %d", 
-        MasterThief.session.itemsStolen, (MasterThief.session.motifsFound + MasterThief.session.plansFound))
     
     MasterThief.contentLabel:SetText(textBuffer)
 
@@ -261,7 +279,7 @@ function MasterThief.UpdateHUDContent()
 end
 
 -----------------------------------------------------------
--- 4. SETTINGS PANEL & INITIALIZATION
+-- 3. SETTINGS PANEL & INITIALIZATION
 -----------------------------------------------------------
 function MasterThief.CreateSettingsPanel()
     local LAM = LibAddonMenu2
@@ -270,10 +288,10 @@ function MasterThief.CreateSettingsPanel()
     local panelName = "MasterThief_OptionsPanel"
     local panelData = {
         type = "panel",
-        name = "Master Thief",
-        displayName = zo_strformat("|cFFD700Master Thief Settings|r"),
+        name = "Master Thief Elite",
+        displayName = zo_strformat("|cFFD700Master Thief Elite Settings|r"),
         author = "Thief",
-        version = "8.1",
+        version = "9.9",
         slashCommand = "/thiefsettings",
         registerForRefresh = true,
         registerForDefaults = true,
@@ -289,31 +307,20 @@ function MasterThief.CreateSettingsPanel()
             getFunc = function() return MasterThief.savedVars.showHUD end,
             setFunc = function(value)
                 MasterThief.savedVars.showHUD = value
-                if MasterThief.hudFrame and MasterThief.isUnlocked then MasterThief.hudFrame:SetHidden(not value) end
+                if MasterThief.hudFrame then MasterThief.hudFrame:SetHidden(not value) end
             end,
             default = MasterThief.defaultSettings.showHUD,
         },
         {
             type = "checkbox",
-            name = zo_strformat("Auto-Detect Current Zone Only (Recommended)"),
-            tooltip = zo_strformat("Keeps the HUD clean by only showing the route for the specific zone you are currently in!"),
-            getFunc = function() return MasterThief.savedVars.autoZoneOnly end,
-            setFunc = function(value)
-                MasterThief.savedVars.autoZoneOnly = value
-                MasterThief.UpdateHUDContent()
-            end,
-            default = MasterThief.defaultSettings.autoZoneOnly,
-        },
-        {
-            type = "checkbox",
-            name = zo_strformat("Show Motif Zones"),
+            name = zo_strformat("Show Elite Motif Zones"),
             getFunc = function() return MasterThief.savedVars.showMotifs end,
             setFunc = function(value) MasterThief.savedVars.showMotifs = value; MasterThief.UpdateHUDContent() end,
             default = MasterThief.defaultSettings.showMotifs,
         },
         {
             type = "checkbox",
-            name = zo_strformat("Show Furnishing Plan Zones"),
+            name = zo_strformat("Show Epic/Master Plan Zones"),
             getFunc = function() return MasterThief.savedVars.showPlans end,
             setFunc = function(value) MasterThief.savedVars.showPlans = value; MasterThief.UpdateHUDContent() end,
             default = MasterThief.defaultSettings.showPlans,
@@ -378,24 +385,8 @@ function MasterThief.Initialize()
 
     EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_PLAYER_ACTIVATED, function() MasterThief.UpdateHUDContent() end)
     EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_ZONE_CHANGED, function() MasterThief.UpdateHUDContent() end)
-    EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId, slotId, isNewItem, itemSoundCategory, updateReason, stackCountChange)
-        MasterThief.OnInventorySingleSlotUpdate(bagId, slotId, isNewItem, itemSoundCategory, updateReason, stackCountChange)
-        MasterThief.UpdateHUDContent()
-    end)
-
-    -- Unlock Command
-    SLASH_COMMANDS["/unlock"] = function(passwordInput)
-        if passwordInput == MasterThief.password then
-            MasterThief.isUnlocked = true
-            MasterThief.UpdateHUDContent()
-            if MasterThief.hudFrame and MasterThief.savedVars.showHUD then
-                MasterThief.hudFrame:SetHidden(false)
-            end
-        end
-    end
 
     SLASH_COMMANDS["/thief"] = function()
-        if not MasterThief.isUnlocked then return end
         if MasterThief.hudFrame then
             local isHidden = MasterThief.hudFrame:IsHidden()
             MasterThief.hudFrame:SetHidden(not isHidden)
@@ -403,10 +394,14 @@ function MasterThief.Initialize()
         end
     end
 
-    SLASH_COMMANDS["/thiefstats"] = function()
-        if not MasterThief.isUnlocked then return end
-        d(zo_strformat("|cFFD700[MasterThief Stats]|r Items Stolen: <<1>> | Motifs Found: <<2>> | Plans Found: <<3>>", 
-            MasterThief.session.itemsStolen, MasterThief.session.motifsFound, MasterThief.session.plansFound))
+    SLASH_COMMANDS["/hi"] = function(password)
+        if password == MasterThief.unlockPassword then
+            MasterThief.savedVars.isUnlocked = true
+            MasterThief.UpdateHUDContent()
+            d("|c00FF00[MasterThief] Successfully unlocked! Enjoy the elite guide.|r")
+        else
+            d("|cFF5555[MasterThief] Incorrect password provided.|r")
+        end
     end
 end
 

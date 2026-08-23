@@ -5,7 +5,7 @@ local Log = Addon.Common.Log
 local SHARED_UTIL = Addon.Common.Util
 
 function M.IsSummaryDebugEnabled()
-    return type(Log.IsSummaryDebugEnabled) == "function" and Log.IsSummaryDebugEnabled() == true
+    return Log.IsSummaryDebugEnabled() == true
 end
 
 function M.Log(...)
@@ -19,9 +19,7 @@ function M.Log(...)
     end
 
     local message = "Skill respec " .. table.concat(parts, " ")
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(message)
-    end
+    Log.LogDebugSummary(message)
 end
 
 function M.FormatLineIdList(lineIds)
@@ -34,18 +32,6 @@ function M.FormatLineIdList(lineIds)
         values[index] = tostring(lineId)
     end
     return table.concat(values, ",")
-end
-
-function M.FormatValueList(values)
-    if type(values) ~= "table" or #values == 0 then
-        return "(none)"
-    end
-
-    local formatted = {}
-    for index, value in ipairs(values) do
-        formatted[index] = tostring(value)
-    end
-    return table.concat(formatted, ",")
 end
 
 function M.BuildLineIdSignature(lineIds)

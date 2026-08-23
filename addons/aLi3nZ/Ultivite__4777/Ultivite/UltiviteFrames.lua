@@ -2,12 +2,28 @@ local U = Ultivite
 U.Frames = U.Frames or {}
 local VFM = U.Frames
 local FAB = U.FancyActionBar
+local Ownership = U.Ownership
 
 local ADDON_NAME = "Ultivite"
 local SAVED_VARS_NAME = "VanillaFrameMoverSavedVariables"
 local CHARACTER_SAVED_VARS_NAME = "VanillaFrameMoverCharacterSavedVariables"
 local SAVED_VARS_VERSION = 1
-local VERSION = "10.7.90 / Ultivite 1.0.125"
+local VERSION = "10.7.95 / Ultivite 1.0.160"
+local ACTION_BAR_HIDDEN_OWNER = "ActionBarHidden"
+
+local function BeginQuickMenuPreviewInteraction()
+    local quickMenu = U.QuickMenu
+    if quickMenu and quickMenu.BeginPreviewHudInteraction then
+        quickMenu.BeginPreviewHudInteraction()
+    end
+end
+
+local function EndQuickMenuPreviewInteraction()
+    local quickMenu = U.QuickMenu
+    if quickMenu and quickMenu.EndPreviewHudInteraction then
+        quickMenu.EndPreviewHudInteraction()
+    end
+end
 
 
 local NORMAL_WIDTH = 237
@@ -87,6 +103,16 @@ local PROFILE_SETTING_KEYS = {
     "staminaX", "staminaY",
     "snapToGrid", "gridSize",
     "layoutVersion", "compactGap", "bottomMargin",
+    "pyramidLayoutEnabled",
+    "pyramidBackupValid",
+    "pyramidBackupHealthX", "pyramidBackupHealthY",
+    "pyramidBackupMagickaX", "pyramidBackupMagickaY",
+    "pyramidBackupStaminaX", "pyramidBackupStaminaY",
+    "pyramidBackupGeometryValid",
+    "pyramidBackupBarWidth", "pyramidBackupBarThickness",
+    "pyramidFabBackupValid",
+    "pyramidFabBackupKbX", "pyramidFabBackupKbY",
+    "pyramidFabBackupGpX", "pyramidFabBackupGpY",
     "darkSoulsLeft", "darkSoulsTop", "darkSoulsGap",
     "dsBottomX", "dsBottomOffset", "dsBottomGap", "dsSelfScale",
     "barWidth", "barThickness",
@@ -112,6 +138,7 @@ local PROFILE_SETTING_KEYS = {
     "questTrackerVisibilityMode",
     "queueStatusVisibilityMode",
     "crosshairVisibilityMode",
+    "hideGoldenPursuits",
     "crownDirectionArrow",
     "crownDirectionArrowSize",
     "crownDirectionArrowOpacity",
@@ -159,6 +186,22 @@ local defaults = {
     layoutVersion = 0,
     compactGap = 24,
     bottomMargin = 8,
+    pyramidLayoutEnabled = false,
+    pyramidBackupValid = false,
+    pyramidBackupHealthX = 0,
+    pyramidBackupHealthY = 0,
+    pyramidBackupMagickaX = 0,
+    pyramidBackupMagickaY = 0,
+    pyramidBackupStaminaX = 0,
+    pyramidBackupStaminaY = 0,
+    pyramidBackupGeometryValid = false,
+    pyramidBackupBarWidth = 0,
+    pyramidBackupBarThickness = 0,
+    pyramidFabBackupValid = false,
+    pyramidFabBackupKbX = 0,
+    pyramidFabBackupKbY = 0,
+    pyramidFabBackupGpX = 0,
+    pyramidFabBackupGpY = 0,
 
     -- Dark Souls preset anchors are saved so the user can tune them, print
     -- the exact values, and later promote a preferred arrangement to a new
@@ -196,6 +239,7 @@ local defaults = {
     questTrackerVisibilityMode = "pvp",
     queueStatusVisibilityMode = "show",
     crosshairVisibilityMode = "show",
+    hideGoldenPursuits = false,
 
     -- Navigation helpers are intentionally opt-in. They use only public ESO
     -- position/camera APIs and never modify the world map or group state.
@@ -895,6 +939,9 @@ function VFM.IsActionBarRootVisible()
     if not root then
         return false
     end
+    if Ownership and Ownership.IsControlOwned and Ownership.IsControlOwned(root) then
+        return false
+    end
     if root.IsHidden and root:IsHidden() then
         return false
     end
@@ -1173,12 +1220,14 @@ function VFM.ApplyActionBarHidden()
     if FAB and FAB.IsUnlocked and FAB.IsUnlocked() then
         return false
     end
-    VFM.CaptureActionBarVisibilitySnapshot()
-
-    -- Hide the complete shared ESO/Fancy Action Bar+ root, including Ultimate.
-    for _, control in ipairs(VFM.GetActionBarControls()) do
-        if control.SetHidden then
-            control:SetHidden(true)
+    if Ownership and Ownership.AcquireControl then
+        for _, control in ipairs(VFM.GetActionBarControls()) do
+            Ownership.AcquireControl(ACTION_BAR_HIDDEN_OWNER, control)
+        end
+    else
+        VFM.CaptureActionBarVisibilitySnapshot()
+        for _, control in ipairs(VFM.GetActionBarControls()) do
+            if control.SetHidden then control:SetHidden(true) end
         end
     end
 
@@ -1186,13 +1235,24 @@ function VFM.ApplyActionBarHidden()
 end
 
 function VFM.RestoreActionBarVisibility()
+    if Ownership and Ownership.ReleaseControl then
+        local released = false
+        for _, control in ipairs(VFM.GetActionBarControls()) do
+            if Ownership.ReleaseControl(ACTION_BAR_HIDDEN_OWNER, control) then released = true end
+        end
+        VFM.actionBarVisibilitySnapshot = nil
+        return released
+    end
+
     if not VFM.actionBarVisibilitySnapshot then
         return false
     end
 
     for control, snapshot in pairs(VFM.actionBarVisibilitySnapshot) do
         if control and control.SetHidden and snapshot and snapshot.hidden ~= nil then
-            control:SetHidden(snapshot.hidden and true or false)
+            if not (Ownership and Ownership.EnforceControl and Ownership.EnforceControl(control)) then
+                control:SetHidden(snapshot.hidden and true or false)
+            end
         end
     end
 
@@ -2845,6 +2905,7 @@ function VFM.EnsureDragCapture()
     capture:SetHandler("OnMouseUp", function(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT and VFM.draggingKey then
             VFM.EndManualDrag(VFM.draggingKey)
+            EndQuickMenuPreviewInteraction()
         end
     end)
 
@@ -3094,8 +3155,11 @@ function VFM.CreateMover(key)
         end
 
         if button == MOUSE_BUTTON_INDEX_RIGHT then
+            BeginQuickMenuPreviewInteraction()
             VFM.UndoBarToEditSnapshot(key)
+            EndQuickMenuPreviewInteraction()
         elseif button == MOUSE_BUTTON_INDEX_LEFT then
+            BeginQuickMenuPreviewInteraction()
             VFM.BeginManualDrag(key)
         end
     end)
@@ -3103,6 +3167,7 @@ function VFM.CreateMover(key)
     mover:SetHandler("OnMouseUp", function(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT then
             VFM.EndManualDrag(key)
+            EndQuickMenuPreviewInteraction()
         end
     end)
 
@@ -3111,6 +3176,12 @@ function VFM.CreateMover(key)
             return
         end
 
+        local quickMenu = Ultivite and U.QuickMenu or nil
+        if quickMenu and quickMenu.previewEnabled == true and quickMenu.resizeEnabled ~= true then
+            return
+        end
+
+        BeginQuickMenuPreviewInteraction()
         local change = delta > 0 and 0.05 or -0.05
 
         if IsShiftKeyDown and IsShiftKeyDown() then
@@ -3122,6 +3193,7 @@ function VFM.CreateMover(key)
         end
 
         VFM.UpdateAllMoverHints()
+        EndQuickMenuPreviewInteraction()
     end)
 
     VFM.movers[key] = {
@@ -4044,7 +4116,7 @@ function VFM.SetChampionProgressVisibilityMode(mode, silent)
             pvp = "hidden in PvP only",
             hide = "hidden always",
         }
-        Print("Champion Point progress " .. (labels[mode] or labels.show))
+        Print("Champion progress bar " .. (labels[mode] or labels.show))
     end
 end
 
@@ -4423,15 +4495,80 @@ function VFM.GetChatVisibilityMode()
 end
 
 function VFM.GetChatControl()
-    if CHAT_SYSTEM and CHAT_SYSTEM.primaryContainer and CHAT_SYSTEM.primaryContainer.control then
-        return CHAT_SYSTEM.primaryContainer.control
+    local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+    if chatSystem and chatSystem.primaryContainer and chatSystem.primaryContainer.control then
+        return chatSystem.primaryContainer.control
     end
     return _G.ZO_ChatWindow
 end
 
+function VFM.ApplyChatResizeExtents()
+    local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+    if not chatSystem then return false end
+
+    local rootWidth, rootHeight = 1920, 1080
+    if GuiRoot and type(GuiRoot.GetDimensions) == "function" then
+        local ok, width, height = pcall(GuiRoot.GetDimensions, GuiRoot)
+        if ok then
+            rootWidth = tonumber(width) or rootWidth
+            rootHeight = tonumber(height) or rootHeight
+        end
+    end
+
+    local minWidth = tonumber(chatSystem.minContainerWidth) or 300
+    local minHeight = tonumber(chatSystem.minContainerHeight) or 170
+    local maxWidth = math.max(550, math.floor(rootWidth - 40))
+    local maxHeight = math.max(380, math.floor(rootHeight - 80))
+
+    if type(chatSystem.SetContainerExtents) == "function" then
+        pcall(chatSystem.SetContainerExtents, chatSystem, minWidth, maxWidth, minHeight, maxHeight)
+    else
+        -- Compatibility fallback for an older chat system implementation.
+        chatSystem.minContainerWidth = minWidth
+        chatSystem.maxContainerWidth = maxWidth
+        chatSystem.minContainerHeight = minHeight
+        chatSystem.maxContainerHeight = maxHeight
+    end
+
+    if type(chatSystem.containers) == "table" then
+        for _, container in pairs(chatSystem.containers) do
+            if container and type(container.CalculateConstraints) == "function" then
+                pcall(container.CalculateConstraints, container)
+            end
+        end
+    elseif chatSystem.primaryContainer and type(chatSystem.primaryContainer.CalculateConstraints) == "function" then
+        pcall(chatSystem.primaryContainer.CalculateConstraints, chatSystem.primaryContainer)
+    end
+
+    return true
+end
+
+function VFM.RepairManagedChatState()
+    local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+    if not chatSystem then return false end
+
+    VFM.ApplyChatResizeExtents()
+
+    -- Older Ultivite builds used the stock Minimize() state for chat auto hide.
+    -- Undo that legacy structural state only when Ultivite itself is managing
+    -- chat visibility. Normal SHOW mode keeps the player's own minimize choice.
+    if VFM.GetChatVisibilityMode() ~= "show"
+        and type(chatSystem.IsMinimized) == "function"
+        and type(chatSystem.Maximize) == "function" then
+        local ok, minimized = pcall(chatSystem.IsMinimized, chatSystem)
+        if ok and minimized == true then
+            pcall(chatSystem.Maximize, chatSystem)
+        end
+    end
+
+    VFM.ApplyChatVisibilityMode()
+    return true
+end
+
 function VFM.IsChatTextEntryOpen()
-    if CHAT_SYSTEM and CHAT_SYSTEM.textEntry and CHAT_SYSTEM.textEntry.IsOpen then
-        local ok, open = pcall(CHAT_SYSTEM.textEntry.IsOpen, CHAT_SYSTEM.textEntry)
+    local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
+    if entry and entry.IsOpen then
+        local ok, open = pcall(entry.IsOpen, entry)
         return ok and open == true
     end
     return false
@@ -4483,33 +4620,73 @@ end
 function VFM.ApplyAutoHideChat()
     if not VFM.saved or VFM.saved.autoHideChat ~= true then return false end
 
-    -- Never minimize the chat container while the text entry is open. Several
-    -- Dark Souls presets intentionally use auto-hide chat, but the quick menu is
-    -- itself opened through chat. Minimizing the container during a preset click
-    -- used to destroy the quick-menu session before the selected profile could be
-    -- reviewed or adjusted. The normal visibility guardian applies the saved hide
-    -- rule as soon as text entry closes.
-    if VFM.IsChatTextEntryOpen and VFM.IsChatTextEntryOpen() then
-        return false
-    end
-    local quickMenu = Ultivite and Ultivite.QuickMenu or nil
-    if quickMenu and quickMenu.panel and quickMenu.panel.IsHidden and not quickMenu.panel:IsHidden() then
-        return false
-    end
-
-    -- CHAT_SYSTEM:Minimize() is safe once the chat containers have loaded. This
-    -- function is only called from/after EVENT_PLAYER_ACTIVATED, never during
-    -- early addon initialization.
-    if CHAT_SYSTEM and type(CHAT_SYSTEM.Minimize) == "function" then
-        local ok = pcall(CHAT_SYSTEM.Minimize, CHAT_SYSTEM)
-        return ok
-    end
-    return false
+    -- Auto hide is presentation only. Never call the stock chat Minimize() API
+    -- here because minimized state changes the container structure and resize
+    -- behaviour. ApplyChatVisibilityMode already provides the requested hide.
+    return VFM.ApplyChatVisibilityMode()
 end
 
 function VFM.SetAutoHideChat(enabled, silent)
     if not VFM.saved then return end
     VFM.SetChatVisibilityMode(enabled and "hide" or "show", silent)
+end
+
+local GOLDEN_PURSUITS_HIDDEN_REASON = "UltiviteHideGoldenPursuits"
+
+function VFM.IsGoldenPursuitsHidden()
+    return VFM.saved and VFM.saved.hideGoldenPursuits == true
+end
+
+function VFM.ApplyGoldenPursuitsVisibility()
+    if not VFM.saved then return false end
+    local hidden = VFM.saved.hideGoldenPursuits == true
+    local applied = false
+
+    -- Golden Pursuits is the promotional-event HUD tracker. Use its fragment's
+    -- hidden-reason system so ESO can still decide whether content exists when
+    -- Ultivite releases ownership.
+    local fragmentApplied = false
+    if PROMOTIONAL_EVENT_TRACKER and PROMOTIONAL_EVENT_TRACKER.GetFragment then
+        local okFragment, fragment = pcall(PROMOTIONAL_EVENT_TRACKER.GetFragment, PROMOTIONAL_EVENT_TRACKER)
+        if okFragment and fragment and fragment.SetHiddenForReason then
+            local duration = DEFAULT_HUD_DURATION or 0
+            fragmentApplied = pcall(fragment.SetHiddenForReason, fragment, GOLDEN_PURSUITS_HIDDEN_REASON, hidden, duration, duration)
+            applied = fragmentApplied or applied
+        end
+    end
+
+    -- Fallback only for builds where the tracker object/fragment is not ready.
+    -- Track direct ownership so turning the option back on never leaves the
+    -- top-level control stuck hidden.
+    local control = _G and _G.ZO_PromotionalEventTracker_TL or nil
+    if not fragmentApplied and control and control.SetHidden then
+        if hidden then
+            VFM.goldenPursuitsFallbackHidden = true
+            applied = pcall(control.SetHidden, control, true) or applied
+        elseif VFM.goldenPursuitsFallbackHidden == true then
+            applied = pcall(control.SetHidden, control, false) or applied
+            VFM.goldenPursuitsFallbackHidden = nil
+        end
+    elseif not hidden then
+        VFM.goldenPursuitsFallbackHidden = nil
+    end
+    return applied
+end
+
+function VFM.SetGoldenPursuitsHidden(hidden, silent)
+    if not VFM.saved then return end
+    VFM.saved.hideGoldenPursuits = hidden and true or false
+    VFM.RequestSettingsSave()
+    VFM.ApplyGoldenPursuitsVisibility()
+
+    -- The tracker can refresh after a campaign/activity update. Reapply once
+    -- after the click while the fragment hidden reason remains authoritative.
+    if zo_callLater then
+        zo_callLater(function() VFM.ApplyGoldenPursuitsVisibility() end, 250)
+    end
+    if not silent then
+        Print(VFM.saved.hideGoldenPursuits and "Golden Pursuits hidden" or "Golden Pursuits returned to ESO control")
+    end
 end
 
 local NAVIGATION_UPDATE_NAME = ADDON_NAME .. "NavigationHelpers"
@@ -5628,6 +5805,10 @@ function VFM.GetVisualPrimaryBarHeight()
 end
 
 function VFM.ApplyBottomCompactLayout(silent)
+    if VFM.saved then
+        VFM.saved.pyramidLayoutEnabled = false
+        VFM.ClearPyramidLayoutBackups()
+    end
     local rootHeight = GuiRoot:GetHeight() or 1080
     local gap = Clamp(VFM.saved.compactGap, 0, 200)
     local bottomMargin = Clamp(VFM.saved.bottomMargin, 0, 300)
@@ -5660,6 +5841,10 @@ function VFM.SetBottomMargin(value)
 end
 
 function VFM.ApplyUltiviteBottomPreset(silent)
+    if VFM.saved then
+        VFM.saved.pyramidLayoutEnabled = false
+        VFM.ClearPyramidLayoutBackups()
+    end
     -- Recommended Ultivite layout captured in game. Keep these
     -- exact saved offsets rather than recalculating from screen dimensions.
     VFM.saved.barWidth = 1.455
@@ -5678,6 +5863,196 @@ function VFM.ApplyUltiviteBottomPreset(silent)
     if not silent then
         Print("Recommended player-bar layout restored")
     end
+end
+
+local function getFancyActionBarHandle()
+    return FAB or FancyActionBar
+end
+
+local function clearPyramidLayoutBackups()
+    if not VFM.saved then return end
+    VFM.saved.pyramidBackupValid = false
+    VFM.saved.pyramidBackupHealthX = 0
+    VFM.saved.pyramidBackupHealthY = 0
+    VFM.saved.pyramidBackupMagickaX = 0
+    VFM.saved.pyramidBackupMagickaY = 0
+    VFM.saved.pyramidBackupStaminaX = 0
+    VFM.saved.pyramidBackupStaminaY = 0
+    VFM.saved.pyramidBackupGeometryValid = false
+    VFM.saved.pyramidBackupBarWidth = 0
+    VFM.saved.pyramidBackupBarThickness = 0
+    VFM.saved.pyramidFabBackupValid = false
+    VFM.saved.pyramidFabBackupKbX = 0
+    VFM.saved.pyramidFabBackupKbY = 0
+    VFM.saved.pyramidFabBackupGpX = 0
+    VFM.saved.pyramidFabBackupGpY = 0
+end
+
+function VFM.ClearPyramidLayoutBackups()
+    clearPyramidLayoutBackups()
+end
+
+local function capturePyramidLayoutBackups()
+    if not VFM.saved then return end
+
+    if VFM.saved.pyramidBackupValid ~= true then
+        VFM.saved.pyramidBackupHealthX = tonumber(VFM.saved.healthX) or 0
+        VFM.saved.pyramidBackupHealthY = tonumber(VFM.saved.healthY) or 0
+        VFM.saved.pyramidBackupMagickaX = tonumber(VFM.saved.magickaX) or 0
+        VFM.saved.pyramidBackupMagickaY = tonumber(VFM.saved.magickaY) or 0
+        VFM.saved.pyramidBackupStaminaX = tonumber(VFM.saved.staminaX) or 0
+        VFM.saved.pyramidBackupStaminaY = tonumber(VFM.saved.staminaY) or 0
+        VFM.saved.pyramidBackupValid = true
+    end
+
+    -- Geometry backup is independent so upgrading from the old Pyramid build,
+    -- which already had a position backup but did not resize the bars, still
+    -- captures the user's normal width/thickness before applying this layout.
+    if VFM.saved.pyramidBackupGeometryValid ~= true then
+        VFM.saved.pyramidBackupBarWidth = tonumber(VFM.saved.barWidth) or defaults.barWidth
+        VFM.saved.pyramidBackupBarThickness = tonumber(VFM.saved.barThickness) or defaults.barThickness
+        VFM.saved.pyramidBackupGeometryValid = true
+    end
+
+    if VFM.saved.pyramidFabBackupValid ~= true then
+        local fab = getFancyActionBarHandle()
+        local fabSettings = fab and fab.GetSettings and fab.GetSettings() or nil
+        if fabSettings and fabSettings.abMove then
+            local kb = fabSettings.abMove.kb or {}
+            local gp = fabSettings.abMove.gp or {}
+            VFM.saved.pyramidFabBackupKbX = tonumber(kb.x) or 0
+            VFM.saved.pyramidFabBackupKbY = tonumber(kb.y) or 0
+            VFM.saved.pyramidFabBackupGpX = tonumber(gp.x) or 0
+            VFM.saved.pyramidFabBackupGpY = tonumber(gp.y) or 0
+            VFM.saved.pyramidFabBackupValid = true
+        end
+    end
+end
+
+local function restorePyramidActionBarBackup()
+    if not VFM.saved or VFM.saved.pyramidFabBackupValid ~= true then return false end
+
+    local fab = getFancyActionBarHandle()
+    local fabSettings = fab and fab.GetSettings and fab.GetSettings() or nil
+    if not fab or not fabSettings then return false end
+
+    fabSettings.abMove = fabSettings.abMove or {}
+    fabSettings.abMove.kb = fabSettings.abMove.kb or {}
+    fabSettings.abMove.gp = fabSettings.abMove.gp or {}
+
+    local kbX = tonumber(VFM.saved.pyramidFabBackupKbX)
+    local kbY = tonumber(VFM.saved.pyramidFabBackupKbY)
+    local gpX = tonumber(VFM.saved.pyramidFabBackupGpX)
+    local gpY = tonumber(VFM.saved.pyramidFabBackupGpY)
+
+    if kbX and kbY then
+        fabSettings.abMove.kb.enable = true
+        fabSettings.abMove.kb.x = kbX
+        fabSettings.abMove.kb.y = kbY
+        fabSettings.abMove.kb.prevX = kbX
+        fabSettings.abMove.kb.prevY = kbY
+    end
+    if gpX and gpY then
+        fabSettings.abMove.gp.enable = true
+        fabSettings.abMove.gp.x = gpX
+        fabSettings.abMove.gp.y = gpY
+        fabSettings.abMove.gp.prevX = gpX
+        fabSettings.abMove.gp.prevY = gpY
+    end
+
+    local useGamepad = fab.style == 2
+    local targetX = useGamepad and gpX or kbX
+    local targetY = useGamepad and gpY or kbY
+
+    if fab.constants and fab.constants.move and targetX and targetY then
+        fab.constants.move.enable = true
+        fab.constants.move.x = targetX
+        fab.constants.move.y = targetY
+    end
+    if fab.SetWholeActionBarPosition and targetX and targetY then
+        fab.SetWholeActionBarPosition(targetX, targetY)
+    end
+    if fab.ReanchorMover then fab.ReanchorMover() end
+    if fab.SaveMoverPosition then fab.SaveMoverPosition() end
+    if fab.ApplyCombatOnlyVisibility then fab.ApplyCombatOnlyVisibility(false) end
+    return true
+end
+
+function VFM.ApplyPyramidLayout(silent)
+    if not VFM.saved then return false end
+
+    capturePyramidLayoutBackups()
+    VFM.saved.pyramidLayoutEnabled = true
+    VFM.saved.individualPositionsInitialized = true
+
+    VFM.ExitFullDarkSoulsPresetState()
+    VFM.SetDSBottomOnly(false, true)
+    VFM.SetDSSelfResourceBars(false, true)
+    VFM.SetDSSelfHealthBar(false, true)
+    VFM.SetDarkSoulsMode(false, true)
+    VFM.SetHideActionBar(false, true)
+
+    -- User-approved Pyramid reference captured from the in-game layout report.
+    -- Keep these as the default Pyramid geometry so enabling Pyramid always
+    -- restores this exact arrangement unless the user adjusts it again later.
+    VFM.saved.barWidth = 1.301
+    VFM.saved.barThickness = 1.899
+    VFM.ApplyBarGeometry()
+
+    if Ultivite and U.PositionFancyActionBarBelowPlayerBars then
+        U.PositionFancyActionBarBelowPlayerBars(true)
+    end
+
+    VFM.SetSavedPosition("health", 7, 413, false)
+    VFM.SetSavedPosition("magicka", -196, 455, false)
+    VFM.SetSavedPosition("stamina", 203, 455, false)
+
+    VFM.ApplyPositions()
+    VFM.UpdateAllMoverLabels()
+    VFM.RefreshDSSelfHealthRuntime()
+    VFM.UpdateCombatVisibility()
+    VFM.RequestSettingsSave()
+
+    if not silent then
+        Print("Pyramid player frames applied")
+    end
+    return true
+end
+
+function VFM.RestorePyramidLayout(silent)
+    if not VFM.saved then return false end
+
+    VFM.saved.pyramidLayoutEnabled = false
+    if VFM.saved.pyramidBackupValid == true then
+        VFM.SetSavedPosition("health", tonumber(VFM.saved.pyramidBackupHealthX) or 0, tonumber(VFM.saved.pyramidBackupHealthY) or 0, false)
+        VFM.SetSavedPosition("magicka", tonumber(VFM.saved.pyramidBackupMagickaX) or 0, tonumber(VFM.saved.pyramidBackupMagickaY) or 0, false)
+        VFM.SetSavedPosition("stamina", tonumber(VFM.saved.pyramidBackupStaminaX) or 0, tonumber(VFM.saved.pyramidBackupStaminaY) or 0, false)
+    end
+    if VFM.saved.pyramidBackupGeometryValid == true then
+        VFM.saved.barWidth = tonumber(VFM.saved.pyramidBackupBarWidth) or defaults.barWidth
+        VFM.saved.barThickness = tonumber(VFM.saved.pyramidBackupBarThickness) or defaults.barThickness
+        VFM.ApplyBarGeometry()
+    end
+
+    VFM.ApplyPositions()
+    VFM.UpdateAllMoverLabels()
+    VFM.RefreshDSSelfHealthRuntime()
+    VFM.UpdateCombatVisibility()
+    restorePyramidActionBarBackup()
+    clearPyramidLayoutBackups()
+    VFM.RequestSettingsSave()
+
+    if not silent then
+        Print("Pyramid player frames disabled")
+    end
+    return true
+end
+
+function VFM.SetPyramidLayoutEnabled(enabled, silent)
+    if enabled then
+        return VFM.ApplyPyramidLayout(silent)
+    end
+    return VFM.RestorePyramidLayout(silent)
 end
 
 function VFM.SetDarkSoulsTopLeftX(value)
@@ -6198,13 +6573,14 @@ function VFM.OnPlayerActivated()
     -- Player activation is a safe HUD point to repair a compass or quest tracker
     -- left hidden by the previous PvP zone before ESO finishes the transition.
     VFM.RefreshUiVisibilityRules(true)
+    VFM.ApplyGoldenPursuitsVisibility()
     VFM.UpdateCombatVisibility(VFM.inCombat)
     VFM.ApplyWerewolfResourceBarVisibility()
     VFM.ApplyMountStaminaBarVisibility()
     VFM.RefreshNavigationHelpers(true)
-    if VFM.saved and VFM.saved.autoHideChat then
-        zo_callLater(function() VFM.ApplyAutoHideChat() end, 500)
-    end
+    zo_callLater(function()
+        VFM.RepairManagedChatState()
+    end, 500)
 
     zo_callLater(function()
         VFM.ApplySavedLayoutDirect("player activated", false)
@@ -6279,6 +6655,8 @@ end
 
 function VFM.SetQuickPlayerLayout(layout, silent)
     if not VFM.saved then return end
+    VFM.saved.pyramidLayoutEnabled = false
+    clearPyramidLayoutBackups()
     layout = tostring(layout or QUICK_PLAYER_LAYOUT_NORMAL)
     VFM.ExitFullDarkSoulsPresetState()
 
@@ -6367,8 +6745,8 @@ function VFM.GetMenuOptions()
         },
         {
             type = "dropdown",
-            name = "Champion Point progress visibility",
-            tooltip = "Show always keeps ESO's native Champion Point progress bar on the normal HUD. Hide in combat suppresses Champion progress while fighting. Hide in PvP suppresses it only in PvP areas. Hide always suppresses Champion progress everywhere. Skill and XP gain animations can still temporarily use the shared progress bar.",
+            name = "Champion Progress Bar visibility",
+            tooltip = "Controls ESO's Champion XP progress bar only. CP numbers on Champion player target and group frames remain always enabled by Ultivite.",
             choices = { "Show always", "Hide in combat", "Hide in PvP only", "Hide always" },
             choicesValues = { "show", "combat", "pvp", "hide" },
             getFunc = function() return VFM.GetChampionProgressVisibilityMode() end,
@@ -6601,8 +6979,17 @@ function VFM.GetMenuOptions()
             tooltip = "Optional alignment helpers. Your normal layout is edited directly by dragging the bars.",
             controls = {
                 {
+                    type = "checkbox",
+                    name = "Pyramid",
+                    tooltip = "Reference Pyramid layout: Health centred above two smaller Magicka and Stamina bars that meet beneath it, with Fancy Action Bar safely below the resource cluster. Turning it off restores the previous bar size, positions and action-bar position.",
+                    getFunc = function() return VFM.saved and VFM.saved.pyramidLayoutEnabled == true end,
+                    setFunc = function(value) VFM.SetPyramidLayoutEnabled(value, false) end,
+                    default = false,
+                    width = "full",
+                },
+                {
                     type = "button",
-                    name = "Vanilla bottom HUD",
+                    name = "Ultivite Default Bottom HUD",
                     tooltip = "Applies Ultivite's default combat layout for the three player resource bars: centered, tightly spaced and almost touching the bottom edge. Fancy Action Bar is positioned directly above by the main Ultivite preset.",
                     func = function()
                         if Ultivite and U.ApplyDefaultCombatHUDLayout then
@@ -7134,6 +7521,9 @@ function VFM.Initialize(externalSaved)
         VFM.characterSaved = externalSaved
         VFM.accountSaved.useAccountWide = VFM.IsUsingAccountWideSettings()
     else
+        -- Keep GetWorldName() here for compatibility with the existing legacy
+        -- VanillaFrameMover SavedVariables path. Character IDs do not require it,
+        -- but deleting the profile level would make old settings appear reset.
         VFM.accountSaved = ZO_SavedVars:NewAccountWide(
             SAVED_VARS_NAME, SAVED_VARS_VERSION, nil, defaults, GetWorldName()
         )
@@ -7187,10 +7577,10 @@ function VFM.Initialize(externalSaved)
     VFM.RefreshDSEnemyHealthRuntime()
     VFM.RefreshDSSelfHealthRuntime()
     VFM.RefreshUiVisibilityRules()
+    VFM.ApplyGoldenPursuitsVisibility()
     VFM.RefreshNavigationHelpers(true)
 
-    if EVENT_GAME_CAMERA_UI_MODE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CameraUiMode", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CameraUiMode", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
             -- Returning from interaction/full UI scenes can make ESO refresh the
             -- native player bars. Reconcile Combat Only as part of that transition.
             VFM.UpdateCombatVisibility()
@@ -7199,9 +7589,9 @@ function VFM.Initialize(externalSaved)
             VFM.UpdateDSSelfHealthBar()
             VFM.UpdateDSSelfResourceBars()
             VFM.ApplyMountStaminaBarVisibility()
+            VFM.ApplyGoldenPursuitsVisibility()
             VFM.RefreshNavigationHelpers(true)
-        end)
-    end
+    end)
 
     -- Reassert once after the rest of the UI has had a chance to register panel
     -- shortcuts. The guardian continues to protect /vfm afterwards.
@@ -7215,23 +7605,19 @@ function VFM.Initialize(externalSaved)
         VFM.OnCombatStateChanged(eventCode, inCombat)
     end)
 
-    if EVENT_WEREWOLF_STATE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WerewolfState", EVENT_WEREWOLF_STATE_CHANGED, function()
-            zo_callLater(function()
-                            VFM.ApplyWerewolfResourceBarVisibility()
-            end, 0)
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WerewolfState", EVENT_WEREWOLF_STATE_CHANGED, function()
+        zo_callLater(function()
+            VFM.ApplyWerewolfResourceBarVisibility()
+        end, 0)
+    end)
 
-    if EVENT_MOUNTED_STATE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "MountState", EVENT_MOUNTED_STATE_CHANGED, function()
-            -- ZOS refreshes MountStamina on this event. Reassert our dedicated
-            -- suppression immediately after the native handler runs.
-            zo_callLater(function()
-                VFM.ApplyMountStaminaBarVisibility()
-            end, 0)
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "MountState", EVENT_MOUNTED_STATE_CHANGED, function()
+        -- ZOS refreshes MountStamina on this event. Reassert our dedicated
+        -- suppression immediately after the native handler runs.
+        zo_callLater(function()
+            VFM.ApplyMountStaminaBarVisibility()
+        end, 0)
+    end)
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "GamepadMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function()
         VFM.OnPlatformStyleChanged()
@@ -7256,17 +7642,15 @@ function VFM.Initialize(externalSaved)
     for _, eventData in ipairs(visualEvents) do
         local eventId = eventData[1]
         local suffix = eventData[2]
-        if eventId then
-            EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. suffix, eventId, function()
-                zo_callLater(function()
-                    if VFM.runtimeReady then
-                        VFM.ApplyAll()
-                    else
-                        VFM.ScheduleApply(0)
-                    end
-                end, 0)
-            end)
-        end
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. suffix, eventId, function()
+            zo_callLater(function()
+                if VFM.runtimeReady then
+                    VFM.ApplyAll()
+                else
+                    VFM.ScheduleApply(0)
+                end
+            end, 0)
+        end)
     end
 
     VFM.initialized = true
@@ -7275,4 +7659,3 @@ function VFM.Initialize(externalSaved)
     -- without waiting for EVENT_PLAYER_ACTIVATED or optional runtime metadata.
     VFM.ScheduleApply(0)
 end
-

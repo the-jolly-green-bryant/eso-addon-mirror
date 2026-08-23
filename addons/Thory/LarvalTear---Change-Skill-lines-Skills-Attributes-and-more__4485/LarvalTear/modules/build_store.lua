@@ -1,12 +1,13 @@
 local Addon = LarvalTearMod
 local Domains = Addon.Common.Domains
 local Log = Addon.Common.Log
+local SkillSettings = Addon.Common.SkillSettings
 local Util = Addon.Common.Util
-local SpSaverModes = Addon.Common.SpSaverModes
 local LTM_ATTRIBUTE_SNAPSHOT = Addon.Modules.AttributeSnapshot
 local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 local LTM_PASSIVE_SNAPSHOT_APPLY = Addon.Modules.PassiveSnapshotApply
 local LTM_ROLE_STATE = Addon.Modules.RoleState
+local LTM_SKILL_SNAPSHOT_AUDIT = Addon.Modules.SkillSnapshotAudit
 local LTM_SUBCLASS_NAME_HELPER = Addon.SubclassNameHelper
 local LTM_SUBCLASS_SNAPSHOT = Addon.Modules.SubclassSnapshot
 local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
@@ -233,16 +234,6 @@ local function ResolveForceChampionRespec(value)
     return value == true
 end
 
-local function NormalizeBuildSpSaver(spSaver)
-    spSaver = type(spSaver) == "table" and spSaver or {}
-
-    return {
-        useOverride = spSaver.useOverride == true,
-        activeMode = SpSaverModes:NormalizeActiveMode(spSaver.activeMode),
-        passiveMode = SpSaverModes:NormalizePassiveMode(spSaver.passiveMode),
-    }
-end
-
 local function ResolveOptionalLinkId(value)
     if type(value) ~= "string" or value == "" or value == "none" then
         return nil
@@ -306,15 +297,13 @@ local function NormalizeBuildCommonShape(build)
     -- Keep SavedVariables focused on source data. Display/cache fields are
     -- rebuilt when needed instead of being persisted with each saved build.
     build.name = nil
-    build.passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(build.passivePolicy)
-    build.spSaver = NormalizeBuildSpSaver(build.spSaver)
+    build.skillSettings = SkillSettings:NormalizeBuild(build.skillSettings)
+    build.passivePolicy = nil
+    build.spSaver = nil
     build.quickslotProfileId = ResolveOptionalLinkId(build.quickslotProfileId)
     build.foodCardId = ResolveOptionalLinkId(build.foodCardId)
     build.classMastery = NormalizeClassMasteryShape(build.classMastery)
-    build.role = type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.NormalizeRoleState) == "function"
-        and LTM_ROLE_STATE:NormalizeRoleState(build.role)
-        or nil
+    build.role = LTM_ROLE_STATE:NormalizeRoleState(build.role)
     if type(build.skills) == "table" and type(build.skills.slots) == "table" then
         for _, slotEntry in ipairs(build.skills.slots) do
             if type(slotEntry) == "table" then
@@ -363,13 +352,11 @@ end
 local function EncodeBuildForPersist(build)
     local persistentBuild, encodeResult = LTM_BUILD_CODEC:EncodeBuildForPersist(build)
     if type(encodeResult) == "table" and encodeResult.status ~= "success" then
-        if type(Log.LogDebugSummary) == "function" then
-            Log.LogDebugSummary(
-                "Build persist encode failed",
-                "status=" .. tostring(encodeResult.status),
-                "reason=" .. tostring(type(encodeResult.errors) == "table" and encodeResult.errors[1] or "unknown")
-            )
-        end
+        Log.LogDebugSummary(
+            "Build persist encode failed",
+            "status=" .. tostring(encodeResult.status),
+            "reason=" .. tostring(type(encodeResult.errors) == "table" and encodeResult.errors[1] or "unknown")
+        )
         return nil, encodeResult
     end
 
@@ -403,26 +390,6 @@ local function NormalizePageBuildOrder(page)
     page.builds = type(page.builds) == "table" and page.builds or {}
     page.buildOrder = NormalizeOrder(page.buildOrder, page.builds)
     return page.buildOrder
-end
-
-local function ApplyBuildRuntimeOverrides(build, overrides)
-    if type(build) ~= "table" then
-        return nil
-    end
-
-    if type(overrides) ~= "table" then
-        return build
-    end
-
-    if overrides.passivePolicy == nil then
-        return build
-    end
-
-    local clonedBuild = Util:DeepCopy(build)
-    if overrides.passivePolicy ~= nil then
-        clonedBuild.passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(overrides.passivePolicy)
-    end
-    return clonedBuild
 end
 
 local function BuildCopiedBuildName(baseName, copyIndex)
@@ -820,12 +787,7 @@ end
 
 local function BuildSubclassName(subclassState)
     local activeLines = type(subclassState) == "table" and subclassState.activeSkillLines or nil
-    if type(LTM_SUBCLASS_NAME_HELPER) == "table"
-        and type(LTM_SUBCLASS_NAME_HELPER.BuildBuildNameFromActiveLines) == "function" then
-        return LTM_SUBCLASS_NAME_HELPER:BuildBuildNameFromActiveLines(activeLines)
-    end
-
-    return GetStringValue("SI_LTM_BUILD_CURRENT_NAME", "Current Build")
+    return LTM_SUBCLASS_NAME_HELPER:BuildBuildNameFromActiveLines(activeLines)
 end
 
 local function NormalizeOverwriteType(overwriteType)
@@ -978,11 +940,6 @@ function LTM_BUILD_STORE:GetCurrentCharacterKey()
 end
 
 function LTM_BUILD_STORE:CaptureCurrentSubclassForBuild()
-    if type(LTM_SUBCLASS_SNAPSHOT) ~= "table"
-        or type(LTM_SUBCLASS_SNAPSHOT.CaptureCurrentSubclassState) ~= "function" then
-        return nil, "subclass_snapshot_unavailable"
-    end
-
     local subclassState = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(nil)
     local targetSkillLineIds = type(subclassState) == "table" and type(subclassState.activeSkillLineIds) == "table"
         and CloneShallow(subclassState.activeSkillLineIds)
@@ -997,11 +954,6 @@ function LTM_BUILD_STORE:CaptureCurrentSubclassForBuild()
 end
 
 function LTM_BUILD_STORE:CaptureCurrentAttributesForBuild()
-    if type(LTM_ATTRIBUTE_SNAPSHOT) ~= "table"
-        or type(LTM_ATTRIBUTE_SNAPSHOT.CaptureCurrentAttributeState) ~= "function" then
-        return nil, "attribute_snapshot_unavailable"
-    end
-
     local attributeState = LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(nil)
     return {
         health = type(attributeState) == "table" and attributeState.health or 0,
@@ -1131,28 +1083,24 @@ function LTM_BUILD_STORE:CaptureCurrentClassMasteryForBuild()
     end
 
     if type(bestCandidate) == "table" then
-        if type(Log.LogDebugSummary) == "function" then
-            Log.LogDebugSummary(
-                "Mastery line detected",
-                "targetSkillLineId=" .. tostring(bestCandidate.skillLineId),
-                "candidateCount=" .. tostring(bestCandidate.candidateCount),
-                "priority=" .. tostring(bestCandidate.priority)
-            )
-            Log.LogDebugSummary(
-                "Mastery abilities captured",
-                "targetSkillLineId=" .. tostring(bestCandidate.skillLineId),
-                "purchasedCount=" .. tostring(bestCandidate.purchasedCount)
-            )
-        end
+        Log.LogDebugSummary(
+            "Mastery line detected",
+            "targetSkillLineId=" .. tostring(bestCandidate.skillLineId),
+            "candidateCount=" .. tostring(bestCandidate.candidateCount),
+            "priority=" .. tostring(bestCandidate.priority)
+        )
+        Log.LogDebugSummary(
+            "Mastery abilities captured",
+            "targetSkillLineId=" .. tostring(bestCandidate.skillLineId),
+            "purchasedCount=" .. tostring(bestCandidate.purchasedCount)
+        )
         return {
             targetSkillLineId = bestCandidate.skillLineId,
             purchasedAbilities = bestCandidate.purchasedAbilities,
         }
     end
 
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary("Mastery capture skipped", "reason=mastery_line_not_detected_on_capture")
-    end
+    Log.LogDebugSummary("Mastery capture skipped", "reason=mastery_line_not_detected_on_capture")
     return nil
 end
 
@@ -1180,11 +1128,6 @@ function LTM_BUILD_STORE:CaptureCurrentChampionPointsForBuild()
 end
 
 function LTM_BUILD_STORE:CaptureCurrentPassiveSnapshotForBuild(build, buildId, overwriteType, existingSnapshot)
-    if type(LTM_PASSIVE_SNAPSHOT_APPLY) ~= "table"
-        or type(LTM_PASSIVE_SNAPSHOT_APPLY.CaptureCurrentSnapshot) ~= "function" then
-        return nil, "passive_snapshot_module_unavailable"
-    end
-
     local snapshot, details = LTM_PASSIVE_SNAPSHOT_APPLY:CaptureCurrentSnapshot({
         build = build,
         buildId = buildId,
@@ -1195,6 +1138,14 @@ function LTM_BUILD_STORE:CaptureCurrentPassiveSnapshotForBuild(build, buildId, o
         return nil, "passive_snapshot_capture_failed"
     end
     return snapshot, nil, details
+end
+
+function LTM_BUILD_STORE:CaptureCurrentActiveSnapshotForBuild()
+    local snapshot, err = LTM_SKILL_SNAPSHOT_AUDIT:CaptureCurrentActiveSnapshot()
+    if type(snapshot) ~= "table" or type(snapshot.a) ~= "string" then
+        return nil, err or "active_snapshot_capture_failed"
+    end
+    return snapshot, nil
 end
 
 local function GetPersistentCharacterBucket(store, characterKey)
@@ -1963,8 +1914,7 @@ function LTM_BUILD_STORE:GetBuildById(buildId)
     local buildList = self:GetBuildListForCurrentCharacter()
     local build = type(buildList) == "table" and buildList[buildId] or nil
     if type(build) == "table" then
-        local overrides = type(self.runtimeBuildOverridesById) == "table" and self.runtimeBuildOverridesById[buildId] or nil
-        return ApplyBuildRuntimeOverrides(build, overrides)
+        return build
     end
 
     return nil
@@ -1999,28 +1949,6 @@ function LTM_BUILD_STORE:GetPreferredBuildById(buildId)
     end
 
     return nil, nil
-end
-
-function LTM_BUILD_STORE:SetBuildPassivePolicy(buildId, passivePolicy)
-    if type(buildId) ~= "string" or buildId == "" then
-        return nil, "build_id_missing"
-    end
-
-    local page, _, persistentBuild = FindPersistentBuildLocationById(self, buildId, nil, true)
-    if type(persistentBuild) ~= "table" then
-        return nil, "build_not_found"
-    end
-
-    self.runtimeBuildOverridesById = self.runtimeBuildOverridesById or {}
-    local savedBuild = DecodeBuildForRuntime(persistentBuild)
-    local normalizedPolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(passivePolicy)
-    -- Persist to the saved build and mirror into runtime overrides for active views.
-    savedBuild.passivePolicy = normalizedPolicy
-    StoreBuildForPersist(page, buildId, savedBuild)
-    local overrides = self.runtimeBuildOverridesById[buildId] or {}
-    overrides.passivePolicy = normalizedPolicy
-    self.runtimeBuildOverridesById[buildId] = overrides
-    return normalizedPolicy
 end
 
 function LTM_BUILD_STORE:SetBuildTransformApply(buildId, kind, enabled)
@@ -2081,20 +2009,20 @@ function LTM_BUILD_STORE:DeleteBuildTransform(buildId, kind)
     return true
 end
 
-function LTM_BUILD_STORE:GetBuildSpSaverSettings(buildId)
+function LTM_BUILD_STORE:GetBuildSkillSettings(buildId)
     if type(buildId) ~= "string" or buildId == "" then
-        return NormalizeBuildSpSaver(nil), "build_id_missing"
+        return SkillSettings:NormalizeBuild(nil), "build_id_missing"
     end
 
     local build = self:GetBuildById(buildId)
     if type(build) ~= "table" then
-        return NormalizeBuildSpSaver(nil), "build_not_found"
+        return SkillSettings:NormalizeBuild(nil), "build_not_found"
     end
 
-    return NormalizeBuildSpSaver(build.spSaver)
+    return SkillSettings:NormalizeBuild(build.skillSettings)
 end
 
-function LTM_BUILD_STORE:SetBuildSpSaverSettings(buildId, spSaver)
+function LTM_BUILD_STORE:SetBuildSkillSettings(buildId, skillSettings)
     if type(buildId) ~= "string" or buildId == "" then
         return nil, "build_id_missing"
     end
@@ -2104,11 +2032,13 @@ function LTM_BUILD_STORE:SetBuildSpSaverSettings(buildId, spSaver)
         return nil, "build_not_found"
     end
 
-    local normalizedSettings = NormalizeBuildSpSaver(spSaver)
+    local normalizedSettings = SkillSettings:NormalizeBuild(skillSettings)
     -- This setting is codec-independent; update only its field so skill targets,
-    -- Passive Policy, and all other saved Build data remain byte-for-byte untouched.
-    persistentBuild.spSaver = normalizedSettings
-    self:RefreshRuntimeCache(self:GetCurrentCharacterKey(), "set_build_sp_saver")
+    -- snapshots, and all other saved Build data remain byte-for-byte untouched.
+    persistentBuild.skillSettings = normalizedSettings
+    persistentBuild.passivePolicy = nil
+    persistentBuild.spSaver = nil
+    self:RefreshRuntimeCache(self:GetCurrentCharacterKey(), "set_build_skill_settings")
     return CloneShallow(normalizedSettings)
 end
 
@@ -2518,8 +2448,7 @@ function LTM_BUILD_STORE:OverwriteBuildByIdFromCurrentSnapshotType(buildId, over
         replacementBuild.characterId = characterKey
         replacementBuild.displayName = existingBuild.displayName or existingBuild.name or replacementBuild.displayName
         replacementBuild.name = nil
-        replacementBuild.passivePolicy = existingBuild.passivePolicy or replacementBuild.passivePolicy
-        replacementBuild.spSaver = NormalizeBuildSpSaver(existingBuild.spSaver)
+        replacementBuild.skillSettings = SkillSettings:NormalizeBuild(existingBuild.skillSettings)
         local capturedTransforms = type(replacementBuild.transforms) == "table" and replacementBuild.transforms or {}
         for _, kind in ipairs({ "werewolf", "vampire" }) do
             local existingTransform = type(existingBuild.transforms) == "table"
@@ -2607,9 +2536,17 @@ function LTM_BUILD_STORE:OverwriteBuildByIdFromCurrentSnapshotType(buildId, over
             return nil, subclassErr
         end
 
+        local classMastery = self:CaptureCurrentClassMasteryForBuild()
+        local skills = self:CaptureCurrentSkillState()
+        local activeSnapshot, activeErr = self:CaptureCurrentActiveSnapshotForBuild()
+        if type(activeSnapshot) ~= "table" then
+            return nil, activeErr
+        end
+
         existingBuild.subclass = subclassData.subclass or { targetSkillLineIds = {} }
-        existingBuild.classMastery = self:CaptureCurrentClassMasteryForBuild()
-        existingBuild.skills = self:CaptureCurrentSkillState()
+        existingBuild.classMastery = classMastery
+        existingBuild.skills = skills
+        existingBuild.activeSnapshot = activeSnapshot
     elseif overwriteType == "equipment" then
         existingBuild.equipment = self:CaptureCurrentEquipmentForBuild()
         existingBuild.outfit = self:CaptureCurrentOutfitForBuild()
@@ -2758,27 +2695,22 @@ function LTM_BUILD_STORE:BuildFromCurrentSnapshot()
     local outfitState = self:CaptureCurrentOutfitForBuild()
     local championPointState = self:CaptureCurrentChampionPointsForBuild()
     local classMasteryState = self:CaptureCurrentClassMasteryForBuild()
-    local roleState = type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.CaptureCurrentRoleState) == "function"
-        and LTM_ROLE_STATE:CaptureCurrentRoleState()
-        or nil
+    local roleState = LTM_ROLE_STATE:CaptureCurrentRoleState()
     local timestamp = ResolveTimestamp()
 
-    if type(Log.LogDebugSummary) == "function" then
-        local warfare = championPointState.warfare or {}
-        local fitness = championPointState.fitness or {}
-        local craft = championPointState.craft or {}
-        Log.LogDebugSummary("Equipment capture summary", "populatedSlots=" .. tostring(CountTableEntries(equipmentState)))
-        Log.LogDebugSummary(
-            "ChampionPoints capture summary",
-            "warfareSlotted=" .. tostring(#(warfare.slotted or {})),
-            "fitnessSlotted=" .. tostring(#(fitness.slotted or {})),
-            "craftSlotted=" .. tostring(#(craft.slotted or {})),
-            "warfareAllocated=" .. tostring(CountTableEntries(warfare.allocated)),
-            "fitnessAllocated=" .. tostring(CountTableEntries(fitness.allocated)),
-            "craftAllocated=" .. tostring(CountTableEntries(craft.allocated))
-        )
-    end
+    local warfare = championPointState.warfare or {}
+    local fitness = championPointState.fitness or {}
+    local craft = championPointState.craft or {}
+    Log.LogDebugSummary("Equipment capture summary", "populatedSlots=" .. tostring(CountTableEntries(equipmentState)))
+    Log.LogDebugSummary(
+        "ChampionPoints capture summary",
+        "warfareSlotted=" .. tostring(#(warfare.slotted or {})),
+        "fitnessSlotted=" .. tostring(#(fitness.slotted or {})),
+        "craftSlotted=" .. tostring(#(craft.slotted or {})),
+        "warfareAllocated=" .. tostring(CountTableEntries(warfare.allocated)),
+        "fitnessAllocated=" .. tostring(CountTableEntries(fitness.allocated)),
+        "craftAllocated=" .. tostring(CountTableEntries(craft.allocated))
+    )
 
     local transforms, transformErr = LTM_TRANSFORM_SKILLS:CaptureAvailableSnapshots(nil)
     if transformErr ~= nil then
@@ -2798,12 +2730,18 @@ function LTM_BUILD_STORE:BuildFromCurrentSnapshot()
         championPoints = championPointState,
         role = roleState,
         transforms = transforms,
-        spSaver = NormalizeBuildSpSaver(nil),
+        skillSettings = SkillSettings:NormalizeBuild(nil),
         metadata = {
             createdAt = timestamp,
             updatedAt = timestamp,
         },
     }
+
+    local activeSnapshot, activeErr = self:CaptureCurrentActiveSnapshotForBuild()
+    if type(activeSnapshot) ~= "table" then
+        return nil, activeErr
+    end
+    build.activeSnapshot = activeSnapshot
 
     local passiveSnapshot, passiveErr, passiveDetails =
         self:CaptureCurrentPassiveSnapshotForBuild(build, build.id, "new", nil)
@@ -2819,9 +2757,7 @@ function LTM_BUILD_STORE:BuildFromCurrentSnapshot()
 end
 
 function LTM_BUILD_STORE:SaveCurrentStateAsNewBuild()
-    if type(Log.WriteChat) == "function" then
-        Log.WriteChat(GetStringValue("SI_LTM_STATUS_SAVE_NEW_CARD_STARTED", "New Card save started"))
-    end
+    Log.WriteChat(GetStringValue("SI_LTM_STATUS_SAVE_NEW_CARD_STARTED", "New Card save started"))
 
     local build, err = self:BuildFromCurrentSnapshot()
     if type(build) ~= "table" then
@@ -2850,9 +2786,7 @@ function LTM_BUILD_STORE:SaveCurrentStateAsNewBuild()
     bucket.uiState.selectedBuildIdByPage[pageId] = build.id
     self:RefreshRuntimeCache(build.characterId, "save_new_build")
 
-    if type(Log.WriteChat) == "function" then
-        Log.WriteChat(GetStringValue("SI_LTM_STATUS_SAVE_NEW_CARD_FINISHED", "New Card save finished"))
-    end
+    Log.WriteChat(GetStringValue("SI_LTM_STATUS_SAVE_NEW_CARD_FINISHED", "New Card save finished"))
 
     return build
 end

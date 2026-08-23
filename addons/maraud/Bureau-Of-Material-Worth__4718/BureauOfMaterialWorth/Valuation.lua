@@ -296,6 +296,13 @@ function Valuation.GetSourceDisplayName(sourceKey)
     return SourceDisplayName(sourceKey)
 end
 
+-- Compact counterpart used by tight UI surfaces such as the summary footer and
+-- the per-material source badge. Unknown LibPrice keys remain visible instead
+-- of disappearing, using the same uppercase fallback as the footer aggregate.
+function Valuation.GetSourceShortName(sourceKey)
+    return SourceShortName(sourceKey)
+end
+
 -- Category model
 -- ---------------------------------------------------------------------------
 -- Categories mirror the crafting professions the craft bag is organized by.

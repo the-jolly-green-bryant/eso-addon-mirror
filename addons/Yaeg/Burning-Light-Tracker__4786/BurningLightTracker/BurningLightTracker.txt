@@ -1,0 +1,36 @@
+## Title: Burning Light Tracker
+## Author: Tim
+## Version: 1.2.1
+## AddOnVersion: 113
+## APIVersion: 101044 101045 101046 101047 101048
+## SavedVariables: BurningLightTrackerSaved
+## Description: Kompakte Anzeige der Burning-Light-Stacks (Templer, Aedrische Speer). Liest ausschliesslich EVENT_COMBAT_EVENT, gefiltert auf zwei Ability-IDs. Drei waehlbare Designs ueber /blt design 1|2|3. Deutsch und Englisch ueber /blt lang de|en.
+## Description-en: Compact display of Burning Light stacks (Templar, Aedric Spear). Reads EVENT_COMBAT_EVENT only, filtered to two ability IDs. Three selectable designs via /blt design 1|2|3. German and English via /blt lang de|en.
+## DependsOn:
+## OptionalDependsOn:
+
+; HINWEIS ZUR APIVERSION
+; Der korrekte Wert fuer den eigenen Client ist die Ausgabe von
+;     /script d(GetAPIVersion())
+; Trage ihn ein, falls ESO das Addon als veraltet markiert. Bis dahin genuegt
+; die Clienteinstellung "Veraltete Addons erlauben".
+
+; HINWEIS ZUR SPRACHE
+; Die Oberflaeche kennt Deutsch und Englisch: /blt lang, /blt lang de,
+; /blt lang en. Die Auswahl liegt in BurningLightTrackerSaved.language und
+; bleibt ueber /reloadui hinweg erhalten. Ohne gespeicherte Auswahl wird die
+; Clientsprache gelesen; alles ausser Deutsch faellt auf Englisch zurueck.
+; Die Zeile "## Description-en:" ist rein kosmetisch -- unbekannte
+; Manifestzeilen ignoriert der Client, das Addon laedt in jedem Fall.
+; Es werden weiterhin keine Bibliotheken benoetigt (DependsOn bleibt leer).
+
+; HINWEIS ZUR EIGENEN UNIT-ID (ab 1.2.1)
+; Nach Login, /reloadui und Zonenwechsel lernt das Addon die eigene, in
+; EVENT_COMBAT_EVENT verwendete unitId neu. Autoritative Quelle ist ein
+; Combat-Event mit sourceType == COMBAT_UNIT_TYPE_PLAYER; der Effektkanal
+; (EVENT_EFFECT_CHANGED, unitTag "player") gilt nur als vorlaeufig. Bis die ID
+; feststeht, werden eigene Kandidatenereignisse kurz zwischengespeichert und
+; erst nach der Pruefung gegen die gelernte ID angewandt. /blt zeigt jederzeit,
+; ob die ID bekannt ist und aus welchem Kanal sie stammt.
+
+BurningLightTracker.lua

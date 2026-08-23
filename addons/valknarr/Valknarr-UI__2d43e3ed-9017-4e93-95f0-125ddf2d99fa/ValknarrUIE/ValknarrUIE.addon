@@ -2,8 +2,8 @@
 ## Author: valknarr
 ## Description: Gamepad grid editor for native HUD: resource bars, chat, action bar, compass, and more.
 ## APIVersion: 101049 101050
-## AddOnVersion: 42
-## Version: 1.0.7
+## AddOnVersion: 43
+## Version: 1.0.8
 ## SavedVariables: ValknarrUIElementsEditor_SavedVariables
 ## DependsOn: LibAddonMenu-2.0
 ## OptionalDependsOn: LibRadialMenu LibHarvensAddonSettings
@@ -25,6 +25,8 @@ adapters/settings_menu.lua
 grid.lua
 movement_controller.lua
 editor.lua
+editor_commands.lua
+editor_reapply.lua
 editor_overlay.lua
 
 # This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.

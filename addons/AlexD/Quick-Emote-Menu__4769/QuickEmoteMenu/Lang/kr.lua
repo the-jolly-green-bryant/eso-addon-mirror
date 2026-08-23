@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "설정 패널 표시",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "이모트 재생 후 메뉴 닫기 (좌클릭)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "버튼 위치 초기화",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "채팅 버튼 X 오프셋",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "채팅 창 옵션 버튼을 기준으로 한 버튼의 가로 오프셋입니다. 버튼이 채팅 창에 연결된 경우에만 적용됩니다.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FF기능|r
 • 카테고리와 즐겨찾기를 통한 빠른 이모트 접근

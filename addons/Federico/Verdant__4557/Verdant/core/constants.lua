@@ -3,7 +3,8 @@ local Verdant = Verdant
 
 Verdant.Constants = {
   ADDON_NAME    = "Verdant",
-  VERSION       = "2.2.0",
+  VERSION       = "2.3.0",
+  BUILD         = "2.3.0",
   SLASH_COMMAND = "/verdant",
 
   DEBUG         = false,
@@ -65,6 +66,7 @@ Verdant.Constants = {
 
   PROFILER_BUDGETS_MS = {
     ["pipeline.combat_event"]            = 5.0,
+    ["pipeline.effect"]                  = 2.0,
     ["pipeline.combat_event.acquisition"] = 2.0,
     ["pipeline.combat_event.filter"]     = 2.0,
     ["pipeline.combat_event.processing"] = 3.0,

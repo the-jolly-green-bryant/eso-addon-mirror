@@ -41,7 +41,7 @@ local mathmax  = math.max
 local IsUnitInCombat = IsUnitInCombat
 local GetUnitStealthState = GetUnitStealthState
 local IsMounted = IsMounted
-local IsWerewolf = IsWerewolf
+local IsPlayerInWerewolfForm = IsPlayerInWerewolfForm
 local IsUnitSwimming = IsUnitSwimming
 
 -- Engine handle for this module's timers (coalesce, interaction-entry, sprint
@@ -1139,7 +1139,8 @@ local function BootstrapPhysicalStates()
     controller.physical[STATE_COMBAT] = IsUnitInCombat and IsUnitInCombat("player") and true or false
     controller.physical[STATE_STEALTH] = (stealthState == STEALTH_STATE_HIDDEN)
         or (stealthState == STEALTH_STATE_HIDDEN_ALMOST_DETECTED)
-    controller.physical[STATE_WEREWOLF] = IsWerewolf and IsWerewolf() and true or false
+    controller.physical[STATE_WEREWOLF] = IsPlayerInWerewolfForm
+        and IsPlayerInWerewolfForm() and true or false
     controller.physical[STATE_MOUNTED] = IsMounted and IsMounted() and true or false
     controller.physical[STATE_SWIMMING] = IsUnitSwimming and IsUnitSwimming("player") and true or false
     controller.physical[STATE_SPRINT] = (SprintWatch ~= nil and SprintWatch.IsSprinting()) and true or false

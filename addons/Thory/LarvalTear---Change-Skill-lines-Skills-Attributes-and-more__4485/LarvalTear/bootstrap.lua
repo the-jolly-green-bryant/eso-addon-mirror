@@ -3,14 +3,14 @@ LarvalTearMod = {}
 local LTM = LarvalTearMod
 
 -- SavedVariables schema
-LTM.SAVED_VARS_SCHEMA_VERSION = 10
+LTM.SAVED_VARS_SCHEMA_VERSION = 11
 
 -- Common
 LTM.Common = {
     Domains = {},
     Log = {},
     LoggerState = {},
-    SpSaverModes = {},
+    SkillSettings = {},
     Util = {},
 }
 
@@ -30,9 +30,9 @@ LTM.Modules = {
     PipelineContext = {},
     PipelineFinalize = {},
     PipelinePlanner = {},
+    ActiveSkillRestore = {},
     SkillPointInputProvider = {},
     SkillPointEvaluator = {},
-    SpSaverPolicyResolver = {},
     SkillPointRunAudit = {},
 
     -- Build / role state
@@ -109,7 +109,7 @@ LTM.UI = {
     ApplyProgress = {},
     Dialogs = {},
     Dispatch = {},
-    SpSaverSettings = {},
+    SkillSettings = {},
     QuickSettings = {
         ProfileFacade = {},
     },

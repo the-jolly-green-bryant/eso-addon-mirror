@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "显示设置面板",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "播放表情后关闭菜单 (左键)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "重置按钮位置",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "聊天按钮 X 偏移",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "按钮相对于聊天窗口选项按钮的水平偏移量。仅当按钮附加到聊天窗口时适用。",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FF功能|r
 • 通过分类和收藏快速访问表情动作

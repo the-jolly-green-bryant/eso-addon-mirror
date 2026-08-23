@@ -66,10 +66,6 @@ local function GetChampionSkillLinkedIds(championSkillId)
 end
 
 local function TraceChampionDebug(...)
-    if type(Log.LogDebugSummary) ~= "function" then
-        return
-    end
-
     Log.LogDebugSummary(...)
 end
 

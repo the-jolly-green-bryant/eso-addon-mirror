@@ -1,13 +1,29 @@
 STARS = STARS or {}
 local STARS = STARS
 STARS.name = "STARS"
-STARS.version = "0.6.14"
+STARS.version = "0.6.17"
 STARS.sv = nil
 
 STARS.UNDERWORLD_ABILITY_IDS = {
-    BLADE_OF_WOE = 101214,
-    VAMPIRE_FEED = 40358,
-    WEREWOLF_SLAUGHTER = 58868,
+    BLADE_OF_WOE = {
+        [146301] = true,
+        [76325] = true,
+        [77101] = true,
+        [77102] = true,
+    },
+    VAMPIRE_FEED = {
+        [33152] = true,
+        [33182] = true,
+        [33175] = true,
+        [33780] = true,
+        [172430] = true,
+    },
+    WEREWOLF_SLAUGHTER = {
+        [252368] = true,
+        [252372] = true,
+        [252371] = true,
+        [258567] = true,
+    },
 }
 
 STARS.CP_MILESTONES = {160,300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600}
@@ -85,7 +101,7 @@ local DEFAULTS = {
             vampireFeeds = 0,
             werewolfSlaughters = 0,
             trackingStarted = 0,
-            bladeOfWoeAbilityIds = {[101214] = true},
+            bladeOfWoeAbilityIds = {[146301]=true,[76325]=true,[77101]=true,[77102]=true},
         },
         campaigns = { current = nil, history = {} }, -- retained for backwards compatibility
         veterancy = { current = nil, history = {} },
@@ -290,7 +306,7 @@ function STARS:ResetUnderworldStats()
         vampireFeeds = 0,
         werewolfSlaughters = 0,
         trackingStarted = Now(),
-        bladeOfWoeAbilityIds = {[self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE] = true},
+        bladeOfWoeAbilityIds = {[146301]=true,[76325]=true,[77101]=true,[77102]=true},
     }
     self.lastPickpocketSuccessMs = nil
     self.lastBladeOfWoeKillMs = nil
@@ -1014,7 +1030,7 @@ end
 function STARS:IsBladeOfWoeAbility(abilityId, abilityName)
     local underworld = self:GetUnderworldStats()
     local numericId = tonumber(abilityId) or 0
-    if numericId == self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE then
+    if self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE[numericId] == true then
         return true
     end
     if underworld and numericId > 0 and underworld.bladeOfWoeAbilityIds
@@ -1040,9 +1056,9 @@ end
 
 function STARS:GetUnderworldExecution(abilityId, abilityName)
     local numericId = tonumber(abilityId) or 0
-    if numericId == self.UNDERWORLD_ABILITY_IDS.VAMPIRE_FEED then
+    if self.UNDERWORLD_ABILITY_IDS.VAMPIRE_FEED[numericId] == true then
         return "vampireFeeds", "Vampire Feed", "lastVampireFeedMs"
-    elseif numericId == self.UNDERWORLD_ABILITY_IDS.WEREWOLF_SLAUGHTER then
+    elseif self.UNDERWORLD_ABILITY_IDS.WEREWOLF_SLAUGHTER[numericId] == true then
         return "werewolfSlaughters", "Werewolf Slaughter", "lastWerewolfSlaughterMs"
     elseif self:IsBladeOfWoeAbility(numericId, abilityName) then
         return "bladeOfWoeKills", "Blade of Woe", "lastBladeOfWoeKillMs"
@@ -1340,7 +1356,7 @@ function STARS:ResetAllStats()
             vampireFeeds=0,
             werewolfSlaughters=0,
             trackingStarted=Now(),
-            bladeOfWoeAbilityIds={[self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE]=true},
+            bladeOfWoeAbilityIds={[146301]=true,[76325]=true,[77101]=true,[77102]=true},
         },
         campaigns = {current=nil,history={}},
         veterancy = {current=nil,history={}},
@@ -1411,7 +1427,9 @@ function STARS:UpgradeSavedVars()
         underworld.trackingStarted = Now()
     end
     if underworld.bladeOfWoeAbilityIds == nil then underworld.bladeOfWoeAbilityIds = {} end
-    underworld.bladeOfWoeAbilityIds[self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE] = true
+    for abilityId in pairs(self.UNDERWORLD_ABILITY_IDS.BLADE_OF_WOE) do
+        underworld.bladeOfWoeAbilityIds[abilityId] = true
+    end
 
     -- Migrate the old Underworld-only boundary into the single memory-book
     -- boundary.  This preserves the earliest trustworthy date already stored
@@ -1485,84 +1503,6 @@ function STARS:ShowResetDialog(dialogName)
 end
 
 
-
-function STARS:AbilityLookupChat(message, colour)
-    local text = string.format("|c%s[STARS]|r %s", colour or "79C8FF", tostring(message or ""))
-    if CHAT_ROUTER and type(CHAT_ROUTER.AddSystemMessage) == "function" then
-        CHAT_ROUTER:AddSystemMessage(text)
-    elseif CHAT_SYSTEM and type(CHAT_SYSTEM.AddMessage) == "function" then
-        CHAT_SYSTEM:AddMessage(text)
-    elseif type(d) == "function" then
-        d(text)
-    end
-end
-
-function STARS:CancelAbilitySearch()
-    EVENT_MANAGER:UnregisterForUpdate("STARS_AbilitySearch")
-    self.abilitySearchJob = nil
-end
-
-function STARS:SearchAbilities(value)
-    self:CancelAbilitySearch()
-
-    local query = tostring(value or "")
-    query = query:gsub("^%s+", ""):gsub("%s+$", "")
-    if query == "" then
-        self:AbilityLookupChat("Enter an ability ID or part of an ability name.", "FF6666")
-        return
-    end
-
-    local numericId = tonumber(query)
-    if numericId and query:match("^%d+$") then
-        numericId = math.floor(numericId)
-        local name = GetAbilityName(numericId)
-        if name and name ~= "" then
-            self:AbilityLookupChat(string.format("Ability %d: %s", numericId, name), "66FF99")
-        else
-            self:AbilityLookupChat(string.format("No ability found for ID %d.", numericId), "FF6666")
-        end
-        return
-    end
-
-    local lower = type(zo_strlower) == "function" and zo_strlower or string.lower
-    local search = lower(query)
-    self.abilitySearchJob = {query=query, search=search, nextId=1, matches=0, shown=0}
-    self:AbilityLookupChat(string.format("Searching ability names for '%s'...", query), "AAAFFF")
-
-    EVENT_MANAGER:RegisterForUpdate("STARS_AbilitySearch", 20, function()
-        local job = self.abilitySearchJob
-        if not job then
-            self:CancelAbilitySearch()
-            return
-        end
-
-        local lastId = math.min(200000, job.nextId + 999)
-        for abilityId = job.nextId, lastId do
-            local name = GetAbilityName(abilityId)
-            if name and name ~= "" and string.find(lower(name), job.search, 1, true) then
-                job.matches = job.matches + 1
-                if job.shown < 40 then
-                    job.shown = job.shown + 1
-                    self:AbilityLookupChat(string.format("%s - ID %d", name, abilityId), "66FF99")
-                end
-            end
-        end
-        job.nextId = lastId + 1
-
-        if job.nextId > 200000 then
-            local matches = job.matches
-            local shown = job.shown
-            self:CancelAbilitySearch()
-            if matches == 0 then
-                self:AbilityLookupChat(string.format("No ability names contain '%s'.", query), "FF6666")
-            elseif matches > shown then
-                self:AbilityLookupChat(string.format("Search complete: %d matches; first %d shown.", matches, shown), "AAAFFF")
-            else
-                self:AbilityLookupChat(string.format("Search complete: %d match%s.", matches, matches == 1 and "" or "es"), "AAAFFF")
-            end
-        end
-    end)
-end
 
 function STARS:InitSettingsMenu()
     if not LibHarvensAddonSettings then return end
@@ -1750,20 +1690,7 @@ function STARS:InitSettingsMenu()
         end,
     })
     ]]
-    AddCategoryHeader("TOOLS")
-    settings:AddSetting({type=HAS.ST_SECTION,label="Ability Lookup"})
-    settings:AddSetting({
-        type=HAS.ST_EDIT,
-        label="Ability Search",
-        tooltip="Enter an ability ID for an immediate lookup, or enter part of an ability name to search IDs 1 to 200000. Results are written to chat.",
-        getFunction=function() return self.abilitySearchText or "" end,
-        setFunction=function(value)
-            self.abilitySearchText = tostring(value or "")
-            self:SearchAbilities(self.abilitySearchText)
-        end,
-    })
-
-    settings:AddSetting({type=HAS.ST_SECTION,label="Notifications"})
+    AddCategoryHeader("NOTIFICATIONS")
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Sound",getFunction=function() return self.sv.options.sound end,setFunction=function(v) self.sv.options.sound=v; self:TouchSV() end})
     settings:AddSetting({type=HAS.ST_CHECKBOX,label="Prestige Center Screen Announce",getFunction=function() return self.sv.options.csa end,setFunction=function(v) self.sv.options.csa=v; self:TouchSV() end})
 

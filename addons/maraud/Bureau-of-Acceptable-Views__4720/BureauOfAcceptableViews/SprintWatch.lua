@@ -36,14 +36,16 @@ local IsUnitSwimming                   = IsUnitSwimming
 local IsUnitFalling                    = IsUnitFalling
 local IsUnitDeadOrReincarnating        = IsUnitDeadOrReincarnating
 local IsMounted                        = IsMounted
-local IsWerewolf                       = IsWerewolf
+local IsPlayerInWerewolfForm           = IsPlayerInWerewolfForm
 local IsGameCameraSiegeControlled      = IsGameCameraSiegeControlled
 local GetActiveWeaponPairInfo          = GetActiveWeaponPairInfo
 local ActionSlotHasNonCostStateFailure = ActionSlotHasNonCostStateFailure
 
 local EVENT_NAMESPACE = "BAV_SprintWatch"
 local REFRESH_NAME    = "BAV_SprintWatch_Refresh"
+local ROLL_DODGE_CLEAR_NAME = "BAV_SprintWatch_RollDodgeClear"
 local REFRESH_DELAY_MS = 100
+local ROLL_DODGE_SUPPRESSION_MS = 1000
 local SPRINT_CONFIRM_SAMPLES = 2
 local PLAYER_UNIT = "player"
 local ROLL_DODGE_ABILITY_ID = 28549
@@ -53,12 +55,13 @@ local ROLL_DODGE_ABILITY_ID = 28549
 --   isSprinting                   -- latest sampled value
 --   eventsRegistered              -- true while engine events are active
 --   refreshPending                -- one coalesced delayed refresh is queued
---   isPlayerRollDodging           -- blocks sprint until the dodge effect fades
+--   isPlayerRollDodging           -- blocks sprint during a bounded dodge window
 local subscribers = {}
 local isSprinting = false
 local eventsRegistered = false
 local refreshPending = false
 local isPlayerRollDodging = false
+local rollDodgeClearPending = false
 local positiveSamples = 0
 local ScheduleRefresh
 
@@ -91,7 +94,7 @@ local function DetectSprinting()
         or IsUnitFalling(PLAYER_UNIT)
         or IsUnitDeadOrReincarnating(PLAYER_UNIT)
         or IsMounted()
-        or IsWerewolf()
+        or IsPlayerInWerewolfForm()
         or IsGameCameraSiegeControlled()
         or isPlayerRollDodging then
         return false
@@ -160,19 +163,36 @@ local function OnPhysicalStateChanged()
     Refresh()
 end
 
--- The player roll-dodge effect suppresses false positives while the bar is
--- temporarily unavailable. Entering a dodge clears sprint at once; fading
--- schedules a settled re-read rather than retaining a stale false state.
-local function OnCombatEvent(_, result)
-    if result == ACTION_RESULT_EFFECT_GAINED then
-        isPlayerRollDodging = true
-        positiveSamples = 0
-        CancelRefresh()
-        SetSprinting(false)
-    elseif result == ACTION_RESULT_EFFECT_FADED then
-        isPlayerRollDodging = false
-        ScheduleRefresh()
+-- A player roll-dodge event suppresses false positives while the bar is
+-- temporarily unavailable. Suppression is time-bounded because a rejected
+-- dodge is not guaranteed to emit a matching completion/fade event.
+local function CancelRollDodgeClear()
+    if not rollDodgeClearPending then
+        return
     end
+    EVENT_MANAGER:UnregisterForUpdate(ROLL_DODGE_CLEAR_NAME)
+    rollDodgeClearPending = false
+end
+
+local function OnRollDodgeClearElapsed()
+    CancelRollDodgeClear()
+    isPlayerRollDodging = false
+    ScheduleRefresh()
+end
+
+local function OnCombatEvent()
+    isPlayerRollDodging = true
+    positiveSamples = 0
+    CancelRefresh()
+    SetSprinting(false)
+
+    -- A rejected roll dodge can emit its start without a matching fade. Keep
+    -- suppression bounded and re-arm it for repeated dodge events so sprint
+    -- detection always recovers without depending on undocumented results.
+    CancelRollDodgeClear()
+    rollDodgeClearPending = true
+    EVENT_MANAGER:RegisterForUpdate(
+        ROLL_DODGE_CLEAR_NAME, ROLL_DODGE_SUPPRESSION_MS, OnRollDodgeClearElapsed)
 end
 
 local function RegisterDetectorEvents()
@@ -208,6 +228,7 @@ local function UnregisterDetectorEvents()
         return
     end
     CancelRefresh()
+    CancelRollDodgeClear()
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_ACTION_SLOT_STATE_UPDATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED)

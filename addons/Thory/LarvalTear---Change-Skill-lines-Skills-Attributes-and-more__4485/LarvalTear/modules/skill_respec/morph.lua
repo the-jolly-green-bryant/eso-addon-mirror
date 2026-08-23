@@ -1,6 +1,19 @@
 local Addon = LarvalTearMod
 local M = Addon.Modules.SkillRespecMorph
 local Util = Addon.Common.Util
+local BASE_MORPH_SLOT = MORPH_SLOT_BASE or 0
+
+local function CreateSummary()
+    return {
+        attemptedCount = 0,
+        morphedCount = 0,
+        skippedInsufficientPointsCount = 0,
+        expectedMissingTargets = {},
+        hardFailure = false,
+        hardFailureReason = nil,
+        hardFailureTarget = nil,
+    }
+end
 
 local function NormalizeOptionalBool(value)
     if value == nil then
@@ -78,7 +91,30 @@ function M:ResolveTarget(apply, target)
         progressionId = progressionId,
         skillLineId = ResolveSkillLineId(skillData),
         targetMorphSlot = targetMorphSlot,
+        source = target.source,
+        transformKind = target.transformKind,
     }
+end
+
+local function IsInsufficientSkillPointsForMorph(resolvedTarget)
+    local allocator = type(resolvedTarget) == "table" and resolvedTarget.allocator or nil
+    local skillData = type(resolvedTarget) == "table" and resolvedTarget.skillData or nil
+    if type(allocator) ~= "table"
+        or type(allocator.GetSkillProgressionKey) ~= "function"
+        or type(allocator.HasEnoughAvailableSkillPointsForSingleTransaction) ~= "function"
+        or type(allocator.IsPurchased) ~= "function"
+        or type(skillData) ~= "table"
+        or type(skillData.IsAtMorph) ~= "function" then
+        return false
+    end
+
+    return Util:SafeCallMethod(allocator, "IsPurchased") == true
+        and Util:SafeCallMethod(skillData, "IsAtMorph") == true
+        and Util:SafeCallMethod(allocator, "GetSkillProgressionKey") == BASE_MORPH_SLOT
+        and Util:SafeCallMethod(
+            allocator,
+            "HasEnoughAvailableSkillPointsForSingleTransaction"
+        ) == false
 end
 
 function M:AuditTargets(apply, context, skillTargetPlan)
@@ -131,6 +167,7 @@ function M:AuditTargets(apply, context, skillTargetPlan)
                 conflictReason = nil,
                 skipReason = nil,
                 canMorph = nil,
+                hasEnoughPoints = nil,
             }
             groupedByProgression[progressionKey] = group
             progressionOrder[#progressionOrder + 1] = progressionKey
@@ -153,6 +190,7 @@ function M:AuditTargets(apply, context, skillTargetPlan)
             slotIndex = target.slotIndex,
             selected = false,
             canMorph = nil,
+            hasEnoughPoints = nil,
             skipReason = nil,
             hasConflict = false,
             selectedMorphSlot = nil,
@@ -248,20 +286,27 @@ function M:AuditTargets(apply, context, skillTargetPlan)
                 elseif allocator.CanMorph == nil then
                     group.skipReason = "can_morph_unavailable"
                 else
-                    group.canMorph = Util:SafeCallMethod(allocator, "CanMorph", group.selectedMorphSlot)
+                    group.canMorph = Util:SafeCallMethod(allocator, "CanMorph")
+                    if type(allocator.HasEnoughAvailableSkillPointsForSingleTransaction) == "function" then
+                        group.hasEnoughPoints = Util:SafeCallMethod(
+                            allocator,
+                            "HasEnoughAvailableSkillPointsForSingleTransaction"
+                        ) == true
+                    end
                     if group.canMorph ~= true then
                         group.skipReason = "cannot_morph_selected_slot"
-                    else
-                        group.selected = true
-                        context.normalizedMorphTargets[#context.normalizedMorphTargets + 1] = {
-                            progressionId = selectedEntry.resolvedTarget.progressionId,
-                            targetMorphSlot = group.selectedMorphSlot,
-                            abilityId = selectedEntry.resolvedTarget.targetAbilityId,
-                            hotbarCategory = selectedEntry.resolvedTarget.hotbarCategory,
-                            slotIndex = selectedEntry.resolvedTarget.slotIndex,
-                        }
-                        context.morphNormalizationSummary.resolvedCount = context.morphNormalizationSummary.resolvedCount + 1
                     end
+                    group.selected = true
+                    context.normalizedMorphTargets[#context.normalizedMorphTargets + 1] = {
+                        progressionId = selectedEntry.resolvedTarget.progressionId,
+                        targetMorphSlot = group.selectedMorphSlot,
+                        abilityId = selectedEntry.resolvedTarget.targetAbilityId,
+                        hotbarCategory = selectedEntry.resolvedTarget.hotbarCategory,
+                        slotIndex = selectedEntry.resolvedTarget.slotIndex,
+                        source = selectedEntry.resolvedTarget.source,
+                        transformKind = selectedEntry.resolvedTarget.transformKind,
+                    }
+                    context.morphNormalizationSummary.resolvedCount = context.morphNormalizationSummary.resolvedCount + 1
                 end
             else
                 group.skipReason = group.skipReason or "resolved_target_missing"
@@ -289,6 +334,7 @@ function M:AuditTargets(apply, context, skillTargetPlan)
             selectedMorphSlot = group.selectedMorphSlot,
             selected = group.selected == true,
             canMorph = group.canMorph,
+            hasEnoughPoints = group.hasEnoughPoints,
             skipReason = group.skipReason,
             normalizationResolvedConflict = normalizationResolvedConflict == true,
             normalizationDroppedCount = normalizationDroppedCount,
@@ -310,6 +356,7 @@ function M:AuditTargets(apply, context, skillTargetPlan)
             targetAudit.conflictReason = group.conflictReason
             targetAudit.selectedMorphSlot = group.selectedMorphSlot
             targetAudit.canMorph = group.canMorph
+            targetAudit.hasEnoughPoints = group.hasEnoughPoints
             targetAudit.currentMorphSlot = group.currentMorphSlot
             targetAudit.currentEffectiveAbilityId = group.currentEffectiveAbilityId
             targetAudit.allocatorAvailable = group.allocatorAvailable == true
@@ -339,7 +386,9 @@ function M:ExecutePending(apply, context)
     local normalizedTargets = type(context) == "table" and context.normalizedMorphTargets or nil
     local progressionEntries = type(context) == "table" and context.morphProgressionAuditEntries or nil
     if type(normalizedTargets) ~= "table" or #normalizedTargets == 0 then
-        return true
+        local emptySummary = CreateSummary()
+        context.morphOutcomeSummary = emptySummary
+        return true, nil, emptySummary
     end
     local progressionById = {}
     for _, entry in ipairs(progressionEntries or {}) do
@@ -347,27 +396,33 @@ function M:ExecutePending(apply, context)
     end
 
     context.morphSelectedProgressionKeys = {}
+    local summary = CreateSummary()
     for _, target in ipairs(normalizedTargets) do
+        summary.attemptedCount = summary.attemptedCount + 1
         local progressionKey = tostring(target.progressionId or target.abilityId)
         local progressionAudit = progressionById[progressionKey] or {}
         local resolvedTarget, resolveErr = self:ResolveTarget(apply, {
             targetAbilityId = target.abilityId,
             hotbarCategory = target.hotbarCategory,
             slotIndex = target.slotIndex,
+            source = target.source,
+            transformKind = target.transformKind,
         })
         local allocator = resolvedTarget and resolvedTarget.allocator or nil
         local skipReason = nil
 
         if resolvedTarget == nil then
-            return false, resolveErr, target
+            summary.hardFailure = true
+            summary.hardFailureReason = resolveErr
+            summary.hardFailureTarget = target
+            context.morphOutcomeSummary = summary
+            return false, resolveErr, summary
         end
 
         if progressionAudit.selected ~= true then
             skipReason = progressionAudit.skipReason or "normalized_target_not_selected"
         elseif progressionAudit.hasConflict == true then
             skipReason = progressionAudit.conflictReason or "morph_conflict_present"
-        elseif progressionAudit.canMorph ~= true then
-            skipReason = progressionAudit.skipReason or "cannot_morph_selected_slot"
         elseif target.targetMorphSlot == nil then
             skipReason = "selected_morph_slot_missing"
         elseif allocator == nil then
@@ -377,56 +432,71 @@ function M:ExecutePending(apply, context)
         end
 
         if skipReason ~= nil then
-            return false, skipReason, target
+            summary.hardFailure = true
+            summary.hardFailureReason = skipReason
+            summary.hardFailureTarget = target
+            context.morphOutcomeSummary = summary
+            return false, skipReason, summary
         end
 
-        local morphResult = Util:SafeCallMethod(allocator, "Morph", target.targetMorphSlot)
-        local morphOk = morphResult == true
-        if not morphOk then
-            local refreshedTarget = nil
-            local retryAllocator = nil
-            local retryResult = nil
-
-            refreshedTarget = self:ResolveTarget(apply, {
-                targetAbilityId = target.abilityId,
-                hotbarCategory = target.hotbarCategory,
-                slotIndex = target.slotIndex,
-            })
-            if refreshedTarget ~= nil then
-                retryAllocator = refreshedTarget.allocator
+        local canMorph = NormalizeOptionalBool(Util:SafeCallMethod(allocator, "CanMorph"))
+        if canMorph ~= true then
+            if IsInsufficientSkillPointsForMorph(resolvedTarget)
+                and type(apply.IsActivePriorityShortagePolicy) == "function"
+                and apply:IsActivePriorityShortagePolicy(context) then
+                summary.skippedInsufficientPointsCount = summary.skippedInsufficientPointsCount + 1
+                summary.expectedMissingTargets[#summary.expectedMissingTargets + 1] = {
+                    progressionId = resolvedTarget.progressionId,
+                    targetAbilityId = resolvedTarget.targetAbilityId,
+                    targetMorphSlot = target.targetMorphSlot,
+                    source = resolvedTarget.source,
+                    owner = resolvedTarget.source,
+                    transformKind = resolvedTarget.transformKind,
+                    shortageReason = "insufficient_skill_points",
+                }
+                progressionAudit.outcome = "skipped_insufficient_points"
+            else
+                skipReason = progressionAudit.skipReason or "cannot_morph_selected_slot"
+                summary.hardFailure = true
+                summary.hardFailureReason = skipReason
+                summary.hardFailureTarget = target
+                context.morphOutcomeSummary = summary
+                return false, skipReason, summary
             end
-            local canRetryMorph = NormalizeOptionalBool(Util:SafeCallMethod(retryAllocator or allocator, "CanMorph"))
-            if canRetryMorph == true
-                and type(retryAllocator) == "table"
-                and type(retryAllocator.Morph) == "function" then
-                retryResult = Util:SafeCallMethod(retryAllocator, "Morph", target.targetMorphSlot)
-                morphOk = retryResult == true
-                if morphOk then
-                    allocator = retryAllocator
-                    resolvedTarget = refreshedTarget
-                end
-            end
+        else
 
+            local morphResult = Util:SafeCallMethod(allocator, "Morph", target.targetMorphSlot)
+            local morphOk = morphResult == true
             if not morphOk then
                 skipReason = "morph_pending_failed"
             end
-        end
 
-        if morphOk then
-            context.modifiedAllocators = context.modifiedAllocators or {}
-            context.modifiedAllocators[#context.modifiedAllocators + 1] = allocator
-            context.morphSelectedProgressionKeys[progressionKey] = true
-        end
+            if morphOk then
+                summary.morphedCount = summary.morphedCount + 1
+                context.modifiedAllocators = context.modifiedAllocators or {}
+                context.modifiedAllocators[#context.modifiedAllocators + 1] = allocator
+                context.morphSelectedProgressionKeys[progressionKey] = true
+                progressionAudit.outcome = "morphed"
+            end
 
-        if not morphOk then
-            return false, skipReason, target
+            if not morphOk then
+                summary.hardFailure = true
+                summary.hardFailureReason = skipReason
+                summary.hardFailureTarget = target
+                context.morphOutcomeSummary = summary
+                return false, skipReason, summary
+            end
         end
     end
 
     local pendingChanges = NormalizeOptionalBool(Util:SafeCallMethod(SKILLS_AND_ACTION_BAR_MANAGER, "HasAnyPendingChanges"))
-    if pendingChanges ~= true then
-        return false, "morph_pending_changes_missing"
+    if summary.morphedCount > 0 and pendingChanges ~= true then
+        summary.hardFailure = true
+        summary.hardFailureReason = "morph_pending_changes_missing"
+        context.morphOutcomeSummary = summary
+        return false, "morph_pending_changes_missing", summary
     end
 
-    return true
+    context.morphOutcomeSummary = summary
+    return true, nil, summary
 end

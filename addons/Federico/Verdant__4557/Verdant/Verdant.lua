@@ -178,6 +178,7 @@ local function on_addon_loaded()
   Verdant.Logo.init()
   Verdant.Settings.init()
   Verdant.Graph.init()
+  Verdant.AutoRecord.init()
   Verdant.Assign.init()
   Verdant.Visibility.init()
 
@@ -185,6 +186,7 @@ local function on_addon_loaded()
 
   Log:info("loaded v" .. C.VERSION, "DEBUG=" .. tostring(C.DEBUG))
   d("[V] " .. string_format(GetString(VERDANT_LOADED), C.VERSION, C.SLASH_COMMAND))
+  if C.DEBUG then d("[V] build " .. tostring(C.BUILD)) end
 end
 
 Verdant.zenimax.events.register_addon_loaded(Verdant.Constants.ADDON_NAME, on_addon_loaded)

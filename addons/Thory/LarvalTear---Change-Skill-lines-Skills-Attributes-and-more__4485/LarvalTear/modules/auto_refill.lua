@@ -40,9 +40,7 @@ local state = {
 }
 
 local function Debug(...)
-    if type(Log) == "table" and type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function DebugMonitor(status)
@@ -150,18 +148,8 @@ local function RecordTargetResult(target, success, reason, summary)
     TryFlushSessionSummary("complete", false)
 end
 
-local function GetText(stringIdName, params)
-    if type(Addon.GetStringText) == "function" then
-        return Addon.GetStringText(stringIdName, params)
-    end
-
-    return tostring(stringIdName or "")
-end
-
 local function WriteChat(stringIdName, params)
-    if type(Log) == "table" and type(Log.WriteChat) == "function" then
-        Log.WriteChat(GetText(stringIdName, params))
-    end
+    Log.WriteChat(Addon.GetStringText(stringIdName, params))
 end
 
 local function IsSupportedFetchBag(bagId)
@@ -250,9 +238,7 @@ local function NotifyQuickSlotFailedOnce(reason)
 
     state.notifiedQuickSlot = true
     WriteChat("SI_LTM_AUTO_REFILL_QUICKSLOT_FAILED", {
-        reason = type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(reason)
-            or tostring(reason or "unknown"),
+        reason = Log.LocalizeErrorReason(reason),
     })
 end
 
@@ -263,16 +249,12 @@ local function NotifyFoodFailedOnce(reason)
 
     state.notifiedFoodHelper = true
     WriteChat("SI_LTM_AUTO_REFILL_FOOD_FAILED", {
-        reason = type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(reason)
-            or tostring(reason or "unknown"),
+        reason = Log.LocalizeErrorReason(reason),
     })
 end
 
 local function RefreshQuickSlotsIfVisible()
-    if type(Addon.NotifyQuickSlotsChanged) == "function" then
-        Addon:NotifyQuickSlotsChanged("auto_refill")
-    end
+    Addon:NotifyQuickSlotsChanged("auto_refill")
 end
 
 local function HandleQuickSlotFetchResult(success, reason, summary)
@@ -305,10 +287,6 @@ local function HandleFoodFetchResult(success, reason, summary)
 end
 
 local function BeginFetch(profile, mode, completion)
-    if type(QuickslotFetch) ~= "table" or type(QuickslotFetch.BeginFetch) ~= "function" then
-        return false, "quickslot_fetch_unavailable", nil
-    end
-
     return QuickslotFetch:BeginFetch(profile, {
         mode = mode,
         preferLowCondition = type(Addon.savedVars) == "table" and Addon.savedVars.quickslotFetchPreferLowCondition == true,
@@ -351,10 +329,6 @@ local function RunFoodMissingFallback(profile, onDone, runId)
 end
 
 local function GetActiveFoodCard()
-    if type(FoodHelper) ~= "table" or type(FoodHelper.GetCardList) ~= "function" then
-        return nil
-    end
-
     for _, card in ipairs(FoodHelper:GetCardList() or {}) do
         if type(card) == "table" and card.isActive == true then
             return card
@@ -423,7 +397,7 @@ function AutoRefill:RunFoodHelperAutoRefill()
     end
     state.foodHelperDone = true
 
-    if type(Addon.IsAutoRefillFoodHelperEnabled) ~= "function" or Addon:IsAutoRefillFoodHelperEnabled() ~= true then
+    if Addon:IsAutoRefillFoodHelperEnabled() ~= true then
         RecordTargetSkipped("food", "setting_off")
         return
     end
@@ -431,7 +405,7 @@ function AutoRefill:RunFoodHelperAutoRefill()
         RecordTargetSkipped("food", "combat")
         return
     end
-    if type(QuickslotFetch) == "table" and type(QuickslotFetch.IsBusy) == "function" and QuickslotFetch:IsBusy() == true then
+    if QuickslotFetch:IsBusy() == true then
         RecordTargetSkipped("food", "fetch_busy")
         return
     end
@@ -486,7 +460,7 @@ function AutoRefill:RunQuickSlotAutoRefill(onDone)
         end
     end
 
-    if type(Addon.IsAutoRefillQuickSlotEnabled) ~= "function" or Addon:IsAutoRefillQuickSlotEnabled() ~= true then
+    if Addon:IsAutoRefillQuickSlotEnabled() ~= true then
         RecordTargetSkipped("quickslot", "setting_off")
         Finish()
         return
@@ -496,12 +470,7 @@ function AutoRefill:RunQuickSlotAutoRefill(onDone)
         Finish()
         return
     end
-    if type(QuickslotProfiles) ~= "table" or type(QuickslotProfiles.GetActiveProfile) ~= "function" then
-        RecordTargetSkipped("quickslot", "profiles_unavailable")
-        Finish()
-        return
-    end
-    if type(QuickslotFetch) == "table" and type(QuickslotFetch.IsBusy) == "function" and QuickslotFetch:IsBusy() == true then
+    if QuickslotFetch:IsBusy() == true then
         RecordTargetSkipped("quickslot", "fetch_busy")
         Finish()
         return

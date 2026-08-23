@@ -93,9 +93,7 @@ local function IsSceneTransitioning(sceneName)
 end
 
 local function LogSummary(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function IsLonePendingFalsePositive(snapshot)
@@ -378,9 +376,7 @@ function LTM_APPLY_START_STATE:LogPrecheck(snapshot, classification, confirmShow
 end
 
 function LTM_APPLY_START_STATE:NotifyCleanFailure(_reason)
-    if type(LTM) == "table" and type(LTM.GetStringText) == "function" and type(Log.WriteChat) == "function" then
-        Log.WriteChat(LTM.GetStringText("SI_LTM_START_STATE_CLEAN_FAILED"))
-    end
+    Log.WriteChat(LTM.GetStringText("SI_LTM_START_STATE_CLEAN_FAILED"))
 end
 
 function LTM_APPLY_START_STATE:DismissPendingConfirmationIfNeeded(snapshot)
@@ -459,10 +455,6 @@ function LTM_APPLY_START_STATE:ForceCloseVisibleDialog(snapshot, dialogName, dia
 end
 
 function LTM_APPLY_START_STATE:ShowConfirmDialog(onConfirm, onCancel)
-    if type(LTM.RequestApplyStartConfirmation) ~= "function" then
-        return false, "start_state_confirm_dialog_unavailable"
-    end
-
     local shown = LTM:RequestApplyStartConfirmation({
         onConfirm = onConfirm,
         onCancel = onCancel,
@@ -475,17 +467,8 @@ function LTM_APPLY_START_STATE:ShowConfirmDialog(onConfirm, onCancel)
 end
 
 function LTM_APPLY_START_STATE:CancelToClean()
-    if type(LTM_SKILL_RESPEC_APPLY) == "table" and type(LTM_SKILL_RESPEC_APPLY.ClearPendingContext) == "function" then
-        pcall(LTM_SKILL_RESPEC_APPLY.ClearPendingContext, LTM_SKILL_RESPEC_APPLY)
-    end
-
-    if type(LTM_ATTRIBUTE_APPLY) == "table" then
-        if type(LTM_ATTRIBUTE_APPLY.ClearPendingContext) == "function" then
-            pcall(LTM_ATTRIBUTE_APPLY.ClearPendingContext, LTM_ATTRIBUTE_APPLY)
-        else
-            LTM_ATTRIBUTE_APPLY.pendingContext = nil
-        end
-    end
+    pcall(LTM_SKILL_RESPEC_APPLY.ClearPendingContext, LTM_SKILL_RESPEC_APPLY)
+    pcall(LTM_ATTRIBUTE_APPLY.ClearPendingContext, LTM_ATTRIBUTE_APPLY)
 
     if type(SKILLS_AND_ACTION_BAR_MANAGER) == "table" then
         local manager = SKILLS_AND_ACTION_BAR_MANAGER
@@ -588,9 +571,8 @@ function LTM_APPLY_START_STATE:Begin(request, completion, startPipeline)
 
         local startOk, startErr = startPipeline(request, completion)
         if startOk ~= true and startErr ~= "handled" then
-            local notified = type(LTM.NotifyActionError) == "function"
-                and LTM:NotifyActionError("common.apply", startErr) == true
-            if not notified and type(Log.Debug) == "function" then
+            local notified = LTM:NotifyActionError("common.apply", startErr) == true
+            if not notified then
                 Log.Debug("Apply start pipeline failed reason=" .. tostring(startErr or "unknown"))
             end
         end

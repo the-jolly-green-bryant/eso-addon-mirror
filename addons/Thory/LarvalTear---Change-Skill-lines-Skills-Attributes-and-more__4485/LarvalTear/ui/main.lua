@@ -4,7 +4,7 @@ local LTM_UI = Addon.UI
 local LTM_UI_STRINGS = Addon.UI.Strings
 local LTM_UI_DISPATCH = Addon.UI.Dispatch
 local LTM_UI_QUICK_SETTINGS = Addon.UI.QuickSettings
-local LTM_UI_SP_SAVER_SETTINGS = Addon.UI.SpSaverSettings
+local LTM_UI_SKILL_SETTINGS = Addon.UI.SkillSettings
 local LTM_UI_LAYOUT = Addon.UI.LayoutConstants
 local LTM_UI_CARD_LAYOUT = LTM_UI_LAYOUT.Card
 local LTM_UI_DIALOG_LAYOUT = LTM_UI_LAYOUT.Dialog
@@ -45,17 +45,14 @@ local UI_CARD_SUMMARY_HEIGHT = LTM_UI_CARD_LAYOUT.SUMMARY_HEIGHT
 local UI_CARD_SUMMARY_BLOCK_HEIGHT = LTM_UI_CARD_LAYOUT.SUMMARY_BLOCK_HEIGHT
 local UI_CARD_SUMMARY_VALUE_HEIGHT = LTM_UI_CARD_LAYOUT.SUMMARY_VALUE_HEIGHT
 local UI_CARD_SUMMARY_TOP_PADDING = LTM_UI_CARD_LAYOUT.SUMMARY_TOP_PADDING
-local UI_CARD_OUTFIT_TOP = LTM_UI_CARD_LAYOUT.OUTFIT_TOP
-local UI_CARD_OUTFIT_WIDTH = LTM_UI_CARD_LAYOUT.OUTFIT_WIDTH
-local UI_CARD_STATUS_ROW_GAP = LTM_UI_CARD_LAYOUT.STATUS_ROW_GAP
+local UI_CARD_STATUS_TOP = LTM_UI_CARD_LAYOUT.STATUS_TOP
 local UI_CARD_SUMMARY_CHECKBOX_TOP = LTM_UI_CARD_LAYOUT.SUMMARY_CHECKBOX_TOP
-local UI_CARD_SUMMARY_CHECKBOX_SECOND_COLUMN_X = LTM_UI_CARD_LAYOUT.SUMMARY_CHECKBOX_SECOND_COLUMN_X
 local UI_CARD_LINK_ROW_TOP = LTM_UI_CARD_LAYOUT.LINK_ROW_TOP
 local UI_CARD_LINK_ROW_HEIGHT = LTM_UI_CARD_LAYOUT.LINK_ROW_HEIGHT
 local UI_CARD_LINK_QS_DROPDOWN_X = LTM_UI_CARD_LAYOUT.LINK_QS_DROPDOWN_X
 local UI_CARD_LINK_FOOD_DROPDOWN_X = LTM_UI_CARD_LAYOUT.LINK_FOOD_DROPDOWN_X
 local UI_CARD_LINK_DROPDOWN_WIDTH = LTM_UI_CARD_LAYOUT.LINK_DROPDOWN_WIDTH
-local UI_CARD_PASSIVE_POLICY_DROPDOWN_WIDTH = LTM_UI_CARD_LAYOUT.PASSIVE_POLICY_DROPDOWN_WIDTH
+local UI_CARD_SKILL_SETTINGS_WIDTH = LTM_UI_CARD_LAYOUT.SKILL_SETTINGS_WIDTH
 local UI_CARD_SKILL_HEIGHT = LTM_UI_CARD_LAYOUT.SKILL_HEIGHT
 local UI_CARD_ATTRIBUTE_WIDTH = LTM_UI_CARD_LAYOUT.ATTRIBUTE_WIDTH
 local UI_CARD_ATTRIBUTE_ROW_HEIGHT = LTM_UI_CARD_LAYOUT.ATTRIBUTE_ROW_HEIGHT
@@ -73,6 +70,7 @@ local UI_ACTION_MENU_PADDING_Y = 5
 local UI_DIALOG_WIDTH = LTM_UI_DIALOG_LAYOUT.WIDTH
 local UI_DIALOG_CONFIRM_HEIGHT = LTM_UI_DIALOG_LAYOUT.CONFIRM_HEIGHT
 local UI_DIALOG_BODY_CONFIRM_HEIGHT = LTM_UI_DIALOG_LAYOUT.BODY_CONFIRM_HEIGHT
+local UI_DIALOG_OUTER_PADDING = LTM_UI_DIALOG_LAYOUT.OUTER_PADDING
 local UI_DIALOG_BUTTON_WIDTH = LTM_UI_DIALOG_LAYOUT.BUTTON_WIDTH
 local UI_DIALOG_OVERWRITE_OPTION_HEIGHT = LTM_UI_DIALOG_LAYOUT.OVERWRITE_OPTION_HEIGHT
 local UI_DIALOG_OVERWRITE_OPTION_GAP = LTM_UI_DIALOG_LAYOUT.OVERWRITE_OPTION_GAP
@@ -125,11 +123,7 @@ local UI_EQUIPMENT_DEPOSIT_ICON_TEXTURE_PREFIX = LTM_UI_RIGHT_PANE_LIST_LAYOUT.E
 local CURRENT_ATTRIBUTE_LAYOUTS = LTM_UI_LAYOUT.AttributeLayouts
 
 local function GetText(key, params)
-    if type(LTM_UI_STRINGS) == "table" and type(LTM_UI_STRINGS.GetText) == "function" then
-        return LTM_UI_STRINGS:GetText(key, params)
-    end
-
-    return key
+    return LTM_UI_STRINGS:GetText(key, params)
 end
 
 local function ResolveSkillPointPlan(precheck)
@@ -142,14 +136,15 @@ local function GetSkillPointPlanValue(plan, key)
     return value ~= nil and value or 0
 end
 
-local function GetSkillPointExpectedResultText(plan, spSaver)
+local function GetSkillPointExpectedResultText(plan, skillSettings)
     local result = type(plan) == "table" and plan.expectedResult or nil
     local key = "dialog.skill_budget.expected_result.other"
     if result == "skill_phase_skip" then
-        key = "dialog.skill_budget.expected_result.skill_phase_skip"
+        local activeShortage = type(skillSettings) == "table" and skillSettings.activeShortage or nil
+        key = "dialog.skill_budget.expected_result.active_" .. tostring(activeShortage)
     elseif result == "passive_partial" then
-        local passiveMode = type(spSaver) == "table" and spSaver.passiveMode or nil
-        key = "dialog.skill_budget.expected_result.passive_" .. tostring(passiveMode)
+        local passiveShortage = type(skillSettings) == "table" and skillSettings.passiveShortage or nil
+        key = "dialog.skill_budget.expected_result.passive_" .. tostring(passiveShortage)
     end
     local text = GetText(key)
     if text == key then
@@ -178,14 +173,12 @@ local function BuildSkillPointShortageDialog(precheck)
         refundPoints = tostring(refundPoints),
         activeRequiredPoints = tostring(activeRequiredPoints),
         totalRequiredPoints = tostring(activeRequiredPoints + passiveRequestedPoints),
-        expectedResult = GetSkillPointExpectedResultText(plan, precheck.spSaver),
+        expectedResult = GetSkillPointExpectedResultText(plan, precheck.skillSettings),
     }
 end
 
 local function LogSkillPointPrecheckSummary(message, cardId, precheck)
-    if type(Log.IsSummaryDebugEnabled) ~= "function"
-        or Log.IsSummaryDebugEnabled() ~= true
-        or type(Log.LogDebugSummary) ~= "function" then
+    if Log.IsSummaryDebugEnabled() ~= true then
         return
     end
 
@@ -304,16 +297,6 @@ local function FindPageEntryById(pageEntries, pageId)
     end
 
     return nil
-end
-
-local function SetLabelText(control, text)
-    if control and control.SetText then
-        control:SetText(text or "")
-    end
-end
-
-local function BuildOutfitDisplayText(outfitName)
-    return string.format("%s: %s", GetText("common.outfit"), outfitName or GetText("common.none"))
 end
 
 local function BuildSlotOrdinalText(slotIndex)
@@ -635,10 +618,6 @@ function LTM_UI:SetCardForceChampionRespecEnabled(cardId, enabled)
         return false
     end
 
-    if type(LTM_UI_DISPATCH) ~= "table" or type(LTM_UI_DISPATCH.SetCardForceChampionRespec) ~= "function" then
-        return false
-    end
-
     local savedValue = LTM_UI_DISPATCH:SetCardForceChampionRespec(cardId, enabled == true)
     return savedValue == true
 end
@@ -646,8 +625,6 @@ end
 function LTM_UI:IsCardForceChampionRespecEnabled(cardId)
     return type(cardId) == "string"
         and cardId ~= ""
-        and type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetCardForceChampionRespec) == "function"
         and LTM_UI_DISPATCH:GetCardForceChampionRespec(cardId) == true
 end
 
@@ -757,11 +734,7 @@ local function SetPageSelectDropdownEnabled(dropdown, enabled)
 end
 
 function LTM_UI:GetSelectedPageId()
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.GetSelectedPageId) == "function" then
-        return LTM_UI_DISPATCH:GetSelectedPageId()
-    end
-
-    return nil
+    return LTM_UI_DISPATCH:GetSelectedPageId()
 end
 
 function LTM_UI:SyncSelectedBuildCardState(buildId, pageId, options)
@@ -769,13 +742,7 @@ function LTM_UI:SyncSelectedBuildCardState(buildId, pageId, options)
         return false
     end
 
-    if type(self.SelectCard) ~= "function" then
-        return true
-    end
-
-    if type(self.GetSelectedPageId) == "function"
-        and self:GetSelectedPageId() ~= pageId
-        and type(self.RefreshCardList) == "function" then
+    if self:GetSelectedPageId() ~= pageId then
         self.selectedBuildId = buildId
         self.selectedCardId = buildId
         self.expandedCardId = nil
@@ -791,9 +758,7 @@ function LTM_UI:SyncSelectedBuildCardState(buildId, pageId, options)
 end
 
 function LTM_UI:RefreshPageHeader()
-    local navigationState = type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.GetPageNavigationState) == "function"
-        and LTM_UI_DISPATCH:GetPageNavigationState()
-        or {}
+    local navigationState = LTM_UI_DISPATCH:GetPageNavigationState()
     self.pageNavigationState = navigationState
 
     self:RefreshPageSelectDropdown(navigationState)
@@ -819,10 +784,7 @@ function LTM_UI:RefreshPageSelectDropdown(navigationState)
     end
 
     navigationState = type(navigationState) == "table" and navigationState or self.pageNavigationState or {}
-    local pageEntries = type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetPageEntries) == "function"
-        and LTM_UI_DISPATCH:GetPageEntries()
-        or {}
+    local pageEntries = LTM_UI_DISPATCH:GetPageEntries()
     local selectedPageId = navigationState.selectedPageId
     local selectedDisplayText = BuildPageDisplayText(navigationState.selectedPageName)
 
@@ -848,12 +810,7 @@ function LTM_UI:RefreshPageSelectDropdown(navigationState)
 end
 
 function LTM_UI:HandleAddPage()
-    local page = nil
-    local err = "page_create_entry_unavailable"
-
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.CreatePage) == "function" then
-        page, err = LTM_UI_DISPATCH:CreatePage()
-    end
+    local page, err = LTM_UI_DISPATCH:CreatePage()
 
     if type(page) ~= "table" then
         self:LogActionError("page.action.add", err)
@@ -900,10 +857,7 @@ function LTM_UI:HandleDeletePage()
 end
 
 function LTM_UI:HandleReorderPages()
-    local pageEntries = type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetPageEntries) == "function"
-        and LTM_UI_DISPATCH:GetPageEntries()
-        or {}
+    local pageEntries = LTM_UI_DISPATCH:GetPageEntries()
     local selectedPageId = self:GetSelectedPageId()
     local selectedPageEntry = FindPageEntryById(pageEntries, selectedPageId)
 
@@ -941,10 +895,7 @@ function LTM_UI:HandleMoveBuildToPage(cardId)
         return
     end
 
-    local pageEntries = type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetPageEntries) == "function"
-        and LTM_UI_DISPATCH:GetPageEntries()
-        or {}
+    local pageEntries = LTM_UI_DISPATCH:GetPageEntries()
     local sourcePageId = self:GetSelectedPageId()
     if type(sourcePageId) ~= "string" or sourcePageId == "" then
         self:LogActionError("card.action.move_page", "page_not_found")
@@ -952,9 +903,7 @@ function LTM_UI:HandleMoveBuildToPage(cardId)
     end
 
     local targetEntries = CloneMoveTargetPageEntries(pageEntries, sourcePageId, nil)
-    local build = type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.GetBuildById) == "function"
-        and LTM_UI_DISPATCH:GetBuildById(cardId)
-        or nil
+    local build = LTM_UI_DISPATCH:GetBuildById(cardId)
 
     self:ShowDialog("MOVE_BUILD_TO_PAGE", {
         cardId = cardId,
@@ -986,18 +935,12 @@ function LTM_UI:SelectPage(targetPageId)
         return
     end
 
-    local ok = type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.SetSelectedPageId) == "function"
-        and LTM_UI_DISPATCH:SetSelectedPageId(targetPageId)
-        or nil
+    local ok = LTM_UI_DISPATCH:SetSelectedPageId(targetPageId)
     if not ok then
         return
     end
 
-    self.selectedBuildId = type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetSelectedBuildIdForPage) == "function"
-        and LTM_UI_DISPATCH:GetSelectedBuildIdForPage(targetPageId)
-        or nil
+    self.selectedBuildId = LTM_UI_DISPATCH:GetSelectedBuildIdForPage(targetPageId)
     self.selectedCardId = self.selectedBuildId
     self.expandedCardId = nil
     self.openActionMenuCardId = nil
@@ -1016,9 +959,7 @@ end
 function LTM_UI:HasOpenActionMenu()
     return self.openPageActionMenu == true
         or self.openActionMenuCardId ~= nil
-        or (type(LTM_UI_QUICK_SETTINGS) == "table"
-            and type(LTM_UI_QUICK_SETTINGS.HasOpenQuickSlotSettingsMenu) == "function"
-            and LTM_UI_QUICK_SETTINGS:HasOpenQuickSlotSettingsMenu())
+        or LTM_UI_QUICK_SETTINGS:HasOpenQuickSlotSettingsMenu()
 end
 
 function LTM_UI:CloseActionMenus()
@@ -1028,9 +969,7 @@ function LTM_UI:CloseActionMenus()
 
     self.openActionMenuCardId = nil
     self.openPageActionMenu = false
-    if type(LTM_UI_QUICK_SETTINGS) == "table" and type(LTM_UI_QUICK_SETTINGS.HideQuickSlotSettingsMenu) == "function" then
-        LTM_UI_QUICK_SETTINGS:HideQuickSlotSettingsMenu()
-    end
+    LTM_UI_QUICK_SETTINGS:HideQuickSlotSettingsMenu()
     self:RefreshSelectionState()
 end
 
@@ -1233,9 +1172,7 @@ function LTM_UI:RefreshCurrentStatePanel(forceSnapshot)
         return
     end
 
-    if forceSnapshot == true
-        and type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.RefreshCurrentSnapshot) == "function" then
+    if forceSnapshot == true then
         self:CancelCurrentEffectRefreshDebounce()
         local summary, skillBars = LTM_UI_DISPATCH:RefreshCurrentSnapshot()
         self:RefreshRightPanePanel()
@@ -1288,9 +1225,7 @@ function LTM_UI:SchedulePostApplyRefreshes()
 end
 
 function LTM_UI:OnApplyCompleted(success, err)
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.RefreshCurrentSnapshot) == "function" then
-        LTM_UI_DISPATCH:RefreshCurrentSnapshot()
-    end
+    LTM_UI_DISPATCH:RefreshCurrentSnapshot()
 
     if self.window and not self.window:IsHidden() then
         self:RefreshRightPanePanel()
@@ -1305,9 +1240,7 @@ function LTM_UI:LogActionError(actionKey, reason)
 
     Log.WriteChat(GetText("status.error", {
         action = GetText(actionKey),
-        reason = type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(reason)
-            or tostring(reason),
+        reason = Log.LocalizeErrorReason(reason),
     }))
 end
 
@@ -1586,10 +1519,7 @@ function LTM_UI:HandleCardSkillSlotDragStart(cardId, hotbarCategory, slotIndex, 
         return
     end
 
-    local abilityId, err = nil, "skill_slot_lookup_unavailable"
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.GetCardSkillSlotAbility) == "function" then
-        abilityId, err = LTM_UI_DISPATCH:GetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex)
-    end
+    local abilityId, err = LTM_UI_DISPATCH:GetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex)
     if type(abilityId) ~= "number" or abilityId <= 0 then
         return
     end
@@ -1597,9 +1527,7 @@ function LTM_UI:HandleCardSkillSlotDragStart(cardId, hotbarCategory, slotIndex, 
     -- Crypt Canon's equipment-provided ultimate is not a normal draggable skill
     -- target; overwriting the equipment/card state is required instead.
     if abilityId == 195031 then
-        if type(Log.WriteChat) == "function" and type(LTM) == "table" and type(LTM.GetStringText) == "function" then
-            Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_CRYPTCANON_OVERWRITE_REQUIRED"))
-        end
+        Log.WriteChat(LTM.GetStringText("SI_LTM_STATUS_CRYPTCANON_OVERWRITE_REQUIRED"))
         return
     end
 
@@ -1614,10 +1542,7 @@ function LTM_UI:HandleCardSkillSlotDragStart(cardId, hotbarCategory, slotIndex, 
         return
     end
 
-    local updateResult, updateErr = nil, "skill_slot_update_unavailable"
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.SetCardSkillSlotAbility) == "function" then
-        updateResult, updateErr = LTM_UI_DISPATCH:SetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex, 0)
-    end
+    local updateResult, updateErr = LTM_UI_DISPATCH:SetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex, 0)
     if type(updateResult) ~= "table" then
         if type(ClearCursor) == "function" then
             ClearCursor()
@@ -1667,10 +1592,7 @@ function LTM_UI:HandleCardSkillSlotReceive(cardId, hotbarCategory, slotIndex, sl
         return false
     end
 
-    local updateResult, updateErr = nil, "skill_slot_update_unavailable"
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.SetCardSkillSlotAbility) == "function" then
-        updateResult, updateErr = LTM_UI_DISPATCH:SetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex, abilityId)
-    end
+    local updateResult, updateErr = LTM_UI_DISPATCH:SetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex, abilityId)
     if type(updateResult) ~= "table" then
         self:LogActionError("common.save", updateErr)
         return false
@@ -1735,14 +1657,10 @@ function LTM_UI:BindRightPaneSkillSlotTooltipHandlers(slotControl)
     end
 
     slotControl:SetHandler("OnMouseEnter", function(control)
-        if type(LTM_UI.ShowRightPaneAbilityTooltip) == "function" then
-            LTM_UI:ShowRightPaneAbilityTooltip(control, control.ltmAbilityTooltipEntry)
-        end
+        LTM_UI:ShowRightPaneAbilityTooltip(control, control.ltmAbilityTooltipEntry)
     end)
     slotControl:SetHandler("OnMouseExit", function()
-        if type(LTM_UI.ClearRightPaneAbilityTooltip) == "function" then
-            LTM_UI:ClearRightPaneAbilityTooltip()
-        end
+        LTM_UI:ClearRightPaneAbilityTooltip()
     end)
 end
 
@@ -1978,8 +1896,7 @@ function LTM_UI:CreateCardControl(index, cardId)
         SetTextTooltip(transformIcon, GetText("transform.settings.tooltip"))
         transformIcon.ltmTransformKind = kind
         transformIcon:SetHandler("OnMouseUp", function(control, mouseButton, upInside)
-            if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT
-                and type(LTM_UI.ShowTransformSkillsPopup) == "function" then
+            if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT then
                 LTM_UI:ShowTransformSkillsPopup(control.ltmTransformKind, cardId)
             end
         end)
@@ -2061,124 +1978,89 @@ function LTM_UI:CreateCardControl(index, cardId)
     BindCardSelectionMouseUp(subclassRow.valueRow, cardId)
     BindCardSelectionMouseUp(card.subclassValue, cardId)
 
-    local passiveSnapshotLabel = WINDOW_MANAGER:CreateControl("$(parent)PassiveSnapshotLabel", summarySection, CT_LABEL)
-    passiveSnapshotLabel:ClearAnchors()
-    passiveSnapshotLabel:SetAnchor(TOPLEFT, summarySection, TOPLEFT, UI_PANEL_INSET, UI_CARD_OUTFIT_TOP)
-    passiveSnapshotLabel:SetAnchor(
-        TOPRIGHT,
-        summarySection,
-        TOPRIGHT,
-        -(UI_PANEL_INSET + UI_CARD_OUTFIT_WIDTH + UI_CARD_STATUS_ROW_GAP),
-        UI_CARD_OUTFIT_TOP
-    )
-    passiveSnapshotLabel:SetHeight(UI_CARD_SUMMARY_BLOCK_HEIGHT)
-    passiveSnapshotLabel:SetFont("ZoFontGameSmall")
-    passiveSnapshotLabel:SetColor(0.72, 0.76, 0.82, 1.0)
-    passiveSnapshotLabel:SetText(GetText("card.passive_snapshot.missing"))
-    if type(passiveSnapshotLabel.SetMaxLineCount) == "function" then
-        passiveSnapshotLabel:SetMaxLineCount(1)
+    local skillSnapshotLabel = WINDOW_MANAGER:CreateControl("$(parent)SkillSnapshotLabel", summarySection, CT_LABEL)
+    skillSnapshotLabel:ClearAnchors()
+    skillSnapshotLabel:SetAnchor(TOPLEFT, summarySection, TOPLEFT, UI_PANEL_INSET, UI_CARD_STATUS_TOP)
+    skillSnapshotLabel:SetAnchor(TOPRIGHT, summarySection, TOPRIGHT, -UI_PANEL_INSET, UI_CARD_STATUS_TOP)
+    skillSnapshotLabel:SetHeight(UI_CARD_SUMMARY_BLOCK_HEIGHT)
+    skillSnapshotLabel:SetFont("ZoFontGameSmall")
+    skillSnapshotLabel:SetColor(0.72, 0.76, 0.82, 1.0)
+    skillSnapshotLabel:SetText(GetText("card.skill_settings.snapshots", {
+        active = GetText("card.skill_settings.snapshot.active"),
+        passive = GetText("card.skill_settings.snapshot.passive"),
+    }))
+    if type(skillSnapshotLabel.SetMaxLineCount) == "function" then
+        skillSnapshotLabel:SetMaxLineCount(1)
     end
-    if type(passiveSnapshotLabel.SetWrapMode) == "function" and TEXT_WRAP_MODE_ELLIPSIS then
-        passiveSnapshotLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    if type(skillSnapshotLabel.SetWrapMode) == "function" and TEXT_WRAP_MODE_ELLIPSIS then
+        skillSnapshotLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     end
-    SetTextTooltip(passiveSnapshotLabel, "")
-    card.passiveSnapshotLabel = passiveSnapshotLabel
-    BindCardSelectionMouseUp(passiveSnapshotLabel, cardId)
+    SetTextTooltip(skillSnapshotLabel, GetText("card.skill_settings.snapshots.tooltip"))
+    card.skillSnapshotLabel = skillSnapshotLabel
+    BindCardSelectionMouseUp(skillSnapshotLabel, cardId)
 
-    local outfitValue = WINDOW_MANAGER:CreateControl("$(parent)OutfitValue", summarySection, CT_LABEL)
-    outfitValue:ClearAnchors()
-    outfitValue:SetAnchor(TOPRIGHT, summarySection, TOPRIGHT, -UI_PANEL_INSET, UI_CARD_OUTFIT_TOP)
-    outfitValue:SetDimensions(UI_CARD_OUTFIT_WIDTH, UI_CARD_SUMMARY_BLOCK_HEIGHT)
-    outfitValue:SetFont("ZoFontGameSmall")
-    outfitValue:SetColor(0.82, 0.84, 0.88, 1.0)
-    outfitValue:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    outfitValue:SetText(BuildOutfitDisplayText(GetText("common.none")))
-    if type(outfitValue.SetMaxLineCount) == "function" then
-        outfitValue:SetMaxLineCount(1)
-    end
-    if type(outfitValue.SetWrapMode) == "function" and TEXT_WRAP_MODE_ELLIPSIS then
-        outfitValue:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-    end
-    SetTextTooltip(outfitValue, "")
-    card.outfitValue = outfitValue
-    BindCardSelectionMouseUp(outfitValue, cardId)
-
-    local passivePolicyDropdown = CreateCardLinkComboBox(
+    local skillSettingsRow = WINDOW_MANAGER:CreateControl("$(parent)SkillSettingsRow", summarySection, CT_CONTROL)
+    skillSettingsRow:ClearAnchors()
+    skillSettingsRow:SetAnchor(
+        TOPLEFT,
         summarySection,
-        "$(parent)PassivePolicyDropdown",
+        TOPLEFT,
         UI_PANEL_INSET,
-        GetText("card.passive_policy.class_all_purchase"),
-        GetText("card.passive_policy.tooltip"),
-        UI_CARD_SUMMARY_CHECKBOX_TOP,
-        UI_CARD_PASSIVE_POLICY_DROPDOWN_WIDTH
-    )
-    card.passivePolicyDropdown = passivePolicyDropdown
-    card.passivePolicyComboBox = passivePolicyDropdown.comboBox
-
-    local spSaverSettingsRow = WINDOW_MANAGER:CreateControl("$(parent)SpSaverSettingsRow", summarySection, CT_CONTROL)
-    spSaverSettingsRow:ClearAnchors()
-    spSaverSettingsRow:SetAnchor(
-        TOPLEFT,
-        summarySection,
-        TOPLEFT,
-        UI_PANEL_INSET + UI_CARD_SUMMARY_CHECKBOX_SECOND_COLUMN_X,
         UI_CARD_SUMMARY_CHECKBOX_TOP
     )
-    spSaverSettingsRow:SetDimensions(UI_CARD_PASSIVE_POLICY_DROPDOWN_WIDTH, UI_CARD_LINK_ROW_HEIGHT)
-    spSaverSettingsRow:SetMouseEnabled(true)
+    skillSettingsRow:SetDimensions(UI_CARD_SKILL_SETTINGS_WIDTH, UI_CARD_LINK_ROW_HEIGHT)
+    skillSettingsRow:SetMouseEnabled(true)
 
-    local spSaverSettingsLabel = WINDOW_MANAGER:CreateControl("$(parent)Label", spSaverSettingsRow, CT_LABEL)
-    spSaverSettingsLabel:ClearAnchors()
-    spSaverSettingsLabel:SetAnchor(TOPLEFT, spSaverSettingsRow, TOPLEFT, 0, 0)
-    spSaverSettingsLabel:SetAnchor(BOTTOMRIGHT, spSaverSettingsRow, BOTTOMRIGHT, -30, 0)
-    spSaverSettingsLabel:SetFont("ZoFontGame")
-    spSaverSettingsLabel:SetColor(0.88, 0.90, 0.94, 1.0)
-    spSaverSettingsLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    spSaverSettingsLabel:SetText(GetText("card.sp_saver.settings"))
-    if type(spSaverSettingsLabel.SetMaxLineCount) == "function" then
-        spSaverSettingsLabel:SetMaxLineCount(1)
+    local skillSettingsLabel = WINDOW_MANAGER:CreateControl("$(parent)Label", skillSettingsRow, CT_LABEL)
+    skillSettingsLabel:ClearAnchors()
+    skillSettingsLabel:SetAnchor(TOPLEFT, skillSettingsRow, TOPLEFT, 0, 0)
+    skillSettingsLabel:SetAnchor(BOTTOMRIGHT, skillSettingsRow, BOTTOMRIGHT, -30, 0)
+    skillSettingsLabel:SetFont("ZoFontGame")
+    skillSettingsLabel:SetColor(0.88, 0.90, 0.94, 1.0)
+    skillSettingsLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    skillSettingsLabel:SetText(GetText("card.skill_settings.title"))
+    if type(skillSettingsLabel.SetMaxLineCount) == "function" then
+        skillSettingsLabel:SetMaxLineCount(1)
     end
-    if type(spSaverSettingsLabel.SetWrapMode) == "function" and TEXT_WRAP_MODE_ELLIPSIS then
-        spSaverSettingsLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    if type(skillSettingsLabel.SetWrapMode) == "function" and TEXT_WRAP_MODE_ELLIPSIS then
+        skillSettingsLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     end
-    local spSaverSettingsTooltip = GetText("card.sp_saver.tooltip")
-    SetTextTooltip(spSaverSettingsLabel, spSaverSettingsTooltip)
-    spSaverSettingsLabel:SetMouseEnabled(true)
+    local skillSettingsTooltip = GetText("card.skill_settings.tooltip")
+    SetTextTooltip(skillSettingsLabel, skillSettingsTooltip)
+    skillSettingsLabel:SetMouseEnabled(true)
 
-    local spSaverSettingsButton = CreateIconButton(
-        spSaverSettingsRow,
+    local skillSettingsButton = CreateIconButton(
+        skillSettingsRow,
         "$(parent)Button",
         24,
         RIGHT,
-        spSaverSettingsRow,
+        skillSettingsRow,
         RIGHT,
         0,
         0,
         "/esoui/art/buttons/edit",
-        spSaverSettingsTooltip
+        skillSettingsTooltip
     )
-    local function OpenSpSaverSettings()
+    local function OpenSkillSettings()
         if LTM_UI.selectedBuildId ~= cardId then
             LTM_UI:SelectCard(cardId)
         end
-        if type(LTM_UI_SP_SAVER_SETTINGS) == "table" and type(LTM_UI_SP_SAVER_SETTINGS.Open) == "function" then
-            LTM_UI_SP_SAVER_SETTINGS:Open(cardId)
-        end
+        LTM_UI_SKILL_SETTINGS:Open(cardId)
     end
-    spSaverSettingsRow:SetHandler("OnMouseUp", function(_, mouseButton, upInside)
+    skillSettingsRow:SetHandler("OnMouseUp", function(_, mouseButton, upInside)
         if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT then
-            OpenSpSaverSettings()
+            OpenSkillSettings()
         end
     end)
-    spSaverSettingsLabel:SetHandler("OnMouseUp", function(_, mouseButton, upInside)
+    skillSettingsLabel:SetHandler("OnMouseUp", function(_, mouseButton, upInside)
         if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT then
-            OpenSpSaverSettings()
+            OpenSkillSettings()
         end
     end)
-    spSaverSettingsButton:SetHandler("OnClicked", OpenSpSaverSettings)
-    card.spSaverSettingsRow = spSaverSettingsRow
-    card.spSaverSettingsLabel = spSaverSettingsLabel
-    card.spSaverSettingsButton = spSaverSettingsButton
+    skillSettingsButton:SetHandler("OnClicked", OpenSkillSettings)
+    card.skillSettingsRow = skillSettingsRow
+    card.skillSettingsLabel = skillSettingsLabel
+    card.skillSettingsButton = skillSettingsButton
 
     local quickSlotLinkDropdown = CreateCardLinkComboBox(
         summarySection,
@@ -2420,10 +2302,7 @@ local function CreateMainWindow(self)
         GetText("current.snapshot.button")
     )
     currentSkillSnapshotButton:SetHandler("OnClicked", function()
-        local report = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetCurrentSkillSnapshotReport) == "function"
-            and LTM_UI_DISPATCH:GetCurrentSkillSnapshotReport()
-            or nil
+        local report = LTM_UI_DISPATCH:GetCurrentSkillSnapshotReport()
         local snapshotText = type(report) == "table" and report.text or "snapshot unavailable"
         LTM_UI:ShowDialog("CURRENT_SKILL_SNAPSHOT", {
             snapshotText = snapshotText,
@@ -2470,9 +2349,7 @@ local function CreateMainWindow(self)
     quickSettingsContent:SetAnchorFill(contentRoot)
     quickSettingsContent:SetHidden(true)
     self.quickSettingsContent = quickSettingsContent
-    if type(LTM_UI_QUICK_SETTINGS) == "table" and type(LTM_UI_QUICK_SETTINGS.CreateContent) == "function" then
-        LTM_UI_QUICK_SETTINGS:CreateContent(quickSettingsContent)
-    end
+    LTM_UI_QUICK_SETTINGS:CreateContent(quickSettingsContent)
 
     local leftPane = CreateBackdrop(armoryStationContent, "$(parent)LeftPane", 0.07, 0.08, 0.09, 0.94, 0.28, 0.30, 0.34, 1.0)
     leftPane:ClearAnchors()
@@ -2821,8 +2698,7 @@ local function CreateMainWindow(self)
         SetTextTooltip(transformIcon, GetText("transform.settings.tooltip"))
         transformIcon.ltmTransformKind = kind
         transformIcon:SetHandler("OnMouseUp", function(control, mouseButton, upInside)
-            if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT
-                and type(LTM_UI.ShowTransformSkillsPopup) == "function" then
+            if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT then
                 LTM_UI:ShowTransformSkillsPopup(
                     control.ltmTransformKind,
                     control.ltmTransformCardId
@@ -2857,14 +2733,10 @@ local function CreateMainWindow(self)
             masteryIcon:SetMouseEnabled(true)
         end
         masteryIcon:SetHandler("OnMouseEnter", function(control)
-            if type(LTM_UI.ShowClassMasteryAbilityTooltip) == "function" then
-                LTM_UI:ShowClassMasteryAbilityTooltip(control, control.ltmClassMasteryEntry)
-            end
+            LTM_UI:ShowClassMasteryAbilityTooltip(control, control.ltmClassMasteryEntry)
         end)
         masteryIcon:SetHandler("OnMouseExit", function()
-            if type(LTM_UI.ClearClassMasteryAbilityTooltip) == "function" then
-                LTM_UI:ClearClassMasteryAbilityTooltip()
-            end
+            LTM_UI:ClearClassMasteryAbilityTooltip()
         end)
         masteryIcon:SetHidden(true)
         self.currentClassMasteryIcons[index] = masteryIcon
@@ -3126,7 +2998,7 @@ local function CreateMainWindow(self)
 
         local precheck, precheckErr = LTM_UI_DISPATCH:EstimateSelectedCardRouteBPreflight(cardId, "class_skills")
         if type(precheck) ~= "table" then
-            if type(Log.IsSummaryDebugEnabled) == "function" and Log.IsSummaryDebugEnabled() and type(Log.LogDebugSummary) == "function" then
+            if Log.IsSummaryDebugEnabled() then
                 Log.LogDebugSummary(
                     "Route B preflight popup skipped",
                     "reason=" .. tostring(precheckErr or "estimate_unavailable"),
@@ -3236,7 +3108,7 @@ local function CreateMainWindow(self)
 
         local precheck, precheckErr = LTM_UI_DISPATCH:EstimateSelectedCardRouteBPreflight(cardId)
         if type(precheck) ~= "table" then
-            if type(Log.IsSummaryDebugEnabled) == "function" and Log.IsSummaryDebugEnabled() and type(Log.LogDebugSummary) == "function" then
+            if Log.IsSummaryDebugEnabled() then
                 Log.LogDebugSummary(
                     "Route B preflight popup skipped",
                     "reason=" .. tostring(precheckErr or "estimate_unavailable"),
@@ -3328,6 +3200,23 @@ local function CreateMainWindow(self)
         dialogTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     end
     self.dialogTitleLabel = dialogTitle
+
+    local dialogOverwriteCloseButton = WINDOW_MANAGER:CreateControl("$(parent)OverwriteCloseButton", dialogPanel, CT_BUTTON)
+    dialogOverwriteCloseButton:ClearAnchors()
+    dialogOverwriteCloseButton:SetAnchor(TOPRIGHT, dialogPanel, TOPRIGHT, -14, 14)
+    dialogOverwriteCloseButton:SetDimensions(24, 24)
+    dialogOverwriteCloseButton:SetClickSound(SOUNDS.DEFAULT_CLICK)
+    dialogOverwriteCloseButton:SetNormalTexture("/esoui/art/buttons/decline_up.dds")
+    dialogOverwriteCloseButton:SetMouseOverTexture("/esoui/art/buttons/decline_over.dds")
+    dialogOverwriteCloseButton:SetPressedTexture("/esoui/art/buttons/decline_down.dds")
+    dialogOverwriteCloseButton:SetDisabledTexture("/esoui/art/buttons/decline_disabled.dds")
+    dialogOverwriteCloseButton:SetHidden(true)
+    SetTextTooltip(dialogOverwriteCloseButton, GetText("common.close"))
+    SetControlDrawOrder(dialogOverwriteCloseButton, DT_HIGH, DL_OVERLAY, 27)
+    dialogOverwriteCloseButton:SetHandler("OnClicked", function()
+        LTM_UI:HideDialog()
+    end)
+    self.dialogOverwriteCloseButton = dialogOverwriteCloseButton
 
     local dialogBody = WINDOW_MANAGER:CreateControl("$(parent)Body", dialogPanel, CT_LABEL)
     dialogBody:SetFont("ZoFontGame")
@@ -3521,73 +3410,58 @@ local function CreateMainWindow(self)
     self.dialogPageReorderScrollChild = dialogPageReorderScrollChild
     self.dialogPageReorderRows = {}
     self:PositionDialogSections(UI_DIALOG_BODY_CONFIRM_HEIGHT, false, false)
-    if type(self.CreateTransformSkillsDialogControls) == "function" then
-        self:CreateTransformSkillsDialogControls(dialogPanel)
-    end
+    self:CreateTransformSkillsDialogControls(dialogPanel)
 
     self.dialogOverwriteOptionButtons = {}
-    local previousOverwriteButton = nil
+    local overwritePanelWidth = UI_DIALOG_WIDTH - (UI_DIALOG_OUTER_PADDING * 2)
     for index, option in ipairs(self:GetOverwriteDialogOptions()) do
-        local optionButton = self:CreateDialogActionButton(dialogOverwriteButtonPanel, "OverwriteOption" .. tostring(index), function()
+        local overwriteType = option.id
+        local optionButton = WINDOW_MANAGER:CreateControlFromVirtual(
+            "$(parent)OverwriteOption" .. tostring(index),
+            dialogOverwriteButtonPanel,
+            "ZO_DefaultButton"
+        )
+        optionButton:SetText("")
+        optionButton:SetHandler("OnClicked", function()
             local dialogContext = LTM_UI.currentDialogContext or {}
-            LTM_UI:HideDialog()
-            LTM_UI:RunOverwrite(dialogContext.cardId, dialogContext.cardName, option.id)
+            LTM_UI:RunOverwrite(dialogContext.cardId, dialogContext.cardName, overwriteType)
         end)
         optionButton:ClearAnchors()
-        if previousOverwriteButton then
-            optionButton:SetAnchor(TOPLEFT, previousOverwriteButton, BOTTOMLEFT, 0, UI_DIALOG_OVERWRITE_OPTION_GAP)
-            optionButton:SetAnchor(TOPRIGHT, previousOverwriteButton, BOTTOMRIGHT, 0, UI_DIALOG_OVERWRITE_OPTION_GAP)
-        else
-            optionButton:SetAnchor(TOPLEFT, dialogOverwriteButtonPanel, TOPLEFT, 0, 0)
-            optionButton:SetAnchor(TOPRIGHT, dialogOverwriteButtonPanel, TOPRIGHT, 0, 0)
-        end
-        optionButton:SetHeight(UI_DIALOG_OVERWRITE_OPTION_HEIGHT)
+        local row = tonumber(option.row) or 1
+        local column = tonumber(option.column) or 1
+        local columnCount = math.max(1, tonumber(option.columnCount) or 1)
+        local buttonWidth = (overwritePanelWidth - (UI_DIALOG_OVERWRITE_OPTION_GAP * (columnCount - 1))) / columnCount
+        local offsetX = (column - 1) * (buttonWidth + UI_DIALOG_OVERWRITE_OPTION_GAP)
+        local offsetY = (row - 1) * (UI_DIALOG_OVERWRITE_OPTION_HEIGHT + UI_DIALOG_OVERWRITE_OPTION_GAP)
+        optionButton:SetAnchor(TOPLEFT, dialogOverwriteButtonPanel, TOPLEFT, offsetX, offsetY)
+        optionButton:SetDimensions(buttonWidth, UI_DIALOG_OVERWRITE_OPTION_HEIGHT)
         optionButton:SetHidden(true)
-        if optionButton.label then
-            SetLabelText(optionButton.label, GetText(option.buttonTextKey))
-        end
+
+        local optionLabel = WINDOW_MANAGER:CreateControl("$(parent)Text", optionButton, CT_LABEL)
+        optionLabel:ClearAnchors()
+        optionLabel:SetAnchor(TOPLEFT, optionButton, TOPLEFT, 8, 0)
+        optionLabel:SetAnchor(BOTTOMRIGHT, optionButton, BOTTOMRIGHT, -8, 0)
+        optionLabel:SetFont("ZoFontGameSmall")
+        optionLabel:SetColor(0.94, 0.95, 0.98, 1.0)
+        optionLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        optionLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        optionLabel:SetMouseEnabled(false)
+        optionLabel:SetText(GetText(option.buttonTextKey))
+        SetControlDrawOrder(optionLabel, DT_HIGH, DL_OVERLAY, 26)
+        optionButton.label = optionLabel
+        optionButton.textKey = option.buttonTextKey
         optionButton.overwriteType = option.id
         optionButton:SetHandler("OnMouseEnter", function(self)
-            self:ApplyVisualState(self.isDanger and "danger_hover" or "hover")
+            self.label:SetColor(1.0, 1.0, 1.0, 1.0)
             LTM_UI:RefreshOverwriteDialogBody(self.overwriteType)
         end)
         optionButton:SetHandler("OnMouseExit", function(self)
-            self:ApplyVisualState(self.isDanger and "danger" or "normal")
-            LTM_UI:RefreshOverwriteDialogBody("all")
+            self.label:SetColor(0.94, 0.95, 0.98, 1.0)
+            LTM_UI:RefreshOverwriteDialogBody(nil)
         end)
-        if optionButton.background then
-            SetControlDrawOrder(optionButton.background, DT_HIGH, DL_OVERLAY, 24)
-        end
-        if optionButton.label then
-            SetControlDrawOrder(optionButton.label, DT_HIGH, DL_OVERLAY, 25)
-        end
+        SetControlDrawOrder(optionButton, DT_HIGH, DL_OVERLAY, 25)
         self.dialogOverwriteOptionButtons[#self.dialogOverwriteOptionButtons + 1] = optionButton
-        previousOverwriteButton = optionButton
     end
-
-    local dialogOverwriteCancelButton = self:CreateDialogActionButton(dialogOverwriteButtonPanel, "OverwriteCancelButton", function()
-        LTM_UI:HideDialog()
-    end)
-    dialogOverwriteCancelButton:ClearAnchors()
-    if previousOverwriteButton then
-        dialogOverwriteCancelButton:SetAnchor(TOPLEFT, previousOverwriteButton, BOTTOMLEFT, 0, UI_DIALOG_OVERWRITE_OPTION_GAP)
-        dialogOverwriteCancelButton:SetAnchor(TOPRIGHT, previousOverwriteButton, BOTTOMRIGHT, 0, UI_DIALOG_OVERWRITE_OPTION_GAP)
-    else
-        dialogOverwriteCancelButton:SetAnchor(TOPLEFT, dialogOverwriteButtonPanel, TOPLEFT, 0, 0)
-        dialogOverwriteCancelButton:SetAnchor(TOPRIGHT, dialogOverwriteButtonPanel, TOPRIGHT, 0, 0)
-    end
-    dialogOverwriteCancelButton:SetHeight(UI_DIALOG_OVERWRITE_OPTION_HEIGHT)
-    dialogOverwriteCancelButton:SetHidden(true)
-    if dialogOverwriteCancelButton.label then
-        SetLabelText(dialogOverwriteCancelButton.label, GetText("common.cancel"))
-    end
-    if dialogOverwriteCancelButton.background then
-        SetControlDrawOrder(dialogOverwriteCancelButton.background, DT_HIGH, DL_OVERLAY, 24)
-    end
-    if dialogOverwriteCancelButton.label then
-        SetControlDrawOrder(dialogOverwriteCancelButton.label, DT_HIGH, DL_OVERLAY, 25)
-    end
-    self.dialogOverwriteCancelButton = dialogOverwriteCancelButton
 
     local dialogConfirmButton = self:CreateDialogActionButton(dialogButtonPanel, "ConfirmButton", function()
         LTM_UI:ConfirmDialog()
@@ -3627,10 +3501,7 @@ function LTM_UI:Initialize()
     self.initialized = true
     CreateMainWindow(self)
     self:RefreshHudLauncher()
-    if type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.InitializeInventorySnapshotInvalidation) == "function" then
-        LTM_UI_DISPATCH:InitializeInventorySnapshotInvalidation()
-    end
+    LTM_UI_DISPATCH:InitializeInventorySnapshotInvalidation()
 
     if type(EVENT_MANAGER) == "table" and type(EVENT_MANAGER.RegisterForEvent) == "function" then
         EVENT_MANAGER:RegisterForEvent("LTM_UI_ActionSlotUpdated", EVENT_ACTION_SLOT_UPDATED, function()
@@ -3685,13 +3556,7 @@ function LTM_UI:HideMainWindow()
     self:CancelCurrentEffectRefreshDebounce()
     self:RefreshActionMenuDismissLayer()
     self:HideDialog()
-    if type(LTM_UI_SP_SAVER_SETTINGS) == "table" and type(LTM_UI_SP_SAVER_SETTINGS.Close) == "function" then
-        LTM_UI_SP_SAVER_SETTINGS:Close()
-    end
-    if type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.DestroyInventorySnapshot) == "function" then
-        LTM_UI_DISPATCH:DestroyInventorySnapshot()
-    end
+    LTM_UI_DISPATCH:DestroyInventorySnapshot()
 
     if type(SCENE_MANAGER.HideTopLevel) == "function" then
         SCENE_MANAGER:HideTopLevel(self.window)

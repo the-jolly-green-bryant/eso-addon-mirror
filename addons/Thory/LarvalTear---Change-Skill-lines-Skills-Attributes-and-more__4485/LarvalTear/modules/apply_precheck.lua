@@ -28,7 +28,6 @@ local function CloneAcceptedPrecheck(precheck)
     local cloned = CloneRequest(precheck)
     cloned.route = CloneRequest(precheck.route)
     cloned.diagnostics = CloneRequest(precheck.diagnostics)
-    cloned.spSaver = type(precheck.spSaver) == "table" and CloneRequest(precheck.spSaver) or nil
     return cloned
 end
 
@@ -48,10 +47,7 @@ function M:ResolveBuild(request)
 
     if type(build) ~= "table" then
         local buildId = normalizedRequest.buildId
-        build = type(LTM_BUILD_STORE) == "table"
-            and type(LTM_BUILD_STORE.GetBuildById) == "function"
-            and LTM_BUILD_STORE:GetBuildById(buildId)
-            or nil
+        build = LTM_BUILD_STORE:GetBuildById(buildId)
     end
 
     if type(build) ~= "table" then
@@ -68,17 +64,7 @@ function M:Evaluate(request, options)
         return nil, buildErr or "build_not_found"
     end
 
-    local gateResult = type(LTM_APPLY_PRECHECK_GATE) == "table"
-        and type(LTM_APPLY_PRECHECK_GATE.Evaluate) == "function"
-        and LTM_APPLY_PRECHECK_GATE:Evaluate(normalizedRequest)
-        or {
-            action = "run_now",
-            diagnostics = {
-                inCombat = false,
-            },
-        }
-
-    gateResult = type(gateResult) == "table" and gateResult or {}
+    local gateResult = LTM_APPLY_PRECHECK_GATE:Evaluate(normalizedRequest)
     gateResult.request = normalizedRequest
     gateResult.build = build
 
@@ -98,17 +84,11 @@ function M:Evaluate(request, options)
         end
     end
 
-    local decisionResult = type(LTM_APPLY_PRECHECK_DECISION) == "table"
-        and type(LTM_APPLY_PRECHECK_DECISION.Evaluate) == "function"
-        and LTM_APPLY_PRECHECK_DECISION:Evaluate(normalizedRequest, build, decisionOptions)
-        or {
-            action = "run_now",
-            route = {
-                partialScope = normalizedRequest.partialScope,
-                preflightMode = normalizedRequest.preflightMode,
-            },
-            diagnostics = {},
-        }
+    local decisionResult = LTM_APPLY_PRECHECK_DECISION:Evaluate(
+        normalizedRequest,
+        build,
+        decisionOptions
+    )
 
     decisionResult = type(decisionResult) == "table" and decisionResult or {}
     decisionResult.request = normalizedRequest
@@ -127,9 +107,7 @@ function M:Begin(request, completion, continueFn)
         return false, buildErr or "build_not_found"
     end
 
-    if normalizedRequest.skipStartStateCheck ~= true
-        and type(LTM_APPLY_START_STATE) == "table"
-        and type(LTM_APPLY_START_STATE.Begin) == "function" then
+    if normalizedRequest.skipStartStateCheck ~= true then
         return LTM_APPLY_START_STATE:Begin(normalizedRequest, completion, function(cleanRequest, cleanCompletion)
             local resumedRequest = CloneRequest(cleanRequest)
             resumedRequest.skipStartStateCheck = true

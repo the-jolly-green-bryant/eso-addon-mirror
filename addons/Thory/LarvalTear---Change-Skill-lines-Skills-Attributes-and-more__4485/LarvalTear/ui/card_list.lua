@@ -4,7 +4,6 @@ local LTM_UI_STRINGS = Addon.UI.Strings
 local LTM_UI_DISPATCH = Addon.UI.Dispatch
 local LTM_UI_LAYOUT = Addon.UI.LayoutConstants
 local LTM_UI_CARD_LAYOUT = LTM_UI_LAYOUT.Card
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 
 local UI_CARD_SPACING = LTM_UI_CARD_LAYOUT.SPACING
 local UI_CARD_HEADER_HEIGHT = LTM_UI_CARD_LAYOUT.HEADER_HEIGHT
@@ -18,29 +17,17 @@ local UI_CARD_LIST_SECTION_HEIGHT = LTM_UI_CARD_LAYOUT.LIST_SECTION_FALLBACK_HEI
 local UI_CARD_LIST_CONTAINER_SCROLLBAR_GAP = LTM_UI_CARD_LAYOUT.LIST_CONTAINER_SCROLLBAR_GAP
 local CARD_ROLE_ICON_TEXTURES = LTM_UI_LAYOUT.RoleIconTextures
 local CARD_ATTRIBUTE_LAYOUTS = LTM_UI_LAYOUT.AttributeLayouts
-local PASSIVE_POLICY_OPTIONS = {
-    { id = "none", textKey = "card.passive_policy.none" },
-    { id = "class_all_purchase", textKey = "card.passive_policy.class_all_purchase" },
-    { id = "class_only", textKey = "card.passive_policy.class_only" },
-    { id = "all", textKey = "card.passive_policy.all" },
-}
+local SKILL_SNAPSHOT_SAVED_COLOR = "B8C2D1"
+local SKILL_SNAPSHOT_UNSAVED_COLOR = "73777D"
 
 local function GetText(key, params)
-    if type(LTM_UI_STRINGS) == "table" and type(LTM_UI_STRINGS.GetText) == "function" then
-        return LTM_UI_STRINGS:GetText(key, params)
-    end
-
-    return key
+    return LTM_UI_STRINGS:GetText(key, params)
 end
 
 local function SetLabelText(control, text)
     if control and control.SetText then
         control:SetText(text or "")
     end
-end
-
-local function BuildOutfitDisplayText(outfitName)
-    return string.format("%s: %s", GetText("common.outfit"), outfitName or GetText("common.none"))
 end
 
 local function NormalizeLinkId(linkId)
@@ -71,12 +58,6 @@ local function RefreshArmoryPanelsAfterCardLinkChange()
 end
 
 local function SaveCardQuickSlotLink(cardId, profileId)
-    if type(LTM_UI_DISPATCH) ~= "table" or type(LTM_UI_DISPATCH.SetCardQuickslotProfileId) ~= "function" then
-        LTM_UI:LogActionError("common.save", "dispatch_unavailable")
-        RefreshArmoryPanelsAfterCardLinkChange()
-        return
-    end
-
     local _, err = LTM_UI_DISPATCH:SetCardQuickslotProfileId(cardId, NormalizeLinkId(profileId))
     if err ~= nil then
         LTM_UI:LogActionError("common.save", err)
@@ -85,12 +66,6 @@ local function SaveCardQuickSlotLink(cardId, profileId)
 end
 
 local function SaveCardFoodLink(cardId, foodCardId)
-    if type(LTM_UI_DISPATCH) ~= "table" or type(LTM_UI_DISPATCH.SetCardFoodCardId) ~= "function" then
-        LTM_UI:LogActionError("common.save", "dispatch_unavailable")
-        RefreshArmoryPanelsAfterCardLinkChange()
-        return
-    end
-
     local _, err = LTM_UI_DISPATCH:SetCardFoodCardId(cardId, NormalizeLinkId(foodCardId))
     if err ~= nil then
         LTM_UI:LogActionError("common.save", err)
@@ -98,66 +73,35 @@ local function SaveCardFoodLink(cardId, foodCardId)
     RefreshArmoryPanelsAfterCardLinkChange()
 end
 
-local function GetPassivePolicyDisplayName(policy)
-    policy = LTM_BUILD_CODEC:NormalizePassivePolicy(policy)
-    for _, option in ipairs(PASSIVE_POLICY_OPTIONS) do
-        if option.id == policy then
-            return GetText(option.textKey)
-        end
-    end
-    return GetText("card.passive_policy.class_all_purchase")
-end
-
-local function GetPassivePolicyTooltipText()
-    return GetText("card.passive_policy.tooltip", {
-        none = GetText("card.passive_policy.none"),
-        class_all_purchase = GetText("card.passive_policy.class_all_purchase"),
-        class_only = GetText("card.passive_policy.class_only"),
-        all = GetText("card.passive_policy.all"),
-        snapshot_saved = GetText("card.passive_snapshot.saved"),
-        overwrite_passives = GetText("dialog.overwrite_card.option.passives"),
-        overwrite_all = GetText("dialog.overwrite_card.option.all"),
+local function GetSkillSettingsSummaryText(summary)
+    local sourceKey = type(summary) == "table" and summary.skillSettingsUseOverride == true
+        and "card.skill_settings.source.build" or "card.skill_settings.source.global"
+    return GetText("card.skill_settings.summary", {
+        source = GetText(sourceKey),
     })
 end
 
-local function SaveCardPassivePolicy(cardId, passivePolicy)
-    if type(LTM_UI_DISPATCH) ~= "table" or type(LTM_UI_DISPATCH.SetCardPassivePolicy) ~= "function" then
-        LTM_UI:LogActionError("common.save", "dispatch_unavailable")
-        RefreshArmoryPanelsAfterCardLinkChange()
-        return
-    end
-
-    local _, err = LTM_UI_DISPATCH:SetCardPassivePolicy(cardId, LTM_BUILD_CODEC:NormalizePassivePolicy(passivePolicy))
-    if err ~= nil then
-        LTM_UI:LogActionError("common.save", err)
-    end
-    RefreshArmoryPanelsAfterCardLinkChange()
+local function ColorizeSkillSnapshotText(text, isSaved)
+    local color = isSaved and SKILL_SNAPSHOT_SAVED_COLOR or SKILL_SNAPSHOT_UNSAVED_COLOR
+    return string.format("|c%s%s|r", color, text)
 end
 
-local function GetPassiveSnapshotDisplayText(summary)
-    local state = type(summary) == "table" and summary.passiveSnapshotState or nil
-    local captureState = type(summary) == "table" and summary.passiveSnapshotCaptureState or nil
-
-    if captureState == "partial_class_mismatch" then
-        return GetText("card.passive_snapshot.partial_class_mismatch")
-    end
-    if state == "saved" then
-        return GetText("card.passive_snapshot.saved")
-    end
-    if state == "empty" then
-        return GetText("card.passive_snapshot.empty")
-    end
-    if state == "invalid" then
-        return GetText("card.passive_snapshot.invalid")
-    end
-    return GetText("card.passive_snapshot.missing")
+local function GetSkillSnapshotSummaryText(summary)
+    local activeState = type(summary) == "table" and summary.activeSnapshotState or "missing"
+    local passiveState = type(summary) == "table" and summary.passiveSnapshotState or "missing"
+    return GetText("card.skill_settings.snapshots", {
+        active = ColorizeSkillSnapshotText(
+            GetText("card.skill_settings.snapshot.active"),
+            activeState == "saved"
+        ),
+        passive = ColorizeSkillSnapshotText(
+            GetText("card.skill_settings.snapshot.passive"),
+            passiveState == "saved"
+        ),
+    })
 end
 
 local function BuildLinkComboOptions(getOptionsFunc)
-    if type(LTM_UI_DISPATCH) ~= "table" or type(getOptionsFunc) ~= "function" then
-        return {}
-    end
-
     local options = getOptionsFunc(LTM_UI_DISPATCH)
     return type(options) == "table" and options or {}
 end
@@ -297,28 +241,15 @@ local function SetIconButtonTexturePrefix(button, texturePrefix)
 end
 
 function LTM_UI:GetCardList()
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.GetBuildList) == "function" then
-        return LTM_UI_DISPATCH:GetBuildList()
-    end
-
-    return {}
+    return LTM_UI_DISPATCH:GetBuildList()
 end
 
 function LTM_UI:GetCardEntries()
-    if type(LTM_UI_DISPATCH) == "table" and type(LTM_UI_DISPATCH.GetBuildEntries) == "function" then
-        return LTM_UI_DISPATCH:GetBuildEntries()
-    end
-
-    return {}
+    return LTM_UI_DISPATCH:GetBuildEntries()
 end
 
 function LTM_UI:GetBuildIdByOrdinalForSelectedPage(ordinal)
-    if type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetBuildIdByOrdinalForSelectedPage) == "function" then
-        return LTM_UI_DISPATCH:GetBuildIdByOrdinalForSelectedPage(ordinal)
-    end
-
-    return nil
+    return LTM_UI_DISPATCH:GetBuildIdByOrdinalForSelectedPage(ordinal)
 end
 
 function LTM_UI:SelectCard(cardId, suppressRightPaneRefresh)
@@ -326,9 +257,7 @@ function LTM_UI:SelectCard(cardId, suppressRightPaneRefresh)
         return
     end
 
-    if type(LTM_UI_DISPATCH) ~= "table"
-        or type(LTM_UI_DISPATCH.IsBuildInSelectedPage) ~= "function"
-        or LTM_UI_DISPATCH:IsBuildInSelectedPage(cardId) ~= true then
+    if LTM_UI_DISPATCH:IsBuildInSelectedPage(cardId) ~= true then
         return
     end
 
@@ -337,9 +266,7 @@ function LTM_UI:SelectCard(cardId, suppressRightPaneRefresh)
     self.openActionMenuCardId = nil
     self.openPageActionMenu = false
     local selectedPageId = self:GetSelectedPageId()
-    if type(selectedPageId) == "string"
-        and type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.SetSelectedBuildIdForPage) == "function" then
+    if type(selectedPageId) == "string" then
         LTM_UI_DISPATCH:SetSelectedBuildIdForPage(selectedPageId, cardId)
     end
     self:RefreshSelectionState()
@@ -383,8 +310,6 @@ function LTM_UI:EnsureCardSelection(cardEntries)
     cardEntries = type(cardEntries) == "table" and cardEntries or self:GetCardEntries()
     local selectedPageId = self:GetSelectedPageId()
     local persistedSelectedBuildId = type(selectedPageId) == "string"
-        and type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.GetSelectedBuildIdForPage) == "function"
         and LTM_UI_DISPATCH:GetSelectedBuildIdForPage(selectedPageId)
         or nil
 
@@ -484,9 +409,7 @@ function LTM_UI:RefreshSelectionState()
     if self.partialCpButton then
         self.partialCpButton:SetEnabled(selectedCardId ~= nil)
     end
-    if type(self.RefreshForceChampionRespecControl) == "function" then
-        self:RefreshForceChampionRespecControl()
-    end
+    self:RefreshForceChampionRespecControl()
 end
 
 local function GetCardListViewportHeight(self)
@@ -630,15 +553,8 @@ function LTM_UI:RefreshCardList(forceSnapshot)
         end
 
         local build = entry.build
-        local summary = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetCardSummary) == "function"
-            and LTM_UI_DISPATCH:GetCardSummary(cardId)
-            or nil
-
-        local detailState = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetCardDetailState) == "function"
-            and LTM_UI_DISPATCH:GetCardDetailState(cardId)
-            or nil
+        local summary = LTM_UI_DISPATCH:GetCardSummary(cardId)
+        local detailState = LTM_UI_DISPATCH:GetCardDetailState(cardId)
 
         local cardTop = currentYOffset
         local cardHeight = nil
@@ -667,12 +583,7 @@ function LTM_UI:RefreshCardList(forceSnapshot)
         if cardControl.subclassValue then
             cardControl.subclassValue.ltmTooltipText = ""
         end
-        local outfitDisplayText = BuildOutfitDisplayText(detailState and detailState.outfitName or GetText("common.none"))
-        SetLabelText(cardControl.outfitValue, outfitDisplayText)
-        if cardControl.outfitValue then
-            cardControl.outfitValue.ltmTooltipText = ""
-        end
-        self:RefreshCardPassivePolicyControl(cardControl, detailState)
+        self:RefreshCardSkillSettingsControl(cardControl, detailState)
         RefreshCardLinkControls(self, cardControl, detailState)
         self:RefreshCardAttributeList(cardControl, detailState)
 
@@ -720,34 +631,14 @@ function LTM_UI:RefreshCardAttributeList(cardControl, summary)
     end
 end
 
-function LTM_UI:RefreshCardPassivePolicyControl(cardControl, summary)
-    if cardControl == nil or cardControl.passivePolicyComboBox == nil then
+function LTM_UI:RefreshCardSkillSettingsControl(cardControl, summary)
+    if cardControl == nil or cardControl.skillSettingsLabel == nil then
         return
     end
-
-    local cardId = type(summary) == "table" and summary.cardId or nil
-    local comboBox = cardControl.passivePolicyComboBox
-    local passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(summary) == "table" and summary.passivePolicy or nil)
-
-    comboBox:SetSortsItems(false)
-    comboBox:ClearItems()
-    for _, option in ipairs(PASSIVE_POLICY_OPTIONS) do
-        local policy = option.id
-        comboBox:AddItem(comboBox:CreateItemEntry(GetText(option.textKey), function()
-            if type(cardId) == "string" and cardId ~= "" then
-                SaveCardPassivePolicy(cardId, policy)
-            end
-        end))
-    end
-    comboBox:SetSelectedItemText(GetPassivePolicyDisplayName(passivePolicy))
-
-    local snapshotText = GetPassiveSnapshotDisplayText(summary)
-    if cardControl.passiveSnapshotLabel ~= nil then
-        SetLabelText(cardControl.passiveSnapshotLabel, snapshotText)
-        cardControl.passiveSnapshotLabel.ltmTooltipText = ""
-    end
-    if cardControl.passivePolicyDropdown ~= nil then
-        cardControl.passivePolicyDropdown.ltmTooltipText = GetPassivePolicyTooltipText()
+    SetLabelText(cardControl.skillSettingsLabel, GetSkillSettingsSummaryText(summary))
+    if cardControl.skillSnapshotLabel ~= nil then
+        SetLabelText(cardControl.skillSnapshotLabel, GetSkillSnapshotSummaryText(summary))
+        cardControl.skillSnapshotLabel.ltmTooltipText = GetText("card.skill_settings.snapshots.tooltip")
     end
 end
 
@@ -803,9 +694,7 @@ RefreshCardLinkControls = function(self, cardControl, summary)
         function(profileId)
             SaveCardQuickSlotLink(cardId, profileId)
         end,
-        type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetQuickSlotProfileDisplayName) == "function"
-            and LTM_UI_DISPATCH:GetQuickSlotProfileDisplayName(quickSlotProfileId)
+        LTM_UI_DISPATCH:GetQuickSlotProfileDisplayName(quickSlotProfileId)
             or BuildMissingLinkDisplayName(quickSlotProfileId, GetText("card.link.quickslot"))
     )
 
@@ -818,9 +707,7 @@ RefreshCardLinkControls = function(self, cardControl, summary)
         function(cardIdToSave)
             SaveCardFoodLink(cardId, cardIdToSave)
         end,
-        type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetFoodCardDisplayName) == "function"
-            and LTM_UI_DISPATCH:GetFoodCardDisplayName(foodCardId)
+        LTM_UI_DISPATCH:GetFoodCardDisplayName(foodCardId)
             or BuildMissingLinkDisplayName(foodCardId, GetText("card.link.food"))
     )
 end

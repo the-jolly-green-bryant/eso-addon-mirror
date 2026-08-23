@@ -3,7 +3,7 @@ U.Sound = U.Sound or {}
 local SS = U.Sound
 
 SS.name = "UltiviteSound"
-SS.version = "1.0.36 / Ultivite 1.0.125"
+SS.version = "1.0.37 / Ultivite 1.0.160"
 SS.savedVersion = 1
 SS.captureUpdateName = "SoundSuppressorCaptureTimer"
 SS.auditionUpdateName = "SoundSuppressorPlayAllTimer"
@@ -643,4 +643,3 @@ function SS.Initialize(externalSV)
 
     chat(string.format("v%s loaded. Hook=%s. Use /ss capture 8 before triggering an unwanted sound.", SS.version, SS.hookMode))
 end
-

@@ -1,23 +1,19 @@
 local Addon = LarvalTearMod
 local Log = Addon.Common.Log
 local LTM_ATTRIBUTE_SNAPSHOT = Addon.Modules.AttributeSnapshot
+local LTM_ACTIVE_SKILL_RESTORE = Addon.Modules.ActiveSkillRestore
 local LTM_BUILD_STORE = Addon.Modules.BuildStore
 local LTM_PIPELINE_PLANNER = Addon.Modules.PipelinePlanner
 local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 local LTM_PASSIVE_SNAPSHOT_APPLY = Addon.Modules.PassiveSnapshotApply
 local LTM_ROLE_STATE = Addon.Modules.RoleState
 local LTM_SUBCLASS_PLANNER = Addon.Modules.SubclassPlanner
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 
 local SHARED_UTIL = Addon.Common.Util
 
 local function HasEntries(value)
     return type(value) == "table" and next(value) ~= nil
-end
-
-local function NormalizeTargets(skillConfig)
-    return SHARED_UTIL:NormalizeSlotTargets(skillConfig)
 end
 
 local function CloneConfig(config)
@@ -29,70 +25,6 @@ local function CloneConfig(config)
         cloned[key] = value
     end
     return cloned
-end
-
-local function CloneCollection(collection)
-    local cloned = {}
-    for key, value in pairs(type(collection) == "table" and collection or {}) do
-        cloned[key] = value
-    end
-    return cloned
-end
-
-local function CloneTransformPlan(plan)
-    local cloned = CloneConfig(plan)
-    -- Skip and execution-time partial handling mutate these collections. Keep
-    -- the analyzed diagnostics immutable when the runtime plan diverges.
-    cloned.residuals = CloneCollection(plan.residuals)
-    cloned.residualSet = CloneCollection(plan.residualSet)
-    cloned.skippedKinds = CloneCollection(plan.skippedKinds)
-    return cloned
-end
-
-local function SeparateDeferredTransformSlots(skillConfig, transformPlan)
-    local progressionKinds = type(transformPlan) == "table"
-        and transformPlan.deferredProgressionKinds
-        or nil
-    local unpurchasedProgressions = type(transformPlan) == "table"
-        and transformPlan.deferredUnpurchasedProgressions
-        or nil
-    if type(progressionKinds) ~= "table" or next(progressionKinds) == nil then
-        return
-    end
-
-    local restoreTargets = {}
-    local deferredSlots = {}
-    for _, target in ipairs(NormalizeTargets(skillConfig)) do
-        local resolved = SHARED_UTIL:ResolveActiveSkillTargetState(target)
-        local progressionId = type(resolved) == "table"
-            and tonumber(resolved.progressionId)
-            or nil
-        progressionId = progressionId ~= nil and math.floor(progressionId) or nil
-        local transformKind = progressionId ~= nil and progressionKinds[progressionId] or nil
-        if type(transformKind) == "string" then
-            deferredSlots[#deferredSlots + 1] = {
-                hotbarCategory = target.hotbarCategory,
-                slotIndex = target.slotIndex,
-                progressionId = progressionId,
-                savedAbilityId = target.abilityId,
-                transformKind = transformKind,
-                targetPurchased = type(unpurchasedProgressions) ~= "table"
-                    or unpurchasedProgressions[progressionId] ~= true,
-            }
-        else
-            restoreTargets[#restoreTargets + 1] = target
-        end
-    end
-
-    if #deferredSlots > 0 then
-        skillConfig.slots = restoreTargets
-        skillConfig.hotbars = nil
-        for _, hotbarCategory in ipairs(SHARED_UTIL.HOTBAR_CATEGORIES or { 0, 1 }) do
-            skillConfig[hotbarCategory] = nil
-        end
-        skillConfig.skills = nil
-        skillConfig.deferredTransformSlots = deferredSlots
-    end
 end
 
 local function NormalizeClassMasteryPurchasedAbilities(purchasedAbilities)
@@ -144,9 +76,7 @@ function LTM_PIPELINE_PLANNER:ResolveClassMasteryDiff(currentState, targetBuild)
     targetSkillLineId = math.floor(targetSkillLineId)
 
     local currentMastery = type(currentState) == "table" and currentState.classMastery or nil
-    if currentMastery == nil
-        and type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.CaptureCurrentClassMasteryForBuild) == "function" then
+    if currentMastery == nil then
         currentMastery = LTM_BUILD_STORE:CaptureCurrentClassMasteryForBuild()
     end
 
@@ -233,21 +163,19 @@ function LTM_PIPELINE_PLANNER:ResolveClassMasteryDiff(currentState, targetBuild)
         or (hasSkillLineDiff and "target_line_changed")
         or (hasAdditionDiff and "additions_only")
         or "matched"
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(
-            "Planner Class Mastery diff",
-            "requiresRespec=" .. tostring(#reductions > 0),
-            "reason=" .. tostring(reason),
-            "currentLine=" .. tostring(currentSkillLineId),
-            "targetLine=" .. tostring(targetSkillLineId),
-            "currentPurchases=" .. tostring(CountMapEntries(currentPurchases)),
-            "targetPurchases=" .. tostring(CountMapEntries(targetPurchases)),
-            "reductions=" .. tostring(#reductions),
-            "additions=" .. tostring(#additions),
-            "lineChanged=" .. tostring(hasSkillLineDiff),
-            "additionsOnly=" .. tostring(hasAdditionDiff and #reductions == 0)
-        )
-    end
+    Log.LogDebugSummary(
+        "Planner Class Mastery diff",
+        "requiresRespec=" .. tostring(#reductions > 0),
+        "reason=" .. tostring(reason),
+        "currentLine=" .. tostring(currentSkillLineId),
+        "targetLine=" .. tostring(targetSkillLineId),
+        "currentPurchases=" .. tostring(CountMapEntries(currentPurchases)),
+        "targetPurchases=" .. tostring(CountMapEntries(targetPurchases)),
+        "reductions=" .. tostring(#reductions),
+        "additions=" .. tostring(#additions),
+        "lineChanged=" .. tostring(hasSkillLineDiff),
+        "additionsOnly=" .. tostring(hasAdditionDiff and #reductions == 0)
+    )
 
     return {
         hasDiff = hasSkillLineDiff or #reductions > 0 or hasAdditionDiff == true,
@@ -262,169 +190,26 @@ function LTM_PIPELINE_PLANNER:ResolveClassMasteryDiff(currentState, targetBuild)
     }
 end
 
-function LTM_PIPELINE_PLANNER:AnalyzeSkillTarget(target, resolved)
-    if type(resolved) ~= "table" then
-        if type(SHARED_UTIL) ~= "table"
-            or type(SHARED_UTIL.ResolveActiveSkillTargetState) ~= "function" then
-            return nil
-        end
-        resolved = SHARED_UTIL:ResolveActiveSkillTargetState(target)
-    end
-    if type(resolved) ~= "table" then
-        return nil
-    end
-
-    if resolved.targetAbilityId == nil or resolved.targetAbilityId <= 0 then
-        return nil
-    end
-
-    return {
-        targetAbilityId = resolved.targetAbilityId,
-        hotbarCategory = resolved.hotbarCategory,
-        slotIndex = resolved.slotIndex,
-        progressionId = resolved.progressionId,
-        skillLineId = resolved.skillLineId,
-        targetMorphSlot = resolved.targetMorphSlot,
-        currentMorphSlot = resolved.currentMorphSlot,
-        currentEffectiveAbilityId = resolved.currentEffectiveAbilityId,
-        skillLineActive = resolved.skillLineActive,
-        isPlayerClassSkillLine = resolved.isPlayerClassSkillLine,
-        requiresPurchaseChange = resolved.requiresPurchase == true,
-        requiresMorphChange = resolved.requiresMorph == true,
-        unresolved = resolved.unresolved == true,
-        reason = resolved.reason,
-    }
-end
-
 function LTM_PIPELINE_PLANNER:ResolveSubclassDiff(context, currentState, targetBuild)
     local targetSubclass = targetBuild and targetBuild.subclass or nil
-    local subclassState = nil
-
-    if type(LTM_PIPELINE_CONTEXT) == "table" and type(LTM_PIPELINE_CONTEXT.GetCurrentSubclassState) == "function" then
-        subclassState = LTM_PIPELINE_CONTEXT:GetCurrentSubclassState(context)
-    end
+    local subclassState = LTM_PIPELINE_CONTEXT:GetCurrentSubclassState(context)
 
     if subclassState == nil and type(currentState) == "table" then
         subclassState = currentState.subclass
     end
 
-    if type(LTM_SUBCLASS_PLANNER) == "table"
-        and type(LTM_SUBCLASS_PLANNER.BuildSubclassPlan) == "function" then
-        local plan = LTM_SUBCLASS_PLANNER:BuildSubclassPlan(context, subclassState, targetSubclass)
-        if type(plan) == "table" then
-            return {
-                ok = plan.ok,
-                hasDiff = plan.hasDiff == true,
-                activate = plan.activate or {},
-                deactivate = plan.deactivate or {},
-                orderedOperations = plan.orderedOperations or {},
-                currentSkillLineIds = plan.currentSkillLineIds or {},
-                targetSkillLineIds = plan.targetSkillLineIds or {},
-                source = "subclass_planner",
-                implemented = true,
-                diagnostics = plan.diagnostics,
-                immutable = plan.immutable,
-                reason = plan.reason,
-            }
-        end
-    end
-
+    local plan = LTM_SUBCLASS_PLANNER:BuildSubclassPlan(context, subclassState, targetSubclass)
     return {
-        ok = true,
-        hasDiff = HasEntries(targetSubclass and targetSubclass.targetSkillLineIds),
-        activate = {},
-        deactivate = {},
-        orderedOperations = {},
-        currentSkillLineIds = {},
-        targetSkillLineIds = targetSubclass and targetSubclass.targetSkillLineIds or {},
-        source = "target_stub",
-        implemented = false,
-    }
-end
-
-function LTM_PIPELINE_PLANNER:ResolveSkillDiff(skillConfig, activeTargetStates)
-    skillConfig = skillConfig or {}
-
-    if HasEntries(skillConfig.morphChanges) then
-        return {
-            hasMorphDiff = true,
-            inferredMorphChanges = skillConfig.morphChanges,
-            source = "explicit_morph_changes",
-            reasons = {},
-            requiresSubclassActivation = false,
-        }
-    end
-
-    local targets = NormalizeTargets(skillConfig)
-    local inferredMorphChanges = {}
-    local inferredPurchaseTargets = {}
-    local seenProgressionIds = {}
-    local seenPurchaseProgressionIds = {}
-    local reasons = {}
-    local requiresSubclassActivation = false
-
-    for targetIndex, target in ipairs(targets) do
-        local analysis = self:AnalyzeSkillTarget(
-            target,
-            type(activeTargetStates) == "table" and activeTargetStates[targetIndex] or nil
-        )
-        local overriddenByTransform = analysis ~= nil
-            and analysis.progressionId ~= nil
-            and type(skillConfig.transformOwnedProgressions) == "table"
-            and skillConfig.transformOwnedProgressions[analysis.progressionId] == true
-        if not overriddenByTransform
-            and analysis ~= nil
-            and (analysis.requiresPurchaseChange or analysis.requiresMorphChange) then
-            if analysis.reason == "skill_line_not_active" and analysis.isPlayerClassSkillLine == true then
-                requiresSubclassActivation = true
-            end
-            local progressionKey = tostring(analysis.progressionId)
-            reasons[#reasons + 1] = string.format(
-                "slot=%s:%s reason=%s target=%s current=%s currentMorph=%s targetMorph=%s lineActive=%s",
-                tostring(target.hotbarCategory),
-                tostring(target.slotIndex),
-                tostring(analysis.reason),
-                tostring(analysis.targetAbilityId),
-                tostring(analysis.currentEffectiveAbilityId),
-                tostring(analysis.currentMorphSlot),
-                tostring(analysis.targetMorphSlot),
-                tostring(analysis.skillLineActive)
-            )
-
-            if analysis.requiresMorphChange == true
-                and analysis.progressionId ~= nil
-                and not seenProgressionIds[progressionKey] then
-                seenProgressionIds[progressionKey] = true
-                inferredMorphChanges[#inferredMorphChanges + 1] = {
-                    targetAbilityId = analysis.targetAbilityId,
-                    hotbarCategory = analysis.hotbarCategory,
-                    slotIndex = analysis.slotIndex,
-                }
-            end
-
-            if analysis.requiresPurchaseChange == true
-                and analysis.progressionId ~= nil
-                and not seenPurchaseProgressionIds[progressionKey] then
-                seenPurchaseProgressionIds[progressionKey] = true
-                inferredPurchaseTargets[#inferredPurchaseTargets + 1] = {
-                    targetAbilityId = analysis.targetAbilityId,
-                    hotbarCategory = analysis.hotbarCategory,
-                    slotIndex = analysis.slotIndex,
-                }
-            end
-        end
-    end
-
-    return {
-        hasPurchaseDiff = #inferredPurchaseTargets > 0,
-        hasMorphDiff = #inferredMorphChanges > 0,
-        inferredPurchaseTargets = inferredPurchaseTargets,
-        inferredMorphChanges = inferredMorphChanges,
-        source = (#inferredPurchaseTargets > 0 or #inferredMorphChanges > 0)
-            and "inferred_from_target_state"
-            or "no_purchase_or_morph_diff",
-        reasons = reasons,
-        requiresSubclassActivation = requiresSubclassActivation,
+        ok = plan.ok,
+        hasDiff = plan.hasDiff == true,
+        activate = plan.activate or {},
+        deactivate = plan.deactivate or {},
+        orderedOperations = plan.orderedOperations or {},
+        currentSkillLineIds = plan.currentSkillLineIds or {},
+        targetSkillLineIds = plan.targetSkillLineIds or {},
+        diagnostics = plan.diagnostics,
+        immutable = plan.immutable,
+        reason = plan.reason,
     }
 end
 
@@ -434,11 +219,8 @@ function LTM_PIPELINE_PLANNER:ResolveAttributeDiff(currentState, targetBuild)
     local normalizedTarget = nil
     local normalizeErr = nil
 
-    if targetAttributes ~= nil and type(LTM_ATTRIBUTE_SNAPSHOT) == "table"
-        and type(LTM_ATTRIBUTE_SNAPSHOT.NormalizeTargetAttributeState) == "function" then
+    if targetAttributes ~= nil then
         normalizedTarget, normalizeErr = LTM_ATTRIBUTE_SNAPSHOT:NormalizeTargetAttributeState(targetAttributes)
-    elseif type(targetAttributes) == "table" then
-        normalizedTarget = targetAttributes
     end
 
     local hasDiff = false
@@ -463,33 +245,18 @@ function LTM_PIPELINE_PLANNER:ResolveRoleDiff(currentState, targetBuild)
     local currentRole = type(currentState) == "table" and currentState.role or nil
     local targetRole = type(targetBuild) == "table" and targetBuild.role or nil
 
-    if type(LTM_ROLE_STATE) == "table" and type(LTM_ROLE_STATE.ResolveRoleDiff) == "function" then
-        return LTM_ROLE_STATE:ResolveRoleDiff(currentRole, targetRole)
-    end
-
-    return {
-        hasDiff = false,
-        current = nil,
-        target = nil,
-        source = "role_state_unavailable",
-    }
+    return LTM_ROLE_STATE:ResolveRoleDiff(currentRole, targetRole)
 end
 
 function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBuild)
     targetBuild = targetBuild or {}
-    local partialScope = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPartialScope) == "function"
-        and LTM_PIPELINE_CONTEXT:GetPartialScope(context)
-        or nil
+    local partialScope = LTM_PIPELINE_CONTEXT:GetPartialScope(context)
     local allowSubclass = partialScope == nil or partialScope == "class_skills"
     local allowClassSkills = partialScope == nil or partialScope == "class_skills"
     local allowAttributes = partialScope == nil or partialScope == "attributes"
     local allowEquipment = partialScope == nil or partialScope == "equipment"
     local allowChampion = partialScope == nil or partialScope == "champion_points"
-    local preflightMode = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetPreflightMode) == "function"
-        and LTM_PIPELINE_CONTEXT:GetPreflightMode(context)
-        or nil
+    local preflightMode = LTM_PIPELINE_CONTEXT:GetPreflightMode(context)
     local skillPhaseMode = type(context) == "table"
         and type(context.runOptions) == "table"
         and context.runOptions.skillPhaseMode
@@ -498,39 +265,41 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
         and type(context.runOptions) == "table"
         and context.runOptions.skillPhaseReason
         or nil
-    local spSaverSkillSkipReason = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverSkipReason) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverSkipReason(context, "normal_skill_changes")
-        or nil
-    local spSaverPassiveSkipReason = type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.GetSpSaverSkipReason) == "function"
-        and LTM_PIPELINE_CONTEXT:GetSpSaverSkipReason(context, "normal_passive_changes")
-        or nil
-    local skipSkillsForSpSaver = spSaverSkillSkipReason ~= nil
-    local skipTransformForSkillPhase = skipSkillsForSpSaver
+    local skillSettingsSkillSkipReason = LTM_PIPELINE_CONTEXT:GetSkillSettingsSkipReason(
+        context,
+        "normal_skill_changes"
+    )
+    local skillSettingsPassiveSkipReason = LTM_PIPELINE_CONTEXT:GetSkillSettingsSkipReason(
+        context,
+        "normal_passive_changes"
+    )
+    local skipSkillsForSkillSettings = skillSettingsSkillSkipReason ~= nil
+    local skipTransformForSkillPhase = skipSkillsForSkillSettings
         or skillPhaseMode == "skip_due_to_insufficient_points"
         or preflightMode == "subclass_only"
     local skillConfig = CloneConfig(targetBuild.skills or {})
-    local analyzedTransformPlan = LTM_TRANSFORM_SKILLS:BuildPlan(targetBuild.transforms, skillConfig)
-    if targetBuild.transforms ~= nil then
+    local activeTargetStates = type(context) == "table" and context.skillPointActiveTargetStates or nil
+    local suppliedTransformPlan = type(context) == "table"
+        and type(context.runOptions) == "table"
+        and context.runOptions.transformPlan
+        or nil
+    local analyzedTransformPlan = suppliedTransformPlan
+    if type(analyzedTransformPlan) ~= "table" then
+        analyzedTransformPlan = LTM_TRANSFORM_SKILLS:BuildPlan(
+            targetBuild.transforms,
+            skillConfig,
+            activeTargetStates
+        )
+    end
+    if targetBuild.transforms ~= nil and type(suppliedTransformPlan) ~= "table" then
         LTM_TRANSFORM_SKILLS:LogPlan(analyzedTransformPlan)
     end
     local transformPlan = analyzedTransformPlan
-    if skipTransformForSkillPhase then
-        transformPlan = CloneTransformPlan(analyzedTransformPlan)
-        LTM_TRANSFORM_SKILLS:SkipPlanOperations(
-            transformPlan,
-            context,
-            skillConfig
-        )
-        transformPlan.skippedBySpSaver = skipSkillsForSpSaver == true
-    else
+    if not skipTransformForSkillPhase then
         LTM_TRANSFORM_SKILLS:RecordPlanResiduals(context, analyzedTransformPlan)
     end
-    skillConfig.transformTargets = transformPlan.targets
-    skillConfig.transformOwnedProgressions = transformPlan.transformOwnedProgressions
-    SeparateDeferredTransformSlots(skillConfig, transformPlan)
-    local passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(type(targetBuild) == "table" and targetBuild.passivePolicy or nil)
+    local skillSettings = LTM_PIPELINE_CONTEXT:GetSkillSettings(context)
+    local passiveRestore = skillSettings.passiveRestore
     local championPointsConfig = nil
     local championOptions = nil
     if type(targetBuild.championPoints) == "table" then
@@ -542,85 +311,117 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
         }
     end
     local subclassDiff = self:ResolveSubclassDiff(context, currentState, targetBuild)
-    local activeTargetStates = type(context) == "table" and context.skillPointActiveTargetStates or nil
-    if type(skillConfig.deferredTransformSlots) == "table"
-        and #skillConfig.deferredTransformSlots > 0 then
-        -- The evaluator states are indexed against the pre-separation slot
-        -- sequence. Deferred Transform slots change that sequence, so reusing
-        -- the old indexes would associate states with the wrong targets.
-        activeTargetStates = nil
+    local suppliedActiveRestorePlan = type(context) == "table"
+        and type(context.runOptions) == "table"
+        and context.runOptions.activeRestorePlan
+        or nil
+    local analyzedActiveRestorePlan = suppliedActiveRestorePlan
+    if type(analyzedActiveRestorePlan) ~= "table" then
+        analyzedActiveRestorePlan = LTM_ACTIVE_SKILL_RESTORE:BuildPlan({
+            mode = skillSettings.activeRestore,
+            activeSnapshot = targetBuild.activeSnapshot,
+            skillConfig = skillConfig,
+            activeTargetStates = activeTargetStates,
+            auditSnapshot = type(context) == "table" and context.skillPointSnapshot or nil,
+            subclassDiff = subclassDiff,
+            transformPlan = analyzedTransformPlan,
+            transformOwnerSkillLineIds = type(context) == "table"
+                and context.skillPointTransformOwnerSkillLineIds
+                or nil,
+            cryptCanonActive = type(context) == "table" and context.skillPointCryptCanonActive or nil,
+        })
     end
-    local skillDiff = self:ResolveSkillDiff(skillConfig, activeTargetStates)
+    local activeRestorePlan = LTM_ACTIVE_SKILL_RESTORE:ApplyShortageDecision(
+        analyzedActiveRestorePlan,
+        skipTransformForSkillPhase and { activeAction = "skip_all" } or skillSettings
+    )
+    local analyzedSkillDiff = analyzedActiveRestorePlan.slotPlan
+    local skillDiff = activeRestorePlan.slotPlan
     local attributeDiff = self:ResolveAttributeDiff(currentState, targetBuild)
     local roleDiff = self:ResolveRoleDiff(currentState, targetBuild)
     local classMasteryDiff = self:ResolveClassMasteryDiff(currentState, targetBuild)
     local needsSubclassChange = subclassDiff.hasDiff == true
     local inferredSubclassRequirement = type(targetBuild.subclass) == "table"
-        and skillDiff.requiresSubclassActivation == true
+        and analyzedSkillDiff.requiresSubclassActivation == true
     if not needsSubclassChange and inferredSubclassRequirement then
         needsSubclassChange = true
     end
-    local analyzedNeedsPurchaseChange = skillDiff.hasPurchaseDiff == true
-    local analyzedNeedsMorphChange = skillDiff.hasMorphDiff == true
+    local analyzedNeedsPurchaseChange = analyzedSkillDiff.hasPurchaseDiff == true
+    local analyzedNeedsMorphChange = analyzedSkillDiff.hasMorphDiff == true
     local analyzedTransformInvalid = analyzedTransformPlan.ok ~= true
-    local analyzedNeedsTransformChange = analyzedTransformPlan.hasDiff == true
-        or analyzedTransformInvalid
-    local needsPurchaseChange = skipSkillsForSpSaver ~= true and analyzedNeedsPurchaseChange
-    local needsMorphChange = skipSkillsForSpSaver ~= true and analyzedNeedsMorphChange
-    local needsTransformChange = skipTransformForSkillPhase ~= true and analyzedNeedsTransformChange
-    local passiveAnalysis = type(LTM_PASSIVE_SNAPSHOT_APPLY) == "table"
-        and type(LTM_PASSIVE_SNAPSHOT_APPLY.AnalyzeBuild) == "function"
-        and LTM_PASSIVE_SNAPSHOT_APPLY:AnalyzeBuild(targetBuild, {
-            source = "pipeline_planner",
-        })
-        or nil
+    local analyzedNeedsTransformChange = LTM_ACTIVE_SKILL_RESTORE:HasOperationsFromSources(
+        analyzedActiveRestorePlan,
+        { transform = true }
+    ) or analyzedTransformInvalid
+    local analyzedNeedsActiveRestore = analyzedActiveRestorePlan.mode == "clear_unused"
+        or LTM_ACTIVE_SKILL_RESTORE:HasOperationsFromSources(
+            analyzedActiveRestorePlan,
+            { active_exact = true, clear_unused = true }
+        )
+    local needsActiveRestore = (activeRestorePlan.mode == "clear_unused"
+        and activeRestorePlan.neutralized ~= true)
+        or LTM_ACTIVE_SKILL_RESTORE:HasOperationsFromSources(
+            activeRestorePlan,
+            { active_exact = true, clear_unused = true }
+        )
+    local needsPurchaseChange = skillDiff.hasPurchaseDiff == true
+    local needsMorphChange = skillDiff.hasMorphDiff == true
+    local needsTransformChange = (activeRestorePlan.neutralized ~= true and analyzedTransformInvalid)
+        or LTM_ACTIVE_SKILL_RESTORE:HasOperationsFromSources(
+            activeRestorePlan,
+            { transform = true }
+        )
+    local passiveAnalysis = LTM_PASSIVE_SNAPSHOT_APPLY:AnalyzeBuild(targetBuild, {
+        source = "pipeline_planner",
+        passiveRestore = passiveRestore,
+    })
     local analyzedNeedsPassiveRespec = type(passiveAnalysis) == "table"
         and passiveAnalysis.requiresRespecForPassive == true
     local analyzedNeedsPassivePurchase = type(passiveAnalysis) == "table" and passiveAnalysis.hasPurchase == true
     local analyzedNeedsPassiveOption = type(passiveAnalysis) == "table" and passiveAnalysis.needsPassiveOption == true
     local analyzedNeedsExactPassiveApply = type(passiveAnalysis) == "table"
         and passiveAnalysis.needsExactPassiveApply == true
-    local skipPassiveForSpSaver = spSaverPassiveSkipReason ~= nil
-    local needsPassiveRespec = skipPassiveForSpSaver ~= true and analyzedNeedsPassiveRespec
-    local needsPassivePurchase = skipPassiveForSpSaver ~= true and analyzedNeedsPassivePurchase
-    local needsPassiveOption = skipPassiveForSpSaver ~= true and analyzedNeedsPassiveOption
-    local needsExactPassiveApply = skipPassiveForSpSaver ~= true and analyzedNeedsExactPassiveApply
+    local skipPassiveForSkillSettings = skillSettingsPassiveSkipReason ~= nil
+    local needsPassiveRespec = skipPassiveForSkillSettings ~= true and analyzedNeedsPassiveRespec
+    local needsPassivePurchase = skipPassiveForSkillSettings ~= true and analyzedNeedsPassivePurchase
+    local needsPassiveOption = skipPassiveForSkillSettings ~= true and analyzedNeedsPassiveOption
+    local needsExactPassiveApply = skipPassiveForSkillSettings ~= true and analyzedNeedsExactPassiveApply
     local needsClassMasteryReduction = classMasteryDiff.requiresRespec == true
     local analyzedNeedsRespec = needsSubclassChange
         or analyzedNeedsPurchaseChange
         or analyzedNeedsMorphChange
         or analyzedNeedsTransformChange
+        or analyzedActiveRestorePlan.requiresRouteB == true
         or analyzedNeedsPassiveRespec
         or needsClassMasteryReduction
     local needsRespec = needsSubclassChange
         or needsPurchaseChange
         or needsMorphChange
         or needsTransformChange
+        or activeRestorePlan.requiresRouteB == true
         or needsPassiveRespec
         or needsClassMasteryReduction
     local needsEquipmentChange = targetBuild.equipment ~= nil
     local needsRoleChange = partialScope == nil and roleDiff.hasDiff == true
     local needsAttributeChange = attributeDiff.hasDiff == true
     local needsChampionChange = targetBuild.championPoints ~= nil
-    local needsSlotRestore = targetBuild.skills ~= nil or targetBuild.actionbar ~= nil
-    local targetSkillLineIds = type(SHARED_UTIL) == "table"
-        and type(SHARED_UTIL.NormalizeLineIdList) == "function"
-        and SHARED_UTIL:NormalizeLineIdList(
-            type(targetBuild.subclass) == "table" and targetBuild.subclass.targetSkillLineIds or nil
-        )
-        or {}
-    local analyzedNeedsStandalonePassiveAutoFill = passivePolicy == "class_all_purchase"
+    local needsSlotRestore = targetBuild.skills ~= nil
+    local targetSkillLineIds = SHARED_UTIL:NormalizeLineIdList(
+        type(targetBuild.subclass) == "table" and targetBuild.subclass.targetSkillLineIds or nil
+    )
+    local analyzedNeedsStandalonePassiveAutoFill = passiveRestore == "class_purchase_all"
         and #targetSkillLineIds > 0
         and analyzedNeedsPassiveRespec ~= true
         and needsSubclassChange ~= true
         and analyzedNeedsPurchaseChange ~= true
         and analyzedNeedsMorphChange ~= true
         and analyzedNeedsTransformChange ~= true
-    local needsStandalonePassiveAutoFill = skipPassiveForSpSaver ~= true
+        and analyzedNeedsActiveRestore ~= true
+    local needsStandalonePassiveAutoFill = skipPassiveForSkillSettings ~= true
         and analyzedNeedsStandalonePassiveAutoFill
-    local exactPassivePolicy = passivePolicy == "class_only" or passivePolicy == "all"
-    local autoFillPassivePolicy = passivePolicy == "class_all_purchase"
-    local analyzedNeedsStandaloneExactPassive = exactPassivePolicy
+    local exactPassiveRestore = passiveRestore == "class_exact" or passiveRestore == "all_exact"
+    local autoFillPassiveRestore = passiveRestore == "class_purchase_all"
+    local analyzedNeedsStandaloneExactPassive = exactPassiveRestore
         and analyzedNeedsExactPassiveApply
         and analyzedNeedsStandalonePassiveAutoFill ~= true
         and analyzedNeedsPassiveRespec ~= true
@@ -628,37 +429,37 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
     local analyzedNeedsStandalonePassiveChanges = analyzedNeedsStandalonePassiveAutoFill
         and analyzedNeedsPassiveOption
     local analyzedNeedsRouteBPassive = analyzedNeedsRespec
-        and ((exactPassivePolicy and analyzedNeedsExactPassiveApply)
-            or (autoFillPassivePolicy and analyzedNeedsPassiveOption))
-    local spSaverAppliesToSkillScope = partialScope == nil or partialScope == "class_skills"
-    local hasSkippedSkillChanges = spSaverAppliesToSkillScope
-        and skipSkillsForSpSaver
-        and (analyzedNeedsPurchaseChange or analyzedNeedsMorphChange or analyzedNeedsTransformChange)
-    local hasSkippedPassiveChanges = spSaverAppliesToSkillScope
-        and skipPassiveForSpSaver
+        and ((exactPassiveRestore and analyzedNeedsExactPassiveApply)
+            or (autoFillPassiveRestore and analyzedNeedsPassiveOption))
+    local skillSettingsAppliesToSkillScope = partialScope == nil or partialScope == "class_skills"
+    local hasSkippedSkillChanges = skillSettingsAppliesToSkillScope
+        and skipSkillsForSkillSettings
+        and (analyzedNeedsPurchaseChange
+            or analyzedNeedsMorphChange
+            or analyzedNeedsTransformChange
+            or analyzedActiveRestorePlan.hasDiff == true)
+    local hasSkippedPassiveChanges = skillSettingsAppliesToSkillScope
+        and skipPassiveForSkillSettings
         and (analyzedNeedsRouteBPassive
             or analyzedNeedsStandalonePassiveChanges
             or analyzedNeedsStandaloneExactPassive)
-    if hasSkippedSkillChanges
-        and type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.RecordSpSaverExpectedSkip) == "function" then
-        LTM_PIPELINE_CONTEXT:RecordSpSaverExpectedSkip(context, "normal_skill_changes")
+    local hasUnscheduledStandalonePassiveSkip = skillSettingsAppliesToSkillScope
+        and skipPassiveForSkillSettings
+        and (analyzedNeedsStandalonePassiveChanges or analyzedNeedsStandaloneExactPassive)
+    if hasSkippedSkillChanges then
+        LTM_PIPELINE_CONTEXT:RecordSkillSettingsExpectedSkip(context, "normal_skill_changes")
     end
     if hasSkippedSkillChanges then
-        skillConfig.spSaverSkipNormalSkillChanges = true
+        skillConfig.skillSettingsSkipNormalSkillChanges = true
     end
-    if hasSkippedPassiveChanges
-        and type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.RecordSpSaverExpectedSkip) == "function" then
-        LTM_PIPELINE_CONTEXT:RecordSpSaverExpectedSkip(context, "normal_passive_changes")
+    if hasSkippedPassiveChanges then
+        LTM_PIPELINE_CONTEXT:RecordSkillSettingsExpectedSkip(context, "normal_passive_changes")
     end
-    if hasSkippedPassiveChanges
-        and type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.RecordSpSaverSkip) == "function" then
-        LTM_PIPELINE_CONTEXT:RecordSpSaverSkip(
+    if hasUnscheduledStandalonePassiveSkip then
+        LTM_PIPELINE_CONTEXT:RecordSkillSettingsSkip(
             context,
             "normal_passive_changes",
-            spSaverPassiveSkipReason
+            skillSettingsPassiveSkipReason
         )
     end
     local classMastery = type(targetBuild.classMastery) == "table" and targetBuild.classMastery or nil
@@ -672,6 +473,9 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
     end
     if allowClassSkills and needsTransformChange then
         activityCommitReasons[#activityCommitReasons + 1] = "transform_change"
+    end
+    if allowClassSkills and needsActiveRestore then
+        activityCommitReasons[#activityCommitReasons + 1] = "active_restore"
     end
     if allowClassSkills and needsPassiveRespec then
         activityCommitReasons[#activityCommitReasons + 1] = "passive_respec"
@@ -688,7 +492,7 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
     -- A = restore-only path with no respec work.
     -- B = any path that requires skill respec state, including morph-only changes.
     local route = needsRespec and "B" or "A"
-    if needsClassMasteryReduction == true and type(Log.LogDebugSummary) == "function" then
+    if needsClassMasteryReduction == true then
         Log.LogDebugSummary(
             "Planner route B reason",
             "reason=class_mastery_reduction",
@@ -704,7 +508,7 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
 
     local phases = {}
     local skipSkillsForInsufficientPoints = skillPhaseMode == "skip_due_to_insufficient_points"
-    local needsSpSaverRouteBPreparation = skipSkillsForSpSaver and route == "B"
+    local needsSkillSettingsRouteBPreparation = skipSkillsForSkillSettings and route == "B"
 
     if allowEquipment and needsEquipmentChange then
         phases[#phases + 1] = "equipment_apply"
@@ -712,14 +516,14 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
     if needsRoleChange then
         phases[#phases + 1] = "role_apply"
     end
-    if allowSubclass and (needsSubclassChange or needsSpSaverRouteBPreparation) then
+    if allowSubclass and (needsSubclassChange or needsSkillSettingsRouteBPreparation) then
         phases[#phases + 1] = "subclass_apply"
     end
     if allowClassSkills
         and (targetBuild.skills ~= nil
             or needsRespec == true
             or skipSkillsForInsufficientPoints == true
-            or skipSkillsForSpSaver == true) then
+            or skipSkillsForSkillSettings == true) then
         phases[#phases + 1] = "skill_apply"
     end
     if allowClassSkills and needsStandalonePassiveAutoFill and skipSkillsForInsufficientPoints ~= true then
@@ -748,18 +552,16 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
 
     if preflightMode == "subclass_only"
         or skillPhaseMode == "skip_due_to_insufficient_points"
-        or skipSkillsForSpSaver then
+        or skipSkillsForSkillSettings then
         skillConfig.mode = "skip_due_to_insufficient_points"
-        skillConfig.reason = spSaverSkillSkipReason
+        skillConfig.reason = skillSettingsSkillSkipReason
             or skillPhaseReason
             or "insufficient_points_preflight"
-        if type(Log.LogDebugSummary) == "function" then
-            Log.LogDebugSummary(
-                "Planner skill phase mode=skip_due_to_insufficient_points",
-                "preflightMode=" .. tostring(preflightMode),
-                "reason=" .. tostring(skillConfig.reason)
-            )
-        end
+        Log.LogDebugSummary(
+            "Planner skill phase mode=skip_due_to_insufficient_points",
+            "preflightMode=" .. tostring(preflightMode),
+            "reason=" .. tostring(skillConfig.reason)
+        )
     end
 
     return {
@@ -792,7 +594,7 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
             skillPassive = {
                 mode = needsStandalonePassiveAutoFill and "standalone_auto_fill"
                     or (needsExactPassiveApply and "exact_restore" or "disabled"),
-                passivePolicy = passivePolicy,
+                passiveRestore = passiveRestore,
                 targetSkillLineIds = targetSkillLineIds,
                 analysis = passiveAnalysis,
                 needsExactPassiveApply = needsExactPassiveApply == true,
@@ -805,7 +607,7 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
                 -- is defined by skill_respec_apply.lua, not by this array.
                 phasePlan = {
                     "subclass_pending",
-                    "transform_reduction",
+                    "active_reduction",
                     "class_mastery_reduce",
                     "class_mastery_purchase",
                     "purchase",
@@ -818,6 +620,7 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
                 },
                 classMasteryReduction = classMasteryDiff,
                 transformPlan = transformPlan,
+                activeRestorePlan = activeRestorePlan,
                 routeAVariant = "restore_only",
                 contractVersion = 1,
             },
@@ -833,15 +636,18 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
             analyzedNeedsPurchaseChange = analyzedNeedsPurchaseChange == true,
             analyzedNeedsMorphChange = analyzedNeedsMorphChange == true,
             analyzedNeedsTransformChange = analyzedNeedsTransformChange == true,
+            analyzedNeedsActiveRestore = analyzedNeedsActiveRestore == true,
             analyzedTransformInvalid = analyzedTransformInvalid == true,
             transformPlan = transformPlan,
             analyzedTransformPlan = analyzedTransformPlan,
+            activeRestorePlan = activeRestorePlan,
+            analyzedActiveRestorePlan = analyzedActiveRestorePlan,
             attributeDiff = attributeDiff,
             roleDiff = roleDiff,
             inferredSubclassRequirement = inferredSubclassRequirement == true,
-            passivePolicy = passivePolicy,
+            passiveRestore = passiveRestore,
             passiveAnalysis = passiveAnalysis,
-            spSaverPassiveSkipReason = spSaverPassiveSkipReason,
+            skillSettingsPassiveSkipReason = skillSettingsPassiveSkipReason,
             hasSkippedSkillChanges = hasSkippedSkillChanges == true,
             hasSkippedPassiveChanges = hasSkippedPassiveChanges == true,
             analyzedNeedsPassiveRespec = analyzedNeedsPassiveRespec == true,
@@ -864,7 +670,7 @@ function LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, currentState, targetBui
             preflightMode = preflightMode,
             championTargetPresent = needsChampionChange == true,
             routeModel = "A_or_B_external_routes",
-            plannerVersion = 2,
+            plannerVersion = 3,
         },
     }
 end

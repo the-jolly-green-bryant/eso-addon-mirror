@@ -15,9 +15,7 @@ local function CreateHudLauncherBackdrop(parent, centerR, centerG, centerB, cent
 end
 
 local function AnchorHudLauncherToDefaultPosition(control)
-    local settings = type(Addon) == "table" and type(Addon.GetHudLauncherSettings) == "function"
-        and Addon:GetHudLauncherSettings(false)
-        or nil
+    local settings = Addon:GetHudLauncherSettings(false)
     if type(settings) == "table" and type(settings.left) == "number" and type(settings.top) == "number" then
         control:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, settings.left, settings.top)
         return
@@ -35,23 +33,8 @@ local function AnchorHudLauncherToDefaultPosition(control)
     control:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -24, 180)
 end
 
-local function GetHudLauncherSettings()
-    if type(Addon) == "table" and type(Addon.GetHudLauncherSettings) == "function" then
-        return Addon:GetHudLauncherSettings(false)
-    end
-
-    return {
-        hidden = false,
-        locked = false,
-        left = nil,
-        top = nil,
-    }
-end
-
 local function SaveHudLauncherPosition(control)
-    local settings = type(Addon) == "table" and type(Addon.GetHudLauncherSettings) == "function"
-        and Addon:GetHudLauncherSettings(true)
-        or nil
+    local settings = Addon:GetHudLauncherSettings(true)
     if type(settings) ~= "table" then
         return
     end
@@ -63,14 +46,7 @@ local function SaveHudLauncherPosition(control)
 end
 
 local function TriggerHudLauncher()
-    if type(Addon) == "table" and type(Addon.HandlePrimaryShortcut) == "function" then
-        Addon:HandlePrimaryShortcut()
-        return
-    end
-
-    if type(LTM_UI) == "table" and type(LTM_UI.ToggleMainWindow) == "function" then
-        LTM_UI:ToggleMainWindow()
-    end
+    Addon:HandlePrimaryShortcut()
 end
 
 local function CreateHudLauncher(ui)
@@ -79,7 +55,7 @@ local function CreateHudLauncher(ui)
         return
     end
 
-    local settings = GetHudLauncherSettings()
+    local settings = Addon:GetHudLauncherSettings(false)
     local launcher = WINDOW_MANAGER:CreateTopLevelWindow("LTM_HudLauncher")
     launcher:SetDimensions(UI_HUD_LAUNCHER_WIDTH, UI_HUD_LAUNCHER_HEIGHT)
     if type(launcher.SetClampedToScreen) == "function" then
@@ -146,7 +122,7 @@ local function CreateHudLauncher(ui)
 
     local fragment = ZO_SimpleSceneFragment:New(launcher)
     fragment:SetConditional(function()
-        local currentSettings = GetHudLauncherSettings()
+        local currentSettings = Addon:GetHudLauncherSettings(false)
         if currentSettings.hidden == true then
             return false
         end
@@ -182,7 +158,7 @@ function LTM_UI:RefreshHudLauncher()
     end
 
     if self.hudLauncher and type(self.hudLauncher.SetMovable) == "function" then
-        local settings = GetHudLauncherSettings()
+        local settings = Addon:GetHudLauncherSettings(false)
         self.hudLauncher:SetMovable(settings.locked ~= true)
     end
 

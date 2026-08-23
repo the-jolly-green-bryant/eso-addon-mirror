@@ -69,6 +69,8 @@ function Lib:RegisterElement(addonId, elementId, spec)
             x = tonumber(spec.default and spec.default.x) or 0.5,
             y = tonumber(spec.default and spec.default.y) or 0.5,
         },
+        replaces = type(spec.replaces) == "string" and spec.replaces or nil,
+        active = spec.active,
     }
     if spec.default and tonumber(spec.default.w) and tonumber(spec.default.h) then
         entry.default.w = tonumber(spec.default.w)
@@ -91,6 +93,53 @@ end
 -- Returns the live registration order. Callers must not mutate the table.
 function Lib:Ids()
     return self.order
+end
+
+function Lib:EntryIsActive(entry)
+    if not entry then
+        return false
+    end
+    if entry.active == nil then
+        return true
+    end
+    if type(entry.active) == "function" then
+        local ok, result = pcall(entry.active)
+        return ok and result and true or false
+    end
+    return entry.active and true or false
+end
+
+-- True when a guest is currently standing in for this host catalog id.
+function Lib:IsReplaced(id)
+    if type(id) ~= "string" then
+        return false
+    end
+    for index = 1, #self.order do
+        local entry = self.byId[self.order[index]]
+        if entry and entry.replaces == id and self:EntryIsActive(entry) then
+            return true
+        end
+    end
+    return false
+end
+
+local visibleIds = {}
+
+-- Catalog / LB-RB / overlay labels. Omits native ids a guest has replaced.
+-- Reuses one table; callers must not keep or mutate it.
+function Lib:VisibleIds()
+    local count = 0
+    for index = 1, #self.order do
+        local id = self.order[index]
+        if not self:IsReplaced(id) then
+            count = count + 1
+            visibleIds[count] = id
+        end
+    end
+    for index = count + 1, #visibleIds do
+        visibleIds[index] = nil
+    end
+    return visibleIds
 end
 
 -- Guest API: full entry list for third-party tools. Host uses Ids().

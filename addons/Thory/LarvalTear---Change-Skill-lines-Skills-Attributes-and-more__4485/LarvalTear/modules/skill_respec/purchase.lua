@@ -18,13 +18,11 @@ local function CreateSummary()
         skippedInsufficientPointsCount = 0,
         skippedCannotPurchaseCount = 0,
         unexpectedFailureCount = 0,
-        degradedCandidateCount = 0,
         hardFailure = false,
         hardFailureReason = nil,
         hardFailureTarget = nil,
         outcomeCounts = {},
-        expectedMissingAbilityIds = {},
-        expectedMissingProgressionIds = {},
+        expectedMissingTargets = {},
     }
 end
 
@@ -42,14 +40,15 @@ local function AppendExpectedMissing(summary, resolvedTarget)
     end
 
     local targetAbilityId = resolvedTarget.targetAbilityId
-    if type(targetAbilityId) == "number" and targetAbilityId > 0 then
-        summary.expectedMissingAbilityIds[#summary.expectedMissingAbilityIds + 1] = targetAbilityId
-    end
-
     local progressionId = resolvedTarget.progressionId
-    if type(progressionId) == "number" and progressionId > 0 then
-        summary.expectedMissingProgressionIds[#summary.expectedMissingProgressionIds + 1] = progressionId
-    end
+    summary.expectedMissingTargets[#summary.expectedMissingTargets + 1] = {
+        progressionId = progressionId,
+        targetAbilityId = targetAbilityId,
+        targetMorphSlot = resolvedTarget.targetMorphSlot,
+        source = resolvedTarget.source,
+        owner = resolvedTarget.source,
+        shortageReason = "insufficient_skill_points",
+    }
 end
 
 local function ResolveSkillLineId(skillData)
@@ -92,7 +91,6 @@ local function MarkOutcome(summary, audit, resolvedTarget, outcome, reason)
         summary.alreadyOwnedOrPendingCount = summary.alreadyOwnedOrPendingCount + 1
     elseif outcome == OUTCOME_SKIPPED_INSUFFICIENT_POINTS then
         summary.skippedInsufficientPointsCount = summary.skippedInsufficientPointsCount + 1
-        summary.degradedCandidateCount = summary.degradedCandidateCount + 1
         AppendExpectedMissing(summary, resolvedTarget)
     elseif outcome == OUTCOME_SKIPPED_CANNOT_PURCHASE then
         summary.skippedCannotPurchaseCount = summary.skippedCannotPurchaseCount + 1
@@ -148,6 +146,9 @@ function M:ResolveTarget(apply, target)
         skillLineData = skillLineData,
         skillData = skillData,
         allocator = allocator,
+        targetMorphSlot = target.targetMorphSlot,
+        source = target.source,
+        transformKind = target.transformKind,
     }
 end
 
@@ -172,6 +173,7 @@ function M:ExecutePending(apply, context, skillTargetPlan)
                 purchaseInvoked = false,
                 canPurchase = nil,
                 hasEnoughPoints = nil,
+                meetsLinePurchaseRequirement = nil,
                 pendingObserved = false,
                 purchasedObserved = false,
                 skipReason = resolveErr,
@@ -196,6 +198,7 @@ function M:ExecutePending(apply, context, skillTargetPlan)
             purchaseInvoked = false,
             canPurchase = nil,
             hasEnoughPoints = nil,
+            meetsLinePurchaseRequirement = nil,
             purchaseOk = nil,
             pendingObserved = false,
             purchasedObserved = false,
@@ -213,6 +216,13 @@ function M:ExecutePending(apply, context, skillTargetPlan)
             audit.hasEnoughPoints = Util:SafeCallMethod(
                 allocator,
                 "HasEnoughAvailableSkillPointsForSingleTransaction"
+            ) == true
+        end
+        if type(resolvedTarget.skillData) == "table"
+            and type(resolvedTarget.skillData.MeetsLinePurchaseRequirement) == "function" then
+            audit.meetsLinePurchaseRequirement = Util:SafeCallMethod(
+                resolvedTarget.skillData,
+                "MeetsLinePurchaseRequirement"
             ) == true
         end
         audit.pendingObserved = Util:SafeCallMethod(allocator, "IsPurchasedChangePending") == true
@@ -233,7 +243,9 @@ function M:ExecutePending(apply, context, skillTargetPlan)
             if allocator.CanPurchase ~= nil then
                 audit.canPurchase = Util:SafeCallMethod(allocator, "CanPurchase")
                 if audit.canPurchase ~= true then
-                    local reason = audit.hasEnoughPoints == false
+                    local insufficientPoints = audit.hasEnoughPoints == false
+                        and audit.meetsLinePurchaseRequirement == true
+                    local reason = insufficientPoints
                         and "insufficient_skill_points"
                         or "cannot_purchase_target_skill"
                     audit.skipReason = reason
@@ -243,7 +255,9 @@ function M:ExecutePending(apply, context, skillTargetPlan)
                         reason = "already_owned_or_pending"
                         audit.skipReason = reason
                     else
-                        outcome = audit.hasEnoughPoints == false
+                        outcome = insufficientPoints
+                            and type(apply.IsActivePriorityShortagePolicy) == "function"
+                            and apply:IsActivePriorityShortagePolicy(context)
                             and OUTCOME_SKIPPED_INSUFFICIENT_POINTS
                             or OUTCOME_SKIPPED_CANNOT_PURCHASE
                     end

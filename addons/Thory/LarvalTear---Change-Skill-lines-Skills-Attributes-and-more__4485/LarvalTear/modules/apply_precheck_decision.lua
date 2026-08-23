@@ -3,7 +3,7 @@ local LTM_APPLY_PRECHECK_DECISION = Addon.Modules.ApplyPrecheckDecision
 local LTM_APPLY_PRECHECK_GATE = Addon.Modules.ApplyPrecheckGate
 local LTM_SKILL_POINT_INPUT_PROVIDER = Addon.Modules.SkillPointInputProvider
 local LTM_SKILL_POINT_EVALUATOR = Addon.Modules.SkillPointEvaluator
-local LTM_SP_SAVER_POLICY_RESOLVER = Addon.Modules.SpSaverPolicyResolver
+local SkillSettings = Addon.Common.SkillSettings
 
 local M = LTM_APPLY_PRECHECK_DECISION
 
@@ -27,18 +27,15 @@ local function BuildRoute(request)
 end
 
 local function BuildInputs(build, request, planOptions)
-    if type(LTM_SKILL_POINT_INPUT_PROVIDER) ~= "table"
-        or type(LTM_SKILL_POINT_INPUT_PROVIDER.Build) ~= "function" then
-        return nil, "skill_point_input_provider_unavailable"
-    end
-
     local ok, inputs = pcall(LTM_SKILL_POINT_INPUT_PROVIDER.Build, LTM_SKILL_POINT_INPUT_PROVIDER, build, {
         source = "apply_precheck_decision",
         partialScope = request.partialScope,
         preflightMode = type(planOptions) == "table" and planOptions.preflightMode or request.preflightMode,
         skillPhaseMode = type(planOptions) == "table" and planOptions.skillPhaseMode or nil,
         skillPhaseReason = type(planOptions) == "table" and planOptions.skillPhaseReason or nil,
-        spSaver = type(planOptions) == "table" and planOptions.spSaver or nil,
+        skillSettings = type(planOptions) == "table" and planOptions.skillSettings or nil,
+        activeRestorePlan = type(planOptions) == "table" and planOptions.activeRestorePlan or nil,
+        transformPlan = type(planOptions) == "table" and planOptions.transformPlan or nil,
         forceChampionRespec = request.forceChampionRespec == true,
     })
     if not ok then
@@ -48,11 +45,6 @@ local function BuildInputs(build, request, planOptions)
 end
 
 local function BuildPlanFromCapturedInputs(build, request, inputs, planOptions)
-    if type(LTM_SKILL_POINT_INPUT_PROVIDER) ~= "table"
-        or type(LTM_SKILL_POINT_INPUT_PROVIDER.BuildPlanFromCapturedInputs) ~= "function" then
-        return nil, "captured_pipeline_plan_provider_unavailable"
-    end
-
     local ok, plan, err = pcall(
         LTM_SKILL_POINT_INPUT_PROVIDER.BuildPlanFromCapturedInputs,
         LTM_SKILL_POINT_INPUT_PROVIDER,
@@ -64,7 +56,9 @@ local function BuildPlanFromCapturedInputs(build, request, inputs, planOptions)
             preflightMode = type(planOptions) == "table" and planOptions.preflightMode or request.preflightMode,
             skillPhaseMode = type(planOptions) == "table" and planOptions.skillPhaseMode or nil,
             skillPhaseReason = type(planOptions) == "table" and planOptions.skillPhaseReason or nil,
-            spSaver = type(planOptions) == "table" and planOptions.spSaver or nil,
+            skillSettings = type(planOptions) == "table" and planOptions.skillSettings or nil,
+            activeRestorePlan = type(planOptions) == "table" and planOptions.activeRestorePlan or nil,
+            transformPlan = type(planOptions) == "table" and planOptions.transformPlan or nil,
             forceChampionRespec = request.forceChampionRespec == true,
         }
     )
@@ -75,11 +69,6 @@ local function BuildPlanFromCapturedInputs(build, request, inputs, planOptions)
 end
 
 local function BuildSkillPointPlan(build, inputs)
-    if type(LTM_SKILL_POINT_EVALUATOR) ~= "table"
-        or type(LTM_SKILL_POINT_EVALUATOR.BuildPlan) ~= "function" then
-        return nil, "skill_point_evaluator_unavailable"
-    end
-
     local ok, skillPointPlan = pcall(
         LTM_SKILL_POINT_EVALUATOR.BuildPlan,
         LTM_SKILL_POINT_EVALUATOR,
@@ -88,21 +77,12 @@ local function BuildSkillPointPlan(build, inputs)
             plan = inputs.plan,
             snapshot = inputs.snapshot,
             passiveAnalysis = inputs.passiveAnalysis,
-            activeTargetStates = inputs.activeTargetStates,
         }
     )
     if not ok then
         return nil, tostring(skillPointPlan)
     end
     return skillPointPlan, nil
-end
-
-local function ResolveSpSaverPolicy(build, skillPointPlan)
-    local commonSettings = type(Addon.GetSpSaverSettings) == "function"
-        and Addon:GetSpSaverSettings()
-        or nil
-    local buildSettings = type(build) == "table" and build.spSaver or nil
-    return LTM_SP_SAVER_POLICY_RESOLVER:Resolve(commonSettings, buildSettings, skillPointPlan)
 end
 
 function M:Evaluate(request, build, options)
@@ -128,12 +108,28 @@ function M:Evaluate(request, build, options)
     local acceptedSkillPointPlan = type(acceptedDiagnostics) == "table"
         and acceptedDiagnostics.skillPointPlan
         or nil
-    local acceptedSpSaver = type(acceptedPrecheck) == "table" and acceptedPrecheck.spSaver or nil
+    local acceptedPipelinePlan = type(acceptedDiagnostics) == "table"
+        and acceptedDiagnostics.pipelinePlan
+        or nil
+    local acceptedActiveRestorePlan = type(acceptedPipelinePlan) == "table"
+        and type(acceptedPipelinePlan.diagnostics) == "table"
+        and acceptedPipelinePlan.diagnostics.analyzedActiveRestorePlan
+        or nil
+    local acceptedTransformPlan = type(acceptedPipelinePlan) == "table"
+        and type(acceptedPipelinePlan.diagnostics) == "table"
+        and acceptedPipelinePlan.diagnostics.analyzedTransformPlan
+        or nil
+    local acceptedSkillSettings = type(acceptedPrecheck) == "table" and acceptedPrecheck.skillSettings or nil
+    local effectiveSkillSettings = type(acceptedSkillSettings) == "table"
+        and acceptedSkillSettings
+        or Addon:ResolveEffectiveSkillSettings(build)
     local planOptions = {
         preflightMode = type(acceptedRoute) == "table" and acceptedRoute.preflightMode or normalizedRequest.preflightMode,
         skillPhaseMode = type(acceptedRoute) == "table" and acceptedRoute.skillPhaseMode or nil,
         skillPhaseReason = type(acceptedRoute) == "table" and acceptedRoute.skillPhaseReason or nil,
-        spSaver = acceptedSpSaver,
+        skillSettings = effectiveSkillSettings,
+        activeRestorePlan = acceptedActiveRestorePlan,
+        transformPlan = acceptedTransformPlan,
     }
     if planOptions.skillPhaseMode == "skip_due_to_insufficient_points" then
         planOptions.preflightMode = "subclass_only"
@@ -151,7 +147,7 @@ function M:Evaluate(request, build, options)
     local skillPointPlanErr = nil
     if type(acceptedRoute) == "table" then
         result.route = CloneRequest(acceptedRoute)
-        result.spSaver = type(acceptedSpSaver) == "table" and CloneRequest(acceptedSpSaver) or nil
+        result.skillSettings = effectiveSkillSettings
     elseif skillScope and normalizedRequest.preflightMode ~= "subclass_only"
         and (type(inputs) ~= "table" or inputs.ok ~= true) then
         local inputErrors = type(inputs) == "table" and inputs.errors or nil
@@ -166,8 +162,12 @@ function M:Evaluate(request, build, options)
     end
     result.diagnostics.skillPointPlan = skillPointPlan
     result.diagnostics.skillPointPlanError = skillPointPlanErr
-    if result.spSaver == nil and skillScope and normalizedRequest.preflightMode ~= "subclass_only" then
-        result.spSaver = ResolveSpSaverPolicy(build, skillPointPlan)
+    if type(acceptedRoute) ~= "table"
+        and skillScope
+        and normalizedRequest.preflightMode ~= "subclass_only" then
+        result.skillSettings = SkillSettings:ResolveShortage(effectiveSkillSettings, skillPointPlan)
+    elseif result.skillSettings == nil then
+        result.skillSettings = effectiveSkillSettings
     end
 
     if skillScope and normalizedRequest.preflightMode ~= "subclass_only"
@@ -182,19 +182,36 @@ function M:Evaluate(request, build, options)
         return result
     end
 
-    if type(skillPointPlan) == "table" and skillPointPlan.expectedResult == "skill_phase_skip" then
+    if type(skillPointPlan) == "table"
+        and skillPointPlan.expectedResult == "skill_phase_skip"
+        and type(result.skillSettings) == "table"
+        and result.skillSettings.activeAction == "skip_all" then
         result.route.skillPhaseMode = "skip_due_to_insufficient_points"
         result.route.skillPhaseReason = "insufficient_points_preflight"
         planOptions.preflightMode = "subclass_only"
         planOptions.skillPhaseMode = result.route.skillPhaseMode
         planOptions.skillPhaseReason = result.route.skillPhaseReason
     end
-    planOptions.spSaver = result.spSaver
+    planOptions.skillSettings = result.skillSettings
+    if type(planOptions.activeRestorePlan) ~= "table" then
+        planOptions.activeRestorePlan = type(inputs) == "table"
+            and type(inputs.plan) == "table"
+            and type(inputs.plan.diagnostics) == "table"
+            and inputs.plan.diagnostics.analyzedActiveRestorePlan
+            or nil
+    end
+    if type(planOptions.transformPlan) ~= "table" then
+        planOptions.transformPlan = type(inputs) == "table"
+            and type(inputs.plan) == "table"
+            and type(inputs.plan.diagnostics) == "table"
+            and inputs.plan.diagnostics.analyzedTransformPlan
+            or nil
+    end
 
     local pipelinePlan = type(inputs) == "table" and inputs.plan or nil
     local pipelinePlanErr = nil
     local needsResolvedPlanRebuild = type(acceptedPrecheck) ~= "table"
-        and (planOptions.spSaver ~= nil or planOptions.skillPhaseMode ~= nil)
+        and (planOptions.skillSettings ~= nil or planOptions.skillPhaseMode ~= nil)
     if type(inputs) == "table" and needsResolvedPlanRebuild then
         local resolvedPipelinePlan = nil
         resolvedPipelinePlan, pipelinePlanErr = BuildPlanFromCapturedInputs(
@@ -210,17 +227,12 @@ function M:Evaluate(request, build, options)
     result.diagnostics.pipelinePlan = pipelinePlan
     result.diagnostics.pipelinePlanError = pipelinePlanErr
 
-    local gateResult = type(LTM_APPLY_PRECHECK_GATE) == "table"
-        and type(LTM_APPLY_PRECHECK_GATE.Evaluate) == "function"
-        and LTM_APPLY_PRECHECK_GATE:Evaluate(normalizedRequest, pipelinePlan)
-        or nil
-    result.diagnostics.activityGate = type(gateResult) == "table" and gateResult.diagnostics or nil
-    if type(gateResult) == "table" and gateResult.action ~= "run_now" then
+    local gateResult = LTM_APPLY_PRECHECK_GATE:Evaluate(normalizedRequest, pipelinePlan)
+    result.diagnostics.activityGate = gateResult.diagnostics
+    if gateResult.action ~= "run_now" then
         result.action = gateResult.action
         result.error = gateResult.error
-        result.activityRestrictionType = type(gateResult.diagnostics) == "table"
-            and gateResult.diagnostics.activityRestrictionType
-            or nil
+        result.activityRestrictionType = gateResult.diagnostics.activityRestrictionType
         return result
     end
 

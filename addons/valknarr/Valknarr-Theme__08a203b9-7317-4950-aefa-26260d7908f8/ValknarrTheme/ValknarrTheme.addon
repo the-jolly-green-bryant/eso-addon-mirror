@@ -1,0 +1,25 @@
+## Title: Valknarr Theme
+## Author: valknarr
+## Description: Readable Health, Magicka, and Stamina bars plus a werewolf-form Fury and sustain meter. Optional: ValknarrUIE to move Theme H/M/S and the wolf widget.
+## APIVersion: 101049 101050
+## AddOnVersion: 24
+## Version: 0.1.23
+## SavedVariables: ValknarrTheme_SavedVariables
+## OptionalDependsOn: ValknarrUIE LibAddonMenu-2.0
+## IsLibrary: False
+
+version.lua
+safe.lua
+logger.lua
+format.lua
+store.lua
+skins.lua
+skins.xml
+frames.lua
+resources.lua
+werewolf.lua
+settings.lua
+bootstrap.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls(R) and related logos are registered trademarks or trademarks of ZeniMax Media Inc.

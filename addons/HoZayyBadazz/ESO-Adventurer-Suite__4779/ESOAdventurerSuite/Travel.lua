@@ -8,8 +8,8 @@ local EPC = ESOProgressionCoach
 EPC.Travel = EPC.Travel or {}
 local T = EPC.Travel
 
-T.PAGE_SIZE = 4
-T.BOOK_PAGE_SIZE = 8
+T.PAGE_SIZE = 6
+T.BOOK_PAGE_SIZE = 10
 T.modeOrder = {"SHRINES", "FRIENDS", "GUILD", "GROUP"}
 T.modeLabels = {
     SHRINES = "Wayshrines",

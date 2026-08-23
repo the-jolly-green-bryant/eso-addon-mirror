@@ -12,8 +12,8 @@ local SAVED_VARIABLES_NAME = "BureauOfMaterialWorth_SavedVariables"
 BureauOfMaterialWorth = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "4.1.223952",
-    releaseDate = "02.08.2026",
+    version = "4.2.112030",
+    releaseDate = "22.08.2026",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Ships at 0: a release
     -- build must stay silent in chat until the user opts into diagnostics via
     -- the settings panel or /bmw debug.

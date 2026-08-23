@@ -5,6 +5,8 @@ local Frames = U.Frames
 local Combat = U.Combat
 local FAB = U.FancyActionBar
 local EnemyAlerts = U.EnemyUltimateAlerts
+local Immersive = U.Immersive
+local Ownership = U.Ownership
 
 U.QuickMenu = U.QuickMenu or {}
 local Q = U.QuickMenu
@@ -57,9 +59,17 @@ Q.resizeEnabled = false
 Q.previewKey = "darkSouls"
 Q.previewRuntime = nil
 Q.previewHandlersInstalled = false
+Q.previewRestoreGeneration = Q.previewRestoreGeneration or 0
+Q.previewRestorePending = false
+Q.previewHudInteractionActive = false
+Q.previewHudInteractionUntil = 0
 Q.manualDismissed = false
 Q.closePending = false
 Q.chatHooksInstalled = false
+Q.chatHookEntry = nil
+Q.chatOpenHookEntry = nil
+Q.chatCloseHookEntry = nil
+Q.chatClosePreHookEntry = nil
 Q.chatReopenGeneration = Q.chatReopenGeneration or 0
 Q.actionInProgress = false
 Q.actionGeneration = Q.actionGeneration or 0
@@ -69,26 +79,29 @@ Q.banditsMiniMapShown = Q.banditsMiniMapShown
 Q.banditsMiniMapBridgeInstalled = Q.banditsMiniMapBridgeInstalled or false
 Q.banditsMiniMapSettingContainer = nil
 Q.banditsMiniMapSettingKey = nil
+Q.votanMiniMapAddon = nil
+Q.sectionControls = Q.sectionControls or {}
+Q.rows = Q.rows or {}
 Q.lastAppliedGraphicsProfile = Q.lastAppliedGraphicsProfile
 Q.openedFromSettings = Q.openedFromSettings or false
 Q.pendingAction = nil
+Q.initializing = false
+Q.createAttempt = Q.createAttempt or 0
+Q.nextCreateRetryMs = Q.nextCreateRetryMs or 0
 
 local function BoolText(value)
     return value and "ON" or "OFF"
 end
 
 local function GetProfileFrames()
-    -- The live module table is authoritative while the addon is running. Using
-    -- the profile copy first could make quick-menu verification read stale state
-    -- immediately after a setter changed Frames.saved.
+    -- Setters update the live module table before profile snapshots.
     if Frames and Frames.saved then return Frames.saved end
     local profile = U.GetActiveProfile and U.GetActiveProfile() or nil
     return profile and profile.frames or nil
 end
 
 local function GetCombatSettings()
-    -- Same rule as Frames: read the live combat table first so a click and its
-    -- displayed state are always talking about the same SavedVariables object.
+    -- Read the live combat table before profile snapshots.
     if Combat and Combat.sv then return Combat.sv end
     local profile = U.GetActiveProfile and U.GetActiveProfile() or nil
     return profile and profile.combat or nil
@@ -108,96 +121,28 @@ local function RefreshLAM()
     end
 end
 
+local function IsTextEntryOpen()
+    local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
+    if not entry or type(entry.IsOpen) ~= "function" then return false end
+    local ok, isOpen = pcall(entry.IsOpen, entry)
+    return ok and isOpen == true
+end
+
 function Q.CanShow()
-    -- When launched from Ultivite's normal settings panel, keep the quick menu
-    -- available inside that UI scene. Normal Enter/chat sessions still require
-    -- the gameplay HUD scene.
+    -- The settings shortcut may open the panel outside the HUD scene.
     if Q.openedFromSettings == true then return true end
+
+    -- TextEntry can open before the HUD scene transition is reported.
+    if IsTextEntryOpen() then return true end
     if SCENE_MANAGER and SCENE_MANAGER.IsShowing then
         return SCENE_MANAGER:IsShowing("hud") or SCENE_MANAGER:IsShowing("hudui")
     end
     return true
 end
 
-local function SafeBoolMethod(object, methodName)
-    if not object or type(object[methodName]) ~= "function" then return nil end
-    local ok, value = pcall(object[methodName], object)
-    if not ok then return nil end
-    return value == true
-end
-
-local function ControlOrParentHidden(control)
-    local current = control
-    local depth = 0
-    while current and depth < 6 do
-        if type(current.IsHidden) == "function" then
-            local ok, hidden = pcall(current.IsHidden, current)
-            if ok and hidden == true then return true end
-        end
-        if type(current.GetAlpha) == "function" then
-            local ok, alpha = pcall(current.GetAlpha, current)
-            if ok and tonumber(alpha) and tonumber(alpha) <= 0.001 then return true end
-        end
-        if type(current.GetParent) ~= "function" then break end
-        local ok, parent = pcall(current.GetParent, current)
-        if not ok or parent == current then break end
-        current = parent
-        depth = depth + 1
-    end
-    return false
-end
-
-local function IsChatContainerMinimized()
-    if not CHAT_SYSTEM then return true end
-    local containers = { CHAT_SYSTEM }
-    if CHAT_SYSTEM.primaryContainer then containers[#containers + 1] = CHAT_SYSTEM.primaryContainer end
-    if type(CHAT_SYSTEM.GetPrimaryContainer) == "function" then
-        local ok, container = pcall(CHAT_SYSTEM.GetPrimaryContainer, CHAT_SYSTEM)
-        if ok and container then containers[#containers + 1] = container end
-    end
-    local chatWindow = rawget(_G, "ZO_ChatWindow")
-    if chatWindow then containers[#containers + 1] = chatWindow end
-
-    for _, container in ipairs(containers) do
-        local minimized = SafeBoolMethod(container, "IsMinimized")
-        if minimized == true then return true end
-        if container.isMinimized == true or container.minimized == true then return true end
-        if container ~= CHAT_SYSTEM and ControlOrParentHidden(container) then return true end
-    end
-    return false
-end
-
-local function MaximizeChatContainerNow()
-    if not CHAT_SYSTEM then return end
-    local containers = { CHAT_SYSTEM }
-    if CHAT_SYSTEM.primaryContainer then containers[#containers + 1] = CHAT_SYSTEM.primaryContainer end
-    if type(CHAT_SYSTEM.GetPrimaryContainer) == "function" then
-        local ok, container = pcall(CHAT_SYSTEM.GetPrimaryContainer, CHAT_SYSTEM)
-        if ok and container then containers[#containers + 1] = container end
-    end
-    for _, container in ipairs(containers) do
-        if container and type(container.Maximize) == "function" then
-            pcall(container.Maximize, container)
-        elseif container and type(container.Restore) == "function" then
-            pcall(container.Restore, container)
-        end
-    end
-end
-
 function Q.IsChatOpen()
-    local entry = CHAT_SYSTEM and CHAT_SYSTEM.textEntry or nil
-    if not entry or type(entry.IsOpen) ~= "function" then return false end
-    local ok, isOpen = pcall(entry.IsOpen, entry)
-    if not ok or isOpen ~= true then return false end
-
-    -- TextEntry:IsOpen() is the authoritative typing-session state. Do not use
-    -- edit-control/parent visibility here: ESO can transiently fade, hide or
-    -- reparent chat controls while another mouse-enabled UI element is under
-    -- the cursor. Treating that visual transition as a close made the Quick
-    -- Menu disappear simply by hovering Preview targets. A genuine minimize is
-    -- still an intentional chat close for Quick Menu purposes.
-    if IsChatContainerMinimized() then return false end
-    return true
+    -- TextEntry state is independent of chat-container presentation.
+    return IsTextEntryOpen()
 end
 
 local function GetNowMs()
@@ -217,6 +162,7 @@ end
 
 function Q.ShouldRemainVisible()
     if not Q.CanShow() then return false end
+    if Q.previewEnabled == true then return true end
     if Q.manualDismissed == true then return false end
     if Q.openedFromSettings == true then return true end
     if Q.actionInProgress == true then return true end
@@ -227,7 +173,7 @@ function Q.ShouldRemainVisible()
 end
 
 local function GetChatDraftText()
-    local entry = CHAT_SYSTEM and CHAT_SYSTEM.textEntry or nil
+    local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
     if not entry then return "" end
     local candidates = { entry.editControl, entry.control, entry }
     for _, control in ipairs(candidates) do
@@ -239,39 +185,146 @@ local function GetChatDraftText()
     return ""
 end
 
--- ESO's TextEntry can remain logically open after the player clicks another UI
--- control even though its edit box has lost keyboard focus. Calling TextEntry:Open()
--- again does not fix that because the stock implementation only TakeFocus()es when
--- transitioning from closed to open. The Quick Menu therefore restores focus on
--- the real ESO edit box explicitly after one of its buttons has been used.
+local function CapturePreviewChatDraft()
+    local runtime = Q.previewRuntime
+    if not runtime or runtime.chatWasOpen ~= true then return end
+    local draft = GetChatDraftText()
+    if draft ~= "" or runtime.chatDraftText == "" then runtime.chatDraftText = draft end
+end
+
 local function EnsureChatKeyboardFocus()
-    local entry = CHAT_SYSTEM and CHAT_SYSTEM.textEntry or nil
-    if not entry then return false end
+    local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
+    if not entry or not IsTextEntryOpen() then return false end
 
-    local isOpen = false
-    if type(entry.IsOpen) == "function" then
-        local ok, value = pcall(entry.IsOpen, entry)
-        isOpen = ok and value == true
-    end
-    if not isOpen then return false end
-
-    local edit = entry.editControl
+    local edit = entry.editControl or rawget(_G, "ZO_ChatWindowTextEntryEditBox")
     if not edit or type(edit.TakeFocus) ~= "function" then return false end
-
     if type(edit.HasFocus) == "function" then
-        local ok, hasFocus = pcall(edit.HasFocus, edit)
-        if ok and hasFocus == true then return true end
+        local ok, focused = pcall(edit.HasFocus, edit)
+        if ok and focused == true then return true end
     end
 
-    local ok = pcall(edit.TakeFocus, edit)
-    return ok == true
+    return pcall(edit.TakeFocus, edit)
+end
+
+local function IsAnyMouseButtonDown()
+    if type(IsMouseButtonDown) ~= "function" then return false end
+    for _, button in ipairs({ MOUSE_BUTTON_INDEX_LEFT, MOUSE_BUTTON_INDEX_RIGHT }) do
+        local ok, pressed = pcall(IsMouseButtonDown, button)
+        if ok and pressed == true then return true end
+    end
+    return false
+end
+
+local function ScheduleChatKeyboardFocusRepair(generation)
+    local focusGeneration = generation or (Q.chatReopenGeneration or 0)
+    local attempt = 0
+    local maxAttempts = 5
+
+    local function tryFocus()
+        if focusGeneration ~= (Q.chatReopenGeneration or 0)
+            or Q.manualDismissed == true
+            or Q.openedFromSettings == true
+            or not Q.IsChatOpen() then
+            return
+        end
+
+        -- Never take keyboard focus while a mouse drag is active. This keeps the
+        -- stock chat resize grip fully owned by ESO while still repairing the
+        -- missing edit-box focus introduced by 1.0.146.
+        if IsAnyMouseButtonDown() then
+            attempt = attempt + 1
+            if attempt < maxAttempts then zo_callLater(tryFocus, CHAT_WATCH_MS) end
+            return
+        end
+
+        if EnsureChatKeyboardFocus() then return end
+
+        attempt = attempt + 1
+        if attempt < maxAttempts then zo_callLater(tryFocus, CHAT_WATCH_MS) end
+    end
+
+    -- Let ESO finish the StartChatInput/Open path and let Ultivite finish its
+    -- visibility refresh before performing the one-time focus repair.
+    zo_callLater(tryFocus, 10)
+end
+
+local function MarkPreviewChatClose()
+    CapturePreviewChatDraft()
+    local runtime = Q.previewRuntime
+    if not runtime then return end
+    runtime.chatClosedForHudInteraction = Q.previewHudInteractionActive == true
+        or GetNowMs() < (Q.previewHudInteractionUntil or 0)
+        or IsAnyMouseButtonDown()
+end
+
+function Q.BeginPreviewHudInteraction()
+    if Q.previewEnabled ~= true or not Q.previewRuntime then return false end
+    Q.previewHudInteractionActive = true
+    Q.previewHudInteractionUntil = GetNowMs() + 2000
+    Q.HoldForInteraction(2000)
+    return true
+end
+
+function Q.EndPreviewHudInteraction()
+    if Q.previewHudInteractionActive ~= true then return false end
+    Q.previewHudInteractionActive = false
+    Q.previewHudInteractionUntil = GetNowMs() + 500
+    -- Editing is now a persistent explicit session. Do not reopen chat while the
+    -- user is dragging or resizing HUD controls. SAVE & LOCK is the only normal
+    -- exit path and restores ordinary chat/menu behavior afterward.
+    return true
+end
+
+function Q.SchedulePreviewChatRestore()
+    local runtime = Q.previewRuntime
+    if Q.previewEnabled ~= true or not runtime or runtime.chatWasOpen ~= true then return end
+    if runtime.chatClosedForHudInteraction ~= true then return end
+    if Q.openedFromSettings == true or Q.manualDismissed == true then return end
+    if Q.previewRestorePending == true then return end
+
+    Q.previewRestoreGeneration = (Q.previewRestoreGeneration or 0) + 1
+    local generation = Q.previewRestoreGeneration
+    Q.previewRestorePending = true
+
+    local function restoreWhenReleased()
+        if generation ~= (Q.previewRestoreGeneration or 0)
+            or Q.previewEnabled ~= true
+            or Q.previewRuntime ~= runtime
+            or Q.openedFromSettings == true
+            or Q.manualDismissed == true then
+            Q.previewRestorePending = false
+            return
+        end
+
+        if IsAnyMouseButtonDown() then
+            zo_callLater(restoreWhenReleased, CHAT_WATCH_MS)
+            return
+        end
+
+        Q.previewRestorePending = false
+        if not Q.IsChatOpen() then
+            local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+            local entry = chatSystem and chatSystem.textEntry or nil
+            if chatSystem and type(chatSystem.StartTextEntry) == "function" then
+                pcall(chatSystem.StartTextEntry, chatSystem, runtime.chatDraftText or "")
+            elseif entry and type(entry.Open) == "function" then
+                pcall(entry.Open, entry, runtime.chatDraftText or "")
+            end
+        end
+        EnsureChatKeyboardFocus()
+        runtime.chatClosedForHudInteraction = false
+        if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
+        Q.RefreshChatVisibility(true)
+    end
+
+    zo_callLater(restoreWhenReleased, 0)
 end
 
 function Q.ReopenChatAfterInteraction(draftText, actionGeneration)
     local reopenGeneration = Q.chatReopenGeneration or 0
     local actionGen = actionGeneration or Q.actionGeneration or 0
 
-    local function restoreOnce()
+    local function restoreChat()
         if Q.manualDismissed == true
             or Q.openedFromSettings == true
             or reopenGeneration ~= (Q.chatReopenGeneration or 0)
@@ -279,26 +332,18 @@ function Q.ReopenChatAfterInteraction(draftText, actionGeneration)
             return
         end
 
-        local entry = CHAT_SYSTEM and CHAT_SYSTEM.textEntry or nil
-        if entry then
-            local isOpen = false
-            if type(entry.IsOpen) == "function" then
-                local ok, value = pcall(entry.IsOpen, entry)
-                isOpen = ok and value == true
-            end
-            if not isOpen and type(entry.Open) == "function" then
-                -- Stock TextEntry:Open() restores keyboard focus when reopening.
+        local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+        local entry = chatSystem and chatSystem.textEntry or nil
+        if not IsTextEntryOpen() then
+            if chatSystem and type(chatSystem.StartTextEntry) == "function" then
+                pcall(chatSystem.StartTextEntry, chatSystem, draftText or "")
+            elseif entry and type(entry.Open) == "function" then
                 pcall(entry.Open, entry, draftText or "")
-            else
-                -- When the entry stayed logically open, explicitly restore the
-                -- edit-control focus that the Quick Menu click temporarily took.
-                EnsureChatKeyboardFocus()
             end
         end
-
-        -- Ultivite visibility rules must never hide chat while text entry is open.
-        if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
         EnsureChatKeyboardFocus()
+
+        if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
 
         Q.actionInProgress = false
         Q.actionButtonKey = nil
@@ -306,13 +351,12 @@ function Q.ReopenChatAfterInteraction(draftText, actionGeneration)
         Q.RefreshChatVisibility(true)
     end
 
-    -- One next-tick restore is enough after the mouse button has been released.
-    -- A second bounded pass handles clients that publish chat focus one frame late,
-    -- without leaving long delayed callbacks that can interfere with later typing.
     zo_callLater(function()
-        restoreOnce()
-        if actionGen == (Q.actionGeneration or 0) and not Q.IsChatOpen() and Q.manualDismissed ~= true then
-            zo_callLater(restoreOnce, 45)
+        restoreChat()
+        if actionGen == (Q.actionGeneration or 0)
+            and Q.manualDismissed ~= true
+            and not Q.IsChatOpen() then
+            zo_callLater(restoreChat, CHAT_WATCH_MS)
         end
     end, 0)
 end
@@ -342,20 +386,92 @@ local function InstallMovableResizeHandlers(control, savePosition, resizeStep)
     control.ultiviteQuickPreviewHandlers = true
     control:SetHandler("OnMouseDown", function(self, button)
         if Q.previewEnabled ~= true or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        Q.BeginPreviewHudInteraction()
         if self.StartMoving then self:StartMoving() end
     end)
     control:SetHandler("OnMouseUp", function(self, button)
         if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
         if self.StopMovingOrResizing then self:StopMovingOrResizing() end
         if Q.previewEnabled == true and savePosition then savePosition(self) end
+        Q.EndPreviewHudInteraction()
     end)
     control:SetHandler("OnMoveStop", function(self)
         if Q.previewEnabled == true and savePosition then savePosition(self) end
     end)
     control:SetHandler("OnMouseWheel", function(self, delta)
         if Q.previewEnabled ~= true or Q.resizeEnabled ~= true or delta == 0 then return end
+        Q.BeginPreviewHudInteraction()
         if resizeStep then resizeStep(delta > 0 and 1 or -1) end
+        Q.EndPreviewHudInteraction()
     end)
+end
+
+local function PersistFabPreviewChange()
+    if U.PersistLiveSettingsToCurrentScope then
+        pcall(U.PersistLiveSettingsToCurrentScope)
+    end
+    if FAB and FAB.RequestSave then FAB.RequestSave() end
+    RequestSave()
+end
+
+local function FinishFabPreviewDrag(mover)
+    if not mover or mover.ultivitePreviewDragActive ~= true then return end
+    mover.ultivitePreviewDragActive = false
+
+    if FAB and FAB.CommitMoverPosition then
+        FAB.CommitMoverPosition()
+    else
+        local fab = rawget(_G, "FancyActionBar")
+        if fab and type(fab.SaveMoverPosition) == "function" then
+            pcall(fab.SaveMoverPosition)
+        end
+    end
+
+    PersistFabPreviewChange()
+    Q.EndPreviewHudInteraction()
+end
+
+function Q.InstallFabPreviewHandlers()
+    local fab = rawget(_G, "FancyActionBar")
+    local mover = rawget(_G, "FAB_Mover")
+    if not fab or not mover or mover.ultivitePreviewHooksInstalled == true then return false end
+    if type(ZO_PreHookHandler) ~= "function" or type(ZO_PostHookHandler) ~= "function" then return false end
+
+    mover.ultivitePreviewHooksInstalled = true
+
+    ZO_PreHookHandler(mover, "OnMouseDown", function(_, button)
+        if button ~= MOUSE_BUTTON_INDEX_LEFT or Q.previewEnabled ~= true then return end
+        mover.ultivitePreviewDragActive = Q.BeginPreviewHudInteraction() == true
+    end)
+
+    ZO_PostHookHandler(mover, "OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then FinishFabPreviewDrag(mover) end
+    end)
+
+    -- FAB saves its mover in OnMoveStop. This post-hook runs after that native
+    -- handler and keeps Ultivite's active profile snapshot in step with FAB.
+    ZO_PostHookHandler(mover, "OnMoveStop", function()
+        FinishFabPreviewDrag(mover)
+    end)
+
+    ZO_PreHookHandler(mover, "OnMouseWheel", function(_, delta)
+        if Q.previewEnabled ~= true or Q.resizeEnabled ~= true or delta == 0 then return end
+        local sv = FAB and FAB.GetSettings and FAB.GetSettings() or nil
+        if not sv or not Q.BeginPreviewHudInteraction() then return end
+
+        local key = fab.style == 2 and "gp" or "kb"
+        sv.abScaling = sv.abScaling or {}
+        sv.abScaling[key] = sv.abScaling[key] or {}
+        local scale = zo_clamp((tonumber(sv.abScaling[key].scale) or 100) + (delta > 0 and 2 or -2), 30, 250)
+        sv.abScaling[key].enable = true
+        sv.abScaling[key].scale = scale
+        if type(fab.SetScale) == "function" then pcall(fab.SetScale) end
+        if type(fab.ReanchorMover) == "function" then pcall(fab.ReanchorMover) end
+        PersistFabPreviewChange()
+        Q.EndPreviewHudInteraction()
+    end)
+
+    return true
 end
 
 function Q.InstallPreviewHandlers()
@@ -433,28 +549,32 @@ function Q.InstallPreviewHandlers()
                 widget.root.ultiviteQuickResizeHandler = true
                 local function resizeLiveStat(_, delta)
                     if Q.previewEnabled ~= true or Q.resizeEnabled ~= true or delta == 0 or not Combat.sv then return end
+                    Q.BeginPreviewHudInteraction()
                     Combat.sv.liveStatFontSize = zo_clamp((tonumber(Combat.sv.liveStatFontSize) or 28) + (delta > 0 and 1 or -1), 16, 42)
                     if Combat.ApplyLiveStatWidgetAppearance then Combat.ApplyLiveStatWidgetAppearance() end
                     SafeRequestSave()
+                    Q.EndPreviewHudInteraction()
                 end
                 widget.root:SetHandler("OnMouseWheel", resizeLiveStat)
-                -- The transparent drag surface sits above the root and normally
-                -- receives mouse input first. Give it the same resize handler so
-                -- RESIZE works reliably without changing the always-draggable rule.
+                -- The transparent drag surface sits above the root while this
+                -- item is being previewed. Give it the same resize handler so
+                -- PREVIEW + RESIZE works reliably without leaving a live hitbox.
                 if widget.dragger then widget.dragger:SetHandler("OnMouseWheel", resizeLiveStat) end
             end
         end
     end
 
-    -- K/D is always draggable on its own. Mouse-wheel resizing is deliberately
-    -- separate and only becomes active while PREVIEW + RESIZE are enabled.
+    -- K/D movement and mouse-wheel resizing are only interactive in preview.
+    -- Outside preview the transparent grab surface is disabled.
     if Combat and Combat.pvpHudRoot and not Combat.pvpHudRoot.ultiviteQuickResizeHandler then
         Combat.pvpHudRoot.ultiviteQuickResizeHandler = true
         local function resizePvpKd(_, delta)
             if Q.previewEnabled ~= true or Q.resizeEnabled ~= true or delta == 0 or not Combat.sv then return end
+            Q.BeginPreviewHudInteraction()
             Combat.sv.pvpHudFontSize = zo_clamp((tonumber(Combat.sv.pvpHudFontSize) or 20) + (delta > 0 and 1 or -1), 14, 36)
             if Combat.ApplyPvpHudAppearance then Combat.ApplyPvpHudAppearance() end
             SafeRequestSave()
+            Q.EndPreviewHudInteraction()
         end
         Combat.pvpHudRoot:SetHandler("OnMouseWheel", resizePvpKd)
         if Combat.pvpHudDragger then Combat.pvpHudDragger:SetHandler("OnMouseWheel", resizePvpKd) end
@@ -510,32 +630,16 @@ function Q.InstallPreviewHandlers()
         Combat.majorBreachRoot.ultiviteQuickResizeOnly = true
         Combat.majorBreachRoot:SetHandler("OnMouseWheel", function(_, delta)
             if Q.previewEnabled ~= true or Q.resizeEnabled ~= true or delta == 0 or not Combat.sv then return end
+            Q.BeginPreviewHudInteraction()
             local size = zo_clamp((tonumber(Combat.sv.majorBreachFontSize) or 16) + (delta > 0 and 1 or -1), 10, 34)
             Combat.sv.majorBreachFontSize = size
             if Combat.majorBreachLabel then Combat.majorBreachLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", size)) end
             SafeRequestSave()
+            Q.EndPreviewHudInteraction()
         end)
     end
 
-    local fab = rawget(_G, "FancyActionBar")
-    local mover = rawget(_G, "FAB_Mover")
-    if fab and mover and not mover.ultiviteQuickResizeHandler then
-        mover.ultiviteQuickResizeHandler = true
-        mover:SetHandler("OnMouseWheel", function(_, delta)
-            if Q.previewEnabled ~= true or Q.resizeEnabled ~= true or delta == 0 then return end
-            local sv = FAB and FAB.GetSettings and FAB.GetSettings() or nil
-            if not sv then return end
-            local key = fab.style == 2 and "gp" or "kb"
-            sv.abScaling = sv.abScaling or {}
-            sv.abScaling[key] = sv.abScaling[key] or {}
-            local scale = zo_clamp((tonumber(sv.abScaling[key].scale) or 100) + (delta > 0 and 2 or -2), 30, 250)
-            sv.abScaling[key].enable = true
-            sv.abScaling[key].scale = scale
-            if fab.SetScale then pcall(fab.SetScale) end
-            if fab.ReanchorMover then pcall(fab.ReanchorMover) end
-            if FAB and FAB.RequestSave then FAB.RequestSave() end
-        end)
-    end
+    Q.InstallFabPreviewHandlers()
 end
 
 function Q.ApplyActualPreviewVisibility()
@@ -572,7 +676,9 @@ function Q.ApplyActualPreviewVisibility()
         -- The FAB mover remains responsible for drag/resize and DeactivatePreviewRuntime
         -- restores the user's real Action Bar / Combat HUD visibility afterwards.
         local bar = rawget(_G, "ZO_ActionBar1")
-        if bar and bar.SetHidden then bar:SetHidden(false) end
+        if bar and bar.SetHidden and not (Ownership and Ownership.IsControlOwned and Ownership.IsControlOwned(bar)) then
+            bar:SetHidden(false)
+        end
     end
     if (key == "darkSouls" or key == "enemyHealth") and Frames then
         if Frames.dsEnemyHealthControl and Frames.dsEnemyHealthControl.frame then
@@ -650,6 +756,9 @@ function Q.ActivatePreviewRuntime()
     local c = GetCombatSettings()
     runtime.framesLocked = f and f.locked ~= false
     runtime.combatLocked = c and c.locked ~= false
+    runtime.chatWasOpen = Q.openedFromSettings ~= true and Q.IsChatOpen()
+    runtime.chatDraftText = runtime.chatWasOpen and GetChatDraftText() or ""
+    runtime.chatClosedForHudInteraction = false
     local fab = rawget(_G, "FancyActionBar")
     runtime.fabUnlocked = fab and fab.IsUnlocked and fab.IsUnlocked() or false
     Q.previewRuntime = runtime
@@ -664,6 +773,10 @@ function Q.DeactivatePreviewRuntime()
     local runtime = Q.previewRuntime
     Q.previewRuntime = nil
     Q.resizeEnabled = false
+    Q.previewRestoreGeneration = (Q.previewRestoreGeneration or 0) + 1
+    Q.previewRestorePending = false
+    Q.previewHudInteractionActive = false
+    Q.previewHudInteractionUntil = 0
 
     if EnemyAlerts and EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind(nil) end
     if Frames then
@@ -699,15 +812,25 @@ function Q.DeactivatePreviewRuntime()
 end
 
 local function CloseChatEntryNow()
-    local entry = CHAT_SYSTEM and CHAT_SYSTEM.textEntry or nil
+    local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+    local entry = chatSystem and chatSystem.textEntry or nil
     if not entry then return end
     local isOpen = false
     if type(entry.IsOpen) == "function" then
         local ok, value = pcall(entry.IsOpen, entry)
         isOpen = ok and value == true
     end
-    if isOpen and type(entry.Close) == "function" then
-        pcall(entry.Close, entry)
+    if isOpen then
+        -- Use ESO's system close path before the TextEntry fallback.
+        if chatSystem and type(chatSystem.CloseTextEntry) == "function" then
+            pcall(chatSystem.CloseTextEntry, chatSystem)
+        end
+        if IsTextEntryOpen() and type(entry.Close) == "function" then
+            pcall(entry.Close, entry)
+        end
+        if IsTextEntryOpen() and d then
+            d("[Ultivite] ESO chat remained open after the Quick Menu close request; press Escape to close stock chat.")
+        end
     end
 end
 
@@ -718,39 +841,45 @@ local function ReleaseQuickMenuMouseInput(enabled)
     for _, button in pairs(Q.buttons or {}) do
         if button and button.SetMouseEnabled then button:SetMouseEnabled(allowMouse) end
     end
+    for _, entry in pairs(Q.sectionControls or {}) do
+        local control = entry and entry.control or nil
+        if control and control.SetMouseEnabled then control:SetMouseEnabled(allowMouse) end
+    end
 end
 
 
 function Q.BeginManualClose()
-    -- Only arm the close here. The actual close happens after mouse-up so the
-    -- left button has completed its UI click before control returns to gameplay.
     Q.chatReopenGeneration = (Q.chatReopenGeneration or 0) + 1
     Q.actionGeneration = (Q.actionGeneration or 0) + 1
     Q.actionInProgress = false
     Q.actionButtonKey = nil
     Q.pendingAction = nil
+    Q.pendingSectionAction = nil
     Q.closePending = true
 end
 
 function Q.ManualClose()
+    if Q.previewEnabled == true then
+        Q.closePending = false
+        Q.manualDismissed = false
+        Q.SafeRefresh()
+        return false
+    end
+    if Q.closePending ~= true then return false end
     Q.closePending = false
 
-    -- If the quick menu was launched from the normal Ultivite settings panel,
-    -- closing it must not touch chat or gameplay input at all. The settings panel
-    -- remains underneath and continues to own UI mode normally.
     if Q.openedFromSettings == true then
         Q.openedFromSettings = false
         Q.manualDismissed = false
         Q.HideNow()
-        return
+        return true
     end
 
     Q.manualDismissed = true
     Q.chatSessionActive = false
     Q.HideNow()
-    -- This runs from mouse-up, so it is safe to close ESO chat synchronously and
-    -- let ESO's own TextEntry:Close() path release UI/camera input.
     CloseChatEntryNow()
+    return true
 end
 
 function Q.OpenFromSettings()
@@ -760,6 +889,7 @@ function Q.OpenFromSettings()
     Q.actionInProgress = false
     Q.actionButtonKey = nil
     Q.pendingAction = nil
+    Q.pendingSectionAction = nil
     Q.closePending = false
     Q.manualDismissed = false
     Q.openedFromSettings = true
@@ -768,19 +898,35 @@ end
 
 function Q.CloseSettingsSession()
     if Q.openedFromSettings ~= true then return end
+    if Q.previewEnabled == true then
+        -- Do not tear down a move/resize session just because the LAM panel was
+        -- closed. The editor remains active until SAVE & LOCK is pressed.
+        Q.openedFromSettings = false
+        Q.manualDismissed = false
+        Q.Show()
+        return false
+    end
     Q.openedFromSettings = false
     Q.manualDismissed = false
     Q.HideNow()
+    return true
 end
 
-function Q.HideNow()
+function Q.HideNow(force)
+    if Q.previewEnabled == true and force ~= true then
+        Q.manualDismissed = false
+        ReleaseQuickMenuMouseInput(true)
+        if Q.panel then Q.panel:SetHidden(false) end
+        return false
+    end
     Q.pointerInside = false
     if Q.panel then Q.panel:SetHidden(true) end
     ReleaseQuickMenuMouseInput(false)
-    if Q.previewEnabled == true or Q.previewRuntime then
+    if force == true and (Q.previewEnabled == true or Q.previewRuntime) then
         Q.previewEnabled = false
         Q.DeactivatePreviewRuntime()
     end
+    return true
 end
 
 function Q.SyncPreviewVisibility()
@@ -788,37 +934,65 @@ function Q.SyncPreviewVisibility()
 end
 
 function Q.Show()
-    if not Q.CanShow() then Q.HideNow(); return end
-    Q.Refresh()
+    if not Q.CanShow() then
+        -- Scene transitions may temporarily hide the editor, but they must never
+        -- end the edit session. Returning to gameplay restores the same session.
+        if Q.panel then Q.panel:SetHidden(true) end
+        ReleaseQuickMenuMouseInput(false)
+        return
+    end
+    Q.SafeRefresh()
     ReleaseQuickMenuMouseInput(true)
     if Q.panel then Q.panel:SetHidden(false) end
 end
 
 function Q.RefreshChatVisibility(force)
-    -- The X is a two-phase close. Keep the control alive between mouse-down and
-    -- mouse-up even if clicking it makes chat lose focus in that same frame.
-    if Q.closePending == true then return end
+    if Q.closePending == true and Q.previewEnabled ~= true then return end
 
-    -- A Quick Menu launched from Ultivite's addon settings is intentionally
-    -- independent of chat. It stays open until X is pressed or the settings
-    -- panel closes.
+    if Q.previewEnabled == true then
+        Q.manualDismissed = false
+        Q.closePending = false
+        if Q.CanShow() then
+            Q.SafeRefresh()
+            ReleaseQuickMenuMouseInput(true)
+            if Q.panel then Q.panel:SetHidden(false) end
+            Q.ApplyActualPreviewVisibility()
+        else
+            if Q.panel then Q.panel:SetHidden(true) end
+            ReleaseQuickMenuMouseInput(false)
+        end
+        return
+    end
+
     if Q.openedFromSettings == true then
         if Q.panel and Q.panel:IsHidden() then Q.Show() end
         return
     end
 
     local liveEntryOpen = Q.IsChatOpen()
-    -- Open/Close hooks own the session state. The live query is only a recovery
-    -- path for reload/order edge cases, never a reason to close a still-active
-    -- session because some child control changed visual state.
-    if liveEntryOpen then Q.chatSessionActive = true end
-    local isOpen = Q.chatSessionActive == true or liveEntryOpen
+    Q.chatSessionActive = liveEntryOpen
+    local isOpen = liveEntryOpen
     local stateChanged = Q.lastChatOpen ~= isOpen
     Q.lastChatOpen = isOpen
 
-    -- A quick-menu click temporarily transfers mouse focus away from the chat
-    -- edit box. That is not a user-requested chat close. Keep the panel alive
-    -- until the action has restored chat and verified its resulting state.
+    if isOpen and Q.previewRuntime then
+        Q.previewRuntime.chatWasOpen = true
+        Q.previewRuntime.chatDraftText = GetChatDraftText()
+        Q.previewRuntime.chatClosedForHudInteraction = false
+    end
+
+    if not isOpen
+        and Q.previewEnabled == true
+        and Q.previewRuntime
+        and Q.previewRuntime.chatClosedForHudInteraction == true
+        and Q.manualDismissed ~= true then
+        ReleaseQuickMenuMouseInput(true)
+        if Q.panel then Q.panel:SetHidden(false) end
+        Q.ApplyActualPreviewVisibility()
+        Q.SchedulePreviewChatRestore()
+        return
+    end
+
     local heldForAction = Q.actionInProgress == true or Q.pointerInside == true or GetNowMs() < (Q.interactionHoldUntil or 0)
     if not isOpen and heldForAction and Q.manualDismissed ~= true then
         if Q.CanShow() and Q.panel and Q.panel:IsHidden() then ReleaseQuickMenuMouseInput(true); Q.panel:SetHidden(false) end
@@ -826,8 +1000,6 @@ function Q.RefreshChatVisibility(force)
     end
 
     if not isOpen then
-        -- A genuine chat close/minimize ends the quick-menu session. This also
-        -- clears a manual X dismissal so the next Enter can open it normally.
         Q.manualDismissed = false
         if force or stateChanged or (Q.panel and not Q.panel:IsHidden()) then Q.HideNow() end
         return
@@ -840,9 +1012,14 @@ function Q.RefreshChatVisibility(force)
 
     if Q.CanShow() then
         if force or stateChanged or (Q.panel and Q.panel:IsHidden()) then
-            Q.Refresh()
+            Q.SafeRefresh()
             ReleaseQuickMenuMouseInput(true)
             if Q.panel then Q.panel:SetHidden(false) end
+        end
+        -- Fallback for late-created or replaced chat entries. Repair only on the
+        -- closed -> open edge, never from the 50 ms watcher while chat remains open.
+        if stateChanged and isOpen and Q.actionInProgress ~= true then
+            ScheduleChatKeyboardFocusRepair(Q.chatReopenGeneration or 0)
         end
         if Q.previewEnabled and (force or stateChanged) then Q.ApplyActualPreviewVisibility() end
     else
@@ -851,66 +1028,60 @@ function Q.RefreshChatVisibility(force)
 end
 
 function Q.InstallChatHooks()
-    if Q.chatHooksInstalled or not ZO_PostHook then return end
-    Q.chatHooksInstalled = true
+    if not ZO_PostHook then return false end
+
+    local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
+    if not entry then
+        -- The chat watcher retries after late TextEntry creation.
+        Q.chatHooksInstalled = false
+        return false
+    end
+    if Q.chatHookEntry == entry then return true end
 
     local function refreshSoon()
-        zo_callLater(function() Q.RefreshChatVisibility(true) end, 0)
+        zo_callLater(function()
+            if Immersive and Immersive.RefreshChatVisibility then pcall(Immersive.RefreshChatVisibility) end
+            Q.RefreshChatVisibility(true)
+        end, 0)
     end
 
-    local entry = CHAT_SYSTEM and CHAT_SYSTEM.textEntry or nil
-    if entry then
-        if type(entry.Open) == "function" then
-            pcall(ZO_PostHook, entry, "Open", function()
-                -- A fresh Enter/chat-open is a new session. Cancel any deferred
-                -- close from the previous quick-menu session before it can touch it.
-                Q.chatReopenGeneration = (Q.chatReopenGeneration or 0) + 1
-                local focusGeneration = Q.chatReopenGeneration
-                Q.openedFromSettings = false
-                Q.manualDismissed = false
-                Q.closePending = false
-                Q.chatSessionActive = true
-                if Frames and Frames.ApplyChatVisibilityMode then Frames.ApplyChatVisibilityMode() end
-                refreshSoon()
-
-                -- Showing Ultivite's mouse-enabled overlay must never leave the
-                -- newly opened ESO chat box without keyboard focus. Reassert the
-                -- stock edit-control focus on the next frame only if this is still
-                -- the same chat session.
-                zo_callLater(function()
-                    if focusGeneration ~= (Q.chatReopenGeneration or 0) then return end
-                    if Q.manualDismissed == true or Q.openedFromSettings == true then return end
-                    EnsureChatKeyboardFocus()
-                end, 0)
-            end)
-        end
-        if type(entry.Close) == "function" then
-            pcall(ZO_PostHook, entry, "Close", function()
-                Q.chatSessionActive = false
-                refreshSoon()
-            end)
-        end
+    if type(entry.Open) == "function" and Q.chatOpenHookEntry ~= entry then
+        local ok = pcall(ZO_PostHook, entry, "Open", function()
+            Q.chatReopenGeneration = (Q.chatReopenGeneration or 0) + 1
+            Q.openedFromSettings = false
+            Q.manualDismissed = false
+            Q.closePending = false
+            Q.chatSessionActive = true
+            if Immersive and Immersive.RefreshChatVisibility then pcall(Immersive.RefreshChatVisibility) end
+            if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
+            -- ESO normally takes focus inside TextEntry:Open. Ultivite's Quick
+            -- Menu visibility transition can steal it immediately afterward, so
+            -- repair once after Open. The repair never runs during mouse dragging
+            -- or resizing and is not part of the 50 ms chat watcher.
+            ScheduleChatKeyboardFocusRepair(Q.chatReopenGeneration)
+            refreshSoon()
+        end)
+        if ok then Q.chatOpenHookEntry = entry end
+    end
+    if type(entry.Close) == "function" and type(ZO_PreHook) == "function" and Q.chatClosePreHookEntry ~= entry then
+        local ok = pcall(ZO_PreHook, entry, "Close", function()
+            MarkPreviewChatClose()
+        end)
+        if ok then Q.chatClosePreHookEntry = entry end
+    end
+    if type(entry.Close) == "function" and Q.chatCloseHookEntry ~= entry then
+        local ok = pcall(ZO_PostHook, entry, "Close", function()
+            MarkPreviewChatClose()
+            Q.chatSessionActive = false
+            refreshSoon()
+        end)
+        if ok then Q.chatCloseHookEntry = entry end
     end
 
-    local containers = {}
-    if CHAT_SYSTEM and CHAT_SYSTEM.primaryContainer then containers[#containers + 1] = CHAT_SYSTEM.primaryContainer end
-    if CHAT_SYSTEM and type(CHAT_SYSTEM.GetPrimaryContainer) == "function" then
-        local ok, container = pcall(CHAT_SYSTEM.GetPrimaryContainer, CHAT_SYSTEM)
-        if ok and container then containers[#containers + 1] = container end
-    end
-    for _, container in ipairs(containers) do
-        if type(container.Minimize) == "function" then
-            pcall(ZO_PostHook, container, "Minimize", function()
-                Q.chatSessionActive = false
-                refreshSoon()
-            end)
-        end
-        for _, methodName in ipairs({ "Maximize", "Restore" }) do
-            if type(container[methodName]) == "function" then
-                pcall(ZO_PostHook, container, methodName, refreshSoon)
-            end
-        end
-    end
+    local fullyInstalled = Q.chatOpenHookEntry == entry and Q.chatCloseHookEntry == entry
+    Q.chatHooksInstalled = fullyInstalled
+    Q.chatHookEntry = fullyInstalled and entry or nil
+    return fullyInstalled
 end
 
 function Q.StartChatWatch()
@@ -918,6 +1089,11 @@ function Q.StartChatWatch()
     if Q.chatWatchRegistered then return end
     Q.chatWatchRegistered = true
     EVENT_MANAGER:RegisterForUpdate("UltiviteQuickMenuChatWatch", CHAT_WATCH_MS, function()
+        -- Bind late-created or replaced chat entries once per object.
+        Q.InstallChatHooks()
+        if not Q.initialized and not Q.initializing and GetNowMs() >= (Q.nextCreateRetryMs or 0) then
+            Q.Create()
+        end
         -- Preview visibility is applied on selection/state changes. Reapplying it
         -- every 50ms caused real HUD update routines to hide a control and the
         -- quick menu to show it again on alternating frames, producing strobing.
@@ -1214,7 +1390,7 @@ local function SetBanditsMiniMapEnabled(enabled)
 
     zo_callLater(function()
         ProbeBanditsMiniMapState()
-        Q.Refresh()
+        Q.SafeRefresh()
     end, 100)
     return true
 end
@@ -1240,16 +1416,93 @@ function Q.InstallBanditsMiniMapBridge()
 
     CALLBACK_MANAGER:RegisterCallback("BUI_MiniMap_Shown", function(shown)
         if type(shown) == "boolean" then Q.banditsMiniMapShown = shown end
-        Q.Refresh()
+        Q.SafeRefresh()
     end)
     CALLBACK_MANAGER:RegisterCallback("BUI_Ready", function()
         Q.banditsMiniMapSettingContainer = nil
         Q.banditsMiniMapSettingKey = nil
         ProbeBanditsMiniMapState()
-        Q.Refresh()
+        Q.SafeRefresh()
     end)
 
     ProbeBanditsMiniMapState()
+end
+
+-- Votan's Minimap bridge. Current Votan builds expose the addon as
+-- VOTANS_MINIMAP and keep the per-character master show state in
+-- addon.player.showMap. The addon's own keybind calls addon:ToggleShowMap(),
+-- so Ultivite uses that native path rather than hiding WORLD_MAP controls itself.
+-- This keeps Circular Votan's Mini Map and all normal Votan map state in sync.
+local function FindVotanMiniMapAddon()
+    if type(Q.votanMiniMapAddon) == "table" and type(Q.votanMiniMapAddon.ToggleShowMap) == "function" then
+        return Q.votanMiniMapAddon
+    end
+
+    -- API 101050 can expose private secure functions through the global table.
+    -- Iterating _G from insecure addon code can therefore taint the call stack
+    -- merely by reading one of those entries. Only use Votan's documented global.
+    local direct = rawget(_G, "VOTANS_MINIMAP")
+    if type(direct) == "table" and type(direct.ToggleShowMap) == "function" then
+        Q.votanMiniMapAddon = direct
+        return direct
+    end
+    return nil
+end
+
+local function ProbeVotanMiniMapState()
+    local addon = FindVotanMiniMapAddon()
+    if not addon then return nil end
+    if type(addon.player) == "table" and type(addon.player.showMap) == "boolean" then
+        return addon.player.showMap
+    end
+    return nil
+end
+
+local function VotanMiniMapStateText()
+    local addon = FindVotanMiniMapAddon()
+    if not addon then return "UNAVAILABLE" end
+    local state = ProbeVotanMiniMapState()
+    if state == nil then return "UNKNOWN" end
+    return state and "ON" or "OFF"
+end
+
+local function SetVotanMiniMapEnabled(enabled)
+    enabled = enabled == true
+    local addon = FindVotanMiniMapAddon()
+    if not addon then
+        if d then d("[Ultivite] Votan's Minimap unavailable: VotansMiniMap is not loaded.") end
+        return false
+    end
+
+    local current = ProbeVotanMiniMapState()
+    if current == enabled then return true end
+    if type(addon.ToggleShowMap) ~= "function" then return false end
+
+    local ok, err = pcall(addon.ToggleShowMap, addon)
+    if not ok then
+        if d then d("[Ultivite] Votan's Minimap toggle failed: " .. tostring(err)) end
+        return false
+    end
+
+    -- Votan updates the world-map mode asynchronously around scene changes.
+    -- Verify the SavedVariable-backed state on the next frame without touching
+    -- the map control directly.
+    if zo_callLater then
+        zo_callLater(function() Q.SafeRefresh() end, 0)
+        zo_callLater(function() Q.SafeRefresh() end, 120)
+    end
+    return true
+end
+
+local function ToggleVotanMiniMap()
+    local current = ProbeVotanMiniMapState()
+    if current == nil then
+        -- If Votan is loaded but its character state has not published yet, do
+        -- not guess which direction a blind toggle would move.
+        if d then d("[Ultivite] Votan's Minimap state is not ready yet.") end
+        return false
+    end
+    return SetVotanMiniMapEnabled(not current)
 end
 
 local function GetGraphicsSettingSafe(settingId)
@@ -1261,107 +1514,800 @@ end
 
 local function SetGraphicsSettingSafe(settingId, value)
     if SETTING_TYPE_GRAPHICS == nil or settingId == nil or type(SetSetting) ~= "function" then return false end
+
     value = tostring(value)
     if GetGraphicsSettingSafe(settingId) == value then return true end
+
+    local saveOption = SETTINGS_SET_OPTION_SAVE_TO_PERSISTED_DATA
+    if saveOption ~= nil then
+        return pcall(SetSetting, SETTING_TYPE_GRAPHICS, settingId, value, saveOption) == true
+    end
     return pcall(SetSetting, SETTING_TYPE_GRAPHICS, settingId, value) == true
 end
 
-local function ApplyGraphicsProfile(profile)
-    local pve = tostring(profile):upper() ~= "PVP"
-    local profileName = pve and "PVE" or "PVP"
+-- Graphics profile manager ---------------------------------------------------
+-- Profiles are account-wide because they describe client video settings, not
+-- character combat layouts. Built-in profiles remain editable and can always
+-- be restored to their factory values. Custom profiles use stable IDs so a
+-- rename never breaks PvE/PvP automatic assignments.
+local GRAPHICS_BUILTIN_PVE = "builtin_pve"
+local GRAPHICS_BUILTIN_PVP = "builtin_pvp"
+local GRAPHICS_BUILTIN_LOW = "builtin_low"
+
+local function GraphicsValue(value)
+    if value == nil then return nil end
+    return tostring(value)
+end
+
+local function GetGraphicsAccountState()
+    if not U.accountSV then return nil end
+    U.accountSV.graphics = U.accountSV.graphics or {}
+    return U.accountSV.graphics
+end
+
+local function GetGodRaysSettingId()
+    return _G and _G["GRAPHICS_SETTING_GOD_RAYS"] or nil
+end
+
+local function GetAmbientOcclusionSettingId()
+    return _G and _G["GRAPHICS_SETTING_AMBIENT_OCCLUSION_TYPE"] or nil
+end
+
+local function ReadCVarSafe(name)
+    if type(GetCVar) ~= "function" then return nil end
+    local ok, value = pcall(GetCVar, name)
+    if not ok or value == nil then return nil end
+    return tostring(value)
+end
+
+-- ESO does not always round-trip boolean graphics values with the same textual
+-- representation that was passed to SetSetting/SetCVar. Depending on the
+-- setting and client path, false/true can come back as 0/1. Treat those forms
+-- as equivalent so a successfully-applied profile is not reported as failed.
+local function GraphicsValuesEquivalent(actual, expected)
+    if actual == nil or expected == nil then return false end
+    actual = tostring(actual):lower()
+    expected = tostring(expected):lower()
+    if actual == expected then return true end
+
+    local booleanValue = {
+        ["true"] = true, ["1"] = true, ["on"] = true,
+        ["false"] = false, ["0"] = false, ["off"] = false,
+    }
+    local actualBool = booleanValue[actual]
+    local expectedBool = booleanValue[expected]
+    if actualBool ~= nil and expectedBool ~= nil then
+        return actualBool == expectedBool
+    end
+
+    local actualNumber = tonumber(actual)
+    local expectedNumber = tonumber(expected)
+    if actualNumber ~= nil and expectedNumber ~= nil then
+        return actualNumber == expectedNumber
+    end
+    return false
+end
+
+local function SetCVarSafe(name, value)
+    if type(SetCVar) ~= "function" or value == nil then return false end
+    value = tostring(value)
+    if GraphicsValuesEquivalent(ReadCVarSafe(name), value) then return true end
+    local ok = pcall(SetCVar, name, value)
+    return ok == true
+end
+
+local function BuildFactoryGraphicsSettings(isPve)
+    return {
+        shadows = GraphicsValue(isPve and SHADOWS_CHOICE_ULTRA or SHADOWS_CHOICE_OFF),
+        waterReflections = GraphicsValue(isPve and SCREENSPACE_WATER_REFLECTION_QUALITY_ULTRA or SCREENSPACE_WATER_REFLECTION_QUALITY_OFF),
+        distortion = isPve and "true" or "false",
+        bloom = isPve and "true" or "false",
+        godRays = isPve and "true" or "false",
+        clutter = GraphicsValue(isPve and CLUTTER_QUALITY_ULTRA or CLUTTER_QUALITY_OFF),
+        ambientOcclusion = GraphicsValue(isPve and AMBIENT_OCCLUSION_TYPE_SSGI or AMBIENT_OCCLUSION_TYPE_NONE),
+    }
+end
+
+-- All Low uses ESO's own public Low graphics preset. Never enumerate _G here:
+-- API 101050 includes private secure functions in the global table and touching
+-- them from insecure addon code can taint the stack. The names below come from
+-- the stock API 101050 video options panel and are looked up individually with
+-- rawget. The preset selector itself is intentionally excluded from the restore
+-- snapshot because restoring it would re-run another preset over the exact values
+-- we are restoring.
+local ALL_LOW_GRAPHICS_SETTING_NAMES = {
+    "GRAPHICS_SETTING_FULLSCREEN",
+    "GRAPHICS_SETTING_ACTIVE_DISPLAY",
+    "GRAPHICS_SETTING_RESOLUTION",
+    "GRAPHICS_SETTING_VSYNC",
+    "GRAPHICS_SETTING_RENDERTHREAD",
+    "GRAPHICS_SETTING_ANTIALIASING_TYPE",
+    "GRAPHICS_SETTING_USE_BACKGROUND_FPS_LIMIT",
+    "GRAPHICS_SETTING_BACKGROUND_FPS_LIMIT",
+    "GRAPHICS_SETTING_GAMMA_ADJUSTMENT",
+    "GRAPHICS_SETTING_MIP_LOAD_SKIP_LEVELS",
+    "GRAPHICS_SETTING_DLSS_MODE",
+    "GRAPHICS_SETTING_FSR_MODE",
+    "GRAPHICS_SETTING_SUB_SAMPLING",
+    "GRAPHICS_SETTING_SHADOWS",
+    "GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY",
+    "GRAPHICS_SETTING_PLANAR_WATER_REFLECTION_QUALITY",
+    "GRAPHICS_SETTING_PFX_GLOBAL_MAXIMUM",
+    "GRAPHICS_SETTING_PFX_SUPPRESS_DISTANCE",
+    "GRAPHICS_SETTING_VIEW_DISTANCE",
+    "GRAPHICS_SETTING_AMBIENT_OCCLUSION_TYPE",
+    "GRAPHICS_SETTING_OCCLUSION_CULLING_ENABLED",
+    "GRAPHICS_SETTING_CLUTTER_2D_QUALITY",
+    "GRAPHICS_SETTING_DEPTH_OF_FIELD_MODE",
+    "GRAPHICS_SETTING_CHARACTER_RESOLUTION",
+    "GRAPHICS_SETTING_BLOOM",
+    "GRAPHICS_SETTING_DISTORTION",
+    "GRAPHICS_SETTING_GOD_RAYS",
+    "GRAPHICS_SETTING_CONSOLE_ENHANCED_RENDER_QUALITY",
+    "GRAPHICS_SETTING_GRAPHICS_MODE_PS5",
+    "GRAPHICS_SETTING_GRAPHICS_MODE_XBSS",
+    "GRAPHICS_SETTING_GRAPHICS_MODE_XBSX",
+    "GRAPHICS_SETTING_CAP_CONSOLE_FRAMERATE_IN_MENUS",
+    "GRAPHICS_SETTING_ENERGY_SUSTAINABILITY_SCREEN_DIM_AND_RESOLUTION",
+    "GRAPHICS_SETTING_HDR_ENABLED",
+    "GRAPHICS_SETTING_HDR_PEAK_BRIGHTNESS",
+    "GRAPHICS_SETTING_HDR_SCENE_BRIGHTNESS",
+    "GRAPHICS_SETTING_HDR_SCENE_CONTRAST",
+    "GRAPHICS_SETTING_HDR_UI_BRIGHTNESS",
+    "GRAPHICS_SETTING_HDR_UI_CONTRAST",
+    "GRAPHICS_SETTING_HDR_MODE",
+    "GRAPHICS_SETTING_SHOW_ADDITIONAL_ALLY_EFFECTS",
+}
+
+local function GetNamedGraphicsSettingId(name)
+    if type(name) ~= "string" or type(_G) ~= "table" then return nil end
+    local settingId = rawget(_G, name)
+    return type(settingId) == "number" and settingId or nil
+end
+
+-- ESO's Low preset remains the authoritative baseline, but Ultivite also
+-- enforces every quality setting for which the public API exposes an explicit
+-- Low, Off or performance value. This prevents a partially-applied preset from
+-- leaving expensive settings behind while still avoiding any global scanning.
+local function BuildAllLowEnforcedTargets()
+    local targets = {}
+    local function add(settingId, value)
+        if type(settingId) == "number" and value ~= nil then
+            targets[#targets + 1] = { settingId = settingId, value = tostring(value) }
+        end
+    end
+
+    add(GRAPHICS_SETTING_MIP_LOAD_SKIP_LEVELS, TEX_RES_CHOICE_LOW)
+    add(GRAPHICS_SETTING_SUB_SAMPLING, SUB_SAMPLING_MODE_LOW)
+    add(GRAPHICS_SETTING_ANTIALIASING_TYPE, ANTIALIASING_TYPE_NONE)
+    add(GRAPHICS_SETTING_SHADOWS, SHADOWS_CHOICE_LOW)
+    add(GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY, SCREENSPACE_WATER_REFLECTION_QUALITY_LOW)
+    add(GRAPHICS_SETTING_PLANAR_WATER_REFLECTION_QUALITY, PLANAR_WATER_REFLECTION_QUALITY_OFF)
+    add(GRAPHICS_SETTING_PFX_GLOBAL_MAXIMUM, PARTICLE_DENSITY_LOW)
+    add(GRAPHICS_SETTING_AMBIENT_OCCLUSION_TYPE, AMBIENT_OCCLUSION_TYPE_NONE)
+    add(GRAPHICS_SETTING_CLUTTER_2D_QUALITY, CLUTTER_QUALITY_LOW)
+    add(GRAPHICS_SETTING_DEPTH_OF_FIELD_MODE, DEPTH_OF_FIELD_MODE_OFF)
+    add(GRAPHICS_SETTING_CHARACTER_RESOLUTION, CHARACTER_RESOLUTION_LOW)
+    add(GRAPHICS_SETTING_BLOOM, "false")
+    add(GRAPHICS_SETTING_DISTORTION, "false")
+    add(GRAPHICS_SETTING_GOD_RAYS, "false")
+    add(GRAPHICS_SETTING_OCCLUSION_CULLING_ENABLED, "true")
+    add(GRAPHICS_SETTING_SHOW_ADDITIONAL_ALLY_EFFECTS, "false")
+
+    return targets
+end
+
+local function ApplyAllLowEnforcedTargets()
+    local ok = true
+    local applied = {}
+    for _, target in ipairs(BuildAllLowEnforcedTargets()) do
+        local supported = true
+        if type(DoesPlatformSupportGraphicSetting) == "function" then
+            local supportOk, result = pcall(DoesPlatformSupportGraphicSetting, target.settingId)
+            if supportOk and result == false then supported = false end
+        end
+        if supported then
+            local targetOk = SetGraphicsSettingSafe(target.settingId, target.value)
+            ok = targetOk and ok
+            if targetOk then applied[#applied + 1] = target end
+        end
+    end
+    return ok, applied
+end
+
+local function VerifyAllLowEnforcedTargets(appliedTargets)
+    local ok = true
+    for _, target in ipairs(appliedTargets or {}) do
+        if not GraphicsValuesEquivalent(GetGraphicsSettingSafe(target.settingId), target.value) then
+            ok = false
+        end
+    end
+    return ok
+end
+
+local function CaptureAllGraphicsSettingValues()
+    local snapshot = {}
+    local seenIds = {}
+    for _, name in ipairs(ALL_LOW_GRAPHICS_SETTING_NAMES) do
+        local settingId = GetNamedGraphicsSettingId(name)
+        if settingId ~= nil and not seenIds[settingId] then
+            local value = GetGraphicsSettingSafe(settingId)
+            if value ~= nil then
+                snapshot[name] = value
+                seenIds[settingId] = true
+            end
+        end
+    end
+    return snapshot
+end
+
+local function BuildChangedGraphicsRestoreSnapshot(before)
+    local restore = {}
+    for name, oldValue in pairs(before or {}) do
+        local settingId = GetNamedGraphicsSettingId(name)
+        if type(settingId) == "number" then
+            local currentValue = GetGraphicsSettingSafe(settingId)
+            if currentValue ~= nil and not GraphicsValuesEquivalent(currentValue, oldValue) then
+                restore[name] = tostring(oldValue)
+            end
+        end
+    end
+    return restore
+end
+
+local function ApplyNamedGraphicsSnapshot(snapshot)
+    local ok = true
+    for name, value in pairs(snapshot or {}) do
+        local settingId = GetNamedGraphicsSettingId(name)
+        if type(settingId) == "number" then
+            ok = SetGraphicsSettingSafe(settingId, value) and ok
+        end
+    end
+    if type(ApplySettings) == "function" then pcall(ApplySettings) end
+    return ok
+end
+
+local function RestoreAllLowGraphicsSnapshot(silent)
+    local state = GetGraphicsAccountState()
+    if not state or state.allLowActive ~= true then return true end
+
+    local ok = ApplyNamedGraphicsSnapshot(state.allLowRestoreSnapshot)
+    if ok then
+        state.allLowActive = false
+        state.allLowRestoreSnapshot = nil
+        if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    end
+
+    if not silent and d then
+        d(ok and "[Ultivite] Restored graphics settings from before All Low." or "[Ultivite] Pre-All-Low graphics restoration was incomplete. The saved restore snapshot was retained for another attempt.")
+    end
+    return ok
+end
+
+local function ApplyAllLowGraphicsPreset(silent)
+    local state = GetGraphicsAccountState()
+    local presetSetting = rawget(_G, "GRAPHICS_SETTING_PRESETS")
+    local lowPreset = rawget(_G, "GRAPHICS_PRESETS_LOW")
+    if not state or presetSetting == nil or lowPreset == nil then
+        if not silent and d then d("[Ultivite] ESO Low graphics preset is not available on this client.") end
+        return false
+    end
+
+    local before
+    if state.allLowActive ~= true then
+        before = CaptureAllGraphicsSettingValues()
+    end
+
+    -- First apply ESO's complete Low preset with persisted-data semantics.
+    local ok = SetGraphicsSettingSafe(presetSetting, lowPreset)
+    if ok and type(ApplySettings) == "function" then
+        ok = pcall(ApplySettings) == true and ok
+    end
+    if ok and type(RefreshSettings) == "function" then
+        ok = pcall(RefreshSettings) == true and ok
+    end
+    if ok and not GraphicsValuesEquivalent(GetGraphicsSettingSafe(presetSetting), lowPreset) then
+        ok = false
+    end
+
+    -- Then explicitly force the public quality controls to their Low, Off or
+    -- performance values. This is intentional redundancy: it makes All Low
+    -- deterministic even if ESO leaves one or more controls unchanged when the
+    -- preset selector is changed by addon code.
+    local enforcedTargets = {}
+    if ok then
+        local enforcedOk
+        enforcedOk, enforcedTargets = ApplyAllLowEnforcedTargets()
+        ok = enforcedOk and ok
+    end
+
+    if ok and type(ApplySettings) == "function" then
+        ok = pcall(ApplySettings) == true and ok
+    end
+    if ok and type(RefreshSettings) == "function" then
+        ok = pcall(RefreshSettings) == true and ok
+    end
+
+    if ok then
+        ok = VerifyAllLowEnforcedTargets(enforcedTargets) and ok
+    end
+
+    if ok and state.allLowActive ~= true then
+        state.allLowRestoreSnapshot = BuildChangedGraphicsRestoreSnapshot(before)
+        state.allLowActive = true
+    elseif ok then
+        state.allLowActive = true
+    end
+
+    if ok then
+        state.lastAppliedProfileId = GRAPHICS_BUILTIN_LOW
+        Q.lastAppliedGraphicsProfile = GRAPHICS_BUILTIN_LOW
+        if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+        if not silent and d then d("[Ultivite] Applied and verified All Low graphics. Previous graphics values are retained for restoration.") end
+    elseif not silent and d then
+        d("[Ultivite] All Low graphics could not be fully applied or verified.")
+    end
+    return ok
+end
+
+local function CaptureCurrentGraphicsSettings()
+    local godRaysSetting = GetGodRaysSettingId()
+    local aoSetting = GetAmbientOcclusionSettingId()
+    return {
+        shadows = GetGraphicsSettingSafe(GRAPHICS_SETTING_SHADOWS),
+        waterReflections = GetGraphicsSettingSafe(GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY),
+        distortion = GetGraphicsSettingSafe(GRAPHICS_SETTING_DISTORTION),
+        bloom = GetGraphicsSettingSafe(GRAPHICS_SETTING_BLOOM),
+        godRays = godRaysSetting and GetGraphicsSettingSafe(godRaysSetting) or ReadCVarSafe("GOD_RAYS"),
+        clutter = GetGraphicsSettingSafe(GRAPHICS_SETTING_CLUTTER_2D_QUALITY),
+        ambientOcclusion = aoSetting and GetGraphicsSettingSafe(aoSetting) or ReadCVarSafe("AMBIENT_OCCLUSION_TYPE"),
+    }
+end
+
+local function CopyGraphicsSettings(source)
+    source = source or {}
+    return {
+        shadows = GraphicsValue(source.shadows),
+        waterReflections = GraphicsValue(source.waterReflections),
+        distortion = GraphicsValue(source.distortion),
+        bloom = GraphicsValue(source.bloom),
+        godRays = GraphicsValue(source.godRays),
+        clutter = GraphicsValue(source.clutter),
+        ambientOcclusion = GraphicsValue(source.ambientOcclusion),
+    }
+end
+
+function Q.GetCurrentGraphicsSettings()
+    return CopyGraphicsSettings(CaptureCurrentGraphicsSettings())
+end
+
+function Q.EnsureGraphicsProfiles()
+    local state = GetGraphicsAccountState()
+    if not state then return nil end
+    state.profiles = type(state.profiles) == "table" and state.profiles or {}
+    state.order = type(state.order) == "table" and state.order or {}
+    state.autoEnabled = state.autoEnabled == true
+    state.nextCustomId = math.max(1, tonumber(state.nextCustomId) or 1)
+    state.pendingName = tostring(state.pendingName or "Custom Graphics")
+
+    local function ensureBuiltin(id, name, factoryType)
+        local profile = state.profiles[id]
+        if type(profile) ~= "table" then
+            profile = { name = name, builtin = factoryType, settings = BuildFactoryGraphicsSettings(factoryType == "pve") }
+            state.profiles[id] = profile
+        end
+        profile.name = tostring(profile.name or name)
+        profile.builtin = factoryType
+        profile.special = factoryType == "low" and "allLow" or nil
+        if type(profile.settings) ~= "table" then
+            profile.settings = BuildFactoryGraphicsSettings(factoryType == "pve")
+        end
+    end
+
+    ensureBuiltin(GRAPHICS_BUILTIN_PVE, "PvE Quality", "pve")
+    ensureBuiltin(GRAPHICS_BUILTIN_PVP, "PvP Performance", "pvp")
+    ensureBuiltin(GRAPHICS_BUILTIN_LOW, "All Low", "low")
+
+    local seen = {}
+    local cleaned = {}
+    local function add(id)
+        if state.profiles[id] and not seen[id] then
+            cleaned[#cleaned + 1] = id
+            seen[id] = true
+        end
+    end
+    add(GRAPHICS_BUILTIN_PVE)
+    add(GRAPHICS_BUILTIN_PVP)
+    add(GRAPHICS_BUILTIN_LOW)
+    for _, id in ipairs(state.order) do add(tostring(id)) end
+    for id in pairs(state.profiles) do add(tostring(id)) end
+    state.order = cleaned
+
+    if not state.profiles[state.pveProfileId or ""] then state.pveProfileId = GRAPHICS_BUILTIN_PVE end
+    if not state.profiles[state.pvpProfileId or ""] then state.pvpProfileId = GRAPHICS_BUILTIN_PVP end
+    if not state.profiles[state.selectedProfileId or ""] then state.selectedProfileId = GRAPHICS_BUILTIN_PVE end
+    return state
+end
+
+function Q.GetGraphicsProfile(profileId)
+    local state = Q.EnsureGraphicsProfiles()
+    return state and state.profiles and state.profiles[profileId or ""] or nil
+end
+
+function Q.GetGraphicsProfileName(profileId)
+    local profile = Q.GetGraphicsProfile(profileId)
+    return profile and tostring(profile.name or profileId) or "Unknown"
+end
+
+function Q.GetAssignedGraphicsProfileId(context)
+    local state = Q.EnsureGraphicsProfiles()
+    if not state then return nil end
+    return tostring(context):upper() == "PVP" and state.pvpProfileId or state.pveProfileId
+end
+
+local function ApplyGraphicsSettings(settings)
+    settings = settings or {}
     local ok = true
     local expectedGraphics = {}
     local expectedCVars = {}
 
     local function applyGraphics(settingId, value)
         if settingId == nil or value == nil then ok = false; return false end
-        expectedGraphics[settingId] = tostring(value)
+        value = tostring(value)
+        expectedGraphics[settingId] = value
         local applied = SetGraphicsSettingSafe(settingId, value)
         ok = applied and ok
         return applied
     end
 
     local function applyCVar(name, value)
-        if type(SetCVar) ~= "function" then ok = false; return false end
-        local applied = pcall(SetCVar, name, tostring(value))
-        if applied then expectedCVars[name] = tostring(value) end
+        if value == nil then ok = false; return false end
+        value = tostring(value)
+        local applied = SetCVarSafe(name, value)
+        if applied then expectedCVars[name] = value end
         ok = applied and ok
         return applied
     end
 
-    -- Only these seven settings are touched.
-    if GRAPHICS_SETTING_SHADOWS ~= nil and SHADOWS_CHOICE_ULTRA ~= nil and SHADOWS_CHOICE_OFF ~= nil then
-        applyGraphics(GRAPHICS_SETTING_SHADOWS, pve and SHADOWS_CHOICE_ULTRA or SHADOWS_CHOICE_OFF)
-    else
-        ok = false
-    end
+    applyGraphics(GRAPHICS_SETTING_SHADOWS, settings.shadows)
+    applyGraphics(GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY, settings.waterReflections)
+    applyGraphics(GRAPHICS_SETTING_DISTORTION, settings.distortion)
+    applyGraphics(GRAPHICS_SETTING_BLOOM, settings.bloom)
 
-    if GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY ~= nil
-        and SCREENSPACE_WATER_REFLECTION_QUALITY_ULTRA ~= nil
-        and SCREENSPACE_WATER_REFLECTION_QUALITY_OFF ~= nil then
-        applyGraphics(GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY, pve and SCREENSPACE_WATER_REFLECTION_QUALITY_ULTRA or SCREENSPACE_WATER_REFLECTION_QUALITY_OFF)
-    else
-        ok = false
-    end
+    local godRaysSetting = GetGodRaysSettingId()
+    if godRaysSetting ~= nil then applyGraphics(godRaysSetting, settings.godRays)
+    else applyCVar("GOD_RAYS", settings.godRays == "true" and "1" or settings.godRays == "false" and "0" or settings.godRays) end
 
-    applyGraphics(GRAPHICS_SETTING_DISTORTION, pve and "true" or "false")
-    applyGraphics(GRAPHICS_SETTING_BLOOM, pve and "true" or "false")
+    applyGraphics(GRAPHICS_SETTING_CLUTTER_2D_QUALITY, settings.clutter)
 
-    local godRaysSetting = _G and _G["GRAPHICS_SETTING_GOD_RAYS"] or nil
-    if godRaysSetting ~= nil then
-        applyGraphics(godRaysSetting, pve and "true" or "false")
-    else
-        applyCVar("GOD_RAYS", pve and "1" or "0")
-    end
-
-    if GRAPHICS_SETTING_CLUTTER_2D_QUALITY ~= nil and CLUTTER_QUALITY_ULTRA ~= nil and CLUTTER_QUALITY_OFF ~= nil then
-        applyGraphics(GRAPHICS_SETTING_CLUTTER_2D_QUALITY, pve and CLUTTER_QUALITY_ULTRA or CLUTTER_QUALITY_OFF)
-    else
-        ok = false
-    end
-
-    local aoValue = pve and AMBIENT_OCCLUSION_TYPE_SSGI or AMBIENT_OCCLUSION_TYPE_NONE
-    if aoValue ~= nil then
-        local aoSettingId = _G and _G["GRAPHICS_SETTING_AMBIENT_OCCLUSION_TYPE"] or nil
-        if aoSettingId ~= nil then
-            applyGraphics(aoSettingId, aoValue)
-        else
-            applyCVar("AMBIENT_OCCLUSION_TYPE", aoValue)
-        end
-    else
-        ok = false
-    end
+    local aoSetting = GetAmbientOcclusionSettingId()
+    if aoSetting ~= nil then applyGraphics(aoSetting, settings.ambientOcclusion)
+    else applyCVar("AMBIENT_OCCLUSION_TYPE", settings.ambientOcclusion) end
 
     if type(ApplySettings) == "function" then pcall(ApplySettings) end
 
-    -- Verify the cached values after ESO applies the profile. A successful pcall
-    -- alone is not proof that the setting changed.
     for settingId, expected in pairs(expectedGraphics) do
-        if GetGraphicsSettingSafe(settingId) ~= expected then ok = false end
+        if not GraphicsValuesEquivalent(GetGraphicsSettingSafe(settingId), expected) then ok = false end
     end
-    if type(GetCVar) == "function" then
-        for name, expected in pairs(expectedCVars) do
-            local readOk, actual = pcall(GetCVar, name)
-            if not readOk or tostring(actual) ~= expected then ok = false end
-        end
+    for name, expected in pairs(expectedCVars) do
+        if not GraphicsValuesEquivalent(ReadCVarSafe(name), expected) then ok = false end
+    end
+    return ok
+end
+
+function Q.ApplyGraphicsSettingsSnapshot(settings, silent)
+    local ok = ApplyGraphicsSettings(CopyGraphicsSettings(settings))
+    if not silent and d then d(ok and "[Ultivite] Unified profile graphics applied." or "[Ultivite] Unified profile graphics verification failed.") end
+    return ok
+end
+
+function Q.ApplyGraphicsProfileById(profileId, silent, allowRetry)
+    local state = Q.EnsureGraphicsProfiles()
+    local profile = state and state.profiles and state.profiles[profileId or ""] or nil
+    if not profile or type(profile.settings) ~= "table" then return false end
+
+    if profileId == GRAPHICS_BUILTIN_LOW or profile.special == "allLow" then
+        return ApplyAllLowGraphicsPreset(silent)
     end
 
+    -- Leaving All Low is transactional: restore every graphics value that ESO's
+    -- Low preset changed before applying the narrower PvE/PvP/custom profile.
+    -- If restoration fails, keep the snapshot and do not layer another profile
+    -- over a partially restored client state.
+    if not RestoreAllLowGraphicsSnapshot(true) then
+        if not silent and d then
+            d("[Ultivite] Graphics profile change stopped because the pre-All-Low settings could not be fully restored.")
+        end
+        return false
+    end
+
+    local ok = ApplyGraphicsSettings(profile.settings)
     if ok then
-        Q.lastAppliedGraphicsProfile = profileName
-        if d then d("[Ultivite] Applied " .. profileName .. " graphics profile and verified the changed settings.") end
+        state.lastAppliedProfileId = profileId
+        Q.lastAppliedGraphicsProfile = profileId
+        if not silent and d then d("[Ultivite] Applied graphics profile: " .. tostring(profile.name or profileId) .. ".") end
+        if U.RequestSettingsSave then U.RequestSettingsSave(true) end
         return true
     end
 
-    if d then d("[Ultivite] Graphics profile verification failed for one or more video settings on this client.") end
+    if allowRetry ~= false and zo_callLater then
+        local retryId = profileId
+        zo_callLater(function()
+            local retryState = Q.EnsureGraphicsProfiles()
+            if not retryState or not retryState.profiles[retryId] then return end
+            if ApplyGraphicsSettings(retryState.profiles[retryId].settings) then
+                retryState.lastAppliedProfileId = retryId
+                Q.lastAppliedGraphicsProfile = retryId
+                if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+            elseif d and not silent then
+                d("[Ultivite] Graphics profile verification failed after retry: " .. Q.GetGraphicsProfileName(retryId) .. ".")
+            end
+            Q.SafeRefresh()
+        end, 400)
+    elseif d and not silent then
+        d("[Ultivite] Graphics profile verification failed: " .. Q.GetGraphicsProfileName(profileId) .. ".")
+    end
     return false
 end
 
+function Q.ApplyAssignedGraphics(context, silent)
+    local id = Q.GetAssignedGraphicsProfileId(context)
+    if not id then return false end
+    return Q.ApplyGraphicsProfileById(id, silent, true)
+end
+
 local function ApplyPveGraphicsProfile()
-    return ApplyGraphicsProfile("PVE")
+    return Q.ApplyAssignedGraphics("PVE", false)
 end
 
 local function ApplyPvpGraphicsProfile()
-    return ApplyGraphicsProfile("PVP")
+    return Q.ApplyAssignedGraphics("PVP", false)
+end
+
+local function ApplyAllLowGraphicsProfile()
+    return Q.ApplyGraphicsProfileById(GRAPHICS_BUILTIN_LOW, false, false)
+end
+
+function Q.GetGraphicsContext()
+    local function safeBool(fn)
+        if type(fn) ~= "function" then return false end
+        local ok, value = pcall(fn)
+        return ok and value == true
+    end
+    if safeBool(IsActiveWorldBattleground) then return "PVP", "Battleground" end
+    if safeBool(IsInCyrodiil) then return "PVP", "Cyrodiil" end
+    if safeBool(IsInImperialCity) then return "PVP", "Imperial City" end
+    return "PVE", "PvE"
+end
+
+function Q.ApplyAutomaticGraphicsForCurrentContext(force)
+    local state = Q.EnsureGraphicsProfiles()
+    if not state or state.autoEnabled ~= true then return false end
+    local context, reason = Q.GetGraphicsContext()
+    local profileId = Q.GetAssignedGraphicsProfileId(context)
+    if not profileId then return false end
+
+    -- EVENT_PLAYER_ACTIVATED is the transition boundary. Within one activation
+    -- generation, do not reapply an unchanged profile unless explicitly asked.
+    local zoneId = 0
+    if type(GetZoneId) == "function" and type(GetUnitZoneIndex) == "function" then
+        local okIndex, zoneIndex = pcall(GetUnitZoneIndex, "player")
+        if okIndex and zoneIndex then
+            local okZone, value = pcall(GetZoneId, zoneIndex)
+            if okZone then zoneId = tonumber(value) or 0 end
+        end
+    end
+    local signature = tostring(context) .. ":" .. tostring(profileId) .. ":" .. tostring(zoneId)
+    if force ~= true and Q.lastAutoGraphicsSignature == signature and Q.lastAppliedGraphicsProfile == profileId then
+        return true
+    end
+
+    local ok = Q.ApplyGraphicsProfileById(profileId, true, true)
+    state.lastAutoContext = context
+    state.lastAutoReason = reason
+    Q.lastAutoGraphicsSignature = signature
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    if ok and d then d("[Ultivite] Auto graphics: " .. tostring(reason) .. " -> " .. Q.GetGraphicsProfileName(profileId) .. ".") end
+    return ok
+end
+
+function Q.ToggleAutomaticGraphics()
+    local state = Q.EnsureGraphicsProfiles()
+    if not state then return false end
+    state.autoEnabled = state.autoEnabled ~= true
+    Q.lastAutoGraphicsSignature = nil
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    if state.autoEnabled then Q.ApplyAutomaticGraphicsForCurrentContext(true) end
+    return true
+end
+
+local function RefreshGraphicsLam()
+    if CALLBACK_MANAGER and U.panel then CALLBACK_MANAGER:FireCallbacks("LAM-RefreshPanel", U.panel) end
+    Q.SafeRefresh()
+end
+
+local function SelectedGraphicsProfile()
+    local state = Q.EnsureGraphicsProfiles()
+    return state and state.profiles and state.profiles[state.selectedProfileId] or nil, state
+end
+
+local function CycleSelectedGraphicsProfile(delta)
+    local state = Q.EnsureGraphicsProfiles()
+    if not state or #state.order == 0 then return false end
+    local current = 1
+    for i, id in ipairs(state.order) do
+        if id == state.selectedProfileId then current = i break end
+    end
+    current = ((current - 1 + delta) % #state.order) + 1
+    state.selectedProfileId = state.order[current]
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    RefreshGraphicsLam()
+    return true
+end
+
+local function CreateCustomGraphicsProfile(captureCurrent, duplicateSelected)
+    local state = Q.EnsureGraphicsProfiles()
+    if not state then return false end
+    local name = tostring(state.pendingName or ""):gsub("^%s+", ""):gsub("%s+$", "")
+    if name == "" then name = "Custom Graphics" end
+    local id = "custom_" .. tostring(state.nextCustomId)
+    while state.profiles[id] do state.nextCustomId = state.nextCustomId + 1; id = "custom_" .. tostring(state.nextCustomId) end
+    state.nextCustomId = state.nextCustomId + 1
+
+    local settings
+    if captureCurrent then
+        settings = CaptureCurrentGraphicsSettings()
+    elseif duplicateSelected then
+        local selected = state.profiles[state.selectedProfileId]
+        settings = CopyGraphicsSettings(selected and selected.settings or BuildFactoryGraphicsSettings(true))
+    else
+        settings = BuildFactoryGraphicsSettings(true)
+    end
+    state.profiles[id] = { name = name, settings = settings }
+    state.order[#state.order + 1] = id
+    state.selectedProfileId = id
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    RefreshGraphicsLam()
+    return true
+end
+
+local function RenameSelectedGraphicsProfile()
+    local profile, state = SelectedGraphicsProfile()
+    if not profile or not state or profile.builtin then return false end
+    local name = tostring(state.pendingName or ""):gsub("^%s+", ""):gsub("%s+$", "")
+    if name == "" then return false end
+    profile.name = name
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    RefreshGraphicsLam()
+    return true
+end
+
+local function DeleteSelectedGraphicsProfile()
+    local profile, state = SelectedGraphicsProfile()
+    if not profile or not state or profile.builtin then return false end
+    local id = state.selectedProfileId
+    state.profiles[id] = nil
+    local cleaned = {}
+    for _, value in ipairs(state.order) do if value ~= id then cleaned[#cleaned + 1] = value end end
+    state.order = cleaned
+    if state.pveProfileId == id then state.pveProfileId = GRAPHICS_BUILTIN_PVE end
+    if state.pvpProfileId == id then state.pvpProfileId = GRAPHICS_BUILTIN_PVP end
+    state.selectedProfileId = GRAPHICS_BUILTIN_PVE
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    RefreshGraphicsLam()
+    return true
+end
+
+local function RestoreSelectedGraphicsProfile()
+    local profile, state = SelectedGraphicsProfile()
+    if not profile or not state or not profile.builtin then return false end
+    profile.settings = BuildFactoryGraphicsSettings(profile.builtin == "pve")
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    RefreshGraphicsLam()
+    return true
+end
+
+local function SetSelectedProfileAs(context)
+    local state = Q.EnsureGraphicsProfiles()
+    if not state or not state.profiles[state.selectedProfileId] then return false end
+    if tostring(context):upper() == "PVP" then state.pvpProfileId = state.selectedProfileId else state.pveProfileId = state.selectedProfileId end
+    Q.lastAutoGraphicsSignature = nil
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    if state.autoEnabled then Q.ApplyAutomaticGraphicsForCurrentContext(true) end
+    RefreshGraphicsLam()
+    return true
+end
+
+local function EnumChoices(items)
+    local labels, values, seen = {}, {}, {}
+    for _, item in ipairs(items) do
+        local value = _G and _G[item[2]] or nil
+        if value ~= nil then
+            local text = tostring(value)
+            if not seen[text] then labels[#labels + 1] = item[1]; values[#values + 1] = text; seen[text] = true end
+        end
+    end
+    return labels, values
+end
+
+function Q.BuildGraphicsMenuControls()
+    Q.EnsureGraphicsProfiles()
+    local shadowLabels, shadowValues = EnumChoices({ {"Off", "SHADOWS_CHOICE_OFF"}, {"Low", "SHADOWS_CHOICE_LOW"}, {"Medium", "SHADOWS_CHOICE_MEDIUM"}, {"High", "SHADOWS_CHOICE_HIGH"}, {"Ultra", "SHADOWS_CHOICE_ULTRA"} })
+    local waterLabels, waterValues = EnumChoices({ {"Off", "SCREENSPACE_WATER_REFLECTION_QUALITY_OFF"}, {"Low", "SCREENSPACE_WATER_REFLECTION_QUALITY_LOW"}, {"Medium", "SCREENSPACE_WATER_REFLECTION_QUALITY_MEDIUM"}, {"High", "SCREENSPACE_WATER_REFLECTION_QUALITY_HIGH"}, {"Ultra", "SCREENSPACE_WATER_REFLECTION_QUALITY_ULTRA"} })
+    local clutterLabels, clutterValues = EnumChoices({ {"Off", "CLUTTER_QUALITY_OFF"}, {"Low", "CLUTTER_QUALITY_LOW"}, {"Medium", "CLUTTER_QUALITY_MEDIUM"}, {"High", "CLUTTER_QUALITY_HIGH"}, {"Ultra", "CLUTTER_QUALITY_ULTRA"} })
+    local aoLabels, aoValues = EnumChoices({ {"Off", "AMBIENT_OCCLUSION_TYPE_NONE"}, {"SSAO", "AMBIENT_OCCLUSION_TYPE_SSAO"}, {"HBAO", "AMBIENT_OCCLUSION_TYPE_HBAO"}, {"LSAO", "AMBIENT_OCCLUSION_TYPE_LSAO"}, {"Screen Space GI", "AMBIENT_OCCLUSION_TYPE_SSGI"} })
+    local boolLabels, boolValues = { "Off", "On" }, { "false", "true" }
+
+    local function getSetting(key)
+        local profile = SelectedGraphicsProfile()
+        return profile and profile.settings and tostring(profile.settings[key] or "") or ""
+    end
+    local function setSetting(key, value)
+        local profile = SelectedGraphicsProfile()
+        if not profile then return end
+        profile.settings = profile.settings or {}
+        profile.settings[key] = tostring(value)
+        if U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    end
+    local function dropdown(name, key, labels, values, tooltip)
+        return { type = "dropdown", name = name, tooltip = tooltip, choices = labels, choicesValues = values,
+            getFunc = function() return getSetting(key) end,
+            setFunc = function(value) setSetting(key, value) end,
+            disabled = function() local p = SelectedGraphicsProfile(); return p and p.special == "allLow" end,
+            width = "full" }
+    end
+
+    return {
+        { type = "description", title = "Automatic Graphics Profiles", text = function()
+            local state = Q.EnsureGraphicsProfiles()
+            local context, reason = Q.GetGraphicsContext()
+            return string.format("Current context: %s. PvE assignment: %s. PvP assignment: %s.", reason, Q.GetGraphicsProfileName(state.pveProfileId), Q.GetGraphicsProfileName(state.pvpProfileId))
+        end },
+        { type = "checkbox", name = "Automatic graphics switching",
+            tooltip = "When enabled, Battlegrounds, Cyrodiil and Imperial City use the assigned PvP profile. Every other zone uses the assigned PvE profile. Switching occurs after loading/zone activation, not during combat.",
+            getFunc = function() local state = Q.EnsureGraphicsProfiles(); return state and state.autoEnabled == true end,
+            setFunc = function(value) local state = Q.EnsureGraphicsProfiles(); if state then state.autoEnabled = value == true; Q.lastAutoGraphicsSignature = nil; if U.RequestSettingsSave then U.RequestSettingsSave(true) end; if state.autoEnabled then Q.ApplyAutomaticGraphicsForCurrentContext(true) end; Q.SafeRefresh() end end,
+            default = false, width = "full" },
+        { type = "button", name = function() return "Apply PvE: " .. Q.GetGraphicsProfileName(Q.GetAssignedGraphicsProfileId("PVE")) end, func = ApplyPveGraphicsProfile, width = "half" },
+        { type = "button", name = function() return "Apply PvP: " .. Q.GetGraphicsProfileName(Q.GetAssignedGraphicsProfileId("PVP")) end, func = ApplyPvpGraphicsProfile, width = "half" },
+        { type = "button", name = "Apply All Low",
+            tooltip = "Applies ESO's complete Low graphics preset, then explicitly enforces every supported Low/Off quality control Ultivite can set through the public graphics API. Previous values are retained and restored before PvE, PvP or another profile is applied.",
+            func = ApplyAllLowGraphicsProfile, width = "full" },
+        { type = "submenu", name = "Profile Editor", controls = {
+            { type = "description", title = function() return "Editing: " .. Q.GetGraphicsProfileName((Q.EnsureGraphicsProfiles() or {}).selectedProfileId) end,
+                text = function()
+                    local p = SelectedGraphicsProfile()
+                    if p and p.special == "allLow" then
+                        return "All Low applies ESO's complete Low preset and explicitly enforces supported Low/Off quality controls. Ultivite snapshots changed graphics values and restores them before PvE, PvP or another profile is applied."
+                    end
+                    return "Use Previous/Next to choose a profile. Editing changes the saved profile but does not immediately change live graphics until you apply it or automatic switching selects it."
+                end },
+            { type = "button", name = "Previous Profile", func = function() CycleSelectedGraphicsProfile(-1) end, width = "half" },
+            { type = "button", name = "Next Profile", func = function() CycleSelectedGraphicsProfile(1) end, width = "half" },
+            { type = "button", name = "Use Selected as PvE", func = function() SetSelectedProfileAs("PVE") end, width = "half" },
+            { type = "button", name = "Use Selected as PvP", func = function() SetSelectedProfileAs("PVP") end, width = "half" },
+            dropdown("Shadows", "shadows", shadowLabels, shadowValues, "Shadow quality saved in this graphics profile."),
+            dropdown("Water Reflections", "waterReflections", waterLabels, waterValues, "Screen-space water reflection quality."),
+            dropdown("Distortion", "distortion", boolLabels, boolValues, "Distortion effect."),
+            dropdown("Bloom", "bloom", boolLabels, boolValues, "Bloom effect."),
+            dropdown("Sunlight Rays", "godRays", boolLabels, boolValues, "Sunlight/God Rays effect."),
+            dropdown("Grass / Clutter", "clutter", clutterLabels, clutterValues, "2D clutter and grass quality."),
+            dropdown("Ambient Occlusion", "ambientOcclusion", aoLabels, aoValues, "Ambient occlusion mode, including Screen Space GI when supported by ESO."),
+            { type = "editbox", name = "New / Rename Profile Name", isMultiline = false,
+                getFunc = function() local state = Q.EnsureGraphicsProfiles(); return state and tostring(state.pendingName or "") or "" end,
+                setFunc = function(value) local state = Q.EnsureGraphicsProfiles(); if state then state.pendingName = tostring(value or ""); if U.RequestSettingsSave then U.RequestSettingsSave(true) end end end,
+                width = "full" },
+            { type = "button", name = "Create From Current Graphics", tooltip = "Creates a new custom profile using ESO's seven graphics settings as they are configured right now.", func = function() CreateCustomGraphicsProfile(true, false) end, width = "full" },
+            { type = "button", name = "Duplicate Selected Profile", func = function() CreateCustomGraphicsProfile(false, true) end, width = "half" },
+            { type = "button", name = "Rename Selected Custom", func = RenameSelectedGraphicsProfile, width = "half",
+                disabled = function() local p = SelectedGraphicsProfile(); return not p or p.builtin ~= nil end },
+            { type = "button", name = "Delete Selected Custom", func = DeleteSelectedGraphicsProfile, width = "half", isDangerous = true,
+                disabled = function() local p = SelectedGraphicsProfile(); return not p or p.builtin ~= nil end },
+            { type = "button", name = "Restore Built-in Defaults", func = RestoreSelectedGraphicsProfile, width = "half",
+                disabled = function() local p = SelectedGraphicsProfile(); return not p or p.builtin == nil end },
+            { type = "button", name = "Apply Selected Profile Now", func = function() local state = Q.EnsureGraphicsProfiles(); return state and Q.ApplyGraphicsProfileById(state.selectedProfileId, false, true) end, width = "full" },
+        } },
+    }
 end
 
 local function GetQuickPlayerLayout()
@@ -1566,7 +2512,7 @@ function Q.CycleDarkSoulsMode()
         local nextMode = DARK_SOULS_MODES[index]
         local applied = Q.ApplyDarkSoulsMode(nextMode.id)
         if applied ~= false then
-            Q.Refresh()
+            Q.SafeRefresh()
             return true
         end
         if d then d("[Ultivite] Skipping unavailable Dark Souls profile: " .. tostring(nextMode.label)) end
@@ -1588,9 +2534,8 @@ end
 local function ToggleCombatOnly()
     if not Frames or not Frames.saved or not Frames.SetCombatOnly then return end
     local enableCombatOnly = Frames.saved.combatOnly ~= true
-    if Frames.SetHideActionBar and Frames.saved.hideActionBar == true then
-        Frames.SetHideActionBar(false, true)
-    end
+    -- Combat Only controls timing only. It must not silently change the separate
+    -- Action Bar ON/OFF preference.
     Frames.SetCombatOnly(enableCombatOnly, true)
     RequestSave()
     RefreshLAM()
@@ -1599,6 +2544,18 @@ end
 local function ToggleActionBar()
     if not Frames or not Frames.saved or not Frames.SetHideActionBar then return end
     Frames.SetHideActionBar(Frames.saved.hideActionBar ~= true, true)
+end
+
+local function TogglePyramidPlayerFrames()
+    if not Frames or not Frames.SetPyramidLayoutEnabled then return false end
+    local f = GetProfileFrames()
+    if not f then return false end
+    Frames.saved = f
+    local enabled = f.pyramidLayoutEnabled ~= true
+    local result = Frames.SetPyramidLayoutEnabled(enabled, true)
+    RequestSave()
+    RefreshLAM()
+    return result ~= false
 end
 
 local function CycleVisibility(kind, cycle)
@@ -1635,11 +2592,8 @@ end
 local SetNpcNamesHidden
 local ENEMY_HEALTH_CYCLE = { "vanilla", "target", "all", "off" }
 local function GetEnemyHealthMode()
-    local sv = GetCombatSettings()
-    if not sv then return "vanilla" end
-    if sv.hideNativeOverheadHealthBars == true then return "off" end
-    if sv.nativeOverheadTargetBar == true then
-        return sv.nativeAllEnemyHealthbars == true and "all" or "target"
+    if Combat and Combat.GetEnemyOverheadHealthMode then
+        return Combat.GetEnemyOverheadHealthMode()
     end
     return "vanilla"
 end
@@ -1648,38 +2602,9 @@ local function SetEnemyHealthMode(mode)
     local sv = GetCombatSettings()
     if not sv or not Combat then return end
     Combat.sv = sv
-    if mode == "off" then
-        if sv.quickMenuEnemyHealthSavedTargetFrame ~= nil then
-            sv.targetFrame = sv.quickMenuEnemyHealthSavedTargetFrame == true
-            sv.quickMenuEnemyHealthSavedTargetFrame = nil
-        end
-        sv.hideDefaultTargetFrame = true
-        if Combat.SetHideNativeOverheadHealthBars then Combat.SetHideNativeOverheadHealthBars(true, true) end
-    elseif mode == "target" or mode == "all" then
-        if sv.quickMenuEnemyHealthSavedTargetFrame ~= nil then
-            sv.targetFrame = sv.quickMenuEnemyHealthSavedTargetFrame == true
-            sv.quickMenuEnemyHealthSavedTargetFrame = nil
-        end
-        sv.hideDefaultTargetFrame = true
-        sv.hideNativeOverheadHealthBars = false
-        sv.nativeOverheadTargetBar = true
-        sv.nativeAllEnemyHealthbars = mode == "all"
-        if Combat.ApplyNativeOverheadTargetBar then Combat.ApplyNativeOverheadTargetBar() end
-        if Combat.ApplyDefaultTargetFrameVisibility then Combat.ApplyDefaultTargetFrameVisibility() end
-    else
-        -- VANILLA must mean one clean base-game presentation, not ESO's stock
-        -- target frame plus Ultivite's persistent custom target frame together.
-        if sv.quickMenuEnemyHealthSavedTargetFrame == nil then
-            sv.quickMenuEnemyHealthSavedTargetFrame = sv.targetFrame ~= false
-        end
-        sv.targetFrame = false
-        sv.hideNativeOverheadHealthBars = false
-        sv.nativeOverheadTargetBar = false
-        sv.hideDefaultTargetFrame = false
-        if Combat.ApplyNativeOverheadTargetBar then Combat.ApplyNativeOverheadTargetBar() end
-        if Combat.ApplyDefaultTargetFrameVisibility then Combat.ApplyDefaultTargetFrameVisibility() end
+    if Combat.SetEnemyOverheadHealthMode then
+        Combat.SetEnemyOverheadHealthMode(mode, true)
     end
-    if Combat.RefreshDisplay then Combat.RefreshDisplay() end
     local f = GetProfileFrames()
     if f and f.vanillaNpcNamesHidden == true and SetNpcNamesHidden then SetNpcNamesHidden(true) end
     RequestSave(); RefreshLAM()
@@ -1753,7 +2678,24 @@ end
 
 local function ToggleNpcNames()
     local f = GetProfileFrames(); if not f then return end
-    SetNpcNamesHidden(f.vanillaNpcNamesHidden ~= true)
+    local hidden = Combat and Combat.IsNpcNamesHidden and Combat.IsNpcNamesHidden() or (f.vanillaNpcNamesHidden == true)
+    SetNpcNamesHidden(not hidden)
+end
+
+local function TogglePlayerNames()
+    if not Combat or not Combat.SetPlayerNamesHidden then return end
+    local hidden = Combat.IsPlayerNamesHidden and Combat.IsPlayerNamesHidden() or false
+    Combat.SetPlayerNamesHidden(not hidden, true)
+    RequestSave()
+    RefreshLAM()
+end
+
+local function ToggleGoldenPursuits()
+    if not Frames or not Frames.SetGoldenPursuitsHidden then return end
+    local hidden = Frames.IsGoldenPursuitsHidden and Frames.IsGoldenPursuitsHidden() or false
+    Frames.SetGoldenPursuitsHidden(not hidden, true)
+    RequestSave()
+    RefreshLAM()
 end
 
 local function ToggleOverheadPlayerInfo()
@@ -1764,20 +2706,14 @@ local function ToggleOverheadPlayerInfo()
 end
 
 local function IsVanillaTargetFramesActive()
-    local sv = GetCombatSettings()
-    if not sv then return false end
-    return sv.targetFrame == false
-        and sv.nativeOverheadTargetBar ~= true
-        and sv.hideDefaultTargetFrame ~= true
-        and sv.hideNativeOverheadHealthBars ~= true
-        and sv.autoHideOtherTargetFrames ~= true
+    return U and U.IsVanillaTargetFramesActive and U.IsVanillaTargetFramesActive() or false
 end
 
-local function ApplyVanillaTargetFrames()
-    if not U or not U.ApplyVanillaTargetFrames then return false end
-    local applied = U.ApplyVanillaTargetFrames(false)
+local function ToggleTargetFrameMode()
+    if not U or not U.ToggleTargetFrameMode then return false end
+    local applied = U.ToggleTargetFrameMode(false)
     RefreshLAM()
-    Q.Refresh()
+    Q.SafeRefresh()
     return applied
 end
 
@@ -1987,28 +2923,71 @@ local PREVIEWABLE_KEYS = {
     breach = true,
 }
 
-function Q.SetPreviewEnabled(enabled)
+function Q.SetPreviewEnabled(enabled, explicitExit)
     local newValue = enabled and true or false
-    if newValue == Q.previewEnabled then return end
+    if newValue == Q.previewEnabled then return true end
+    if newValue == false and Q.previewEnabled == true and explicitExit ~= true then
+        Q.SafeRefresh()
+        return false
+    end
     Q.previewEnabled = newValue
     if newValue then
+        Q.manualDismissed = false
+        Q.closePending = false
         Q.ActivatePreviewRuntime()
     else
         Q.DeactivatePreviewRuntime()
     end
     Q.SyncPreviewVisibility()
-    Q.Refresh()
+    Q.SafeRefresh()
+    return true
 end
 
 function Q.TogglePreview()
-    Q.SetPreviewEnabled(Q.previewEnabled ~= true)
+    if Q.previewEnabled == true then
+        Q.SafeRefresh()
+        return false
+    end
+    return Q.SetPreviewEnabled(true)
+end
+
+function Q.SaveAndLockEditing()
+    local wasPreview = Q.previewEnabled == true or Q.previewRuntime ~= nil
+    if Q.previewEnabled == true then
+        Q.SetPreviewEnabled(false, true)
+    elseif Q.previewRuntime then
+        Q.DeactivatePreviewRuntime()
+    end
+
+    if Frames and Frames.SetLocked then Frames.SetLocked(true, true) end
+    if Combat and Combat.SetLocked then Combat.SetLocked(true, true) end
+    if Combat and Combat.SetPositionPreview then Combat.SetPositionPreview(false) end
+    if EnemyAlerts and EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind(nil) end
+
+    local fab = rawget(_G, "FancyActionBar")
+    if fab and fab.IsUnlocked and fab.ToggleMover and fab.IsUnlocked() then
+        pcall(fab.ToggleMover, false)
+    end
+
+    Q.previewHudInteractionActive = false
+    Q.previewHudInteractionUntil = 0
+    Q.previewRestorePending = false
+    Q.closePending = false
+    Q.manualDismissed = true
+    Q.openedFromSettings = false
+    RequestSave()
+    SafeRequestSave()
+    Q.HideNow(false)
+
+    if d and wasPreview then d("[Ultivite] HUD positions and sizes saved and locked.") end
+    return true
 end
 
 function Q.ToggleResize()
     if Q.previewEnabled ~= true then Q.SetPreviewEnabled(true) end
     Q.resizeEnabled = Q.resizeEnabled ~= true
     Q.ApplyActualPreviewVisibility()
-    Q.Refresh()
+    Q.SafeRefresh()
 end
 
 function Q.SelectPreview(key)
@@ -2020,19 +2999,25 @@ end
 function Q.Refresh()
     local f = GetProfileFrames()
     local c = GetCombatSettings()
-    SetButtonText("preview", "PREVIEW: " .. BoolText(Q.previewEnabled == true))
-    SetButtonText("resize", "RESIZE: " .. BoolText(Q.resizeEnabled == true))
+    SetButtonText("preview", Q.previewEnabled == true and "MOVE / RESIZE MODE: ACTIVE" or "MOVE / RESIZE MODE: OFF")
+    SetButtonText("resize", "MOUSE WHEEL RESIZE: " .. BoolText(Q.resizeEnabled == true))
+    SetButtonText("saveLock", Q.previewEnabled == true and "SAVE & LOCK EDITING" or "SAVE & LOCK")
+    SetButtonText("immersive", "IMMERSIVE MODE: " .. BoolText(Immersive and Immersive.IsActive and Immersive.IsActive()))
+    SetButtonText("camera", "CAMERA / SCREENSHOT MODE: " .. BoolText(Immersive and Immersive.IsCameraMode and Immersive.IsCameraMode()))
     SetButtonText("darkSouls", "DARK SOULS PROFILE: " .. DarkSoulsText())
+    SetButtonText("pyramid", "PYRAMID PLAYER FRAMES: " .. BoolText(f and f.pyramidLayoutEnabled == true))
     local hudPreset = GetHudVisibilityPreset()
     local hudText = hudPreset == "combat" and "COMBAT CLEAN" or hudPreset == "pvp" and "PVP CLEAN" or SimpleModeLabel(hudPreset)
-    SetButtonText("hudVisibility", "HUD VISIBILITY: " .. hudText)
-    SetButtonText("enemyHealth", "ENEMY HEALTH BARS: " .. SimpleModeLabel(GetEnemyHealthMode()))
+    SetButtonText("hudVisibility", "ESO HUD PRESET: " .. hudText)
+    SetButtonText("enemyHealth", "ESO ENEMY OVERHEAD BARS: " .. SimpleModeLabel(GetEnemyHealthMode()))
     SetButtonText("combatOnly", "COMBAT HUD: " .. ((f and f.combatOnly == true) and "COMBAT ONLY" or "ALWAYS"))
     SetButtonText("actionBar", "ACTION BAR: " .. BoolText(not (f and f.hideActionBar == true)))
-    SetButtonText("vanillaTargetFrames", IsVanillaTargetFramesActive() and "TARGET FRAMES: VANILLA / DEFAULT" or "RESTORE VANILLA TARGET FRAMES")
+    SetButtonText("vanillaTargetFrames", IsVanillaTargetFramesActive() and "TARGET FRAMES: VANILLA  >  ULTIVITE" or "TARGET FRAMES: ULTIVITE  >  VANILLA")
     SetButtonText("groupFrame", "GROUP FRAME: " .. SimpleModeLabel(Frames and Frames.GetGroupFrameVisibilityMode and Frames.GetGroupFrameVisibilityMode() or "show"))
-    SetButtonText("cpProgress", "CP PROGRESS BAR: " .. SimpleModeLabel(Frames and Frames.GetChampionProgressVisibilityMode and Frames.GetChampionProgressVisibilityMode() or "show"))
-    SetButtonText("npcNames", "NPC NAMES: " .. ((f and f.vanillaNpcNamesHidden == true) and "OFF" or "ON"))
+    SetButtonText("cpProgress", "CHAMPION PROGRESS BAR: " .. SimpleModeLabel(Frames and Frames.GetChampionProgressVisibilityMode and Frames.GetChampionProgressVisibilityMode() or "show"))
+    SetButtonText("npcNames", "ESO NPC NAMES: " .. ((Combat and Combat.IsNpcNamesHidden and Combat.IsNpcNamesHidden()) and "OFF" or "ON"))
+    SetButtonText("playerNames", "ESO PLAYER NAMES: " .. ((Combat and Combat.IsPlayerNamesHidden and Combat.IsPlayerNamesHidden()) and "OFF" or "ON"))
+    SetButtonText("goldenPursuits", "GOLDEN PURSUITS: " .. ((Frames and Frames.IsGoldenPursuitsHidden and Frames.IsGoldenPursuitsHidden()) and "OFF" or "ON"))
     SetButtonText("overheadPlayerInfo", "OVERHEAD PLAYER INFO: " .. BoolText(Combat and Combat.IsOverheadPlayerInfoEnabled and Combat.IsOverheadPlayerInfoEnabled()))
     SetButtonText("esoCompass", "ESO COMPASS: " .. VisibilityText("compass"))
     SetButtonText("questTracker", "QUEST TRACKER: " .. VisibilityText("quests"))
@@ -2051,9 +3036,14 @@ function Q.Refresh()
     SetButtonText("cc", "CC IMMUNITY: " .. BoolText(c and c.showCcImmunityTracker ~= false))
     SetButtonText("feetCompass", "FEET COMPASS: " .. SimpleModeLabel(GetHelperMode("feet")))
     SetButtonText("crownArrow", "CROWN ARROW: " .. SimpleModeLabel(GetHelperMode("crown")))
+    SetButtonText("votanMiniMap", "VOTAN MINIMAP: " .. VotanMiniMapStateText())
     SetButtonText("banditsMiniMap", "BANDITS MINIMAP: " .. BanditsMiniMapStateText())
-    SetButtonText("graphicsPveApply", "APPLY PVE GRAPHICS")
-    SetButtonText("graphicsPvpApply", "APPLY PVP GRAPHICS")
+    local graphicsState = Q.EnsureGraphicsProfiles()
+    local graphicsContext = Q.GetGraphicsContext()
+    SetButtonText("graphicsAuto", "AUTO GRAPHICS: " .. BoolText(graphicsState and graphicsState.autoEnabled == true) .. "  |  " .. tostring(graphicsContext))
+    SetButtonText("graphicsPveApply", "APPLY PVE: " .. Q.GetGraphicsProfileName(Q.GetAssignedGraphicsProfileId("PVE")))
+    SetButtonText("graphicsPvpApply", "APPLY PVP: " .. Q.GetGraphicsProfileName(Q.GetAssignedGraphicsProfileId("PVP")))
+    SetButtonText("graphicsLowApply", "APPLY ALL LOW: " .. ((graphicsState and graphicsState.allLowActive == true) and "ACTIVE" or "READY"))
     local burstMode = GetWarningMode("burst")
     local executeMode = GetWarningMode("execute")
     SetButtonText("burst", "BURST WARNING: " .. (burstMode == "pvp" and "PVP ONLY" or SimpleModeLabel(burstMode)))
@@ -2066,8 +3056,27 @@ function Q.Refresh()
     if Q.previewEnabled then Q.ApplyActualPreviewVisibility() end
 end
 
+function Q.SafeRefresh()
+    local ok, failure = pcall(Q.Refresh)
+    if ok then
+        Q.lastRefreshFailure = nil
+        return true
+    end
+    failure = tostring(failure or "unknown refresh error")
+    if Q.lastRefreshFailure ~= failure and d then
+        d("[Ultivite] Quick Menu refresh isolated from ESO chat input: " .. failure)
+    end
+    Q.lastRefreshFailure = failure
+    return false
+end
+
+local function QuickControlName(base)
+    local attempt = tonumber(Q.createAttempt) or 1
+    return attempt > 1 and (base .. "Retry" .. tostring(attempt)) or base
+end
+
 local function NewButton(parent, key, text, yOffset, callback)
-    local button = WINDOW_MANAGER:CreateControlFromVirtual("UltiviteQuickMenu" .. key, parent, "ZO_DefaultButton")
+    local button = WINDOW_MANAGER:CreateControlFromVirtual(QuickControlName("UltiviteQuickMenu" .. key), parent, "ZO_DefaultButton")
     button:SetDimensions(PANEL_WIDTH - 24, ROW_HEIGHT)
     button:SetAnchor(TOP, parent, TOP, 0, yOffset)
     button:SetText(text)
@@ -2125,12 +3134,12 @@ local function NewButton(parent, key, text, yOffset, callback)
         end
 
         if PREVIEWABLE_KEYS[key] == true then Q.SelectPreview(key) end
-        Q.Refresh()
+        Q.SafeRefresh()
 
         if ok and resultOrError ~= false and key ~= "settings" and key ~= "graphicsPveApply" and key ~= "graphicsPvpApply" then
             zo_callLater(function()
                 if actionGen ~= (Q.actionGeneration or 0) then return end
-                Q.Refresh()
+                Q.SafeRefresh()
                 local afterText = self.GetText and tostring(self:GetText() or "") or ""
                 if pending.beforeText == afterText then
                     Q.lastActionFailure = "state did not change"
@@ -2167,61 +3176,207 @@ local function NewButton(parent, key, text, yOffset, callback)
     return button
 end
 
-local function NewSection(parent, text, yOffset, index)
-    local backdrop = WINDOW_MANAGER:CreateControl("UltiviteQuickMenuSectionBackdrop" .. tostring(index), parent, CT_BACKDROP)
-    backdrop:SetDimensions(PANEL_WIDTH - 24, SECTION_HEIGHT)
-    backdrop:SetAnchor(TOP, parent, TOP, 0, yOffset)
-    backdrop:SetCenterColor(0.035, 0.055, 0.070, 0.92)
-    backdrop:SetEdgeColor(0.15, 0.35, 0.46, 0.65)
-    backdrop:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 1, 0)
-    backdrop:SetMouseEnabled(false)
-
-    local label = WINDOW_MANAGER:CreateControl("UltiviteQuickMenuSectionLabel" .. tostring(index), backdrop, CT_LABEL)
-    label:SetAnchorFill(backdrop)
-    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    label:SetFont("ZoFontGameSmall")
-    label:SetColor(0.60, 0.84, 0.95, 1.00)
-    label:SetText(string.upper(text))
-    label:SetMouseEnabled(false)
-    return backdrop
+local function GetQuickMenuSectionStore()
+    if U.accountSV then
+        U.accountSV.quickMenuSections = U.accountSV.quickMenuSections or {}
+        return U.accountSV.quickMenuSections
+    end
+    Q.sectionExpandedFallback = Q.sectionExpandedFallback or {}
+    return Q.sectionExpandedFallback
 end
 
+local function IsSectionExpanded(key)
+    local store = GetQuickMenuSectionStore()
+    return store[key] == true
+end
 
-function Q.Create()
-    if Q.initialized or not WINDOW_MANAGER or not GuiRoot then return end
-    Q.initialized = true
+local function SetSectionExpanded(key, expanded)
+    local store = GetQuickMenuSectionStore()
+    expanded = expanded == true
 
-    -- Rows are intentionally grouped by what the player is trying to change,
-    -- not by the internal module that owns the setting.
+    if expanded then
+        for sectionKey in pairs(Q.sectionControls or {}) do
+            store[sectionKey] = sectionKey == key
+        end
+    else
+        store[key] = false
+    end
+    pcall(RequestSave)
+end
+
+local function UpdateSectionLabel(key)
+    local entry = Q.sectionControls[key]
+    if not entry or not entry.label then return end
+    local prefix = IsSectionExpanded(key) and "[-] " or "[+] "
+    entry.label:SetText(prefix .. string.upper(entry.text or key))
+end
+
+function Q.LayoutRows()
+    if not Q.panel or type(Q.rows) ~= "table" then return end
+    local y = HEADER_HEIGHT
+    local activeSection = nil
+
+    for _, row in ipairs(Q.rows) do
+        if row.type == "section" then
+            activeSection = row.key
+            local entry = Q.sectionControls[row.key]
+            local control = entry and entry.control or nil
+            if control then
+                control:SetHidden(false)
+                control:ClearAnchors()
+                control:SetAnchor(TOP, Q.panel, TOP, 0, y)
+                y = y + SECTION_HEIGHT + SECTION_GAP
+                UpdateSectionLabel(row.key)
+            end
+        else
+            local control = Q.buttons[row.key]
+            local visible = activeSection == nil or IsSectionExpanded(activeSection)
+            if control then
+                control:SetHidden(not visible)
+                if visible then
+                    control:ClearAnchors()
+                    control:SetAnchor(TOP, Q.panel, TOP, 0, y)
+                    y = y + ROW_HEIGHT + ROW_GAP
+                end
+            end
+        end
+    end
+
+    Q.panel:SetHeight(y + 10)
+end
+
+local function ToggleQuickMenuSection(key)
+    SetSectionExpanded(key, not IsSectionExpanded(key))
+    Q.LayoutRows()
+    Q.SafeRefresh()
+end
+
+local function NewSection(parent, key, text, index)
+    local button = WINDOW_MANAGER:CreateControlFromVirtual(
+        QuickControlName("UltiviteQuickMenuSection" .. tostring(index)),
+        parent,
+        "ZO_DefaultButton"
+    )
+    button:SetDimensions(PANEL_WIDTH - 24, SECTION_HEIGHT)
+    button:SetAnchor(TOP, parent, TOP, 0, HEADER_HEIGHT)
+    button:SetFont("ZoFontGameSmall")
+    if button.SetNormalFontColor then button:SetNormalFontColor(0.60, 0.84, 0.95, 1.00) end
+    if button.SetMouseOverFontColor then button:SetMouseOverFontColor(0.90, 0.97, 1.00, 1.00) end
+    button:SetMouseEnabled(true)
+
+    Q.sectionControls[key] = { control = button, label = button, text = text }
+    UpdateSectionLabel(key)
+
+    button:SetHandler("OnMouseEnter", function()
+        Q.pointerInside = true
+        Q.HoldForInteraction(1200)
+    end)
+    button:SetHandler("OnMouseExit", function()
+        Q.pointerInside = false
+        Q.HoldForInteraction(500)
+    end)
+
+    local function FinishSectionAction(pending)
+        if Q.pendingSectionAction ~= pending then return end
+        Q.pendingSectionAction = nil
+        if pending.generation ~= (Q.actionGeneration or 0) then return end
+
+        if Q.openedFromSettings == true then
+            Q.actionInProgress = false
+            Q.actionButtonKey = nil
+            Q.RefreshChatVisibility(true)
+        elseif pending.wasChatOpen and Q.manualDismissed ~= true then
+            Q.ReopenChatAfterInteraction(pending.draftText, pending.generation)
+        else
+            Q.actionInProgress = false
+            Q.actionButtonKey = nil
+            Q.RefreshChatVisibility(true)
+        end
+    end
+
+    button:SetHandler("OnMouseDown", function(_, mouseButton)
+        if mouseButton ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        local wasChatOpen = Q.openedFromSettings ~= true and Q.IsChatOpen()
+        Q.actionGeneration = (Q.actionGeneration or 0) + 1
+        Q.actionInProgress = true
+        Q.actionButtonKey = "section:" .. key
+        Q.HoldForInteraction(700)
+        local pending = {
+            key = key,
+            generation = Q.actionGeneration,
+            wasChatOpen = wasChatOpen,
+            draftText = wasChatOpen and GetChatDraftText() or "",
+        }
+        Q.pendingSectionAction = pending
+
+        local ok, failure = pcall(ToggleQuickMenuSection, key)
+        if not ok and d then d("[Ultivite] Quick Menu section error [" .. tostring(key) .. "]: " .. tostring(failure)) end
+        zo_callLater(function() FinishSectionAction(pending) end, 0)
+    end)
+    button:SetHandler("OnMouseUp", function(_, mouseButton)
+        if mouseButton ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        local pending = Q.pendingSectionAction
+        if not pending or pending.key ~= key then return end
+        FinishSectionAction(pending)
+    end)
+    button:SetHandler("OnClicked", function() end)
+
+    return button
+end
+
+local function CreateControls()
+    Q.createAttempt = (tonumber(Q.createAttempt) or 0) + 1
+    Q.buttons = {}
+    Q.sectionControls = {}
+
+    -- Sections default to collapsed to keep the panel compact.
     local rows = {
-        { type = "button", key = "preview", text = "PREVIEW", callback = Q.TogglePreview },
-        { type = "button", key = "resize", text = "RESIZE", callback = Q.ToggleResize },
         { type = "button", key = "settings", text = "FULL ULTIVITE SETTINGS", callback = function()
+            if Q.previewEnabled == true then
+                Q.SafeRefresh()
+                return false
+            end
             if Q.openedFromSettings == true then
                 Q.CloseSettingsSession()
                 return true
             end
+            Q.BeginManualClose()
             Q.ManualClose()
             zo_callLater(function()
                 if LibAddonMenu2 and U.panel and LibAddonMenu2.OpenToPanel then LibAddonMenu2:OpenToPanel(U.panel) end
             end, 0)
             return true
         end },
+        { type = "button", key = "preview", text = "MOVE / RESIZE MODE", callback = Q.TogglePreview },
+        { type = "button", key = "resize", text = "MOUSE WHEEL RESIZE", callback = Q.ToggleResize },
+        { type = "button", key = "saveLock", text = "SAVE & LOCK", callback = Q.SaveAndLockEditing },
+        { type = "button", key = "immersive", text = "IMMERSIVE MODE", callback = function()
+            if not Immersive or not Immersive.Toggle then return false end
+            local result = Immersive.Toggle(true)
+            RefreshLAM()
+            return result
+        end },
+        { type = "button", key = "camera", text = "CAMERA / SCREENSHOT MODE", callback = function()
+            if not Immersive or not Immersive.ToggleCameraMode then return false end
+            local result = Immersive.ToggleCameraMode(true)
+            RefreshLAM()
+            if result and Immersive.IsCameraMode and Immersive.IsCameraMode() and zo_callLater then
+                zo_callLater(function()
+                    Q.BeginManualClose()
+                    Q.ManualClose()
+                end, 80)
+            end
+            return result
+        end },
 
-        { type = "section", text = "Combat Information" },
+        { type = "section", key = "combatInfo", text = "Combat Information" },
         { type = "button", key = "pvpKD", text = "PVP K/D COUNTER", callback = function() ToggleCombatBoolean("showPvpKillCounter", true, "UpdatePvpHud") end },
         { type = "button", key = "stats", text = "DAMAGE + RESISTANCE", callback = CycleStats },
         { type = "button", key = "shield", text = "SHIELD", callback = CycleShield },
         { type = "button", key = "debuffs", text = "DEBUFFS", callback = CycleDebuffs },
         { type = "button", key = "cc", text = "CC IMMUNITY", callback = function() ToggleCombatBoolean("showCcImmunityTracker", true, "ScanPlayerAuraHud") end },
 
-        { type = "section", text = "Navigation" },
-        { type = "button", key = "feetCompass", text = "FEET COMPASS", callback = CycleFeetCompass },
-        { type = "button", key = "crownArrow", text = "CROWN ARROW", callback = CycleCrownArrow },
-        { type = "button", key = "banditsMiniMap", text = "BANDITS MINIMAP", callback = ToggleBanditsMiniMap },
-
-        { type = "section", text = "Warnings" },
+        { type = "section", key = "warnings", text = "Combat Warnings" },
         { type = "button", key = "corrosiveAlert", text = "CORROSIVE ARMOR ALERT", callback = function()
             if EnemyAlerts and EnemyAlerts.SetCorrosiveEnabled then return EnemyAlerts.SetCorrosiveEnabled(not EnemyAlerts.GetCorrosiveEnabled()) end
             return false
@@ -2236,10 +3391,18 @@ function Q.Create()
         { type = "button", key = "resolve", text = "MAJOR RESOLVE WARNING", callback = function() ToggleCombatBoolean("showNoMajorResolveWarning", true, "UpdateMajorResolveWarning") end },
         { type = "button", key = "breach", text = "MAJOR BREACH DOT", callback = ToggleMajorBreach },
 
-        { type = "section", text = "World UI" },
-        { type = "button", key = "groupFrame", text = "GROUP FRAME", callback = CycleGroupFrame },
-        { type = "button", key = "cpProgress", text = "CP PROGRESS BAR", callback = CycleCpProgress },
-        { type = "button", key = "npcNames", text = "NPC NAMES", callback = ToggleNpcNames },
+        { type = "section", key = "navigation", text = "Navigation & Minimap" },
+        { type = "button", key = "feetCompass", text = "FEET COMPASS", callback = CycleFeetCompass },
+        { type = "button", key = "crownArrow", text = "CROWN ARROW", callback = CycleCrownArrow },
+        { type = "button", key = "votanMiniMap", text = "VOTAN MINIMAP", callback = ToggleVotanMiniMap },
+        { type = "button", key = "banditsMiniMap", text = "BANDITS MINIMAP", callback = ToggleBanditsMiniMap },
+
+        { type = "section", key = "worldUi", text = "World UI Visibility" },
+        { type = "button", key = "hudVisibility", text = "ESO HUD PRESET", callback = CycleHudVisibilityPreset },
+        { type = "button", key = "goldenPursuits", text = "GOLDEN PURSUITS", callback = ToggleGoldenPursuits },
+        { type = "button", key = "cpProgress", text = "CHAMPION PROGRESS BAR", callback = CycleCpProgress },
+        { type = "button", key = "npcNames", text = "ESO NPC NAMES", callback = ToggleNpcNames },
+        { type = "button", key = "playerNames", text = "ESO PLAYER NAMES", callback = TogglePlayerNames },
         { type = "button", key = "overheadPlayerInfo", text = "OVERHEAD PLAYER INFO", callback = ToggleOverheadPlayerInfo },
         { type = "button", key = "esoCompass", text = "ESO COMPASS", callback = function() CycleVisibility("compass", STANDARD_VISIBILITY_CYCLE) end },
         { type = "button", key = "questTracker", text = "QUEST TRACKER", callback = function() CycleVisibility("quests", STANDARD_VISIBILITY_CYCLE) end },
@@ -2249,30 +3412,29 @@ function Q.Create()
         { type = "button", key = "mountMeter", text = "MOUNT STAMINA", callback = ToggleMountMeter },
         { type = "button", key = "werewolfMeter", text = "WEREWOLF METER", callback = ToggleWerewolfMeter },
 
-        { type = "section", text = "Graphics Profiles" },
-        { type = "button", key = "graphicsPveApply", text = "APPLY PVE GRAPHICS", callback = ApplyPveGraphicsProfile },
-        { type = "button", key = "graphicsPvpApply", text = "APPLY PVP GRAPHICS", callback = ApplyPvpGraphicsProfile },
-
-        { type = "section", text = "Profiles & Core HUD" },
+        { type = "section", key = "hudFrames", text = "HUD & Frames" },
+        { type = "button", key = "pyramid", text = "PYRAMID PLAYER FRAMES", callback = TogglePyramidPlayerFrames },
         { type = "button", key = "darkSouls", text = "DARK SOULS PROFILE", callback = Q.CycleDarkSoulsMode },
-        { type = "button", key = "hudVisibility", text = "HUD VISIBILITY", callback = CycleHudVisibilityPreset },
-        { type = "button", key = "enemyHealth", text = "ENEMY HEALTH BARS", callback = CycleEnemyHealth },
+        { type = "button", key = "vanillaTargetFrames", text = "TARGET FRAME MODE", callback = ToggleTargetFrameMode },
+        { type = "button", key = "groupFrame", text = "GROUP FRAME", callback = CycleGroupFrame },
+        { type = "button", key = "enemyHealth", text = "ESO ENEMY OVERHEAD BARS", callback = CycleEnemyHealth },
         { type = "button", key = "combatOnly", text = "COMBAT HUD", callback = ToggleCombatOnly },
         { type = "button", key = "actionBar", text = "ACTION BAR", callback = ToggleActionBar },
-        { type = "button", key = "vanillaTargetFrames", text = "RESTORE VANILLA TARGET FRAMES", callback = ApplyVanillaTargetFrames },
+
+        { type = "section", key = "graphics", text = "Graphics Profiles" },
+        { type = "button", key = "graphicsAuto", text = "AUTO GRAPHICS", callback = Q.ToggleAutomaticGraphics },
+        { type = "button", key = "graphicsPveApply", text = "APPLY PVE GRAPHICS", callback = ApplyPveGraphicsProfile },
+        { type = "button", key = "graphicsPvpApply", text = "APPLY PVP GRAPHICS", callback = ApplyPvpGraphicsProfile },
+        { type = "button", key = "graphicsLowApply", text = "APPLY ALL LOW", callback = ApplyAllLowGraphicsProfile },
     }
+    Q.rows = rows
 
-    local contentHeight = 0
-    for _, row in ipairs(rows) do
-        if row.type == "section" then
-            contentHeight = contentHeight + SECTION_HEIGHT + SECTION_GAP
-        else
-            contentHeight = contentHeight + ROW_HEIGHT + ROW_GAP
-        end
-    end
-    local panelHeight = HEADER_HEIGHT + contentHeight + 10
+    -- LayoutRows calculates the exact live height from expanded sections after
+    -- controls are created. Start compact to avoid a one-frame full-height flash.
+    local panelHeight = HEADER_HEIGHT + (5 * (ROW_HEIGHT + ROW_GAP)) + (6 * (SECTION_HEIGHT + SECTION_GAP)) + 10
 
-    local panel = WINDOW_MANAGER:CreateTopLevelWindow("UltiviteQuickMenuPanel")
+    local panel = WINDOW_MANAGER:CreateTopLevelWindow(QuickControlName("UltiviteQuickMenuPanel"))
+    Q.panel = panel
     panel:SetDimensions(PANEL_WIDTH, panelHeight)
     panel:SetAnchor(RIGHT, GuiRoot, RIGHT, PANEL_RIGHT_OFFSET, PANEL_Y_OFFSET)
     panel:SetMouseEnabled(true)
@@ -2292,7 +3454,7 @@ function Q.Create()
     panel:SetHidden(true)
     panel:SetMouseEnabled(false)
 
-    local backdrop = WINDOW_MANAGER:CreateControl("UltiviteQuickMenuBackdrop", panel, CT_BACKDROP)
+    local backdrop = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteQuickMenuBackdrop"), panel, CT_BACKDROP)
     backdrop:SetAnchorFill(panel)
     backdrop:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
     backdrop:SetCenterColor(0.015, 0.02, 0.025, 0.94)
@@ -2300,7 +3462,7 @@ function Q.Create()
     backdrop:SetEdgeColor(0.20, 0.62, 0.82, 0.92)
     backdrop:SetMouseEnabled(false)
 
-    local title = WINDOW_MANAGER:CreateControl("UltiviteQuickMenuTitle", panel, CT_LABEL)
+    local title = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteQuickMenuTitle"), panel, CT_LABEL)
     title:SetDimensions(PANEL_WIDTH - 64, 24)
     title:SetAnchor(TOP, panel, TOP, 0, 8)
     title:SetFont("ZoFontWinH3")
@@ -2310,7 +3472,7 @@ function Q.Create()
     title:SetText("ULTIVITE QUICK MENU")
     title:SetMouseEnabled(false)
 
-    local closeButton = WINDOW_MANAGER:CreateControl("UltiviteQuickMenuCloseButton", panel, CT_BUTTON)
+    local closeButton = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteQuickMenuCloseButton"), panel, CT_BUTTON)
     closeButton:SetDimensions(28, 28)
     closeButton:SetAnchor(TOPRIGHT, panel, TOPRIGHT, -7, 5)
     closeButton:SetFont("ZoFontGameBold")
@@ -2318,47 +3480,87 @@ function Q.Create()
     if closeButton.SetNormalFontColor then closeButton:SetNormalFontColor(0.90, 0.94, 0.96, 1.00) end
     if closeButton.SetMouseOverFontColor then closeButton:SetMouseOverFontColor(1.00, 0.35, 0.30, 1.00) end
     closeButton:SetHandler("OnMouseDown", function(_, mouseButton)
-        if mouseButton == MOUSE_BUTTON_INDEX_LEFT then Q.BeginManualClose() end
+        if mouseButton ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        if Q.previewEnabled == true then Q.SafeRefresh(); return end
+        Q.BeginManualClose()
+        zo_callLater(function()
+            if Q.closePending == true then Q.ManualClose() end
+        end, 0)
     end)
     closeButton:SetHandler("OnMouseUp", function(_, mouseButton)
-        if mouseButton == MOUSE_BUTTON_INDEX_LEFT and Q.closePending == true then Q.ManualClose() end
+        if mouseButton == MOUSE_BUTTON_INDEX_LEFT and Q.previewEnabled ~= true and Q.closePending == true then Q.ManualClose() end
     end)
     closeButton:SetHandler("OnClicked", function() end)
     Q.closeButton = closeButton
 
-    local hint = WINDOW_MANAGER:CreateControl("UltiviteQuickMenuHint", panel, CT_LABEL)
+    local hint = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteQuickMenuHint"), panel, CT_LABEL)
     hint:SetDimensions(PANEL_WIDTH - 54, 18)
     hint:SetAnchor(TOP, panel, TOP, 0, 31)
     hint:SetFont("ZoFontGameSmall")
     hint:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     hint:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     hint:SetColor(0.68, 0.76, 0.82, 0.95)
-    hint:SetText("Enter opens  |  X closes")
+    hint:SetText("Move/resize stays active until SAVE & LOCK")
     hint:SetMouseEnabled(false)
 
-    Q.panel = panel
-    local y = HEADER_HEIGHT
     local sectionIndex = 0
     for _, row in ipairs(rows) do
         if row.type == "section" then
             sectionIndex = sectionIndex + 1
-            NewSection(panel, row.text, y, sectionIndex)
-            y = y + SECTION_HEIGHT + SECTION_GAP
+            NewSection(panel, row.key, row.text, sectionIndex)
         else
-            NewButton(panel, row.key, row.text, y, row.callback)
-            y = y + ROW_HEIGHT + ROW_GAP
+            NewButton(panel, row.key, row.text, HEADER_HEIGHT, row.callback)
         end
     end
 
     Q.InstallBanditsMiniMapBridge()
-    Q.Refresh()
-    Q.StartChatWatch()
+    Q.LayoutRows()
+    -- A label refresh failure must not disable the existing controls.
+    Q.SafeRefresh()
+end
+
+function Q.Create()
+    if Q.initialized then return true end
+    if Q.initializing or not WINDOW_MANAGER or not GuiRoot then return false end
+    Q.initializing = true
+    local ok, failure = pcall(CreateControls)
+    Q.initializing = false
+
+    if ok and Q.panel then
+        Q.initialized = true
+        Q.nextCreateRetryMs = 0
+        Q.StartChatWatch()
+        Q.RefreshChatVisibility(true)
+        return true
+    end
+
+    Q.initialized = false
+    Q.nextCreateRetryMs = GetNowMs() + 1000
+    if Q.panel and Q.panel.SetHidden then pcall(Q.panel.SetHidden, Q.panel, true) end
+    if d then d("[Ultivite] Quick Menu creation failed and will retry: " .. tostring(failure or "panel unavailable")) end
+    return false
 end
 
 local EVENT_NAMESPACE = "UltiviteQuickMenu"
 EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
     zo_callLater(function()
+        -- The watch is independent of panel creation. If a control/template is
+        -- temporarily unavailable it keeps tracking the real chat entry and
+        -- retries construction without ever touching ESO's input mode.
+        Q.StartChatWatch()
         Q.Create()
     end, 250)
+end)
+
+local GRAPHICS_EVENT_NAMESPACE = "UltiviteGraphicsAuto"
+EVENT_MANAGER:RegisterForEvent(GRAPHICS_EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
+    -- ESO can still be finalizing video state on the first frame after a load.
+    -- Apply once after activation, then the profile writer performs one verified
+    -- retry if a setting was not accepted yet.
+    if zo_callLater then
+        zo_callLater(function() Q.ApplyAutomaticGraphicsForCurrentContext(false) end, 500)
+    else
+        Q.ApplyAutomaticGraphicsForCurrentContext(false)
+    end
 end)

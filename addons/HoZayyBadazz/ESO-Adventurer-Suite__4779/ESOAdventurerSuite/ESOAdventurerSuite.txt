@@ -1,11 +1,11 @@
-## Title: ESO Adventurer Suite
-## Description: All-in-one ESO adventuring suite with Tamriel Codex, interactive quest/set/travel tools, ESO-style scalable Player/Target frames, integrated buffs/debuffs, companion health/level rows, individually movable active-hotbar skills 1-5 plus Ultimate, movable Alliance Rank progress, configurable overlay visibility, ESO-styled Group/Raid frames, shape-matched native resource bars, stable timer, clock, active quest tracker, minimap, live combat stats, repair/recharge cost estimate with Always/Codex-only modes, maintenance, and progression utilities. Public beta.
-## Author: HoZayyBadazz
-## Version: 0.24.70
-## AddOnVersion: 2470
-## APIVersion: 101050
+## Title: |cB8860BESO |cFFD700Adventurer Suite|r
+## Description: |cFFD700Tamriel Codex, HUD, minimap, quests, combat stats, travel, gear, and adventure tools.|r
+## Author: |c00FFFFHoZayyBadazz|r
+## Version: 0.25.26
+## AddOnVersion: 2526
+## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars
-## OptionalDependsOn: LibAddonMenu-2.0
+## DependsOn: LibAddonMenu-2.0
 
 Core.lua
 Compatibility.lua
@@ -14,17 +14,20 @@ Engine.lua
 Role.lua
 Travel.lua
 Activities.lua
+DungeonFinder.lua
 QuestFinder.lua
 SetJournal.lua
 Endgame.lua
 TargetBuild.lua
 GearOptimizer.lua
+GearLoadoutOverlay.lua
 Advisor.lua
 CombatPresentation.lua
 Combat.lua
 Maintenance.lua
 UnitFrames.lua
 AllianceRank.lua
+ChampionOverlay.lua
 AbilityOverlays.lua
 RepairCostOverlay.lua
 StableTimer.lua
@@ -35,5 +38,6 @@ Journal.lua
 MiniMap.lua
 UtilitySuite.lua
 UI.lua
+GraphicsPreset.lua
 Settings.lua
 Bindings.xml

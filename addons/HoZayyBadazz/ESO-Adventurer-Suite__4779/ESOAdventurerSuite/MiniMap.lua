@@ -766,6 +766,220 @@ function M:CreatePin(name, size, texture, color)
     return pin
 end
 
+-- Special game modes benefit from a denser, fully labeled navigation view.
+-- Keep normal overland PvE icon-focused, but show names automatically in
+-- Cyrodiil / Imperial City / Battlegrounds and instanced dungeons.
+function M:IsPvPIconOnlyMode()
+    if safe(IsPlayerInAvAWorld, false) == true then return true end
+    if safe(IsActiveWorldBattleground, false) == true then return true end
+    if safe(IsInCampaign, false) == true then return true end
+    return false
+end
+
+function M:IsLabeledMapMode()
+    -- PvP mirrors ESO's own Cyrodiil presentation: icons + alliance transit
+    -- connections, without map-object names cluttering the field.
+    if self:IsPvPIconOnlyMode() then return false end
+    if type(IsUnitInDungeon) == "function" and safe(IsUnitInDungeon, false, "player") == true then return true end
+    return false
+end
+
+function M:EnsureMapObjectLabels(kind, count)
+    self.mapObjectLabels = self.mapObjectLabels or {}
+    local pool = self.mapObjectLabels[kind]
+    if not pool then pool = {}; self.mapObjectLabels[kind] = pool end
+    for i = #pool + 1, count do
+        local label = makeLabel(self.viewport, "EPC_MiniMap_Label_" .. tostring(kind) .. "_" .. tostring(i), "$(BOLD_FONT)|11|soft-shadow-thick", COLORS.white, TEXT_ALIGN_CENTER)
+        label:SetDimensions(150, 18)
+        label:SetDrawLayer(DL_OVERLAY)
+        label:SetDrawLevel(96)
+        label:SetHidden(true)
+        pool[i] = label
+    end
+    return pool
+end
+
+function M:HideMapObjectLabels()
+    if not self.mapObjectLabels then return end
+    for _, pool in pairs(self.mapObjectLabels) do
+        for i = 1, #pool do pool[i]:SetHidden(true) end
+    end
+end
+
+function M:PlaceMapObjectLabel(label, text, x, y, yOffset, color)
+    if not label or not text or text == "" then return false end
+    local px, py, inside = self:MapToScreen(x, y)
+    if not inside or px == nil or py == nil then label:SetHidden(true) return false end
+    label:ClearAnchors()
+    label:SetAnchor(TOP, self.viewport, TOPLEFT, px, py + (tonumber(yOffset) or 10))
+    label:SetText(tostring(text))
+    if color then label:SetColor(unpack(color)) else label:SetColor(unpack(COLORS.white)) end
+    label:SetHidden(false)
+    return true
+end
+
+function M:GetPvPPinTexture(pinType)
+    if pinType == nil then return nil end
+    if type(GetMapPinTexture) == "function" then
+        local tex = safe(GetMapPinTexture, nil, pinType)
+        if type(tex) == "string" and tex ~= "" then return tex end
+    end
+    if ZO_MapPin and type(ZO_MapPin.PIN_DATA) == "table" then
+        local def = ZO_MapPin.PIN_DATA[pinType]
+        if type(def) == "table" then
+            local tex = def.texture
+            if type(tex) == "string" and tex ~= "" then return tex end
+            if type(tex) == "function" then
+                local ok, value = pcall(tex, pinType)
+                if ok and type(value) == "string" and value ~= "" then return value end
+            end
+        end
+    end
+    return nil
+end
+
+-- Normal PvE maps should use the same native-icon approach as the Cyrodiil
+-- layer.  Prefer the exact texture ESO supplies for the POI.  Some POIs only
+-- expose a MapDisplayPinType, so fall back to ESO's native pin definition
+-- instead of drawing the Suite's generic custom-destination diamond.
+function M:GetNativePvEMapPinTexture(icon, pinType)
+    if type(icon) == "string" and icon ~= "" and icon ~= POI_FALLBACK_TEXTURE and icon ~= WAYPOINT_TEXTURE then
+        return icon
+    end
+    local native = self:GetPvPPinTexture(pinType)
+    if type(native) == "string" and native ~= "" and native ~= POI_FALLBACK_TEXTURE and native ~= WAYPOINT_TEXTURE then
+        return native
+    end
+    return nil
+end
+
+function M:GetPvPAllianceColor(alliance)
+    alliance = tonumber(alliance) or 0
+    if type(GetAllianceColor) == "function" and alliance > 0 then
+        local r, g, b = safe(GetAllianceColor, nil, alliance)
+        if tonumber(r) and tonumber(g) and tonumber(b) then return {r, g, b, 1} end
+    end
+    if alliance == ALLIANCE_ALDMERI_DOMINION then return {0.95, 0.78, 0.16, 1} end
+    if alliance == ALLIANCE_DAGGERFALL_COVENANT then return {0.22, 0.50, 0.90, 1} end
+    if alliance == ALLIANCE_EBONHEART_PACT then return {0.88, 0.24, 0.20, 1} end
+    return COLORS.white
+end
+
+function M:EnsurePvPPins(count)
+    self.pvpPins = self.pvpPins or {}
+    for i = #self.pvpPins + 1, count do
+        local pin = self:CreatePin("EPC_MiniMap_PvPObjective_" .. tostring(i), 26, POI_FALLBACK_TEXTURE, COLORS.white)
+        pin:SetDrawLevel(88)
+        self.pvpPins[i] = pin
+    end
+end
+
+function M:HidePvPPins()
+    for i = 1, #(self.pvpPins or {}) do self.pvpPins[i]:SetHidden(true) end
+end
+
+function M:EnsurePvPTransitLines(count)
+    self.pvpTransitLines = self.pvpTransitLines or {}
+    for i = #self.pvpTransitLines + 1, count do
+        local line = wm:CreateControl("EPC_MiniMap_PvPTransit_" .. tostring(i), self.viewport, CT_LINE)
+        line:SetThickness(3)
+        line:SetColor(1, 1, 1, 0.88)
+        line:SetDrawLayer(DL_OVERLAY)
+        line:SetDrawLevel(82)
+        line:SetHidden(true)
+        self.pvpTransitLines[i] = line
+    end
+    return self.pvpTransitLines
+end
+
+function M:HidePvPTransitLines()
+    for i = 1, #(self.pvpTransitLines or {}) do self.pvpTransitLines[i]:SetHidden(true) end
+end
+
+function M:PlacePvPTransitLine(line, data)
+    if not line or not data then return false end
+    local x1, y1, in1 = self:MapToScreen(data.startX, data.startY)
+    local x2, y2, in2 = self:MapToScreen(data.endX, data.endY)
+    if x1 == nil or y1 == nil or x2 == nil or y2 == nil or (not in1 and not in2) then
+        line:SetHidden(true)
+        return false
+    end
+
+    -- A LineControl stretches between two anchors. Pick opposing corners based
+    -- on slope so both positive- and negative-slope Cyrodiil links render.
+    line:ClearAnchors()
+    if (x2 - x1) * (y2 - y1) >= 0 then
+        local leftX, leftY, rightX, rightY
+        if x1 <= x2 then leftX, leftY, rightX, rightY = x1, y1, x2, y2
+        else leftX, leftY, rightX, rightY = x2, y2, x1, y1 end
+        if leftY <= rightY then
+            line:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, leftX, leftY)
+            line:SetAnchor(BOTTOMRIGHT, self.viewport, TOPLEFT, rightX, rightY)
+        else
+            line:SetAnchor(BOTTOMLEFT, self.viewport, TOPLEFT, leftX, leftY)
+            line:SetAnchor(TOPRIGHT, self.viewport, TOPLEFT, rightX, rightY)
+        end
+    else
+        local leftX, leftY, rightX, rightY
+        if x1 <= x2 then leftX, leftY, rightX, rightY = x1, y1, x2, y2
+        else leftX, leftY, rightX, rightY = x2, y2, x1, y1 end
+        line:SetAnchor(BOTTOMLEFT, self.viewport, TOPLEFT, leftX, leftY)
+        line:SetAnchor(TOPRIGHT, self.viewport, TOPLEFT, rightX, rightY)
+    end
+
+    local color = data.color or COLORS.white
+    local alpha = data.active == false and 0.34 or 0.88
+    line:SetColor(color[1] or 1, color[2] or 1, color[3] or 1, alpha)
+    line:SetThickness(data.active == false and 2 or 3)
+    line:SetHidden(false)
+    return true
+end
+
+function M:RenderPvPTransitLines()
+    local data = self.pvpTravelLinks or {}
+    if safe(IsPlayerInAvAWorld, false) ~= true or #data == 0 then
+        self:HidePvPTransitLines()
+        return
+    end
+    local pool = self:EnsurePvPTransitLines(#data)
+    local used = 0
+    for i = 1, #data do
+        local d = data[i]
+        if d and d.startX and d.startY and d.endX and d.endY then
+            used = used + 1
+            self:PlacePvPTransitLine(pool[used], d)
+        end
+    end
+    for i = used + 1, #pool do pool[i]:SetHidden(true) end
+end
+
+function M:RenderPvPPins()
+    local data = self.pvpKeepData or {}
+    if safe(IsPlayerInAvAWorld, false) ~= true or #data == 0 then self:HidePvPPins(); return end
+    self:EnsurePvPPins(#data)
+    local used = 0
+    for i = 1, #data do
+        local d = data[i]
+        if d and d.x and d.y then
+            used = used + 1
+            local pin = self.pvpPins[used]
+            local texture = d.texture
+            if type(texture) == "string" and texture ~= "" then
+                pin:SetTexture(texture)
+                -- Native ESO PvP pin textures already encode ownership/state.
+                pin:SetColor(1, 1, 1, 1)
+            else
+                pin:SetTexture(POI_FALLBACK_TEXTURE)
+                pin:SetColor(unpack(d.color or COLORS.white))
+            end
+            local size = tonumber(d.size) or 26
+            pin:SetDimensions(size, size)
+            self:PlacePin(pin, d.x, d.y, size, false)
+        end
+    end
+    for i = used + 1, #self.pvpPins do self.pvpPins[i]:SetHidden(true) end
+end
+
 function M:EnsureGroupPins(count)
     self.groupPins = self.groupPins or {}
     for i = #self.groupPins + 1, count do
@@ -1528,8 +1742,11 @@ function M:RefreshStaticPins()
         for nodeIndex = 1, count do
             local known, name, x, y, icon, _, _, shown, locked = safe(GetFastTravelNodeInfo, nil, nodeIndex)
             if known == true and shown == true and locked ~= true and tonumber(x) and tonumber(y) then
-                self.shrineData[#self.shrineData + 1] = { x=tonumber(x), y=tonumber(y), icon=icon, name=clean(name, "Wayshrine") }
-                if #self.shrineData >= 48 then break end
+                self.shrineData[#self.shrineData + 1] = {
+                    x=tonumber(x), y=tonumber(y), icon=icon, name=clean(name, "Wayshrine"),
+                    nativeIcon=(type(icon) == "string" and icon ~= ""),
+                }
+                if #self.shrineData >= 96 then break end
             end
         end
     end
@@ -1538,8 +1755,15 @@ function M:RefreshStaticPins()
         local data = self.shrineData[i]
         local pin = self.shrinePins[i]
         if data then
-            if data.icon and data.icon ~= "" then pin:SetTexture(data.icon) else pin:SetTexture(WAYPOINT_TEXTURE) end
-            pin:SetColor(0.92, 0.78, 0.40, 0.86)
+            if data.icon and data.icon ~= "" then
+                pin:SetTexture(data.icon)
+                -- ESO's wayshrine / fast-travel artwork already carries its own
+                -- visual treatment, so do not recolor it with the old gold tint.
+                pin:SetColor(1, 1, 1, 1)
+            else
+                pin:SetTexture(WAYPOINT_TEXTURE)
+                pin:SetColor(1, 1, 1, 1)
+            end
         else
             pin:SetHidden(true)
         end
@@ -1571,9 +1795,11 @@ function M:RefreshStaticPins()
                     local dx = (x - (self.playerX or 0.5))
                     local dy = (y - (self.playerY or 0.5))
                     local dist2 = (dx * dx) + (dy * dy)
+                    local nativeIcon = self:GetNativePvEMapPinTexture(icon, pinType)
                     local data = {
-                        x=x, y=y, icon=icon, name=name, discovered=discovered == true,
+                        x=x, y=y, icon=nativeIcon or icon, name=name, discovered=discovered == true,
                         nearby=nearby == true, isCompletion=isCompletion, distance2=dist2, pinType=pinType,
+                        nativeIcon=nativeIcon ~= nil,
                     }
                     if isSellMerchantPOI(name, icon) then
                         data.isMerchant = true
@@ -1599,7 +1825,121 @@ function M:RefreshStaticPins()
     self:EnsurePOIPins(maxPins)
     self:EnsureMerchantPins(math.min(96, math.max(16, #(self.merchantData or {}))))
     self:EnsureServicePins(math.min(96, math.max(8, #(self.serviceData or {}))))
+    self:RefreshPvPKeepData()
     self.staticPinsDirty = false
+end
+
+function M:RefreshPvPKeepData()
+    self.pvpKeepData = {}
+    self.pvpTravelLinks = {}
+    if safe(IsPlayerInAvAWorld, false) ~= true then return end
+    if type(GetNumKeeps) ~= "function" or type(GetKeepKeysByIndex) ~= "function" or type(GetKeepPinInfo) ~= "function" then return end
+    local count = safeNumber(GetNumKeeps, 0)
+    for i = 1, count do
+        local keepId = select(1, safe(GetKeepKeysByIndex, nil, i))
+        if keepId then
+            local name = type(GetKeepName) == "function" and clean(safe(GetKeepName, "", keepId), "PvP Objective") or "PvP Objective"
+            local x, y, pinType, contextUsed
+            for context = 1, 3 do
+                local pType, kx, ky = safe(GetKeepPinInfo, nil, keepId, context)
+                kx, ky = tonumber(kx), tonumber(ky)
+                if kx and ky and kx > 0 and ky > 0 and kx <= 1 and ky <= 1 then
+                    pinType, x, y, contextUsed = pType, kx, ky, context
+                    break
+                end
+            end
+            if x and y then
+                local alliance = 0
+                if type(GetKeepAlliance) == "function" then alliance = tonumber(safe(GetKeepAlliance, 0, keepId, contextUsed or 1)) or 0 end
+                local keepType = type(GetKeepType) == "function" and safe(GetKeepType, nil, keepId) or nil
+                local resourceType = type(GetKeepResourceType) == "function" and safe(GetKeepResourceType, nil, keepId) or nil
+                local size = 26
+                -- Resources are visually smaller than keeps/outposts on ESO's PvP map.
+                if resourceType and resourceType ~= 0 then size = 20 end
+                self.pvpKeepData[#self.pvpKeepData + 1] = {
+                    x=x, y=y, name=name, keepId=keepId, pinType=pinType,
+                    texture=self:GetPvPPinTexture(pinType), alliance=alliance,
+                    color=self:GetPvPAllianceColor(alliance), keepType=keepType,
+                    resourceType=resourceType, size=size, context=contextUsed,
+                }
+            end
+        end
+    end
+
+    -- Cyrodiil transitus network. ESO exposes each connection with owner,
+    -- restriction, state, and normalized map endpoints. Use those values
+    -- directly so the minimap mirrors who owns each connected supply line.
+    if type(GetNumKeepTravelNetworkLinks) == "function" and type(GetKeepTravelNetworkLinkInfo) == "function" then
+        local context = BGQUERY_LOCAL or 1
+        local linkCount = safeNumber(GetNumKeepTravelNetworkLinks, 0, context)
+        for i = 1, linkCount do
+            local linkType, linkOwner, restrictedToAlliance, startX, startY, endX, endY = safe(GetKeepTravelNetworkLinkInfo, nil, i, context)
+            startX, startY, endX, endY = tonumber(startX), tonumber(startY), tonumber(endX), tonumber(endY)
+            if startX and startY and endX and endY and startX >= 0 and startX <= 1 and startY >= 0 and startY <= 1 and endX >= 0 and endX <= 1 and endY >= 0 and endY <= 1 then
+                local owner = tonumber(linkOwner) or 0
+                if owner <= 0 then owner = tonumber(restrictedToAlliance) or 0 end
+                local active = true
+                if FAST_TRAVEL_LINK_ACTIVE ~= nil and tonumber(linkType) ~= nil then
+                    active = tonumber(linkType) == tonumber(FAST_TRAVEL_LINK_ACTIVE)
+                end
+                self.pvpTravelLinks[#self.pvpTravelLinks + 1] = {
+                    startX=startX, startY=startY, endX=endX, endY=endY,
+                    linkType=linkType, alliance=owner, active=active,
+                    color=self:GetPvPAllianceColor(owner),
+                }
+            end
+        end
+    end
+end
+
+function M:RenderModeLabels()
+    -- PvP intentionally uses icons only, matching ESO's Cyrodiil map.
+    if self:IsPvPIconOnlyMode() then self:HideMapObjectLabels(); return end
+    if not self:IsLabeledMapMode() then self:HideMapObjectLabels(); return end
+
+    local function render(kind, data, nameFn, offset, colorFn)
+        data = data or {}
+        local pool = self:EnsureMapObjectLabels(kind, #data)
+        local used = 0
+        for i = 1, #data do
+            local d = data[i]
+            if d and d.x and d.y then
+                used = used + 1
+                local text = nameFn and nameFn(d, i) or d.name
+                local color = colorFn and colorFn(d, i) or COLORS.white
+                self:PlaceMapObjectLabel(pool[used], text, d.x, d.y, offset, color)
+            end
+        end
+        for i = used + 1, #pool do pool[i]:SetHidden(true) end
+    end
+
+    render("shrines", self.shrineData, function(d) return d.name end, 10, function() return COLORS.gold end)
+    render("pois", self.poiData, function(d) return d.name end, 10, function(d) return d.discovered and COLORS.white or COLORS.gold end)
+    render("merchants", self.merchantData, function(d) return d.name or "Merchant" end, 13, function() return COLORS.gold end)
+    render("services", self.serviceData, function(d) return d.name or STORE_TYPE_LABELS[d.kind] or "Service" end, 15, function() return COLORS.gold end)
+    render("keeps", self.pvpKeepData, function(d) return d.name end, 15, function(d) return d.color or COLORS.white end)
+
+    local groupData = {}
+    for i, st in pairs(self.groupPinState or {}) do
+        if st and st.x and st.y and st.name then groupData[#groupData + 1] = {x=st.x,y=st.y,name=st.name,leader=st.leader} end
+    end
+    render("group", groupData, function(d) return d.leader and (d.name .. " [LEADER]") or d.name end, 10, function() return COLORS.cyan end)
+
+    local specials = {}
+    if self.questPosition and self.questPosition.x and self.questPosition.y then specials[#specials+1] = {x=self.questPosition.x,y=self.questPosition.y,name=self.questPosition.name or "Quest",color=COLORS.gold} end
+    if self.waypointPosition and self.waypointPosition.x and self.waypointPosition.y then specials[#specials+1] = {x=self.waypointPosition.x,y=self.waypointPosition.y,name="Waypoint",color=COLORS.blue} end
+    if self.rallyPosition and self.rallyPosition.x and self.rallyPosition.y then specials[#specials+1] = {x=self.rallyPosition.x,y=self.rallyPosition.y,name="Rally Point",color=COLORS.green} end
+    render("special", specials, function(d) return d.name end, 14, function(d) return d.color end)
+
+    local playerPool = self:EnsureMapObjectLabels("player", 1)
+    self:PlaceMapObjectLabel(playerPool[1], "YOU", self.playerX, self.playerY, 16, COLORS.white)
+
+    local companionData = {}
+    if safe(DoesUnitExist, false, "companion") == true then
+        local x, y, _, shown = safe(GetMapPlayerPosition, nil, "companion")
+        if shown == true and tonumber(x) and tonumber(y) then companionData[1] = {x=tonumber(x),y=tonumber(y),name=clean(safe(GetUnitName,"","companion"),"Companion")} end
+    end
+    render("companion", companionData, function(d) return d.name end, 10, function() return COLORS.white end)
 end
 
 function M:RefreshQuestPin()
@@ -1711,6 +2051,8 @@ function M:RefreshGroupPins()
                         state.heading = drawHeading
                     end
                     state.x, state.y = x, y
+                    state.name = clean(safe(GetUnitName, "", unitTag), unitTag)
+                    state.leader = leader
                     self.groupPinState[i] = state
 
                     self:PlacePin(pin, x, y, leader and 20 or 16, leader)
@@ -1808,43 +2150,56 @@ function M:RenderPOIPins()
         for i = 1, #self.poiPins do self.poiPins[i]:SetHidden(true) end
         return
     end
+
     local maxPins = math.max(24, math.min(220, tonumber(EPC.saved.miniMapPOIMax) or 160))
     local used = 0
+    local nativePvE = not self:IsPvPIconOnlyMode()
+
     for i = 1, #(self.poiData or {}) do
         if used >= maxPins then break end
         local data = self.poiData[i]
         local _, _, inside = self:MapToScreen(data.x, data.y)
         if inside then
-            -- Do not cluster town icons. If ESO exposes a visible POI, render it.
-            -- Dense hubs can legitimately contain several nearby services/landmarks.
-            used = used + 1
-            local pin = self.poiPins[used]
-            pin:SetDimensions(data.nearby and 20 or 17, data.nearby and 20 or 17)
-            if data.icon and data.icon ~= "" and data.icon ~= POI_FALLBACK_TEXTURE and data.icon ~= WAYPOINT_TEXTURE then
-                -- Do not render the pale/white background POI layer. Those are
-                -- ordinary discovered POIs that created the field of white icons
-                -- the user asked to remove. Keep nearby POIs plus learned pins,
-                -- merchants and services visible through their own layers.
-                if data.discovered == true and data.nearby ~= true and data.learned ~= true then
-                    pin:SetHidden(true)
-                    used = used - 1
+            local texture = self:GetNativePvEMapPinTexture(data.icon, data.pinType)
+
+            -- Never replace a missing ESO icon with the generic white/custom
+            -- destination diamond.  This keeps the overland map looking like
+            -- ESO's own map rather than a field of addon fallback markers.
+            if texture then
+                used = used + 1
+                local pin = self.poiPins[used]
+                local size = data.nearby and 21 or (data.isCompletion and 19 or 18)
+                pin:SetDimensions(size, size)
+                pin:SetTexture(texture)
+
+                if nativePvE then
+                    -- Match the PvP implementation: let ESO's native texture
+                    -- encode POI type/state and leave the artwork untinted.
+                    -- Unlike the old minimap pass, discovered overland POIs are
+                    -- no longer hidden just because they are not nearby.
+                    pin:SetColor(1, 1, 1, 1)
+                    self:PlacePin(pin, data.x, data.y, size, false)
                 else
-                    pin:SetTexture(data.icon)
-                    if data.discovered ~= true then
-                        pin:SetColor(0.98, 0.72, 0.18, 0.98)
-                    elseif data.nearby then
-                        pin:SetColor(0.24, 0.56, 0.97, 0.94)
+                    -- Preserve the established PvP behavior so Cyrodiil remains
+                    -- focused on keeps, scrolls, and transit-network ownership.
+                    if data.discovered == true and data.nearby ~= true and data.learned ~= true and not self:IsLabeledMapMode() then
+                        pin:SetHidden(true)
+                        used = used - 1
                     else
-                        pin:SetColor(1, 1, 1, 1)
+                        if data.discovered ~= true then
+                            pin:SetColor(0.98, 0.72, 0.18, 0.98)
+                        elseif data.nearby then
+                            pin:SetColor(0.24, 0.56, 0.97, 0.94)
+                        else
+                            pin:SetColor(1, 1, 1, 1)
+                        end
+                        self:PlacePin(pin, data.x, data.y, size, false)
                     end
-                    self:PlacePin(pin, data.x, data.y, data.nearby and 20 or 17, false)
                 end
-            else
-                pin:SetHidden(true)
-                used = used - 1
             end
         end
     end
+
     for i = used + 1, #self.poiPins do self.poiPins[i]:SetHidden(true) end
 end
 
@@ -1888,7 +2243,8 @@ function M:RenderTrail()
 end
 
 function M:UpdateContextText(force)
-    -- The minimap is intentionally icon-only. Keep all informational text hidden.
+    -- Normal overland mode stays icon-focused. Object labels for special game
+    -- modes are rendered separately by RenderModeLabels().
     if self.modeLabel then self.modeLabel:SetHidden(true) end
     if self.zoneLabel then self.zoneLabel:SetHidden(true) end
     if self.coordsLabel then self.coordsLabel:SetHidden(true) end
@@ -1973,6 +2329,9 @@ function M:UpdatePanAndPins(forceStatic)
     self:RenderMerchantPins()
     self:RenderServicePins()
     self:RenderPOIPins()
+    -- Draw alliance-owned transitus connections beneath PvP objective icons.
+    self:RenderPvPTransitLines()
+    self:RenderPvPPins()
     self:RenderTrail()
     self:RefreshWaypointPin()
     self:RefreshQuestPin()
@@ -1980,6 +2339,7 @@ function M:UpdatePanAndPins(forceStatic)
     self:RefreshGroupPins()
     self:RefreshCompanionPin()
     self:PulsePriorityPins()
+    self:RenderModeLabels()
     self:UpdateContextText(false)
 end
 
@@ -2020,6 +2380,8 @@ function M:RegisterEvents()
     register(EVENT_PLAYER_ACTIVATED, true)
     register(EVENT_ZONE_CHANGED, true)
     register(EVENT_FAST_TRAVEL_NETWORK_UPDATED, true)
+    register(EVENT_FAST_TRAVEL_KEEP_NETWORK_UPDATED, true)
+    register(EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED, true)
     register(EVENT_GROUP_UPDATE, false)
     register(EVENT_GROUP_MEMBER_JOINED, false)
     register(EVENT_GROUP_MEMBER_LEFT, false)
@@ -2138,4 +2500,222 @@ function M:Initialize()
     self:Create()
     self:RegisterEvents()
     self:Refresh(true)
+end
+
+
+-- ============================================================================
+-- v0.24.84 - Live Cyrodiil Elder Scroll objective layer
+-- Elder Scrolls are objective records, not keep pins. Query them separately so
+-- carried/returned scrolls remain visible on the icon-only PvP minimap.
+-- ============================================================================
+function M:EnsurePvPScrollPins(count)
+    self.pvpScrollPins = self.pvpScrollPins or {}
+    for i = #self.pvpScrollPins + 1, count do
+        local pin = self:CreatePin("EPC_MiniMap_ElderScroll_" .. tostring(i), 30, POI_FALLBACK_TEXTURE, COLORS.white)
+        pin:SetDrawLevel(94)
+        self.pvpScrollPins[i] = pin
+    end
+end
+
+function M:HidePvPScrollPins()
+    for i = 1, #(self.pvpScrollPins or {}) do self.pvpScrollPins[i]:SetHidden(true) end
+end
+
+function M:IsElderScrollObjective(keepId, objectiveId, objectiveName)
+    keepId = tonumber(keepId) or 0
+    objectiveId = tonumber(objectiveId) or 0
+    if keepId > 0 and type(GetKeepArtifactObjectiveId) == "function" then
+        local artifactId = tonumber(safe(GetKeepArtifactObjectiveId, 0, keepId)) or 0
+        if artifactId > 0 and artifactId == objectiveId then return true end
+    end
+    local name = string.lower(tostring(objectiveName or ""))
+    return name:find("elder scroll", 1, true) ~= nil
+end
+
+function M:RefreshPvPScrollData()
+    self.pvpScrollData = {}
+    if safe(IsPlayerInAvAWorld, false) ~= true then return end
+    if type(GetNumObjectives) ~= "function" or type(GetObjectiveIdsForIndex) ~= "function" or type(GetObjectivePinInfo) ~= "function" then return end
+
+    local num = safeNumber(GetNumObjectives, 0)
+    for index = 1, num do
+        local keepId, objectiveId, context = safe(GetObjectiveIdsForIndex, nil, index)
+        keepId, objectiveId = tonumber(keepId) or 0, tonumber(objectiveId) or 0
+        context = context or BGQUERY_LOCAL or 1
+        if objectiveId > 0 then
+            local objectiveName, objectiveType, objectiveState = "", nil, nil
+            if type(GetObjectiveInfo) == "function" then
+                objectiveName, objectiveType, objectiveState = safe(GetObjectiveInfo, "", keepId, objectiveId, context)
+            end
+            if self:IsElderScrollObjective(keepId, objectiveId, objectiveName) then
+                local pinType, x, y, continuous = safe(GetObjectivePinInfo, nil, keepId, objectiveId, context)
+                x, y = tonumber(x), tonumber(y)
+
+                -- At-base or transition states may temporarily omit a current
+                -- coordinate. Fall back to return/spawn locations so the scroll
+                -- never disappears from the minimap merely because it was reset.
+                if not x or not y or x <= 0 or y <= 0 or x > 1 or y > 1 then
+                    if type(GetObjectiveReturnPinInfo) == "function" then
+                        local returnPinType, rx, ry = safe(GetObjectiveReturnPinInfo, nil, keepId, objectiveId, context)
+                        rx, ry = tonumber(rx), tonumber(ry)
+                        if rx and ry and rx > 0 and ry > 0 and rx <= 1 and ry <= 1 then
+                            pinType, x, y = returnPinType or pinType, rx, ry
+                        end
+                    end
+                end
+                if not x or not y or x <= 0 or y <= 0 or x > 1 or y > 1 then
+                    if type(GetObjectiveSpawnPinInfo) == "function" then
+                        local spawnPinType, sx, sy = safe(GetObjectiveSpawnPinInfo, nil, keepId, objectiveId, context)
+                        sx, sy = tonumber(sx), tonumber(sy)
+                        if sx and sy and sx > 0 and sy > 0 and sx <= 1 and sy <= 1 then
+                            pinType, x, y = spawnPinType or pinType, sx, sy
+                        end
+                    end
+                end
+
+                if x and y and x > 0 and y > 0 and x <= 1 and y <= 1 then
+                    local color = COLORS.white
+                    if type(GetObjectiveAuraPinInfo) == "function" then
+                        local _, r, g, b = safe(GetObjectiveAuraPinInfo, nil, keepId, objectiveId, context)
+                        if tonumber(r) and tonumber(g) and tonumber(b) then color = {r, g, b, 1} end
+                    end
+                    self.pvpScrollData[#self.pvpScrollData + 1] = {
+                        x=x, y=y, keepId=keepId, objectiveId=objectiveId, context=context,
+                        name=objectiveName, pinType=pinType, objectiveType=objectiveType,
+                        objectiveState=objectiveState, continuous=continuous == true,
+                        texture=self:GetPvPPinTexture(pinType), color=color,
+                    }
+                end
+            end
+        end
+    end
+end
+
+function M:RenderPvPScrollPins()
+    if not self:IsPvPIconOnlyMode() then self:HidePvPScrollPins(); return end
+
+    local now = type(GetFrameTimeMilliseconds) == "function" and tonumber(GetFrameTimeMilliseconds()) or 0
+    if now == 0 or not self.lastPvPScrollRefreshMs or (now - self.lastPvPScrollRefreshMs) >= 250 then
+        self.lastPvPScrollRefreshMs = now
+        self:RefreshPvPScrollData()
+    end
+
+    local data = self.pvpScrollData or {}
+    self:EnsurePvPScrollPins(#data)
+    for i = 1, #self.pvpScrollPins do
+        local pin = self.pvpScrollPins[i]
+        local scroll = data[i]
+        if scroll then
+            if scroll.texture and scroll.texture ~= "" then pin:SetTexture(scroll.texture) else pin:SetTexture(POI_FALLBACK_TEXTURE) end
+            local c = scroll.color or COLORS.white
+            pin:SetColor(c[1] or 1, c[2] or 1, c[3] or 1, c[4] or 1)
+            self:PlacePin(pin, scroll.x, scroll.y, 30, false)
+        else
+            pin:SetHidden(true)
+        end
+    end
+end
+
+local easLegacyRenderPvPPins_2484 = M.RenderPvPPins
+function M:RenderPvPPins()
+    if easLegacyRenderPvPPins_2484 then easLegacyRenderPvPPins_2484(self) end
+    self:RenderPvPScrollPins()
+end
+
+local easLegacyRefreshPvPKeepData_2484 = M.RefreshPvPKeepData
+function M:RefreshPvPKeepData()
+    easLegacyRefreshPvPKeepData_2484(self)
+    self:RefreshPvPScrollData()
+end
+
+
+-- ============================================================================
+-- v0.24.86 - Native Elder Scroll artwork resolver
+-- Use the exact objective pin type returned by ESO and try the game's native
+-- map-pin texture definitions with objective context. Native textures are
+-- rendered untinted so their built-in alliance/artifact colors remain intact.
+-- ============================================================================
+function M:GetNativeObjectivePinTexture(pinType, keepId, objectiveId, context, objectiveName)
+    if pinType == nil then return nil end
+
+    if type(GetMapPinTexture) == "function" then
+        local tex = safe(GetMapPinTexture, nil, pinType)
+        if type(tex) == "string" and tex ~= "" then return tex end
+    end
+
+    if ZO_MapPin and type(ZO_MapPin.PIN_DATA) == "table" then
+        local def = ZO_MapPin.PIN_DATA[pinType]
+        if type(def) == "table" then
+            local tex = def.texture
+            if type(tex) == "string" and tex ~= "" then return tex end
+            if type(tex) == "function" then
+                local tag = {
+                    pinType = pinType,
+                    keepId = keepId,
+                    objectiveId = objectiveId,
+                    bgContext = context,
+                    context = context,
+                    objectiveName = objectiveName,
+                }
+                local attempts = {
+                    function() return tex(tag) end,
+                    function() return tex(pinType, tag) end,
+                    function() return tex(keepId, objectiveId, context) end,
+                    function() return tex(pinType, keepId, objectiveId, context) end,
+                    function() return tex(pinType) end,
+                }
+                for i = 1, #attempts do
+                    local ok, value = pcall(attempts[i])
+                    if ok and type(value) == "string" and value ~= "" then return value end
+                end
+            end
+        end
+    end
+
+    return self:GetPvPPinTexture(pinType)
+end
+
+local easLegacyRefreshPvPScrollData_2486 = M.RefreshPvPScrollData
+function M:RefreshPvPScrollData()
+    easLegacyRefreshPvPScrollData_2486(self)
+    for i = 1, #(self.pvpScrollData or {}) do
+        local scroll = self.pvpScrollData[i]
+        scroll.texture = self:GetNativeObjectivePinTexture(
+            scroll.pinType, scroll.keepId, scroll.objectiveId, scroll.context, scroll.name
+        )
+        scroll.hasNativeTexture = type(scroll.texture) == "string" and scroll.texture ~= ""
+    end
+end
+
+local easLegacyRenderPvPScrollPins_2486 = M.RenderPvPScrollPins
+function M:RenderPvPScrollPins()
+    if not self:IsPvPIconOnlyMode() then self:HidePvPScrollPins(); return end
+
+    local now = type(GetFrameTimeMilliseconds) == "function" and tonumber(GetFrameTimeMilliseconds()) or 0
+    if now == 0 or not self.lastPvPScrollRefreshMs or (now - self.lastPvPScrollRefreshMs) >= 250 then
+        self.lastPvPScrollRefreshMs = now
+        self:RefreshPvPScrollData()
+    end
+
+    local data = self.pvpScrollData or {}
+    self:EnsurePvPScrollPins(#data)
+    for i = 1, #self.pvpScrollPins do
+        local pin = self.pvpScrollPins[i]
+        local scroll = data[i]
+        if scroll then
+            if scroll.hasNativeTexture then
+                pin:SetTexture(scroll.texture)
+                -- Do not tint ESO's native Elder Scroll artwork. The texture
+                -- itself carries the correct multi-color scroll appearance.
+                pin:SetColor(1, 1, 1, 1)
+            else
+                pin:SetTexture(POI_FALLBACK_TEXTURE)
+                local c = scroll.color or COLORS.white
+                pin:SetColor(c[1] or 1, c[2] or 1, c[3] or 1, c[4] or 1)
+            end
+            self:PlacePin(pin, scroll.x, scroll.y, 30, false)
+        else
+            pin:SetHidden(true)
+        end
+    end
 end

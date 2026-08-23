@@ -57,6 +57,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [HearthHome Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tanelornian/HearthHome-Filter__2282) | Tanelornian | PC / Mac | 1.0.2.7 |
 | [Heat Shock Tracker (former Stagger)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/Heat-Shock-Tracker-former-Stagger__4270) | B7TxSpeed | PC / Mac | 1.3 |
 | [Heat Shock Tracker (PC & Console) - DK Magma Fist + Uptime (Stagger)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Heat-Shock-Tracker-PC-Console---DK-Magma-Fist-Uptime-Stagger__4438) | Duesentrieb | PC / Mac | 20260715-0001 |
+| [HeavyAttackAlerter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/HeavyAttackAlerter__176205c5-4aad-438f-a2c1-311b59466f3c) | Tetsurion | Console | — |
 | [Hedning Quotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Parietic/Hedning-Quotes__2622) | Parietic | PC / Mac | 1.0.1 |
 | [HeistMute](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DavidJCobb/HeistMute__2438) | DavidJCobb | PC / Mac | 3 |
 | [Helix Rotations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/helixanon/Helix-Rotations__3181) | helixanon | PC / Mac | v0.6.1 |

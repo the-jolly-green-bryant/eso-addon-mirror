@@ -42,7 +42,7 @@ CollectiblesTrackerAllTheThings.COLLECTIBLE_CATEGORY_TYPE_KEYBOARD_ICON_UP =
 local collectibleCategoryTypeKeyboardIconByType = nil
 
 local function NormalizeCollectibleCategoryKeyboardIconPath(iconPath)
-    if (type(iconPath) ~= "string") then
+    if (not iconPath or iconPath == "") then
         return nil
     end
 
@@ -59,9 +59,35 @@ local function NormalizeCollectibleCategoryKeyboardIconPath(iconPath)
     return iconPath
 end
 
+function CollectiblesTrackerAllTheThings.IsUnreleasedCollectibleIcon(iconPath)
+    if (iconPath == nil or iconPath == "") then
+        return false
+    end
+    local normalizedIcon = zo_strformat("<<z:1>>", iconPath:gsub("\\", "/"))
+    local missingIcon = zo_strformat(
+        "<<z:1>>",
+        CollectiblesTrackerAllTheThings.UNRELEASED_COLLECTIBLE_ICON:gsub("\\", "/")
+    )
+    if (normalizedIcon == missingIcon) then
+        return true
+    end
+    return string.find(normalizedIcon, "/icon_missing.dds", 1, true) ~= nil
+end
+
 function CollectiblesTrackerAllTheThings.IsValidCategorySourceLabelIconPath(iconPath)
     iconPath = NormalizeCollectibleCategoryKeyboardIconPath(iconPath)
     if (iconPath == nil) then
+        return false
+    end
+    return true
+end
+
+-- Collections subcategories often return icon_missing.dds; that is not a real tree icon.
+local function IsUsableCollectibleCategoryTreeIconPath(iconPath)
+    if (not CollectiblesTrackerAllTheThings.IsValidCategorySourceLabelIconPath(iconPath)) then
+        return false
+    end
+    if (CollectiblesTrackerAllTheThings.IsUnreleasedCollectibleIcon(iconPath)) then
         return false
     end
     return true
@@ -76,10 +102,10 @@ local function CategoryTreeNameMatchesCollectibleCategoryType(treeName, category
 end
 
 local function AssignIconForTreeName(iconByCategoryType, treeName, normalIcon)
-    normalIcon = NormalizeCollectibleCategoryKeyboardIconPath(normalIcon)
-    if (normalIcon == nil) then
+    if (not IsUsableCollectibleCategoryTreeIconPath(normalIcon)) then
         return
     end
+    normalIcon = NormalizeCollectibleCategoryKeyboardIconPath(normalIcon)
 
     for categoryType = COLLECTIBLE_CATEGORY_TYPE_ITERATION_BEGIN, COLLECTIBLE_CATEGORY_TYPE_ITERATION_END do
         if (CategoryTreeNameMatchesCollectibleCategoryType(treeName, categoryType)) then
@@ -117,7 +143,7 @@ function CollectiblesTrackerAllTheThings.GetCollectibleCategoryTypeKeyboardIconM
 
         for categoryType, iconPath in pairs(staticIconByCategoryType) do
             local mergedPath = mergedIconByCategoryType[categoryType]
-            if (not CollectiblesTrackerAllTheThings.IsValidCategorySourceLabelIconPath(mergedPath)) then
+            if (not IsUsableCollectibleCategoryTreeIconPath(mergedPath)) then
                 mergedPath = nil
                 mergedIconByCategoryType[categoryType] = nil
             end
@@ -169,4 +195,93 @@ function CollectiblesTrackerAllTheThings.FormatWhiteCategorySourceLabel(labelTex
     end
 
     return formattedLabel
+end
+
+-- Collections Book names: ZO_CollectibleCategoryData:GetFormattedName
+-- (GetCollectibleCategoryNameByCategoryId + SI_COLLECTIBLE_NAME_FORMATTER).
+function CollectiblesTrackerAllTheThings.GetCollectionsCategoryFormattedName(topLevelIndex, subCategoryIndex)
+    local categoryId = GetCollectibleCategoryId(topLevelIndex, subCategoryIndex)
+    local categoryName = nil
+    if (categoryId ~= nil and categoryId ~= 0) then
+        categoryName = GetCollectibleCategoryNameByCategoryId(categoryId)
+    end
+    if (categoryName == nil or categoryName == "") then
+        if (subCategoryIndex ~= nil) then
+            categoryName = GetCollectibleSubCategoryInfo(topLevelIndex, subCategoryIndex)
+        else
+            categoryName = GetCollectibleCategoryInfo(topLevelIndex)
+        end
+    end
+    if (categoryName == nil or categoryName == "") then
+        return ""
+    end
+    return ZO_CachedStrFormat(SI_COLLECTIBLE_NAME_FORMATTER, categoryName)
+end
+
+function CollectiblesTrackerAllTheThings.GetCollectionsCategoryParentDisplayName(topLevelIndex)
+    return CollectiblesTrackerAllTheThings.GetCollectionsCategoryFormattedName(topLevelIndex, nil)
+end
+
+function CollectiblesTrackerAllTheThings.GetCollectionsCategoryKeyboardIcon(topLevelIndex, subCategoryIndex)
+    local normalIcon = GetCollectibleCategoryKeyboardIcons(topLevelIndex, subCategoryIndex)
+    if (IsUsableCollectibleCategoryTreeIconPath(normalIcon)) then
+        return NormalizeCollectibleCategoryKeyboardIconPath(normalIcon)
+    end
+    if (subCategoryIndex ~= nil) then
+        local parentIcon = GetCollectibleCategoryKeyboardIcons(topLevelIndex, nil)
+        if (IsUsableCollectibleCategoryTreeIconPath(parentIcon)) then
+            return NormalizeCollectibleCategoryKeyboardIconPath(parentIcon)
+        end
+    end
+    return nil
+end
+
+local function GetCollectibleCategorySpecializationKeyboardIcon(topLevelIndex)
+    local specialization = GetCollectibleCategorySpecialization(topLevelIndex)
+    local categoryType = nil
+    if (specialization == COLLECTIBLE_CATEGORY_SPECIALIZATION_DLC) then
+        categoryType = COLLECTIBLE_CATEGORY_TYPE_DLC
+    elseif (specialization == COLLECTIBLE_CATEGORY_SPECIALIZATION_HOUSING) then
+        categoryType = COLLECTIBLE_CATEGORY_TYPE_HOUSE
+    elseif (specialization == COLLECTIBLE_CATEGORY_SPECIALIZATION_OUTFIT_STYLES) then
+        categoryType = COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE
+    elseif (specialization == COLLECTIBLE_CATEGORY_SPECIALIZATION_TRIBUTE_PATRONS) then
+        categoryType = COLLECTIBLE_CATEGORY_TYPE_TRIBUTE_PATRON
+    end
+    if (categoryType == nil) then
+        return nil
+    end
+    local iconPath = CollectiblesTrackerAllTheThings.GetCollectibleCategoryTypeKeyboardIcon(categoryType)
+    if (IsUsableCollectibleCategoryTreeIconPath(iconPath)) then
+        return iconPath
+    end
+    return nil
+end
+
+local function GetCollectibleCategoryTypeIconFromCollectibleIds(collectibleIds)
+    if (collectibleIds == nil) then
+        return nil
+    end
+    for _, collectibleId in ipairs(collectibleIds) do
+        local categoryType = GetCollectibleCategoryType(collectibleId)
+        if (categoryType ~= COLLECTIBLE_CATEGORY_TYPE_INVALID) then
+            local iconPath = CollectiblesTrackerAllTheThings.GetCollectibleCategoryTypeKeyboardIcon(categoryType)
+            if (IsUsableCollectibleCategoryTreeIconPath(iconPath)) then
+                return iconPath
+            end
+        end
+    end
+    return nil
+end
+
+function CollectiblesTrackerAllTheThings.GetCollectionsCategorySourceIcon(topLevelIndex, subCategoryIndex, collectibleIds)
+    local treeIcon = CollectiblesTrackerAllTheThings.GetCollectionsCategoryKeyboardIcon(topLevelIndex, subCategoryIndex)
+    if (treeIcon ~= nil) then
+        return treeIcon
+    end
+    local specializationIcon = GetCollectibleCategorySpecializationKeyboardIcon(topLevelIndex)
+    if (specializationIcon ~= nil) then
+        return specializationIcon
+    end
+    return GetCollectibleCategoryTypeIconFromCollectibleIds(collectibleIds)
 end

@@ -29,9 +29,7 @@ local function NormalizeCharacterKey(characterKey)
 end
 
 local function Debug(...)
-    if type(Log) == "table" and type(Log.Debug) == "function" then
-        Log.Debug("[AlchemyRecipe]", ...)
-    end
+    Log.Debug("[AlchemyRecipe]", ...)
 end
 
 local function NormalizeRecipeId(recipeId)

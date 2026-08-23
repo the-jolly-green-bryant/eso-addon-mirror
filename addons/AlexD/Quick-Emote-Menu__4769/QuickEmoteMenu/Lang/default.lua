@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Show Settings Panel",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Close menu after playing emote (left-click)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Reset button position",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "Chat Button Offset X",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "The horizontal offset of the button relative to the chat window options button. Only applies when the button is attached to the chat window.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFFEATURES|r
 • Fast access to emotes with categories and favorites

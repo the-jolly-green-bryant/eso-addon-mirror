@@ -1,19 +1,20 @@
 local NWAimCam = {}
 NWAimCam.name = "NWAimCam"
-NWAimCam.version = "1.4"
+NWAimCam.version = "1.5"
 
 local isAiming = false
 local savedDistance = "130"
 local aimTimer = 0
+local debugMode = false
 
--- Weapon ID Mappings
+-- Base Weapon Ability IDs
 local WEAPON_IDS = {
     BOW = { 16691 },
     DESTRUCTION = { 15383, 16261, 18396 }, -- Inferno, Ice, Lightning
     RESTORATION = { 16212 }
 }
 
--- Default settings
+-- Default account-wide settings
 local defaultSettings = {
     enabled = true,
     enableBow = true,
@@ -22,10 +23,14 @@ local defaultSettings = {
     aimDistance = "0",
     maxFOV = 130,
     hOffset = 34,
-    failsafeTime = 1.25
+    failsafeTime = 1.25,
+    customSkills = {}, -- Table structure: [abilityId] = "Custom Name"
 }
 
--- Centralized function to safely reset the camera
+local tempSkillInput = ""
+local tempNameInput = ""
+
+-- Centralized camera reset routine
 local function ResetCamera()
     if isAiming then
         SetSetting(SETTING_TYPE_CAMERA, CAMERA_SETTING_DISTANCE, savedDistance)
@@ -34,67 +39,82 @@ local function ResetCamera()
     end
 end
 
--- Timer logic for failsafe
+-- Timer logic for failsafe auto zoom out
 function NWAimCam.OnUpdate()
-    aimTimer = aimTimer + 100
+    aimTimer = aimTimer + 50
     if aimTimer > (NWAimCam.savedVars.failsafeTime * 1000) then
         ResetCamera()
     end
 end
 
--- Event triggered when heavy attack / aim begins
+-- Triggered strictly when a heavy attack or registered ability starts
 function NWAimCam.OnCombatEventBegin(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
     if not isAiming then
         savedDistance = GetSetting(SETTING_TYPE_CAMERA, CAMERA_SETTING_DISTANCE)
         SetSetting(SETTING_TYPE_CAMERA, CAMERA_SETTING_DISTANCE, NWAimCam.savedVars.aimDistance)
         isAiming = true
         aimTimer = 0
-        EVENT_MANAGER:RegisterForUpdate(NWAimCam.name .. "Update", 100, NWAimCam.OnUpdate)
+        EVENT_MANAGER:RegisterForUpdate(NWAimCam.name .. "Update", 50, NWAimCam.OnUpdate)
+    else
+        aimTimer = 0
     end
 end
 
--- Active registered ability IDs table for fast lookup on release
+-- Table for fast ability validation on combat events
 local registeredAbilityLookup = {}
 
--- Event triggered on other actions to release the camera
+-- Triggered when an unrelated combat action occurs to smoothly release camera zoom
 function NWAimCam.OnCombatEventEnd(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-    if isAiming and not registeredAbilityLookup[abilityId] then
-        ResetCamera()
+    if isAiming then
+        if not registeredAbilityLookup[abilityId] then
+            ResetCamera()
+        end
     end
 end
 
--- Performance Optimization: Register events strictly for enabled weapons
+-- Registers combat event filters strictly for active categories and custom skills
 function NWAimCam.RegisterEvents()
     NWAimCam.UnregisterEvents()
 
     if not NWAimCam.savedVars.enabled then return end
 
     registeredAbilityLookup = {}
-    local abilitiesToRegister = {}
+    local defaultWeaponAbilities = {}
+    local customAbilities = {}
 
     if NWAimCam.savedVars.enableBow then
         for _, id in ipairs(WEAPON_IDS.BOW) do
-            table.insert(abilitiesToRegister, id)
+            table.insert(defaultWeaponAbilities, id)
             registeredAbilityLookup[id] = true
         end
     end
 
     if NWAimCam.savedVars.enableDestruction then
         for _, id in ipairs(WEAPON_IDS.DESTRUCTION) do
-            table.insert(abilitiesToRegister, id)
+            table.insert(defaultWeaponAbilities, id)
             registeredAbilityLookup[id] = true
         end
     end
 
     if NWAimCam.savedVars.enableRestoration then
         for _, id in ipairs(WEAPON_IDS.RESTORATION) do
-            table.insert(abilitiesToRegister, id)
+            table.insert(defaultWeaponAbilities, id)
             registeredAbilityLookup[id] = true
         end
     end
 
-    -- Register individual engine filters for each enabled weapon ID
-    for _, abilityId in ipairs(abilitiesToRegister) do
+    if NWAimCam.savedVars.customSkills then
+        for id, _ in pairs(NWAimCam.savedVars.customSkills) do
+            local numId = tonumber(id)
+            if numId then
+                table.insert(customAbilities, numId)
+                registeredAbilityLookup[numId] = true
+            end
+        end
+    end
+
+    -- Register default heavy attacks with ACTION_RESULT_BEGIN
+    for _, abilityId in ipairs(defaultWeaponAbilities) do
         local eventName = NWAimCam.name .. "Begin_" .. tostring(abilityId)
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, NWAimCam.OnCombatEventBegin)
         EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
@@ -102,25 +122,59 @@ function NWAimCam.RegisterEvents()
         EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
     end
 
-    -- If at least one category is enabled, register the End event
-    if #abilitiesToRegister > 0 then
+    -- Register custom skills without action_result filter to catch instant and ground casts
+    for _, abilityId in ipairs(customAbilities) do
+        local eventName = NWAimCam.name .. "CustomBegin_" .. tostring(abilityId)
+        EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, NWAimCam.OnCombatEventBegin)
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
+    end
+
+    if (#defaultWeaponAbilities > 0) or (#customAbilities > 0) then
         EVENT_MANAGER:RegisterForEvent(NWAimCam.name .. "End", EVENT_COMBAT_EVENT, NWAimCam.OnCombatEventEnd)
         EVENT_MANAGER:AddFilterForEvent(NWAimCam.name .. "End", EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
     end
 end
 
--- Performance Optimization: Unregister all events completely
+-- Unregisters all combat events from engine to eliminate performance footprint
 function NWAimCam.UnregisterEvents()
     for _, category in pairs(WEAPON_IDS) do
         for _, id in ipairs(category) do
             EVENT_MANAGER:UnregisterForEvent(NWAimCam.name .. "Begin_" .. tostring(id), EVENT_COMBAT_EVENT)
         end
     end
+    if NWAimCam.savedVars and NWAimCam.savedVars.customSkills then
+        for id, _ in pairs(NWAimCam.savedVars.customSkills) do
+            EVENT_MANAGER:UnregisterForEvent(NWAimCam.name .. "CustomBegin_" .. tostring(id), EVENT_COMBAT_EVENT)
+        end
+    end
     EVENT_MANAGER:UnregisterForEvent(NWAimCam.name .. "End", EVENT_COMBAT_EVENT)
     ResetCamera()
 end
 
--- Settings Menu setup
+-- Debug combat listener to print only clean skill name and ID into chat
+function NWAimCam.OnDebugCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+    if abilityName and abilityName ~= "" and abilityId and abilityId > 0 then
+        d("[NWAimCam Skill Finder] Skill: " .. tostring(abilityName) .. " | ID: " .. tostring(abilityId))
+    end
+end
+
+-- Toggles live combat event inspection mode
+local function ToggleSkillCodeFinder()
+    debugMode = not debugMode
+    if debugMode then
+        EVENT_MANAGER:RegisterForEvent(NWAimCam.name .. "SkillFinder", EVENT_COMBAT_EVENT, NWAimCam.OnDebugCombatEvent)
+        EVENT_MANAGER:AddFilterForEvent(NWAimCam.name .. "SkillFinder", EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+        d("|c00FF00[NWAimCam]|r Skill Code Finder is now |c00FF00ENABLED|r. Cast any skill or heavy attack to see its ID.")
+    else
+        EVENT_MANAGER:UnregisterForEvent(NWAimCam.name .. "SkillFinder", EVENT_COMBAT_EVENT)
+        d("|c00FF00[NWAimCam]|r Skill Code Finder is now |cFF0000DISABLED|r.")
+    end
+end
+
+SLASH_COMMANDS["/nwcamskillcode"] = ToggleSkillCodeFinder
+
+-- LibAddonMenu settings panel creation
 local function CreateSettingsMenu()
     local LAM = LibAddonMenu2
     
@@ -134,6 +188,35 @@ local function CreateSettingsMenu()
         registerForDefaults = true,
     }
     LAM:RegisterAddonPanel("NWAimCamOptions", panelData)
+
+    -- Dynamic list for individual custom skills management
+    local customSkillsControls = {}
+    local hasCustom = false
+
+    if NWAimCam.savedVars and NWAimCam.savedVars.customSkills then
+        for id, name in pairs(NWAimCam.savedVars.customSkills) do
+            hasCustom = true
+            local currentId = tonumber(id)
+            local currentName = tostring(name)
+            table.insert(customSkillsControls, {
+                type = "button",
+                name = string.format("Delete: %s (%d)", currentName, currentId),
+                tooltip = "Click to remove this skill and reload the interface.",
+                func = function()
+                    NWAimCam.savedVars.customSkills[currentId] = nil
+                    ReloadUI()
+                end,
+                width = "half",
+            })
+        end
+    end
+
+    if not hasCustom then
+        table.insert(customSkillsControls, {
+            type = "description",
+            text = "|c808080No custom skills registered yet.|r",
+        })
+    end
     
     local optionsData = {
         {
@@ -190,6 +273,71 @@ local function CreateSettingsMenu()
             end,
             disabled = function() return not NWAimCam.savedVars.enabled end,
             default = defaultSettings.enableRestoration,
+        },
+        {
+            type = "header",
+            name = "Custom Skills & Abilities",
+        },
+        {
+            type = "description",
+            title = "How Custom Skills Work",
+            text = "1. Click 'Toggle Skill Code Finder Mode' or type /nwcamskillcode in chat.\n" ..
+                   "2. Cast your desired skill to inspect its clean Ability ID in chat.\n" ..
+                   "3. Enter the ID number and an optional custom name below.\n" ..
+                   "4. Click 'Add Skill' to save and reload the UI.",
+        },
+        {
+            type = "button",
+            name = "Toggle Skill Code Finder Mode",
+            tooltip = "Turns the live chat skill ID listener ON or OFF.",
+            func = function()
+                ToggleSkillCodeFinder()
+            end,
+            width = "half",
+        },
+        {
+            type = "editbox",
+            name = "Skill Code (Ability ID)",
+            tooltip = "Enter the numeric Ability ID.",
+            getFunc = function() return tempSkillInput end,
+            setFunc = function(value) tempSkillInput = value end,
+            isMultiline = false,
+        },
+        {
+            type = "editbox",
+            name = "Skill Custom Name (Optional)",
+            tooltip = "Enter a friendly name for this skill, or leave blank to auto-detect.",
+            getFunc = function() return tempNameInput end,
+            setFunc = function(value) tempNameInput = value end,
+            isMultiline = false,
+        },
+        {
+            type = "button",
+            name = "Add Skill",
+            tooltip = "Saves this Skill permanently and reloads the UI to register native engine filters.",
+            func = function()
+                local id = tonumber(tempSkillInput)
+                if id and id > 0 then
+                    local name = tempNameInput
+                    if not name or name == "" then
+                        name = GetAbilityName(id)
+                    end
+                    if not name or name == "" then
+                        name = "Custom Skill " .. tostring(id)
+                    end
+                    NWAimCam.savedVars.customSkills[id] = name
+                    tempSkillInput = ""
+                    tempNameInput = ""
+                    ReloadUI()
+                end
+            end,
+            width = "half",
+        },
+        {
+            type = "submenu",
+            name = "Manage Saved Custom Skills",
+            tooltip = "View and individually delete registered custom skills.",
+            controls = customSkillsControls,
         },
         {
             type = "header",
@@ -259,15 +407,21 @@ local function CreateSettingsMenu()
                    "Zoom in and out speed is controlled by the engine, so using a lower max FOV delivers greater immersion (Real Action Combat Players play ZOOMED IN).",
         },
     }
+
     LAM:RegisterOptionControls("NWAimCamOptions", optionsData)
 end
 
+-- Addon initialization entry point
 function NWAimCam.OnAddOnLoaded(event, addonName)
     if addonName == NWAimCam.name then
         EVENT_MANAGER:UnregisterForEvent(NWAimCam.name, EVENT_ADD_ON_LOADED)
         
         NWAimCam.savedVars = ZO_SavedVars:NewAccountWide("NWAimCamVariables", 1, nil, defaultSettings, GetWorldName())
         
+        if not NWAimCam.savedVars.customSkills then
+            NWAimCam.savedVars.customSkills = {}
+        end
+
         CreateSettingsMenu()
         
         if NWAimCam.savedVars.enabled then

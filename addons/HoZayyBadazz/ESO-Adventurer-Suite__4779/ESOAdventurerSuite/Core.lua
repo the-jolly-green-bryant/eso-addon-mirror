@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.24.48"
+EPC.version = "0.25.23"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -77,6 +77,11 @@ EPC.defaults = {
     inventoryCharacters = {},
     sharedInventory = { items = {} },
 
+    -- Optional native ESO cinematic graphics preset. This only changes settings
+    -- exposed through ESO's own graphics API and never installs external shaders.
+    cinematicGraphicsEnabled = false,
+    cinematicGraphicsBackup = {},
+
     -- Persistent HUD / unit frames. These are independent of the large suite window.
     showPlayerFrame = true,
     showTargetFrame = true,
@@ -140,10 +145,28 @@ EPC.defaults = {
     activeQuestTop = -1,
     activeQuestWidth = 420,
     activeQuestHeight = 160,
+    selectedHudQuestIndex = nil,
+    selectedHudQuestId = 0,
+    selectedHudQuestName = "",
+    selectedHudQuestSource = "",
+    questTrackingSource = "ACTIVE_QUEST",
+    activeHudQuestIndex = nil,
+    activeHudQuestId = 0,
+    activeHudQuestName = "",
+    goldenHudQuestIndex = nil,
+    goldenHudQuestId = 0,
+    goldenHudQuestName = "",
+    mainHudQuestIndex = nil,
+    mainHudQuestId = 0,
+    mainHudQuestName = "",
 
-    -- Movable native Golden Pursuits / Tamriel Tomes HUD tracker.
+    -- Suite-owned Golden Pursuits HUD tracker.
     goldenPursuitsLeft = -1,
     goldenPursuitsTop = -1,
+    goldenPursuitsWidth = 420,
+    goldenPursuitsHeight = 140,
+    goldenPursuitName = "",
+    goldenPursuitQuestName = "",
 
     -- Movable ESO-style Alliance Rank overlay.
     showAllianceRank = true,
@@ -151,6 +174,12 @@ EPC.defaults = {
     allianceRankLeft = -1,
     allianceRankTop = -1,
     allianceRankScale = 1.0,
+
+    -- Movable Champion Point overlay.
+    showChampionOverlay = true,
+    championOverlayVisibility = "ALWAYS",
+    championOverlayLeft = -1,
+    championOverlayTop = -1,
 
     -- Six independently movable active-hotbar overlays: skills 1-5 plus Ultimate.
     showAbilityOverlays = true,
@@ -291,6 +320,7 @@ function EPC:RefreshGameplayOverlays()
     if self.Clock and self.Clock.Refresh then self.Clock:Refresh() end
     if self.ActiveQuest and self.ActiveQuest.Refresh then self.ActiveQuest:Refresh() end
     if self.AllianceRank and self.AllianceRank.Refresh then self.AllianceRank:Refresh() end
+    if self.ChampionOverlay and self.ChampionOverlay.Refresh then self.ChampionOverlay:Refresh() end
     if self.AbilityOverlays and self.AbilityOverlays.Refresh then self.AbilityOverlays:Refresh() end
     if self.RepairCostOverlay and self.RepairCostOverlay.Refresh then self.RepairCostOverlay:Refresh() end
     if self.UI and self.UI.UpdateCombatHUD and self.Combat then self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary()) end
@@ -415,9 +445,10 @@ function EPC:SetUnitFramesMoveMode(active)
     local canActiveQuest = self.ActiveQuest and self.ActiveQuest.SetLayoutMode
     local canGoldenPursuits = self.GoldenPursuits and self.GoldenPursuits.SetLayoutMode
     local canAllianceRank = self.AllianceRank and self.AllianceRank.SetLayoutMode
+    local canChampionOverlay = self.ChampionOverlay and self.ChampionOverlay.SetLayoutMode
     local canAbilities = self.AbilityOverlays and self.AbilityOverlays.SetLayoutMode
     local canRepairCosts = self.RepairCostOverlay and self.RepairCostOverlay.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canAbilities and not canRepairCosts then return end
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canRepairCosts then return end
     active = active == true
 
     if active then
@@ -433,9 +464,10 @@ function EPC:SetUnitFramesMoveMode(active)
         if canActiveQuest then self.ActiveQuest:SetLayoutMode(true) end
         if canGoldenPursuits then self.GoldenPursuits:SetLayoutMode(true) end
         if canAllianceRank then self.AllianceRank:SetLayoutMode(true) end
+        if canChampionOverlay then self.ChampionOverlay:SetLayoutMode(true) end
         if canAbilities then self.AbilityOverlays:SetLayoutMode(true) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(true) end
-        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Repair Estimate, and each Ability icon, then use /esosuite frames lock.")
+        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Repair Estimate, and each Ability icon, then use /esosuite frames lock.")
     else
         self.unitFramesMoveMode = false
         if canFrames then self.UnitFrames:SetLayoutMode(false) end
@@ -445,6 +477,7 @@ function EPC:SetUnitFramesMoveMode(active)
         if canActiveQuest then self.ActiveQuest:SetLayoutMode(false) end
         if canGoldenPursuits then self.GoldenPursuits:SetLayoutMode(false) end
         if canAllianceRank then self.AllianceRank:SetLayoutMode(false) end
+        if canChampionOverlay then self.ChampionOverlay:SetLayoutMode(false) end
         if canAbilities then self.AbilityOverlays:SetLayoutMode(false) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(false) end
         if self.unitFramesMoveOwned and not self.interactionMode and not self.combatHudMoveMode and not self.miniMapMoveMode then setCameraUIMode(false) end
@@ -502,6 +535,10 @@ function EPC:ResetUnitFramePositions()
     if self.Clock and self.Clock.ResetPosition then
         self.Clock:ResetPosition()
         self.Clock:Refresh()
+    end
+    if self.ChampionOverlay and self.ChampionOverlay.ResetPosition then
+        self.ChampionOverlay:ResetPosition()
+        self.ChampionOverlay:Refresh()
     end
     if self.ActiveQuest and self.ActiveQuest.ResetPosition then
         self.ActiveQuest:ResetPosition()
@@ -719,6 +756,59 @@ function EPC:RegisterEvents()
         end)
     end
 
+    -- Quest-chain continuation: after the player completes a quest, arm a short
+    -- continuation window. If ESO immediately offers the next quest while the
+    -- player is still in the quest-giver interaction, accept that offered quest
+    -- and assist it once it is added to the journal. This intentionally does not
+    -- auto-accept arbitrary quests during normal play.
+    self.questContinuation = self.questContinuation or { armedUntil = 0, awaitingAdded = false }
+
+    if EVENT_QUEST_COMPLETE then
+        EVENT_MANAGER:RegisterForEvent(self.name .. "_QuestChainComplete", EVENT_QUEST_COMPLETE, function(_, questName)
+            local now = type(GetGameTimeMilliseconds) == "function" and GetGameTimeMilliseconds() or 0
+            self.questContinuation.armedUntil = now + 20000
+            self.questContinuation.awaitingAdded = false
+            self.questContinuation.completedQuestName = tostring(questName or "")
+        end)
+    end
+
+    if EVENT_QUEST_OFFERED then
+        EVENT_MANAGER:RegisterForEvent(self.name .. "_QuestChainOffered", EVENT_QUEST_OFFERED, function()
+            local state = self.questContinuation
+            local now = type(GetGameTimeMilliseconds) == "function" and GetGameTimeMilliseconds() or 0
+            if not state or now > (tonumber(state.armedUntil) or 0) then return end
+            if type(AcceptOfferedQuest) ~= "function" then return end
+
+            -- Consume the continuation window before accepting so duplicate offer
+            -- events cannot accept more than one quest.
+            state.armedUntil = 0
+            state.awaitingAdded = true
+            zo_callLater(function()
+                local ok = pcall(AcceptOfferedQuest)
+                if not ok then state.awaitingAdded = false end
+            end, 50)
+        end)
+    end
+
+    if EVENT_QUEST_ADDED then
+        EVENT_MANAGER:RegisterForEvent(self.name .. "_QuestChainAdded", EVENT_QUEST_ADDED, function(_, journalIndex, questName)
+            local state = self.questContinuation
+            if not state or state.awaitingAdded ~= true then return end
+            state.awaitingAdded = false
+
+            -- Make the newly continued quest the assisted quest so the normal ESO
+            -- tracker and Adventurer Suite Active Quest display continue with it.
+            if type(SetTracked) == "function" and TRACK_TYPE_QUEST ~= nil then
+                pcall(SetTracked, TRACK_TYPE_QUEST, true, journalIndex)
+            end
+            if type(SetTrackedIsAssisted) == "function" and TRACK_TYPE_QUEST ~= nil then
+                pcall(SetTrackedIsAssisted, TRACK_TYPE_QUEST, true, journalIndex)
+            end
+            if self.RequestRefresh then self:RequestRefresh("quest-chain-continued") end
+            if self.Print then self:Print("Continuing quest: " .. tostring(questName or "Next quest")) end
+        end)
+    end
+
     for i = 1, #questEvents do
         local eventId = questEvents[i]
         EVENT_MANAGER:RegisterForEvent(self.name .. "_Quest_" .. tostring(eventId), eventId, function(eventCode)
@@ -921,6 +1011,7 @@ function EPC:RegisterEvents()
                 if self.Clock and self.Clock.SetLayoutMode then self.Clock:SetLayoutMode(false) end
                 if self.ActiveQuest and self.ActiveQuest.SetLayoutMode then self.ActiveQuest:SetLayoutMode(false) end
                 if self.AllianceRank and self.AllianceRank.SetLayoutMode then self.AllianceRank:SetLayoutMode(false) end
+                if self.ChampionOverlay and self.ChampionOverlay.SetLayoutMode then self.ChampionOverlay:SetLayoutMode(false) end
                 if self.AbilityOverlays and self.AbilityOverlays.SetLayoutMode then self.AbilityOverlays:SetLayoutMode(false) end
             end
             if self.miniMapMoveMode and self:Safe(IsGameCameraUIModeActive, false) ~= true then
@@ -1060,17 +1151,20 @@ function EPC:Initialize()
     initModule("ROLE", self.Role)
     initModule("TRAVEL", self.Travel)
     initModule("ACTIVITIES", self.Activities)
+    initModule("DUNGEON_FINDER", self.DungeonFinder)
     initModule("QUEST_FINDER", self.QuestFinder)
     initModule("SET_JOURNAL", self.SetJournal)
     initModule("ENDGAME", self.Endgame)
     initModule("TARGET_BUILD", self.TargetBuild)
     initModule("GEAR_OPTIMIZER", self.GearOptimizer)
+    initModule("GEAR_LOADOUT_OVERLAY", self.GearLoadoutOverlay)
     initModule("ADVISOR", self.Advisor)
     initModule("COMBAT_PRESENTATION", self.CombatPresentation)
     initModule("COMBAT", self.Combat)
     initModule("MAINTENANCE", self.Maintenance)
     initModule("UNIT_FRAMES", self.UnitFrames)
     initModule("ALLIANCE_RANK", self.AllianceRank)
+    initModule("CHAMPION_OVERLAY", self.ChampionOverlay)
     initModule("ABILITY_OVERLAYS", self.AbilityOverlays)
     initModule("REPAIR_COST_OVERLAY", self.RepairCostOverlay)
     initModule("STABLE_TIMER", self.StableTimer)
@@ -1313,6 +1407,7 @@ function EPC:Initialize()
                 self.saved.showClock = true
                 self.saved.showActiveQuestOverlay = true
                 self.saved.showAllianceRank = true
+                self.saved.showChampionOverlay = true
                 self.saved.showAbilityOverlays = true
                 self.saved.showRepairCostOverlay = true
                 self.saved.showCombatHud = true
@@ -1322,6 +1417,7 @@ function EPC:Initialize()
                 if self.Clock then self.Clock:Refresh() end
                 if self.ActiveQuest then self.ActiveQuest:Refresh() end
                 if self.AllianceRank then self.AllianceRank:Refresh() end
+                if self.ChampionOverlay then self.ChampionOverlay:Refresh() end
                 if self.AbilityOverlays then self.AbilityOverlays:Refresh() end
                 if self.RepairCostOverlay then self.RepairCostOverlay:Refresh() end
                 if self.UI and self.UI.UpdateCombatHUD and self.Combat then self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary()) end
@@ -1338,6 +1434,7 @@ function EPC:Initialize()
                 self.saved.showClock = false
                 self.saved.showActiveQuestOverlay = false
                 self.saved.showAllianceRank = false
+                self.saved.showChampionOverlay = false
                 self.saved.showAbilityOverlays = false
                 self.saved.showRepairCostOverlay = false
                 self.saved.showCombatHud = false
@@ -1347,6 +1444,7 @@ function EPC:Initialize()
                 if self.Clock then self.Clock:Refresh() end
                 if self.ActiveQuest then self.ActiveQuest:Refresh() end
                 if self.AllianceRank then self.AllianceRank:Refresh() end
+                if self.ChampionOverlay then self.ChampionOverlay:Refresh() end
                 if self.AbilityOverlays then self.AbilityOverlays:Refresh() end
                 if self.RepairCostOverlay then self.RepairCostOverlay:Refresh() end
                 if self.UI and self.UI.UpdateCombatHUD and self.Combat then self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary()) end

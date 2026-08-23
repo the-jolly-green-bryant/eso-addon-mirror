@@ -10,11 +10,11 @@ function QuickslotGate:CanApply()
         return false, "gamepad_not_supported"
     end
 
-    if type(Addon) == "table" and type(Addon.activeApplyRun) == "table" then
+    if type(Addon.activeApplyRun) == "table" then
         return false, "build_apply_running"
     end
 
-    if type(Addon.Modules.QuickslotApply) == "table" and Addon.Modules.QuickslotApply.running == true then
+    if Addon.Modules.QuickslotApply.running == true then
         return false, "quickslot_apply_running"
     end
 

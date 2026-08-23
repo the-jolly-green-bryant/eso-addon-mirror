@@ -1,7 +1,8 @@
 -- Overlay drawing for the HUD editor: catalog, banner, selection box, and
 -- grid guides. Session open/close stays in editor.lua — every guard there
--- is console-learned. These methods hang off the same ValknarrUIEEditor
--- table (X = X or {}) so Apply/Begin keep calling Editor:RefreshOverlay.
+-- is console-learned. Slash/diag and saved-layout reapply are sibling files.
+-- These methods hang off the same ValknarrUIEEditor table (X = X or {}) so
+-- Apply/Begin keep calling Editor:RefreshOverlay.
 
 ValknarrUIEEditor = ValknarrUIEEditor or {}
 
@@ -15,6 +16,7 @@ local Safe = ValknarrUIESafe
 -- Shared with editor.lua (loaded first). Assigned there so both files
 -- use one ElementIds/LabelOf rather than drifting copies.
 local ElementIds = Editor.ElementIds
+local AllElementIds = Editor.AllElementIds
 local LabelOf = Editor.LabelOf
 local StatusLabel = Editor.StatusLabel
 local StatusColor = Editor.StatusColor
@@ -98,7 +100,7 @@ function Editor:CreateOverlay()
     -- immediately and still counted as a SetText on every overlay create.
 
     self.catalog = WINDOW_MANAGER:CreateControl("ValknarrUIECatalog", self.root, CT_BACKDROP)
-    local ids = ElementIds()
+    local ids = (AllElementIds and AllElementIds()) or ElementIds()
     local rowH = 30
     local rowTop = 14
     self.catalogRowHeight = rowH
@@ -179,7 +181,8 @@ function Editor:CreateOverlay()
 
     self.labels = {}
     self.proxies = {}
-    for _, name in ipairs(ElementIds()) do
+    local overlayIds = (AllElementIds and AllElementIds()) or ElementIds()
+    for _, name in ipairs(overlayIds) do
         local proxy = WINDOW_MANAGER:CreateControl("ValknarrUIEProxy" .. SafeControlName(name), self.root, CT_BACKDROP)
         local color = PROXY_COLORS[name] or { 0.70, 0.70, 0.70, 0.45 }
         proxy:SetCenterColor(color[1], color[2], color[3], color[4])
@@ -233,10 +236,19 @@ function Editor:SetChromeVisible(visible)
         self.catalog:SetHidden(hide)
     end
     Grid:SetVisible(visible)
+    local listed = {}
     for _, name in ipairs(ElementIds()) do
+        listed[name] = true
         local label = self.labels and self.labels[name]
         if label then
             label:SetHidden(hide)
+        end
+    end
+    if self.labels then
+        for name, label in pairs(self.labels) do
+            if not listed[name] then
+                label:SetHidden(true)
+            end
         end
     end
     if self.overlay then
@@ -249,13 +261,24 @@ function Editor:UpdateCatalog()
     local colors = self.catalogColorCache or {}
     self.catalogTextCache = texts
     self.catalogColorCache = colors
+    local listed = {}
+    for _, name in ipairs(ElementIds()) do
+        listed[name] = true
+    end
+    if self.catalogRows then
+        for name, row in pairs(self.catalogRows) do
+            row:SetHidden(not listed[name])
+        end
+    end
     local selectedIndex
-    for index, name in ipairs(ElementIds()) do
+    local visIndex = 0
+    for _, name in ipairs(ElementIds()) do
+        visIndex = visIndex + 1
         local row = self.catalogRows and self.catalogRows[name]
         if row then
             local selected = name == self.selected
             if selected then
-                selectedIndex = index
+                selectedIndex = visIndex
             end
             local marker = selected and "> " or "  "
             local status = self.status and self.status[name]
@@ -273,7 +296,13 @@ function Editor:UpdateCatalog()
                     row:SetColor(StatusColor(status))
                 end
             end
+            local rowTop = (self.catalogRowTop or 14) + (visIndex * (self.catalogRowHeight or 30))
+            row:SetAnchor(TOPLEFT, self.catalog, TOPLEFT, 18, rowTop)
         end
+    end
+    if self.catalog then
+        local catalogH = math.max(214, 72 + (visIndex * (self.catalogRowHeight or 30)))
+        self.catalog:SetDimensions(400, catalogH)
     end
 
     if self.catalogSelection and self.catalogSelectionIndex ~= selectedIndex then
@@ -364,6 +393,10 @@ function Editor:RefreshOverlay()
     end
     self.overlayDirty = false
 
+    if self.selected and LibValknarrUIE and LibValknarrUIE.IsReplaced and LibValknarrUIE:IsReplaced(self.selected) then
+        self.selected = ElementIds()[1] or self.selected
+    end
+
     local width, height = Adapter:GetScreenSize()
     Grid:LayoutLines(width, height)
 
@@ -428,6 +461,25 @@ function Editor:RefreshOverlay()
                 label:SetText(labelText)
             end
             label:SetHidden(self.cleanPreview)
+        end
+    end
+
+    local listed = {}
+    for _, name in ipairs(ElementIds()) do
+        listed[name] = true
+    end
+    if self.labels then
+        for name, label in pairs(self.labels) do
+            if not listed[name] then
+                label:SetHidden(true)
+            end
+        end
+    end
+    if self.proxies then
+        for name, proxy in pairs(self.proxies) do
+            if not listed[name] then
+                proxy:SetHidden(true)
+            end
         end
     end
 

@@ -30,11 +30,6 @@ local function ResolveMatched(verifyResult, currentSignature, targetSignature)
 end
 
 function M:CollectRouteBVerifySnapshot(context)
-    if type(LTM_SUBCLASS_VERIFY) ~= "table"
-        or type(LTM_SUBCLASS_VERIFY.VerifySubclassState) ~= "function" then
-        return nil, "subclass_verify_module_unavailable"
-    end
-
     local verifyTargetState = CloneVerifyTargetState(context and context.targetState or nil)
     local verifyCallOk, verifyResult = pcall(function()
         return LTM_SUBCLASS_VERIFY:VerifySubclassState(context and context.pipelineContext or nil, verifyTargetState)
@@ -74,19 +69,30 @@ function M:VerifyTransformSnapshotsPostCommit(context)
     if type(context.transformPostCommitVerify) == "table" then
         return context.transformPostCommitVerify
     end
-    if context.completionResolved ~= true then
+    if context.postMutationVerifySucceeded ~= true then
         return nil
     end
 
     local transformPlan = context.transformPlan
-    if type(transformPlan) ~= "table" or transformPlan.hasTarget ~= true then
+    if type(transformPlan) ~= "table"
+        or transformPlan.hasTarget ~= true
+        or type(context.activeRestorePlan) == "table"
+            and context.activeRestorePlan.neutralized == true then
         return nil
     end
 
     local transformSnapshots = transformPlan.appliedSnapshots
     local transformVerify = LTM_TRANSFORM_SKILLS:VerifySnapshots(
         transformSnapshots,
-        context.pipelineContext
+        context.pipelineContext,
+        {
+            expectedMissingProgressionSet = type(context.expectedMissingActiveTargets) == "table"
+                and {
+                    purchases = context.expectedMissingActiveTargets.purchaseByProgression,
+                    morphs = context.expectedMissingActiveTargets.morphByProgression,
+                }
+                or nil,
+        }
     )
     context.transformPostCommitVerify = transformVerify
     return transformVerify

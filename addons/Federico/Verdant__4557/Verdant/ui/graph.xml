@@ -56,7 +56,7 @@
         <Texture name="$(parent)ChromeTop"
                  textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
           <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="6"  offsetY="6"/>
-          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="84"/>
         </Texture>
 
         <Texture name="$(parent)ChromeBottom"
@@ -67,13 +67,13 @@
 
         <Texture name="$(parent)ChromeLeft"
                  textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
-          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="6"  offsetY="62"/>
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="6"  offsetY="84"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="-14"/>
         </Texture>
 
         <Texture name="$(parent)ChromeRight"
                  textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
-          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-14" offsetY="62"/>
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-14" offsetY="84"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6"  offsetY="-14"/>
         </Texture>
 
@@ -117,7 +117,7 @@
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-30" offsetY="4"/>
+          <Anchor point="TOPRIGHT" offsetX="-30" offsetY="9"/>
           <Dimensions x="18" y="18"/>
           <Textures normal="EsoUI/Art/Buttons/pointsplus_up.dds"
                     pressed="EsoUI/Art/Buttons/pointsplus_down.dds"
@@ -129,7 +129,7 @@
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="4"/>
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="9"/>
           <Dimensions x="18" y="18"/>
           <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
                     pressed="EsoUI/Art/Buttons/decline_down.dds"
@@ -183,7 +183,7 @@
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-72" offsetY="34"/>
+          <Anchor point="TOPRIGHT" offsetX="-72" offsetY="33"/>
           <Dimensions x="24" y="24"/>
           <Textures normal="EsoUI/Art/Buttons/large_leftdoublearrow_up.dds"
                     pressed="EsoUI/Art/Buttons/large_leftdoublearrow_down.dds"
@@ -203,7 +203,7 @@
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="34"/>
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="33"/>
           <Dimensions x="24" y="24"/>
           <Textures normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
                     pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
@@ -213,7 +213,7 @@
 
         <!-- ── Inner viewport: tighter padding, less chrome presence ────── -->
         <Control name="$(parent)Viewport" mouseEnabled="false">
-          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="62"/>
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="84"/>
           <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-14"/>
 
           <Controls>

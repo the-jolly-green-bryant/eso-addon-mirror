@@ -1,8 +1,8 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 474
-## Version: 0.0.474
+## AddOnVersion: 479
+## Version: 0.0.479
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
@@ -52,6 +52,7 @@ combat/setup_analysis.lua
 storage/bitcodec.lua
 storage/binary.lua
 storage/storage.lua
+storage/memdiag.lua
 storage/migration.lua
 
 ; Network domain

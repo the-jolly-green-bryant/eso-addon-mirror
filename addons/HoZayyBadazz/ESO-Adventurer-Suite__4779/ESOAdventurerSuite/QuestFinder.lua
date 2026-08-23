@@ -8,7 +8,7 @@ local EPC = ESOProgressionCoach
 EPC.QuestFinder = EPC.QuestFinder or {}
 local Q = EPC.QuestFinder
 
-Q.PAGE_SIZE = 8
+Q.PAGE_SIZE = 10
 Q.SCAN_MAX_ID = 15000
 Q.SCAN_CHUNK = 250
 
@@ -286,11 +286,50 @@ function Q:Scroll(delta)
     if EPC.UI and EPC.saved and EPC.saved.activeTab == "QUESTS" then EPC.UI:RenderQuest(self:BuildView()) end
 end
 
+function Q:AssistAcceptedQuest2511(entry, setMapZone)
+    if not entry or not entry.questIndex then return false end
+    local questIndex = tonumber(entry.questIndex)
+    if not questIndex then return false end
+
+    if setMapZone and type(SetMapToQuestZone) == "function" then
+        pcall(SetMapToQuestZone, questIndex)
+    end
+    if TRACK_TYPE_QUEST ~= nil and type(SetTrackedIsAssisted) == "function" then
+        if type(SetTracked) == "function" then
+            pcall(SetTracked, TRACK_TYPE_QUEST, true, questIndex, 0)
+        end
+        pcall(SetTrackedIsAssisted, TRACK_TYPE_QUEST, true, questIndex, 0)
+    end
+
+    -- Refresh the Suite overlay immediately instead of waiting for ESO's
+    -- tracking event/tick. A short follow-up refresh catches clients that
+    -- apply the assisted-tracker state one frame later.
+    if EPC.ActiveQuest and type(EPC.ActiveQuest.Refresh) == "function" then
+        EPC.ActiveQuest:Refresh()
+        if type(zo_callLater) == "function" then
+            zo_callLater(function()
+                if EPC.ActiveQuest and type(EPC.ActiveQuest.Refresh) == "function" then
+                    EPC.ActiveQuest:Refresh()
+                end
+            end, 60)
+        end
+    end
+    return true
+end
+
 function Q:SelectRow(index)
     local view = self.lastView or self:BuildView()
     local entry = view.rows and view.rows[index]
     if not entry then return end
     self.selectedKey = entry.key
+
+    -- Selecting an already-accepted quest in Quest Finder now makes it the
+    -- assisted/tracked quest immediately, so the Active Quest HUD switches
+    -- to the same quest without requiring a separate TRAVEL/ROUTE click.
+    if entry.questIndex then
+        self:AssistAcceptedQuest2511(entry, false)
+    end
+
     if EPC.UI and EPC.saved and EPC.saved.activeTab == "QUESTS" then EPC.UI:RenderQuest(self:BuildView()) end
 end
 
@@ -300,11 +339,7 @@ function Q:RouteSelected()
     if not q then EPC:Print("Select a quest first.") return end
 
     if q.questIndex then
-        if type(SetMapToQuestZone) == "function" then pcall(SetMapToQuestZone, q.questIndex) end
-        if TRACK_TYPE_QUEST and type(SetTrackedIsAssisted) == "function" then
-            if type(SetTracked) == "function" then pcall(SetTracked, TRACK_TYPE_QUEST, true, q.questIndex, 0) end
-            pcall(SetTrackedIsAssisted, TRACK_TYPE_QUEST, true, q.questIndex, 0)
-        end
+        self:AssistAcceptedQuest2511(q, true)
         EPC:Print("Assisting active quest: " .. q.name)
         return
     end
@@ -317,4 +352,32 @@ function Q:RouteSelected()
     if EPC.Travel then EPC.Travel.selectedKey = nil end
     EPC:RefreshNow("quest-discovery-route")
     EPC:Print(string.format("Quest route: %s - %s. %s", q.name, q.zone, q.starter))
+end
+
+-- v0.25.12: make the Quest Finder selection authoritative for the Suite HUD.
+local easLegacyAssistAcceptedQuest_2512 = Q.AssistAcceptedQuest2511
+function Q:AssistAcceptedQuest2511(entry, setMapZone)
+    if entry and entry.questIndex and EPC.ActiveQuest and EPC.ActiveQuest.SetSelectedQuest2512 then
+        EPC.ActiveQuest:SetSelectedQuest2512(entry.questIndex, entry.questId, entry.name, "QUEST_FINDER")
+    end
+    return easLegacyAssistAcceptedQuest_2512(self, entry, setMapZone)
+end
+
+
+-- v0.25.16: Suite quest-source priority. Selecting an accepted quest remembers
+-- it in the appropriate source slot, but only the source selected in Settings
+-- is allowed to become ESO's assisted quest.
+function Q:AssistAcceptedQuest2511(entry, setMapZone)
+    if not entry or not entry.questIndex then return false end
+    local questIndex = tonumber(entry.questIndex)
+    if not questIndex then return false end
+
+    if setMapZone and type(SetMapToQuestZone) == "function" then
+        pcall(SetMapToQuestZone, questIndex)
+    end
+
+    if EPC.ActiveQuest and EPC.ActiveQuest.SetSelectedQuest2512 then
+        EPC.ActiveQuest:SetSelectedQuest2512(questIndex, entry.questId, entry.name, "QUEST_FINDER")
+    end
+    return true
 end

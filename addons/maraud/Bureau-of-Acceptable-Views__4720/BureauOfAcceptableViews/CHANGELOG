@@ -3,6 +3,17 @@
 
 
 
+[color=#6FCB9F]Version: 3.7.105247[/color]
+
+Update 51 compatibility and sprint-state reliability update.
+
+- Audited the addon against the future Update 51 / API 101051 documentation and API patch notes; no incompatible removed or changed API usage was found.
+- Added API 101051 manifest compatibility while retaining support for the current live API 101050.
+- Replaced the legacy werewolf compatibility alias with the documented `IsPlayerInWerewolfForm()` API.
+- Removed the sprint detector's dependency on undocumented roll-dodge action results.
+- Added a bounded roll-dodge suppression window so sprint detection always recovers when ESO omits a matching completion event.
+
+
 [color=#6FCB9F]Version: 3.6.064722[/color]
 
 Patch release with Adaptive PvP fixes, stability improvements, and runtime optimizations.

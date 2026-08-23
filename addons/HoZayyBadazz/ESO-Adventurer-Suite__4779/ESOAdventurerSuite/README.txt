@@ -1,11 +1,114 @@
+Update 0.25.23
+- Added Settings > Cinematic Graphics > Cinematic Maximum. It applies ESO's own Maximum/Ultra-quality graphics values, saves the affected pre-cinematic settings for restore, and does not directly alter resolution/display mode/HDR/FPS-limit choices. ESO's own Maximum preset may adjust other quality-linked video values, including anti-aliasing/upscaling behavior.
+- This is a native ESO graphics preset only; addons cannot install ray tracing, replacement textures, or external post-processing shaders.
+
+Update 0.25.22
+- Removed the custom movable/resizable quest direction arrow and its Settings controls.
+- Quest Tracking still supports Active Quest, Golden Pursuits, and Main Quest as independent sources, with the selected source driving ESO's native assisted quest/compass guidance.
+
+Update 0.25.21
+- Quest direction guidance is now synchronized with ESO's native assisted quest compass. The selected Suite source is the only assisted quest, and the custom movable arrow uses matching map heading data.
+
+Update 0.25.20
+- Quest direction tracking is strictly bound to the source chosen in Settings: Active Quest, Golden Pursuits, or Main Quest. No cross-source fallback is allowed.
+- Switching sources clears stale quest/breadcrumb state and the arrow uses live camera heading while turning.
+
+Update 0.25.19
+- Quest direction arrow now follows ESO's live breadcrumb position for the exact Active Quest, Golden Pursuit quest, or Main Quest selected in Quest Tracking settings.
+- The arrow and player heading now use the same ESO map-coordinate system so direction updates correctly while moving and turning.
+
+Update 0.25.18
+- Added Champion Level Overlay visibility settings: Always On or Champion Point Gain Only.
+- Gain-only mode shows the Champion overlay for 10 seconds whenever any Craft, Warfare, or Fitness Champion Point is earned, then hides it again.
+
+Update 0.25.17
+- Quest direction HUD now shows the selected source, tracked quest name, exact target objective, and relative direction so the arrow is never ambiguous.
+- If ESO does not expose a mappable position for the selected objective, the HUD says so instead of showing a misleading arrow.
+
+Update 0.25.16
+- Quest Tracking Settings are now authoritative: Active Quest, Golden Pursuits, and Main Quest are independent, and only the selected source controls the quest HUD, direction arrow, and ESO assisted quest.
+- Suite Quest Finder selections no longer require a second selection in ESO's native Quest Finder before the overlay changes.
+
+Update 0.25.15
+- Champion overlay now uses ESO native Champion symbols, correct earned CP totals, and separate Craft/Warfare/Fitness pool counts. Pre-Champion characters show their actual level.
+
+Update 0.25.14
+- Quest Tracking now has three independent sources: Active Quest, Golden Pursuits, and Main Quest.
+- Main Story quests no longer interfere with the Active Quest source.
+- Only the selected source drives the quest HUD and movable/resizable direction arrow.
+
 AI DEVELOPMENT DISCLOSURE
 =========================
 ESO Adventurer Suite was developed with assistance from OpenAI, including AI-assisted code generation and review. The author, HoZayyBadazz, is responsible for publishing, testing, maintaining, and responding to issues in the addon.
 
-ESO ADVENTURER SUITE 0.24.56 - PROTECTED DISTRIBUTION
+Update 0.25.13
+- Quest Tracking settings now let you choose one source: Active Quest or Golden Pursuits. Only that source controls the gameplay tracker and direction arrow.
+- Quest Finder and Golden Pursuits selections are stored separately, and the direction arrow can be enabled and resized from settings or moved/resized in HUD Layout Mode.
+
+Update 0.25.12
+- Quest Finder selections now directly control the Suite Active Quest HUD and quest direction arrow.
+- Added a movable/resizable quest-direction arrow that uses ESO-provided objective or breadcrumb coordinates; it does not invent a direction when ESO exposes no mappable quest position.
+- Selecting a matching Golden Pursuit quest can drive the same HUD/navigation target.
+
+Update 0.25.11
+- Quest Finder selections for accepted quests now immediately switch the Active Quest overlay to the selected quest.
+
+Update 0.25.10
+- Removed the Active Quest header label so the quest HUD shows only the quest content with a cleaner compact layout.
+
+Update 0.25.09
+- Golden Pursuits and Active Quest HUD boxes now use more compact vertical sizing while remaining movable/resizable. Existing tall saved heights migrate once to the new compact defaults.
+
+Update 0.25.08
+- Golden Pursuits gameplay HUD is now intentionally minimal: GOLDEN PURSUITS header plus active quest name only.
+
+Update 0.25.07
+- Fixed the Golden Pursuits HUD Lua syntax error from v0.25.06.
+
+Update 0.25.06
+- Simplified the Golden Pursuits gameplay HUD so it shows the GOLDEN PURSUITS header with the active quest underneath and no extra Selected Pursuit / Active Golden Pursuit labels.
+
+Update 0.25.05
+- Replaced the duplicate Golden Pursuits presentation with one Suite-owned HUD; ESO's native promotional-event tracker is suppressed while the Suite is active.
+- Golden Pursuits HUD is now movable and resizable in HUD Layout Mode and remembers its position and size.
+- Restyled the regular Active Quest overlay to match the Golden Pursuits HUD with the same inset dark card, gold border, spacing, and resize treatment.
+
+Update 0.25.04
+- Golden Pursuits gameplay tracker now shows the pursuit selected in the Codex and the matched assisted journal quest name when one exists.
+- The synced Active panel follows the movable Golden Pursuits tracker and obeys the same gameplay-only/menu-hide behavior.
+
+Update 0.25.03
+- Live Equipment panel borders are now drawn inside their controls so the full top/side/bottom strokes remain visible at smaller overlay scales.
+
+Update 0.25.02
+- Live Equipment layout cleanup: wider center breathing room, clearer gaps between gear cards and character stage, and a larger dedicated Active Weapon Bar panel with non-overlapping status text.
+
+Update 0.25.01
+- Live Equipment now uses a much larger centered current-character paper-doll presentation with the ESO-provided player silhouette, character identity, and alliance-theme accent treatment.
+- ESO does not expose a true custom 3D dressed-character renderer to normal addons, so the overlay uses the game-provided silhouette rather than claiming a 3D model.
+
+Update 0.25.00
+- Normal PvE/overland minimap now uses ESO native map/POI artwork in the same style as the Cyrodiil PvP layer.
+- Visible discovered POIs stay available on the overland minimap, native wayshrine/fast-travel artwork is no longer addon-tinted, and missing native POIs are omitted instead of replaced by generic white diamonds.
+- Golden Pursuits continues to keep active and completed tasks in separate views.
+
+Update 0.24.92
+- Expanded Codex lists now use clean name-only selection rows with more breathing room.
+- Full row metadata remains available in the Selected/detail panel instead of being duplicated in every row.
+- Live Gear paper-doll is player-only; Companion mode was removed.
+- Codex list workspaces show more rows with larger readable row text.
+- Dungeon Finder ROLE: HEALER control width was increased to prevent clipping.
+
+ESO ADVENTURER SUITE 0.24.78 - PUBLIC BETA
 =================================================================
 
-Version 0.24.8 is the public-beta release candidate for the refreshed minimap, Codex travel/Quest Finder fixes, Alliance Rank presentation, and interaction/keybinding cleanup. The minimap keeps ESO's normal top compass, uses smoother movement and a less destructive zoom range, and remains usable while Suite Interaction Mode is active. All prior Codex, unit-frame, ability, repair/recharge, checkpoint, companion, and progression features remain.
+Version 0.24.78 replaces the old Lore Book presentation with an advanced translucent glass command-center interface inspired by modern Figma-style workspace layouts. The Codex is movable and resizable, remembers its position and dimensions, uses a left navigation rail and compact top command bar, and preserves every existing Codex tool and data page.
+
+Version 0.24.74 adds separate BEST WEAPONS and BEST JEWELRY optimizer actions, a BEST ABILITIES action that slots purchased recommended skills into active-bar positions 1-5 (and Ultimate when available), and BEST POTIONS which places up to four highest-scoring backpack potions onto the quickslot wheel. All actions are explicit, out-of-combat requests; the addon does not cast abilities or consume potions automatically.
+
+Version 0.24.73 adds movable Champion overlay support, explicit Best Light/Medium/Heavy Codex armor actions, immediate Inventory-close handling for the repair/recharge estimate, and an alphabetical runtime Dungeon Finder with Base Game vs DLC / Chapter labels. It also incorporates ESOUI review best practices for filtered combat events, server-separated account-wide SavedVariables, manifest dependency syntax, and AI disclosure.
+
+Version 0.24.8 was the public-beta release candidate for the refreshed minimap, Codex travel/Quest Finder fixes, Alliance Rank presentation, and interaction/keybinding cleanup. The minimap keeps ESO's normal top compass, uses smoother movement and a less destructive zoom range, and remains usable while Suite Interaction Mode is active. All prior Codex, unit-frame, ability, repair/recharge, checkpoint, companion, and progression features remain.
 OWNERSHIP AND DISTRIBUTION
 --------------------------
 Copyright (c) 2026 HoZayyBadazz. All Rights Reserved.
@@ -489,3 +592,39 @@ Slash commands:
 /esosuite checkpoint open
 
 A checkpoint is a saved map position/waypoint, not a direct teleport. Travel to it using ESO's normal movement, wayshrines, group travel, housing, or other game travel systems.
+
+
+Update 0.24.79
+- Tamriel Codex received an enhanced Figma-style glass redesign with a more advanced dashboard presentation, stronger navigation hierarchy, and premium translucent panel styling.
+
+
+Update 0.24.86
+- The Figma Codex can now be resized much smaller. Cyrodiil Elder Scroll pins prefer ESO native objective artwork and preserve native colors.
+
+
+Update 0.24.87
+- Dungeon Finder now lets you select a dungeon, choose Normal/Veteran and role, queue that dungeon, host a Group Finder listing, request replacements, and cancel the Activity Finder queue from the selected-side action panel.
+
+
+Update 0.24.88
+- Cleaned up Dungeon Finder selected-side spacing so queue/host controls no longer overlap dungeon details.
+
+
+Update 0.24.89
+- Gear & Sets opens a live equipment paper-doll overlay with armor, jewelry and both weapon bars.
+- Switch between player and active companion gear where ESO exposes BAG_COMPANION_WORN.
+- The panel refreshes as equipped items or the active weapon pair change.
+
+Update 0.24.90
+- Live Gear overlay now follows the active Codex/Figma theme accent.
+- Companion mode resolves the active companion directly and shows its equipped BAG_COMPANION_WORN gear instead of silently falling back to Player.
+- If no companion is active, the Companion view stays selected and clearly says to summon one.
+- Player view identifies the actual current character by name, race, class, and level/Champion Points.
+- ESO exposes race/gender silhouette art to addons, but not a stable arbitrary live 3D character model for a custom overlay, so the center remains an ESO silhouette with live equipment around it.
+
+
+
+0.24.98 UPDATE
+- Golden Pursuits detail action now reads TRAVEL / QUEST instead of OPEN ESO GOLDEN PURSUITS.
+- The button tracks the selected pursuit, assists a matching journal quest when available, and routes to the nearest safe discovered wayshrine using the Suite's existing Golden Pursuits routing logic.
+

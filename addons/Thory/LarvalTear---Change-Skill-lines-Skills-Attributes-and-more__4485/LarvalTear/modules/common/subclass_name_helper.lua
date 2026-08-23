@@ -25,17 +25,13 @@ local function GetDefaultBuildName()
 end
 
 local function GetLocalizationRoot()
-    local root = type(LTM_SUBCLASS_NAME_LOCALIZATION) == "table" and LTM_SUBCLASS_NAME_LOCALIZATION or nil
-    if type(root) ~= "table" then
-        return nil
-    end
-
+    local root = LTM_SUBCLASS_NAME_LOCALIZATION
     local preferredEntries = root[Addon:GetClientLanguage()]
     if type(preferredEntries) == "table" then
         return preferredEntries
     end
 
-    return type(root.en) == "table" and root.en or nil
+    return root.en
 end
 
 local function ResolveRecordName(record, preferShort)

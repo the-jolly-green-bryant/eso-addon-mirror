@@ -3,8 +3,8 @@ STZ.Menu = STZ.Menu or {}
 local Menu = STZ.Menu
 
 local ACCESS_MODE_ITEMS = {
-    { name = "Private — Me only", data = "private" },
-    { name = "Guild Testing — Me + approved guilds", data = "guild" },
+    { name = "Private - Me only", data = "private" },
+    { name = "Guild Testing - Me + approved guilds", data = "guild" },
     { name = "Public", data = "public" },
 }
 
@@ -153,7 +153,7 @@ function Menu:Initialize()
             label = "Access mode",
             items = ACCESS_MODE_ITEMS,
             getFunction = function()
-                return FindItemName(ACCESS_MODE_ITEMS, STZ.Config.access.mode, "Private — Me only")
+                return FindItemName(ACCESS_MODE_ITEMS, STZ.Config.access.mode, "Private - Me only")
             end,
             setFunction = function(_, name, item)
                 local value = ResolveSelectedData(item, name, ACCESS_MODE_ITEMS, "private")
@@ -189,6 +189,10 @@ function Menu:Initialize()
                 end,
             })
         end
+    end
+
+    if STZ.AbilityTools and type(STZ.AbilityTools.AddSettings) == "function" then
+        STZ.AbilityTools:AddSettings(settings, lib)
     end
 
     settings:AddSetting({

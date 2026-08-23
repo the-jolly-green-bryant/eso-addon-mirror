@@ -7,7 +7,6 @@ local EVENT_NAMESPACE = "NQOL_GPS"
 local UPDATE_INTERVAL_MIN_MS = 50
 local UPDATE_INTERVAL_MAX_MS = 1000
 local UPDATE_INTERVAL_STEP_MS = 50
-local ADVANCED_QR_PREFIX = "E3"
 local ADVANCED_QR_HEADING_SCALE = 1000
 local TEXT_PADDING_X = 18
 local TEXT_PADDING_Y = 12
@@ -70,6 +69,7 @@ local lastFormattedX
 local lastFormattedY
 local lastFormattedZ
 local lastFormattedCSV
+local lastPlayerHeading
 local fontStringCache = {}
 local layoutRefreshRevision = 0
 
@@ -165,7 +165,12 @@ local function ShouldShow()
     if settingsPanelVisible then
         return GetSettings().showInSettings == true
     end
-    return GetSettings().enabled == true and IsGameplaySceneShowing()
+    local settings = GetSettings()
+    if settings.enabled ~= true then
+        return false
+    end
+    return IsGameplaySceneShowing()
+        or (settings.displayFormat == "qr" and settings.advancedData == true)
 end
 
 local function EnsureControl()
@@ -263,6 +268,7 @@ local function ReadGlobalPosition()
     then
         return nil, nil, nil
     end
+    lastPlayerHeading = playerHeading
     return globalX, globalY, worldZ, playerHeading
 end
 
@@ -298,9 +304,11 @@ local function CollectAdvancedQRValue(playerHeading)
         return nil
     end
 
-    return StringFormat(
-        "%s:%d:%d:%d:%d:%d:%d",
-        ADVANCED_QR_PREFIX,
+    local encoder = NQOL.GPSAdvancedData
+    if type(encoder) ~= "table" or type(encoder.BuildPayload) ~= "function" then
+        return nil
+    end
+    return encoder.BuildPayload(
         zoneId,
         worldX,
         worldY,
@@ -409,9 +417,16 @@ local function RefreshDisplay(force)
     end
 
     local settings = GetSettings()
-    local globalX, globalY, worldZ, playerHeading = ReadGlobalPosition()
-    local xText, yText, zText, csvValue = FormatCoordinates(globalX, globalY, worldZ)
     local usesAdvancedQR = settings.displayFormat == "qr" and settings.advancedData
+    local xText, yText, zText, csvValue, playerHeading
+    if usesAdvancedQR and not IsGameplaySceneShowing() and lastFormattedCSV then
+        xText, yText, zText, csvValue, playerHeading =
+            lastFormattedX, lastFormattedY, lastFormattedZ, lastFormattedCSV, lastPlayerHeading
+    else
+        local globalX, globalY, worldZ
+        globalX, globalY, worldZ, playerHeading = ReadGlobalPosition()
+        xText, yText, zText, csvValue = FormatCoordinates(globalX, globalY, worldZ)
+    end
     if not force and csvValue and csvValue == lastRenderedCoordinates and not usesAdvancedQR then
         return
     end
@@ -543,6 +558,9 @@ function GPS.Initialize()
         return
     end
     initialized = true
+    if NQOL.GPSAdvancedData and NQOL.GPSAdvancedData.Initialize then
+        NQOL.GPSAdvancedData.Initialize()
+    end
     InstallSceneCallbacks()
     UpdateRuntime()
 end

@@ -10,7 +10,6 @@ local LTM_SKILL_POINT_RUN_AUDIT = Addon.Modules.SkillPointRunAudit
 local LTM_ROLE_STATE = Addon.Modules.RoleState
 local LTM_SUBCLASS_SNAPSHOT = Addon.Modules.SubclassSnapshot
 local LTM_BUILD_STORE = Addon.Modules.BuildStore
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 local LTM_EQUIPMENT_CHANGE = Addon.Modules.EquipmentChange
 local LTM_EQUIPMENT_FETCH = Addon.Modules.EquipmentFetch
@@ -62,17 +61,11 @@ local function GetBuildDisplayName(buildId, build)
 end
 
 local function NormalizeRoleState(role)
-    return type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.NormalizeRoleState) == "function"
-        and LTM_ROLE_STATE:NormalizeRoleState(role)
-        or nil
+    return LTM_ROLE_STATE:NormalizeRoleState(role)
 end
 
 local function CaptureCurrentRoleState()
-    return type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.CaptureCurrentRoleState) == "function"
-        and LTM_ROLE_STATE:CaptureCurrentRoleState()
-        or nil
+    return LTM_ROLE_STATE:CaptureCurrentRoleState()
 end
 
 local function SafeCall(func, ...)
@@ -110,16 +103,11 @@ local function TrySetChatInputText(text)
 end
 
 local function BuildCurrentSkillLineSummary(activeLines)
-    if type(LTM_SUBCLASS_NAME_HELPER) == "table"
-        and type(LTM_SUBCLASS_NAME_HELPER.BuildDetailListFromActiveLines) == "function" then
-        return LTM_SUBCLASS_NAME_HELPER:BuildDetailListFromActiveLines(activeLines, {
-            includeClass = true,
-            preferClassShort = true,
-            preferSkillLineShort = false,
-        })
-    end
-
-    return {}
+    return LTM_SUBCLASS_NAME_HELPER:BuildDetailListFromActiveLines(activeLines, {
+        includeClass = true,
+        preferClassShort = true,
+        preferSkillLineShort = false,
+    })
 end
 
 local function NormalizeDisplayText(text)
@@ -154,21 +142,20 @@ local function ResolvePassiveSnapshotState(build)
     return "empty"
 end
 
-local function ResolvePassiveSnapshotCaptureState(build)
-    local metadata = type(build) == "table" and type(build.metadata) == "table" and build.metadata or nil
-    return type(metadata) == "table" and metadata.passiveSnapshotCaptureState or nil
+local function ResolveActiveSnapshotState(build)
+    if type(build) ~= "table" or build.activeSnapshot == nil then
+        return "missing"
+    end
+
+    return "saved"
 end
 
 local function BuildSavedSubclassSummary(subclassIds)
-    local names = {}
-    if type(LTM_SUBCLASS_NAME_HELPER) == "table"
-        and type(LTM_SUBCLASS_NAME_HELPER.BuildDetailListFromIds) == "function" then
-        names = LTM_SUBCLASS_NAME_HELPER:BuildDetailListFromIds(subclassIds, {
-            includeClass = true,
-            preferClassShort = true,
-            preferSkillLineShort = true,
-        })
-    end
+    local names = LTM_SUBCLASS_NAME_HELPER:BuildDetailListFromIds(subclassIds, {
+        includeClass = true,
+        preferClassShort = true,
+        preferSkillLineShort = true,
+    })
 
     if #names == 0 then
         return GetStringValue("SI_LTM_COMMON_NONE", "")
@@ -178,16 +165,11 @@ local function BuildSavedSubclassSummary(subclassIds)
 end
 
 local function BuildSavedSkillLineSummaryList(subclassIds)
-    if type(LTM_SUBCLASS_NAME_HELPER) == "table"
-        and type(LTM_SUBCLASS_NAME_HELPER.BuildDetailListFromIds) == "function" then
-        return LTM_SUBCLASS_NAME_HELPER:BuildDetailListFromIds(subclassIds, {
-            includeClass = true,
-            preferClassShort = true,
-            preferSkillLineShort = false,
-        })
-    end
-
-    return {}
+    return LTM_SUBCLASS_NAME_HELPER:BuildDetailListFromIds(subclassIds, {
+        includeClass = true,
+        preferClassShort = true,
+        preferSkillLineShort = false,
+    })
 end
 
 local function BuildSavedAttributeSummary(attributes)
@@ -866,10 +848,7 @@ local function BuildSavedEquipmentState(equipment)
         local itemName = ResolveSavedEquipmentItemName(itemLink)
 
         if type(itemName) == "string" and itemName ~= "" then
-            local targetEntry = type(LTM_EQUIPMENT_CHANGE) == "table"
-                and type(LTM_EQUIPMENT_CHANGE.NormalizeTargetEntry) == "function"
-                and LTM_EQUIPMENT_CHANGE:NormalizeTargetEntry(slotEntry)
-                or nil
+            local targetEntry = LTM_EQUIPMENT_CHANGE:NormalizeTargetEntry(slotEntry)
             local isOwnedNow = true
             if targetEntry ~= nil
                 and type(GetItemLink) == "function" then
@@ -894,10 +873,7 @@ local function BuildSavedEquipmentState(equipment)
 end
 
 local function GetEquipmentStateCacheCharacterKey(build)
-    local characterKey = type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.GetCurrentCharacterKey) == "function"
-        and LTM_BUILD_STORE:GetCurrentCharacterKey()
-        or nil
+    local characterKey = LTM_BUILD_STORE:GetCurrentCharacterKey()
     if characterKey == nil and type(build) == "table" then
         characterKey = build.characterId
     end
@@ -911,9 +887,7 @@ end
 
 local function GetEquipmentStateCacheReference(buildId, build)
     local equipment = type(build) == "table" and type(build.equipment) == "table" and build.equipment or nil
-    if type(buildId) ~= "string" or buildId == ""
-        or type(LTM_BUILD_STORE) ~= "table"
-        or type(LTM_BUILD_STORE.GetBuildListForCurrentCharacter) ~= "function" then
+    if type(buildId) ~= "string" or buildId == "" then
         return equipment
     end
 
@@ -1009,19 +983,12 @@ local function ScheduleInventorySnapshotTargetRefresh()
     inventorySnapshotRefreshScheduled = true
     zo_callLater(function()
         inventorySnapshotRefreshScheduled = false
-        if type(Addon) ~= "table" or type(Addon.UI) ~= "table" then
-            return
-        end
-
         local UI = Addon.UI
         if UI.window ~= nil
             and type(UI.window.IsHidden) == "function"
             and UI.window:IsHidden() ~= true
-            and type(UI.IsArmoryStationTabActive) == "function"
             and UI:IsArmoryStationTabActive()
-            and type(UI.GetRightPaneMode) == "function"
-            and UI:GetRightPaneMode() == "target"
-            and type(UI.RefreshRightPanePanel) == "function" then
+            and UI:GetRightPaneMode() == "target" then
             UI:RefreshRightPanePanel()
         end
     end, INVENTORY_SNAPSHOT_REFRESH_DELAY_MS)
@@ -1198,51 +1165,27 @@ function LTM_UI_DISPATCH:GetBuildList()
 end
 
 function LTM_UI_DISPATCH:GetBuildEntries()
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetRuntimeBuildEntriesForSelectedPage) == "function" then
-        return LTM_BUILD_STORE:GetRuntimeBuildEntriesForSelectedPage()
-    end
-
-    return {}
+    return LTM_BUILD_STORE:GetRuntimeBuildEntriesForSelectedPage()
 end
 
 function LTM_UI_DISPATCH:GetBuildIdByOrdinalForSelectedPage(ordinal)
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetBuildIdByOrdinalForSelectedPage) == "function" then
-        return LTM_BUILD_STORE:GetBuildIdByOrdinalForSelectedPage(ordinal)
-    end
-
-    return nil
+    return LTM_BUILD_STORE:GetBuildIdByOrdinalForSelectedPage(ordinal)
 end
 
 function LTM_UI_DISPATCH:GetPageBuildCount(pageId)
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetPageBuildCount) == "function" then
-        return LTM_BUILD_STORE:GetPageBuildCount(pageId)
-    end
-
-    return 0
+    return LTM_BUILD_STORE:GetPageBuildCount(pageId)
 end
 
 function LTM_UI_DISPATCH:IsRuntimeCacheAvailable()
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.IsRuntimeCacheAvailable) == "function" then
-        return LTM_BUILD_STORE:IsRuntimeCacheAvailable() == true
-    end
-
-    return false
+    return LTM_BUILD_STORE:IsRuntimeCacheAvailable() == true
 end
 
 function LTM_UI_DISPATCH:GetPageEntries()
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetPageList) == "function" then
-        return LTM_BUILD_STORE:GetPageList()
-    end
-
-    return {}
+    return LTM_BUILD_STORE:GetPageList()
 end
 
 function LTM_UI_DISPATCH:GetSelectedPageId()
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetSelectedPageId) == "function" then
-        return LTM_BUILD_STORE:GetSelectedPageId()
-    end
-
-    return nil
+    return LTM_BUILD_STORE:GetSelectedPageId()
 end
 
 function LTM_UI_DISPATCH:GetPageNavigationState()
@@ -1278,34 +1221,18 @@ function LTM_UI_DISPATCH:GetPageNavigationState()
 end
 
 function LTM_UI_DISPATCH:SetSelectedPageId(pageId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetSelectedPageId) ~= "function" then
-        return nil, "page_select_entry_unavailable"
-    end
-
     return LTM_BUILD_STORE:SetSelectedPageId(pageId)
 end
 
 function LTM_UI_DISPATCH:CreatePage(pageName)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.CreatePage) ~= "function" then
-        return nil, "page_create_entry_unavailable"
-    end
-
     return LTM_BUILD_STORE:CreatePage(pageName)
 end
 
 function LTM_UI_DISPATCH:RenamePage(pageId, newName)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.RenamePage) ~= "function" then
-        return nil, "page_rename_entry_unavailable"
-    end
-
     return LTM_BUILD_STORE:RenamePage(pageId, newName)
 end
 
 function LTM_UI_DISPATCH:DeleteSelectedPage()
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.DeleteSelectedPage) ~= "function" then
-        return nil, "page_delete_entry_unavailable"
-    end
-
     local result, err = LTM_BUILD_STORE:DeleteSelectedPage()
     if type(result) == "table" then
         ClearSavedEquipmentStateCacheForCurrentCharacter()
@@ -1314,10 +1241,6 @@ function LTM_UI_DISPATCH:DeleteSelectedPage()
 end
 
 function LTM_UI_DISPATCH:DeletePage(pageId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.DeletePage) ~= "function" then
-        return nil, "page_delete_entry_unavailable"
-    end
-
     local result, err = LTM_BUILD_STORE:DeletePage(pageId)
     if type(result) == "table" then
         ClearSavedEquipmentStateCacheForCurrentCharacter()
@@ -1326,42 +1249,22 @@ function LTM_UI_DISPATCH:DeletePage(pageId)
 end
 
 function LTM_UI_DISPATCH:SetPageOrder(pageOrder)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetPageOrder) ~= "function" then
-        return nil, "page_reorder_entry_unavailable"
-    end
-
     return LTM_BUILD_STORE:SetPageOrder(pageOrder)
 end
 
 function LTM_UI_DISPATCH:SetBuildOrderForSelectedPage(buildOrder)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildOrderForSelectedPage) ~= "function" then
-        return nil, "build_reorder_entry_unavailable"
-    end
-
     return LTM_BUILD_STORE:SetBuildOrderForSelectedPage(buildOrder)
 end
 
 function LTM_UI_DISPATCH:GetSelectedBuildIdForPage(pageId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.GetSelectedBuildIdForPage) ~= "function" then
-        return nil
-    end
-
     return LTM_BUILD_STORE:GetSelectedBuildIdForPage(pageId)
 end
 
 function LTM_UI_DISPATCH:SetSelectedBuildIdForPage(pageId, buildId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetSelectedBuildIdForPage) ~= "function" then
-        return nil, "build_select_entry_unavailable"
-    end
-
     return LTM_BUILD_STORE:SetSelectedBuildIdForPage(pageId, buildId)
 end
 
 function LTM_UI_DISPATCH:IsBuildInSelectedPage(cardId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.IsBuildInSelectedPage) ~= "function" then
-        return false
-    end
-
     return LTM_BUILD_STORE:IsBuildInSelectedPage(cardId) == true
 end
 
@@ -1370,11 +1273,7 @@ function LTM_UI_DISPATCH:GetBuildById(cardId)
         return nil
     end
 
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetBuildById) == "function" then
-        return LTM_BUILD_STORE:GetBuildById(cardId)
-    end
-
-    return nil
+    return LTM_BUILD_STORE:GetBuildById(cardId)
 end
 
 function LTM_UI_DISPATCH:GetSelectedTargetBuild(cardId)
@@ -1382,12 +1281,7 @@ function LTM_UI_DISPATCH:GetSelectedTargetBuild(cardId)
         return nil, nil
     end
 
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetPreferredBuildById) == "function" then
-        return LTM_BUILD_STORE:GetPreferredBuildById(cardId)
-    end
-
-    local build = self:GetBuildById(cardId)
-    return build, type(build) == "table" and "runtime" or nil
+    return LTM_BUILD_STORE:GetPreferredBuildById(cardId)
 end
 
 function LTM_UI_DISPATCH:GetCardSummary(cardId)
@@ -1426,9 +1320,8 @@ function LTM_UI_DISPATCH:GetCardDetailState(cardId)
     local attributes = type(build.attributes) == "table" and build.attributes or {}
     local equipment = type(build.equipment) == "table" and build.equipment or {}
     local championPoints = type(build.championPoints) == "table" and build.championPoints or {}
-    local passivePolicy = LTM_BUILD_CODEC:NormalizePassivePolicy(build.passivePolicy)
+    local activeSnapshotState = ResolveActiveSnapshotState(build)
     local passiveSnapshotState = ResolvePassiveSnapshotState(build)
-    local passiveSnapshotCaptureState = ResolvePassiveSnapshotCaptureState(build)
     local forceChampionRespec = build.forceChampionRespec == true
     local quickslotProfileId = type(build.quickslotProfileId) == "string" and build.quickslotProfileId ~= "" and build.quickslotProfileId or nil
     local foodCardId = type(build.foodCardId) == "string" and build.foodCardId ~= "" and build.foodCardId or nil
@@ -1437,9 +1330,9 @@ function LTM_UI_DISPATCH:GetCardDetailState(cardId)
         cardId = cardId,
         cardName = GetBuildDisplayName(cardId, build),
         role = NormalizeRoleState(build.role),
-        passivePolicy = passivePolicy,
+        skillSettingsUseOverride = type(build.skillSettings) == "table" and build.skillSettings.useOverride == true,
+        activeSnapshotState = activeSnapshotState,
         passiveSnapshotState = passiveSnapshotState,
-        passiveSnapshotCaptureState = passiveSnapshotCaptureState,
         forceChampionRespec = forceChampionRespec,
         quickslotProfileId = quickslotProfileId,
         foodCardId = foodCardId,
@@ -1458,22 +1351,7 @@ function LTM_UI_DISPATCH:GetCardDetailState(cardId)
     }
 end
 
-function LTM_UI_DISPATCH:SetCardPassivePolicy(cardId, passivePolicy)
-    if type(cardId) ~= "string" or cardId == "" then
-        return nil, "build_id_missing"
-    end
-
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildPassivePolicy) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
-
-    return LTM_BUILD_STORE:SetBuildPassivePolicy(cardId, LTM_BUILD_CODEC:NormalizePassivePolicy(passivePolicy))
-end
-
 function LTM_UI_DISPATCH:SetCardTransformApply(cardId, kind, enabled)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildTransformApply) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
     return LTM_BUILD_STORE:SetBuildTransformApply(cardId, kind, enabled == true)
 end
 
@@ -1488,9 +1366,6 @@ function LTM_UI_DISPATCH:OverwriteCardTransform(cardId, kind)
 end
 
 function LTM_UI_DISPATCH:DeleteCardTransform(cardId, kind)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.DeleteBuildTransform) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
     return LTM_BUILD_STORE:DeleteBuildTransform(cardId, kind)
 end
 
@@ -1509,48 +1384,39 @@ function LTM_UI_DISPATCH:GetTransformSkillsPopupState(cardId)
     }
 end
 
-function LTM_UI_DISPATCH:GetGlobalSpSaverSettings()
-    return LTM:GetSpSaverSettings()
+function LTM_UI_DISPATCH:GetGlobalSkillSettings()
+    return LTM:GetGlobalSkillSettings()
 end
 
-function LTM_UI_DISPATCH:SetGlobalSpSaverActiveMode(mode)
-    if type(LTM.SetSpSaverActiveMode) ~= "function" then
-        return nil, "settings_unavailable"
-    end
-
-    return LTM:SetSpSaverActiveMode(mode)
+function LTM_UI_DISPATCH:SetGlobalSkillSettings(settings)
+    return LTM:SetGlobalSkillSettings(settings)
 end
 
-function LTM_UI_DISPATCH:SetGlobalSpSaverPassiveMode(mode)
-    if type(LTM.SetSpSaverPassiveMode) ~= "function" then
-        return nil, "settings_unavailable"
+function LTM_UI_DISPATCH:GetCardSkillSettingsState(cardId)
+    local build = self:GetBuildById(cardId)
+    if type(build) ~= "table" then
+        return nil, "build_not_found"
     end
 
-    return LTM:SetSpSaverPassiveMode(mode)
+    local settings, err = LTM_BUILD_STORE:GetBuildSkillSettings(cardId)
+    if type(settings) ~= "table" then
+        return nil, err
+    end
+
+    return {
+        cardId = cardId,
+        settings = settings,
+        activeSnapshotState = ResolveActiveSnapshotState(build),
+        passiveSnapshotState = ResolvePassiveSnapshotState(build),
+    }
 end
 
-function LTM_UI_DISPATCH:GetCardSpSaverSettings(cardId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.GetBuildSpSaverSettings) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
-
-    return LTM_BUILD_STORE:GetBuildSpSaverSettings(cardId)
-end
-
-function LTM_UI_DISPATCH:SetCardSpSaverSettings(cardId, spSaver)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildSpSaverSettings) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
-
-    return LTM_BUILD_STORE:SetBuildSpSaverSettings(cardId, spSaver)
+function LTM_UI_DISPATCH:SetCardSkillSettings(cardId, settings)
+    return LTM_BUILD_STORE:SetBuildSkillSettings(cardId, settings)
 end
 
 function LTM_UI_DISPATCH:GetCardForceChampionRespec(cardId)
     if type(cardId) ~= "string" or cardId == "" then
-        return false
-    end
-
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.GetBuildForceChampionRespec) ~= "function" then
         return false
     end
 
@@ -1562,68 +1428,36 @@ function LTM_UI_DISPATCH:SetCardForceChampionRespec(cardId, enabled)
         return nil, "build_id_missing"
     end
 
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildForceChampionRespec) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
-
     return LTM_BUILD_STORE:SetBuildForceChampionRespec(cardId, enabled == true)
 end
 
 function LTM_UI_DISPATCH:GetQuickSlotLinkOptions()
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE) ~= "table"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.GetQuickSlotLinkOptions) ~= "function" then
-        return {}
-    end
-
     return LTM_QUICK_SETTINGS_PROFILE_FACADE:GetQuickSlotLinkOptions()
 end
 
 function LTM_UI_DISPATCH:GetQuickSlotProfileDisplayName(profileId)
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE) ~= "table"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.GetQuickSlotProfileDisplayName) ~= "function" then
-        return nil
-    end
-
     return LTM_QUICK_SETTINGS_PROFILE_FACADE:GetQuickSlotProfileDisplayName(profileId)
 end
 
 function LTM_UI_DISPATCH:HasQuickSlotProfile(profileId)
-    return type(LTM_QUICK_SETTINGS_PROFILE_FACADE) == "table"
-        and type(LTM_QUICK_SETTINGS_PROFILE_FACADE.HasQuickSlotProfile) == "function"
-        and LTM_QUICK_SETTINGS_PROFILE_FACADE:HasQuickSlotProfile(profileId) == true
+    return LTM_QUICK_SETTINGS_PROFILE_FACADE:HasQuickSlotProfile(profileId) == true
 end
 
 function LTM_UI_DISPATCH:GetFoodLinkOptions()
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE) ~= "table"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.GetFoodLinkOptions) ~= "function" then
-        return {}
-    end
-
     return LTM_QUICK_SETTINGS_PROFILE_FACADE:GetFoodLinkOptions()
 end
 
 function LTM_UI_DISPATCH:GetFoodCardDisplayName(foodCardId)
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE) ~= "table"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.GetFoodCardDisplayName) ~= "function" then
-        return nil
-    end
-
     return LTM_QUICK_SETTINGS_PROFILE_FACADE:GetFoodCardDisplayName(foodCardId)
 end
 
 function LTM_UI_DISPATCH:HasFoodCard(foodCardId)
-    return type(LTM_QUICK_SETTINGS_PROFILE_FACADE) == "table"
-        and type(LTM_QUICK_SETTINGS_PROFILE_FACADE.HasFoodCard) == "function"
-        and LTM_QUICK_SETTINGS_PROFILE_FACADE:HasFoodCard(foodCardId) == true
+    return LTM_QUICK_SETTINGS_PROFILE_FACADE:HasFoodCard(foodCardId) == true
 end
 
 function LTM_UI_DISPATCH:SetCardQuickslotProfileId(cardId, profileId)
     if type(cardId) ~= "string" or cardId == "" then
         return nil, "build_id_missing"
-    end
-
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildQuickslotProfileId) ~= "function" then
-        return nil, "build_store_unavailable"
     end
 
     return LTM_BUILD_STORE:SetBuildQuickslotProfileId(cardId, profileId)
@@ -1632,10 +1466,6 @@ end
 function LTM_UI_DISPATCH:SetCardFoodCardId(cardId, foodCardId)
     if type(cardId) ~= "string" or cardId == "" then
         return nil, "build_id_missing"
-    end
-
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildFoodCardId) ~= "function" then
-        return nil, "build_store_unavailable"
     end
 
     return LTM_BUILD_STORE:SetBuildFoodCardId(cardId, foodCardId)
@@ -1652,15 +1482,7 @@ function LTM_UI_DISPATCH:RunQuickSlotLinkApply(profileId, continuation)
         return
     end
 
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE) ~= "table"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.HasQuickSlotProfile) ~= "function"
-        or LTM_QUICK_SETTINGS_PROFILE_FACADE:HasQuickSlotProfile(profileId) ~= true then
-        continuation()
-        return
-    end
-
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE.SetActiveProfile) ~= "function"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.BeginProfileApply) ~= "function" then
+    if LTM_QUICK_SETTINGS_PROFILE_FACADE:HasQuickSlotProfile(profileId) ~= true then
         continuation()
         return
     end
@@ -1671,9 +1493,7 @@ function LTM_UI_DISPATCH:RunQuickSlotLinkApply(profileId, continuation)
         return
     end
 
-    local applyState = type(LTM_QUICK_SETTINGS_PROFILE_FACADE.GetProfileApplyState) == "function"
-        and LTM_QUICK_SETTINGS_PROFILE_FACADE:GetProfileApplyState(profile)
-        or nil
+    local applyState = LTM_QUICK_SETTINGS_PROFILE_FACADE:GetProfileApplyState(profile)
     if type(applyState) == "table" and applyState.canCompare == true and applyState.needsApply ~= true then
         continuation()
         return
@@ -1702,13 +1522,7 @@ function LTM_UI_DISPATCH:RunFoodLinkApply(foodCardId)
         return
     end
 
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE) ~= "table"
-        or type(LTM_QUICK_SETTINGS_PROFILE_FACADE.HasFoodCard) ~= "function"
-        or LTM_QUICK_SETTINGS_PROFILE_FACADE:HasFoodCard(foodCardId) ~= true then
-        return
-    end
-
-    if type(LTM_QUICK_SETTINGS_PROFILE_FACADE.SetActiveFoodCard) ~= "function" then
+    if LTM_QUICK_SETTINGS_PROFILE_FACADE:HasFoodCard(foodCardId) ~= true then
         return
     end
 
@@ -1741,20 +1555,12 @@ function LTM_UI_DISPATCH:GetCardSkillSlotAbility(cardId, hotbarCategory, slotInd
         return nil, "build_id_missing"
     end
 
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.GetSavedSkillSlotAbility) ~= "function" then
-        return nil, "build_store_unavailable"
-    end
-
     return LTM_BUILD_STORE:GetSavedSkillSlotAbility(cardId, hotbarCategory, slotIndex)
 end
 
 function LTM_UI_DISPATCH:SetCardSkillSlotAbility(cardId, hotbarCategory, slotIndex, abilityId)
     if type(cardId) ~= "string" or cardId == "" then
         return nil, "build_id_missing"
-    end
-
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetSavedSkillSlotAbility) ~= "function" then
-        return nil, "build_store_unavailable"
     end
 
     return LTM_BUILD_STORE:SetSavedSkillSlotAbility(cardId, hotbarCategory, slotIndex, abilityId)
@@ -1780,26 +1586,11 @@ function LTM_UI_DISPATCH:GetCurrentSkillBarState()
 end
 
 function LTM_UI_DISPATCH:RefreshCurrentSnapshot()
-    local subclassState = type(LTM_SUBCLASS_SNAPSHOT) == "table"
-        and type(LTM_SUBCLASS_SNAPSHOT.CaptureCurrentSubclassState) == "function"
-        and LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(nil)
-        or {}
-    local attributeState = type(LTM_ATTRIBUTE_SNAPSHOT) == "table"
-        and type(LTM_ATTRIBUTE_SNAPSHOT.CaptureCurrentAttributeState) == "function"
-        and LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(nil)
-        or {}
-    local skillState = type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.CaptureCurrentSkillState) == "function"
-        and LTM_BUILD_STORE:CaptureCurrentSkillState()
-        or {}
-    local hotbarSnapshot = type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.CaptureCurrentSkillBarSnapshot) == "function"
-        and LTM_BUILD_STORE:CaptureCurrentSkillBarSnapshot()
-        or nil
-    local classMasteryState = type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.CaptureCurrentClassMasteryForBuild) == "function"
-        and LTM_BUILD_STORE:CaptureCurrentClassMasteryForBuild()
-        or nil
+    local subclassState = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(nil)
+    local attributeState = LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(nil)
+    local skillState = LTM_BUILD_STORE:CaptureCurrentSkillState()
+    local hotbarSnapshot = LTM_BUILD_STORE:CaptureCurrentSkillBarSnapshot()
+    local classMasteryState = LTM_BUILD_STORE:CaptureCurrentClassMasteryForBuild()
 
     self.currentStateSummary = {
         currentSkillLineNames = BuildCurrentSkillLineSummary(subclassState.activeSkillLines),
@@ -1864,23 +1655,15 @@ function LTM_UI_DISPATCH:GetTargetSkillBarState(cardId)
 end
 
 function LTM_UI_DISPATCH:IsEquipmentFetchAvailable()
-    return type(LTM_EQUIPMENT_FETCH) == "table"
-        and type(LTM_EQUIPMENT_FETCH.IsFetchContextAvailable) == "function"
-        and (type(LTM_EQUIPMENT_FETCH.IsBusy) ~= "function" or LTM_EQUIPMENT_FETCH:IsBusy() ~= true)
-        and (type(LTM_EQUIPMENT_DEPOSIT) ~= "table"
-            or type(LTM_EQUIPMENT_DEPOSIT.IsBusy) ~= "function"
-            or LTM_EQUIPMENT_DEPOSIT:IsBusy() ~= true)
+    return LTM_EQUIPMENT_FETCH:IsBusy() ~= true
+        and LTM_EQUIPMENT_DEPOSIT:IsBusy() ~= true
         and LTM_EQUIPMENT_FETCH:IsFetchContextAvailable()
         or false
 end
 
 function LTM_UI_DISPATCH:IsEquipmentDepositAvailable()
-    return type(LTM_EQUIPMENT_DEPOSIT) == "table"
-        and type(LTM_EQUIPMENT_DEPOSIT.IsDepositContextAvailable) == "function"
-        and (type(LTM_EQUIPMENT_DEPOSIT.IsBusy) ~= "function" or LTM_EQUIPMENT_DEPOSIT:IsBusy() ~= true)
-        and (type(LTM_EQUIPMENT_FETCH) ~= "table"
-            or type(LTM_EQUIPMENT_FETCH.IsBusy) ~= "function"
-            or LTM_EQUIPMENT_FETCH:IsBusy() ~= true)
+    return LTM_EQUIPMENT_DEPOSIT:IsBusy() ~= true
+        and LTM_EQUIPMENT_FETCH:IsBusy() ~= true
         and LTM_EQUIPMENT_DEPOSIT:IsDepositContextAvailable()
         or false
 end
@@ -1888,10 +1671,6 @@ end
 function LTM_UI_DISPATCH:ApplySelectedCard(cardId, completion, acceptedSkillPointPrecheck)
     if type(cardId) ~= "string" or cardId == "" then
         return nil, "build_id_missing"
-    end
-
-    if type(LTM) ~= "table" or type(LTM.ApplyRequest) ~= "function" then
-        return nil, "pipeline_entry_unavailable"
     end
 
     return LTM:ApplyRequest({
@@ -1922,10 +1701,6 @@ function LTM_UI_DISPATCH:EstimateSelectedCardRouteBPreflight(cardId, partialScop
         return nil, "partial_scope_invalid"
     end
 
-    if type(LTM) ~= "table" or type(LTM.EvaluateApplyPrecheck) ~= "function" then
-        return nil, "apply_precheck_unavailable"
-    end
-
     return LTM:EvaluateApplyPrecheck({
         buildId = cardId,
         partialScope = partialScope,
@@ -1936,29 +1711,14 @@ function LTM_UI_DISPATCH:EstimateSelectedCardRouteBPreflight(cardId, partialScop
 end
 
 function LTM_UI_DISPATCH:GetCurrentSkillSnapshotReport()
-    if type(LTM_SKILL_SNAPSHOT_AUDIT) ~= "table"
-        or type(LTM_SKILL_SNAPSHOT_AUDIT.CaptureAndFormatSnapshot) ~= "function" then
-        return nil, "skill_snapshot_audit_unavailable"
-    end
-
     return LTM_SKILL_SNAPSHOT_AUDIT:CaptureAndFormatSnapshot()
 end
 
 function LTM_UI_DISPATCH:RecordAcceptedSkillPointRun(metadata, precheck)
-    if type(LTM_SKILL_POINT_RUN_AUDIT) ~= "table"
-        or type(LTM_SKILL_POINT_RUN_AUDIT.RecordAcceptedRun) ~= "function" then
-        return false, "skill_point_run_audit_unavailable"
-    end
-
     return LTM_SKILL_POINT_RUN_AUDIT:RecordAcceptedRun(metadata, precheck)
 end
 
 function LTM_UI_DISPATCH:RecordSkillPointTerminalSummary(runId, buildId, finalResult)
-    if type(LTM_SKILL_POINT_RUN_AUDIT) ~= "table"
-        or type(LTM_SKILL_POINT_RUN_AUDIT.RecordTerminalSummary) ~= "function" then
-        return nil, "skill_point_run_audit_unavailable"
-    end
-
     return LTM_SKILL_POINT_RUN_AUDIT:RecordTerminalSummary(runId, buildId, finalResult)
 end
 
@@ -1979,10 +1739,6 @@ function LTM_UI_DISPATCH:ApplySelectedTargetBuildPartial(
         return nil, "partial_scope_invalid"
     end
 
-    if type(LTM) ~= "table" or type(LTM.ApplyRequest) ~= "function" then
-        return nil, "pipeline_entry_unavailable"
-    end
-
     local build, source = self:GetSelectedTargetBuild(cardId)
     if type(build) ~= "table" then
         return nil, "target_build_missing"
@@ -1994,17 +1750,15 @@ function LTM_UI_DISPATCH:ApplySelectedTargetBuildPartial(
         return nil, "target_champion_points_missing"
     end
 
-    if type(Log.LogDebugSummary) == "function" then
-        local actionLabel = partialScope == "attributes" and "Attribute Respec button pressed"
-            or partialScope == "class_skills" and "Class & Skills Respec button pressed"
-            or partialScope == "equipment" and "Equipment Change button pressed"
-            or "CP Change button pressed"
-        Log.LogDebugSummary(
-            actionLabel,
-            "cardId=" .. tostring(cardId),
-            "source=" .. tostring(source)
-        )
-    end
+    local actionLabel = partialScope == "attributes" and "Attribute Respec button pressed"
+        or partialScope == "class_skills" and "Class & Skills Respec button pressed"
+        or partialScope == "equipment" and "Equipment Change button pressed"
+        or "CP Change button pressed"
+    Log.LogDebugSummary(
+        actionLabel,
+        "cardId=" .. tostring(cardId),
+        "source=" .. tostring(source)
+    )
 
     return LTM:ApplyRequest({
         build = build,
@@ -2031,10 +1785,6 @@ function LTM_UI_DISPATCH:FetchMissingSelectedTargetEquipment(cardId, completion)
         return nil, "build_id_missing"
     end
 
-    if type(LTM_EQUIPMENT_FETCH) ~= "table" or type(LTM_EQUIPMENT_FETCH.BeginFetch) ~= "function" then
-        return nil, "equipment_fetch_unavailable"
-    end
-
     local build, source = self:GetSelectedTargetBuild(cardId)
     if type(build) ~= "table" then
         return nil, "target_build_missing"
@@ -2043,13 +1793,11 @@ function LTM_UI_DISPATCH:FetchMissingSelectedTargetEquipment(cardId, completion)
         return nil, "target_equipment_missing"
     end
 
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(
-            "Equipment fetch button pressed",
-            "cardId=" .. tostring(cardId),
-            "source=" .. tostring(source)
-        )
-    end
+    Log.LogDebugSummary(
+        "Equipment fetch button pressed",
+        "cardId=" .. tostring(cardId),
+        "source=" .. tostring(source)
+    )
 
     local fetchOk, fetchErr, summary = LTM_EQUIPMENT_FETCH:BeginFetch(build.equipment, function(success, reason, resultSummary)
         MarkInventorySnapshotDirty({
@@ -2063,21 +1811,11 @@ function LTM_UI_DISPATCH:FetchMissingSelectedTargetEquipment(cardId, completion)
 end
 
 function LTM_UI_DISPATCH:DepositUnusedEquipment(cardId, completion)
-    if type(LTM_EQUIPMENT_DEPOSIT) ~= "table" or type(LTM_EQUIPMENT_DEPOSIT.BeginDeposit) ~= "function" then
-        return nil, "equipment_deposit_unavailable"
-    end
-
     local options = {
         currentBuildId = type(cardId) == "string" and cardId ~= "" and cardId or nil,
-        cleanupScope = type(LTM.GetEquipmentDepositCleanupScope) == "function"
-            and LTM:GetEquipmentDepositCleanupScope()
-            or "all_build_cards",
-        itemFilter = type(LTM.GetEquipmentDepositItemFilter) == "function"
-            and LTM:GetEquipmentDepositItemFilter()
-            or "saved_build_gear_only",
-        safetyMode = type(LTM.GetEquipmentDepositSafetyMode) == "function"
-            and LTM:GetEquipmentDepositSafetyMode()
-            or "normal",
+        cleanupScope = LTM:GetEquipmentDepositCleanupScope(),
+        itemFilter = LTM:GetEquipmentDepositItemFilter(),
+        safetyMode = LTM:GetEquipmentDepositSafetyMode(),
     }
 
     return LTM_EQUIPMENT_DEPOSIT:BeginDeposit(options, function(success, reason, summary)
@@ -2095,10 +1833,6 @@ function LTM_UI_DISPATCH:LinkGearToChat(cardId)
         or (type(IsInGamepadPreferredMode) == "function" and IsInGamepadPreferredMode()) then
         Log.WriteChat(GetStringValue("SI_LTM_GEAR_LINK_UNAVAILABLE_GAMEPAD", "Link Gear to Chat is available in keyboard mode only."))
         return nil, "gamepad_unavailable"
-    end
-
-    if type(LTM_GEAR_LINK_SUMMARY) ~= "table" or type(LTM_GEAR_LINK_SUMMARY.BuildChatText) ~= "function" then
-        return nil, "gear_link_summary_unavailable"
     end
 
     local build = select(1, self:GetSelectedTargetBuild(cardId))
@@ -2125,10 +1859,6 @@ function LTM_UI_DISPATCH:LinkGearToChat(cardId)
 end
 
 function LTM_UI_DISPATCH:AddNewCard()
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SaveCurrentStateAsNewBuild) ~= "function" then
-        return nil, "save_entry_unavailable"
-    end
-
     local build, err = LTM_BUILD_STORE:SaveCurrentStateAsNewBuild()
     if type(build) == "table" then
         ClearSavedEquipmentStateCacheForBuild(build.id)
@@ -2137,10 +1867,6 @@ function LTM_UI_DISPATCH:AddNewCard()
 end
 
 function LTM_UI_DISPATCH:RenameCard(cardId, newName)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.RenameBuildById) ~= "function" then
-        return nil, "rename_entry_unavailable"
-    end
-
     local build, err = LTM_BUILD_STORE:RenameBuildById(cardId, newName)
     if type(build) == "table" then
         ClearSavedEquipmentStateCacheForBuild(cardId)
@@ -2149,10 +1875,6 @@ function LTM_UI_DISPATCH:RenameCard(cardId, newName)
 end
 
 function LTM_UI_DISPATCH:DeleteCard(cardId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.DeleteBuildById) ~= "function" then
-        return nil, "delete_entry_unavailable"
-    end
-
     local result, err = LTM_BUILD_STORE:DeleteBuildById(cardId)
     if type(result) == "table" then
         ClearSavedEquipmentStateCacheForBuild(cardId)
@@ -2161,10 +1883,6 @@ function LTM_UI_DISPATCH:DeleteCard(cardId)
 end
 
 function LTM_UI_DISPATCH:DuplicateCard(cardId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.DuplicateBuildById) ~= "function" then
-        return nil, "duplicate_entry_unavailable"
-    end
-
     local result, err = LTM_BUILD_STORE:DuplicateBuildById(cardId)
     if type(result) == "table" then
         ClearSavedEquipmentStateCacheForBuild(result.copiedBuildId)
@@ -2173,10 +1891,6 @@ function LTM_UI_DISPATCH:DuplicateCard(cardId)
 end
 
 function LTM_UI_DISPATCH:MoveCardToPage(cardId, targetPageId)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.MoveBuildToPage) ~= "function" then
-        return nil, "move_entry_unavailable"
-    end
-
     local result, err = LTM_BUILD_STORE:MoveBuildToPage(cardId, targetPageId)
     if type(result) == "table" then
         ClearSavedEquipmentStateCacheForBuild(cardId)
@@ -2185,10 +1899,6 @@ function LTM_UI_DISPATCH:MoveCardToPage(cardId, targetPageId)
 end
 
 function LTM_UI_DISPATCH:OverwriteCard(cardId, overwriteType)
-    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.OverwriteBuildByIdFromCurrentSnapshotType) ~= "function" then
-        return nil, "overwrite_entry_unavailable"
-    end
-
     local build, err = LTM_BUILD_STORE:OverwriteBuildByIdFromCurrentSnapshotType(cardId, overwriteType)
     if type(build) == "table" then
         ClearSavedEquipmentStateCacheForBuild(cardId)

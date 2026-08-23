@@ -1,0 +1,19 @@
+CURRENT PROJECT EXPORT NOTES
+============================
+
+Everything belonging to the experiment lives inside Current_Project.
+The two fixed host files outside this folder are only:
+
+- Sugas_Test_Zone.addon
+- Sugas_Test_Zone.lua
+
+When the experiment becomes its own addon:
+
+1. Copy Current_Project into a new addon folder.
+2. Give the project its final addon name and namespace.
+3. Add a standalone manifest and addon-loaded bootstrap.
+4. Replace the Sugas_Test_Zone owner gate with the new addon's normal startup.
+5. Rename its SavedVariables and LibSTARSConnect module ID before release.
+
+The project files are definition-only until Project:Initialize() is called by
+the owner-gated Sugas_Test_Zone launcher.

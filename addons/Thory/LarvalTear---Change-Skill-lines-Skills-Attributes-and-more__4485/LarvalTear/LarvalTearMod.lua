@@ -2,7 +2,7 @@ local Addon = LarvalTearMod
 local LTM = Addon
 local Log = Addon.Common.Log
 local SHARED_UTIL = Addon.Common.Util
-local SP_SAVER_MODES = Addon.Common.SpSaverModes
+local SKILL_SETTINGS = Addon.Common.SkillSettings
 local LTM_UI = Addon.UI
 local LTM_UI_APPLY_PROGRESS = Addon.UI.ApplyProgress
 local LTM_APPLY_PRECHECK = Addon.Modules.ApplyPrecheck
@@ -36,9 +36,11 @@ local SETTINGS_DEFAULTS = {
     equipmentDepositItemFilter = "saved_build_gear_only",
     equipmentDepositSafetyMode = "normal",
     applyUiMode = "default",
-    spSaver = {
-        activeMode = SP_SAVER_MODES.ActiveDefault,
-        passiveMode = SP_SAVER_MODES.PassiveDefault,
+    skillSettings = {
+        activeRestore = SKILL_SETTINGS.ActiveRestoreDefault,
+        passiveRestore = SKILL_SETTINGS.PassiveRestoreDefault,
+        passiveShortage = SKILL_SETTINGS.PassiveShortageDefault,
+        activeShortage = SKILL_SETTINGS.ActiveShortageDefault,
     },
 }
 local APPLY_REQUEST_SUPERSEDED = "request_superseded"
@@ -167,13 +169,6 @@ local function NormalizeApplyUiMode(mode)
     return "default"
 end
 
-local function NormalizeSpSaverSettings(settings)
-    settings = type(settings) == "table" and settings or {}
-    settings.activeMode = SP_SAVER_MODES:NormalizeActiveMode(settings.activeMode)
-    settings.passiveMode = SP_SAVER_MODES:NormalizePassiveMode(settings.passiveMode)
-    return settings
-end
-
 function LTM:EnsureSavedVarsSchemaVersion(savedVars)
     if type(savedVars) ~= "table" then
         return nil
@@ -190,35 +185,35 @@ function LTM:EnsureSavedVarsSchemaVersion(savedVars)
     end
 
     if currentVersion < 9 and latestVersion >= 9 then
-        if type(LTM_BUILD_CODEC) ~= "table" or type(LTM_BUILD_CODEC.MigrateToSchema9) ~= "function" then
-            return savedVars.schemaVersion
-        end
-
         local ok, migrationErr = LTM_BUILD_CODEC:MigrateToSchema9(savedVars)
         if ok ~= true then
-            if type(Log.LogDebugSummary) == "function" then
-                Log.LogDebugSummary("SavedVariables schema 9 migration failed", "reason=" .. tostring(migrationErr))
-            end
+            Log.LogDebugSummary("SavedVariables schema 9 migration failed", "reason=" .. tostring(migrationErr))
             return savedVars.schemaVersion
         end
         savedVars.schemaVersion = 9
     end
 
     if currentVersion < 10 and latestVersion >= 10 then
-        if type(LTM_BUILD_CODEC) ~= "table" or type(LTM_BUILD_CODEC.MigrateToSchema10) ~= "function" then
-            return savedVars.schemaVersion
-        end
-
         local ok, migrationErr = LTM_BUILD_CODEC:MigrateToSchema10(savedVars)
         if ok ~= true then
-            if type(Log.LogDebugSummary) == "function" then
-                Log.LogDebugSummary("SavedVariables schema 10 migration failed", "reason=" .. tostring(migrationErr))
-            end
+            Log.LogDebugSummary("SavedVariables schema 10 migration failed", "reason=" .. tostring(migrationErr))
             return savedVars.schemaVersion
         end
+        savedVars.schemaVersion = 10
     end
 
-    savedVars.schemaVersion = latestVersion
+    if currentVersion < 11 and latestVersion >= 11 then
+        local ok, migrationErr = LTM_BUILD_CODEC:MigrateToSchema11(savedVars)
+        if ok ~= true then
+            Log.LogDebugSummary("SavedVariables schema 11 migration failed", "reason=" .. tostring(migrationErr))
+            return savedVars.schemaVersion
+        end
+        savedVars.schemaVersion = 11
+    end
+
+    if (tonumber(savedVars.schemaVersion) or 0) < latestVersion then
+        savedVars.schemaVersion = latestVersion
+    end
     return savedVars.schemaVersion
 end
 
@@ -259,7 +254,10 @@ function LTM:EnsureSettings(savedVars)
     settings.equipmentDepositItemFilter = NormalizeEquipmentDepositItemFilter(settings.equipmentDepositItemFilter)
     settings.equipmentDepositSafetyMode = NormalizeEquipmentDepositSafetyMode(settings.equipmentDepositSafetyMode)
     settings.applyUiMode = NormalizeApplyUiMode(settings.applyUiMode)
-    settings.spSaver = NormalizeSpSaverSettings(settings.spSaver)
+    settings.skillSettings = SKILL_SETTINGS:NormalizeGlobal(settings.skillSettings)
+    if (tonumber(savedVars.schemaVersion) or 0) >= 11 then
+        settings.spSaver = nil
+    end
     return settings
 end
 
@@ -308,10 +306,7 @@ function LTM:GetSettings(forWrite)
         equipmentDepositItemFilter = NormalizeEquipmentDepositItemFilter(settings.equipmentDepositItemFilter),
         equipmentDepositSafetyMode = NormalizeEquipmentDepositSafetyMode(settings.equipmentDepositSafetyMode),
         applyUiMode = NormalizeApplyUiMode(settings.applyUiMode),
-        spSaver = {
-            activeMode = SP_SAVER_MODES:NormalizeActiveMode(type(settings.spSaver) == "table" and settings.spSaver.activeMode or nil),
-            passiveMode = SP_SAVER_MODES:NormalizePassiveMode(type(settings.spSaver) == "table" and settings.spSaver.passiveMode or nil),
-        },
+        skillSettings = SKILL_SETTINGS:NormalizeGlobal(settings.skillSettings),
     }
 end
 
@@ -419,8 +414,7 @@ end
 LTM.GetStringText = GetStringText
 
 local function IsPipelineSafeAbortReason(reason)
-    local safeAbortReasons = type(LTM_PIPELINE) == "table" and LTM_PIPELINE.SAFE_ABORT_REASONS or nil
-    return type(reason) == "string" and type(safeAbortReasons) == "table" and safeAbortReasons[reason] == true
+    return type(reason) == "string" and LTM_PIPELINE.SAFE_ABORT_REASONS[reason] == true
 end
 
 local function IsPipelineSafeAbortFailure(err, finalResult)
@@ -445,46 +439,17 @@ end
 
 local GetApplyRequestDisplayName
 
-local function HideMainWindowIfAvailable()
-    if type(LTM_UI) == "table" and type(LTM_UI.HideMainWindow) == "function" then
-        Log.Debug("HideMainWindow invoked after safe abort")
-        LTM_UI:HideMainWindow()
-        return true
-    end
-
-    return false
-end
-
-local function ShowMainWindowIfAvailable()
-    if type(LTM.GetApplyUiMode) == "function" and LTM:GetApplyUiMode() == "small_progress" then
+local function ShowMainWindowForApply()
+    if LTM:GetApplyUiMode() == "small_progress" then
         return false
     end
 
-    if type(LTM_UI) == "table" and type(LTM_UI.ShowMainWindow) == "function" then
-        LTM_UI:ShowMainWindow()
-        return true
-    end
-
-    return false
+    LTM_UI:ShowMainWindow()
+    return true
 end
 
-local function HideMainWindowForApplyProgress()
-    if type(LTM_UI) == "table" and type(LTM_UI.HideMainWindow) == "function" then
-        LTM_UI:HideMainWindow()
-        return true
-    end
-
-    return false
-end
-
-local function IsApplyProgressUsable()
-    return type(LTM_UI_APPLY_PROGRESS) == "table"
-end
-
-local function IsSmallProgressAvailable()
-    return type(LTM.GetApplyUiMode) == "function"
-        and LTM:GetApplyUiMode() == "small_progress"
-        and IsApplyProgressUsable()
+local function ShouldUseSmallProgress()
+    return LTM:GetApplyUiMode() == "small_progress"
 end
 
 local function GetProgressWaitStatusText(waitType)
@@ -508,23 +473,18 @@ local function GetProgressWaitStatusText(waitType)
 end
 
 local function UpdateApplyProgressStatus(text)
-    if not IsApplyProgressUsable()
-        or LTM.applyProgressActiveToken == nil
+    if LTM.applyProgressActiveToken == nil
         or type(text) ~= "string"
         or text == "" then
         return false
     end
 
-    if type(LTM_UI_APPLY_PROGRESS.UpdateStatus) == "function" then
-        LTM_UI_APPLY_PROGRESS:UpdateStatus(text)
-        return true
-    end
-
-    return false
+    LTM_UI_APPLY_PROGRESS:UpdateStatus(text)
+    return true
 end
 
 local function BeginApplyProgressForRequest(request, statusText)
-    if not IsSmallProgressAvailable() then
+    if not ShouldUseSmallProgress() then
         return nil
     end
 
@@ -533,10 +493,8 @@ local function BeginApplyProgressForRequest(request, statusText)
     LTM.applyProgressActiveToken = token
     LTM.applyProgressSpecificWaitActive = false
 
-    HideMainWindowForApplyProgress()
-    if type(LTM_UI_APPLY_PROGRESS.Show) == "function" then
-        LTM_UI_APPLY_PROGRESS:Show(GetApplyRequestDisplayName(request))
-    end
+    LTM_UI:HideMainWindow()
+    LTM_UI_APPLY_PROGRESS:Show(GetApplyRequestDisplayName(request))
     if type(statusText) == "string" and statusText ~= "" then
         UpdateApplyProgressStatus(statusText)
     end
@@ -545,26 +503,22 @@ local function BeginApplyProgressForRequest(request, statusText)
 end
 
 local function HideApplyProgressIfCurrent(token)
-    if LTM.applyProgressActiveToken ~= token or not IsApplyProgressUsable() then
+    if LTM.applyProgressActiveToken ~= token then
         return false
     end
 
-    if type(LTM_UI_APPLY_PROGRESS.Hide) == "function" then
-        LTM_UI_APPLY_PROGRESS:Hide()
-    end
+    LTM_UI_APPLY_PROGRESS:Hide()
     LTM.applyProgressActiveToken = nil
     LTM.applyProgressSpecificWaitActive = false
     return true
 end
 
 local function SetApplyProgressResult(token, success, reason, statusText)
-    if LTM.applyProgressActiveToken ~= token or not IsApplyProgressUsable() then
+    if LTM.applyProgressActiveToken ~= token then
         return false
     end
 
-    if type(LTM_UI_APPLY_PROGRESS.SetResult) == "function" then
-        LTM_UI_APPLY_PROGRESS:SetResult(success == true, reason)
-    end
+    LTM_UI_APPLY_PROGRESS:SetResult(success == true, reason)
     if type(statusText) == "string" and statusText ~= "" then
         UpdateApplyProgressStatus(statusText)
     end
@@ -709,29 +663,29 @@ function LTM:SetApplyUiMode(mode)
     return true
 end
 
-function LTM:GetSpSaverSettings()
+function LTM:GetGlobalSkillSettings()
     local settings = self:GetSettings(false)
-    return type(settings) == "table" and settings.spSaver or nil
+    return SKILL_SETTINGS:NormalizeGlobal(type(settings) == "table" and settings.skillSettings or nil)
 end
 
-function LTM:SetSpSaverActiveMode(mode)
+function LTM:SetGlobalSkillSettings(skillSettings)
     local settings = self:GetSettings(true)
     if type(settings) ~= "table" then
         return nil
     end
 
-    settings.spSaver.activeMode = SP_SAVER_MODES:NormalizeActiveMode(mode)
-    return settings.spSaver.activeMode
+    local normalized = SKILL_SETTINGS:NormalizeGlobal(skillSettings)
+    settings.skillSettings = normalized
+    return SKILL_SETTINGS:NormalizeGlobal(normalized)
 end
 
-function LTM:SetSpSaverPassiveMode(mode)
-    local settings = self:GetSettings(true)
-    if type(settings) ~= "table" then
-        return nil
-    end
-
-    settings.spSaver.passiveMode = SP_SAVER_MODES:NormalizePassiveMode(mode)
-    return settings.spSaver.passiveMode
+function LTM:ResolveEffectiveSkillSettings(build)
+    local resolved, source = SKILL_SETTINGS:ResolveEffective(
+        self:GetGlobalSkillSettings(),
+        type(build) == "table" and build.skillSettings or nil
+    )
+    resolved.source = source
+    return resolved
 end
 
 function LTM:GetClientLanguage()
@@ -764,13 +718,11 @@ function LTM:ApplyLocalizationEntries(entries)
 end
 
 function LTM:ApplyLanguage()
-    local baseEntries = type(Addon.Localization) == "table" and Addon.Localization.en or nil
-    self:ApplyLocalizationEntries(baseEntries)
+    self:ApplyLocalizationEntries(Addon.Localization.en)
 
     local targetLanguage = self:GetPreferredLanguage()
     if targetLanguage ~= "en" then
-        local localizedEntries = type(Addon.Localization) == "table" and Addon.Localization[targetLanguage] or nil
-        self:ApplyLocalizationEntries(localizedEntries)
+        self:ApplyLocalizationEntries(Addon.Localization[targetLanguage])
     end
 
     self.activeLanguage = targetLanguage
@@ -820,31 +772,18 @@ function LTM:NotifyActivityDisallowed(restrictionType)
 end
 
 function LTM:NotifyActionError(actionKey, reason)
-    if type(LTM_UI) == "table" and type(LTM_UI.LogActionError) == "function" then
-        LTM_UI:LogActionError(actionKey, reason)
-        return true
-    end
-
-    return false
+    LTM_UI:LogActionError(actionKey, reason)
+    return true
 end
 
 function LTM:RequestApplyStartConfirmation(context)
-    if type(LTM_UI) == "table" and type(LTM_UI.ShowDialog) == "function" then
-        LTM_UI:ShowDialog("APPLY_START_CONFIRM", context)
-        return true
-    end
-
-    return false
+    LTM_UI:ShowDialog("APPLY_START_CONFIRM", context)
+    return true
 end
 
 function LTM:NotifyQuickSlotsChanged(source)
-    local quickSettings = type(LTM_UI) == "table" and LTM_UI.QuickSettings or nil
-    if type(quickSettings) == "table" and type(quickSettings.RefreshQuickSlots) == "function" then
-        quickSettings:RefreshQuickSlots()
-        return true
-    end
-
-    return false
+    LTM_UI.QuickSettings:RefreshQuickSlots()
+    return true
 end
 
 function LTM:ResetWaitNotification(stateHolder)
@@ -879,11 +818,7 @@ function LTM:NotifyWaitStarted(stateHolder, waitType, seconds)
 end
 
 function LTM:RegisterSettingsPanel()
-    if type(LTM_SETTINGS_PANEL) == "table" and type(LTM_SETTINGS_PANEL.Register) == "function" then
-        return LTM_SETTINGS_PANEL:Register()
-    end
-
-    return false
+    return LTM_SETTINGS_PANEL:Register()
 end
 
 local function CloneTableShallow(source)
@@ -892,14 +827,6 @@ local function CloneTableShallow(source)
         cloned[key] = value
     end
     return cloned
-end
-
-local function CloneResolvedSpSaverPolicy(policy)
-    if type(policy) ~= "table" then
-        return nil
-    end
-
-    return CloneTableShallow(policy)
 end
 
 local function CloneAcceptedSkillPointPrecheck(precheck)
@@ -915,7 +842,6 @@ local function CloneAcceptedSkillPointPrecheck(precheck)
     cloned.continuation = type(precheck.continuation) == "table"
         and CloneTableShallow(precheck.continuation)
         or nil
-    cloned.spSaver = CloneResolvedSpSaverPolicy(precheck.spSaver)
     return cloned
 end
 
@@ -947,9 +873,7 @@ local function ResolveApplyRequestForceChampionRespec(request)
         return false
     end
 
-    return type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.GetBuildForceChampionRespec) == "function"
-        and LTM_BUILD_STORE:GetBuildForceChampionRespec(buildId) == true
+    return LTM_BUILD_STORE:GetBuildForceChampionRespec(buildId) == true
 end
 
 local function GetApplyRequestIdentifier(request)
@@ -1019,9 +943,7 @@ end
 
 local function FormatApplyProgressSafeAbortStatus(reason)
     local displayReason = type(reason) == "string" and reason ~= "" and reason or "unknown"
-    if displayReason ~= "unknown"
-        and type(Log) == "table"
-        and type(Log.LocalizeErrorReason) == "function" then
+    if displayReason ~= "unknown" then
         displayReason = Log.LocalizeErrorReason(reason)
     end
 
@@ -1030,9 +952,7 @@ end
 
 local function FormatApplySafeAbortChatReason(reason)
     local displayReason = type(reason) == "string" and reason ~= "" and reason or "unknown"
-    if displayReason ~= "unknown"
-        and type(Log) == "table"
-        and type(Log.LocalizeErrorReason) == "function" then
+    if displayReason ~= "unknown" then
         displayReason = Log.LocalizeErrorReason(reason)
     end
 
@@ -1040,9 +960,7 @@ local function FormatApplySafeAbortChatReason(reason)
 end
 
 function LTM:LogApplyRequestSummary(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function BuildApplyRequestEnvelope(requestData, completion)
@@ -1124,25 +1042,18 @@ function LTM:ResolveBuildCardLocation(buildId, pageId)
         return nil, nil
     end
 
-    if type(LTM_BUILD_STORE) ~= "table" then
-        return nil, nil
-    end
-
     if type(pageId) == "string"
         and pageId ~= ""
-        and type(LTM_BUILD_STORE.GetBuildOrdinalForPage) == "function"
         and LTM_BUILD_STORE:GetBuildOrdinalForPage(pageId, buildId) ~= nil then
         return buildId, pageId
     end
 
-    if type(LTM_BUILD_STORE.GetPageList) == "function" then
-        for _, pageEntry in ipairs(LTM_BUILD_STORE:GetPageList()) do
-            local resolvedPageId = type(pageEntry) == "table" and pageEntry.pageId or nil
-            local page = type(pageEntry) == "table" and pageEntry.page or nil
-            for _, orderedBuildId in ipairs(type(page) == "table" and page.buildOrder or {}) do
-                if orderedBuildId == buildId and type(resolvedPageId) == "string" and resolvedPageId ~= "" then
-                    return buildId, resolvedPageId
-                end
+    for _, pageEntry in ipairs(LTM_BUILD_STORE:GetPageList()) do
+        local resolvedPageId = type(pageEntry) == "table" and pageEntry.pageId or nil
+        local page = type(pageEntry) == "table" and pageEntry.page or nil
+        for _, orderedBuildId in ipairs(type(page) == "table" and page.buildOrder or {}) do
+            if orderedBuildId == buildId and type(resolvedPageId) == "string" and resolvedPageId ~= "" then
+                return buildId, resolvedPageId
             end
         end
     end
@@ -1164,12 +1075,6 @@ function LTM:SetCurrentBuildCardState(buildId, pageId)
 end
 
 function LTM:GetSelectedBuildCardState()
-    if type(LTM_BUILD_STORE) ~= "table"
-        or type(LTM_BUILD_STORE.GetSelectedPageId) ~= "function"
-        or type(LTM_BUILD_STORE.GetSelectedBuildIdForPage) ~= "function" then
-        return nil
-    end
-
     local pageId = LTM_BUILD_STORE:GetSelectedPageId()
     local buildId = type(pageId) == "string" and LTM_BUILD_STORE:GetSelectedBuildIdForPage(pageId) or nil
     local resolvedBuildId, resolvedPageId = self:ResolveBuildCardLocation(buildId, pageId)
@@ -1201,16 +1106,7 @@ function LTM:GetCurrentBuildCardState()
 end
 
 function LTM:ResolveBuildCardShortcutTarget(shortcutType, ordinal)
-    if type(LTM_BUILD_STORE) ~= "table" then
-        return nil, nil, "build_store_unavailable"
-    end
-
     if shortcutType == "ordinal" then
-        if type(LTM_BUILD_STORE.GetSelectedPageId) ~= "function"
-            or type(LTM_BUILD_STORE.GetBuildIdByOrdinalForPage) ~= "function" then
-            return nil, nil, "build_card_lookup_unavailable"
-        end
-
         local pageId = LTM_BUILD_STORE:GetSelectedPageId()
         local buildId = LTM_BUILD_STORE:GetBuildIdByOrdinalForPage(pageId, ordinal)
         if type(buildId) ~= "string" or buildId == "" then
@@ -1233,11 +1129,6 @@ function LTM:ResolveBuildCardShortcutTarget(shortcutType, ordinal)
         return nil, currentState.pageId, "build_card_shortcut_invalid"
     end
 
-    if type(LTM_BUILD_STORE.GetBuildOrdinalForPage) ~= "function"
-        or type(LTM_BUILD_STORE.GetBuildIdByOrdinalForPage) ~= "function" then
-        return nil, currentState.pageId, "build_card_lookup_unavailable"
-    end
-
     local currentOrdinal = LTM_BUILD_STORE:GetBuildOrdinalForPage(currentState.pageId, currentState.buildId)
     if type(currentOrdinal) ~= "number" then
         return nil, currentState.pageId, "current_build_card_missing"
@@ -1258,24 +1149,16 @@ function LTM:SyncSelectedBuildCardState(buildId, pageId)
     end
 
     if type(pageId) == "string"
-        and pageId ~= ""
-        and type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.SetSelectedPageId) == "function" then
+        and pageId ~= "" then
         LTM_BUILD_STORE:SetSelectedPageId(pageId)
     end
 
     if type(pageId) == "string"
-        and pageId ~= ""
-        and type(LTM_BUILD_STORE) == "table"
-        and type(LTM_BUILD_STORE.SetSelectedBuildIdForPage) == "function" then
+        and pageId ~= "" then
         LTM_BUILD_STORE:SetSelectedBuildIdForPage(pageId, buildId)
     end
 
-    if type(LTM_UI) == "table" and type(LTM_UI.SyncSelectedBuildCardState) == "function" then
-        return LTM_UI:SyncSelectedBuildCardState(buildId, pageId)
-    end
-
-    return true
+    return LTM_UI:SyncSelectedBuildCardState(buildId, pageId)
 end
 
 function LTM:IsApplyRunning()
@@ -1314,9 +1197,7 @@ function LTM:QueueLatestApplyRequest(requestData, completion)
         "replacedPrevious=" .. tostring(type(previousEnvelope) == "table")
     )
 
-    if type(Log.WriteChat) == "function" then
-        Log.WriteChat(GetStringText("SI_LTM_STATUS_APPLY_QUEUED_LATEST"))
-    end
+    Log.WriteChat(GetStringText("SI_LTM_STATUS_APPLY_QUEUED_LATEST"))
 
     if type(previousEnvelope) == "table" then
         self:LogApplyRequestSummary(
@@ -1339,7 +1220,7 @@ function LTM:StartQueuedApplyRequest()
     end
 
     self.queuedApplyRequest = nil
-    ShowMainWindowIfAvailable()
+    ShowMainWindowForApply()
     self:LogApplyRequestSummary(
         "Queued request started",
         "buildId=" .. tostring(queuedRequest.buildId),
@@ -1355,11 +1236,43 @@ local APPLY_PARTIAL_REASON_STRING_IDS = {
     insufficient_skill_points = "SI_LTM_STATUS_APPLY_PARTIAL_REASON_INSUFFICIENT_POINTS",
     passive_skills_unavailable = "SI_LTM_STATUS_APPLY_PARTIAL_REASON_PASSIVE_SKILLS_UNAVAILABLE",
     passive_ranks_not_restored = "SI_LTM_STATUS_APPLY_PARTIAL_REASON_PASSIVE_RANKS_NOT_RESTORED",
-    sp_saver_skip_skill_changes = "SI_LTM_STATUS_APPLY_PARTIAL_REASON_SP_SAVER_SKILL_CHANGES_SKIPPED",
-    sp_saver_passive_all_or_nothing_skipped =
-        "SI_LTM_STATUS_APPLY_PARTIAL_REASON_SP_SAVER_ALL_OR_NOTHING_SKIPPED",
-    sp_saver_passive_preserve_current_skipped =
-        "SI_LTM_STATUS_APPLY_PARTIAL_REASON_SP_SAVER_PRESERVE_CURRENT",
+    skill_settings_skip_all = "SI_LTM_STATUS_APPLY_PARTIAL_REASON_SKILL_SETTINGS_SKILL_CHANGES_SKIPPED",
+    skill_settings_passive_all_or_nothing_skipped =
+        "SI_LTM_STATUS_APPLY_PARTIAL_REASON_SKILL_SETTINGS_ALL_OR_NOTHING_SKIPPED",
+    action_bar_assignment_manager_unavailable = "SI_LTM_ERROR_REASON_ACTION_BAR_ASSIGNMENT_MANAGER_UNAVAILABLE",
+    skills_data_manager_unavailable = "SI_LTM_ERROR_REASON_SKILLS_DATA_MANAGER_UNAVAILABLE",
+    action_bar_restore_failed = "SI_LTM_ERROR_REASON_ACTION_BAR_RESTORE_FAILED",
+    crafted_ability_id_missing = "SI_LTM_ERROR_REASON_CRAFTED_ABILITY_ID_MISSING",
+    crafted_skill_data_unavailable = "SI_LTM_ERROR_REASON_CRAFTED_SKILL_DATA_UNAVAILABLE",
+    crafted_skill_not_purchased = "SI_LTM_ERROR_REASON_CRAFTED_SKILL_NOT_PURCHASED",
+    assign_failed = "SI_LTM_ERROR_REASON_ACTION_BAR_ASSIGN_FAILED",
+    slot_out_of_range = "SI_LTM_ERROR_REASON_ACTION_BAR_SLOT_OUT_OF_RANGE",
+    cryptcanon_special_ultimate_requires_overwrite =
+        "SI_LTM_ERROR_REASON_CRYPTCANON_SPECIAL_ULTIMATE_REQUIRES_OVERWRITE",
+    hotbar_unavailable = "SI_LTM_ERROR_REASON_HOTBAR_UNAVAILABLE",
+    clear_failed = "SI_LTM_ERROR_REASON_ACTION_BAR_CLEAR_FAILED",
+    unknown_ability = "SI_LTM_ERROR_REASON_UNKNOWN_ABILITY",
+    skill_data_unavailable = "SI_LTM_ERROR_REASON_SKILL_DATA_UNAVAILABLE",
+    passive_not_slottable = "SI_LTM_ERROR_REASON_PASSIVE_NOT_SLOTTABLE",
+    skill_not_purchased = "SI_LTM_ERROR_REASON_SKILL_NOT_PURCHASED",
+    current_progression_unavailable = "SI_LTM_ERROR_REASON_CURRENT_PROGRESSION_UNAVAILABLE",
+    target_morph_not_currently_available = "SI_LTM_ERROR_REASON_TARGET_MORPH_NOT_CURRENTLY_AVAILABLE",
+    transform_skill_line_unavailable = "SI_LTM_ERROR_REASON_TRANSFORM_SKILL_LINE_UNAVAILABLE",
+    transform_progression_unavailable = "SI_LTM_ERROR_REASON_TRANSFORM_PROGRESSION_UNAVAILABLE",
+    transform_slot_target_precedence = "SI_LTM_ERROR_REASON_TRANSFORM_SLOT_TARGET_PRECEDENCE",
+    transform_target_ability_unavailable = "SI_LTM_ERROR_REASON_TRANSFORM_TARGET_ABILITY_UNAVAILABLE",
+    transform_rank_exact_unavailable = "SI_LTM_ERROR_REASON_TRANSFORM_RANK_EXACT_UNAVAILABLE",
+    transform_rank_not_restorable = "SI_LTM_ERROR_REASON_TRANSFORM_RANK_NOT_RESTORABLE",
+    transform_auto_grant_unpurchase_not_restorable =
+        "SI_LTM_ERROR_REASON_TRANSFORM_AUTO_GRANT_UNPURCHASE_NOT_RESTORABLE",
+    transform_live_owner_line_unavailable = "SI_LTM_ERROR_REASON_TRANSFORM_LIVE_OWNER_LINE_UNAVAILABLE",
+    transform_snapshot_not_table = "SI_LTM_ERROR_REASON_TRANSFORM_SNAPSHOT_INVALID",
+    transform_snapshot_duplicate_skill_index = "SI_LTM_ERROR_REASON_TRANSFORM_SNAPSHOT_DUPLICATE_SKILL",
+    transform_snapshot_duplicate_progression_id = "SI_LTM_ERROR_REASON_TRANSFORM_SNAPSHOT_DUPLICATE_PROGRESSION",
+    transform_line_not_table = "SI_LTM_ERROR_REASON_TRANSFORM_LINE_INVALID",
+    transform_line_malformed = "SI_LTM_ERROR_REASON_TRANSFORM_LINE_INVALID",
+    transform_skill_malformed = "SI_LTM_ERROR_REASON_TRANSFORM_SKILL_INVALID",
+    transform_partial = "SI_LTM_ERROR_REASON_TRANSFORM_PARTIAL",
     equipment_item_not_found = "SI_LTM_STATUS_APPLY_PARTIAL_REASON_EQUIPMENT_ITEMS_NOT_FOUND",
     champion_allocated_respec_unsupported =
         "SI_LTM_STATUS_APPLY_PARTIAL_REASON_CP_ALLOCATION_MISMATCH",
@@ -1380,6 +1293,11 @@ local function ResolveApplyPartialReasonStringId(reason)
     if stringIdName ~= nil then
         return stringIdName
     end
+    local reasonKind = type(reason) == "string" and string.match(reason, "^([^:]+)") or nil
+    stringIdName = APPLY_PARTIAL_REASON_STRING_IDS[reasonKind]
+    if stringIdName ~= nil then
+        return stringIdName
+    end
     if type(reason) == "string" and string.sub(reason, 1, 12) == "ROLE_APPLY_E" then
         return "SI_LTM_STATUS_APPLY_PARTIAL_REASON_ROLE_FAILED"
     end
@@ -1387,10 +1305,7 @@ local function ResolveApplyPartialReasonStringId(reason)
 end
 
 local function ResolveApplyResultDomainLabel(domain)
-    if type(LTM_PIPELINE) == "table" and type(LTM_PIPELINE.ResolvePhaseTargetLabel) == "function" then
-        return LTM_PIPELINE:ResolvePhaseTargetLabel(domain)
-    end
-    return tostring(domain or GetStringText("SI_LTM_COMMON_UNKNOWN"))
+    return LTM_PIPELINE:ResolvePhaseTargetLabel(domain)
 end
 
 local function ResolveMultipleDomainResults(finalResult)
@@ -1445,10 +1360,7 @@ local function ResolveApplyResultReasonText(reason)
     if stringIdName ~= nil then
         return GetStringText(stringIdName)
     end
-    if type(Log.ResolveLocalizedErrorReason) == "function" then
-        return Log.ResolveLocalizedErrorReason(reason)
-    end
-    return nil
+    return Log.ResolveLocalizedErrorReason(reason)
 end
 
 local function BuildMultipleDomainDetails(entries)
@@ -1483,11 +1395,7 @@ local function BuildMultipleDomainDetails(entries)
 end
 
 local function WriteImportantApplyChat(message)
-    if type(Log.WriteImportantChat) == "function" then
-        Log.WriteImportantChat(message)
-    elseif type(Log.WriteChat) == "function" then
-        Log.WriteChat(message)
-    end
+    Log.WriteImportantChat(message)
 end
 
 function LTM:FinishApplyRun(runId, success, err, finalResult, afterActiveRunCleared)
@@ -1496,18 +1404,15 @@ function LTM:FinishApplyRun(runId, success, err, finalResult, afterActiveRunClea
         return false
     end
 
-    if type(LTM_UI.Dispatch) == "table"
-        and type(LTM_UI.Dispatch.RecordSkillPointTerminalSummary) == "function" then
-        local terminalOk, terminalErr = pcall(
-            LTM_UI.Dispatch.RecordSkillPointTerminalSummary,
-            LTM_UI.Dispatch,
-            runId,
-            activeRun.buildId,
-            finalResult
-        )
-        if terminalOk ~= true then
-            Log.Debug("Skill Point terminal summary failed:", terminalErr)
-        end
+    local terminalOk, terminalErr = pcall(
+        LTM_UI.Dispatch.RecordSkillPointTerminalSummary,
+        LTM_UI.Dispatch,
+        runId,
+        activeRun.buildId,
+        finalResult
+    )
+    if terminalOk ~= true then
+        Log.Debug("Skill Point terminal summary failed:", terminalErr)
     end
 
     self:LogApplyRequestSummary(
@@ -1530,36 +1435,35 @@ function LTM:FinishApplyRun(runId, success, err, finalResult, afterActiveRunClea
             reason = FormatApplySafeAbortChatReason(GetProgressFailureReason(err, finalResult)),
         })
         or nil
-    if type(Log.WriteChat) == "function" then
-        local buildId = tostring(activeRun.buildId or "")
-        local status = type(finalResult) == "table" and finalResult.finalStatus or nil
-        if multipleDomainResults ~= nil then
-            WriteImportantApplyChat(BuildMultipleDomainSummary(multipleDomainResults, safeAbortMessage))
-            if type(Log.IsSummaryDebugEnabled) == "function" and Log.IsSummaryDebugEnabled() then
-                WriteImportantApplyChat(BuildMultipleDomainDetails(multipleDomainResults))
-            end
-        elseif status == "partial_success" then
-            Log.WriteChat(GetStringText("SI_LTM_STATUS_APPLY_PARTIAL", {
-                buildId = buildId,
-            }))
-            local reasons = type(finalResult.reasons) == "table" and finalResult.reasons or {}
-            local writtenReasonKeys = {}
-            for _, reason in ipairs(reasons) do
-                local stringIdName = ResolveApplyPartialReasonStringId(reason)
+    local buildId = tostring(activeRun.buildId or "")
+    local status = type(finalResult) == "table" and finalResult.finalStatus or nil
+    if multipleDomainResults ~= nil then
+        WriteImportantApplyChat(BuildMultipleDomainSummary(multipleDomainResults, safeAbortMessage))
+        if Log.IsSummaryDebugEnabled() then
+            WriteImportantApplyChat(BuildMultipleDomainDetails(multipleDomainResults))
+        end
+    elseif status == "partial_success" then
+        Log.WriteChat(GetStringText("SI_LTM_STATUS_APPLY_PARTIAL", {
+            buildId = buildId,
+        }))
+        local reasons = type(finalResult.reasons) == "table" and finalResult.reasons or {}
+        local writtenReasonKeys = {}
+        for _, reason in ipairs(reasons) do
+            local stringIdName = ResolveApplyPartialReasonStringId(reason)
 
-                if stringIdName ~= nil and writtenReasonKeys[stringIdName] ~= true then
-                    writtenReasonKeys[stringIdName] = true
-                    Log.WriteChat(GetStringText(stringIdName))
-                end
+            if stringIdName ~= nil and writtenReasonKeys[stringIdName] ~= true then
+                writtenReasonKeys[stringIdName] = true
+                Log.WriteChat(GetStringText(stringIdName))
             end
         end
     end
 
     if isSafeAbortFailure then
-        if multipleDomainResults == nil and type(Log.WriteChat) == "function" then
+        if multipleDomainResults == nil then
             Log.WriteChat(safeAbortMessage)
         end
-        HideMainWindowIfAvailable()
+        Log.Debug("HideMainWindow invoked after safe abort")
+        LTM_UI:HideMainWindow()
     end
 
     if type(finalResult) == "table"
@@ -1635,7 +1539,7 @@ function LTM:OnCombatStateChanged(inCombat)
     end
 
     self:ResetWaitNotification(self)
-    ShowMainWindowIfAvailable()
+    ShowMainWindowForApply()
     Log.WriteChat(GetStringText("SI_LTM_STATUS_APPLY_RESUME_AFTER_COMBAT"))
     StartApplyRequestEnvelope(self, queuedRequest)
 end
@@ -1656,7 +1560,8 @@ function LTM:RunBuild(build, completion, options)
         return false, "build_not_found"
     end
 
-    local ok, err = LTM_PIPELINE:Run(build, completion, options)
+    local runOptions = type(options) == "table" and CloneTableShallow(options) or {}
+    local ok, err = LTM_PIPELINE:Run(build, completion, runOptions)
     if not ok and err ~= "handled" then
         Log.Debug("Build run failed:", err)
     end
@@ -1670,19 +1575,10 @@ function LTM:EvaluateApplyPrecheck(request, options)
         or "unknown"
     normalizedRequest.forceChampionRespec = ResolveApplyRequestForceChampionRespec(normalizedRequest)
 
-    if type(LTM_APPLY_PRECHECK) ~= "table" or type(LTM_APPLY_PRECHECK.Evaluate) ~= "function" then
-        return nil, "apply_precheck_unavailable"
-    end
-
     return LTM_APPLY_PRECHECK:Evaluate(normalizedRequest, options)
 end
 
 local function EvaluateApplyRequestGate(request)
-    if type(LTM_APPLY_PRECHECK_GATE) ~= "table"
-        or type(LTM_APPLY_PRECHECK_GATE.Evaluate) ~= "function" then
-        return nil
-    end
-
     return LTM_APPLY_PRECHECK_GATE:Evaluate(request)
 end
 
@@ -1723,9 +1619,7 @@ function LTM:ApplyRequestCore(request, completion)
         or "unknown"
     normalizedRequest.forceChampionRespec = ResolveApplyRequestForceChampionRespec(normalizedRequest)
 
-    if normalizedRequest.skipStartStateCheck ~= true
-        and type(LTM_APPLY_PRECHECK) == "table"
-        and type(LTM_APPLY_PRECHECK.Begin) == "function" then
+    if normalizedRequest.skipStartStateCheck ~= true then
         return LTM_APPLY_PRECHECK:Begin(normalizedRequest, completion, function(cleanRequest, cleanCompletion)
             local resumedRequest = CloneApplyRequest(cleanRequest)
             resumedRequest.skipStartStateCheck = true
@@ -1736,9 +1630,7 @@ function LTM:ApplyRequestCore(request, completion)
     local build = normalizedRequest.build
     if type(build) ~= "table" then
         local buildId = normalizedRequest.buildId
-        build = type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.GetBuildById) == "function"
-            and LTM_BUILD_STORE:GetBuildById(buildId)
-            or nil
+        build = LTM_BUILD_STORE:GetBuildById(buildId)
         if not build then
             Log.Debug("Build not found:", buildId)
             return false, "build_not_found"
@@ -1747,9 +1639,7 @@ function LTM:ApplyRequestCore(request, completion)
 
     local skillPhaseMode, skillPhaseReason = ResolveSkillPhasePreflightSkip(build, normalizedRequest)
     local acceptedPrecheck, acceptedContinuation = ResolveAcceptedSkillPointPrecheck(normalizedRequest)
-    local resolvedSpSaver = CloneResolvedSpSaverPolicy(
-        type(acceptedPrecheck) == "table" and acceptedPrecheck.spSaver or nil
-    )
+    local resolvedSkillSettings = type(acceptedPrecheck) == "table" and acceptedPrecheck.skillSettings or nil
     local resolvedPreflightMode = type(acceptedContinuation) == "table"
         and acceptedContinuation.resolvedPreflightMode
         or normalizedRequest.preflightMode
@@ -1764,7 +1654,13 @@ function LTM:ApplyRequestCore(request, completion)
         preflightMode = resolvedPreflightMode,
         skillPhaseMode = skillPhaseMode,
         skillPhaseReason = skillPhaseReason,
-        spSaver = resolvedSpSaver,
+        skillSettings = resolvedSkillSettings,
+        activeRestorePlan = type(acceptedContinuation) == "table"
+            and acceptedContinuation.activeRestorePlan
+            or nil,
+        transformPlan = type(acceptedContinuation) == "table"
+            and acceptedContinuation.transformPlan
+            or nil,
         source = normalizedRequest.source,
         pageId = normalizedRequest.pageId,
         forceChampionRespec = normalizedRequest.forceChampionRespec == true,
@@ -1781,6 +1677,15 @@ local function BuildAcceptedSkillPointContinuation(precheck)
     local route = type(precheck.route) == "table" and precheck.route or nil
     local diagnostics = type(precheck.diagnostics) == "table" and precheck.diagnostics or nil
     local skillPointPlan = type(diagnostics) == "table" and diagnostics.skillPointPlan or nil
+    local pipelinePlan = type(diagnostics) == "table" and diagnostics.pipelinePlan or nil
+    local activeRestorePlan = type(pipelinePlan) == "table"
+        and type(pipelinePlan.diagnostics) == "table"
+        and pipelinePlan.diagnostics.analyzedActiveRestorePlan
+        or nil
+    local transformPlan = type(pipelinePlan) == "table"
+        and type(pipelinePlan.diagnostics) == "table"
+        and pipelinePlan.diagnostics.analyzedTransformPlan
+        or nil
     local skillPhaseMode = type(route) == "table" and route.skillPhaseMode or nil
     local resolvedPreflightMode = skillPhaseMode == "skip_due_to_insufficient_points"
         and "subclass_only"
@@ -1790,11 +1695,13 @@ local function BuildAcceptedSkillPointContinuation(precheck)
             skillPhaseMode = skillPhaseMode,
             skillPhaseReason = type(route) == "table" and route.skillPhaseReason or nil,
             resolvedPreflightMode = resolvedPreflightMode,
+            activeRestorePlan = activeRestorePlan,
+            transformPlan = transformPlan,
         },
         diagnostics = {
             expectedResult = type(skillPointPlan) == "table" and skillPointPlan.expectedResult or nil,
         },
-        spSaver = CloneResolvedSpSaverPolicy(precheck.spSaver),
+        skillSettings = precheck.skillSettings,
     }
 end
 
@@ -1863,15 +1770,13 @@ function LTM:ApplyRequest(request, completion)
     end
     if type(precheck) == "table" and precheck.action == "block" then
         local err = precheck.error or "apply_precheck_blocked"
-        if type(Log.LogDebugSummary) == "function" then
-            Log.LogDebugSummary(
-                "Apply request blocked by precheck",
-                "reason=" .. tostring(err),
-                "invalidReason=" .. tostring(precheck.invalidReason),
-                "buildId=" .. tostring(GetApplyRequestIdentifier(normalizedRequest))
-            )
-        end
-        if err == "skill_point_evaluator_invalid" and type(Log.WriteChat) == "function" then
+        Log.LogDebugSummary(
+            "Apply request blocked by precheck",
+            "reason=" .. tostring(err),
+            "invalidReason=" .. tostring(precheck.invalidReason),
+            "buildId=" .. tostring(GetApplyRequestIdentifier(normalizedRequest))
+        )
+        if err == "skill_point_evaluator_invalid" then
             Log.WriteChat(GetStringText("SI_LTM_STATUS_SKILL_POINT_EVALUATOR_INVALID", {
                 reason = tostring(precheck.invalidReason or "unknown"),
             }))
@@ -1886,20 +1791,17 @@ function LTM:ApplyRequest(request, completion)
 
     normalizedRequest.acceptedSkillPointPrecheck = BuildAcceptedSkillPointContinuation(precheck)
     local runId, activeRun = self:BeginApplyRun(normalizedRequest)
-    if type(LTM_UI.Dispatch) == "table"
-        and type(LTM_UI.Dispatch.RecordAcceptedSkillPointRun) == "function" then
-        local auditOk, auditErr = pcall(
-            LTM_UI.Dispatch.RecordAcceptedSkillPointRun,
-            LTM_UI.Dispatch,
-            {
-                runId = runId,
-                buildId = activeRun and activeRun.buildId,
-            },
-            precheck
-        )
-        if auditOk ~= true then
-            Log.Debug("Skill Point accepted run audit failed:", auditErr)
-        end
+    local auditOk, auditErr = pcall(
+        LTM_UI.Dispatch.RecordAcceptedSkillPointRun,
+        LTM_UI.Dispatch,
+        {
+            runId = runId,
+            buildId = activeRun and activeRun.buildId,
+        },
+        precheck
+    )
+    if auditOk ~= true then
+        Log.Debug("Skill Point accepted run audit failed:", auditErr)
     end
     self:LogApplyRequestSummary(
         "Apply request accepted",
@@ -1918,9 +1820,7 @@ function LTM:ApplyRequest(request, completion)
                 return
             end
             LTM.applyProgressSpecificWaitActive = false
-            if type(LTM_UI_APPLY_PROGRESS.UpdatePhase) == "function" then
-                LTM_UI_APPLY_PROGRESS:UpdatePhase(phaseName)
-            end
+            LTM_UI_APPLY_PROGRESS:UpdatePhase(phaseName)
         end
         normalizedRequest.onStatusUpdate = function(statusName, detail)
             if LTM.applyProgressActiveToken ~= progressRunToken then
@@ -2042,20 +1942,16 @@ function LTM:RunBuildById(buildId, completion, options)
 end
 
 function LTM:HandlePrimaryShortcut()
-    if type(LTM_UI) == "table" and type(LTM_UI.ToggleMainWindow) == "function" then
-        LTM_UI:ToggleMainWindow()
-    end
+    LTM_UI:ToggleMainWindow()
 end
 
 function LTM:HandleBuildCardShortcut(shortcutType, ordinal)
     local buildId, pageId, err = self:ResolveBuildCardShortcutTarget(shortcutType, ordinal)
     if type(buildId) ~= "string" or buildId == "" then
-        if type(Log.WriteChat) == "function" then
-            Log.WriteChat(GetStringText("SI_LTM_STATUS_ERROR", {
-                action = "Build Card keybind",
-                reason = type(Log.LocalizeErrorReason) == "function" and Log.LocalizeErrorReason(err) or tostring(err),
-            }))
-        end
+        Log.WriteChat(GetStringText("SI_LTM_STATUS_ERROR", {
+            action = "Build Card keybind",
+            reason = Log.LocalizeErrorReason(err),
+        }))
         return nil, err
     end
 
@@ -2064,9 +1960,7 @@ function LTM:HandleBuildCardShortcut(shortcutType, ordinal)
         pageId = pageId,
         source = "keybind_full_apply",
     }, function(success, completionErr)
-        if type(LTM_UI) == "table" and type(LTM_UI.OnApplyCompleted) == "function" then
-            LTM_UI:OnApplyCompleted(success, completionErr)
-        end
+        LTM_UI:OnApplyCompleted(success, completionErr)
     end)
 
     if ok == true then
@@ -2088,9 +1982,7 @@ function LTM:SetHudLauncherHidden(hidden)
     end
 
     hudSettings.hidden = hidden == true
-    if type(LTM_UI) == "table" and type(LTM_UI.RefreshHudLauncher) == "function" then
-        LTM_UI:RefreshHudLauncher()
-    end
+    LTM_UI:RefreshHudLauncher()
 
     Log.WriteChat("HUD icon enabled=" .. tostring(hudSettings.hidden ~= true))
     return true
@@ -2107,9 +1999,7 @@ function LTM:SetHudLauncherLocked(locked)
     end
 
     hudSettings.locked = locked == true
-    if type(LTM_UI) == "table" and type(LTM_UI.RefreshHudLauncher) == "function" then
-        LTM_UI:RefreshHudLauncher()
-    end
+    LTM_UI:RefreshHudLauncher()
 
     Log.WriteChat("HUD icon locked=" .. tostring(hudSettings.locked == true))
     return true
@@ -2176,38 +2066,18 @@ end
 function LTM:Initialize()
     local migrationFailed = self:InitializeSavedVars() == false
     self:ApplyLanguage()
-    if migrationFailed and type(Log.LogSavedVarsMigrationError) == "function" then
+    if migrationFailed then
         Log.LogSavedVarsMigrationError()
     end
-    if type(LTM_BUILD_STORE) == "table" and type(LTM_BUILD_STORE.Initialize) == "function" then
-        LTM_BUILD_STORE:Initialize(self.savedVars)
-    end
-    if type(LTM_QUICKSLOT_PROFILES) == "table" and type(LTM_QUICKSLOT_PROFILES.Initialize) == "function" then
-        LTM_QUICKSLOT_PROFILES:Initialize(self.savedVars)
-    end
-    if type(LTM_FOOD_HELPER) == "table" and type(LTM_FOOD_HELPER.Initialize) == "function" then
-        LTM_FOOD_HELPER:Initialize(self.savedVars)
-    end
-    if type(LTM_ALCHEMY_RECIPE) == "table" and type(LTM_ALCHEMY_RECIPE.Initialize) == "function" then
-        LTM_ALCHEMY_RECIPE:Initialize(self.savedVars)
-    end
-    if type(LTM_ENCHANT_RECIPE) == "table" and type(LTM_ENCHANT_RECIPE.Initialize) == "function" then
-        LTM_ENCHANT_RECIPE:Initialize(self.savedVars)
-    end
-    if type(LTM_SCRIBING_RECIPE) == "table" and type(LTM_SCRIBING_RECIPE.Initialize) == "function" then
-        LTM_SCRIBING_RECIPE:Initialize(self.savedVars)
-    end
-    if type(LTM_AUTO_REFILL) == "table" and type(LTM_AUTO_REFILL.Initialize) == "function" then
-        LTM_AUTO_REFILL:Initialize()
-    end
-    if type(LTM_UI) == "table" and type(LTM_UI.Initialize) == "function" then
-        LTM_UI:Initialize()
-    end
-    if type(LTM_UI) == "table"
-        and type(LTM_UI.StationLauncher) == "table"
-        and type(LTM_UI.StationLauncher.Initialize) == "function" then
-        LTM_UI.StationLauncher:Initialize()
-    end
+    LTM_BUILD_STORE:Initialize(self.savedVars)
+    LTM_QUICKSLOT_PROFILES:Initialize(self.savedVars)
+    LTM_FOOD_HELPER:Initialize(self.savedVars)
+    LTM_ALCHEMY_RECIPE:Initialize(self.savedVars)
+    LTM_ENCHANT_RECIPE:Initialize(self.savedVars)
+    LTM_SCRIBING_RECIPE:Initialize(self.savedVars)
+    LTM_AUTO_REFILL:Initialize()
+    LTM_UI:Initialize()
+    LTM_UI.StationLauncher:Initialize()
     self:RegisterSettingsPanel()
     self:RegisterSlashCommands()
     self:RegisterCombatStateObserver()

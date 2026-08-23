@@ -29,16 +29,27 @@ local function IsEnabled()
 end
 
 local function GetLogoutMenuEntry()
-    if not MENU_ENTRY_DATA or not MENU_MAIN_ENTRIES then
+    if type(ZO_MENU_ENTRIES) ~= "table" or type(ZO_MENU_MAIN_ENTRIES) ~= "table" then
         return nil
     end
 
-    local entry = MENU_ENTRY_DATA[MENU_MAIN_ENTRIES.LOG_OUT]
-    if type(entry) ~= "table" or type(entry.activatedCallback) ~= "function" then
+    local logoutEntryId = ZO_MENU_MAIN_ENTRIES.LOG_OUT
+    if logoutEntryId == nil then
         return nil
     end
 
-    return entry
+    for _, menuEntry in ipairs(ZO_MENU_ENTRIES) do
+        if menuEntry.id == logoutEntryId then
+            local entry = menuEntry.data
+            if type(entry) == "table" and type(entry.activatedCallback) == "function" then
+                return entry
+            end
+
+            return nil
+        end
+    end
+
+    return nil
 end
 
 local function LogoutWithoutConfirmation()

@@ -4,8 +4,6 @@ local Addon = LarvalTearMod
 local Log = Addon.Common.Log
 local SkillPointRunAudit = Addon.Modules.SkillPointRunAudit
 
-local LOGGER_CHILD_TAG = "SkillPointRunAudit"
-
 local acceptedPlansByRunId = {}
 local DOWNSTREAM_FAILURE_PHASES = {
     Equipment = true,
@@ -17,13 +15,12 @@ local DOWNSTREAM_FAILURE_PHASES = {
 local SKILL_DOMAIN_PARTIAL_RESULT_CODES = {
     passive_auto_fill_insufficient_points_partial = true,
     passive_exact_restore_partial = true,
-    route_b_degraded_insufficient_points = true,
+    route_b_active_priority_insufficient_points = true,
     skill_phase_skipped_insufficient_points = true,
 }
 local PASSIVE_PARTIAL_RESULT_CODES = {
     passive_auto_fill_insufficient_points_partial = true,
     passive_exact_restore_partial = true,
-    route_b_degraded_insufficient_points = true,
 }
 
 local function StringifyLogValue(value)
@@ -33,32 +30,23 @@ local function StringifyLogValue(value)
 end
 
 local function EmitAuditLog(message)
-    if type(Log) ~= "table"
-        or type(Log.IsDebugEnabled) ~= "function"
-        or Log.IsDebugEnabled() ~= true
-        or type(Log.GetChildLogger) ~= "function" then
-        return
-    end
-
-    local ok, logger = pcall(Log.GetChildLogger, LOGGER_CHILD_TAG)
-    if not ok or logger == nil or type(logger.Debug) ~= "function" then
-        return
-    end
-    pcall(logger.Debug, logger, message)
+    Log.LogDebugSummary(message)
 end
 
-local function CloneSpSaverPolicy(policy)
-    if type(policy) ~= "table" then
+local function CloneSkillSettings(settings)
+    if type(settings) ~= "table" then
         return nil
     end
 
     return {
-        activeMode = policy.activeMode,
-        passiveMode = policy.passiveMode,
-        activeAction = policy.activeAction,
-        passiveAction = policy.passiveAction,
-        reason = policy.reason,
-        source = policy.source,
+        activeRestore = settings.activeRestore,
+        passiveRestore = settings.passiveRestore,
+        activeShortage = settings.activeShortage,
+        passiveShortage = settings.passiveShortage,
+        activeAction = settings.activeAction,
+        passiveAction = settings.passiveAction,
+        reason = settings.reason,
+        source = settings.source,
     }
 end
 
@@ -68,37 +56,34 @@ local function HasSkippedTarget(targets)
 end
 
 local function ResolveExpectedSkippedTargets(finalResult)
-    local expected = type(finalResult) == "table" and finalResult.spSaverExpected or nil
+    local expected = type(finalResult) == "table" and finalResult.skillSettingsExpected or nil
     return type(expected) == "table" and type(expected.skippedTargets) == "table"
         and expected.skippedTargets
         or {}
 end
 
-local function ResolveExpectedSpSaverReason(policy, expectedTargets)
+local function ResolveExpectedSkillSettingsReason(policy, expectedTargets)
     if type(policy) ~= "table" or not HasSkippedTarget(expectedTargets) then
         return nil
     end
     if expectedTargets.normal_skill_changes == true then
-        return "sp_saver_skip_skill_changes"
+        return "skill_settings_skip_all"
     end
     if expectedTargets.normal_passive_changes ~= true then
         return nil
     end
-    if policy.activeAction == "skip_skill_changes" then
-        return "sp_saver_skip_skill_changes"
+    if policy.activeAction == "skip_all" then
+        return "skill_settings_skip_all"
     end
-    if policy.passiveMode == "all_or_nothing" then
-        return "sp_saver_passive_all_or_nothing_skipped"
-    end
-    if policy.passiveMode == "preserve_current" then
-        return "sp_saver_passive_preserve_current_skipped"
+    if policy.passiveShortage == "all_or_nothing" then
+        return "skill_settings_passive_all_or_nothing_skipped"
     end
     return nil
 end
 
 local function ResolveExpectedTerminalResult(expectedResult, policy, expectedTargets)
     local hasSkipAction = type(policy) == "table"
-        and (policy.activeAction == "skip_skill_changes"
+        and (policy.activeAction == "skip_all"
             or policy.passiveAction == "skip_passive_changes")
     if hasSkipAction then
         return HasSkippedTarget(expectedTargets) and "partial_success" or "full_success"
@@ -162,10 +147,26 @@ local function ResolveActualFinalReason(finalResult, expectedReason)
 end
 
 local function ResolveActualSkippedTargets(finalResult)
-    local spSaver = type(finalResult) == "table" and finalResult.spSaver or nil
-    return type(spSaver) == "table" and type(spSaver.skippedTargets) == "table"
-        and spSaver.skippedTargets
+    local runtime = type(finalResult) == "table" and finalResult.skillSettingsRuntime or nil
+    return type(runtime) == "table" and type(runtime.skippedTargets) == "table"
+        and runtime.skippedTargets
         or {}
+end
+
+local function ResolveActivePriorityResidual(finalResult)
+    if type(finalResult) ~= "table" then
+        return nil
+    end
+    if finalResult.resultCode == "route_b_active_priority_insufficient_points" then
+        return type(finalResult.residualSummary) == "table" and finalResult.residualSummary or nil
+    end
+    for _, entry in ipairs(type(finalResult.results) == "table" and finalResult.results or {}) do
+        if type(entry) == "table"
+            and entry.resultCode == "route_b_active_priority_insufficient_points" then
+            return type(entry.residualSummary) == "table" and entry.residualSummary or nil
+        end
+    end
+    return nil
 end
 
 local function IsTargetSkipped(targets, target)
@@ -190,7 +191,7 @@ local function BuildSkippedTargetsText(skippedTargets)
     return #targets > 0 and table.concat(targets, ",") or nil
 end
 
-local function ClassifyTerminalResult(expectedResult, finalResult)
+local function ClassifyTerminalResult(expectedResult, finalResult, policy)
     local actualResult = type(finalResult) == "table" and finalResult.finalStatus or "failure"
     local resultCode = type(finalResult) == "table" and finalResult.resultCode or nil
     local failurePhase = type(finalResult) == "table" and finalResult.failurePhase or nil
@@ -241,6 +242,12 @@ local function ClassifyTerminalResult(expectedResult, finalResult)
     end
 
     if expectedResult == "skill_phase_skip" then
+        if type(policy) == "table"
+            and policy.activeShortage == "active_priority"
+            and actualResult == "partial_success"
+            and resultCode == "route_b_active_priority_insufficient_points" then
+            return actualResult, "match", "none"
+        end
         if actualResult == "partial_success" and resultCode == "skill_phase_skipped_insufficient_points" then
             return actualResult, "match", "none"
         end
@@ -254,38 +261,38 @@ local function ClassifyTerminalResult(expectedResult, finalResult)
 end
 
 local function ClassifyAcceptedRun(accepted, finalResult)
-    local policy = type(accepted) == "table" and accepted.spSaver or nil
+    local policy = type(accepted) == "table" and accepted.skillSettings or nil
     local expectedTargets = ResolveExpectedSkippedTargets(finalResult)
     local actualTargets = ResolveActualSkippedTargets(finalResult)
-    local expectedReason = ResolveExpectedSpSaverReason(policy, expectedTargets)
+    local expectedReason = ResolveExpectedSkillSettingsReason(policy, expectedTargets)
     local hasSkipAction = type(policy) == "table"
-        and (policy.activeAction == "skip_skill_changes"
+        and (policy.activeAction == "skip_all"
             or policy.passiveAction == "skip_passive_changes")
     if not hasSkipAction then
         if HasSkippedTarget(actualTargets) then
             local actualResult = type(finalResult) == "table" and finalResult.finalStatus or "failure"
-            return actualResult, "unexplained_difference", "sp_saver_unexpected_runtime_skip"
+            return actualResult, "unexplained_difference", "skill_settings_unexpected_runtime_skip"
         end
-        return ClassifyTerminalResult(accepted.expectedResult, finalResult)
+        return ClassifyTerminalResult(accepted.expectedResult, finalResult, policy)
     end
 
     local actualResult = type(finalResult) == "table" and finalResult.finalStatus or "failure"
     if actualResult == "failure" then
-        return ClassifyTerminalResult(accepted.expectedResult, finalResult)
+        return ClassifyTerminalResult(accepted.expectedResult, finalResult, policy)
     end
 
     if not SkippedTargetsMatch(expectedTargets, actualTargets) then
-        return actualResult, "unexplained_difference", "sp_saver_expected_actual_target_mismatch"
+        return actualResult, "unexplained_difference", "skill_settings_expected_actual_target_mismatch"
     end
 
     if not HasSkippedTarget(expectedTargets) then
-        return ClassifyTerminalResult("full_success", finalResult)
+        return ClassifyTerminalResult("full_success", finalResult, policy)
     end
     if actualResult == "partial_success" and HasReason(finalResult, expectedReason) then
         return actualResult, "match", "none"
     end
 
-    return actualResult, "unexplained_difference", "sp_saver_runtime_terminal_mismatch"
+    return actualResult, "unexplained_difference", "skill_settings_runtime_terminal_mismatch"
 end
 
 function SkillPointRunAudit:RecordAcceptedRun(metadata, precheck)
@@ -301,7 +308,7 @@ function SkillPointRunAudit:RecordAcceptedRun(metadata, precheck)
         runId = metadata.runId,
         buildId = metadata.buildId,
         expectedResult = skillPointPlan.expectedResult,
-        spSaver = CloneSpSaverPolicy(type(precheck) == "table" and precheck.spSaver or nil),
+        skillSettings = CloneSkillSettings(type(precheck) == "table" and precheck.skillSettings or nil),
     }
     return true
 end
@@ -312,19 +319,29 @@ function SkillPointRunAudit:RecordTerminalSummary(runId, buildId, finalResult)
     if type(accepted) ~= "table" then
         return nil
     end
+    if Log.IsSummaryDebugEnabled() ~= true then
+        return nil
+    end
 
     local resolvedBuildId = buildId or accepted.buildId
     local expectedResult = accepted.expectedResult
-    local spSaver = accepted.spSaver
+    local skillSettings = accepted.skillSettings
     local expectedSkippedTargets = ResolveExpectedSkippedTargets(finalResult)
-    local expectedSpSaverReason = ResolveExpectedSpSaverReason(spSaver, expectedSkippedTargets)
-    local expectedTerminalResult = ResolveExpectedTerminalResult(expectedResult, spSaver, expectedSkippedTargets)
+    local expectedSkillSettingsReason = ResolveExpectedSkillSettingsReason(skillSettings, expectedSkippedTargets)
+    local expectedTerminalResult = ResolveExpectedTerminalResult(expectedResult, skillSettings, expectedSkippedTargets)
     local actualResult, comparison, mismatchReason = ClassifyAcceptedRun(accepted, finalResult)
-    local actualFinalReason = ResolveActualFinalReason(finalResult, expectedSpSaverReason)
+    local actualFinalReason = ResolveActualFinalReason(finalResult, expectedSkillSettingsReason)
     local actualSkippedTargets = ResolveActualSkippedTargets(finalResult)
     local expectedSkippedTargetsText = BuildSkippedTargetsText(expectedSkippedTargets)
     local actualSkippedTargetsText = BuildSkippedTargetsText(actualSkippedTargets)
     local failurePhase = type(finalResult) == "table" and finalResult.failurePhase or nil
+    local activePriorityResidual = ResolveActivePriorityResidual(finalResult)
+    local expectedMissingPurchaseCount = type(activePriorityResidual) == "table"
+        and activePriorityResidual.expectedMissingPurchaseCount
+        or 0
+    local expectedMissingMorphCount = type(activePriorityResidual) == "table"
+        and activePriorityResidual.expectedMissingMorphCount
+        or 0
     local parts = {
         "SkillPointTerminalSummary:",
         "runId=" .. StringifyLogValue(accepted.runId),
@@ -332,38 +349,40 @@ function SkillPointRunAudit:RecordTerminalSummary(runId, buildId, finalResult)
         "expectedResult=" .. StringifyLogValue(expectedResult),
         "expectedTerminalResult=" .. StringifyLogValue(expectedTerminalResult),
         "actualResult=" .. StringifyLogValue(actualResult),
-        "spSaverSource=" .. StringifyLogValue(type(spSaver) == "table" and spSaver.source or nil),
-        "activeMode=" .. StringifyLogValue(type(spSaver) == "table" and spSaver.activeMode or nil),
-        "passiveMode=" .. StringifyLogValue(type(spSaver) == "table" and spSaver.passiveMode or nil),
-        "expectedActiveAction=" .. StringifyLogValue(type(spSaver) == "table" and spSaver.activeAction or nil),
-        "expectedPassiveAction=" .. StringifyLogValue(type(spSaver) == "table" and spSaver.passiveAction or nil),
+        "skillSettingsSource=" .. StringifyLogValue(type(skillSettings) == "table" and skillSettings.source or nil),
+        "activeShortage=" .. StringifyLogValue(type(skillSettings) == "table" and skillSettings.activeShortage or nil),
+        "passiveShortage=" .. StringifyLogValue(type(skillSettings) == "table" and skillSettings.passiveShortage or nil),
+        "expectedActiveAction=" .. StringifyLogValue(type(skillSettings) == "table" and skillSettings.activeAction or nil),
+        "expectedPassiveAction=" .. StringifyLogValue(type(skillSettings) == "table" and skillSettings.passiveAction or nil),
         "expectedSkippedTargets=" .. StringifyLogValue(expectedSkippedTargetsText),
         "actualSkippedTargets=" .. StringifyLogValue(actualSkippedTargetsText),
-        "expectedReason=" .. StringifyLogValue(expectedSpSaverReason),
+        "expectedReason=" .. StringifyLogValue(expectedSkillSettingsReason),
         "actualFinalReason=" .. StringifyLogValue(actualFinalReason),
         "failurePhase=" .. StringifyLogValue(failurePhase),
+        "activeExpectedMissingPurchase=" .. StringifyLogValue(expectedMissingPurchaseCount),
+        "activeExpectedMissingMorph=" .. StringifyLogValue(expectedMissingMorphCount),
         "comparison=" .. StringifyLogValue(comparison),
         "mismatchReason=" .. StringifyLogValue(mismatchReason),
     }
-    if comparison == "unexplained_difference" then
-        EmitAuditLog(table.concat(parts, " "))
-    end
+    EmitAuditLog(table.concat(parts, " "))
     return {
         runId = accepted.runId,
         buildId = resolvedBuildId,
         expectedResult = expectedResult,
         expectedTerminalResult = expectedTerminalResult,
         actualResult = actualResult,
-        spSaverSource = type(spSaver) == "table" and spSaver.source or nil,
-        activeMode = type(spSaver) == "table" and spSaver.activeMode or nil,
-        passiveMode = type(spSaver) == "table" and spSaver.passiveMode or nil,
-        expectedActiveAction = type(spSaver) == "table" and spSaver.activeAction or nil,
-        expectedPassiveAction = type(spSaver) == "table" and spSaver.passiveAction or nil,
+        skillSettingsSource = type(skillSettings) == "table" and skillSettings.source or nil,
+        activeShortage = type(skillSettings) == "table" and skillSettings.activeShortage or nil,
+        passiveShortage = type(skillSettings) == "table" and skillSettings.passiveShortage or nil,
+        expectedActiveAction = type(skillSettings) == "table" and skillSettings.activeAction or nil,
+        expectedPassiveAction = type(skillSettings) == "table" and skillSettings.passiveAction or nil,
         expectedSkippedTargets = expectedSkippedTargets,
         actualSkippedTargets = actualSkippedTargets,
-        expectedReason = expectedSpSaverReason,
+        expectedReason = expectedSkillSettingsReason,
         actualFinalReason = actualFinalReason,
         failurePhase = failurePhase,
+        expectedMissingPurchaseCount = expectedMissingPurchaseCount,
+        expectedMissingMorphCount = expectedMissingMorphCount,
         comparison = comparison,
         mismatchReason = mismatchReason,
     }

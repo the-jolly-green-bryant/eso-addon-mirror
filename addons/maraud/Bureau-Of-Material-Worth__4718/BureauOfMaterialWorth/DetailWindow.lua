@@ -398,6 +398,24 @@ local function SetupRow(rowControl, data)
     nameLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     nameLabel:SetText(addon.Valuation.ColorizeMaterialName(data.name, data.quality))
 
+    local sourceBg = rowControl:GetNamedChild("SourceBg")
+    local sourceLabel = rowControl:GetNamedChild("Source")
+    local sourceBadge = not data.diff and data.priced
+        and addon.Valuation.GetSourceShortName(data.source) or nil
+    UI.PaintRowFill(sourceBg, "badge")
+    sourceLabel:SetFont(FONT.small)
+    sourceLabel:SetText(sourceBadge and Colorize(COLOR_ACCENT, sourceBadge) or "")
+    sourceBg:SetHidden(sourceBadge == nil)
+    sourceLabel:SetHidden(sourceBadge == nil)
+
+    nameLabel:ClearAnchors()
+    nameLabel:SetAnchor(LEFT, rowControl:GetNamedChild("Icon"), RIGHT, 6, 0)
+    if sourceBadge then
+        nameLabel:SetAnchor(RIGHT, sourceBg, LEFT, -6, 0)
+    else
+        nameLabel:SetAnchor(RIGHT, rowControl:GetNamedChild("Qty"), LEFT, -6, 0)
+    end
+
     -- Diff rows repurpose the four numeric/status columns; a category/search row
     -- renders them as the normal Qty / Value / Cumulative / Change. Branch once on
     -- the diff flag rather than threading mode through every column.

@@ -18,6 +18,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Einstellungspanel anzeigen",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Menü nach Emote schließen (Linksklick)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Button-Position zurücksetzen",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "Chat-Schaltflächenversatz X",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "Der horizontale Versatz der Schaltfläche relativ zur Optionsschaltfläche des Chatfensters. Gilt nur, wenn die Schaltfläche am Chatfenster angeheftet ist.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFFUNKTIONEN|r
 • Schneller Zugriff auf Emotes mit Kategorien und Favoriten

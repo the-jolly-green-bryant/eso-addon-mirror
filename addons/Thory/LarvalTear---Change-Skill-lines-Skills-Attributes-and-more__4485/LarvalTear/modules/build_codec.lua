@@ -1,6 +1,7 @@
 local Addon = LarvalTearMod
 local Domains = Addon.Common.Domains
 local Log = Addon.Common.Log
+local SkillSettings = Addon.Common.SkillSettings
 local Util = Addon.Common.Util
 local M = Addon.Modules.BuildCodec
 
@@ -75,6 +76,16 @@ end
 
 local function IsNonNegativeInteger(value)
     return type(value) == "number" and value >= 0 and math.floor(value) == value
+end
+
+local function CopyActiveSnapshot(snapshot)
+    if type(snapshot) ~= "table" then
+        return nil
+    end
+
+    return {
+        a = snapshot.a,
+    }
 end
 
 local function EncodeTransformSnapshots(snapshots)
@@ -229,16 +240,12 @@ local function NormalizeCanonicalPassivePolicy(policy)
     return "class_all_purchase"
 end
 
-local function DecodePassivePolicy(policy)
+local function MigrateLegacyPassivePolicyToSchema10(policy)
     if policy == "auto_fill" then
         policy = "class_all_purchase"
     elseif policy == "manual" then
         policy = "none"
     end
-    return NormalizeCanonicalPassivePolicy(policy)
-end
-
-function M:NormalizePassivePolicy(policy)
     return NormalizeCanonicalPassivePolicy(policy)
 end
 
@@ -1219,6 +1226,8 @@ local function TransformBuildForSchema9(codec, build, buildId)
     if type(encodeResult) == "table" and encodeResult.status ~= "success" then
         return nil, "encode_source_failed:" .. tostring(buildId) .. ":" .. tostring(encodeResult.status)
     end
+    encoded.passivePolicy = build.passivePolicy
+    encoded.spSaver = Util:DeepCopy(build.spSaver)
     local decoded, decodeResult = codec:DecodeBuildForRuntime(encoded)
     if type(decodeResult) == "table" and decodeResult.status ~= "success" then
         return nil, "decode_verify_failed:" .. tostring(buildId) .. ":" .. tostring(decodeResult.status)
@@ -1239,13 +1248,16 @@ local function TransformBuildForSchema10(codec, build, buildId)
     end
 
     if type(runtimeBuild) == "table" then
-        runtimeBuild.passivePolicy = M:NormalizePassivePolicy(runtimeBuild.passivePolicy)
+        runtimeBuild.passivePolicy = MigrateLegacyPassivePolicyToSchema10(build.passivePolicy)
+        runtimeBuild.spSaver = Util:DeepCopy(build.spSaver)
     end
 
     local encoded, encodeResult = codec:EncodeBuildForPersist(runtimeBuild)
     if type(encodeResult) == "table" and encodeResult.status ~= "success" then
         return nil, "encode_source_failed:" .. tostring(buildId) .. ":" .. tostring(encodeResult.status)
     end
+    encoded.passivePolicy = runtimeBuild.passivePolicy
+    encoded.spSaver = Util:DeepCopy(runtimeBuild.spSaver)
     local decoded, decodeResult = codec:DecodeBuildForRuntime(encoded)
     if type(decodeResult) == "table" and decodeResult.status == "failure" then
         return nil, "decode_verify_failed:" .. tostring(buildId) .. ":" .. tostring(decodeResult.status)
@@ -1301,6 +1313,103 @@ local function TransformBucketForSchema9(codec, bucket)
     return transformed
 end
 
+local function MigrateLegacyPassiveRestore(policy)
+    if policy == "none" then
+        return "none"
+    elseif policy == "class_only" then
+        return "class_exact"
+    elseif policy == "all" then
+        return "all_exact"
+    end
+
+    return SkillSettings.PassiveRestoreDefault
+end
+
+local function MigrateLegacyPassiveShortage(mode)
+    if mode == "all_or_nothing" or mode == "preserve_current" then
+        return "all_or_nothing"
+    end
+
+    return SkillSettings.PassiveShortageDefault
+end
+
+local function MigrateLegacyActiveShortage(mode)
+    if mode == "skip_skill_changes" then
+        return "skip_all"
+    end
+
+    return SkillSettings.ActiveShortageDefault
+end
+
+local function MigrateGlobalSkillSettings(oldSpSaver)
+    oldSpSaver = type(oldSpSaver) == "table" and oldSpSaver or {}
+    return SkillSettings:NormalizeGlobal({
+        activeRestore = SkillSettings.ActiveRestoreDefault,
+        passiveRestore = SkillSettings.PassiveRestoreDefault,
+        passiveShortage = MigrateLegacyPassiveShortage(oldSpSaver.passiveMode),
+        activeShortage = MigrateLegacyActiveShortage(oldSpSaver.activeMode),
+    })
+end
+
+local function MigrateBuildSkillSettings(build, globalSkillSettings)
+    local oldSpSaver = type(build.spSaver) == "table" and build.spSaver or {}
+    local useOldSpSaverOverride = oldSpSaver.useOverride == true
+    local passiveRestore = MigrateLegacyPassiveRestore(build.passivePolicy)
+    local useOverride = passiveRestore ~= SkillSettings.PassiveRestoreDefault or useOldSpSaverOverride
+    local passiveShortage = globalSkillSettings.passiveShortage
+    local activeShortage = globalSkillSettings.activeShortage
+    if useOldSpSaverOverride then
+        passiveShortage = MigrateLegacyPassiveShortage(oldSpSaver.passiveMode)
+        activeShortage = MigrateLegacyActiveShortage(oldSpSaver.activeMode)
+    end
+
+    return SkillSettings:NormalizeBuild({
+        useOverride = useOverride,
+        activeRestore = SkillSettings.ActiveRestoreDefault,
+        passiveRestore = passiveRestore,
+        passiveShortage = passiveShortage,
+        activeShortage = activeShortage,
+    })
+end
+
+local function TransformBuildForSchema11(build, globalSkillSettings)
+    local transformed = Util:DeepCopy(build)
+    transformed.skillSettings = MigrateBuildSkillSettings(build, globalSkillSettings)
+    transformed.passivePolicy = nil
+    transformed.spSaver = nil
+    return transformed
+end
+
+local function TransformBucketForSchema11(bucket, globalSkillSettings)
+    local transformed = Util:DeepCopy(bucket)
+    if type(transformed) ~= "table" then
+        return transformed, 0
+    end
+
+    local buildCount = 0
+    if type(transformed.pages) == "table" then
+        for _, page in pairs(transformed.pages) do
+            if type(page) == "table" and type(page.builds) == "table" then
+                for buildId, build in pairs(page.builds) do
+                    if type(build) == "table" then
+                        page.builds[buildId] = TransformBuildForSchema11(build, globalSkillSettings)
+                        buildCount = buildCount + 1
+                    end
+                end
+            end
+        end
+    else
+        for key, build in pairs(transformed) do
+            if not RESERVED_CHARACTER_BUCKET_KEYS[key] and type(build) == "table" then
+                transformed[key] = TransformBuildForSchema11(build, globalSkillSettings)
+                buildCount = buildCount + 1
+            end
+        end
+    end
+
+    return transformed, buildCount
+end
+
 function M:GetCurrentSchemaVersion()
     return tonumber(Addon.SAVED_VARS_SCHEMA_VERSION) or 0
 end
@@ -1309,7 +1418,10 @@ function M:EncodeBuildForPersist(runtimeBuild)
     local result = BuildCodecResult()
     local persistentBuild = Util:DeepCopy(runtimeBuild)
     if type(persistentBuild) == "table" then
-        persistentBuild.passivePolicy = M:NormalizePassivePolicy(runtimeBuild and runtimeBuild.passivePolicy)
+        persistentBuild.skillSettings = SkillSettings:NormalizeBuild(runtimeBuild and runtimeBuild.skillSettings)
+        persistentBuild.passivePolicy = nil
+        persistentBuild.spSaver = nil
+        persistentBuild.activeSnapshot = CopyActiveSnapshot(runtimeBuild and runtimeBuild.activeSnapshot)
         persistentBuild.passiveSnapshot = EncodePassiveSnapshot(runtimeBuild and runtimeBuild.passiveSnapshot)
         local encodedTransforms, transformErr = EncodeTransformSnapshots(runtimeBuild and runtimeBuild.transforms)
         persistentBuild.transforms = encodedTransforms
@@ -1330,7 +1442,10 @@ function M:DecodeBuildForRuntime(persistentBuild)
     local result = BuildCodecResult()
     local runtimeBuild = Util:DeepCopy(persistentBuild)
     if type(runtimeBuild) == "table" then
-        runtimeBuild.passivePolicy = DecodePassivePolicy(persistentBuild and persistentBuild.passivePolicy)
+        runtimeBuild.skillSettings = SkillSettings:NormalizeBuild(persistentBuild and persistentBuild.skillSettings)
+        runtimeBuild.passivePolicy = nil
+        runtimeBuild.spSaver = nil
+        runtimeBuild.activeSnapshot = CopyActiveSnapshot(persistentBuild and persistentBuild.activeSnapshot)
         runtimeBuild.passiveSnapshot = DecodePassiveSnapshot(persistentBuild and persistentBuild.passiveSnapshot, result)
         local persistentTransforms = persistentBuild and persistentBuild.transforms
         runtimeBuild.transforms = DecodeTransformSnapshots(runtimeBuild.transforms, result)
@@ -1381,9 +1496,7 @@ function M:MigrateToSchema9(savedVars)
     end
 
     savedVars.buildsByCharacter = migratedBuildsByCharacter
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary("SavedVariables schema 9 migration complete", "buildCount=" .. tostring(buildCount))
-    end
+    Log.LogDebugSummary("SavedVariables schema 9 migration complete", "buildCount=" .. tostring(buildCount))
     return true, {
         buildCount = buildCount,
     }
@@ -1441,9 +1554,37 @@ function M:MigrateToSchema10(savedVars)
     end
 
     savedVars.buildsByCharacter = migratedBuildsByCharacter
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary("SavedVariables schema 10 migration complete", "buildCount=" .. tostring(buildCount))
+    Log.LogDebugSummary("SavedVariables schema 10 migration complete", "buildCount=" .. tostring(buildCount))
+    return true, {
+        buildCount = buildCount,
+    }
+end
+
+function M:MigrateToSchema11(savedVars)
+    if type(savedVars) ~= "table" then
+        return false, "saved_vars_invalid"
     end
+
+    local oldSettings = type(savedVars.settings) == "table" and savedVars.settings or {}
+    local globalSkillSettings = MigrateGlobalSkillSettings(oldSettings.spSaver)
+    local migratedSettings = Util:DeepCopy(oldSettings)
+    migratedSettings.skillSettings = globalSkillSettings
+    migratedSettings.spSaver = nil
+
+    local oldBuildsByCharacter = savedVars.buildsByCharacter
+    local migratedBuildsByCharacter = {}
+    local buildCount = 0
+    if type(oldBuildsByCharacter) == "table" then
+        for characterKey, bucket in pairs(oldBuildsByCharacter) do
+            local migratedBucket, migratedCount = TransformBucketForSchema11(bucket, globalSkillSettings)
+            migratedBuildsByCharacter[characterKey] = migratedBucket
+            buildCount = buildCount + migratedCount
+        end
+    end
+
+    savedVars.buildsByCharacter = migratedBuildsByCharacter
+    savedVars.settings = migratedSettings
+    Log.LogDebugSummary("SavedVariables schema 11 migration complete", "buildCount=" .. tostring(buildCount))
     return true, {
         buildCount = buildCount,
     }

@@ -85,11 +85,7 @@ local MENU_ENTRIES = {
 }
 
 local function GetText(key, params)
-    if type(Strings) == "table" and type(Strings.GetText) == "function" then
-        return Strings:GetText(key, params)
-    end
-
-    return key
+    return Strings:GetText(key, params)
 end
 
 local function CreateBackdrop(parent, name, centerR, centerG, centerB, centerA, edgeR, edgeG, edgeB, edgeA)
@@ -227,9 +223,7 @@ local function SetLabelText(control, text)
 end
 
 local function WriteChat(text)
-    if type(Log) == "table" and type(Log.WriteChat) == "function" then
-        Log.WriteChat(text)
-    end
+    Log.WriteChat(text)
 end
 
 local function SetTextTooltip(control, text)
@@ -481,13 +475,10 @@ end
 
 local function GetQuickSlotFetchMonitorState()
     local ui = Addon.UI
-    local windowVisible = type(ui) == "table"
-        and ui.window ~= nil
+    local windowVisible = ui.window ~= nil
         and type(ui.window.IsHidden) == "function"
         and ui.window:IsHidden() == false
-    local quickSettingsActive = type(ui) == "table"
-        and type(ui.IsArmoryStationTabActive) == "function"
-        and ui:IsArmoryStationTabActive() == false
+    local quickSettingsActive = ui:IsArmoryStationTabActive() == false
     local quickSlotsPanel = QuickSettings.quickSlotsPanel
     local quickSlotsVisible = QuickSettings.selectedMenuId == "quick_slots"
         and quickSlotsPanel ~= nil
@@ -502,10 +493,7 @@ local function GetQuickSlotFetchMonitorState()
 end
 
 local function GetQuickSlotFetchActivityState()
-    local availability = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetFetchAvailability) == "function"
-        and QuickslotProfileFacade:GetFetchAvailability(QuickSettings.quickSlotFetchMode, 0)
-        or {}
+    local availability = QuickslotProfileFacade:GetFetchAvailability(QuickSettings.quickSlotFetchMode, 0)
 
     return {
         fetchBusy = availability.busy == true,
@@ -600,10 +588,7 @@ local function RegisterRecipeRefreshEvents(self)
         return
     end
 
-    local eventManager = type(Util) == "table"
-        and type(Util.GetEventManager) == "function"
-        and Util:GetEventManager()
-        or nil
+    local eventManager = Util:GetEventManager()
     if eventManager == nil then
         return
     end
@@ -656,10 +641,7 @@ local function RegisterQuickSlotRefreshEvents(self)
         return
     end
 
-    local eventManager = type(Util) == "table"
-        and type(Util.GetEventManager) == "function"
-        and Util:GetEventManager()
-        or nil
+    local eventManager = Util:GetEventManager()
     if eventManager == nil then
         return
     end
@@ -750,15 +732,7 @@ function QuickSettings:StartRecipeShortRefresh(menuId)
 end
 
 local function NormalizeQuickSlotFetchMode(mode)
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.NormalizeFetchMode) == "function" then
-        return QuickslotProfileFacade:NormalizeFetchMode(mode)
-    end
-
-    if mode == QUICK_SLOT_FETCH_MODE_REFILL_MAX then
-        return QUICK_SLOT_FETCH_MODE_REFILL_MAX
-    end
-
-    return QUICK_SLOT_FETCH_MODE_MISSING
+    return QuickslotProfileFacade:NormalizeFetchMode(mode)
 end
 
 local function RefreshQuickSlotFetchModeControls()
@@ -772,9 +746,7 @@ end
 
 local function SelectQuickSlotFetchMode(mode)
     QuickSettings.quickSlotFetchMode = NormalizeQuickSlotFetchMode(mode)
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.SetFetchMode) == "function" then
-        QuickslotProfileFacade:SetFetchMode(QuickSettings.quickSlotFetchMode)
-    end
+    QuickslotProfileFacade:SetFetchMode(QuickSettings.quickSlotFetchMode)
     RefreshQuickSlotFetchModeControls()
     QuickSettings:RefreshQuickSlots()
 end
@@ -1068,14 +1040,8 @@ CreateQuickSlotsPanel = function(self, parent, titleLabel)
     saveButton:SetAnchor(TOPRIGHT, header, TOPRIGHT, 0, QUICK_SLOT_SAVE_BUTTON_TOP_OFFSET)
     SetControlDrawOrder(saveButton, DT_HIGH, DL_CONTROLS, 4)
     self.quickSlotSaveButton = saveButton
-    self.quickSlotFetchMode = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetFetchMode) == "function"
-        and QuickslotProfileFacade:GetFetchMode()
-        or QUICK_SLOT_FETCH_MODE_MISSING
-    self.quickSlotFetchPreferLowCondition = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetFetchPreferLowCondition) == "function"
-        and QuickslotProfileFacade:GetFetchPreferLowCondition()
-        or false
+    self.quickSlotFetchMode = QuickslotProfileFacade:GetFetchMode()
+    self.quickSlotFetchPreferLowCondition = QuickslotProfileFacade:GetFetchPreferLowCondition()
 
     local fetchModeRow = WINDOW_MANAGER:CreateControl("LTM_QSFetchModeRow", header, CT_CONTROL)
     fetchModeRow:ClearAnchors()
@@ -1137,9 +1103,7 @@ CreateQuickSlotsPanel = function(self, parent, titleLabel)
     if type(ZO_CheckButton_SetToggleFunction) == "function" then
         ZO_CheckButton_SetToggleFunction(fetchPreferenceCheckbox, function(_, isChecked)
             QuickSettings.quickSlotFetchPreferLowCondition = isChecked == true
-            if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.SetFetchPreferLowCondition) == "function" then
-                QuickslotProfileFacade:SetFetchPreferLowCondition(isChecked == true)
-            end
+            QuickslotProfileFacade:SetFetchPreferLowCondition(isChecked == true)
         end)
     end
     local fetchPreferenceLabel = fetchPreferenceCheckbox.GetNamedChild
@@ -1269,9 +1233,7 @@ CreateFoodHelperPanel = function(self, parent, titleLabel)
 end
 
 SetFoodAutoEatEnabled = function(self, enabled)
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.SetFoodAutoEatEnabled) == "function" then
-        QuickslotProfileFacade:SetFoodAutoEatEnabled(enabled == true)
-    end
+    QuickslotProfileFacade:SetFoodAutoEatEnabled(enabled == true)
     self:RefreshFoodHelper()
 end
 
@@ -1283,18 +1245,13 @@ HandleFoodHelperResult = function(self, card, err, successKey)
     end
 
     WriteChat(GetText("quick_settings.food_helper.warning.invalid", {
-        reason = type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(err)
-            or tostring(err or "unknown"),
+        reason = Log.LocalizeErrorReason(err),
     }))
     return false
 end
 
 function QuickSettings:RegisterCurrentActiveFood()
-    local card, err = nil, "food_helper_unavailable"
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.RegisterCurrentActiveFood) == "function" then
-        card, err = QuickslotProfileFacade:RegisterCurrentActiveFood()
-    end
+    local card, err = QuickslotProfileFacade:RegisterCurrentActiveFood()
 
     HandleFoodHelperResult(self, card, err, "quick_settings.food_helper.registered")
 end
@@ -1305,10 +1262,7 @@ CreateFoodCardFromCursor = function(self)
         return false
     end
 
-    local card, err = nil, "food_helper_unavailable"
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.CreateFoodCardFromBagSlot) == "function" then
-        card, err = QuickslotProfileFacade:CreateFoodCardFromBagSlot(bagId, slotIndex)
-    end
+    local card, err = QuickslotProfileFacade:CreateFoodCardFromBagSlot(bagId, slotIndex)
 
     local handled = HandleFoodHelperResult(self, card, err, "quick_settings.food_helper.registered")
     if handled and type(ClearCursor) == "function" then
@@ -1332,10 +1286,7 @@ function QuickSettings:ReplaceFoodCardFromCursor(card)
         return false
     end
 
-    local updatedCard, err = nil, "food_helper_unavailable"
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.ReplaceFoodCardFromBagSlot) == "function" then
-        updatedCard, err = QuickslotProfileFacade:ReplaceFoodCardFromBagSlot(cardId, bagId, slotIndex)
-    end
+    local updatedCard, err = QuickslotProfileFacade:ReplaceFoodCardFromBagSlot(cardId, bagId, slotIndex)
 
     local handled = HandleFoodHelperResult(self, updatedCard, err, "quick_settings.food_helper.replaced")
     if handled and type(ClearCursor) == "function" then
@@ -1345,17 +1296,11 @@ function QuickSettings:ReplaceFoodCardFromCursor(card)
 end
 
 SetActiveFoodCard = function(self, cardId)
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.SetActiveFoodCard) == "function" then
-        QuickslotProfileFacade:SetActiveFoodCard(cardId)
-    end
+    QuickslotProfileFacade:SetActiveFoodCard(cardId)
     self:RefreshFoodHelper()
 end
 
 function QuickSettings:DeleteFoodCard(cardId)
-    if type(QuickslotProfileFacade) ~= "table" or type(QuickslotProfileFacade.DeleteFoodCard) ~= "function" then
-        return false
-    end
-
     local deleted = QuickslotProfileFacade:DeleteFoodCard(cardId)
     if deleted == true then
         self:RefreshFoodHelper()
@@ -1519,17 +1464,12 @@ function QuickSettings:RefreshFoodHelper()
         return
     end
 
-    local autoEatEnabled = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetFoodAutoEatEnabled) == "function"
-        and QuickslotProfileFacade:GetFoodAutoEatEnabled() == true
+    local autoEatEnabled = QuickslotProfileFacade:GetFoodAutoEatEnabled() == true
     if type(ZO_CheckButton_SetCheckState) == "function" and self.foodAutoEatCheckbox then
         ZO_CheckButton_SetCheckState(self.foodAutoEatCheckbox, autoEatEnabled)
     end
 
-    local cards = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetFoodCardList) == "function"
-        and QuickslotProfileFacade:GetFoodCardList()
-        or {}
+    local cards = QuickslotProfileFacade:GetFoodCardList()
 
     self.foodEmptyLabel:SetHidden(#cards > 0)
     self.foodCards = self.foodCards or {}
@@ -1646,24 +1586,17 @@ local function GetAlchemyRecipeErrorText(err)
         return GetText("quick_settings.alchemy_recipe.warning.slots_not_set")
     end
     return GetText("quick_settings.alchemy_recipe.warning.invalid", {
-        reason = type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(err)
-            or tostring(err or "unknown"),
+        reason = Log.LocalizeErrorReason(err),
     })
 end
 
 SetAlchemyAutoApplyEnabled = function(self, enabled)
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.SetAutoApplyEnabled) == "function" then
-        AlchemyRecipe:SetAutoApplyEnabled(enabled == true)
-    end
+    AlchemyRecipe:SetAutoApplyEnabled(enabled == true)
     self:RefreshAlchemyRecipe()
 end
 
 CaptureAlchemyRecipe = function(self)
-    local recipe, err = nil, "alchemy_recipe_unavailable"
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.CaptureFromStation) == "function" then
-        recipe, err = AlchemyRecipe:CaptureFromStation()
-    end
+    local recipe, err = AlchemyRecipe:CaptureFromStation()
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.alchemy_recipe.saved", {
@@ -1679,10 +1612,7 @@ CaptureAlchemyRecipe = function(self)
 end
 
 SetActiveAlchemyRecipe = function(self, recipeId)
-    local recipe, err = nil, "alchemy_recipe_unavailable"
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.SetActiveRecipe) == "function" then
-        recipe, err = AlchemyRecipe:SetActiveRecipe(recipeId)
-    end
+    local recipe, err = AlchemyRecipe:SetActiveRecipe(recipeId)
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.alchemy_recipe.active_set", {
@@ -1698,10 +1628,7 @@ SetActiveAlchemyRecipe = function(self, recipeId)
 end
 
 DeleteAlchemyRecipe = function(self, recipeId)
-    local ok, err = false, "alchemy_recipe_unavailable"
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.DeleteRecipe) == "function" then
-        ok, err = AlchemyRecipe:DeleteRecipe(recipeId)
-    end
+    local ok, err = AlchemyRecipe:DeleteRecipe(recipeId)
 
     if ok == true then
         WriteChat(GetText("quick_settings.alchemy_recipe.deleted"))
@@ -1715,19 +1642,14 @@ DeleteAlchemyRecipe = function(self, recipeId)
 end
 
 ApplyAlchemyRecipeToStation = function(self, recipeId)
-    local ok, result = false, "alchemy_recipe_unavailable"
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.ApplyRecipeToStation) == "function" then
-        ok, result = AlchemyRecipe:ApplyRecipeToStation(recipeId)
-    end
+    local ok, result = AlchemyRecipe:ApplyRecipeToStation(recipeId)
 
     if ok == true then
         local recipe = type(result) == "table" and type(result.recipe) == "table" and result.recipe or {}
         WriteChat(GetText("quick_settings.alchemy_recipe.applied", {
             recipeName = recipe.name or recipe.resultItemLink or recipeId or "",
         }))
-        if type(Log) == "table" and type(Log.Debug) == "function" then
-            Log.Debug("[AlchemyRecipe]", "manualApply", "ok=true", "recipeId=" .. tostring(recipeId))
-        end
+        Log.Debug("[AlchemyRecipe]", "manualApply", "ok=true", "recipeId=" .. tostring(recipeId))
         self:RefreshAlchemyRecipe()
         self:StartRecipeShortRefresh("alchemy_recipe")
         return true
@@ -1739,10 +1661,7 @@ ApplyAlchemyRecipeToStation = function(self, recipeId)
 end
 
 SetAlchemyRecipeCraftCount = function(self, recipeId, count)
-    local recipe, err = nil, "alchemy_recipe_unavailable"
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.SetRecipeCraftCount) == "function" then
-        recipe, err = AlchemyRecipe:SetRecipeCraftCount(recipeId, count)
-    end
+    local recipe, err = AlchemyRecipe:SetRecipeCraftCount(recipeId, count)
 
     if type(recipe) == "table" then
         self:RefreshAlchemyRecipe()
@@ -1988,7 +1907,7 @@ CreateAlchemyRecipeCard = function(self, parent, index)
     card.applyButton = applyButton
 
     local renameButton = CreateIconButton(card, namePrefix .. "Rename", ALCHEMY_RECIPE_ICON_BUTTON_SIZE, "/esoui/art/buttons/edit", GetText("common.rename"), function()
-        if type(card.recipe) == "table" and type(Addon.UI.ShowDialog) == "function" then
+        if type(card.recipe) == "table" then
             Addon.UI:ShowDialog("ALCHEMY_RECIPE_RENAME_INPUT", {
                 recipeId = card.recipe.id,
                 recipeName = card.recipe.name or card.recipe.id,
@@ -2043,9 +1962,7 @@ RefreshAlchemyRecipeCard = function(self, card, recipe, inventoryIndex)
         card.craftCountEdit:SetText(tostring(card.ltmCraftCount))
     end
 
-    local inventoryState = type(AlchemyRecipe) == "table"
-        and type(AlchemyRecipe.GetRecipeInventoryState) == "function"
-        and recipeId ~= nil
+    local inventoryState = recipeId ~= nil
         and AlchemyRecipe:GetRecipeInventoryState(recipeId, inventoryIndex)
         or nil
     local reagents = type(inventoryState) == "table" and type(inventoryState.reagents) == "table" and inventoryState.reagents or {}
@@ -2081,21 +1998,16 @@ function QuickSettings:RefreshAlchemyRecipe()
         return
     end
 
-    local autoApplyEnabled = type(AlchemyRecipe) == "table"
-        and type(AlchemyRecipe.GetAutoApplyEnabled) == "function"
-        and AlchemyRecipe:GetAutoApplyEnabled() == true
+    local autoApplyEnabled = AlchemyRecipe:GetAutoApplyEnabled() == true
     if type(ZO_CheckButton_SetCheckState) == "function" and self.alchemyAutoApplyCheckbox then
         ZO_CheckButton_SetCheckState(self.alchemyAutoApplyCheckbox, autoApplyEnabled)
     end
 
     if self.alchemyCaptureButton and type(self.alchemyCaptureButton.SetEnabled) == "function" then
-        self.alchemyCaptureButton:SetEnabled(type(AlchemyRecipe) == "table" and AlchemyRecipe.isStationOpen == true)
+        self.alchemyCaptureButton:SetEnabled(AlchemyRecipe.isStationOpen == true)
     end
 
-    local recipes = type(AlchemyRecipe) == "table"
-        and type(AlchemyRecipe.GetRecipeList) == "function"
-        and AlchemyRecipe:GetRecipeList()
-        or {}
+    local recipes = AlchemyRecipe:GetRecipeList()
 
     self.alchemyRecipeEmptyLabel:SetHidden(#recipes > 0)
     self.alchemyRecipeCards = self.alchemyRecipeCards or {}
@@ -2114,8 +2026,6 @@ function QuickSettings:RefreshAlchemyRecipe()
         end
     end
     local inventoryIndex = #recipes > 0
-        and type(AlchemyRecipe) == "table"
-        and type(AlchemyRecipe.BuildInventoryIndex) == "function"
         and AlchemyRecipe:BuildInventoryIndex()
         or nil
     local rowCount = #recipes > 0 and math.ceil(#recipes / ALCHEMY_RECIPE_CARD_COLUMNS) or 0
@@ -2243,24 +2153,17 @@ local function GetEnchantRecipeErrorText(err)
         return GetText("quick_settings.enchant_recipe.warning.slots_not_set")
     end
     return GetText("quick_settings.enchant_recipe.warning.invalid", {
-        reason = type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(err)
-            or tostring(err or "unknown"),
+        reason = Log.LocalizeErrorReason(err),
     })
 end
 
 SetEnchantAutoApplyEnabled = function(self, enabled)
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.SetAutoApplyEnabled) == "function" then
-        EnchantRecipe:SetAutoApplyEnabled(enabled == true)
-    end
+    EnchantRecipe:SetAutoApplyEnabled(enabled == true)
     self:RefreshEnchantRecipe()
 end
 
 CaptureEnchantRecipe = function(self)
-    local recipe, err = nil, "enchant_recipe_unavailable"
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.CaptureFromStation) == "function" then
-        recipe, err = EnchantRecipe:CaptureFromStation()
-    end
+    local recipe, err = EnchantRecipe:CaptureFromStation()
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.enchant_recipe.saved", {
@@ -2276,10 +2179,7 @@ CaptureEnchantRecipe = function(self)
 end
 
 SetActiveEnchantRecipe = function(self, recipeId)
-    local recipe, err = nil, "enchant_recipe_unavailable"
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.SetActiveRecipe) == "function" then
-        recipe, err = EnchantRecipe:SetActiveRecipe(recipeId)
-    end
+    local recipe, err = EnchantRecipe:SetActiveRecipe(recipeId)
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.enchant_recipe.active_set", {
@@ -2295,10 +2195,7 @@ SetActiveEnchantRecipe = function(self, recipeId)
 end
 
 DeleteEnchantRecipe = function(self, recipeId)
-    local ok, err = false, "enchant_recipe_unavailable"
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.DeleteRecipe) == "function" then
-        ok, err = EnchantRecipe:DeleteRecipe(recipeId)
-    end
+    local ok, err = EnchantRecipe:DeleteRecipe(recipeId)
 
     if ok == true then
         WriteChat(GetText("quick_settings.enchant_recipe.deleted"))
@@ -2312,19 +2209,14 @@ DeleteEnchantRecipe = function(self, recipeId)
 end
 
 ApplyEnchantRecipeToStation = function(self, recipeId)
-    local ok, result = false, "enchant_recipe_unavailable"
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.ApplyRecipeToStation) == "function" then
-        ok, result = EnchantRecipe:ApplyRecipeToStation(recipeId)
-    end
+    local ok, result = EnchantRecipe:ApplyRecipeToStation(recipeId)
 
     if ok == true then
         local recipe = type(result) == "table" and type(result.recipe) == "table" and result.recipe or {}
         WriteChat(GetText("quick_settings.enchant_recipe.applied", {
             recipeName = recipe.name or recipe.resultItemLink or recipeId or "",
         }))
-        if type(Log) == "table" and type(Log.Debug) == "function" then
-            Log.Debug("[EnchantRecipe]", "manualApply", "ok=true", "recipeId=" .. tostring(recipeId))
-        end
+        Log.Debug("[EnchantRecipe]", "manualApply", "ok=true", "recipeId=" .. tostring(recipeId))
         self:RefreshEnchantRecipe()
         self:StartRecipeShortRefresh("enchant_recipe")
         return true
@@ -2336,10 +2228,7 @@ ApplyEnchantRecipeToStation = function(self, recipeId)
 end
 
 SetEnchantRecipeCraftCount = function(self, recipeId, count)
-    local recipe, err = nil, "enchant_recipe_unavailable"
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.SetRecipeCraftCount) == "function" then
-        recipe, err = EnchantRecipe:SetRecipeCraftCount(recipeId, count)
-    end
+    local recipe, err = EnchantRecipe:SetRecipeCraftCount(recipeId, count)
 
     if type(recipe) == "table" then
         self:RefreshEnchantRecipe()
@@ -2590,7 +2479,7 @@ CreateEnchantRecipeCard = function(self, parent, index)
     card.applyButton = applyButton
 
     local renameButton = CreateIconButton(card, namePrefix .. "Rename", ALCHEMY_RECIPE_ICON_BUTTON_SIZE, "/esoui/art/buttons/edit", GetText("common.rename"), function()
-        if type(card.recipe) == "table" and type(Addon.UI.ShowDialog) == "function" then
+        if type(card.recipe) == "table" then
             Addon.UI:ShowDialog("ENCHANT_RECIPE_RENAME_INPUT", {
                 recipeId = card.recipe.id,
                 recipeName = card.recipe.name or card.recipe.id,
@@ -2645,9 +2534,7 @@ RefreshEnchantRecipeCard = function(self, card, recipe, inventoryIndex)
         card.craftCountEdit:SetText(tostring(card.ltmCraftCount))
     end
 
-    local inventoryState = type(EnchantRecipe) == "table"
-        and type(EnchantRecipe.GetRecipeInventoryState) == "function"
-        and recipeId ~= nil
+    local inventoryState = recipeId ~= nil
         and EnchantRecipe:GetRecipeInventoryState(recipeId, inventoryIndex)
         or nil
     local reagents = type(inventoryState) == "table" and {
@@ -2689,21 +2576,16 @@ function QuickSettings:RefreshEnchantRecipe()
         return
     end
 
-    local autoApplyEnabled = type(EnchantRecipe) == "table"
-        and type(EnchantRecipe.GetAutoApplyEnabled) == "function"
-        and EnchantRecipe:GetAutoApplyEnabled() == true
+    local autoApplyEnabled = EnchantRecipe:GetAutoApplyEnabled() == true
     if type(ZO_CheckButton_SetCheckState) == "function" and self.enchantAutoApplyCheckbox then
         ZO_CheckButton_SetCheckState(self.enchantAutoApplyCheckbox, autoApplyEnabled)
     end
 
     if self.enchantCaptureButton and type(self.enchantCaptureButton.SetEnabled) == "function" then
-        self.enchantCaptureButton:SetEnabled(type(EnchantRecipe) == "table" and EnchantRecipe.isStationOpen == true)
+        self.enchantCaptureButton:SetEnabled(EnchantRecipe.isStationOpen == true)
     end
 
-    local recipes = type(EnchantRecipe) == "table"
-        and type(EnchantRecipe.GetRecipeList) == "function"
-        and EnchantRecipe:GetRecipeList()
-        or {}
+    local recipes = EnchantRecipe:GetRecipeList()
 
     self.enchantRecipeEmptyLabel:SetHidden(#recipes > 0)
     self.enchantRecipeCards = self.enchantRecipeCards or {}
@@ -2722,8 +2604,6 @@ function QuickSettings:RefreshEnchantRecipe()
         end
     end
     local inventoryIndex = #recipes > 0
-        and type(EnchantRecipe) == "table"
-        and type(EnchantRecipe.BuildInventoryIndex) == "function"
         and EnchantRecipe:BuildInventoryIndex()
         or nil
     local rowCount = #recipes > 0 and math.ceil(#recipes / ALCHEMY_RECIPE_CARD_COLUMNS) or 0
@@ -2902,9 +2782,7 @@ local function GetScribingRecipeErrorText(err)
         or nil
     return GetText("quick_settings.scribing_recipe.warning.invalid", {
         reason = validationReasonText
-            or type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-            and Log.LocalizeErrorReason(err)
-            or tostring(err or "unknown"),
+            or Log.LocalizeErrorReason(err),
     })
 end
 
@@ -2941,9 +2819,7 @@ GetScribingValidationReasonText = function(reason)
         return GetText("quick_settings.scribing_recipe.validation.invalid_combination")
     end
 
-    return type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-        and Log.LocalizeErrorReason(reason)
-        or tostring(reason)
+    return Log.LocalizeErrorReason(reason)
 end
 
 local function BuildScribingValidationSummary(validationState)
@@ -2975,17 +2851,12 @@ local function BuildScribingValidationSummary(validationState)
 end
 
 SetScribingAutoApplyEnabled = function(self, enabled)
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.SetAutoApplyEnabled) == "function" then
-        ScribingRecipe:SetAutoApplyEnabled(enabled == true)
-    end
+    ScribingRecipe:SetAutoApplyEnabled(enabled == true)
     self:RefreshScribingRecipe()
 end
 
 CaptureScribingRecipe = function(self)
-    local recipe, err = nil, "scribing_recipe_unavailable"
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.CaptureFromStation) == "function" then
-        recipe, err = ScribingRecipe:CaptureFromStation()
-    end
+    local recipe, err = ScribingRecipe:CaptureFromStation()
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.scribing_recipe.saved", {
@@ -3126,18 +2997,14 @@ RegisterScribingRecipeFromDrop = function(self, button)
         return false
     end
 
-    local recipe = nil
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.CreateRecipeFromIds) == "function" then
-        recipe, err = ScribingRecipe:CreateRecipeFromIds(
-            nil,
-            slots.craftedAbilityId,
-            slots.primaryScriptId,
-            slots.secondaryScriptId,
-            slots.tertiaryScriptId
-        )
-    else
-        err = "scribing_recipe_unavailable"
-    end
+    local recipe
+    recipe, err = ScribingRecipe:CreateRecipeFromIds(
+        nil,
+        slots.craftedAbilityId,
+        slots.primaryScriptId,
+        slots.secondaryScriptId,
+        slots.tertiaryScriptId
+    )
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.scribing_recipe.saved", {
@@ -3156,10 +3023,7 @@ RegisterScribingRecipeFromDrop = function(self, button)
 end
 
 SetActiveScribingRecipe = function(self, recipeId)
-    local recipe, err = nil, "scribing_recipe_unavailable"
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.SetActiveRecipe) == "function" then
-        recipe, err = ScribingRecipe:SetActiveRecipe(recipeId)
-    end
+    local recipe, err = ScribingRecipe:SetActiveRecipe(recipeId)
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.scribing_recipe.active_set", {
@@ -3175,10 +3039,7 @@ SetActiveScribingRecipe = function(self, recipeId)
 end
 
 DeleteScribingRecipe = function(self, recipeId)
-    local ok, err = false, "scribing_recipe_unavailable"
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.DeleteRecipe) == "function" then
-        ok, err = ScribingRecipe:DeleteRecipe(recipeId)
-    end
+    local ok, err = ScribingRecipe:DeleteRecipe(recipeId)
 
     if ok == true then
         WriteChat(GetText("quick_settings.scribing_recipe.deleted"))
@@ -3192,19 +3053,14 @@ DeleteScribingRecipe = function(self, recipeId)
 end
 
 ApplyScribingRecipeToStation = function(self, recipeId)
-    local ok, result = false, "scribing_recipe_unavailable"
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.ApplyRecipeToStation) == "function" then
-        ok, result = ScribingRecipe:ApplyRecipeToStation(recipeId)
-    end
+    local ok, result = ScribingRecipe:ApplyRecipeToStation(recipeId)
 
     if ok == true then
         local recipe = type(result) == "table" and type(result.recipe) == "table" and result.recipe or {}
         WriteChat(GetText("quick_settings.scribing_recipe.applied", {
             recipeName = recipe.name or recipe.craftedAbilityName or recipeId or "",
         }))
-        if type(Log) == "table" and type(Log.Debug) == "function" then
-            Log.Debug("[ScribingRecipe]", "manualApply", "ok=true", "recipeId=" .. tostring(recipeId))
-        end
+        Log.Debug("[ScribingRecipe]", "manualApply", "ok=true", "recipeId=" .. tostring(recipeId))
         self:RefreshScribingRecipe()
         self:StartRecipeShortRefresh("scribing_recipe")
         return true
@@ -3420,7 +3276,7 @@ CreateScribingRecipeCard = function(self, parent, index)
     card.applyButton = applyButton
 
     local renameButton = CreateIconButton(card, namePrefix .. "Rename", ALCHEMY_RECIPE_ICON_BUTTON_SIZE, "/esoui/art/buttons/edit", GetText("common.rename"), function()
-        if type(card.recipe) == "table" and type(Addon.UI.ShowDialog) == "function" then
+        if type(card.recipe) == "table" then
             Addon.UI:ShowDialog("SCRIBING_RECIPE_RENAME_INPUT", {
                 recipeId = card.recipe.id,
                 recipeName = card.recipe.name or card.recipe.id,
@@ -3501,9 +3357,7 @@ RefreshScribingRecipeCard = function(self, card, recipe)
         row.label.ltmTooltipText = text
     end
 
-    local validationState = type(ScribingRecipe) == "table"
-        and type(ScribingRecipe.GetRecipeValidationState) == "function"
-        and recipeId ~= nil
+    local validationState = recipeId ~= nil
         and ScribingRecipe:GetRecipeValidationState(recipeId)
         or nil
     local validationText, validationOk = BuildScribingValidationSummary(validationState)
@@ -3523,21 +3377,16 @@ function QuickSettings:RefreshScribingRecipe()
         return
     end
 
-    local autoApplyEnabled = type(ScribingRecipe) == "table"
-        and type(ScribingRecipe.GetAutoApplyEnabled) == "function"
-        and ScribingRecipe:GetAutoApplyEnabled() == true
+    local autoApplyEnabled = ScribingRecipe:GetAutoApplyEnabled() == true
     if type(ZO_CheckButton_SetCheckState) == "function" and self.scribingAutoApplyCheckbox then
         ZO_CheckButton_SetCheckState(self.scribingAutoApplyCheckbox, autoApplyEnabled)
     end
 
     if self.scribingCaptureButton and type(self.scribingCaptureButton.SetEnabled) == "function" then
-        self.scribingCaptureButton:SetEnabled(type(ScribingRecipe) == "table" and ScribingRecipe.isStationOpen == true)
+        self.scribingCaptureButton:SetEnabled(ScribingRecipe.isStationOpen == true)
     end
 
-    local recipes = type(ScribingRecipe) == "table"
-        and type(ScribingRecipe.GetRecipeList) == "function"
-        and ScribingRecipe:GetRecipeList()
-        or {}
+    local recipes = ScribingRecipe:GetRecipeList()
 
     self.scribingRecipeEmptyLabel:SetHidden(#recipes > 0)
     self.scribingRecipeCards = self.scribingRecipeCards or {}
@@ -3576,10 +3425,6 @@ function QuickSettings:RefreshScribingRecipe()
 end
 
 function QuickSettings:SaveCurrentQuickSlots()
-    if type(QuickslotProfileFacade) ~= "table" or type(QuickslotProfileFacade.CreateFromCurrent) ~= "function" then
-        return
-    end
-
     local profile, err = QuickslotProfileFacade:CreateFromCurrent(nil)
     if type(profile) ~= "table" then
         WriteChat(GetText("quick_settings.quick_slots.failed", { reason = tostring(err) }))
@@ -3591,19 +3436,11 @@ function QuickSettings:SaveCurrentQuickSlots()
 end
 
 function QuickSettings:DeleteQuickSlotProfile(profileId)
-    if type(QuickslotProfileFacade) ~= "table" or type(QuickslotProfileFacade.DeleteProfile) ~= "function" then
-        return
-    end
-
     QuickslotProfileFacade:DeleteProfile(profileId)
     self:RefreshQuickSlots()
 end
 
 function QuickSettings:RenameQuickSlotProfile(profileId, newName)
-    if type(QuickslotProfileFacade) ~= "table" or type(QuickslotProfileFacade.RenameProfile) ~= "function" then
-        return nil, "quickslot_profiles_unavailable"
-    end
-
     local profile, err = QuickslotProfileFacade:RenameProfile(profileId, newName)
     if type(profile) == "table" then
         self:RefreshQuickSlots()
@@ -3612,10 +3449,7 @@ function QuickSettings:RenameQuickSlotProfile(profileId, newName)
 end
 
 function QuickSettings:RenameAlchemyRecipe(recipeId, newName)
-    local recipe, err = nil, "alchemy_recipe_unavailable"
-    if type(AlchemyRecipe) == "table" and type(AlchemyRecipe.RenameRecipe) == "function" then
-        recipe, err = AlchemyRecipe:RenameRecipe(recipeId, newName)
-    end
+    local recipe, err = AlchemyRecipe:RenameRecipe(recipeId, newName)
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.alchemy_recipe.renamed", {
@@ -3631,10 +3465,7 @@ function QuickSettings:RenameAlchemyRecipe(recipeId, newName)
 end
 
 function QuickSettings:RenameEnchantRecipe(recipeId, newName)
-    local recipe, err = nil, "enchant_recipe_unavailable"
-    if type(EnchantRecipe) == "table" and type(EnchantRecipe.RenameRecipe) == "function" then
-        recipe, err = EnchantRecipe:RenameRecipe(recipeId, newName)
-    end
+    local recipe, err = EnchantRecipe:RenameRecipe(recipeId, newName)
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.enchant_recipe.renamed", {
@@ -3650,10 +3481,7 @@ function QuickSettings:RenameEnchantRecipe(recipeId, newName)
 end
 
 function QuickSettings:RenameScribingRecipe(recipeId, newName)
-    local recipe, err = nil, "scribing_recipe_unavailable"
-    if type(ScribingRecipe) == "table" and type(ScribingRecipe.RenameRecipe) == "function" then
-        recipe, err = ScribingRecipe:RenameRecipe(recipeId, newName)
-    end
+    local recipe, err = ScribingRecipe:RenameRecipe(recipeId, newName)
 
     if type(recipe) == "table" then
         WriteChat(GetText("quick_settings.scribing_recipe.renamed", {
@@ -3673,29 +3501,24 @@ function QuickSettings:ApplyQuickSlotProfile(profile, confirmedMissing)
         return
     end
 
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.SetActiveProfile) == "function" then
-        local activeProfile = QuickslotProfileFacade:SetActiveProfile(profile.id)
-        if type(activeProfile) == "table" then
-            profile = activeProfile
-            self:RefreshQuickSlots()
-        else
-            self:RefreshQuickSlots()
-            return
-        end
+    local activeProfile = QuickslotProfileFacade:SetActiveProfile(profile.id)
+    if type(activeProfile) == "table" then
+        profile = activeProfile
+        self:RefreshQuickSlots()
+    else
+        self:RefreshQuickSlots()
+        return
     end
 
-    local applyState = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetProfileApplyState) == "function"
-        and QuickslotProfileFacade:GetProfileApplyState(profile)
-        or nil
+    local applyState = QuickslotProfileFacade:GetProfileApplyState(profile)
     if type(applyState) == "table" and applyState.canCompare == true and applyState.needsApply ~= true then
         self:RefreshQuickSlots()
         return
     end
 
-    if not confirmedMissing and type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.BuildMissingConfirmModel) == "function" then
+    if not confirmedMissing then
         local missingConfirm = QuickslotProfileFacade:BuildMissingConfirmModel(profile)
-        if type(missingConfirm) == "table" and missingConfirm.hasMissing == true and type(Addon.UI.ShowDialog) == "function" then
+        if type(missingConfirm) == "table" and missingConfirm.hasMissing == true then
             Addon.UI:ShowDialog("QUICKSLOT_MISSING_CONFIRM", {
                 params = {
                     items = missingConfirm.itemsText or "",
@@ -3706,11 +3529,6 @@ function QuickSettings:ApplyQuickSlotProfile(profile, confirmedMissing)
             })
             return
         end
-    end
-
-    if type(QuickslotProfileFacade) ~= "table" or type(QuickslotProfileFacade.BeginProfileApply) ~= "function" then
-        self:RefreshQuickSlots()
-        return
     end
 
     QuickslotProfileFacade:BeginProfileApply(profile, function(result)
@@ -3735,18 +3553,14 @@ function QuickSettings:ClearActiveQuickSlotProfile(profile)
         return
     end
 
-    if type(QuickslotProfileFacade) == "table" and type(QuickslotProfileFacade.ClearActiveProfile) == "function" then
-        QuickslotProfileFacade:ClearActiveProfile(profile.id)
-    end
+    QuickslotProfileFacade:ClearActiveProfile(profile.id)
     self:RefreshQuickSlots()
 end
 
 HandleQuickSlotFetchResult = function(self, success, reason, summary)
     if success ~= true then
         WriteChat(GetText("status.fetched_quickslot_failed", {
-            reason = type(Log) == "table" and type(Log.LocalizeErrorReason) == "function"
-                and Log.LocalizeErrorReason(reason)
-                or tostring(reason or "unknown"),
+            reason = Log.LocalizeErrorReason(reason),
         }))
     elseif reason == "nothing_missing" then
         WriteChat(GetText("status.fetched_quickslot_already_owned"))
@@ -3775,11 +3589,6 @@ end
 
 function QuickSettings:FetchQuickSlotProfile(profile)
     if type(profile) ~= "table" then
-        return
-    end
-
-    if type(QuickslotProfileFacade) ~= "table" or type(QuickslotProfileFacade.BeginProfileFetch) ~= "function" then
-        HandleQuickSlotFetchResult(self, false, "quickslot_fetch_unavailable", nil)
         return
     end
 
@@ -3923,7 +3732,7 @@ CreateQuickSlotCard = function(self, parent, index)
         "/esoui/art/buttons/edit",
         GetText("common.rename"),
         function()
-            if type(card.profile) == "table" and type(Addon.UI.ShowDialog) == "function" then
+            if type(card.profile) == "table" then
                 Addon.UI:ShowDialog("QUICKSLOT_RENAME_INPUT", {
                     profileId = card.profile.id,
                     profileName = card.profile.displayName or card.profile.name or card.profile.id,
@@ -3969,10 +3778,7 @@ RefreshQuickSlotFetchButton = function(self, card, profile, missingCount)
         return
     end
 
-    local availability = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetFetchAvailability) == "function"
-        and QuickslotProfileFacade:GetFetchAvailability(self.quickSlotFetchMode, missingCount)
-        or {}
+    local availability = QuickslotProfileFacade:GetFetchAvailability(self.quickSlotFetchMode, missingCount)
     local busy = availability.busy == true
     local hasMissing = availability.hasMissing == true
     local mode = NormalizeQuickSlotFetchMode(availability.mode)
@@ -4008,9 +3814,7 @@ function QuickSettings:HideQuickSlotSettingsMenu()
         end
     end
     self.openQuickSlotSettingsCard = nil
-    if type(Addon.UI) == "table" and type(Addon.UI.RefreshActionMenuDismissLayer) == "function" then
-        Addon.UI:RefreshActionMenuDismissLayer()
-    end
+    Addon.UI:RefreshActionMenuDismissLayer()
 end
 
 RefreshQuickSlotCard = function(self, card, profile, refreshContext)
@@ -4020,10 +3824,7 @@ RefreshQuickSlotCard = function(self, card, profile, refreshContext)
         ZO_CheckButton_SetCheckState(card.applyCheckbox, profile.isActive == true)
     end
 
-    local displayModel = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.BuildProfileDisplayModel) == "function"
-        and QuickslotProfileFacade:BuildProfileDisplayModel(profile, refreshContext)
-        or {}
+    local displayModel = QuickslotProfileFacade:BuildProfileDisplayModel(profile, refreshContext)
     local displaySlots = type(displayModel.slots) == "table" and displayModel.slots or {}
     local missingCount = tonumber(displayModel.missingCount) or 0
 
@@ -4096,10 +3897,7 @@ function QuickSettings:RefreshQuickSlots()
         return
     end
 
-    local profiles = type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.GetProfileList) == "function"
-        and QuickslotProfileFacade:GetProfileList()
-        or {}
+    local profiles = QuickslotProfileFacade:GetProfileList()
 
     self.quickSlotEmptyLabel:SetHidden(#profiles > 0)
     local listWidth = self.quickSlotListRoot.GetWidth and self.quickSlotListRoot:GetWidth() or 0
@@ -4115,8 +3913,6 @@ function QuickSettings:RefreshQuickSlots()
     local layoutSignature = BuildQuickSlotLayoutSignature(profiles, listWidth, viewportHeight)
     local layoutNeedsRefresh = self.quickSlotLayoutSignature ~= layoutSignature
     local refreshContext = #profiles > 0
-        and type(QuickslotProfileFacade) == "table"
-        and type(QuickslotProfileFacade.BuildProfileListRefreshContext) == "function"
         and QuickslotProfileFacade:BuildProfileListRefreshContext()
         or nil
 

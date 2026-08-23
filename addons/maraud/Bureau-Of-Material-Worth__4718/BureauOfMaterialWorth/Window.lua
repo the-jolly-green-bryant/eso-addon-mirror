@@ -9,6 +9,7 @@ local GetGameTimeMilliseconds = GetGameTimeMilliseconds
 local stringformat = string.format
 local zo_round = zo_round
 local mathabs = math.abs
+local mathmax = math.max
 local mathsin = math.sin
 
 -- Palette (shared house style; see private.COLOR_* in BureauOfMaterialWorth.lua)
@@ -84,6 +85,8 @@ LEADER_MARKER_COLOR[4] = UI.CHROME.ACCENT_MARK
 local SPARK_HEIGHT     = 32  -- area-strip height in px (head line above, scale below)
 local SPARK_MIN_BAR_H  = 2   -- floor height so the minimum sample still draws
 local SPARK_SCALE_GAP  = 2   -- gap between the strip and the min/max scale line
+local SPARK_MARKER_WIDTH = 6
+local SPARK_MARKER_HEIGHT = 4
 -- Area fill + "now" highlight, tinted by trend. Both tints are the palette's own
 -- gain/loss tones (the same ones the delta figure beneath the chart is written
 -- in), so the colour of the silhouette and the colour of the number it explains
@@ -247,6 +250,7 @@ local sparkHeadLabel    -- current value + trend arrow, right-aligned on the cap
 local sparkContainer    -- holds the filled strip; anchors the per-sample bars
 local sparkScaleLabel   -- "min … max" scale line beneath the strip
 local sparkBars = {}    -- pooled CT_BACKDROP bars, index 1..N
+local sparkNowMarker    -- compact cap on the newest history sample
 local rowPool         -- reusable category rows { container, name, gold, data }
 
 -- Footer "updated X ago" should feel live even when nothing else changes, so a
@@ -412,6 +416,11 @@ local function AcquireRow(index)
     -- are clickable (they open the detail window), and until now nothing said so
     -- until the tooltip appeared; this is the same accent wash the detail and
     -- withdraw tables use, so a hover means the same thing everywhere.
+    local shareFill = UI.CreateFill(nil, container, UI.CHROME.CATEGORY_SHARE)
+    shareFill:SetHeight(ROW_HEIGHT - 4)
+    shareFill:SetAnchor(LEFT, container, LEFT, 0, 0)
+    shareFill:SetHidden(true)
+
     local hoverFill = UI.CreateHoverFill(nil, container)
 
     local leaderMarker = WINDOW_MANAGER:CreateControl(nil, container, CT_TEXTURE)
@@ -439,6 +448,7 @@ local function AcquireRow(index)
         name = nameLabel,
         gold = goldLabel,
         leaderMarker = leaderMarker,
+        shareFill = shareFill,
         hoverFill = hoverFill,
     }
 
@@ -735,6 +745,11 @@ function Window.Initialize()
     sparkContainer:SetHeight(SPARK_HEIGHT)
     sparkContainer:SetMouseEnabled(true)
 
+    sparkNowMarker = UI.CreateFill(addon.name .. "_SparkNow", sparkContainer, SPARK_AREA_UP_NOW)
+    sparkNowMarker:SetDimensions(SPARK_MARKER_WIDTH, SPARK_MARKER_HEIGHT)
+    sparkNowMarker:SetDrawLevel(2)
+    sparkNowMarker:SetHidden(true)
+
     -- Min/max scale line beneath the strip: the series value range, centered so
     -- it reads as a caption for the whole silhouette rather than hugging one edge.
     sparkScaleLabel = WINDOW_MANAGER:CreateControl(addon.name .. "_SparkScale", windowControl, CT_LABEL)
@@ -795,6 +810,8 @@ local function RenderFooter()
     local slots = lastSnapshot.slots or 0
     local unpriced = lastSnapshot.unpricedSlots or 0
     local priced = slots - unpriced
+    local coveragePercent = slots > 0 and zo_round(priced / slots * 100) or 0
+    local coverageText = stringformat(GetString(SI_BMW_ROW_PERCENT), coveragePercent)
 
     local function SourceSuffix()
         if lastSnapshot.sourceShort then
@@ -811,10 +828,12 @@ local function RenderFooter()
     if unpriced > 0 and slots > 0 and (unpriced * 2 > slots) then
         -- Low coverage: loud warning in place of the usual count.
         footerPricesRow.value:SetText(Colorize(COLOR_WARN,
-            stringformat(GetString(SI_BMW_FOOTER_LOW_COVERAGE), unpriced, slots)))
+            stringformat(GetString(SI_BMW_FOOTER_LOW_COVERAGE), unpriced, slots)
+                .. " · " .. coverageText))
     else
         local countColor = unpriced > 0 and COLOR_WARN or COLOR_MUTED
         local countText = stringformat(GetString(SI_BMW_FOOTER_COVERAGE_VALUE), priced, slots)
+            .. " · " .. coverageText
         footerPricesRow.value:SetText(
             Colorize(countColor, countText) .. Colorize(COLOR_MUTED, SourceSuffix()))
     end
@@ -915,6 +934,7 @@ local function RenderSparkline(innerWidth)
         sparkHeadLabel:SetHidden(true)
         sparkContainer:SetHidden(true)
         sparkScaleLabel:SetHidden(true)
+        sparkNowMarker:SetHidden(true)
         for i = 1, #sparkBars do
             sparkBars[i]:SetHidden(true)
         end
@@ -998,13 +1018,26 @@ local function RenderSparkline(innerWidth)
         sparkBars[i]:SetHidden(true)
     end
 
+    local newestBar = sparkBars[drawn]
+    UI.PaintFill(sparkNowMarker, nowColor)
+    sparkNowMarker:ClearAnchors()
+    sparkNowMarker:SetAnchor(TOPRIGHT, newestBar, TOPRIGHT, 0, 0)
+    sparkNowMarker:SetHidden(false)
+
     -- Head: current value + trend arrow + gold icon, colored by direction. The
     -- arrow and gold icon are textures (left outside Colorize, since textures
     -- aren't tinted); only the number is colored. Matches FormatGold's idiom.
-    local headColor = COLOR_MUTED
+    local headColor = rising and COLOR_GAIN or COLOR_LOSS
     local headArrow = rising and ARROW_UP or ARROW_DOWN
+    local trendText = ""
+    if firstGold > 0 then
+        local trendPercent = mathabs((lastGold - firstGold) / firstGold * 100)
+        trendText = " · " .. Colorize(headColor,
+            stringformat(GetString(SI_BMW_DETAIL_GROWTH), stringformat("%.1f", trendPercent)))
+    end
     sparkHeadLabel:SetText(headArrow .. " " ..
-        Colorize(headColor, ZO_LocalizeDecimalNumber(zo_round(lastGold))) .. " " .. GOLD_ICON)
+        Colorize(COLOR_MUTED, ZO_LocalizeDecimalNumber(zo_round(lastGold))) .. " "
+        .. GOLD_ICON .. trendText)
 
     -- Scale line: the series value range as "min - max" (plain hyphen), centered
     -- under the strip. Stated as a range rather than edge-pinned labels because
@@ -1092,6 +1125,14 @@ function Window.Update()
             row.data = data
             row.isLeader = data.id == leaderCategoryId
             row.leaderMarker:SetHidden(not row.isLeader)
+            local share = grandTotal and grandTotal > 0 and data.gold / grandTotal or 0
+            if share > 0 then
+                row.shareFill:SetWidth(mathmax(2,
+                    zo_round((CurrentWidth() - PADDING * 2) * share)))
+                row.shareFill:SetHidden(false)
+            else
+                row.shareFill:SetHidden(true)
+            end
             -- Optional profession icon + name + the category's share of the grand
             -- total, so it reads "[icon] Blacksmithing 42%" at a glance. Guard
             -- against a zero total (an all-unpriced bag) so the share is simply
@@ -1135,6 +1176,7 @@ function Window.Update()
         rowPool[i].data = nil
         rowPool[i].isLeader = nil
         rowPool[i].leaderMarker:SetHidden(true)
+        rowPool[i].shareFill:SetHidden(true)
         -- Also drop the hover wash: a row hidden while the pointer was over it
         -- would come back from the pool already lit.
         rowPool[i].hoverFill:SetHidden(true)

@@ -41,17 +41,7 @@ local function CreateSkippedResult(code, details)
 end
 
 local function LogMastery(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
-end
-
-local function GetFrameTimeMillisecondsSafe()
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.GetFrameTimeMillisecondsSafe) == "function" then
-        return SHARED_UTIL:GetFrameTimeMillisecondsSafe()
-    end
-
-    return type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds() or 0
+    Log.LogDebugSummary(...)
 end
 
 local function CountTableEntries(entries)
@@ -451,7 +441,7 @@ local function BuildPipelinePhaseResult(success, summary, err, skipped)
         classMasterySummary = summary,
     }
     if success == true and skipped ~= true then
-        details.commitAt = GetFrameTimeMillisecondsSafe()
+        details.commitAt = SHARED_UTIL:GetFrameTimeMillisecondsSafe()
         details.mutatingAction = "class_mastery_purchase"
     end
 
@@ -494,10 +484,8 @@ function M:Finalize(context, success, err, result)
     context.finished = true
     self:SetLastResult(result)
 
-    if success == true and type(result) == "table" and result.skipped ~= true
-        and type(LTM_APPLY_COOLDOWN_GATE) == "table"
-        and type(LTM_APPLY_COOLDOWN_GATE.RecordMutation) == "function" then
-        LTM_APPLY_COOLDOWN_GATE:RecordMutation("skill", GetFrameTimeMillisecondsSafe())
+    if success == true and type(result) == "table" and result.skipped ~= true then
+        LTM_APPLY_COOLDOWN_GATE:RecordMutation("skill", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
     end
 
     local completion = context.completion

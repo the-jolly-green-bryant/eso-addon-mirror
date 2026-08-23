@@ -18,10 +18,10 @@
     "NWAimCam"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4772/",
-  "fingerprint": "2b44419e20d4c7e33c737d74d440d465e570fe193d6e7eb0bd54def78dc096c2",
+  "fingerprint": "72bc14cfe8c8c22071ee8180478dbbc8351c2e761f719edc77129abafc7637df",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16991.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16992.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17076.png"
   ],
   "platform": "pc",
   "published": true,
@@ -29,11 +29,11 @@
   "source_id": "4772",
   "source_url": "https://www.esoui.com/downloads/info4772-NWAimCam-Zoomaction.html",
   "stats": {
-    "downloads": 36,
+    "downloads": 65,
     "favorites": 2,
-    "monthly_downloads": 32
+    "monthly_downloads": 62
   },
   "title": "NW AimCam - Zoom action",
-  "updated_at": 1786984964000,
-  "version": "1.4"
+  "updated_at": 1787438091000,
+  "version": "1.51"
 }

@@ -41,11 +41,7 @@ local CURRENT_CP_GROUP_LAYOUTS = {
 }
 
 local function GetText(key, params)
-    if type(LTM_UI_STRINGS) == "table" and type(LTM_UI_STRINGS.GetText) == "function" then
-        return LTM_UI_STRINGS:GetText(key, params)
-    end
-
-    return key
+    return LTM_UI_STRINGS:GetText(key, params)
 end
 
 local function SetLabelText(control, text)
@@ -236,15 +232,12 @@ function LTM_UI:SetRightPaneMode(mode)
         return
     end
 
-    if type(self.CancelCurrentEffectRefreshDebounce) == "function" then
-        self:CancelCurrentEffectRefreshDebounce()
-    end
+    self:CancelCurrentEffectRefreshDebounce()
     self.rightPaneMode = normalizedMode
     if normalizedMode == "current"
         and self.window ~= nil
         and not self.window:IsHidden()
-        and self:IsArmoryStationTabActive()
-        and type(self.RefreshCurrentStatePanel) == "function" then
+        and self:IsArmoryStationTabActive() then
         self:RefreshCurrentStatePanel(true)
     else
         self:RefreshRightPanePanel()
@@ -310,28 +303,15 @@ function LTM_UI:RefreshRightPanePanel()
 
     local mode = self:GetRightPaneMode()
     local selectedBuildId = self.selectedBuildId
-    local summary = {}
-    local rightPaneSkillBars = {}
+    local summary
+    local rightPaneSkillBars
 
     if mode == "target" then
-        summary = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetTargetStateSummary) == "function"
-            and LTM_UI_DISPATCH:GetTargetStateSummary(selectedBuildId)
-            or {}
-
-        rightPaneSkillBars = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetTargetSkillBarState) == "function"
-            and LTM_UI_DISPATCH:GetTargetSkillBarState(selectedBuildId)
-            or {}
+        summary = LTM_UI_DISPATCH:GetTargetStateSummary(selectedBuildId)
+        rightPaneSkillBars = LTM_UI_DISPATCH:GetTargetSkillBarState(selectedBuildId)
     else
-        summary = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetCurrentStateSummary) == "function"
-            and LTM_UI_DISPATCH:GetCurrentStateSummary()
-            or {}
-        rightPaneSkillBars = type(LTM_UI_DISPATCH) == "table"
-            and type(LTM_UI_DISPATCH.GetCurrentSkillBarState) == "function"
-            and LTM_UI_DISPATCH:GetCurrentSkillBarState()
-            or {}
+        summary = LTM_UI_DISPATCH:GetCurrentStateSummary()
+        rightPaneSkillBars = LTM_UI_DISPATCH:GetCurrentSkillBarState()
     end
 
     SetLabelText(self.currentTitle, GetRightPaneModeLabel(mode))
@@ -371,9 +351,7 @@ function LTM_UI:RefreshRightPanePanel()
         mode,
         mode == "target" and selectedBuildId or nil
     )
-    if type(self.RefreshForceChampionRespecControl) == "function" then
-        self:RefreshForceChampionRespecControl()
-    end
+    self:RefreshForceChampionRespecControl()
 end
 
 function LTM_UI:RefreshEquipmentFetchButton(summary)
@@ -386,13 +364,9 @@ function LTM_UI:RefreshEquipmentFetchButton(summary)
     local fetchEnabled = isTargetMode
         and hasTarget
         and type(self.selectedBuildId) == "string"
-        and type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.IsEquipmentFetchAvailable) == "function"
         and LTM_UI_DISPATCH:IsEquipmentFetchAvailable()
     local depositEnabled = isTargetMode
         and hasTarget
-        and type(LTM_UI_DISPATCH) == "table"
-        and type(LTM_UI_DISPATCH.IsEquipmentDepositAvailable) == "function"
         and LTM_UI_DISPATCH:IsEquipmentDepositAvailable()
 
     if self.currentEquipmentFetchButton ~= nil then
@@ -797,9 +771,7 @@ end
 function LTM_UI:HandleEquipmentFetchResult(success, reason, summary)
     if success ~= true then
         Log.WriteChat(GetText("status.fetched_equipment_failed", {
-            reason = type(Log.LocalizeErrorReason) == "function"
-                and Log.LocalizeErrorReason(reason)
-                or tostring(reason or "unknown"),
+            reason = Log.LocalizeErrorReason(reason),
         }))
     elseif reason == "nothing_missing" then
         Log.WriteChat(GetText("status.fetched_equipment_already_owned"))
@@ -825,9 +797,7 @@ function LTM_UI:HandleEquipmentDepositResult(success, reason, summary)
         }))
     elseif success ~= true then
         Log.WriteChat(GetText("status.deposited_equipment_failed", {
-            reason = type(Log.LocalizeErrorReason) == "function"
-                and Log.LocalizeErrorReason(reason)
-                or tostring(reason or "unknown"),
+            reason = Log.LocalizeErrorReason(reason),
         }))
     elseif reason == "nothing_to_deposit" then
         Log.WriteChat(GetText("status.deposited_equipment_none", {

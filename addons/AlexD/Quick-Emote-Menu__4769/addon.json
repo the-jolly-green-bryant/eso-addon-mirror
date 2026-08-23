@@ -18,7 +18,7 @@
     "QuickEmoteMenu"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4769/",
-  "fingerprint": "741fd246eb032c0d5ed7967790dcb4ceb04a5799a8e7dea7787af6b954d00003",
+  "fingerprint": "f1ca0a8ee137d8ecee8584f66fde2edd9407b0b1471a8b3b63df440b3f570fda",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16998.png",
     "https://cdn-eso.mmoui.com/preview/pvw16975.png",
@@ -30,11 +30,11 @@
   "source_id": "4769",
   "source_url": "https://www.esoui.com/downloads/info4769-QuickEmoteMenu.html",
   "stats": {
-    "downloads": 83,
+    "downloads": 94,
     "favorites": 1,
-    "monthly_downloads": 83
+    "monthly_downloads": 90
   },
   "title": "Quick Emote Menu",
-  "updated_at": 1787191663000,
-  "version": "1.2.2"
+  "updated_at": 1787432092000,
+  "version": "1.3.0"
 }

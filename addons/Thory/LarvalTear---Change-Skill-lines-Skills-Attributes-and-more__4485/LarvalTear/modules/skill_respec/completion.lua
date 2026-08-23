@@ -60,14 +60,7 @@ function M:ResolveRouteBCompletionSuccess(apply, context, snapshot, successKind)
     self:MarkRouteBCompletionResolved(context, true, successKind)
     logging.Log("Route B completion observed kind=" .. tostring(successKind))
     if context.subclassOnlyMode == true then
-        apply:FinalizeRouteBSuccess(context, "route_b_subclass_only_confirmed", {
-            result = context.resultCode,
-            verifyState = context.verifiedState,
-            verify = context.verifyResult,
-            completion = snapshot,
-            completionSuccessKind = successKind,
-            verifyMode = "subclass_only",
-        })
+        apply:FinalizeRouteBSuccess(context)
         return
     end
 
@@ -221,9 +214,7 @@ function M:OnRouteBResultEvent(apply, context, result)
     context.resultCode = result
 
     if RESPEC_RESULT_DISALLOWED_IN_ACTIVITY ~= nil and result == RESPEC_RESULT_DISALLOWED_IN_ACTIVITY then
-        if type(LTM) == "table" and type(LTM.NotifyActivityDisallowed) == "function" then
-            LTM:NotifyActivityDisallowed("class_skills")
-        end
+        LTM:NotifyActivityDisallowed("class_skills")
         apply:FinalizeRouteBFailure(context, "activity_disallowed", {
             result = result,
             targetSkillLineIds = context.plan and context.plan.targetSkillLineIds or nil,

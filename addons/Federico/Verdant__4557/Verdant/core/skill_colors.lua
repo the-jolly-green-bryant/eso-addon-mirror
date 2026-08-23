@@ -141,6 +141,10 @@ local ABILITY_OVERRIDES = {
   [55677] =  "undaunted",
   [63511] =  "undaunted",
   [184634] =  "item",
+  [218784] =  "resto",
+  [172055] =  "item",
+  [218786] =  "resto",
+  [218787] =  "resto",
 
 }
 
@@ -249,6 +253,10 @@ function M.unknown_lines()
 end
 
 local FALLBACK = GROUP_COLORS.other
+
+function M.has_explicit_override(abilityId)
+  return USER_OVERRIDES[abilityId] ~= nil or ABILITY_OVERRIDES[abilityId] ~= nil
+end
 
 function M.get_color(abilityId)
   return GROUP_COLORS[lookup_group(abilityId)] or FALLBACK

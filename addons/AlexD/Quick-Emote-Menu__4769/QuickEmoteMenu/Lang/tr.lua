@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Ayar panelini göster",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Emote sonrası menüyü kapat (sol tık)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Düğme konumunu sıfırla",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "Sohbet Düğmesi X Kaydırması",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "Düğmenin sohbet penceresi seçenekleri düğmesine göre yatay kaydırması. Yalnızca düğme sohbet penceresine bağlı olduğunda geçerlidir.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFÖZELLİKLER|r
 • Kategoriler ve favoriler ile emotelere hızlı erişim

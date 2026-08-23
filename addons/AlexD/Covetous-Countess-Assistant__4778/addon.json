@@ -18,7 +18,7 @@
     "CovetousCountessAssistant"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4778/",
-  "fingerprint": "57b18987b61c1448d9c670f762d9c1d712ac1393b09303810f53b5e3430ed46d",
+  "fingerprint": "dcd5cd5d7b302c8827f2d4789db4f6195c74866b49d7767c5045081559342f4e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17031.png",
     "https://cdn-eso.mmoui.com/preview/pvw17032.png"
@@ -29,11 +29,11 @@
   "source_id": "4778",
   "source_url": "https://www.esoui.com/downloads/info4778-CovetousCountessAssistant.html",
   "stats": {
-    "downloads": 7,
+    "downloads": 44,
     "favorites": 0,
-    "monthly_downloads": 4
+    "monthly_downloads": 35
   },
   "title": "Covetous Countess Assistant",
-  "updated_at": 1787080266000,
-  "version": "1.0.0"
+  "updated_at": 1787408470000,
+  "version": "1.1.1"
 }

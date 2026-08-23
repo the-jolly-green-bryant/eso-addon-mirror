@@ -194,17 +194,11 @@ local function IsFoodOrDrinkItemType(itemType)
 end
 
 local function IsAutoEatDebugEnabled()
-    if type(Log) == "table"
-        and type(Log.IsDebugEnabled) == "function"
-        and Log.IsDebugEnabled() == true then
-        return true
-    end
-
-    return false
+    return Log.IsDebugEnabled() == true
 end
 
 local function DebugAutoEat(...)
-    if IsAutoEatDebugEnabled() and type(Log.Debug) == "function" then
+    if IsAutoEatDebugEnabled() then
         Log.Debug("[FoodHelper][AutoEat]", ...)
     end
 end
@@ -704,18 +698,20 @@ function FoodHelper:GetActiveAutoEatContext()
         return nil, "food_unsupported_item"
     end
     local areaProbe = BuildFoodHelperAutoEatAreaProbe()
-    DebugAutoEat(
-        "state",
-        "enabled=" .. tostring(enabled),
-        "activeCardId=" .. tostring(activeCardId),
-        "itemId=" .. tostring(itemId),
-        "buffAbilityId=" .. tostring(buffAbilityId),
-        "areaAllowed=" .. tostring(areaProbe.allowed == true),
-        "inDungeonOrTrial=" .. tostring(areaProbe.inDungeonOrTrial),
-        "isPlayerInRaid=" .. tostring(areaProbe.isPlayerInRaid),
-        "zoneId=" .. tostring(areaProbe.zoneId),
-        "inPvP=" .. tostring(areaProbe.inPvP)
-    )
+    if IsAutoEatDebugEnabled() then
+        DebugAutoEat(
+            "state",
+            "enabled=" .. tostring(enabled),
+            "activeCardId=" .. tostring(activeCardId),
+            "itemId=" .. tostring(itemId),
+            "buffAbilityId=" .. tostring(buffAbilityId),
+            "areaAllowed=" .. tostring(areaProbe.allowed == true),
+            "inDungeonOrTrial=" .. tostring(areaProbe.inDungeonOrTrial),
+            "isPlayerInRaid=" .. tostring(areaProbe.isPlayerInRaid),
+            "zoneId=" .. tostring(areaProbe.zoneId),
+            "inPvP=" .. tostring(areaProbe.inPvP)
+        )
+    end
     if areaProbe.allowed ~= true then
         DebugAutoEat("areaGate", "allowed=false")
         return nil, "food_area_not_allowed"
@@ -937,7 +933,7 @@ function FoodHelper:OnAutoEatEffectChanged(changeType, unitTag, abilityId)
         return false
     end
 
-    if type(unitTag) == "string" and unitTag ~= "player" then
+    if unitTag ~= "player" then
         return false
     end
 
@@ -947,6 +943,11 @@ function FoodHelper:OnAutoEatEffectChanged(changeType, unitTag, abilityId)
     end
 
     abilityId = tonumber(abilityId)
+    local expectedBuffAbilityId = self:GetBuffAbilityIdForItemId(state.itemId) or state.buffAbilityId
+    if expectedBuffAbilityId == nil or abilityId ~= expectedBuffAbilityId then
+        return false
+    end
+
     if IsAutoEatDebugEnabled() then
         DebugAutoEat(
             "effectChanged",
@@ -959,12 +960,6 @@ function FoodHelper:OnAutoEatEffectChanged(changeType, unitTag, abilityId)
     local context, err = self:GetActiveAutoEatContext()
     if type(context) ~= "table" then
         DebugAutoEat("effectChanged", "skipped=true", "reason=" .. tostring(err))
-        return false
-    end
-    if abilityId ~= context.buffAbilityId then
-        if IsAutoEatDebugEnabled() then
-            DebugAutoEat("mapping", "matched=false", "expected=" .. tostring(context.buffAbilityId), "actual=" .. tostring(abilityId))
-        end
         return false
     end
 

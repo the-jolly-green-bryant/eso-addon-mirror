@@ -9,7 +9,7 @@ knows the worthless vendor price; this addon reads real trading prices through
 **LibPrice**, which transparently pulls from whichever price source you have
 installed (Master Merchant, Tamriel Trade Centre, or Arkadius' Trade Tools).
 
-> **Compatibility:** API: LIVE 101050 · Requires [LibPrice](https://www.esoui.com/downloads/info2753.html) (>= 70530)
+> **Compatibility:** API: LIVE 101050 / PTS 101051 · Requires [LibPrice](https://www.esoui.com/downloads/info2753.html) (>= 70530)
 > (and a price source such as Master Merchant or Tamriel Trade Centre to read
 > prices from) and [LibAddonMenu-2.0](https://www.esoui.com/downloads/info7-LibAddonMenu.html)
 > (>= 43) for the settings panel.
@@ -47,9 +47,9 @@ materials the total updates on its own.
 - A **prominent grand total** with a subtitle showing total slots, stacks, and
   items.
 - A **per-profession breakdown** beneath it, which you can turn off to show just
-  the total. Each row carries a **profession icon**, the category's **share of
-  the grand total** (e.g. "Blacksmithing 42%"), and you can **sort rows by value**
-  so your biggest holdings float to the top.
+  the total. Each row carries a **profession icon**, a subtle **share bar**, the
+  category's **share of the grand total** (e.g. "Blacksmithing 42%"), and you can
+  **sort rows by value** so your biggest holdings float to the top.
 - **Hover tooltips** on each category reveal its value, slot count (distinct
   materials), stack count (in classic 200-item stacks), item count, and how many
   of its slots have no price.
@@ -61,7 +61,8 @@ materials the total updates on its own.
 - **Click any category row** to open a separate, scrollable window listing *every
   individual material* in that profession - handy for "Other", which can hold
   hundreds of distinct materials.
-- Each row shows the material's **icon**, its **name** (tinted by quality), the
+- Each row shows the material's **icon**, its **name** (tinted by quality), a
+  compact **price-source badge** (MM / TTC / ATT and other LibPrice sources), the
   **quantity** you hold, and its **total value**. **Click any column header** to
   sort by it (click again to flip direction); the table opens on **value,
   highest first** - the "what to sell right now" order - so the stacks that make
@@ -138,20 +139,23 @@ materials the total updates on its own.
 - The footer separates **Inventory** (when the bag valuation last changed) from
   **Prices** (when LibPrice was last queried), so a deposit never masquerades as
   fresh market data.
-- **Coverage** reports how many slots are priced (e.g. "468/469 priced") and the
-  **price source** it drew from, shown compactly (MM / TTC / ATT, with a "+" when
-  several contributed). When more than half the slots are unpriced the row turns
-  to a loud "unpriced!" warning, so the total never silently pretends to be
-  complete. Click Coverage to inspect the materials missing a price.
+- **Coverage** reports how many slots are priced and the corresponding percentage
+  (e.g. "468/469 priced · 99%"), plus the **price source** it drew from, shown
+  compactly (MM / TTC / ATT, with a "+" when several contributed). When more than
+  half the slots are unpriced the row turns to a loud "unpriced!" warning, so the
+  total never silently pretends to be complete. Click Coverage to inspect the
+  materials missing a price.
 - A **value-change row** (▲/▼) shows how your Craft Bag's value changed - labeled
   "This visit" or "This session". Hover it to split the change into material
   movement and price revaluation; click it to inspect the materials whose
   quantities changed in the existing detail window.
 - An optional **value-history sparkline** beneath the footer plots your total
-  over time. One point is recorded per bag-open (at most once every few hours),
-  keeping the last 90; hover it for the oldest, newest, and net-change figures.
-  Because points are spaced hours apart, the graph appears once you have at least
-  two and fills in meaningfully over several days of play.
+  over time. Its newest sample is explicitly marked, and the header shows the
+  overall percentage trend across the visible history. One point is recorded per
+  bag-open (at most once every few hours), keeping the last 90; hover it for the
+  oldest, newest, and net-change figures. Because points are spaced hours apart,
+  the graph appears once you have at least two and fills in meaningfully over
+  several days of play.
 - An optional **chat announcement** prints the bag's value the first time you open
   it each session, with the since-last-visit change when your stock moved.
 - `/bmw refresh` re-queries prices - handy after Master Merchant or Tamriel Trade

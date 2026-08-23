@@ -303,7 +303,7 @@ buildZoneLookup(GF.Arenas, GF.ArenaNameToZoneID, GF.ZoneToArenaShort)
 
 -- Blacklist functions
 function GF.BlacklistLeader(displayName)
-	GF.Settings.BlacklistedLeaders[displayName] = true
+	GF.SV.BlacklistedLeaders[displayName] = true
 	GF.RefreshUI()
 
 	if GF_BLACKLIST_DROPDOWN then
@@ -313,7 +313,7 @@ function GF.BlacklistLeader(displayName)
 end
 
 function GF.IsLeaderBlacklisted(displayName)
-	return GF.Settings.BlacklistedLeaders[displayName] == true
+	return GF.SV.BlacklistedLeaders[displayName] == true
 end
 
 -- =========================================================
@@ -322,22 +322,19 @@ end
 function GroupFinderPlus_ToggleWindow()
 	if GF.isMasterHidden then return end
 
-	local hidden = not GF.Settings.isHidden
-	GF.Settings.isHidden = hidden
+	GF.SV.isHidden = not GF.SV.isHidden
 
-	if hidden then
-		HUD_SCENE:RemoveFragment(GF.fragment)
-		HUD_UI_SCENE:RemoveFragment(GF.fragment)
-	else
+	if not GF.SV.isHidden then
 		GF.ClearListingsUI()
 		GF.firstSearchAfterCategoryChange = true
 		GF.SetEmptyIconSearching(true)
-		GF.MasterToggleCheck()
 	end
+
+	GF.MasterToggleCheck()
 end
 
 function GroupFinderPlus_CycleCategory()
-	if not GF.win or GF.Settings.isHidden or GF.isMasterHidden then return end
+	if not GF.win or GF.SV.isHidden or GF.isMasterHidden then return end
 
 	local nextIndex = GF.GetNextEnabledCategoryIndex()
 	if not nextIndex then return end
@@ -346,7 +343,7 @@ function GroupFinderPlus_CycleCategory()
 	local cat = GF.Categories[nextIndex]
 	GF.currentCategory = cat.id
 
-	GF.Settings.LastCategory = GF.Settings.SaveLastCategory and GF.currentCategory or nil
+	GF.SV.LastCategory = GF.SV.SaveLastCategory and GF.currentCategory or nil
 
 	if GF.topButton then
 		GF.topButton:ClearAnchors()
@@ -371,12 +368,12 @@ function GroupFinderPlus_CycleCategory()
 end
 
 function GroupFinderPlus_SwitchMode()
-	if not GF.win or GF.Settings.isHidden or GF.isMasterHidden then return end
+	if not GF.win or GF.SV.isHidden or GF.isMasterHidden then return end
 
 	if not GF.CategoriesWithPrefix[GF.currentCategory] then return end
 
 	GF.instanceMode = (GF.instanceMode == 1) and 2 or 1
-	GF.Settings.InstanceMode = GF.instanceMode
+	GF.SV.InstanceMode = GF.instanceMode
 
 	if GF.leftTopButton then
 		GF.leftTopButton:ClearAnchors()
@@ -422,7 +419,7 @@ function GF.GetNextEnabledCategoryIndex()
 		end
 
 		local cat = GF.Categories[nextIndex]
-		if GF.Settings.CategoriesEnabled[cat.id] ~= false then
+		if GF.SV.CategoriesEnabled[cat.id] ~= false then
 			return nextIndex
 		end
 	until nextIndex == startIndex
@@ -515,8 +512,8 @@ function GF.CreateWindow()
 		local width	  = self:GetWidth()
 
 		local EPS	  = 2
-		local anchor  = GF.Settings.windowAnchor
-		local x		  = GF.Settings.windowOffsetX
+		local anchor  = GF.SV.windowAnchor
+		local x		  = GF.SV.windowOffsetX
 
 		if left <= EPS then
 			anchor = "LEFT"
@@ -525,7 +522,7 @@ function GF.CreateWindow()
 			anchor = "RIGHT"
 			x = -5
 		else
-			anchor = GF.Settings.windowAnchor
+			anchor = GF.SV.windowAnchor
 			if anchor == "LEFT" then
 				x = left
 			else
@@ -533,9 +530,9 @@ function GF.CreateWindow()
 			end
 		end
 
-		GF.Settings.windowAnchor  = anchor
-		GF.Settings.windowOffsetX = x
-		GF.Settings.windowOffsetY = top
+		GF.SV.windowAnchor	= anchor
+		GF.SV.windowOffsetX = x
+		GF.SV.windowOffsetY = top
 
 		GF.ApplyWindowAnchor()
 	end)
@@ -594,32 +591,6 @@ function GF.CreateWindow()
 	GF.searchIcon = searchIcon
 
 	GF.fragment = ZO_HUDFadeSceneFragment:New(GF.win)
-	HUD_SCENE:AddFragment(GF.fragment)
-	HUD_UI_SCENE:AddFragment(GF.fragment)
-
-	local originalShow = GF.fragment.Show
-	function GF.fragment:Show(force)
-		if not force and GF.Settings.isHidden then return end
-		originalShow(self)
-	end
-
-	if not GF.Settings.isHidden then
-		HUD_SCENE:AddFragment(GF.fragment)
-		HUD_UI_SCENE:AddFragment(GF.fragment)
-	else
-		HUD_SCENE:RemoveFragment(GF.fragment)
-		HUD_UI_SCENE:RemoveFragment(GF.fragment)
-	end
-
-	GF.fragment:RegisterCallback("StateChange", function(oldState, newState)
-		if newState == SCENE_FRAGMENT_SHOWN then
-			EM:RegisterForEvent(GF.name, EVENT_GROUP_FINDER_SEARCH_COOLDOWN_UPDATE, GF.OnCooldownUpdate)
-			GF.RequestCurrentCategorySearch()
-		elseif newState == SCENE_FRAGMENT_HIDDEN then
-			EM:UnregisterForEvent(GF.name, EVENT_GROUP_FINDER_SEARCH_COOLDOWN_UPDATE)
-		end
-	end)
-
 	-- =====================================================
 	-- Category Button
 	-- =====================================================
@@ -651,7 +622,7 @@ function GF.CreateWindow()
 	-- =====================================================
 	-- Normal / Veteran
 	-- =====================================================
-	if GF.Settings.ShowInstanceModeButton then
+	if GF.SV.ShowInstanceModeButton then
 		local leftButton = WINDOW_MANAGER:CreateControl(nil, GF.win, CT_TEXTURE)
 		GF.leftTopButton = leftButton
 
@@ -681,12 +652,12 @@ end
 function GF.ApplyWindowAnchor()
 	if not GF.win then return end
 
-	local x = GF.Settings.windowOffsetX or 0
-	local y = GF.Settings.windowOffsetY or 0
+	local x = GF.SV.windowOffsetX or 0
+	local y = GF.SV.windowOffsetY or 0
 
 	GF.win:ClearAnchors()
 
-	if GF.Settings.windowAnchor == "RIGHT" then
+	if GF.SV.windowAnchor == "RIGHT" then
 		GF.win:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -x, y)
 	else
 		GF.win:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
@@ -696,7 +667,7 @@ function GF.ApplyWindowAnchor()
 end
 
 function GF.UpdateInstanceModeButtonVisibility()
-	if not GF.Settings.ShowInstanceModeButton then
+	if not GF.SV.ShowInstanceModeButton then
 		if GF.leftTopButton then
 			GF.leftTopButton:SetHidden(true)
 		end
@@ -706,9 +677,9 @@ function GF.UpdateInstanceModeButtonVisibility()
 	local show = GF.currentCategory == GROUP_FINDER_CATEGORY_TRIAL or GF.currentCategory == GROUP_FINDER_CATEGORY_DUNGEON or GF.currentCategory == GROUP_FINDER_CATEGORY_ARENA
 
 	if GF.leftTopButton then
-		GF.leftTopButton:SetHidden(not show or GF.isMasterHidden or GF.Settings.isHidden)
+		GF.leftTopButton:SetHidden(not show or GF.isMasterHidden or GF.SV.isHidden)
 
-		if show and not GF.isMasterHidden and not GF.Settings.isHidden then
+		if show and not GF.isMasterHidden and not GF.SV.isHidden then
 			local icon = (GF.instanceMode == 1) and ICON_NORMAL or ICON_VETERAN
 			GF.leftTopButton:SetTexture(icon)
 
@@ -790,7 +761,7 @@ function GF.CreateRow()
 		self.isHovered = true
 
 		local side, offset
-		if GF.Settings.windowAnchor == "LEFT" then
+		if GF.SV.windowAnchor == "LEFT" then
 			side   = LEFT
 			offset = 5
 		else
@@ -803,7 +774,7 @@ function GF.CreateRow()
 		ZO_ClearNumericallyIndexedTable(GF.tooltipLines)
 		local lines = GF.tooltipLines
 
-		if GF.Settings.ShowInstanceTooltip and self.tooltipData and self.tooltipData.instance and self.tooltipData.instance ~= "" then
+		if GF.SV.ShowInstanceTooltip and self.tooltipData and self.tooltipData.instance and self.tooltipData.instance ~= "" then
 			local displayInstance = GF.StripZonePostfix(self.tooltipData.instance)
 			table.insert(lines, string.format("|cFFFFFF%s|r", displayInstance))
 		end
@@ -928,7 +899,7 @@ function GF.BuildListings()
 		local title = GetGroupFinderSearchListingTitleByIndex(i)
 		local desc	= GetGroupFinderSearchListingDescriptionByIndex(i)
 
-		local hideWTS = GF.Settings.HideWTSListings
+		local hideWTS = GF.SV.HideWTSListings
 		if GF.currentCategory == GROUP_FINDER_CATEGORY_CUSTOM then
 			hideWTS = false
 		end
@@ -972,7 +943,7 @@ function GF.BuildListings()
 				end
 			end
 
-			if short == "∞" or GF.Settings.TrialsEnabled[short] ~= false then
+			if short == "∞" or GF.SV.TrialsEnabled[short] ~= false then
 				local prefix = ""
 
 				if GF.CategoriesWithPrefix[GF.currentCategory] then
@@ -1056,7 +1027,7 @@ function GF.RefreshUI()
 	for _, listing in ipairs(GF.listings) do
 		local requiredCP = listing.requiresCP and listing.requiredCP or 0
 
-		local hideCPCheck = not GF.Settings.HideInsufficientCP or playerCP >= requiredCP
+		local hideCPCheck = not GF.SV.HideInsufficientCP or playerCP >= requiredCP
 		local hideSessionCheck = not GF.hiddenListings[listing.sessionId]
 		local hideBlacklistCheck = not GF.IsLeaderBlacklisted(listing.leaderDisplayName)
 
@@ -1187,7 +1158,7 @@ function GF.RefreshUI()
 
 		elseif isLastBoss and GF.CategoriesWithPrefix[GF.currentCategory] then
 			row.desiredBgColor = COLOR_DEFAULT_BG
-			if GF.Settings.LastBossRainbow then
+			if GF.SV.LastBossRainbow then
 				GF.StartRainbow(row)
 			else
 				GF.StopRainbow(row)
@@ -1352,7 +1323,7 @@ function GF.UpdateTopButtonAnchors()
 		GF.leftTopButton:ClearAnchors()
 	end
 
-	if GF.Settings.windowAnchor == "RIGHT" then
+	if GF.SV.windowAnchor == "RIGHT" then
 		GF.topButton:SetAnchor(TOPRIGHT, GF.win, TOPRIGHT, -GF.TOP_BUTTON_PADDING - 2, GF.TOP_BUTTON_PADDING + 10)
 
 		if GF.leftTopButton then
@@ -1452,12 +1423,12 @@ end
 function GF.MasterToggleCheck()
 	local hosting = GetCurrentGroupFinderUserType() == 1
 	local inBattleground = IsActiveWorldBattleground()
-	local inInstance = GF.IsInstanced == true and GF.Settings.HideInInstance
+	local inInstance = GF.IsInstanced == true and GF.SV.HideInInstance
 	local lowLevel = GF.playerLevel and GF.playerLevel < 10
 
 	GF.isMasterHidden = hosting or inBattleground or inInstance or lowLevel
 
-	if GF.isMasterHidden or GF.Settings.isHidden then
+	if GF.isMasterHidden or GF.SV.isHidden then
 		HUD_SCENE:RemoveFragment(GF.fragment)
 		HUD_UI_SCENE:RemoveFragment(GF.fragment)
 	else
@@ -1492,20 +1463,21 @@ function GF.OnCooldownUpdate(_, cooldownMs)
 end
 
 function GF.RequestCurrentCategorySearch()
-	if GF.isMasterHidden or GF.Settings.isHidden then
-		return
-	end
-
 	SetGroupFinderFilterCategory(GF.currentCategory, true)
 
 	if GF.CategoriesWithPrefix[GF.currentCategory] then
-		SetGroupFinderFilterPrimaryOptionByIndex(GF.Settings.InstanceMode, true)
-		GF.instanceMode = GF.Settings.InstanceMode
+		SetGroupFinderFilterPrimaryOptionByIndex(GF.SV.InstanceMode, true)
+		GF.instanceMode = GF.SV.InstanceMode
 	end
 
 	GF.UpdateInstanceModeButtonVisibility()
 
 	GF.lastSearchCategory = GF.currentCategory
+
+	if GF.SV.AllowAllRoles then
+		SetGroupFinderFilterEnforceRoles(false)
+	end
+
 	RequestGroupFinderSearch()
 end
 
@@ -1534,7 +1506,6 @@ end
 
 function GF.OnPlayerActivated()
 	GF.InstanceCheck()
-	GF.MasterToggleCheck()
 	GF.EventZoneCheck()
 
 	if GF.playerLevel == nil then
@@ -1543,8 +1514,13 @@ function GF.OnPlayerActivated()
 
 	GF.championPoints = GetUnitChampionPoints("player")
 
-	if not IsGroupFinderSearchOnCooldown() then
-		GF.RequestCurrentCategorySearch()
+	GF.MasterToggleCheck()
+end
+
+function GF.OnPlayerDeactivated()
+	if not GF.SV.isHidden and not GF.isMasterHidden then
+		HUD_SCENE:RemoveFragment(GF.fragment)
+		HUD_UI_SCENE:RemoveFragment(GF.fragment)
 	end
 end
 
@@ -1552,23 +1528,32 @@ end
 -- Init
 -- =========================================================
 function GF.Initialize()
-	GF.Settings = ZO_SavedVars:NewAccountWide("GroupFinderPlus_SavedVariables", 1, nil, defaultSV)
+	GF.SV = ZO_SavedVars:NewAccountWide("GroupFinderPlus_SavedVariables", 1, nil, defaultSV)
 
 	for i, cat in ipairs(GF.Categories) do
-		if GF.Settings.SaveLastCategory and cat.id == GF.Settings.LastCategory then
+		if GF.SV.SaveLastCategory and cat.id == GF.SV.LastCategory then
 			GF.currentCategoryIndex = i
 			GF.currentCategory = cat.id
 			break
 		end
 	end
 
-	GF.instanceMode = GF.Settings.InstanceMode
+	GF.instanceMode = GF.SV.InstanceMode
 	GF.RegisterLAMPanel()
 	GF.RegisterBlacklistDialog()
 	GF.AllowAllRoles()
 	GF.CreateWindow()
 	GF.RefreshUI()
 	GF.FixAchievements()
+
+	GF.fragment:RegisterCallback("StateChange", function(oldState, newState)
+		if newState == SCENE_FRAGMENT_SHOWN then
+			EM:RegisterForEvent(GF.name, EVENT_GROUP_FINDER_SEARCH_COOLDOWN_UPDATE, GF.OnCooldownUpdate)
+			GF.RequestCurrentCategorySearch()
+		elseif newState == SCENE_FRAGMENT_HIDDEN then
+			EM:UnregisterForEvent(GF.name, EVENT_GROUP_FINDER_SEARCH_COOLDOWN_UPDATE)
+		end
+	end)
 
 	SLASH_COMMANDS["/gfplus"] = GroupFinderPlus_ToggleWindow
 
@@ -1581,6 +1566,8 @@ function GF.Initialize()
 	EM:RegisterForEvent(GF.name, EVENT_GROUP_FINDER_SEARCH_COMPLETE, GF.OnSearchComplete)
 
 	EM:RegisterForEvent(GF.name, EVENT_PLAYER_ACTIVATED, GF.OnPlayerActivated)
+
+	EM:RegisterForEvent(GF.name, EVENT_PLAYER_DEACTIVATED, GF.OnPlayerDeactivated)
 end
 
 local function OnAddonLoaded(_, addonName)

@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "Pokaż panel ustawień",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "Zamknij menu po emote (LPM)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "Resetuj pozycję przycisku",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "Przesunięcie X przycisku czatu",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "Poziome przesunięcie przycisku względem przycisku opcji okna czatu. Ma zastosowanie tylko wtedy, gdy przycisk jest dołączony do okna czatu.",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FFFUNKCJE|r
 • Szybki dostęp do emotek dzięki kategoriom i ulubionym

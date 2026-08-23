@@ -6,7 +6,7 @@ takes it away, and layers a few optional cinematic touches on top. Dynamic FOV
 and Adaptive PvP are on out of the box; the PvP detector remains completely
 inert outside AvA worlds and Battlegrounds.
 
-> **Compatibility:** API: LIVE 101050 / PTS 101050 · Optional: LibAddonMenu-2.0
+> **Compatibility:** API: LIVE 101050 / PTS 101051 · Optional: LibAddonMenu-2.0
 > (>= 43) for the settings panel.
 
 ---

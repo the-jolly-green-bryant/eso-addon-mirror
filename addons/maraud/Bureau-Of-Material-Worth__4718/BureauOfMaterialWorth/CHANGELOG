@@ -3,6 +3,18 @@
 
 
 
+[color=#6FCB9F]Version: 4.2.112030[/color]
+
+Visual clarity and Update 51 compatibility review.
+
+- Category Share: Added subtle fill bars behind profession rows, making each category's share of the total readable before looking at the percentage.
+- Price Coverage: The footer now shows the priced-material percentage alongside the priced/total count and active price source.
+- Price Sources: Material rows now carry compact MM, TTC, ATT, FurC, NPC, Crown, or Rolis source badges using the same centralized source labels as the footer and tooltips.
+- Value History: Added a clear marker for the newest history sample and an overall percentage trend beside the current value.
+- Update 51: Added API 101051 support while retaining API 101050. Reviewed the addon and its required libraries against the published Update 51 API patch notes and documentation; no direct use of removed APIs or incompatible changed signatures was found. Final runtime verification is still recommended on the final PTS/live build.
+
+
+
 [color=#6FCB9F]Version: 4.1.223952[/color]
 
 An update aimed at optimizing the existing functionality and improving the Live valuation and price-cache release.

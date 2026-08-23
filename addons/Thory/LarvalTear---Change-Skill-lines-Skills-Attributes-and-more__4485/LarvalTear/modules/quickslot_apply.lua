@@ -8,9 +8,7 @@ local APPLY_DELAY_MS = 300
 local FINAL_VERIFY_DELAY_MS = 300
 
 local function DebugSummary(...)
-    if type(Log) == "table" and type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function BuildOperationList(profile)

@@ -50,14 +50,14 @@ local UI_DIALOG_PAGE_REORDER_BUTTON_WIDTH = LTM_UI_DIALOG_LAYOUT.PAGE_REORDER_BU
 local UI_RENAME_TEXT_MAX_UNITS = 18
 
 local OVERWRITE_DIALOG_OPTIONS = {
-    { id = "attributes", buttonTextKey = "dialog.overwrite_card.option.attributes", bodyTextKey = "dialog.overwrite_card.body.attributes" },
-    { id = "class_skills", buttonTextKey = "dialog.overwrite_card.option.class_skills", bodyTextKey = "dialog.overwrite_card.body.class_skills" },
-    { id = "equipment", buttonTextKey = "dialog.overwrite_card.option.equipment", bodyTextKey = "dialog.overwrite_card.body.equipment" },
-    { id = "cp", buttonTextKey = "dialog.overwrite_card.option.cp", bodyTextKey = "dialog.overwrite_card.body.cp" },
-    { id = "passives", buttonTextKey = "dialog.overwrite_card.option.passives", bodyTextKey = "dialog.overwrite_card.body.passives" },
-    { id = "transform_werewolf", buttonTextKey = "dialog.overwrite_card.option.transform_werewolf", bodyTextKey = "dialog.overwrite_card.body.transform_werewolf" },
-    { id = "transform_vampire", buttonTextKey = "dialog.overwrite_card.option.transform_vampire", bodyTextKey = "dialog.overwrite_card.body.transform_vampire" },
-    { id = "all", buttonTextKey = "dialog.overwrite_card.option.all", bodyTextKey = "dialog.overwrite_card.body.all" },
+    { id = "class_skills", row = 1, column = 1, columnCount = 2, buttonTextKey = "dialog.overwrite_card.option.class_skills", bodyTextKey = "dialog.overwrite_card.body.class_skills" },
+    { id = "passives", row = 1, column = 2, columnCount = 2, buttonTextKey = "dialog.overwrite_card.option.passives", bodyTextKey = "dialog.overwrite_card.body.passives" },
+    { id = "equipment", row = 2, column = 1, columnCount = 3, buttonTextKey = "dialog.overwrite_card.option.equipment", bodyTextKey = "dialog.overwrite_card.body.equipment" },
+    { id = "cp", row = 2, column = 2, columnCount = 3, buttonTextKey = "dialog.overwrite_card.option.cp", bodyTextKey = "dialog.overwrite_card.body.cp" },
+    { id = "attributes", row = 2, column = 3, columnCount = 3, buttonTextKey = "dialog.overwrite_card.option.attributes", bodyTextKey = "dialog.overwrite_card.body.attributes" },
+    { id = "transform_werewolf", row = 3, column = 1, columnCount = 2, buttonTextKey = "dialog.overwrite_card.option.transform_werewolf", bodyTextKey = "dialog.overwrite_card.body.transform_werewolf" },
+    { id = "transform_vampire", row = 3, column = 2, columnCount = 2, buttonTextKey = "dialog.overwrite_card.option.transform_vampire", bodyTextKey = "dialog.overwrite_card.body.transform_vampire" },
+    { id = "all", row = 4, column = 1, columnCount = 1, buttonTextKey = "dialog.overwrite_card.option.all", bodyTextKey = "dialog.overwrite_card.body.all" },
 }
 
 function LTM_UI:GetOverwriteDialogOptions()
@@ -65,11 +65,7 @@ function LTM_UI:GetOverwriteDialogOptions()
 end
 
 local function GetText(key, params)
-    if type(LTM_UI_STRINGS) == "table" and type(LTM_UI_STRINGS.GetText) == "function" then
-        return LTM_UI_STRINGS:GetText(key, params)
-    end
-
-    return key
+    return LTM_UI_STRINGS:GetText(key, params)
 end
 
 local function SetLabelText(control, text)
@@ -481,7 +477,10 @@ function LTM_UI:PositionDialogSections(bodyHeight, isPageReorder, isInput, bodyW
         self.dialogOverwriteButtonPanel:ClearAnchors()
         self.dialogOverwriteButtonPanel:SetAnchor(TOPLEFT, self.dialogBodyLabel, BOTTOMLEFT, 0, UI_DIALOG_BODY_INPUT_GAP + UI_DIALOG_OVERWRITE_PANEL_OFFSET_Y)
         self.dialogOverwriteButtonPanel:SetAnchor(TOPRIGHT, self.dialogBodyLabel, BOTTOMRIGHT, 0, UI_DIALOG_BODY_INPUT_GAP + UI_DIALOG_OVERWRITE_PANEL_OFFSET_Y)
-        local rowCount = #OVERWRITE_DIALOG_OPTIONS + 1
+        local rowCount = 1
+        for _, option in ipairs(OVERWRITE_DIALOG_OPTIONS) do
+            rowCount = math.max(rowCount, tonumber(option.row) or 1)
+        end
         self.dialogOverwriteButtonPanel:SetHeight(
             (UI_DIALOG_OVERWRITE_OPTION_HEIGHT * rowCount)
                 + (UI_DIALOG_OVERWRITE_OPTION_GAP * math.max(rowCount - 1, 0))
@@ -911,9 +910,7 @@ end
 local RefreshDialogLayout
 
 function LTM_UI:ShowDialog(dialogId, context)
-    local definition = type(LTM_UI_DIALOGS) == "table" and type(LTM_UI_DIALOGS.Get) == "function"
-        and LTM_UI_DIALOGS:Get(dialogId)
-        or nil
+    local definition = LTM_UI_DIALOGS:Get(dialogId)
     if type(definition) ~= "table" or not self.dialogOverlay then
         return
     end
@@ -1005,10 +1002,10 @@ function LTM_UI:ShowDialog(dialogId, context)
         if type(self.dialogOverwriteOptionButtons) == "table" then
             for _, optionButton in ipairs(self.dialogOverwriteOptionButtons) do
                 optionButton:SetHidden(not showOverwriteButtons)
+                if showOverwriteButtons and optionButton.textKey then
+                    SetLabelText(optionButton.label or optionButton, GetText(optionButton.textKey))
+                end
             end
-        end
-        if self.dialogOverwriteCancelButton then
-            self.dialogOverwriteCancelButton:SetHidden(not showOverwriteButtons)
         end
     end
 
@@ -1045,7 +1042,7 @@ function LTM_UI:ShowDialog(dialogId, context)
 
     if self.dialogTransformSkillsPanel then
         self.dialogTransformSkillsPanel:SetHidden(not isTransformSkills)
-        if isTransformSkills and type(self.RefreshTransformSkillsDialog) == "function" then
+        if isTransformSkills then
             self:RefreshTransformSkillsDialog()
         end
     end
@@ -1060,8 +1057,12 @@ function LTM_UI:ShowDialog(dialogId, context)
         self.dialogConfirmButton:SetHidden(definition.style == "overwrite_picker")
     end
 
+    if self.dialogOverwriteCloseButton then
+        self.dialogOverwriteCloseButton:SetHidden(definition.style ~= "overwrite_picker")
+    end
+
     if definition.style == "overwrite_picker" then
-        self:RefreshOverwriteDialogBody("all")
+        self:RefreshOverwriteDialogBody(nil)
     end
 
     self.dialogOverlay:SetHidden(false)
@@ -1093,8 +1094,8 @@ function LTM_UI:HideDialog()
             optionButton:SetHidden(true)
         end
     end
-    if self.dialogOverwriteCancelButton then
-        self.dialogOverwriteCancelButton:SetHidden(true)
+    if self.dialogOverwriteCloseButton then
+        self.dialogOverwriteCloseButton:SetHidden(true)
     end
     if self.dialogPageReorderPanel then
         self.dialogPageReorderPanel:SetHidden(true)
@@ -1108,9 +1109,7 @@ function LTM_UI:HideDialog()
     if self.dialogTransformSkillsPanel then
         self.dialogTransformSkillsPanel:SetHidden(true)
     end
-    if type(self.ClearTransformSkillsTooltip) == "function" then
-        self:ClearTransformSkillsTooltip()
-    end
+    self:ClearTransformSkillsTooltip()
 end
 
 function LTM_UI:CancelDialog()
@@ -1182,7 +1181,7 @@ RefreshDialogLayout = function(self, definition, bodyText, budgetSummaryTexts, b
         budgetSummaryRowHeights,
         budgetExpectedHeight
     )
-    if isTransformSkills and type(self.PositionTransformSkillsDialog) == "function" then
+    if isTransformSkills then
         self:PositionTransformSkillsDialog(panelWidth)
     end
     self:PositionDialogActionButtons(buttonWidth)
@@ -1322,7 +1321,7 @@ function LTM_UI:ConfirmDialog()
         if self:GetRightPaneMode() == "target" then
             self:RefreshRightPanePanel()
         end
-        local targetPageEntry = FindPageEntryById(type(LTM_UI_DISPATCH) == "table" and LTM_UI_DISPATCH:GetPageEntries() or {}, result.targetPageId)
+        local targetPageEntry = FindPageEntryById(LTM_UI_DISPATCH:GetPageEntries(), result.targetPageId)
         Log.WriteChat(GetText("status.moved", {
             cardName = result.buildName or context.cardName or context.cardId,
             pageName = type(targetPageEntry) == "table" and (targetPageEntry.name or targetPageEntry.pageId) or result.targetPageId,
@@ -1346,10 +1345,7 @@ function LTM_UI:ConfirmDialog()
 
     if dialogId == "QUICKSLOT_RENAME_INPUT" then
         local inputValue = self.dialogEditBox and self.dialogEditBox.GetText and self.dialogEditBox:GetText() or ""
-        local profile, err = nil, "quickslot_ui_unavailable"
-        if type(LTM_UI_QUICK_SETTINGS) == "table" and type(LTM_UI_QUICK_SETTINGS.RenameQuickSlotProfile) == "function" then
-            profile, err = LTM_UI_QUICK_SETTINGS:RenameQuickSlotProfile(context.profileId, inputValue)
-        end
+        local profile, err = LTM_UI_QUICK_SETTINGS:RenameQuickSlotProfile(context.profileId, inputValue)
         if type(profile) ~= "table" then
             self:LogActionError("common.rename", err)
             return
@@ -1360,11 +1356,6 @@ function LTM_UI:ConfirmDialog()
 
     if dialogId == "ALCHEMY_RECIPE_RENAME_INPUT" then
         local inputValue = self.dialogEditBox and self.dialogEditBox.GetText and self.dialogEditBox:GetText() or ""
-        if type(LTM_UI_QUICK_SETTINGS) ~= "table" or type(LTM_UI_QUICK_SETTINGS.RenameAlchemyRecipe) ~= "function" then
-            self:LogActionError("common.rename", "alchemy_recipe_unavailable")
-            return
-        end
-
         local recipe = LTM_UI_QUICK_SETTINGS:RenameAlchemyRecipe(context.recipeId, inputValue)
         if type(recipe) ~= "table" then
             return
@@ -1374,11 +1365,6 @@ function LTM_UI:ConfirmDialog()
 
     if dialogId == "ENCHANT_RECIPE_RENAME_INPUT" then
         local inputValue = self.dialogEditBox and self.dialogEditBox.GetText and self.dialogEditBox:GetText() or ""
-        if type(LTM_UI_QUICK_SETTINGS) ~= "table" or type(LTM_UI_QUICK_SETTINGS.RenameEnchantRecipe) ~= "function" then
-            self:LogActionError("common.rename", "enchant_recipe_unavailable")
-            return
-        end
-
         local recipe = LTM_UI_QUICK_SETTINGS:RenameEnchantRecipe(context.recipeId, inputValue)
         if type(recipe) ~= "table" then
             return
@@ -1388,11 +1374,6 @@ function LTM_UI:ConfirmDialog()
 
     if dialogId == "SCRIBING_RECIPE_RENAME_INPUT" then
         local inputValue = self.dialogEditBox and self.dialogEditBox.GetText and self.dialogEditBox:GetText() or ""
-        if type(LTM_UI_QUICK_SETTINGS) ~= "table" or type(LTM_UI_QUICK_SETTINGS.RenameScribingRecipe) ~= "function" then
-            self:LogActionError("common.rename", "scribing_recipe_unavailable")
-            return
-        end
-
         local recipe = LTM_UI_QUICK_SETTINGS:RenameScribingRecipe(context.recipeId, inputValue)
         if type(recipe) ~= "table" then
             return

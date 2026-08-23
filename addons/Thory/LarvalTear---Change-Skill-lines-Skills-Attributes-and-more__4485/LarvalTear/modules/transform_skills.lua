@@ -12,9 +12,6 @@ local VAMPIRE_BASE_ABILITY_ANCHORS = {
     { abilityId = 32986, name = "Mist Form" },
 }
 local KIND_ORDER = { "werewolf", "vampire" }
--- Synthetic targets participate in purchase/morph planning only. Keep them
--- above every normal action-bar slot so they cannot collide with saved slots.
-local SYNTHETIC_TRANSFORM_SLOT_BASE = 100
 local SHRINE_ICON_TEXTURES = {
     werewolf = "/esoui/art/icons/ability_werewolf_010.dds",
     vampire = "/esoui/art/icons/ability_vampire_007.dds",
@@ -67,7 +64,7 @@ end
 
 local function GetPlayerCurseKind()
     if type(GetPlayerCurseType) ~= "function" then
-        return nil
+        return nil, "player_curse_type_unavailable"
     end
     local curseType = Util:SafeCall(GetPlayerCurseType)
     if type(CURSE_TYPE_WEREWOLF) == "number" and curseType == CURSE_TYPE_WEREWOLF then
@@ -76,7 +73,10 @@ local function GetPlayerCurseKind()
     if type(CURSE_TYPE_VAMPIRE) == "number" and curseType == CURSE_TYPE_VAMPIRE then
         return "vampire"
     end
-    return nil
+    if type(CURSE_TYPE_NONE) == "number" and curseType == CURSE_TYPE_NONE then
+        return nil, nil
+    end
+    return nil, "player_curse_type_unresolved"
 end
 
 local function LogVampireAnchorResolution(skillLineId, matchedAnchorCount, reason)
@@ -229,6 +229,26 @@ local function FindAvailableLines()
         lines[curseKind] = skillLineData
     end
     return lines
+end
+
+function M:ResolveLiveOwnerSkillLineSet()
+    local ownerSkillLineIds = {}
+    local curseKind, curseErr = GetPlayerCurseKind()
+    if curseKind == nil then
+        if curseErr ~= nil then
+            return nil, curseErr
+        end
+        return ownerSkillLineIds, nil
+    end
+
+    local skillLineData = ResolveUsableLine(curseKind)
+    local skillLineId = GetLineId(skillLineData)
+    if skillLineId == nil then
+        return nil, "transform_live_owner_line_unavailable:" .. tostring(curseKind)
+    end
+
+    ownerSkillLineIds[skillLineId] = true
+    return ownerSkillLineIds, nil
 end
 
 local function GetCommittedMorphSlot(skillData)
@@ -405,11 +425,15 @@ local function ResolveTargetAbilityId(progressionId, morphSlot)
     )
 end
 
-local function BuildNormalProgressionTargets(skillConfig)
+local function BuildSlotProgressionTargets(skillConfig, activeTargetStates)
     local byProgression = {}
     local targets = Util:NormalizeSlotTargets(skillConfig)
-    for _, target in ipairs(targets) do
-        local resolved = Util:ResolveActiveSkillTargetState(target)
+    local states = type(activeTargetStates) == "table" and activeTargetStates or {}
+    for targetIndex, target in ipairs(targets) do
+        local resolved = states[targetIndex]
+        if type(resolved) ~= "table" then
+            resolved = Util:ResolveActiveSkillTargetState(target)
+        end
         local progressionId = type(resolved) == "table"
             and NormalizeInteger(resolved.progressionId, 1)
             or nil
@@ -462,7 +486,7 @@ local function BuildLiveProgressionMap(skillLineData)
     return liveByProgression
 end
 
-function M:BuildPlan(snapshots, skillConfig)
+function M:BuildPlan(snapshots, skillConfig, activeTargetStates)
     local normalized, normalizeErr = self:NormalizeSnapshots(snapshots)
     local plan = {
         ok = true,
@@ -470,14 +494,10 @@ function M:BuildPlan(snapshots, skillConfig)
         hasDiff = false,
         targets = {},
         reductions = {},
-        activeRefund = 0,
         appliedSnapshots = {},
         residuals = {},
         residualSet = {},
         skippedKinds = {},
-        transformOwnedProgressions = {},
-        deferredProgressionKinds = {},
-        deferredUnpurchasedProgressions = {},
         blockReason = nil,
     }
     if snapshots ~= nil and normalized == nil then
@@ -490,13 +510,12 @@ function M:BuildPlan(snapshots, skillConfig)
         return plan
     end
 
-    local normalTargets, normalErr = BuildNormalProgressionTargets(skillConfig)
-    if normalTargets == nil then
-        AppendBlock(plan, normalErr)
+    local slotTargets, slotErr = BuildSlotProgressionTargets(skillConfig, activeTargetStates)
+    if slotTargets == nil then
+        AppendBlock(plan, slotErr)
         return plan
     end
 
-    local syntheticSlot = SYNTHETIC_TRANSFORM_SLOT_BASE
     for _, kind in ipairs(KIND_ORDER) do
         local targetLine = normalized[kind]
         if type(targetLine) == "table" and targetLine.apply == true then
@@ -507,17 +526,12 @@ function M:BuildPlan(snapshots, skillConfig)
             else
                 local liveByProgression = BuildLiveProgressionMap(skillLineData)
                 local laneValid = true
-                local laneRefund = 0
                 local laneTargets = {}
                 local laneReductions = {}
                 local laneHasDiff = false
-                local laneNormalTargetConflicts = {}
-                local laneTransformOwnedProgressions = {}
-                local laneDeferredProgressionKinds = {}
-                local laneDeferredUnpurchasedProgressions = {}
                 for _, targetSkill in ipairs(targetLine.skills) do
                     local skillData = liveByProgression[targetSkill.progressionId]
-                    local normalTarget = normalTargets[targetSkill.progressionId]
+                    local slotTarget = slotTargets[targetSkill.progressionId]
                     if type(skillData) ~= "table" then
                         AppendResidual(
                             plan,
@@ -525,18 +539,14 @@ function M:BuildPlan(snapshots, skillConfig)
                         )
                         laneValid = false
                     else
-                        local normalTargetConflict = normalTarget ~= nil
+                        local slotTargetConflict = slotTarget ~= nil
                             and (targetSkill.purchased ~= true
-                                or normalTarget.morphSlot ~= targetSkill.morphSlot)
-                        if normalTargetConflict then
-                            laneNormalTargetConflicts[targetSkill.progressionId] = true
-                        end
-                        if normalTarget ~= nil then
-                            laneTransformOwnedProgressions[targetSkill.progressionId] = true
-                            laneDeferredProgressionKinds[targetSkill.progressionId] = kind
-                            if targetSkill.purchased ~= true then
-                                laneDeferredUnpurchasedProgressions[targetSkill.progressionId] = true
-                            end
+                                or slotTarget.morphSlot ~= targetSkill.morphSlot)
+                        if slotTargetConflict then
+                            AppendResidual(
+                                plan,
+                                "transform_slot_target_precedence:" .. tostring(targetSkill.progressionId)
+                            )
                         end
 
                         if targetSkill.purchased == true then
@@ -569,36 +579,32 @@ function M:BuildPlan(snapshots, skillConfig)
                                             .. ":retained=" .. tostring(retainedRank)
                                     )
                                 end
-                                syntheticSlot = syntheticSlot + 1
-                                laneTargets[#laneTargets + 1] = {
-                                    hotbarCategory = 0,
-                                    slotIndex = syntheticSlot,
-                                    abilityId = targetAbilityId,
-                                    transformKind = kind,
-                                    progressionId = targetSkill.progressionId,
-                                }
-                            end
-
-                            local currentPurchased = Util:SafeCallMethod(skillData, "IsPurchased") == true
-                            local currentMorphSlot = currentPurchased
-                                and GetCommittedMorphSlot(skillData)
-                                or BASE_MORPH_SLOT
-                            if not currentPurchased or currentMorphSlot ~= targetSkill.morphSlot then
-                                laneHasDiff = true
-                            end
-                            if currentPurchased
-                                and targetSkill.morphSlot == BASE_MORPH_SLOT
-                                and currentMorphSlot ~= BASE_MORPH_SLOT then
-                                laneReductions[#laneReductions + 1] = {
-                                    kind = kind,
-                                    skillLineId = targetLine.skillLineId,
-                                    progressionId = targetSkill.progressionId,
-                                    action = "unmorph",
-                                }
+                                local currentPurchased = Util:SafeCallMethod(skillData, "IsPurchased") == true
+                                local currentMorphSlot = currentPurchased
+                                    and GetCommittedMorphSlot(skillData)
+                                    or BASE_MORPH_SLOT
+                                if slotTarget == nil then
+                                    laneTargets[#laneTargets + 1] = {
+                                        targetAbilityId = targetAbilityId,
+                                        targetMorphSlot = targetSkill.morphSlot,
+                                        currentPurchased = currentPurchased,
+                                        currentMorphSlot = currentMorphSlot,
+                                        costMultiplier = NormalizeInteger(
+                                            Util:SafeCallMethod(skillData, "GetSkillPointCostMultiplier"),
+                                            1
+                                        ),
+                                        transformKind = kind,
+                                        skillLineId = targetLine.skillLineId,
+                                        progressionId = targetSkill.progressionId,
+                                    }
+                                    if not currentPurchased or currentMorphSlot ~= targetSkill.morphSlot then
+                                        laneHasDiff = true
+                                    end
+                                end
                             end
                         else
                             local currentPurchased = Util:SafeCallMethod(skillData, "IsPurchased") == true
-                            if currentPurchased then
+                            if currentPurchased and slotTarget == nil then
                                 laneHasDiff = true
                                 if Util:SafeCallMethod(skillData, "IsAutoGrant") == true then
                                     AppendResidual(
@@ -608,21 +614,8 @@ function M:BuildPlan(snapshots, skillConfig)
                                     )
                                     laneValid = false
                                 end
-                                local pointCount = NormalizeInteger(
-                                    Util:SafeCallMethod(skillData, "GetNumPointsAllocated"),
-                                    0
-                                )
-                                if pointCount == nil then
-                                    AppendResidual(
-                                        plan,
-                                        "transform_point_count_unavailable:" .. tostring(targetSkill.progressionId)
-                                    )
-                                    laneValid = false
-                                else
-                                    laneRefund = laneRefund + pointCount
-                                end
                                 laneReductions[#laneReductions + 1] = {
-                                    kind = kind,
+                                    transformKind = kind,
                                     skillLineId = targetLine.skillLineId,
                                     progressionId = targetSkill.progressionId,
                                     action = "clear",
@@ -635,7 +628,6 @@ function M:BuildPlan(snapshots, skillConfig)
                 if laneValid then
                     plan.hasTarget = true
                     plan.hasDiff = plan.hasDiff or laneHasDiff
-                    plan.activeRefund = plan.activeRefund + laneRefund
                     -- targetLine belongs to this newly normalized plan and is not
                     -- exposed through the input snapshot, so no second copy is needed.
                     plan.appliedSnapshots[kind] = targetLine
@@ -645,20 +637,6 @@ function M:BuildPlan(snapshots, skillConfig)
                     for _, reduction in ipairs(laneReductions) do
                         plan.reductions[#plan.reductions + 1] = reduction
                     end
-                    for progressionId in pairs(laneNormalTargetConflicts) do
-                        AppendResidual(
-                            plan,
-                            "transform_normal_target_override:" .. tostring(progressionId)
-                        )
-                    end
-                    for progressionId in pairs(laneTransformOwnedProgressions) do
-                        plan.transformOwnedProgressions[progressionId] = true
-                        plan.deferredProgressionKinds[progressionId] =
-                            laneDeferredProgressionKinds[progressionId]
-                        if laneDeferredUnpurchasedProgressions[progressionId] == true then
-                            plan.deferredUnpurchasedProgressions[progressionId] = true
-                        end
-                    end
                 else
                     plan.skippedKinds[kind] = "lane_validation_failed"
                 end
@@ -667,15 +645,6 @@ function M:BuildPlan(snapshots, skillConfig)
     end
     if next(plan.appliedSnapshots) == nil then
         plan.appliedSnapshots = nil
-    end
-    if next(plan.transformOwnedProgressions) == nil then
-        plan.transformOwnedProgressions = nil
-    end
-    if next(plan.deferredProgressionKinds) == nil then
-        plan.deferredProgressionKinds = nil
-    end
-    if next(plan.deferredUnpurchasedProgressions) == nil then
-        plan.deferredUnpurchasedProgressions = nil
     end
     return plan
 end
@@ -708,10 +677,7 @@ local function WarnUnavailableKinds(pipelineContext, skippedKinds)
             local stringId = kind == "werewolf"
                 and "SI_LTM_TRANSFORM_WARNING_LINE_UNAVAILABLE_WEREWOLF"
                 or "SI_LTM_TRANSFORM_WARNING_LINE_UNAVAILABLE_VAMPIRE"
-            local message = type(Addon.GetStringText) == "function"
-                and Addon.GetStringText(stringId)
-                or stringId
-            Log.WriteImportantChat(message)
+            Log.WriteImportantChat(Addon.GetStringText(stringId))
         end
     end
 end
@@ -728,10 +694,7 @@ local function WarnIncompleteKinds(pipelineContext, kinds)
             local stringId = kind == "werewolf"
                 and "SI_LTM_TRANSFORM_WARNING_APPLY_INCOMPLETE_WEREWOLF"
                 or "SI_LTM_TRANSFORM_WARNING_APPLY_INCOMPLETE_VAMPIRE"
-            local message = type(Addon.GetStringText) == "function"
-                and Addon.GetStringText(stringId)
-                or stringId
-            Log.WriteImportantChat(message)
+            Log.WriteImportantChat(Addon.GetStringText(stringId))
         end
     end
 end
@@ -749,262 +712,13 @@ function M:RecordPlanResiduals(pipelineContext, plan)
     WarnUnavailableKinds(pipelineContext, plan.skippedKinds)
 end
 
-function M:ResolveDeferredSlotTargets(deferredSlots)
-    local targets = {}
-    local errors = {}
-    for _, slot in ipairs(type(deferredSlots) == "table" and deferredSlots or {}) do
-        slot = type(slot) == "table" and slot or {}
-        local progressionId = NormalizeInteger(
-            slot.progressionId,
-            1
-        )
-        local hotbarCategory = NormalizeInteger(
-            slot.hotbarCategory,
-            0
-        )
-        local slotIndex = NormalizeInteger(
-            slot.slotIndex,
-            0
-        )
-        local target = {
-            hotbarCategory = hotbarCategory,
-            slotIndex = slotIndex,
-            progressionId = progressionId,
-            savedAbilityId = slot.savedAbilityId,
-            deferredTransformKind = slot.transformKind,
-            targetTransformPurchased = slot.targetPurchased ~= false,
-        }
-        local skillData = progressionId ~= nil
-            and type(SKILLS_DATA_MANAGER) == "table"
-            and type(SKILLS_DATA_MANAGER.GetSkillDataByProgressionId) == "function"
-            and SKILLS_DATA_MANAGER:GetSkillDataByProgressionId(progressionId)
-            or nil
-        if hotbarCategory == nil or slotIndex == nil or type(skillData) ~= "table" then
-            target.resolveError = "transform_deferred_slot_skill_unavailable"
-            errors[#errors + 1] = target
-        elseif Util:SafeCallMethod(skillData, "IsPurchased") ~= true then
-            target.abilityId = 0
-            targets[#targets + 1] = target
-        else
-            local morphSlot = GetCommittedMorphSlot(skillData)
-            local abilityId = ResolveTargetAbilityId(progressionId, morphSlot)
-            if abilityId == nil then
-                target.resolveError = "transform_deferred_slot_ability_unavailable"
-                errors[#errors + 1] = target
-            else
-                target.abilityId = abilityId
-                targets[#targets + 1] = target
-            end
-        end
-    end
-    return targets, errors
-end
-
-function M:RecordDeferredRestoreResults(pipelineContext, results)
-    if type(pipelineContext) ~= "table" then
-        return
-    end
-    local reasons = {}
-    local reasonSet = {}
-    local incompleteKinds = {}
-    local failedSlots = {}
-    for _, result in ipairs(type(results) == "table" and results or {}) do
-        if type(result) == "table" then
-            if result.targetTransformPurchased == false
-                and (result.reason == "cleared" or result.reason == "already_empty") then
-                AppendUnique(
-                    reasons,
-                    reasonSet,
-                    "transform_slot_cleared_unpurchased:" .. tostring(result.progressionId)
-                )
-            end
-            if result.status == "error" and type(result.deferredTransformKind) == "string" then
-                local reason = tostring(result.reason or "transform_deferred_slot_restore_failed")
-                AppendUnique(reasons, reasonSet, reason)
-                incompleteKinds[result.deferredTransformKind] = true
-                failedSlots[#failedSlots + 1] = {
-                    hotbarCategory = result.hotbarCategory,
-                    slotIndex = result.slotIndex,
-                    progressionId = result.progressionId,
-                    reason = reason,
-                }
-            end
-        end
-    end
-    RecordPartial(pipelineContext, reasons, {
-        stage = "deferred_slot_restore",
-        failedSlots = failedSlots,
-    })
-    WarnIncompleteKinds(pipelineContext, incompleteKinds)
-end
-
-local function ClearSyntheticTransformTargets(context, directSkillConfig)
-    local pipelinePlan = type(context) == "table"
-        and type(context.routeBConfig) == "table"
-        and context.routeBConfig._pipelinePlan
-        or nil
-    local plannedSkillConfig = type(pipelinePlan) == "table"
-        and type(pipelinePlan.configs) == "table"
-        and pipelinePlan.configs.skills
-        or nil
-    if type(directSkillConfig) == "table" then
-        directSkillConfig.transformTargets = {}
-        directSkillConfig.transformOwnedProgressions = nil
-    end
-    if type(plannedSkillConfig) == "table" and plannedSkillConfig ~= directSkillConfig then
-        plannedSkillConfig.transformTargets = {}
-        plannedSkillConfig.transformOwnedProgressions = nil
-    end
-    local routeBConfig = type(context) == "table" and context.routeBConfig or nil
-    if type(routeBConfig) == "table" then
-        routeBConfig.transformTargets = {}
-        routeBConfig.transformOwnedProgressions = nil
-    end
-end
-
-function M:SkipPlanOperations(plan, context, skillConfig)
-    if type(plan) ~= "table" then
-        return
-    end
-    plan.hasTarget = false
-    plan.hasDiff = false
-    plan.targets = {}
-    plan.reductions = {}
-    plan.activeRefund = 0
-    plan.appliedSnapshots = nil
-    plan.transformOwnedProgressions = nil
-    plan.deferredProgressionKinds = nil
-    plan.deferredUnpurchasedProgressions = nil
-    plan.ok = true
-    plan.blockReason = nil
-    plan.skippedBySkillPhase = true
-    ClearSyntheticTransformTargets(context, skillConfig)
-end
-
-local function SkipPlanAtExecution(self, plan, context, reason)
-    if type(plan) ~= "table" then
-        return
-    end
-    AppendResidual(plan, reason)
-    self:SkipPlanOperations(plan, context)
-    plan.executionSkipped = true
-    local pipelineContext = type(context) == "table" and context.pipelineContext or nil
-    RecordPartial(pipelineContext, { reason }, {
-        executionSkipped = true,
-        reason = reason,
-    })
-end
-
-local function ResolveReductionAllocator(reduction)
-    if type(SKILLS_DATA_MANAGER) ~= "table"
-        or type(SKILLS_DATA_MANAGER.GetSkillDataByProgressionId) ~= "function" then
-        return nil, "transform_skill_resolver_unavailable"
-    end
-    local skillData = SKILLS_DATA_MANAGER:GetSkillDataByProgressionId(reduction.progressionId)
-    if type(skillData) ~= "table"
-        or GetSkillLineId(skillData) ~= reduction.skillLineId
-        or Util:SafeCallMethod(skillData, "IsActive") ~= true
-        or Util:SafeCallMethod(skillData, "IsPassive") == true
-        or Util:SafeCallMethod(skillData, "IsCraftedAbility") == true then
-        return nil, "transform_reduction_skill_unavailable:" .. tostring(reduction.progressionId)
-    end
-    local allocator = Util:SafeCallMethod(skillData, "GetPointAllocator")
-    local methodName = reduction.action == "unmorph" and "Unmorph" or "Clear"
-    if type(allocator) ~= "table"
-        or type(allocator[methodName]) ~= "function"
-        or type(allocator.Revert) ~= "function" then
-        return nil, "transform_allocator_unavailable:" .. tostring(reduction.progressionId)
-    end
-    return {
-        allocator = allocator,
-        methodName = methodName,
-        reduction = reduction,
-    }
-end
-
-local function RevertAllocator(allocator)
-    if type(allocator) ~= "table" or type(allocator.Revert) ~= "function" then
-        return false, "revert_unavailable"
-    end
-    local ok, err = pcall(allocator.Revert, allocator)
-    if not ok then
-        return false, tostring(err)
-    end
-    return true
-end
-
-function M:ExecutePendingReductions(plan, context)
-    if type(plan) ~= "table" or plan.ok ~= true then
-        return false, type(plan) == "table" and plan.blockReason or "transform_plan_missing"
-    end
-    if type(context) == "table"
-        and (context.subclassOnlyMode == true or plan.skippedBySkillPhase == true) then
-        self:SkipPlanOperations(plan, context)
-        return true
-    end
-    if plan.hasTarget ~= true or #(plan.reductions or {}) == 0 then
-        return true
-    end
-
-    local manager = SKILLS_AND_ACTION_BAR_MANAGER
-    if type(manager) ~= "table"
-        or type(manager.DoesSkillPointAllocationModeAllowClear) ~= "function"
-        or manager:DoesSkillPointAllocationModeAllowClear() ~= true then
-        SkipPlanAtExecution(self, plan, context, "transform_allocation_mode_disallows_clear")
-        return true
-    end
-
-    local resolved = {}
-    for _, reduction in ipairs(plan.reductions or {}) do
-        local entry, resolveErr = ResolveReductionAllocator(reduction)
-        if entry == nil then
-            SkipPlanAtExecution(self, plan, context, resolveErr)
-            return true
-        end
-        resolved[#resolved + 1] = entry
-    end
-
-    local executed = {}
-    for _, entry in ipairs(resolved) do
-        if Util:SafeCallMethod(entry.allocator, entry.methodName) ~= true then
-            local revertError = nil
-            local reverted, revertErr = RevertAllocator(entry.allocator)
-            if not reverted then
-                revertError = revertErr
-            end
-            for _, previous in ipairs(executed) do
-                local previousReverted, previousRevertErr = RevertAllocator(previous.allocator)
-                if not previousReverted and revertError == nil then
-                    revertError = previousRevertErr
-                end
-            end
-            if revertError ~= nil then
-                return false, "transform_reduction_revert_error:" .. tostring(revertError)
-            end
-            SkipPlanAtExecution(
-                self,
-                plan,
-                context,
-                "transform_" .. tostring(entry.reduction.action) .. "_failed:"
-                    .. tostring(entry.reduction.progressionId)
-            )
-            return true
-        end
-        executed[#executed + 1] = entry
-    end
-
-    context.modifiedAllocators = context.modifiedAllocators or {}
-    for _, entry in ipairs(executed) do
-        context.modifiedAllocators[#context.modifiedAllocators + 1] = entry.allocator
-    end
-    return true
-end
-
-function M:VerifySnapshots(snapshots, pipelineContext)
+function M:VerifySnapshots(snapshots, pipelineContext, options)
     local normalized, normalizeErr = self:NormalizeSnapshots(snapshots)
+    local expectedMissing = type(options) == "table" and options.expectedMissingProgressionSet or nil
+    local expectedMissingPurchases = type(expectedMissing) == "table" and expectedMissing.purchases or {}
+    local expectedMissingMorphs = type(expectedMissing) == "table" and expectedMissing.morphs or {}
     local residuals = {}
     local residualSet = {}
-    local unavailableKinds = {}
     local incompleteKinds = {}
     if snapshots ~= nil and normalized == nil then
         if normalizeErr ~= nil then
@@ -1019,34 +733,20 @@ function M:VerifySnapshots(snapshots, pipelineContext)
                     ResolveUsableLine(kind, targetLine.skillLineId),
                     true
                 )
-                if type(currentLine) ~= "table" then
-                    AppendUnique(residuals, residualSet, "transform_line_unavailable:" .. kind)
-                    unavailableKinds[kind] = "skill_line_unavailable"
-                else
+                if type(currentLine) == "table" then
                     local currentByProgression = {}
                     for _, currentSkill in ipairs(currentLine.skills) do
                         currentByProgression[currentSkill.progressionId] = currentSkill
                     end
                     for _, targetSkill in ipairs(targetLine.skills) do
                         local currentSkill = currentByProgression[targetSkill.progressionId]
-                        if type(currentSkill) ~= "table" then
-                            AppendUnique(
-                                residuals,
-                                residualSet,
-                                "transform_progression_unavailable:" .. kind .. ":"
-                                    .. tostring(targetSkill.progressionId)
-                            )
-                            incompleteKinds[kind] = true
-                        elseif currentSkill.purchased ~= targetSkill.purchased
-                            or currentSkill.morphSlot ~= targetSkill.morphSlot then
-                            AppendUnique(
-                                residuals,
-                                residualSet,
-                                "transform_verify_state_mismatch:" .. kind .. ":"
-                                    .. tostring(targetSkill.progressionId)
-                            )
-                            incompleteKinds[kind] = true
-                        elseif targetSkill.purchased == true then
+                        local progressionExpectedMissing = expectedMissingPurchases[targetSkill.progressionId] ~= nil
+                            or expectedMissingMorphs[targetSkill.progressionId] ~= nil
+                        if not progressionExpectedMissing
+                            and type(currentSkill) == "table"
+                            and currentSkill.purchased == targetSkill.purchased
+                            and currentSkill.morphSlot == targetSkill.morphSlot
+                            and targetSkill.purchased == true then
                             if targetSkill.rank == nil or currentSkill.rank == nil then
                                 AppendUnique(
                                     residuals,
@@ -1079,7 +779,6 @@ function M:VerifySnapshots(snapshots, pipelineContext)
         stage = "post_commit_verify",
         residualCount = #residuals,
     })
-    WarnUnavailableKinds(pipelineContext, unavailableKinds)
     WarnIncompleteKinds(pipelineContext, incompleteKinds)
     return {
         ok = true,

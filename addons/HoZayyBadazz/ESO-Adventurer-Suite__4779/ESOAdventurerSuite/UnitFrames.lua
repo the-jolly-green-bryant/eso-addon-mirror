@@ -1178,6 +1178,62 @@ local function readAdvancedFlat(statType)
     return flatValue
 end
 
+local function parsePercentText(text)
+    if type(text) ~= "string" or text == "" then return nil end
+    -- Advanced-stat display strings can contain color markup, localized labels,
+    -- or a percent sign. Strip markup and read the first numeric percentage.
+    text = text:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    local value = text:match("([%+%-]?%d+[%.%,]?%d*)%s*%%")
+    if not value then value = text:match("([%+%-]?%d+[%.%,]?%d*)") end
+    if not value then return nil end
+    value = tonumber((value:gsub(",", ".")))
+    return normalizeAdvancedPercent(value)
+end
+
+local function readCriticalDamageFromAdvancedInfo()
+    if type(GetNumAdvancedStatCategories) ~= "function"
+        or type(GetAdvancedStatsCategoryId) ~= "function"
+        or type(GetAdvancedStatCategoryInfo) ~= "function"
+        or type(GetAdvancedStatInfo) ~= "function" then
+        return nil
+    end
+
+    local wantedType = ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_DAMAGE
+    local numCategories = tonumber(safe(GetNumAdvancedStatCategories, 0)) or 0
+    for categoryIndex = 1, numCategories do
+        local categoryId = safe(GetAdvancedStatsCategoryId, nil, categoryIndex)
+        if categoryId ~= nil then
+            local _, numStats = safe(GetAdvancedStatCategoryInfo, nil, categoryId)
+            numStats = tonumber(numStats) or 0
+            for statIndex = 1, numStats do
+                local ok, statType, statDisplayName, _, flatValueDescription, percentValueDescription =
+                    pcall(GetAdvancedStatInfo, categoryId, statIndex)
+                if ok then
+                    local isCriticalDamage = wantedType ~= nil and statType == wantedType
+                    if not isCriticalDamage and type(statDisplayName) == "string" then
+                        local normalized = zo_strlower and zo_strlower(statDisplayName) or string.lower(statDisplayName)
+                        isCriticalDamage = normalized:find("critical", 1, true) ~= nil
+                            and normalized:find("damage", 1, true) ~= nil
+                    end
+                    if isCriticalDamage then
+                        -- Use the statType returned by ESO itself. This is more robust than
+                        -- relying on a global enum name being present/unchanged on every client.
+                        local value = readAdvancedPercent(statType, true)
+                        if value and value > 0 then return value end
+
+                        -- Last-resort compatibility path for clients that only expose a
+                        -- human-readable value through the Advanced Stats row descriptions.
+                        value = parsePercentText(percentValueDescription)
+                        if value == nil or value <= 0 then value = parsePercentText(flatValueDescription) end
+                        if value and value > 0 then return value end
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
 function F:IsHudSuppressed()
     if self.layoutMode == true then return false end
     return EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true
@@ -1309,13 +1365,20 @@ function F:RefreshStats()
     local sr = readPlayerStat(STAT_SPELL_RESIST)
     local pr = readPlayerStat(STAT_PHYSICAL_RESIST)
     local cc = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_CHANCE, false)
-    local cd = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_DAMAGE, true)
 
-    -- The aggregate critical-percent entry is a safe secondary live-client path
-    -- when Critical Damage itself reports an empty/zero percentage channel.
-    if cd == nil or cd <= 0 then
-        cd = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_PERCENT, true)
+    -- ESO's Critical Damage advanced stat is the BONUS above the universal 50%
+    -- critical-hit base. A perfectly valid bonus of 0 therefore means 50% total,
+    -- not "stat unavailable". Current LibCombat uses the same 50 + ZOS bonus
+    -- calculation. Keep zero as a valid result and only fall back when the API
+    -- truly returns nil/unavailable.
+    local cdBonus = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_DAMAGE, true)
+    if cdBonus == nil then
+        cdBonus = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_PERCENT, true)
     end
+    if cdBonus == nil then
+        cdBonus = readCriticalDamageFromAdvancedInfo()
+    end
+    local cd = cdBonus ~= nil and (50 + cdBonus) or nil
 
     local stats = self.statsFrame.epcStats
     stats.PEN:SetText(compactNumber(pen))

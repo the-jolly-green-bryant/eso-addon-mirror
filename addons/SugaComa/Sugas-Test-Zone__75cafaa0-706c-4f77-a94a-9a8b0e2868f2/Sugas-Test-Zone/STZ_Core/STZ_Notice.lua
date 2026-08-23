@@ -19,3 +19,4 @@ function Notice:ShowDenied(projectName)
         tostring(STZ.Config.notice.stableReleaseText)
     ))
 end
+

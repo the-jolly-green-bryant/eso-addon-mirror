@@ -495,11 +495,6 @@ local function BuildFetchPlan(profile, options)
     options = type(options) == "table" and options or {}
     options.mode = NormalizeFetchMode(options.mode)
 
-    if type(QuickslotSnapshot) ~= "table"
-        or type(QuickslotSnapshot.IsItemEntry) ~= "function" then
-        return false, "quickslot_snapshot_unavailable", nil
-    end
-
     local sourceBagIds, sourceErr, bankingBag = BuildSourceBagList(options)
     if type(sourceBagIds) ~= "table" then
         return false, sourceErr or "fetch_source_unavailable", {

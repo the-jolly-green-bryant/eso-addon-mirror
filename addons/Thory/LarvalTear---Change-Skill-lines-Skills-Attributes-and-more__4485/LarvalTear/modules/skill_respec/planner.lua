@@ -2,43 +2,36 @@ local Addon = LarvalTearMod
 local M = Addon.Modules.SkillRespecPlanner
 local SHARED_UTIL = Addon.Common.Util
 
-local function NormalizeSlotTargets(config)
-    if type(SHARED_UTIL) == "table" and type(SHARED_UTIL.NormalizeSlotTargets) == "function" then
-        return SHARED_UTIL:NormalizeSlotTargets(config)
-    end
-
-    return {}
-end
-
-local function BuildAllTargets(config)
+local function BuildAllTargets(activeRestorePlan)
     local targets = {}
-    local transformOwners = type(config) == "table" and config.transformOwnedProgressions or nil
-    for _, target in ipairs(NormalizeSlotTargets(config)) do
-        local resolved = type(transformOwners) == "table"
-            and type(SHARED_UTIL) == "table"
-            and type(SHARED_UTIL.ResolveActiveSkillTargetState) == "function"
-            and SHARED_UTIL:ResolveActiveSkillTargetState(target)
-            or nil
-        local progressionId = type(resolved) == "table"
-            and tonumber(resolved.progressionId)
-            or nil
-        progressionId = progressionId ~= nil and math.floor(progressionId) or nil
-        if progressionId == nil
-            or type(transformOwners) ~= "table"
-            or transformOwners[progressionId] ~= true then
-            targets[#targets + 1] = target
-        end
-    end
-    for _, entry in ipairs(type(config) == "table" and config.transformTargets or {}) do
-        if type(entry) == "table" and tonumber(entry.abilityId) ~= nil then
-            targets[#targets + 1] = {
-                hotbarCategory = tonumber(entry.hotbarCategory) or 0,
-                slotIndex = tonumber(entry.slotIndex) or (100 + #targets),
-                abilityId = math.floor(tonumber(entry.abilityId)),
-                transformKind = entry.transformKind,
-                progressionId = entry.progressionId,
-                savedRank = entry.savedRank,
-            }
+    local targetIndexByProgression = {}
+    local operations = type(activeRestorePlan) == "table" and activeRestorePlan.operations or nil
+    for _, bucket in ipairs({ "purchases", "morphs" }) do
+        for _, operation in ipairs(type(operations) == "table" and operations[bucket] or {}) do
+            local progressionId = tonumber(type(operation) == "table" and operation.progressionId or nil)
+            local targetAbilityId = tonumber(type(operation) == "table" and operation.targetAbilityId or nil)
+            if progressionId ~= nil and targetAbilityId ~= nil then
+                progressionId = math.floor(progressionId)
+                targetAbilityId = math.floor(targetAbilityId)
+                local target = {
+                    hotbarCategory = tonumber(operation.hotbarCategory),
+                    slotIndex = tonumber(operation.slotIndex),
+                    targetAbilityId = targetAbilityId,
+                    progressionId = progressionId,
+                    targetMorphSlot = operation.targetMorphSlot,
+                    source = operation.source,
+                    transformKind = operation.transformKind,
+                    executionOrder = #targets + 1,
+                }
+                local existingIndex = targetIndexByProgression[progressionId]
+                if existingIndex ~= nil then
+                    target.executionOrder = targets[existingIndex].executionOrder
+                    targets[existingIndex] = target
+                else
+                    targets[#targets + 1] = target
+                    targetIndexByProgression[progressionId] = #targets
+                end
+            end
         end
     end
     return targets
@@ -65,7 +58,9 @@ function M:AnalyzeRouteBSkillTarget(target, options)
         slotActionType = target and target.slotActionType or nil,
         craftedAbilityId = target and target.craftedAbilityId or nil,
         scriptIds = target and target.scriptIds or nil,
+        source = target and target.source or nil,
         transformKind = target and target.transformKind or nil,
+        executionOrder = target and target.executionOrder or nil,
         fallbackCraftedAbilityId = nil,
         craftedResolveSource = nil,
         purchased = false,
@@ -121,15 +116,7 @@ function M:AnalyzeRouteBSkillTarget(target, options)
         return Finalize("readyTargets", nil)
     end
 
-    local resolved = type(SHARED_UTIL) == "table"
-        and type(SHARED_UTIL.ResolveActiveSkillTargetState) == "function"
-        and SHARED_UTIL:ResolveActiveSkillTargetState(target, options)
-        or nil
-    if type(resolved) ~= "table" then
-        entry.unresolved = true
-        entry.reason = "active_skill_target_state_unavailable"
-        return Finalize("unresolvedTargets", "active_skill_target_state_unavailable")
-    end
+    local resolved = SHARED_UTIL:ResolveActiveSkillTargetState(target)
 
     entry.progressionDataAvailable = type(resolved.progressionData) == "table"
     entry.skillDataAvailable = type(resolved.skillData) == "table"
@@ -226,8 +213,13 @@ end
 
 function M:BuildRouteBSkillTargetPlan(config)
     local skillConfig = self:ResolveRouteBSkillConfig(config)
-    local targets = BuildAllTargets(skillConfig)
     local pipelinePlan = type(config) == "table" and config._pipelinePlan or nil
+    local activeRestorePlan = type(pipelinePlan) == "table"
+        and type(pipelinePlan.configs) == "table"
+        and type(pipelinePlan.configs.skillRespec) == "table"
+        and pipelinePlan.configs.skillRespec.activeRestorePlan
+        or nil
+    local targets = BuildAllTargets(activeRestorePlan)
     local subclassDiff = type(pipelinePlan) == "table" and type(pipelinePlan.diagnostics) == "table"
         and pipelinePlan.diagnostics.subclassDiff
         or nil
@@ -248,11 +240,6 @@ function M:BuildRouteBSkillTargetPlan(config)
             normalizedTargetCount = #targets,
             subclassOpCount = #subclassOps,
             rawSlotsCount = type(skillConfig) == "table" and type(skillConfig.slots) == "table" and #skillConfig.slots or 0,
-            hasActionbarConfig = type(config) == "table"
-                and type(config._pipelinePlan) == "table"
-                and type(config._pipelinePlan.configs) == "table"
-                and type(config._pipelinePlan.configs.actionbar) == "table"
-                or false,
         },
     }
 
@@ -262,6 +249,23 @@ function M:BuildRouteBSkillTargetPlan(config)
             plan[bucket][#plan[bucket] + 1] = entry
         end
     end
+
+    local sourcePriority = {
+        slot = 1,
+        transform = 2,
+        active_exact = 3,
+        clear_unused = 3,
+    }
+    local function SortExecutionTargets(left, right)
+        local leftPriority = sourcePriority[left.source] or 99
+        local rightPriority = sourcePriority[right.source] or 99
+        if leftPriority ~= rightPriority then
+            return leftPriority < rightPriority
+        end
+        return (left.executionOrder or 0) < (right.executionOrder or 0)
+    end
+    table.sort(plan.purchaseTargets, SortExecutionTargets)
+    table.sort(plan.morphTargets, SortExecutionTargets)
 
     plan.readySlots = plan.readyTargets
 

@@ -170,7 +170,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PT-BR Patch for Tamriel Trade Centre](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/frooke/PT-BR-Patch-for-Tamriel-Trade-Centre__3506) | frooke | PC / Mac | 2.0.1 |
 | [PTS Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/PTS-Assistant__4352) | imPDA | PC / Mac | 5 |
 | [Public Dungeon Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhaossa-daro/Public-Dungeon-Tracker__4214) | Rhaossa-daro | PC / Mac | 1.0.1 |
-| [Pug Blacklist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haze068/Pug-Blacklist__4322) | haze068 | PC / Mac | 5 |
 | [PUGmo - The Pick Up Group utility + more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tigertron/PUGmo---The-Pick-Up-Group-utility-more__3207) | Tigertron | PC / Mac | 21.10.09 |
 | [PUGSupportIcons - icon pack for OdySupport Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/def-venom/PUGSupportIcons---icon-pack-for-OdySupport-Icons__3397) | def venom | PC / Mac | 1.001 |
 | [Puma](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Puma__5fcc6401-3a36-427e-acd5-9611fb589e78) | Vixen_Hunny | Console | — |

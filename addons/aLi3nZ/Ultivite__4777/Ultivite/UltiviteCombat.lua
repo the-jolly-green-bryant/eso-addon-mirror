@@ -5,7 +5,7 @@ local FAB = U.FancyActionBar
 local Frames = U.Frames
 
 KS.name = "UltiviteCombat"
-KS.version = "1.6.89 / Ultivite 1.0.125"
+KS.version = "1.6.94 / Ultivite 1.0.160"
 KS.savedVersion = 1
 KS.scopeSavedVersion = 1
 KS.unitTag = "reticleover"
@@ -204,9 +204,10 @@ local defaults = {
     playerNameMode = "@Account name",
     abilityId = 0,
     learnedName = "",
-    uiRevision = 50,
+    uiRevision = 51,
     stickyTarget = true,
     targetFrame = true,
+    targetFrameMode = "ultivite",
     anchorAboveTarget = false,
     targetHeadOffsetCm = 220,
     targetScreenGap = 8,
@@ -232,6 +233,8 @@ local defaults = {
     overheadPlayerInfoOriginalEnemyPlayerNameplates = "",
     overheadPlayerInfoOriginalFriendlyPlayerNameplates = "",
     overheadPlayerInfoOriginalGroupMemberNameplates = "",
+    playerNamesGlobalHidden = false,
+    playerNamesOverrideActive = false,
     hideLUIETargetFrame = true,
     autoHideOtherTargetFrames = true,
     externalTargetFrameControlName = "",
@@ -321,6 +324,10 @@ local defaults = {
     showEnemyCorrosiveAlert = true,
     showEnemyOnslaughtAlert = true,
     enemyUltimateAlertIconSize = 54,
+    enemyUltimateAlertTargetX = 0,
+    enemyUltimateAlertTargetY = -115,
+    enemyUltimateAlertGlobalX = 0,
+    enemyUltimateAlertGlobalY = 165,
     timerPlacement = "Above frame",
     timerFontSize = 44,
     balorghTimerFontSize = 32,
@@ -1351,15 +1358,10 @@ function KS.ApplyLUIETargetFrameVisibility()
 end
 
 function KS.ShouldShowNativePlayerCpFrame()
-    if not KS.sv then return false end
-    -- Target-frame CP is permanently enabled. In Ultivite's custom target-frame
-    -- mode we render the same CP information
-    -- inside that frame instead. Only release ESO's stock frame in native-overhead
-    -- mode so the two target frames are never shown together.
-    if KS.sv.nativeOverheadTargetBar ~= true then return false end
-    if not DoesUnitExist or not DoesUnitExist(KS.unitTag) then return false end
-    if not IsUnitPlayer or not IsUnitPlayer(KS.unitTag) then return false end
-    return true
+    -- Compatibility shim retained for older callers. Ultivite now renders player
+    -- CP / level itself, so Target Frame Mode = Ultivite must never release ESO's
+    -- stock reticle target frame just to obtain the native Champion icon.
+    return false
 end
 
 function KS.SetShowPlayerTargetChampionPoints(enabled, silent)
@@ -1376,11 +1378,9 @@ function KS.SetShowPlayerTargetChampionPoints(enabled, silent)
 end
 
 function KS.ShouldHideDefaultTargetFrame()
-    if not KS.sv or KS.sv.hideDefaultTargetFrame ~= true then return false end
-    -- ESO's stock target unit frame is the only public native frame that exposes
-    -- the Champion icon + effective CP level exactly as the base game does.
-    -- Allow it only for player targets when requested; NPC targets remain hidden.
-    return not KS.ShouldShowNativePlayerCpFrame()
+    -- This setting is absolute. When Ultivite owns target presentation, ESO's
+    -- stock reticle target frame stays hidden for NPC and player targets alike.
+    return KS.sv ~= nil and KS.sv.hideDefaultTargetFrame == true
 end
 
 function KS.ApplyDefaultTargetFrameVisibility()
@@ -1417,11 +1417,11 @@ function KS.ApplyDefaultTargetFrameVisibility()
     -- hiding it is cheap; discovery is deferred by ScheduleOtherTargetFrameHide().
     if KS.dynamicHiddenTargetFrame and KS.ApplyOtherTargetFrameVisibility(false) then applied = true end
 
-    -- Once our hide reason and any stale duplicate-frame alpha suppression are gone,
-    -- ask ESO's own target frame to refresh its level component. ESO's implementation
-    -- uses IsUnitChampion + GetUnitEffectiveChampionPoints here and owns the native
-    -- Champion icon, so this keeps the presentation exactly in step with the base UI.
-    if not hide and KS.ShouldShowNativePlayerCpFrame() and stockUnitFrame then
+    -- When Vanilla / Default mode releases the stock frame, refresh its native
+    -- level / Champion presentation so ESO immediately owns the complete frame again.
+    if not hide and stockUnitFrame
+        and DoesUnitExist and DoesUnitExist(KS.unitTag)
+        and IsUnitPlayer and IsUnitPlayer(KS.unitTag) then
         if stockUnitFrame.UpdateLevel then
             pcall(function() stockUnitFrame:UpdateLevel() end)
         end
@@ -1827,17 +1827,6 @@ function KS.PrintDiagnostic()
     local preferred = KS.HasPreferredTarget()
     local hudAllowed = KS.IsHUDAllowed()
 
-    local zoneId, worldX, worldY, worldZ = 0, 0, 0, 0
-    local rawZone, rawX, rawY, rawZ = 0, 0, 0, 0
-    if exists and GetUnitWorldPosition then
-        local ok, a, b, c, e = pcall(GetUnitWorldPosition, KS.unitTag)
-        if ok then zoneId, worldX, worldY, worldZ = a, b, c, e end
-    end
-    if exists and GetUnitRawWorldPosition then
-        local ok, a, b, c, e = pcall(GetUnitRawWorldPosition, KS.unitTag)
-        if ok then rawZone, rawX, rawY, rawZ = a, b, c, e end
-    end
-
     local rootHidden = KS.root and KS.root.IsHidden and KS.root:IsHidden() or true
     local rootX, rootY = nil, nil
     if KS.root and KS.root.GetCenter then rootX, rootY = KS.root:GetCenter() end
@@ -1859,9 +1848,9 @@ function KS.PrintDiagnostic()
         diagBool(rootHidden), diagBool(KS.lastRootVisible == true), diagBool(KS.sv and KS.sv.locked == true),
         diagBool(KS.IsWorldFollowMode()), diagBool(KS.worldFollowAvailable == true), diagBool(KS.fallbackActive == true),
         diagBool(hudAllowed), tostring(rootX), tostring(rootY), tostring(gw), tostring(gh)))
-    chat(string.format("DIAG world zone=%s xyz=%s,%s,%s | raw zone=%s xyz=%s,%s,%s | source=%s failure=%s",
-        tostring(zoneId), tostring(worldX), tostring(worldY), tostring(worldZ),
-        tostring(rawZone), tostring(rawX), tostring(rawY), tostring(rawZ),
+    -- ESOUI policy forbids querying the position of a non-grouped reticle
+    -- target. Diagnostics intentionally report the safe fallback state only.
+    chat(string.format("DIAG target-world-position=not-queried | source=%s failure=%s",
         tostring(KS.lastWorldPositionSource or "none"), tostring(KS.lastWorldFailure or "none")))
     chat(string.format("DIAG probe=%s system=%s events reticle=%s power=%s worldOK=%s worldFail=%s",
         diagBool(probeHas3D), probeSystem, tostring(c.reticle or 0), tostring(c.power or 0), tostring(c.worldSuccess or 0), tostring(c.worldFail or 0)))
@@ -2022,6 +2011,20 @@ function KS.ClearNpcNamesOverride()
     KS.sv.npcNamesOverrideActive = false
 end
 
+function KS.IsNpcNamesHidden()
+    if not KS.sv then return false end
+    if KS.sv.npcNamesOverrideActive == true then
+        return KS.sv.npcNamesGlobalHidden == true
+    end
+    local master = NAMEPLATE_TYPE_ALL_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_NAMEPLATES) or "1"
+    if master == "0" or master == "false" then return true end
+    local off = tostring(KS.GetNativeNameplateOffChoice())
+    local enemy = NAMEPLATE_TYPE_ENEMY_NPC_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_NAMEPLATES) or ""
+    local friendly = NAMEPLATE_TYPE_FRIENDLY_NPC_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_NPC_NAMEPLATES) or ""
+    local neutral = NAMEPLATE_TYPE_NEUTRAL_NPC_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_NEUTRAL_NPC_NAMEPLATES) or ""
+    return enemy == off and friendly == off and neutral == off
+end
+
 
 function KS.CaptureNativeNameplateSettings()
     if not KS.sv or KS.sv.nativeSettingsCaptured == true then return end
@@ -2054,6 +2057,74 @@ function KS.RestoreNativeNameplateSettings()
     return restored
 end
 
+
+function KS.ApplyPlayerNamesOverride()
+    if not KS.sv or KS.sv.playerNamesOverrideActive ~= true then return false end
+
+    local hidden = KS.sv.playerNamesGlobalHidden == true
+    local choice
+    if hidden then
+        choice = KS.GetNativeNameplateOffChoice()
+    else
+        choice = NAMEPLATE_CHOICE_ALWAYS or NAMEPLATE_CHOICE_TARGETED
+        if choice == nil then return false end
+        if NAMEPLATE_TYPE_ALL_NAMEPLATES ~= nil then
+            KS.SetPersistedNameplateSetting(NAMEPLATE_TYPE_ALL_NAMEPLATES, 1)
+        end
+    end
+
+    local ok = true
+    if NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES ~= nil then
+        ok = KS.SetPersistedNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES, choice) and ok
+    end
+    if NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES ~= nil then
+        ok = KS.SetPersistedNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES, choice) and ok
+    end
+    if NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES ~= nil then
+        ok = KS.SetPersistedNameplateSetting(NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES, choice) and ok
+    end
+    return ok
+end
+
+function KS.SetPlayerNamesHidden(hidden, silent)
+    if not KS.sv then return false end
+    KS.sv.playerNamesOverrideActive = true
+    KS.sv.playerNamesGlobalHidden = hidden and true or false
+
+    local ok = KS.ApplyPlayerNamesOverride()
+    if KS.ApplyNativeOverheadTargetBar then KS.ApplyNativeOverheadTargetBar() end
+    KS.ApplyPlayerNamesOverride()
+
+    -- ESO/nameplate modules can refresh in the same frame. Reassert the explicit
+    -- user choice twice without coupling it to Overhead Player Info.
+    if zo_callLater then
+        zo_callLater(function() if KS.sv then KS.ApplyPlayerNamesOverride() end end, 100)
+        zo_callLater(function() if KS.sv then KS.ApplyPlayerNamesOverride() end end, 500)
+    end
+    if U and U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    if not silent then chat(hidden and "Player names hidden." or "Player names shown.") end
+    return ok
+end
+
+function KS.ClearPlayerNamesOverride()
+    if not KS.sv then return end
+    KS.sv.playerNamesOverrideActive = false
+end
+
+function KS.IsPlayerNamesHidden()
+    if not KS.sv then return false end
+    if KS.sv.playerNamesOverrideActive == true then
+        return KS.sv.playerNamesGlobalHidden == true
+    end
+    local master = NAMEPLATE_TYPE_ALL_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_NAMEPLATES) or "1"
+    if master == "0" or master == "false" then return true end
+    local off = tostring(KS.GetNativeNameplateOffChoice())
+    local enemy = NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES) or ""
+    local friendly = NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES) or ""
+    local group = NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES ~= nil and KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES) or ""
+    return enemy == off and friendly == off and group == off
+end
+
 function KS.ApplyNativeOverheadTargetBar()
     if not KS.sv then return false end
 
@@ -2071,12 +2142,14 @@ function KS.ApplyNativeOverheadTargetBar()
             KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS, hidden)
         end
         KS.ApplyNpcNamesOverride()
+        KS.ApplyPlayerNamesOverride()
         return true
     end
 
     if KS.sv.nativeOverheadTargetBar ~= true then
         KS.RestoreNativeNameplateSettings()
         KS.ApplyNpcNamesOverride()
+        KS.ApplyPlayerNamesOverride()
         return false
     end
 
@@ -2098,35 +2171,50 @@ function KS.ApplyNativeOverheadTargetBar()
     end
 
     KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_HEALTHBARS, 1)
-    KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_NAMEPLATES, 1)
     KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS, enemyHealthbarChoice)
     KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS, enemyHealthbarChoice)
-    KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES, targeted)
 
-    -- Overhead Player Info owns player-name visibility while enabled. Apply it
-    -- after native target mode so later target-frame refreshes cannot demote
-    -- enemy names back to Targeted.
-    if KS.sv.overheadPlayerInfo == true then
-        KS.ApplyOverheadPlayerInfoNameplates()
+    -- Enemy overhead Health bars and player/NPC names are separate controls.
+    -- Native overhead mode must not silently turn names on. If Ultivite owns a
+    -- high-level name choice, reapply it. Otherwise preserve the ESO values that
+    -- were present before native overhead mode took ownership of the Health bars.
+    local playerOverrideActive = KS.sv.playerNamesOverrideActive == true
+    local npcOverrideActive = KS.sv.npcNamesOverrideActive == true
+    if not playerOverrideActive and not npcOverrideActive then
+        local allNamesOriginal = tostring(KS.sv.nativeOriginalAllNameplates or "")
+        if allNamesOriginal ~= "" then
+            KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_NAMEPLATES, allNamesOriginal)
+        end
     end
 
-    local globalOverrideActive = KS.sv.npcNamesOverrideActive == true
-    local globalHidden = globalOverrideActive and KS.sv.npcNamesGlobalHidden == true
+    if playerOverrideActive then
+        KS.ApplyPlayerNamesOverride()
+    else
+        local enemyPlayerOriginal = tostring(KS.sv.nativeOriginalEnemyPlayerNameplates or "")
+        if enemyPlayerOriginal ~= "" then
+            KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES, enemyPlayerOriginal)
+        end
+    end
+
+    local globalHidden = npcOverrideActive and KS.sv.npcNamesGlobalHidden == true
     local hideNpcNamesHere = KS.sv.nativeHideNpcNames == true or globalHidden
 
     if hideNpcNamesHere then
         KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_NAMEPLATES, hidden)
         KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_NPC_NAMEPLATES, hidden)
         KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_NEUTRAL_NPC_NAMEPLATES, hidden)
-    elseif globalOverrideActive then
+    elseif npcOverrideActive then
         local always = NAMEPLATE_CHOICE_ALWAYS or targeted
         KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_NAMEPLATES, always)
         KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_NPC_NAMEPLATES, always)
         KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_NEUTRAL_NPC_NAMEPLATES, always)
     else
-        KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_NAMEPLATES, targeted)
+        local enemyOriginal = tostring(KS.sv.nativeOriginalEnemyNpcNameplates or "")
         local friendlyOriginal = tostring(KS.sv.nativeOriginalFriendlyNpcNameplates or "")
         local neutralOriginal = tostring(KS.sv.nativeOriginalNeutralNpcNameplates or "")
+        if enemyOriginal ~= "" then
+            KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_NAMEPLATES, enemyOriginal)
+        end
         if friendlyOriginal ~= "" then
             KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_NPC_NAMEPLATES, friendlyOriginal)
         end
@@ -2172,6 +2260,44 @@ function KS.GetHideNativeOverheadHealthBars()
     return KS.sv and KS.sv.hideNativeOverheadHealthBars == true
 end
 
+-- One canonical controller for ESO overhead enemy health bars. This is kept
+-- completely separate from Target Frame Mode so changing overhead bars can
+-- never silently enable or disable Ultivite's target frame again.
+function KS.GetEnemyOverheadHealthMode()
+    if not KS.sv then return "vanilla" end
+    if KS.sv.hideNativeOverheadHealthBars == true then return "off" end
+    if KS.sv.nativeOverheadTargetBar == true then
+        return KS.sv.nativeAllEnemyHealthbars == true and "all" or "target"
+    end
+    return "vanilla"
+end
+
+function KS.SetEnemyOverheadHealthMode(mode, silent)
+    if not KS.sv then return false end
+    mode = tostring(mode or "vanilla")
+    if mode ~= "off" and mode ~= "target" and mode ~= "all" then mode = "vanilla" end
+
+    if mode == "off" then
+        KS.sv.nativeOverheadTargetBar = false
+        KS.sv.nativeAllEnemyHealthbars = false
+        KS.SetHideNativeOverheadHealthBars(true, true)
+    else
+        KS.sv.hideNativeOverheadHealthBars = false
+        KS.sv.nativeOverheadTargetBar = mode == "target" or mode == "all"
+        KS.sv.nativeAllEnemyHealthbars = mode == "all"
+        KS.ApplyNativeOverheadTargetBar()
+        KS.ApplyPosition()
+        KS.RefreshDisplay()
+    end
+
+    if U and U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    if not silent then
+        local labels = { vanilla = "ESO default", target = "target only", all = "all enemies", off = "hidden" }
+        chat("Enemy overhead Health bars: " .. (labels[mode] or labels.vanilla))
+    end
+    return true
+end
+
 
 local OVERHEAD_PLAYER_INFO_UPDATE_MS = 100
 local OVERHEAD_PLAYER_INFO_HEAD_OFFSET_CM = 225
@@ -2182,67 +2308,16 @@ KS.overheadPlayerInfoGroupLabels = KS.overheadPlayerInfoGroupLabels or {}
 KS.overheadPlayerInfoReticleLabel = KS.overheadPlayerInfoReticleLabel or nil
 KS.overheadPlayerInfoProbe = KS.overheadPlayerInfoProbe or nil
 
-local OVERHEAD_PLAYER_NAMEPLATE_SETTINGS = {
-    { key = "overheadPlayerInfoOriginalAllNameplates", id = function() return NAMEPLATE_TYPE_ALL_NAMEPLATES end },
-    { key = "overheadPlayerInfoOriginalEnemyPlayerNameplates", id = function() return NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES end },
-    { key = "overheadPlayerInfoOriginalFriendlyPlayerNameplates", id = function() return NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES end },
-    { key = "overheadPlayerInfoOriginalGroupMemberNameplates", id = function() return NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES end },
-}
-
 function KS.IsOverheadPlayerInfoEnabled()
     return KS.sv and KS.sv.overheadPlayerInfo == true
 end
 
-function KS.CaptureOverheadPlayerInfoNameplates()
-    if not KS.sv then return end
-    for _, entry in ipairs(OVERHEAD_PLAYER_NAMEPLATE_SETTINGS) do
-        local id = entry.id()
-        if id ~= nil and tostring(KS.sv[entry.key] or "") == "" then
-            local value = KS.GetNativeNameplateSetting(id)
-            if value ~= nil and tostring(value) ~= "" then
-                KS.sv[entry.key] = tostring(value)
-            end
-        end
-    end
-end
-
-function KS.RestoreOverheadPlayerInfoNameplates()
-    if not KS.sv then return end
-    for _, entry in ipairs(OVERHEAD_PLAYER_NAMEPLATE_SETTINGS) do
-        local id = entry.id()
-        local value = tostring(KS.sv[entry.key] or "")
-        if id ~= nil and value ~= "" then
-            KS.SetNativeNameplateSetting(id, value)
-        end
-        KS.sv[entry.key] = ""
-    end
-end
-
+-- Overhead Player Info is an Ultivite-owned Character Name + CP/Level overlay.
+-- It no longer changes ESO's native blue player-name nameplates. Those are
+-- controlled independently by the Player Names option.
 function KS.ApplyOverheadPlayerInfoNameplates()
-    if not KS.sv then return false end
-
-    if KS.sv.overheadPlayerInfo ~= true then
-        KS.RestoreOverheadPlayerInfoNameplates()
-        return false
-    end
-
-    KS.CaptureOverheadPlayerInfoNameplates()
-    local always = NAMEPLATE_CHOICE_ALWAYS or NAMEPLATE_CHOICE_TARGETED
-    if always == nil then return false end
-
-    if NAMEPLATE_TYPE_ALL_NAMEPLATES ~= nil then
-        KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_NAMEPLATES, 1)
-    end
-    if NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES ~= nil then
-        KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES, always)
-    end
-    if NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES ~= nil then
-        KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES, always)
-    end
-    if NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES ~= nil then
-        KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES, always)
-    end
-    return true
+    if KS.ApplyPlayerNamesOverride then KS.ApplyPlayerNamesOverride() end
+    return KS.sv and KS.sv.overheadPlayerInfo == true
 end
 
 local function GetUnitLevelSafe(unitTag)
@@ -2336,6 +2411,9 @@ function KS.CreateOverheadPlayerInfoUi()
 end
 
 function KS.GetUnitHeadScreenPosition(unitTag)
+    -- Only grouped units may be projected. Never ask ESO for the world position
+    -- of reticleover, an enemy or any other non-grouped player.
+    if type(unitTag) ~= "string" or not unitTag:match("^group%d+$") then return nil, nil end
     if not KS.overheadPlayerInfoProbe or not GetUnitWorldPosition or not WorldPositionToGuiRender3DPosition then
         return nil, nil
     end
@@ -2468,16 +2546,9 @@ function KS.UpdateOverheadPlayerInfo()
             reticleLabel:SetText(text)
             reticleLabel:ClearAnchors()
 
-            -- Use a real world attachment whenever ESO exposes a world position
-            -- for this reticle target. PvP enemy reticle targets commonly return
-            -- no usable world position, so fall back to a compact mouseover label
-            -- immediately above the reticle instead of drawing a drifting fake tag.
-            local x, y = KS.GetUnitHeadScreenPosition("reticleover")
-            if x and y then
-                reticleLabel:SetAnchor(BOTTOM, GuiRoot, TOPLEFT, x, y - OVERHEAD_PLAYER_INFO_SCREEN_GAP)
-            else
-                reticleLabel:SetAnchor(BOTTOM, GuiRoot, CENTER, 0, OVERHEAD_PLAYER_INFO_RETICLE_Y)
-            end
+            -- Non-grouped player/enemy positions must not be queried. Mouseover
+            -- information stays at a fixed 2D reticle anchor.
+            reticleLabel:SetAnchor(BOTTOM, GuiRoot, CENTER, 0, OVERHEAD_PLAYER_INFO_RETICLE_Y)
             reticleLabel:SetHidden(false)
             reticleVisible = true
         end
@@ -2503,36 +2574,22 @@ end
 function KS.SetOverheadPlayerInfoEnabled(enabled, silent)
     if not KS.sv then return end
     enabled = enabled and true or false
-    if enabled == (KS.sv.overheadPlayerInfo == true) then
-        KS.ApplyOverheadPlayerInfoNameplates()
-        KS.RefreshOverheadPlayerInfoRuntime()
-        return
-    end
-
     KS.sv.overheadPlayerInfo = enabled
-    if enabled then
-        KS.CaptureOverheadPlayerInfoNameplates()
-        KS.ApplyNativeOverheadTargetBar()
-        KS.ApplyOverheadPlayerInfoNameplates()
-    else
-        KS.RestoreOverheadPlayerInfoNameplates()
-        KS.ApplyNativeOverheadTargetBar()
-    end
     KS.RefreshOverheadPlayerInfoRuntime()
+    if KS.ApplyPlayerNamesOverride then KS.ApplyPlayerNamesOverride() end
     if U and U.RequestSettingsSave then U.RequestSettingsSave(true) end
 
     if not silent then
         chat(enabled
             and "Overhead Player Info enabled: group members show Character Name + CP/Level; mouseover players show available CP/Level."
-            or "Overhead Player Info disabled; previous player nameplate settings restored.")
+            or "Overhead Player Info disabled.")
     end
 end
 
 function KS.IsWorldFollowMode()
-    -- The diagnostic build proved GetUnitWorldPosition(reticleover) returns 0,0,0
-    -- for ordinary targets and preferred Tab targets expose no unit tag. Never run
-    -- the failed 16 ms projection loop while native overhead mode is active.
-    return not KS.IsNativeOverheadMode() and KS.sv and KS.sv.anchorAboveTarget ~= false and KS.sv.locked == true
+    -- Disabled permanently: following a reticle target would require querying a
+    -- non-grouped/enemy world position, which ESOUI explicitly prohibits.
+    return false
 end
 
 function KS.ApplyRootVisibility()
@@ -2561,150 +2618,16 @@ function KS.ApplyWorldFallbackAnchor()
 end
 
 function KS.CreateWorldTargetProbe()
-    if KS.worldProbe then return end
-
-    local probe = WINDOW_MANAGER:CreateControl("KjalnarStacksWorldTargetProbe", GuiRoot, CT_TEXTURE)
-    KS.worldProbe = probe
-    probe:SetDimensions(1, 1)
-    probe:SetMouseEnabled(false)
-    probe:SetAlpha(0.001)
-    probe:SetHidden(false)
-
-    local ok, err = pcall(function()
-        if probe.Create3DRenderSpace then probe:Create3DRenderSpace() end
-        if probe.Set3DRenderSpaceSystem and GUI_RENDER_3D_SPACE_SYSTEM_WORLD then
-            probe:Set3DRenderSpaceSystem(GUI_RENDER_3D_SPACE_SYSTEM_WORLD)
-        end
-        if probe.Set3DRenderSpaceUsesDepthBuffer then probe:Set3DRenderSpaceUsesDepthBuffer(false) end
-        if probe.Set3DLocalDimensions then probe:Set3DLocalDimensions(0.01, 0.01) end
-    end)
-    if not ok then
-        KS.SetWorldFailure("probe-init-error", tostring(err))
-    else
-        KS.DiagPush("PROBE", "3D probe created")
-    end
+    -- Compatibility no-op. Ultivite no longer creates a probe for non-grouped
+    -- target projection; the target frame uses its fixed 2D fallback.
+    KS.worldProbe = nil
 end
 
 function KS.GetLiveTargetHeadScreenPosition()
-    if not KS.worldProbe then
-        KS.SetWorldFailure("no-probe")
-        return nil, nil, "no-probe"
-    end
-    if not WorldPositionToGuiRender3DPosition then
-        KS.SetWorldFailure("no-world-converter")
-        return nil, nil, "no-world-converter"
-    end
-    if DoesUnitExist and not DoesUnitExist(KS.unitTag) then
-        KS.SetWorldFailure("reticleover-missing")
-        return nil, nil, "reticleover-missing"
-    end
-
-    local liveName = cleanName(GetUnitName(KS.unitTag))
-    if liveName == "" then
-        KS.SetWorldFailure("reticle-name-empty")
-        return nil, nil, "reticle-name-empty"
-    end
-    if KS.currentTarget ~= "" and liveName ~= KS.currentTarget then
-        KS.SetWorldFailure("target-name-mismatch", liveName .. " != " .. KS.currentTarget)
-        return nil, nil, "target-name-mismatch"
-    end
-
-    -- IMPORTANT: WorldPositionToGuiRender3DPosition is paired with the normal
-    -- GetUnitWorldPosition coordinate space. 1.6.4 preferred RawWorldPosition,
-    -- which can be a different coordinate space and was the first concrete fault
-    -- found in the failed world-follow path.
-    if not GetUnitWorldPosition then
-        KS.SetWorldFailure("no-GetUnitWorldPosition")
-        return nil, nil, "no-GetUnitWorldPosition"
-    end
-
-    local okWorld, zoneId, worldX, worldY, worldZ = pcall(GetUnitWorldPosition, KS.unitTag)
-    if not okWorld then
-        KS.SetWorldFailure("world-position-error", tostring(zoneId))
-        return nil, nil, "world-position-error"
-    end
-
-    zoneId = tonumber(zoneId) or 0
-    worldX = tonumber(worldX)
-    worldY = tonumber(worldY)
-    worldZ = tonumber(worldZ)
-    if zoneId <= 0 or not worldX or not worldY or not worldZ then
-        KS.SetWorldFailure("world-position-invalid", string.format("zone=%s x=%s y=%s z=%s", tostring(zoneId), tostring(worldX), tostring(worldY), tostring(worldZ)))
-        return nil, nil, "world-position-invalid"
-    end
-    if worldX == 0 and worldY == 0 and worldZ == 0 then
-        KS.SetWorldFailure("world-position-zero")
-        return nil, nil, "world-position-zero"
-    end
-
-    local headOffsetCm = tonumber(KS.sv and KS.sv.targetHeadOffsetCm) or defaults.targetHeadOffsetCm
-    local okRender, renderX, renderY, renderZ = pcall(WorldPositionToGuiRender3DPosition, worldX, worldY + headOffsetCm, worldZ)
-    if not okRender then
-        KS.SetWorldFailure("world-convert-error", tostring(renderX))
-        return nil, nil, "world-convert-error"
-    end
-    renderX = tonumber(renderX)
-    renderY = tonumber(renderY)
-    renderZ = tonumber(renderZ)
-    if not renderX or not renderY or not renderZ then
-        KS.SetWorldFailure("render-position-invalid")
-        return nil, nil, "render-position-invalid"
-    end
-
-    local okOrigin, originErr = pcall(function()
-        KS.worldProbe:Set3DRenderSpaceOrigin(renderX, renderY, renderZ)
-    end)
-    if not okOrigin then
-        KS.SetWorldFailure("set-origin-error", tostring(originErr))
-        return nil, nil, "set-origin-error"
-    end
-
-    local screenX, screenY
-    if KS.worldProbe.ProjectToScreen then
-        local okProject, x, y = pcall(function() return KS.worldProbe:ProjectToScreen(0.5, 0.5) end)
-        if not okProject then
-            KS.SetWorldFailure("project-error", tostring(x))
-            return nil, nil, "project-error"
-        end
-        screenX, screenY = x, y
-    elseif KS.worldProbe.ProjectRectToScreenAndComputeAABBPoint then
-        local okProject, x, y = pcall(function() return KS.worldProbe:ProjectRectToScreenAndComputeAABBPoint(CENTER) end)
-        if not okProject then
-            KS.SetWorldFailure("project-aabb-error", tostring(x))
-            return nil, nil, "project-aabb-error"
-        end
-        screenX, screenY = x, y
-    else
-        KS.SetWorldFailure("no-project-api")
-        return nil, nil, "no-project-api"
-    end
-
-    screenX = tonumber(screenX)
-    screenY = tonumber(screenY)
-    if not screenX or not screenY then
-        KS.SetWorldFailure("screen-position-invalid", string.format("x=%s y=%s", tostring(screenX), tostring(screenY)))
-        return nil, nil, "screen-position-invalid"
-    end
-
-    local rootWidth, rootHeight = GuiRoot:GetDimensions()
-    rootWidth = tonumber(rootWidth) or 0
-    rootHeight = tonumber(rootHeight) or 0
-    if rootWidth > 0 and rootHeight > 0 then
-        if screenX < -100 or screenX > rootWidth + 100 or screenY < -100 or screenY > rootHeight + 100 then
-            KS.SetWorldFailure("screen-position-offscreen", string.format("%.1f,%.1f root=%.1f,%.1f", screenX, screenY, rootWidth, rootHeight))
-            return nil, nil, "screen-position-offscreen"
-        end
-    end
-
-    KS.lastWorldSnapshot = {
-        zoneId = zoneId, worldX = worldX, worldY = worldY, worldZ = worldZ,
-        renderX = renderX, renderY = renderY, renderZ = renderZ,
-        screenX = screenX, screenY = screenY,
-        name = liveName,
-        at = GetGameTimeMilliseconds and GetGameTimeMilliseconds() or 0,
-    }
-    KS.SetWorldSuccess("GetUnitWorldPosition", worldX, worldY, worldZ, screenX, screenY)
-    return screenX, screenY, "ok"
+    -- Retained as a compatibility API for old callers, but deliberately does no
+    -- target-position work. The target frame uses its safe 2D fallback instead.
+    KS.SetWorldFailure("disabled-esoui-compliance")
+    return nil, nil, "disabled-esoui-compliance"
 end
 
 function KS.UpdateWorldTargetAnchor()
@@ -2815,17 +2738,9 @@ function KS.IsChatTextEntryActive()
 end
 
 function KS.ApplyAlwaysCollapseChat()
-    if not KS.sv or KS.sv.alwaysCollapseChat ~= true then return false end
-    if KS.IsChatTextEntryActive() then return false end
-
-    local chatSystem = KEYBOARD_CHAT_SYSTEM
-    if not chatSystem or not chatSystem.IsMinimized or not chatSystem.Minimize then return false end
-
-    local ok, minimized = pcall(function() return chatSystem:IsMinimized() end)
-    if ok and minimized then return true end
-
-    local minimizedOk = pcall(function() chatSystem:Minimize() end)
-    return minimizedOk
+    -- Retired in Ultivite 1.0.146. Structural chat minimization can interfere
+    -- with the stock resize path. Frames owns non-destructive chat visibility.
+    return false
 end
 
 function KS.GetPvpContextType()
@@ -2917,7 +2832,7 @@ function KS.IsLocalPlayerCombatUnit(name, unitId)
 end
 
 function KS.IsPlayerCombatUnit(unitType, name)
-    if COMBAT_UNIT_TYPE_PLAYER and tonumber(unitType) == tonumber(COMBAT_UNIT_TYPE_PLAYER) then return true end
+    if tonumber(unitType) == tonumber(COMBAT_UNIT_TYPE_PLAYER) then return true end
     local candidate = tostring(name or "")
     return candidate:sub(1, 1) == "@"
 end
@@ -3044,16 +2959,19 @@ function KS.SavePvpHudPosition()
 end
 
 function KS.SetPvpHudEditMode(enabled)
-    -- Retained as a preview/force-visible flag only. The K/D counter itself is
-    -- permanently movable whenever visible and no longer has an unlock state.
+    -- The K/D counter has a large transparent grab surface. Keep that surface
+    -- completely non-interactive during normal play so it can never sit over
+    -- stock UI controls such as the chat resize edge. Preview mode explicitly
+    -- enables it when the user wants to move the counter.
     KS.pvpHudEditMode = enabled and true or false
+    local interactive = KS.pvpHudEditMode == true
 
     if KS.pvpHudRoot then
-        KS.pvpHudRoot:SetMouseEnabled(true)
-        KS.pvpHudRoot:SetMovable(true)
+        KS.pvpHudRoot:SetMouseEnabled(interactive)
+        KS.pvpHudRoot:SetMovable(interactive)
     end
     if KS.pvpHudDragger then
-        KS.pvpHudDragger:SetMouseEnabled(true)
+        KS.pvpHudDragger:SetMouseEnabled(interactive)
     end
 
     KS.lastPvpHudText = nil
@@ -3483,7 +3401,7 @@ function KS.GetMenuOptions()
                 },
                 {
                     type = "description",
-                    text = "Use Profiles & Core HUD -> Vanilla / Default Target Frames for a one-click return to ESO's stock target frame. Player CP / level for Ultivite target frames is controlled in Target behaviour above.",
+                    text = "Use UI Visibility -> Target Frames & ESO Overhead Bars -> Target Frame Mode to switch between Ultivite and ESO's stock target frame. Player CP / level remains automatic on Ultivite player target frames.",
                     width = "full",
                 },
                 {
@@ -3570,7 +3488,7 @@ function KS.GetMenuOptions()
                         {
                             type = "checkbox",
                             name = "Corrosive Armor alert",
-                            tooltip = "Uses the same incoming-damage warning method as DKcorrosiveAlert: Corrosive Armor is detected when its periodic damage reaches you. While you mouse over the detected source, Ultivite adds the Corrosive icon above that enemy for the remaining tracked window.",
+                            tooltip = "Uses the same incoming-damage warning method as DKcorrosiveAlert: Corrosive Armor is detected when its periodic damage reaches you. While you mouse over the detected source, Ultivite adds the Corrosive icon above the reticle for the remaining tracked window.",
                             getFunc = function() return KS.sv.showEnemyCorrosiveAlert ~= false end,
                             setFunc = function(value)
                                 local alerts = U.EnemyUltimateAlerts
@@ -3592,6 +3510,28 @@ function KS.GetMenuOptions()
                             width = "full",
                         },
                         {
+                            type = "button",
+                            name = "Test Corrosive Armor alert",
+                            tooltip = "Runs the real Corrosive warning display for three seconds without requiring another player.",
+                            func = function()
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.TestAlert then alerts.TestAlert("corrosive") end
+                            end,
+                            disabled = function() return KS.sv.showEnemyCorrosiveAlert == false end,
+                            width = "half",
+                        },
+                        {
+                            type = "button",
+                            name = "Test Onslaught alert",
+                            tooltip = "Runs the real Onslaught warning display for eight seconds without requiring another player.",
+                            func = function()
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.TestAlert then alerts.TestAlert("onslaught") end
+                            end,
+                            disabled = function() return KS.sv.showEnemyOnslaughtAlert == false end,
+                            width = "half",
+                        },
+                        {
                             type = "slider",
                             name = "Enemy Ultimate icon size",
                             min = 32, max = 96, step = 2,
@@ -3601,6 +3541,81 @@ function KS.GetMenuOptions()
                                 if alerts and alerts.SetIconSize then alerts.SetIconSize(value) else KS.sv.enemyUltimateAlertIconSize = value end
                             end,
                             default = defaults.enemyUltimateAlertIconSize,
+                            width = "full",
+                        },
+                        {
+                            type = "slider",
+                            name = "Warning position X",
+                            tooltip = "Moves the Corrosive and Onslaught reticle warning icons left or right.",
+                            min = -800, max = 800, step = 5,
+                            getFunc = function() return tonumber(KS.sv.enemyUltimateAlertTargetX) or defaults.enemyUltimateAlertTargetX end,
+                            setFunc = function(value)
+                                KS.sv.enemyUltimateAlertTargetX = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertTargetX), -800, 800)
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
+                                if alerts and alerts.UpdateTargetMarker then alerts.UpdateTargetMarker() end
+                            end,
+                            default = defaults.enemyUltimateAlertTargetX,
+                            width = "full",
+                        },
+                        {
+                            type = "slider",
+                            name = "Warning position Y",
+                            tooltip = "Moves the Corrosive and Onslaught reticle warning icons up or down.",
+                            min = -500, max = 500, step = 5,
+                            getFunc = function() return tonumber(KS.sv.enemyUltimateAlertTargetY) or defaults.enemyUltimateAlertTargetY end,
+                            setFunc = function(value)
+                                KS.sv.enemyUltimateAlertTargetY = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertTargetY), -500, 500)
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
+                                if alerts and alerts.UpdateTargetMarker then alerts.UpdateTargetMarker() end
+                            end,
+                            default = defaults.enemyUltimateAlertTargetY,
+                            width = "full",
+                        },
+                        {
+                            type = "slider",
+                            name = "Top banner X",
+                            tooltip = "Moves the top screen Corrosive and Onslaught banner warnings left or right.",
+                            min = -800, max = 800, step = 5,
+                            getFunc = function() return tonumber(KS.sv.enemyUltimateAlertGlobalX) or defaults.enemyUltimateAlertGlobalX end,
+                            setFunc = function(value)
+                                KS.sv.enemyUltimateAlertGlobalX = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertGlobalX), -800, 800)
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
+                                if alerts and alerts.UpdateGlobalAlert then alerts.UpdateGlobalAlert() end
+                            end,
+                            default = defaults.enemyUltimateAlertGlobalX,
+                            width = "full",
+                        },
+                        {
+                            type = "slider",
+                            name = "Top banner Y",
+                            tooltip = "Moves the top screen Corrosive and Onslaught banner warnings up or down.",
+                            min = 0, max = 500, step = 5,
+                            getFunc = function() return tonumber(KS.sv.enemyUltimateAlertGlobalY) or defaults.enemyUltimateAlertGlobalY end,
+                            setFunc = function(value)
+                                KS.sv.enemyUltimateAlertGlobalY = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertGlobalY), 0, 500)
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
+                                if alerts and alerts.UpdateGlobalAlert then alerts.UpdateGlobalAlert() end
+                            end,
+                            default = defaults.enemyUltimateAlertGlobalY,
+                            width = "full",
+                        },
+                        {
+                            type = "button",
+                            name = "Reset Enemy Ultimate warning positions",
+                            func = function()
+                                KS.sv.enemyUltimateAlertTargetX = defaults.enemyUltimateAlertTargetX
+                                KS.sv.enemyUltimateAlertTargetY = defaults.enemyUltimateAlertTargetY
+                                KS.sv.enemyUltimateAlertGlobalX = defaults.enemyUltimateAlertGlobalX
+                                KS.sv.enemyUltimateAlertGlobalY = defaults.enemyUltimateAlertGlobalY
+                                local alerts = U.EnemyUltimateAlerts
+                                if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
+                                if alerts and alerts.UpdateTargetMarker then alerts.UpdateTargetMarker() end
+                                if alerts and alerts.UpdateGlobalAlert then alerts.UpdateGlobalAlert() end
+                            end,
                             width = "full",
                         },
                     },
@@ -5525,7 +5540,8 @@ function KS.CreateUI()
     KS.CreateCombatDangerWarnings()
     KS.CreateImportantTargetDebuffHud()
 
-    -- Four text-only, always-movable live stat HUD numbers.
+    -- Four text-only live stat HUD numbers. Their grab surfaces are enabled only
+    -- by Quick Menu preview so they cannot intercept normal UI mouse input.
     KS.CreateLiveStatWidgets()
 
     local majorResolveWarningRoot = wm:CreateTopLevelWindow("KjalnarStacksMajorResolveWarning")
@@ -5587,8 +5603,8 @@ function KS.CreateUI()
     pvpHudRoot:SetDrawLayer(DL_OVERLAY)
     pvpHudRoot:SetDrawTier(DT_HIGH)
     pvpHudRoot:SetClampedToScreen(true)
-    pvpHudRoot:SetMovable(true)
-    pvpHudRoot:SetMouseEnabled(true)
+    pvpHudRoot:SetMovable(false)
+    pvpHudRoot:SetMouseEnabled(false)
     pvpHudRoot:SetHidden(true)
 
     local pvpHudLabel = wm:CreateControl("KjalnarStacksPvpKDLabel", pvpHudRoot, CT_LABEL)
@@ -5611,7 +5627,7 @@ function KS.CreateUI()
     pvpHudDragger:SetCenterColor(0, 0, 0, 0)
     pvpHudDragger:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 2, 0)
     pvpHudDragger:SetEdgeColor(0, 0, 0, 0)
-    pvpHudDragger:SetMouseEnabled(true)
+    pvpHudDragger:SetMouseEnabled(false)
 
     local function beginPvpHudMove(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT then
@@ -8053,16 +8069,16 @@ function KS.CreateLiveStatWidget(key)
 
     local wm = WINDOW_MANAGER
     local root = wm:CreateTopLevelWindow(config.rootName)
-    -- Give the direct-drag widgets a generous hit area without making the
-    -- displayed number itself visually larger. This is intentionally always
-    -- interactive and completely independent of Ultivite's global unlock state.
+    -- Give preview/edit mode a generous hit area without making the displayed
+    -- number itself visually larger. Outside preview the hit area is disabled
+    -- so transparent HUD controls cannot block stock UI mouse interaction.
     root:SetDimensions(156, 56)
     root:SetDrawLayer(DL_OVERLAY)
     root:SetDrawTier(DT_HIGH)
     root:SetDrawLevel(1460)
     root:SetClampedToScreen(true)
-    root:SetMovable(true)
-    root:SetMouseEnabled(true)
+    root:SetMovable(false)
+    root:SetMouseEnabled(false)
     root:SetHidden(false)
 
     local dragger = wm:CreateControl(config.rootName .. "Dragger", root, CT_BACKDROP)
@@ -8070,7 +8086,7 @@ function KS.CreateLiveStatWidget(key)
     dragger:SetCenterColor(0, 0, 0, 0)
     dragger:SetEdgeColor(0, 0, 0, 0)
     dragger:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 2, 0)
-    dragger:SetMouseEnabled(true)
+    dragger:SetMouseEnabled(false)
 
     local label = wm:CreateControl(config.rootName .. "Label", root, CT_LABEL)
     label:SetAnchorFill(root)
@@ -8172,11 +8188,12 @@ function KS.UpdateLiveStatWidgets(force)
     for key, widget in pairs(KS.liveStatWidgets) do
         local config = LIVE_STAT_CONFIG[key]
         if config and widget and widget.root and widget.label then
-            widget.root:SetMovable(true)
-            widget.root:SetMouseEnabled(true)
-            if widget.dragger then widget.dragger:SetMouseEnabled(true) end
-            local enabled = KS.sv[config.enabledKey] ~= false
             local previewVisible = (previewStats and key ~= "shield") or (previewShield and key == "shield")
+            local interactive = previewVisible
+            widget.root:SetMovable(interactive)
+            widget.root:SetMouseEnabled(interactive)
+            if widget.dragger then widget.dragger:SetMouseEnabled(interactive) end
+            local enabled = KS.sv[config.enabledKey] ~= false
             local visible = previewVisible or (enabled and (key ~= "shield" or (tonumber(values.shield) or 0) > 0))
             widget.root:SetHidden(not visible)
             if visible then
@@ -8571,9 +8588,9 @@ function KS.OnEffectChanged(eventCode, changeType, effectSlot, effectName, unitT
 end
 
 function KS.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-    local isDeathResult = result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP or (ACTION_RESULT_DIED_COMPANION_XP and result == ACTION_RESULT_DIED_COMPANION_XP)
+    local isDeathResult = result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP or result == ACTION_RESULT_DIED_COMPANION_XP
 
-    if ACTION_RESULT_KILLING_BLOW and result == ACTION_RESULT_KILLING_BLOW then
+    if result == ACTION_RESULT_KILLING_BLOW then
         local contextType = KS.GetPvpContextType()
         local isLocalPlayerKill = KS.IsPvpTrackingContext()
             and KS.IsLocalPlayerCombatUnit(sourceName, sourceUnitId)
@@ -8596,9 +8613,6 @@ function KS.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphi
             -- the announcement here as a visual fallback, without changing the counter.
             KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName))
 
-            if not EVENT_PVP_KILL_FEED_DEATH then
-                KS.CountPvpKill(targetName)
-            end
         end
         return
     end
@@ -9153,7 +9167,7 @@ function KS.Initialize(externalSV)
         KS.sv.uiRevision = 38
     end
     if (tonumber(KS.sv.uiRevision) or 0) < 39 then
-        -- Always-movable live stat HUD. Only add missing keys; never overwrite
+        -- Live stat HUD settings. Only add missing keys; never overwrite
         -- existing combat, layout, tracker or profile settings during upgrade.
         if KS.sv.showLiveDamageStat == nil then KS.sv.showLiveDamageStat = defaults.showLiveDamageStat end
         if KS.sv.showFrontResistanceStat == nil then KS.sv.showFrontResistanceStat = defaults.showFrontResistanceStat end
@@ -9272,6 +9286,33 @@ function KS.Initialize(externalSV)
         if KS.sv.overheadPlayerInfoOriginalGroupMemberNameplates == nil then KS.sv.overheadPlayerInfoOriginalGroupMemberNameplates = "" end
         KS.sv.uiRevision = 50
     end
+    if (tonumber(KS.sv.uiRevision) or 0) < 51 then
+        -- Ultivite 1.0.126 separates native Player Names from Overhead Player
+        -- Info. Restore the pre-1.0.126 native nameplate snapshot once, then
+        -- clear those legacy ownership fields so the two controls cannot fight.
+        local legacy = {
+            { key = "overheadPlayerInfoOriginalAllNameplates", id = function() return NAMEPLATE_TYPE_ALL_NAMEPLATES end },
+            { key = "overheadPlayerInfoOriginalEnemyPlayerNameplates", id = function() return NAMEPLATE_TYPE_ENEMY_PLAYER_NAMEPLATES end },
+            { key = "overheadPlayerInfoOriginalFriendlyPlayerNameplates", id = function() return NAMEPLATE_TYPE_FRIENDLY_PLAYER_NAMEPLATES end },
+            { key = "overheadPlayerInfoOriginalGroupMemberNameplates", id = function() return NAMEPLATE_TYPE_GROUP_MEMBER_NAMEPLATES end },
+        }
+        for _, entry in ipairs(legacy) do
+            local id = entry.id()
+            local value = tostring(KS.sv[entry.key] or "")
+            if id ~= nil and value ~= "" then KS.SetNativeNameplateSetting(id, value) end
+            KS.sv[entry.key] = ""
+        end
+        if KS.sv.playerNamesGlobalHidden == nil then KS.sv.playerNamesGlobalHidden = defaults.playerNamesGlobalHidden end
+        if KS.sv.playerNamesOverrideActive == nil then KS.sv.playerNamesOverrideActive = defaults.playerNamesOverrideActive end
+        KS.sv.uiRevision = 51
+    end
+    if (tonumber(KS.sv.uiRevision) or 0) < 52 then
+        -- Ultivite 1.0.146 retires legacy stock chat minimization. Existing
+        -- SavedVariables could retain this hidden setting even though the main
+        -- Ultivite menu no longer exposes it. Force it off once.
+        KS.sv.alwaysCollapseChat = false
+        KS.sv.uiRevision = 52
+    end
 
     KS.debug = KS.sv.diagnosticLogging == true
     KS.learning = false
@@ -9294,6 +9335,7 @@ function KS.Initialize(externalSV)
     -- Ultivite owns the single consolidated LibAddonMenu panel.
     KS.ApplyNativeOverheadTargetBar()
     KS.ApplyOverheadPlayerInfoNameplates()
+    KS.ApplyPlayerNamesOverride()
     KS.RefreshOverheadPlayerInfoRuntime()
     -- Performance-safe mode: do not post-hook ZOS target-frame refresh functions.
     -- Those functions execute during every mouseover and were a direct source of hitching.
@@ -9340,18 +9382,13 @@ function KS.Initialize(externalSV)
     EVENT_MANAGER:RegisterForEvent(targetHealthEvent, EVENT_POWER_UPDATE, function(...)
         KS.OnTargetPowerUpdate(...)
     end)
-    if REGISTER_FILTER_UNIT_TAG then
-        EVENT_MANAGER:AddFilterForEvent(targetHealthEvent, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, KS.unitTag)
-    end
-    if REGISTER_FILTER_POWER_TYPE then
-        EVENT_MANAGER:AddFilterForEvent(targetHealthEvent, EVENT_POWER_UPDATE, REGISTER_FILTER_POWER_TYPE, COMBAT_MECHANIC_FLAGS_HEALTH)
-    end
+    EVENT_MANAGER:AddFilterForEvent(targetHealthEvent, EVENT_POWER_UPDATE,
+        REGISTER_FILTER_UNIT_TAG, KS.unitTag,
+        REGISTER_FILTER_POWER_TYPE, COMBAT_MECHANIC_FLAGS_HEALTH)
 
-    if EVENT_RETICLE_TARGET_PLAYER_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "ReticlePlayerChanged", EVENT_RETICLE_TARGET_PLAYER_CHANGED, function()
-            KS.OnTargetChanged()
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "ReticlePlayerChanged", EVENT_RETICLE_TARGET_PLAYER_CHANGED, function()
+        KS.OnTargetChanged()
+    end)
 
     -- IMPORTANT: do not register EVENT_EFFECT_CHANGED for reticleover. ESO emits a
     -- burst for the target's effects when the mouse enters a unit, which can hitch
@@ -9362,9 +9399,7 @@ function KS.Initialize(externalSV)
     EVENT_MANAGER:RegisterForEvent(playerTimerEffectEvent, EVENT_EFFECT_CHANGED, function(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime)
         KS.HandlePlayerTimerEffect(changeType, effectName, unitTag, beginTime, endTime)
     end)
-    if REGISTER_FILTER_UNIT_TAG then
-        EVENT_MANAGER:AddFilterForEvent(playerTimerEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-    end
+    EVENT_MANAGER:AddFilterForEvent(playerTimerEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
 
     EVENT_MANAGER:RegisterForEvent(KS.name .. "CombatTimers", EVENT_ACTION_SLOT_ABILITY_USED, function(...) KS.OnActionSlotAbilityUsed(...) end)
 
@@ -9372,61 +9407,43 @@ function KS.Initialize(externalSV)
     EVENT_MANAGER:RegisterForEvent(dragonEffectEvent, EVENT_EFFECT_CHANGED, function(...)
         KS.OnDragonAppetiteEffectChanged(...)
     end)
-    if REGISTER_FILTER_UNIT_TAG then
-        EVENT_MANAGER:AddFilterForEvent(dragonEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-    end
+    EVENT_MANAGER:AddFilterForEvent(dragonEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
 
     local wretchedEffectEvent = KS.name .. "WretchedVitalityEffect"
     EVENT_MANAGER:RegisterForEvent(wretchedEffectEvent, EVENT_EFFECT_CHANGED, function(...)
         KS.OnWretchedVitalityEffectChanged(...)
     end)
-    if REGISTER_FILTER_UNIT_TAG then
-        EVENT_MANAGER:AddFilterForEvent(wretchedEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-    end
+    EVENT_MANAGER:AddFilterForEvent(wretchedEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
 
     local playerAuraHudEffectEvent = KS.name .. "PlayerAuraHudEffect"
     EVENT_MANAGER:RegisterForEvent(playerAuraHudEffectEvent, EVENT_EFFECT_CHANGED, function(...)
         KS.OnPlayerAuraHudEffectChanged(...)
     end)
-    if REGISTER_FILTER_UNIT_TAG then
-        EVENT_MANAGER:AddFilterForEvent(playerAuraHudEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-    end
+    EVENT_MANAGER:AddFilterForEvent(playerAuraHudEffectEvent, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
 
-    local criticalResults = {}
-    if ACTION_RESULT_CRITICAL_DAMAGE then criticalResults[#criticalResults + 1] = ACTION_RESULT_CRITICAL_DAMAGE end
-    if ACTION_RESULT_DOT_TICK_CRITICAL then criticalResults[#criticalResults + 1] = ACTION_RESULT_DOT_TICK_CRITICAL end
+    local criticalResults = { ACTION_RESULT_CRITICAL_DAMAGE, ACTION_RESULT_DOT_TICK_CRITICAL }
     for i, resultCode in ipairs(criticalResults) do
         local eventName = KS.name .. "ProcCritical" .. tostring(i)
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, function(...) KS.OnProcCriticalEvent(...) end)
-        if REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE and COMBAT_UNIT_TYPE_PLAYER then
-            EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
+            REGISTER_FILTER_COMBAT_RESULT, resultCode)
+    end
+
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "BattlegroundKill", EVENT_BATTLEGROUND_KILL, function(...) KS.OnBattlegroundKill(...) end)
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "BattlegroundScoreboard", EVENT_BATTLEGROUND_SCOREBOARD_UPDATED, function()
+        if KS.GetPvpContextType() == "BG" then
+            KS.SyncBattlegroundScoreboard(false)
+            KS.UpdatePvpHud(false)
         end
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, resultCode)
-    end
+    end)
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "PvpKillFeed", EVENT_PVP_KILL_FEED_DEATH, function(...) KS.OnPvpKillFeedDeath(...) end)
 
-    if EVENT_BATTLEGROUND_KILL then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "BattlegroundKill", EVENT_BATTLEGROUND_KILL, function(...) KS.OnBattlegroundKill(...) end)
-    end
-    if EVENT_BATTLEGROUND_SCOREBOARD_UPDATED then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "BattlegroundScoreboard", EVENT_BATTLEGROUND_SCOREBOARD_UPDATED, function()
-            if KS.GetPvpContextType() == "BG" then
-                KS.SyncBattlegroundScoreboard(false)
-                KS.UpdatePvpHud(false)
-            end
-        end)
-    end
-    if EVENT_PVP_KILL_FEED_DEATH then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "PvpKillFeed", EVENT_PVP_KILL_FEED_DEATH, function(...) KS.OnPvpKillFeedDeath(...) end)
-    end
+    local killEvent = KS.name .. "PvpKillingBlow"
+    EVENT_MANAGER:RegisterForEvent(killEvent, EVENT_COMBAT_EVENT, function(...) KS.OnCombatEvent(...) end)
+    EVENT_MANAGER:AddFilterForEvent(killEvent, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_KILLING_BLOW)
 
-    if ACTION_RESULT_KILLING_BLOW then
-        local killEvent = KS.name .. "PvpKillingBlow"
-        EVENT_MANAGER:RegisterForEvent(killEvent, EVENT_COMBAT_EVENT, function(...) KS.OnCombatEvent(...) end)
-        EVENT_MANAGER:AddFilterForEvent(killEvent, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_KILLING_BLOW)
-    end
-
-    local deathResults = { ACTION_RESULT_DIED, ACTION_RESULT_DIED_XP }
-    if ACTION_RESULT_DIED_COMPANION_XP then table.insert(deathResults, ACTION_RESULT_DIED_COMPANION_XP) end
+    local deathResults = { ACTION_RESULT_DIED, ACTION_RESULT_DIED_XP, ACTION_RESULT_DIED_COMPANION_XP }
     for i, resultCode in ipairs(deathResults) do
         local eventName = KS.name .. "TargetDeath" .. tostring(i)
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, function(...) KS.OnCombatEvent(...) end)
@@ -9455,18 +9472,18 @@ function KS.Initialize(externalSV)
 
     local playerPowerEvent = KS.name .. "PlayerResourceDanger"
     EVENT_MANAGER:RegisterForEvent(playerPowerEvent, EVENT_POWER_UPDATE, function(...) KS.OnPlayerPowerUpdate(...) end)
-    if REGISTER_FILTER_UNIT_TAG then EVENT_MANAGER:AddFilterForEvent(playerPowerEvent, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, "player") end
+    EVENT_MANAGER:AddFilterForEvent(playerPowerEvent, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
 
-    if EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED then
+    do
         local eventName = KS.name .. "ShieldAdded"
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, function(eventCode, unitTag, unitAttributeVisual, statType, attributeType, powerType, value, maxValue)
             if unitTag ~= "player" or unitAttributeVisual ~= ATTRIBUTE_VISUAL_POWER_SHIELDING then return end
             KS.lastKnownShieldValue = math.max(0, tonumber(value) or KS.GetCurrentDamageShieldValue())
             KS.UpdateLiveStatWidgets(true)
         end)
-        if REGISTER_FILTER_UNIT_TAG then EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, REGISTER_FILTER_UNIT_TAG, "player") end
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED, REGISTER_FILTER_UNIT_TAG, "player")
     end
-    if EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED then
+    do
         local eventName = KS.name .. "ShieldUpdated"
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED, function(eventCode, unitTag, unitAttributeVisual, statType, attributeType, powerType, oldValue, newValue, oldMaxValue, newMaxValue)
             if unitTag ~= "player" or unitAttributeVisual ~= ATTRIBUTE_VISUAL_POWER_SHIELDING then return end
@@ -9484,9 +9501,9 @@ function KS.Initialize(externalSV)
             end
             KS.UpdateLiveStatWidgets(true)
         end)
-        if REGISTER_FILTER_UNIT_TAG then EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED, REGISTER_FILTER_UNIT_TAG, "player") end
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED, REGISTER_FILTER_UNIT_TAG, "player")
     end
-    if EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED then
+    do
         local eventName = KS.name .. "ShieldRemoved"
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED, function(eventCode, unitTag, unitAttributeVisual)
             if unitTag ~= "player" or unitAttributeVisual ~= ATTRIBUTE_VISUAL_POWER_SHIELDING then return end
@@ -9495,13 +9512,13 @@ function KS.Initialize(externalSV)
             KS.lastKnownShieldValue = 0
             KS.UpdateLiveStatWidgets(true)
         end)
-        if REGISTER_FILTER_UNIT_TAG then EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED, REGISTER_FILTER_UNIT_TAG, "player") end
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED, REGISTER_FILTER_UNIT_TAG, "player")
     end
 
-    if EVENT_COMBAT_EVENT and ACTION_RESULT_DAMAGE_SHIELDED then
+    do
         local eventName = KS.name .. "ShieldDamageFallback"
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, function(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue)
-            if COMBAT_UNIT_TYPE_PLAYER and targetType ~= COMBAT_UNIT_TYPE_PLAYER then return end
+            if targetType ~= COMBAT_UNIT_TYPE_PLAYER then return end
             local before = math.max(0, tonumber(KS.lastKnownShieldValue) or KS.GetCurrentDamageShieldValue())
             local nowMs = GetGameTimeMilliseconds and GetGameTimeMilliseconds() or 0
             KS.lastShieldDamageAtMs = nowMs
@@ -9512,10 +9529,9 @@ function KS.Initialize(externalSV)
                 KS.UpdateLiveStatWidgets(true)
             end, 10)
         end)
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_DAMAGE_SHIELDED)
-        if REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE and COMBAT_UNIT_TYPE_PLAYER then
-            EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-        end
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_DAMAGE_SHIELDED,
+            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
     end
 
     EVENT_MANAGER:RegisterForEvent(KS.name .. "CameraUI", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function() KS.RefreshDisplay(); KS.UpdateCombatTimers(); KS.UpdateFoodWarning(); KS.UpdateMajorResolveWarning() end)
@@ -9537,34 +9553,26 @@ function KS.Initialize(externalSV)
         KS.ResetBurstDamageHistory()
         KS.UpdateCombatDangerWarnings(true)
     end)
-    if EVENT_DUEL_STARTED then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "DuelStarted", EVENT_DUEL_STARTED, function()
-            KS.duelActive = true
-            KS.UpdatePvpHud()
-            if KS.killMessageRoot then KS.killMessageRoot:SetHidden(true) end
-        end)
-    end
-    if EVENT_DUEL_FINISHED then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "DuelFinished", EVENT_DUEL_FINISHED, function()
-            KS.duelActive = false
-            KS.UpdatePvpHud()
-        end)
-    end
-    if EVENT_BATTLEGROUND_STATE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "BattlegroundState", EVENT_BATTLEGROUND_STATE_CHANGED, function(...) KS.OnBattlegroundStateChanged(...) end)
-    end
-    if EVENT_PLAYER_DEAD then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "PlayerDead", EVENT_PLAYER_DEAD, function()
-            if KS.GetPvpContextType() == "BG" then
-                zo_callLater(function()
-                    KS.SyncBattlegroundScoreboard(false)
-                    KS.UpdatePvpHud(false)
-                end, 75)
-            else
-                KS.CountPvpDeath()
-            end
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "DuelStarted", EVENT_DUEL_STARTED, function()
+        KS.duelActive = true
+        KS.UpdatePvpHud()
+        if KS.killMessageRoot then KS.killMessageRoot:SetHidden(true) end
+    end)
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "DuelFinished", EVENT_DUEL_FINISHED, function()
+        KS.duelActive = false
+        KS.UpdatePvpHud()
+    end)
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "BattlegroundState", EVENT_BATTLEGROUND_STATE_CHANGED, function(...) KS.OnBattlegroundStateChanged(...) end)
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "PlayerDead", EVENT_PLAYER_DEAD, function()
+        if KS.GetPvpContextType() == "BG" then
+            zo_callLater(function()
+                KS.SyncBattlegroundScoreboard(false)
+                KS.UpdatePvpHud(false)
+            end, 75)
+        else
+            KS.CountPvpDeath()
+        end
+    end)
 
     EVENT_MANAGER:RegisterForEvent(KS.name .. "Equipment", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(eventCode, bagId, slotIndex)
         if bagId == BAG_WORN then
@@ -9574,16 +9582,14 @@ function KS.Initialize(externalSV)
             end, 50)
         end
     end)
-    if EVENT_ACTIVE_WEAPON_PAIR_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(KS.name .. "WeaponPair", EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function()
-            zo_callLater(function()
-                KS.RefreshProcSetEquipment(false)
-                KS.ScanDragonAppetiteStacks()
-                KS.UpdateLiveStatWidgets(true)
-                KS.UpdateSkillStackTrackers(true)
-            end, 25)
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(KS.name .. "WeaponPair", EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function()
+        zo_callLater(function()
+            KS.RefreshProcSetEquipment(false)
+            KS.ScanDragonAppetiteStacks()
+            KS.UpdateLiveStatWidgets(true)
+            KS.UpdateSkillStackTrackers(true)
+        end, 25)
+    end)
     EVENT_MANAGER:RegisterForUpdate(KS.name .. "KjalnarPoll", KS.pollMs, function()
         if KS.kjalnarEquipped or (KS.sv and (KS.sv.majorBreachTracker ~= false or KS.sv.showImportantTargetDebuffs ~= false)) then
             KS.ScanTargetAuras()
@@ -9600,9 +9606,9 @@ function KS.Initialize(externalSV)
             KS.UpdateCombatTimers()
         end
     end)
-    EVENT_MANAGER:RegisterForUpdate(KS.name .. "WorldFollow", KS.worldFollowMs, function()
-        if KS.IsWorldFollowMode() then KS.UpdateWorldTargetAnchor() end
-    end)
+    -- Legacy non-grouped target projection is disabled for ESOUI compliance.
+    -- Ensure an older reload/session cannot leave its high-frequency update live.
+    EVENT_MANAGER:UnregisterForUpdate(KS.name .. "WorldFollow")
     EVENT_MANAGER:RegisterForUpdate(KS.name .. "TimerPoll", KS.timerPollMs, function()
         if (tonumber(KS.onslaughtExpiresAt) or 0) > 0
             or (tonumber(KS.balorghExpiresAt) or 0) > 0
@@ -9649,11 +9655,6 @@ function KS.Initialize(externalSV)
             KS.UpdateFoodWarning()
         elseif KS.foodWarningRoot and not KS.foodWarningRoot:IsHidden() then
             KS.foodWarningRoot:SetHidden(true)
-        end
-    end)
-    EVENT_MANAGER:RegisterForUpdate(KS.name .. "ChatCollapse", 500, function()
-        if KS.sv and KS.sv.alwaysCollapseChat == true then
-            KS.ApplyAlwaysCollapseChat()
         end
     end)
     -- Very slow visibility watchdog. Never scan GuiRoot and never touch the unit-frame
@@ -9706,4 +9707,3 @@ function KS.Initialize(externalSV)
         end
     end, 500)
 end
-

@@ -30,7 +30,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Quick Bind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Quick-Bind__3562) | notnear | PC / Mac | 1.0.1 |
 | [Quick Cast Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xen32/Quick-Cast-Toggle__3150) | xen32 | PC / Mac | 1.1 |
 | [Quick Destroy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DrunkKittens/Quick-Destroy__2288) | DrunkKittens | PC / Mac | 1.19 |
-| [Quick Emote Menu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Quick-Emote-Menu__4769) | AlexD | PC / Mac | 1.2.2 |
+| [Quick Emote Menu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Quick-Emote-Menu__4769) | AlexD | PC / Mac | 1.3.0 |
 | [Quick Enchanter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Quick-Enchanter__669) | Criscal | PC / Mac | 0.45.0 |
 | [Quick Fashion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lari/Quick-Fashion__3115) | Lari | PC / Mac | 2.3 |
 | [Quick Junk And Destroy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FoG/Quick-Junk-And-Destroy__3535) | FoG | PC / Mac | 1.0.1 |

@@ -17,6 +17,24 @@ local strings = {
         = "Seguimiento Tesorero de Tributos: ACTIVADO",
     SI_COVETOUSCOUNTESSASSISTANT_MSG_CROW_OFF
         = "Seguimiento Tesorero de Tributos: DESACTIVADO",
+    SI_COVETOUSCOUNTESSASSISTANT_OPTION_HIGHLIGHT_QUEST_ITEMS
+        = "Resaltar objetos de misión",
+    SI_COVETOUSCOUNTESSASSISTANT_OPTION_HIGHLIGHT_QUEST_ITEMS_TOOLTIP
+        = "Colorea de verde los iconos de los objetos que coincidan con las etiquetas de la misión activa.",
+    SI_COVETOUSCOUNTESSASSISTANT_MSG_HIGHLIGHT_ON
+        = "Resaltado de objetos de misión: ACTIVADO",
+    SI_COVETOUSCOUNTESSASSISTANT_MSG_HIGHLIGHT_OFF
+        = "Resaltado de objetos de misión: DESACTIVADO",
+    SI_COVETOUSCOUNTESSASSISTANT_OPTION_AUTOSKIP_TIPBOARD
+        = "Omitir ofertas del Tablón de Consejos",
+    SI_COVETOUSCOUNTESSASSISTANT_OPTION_AUTOSKIP_TIPBOARD_TOOLTIP
+        = "Cerrar automáticamente las ofertas del Tablón de Consejos que no sean la Condesa Codiciosa.",
+    SI_COVETOUSCOUNTESSASSISTANT_OPTION_AUTOSKIP_TIPBOARD_WARNING
+        = "Esto cerrará automáticamente los diálogos que no sean de la Condesa.",
+    SI_COVETOUSCOUNTESSASSISTANT_MSG_AUTOSKIP_ON
+        = "Omisión Tablón de Consejos: ACTIVADA",
+    SI_COVETOUSCOUNTESSASSISTANT_MSG_AUTOSKIP_OFF
+        = "Omisión Tablón de Consejos: DESACTIVADA",
 }
 
 for stringId, stringValue in pairs(strings) do

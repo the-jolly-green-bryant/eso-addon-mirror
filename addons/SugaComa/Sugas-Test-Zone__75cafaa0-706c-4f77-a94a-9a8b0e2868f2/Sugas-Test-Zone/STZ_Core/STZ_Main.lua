@@ -118,6 +118,11 @@ local function OnAddOnLoaded(_, addonName)
         accessMode = STZ.Config.access.deploymentMode,
         approvedGuildIds = {},
         lastSelfTest = {},
+        abilityMonitorEnabled = false,
+        abilityMonitorMode = "focused",
+        abilityLookupId = "",
+        abilityExportUrl = "",
+        abilityExportParameter = "data",
     }
 
     local savedVarsManager = ZO_SavedVars
@@ -131,6 +136,10 @@ local function OnAddOnLoaded(_, addonName)
     STZ.sv.launches = (tonumber(STZ.sv.launches) or 0) + 1
     RestoreSavedConfiguration()
     RegisterCommands()
+
+    if STZ.AbilityTools and type(STZ.AbilityTools.Initialize) == "function" then
+        STZ.AbilityTools:Initialize()
+    end
 
     if STZ.Menu and type(STZ.Menu.Initialize) == "function" then
         STZ.Menu:Initialize()

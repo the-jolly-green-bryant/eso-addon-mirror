@@ -21,29 +21,6 @@ BattleScrolls.journal.shareStepper = shareStepper
 
 local ICON_SENT = "EsoUI/Art/Miscellaneous/Gamepad/gp_checkmark.dds"
 local ICON_NEXT = "EsoUI/Art/Miscellaneous/Gamepad/gp_rightArrow.dds"
-local MAX_DIAG_ROWS = 8
-
----Appends the newest share-trace entries (newest first). The Xbox
----browser-exit leak can only be diagnosed on the console, where this
----screen is the only readable output.
----@param list ZO_ParametricScrollList
-local function appendDiagnostics(list)
-    local entryBuilder = BattleScrolls.journal.EntryBuilder
-    local entries = BattleScrolls.shareTrace.list()
-    local nowMs = GetGameTimeMilliseconds()
-    local shown = 0
-    for i = #entries, 1, -1 do
-        if shown >= MAX_DIAG_ROWS then
-            break
-        end
-        local e = entries[i]
-        entryBuilder.addEntry(list, {
-            label = string.format("-%.1fs  %s", (nowMs - e.gameMs) / 1000, e.text),
-            header = shown == 0 and GetString(BATTLESCROLLS_SHARE_DIAG_HEADER) or nil,
-        })
-        shown = shown + 1
-    end
-end
 
 -- The part row a settled resend should leave selected (so a multi-part
 -- resend session does not get yanked back to the done row after each part)
@@ -139,7 +116,6 @@ function shareStepper.render(list)
         end
     end
 
-    appendDiagnostics(list)
     list:Commit()
 
     -- Keep the actionable row selected. The parametric list resets to row 1

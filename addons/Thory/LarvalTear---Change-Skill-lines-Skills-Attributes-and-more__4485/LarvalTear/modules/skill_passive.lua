@@ -2,9 +2,7 @@ local Addon = LarvalTearMod
 local Log = Addon.Common.Log
 local LTM_SKILL_PASSIVE = Addon.Modules.SkillPassive
 local SHARED_UTIL = Addon.Common.Util
-local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
 
-local PASSIVE_POLICY_AUTO_FILL = "class_all_purchase"
 local PASSIVE_POLICY_NONE = "none"
 
 local function NormalizeNonNegativeInteger(value)
@@ -77,17 +75,6 @@ local function IncrementReason(reasonCounts, reason)
     reasonCounts[reason] = (reasonCounts[reason] or 0) + 1
 end
 
-local function ResolvePassivePolicy(input)
-    local policy = LTM_BUILD_CODEC:NormalizePassivePolicy(input and input.passivePolicy or nil)
-    if policy == PASSIVE_POLICY_NONE
-        or policy == "class_only"
-        or policy == "all" then
-        return PASSIVE_POLICY_NONE
-    end
-
-    return PASSIVE_POLICY_AUTO_FILL
-end
-
 local function ResolveSkillLineData(skillLineId)
     if type(SKILLS_DATA_MANAGER) ~= "table"
         or type(SKILLS_DATA_MANAGER.GetSkillLineDataById) ~= "function" then
@@ -130,7 +117,7 @@ local function BuildSummary(input)
     local targetLineIds = SHARED_UTIL:NormalizeLineIdList(explicitTargetLineIds or fallbackTargetLineIds)
     return {
         ok = true,
-        policy = ResolvePassivePolicy(input),
+        policy = input.passiveRestore,
         targetLineCount = #targetLineIds,
         targetSkillLineIds = targetLineIds,
         targetPassiveCount = 0,
@@ -221,15 +208,13 @@ local function TryRestorePassiveSkill(skillData, summary)
 
     if step >= safetyLimit then
         IncrementReason(summary.reasonCounts, "safety_limit")
-        if type(Log.LogDebugSummary) == "function" then
-            Log.LogDebugSummary(
-                "Skill passive safety limit",
-                "skillName=" .. tostring(GetSkillName(skillData)),
-                "finalAllocatorRank=" .. tostring(GetAllocatorRank(allocator)),
-                "maxRank=" .. tostring(maxRank),
-                "stepCount=" .. tostring(step)
-            )
-        end
+        Log.LogDebugSummary(
+            "Skill passive safety limit",
+            "skillName=" .. tostring(GetSkillName(skillData)),
+            "finalAllocatorRank=" .. tostring(GetAllocatorRank(allocator)),
+            "maxRank=" .. tostring(maxRank),
+            "stepCount=" .. tostring(step)
+        )
     end
 
     if changed then
@@ -263,18 +248,16 @@ function LTM_SKILL_PASSIVE:LogSummary(summary)
     end
 
     local reasonSummary = ResolveReasonSummary(summary.reasonCounts)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(
-            "Skill passive summary",
-            "policy=" .. tostring(summary.policy),
-            "targetSkillLineIds=" .. tostring(table.concat(summary.targetSkillLineIds or {}, ",")),
-            "targetPassiveCount=" .. tostring(summary.targetPassiveCount or 0),
-            "restoredCount=" .. tostring(summary.restoredCount or 0),
-            "skippedCount=" .. tostring(summary.skippedCount or 0),
-            "warnings=" .. tostring(summary.warningCount or 0),
-            "reasons=" .. tostring(reasonSummary)
-        )
-    end
+    Log.LogDebugSummary(
+        "Skill passive summary",
+        "policy=" .. tostring(summary.policy),
+        "targetSkillLineIds=" .. tostring(table.concat(summary.targetSkillLineIds or {}, ",")),
+        "targetPassiveCount=" .. tostring(summary.targetPassiveCount or 0),
+        "restoredCount=" .. tostring(summary.restoredCount or 0),
+        "skippedCount=" .. tostring(summary.skippedCount or 0),
+        "warnings=" .. tostring(summary.warningCount or 0),
+        "reasons=" .. tostring(reasonSummary)
+    )
 end
 
 function LTM_SKILL_PASSIVE:Run(input)
@@ -286,13 +269,11 @@ function LTM_SKILL_PASSIVE:Run(input)
         summary.skippedCount = summary.targetLineCount
         IncrementReason(summary.reasonCounts, "policy_none")
         summary.warningCount = 0
-        if type(Log.LogDebugSummary) == "function" then
-            Log.LogDebugSummary(
-                "passive skipped due to policy",
-                "policy=" .. tostring(policy),
-                "targetLineCount=" .. tostring(summary.targetLineCount or 0)
-            )
-        end
+        Log.LogDebugSummary(
+            "passive skipped due to policy",
+            "policy=" .. tostring(policy),
+            "targetLineCount=" .. tostring(summary.targetLineCount or 0)
+        )
         self:LogSummary(summary)
         summary.onAllocatorModified = nil
         return summary

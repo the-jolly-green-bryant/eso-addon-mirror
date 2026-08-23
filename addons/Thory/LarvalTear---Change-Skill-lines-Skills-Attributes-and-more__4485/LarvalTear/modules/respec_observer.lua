@@ -7,9 +7,7 @@ local ATTRIBUTE_RESULT_EVENT_NAMESPACE = "LTM_AttributeApply_Result"
 local ATTRIBUTE_CAST_EVENT_NAMESPACE = "LTM_AttributeApply_Cast"
 
 local function LogDebugSummary(...)
-    if type(Log.LogDebugSummary) == "function" then
-        Log.LogDebugSummary(...)
-    end
+    Log.LogDebugSummary(...)
 end
 
 local function GetAttributeRespecCastTimeRemainingMsSafe()

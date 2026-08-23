@@ -304,5 +304,19 @@ function R:Initialize()
     if EVENT_MONEY_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Money", EVENT_MONEY_UPDATE, function() self:Refresh() end) end
     if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end) end
     if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end) end
+
+    -- Inventory update events do not necessarily fire when the scene itself closes.
+    -- Listen to the keyboard and gamepad inventory scene states so the estimate
+    -- hides immediately when Inventory is dismissed.
+    if SCENE_MANAGER and type(SCENE_MANAGER.GetScene) == "function" then
+        for _, sceneName in ipairs({"inventory", "gamepad_inventory_root"}) do
+            local ok, scene = pcall(SCENE_MANAGER.GetScene, SCENE_MANAGER, sceneName)
+            if ok and scene and type(scene.RegisterCallback) == "function" then
+                scene:RegisterCallback("StateChange", function()
+                    self:Refresh()
+                end)
+            end
+        end
+    end
     self:Refresh()
 end

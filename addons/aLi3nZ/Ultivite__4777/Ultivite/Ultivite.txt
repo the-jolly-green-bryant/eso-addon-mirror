@@ -1,13 +1,14 @@
 ## Title: Ultivite
 ## Author: Ben
-## Version: 1.0.125
-## AddOnVersion: 1000124
+## Version: 1.0.160
+## AddOnVersion: 1000160
 ## APIVersion: 101050 101051
-## Description: Unified ESO combat HUD, Dark Souls UI, trackers, sound suppression and Fancy Action Bar+ integration.
+## Description: Unified ESO combat HUD, Immersive Mode, Dark Souls UI, trackers, notification cleanup, sound suppression and Fancy Action Bar+ integration.
 ## SavedVariables: UltiviteSavedVariables UltiviteCharacterSavedVariables KjalnarStacksSavedVariables KjalnarStacksProfileSavedVariables VanillaFrameMoverSavedVariables VanillaFrameMoverCharacterSavedVariables SoundSuppressorSavedVariables
-## DependsOn: LibAddonMenu-2.0 FancyActionBar+
+## DependsOn: LibAddonMenu-2.0>=43 FancyActionBar+>=21906
 
 UltiviteNamespace.lua
+UltiviteOwnership.lua
 UltiviteFABBridge.lua
 
 
@@ -15,5 +16,8 @@ UltiviteFrames.lua
 UltiviteCombat.lua
 UltiviteEnemyUltimateAlerts.lua
 UltiviteSound.lua
+UltiviteImmersive.lua
+UltiviteLayoutSafety.lua
+UltiviteProfiles.lua
 Ultivite.lua
 UltiviteQuickMenu.lua

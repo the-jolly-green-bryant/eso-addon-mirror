@@ -178,15 +178,37 @@ local function ShowSelectedError(chatMenu)
     end
 end
 
-local function RemoveChatKeybind(chatMenu)
+local function ResolveKeybindValue(value, ...)
+    if type(value) == "function" then
+        return value(...)
+    end
+
+    return value
+end
+
+local function RestoreChatKeybind(chatMenu)
     local descriptor = chatMenu and chatMenu.chatEntryListKeybindDescriptor
     if type(descriptor) ~= "table" then
         return
     end
 
-    for index = #descriptor, 1, -1 do
-        if descriptor[index][CHAT_KEYBIND_MARKER] then
-            table.remove(descriptor, index)
+    for _, keybindDescriptor in ipairs(descriptor) do
+        local original = keybindDescriptor[CHAT_KEYBIND_MARKER]
+        if type(original) == "table" then
+            if keybindDescriptor.name == original.wrappedName then
+                keybindDescriptor.name = original.name
+            end
+            if keybindDescriptor.callback == original.wrappedCallback then
+                keybindDescriptor.callback = original.callback
+            end
+            if keybindDescriptor.enabled == original.wrappedEnabled then
+                keybindDescriptor.enabled = original.enabled
+            end
+            if keybindDescriptor.visible == original.wrappedVisible then
+                keybindDescriptor.visible = original.visible
+            end
+
+            keybindDescriptor[CHAT_KEYBIND_MARKER] = nil
         end
     end
 
@@ -195,7 +217,7 @@ local function RemoveChatKeybind(chatMenu)
     end
 end
 
-local function AddChatKeybind(chatMenu)
+local function WrapChatKeybind(chatMenu)
     local descriptor = chatMenu and chatMenu.chatEntryListKeybindDescriptor
     if type(descriptor) ~= "table" then
         return false
@@ -205,26 +227,66 @@ local function AddChatKeybind(chatMenu)
         if keybindDescriptor[CHAT_KEYBIND_MARKER] then
             return true
         end
+
+        if keybindDescriptor.keybind == "UI_SHORTCUT_PRIMARY" then
+            local original = {
+                name = keybindDescriptor.name,
+                callback = keybindDescriptor.callback,
+                enabled = keybindDescriptor.enabled,
+                visible = keybindDescriptor.visible,
+            }
+
+            original.wrappedName = function(...)
+                if GetSelectedError(chatMenu) then
+                    return NQOL.L("features.errors_dismissal.show_error_keybind")
+                end
+
+                return ResolveKeybindValue(original.name, ...)
+            end
+            original.wrappedCallback = function(...)
+                if GetSelectedError(chatMenu) then
+                    return ShowSelectedError(chatMenu)
+                end
+
+                if original.callback then
+                    return original.callback(...)
+                end
+            end
+            original.wrappedEnabled = function(...)
+                if GetSelectedError(chatMenu) then
+                    return true
+                end
+
+                if type(original.enabled) == "function" then
+                    return original.enabled(...)
+                end
+
+                return original.enabled == nil or original.enabled
+            end
+            original.wrappedVisible = function(...)
+                if GetSelectedError(chatMenu) then
+                    return true
+                end
+
+                local visible = ResolveKeybindValue(original.visible, ...)
+                return visible == nil or visible
+            end
+
+            keybindDescriptor.name = original.wrappedName
+            keybindDescriptor.callback = original.wrappedCallback
+            keybindDescriptor.enabled = original.wrappedEnabled
+            keybindDescriptor.visible = original.wrappedVisible
+            keybindDescriptor[CHAT_KEYBIND_MARKER] = original
+
+            if chatMenu.chatEntryPanelFocalArea and chatMenu.chatEntryPanelFocalArea.SetKeybindDescriptor then
+                chatMenu.chatEntryPanelFocalArea:SetKeybindDescriptor(descriptor)
+            end
+
+            return true
+        end
     end
 
-    table.insert(descriptor, {
-        alignment = KEYBIND_STRIP_ALIGN_LEFT,
-        keybind = "UI_SHORTCUT_PRIMARY",
-        name = NQOL.L("features.errors_dismissal.show_error_keybind"),
-        callback = function()
-            ShowSelectedError(chatMenu)
-        end,
-        visible = function()
-            return GetSelectedError(chatMenu) ~= nil
-        end,
-        [CHAT_KEYBIND_MARKER] = true,
-    })
-
-    if chatMenu.chatEntryPanelFocalArea and chatMenu.chatEntryPanelFocalArea.SetKeybindDescriptor then
-        chatMenu.chatEntryPanelFocalArea:SetKeybindDescriptor(descriptor)
-    end
-
-    return true
+    return false
 end
 
 local function StopChatKeybindRetry()
@@ -241,7 +303,7 @@ local function EnsureChatKeybind()
         return
     end
 
-    if AddChatKeybind(CHAT_MENU_GAMEPAD) then
+    if WrapChatKeybind(CHAT_MENU_GAMEPAD) then
         StopChatKeybindRetry()
         return
     end
@@ -328,7 +390,7 @@ local function RefreshListener()
     else
         UnregisterErrorListener()
         StopChatKeybindRetry()
-        RemoveChatKeybind(CHAT_MENU_GAMEPAD)
+        RestoreChatKeybind(CHAT_MENU_GAMEPAD)
         SetNativeFrameUnsuppressed(false)
         RestoreNativeErrorListener()
     end

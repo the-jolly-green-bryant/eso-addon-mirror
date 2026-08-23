@@ -8,16 +8,16 @@ function GF.RegisterLAMPanel()
 		return string.format("|t%d:%d:%s|t %s", size, size, iconPath, name)
 	end
 
-	GF.Settings.CategoriesEnabled = GF.Settings.CategoriesEnabled or {}
+	GF.SV.CategoriesEnabled = GF.SV.CategoriesEnabled or {}
 	for _, cat in ipairs(GF.Categories) do
-		if GF.Settings.CategoriesEnabled[cat.id] == nil then
-			GF.Settings.CategoriesEnabled[cat.id] = true
+		if GF.SV.CategoriesEnabled[cat.id] == nil then
+			GF.SV.CategoriesEnabled[cat.id] = true
 		end
 	end
 
 	for short, _ in pairs(GF.Trials) do
-		if GF.Settings.TrialsEnabled[short] == nil then
-			GF.Settings.TrialsEnabled[short] = true
+		if GF.SV.TrialsEnabled[short] == nil then
+			GF.SV.TrialsEnabled[short] = true
 		end
 	end
 
@@ -30,9 +30,9 @@ function GF.RegisterLAMPanel()
 			type = "checkbox",
 			name = "Allow All Roles In Group Finder",
 			tooltip = "Keeps the 'Enforce Roles' filter off by default when searching for groups",
-			getFunc = function() return GF.Settings.AllowAllRoles end,
+			getFunc = function() return GF.SV.AllowAllRoles end,
 			setFunc = function(value)
-				GF.Settings.AllowAllRoles = value
+				GF.SV.AllowAllRoles = value
 			end,
 			default = true,
 			requiresReload = true,
@@ -41,9 +41,9 @@ function GF.RegisterLAMPanel()
 			type = "checkbox",
 			name = "Hide Listings if CP is Insufficient",
 			tooltip = "Hide trials/activities where your champion points are too low to join.",
-			getFunc = function() return GF.Settings.HideInsufficientCP end,
+			getFunc = function() return GF.SV.HideInsufficientCP end,
 			setFunc = function(value)
-				GF.Settings.HideInsufficientCP = value
+				GF.SV.HideInsufficientCP = value
 				GF.RefreshUI()
 			end,
 			default = false,
@@ -52,9 +52,9 @@ function GF.RegisterLAMPanel()
 			type = "checkbox",
 			name = "Hide WTS Listings (not in Custom category)",
 			tooltip = "Hide listings whose titles contain 'WTS' (want to sell).",
-			getFunc = function() return GF.Settings.HideWTSListings end,
+			getFunc = function() return GF.SV.HideWTSListings end,
 			setFunc = function(value)
-				GF.Settings.HideWTSListings = value
+				GF.SV.HideWTSListings = value
 				GF.RefreshUI()
 			end,
 			default = true,
@@ -64,9 +64,9 @@ function GF.RegisterLAMPanel()
 			type = "checkbox",
 			name = "Show Instance Name in Tooltip",
 			tooltip = "Switch to enable/disable showing localized target instance name in a tooltip.",
-			getFunc = function() return GF.Settings.ShowInstanceTooltip end,
+			getFunc = function() return GF.SV.ShowInstanceTooltip end,
 			setFunc = function(value)
-				GF.Settings.ShowInstanceTooltip = value
+				GF.SV.ShowInstanceTooltip = value
 			end,
 			default = true,
 		},
@@ -76,10 +76,10 @@ function GF.RegisterLAMPanel()
 			name = "Show Normal / Veteran Toggle Button",
 			tooltip = "Show or hide the Normal–Veteran toggle button next to the category selector.",
 			getFunc = function()
-				return GF.Settings.ShowInstanceModeButton
+				return GF.SV.ShowInstanceModeButton
 			end,
 			setFunc = function(value)
-				GF.Settings.ShowInstanceModeButton = value
+				GF.SV.ShowInstanceModeButton = value
 
 				if GF.leftTopButton then
 					GF.leftTopButton:SetHidden(not value)
@@ -95,10 +95,10 @@ function GF.RegisterLAMPanel()
 			name = "Save Last Selected Category",
 			tooltip = "If enabled, GroupFinder+ will remember the last selected category between sessions.",
 			getFunc = function()
-				return GF.Settings.SaveLastCategory
+				return GF.SV.SaveLastCategory
 			end,
 			setFunc = function(value)
-				GF.Settings.SaveLastCategory = value
+				GF.SV.SaveLastCategory = value
 			end,
 			default = false,
 		},
@@ -108,10 +108,10 @@ function GF.RegisterLAMPanel()
 			name = "Full Description For Achievement Links",
 			tooltip = "If enabled, any achievements viewed from a link will always have description fully visible.",
 			getFunc = function()
-				return GF.Settings.FullAchievements
+				return GF.SV.FullAchievements
 			end,
 			setFunc = function(value)
-				GF.Settings.FullAchievements = value
+				GF.SV.FullAchievements = value
 			end,
 			default = true,
 		},
@@ -121,10 +121,10 @@ function GF.RegisterLAMPanel()
 			name = "|cff0000R|cff7f00a|cffff00i|c00ff00n|c0000ffb|c4b0082o|c9400d3w|r Effect for Last Boss Listings",
 			tooltip = "If enabled, listings that mention 'last boss' will have a rainbow background effect.",
 			getFunc = function()
-				return GF.Settings.LastBossRainbow
+				return GF.SV.LastBossRainbow
 			end,
 			setFunc = function(value)
-				GF.Settings.LastBossRainbow = value
+				GF.SV.LastBossRainbow = value
 				if GF.win and not GF.win:IsHidden() then
 					GF.RefreshUI()
 				end
@@ -137,10 +137,10 @@ function GF.RegisterLAMPanel()
 			name = "Hide UI in Dungeons and Trials",
 			tooltip = "If enabled, UI will auto-hide when joining a dungeon or a trial.",
 			getFunc = function()
-				return GF.Settings.HideInInstance
+				return GF.SV.HideInInstance
 			end,
 			setFunc = function(value)
-				GF.Settings.HideInInstance = value
+				GF.SV.HideInInstance = value
 				GF.MasterToggleCheck()
 			end,
 			default = false,
@@ -160,9 +160,9 @@ function GF.RegisterLAMPanel()
 			type = "checkbox",
 			name = Iconize(cat.name or cat.id, cat.icon, 25),
 			tooltip = "Toggle visibility for category " .. (cat.name or cat.id),
-			getFunc = function() return GF.Settings.CategoriesEnabled[cat.id] end,
+			getFunc = function() return GF.SV.CategoriesEnabled[cat.id] end,
 			setFunc = function(value)
-				GF.Settings.CategoriesEnabled[cat.id] = value
+				GF.SV.CategoriesEnabled[cat.id] = value
 				GF.RefreshUI()
 			end,
 			default = true,
@@ -183,9 +183,9 @@ function GF.RegisterLAMPanel()
 			type = "checkbox",
 			name = short .. " (" .. cleanName .. ")",
 			tooltip = "Toggle visibility for trial " .. short,
-			getFunc = function() return GF.Settings.TrialsEnabled[short] end,
+			getFunc = function() return GF.SV.TrialsEnabled[short] end,
 			setFunc = function(value)
-				GF.Settings.TrialsEnabled[short] = value
+				GF.SV.TrialsEnabled[short] = value
 				GF.RefreshUI()
 			end,
 			default = true,
@@ -210,8 +210,8 @@ function GF.RegisterLAMPanel()
 
 	function GF.GetBlacklistChoices()
 		local leaders = {}
-		if GF.Settings and GF.Settings.BlacklistedLeaders then
-			for name, _ in pairs(GF.Settings.BlacklistedLeaders) do
+		if GF.SV and GF.SV.BlacklistedLeaders then
+			for name, _ in pairs(GF.SV.BlacklistedLeaders) do
 				table.insert(leaders, name)
 			end
 		end
@@ -237,7 +237,7 @@ function GF.RegisterLAMPanel()
 		tooltip = "Unblacklist the selected player.",
 		func = function()
 			if selectedBlacklistedPlayer and selectedBlacklistedPlayer ~= "" then
-				GF.Settings.BlacklistedLeaders[selectedBlacklistedPlayer] = nil
+				GF.SV.BlacklistedLeaders[selectedBlacklistedPlayer] = nil
 				GF.RefreshUI()
 				GF.Popup("Unblacklisted " .. selectedBlacklistedPlayer, nil, "00FF00")
 				selectedBlacklistedPlayer = ""

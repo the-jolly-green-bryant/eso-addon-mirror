@@ -17,6 +17,8 @@ local strings = {
     SI_QUICKEMOTEMENU_OPTION_SHOW_PANEL     = "設定パネルを表示",
     SI_QUICKEMOTEMENU_OPTION_CLOSE          = "エモート再生後にメニューを閉じる (左クリック)",
     SI_QUICKEMOTEMENU_OPTION_RESET          = "ボタン位置をリセット",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X         = "チャットボタンのXオフセット",
+    SI_QUICKEMOTEMENU_OPTION_CHAT_BUTTON_OFFSET_X_TOOLTIP = "チャットウィンドウのオプションボタンを基準としたボタンの水平方向のオフセットです。ボタンがチャットウィンドウに取り付けられている場合にのみ適用されます。",
     SI_QUICKEMOTEMENU_OPTION_DESCRIPTION    = [[
 |c3399FF機能|r
 • カテゴリとお気に入りからエモートに素早くアクセス

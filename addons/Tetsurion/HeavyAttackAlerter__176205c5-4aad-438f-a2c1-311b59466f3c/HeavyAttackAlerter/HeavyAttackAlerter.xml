@@ -1,0 +1,14 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="HeavyAttackAlerter_UI" clampedToScreen="true" movable="false" mouseEnabled="false" hidden="false" layer="OVERLAY" tier="HIGH">
+            <Dimensions x="40" y="40" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Texture name="$(parent)_Texture" textureFile="/esoui/art/icons/servicetooltipicons/servicetooltipicon_heavyarmor.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
