@@ -5,7 +5,7 @@ local FAB = U.FancyActionBar
 local Frames = U.Frames
 
 KS.name = "UltiviteCombat"
-KS.version = "1.6.94 / Ultivite 1.0.160"
+KS.version = "1.6.110 / Ultivite 1.0.200"
 KS.savedVersion = 1
 KS.scopeSavedVersion = 1
 KS.unitTag = "reticleover"
@@ -109,6 +109,10 @@ KS.killMessageLabel = nil
 KS.killMessageExpiresAt = 0
 KS.killMessageFadeSeconds = 0.8
 KS.killMessageText = ""
+KS.killMessageBurstCount = 0
+KS.killMessageBurstLastAtMs = 0
+KS.killMessageBurstWindowMs = 900
+KS.killMessageRecentVictims = {}
 KS.pvpHudRoot = nil
 KS.pvpHudLabel = nil
 KS.lastPvpHudText = nil
@@ -204,7 +208,7 @@ local defaults = {
     playerNameMode = "@Account name",
     abilityId = 0,
     learnedName = "",
-    uiRevision = 51,
+    uiRevision = 53,
     stickyTarget = true,
     targetFrame = true,
     targetFrameMode = "ultivite",
@@ -228,7 +232,8 @@ local defaults = {
     nativeAllEnemyHealthbars = true,
     hideDefaultTargetFrame = true,
     showNativePlayerCpFrame = true,
-    overheadPlayerInfo = false,
+    overheadPlayerInfo = true,
+    cpOnHover = true,
     overheadPlayerInfoOriginalAllNameplates = "",
     overheadPlayerInfoOriginalEnemyPlayerNameplates = "",
     overheadPlayerInfoOriginalFriendlyPlayerNameplates = "",
@@ -335,6 +340,9 @@ local defaults = {
     diagnosticLogging = false,
     showPvpKillCounter = true,
     showPvpKillMessages = true,
+    killMessageX = 0,
+    killMessageY = -145,
+    killMessageFontSize = 30,
     pvpHudX = 89,
     pvpHudY = 51,
     pvpHudFontSize = 20,
@@ -831,7 +839,9 @@ function KS.ApplyFontSettings()
         KS.dragonAppetiteTimerLabel:SetFont(string.format("%s|%d|%s", token, dragonAppetiteFontSize, effect))
     end
     if KS.killMessageLabel then
-        KS.killMessageLabel:SetFont(string.format("%s|%d|%s", token, clamp(timerSize + 4, 20, 48), effect))
+        local killMessageFontSize = clamp(math.floor(tonumber(KS.sv.killMessageFontSize) or defaults.killMessageFontSize), 20, 56)
+        KS.sv.killMessageFontSize = killMessageFontSize
+        KS.killMessageLabel:SetFont(string.format("%s|%d|%s", token, killMessageFontSize, effect))
     end
     if KS.pvpHudLabel then
         if KS.ApplyPvpHudAppearance then
@@ -852,6 +862,7 @@ function KS.ResetFontSettings()
     KS.sv.timerFontSize = defaults.timerFontSize
     KS.sv.balorghTimerFontSize = defaults.balorghTimerFontSize
     KS.sv.dragonAppetiteFontSize = defaults.dragonAppetiteFontSize
+    KS.sv.killMessageFontSize = defaults.killMessageFontSize
     KS.ApplyFontSettings()
     KS.RefreshDisplay()
 end
@@ -1340,7 +1351,8 @@ local function setControlHiddenOnlyWhenNeeded(control, hide)
 end
 
 function KS.ApplyLUIETargetFrameVisibility()
-    local hide = KS.sv and KS.sv.hideLUIETargetFrame == true
+    local hide = (KS.sv and KS.sv.hideLUIETargetFrame == true)
+        or (KS.ShouldHideEnemyTargetFramesOutsideCombat and KS.ShouldHideEnemyTargetFramesOutsideCombat())
     local tlw, frameData = KS.GetLUIETargetFrame()
     local applied = false
 
@@ -1377,10 +1389,28 @@ function KS.SetShowPlayerTargetChampionPoints(enabled, silent)
     end
 end
 
+function KS.ShouldHideEnemyTargetFramesOutsideCombat()
+    if KS.IsPlayerInCombat() then return false end
+    if not DoesUnitExist or not IsUnitAttackable then return false end
+
+    local tags = { "reticleoverplayer", KS.unitTag or "reticleover" }
+    for _, unitTag in ipairs(tags) do
+        local okExists, exists = pcall(DoesUnitExist, unitTag)
+        if okExists and exists then
+            local okAttackable, attackable = pcall(IsUnitAttackable, unitTag)
+            if okAttackable and attackable == true then return true end
+        end
+    end
+    return false
+end
+
 function KS.ShouldHideDefaultTargetFrame()
-    -- This setting is absolute. When Ultivite owns target presentation, ESO's
-    -- stock reticle target frame stays hidden for NPC and player targets alike.
-    return KS.sv ~= nil and KS.sv.hideDefaultTargetFrame == true
+    -- Ultivite ownership remains absolute. When Vanilla / Default owns the stock
+    -- frame, suppress attackable enemy target frames outside combat so no enemy
+    -- Health bar is shown merely from mouseover or targeting. Friendly/non-hostile
+    -- target information is not affected by this combat-only rule.
+    return (KS.sv ~= nil and KS.sv.hideDefaultTargetFrame == true)
+        or KS.ShouldHideEnemyTargetFramesOutsideCombat()
 end
 
 function KS.ApplyDefaultTargetFrameVisibility()
@@ -1468,15 +1498,25 @@ end
 function KS.IsProtectedReticleControl(control)
     if not control then return false end
 
-    -- Ultivite manages ESO's stock reticle target frame explicitly through
-    -- hideDefaultTargetFrame / showNativePlayerCpFrame. The duplicate-frame
-    -- detector must never learn or alpha-hide this control, otherwise releasing
-    -- the stock frame for a player target also removes ESO's native Champion icon
-    -- and CP / level label.
     local stockTargetFrame = _G["ZO_TargetUnitFramereticleover"]
     if stockTargetFrame then
         if control == stockTargetFrame then return true end
         if isDescendantOf(control, stockTargetFrame) then return true end
+        if isDescendantOf(stockTargetFrame, control) then return true end
+    end
+
+    local mouseoverCpFrame = KS.nativeReticlePlayerFrame and KS.nativeReticlePlayerFrame.frame or nil
+    if mouseoverCpFrame then
+        if control == mouseoverCpFrame then return true end
+        if isDescendantOf(control, mouseoverCpFrame) then return true end
+        if isDescendantOf(mouseoverCpFrame, control) then return true end
+    end
+
+    local mouseoverCpBadge = KS.nativeReticlePlayerBadge
+    if mouseoverCpBadge then
+        if control == mouseoverCpBadge then return true end
+        if isDescendantOf(control, mouseoverCpBadge) then return true end
+        if isDescendantOf(mouseoverCpBadge, control) then return true end
     end
 
     local reticleContainer = _G["ZO_ReticleContainer"]
@@ -1942,6 +1982,62 @@ function KS.GetNativeNameplateOffChoice()
     return 0
 end
 
+-- Enemy overhead Health bars have a separate transient snapshot from native
+-- target-mode ownership. This lets ESO Default remain combat-only without
+-- capturing or later restoring unrelated player/NPC name settings.
+function KS.CaptureEnemyHealthbarCombatGate()
+    if KS.enemyHealthbarCombatSnapshot then return true end
+    KS.enemyHealthbarCombatSnapshot = {
+        all = KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_HEALTHBARS),
+        npc = KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS),
+        player = KS.GetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS),
+    }
+    return true
+end
+
+function KS.RestoreEnemyHealthbarCombatGate()
+    local snapshot = KS.enemyHealthbarCombatSnapshot
+    if type(snapshot) ~= "table" then return true end
+
+    local ok = true
+    if snapshot.all and snapshot.all ~= "" then
+        ok = KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_HEALTHBARS, snapshot.all) and ok
+    end
+    if snapshot.npc and snapshot.npc ~= "" then
+        ok = KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS, snapshot.npc) and ok
+    end
+    if snapshot.player and snapshot.player ~= "" then
+        ok = KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS, snapshot.player) and ok
+    end
+    if ok then KS.enemyHealthbarCombatSnapshot = nil end
+    return ok
+end
+
+-- When a user changes ESO's persisted Health-bar choices while either temporary
+-- owner is active, update the relevant restoration snapshot immediately.
+function KS.RememberNativeHealthbarPreference(settingId, value)
+    if not KS.sv or settingId == nil or value == nil then return false end
+    value = tostring(value)
+
+    local gate = KS.enemyHealthbarCombatSnapshot
+    if settingId == NAMEPLATE_TYPE_ALL_HEALTHBARS then
+        if gate then gate.all = value end
+        if KS.sv.nativeSettingsCaptured == true then KS.sv.nativeOriginalAllHealthbars = value end
+        return true
+    end
+    if settingId == NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS then
+        if gate then gate.npc = value end
+        if KS.sv.nativeSettingsCaptured == true then KS.sv.nativeOriginalEnemyNpcHealthbars = value end
+        return true
+    end
+    if settingId == NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS then
+        if gate then gate.player = value end
+        if KS.sv.nativeSettingsCaptured == true then KS.sv.nativeOriginalEnemyPlayerHealthbars = value end
+        return true
+    end
+    return false
+end
+
 function KS.SetPersistedNameplateSetting(settingId, value)
     if not SetSetting or SETTING_TYPE_NAMEPLATES == nil or settingId == nil or value == nil then return false end
     value = tostring(value)
@@ -2146,13 +2242,41 @@ function KS.ApplyNativeOverheadTargetBar()
         return true
     end
 
+    -- All enemy overhead Health-bar modes are combat-only. ESO Default uses a
+    -- small Health-bar-only snapshot, while native Target/All mode keeps using its
+    -- existing full ownership snapshot so disabling that mode still restores the
+    -- user's original ESO nameplate configuration.
+    if not KS.IsPlayerInCombat() then
+        if KS.sv.nativeOverheadTargetBar == true then
+            KS.CaptureNativeNameplateSettings()
+            local originalMaster = tostring(KS.sv.nativeOriginalAllHealthbars or "")
+            if originalMaster ~= "" then
+                KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ALL_HEALTHBARS, originalMaster)
+            end
+        else
+            KS.CaptureEnemyHealthbarCombatGate()
+        end
+
+        local hidden = KS.GetNativeNameplateOffChoice()
+        if NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS ~= nil then
+            KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS, hidden)
+        end
+        if NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS ~= nil then
+            KS.SetNativeNameplateSetting(NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS, hidden)
+        end
+        KS.ApplyNpcNamesOverride()
+        KS.ApplyPlayerNamesOverride()
+        return true
+    end
+
     if KS.sv.nativeOverheadTargetBar ~= true then
-        KS.RestoreNativeNameplateSettings()
+        KS.RestoreEnemyHealthbarCombatGate()
         KS.ApplyNpcNamesOverride()
         KS.ApplyPlayerNamesOverride()
         return false
     end
 
+    KS.enemyHealthbarCombatSnapshot = nil
     KS.CaptureNativeNameplateSettings()
 
     -- ESO's own in-world nameplate renderer owns the unit-to-screen attachment.
@@ -2228,8 +2352,19 @@ end
 function KS.SetNativeOverheadTargetBar(enabled)
     if not KS.sv then return end
     enabled = enabled and true or false
-    if enabled and KS.sv.nativeSettingsCaptured ~= true then KS.CaptureNativeNameplateSettings() end
-    if enabled then KS.sv.hideNativeOverheadHealthBars = false end
+    local wasEnabled = KS.sv.nativeOverheadTargetBar == true
+
+    if enabled then
+        -- If ESO Default was currently suppressed outside combat, restore those
+        -- intended values before capturing native-mode ownership. Otherwise native
+        -- mode would incorrectly remember Never as the user's original choice.
+        KS.RestoreEnemyHealthbarCombatGate()
+        if KS.sv.nativeSettingsCaptured ~= true then KS.CaptureNativeNameplateSettings() end
+        KS.sv.hideNativeOverheadHealthBars = false
+    elseif wasEnabled and KS.sv.hideNativeOverheadHealthBars ~= true then
+        KS.RestoreNativeNameplateSettings()
+    end
+
     KS.sv.nativeOverheadTargetBar = enabled
     KS.ApplyNativeOverheadTargetBar()
     KS.ApplyPosition()
@@ -2245,9 +2380,17 @@ end
 function KS.SetHideNativeOverheadHealthBars(enabled, silent)
     if not KS.sv then return end
     enabled = enabled and true or false
-    if enabled and KS.sv.nativeSettingsCaptured ~= true then KS.CaptureNativeNameplateSettings() end
-    KS.sv.hideNativeOverheadHealthBars = enabled
-    if enabled then KS.sv.nativeOverheadTargetBar = false end
+
+    if enabled then
+        KS.RestoreEnemyHealthbarCombatGate()
+        if KS.sv.nativeSettingsCaptured ~= true then KS.CaptureNativeNameplateSettings() end
+        KS.sv.hideNativeOverheadHealthBars = true
+        KS.sv.nativeOverheadTargetBar = false
+    else
+        KS.sv.hideNativeOverheadHealthBars = false
+        KS.RestoreNativeNameplateSettings()
+    end
+
     KS.ApplyNativeOverheadTargetBar()
     KS.ApplyPosition()
     KS.RefreshDisplay()
@@ -2278,12 +2421,22 @@ function KS.SetEnemyOverheadHealthMode(mode, silent)
     if mode ~= "off" and mode ~= "target" and mode ~= "all" then mode = "vanilla" end
 
     if mode == "off" then
-        KS.sv.nativeOverheadTargetBar = false
         KS.sv.nativeAllEnemyHealthbars = false
         KS.SetHideNativeOverheadHealthBars(true, true)
-    else
+    elseif mode == "vanilla" then
+        KS.RestoreEnemyHealthbarCombatGate()
+        KS.RestoreNativeNameplateSettings()
         KS.sv.hideNativeOverheadHealthBars = false
-        KS.sv.nativeOverheadTargetBar = mode == "target" or mode == "all"
+        KS.sv.nativeOverheadTargetBar = false
+        KS.sv.nativeAllEnemyHealthbars = false
+        KS.ApplyNativeOverheadTargetBar()
+        KS.ApplyPosition()
+        KS.RefreshDisplay()
+    else
+        KS.RestoreEnemyHealthbarCombatGate()
+        if KS.sv.nativeSettingsCaptured ~= true then KS.CaptureNativeNameplateSettings() end
+        KS.sv.hideNativeOverheadHealthBars = false
+        KS.sv.nativeOverheadTargetBar = true
         KS.sv.nativeAllEnemyHealthbars = mode == "all"
         KS.ApplyNativeOverheadTargetBar()
         KS.ApplyPosition()
@@ -2302,22 +2455,61 @@ end
 local OVERHEAD_PLAYER_INFO_UPDATE_MS = 100
 local OVERHEAD_PLAYER_INFO_HEAD_OFFSET_CM = 225
 local OVERHEAD_PLAYER_INFO_SCREEN_GAP = 12
-local OVERHEAD_PLAYER_INFO_RETICLE_Y = -105
 
 KS.overheadPlayerInfoGroupLabels = KS.overheadPlayerInfoGroupLabels or {}
+KS.overheadPlayerInfoGroupCount = KS.overheadPlayerInfoGroupCount or 0
+KS.overheadPlayerInfoVisibleCount = KS.overheadPlayerInfoVisibleCount or 0
 KS.overheadPlayerInfoReticleLabel = KS.overheadPlayerInfoReticleLabel or nil
 KS.overheadPlayerInfoProbe = KS.overheadPlayerInfoProbe or nil
+KS.overheadPlayerInfoReticleCache = KS.overheadPlayerInfoReticleCache or nil
+KS.overheadPlayerInfoTargetBridgeLabel = KS.overheadPlayerInfoTargetBridgeLabel or nil
+KS.nativeReticlePlayerFrame = KS.nativeReticlePlayerFrame or nil
 
-function KS.IsOverheadPlayerInfoEnabled()
-    return KS.sv and KS.sv.overheadPlayerInfo == true
+-- 1.0.192 keeps true world projection limited to stable group unit tags. API
+-- 101050 exposes the targeted ungrouped player and CP through reticleoverplayer,
+-- but ESO's native floating nameplate is engine-owned and has no writable Lua
+-- text control or arbitrary-player world position. In native overhead mode,
+-- Ultivite therefore renders a compact player-name + CP bridge at the supported
+-- screen-space target-frame location. The normal Ultivite target frame continues
+-- to render name + CP directly when native overhead mode is not active.
+-- EVENT_UNIT_CREATED is deliberately not used as an arbitrary-player discovery path.
+
+-- CP diagnostics cover group world projection plus targeted-player name presentation.
+-- No global scans and no protected APIs.
+KS.worldCpDiag = KS.worldCpDiag or {
+    reticleChanged = 0,
+    reticlePlayerChanged = 0,
+    reticleCaptures = 0,
+    reticleMisses = 0,
+    pollPlayerHits = 0,
+    pollPlayerLosses = 0,
+    lastReticle = nil,
+    lastPollTag = "",
+    lastPollAtMs = 0,
+}
+local function WorldCpDiagNowMs()
+    return GetGameTimeMilliseconds and (tonumber(GetGameTimeMilliseconds()) or 0) or 0
 end
 
--- Overhead Player Info is an Ultivite-owned Character Name + CP/Level overlay.
--- It no longer changes ESO's native blue player-name nameplates. Those are
+local function WorldCpDiagSafeCall(fn, ...)
+    if type(fn) ~= "function" then return false, nil end
+    return pcall(fn, ...)
+end
+
+function KS.IsOverheadPlayerInfoEnabled()
+    -- Ultivite 1.0.173: player CP / level presentation is no longer an optional
+    -- HUD feature. It stays enabled whenever the combat module is available.
+    return KS.sv ~= nil
+end
+
+-- Player CP / level presentation is Ultivite-owned. Group members can use
+-- world-follow labels because stable group unit tags expose position. Ungrouped
+-- players use target-frame or reticle presentation only. Native player names are
 -- controlled independently by the Player Names option.
 function KS.ApplyOverheadPlayerInfoNameplates()
     if KS.ApplyPlayerNamesOverride then KS.ApplyPlayerNamesOverride() end
-    return KS.sv and KS.sv.overheadPlayerInfo == true
+    if KS.sv then KS.sv.overheadPlayerInfo = true end
+    return KS.sv ~= nil
 end
 
 local function GetUnitLevelSafe(unitTag)
@@ -2334,13 +2526,9 @@ local function GetUnitLevelSafe(unitTag)
 end
 
 local function GetUnitChampionPointsSafe(unitTag)
-    local isChampion = false
-    if IsUnitChampion then
-        local ok, value = pcall(IsUnitChampion, unitTag)
-        isChampion = ok and value == true
-    end
-    if not isChampion then return 0 end
-
+    -- Do not gate CP lookup behind IsUnitChampion(). ESO can expose a valid
+    -- Champion Point value on short-lived world unit tags before every other
+    -- unit-state helper has settled. The CP value itself is authoritative.
     local cp = 0
     if GetUnitEffectiveChampionPoints then
         local ok, value = pcall(GetUnitEffectiveChampionPoints, unitTag)
@@ -2353,24 +2541,461 @@ local function GetUnitChampionPointsSafe(unitTag)
     return math.max(0, cp)
 end
 
+local function CaptureWorldCpUnitSnapshot(unitTag, source)
+    local snapshot = {
+        atMs = WorldCpDiagNowMs(),
+        source = tostring(source or "snapshot"),
+        tag = tostring(unitTag or ""),
+        exists = false,
+        isPlayer = false,
+        displayName = "",
+        rawName = "",
+        cpEffective = 0,
+        cpBase = 0,
+        canGainCp = false,
+        level = 0,
+        effectiveLevel = 0,
+        grouped = false,
+        zoneId = 0,
+        worldX = 0,
+        worldY = 0,
+        worldZ = 0,
+        hasWorldPosition = false,
+        projected = false,
+        screenX = nil,
+        screenY = nil,
+    }
+
+    if snapshot.tag == "" then return snapshot end
+
+    do
+        local ok, value = WorldCpDiagSafeCall(DoesUnitExist, snapshot.tag)
+        snapshot.exists = ok and value == true
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(IsUnitPlayer, snapshot.tag)
+        snapshot.isPlayer = ok and value == true
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(GetUnitDisplayName, snapshot.tag)
+        if ok and type(value) == "string" then snapshot.displayName = value end
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(GetRawUnitName, snapshot.tag)
+        if ok and type(value) == "string" then snapshot.rawName = value end
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(GetUnitEffectiveChampionPoints, snapshot.tag)
+        if ok then snapshot.cpEffective = math.max(0, tonumber(value) or 0) end
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(GetUnitChampionPoints, snapshot.tag)
+        if ok then snapshot.cpBase = math.max(0, tonumber(value) or 0) end
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(CanUnitGainChampionPoints, snapshot.tag)
+        snapshot.canGainCp = ok and value == true
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(GetUnitLevel, snapshot.tag)
+        if ok then snapshot.level = math.max(0, tonumber(value) or 0) end
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(GetUnitEffectiveLevel, snapshot.tag)
+        if ok then snapshot.effectiveLevel = math.max(0, tonumber(value) or 0) end
+    end
+    do
+        local ok, value = WorldCpDiagSafeCall(IsUnitGrouped, snapshot.tag)
+        snapshot.grouped = ok and value == true
+    end
+    -- World positioning is intentionally sampled only for grouped players.
+    -- API 101050 exposes CP for reticleoverplayer but does not expose usable
+    -- arbitrary ungrouped-player world coordinates. Do not keep probing a path
+    -- the client has already proven unavailable.
+    local stableGroupTag = string.match(snapshot.tag, "^group%d+$") ~= nil
+    local groupWorldPosition = GetUnitRawWorldPosition or GetUnitWorldPosition
+    if stableGroupTag and type(groupWorldPosition) == "function" then
+        local ok, zoneId, worldX, worldY, worldZ = pcall(groupWorldPosition, snapshot.tag)
+        if ok then
+            snapshot.zoneId = tonumber(zoneId) or 0
+            snapshot.worldX = tonumber(worldX) or 0
+            snapshot.worldY = tonumber(worldY) or 0
+            snapshot.worldZ = tonumber(worldZ) or 0
+            snapshot.hasWorldPosition = snapshot.zoneId > 0
+                and not (snapshot.worldX == 0 and snapshot.worldY == 0 and snapshot.worldZ == 0)
+        end
+    end
+    if snapshot.exists and snapshot.isPlayer and stableGroupTag and KS.GetUnitHeadScreenPosition then
+        local ok, sx, sy = pcall(KS.GetUnitHeadScreenPosition, snapshot.tag)
+        if ok and tonumber(sx) and tonumber(sy) then
+            snapshot.projected = true
+            snapshot.screenX = tonumber(sx)
+            snapshot.screenY = tonumber(sy)
+        end
+    end
+    return snapshot
+end
+
+local function FormatWorldCpSnapshot(snapshot)
+    if not snapshot then return "none" end
+    local name = snapshot.displayName ~= "" and snapshot.displayName
+        or (snapshot.rawName ~= "" and snapshot.rawName or "-")
+    local world = snapshot.hasWorldPosition
+        and string.format("z=%d xyz=%d,%d,%d",
+            tonumber(snapshot.zoneId) or 0,
+            tonumber(snapshot.worldX) or 0,
+            tonumber(snapshot.worldY) or 0,
+            tonumber(snapshot.worldZ) or 0)
+        or "world=NO"
+    local screen = snapshot.projected
+        and string.format("screen=%.1f,%.1f", tonumber(snapshot.screenX) or 0, tonumber(snapshot.screenY) or 0)
+        or "screen=NO"
+    return string.format(
+        "src=%s tag=%s exists=%s player=%s name=%s cpEff=%d cpBase=%d canCP=%s lv=%d effLv=%d grouped=%s %s %s",
+        tostring(snapshot.source or "-"),
+        tostring(snapshot.tag or "-"),
+        diagBool(snapshot.exists),
+        diagBool(snapshot.isPlayer),
+        tostring(name),
+        tonumber(snapshot.cpEffective) or 0,
+        tonumber(snapshot.cpBase) or 0,
+        diagBool(snapshot.canGainCp),
+        tonumber(snapshot.level) or 0,
+        tonumber(snapshot.effectiveLevel) or 0,
+        diagBool(snapshot.grouped),
+        world,
+        screen)
+end
+
+function KS.CaptureWorldCpReticleDiagnostic(source)
+    KS.worldCpDiag = KS.worldCpDiag or {}
+    local diag = KS.worldCpDiag
+    local unitTag = KS.GetActiveReticlePlayerTag and KS.GetActiveReticlePlayerTag() or nil
+    if unitTag then
+        local snapshot = CaptureWorldCpUnitSnapshot(unitTag, tostring(source or "reticle"))
+        diag.reticleCaptures = (tonumber(diag.reticleCaptures) or 0) + 1
+        diag.lastReticle = snapshot
+        return snapshot
+    end
+
+    diag.reticleMisses = (tonumber(diag.reticleMisses) or 0) + 1
+    return nil
+end
+function KS.ScheduleWorldCpReticleDiagnostic(source)
+    KS.worldCpDiag = KS.worldCpDiag or {}
+    local sourceText = tostring(source or "reticle")
+    if sourceText == "EVENT_RETICLE_TARGET_CHANGED" then
+        KS.worldCpDiag.reticleChanged = (tonumber(KS.worldCpDiag.reticleChanged) or 0) + 1
+    elseif sourceText == "EVENT_RETICLE_TARGET_PLAYER_CHANGED" then
+        KS.worldCpDiag.reticlePlayerChanged = (tonumber(KS.worldCpDiag.reticlePlayerChanged) or 0) + 1
+    end
+
+    -- One event-time sample is enough now that the production path also reads
+    -- reticleoverplayer every 100 ms. Avoid diagnostic delayed callbacks fighting
+    -- with rapidly changing reticle state.
+    KS.CaptureWorldCpReticleDiagnostic(sourceText)
+end
+function KS.RecordWorldCpPollingDiagnostic(activeReticlePlayerTag)
+    KS.worldCpDiag = KS.worldCpDiag or {}
+    local diag = KS.worldCpDiag
+    local nowMs = WorldCpDiagNowMs()
+    local activeTag = tostring(activeReticlePlayerTag or "")
+    local previousTag = tostring(diag.lastPollTag or "")
+
+    if activeTag ~= "" then
+        if activeTag ~= previousTag or (nowMs - (tonumber(diag.lastPollAtMs) or 0)) >= 500 then
+            diag.pollPlayerHits = (tonumber(diag.pollPlayerHits) or 0) + 1
+            local snapshot = CaptureWorldCpUnitSnapshot(activeTag, "PLAYER_CP_LOOP")
+            if snapshot.exists and snapshot.isPlayer then
+                diag.lastReticle = snapshot
+            end
+            diag.lastPollAtMs = nowMs
+        end
+    elseif previousTag ~= "" then
+        diag.pollPlayerLosses = (tonumber(diag.pollPlayerLosses) or 0) + 1
+    end
+
+    diag.lastPollTag = activeTag
+end
 function KS.GetOverheadPlayerInfoText(unitTag)
     if not DoesUnitExist or not DoesUnitExist(unitTag) then return "" end
     if IsUnitPlayer and not IsUnitPlayer(unitTag) then return "" end
 
-    local name = cleanName(GetUnitName and GetUnitName(unitTag) or "")
-    if name == "" then return "" end
+    -- Native ESO nameplates already own the player name, title and guild text.
+    -- Ultivite adds only progression information so the world-space display does
+    -- not duplicate the player's name. Champion players show CP; players below
+    -- Champion level show their normal level.
+    local cp = GetUnitChampionPointsSafe(unitTag)
+    if cp > 0 then
+        return string.format("CP %d", cp)
+    end
 
     local level = GetUnitLevelSafe(unitTag)
-    local cp = GetUnitChampionPointsSafe(unitTag)
+    if level > 0 then
+        return string.format("Lv %d", level)
+    end
+    return ""
+end
 
-    if cp > 0 and level > 0 then
-        return string.format("%s  •  CP %d  •  Lv %d", name, cp, level)
-    elseif cp > 0 then
-        return string.format("%s  •  CP %d", name, cp)
-    elseif level > 0 then
-        return string.format("%s  •  Lv %d", name, level)
+local function GetTargetPlayerBridgeText(info)
+    if not info or info.isPlayer ~= true then return "" end
+
+    local name = KS.GetDisplayedTargetName and KS.GetDisplayedTargetName(info, tostring(info.name or ""))
+        or tostring(info.displayName ~= "" and info.displayName or info.name or "")
+    if name == "" then return "" end
+
+    local title = ""
+    if GetUnitTitle and type(info.unitTag) == "string" and info.unitTag ~= "" then
+        local ok, value = pcall(GetUnitTitle, info.unitTag)
+        if ok and type(value) == "string" and value ~= "" then
+            title = cleanName(value)
+        end
+    end
+    if title ~= "" then
+        name = string.format("%s, %s", name, title)
+    end
+
+    local cp = tonumber(info.championPoints) or 0
+    if cp > 0 then
+        return string.format("%s   CP %d", name, cp)
+    end
+
+    local level = tonumber(info.level) or 0
+    if level > 0 then
+        return string.format("%s   Lv %d", name, level)
     end
     return name
+end
+
+function KS.PositionTargetPlayerProgressBridge()
+    -- Retired before 1.0.191. Kept as a compatibility no-op for older callers.
+end
+
+function KS.GetTargetPlayerProgressBridgeLabel()
+    if KS.overheadPlayerInfoTargetBridgeLabel then
+        KS.overheadPlayerInfoTargetBridgeLabel:SetHidden(true)
+    end
+    return nil
+end
+
+local MOUSEOVER_CP_NAMEPLATE_OFFSET_Y = -72
+local MOUSEOVER_CP_NAMEPLATE_GAP = 8
+
+local function HideNativeReticlePlayerFrame()
+    -- Native target-frame experiments are retired. Keep legacy references hidden
+    -- defensively, then hide the independent mouseover progression label.
+    local frame = KS.nativeReticlePlayerFrame
+    if frame then
+        if frame.SetHiddenForReason then
+            pcall(function() frame:SetHiddenForReason("UltiviteMouseoverCp", true) end)
+        end
+        if frame.frame and frame.frame.SetHidden then
+            pcall(function() frame.frame:SetHidden(true) end)
+        end
+    end
+    local badge = KS.nativeReticlePlayerBadge
+    if badge and badge.SetHidden then
+        pcall(function() badge:SetHidden(true) end)
+    end
+end
+
+local function GetMouseoverNativeNameLine(unitTag)
+    if type(unitTag) ~= "string" or unitTag == "" then return "" end
+
+    local name = ""
+    if GetUnitDisplayName then
+        local ok, value = pcall(GetUnitDisplayName, unitTag)
+        if ok and type(value) == "string" then name = cleanName(value) end
+    end
+    if name == "" and GetUnitName then
+        local ok, value = pcall(GetUnitName, unitTag)
+        if ok and type(value) == "string" then name = cleanName(value) end
+    end
+    if name == "" then return "" end
+
+    local title = ""
+    if GetUnitTitle then
+        local ok, value = pcall(GetUnitTitle, unitTag)
+        if ok and type(value) == "string" then title = cleanName(value) end
+    end
+    if title ~= "" then
+        return string.format("%s, %s", name, title)
+    end
+    return name
+end
+
+local function PositionMouseoverCpBadge(badge, unitTag, progressionText)
+    if not badge or not badge.cpLabel or not GuiRoot then return false end
+
+    local reticle = _G and _G["ZO_ReticleContainerReticle"] or nil
+    local anchorTarget = reticle or GuiRoot
+    local nameLine = GetMouseoverNativeNameLine(unitTag)
+    local nameWidth = 0
+    local progressionWidth = 0
+
+    if badge.cpLabel.GetStringWidth then
+        local okName, measuredName = pcall(function() return badge.cpLabel:GetStringWidth(nameLine) end)
+        if okName then nameWidth = tonumber(measuredName) or 0 end
+        local okProgress, measuredProgress = pcall(function() return badge.cpLabel:GetStringWidth(progressionText or "") end)
+        if okProgress then progressionWidth = tonumber(measuredProgress) or 0 end
+    end
+
+    if progressionWidth <= 0 then progressionWidth = 78 end
+    local badgeWidth = math.max(72, progressionWidth + 8)
+    badge:SetDimensions(badgeWidth, 34)
+    badge.cpLabel:SetDimensions(badgeWidth, 34)
+
+    -- ESO's world nameplate itself is engine-owned, so there is no public anchor
+    -- to attach to. While reticleoverplayer is active, reconstruct the displayed
+    -- blue name/title width with the same font and place progression immediately
+    -- after its expected right edge. This visually fuses CP with the highlighted
+    -- line without bringing back a target frame or a distant standalone badge.
+    local offsetX = (nameWidth * 0.5) + MOUSEOVER_CP_NAMEPLATE_GAP + (badgeWidth * 0.5)
+    badge:ClearAnchors()
+    badge:SetAnchor(CENTER, anchorTarget, CENTER, offsetX, MOUSEOVER_CP_NAMEPLATE_OFFSET_Y)
+
+    badge._ultiviteNameLine = nameLine
+    badge._ultiviteNameWidth = nameWidth
+    badge._ultiviteProgressionWidth = progressionWidth
+    badge._ultiviteOffsetX = offsetX
+    badge._ultiviteOffsetY = MOUSEOVER_CP_NAMEPLATE_OFFSET_Y
+    return true
+end
+
+local function EnsureMouseoverCpBadge()
+    if KS.nativeReticlePlayerBadge and KS.nativeReticlePlayerBadge.cpLabel then
+        return KS.nativeReticlePlayerBadge
+    end
+    if not WINDOW_MANAGER or not GuiRoot then return nil end
+
+    -- Completely independent top-level label. No ZO_TargetUnitFrame controls are
+    -- reused, so native target-frame hidden reasons cannot suppress it.
+    local badge = WINDOW_MANAGER:CreateTopLevelWindow("UltiviteMouseoverPlayerCpBadge")
+    badge:SetDimensions(100, 34)
+    badge:SetMouseEnabled(false)
+    badge:SetMovable(false)
+    if badge.SetClampedToScreen then badge:SetClampedToScreen(true) end
+    if badge.SetDrawTier and DT_HIGH then badge:SetDrawTier(DT_HIGH) end
+    if badge.SetDrawLayer and DL_OVERLAY then badge:SetDrawLayer(DL_OVERLAY) end
+    if badge.SetDrawLevel then badge:SetDrawLevel(3000) end
+    badge:SetHidden(true)
+
+    local label = WINDOW_MANAGER:CreateControl("UltiviteMouseoverPlayerCpBadgeLabel", badge, CT_LABEL)
+    label:SetAnchorFill(badge)
+    label:SetFont("ZoFontGameBold")
+    if label.SetVerticalAlignment and TEXT_ALIGN_CENTER then label:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+    if label.SetHorizontalAlignment and TEXT_ALIGN_CENTER then label:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    label:SetMouseEnabled(false)
+    if label.SetDrawTier and DT_HIGH then label:SetDrawTier(DT_HIGH) end
+    if label.SetDrawLayer and DL_OVERLAY then label:SetDrawLayer(DL_OVERLAY) end
+    if label.SetDrawLevel then label:SetDrawLevel(3001) end
+
+    badge.cpIcon = nil
+    badge.cpLabel = label
+    KS.nativeReticlePlayerBadge = badge
+    return badge
+end
+
+function KS.EnsureNativeReticlePlayerFrame()
+    -- Compatibility name retained for callers. The mouseover CP presentation is
+    -- now an independent Ultivite top-level badge, not a native target frame.
+    return nil
+end
+
+function KS.IsCpOnHoverEnabled()
+    return KS.sv ~= nil and KS.sv.cpOnHover ~= false
+end
+
+function KS.SetCpOnHoverEnabled(enabled, silent)
+    if not KS.sv then return false end
+    KS.sv.cpOnHover = enabled ~= false
+    if KS.sv.cpOnHover ~= true then
+        HideNativeReticlePlayerFrame()
+    elseif KS.UpdateOverheadPlayerInfo then
+        KS.UpdateOverheadPlayerInfo()
+    end
+    if U and U.RequestSettingsSave then U.RequestSettingsSave(true) end
+    if not silent then
+        chat("CP on Hover: " .. (KS.sv.cpOnHover == true and "ON" or "OFF"))
+    end
+    return true
+end
+
+function KS.UpdateNativeReticlePlayerFrame(activeUnitTag, suppressForGroup)
+    if not KS.IsCpOnHoverEnabled() then
+        HideNativeReticlePlayerFrame()
+        return false
+    end
+    if activeUnitTag ~= "reticleoverplayer" or suppressForGroup == true then
+        HideNativeReticlePlayerFrame()
+        return false
+    end
+    if not DoesUnitExist or not IsUnitPlayer
+        or not DoesUnitExist("reticleoverplayer") or not IsUnitPlayer("reticleoverplayer") then
+        HideNativeReticlePlayerFrame()
+        return false
+    end
+
+    local badge = EnsureMouseoverCpBadge()
+    if not badge or not badge.cpLabel then
+        HideNativeReticlePlayerFrame()
+        return false
+    end
+
+    local cp = GetUnitChampionPointsSafe("reticleoverplayer")
+    local level = cp > 0 and 0 or GetUnitLevelSafe("reticleoverplayer")
+    local hasValue = cp > 0 or level > 0
+    if not hasValue then
+        HideNativeReticlePlayerFrame()
+        return false
+    end
+
+    local progressionText = cp > 0 and ("CP " .. tostring(cp)) or ("Lv " .. tostring(level))
+    badge.cpLabel:SetText(progressionText)
+    PositionMouseoverCpBadge(badge, "reticleoverplayer", progressionText)
+
+    local r, g, b = 0.20, 0.80, 1.00
+    if GetUnitReactionColor then
+        local okColor, rr, gg, bb = pcall(GetUnitReactionColor, "reticleoverplayer")
+        if okColor and tonumber(rr) and tonumber(gg) and tonumber(bb) then
+            r, g, b = rr, gg, bb
+        end
+    end
+    badge.cpLabel:SetColor(r, g, b, 1)
+    badge.cpLabel:SetAlpha(1)
+    badge.cpLabel:SetHidden(false)
+    badge:SetAlpha(1)
+    badge:SetHidden(false)
+
+    local left, top, width, height = nil, nil, nil, nil
+    if badge.GetLeft then pcall(function() left = badge:GetLeft() end) end
+    if badge.GetTop then pcall(function() top = badge:GetTop() end) end
+    if badge.GetWidth then pcall(function() width = badge:GetWidth() end) end
+    if badge.GetHeight then pcall(function() height = badge:GetHeight() end) end
+
+    KS.worldCpDiag = KS.worldCpDiag or {}
+    KS.worldCpDiag.lastNativeReticlePlayerFrameRender = {
+        atMs = WorldCpDiagNowMs(),
+        tag = "reticleoverplayer",
+        cp = cp,
+        level = level,
+        nameText = "",
+        levelText = tostring(badge.cpLabel:GetText() or ""),
+        visible = true,
+        cpOnly = true,
+        badgeLeft = tonumber(left),
+        badgeTop = tonumber(top),
+        badgeWidth = tonumber(width),
+        badgeHeight = tonumber(height),
+        offsetX = tonumber(badge._ultiviteOffsetX),
+        offsetY = tonumber(badge._ultiviteOffsetY),
+        nameLine = tostring(badge._ultiviteNameLine or ""),
+        nameWidth = tonumber(badge._ultiviteNameWidth) or 0,
+        progressionWidth = tonumber(badge._ultiviteProgressionWidth) or 0,
+        directTopLevel = true,
+        visuallyFusedToName = true,
+    }
+    return true
 end
 
 function KS.CreateOverheadPlayerInfoUi()
@@ -2393,32 +3018,24 @@ function KS.CreateOverheadPlayerInfoUi()
         end)
     end
 
-    if not KS.overheadPlayerInfoReticleLabel then
-        local label = WINDOW_MANAGER:CreateControl("UltiviteOverheadPlayerInfoReticle", GuiRoot, CT_LABEL)
-        KS.overheadPlayerInfoReticleLabel = label
-        label:SetDimensions(520, 28)
-        label:SetFont("ZoFontGameShadow")
-        label:SetColor(1, 1, 1, 1)
-        label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-        label:SetMouseEnabled(false)
-        label:SetDrawLayer(DL_OVERLAY)
-        label:SetDrawTier(DT_HIGH)
-        label:SetHidden(true)
-    end
-
+    KS.EnsureNativeReticlePlayerFrame()
     return true
 end
 
 function KS.GetUnitHeadScreenPosition(unitTag)
-    -- Only grouped units may be projected. Never ask ESO for the world position
-    -- of reticleover, an enemy or any other non-grouped player.
-    if type(unitTag) ~= "string" or not unitTag:match("^group%d+$") then return nil, nil end
-    if not KS.overheadPlayerInfoProbe or not GetUnitWorldPosition or not WorldPositionToGuiRender3DPosition then
+    -- World-space CP is intentionally limited to stable groupN unit tags. API
+    -- 101050 exposes CP for reticleoverplayer but not usable arbitrary-player
+    -- world coordinates. Keep this helper fail-closed so future callers cannot
+    -- accidentally reintroduce ungrouped-player projection attempts.
+    if type(unitTag) ~= "string" or not string.match(unitTag, "^group%d+$") then return nil, nil end
+    local groupWorldPosition = GetUnitRawWorldPosition or GetUnitWorldPosition
+    if not KS.overheadPlayerInfoProbe or not groupWorldPosition or not WorldPositionToGuiRender3DPosition then
         return nil, nil
     end
 
-    local okWorld, zoneId, worldX, worldY, worldZ = pcall(GetUnitWorldPosition, unitTag)
+    -- OdySupportIcons moved group world markers to raw positions to avoid
+    -- remapping errors in places such as Imperial City and instanced zones.
+    local okWorld, zoneId, worldX, worldY, worldZ = pcall(groupWorldPosition, unitTag)
     if not okWorld then return nil, nil end
     zoneId = tonumber(zoneId) or 0
     worldX = tonumber(worldX)
@@ -2486,9 +3103,145 @@ function KS.GetOverheadPlayerInfoGroupLabel(index)
     return label
 end
 
+local function IsSameUnitSafe(unitTagA, unitTagB)
+    if not unitTagA or not unitTagB or not DoesUnitExist or not AreUnitsEqual then return false end
+    if not DoesUnitExist(unitTagA) or not DoesUnitExist(unitTagB) then return false end
+    local ok, same = pcall(AreUnitsEqual, unitTagA, unitTagB)
+    return ok and same == true
+end
+
+function KS.GetActiveReticlePlayerTag()
+    -- Dedicated player targeting is authoritative. reticleover can simultaneously
+    -- point at a pet, summon or other generic unit while reticleoverplayer contains
+    -- the actual highlighted player.
+    local candidates = { "reticleoverplayer", "reticleover" }
+    for _, unitTag in ipairs(candidates) do
+        if DoesUnitExist and IsUnitPlayer then
+            local okExists, exists = pcall(DoesUnitExist, unitTag)
+            local okPlayer, isPlayer = pcall(IsUnitPlayer, unitTag)
+            if okExists and exists and okPlayer and isPlayer then
+                return unitTag
+            end
+        end
+    end
+    return nil
+end
+
+function KS.GetLiveReticlePlayerPresentationInfo()
+    local unitTag = KS.GetActiveReticlePlayerTag()
+    if not unitTag then return nil end
+
+    local name = ""
+    if GetUnitName then
+        local ok, value = pcall(GetUnitName, unitTag)
+        if ok then name = cleanName(value) end
+    end
+    local displayName = ""
+    if GetUnitDisplayName then
+        local ok, value = pcall(GetUnitDisplayName, unitTag)
+        if ok and type(value) == "string" then displayName = value end
+    end
+    if name == "" then name = cleanName(displayName) end
+    if name == "" then return nil end
+
+    local cp = GetUnitChampionPointsSafe(unitTag)
+    local level = cp > 0 and 0 or GetUnitLevelSafe(unitTag)
+    local health, healthMax = 0, 0
+    if GetUnitPower then
+        local ok, value, maxValue = pcall(GetUnitPower, unitTag, COMBAT_MECHANIC_FLAGS_HEALTH)
+        if ok then
+            health = tonumber(value) or 0
+            healthMax = tonumber(maxValue) or 0
+        end
+    end
+
+    return {
+        unitTag = unitTag,
+        name = name,
+        isPlayer = true,
+        displayName = displayName,
+        className = "",
+        classId = 0,
+        championPoints = cp,
+        level = level,
+        health = health,
+        healthMax = healthMax,
+        updatedAt = GetFrameTimeSeconds and GetFrameTimeSeconds() or 0,
+    }
+end
+
+local function IsUltiviteTargetPlayerProgressActuallyVisible(activeUnitTag)
+    -- Suppress the fallback only when the same targeted player has another
+    -- Ultivite CP/level presentation that was actually rendered on screen.
+    -- Settings are not evidence of visibility.
+    local activeTag = tostring(activeUnitTag or "")
+    if activeTag == "" then return false end
+
+    local diag = KS.worldCpDiag or {}
+    local render = diag.lastTargetNameRender
+    if render and render.visible == true and tostring(render.tag or "") == activeTag then
+        local ageMs = WorldCpDiagNowMs() - (tonumber(render.atMs) or 0)
+        if ageMs >= 0 and ageMs <= 300 then
+            return true
+        end
+    end
+
+    -- The Dark Souls player frame has its own Champion icon/number. It is safe
+    -- to treat it as an alternate only while it is visibly rendering a player.
+    if Frames and Frames.IsDSEnemyPlayerPresentationVisible
+        and Frames.IsDSEnemyPlayerPresentationVisible() then
+        return true
+    end
+
+    return false
+end
+
+function KS.ShouldUseNativePlayerProgressBridge(activeUnitTag)
+    if not KS.sv then return false end
+    -- 1.0.184 incorrectly gated this fallback on nativeOverheadTargetBar. That
+    -- setting controls enemy overhead health bars and is unrelated to ESO's
+    -- engine-rendered player nameplate. A real targeted player now gets this
+    -- bridge unless the same player already has confirmed Ultivite CP/level text.
+    return not IsUltiviteTargetPlayerProgressActuallyVisible(activeUnitTag)
+end
+
+function KS.ShouldUseReticlePlayerProgressFallback()
+    -- Compatibility shim for diagnostics/older callers. The old reticle-anchored
+    -- label is retired; the supported fallback is now the top-centre target bridge.
+    return KS.ShouldUseNativePlayerProgressBridge(KS.GetActiveReticlePlayerTag and KS.GetActiveReticlePlayerTag() or nil)
+end
+
+local function ApplyOverheadPlayerLabelColor(label, unitTag)
+    if not label then return end
+    if GetUnitReactionColor then
+        local ok, r, g, b = pcall(GetUnitReactionColor, unitTag)
+        if ok and tonumber(r) and tonumber(g) and tonumber(b) then
+            label:SetColor(r, g, b, 1)
+            return
+        end
+    end
+    label:SetColor(1, 1, 1, 1)
+end
+
+function KS.InstallOverheadPlayerUnitTracking()
+    if KS.overheadPlayerUnitTrackingInstalled then return end
+    KS.overheadPlayerUnitTrackingInstalled = true
+
+    -- Reticle handling is consolidated into the main target-change registrations
+    -- during initialization. Keep this compatibility initializer so settings and
+    -- older callers can safely request the runtime without creating duplicate
+    -- event writers.
+    KS.worldCpReticleChangedRegistered = EVENT_RETICLE_TARGET_CHANGED ~= nil
+    KS.worldCpReticlePlayerChangedRegistered = EVENT_RETICLE_TARGET_PLAYER_CHANGED ~= nil
+end
+
 function KS.HideOverheadPlayerInfo()
+    HideNativeReticlePlayerFrame()
     if KS.overheadPlayerInfoReticleLabel then
         KS.overheadPlayerInfoReticleLabel:SetHidden(true)
+    end
+    if KS.overheadPlayerInfoTargetBridgeLabel then
+        KS.overheadPlayerInfoTargetBridgeLabel:SetHidden(true)
     end
     for _, label in pairs(KS.overheadPlayerInfoGroupLabels or {}) do
         if label then label:SetHidden(true) end
@@ -2496,36 +3249,52 @@ function KS.HideOverheadPlayerInfo()
 end
 
 function KS.UpdateOverheadPlayerInfo()
-    if not KS.sv or KS.sv.overheadPlayerInfo ~= true then
+    if not KS.sv then
         KS.HideOverheadPlayerInfo()
         return
     end
+    local immersive = U and U.Immersive
+    if immersive and immersive.ShouldHideOverheadPlayerInfo and immersive.ShouldHideOverheadPlayerInfo() then
+        KS.HideOverheadPlayerInfo()
+        return
+    end
+    KS.sv.overheadPlayerInfo = true
     if not KS.CreateOverheadPlayerInfoUi() then return end
 
+    local activeReticlePlayerTag = KS.GetActiveReticlePlayerTag()
+    KS.RecordWorldCpPollingDiagnostic(activeReticlePlayerTag)
+
+    -- Supported world-follow path: stable group unit tags only.
     local groupSize = 0
     if GetGroupSize then
         local ok, value = pcall(GetGroupSize)
         if ok then groupSize = math.max(0, math.min(tonumber(value) or 0, tonumber(GROUP_SIZE_MAX) or 24)) end
     end
     local reticleIsGroupMember = false
+    local reticleGroupLabelVisible = false
+    local visibleGroupCount = 0
     for index = 1, groupSize do
-        local unitTag = "group" .. tostring(index)
+        local unitTag = GetGroupUnitTagByIndex and GetGroupUnitTagByIndex(index) or nil
+        if type(unitTag) ~= "string" or unitTag == "" then
+            unitTag = "group" .. tostring(index)
+        end
         local label = KS.GetOverheadPlayerInfoGroupLabel(index)
         local visible = false
         if label and DoesUnitExist and DoesUnitExist(unitTag) then
-            if DoesUnitExist("reticleover") and AreUnitsEqual then
-                local okEqual, equal = pcall(AreUnitsEqual, unitTag, "reticleover")
-                if okEqual and equal == true then reticleIsGroupMember = true end
-            end
-            local text = KS.GetOverheadPlayerInfoText(unitTag)
-            if text ~= "" then
+            local matchesReticle = activeReticlePlayerTag and IsSameUnitSafe(unitTag, activeReticlePlayerTag) or false
+            if matchesReticle then reticleIsGroupMember = true end
+            local textValue = KS.GetOverheadPlayerInfoText(unitTag)
+            if textValue ~= "" then
                 local x, y = KS.GetUnitHeadScreenPosition(unitTag)
                 if x and y then
-                    label:SetText(text)
+                    label:SetText(textValue)
+                    ApplyOverheadPlayerLabelColor(label, unitTag)
                     label:ClearAnchors()
                     label:SetAnchor(BOTTOM, GuiRoot, TOPLEFT, x, y - OVERHEAD_PLAYER_INFO_SCREEN_GAP)
                     label:SetHidden(false)
                     visible = true
+                    visibleGroupCount = visibleGroupCount + 1
+                    if matchesReticle then reticleGroupLabelVisible = true end
                 end
             end
         end
@@ -2535,61 +3304,333 @@ function KS.UpdateOverheadPlayerInfo()
         local label = KS.overheadPlayerInfoGroupLabels[index]
         if label then label:SetHidden(true) end
     end
+    KS.overheadPlayerInfoGroupCount = groupSize
+    KS.overheadPlayerInfoVisibleCount = visibleGroupCount
 
+    -- Mouseover-only player CP badge. ESO does not expose a writable blue
+    -- floating nameplate, so use only the proven native Champion icon/level
+    -- controls and position that compact pair directly under the nameplate area.
+    -- If a group world label already occupies the same player, suppress the
+    -- mouseover badge to avoid duplicate CP values.
     local reticleLabel = KS.overheadPlayerInfoReticleLabel
-    local reticleVisible = false
-    if not reticleIsGroupMember
-        and reticleLabel and DoesUnitExist and DoesUnitExist("reticleover")
-        and IsUnitPlayer and IsUnitPlayer("reticleover") then
-        local text = KS.GetOverheadPlayerInfoText("reticleover")
-        if text ~= "" then
-            reticleLabel:SetText(text)
-            reticleLabel:ClearAnchors()
-
-            -- Non-grouped player/enemy positions must not be queried. Mouseover
-            -- information stays at a fixed 2D reticle anchor.
-            reticleLabel:SetAnchor(BOTTOM, GuiRoot, CENTER, 0, OVERHEAD_PLAYER_INFO_RETICLE_Y)
-            reticleLabel:SetHidden(false)
-            reticleVisible = true
-        end
+    if reticleLabel then reticleLabel:SetHidden(true) end
+    if KS.overheadPlayerInfoTargetBridgeLabel then
+        KS.overheadPlayerInfoTargetBridgeLabel:SetHidden(true)
     end
-    if reticleLabel and not reticleVisible then reticleLabel:SetHidden(true) end
+    local mouseoverCpVisible = KS.UpdateNativeReticlePlayerFrame(activeReticlePlayerTag, reticleGroupLabelVisible == true)
+
+    KS.overheadPlayerInfoLastReticleTag = activeReticlePlayerTag or ""
+    KS.overheadPlayerInfoLastReticleCp = activeReticlePlayerTag and GetUnitChampionPointsSafe(activeReticlePlayerTag) or 0
+    KS.overheadPlayerInfoLastReticleProjected = false
+    KS.overheadPlayerInfoLastReticleFallback = mouseoverCpVisible == true
+    KS.overheadPlayerInfoLastReticleGrace = false
+    KS.overheadPlayerInfoLastReticleGroupMatch = reticleIsGroupMember == true
+    KS.overheadPlayerInfoLastReticleTrackedMatch = false
+    KS.overheadPlayerInfoLastReticleAlternateVisible = reticleGroupLabelVisible == true
 end
 
 function KS.RefreshOverheadPlayerInfoRuntime()
     if not EVENT_MANAGER then return end
     local updateName = KS.name .. "OverheadPlayerInfo"
-    if KS.sv and KS.sv.overheadPlayerInfo == true then
+    if KS.sv then
+        -- CP / level is an always-on presentation rule from 1.0.172 onward.
+        KS.sv.overheadPlayerInfo = true
         KS.CreateOverheadPlayerInfoUi()
-        EVENT_MANAGER:RegisterForUpdate(updateName, OVERHEAD_PLAYER_INFO_UPDATE_MS, function()
-            KS.UpdateOverheadPlayerInfo()
-        end)
+        KS.InstallOverheadPlayerUnitTracking()
+        if not KS.overheadPlayerInfoUpdateRegistered then
+            EVENT_MANAGER:RegisterForUpdate(updateName, OVERHEAD_PLAYER_INFO_UPDATE_MS, function()
+                KS.UpdateOverheadPlayerInfo()
+            end)
+            KS.overheadPlayerInfoUpdateRegistered = true
+        end
         KS.UpdateOverheadPlayerInfo()
     else
-        EVENT_MANAGER:UnregisterForUpdate(updateName)
+        if KS.overheadPlayerInfoUpdateRegistered then
+            EVENT_MANAGER:UnregisterForUpdate(updateName)
+            KS.overheadPlayerInfoUpdateRegistered = false
+        end
         KS.HideOverheadPlayerInfo()
     end
 end
 
 function KS.SetOverheadPlayerInfoEnabled(enabled, silent)
     if not KS.sv then return end
-    enabled = enabled and true or false
-    KS.sv.overheadPlayerInfo = enabled
+    -- Compatibility entry point retained for older profiles/callers. The setting
+    -- is deliberately forced on because CP / level should accompany player HUD
+    -- information whenever ESO exposes a usable player unitTag.
+    KS.sv.overheadPlayerInfo = true
     KS.RefreshOverheadPlayerInfoRuntime()
     if KS.ApplyPlayerNamesOverride then KS.ApplyPlayerNamesOverride() end
     if U and U.RequestSettingsSave then U.RequestSettingsSave(true) end
 
     if not silent then
-        chat(enabled
-            and "Overhead Player Info enabled: group members show Character Name + CP/Level; mouseover players show available CP/Level."
-            or "Overhead Player Info disabled.")
+        chat("Player CP / level: ALWAYS ON")
     end
 end
 
 function KS.IsWorldFollowMode()
-    -- Disabled permanently: following a reticle target would require querying a
-    -- non-grouped/enemy world position, which ESOUI explicitly prohibits.
+    -- Legacy target-frame world-follow is permanently disabled. Group CP labels
+    -- have their own independent world-follow path and must never move the main
+    -- target frame or force it onto the fallback anchor.
     return false
+end
+
+function KS.GetWorldPlayerCpDiagnostics()
+    return tonumber(KS.overheadPlayerInfoGroupCount) or 0,
+        tonumber(KS.overheadPlayerInfoVisibleCount) or 0,
+        tostring(KS.overheadPlayerInfoLastReticleTag or ""),
+        tonumber(KS.overheadPlayerInfoLastReticleCp) or 0,
+        false
+end
+
+function KS.ClearWorldPlayerCpDiagnostic()
+    KS.worldCpDiag = {
+        reticleChanged = 0,
+        reticlePlayerChanged = 0,
+        reticleCaptures = 0,
+        reticleMisses = 0,
+        pollPlayerHits = 0,
+        pollPlayerLosses = 0,
+        lastReticle = nil,
+        lastPollTag = "",
+        lastPollAtMs = 0,
+        lastTargetNameRender = nil,
+        lastNativePlayerBridgeRender = nil,
+    }
+    chat("CP diagnostics reset. Look directly at a player, then run /ulticpdiag. Group world labels, native-overhead bridge, and custom target-frame CP are reported separately.")
+end
+
+local worldCpDiagCollector = nil
+
+local function WorldCpDiagChat(message)
+    local line = "CP DIAG | " .. tostring(message or "")
+    if worldCpDiagCollector then
+        worldCpDiagCollector[#worldCpDiagCollector + 1] = line
+    else
+        chat(line)
+    end
+end
+
+local function WorldCpDiagPrintSnapshot(prefix, snapshot)
+    WorldCpDiagChat(tostring(prefix) .. " " .. FormatWorldCpSnapshot(snapshot))
+end
+
+local function EmitWorldPlayerCpDiagnostic()
+    KS.UpdateOverheadPlayerInfo()
+    KS.RefreshDisplay(true)
+
+    local diag = KS.worldCpDiag or {}
+    local apiVersion = GetAPIVersion and tonumber(GetAPIVersion()) or 0
+    local groupCount = tonumber(KS.overheadPlayerInfoGroupCount) or 0
+    local groupVisible = tonumber(KS.overheadPlayerInfoVisibleCount) or 0
+    local livePlayer = KS.GetLiveReticlePlayerPresentationInfo()
+
+    WorldCpDiagChat(string.format("BEGIN | Ultivite 1.0.200 | API=%d", apiVersion))
+    WorldCpDiagChat("Architecture: groupTags=world-follow | mouseoverPlayer=reticle-driven CP visually fused to measured blue name/title width | nativeNameplateText=engine-owned")
+    WorldCpDiagChat("CP on Hover: " .. (KS.IsCpOnHoverEnabled() and "ON" or "OFF"))
+    WorldCpDiagChat(string.format(
+        "Tracking: installed=%s reticleChanged=%s reticlePlayerChanged=%s groupTags=%d groupVisible=%d",
+        diagBool(KS.overheadPlayerUnitTrackingInstalled == true),
+        diagBool(KS.worldCpReticleChangedRegistered == true),
+        diagBool(KS.worldCpReticlePlayerChangedRegistered == true),
+        groupCount, groupVisible))
+
+    WorldCpDiagPrintSnapshot("NOW reticleoverplayer:", CaptureWorldCpUnitSnapshot("reticleoverplayer", "command"))
+    WorldCpDiagPrintSnapshot("NOW reticleover:", CaptureWorldCpUnitSnapshot("reticleover", "command"))
+
+    if livePlayer then
+        WorldCpDiagChat(string.format(
+            "Target presentation: tag=%s name=%s cp=%d level=%d health=%d/%d mode=%s",
+            tostring(livePlayer.unitTag or ""), tostring(livePlayer.displayName ~= "" and livePlayer.displayName or livePlayer.name or ""),
+            tonumber(livePlayer.championPoints) or 0, tonumber(livePlayer.level) or 0,
+            tonumber(livePlayer.health) or 0, tonumber(livePlayer.healthMax) or 0,
+            "engine-nameplate-unaddressable"))
+    else
+        WorldCpDiagChat("Target presentation: NONE")
+    end
+
+    local lastReticle = diag.lastReticle
+    if lastReticle then
+        local ageMs = math.max(0, WorldCpDiagNowMs() - (tonumber(lastReticle.atMs) or 0))
+        WorldCpDiagPrintSnapshot(string.format("LAST player target (%dms ago):", ageMs), lastReticle)
+    else
+        WorldCpDiagChat("LAST player target: NONE")
+    end
+
+    WorldCpDiagChat(string.format(
+        "Events: reticle=%d playerReticle=%d captures=%d misses=%d worldLoopHits=%d worldLoopLosses=%d",
+        tonumber(diag.reticleChanged) or 0, tonumber(diag.reticlePlayerChanged) or 0,
+        tonumber(diag.reticleCaptures) or 0, tonumber(diag.reticleMisses) or 0,
+        tonumber(diag.pollPlayerHits) or 0, tonumber(diag.pollPlayerLosses) or 0))
+
+    WorldCpDiagChat("Reticle indicator: RETIRED | native floating nameplate is not writable")
+
+    HideNativeReticlePlayerFrame()
+    WorldCpDiagChat("Native mouseover CP badge: independent top-level label; name/title width measured with ZoFontGameBold; CP placed after expected blue-line right edge; Y=-72 from ESO reticle")
+    if diag.lastNativeReticlePlayerFrameRender then
+        local render = diag.lastNativeReticlePlayerFrameRender
+        local renderAge = math.max(0, WorldCpDiagNowMs() - (tonumber(render.atMs) or 0))
+        WorldCpDiagChat(string.format(
+            "LAST mouseover CP badge %dms ago: tag=%s cp=%d level=%d visible=%s text=%q cpOnly=%s nameLine=%q nameWidth=%.1f offset=%.1f,%.1f rect=%s",
+            renderAge, tostring(render.tag or ""), tonumber(render.cp) or 0,
+            tonumber(render.level) or 0, diagBool(render.visible == true),
+            tostring(render.levelText or ""), diagBool(render.cpOnly == true),
+            tostring(render.nameLine or ""), tonumber(render.nameWidth) or 0,
+            tonumber(render.offsetX) or 0, tonumber(render.offsetY) or 0,
+            render.badgeLeft and string.format("%.1f,%.1f %.1fx%.1f", render.badgeLeft, render.badgeTop or 0, render.badgeWidth or 0, render.badgeHeight or 0) or "none"))
+    else
+        WorldCpDiagChat("LAST mouseover CP badge: NONE")
+    end
+    local last = diag.lastReticle
+    if last and last.exists and last.isPlayer then
+        WorldCpDiagChat(string.format(
+            "Ungrouped nameplate limit: tag=%s name=%s cp=%d level=%d worldPosition=%s writableNameplate=false",
+            tostring(last.tag or ""),
+            tostring(last.displayName ~= "" and last.displayName or last.rawName or ""),
+            tonumber(last.cpEffective) or 0, tonumber(last.level) or 0,
+            diagBool(last.hasWorldPosition == true)))
+    else
+        WorldCpDiagChat("Ungrouped nameplate limit: no recent player snapshot")
+    end
+
+    if diag.lastTargetNameRender then
+        local render = diag.lastTargetNameRender
+        local renderAge = math.max(0, WorldCpDiagNowMs() - (tonumber(render.atMs) or 0))
+        WorldCpDiagChat(string.format(
+            "LAST target-name render %dms ago: tag=%s cp=%d level=%d visible=%s mode=%s text=%q",
+            renderAge, tostring(render.tag or ""), tonumber(render.cp) or 0,
+            tonumber(render.level) or 0, diagBool(render.visible == true),
+            tostring(render.targetFrameMode or ""), tostring(render.text or "")))
+    else
+        WorldCpDiagChat("LAST target-name render: NONE")
+    end
+
+    WorldCpDiagChat("END")
+end
+
+function KS.GetWorldPlayerCpDiagnosticText()
+    local previousCollector = worldCpDiagCollector
+    local lines = {}
+    worldCpDiagCollector = lines
+    local ok, err = pcall(EmitWorldPlayerCpDiagnostic)
+    worldCpDiagCollector = previousCollector
+    if not ok then
+        lines[#lines + 1] = "CP DIAG | ERROR while building report: " .. tostring(err)
+    end
+    return table.concat(lines, "\n")
+end
+
+function KS.PrintWorldPlayerCpDiagnostic()
+    EmitWorldPlayerCpDiagnostic()
+end
+
+function KS.ShowWorldPlayerCpDiagnostic()
+    if not WINDOW_MANAGER or not GuiRoot then
+        KS.PrintWorldPlayerCpDiagnostic()
+        return false
+    end
+
+    local window = KS.worldCpDiagnosticWindow
+    if not window then
+        window = WINDOW_MANAGER:CreateTopLevelWindow("UltiviteWorldCpDiagnosticWindow")
+        window:SetDimensions(1080, 680)
+        window:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+        window:SetDrawTier(DT_HIGH)
+        window:SetDrawLayer(DL_OVERLAY)
+        window:SetDrawLevel(5200)
+        window:SetMouseEnabled(true)
+        window:SetMovable(true)
+        window:SetClampedToScreen(true)
+        window:SetHidden(true)
+
+        local backdrop = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticBackdrop", window, CT_BACKDROP)
+        backdrop:SetAnchorFill(window)
+        backdrop:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+        backdrop:SetCenterColor(0.02, 0.02, 0.02, 0.98)
+        backdrop:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 2, 0)
+        backdrop:SetEdgeColor(0.35, 0.35, 0.35, 1)
+
+        local title = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticTitle", window, CT_LABEL)
+        title:SetFont("ZoFontWinH2")
+        title:SetText("Ultivite Player CP Diagnostics")
+        title:SetAnchor(TOPLEFT, window, TOPLEFT, 24, 18)
+        title:SetMouseEnabled(true)
+        title:SetHandler("OnMouseDown", function(_, button)
+            if button == MOUSE_BUTTON_INDEX_LEFT and window.StartMoving then window:StartMoving() end
+        end)
+        title:SetHandler("OnMouseUp", function(_, button)
+            if button == MOUSE_BUTTON_INDEX_LEFT and window.StopMovingOrResizing then window:StopMovingOrResizing() end
+        end)
+
+        local help = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticHelp", window, CT_LABEL)
+        help:SetFont("ZoFontGame")
+        help:SetText("The concise CP report is already selected. Press Ctrl+C, then paste it into ChatGPT. It reports group world-follow separately from targeted-player CP presentation.")
+        help:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 8)
+        help:SetDimensions(1030, 44)
+
+        local edit = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticEdit", window, CT_EDITBOX)
+        edit:SetAnchor(TOPLEFT, window, TOPLEFT, 24, 94)
+        edit:SetDimensions(1032, 510)
+        edit:SetFont("ZoFontGame")
+        edit:SetMultiLine(true)
+        edit:SetNewLineEnabled(true)
+        edit:SetEditEnabled(true)
+        edit:SetCopyEnabled(true)
+        edit:SetPasteEnabled(false)
+        edit:SetMaxInputChars(50000)
+        edit:SetSelectAllOnFocus(true)
+        edit:SetColor(1, 1, 1, 1)
+        edit:SetHandler("OnEscape", function()
+            edit:LoseFocus()
+            window:SetHidden(true)
+        end)
+
+        local arm = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticArm", window, CT_BUTTON)
+        arm:SetDimensions(200, 36)
+        arm:SetAnchor(BOTTOMLEFT, window, BOTTOMLEFT, 24, -18)
+        arm:SetFont("ZoFontGameBold")
+        arm:SetText("Reset Capture")
+        arm:SetHandler("OnClicked", function()
+            edit:LoseFocus()
+            KS.ClearWorldPlayerCpDiagnostic()
+            window:SetHidden(true)
+        end)
+
+        local printButton = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticPrint", window, CT_BUTTON)
+        printButton:SetDimensions(180, 36)
+        printButton:SetAnchor(BOTTOM, window, BOTTOM, 0, -18)
+        printButton:SetFont("ZoFontGameBold")
+        printButton:SetText("Print to Chat")
+        printButton:SetHandler("OnClicked", function() KS.PrintWorldPlayerCpDiagnostic() end)
+
+        local close = WINDOW_MANAGER:CreateControl("UltiviteWorldCpDiagnosticClose", window, CT_BUTTON)
+        close:SetDimensions(180, 36)
+        close:SetAnchor(BOTTOMRIGHT, window, BOTTOMRIGHT, -24, -18)
+        close:SetFont("ZoFontGameBold")
+        close:SetText("Close")
+        close:SetHandler("OnClicked", function()
+            edit:LoseFocus()
+            window:SetHidden(true)
+        end)
+
+        window.edit = edit
+        KS.worldCpDiagnosticWindow = window
+    end
+
+    window.edit:SetText(KS.GetWorldPlayerCpDiagnosticText())
+    window:SetHidden(false)
+    if zo_callLater then
+        zo_callLater(function()
+            if window and window.edit and not window:IsHidden() then
+                window.edit:TakeFocus()
+                window.edit:SelectAll()
+            end
+        end, 20)
+    else
+        window.edit:TakeFocus()
+        window.edit:SelectAll()
+    end
+    return true
 end
 
 function KS.ApplyRootVisibility()
@@ -2861,36 +3902,109 @@ end
 function KS.ApplyKillMessageAnchor()
     if not KS.killMessageRoot or not GuiRoot then return end
     -- Kill announcements are a screen HUD element, not part of the target frame.
-    -- Keep them consistently just above screen centre even when no combat timer is visible.
+    -- Preview Everything can now move this independently, so keep the saved
+    -- centre-relative position instead of hard-coding the old 0,-145 anchor.
+    local x = clamp(math.floor(tonumber(KS.sv and KS.sv.killMessageX) or defaults.killMessageX), -1100, 1100)
+    local y = clamp(math.floor(tonumber(KS.sv and KS.sv.killMessageY) or defaults.killMessageY), -600, 600)
+    if KS.sv then KS.sv.killMessageX, KS.sv.killMessageY = x, y end
     KS.killMessageRoot:ClearAnchors()
-    KS.killMessageRoot:SetAnchor(CENTER, GuiRoot, CENTER, 0, -145)
+    KS.killMessageRoot:SetAnchor(CENTER, GuiRoot, CENTER, x, y)
 end
 
-function KS.ShowKillMessage(displayName)
+local function rememberKillMessageVictim(displayName, victimKey, nowMs)
+    KS.killMessageRecentVictims = KS.killMessageRecentVictims or {}
+
+    local key = normalizeName(cleanName(victimKey))
+    if key == "" then key = normalizeName(cleanName(displayName)) end
+    if key == "" then key = normalizeName(displayName) end
+    if key == "" then return false end
+
+    local previousAtMs = tonumber(KS.killMessageRecentVictims[key]) or 0
+    KS.killMessageRecentVictims[key] = nowMs
+
+    for recentKey, atMs in pairs(KS.killMessageRecentVictims) do
+        atMs = tonumber(atMs) or 0
+        if atMs <= 0 or nowMs < atMs or (nowMs - atMs) > 1500 then
+            KS.killMessageRecentVictims[recentKey] = nil
+        end
+    end
+
+    return previousAtMs > 0 and nowMs >= previousAtMs and (nowMs - previousAtMs) < 1250
+end
+
+function KS.ShowKillMessage(displayName, sourceKind, victimKey)
     if not KS.sv or KS.sv.showPvpKillMessages == false then return end
     if not KS.IsPvpTrackingContext() then return end
     if not KS.killMessageRoot or not KS.killMessageLabel then return end
 
     displayName = tostring(displayName or "")
     if displayName == "" then displayName = "player" end
+    sourceKind = tostring(sourceKind or "direct")
+    victimKey = tostring(victimKey or displayName)
 
     local nowMs = GetGameTimeMilliseconds and GetGameTimeMilliseconds() or 0
+    if nowMs <= 0 then nowMs = math.floor((GetFrameTimeSeconds and GetFrameTimeSeconds() or 0) * 1000) end
+
+    -- PvP killing blows can be reported once by EVENT_COMBAT_EVENT and again by
+    -- the Battleground/PvP kill feed. Both event families expose the victim's
+    -- character name, so use that stable identity to count the kill only once.
+    local duplicateVictim = rememberKillMessageVictim(displayName, victimKey, nowMs)
+    local logicalNewKill = not duplicateVictim
+
     local incomingIsAccountName = displayName:sub(1, 1) == "@"
     local previousName = tostring(KS.lastKillMessageName or "")
     local previousWasAccountName = previousName:sub(1, 1) == "@"
     local previousAtMs = tonumber(KS.lastKillMessageAtMs) or 0
 
-    -- EVENT_BATTLEGROUND_KILL supplies the @display name, while the combat-event
-    -- fallback may only contain the character name. Do not let the lower-quality
-    -- fallback overwrite a just-received @display name for the same kill.
-    if not incomingIsAccountName and previousWasAccountName and nowMs > 0
-        and previousAtMs > 0 and (nowMs - previousAtMs) < 350 then
-        return
+    -- The authoritative PvP event usually has the victim's @display name while
+    -- the combat-event fallback may only have the character name. Upgrade the
+    -- text when that richer name arrives without incrementing the burst count.
+    if duplicateVictim and sourceKind == "authoritative" and incomingIsAccountName then
+        KS.lastKillMessageName = displayName
+    elseif logicalNewKill then
+        KS.lastKillMessageName = displayName
+    elseif not incomingIsAccountName and previousWasAccountName and previousAtMs > 0
+        and nowMs >= previousAtMs and (nowMs - previousAtMs) < 350 then
+        displayName = previousName
     end
 
-    KS.lastKillMessageName = displayName
+    if logicalNewKill then
+        local burstWindowMs = tonumber(KS.killMessageBurstWindowMs) or 900
+        local lastBurstAtMs = tonumber(KS.killMessageBurstLastAtMs) or 0
+        if lastBurstAtMs <= 0 or nowMs < lastBurstAtMs or (nowMs - lastBurstAtMs) > burstWindowMs then
+            KS.killMessageBurstCount = 1
+        else
+            KS.killMessageBurstCount = math.max(1, tonumber(KS.killMessageBurstCount) or 1) + 1
+        end
+        KS.killMessageBurstLastAtMs = nowMs
+    end
+
+    local burstCount = math.max(1, tonumber(KS.killMessageBurstCount) or 1)
+    local shownName = tostring(KS.lastKillMessageName or displayName)
+    if burstCount > 1 then
+        local streakTitle = nil
+        if burstCount >= 10 then
+            streakTitle = "ULTRA KILL"
+        elseif burstCount >= 5 then
+            streakTitle = "M M M MONSTER KILL"
+        elseif burstCount == 4 then
+            streakTitle = "QUAD KILL"
+        elseif burstCount == 3 then
+            streakTitle = "TRIPLE KILL"
+        elseif burstCount == 2 then
+            streakTitle = "DOUBLE KILL"
+        end
+
+        if streakTitle then
+            KS.killMessageText = string.format("%s  |  KILLED %d PLAYERS", streakTitle, burstCount)
+        else
+            KS.killMessageText = string.format("KILLED %d PLAYERS", burstCount)
+        end
+    else
+        KS.killMessageText = "KILLED " .. shownName
+    end
+
     KS.lastKillMessageAtMs = nowMs
-    KS.killMessageText = "KILLED " .. displayName
     KS.killMessageLabel:SetText(KS.killMessageText)
     KS.killMessageRoot:SetAlpha(1)
     KS.killMessageRoot:SetHidden(false)
@@ -2900,6 +4014,14 @@ end
 
 function KS.UpdateKillMessage()
     if not KS.killMessageRoot then return end
+    local quickMenu = U and U.QuickMenu or nil
+    local previewKill = quickMenu and quickMenu.IsPreviewing and quickMenu.IsPreviewing("killMessage") or false
+    if previewKill then
+        if KS.killMessageLabel then KS.killMessageLabel:SetText("KILLED @PREVIEW") end
+        KS.killMessageRoot:SetAlpha(1)
+        KS.killMessageRoot:SetHidden(false)
+        return
+    end
     local expiresAt = tonumber(KS.killMessageExpiresAt) or 0
     local now = GetFrameTimeSeconds and GetFrameTimeSeconds() or 0
     local remain = expiresAt - now
@@ -3114,7 +4236,7 @@ function KS.OnBattlegroundKill(eventCode, killedCharacterName, killedDisplayName
     if localKiller and not localVictim then
         local victimName = tostring(killedDisplayName or "")
         if victimName == "" then victimName = tostring(killedCharacterName or "") end
-        KS.ShowKillMessage(victimName)
+        KS.ShowKillMessage(victimName, "authoritative", killedCharacterName)
     end
 
     zo_callLater(function()
@@ -3131,13 +4253,13 @@ function KS.OnPvpKillFeedDeath(eventCode, killLocation, killerDisplayName, kille
     local localVictim = KS.IsLocalPvpIdentity(victimDisplayName, victimCharacterName)
 
     if localKiller and not localVictim then
-        KS.CountPvpKill((tostring(victimDisplayName or "") ~= "" and victimDisplayName) or victimCharacterName)
+        KS.CountPvpKill((tostring(victimDisplayName or "") ~= "" and victimDisplayName) or victimCharacterName, victimCharacterName)
     elseif localVictim then
         KS.CountPvpDeath()
     end
 end
 
-function KS.CountPvpKill(targetName)
+function KS.CountPvpKill(targetName, targetCharacterName)
     if not KS.sv or not KS.IsPvpTrackingContext() then return end
     if KS.GetPvpContextType() == "BG" then
         KS.SyncBattlegroundScoreboard(false)
@@ -3146,7 +4268,7 @@ function KS.CountPvpKill(targetName)
     end
 
     KS.sv.pvpKills = (tonumber(KS.sv.pvpKills) or 0) + 1
-    KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName))
+    KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName), "authoritative", targetCharacterName or targetName)
     KS.UpdatePvpHud(false)
 end
 
@@ -3279,7 +4401,7 @@ function KS.GetMenuOptions()
         {
             type = "checkbox",
             name = "Show health bars for ALL enemies",
-            tooltip = "When native overhead mode is enabled, show overhead health bars for every enemy NPC in PvE and every enemy player in PvP, including dungeons, Battlegrounds, Imperial City and Cyrodiil. Names are controlled separately.",
+            tooltip = "When native overhead mode is enabled, show overhead Health bars for every enemy NPC in PvE and every enemy player in PvP while you are in combat. Outside combat, enemy Health bars are always hidden. Names are controlled separately.",
             getFunc = function() return KS.sv.nativeAllEnemyHealthbars == true end,
             setFunc = function(value) KS.sv.nativeAllEnemyHealthbars = value and true or false; KS.ApplyNativeOverheadTargetBar() end,
             default = defaults.nativeAllEnemyHealthbars,
@@ -3488,7 +4610,7 @@ function KS.GetMenuOptions()
                         {
                             type = "checkbox",
                             name = "Corrosive Armor alert",
-                            tooltip = "Uses the same incoming-damage warning method as DKcorrosiveAlert: Corrosive Armor is detected when its periodic damage reaches you. While you mouse over the detected source, Ultivite adds the Corrosive icon above the reticle for the remaining tracked window.",
+                            tooltip = "Uses incoming periodic damage to identify Corrosive Armor. The live skill has a 10-second base duration; when the detected source is under your reticle Ultivite reads ESO's actual buff end time, so duration bonuses such as Eternal Mountain are reflected exactly.",
                             getFunc = function() return KS.sv.showEnemyCorrosiveAlert ~= false end,
                             setFunc = function(value)
                                 local alerts = U.EnemyUltimateAlerts
@@ -3512,7 +4634,7 @@ function KS.GetMenuOptions()
                         {
                             type = "button",
                             name = "Test Corrosive Armor alert",
-                            tooltip = "Runs the real Corrosive warning display for three seconds without requiring another player.",
+                            tooltip = "Runs the real Corrosive warning display using the current 10-second base Corrosive Armor duration without requiring another player.",
                             func = function()
                                 local alerts = U.EnemyUltimateAlerts
                                 if alerts and alerts.TestAlert then alerts.TestAlert("corrosive") end
@@ -3527,6 +4649,36 @@ function KS.GetMenuOptions()
                             func = function()
                                 local alerts = U.EnemyUltimateAlerts
                                 if alerts and alerts.TestAlert then alerts.TestAlert("onslaught") end
+                            end,
+                            disabled = function() return KS.sv.showEnemyOnslaughtAlert == false end,
+                            width = "half",
+                        },
+                        {
+                            type = "button",
+                            name = "Move Corrosive warning",
+                            tooltip = "Opens Ultivite Move / Resize Mode with the Corrosive warning preview selected. Drag the visible caster banner or reticle icon directly, then use SAVE & LOCK or close Ultivite settings.",
+                            func = function()
+                                local quick = U.QuickMenu
+                                if not quick then return end
+                                if quick.OpenFromSettings then quick.OpenFromSettings() end
+                                if quick.SetPreviewEnabled then quick.SetPreviewEnabled(true) end
+                                if quick.SelectPreview then quick.SelectPreview("corrosiveAlert") end
+                                if quick.ApplyActualPreviewVisibility then quick.ApplyActualPreviewVisibility() end
+                            end,
+                            disabled = function() return KS.sv.showEnemyCorrosiveAlert == false end,
+                            width = "half",
+                        },
+                        {
+                            type = "button",
+                            name = "Move Onslaught warning",
+                            tooltip = "Opens Ultivite Move / Resize Mode with the Onslaught warning preview selected. Drag the visible caster banner or reticle icon directly, then use SAVE & LOCK or close Ultivite settings.",
+                            func = function()
+                                local quick = U.QuickMenu
+                                if not quick then return end
+                                if quick.OpenFromSettings then quick.OpenFromSettings() end
+                                if quick.SetPreviewEnabled then quick.SetPreviewEnabled(true) end
+                                if quick.SelectPreview then quick.SelectPreview("onslaughtAlert") end
+                                if quick.ApplyActualPreviewVisibility then quick.ApplyActualPreviewVisibility() end
                             end,
                             disabled = function() return KS.sv.showEnemyOnslaughtAlert == false end,
                             width = "half",
@@ -3575,12 +4727,12 @@ function KS.GetMenuOptions()
                         },
                         {
                             type = "slider",
-                            name = "Top banner X",
-                            tooltip = "Moves the top screen Corrosive and Onslaught banner warnings left or right.",
-                            min = -800, max = 800, step = 5,
+                            name = "Caster alert banner X",
+                            tooltip = "Moves the Corrosive and Onslaught source/caster banner left or right. You can also drag this banner directly in MOVE / RESIZE MODE while previewing either alert.",
+                            min = -1600, max = 1600, step = 5,
                             getFunc = function() return tonumber(KS.sv.enemyUltimateAlertGlobalX) or defaults.enemyUltimateAlertGlobalX end,
                             setFunc = function(value)
-                                KS.sv.enemyUltimateAlertGlobalX = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertGlobalX), -800, 800)
+                                KS.sv.enemyUltimateAlertGlobalX = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertGlobalX), -1600, 1600)
                                 local alerts = U.EnemyUltimateAlerts
                                 if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
                                 if alerts and alerts.UpdateGlobalAlert then alerts.UpdateGlobalAlert() end
@@ -3590,12 +4742,12 @@ function KS.GetMenuOptions()
                         },
                         {
                             type = "slider",
-                            name = "Top banner Y",
-                            tooltip = "Moves the top screen Corrosive and Onslaught banner warnings up or down.",
-                            min = 0, max = 500, step = 5,
+                            name = "Caster alert banner Y",
+                            tooltip = "Moves the Corrosive and Onslaught source/caster banner vertically. The full screen height is available instead of only the old upper-screen range.",
+                            min = 0, max = 1600, step = 5,
                             getFunc = function() return tonumber(KS.sv.enemyUltimateAlertGlobalY) or defaults.enemyUltimateAlertGlobalY end,
                             setFunc = function(value)
-                                KS.sv.enemyUltimateAlertGlobalY = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertGlobalY), 0, 500)
+                                KS.sv.enemyUltimateAlertGlobalY = clamp(math.floor(tonumber(value) or defaults.enemyUltimateAlertGlobalY), 0, 1600)
                                 local alerts = U.EnemyUltimateAlerts
                                 if alerts and alerts.ApplyLayout then alerts.ApplyLayout() end
                                 if alerts and alerts.UpdateGlobalAlert then alerts.UpdateGlobalAlert() end
@@ -4193,7 +5345,7 @@ function KS.GetMenuOptions()
                 {
                     type = "checkbox",
                     name = "Show killed player message",
-                    tooltip = "Shows KILLED @playername just above the centre of the screen for about 3 seconds, then fades out.",
+                    tooltip = "Shows KILLED @playername for a single kill. Rapid multi-kills add streak titles while keeping the exact count: DOUBLE KILL at 2, TRIPLE KILL at 3, QUAD KILL at 4, M M M MONSTER KILL from 5 to 9, and ULTRA KILL from 10 onward. The message stays up for about 3 seconds, then fades out.",
                     getFunc = function() return KS.sv.showPvpKillMessages ~= false end,
                     setFunc = function(value)
                         KS.sv.showPvpKillMessages = value and true or false
@@ -5925,6 +7077,8 @@ function KS.RefreshDisplay(skipTargetSync)
 
     local hasTarget = KS.currentTarget ~= ""
     local preview = KS.IsPositionPreviewActive()
+    local livePlayerPresentation = KS.GetLiveReticlePlayerPresentationInfo()
+    local hasPresentationTarget = hasTarget or livePlayerPresentation ~= nil
 
     if KS.IsNativeOverheadMode() then
         KS.RefreshNativeKjalnarBadge(preview, hasTarget)
@@ -5933,10 +7087,11 @@ function KS.RefreshDisplay(skipTargetSync)
 
     -- Restore controls that native compact mode may have hidden before drawing the
     -- legacy screen-space custom frame.
+    local showTargetHealthBar = preview or KS.IsPlayerInCombat()
     if KS.nameLabel then KS.nameLabel:SetHidden(false) end
-    if KS.healthBg then KS.healthBg:SetHidden(false) end
-    if KS.healthText then KS.healthText:SetHidden(false) end
-    if KS.healthPercent then KS.healthPercent:SetHidden(false) end
+    if KS.healthBg then KS.healthBg:SetHidden(not showTargetHealthBar) end
+    if KS.healthText then KS.healthText:SetHidden(not showTargetHealthBar) end
+    if KS.healthPercent then KS.healthPercent:SetHidden(not showTargetHealthBar) end
     if KS.statusLabel then KS.statusLabel:SetHidden(false) end
     if KS.kjBadge then
         KS.kjBadge:SetDimensions(STACK_BADGE_SIZE, STACK_BADGE_SIZE)
@@ -5945,43 +7100,63 @@ function KS.RefreshDisplay(skipTargetSync)
     end
     KS.root:SetWidth(FRAME_WIDTH)
 
-    local visible = preview or (KS.IsHUDAllowed() and (KS.forceVisible or (KS.sv.targetFrame and hasTarget)))
+    local visible = preview or (KS.IsHUDAllowed() and (KS.forceVisible or (KS.sv.targetFrame and hasPresentationTarget)))
     KS.lastRootVisible = visible
     KS.ApplyRootVisibility()
     KS.UpdateDragState()
     if not visible then return end
 
-    local info = KS.targetInfoCache[KS.currentTarget] or {}
-    local rawName = KS.currentTarget ~= "" and KS.currentTarget or (preview and "TARGET FRAME PREVIEW" or "NO TARGET")
+    -- For player presentation, reticleoverplayer is authoritative. This mirrors
+    -- established target-frame addons and avoids showing a pet/summon from the
+    -- generic reticleover tag while the dedicated player tag contains the actual
+    -- highlighted player and their CP.
+    local info = livePlayerPresentation or KS.targetInfoCache[KS.currentTarget] or {}
+    local rawName = livePlayerPresentation and livePlayerPresentation.name
+        or (KS.currentTarget ~= "" and KS.currentTarget or (preview and "TARGET FRAME PREVIEW" or "NO TARGET"))
     local name = KS.GetDisplayedTargetName(info, rawName)
     local championPoints = tonumber(info.championPoints) or 0
     local level = tonumber(info.level) or 0
+
+    -- Custom target mode: player CP/level lives in the same label as the Ultivite-rendered
+    -- player name. This makes progression inseparable from the already proven
+    -- target-name rendering path instead of relying on a separately anchored icon
+    -- or reticle label. Character/@Account name selection is preserved.
     local nameText = name
+    if info.isPlayer == true then
+        if championPoints > 0 then
+            nameText = string.format("%s   CP %d", name, championPoints)
+        elseif level > 0 then
+            nameText = string.format("%s   Lv %d", name, level)
+        end
+    end
     if KS.lastNameText ~= nameText then
         KS.lastNameText = nameText
         KS.nameLabel:SetText(nameText)
     end
 
-    local showChampion = info.isPlayer == true and championPoints > 0
-    local showLevel = info.isPlayer == true and not showChampion and level > 0
-    if KS.championIcon then KS.championIcon:SetHidden(not showChampion) end
+    -- The old separate Champion icon/number controls are retained for SavedUI
+    -- compatibility but are deliberately hidden. The name label is now the one
+    -- authoritative player-progression presentation in the Ultivite target frame.
+    if KS.championIcon then KS.championIcon:SetHidden(true) end
     if KS.targetLevelLabel then
-        if showChampion then
-            KS.targetLevelLabel:ClearAnchors()
-            KS.targetLevelLabel:SetAnchor(LEFT, KS.championIcon, RIGHT, 3, 0)
-            KS.targetLevelLabel:SetText(tostring(championPoints))
-            KS.targetLevelLabel:SetHidden(false)
-        elseif showLevel then
-            KS.targetLevelLabel:ClearAnchors()
-            KS.targetLevelLabel:SetAnchor(LEFT, KS.root, TOPLEFT, 12, 14)
-            KS.targetLevelLabel:SetText(tostring(level))
-            KS.targetLevelLabel:SetHidden(false)
-        else
-            KS.targetLevelLabel:SetHidden(true)
-        end
+        KS.targetLevelLabel:SetText("")
+        KS.targetLevelLabel:SetHidden(true)
     end
 
-    local detailText = (preview and not hasTarget) and "EDIT MODE • drag to move • mouse wheel to resize" or ""
+    if livePlayerPresentation and info.isPlayer == true then
+        KS.worldCpDiag = KS.worldCpDiag or {}
+        KS.worldCpDiag.lastTargetNameRender = {
+            atMs = WorldCpDiagNowMs(),
+            tag = tostring(livePlayerPresentation.unitTag or ""),
+            cp = championPoints,
+            level = level,
+            text = tostring(nameText or ""),
+            visible = KS.nameLabel and not KS.nameLabel:IsHidden(),
+            targetFrameMode = tostring(KS.sv and KS.sv.targetFrameMode or "ultivite"),
+        }
+    end
+
+    local detailText = (preview and not hasPresentationTarget) and "EDIT MODE • drag to move • mouse wheel to resize" or ""
     local hasDetails = detailText ~= ""
     if KS.lastDetailText ~= detailText then
         KS.lastDetailText = detailText
@@ -6000,7 +7175,7 @@ function KS.RefreshDisplay(skipTargetSync)
     local healthMax = tonumber(info.healthMax) or 0
     local healthPct = healthMax > 0 and clamp(health / healthMax, 0, 1) or 0
     local healthWidth, healthText, percentText
-    if preview and not hasTarget then
+    if preview and not hasPresentationTarget then
         healthWidth = HEALTH_FILL_WIDTH
         healthText = "DRAG TO POSITION"
         percentText = ""
@@ -6013,7 +7188,7 @@ function KS.RefreshDisplay(skipTargetSync)
     if KS.lastHealthText ~= healthText then KS.lastHealthText = healthText; KS.healthText:SetText(healthText) end
     if KS.healthPercent and KS.lastHealthPercentText ~= percentText then KS.lastHealthPercentText = percentText; KS.healthPercent:SetText(percentText) end
 
-    local alphaMode = preview and "preview" or (KS.liveSelectedTarget and "live" or "retained")
+    local alphaMode = preview and "preview" or ((livePlayerPresentation or KS.liveSelectedTarget) and "live" or "retained")
     if KS.lastDisplayAlphaMode ~= alphaMode then
         KS.lastDisplayAlphaMode = alphaMode
         if alphaMode == "preview" or alphaMode == "live" then
@@ -6031,7 +7206,10 @@ function KS.RefreshDisplay(skipTargetSync)
         end
     end
 
-    local showKjalnar = KS.sv.showKjalnarTracker ~= false and KS.kjalnarEquipped == true and (preview or KS.IsPlayerInCombat())
+    local presentationMatchesSelected = not livePlayerPresentation
+        or cleanName(livePlayerPresentation.name or "") == cleanName(KS.currentTarget or "")
+    local showKjalnar = KS.sv.showKjalnarTracker ~= false and KS.kjalnarEquipped == true
+        and (preview or KS.IsPlayerInCombat()) and presentationMatchesSelected
     if KS.lastShowKjalnar ~= showKjalnar then
         KS.lastShowKjalnar = showKjalnar
         if KS.kjLabel then KS.kjLabel:SetHidden(true) end
@@ -6048,8 +7226,12 @@ function KS.RefreshDisplay(skipTargetSync)
         end
     end
 
-    local hasStatus = isDecoy or preview
-    local contentBottom = healthY + HEALTH_BG_HEIGHT
+    -- A dedicated reticleoverplayer presentation wins over a generic reticle
+    -- decoy such as a pet or summon. Do not show "DECOY IGNORED" beneath the
+    -- actual player target in that case.
+    local displayIsDecoy = isDecoy and livePlayerPresentation == nil
+    local hasStatus = displayIsDecoy or preview
+    local contentBottom = showTargetHealthBar and (healthY + HEALTH_BG_HEIGHT) or 28
     if showKjalnar then
         contentBottom = math.max(contentBottom, healthY - 6 + STACK_BADGE_SIZE)
     end
@@ -6078,10 +7260,10 @@ function KS.RefreshDisplay(skipTargetSync)
         end
     end
 
-    local statusText = isDecoy and ("DECOY IGNORED: " .. decoyName) or (preview and "POSITIONING MODE" or "")
+    local statusText = displayIsDecoy and ("DECOY IGNORED: " .. decoyName) or (preview and "POSITIONING MODE" or "")
     if KS.lastStatusText ~= statusText then
         KS.lastStatusText = statusText
-        if isDecoy then KS.statusLabel:SetColor(1.0, 0.72, 0.22, 0.98)
+        if displayIsDecoy then KS.statusLabel:SetColor(1.0, 0.72, 0.22, 0.98)
         elseif preview then KS.statusLabel:SetColor(0.45, 0.85, 1.0, 0.98) end
         KS.statusLabel:SetText(statusText)
     end
@@ -6713,8 +7895,10 @@ function KS.ApplyPlayerAuraHudLayout()
 
     if KS.ccImmunityRoot then
         KS.ccImmunityRoot:SetDimensions(size, size)
-        KS.ccImmunityRoot:ClearAnchors()
-        KS.ccImmunityRoot:SetAnchor(CENTER, GuiRoot, CENTER, ccX, ccY)
+        if KS.ccImmunityRoot.ultiviteQuickDragging ~= true then
+            KS.ccImmunityRoot:ClearAnchors()
+            KS.ccImmunityRoot:SetAnchor(CENTER, GuiRoot, CENTER, ccX, ccY)
+        end
     end
     if KS.ccImmunityCountdown then
         KS.ccImmunityCountdown:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", timerFontSize))
@@ -6723,8 +7907,10 @@ function KS.ApplyPlayerAuraHudLayout()
     local gap = 6
     if KS.playerDebuffRoot then
         KS.playerDebuffRoot:SetDimensions((size * maxIcons) + (gap * math.max(0, maxIcons - 1)), size)
-        KS.playerDebuffRoot:ClearAnchors()
-        KS.playerDebuffRoot:SetAnchor(CENTER, GuiRoot, CENTER, debuffX, debuffY)
+        if KS.playerDebuffRoot.ultiviteQuickDragging ~= true then
+            KS.playerDebuffRoot:ClearAnchors()
+            KS.playerDebuffRoot:SetAnchor(CENTER, GuiRoot, CENTER, debuffX, debuffY)
+        end
     end
 
     for index, slot in ipairs(KS.playerDebuffSlots or {}) do
@@ -7136,8 +8322,9 @@ end
 function KS.UpdateWretchedVitalityTimers()
     local root = KS.wretchedVitalityRoot
     if not root then return end
+    local preview = IsQuickMenuPreviewing("wretchedVitality")
 
-    if not KS.sv or KS.sv.wretchedVitalityTimers == false or not KS.IsHUDAllowed() then
+    if not preview and (not KS.sv or KS.sv.wretchedVitalityTimers == false or not KS.IsHUDAllowed()) then
         root:SetHidden(true)
         return
     end
@@ -7156,6 +8343,13 @@ function KS.UpdateWretchedVitalityTimers()
     -- ESO replaced the buff slot at the same moment the old timer reached zero.
     if #active < #(KS.wretchedVitalityBuffs or {}) then
         KS.wretchedVitalityBuffs = active
+    end
+
+    if preview and #active == 0 then
+        active = {
+            { name = "Wretched Vitality", abilityId = 0, beginTime = now, endTime = now + 15, icon = "" },
+            { name = "Wretched Vitality", abilityId = 0, beginTime = now, endTime = now + 9, icon = "" },
+        }
     end
 
     if #active == 0 then
@@ -7390,19 +8584,56 @@ function KS.CreateSkillStackTrackers()
     KS.ApplySkillStackTrackerLayout()
 end
 
+local function GetPreviewSlottedSkillSamples(maxCount)
+    local samples = {}
+    local streakSample = nil
+    local firstSlot = tonumber(rawget(_G, "ACTION_BAR_FIRST_NORMAL_SLOT_INDEX")) or 3
+    local lastSlot = tonumber(rawget(_G, "ACTION_BAR_LAST_WEAPON_SLOT_INDEX")) or 8
+    for _, hotbar in ipairs(KS.GetReadableHotbarCategories()) do
+        for slotIndex = firstSlot, lastSlot do
+            local icon = type(GetSlotTexture) == "function" and tostring(GetSlotTexture(slotIndex, hotbar) or "") or ""
+            local name = type(GetSlotName) == "function" and tostring(GetSlotName(slotIndex, hotbar) or "") or ""
+            local abilityId = type(GetSlotBoundId) == "function" and (tonumber(GetSlotBoundId(slotIndex, hotbar)) or 0) or 0
+            if icon ~= "" then
+                local sample = { name = name, abilityId = abilityId, icon = icon, slotIndex = slotIndex, hotbar = hotbar }
+                if isStreakSkillName(name) and not streakSample then streakSample = sample end
+                if #samples < (tonumber(maxCount) or 3) then samples[#samples + 1] = sample end
+            end
+        end
+    end
+    return samples, streakSample
+end
+
 function KS.UpdateSkillStackTrackers(force)
     if not KS.sv then return end
     local nowMs = GetGameTimeMilliseconds and GetGameTimeMilliseconds() or 0
     if not force and nowMs > 0 and (nowMs - (tonumber(KS.skillStackLastScanMs) or 0)) < 200 then return end
     if nowMs > 0 then KS.skillStackLastScanMs = nowMs end
-    local hudAllowed = KS.IsHUDAllowed()
+    local preview = IsQuickMenuPreviewing("skillStacks")
+    local hudAllowed = preview or KS.IsHUDAllowed()
     local generic, streak = KS.CollectSlottedSkillStackState()
-    local showGeneric = hudAllowed and KS.sv.showGenericStackTracker ~= false and #generic > 0
+    if preview and #generic == 0 then
+        local samples, streakSample = GetPreviewSlottedSkillSamples(3)
+        generic = {
+            { name = (samples[1] and samples[1].name) or "Stack Preview", abilityId = (samples[1] and samples[1].abilityId) or 0, stacks = 3, remainingMs = 6000, slotIndex = (samples[1] and samples[1].slotIndex) or 1, hotbar = (samples[1] and samples[1].hotbar) or 1, icon = (samples[1] and samples[1].icon) or "" },
+            { name = (samples[2] and samples[2].name) or "Stack Preview", abilityId = (samples[2] and samples[2].abilityId) or 0, stacks = 5, remainingMs = 6000, slotIndex = (samples[2] and samples[2].slotIndex) or 2, hotbar = (samples[2] and samples[2].hotbar) or 1, icon = (samples[2] and samples[2].icon) or "" },
+        }
+        if not streak then
+            local ss = streakSample or samples[3]
+            streak = { name = (ss and ss.name) or "Streak Fatigue", abilityId = (ss and ss.abilityId) or 0, stacks = 2, remainingMs = 3000, slotIndex = (ss and ss.slotIndex) or 3, hotbar = (ss and ss.hotbar) or 1, icon = (ss and ss.icon) or "" }
+        end
+    end
+    if preview and not streak then
+        streak = { name = "Streak Fatigue", abilityId = 0, stacks = 2, remainingMs = 3000, slotIndex = 3, hotbar = 1, icon = "" }
+    end
+    local showGeneric = preview or (hudAllowed and KS.sv.showGenericStackTracker ~= false and #generic > 0)
     if KS.genericStackRoot then
         for index, slot in ipairs(KS.genericStackSlots or {}) do
             local entry = generic[index]
             if showGeneric and entry then
-                if force or slot.lastIcon ~= entry.icon then slot.lastIcon = entry.icon; slot.icon:SetTexture(entry.icon) end
+                local icon = tostring(entry.icon or "")
+                if force or slot.lastIcon ~= icon then slot.lastIcon = icon; slot.icon:SetTexture(icon) end
+                slot.icon:SetHidden(icon == "")
                 local text = tostring(math.max(1, math.floor(tonumber(entry.stacks) or 1)))
                 if force or slot.lastText ~= text then slot.lastText = text; slot.count:SetText(text) end
                 slot.control:SetHidden(false)
@@ -7412,11 +8643,12 @@ function KS.UpdateSkillStackTrackers(force)
         end
         KS.genericStackRoot:SetHidden(not showGeneric)
     end
-    local showStreak = hudAllowed and KS.sv.showStreakFatigueTracker ~= false and streak ~= nil
+    local showStreak = preview or (hudAllowed and KS.sv.showStreakFatigueTracker ~= false and streak ~= nil)
     if KS.streakFatigueRoot then
         if showStreak then
             local icon = tostring(streak.icon or "")
             if force or KS.lastStreakFatigueIcon ~= icon then KS.lastStreakFatigueIcon = icon; KS.streakFatigueIcon:SetTexture(icon) end
+            KS.streakFatigueIcon:SetHidden(icon == "")
             local text = tostring(math.max(1, math.floor(tonumber(streak.stacks) or 1)))
             if force or KS.lastStreakFatigueText ~= text then KS.lastStreakFatigueText = text; KS.streakFatigueCount:SetText(text) end
         end
@@ -7489,7 +8721,8 @@ end
 
 function KS.UpdateResourceDangerHud(force)
     if not KS.sv or not KS.resourceDangerRoot then return end
-    if KS.sv.showResourceDanger == false or not KS.IsHUDAllowed() or (IsUnitDead and IsUnitDead("player")) then
+    local preview = IsQuickMenuPreviewing("resourceDanger")
+    if not preview and (KS.sv.showResourceDanger == false or not KS.IsHUDAllowed() or (IsUnitDead and IsUnitDead("player"))) then
         KS.resourceDangerRoot:SetHidden(true)
         return
     end
@@ -7499,11 +8732,16 @@ function KS.UpdateResourceDangerHud(force)
         [COMBAT_MECHANIC_FLAGS_STAMINA] = clamp(tonumber(KS.sv.resourceDangerStaminaPct) or defaults.resourceDangerStaminaPct, 5, 60),
     }
     local any = false
+    local previewValues = {
+        [COMBAT_MECHANIC_FLAGS_HEALTH] = 35,
+        [COMBAT_MECHANIC_FLAGS_MAGICKA] = 20,
+        [COMBAT_MECHANIC_FLAGS_STAMINA] = 50,
+    }
     for powerType, label in pairs(KS.resourceDangerLabels or {}) do
         local v = KS.resourceDangerValues and KS.resourceDangerValues[powerType] or nil
         local maximum = v and tonumber(v.maximum) or 0
-        local pct = maximum > 0 and ((tonumber(v.current) or 0) * 100 / maximum) or 100
-        local show = pct > 0 and pct <= thresholds[powerType]
+        local pct = preview and (previewValues[powerType] or thresholds[powerType]) or (maximum > 0 and ((tonumber(v.current) or 0) * 100 / maximum) or 100)
+        local show = preview or (pct > 0 and pct <= thresholds[powerType])
         if show then
             any = true
             local text = tostring(math.floor(pct + 0.5)) .. "%"
@@ -7812,6 +9050,7 @@ function KS.UpdateImportantTargetDebuffs(force)
         if showRoot and aura then
             local icon = tostring(aura.icon or "")
             if force or slot.lastIcon ~= icon then slot.lastIcon = icon; slot.icon:SetTexture(icon) end
+            slot.icon:SetHidden(icon == "")
             local remaining = math.max(0, (tonumber(aura.endTime) or 0) - now)
             local text = tostring(math.max(1, math.ceil(remaining - 0.001)))
             if force or slot.lastText ~= text then slot.lastText = text; slot.countdown:SetText(text) end
@@ -8050,15 +9289,14 @@ end
 
 function KS.EndLiveStatDrag()
     local state = KS.liveStatDragState
-    if not state then return end
-    KS.UpdateLiveStatDrag()
+    if state then KS.UpdateLiveStatDrag() end
     EVENT_MANAGER:UnregisterForUpdate(KS.name .. "LiveStatDrag")
     if KS.liveStatDragCapture then
         KS.liveStatDragCapture:SetMouseEnabled(false)
         KS.liveStatDragCapture:SetHidden(true)
     end
     KS.liveStatDragState = nil
-    KS.SaveLiveStatPosition(state.key)
+    if state then KS.SaveLiveStatPosition(state.key) end
 end
 
 function KS.CreateLiveStatWidget(key)
@@ -8603,7 +9841,7 @@ function KS.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphi
             -- event is delayed or missed. The dedicated BG event will replace this with
             -- the victim's @display name when available.
             if isLocalPlayerKill then
-                KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName))
+                KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName), "fallback", targetName)
             end
             return
         end
@@ -8611,7 +9849,7 @@ function KS.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphi
         if isLocalPlayerKill then
             -- In Cyrodiil/IC the dedicated kill-feed event owns K/D counting. Still show
             -- the announcement here as a visual fallback, without changing the counter.
-            KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName))
+            KS.ShowKillMessage(KS.ResolveKilledPlayerDisplayName(targetName), "fallback", targetName)
 
         end
         return
@@ -8851,6 +10089,12 @@ function KS.HandleSlash(text)
         KS.PrintImportantTargetDebuffDiagnostic()
     elseif cmd == "dangerdiag" then
         KS.PrintCombatDangerDiagnostic()
+    elseif cmd == "cpdiag" or cmd == "worldcpdiag" then
+        if zo_strlower(zo_strtrim(arg or "")) == "clear" then
+            KS.ClearWorldPlayerCpDiagnostic()
+        else
+            KS.PrintWorldPlayerCpDiagnostic()
+        end
     elseif cmd == "nativeon" then
         KS.SetNativeOverheadTargetBar(true)
     elseif cmd == "nativeoff" then
@@ -8862,7 +10106,7 @@ function KS.HandleSlash(text)
     elseif cmd == "diagclear" then
         KS.ClearDiagnosticLog()
     else
-        chat("Commands: /ks unlock | lock | center | centerscreen | reset | clear | sticky | targetframe | decoyguard | left/right/up/down 25 | learn | learnoff | forget | debug | scale 1.0 | id 123456 | status | kdreset | timerdiag | procdiag | breachdiag | fooddiag | resolvediag | dragondiag | wretcheddiag | auradiag | statdiag | stackdiag | streakdiag | targetdebuffdiag | dangerdiag | nativeon | nativeoff | diag | diaglog | diagclear")
+        chat("Commands: /ks unlock | lock | center | centerscreen | reset | clear | sticky | targetframe | decoyguard | left/right/up/down 25 | learn | learnoff | forget | debug | scale 1.0 | id 123456 | status | kdreset | timerdiag | procdiag | breachdiag | fooddiag | resolvediag | dragondiag | wretcheddiag | auradiag | statdiag | stackdiag | streakdiag | targetdebuffdiag | dangerdiag | cpdiag | nativeon | nativeoff | diag | diaglog | diagclear")
     end
 end
 
@@ -9313,6 +10557,27 @@ function KS.Initialize(externalSV)
         KS.sv.alwaysCollapseChat = false
         KS.sv.uiRevision = 52
     end
+    if (tonumber(KS.sv.uiRevision) or 0) < 53 then
+        -- Ultivite Preview Everything adds a real movable kill-message
+        -- position and independent size. Nil-only migration preserves existing
+        -- combat settings and every established HUD position.
+        if KS.sv.killMessageX == nil then KS.sv.killMessageX = defaults.killMessageX end
+        if KS.sv.killMessageY == nil then KS.sv.killMessageY = defaults.killMessageY end
+        if KS.sv.killMessageFontSize == nil then KS.sv.killMessageFontSize = defaults.killMessageFontSize end
+        KS.sv.uiRevision = 53
+    end
+    if (tonumber(KS.sv.uiRevision) or 0) < 54 then
+        -- Ultivite 1.0.173: CP / level is presentation information, not an
+        -- optional tracker. Force it on for existing profiles as well as new ones.
+        KS.sv.overheadPlayerInfo = true
+        KS.sv.uiRevision = 54
+    end
+    if (tonumber(KS.sv.uiRevision) or 0) < 55 then
+        -- Legacy migration only. 1.0.192 uses group tags for true world
+        -- following and reticleoverplayer for targeted-player presentation.
+        KS.sv.overheadPlayerInfo = true
+        KS.sv.uiRevision = 55
+    end
 
     KS.debug = KS.sv.diagnosticLogging == true
     KS.learning = false
@@ -9371,6 +10636,8 @@ function KS.Initialize(externalSV)
     CALLBACK_MANAGER:RegisterCallback("UnitFramesCreated", function() KS.ApplyDefaultTargetFrameVisibility() end)
 
     EVENT_MANAGER:RegisterForEvent(KS.name, EVENT_RETICLE_TARGET_CHANGED, function()
+        KS.ScheduleWorldCpReticleDiagnostic("EVENT_RETICLE_TARGET_CHANGED")
+        KS.UpdateOverheadPlayerInfo()
         KS.OnTargetChanged()
     end)
 
@@ -9386,9 +10653,40 @@ function KS.Initialize(externalSV)
         REGISTER_FILTER_UNIT_TAG, KS.unitTag,
         REGISTER_FILTER_POWER_TYPE, COMBAT_MECHANIC_FLAGS_HEALTH)
 
-    EVENT_MANAGER:RegisterForEvent(KS.name .. "ReticlePlayerChanged", EVENT_RETICLE_TARGET_PLAYER_CHANGED, function()
-        KS.OnTargetChanged()
+    -- Dedicated player target presentation follows the same event-driven model.
+    -- It does not replace Kjalnar's generic reticleover combat/aura source; it only
+    -- refreshes the visible player target frame when ESO updates that player tag.
+    local targetPlayerHealthEvent = KS.name .. "TargetPlayerHealthPower"
+    EVENT_MANAGER:RegisterForEvent(targetPlayerHealthEvent, EVENT_POWER_UPDATE, function(_, unitTag, _, powerType)
+        if unitTag == "reticleoverplayer" and powerType == COMBAT_MECHANIC_FLAGS_HEALTH then
+            KS.RefreshDisplay(true)
+        end
     end)
+    EVENT_MANAGER:AddFilterForEvent(targetPlayerHealthEvent, EVENT_POWER_UPDATE,
+        REGISTER_FILTER_UNIT_TAG, "reticleoverplayer",
+        REGISTER_FILTER_POWER_TYPE, COMBAT_MECHANIC_FLAGS_HEALTH)
+
+    if EVENT_CHAMPION_POINT_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(KS.name .. "TargetPlayerChampionPoints", EVENT_CHAMPION_POINT_UPDATE, function(_, unitTag)
+            if unitTag == "reticleoverplayer" then KS.RefreshDisplay(true) end
+        end)
+    end
+    if EVENT_LEVEL_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(KS.name .. "TargetPlayerLevel", EVENT_LEVEL_UPDATE, function(_, unitTag)
+            if unitTag == "reticleoverplayer" then KS.RefreshDisplay(true) end
+        end)
+    end
+
+    if EVENT_RETICLE_TARGET_PLAYER_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(KS.name .. "ReticlePlayerChanged", EVENT_RETICLE_TARGET_PLAYER_CHANGED, function()
+            KS.ScheduleWorldCpReticleDiagnostic("EVENT_RETICLE_TARGET_PLAYER_CHANGED")
+            KS.UpdateOverheadPlayerInfo()
+            KS.OnTargetChanged()
+            -- Immediate player presentation uses reticleoverplayer directly while
+            -- the normal target-state coalescer settles generic reticleover.
+            KS.RefreshDisplay(true)
+        end)
+    end
 
     -- IMPORTANT: do not register EVENT_EFFECT_CHANGED for reticleover. ESO emits a
     -- burst for the target's effects when the mouse enters a unit, which can hitch
@@ -9539,6 +10837,8 @@ function KS.Initialize(externalSV)
     EVENT_MANAGER:RegisterForEvent(KS.name .. "CameraOff", EVENT_GAME_CAMERA_DEACTIVATED, function() KS.RefreshDisplay(); KS.UpdateCombatTimers(); KS.UpdateFoodWarning(); KS.UpdateMajorResolveWarning() end)
     EVENT_MANAGER:RegisterForEvent(KS.name .. "CombatState", EVENT_PLAYER_COMBAT_STATE, function()
         KS.lastShowKjalnar = nil
+        KS.ApplyNativeOverheadTargetBar()
+        KS.ApplyDefaultTargetFrameVisibility()
         KS.RefreshDisplay()
         KS.UpdateCombatTimers()
         KS.UpdatePvpHud()
@@ -9686,6 +10986,17 @@ function KS.Initialize(externalSV)
 
     SLASH_COMMANDS["/ks"] = function(text) KS.HandleSlash(text) end
     SLASH_COMMANDS["/kjalnar"] = function(text) KS.HandleSlash(text) end
+    SLASH_COMMANDS["/ulticpdiag"] = function(text)
+        local arg = zo_strlower(zo_strtrim(text or ""))
+        if arg == "clear" then
+            KS.ClearWorldPlayerCpDiagnostic()
+        elseif arg == "print" or arg == "chat" then
+            KS.PrintWorldPlayerCpDiagnostic()
+        else
+            KS.ShowWorldPlayerCpDiagnostic()
+        end
+    end
+    SLASH_COMMANDS["/ucpdiag"] = SLASH_COMMANDS["/ulticpdiag"]
 
     zo_callLater(function()
         KS.ApplyDefaultTargetFrameVisibility()

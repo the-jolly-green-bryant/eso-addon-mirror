@@ -8,8 +8,20 @@ local ADDON_NAME = "Ultivite"
 local SAVED_VARS_NAME = "VanillaFrameMoverSavedVariables"
 local CHARACTER_SAVED_VARS_NAME = "VanillaFrameMoverCharacterSavedVariables"
 local SAVED_VARS_VERSION = 1
-local VERSION = "10.7.95 / Ultivite 1.0.160"
+local VERSION = "10.7.105 / Ultivite 1.0.200"
 local ACTION_BAR_HIDDEN_OWNER = "ActionBarHidden"
+
+local function LayoutX(value)
+    return U.ScaleLayoutX and U.ScaleLayoutX(value) or value
+end
+
+local function LayoutY(value)
+    return U.ScaleLayoutY and U.ScaleLayoutY(value) or value
+end
+
+local function LayoutSize(value)
+    return U.ScaleLayoutSize and U.ScaleLayoutSize(value) or value
+end
 
 local function BeginQuickMenuPreviewInteraction()
     local quickMenu = U.QuickMenu
@@ -30,10 +42,15 @@ local NORMAL_WIDTH = 237
 local SHRUNK_WIDTH = 141
 local SHRUNK_RATIO = SHRUNK_WIDTH / NORMAL_WIDTH
 local MAX_BAR_SCALE = 5.00
+local PYRAMID_REFERENCE_VERSION = 3
 
-local DARKSOULS_LEFT = 28
-local DARKSOULS_TOP = 77
-local DARKSOULS_BAR_GAP = 2
+local DARKSOULS_LEFT_REFERENCE = 24.1
+local DARKSOULS_TOP_REFERENCE = 66.2
+local DARKSOULS_BAR_GAP_REFERENCE = 2
+
+local function DefaultDarkSoulsLeft() return LayoutX(DARKSOULS_LEFT_REFERENCE) end
+local function DefaultDarkSoulsTop() return LayoutY(DARKSOULS_TOP_REFERENCE) end
+local function DefaultDarkSoulsGap() return LayoutSize(DARKSOULS_BAR_GAP_REFERENCE) end
 local DARKSOULS_BAR_WIDTH_SCALE = 1.32
 local DARKSOULS_BAR_THICKNESS_SCALE = 0.65
 local DARKSOULS_BAR_INDEX = { health = 1, magicka = 2, stamina = 3 }
@@ -104,6 +121,7 @@ local PROFILE_SETTING_KEYS = {
     "snapToGrid", "gridSize",
     "layoutVersion", "compactGap", "bottomMargin",
     "pyramidLayoutEnabled",
+    "pyramidReferenceVersion",
     "pyramidBackupValid",
     "pyramidBackupHealthX", "pyramidBackupHealthY",
     "pyramidBackupMagickaX", "pyramidBackupMagickaY",
@@ -113,6 +131,7 @@ local PROFILE_SETTING_KEYS = {
     "pyramidFabBackupValid",
     "pyramidFabBackupKbX", "pyramidFabBackupKbY",
     "pyramidFabBackupGpX", "pyramidFabBackupGpY",
+    "pyramidFabBackupKbScale", "pyramidFabBackupGpScale",
     "darkSoulsLeft", "darkSoulsTop", "darkSoulsGap",
     "dsBottomX", "dsBottomOffset", "dsBottomGap", "dsSelfScale",
     "barWidth", "barThickness",
@@ -174,12 +193,12 @@ local defaults = {
     -- New profiles must use these positions immediately. If this were false,
     -- first activation would capture ESO's vanilla anchors and overwrite them.
     individualPositionsInitialized = true,
-    healthX = 0,
-    healthY = 623,
-    magickaX = -553,
-    magickaY = 623,
-    staminaX = 553,
-    staminaY = 623,
+    healthX = LayoutX(0),
+    healthY = LayoutY(623),
+    magickaX = LayoutX(-553),
+    magickaY = LayoutY(623),
+    staminaX = LayoutX(553),
+    staminaY = LayoutY(623),
 
     snapToGrid = true,
     gridSize = 7,
@@ -187,6 +206,7 @@ local defaults = {
     compactGap = 24,
     bottomMargin = 8,
     pyramidLayoutEnabled = false,
+    pyramidReferenceVersion = 0,
     pyramidBackupValid = false,
     pyramidBackupHealthX = 0,
     pyramidBackupHealthY = 0,
@@ -202,20 +222,22 @@ local defaults = {
     pyramidFabBackupKbY = 0,
     pyramidFabBackupGpX = 0,
     pyramidFabBackupGpY = 0,
+    pyramidFabBackupKbScale = 0,
+    pyramidFabBackupGpScale = 0,
 
     -- Dark Souls preset anchors are saved so the user can tune them, print
     -- the exact values, and later promote a preferred arrangement to a new
     -- built-in default without touching the normal saved ESO bar positions.
-    darkSoulsLeft = DARKSOULS_LEFT,
-    darkSoulsTop = DARKSOULS_TOP,
-    darkSoulsGap = DARKSOULS_BAR_GAP,
-    dsBottomX = 0,
-    dsBottomOffset = DS_SELF_HEALTH_BOTTOM_OFFSET,
-    dsBottomGap = DS_SELF_RESOURCE_GAP,
-    dsSelfScale = 1.00,
+    darkSoulsLeft = DefaultDarkSoulsLeft(),
+    darkSoulsTop = DefaultDarkSoulsTop(),
+    darkSoulsGap = DefaultDarkSoulsGap(),
+    dsBottomX = LayoutX(0),
+    dsBottomOffset = LayoutY(DS_SELF_HEALTH_BOTTOM_OFFSET),
+    dsBottomGap = LayoutSize(DS_SELF_RESOURCE_GAP),
+    dsSelfScale = LayoutSize(1.00),
 
-    barWidth = 1.455,
-    barThickness = 2.123,
+    barWidth = LayoutSize(1.455),
+    barThickness = LayoutSize(2.123),
 
     combatOnly = false,
     hideChampionProgress = false,
@@ -265,9 +287,9 @@ local defaults = {
     dsEnemyHealthMode = DS_ENEMY_HEALTH_MODE_OFF,
     dsEnemyTrackReticle = false,
     dsEnemyX = 0,
-    dsEnemyBottomOffset = DS_ENEMY_HEALTH_BOTTOM_OFFSET,
-    dsEnemyWidth = DS_ENEMY_HEALTH_WIDTH,
-    dsEnemyHeight = DS_ENEMY_HEALTH_HEIGHT,
+    dsEnemyBottomOffset = LayoutY(DS_ENEMY_HEALTH_BOTTOM_OFFSET),
+    dsEnemyWidth = LayoutSize(DS_ENEMY_HEALTH_WIDTH),
+    dsEnemyHeight = LayoutSize(DS_ENEMY_HEALTH_HEIGHT),
     dsSelfHealthBar = false,
     dsSelfHealthCombatOnly = false,
     dsSelfResourceBars = false,
@@ -398,7 +420,7 @@ end
 
 function VFM.GetActiveBarWidthScale()
     if VFM.saved and VFM.saved.darkSoulsMode then
-        local scale = DARKSOULS_BAR_WIDTH_SCALE
+        local scale = DARKSOULS_BAR_WIDTH_SCALE * LayoutSize(1.0)
         if VFM.saved.showDSUltimate then
             scale = scale * DS_ULTIMATE_DARKSOULS_WIDTH_MULTIPLIER
         end
@@ -409,7 +431,7 @@ end
 
 function VFM.GetActiveBarThicknessScale()
     if VFM.saved and VFM.saved.darkSoulsMode then
-        local scale = DARKSOULS_BAR_THICKNESS_SCALE
+        local scale = DARKSOULS_BAR_THICKNESS_SCALE * LayoutSize(1.0)
         if VFM.saved.showDSUltimate then
             scale = scale * DS_ULTIMATE_DARKSOULS_THICKNESS_MULTIPLIER
         end
@@ -607,27 +629,58 @@ local function IsGroupUnitTag(unitTag)
     return type(unitTag) == "string" and string.match(unitTag, "^group%d+$") ~= nil
 end
 
+local function GetGroupUnitChampionPoints(unitTag)
+    if not IsGroupUnitTag(unitTag) then return 0 end
+    if IsUnitChampion then
+        local ok, isChampion = pcall(IsUnitChampion, unitTag)
+        if ok and isChampion ~= true then return 0 end
+    end
+
+    local cp = 0
+    if GetUnitEffectiveChampionPoints then
+        local ok, value = pcall(GetUnitEffectiveChampionPoints, unitTag)
+        if ok then cp = tonumber(value) or 0 end
+    end
+    if cp <= 0 and GetUnitChampionPoints then
+        local ok, value = pcall(GetUnitChampionPoints, unitTag)
+        if ok then cp = tonumber(value) or 0 end
+    end
+    return math.max(0, cp)
+end
+
 local function ApplyGroupFrameChampionPointState(frame)
     if not frame or not VFM.saved then return false end
     local unitTag = frame.unitTag
     if not IsGroupUnitTag(unitTag) then return false end
 
-    local isChampion = false
-    if IsUnitChampion then
-        local ok, value = pcall(IsUnitChampion, unitTag)
-        isChampion = ok and value == true
+    local cp = GetGroupUnitChampionPoints(unitTag)
+    if cp <= 0 then return true end
+
+    -- CP is permanent Ultivite presentation whenever a grouped player's health
+    -- frame is visible. Do not depend on ESO having already populated the label:
+    -- explicitly write the effective CP value, then keep the stock Champion icon
+    -- and level/CP label visible. The controls remain children of the unit frame,
+    -- so they naturally disappear whenever the health frame itself is hidden.
+    local levelLabel = frame.levelLabel
+    local championIcon = frame.championIcon
+    local control = frame.control
+    if control and control.GetNamedChild then
+        if not levelLabel then
+            levelLabel = control:GetNamedChild("Level") or control:GetNamedChild("LevelLabel")
+        end
+        if not championIcon then
+            championIcon = control:GetNamedChild("Champion") or control:GetNamedChild("ChampionIcon")
+        end
     end
 
-    -- Ultivite never suppresses group-frame CP. ESO owns the actual number and
-    -- Champion icon; this post-hook only guarantees they stay visible for
-    -- Champion group members if an older Ultivite profile previously hid them.
-    if isChampion then
-        if frame.levelLabel and frame.levelLabel.SetHidden then
-            pcall(function() frame.levelLabel:SetHidden(false) end)
-        end
-        if frame.championIcon and frame.championIcon.SetHidden then
-            pcall(function() frame.championIcon:SetHidden(false) end)
-        end
+    if levelLabel then
+        if levelLabel.SetText then pcall(function() levelLabel:SetText(tostring(cp)) end) end
+        if levelLabel.SetHidden then pcall(function() levelLabel:SetHidden(false) end) end
+        if levelLabel.SetAlpha then pcall(function() levelLabel:SetAlpha(1) end) end
+    end
+    if championIcon then
+        if championIcon.SetHidden then pcall(function() championIcon:SetHidden(false) end) end
+        if championIcon.SetAlpha then pcall(function() championIcon:SetAlpha(1) end) end
     end
     return true
 end
@@ -783,6 +836,119 @@ function VFM.FindShrinkExpandModule()
     return nil
 end
 
+function VFM.FindUnwaveringModule()
+    if VFM.unwaveringModule then
+        return VFM.unwaveringModule
+    end
+
+    if not ATTRIBUTE_VISUAL_UNWAVERING_POWER or not STAT_MITIGATION
+        or not ATTRIBUTE_HEALTH or not COMBAT_MECHANIC_FLAGS_HEALTH then
+        return nil
+    end
+
+    local visualizer = PLAYER_ATTRIBUTE_BARS and PLAYER_ATTRIBUTE_BARS.attributeVisualizer
+    if not visualizer or not visualizer.visualModules then
+        return nil
+    end
+
+    -- Current ESOUI exposes the temporary immunity/Unwavering visual as a
+    -- player attribute visualizer module. It is the module that creates the
+    -- bright invulnerable border and pulses the Warner container on Health.
+    for module in pairs(visualizer.visualModules) do
+        if module and module.IsUnitVisualRelevant
+            and module:IsUnitVisualRelevant(ATTRIBUTE_VISUAL_UNWAVERING_POWER, STAT_MITIGATION, ATTRIBUTE_HEALTH, COMBAT_MECHANIC_FLAGS_HEALTH) then
+            VFM.unwaveringModule = module
+            return module
+        end
+    end
+
+    return nil
+end
+
+local function ModuleHandlesVisual(module, visualType, stat, attribute, powerType)
+    if not module or not module.IsUnitVisualRelevant or visualType == nil then
+        return false
+    end
+    local ok, relevant = pcall(module.IsUnitVisualRelevant, module, visualType, stat, attribute, powerType)
+    return ok and relevant == true
+end
+
+function VFM.FindArmorDamageModule()
+    if VFM.armorDamageModule then
+        return VFM.armorDamageModule
+    end
+    local visualizer = PLAYER_ATTRIBUTE_BARS and PLAYER_ATTRIBUTE_BARS.attributeVisualizer
+    if not visualizer or not visualizer.visualModules
+        or not ATTRIBUTE_VISUAL_INCREASED_STAT or not STAT_POWER
+        or not ATTRIBUTE_HEALTH or not COMBAT_MECHANIC_FLAGS_HEALTH then
+        return nil
+    end
+    for module in pairs(visualizer.visualModules) do
+        if ModuleHandlesVisual(module, ATTRIBUTE_VISUAL_INCREASED_STAT, STAT_POWER, ATTRIBUTE_HEALTH, COMBAT_MECHANIC_FLAGS_HEALTH) then
+            VFM.armorDamageModule = module
+            return module
+        end
+    end
+    return nil
+end
+
+function VFM.FindPossessionModule()
+    if VFM.possessionModule then
+        return VFM.possessionModule
+    end
+    local visualizer = PLAYER_ATTRIBUTE_BARS and PLAYER_ATTRIBUTE_BARS.attributeVisualizer
+    if not visualizer or not visualizer.visualModules
+        or not ATTRIBUTE_VISUAL_POSSESSION or not STAT_MITIGATION
+        or not ATTRIBUTE_HEALTH or not COMBAT_MECHANIC_FLAGS_HEALTH then
+        return nil
+    end
+    for module in pairs(visualizer.visualModules) do
+        if ModuleHandlesVisual(module, ATTRIBUTE_VISUAL_POSSESSION, STAT_MITIGATION, ATTRIBUTE_HEALTH, COMBAT_MECHANIC_FLAGS_HEALTH) then
+            VFM.possessionModule = module
+            return module
+        end
+    end
+    return nil
+end
+
+function VFM.FindPowerShieldModule()
+    if VFM.powerShieldModule then
+        return VFM.powerShieldModule
+    end
+    local visualizer = PLAYER_ATTRIBUTE_BARS and PLAYER_ATTRIBUTE_BARS.attributeVisualizer
+    if not visualizer or not visualizer.visualModules
+        or not ATTRIBUTE_VISUAL_POWER_SHIELDING or not STAT_MITIGATION
+        or not ATTRIBUTE_HEALTH or not COMBAT_MECHANIC_FLAGS_HEALTH then
+        return nil
+    end
+    for module in pairs(visualizer.visualModules) do
+        if ModuleHandlesVisual(module, ATTRIBUTE_VISUAL_POWER_SHIELDING, STAT_MITIGATION, ATTRIBUTE_HEALTH, COMBAT_MECHANIC_FLAGS_HEALTH) then
+            VFM.powerShieldModule = module
+            return module
+        end
+    end
+    return nil
+end
+
+function VFM.FindArrowRegenerationModule()
+    if VFM.arrowRegenerationModule then
+        return VFM.arrowRegenerationModule
+    end
+    local visualizer = PLAYER_ATTRIBUTE_BARS and PLAYER_ATTRIBUTE_BARS.attributeVisualizer
+    if not visualizer or not visualizer.visualModules
+        or not ATTRIBUTE_VISUAL_INCREASED_REGEN_POWER or not STAT_HEALTH_REGEN_COMBAT
+        or not ATTRIBUTE_HEALTH or not COMBAT_MECHANIC_FLAGS_HEALTH then
+        return nil
+    end
+    for module in pairs(visualizer.visualModules) do
+        if ModuleHandlesVisual(module, ATTRIBUTE_VISUAL_INCREASED_REGEN_POWER, STAT_HEALTH_REGEN_COMBAT, ATTRIBUTE_HEALTH, COMBAT_MECHANIC_FLAGS_HEALTH) then
+            VFM.arrowRegenerationModule = module
+            return module
+        end
+    end
+    return nil
+end
+
 function VFM.CaptureEditSnapshot()
     local snapshot = {}
     for _, key in ipairs(EDIT_SNAPSHOT_KEYS) do
@@ -829,6 +995,7 @@ function VFM.RestoreEditSnapshot()
 
     VFM.ApplyBarGeometry()
     VFM.ApplyDarkSoulsHealthStyle()
+    VFM.SuppressPrimaryBarDynamicVisuals()
     VFM.ApplyTextStyle()
     VFM.AnchorAllBarsToSavedPositions()
     VFM.PositionAllMovers()
@@ -899,8 +1066,8 @@ function VFM.GetDarkSoulsBarCenter(key)
     local barWidth = VFM.GetVisualPrimaryBarWidth()
     local barHeight = VFM.GetVisualPrimaryBarHeight()
     local left = VFM.GetDarkSoulsLeftOffset()
-    local top = tonumber(VFM.saved and VFM.saved.darkSoulsTop) or DARKSOULS_TOP
-    local gap = Clamp(tonumber(VFM.saved and VFM.saved.darkSoulsGap) or DARKSOULS_BAR_GAP, 0, 100)
+    local top = tonumber(VFM.saved and VFM.saved.darkSoulsTop) or DefaultDarkSoulsTop()
+    local gap = Clamp(tonumber(VFM.saved and VFM.saved.darkSoulsGap) or DefaultDarkSoulsGap(), 0, 100)
 
     return left + (barWidth / 2),
         top + (barHeight / 2) + ((index - 1) * (barHeight + gap))
@@ -971,12 +1138,12 @@ function VFM.IsDSUltimateEnabled()
 end
 
 function VFM.GetDarkSoulsLeftOffset()
-    local left = tonumber(VFM.saved and VFM.saved.darkSoulsLeft) or DARKSOULS_LEFT
+    local left = tonumber(VFM.saved and VFM.saved.darkSoulsLeft) or DefaultDarkSoulsLeft()
     -- Only the compact top-left layout needs to reserve horizontal room for
     -- Ultimate. The large bottom layout positions Ultimate independently to
     -- the left of the complete 988px resource stack.
     if VFM.saved and VFM.saved.darkSoulsMode and VFM.saved.showDSUltimate then
-        left = left + DS_ULTIMATE_BAR_OFFSET
+        left = left + LayoutX(DS_ULTIMATE_BAR_OFFSET)
     end
     return left
 end
@@ -1109,17 +1276,23 @@ function VFM.UpdateDSUltimateControl()
 
     control.frame:ClearAnchors()
 
-    if VFM.IsDSBottomUltimateEnabled() then
+    local bottomUltimate = VFM.IsDSBottomUltimateEnabled()
+    local ultimateScale = bottomUltimate and VFM.GetDSSelfVisualScale() or LayoutSize(1.0)
+    ultimateScale = Clamp(ultimateScale, 0.50, 2.50)
+    if control.frame.SetScale then control.frame:SetScale(ultimateScale) end
+
+    if bottomUltimate then
         -- Dark Souls Self uses three 988px bars centred on dsBottomX. When the
         -- action bar is deliberately disabled, put Ultimate immediately to the
         -- left of that complete stack and centre it vertically against Health
         -- through Stamina. This custom Ultimate is independent of ZO_ActionBar1.
         local stackCenterX = tonumber(VFM.saved.dsBottomX) or 0
-        local stackLeftX = stackCenterX - (DS_SELF_HEALTH_WIDTH / 2)
-        local centerX = stackLeftX - DS_ULTIMATE_BOTTOM_GAP - (DS_ULTIMATE_BOX_SIZE / 2)
+        local selfScale = VFM.GetDSSelfVisualScale()
+        local stackLeftX = stackCenterX - ((DS_SELF_HEALTH_WIDTH * selfScale) / 2)
+        local centerX = stackLeftX - LayoutSize(DS_ULTIMATE_BOTTOM_GAP) - ((DS_ULTIMATE_BOX_SIZE * ultimateScale) / 2)
         local healthBottom = VFM.GetDSSelfResourceBottomOffset("health")
         local staminaBottom = VFM.GetDSSelfResourceBottomOffset("stamina")
-        local centerY = ((healthBottom + staminaBottom) / 2) - (DS_SELF_HEALTH_HEIGHT / 2)
+        local centerY = ((healthBottom + staminaBottom) / 2) - ((DS_SELF_HEALTH_HEIGHT * selfScale) / 2)
         control.frame:SetAnchor(CENTER, GuiRoot, BOTTOM, zo_round(centerX), zo_round(centerY))
     else
         -- Centre the ultimate box vertically against the whole compact top-left
@@ -1127,8 +1300,8 @@ function VFM.UpdateDSUltimateControl()
         local _, healthY = VFM.GetDarkSoulsBarCenter("health")
         local _, staminaY = VFM.GetDarkSoulsBarCenter("stamina")
         local centerY = zo_round(((healthY or 0) + (staminaY or 0)) / 2)
-        local savedLeft = tonumber(VFM.saved and VFM.saved.darkSoulsLeft) or DARKSOULS_LEFT
-        local centerX = savedLeft + DS_ULTIMATE_LEFT_NUDGE + zo_round(DS_ULTIMATE_BOX_SIZE / 2)
+        local savedLeft = tonumber(VFM.saved and VFM.saved.darkSoulsLeft) or DefaultDarkSoulsLeft()
+        local centerX = savedLeft + LayoutX(DS_ULTIMATE_LEFT_NUDGE) + zo_round((DS_ULTIMATE_BOX_SIZE * ultimateScale) / 2)
         control.frame:SetAnchor(CENTER, GuiRoot, TOPLEFT, centerX, centerY)
     end
 
@@ -1494,28 +1667,39 @@ function VFM.GetReticleTargetUnitFrame()
     return nil
 end
 
+function VFM.GetDSEnemyLiveUnitTag()
+    -- Prefer ESO's dedicated player-target tag when it exists. The generic
+    -- reticleover tag can simultaneously resolve to a pet or summon while
+    -- reticleoverplayer contains the actual player under the crosshair.
+    if DoesUnitExist and IsUnitPlayer then
+        local okExists, exists = pcall(DoesUnitExist, "reticleoverplayer")
+        local okPlayer, isPlayer = pcall(IsUnitPlayer, "reticleoverplayer")
+        local attackable = true
+        if IsUnitAttackable then
+            local okAttackable, value = pcall(IsUnitAttackable, "reticleoverplayer")
+            attackable = okAttackable and value == true
+        end
+        if okExists and exists and okPlayer and isPlayer and attackable then
+            return "reticleoverplayer"
+        end
+    end
+    return "reticleover"
+end
+
 function VFM.IsValidDSEnemyReticleTarget()
-    return DoesUnitExist
-        and DoesUnitExist("reticleover")
-        and (not IsUnitAttackable or IsUnitAttackable("reticleover"))
-        and (not IsUnitDead or not IsUnitDead("reticleover"))
+    local unitTag = VFM.GetDSEnemyLiveUnitTag()
+    if not DoesUnitExist or not DoesUnitExist(unitTag) then return false end
+    return (not IsUnitAttackable or IsUnitAttackable(unitTag))
+        and (not IsUnitDead or not IsUnitDead(unitTag))
 end
 
 function VFM.GetDSEnemyReticleTargetName()
-    if not VFM.IsValidDSEnemyReticleTarget() then
-        return nil
-    end
-
+    if not VFM.IsValidDSEnemyReticleTarget() then return nil end
+    local unitTag = VFM.GetDSEnemyLiveUnitTag()
     local name
-    if GetRawUnitName then
-        name = GetRawUnitName("reticleover")
-    end
-    if (not name or name == "") and GetUnitName then
-        name = GetUnitName("reticleover")
-    end
-    if not name or name == "" then
-        return nil
-    end
+    if GetRawUnitName then name = GetRawUnitName(unitTag) end
+    if (not name or name == "") and GetUnitName then name = GetUnitName(unitTag) end
+    if not name or name == "" then return nil end
     return name
 end
 
@@ -1543,6 +1727,22 @@ function VFM.IsCurrentReticleDSEnemyPreferredTarget()
     return true
 end
 
+function VFM.IsDSEnemyPlayerPresentationVisible()
+    local control = VFM.dsEnemyHealthControl
+    if not control or not control.frame or VFM.dsEnemyLastIsPlayer ~= true then
+        return false
+    end
+    if control.frame.IsHidden then
+        local ok, hidden = pcall(function() return control.frame:IsHidden() end)
+        if not ok or hidden then return false end
+    end
+    if control.frame.GetAlpha then
+        local ok, alpha = pcall(function() return control.frame:GetAlpha() end)
+        if ok and tonumber(alpha) and tonumber(alpha) <= 0.01 then return false end
+    end
+    return true
+end
+
 function VFM.ApplyDSEnemyNormalFrameVisibility()
     local unitFrame = VFM.GetReticleTargetUnitFrame()
     if not unitFrame or not unitFrame.SetHiddenForReason then
@@ -1560,10 +1760,10 @@ function VFM.ApplyDSEnemyNormalFrameVisibility()
 end
 
 function VFM.GetDSEnemyHealthGeometry()
-    local width = Clamp(VFM.saved and VFM.saved.dsEnemyWidth or DS_ENEMY_HEALTH_WIDTH, 320, 1800)
-    local height = Clamp(VFM.saved and VFM.saved.dsEnemyHeight or DS_ENEMY_HEALTH_HEIGHT, 8, 80)
+    local width = Clamp(VFM.saved and VFM.saved.dsEnemyWidth or LayoutSize(DS_ENEMY_HEALTH_WIDTH), 320, 1800)
+    local height = Clamp(VFM.saved and VFM.saved.dsEnemyHeight or LayoutSize(DS_ENEMY_HEALTH_HEIGHT), 8, 80)
     local x = Clamp(VFM.saved and VFM.saved.dsEnemyX or 0, -1400, 1400)
-    local bottomOffset = Clamp(VFM.saved and VFM.saved.dsEnemyBottomOffset or DS_ENEMY_HEALTH_BOTTOM_OFFSET, -900, 0)
+    local bottomOffset = Clamp(VFM.saved and VFM.saved.dsEnemyBottomOffset or LayoutY(DS_ENEMY_HEALTH_BOTTOM_OFFSET), -900, 0)
     return width, height, x, bottomOffset
 end
 
@@ -1580,6 +1780,8 @@ function VFM.ApplyDSEnemyHealthGeometry()
     frame:SetDimensions(width, height)
     frame:ClearAnchors()
     frame:SetAnchor(BOTTOM, GuiRoot, BOTTOM, x, bottomOffset)
+    if control.championIcon then control.championIcon:SetDimensions(LayoutSize(20), LayoutSize(20)) end
+    if control.levelLabel then control.levelLabel:SetDimensions(LayoutSize(90), LayoutSize(22)) end
     return true
 end
 
@@ -1720,7 +1922,10 @@ function VFM.UpdateDSEnemyHealthBar()
         return false
     end
 
-    if VFM.saved and VFM.saved.combatOnly and not VFM.inCombat and VFM.saved.locked then
+    -- The Dark Souls enemy Health bar is always combat-only during normal
+    -- gameplay, independent of the broader Combat Only player-frame option. Keep
+    -- unlocked edit mode exempt so the bar can still be positioned deliberately.
+    if VFM.saved and not VFM.inCombat and VFM.saved.locked then
         if control and control.frame then
             control.frame:SetHidden(true)
         end
@@ -1768,8 +1973,9 @@ function VFM.UpdateDSEnemyHealthBar()
     local targetLevel = 0
 
     if useLiveReticle or VFM.IsCurrentReticleDSEnemyPreferredTarget() then
+        local liveUnitTag = VFM.GetDSEnemyLiveUnitTag()
         local liveCurrent, liveMaximum, effectiveMaximum = GetUnitPower(
-            "reticleover",
+            liveUnitTag,
             COMBAT_MECHANIC_FLAGS_HEALTH
         )
 
@@ -1786,15 +1992,15 @@ function VFM.UpdateDSEnemyHealthBar()
             VFM.dsEnemyLastCurrent = current
             VFM.dsEnemyLastMaximum = maximum
 
-            targetIsPlayer = IsUnitPlayer and IsUnitPlayer("reticleover") or false
+            targetIsPlayer = IsUnitPlayer and IsUnitPlayer(liveUnitTag) or false
             if targetIsPlayer then
                 if GetUnitEffectiveChampionPoints then
-                    targetChampionPoints = tonumber(GetUnitEffectiveChampionPoints("reticleover")) or 0
+                    targetChampionPoints = tonumber(GetUnitEffectiveChampionPoints(liveUnitTag)) or 0
                 elseif GetUnitChampionPoints then
-                    targetChampionPoints = tonumber(GetUnitChampionPoints("reticleover")) or 0
+                    targetChampionPoints = tonumber(GetUnitChampionPoints(liveUnitTag)) or 0
                 end
                 if targetChampionPoints <= 0 and GetUnitEffectiveLevel then
-                    targetLevel = tonumber(GetUnitEffectiveLevel("reticleover")) or 0
+                    targetLevel = tonumber(GetUnitEffectiveLevel(liveUnitTag)) or 0
                 end
             end
             VFM.dsEnemyLastIsPlayer = targetIsPlayer
@@ -1946,13 +2152,29 @@ function VFM.IsDSSelfHealthEnabled()
     return VFM.saved and VFM.saved.dsSelfHealthBar and true or false
 end
 
+function VFM.GetDSSelfVisualScale()
+    local fallback = LayoutSize(1.0)
+    return Clamp(tonumber(VFM.saved and VFM.saved.dsSelfScale) or fallback, 0.50, 2.50)
+end
+
+function VFM.ApplyDSSelfVisualScale()
+    local scale = VFM.GetDSSelfVisualScale()
+    for _, control in ipairs({ VFM.dsSelfHealthControl, VFM.dsSelfMagickaControl, VFM.dsSelfStaminaControl }) do
+        if control and control.frame and control.frame.SetScale then
+            control.frame:SetScale(scale)
+        end
+    end
+    return scale
+end
+
 function VFM.GetDSSelfBottomBaseOffset()
     -- The target bar keeps the lowest proven position. When an enemy long bar
     -- is enabled, the player stack moves above it as one unit. The base offset
     -- is profile-backed so Dark Souls presets can be tuned and synced.
-    local base = tonumber(VFM.saved and VFM.saved.dsBottomOffset) or DS_SELF_HEALTH_BOTTOM_OFFSET
+    local base = tonumber(VFM.saved and VFM.saved.dsBottomOffset) or LayoutY(DS_SELF_HEALTH_BOTTOM_OFFSET)
     if VFM.IsDSEnemyHealthEnabled() then
-        return base - DS_SELF_HEALTH_HEIGHT - DS_SELF_HEALTH_STACK_GAP
+        local enemyHeight = tonumber(VFM.saved and VFM.saved.dsEnemyHeight) or LayoutSize(DS_ENEMY_HEALTH_HEIGHT)
+        return base - enemyHeight - LayoutSize(DS_SELF_HEALTH_STACK_GAP)
     end
     return base
 end
@@ -1967,8 +2189,8 @@ function VFM.GetDSSelfResourceBottomOffset(resourceKey)
 
     -- Full bottom stack mirrors the top-left order:
     -- Health on top, Magicka in the middle, Stamina on the bottom.
-    local gap = Clamp(tonumber(VFM.saved and VFM.saved.dsBottomGap) or DS_SELF_RESOURCE_GAP, 0, 100)
-    local step = DS_SELF_HEALTH_HEIGHT + gap
+    local gap = Clamp(tonumber(VFM.saved and VFM.saved.dsBottomGap) or LayoutSize(DS_SELF_RESOURCE_GAP), 0, 100)
+    local step = (DS_SELF_HEALTH_HEIGHT * VFM.GetDSSelfVisualScale()) + gap
     if resourceKey == "health" then
         return base - (step * 2)
     elseif resourceKey == "magicka" then
@@ -1988,7 +2210,7 @@ function VFM.CreateDSSelfHealthBar()
 
     local frame = WINDOW_MANAGER:CreateTopLevelWindow("VanillaFrameMoverDSSelfHealth")
     frame:SetDimensions(DS_SELF_HEALTH_WIDTH, DS_SELF_HEALTH_HEIGHT)
-    frame:SetScale(Clamp(tonumber(VFM.saved and VFM.saved.dsSelfScale) or 1.0, 0.50, 2.50))
+    frame:SetScale(VFM.GetDSSelfVisualScale())
     frame:SetDrawLayer(DL_OVERLAY)
     frame:SetDrawTier(DT_HIGH)
     frame:SetDrawLevel(1490)
@@ -2044,7 +2266,7 @@ function VFM.CreateDSSelfResourceBar(resourceKey)
 
     local frame = WINDOW_MANAGER:CreateTopLevelWindow("UltiviteDSSelf" .. suffix)
     frame:SetDimensions(DS_SELF_HEALTH_WIDTH, DS_SELF_HEALTH_HEIGHT)
-    frame:SetScale(Clamp(tonumber(VFM.saved and VFM.saved.dsSelfScale) or 1.0, 0.50, 2.50))
+    frame:SetScale(VFM.GetDSSelfVisualScale())
     frame:SetDrawLayer(DL_OVERLAY)
     frame:SetDrawTier(DT_HIGH)
     frame:SetDrawLevel(1488)
@@ -2118,6 +2340,7 @@ function VFM.UpdateDSSelfResourceBar(resourceKey)
     if not control then
         return false
     end
+    VFM.ApplyDSSelfVisualScale()
 
     control.frame:ClearAnchors()
     control.frame:SetAnchor(
@@ -2176,6 +2399,7 @@ function VFM.UpdateDSSelfHealthBar()
     if not control then
         return false
     end
+    VFM.ApplyDSSelfVisualScale()
 
     control.frame:ClearAnchors()
     control.frame:SetAnchor(BOTTOM, GuiRoot, BOTTOM, tonumber(VFM.saved.dsBottomX) or 0, VFM.GetDSSelfHealthBottomOffset())
@@ -2521,19 +2745,339 @@ function VFM.GetRawNormalWidth()
 end
 
 function VFM.GetRawTargetWidthForControl(control, rawNormal, rawShrunk)
+    -- Ultivite deliberately keeps the three native player bars at one fixed
+    -- configured width. ESO's max-resource visualizer normally grows or shrinks
+    -- them for temporary max-resource effects, which makes Pyramid and the other
+    -- layouts visibly jump. The configured normal width is authoritative.
+    return rawNormal
+end
+
+function VFM.InstallStaticShrinkExpandOverride()
     local module = VFM.FindShrinkExpandModule()
-    if module and module.barInfo and module.barControls then
-        for stat, moduleControl in pairs(module.barControls) do
-            if moduleControl == control then
-                local info = module.barInfo[stat]
-                if info and (info.state == ATTRIBUTE_BAR_STATE_SHRUNK or (info.value and info.value < 0)) then
-                    return rawShrunk
+    if not module then
+        return false
+    end
+
+    if module.vfmStaticSizingInstalled then
+        return true
+    end
+
+    module.vfmStaticSizingInstalled = true
+    module.vfmOriginalTryChangingState = module.TryChangingState
+
+    -- Keep ESO's bookkeeping for attribute visual values intact, but prevent the
+    -- player-only ShrinkExpand module from ever starting a width animation. The
+    -- official module routes all max-resource visual changes through this method.
+    module.TryChangingState = function(self, bar, info, stat)
+        if info and info.state ~= ATTRIBUTE_BAR_STATE_NORMAL then
+            return ATTRIBUTE_BAR_STATE_NORMAL, self.normalWidth, self.normalWidth
+        end
+        return nil
+    end
+
+    return true
+end
+
+function VFM.SuppressUnwaveringVisuals()
+    local module = VFM.FindUnwaveringModule()
+    if not module then
+        return false
+    end
+
+    if not module.vfmStaticVisualInstalled then
+        module.vfmStaticVisualInstalled = true
+        module.vfmOriginalOnValueChanged = module.OnValueChanged
+
+        -- Preserve ESO's value bookkeeping in the module's Added/Updated/Removed
+        -- handlers, but replace the presentation step so the immunity effect can
+        -- never fade the bar, create the thick white overlay, or pulse the Warner
+        -- glow while Ultivite owns these native player frames.
+        module.OnValueChanged = function(self, bar, info, instant)
+            if info then
+                if info.animation and info.animation.IsPlaying and info.animation:IsPlaying() then
+                    info.animation:Stop()
                 end
-                return rawNormal
+                if info.control then
+                    if info.control.SetHidden then info.control:SetHidden(true) end
+                    if info.control.SetAlpha then info.control:SetAlpha(0) end
+                end
+                info.lastValue = info.value
+            end
+            if bar and bar.warner then
+                if bar.warner.SetPaused then bar.warner:SetPaused(true) end
+            end
+            if bar and bar.warnerContainer and bar.warnerContainer.SetAlpha then
+                bar.warnerContainer:SetAlpha(0)
             end
         end
     end
-    return rawNormal
+
+    for attribute, info in pairs(module.barInfo or {}) do
+        local bar = module.barControls and module.barControls[attribute] or nil
+        if info then
+            if info.animation and info.animation.IsPlaying and info.animation:IsPlaying() then
+                info.animation:Stop()
+            end
+            if info.control then
+                if info.control.SetHidden then info.control:SetHidden(true) end
+                if info.control.SetAlpha then info.control:SetAlpha(0) end
+            end
+            info.lastValue = info.value
+        end
+        if bar and bar.warner and bar.warner.SetPaused then
+            bar.warner:SetPaused(true)
+        end
+        if bar and bar.warnerContainer and bar.warnerContainer.SetAlpha then
+            bar.warnerContainer:SetAlpha(0)
+        end
+    end
+
+    return true
+end
+
+
+local function EndDynamicVisualizerAnimation(animation)
+    if not animation then
+        return
+    end
+    if ZO_Animation_PlayBackwardOrInstantlyToStart then
+        pcall(ZO_Animation_PlayBackwardOrInstantlyToStart, animation, ANIMATION_INSTANT)
+    elseif animation.Stop then
+        pcall(animation.Stop, animation)
+    end
+end
+
+function VFM.SuppressArmorDamageVisuals()
+    local module = VFM.FindArmorDamageModule()
+    if not module then
+        return false
+    end
+
+    if not module.vfmStaticVisualInstalled then
+        module.vfmStaticVisualInstalled = true
+        module.vfmOriginalOnValueChanged = module.OnValueChanged
+
+        -- ArmorDamage is also the ZOS "increased power" presentation. It creates
+        -- a texture extending roughly 80px outside the health bar and a separate
+        -- glow extending outside the frame. Never start those visuals while
+        -- Ultivite owns the player bars.
+        module.OnValueChanged = function(self, bar, info)
+            if info then
+                if info.currentAnimation then
+                    EndDynamicVisualizerAnimation(info.currentAnimation)
+                    info.currentAnimation = nil
+                end
+                info.lastValue = info.value
+            end
+            if bar and bar.bgContainer and bar.bgContainer.SetAlpha then
+                bar.bgContainer:SetAlpha(1)
+            end
+        end
+    end
+
+    for _, info in pairs(module.barInfo or {}) do
+        if info then
+            if info.currentAnimation then
+                EndDynamicVisualizerAnimation(info.currentAnimation)
+                info.currentAnimation = nil
+            end
+            info.lastValue = info.value
+        end
+    end
+    for _, bar in pairs(module.barControls or {}) do
+        if bar and bar.bgContainer and bar.bgContainer.SetAlpha then
+            bar.bgContainer:SetAlpha(1)
+        end
+    end
+    return true
+end
+
+function VFM.SuppressPossessionVisuals()
+    local module = VFM.FindPossessionModule()
+    if not module then
+        return false
+    end
+
+    if not module.vfmStaticVisualInstalled then
+        module.vfmStaticVisualInstalled = true
+        module.vfmOriginalOnValueChanged = module.OnValueChanged
+        module.OnValueChanged = function(self, bar, info)
+            if info then
+                if info.currentAnimation then
+                    EndDynamicVisualizerAnimation(info.currentAnimation)
+                    info.currentAnimation = nil
+                end
+                if info.barOverlayControl then
+                    if info.barOverlayControl.SetHidden then info.barOverlayControl:SetHidden(true) end
+                    if info.barOverlayControl.SetAlpha then info.barOverlayControl:SetAlpha(0) end
+                end
+                info.lastValue = info.value
+            end
+            if bar and bar.bgContainer and bar.bgContainer.SetAlpha then
+                bar.bgContainer:SetAlpha(1)
+            end
+        end
+    end
+
+    for _, info in pairs(module.barInfo or {}) do
+        if info then
+            if info.currentAnimation then
+                EndDynamicVisualizerAnimation(info.currentAnimation)
+                info.currentAnimation = nil
+            end
+            if info.barOverlayControl then
+                if info.barOverlayControl.SetHidden then info.barOverlayControl:SetHidden(true) end
+                if info.barOverlayControl.SetAlpha then info.barOverlayControl:SetAlpha(0) end
+            end
+            info.lastValue = info.value
+        end
+    end
+    return true
+end
+
+local function HidePowerShieldOverlayInfo(barInfo)
+    if not barInfo or not barInfo.overlayControls then
+        return
+    end
+    for _, overlay in pairs(barInfo.overlayControls) do
+        if overlay then
+            if overlay.SetHidden then overlay:SetHidden(true) end
+            if overlay.SetAlpha then overlay:SetAlpha(0) end
+        end
+    end
+end
+
+function VFM.SuppressPowerShieldVisuals()
+    local module = VFM.FindPowerShieldModule()
+    if not module then
+        return false
+    end
+
+    if not module.vfmStaticVisualInstalled then
+        module.vfmStaticVisualInstalled = true
+        module.vfmOriginalOnValueChanged = module.OnValueChanged
+        module.vfmOriginalUpdateValue = module.UpdateValue
+        module.vfmOriginalOnStatusBarValueChanged = module.OnStatusBarValueChanged
+        module.vfmOriginalDoAlphaUpdate = module.DoAlphaUpdate
+
+        -- Damage shield, trauma and no-healing overlays normally repaint the
+        -- native health bar. The underlying combat values remain untouched, but
+        -- Ultivite's player-bar shell is intentionally presentation-static.
+        module.OnValueChanged = function(self, attributeBar, barInfo, visualType)
+            local visualInfo = barInfo and barInfo.visualInfo and barInfo.visualInfo[visualType] or nil
+            if visualInfo then
+                visualInfo.lastValue = visualInfo.value
+            end
+            HidePowerShieldOverlayInfo(barInfo)
+        end
+        module.UpdateValue = function(self, attributeBar, barInfo)
+            HidePowerShieldOverlayInfo(barInfo)
+        end
+        module.OnStatusBarValueChanged = function(self, attributeBar, barInfo)
+            HidePowerShieldOverlayInfo(barInfo)
+        end
+        module.DoAlphaUpdate = function(self)
+            for _, barInfo in pairs(self.attributeInfo or {}) do
+                HidePowerShieldOverlayInfo(barInfo)
+            end
+        end
+    end
+
+    for _, barInfo in pairs(module.attributeInfo or {}) do
+        HidePowerShieldOverlayInfo(barInfo)
+        for _, visualInfo in pairs(barInfo.visualInfo or {}) do
+            visualInfo.lastValue = visualInfo.value
+        end
+    end
+    return true
+end
+
+function VFM.SuppressArrowRegenerationVisuals()
+    local module = VFM.FindArrowRegenerationModule()
+    if not module then
+        return false
+    end
+
+    if not module.vfmStaticVisualInstalled then
+        module.vfmStaticVisualInstalled = true
+        module.vfmOriginalPulse = module.Pulse
+        module.vfmOriginalPlayArrow = module.PlayArrow
+
+        -- Regeneration arrows are another native presentation-only animation
+        -- attached to Health/Magicka/Stamina. Do not animate the static Ultivite
+        -- resource bars, while leaving ESO's actual regeneration values alone.
+        module.Pulse = function() end
+        module.PlayArrow = function() end
+    end
+
+    for _, info in pairs(module.barInfo or {}) do
+        if info then
+            info.arrowsRemaining = 0
+            info.takeControl = false
+        end
+    end
+
+    local pool = module.arrowPool
+    if pool and pool.GetActiveObjects then
+        local active = {}
+        for _, arrow in pairs(pool:GetActiveObjects() or {}) do
+            active[#active + 1] = arrow
+        end
+        for _, arrow in ipairs(active) do
+            if arrow and arrow.animation and arrow.animation.Stop then
+                pcall(arrow.animation.Stop, arrow.animation)
+            end
+            if arrow and arrow.SetHidden then arrow:SetHidden(true) end
+            if arrow and arrow.SetAlpha then arrow:SetAlpha(0) end
+        end
+    end
+    return true
+end
+
+function VFM.SuppressPrimaryBarDynamicVisuals()
+    VFM.SuppressArmorDamageVisuals()
+    VFM.SuppressUnwaveringVisuals()
+    VFM.SuppressPossessionVisuals()
+    VFM.SuppressPowerShieldVisuals()
+    VFM.SuppressArrowRegenerationVisuals()
+
+    local bars = VFM.GetPrimaryBarObjects()
+    if not bars then
+        return false
+    end
+
+    -- The native Warner overlay is the bright animated border/glow used by ESO's
+    -- attribute visual system. Ultivite owns the presentation of these three bars,
+    -- so keep that overlay permanently invisible in every player-frame mode.
+    for _, key in ipairs(BAR_KEYS) do
+        local bar = bars[key]
+        local control = bar and bar.control
+        if control then
+            if control.warner and control.warner.SetPaused then
+                control.warner:SetPaused(true)
+            end
+            if control.warnerContainer then
+                if control.warnerContainer.SetHidden then control.warnerContainer:SetHidden(true) end
+                if control.warnerContainer.SetAlpha then control.warnerContainer:SetAlpha(0) end
+            end
+            if control.bgContainer and control.bgContainer.SetAlpha then
+                local keepHidden = bar.vfmCombatHardHidden == true
+                    or (VFM.saved and VFM.saved.combatOnly == true and VFM.saved.locked == true and VFM.inCombat ~= true)
+                control.bgContainer:SetAlpha(keepHidden and 0 or 1)
+                if keepHidden and control.bgContainer.SetHidden then
+                    control.bgContainer:SetHidden(true)
+                end
+            end
+
+            local warnerControl = control:GetNamedChild("Warner")
+            if warnerControl then
+                if warnerControl.SetHidden then warnerControl:SetHidden(true) end
+                if warnerControl.SetAlpha then warnerControl:SetAlpha(0) end
+            end
+        end
+    end
+
+    return true
 end
 
 function VFM.ApplyShrinkExpandWidths()
@@ -2553,13 +3097,14 @@ function VFM.ApplyShrinkExpandWidths()
     local original = module.vfmOriginalWidths
     local scale = VFM.GetActiveBarWidthScale()
 
-    -- Keep the proven v9 horizontal sizing model: scale ESO's managed raw
-    -- widths and the native bar transform together. Positive max-resource
-    -- visuals deliberately use the normal width so buffs can never make the
-    -- player bars physically larger than the configured size.
+    VFM.InstallStaticShrinkExpandOverride()
+
+    -- All three native ShrinkExpand widths are intentionally identical. This
+    -- removes both temporary growth and temporary shrinkage while preserving the
+    -- user's configured Ultivite width and ESO's normal resource fill behaviour.
     module.normalWidth = zo_round((original.normal or NORMAL_WIDTH) * scale)
     module.expandedWidth = module.normalWidth
-    module.shrunkWidth = zo_round((original.shrunk or SHRUNK_WIDTH) * scale)
+    module.shrunkWidth = module.normalWidth
 
     if module.barInfo and module.barControls then
         local owner = module.GetOwner and module:GetOwner() or nil
@@ -2571,27 +3116,12 @@ function VFM.ApplyShrinkExpandWidths()
                     info.animation:Stop()
                 end
 
-                local value = tonumber(info.value) or 0
-                local state
-                local targetWidth
+                local state = ATTRIBUTE_BAR_STATE_NORMAL
+                local targetWidth = module.normalWidth
 
-                if value < 0 then
-                    state = ATTRIBUTE_BAR_STATE_SHRUNK
-                    targetWidth = module.shrunkWidth
-                elseif value > 0 then
-                    state = ATTRIBUTE_BAR_STATE_EXPANDED
-                    targetWidth = module.normalWidth
-                else
-                    state = ATTRIBUTE_BAR_STATE_NORMAL
-                    targetWidth = module.normalWidth
-                end
-
-                -- ESO's ShrinkExpand:OnValueChanged only writes the width when
-                -- its internal state changes. That makes live slider/wheel
-                -- resizing unreliable while the bar remains in the same state.
-                -- Apply the target raw width directly every time, using the same
-                -- resize callbacks as ESO's own instant-resize path so attached
-                -- systems such as the native shield can refresh correctly.
+                -- Force a single stable state regardless of positive or negative
+                -- max-resource visuals. Attribute values still update inside ESO,
+                -- but they no longer alter Ultivite's player-bar geometry.
                 info.state = state
 
                 if owner and owner.FireCallbacks then
@@ -2618,6 +3148,7 @@ function VFM.ApplyShrinkExpandWidths()
         end
     end
 
+    VFM.SuppressPrimaryBarDynamicVisuals()
     return true
 end
 
@@ -2926,8 +3457,8 @@ function VFM.BeginManualDrag(key)
 
     local startX, startY
     if VFM.saved.darkSoulsMode then
-        startX = tonumber(VFM.saved.darkSoulsLeft) or DARKSOULS_LEFT
-        startY = tonumber(VFM.saved.darkSoulsTop) or DARKSOULS_TOP
+        startX = tonumber(VFM.saved.darkSoulsLeft) or DefaultDarkSoulsLeft()
+        startY = tonumber(VFM.saved.darkSoulsTop) or DefaultDarkSoulsTop()
         VFM.draggingDarkSoulsStack = true
     else
         startX, startY = VFM.GetSavedPosition(key)
@@ -3009,8 +3540,8 @@ function VFM.EndManualDrag(key)
 
     local fineMove = IsShiftKeyDown and IsShiftKeyDown()
     if VFM.draggingDarkSoulsStack then
-        local x = tonumber(VFM.saved.darkSoulsLeft) or DARKSOULS_LEFT
-        local y = tonumber(VFM.saved.darkSoulsTop) or DARKSOULS_TOP
+        local x = tonumber(VFM.saved.darkSoulsLeft) or DefaultDarkSoulsLeft()
+        local y = tonumber(VFM.saved.darkSoulsTop) or DefaultDarkSoulsTop()
         if VFM.saved.snapToGrid and not fineMove then
             local grid = Clamp(VFM.saved.gridSize, 2, 100)
             x = SnapValue(x, grid)
@@ -3050,10 +3581,9 @@ function VFM.EndManualDrag(key)
 end
 
 function VFM.CancelManualDrag()
-    if not VFM.draggingKey then
-        return
-    end
-
+    -- Always tear down the capture even if the drag-state variable was already
+    -- cleared. Closing a settings scene during a mouse drag can lose OnMouseUp,
+    -- leaving an otherwise invisible full-screen control able to trap gameplay.
     local key = VFM.draggingKey
     EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME .. "DragUpdate")
     if VFM.dragCapture then
@@ -3067,7 +3597,7 @@ function VFM.CancelManualDrag()
     VFM.dragStartX = nil
     VFM.dragStartY = nil
 
-    local moverData = VFM.movers[key]
+    local moverData = key and VFM.movers[key] or nil
     if moverData then
         moverData.coords:SetHidden(true)
         moverData.backdrop:SetCenterColor(0.15, 0.75, 1.00, 0.015)
@@ -3540,7 +4070,7 @@ function VFM.GetLayoutDrift()
 
     local module = VFM.FindShrinkExpandModule()
     local wantedNormal = zo_round(NORMAL_WIDTH * wantedXScale)
-    local wantedShrunk = zo_round(SHRUNK_WIDTH * wantedXScale)
+    local wantedShrunk = wantedNormal
 
     for _, key in ipairs(BAR_KEYS) do
         local control = VFM.GetPrimaryControl(key)
@@ -3571,11 +4101,7 @@ function VFM.GetLayoutDrift()
         if module and module.barInfo and module.barControls then
             for statType, moduleControl in pairs(module.barControls) do
                 if moduleControl == control then
-                    local info = module.barInfo[statType]
                     local expectedWidth = wantedNormal
-                    if info and (info.state == ATTRIBUTE_BAR_STATE_SHRUNK or (tonumber(info.value) or 0) < 0) then
-                        expectedWidth = wantedShrunk
-                    end
                     local actualWidth = tonumber(control:GetWidth()) or 0
                     if math.abs(actualWidth - expectedWidth) > 1.5 then
                         widthDrift = true
@@ -4502,9 +5028,54 @@ function VFM.GetChatControl()
     return _G.ZO_ChatWindow
 end
 
+function VFM.RestoreNativeChatInteraction()
+    local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
+    local container = chatSystem and chatSystem.primaryContainer or nil
+    local control = container and container.control or VFM.GetChatControl()
+    if not control then return false end
+
+    -- Restore the stock API 101050 keyboard chat interaction properties used by
+    -- the user confirmed 1.0.153 and 1.0.154 native chat repairs. Tabs remain
+    -- ESO's drag surface and the container keeps ESO's resize grip.
+    if type(control.StopMovingOrResizing) == "function" then
+        pcall(control.StopMovingOrResizing, control)
+    end
+    if type(control.SetMovable) == "function" then
+        pcall(control.SetMovable, control, false)
+    end
+    if type(control.SetMouseEnabled) == "function" then
+        pcall(control.SetMouseEnabled, control, true)
+    end
+    if type(control.SetClampedToScreen) == "function" then
+        pcall(control.SetClampedToScreen, control, true)
+    end
+    if type(control.SetResizeHandleSize) == "function" then
+        pcall(control.SetResizeHandleSize, control, 8)
+    end
+
+    if container and type(container.windows) == "table" then
+        for _, window in ipairs(container.windows) do
+            local tab = window and window.tab or nil
+            if tab and type(tab.SetMouseEnabled) == "function" then
+                pcall(tab.SetMouseEnabled, tab, true)
+            end
+        end
+    end
+
+    if container and type(container.CalculateConstraints) == "function" then
+        pcall(container.CalculateConstraints, container)
+    end
+    return true
+end
+
 function VFM.ApplyChatResizeExtents()
+    -- Restore the user-confirmed stable 1.0.156 / 1.0.147 native chat path.
+    -- ESO's keyboard chat needs valid container extents and recalculated native
+    -- constraints for its own drag edge and resize grip to remain interactive.
     local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
     if not chatSystem then return false end
+
+    VFM.RestoreNativeChatInteraction()
 
     local rootWidth, rootHeight = 1920, 1080
     if GuiRoot and type(GuiRoot.GetDimensions) == "function" then
@@ -4523,22 +5094,37 @@ function VFM.ApplyChatResizeExtents()
     if type(chatSystem.SetContainerExtents) == "function" then
         pcall(chatSystem.SetContainerExtents, chatSystem, minWidth, maxWidth, minHeight, maxHeight)
     else
-        -- Compatibility fallback for an older chat system implementation.
         chatSystem.minContainerWidth = minWidth
         chatSystem.maxContainerWidth = maxWidth
         chatSystem.minContainerHeight = minHeight
         chatSystem.maxContainerHeight = maxHeight
     end
 
+    local function applyContainerConstraints(container)
+        if not container then return end
+        local control = container.control
+        -- ChatSystem extents are not sufficient on every client state. The stock
+        -- ZO_ChatWindow control can retain its old 550 x 380 constraint and then
+        -- silently clamp SetDimensions. Keep the control and system in agreement.
+        if control and type(control.SetDimensionConstraints) == "function" then
+            pcall(control.SetDimensionConstraints, control, minWidth, minHeight, maxWidth, maxHeight)
+        end
+        if type(container.CalculateConstraints) == "function" then
+            pcall(container.CalculateConstraints, container)
+        end
+    end
+
     if type(chatSystem.containers) == "table" then
         for _, container in pairs(chatSystem.containers) do
-            if container and type(container.CalculateConstraints) == "function" then
-                pcall(container.CalculateConstraints, container)
-            end
+            applyContainerConstraints(container)
         end
-    elseif chatSystem.primaryContainer and type(chatSystem.primaryContainer.CalculateConstraints) == "function" then
-        pcall(chatSystem.primaryContainer.CalculateConstraints, chatSystem.primaryContainer)
+    else
+        applyContainerConstraints(chatSystem.primaryContainer)
     end
+
+    -- Some chat replacements publish primaryContainer separately from the
+    -- containers table. Reapplying is harmless and avoids missing that control.
+    applyContainerConstraints(chatSystem.primaryContainer)
 
     return true
 end
@@ -4549,9 +5135,8 @@ function VFM.RepairManagedChatState()
 
     VFM.ApplyChatResizeExtents()
 
-    -- Older Ultivite builds used the stock Minimize() state for chat auto hide.
-    -- Undo that legacy structural state only when Ultivite itself is managing
-    -- chat visibility. Normal SHOW mode keeps the player's own minimize choice.
+    -- Old Ultivite chat auto-hide builds could leave ESO structurally minimized.
+    -- Only undo that legacy state when Ultivite itself manages visibility.
     if VFM.GetChatVisibilityMode() ~= "show"
         and type(chatSystem.IsMinimized) == "function"
         and type(chatSystem.Maximize) == "function" then
@@ -4581,9 +5166,14 @@ function VFM.ApplyChatVisibilityMode()
         or (mode == "combat" and (IsUnitInCombat and IsUnitInCombat("player") or VFM.inCombat == true))
         or (mode == "pvp" and VFM.IsPvpUiContext and VFM.IsPvpUiContext())
 
-    -- Never hide chat while the user is typing. Once text entry closes the
-    -- normal visibility guardian applies the selected rule immediately.
+    -- Never hide chat while the user is typing or while ESO itself is in the
+    -- middle of a native resize. A resize can temporarily drop text-entry focus;
+    -- treating that as an auto-hide trigger makes the window disappear mid-drag.
     if VFM.IsChatTextEntryOpen() then shouldHide = false end
+    local quick = U and U.QuickMenu or nil
+    if quick and quick.IsNativeChatResizeActive and quick.IsNativeChatResizeActive() then
+        shouldHide = false
+    end
 
     local control = VFM.GetChatControl()
     if not control or not control.SetHidden then return false end
@@ -4741,7 +5331,7 @@ function VFM.SetNavigationHelperVisibilityMode(kind, mode, silent)
     VFM.saved[key] = mode
     VFM.RequestSettingsSave()
     VFM.RefreshNavigationHelpers(true)
-    if not silent then Print(string.format("%s visibility: %s", kind == "feet" and "Feet compass" or "Crown arrow", string.upper(mode))) end
+    if not silent then Print(string.format("%s visibility: %s", kind == "feet" and "Feet compass" or "Follow the Leader", string.upper(mode))) end
 end
 
 function VFM.ShouldShowNavigationHelper(kind)
@@ -4780,6 +5370,10 @@ function VFM.CreateCrownDirectionArrow()
     texture:SetAnchorFill(control)
     texture:SetTexture("Ultivite/art/crown_direction_marker.dds")
     texture:SetColor(1, 1, 1, 1)
+    -- Rotating UI textures look noticeably softer when ESO pixel-rounds the
+    -- final texture rectangle. Keep the marker in shader space and rotate it
+    -- explicitly around its true centre.
+    if texture.SetPixelRoundingEnabled then texture:SetPixelRoundingEnabled(false) end
 
     control.texture = texture
     control.accent = nil
@@ -4831,21 +5425,29 @@ function VFM.ApplyCrownDirectionArrowLayout()
     local size = ClampNumber(VFM.saved.crownDirectionArrowSize, 14, 96, defaults.crownDirectionArrowSize)
     local alpha = ClampNumber(VFM.saved.crownDirectionArrowOpacity, 0.10, 1.00, defaults.crownDirectionArrowOpacity)
 
-    -- The composite asset is deliberately tall inside a square canvas. Scaling
-    -- the whole square keeps the rotation perfectly centred while giving the
-    -- arrow substantially more shaft length than the old stretched texture.
+    -- The marker is rotated continuously. Keep its geometry completely stable
+    -- between angle updates: repeatedly clearing/reapplying anchors while a
+    -- texture is rotating can cause soft transient sampling. An even square
+    -- also guarantees a whole-pixel centre for the rotation pivot.
     local markerSize = math.max(46, zo_round(size * 2.55))
+    if (markerSize % 2) ~= 0 then markerSize = markerSize + 1 end
+    local x = zo_round(ClampNumber(VFM.saved.crownDirectionArrowX, -2000, 2000, defaults.crownDirectionArrowX))
+    local y = zo_round(ClampNumber(VFM.saved.crownDirectionArrowY, -1200, 1200, defaults.crownDirectionArrowY))
+
+    local cache = VFM.crownDirectionArrowLayoutCache
+    if cache and cache.size == markerSize and cache.alpha == alpha and cache.x == x and cache.y == y then
+        return
+    end
+
     control:SetDimensions(markerSize, markerSize)
     control:ClearAnchors()
-    control:SetAnchor(CENTER, GuiRoot, CENTER,
-        ClampNumber(VFM.saved.crownDirectionArrowX, -2000, 2000, defaults.crownDirectionArrowX),
-        ClampNumber(VFM.saved.crownDirectionArrowY, -1200, 1200, defaults.crownDirectionArrowY))
+    control:SetAnchor(CENTER, GuiRoot, CENTER, x, y)
     control:SetAlpha(alpha)
-
-    if control.texture then
-        control.texture:ClearAnchors()
-        control.texture:SetAnchorFill(control)
+    if control.texture and control.texture.SetPixelRoundingEnabled then
+        control.texture:SetPixelRoundingEnabled(false)
     end
+
+    VFM.crownDirectionArrowLayoutCache = { size = markerSize, alpha = alpha, x = x, y = y }
 end
 
 function VFM.ApplyFeetCompassLayout()
@@ -4956,7 +5558,7 @@ function VFM.UpdateCrownDirectionArrow(force)
         and Ultivite.QuickMenu.IsPreviewing("crownArrow")
     if quickPreview then
         VFM.ApplyCrownDirectionArrowLayout()
-        if control.texture and control.texture.SetTextureRotation then control.texture:SetTextureRotation(0) end
+        if control.texture and control.texture.SetTextureRotation then control.texture:SetTextureRotation(0, 0.5, 0.5) end
         control:SetHidden(false)
         return
     end
@@ -4998,7 +5600,7 @@ function VFM.UpdateCrownDirectionArrow(force)
     VFM.ApplyCrownDirectionArrowLayout()
     local angle = NormalizeRadians(VFM.cachedCrownWorldBearing - heading)
     if control.texture and control.texture.SetTextureRotation then
-        control.texture:SetTextureRotation(angle)
+        control.texture:SetTextureRotation(angle, 0.5, 0.5)
     end
     control:SetHidden(false)
 end
@@ -5072,7 +5674,7 @@ function VFM.UpdateFeetCompass(force)
     end
 
     if control.texture and control.texture.SetTextureRotation then
-        control.texture:SetTextureRotation(0)
+        control.texture:SetTextureRotation(0, 0.5, 0.5)
     end
     control:SetHidden(false)
 end
@@ -5102,7 +5704,7 @@ function VFM.SetCrownDirectionArrow(enabled, silent)
     VFM.saved.crownDirectionArrow = enabled and true or false
     VFM.RequestSettingsSave()
     VFM.RefreshNavigationHelpers(true)
-    if not silent then Print(VFM.saved.crownDirectionArrow and "Crown direction arrow enabled" or "Crown direction arrow disabled") end
+    if not silent then Print(VFM.saved.crownDirectionArrow and "Follow the Leader enabled" or "Follow the Leader disabled") end
 end
 
 function VFM.SetCrownDirectionArrowSize(value)
@@ -5240,6 +5842,11 @@ function VFM.StartLayoutGuardian()
         if VFM.saved.darkSoulsMode then
             VFM.SetDarkSoulsResourceTextHidden(true)
         end
+
+        -- Some native attribute visual modules can refresh the Warner overlay
+        -- independently of layout changes. Keep the no-glow rule authoritative
+        -- even when no resize or position drift occurred.
+        VFM.SuppressPrimaryBarDynamicVisuals()
 
         -- EVENT_PLAYER_COMBAT_STATE can be missed across loading, death and scene
         -- transitions. Reconcile against ESO's live combat state so the cached
@@ -5458,6 +6065,23 @@ function VFM.ShouldHardHidePrimaryBar(bar)
         and VFM.inCombat ~= true
 end
 
+local function SetPrimaryBarBackgroundHidden(control, hidden)
+    if not control then return end
+
+    local bg = control.bgContainer
+    if not bg and control.GetNamedChild then
+        bg = control:GetNamedChild("BgContainer")
+    end
+    if not bg then return end
+
+    if bg.SetAlpha then
+        bg:SetAlpha(hidden and 0 or 1)
+    end
+    if bg.SetHidden then
+        bg:SetHidden(hidden and true or false)
+    end
+end
+
 function VFM.SetPrimaryBarHardHidden(bar, hidden)
     if not VFM.IsPrimaryBar(bar) or not bar.control then
         return false
@@ -5469,12 +6093,15 @@ function VFM.SetPrimaryBarHardHidden(bar, hidden)
     if hidden then
         -- Timeline state alone is not enough. ESO can restart the contextual
         -- fade animation after interactions, resource updates and scene changes.
-        -- Physically hide the primary control as the final authority while the
-        -- Combat Only rule owns it.
+        -- Physically hide every native primary-bar surface as the final authority
+        -- while Combat Only owns it. ESO's BgContainer can be managed separately
+        -- from the main bar control, which otherwise leaves a large dark rectangle
+        -- visible after layout or scale changes such as enabling Pyramid.
         if bar.timeline and bar.timeline.PlayInstantlyToStart then
             bar.timeline:PlayInstantlyToStart(true)
         end
         bar.isContextuallyShown = false
+        SetPrimaryBarBackgroundHidden(control, true)
         if control.SetAlpha then
             control:SetAlpha(0)
         end
@@ -5487,6 +6114,7 @@ function VFM.SetPrimaryBarHardHidden(bar, hidden)
 
     if bar.vfmCombatHardHidden then
         bar.vfmCombatHardHidden = false
+        SetPrimaryBarBackgroundHidden(control, false)
         if control.SetHidden then
             control:SetHidden(false)
         end
@@ -5521,6 +6149,7 @@ function VFM.InstallPrimaryBarHardHideHooks()
                 ZO_PostHook(barRef, "UpdateContextualFading", function()
                     if VFM.ShouldHardHidePrimaryBar(barRef) and barRef.control then
                         barRef.isContextuallyShown = false
+                        SetPrimaryBarBackgroundHidden(barRef.control, true)
                         if barRef.control.SetAlpha then barRef.control:SetAlpha(0) end
                         if barRef.control.SetHidden then barRef.control:SetHidden(true) end
                         barRef.vfmCombatHardHidden = true
@@ -5534,6 +6163,7 @@ function VFM.InstallPrimaryBarHardHideHooks()
                 ZO_PostHook(barRef, "UpdateStatusBar", function()
                     if VFM.ShouldHardHidePrimaryBar(barRef) and barRef.control then
                         barRef.isContextuallyShown = false
+                        SetPrimaryBarBackgroundHidden(barRef.control, true)
                         if barRef.control.SetAlpha then barRef.control:SetAlpha(0) end
                         if barRef.control.SetHidden then barRef.control:SetHidden(true) end
                         barRef.vfmCombatHardHidden = true
@@ -5845,16 +6475,16 @@ function VFM.ApplyUltiviteBottomPreset(silent)
         VFM.saved.pyramidLayoutEnabled = false
         VFM.ClearPyramidLayoutBackups()
     end
-    -- Recommended Ultivite layout captured in game. Keep these
-    -- exact saved offsets rather than recalculating from screen dimensions.
-    VFM.saved.barWidth = 1.455
-    VFM.saved.barThickness = 2.123
-    VFM.saved.compactGap = 24
-    VFM.saved.bottomMargin = 8
+    -- 4K reference layout scaled against the current logical GuiRoot. This keeps
+    -- the same visual proportions on lower resolutions and different ESO UI scales.
+    VFM.saved.barWidth = LayoutSize(1.455)
+    VFM.saved.barThickness = LayoutSize(2.123)
+    VFM.saved.compactGap = LayoutSize(24)
+    VFM.saved.bottomMargin = LayoutY(8)
     VFM.saved.individualPositionsInitialized = true
-    VFM.SetSavedPosition("health", 0, 623, false)
-    VFM.SetSavedPosition("magicka", -553, 623, false)
-    VFM.SetSavedPosition("stamina", 553, 623, false)
+    VFM.SetSavedPosition("health", LayoutX(0), LayoutY(623), false)
+    VFM.SetSavedPosition("magicka", LayoutX(-553), LayoutY(623), false)
+    VFM.SetSavedPosition("stamina", LayoutX(553), LayoutY(623), false)
     VFM.ApplyBarGeometry()
     VFM.ApplyPositions()
     VFM.UpdateAllMoverLabels()
@@ -5886,6 +6516,8 @@ local function clearPyramidLayoutBackups()
     VFM.saved.pyramidFabBackupKbY = 0
     VFM.saved.pyramidFabBackupGpX = 0
     VFM.saved.pyramidFabBackupGpY = 0
+    VFM.saved.pyramidFabBackupKbScale = 0
+    VFM.saved.pyramidFabBackupGpScale = 0
 end
 
 function VFM.ClearPyramidLayoutBackups()
@@ -5914,9 +6546,9 @@ local function capturePyramidLayoutBackups()
         VFM.saved.pyramidBackupGeometryValid = true
     end
 
+    local fab = getFancyActionBarHandle()
+    local fabSettings = fab and fab.GetSettings and fab.GetSettings() or nil
     if VFM.saved.pyramidFabBackupValid ~= true then
-        local fab = getFancyActionBarHandle()
-        local fabSettings = fab and fab.GetSettings and fab.GetSettings() or nil
         if fabSettings and fabSettings.abMove then
             local kb = fabSettings.abMove.kb or {}
             local gp = fabSettings.abMove.gp or {}
@@ -5924,8 +6556,16 @@ local function capturePyramidLayoutBackups()
             VFM.saved.pyramidFabBackupKbY = tonumber(kb.y) or 0
             VFM.saved.pyramidFabBackupGpX = tonumber(gp.x) or 0
             VFM.saved.pyramidFabBackupGpY = tonumber(gp.y) or 0
+            local scaling = fabSettings.abScaling or {}
+            VFM.saved.pyramidFabBackupKbScale = tonumber(scaling.kb and scaling.kb.scale) or 100
+            VFM.saved.pyramidFabBackupGpScale = tonumber(scaling.gp and scaling.gp.scale) or 100
             VFM.saved.pyramidFabBackupValid = true
         end
+    elseif fabSettings and ((tonumber(VFM.saved.pyramidFabBackupKbScale) or 0) <= 0
+        or (tonumber(VFM.saved.pyramidFabBackupGpScale) or 0) <= 0) then
+        local scaling = fabSettings.abScaling or {}
+        VFM.saved.pyramidFabBackupKbScale = tonumber(scaling.kb and scaling.kb.scale) or 100
+        VFM.saved.pyramidFabBackupGpScale = tonumber(scaling.gp and scaling.gp.scale) or 100
     end
 end
 
@@ -5944,6 +6584,20 @@ local function restorePyramidActionBarBackup()
     local kbY = tonumber(VFM.saved.pyramidFabBackupKbY)
     local gpX = tonumber(VFM.saved.pyramidFabBackupGpX)
     local gpY = tonumber(VFM.saved.pyramidFabBackupGpY)
+    local kbScale = tonumber(VFM.saved.pyramidFabBackupKbScale)
+    local gpScale = tonumber(VFM.saved.pyramidFabBackupGpScale)
+
+    fabSettings.abScaling = fabSettings.abScaling or {}
+    fabSettings.abScaling.kb = fabSettings.abScaling.kb or {}
+    fabSettings.abScaling.gp = fabSettings.abScaling.gp or {}
+    if kbScale and kbScale > 0 then
+        fabSettings.abScaling.kb.enable = true
+        fabSettings.abScaling.kb.scale = kbScale
+    end
+    if gpScale and gpScale > 0 then
+        fabSettings.abScaling.gp.enable = true
+        fabSettings.abScaling.gp.scale = gpScale
+    end
 
     if kbX and kbY then
         fabSettings.abMove.kb.enable = true
@@ -5964,6 +6618,11 @@ local function restorePyramidActionBarBackup()
     local targetX = useGamepad and gpX or kbX
     local targetY = useGamepad and gpY or kbY
 
+    local targetScale = useGamepad and gpScale or kbScale
+    if fab.constants and fab.constants.abScale and targetScale and targetScale > 0 then
+        fab.constants.abScale.enable = true
+        fab.constants.abScale.scale = targetScale
+    end
     if fab.constants and fab.constants.move and targetX and targetY then
         fab.constants.move.enable = true
         fab.constants.move.x = targetX
@@ -5972,6 +6631,7 @@ local function restorePyramidActionBarBackup()
     if fab.SetWholeActionBarPosition and targetX and targetY then
         fab.SetWholeActionBarPosition(targetX, targetY)
     end
+    if fab.SetScale then fab.SetScale() end
     if fab.ReanchorMover then fab.ReanchorMover() end
     if fab.SaveMoverPosition then fab.SaveMoverPosition() end
     if fab.ApplyCombatOnlyVisibility then fab.ApplyCombatOnlyVisibility(false) end
@@ -5983,6 +6643,7 @@ function VFM.ApplyPyramidLayout(silent)
 
     capturePyramidLayoutBackups()
     VFM.saved.pyramidLayoutEnabled = true
+    VFM.saved.pyramidReferenceVersion = PYRAMID_REFERENCE_VERSION
     VFM.saved.individualPositionsInitialized = true
 
     VFM.ExitFullDarkSoulsPresetState()
@@ -5992,25 +6653,31 @@ function VFM.ApplyPyramidLayout(silent)
     VFM.SetDarkSoulsMode(false, true)
     VFM.SetHideActionBar(false, true)
 
-    -- User-approved Pyramid reference captured from the in-game layout report.
-    -- Keep these as the default Pyramid geometry so enabling Pyramid always
-    -- restores this exact arrangement unless the user adjusts it again later.
-    VFM.saved.barWidth = 1.301
-    VFM.saved.barThickness = 1.899
+    -- User-approved 4K Pyramid reference from the latest layout report. Scale
+    -- its centered offsets and geometry against the current logical GuiRoot.
+    VFM.saved.barWidth = LayoutSize(1.301)
+    VFM.saved.barThickness = LayoutSize(1.899)
     VFM.ApplyBarGeometry()
 
     if Ultivite and U.PositionFancyActionBarBelowPlayerBars then
         U.PositionFancyActionBarBelowPlayerBars(true)
     end
 
-    VFM.SetSavedPosition("health", 7, 413, false)
-    VFM.SetSavedPosition("magicka", -196, 455, false)
-    VFM.SetSavedPosition("stamina", 203, 455, false)
+    VFM.SetSavedPosition("health", LayoutX(14), LayoutY(427), false)
+    VFM.SetSavedPosition("magicka", LayoutX(-189), LayoutY(469), false)
+    VFM.SetSavedPosition("stamina", LayoutX(210), LayoutY(469), false)
 
     VFM.ApplyPositions()
     VFM.UpdateAllMoverLabels()
     VFM.RefreshDSSelfHealthRuntime()
     VFM.UpdateCombatVisibility()
+    -- Pyramid changes the native bar transform and background geometry. Reassert
+    -- the physical Combat Only hide even if runtime preparation has not completed
+    -- yet, so enabling Pyramid out of combat cannot expose a background rectangle.
+    VFM.ApplyImmediateCombatOnlyHide()
+    if FAB and FAB.ApplyCombatOnlyVisibility then
+        FAB.ApplyCombatOnlyVisibility(false)
+    end
     VFM.RequestSettingsSave()
 
     if not silent then
@@ -6038,7 +6705,11 @@ function VFM.RestorePyramidLayout(silent)
     VFM.UpdateAllMoverLabels()
     VFM.RefreshDSSelfHealthRuntime()
     VFM.UpdateCombatVisibility()
+    VFM.ApplyImmediateCombatOnlyHide()
     restorePyramidActionBarBackup()
+    if FAB and FAB.ApplyCombatOnlyVisibility then
+        FAB.ApplyCombatOnlyVisibility(false)
+    end
     clearPyramidLayoutBackups()
     VFM.RequestSettingsSave()
 
@@ -6108,13 +6779,12 @@ end
 
 function VFM.SetDSSelfScale(value)
     if not VFM.saved then return end
-    VFM.saved.dsSelfScale = Clamp(tonumber(value) or 1.0, 0.50, 2.50)
-    for _, control in ipairs({ VFM.dsSelfHealthControl, VFM.dsSelfMagickaControl, VFM.dsSelfStaminaControl }) do
-        if control and control.frame then control.frame:SetScale(VFM.saved.dsSelfScale) end
-    end
+    VFM.saved.dsSelfScale = Clamp(tonumber(value) or LayoutSize(1.0), 0.50, 2.50)
+    VFM.ApplyDSSelfVisualScale()
     VFM.RequestSettingsSave()
     VFM.UpdateDSSelfHealthBar()
     VFM.UpdateDSSelfResourceBars()
+    VFM.UpdateDSUltimateControl()
 end
 
 function VFM.GetLayoutPositioningLines()
@@ -6138,9 +6808,9 @@ function VFM.GetLayoutPositioningLines()
     )
     lines[#lines + 1] = string.format(
         "DARKSOULS topLeft=(%.1f,%.1f) topGap=%d mode=%s full=%s ultimate=%s hideActionBar=%s combatOnly=%s",
-        tonumber(VFM.saved.darkSoulsLeft) or DARKSOULS_LEFT,
-        tonumber(VFM.saved.darkSoulsTop) or DARKSOULS_TOP,
-        tonumber(VFM.saved.darkSoulsGap) or DARKSOULS_BAR_GAP,
+        tonumber(VFM.saved.darkSoulsLeft) or DefaultDarkSoulsLeft(),
+        tonumber(VFM.saved.darkSoulsTop) or DefaultDarkSoulsTop(),
+        tonumber(VFM.saved.darkSoulsGap) or DefaultDarkSoulsGap(),
         tostring(VFM.saved.darkSoulsMode == true),
         tostring(VFM.saved.fullDarkSoulsMode == true),
         tostring(VFM.saved.showDSUltimate == true),
@@ -6393,6 +7063,7 @@ function VFM.ScheduleAttributeVisualReapply()
         if VFM.runtimeReady then
             VFM.ApplyBarGeometry()
             VFM.ApplyDarkSoulsHealthStyle()
+            VFM.SuppressPrimaryBarDynamicVisuals()
             VFM.ApplyTextStyle()
             -- Attribute visual updates can restart ESO's native resource-bar
             -- timelines. Reapply Combat Only immediately after the visual pass.
@@ -6403,6 +7074,11 @@ end
 
 function VFM.OnAttributeVisualChanged(_, unitTag)
     if unitTag == "player" then
+        -- Default UI registers first, so this runs after ESO has processed the
+        -- visual event. Suppress the native glow immediately in the same frame,
+        -- then keep the existing zero-delay geometry repair as a second guard.
+        VFM.ApplyShrinkExpandWidths()
+        VFM.SuppressPrimaryBarDynamicVisuals()
         VFM.ScheduleAttributeVisualReapply()
     end
 end
@@ -6455,10 +7131,14 @@ function VFM.ApplyAll()
     VFM.PatchResourceText()
     VFM.ApplyBarGeometry()
     VFM.ApplyDarkSoulsHealthStyle()
+    VFM.SuppressPrimaryBarDynamicVisuals()
     VFM.ApplyTextStyle()
     VFM.ApplyActionBarHidden()
     VFM.ApplyGroupFrameState()
     VFM.ApplyGroupFrameChampionPoints()
+    -- The persistent GroupFrameCP guard is registered once during Initialize.
+    -- ApplyAll only performs the immediate refresh so repeated layout/profile
+    -- application cannot replace or churn the same named update callback.
     VFM.ApplyWerewolfResourceBarVisibility()
     VFM.ApplyMountStaminaBarVisibility()
     VFM.UpdateDSUltimateControl()
@@ -6578,9 +7258,11 @@ function VFM.OnPlayerActivated()
     VFM.ApplyWerewolfResourceBarVisibility()
     VFM.ApplyMountStaminaBarVisibility()
     VFM.RefreshNavigationHelpers(true)
-    zo_callLater(function()
-        VFM.RepairManagedChatState()
-    end, 500)
+
+    -- Normal ESO chat is intentionally left structurally untouched on player
+    -- activation. Ultivite only observes/apply its visibility preference here.
+    -- Direct chat movement/resize repair is now explicit user action only.
+    VFM.ApplyChatVisibilityMode()
 
     zo_callLater(function()
         VFM.ApplySavedLayoutDirect("player activated", false)
@@ -6664,9 +7346,9 @@ function VFM.SetQuickPlayerLayout(layout, silent)
     -- resource-text restoration, Dark Souls health artwork, bottom-stack
     -- visibility and native-bar hidden reasons.
     if layout == QUICK_PLAYER_LAYOUT_TOPLEFT then
-        VFM.saved.darkSoulsLeft = DARKSOULS_LEFT
-        VFM.saved.darkSoulsTop = DARKSOULS_TOP
-        VFM.saved.darkSoulsGap = DARKSOULS_BAR_GAP
+        VFM.saved.darkSoulsLeft = DefaultDarkSoulsLeft()
+        VFM.saved.darkSoulsTop = DefaultDarkSoulsTop()
+        VFM.saved.darkSoulsGap = DefaultDarkSoulsGap()
         VFM.SetDSBottomOnly(false, true)
         VFM.SetDSSelfResourceBars(false, true)
         VFM.SetDSSelfHealthBar(false, true)
@@ -6681,9 +7363,9 @@ function VFM.SetQuickPlayerLayout(layout, silent)
         -- the action bar is shown and appears automatically if Hide Action Bar is enabled.
         VFM.SetShowDSUltimate(true, true)
     elseif layout == QUICK_PLAYER_LAYOUT_BOTH then
-        VFM.saved.darkSoulsLeft = DARKSOULS_LEFT
-        VFM.saved.darkSoulsTop = DARKSOULS_TOP
-        VFM.saved.darkSoulsGap = DARKSOULS_BAR_GAP
+        VFM.saved.darkSoulsLeft = DefaultDarkSoulsLeft()
+        VFM.saved.darkSoulsTop = DefaultDarkSoulsTop()
+        VFM.saved.darkSoulsGap = DefaultDarkSoulsGap()
         VFM.SetDSBottomOnly(false, true)
         VFM.SetDSSelfHealthBar(true, true)
         VFM.SetDSSelfResourceBars(true, true)
@@ -7120,7 +7802,7 @@ function VFM.GetMenuOptions()
                     min = -400,
                     max = 2400,
                     step = 1,
-                    getFunc = function() return tonumber(VFM.saved.darkSoulsLeft) or DARKSOULS_LEFT end,
+                    getFunc = function() return tonumber(VFM.saved.darkSoulsLeft) or DefaultDarkSoulsLeft() end,
                     setFunc = function(value) VFM.SetDarkSoulsTopLeftX(value) end,
                     width = "half",
                 },
@@ -7130,7 +7812,7 @@ function VFM.GetMenuOptions()
                     min = 0,
                     max = 1600,
                     step = 1,
-                    getFunc = function() return tonumber(VFM.saved.darkSoulsTop) or DARKSOULS_TOP end,
+                    getFunc = function() return tonumber(VFM.saved.darkSoulsTop) or DefaultDarkSoulsTop() end,
                     setFunc = function(value) VFM.SetDarkSoulsTopLeftY(value) end,
                     width = "half",
                 },
@@ -7140,7 +7822,7 @@ function VFM.GetMenuOptions()
                     min = 0,
                     max = 60,
                     step = 1,
-                    getFunc = function() return tonumber(VFM.saved.darkSoulsGap) or DARKSOULS_BAR_GAP end,
+                    getFunc = function() return tonumber(VFM.saved.darkSoulsGap) or DefaultDarkSoulsGap() end,
                     setFunc = function(value) VFM.SetDarkSoulsTopLeftGap(value) end,
                     width = "full",
                 },
@@ -7544,6 +8226,8 @@ function VFM.Initialize(externalSaved)
     -- CP is a permanent part of Ultivite group-frame presentation. Migrate any
     -- older profile that stored this as false back to ON.
     VFM.saved.showGroupFrameChampionPoints = true
+    local migrateActivePyramid = VFM.saved.pyramidLayoutEnabled == true
+        and (tonumber(VFM.saved.pyramidReferenceVersion) or 0) < PYRAMID_REFERENCE_VERSION
     if VFM.saved.chatVisibilityMode == nil then
         VFM.saved.chatVisibilityMode = VFM.saved.autoHideChat == true and "hide" or "show"
     end
@@ -7571,6 +8255,19 @@ function VFM.Initialize(externalSaved)
     VFM.StartLayoutGuardian()
     VFM.ApplyGroupFrameState()
     VFM.ApplyGroupFrameChampionPoints()
+    if migrateActivePyramid and zo_callLater then
+        zo_callLater(function()
+            if VFM.saved and VFM.saved.pyramidLayoutEnabled == true then
+                VFM.ApplyPyramidLayout(true)
+            end
+        end, 250)
+    end
+    -- Other addons and ESO scene refreshes can rerun unit-frame UpdateLevel after
+    -- our post-hook. A low-frequency guard makes the "CP always visible with the
+    -- group health frame" rule deterministic without scanning globals.
+    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "GroupFrameCP", 500, function()
+        VFM.ApplyGroupFrameChampionPoints()
+    end)
     VFM.ApplyWerewolfResourceBarVisibility()
     VFM.ApplyMountStaminaBarVisibility()
     VFM.UpdateDSUltimateControl()
@@ -7628,6 +8325,11 @@ function VFM.Initialize(externalSaved)
             VFM.ApplyPositions()
             VFM.UpdateAllMoverSizes()
             VFM.UpdateAllMoverLabels()
+            VFM.dsEnemyGeometrySignature = nil
+            VFM.ApplyDSEnemyHealthGeometry()
+            VFM.UpdateDSSelfHealthBar()
+            VFM.UpdateDSSelfResourceBars()
+            VFM.ApplyGroupFrameChampionPoints()
             VFM.ApplyCrownDirectionArrowLayout()
             VFM.ApplyFeetCompassLayout()
         end, 100)

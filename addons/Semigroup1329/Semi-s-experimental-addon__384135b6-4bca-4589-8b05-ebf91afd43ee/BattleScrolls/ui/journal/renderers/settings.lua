@@ -389,6 +389,48 @@ local function renderDpsMeterGroupSettings(list, settings, defaults, onRefresh, 
         end
     end
 
+    -- Own bar color for the colorful bars design (shared to group, protocol 435)
+    if currentGroupDesignId == "bars" then
+        local colorValues = { "", "FF5A5A", "FF9432", "FFC93C", "5AD25A", "2FD5C8", "3EB6FF", "4C6EFF", "9B59F6", "FF6EC7", "F0F0F0", "9D9D9D" }
+        local colorNameIds = {
+            BATTLESCROLLS_COLOR_DEFAULT, BATTLESCROLLS_COLOR_RED, BATTLESCROLLS_COLOR_ORANGE,
+            BATTLESCROLLS_COLOR_GOLD, BATTLESCROLLS_COLOR_GREEN, BATTLESCROLLS_COLOR_TEAL,
+            BATTLESCROLLS_COLOR_CYAN, BATTLESCROLLS_COLOR_BLUE, BATTLESCROLLS_COLOR_PURPLE,
+            BATTLESCROLLS_COLOR_PINK, BATTLESCROLLS_COLOR_WHITE, BATTLESCROLLS_COLOR_GREY,
+        }
+        local colorStrings = {}
+        for i, hex in ipairs(colorValues) do
+            local name = GetString(colorNameIds[i])
+            if hex == "" then
+                colorStrings[i] = name
+            else
+                colorStrings[i] = string.format("|c%s■|r %s", hex, name)
+            end
+        end
+        local barColorData = {
+            text = GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR),
+            valid = colorValues,
+            valueStrings = colorStrings,
+            tooltip = textTooltip(GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR), GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT)),
+            getFunction = function()
+                return settings and settings.groupBarColor or ""
+            end,
+            setFunction = function(value)
+                local newValue = value ~= "" and value or nil
+                if settings and settings.groupBarColor ~= newValue then
+                    settings.groupBarColor = newValue
+                    if BattleScrolls.prefsShare then
+                        BattleScrolls.prefsShare:OnColorChanged()
+                    end
+                    if BattleScrolls.dpsMeter then
+                        BattleScrolls.dpsMeter:ShowPreview()
+                    end
+                end
+            end,
+        }
+        list:AddEntry("ZO_GamepadHorizontalListRow", barColorData)
+    end
+
     -- Group position dropdown (only shown when personal is also enabled)
     if personalEnabled then
         local groupPositionData = {
@@ -1030,6 +1072,19 @@ local function renderMemoryDiagnostics(list, onRefresh)
     end
     buttonRow(GetString(BATTLESCROLLS_MEMDIAG_ALLOC_STRINGS), memDiag.allocateStrings)
     buttonRow(GetString(BATTLESCROLLS_MEMDIAG_ALLOC_TABLES), memDiag.allocateTables)
+    buttonRow(GetString(BATTLESCROLLS_MEMDIAG_PROBE_STRINGS), memDiag.probeStringSizes)
+
+    if memDiag.probeRows then
+        valueRow(GetString(BATTLESCROLLS_MEMDIAG_PROBE_HEADER), "")
+        for _, row in ipairs(memDiag.probeRows) do
+            list:AddEntry("ZO_GamepadOptionsLabelRow", {
+                text = string.format("%d: %d / %d / %d", row.length,
+                    math.floor(row.gaugePerString + 0.5),
+                    math.floor(row.heapPerString + 0.5),
+                    row.modelPerString),
+            })
+        end
+    end
     if memDiag.heldModelBytes() > 0 then
         buttonRow(GetString(BATTLESCROLLS_MEMDIAG_RELEASE), memDiag.release)
     end

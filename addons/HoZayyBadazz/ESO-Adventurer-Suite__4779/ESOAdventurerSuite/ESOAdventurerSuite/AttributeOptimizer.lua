@@ -1,0 +1,118 @@
+-- ESO Adventurer Suite
+-- Current-build attribute optimizer
+local EPC = ESOProgressionCoach
+EPC.AttributeOptimizer = EPC.AttributeOptimizer or {}
+local A = EPC.AttributeOptimizer
+
+local function safe(fn, fallback, ...)
+    if type(fn) ~= "function" then return fallback end
+    local ok,a,b,c,d,e = pcall(fn, ...)
+    if not ok then return fallback end
+    return a,b,c,d,e
+end
+
+local function num(fn, fallback, ...)
+    local v = safe(fn, fallback, ...)
+    v = tonumber(v)
+    if v == nil then return tonumber(fallback) or 0 end
+    return v
+end
+
+function A:Notify(message)
+    message=tostring(message or "")
+    if message=="" then return end
+    if EPC and EPC.Print then EPC:Print(message) end
+    if type(ZO_Alert)=="function" then pcall(ZO_Alert, UI_ALERT_CATEGORY_ALERT or 1, nil, message) end
+end
+
+function A:GetContext()
+    local context = EPC.GearOptimizer and EPC.GearOptimizer.GetWornBuildContext and EPC.GearOptimizer:GetWornBuildContext() or {}
+    local profile = context.profile or (EPC.GearOptimizer and EPC.GearOptimizer.GetProfile and EPC.GearOptimizer:GetProfile()) or {}
+    local role = string.upper(tostring(context.role or "DAMAGE"))
+    if role=="DPS" then role="DAMAGE" end
+    local magicka = profile.magicka ~= false
+    return {role=role, magicka=magicka, profile=profile, context=context}
+end
+
+function A:GetCurrent()
+    local h=num(GetAttributeSpentPoints,0,ATTRIBUTE_HEALTH or 1)
+    local m=num(GetAttributeSpentPoints,0,ATTRIBUTE_MAGICKA or 2)
+    local s=num(GetAttributeSpentPoints,0,ATTRIBUTE_STAMINA or 3)
+    local u=num(GetAttributeUnspentPoints,0)
+    return {health=h,magicka=m,stamina=s,unspent=u,total=h+m+s+u}
+end
+
+local function split(total, healthPct, magPct, stamPct)
+    total=math.max(0,math.floor(tonumber(total) or 0))
+    local h=math.floor(total*healthPct+0.5)
+    local m=math.floor(total*magPct+0.5)
+    local s=math.max(0,total-h-m)
+    if stamPct==0 and magPct>0 then m=m+s s=0 end
+    if magPct==0 and stamPct>0 then s=s+m m=0 end
+    return h,m,s
+end
+
+function A:BuildPlan()
+    local current=self:GetCurrent()
+    local c=self:GetContext()
+    local total=current.total
+    local h,m,s
+
+    if c.role=="TANK" then
+        -- Tank baseline: majority Health, remainder Stamina for blocking/dodging.
+        h,m,s=split(total,0.625,0,0.375)
+    elseif c.role=="HEALER" then
+        if c.magicka then h,m,s=0,total,0 else h,m,s=0,0,total end
+    elseif c.role=="SOLO" then
+        local hp=math.floor(total*0.15+0.5)
+        if c.magicka then h,m,s=hp,total-hp,0 else h,m,s=hp,0,total-hp end
+    else
+        if c.magicka then h,m,s=0,total,0 else h,m,s=0,0,total end
+    end
+
+    return {
+        context=c,
+        current=current,
+        target={health=h,magicka=m,stamina=s,total=total},
+        delta={health=h-current.health,magicka=m-current.magicka,stamina=s-current.stamina},
+        cost=num(GetAttributeRespecGoldCost,0),
+    }
+end
+
+function A:BuildView()
+    local p=self:BuildPlan()
+    return {
+        cost=p.cost,
+        role=p.context.role,
+        build=p.context.profile and p.context.profile.label or (p.context.magicka and "Magicka" or "Stamina"),
+        current=p.current,
+        target=p.target,
+        changed=(p.delta.health~=0 or p.delta.magicka~=0 or p.delta.stamina~=0),
+    }
+end
+
+function A:ApplyBestAttributes()
+    if type(IsUnitInCombat)=="function" and safe(IsUnitInCombat,false,"player") then
+        self:Notify("ATTRIBUTES: leave combat before redistributing attributes.")
+        return false
+    end
+
+    local p=self:BuildPlan()
+    if p.current.total<=0 then
+        self:Notify("ATTRIBUTES: there are no attribute points available to redistribute yet.")
+        return false
+    end
+    if p.delta.health==0 and p.delta.magicka==0 and p.delta.stamina==0 then
+        self:Notify("ATTRIBUTES: your points already match the recommended split.")
+        return true
+    end
+
+    -- Update 49 made attribute respecs free and shrine-free through the Character UI.
+    -- Do not call the legacy SendAttributePointAllocationRequest gold path here, because
+    -- that path can still return NOT_AT_SKILL_RESPEC_SHRINE outside a shrine.
+    self:Notify(string.format("ATTRIBUTES TARGET: %d Health / %d Magicka / %d Stamina. Opening Character Attributes; use ESO's Respec control to enter free respec mode.", p.target.health, p.target.magicka, p.target.stamina))
+    if SCENE_MANAGER and type(SCENE_MANAGER.Show)=="function" then
+        pcall(function() SCENE_MANAGER:Show("stats") end)
+    end
+    return true
+end

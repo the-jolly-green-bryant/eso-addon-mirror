@@ -2,13 +2,15 @@
 -- Export
 -- Builds self-contained binary export streams for online sharing.
 --
--- Wire format v5 (bytes, before URL transport):
---   u8  wireVersion (5; the only supported version - the pre-release v4
---       generation was retired before the addon shipped. Encounter _data
---       blobs ship the wire layout of storage v18 semantics:
---       column-oriented damage/effect sections, permille effect times,
---       playerTimeAtMaxStacksMs dropped (see storage/binary.lua's wire
---       writers; web/src/shared/decoder.ts is the only reader))
+-- Wire format v6 (bytes, before URL transport):
+--   u8  wireVersion (6; v5 remains live on the public addon - the site
+--       must keep its v5 decoder. v6 = v5 with the storage v19 blob
+--       semantics: 24-bit section mask, ULTIMATE/RESURRECTIONS/CRUX/ZEN
+--       sections, attacker-name refs inside death recap attacks. Blobs
+--       otherwise keep the wire layout: column-oriented damage/effect
+--       sections, permille effect times, playerTimeAtMaxStacksMs dropped
+--       (see storage/binary.lua's wire writers; web/src/shared/decoder.ts
+--       is the only reader))
 --   u8  flags: bit0 = body is raw-DEFLATE compressed, bit1 = archive profile
 --   body (compressed when bit0 is set):
 --     varint createdAtS               (export time)
@@ -121,7 +123,7 @@ BattleScrolls = BattleScrolls or {}
 local export = {}
 BattleScrolls.export = export
 
-export.WIRE_VERSION = 5
+export.WIRE_VERSION = 6
 export.PROFILE_VIEW = 1
 export.PROFILE_ARCHIVE = 2
 
@@ -714,7 +716,11 @@ local function buildStreamAsync(instance, encounters, profile)
                     end
                 end
                 entries[#entries + 1] = {
-                    displayName = encounter.displayName or "",
+                    -- A local rename travels as "custom (real)" so the share
+                    -- keeps both the user's label and the recognizable name
+                    displayName = encounter.customName
+                        and string.format("%s (%s)", encounter.customName, encounter.displayName or "")
+                        or (encounter.displayName or ""),
                     gameVersion = encounter.gameVersion or "",
                     timestampS = encounter.timestampS or 0,
                     durationMs = encounter.durationMs or 0,
@@ -742,8 +748,11 @@ local function buildStreamAsync(instance, encounters, profile)
         local body = ByteWriter.new()
         body:writeVarUInt(GetTimeStamp())
         -- The journal titles instances by zone; instanceName on the wire is
-        -- the same string ("Earthen Root Enclave", "Sunspire", ...)
-        body:writeString(instance.zone or "")
+        -- the same string ("Earthen Root Enclave", "Sunspire", ...). A local
+        -- rename travels as "custom (real)".
+        body:writeString(instance.customName
+            and string.format("%s (%s)", instance.customName, instance.zone or "")
+            or (instance.zone or ""))
         body:writeVarUInt(instance.timestampS or 0)
         body:writeByte((instance.isOverland and 1 or 0)
             + (instance.isHouse and 2 or 0)

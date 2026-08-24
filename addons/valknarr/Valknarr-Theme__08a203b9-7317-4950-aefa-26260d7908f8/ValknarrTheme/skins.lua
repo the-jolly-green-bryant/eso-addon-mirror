@@ -22,22 +22,50 @@ Skins.TEMPLATE = {
     seg = "ValknarrTheme_WwSeg",
 }
 Skins.WOLF = {
-    wolf1 = { icon = TEX_ROOT .. "w1i.dds", ring = TEX_ROOT .. "w1r.dds", wedge = TEX_ROOT .. "wseg.dds" },
-    wolf2 = { icon = TEX_ROOT .. "w2i.dds", ring = TEX_ROOT .. "w2r.dds", wedge = TEX_ROOT .. "wseg.dds" },
-    wolf3 = { icon = TEX_ROOT .. "w3i.dds", ring = TEX_ROOT .. "w3r.dds", wedge = TEX_ROOT .. "wseg.dds" },
-    wolf4 = { icon = TEX_ROOT .. "w4i.dds", ring = TEX_ROOT .. "w4r.dds", wedge = TEX_ROOT .. "wseg.dds" },
+    steel = {
+        icon = TEX_ROOT .. "w3i.dds",
+        ring = TEX_ROOT .. "w3r.dds",
+        wedge = TEX_ROOT .. "wseg.dds",
+        liquid = TEX_ROOT .. "liq.dds",
+        portrait = TEX_ROOT .. "swf.dds",
+    },
+    bronze = {
+        icon = TEX_ROOT .. "w2i.dds",
+        ring = TEX_ROOT .. "w2r.dds",
+        wedge = TEX_ROOT .. "rnw.dds",
+    },
 }
 
-function Skins.BarFrame(barId)
+function Skins.BarFrame(themeId)
     local frames = _G.ValknarrThemeFrames
     if type(frames) ~= "table" then
         return nil
     end
-    local pack = frames[barId]
+    local id = Format.NormalizeThemeId(themeId)
+    local pack = frames[id]
     if type(pack) ~= "table" or type(pack.tiles) ~= "table" or type(pack.hole) ~= "table" then
         return nil
     end
     return pack
+end
+
+function Skins.WolfPlate(wolfId)
+    local frames = _G.ValknarrThemeFrames
+    if type(frames) ~= "table" or type(frames.wolf) ~= "table" then
+        return nil
+    end
+    local id = Format.NormalizeWolfId(wolfId)
+    local pack = frames.wolf[id]
+    if type(pack) ~= "table" or type(pack.tiles) ~= "table" or type(pack.hole) ~= "table" then
+        return nil
+    end
+    return {
+        tiles = pack.tiles,
+        hole = pack.hole,
+        circle = frames.wolf.circle or { 0.75, 0.50, 0.24 },
+        cols = frames.wolf.cols or 4,
+        rows = frames.wolf.rows or 2,
+    }
 end
 
 function Skins.BindBarTiles(controls, pack, tagPrefix)
@@ -106,24 +134,37 @@ end
 
 local EXPECT = {
     [TEX_ROOT .. "u1.dds"] = { 256, 64 },
-    [TEX_ROOT .. "xl.dds"] = { 256, 256 },
-    [TEX_ROOT .. "xm.dds"] = { 256, 256 },
-    [TEX_ROOT .. "xr.dds"] = { 256, 256 },
-    [TEX_ROOT .. "yl.dds"] = { 256, 256 },
-    [TEX_ROOT .. "ym.dds"] = { 256, 256 },
-    [TEX_ROOT .. "yr.dds"] = { 256, 256 },
-    [TEX_ROOT .. "zl.dds"] = { 256, 256 },
-    [TEX_ROOT .. "zm.dds"] = { 256, 256 },
-    [TEX_ROOT .. "zr.dds"] = { 256, 256 },
-    [TEX_ROOT .. "w1i.dds"] = { 256, 256 },
-    [TEX_ROOT .. "w1r.dds"] = { 256, 256 },
+    [TEX_ROOT .. "a2l.dds"] = { 256, 256 },
+    [TEX_ROOT .. "a2m.dds"] = { 256, 256 },
+    [TEX_ROOT .. "a2r.dds"] = { 256, 256 },
+    [TEX_ROOT .. "a3l.dds"] = { 256, 256 },
+    [TEX_ROOT .. "a3m.dds"] = { 256, 256 },
+    [TEX_ROOT .. "a3r.dds"] = { 256, 256 },
     [TEX_ROOT .. "w2i.dds"] = { 256, 256 },
     [TEX_ROOT .. "w2r.dds"] = { 256, 256 },
     [TEX_ROOT .. "w3i.dds"] = { 256, 256 },
     [TEX_ROOT .. "w3r.dds"] = { 256, 256 },
-    [TEX_ROOT .. "w4i.dds"] = { 256, 256 },
-    [TEX_ROOT .. "w4r.dds"] = { 256, 256 },
     [TEX_ROOT .. "wseg.dds"] = { 256, 256 },
+    [TEX_ROOT .. "liq.dds"] = { 256, 256 },
+    [TEX_ROOT .. "rnw.dds"] = { 256, 256 },
+    [TEX_ROOT .. "swf.dds"] = { 256, 256 },
+    [TEX_ROOT .. "bwf.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s1.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s2.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s3.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s4.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s5.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s6.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s7.dds"] = { 256, 256 },
+    [TEX_ROOT .. "s8.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b1.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b2.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b3.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b4.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b5.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b6.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b7.dds"] = { 256, 256 },
+    [TEX_ROOT .. "b8.dds"] = { 256, 256 },
 }
 
 local function BarePath(path)
@@ -262,8 +303,7 @@ function Skins.Bind(control, path, tag)
     if Log and (used or tries <= 2 or tries == MAX_MISS_TRIES) then
         local bits = Log.ControlBits and Log:ControlBits(control) or {}
         local fileName = TextureFileName(control) or ""
-        Log:Always(
-            "tex tag=" .. tostring(tag)
+        local line = "tex tag=" .. tostring(tag)
             .. " path=" .. path
             .. " used=" .. tostring(used or "")
             .. " ok=" .. tostring(lastOk and true or false)
@@ -274,7 +314,11 @@ function Skins.Bind(control, path, tag)
             .. " file=" .. fileName
             .. " err=" .. tostring(lastErr or "")
             .. " name=" .. tostring(bits.name or control.GetName and control:GetName() or "?")
-        )
+        if type(tag) == "string" and string.find(tag, "probe/", 1, true) then
+            Log:Always(line)
+        else
+            Log:Debug(line)
+        end
     end
     return used ~= nil
 end
@@ -317,9 +361,10 @@ function Skins.Probe(pass)
     end
     pass = tonumber(pass) or 1
     local specs = {
-        { tag = "probe/wolf", path = TEX_ROOT .. "w2i.dds", want = "256x256" },
-        { tag = "probe/tile", path = TEX_ROOT .. "xl.dds", want = "256x256" },
+        { tag = "probe/wolf", path = TEX_ROOT .. "w3i.dds", want = "256x256" },
+        { tag = "probe/tile", path = TEX_ROOT .. "a2l.dds", want = "256x256" },
         { tag = "probe/strip", path = TEX_ROOT .. "u1.dds", want = "256x64" },
+        { tag = "probe/plate", path = TEX_ROOT .. "s1.dds", want = "256x256" },
     }
     if Log then
         Log:Always("probe pass=" .. tostring(pass))

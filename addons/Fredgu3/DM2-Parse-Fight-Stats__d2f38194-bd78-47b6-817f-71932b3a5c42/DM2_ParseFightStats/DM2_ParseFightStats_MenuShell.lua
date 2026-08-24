@@ -859,6 +859,23 @@ local function buildTopSkillRows(session, maxRows)
       maxTxt = fmtInt(sk.max),
     }
   end
+  -- Same display name, different ability IDs = separate combat components (scribed scripts,
+  -- Crystal Fragments proc vs cast, Stampede hit vs leap). Tag Type with the id so they
+  -- are not mistaken for duplicate rows.
+  do
+    local nameCount = {}
+    for i = 1, #rows do
+      local k = string.lower(tostring(rows[i].name or ""))
+      if k ~= "" then nameCount[k] = (nameCount[k] or 0) + 1 end
+    end
+    for i = 1, #rows do
+      local k = string.lower(tostring(rows[i].name or ""))
+      local id = tonumber(rows[i].id) or 0
+      if k ~= "" and (nameCount[k] or 0) > 1 and id > 0 then
+        rows[i].kindTxt = tostring(rows[i].kindTxt or "") .. " · " .. tostring(id)
+      end
+    end
+  end
   return rows
 end
 
@@ -1227,9 +1244,12 @@ local function buildTargetDebuffRows(session, maxRows)
     elseif (tonumber(d.id) or 0) > 0 then
       src = "id " .. tostring(d.id)
     end
+    local rawKind = d.kind or "Effect"
     rows[i] = {
       name = d.name or "?",
-      kind = d.kind or "Effect",
+      kind = rawKind,
+      -- "Effect" is the combat-log leftover of your skill landing — not a lasting debuff
+      kindTxt = (rawKind == "Effect") and "Skill hit" or rawKind,
       apps = apps,
       appsTxt = tostring(apps),
       uptime = uptime,
@@ -2369,21 +2389,20 @@ local function sortedIdList(ids)
 end
 
 local function barSlotIds(session, barLabel)
-  local ids = {}
+  local ids = { 0, 0, 0, 0, 0, 0 }
   if session and type(session.slottedAbilityBySlot) == "table" then
     for slot = 3, 8 do
       local entry = session.slottedAbilityBySlot[barLabel .. ":" .. slot]
       if type(entry) == "table" then
-        ids[#ids + 1] = tonumber(entry.id) or 0
-      else
-        ids[#ids + 1] = 0
+        ids[slot - 2] = tonumber(entry.id) or 0
       end
     end
   end
   return ids
 end
 
--- Prefer non-zero slot ids from start snapshot when end re-read is incomplete
+-- Prefer non-zero slot ids from start snapshot when end re-read is incomplete.
+-- Arrays are always slot 3..8 in order (index 1 = slot 3). Never compact-skip empties.
 local function mergeBarSlotIds(primary, fallback)
   local out = {}
   for i = 1, 6 do
@@ -2395,14 +2414,18 @@ local function mergeBarSlotIds(primary, fallback)
 end
 
 local function barSlotIdsFromBuild(build, side)
-  local ids = {}
+  local ids = { 0, 0, 0, 0, 0, 0 }
   local slots = build and build.bars and build.bars[side]
   if type(slots) == "table" then
     for _, s in ipairs(slots) do
-      ids[#ids + 1] = tonumber(s.id) or 0
+      local slot = tonumber(s.slot) or 0
+      local idx = slot - 2 -- 3..8 → 1..6
+      if idx >= 1 and idx <= 6 then
+        local id = tonumber(s.id) or 0
+        if id > 0 then ids[idx] = id end
+      end
     end
   end
-  while #ids < 6 do ids[#ids + 1] = 0 end
   return ids
 end
 
@@ -2432,13 +2455,13 @@ local function buildFingerprintParts(session, championList)
   if session and type(session.equippedSets) == "table" then
     for _, n in ipairs(session.equippedSets) do addSetName(n) end
   end
-  -- Fallback: build snap sets if live equippedSets empty/partial
-  if #setNames == 0 and type(startB) == "table" and type(startB.sets) == "table" then
+  -- Union start + end snaps (partial live list used to skip these and mint a new hash)
+  if type(startB) == "table" and type(startB.sets) == "table" then
     for _, n in ipairs(startB.sets) do
       addSetName(type(n) == "table" and n.name or n)
     end
   end
-  if #setNames == 0 and type(endB) == "table" and type(endB.sets) == "table" then
+  if type(endB) == "table" and type(endB.sets) == "table" then
     for _, n in ipairs(endB.sets) do
       addSetName(type(n) == "table" and n.name or n)
     end
@@ -2544,29 +2567,19 @@ local function captureSessionBuild(session, phase)
         startBySlot[tonumber(s.slot) or 0] = s
       end
     end
-    if type(session.slottedAbilityBySlot) == "table" then
-      for slot = 3, 8 do
-        local entry = session.slottedAbilityBySlot[barLabel .. ":" .. slot]
-        local id = (type(entry) == "table" and tonumber(entry.id)) or 0
-        local name = (type(entry) == "table" and entry.name) or ""
-        if id <= 0 and type(startBySlot[slot]) == "table" then
-          id = tonumber(startBySlot[slot].id) or 0
-          if name == "" then name = startBySlot[slot].name or "" end
-        end
-        if id > 0 or name ~= "" then
-          slots[#slots + 1] = { slot = slot, id = id, name = name or "" }
-        end
+    -- Always 6 entries in slot order 3..8 so fingerprints cannot shift when a slot misses
+    for slot = 3, 8 do
+      local entry = nil
+      if type(session.slottedAbilityBySlot) == "table" then
+        entry = session.slottedAbilityBySlot[barLabel .. ":" .. slot]
       end
-    end
-    -- If live map empty, fall back entirely to start snap
-    if #slots == 0 and type(startSlots) == "table" then
-      for _, s in ipairs(startSlots) do
-        slots[#slots + 1] = {
-          slot = tonumber(s.slot) or 0,
-          id = tonumber(s.id) or 0,
-          name = s.name or "",
-        }
+      local id = (type(entry) == "table" and tonumber(entry.id)) or 0
+      local name = (type(entry) == "table" and entry.name) or ""
+      if id <= 0 and type(startBySlot[slot]) == "table" then
+        id = tonumber(startBySlot[slot].id) or 0
+        if name == "" then name = startBySlot[slot].name or "" end
       end
+      slots[#slots + 1] = { slot = slot, id = id, name = name or "" }
     end
     return slots
   end
@@ -2612,9 +2625,9 @@ local function captureSessionBuild(session, phase)
     end
   end
   -- Stable core key (bars/sets/Mundus, no CP) for experiments + A/B pairing
-  local frontIds, backIds = {}, {}
-  for _, s in ipairs(build.bars.front or {}) do frontIds[#frontIds + 1] = tonumber(s.id) or 0 end
-  for _, s in ipairs(build.bars.back or {}) do backIds[#backIds + 1] = tonumber(s.id) or 0 end
+  -- Slot-aligned 3..8 (same order as fingerprint) — compact ipairs used to shift IDs
+  local frontIds = barSlotIdsFromBuild(build, "front")
+  local backIds = barSlotIdsFromBuild(build, "back")
   local setParts = {}
   for _, n in ipairs(build.sets) do
     local s = string.lower(tostring((type(n) == "table" and n.name) or n or ""))
@@ -5183,14 +5196,7 @@ local function coreBuildKey(session)
     return tostring(session.buildFingerprint or "")
   end
   local function barIds(side)
-    local arr = {}
-    local slots = b.bars and b.bars[side]
-    if type(slots) == "table" then
-      for _, s in ipairs(slots) do
-        arr[#arr + 1] = tonumber(s.id) or 0
-      end
-    end
-    return table.concat(arr, ",")
+    return table.concat(barSlotIdsFromBuild(b, side), ",")
   end
   local sets = {}
   if type(b.sets) == "table" then
@@ -5509,6 +5515,83 @@ local function tryAttachExperimentRun(session)
 end
 M.TryAttachExperimentRun = tryAttachExperimentRun
 
+-- Crit *damage multiplier* is not on combat events (console). Sheet STAT_CRITICAL_DAMAGE
+-- is often 0. Recipe from observed Force/Brittle uptime + known CP/racial is still useful.
+local function championListHasName(session, needle)
+  needle = string.lower(tostring(needle or ""))
+  if needle == "" then return false end
+  local list = session and ((session.build and session.build.champion)
+    or (session.buildEnd and session.buildEnd.champion)
+    or (session.buildStart and session.buildStart.champion))
+  if type(list) ~= "table" then return false end
+  for _, cp in ipairs(list) do
+    local n = string.lower(tostring((type(cp) == "table" and cp.name) or ""))
+    if n ~= "" and string.find(n, needle, 1, true) then return true end
+  end
+  return false
+end
+
+local function estimateCritDamageRecipe(session, profile)
+  profile = profile or getActiveContentProfile()
+  local pct = 50
+  local bits = { "base 50" }
+  local majF = 0
+  local minF = 0
+  if session then
+    majF = select(1, buffUptimeByNameKey(session, "major force")) or 0
+    minF = select(1, buffUptimeByNameKey(session, "minor force")) or 0
+  end
+  if majF >= 0.05 then
+    local add = 20 * math.min(1, majF)
+    pct = pct + add
+    bits[#bits + 1] = string.format("Maj Force +%0.0f", add)
+  elseif profile and profile.assumeMajorForce then
+    pct = pct + 20
+    bits[#bits + 1] = "Maj Force +20 (assumed)"
+  end
+  if minF >= 0.05 then
+    local add = 10 * math.min(1, minF)
+    pct = pct + add
+    bits[#bits + 1] = string.format("Min Force +%0.0f", add)
+  end
+  local majB = 0
+  local minB = 0
+  if session then
+    majB = select(1, debuffUptimeByNameKey(session, "major brittle")) or 0
+    minB = select(1, debuffUptimeByNameKey(session, "minor brittle")) or 0
+  end
+  if majB >= 0.05 then
+    local add = 20 * math.min(1, majB)
+    pct = pct + add
+    bits[#bits + 1] = string.format("Maj Brittle +%0.0f", add)
+  end
+  if minB >= 0.05 then
+    local add = 10 * math.min(1, minB)
+    pct = pct + add
+    bits[#bits + 1] = string.format("Min Brittle +%0.0f", add)
+  end
+  if championListHasName(session, "fighting finesse") then
+    pct = pct + 8
+    bits[#bits + 1] = "Finesse +8"
+  end
+  if type(GetUnitRace) == "function" then
+    local ok, race = pcall(GetUnitRace, "player")
+    if ok and type(race) == "string" and string.find(string.lower(race), "khajiit", 1, true) then
+      pct = pct + 12
+      bits[#bits + 1] = "Khajiit +12"
+    end
+  end
+  local ceiling = (tonumber(profile and profile.critDamageCeiling) or 1.25) * 100
+  local over = math.max(0, pct - ceiling)
+  return {
+    pct = pct,
+    ceiling = ceiling,
+    over = over,
+    bits = bits,
+    recipeTxt = table.concat(bits, " + "),
+  }
+end
+
 -- Phase 2 coach analysis: waste, sets, next test inputs
 local function buildCoachAnalysis(session, syn, diag, profile)
   profile = profile or getActiveContentProfile()
@@ -5643,6 +5726,21 @@ local function buildCoachAnalysis(session, syn, diag, profile)
       "Crit damage mult (sheet): %0.0f%%  ·  ceiling %0.0f%%  %s",
       critDmgPct, ceiling, confidenceChip(CONFIDENCE.OBSERVED)
     )
+  else
+    -- Console rarely exposes STAT_CRITICAL_DAMAGE. Recipe from Force/Brittle/CP/racial.
+    local rec = estimateCritDamageRecipe(session, profile)
+    local headroom = math.max(0, (rec.ceiling or 125) - (rec.pct or 50))
+    lines[#lines + 1] = string.format(
+      "Crit dmg recipe: ~%0.0f%% of %0.0f%% cap (%s headroom)  ·  %s  %s",
+      rec.pct or 50, rec.ceiling or 125,
+      (headroom <= 0) and "at/over" or string.format("+%0.0f", headroom),
+      rec.recipeTxt or "base 50",
+      confidenceChip(CONFIDENCE.ESTIMATED)
+    )
+    if rec.over and rec.over > 0.5 then
+      overcapRisk = true
+      riskReason = "recipe over ceiling"
+    end
   end
   -- Only show sheet mult / exposure lines when we have data; skip permanent Insufficient spam
   lines[#lines + 1] = string.format(
@@ -5669,12 +5767,6 @@ local function buildCoachAnalysis(session, syn, diag, profile)
         confidenceChip(exposure.confidence or CONFIDENCE.ESTIMATED)
       )
     end
-  elseif critDmgPct <= 0 then
-    -- One short note only — not a fake "missing data" headline when crit rate already shown
-    lines[#lines + 1] = string.format(
-      "Crit damage mult: sheet API returned 0 this fight (hit crit rate is separate)  %s",
-      confidenceChip(CONFIDENCE.INSUFFICIENT)
-    )
   end
 
   -- Phase 2.5.2b: CP A/B pairs + attach marginals to synergy CP list
@@ -7330,7 +7422,7 @@ local function layoutDamagePanelColumns(panel, hdrs, rows, maxRows, W, H, compac
   if compact then
     prefs = { 70, 48, 92, 52 } -- amt share type dps
   else
-    prefs = { 72, 40, 48, 42, 100, 52 } -- amt hits share crit type dps
+    prefs = { 72, 40, 48, 42, 118, 52 } -- amt hits share crit type dps (wider Type for duplicate-id tags)
   end
   local gap = 4
   local prefSum = 0
@@ -7566,12 +7658,12 @@ local BUFF_MID_ROWS = 12
 local BUFF_DEB_ROWS = 12
 
 local function createBuffsUI(screen)
-  if screen.buffsUI and not screen.buffsUI._v3171 then screen.buffsUI = nil end
+  if screen.buffsUI and not screen.buffsUI._v31718 then screen.buffsUI = nil end
   if screen.buffsUI then return screen.buffsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.buffs
   if not panel then return nil end
-  local ui = { panel = panel, rows = {}, midRows = {}, sideRows = {}, _v3171 = true }
+  local ui = { panel = panel, rows = {}, midRows = {}, sideRows = {}, _v31718 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuBuffRootV4", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -7702,6 +7794,10 @@ local function createBuffsUI(screen)
     barFg:SetDimensions(2, 3)
     ui.sideRows[i] = { row = row, name = name, src = src, detail = detail, tier = tier, up = up, barBg = barBg, barFg = barFg }
   end
+  ui.sideNote = makeDashLabel(ui.side, "DM2StatsMenuBuffC3NoteV4", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  if ui.sideNote.SetWrapMode then ui.sideNote:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE or TEXT_WRAP_MODE_ELLIPSIS) end
+  if ui.sideNote.SetMaxLineCount then ui.sideNote:SetMaxLineCount(2) end
+  ui.sideNote:SetText("Skill hit = your skill landing on the dummy (high % is normal). Debuff / Status = lasting effects like Breach.")
 
   ui.empty = makeDashLabel(ui.root, "DM2StatsMenuBuffEmptyV4", 15, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.empty:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 60)
@@ -7855,20 +7951,22 @@ local function layoutBuffsUI(ui, hostW, hostH)
     end
   end
 
-  -- Col 3: Status · Kind · Detail · Apps · Up% (kind/detail nudged right)
+  -- Col 3: Status (wide) · Kind · Detail · Apps · Up%
+  -- Kind/detail sit ~20 chars right of the old 28% name so "Minor Vulnerability" is fully visible
   ui.sideTitle:ClearAnchors()
   ui.sideTitle:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8, 4)
   ui.sideTitle:SetWidth(colW - 16)
-  local sUpW, sAppsW, sKindW = 38, 34, 46
+  local sUpW, sAppsW, sKindW = 38, 34, 56
   local sUpX = colW - 14 - sUpW
   local sAppsX = sUpX - sAppsW - 3
-  local nW = math.max(68, math.floor(colW * 0.28))
-  local sKindX = nW + 8
-  local sDetX = sKindX + sKindW + 6
-  local sDetW = math.max(98, sAppsX - sDetX - 3)
+  local nW = math.max(132, math.floor(colW * 0.42))
+  local sKindX = nW + 10
+  local sDetX = sKindX + sKindW + 4
+  local sDetW = math.max(52, sAppsX - sDetX - 3)
   if sDetX + sDetW > sAppsX - 3 then
-    sDetW = math.max(80, sAppsX - sDetX - 3)
+    sDetW = math.max(44, sAppsX - sDetX - 3)
   end
+  if nW + 10 > sKindX then nW = math.max(120, sKindX - 10) end
   ui.sideHdrName:ClearAnchors()
   ui.sideHdrName:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8, 22)
   ui.sideHdrName:SetWidth(nW)
@@ -7886,7 +7984,13 @@ local function layoutBuffsUI(ui, hostW, hostH)
   ui.sideHdrUp:ClearAnchors()
   ui.sideHdrUp:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + sUpX, 22)
   ui.sideHdrUp:SetWidth(sUpW)
-  local sH = math.floor((bodyH - 40) / BUFF_DEB_ROWS)
+  local noteH = (ui.sideNote and not ui.sideNote:IsHidden()) and 32 or 0
+  if ui.sideNote then
+    ui.sideNote:ClearAnchors()
+    ui.sideNote:SetAnchor(BOTTOMLEFT, ui.side, BOTTOMLEFT, 8, -4)
+    ui.sideNote:SetWidth(colW - 16)
+  end
+  local sH = math.floor((bodyH - 40 - noteH) / BUFF_DEB_ROWS)
   if sH < 16 then sH = 16 end
   if sH > 22 then sH = 22 end
   for i = 1, BUFF_DEB_ROWS do
@@ -8074,8 +8178,9 @@ local function refreshBuffsUI(screen, session)
     if r then
       if d then
         r.row:SetHidden(false)
-        r.name:SetText(formatAbilityDisplay(d.name, d.id, 34))
-        r.src:SetText(displayName(d.kind or "Effect", 12))
+        -- Name only here — id lives in Detail. Stuffing " · id N" was clipping Status.
+        r.name:SetText(displayName(d.name or "?", 40))
+        r.src:SetText(displayName(d.kindTxt or d.kind or "Skill hit", 12))
         if r.detail then
           r.detail:SetText(displayName(d.sourceTxt or "", 28))
         end

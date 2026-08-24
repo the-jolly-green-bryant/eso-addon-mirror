@@ -4,6 +4,42 @@ Full version history for Frostfall. See README.md for current features, installa
 
 ---
 
+### v3.4.20
+- **HUD now indicates when the spell-resist reagent buff is active.** The
+  "FEELS LIKE" row's label (the row this buff actually shifts) switches to a
+  soft violet color and appends a rough `(Xm)` remaining-time readout while
+  the buff is running, reverting to its normal color/text once it ends.
+  No new control or art asset — reuses that row's existing label control.
+  Refreshes on the HUD's normal update cadence, plus immediately whenever
+  the buff is applied, refreshed, or ends (natural expiry or `/ff debug
+  resetStatus`), same as the rest of the HUD already does.
+
+---
+
+### v3.4.19
+- **Craft bag reagent consumption now triggers the spell-resist buff too.**
+  Reagent detection previously only watched `BAG_BACKPACK`, so a player with
+  craft bag access — where reagents auto-deposit instead of sitting in the
+  backpack — could eat a spell-resist reagent (Bugloss, Mudcrab Chitin, Clam
+  Gall, White Cap) straight from the craft bag and see no effect. Added a
+  second `BAG_VIRTUAL`-filtered registration (`RegisterReagentListener`/
+  `UnregisterReagentListener` now toggle both together), on the same handler
+  — the existing per-slot cache already keys by `bagId .. ":" .. slotId`, so
+  backpack and craft bag slots never collide.
+- **The herbal thermal-resistance buff (spell-resist reagent effect) now
+  survives a relog.** Previously tracked only in `FV.State` (in-memory,
+  reset on every UI reload) via `GetGameTimeMilliseconds()` — a session-
+  local uptime clock that means nothing carried into a new session. Now also
+  mirrored to `FV.SV.spellResistEndTimestamp` in real-world epoch time
+  (`GetTimeStamp()`) whenever the buff is applied, refreshed, or cleared
+  (naturally or via `/ff debug resetStatus`). A new `RestoreSpellResistBuff`,
+  called from `Initialize()`, re-derives the remaining duration into the new
+  session's game-time clock and resumes the 1-second tick if time is still
+  left — the buff picks up right where it left off instead of vanishing on
+  relog.
+
+---
+
 ### v3.4.18
 - **Star Dew's itemId (64500) confirmed and added** to
   `FV.WATER_SOLVENT_ITEM_IDS`, per the developer's own manual lookup — all

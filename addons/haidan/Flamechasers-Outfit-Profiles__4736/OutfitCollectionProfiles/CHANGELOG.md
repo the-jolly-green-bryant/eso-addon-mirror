@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.1
+- Fixed dropdown menus rendering behind the main window.
+- Matched every dropdown popup to the width of its field.
+- Fixed action-button and delay tooltips rendering behind the main window.
+- Repositioned tooltips below their controls for cleaner screen placement.
+
+## 0.4.0
+- Rebuilt the window with a compact Flamechasers header, clearer profile status, refined category rows, and custom action buttons.
+- Replaced **Keep Current** with the clearer **Not Tracked** option and renamed **Remove / None** to **Unequip / None**.
+- Profiles now start only when the equipped outfit slot actually changes, including outfit changes made by Armory builds.
+- Removed automatic full-profile checks after ordinary loading screens, combat, and same-slot Armory restores.
+- Added a resumable apply task that pauses across loading screens and continues only when work remains unfinished.
+- Preserved sequential cooldown-safe collectible actions and retries, with a final confirmation pass before the addon returns to idle.
+
 ## 0.3.11
 - Registered the shared Flamechasers keybind category and action labels before
   ESO parses `Bindings.xml`, preventing the category from appearing as its raw string ID.

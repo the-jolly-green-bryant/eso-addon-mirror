@@ -1,0 +1,115 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="VerdantLibrary"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true">
+
+      <Dimensions x="440" y="470"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="120" offsetY="0"/>
+
+      <OnMouseWheel>Verdant.Library.on_scroll(delta)</OnMouseWheel>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <Texture name="$(parent)BrandLogo" textureFile="Verdant/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="8"/>
+          <Dimensions x="24" y="24"/>
+        </Texture>
+
+        <Label name="$(parent)WindowTitle"
+               font="ZoFontWindowTitle"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="42" offsetY="10"/>
+          <Dimensions y="18"/>
+        </Label>
+
+        <Label name="$(parent)CountLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-34" offsetY="12"/>
+          <Dimensions x="70" y="14"/>
+        </Label>
+
+        <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verdant.Library.hide()</OnClicked>
+        </Button>
+
+        <Texture name="$(parent)ListFill"
+                 textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds">
+          <Anchor point="TOPLEFT"     offsetX="15"  offsetY="45"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-47"/>
+        </Texture>
+
+        <Backdrop name="$(parent)ListBg">
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="44"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-46"/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="4"/>
+          <Insets left="4" top="4" right="-4" bottom="-4"/>
+        </Backdrop>
+
+        <Control name="$(parent)List" mouseEnabled="false">
+          <Anchor point="TOPLEFT"  offsetX="20"  offsetY="50"/>
+          <Anchor point="TOPRIGHT" offsetX="-20" offsetY="50"/>
+          <Dimensions y="352"/>
+          <Controls>
+            <Label name="$(parent)Empty"
+                   font="ZoFontGameSmall"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="CENTER">
+              <AnchorFill/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <Button name="$(parent)OpenBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" offsetX="14" offsetY="-12"/>
+          <Dimensions x="110" y="24"/>
+          <OnClicked>Verdant.Library.on_open_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)LockBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOM" offsetX="0" offsetY="-12"/>
+          <Dimensions x="110" y="24"/>
+          <OnClicked>Verdant.Library.on_lock_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)DeleteBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-12"/>
+          <Dimensions x="110" y="24"/>
+          <OnClicked>Verdant.Library.on_delete_click()</OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

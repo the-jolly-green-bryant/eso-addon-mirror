@@ -334,6 +334,7 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_AVG_TICK] = "平均跳",
     [BATTLESCROLLS_TOOLTIP_MIN_TICK] = "最小跳",
     [BATTLESCROLLS_TOOLTIP_MAX_TICK] = "最大跳",
+    [BATTLESCROLLS_TOOLTIP_TICKS] = "跳数",
 
     [BATTLESCROLLS_TOOLTIP_BY_TARGET] = "按目标",
     [BATTLESCROLLS_TOOLTIP_MEAN_INTERVAL] = "平均间隔",
@@ -966,6 +967,8 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_VALUE_MB] = "<<1>> MB",
     [BATTLESCROLLS_MEMDIAG_VALUE_MB_PAIR] = "<<1>> / <<2>> MB",
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "插件内存（主机仪表）",
+    [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "测量字符串大小分级",
+    [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "长度：仪表 / 堆 / 模型（每字符串字节）",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "选择发送内容",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "全部战斗（<<1>>）",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "仅Boss（<<1>>）",
@@ -983,5 +986,76 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_FINISH] = "完成分享",
 }
 for id, str in pairs(shareStrings) do
+    SafeAddString(id, str, 1)
+end
+
+-- 新功能：重命名、团队伤害、复活、条形颜色、终极技、命定楔石、祖恩
+local featureStrings = {
+    [BATTLESCROLLS_RENAME] = "重命名",
+    [BATTLESCROLLS_RENAME_TEXT] = "输入新名称。输入原名称（<<1>>）即可重置。",
+
+    [BATTLESCROLLS_TAB_RAID_DAMAGE] = "团队伤害",
+    [BATTLESCROLLS_STAT_RAID_DAMAGE] = "团队总伤害",
+    [BATTLESCROLLS_STAT_RAID_DPS] = "团队DPS",
+
+    [BATTLESCROLLS_GROUP_COL_RES] = "复活",
+
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR] = "你的条形颜色",
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT] = "「彩色条形」团队统计中你自己条形的颜色。会同步给使用Battle Scrolls的队友，他们也会以此颜色看到你的条形。",
+    [BATTLESCROLLS_COLOR_DEFAULT] = "默认",
+    [BATTLESCROLLS_COLOR_RED] = "红色",
+    [BATTLESCROLLS_COLOR_ORANGE] = "橙色",
+    [BATTLESCROLLS_COLOR_GOLD] = "金色",
+    [BATTLESCROLLS_COLOR_GREEN] = "绿色",
+    [BATTLESCROLLS_COLOR_TEAL] = "青绿色",
+    [BATTLESCROLLS_COLOR_CYAN] = "青色",
+    [BATTLESCROLLS_COLOR_BLUE] = "蓝色",
+    [BATTLESCROLLS_COLOR_PURPLE] = "紫色",
+    [BATTLESCROLLS_COLOR_PINK] = "粉色",
+    [BATTLESCROLLS_COLOR_WHITE] = "白色",
+    [BATTLESCROLLS_COLOR_GREY] = "灰色",
+
+    [BATTLESCROLLS_HEADER_ULTIMATE] = "终极技能",
+    [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "进入战斗时的终极值",
+    [BATTLESCROLLS_STAT_ULT_GENERATED] = "获得的终极值",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "消耗与流失的终极值",
+    [BATTLESCROLLS_HEADER_ULT_SOURCES] = "终极值来源",
+    [BATTLESCROLLS_ULT_BASE_GENERATION] = "基础获取",
+    [BATTLESCROLLS_ULT_HEROISM_LINE] = "包含<<C:1>>：覆盖率<<2>>%，约<<3>>",
+    [BATTLESCROLLS_HEADER_ULT_CASTS] = "已使用的终极技能",
+
+    [BATTLESCROLLS_HEADER_CRUX] = "魔核",
+    [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "生成技能施放次数",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "魔核已满时的生成",
+    [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "消耗技能施放次数",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "不足3层魔核时的消耗",
+    [BATTLESCROLLS_CRUX_AT_N] = "<<1>>层魔核时：<<2>>",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "各技能的魔核运用",
+
+    [BATTLESCROLLS_HEADER_ZEN] = "持续伤害叠加（祖恩）",
+    [BATTLESCROLLS_ZEN_AVG_DOTS] = "平均DoT数",
+    [BATTLESCROLLS_ZEN_UPTIME] = "祖恩减益覆盖率",
+    [BATTLESCROLLS_ZEN_POTENTIAL] = "至少1个DoT的时间",
+    [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>>个DoT",
+    [BATTLESCROLLS_ZEN_SHARE_LINE] = "平均<<1>> — 5个DoT时<<2>>",
+    [BATTLESCROLLS_ZEN_SHORT] = "祖恩",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — 祖恩<<2>>% — 1+DoT <<3>>%",
+
+    [BATTLESCROLLS_HEADER_SUPPORT] = "辅助",
+    [BATTLESCROLLS_STAT_RESURRECTIONS] = "复活次数",
+}
+for id, str in pairs(featureStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local cruxPassiveStrings = {
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "非施放消耗",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "在没有临近消耗技能施放时失去的魔核：自然过期（30秒）或死亡。",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "由该来源触发生成的魔核（按时间与层数增长匹配）。",
+    [BATTLESCROLLS_STAT_CRUX_OTHER] = "其他魔核增长",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "没有可追踪来源的魔核增长——例如「<<1>>」的周期性触发。",
+    [BATTLESCROLLS_HEADER_CRUX_GAINED] = "按技能的魔核获取",
+}
+for id, str in pairs(cruxPassiveStrings) do
     SafeAddString(id, str, 1)
 end

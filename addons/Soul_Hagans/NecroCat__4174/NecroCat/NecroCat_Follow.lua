@@ -117,6 +117,63 @@ local function OnChatMessage(eventCode, channelType, fromName, messageText, isCu
     end
 end
 
+-- 1. Функция переключения авторежима
+function FM.ToggleAutoPrepare()
+    -- Переключаем значение (было true стало false, и наоборот)
+    NecroCat.savedVars.followAutoPrepare = not NecroCat.savedVars.followAutoPrepare
+    
+    -- Сразу обновляем цвет кнопки
+    FM.UpdateChatButtonColor()
+    
+    -- Пишем сообщение в чат, чтобы ты видел, что режим изменился
+    if NecroCat.savedVars.followAutoPrepare then
+        d("|c00FF00[NecroCat]: Авто-маяк при телепорте включен.|r")
+    else
+        d("|cFF0000[NecroCat]: Авто-маяк при телепорте выключен.|r")
+    end
+end
+
+-- 2. Функция обновления видимости кнопки (через прозрачность)
+function FM.UpdateChatButtonColor()
+    if not FM.ChatButton then return end
+    
+    -- Всегда держим рабочую зеленую галочку
+    FM.ChatButton:SetNormalTexture("/esoui/art/buttons/accept_up.dds")
+    
+    if NecroCat.savedVars.followAutoPrepare then
+        -- Если включен: яркая (100% непрозрачности)
+        FM.ChatButton:SetAlpha(1.0) 
+    else
+        -- Если выключен: полупрозрачная/тусклая (35% видимости)
+        FM.ChatButton:SetAlpha(0.35) 
+    end
+end
+
+-- Флаг, чтобы не триггерить маяк при обычном входе/перезагрузке интерфейса
+local isFirstLoad = true
+
+local function OnPlayerActivated(eventCode)
+    -- Если это самый первый вход в игру или /reloadui — просто запоминаем и ничего не делаем
+    if isFirstLoad then
+        isFirstLoad = false
+        return
+    end
+
+    -- Проверяем: включен ли наш авторежим?
+    if not NecroCat.savedVars.followAutoPrepare then return end
+
+    -- Проверяем: находимся ли мы вообще в группе?
+    if not IsUnitGrouped("player") then return end
+
+    -- Даем игре полсекунды (500 мс) на полную отрисовку чата и вызываем подготовку маяка
+    zo_callLater(function()
+        FM.SendBeacon()
+    end, 500)
+end
+
+EVENT_MANAGER:RegisterForEvent("NecroCat_Follow_Load", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
+
+-- 3. Обновленная функция инициализации
 function FM.Init()
     CreateDialog()
     EVENT_MANAGER:RegisterForEvent("NecroCat_Follow", EVENT_CHAT_MESSAGE_CHANNEL, OnChatMessage)
@@ -124,11 +181,29 @@ function FM.Init()
     SLASH_COMMANDS["/fmdemo"] = function() 
         FM.OpenDialog("Тестовый Игрок", "Тестовая Зона") 
     end    
+    
+    -- Создаем кнопку в чате
     local btn = WINDOW_MANAGER:CreateControl("NecroCat_FollowChatBtn", ZO_ChatWindow, CT_BUTTON)
     btn:SetDimensions(28, 28)
     btn:SetAnchor(TOPLEFT, ZO_ChatWindow, TOPLEFT, NecroCat.savedVars.followButtonX or 177, 10)
     btn:SetNormalTexture("/esoui/art/buttons/accept_up.dds")
-    btn:SetHandler("OnClicked", FM.SendBeacon)
+    
+    -- Вместо OnClicked используем OnMouseUp, чтобы разделять левый и правый клик
+    btn:SetHandler("OnMouseUp", function(self, button, upInside)
+        if upInside then
+            if button == MOUSE_BUTTON_INDEX_LEFT then
+                -- Левый клик: отправляем маяк прямо сейчас
+                FM.SendBeacon()
+            elseif button == MOUSE_BUTTON_INDEX_RIGHT then
+                -- Правый клик: переключаем авторежим
+                FM.ToggleAutoPrepare()
+            end
+        end
+    end)
+    
     btn:SetHidden(not NecroCat.savedVars.followShowButton)
     FM.ChatButton = btn
+    
+    -- При загрузке игры сразу проверяем сохраненный режим и красим кнопку
+    FM.UpdateChatButtonColor()
 end

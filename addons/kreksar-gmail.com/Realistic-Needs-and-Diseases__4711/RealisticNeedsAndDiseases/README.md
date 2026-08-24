@@ -21,6 +21,9 @@ For the full version history, see the Change Log tab, or CHANGELOG.md included i
 [size=4][b]Overlay art credit[/b][/size]
 The disease status-overlay images (Frostbite.dds, Heatstroke.dds, MagesBane.dds, FightersBane.dds, ThiefsBane.dds) were generated using AI text-to-image tools — [url=https://perchance.org/ai-text-to-image-generator]Perchance AI Text-to-Image Generator[/url] and Google's Gemini Image Creator — and edited/converted to the game's .dds format using Paint.NET. They are not hand-drawn or sourced from ESO's own art assets.
 
+[size=4][b]Status icon art credit[/b][/size]
+The status display icons (textures/icons/ — Hunger.dds, Thirst.dds, Fatigue.dds, Drunkenness.dds, Frostbite.dds, Heatstroke.dds, MagesBane.dds, FightersBane.dds, ThiefsBane.dds) were generated using AI image tools, including [url=https://perchance.org/ai-icon-generator]Perchance AI Icon Generator[/url], and converted to the game's .dds format. They are not hand-drawn or sourced from ESO's own art assets.
+
 [size=5][b]Needs[/b][/size]
 
 [list]

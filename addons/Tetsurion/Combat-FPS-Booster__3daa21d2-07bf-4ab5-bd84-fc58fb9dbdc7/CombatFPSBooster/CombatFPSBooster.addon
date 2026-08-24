@@ -1,0 +1,14 @@
+## Title: |c00FF00Combat FPS Booster|r
+## Author: Tetsurion
+## Description: A lightweight performance booster designed to eliminate micro-stutters and boost FPS in heavy combat
+## Version: 1.0.6
+## AddOnVersion: 10006
+## APIVersion: 101050 101051
+## SavedVariables: CombatFPSBoosterSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+localization/en.lua
+localization/ru.lua
+localization/de.lua
+
+CombatFPSBooster.lua

@@ -80,7 +80,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FixedCombatString](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/FixedCombatString__3831) | MelanAster | PC / Mac | 0.30 |
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
 | [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.58 |
-| [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.3.11 |
+| [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.4.1 |
 | [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.18 |
 | [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.7.17 |
 | [Flappy Nord – Mini Game](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Traybair/Flappy-Nord-Mini-Game__4492) | Traybair | PC / Mac | 1.0.5 |
@@ -116,7 +116,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Friend Auto Trade](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Quazzert/Friend-Auto-Trade__1168) | Quazzert | PC / Mac | 0.1 |
 | [Friend Removed Notification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Friend-Removed-Notification__1225) | CaptainBlagbird | PC / Mac | 2.01 |
 | [Friendly Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crunatus/Friendly-Reminder__2882) | Crunatus | PC / Mac | 1.3 |
-| [Frostfall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Frostfall__4710) | kreksar@gmail.com | PC / Mac | 3.4.18 |
+| [Frostfall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Frostfall__4710) | kreksar@gmail.com | PC / Mac | 3.4.20 |
 | [FsBountyDecay](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FelipeS11/FsBountyDecay__2486) | FelipeS11 | PC / Mac | 3.0 |
 | [Full Moon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Full-Moon__2107) | g4rr3t | PC / Mac | 1.2.4 |
 | [Fun Kill Feed - (tested on console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Fun-Kill-Feed---tested-on-console__4286) | SugaComa | PC / Mac | 1.3.5 |
@@ -124,10 +124,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Furnishing Recipe Collector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomstock/Furnishing-Recipe-Collector__3862) | tomstock | PC / Mac | 1.4.9 |
 | [Furnishing Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Furnishing-Tracker__c49eb98c-6821-47de-9cb2-10b972d1a55f) | Eldibabalo | Console | — |
 | [Furnishings placed 2 Nickname](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/remosito/Furnishings-placed-2-Nickname__3579) | remosito | PC / Mac | 37.0 |
-| [Furniture Builder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Builder__33acf830-6318-4dc0-8458-4a061eca1ad3) | killerkev77 | Console | — |
 | [Furniture Catalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Catalogue__1617) | manavortex | PC / Mac | 6.3.0 |
 | [Furniture Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Finder__2b591c30-b518-46da-978a-c1a788963735) | killerkev77 | Console | — |
 | [Furniture Grouper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/datael/Furniture-Grouper__1799) | datael | PC / Mac | 1.0.6a |
+| [Furniture Placer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Placer__33acf830-6318-4dc0-8458-4a061eca1ad3) | killerkev77 | Console | — |
 | [Furniture Preview modified by Teva](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Teva/Furniture-Preview-modified-by-Teva__2970) | Teva | PC / Mac | 2.60 |
 | [Furniture Shopping List (FurC 2.0 patch)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Shopping-List-FurC-2.0-patch__1865) | manavortex | PC / Mac | 1.4.11 |
 | [Furniture Snap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/Furniture-Snap__1944) | Cardinal05 | PC / Mac | 1.3 |

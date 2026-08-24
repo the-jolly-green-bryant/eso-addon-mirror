@@ -12,7 +12,7 @@ local Log = ValknarrThemeLog
 local Skins = ValknarrThemeSkins
 
 local ADDON_NAME = "ValknarrTheme"
-local FONTS = { "ZoFontGamepad34", "ZoFontGamepad27", "ZoFontGameShadow" }
+local FONTS = Format.HUD_FONTS or { "ZoFontGamepad27", "ZoFontGamepad22", "ZoFontGameShadow" }
 
 local BARS = {
     {
@@ -31,8 +31,8 @@ local BARS = {
         title = "Magicka",
         global = "ZO_PlayerAttributeMagicka",
         power = "COMBAT_MECHANIC_FLAGS_MAGICKA",
-        x = 0.34,
-        y = 0.82,
+        x = 0.30,
+        y = 0.86,
         width = 320,
         height = 44,
         fill = { 0.22, 0.46, 0.94, 1 },
@@ -42,8 +42,8 @@ local BARS = {
         title = "Stamina",
         global = "ZO_PlayerAttributeStamina",
         power = "COMBAT_MECHANIC_FLAGS_STAMINA",
-        x = 0.66,
-        y = 0.82,
+        x = 0.70,
+        y = 0.86,
         width = 320,
         height = 44,
         fill = { 0.20, 0.70, 0.30, 1 },
@@ -91,16 +91,31 @@ function Resources.SetGamepadFont(label, preferred)
     if not label or type(label.SetFont) ~= "function" then
         return false
     end
-    local fonts = FONTS
-    if preferred then
-        fonts = { preferred, "ZoFontGamepad27", "ZoFontGamepad34", "ZoFontGameShadow" }
+    local fonts
+    if type(preferred) == "table" then
+        fonts = preferred
+    elseif preferred then
+        fonts = { preferred, "ZoFontGamepad27", "ZoFontGamepad22", "ZoFontGameShadow" }
+    elseif Format.HudFonts then
+        fonts = Format.HudFonts()
+    else
+        fonts = FONTS
     end
     for index = 1, #fonts do
         if pcall(label.SetFont, label, fonts[index]) then
+            Resources.AlignBarLabel(label)
             return true
         end
     end
     return false
+end
+
+function Resources.AlignBarLabel(label)
+    if not label then
+        return
+    end
+    Safe.Try(label, "SetHorizontalAlignment", TEXT_ALIGN_CENTER)
+    Safe.Try(label, "SetVerticalAlignment", TEXT_ALIGN_CENTER)
 end
 
 local function OverlayTier(control, drawLevel)
@@ -320,7 +335,7 @@ function Resources:Ensure(spec)
 
     local fill = WINDOW_MANAGER:CreateControl(ADDON_NAME .. spec.title .. "Fill", root, CT_BACKDROP)
     Safe.Try(fill, "SetAnchor", LEFT, bg, LEFT, 6, 0)
-    PaintBackdrop(fill, spec.width - 12, spec.height - 8, spec.fill, nil, 101)
+    PaintBackdrop(fill, spec.width - 12, spec.height - 8, Format.Fill("clean", spec.id), nil, 101)
 
     local host = WINDOW_MANAGER:CreateControl(ADDON_NAME .. spec.title .. "ChromeHost", root, CT_CONTROL)
     OverlayTier(host, 102)
@@ -345,7 +360,7 @@ function Resources:Ensure(spec)
     OverlayTier(label, 104)
     Safe.Try(label, "SetAnchor", CENTER, bg, CENTER, 0, 0)
     Safe.Try(label, "SetDimensions", spec.width, spec.height)
-    Safe.Try(label, "SetHorizontalAlignment", TEXT_ALIGN_CENTER)
+    Resources.AlignBarLabel(label)
     Safe.Try(label, "SetColor", 1, 1, 1, 1)
     Resources.SetGamepadFont(label)
 
@@ -388,27 +403,31 @@ function Resources:RefreshBar(spec)
     end
 
     self:PlaceIfUnanchored(spec, root)
-    Safe.Try(root, "SetHidden", not themed)
+    Safe.Try(root, "SetHidden", not (themed and Format.HudSceneVisible()))
     if not themed then
         return
     end
     Safe.Try(root, "SetAlpha", 1)
     Safe.Try(frame.fill, "SetHidden", false)
-    Safe.Try(frame.label, "SetHidden", false)
 
     local current, maximum = self:ReadPower(spec)
     local pct = Format.Percent(current, maximum)
-    local metal = Format.ResourcesMetal(ValknarrThemeStore:ThemeId())
-    local pack = Skins and Skins.BarFrame and Skins.BarFrame(spec.id)
+    local themeId = ValknarrThemeStore:ThemeId()
+    local metal = Format.ResourcesMetal(themeId)
+    local pack = Skins and Skins.BarFrame and Skins.BarFrame(themeId)
     local framed = false
     if metal and pack and frame.tiles and Skins.BindBarTiles then
+        if frame.metalSkin ~= themeId then
+            for index = 1, #frame.tiles do
+                if Skins.ClearBind then
+                    Skins.ClearBind(frame.tiles[index])
+                end
+            end
+            frame.metalArmed = nil
+            frame.metalSkin = themeId
+        end
         if not frame.metalArmed or frame.metalRebind then
             if not frame.metalArmed then
-                for index = 1, #frame.tiles do
-                    if Skins.ClearBind then
-                        Skins.ClearBind(frame.tiles[index])
-                    end
-                end
                 frame.metalArmed = true
             end
             frame.metalRebind = nil
@@ -419,12 +438,13 @@ function Resources:RefreshBar(spec)
     else
         frame.metalArmed = nil
         frame.metalRebind = nil
+        frame.metalSkin = nil
     end
     frame.framed = framed
     if metal and not framed then
         if Log and not frame.metalMissLogged then
             frame.metalMissLogged = true
-            Log:Always("metal tiles missed; " .. spec.id .. " using clean layout; retrying")
+            Log:Debug("frame tiles missed; " .. spec.id .. " using clean layout; retrying")
         end
         self:StartMetalRetry()
     else
@@ -453,34 +473,51 @@ function Resources:RefreshBar(spec)
             Safe.Try(piece, "SetAnchor", TOPLEFT, frame.chromeHost, TOPLEFT, (index - 1) * tile, 0)
             Safe.Try(piece, "SetDimensions", tile, tile)
         end
-        Safe.Try(frame.bg, "ClearAnchors")
-        Safe.Try(frame.bg, "SetAnchor", TOPLEFT, frame.chromeHost, TOPLEFT, x, y)
-        PaintBackdrop(frame.bg, wellW, wellH, CLEAN_CENTER, nil, 100)
+        Safe.Try(frame.bg, "SetHidden", true)
         Safe.Try(frame.fill, "ClearAnchors")
-        Safe.Try(frame.fill, "SetAnchor", LEFT, frame.bg, LEFT, 0, 0)
-        PaintBackdrop(frame.fill, math.max(8, math.floor((wellW * pct) / 100)), wellH, spec.fill, nil, 101)
+        Safe.Try(frame.fill, "SetAnchor", TOPLEFT, frame.chromeHost, TOPLEFT, x, y)
+        PaintBackdrop(frame.fill, math.max(8, math.floor((wellW * pct) / 100)), wellH, Format.Fill(themeId, spec.id), nil, 101)
         if frame.label then
+            local ox = math.floor(x + wellW * 0.5 - stripW * 0.5)
+            local oy = math.floor(y + wellH * 0.5 - stripH * 0.5)
             Safe.Try(frame.label, "ClearAnchors")
-            Safe.Try(frame.label, "SetAnchor", CENTER, frame.bg, CENTER, 0, 0)
+            Safe.Try(frame.label, "SetAnchor", CENTER, frame.chromeHost, CENTER, ox, oy)
             Safe.Try(frame.label, "SetDimensions", wellW, wellH)
+            Resources.SetGamepadFont(frame.label, Format.HudFonts(themeId, wellH))
         end
     else
         HideTiles(frame.tiles, frame.chromeHost)
+        Safe.Try(frame.bg, "SetHidden", false)
         Safe.Try(frame.bg, "ClearAnchors")
         Safe.Try(frame.bg, "SetAnchor", TOPLEFT, root, TOPLEFT, 0, 0)
         PaintBackdrop(frame.bg, spec.width, spec.height, CLEAN_CENTER, nil, 100)
         Safe.Try(frame.fill, "ClearAnchors")
         Safe.Try(frame.fill, "SetAnchor", LEFT, frame.bg, LEFT, 6, 0)
-        PaintBackdrop(frame.fill, math.max(8, math.floor(((spec.width - 12) * pct) / 100)), spec.height - 8, spec.fill, nil, 101)
+        PaintBackdrop(frame.fill, math.max(8, math.floor(((spec.width - 12) * pct) / 100)), spec.height - 8, Format.Fill(themeId, spec.id), nil, 101)
         if frame.label then
             Safe.Try(frame.label, "ClearAnchors")
             Safe.Try(frame.label, "SetAnchor", CENTER, frame.bg, CENTER, 0, 0)
             Safe.Try(frame.label, "SetDimensions", spec.width, spec.height)
+            Resources.SetGamepadFont(frame.label, Format.HudFonts(themeId, spec.height - 8))
         end
     end
     if frame.label then
         Safe.Try(frame.label, "SetText", Format.ResourceLine(current, maximum))
-        Resources.SetGamepadFont(frame.label)
+        Safe.Try(frame.label, "SetHidden", not Format.ShowBarText())
+    end
+end
+
+function Resources:SyncHudVisibility()
+    local themed = Format.ResourcesThemed(ValknarrThemeStore:ThemeId())
+    local hud = Format.HudSceneVisible()
+    if not self.frames then
+        return
+    end
+    for index = 1, #BARS do
+        local frame = self.frames[BARS[index].id]
+        if frame and frame.root then
+            Safe.Try(frame.root, "SetHidden", not (themed and hud))
+        end
     end
 end
 
@@ -506,7 +543,7 @@ function Resources:StopMetalRetry()
     self.metalRetrying = false
     if wasRetrying and ticks >= 8 and Format.ResourcesMetal(ValknarrThemeStore:ThemeId())
         and self:AnyMetalMissing() and Log then
-        Log:Always("metal tiles still missed after retry")
+        Log:Warn("frame tiles still missed after retry")
     end
 end
 
@@ -545,6 +582,7 @@ function Resources:Apply()
                 if frame then
                     frame.metalArmed = nil
                     frame.metalRebind = nil
+                    frame.metalSkin = nil
                     frame.framed = nil
                     frame.metalMissLogged = nil
                 end
@@ -614,7 +652,9 @@ function Resources:DescribeBar(spec)
         powerFlag = PowerType(spec.power),
         skin = ValknarrThemeStore:ThemeId(),
         chrome = frame and frame.chrome and frame.chrome.ValknarrBoundTex or nil,
-        metal = Format.ResourcesMetal(ValknarrThemeStore:ThemeId()) and true or false,
+        framed = frame and frame.framed and true or false,
+        hudVisible = Format.HudSceneVisible() and true or false,
+        barText = Format.ShowBarText() and true or false,
     }
 end
 
@@ -698,6 +738,9 @@ function Resources:RegisterEvents()
     end
     if type(EVENT_MANAGER.RegisterForUpdate) == "function" then
         EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "ResKeepHidden", 250, function()
+            if ValknarrTheme and ValknarrTheme.SyncHudVisibility then
+                ValknarrTheme:SyncHudVisibility()
+            end
             if not Format.ResourcesThemed(ValknarrThemeStore:ThemeId()) then
                 return
             end

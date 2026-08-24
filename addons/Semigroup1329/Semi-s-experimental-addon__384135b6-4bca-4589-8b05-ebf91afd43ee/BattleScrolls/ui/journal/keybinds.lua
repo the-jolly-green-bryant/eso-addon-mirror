@@ -391,6 +391,17 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
                 return targetData ~= nil and targetData.data ~= nil and not targetData.isSettings
             end,
         },
+        {
+            keybind = "UI_SHORTCUT_TERTIARY",
+            name = GetString(BATTLESCROLLS_RENAME),
+            callback = function()
+                journalUI:ShowRenameInstanceDialog()
+            end,
+            visible = function()
+                local targetData = journalUI.instanceList:GetTargetData()
+                return targetData ~= nil and targetData.data ~= nil and not targetData.isSettings
+            end,
+        },
     }
 
     -- Encounter list keybinds
@@ -500,6 +511,17 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
             end,
             sound = SOUNDS.DIALOG_ACCEPT,
         },
+        {
+            keybind = "UI_SHORTCUT_TERTIARY",
+            name = GetString(BATTLESCROLLS_RENAME),
+            callback = function()
+                journalUI:ShowRenameEncounterDialog()
+            end,
+            visible = function()
+                local targetData = journalUI.encounterList:GetTargetData()
+                return targetData ~= nil and targetData.data ~= nil
+            end,
+        },
     }
 
     -- Stats view keybinds
@@ -572,6 +594,7 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
                 -- Only show on tabs that support filtering
                 return journalUI.selectedTab == STATS_TAB.DAMAGE_DONE
                     or journalUI.selectedTab == STATS_TAB.BOSS_DAMAGE_DONE
+                    or journalUI.selectedTab == STATS_TAB.RAID_DAMAGE
                     or journalUI.selectedTab == STATS_TAB.DAMAGE_TAKEN
                     or journalUI.selectedTab == STATS_TAB.HEALING_OUT
                     or journalUI.selectedTab == STATS_TAB.HEALING_IN

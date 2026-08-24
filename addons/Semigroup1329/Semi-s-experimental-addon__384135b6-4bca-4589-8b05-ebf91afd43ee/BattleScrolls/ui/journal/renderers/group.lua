@@ -329,7 +329,22 @@ local function buildGroupPlayerPanel(q2, q3, q4, ctx, data, playerName, members)
         end
     end
 
-    col2:mount(journal.SECTION_GAP, 0, damageSection, vsAverageSection, survivabilitySection, healingSection)
+    -- Z'en / DoT stacking section: per-boss delivery metrics, present only
+    -- for bosses the sender's Z'en debuff actually touched (V3 senders)
+    local zenSection
+    if data.zenByBoss and #data.zenByBoss > 0 then
+        local zenRows = {}
+        for _, zb in ipairs(data.zenByBoss) do
+            local bossName = resolveBossName(bossSeqNames, zb.bossTag, zb.tagSeq)
+            table.insert(zenRows, col2:StatRow(bossName,
+                zo_strformat(GetString(BATTLESCROLLS_ZEN_SHARE_LINE),
+                    string.format("%.1f", zb.avgStacksTenths / 10),
+                    utils.formatDuration(zb.timeAt5Ms))))
+        end
+        zenSection = col2:Section(GetString(BATTLESCROLLS_HEADER_ZEN), unpack(zenRows))
+    end
+
+    col2:mount(journal.SECTION_GAP, 0, damageSection, vsAverageSection, survivabilitySection, healingSection, zenSection)
 
     LibEffect.Yield():Await()
 

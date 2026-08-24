@@ -83,6 +83,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field bossTagSeqByUnitId table<number, string>|nil Maps boss unitId to "tag:seq" key for local player boss damage mapping
 ---@field gameVersion string|nil Game patch version at time of encounter (e.g. "11.3.5")
 ---@field playerUnitId number|nil The player's own source unit id in this encounter's damage maps (nil on encounters recorded before it was captured)
+---@field customName string|nil User-set name override (plain field, editable without re-encoding)
 
 ---@class Encounter
 ---@field isPlayerFight boolean|nil True when a player/duel fight
@@ -112,6 +113,11 @@ BattleScrolls = BattleScrolls or {}
 ---@field weaving WeavingData|nil Weaving/rotation activity data (v12+)
 ---@field gameVersion string|nil Game patch version at time of encounter (e.g. "11.3.5")
 ---@field playerUnitId number|nil The player's own source unit id in this encounter's damage maps (nil on encounters recorded before it was captured)
+---@field customName string|nil User-set name override (plain field on the compact encounter)
+---@field ultimate UltimateData|nil Ultimate generation/usage data (v19+)
+---@field crux CruxData|nil Arcanist Crux economy data (v19+)
+---@field resurrections number|nil Successful resurrection casts by the player (v19+)
+---@field zen ZenData|nil Per-boss DoT-count/Z'en time buckets (v19+)
 
 -- Instance types distinguish between live state (during combat) and storage format.
 -- InstanceState: Live instance with uncompressed abilityInfo and unitNames
@@ -142,6 +148,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field _instanceData string[]|nil Compressed abilityInfo (base64 chunks)
 ---@field _instanceDataVersion number|nil Schema version for _instanceData
 ---@field _migrationFailed boolean|nil True when v17 migration failed verification for this instance (left in old format, not retried)
+---@field customName string|nil User-set name override for the instance
 ---@field encounters CompactEncounter[] Array of encounters in this instance
 
 ---@alias Instance InstanceState|InstanceStorage
@@ -187,6 +194,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field favoriteEffects table<number, boolean>
 ---@field pivotQueries table<string, PivotQuery>|nil Saved pivot queries
 ---@field hasCompletedOnboarding boolean
+---@field groupBarColor string|nil Own bar color for the colorful group bars design ("RRGGBB" hex; nil = per-name default)
 
 ---@class OwnSetupPoolEntry
 ---@field v number Schema version the setup was encoded with
@@ -434,6 +442,11 @@ end
 ---Sets the LibAsync stall threshold (applied immediately)
 ---@param fps number The FPS threshold value
 function storage:SetAsyncStallThreshold(fps)
+    -- No-op when unchanged: LibAsync's slash handler prints to chat, so it
+    -- must only run on an actual change
+    if self:GetAsyncStallThreshold() == fps then
+        return
+    end
     -- Use LibAsync's slash command handler to apply the change immediately
     -- This updates both the saved var and the internal threshold
     if LibAsync and LibAsync.Slash then

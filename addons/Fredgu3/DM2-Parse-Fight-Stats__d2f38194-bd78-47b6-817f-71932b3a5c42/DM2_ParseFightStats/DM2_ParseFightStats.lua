@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.16"
+R.version     = "3.17.17"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -434,8 +434,12 @@ R._announcements = {
     title = "Rotation on one screen · Fitness CP not dummy-rated",
     body = "• Rotation: whole dummy skill timeline on one screen (icons shrink to fit).\n  Square/Y only if the fight is longer than the panel can hold.\n• Channel skills keep real icons (not initials). New dummy for this.\n• Fitness CP still listed, but dummy parses no longer rate them Strong/Soft.\n  Dummy does not hit back — survivability stars show N/A.",
   },
+  ["3.17.17"] = {
+    title = "Build ID · quieter chat · Buffs labels",
+    body = "• Chat: only a captured-fight DPS line (ESO-style Result: X DPS, Ys). Skip reasons silent.\n• Build ID: same bars/sets/Mundus/CP should hash the same (slot order + end recapture).\n  New dummy parses needed — old history IDs will still differ.\n• Insights: crit damage uses a Force/Brittle/CP recipe when the sheet API is 0.\n• Buffs: Target Debuffs names fully visible. Skill hit = your skill landing on the dummy.\n• Damage: same-name rows (Sundering Knife, Crystal Fragments) tagged with ability id.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.16"
+R._latestAnnouncementVersion = "3.17.17"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -1296,6 +1300,48 @@ local function captureSlottedAbilities()
     for slot = 20, 25 do addSlot(slot, nil, "Back") end
   end
   return ids, names, bars, barsByName, bySlot
+end
+
+-- Merge a fresh slot/set read into the session without wiping bars that failed to re-read.
+-- Called at fight end so Build ID is not minted from a partial start snapshot.
+local function mergeLiveGearAndSlots(session)
+  if type(session) ~= "table" then return end
+  local slotIds, slotNames, slotBars, slotBarsByName, slotBySlot = captureSlottedAbilities()
+  session.slottedAbilityIds = session.slottedAbilityIds or {}
+  for id, v in pairs(slotIds or {}) do session.slottedAbilityIds[id] = v end
+  session.slottedAbilityNames = session.slottedAbilityNames or {}
+  for nk, v in pairs(slotNames or {}) do session.slottedAbilityNames[nk] = v end
+  session.slottedAbilityBar = session.slottedAbilityBar or {}
+  for id, bar in pairs(slotBars or {}) do session.slottedAbilityBar[id] = bar end
+  session.slottedAbilityBarByName = session.slottedAbilityBarByName or {}
+  for nameKey, bar in pairs(slotBarsByName or {}) do
+    session.slottedAbilityBarByName[nameKey] = bar
+  end
+  session.slottedAbilityBySlot = session.slottedAbilityBySlot or {}
+  for k, entry in pairs(slotBySlot or {}) do
+    if type(entry) == "table" and (tonumber(entry.id) or 0) > 0 then
+      session.slottedAbilityBySlot[k] = entry
+    end
+  end
+  local sets, setMap = captureEquippedSets()
+  session.equippedSets = session.equippedSets or {}
+  session.equippedSetMap = session.equippedSetMap or {}
+  if type(setMap) == "table" then
+    for key, n in pairs(setMap) do
+      if key and n and not session.equippedSetMap[key] then
+        session.equippedSetMap[key] = n
+        session.equippedSets[#session.equippedSets + 1] = n
+      end
+    end
+  elseif type(sets) == "table" then
+    for _, n in ipairs(sets) do
+      local key = normalizeNameKey(n)
+      if key ~= "" and not session.equippedSetMap[key] then
+        session.equippedSetMap[key] = n
+        session.equippedSets[#session.equippedSets + 1] = n
+      end
+    end
+  end
 end
 
 local function ensureSet(session, setName)
@@ -6036,6 +6082,8 @@ local function finalizeSession(session)
       session.mundus = mundus
     end
   end
+  -- Refresh bars/sets before fingerprint so a partial start read cannot mint a new Build ID
+  pcall(mergeLiveGearAndSlots, session)
   -- Phase 1: build snapshot + fingerprint at fight end (canonical for history)
   if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureSessionBuild) == "function" then
     local okB, build = pcall(DM2StatsMenuShell.CaptureSessionBuild, session, "end")
@@ -6112,27 +6160,16 @@ local function combatFlagIsIn(inCombat)
   return not not inCombat
 end
 
-local function notifyHistorySaved(session, pathNote)
+local function notifyHistorySaved(session, _pathNote)
   if type(session) ~= "table" then return end
   local dps = 0
   local dur = tonumber(session.durationMs) or 0
   local dmg = tonumber(session.totalDamage) or 0
   if dur > 0 then dps = dmg / (dur / 1000) end
-  local n = getHistoryCount()
   local tgt = tostring(session.lastTargetName or "fight")
   if #tgt > 40 then tgt = string.sub(tgt, 1, 37) .. "..." end
-  local max = historyMaxSetting()
-  -- Include raw total damage so you can cross-check Simple DPS Fight Total
-  d(string.format(
-    "|c88ff88DM2 Parse|r: saved %s · %.0fk DPS · total %s · %0.1fs · history %d/%d (#1=newest)%s",
-    tgt,
-    dps / 1000,
-    fmtInt(dmg),
-    dur / 1000,
-    n,
-    max,
-    pathNote and (" · " .. pathNote) or ""
-  ))
+  -- Same shape as ESO dummy chat: "Result: 14332.7 DPS, 34s (Target Name)"
+  d(string.format("|c88ff88DM2 Parse|r: Result: %s DPS, %0.1fs (%s)", fmtDps(dps), dur / 1000, tgt))
   -- Menu open: jump to newest fight so History isn't stuck on stale view
   if DM2StatsMenuShell and type(DM2StatsMenuShell.OnFightSaved) == "function" then
     pcall(DM2StatsMenuShell.OnFightSaved)
@@ -6141,7 +6178,6 @@ end
 
 function R:OnCombatState(_, inCombat)
   local nowIn = combatFlagIsIn(inCombat)
-  local wasIn = self.inCombat == true
   self.inCombat = nowIn
 
   if nowIn then
@@ -6206,16 +6242,8 @@ function R:OnCombatState(_, inCombat)
   end
 
   if not live or not live.started then
-    -- If we had damage but never started (filters), drop quietly
+    -- Never started (filters / no damage): drop with no chat
     self.session = nil
-    -- Helpful when capture never started (filters / enable / open-world skip)
-    if wasIn and SV and SV.settings and SV.settings.enable then
-      local t = GetFrameTimeSeconds and GetFrameTimeSeconds() or 0
-      if (t - (self._lastNoStartWarn or 0)) > 8 then
-        self._lastNoStartWarn = t
-        d("|cFFAA00DM2 Parse|r: combat ended but no parse started (open-world OFF and target not seen as dummy/housing — or no damage events).")
-      end
-    end
     return
   end
 
@@ -6245,17 +6273,7 @@ function R:OnCombatState(_, inCombat)
   end
 
   if not s then
-    local minMs = tonumber(SV and SV.settings and SV.settings.minFightMs) or 0
-    local minDmg = tonumber(SV and SV.settings and SV.settings.minDamage) or 0
-    local dur = tonumber(live.durationMs) or 0
-    local dmg = tonumber(live.totalDamage) or 0
-    d(string.format(
-      "|cFFAA00DM2 Parse|r: fight not saved (duration %0.1fs / dmg %s — need ≥%0.0fs and ≥%s dmg).",
-      dur / 1000,
-      tostring(math.floor(dmg)),
-      minMs / 1000,
-      tostring(minDmg)
-    ))
+    -- Too short / too little damage / not dummy: drop with no chat
     self.session = nil
     self._finalizingCombat = false
     return

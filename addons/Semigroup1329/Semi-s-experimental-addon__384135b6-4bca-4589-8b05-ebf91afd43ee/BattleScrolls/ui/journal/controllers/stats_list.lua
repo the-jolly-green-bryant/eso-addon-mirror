@@ -36,6 +36,7 @@ local panelSpecBuilders = {
     [StatsTab.EFFECTS_GROUP]     = renderers.effects.buildEffectsPanelSpec,
     [StatsTab.SETUP]             = renderers.setup.buildSetupPanelSpec,
     [StatsTab.ACTIVITY]          = renderers.activity.buildActivityPanelSpec,
+    [StatsTab.RAID_DAMAGE]       = renderers.damage.buildRaidDamagePanelSpec,
 }
 
 -------------------------
@@ -67,6 +68,8 @@ function StatsListController.renderTab(ctx, selectedTab)
             renderers.damage.renderBossDamageDone(ctx):Await()
         elseif selectedTab == StatsTab.DAMAGE_DONE then
             renderers.damage.renderDamageDone(ctx):Await()
+        elseif selectedTab == StatsTab.RAID_DAMAGE then
+            renderers.damage.renderRaidDamage(ctx):Await()
         elseif selectedTab == StatsTab.DAMAGE_TAKEN then
             renderers.damage.renderDamageTaken(ctx):Await()
         elseif selectedTab == StatsTab.HEALING_OUT then

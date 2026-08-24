@@ -2,7 +2,7 @@ ArchiveAdvisor = ArchiveAdvisor or {}
 local ADDON = ArchiveAdvisor
 
 ADDON.name = "ArchiveAdvisor"
-ADDON.version = "1.0.0"
+ADDON.version = "1.0.1"
 ADDON.marker = nil
 ADDON.whyLabel = nil
 ADDON.hookedKeyboard = false
@@ -36,6 +36,7 @@ local WHY_FLAG_LABELS = {
     POISON = "Poison",
     FIRE = "Fire",
     FROST = "Frost",
+    WEREWOLF_ACTIVE = "Werewolf",
 }
 
 local WHY_FAMILY_LABELS = {

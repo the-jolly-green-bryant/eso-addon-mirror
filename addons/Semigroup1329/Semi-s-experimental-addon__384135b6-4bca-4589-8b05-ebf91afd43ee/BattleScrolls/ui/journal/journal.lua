@@ -315,6 +315,7 @@ function BattleScrolls_Journal_Gamepad:RefreshHeader()
 
     ZO_GamepadGenericHeader_Refresh(self.header, self.headerData, true)
     self:applyStatsHeaderLayout()
+    self:refreshFooter()
 
     if self.headerData.tabBarEntries then
         if self.pendingTabIndex then
@@ -339,37 +340,24 @@ function BattleScrolls_Journal_Gamepad:RefreshHeader()
     end
 end
 
----Builds header data pairs for the current stats tab. Compact single-line on effects tabs,
----full label/value pairs on others.
+---Builds header data pairs for the current stats tab. Same layout on all
+---tabs; the player name lives in the generic footer (bottom right) instead.
 function BattleScrolls_Journal_Gamepad:buildStatsHeaderData()
-    self.headerData.data1HeaderText = nil
-    self.headerData.data1Text = nil
-    self.headerData.data2HeaderText = nil
-    self.headerData.data2Text = nil
+    self.headerData.data1HeaderText = GetString(BATTLESCROLLS_STAT_DURATION)
+    self.headerData.data1Text = BattleScrolls.journal.utils.formatPreciseDuration(self.selectedEncounter.durationMs)
+    if self.selectedEncounter.gameVersion then
+        self.headerData.data2HeaderText = GetString(BATTLESCROLLS_STAT_PATCH)
+        self.headerData.data2Text = self.selectedEncounter.gameVersion
+    else
+        self.headerData.data2HeaderText = nil
+        self.headerData.data2Text = nil
+    end
     self.headerData.data3HeaderText = nil
     self.headerData.data3Text = nil
-
-    if isEffectsTab(self.selectedTab) then
-        self.headerData.data1HeaderText = BattleScrolls.utils.GetUndecoratedDisplayName()
-        local value = BattleScrolls.journal.utils.formatPreciseDuration(self.selectedEncounter.durationMs)
-        if self.selectedEncounter.gameVersion then
-            value = value .. "  —  " .. self.selectedEncounter.gameVersion
-        end
-        self.headerData.data1Text = value
-    else
-        self.headerData.data1HeaderText = GetString(BATTLESCROLLS_GROUP_COL_NAME)
-        self.headerData.data1Text = BattleScrolls.utils.GetUndecoratedDisplayName()
-        self.headerData.data2HeaderText = GetString(BATTLESCROLLS_STAT_DURATION)
-        self.headerData.data2Text = BattleScrolls.journal.utils.formatPreciseDuration(self.selectedEncounter.durationMs)
-        if self.selectedEncounter.gameVersion then
-            self.headerData.data3HeaderText = GetString(BATTLESCROLLS_STAT_PATCH)
-            self.headerData.data3Text = self.selectedEncounter.gameVersion
-        end
-    end
 end
 
----Re-anchors data pairs below the subheader when it is visible, and applies
----the stacked (compact) layout on effects tabs. Must be called after
+---Re-anchors data pairs below the subheader when it is visible, and keeps the
+---effects search box below the data pairs. Must be called after
 ---RefreshData / RefreshData since reflow resets DATA1HEADER anchors.
 function BattleScrolls_Journal_Gamepad:applyStatsHeaderLayout()
     if self.mode ~= NAVIGATION_MODE.STATS then return end
@@ -386,28 +374,34 @@ function BattleScrolls_Journal_Gamepad:applyStatsHeaderLayout()
 
     if not isEffectsTab(self.selectedTab) then return end
 
-    local controls = self.header.controls
-    local data1 = controls[ZO_GAMEPAD_HEADER_CONTROLS.DATA1]
-    local data1Header = controls[ZO_GAMEPAD_HEADER_CONTROLS.DATA1HEADER]
-    if not data1 or not data1Header then return end
-
-    -- Force stacked layout: full-width value below header label (matches ESO's overlap anchors)
-    data1:ClearAnchors()
-    data1:SetAnchor(BOTTOMLEFT, data1Header, BOTTOMLEFT, 0, 40)
-    data1:SetAnchor(BOTTOMRIGHT, data1Header, BOTTOMRIGHT, 0, 40)
-    data1:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-
-    -- RefreshData anchored search to DATA1HEADER (first match in anchor targets),
-    -- but DATA1 is now 40px below — re-anchor search below DATA1
-    if self.textSearchHeaderControl then
+    -- RefreshData anchored search to DATA1HEADER (first match in anchor
+    -- targets), which would overlap the value row — re-anchor below DATA1
+    local data1 = self.header.controls[ZO_GAMEPAD_HEADER_CONTROLS.DATA1]
+    if self.textSearchHeaderControl and data1 then
         self.textSearchHeaderControl:ClearAnchors()
         self.textSearchHeaderControl:SetAnchor(TOPLEFT, data1, BOTTOMLEFT, 0, 0)
+    end
+end
+
+---Shows the account name in the generic footer (bottom right, like the main
+---menu) while in stats mode; clears it elsewhere. Account only - history is
+---account-wide and the recording character is not stored, so the current
+---character's name would be wrong for encounters recorded on another one.
+function BattleScrolls_Journal_Gamepad:refreshFooter()
+    if self.mode == NAVIGATION_MODE.STATS then
+        GAMEPAD_GENERIC_FOOTER:Refresh({
+            data1Text = BattleScrolls.utils.GetUndecoratedDisplayName(),
+        })
+    else
+        GAMEPAD_GENERIC_FOOTER:Refresh({})
     end
 end
 
 function BattleScrolls_Journal_Gamepad:OnHiding()
     ZO_GamepadGenericHeader_Deactivate(self.header)
     BattleScrolls.journal.subheader.deactivate(self)
+    -- The generic footer is shared with other scenes — leave it clean
+    GAMEPAD_GENERIC_FOOTER:Refresh({})
 end
 
 -------------------------
@@ -653,7 +647,7 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteInstanceDialog()
     local usagePercent = limitBytes > 0 and (totalBytes / limitBytes * 100) or 0
 
     local encounterCount = #instance.encounters
-    local instanceName = string.format("%s (%d)", instance.zone, encounterCount)
+    local instanceName = string.format("%s (%d)", instance.customName or instance.zone, encounterCount)
 
     local mainText = table.concat({
         zo_strformat(GetString(BATTLESCROLLS_DELETE_INSTANCE_TEXT), instanceName),
@@ -690,7 +684,7 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteEncounterDialog()
     local limitBytes = preset.memoryMB * 1000000
     local usagePercent = limitBytes > 0 and (totalBytes / limitBytes * 100) or 0
 
-    local encounterName = encounter.displayName
+    local encounterName = encounter.customName or encounter.displayName
 
     local mainText = table.concat({
         zo_strformat(GetString(BATTLESCROLLS_DELETE_ENCOUNTER_TEXT), encounterName),
@@ -711,6 +705,60 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteEncounterDialog()
             else
                 self:RefreshList()
             end
+        end,
+    })
+end
+
+-------------------------
+-- Rename Dialogs
+-------------------------
+
+---Shows rename dialog for the targeted instance. Entering the original zone
+---name (or the same text) clears the custom name back to the default.
+function BattleScrolls_Journal_Gamepad:ShowRenameInstanceDialog()
+    local targetData = self.instanceList:GetTargetData()
+    if not targetData or not targetData.data then return end
+
+    local instance = targetData.data
+    local defaultName = instance.zone or ""
+
+    BattleScrolls.journal.dialogs.showTextInputDialog({
+        title = GetString(BATTLESCROLLS_RENAME),
+        mainText = zo_strformat(GetString(BATTLESCROLLS_RENAME_TEXT), defaultName),
+        defaultText = instance.customName or defaultName,
+        onConfirm = function(text)
+            text = zo_strtrim(text)
+            if text == "" or text == defaultName then
+                instance.customName = nil
+            else
+                instance.customName = text
+            end
+            self:RefreshList()
+        end,
+    })
+end
+
+---Shows rename dialog for the targeted encounter. Entering the original
+---display name (or the same text) clears the custom name back to the default.
+function BattleScrolls_Journal_Gamepad:ShowRenameEncounterDialog()
+    local targetData = self.encounterList:GetTargetData()
+    if not targetData or not targetData.data then return end
+
+    local encounter = targetData.data
+    local defaultName = encounter.displayName or ""
+
+    BattleScrolls.journal.dialogs.showTextInputDialog({
+        title = GetString(BATTLESCROLLS_RENAME),
+        mainText = zo_strformat(GetString(BATTLESCROLLS_RENAME_TEXT), defaultName),
+        defaultText = encounter.customName or defaultName,
+        onConfirm = function(text)
+            text = zo_strtrim(text)
+            if text == "" or text == defaultName then
+                encounter.customName = nil
+            else
+                encounter.customName = text
+            end
+            self:RefreshList()
         end,
     })
 end

@@ -12,9 +12,14 @@ BattleScrolls = BattleScrolls or {}
 local binaryStorage = {}
 BattleScrolls.binaryStorage = binaryStorage
 
-local CURRENT_VERSION = 18
+local CURRENT_VERSION = 19
 -- Exposed for the migration's legacy scan; the wire version signals this to
--- the web decoder (wire v5 frames v18 blobs, v4 framed v17)
+-- the web decoder (wire v6 frames v19 blobs, v5 framed v18). v19 is v18 plus:
+-- a 24-bit section mask (was 16), first-class ULTIMATE/RESURRECTIONS/CRUX/ZEN
+-- sections (CRUX includes conditional-generation fields), an attacker-name
+-- ref on every stored death recap attack, and the resurrections + zen share
+-- metrics appended to shared payloads. Not readable by v18 decoders -
+-- acceptable, the format never shipped outside this dev build.
 binaryStorage.CURRENT_VERSION = CURRENT_VERSION
 
 -- Import BitEncoder/BitDecoder from bitcodec module
@@ -96,9 +101,10 @@ local BITS = {
 
 local EQUIP_SLOT_COUNT = 14
 
--- v17: encounters start with a 16-bit section-presence bitmask; empty sections
--- are omitted entirely and reconstructed as defaults on decode. Bit indices
--- must never be reordered - append only.
+-- v17: encounters start with a section-presence bitmask; empty sections are
+-- omitted entirely and reconstructed as defaults on decode. Bit indices must
+-- never be reordered - append only. The mask is 16 bits through v18 and 24
+-- bits from v19 on (read width is version-gated).
 local SECTION = {
     DAMAGE = 1,
     DAMAGE_GROUP = 2,
@@ -115,6 +121,11 @@ local SECTION = {
     DEATHS = 13,
     SETUP = 14,
     WEAVING = 15,
+    -- v19+ (24-bit mask): death attacker names ride inside DEATHS itself
+    ULTIMATE = 16,
+    RESURRECTIONS = 17,
+    CRUX = 18,
+    ZEN = 19,
 }
 
 ---@param mask number
@@ -1105,6 +1116,227 @@ local function readWeaving(decoder, version, registry)
 end
 
 -- =============================================================================
+-- v19+ SECTIONS: ULTIMATE / CRUX / ZEN
+-- Everything is varints/registry refs, so the stream stays byte-aligned
+-- throughout (RESURRECTIONS is a single varint written inline).
+-- =============================================================================
+
+---Writes UltimateData
+---@param encoder BitEncoder
+---@param ult UltimateData
+---@param registry EncounterRegistry
+local function writeUltimate(encoder, ult, registry)
+    encoder:writeVarUInt(ult.startUlt or 0)
+    encoder:writeVarUInt(ult.maxUlt or 0)
+    encoder:writeVarUInt(ult.totalGained or 0)
+    encoder:writeVarUInt(ult.totalDrained or 0)
+
+    local entries = sortedAbilityEntries(registry, ult.gainByAbilityId or {})
+    local gainCount = writeVarCount(encoder, #entries)
+    local prevIndex = 0
+    for i = 1, gainCount do
+        local entry = entries[i]
+        encoder:writeVarUInt(entry.index - prevIndex - 1)
+        prevIndex = entry.index
+        ---@type UltGainBreakdown
+        local gain = entry.value
+        encoder:writeVarUInt(gain.total)
+        encoder:writeVarUInt(gain.ticks)
+        -- ticks == 0 (base bucket) has no tick stats; ticks == 1 implies
+        -- minTick == maxTick == total; only 2+ ticks carry explicit bounds
+        if gain.ticks >= 2 then
+            encoder:writeVarUInt(gain.minTick)
+            encoder:writeVarUInt(gain.maxTick)
+        end
+    end
+
+    local casts = ult.casts or {}
+    local castCount = writeVarCount(encoder, #casts)
+    local prevTimeMs = 0
+    for i = 1, castCount do
+        local cast = casts[i]
+        local timeMs = cast.timeMs or 0
+        -- Chronological order makes deltas small; clamp defensively
+        local delta = timeMs - prevTimeMs
+        if delta < 0 then delta = 0 end
+        encoder:writeVarUInt(delta)
+        prevTimeMs = prevTimeMs + delta
+        writeAbilityRef(encoder, registry, cast.abilityId)
+    end
+end
+
+---Reads UltimateData
+---@param decoder BitDecoder
+---@param registry RegistryArrays
+---@return UltimateData
+local function readUltimate(decoder, registry)
+    ---@type UltimateData
+    local ult = {
+        startUlt = decoder:readVarUInt(),
+        maxUlt = decoder:readVarUInt(),
+        totalGained = decoder:readVarUInt(),
+        totalDrained = decoder:readVarUInt(),
+        gainByAbilityId = {},
+        casts = {},
+    }
+
+    local gainCount = decoder:readVarUInt()
+    if gainCount > MAX_MAP_COUNT then gainCount = MAX_MAP_COUNT end
+    local prevIndex = 0
+    for _ = 1, gainCount do
+        local abilityId
+        abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+        local total = decoder:readVarUInt()
+        local ticks = decoder:readVarUInt()
+        local minTick, maxTick = 0, 0
+        if ticks == 1 then
+            minTick, maxTick = total, total
+        elseif ticks >= 2 then
+            minTick = decoder:readVarUInt()
+            maxTick = decoder:readVarUInt()
+        end
+        ult.gainByAbilityId[abilityId] =
+            { total = total, ticks = ticks, minTick = minTick, maxTick = maxTick }
+    end
+
+    local castCount = decoder:readVarUInt()
+    if castCount > MAX_MAP_COUNT then castCount = MAX_MAP_COUNT end
+    local prevTimeMs = 0
+    for _ = 1, castCount do
+        prevTimeMs = prevTimeMs + decoder:readVarUInt()
+        ult.casts[#ult.casts + 1] = {
+            timeMs = prevTimeMs,
+            abilityId = readAbilityRef(decoder, registry),
+        }
+    end
+
+    return ult
+end
+
+---Writes CruxData
+---@param encoder BitEncoder
+---@param crux CruxData
+---@param registry EncounterRegistry
+local function writeCrux(encoder, crux, registry)
+    encoder:writeVarUInt(crux.generatorCasts or 0)
+    encoder:writeVarUInt(crux.generatorAtFull or 0)
+    encoder:writeVarUInt(crux.spenderCasts or 0)
+    local under = crux.spenderUnder or {}
+    encoder:writeVarUInt(under[1] or 0)
+    encoder:writeVarUInt(under[2] or 0)
+    encoder:writeVarUInt(under[3] or 0)
+    encoder:writeVarUInt(crux.passiveEvents or 0)
+    encoder:writeVarUInt(crux.passiveStacks or 0)
+
+    local entries = sortedAbilityEntries(registry, crux.byAbility or {})
+    local count = writeVarCount(encoder, #entries)
+    local prevIndex = 0
+    for i = 1, count do
+        local entry = entries[i]
+        encoder:writeVarUInt(entry.index - prevIndex - 1)
+        prevIndex = entry.index
+        encoder:writeVarUInt(entry.value.casts or 0)
+        encoder:writeVarUInt(entry.value.bad or 0)
+    end
+
+    -- Conditional generation. Canonical source ids are written raw
+    -- (not registry refs) - they are display ids that may appear nowhere
+    -- else in the encounter, and there are at most a handful.
+    local conditional = crux.conditionalGains or {}
+    local condIds = {}
+    for abilityId in pairs(conditional) do
+        condIds[#condIds + 1] = abilityId
+    end
+    table.sort(condIds)
+    encoder:writeVarUInt(#condIds)
+    for i = 1, #condIds do
+        encoder:writeVarUInt(condIds[i])
+        encoder:writeVarUInt(conditional[condIds[i]])
+    end
+    encoder:writeVarUInt(crux.unattributedGains or 0)
+end
+
+---Reads CruxData
+---@param decoder BitDecoder
+---@param registry RegistryArrays
+---@return CruxData
+local function readCrux(decoder, registry)
+    ---@type CruxData
+    local crux = {
+        generatorCasts = decoder:readVarUInt(),
+        generatorAtFull = decoder:readVarUInt(),
+        spenderCasts = decoder:readVarUInt(),
+        spenderUnder = {},
+        byAbility = {},
+    }
+    crux.spenderUnder[1] = decoder:readVarUInt()
+    crux.spenderUnder[2] = decoder:readVarUInt()
+    crux.spenderUnder[3] = decoder:readVarUInt()
+    crux.passiveEvents = decoder:readVarUInt()
+    crux.passiveStacks = decoder:readVarUInt()
+
+    local count = decoder:readVarUInt()
+    if count > MAX_MAP_COUNT then count = MAX_MAP_COUNT end
+    local prevIndex = 0
+    for _ = 1, count do
+        local abilityId
+        abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
+        crux.byAbility[abilityId] = {
+            casts = decoder:readVarUInt(),
+            bad = decoder:readVarUInt(),
+        }
+    end
+
+    crux.conditionalGains = {}
+    local condCount = decoder:readVarUInt()
+    if condCount > MAX_MAP_COUNT then condCount = MAX_MAP_COUNT end
+    for _ = 1, condCount do
+        local abilityId = decoder:readVarUInt()
+        crux.conditionalGains[abilityId] = decoder:readVarUInt()
+    end
+    crux.unattributedGains = decoder:readVarUInt()
+
+    return crux
+end
+
+---Writes ZenData (per boss tag: 12 time buckets)
+---@param encoder BitEncoder
+---@param zen ZenData
+---@param registry EncounterRegistry
+local function writeZen(encoder, zen, registry)
+    local count = writeTableVarCount(encoder, zen)
+    local written = 0
+    for unitTag, buckets in pairs(zen) do
+        if written >= count then break end
+        written = written + 1
+        writeNameRef(encoder, registry, unitTag)
+        for i = 1, 12 do
+            encoder:writeVarUInt(buckets[i] or 0)
+        end
+    end
+end
+
+---Reads ZenData
+---@param decoder BitDecoder
+---@param registry RegistryArrays
+---@return ZenData
+local function readZen(decoder, registry)
+    ---@type ZenData
+    local zen = {}
+    local count = decoder:readVarUInt()
+    if count > MAX_MAP_COUNT then count = MAX_MAP_COUNT end
+    for _ = 1, count do
+        local unitTag = readNameRef(decoder, registry)
+        local buckets = {}
+        for i = 1, 12 do
+            buckets[i] = decoder:readVarUInt()
+        end
+        zen[unitTag] = buckets
+    end
+    return zen
+end
+
+-- =============================================================================
 -- EFFECTS ENCODING
 -- =============================================================================
 
@@ -1402,7 +1634,10 @@ end
 local function writeDeathRecap(encoder, recap, registry)
     local attacks = recap.attacks or {}
     if registry then
-        -- Encounter path: attack count packed into the time varint, refs interned
+        -- Encounter path: attack count packed into the time varint, refs interned.
+        -- v19: every attack carries an attacker-name ref (0 = unknown). Names
+        -- exist only in local storage - the registry-less shared path below
+        -- (what group members receive) never writes them.
         local attackCount = #attacks
         if attackCount > 7 then
             attackCount = 7
@@ -1411,6 +1646,12 @@ local function writeDeathRecap(encoder, recap, registry)
         for i = 1, attackCount do
             writeAbilityRef(encoder, registry, attacks[i].abilityId)
             encoder:writeVarUInt(attacks[i].damage)
+            local name = attacks[i].attackerName
+            if name and name ~= "" then
+                encoder:writeVarUInt(binaryStorage.internName(registry, name))
+            else
+                encoder:writeVarUInt(0)
+            end
         end
         return
     end
@@ -1433,10 +1674,17 @@ local function readDeathRecap(decoder, version, registry)
         local attackCount = packed % 8
         local attacks = {}
         for _ = 1, attackCount do
-            attacks[#attacks + 1] = {
+            local attack = {
                 abilityId = readAbilityRef(decoder, registry),
                 damage = decoder:readVarUInt(),
             }
+            if version >= 19 then
+                local nameIndex = decoder:readVarUInt()
+                if nameIndex > 0 then
+                    attack.attackerName = registry.names[nameIndex]
+                end
+            end
+            attacks[#attacks + 1] = attack
         end
         return { timeOffsetMs = timeOffsetMs, attacks = attacks }
     end
@@ -1983,6 +2231,8 @@ end
 ---@field u number Sender fight duration in ms
 ---@field h number|nil 16-bit setup hash
 ---@field r number|nil LFG_ROLE_* constant captured at match time
+---@field s number|nil Resurrection count (plain marker so richer-entry-wins upsert dedup can compare without decoding; nil when the sender's protocol carried no res field)
+---@field z number|nil Zen boss-entry count (plain V3 marker, same dedup role as s)
 ---@field c string[] Base64 chunks of the binary SharedEncounterData payload
 
 local PERCENT_BITS = 12
@@ -2115,6 +2365,31 @@ local function writeSharedPayload(encoder, data)
     else
         encoder:writeBit(false)
     end
+
+    -- v19: resurrection count appended at the end (older readers stop before
+    -- it; length framing protects the wire)
+    if data.resurrections and data.resurrections > 0 then
+        encoder:writeBit(true)
+        encoder:writeVarUInt(data.resurrections)
+    else
+        encoder:writeBit(false)
+    end
+
+    -- v19: per-boss zen delivery metrics (only bosses the debuff touched)
+    local zenByBoss = data.zenByBoss
+    if zenByBoss and #zenByBoss > 0 then
+        encoder:writeBit(true)
+        local zenCount = writeVarCount(encoder, #zenByBoss)
+        for i = 1, zenCount do
+            local entry = zenByBoss[i]
+            writeBossTag(encoder, entry.bossTag)
+            encoder:writeVarUInt(entry.tagSeq or 0)
+            encoder:writeVarUInt(entry.avgStacksTenths)
+            encoder:writeVarUInt(entry.timeAt5Ms)
+        end
+    else
+        encoder:writeBit(false)
+    end
 end
 
 ---Reads the binary payload of a SharedEncounterData.
@@ -2196,6 +2471,23 @@ local function readSharedPayload(decoder, version)
         data.deaths = { deathCount = deathCount, first = first, last = last }
     end
 
+    if version >= 19 and decoder:readBit() then
+        data.resurrections = decoder:readVarUInt()
+    end
+
+    if version >= 19 and decoder:readBit() then
+        data.zenByBoss = {}
+        local zenCount = readMapCount(decoder, version)
+        for i = 1, zenCount do
+            data.zenByBoss[i] = {
+                bossTag = readBossTag(decoder),
+                tagSeq = decoder:readVarUInt(),
+                avgStacksTenths = decoder:readVarUInt(),
+                timeAt5Ms = decoder:readVarUInt(),
+            }
+        end
+    end
+
     return data
 end
 
@@ -2213,6 +2505,8 @@ function binaryStorage.encodeSharedEntry(entry)
         u = entry.data.durationMs,
         h = entry.data.setupHash,
         r = entry.role,
+        s = entry.data.resurrections,
+        z = entry.data.zenByBoss and #entry.data.zenByBoss or nil,
         c = encoder:finish(),
     }
 end
@@ -2553,14 +2847,19 @@ local function encodeEncounterImpl(encounter, setupPooled, registry, wireDuratio
             [SECTION.DEATHS] = encounter.deaths ~= nil,
             [SECTION.SETUP] = encounter.setup ~= nil,
             [SECTION.WEAVING] = encounter.weaving ~= nil,
+            [SECTION.ULTIMATE] = encounter.ultimate ~= nil,
+            [SECTION.RESURRECTIONS] = (encounter.resurrections or 0) > 0,
+            [SECTION.CRUX] = encounter.crux ~= nil,
+            [SECTION.ZEN] = encounter.zen ~= nil,
         }
+
         local mask = 0
         for bit, isPresent in pairs(present) do
             if isPresent then
                 mask = mask + BitLShift(1, bit - 1)
             end
         end
-        encoder:writeUInt(mask, 16)
+        encoder:writeUInt(mask, 24)
 
         -- Heavy sections: damage maps and healing (yield based on data volume).
         -- Every section is byte-aligned so varint/string ops stay on the
@@ -2658,6 +2957,22 @@ local function encodeEncounterImpl(encounter, setupPooled, registry, wireDuratio
             writeWeaving(encoder, encounter.weaving, registry)
             encoder:alignToByte()
         end
+        if present[SECTION.ULTIMATE] then
+            writeUltimate(encoder, encounter.ultimate, registry)
+            encoder:alignToByte()
+        end
+        if present[SECTION.RESURRECTIONS] then
+            encoder:writeVarUInt(encounter.resurrections)
+            encoder:alignToByte()
+        end
+        if present[SECTION.CRUX] then
+            writeCrux(encoder, encounter.crux, registry)
+            encoder:alignToByte()
+        end
+        if present[SECTION.ZEN] then
+            writeZen(encoder, encounter.zen, registry)
+            encoder:alignToByte()
+        end
         flushProgress(progress)
 
         local chunks = encoder:finish()
@@ -2677,6 +2992,7 @@ local function encodeEncounterImpl(encounter, setupPooled, registry, wireDuratio
             bossTagSeqByUnitId = encounter.bossTagSeqByUnitId,
             gameVersion = encounter.gameVersion,
             playerUnitId = encounter.playerUnitId,
+            customName = encounter.customName,
         }
     end)
 end
@@ -2735,6 +3051,7 @@ function binaryStorage.decodeEncounterAsync(binaryEncounter, registry)
             bossTagSeqByUnitId = binaryEncounter.bossTagSeqByUnitId,
             gameVersion = binaryEncounter.gameVersion,
             playerUnitId = binaryEncounter.playerUnitId,
+            customName = binaryEncounter.customName,
         }
 
         -- v17+: shared entries are stored binary in _shared; decode them into
@@ -2747,9 +3064,12 @@ function binaryStorage.decodeEncounterAsync(binaryEncounter, registry)
             result.sharedData = sharedData
         end
 
-        -- v17+: section-presence bitmask; pre-v17 streams contain every section
+        -- v17+: section-presence bitmask (16 bits through v18, 24 from v19);
+        -- pre-v17 streams contain every section
         local mask = 0xFFFF
-        if _v >= 17 then
+        if _v >= 19 then
+            mask = decoder:readUInt(24)
+        elseif _v >= 17 then
             mask = decoder:readUInt(16)
         end
 
@@ -2876,6 +3196,26 @@ function binaryStorage.decodeEncounterAsync(binaryEncounter, registry)
         if _v >= 12 and hasSection(mask, SECTION.WEAVING) then
             result.weaving = readWeaving(decoder, _v, registry)
             alignSection()
+        end
+
+        -- v19+ sections (24-bit mask)
+        if _v >= 19 then
+            if hasSection(mask, SECTION.ULTIMATE) then
+                result.ultimate = readUltimate(decoder, registry)
+                alignSection()
+            end
+            if hasSection(mask, SECTION.RESURRECTIONS) then
+                result.resurrections = decoder:readVarUInt()
+                alignSection()
+            end
+            if hasSection(mask, SECTION.CRUX) then
+                result.crux = readCrux(decoder, registry)
+                alignSection()
+            end
+            if hasSection(mask, SECTION.ZEN) then
+                result.zen = readZen(decoder, registry)
+                alignSection()
+            end
         end
 
         return result

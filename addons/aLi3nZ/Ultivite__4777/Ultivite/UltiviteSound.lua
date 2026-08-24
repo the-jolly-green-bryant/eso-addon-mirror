@@ -3,7 +3,7 @@ U.Sound = U.Sound or {}
 local SS = U.Sound
 
 SS.name = "UltiviteSound"
-SS.version = "1.0.37 / Ultivite 1.0.160"
+SS.version = "1.0.41 / Ultivite 1.0.200"
 SS.savedVersion = 1
 SS.captureUpdateName = "SoundSuppressorCaptureTimer"
 SS.auditionUpdateName = "SoundSuppressorPlayAllTimer"

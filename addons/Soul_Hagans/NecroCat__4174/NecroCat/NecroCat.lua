@@ -2,7 +2,7 @@
 NecroCat = NecroCat or {
     name    = "NecroCat",
     author  = "Soul_Hagans",
-    version = "1.9.1",
+    version = "1.9.3",
 }
 
 local NC = NecroCat
@@ -17,6 +17,7 @@ ZO_CreateStringId("SI_BINDING_NAME_NC_DIFF_VETERAN", "Сложность: Отг
 ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_FOLLOW_SEND", "Отправить сигнал Follow")
 ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_FOLLOW_YES", "Follow: Телепортироваться (Принять)")
 ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_FOLLOW_NO", "Follow: Отмена")
+ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_SELF_WHISPER", "Шепот самому себе (Заметка)")
 
 ---------------------------------------------------------
 -- 1. ФУНКЦИИ ДЕЙСТВИЙ (МАУНТ, ЧАТ, ТЕЛЕПОРТ)
@@ -28,6 +29,13 @@ function NC.CastleHall()
         RequestJumpToHouse(13)
     else
         JumpToSpecificHouse("@NecroCat_Crimson", 13)
+    end
+end
+
+function NC.SelfWhisper()
+    local myId = GetDisplayName()
+    if myId and myId ~= "" then
+        StartChatInput("/w " .. myId .. " ")
     end
 end
 
@@ -310,7 +318,14 @@ end
 
 local function UpdateCastleIconPosition(newCoord)
     NC.savedVars.vrxCoord = newCoord
+    NC.CastleIcon:ClearAnchors()
     NC.CastleIcon:SetAnchor(TOPRIGHT, ZO_ChatWindow, TOPRIGHT, -newCoord, 10)
+end
+
+local function UpdateNoteIconPosition(newCoord)
+    NC.savedVars.noteXCoord = newCoord
+    NC.NoteIcon:ClearAnchors()
+    NC.NoteIcon:SetAnchor(TOPRIGHT, ZO_ChatWindow, TOPRIGHT, -newCoord, 10)
 end
 
 local function InitializeMenu()
@@ -366,8 +381,8 @@ local function InitializeMenu()
             setFunc = function(v) 
                 NC.savedVars.guildHomeVisibility = v 
                 -- Если окно гильдии сейчас открыто, мы сразу обновим видимость кнопок
-                if ZO_GuildHome_NecroCat_UpdateVisibility then 
-                    ZO_GuildHome_NecroCat_UpdateVisibility() 
+                if NC.UpdateGuildHomeVisibility then 
+                    NC.UpdateGuildHomeVisibility() 
                 end
             end,
         },
@@ -401,19 +416,35 @@ local function InitializeMenu()
             getFunc = function() return NC.savedVars.disableEnforceRole end,
             setFunc = function(v) NC.savedVars.disableEnforceRole = v end,
         },
-        { type = "header", name = "Иконка телепорта" },
+        { type = "header", name = "Иконки в чате" },
         {
             type = "checkbox",
-            name = "Показывать иконку",
+            name = "Показывать иконку телепорта",
             getFunc = function() return NC.savedVars.showIcon end,
             setFunc = function(v) NC.savedVars.showIcon = v NC.CastleIcon:SetHidden(not v) end,
         },
         {
+            type = "checkbox",
+            name = "Показывать блокнот (шепот себе)",
+            getFunc = function() return NC.savedVars.showNoteIcon end,
+            setFunc = function(v) 
+                NC.savedVars.showNoteIcon = v 
+                NC.NoteIcon:SetHidden(not v) 
+            end,
+        },
+        {
             type = "slider",
-            name = "Позиция иконки",
+            name = "Позиция иконки телепорта",
             min = 0, max = 800,
             getFunc = function() return NC.savedVars.vrxCoord end,
             setFunc = function(v) UpdateCastleIconPosition(v) end,
+        },
+        {
+            type = "slider",
+            name = "Позиция блокнота",
+            min = 0, max = 800,
+            getFunc = function() return NC.savedVars.noteXCoord end,
+            setFunc = function(v) UpdateNoteIconPosition(v) end,
         },
         { type = "header", name = "Уведомления о личке" },
         {
@@ -622,7 +653,7 @@ local function AddNecroMenuEntries(data)
     AddCustomSubMenuItem("|c66f2ffNecroCat|r", necroCatSubMenu)
 end
 
-function HookFriendsAndGuildMenu()
+local function HookFriendsAndGuildMenu()
     if not LibCustomMenu then return end
     
     local function AddCustomItems(data)
@@ -643,7 +674,9 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
 
     NC.savedVars = ZO_SavedVars:NewAccountWide("NecroCat_SV", 1, nil, {
         vrxCoord        = 136,
+        noteXCoord      = 170,
         showIcon        = true,
+        showNoteIcon    = false,
         guildHomeVisibility = 1,
         pinned          = {},
         whisperAlert    = false,
@@ -687,6 +720,18 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         SetTooltipText(InformationTooltip, "|c66f2ffNecro cat's Guildhall|r")
     end)
     NC.CastleIcon:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+    
+    NC.NoteIcon = WINDOW_MANAGER:CreateControl("NecroCatSelfWhisper", ZO_ChatWindow, CT_BUTTON)
+    NC.NoteIcon:SetDimensions(25, 25)
+    NC.NoteIcon:SetNormalTexture("EsoUI/Art/MainMenu/menuBar_journal_up.dds")
+    NC.NoteIcon:SetHidden(not NC.savedVars.showNoteIcon)
+    NC.NoteIcon:SetAnchor(TOPRIGHT, ZO_ChatWindow, TOPRIGHT, -NC.savedVars.noteXCoord, 10)
+    NC.NoteIcon:SetHandler("OnClicked", NC.SelfWhisper)
+    NC.NoteIcon:SetHandler("OnMouseEnter", function(ctrl)
+        InitializeTooltip(InformationTooltip, ctrl, TOP, 0, 5)
+        SetTooltipText(InformationTooltip, "|c66f2ffНаписать себе в личку|r")
+    end)
+    NC.NoteIcon:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
     
     NC.isReady = false
     zo_callLater(function() NC.isReady = true end, 5000) 

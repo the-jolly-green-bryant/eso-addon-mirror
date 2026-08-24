@@ -53,6 +53,7 @@ local COMBAT_VISIBILITY_KEYS = {
     npcNamesOverrideActive = true,
     playerNamesGlobalHidden = true,
     overheadPlayerInfoEnabled = true,
+    cpOnHover = true,
 }
 
 local function deepCopy(value)

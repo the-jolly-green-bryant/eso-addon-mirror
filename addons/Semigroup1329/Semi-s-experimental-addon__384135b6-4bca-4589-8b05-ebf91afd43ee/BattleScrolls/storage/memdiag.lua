@@ -39,17 +39,27 @@ BattleScrolls = BattleScrolls or {}
 ---@field historyEstimateBytes number storage:EstimateHistorySize() (the shown, fudged number)
 ---@field sections MemDiagSection[] Depth-3 breakdown, largest first
 
+---@class MemDiagProbeRow
+---@field length number String length probed
+---@field gaugePerString number Console gauge bytes charged per string (0 on PC)
+---@field heapPerString number collectgarbage bytes per string
+---@field modelPerString number What our layout model charges per string
+
 ---@class MemDiag
 ---@field lastReport MemDiagReport|nil Result of the latest measure run
+---@field probeRows MemDiagProbeRow[]|nil Result of the latest size-class probe
 ---@field busyText string|nil Localized status while an async op runs; nil when idle
 ---@field _held (string|number[])[]|nil Calibration allocations currently pinned
 ---@field _heldModelBytes number Model cost of the pinned allocations
+---@field _stringSerial number Ever-increasing suffix counter: Havok interns ALL strings (5.1 lineage), so restarting the counter per press would regenerate identical strings and later presses would allocate nothing
 ---@field _fiber Fiber<any>|nil Running diagnostic op (measure/allocate/release)
 local memDiag = {
     lastReport = nil,
+    probeRows = nil,
     busyText = nil,
     _held = nil,
     _heldModelBytes = 0,
+    _stringSerial = 0,
     _fiber = nil,
 }
 BattleScrolls.memDiag = memDiag
@@ -275,14 +285,99 @@ function memDiag.allocateStrings(onDone)
         local count = math.floor(CALIBRATION_BYTES / perString)
         local base = string.rep("m", CALIBRATION_STRING_LEN - 12)
         for i = 1, count do
-            -- The 12-digit suffix keeps every string unique (no interning,
-            -- no sharing) at the target length
-            held[#held + 1] = base .. string.format("%012d", i)
+            -- The 12-digit suffix keeps every string unique — across presses
+            -- too, via the persistent serial (see _stringSerial above)
+            memDiag._stringSerial = memDiag._stringSerial + 1
+            held[#held + 1] = base .. string.format("%012d", memDiag._stringSerial)
             if i % STRINGS_PER_YIELD == 0 then
                 LibEffect.Yield():Await()
             end
         end
         memDiag._heldModelBytes = memDiag._heldModelBytes + count * perString
+    end), onDone)
+end
+
+-- Size-class probe ---------------------------------------------------------
+-- Havok Script allocates through hkFreeListMemorySystem, whose allocators
+-- (read out of the client binary) both work in 16-byte steps: requests up to
+-- 640 bytes come from binned free lists ((size+15)/16 selects the bin),
+-- larger ones from hkLargeBlockAllocator's coalescing list. So our 240-char
+-- chunk strings should cost ~288 bytes and the model should be within a few
+-- percent. These lengths bracket the 641-byte boundary and the 1996-char
+-- chunk size we reduced from, to confirm that on the real console allocator
+-- rather than trusting the disassembly.
+local PROBE_LENGTHS = { 120, 200, 240, 260, 300, 380, 500, 590, 620, 1996 }
+
+-- Allocate a roughly constant volume at every length: the console gauge reads
+-- in 0.01 MB steps, so each step needs enough bulk to be read off it
+local PROBE_TARGET_BYTES = 2 * 1024 * 1024
+
+-- The pool APIs report megabytes; pools are sized in binary MB
+local MB_BYTES = 1024 * 1024
+
+---@return number bytes Console add-on memory gauge, 0 where unavailable (PC)
+function memDiag.gaugeBytes()
+    if GetTotalUserAddOnMemoryPoolUsageMB then
+        return GetTotalUserAddOnMemoryPoolUsageMB() * MB_BYTES
+    end
+    return 0
+end
+
+---Builds one unique string of exactly `length` characters
+---@param length number
+---@return string
+local function uniqueString(length)
+    memDiag._stringSerial = memDiag._stringSerial + 1
+    return string.rep("m", length - 12) .. string.format("%012d", memDiag._stringSerial)
+end
+
+---Measures marginal per-string cost at one length: allocate a pinned batch,
+---settle GC, sample, then drop it and settle again so the next length starts
+---from the same footing.
+---@param length number
+---@return Effect Effect resolving to MemDiagProbeRow
+local function probeLengthEffect(length)
+    return LibEffect.Async(function()
+        BattleScrolls.gc:CollectFullAsync():Await()
+        local gaugeBefore, heapBefore = memDiag.gaugeBytes(), memDiag.luaHeapBytes()
+
+        local modelPerString = 32 + length + 1 + 16
+        local count = math.max(200, math.floor(PROBE_TARGET_BYTES / modelPerString))
+        local batch = {}
+        for i = 1, count do
+            batch[i] = uniqueString(length)
+            if i % STRINGS_PER_YIELD == 0 then
+                LibEffect.Yield():Await()
+            end
+        end
+
+        BattleScrolls.gc:CollectFullAsync():Await()
+        local gaugeAfter, heapAfter = memDiag.gaugeBytes(), memDiag.luaHeapBytes()
+        -- batch stays reachable until here on purpose
+        local batchSize = #batch
+        batch = nil
+        BattleScrolls.gc:CollectFullAsync():Await()
+
+        ---@type MemDiagProbeRow
+        return {
+            length = length,
+            gaugePerString = (gaugeAfter - gaugeBefore) / batchSize,
+            heapPerString = (heapAfter - heapBefore) / batchSize,
+            modelPerString = modelPerString,
+        }
+    end)
+end
+
+---Runs the size-class probe across PROBE_LENGTHS; result lands in probeRows.
+---@param onDone fun()
+function memDiag.probeStringSizes(onDone)
+    runOp(GetString(BATTLESCROLLS_MEMDIAG_BUSY), LibEffect.Async(function()
+        ---@type MemDiagProbeRow[]
+        local rows = {}
+        for _, length in ipairs(PROBE_LENGTHS) do
+            rows[#rows + 1] = probeLengthEffect(length):Await()
+            memDiag.probeRows = rows -- publish incrementally: a forced reload mid-run still leaves usable data
+        end
     end), onDone)
 end
 

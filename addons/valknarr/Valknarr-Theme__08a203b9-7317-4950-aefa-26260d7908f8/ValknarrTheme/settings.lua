@@ -20,6 +20,16 @@ function Settings:TryLibAddonMenu()
     if type(lam.RegisterAddonPanel) ~= "function" or type(lam.RegisterOptionControls) ~= "function" then
         return false
     end
+    local function SetSettingsOpen(open)
+        if open then
+            _G.ValknarrThemeSettingsOpen = true
+        else
+            _G.ValknarrThemeSettingsOpen = nil
+        end
+        if ValknarrTheme and ValknarrTheme.SyncHudVisibility then
+            ValknarrTheme:SyncHudVisibility()
+        end
+    end
     local panelOk = pcall(lam.RegisterAddonPanel, lam, PANEL_ID, {
         type = "panel",
         name = "Valknarr Theme",
@@ -28,6 +38,12 @@ function Settings:TryLibAddonMenu()
         version = ValknarrThemeVersion or "0.0.0",
         registerForRefresh = true,
         registerForDefaults = true,
+        opened = function()
+            SetSettingsOpen(true)
+        end,
+        closed = function()
+            SetSettingsOpen(false)
+        end,
     })
     if not panelOk then
         return false
@@ -36,14 +52,15 @@ function Settings:TryLibAddonMenu()
         {
             type = "dropdown",
             name = "Health / Magicka / Stamina",
-            tooltip = "Clean is numbers on a solid bar. Metal stitches three painted tiles and draws the fill in the joined hole.",
-            choices = { "Default (vanilla)", "Clean", "Metal" },
-            choicesValues = { Format.THEME_DEFAULT, Format.THEME_CLEAN, Format.THEME_METAL },
+            tooltip = "Clean is numbers on a solid bar. Steel / Bronze stitch three tiles; fill shows through the transparent hole.",
+            choices = { "Default (vanilla)", "Clean", "Steel bevel", "Bronze" },
+            choicesValues = { Format.THEME_DEFAULT, Format.THEME_CLEAN, Format.THEME_STEEL, Format.THEME_BRONZE },
             getFunc = function()
                 return Store:ThemeId()
             end,
             setFunc = function(value)
                 Store:SetThemeId(value)
+                _G.ValknarrThemeSettingsOpen = true
                 ApplyLive()
             end,
             default = Format.THEME_CLEAN,
@@ -51,17 +68,48 @@ function Settings:TryLibAddonMenu()
         {
             type = "dropdown",
             name = "Werewolf meter",
-            tooltip = "Wolf 1 Nordic, 2 snarling + spikes, 3 steel, 4 snarling + Nordic ring.",
-            choices = { "Vanilla", "Clean", "Wolf 1 (Nordic)", "Wolf 2 (snarl)", "Wolf 3 (steel)", "Wolf 4 (snarl+Nordic)" },
-            choicesValues = { Format.WOLF_VANILLA, Format.WOLF_CLEAN, Format.WOLF_1, Format.WOLF_2, Format.WOLF_3, Format.WOLF_4 },
+            tooltip = "Named skins are one inverted-L plate: Ult in the bar. Steel fills the globe with liquid; bronze paints Fury on the ring.",
+            choices = { "Vanilla", "Clean", "Steel bevel", "Bronze" },
+            choicesValues = { Format.WOLF_VANILLA, Format.WOLF_CLEAN, Format.WOLF_STEEL, Format.WOLF_BRONZE },
             getFunc = function()
                 return Store:WolfId()
             end,
             setFunc = function(value)
                 Store:SetWolfId(value)
+                _G.ValknarrThemeSettingsOpen = true
                 ApplyLive()
             end,
             default = Format.WOLF_CLEAN,
+        },
+        {
+            type = "checkbox",
+            name = "Show numbers on bars",
+            tooltip = "Off hides H/M/S and Ult / Fury text. The fills still move.",
+            getFunc = function()
+                return Store:GetSetting("showBarText")
+            end,
+            setFunc = function(value)
+                Store:SetSetting("showBarText", value)
+                _G.ValknarrThemeSettingsOpen = true
+                ApplyLive()
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = "Preview HUD in this menu",
+            tooltip = "Show Health / Magicka / Stamina here so you can judge skins and text. The map still hides them.",
+            getFunc = function()
+                return Store:GetSetting("previewInSettings")
+            end,
+            setFunc = function(value)
+                Store:SetSetting("previewInSettings", value)
+                if value then
+                    _G.ValknarrThemeSettingsOpen = true
+                end
+                ApplyLive()
+            end,
+            default = true,
         },
         {
             type = "checkbox",
@@ -89,7 +137,7 @@ function Settings:RegisterLibraries()
         if lam then
             Log:Always("Theme also in Add-On Settings (LibAddonMenu)")
         else
-            Log:Always("Theme: /vtheme hud clean|metal|default   /vtheme wolf clean|wolf1-4|vanilla")
+            Log:Always("Theme: /vtheme hud clean|steel|bronze|default   /vtheme wolf clean|steel|bronze|vanilla")
         end
     end
 end
@@ -99,7 +147,13 @@ function Settings:HandleSlash(args)
     text = string.lower(text)
     if text == "" or text == "status" then
         if Log then
-            Log:Always("hud=" .. Store:ThemeId() .. "  wolf=" .. Store:WolfId() .. "  (/vtheme help)")
+            Log:Always(
+                "hud=" .. Store:ThemeId()
+                .. "  wolf=" .. Store:WolfId()
+                .. "  text=" .. (Store:GetSetting("showBarText") and "on" or "off")
+                .. "  preview=" .. (Store:GetSetting("previewInSettings") and "on" or "off")
+                .. "  (/vtheme help)"
+            )
         end
         return
     end
@@ -108,17 +162,18 @@ function Settings:HandleSlash(args)
             Log:Always("/vtheme                show hud + wolf skins")
             Log:Always("/vtheme hud default    native H/M/S")
             Log:Always("/vtheme hud clean      readable Valknarr bars")
-            Log:Always("/vtheme hud metal      three tiles stitched, fill in the hole")
+            Log:Always("/vtheme hud steel      Steel bevel frame")
+            Log:Always("/vtheme hud bronze     Bronze frame")
             Log:Always("/vtheme wolf vanilla   native werewolf bar")
             Log:Always("/vtheme wolf clean     current Valknarr widget")
-            Log:Always("/vtheme wolf wolf1     Nordic medallion")
-            Log:Always("/vtheme wolf wolf2     snarling wolf + spiked ring")
-            Log:Always("/vtheme wolf wolf3     steel medallion")
-            Log:Always("/vtheme wolf wolf4     snarling wolf + Nordic ring")
+            Log:Always("/vtheme wolf steel     Steel bevel plate, liquid fury globe")
+            Log:Always("/vtheme wolf bronze    Bronze plate")
             Log:Always("/vtheme default        hud default (alias)")
             Log:Always("/vtheme clean          hud clean (alias: valknarr)")
-            Log:Always("/vtheme metal          hud metal")
+            Log:Always("/vtheme steel|bronze   hud shortcuts")
             Log:Always("/vtheme toggle         hud default <-> clean")
+            Log:Always("/vtheme text on|off    show or hide numbers on the bars")
+            Log:Always("/vtheme preview on|off show H/M/S while Theme settings are open")
             Log:Always("/vtheme diag           snapshot for bug reports (always prints)")
             Log:Always("/vtheme probe          bind wolf / square tile / 256x64 strip (twice)")
             Log:Always("/vtheme log on|off     verbose chat logging (saved)")
@@ -158,6 +213,39 @@ function Settings:HandleSlash(args)
         ApplyLive()
         return
     end
+    if text == "text" or text == "numbers" or text == "text status" then
+        if Log then
+            Log:Always("bar text = " .. (Store:GetSetting("showBarText") and "on" or "off"))
+        end
+        return
+    end
+    if text == "text on" or text == "texton" or text == "numbers on" then
+        Store:SetSetting("showBarText", true)
+        ApplyLive()
+        return
+    end
+    if text == "text off" or text == "textoff" or text == "numbers off" then
+        Store:SetSetting("showBarText", false)
+        ApplyLive()
+        return
+    end
+    if text == "preview" or text == "preview status" then
+        if Log then
+            Log:Always("settings preview = " .. (Store:GetSetting("previewInSettings") and "on" or "off"))
+        end
+        return
+    end
+    if text == "preview on" or text == "previewon" then
+        Store:SetSetting("previewInSettings", true)
+        _G.ValknarrThemeSettingsOpen = true
+        ApplyLive()
+        return
+    end
+    if text == "preview off" or text == "previewoff" then
+        Store:SetSetting("previewInSettings", false)
+        ApplyLive()
+        return
+    end
     local hudSkin = string.match(text, "^hud%s+(%S+)$")
     if hudSkin then
         if hudSkin == "vanilla" or hudSkin == "native" or hudSkin == "off" then
@@ -192,7 +280,9 @@ function Settings:HandleSlash(args)
         ApplyLive()
         return
     end
-    if text == "metal" or text == "metal1" or text == "metal2" or text == "metal3" or text == "metal4" then
+    if text == "nordic" or text == "steel" or text == "bronze"
+        or text == "metal" or text == "metal1" or text == "metal2" or text == "metal3" or text == "metal4"
+        or text == "a" or text == "b" or text == "c" then
         Store:SetThemeId(text)
         ApplyLive()
         return

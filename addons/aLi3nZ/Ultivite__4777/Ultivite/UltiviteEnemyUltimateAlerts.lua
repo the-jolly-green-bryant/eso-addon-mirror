@@ -14,7 +14,8 @@ local UPDATE_MS = 50
 -- damage received by the player is emitted as ability 17879. The latter is the
 -- live combat-event signature used by the maintained DKCorrosiveAlert addon.
 local CORROSIVE_EFFECT_ID = 33852
-local CORROSIVE_DURATION_MS = 3000
+local CORROSIVE_DURATION_MS = 10000
+local CORROSIVE_TICK_GRACE_MS = 1500
 local CORROSIVE_DAMAGE_IDS = {
     [17879] = true,
 }
@@ -31,6 +32,8 @@ A.registeredEvents = A.registeredEvents or {}
 A.updateRunning = false
 A.initialized = false
 A.previewKind = nil
+A.globalDragging = false
+A.targetDragging = false
 A.globalRoot = nil
 A.targetRoot = nil
 A.globalRows = A.globalRows or {}
@@ -78,7 +81,7 @@ local function getSettings()
 end
 
 local function requestSave()
-    if U.RequestSettingsSave then U.RequestSettingsSave() end
+    if U.RequestSettingsSave then U.RequestSettingsSave(true) end
 end
 
 local function diagnostic(message)
@@ -92,23 +95,47 @@ local function getTargetOffsets()
     return zo_clamp(x, -800, 800), zo_clamp(y, -500, 500)
 end
 
+local function getGlobalPositionLimits()
+    local width = GuiRoot and GuiRoot.GetWidth and (tonumber(GuiRoot:GetWidth()) or 0) or 0
+    local height = GuiRoot and GuiRoot.GetHeight and (tonumber(GuiRoot:GetHeight()) or 0) or 0
+    local maxX = math.max(800, math.floor((width * 0.5) - 40))
+    local maxY = math.max(500, math.floor(height - 90))
+    return maxX, maxY
+end
+
 local function getGlobalOffsets()
     local sv = getSettings()
     local x = tonumber(sv and sv.enemyUltimateAlertGlobalX) or 0
     local y = tonumber(sv and sv.enemyUltimateAlertGlobalY) or 165
-    return zo_clamp(x, -800, 800), zo_clamp(y, 0, 500)
+    local maxX, maxY = getGlobalPositionLimits()
+    return zo_clamp(x, -maxX, maxX), zo_clamp(y, 0, maxY)
 end
 
+-- Warning artwork must not be resolved from combat-event IDs.  Corrosive
+-- detection uses effect/damage IDs that are not guaranteed to own the slotted
+-- skill artwork, which can make GetAbilityIcon return ESO's question-mark icon.
+-- Reference a known in-client Corrosive Armor texture directly instead. ESO-Hub
+-- uses a web-export filename for the Update 49 image which is not a valid
+-- in-client DDS path; the packaged ESO texture remains ability_dragonknight_018_b.
+local OFFICIAL_ULTIMATE_ICONS = {
+    corrosive = "EsoUI/Art/Icons/ability_dragonknight_018_b.dds",
+    onslaught = "EsoUI/Art/Icons/ability_2handed_006_a.dds",
+}
+
 local function resolveIcon(kind)
+    -- Prefer ESO's live skill metadata when it resolves to a real texture. Some
+    -- combat/effect IDs return icon_missing.dds instead of the slotted skill art,
+    -- so Corrosive falls back to the known packaged in-client texture.
     local abilityId = kind == "corrosive" and CORROSIVE_EFFECT_ID or 83229
-    if GetAbilityIcon then
-        local ok, icon = pcall(GetAbilityIcon, abilityId)
-        if ok and icon and icon ~= "" then return icon end
+    if type(GetAbilityIcon) == "function" then
+        local ok, value = pcall(GetAbilityIcon, abilityId)
+        local icon = ok and tostring(value or "") or ""
+        local lowered = lower(icon)
+        if icon ~= "" and not lowered:find("icon_missing", 1, true) and not lowered:find("question", 1, true) then
+            return icon
+        end
     end
-    if kind == "corrosive" then
-        return "EsoUI/Art/Icons/ability_dragonknight_018_b.dds"
-    end
-    return "EsoUI/Art/Icons/icon_missing.dds"
+    return OFFICIAL_ULTIMATE_ICONS[kind] or OFFICIAL_ULTIMATE_ICONS.onslaught
 end
 
 local function createIconSlot(parent, name, kind)
@@ -193,8 +220,10 @@ function A.ApplyLayout()
     end
     if A.globalRoot then
         A.globalRoot:SetDimensions(rootWidth, math.max(90, nextY))
-        A.globalRoot:ClearAnchors()
-        A.globalRoot:SetAnchor(TOP, GuiRoot, TOP, globalX, globalY)
+        if A.globalDragging ~= true then
+            A.globalRoot:ClearAnchors()
+            A.globalRoot:SetAnchor(TOP, GuiRoot, TOP, globalX, globalY)
+        end
     end
 end
 
@@ -338,7 +367,17 @@ local function recordAlert(kind, sourceName, sourceUnitId, abilityId)
         if existing.sourceName == "" then existing.sourceName = cleanName(sourceName) end
         if existing.sourceNameKey == "" then existing.sourceNameKey = nameKey(sourceName) end
         if not existing.sourceUnitId then existing.sourceUnitId = validUnitId(sourceUnitId) end
-        existing.expiresAtMs = now + duration
+        if kind == "corrosive" then
+            -- Corrosive's periodic damage arrives once per second. Do not reset a
+            -- full ten-second timer on every tick or the warning can outlive the
+            -- Ultimate by almost its full duration. Keep the original ten-second
+            -- estimate and only add a short grace near the end while fresh ticks
+            -- prove the effect is still active. Reticle buff data below replaces
+            -- this estimate with ESO's exact endTime whenever it is available.
+            existing.expiresAtMs = math.max(tonumber(existing.expiresAtMs) or 0, now + CORROSIVE_TICK_GRACE_MS)
+        else
+            existing.expiresAtMs = now + duration
+        end
     end
 
     diagnostic(string.format("Enemy ultimate %s source=%s id=%s ability=%s", kind, tostring(existing.sourceName), tostring(existing.sourceUnitId), tostring(abilityId)))
@@ -530,25 +569,98 @@ local function updateTargetSlot(slot, entry, previewSeconds)
     return true
 end
 
+local function setMouseEnabled(control, enabled)
+    if control and control.SetMouseEnabled then control:SetMouseEnabled(enabled == true) end
+end
+
+local function setGlobalPreviewMouseEnabled(enabled)
+    setMouseEnabled(A.globalRoot, enabled)
+    for _, row in pairs(A.globalRows or {}) do
+        setMouseEnabled(row, enabled)
+        setMouseEnabled(row and row.icon, enabled)
+        setMouseEnabled(row and row.label, enabled)
+    end
+end
+
+local function setTargetPreviewMouseEnabled(enabled)
+    setMouseEnabled(A.targetRoot, enabled)
+    for _, slot in pairs(A.targetSlots or {}) do
+        setMouseEnabled(slot, enabled)
+        setMouseEnabled(slot and slot.backdrop, enabled)
+        setMouseEnabled(slot and slot.icon, enabled)
+        setMouseEnabled(slot and slot.timer, enabled)
+    end
+end
+
+local function saveGlobalRootPosition()
+    local sv = getSettings()
+    if not sv or not A.globalRoot or not GuiRoot then return false end
+    local cx = A.globalRoot.GetCenter and select(1, A.globalRoot:GetCenter()) or nil
+    local gx = GuiRoot.GetCenter and select(1, GuiRoot:GetCenter()) or nil
+    local top = A.globalRoot.GetTop and A.globalRoot:GetTop() or nil
+    local guiTop = GuiRoot.GetTop and GuiRoot:GetTop() or 0
+    if not cx or not gx or not top then return false end
+    local maxX, maxY = getGlobalPositionLimits()
+    sv.enemyUltimateAlertGlobalX = zo_clamp(zo_round(cx - gx), -maxX, maxX)
+    sv.enemyUltimateAlertGlobalY = zo_clamp(zo_round(top - (guiTop or 0)), 0, maxY)
+    requestSave()
+    return true
+end
+
+local function saveTargetRootPosition()
+    local sv = getSettings()
+    if not sv or not A.targetRoot or not GuiRoot then return false end
+    local cx, cy = A.targetRoot:GetCenter()
+    local gx, gy = GuiRoot:GetCenter()
+    if not cx or not cy or not gx or not gy then return false end
+    sv.enemyUltimateAlertTargetX = zo_clamp(zo_round(cx - gx), -800, 800)
+    sv.enemyUltimateAlertTargetY = zo_clamp(zo_round(cy - gy), -500, 500)
+    requestSave()
+    return true
+end
+
+function A.StopEditing(saveCurrentPosition)
+    -- Hard-stop both native move states and all alert mouse surfaces. This path
+    -- is safe to call repeatedly and is used when settings close even if an
+    -- OnMouseUp event was lost while the user was dragging.
+    if A.globalRoot and A.globalRoot.StopMovingOrResizing then
+        pcall(A.globalRoot.StopMovingOrResizing, A.globalRoot)
+    end
+    if A.targetRoot and A.targetRoot.StopMovingOrResizing then
+        pcall(A.targetRoot.StopMovingOrResizing, A.targetRoot)
+    end
+    if saveCurrentPosition == true then
+        saveGlobalRootPosition()
+        saveTargetRootPosition()
+    end
+    A.globalDragging = false
+    A.targetDragging = false
+    setGlobalPreviewMouseEnabled(false)
+    setTargetPreviewMouseEnabled(false)
+    return true
+end
+
 function A.UpdateTargetMarker()
     if not A.targetRoot then return end
     local preview = A.previewKind
     if preview then
-        local showCorrosive = preview == "corrosive"
-        local showOnslaught = preview == "onslaught"
-        updateTargetSlot(A.targetSlots.corrosive, nil, showCorrosive and 3.0 or nil)
+        local showCorrosive = preview == "corrosive" or preview == "all"
+        local showOnslaught = preview == "onslaught" or preview == "all"
+        updateTargetSlot(A.targetSlots.corrosive, nil, showCorrosive and 10.0 or nil)
         updateTargetSlot(A.targetSlots.onslaught, nil, showOnslaught and 8.0 or nil)
-        local targetX, targetY = getTargetOffsets()
-        A.targetRoot:ClearAnchors()
-        A.targetRoot:SetAnchor(CENTER, GuiRoot, CENTER, targetX, targetY)
+        if A.targetDragging ~= true then
+            local targetX, targetY = getTargetOffsets()
+            A.targetRoot:ClearAnchors()
+            A.targetRoot:SetAnchor(CENTER, GuiRoot, CENTER, targetX, targetY)
+        end
         A.targetRoot:SetMovable(true)
         A.targetRoot:SetHidden(false)
-        A.targetRoot:SetMouseEnabled(true)
+        setTargetPreviewMouseEnabled(true)
         return
     end
 
     A.targetRoot:SetMovable(false)
-    A.targetRoot:SetMouseEnabled(false)
+    setTargetPreviewMouseEnabled(false)
     local target = getReticleTarget()
     if not target then
         updateTargetSlot(A.targetSlots.corrosive, nil, nil)
@@ -583,10 +695,27 @@ end
 function A.UpdateGlobalAlert()
     if not A.globalRoot then return end
     if A.previewKind then
-        A.globalRoot:SetHidden(true)
+        for _, kind in ipairs({ "corrosive", "onslaught" }) do
+            local row = A.globalRows[kind]
+            if row then
+                local show = A.previewKind == "all" or kind == A.previewKind
+                if show then
+                    local title = kind == "corrosive" and "CORROSIVE ARMOR" or "ONSLAUGHT"
+                    row.label:SetText(string.format("%s   %.1fs  DRAG TO MOVE  •  WHEEL TO RESIZE", title, kind == "corrosive" and 10.0 or 8.0))
+                    row:SetHidden(false)
+                else
+                    row:SetHidden(true)
+                end
+            end
+        end
+        A.globalRoot:SetMovable(true)
+        setGlobalPreviewMouseEnabled(true)
+        A.globalRoot:SetHidden(false)
         return
     end
 
+    A.globalRoot:SetMovable(false)
+    setGlobalPreviewMouseEnabled(false)
     local sv = getSettings()
     local now = nowMs()
     local visible = false
@@ -681,7 +810,8 @@ function A.SetIconSize(value)
 end
 
 function A.SetPreviewKind(kind)
-    if kind ~= "corrosive" and kind ~= "onslaught" then kind = nil end
+    if kind ~= "corrosive" and kind ~= "onslaught" and kind ~= "all" then kind = nil end
+    if kind == nil then A.StopEditing(false) end
     A.previewKind = kind
     if kind then A.StartUpdateLoop() end
     A.Update(true)
@@ -770,41 +900,137 @@ function A.Initialize()
         A.Update(true)
     end)
 
-    if A.targetRoot then
-        A.targetRoot:SetHandler("OnMouseDown", function(self, button)
+    if A.globalRoot then
+        local function canEditAlerts()
             local q = U.QuickMenu
-            if button ~= MOUSE_BUTTON_INDEX_LEFT or not q or q.previewEnabled ~= true or not A.previewKind then return end
-            if q.BeginPreviewHudInteraction then q.BeginPreviewHudInteraction() end
-            self:SetMovable(true)
-            self:StartMoving()
-        end)
-        local function saveTargetPosition(self)
-            local q = U.QuickMenu
-            if q and q.previewEnabled == true and A.previewKind then
-                self:StopMovingOrResizing()
-                local sv = getSettings()
-                local cx, cy = self:GetCenter()
-                local gx, gy = GuiRoot:GetCenter()
-                if sv and cx and cy and gx and gy then
-                    sv.enemyUltimateAlertTargetX = zo_clamp(zo_round(cx - gx), -800, 800)
-                    sv.enemyUltimateAlertTargetY = zo_clamp(zo_round(cy - gy), -500, 500)
-                    requestSave()
-                end
-                if q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
-                A.UpdateTargetMarker()
-            end
+            return q and q.previewEnabled == true and A.previewKind ~= nil
         end
-        A.targetRoot:SetHandler("OnMouseUp", function(self, button)
-            if button == MOUSE_BUTTON_INDEX_LEFT then saveTargetPosition(self) end
-        end)
-        A.targetRoot:SetHandler("OnMoveStop", function(self) saveTargetPosition(self) end)
-        A.targetRoot:SetHandler("OnMouseWheel", function(_, delta)
+
+        local function saveGlobalPosition()
+            saveGlobalRootPosition()
+            A.ApplyLayout()
+            A.UpdateGlobalAlert()
+        end
+
+        local function beginGlobalDrag(button)
+            if button ~= MOUSE_BUTTON_INDEX_LEFT or not canEditAlerts() then return end
             local q = U.QuickMenu
-            if not q or q.previewEnabled ~= true or q.resizeEnabled ~= true or not A.previewKind or delta == 0 then return end
+            if q and q.BeginPreviewHudInteraction then q.BeginPreviewHudInteraction() end
+            A.globalDragging = true
+            A.globalRoot:SetMovable(true)
+            A.globalRoot:StartMoving()
+        end
+
+        local function finishGlobalDrag(button)
+            if button ~= nil and button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+            if A.globalDragging ~= true then return end
+            A.globalDragging = false
+            -- Clear the engine drag state before re-anchoring to the saved offset.
+            if A.globalRoot.StopMovingOrResizing then A.globalRoot:StopMovingOrResizing() end
+            saveGlobalPosition()
+            local q = U.QuickMenu
+            if q and q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+        end
+
+        local function resizeAlerts(delta)
+            local q = U.QuickMenu
+            if not canEditAlerts() or not q or q.resizeEnabled ~= true or delta == 0 then return end
             local sv = getSettings()
             local current = tonumber(sv and sv.enemyUltimateAlertIconSize) or 54
+            if q.BeginPreviewHudInteraction then q.BeginPreviewHudInteraction() end
             A.SetIconSize(current + (delta > 0 and 2 or -2))
+            if q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+        end
+
+        local function bindGlobalDragSurface(surface)
+            if not surface or surface.ultiviteEnemyAlertDragBound == true then return end
+            surface.ultiviteEnemyAlertDragBound = true
+            surface:SetHandler("OnMouseDown", function(_, button) beginGlobalDrag(button) end)
+            surface:SetHandler("OnMouseUp", function(_, button) finishGlobalDrag(button) end)
+            surface:SetHandler("OnMouseWheel", function(_, delta) resizeAlerts(delta) end)
+        end
+
+        A.globalRoot:SetHandler("OnMoveStop", function()
+            if A.globalDragging == true then
+                A.globalDragging = false
+                saveGlobalPosition()
+                local q = U.QuickMenu
+                if q and q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+            end
         end)
+
+        bindGlobalDragSurface(A.globalRoot)
+        for _, row in pairs(A.globalRows or {}) do
+            bindGlobalDragSurface(row)
+            bindGlobalDragSurface(row and row.icon)
+            bindGlobalDragSurface(row and row.label)
+        end
+    end
+
+    if A.targetRoot then
+        local function canEditAlerts()
+            local q = U.QuickMenu
+            return q and q.previewEnabled == true and A.previewKind ~= nil
+        end
+
+        local function saveTargetPosition()
+            saveTargetRootPosition()
+            A.UpdateTargetMarker()
+        end
+
+        local function beginTargetDrag(button)
+            if button ~= MOUSE_BUTTON_INDEX_LEFT or not canEditAlerts() then return end
+            local q = U.QuickMenu
+            if q and q.BeginPreviewHudInteraction then q.BeginPreviewHudInteraction() end
+            A.targetDragging = true
+            A.targetRoot:SetMovable(true)
+            A.targetRoot:StartMoving()
+        end
+
+        local function finishTargetDrag(button)
+            if button ~= nil and button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+            if A.targetDragging ~= true then return end
+            A.targetDragging = false
+            if A.targetRoot.StopMovingOrResizing then A.targetRoot:StopMovingOrResizing() end
+            saveTargetPosition()
+            local q = U.QuickMenu
+            if q and q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+        end
+
+        local function resizeAlerts(delta)
+            local q = U.QuickMenu
+            if not canEditAlerts() or not q or q.resizeEnabled ~= true or delta == 0 then return end
+            local sv = getSettings()
+            local current = tonumber(sv and sv.enemyUltimateAlertIconSize) or 54
+            if q.BeginPreviewHudInteraction then q.BeginPreviewHudInteraction() end
+            A.SetIconSize(current + (delta > 0 and 2 or -2))
+            if q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+        end
+
+        local function bindTargetDragSurface(surface)
+            if not surface or surface.ultiviteEnemyAlertDragBound == true then return end
+            surface.ultiviteEnemyAlertDragBound = true
+            surface:SetHandler("OnMouseDown", function(_, button) beginTargetDrag(button) end)
+            surface:SetHandler("OnMouseUp", function(_, button) finishTargetDrag(button) end)
+            surface:SetHandler("OnMouseWheel", function(_, delta) resizeAlerts(delta) end)
+        end
+
+        A.targetRoot:SetHandler("OnMoveStop", function()
+            if A.targetDragging == true then
+                A.targetDragging = false
+                saveTargetPosition()
+                local q = U.QuickMenu
+                if q and q.EndPreviewHudInteraction then q.EndPreviewHudInteraction() end
+            end
+        end)
+
+        bindTargetDragSurface(A.targetRoot)
+        for _, slot in pairs(A.targetSlots or {}) do
+            bindTargetDragSurface(slot)
+            bindTargetDragSurface(slot and slot.backdrop)
+            bindTargetDragSurface(slot and slot.icon)
+            bindTargetDragSurface(slot and slot.timer)
+        end
     end
 
     A.Update(true)

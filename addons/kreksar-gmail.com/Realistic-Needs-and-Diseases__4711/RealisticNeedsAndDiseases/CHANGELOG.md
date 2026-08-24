@@ -4,6 +4,215 @@ Full version history. See README.md for current features, installation, and usag
 
 ---
 
+### 0.19.23
+- **Real icon art replaces the placeholder icons.** The 9 files in
+  `textures/icons/` (Hunger.dds, Thirst.dds, Fatigue.dds, Drunkenness.dds,
+  Frostbite.dds, Heatstroke.dds, MagesBane.dds, FightersBane.dds,
+  ThiefsBane.dds) — previously all just copies of the ThiefsBane.dds
+  overlay texture — are now the author's own AI-generated icon art.
+  No code changes needed; `RN.STATUS_ICON_PATHS` already pointed at these
+  exact filenames.
+- **Added a "Status icon art credit" section to README.md**, crediting
+  [url=https://perchance.org/ai-icon-generator]Perchance AI Icon
+  Generator[/url] alongside the existing overlay-art credit section for
+  the disease overlay textures.
+
+---
+
+### 0.19.22
+- **Removed the "Badge & Pip" and simple color-tint icon displays,
+  keeping only the transparency-based one.** Of the 3 icon display
+  variants added in 0.19.18-0.19.20, only
+  `RealisticNeedsAndDiseases_StatusIconsTransparency.lua` remains —
+  `RealisticNeedsAndDiseases_StatusIcons.lua` and
+  `RealisticNeedsAndDiseases_StatusIconsSimple.lua` are deleted, along with
+  their Settings checkboxes, reset-position buttons, and SavedVariables
+  fields (`statusIconsEnabled`, `statusIconsSimpleEnabled`, and their
+  associated position fields). The remaining display's Settings checkbox
+  is renamed from "Use icon-based status display (transparency)" to just
+  "Use icon-based status display" now that it's the only one.
+  `RN.STATUS_ICON_PATHS` (previously defined in the now-deleted
+  StatusIcons.lua) moved into StatusIconsTransparency.lua directly, since
+  it was the last remaining consumer.
+  - `textures/icons/` (the bundled ThiefsBane.dds-copy placeholder icons)
+    is unchanged — the transparency display already used all 9 files.
+
+---
+
+### 0.19.21
+- **Placeholder icon art is now bundled with the addon instead of pointing
+  at ESO's built-in `icon_missing.dds`.** New `textures/icons/` folder with
+  9 files (`Hunger.dds`, `Thirst.dds`, `Fatigue.dds`, `Drunkenness.dds`,
+  `Frostbite.dds`, `Heatstroke.dds`, `MagesBane.dds`, `FightersBane.dds`,
+  `ThiefsBane.dds`) — each currently just a copy of the existing
+  `textures/overlays/ThiefsBane.dds` overlay texture, since no real icon
+  art exists yet. `RN.STATUS_ICON_PATHS` in `StatusIcons.lua` (shared by
+  all 3 icon display variants) now points at these bundled files using the
+  same `RealisticNeedsAndDiseases/textures/...` path convention the
+  overlay textures already use, rather than a generic ESO fallback icon.
+  Swap the 9 files in `textures/icons/` for real generated art later — no
+  code changes needed.
+- **Removed `ICON_BRIEF.md`** from the package.
+
+---
+
+### 0.19.20
+- **New: transparency-based icon status display (third variant).** New file
+  `RealisticNeedsAndDiseases_StatusIconsTransparency.lua`, opt-in via
+  Settings > "Use icon-based status display (transparency)" (off by
+  default). A third sibling alongside 0.19.18's "Badge & Pip" and 0.19.19's
+  simple color-tint displays — independent toggle, any combination of the
+  three (plus the original text window) can run at once.
+  - Fully transparent (alpha 0) = need satisfied / disease not present.
+    Fully opaque (alpha 1) = need completely empty / disease at Severe.
+    No color tint, no border, no pips at all — opacity is the only
+    variable.
+  - Layout is fixed: all 4 need icons and all 5 disease icons occupy the
+    same position for the window's lifetime, unlike the other two displays'
+    dynamic show/hide — only each icon's alpha changes on refresh.
+  - Reuses the same placeholder icons/`RN.STATUS_ICON_PATHS` table as the
+    other two icon displays.
+  - Worth playtesting against the other two: a satisfied need or absent
+    disease is genuinely invisible (not just faint), which is what was
+    asked for, but does mean nothing's there to notice or hover until
+    something starts going wrong.
+
+---
+
+### 0.19.19
+- **New: simpler alternate icon-based status display.** New file
+  `RealisticNeedsAndDiseases_StatusIconsSimple.lua`, opt-in via Settings >
+  "Use icon-based status display (simple color-tint)" (off by default).
+  A simpler sibling to 0.19.18's "Badge & Pip" icon display, not a
+  replacement — both have independent toggles and can run alongside each
+  other and/or the text status window. This one is the generic buff-icon
+  pattern: a plain icon per active status, tinted by severity (flat color
+  multiply on the icon texture, no border/pip system), shown only while
+  that status is actually active — a need past its comfortable band, or a
+  contracted disease — same as any standard buff/debuff icon row, rather
+  than a fixed always-visible 4-need layout.
+  - Reuses the same placeholder icons and `RN.STATUS_ICON_PATHS` table (and
+    the same `ICON_BRIEF.md` art brief) as 0.19.18's display — swapping in
+    real art updates both at once.
+  - Has no background panel (matching classic buff-icon rows — just icons
+    floating), which means it can only be grabbed for dragging in the small
+    padding gaps between icons rather than the icons themselves. Untested
+    in-game whether that's workable in practice; a "Reset icon status
+    window position (simple color-tint)" button is included as a fallback.
+
+---
+
+### 0.19.18
+- **New: icon-based status display (proof of concept).** New file
+  `RealisticNeedsAndDiseases_StatusIcons.lua`, opt-in via Settings > "Use
+  icon-based status display (proof of concept)" (off by default, runs
+  alongside the existing text status window rather than replacing it).
+  Deliberately a different visual language than the label-above-value text
+  row pattern this addon's own StatusBar already uses (itself credited to
+  the RolePlayNeeds reference addon) — a horizontal row of icon badges (one
+  per need, plus one per currently-active disease) with a small "pip" dot
+  row under each badge whose LIT COUNT is the severity readout (4 pips for
+  needs' 4 bands, 3 pips for diseases' 3 severities), rather than encoding
+  severity through icon tint or a number overlay.
+  - All 9 icons currently point at ESO's own placeholder texture
+    (`EsoUI/Art/icons/icon_missing.dds`) — swap `RN.STATUS_ICON_PATHS` at
+    the top of the new file for real art once available; nothing else
+    needs to change.
+  - Added `ICON_BRIEF.md`, a self-contained AI-art-generation prompt for
+    each of the 9 icons plus a shared style guide, so the placeholder art
+    can be replaced with generated icons matching the existing colored-
+    border/pip severity system (the icon art itself doesn't need to encode
+    severity through color).
+  - Drag-movable independently of the text status window's position; new
+    "Reset icon status window position" button added alongside the
+    existing one.
+
+---
+
+### 0.19.17
+- **Needs and disease systems fully decoupled, with a new true master
+  switch.** Previously, `needsSystemEnabled` doubled as an undocumented
+  master switch — `OnTick` returned early entirely whenever it was off,
+  silently skipping disease processing too, while `diseaseSystemEnabled`
+  couldn't stop combat-triggered disease contraction from happening with
+  needs off, and consumption crediting (food/drink/water restoring needs,
+  ingredients curing disease) wasn't gated by either toggle at all. Settings
+  now has 3 independent switches:
+  - **Enable the addon** (new `masterEnabled`) — the actual master switch.
+    Freezes everything: needs decay, all consumption crediting, disease
+    contraction/progression/self-cure, and curing.
+  - **Enable needs tracking** (`needsSystemEnabled`) — hunger/thirst/
+    fatigue/drunkenness decay and restoration only. Fully independent of
+    disease processing now.
+  - **Enable the disease system** (`diseaseSystemEnabled`) — contraction,
+    progression, and self-cure only. Curing an existing disease still works
+    even with this off; only needs decay/restoration is unaffected either way.
+  - You can now turn off needs tracking and leave the disease system running
+    (or vice versa) — the scenario this version was built to support.
+  - Heads up if you'd previously turned `needsSystemEnabled` off expecting it
+    to act as a master off switch: after this update, the disease system
+    will resume running unless you also turn off the new "Enable the addon"
+    toggle (default: everything on).
+
+---
+
+### 0.19.16
+- **New debug command: `/rnd debug skipprogression <1-5>`** — fast-forwards
+  an active, below-Severe disease's untreated-stage progression timer to one
+  tick (~5s) short of both its 30-minute threshold and its 5-minute reroll
+  interval, so the very next tick fires the escalation roll immediately
+  instead of requiring up to 35 minutes of real-time waiting. Makes it
+  practical to test the 0.19.15 stage-progression mechanic (including
+  repeatedly, to see the 15% chance actually land or miss) without sitting
+  around. Requires the target disease to already be active (`/rnd debug
+  disease` first if needed) and not already Severe.
+
+---
+
+### 0.19.15
+- **Craft bag reagent consumption now cures/progresses diseases too.**
+  Remedy-ingredient detection previously only watched `BAG_BACKPACK`, so a
+  player with craft bag access — where raw reagents auto-deposit instead of
+  sitting in the backpack — could eat a curative ingredient straight from the
+  craft bag and see no effect at all. Added a second `BAG_VIRTUAL`-filtered
+  registration onto the same handler; the existing per-slot tracking already
+  keys by `bagId .. ":" .. slotId`, so backpack and craft bag slots never
+  collide.
+- **Disease stage progression:** an untreated Mild or Moderate case now has a
+  chance to worsen on its own after 30 real-world minutes at that stage,
+  rerolling every 5 minutes thereafter (15% per reroll) until it either
+  escalates or gets treated. Applies to all 5 diseases; Severe cases don't
+  roll since there's nowhere higher to go. The 30-minute clock is tracked per
+  stage (any severity change resets it) and persists across a relog rather
+  than resetting on logout.
+- **Frostbite/Heatstroke self-cure:** a Mild (stage 1) case now has a chance
+  to clear up on its own once the player has been continuously out of the
+  qualifying cold/heat range for 30 real-world minutes, rerolling every 5
+  minutes thereafter (15% per reroll). Only applies at Mild — Moderate/Severe
+  still need an ingredient or the care-cure path. Re-entering the
+  qualifying temperature range resets the clock.
+- The 15% reroll chance used by both new mechanics above is a starting
+  default, not a confirmed balance number — worth tuning from actual play
+  and eventually exposing in Settings.
+
+---
+
+### 0.19.14
+- **Fixed an intermittent food/drink consumption miss** where eating or
+  drinking with no other inventory activity would occasionally not restore
+  hunger/thirst, requiring a second try. The buff-confirmation gate that
+  guards against false positives (selling, banking, etc.) only checked
+  BACKWARD in time — was a food/drink buff granted recently, as of the
+  inventory-shrink event? ESO doesn't guarantee the buff-gain event and the
+  inventory-shrink event fire in a fixed order, so whenever the shrink was
+  processed first, the buff timestamp wasn't set yet and the genuine
+  consumption was silently dropped. The check is now bidirectional: an
+  inventory shrink with no recent buff is held as a pending consumption for
+  up to the same 500ms window, and is credited retroactively if the
+  confirming buff event arrives shortly after.
+
+---
+
 ### 0.19.13
 - **Band-transition notifications (the top-right alert banner for hunger/
   thirst/fatigue/drunkenness crossing into a new band) now fire

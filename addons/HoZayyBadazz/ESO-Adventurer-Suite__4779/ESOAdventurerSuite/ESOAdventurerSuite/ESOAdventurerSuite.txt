@@ -1,0 +1,48 @@
+## Title: |cB8860BESO |cFFD700Adventurer Suite|r
+## Description: |cFFD700Tamriel Codex, HUD, minimap, quests, combat stats, travel, gear, and adventure tools.|r
+## Author: |c00FFFFHoZayyBadazz|r
+## Version: 0.26.08
+## AddOnVersion: 2608
+## APIVersion: 101050 101051
+## SavedVariables: ESOProgressionCoachSavedVars
+## DependsOn: LibAddonMenu-2.0>=43
+
+Core.lua
+Compatibility.lua
+Data.lua
+Engine.lua
+Role.lua
+Travel.lua
+Activities.lua
+DungeonFinder.lua
+DungeonHistory.lua
+ActivityRunHistory.lua
+QuestFinder.lua
+SetJournal.lua
+Endgame.lua
+TargetBuild.lua
+GearOptimizer.lua
+GearLoadoutOverlay.lua
+Advisor.lua
+CombatPresentation.lua
+Combat.lua
+Maintenance.lua
+UnitFrames.lua
+AllianceRank.lua
+ChampionOverlay.lua
+ChampionOptimizer.lua
+AttributeOptimizer.lua
+AbilityOverlays.lua
+Reticle.lua
+RepairCostOverlay.lua
+StableTimer.lua
+Clock.lua
+ActiveQuest.lua
+GoldenPursuits.lua
+Journal.lua
+MiniMap.lua
+UtilitySuite.lua
+UI.lua
+GraphicsPreset.lua
+Settings.lua
+Bindings.xml

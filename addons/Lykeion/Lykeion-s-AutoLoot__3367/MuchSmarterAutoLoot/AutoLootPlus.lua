@@ -1,7 +1,7 @@
 MuchSmarterAutoLoot = MuchSmarterAutoLoot or {}
 local MSAL = MuchSmarterAutoLoot
-MSAL.version = "8.1.5"
-MSAL.addonVersion = 80105
+MSAL.version = "8.2.0"
+MSAL.addonVersion = 80200
 MSAL.author = "Lykeion"
 
 local MSALSettingPanel = {}
@@ -11,6 +11,7 @@ local MSAL_AUTOLOOT_DISABLE = "msal_autoloot_disable"
 local MSAL_AUTOLOOT_DISMISS = "msal_autoloot_dismiss"
 local chatboxPrefix =
     "|c345e88[|r|c44637fA|r|c536876u|r|c626d6dt|r|c727264o|r|c81785bL|r|c917d52o|r|ca08249o|r|caf8740t|r|cbf8c37+|r|cce912e] "
+local chatboxLogColor = "|cce912e"
 local WM = GetWindowManager()
 local SV_NAME = 'MSAL_VARS'
 local SV_VER = 1
@@ -89,6 +90,7 @@ local defaults = {
     deconLogEnabled = true,
     sellJunkLogEnabled = false,
     stolenRule = "never loot",
+    stolenTreasureThreshold = 0,
     autoBind = false,
     autoDisposeAfterBind = false,
     blacklist = {},
@@ -131,7 +133,7 @@ local defaults = {
         furnishingMaterials = "always loot",
         ink = "always loot",
 
-        lootCappedCurrencies = true,
+        lootCurrencies = true,
 
         thirdParty = nil,
         thirdPartyMinValue = 5000,
@@ -682,8 +684,8 @@ local function LaunderAllStolen()
                 ChatboxLog(GetString(SI_ITEMLAUNDERRESULT7))
                 break
             else
-                ChatboxLog(GetString(SI_FENCE_LAUNDER_TAB) .. GetString(MSAL_SPACE) ..
-                               GetItemLink(BAG_BACKPACK, data.slotIndex))
+                BufferItemDisposeLog(GetString(SI_FENCE_LAUNDER_TAB),
+                    GetItemLink(BAG_BACKPACK, data.slotIndex))
                 LaunderItem(BAG_BACKPACK, data.slotIndex,
                     math.min(math.min(data.stackCount, 100), (totalLaunders - laundersUsed)))
             end
@@ -945,6 +947,16 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
                 SetItemIsJunk(bagId, slotId, true)
                 scribingAutoJunked = true
             end
+        end
+    end
+
+    if isTreasure and isStolen and not itemOnList(link, WLIST_TOKEN) and not itemOnList(link, WLIST_JUNK_TOKEN) then
+        if quality < db.stolenTreasureThreshold then
+            DestroyItem(bagId, slotId)
+            if quality >= db.printDisposeThreshold then
+                BufferItemDisposeLog(GetString(SI_ITEM_ACTION_DESTROY), link)
+            end
+            return
         end
     end
 
@@ -1337,6 +1349,27 @@ local function GetSafeDynamicOption(filterType, defaultOption)
     return filterType
 end
 
+local function GetStolenTreasureQualityLabel(filterType, logColor)
+    local label
+    if filterType == ITEM_DISPLAY_QUALITY_MAGIC then
+        label = zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
+            GetItemQualityColor(ITEM_DISPLAY_QUALITY_MAGIC):Colorize(GetString(SI_ITEMQUALITY2)))
+    elseif filterType == ITEM_DISPLAY_QUALITY_ARCANE then
+        label = zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
+            GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARCANE):Colorize(GetString(SI_ITEMQUALITY3)))
+    elseif filterType == ITEM_DISPLAY_QUALITY_ARTIFACT then
+        label = zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
+            GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARTIFACT):Colorize(GetString(SI_ITEMQUALITY4)))
+    else
+        label = GetString(MSAL_ALWAYS_LOOT)
+    end
+    if logColor then
+        -- keep the surrounding log color after the quality color's reset (|r)
+        label = string.gsub(label, "|r", "|r" .. logColor)
+    end
+    return label
+end
+
 local function ShouldLootForSell(filterType)
     if (filterType == "always loot" or filterType == "loot and junk") then
         return true
@@ -1615,15 +1648,15 @@ local function ShouldLootFoodAndDrink(filterType, link)
     return false
 end
 
+local function IsPlayerHiddenOrStealthed()
+    local stealthState = GetUnitStealthState("player")
+    return stealthState == STEALTH_STATE_HIDDEN or stealthState == STEALTH_STATE_HIDDEN_ALMOST_DETECTED or
+        stealthState == STEALTH_STATE_STEALTH or stealthState == STEALTH_STATE_STEALTH_ALMOST_DETECTED
+end
+
 local function CanLootWithoutBounty(link)
     if IsItemLinkStolen(link) then
-        if GetUnitStealthState("player") == STEALTH_STATE_HIDDEN or GetUnitStealthState("player") ==
-            STEALTH_STATE_HIDDEN_ALMOST_DETECTED or GetUnitStealthState("player") == STEALTH_STATE_STEALTH or
-            GetUnitStealthState("player") == STEALTH_STATE_STEALTH_ALMOST_DETECTED then
-            return true
-        else
-            return false
-        end
+        return IsPlayerHiddenOrStealthed()
     else
         return true
     end
@@ -2224,6 +2257,59 @@ function MSAL.FilterItem(link, isQuest, lootType)
     return nil, nil
 end
 
+local function LootCurrenciesByRules(showOverlimitWarning)
+    local currencyInfo = LOOT_SHARED:GetLootCurrencyInformation()
+    local allCurrenciesLooted = true
+    for curt, info in pairs(currencyInfo) do
+        if curt == CURT_MONEY then
+            if info.currencyAmount > 0 then
+                if db.filters.lootCurrencies == true then
+                    LootMoney()
+                else
+                    allCurrenciesLooted = false
+                    isAllCurtLooted = false
+                end
+            elseif info.stolenCurrencyAmount > 0 then
+                if db.filters.lootCurrencies == true and IsPlayerHiddenOrStealthed() then
+                    LootMoney()
+                else
+                    allCurrenciesLooted = false
+                    isAllCurtLooted = false
+                end
+            end
+        elseif curt == CURT_TRANSMUTE_CRYSTALS then
+            local curtAmount = GetCurrencyAmount(CURT_TRANSMUTE_CRYSTALS, CURRENCY_LOCATION_ACCOUNT)
+            local maxCurt = GetMaxPossibleCurrency(CURT_TRANSMUTE_CRYSTALS, CURRENCY_LOCATION_ACCOUNT)
+            if info.currencyAmount > 0 then
+                if db.filters.lootCurrencies == true then
+                    if (curtAmount + info.currencyAmount <= maxCurt) then
+                        LootCurrency(curt)
+                    else
+                        if showOverlimitWarning then
+                            OverlimitWarning(curt)
+                        end
+                        allCurrenciesLooted = false
+                        isAllCurtLooted = false
+                    end
+                else
+                    allCurrenciesLooted = false
+                    isAllCurtLooted = false
+                end
+            end
+        else
+            if info.currencyAmount > 0 then
+                if db.filters.lootCurrencies == true then
+                    LootCurrency(curt)
+                else
+                    allCurrenciesLooted = false
+                    isAllCurtLooted = false
+                end
+            end
+        end
+    end
+    return allCurrenciesLooted
+end
+
 local function OnLootUpdated()
     chatlogSuffix = nil
     disposeLogLines = {}
@@ -2258,62 +2344,7 @@ local function OnLootUpdated()
     setItemList = {}
     isRepetitiveGear = false
 
-    local currencyInfo = LOOT_SHARED:GetLootCurrencyInformation()
-    for curt, info in pairs(currencyInfo) do
-        if curt == CURT_MONEY then
-            if info.currencyAmount > 0 then
-                if db.filters.lootCappedCurrencies == true then
-                    -- if db.printLootThreshold <= 5 then
-                    --     ChatboxLog(GetString(SI_ITEM_ACTION_LOOT_TAKE) .. " " .. GetCurrencyName(curt, false, true) .. ": " ..
-                    --     info.currencyAmount)
-                    -- end
-                    LootMoney()
-                else
-                    isAllCurtLooted = false
-                end
-            elseif info.stolenCurrencyAmount > 0 then
-                if db.filters.lootCappedCurrencies == true and db.stolenRule == "follow" and
-                    (GetUnitStealthState("player") == STEALTH_STATE_HIDDEN or GetUnitStealthState("player") ==
-                        STEALTH_STATE_HIDDEN_ALMOST_DETECTED or GetUnitStealthState("player") == STEALTH_STATE_STEALTH or
-                        GetUnitStealthState("player") == STEALTH_STATE_STEALTH_ALMOST_DETECTED) then
-                    LootMoney()
-                else
-                    isAllCurtLooted = false
-                end
-            end
-        elseif curt == CURT_TRANSMUTE_CRYSTALS then
-            local curtAmount = GetCurrencyAmount(CURT_TRANSMUTE_CRYSTALS, CURRENCY_LOCATION_ACCOUNT)
-            local maxCurt = GetMaxPossibleCurrency(CURT_TRANSMUTE_CRYSTALS, CURRENCY_LOCATION_ACCOUNT)
-            if info.currencyAmount > 0 then
-                if db.filters.lootCappedCurrencies == true then
-                    if (curtAmount + info.currencyAmount <= maxCurt) then
-                        -- if db.printLootThreshold <= 5 then
-                        --     ChatboxLog(GetString(SI_ITEM_ACTION_LOOT_TAKE) .. " " .. GetCurrencyName(curt, false, true) ..
-                        --         ": " .. info.currencyAmount)
-                        -- end
-                        LootCurrency(curt)
-                    else
-                        OverlimitWarning(curt)
-                        isAllCurtLooted = false
-                    end
-                else
-                    isAllCurtLooted = false
-                end
-            end
-        else
-            if info.currencyAmount > 0 then
-                if db.filters.lootCappedCurrencies == true then
-                    -- if db.printLootThreshold <= 5 then
-                    --     ChatboxLog(GetString(SI_ITEM_ACTION_LOOT_TAKE) .. " " .. GetCurrencyName(curt, false, true) .. ": " ..
-                    --     info.currencyAmount)
-                    -- end
-                    LootCurrency(curt)
-                else
-                    isAllCurtLooted = false
-                end
-            end
-        end
-    end
+    LootCurrenciesByRules(true)
 
     local willCommitCrime = false
 
@@ -2595,13 +2626,7 @@ local function OnLootUpdated()
 
         -- make sure it will be only triggered once
         if not isAllCurtLooted and isUnboxing == false then
-            LootMoney()
-            for _, curt in ipairs(curtType) do
-                if curt ~= CURT_TRANSMUTE_CRYSTALS then
-                    LootCurrency(curt)
-                end
-            end
-            isAllCurtLooted = true
+            isAllCurtLooted = LootCurrenciesByRules(false)
         end
 
         local bListedSetGearList = {}
@@ -2715,6 +2740,8 @@ local function ListAutoDeconItems()
                     if GetItemLinkDisplayQuality(link) >= ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE then
                         -- skip mythic items
                     else
+                        -- items made via reconstruction are excluded from the auto-decon list
+                        local isReconstructed = IsItemReconstructed(BAG_BACKPACK, bagSlot)
                         local trait = GetItemLinkTraitInfo(link)
                         local isJewelry = jewelryTraits[trait] and itemType == ITEMTYPE_ARMOR
                         local isGlyph = itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or
@@ -2762,7 +2789,7 @@ local function ListAutoDeconItems()
                                     if deconMode == "decon and junk" and db.deconThreshold > 0 then
                                         shouldDecon = GetItemLinkDisplayQuality(link) >= db.deconThreshold
                                     end
-                                    if shouldDecon then
+                                    if shouldDecon and not isReconstructed then
                                         autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
                                         autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
                                         table.insert(deconLinks, link)
@@ -2779,9 +2806,11 @@ local function ListAutoDeconItems()
                                     if styleMatLink ~= "" and IsThirdPartyOptionValid(db.filters.thirdParty) then
                                         if ShouldLootThirdPartyWorthyItem(db.filters.thirdParty, styleMatLink,
                                             db.filters.styleMaterials3rdPriceThreshold) then
-                                            autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
-                                            autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
-                                            table.insert(deconLinks, link)
+                                            if not isReconstructed then
+                                                autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
+                                                autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
+                                                table.insert(deconLinks, link)
+                                            end
                                         end
                                     end
                                 end
@@ -2796,9 +2825,11 @@ local function ListAutoDeconItems()
                                                                ITEM_TRAIT_TYPE_JEWELRY_SWIFT or trait ==
                                                                ITEM_TRAIT_TYPE_JEWELRY_TRIUNE
                                 if isRareWeaponTrait or isRareArmorTrait or isRareJewelryTrait then
-                                    autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
-                                    autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
-                                    table.insert(deconLinks, link)
+                                    if not isReconstructed then
+                                        autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
+                                        autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
+                                        table.insert(deconLinks, link)
+                                    end
                                 end
                             end
                             if scanIntricate then
@@ -2807,9 +2838,11 @@ local function ListAutoDeconItems()
                                                         ITEM_TRAIT_TYPE_JEWELRY_INTRICATE
                                 DebugLog("isIntricate: " .. tostring(isIntricate) .. ", not maxed: " .. tostring(not IsIntricateSkillMaxed(link, itemType)))
                                 if isIntricate and not IsIntricateSkillMaxed(link, itemType) then
-                                    autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
-                                    autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
-                                    table.insert(deconLinks, link)
+                                    if not isReconstructed then
+                                        autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
+                                        autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
+                                        table.insert(deconLinks, link)
+                                    end
                                 end
                             end
                             if scanGlyphs then
@@ -3204,7 +3237,7 @@ local function SettingInitialize()
         "only purple",
         "never loot"
     }
-    local qualityGoldChoices = {
+    local qualityBlueToGoldChoices = {
         GetString(MSAL_ALWAYS_LOOT),
         zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
             GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARCANE):Colorize(GetString(SI_ITEMQUALITY3))),
@@ -3214,12 +3247,27 @@ local function SettingInitialize()
             GetItemQualityColor(ITEM_DISPLAY_QUALITY_LEGENDARY):Colorize(GetString(SI_ITEMQUALITY5))),
         GetString(MSAL_LEAVE_TO_DISPOSER)
     }
-    local qualityGoldChoicesValues = {
+    local qualityBlueToGoldChoicesValues = {
         "always loot",
         "only blue",
         "only purple",
         "only gold",
         "never loot"
+    }
+    local qualityGreenToPurpleChoices = {
+        GetString(MSAL_ALWAYS_LOOT),
+        zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
+            GetItemQualityColor(ITEM_DISPLAY_QUALITY_MAGIC):Colorize(GetString(SI_ITEMQUALITY2))),
+        zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
+            GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARCANE):Colorize(GetString(SI_ITEMQUALITY3))),
+        zo_strformat(GetString(MSAL_ONLY_OR_HIGHER),
+            GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARTIFACT):Colorize(GetString(SI_ITEMQUALITY4))),
+    }
+    local qualityGreenToPurpleChoicesValues = {
+        ITEM_DISPLAY_QUALITY_TRASH,
+        ITEM_DISPLAY_QUALITY_MAGIC,
+        ITEM_DISPLAY_QUALITY_ARCANE,
+        ITEM_DISPLAY_QUALITY_ARTIFACT,
     }
 
     local dynamicBooleanChoices, dynamicBooleanChoicesValues =
@@ -3581,10 +3629,10 @@ local function SettingInitialize()
                     name = GetString(MSAL_AUTOLOOT_CURRENCY),
                     tooltip = GetString(MSAL_AUTOLOOT_CURRENCY_TOOLTIP),
                     getFunc = function()
-                        return db.filters.lootCappedCurrencies
+                        return db.filters.lootCurrencies
                     end,
                     setFunc = function(value)
-                        db.filters.lootCappedCurrencies = value
+                        db.filters.lootCurrencies = value
                     end,
                     default = true
                 },
@@ -3613,20 +3661,6 @@ local function SettingInitialize()
                     default = false
                 },
                 {
-                    type = "dropdown",
-                    name = GetString(MSAL_STOLEN_ITEMS_RULE),
-                    tooltip = zo_strformat(GetString(MSAL_STOLEN_ITEMS_RULE_TOOLTIP), GetString(MSAL_DONT_STEAL), GetString(MSAL_DONT_STEAL_STRICT), GetString(MSAL_FOLLOW_RULES)),
-                    choices = stolenChoices,
-                    choicesValues = stolenChoicesValues,
-                    getFunc = function()
-                        return db.stolenRule
-                    end,
-                    setFunc = function(value)
-                        db.stolenRule = value
-                    end,
-                    default = "never loot"
-                },
-                {
                     type = "checkbox",
                     name = GetString(MSAL_AUTO_SELL),
                     tooltip = trimLastCharUTF8(GetString(SI_ITEM_FORMAT_STR_PRIORITY_SELL)) .. " / " ..
@@ -3638,18 +3672,6 @@ local function SettingInitialize()
                         db.autoSellJunk = value
                     end,
                     default = true
-                },
-                {
-                    type = "checkbox",
-                    name = GetString(MSAL_AUTO_LAUNDER),
-                    tooltip = GetString(MSAL_AUTO_LAUNDER_TOOLTIP),
-                    getFunc = function()
-                        return db.autoLaunder
-                    end,
-                    setFunc = function(value)
-                        db.autoLaunder = value
-                    end,
-                    default = false
                 },
                 {
                     type = "checkbox",
@@ -3743,6 +3765,51 @@ local function SettingInitialize()
                         db.useIconsInLog = value
                     end,
                     default = false
+                },
+                {
+                    type = "header",
+                    name = "|c999999 / " .. GetString(MSAL_STEALING) .. "|r",
+                    width = "full"
+                },
+                {
+                    type = "dropdown",
+                    name = GetString(MSAL_STOLEN_ITEMS_RULE),
+                    tooltip = zo_strformat(GetString(MSAL_STOLEN_ITEMS_RULE_TOOLTIP), GetString(MSAL_DONT_STEAL), GetString(MSAL_DONT_STEAL_STRICT), GetString(MSAL_FOLLOW_RULES)),
+                    choices = stolenChoices,
+                    choicesValues = stolenChoicesValues,
+                    getFunc = function()
+                        return db.stolenRule
+                    end,
+                    setFunc = function(value)
+                        db.stolenRule = value
+                    end,
+                    default = "never loot"
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(MSAL_AUTO_LAUNDER),
+                    tooltip = GetString(MSAL_AUTO_LAUNDER_TOOLTIP),
+                    getFunc = function()
+                        return db.autoLaunder
+                    end,
+                    setFunc = function(value)
+                        db.autoLaunder = value
+                    end,
+                    default = false
+                },
+                {
+                    type = "dropdown",
+                    name = GetString(MSAL_STOLEN_TREASURE_QUALITY_FILTER),
+                    tooltip = GetString(MSAL_STOLEN_TREASURE_QUALITY_FILTER_TOOLTIP),
+                    choices = qualityGreenToPurpleChoices,
+                    choicesValues = qualityGreenToPurpleChoicesValues,
+                    getFunc = function()
+                        return db.stolenTreasureThreshold
+                    end,
+                    setFunc = function(value)
+                        db.stolenTreasureThreshold = value
+                    end,
+                    default = 0
                 },
                 {
                     type = "header",
@@ -4125,8 +4192,8 @@ local function SettingInitialize()
                 {
                     type = "dropdown",
                     name = zo_strformat(GetString(MSAL_GENERAL), GetString(SI_ITEMTYPEDISPLAYCATEGORY1)),
-                    choices = qualityGoldChoices,
-                    choicesValues = qualityGoldChoicesValues,
+                    choices = qualityBlueToGoldChoices,
+                    choicesValues = qualityBlueToGoldChoicesValues,
                     getFunc = function()
                         return db.filters.weapons
                     end,
@@ -4138,8 +4205,8 @@ local function SettingInitialize()
                 {
                     type = "dropdown",
                     name = zo_strformat(GetString(MSAL_GENERAL), GetString(SI_ITEMTYPEDISPLAYCATEGORY2)),
-                    choices = qualityGoldChoices,
-                    choicesValues = qualityGoldChoicesValues,
+                    choices = qualityBlueToGoldChoices,
+                    choicesValues = qualityBlueToGoldChoicesValues,
                     getFunc = function()
                         return db.filters.armors
                     end,
@@ -4151,8 +4218,8 @@ local function SettingInitialize()
                 {
                     type = "dropdown",
                     name = zo_strformat(GetString(MSAL_GENERAL), GetString(SI_ITEMTYPEDISPLAYCATEGORY3)),
-                    choices = qualityGoldChoices,
-                    choicesValues = qualityGoldChoicesValues,
+                    choices = qualityBlueToGoldChoices,
+                    choicesValues = qualityBlueToGoldChoicesValues,
                     getFunc = function()
                         return db.filters.jewelry
                     end,
@@ -4227,8 +4294,8 @@ local function SettingInitialize()
                 {
                     type = "dropdown",
                     name = GetString(SI_SMITHING_EXTRACTION_REFINE_HEADER),
-                    choices = qualityGoldChoices,
-                    choicesValues = qualityGoldChoicesValues,
+                    choices = qualityBlueToGoldChoices,
+                    choicesValues = qualityBlueToGoldChoicesValues,
                     getFunc = function()
                         return db.filters.refineMaterials
                     end,
@@ -4985,9 +5052,9 @@ local function SettingInitialize()
             end,
             default = false
         }
-        local autoLaunderSettingsIndex = findControlIndex(generalSettingsIndex, GetString(MSAL_AUTO_LAUNDER))
+        local autoSellSettingsIndex = findControlIndex(generalSettingsIndex, GetString(MSAL_AUTO_SELL))
         -- when insert multiple controls in a row always insert them in reverted order, to the same index
-        table.insert(optionsData[generalSettingsIndex].controls, autoLaunderSettingsIndex + 1, skipDialogSettings)
+        table.insert(optionsData[generalSettingsIndex].controls, autoSellSettingsIndex + 1, skipDialogSettings)
 
         -- local scriptAutoMarkSettings = 
         -- local scriptFilterIndex
@@ -5333,6 +5400,13 @@ local function OnPlayerActivated()
                             CHAT_ROUTER:AddSystemMessage(chatboxPrefix .. GetString(MSAL_STRICT_STEAL_WARNING))
                         end, GetLatency() + 100)
                     end
+                    if db.stolenTreasureThreshold > ITEM_DISPLAY_QUALITY_TRASH then
+                        zo_callLater(function()
+                            CHAT_ROUTER:AddSystemMessage(chatboxPrefix ..
+                                zo_strformat(GetString(MSAL_STOLEN_TREASURE_FILTER_LOGIN_REMINDER),
+                                    GetStolenTreasureQualityLabel(db.stolenTreasureThreshold, chatboxLogColor)))
+                        end, GetLatency() + 100)
+                    end
                 end
             end
             EVENT_MANAGER:RegisterForEvent("MSAL_LOOT_UPDATED", EVENT_LOOT_UPDATED, MSAL.OnLootUpdatedThrottled)
@@ -5564,8 +5638,12 @@ local function OnLoaded(_, addon)
 
         -- deal with legacy options
         if db.filters.uncapped ~= nil then
-            db.filters.lootCappedCurrencies = db.filters.uncapped
+            db.filters.lootCurrencies = db.filters.uncapped
             db.filters.uncapped = nil
+        end
+        if db.filters.lootCappedCurrencies ~= nil then
+            db.filters.lootCurrencies = db.filters.lootCappedCurrencies
+            db.filters.lootCappedCurrencies = nil
         end
         if db.greedyMode ~= nil then
             db.alwaysLootStackable = db.greedyMode

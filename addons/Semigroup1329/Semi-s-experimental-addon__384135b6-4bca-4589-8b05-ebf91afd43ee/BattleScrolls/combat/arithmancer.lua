@@ -1455,6 +1455,8 @@ function ArithmancerInstance:buildSharedEncounterData()
         }
     end
 
+    local zenByBoss = BattleScrolls.zen.shareByBoss(source.zen)
+
     ---@type SharedEncounterData
     return {
         timestampS = source.timestampS or 0,
@@ -1472,6 +1474,8 @@ function ArithmancerInstance:buildSharedEncounterData()
         aliveTimeMs = source.playerAliveTimeMs,
         topDamageTakenAbilities = topDamageTakenAbilities,
         deaths = deaths,
+        resurrections = source.resurrections,
+        zenByBoss = zenByBoss,
     }
 end
 

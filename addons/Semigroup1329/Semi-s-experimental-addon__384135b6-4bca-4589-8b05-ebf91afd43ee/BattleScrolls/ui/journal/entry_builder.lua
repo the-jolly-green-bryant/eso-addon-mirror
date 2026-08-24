@@ -27,6 +27,7 @@ local journal = BattleScrolls.journal
 ---@class DetailRow
 ---@field icon string Pre-resolved texture path
 ---@field label string Display text
+---@field sublabel string|nil Secondary line rendered under the row (e.g. death recap attacker)
 ---@field value string|nil Right-aligned value text
 ---@field isHighlighted boolean|nil Killing blow skull indicator
 

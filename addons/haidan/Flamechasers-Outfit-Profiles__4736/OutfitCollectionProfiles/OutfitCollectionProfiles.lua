@@ -3,7 +3,7 @@ local OCP = OutfitCollectionProfiles
 
 OCP.name = "OutfitCollectionProfiles"
 OCP.displayName = "Flamechasers Outfit Profiles"
-OCP.version = "0.3.11"
+OCP.version = "0.4.1"
 OCP.pollIntervalMs = 500
 OCP.applyDelayMs = 900
 OCP.maxUseAttempts = 5
@@ -158,7 +158,7 @@ function OCP.SaveDraftConfirmed()
     local outfitIndex = OCP.selectedOutfitIndex or OCP.GetEquippedOutfitIndex()
     OCP.saved.profiles[tostring(outfitIndex)] = OCP.GetDraftProfile()
     OCP.draftDirty = false
-    d(string.format("|cF05A28[Flamechasers]|r Saved Collection profile for |cFFFFFF%s|r.", OCP.GetOutfitName(outfitIndex)))
+    d(string.format("|cC8643B[Flamechasers]|r Saved Collection profile for |cFFFFFF%s|r.", OCP.GetOutfitName(outfitIndex)))
     OCP.RefreshWindow()
 end
 
@@ -196,7 +196,7 @@ function OCP.GetProfileSummary(outfitIndex)
             parts[#parts + 1] = definition.label .. ": " .. value
         end
     end
-    if #parts == 0 then return "Saved setup — all categories set to Keep Current" end
+    if #parts == 0 then return "Saved setup — no categories tracked" end
     return table.concat(parts, "  •  ")
 end
 
@@ -260,21 +260,157 @@ function OCP.SaveCurrentOutfitProfile()
     OCP.RequestCapture(OCP.GetEquippedOutfitIndex())
 end
 
-function OCP.CancelApply()
+function OCP.SetApplyState(state, completed, total, detail)
+    OCP.applyState = state or "idle"
+    OCP.applyCompleted = completed or 0
+    OCP.applyTotal = total or 0
+    OCP.applyDetail = detail
+    if OCP.RefreshStatus then OCP.RefreshStatus() end
+end
+
+function OCP.CancelApply(resetState)
     OCP.applyGeneration = (OCP.applyGeneration or 0) + 1
+    if OCP.pendingApply then
+        OCP.pendingApply.scheduleToken = (OCP.pendingApply.scheduleToken or 0) + 1
+        OCP.pendingApply.scheduled = false
+    end
+    OCP.pendingApply = nil
+    if resetState ~= false then OCP.SetApplyState("idle") end
+end
+
+function OCP.SchedulePendingApply(delayMs)
+    local task = OCP.pendingApply
+    if not task or task.scheduled or not OCP.playerActivated then return end
+
+    task.scheduleToken = (task.scheduleToken or 0) + 1
+    local token = task.scheduleToken
+    task.scheduled = true
+    zo_callLater(function()
+        if OCP.pendingApply ~= task or token ~= task.scheduleToken then return end
+        task.scheduled = false
+        if OCP.playerActivated then OCP.ProcessPendingApply() end
+    end, delayMs or 0)
+end
+
+function OCP.CompletePendingApply(task)
+    if OCP.pendingApply ~= task then return end
+
+    -- Confirm the whole profile once more before sleeping. This catches a
+    -- category that changed again while later collectible actions were queued.
+    for index, job in ipairs(task.jobs) do
+        if not job.failed and OCP.GetActiveCollectible(job.categoryType) ~= job.desiredId then
+            if job.confirmed then
+                job.confirmed = false
+                task.completed = math.max(0, task.completed - 1)
+            end
+            job.attempts = 0
+            task.jobIndex = index
+            OCP.SetApplyState("waiting", task.completed, #task.jobs,
+                "confirming " .. job.definition.label)
+            OCP.SchedulePendingApply(150)
+            return
+        end
+    end
+
+    OCP.pendingApply = nil
+    if task.failed > 0 then
+        OCP.SetApplyState("warning", #task.jobs - task.failed, #task.jobs,
+            string.format("%d unavailable", task.failed))
+    else
+        OCP.SetApplyState("complete", #task.jobs, #task.jobs)
+    end
+    Debug("Finished applying " .. OCP.GetOutfitName(task.outfitIndex))
+end
+
+function OCP.ProcessPendingApply()
+    local task = OCP.pendingApply
+    if not task or not OCP.playerActivated then return end
+    if task.generation ~= OCP.applyGeneration then return end
+
+    -- Automatic jobs belong to one equipped outfit. If another outfit replaces
+    -- it before polling catches up, stop touching Collections immediately.
+    if task.requiresOutfitMatch
+        and OCP.GetEquippedOutfitIndex() ~= task.outfitIndex then
+        OCP.PollOutfit("outfit changed during profile apply")
+        return
+    end
+
+    local job = task.jobs[task.jobIndex]
+    if not job then
+        OCP.CompletePendingApply(task)
+        return
+    end
+
+    local activeId = OCP.GetActiveCollectible(job.categoryType)
+    if activeId == job.desiredId then
+        if not job.confirmed then
+            job.confirmed = true
+            task.completed = task.completed + 1
+        end
+        task.jobIndex = task.jobIndex + 1
+        OCP.SetApplyState("applying", task.completed, #task.jobs)
+        OCP.SchedulePendingApply(50)
+        return
+    end
+
+    local useId = job.desiredId > 0 and job.desiredId or activeId
+    if useId <= 0 then
+        if not job.confirmed then
+            job.confirmed = true
+            task.completed = task.completed + 1
+        end
+        task.jobIndex = task.jobIndex + 1
+        OCP.SchedulePendingApply(50)
+        return
+    end
+
+    -- An unlocked collectible can become temporarily unusable or blocked by
+    -- combat, movement, transformations, or a loading transition. Keep this
+    -- one apply job alive and retry only while it remains unfinished.
+    if not IsCollectibleUnlocked(useId) then
+        Debug("Saved collectible is no longer unlocked for " .. job.definition.label)
+        job.failed = true
+        task.failed = task.failed + 1
+        task.jobIndex = task.jobIndex + 1
+        OCP.SetApplyState("warning", task.completed, #task.jobs,
+            job.definition.label .. " unavailable")
+        OCP.SchedulePendingApply(50)
+        return
+    end
+
+    job.attempts = job.attempts + 1
+    if IsCollectibleUsable(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
+        and IsCollectibleValidForPlayer(useId)
+        and not IsCollectibleBlocked(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER) then
+        UseCollectible(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
+        OCP.SetApplyState("applying", task.completed, #task.jobs,
+            job.definition.label)
+    else
+        OCP.SetApplyState("waiting", task.completed, #task.jobs,
+            job.definition.label)
+    end
+
+    local delayMs = OCP.GetCollectibleDelayMs()
+    if job.attempts >= OCP.maxUseAttempts then
+        Debug("ESO is still delaying " .. job.definition.label .. "; keeping the active job pending")
+        job.attempts = 0
+        delayMs = math.max(delayMs, 1500)
+        OCP.SetApplyState("waiting", task.completed, #task.jobs,
+            job.definition.label)
+    end
+    OCP.SchedulePendingApply(delayMs)
 end
 
 function OCP.ApplyOutfitProfile(outfitIndex, reason, profileOverride)
     outfitIndex = outfitIndex == nil and OCP.GetEquippedOutfitIndex() or outfitIndex
     local profile = profileOverride or OCP.GetProfile(outfitIndex, false)
+
+    OCP.CancelApply(false)
     if not profile then
         Debug("No profile for " .. OCP.GetOutfitName(outfitIndex))
+        OCP.SetApplyState("untracked")
         return
     end
-
-    OCP.CancelApply()
-    local generation = OCP.applyGeneration
-    Debug(string.format("Applying %s (%s)", OCP.GetOutfitName(outfitIndex), reason or "manual"))
 
     local jobs = {}
     for _, definition in ipairs(OCP.categoryDefinitions) do
@@ -283,81 +419,52 @@ function OCP.ApplyOutfitProfile(outfitIndex, reason, profileOverride)
             jobs[#jobs + 1] = {
                 definition = definition,
                 categoryType = definition.categoryType,
-                setting = setting,
+                desiredId = setting.mode == "item"
+                    and (tonumber(setting.collectibleId) or 0) or 0,
+                attempts = 0,
+                confirmed = false,
+                failed = false,
             }
         end
     end
 
-    local function ProcessJob(jobIndex)
-        if generation ~= OCP.applyGeneration then return end
-        local job = jobs[jobIndex]
-        if not job then
-            OCP.RefreshStatus()
-            return
-        end
-
-        local attempts = 0
-        local function TryJob()
-            if generation ~= OCP.applyGeneration then return end
-            attempts = attempts + 1
-
-            local activeId = OCP.GetActiveCollectible(job.categoryType)
-            local desiredId = job.setting.mode == "item" and tonumber(job.setting.collectibleId) or 0
-            if activeId == desiredId then
-                zo_callLater(function() ProcessJob(jobIndex + 1) end, 50)
-                return
-            end
-
-            local useId = desiredId > 0 and desiredId or activeId
-            if useId <= 0 then
-                zo_callLater(function() ProcessJob(jobIndex + 1) end, 50)
-                return
-            end
-
-            if IsCollectibleUnlocked(useId)
-                and IsCollectibleUsable(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
-                and IsCollectibleValidForPlayer(useId)
-                and not IsCollectibleBlocked(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER) then
-                UseCollectible(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
-            end
-
-            zo_callLater(function()
-                if generation ~= OCP.applyGeneration then return end
-                local nowActive = OCP.GetActiveCollectible(job.categoryType)
-                if nowActive == desiredId or attempts >= OCP.maxUseAttempts then
-                    if nowActive ~= desiredId then
-                        Debug("Could not apply " .. job.definition.label .. "; it will retry after combat or activation")
-                    end
-                    ProcessJob(jobIndex + 1)
-                else
-                    TryJob()
-                end
-            end, OCP.GetCollectibleDelayMs())
-        end
-        TryJob()
+    if #jobs == 0 then
+        OCP.SetApplyState("untracked")
+        return
     end
 
-    ProcessJob(1)
+    OCP.pendingApply = {
+        generation = OCP.applyGeneration,
+        outfitIndex = outfitIndex,
+        reason = reason or "manual",
+        requiresOutfitMatch = profileOverride == nil,
+        jobs = jobs,
+        jobIndex = 1,
+        completed = 0,
+        failed = 0,
+        scheduled = false,
+        scheduleToken = 0,
+    }
+    Debug(string.format("Applying %s (%s)",
+        OCP.GetOutfitName(outfitIndex), reason or "manual"))
+    OCP.SetApplyState("applying", 0, #jobs)
+    OCP.SchedulePendingApply(OCP.applyDelayMs)
 end
 
-function OCP.ScheduleApply(reason, delayMs)
-    OCP.scheduleGeneration = (OCP.scheduleGeneration or 0) + 1
-    local generation = OCP.scheduleGeneration
-    zo_callLater(function()
-        if generation ~= OCP.scheduleGeneration then return end
-        OCP.ApplyOutfitProfile(nil, reason)
-    end, delayMs or OCP.applyDelayMs)
+function OCP.HandleOutfitChanged(current, reason)
+    OCP.lastOutfitIndex = current
+    if OCP.window and not OCP.window:IsHidden() then
+        OCP.selectedOutfitIndex = current
+        OCP.LoadDraft(current)
+        OCP.RefreshWindow()
+    end
+    OCP.ApplyOutfitProfile(current, reason or "outfit changed")
 end
 
-function OCP.PollOutfit()
+function OCP.PollOutfit(reason)
     local current = OCP.GetEquippedOutfitIndex()
     if OCP.lastOutfitIndex ~= current then
-        OCP.lastOutfitIndex = current
-        if OCP.window and not OCP.window:IsHidden() then
-            OCP.selectedOutfitIndex = current
-            OCP.RefreshWindow()
-        end
-        OCP.ScheduleApply("outfit changed")
+        OCP.HandleOutfitChanged(current, reason or "outfit changed")
     end
 
     local nameSignature = OCP.GetOutfitNameSignature()
@@ -368,17 +475,42 @@ function OCP.PollOutfit()
 end
 
 function OCP.OnPlayerActivated()
-    OCP.lastOutfitIndex = OCP.GetEquippedOutfitIndex()
+    OCP.playerActivated = true
+    local current = OCP.GetEquippedOutfitIndex()
+    if OCP.lastOutfitIndex ~= current then
+        OCP.HandleOutfitChanged(current, "outfit changed during loading")
+    elseif OCP.pendingApply then
+        OCP.SetApplyState("applying", OCP.pendingApply.completed,
+            #OCP.pendingApply.jobs, "resuming")
+        OCP.SchedulePendingApply(300)
+    end
     OCP.lastOutfitNameSignature = OCP.GetOutfitNameSignature()
-    OCP.ScheduleApply("player activated", 1500)
+end
+
+function OCP.OnPlayerDeactivated()
+    OCP.playerActivated = false
+    if OCP.pendingApply then
+        OCP.pendingApply.scheduleToken = OCP.pendingApply.scheduleToken + 1
+        OCP.pendingApply.scheduled = false
+        OCP.SetApplyState("paused", OCP.pendingApply.completed,
+            #OCP.pendingApply.jobs, "loading")
+    end
+end
+
+function OCP.ResumePendingApply(reason)
+    if not OCP.pendingApply then return end
+    Debug("Resuming unfinished profile after " .. (reason or "interruption"))
+    OCP.SetApplyState("applying", OCP.pendingApply.completed,
+        #OCP.pendingApply.jobs, "resuming")
+    OCP.SchedulePendingApply(250)
 end
 
 function OCP.OnArmoryRestored(result)
     if result ~= ARMORY_BUILD_RESTORE_RESULT_SUCCESS then return end
-    -- Armory restoration is asynchronous. Polling catches the slot change, while
-    -- these passes cover slow equipment/appearance completion and same-slot restores.
-    OCP.ScheduleApply("armory restored", 1800)
-    zo_callLater(function() OCP.ScheduleApply("armory settled", 800) end, 3500)
+    -- An Armory restore starts work only if it actually changes the equipped
+    -- outfit. Same-outfit restores deliberately leave Collections untouched.
+    zo_callLater(function() OCP.PollOutfit("outfit changed by Armory") end, 250)
+    zo_callLater(function() OCP.PollOutfit("outfit changed by Armory") end, 1800)
 end
 
 function OCP.Initialize()
@@ -393,6 +525,8 @@ function OCP.Initialize()
 
     OCP.lastOutfitIndex = OCP.GetEquippedOutfitIndex()
     OCP.selectedOutfitIndex = OCP.lastOutfitIndex
+    OCP.playerActivated = false
+    OCP.applyState = "idle"
     OCP.LoadDraft(OCP.selectedOutfitIndex)
     OCP.CreateWindow()
 
@@ -429,8 +563,10 @@ function OCP.Initialize()
     })
 
     EVENT_MANAGER:RegisterForEvent(OCP.name, EVENT_PLAYER_ACTIVATED, function() OCP.OnPlayerActivated() end)
+    EVENT_MANAGER:RegisterForEvent(OCP.name, EVENT_PLAYER_DEACTIVATED,
+        function() OCP.OnPlayerDeactivated() end)
     EVENT_MANAGER:RegisterForEvent(OCP.name, EVENT_PLAYER_COMBAT_STATE, function(_, inCombat)
-        if not inCombat then OCP.ScheduleApply("combat ended", 1000) end
+        if not inCombat then OCP.ResumePendingApply("combat") end
     end)
 
     EVENT_MANAGER:RegisterForEvent(OCP.name .. "Armory", EVENT_ARMORY_BUILD_RESTORE_RESPONSE, function(_, result)

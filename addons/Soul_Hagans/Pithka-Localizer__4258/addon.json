@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Soul_Hagans/Pithka-Localizer__4258",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Soul_Hagans",
   "canonical_id": "esoui:4258",
   "category_id": "33",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -25,7 +30,7 @@
     "PithkaLocalizer"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4258/",
-  "fingerprint": "6fa1c3e76036360e55ff82aa1ab6191009a4b0705fbf2696965fa2a76a4c10bd",
+  "fingerprint": "81155c29f5178180cfd55a1130a72eb4842adc67db1867fc762f64f2997c03c7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15082.png",
     "https://cdn-eso.mmoui.com/preview/pvw15080.png",
@@ -40,9 +45,9 @@
   "source_id": "4258",
   "source_url": "https://www.esoui.com/downloads/info4258-PithkaLocalizer.html",
   "stats": {
-    "downloads": 1281,
+    "downloads": 1328,
     "favorites": 0,
-    "monthly_downloads": 99
+    "monthly_downloads": 64
   },
   "title": "Pithka Localizer",
   "updated_at": 1781198377000,

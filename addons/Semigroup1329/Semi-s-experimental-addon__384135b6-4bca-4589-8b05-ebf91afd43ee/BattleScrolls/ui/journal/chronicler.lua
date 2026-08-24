@@ -119,6 +119,12 @@ local function showDeathRecapTooltip(data)
             end
 
             attackSection:AddCustomControl(control)
+
+            -- Attacker line under the attack row, mirroring the base game's
+            -- death recap layout (name below the attack name)
+            if row.sublabel and row.sublabel ~= "" then
+                attackSection:AddLine(row.sublabel, tooltip:GetStyle("bodyDescription"))
+            end
         end
         tooltip:AddSection(attackSection)
     end
@@ -554,7 +560,13 @@ function chronicler.computeTabVisibility(decodedEncounter)
         hasAnyEffects = (hasEffectsPlayer or hasEffectsBoss or hasEffectsGroup) or false,
         hasGroupData = decodedEncounter.sharedData ~= nil and #decodedEncounter.sharedData >= 2,
         hasSetup = decodedEncounter.setup ~= nil,
-        hasActivity = (decodedEncounter.procs and #decodedEncounter.procs > 0) or decodedEncounter.weaving ~= nil,
+        hasActivity = (decodedEncounter.procs and #decodedEncounter.procs > 0)
+            or decodedEncounter.weaving ~= nil
+            or decodedEncounter.ultimate ~= nil
+            or decodedEncounter.crux ~= nil
+            or decodedEncounter.zen ~= nil
+            or (decodedEncounter.resurrections or 0) > 0,
+        hasRaidDamage = not ZO_IsTableEmpty(decodedEncounter.damageByUnitIdGroup),
     }
 end
 
@@ -567,6 +579,7 @@ local function getVisibleSubViews(groupKey, tabVis)
     local visibilityChecks = {
         [STATS_TAB.BOSS_DAMAGE_DONE] = tabVis.dealtDamageToBosses,
         [STATS_TAB.DAMAGE_DONE] = tabVis.dealtDamage,
+        [STATS_TAB.RAID_DAMAGE] = tabVis.hasRaidDamage,
         [STATS_TAB.HEALING_OUT] = tabVis.hasHealingOutToGroup,
         [STATS_TAB.SELF_HEALING] = tabVis.hasSelfHealing,
         [STATS_TAB.HEALING_IN] = tabVis.hasHealingInFromGroup,

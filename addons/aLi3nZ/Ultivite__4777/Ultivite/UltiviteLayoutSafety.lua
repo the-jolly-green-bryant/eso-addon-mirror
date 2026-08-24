@@ -13,6 +13,7 @@ local DEFAULTS = {
     autoRepairOnDisplayChange = true,
     lastRootWidth = 0,
     lastRootHeight = 0,
+    dynamicResolutionBaselineVersion = 1,
 }
 
 -- Layout values need to shrink more than text and alert icons. Keeping a
@@ -533,15 +534,14 @@ function L.Initialize(accountSV)
 
     local width, height = L.GetRootDimensions()
     if isNewDisplaySafety then
-        if height <= 1200 then
-            L.sv.preset = "1080p"
-        elseif height <= 1700 then
-            L.sv.preset = "1440p"
-        else
-            L.sv.preset = "4k"
-        end
-        L.sv.appliedFactor = PRESETS[L.sv.preset].layoutFactor
+        -- Built-in layouts now scale directly from the live logical GuiRoot, so a
+        -- second automatic 1080p/1440p multiplier would shrink them twice. Keep
+        -- the manual scale preset neutral on new installs. Existing users retain
+        -- their chosen preset and current saved coordinates without migration.
+        L.sv.preset = "4k"
+        L.sv.appliedFactor = PRESETS["4k"].layoutFactor
     end
+    L.sv.dynamicResolutionBaselineVersion = 1
     local previousWidth = tonumber(L.sv.lastRootWidth) or 0
     local previousHeight = tonumber(L.sv.lastRootHeight) or 0
     local changed = previousWidth > 0
@@ -563,11 +563,11 @@ function L.GetMenuOptions()
     return {
         { type = "description", title = "Resolution & UI Scale Safety", text = function() return L.GetStatusText() end },
         { type = "dropdown", name = "HUD scale preset", choices = { "1080p", "1440p", "4K" }, choicesValues = { "1080p", "1440p", "4k" },
-            tooltip = "Scales positions and geometry separately from readable text and icons. Switching presets is reversible and preserves edits made under each preset. It does not change ESO's own UI scale setting.",
+            tooltip = "Optional additional HUD scaling. Built-in Ultivite layouts already adapt automatically to the live ESO UI canvas using the 4K layout reference. Switching this manual preset is reversible and does not change ESO's own UI scale setting.",
             getFunc = function() return L.sv and L.sv.preset or "4k" end,
             setFunc = function(value) L.ApplyPreset(value, false) end, default = "4k", width = "full" },
         { type = "checkbox", name = "Repair HUD after resolution or UI scale changes",
-            tooltip = "When ESO's logical UI canvas changes between loading screens, Ultivite repairs saved coordinates using each control's complete visible bounds. It does not choose a different scale preset automatically.",
+            tooltip = "When ESO's logical UI canvas changes between loading screens, Ultivite repairs saved coordinates using each control's complete visible bounds. Built-in layout presets calculate their own resolution-aware positions automatically.",
             getFunc = function() return L.sv and L.sv.autoRepairOnDisplayChange == true end,
             setFunc = function(value) if L.sv then L.sv.autoRepairOnDisplayChange = value == true; requestSave() end end,
             default = true, width = "full" },

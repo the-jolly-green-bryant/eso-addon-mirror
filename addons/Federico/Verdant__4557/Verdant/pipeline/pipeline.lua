@@ -51,7 +51,7 @@ end
 local now = Acquisition.now
 
 function M.dispatch_heal_out(result, isError, _name, _g, _slot,
-                              _src, sourceType, _tgt, targetType, hit,
+                              _src, sourceType, targetName, targetType, hit,
                               _pt, _dt, _log, sourceUnitId, targetUnitId,
                               abilityId, overflow)
   prof_enter("pipeline.combat_event")
@@ -76,6 +76,7 @@ function M.dispatch_heal_out(result, isError, _name, _g, _slot,
   bump("engine.heal.accepted")
 
   local t = now()
+  Verdant.Triage.on_own_heal(targetName, hit, overflow, t, targetType, result)
   prof_enter("pipeline.combat_event.acquisition")
   local ev_heal, ev_overheal = Acquisition.acquire_heal_out(
     t, hit, overflow, targetUnitId, targetType, abilityId, result)
@@ -207,10 +208,29 @@ function M.dispatch_death_state(_unitTag, isDead)
   end
 end
 
+function M.dispatch_power(unitTag, idx, ptype, value, pmax, effMax)
+  prof_enter("pipeline.power")
+  bump("engine.power.in")
+  Verdant.Triage.on_power(unitTag, idx, ptype, value, pmax, effMax)
+  prof_exit("pipeline.power")
+end
+
+function M.dispatch_death_state_group(unitTag, isDead)
+  Verdant.Triage.on_unit_death(unitTag, isDead)
+  if Verdant.zenimax.api.AreUnitsEqual(unitTag, "player") then return end
+  bump(isDead and "engine.death.group_died" or "engine.death.group_res")
+  if not Verdant.TemporalBuffer.is_recording() then return end
+  local sv = Verdant.SavedVars
+  if not (sv and sv.settings and sv.settings.group_death_markers) then return end
+  Verdant.TemporalBuffer.add_marker(now(), isDead, unitTag)
+  Log:info(isDead and "group death marker" or "group res marker", unitTag)
+end
+
 function M.dispatch_group_change()
   bump("engine.group.changed")
   Log:info("group changed; refreshing coverage mode")
   Verdant.Coverage.refresh_mode()
+  Verdant.Triage.refresh_names()
 end
 
 function M.dispatch_group_left()
@@ -272,6 +292,16 @@ function M.init()
   E.register("Verdant_E_Death", EVENT_UNIT_DEATH_STATE_CHANGED, M.dispatch_death_state)
   E.add_filter("Verdant_E_Death", EVENT_UNIT_DEATH_STATE_CHANGED,
     REGISTER_FILTER_UNIT_TAG, "player")
+
+  E.register("Verdant_E_DeathGroup", EVENT_UNIT_DEATH_STATE_CHANGED, M.dispatch_death_state_group)
+  E.add_filter("Verdant_E_DeathGroup", EVENT_UNIT_DEATH_STATE_CHANGED,
+    C.REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+
+  E.register("Verdant_E_Power", C.EVENT_POWER_UPDATE, M.dispatch_power)
+  E.add_filter("Verdant_E_Power", C.EVENT_POWER_UPDATE,
+    C.REGISTER_FILTER_POWER_TYPE, C.POWERTYPE_HEALTH)
+  E.add_filter("Verdant_E_Power", C.EVENT_POWER_UPDATE,
+    C.REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 
   E.register("Verdant_E_GroupJ", EVENT_GROUP_MEMBER_JOINED, M.dispatch_group_change)
   E.register("Verdant_E_GroupL", EVENT_GROUP_MEMBER_LEFT,   M.dispatch_group_left)

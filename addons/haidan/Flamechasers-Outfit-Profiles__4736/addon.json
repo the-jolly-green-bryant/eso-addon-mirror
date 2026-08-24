@@ -18,9 +18,9 @@
     "OutfitCollectionProfiles"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4736/",
-  "fingerprint": "143cbcba98c77622eb94f36d458e633a9a2354cb2fe093e579dbc04ebc2b1ba2",
+  "fingerprint": "f5668baefe277afa878c75956bb7fc571518b289a0a5ba2b2b0da68aa4bc216f",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16856.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17092.png"
   ],
   "platform": "pc",
   "published": true,
@@ -28,11 +28,11 @@
   "source_id": "4736",
   "source_url": "https://www.esoui.com/downloads/info4736-FlamechasersOutfitProfiles.html",
   "stats": {
-    "downloads": 28,
+    "downloads": 52,
     "favorites": 0,
-    "monthly_downloads": 24
+    "monthly_downloads": 50
   },
   "title": "Flamechasers Outfit Profiles",
-  "updated_at": 1785716853000,
-  "version": "0.3.11"
+  "updated_at": 1787515110000,
+  "version": "0.4.1"
 }

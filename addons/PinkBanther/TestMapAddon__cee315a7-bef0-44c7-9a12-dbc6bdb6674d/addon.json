@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/TestMapAddon__cee315a7-bef0-44c7-9a12-dbc6bdb6674d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:cee315a7-bef0-44c7-9a12-dbc6bdb6674d",
+  "content_id": "cee315a7-bef0-44c7-9a12-dbc6bdb6674d",
+  "deleted": false,
+  "fingerprint": "1bb8eaa54308bb11a1b0f8fbbd5b59efe8bb48bab1777ee60a56d52426003616",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "cee315a7-bef0-44c7-9a12-dbc6bdb6674d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/cee315a7-bef0-44c7-9a12-dbc6bdb6674d",
+  "title": "TestMapAddon"
+}

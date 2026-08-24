@@ -14,7 +14,7 @@ local OWNERSHIP_OWNER = "ImmersiveMode"
 local VOTAN_RESOURCE = "VotanMinimapVisibility"
 local OVERHEAD_RESOURCE = "EsoOverheadVisibility"
 
-I.version = "1.0.160"
+I.version = "1.0.200"
 I.active = false
 I.sv = nil
 I.hiddenControls = I.hiddenControls or {}
@@ -508,6 +508,13 @@ function I.RestoreNativeOverheadTemporaryState()
     if Ownership and Ownership.ReleaseResource then
         Ownership.ReleaseResource(OWNERSHIP_OWNER, OVERHEAD_RESOURCE)
     end
+
+    -- Reconcile Ultivite's combat-only enemy Health-bar rule after Immersive or
+    -- Camera mode restores ESO's temporary nameplate snapshot.
+    local combat = getCombat()
+    if combat and combat.ApplyNativeOverheadTargetBar then
+        combat.ApplyNativeOverheadTargetBar()
+    end
 end
 
 local function hideGoldenPursuits()
@@ -627,6 +634,12 @@ end
 
 function I.IsActive()
     return I.active == true
+end
+
+function I.ShouldHideOverheadPlayerInfo()
+    if not I.active then return false end
+    local cfg = getConfig()
+    return cfg and cfg.hideOverheadPlayerInfo == true
 end
 
 function I.SetActive(enabled, silent)
@@ -1094,7 +1107,7 @@ function I.GetMenuOptions()
         { type = "checkbox", name = "Champion progress bar", getFunc = function() return cfg().hideChampionProgress end, setFunc = function(v) cfg().hideChampionProgress = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideChampionProgress },
         { type = "checkbox", name = "Ultivite combat information", getFunc = function() return cfg().hideCombatInformation end, setFunc = function(v) cfg().hideCombatInformation = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideCombatInformation },
         { type = "checkbox", name = "Ultivite combat warnings", getFunc = function() return cfg().hideCombatWarnings end, setFunc = function(v) cfg().hideCombatWarnings = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideCombatWarnings },
-        { type = "checkbox", name = "Feet compass and crown arrow", getFunc = function() return cfg().hideNavigationHelpers end, setFunc = function(v) cfg().hideNavigationHelpers = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideNavigationHelpers },
+        { type = "checkbox", name = "Feet compass and Follow the Leader", getFunc = function() return cfg().hideNavigationHelpers end, setFunc = function(v) cfg().hideNavigationHelpers = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideNavigationHelpers },
         { type = "checkbox", name = "Nameplates and overhead information", tooltip = "Temporarily hides ESO nameplates, overhead health bars, titles, guild text, indicators, target markers and chat bubbles, plus Ultivite's overhead player labels.", getFunc = function() return cfg().hideOverheadPlayerInfo end, setFunc = function(v) cfg().hideOverheadPlayerInfo = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideOverheadPlayerInfo },
         { type = "checkbox", name = "Votan's Minimap", getFunc = function() return cfg().hideVotanMinimap end, setFunc = function(v) cfg().hideVotanMinimap = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideVotanMinimap },
         { type = "checkbox", name = "HarvestMap 3D world pins", tooltip = "Temporarily hides HarvestMap's 3D world pins without changing HarvestMap's saved display preference.", getFunc = function() return cfg().hideHarvestMap3dPins end, setFunc = function(v) cfg().hideHarvestMap3dPins = v == true; requestSave(); if I.active then I.Reapply() end end, default = immersiveDefaults.hideHarvestMap3dPins },

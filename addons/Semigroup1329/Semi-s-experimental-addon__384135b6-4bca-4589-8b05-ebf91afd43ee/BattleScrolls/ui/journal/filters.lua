@@ -39,6 +39,8 @@ function filters.getDialogTitle(journalUI)
         return GetString(BATTLESCROLLS_FILTER_DAMAGE_DONE)
     elseif selectedTab == StatsTab.BOSS_DAMAGE_DONE then
         return GetString(BATTLESCROLLS_FILTER_BOSS_DAMAGE)
+    elseif selectedTab == StatsTab.RAID_DAMAGE then
+        return GetString(BATTLESCROLLS_FILTER_BY_TARGET)
     elseif selectedTab == StatsTab.DAMAGE_TAKEN then
         return GetString(BATTLESCROLLS_FILTER_BY_SOURCE)
     elseif selectedTab == StatsTab.HEALING_OUT then
@@ -163,7 +165,7 @@ function filters.applyPending(journalUI)
         tabFilters.sourceFilter = sourceFilter
     elseif journalUI.selectedTab == StatsTab.DAMAGE_TAKEN or journalUI.selectedTab == StatsTab.HEALING_IN then
         tabFilters.sourceFilter = mainFilter
-    elseif journalUI.selectedTab == StatsTab.HEALING_OUT then
+    elseif journalUI.selectedTab == StatsTab.HEALING_OUT or journalUI.selectedTab == StatsTab.RAID_DAMAGE then
         tabFilters.targetFilter = mainFilter
     elseif journalUI.selectedTab == StatsTab.EFFECTS_GROUP then
         tabFilters.groupFilter = mainFilter
@@ -332,6 +334,18 @@ function filters.getFilterableUnits(journalUI)
             bossTargets[bossUnitId] = zo_strformat(SI_UNIT_NAME, rawName)
         end
         return groupUnitsByName(bossTargets, nil, nil)
+
+    elseif selectedTab == StatsTab.RAID_DAMAGE then
+        local targets = {}
+        for _, damageTable in ipairs({ encounter.damageByUnitId, encounter.damageByUnitIdGroup }) do
+            for _, byTarget in pairs(damageTable or {}) do
+                for targetUnitId in pairs(byTarget) do
+                    local rawName = unitNames[targetUnitId] or GetString(BATTLESCROLLS_UNKNOWN)
+                    targets[targetUnitId] = zo_strformat(SI_UNIT_NAME, rawName)
+                end
+            end
+        end
+        return groupUnitsByName(targets, nil, nil)
 
     elseif selectedTab == StatsTab.DAMAGE_TAKEN then
         local sources = {}

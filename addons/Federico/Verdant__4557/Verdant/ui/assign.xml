@@ -80,11 +80,13 @@
         <Control name="$(parent)Flyout" hidden="true" mouseEnabled="true">
           <Dimensions x="200" y="100"/>
           <Controls>
+            <Texture name="$(parent)Fill">
+              <AnchorFill/>
+            </Texture>
             <Backdrop name="$(parent)Bg">
               <AnchorFill/>
               <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
                     edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
-              <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
               <Insets left="4" top="4" right="-4" bottom="-4"/>
             </Backdrop>
           </Controls>

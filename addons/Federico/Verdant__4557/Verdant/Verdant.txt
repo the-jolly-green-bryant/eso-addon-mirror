@@ -1,9 +1,9 @@
 ## Title: Verdant
-## Description: Real-time healer contribution bar — eHPS, shield mitigation and EMS, with skill-colour breakdown
+## Description: Real-time healer contribution tool — healing, shields and triage, with skill-colour breakdown
 ## Author: Federico Vergelli
-## Version: 2.3.0
-## AddOnVersion: 8
-## APIVersion: 101049 101050
+## Version: 2.4.0
+## AddOnVersion: 9
+## APIVersion: 101050 101051
 ## SavedVariables: VerdantSavedVars
 
 # This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
@@ -19,6 +19,7 @@ core/gc.lua
 lib/mem/buffer_pool.lua
 lib/mem/ring_buffer.lua
 lib/mem/event.lua
+lib/vsf.lua
 zenimax/constants.lua
 zenimax/api.lua
 zenimax/ui.lua
@@ -40,7 +41,10 @@ core/mode.lua
 core/skill_colors.lua
 core/metrics.lua
 core/buff_tracker.lua
+core/triage.lua
+core/session_store.lua
 observability/diagnostics.lua
+observability/trace.lua
 pipeline/acquisition.lua
 pipeline/filter.lua
 pipeline/processing.lua
@@ -56,6 +60,8 @@ ui/settings.xml
 ui/settings.lua
 ui/graph.xml
 ui/graph.lua
+ui/library.xml
+ui/library.lua
 ui/assign.xml
 ui/assign.lua
 ui/logo.xml

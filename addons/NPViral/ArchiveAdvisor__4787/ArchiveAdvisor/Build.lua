@@ -172,6 +172,84 @@ local function ApplySkillCapabilities(flags, abilities)
     end
 end
 
+local werewolfLineProgressions = nil
+
+local function GetWerewolfLineProgressions()
+    if werewolfLineProgressions then
+        return werewolfLineProgressions
+    end
+
+    werewolfLineProgressions = {}
+    for lineName, seedAbilityId in pairs(ADDON.Data.WEREWOLF_LINE_SEEDS or {}) do
+        local hasProgression, progressionIndex = GetAbilityProgressionXPInfoFromAbilityId(seedAbilityId)
+        if hasProgression and progressionIndex then
+            werewolfLineProgressions[lineName] = progressionIndex
+        end
+    end
+
+    return werewolfLineProgressions
+end
+
+local function GetWerewolfAbilityLineMap()
+    local lineByAbilityId = {}
+
+    -- Build this per snapshot because effective Werewolf IDs can change with
+    -- the current hotbar override state (for example Pounce -> Carnage).
+    for lineName, progressionIndex in pairs(GetWerewolfLineProgressions()) do
+        for morphChoice = 0, 2 do
+            for rank = 1, 4 do
+                local abilityId = GetAbilityProgressionAbilityId(progressionIndex, morphChoice, rank)
+                if abilityId and abilityId > 0 then
+                    lineByAbilityId[abilityId] = lineName
+
+                    local effectiveId = GetEffectiveAbilityIdForAbilityOnHotbar(abilityId, HOTBAR_CATEGORY_WEREWOLF)
+                    if effectiveId and effectiveId > 0 then
+                        lineByAbilityId[effectiveId] = lineName
+                    end
+                end
+            end
+        end
+    end
+
+    return lineByAbilityId
+end
+
+local function ApplyWerewolfLineCapabilities(flags, abilities)
+    local lineByAbilityId = GetWerewolfAbilityLineMap()
+    local lineProgressions = GetWerewolfLineProgressions()
+
+    -- Werewolf Light/Heavy Attacks and its damaging kit are martial even when
+    -- the character underneath is using a staff or another ranged weapon.
+    flags.MARTIAL = true
+
+    for abilityId in pairs(abilities) do
+        local lineName = lineByAbilityId[abilityId]
+
+        -- Normal morph IDs expose their progression directly. Effective IDs
+        -- such as Carnage are normally resolved by the hotbar map above.
+        if not lineName then
+            local hasProgression, progressionIndex = GetAbilityProgressionXPInfoFromAbilityId(abilityId)
+            if hasProgression and progressionIndex then
+                for candidateLine, candidateProgression in pairs(lineProgressions) do
+                    if candidateProgression == progressionIndex then
+                        lineName = candidateLine
+                        break
+                    end
+                end
+            end
+        end
+
+        local capabilityData = lineName and ADDON.Data.WEREWOLF_LINE_CAPABILITIES[lineName]
+        if capabilityData then
+            for capability, enabled in pairs(capabilityData) do
+                if enabled then
+                    flags[capability] = true
+                end
+            end
+        end
+    end
+end
+
 local function ApplyWeaponTypeSignals(flags, weaponType)
     -- Weapon type alone is not a build specialization signal. It is only used
     -- here for the structural ranged capability.
@@ -305,15 +383,23 @@ function ADDON.Build:Snapshot()
         POISON = false,
         FIRE = false,
         FROST = false,
+        WEREWOLF_ACTIVE = false,
     }
+
+    local activeHotbar = GetActiveHotbarCategory()
+    flags.WEREWOLF_ACTIVE = activeHotbar == HOTBAR_CATEGORY_WEREWOLF
 
     local sets = GetEquippedSets()
     local hasOakensoul = sets[ADDON.Data.OAKENSOUL_SET_ID] ~= nil
     local hotbars = GetRelevantHotbars(hasOakensoul)
-    local abilities = GetSlottedAbilities(hotbars)
+    local skillHotbars = flags.WEREWOLF_ACTIVE and { HOTBAR_CATEGORY_WEREWOLF } or hotbars
+    local abilities = GetSlottedAbilities(skillHotbars)
     local skillFamilyCounts = GetSkillFamilyCounts(abilities)
 
     ApplySkillCapabilities(flags, abilities)
+    if flags.WEREWOLF_ACTIVE then
+        ApplyWerewolfLineCapabilities(flags, abilities)
+    end
     local magickaCostSkills, staminaCostSkills = GetAbilityCostSignals(abilities)
 
     -- Attribute allocation is the primary resource signal. Skill costs are only
@@ -338,6 +424,12 @@ function ADDON.Build:Snapshot()
 
     local weaponTypes = GetWeaponSignals(flags, hotbars)
 
+    -- The equipped weapon remains relevant for enchants/poisons while
+    -- transformed, but its human combat geometry does not describe Werewolf.
+    if flags.WEREWOLF_ACTIVE then
+        flags.RANGED = false
+    end
+
     -- Weapon damage family only counts when a Weapon skill is actually slotted.
     if (skillFamilyCounts.WEAPON or 0) > 0 then
         if weaponTypes[WEAPONTYPE_LIGHTNING_STAFF]
@@ -359,21 +451,24 @@ function ADDON.Build:Snapshot()
         end
     end
 
-    -- Strong Heavy-Attack specialization signals only.
-    local sergeantsMail = sets[ADDON.Data.SERGEANTS_MAIL_SET_ID]
-    if (sergeantsMail and sergeantsMail >= 5)
-        or (hasOakensoul and weaponTypes[WEAPONTYPE_LIGHTNING_STAFF]) then
-        flags.HA_SPECIALIST = true
-    end
+    -- Strong Heavy-Attack specialization signals only. Human HA specialization
+    -- does not carry into the Werewolf combat bar.
+    if not flags.WEREWOLF_ACTIVE then
+        local sergeantsMail = sets[ADDON.Data.SERGEANTS_MAIL_SET_ID]
+        if (sergeantsMail and sergeantsMail >= 5)
+            or (hasOakensoul and weaponTypes[WEAPONTYPE_LIGHTNING_STAFF]) then
+            flags.HA_SPECIALIST = true
+        end
 
-    -- For a Heavy-Attack specialist, the staff element is a relevant signal.
-    if flags.HA_SPECIALIST then
-        if weaponTypes[WEAPONTYPE_LIGHTNING_STAFF] then
-            flags.LIGHTNING = true
-        elseif weaponTypes[WEAPONTYPE_FIRE_STAFF] then
-            flags.FIRE = true
-        elseif weaponTypes[WEAPONTYPE_FROST_STAFF] then
-            flags.FROST = true
+        -- For a Heavy-Attack specialist, the staff element is a relevant signal.
+        if flags.HA_SPECIALIST then
+            if weaponTypes[WEAPONTYPE_LIGHTNING_STAFF] then
+                flags.LIGHTNING = true
+            elseif weaponTypes[WEAPONTYPE_FIRE_STAFF] then
+                flags.FIRE = true
+            elseif weaponTypes[WEAPONTYPE_FROST_STAFF] then
+                flags.FROST = true
+            end
         end
     end
 

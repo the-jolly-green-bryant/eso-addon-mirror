@@ -83,15 +83,22 @@ function M.iterate(fn)
 end
 
 local markers = { n = 0 }
-local MARKER_CAP = 40
+local MARKER_CAP       = 80
+local MARKER_GROUP_CAP = 60
+local group_marker_n   = 0
 
-function M.add_marker(t, is_death)
+function M.add_marker(t, is_death, who)
   if markers.n >= MARKER_CAP then return end
+  if who then
+    if group_marker_n >= MARKER_GROUP_CAP then return end
+    group_marker_n = group_marker_n + 1
+  end
   markers.n = markers.n + 1
   local m = markers[markers.n]
   if not m then m = {}; markers[markers.n] = m end
   m.t = t
   m.death = is_death and true or false
+  m.who = who
 end
 
 function M.markers() return markers, markers.n end
@@ -103,11 +110,14 @@ function M.is_recording() return state.recording end
 function M.start_recording()
   state.recording = true
   log:info("start_recording")
+  if Verdant.Triage then Verdant.Triage.on_session_start() end
+  if Verdant.SessionStore then Verdant.SessionStore.on_session_start() end
 end
 
 function M.stop_recording()
   state.recording = false
   log:info("stop_recording: count=", state.count, "/", state.capacity)
+  if Verdant.Triage then Verdant.Triage.on_session_stop() end
 end
 
 local summary_scratch = {
@@ -153,9 +163,28 @@ function M.summary()
   return s
 end
 
+local EMPTY_SHARES = { count = 0 }
+
+function M.load_session(samples, marker_list)
+  M.clear()
+  for i = 1, #samples do
+    local s = samples[i]
+    M.push(s.t, s.eHPS, s.MPS, s.crit, s.noncrit,
+           s.eg or EMPTY_SHARES, s.mg or EMPTY_SHARES,
+           s.ea or EMPTY_SHARES, s.ma or EMPTY_SHARES, s.d)
+  end
+  for i = 1, #marker_list do
+    local m = marker_list[i]
+    M.add_marker(m.t, m.death, m.who)
+  end
+  state.recording = false
+  log:info("session loaded: samples=", #samples, "markers=", #marker_list)
+end
+
 function M.clear()
   log:info("clear: discarding", state.count, "samples")
   state.write = 1
   state.count = 0
   markers.n = 0
+  group_marker_n = 0
 end

@@ -47,6 +47,10 @@ local STANDARD_VISIBILITY_CYCLE = { "show", "combat", "pvp", "hide" }
 local CROSSHAIR_VISIBILITY_CYCLE = { "show", "combatOnly", "pvpOnly", "combat", "pvp", "hide" }
 
 Q.panel = nil
+Q.editToolbar = nil
+Q.editToolbarStatus = nil
+Q.editToolbarUnlock = nil
+Q.editToolbarSave = nil
 Q.buttons = Q.buttons or {}
 Q.lastChatOpen = nil
 Q.chatWatchRegistered = false
@@ -56,7 +60,11 @@ Q.chatSessionActive = false
 Q.pointerInside = false
 Q.previewEnabled = false
 Q.resizeEnabled = false
+Q.previewAll = true
 Q.previewKey = "darkSouls"
+Q.nativeChatResizeActive = false
+Q.nativeChatResizeHoldUntil = 0
+Q.nativeChatResizeObserverInstalled = false
 Q.previewRuntime = nil
 Q.previewHandlersInstalled = false
 Q.previewRestoreGeneration = Q.previewRestoreGeneration or 0
@@ -89,6 +97,10 @@ Q.initializing = false
 Q.createAttempt = Q.createAttempt or 0
 Q.nextCreateRetryMs = Q.nextCreateRetryMs or 0
 
+-- Forward declaration because the live label refresh is defined before the
+-- section-store helpers lower in this file.
+local AreAllQuickMenuSectionsExpanded
+
 local function BoolText(value)
     return value and "ON" or "OFF"
 end
@@ -108,7 +120,9 @@ local function GetCombatSettings()
 end
 
 function Q.IsPreviewing(key)
-    return Q.previewEnabled == true and Q.previewKey == key
+    if Q.previewEnabled ~= true then return false end
+    if Q.previewAll == true then return true end
+    return Q.previewKey == key
 end
 
 local function RequestSave()
@@ -129,8 +143,9 @@ local function IsTextEntryOpen()
 end
 
 function Q.CanShow()
-    -- The settings shortcut may open the panel outside the HUD scene.
-    if Q.openedFromSettings == true then return true end
+    -- The settings shortcut and explicit chat editor may remain open outside an
+    -- active text-entry session. Keep the Quick Menu available until Save/Lock.
+    if Q.openedFromSettings == true or U.chatWindowEditing == true then return true end
 
     -- TextEntry can open before the HUD scene transition is reported.
     if IsTextEntryOpen() then return true end
@@ -165,10 +180,12 @@ function Q.ShouldRemainVisible()
     if Q.previewEnabled == true then return true end
     if Q.manualDismissed == true then return false end
     if Q.openedFromSettings == true then return true end
+    if U.chatWindowEditing == true then return true end
     if Q.actionInProgress == true then return true end
     if Q.pointerInside == true then return true end
     if GetNowMs() < (Q.interactionHoldUntil or 0) then return true end
     if Q.chatSessionActive == true then return true end
+    if Q.IsNativeChatResizeActive and Q.IsNativeChatResizeActive() then return true end
     return Q.IsChatOpen()
 end
 
@@ -192,9 +209,25 @@ local function CapturePreviewChatDraft()
     if draft ~= "" or runtime.chatDraftText == "" then runtime.chatDraftText = draft end
 end
 
+local function IsAnyMouseButtonDown()
+    if type(IsMouseButtonDown) ~= "function" then return false end
+    for _, button in ipairs({ MOUSE_BUTTON_INDEX_LEFT, MOUSE_BUTTON_INDEX_RIGHT }) do
+        local ok, pressed = pcall(IsMouseButtonDown, button)
+        if ok and pressed == true then return true end
+    end
+    return false
+end
+
 local function EnsureChatKeyboardFocus()
     local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
     if not entry or not IsTextEntryOpen() then return false end
+
+    -- Never take keyboard focus while the mouse is held, ESO is resizing chat,
+    -- or Ultivite's explicit chat move/resize overlay is active. This is only a
+    -- one-time repair after opening chat or completing a Quick Menu click.
+    if IsAnyMouseButtonDown() then return false end
+    if Q.IsNativeChatResizeActive and Q.IsNativeChatResizeActive() then return false end
+    if U.chatWindowEditing == true then return false end
 
     local edit = entry.editControl or rawget(_G, "ZO_ChatWindowTextEntryEditBox")
     if not edit or type(edit.TakeFocus) ~= "function" then return false end
@@ -206,13 +239,28 @@ local function EnsureChatKeyboardFocus()
     return pcall(edit.TakeFocus, edit)
 end
 
-local function IsAnyMouseButtonDown()
-    if type(IsMouseButtonDown) ~= "function" then return false end
-    for _, button in ipairs({ MOUSE_BUTTON_INDEX_LEFT, MOUSE_BUTTON_INDEX_RIGHT }) do
-        local ok, pressed = pcall(IsMouseButtonDown, button)
-        if ok and pressed == true then return true end
-    end
-    return false
+local function GetPrimaryChatContainer()
+    return U.GetPrimaryChatContainer and U.GetPrimaryChatContainer() or nil
+end
+
+local function IsOurPrimaryChatControl(control)
+    local container = GetPrimaryChatContainer()
+    return container and container.control and control == container.control or false
+end
+
+function Q.IsNativeChatResizeActive()
+    -- Read ESO's own resize flag only. Do not pre-hook, post-hook, replace or
+    -- wrap the stock resize callbacks. Native chat resizing must remain a fully
+    -- ZOS-owned interaction so Ultivite cannot taint or interrupt it.
+    local container = GetPrimaryChatContainer()
+    return container ~= nil and container.resizing == true
+end
+
+function Q.InstallNativeChatResizeObserver()
+    -- Compatibility entry point retained for older call sites. Intentionally
+    -- installs nothing. Q.IsNativeChatResizeActive() is a passive state read.
+    Q.nativeChatResizeObserverInstalled = true
+    return true
 end
 
 local function ScheduleChatKeyboardFocusRepair(generation)
@@ -224,28 +272,26 @@ local function ScheduleChatKeyboardFocusRepair(generation)
         if focusGeneration ~= (Q.chatReopenGeneration or 0)
             or Q.manualDismissed == true
             or Q.openedFromSettings == true
+            or U.chatWindowEditing == true
             or not Q.IsChatOpen() then
             return
         end
 
-        -- Never take keyboard focus while a mouse drag is active. This keeps the
-        -- stock chat resize grip fully owned by ESO while still repairing the
-        -- missing edit-box focus introduced by 1.0.146.
-        if IsAnyMouseButtonDown() then
+        if IsAnyMouseButtonDown() or (Q.IsNativeChatResizeActive and Q.IsNativeChatResizeActive()) then
             attempt = attempt + 1
-            if attempt < maxAttempts then zo_callLater(tryFocus, CHAT_WATCH_MS) end
+            if attempt < maxAttempts and zo_callLater then zo_callLater(tryFocus, CHAT_WATCH_MS) end
             return
         end
 
         if EnsureChatKeyboardFocus() then return end
-
         attempt = attempt + 1
-        if attempt < maxAttempts then zo_callLater(tryFocus, CHAT_WATCH_MS) end
+        if attempt < maxAttempts and zo_callLater then zo_callLater(tryFocus, CHAT_WATCH_MS) end
     end
 
-    -- Let ESO finish the StartChatInput/Open path and let Ultivite finish its
-    -- visibility refresh before performing the one-time focus repair.
-    zo_callLater(tryFocus, 10)
+    -- This is the bounded post-open repair used by the last stable chat build.
+    -- It never runs continuously and never runs while a resize/move is active.
+    if zo_callLater then zo_callLater(tryFocus, 10) else tryFocus() end
+    return true
 end
 
 local function MarkPreviewChatClose()
@@ -276,48 +322,17 @@ function Q.EndPreviewHudInteraction()
 end
 
 function Q.SchedulePreviewChatRestore()
+    -- Stock chat is observation-only from Ultivite. Older builds attempted to
+    -- reopen ESO TextEntry after HUD dragging. That touched the same lifecycle
+    -- ESO uses for typing and native edge resizing and could collapse chat.
+    -- Preserve only Ultivite's bookkeeping; the player/ESO decides when chat
+    -- opens, closes, gains focus, or resumes after a mouse interaction.
     local runtime = Q.previewRuntime
-    if Q.previewEnabled ~= true or not runtime or runtime.chatWasOpen ~= true then return end
-    if runtime.chatClosedForHudInteraction ~= true then return end
-    if Q.openedFromSettings == true or Q.manualDismissed == true then return end
-    if Q.previewRestorePending == true then return end
-
-    Q.previewRestoreGeneration = (Q.previewRestoreGeneration or 0) + 1
-    local generation = Q.previewRestoreGeneration
-    Q.previewRestorePending = true
-
-    local function restoreWhenReleased()
-        if generation ~= (Q.previewRestoreGeneration or 0)
-            or Q.previewEnabled ~= true
-            or Q.previewRuntime ~= runtime
-            or Q.openedFromSettings == true
-            or Q.manualDismissed == true then
-            Q.previewRestorePending = false
-            return
-        end
-
-        if IsAnyMouseButtonDown() then
-            zo_callLater(restoreWhenReleased, CHAT_WATCH_MS)
-            return
-        end
-
-        Q.previewRestorePending = false
-        if not Q.IsChatOpen() then
-            local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
-            local entry = chatSystem and chatSystem.textEntry or nil
-            if chatSystem and type(chatSystem.StartTextEntry) == "function" then
-                pcall(chatSystem.StartTextEntry, chatSystem, runtime.chatDraftText or "")
-            elseif entry and type(entry.Open) == "function" then
-                pcall(entry.Open, entry, runtime.chatDraftText or "")
-            end
-        end
-        EnsureChatKeyboardFocus()
+    Q.previewRestorePending = false
+    if runtime then
         runtime.chatClosedForHudInteraction = false
-        if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
-        Q.RefreshChatVisibility(true)
     end
-
-    zo_callLater(restoreWhenReleased, 0)
+    Q.RefreshChatVisibility(true)
 end
 
 function Q.ReopenChatAfterInteraction(draftText, actionGeneration)
@@ -327,22 +342,33 @@ function Q.ReopenChatAfterInteraction(draftText, actionGeneration)
     local function restoreChat()
         if Q.manualDismissed == true
             or Q.openedFromSettings == true
+            or U.chatWindowEditing == true
             or reopenGeneration ~= (Q.chatReopenGeneration or 0)
             or actionGen ~= (Q.actionGeneration or 0) then
+            Q.actionInProgress = false
+            Q.actionButtonKey = nil
+            return
+        end
+
+        if IsAnyMouseButtonDown() or (Q.IsNativeChatResizeActive and Q.IsNativeChatResizeActive()) then
+            if zo_callLater then zo_callLater(restoreChat, CHAT_WATCH_MS) end
             return
         end
 
         local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
         local entry = chatSystem and chatSystem.textEntry or nil
         if not IsTextEntryOpen() then
+            -- This path runs only because the user clicked a Quick Menu control
+            -- while chat was already open. Restore that same chat session/draft.
             if chatSystem and type(chatSystem.StartTextEntry) == "function" then
                 pcall(chatSystem.StartTextEntry, chatSystem, draftText or "")
+            elseif type(StartChatInput) == "function" then
+                pcall(StartChatInput, draftText or "")
             elseif entry and type(entry.Open) == "function" then
                 pcall(entry.Open, entry, draftText or "")
             end
         end
         EnsureChatKeyboardFocus()
-
         if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
 
         Q.actionInProgress = false
@@ -351,14 +377,7 @@ function Q.ReopenChatAfterInteraction(draftText, actionGeneration)
         Q.RefreshChatVisibility(true)
     end
 
-    zo_callLater(function()
-        restoreChat()
-        if actionGen == (Q.actionGeneration or 0)
-            and Q.manualDismissed ~= true
-            and not Q.IsChatOpen() then
-            zo_callLater(restoreChat, CHAT_WATCH_MS)
-        end
-    end, 0)
+    if zo_callLater then zo_callLater(restoreChat, 0) else restoreChat() end
 end
 
 local function SafeRequestSave()
@@ -387,15 +406,18 @@ local function InstallMovableResizeHandlers(control, savePosition, resizeStep)
     control:SetHandler("OnMouseDown", function(self, button)
         if Q.previewEnabled ~= true or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
         Q.BeginPreviewHudInteraction()
+        self.ultiviteQuickDragging = true
         if self.StartMoving then self:StartMoving() end
     end)
     control:SetHandler("OnMouseUp", function(self, button)
         if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
         if self.StopMovingOrResizing then self:StopMovingOrResizing() end
+        self.ultiviteQuickDragging = false
         if Q.previewEnabled == true and savePosition then savePosition(self) end
         Q.EndPreviewHudInteraction()
     end)
     control:SetHandler("OnMoveStop", function(self)
+        self.ultiviteQuickDragging = false
         if Q.previewEnabled == true and savePosition then savePosition(self) end
     end)
     control:SetHandler("OnMouseWheel", function(self, delta)
@@ -583,7 +605,7 @@ function Q.InstallPreviewHandlers()
     local auraRoots = {
         { root = Combat and Combat.ccImmunityRoot, x = "ccImmunityX", y = "ccImmunityY", size = "playerAuraIconSize", min = 24, max = 90, apply = "ApplyPlayerAuraHudLayout" },
         { root = Combat and Combat.playerDebuffRoot, x = "playerDebuffX", y = "playerDebuffY", size = "playerAuraIconSize", min = 24, max = 90, apply = "ApplyPlayerAuraHudLayout" },
-        { root = Combat and Combat.targetDebuffRoot, x = "targetDebuffX", y = "targetDebuffY", size = "targetDebuffIconSize", min = 24, max = 90, apply = "ApplyTargetDebuffLayout" },
+        { root = Combat and Combat.targetDebuffRoot, x = "targetDebuffX", y = "targetDebuffY", size = "targetDebuffIconSize", min = 24, max = 90, apply = "ApplyImportantTargetDebuffLayout" },
     }
     for _, info in ipairs(auraRoots) do
         if info.root then
@@ -626,6 +648,34 @@ function Q.InstallPreviewHandlers()
         end
     end
 
+    -- Trackers that previously had sliders but no direct mover are now first-class
+    -- Preview All controls. Their normal update loops are preview-aware, so these
+    -- visible roots remain stable while they are dragged instead of disappearing
+    -- on the next 50/200 ms combat refresh.
+    local trackerRoots = {
+        { root = Combat and Combat.wretchedVitalityRoot, x = "wretchedVitalityX", y = "wretchedVitalityY", size = "wretchedVitalityIconSize", min = 36, max = 80, step = 2, apply = "ApplyWretchedVitalityLayout", update = "UpdateWretchedVitalityTimers" },
+        { root = Combat and Combat.genericStackRoot, x = "genericStackX", y = "genericStackY", size = "genericStackIconSize", min = 30, max = 64, step = 2, apply = "ApplySkillStackTrackerLayout", update = "UpdateSkillStackTrackers" },
+        { root = Combat and Combat.streakFatigueRoot, x = "streakFatigueX", y = "streakFatigueY", size = "streakFatigueIconSize", min = 30, max = 68, step = 2, apply = "ApplySkillStackTrackerLayout", update = "UpdateSkillStackTrackers" },
+        { root = Combat and Combat.resourceDangerRoot, x = "resourceDangerX", y = "resourceDangerY", size = "resourceDangerFontSize", min = 16, max = 38, step = 1, apply = "ApplyResourceDangerLayout", update = "UpdateResourceDangerHud" },
+        { root = Combat and Combat.killMessageRoot, x = "killMessageX", y = "killMessageY", size = "killMessageFontSize", min = 20, max = 56, step = 1, apply = "ApplyKillMessageAnchor", update = "UpdateKillMessage" },
+    }
+    for _, info in ipairs(trackerRoots) do
+        if info.root then
+            InstallMovableResizeHandlers(info.root, function(root)
+                SaveCenteredPosition(root, info.x, info.y, -1100, 1100, -600, 600)
+                if info.apply and Combat[info.apply] then Combat[info.apply]() end
+            end, function(direction)
+                if not Combat.sv then return end
+                local current = tonumber(Combat.sv[info.size]) or info.min
+                Combat.sv[info.size] = zo_clamp(current + (direction * (info.step or 1)), info.min, info.max)
+                if info.apply and Combat[info.apply] then Combat[info.apply]() end
+                if info.update and Combat[info.update] then Combat[info.update](true) end
+                if Combat.ApplyFontSettings and info.size == "killMessageFontSize" then Combat.ApplyFontSettings() end
+                SafeRequestSave()
+            end)
+        end
+    end
+
     if Combat and Combat.majorBreachRoot and not Combat.majorBreachRoot.ultiviteQuickResizeOnly then
         Combat.majorBreachRoot.ultiviteQuickResizeOnly = true
         Combat.majorBreachRoot:SetHandler("OnMouseWheel", function(_, delta)
@@ -642,63 +692,95 @@ function Q.InstallPreviewHandlers()
     Q.InstallFabPreviewHandlers()
 end
 
+local function SetPreviewCaption(root, text, visible)
+    if not root or not WINDOW_MANAGER then return end
+    local label = root.ultivitePreviewCaption
+    if not label then
+        label = WINDOW_MANAGER:CreateControl(nil, root, CT_LABEL)
+        root.ultivitePreviewCaption = label
+        label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        label:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
+        label:SetFont("$(BOLD_FONT)|16|soft-shadow-thick")
+        label:SetColor(0.55, 0.88, 1.0, 0.98)
+        label:SetMouseEnabled(false)
+        label:ClearAnchors()
+        label:SetAnchor(BOTTOM, root, TOP, 0, -3)
+        label:SetDimensions(260, 22)
+    end
+    label:SetText(tostring(text or ""))
+    label:SetHidden(visible ~= true)
+end
+
+local function HidePreviewCaptions()
+    if not Combat then return end
+    for _, root in ipairs({ Combat.ccImmunityRoot, Combat.playerDebuffRoot, Combat.targetDebuffRoot,
+        Combat.genericStackRoot, Combat.streakFatigueRoot }) do
+        if root and root.ultivitePreviewCaption then root.ultivitePreviewCaption:SetHidden(true) end
+    end
+end
+
 function Q.ApplyActualPreviewVisibility()
     if Q.previewEnabled ~= true then return end
     Q.InstallPreviewHandlers()
 
-    -- Preset changes can relock their normal editors. Preview owns the edit
-    -- session while it is active, so immediately put the real HUD back into
-    -- movable mode without changing the selected visual preset.
-    if Frames and Frames.saved and Frames.saved.locked == true and Frames.SetLocked then Frames.SetLocked(false, true) end
-    if Combat and Combat.sv and Combat.sv.locked == true and Combat.SetPositionPreview then Combat.SetPositionPreview(true) end
+    -- Editing mode is intentionally global. The user should not have to select
+    -- one menu row before the corresponding mover exists. Unlock all owned HUD
+    -- systems, show every supported preview at once, and enable wheel resizing.
+    Q.previewAll = true
+    Q.resizeEnabled = true
+    if Q.editToolbar then
+        Q.editToolbar:SetHidden(false)
+        Q.editToolbar:SetMouseEnabled(true)
+    end
+    if Q.editToolbarStatus then Q.editToolbarStatus:SetText("PREVIEW EVERYTHING   •   DRAG TO MOVE   •   WHEEL TO RESIZE") end
+
+    if Frames and Frames.SetLocked then Frames.SetLocked(false, true) end
+    if Combat and Combat.SetPositionPreview then Combat.SetPositionPreview(true) end
+
     local liveFab = rawget(_G, "FancyActionBar")
-    if liveFab and liveFab.ToggleMover and liveFab.IsUnlocked and not liveFab.IsUnlocked() then pcall(liveFab.ToggleMover, true) end
-
-    -- First release anything that was force-shown for the previous menu row.
-    -- The normal Ultivite update routines decide whether those controls should
-    -- be visible when they are not the active preview target.
-    if Frames and Frames.RefreshNavigationHelpers then Frames.RefreshNavigationHelpers(true) end
-    if EnemyAlerts and EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind(nil) end
-    if Combat then
-        if Combat.UpdateLiveStatWidgets then Combat.UpdateLiveStatWidgets(true) end
-        if Combat.ScanPlayerAuraHud then Combat.ScanPlayerAuraHud() end
-        if Combat.ScanTargetAuras then Combat.ScanTargetAuras() end
-        if Combat.UpdateCombatDangerWarnings then Combat.UpdateCombatDangerWarnings(true) end
-        if Combat.UpdateFoodWarning then Combat.UpdateFoodWarning() end
-        if Combat.UpdateMajorResolveWarning then Combat.UpdateMajorResolveWarning() end
-        if Combat.UpdateMajorBreachDisplay then Combat.UpdateMajorBreachDisplay() end
-        if Combat.SetPvpHudEditMode then Combat.SetPvpHudEditMode(false) elseif Combat.UpdatePvpHud then Combat.UpdatePvpHud() end
+    if liveFab and liveFab.ToggleMover and liveFab.IsUnlocked and not liveFab.IsUnlocked() then
+        pcall(liveFab.ToggleMover, true)
     end
 
-    local key = Q.previewKey or "darkSouls"
-    if key == "actionBar" then
-        -- Show the actual FAB/ESO action-bar root while it is the selected preview.
-        -- The FAB mover remains responsible for drag/resize and DeactivatePreviewRuntime
-        -- restores the user's real Action Bar / Combat HUD visibility afterwards.
-        local bar = rawget(_G, "ZO_ActionBar1")
-        if bar and bar.SetHidden and not (Ownership and Ownership.IsControlOwned and Ownership.IsControlOwned(bar)) then
-            bar:SetHidden(false)
-        end
+    -- Action Bar / FAB.
+    local bar = rawget(_G, "ZO_ActionBar1")
+    if bar and bar.SetHidden and not (Ownership and Ownership.IsControlOwned and Ownership.IsControlOwned(bar)) then
+        bar:SetHidden(false)
     end
-    if (key == "darkSouls" or key == "enemyHealth") and Frames then
+
+    -- Dark Souls / player HUD controls. Player bar editing itself is owned by
+    -- Frames.SetLocked(false), which displays the visible movers for all bars.
+    if Frames then
         if Frames.dsEnemyHealthControl and Frames.dsEnemyHealthControl.frame then
             Frames.dsEnemyHealthControl.frame:SetMovable(true)
             Frames.dsEnemyHealthControl.frame:SetMouseEnabled(true)
+            Frames.dsEnemyHealthControl.frame:SetHidden(false)
         end
         if Frames.dsSelfHealthControl and Frames.dsSelfHealthControl.frame then
             Frames.dsSelfHealthControl.frame:SetMovable(true)
             Frames.dsSelfHealthControl.frame:SetMouseEnabled(true)
+            Frames.dsSelfHealthControl.frame:SetHidden(false)
         end
+
+        if Frames.ApplyFeetCompassLayout and Frames.CreateFeetCompass then
+            Frames.ApplyFeetCompassLayout()
+            local control = Frames.CreateFeetCompass()
+            if control then control:SetMovable(true); control:SetMouseEnabled(true); control:SetHidden(false) end
+        end
+        if Frames.ApplyCrownDirectionArrowLayout and Frames.CreateCrownDirectionArrow then
+            Frames.ApplyCrownDirectionArrowLayout()
+            local control = Frames.CreateCrownDirectionArrow()
+            if control then control:SetMovable(true); control:SetMouseEnabled(true); control:SetHidden(false) end
+        end
+        if Frames.RefreshNavigationHelpers then Frames.RefreshNavigationHelpers(true) end
     end
-    if key == "feetCompass" and Frames and Frames.ApplyFeetCompassLayout and Frames.CreateFeetCompass then
-        Frames.ApplyFeetCompassLayout()
-        local control = Frames.CreateFeetCompass()
-        control:SetMovable(true); control:SetMouseEnabled(true); control:SetHidden(false)
-    elseif key == "crownArrow" and Frames and Frames.ApplyCrownDirectionArrowLayout and Frames.CreateCrownDirectionArrow then
-        Frames.ApplyCrownDirectionArrowLayout()
-        local control = Frames.CreateCrownDirectionArrow()
-        control:SetMovable(true); control:SetMouseEnabled(true); control:SetHidden(false)
-    elseif key == "pvpKD" and Combat then
+
+    if Combat then
+        -- Target frame and all tracker groups that follow Combat's unlocked state.
+        if Combat.RefreshDisplay then Combat.RefreshDisplay() end
+        if Combat.UpdateCombatTimers then Combat.UpdateCombatTimers() end
+
+        -- K/D counter.
         if Combat.SetPvpHudEditMode then Combat.SetPvpHudEditMode(true) end
         if Combat.pvpHudRoot then
             Combat.pvpHudRoot:SetMovable(true)
@@ -706,47 +788,83 @@ function Q.ApplyActualPreviewVisibility()
             Combat.pvpHudRoot:SetHidden(false)
         end
         if Combat.pvpHudDragger then Combat.pvpHudDragger:SetMouseEnabled(true) end
-    elseif key == "stats" and Combat and Combat.CreateLiveStatWidgets then
-        Combat.CreateLiveStatWidgets()
+
+        -- All live stat widgets, including shield.
+        if Combat.CreateLiveStatWidgets then Combat.CreateLiveStatWidgets() end
+        if Combat.UpdateLiveStatWidgets then Combat.UpdateLiveStatWidgets(true) end
         for _, widget in pairs(Combat.liveStatWidgets or {}) do
-            if widget and widget.root then widget.root:SetHidden(false); widget.root:SetMouseEnabled(true); widget.root:SetMovable(true) end
+            if widget and widget.root then
+                widget.root:SetHidden(false)
+                widget.root:SetMovable(true)
+                widget.root:SetMouseEnabled(true)
+            end
+            if widget and widget.dragger then widget.dragger:SetMouseEnabled(true) end
         end
-    elseif key == "shield" and Combat and Combat.CreateLiveStatWidgets then
-        Combat.CreateLiveStatWidgets()
-        local widget = Combat.liveStatWidgets and Combat.liveStatWidgets.shield
-        if widget and widget.root then
-            widget.root:SetHidden(false); widget.root:SetMouseEnabled(true); widget.root:SetMovable(true)
-            if widget.label then widget.label:SetText("12500") end
+        local shieldWidget = Combat.liveStatWidgets and Combat.liveStatWidgets.shield
+        if shieldWidget and shieldWidget.label then shieldWidget.label:SetText("12500") end
+
+        -- Aura / debuff HUD.
+        if Combat.ccImmunityRoot then
+            Combat.ccImmunityRoot:SetMovable(true); Combat.ccImmunityRoot:SetMouseEnabled(true); Combat.ccImmunityRoot:SetHidden(false)
         end
-    elseif key == "cc" and Combat and Combat.ccImmunityRoot then
-        Combat.ccImmunityRoot:SetMovable(true); Combat.ccImmunityRoot:SetMouseEnabled(true); Combat.ccImmunityRoot:SetHidden(false)
         if Combat.ccImmunityCountdown then Combat.ccImmunityCountdown:SetText("6.0") end
-    elseif key == "debuffs" and Combat then
         if Combat.playerDebuffRoot then Combat.playerDebuffRoot:SetMovable(true); Combat.playerDebuffRoot:SetMouseEnabled(true); Combat.playerDebuffRoot:SetHidden(false) end
         if Combat.targetDebuffRoot then Combat.targetDebuffRoot:SetMovable(true); Combat.targetDebuffRoot:SetMouseEnabled(true); Combat.targetDebuffRoot:SetHidden(false) end
-    elseif key == "corrosiveAlert" and EnemyAlerts and EnemyAlerts.SetPreviewKind then
-        EnemyAlerts.SetPreviewKind("corrosive")
-    elseif key == "onslaughtAlert" and EnemyAlerts and EnemyAlerts.SetPreviewKind then
-        EnemyAlerts.SetPreviewKind("onslaught")
-    elseif (key == "burst" or key == "execute") and Combat and Combat.combatDangerRoot then
-        local root = Combat.combatDangerRoot
-        root:SetMovable(true); root:SetMouseEnabled(true); root:SetHidden(false)
-        local label = Combat.combatDangerLabels and Combat.combatDangerLabels[1]
-        if label then
-            label:ClearAnchors(); label:SetAnchor(CENTER, root, CENTER, 0, 0)
-            label:SetText(key == "burst" and "BURST DAMAGE" or "EXECUTE DANGER")
-            if key == "burst" then label:SetColor(1.0, 0.12, 0.08, 1) else label:SetColor(1.0, 0.18, 0.16, 1) end
-            label:SetHidden(false)
+        if Combat.ScanPlayerAuraHud then Combat.ScanPlayerAuraHud() end
+        if Combat.ScanTargetAuras then Combat.ScanTargetAuras() end
+        SetPreviewCaption(Combat.ccImmunityRoot, "CC IMMUNITY", true)
+        SetPreviewCaption(Combat.playerDebuffRoot, "SELF DEBUFFS", true)
+        SetPreviewCaption(Combat.targetDebuffRoot, "TARGET DEBUFFS", true)
+
+        -- Combat warnings. IsPreviewing() returns true for all preview keys while
+        -- global preview is active, so their normal update functions render real
+        -- preview content instead of unrelated fake controls.
+        if Combat.combatDangerRoot then
+            Combat.combatDangerRoot:SetMovable(true); Combat.combatDangerRoot:SetMouseEnabled(true); Combat.combatDangerRoot:SetHidden(false)
         end
-    elseif key == "food" and Combat and Combat.foodWarningRoot then
-        Combat.foodWarningRoot:SetMovable(true); Combat.foodWarningRoot:SetMouseEnabled(true); Combat.foodWarningRoot:SetHidden(false)
-    elseif key == "resolve" and Combat and Combat.majorResolveWarningRoot then
-        Combat.majorResolveWarningRoot:SetMovable(true); Combat.majorResolveWarningRoot:SetMouseEnabled(true); Combat.majorResolveWarningRoot:SetHidden(false)
-    elseif key == "breach" and Combat and Combat.majorBreachRoot then
+        if Combat.UpdateCombatDangerWarnings then Combat.UpdateCombatDangerWarnings(true) end
+
+        if Combat.foodWarningRoot then Combat.foodWarningRoot:SetMovable(true); Combat.foodWarningRoot:SetMouseEnabled(true); Combat.foodWarningRoot:SetHidden(false) end
+        if Combat.UpdateFoodWarning then Combat.UpdateFoodWarning() end
+
+        if Combat.majorResolveWarningRoot then Combat.majorResolveWarningRoot:SetMovable(true); Combat.majorResolveWarningRoot:SetMouseEnabled(true); Combat.majorResolveWarningRoot:SetHidden(false) end
+        if Combat.UpdateMajorResolveWarning then Combat.UpdateMajorResolveWarning() end
+
         Combat.majorBreachEditMode = true
-        Combat.majorBreachRoot:SetMovable(true); Combat.majorBreachRoot:SetMouseEnabled(true); Combat.majorBreachRoot:SetHidden(false)
+        if Combat.majorBreachRoot then
+            Combat.majorBreachRoot:SetMovable(true); Combat.majorBreachRoot:SetMouseEnabled(true); Combat.majorBreachRoot:SetHidden(false)
+        end
         if Combat.majorBreachLabel then Combat.majorBreachLabel:SetColor(1, 0.12, 0.08, 1); Combat.majorBreachLabel:SetText("●") end
+
+        -- Set / proc / resource / kill-message trackers. These used to be omitted
+        -- from Preview All or immediately hidden again by their live update loop.
+        -- Each update routine now has a deterministic preview branch.
+        for _, root in ipairs({ Combat.wretchedVitalityRoot, Combat.genericStackRoot,
+            Combat.streakFatigueRoot, Combat.resourceDangerRoot, Combat.killMessageRoot }) do
+            if root then root:SetMovable(true); root:SetMouseEnabled(true); root:SetHidden(false) end
+        end
+        if Combat.UpdateWretchedVitalityTimers then Combat.UpdateWretchedVitalityTimers(true) end
+        if Combat.UpdateSkillStackTrackers then Combat.UpdateSkillStackTrackers(true) end
+        SetPreviewCaption(Combat.genericStackRoot, "SKILL STACKS", true)
+        SetPreviewCaption(Combat.streakFatigueRoot, "STREAK FATIGUE", true)
+        if Combat.UpdateResourceDangerHud then Combat.UpdateResourceDangerHud(true) end
+        if Combat.UpdateKillMessage then Combat.UpdateKillMessage(true) end
+
+        -- Main target frame timer group is already position-linked to the target
+        -- frame and scales with it. Force representative timer text visible so it
+        -- is present in the same Preview Everything view instead of only appearing
+        -- after a real proc.
+        if Combat.timerRoot then Combat.timerRoot:SetHidden(false) end
+        if Combat.onslaughtTimerLabel then Combat.onslaughtTimerLabel:SetText("ONSLAUGHT  8"); Combat.onslaughtTimerLabel:SetHidden(false) end
+        if Combat.balorghTimerLabel then Combat.balorghTimerLabel:SetText("BALORGH  2"); Combat.balorghTimerLabel:SetHidden(false) end
+        if Combat.tarnishedTimerLabel then Combat.tarnishedTimerLabel:SetText("TARNISHED  PROC 1.3"); Combat.tarnishedTimerLabel:SetHidden(false) end
+        if Combat.nullArcaTimerLabel then Combat.nullArcaTimerLabel:SetText("NULL ARCA  5"); Combat.nullArcaTimerLabel:SetHidden(false) end
+        if Combat.dragonAppetiteTimerLabel then Combat.dragonAppetiteTimerLabel:SetText("DRAGON'S APPETITE  6 / 10"); Combat.dragonAppetiteTimerLabel:SetHidden(false) end
     end
+
+    -- Corrosive and Onslaught are shown together. Both the caster banner and
+    -- reticle marker become real drag surfaces, and the wheel resizes them.
+    if EnemyAlerts and EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind("all") end
 end
 
 function Q.ActivatePreviewRuntime()
@@ -762,6 +880,8 @@ function Q.ActivatePreviewRuntime()
     local fab = rawget(_G, "FancyActionBar")
     runtime.fabUnlocked = fab and fab.IsUnlocked and fab.IsUnlocked() or false
     Q.previewRuntime = runtime
+    Q.previewAll = true
+    Q.resizeEnabled = true
 
     if Frames and Frames.SetLocked then Frames.SetLocked(false, true) end
     if Combat and Combat.SetPositionPreview then Combat.SetPositionPreview(true) end
@@ -770,6 +890,7 @@ function Q.ActivatePreviewRuntime()
 end
 
 function Q.DeactivatePreviewRuntime()
+    HidePreviewCaptions()
     local runtime = Q.previewRuntime
     Q.previewRuntime = nil
     Q.resizeEnabled = false
@@ -777,6 +898,7 @@ function Q.DeactivatePreviewRuntime()
     Q.previewRestorePending = false
     Q.previewHudInteractionActive = false
     Q.previewHudInteractionUntil = 0
+    if Q.editToolbar then Q.editToolbar:SetHidden(true); Q.editToolbar:SetMouseEnabled(false) end
 
     if EnemyAlerts and EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind(nil) end
     if Frames then
@@ -790,7 +912,14 @@ function Q.DeactivatePreviewRuntime()
     if Combat then
         Combat.majorBreachEditMode = false
         if Combat.SetPvpHudEditMode then Combat.SetPvpHudEditMode(false) end
-        for _, root in pairs({ Combat.ccImmunityRoot, Combat.playerDebuffRoot, Combat.targetDebuffRoot, Combat.combatDangerRoot, Combat.foodWarningRoot, Combat.majorResolveWarningRoot, Combat.majorBreachRoot }) do
+        for _, widget in pairs(Combat.liveStatWidgets or {}) do
+            if widget and widget.root then widget.root:SetMovable(false); widget.root:SetMouseEnabled(false) end
+            if widget and widget.dragger then widget.dragger:SetMouseEnabled(false) end
+        end
+        for _, root in pairs({ Combat.ccImmunityRoot, Combat.playerDebuffRoot, Combat.targetDebuffRoot,
+            Combat.combatDangerRoot, Combat.foodWarningRoot, Combat.majorResolveWarningRoot, Combat.majorBreachRoot,
+            Combat.wretchedVitalityRoot, Combat.genericStackRoot, Combat.streakFatigueRoot,
+            Combat.resourceDangerRoot, Combat.killMessageRoot }) do
             if root then root:SetMovable(false); root:SetMouseEnabled(false) end
         end
         if runtime and Combat.SetPositionPreview then Combat.SetPositionPreview(runtime.combatLocked == false) end
@@ -811,27 +940,168 @@ function Q.DeactivatePreviewRuntime()
     if FAB and FAB.ApplyCombatOnlyVisibility then FAB.ApplyCombatOnlyVisibility(false) end
 end
 
+-- Preview Everything deliberately forces controls visible. Every preview-only
+-- override must therefore have a deterministic teardown path. This routine runs
+-- only after previewEnabled is false, so all normal update functions evaluate
+-- real gameplay state instead of their preview branches.
+function Q.RestoreLiveHudAfterPreview()
+    HidePreviewCaptions()
+    if EnemyAlerts then
+        if EnemyAlerts.StopEditing then EnemyAlerts.StopEditing(true) end
+        if EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind(nil) end
+        if EnemyAlerts.Update then EnemyAlerts.Update(true) end
+    end
+
+    if Frames then
+        if Frames.SetLocked then Frames.SetLocked(true, true) end
+        if Frames.CancelManualDrag then Frames.CancelManualDrag() end
+        if Frames.ApplySavedLayoutDirect then Frames.ApplySavedLayoutDirect("preview exit", true) end
+        if Frames.RefreshDSEnemyHealthRuntime then Frames.RefreshDSEnemyHealthRuntime() end
+        if Frames.RefreshDSSelfHealthRuntime then Frames.RefreshDSSelfHealthRuntime() end
+        if Frames.RefreshNavigationHelpers then Frames.RefreshNavigationHelpers(true) end
+        if Frames.UpdateCombatVisibility then Frames.UpdateCombatVisibility() end
+        if Frames.ApplyChatVisibilityMode then Frames.ApplyChatVisibilityMode() end
+    end
+
+    if Combat then
+        Combat.majorBreachEditMode = false
+        if Combat.SetLocked then Combat.SetLocked(true, true) end
+        if Combat.SetPositionPreview then Combat.SetPositionPreview(false) end
+        if Combat.SetPvpHudEditMode then Combat.SetPvpHudEditMode(false) end
+
+        -- Kill every preview hitbox before running visibility updates.
+        for _, widget in pairs(Combat.liveStatWidgets or {}) do
+            if widget and widget.root then widget.root:SetMovable(false); widget.root:SetMouseEnabled(false) end
+            if widget and widget.dragger then widget.dragger:SetMouseEnabled(false) end
+        end
+        for _, root in pairs({ Combat.ccImmunityRoot, Combat.playerDebuffRoot, Combat.targetDebuffRoot,
+            Combat.combatDangerRoot, Combat.foodWarningRoot, Combat.majorResolveWarningRoot, Combat.majorBreachRoot,
+            Combat.wretchedVitalityRoot, Combat.genericStackRoot, Combat.streakFatigueRoot,
+            Combat.resourceDangerRoot, Combat.killMessageRoot }) do
+            if root then root:SetMovable(false); root:SetMouseEnabled(false) end
+        end
+
+        -- First remove every forced Preview Everything visual unconditionally.
+        -- Live update routines below may immediately re-show a control when a real
+        -- gameplay condition requires it, but fake preview content must never be
+        -- allowed to survive the transition even for one frame.
+        if Combat.timerRoot then Combat.timerRoot:SetHidden(true) end
+        for _, label in ipairs({ Combat.onslaughtTimerLabel, Combat.balorghTimerLabel,
+            Combat.tarnishedTimerLabel, Combat.nullArcaTimerLabel, Combat.dragonAppetiteTimerLabel }) do
+            if label then label:SetHidden(true) end
+        end
+        for _, root in ipairs({ Combat.pvpHudRoot, Combat.ccImmunityRoot, Combat.playerDebuffRoot,
+            Combat.targetDebuffRoot, Combat.combatDangerRoot, Combat.foodWarningRoot,
+            Combat.majorResolveWarningRoot, Combat.majorBreachRoot, Combat.wretchedVitalityRoot,
+            Combat.genericStackRoot, Combat.streakFatigueRoot, Combat.resourceDangerRoot,
+            Combat.killMessageRoot }) do
+            if root then root:SetHidden(true) end
+        end
+        for _, widget in pairs(Combat.liveStatWidgets or {}) do
+            if widget and widget.root then widget.root:SetHidden(true) end
+        end
+        if Combat.killMessageLabel and Combat.killMessageText then
+            Combat.killMessageLabel:SetText(Combat.killMessageText)
+        end
+
+        -- Re-evaluate every control that Preview Everything can force visible or
+        -- populate with fake text. Because previewEnabled is already false, these
+        -- routines now use real combat state only.
+        if Combat.RefreshDisplay then Combat.RefreshDisplay() end
+        if Combat.UpdateCombatTimers then Combat.UpdateCombatTimers() end
+        if Combat.UpdatePvpHud then Combat.UpdatePvpHud(false) end
+        if Combat.UpdateLiveStatWidgets then Combat.UpdateLiveStatWidgets(true) end
+        if Combat.ScanPlayerAuraHud then Combat.ScanPlayerAuraHud() end
+        if Combat.ScanTargetAuras then Combat.ScanTargetAuras() end
+        if Combat.UpdateCombatDangerWarnings then Combat.UpdateCombatDangerWarnings(true) end
+        if Combat.UpdateFoodWarning then Combat.UpdateFoodWarning() end
+        if Combat.UpdateMajorResolveWarning then Combat.UpdateMajorResolveWarning() end
+        if Combat.UpdateMajorBreachDisplay then Combat.UpdateMajorBreachDisplay() end
+        if Combat.UpdateWretchedVitalityTimers then Combat.UpdateWretchedVitalityTimers() end
+        if Combat.UpdateSkillStackTrackers then Combat.UpdateSkillStackTrackers(true) end
+        if Combat.UpdateResourceDangerHud then Combat.UpdateResourceDangerHud(true) end
+        if Combat.UpdateKillMessage then Combat.UpdateKillMessage() end
+    end
+
+    local fab = rawget(_G, "FancyActionBar")
+    if fab and fab.IsUnlocked and fab.ToggleMover and fab.IsUnlocked() then
+        pcall(fab.ToggleMover, false)
+    end
+    if FAB and FAB.ApplyCombatOnlyVisibility then FAB.ApplyCombatOnlyVisibility(false) end
+
+    -- The global toolbar itself is a top-level UI lock while mouse enabled.
+    if Q.editToolbar then Q.editToolbar:SetMouseEnabled(false); Q.editToolbar:SetHidden(true) end
+    return true
+end
+
+function Q.AttemptReturnToGameplay()
+    -- First use ESO's guarded path. Once Ultivite has hidden every one of its
+    -- top-level/mouse controls and chat input is closed, a bounded fallback to
+    -- SetInUIMode(false) uses the same public scene-manager method ESO itself
+    -- uses to leave HUD UI mode. This prevents a dead cursor-only state.
+    local function ultiviteUiReleased()
+        if Q.panel and Q.panel.IsHidden and not Q.panel:IsHidden() then return false end
+        if Q.editToolbar and Q.editToolbar.IsHidden and not Q.editToolbar:IsHidden() then return false end
+        if U.chatWindowEditing == true then return false end
+        return true
+    end
+
+    local function tryExit(allowDirect)
+        if U.CloseChatTextEntryForGameplay then U.CloseChatTextEntryForGameplay() end
+        if not SCENE_MANAGER then return end
+
+        -- ESO's own Resume Game action hides this scene. Cleaning Ultivite
+        -- controls alone is not enough if Addon Settings still leaves the game
+        -- menu scene active, because the scene itself keeps UI mode/cursor alive.
+        if type(SCENE_MANAGER.IsShowing) == "function" and type(SCENE_MANAGER.Hide) == "function" then
+            local okShowing, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, "gameMenuInGame")
+            if okShowing and showing == true then
+                pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, "gameMenuInGame")
+            end
+        end
+
+        if type(SCENE_MANAGER.SafelyAttemptToExitUIMode) == "function" then
+            pcall(SCENE_MANAGER.SafelyAttemptToExitUIMode, SCENE_MANAGER)
+        end
+
+        if allowDirect and ultiviteUiReleased() then
+            local chatOpen = false
+            local chat = U.GetChatSystem and U.GetChatSystem() or nil
+            if chat and type(chat.IsTextEntryOpen) == "function" then
+                local ok, open = pcall(chat.IsTextEntryOpen, chat)
+                chatOpen = ok and open == true
+            end
+            if not chatOpen and type(SCENE_MANAGER.IsInUIMode) == "function" then
+                local ok, inUi = pcall(SCENE_MANAGER.IsInUIMode, SCENE_MANAGER)
+                if ok and inUi == true then
+                    if type(SCENE_MANAGER.ShowBaseScene) == "function" then
+                        pcall(SCENE_MANAGER.ShowBaseScene, SCENE_MANAGER)
+                    end
+                    if type(SCENE_MANAGER.SetInUIMode) == "function" then
+                        pcall(SCENE_MANAGER.SetInUIMode, SCENE_MANAGER, false)
+                    end
+                end
+            end
+        end
+    end
+
+    tryExit(false)
+    if zo_callLater then
+        zo_callLater(function() tryExit(false) end, 0)
+        zo_callLater(function() tryExit(false) end, 80)
+        zo_callLater(function() tryExit(true) end, 200)
+        zo_callLater(function() tryExit(true) end, 500)
+    else
+        tryExit(true)
+    end
+    return true
+end
+
 local function CloseChatEntryNow()
-    local chatSystem = U.GetChatSystem and U.GetChatSystem() or nil
-    local entry = chatSystem and chatSystem.textEntry or nil
-    if not entry then return end
-    local isOpen = false
-    if type(entry.IsOpen) == "function" then
-        local ok, value = pcall(entry.IsOpen, entry)
-        isOpen = ok and value == true
-    end
-    if isOpen then
-        -- Use ESO's system close path before the TextEntry fallback.
-        if chatSystem and type(chatSystem.CloseTextEntry) == "function" then
-            pcall(chatSystem.CloseTextEntry, chatSystem)
-        end
-        if IsTextEntryOpen() and type(entry.Close) == "function" then
-            pcall(entry.Close, entry)
-        end
-        if IsTextEntryOpen() and d then
-            d("[Ultivite] ESO chat remained open after the Quick Menu close request; press Escape to close stock chat.")
-        end
-    end
+    -- Compatibility no-op. The Quick Menu X closes Ultivite only.
+    -- ESO owns its TextEntry completely so Enter typing, dragging and native
+    -- edge resizing cannot be invalidated by an addon initiated Close/Open pair.
+    return true
 end
 
 local function ReleaseQuickMenuMouseInput(enabled)
@@ -859,21 +1129,15 @@ function Q.BeginManualClose()
 end
 
 function Q.ManualClose()
-    if Q.previewEnabled == true then
+    if Q.previewEnabled == true or Q.openedFromSettings == true or U.chatWindowEditing == true then
         Q.closePending = false
-        Q.manualDismissed = false
-        Q.SafeRefresh()
-        return false
+        -- The X button in an Ultivite settings/editing session is exactly the
+        -- same commit path as SAVE & LOCK ALL.
+        return Q.SaveAndLockEditing(true)
     end
     if Q.closePending ~= true then return false end
     Q.closePending = false
 
-    if Q.openedFromSettings == true then
-        Q.openedFromSettings = false
-        Q.manualDismissed = false
-        Q.HideNow()
-        return true
-    end
 
     Q.manualDismissed = true
     Q.chatSessionActive = false
@@ -898,14 +1162,19 @@ end
 
 function Q.CloseSettingsSession()
     if Q.openedFromSettings ~= true then return end
-    if Q.previewEnabled == true then
-        -- Do not tear down a move/resize session just because the LAM panel was
-        -- closed. The editor remains active until SAVE & LOCK is pressed.
-        Q.openedFromSettings = false
-        Q.manualDismissed = false
-        Q.Show()
-        return false
+
+    -- Closing the LibAddonMenu panel is an explicit request to leave UI
+    -- configuration and return to gameplay. Older persistent-edit builds kept
+    -- the Quick Menu and HUD movers alive here, which left ESO in UI mode with
+    -- the mouse cursor captured after the settings panel disappeared. Preserve
+    -- persistent editing while the settings/Quick Menu are open, but closing
+    -- the settings panel now commits the current positions and releases every
+    -- edit surface exactly like SAVE & LOCK.
+    if Q.previewEnabled == true or Q.previewRuntime ~= nil then
+        Q.SaveAndLockEditing()
+        return true
     end
+
     Q.openedFromSettings = false
     Q.manualDismissed = false
     Q.HideNow()
@@ -956,7 +1225,10 @@ function Q.RefreshChatVisibility(force)
             Q.SafeRefresh()
             ReleaseQuickMenuMouseInput(true)
             if Q.panel then Q.panel:SetHidden(false) end
-            Q.ApplyActualPreviewVisibility()
+            -- Do not rebuild/re-anchor every mover from the 50 ms chat watcher.
+            -- Reapplying anchors during an active drag was the direct reason the
+            -- Enemy Ultimate markers appeared impossible to move.
+            if force == true then Q.ApplyActualPreviewVisibility() end
         else
             if Q.panel then Q.panel:SetHidden(true) end
             ReleaseQuickMenuMouseInput(false)
@@ -970,36 +1242,60 @@ function Q.RefreshChatVisibility(force)
     end
 
     local liveEntryOpen = Q.IsChatOpen()
-    Q.chatSessionActive = liveEntryOpen
-    local isOpen = liveEntryOpen
+    local nativeResize = Q.IsNativeChatResizeActive and Q.IsNativeChatResizeActive() or false
+    local mouseGesture = IsAnyMouseButtonDown()
+
+    -- ESO can drop TextEntry focus a frame before SharedChatContainer sets its
+    -- resizing flag. Do not interpret that one-frame gap as chat being closed
+    -- while the mouse button is still held. This keeps the Quick Menu from
+    -- changing top-level UI state in the middle of a native chat drag/resize.
+    if not liveEntryOpen and not nativeResize and mouseGesture and Q.lastChatOpen == true then
+        Q.chatSessionActive = true
+        return
+    end
+
+    -- Grabbing the native chat resize edge can make TextEntry lose keyboard
+    -- focus before the stock resize operation has completed. Treat the resize
+    -- lifecycle as an active chat session so the Quick Menu is not torn down
+    -- under ESO's mouse interaction.
+    local isOpen = liveEntryOpen or nativeResize
+    Q.chatSessionActive = isOpen
     local stateChanged = Q.lastChatOpen ~= isOpen
     Q.lastChatOpen = isOpen
 
-    if isOpen and Q.previewRuntime then
+    -- If ESO is actively resizing its stock chat container, get Ultivite's
+    -- Quick Menu completely out of the mouse path until the native operation
+    -- finishes. This is presentation-only and does not alter the chat control.
+    if nativeResize then
+        if Q.panel then Q.panel:SetHidden(true) end
+        ReleaseQuickMenuMouseInput(false)
+        return
+    end
+
+    if liveEntryOpen and Q.previewRuntime then
         Q.previewRuntime.chatWasOpen = true
         Q.previewRuntime.chatDraftText = GetChatDraftText()
         Q.previewRuntime.chatClosedForHudInteraction = false
     end
 
-    if not isOpen
-        and Q.previewEnabled == true
-        and Q.previewRuntime
-        and Q.previewRuntime.chatClosedForHudInteraction == true
-        and Q.manualDismissed ~= true then
-        ReleaseQuickMenuMouseInput(true)
-        if Q.panel then Q.panel:SetHidden(false) end
-        Q.ApplyActualPreviewVisibility()
-        Q.SchedulePreviewChatRestore()
+    local heldForAction = nativeResize
+        or Q.actionInProgress == true
+        or Q.pointerInside == true
+        or GetNowMs() < (Q.interactionHoldUntil or 0)
+        or GetNowMs() < (Q.nativeChatResizeHoldUntil or 0)
+
+    if not liveEntryOpen and heldForAction and Q.manualDismissed ~= true then
+        if Q.CanShow() then
+            if force or stateChanged or (Q.panel and Q.panel:IsHidden()) then
+                Q.SafeRefresh()
+                ReleaseQuickMenuMouseInput(true)
+                if Q.panel then Q.panel:SetHidden(false) end
+            end
+        end
         return
     end
 
-    local heldForAction = Q.actionInProgress == true or Q.pointerInside == true or GetNowMs() < (Q.interactionHoldUntil or 0)
-    if not isOpen and heldForAction and Q.manualDismissed ~= true then
-        if Q.CanShow() and Q.panel and Q.panel:IsHidden() then ReleaseQuickMenuMouseInput(true); Q.panel:SetHidden(false) end
-        return
-    end
-
-    if not isOpen then
+    if not liveEntryOpen then
         Q.manualDismissed = false
         if force or stateChanged or (Q.panel and not Q.panel:IsHidden()) then Q.HideNow() end
         return
@@ -1016,36 +1312,29 @@ function Q.RefreshChatVisibility(force)
             ReleaseQuickMenuMouseInput(true)
             if Q.panel then Q.panel:SetHidden(false) end
         end
-        -- Fallback for late-created or replaced chat entries. Repair only on the
-        -- closed -> open edge, never from the 50 ms watcher while chat remains open.
-        if stateChanged and isOpen and Q.actionInProgress ~= true then
+        if stateChanged and liveEntryOpen and Q.actionInProgress ~= true and U.chatWindowEditing ~= true then
             ScheduleChatKeyboardFocusRepair(Q.chatReopenGeneration or 0)
         end
-        if Q.previewEnabled and (force or stateChanged) then Q.ApplyActualPreviewVisibility() end
     else
         Q.HideNow()
     end
 end
 
 function Q.InstallChatHooks()
+    Q.InstallNativeChatResizeObserver()
     if not ZO_PostHook then return false end
 
     local entry = U.GetChatTextEntry and U.GetChatTextEntry() or nil
     if not entry then
-        -- The chat watcher retries after late TextEntry creation.
         Q.chatHooksInstalled = false
         return false
     end
-    if Q.chatHookEntry == entry then return true end
-
-    local function refreshSoon()
-        zo_callLater(function()
-            if Immersive and Immersive.RefreshChatVisibility then pcall(Immersive.RefreshChatVisibility) end
-            Q.RefreshChatVisibility(true)
-        end, 0)
+    if Q.chatOpenHookEntry == entry then
+        Q.chatHooksInstalled = true
+        return true
     end
 
-    if type(entry.Open) == "function" and Q.chatOpenHookEntry ~= entry then
+    if type(entry.Open) == "function" then
         local ok = pcall(ZO_PostHook, entry, "Open", function()
             Q.chatReopenGeneration = (Q.chatReopenGeneration or 0) + 1
             Q.openedFromSettings = false
@@ -1054,34 +1343,23 @@ function Q.InstallChatHooks()
             Q.chatSessionActive = true
             if Immersive and Immersive.RefreshChatVisibility then pcall(Immersive.RefreshChatVisibility) end
             if Frames and Frames.ApplyChatVisibilityMode then pcall(Frames.ApplyChatVisibilityMode) end
-            -- ESO normally takes focus inside TextEntry:Open. Ultivite's Quick
-            -- Menu visibility transition can steal it immediately afterward, so
-            -- repair once after Open. The repair never runs during mouse dragging
-            -- or resizing and is not part of the 50 ms chat watcher.
             ScheduleChatKeyboardFocusRepair(Q.chatReopenGeneration)
-            refreshSoon()
+            if zo_callLater then
+                zo_callLater(function() Q.RefreshChatVisibility(true) end, 0)
+            else
+                Q.RefreshChatVisibility(true)
+            end
         end)
-        if ok then Q.chatOpenHookEntry = entry end
-    end
-    if type(entry.Close) == "function" and type(ZO_PreHook) == "function" and Q.chatClosePreHookEntry ~= entry then
-        local ok = pcall(ZO_PreHook, entry, "Close", function()
-            MarkPreviewChatClose()
-        end)
-        if ok then Q.chatClosePreHookEntry = entry end
-    end
-    if type(entry.Close) == "function" and Q.chatCloseHookEntry ~= entry then
-        local ok = pcall(ZO_PostHook, entry, "Close", function()
-            MarkPreviewChatClose()
-            Q.chatSessionActive = false
-            refreshSoon()
-        end)
-        if ok then Q.chatCloseHookEntry = entry end
+        if ok then
+            Q.chatOpenHookEntry = entry
+            Q.chatHookEntry = entry
+            Q.chatHooksInstalled = true
+            return true
+        end
     end
 
-    local fullyInstalled = Q.chatOpenHookEntry == entry and Q.chatCloseHookEntry == entry
-    Q.chatHooksInstalled = fullyInstalled
-    Q.chatHookEntry = fullyInstalled and entry or nil
-    return fullyInstalled
+    Q.chatHooksInstalled = false
+    return false
 end
 
 function Q.StartChatWatch()
@@ -1089,8 +1367,7 @@ function Q.StartChatWatch()
     if Q.chatWatchRegistered then return end
     Q.chatWatchRegistered = true
     EVENT_MANAGER:RegisterForUpdate("UltiviteQuickMenuChatWatch", CHAT_WATCH_MS, function()
-        -- Bind late-created or replaced chat entries once per object.
-        Q.InstallChatHooks()
+        if not Q.chatHooksInstalled then Q.InstallChatHooks() end
         if not Q.initialized and not Q.initializing and GetNowMs() >= (Q.nextCreateRetryMs or 0) then
             Q.Create()
         end
@@ -1601,7 +1878,7 @@ local function BuildFactoryGraphicsSettings(isPve)
         shadows = GraphicsValue(isPve and SHADOWS_CHOICE_ULTRA or SHADOWS_CHOICE_OFF),
         waterReflections = GraphicsValue(isPve and SCREENSPACE_WATER_REFLECTION_QUALITY_ULTRA or SCREENSPACE_WATER_REFLECTION_QUALITY_OFF),
         distortion = isPve and "true" or "false",
-        bloom = isPve and "true" or "false",
+        bloom = "false",
         godRays = isPve and "true" or "false",
         clutter = GraphicsValue(isPve and CLUTTER_QUALITY_ULTRA or CLUTTER_QUALITY_OFF),
         ambientOcclusion = GraphicsValue(isPve and AMBIENT_OCCLUSION_TYPE_SSGI or AMBIENT_OCCLUSION_TYPE_NONE),
@@ -1748,7 +2025,7 @@ local function BuildChangedGraphicsRestoreSnapshot(before)
         if type(settingId) == "number" then
             local currentValue = GetGraphicsSettingSafe(settingId)
             if currentValue ~= nil and not GraphicsValuesEquivalent(currentValue, oldValue) then
-                restore[name] = tostring(oldValue)
+                restore[name] = name == "GRAPHICS_SETTING_BLOOM" and "false" or tostring(oldValue)
             end
         end
     end
@@ -1760,8 +2037,14 @@ local function ApplyNamedGraphicsSnapshot(snapshot)
     for name, value in pairs(snapshot or {}) do
         local settingId = GetNamedGraphicsSettingId(name)
         if type(settingId) == "number" then
+            if name == "GRAPHICS_SETTING_BLOOM" then
+                value = "false"
+            end
             ok = SetGraphicsSettingSafe(settingId, value) and ok
         end
+    end
+    if GRAPHICS_SETTING_BLOOM ~= nil then
+        ok = SetGraphicsSettingSafe(GRAPHICS_SETTING_BLOOM, "false") and ok
     end
     if type(ApplySettings) == "function" then pcall(ApplySettings) end
     return ok
@@ -1857,7 +2140,7 @@ local function CaptureCurrentGraphicsSettings()
         shadows = GetGraphicsSettingSafe(GRAPHICS_SETTING_SHADOWS),
         waterReflections = GetGraphicsSettingSafe(GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY),
         distortion = GetGraphicsSettingSafe(GRAPHICS_SETTING_DISTORTION),
-        bloom = GetGraphicsSettingSafe(GRAPHICS_SETTING_BLOOM),
+        bloom = "false",
         godRays = godRaysSetting and GetGraphicsSettingSafe(godRaysSetting) or ReadCVarSafe("GOD_RAYS"),
         clutter = GetGraphicsSettingSafe(GRAPHICS_SETTING_CLUTTER_2D_QUALITY),
         ambientOcclusion = aoSetting and GetGraphicsSettingSafe(aoSetting) or ReadCVarSafe("AMBIENT_OCCLUSION_TYPE"),
@@ -1870,7 +2153,7 @@ local function CopyGraphicsSettings(source)
         shadows = GraphicsValue(source.shadows),
         waterReflections = GraphicsValue(source.waterReflections),
         distortion = GraphicsValue(source.distortion),
-        bloom = GraphicsValue(source.bloom),
+        bloom = "false",
         godRays = GraphicsValue(source.godRays),
         clutter = GraphicsValue(source.clutter),
         ambientOcclusion = GraphicsValue(source.ambientOcclusion),
@@ -1907,6 +2190,16 @@ function Q.EnsureGraphicsProfiles()
     ensureBuiltin(GRAPHICS_BUILTIN_PVE, "PvE Quality", "pve")
     ensureBuiltin(GRAPHICS_BUILTIN_PVP, "PvP Performance", "pvp")
     ensureBuiltin(GRAPHICS_BUILTIN_LOW, "All Low", "low")
+
+    -- Bloom is intentionally unsupported by Ultivite graphics profiles.
+    -- Migrate every existing built-in/custom profile to OFF so an older saved
+    -- profile can never re-enable Bloom during manual or automatic switching.
+    for _, profile in pairs(state.profiles) do
+        if type(profile) == "table" then
+            profile.settings = type(profile.settings) == "table" and profile.settings or {}
+            profile.settings.bloom = "false"
+        end
+    end
 
     local seen = {}
     local cleaned = {}
@@ -1972,7 +2265,7 @@ local function ApplyGraphicsSettings(settings)
     applyGraphics(GRAPHICS_SETTING_SHADOWS, settings.shadows)
     applyGraphics(GRAPHICS_SETTING_SCREENSPACE_WATER_REFLECTION_QUALITY, settings.waterReflections)
     applyGraphics(GRAPHICS_SETTING_DISTORTION, settings.distortion)
-    applyGraphics(GRAPHICS_SETTING_BLOOM, settings.bloom)
+    applyGraphics(GRAPHICS_SETTING_BLOOM, "false")
 
     local godRaysSetting = GetGodRaysSettingId()
     if godRaysSetting ~= nil then applyGraphics(godRaysSetting, settings.godRays)
@@ -2246,7 +2539,11 @@ function Q.BuildGraphicsMenuControls()
         local profile = SelectedGraphicsProfile()
         if not profile then return end
         profile.settings = profile.settings or {}
-        profile.settings[key] = tostring(value)
+        if key == "bloom" then
+            profile.settings.bloom = "false"
+        else
+            profile.settings[key] = tostring(value)
+        end
         if U.RequestSettingsSave then U.RequestSettingsSave(true) end
     end
     local function dropdown(name, key, labels, values, tooltip)
@@ -2289,7 +2586,7 @@ function Q.BuildGraphicsMenuControls()
             dropdown("Shadows", "shadows", shadowLabels, shadowValues, "Shadow quality saved in this graphics profile."),
             dropdown("Water Reflections", "waterReflections", waterLabels, waterValues, "Screen-space water reflection quality."),
             dropdown("Distortion", "distortion", boolLabels, boolValues, "Distortion effect."),
-            dropdown("Bloom", "bloom", boolLabels, boolValues, "Bloom effect."),
+            { type = "description", title = "Bloom", text = "Always Off. Ultivite will never enable Bloom in any graphics profile, preset, restore, or automatic switch." },
             dropdown("Sunlight Rays", "godRays", boolLabels, boolValues, "Sunlight/God Rays effect."),
             dropdown("Grass / Clutter", "clutter", clutterLabels, clutterValues, "2D clutter and grass quality."),
             dropdown("Ambient Occlusion", "ambientOcclusion", aoLabels, aoValues, "Ambient occlusion mode, including Screen Space GI when supported by ESO."),
@@ -2369,7 +2666,7 @@ local PROFILE_FRAME_PRESERVE_KEYS = {
     "chatVisibilityMode", "autoHideChat",
     "hideMountStaminaBar", "hideWerewolfResourceBar",
     "feetCompass", "feetCompassVisibilityMode",
-    "crownDirectionArrow", "crownDirectionArrowVisibilityMode",
+    "crownDirectionArrow", "crownDirectionArrowVisibilityMode", "crownDirectionArrowOpacity",
 }
 
 local PROFILE_COMBAT_PRESERVE_KEYS = {
@@ -2380,7 +2677,10 @@ local PROFILE_COMBAT_PRESERVE_KEYS = {
     "showExecuteDangerWarning", "executeDangerWarningMode",
     "showNoFoodWarning", "showNoMajorResolveWarning", "majorBreachTracker",
     "showEnemyCorrosiveAlert", "showEnemyOnslaughtAlert", "enemyUltimateAlertIconSize",
+    "enemyUltimateAlertTargetX", "enemyUltimateAlertTargetY",
+    "enemyUltimateAlertGlobalX", "enemyUltimateAlertGlobalY",
     "nativeHideNpcNames", "npcNamesGlobalHidden", "npcNamesOverrideActive",
+    "cpOnHover",
 }
 
 local function CaptureIndependentQuickMenuState()
@@ -2577,6 +2877,25 @@ local function ToggleCombatBoolean(key, defaultOn, refreshFunction)
     RefreshLAM()
 end
 
+local function ToggleKillAnnouncements()
+    local sv = GetCombatSettings()
+    if not sv then return false end
+    sv.showPvpKillMessages = not (sv.showPvpKillMessages ~= false)
+    if Combat then
+        Combat.sv = sv
+        if not sv.showPvpKillMessages and Combat.killMessageRoot then
+            Combat.killMessageExpiresAt = 0
+            Combat.killMessageRoot:SetHidden(true)
+        elseif Combat.UpdateKillMessage then
+            Combat.UpdateKillMessage()
+        end
+    end
+    RequestSave()
+    RefreshLAM()
+    Q.SafeRefresh()
+    return true
+end
+
 local function ToggleMajorBreach()
     local sv = GetCombatSettings()
     if not sv then return end
@@ -2690,6 +3009,16 @@ local function TogglePlayerNames()
     RefreshLAM()
 end
 
+local function ToggleCpOnHover()
+    if not Combat or not Combat.IsCpOnHoverEnabled or not Combat.SetCpOnHoverEnabled then return false end
+    local enabled = Combat.IsCpOnHoverEnabled()
+    local changed = Combat.SetCpOnHoverEnabled(not enabled, true)
+    RequestSave()
+    RefreshLAM()
+    Q.SafeRefresh()
+    return changed
+end
+
 local function ToggleGoldenPursuits()
     if not Frames or not Frames.SetGoldenPursuitsHidden then return end
     local hidden = Frames.IsGoldenPursuitsHidden and Frames.IsGoldenPursuitsHidden() or false
@@ -2721,6 +3050,14 @@ local CHAT_CYCLE = { "show", "combat", "pvp", "hide" }
 local function CycleChatVisibility()
     if not Frames or not Frames.GetChatVisibilityMode or not Frames.SetChatVisibilityMode then return end
     Frames.SetChatVisibilityMode(CycleIndex(Frames.GetChatVisibilityMode(), CHAT_CYCLE), true)
+    RefreshLAM()
+end
+
+local function ToggleAutoHideChat()
+    if not Frames or not Frames.GetChatVisibilityMode or not Frames.SetChatVisibilityMode then return end
+    local current = Frames.GetChatVisibilityMode()
+    Frames.SetChatVisibilityMode(current == "hide" and "show" or "hide", true)
+    RefreshLAM()
 end
 
 local function ToggleMountMeter()
@@ -2819,7 +3156,48 @@ local function SetHelperMode(kind, mode)
     return true
 end
 local function CycleFeetCompass() SetHelperMode("feet", CycleIndex(GetHelperMode("feet"), HELPER_CYCLE)) end
-local function CycleCrownArrow() SetHelperMode("crown", CycleIndex(GetHelperMode("crown"), HELPER_CYCLE)) end
+local FOLLOW_LEADER_TRANSPARENCY_LEVELS = { 0, 15, 30, 45, 60, 75, 90 }
+
+local function ToggleFollowLeader()
+    local f = GetProfileFrames()
+    if not f or not Frames or not Frames.SetCrownDirectionArrow then return false end
+    local enable = f.crownDirectionArrow ~= true
+    -- Quick Menu is deliberately a true ON/OFF toggle. Turning it on means
+    -- show normally rather than reviving an older combat-only/PvP-only mode.
+    if enable and Frames.SetNavigationHelperVisibilityMode then
+        Frames.SetNavigationHelperVisibilityMode("crown", "show", true)
+    end
+    Frames.SetCrownDirectionArrow(enable, true)
+    RequestSave()
+    Q.SafeRefresh()
+    return true
+end
+
+local function GetFollowLeaderTransparencyPercent()
+    local f = GetProfileFrames()
+    local opacity = tonumber(f and f.crownDirectionArrowOpacity) or 0.70
+    opacity = zo_clamp(opacity, 0.10, 1.00)
+    return zo_round((1 - opacity) * 100)
+end
+
+local function CycleFollowLeaderTransparency()
+    if not Frames or not Frames.SetCrownDirectionArrowOpacity then return false end
+    local current = GetFollowLeaderTransparencyPercent()
+    local bestIndex, bestDistance = 1, math.huge
+    for index, value in ipairs(FOLLOW_LEADER_TRANSPARENCY_LEVELS) do
+        local distance = math.abs(value - current)
+        if distance < bestDistance then
+            bestDistance = distance
+            bestIndex = index
+        end
+    end
+    local nextIndex = (bestIndex % #FOLLOW_LEADER_TRANSPARENCY_LEVELS) + 1
+    local transparency = FOLLOW_LEADER_TRANSPARENCY_LEVELS[nextIndex]
+    Frames.SetCrownDirectionArrowOpacity(1 - (transparency / 100))
+    RequestSave()
+    Q.SafeRefresh()
+    return true
+end
 
 local WARNING_CYCLE = { "off", "pvp", "always" }
 local function GetWarningMode(kind)
@@ -2925,7 +3303,15 @@ local PREVIEWABLE_KEYS = {
 
 function Q.SetPreviewEnabled(enabled, explicitExit)
     local newValue = enabled and true or false
-    if newValue == Q.previewEnabled then return true end
+    if newValue == Q.previewEnabled then
+        if newValue then
+            Q.previewAll = true
+            Q.resizeEnabled = true
+            Q.ApplyActualPreviewVisibility()
+            Q.SafeRefresh()
+        end
+        return true
+    end
     if newValue == false and Q.previewEnabled == true and explicitExit ~= true then
         Q.SafeRefresh()
         return false
@@ -2934,6 +3320,8 @@ function Q.SetPreviewEnabled(enabled, explicitExit)
     if newValue then
         Q.manualDismissed = false
         Q.closePending = false
+        Q.previewAll = true
+        Q.resizeEnabled = true
         Q.ActivatePreviewRuntime()
     else
         Q.DeactivatePreviewRuntime()
@@ -2951,57 +3339,126 @@ function Q.TogglePreview()
     return Q.SetPreviewEnabled(true)
 end
 
-function Q.SaveAndLockEditing()
+function Q.UnlockAllEditing()
+    if Q.previewEnabled ~= true then
+        Q.SetPreviewEnabled(true)
+    else
+        Q.previewAll = true
+        Q.resizeEnabled = true
+        if Frames and Frames.SetLocked then Frames.SetLocked(false, true) end
+        if Combat and Combat.SetPositionPreview then Combat.SetPositionPreview(true) end
+        local fab = rawget(_G, "FancyActionBar")
+        if fab and fab.ToggleMover and fab.IsUnlocked and not fab.IsUnlocked() then pcall(fab.ToggleMover, true) end
+        Q.ApplyActualPreviewVisibility()
+        Q.SafeRefresh()
+    end
+    return true
+end
+
+function Q.SaveAndLockEditing(returnToGameplay)
     local wasPreview = Q.previewEnabled == true or Q.previewRuntime ~= nil
+
+    -- Invalidate every delayed Quick Menu/chat callback before cleanup. Without
+    -- this, a queued post-click chat restore can run after X/SAVE & LOCK and
+    -- reopen TextEntry, immediately putting ESO back into cursor/UI mode.
+    Q.chatReopenGeneration = (Q.chatReopenGeneration or 0) + 1
+    Q.actionGeneration = (Q.actionGeneration or 0) + 1
+    Q.previewRestoreGeneration = (Q.previewRestoreGeneration or 0) + 1
+    Q.actionInProgress = false
+    Q.actionButtonKey = nil
+    Q.pendingAction = nil
+    Q.pendingSectionAction = nil
+    Q.pointerInside = false
+    Q.interactionHoldUntil = 0
+
+    -- SAVE & LOCK is an explicit exit from editing. Default to returning to
+    -- gameplay unless a caller deliberately passes false while keeping a
+    -- settings panel open.
+    local shouldReturnToGameplay = returnToGameplay ~= false
+    -- Terminate active drags first. A missing OnMouseUp must never leave a
+    -- full-screen transparent mover capturing the mouse.
+    if EnemyAlerts and EnemyAlerts.StopEditing then EnemyAlerts.StopEditing(true) end
+    if Combat and Combat.EndLiveStatDrag then Combat.EndLiveStatDrag() end
+    if Frames and Frames.CancelManualDrag then Frames.CancelManualDrag() end
+    if U.EndChatWindowEditing then U.EndChatWindowEditing(true) end
+
     if Q.previewEnabled == true then
         Q.SetPreviewEnabled(false, true)
     elseif Q.previewRuntime then
         Q.DeactivatePreviewRuntime()
     end
 
-    if Frames and Frames.SetLocked then Frames.SetLocked(true, true) end
-    if Combat and Combat.SetLocked then Combat.SetLocked(true, true) end
-    if Combat and Combat.SetPositionPreview then Combat.SetPositionPreview(false) end
-    if EnemyAlerts and EnemyAlerts.SetPreviewKind then EnemyAlerts.SetPreviewKind(nil) end
-
-    local fab = rawget(_G, "FancyActionBar")
-    if fab and fab.IsUnlocked and fab.ToggleMover and fab.IsUnlocked() then
-        pcall(fab.ToggleMover, false)
-    end
-
+    Q.previewEnabled = false
+    Q.previewAll = true
+    Q.resizeEnabled = false
     Q.previewHudInteractionActive = false
     Q.previewHudInteractionUntil = 0
     Q.previewRestorePending = false
     Q.closePending = false
+
+    -- Recompute the real HUD immediately. This is the critical cleanup missing
+    -- from 1.0.165: preview bars, fake timers, KILLED @PREVIEW, warning text and
+    -- navigation helpers cannot survive SAVE & LOCK.
+    Q.RestoreLiveHudAfterPreview()
+
     Q.manualDismissed = true
     Q.openedFromSettings = false
+    ReleaseQuickMenuMouseInput(false)
+    if Q.panel then Q.panel:SetHidden(true) end
+    if Q.editToolbar then Q.editToolbar:SetMouseEnabled(false); Q.editToolbar:SetHidden(true) end
+
     RequestSave()
     SafeRequestSave()
-    Q.HideNow(false)
+
+    if shouldReturnToGameplay then
+        -- ESO's scene manager will not leave UI mode while chat TextEntry is
+        -- open. Close it only here, after every Ultivite edit surface is gone.
+        -- keepText=true preserves any unsent draft.
+        -- Do not rely on cached chat state here. A resize or HUD mouse gesture
+        -- can change TextEntry focus between the click and this cleanup. SAVE &
+        -- LOCK explicitly means leave UI mode, so ask the helper to close chat if
+        -- it is open at this exact moment. The helper is a no-op when already closed.
+        if U.CloseChatTextEntryForGameplay then
+            U.CloseChatTextEntryForGameplay()
+        end
+        Q.chatSessionActive = false
+        Q.lastChatOpen = false
+        Q.AttemptReturnToGameplay()
+    end
 
     if d and wasPreview then d("[Ultivite] HUD positions and sizes saved and locked.") end
     return true
 end
 
+-- Single authoritative exit boundary used by SAVE & LOCK ALL, the global edit
+-- toolbar, the Quick Menu X and the LibAddonMenu close callback. Keeping one
+-- function here prevents those exits drifting into different cleanup behavior.
+function Q.SaveLockAndExit()
+    return Q.SaveAndLockEditing(true)
+end
+
+
 function Q.ToggleResize()
-    if Q.previewEnabled ~= true then Q.SetPreviewEnabled(true) end
-    Q.resizeEnabled = Q.resizeEnabled ~= true
-    Q.ApplyActualPreviewVisibility()
-    Q.SafeRefresh()
+    -- Editing mode now always enables mouse-wheel resizing for every supported
+    -- preview element. Keep this compatibility entry point as an explicit unlock.
+    return Q.UnlockAllEditing()
 end
 
 function Q.SelectPreview(key)
     if not key or PREVIEWABLE_KEYS[key] ~= true then return end
     Q.previewKey = key
+    Q.previewAll = true
     if Q.previewEnabled then Q.ApplyActualPreviewVisibility() end
 end
 
 function Q.Refresh()
     local f = GetProfileFrames()
     local c = GetCombatSettings()
-    SetButtonText("preview", Q.previewEnabled == true and "MOVE / RESIZE MODE: ACTIVE" or "MOVE / RESIZE MODE: OFF")
-    SetButtonText("resize", "MOUSE WHEEL RESIZE: " .. BoolText(Q.resizeEnabled == true))
-    SetButtonText("saveLock", Q.previewEnabled == true and "SAVE & LOCK EDITING" or "SAVE & LOCK")
+    SetButtonText("expandAll", AreAllQuickMenuSectionsExpanded() and "COLLAPSE ALL SECTIONS" or "EXPAND ALL SECTIONS")
+    SetButtonText("preview", Q.previewEnabled == true and "EDITING MODE / PREVIEW ALL: ACTIVE" or "EDITING MODE / PREVIEW ALL: OFF")
+    SetButtonText("resize", Q.previewEnabled == true and "UNLOCK ALL ELEMENTS: ACTIVE" or "UNLOCK ALL ELEMENTS")
+    SetButtonText("saveLock", "SAVE & LOCK ALL")
+    SetButtonText("chatEdit", U.chatWindowEditing == true and "CHAT WINDOW MOVE / RESIZE: UNLOCKED" or "CHAT WINDOW MOVE / RESIZE")
     SetButtonText("immersive", "IMMERSIVE MODE: " .. BoolText(Immersive and Immersive.IsActive and Immersive.IsActive()))
     SetButtonText("camera", "CAMERA / SCREENSHOT MODE: " .. BoolText(Immersive and Immersive.IsCameraMode and Immersive.IsCameraMode()))
     SetButtonText("darkSouls", "DARK SOULS PROFILE: " .. DarkSoulsText())
@@ -3017,17 +3474,19 @@ function Q.Refresh()
     SetButtonText("cpProgress", "CHAMPION PROGRESS BAR: " .. SimpleModeLabel(Frames and Frames.GetChampionProgressVisibilityMode and Frames.GetChampionProgressVisibilityMode() or "show"))
     SetButtonText("npcNames", "ESO NPC NAMES: " .. ((Combat and Combat.IsNpcNamesHidden and Combat.IsNpcNamesHidden()) and "OFF" or "ON"))
     SetButtonText("playerNames", "ESO PLAYER NAMES: " .. ((Combat and Combat.IsPlayerNamesHidden and Combat.IsPlayerNamesHidden()) and "OFF" or "ON"))
+    SetButtonText("cpOnHover", "CP ON HOVER: " .. BoolText(Combat and Combat.IsCpOnHoverEnabled and Combat.IsCpOnHoverEnabled()))
     SetButtonText("goldenPursuits", "GOLDEN PURSUITS: " .. ((Frames and Frames.IsGoldenPursuitsHidden and Frames.IsGoldenPursuitsHidden()) and "OFF" or "ON"))
-    SetButtonText("overheadPlayerInfo", "OVERHEAD PLAYER INFO: " .. BoolText(Combat and Combat.IsOverheadPlayerInfoEnabled and Combat.IsOverheadPlayerInfoEnabled()))
     SetButtonText("esoCompass", "ESO COMPASS: " .. VisibilityText("compass"))
     SetButtonText("questTracker", "QUEST TRACKER: " .. VisibilityText("quests"))
     SetButtonText("queueStatus", "QUEUE STATUS: " .. VisibilityText("queue"))
     SetButtonText("crosshair", "CROSSHAIR: " .. VisibilityText("crosshair"))
     local chatMode = Frames and Frames.GetChatVisibilityMode and Frames.GetChatVisibilityMode() or "show"
-    SetButtonText("chatVisibility", "CHAT: " .. (chatMode == "show" and "NORMAL" or (chatMode == "hide" and "AUTO HIDE" or SimpleModeLabel(chatMode))))
+    SetButtonText("autoHideChat", "AUTO HIDE CHAT: " .. BoolText(chatMode == "hide"))
+    SetButtonText("chatVisibility", "CHAT VISIBILITY: " .. (chatMode == "show" and "NORMAL" or (chatMode == "hide" and "AUTO HIDE" or SimpleModeLabel(chatMode))))
     SetButtonText("mountMeter", "MOUNT STAMINA: " .. BoolText(not (f and f.hideMountStaminaBar == true)))
     SetButtonText("werewolfMeter", "WEREWOLF METER: " .. BoolText(not (f and f.hideWerewolfResourceBar == true)))
     SetButtonText("pvpKD", "PVP K/D COUNTER: " .. BoolText(c and c.showPvpKillCounter ~= false))
+    SetButtonText("killAnnouncements", "PVP KILL ANNOUNCEMENTS: " .. BoolText(c and c.showPvpKillMessages ~= false))
     SetButtonText("stats", "DAMAGE + RESISTANCE: " .. SimpleModeLabel(GetStatMode()))
     SetButtonText("shield", "SHIELD: " .. SimpleModeLabel(GetShieldMode()))
     local debuffMode = GetDebuffMode()
@@ -3035,7 +3494,8 @@ function Q.Refresh()
     SetButtonText("debuffs", "DEBUFFS: " .. debuffText)
     SetButtonText("cc", "CC IMMUNITY: " .. BoolText(c and c.showCcImmunityTracker ~= false))
     SetButtonText("feetCompass", "FEET COMPASS: " .. SimpleModeLabel(GetHelperMode("feet")))
-    SetButtonText("crownArrow", "CROWN ARROW: " .. SimpleModeLabel(GetHelperMode("crown")))
+    SetButtonText("crownArrow", "FOLLOW THE LEADER: " .. BoolText(f and f.crownDirectionArrow == true))
+    SetButtonText("crownTransparency", "FOLLOW THE LEADER TRANSPARENCY: " .. tostring(GetFollowLeaderTransparencyPercent()) .. "%")
     SetButtonText("votanMiniMap", "VOTAN MINIMAP: " .. VotanMiniMapStateText())
     SetButtonText("banditsMiniMap", "BANDITS MINIMAP: " .. BanditsMiniMapStateText())
     local graphicsState = Q.EnsureGraphicsProfiles()
@@ -3053,7 +3513,9 @@ function Q.Refresh()
     SetButtonText("food", "NO FOOD WARNING: " .. BoolText(c and c.showNoFoodWarning ~= false))
     SetButtonText("resolve", "MAJOR RESOLVE WARNING: " .. BoolText(c and c.showNoMajorResolveWarning ~= false))
     SetButtonText("breach", "MAJOR BREACH DOT: " .. BoolText(c and c.majorBreachTracker ~= false))
-    if Q.previewEnabled then Q.ApplyActualPreviewVisibility() end
+    -- Do not rebuild Preview Everything from this ordinary text refresh. The
+    -- 50 ms chat watcher calls Refresh(), and repeatedly reapplying preview
+    -- state from that loop can fight active drags and live HUD update routines.
 end
 
 function Q.SafeRefresh()
@@ -3204,6 +3666,29 @@ local function SetSectionExpanded(key, expanded)
     pcall(RequestSave)
 end
 
+AreAllQuickMenuSectionsExpanded = function()
+    local foundSection = false
+    for sectionKey in pairs(Q.sectionControls or {}) do
+        foundSection = true
+        if not IsSectionExpanded(sectionKey) then return false end
+    end
+    return foundSection
+end
+
+local function ToggleAllQuickMenuSections()
+    local store = GetQuickMenuSectionStore()
+    local expand = not AreAllQuickMenuSectionsExpanded()
+
+    for sectionKey in pairs(Q.sectionControls or {}) do
+        store[sectionKey] = expand
+    end
+
+    pcall(RequestSave)
+    Q.LayoutRows()
+    Q.SafeRefresh()
+    return true
+end
+
 local function UpdateSectionLabel(key)
     local entry = Q.sectionControls[key]
     if not entry or not entry.label then return end
@@ -3324,13 +3809,67 @@ local function NewSection(parent, key, text, index)
     return button
 end
 
+function Q.CreateGlobalEditToolbar()
+    if Q.editToolbar or not WINDOW_MANAGER or not GuiRoot then return Q.editToolbar end
+
+    local toolbar = WINDOW_MANAGER:CreateTopLevelWindow(QuickControlName("UltiviteGlobalEditToolbar"))
+    Q.editToolbar = toolbar
+    toolbar:SetDimensions(610, 68)
+    toolbar:SetAnchor(TOP, GuiRoot, TOP, 0, 18)
+    toolbar:SetDrawLayer(DL_OVERLAY)
+    toolbar:SetDrawTier(DT_HIGH)
+    if toolbar.SetDrawLevel then toolbar:SetDrawLevel(5200) end
+    toolbar:SetMouseEnabled(false)
+    toolbar:SetClampedToScreen(true)
+    toolbar:SetHidden(true)
+
+    local bg = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteGlobalEditToolbarBG"), toolbar, CT_BACKDROP)
+    bg:SetAnchorFill(toolbar)
+    bg:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+    bg:SetCenterColor(0.01, 0.02, 0.03, 0.94)
+    bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 3, 0)
+    bg:SetEdgeColor(0.20, 0.75, 1.00, 0.95)
+    bg:SetMouseEnabled(false)
+
+    local status = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteGlobalEditToolbarStatus"), toolbar, CT_LABEL)
+    Q.editToolbarStatus = status
+    status:SetDimensions(590, 20)
+    status:SetAnchor(TOP, toolbar, TOP, 0, 5)
+    status:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    status:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    status:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
+    status:SetColor(0.75, 0.90, 1.00, 1.00)
+    status:SetText("PREVIEW EVERYTHING   •   DRAG TO MOVE   •   WHEEL TO RESIZE")
+    status:SetMouseEnabled(false)
+
+    local function makeButton(name, text, x, width, callback)
+        local button = WINDOW_MANAGER:CreateControl(QuickControlName(name), toolbar, CT_BUTTON)
+        button:SetDimensions(width, 28)
+        button:SetAnchor(BOTTOMLEFT, toolbar, BOTTOMLEFT, x, -8)
+        button:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
+        button:SetText(text)
+        button:SetHandler("OnClicked", callback)
+        return button
+    end
+
+    Q.editToolbarUnlock = makeButton("UltiviteGlobalEditUnlock", "UNLOCK ALL", 25, 260, function()
+        Q.UnlockAllEditing()
+    end)
+    Q.editToolbarSave = makeButton("UltiviteGlobalEditSave", "SAVE & LOCK ALL", 325, 260, Q.SaveLockAndExit)
+
+    return toolbar
+end
+
 local function CreateControls()
     Q.createAttempt = (tonumber(Q.createAttempt) or 0) + 1
     Q.buttons = {}
     Q.sectionControls = {}
 
-    -- Sections default to collapsed to keep the panel compact.
+    -- Sections default to collapsed to keep the panel compact. The first control
+    -- deliberately sits above every section so the full menu can be opened or
+    -- collapsed with one click without changing any individual feature state.
     local rows = {
+        { type = "button", key = "expandAll", text = "EXPAND ALL SECTIONS", callback = ToggleAllQuickMenuSections },
         { type = "button", key = "settings", text = "FULL ULTIVITE SETTINGS", callback = function()
             if Q.previewEnabled == true then
                 Q.SafeRefresh()
@@ -3347,9 +3886,9 @@ local function CreateControls()
             end, 0)
             return true
         end },
-        { type = "button", key = "preview", text = "MOVE / RESIZE MODE", callback = Q.TogglePreview },
-        { type = "button", key = "resize", text = "MOUSE WHEEL RESIZE", callback = Q.ToggleResize },
-        { type = "button", key = "saveLock", text = "SAVE & LOCK", callback = Q.SaveAndLockEditing },
+        { type = "button", key = "preview", text = "EDITING MODE / PREVIEW ALL", callback = Q.TogglePreview },
+        { type = "button", key = "resize", text = "UNLOCK ALL ELEMENTS", callback = Q.UnlockAllEditing },
+        { type = "button", key = "saveLock", text = "SAVE & LOCK ALL", callback = Q.SaveLockAndExit },
         { type = "button", key = "immersive", text = "IMMERSIVE MODE", callback = function()
             if not Immersive or not Immersive.Toggle then return false end
             local result = Immersive.Toggle(true)
@@ -3369,8 +3908,42 @@ local function CreateControls()
             return result
         end },
 
+        { type = "section", key = "chatWindow", text = "Chat Window" },
+        -- Chat has one canonical Quick Menu section. Visibility, auto-hide and
+        -- geometry controls stay together instead of being split across World UI.
+        { type = "button", key = "autoHideChat", text = "AUTO HIDE CHAT", callback = ToggleAutoHideChat },
+        { type = "button", key = "chatVisibility", text = "CHAT VISIBILITY", callback = CycleChatVisibility },
+        { type = "button", key = "chatEdit", text = "CHAT WINDOW MOVE / RESIZE", callback = function()
+            if U.chatWindowEditing == true then
+                if U.EndChatWindowEditing then return U.EndChatWindowEditing(true) end
+                return false
+            end
+            if U.BeginChatWindowEditing then return U.BeginChatWindowEditing() end
+            return false
+        end },
+        { type = "button", key = "chatSmaller", text = "CHAT WINDOW: SMALLER", callback = function()
+            if not U.GetChatDimensions or not U.SetChatDimensions then return false end
+            local width, height = U.GetChatDimensions()
+            return U.SetChatDimensions((tonumber(width) or 445) - 80, (tonumber(height) or 267) - 48)
+        end },
+        { type = "button", key = "chatLarger", text = "CHAT WINDOW: LARGER", callback = function()
+            if not U.GetChatDimensions or not U.SetChatDimensions then return false end
+            local width, height = U.GetChatDimensions()
+            return U.SetChatDimensions((tonumber(width) or 445) + 80, (tonumber(height) or 267) + 48)
+        end },
+
+        { type = "section", key = "hudFrames", text = "HUD & Frames" },
+        { type = "button", key = "pyramid", text = "PYRAMID PLAYER FRAMES", callback = TogglePyramidPlayerFrames },
+        { type = "button", key = "darkSouls", text = "DARK SOULS PROFILE", callback = Q.CycleDarkSoulsMode },
+        { type = "button", key = "vanillaTargetFrames", text = "TARGET FRAME MODE", callback = ToggleTargetFrameMode },
+        { type = "button", key = "groupFrame", text = "GROUP FRAME", callback = CycleGroupFrame },
+        { type = "button", key = "enemyHealth", text = "ESO ENEMY OVERHEAD BARS", callback = CycleEnemyHealth },
+        { type = "button", key = "combatOnly", text = "COMBAT HUD", callback = ToggleCombatOnly },
+        { type = "button", key = "actionBar", text = "ACTION BAR", callback = ToggleActionBar },
+
         { type = "section", key = "combatInfo", text = "Combat Information" },
         { type = "button", key = "pvpKD", text = "PVP K/D COUNTER", callback = function() ToggleCombatBoolean("showPvpKillCounter", true, "UpdatePvpHud") end },
+        { type = "button", key = "killAnnouncements", text = "PVP KILL ANNOUNCEMENTS", callback = ToggleKillAnnouncements },
         { type = "button", key = "stats", text = "DAMAGE + RESISTANCE", callback = CycleStats },
         { type = "button", key = "shield", text = "SHIELD", callback = CycleShield },
         { type = "button", key = "debuffs", text = "DEBUFFS", callback = CycleDebuffs },
@@ -3393,7 +3966,8 @@ local function CreateControls()
 
         { type = "section", key = "navigation", text = "Navigation & Minimap" },
         { type = "button", key = "feetCompass", text = "FEET COMPASS", callback = CycleFeetCompass },
-        { type = "button", key = "crownArrow", text = "CROWN ARROW", callback = CycleCrownArrow },
+        { type = "button", key = "crownArrow", text = "FOLLOW THE LEADER", callback = ToggleFollowLeader },
+        { type = "button", key = "crownTransparency", text = "FOLLOW THE LEADER TRANSPARENCY", callback = CycleFollowLeaderTransparency },
         { type = "button", key = "votanMiniMap", text = "VOTAN MINIMAP", callback = ToggleVotanMiniMap },
         { type = "button", key = "banditsMiniMap", text = "BANDITS MINIMAP", callback = ToggleBanditsMiniMap },
 
@@ -3403,23 +3977,13 @@ local function CreateControls()
         { type = "button", key = "cpProgress", text = "CHAMPION PROGRESS BAR", callback = CycleCpProgress },
         { type = "button", key = "npcNames", text = "ESO NPC NAMES", callback = ToggleNpcNames },
         { type = "button", key = "playerNames", text = "ESO PLAYER NAMES", callback = TogglePlayerNames },
-        { type = "button", key = "overheadPlayerInfo", text = "OVERHEAD PLAYER INFO", callback = ToggleOverheadPlayerInfo },
+        { type = "button", key = "cpOnHover", text = "CP ON HOVER", callback = ToggleCpOnHover },
         { type = "button", key = "esoCompass", text = "ESO COMPASS", callback = function() CycleVisibility("compass", STANDARD_VISIBILITY_CYCLE) end },
         { type = "button", key = "questTracker", text = "QUEST TRACKER", callback = function() CycleVisibility("quests", STANDARD_VISIBILITY_CYCLE) end },
         { type = "button", key = "queueStatus", text = "QUEUE STATUS", callback = function() CycleVisibility("queue", STANDARD_VISIBILITY_CYCLE) end },
         { type = "button", key = "crosshair", text = "CROSSHAIR", callback = function() CycleVisibility("crosshair", CROSSHAIR_VISIBILITY_CYCLE) end },
-        { type = "button", key = "chatVisibility", text = "CHAT", callback = CycleChatVisibility },
         { type = "button", key = "mountMeter", text = "MOUNT STAMINA", callback = ToggleMountMeter },
         { type = "button", key = "werewolfMeter", text = "WEREWOLF METER", callback = ToggleWerewolfMeter },
-
-        { type = "section", key = "hudFrames", text = "HUD & Frames" },
-        { type = "button", key = "pyramid", text = "PYRAMID PLAYER FRAMES", callback = TogglePyramidPlayerFrames },
-        { type = "button", key = "darkSouls", text = "DARK SOULS PROFILE", callback = Q.CycleDarkSoulsMode },
-        { type = "button", key = "vanillaTargetFrames", text = "TARGET FRAME MODE", callback = ToggleTargetFrameMode },
-        { type = "button", key = "groupFrame", text = "GROUP FRAME", callback = CycleGroupFrame },
-        { type = "button", key = "enemyHealth", text = "ESO ENEMY OVERHEAD BARS", callback = CycleEnemyHealth },
-        { type = "button", key = "combatOnly", text = "COMBAT HUD", callback = ToggleCombatOnly },
-        { type = "button", key = "actionBar", text = "ACTION BAR", callback = ToggleActionBar },
 
         { type = "section", key = "graphics", text = "Graphics Profiles" },
         { type = "button", key = "graphicsAuto", text = "AUTO GRAPHICS", callback = Q.ToggleAutomaticGraphics },
@@ -3431,7 +3995,7 @@ local function CreateControls()
 
     -- LayoutRows calculates the exact live height from expanded sections after
     -- controls are created. Start compact to avoid a one-frame full-height flash.
-    local panelHeight = HEADER_HEIGHT + (5 * (ROW_HEIGHT + ROW_GAP)) + (6 * (SECTION_HEIGHT + SECTION_GAP)) + 10
+    local panelHeight = HEADER_HEIGHT + (7 * (ROW_HEIGHT + ROW_GAP)) + (7 * (SECTION_HEIGHT + SECTION_GAP)) + 10
 
     local panel = WINDOW_MANAGER:CreateTopLevelWindow(QuickControlName("UltiviteQuickMenuPanel"))
     Q.panel = panel
@@ -3479,18 +4043,9 @@ local function CreateControls()
     closeButton:SetText("X")
     if closeButton.SetNormalFontColor then closeButton:SetNormalFontColor(0.90, 0.94, 0.96, 1.00) end
     if closeButton.SetMouseOverFontColor then closeButton:SetMouseOverFontColor(1.00, 0.35, 0.30, 1.00) end
-    closeButton:SetHandler("OnMouseDown", function(_, mouseButton)
-        if mouseButton ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if Q.previewEnabled == true then Q.SafeRefresh(); return end
-        Q.BeginManualClose()
-        zo_callLater(function()
-            if Q.closePending == true then Q.ManualClose() end
-        end, 0)
-    end)
-    closeButton:SetHandler("OnMouseUp", function(_, mouseButton)
-        if mouseButton == MOUSE_BUTTON_INDEX_LEFT and Q.previewEnabled ~= true and Q.closePending == true then Q.ManualClose() end
-    end)
-    closeButton:SetHandler("OnClicked", function() end)
+    -- X is literally the same function as SAVE & LOCK ALL. OnClicked runs after
+    -- mouse-up, so the button releases focus before the shared exit path hides it.
+    closeButton:SetHandler("OnClicked", Q.SaveLockAndExit)
     Q.closeButton = closeButton
 
     local hint = WINDOW_MANAGER:CreateControl(QuickControlName("UltiviteQuickMenuHint"), panel, CT_LABEL)
@@ -3500,7 +4055,7 @@ local function CreateControls()
     hint:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     hint:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     hint:SetColor(0.68, 0.76, 0.82, 0.95)
-    hint:SetText("Move/resize stays active until SAVE & LOCK")
+    hint:SetText("All previews visible  •  drag to move  •  wheel to resize")
     hint:SetMouseEnabled(false)
 
     local sectionIndex = 0
@@ -3513,6 +4068,7 @@ local function CreateControls()
         end
     end
 
+    Q.CreateGlobalEditToolbar()
     Q.InstallBanditsMiniMapBridge()
     Q.LayoutRows()
     -- A label refresh failure must not disable the existing controls.
@@ -3555,6 +4111,13 @@ end)
 
 local GRAPHICS_EVENT_NAMESPACE = "UltiviteGraphicsAuto"
 EVENT_MANAGER:RegisterForEvent(GRAPHICS_EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
+    -- Bloom is a hard Ultivite invariant: never enable it, including when
+    -- automatic profile switching is disabled or an older profile stored ON.
+    if GRAPHICS_SETTING_BLOOM ~= nil then
+        SetGraphicsSettingSafe(GRAPHICS_SETTING_BLOOM, "false")
+        if type(ApplySettings) == "function" then pcall(ApplySettings) end
+    end
+
     -- ESO can still be finalizing video state on the first frame after a load.
     -- Apply once after activation, then the profile writer performs one verified
     -- retry if a setting was not accepted yet.

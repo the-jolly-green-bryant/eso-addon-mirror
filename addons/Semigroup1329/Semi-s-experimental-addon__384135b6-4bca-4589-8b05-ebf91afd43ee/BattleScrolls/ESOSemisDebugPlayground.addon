@@ -1,8 +1,8 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 479
-## Version: 0.0.479
+## AddOnVersion: 483
+## Version: 0.0.483
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
@@ -35,6 +35,10 @@ core/log.lua
 combat/arithmancer.lua
 combat/accumulators.lua
 combat/weaving.lua
+combat/ultimate.lua
+combat/crux.lua
+combat/resurrections.lua
+combat/zen.lua
 combat/effects.lua
 combat/effects_events.lua
 combat/effects_reconcile.lua
@@ -57,6 +61,7 @@ storage/migration.lua
 
 ; Network domain
 network/lgb.lua
+network/prefsshare.lua
 network/dpsshare.lua
 network/dpssender.lua
 network/encountershare.lua

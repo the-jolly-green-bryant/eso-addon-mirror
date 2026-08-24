@@ -26,6 +26,9 @@
             <Action name="NECROCAT_FOLLOW_NO">
                 <Down>NecroCat.Follow.CloseDialog()</Down>
             </Action>
+            <Action name="NECROCAT_SELF_WHISPER">
+                <Down>NecroCat.SelfWhisper()</Down>
+            </Action>
         </Category>
     </Layer>
 </Bindings>

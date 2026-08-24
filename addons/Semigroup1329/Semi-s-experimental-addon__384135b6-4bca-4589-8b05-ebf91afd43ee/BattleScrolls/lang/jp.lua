@@ -334,6 +334,7 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_AVG_TICK] = "平均ティック",
     [BATTLESCROLLS_TOOLTIP_MIN_TICK] = "最小ティック",
     [BATTLESCROLLS_TOOLTIP_MAX_TICK] = "最大ティック",
+    [BATTLESCROLLS_TOOLTIP_TICKS] = "ティック数",
 
     [BATTLESCROLLS_TOOLTIP_BY_TARGET] = "ターゲット別",
     [BATTLESCROLLS_TOOLTIP_MEAN_INTERVAL] = "平均間隔",
@@ -966,6 +967,8 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_VALUE_MB] = "<<1>> MB",
     [BATTLESCROLLS_MEMDIAG_VALUE_MB_PAIR] = "<<1>> / <<2>> MB",
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "アドオンメモリ（コンソールゲージ）",
+    [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "文字列サイズクラスを計測",
+    [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "長さ: ゲージ / ヒープ / モデル（1文字列あたりのバイト）",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "送信内容の選択",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "すべての戦闘（<<1>>）",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "ボスのみ（<<1>>）",
@@ -983,5 +986,76 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_FINISH] = "共有を完了",
 }
 for id, str in pairs(shareStrings) do
+    SafeAddString(id, str, 1)
+end
+
+-- 新機能：名前変更、レイドダメージ、蘇生、バーの色、アルティメット、クルックス、ズェン
+local featureStrings = {
+    [BATTLESCROLLS_RENAME] = "名前を変更",
+    [BATTLESCROLLS_RENAME_TEXT] = "新しい名前を入力してください。元の名前（<<1>>）を入力するとリセットされます。",
+
+    [BATTLESCROLLS_TAB_RAID_DAMAGE] = "レイドダメージ",
+    [BATTLESCROLLS_STAT_RAID_DAMAGE] = "レイド合計ダメージ",
+    [BATTLESCROLLS_STAT_RAID_DPS] = "レイドDPS",
+
+    [BATTLESCROLLS_GROUP_COL_RES] = "蘇生",
+
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR] = "自分のバーの色",
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT] = "グループメーター「カラフルバー」での自分のバーの色。Battle Scrollsを使用するグループメンバーにも共有され、相手にも同じ色で表示されます。",
+    [BATTLESCROLLS_COLOR_DEFAULT] = "デフォルト",
+    [BATTLESCROLLS_COLOR_RED] = "赤",
+    [BATTLESCROLLS_COLOR_ORANGE] = "オレンジ",
+    [BATTLESCROLLS_COLOR_GOLD] = "ゴールド",
+    [BATTLESCROLLS_COLOR_GREEN] = "緑",
+    [BATTLESCROLLS_COLOR_TEAL] = "ティール",
+    [BATTLESCROLLS_COLOR_CYAN] = "シアン",
+    [BATTLESCROLLS_COLOR_BLUE] = "青",
+    [BATTLESCROLLS_COLOR_PURPLE] = "紫",
+    [BATTLESCROLLS_COLOR_PINK] = "ピンク",
+    [BATTLESCROLLS_COLOR_WHITE] = "白",
+    [BATTLESCROLLS_COLOR_GREY] = "グレー",
+
+    [BATTLESCROLLS_HEADER_ULTIMATE] = "アルティメット",
+    [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "戦闘開始時のアルティメット",
+    [BATTLESCROLLS_STAT_ULT_GENERATED] = "獲得したアルティメット",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "消費・喪失したアルティメット",
+    [BATTLESCROLLS_HEADER_ULT_SOURCES] = "アルティメット獲得源",
+    [BATTLESCROLLS_ULT_BASE_GENERATION] = "基本獲得",
+    [BATTLESCROLLS_ULT_HEROISM_LINE] = "<<C:1>>を含む：維持率<<2>>%、約<<3>>",
+    [BATTLESCROLLS_HEADER_ULT_CASTS] = "使用したアルティメット",
+
+    [BATTLESCROLLS_HEADER_CRUX] = "クラッツ",
+    [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "生成スキル使用回数",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "クラッツ満杯時の生成",
+    [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "消費スキル使用回数",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "クラッツ3未満での消費",
+    [BATTLESCROLLS_CRUX_AT_N] = "クラッツ<<1>>時：<<2>>",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "スキル別クラッツ運用",
+
+    [BATTLESCROLLS_HEADER_ZEN] = "継続ダメージの重ね掛け（ズェン）",
+    [BATTLESCROLLS_ZEN_AVG_DOTS] = "平均DoT数",
+    [BATTLESCROLLS_ZEN_UPTIME] = "ズェンの弱体化の維持率",
+    [BATTLESCROLLS_ZEN_POTENTIAL] = "DoT1個以上の時間",
+    [BATTLESCROLLS_ZEN_DOTS_LABEL] = "DoT <<1>>個",
+    [BATTLESCROLLS_ZEN_SHARE_LINE] = "平均<<1>> — DoT5個で<<2>>",
+    [BATTLESCROLLS_ZEN_SHORT] = "ズェン",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — ズェン<<2>>% — 1+DoT <<3>>%",
+
+    [BATTLESCROLLS_HEADER_SUPPORT] = "サポート",
+    [BATTLESCROLLS_STAT_RESURRECTIONS] = "蘇生",
+}
+for id, str in pairs(featureStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local cruxPassiveStrings = {
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "スキル外での消費",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "消費スキルの使用なしで失われたクラッツ：自然消滅（30秒）または死亡。",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "この発生源の発動により生成されたクラッツ（タイミングでスタック増加と照合）。",
+    [BATTLESCROLLS_STAT_CRUX_OTHER] = "その他のクラッツ増加",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "追跡できる発生源のないクラッツの増加。例：「<<1>>」の定期的な発動。",
+    [BATTLESCROLLS_HEADER_CRUX_GAINED] = "アビリティ別クラッツ獲得",
+}
+for id, str in pairs(cruxPassiveStrings) do
     SafeAddString(id, str, 1)
 end

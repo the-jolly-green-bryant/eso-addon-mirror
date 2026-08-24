@@ -1,4 +1,5 @@
--- Form-only werewolf widget: Fury bar + Ultimate bar, plus the werewolf icon.
+-- Form-only werewolf widget. Clean: icon + Ult over Fury.
+-- Named skins: one 8-tile inverted-L plate (Ult in the bar, Fury on the head).
 -- No cooldown ring (console paints that as a spinning white square).
 -- Native ZO_PlayerAttributeWerewolf is hidden while this widget is shown.
 
@@ -15,18 +16,90 @@ local ELEMENT_ID = "werewolf"
 local HOST_ADDON = "ValknarrUIE"
 
 local ROOT_W = 340
-local ROOT_H = 104
+local ROOT_H = 160
 local ORB_SIZE = 96
 local BAR_W = 228
 local BAR_H = 36
+local PLATE_COLS = 4
+local PLATE_ROWS = 2
+local PLATE_TILE = 80
+local PLATE_W = PLATE_COLS * PLATE_TILE
+local PLATE_H = PLATE_ROWS * PLATE_TILE
+local PLATE_COUNT = PLATE_COLS * PLATE_ROWS
 local DEFAULT_X = 0.16
 local DEFAULT_Y = 0.72
 local BLINK_MS = 400
-local FURY_FILL = { 0.78, 0.12, 0.12, 0.95 }
-local ULT_FILL = { 0.90, 0.72, 0.16, 0.95 }
-local FILL_WARN = { 1, 0.28, 0.12, 1 }
+local FILL_WARN = { 0.78, 0.28, 0.16, 1 }
 local SUSTAIN_OK = { 1, 0.92, 0.55, 1 }
 local SUSTAIN_WARN = { 1, 0.32, 0.22, 1 }
+
+local function OverlayTier(control, drawLevel)
+    Safe.Try(control, "SetMouseEnabled", false)
+    Safe.Try(control, "SetMovable", false)
+    Safe.Try(control, "SetDrawLayer", DL_OVERLAY)
+    Safe.Try(control, "SetDrawTier", DT_HIGH)
+    Safe.Try(control, "SetDrawLevel", drawLevel or 100)
+    Safe.Try(control, "SetAlpha", 1)
+end
+
+local function HideTiles(tiles, host)
+    if host then
+        Safe.Try(host, "SetHidden", true)
+    end
+    if type(tiles) ~= "table" then
+        return
+    end
+    for index = 1, #tiles do
+        Safe.Try(tiles[index], "SetHidden", true)
+    end
+end
+
+local function TilesBound(tiles)
+    if type(tiles) ~= "table" or not Skins or type(Skins.IsCustomBound) ~= "function" then
+        return false
+    end
+    if #tiles < 1 then
+        return false
+    end
+    for index = 1, #tiles do
+        if not Skins.IsCustomBound(tiles[index]) then
+            return false
+        end
+    end
+    return true
+end
+
+local function MakePlate(parent)
+    local host = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfPlateHost", parent, CT_CONTROL)
+    OverlayTier(host, 102)
+    Safe.Try(host, "SetHidden", true)
+    local tiles = {}
+    for index = 1, PLATE_COUNT do
+        local tile
+        if WINDOW_MANAGER and CT_TEXTURE then
+            tile = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfPlate" .. index, host, CT_TEXTURE)
+        end
+        if tile then
+            OverlayTier(tile, 109)
+            Safe.Try(tile, "SetColor", 1, 1, 1, 1)
+            Safe.Try(tile, "SetHidden", true)
+            tiles[index] = tile
+        end
+    end
+    return host, tiles
+end
+
+local function SizeOrb(holder, icon, ring, segs, size)
+    Safe.Try(holder, "SetDimensions", size, size)
+    Safe.Try(icon, "SetDimensions", size, size)
+    Safe.Try(ring, "SetDimensions", size, size)
+    if type(segs) ~= "table" then
+        return
+    end
+    for index = 1, #segs do
+        Safe.Try(segs[index], "SetDimensions", size, size)
+    end
+end
 
 -- Vanilla werewolf ability art. Not LycanMeter's files.
 local ICON_TEXTURE = "/esoui/art/icons/ability_werewolf_001.dds"
@@ -70,7 +143,7 @@ function Werewolf:ShouldShow(wolfId, inForm)
     if inForm == nil then
         inForm = InForm()
     end
-    return Format.WidgetVisible(wolfId, inForm)
+    return Format.WidgetVisible(wolfId, inForm, Format.IsEditorScene())
 end
 
 -- Default layout only. Refresh / power / form events must not re-anchor
@@ -188,91 +261,94 @@ function Werewolf:Ensure()
         self.segments[index] = seg
     end
 
+    local liquid = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfLiquid", iconHolder, CT_TEXTURE)
+    OverlayTier(liquid, 110)
+    Safe.Try(liquid, "SetColor", 1, 1, 1, 1)
+    Safe.Try(liquid, "SetHidden", true)
+    self.liquid = liquid
+
+    local rim = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfLiquidRim", iconHolder, CT_BACKDROP)
+    OverlayTier(rim, 111)
+    Safe.Try(rim, "SetCenterColor", 1.0, 0.62, 0.32, 0.95)
+    Safe.Try(rim, "SetEdgeColor", 0, 0, 0, 0)
+    Safe.Try(rim, "SetEdgeTexture", nil, 1, 1, 1, 0)
+    Safe.Try(rim, "SetHidden", true)
+    self.liquidRim = rim
+
+    local cleanUlt = Format.Fill("clean", "ult")
+    local cleanFury = Format.Fill("clean", "fury")
+
     local ultBg = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfUltBg", root, CT_BACKDROP)
-    Safe.Try(ultBg, "SetAnchor", TOPRIGHT, iconHolder, TOPLEFT, -6, 4)
+    Safe.Try(ultBg, "SetAnchor", TOPRIGHT, iconHolder, TOPLEFT, -6, -12)
     Safe.Try(ultBg, "SetDimensions", BAR_W, BAR_H)
     Safe.Try(ultBg, "SetCenterColor", 0.08, 0.06, 0.02, 0.82)
-    Safe.Try(ultBg, "SetEdgeColor", 0.55, 0.42, 0.12, 0.9)
+    Safe.Try(ultBg, "SetEdgeColor", 0.48, 0.38, 0.16, 0.9)
     Safe.Try(ultBg, "SetEdgeTexture", nil, 1, 1, 1, 0)
     self.ultBg = ultBg
 
     local ultFill = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfUltFill", root, CT_BACKDROP)
     Safe.Try(ultFill, "SetAnchor", LEFT, ultBg, LEFT, 2, 0)
     Safe.Try(ultFill, "SetDimensions", 8, BAR_H - 4)
-    Safe.Try(ultFill, "SetCenterColor", ULT_FILL[1], ULT_FILL[2], ULT_FILL[3], ULT_FILL[4])
+    Safe.Try(ultFill, "SetCenterColor", cleanUlt[1], cleanUlt[2], cleanUlt[3], cleanUlt[4])
     Safe.Try(ultFill, "SetEdgeColor", 0, 0, 0, 0)
     Safe.Try(ultFill, "SetEdgeTexture", nil, 1, 1, 1, 0)
-    Safe.Try(ultFill, "SetDrawLayer", DL_OVERLAY)
-    Safe.Try(ultFill, "SetDrawTier", DT_HIGH)
+    OverlayTier(ultFill, 101)
     self.ultFill = ultFill
 
-    local sustain = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfSustain", ultBg, CT_LABEL)
+    local sustain = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfSustain", root, CT_LABEL)
     Safe.Try(sustain, "SetAnchor", CENTER, ultBg, CENTER, 0, 0)
     Safe.Try(sustain, "SetDimensions", BAR_W, BAR_H)
-    Safe.Try(sustain, "SetHorizontalAlignment", TEXT_ALIGN_CENTER)
-    Safe.Try(sustain, "SetDrawLayer", DL_OVERLAY)
-    Safe.Try(sustain, "SetDrawTier", DT_HIGH)
-    Safe.Try(sustain, "SetDrawLevel", 110)
+    if ValknarrThemeResources and ValknarrThemeResources.AlignBarLabel then
+        ValknarrThemeResources.AlignBarLabel(sustain)
+    else
+        Safe.Try(sustain, "SetHorizontalAlignment", TEXT_ALIGN_CENTER)
+        Safe.Try(sustain, "SetVerticalAlignment", TEXT_ALIGN_CENTER)
+    end
+    OverlayTier(sustain, 110)
     Safe.Try(sustain, "SetColor", SUSTAIN_OK[1], SUSTAIN_OK[2], SUSTAIN_OK[3], SUSTAIN_OK[4])
     if ValknarrThemeResources and ValknarrThemeResources.SetGamepadFont then
-        ValknarrThemeResources.SetGamepadFont(sustain, "ZoFontGamepad27")
+        ValknarrThemeResources.SetGamepadFont(sustain, Format.HudFonts("clean", BAR_H))
     elseif sustain and type(sustain.SetFont) == "function" then
-        pcall(sustain.SetFont, sustain, "ZoFontGamepad27")
+        pcall(sustain.SetFont, sustain, "ZoFontGamepad22")
     end
     self.sustainLabel = sustain
 
     local barBg = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfBarBg", root, CT_BACKDROP)
-    Safe.Try(barBg, "SetAnchor", BOTTOMRIGHT, iconHolder, BOTTOMLEFT, -6, -4)
+    Safe.Try(barBg, "SetAnchor", BOTTOMRIGHT, iconHolder, BOTTOMLEFT, -6, 12)
     Safe.Try(barBg, "SetDimensions", BAR_W, BAR_H)
     Safe.Try(barBg, "SetCenterColor", 0.08, 0.02, 0.02, 0.82)
-    Safe.Try(barBg, "SetEdgeColor", 0.35, 0.1, 0.1, 0.9)
+    Safe.Try(barBg, "SetEdgeColor", 0.32, 0.12, 0.10, 0.9)
     Safe.Try(barBg, "SetEdgeTexture", nil, 1, 1, 1, 0)
     self.barBg = barBg
 
     local fill = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfFill", root, CT_BACKDROP)
     Safe.Try(fill, "SetAnchor", LEFT, barBg, LEFT, 2, 0)
     Safe.Try(fill, "SetDimensions", 8, BAR_H - 4)
-    Safe.Try(fill, "SetCenterColor", FURY_FILL[1], FURY_FILL[2], FURY_FILL[3], FURY_FILL[4])
+    Safe.Try(fill, "SetCenterColor", cleanFury[1], cleanFury[2], cleanFury[3], cleanFury[4])
     Safe.Try(fill, "SetEdgeColor", 0, 0, 0, 0)
     Safe.Try(fill, "SetEdgeTexture", nil, 1, 1, 1, 0)
-    Safe.Try(fill, "SetDrawLayer", DL_OVERLAY)
-    Safe.Try(fill, "SetDrawTier", DT_HIGH)
+    OverlayTier(fill, 101)
     self.fill = fill
 
-    local fury = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfFury", barBg, CT_LABEL)
+    local fury = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfFury", root, CT_LABEL)
     Safe.Try(fury, "SetAnchor", CENTER, barBg, CENTER, 0, 0)
     Safe.Try(fury, "SetDimensions", BAR_W, BAR_H)
-    Safe.Try(fury, "SetHorizontalAlignment", TEXT_ALIGN_CENTER)
-    Safe.Try(fury, "SetDrawLayer", DL_OVERLAY)
-    Safe.Try(fury, "SetDrawTier", DT_HIGH)
-    Safe.Try(fury, "SetDrawLevel", 110)
-    Safe.Try(fury, "SetColor", 1, 0.92, 0.92, 1)
+    if ValknarrThemeResources and ValknarrThemeResources.AlignBarLabel then
+        ValknarrThemeResources.AlignBarLabel(fury)
+    else
+        Safe.Try(fury, "SetHorizontalAlignment", TEXT_ALIGN_CENTER)
+        Safe.Try(fury, "SetVerticalAlignment", TEXT_ALIGN_CENTER)
+    end
+    OverlayTier(fury, 110)
+    Safe.Try(fury, "SetColor", 0.92, 0.86, 0.82, 1)
     if ValknarrThemeResources and ValknarrThemeResources.SetGamepadFont then
-        ValknarrThemeResources.SetGamepadFont(fury, "ZoFontGamepad27")
+        ValknarrThemeResources.SetGamepadFont(fury, Format.HudFonts("clean", BAR_H))
     elseif fury and type(fury.SetFont) == "function" then
-        pcall(fury.SetFont, fury, "ZoFontGamepad27")
+        pcall(fury.SetFont, fury, "ZoFontGamepad22")
     end
     self.furyLabel = fury
 
-    local function MakeChrome(name, parent)
-        local chrome
-        if Skins and Skins.CreateTexture then
-            chrome = Skins.CreateTexture(name, parent, Skins.TEMPLATE.hudRim)
-        else
-            chrome = WINDOW_MANAGER:CreateControl(name, parent, CT_TEXTURE)
-        end
-        Safe.Try(chrome, "SetDimensions", BAR_W + 28, BAR_H + 16)
-        Safe.Try(chrome, "SetColor", 1, 1, 1, 1)
-        Safe.Try(chrome, "SetAnchor", TOPLEFT, parent, TOPLEFT, -14, -8)
-        Safe.Try(chrome, "SetAnchor", BOTTOMRIGHT, parent, BOTTOMRIGHT, 14, 8)
-        Safe.Try(chrome, "SetDrawLayer", DL_OVERLAY)
-        Safe.Try(chrome, "SetDrawTier", DT_HIGH)
-        Safe.Try(chrome, "SetDrawLevel", 109)
-        Safe.Try(chrome, "SetHidden", true)
-        return chrome
-    end
-    self.ultChrome = MakeChrome(ADDON_NAME .. "WolfUltChrome", ultBg)
-    self.furyChrome = MakeChrome(ADDON_NAME .. "WolfFuryChrome", barBg)
+    self.plateHost, self.plateTiles = MakePlate(root)
 
     self.root = root
     if Log then
@@ -372,17 +448,132 @@ function Werewolf:StopBlink()
     self.blinkOn = false
 end
 
+local function LayoutCleanBar(bg, fill, label, pct, color, bgCenter, bgEdge)
+    Safe.Try(bg, "SetHidden", false)
+    if bgCenter then
+        Safe.Try(bg, "SetCenterColor", bgCenter[1], bgCenter[2], bgCenter[3], bgCenter[4])
+    end
+    if bgEdge then
+        Safe.Try(bg, "SetEdgeColor", bgEdge[1], bgEdge[2], bgEdge[3], bgEdge[4])
+        Safe.Try(bg, "SetEdgeTexture", nil, 1, 1, 1, 0)
+    end
+    Safe.Try(fill, "ClearAnchors")
+    Safe.Try(fill, "SetAnchor", LEFT, bg, LEFT, 2, 0)
+    Safe.Try(fill, "SetDimensions", math.max(8, math.floor(((BAR_W - 4) * pct) / 100)), BAR_H - 4)
+    if color then
+        Safe.Try(fill, "SetCenterColor", color[1], color[2], color[3], color[4])
+    end
+    Safe.Try(fill, "SetHidden", false)
+    if label then
+        Safe.Try(label, "ClearAnchors")
+        Safe.Try(label, "SetAnchor", CENTER, bg, CENTER, 0, 0)
+        Safe.Try(label, "SetDimensions", BAR_W, BAR_H)
+    end
+end
+
+function Werewolf:ClearFrameBinds()
+    local tiles = self.plateTiles
+    if type(tiles) == "table" then
+        for index = 1, #tiles do
+            if Skins and Skins.ClearBind then
+                Skins.ClearBind(tiles[index])
+            end
+        end
+    end
+    self.frameArmed = nil
+    self.frameRebind = nil
+    self.frameSkin = nil
+    self.framed = false
+end
+
+function Werewolf:AnyFrameMissing()
+    if not Format.WolfMetal(ValknarrThemeStore:WolfId()) then
+        return false
+    end
+    return not self.framed
+end
+
+function Werewolf:StopFrameRetry()
+    local ticks = self.frameRetryTick or 0
+    local wasRetrying = self.frameRetrying
+    if self.frameRetrying and EVENT_MANAGER and type(EVENT_MANAGER.UnregisterForUpdate) == "function" then
+        pcall(EVENT_MANAGER.UnregisterForUpdate, EVENT_MANAGER, ADDON_NAME .. "WolfRetry")
+    end
+    self.frameRetrying = false
+    if wasRetrying and ticks >= 8 and self:AnyFrameMissing() and Log then
+        Log:Warn("wolf frame tiles still missed after retry")
+    end
+end
+
+function Werewolf:StartFrameRetry()
+    if self.frameRetrying then
+        return
+    end
+    if not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForUpdate) ~= "function" then
+        return
+    end
+    self.frameRetrying = true
+    self.frameRetryTick = 0
+    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "WolfRetry", 400, function()
+        Werewolf.frameRetryTick = (Werewolf.frameRetryTick or 0) + 1
+        Werewolf.frameRebind = true
+        Werewolf:Refresh()
+        if Werewolf.frameRetryTick >= 8 or not Werewolf:AnyFrameMissing() then
+            Werewolf:StopFrameRetry()
+        end
+    end)
+end
+
+function Werewolf:BindPlate(wolfId)
+    local pack = Skins and Skins.WolfPlate and Skins.WolfPlate(wolfId)
+    local want = Format.WolfMetal(wolfId)
+    if not (want and pack and self.plateTiles and Skins.BindBarTiles) then
+        if self.frameArmed or self.framed or self.frameSkin then
+            self:StopFrameRetry()
+            self:ClearFrameBinds()
+        end
+        return false, nil
+    end
+    if self.frameSkin ~= wolfId then
+        self:ClearFrameBinds()
+        self.frameSkin = wolfId
+    end
+    local framed
+    if not self.frameArmed or self.frameRebind then
+        self.frameArmed = true
+        self.frameRebind = nil
+        framed = Skins.BindBarTiles(self.plateTiles, pack, "wolf/plate")
+    else
+        framed = TilesBound(self.plateTiles)
+    end
+    self.framed = framed
+    if want and not framed then
+        if Log and not self.frameMissLogged then
+            self.frameMissLogged = true
+            Log:Debug("wolf plate tiles missed; using clean layout; retrying")
+        end
+        self:StartFrameRetry()
+    else
+        self.frameMissLogged = nil
+        if framed then
+            self:StopFrameRetry()
+        end
+    end
+    return framed, pack
+end
+
 function Werewolf:PaintWarning(on)
-    local fill = on and FILL_WARN or ULT_FILL
+    local wolfId = ValknarrThemeStore:WolfId()
+    local fill = on and FILL_WARN or Format.Fill(wolfId, "ult")
     local text = on and SUSTAIN_WARN or SUSTAIN_OK
     if self.ultFill then
         Safe.Try(self.ultFill, "SetCenterColor", fill[1], fill[2], fill[3], fill[4])
     end
-    if self.ultBg then
+    if self.ultBg and not self.framed then
         if on then
-            Safe.Try(self.ultBg, "SetEdgeColor", 1, 0.35, 0.18, 1)
+            Safe.Try(self.ultBg, "SetEdgeColor", 0.72, 0.32, 0.18, 1)
         else
-            Safe.Try(self.ultBg, "SetEdgeColor", 0.55, 0.42, 0.12, 0.9)
+            Safe.Try(self.ultBg, "SetEdgeColor", fill[1] * 0.8, fill[2] * 0.8, fill[3] * 0.8, 0.9)
         end
     end
     if self.sustainLabel then
@@ -418,85 +609,285 @@ function Werewolf:SetWarning(on)
     self:PaintWarning(false)
 end
 
-function Werewolf:ApplySkin(pct)
-    local wolfId = ValknarrThemeStore:WolfId()
-    local pack = Skins and Skins.WolfPack(wolfId)
-    local metal = pack ~= nil
-    local iconPath = ICON_TEXTURE
-    if pack and pack.icon then
-        iconPath = pack.icon
-    end
-    if Skins and self.icon then
-        local bind = Skins.Rebind or Skins.Bind
-        bind(self.icon, iconPath, "wolf/icon")
-    end
-    if self.ringFrame then
-        Safe.Try(self.ringFrame, "SetHidden", not metal)
-        if metal and Skins then
-            local bind = Skins.Rebind or Skins.Bind
-            bind(self.ringFrame, pack.ring, "wolf/ring")
-        end
-    end
+function Werewolf:PaintRing(furyPct, wedgePath, show, count)
+    count = tonumber(count) or Format.RING_SEGMENTS
     local filled = 0
-    if metal then
-        filled = Format.RingFilled(pct)
+    if show then
+        filled = Format.RingFilled(furyPct, count)
     end
     local twoPi = 2 * math.pi
     local segs = self.segments or {}
     for index = 1, Format.RING_SEGMENTS do
         local seg = segs[index]
         if seg then
-            local showSeg = metal and index <= filled
+            local showSeg = show and index <= filled and index <= count
             Safe.Try(seg, "SetHidden", not showSeg)
-            if showSeg and Skins then
+            if showSeg and Skins and wedgePath then
                 local bind = Skins.Rebind or Skins.Bind
-                bind(seg, pack.wedge, "wolf/wedge")
-                Safe.Try(seg, "SetTextureRotation", (index - 1) * (twoPi / Format.RING_SEGMENTS))
+                bind(seg, wedgePath, "wolf/wedge")
+                Safe.Try(seg, "SetTextureRotation", (index - 1) * (twoPi / count))
             end
         end
     end
-    -- HUD chrome looks wrong stretched over these short bars. Keep a thin
-    -- bronze edge only; the painted wolf + ring is the metal look.
-    if self.ultChrome then
-        Safe.Try(self.ultChrome, "SetHidden", true)
+    return filled
+end
+
+function Werewolf:HideLiquid()
+    Safe.Try(self.liquid, "SetHidden", true)
+    Safe.Try(self.liquidRim, "SetHidden", true)
+end
+
+function Werewolf:PaintPortrait(wolfId)
+    local icon = self.icon
+    if not icon then
+        return
     end
-    if self.furyChrome then
-        Safe.Try(self.furyChrome, "SetHidden", true)
+    local pack = Skins and Skins.WolfPack and Skins.WolfPack(wolfId)
+    local path = pack and pack.portrait
+    if not path then
+        Safe.Try(icon, "SetHidden", true)
+        return
     end
-    if self.ultBg then
-        if metal then
-            Safe.Try(self.ultBg, "SetCenterColor", 0.08, 0.06, 0.03, 0.90)
-            Safe.Try(self.ultBg, "SetEdgeColor", 0.72, 0.58, 0.32, 0.95)
-            Safe.Try(self.ultBg, "SetEdgeTexture", nil, 1, 1, 2, 0)
+    local size = 0
+    if self.orb and type(self.orb.GetWidth) == "function" then
+        size = tonumber(self.orb:GetWidth()) or 0
+    end
+    if size < 8 then
+        size = ORB_SIZE
+    end
+    local inner = math.max(8, math.floor(size * Format.WolfLiquidScale(wolfId)))
+    OverlayTier(icon, 112)
+    local bind = (Skins and (Skins.Rebind or Skins.Bind)) or nil
+    if bind then
+        bind(icon, path, "wolf/portrait")
+    end
+    Safe.Try(icon, "ClearAnchors")
+    Safe.Try(icon, "SetAnchor", CENTER, self.orb, CENTER, 0, 0)
+    Safe.Try(icon, "SetDimensions", inner, inner)
+    Safe.Try(icon, "SetHidden", false)
+end
+
+function Werewolf:PaintLiquid(furyPct, wolfId)
+    local liquid = self.liquid
+    if not liquid then
+        return 0
+    end
+    local pct = (tonumber(furyPct) or 0) / 100
+    if pct < 0 then
+        pct = 0
+    end
+    if pct > 1 then
+        pct = 1
+    end
+    if pct < 0.02 then
+        self:HideLiquid()
+        return 0
+    end
+    local size = 0
+    if self.orb and type(self.orb.GetWidth) == "function" then
+        size = tonumber(self.orb:GetWidth()) or 0
+    end
+    if size < 8 then
+        size = ORB_SIZE
+    end
+    local inner = math.max(8, math.floor(size * Format.WolfLiquidScale(wolfId)))
+    local height = math.max(2, math.floor(inner * pct))
+    local inset = math.floor((size - inner) * 0.5)
+    local path = "/ValknarrTheme/texture/liq.dds"
+    local pack = Skins and Skins.WolfPack and Skins.WolfPack(wolfId)
+    if pack and pack.liquid then
+        path = pack.liquid
+    end
+    local bind = (Skins and (Skins.Rebind or Skins.Bind)) or nil
+    if bind then
+        bind(liquid, path, "wolf/liquid")
+    end
+    OverlayTier(liquid, 110)
+    Safe.Try(liquid, "ClearAnchors")
+    Safe.Try(liquid, "SetAnchor", BOTTOM, self.orb, BOTTOM, 0, -inset)
+    Safe.Try(liquid, "SetDimensions", inner, height)
+    Safe.Try(liquid, "SetTextureCoords", 0, 1, 1 - pct, 1)
+    Safe.Try(liquid, "SetHidden", false)
+
+    local rim = self.liquidRim
+    if rim then
+        local radius = inner * 0.5
+        local fromCenter = height - radius
+        local under = radius * radius - fromCenter * fromCenter
+        local chord = 0
+        if under > 0 then
+            chord = math.floor(math.sqrt(under) * 2 * 0.92)
+        end
+        if chord >= 10 and pct < 0.98 then
+            OverlayTier(rim, 111)
+            Safe.Try(rim, "ClearAnchors")
+            Safe.Try(rim, "SetAnchor", TOP, liquid, TOP, 0, 0)
+            Safe.Try(rim, "SetDimensions", chord, 3)
+            Safe.Try(rim, "SetHidden", false)
         else
-            Safe.Try(self.ultBg, "SetCenterColor", 0.08, 0.06, 0.02, 0.82)
-            Safe.Try(self.ultBg, "SetEdgeColor", 0.55, 0.42, 0.12, 0.9)
-            Safe.Try(self.ultBg, "SetEdgeTexture", nil, 1, 1, 1, 0)
+            Safe.Try(rim, "SetHidden", true)
         end
     end
-    if self.barBg then
-        if metal then
-            Safe.Try(self.barBg, "SetCenterColor", 0.10, 0.03, 0.03, 0.90)
-            Safe.Try(self.barBg, "SetEdgeColor", 0.62, 0.28, 0.16, 0.95)
-            Safe.Try(self.barBg, "SetEdgeTexture", nil, 1, 1, 2, 0)
-        else
-            Safe.Try(self.barBg, "SetCenterColor", 0.08, 0.02, 0.02, 0.82)
-            Safe.Try(self.barBg, "SetEdgeColor", 0.35, 0.1, 0.1, 0.9)
-            Safe.Try(self.barBg, "SetEdgeTexture", nil, 1, 1, 1, 0)
+    return math.floor(pct * 100)
+end
+
+function Werewolf:LayoutPlate(pack, furyPct, ultPct, wolfId)
+    Safe.Try(self.ultBg, "SetHidden", true)
+    Safe.Try(self.barBg, "SetHidden", true)
+    Safe.Try(self.fill, "SetHidden", true)
+    Safe.Try(self.furyLabel, "SetHidden", true)
+    Safe.Try(self.icon, "SetHidden", true)
+    Safe.Try(self.ringFrame, "SetHidden", true)
+
+    local host = self.plateHost
+    local tiles = self.plateTiles
+    Safe.Try(host, "SetHidden", false)
+    Safe.Try(host, "ClearAnchors")
+    Safe.Try(host, "SetAnchor", CENTER, self.root, CENTER, 0, 0)
+    Safe.Try(host, "SetDimensions", PLATE_W, PLATE_H)
+    for index = 1, #tiles do
+        local piece = tiles[index]
+        local col = (index - 1) % PLATE_COLS
+        local row = math.floor((index - 1) / PLATE_COLS)
+        Safe.Try(piece, "SetHidden", false)
+        Safe.Try(piece, "ClearAnchors")
+        Safe.Try(piece, "SetAnchor", TOPLEFT, host, TOPLEFT, col * PLATE_TILE, row * PLATE_TILE)
+        Safe.Try(piece, "SetDimensions", PLATE_TILE, PLATE_TILE)
+    end
+
+    local hole = pack.hole
+    local x = hole[1] * PLATE_W + 2
+    local y = hole[2] * PLATE_H + 2
+    local wellW = (hole[3] - hole[1]) * PLATE_W - 4
+    local wellH = (hole[4] - hole[2]) * PLATE_H - 4
+    local ultColor = Format.Fill(wolfId, "ult")
+    Safe.Try(self.ultFill, "ClearAnchors")
+    Safe.Try(self.ultFill, "SetAnchor", TOPLEFT, host, TOPLEFT, x, y)
+    Safe.Try(self.ultFill, "SetDimensions", math.max(8, math.floor((wellW * ultPct) / 100)), wellH)
+    Safe.Try(self.ultFill, "SetCenterColor", ultColor[1], ultColor[2], ultColor[3], ultColor[4])
+    Safe.Try(self.ultFill, "SetHidden", false)
+    if self.sustainLabel then
+        local ox = math.floor(x + wellW * 0.5 - PLATE_W * 0.5)
+        local oy = math.floor(y + wellH * 0.5 - PLATE_H * 0.5)
+        Safe.Try(self.sustainLabel, "ClearAnchors")
+        Safe.Try(self.sustainLabel, "SetAnchor", CENTER, host, CENTER, ox, oy)
+        Safe.Try(self.sustainLabel, "SetDimensions", wellW, wellH)
+        if ValknarrThemeResources and ValknarrThemeResources.SetGamepadFont then
+            ValknarrThemeResources.SetGamepadFont(self.sustainLabel, Format.HudFonts(wolfId, wellH))
         end
     end
+
+    local circle = pack.circle or { 0.75, 0.50, 0.24 }
+    local cx = circle[1] * PLATE_W
+    local cy = circle[2] * PLATE_H
+    local radius = circle[3] * PLATE_W
+    local orb = math.max(48, math.floor(radius * 2))
+    Safe.Try(self.orb, "ClearAnchors")
+    Safe.Try(self.orb, "SetAnchor", TOPLEFT, host, TOPLEFT, math.floor(cx - orb * 0.5), math.floor(cy - orb * 0.5))
+    SizeOrb(self.orb, self.icon, self.ringFrame, self.segments, orb)
+    if Format.WolfLiquid(wolfId) then
+        self:PaintRing(furyPct, nil, false)
+        self:PaintPortrait(wolfId)
+        return self:PaintLiquid(furyPct, wolfId)
+    end
+    self:HideLiquid()
+    OverlayTier(self.icon, 106)
+    Safe.Try(self.icon, "SetHidden", true)
+    local wolf = Skins and Skins.WolfPack and Skins.WolfPack(wolfId)
+    if Format.WolfRunes(wolfId) then
+        return self:PaintRing(furyPct, wolf and wolf.wedge, true, Format.RUNE_SEGMENTS)
+    end
+    return self:PaintRing(furyPct, wolf and wolf.wedge, true)
+end
+
+function Werewolf:LayoutClean(furyPct, ultPct, wolfId)
+    HideTiles(self.plateTiles, self.plateHost)
+    self:HideLiquid()
+    OverlayTier(self.icon, 106)
+    Safe.Try(self.icon, "SetHidden", false)
+    Safe.Try(self.ringFrame, "SetHidden", true)
+    Safe.Try(self.orb, "ClearAnchors")
+    Safe.Try(self.orb, "SetAnchor", RIGHT, self.root, RIGHT, 0, 0)
+    SizeOrb(self.orb, self.icon, self.ringFrame, self.segments, ORB_SIZE)
+    if Skins and self.icon then
+        local bind = Skins.Rebind or Skins.Bind
+        bind(self.icon, ICON_TEXTURE, "wolf/icon")
+    end
+    local ultColor = Format.Fill(wolfId, "ult")
+    local furyColor = Format.Fill(wolfId, "fury")
+    LayoutCleanBar(
+        self.ultBg, self.ultFill, self.sustainLabel, ultPct, ultColor,
+        { 0.08, 0.06, 0.02, 0.82 },
+        { ultColor[1] * 0.7, ultColor[2] * 0.7, ultColor[3] * 0.7, 0.9 }
+    )
+    LayoutCleanBar(
+        self.barBg, self.fill, self.furyLabel, furyPct, furyColor,
+        { 0.08, 0.02, 0.02, 0.82 },
+        { furyColor[1] * 0.7, furyColor[2] * 0.7, furyColor[3] * 0.7, 0.9 }
+    )
+    if self.sustainLabel and ValknarrThemeResources and ValknarrThemeResources.SetGamepadFont then
+        ValknarrThemeResources.SetGamepadFont(self.sustainLabel, Format.HudFonts("clean", BAR_H))
+    end
+    if self.furyLabel and ValknarrThemeResources and ValknarrThemeResources.SetGamepadFont then
+        ValknarrThemeResources.SetGamepadFont(self.furyLabel, Format.HudFonts("clean", BAR_H))
+    end
+    return self:PaintRing(furyPct, nil, false)
+end
+
+function Werewolf:ApplySkin(furyPct, ultPct)
+    local wolfId = ValknarrThemeStore:WolfId()
+    furyPct = furyPct or 0
+    ultPct = ultPct or 0
+    local framed, pack = self:BindPlate(wolfId)
+    local filled
+    if framed and pack then
+        filled = self:LayoutPlate(pack, furyPct, ultPct, wolfId)
+    else
+        filled = self:LayoutClean(furyPct, ultPct, wolfId)
+    end
+
     if self.lastWolfId ~= wolfId then
         if Log then
-            Log:Always(
-                "wolf ring skin=" .. wolfId
-                .. " filled=" .. tostring(filled) .. "/" .. tostring(Format.RING_SEGMENTS)
-                .. " fury=" .. tostring(pct) .. "%"
-                .. " metal=" .. tostring(metal)
+            local meter
+            if Format.WolfLiquid(wolfId) then
+                meter = "liquid=" .. tostring(furyPct) .. "%"
+            else
+                meter = "filled=" .. tostring(filled) .. "/" .. tostring(Format.RING_SEGMENTS)
+            end
+            Log:Debug(
+                "wolf plate skin=" .. wolfId
+                .. " " .. meter
+                .. " fury=" .. tostring(furyPct) .. "%"
+                .. " plated=" .. tostring(framed)
             )
         end
         self.lastWolfId = wolfId
     elseif Log and Log.Debug then
-        Log:Debug("wolf ring filled=" .. tostring(filled) .. " fury=" .. tostring(pct))
+        Log:Debug("wolf plate filled=" .. tostring(filled) .. " fury=" .. tostring(furyPct))
+    end
+    self:ApplyLabels()
+end
+
+function Werewolf:ApplyLabels()
+    local showText = Format.ShowBarText()
+    if self.sustainLabel then
+        Safe.Try(self.sustainLabel, "SetHidden", not showText)
+    end
+    if self.furyLabel then
+        Safe.Try(self.furyLabel, "SetHidden", self.framed or not showText)
+    end
+end
+
+function Werewolf:SyncHudVisibility(hud)
+    if Format.IsEditorScene() then
+        self:Refresh()
+        return
+    end
+    if hud == nil then
+        hud = Format.HudSceneVisible()
+    end
+    if self.root then
+        Safe.Try(self.root, "SetHidden", not (self:ShouldShow() and hud))
     end
 end
 
@@ -505,11 +896,12 @@ function Werewolf:Refresh()
     local root = self:Ensure()
     if root then
         self:PlaceIfUnanchored(root)
-        Safe.Try(root, "SetHidden", not show)
+        Safe.Try(root, "SetHidden", not (show and Format.HudSceneVisible()))
     end
     self:SyncNativeBar(show)
     if not show then
         self:SetWarning(false)
+        self:StopFrameRetry()
         return
     end
 
@@ -518,24 +910,13 @@ function Werewolf:Refresh()
     local ultimate, ultMax = self:ReadUltimate()
     local ultPct = Format.Percent(ultimate, ultMax)
     local inCombat = InCombat()
-    local inner = BAR_W - 4
-    if self.fill then
-        local width = math.max(8, math.floor((pct / 100) * inner))
-        Safe.Try(self.fill, "SetDimensions", width, BAR_H - 4)
-        Safe.Try(self.fill, "SetHidden", false)
-    end
-    if self.ultFill then
-        local width = math.max(8, math.floor((ultPct / 100) * inner))
-        Safe.Try(self.ultFill, "SetDimensions", width, BAR_H - 4)
-        Safe.Try(self.ultFill, "SetHidden", false)
-    end
     if self.furyLabel then
         Safe.Try(self.furyLabel, "SetText", Format.FuryLine(furyCurrent, furyMax))
     end
     if self.sustainLabel then
         Safe.Try(self.sustainLabel, "SetText", Format.SustainLine(ultimate, inCombat))
     end
-    self:ApplySkin(pct)
+    self:ApplySkin(pct, ultPct)
     self:SetWarning(Format.SustainIsLow(ultimate, inCombat))
 end
 
@@ -577,8 +958,12 @@ function Werewolf:Describe()
         hostRegistered = self.hostRegistered and true or false,
         skin = ValknarrThemeStore:WolfId(),
         ringFilled = Format.RingFilled(Format.Percent(furyCurrent, furyMax)),
+        framed = self.framed and true or false,
+        hudVisible = Format.HudSceneVisible() and true or false,
+        barText = Format.ShowBarText() and true or false,
         iconTex = self.icon and self.icon.ValknarrBoundTex or nil,
         ringTex = self.ringFrame and self.ringFrame.ValknarrBoundTex or nil,
+        plateTile = self.plateTiles and self.plateTiles[1] and self.plateTiles[1].ValknarrBoundTex or nil,
     }
 end
 

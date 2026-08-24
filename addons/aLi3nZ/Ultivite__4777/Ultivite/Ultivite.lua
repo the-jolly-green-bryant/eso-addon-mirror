@@ -9,7 +9,7 @@ local LayoutSafety = U.LayoutSafety
 local ProfileManager = U.ProfileManager
 
 U.name = "Ultivite"
-U.version = "1.0.160"
+U.version = "1.0.200"
 U.savedVersion = 1
 U.migrationVersion = 9
 U.panel = nil
@@ -19,8 +19,8 @@ local function chat(message)
     d(string.format("|c7FD4FF[Ultivite]|r %s", tostring(message)))
 end
 
-local DS_TOPLEFT_X = 28
-local DS_TOPLEFT_Y = 77
+local DS_TOPLEFT_X = 24.1
+local DS_TOPLEFT_Y = 66.2
 local DS_TOPLEFT_GAP = 2
 local DS_ACTIONBAR_ENEMY_BOTTOM = -196
 local DS_ACTIONBAR_KB_X = 823.9
@@ -30,15 +30,35 @@ local DS_ACTIONBAR_GP_X = 815.0
 local DS_ACTIONBAR_GP_Y = 1134.0
 local DS_ACTIONBAR_GP_SCALE = 122
 
+local function LayoutX(value)
+    return U.ScaleLayoutX and U.ScaleLayoutX(value) or value
+end
+
+local function LayoutY(value)
+    return U.ScaleLayoutY and U.ScaleLayoutY(value) or value
+end
+
+local function LayoutSize(value)
+    return U.ScaleLayoutSize and U.ScaleLayoutSize(value) or value
+end
+
+local function LayoutAbsoluteX(value)
+    return U.ScaleLayoutAbsoluteX and U.ScaleLayoutAbsoluteX(value) or value
+end
+
+local function LayoutAbsoluteY(value)
+    return U.ScaleLayoutAbsoluteY and U.ScaleLayoutAbsoluteY(value) or value
+end
+
 local FACTORY_SOUND_BLOCKS = {}
 
 local function applySharedDarkSoulsTopLeftDefaults(frameSettings)
     if not frameSettings then return end
     frameSettings.darkSoulsMode = true
     frameSettings.showDSUltimate = true
-    frameSettings.darkSoulsLeft = DS_TOPLEFT_X
-    frameSettings.darkSoulsTop = DS_TOPLEFT_Y
-    frameSettings.darkSoulsGap = DS_TOPLEFT_GAP
+    frameSettings.darkSoulsLeft = LayoutSize(DS_TOPLEFT_X)
+    frameSettings.darkSoulsTop = LayoutSize(DS_TOPLEFT_Y)
+    frameSettings.darkSoulsGap = LayoutSize(DS_TOPLEFT_GAP)
 end
 
 local function lockFancyActionBarEditing()
@@ -171,25 +191,25 @@ local function applyDarkSoulsActionBarExactFabSettings(fabSettings)
     fabSettings.abScaling.kb = fabSettings.abScaling.kb or {}
     fabSettings.abScaling.gp = fabSettings.abScaling.gp or {}
     fabSettings.abScaling.kb.enable = true
-    fabSettings.abScaling.kb.scale = DS_ACTIONBAR_KB_SCALE
+    fabSettings.abScaling.kb.scale = zo_clamp(LayoutSize(DS_ACTIONBAR_KB_SCALE), 30, 250)
     fabSettings.abScaling.gp.enable = true
-    fabSettings.abScaling.gp.scale = DS_ACTIONBAR_GP_SCALE
+    fabSettings.abScaling.gp.scale = zo_clamp(LayoutSize(DS_ACTIONBAR_GP_SCALE), 30, 250)
 
     fabSettings.abMove = fabSettings.abMove or {}
     fabSettings.abMove.kb = fabSettings.abMove.kb or {}
     fabSettings.abMove.gp = fabSettings.abMove.gp or {}
 
     fabSettings.abMove.kb.enable = true
-    fabSettings.abMove.kb.x = DS_ACTIONBAR_KB_X
-    fabSettings.abMove.kb.y = DS_ACTIONBAR_KB_Y
-    fabSettings.abMove.kb.prevX = DS_ACTIONBAR_KB_X
-    fabSettings.abMove.kb.prevY = DS_ACTIONBAR_KB_Y
+    fabSettings.abMove.kb.x = LayoutAbsoluteX(DS_ACTIONBAR_KB_X)
+    fabSettings.abMove.kb.y = LayoutAbsoluteY(DS_ACTIONBAR_KB_Y)
+    fabSettings.abMove.kb.prevX = LayoutAbsoluteX(DS_ACTIONBAR_KB_X)
+    fabSettings.abMove.kb.prevY = LayoutAbsoluteY(DS_ACTIONBAR_KB_Y)
 
     fabSettings.abMove.gp.enable = true
-    fabSettings.abMove.gp.x = DS_ACTIONBAR_GP_X
-    fabSettings.abMove.gp.y = DS_ACTIONBAR_GP_Y
-    fabSettings.abMove.gp.prevX = DS_ACTIONBAR_GP_X
-    fabSettings.abMove.gp.prevY = DS_ACTIONBAR_GP_Y
+    fabSettings.abMove.gp.x = LayoutAbsoluteX(DS_ACTIONBAR_GP_X)
+    fabSettings.abMove.gp.y = LayoutAbsoluteY(DS_ACTIONBAR_GP_Y)
+    fabSettings.abMove.gp.prevX = LayoutAbsoluteX(DS_ACTIONBAR_GP_X)
+    fabSettings.abMove.gp.prevY = LayoutAbsoluteY(DS_ACTIONBAR_GP_Y)
 
     if FAB and FAB.RefreshRuntime then FAB.RefreshRuntime() end
 end
@@ -512,14 +532,17 @@ function U.PositionFancyActionBarBelowPlayerBars(silent)
         return false, nil, nil
     end
 
-    if fab.ApplyCombatOnlyVisibility then
-        fab.ApplyCombatOnlyVisibility(true)
-    end
+    -- Hidden controls can be safely positioned and scaled. Do not force FAB
+    -- visible here because Pyramid may be enabled while Combat Only is active.
+    -- Forcing visibility during this layout pass can expose the action-bar root
+    -- or its backdrop while the player is out of combat.
 
     -- User-approved Pyramid reference captured from the in-game layout report.
     -- Keep the exact saved Pyramid FAB placement instead of recalculating it.
-    local kbX, kbY = 801.2, 1177.4
-    local gpX, gpY = 803.0, 1296.8
+    local kbX, kbY = LayoutAbsoluteX(802.4), LayoutAbsoluteY(1187.2)
+    local gpX, gpY = LayoutAbsoluteX(803.0), LayoutAbsoluteY(1296.8)
+    local kbScale = zo_clamp(LayoutSize(154), 30, 250)
+    local gpScale = zo_clamp(LayoutSize(122), 30, 250)
     local useGamepad = fab.style == 2
     local targetX = useGamepad and gpX or kbX
     local targetY = useGamepad and gpY or kbY
@@ -530,6 +553,14 @@ function U.PositionFancyActionBarBelowPlayerBars(silent)
     if fab.SetWholeActionBarPosition then
         fab.SetWholeActionBarPosition(targetX, targetY)
     end
+
+    fabSettings.abScaling = fabSettings.abScaling or {}
+    fabSettings.abScaling.kb = fabSettings.abScaling.kb or {}
+    fabSettings.abScaling.gp = fabSettings.abScaling.gp or {}
+    fabSettings.abScaling.kb.enable = true
+    fabSettings.abScaling.kb.scale = kbScale
+    fabSettings.abScaling.gp.enable = true
+    fabSettings.abScaling.gp.scale = gpScale
 
     fabSettings.abMove = fabSettings.abMove or {}
     fabSettings.abMove.kb = fabSettings.abMove.kb or {}
@@ -545,16 +576,28 @@ function U.PositionFancyActionBarBelowPlayerBars(silent)
     fabSettings.abMove.gp.prevX = gpX
     fabSettings.abMove.gp.prevY = gpY
 
+    if fab.constants and fab.constants.abScale then
+        fab.constants.abScale.enable = true
+        fab.constants.abScale.scale = useGamepad and gpScale or kbScale
+    end
     if fab.constants and fab.constants.move then
         fab.constants.move.x = targetX
         fab.constants.move.y = targetY
         fab.constants.move.enable = true
     end
+    if fab.SetScale then fab.SetScale() end
     if fab.SetMoved then fab.SetMoved(true) end
     if fab.ReanchorMover then fab.ReanchorMover() end
     if fab.SaveMoverPosition then fab.SaveMoverPosition() end
     if fab.ApplyCombatOnlyVisibility then
         fab.ApplyCombatOnlyVisibility(false)
+        if zo_callLater then
+            zo_callLater(function()
+                if fab.ApplyCombatOnlyVisibility then
+                    fab.ApplyCombatOnlyVisibility(false)
+                end
+            end, 0)
+        end
     end
 
     local visualLeft, visualTop, visualRight, visualBottom
@@ -680,33 +723,38 @@ function U.ApplyDefaultCombatHUDLayout(silent)
         -- Exact user-approved FAB layout captured by Print Positions in ESO.
         -- Keyboard is the authoritative normal/default layout. Gamepad values are
         -- retained from the same diagnostic so switching UI mode stays deterministic.
+        local defaultKbScale = zo_clamp(LayoutSize(154), 30, 250)
+        local defaultGpScale = zo_clamp(LayoutSize(122), 30, 250)
+        local defaultKbX, defaultKbY = LayoutAbsoluteX(796.0245361328), LayoutAbsoluteY(1126.2349853516)
+        local defaultGpX, defaultGpY = LayoutAbsoluteX(815.0), LayoutAbsoluteY(1134.0)
+
         fabSettings.abScaling = fabSettings.abScaling or {}
         fabSettings.abScaling.kb = fabSettings.abScaling.kb or {}
         fabSettings.abScaling.gp = fabSettings.abScaling.gp or {}
         fabSettings.abScaling.kb.enable = true
-        fabSettings.abScaling.kb.scale = 154
+        fabSettings.abScaling.kb.scale = defaultKbScale
         fabSettings.abScaling.gp.enable = true
-        fabSettings.abScaling.gp.scale = 122
+        fabSettings.abScaling.gp.scale = defaultGpScale
 
         fabSettings.abMove = fabSettings.abMove or {}
         fabSettings.abMove.kb = fabSettings.abMove.kb or {}
         fabSettings.abMove.gp = fabSettings.abMove.gp or {}
         fabSettings.abMove.kb.enable = true
-        fabSettings.abMove.kb.x = 796.0245361328
-        fabSettings.abMove.kb.y = 1126.2349853516
-        fabSettings.abMove.kb.prevX = 796.0245361328
-        fabSettings.abMove.kb.prevY = 1126.2349853516
+        fabSettings.abMove.kb.x = defaultKbX
+        fabSettings.abMove.kb.y = defaultKbY
+        fabSettings.abMove.kb.prevX = defaultKbX
+        fabSettings.abMove.kb.prevY = defaultKbY
         fabSettings.abMove.gp.enable = true
-        fabSettings.abMove.gp.x = 815.0
-        fabSettings.abMove.gp.y = 1134.0
-        fabSettings.abMove.gp.prevX = 815.0
-        fabSettings.abMove.gp.prevY = 1134.0
+        fabSettings.abMove.gp.x = defaultGpX
+        fabSettings.abMove.gp.y = defaultGpY
+        fabSettings.abMove.gp.prevX = defaultGpX
+        fabSettings.abMove.gp.prevY = defaultGpY
 
         if FAB and FAB.constants then
             local isGamepad = FAB.style == 2
-            local targetScale = isGamepad and 122 or 154
-            local targetX = isGamepad and 815.0 or 796.0245361328
-            local targetY = isGamepad and 1134.0 or 1126.2349853516
+            local targetScale = isGamepad and defaultGpScale or defaultKbScale
+            local targetX = isGamepad and defaultGpX or defaultKbX
+            local targetY = isGamepad and defaultGpY or defaultKbY
             if FAB.constants.abScale then
                 FAB.constants.abScale.enable = true
                 FAB.constants.abScale.scale = targetScale
@@ -727,9 +775,9 @@ function U.ApplyDefaultCombatHUDLayout(silent)
         local fab = FAB
         if fab then
             local isGamepad = fab.style == 2
-            local targetScale = isGamepad and 122 or 154
-            local targetX = isGamepad and 815.0 or 796.0245361328
-            local targetY = isGamepad and 1134.0 or 1126.2349853516
+            local targetScale = isGamepad and zo_clamp(LayoutSize(122), 30, 250) or zo_clamp(LayoutSize(154), 30, 250)
+            local targetX = isGamepad and LayoutAbsoluteX(815.0) or LayoutAbsoluteX(796.0245361328)
+            local targetY = isGamepad and LayoutAbsoluteY(1134.0) or LayoutAbsoluteY(1126.2349853516)
             if fab.constants and fab.constants.abScale then
                 fab.constants.abScale.enable = true
                 fab.constants.abScale.scale = targetScale
@@ -781,9 +829,10 @@ function U.ApplyDarkSoulsSelfPreset(silent)
     f.dsBottomOnly = true
     f.dsSelfHealthCombatOnly = false
     f.combatOnly = true
-    f.dsBottomX = 0
-    f.dsBottomOffset = -220
-    f.dsBottomGap = 8
+    f.dsBottomX = LayoutX(0)
+    f.dsBottomOffset = LayoutY(-220)
+    f.dsBottomGap = LayoutSize(8)
+    f.dsSelfScale = zo_clamp(LayoutSize(1.0), 0.50, 2.50)
     f.dsEnemyHealthMode = "off"
     f.dsEnemyTrackReticle = false
     f.hideActionBar = false
@@ -842,10 +891,10 @@ function U.ApplyFullDarkSoulsPreset(silent)
     f.dsBottomOnly = false
     f.dsEnemyHealthMode = "only"
     f.dsEnemyTrackReticle = true
-    f.dsEnemyX = 0
-    f.dsEnemyBottomOffset = -38
-    f.dsEnemyWidth = 988
-    f.dsEnemyHeight = 18
+    f.dsEnemyX = LayoutX(0)
+    f.dsEnemyBottomOffset = LayoutY(-38)
+    f.dsEnemyWidth = LayoutSize(988)
+    f.dsEnemyHeight = LayoutSize(18)
     f.hideActionBar = true
     f.combatOnly = true
     f.hideChampionProgress = true
@@ -975,9 +1024,9 @@ function U.PositionDarkSoulsActionBarLongBar()
     end
     bottomOffset = math.max(-900, math.min(0, bottomOffset))
 
-    f.dsEnemyX = 0
+    f.dsEnemyX = LayoutX(0)
     f.dsEnemyBottomOffset = bottomOffset
-    f.dsBottomX = 0
+    f.dsBottomX = LayoutX(0)
     f.dsBottomOffset = bottomOffset
 
     if Frames then
@@ -1007,9 +1056,9 @@ function U.SetDarkSoulsActionBarHealthSource(source, silent)
         f.dsSelfHealthBar = false
         f.dsEnemyHealthMode = "only"
         f.dsEnemyTrackReticle = true
-        f.dsEnemyWidth = 988
-        f.dsEnemyHeight = 18
-        f.dsEnemyX = 0
+        f.dsEnemyWidth = LayoutSize(988)
+        f.dsEnemyHeight = LayoutSize(18)
+        f.dsEnemyX = LayoutX(0)
     end
 
     if Frames then
@@ -1056,13 +1105,13 @@ function U.ApplyDarkSoulsActionBarPreset(silent)
     f.dsBottomOnly = false
     f.dsEnemyHealthMode = "only"
     f.dsEnemyTrackReticle = true
-    f.dsEnemyX = 0
-    f.dsEnemyBottomOffset = DS_ACTIONBAR_ENEMY_BOTTOM
-    f.dsEnemyWidth = 988
-    f.dsEnemyHeight = 18
-    f.dsBottomX = 0
-    f.dsBottomOffset = DS_ACTIONBAR_ENEMY_BOTTOM
-    f.dsBottomGap = 8
+    f.dsEnemyX = LayoutX(0)
+    f.dsEnemyBottomOffset = LayoutY(DS_ACTIONBAR_ENEMY_BOTTOM)
+    f.dsEnemyWidth = LayoutSize(988)
+    f.dsEnemyHeight = LayoutSize(18)
+    f.dsBottomX = LayoutX(0)
+    f.dsBottomOffset = LayoutY(DS_ACTIONBAR_ENEMY_BOTTOM)
+    f.dsBottomGap = LayoutSize(8)
     f.hideActionBar = false
     f.combatOnly = true
     f.hideChampionProgress = true
@@ -1124,9 +1173,9 @@ function U.ApplyDarkSoulsActionBarPreset(silent)
         local fab = FAB
         if fab and fab.GetSettings and fab.GetSettings() then
             local isGamepad = fab.style == 2
-            local targetScale = isGamepad and DS_ACTIONBAR_GP_SCALE or DS_ACTIONBAR_KB_SCALE
-            local targetX = isGamepad and DS_ACTIONBAR_GP_X or DS_ACTIONBAR_KB_X
-            local targetY = isGamepad and DS_ACTIONBAR_GP_Y or DS_ACTIONBAR_KB_Y
+            local targetScale = isGamepad and zo_clamp(LayoutSize(DS_ACTIONBAR_GP_SCALE), 30, 250) or zo_clamp(LayoutSize(DS_ACTIONBAR_KB_SCALE), 30, 250)
+            local targetX = isGamepad and LayoutAbsoluteX(DS_ACTIONBAR_GP_X) or LayoutAbsoluteX(DS_ACTIONBAR_KB_X)
+            local targetY = isGamepad and LayoutAbsoluteY(DS_ACTIONBAR_GP_Y) or LayoutAbsoluteY(DS_ACTIONBAR_KB_Y)
 
             if fab.constants and fab.constants.abScale then
                 fab.constants.abScale.enable = true
@@ -1144,9 +1193,9 @@ function U.ApplyDarkSoulsActionBarPreset(silent)
             chat("Dark Souls + Action Bar could not position Fancy Action Bar+. Confirm the standalone addon is enabled.")
         end
 
-        -- These are the exact user-approved printed values for this preset.
-        f.dsEnemyBottomOffset = DS_ACTIONBAR_ENEMY_BOTTOM
-        f.dsBottomOffset = DS_ACTIONBAR_ENEMY_BOTTOM
+        -- Reapply the 4K reference after FAB settles, scaled to this GuiRoot.
+        f.dsEnemyBottomOffset = LayoutY(DS_ACTIONBAR_ENEMY_BOTTOM)
+        f.dsBottomOffset = LayoutY(DS_ACTIONBAR_ENEMY_BOTTOM)
         if Frames then
             Frames.saved = f
             Frames.dsEnemyGeometrySignature = nil
@@ -1213,6 +1262,15 @@ function U.GetLayoutPositioningLines()
         end
     else
         lines[#lines + 1] = "FAB SAVED unavailable"
+    end
+
+    if Combat and Combat.GetWorldPlayerCpDiagnostics then
+        local groupTags, groupVisible, reticleTag, reticleCp = Combat.GetWorldPlayerCpDiagnostics()
+        lines[#lines + 1] = string.format(
+            "PLAYERCP groupTags=%d groupVisible=%d reticleTag=%s reticleCP=%d",
+            tonumber(groupTags) or 0, tonumber(groupVisible) or 0, tostring(reticleTag or ""),
+            tonumber(reticleCp) or 0
+        )
     end
 
     lines[#lines + 1] = string.format("PROFILE accountWide=%s version=%s", tostring(U.IsUsingAccountWideSettings()), tostring(U.version))
@@ -2286,6 +2344,19 @@ local function buildSimplifiedFrameOptions(raw)
         if not applied and d then
             d("[Ultivite] ESO setting write did not apply; the live value did not change.")
         end
+
+        -- Enemy Health-bar choices are persisted exactly as selected, but Ultivite
+        -- owns their runtime visibility outside combat. If a choice is changed
+        -- while the temporary combat gate is active, update its restoration
+        -- snapshot and immediately reapply the out-of-combat hide.
+        if applied and systemType == SETTING_TYPE_NAMEPLATES and Combat
+            and Combat.RememberNativeHealthbarPreference
+            and (settingId == NAMEPLATE_TYPE_ALL_HEALTHBARS
+                or settingId == NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS
+                or settingId == NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS) then
+            Combat.RememberNativeHealthbarPreference(settingId, value)
+            if Combat.ApplyNativeOverheadTargetBar then Combat.ApplyNativeOverheadTargetBar() end
+        end
         return applied
     end
 
@@ -2602,8 +2673,8 @@ local function buildSimplifiedFrameOptions(raw)
                     },
                     {
                         type = "checkbox",
-                        name = "Show crown direction arrow",
-                        tooltip = "Shows the small white arrow pointing toward the current group leader/crown. Size, opacity and position are under Player HUD & Layouts > Navigation Helper Appearance & Position.",
+                        name = "Follow the Leader",
+                        tooltip = "Shows the directional marker that points toward the current group leader/crown. Size, transparency and position are under Player HUD & Layouts > Navigation Helper Appearance & Position.",
                         getFunc = function() return Frames.saved and Frames.saved.crownDirectionArrow == true end,
                         setFunc = function(value) Frames.SetCrownDirectionArrow(value, true); refreshUltivitePanel() end,
                         default = false,
@@ -2631,22 +2702,20 @@ local function buildSimplifiedFrameOptions(raw)
                     },
                     {
                         type = "checkbox",
-                        name = "Overhead Player Info",
-                        tooltip = "Shows Character Name + CP + Level above group members. Information for enemy or other players you mouse over stays at a fixed 2D reticle anchor; Ultivite never queries a non-grouped player's world position. This is independent from ESO's native Player Names setting below.",
-                        getFunc = function() return Combat and Combat.IsOverheadPlayerInfoEnabled and Combat.IsOverheadPlayerInfoEnabled() or false end,
+                        name = "CP on Hover",
+                        tooltip = "Shows CP beside the reticle area while you are directly hovering a Champion player. Non-Champion players show their level. Group-member world CP remains independent and continues to follow group members.",
+                        getFunc = function() return Combat and Combat.IsCpOnHoverEnabled and Combat.IsCpOnHoverEnabled() or false end,
                         setFunc = function(value)
-                            if Combat and Combat.SetOverheadPlayerInfoEnabled then
-                                Combat.SetOverheadPlayerInfoEnabled(value, true)
-                            end
+                            if Combat and Combat.SetCpOnHoverEnabled then Combat.SetCpOnHoverEnabled(value, true) end
                             refreshUltivitePanel()
                         end,
-                        default = false,
+                        default = true,
                         width = "full",
                     },
                     {
                         type = "checkbox",
                         name = "Show player names above heads",
-                        tooltip = "Shows or hides ESO's native blue player names above enemy, friendly and group players. This does not disable Ultivite's Overhead Player Info Character Name + CP/Level overlay.",
+                        tooltip = "Shows or hides ESO's native blue player names above enemy, friendly and group players. This does not disable Ultivite player CP/level presentation.",
                         getFunc = function()
                             return not (Combat and Combat.IsPlayerNamesHidden and Combat.IsPlayerNamesHidden())
                         end,
@@ -2693,8 +2762,8 @@ local function buildSimplifiedFrameOptions(raw)
                 controls = {
                     {
                         type = "slider",
-                        name = "Crown arrow size",
-                        tooltip = "Size of the crown direction marker. The white arrow is intentionally long and the gold crown is permanently attached to its base at every rotation angle.",
+                        name = "Follow the Leader size",
+                        tooltip = "Size of the Follow the Leader direction marker. The white arrow is intentionally long and the gold crown is permanently attached to its base at every rotation angle.",
                         min = 14, max = 96, step = 1,
                         getFunc = function() return (Frames.saved and Frames.saved.crownDirectionArrowSize) or 40 end,
                         setFunc = function(value) Frames.SetCrownDirectionArrowSize(value) end,
@@ -2703,8 +2772,8 @@ local function buildSimplifiedFrameOptions(raw)
                     },
                     {
                         type = "slider",
-                        name = "Crown arrow opacity",
-                        tooltip = "Makes the white crown arrow more or less transparent.",
+                        name = "Follow the Leader opacity",
+                        tooltip = "Makes the Follow the Leader marker more or less transparent.",
                         min = 10, max = 100, step = 5,
                         getFunc = function() return zo_round(((Frames.saved and Frames.saved.crownDirectionArrowOpacity) or 0.70) * 100) end,
                         setFunc = function(value) Frames.SetCrownDirectionArrowOpacity(value / 100) end,
@@ -2713,8 +2782,8 @@ local function buildSimplifiedFrameOptions(raw)
                     },
                     {
                         type = "slider",
-                        name = "Crown arrow horizontal position",
-                        tooltip = "Moves the crown arrow left or right from screen centre.",
+                        name = "Follow the Leader horizontal position",
+                        tooltip = "Moves the Follow the Leader marker left or right from screen centre.",
                         min = -1000, max = 1000, step = 5,
                         getFunc = function() return (Frames.saved and Frames.saved.crownDirectionArrowX) or 0 end,
                         setFunc = function(value) Frames.SetCrownDirectionArrowX(value) end,
@@ -2723,8 +2792,8 @@ local function buildSimplifiedFrameOptions(raw)
                     },
                     {
                         type = "slider",
-                        name = "Crown arrow vertical position",
-                        tooltip = "Moves the crown arrow up or down from screen centre.",
+                        name = "Follow the Leader vertical position",
+                        tooltip = "Moves the Follow the Leader marker up or down from screen centre.",
                         min = -700, max = 700, step = 5,
                         getFunc = function() return (Frames.saved and Frames.saved.crownDirectionArrowY) or -90 end,
                         setFunc = function(value) Frames.SetCrownDirectionArrowY(value) end,
@@ -2831,7 +2900,7 @@ local function buildSimplifiedFrameOptions(raw)
                     {
                         type = "checkbox",
                         name = "Enable Ultivite target frame",
-                        tooltip = "Shows Ultivite's own persistent target frame when a valid target is available.",
+                        tooltip = "Shows Ultivite's own persistent target presentation when a valid target is available. Its enemy Health meter is combat-only; player name and CP information can still remain available outside combat.",
                         getFunc = function()
                             local sv = getCombatVisibilitySettings()
                             return sv and sv.targetFrame == true
@@ -2914,7 +2983,7 @@ local function buildSimplifiedFrameOptions(raw)
                     {
                         type = "checkbox",
                         name = "Use native overhead target bar",
-                        tooltip = "When disabled, Ultivite does not force ESO's native targeted overhead healthbar mode.",
+                        tooltip = "When enabled, Ultivite uses ESO's native targeted overhead Health bar while you are in combat. Enemy Health bars remain hidden outside combat.",
                         getFunc = function()
                             local sv = getCombatVisibilitySettings()
                             return sv and sv.nativeOverheadTargetBar == true
@@ -3546,6 +3615,19 @@ function U.BuildMenu()
             width = "full",
         },
         {
+            type = "button",
+            name = "Show Player CP diagnostics",
+            tooltip = "Opens a concise player CP diagnostic report in a selectable text window. Press Ctrl+C to copy it for troubleshooting.",
+            func = function()
+                if Combat.ShowWorldPlayerCpDiagnostic then
+                    Combat.ShowWorldPlayerCpDiagnostic()
+                elseif Combat.PrintWorldPlayerCpDiagnostic then
+                    Combat.PrintWorldPlayerCpDiagnostic()
+                end
+            end,
+            width = "full",
+        },
+        {
             type = "submenu",
             name = "Duplicate target-frame tools",
             tooltip = "Only use this if another addon leaves a second target frame on screen.",
@@ -3858,6 +3940,182 @@ function U.BuildMenu()
         width = "full",
     }
 
+    local hudEditingMenu = {
+        type = "submenu",
+        name = "HUD Editing / Preview All",
+        tooltip = "Shows every supported Ultivite HUD preview together. Unlock All enables dragging and mouse-wheel resizing. Save & Lock All commits positions and removes every editing mouse surface.",
+        controls = {
+            {
+                type = "button",
+                name = "Unlock All + Preview Everything",
+                tooltip = "Shows every supported preview at once and unlocks player bars, combat HUD elements, warnings, navigation helpers, Enemy Ultimate alerts and Fancy Action Bar. Drag to move and use the mouse wheel to resize supported elements.",
+                func = function()
+                    local quick = U.QuickMenu
+                    if quick and quick.OpenFromSettings then quick.OpenFromSettings() end
+                    if quick and quick.UnlockAllEditing then quick.UnlockAllEditing() end
+                end,
+                width = "full",
+            },
+            {
+                type = "button",
+                name = "Save & Lock All",
+                tooltip = "Saves current positions and sizes, locks every Ultivite mover, closes Fancy Action Bar editing and releases all editing mouse surfaces.",
+                func = function()
+                    local quick = U.QuickMenu
+                    if quick and quick.SaveLockAndExit then
+                        quick.SaveLockAndExit()
+                    elseif quick and quick.SaveAndLockEditing then
+                        quick.SaveAndLockEditing(true)
+                    end
+                end,
+                width = "full",
+            },
+        },
+    }
+
+    local chatSizeMenu = {
+        type = "submenu",
+        name = "Chat Window",
+        tooltip = "All chat visibility, move and resize controls in one place. Normal leaves ESO chat alone. Auto Hide hides chat whenever you are not actively typing.",
+        controls = {
+            {
+                type = "header",
+                name = "Visibility",
+                width = "full",
+            },
+            {
+                type = "checkbox",
+                name = "Auto hide chat when not typing",
+                tooltip = "When enabled, the chat window hides whenever you are not actively typing. Turning this off returns Chat visibility mode to Normal when Auto Hide is currently selected.",
+                getFunc = function()
+                    return Frames and Frames.GetChatVisibilityMode and Frames.GetChatVisibilityMode() == "hide" or false
+                end,
+                setFunc = function(value)
+                    if not Frames or not Frames.GetChatVisibilityMode or not Frames.SetChatVisibilityMode then return end
+                    local current = Frames.GetChatVisibilityMode()
+                    if value == true then
+                        Frames.SetChatVisibilityMode("hide", true)
+                    elseif current == "hide" then
+                        Frames.SetChatVisibilityMode("show", true)
+                    end
+                    refreshUltivitePanel()
+                end,
+                default = false,
+                width = "full",
+            },
+            {
+                type = "dropdown",
+                name = "Chat visibility mode",
+                tooltip = "Normal leaves chat under ESO control. Hide in combat suppresses chat only while fighting. Hide in PvP suppresses it only in Battlegrounds, Cyrodiil and Imperial City. Auto Hide hides chat whenever you are not actively typing.",
+                choices = { "Normal", "Hide in combat", "Hide in PvP", "Auto Hide" },
+                choicesValues = { "show", "combat", "pvp", "hide" },
+                getFunc = function() return Frames and Frames.GetChatVisibilityMode and Frames.GetChatVisibilityMode() or "show" end,
+                setFunc = function(value)
+                    if Frames and Frames.SetChatVisibilityMode then Frames.SetChatVisibilityMode(value, true) end
+                    refreshUltivitePanel()
+                end,
+                default = "show",
+                width = "full",
+            },
+            {
+                type = "header",
+                name = "Move & Resize",
+                width = "full",
+            },
+            {
+                type = "button",
+                name = "Unlock Chat Window for Drag and Resize",
+                tooltip = "Shows a temporary edit surface over ESO's real chat window. Drag anywhere on it to move chat. Use the mouse wheel to resize. Save & Lock All or the Ultivite settings X button removes the edit surface and saves the result.",
+                func = function()
+                    if Frames and Frames.RepairManagedChatState then Frames.RepairManagedChatState() end
+                    if U.BeginChatWindowEditing then U.BeginChatWindowEditing() end
+                end,
+                width = "full",
+            },
+            {
+                type = "button",
+                name = "Repair Native Chat Drag and Resize",
+                tooltip = "Restores the proven 1.0.156 native ESO chat container extents and recalculates ESO's own resize constraints without replacing the stock chat window.",
+                func = function()
+                    if Frames and Frames.RepairManagedChatState then Frames.RepairManagedChatState() end
+                end,
+                width = "full",
+            },
+            {
+                type = "slider",
+                name = "Chat position X",
+                tooltip = "Moves ESO's real primary chat window horizontally. This is a direct fallback if native tab dragging is inconvenient.",
+                min = 0, max = 4000, step = 10,
+                getFunc = function()
+                    local x = U.GetChatPosition and select(1, U.GetChatPosition()) or 0
+                    return math.floor((tonumber(x) or 0) + 0.5)
+                end,
+                setFunc = function(value)
+                    if not U.SetChatPosition then return end
+                    local _, y = U.GetChatPosition()
+                    U.SetChatPosition(value, y)
+                end,
+                width = "full",
+            },
+            {
+                type = "slider",
+                name = "Chat position Y",
+                tooltip = "Moves ESO's real primary chat window vertically. This is a direct fallback if native tab dragging is inconvenient.",
+                min = 0, max = 2200, step = 10,
+                getFunc = function()
+                    local y = 0
+                    if U.GetChatPosition then
+                        local _, liveY = U.GetChatPosition()
+                        y = liveY or 0
+                    end
+                    return math.floor((tonumber(y) or 0) + 0.5)
+                end,
+                setFunc = function(value)
+                    if not U.SetChatPosition then return end
+                    local x = U.GetChatPosition()
+                    U.SetChatPosition(x, value)
+                end,
+                width = "full",
+            },
+            {
+                type = "slider",
+                name = "Chat width",
+                tooltip = "Changes the width of ESO's real primary chat window. ESO's own active dimension constraints are still respected.",
+                min = 300, max = 4000, step = 10,
+                getFunc = function()
+                    local width = U.GetChatDimensions and select(1, U.GetChatDimensions()) or 445
+                    return math.floor((tonumber(width) or 445) + 0.5)
+                end,
+                setFunc = function(value)
+                    if not U.SetChatDimensions then return end
+                    local _, height = U.GetChatDimensions()
+                    U.SetChatDimensions(value, height)
+                end,
+                width = "full",
+            },
+            {
+                type = "slider",
+                name = "Chat height",
+                tooltip = "Changes the height of ESO's real primary chat window. This is available even if edge dragging is inconvenient on the current UI scale.",
+                min = 150, max = 2200, step = 10,
+                getFunc = function()
+                    local height = 267
+                    if U.GetChatDimensions then
+                        local _, liveHeight = U.GetChatDimensions()
+                        height = liveHeight or height
+                    end
+                    return math.floor((tonumber(height) or 267) + 0.5)
+                end,
+                setFunc = function(value)
+                    if not U.SetChatDimensions then return end
+                    local width = U.GetChatDimensions()
+                    U.SetChatDimensions(width, value)
+                end,
+                width = "full",
+            },
+        },
+    }
+
     local restoreLayoutButton = {
         type = "button",
         name = "Restore Recommended Layout",
@@ -3919,18 +4177,14 @@ function U.BuildMenu()
         end
     end
 
-    local quickSetupControls = {
-        deepCopy(openQuickMenuButton),
-        deepCopy(profileScopeOption),
-        deepCopy(saveButton),
-        deepCopy(syncButton),
-        deepCopy(reloadButton),
-    }
-    addClone(quickSetupControls, findOptionByName(frameOptions, "HUD Preset"))
-    quickSetupControls[#quickSetupControls + 1] = {
+    local hudPresetShortcut = nil
+    local sourceHudPreset = findOptionByName(frameOptions, "HUD Preset")
+    if sourceHudPreset then hudPresetShortcut = stripCloneReferences(deepCopy(sourceHudPreset)) end
+
+    local targetFrameShortcut = {
         type = "dropdown",
         name = "Target Frame Mode (shortcut)",
-        tooltip = "Quick shortcut to the canonical Target Frame Mode under UI Visibility > Target Frames & ESO Overhead Bars.",
+        tooltip = "Quick shortcut to the canonical Target Frame Mode under UI Visibility & Chat > Target Frames & ESO Overhead Bars.",
         choices = { "Ultivite", "Vanilla / Default" },
         choicesValues = { "ultivite", "vanilla" },
         getFunc = function() return U.IsVanillaTargetFramesActive and U.IsVanillaTargetFramesActive() and "vanilla" or "ultivite" end,
@@ -3941,20 +4195,33 @@ function U.BuildMenu()
         width = "full",
     }
 
-    local startControls = {}
-    appendAll(startControls, quickSetupControls)
+    local startControls = {
+        {
+            type = "description",
+            text = "Quick access contains only the controls most useful while setting up Ultivite. Detailed chat and visibility controls are grouped together in section 2.",
+            width = "full",
+        },
+        deepCopy(openQuickMenuButton),
+    }
+    if hudPresetShortcut then startControls[#startControls + 1] = hudPresetShortcut end
+    startControls[#startControls + 1] = targetFrameShortcut
+    startControls[#startControls + 1] = deepCopy(hudEditingMenu)
     startControls[#startControls + 1] = {
         type = "submenu",
         name = "Unified Profile Manager",
-        tooltip = "Create named profiles and choose which Ultivite systems each profile controls. This manager is available only in the full settings menu.",
+        tooltip = "Create named profiles and choose which Ultivite systems each profile controls.",
         controls = unifiedProfileOptions,
     }
+    startControls[#startControls + 1] = deepCopy(profileScopeOption)
+    startControls[#startControls + 1] = deepCopy(saveButton)
+    startControls[#startControls + 1] = deepCopy(syncButton)
     startControls[#startControls + 1] = {
         type = "submenu",
         name = "Resolution & UI Scale Safety",
         tooltip = "Apply a resolution-aware Ultivite HUD scale preset and repair elements that moved off screen after a display or UI scale change.",
         controls = layoutSafetyOptions,
     }
+    startControls[#startControls + 1] = deepCopy(reloadButton)
 
     local combatEffectsControls = {}
     addClone(combatEffectsControls, findOptionByName(combatOptions, "Combat Warnings & Resource Alerts"))
@@ -3999,11 +4266,11 @@ function U.BuildMenu()
     -- explicitly labelled as a shortcut so users know it controls the same state.
     local uiVisibilityControls = uiVisibilityHub and deepCopy(uiVisibilityHub.controls) or {}
 
-    local navShowCrown = findOptionByName(uiVisibilityControls, "Show crown direction arrow")
+    local navShowCrown = findOptionByName(uiVisibilityControls, "Follow the Leader")
     local navShowFeet = findOptionByName(uiVisibilityControls, "Show feet compass")
     local navAppearanceSource = findOptionByName(uiVisibilityControls, "Navigation Helper Appearance & Position")
     local nativeEsoAdvanced = findOptionByName(uiVisibilityControls, "Vanilla ESO Interface Toggles")
-    local overheadInfo = findOptionByName(uiVisibilityControls, "Overhead Player Info")
+    local overheadInfo = findOptionByName(uiVisibilityControls, "Player CP / level (always on)")
     local playerNames = findOptionByName(uiVisibilityControls, "Show player names above heads")
     local nativeHideNpc = findOptionByName(uiVisibilityControls, "Hide NPC names in native mode")
     local targetMode = findOptionByName(uiVisibilityControls, "Target Frame Mode")
@@ -4016,9 +4283,9 @@ function U.BuildMenu()
         ["Hide bottom Dark Souls bars out of combat"] = true,
         ["Bottom Dark Souls player bars only"] = true,
         ["Navigation Helpers"] = true,
-        ["Show crown direction arrow"] = true,
+        ["Follow the Leader"] = true,
         ["Show feet compass"] = true,
-        ["Overhead Player Info"] = true,
+        ["Player CP / level (always on)"] = true,
         ["Show player names above heads"] = true,
         ["Enable Ultivite target frame"] = true,
         ["Hide stock ESO target frame"] = true,
@@ -4032,6 +4299,7 @@ function U.BuildMenu()
         ["Action Bar Visibility"] = true,
         ["Vanilla ESO Interface Toggles"] = true,
         ["Hide all NPC names"] = true,
+        ["Chat visibility"] = true,
     })
 
     local generalHud = findOptionByName(uiVisibilityControls, "Player HUD & Global Visibility")
@@ -4040,7 +4308,7 @@ function U.BuildMenu()
     local navAppearance = findOptionByName(uiVisibilityControls, "Navigation Helper Appearance & Position")
     if navAppearance then
         navAppearance.name = "Navigation Helpers"
-        navAppearance.tooltip = "Show or hide Ultivite navigation helpers. Size, opacity and position are under Player HUD & Layouts."
+        navAppearance.tooltip = "Show or hide Ultivite navigation helpers. Size, transparency and position are under Player HUD & Layouts."
         navAppearance.controls = {}
         if navShowCrown then navAppearance.controls[#navAppearance.controls + 1] = stripCloneReferences(deepCopy(navShowCrown)) end
         if navShowFeet then navAppearance.controls[#navAppearance.controls + 1] = stripCloneReferences(deepCopy(navShowFeet)) end
@@ -4050,7 +4318,7 @@ function U.BuildMenu()
     namesControls[#namesControls + 1] = {
         type = "checkbox",
         name = "ESO NPC names above heads",
-        tooltip = "Shows or hides ESO's native enemy, friendly and neutral NPC nameplates. This is separate from Ultivite Overhead Player Info.",
+        tooltip = "Shows or hides ESO's native enemy, friendly and neutral NPC nameplates. This is separate from Ultivite player CP/level presentation.",
         getFunc = function()
             if Combat and Combat.IsNpcNamesHidden then return not Combat.IsNpcNamesHidden() end
             local f = Frames and Frames.saved
@@ -4078,7 +4346,7 @@ function U.BuildMenu()
     if playerNames then
         local playerNamesClone = stripCloneReferences(deepCopy(playerNames))
         playerNamesClone.name = "ESO player names above heads"
-        playerNamesClone.tooltip = "Shows or hides ESO's native player nameplates. This is separate from Overhead Player Info, which is Ultivite's Character Name + CP/Level overlay."
+        playerNamesClone.tooltip = "Shows or hides ESO's native player nameplates. Ultivite's CP / level presentation remains active independently whenever ESO exposes a usable player unitTag."
         namesControls[#namesControls + 1] = playerNamesClone
     end
     if overheadInfo then namesControls[#namesControls + 1] = stripCloneReferences(deepCopy(overheadInfo)) end
@@ -4092,7 +4360,7 @@ function U.BuildMenu()
     local namesMenu = {
         type = "submenu",
         name = "Player & NPC Names",
-        tooltip = "ESO native player/NPC names and Ultivite's separate Character Name + CP/Level overhead overlay.",
+        tooltip = "ESO native player/NPC names plus Ultivite's always-on player CP / level presentation.",
         controls = namesControls,
     }
 
@@ -4101,7 +4369,7 @@ function U.BuildMenu()
     targetControls[#targetControls + 1] = {
         type = "dropdown",
         name = "ESO enemy overhead Health bars",
-        tooltip = "Controls only the Health bars rendered above enemies in the world. This is independent from Target Frame Mode and will never switch the top-screen target frame.",
+        tooltip = "Controls the Health bars rendered above enemies in the world while you are in combat. Outside combat, enemy Health bars are always hidden. This is independent from Target Frame Mode and will never switch the top-screen target frame.",
         choices = { "ESO default", "Target only", "All enemies", "Hide all" },
         choicesValues = { "vanilla", "target", "all", "off" },
         getFunc = function() return Combat and Combat.GetEnemyOverheadHealthMode and Combat.GetEnemyOverheadHealthMode() or "vanilla" end,
@@ -4115,7 +4383,7 @@ function U.BuildMenu()
     local targetMenu = {
         type = "submenu",
         name = "Target Frames & ESO Overhead Bars",
-        tooltip = "Target Frame Mode controls the top-screen target frame. ESO enemy overhead Health bars independently control native bars above enemies in the world.",
+        tooltip = "Target Frame Mode controls the top-screen target frame. ESO enemy overhead Health bars independently control native bars above enemies in the world. Enemy Health bars are always suppressed outside combat.",
         controls = targetControls,
     }
 
@@ -4123,6 +4391,7 @@ function U.BuildMenu()
     -- before Compass / Quest / Queue visibility.
     local orderedVisibility = {}
     local insertedPlayerUi = false
+    local insertedChat = false
     for _, option in ipairs(uiVisibilityControls) do
         if not insertedPlayerUi and type(option) == "table" and option.name == "Compass" then
             orderedVisibility[#orderedVisibility + 1] = namesMenu
@@ -4130,6 +4399,13 @@ function U.BuildMenu()
             insertedPlayerUi = true
         end
         orderedVisibility[#orderedVisibility + 1] = option
+        if not insertedChat and type(option) == "table" and option.name == "General HUD Visibility" then
+            orderedVisibility[#orderedVisibility + 1] = stripCloneReferences(deepCopy(chatSizeMenu))
+            insertedChat = true
+        end
+    end
+    if not insertedChat then
+        table.insert(orderedVisibility, 1, stripCloneReferences(deepCopy(chatSizeMenu)))
     end
     if not insertedPlayerUi then
         orderedVisibility[#orderedVisibility + 1] = namesMenu
@@ -4138,7 +4414,7 @@ function U.BuildMenu()
     uiVisibilityControls = orderedVisibility
     table.insert(uiVisibilityControls, 1, {
         type = "description",
-        text = "Visibility presets are batch shortcuts. Individual controls below show the current state and can override a preset. ESO Player/NPC Names are native blue nameplates; Overhead Player Info is Ultivite's separate Character Name + CP/Level overlay. Target Frame Mode controls the top-screen target frame; ESO enemy overhead bars control world-space Health bars.",
+        text = "Visibility presets are batch shortcuts. ESO Player/NPC Names are native nameplates. Group-member CP / level can follow real world position. Arbitrary ungrouped floating nameplates are engine-owned and cannot be extended with CP through the public addon API. Target Frame Mode controls the top-screen target frame; ESO enemy overhead bars control world-space Health bars. All enemy Health bars are combat-only.",
         width = "full",
     })
 
@@ -4159,7 +4435,7 @@ function U.BuildMenu()
     if navAppearanceSource then
         local navLayout = stripCloneReferences(deepCopy(navAppearanceSource))
         navLayout.name = "Navigation Helper Appearance & Position"
-        navLayout.tooltip = "Size, opacity and position for the crown arrow and feet compass. Their visibility modes are under UI Visibility."
+        navLayout.tooltip = "Size, transparency and position for Follow the Leader and the feet compass. Their visibility controls are under UI Visibility."
         frameOptions[#frameOptions + 1] = navLayout
     end
     if nativeEsoAdvanced then
@@ -4194,13 +4470,13 @@ function U.BuildMenu()
         {
             type = "submenu",
             name = "1. Quick Access & Profiles",
-            tooltip = "Common shortcuts plus profile scope, save, sync and reload controls. Detailed visibility options live in section 2.",
+            tooltip = "Common shortcuts, HUD editing, profile scope, save, sync and reload controls. Visibility and chat controls live in section 2 so this section stays compact.",
             controls = startControls,
         },
         {
             type = "submenu",
-            name = "2. UI Visibility",
-            tooltip = "Central control hub for everything Ultivite can deliberately hide, suppress or collapse.",
+            name = "2. UI Visibility & Chat",
+            tooltip = "Canonical visibility controls for ESO and Ultivite HUD elements, plus all chat visibility, move and resize controls.",
             controls = uiVisibilityControls,
         },
         {
@@ -4252,7 +4528,21 @@ function U.BuildMenu()
     CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)
         if panel == U.panel then
             local quick = Ultivite and Ultivite.QuickMenu or nil
-            if quick and quick.CloseSettingsSession then quick.CloseSettingsSession() end
+            -- The LibAddonMenu X is the same Save & Lock All boundary. Defer one
+            -- frame so LAM has released its own mouse focus before Ultivite asks
+            -- ESO to leave UI mode.
+            if quick and (quick.SaveLockAndExit or quick.SaveAndLockEditing) then
+                local function commitAndExit()
+                    if quick.SaveLockAndExit then
+                        quick.SaveLockAndExit()
+                    else
+                        quick.SaveAndLockEditing(true)
+                    end
+                end
+                if zo_callLater then zo_callLater(commitAndExit, 0) else commitAndExit() end
+            elseif quick and quick.CloseSettingsSession then
+                quick.CloseSettingsSession()
+            end
             U.RequestSettingsSave(true)
         end
     end)
@@ -4368,6 +4658,16 @@ function U.Initialize()
             U.PrintLayoutPositioning()
         elseif command == "copy" or command == "gpt" or command == "copypositions" then
             U.ShowLayoutReport()
+        elseif command == "cpdiag" or command == "worldcpdiag" then
+            if Combat and Combat.ShowWorldPlayerCpDiagnostic then
+                Combat.ShowWorldPlayerCpDiagnostic()
+            elseif Combat and Combat.PrintWorldPlayerCpDiagnostic then
+                Combat.PrintWorldPlayerCpDiagnostic()
+            end
+        elseif command == "cpdiagclear" then
+            if Combat and Combat.ClearWorldPlayerCpDiagnostic then
+                Combat.ClearWorldPlayerCpDiagnostic()
+            end
         elseif command == "preset" then
             U.ApplyDefaultCombatHUDLayout(false)
         elseif command == "dsself" or command == "darksoulsself" then

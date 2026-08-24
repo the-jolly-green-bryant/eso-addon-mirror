@@ -51,6 +51,7 @@ end
 
 local function rec_reset(rec, id)
   rec.id           = id
+  rec.step_quant   = nil
   rec.name         = nil
   rec.group        = "other"
   rec.n_ids        = 0
@@ -231,11 +232,22 @@ local function get_rec(id, tag)
   return rec
 end
 
+local STEP_QUANT_MS   = 250
+local STEP_COARSEN_AT = 1200
+
 local function push_step(rec, t)
-  local n = rec.n_steps + 1
+  local n = rec.n_steps
+  if n > 0 and (t - rec.step_t[n]) < (rec.step_quant or STEP_QUANT_MS) then
+    rec.step_c[n] = rec.conc
+    return
+  end
+  n = n + 1
   rec.n_steps = n
   rec.step_t[n] = t
   rec.step_c[n] = rec.conc
+  if n % STEP_COARSEN_AT == 0 then
+    rec.step_quant = (rec.step_quant or STEP_QUANT_MS) * 2
+  end
 end
 
 local function open_interval(rec, t)
@@ -459,6 +471,37 @@ function M.is_recording() return recording end
 function M.count() return n_tracked end
 function M.session_start() return t_start end
 function M.session_end() return t_end end
+
+function M.load_session(metas, steps, t0, t1)
+  M.reset()
+  recording = false
+  t_start = t0
+  t_end   = t1
+  for i = 1, #metas do
+    local m = metas[i]
+    order[i] = {
+      name = m.name, id = m.id, group = m.grp, desc = m.desc or "",
+      uptime_ms = m.uptime_ms or 0, max_conc = m.max_conc or 1,
+      only_self = m.only_self or false, vetoed = m.vetoed or false,
+      unique_units = m.unique_units or 0, applications = m.applications or 0,
+      conc_avg = m.conc_avg or 0, longest_gap_ms = m.longest_gap_ms or 0,
+      n_steps = 0, step_t = {}, step_c = {},
+      n_iv = 0, iv_t0 = {}, iv_t1 = {},
+      holders = {}, holders_n = {}, units_ever = {}, ids = { m.id },
+    }
+    n_tracked = i
+  end
+  for i = 1, #steps do
+    local st = steps[i]
+    local rec = order[st.b + 1]
+    if rec then
+      rec.n_steps = rec.n_steps + 1
+      rec.step_t[rec.n_steps] = st.t
+      rec.step_c[rec.n_steps] = st.c
+    end
+  end
+  log:info("session loaded: buffs=", n_tracked, "steps=", #steps)
+end
 
 function M.get(i) return order[i] end
 

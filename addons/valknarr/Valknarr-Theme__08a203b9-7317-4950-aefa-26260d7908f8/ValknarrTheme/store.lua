@@ -11,6 +11,8 @@ local defaults = {
     themeId = "clean",
     wolfId = "clean",
     showDebugLog = false,
+    showBarText = true,
+    previewInSettings = true,
 }
 
 function Store:Initialize()
@@ -26,6 +28,8 @@ function Store:Initialize()
             themeId = defaults.themeId,
             wolfId = defaults.wolfId,
             showDebugLog = false,
+            showBarText = true,
+            previewInSettings = true,
             debugLog = {},
         }
         self:Migrate()
@@ -50,6 +54,8 @@ function Store:Initialize()
             themeId = defaults.themeId,
             wolfId = defaults.wolfId,
             showDebugLog = false,
+            showBarText = true,
+            previewInSettings = true,
             debugLog = {},
         }
     end
@@ -75,6 +81,12 @@ function Store:Migrate()
     saved.version = 2
     if saved.showDebugLog == nil then
         saved.showDebugLog = false
+    end
+    if saved.showBarText == nil then
+        saved.showBarText = true
+    end
+    if saved.previewInSettings == nil then
+        saved.previewInSettings = true
     end
 end
 
@@ -103,7 +115,7 @@ function Store:SetThemeId(themeId)
     local nextId = Format.NormalizeThemeId(themeId)
     self.saved.themeId = nextId
     if Log then
-        Log:Always("hud skin = " .. nextId)
+        Log:Debug("hud skin = " .. nextId)
     end
     return nextId
 end
@@ -113,7 +125,7 @@ function Store:SetWolfId(wolfId)
     local nextId = Format.NormalizeWolfId(wolfId)
     self.saved.wolfId = nextId
     if Log then
-        Log:Always("wolf skin = " .. nextId)
+        Log:Debug("wolf skin = " .. nextId)
     end
     return nextId
 end
@@ -130,6 +142,18 @@ function Store:GetSetting(key)
     if key == "showDebugLog" then
         return self.saved.showDebugLog and true or false
     end
+    if key == "showBarText" then
+        if self.saved.showBarText == nil then
+            return true
+        end
+        return self.saved.showBarText and true or false
+    end
+    if key == "previewInSettings" then
+        if self.saved.previewInSettings == nil then
+            return true
+        end
+        return self.saved.previewInSettings and true or false
+    end
     return nil
 end
 
@@ -138,6 +162,20 @@ function Store:SetSetting(key, value)
     if key == "showDebugLog" then
         self.saved.showDebugLog = value and true or false
         return self.saved.showDebugLog
+    end
+    if key == "showBarText" then
+        self.saved.showBarText = value and true or false
+        if Log then
+            Log:Always("bar text = " .. (self.saved.showBarText and "on" or "off"))
+        end
+        return self.saved.showBarText
+    end
+    if key == "previewInSettings" then
+        self.saved.previewInSettings = value and true or false
+        if Log then
+            Log:Always("settings preview = " .. (self.saved.previewInSettings and "on" or "off"))
+        end
+        return self.saved.previewInSettings
     end
     return nil
 end

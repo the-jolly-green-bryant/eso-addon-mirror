@@ -1,6 +1,6 @@
 local NWAimCam = {}
 NWAimCam.name = "NWAimCam"
-NWAimCam.version = "1.5"
+NWAimCam.version = "1.6"
 
 local isAiming = false
 local savedDistance = "130"
@@ -113,21 +113,18 @@ function NWAimCam.RegisterEvents()
         end
     end
 
-    -- Register default heavy attacks with ACTION_RESULT_BEGIN
+    -- Register default heavy attacks with single-line chained filters
     for _, abilityId in ipairs(defaultWeaponAbilities) do
         local eventName = NWAimCam.name .. "Begin_" .. tostring(abilityId)
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, NWAimCam.OnCombatEventBegin)
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ACTION_RESULT, ACTION_RESULT_BEGIN)
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER, REGISTER_FILTER_ACTION_RESULT, ACTION_RESULT_BEGIN, REGISTER_FILTER_ABILITY_ID, abilityId)
     end
 
-    -- Register custom skills without action_result filter to catch instant and ground casts
+    -- Register custom skills with single-line chained filters
     for _, abilityId in ipairs(customAbilities) do
         local eventName = NWAimCam.name .. "CustomBegin_" .. tostring(abilityId)
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, NWAimCam.OnCombatEventBegin)
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER, REGISTER_FILTER_ABILITY_ID, abilityId)
     end
 
     if (#defaultWeaponAbilities > 0) or (#customAbilities > 0) then

@@ -60,9 +60,9 @@ local FV = Frostfall
 -- CONSTANTS
 -- ============================================================
 FV.NAME            = "Frostfall"
-FV.VERSION         = "3.4.18"
+FV.VERSION         = "3.4.20"
 FV.DISPLAY_NAME    = "Frostfall Temperature System"
-FV.SAVED_VARS_VER  = 8   -- unchanged: spell-resist buff state is ephemeral (FV.State), not saved
+FV.SAVED_VARS_VER  = 8   -- unchanged: the new spellResistEndTimestamp field (v3.4.19) is additive and needs no data migration
 
 -- ============================================================
 -- TEMPERATURE UNITS
@@ -274,8 +274,13 @@ FV.State = {
     -- Spell-resist reagent buff (see FV.SPELL_RESIST_REAGENT_IDS).
     -- spellResistOffset is a transient display-only delta added on top of
     -- playerTemp by FV:GetEffectiveTemp() while the buff is active.
+    -- spellResistEndTime is keyed to GetGameTimeMilliseconds() (this
+    -- session's uptime clock) and is NOT itself saved -- FV.SV.spellResistEndTimestamp
+    -- (real-world epoch time, via GetTimeStamp()) is the persisted source of
+    -- truth, re-derived into this session's spellResistEndTime at Initialize().
+    -- See RestoreSpellResistBuff below.
     spellResistOffset       = 0,
-    spellResistEndTime      = nil,  -- game-time seconds when the buff expires
+    spellResistEndTime      = nil,  -- game-time seconds when the buff expires (this session only)
     spellResistWarnedMinute = nil,  -- last minute-mark we already warned for
 
     insulation         = 0,
@@ -885,6 +890,7 @@ function FV:OnSpellResistTick()
         FV.State.spellResistOffset       = 0
         FV.State.spellResistEndTime      = nil
         FV.State.spellResistWarnedMinute = nil
+        if FV.SV then FV.SV.spellResistEndTimestamp = nil end
         EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_SpellResistTick")
         FV:Notify("|c88CCFFThe reagent's steadying effect on your body temperature fades.|r")
         FV_Log("SpellResist: buff expired — modifier removed, calculations proceed as normal.")
@@ -913,8 +919,18 @@ end
 -- not a snapshot taken at the moment of consumption.
 function FV:ApplySpellResistReagent()
     local wasActive = FV.State.spellResistEndTime ~= nil
-    FV.State.spellResistEndTime      = GetGameTimeMilliseconds() / 1000 + self:GetSpellResistDurationSeconds()
+    local duration = self:GetSpellResistDurationSeconds()
+    FV.State.spellResistEndTime      = GetGameTimeMilliseconds() / 1000 + duration
     FV.State.spellResistWarnedMinute = nil
+
+    -- Persisted in real-world epoch time (GetTimeStamp()) alongside the
+    -- in-memory game-time expiry above, so the buff survives a relog --
+    -- see RestoreSpellResistBuff, called from Initialize(). GetGameTimeMilliseconds()
+    -- resets to a new baseline every UI reload and so can't be compared
+    -- across sessions; GetTimeStamp() can.
+    if FV.SV then
+        FV.SV.spellResistEndTimestamp = GetTimeStamp() + duration
+    end
 
     EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_SpellResistTick")
     EVENT_MANAGER:RegisterForUpdate(FV.NAME .. "_SpellResistTick", 1000, function() FV:OnSpellResistTick() end)
@@ -955,7 +971,10 @@ function FV:ResetStatus()
     FV.State.spellResistWarnedMinute = nil
     EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_SpellResistTick")
 
-    if FV.SV then FV.SV.playerTemp = neutral end
+    if FV.SV then
+        FV.SV.playerTemp = neutral
+        FV.SV.spellResistEndTimestamp = nil
+    end
 
     FV_Log(string.format("ResetStatus: playerTemp reset to neutral (%.1f°C), spell-resist buff cleared.", neutral))
     self:OnUpdate(0)
@@ -1023,12 +1042,28 @@ local function RegisterReagentListener()
     EVENT_MANAGER:AddFilterForEvent(FV.NAME .. "_ReagentInventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
         REGISTER_FILTER_BAG_ID, BAG_BACKPACK,
         REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+
+    -- Second registration, identical aside from the bag id, so reagents
+    -- eaten straight from the craft bag (BAG_VIRTUAL -- where they live
+    -- instead of the backpack once a player has craft bag access) are also
+    -- picked up. AddFilterForEvent only takes one bag id per named
+    -- registration, so this needs its own name rather than a second filter
+    -- on "_ReagentInventory" above. OnReagentInventoryChange itself needs no
+    -- change -- its bagId..":"..slotId key already keeps backpack and craft
+    -- bag slots from colliding.
+    EVENT_MANAGER:RegisterForEvent(FV.NAME .. "_ReagentInventory_CraftBag", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+        function(...) FV:OnReagentInventoryChange(...) end)
+    EVENT_MANAGER:AddFilterForEvent(FV.NAME .. "_ReagentInventory_CraftBag", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+        REGISTER_FILTER_BAG_ID, BAG_VIRTUAL,
+        REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+
     _reagentListenerRegistered = true
 end
 
 local function UnregisterReagentListener()
     if not _reagentListenerRegistered then return end
     EVENT_MANAGER:UnregisterForEvent(FV.NAME .. "_ReagentInventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+    EVENT_MANAGER:UnregisterForEvent(FV.NAME .. "_ReagentInventory_CraftBag", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
     _reagentListenerRegistered = false
 end
 
@@ -1230,6 +1265,29 @@ end
 -- INITIALIZATION
 -- ============================================================
 
+-- Restores an in-progress spell-resist reagent buff across a relog.
+-- FV.SV.spellResistEndTimestamp is real-world epoch time (GetTimeStamp()),
+-- so — unlike FV.State.spellResistEndTime, which is keyed to
+-- GetGameTimeMilliseconds() and resets to a new baseline every UI reload —
+-- it's directly comparable to "now" in a brand new session. If time still
+-- remains, re-derive spellResistEndTime in THIS session's game-time clock
+-- (same remaining-seconds value, just re-based) and resume the 1s tick;
+-- FV:OnSpellResistTick/ApplySpellResistReagent take it from there exactly
+-- as if the buff had never stopped ticking.
+function FV:RestoreSpellResistBuff()
+    if not FV.SV or not FV.SV.spellResistEndTimestamp then return end
+
+    local remaining = FV.SV.spellResistEndTimestamp - GetTimeStamp()
+    if remaining <= 0 then
+        FV.SV.spellResistEndTimestamp = nil
+        return
+    end
+
+    FV.State.spellResistEndTime = GetGameTimeMilliseconds() / 1000 + remaining
+    EVENT_MANAGER:RegisterForUpdate(FV.NAME .. "_SpellResistTick", 1000, function() FV:OnSpellResistTick() end)
+    FV_Log(string.format("SpellResist: restored across a relog with %.0fs remaining.", remaining))
+end
+
 function FV:Initialize()
     -- Namespaced by GetWorldName() ("EU Megaserver" / "NA Megaserver" / "PTS")
     -- so each server keeps its own saved data instead of all three sharing
@@ -1241,6 +1299,8 @@ function FV:Initialize()
         FV.State.lastTempBand = GetTempBand(FV.SV.playerTemp)
         FV.State._initialized = true
     end
+
+    self:RestoreSpellResistBuff()
 
     -- Resolve stable emoteIds from PLAYER_EMOTE_MANAGER before building the
     -- config menu, so the dropdown is populated when the panel is registered.

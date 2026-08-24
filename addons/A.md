@@ -212,6 +212,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Antiquity Lead Expiry Warnings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mccalli/Antiquity-Lead-Expiry-Warnings__3813) | mccalli | PC / Mac | 1.0.8 |
 | [AOEHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/AOEHelper__3342) | m00nyONE | PC / Mac | 1.2.2 |
 | [AP Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ghostbane/AP-Meter__1792) | ghostbane | PC / Mac | 2.0.4 |
+| [arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic__c8823ab9-749b-4180-ad52-c15b1363d974) | Lofand | Console | — |
 | [arabic new text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic-new-text__6ca61801-549f-44fd-b20a-9b655530c6bc) | Lofand | Console | — |
 | [Arcanist Crux Job Gauge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ViciousTomato/Arcanist-Crux-Job-Gauge__3661) | ViciousTomato | PC / Mac | 1.1 |
 | [Arcanum Artis GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Niwasaka/Arcanum-Artis-GuildHall__3013) | Niwasaka | PC / Mac | 1.22.0 |
@@ -225,7 +226,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__7b383e7f-a85f-491d-b950-dffc87bcec10) | tmbrinks | Console | — |
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__3473) | tmbrinks | PC / Mac | 1.1.0 |
 | [Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Archive-Helper__3772) | FlatBadger | PC / Mac | 1.4.2 |
-| [ArchiveAdvisor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/ArchiveAdvisor__4787) | NPViral | PC / Mac | 1.0.0 |
+| [ArchiveAdvisor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/ArchiveAdvisor__4787) | NPViral | PC / Mac | 1.0.1 |
 | [ArcTech](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/ArcTech__fd28ddff-8837-4702-8beb-110fee70b432) | Scribe_Rob | Console | — |
 | [ArcTechv2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/ArcTechv2__798e2650-33dc-48bb-80c5-8c09cabc36b5) | Scribe_Rob | Console | — |
 | [Are We Mounted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DaWeedle/Are-We-Mounted__4134) | DaWeedle | PC / Mac | 1.0.0 |
@@ -249,7 +250,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ArmoryRoleSwitcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/ArmoryRoleSwitcher__3901) | Masteroshi430 | PC / Mac | 2026.07.09 |
 | [ArmoryWarning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Citats/ArmoryWarning__4046) | Citats | PC / Mac | 1.0 |
 | [Arrow To The Knee GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/animalu/Arrow-To-The-Knee-GuildHalls__3018) | animalu | PC / Mac | 0.0.6 |
-| [Arry's Build Set Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Arandul/Arry-s-Build-Set-Tracker__4682) | Arandul | PC / Mac | 1.0.0 |
+| [Arry's Build Set Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Arandul/Arry-s-Build-Set-Tracker__4682) | Arandul | PC / Mac | 1.2.1 |
 | [Artaeum Group Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Artaeum-Group-Tool__dc653131-c684-4f94-b875-35a29506436b) | M0R | Console | — |
 | [Artaeum Group Tool 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Artaeum-Group-Tool-2.0__3012) | M0R | PC / Mac | 5.0.2 |
 | [Artempapa Guild Hall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Artempapa/Artempapa-Guild-Hall__3135) | Artempapa | PC / Mac | 2.0 |

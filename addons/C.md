@@ -148,6 +148,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Combat Cloud Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2Weak2Live/Combat-Cloud-Updated__2568) | 2Weak2Live | PC / Mac | 0.96 |
 | [Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-LaunchPad-Slayer-Arkasis-Raidlead-Tools__4449) | Duesentrieb | PC / Mac | 20260819-0006 |
 | [Combat Crosshair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Combat-Crosshair__2760) | Turbo1 | PC / Mac | 1.5 |
+| [Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Combat-FPS-Booster__3daa21d2-07bf-4ab5-bd84-fc58fb9dbdc7) | Tetsurion | Console | — |
 | [Combat Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Combat-Indicator__1543) | Crabby654 | PC / Mac | 1.8.7 |
 | [Combat Metrics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Combat-Metrics__1360) | Solinur | PC / Mac | 1.7.8 |
 | [Combat Metronome (GCD Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Darianopolis/Combat-Metronome-GCD-Tracker__2373) | Darianopolis | PC / Mac | 1.7.6 |

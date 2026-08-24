@@ -12,6 +12,7 @@ local GetString                  = api.GetString
 local math_max                   = math.max
 local math_floor                 = math.floor
 local string_format              = string.format
+local table_sort                 = table.sort
 
 local log               = Verdant.Log.for_module("graph")
 local TOPLEFT           = zc.TOPLEFT
@@ -38,11 +39,13 @@ local C_NONCRIT   = { r = 0.34, g = 0.55, b = 0.40, a = 0.90 }  -- muted green b
 local C_CRIT      = { r = 1.00, g = 0.85, b = 0.40, a = 0.96 }  -- bright gold (crit pops)
 local C_LINE_DMG  = { r = 0.93, g = 0.44, b = 0.38, a = 0.60 }
 local C_FILL_DMG  = { r = 0.90, g = 0.38, b = 0.32, a = 0.10 }
-local C_MARK_DEATH = { r = 0.92, g = 0.88, b = 0.84, a = 0.55 }
-local C_MARK_RES   = { r = 0.45, g = 1.00, b = 0.62, a = 0.55 }
+local C_MARK_DEATH     = { r = 0.92, g = 0.88, b = 0.84, a = 0.55 }
+local C_MARK_DEATH_OWN = { r = 0.95, g = 0.34, b = 0.28, a = 0.65 }
+local C_MARK_RES       = { r = 0.45, g = 1.00, b = 0.62, a = 0.55 }
 local TEX_SKULL    = "EsoUI/Art/TargetMarkers/Target_White_Skull_64.dds"
 local TEX_RES      = "EsoUI/Art/Notifications/notificationIcon_resurrect.dds"
-local MARK_ICON_SZ = 16
+local MARK_ICON_SZ     = 16
+local MARK_ICON_SZ_GRP = 11
 
 local C_VIEWPORT  = { r = 0.78, g = 1.00, b = 0.86 }
 
@@ -65,7 +68,8 @@ local VIEW_EMS    = 1
 local VIEW_SKILL  = 2
 local VIEW_CRIT   = 3
 local VIEW_BUFFS  = 4
-local VIEW_LABELS = { "EMS", "SKILL", "CRIT", "BUFFS" }
+local VIEW_TRIAGE = 5
+local VIEW_LABELS = { "EMS", "SKILL", "CRIT", "BUFFS", "TRIAGE" }
 local current_view = VIEW_EMS
 
 -- SKILL view shield orientation: false = shields grow UP from the subplot floor
@@ -403,7 +407,7 @@ local r2_xs_top, r2_colh_top       = {}, {}
 local r2_xs_bot, r2_colh_bot       = {}, {}
 local r3_xs, r3_top_hs             = {}, {}
 
-local MIN_COL_PX = 2
+local MIN_COL_PX = 4
 local dec_cols   = {}
 
 local function decimate(cw)
@@ -499,6 +503,35 @@ local function build_hover_card()
   root:SetDrawLevel(20)
   root:SetAlpha(0)
   root:SetHidden(true)
+
+  local base = WM:CreateControl("VerdantHoverCardBase", root, CT_TEXTURE)
+  base:SetTexture(FILL_TEXTURE)
+  base:SetTextureCoords(0, 1, 0, 0.05)
+  base:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
+  base:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, 0, 0)
+  base:SetColor(0.045, 0.05, 0.042, 0.97)
+
+  local border_top = WM:CreateControl("VerdantHoverCardBTop", root, CT_TEXTURE)
+  border_top:SetTexture(FILL_TEXTURE)
+  border_top:SetTextureCoords(0, 1, 0, 0.05)
+  border_top:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
+  border_top:SetAnchor(TOPRIGHT, root, TOPRIGHT, 0, 0)
+  border_top:SetHeight(1)
+  border_top:SetColor(0.42, 1.00, 0.60, 0.30)
+  local border_bot = WM:CreateControl("VerdantHoverCardBBot", root, CT_TEXTURE)
+  border_bot:SetTexture(FILL_TEXTURE)
+  border_bot:SetTextureCoords(0, 1, 0, 0.05)
+  border_bot:SetAnchor(BOTTOMLEFT, root, BOTTOMLEFT, 0, 0)
+  border_bot:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, 0, 0)
+  border_bot:SetHeight(1)
+  border_bot:SetColor(0.42, 1.00, 0.60, 0.30)
+  local border_r = WM:CreateControl("VerdantHoverCardBR", root, CT_TEXTURE)
+  border_r:SetTexture(FILL_TEXTURE)
+  border_r:SetTextureCoords(0, 1, 0, 0.05)
+  border_r:SetAnchor(TOPRIGHT, root, TOPRIGHT, 0, 0)
+  border_r:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, 0, 0)
+  border_r:SetWidth(1)
+  border_r:SetColor(0.42, 1.00, 0.60, 0.30)
 
   local bg = WM:CreateControl("VerdantHoverCardBg", root, CT_TEXTURE)
   bg:SetTexture(FILL_TEXTURE)
@@ -668,6 +701,64 @@ local function show_card(band, col, unit, mx, my, elapsed_ms)
   position_card(mx, my)
 end
 
+local C_TRI_CLASS = {
+  { r = 0.55, g = 0.92, b = 0.62 },
+  { r = 0.55, g = 0.66, b = 0.82 },
+  { r = 0.95, g = 0.42, b = 0.34 },
+  { r = 0.62, g = 0.22, b = 0.22 },
+  { r = 0.55, g = 0.55, b = 0.55 },
+  { r = 0.50, g = 0.38, b = 0.38 },
+}
+local C_TRI_NAME   = { r = 0.86, g = 0.92, b = 0.88, a = 1.0 }
+local C_TRI_DIM    = { r = 0.60, g = 0.64, b = 0.61, a = 0.95 }
+local C_TRI_TIME   = { r = 0.48, g = 0.46, b = 0.42, a = 1.0 }
+local C_TRI_DEPTH  = { r = 0.91, g = 0.72, b = 0.29, a = 1.0 }
+local C_TRI_DEEP   = { r = 0.95, g = 0.42, b = 0.34, a = 1.0 }
+local C_TRI_STRIP  = { r = 0.16, g = 0.15, b = 0.13, a = 0.90 }
+local C_TRI_FAST   = { r = 0.58, g = 0.85, b = 0.92 }
+local C_TRI_MID    = { r = 0.92, g = 0.95, b = 0.93 }
+local C_TRI_SLOW   = { r = 0.91, g = 0.58, b = 0.42 }
+local TRI_HEADER_H = 20
+local TRI_STRIP_H  = 14
+local TRI_STRIP_GAP = 10
+local TRI_ROW_H    = 24
+local TRI_ROW_GAP  = 2
+local TRI_RT_FAST_MS = 1000
+local TRI_RT_SLOW_MS = 2500
+
+local TRI_CHIP_KEY = {
+  "VERDANT_TRI_CHIP_SAVE",
+  "VERDANT_TRI_CHIP_RECOVERED",
+  "VERDANT_TRI_CHIP_DIED",
+  "VERDANT_TRI_CHIP_MISSED",
+  "VERDANT_TRI_CHIP_CUT",
+  "VERDANT_TRI_CHIP_ONESHOT",
+}
+
+local TRI_TIP_KEY = {
+  "VERDANT_TRI_TIP_SAVE",
+  "VERDANT_TRI_TIP_RECOVERED",
+  "VERDANT_TRI_TIP_DIED",
+  "VERDANT_TRI_TIP_MISSED",
+  "VERDANT_TRI_TIP_CUT",
+  "VERDANT_TRI_TIP_ONESHOT",
+}
+
+local function tri_rt_color(rt)
+  if rt < TRI_RT_FAST_MS then return C_TRI_FAST end
+  if rt > TRI_RT_SLOW_MS then return C_TRI_SLOW end
+  return C_TRI_MID
+end
+
+local function tri_time_str(off_ms)
+  local s = math_floor(off_ms / 1000)
+  return string_format("%d:%02d", math_floor(s / 60), s % 60)
+end
+
+local tri_hit = { n = 0, y0 = {}, y1 = {}, ep = {} }
+local tri_dot_lastx = {}
+local TRI_GLYPH_GAP = 6
+
 local function show_moment_card(swatch_c, name_text, stat_text, elapsed_ms, mx, my)
   local card = controls.card
   if not card then return end
@@ -825,6 +916,54 @@ local function hover_poll()
     buff_hover_poll(mx, my)
     return
   end
+  if current_view == VIEW_TRIAGE then
+    local canvas = controls.canvas
+    local rel_y  = my - canvas:GetTop()
+    local rel_x  = mx - canvas:GetLeft()
+    local inside = rel_x >= 0 and rel_x <= canvas:GetWidth()
+    local e = nil
+    if inside then
+      for i = 1, tri_hit.n do
+        if rel_y >= tri_hit.y0[i] and rel_y <= tri_hit.y1[i] then
+          e = tri_hit.ep[i]
+          break
+        end
+      end
+    end
+    if e then
+      local T = Verdant.Triage
+      local c = C_TRI_CLASS[e.class] or C_TRI_CLASS[5]
+      local who = T.slot_name(e.slot) or ("group" .. e.slot)
+      local depth = math_floor(e.min_rho * 100 + 0.5)
+      local facts = string_format("|c%s%d%%|r %s",
+        hexc((e.min_rho < 0.15) and C_TRI_DEEP or C_TRI_DEPTH), depth,
+        GetString(VERDANT_TRI_TIP_MINHP))
+      if e.rt >= 0 then
+        facts = facts .. string_format("  ·  |c%s%s|r",
+          hexc(tri_rt_color(e.rt)), string_format(GetString(VERDANT_TRI_TIP_RT), e.rt / 1000))
+      elseif e.responded then
+        facts = facts .. "  ·  |c" .. hexc(C_TRI_FAST) .. GetString(VERDANT_TRI_RT_HOTS) .. "|r"
+      end
+      show_moment_card(c, who, facts, e.t_start - tri_hit.t0, mx, my)
+      local card = controls.card
+      if card and card.desc then
+        local desc = card.desc
+        desc:ClearAnchors()
+        desc:SetAnchor(TOPLEFT, card.root, TOPLEFT, 12, CARD_H - 4)
+        desc:SetWidth(CARD_W - 20)
+        desc:SetHeight(400)
+        desc:SetText(GetString(rawget(_G, TRI_TIP_KEY[e.class] or TRI_TIP_KEY[5])))
+        desc:SetHidden(false)
+        local dh = desc:GetTextHeight()
+        if dh < 12 then dh = 12 end
+        desc:SetHeight(dh)
+        card.root:SetHeight(CARD_H - 4 + dh + 8)
+      end
+    else
+      fade_out(card_fader)
+    end
+    return
+  end
   local band, col, canvas, H, unit
   if current_view == VIEW_SKILL then
     local inside, b, c = probe(controls.ehps_canvas, hit_top, mx, my)
@@ -900,30 +1039,47 @@ local function update_hover_gate()
   end
 end
 
+local function draw_one_marker(pool_line, pool_icon, canvas, m, x, is_group)
+  local c
+  if m.death then
+    c = is_group and C_MARK_DEATH or C_MARK_DEATH_OWN
+  else
+    c = C_MARK_RES
+  end
+  local sz = is_group and MARK_ICON_SZ_GRP or MARK_ICON_SZ
+
+  local ln = pool_line:AcquireObject()
+  ln:ClearAnchors()
+  ln:SetAnchor(TOPLEFT,    canvas, TOPLEFT,    x, 0)
+  ln:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, x, 0)
+  ln:SetWidth(1)
+  ln:SetColor(c.r, c.g, c.b, is_group and c.a * 0.45 or c.a)
+  ln:SetHidden(false)
+
+  local ic = pool_icon:AcquireObject()
+  ic:ClearAnchors()
+  ic:SetTexture(m.death and TEX_SKULL or TEX_RES)
+  ic:SetDimensions(sz, sz)
+  ic:SetAnchor(TOPLEFT, canvas, TOPLEFT, x - math_floor(sz / 2), is_group and 4 or 1)
+  ic:SetColor(c.r, c.g, c.b, is_group and 0.50 or 0.95)
+  ic:SetHidden(false)
+end
+
 local function draw_markers(pool_line, pool_icon, canvas, t0, span, lane_x, lane_w)
   if span <= 0 then return end
   local ms, n = Verdant.TemporalBuffer.markers()
   for i = 1, n do
     local m = ms[i]
-    if m.t >= t0 and m.t <= t0 + span then
+    if m.who and m.t >= t0 and m.t <= t0 + span then
       local x = lane_x + math_floor((m.t - t0) / span * lane_w + 0.5)
-      local c = m.death and C_MARK_DEATH or C_MARK_RES
-
-      local ln = pool_line:AcquireObject()
-      ln:ClearAnchors()
-      ln:SetAnchor(TOPLEFT,    canvas, TOPLEFT,    x, 0)
-      ln:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, x, 0)
-      ln:SetWidth(1)
-      ln:SetColor(c.r, c.g, c.b, c.a)
-      ln:SetHidden(false)
-
-      local ic = pool_icon:AcquireObject()
-      ic:ClearAnchors()
-      ic:SetTexture(m.death and TEX_SKULL or TEX_RES)
-      ic:SetDimensions(MARK_ICON_SZ, MARK_ICON_SZ)
-      ic:SetAnchor(TOPLEFT, canvas, TOPLEFT, x - math_floor(MARK_ICON_SZ / 2), 1)
-      ic:SetColor(c.r, c.g, c.b, 0.95)
-      ic:SetHidden(false)
+      draw_one_marker(pool_line, pool_icon, canvas, m, x, true)
+    end
+  end
+  for i = 1, n do
+    local m = ms[i]
+    if not m.who and m.t >= t0 and m.t <= t0 + span then
+      local x = lane_x + math_floor((m.t - t0) / span * lane_w + 0.5)
+      draw_one_marker(pool_line, pool_icon, canvas, m, x, false)
     end
   end
 end
@@ -1348,6 +1504,8 @@ local function seg_alpha(conc, max_conc)
 end
 
 
+
+
 local function render_view4()
   controls.pool_buff_seg:ReleaseAllObjects()
   controls.pool_buff_icon:ReleaseAllObjects()
@@ -1436,6 +1594,7 @@ local function render_view4()
     icon:ClearAnchors()
     icon:SetTexture(SC.ability_icon(rec.id))
     icon:SetDimensions(isz, isz)
+    icon:SetColor(1, 1, 1, 1)
     icon:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, y + math_floor((row_h - isz) / 2))
     icon:SetHidden(false)
 
@@ -1470,6 +1629,24 @@ local function render_view4()
     end
 
     local n_steps = rec.n_steps
+    local run_x0, run_x1, run_conc
+    local function flush_run()
+      if not run_x0 then return end
+      local seg = controls.pool_buff_seg:AcquireObject()
+      seg:ClearAnchors()
+      seg:SetAnchor(TOPLEFT, canvas, TOPLEFT, run_x0, y)
+      seg:SetWidth(math_max(1, run_x1 - run_x0))
+      seg:SetHeight(row_h)
+      local a = seg_alpha(run_conc, rec.max_conc)
+      if hk ~= nil and rec.id ~= hk then
+        seg:SetColor(c.r * 0.30 + C_DIM_BIAS, c.g * 0.30 + C_DIM_BIAS,
+                     c.b * 0.30 + C_DIM_BIAS, 0.25)
+      else
+        seg:SetColor(c.r, c.g, c.b, a)
+      end
+      seg:SetHidden(false)
+      run_x0 = nil
+    end
     for k = 1, n_steps do
       local conc = rec.step_c[k]
       if conc > 0 then
@@ -1479,23 +1656,18 @@ local function render_view4()
         if en > st then
           local x0 = lane_x + math_floor((st - t0) / span * lane_w + 0.5)
           local x1 = lane_x + math_floor((en - t0) / span * lane_w + 0.5)
-          local bw = math_max(1, x1 - x0)
-          local seg = controls.pool_buff_seg:AcquireObject()
-          seg:ClearAnchors()
-          seg:SetAnchor(TOPLEFT, canvas, TOPLEFT, x0, y)
-          seg:SetWidth(bw)
-          seg:SetHeight(row_h)
-          local a = seg_alpha(conc, rec.max_conc)
-          if hk ~= nil and rec.id ~= hk then
-            seg:SetColor(c.r * 0.30 + C_DIM_BIAS, c.g * 0.30 + C_DIM_BIAS,
-                         c.b * 0.30 + C_DIM_BIAS, 0.25)
+          if x1 <= x0 then x1 = x0 + 1 end
+          if run_x0 and x0 <= run_x1 then
+            if x1 > run_x1 then run_x1 = x1 end
+            if conc > run_conc then run_conc = conc end
           else
-            seg:SetColor(c.r, c.g, c.b, a)
+            flush_run()
+            run_x0, run_x1, run_conc = x0, x1, conc
           end
-          seg:SetHidden(false)
         end
       end
     end
+    flush_run()
   end
 
   draw_markers(controls.pool_marker_line, controls.pool_marker_icon,
@@ -1513,6 +1685,315 @@ local function render_view4()
   end
 end
 
+local function render_view5()
+  controls.pool_buff_seg:ReleaseAllObjects()
+  controls.pool_buff_icon:ReleaseAllObjects()
+  controls.pool_buff_lbl:ReleaseAllObjects()
+  hide_grid(controls.grid_ems)
+
+  local T = Verdant.Triage
+  local eps, n_eps = T.episodes()
+
+  if n_eps == 0 then
+    controls.no_data:SetHidden(false)
+    return
+  end
+  controls.no_data:SetHidden(true)
+
+  local canvas = controls.canvas
+  local cw, ch = canvas:GetWidth(), canvas:GetHeight()
+  if cw <= 180 or ch <= TRI_HEADER_H + TRI_STRIP_H + TRI_ROW_H then return end
+
+  local BT = Verdant.BuffTracker
+  local recording = Verdant.TemporalBuffer.is_recording()
+  local t0   = BT.session_start()
+  local t_hi = recording and GetGameTimeMilliseconds() or BT.session_end()
+  local span = t_hi - t0
+  if span <= 0 then return end
+
+  Verdant.Diagnostics.bump("graph.view_triage.renders")
+  hit_begin(hit_main, 0)
+
+  local capture = not recording
+  tri_hit.n  = 0
+  tri_hit.t0 = t0
+
+  local s = T.summary()
+  local head = controls.pool_buff_lbl:AcquireObject()
+  head:ClearAnchors()
+  local head_text
+  if s.rt_n > 0 then
+    head_text = string_format("%s |cebf2ed%d/%d|r    RT50 |cebf2ed%.1fs|r    RT95 |cebf2ed%.1fs|r",
+      GetString(VERDANT_TRI_HEAD_SAVES), s.counts.s,
+      s.counts.s + s.counts.o + s.counts.l + s.counts.m,
+      s.rt50 / 1000, s.rt95 / 1000)
+  else
+    head_text = string_format("%s |cebf2ed%d/%d|r",
+      GetString(VERDANT_TRI_HEAD_SAVES), s.counts.s,
+      s.counts.s + s.counts.o + s.counts.l + s.counts.m)
+  end
+  head:SetText(head_text)
+  head:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+  head:SetColor(C_TRI_DIM.r, C_TRI_DIM.g, C_TRI_DIM.b, C_TRI_DIM.a)
+  head:SetDimensions(cw, TRI_HEADER_H)
+  head:SetAnchor(TOPLEFT, canvas, TOPLEFT, 2, 0)
+  head:SetHidden(false)
+
+  local strip_y = TRI_HEADER_H
+  local strip = controls.pool_buff_seg:AcquireObject()
+  strip:ClearAnchors()
+  strip:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, strip_y)
+  strip:SetWidth(cw)
+  strip:SetHeight(TRI_STRIP_H)
+  strip:SetColor(C_TRI_STRIP.r, C_TRI_STRIP.g, C_TRI_STRIP.b, C_TRI_STRIP.a)
+  strip:SetHidden(false)
+
+  local s_top = controls.pool_buff_seg:AcquireObject()
+  s_top:ClearAnchors()
+  s_top:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, strip_y - 1)
+  s_top:SetWidth(cw)
+  s_top:SetHeight(1)
+  s_top:SetColor(0, 0, 0, 0.45)
+  s_top:SetHidden(false)
+  local s_bot = controls.pool_buff_seg:AcquireObject()
+  s_bot:ClearAnchors()
+  s_bot:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, strip_y + TRI_STRIP_H)
+  s_bot:SetWidth(cw)
+  s_bot:SetHeight(1)
+  s_bot:SetColor(1, 1, 1, 0.05)
+  s_bot:SetHidden(false)
+
+  for k in pairs(tri_dot_lastx) do tri_dot_lastx[k] = nil end
+  for i = 1, n_eps do
+    local e = eps[i]
+    if e.t_start >= t0 and e.t_start <= t_hi then
+      local x = math_floor((e.t_start - t0) / span * (cw - 8) + 0.5)
+      local lx = tri_dot_lastx[e.class]
+      if lx == nil or (x - lx) >= TRI_GLYPH_GAP then
+        tri_dot_lastx[e.class] = x
+        local c = C_TRI_CLASS[e.class] or C_TRI_CLASS[5]
+        local rim = controls.pool_buff_seg:AcquireObject()
+        rim:ClearAnchors()
+        rim:SetAnchor(TOPLEFT, canvas, TOPLEFT, x, strip_y + 2)
+        rim:SetWidth(10)
+        rim:SetHeight(10)
+        rim:SetColor(0.04, 0.04, 0.035, 0.95)
+        rim:SetHidden(false)
+        local dot = controls.pool_buff_seg:AcquireObject()
+        dot:ClearAnchors()
+        dot:SetAnchor(TOPLEFT, canvas, TOPLEFT, x + 1, strip_y + 3)
+        dot:SetWidth(8)
+        dot:SetHeight(8)
+        dot:SetColor(c.r, c.g, c.b, e.class == T.CLASS_O and 0.55 or 1.0)
+        dot:SetHidden(false)
+      end
+    end
+  end
+
+  local tl = controls.pool_buff_lbl:AcquireObject()
+  tl:ClearAnchors()
+  tl:SetText("0:00")
+  tl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+  tl:SetColor(C_TRI_TIME.r, C_TRI_TIME.g, C_TRI_TIME.b, 0.75)
+  tl:SetDimensions(50, TRI_STRIP_H)
+  tl:SetAnchor(TOPLEFT, canvas, TOPLEFT, 3, strip_y)
+  tl:SetHidden(false)
+  local tr = controls.pool_buff_lbl:AcquireObject()
+  tr:ClearAnchors()
+  tr:SetText(tri_time_str(span))
+  tr:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+  tr:SetColor(C_TRI_TIME.r, C_TRI_TIME.g, C_TRI_TIME.b, 0.75)
+  tr:SetDimensions(50, TRI_STRIP_H)
+  tr:SetAnchor(TOPLEFT, canvas, TOPLEFT, cw - 53, strip_y)
+  tr:SetHidden(false)
+
+  local ms, mn = Verdant.TemporalBuffer.markers()
+  local last_own_x, last_grp_x
+  for i = 1, mn do
+    local m = ms[i]
+    if m.death and m.t >= t0 and m.t <= t_hi then
+      local x = math_floor((m.t - t0) / span * (cw - 8) + 0.5)
+      local lx = m.who and last_grp_x or last_own_x
+      if lx == nil or (x - lx) >= TRI_GLYPH_GAP then
+        if m.who then last_grp_x = x else last_own_x = x end
+        local ic = controls.pool_marker_icon:AcquireObject()
+        ic:ClearAnchors()
+        ic:SetTexture(TEX_SKULL)
+        ic:SetDimensions(10, 10)
+        ic:SetAnchor(TOPLEFT, canvas, TOPLEFT, x, strip_y + 2)
+        local mc = m.who and C_MARK_DEATH or C_MARK_DEATH_OWN
+        ic:SetColor(mc.r, mc.g, mc.b, m.who and 0.5 or 0.95)
+        ic:SetHidden(false)
+      end
+    end
+  end
+
+  local list_y = strip_y + TRI_STRIP_H + TRI_STRIP_GAP
+  local fit = math_floor((ch - list_y) / (TRI_ROW_H + TRI_ROW_GAP))
+  if fit < 1 then return end
+  local first = (n_eps > fit) and (n_eps - fit + 1) or 1
+  local pslot = T.player_slot()
+
+  if first > 1 then
+    local more = controls.pool_buff_lbl:AcquireObject()
+    more:ClearAnchors()
+    more:SetText(string_format(GetString(VERDANT_TRI_MORE), first - 1))
+    more:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    more:SetColor(C_TRI_TIME.r, C_TRI_TIME.g, C_TRI_TIME.b, 0.9)
+    more:SetDimensions(160, TRI_HEADER_H)
+    more:SetAnchor(TOPLEFT, canvas, TOPLEFT, cw - 164, 0)
+    more:SetHidden(false)
+  end
+
+  local row_i = 0
+  for i = first, n_eps do
+    local e = eps[i]
+    local y = list_y + row_i * (TRI_ROW_H + TRI_ROW_GAP)
+    row_i = row_i + 1
+    local c = C_TRI_CLASS[e.class] or C_TRI_CLASS[5]
+
+    if capture then
+      tri_hit.n = tri_hit.n + 1
+      tri_hit.y0[tri_hit.n] = y
+      tri_hit.y1[tri_hit.n] = y + TRI_ROW_H
+      tri_hit.ep[tri_hit.n] = e
+    end
+
+    local bg = controls.pool_buff_seg:AcquireObject()
+    bg:ClearAnchors()
+    bg:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, y)
+    bg:SetWidth(cw)
+    bg:SetHeight(TRI_ROW_H)
+    bg:SetColor(c.r, c.g, c.b, e.class == T.CLASS_O and 0.03 or 0.07)
+    bg:SetHidden(false)
+
+    local hl = controls.pool_buff_seg:AcquireObject()
+    hl:ClearAnchors()
+    hl:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, y)
+    hl:SetWidth(cw)
+    hl:SetHeight(1)
+    hl:SetColor(1, 1, 1, 0.05)
+    hl:SetHidden(false)
+
+    local sep = controls.pool_buff_seg:AcquireObject()
+    sep:ClearAnchors()
+    sep:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, y + TRI_ROW_H)
+    sep:SetWidth(cw)
+    sep:SetHeight(1)
+    sep:SetColor(0, 0, 0, 0.40)
+    sep:SetHidden(false)
+
+    local tlbl = controls.pool_buff_lbl:AcquireObject()
+    tlbl:ClearAnchors()
+    tlbl:SetText(tri_time_str(e.t_start - t0))
+    tlbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    tlbl:SetColor(C_TRI_TIME.r, C_TRI_TIME.g, C_TRI_TIME.b, C_TRI_TIME.a)
+    tlbl:SetDimensions(38, TRI_ROW_H)
+    tlbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, 6, y)
+    tlbl:SetHidden(false)
+
+    local icon_path = T.slot_icon(e.slot)
+    if icon_path then
+      local ci = controls.pool_buff_icon:AcquireObject()
+      ci:ClearAnchors()
+      ci:SetTexture(icon_path)
+      ci:SetDimensions(16, 16)
+      ci:SetAnchor(TOPLEFT, canvas, TOPLEFT, 46, y + 4)
+      ci:SetColor(1, 1, 1, e.class == T.CLASS_O and 0.55 or 0.95)
+      ci:SetHidden(false)
+    end
+
+    local pname = T.slot_name(e.slot) or ("group" .. e.slot)
+    if e.slot == pslot then pname = pname .. GetString(VERDANT_TRI_YOU) end
+    local nlbl = controls.pool_buff_lbl:AcquireObject()
+    nlbl:ClearAnchors()
+    nlbl:SetText(pname)
+    nlbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    if e.class == T.CLASS_O then
+      nlbl:SetColor(C_TRI_DIM.r, C_TRI_DIM.g, C_TRI_DIM.b, 0.85)
+    else
+      nlbl:SetColor(C_TRI_NAME.r, C_TRI_NAME.g, C_TRI_NAME.b, C_TRI_NAME.a)
+    end
+    local name_w = math_max(60, cw - 320)
+    nlbl:SetDimensions(name_w, TRI_ROW_H)
+    nlbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, 66, y)
+    nlbl:SetHidden(false)
+
+    local dx = 66 + name_w
+    local depth = math_floor(e.min_rho * 100 + 0.5)
+    local dc = (e.min_rho < 0.15) and C_TRI_DEEP or C_TRI_DEPTH
+    local bar_y = y + math_floor((TRI_ROW_H - 8) / 2)
+    local bbg = controls.pool_buff_seg:AcquireObject()
+    bbg:ClearAnchors()
+    bbg:SetAnchor(TOPLEFT, canvas, TOPLEFT, dx, bar_y)
+    bbg:SetWidth(36)
+    bbg:SetHeight(8)
+    bbg:SetColor(0.05, 0.05, 0.045, 0.90)
+    bbg:SetHidden(false)
+    local fill_w = math_floor(36 * e.min_rho + 0.5)
+    if fill_w < 1 then fill_w = 1 end
+    local bfill = controls.pool_buff_seg:AcquireObject()
+    bfill:ClearAnchors()
+    bfill:SetAnchor(TOPLEFT, canvas, TOPLEFT, dx, bar_y)
+    bfill:SetWidth(fill_w)
+    bfill:SetHeight(8)
+    bfill:SetColor(dc.r, dc.g, dc.b, 0.95)
+    bfill:SetHidden(false)
+    local dlbl = controls.pool_buff_lbl:AcquireObject()
+    dlbl:ClearAnchors()
+    dlbl:SetText(string_format("%d%%", depth))
+    dlbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    dlbl:SetColor(dc.r, dc.g, dc.b, 0.95)
+    dlbl:SetDimensions(34, TRI_ROW_H)
+    dlbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, dx + 40, y)
+    dlbl:SetHidden(false)
+
+    local chip_x = dx + 78
+    local chip_text = GetString(rawget(_G, TRI_CHIP_KEY[e.class] or TRI_CHIP_KEY[5]))
+    local chip_w = #chip_text * 7 + 14
+    local frame = controls.pool_buff_seg:AcquireObject()
+    frame:ClearAnchors()
+    frame:SetAnchor(TOPLEFT, canvas, TOPLEFT, chip_x, y + 3)
+    frame:SetWidth(chip_w)
+    frame:SetHeight(TRI_ROW_H - 6)
+    frame:SetColor(c.r, c.g, c.b, e.class == T.CLASS_O and 0.30 or 0.60)
+    frame:SetHidden(false)
+    local chip = controls.pool_buff_seg:AcquireObject()
+    chip:ClearAnchors()
+    chip:SetAnchor(TOPLEFT, canvas, TOPLEFT, chip_x + 1, y + 4)
+    chip:SetWidth(chip_w - 2)
+    chip:SetHeight(TRI_ROW_H - 8)
+    chip:SetColor(0.09, 0.085, 0.075, 0.92)
+    chip:SetHidden(false)
+    local clbl = controls.pool_buff_lbl:AcquireObject()
+    clbl:ClearAnchors()
+    clbl:SetText(chip_text)
+    clbl:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    clbl:SetColor(c.r, c.g, c.b, 1)
+    clbl:SetDimensions(chip_w, TRI_ROW_H)
+    clbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, chip_x, y)
+    clbl:SetHidden(false)
+
+    local rlbl = controls.pool_buff_lbl:AcquireObject()
+    rlbl:ClearAnchors()
+    if e.rt >= 0 then
+      local rc = tri_rt_color(e.rt)
+      rlbl:SetText(string_format("RT %.1fs", e.rt / 1000))
+      rlbl:SetColor(rc.r, rc.g, rc.b, 1)
+    elseif e.responded then
+      rlbl:SetText(GetString(VERDANT_TRI_RT_HOTS))
+      rlbl:SetColor(C_TRI_FAST.r, C_TRI_FAST.g, C_TRI_FAST.b, 0.55)
+    else
+      rlbl:SetText("RT -")
+      rlbl:SetColor(C_TRI_TIME.r, C_TRI_TIME.g, C_TRI_TIME.b, 0.8)
+    end
+    rlbl:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    rlbl:SetDimensions(70, TRI_ROW_H)
+    rlbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, cw - 76, y)
+    rlbl:SetHidden(false)
+  end
+end
+
 function render_current_view()
   if controls.pool_marker_line then
     controls.pool_marker_line:ReleaseAllObjects()
@@ -1526,6 +2007,8 @@ function render_current_view()
     render_view3()
   elseif current_view == VIEW_BUFFS then
     render_view4()
+  elseif current_view == VIEW_TRIAGE then
+    render_view5()
   else
     layout_skill_area()
     render_view2()
@@ -1539,16 +2022,24 @@ local C_SUM_PEAK = C_LINE_EMS
 local C_SUM_CRIT = C_CRIT
 local C_SUM_VAL  = { r = 0.92, g = 0.95, b = 0.93 }
 
+local C_SUM_RT = { r = 0.58, g = 0.85, b = 0.92 }
+
 local function build_summary_text()
   local s = Verdant.TemporalBuffer.summary()
   if s.count == 0 then return nil end
   local vc = hexc(C_SUM_VAL)
   local crit_pct = math_floor(s.crit_pct * 100 + 0.5)
-  return string_format(
+  local text = string_format(
     "|c%s%s|r |c%s%s|r   |c%s%s|r |c%s%s|r   |c%s%s|r |c%s%d%%|r",
     hexc(C_SUM_AVG),  GetString(VERDANT_SUMMARY_AVG),  vc, fmt_val(s.avg_ems),
     hexc(C_SUM_PEAK), GetString(VERDANT_SUMMARY_PEAK), vc, fmt_val(s.peak_ems),
     hexc(C_SUM_CRIT), GetString(VERDANT_SUMMARY_CRIT), vc, crit_pct)
+  local ts = Verdant.Triage.summary()
+  if ts.rt_n > 0 then
+    text = text .. string_format("   |c%s%s|r |c%s%.1fs|r",
+      hexc(C_SUM_RT), GetString(VERDANT_SUMMARY_RT), vc, ts.rt50 / 1000)
+  end
+  return text
 end
 
 local function update_summary_chip()
@@ -1582,6 +2073,8 @@ local function set_view(v)
   hover_key = nil
   if v == VIEW_BUFFS then
     controls.no_data:SetText(GetString(VERDANT_GRAPH_NO_BUFFS))
+  elseif v == VIEW_TRIAGE then
+    controls.no_data:SetText(GetString(VERDANT_GRAPH_NO_TRIAGE))
   else
     controls.no_data:SetText(GetString(VERDANT_GRAPH_NO_DATA))
   end
@@ -1664,6 +2157,7 @@ function M.on_stop_click()
   Verdant.TemporalBuffer.stop_recording()
   zev.unregister_update(Verdant.Constants.TEMPORAL.UPDATE_NAME)
   Verdant.BuffTracker.finalize(GetGameTimeMilliseconds())
+  Verdant.SessionStore.on_session_stop()
   summary_text = build_summary_text()
   local s = Verdant.TemporalBuffer.summary()
   Verdant.Diagnostics.bump("graph.summary.computed")
@@ -1672,6 +2166,98 @@ function M.on_stop_click()
            "crit_pct=", math_floor(s.crit_pct * 100 + 0.5))
   refresh_button_colors()
   render_current_view()
+end
+
+function M.load_session(sess)
+  if Verdant.TemporalBuffer.is_recording() then
+    d("[V] " .. GetString(VERDANT_LIB_BUSY))
+    return false
+  end
+  if not (sess and sess.streams and sess.desc and sess.head) then
+    d("[V] " .. string_format(GetString(VERDANT_LIB_CORRUPT), "missing structure"))
+    return false
+  end
+  local vsf = Verdant.lib.vsf
+  local series, e1 = vsf.unpack(sess.streams.series,   sess.desc.series)
+  local steps,  e2 = vsf.unpack(sess.streams.steps,    sess.desc.steps)
+  local eps,    e3 = vsf.unpack(sess.streams.episodes, sess.desc.episodes)
+  local mks,    e4 = vsf.unpack(sess.streams.markers,  sess.desc.markers)
+  if not (series and steps and eps and mks) then
+    d("[V] " .. string_format(GetString(VERDANT_LIB_CORRUPT),
+      tostring(e1 or e2 or e3 or e4)))
+    return false
+  end
+
+  if sess.streams.shares and sess.desc.shares then
+    local shares = vsf.unpack(sess.streams.shares, sess.desc.shares)
+    if shares then
+      local gkeys = sess.gkeys or {}
+      local SC = Verdant.SkillColors
+      for i = 1, #shares do
+        local r = shares[i]
+        local sample = series[r.si]
+        if sample then
+          local field = (r.ch == 0) and "eg" or "mg"
+          local tbl = sample[field]
+          if not tbl then tbl = { count = 0 }; sample[field] = tbl end
+          local key = gkeys[r.key + 1] or "other"
+          local c = SC.group_color(key)
+          tbl.count = tbl.count + 1
+          tbl[tbl.count] = {
+            r = c.r, g = c.g, b = c.b, a = c.a,
+            share = r.sh, key = key,
+          }
+        end
+      end
+    end
+  end
+
+  if sess.streams.abilities and sess.desc.abilities then
+    local abilities = vsf.unpack(sess.streams.abilities, sess.desc.abilities)
+    if abilities then
+      local SC = Verdant.SkillColors
+      for i = 1, #abilities do
+        local r = abilities[i]
+        local sample = series[r.si]
+        if sample then
+          local field = (r.ch == 0) and "ea" or "ma"
+          local tbl = sample[field]
+          if not tbl then tbl = { count = 0 }; sample[field] = tbl end
+          local key = SC.ability_group(r.id)
+          local c = SC.group_color(key)
+          tbl.count = tbl.count + 1
+          tbl[tbl.count] = {
+            id = r.id, share = r.sh, key = key,
+            r = c.r, g = c.g, b = c.b, a = c.a,
+          }
+        end
+      end
+    end
+  end
+
+  release_all_pools()
+  hide_all_grids()
+
+  local markers = {}
+  for i = 1, #mks do
+    local m = mks[i]
+    markers[i] = {
+      t = m.t, death = m.death == 1,
+      who = (m.who > 0) and ("group" .. m.who) or nil,
+    }
+  end
+  Verdant.TemporalBuffer.load_session(series, markers)
+  Verdant.BuffTracker.load_session(sess.buffs or {}, steps, 0, sess.head.dur_ms or 0)
+  Verdant.Triage.load_session(eps, sess.roster, sess.head.player_slot)
+
+  summary_text = build_summary_text()
+  controls.status:SetText(string_format(GetString(VERDANT_LIB_LOADED),
+    sess.head.zone or "?"))
+  Verdant.Visibility.set("graph", true)
+  refresh_button_colors()
+  render_current_view()
+  Verdant.Diagnostics.bump("library.session_loaded")
+  return true
 end
 
 function M.on_flush_click()
@@ -1719,14 +2305,14 @@ end
 
 function M.prev_view()
   local v = current_view - 1
-  if v < VIEW_EMS then v = VIEW_BUFFS end
+  if v < VIEW_EMS then v = VIEW_TRIAGE end
   release_all_pools()
   set_view(v)
 end
 
 function M.next_view()
   local v = current_view + 1
-  if v > VIEW_BUFFS then v = VIEW_EMS end
+  if v > VIEW_TRIAGE then v = VIEW_EMS end
   release_all_pools()
   set_view(v)
 end
@@ -1769,6 +2355,7 @@ function M.init()
   controls.btn_record    = VerdantGraphWindowRecordBtn
   controls.btn_stop      = VerdantGraphWindowStopBtn
   controls.btn_flush     = VerdantGraphWindowFlushBtn
+  controls.btn_lib       = VerdantGraphWindowLibBtn
   controls.status        = VerdantGraphWindowStatusLabel
   controls.btn_prev_view = VerdantGraphWindowPrevViewBtn
   controls.view_label    = VerdantGraphWindowViewLabel

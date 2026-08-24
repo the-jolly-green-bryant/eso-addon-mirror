@@ -193,13 +193,23 @@ local colorCache = setmetatable({}, { __mode = "k" })
 
 ---Generate a stable, vivid color from a display name
 ---Uses golden ratio to spread hues evenly, keeps saturation and lightness tuned for visibility
----Results are cached for performance
+---Results are cached for performance. A user-chosen color (own setting or a
+---group member's shared preference, protocol 435) overrides the hash color;
+---overrides are checked before the cache so preference changes apply live.
 ---@param displayName string
 ---@return number r Red (0-1)
 ---@return number g Green (0-1)
 ---@return number b Blue (0-1)
 ---@return number a Alpha (always 1)
 function utils.ColorFromName(displayName)
+    local prefsShare = BattleScrolls.prefsShare
+    if prefsShare then
+        local chosen = prefsShare.GetColorFor(displayName)
+        if chosen then
+            return chosen.r, chosen.g, chosen.b, 1
+        end
+    end
+
     local cached = colorCache[displayName]
     if cached then
         return cached[1], cached[2], cached[3], cached[4]

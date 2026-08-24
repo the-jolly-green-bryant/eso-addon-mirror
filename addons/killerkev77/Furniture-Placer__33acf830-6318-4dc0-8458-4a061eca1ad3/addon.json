@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/killerkev77/Furniture-Builder__33acf830-6318-4dc0-8458-4a061eca1ad3",
+  "archive_path": "addons/killerkev77/Furniture-Placer__33acf830-6318-4dc0-8458-4a061eca1ad3",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "killerkev77",
   "canonical_id": "bethesda:33acf830-6318-4dc0-8458-4a061eca1ad3",
   "content_id": "33acf830-6318-4dc0-8458-4a061eca1ad3",
   "deleted": false,
-  "fingerprint": "658631b8dc0e80a33335e25b9fe51ecd9288a6a291e36f3f092e447f03bc947a",
+  "fingerprint": "4a2b8891780e12cfc2b50a3fc0e523f02eef4c0ef52b6e737a27e59815563353",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "33acf830-6318-4dc0-8458-4a061eca1ad3",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/33acf830-6318-4dc0-8458-4a061eca1ad3",
-  "title": "Furniture Builder"
+  "title": "Furniture Placer"
 }

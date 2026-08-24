@@ -136,9 +136,9 @@ function HUD:CreateControls()
     local row2Y = row1Y + ROW_HEIGHT + ROW_GAP
     local row3Y = row2Y + ROW_HEIGHT + ROW_GAP
 
-    _, self.zoneTempVal  = MakeRow("ZoneTemp",  "ZONE",       row1Y)
-    _, self.playerTempVal= MakeRow("PlayerTemp","FEELS LIKE", row2Y)
-    _, self.insulationVal= MakeRow("Insulation","INSULATION", row3Y)
+    _, self.zoneTempVal        = MakeRow("ZoneTemp",  "ZONE",       row1Y)
+    self.playerTempLbl, self.playerTempVal = MakeRow("PlayerTemp","FEELS LIKE", row2Y)
+    _, self.insulationVal      = MakeRow("Insulation","INSULATION", row3Y)
 
     -- Thin separator line between rows (decorative CT_TEXTURE)
     local function MakeSep(offsetY)
@@ -156,6 +156,39 @@ function HUD:CreateControls()
     w:SetAlpha(FV.SV.hudAlpha)
 
     self.controls_created = true
+end
+
+-- ============================================================
+-- SPELL-RESIST REAGENT BUFF INDICATOR
+--
+-- Row 2 ("FEELS LIKE") is exactly what the spell-resist reagent buff
+-- (FV:ApplySpellResistReagent in Frostfall.lua) shifts, so the indicator
+-- lives on that row's own label rather than as a separate badge/icon —
+-- no new control or art asset needed, and it reads naturally as "this
+-- number is currently being steadied." FV.State.spellResistEndTime is
+-- this session's game-time expiry (see Frostfall.lua for how it's kept in
+-- sync with the persisted FV.SV.spellResistEndTimestamp across a relog);
+-- nil/absent means the buff isn't active, which is the only thing this
+-- indicator needs to know.
+-- ============================================================
+local PLAYER_TEMP_LABEL_BASE  = "FEELS LIKE"
+local PLAYER_TEMP_LABEL_BUFFED_COLOR = { r = 0.85, g = 0.65, b = 1.0 }  -- soft violet, distinct from the plain label color below
+local PLAYER_TEMP_LABEL_BASE_COLOR   = { r = 0.7,  g = 0.85, b = 1.0 }  -- matches MakeRow's default label color
+
+local function UpdateSpellResistIndicator(lbl, state)
+    if not state.spellResistEndTime then
+        lbl:SetText(PLAYER_TEMP_LABEL_BASE)
+        lbl:SetColor(PLAYER_TEMP_LABEL_BASE_COLOR.r, PLAYER_TEMP_LABEL_BASE_COLOR.g, PLAYER_TEMP_LABEL_BASE_COLOR.b, 0.8)
+        return
+    end
+
+    local remainingSeconds = state.spellResistEndTime - (GetGameTimeMilliseconds() / 1000)
+    local remainingMinutes = math.max(0, math.ceil(remainingSeconds / 60))
+    -- Kept short (vs. e.g. "(STEADIED, 12m)") since this label has no fixed
+    -- width/wrap and sits inside a 220px-wide HUD — the color shift is the
+    -- primary "buff active" signal, this is just the bonus detail.
+    lbl:SetText(string.format("%s (%dm)", PLAYER_TEMP_LABEL_BASE, remainingMinutes))
+    lbl:SetColor(PLAYER_TEMP_LABEL_BUFFED_COLOR.r, PLAYER_TEMP_LABEL_BUFFED_COLOR.g, PLAYER_TEMP_LABEL_BUFFED_COLOR.b, 1.0)
 end
 
 -- ============================================================
@@ -178,6 +211,7 @@ function HUD:Update(playerTemp, state)
     local col = GetTempColor(playerTemp)
     self.playerTempVal:SetText(FV.FormatTemp(playerTemp))
     self.playerTempVal:SetColor(col.r, col.g, col.b, 1.0)
+    UpdateSpellResistIndicator(self.playerTempLbl, state)
 
     -- Row 3: insulation value and source
     self.insulationVal:SetText(

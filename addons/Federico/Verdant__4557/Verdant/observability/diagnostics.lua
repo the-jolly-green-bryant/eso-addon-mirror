@@ -219,6 +219,15 @@ function M.full_report(include_gc)
   if Verdant.AutoRecord and Verdant.AutoRecord.report_lines then
     section("auto record", Verdant.AutoRecord.report_lines())
   end
+  if Verdant.Trace and Verdant.Trace.status_line then
+    section("trace", { Verdant.Trace.status_line() })
+  end
+  if Verdant.Triage and Verdant.Triage.report_lines then
+    section("triage", Verdant.Triage.report_lines())
+  end
+  if Verdant.SessionStore and Verdant.SessionStore.report_lines then
+    section("session library", Verdant.SessionStore.report_lines())
+  end
   section("diagnostics", build_diag_lines())
   if Verdant.Profiler and Verdant.Profiler.report_lines then
     section("profiler",   Verdant.Profiler.report_lines())
@@ -296,8 +305,15 @@ function M.gc_probe_lines(n)
     TB.push(now, e, m, c, nc, gcprobe_eg, gcprobe_mg)
   end)
 
+  local tp = 0
+  if Verdant.Triage and not Verdant.Triage.is_active() then
+    tp = measure("triage.on_power (idle)", function()
+      Verdant.Triage.on_power("group2", 0, 0, 15000, 40000, 40000)
+    end)
+  end
+
   TB.clear()
-  emit(dp < 1 and "VERDICT: data path ~0 -> ZERO-ALLOC CONFIRMED"
+  emit((dp < 1 and tp < 1) and "VERDICT: data path ~0 -> ZERO-ALLOC CONFIRMED"
                or "VERDICT: data path NONZERO -> an alloc leaked, investigate")
   emit("(temporal buffer cleared)")
   return lines

@@ -167,13 +167,27 @@
           <OnClicked>Verdant.Graph.on_flush_click()</OnClicked>
         </Button>
 
-        <!-- StatusLabel spans the gap between Flush and the view nav so it
+        <Button name="$(parent)LibBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPLEFT" offsetX="200" offsetY="31"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_up.dds"
+                    pressed="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_down.dds"
+                    mouseOver="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_over.dds"/>
+          <OnClicked>Verdant.Library.toggle()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDANT_LIB_TITLE))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Button>
+
+        <!-- StatusLabel spans the gap between Lib and the view nav so it
              contracts gracefully at the minimum window width. -->
         <Label name="$(parent)StatusLabel"
                font="ZoFontGameSmall"
                horizontalAlignment="LEFT"
                verticalAlignment="CENTER">
-          <Anchor point="TOPLEFT"  offsetX="200"  offsetY="38"/>
+          <Anchor point="TOPLEFT"  offsetX="252"  offsetY="38"/>
           <Anchor point="TOPRIGHT" offsetX="-104" offsetY="38"/>
           <Dimensions y="14"/>
         </Label>

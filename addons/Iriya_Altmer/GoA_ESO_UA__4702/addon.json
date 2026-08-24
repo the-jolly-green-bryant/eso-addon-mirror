@@ -40,7 +40,7 @@
     "EsoUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4702/",
-  "fingerprint": "3aeba5464ba1b262ea5605c3582de031ee9e494de1a9b6e531c01b00e2e5da22",
+  "fingerprint": "d633986ede83b8057530abae9ac3481c044b1fb96dec552145d9716ec5152be8",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16677.png"
   ],
@@ -50,11 +50,11 @@
   "source_id": "4702",
   "source_url": "https://www.esoui.com/downloads/info4702-GoA_ESO_UA.html",
   "stats": {
-    "downloads": 415,
+    "downloads": 429,
     "favorites": 1,
-    "monthly_downloads": 345
+    "monthly_downloads": 354
   },
   "title": "GoA_ESO_UA",
-  "updated_at": 1787436554000,
-  "version": "45.38"
+  "updated_at": 1787514237000,
+  "version": "45.57"
 }

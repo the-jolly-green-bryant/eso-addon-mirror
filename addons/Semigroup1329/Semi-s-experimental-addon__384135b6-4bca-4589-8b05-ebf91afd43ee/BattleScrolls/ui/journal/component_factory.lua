@@ -727,6 +727,9 @@ function ColumnBuilder:DeathAttackRow(attack, isKillingBlow)
     local killingBlowIcon = row:GetNamedChild("KillingBlow")
     if killingBlowIcon then killingBlowIcon:SetHidden(not isKillingBlow) end
 
+    -- No attacker name here: group cards render sharedData, which always
+    -- goes through the shared-payload serialization (own entry included) -
+    -- attacker names never survive it, so the field is absent in practice
     row:GetNamedChild("Name"):SetText(journal.utils.getAbilityDisplayName(attack.abilityId))
     row:GetNamedChild("Value"):SetText(journal.utils.formatCompact(attack.damage))
 

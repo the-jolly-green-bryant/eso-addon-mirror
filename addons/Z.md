@@ -31,7 +31,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Zone Mount and Pet Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__03172246-c90c-4b8b-9821-06a74a01ce96) | MadeByQwerty | Console | — |
 | [Zone Mount and Pet Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__4216) | MadeByQwerty | PC / Mac | 1.2.1 |
 | [Zone Name Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dorrino/Zone-Name-Alert__1383) | dorrino | PC / Mac | 1.15 |
-| [ZoneAchievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/ZoneAchievements__4262) | Soul_Hagans | PC / Mac | 2.0.2 |
+| [ZoneAchievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/ZoneAchievements__4262) | Soul_Hagans | PC / Mac | 2.0.3 |
 | [ZoneNameLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/ZoneNameLogger__2194) | Coorbin | PC / Mac | 1.0 |
+| [ZoneSets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/ZoneSets__4788) | Soul_Hagans | PC / Mac | 1.0.1 |
 | [ZoomInFurther](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/ZoomInFurther__e748a1af-bca6-470d-be77-d5e7ab432006) | murphyx | Console | — |
 | [Zoruah's Gamepad Tuner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OfficialZoruah/Zoruah-s-Gamepad-Tuner__4606) | OfficialZoruah | PC / Mac | 2.0.0 |

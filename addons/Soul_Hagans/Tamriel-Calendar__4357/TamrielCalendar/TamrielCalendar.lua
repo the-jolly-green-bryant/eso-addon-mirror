@@ -191,10 +191,10 @@ function TC.Initialize(eventCode, addOnName)
     TC.savedVars = ZO_SavedVars:NewAccountWide("TamrielCalendarVars", 2, nil, {stripHidden = false, positions = {}}, GetWorldName())
     
     -- Наследование недостающих строк
-    for langKey, table in pairs(LStrings) do
+    for langKey, tbl in pairs(LStrings) do
         if langKey ~= "en" then
-            for k,v in pairs(LStrings.en) do if not table[k] then table[k] = v end end
-            for k,v in pairs(LStrings.en.hNames) do if not table.hNames[k] then table.hNames[k] = v end end
+            for k,v in pairs(LStrings.en) do if not tbl[k] then tbl[k] = v end end
+            for k,v in pairs(LStrings.en.hNames) do if not tbl.hNames[k] then tbl.hNames[k] = v end end
         end
     end
 

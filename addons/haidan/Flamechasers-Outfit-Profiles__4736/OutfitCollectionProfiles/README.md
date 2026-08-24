@@ -27,19 +27,23 @@ Polymorphs are intentionally excluded for the first release.
 2. Log in or run `/reloadui`.
 3. Enter `/fop`, `/ocp`, or `/outfitprofiles`, or assign **Open Flamechasers Outfit Profiles** in Controls > Keybindings. Each method toggles the window open/closed.
 4. Select an outfit slot and configure every category.
-5. Choose **Keep Current**, **Remove / None**, or a specific unlocked collectible.
+5. Choose **Not Tracked**, **Unequip / None**, or a specific unlocked collectible.
 
-**Capture Current Appearance** copies all currently active supported collectibles into the window as an unsaved draft. **Save Profile** commits that draft. **Apply Draft** previews the displayed choices without saving them.
+**Capture Current** copies all currently active supported collectibles into the window as an unsaved draft. **Save Profile** commits that draft. **Preview Draft** applies the displayed choices once without saving them.
+
+**Not Tracked** means the addon leaves that category exactly as it is when the outfit activates. Use it for cosmetics you want to change freely without the profile managing them.
 
 Assign **Save Collections for Current Outfit** under Controls > Keybindings to capture everything currently active without opening the window. If that outfit already has a saved setup, the addon asks for confirmation before overwriting it.
 
 ## Armory support
 
-The addon monitors the outfit slot actually equipped on the character. If an Armory build restores another outfit, its profile is applied after the restoration settles. A periodic state check and delayed Armory passes are both used so this does not depend on the Collections window remaining open.
+The addon monitors the outfit slot actually equipped on the character. If an Armory build restores a different outfit slot, that outfit's profile starts after the restoration settles. Restoring an Armory build that keeps the same outfit slot does not reapply cosmetics.
 
 ## Notes
 
-- ESO can temporarily block collectible use during combat, movement, transformations, or other animations. The addon retries and applies the profile again after combat and player activation.
+- Profiles start only when the equipped outfit slot changes, whether changed directly or by an Armory build.
+- Once every tracked category is confirmed, the addon stops checking cosmetics until the outfit slot changes again. This lets you temporarily wear something different without it being reverted after an ordinary loading screen.
+- ESO can temporarily block collectible use during combat, movement, transformations, or other animations. An unfinished profile keeps its current task, retries safely, and resumes after a loading screen instead of restarting the full profile.
 - Collectible changes are queued 2.5 seconds apart to respect ESO's shared appearance cooldown.
 - The **Delay** field changes that pause per character. It defaults to 2.5 seconds and accepts values from 0.5 to 10.0 seconds.
 - Mount selection changes, but the addon does not mount the character.

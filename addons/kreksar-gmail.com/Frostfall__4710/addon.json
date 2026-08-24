@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/kreksar-gmail.com/Frostfall__4710",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "kreksar@gmail.com",
   "canonical_id": "esoui:4710",
   "category_id": "114",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -17,7 +22,7 @@
     "Frostfall"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4710/",
-  "fingerprint": "55f34a793f85299bf57c774a405251c8c9013d8a99ab94de9e39752a8a16fcc7",
+  "fingerprint": "9edc97a62802db2e853bab0f32988836f2b32d6957cc2dbb0fa2ee679709af65",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16736.png",
     "https://cdn-eso.mmoui.com/preview/pvw16737.png",
@@ -30,11 +35,11 @@
   "source_id": "4710",
   "source_url": "https://www.esoui.com/downloads/info4710-Frostfall.html",
   "stats": {
-    "downloads": 69,
+    "downloads": 103,
     "favorites": 1,
-    "monthly_downloads": 52
+    "monthly_downloads": 63
   },
   "title": "Frostfall",
-  "updated_at": 1785194638000,
-  "version": "3.4.18"
+  "updated_at": 1787476420000,
+  "version": "3.4.20"
 }

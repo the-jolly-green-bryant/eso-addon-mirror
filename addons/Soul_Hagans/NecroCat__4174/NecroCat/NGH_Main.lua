@@ -144,8 +144,8 @@ local function UI_Init()
     end
 end
 
--- Глобальная функция обновления видимости кнопок (улучшенная версия)
-function ZO_GuildHome_NecroCat_UpdateVisibility()
+-- Функция обновления видимости кнопок (привязана к NecroCat)
+function NecroCat.UpdateGuildHomeVisibility()
     if not ZO_GuildHome_NecroCat then return end
 
     -- Получаем текущий режим из настроек
@@ -196,12 +196,12 @@ local function OnAddOnLoaded(_,addonName)
 
     -- При показе экрана гильдии вызываем обновление видимости
     ZO_PreHookHandler(ZO_GuildHome, "OnEffectivelyShown", function()
-        ZO_GuildHome_NecroCat_UpdateVisibility()
+        NecroCat.UpdateGuildHomeVisibility()
     end)
 
     -- При переключении гильдий в списке вызываем обновление видимости
     CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function()
-        ZO_GuildHome_NecroCat_UpdateVisibility()
+        NecroCat.UpdateGuildHomeVisibility()
     end)
 
     UI_Init()

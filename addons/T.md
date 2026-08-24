@@ -15,7 +15,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Take One](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mightyjo/Take-One__3076) | mightyjo | PC / Mac | 1.2.0 |
 | [Talk Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/Talk-Toggle__cda29292-5e10-4045-9219-10ff1a9444fe) | dicen9 | Console | — |
 | [Tamriel Ambulance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheInfiniti352/Tamriel-Ambulance__3124) | TheInfiniti352 | PC / Mac | 1.2.11 |
-| [Tamriel Calendar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/Tamriel-Calendar__4357) | Soul_Hagans | PC / Mac | 2.3.1 |
+| [Tamriel Calendar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/Tamriel-Calendar__4357) | Soul_Hagans | PC / Mac | 2.3.2 |
 | [Tamriel Chronos - Clock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gandalf/Tamriel-Chronos---Clock__3348) | Gandalf | PC / Mac | 20101 |
 | [Tamriel Master Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger__1e746db5-8418-4a6f-9f17-4449e0d7e3f0) | xPricee | Console | — |
 | [Tamriel Master Ledger - DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger---DEV__89ecfc27-e76b-48ae-8d40-e76bbf0c5c13) | xPricee | Console | — |
@@ -68,6 +68,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Test suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite__dc420d92-00cf-428d-8c89-a7cb5ceecd44) | Tekatsu | Console | — |
 | [Test suite 2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite-2__e1fa49c2-830c-41dc-9927-0d013ba1f21d) | Tekatsu | Console | — |
 | [Testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiNk3F13/Testing__8cd10e06-846e-4b81-9858-f1a6943f0b32) | FiNk3F13 | Console | — |
+| [TestMapAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/TestMapAddon__cee315a7-bef0-44c7-9a12-dbc6bdb6674d) | PinkBanther | Console | — |
 | [TESTUPDATE2112](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rob82668/TESTUPDATE2112__4435) | rob82668 | PC / Mac | 1.0.0 |
 | [Tetris for Fishing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sem/Tetris-for-Fishing__3314) | Sem | PC / Mac | 1.7 |
 | [Text Trials Guide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Text-Trials-Guide__2461) | Splat | PC / Mac | 1.2.8 |

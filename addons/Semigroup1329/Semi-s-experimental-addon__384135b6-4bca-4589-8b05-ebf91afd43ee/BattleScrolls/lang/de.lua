@@ -334,6 +334,7 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_AVG_TICK] = "Durchschnittlicher Tick",
     [BATTLESCROLLS_TOOLTIP_MIN_TICK] = "Min. Tick",
     [BATTLESCROLLS_TOOLTIP_MAX_TICK] = "Max. Tick",
+    [BATTLESCROLLS_TOOLTIP_TICKS] = "Ticks",
 
     [BATTLESCROLLS_TOOLTIP_BY_TARGET] = "Nach Ziel",
     [BATTLESCROLLS_TOOLTIP_MEAN_INTERVAL] = "Durchschnittl. Intervall",
@@ -964,6 +965,8 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_VALUE_MB] = "<<1>> MB",
     [BATTLESCROLLS_MEMDIAG_VALUE_MB_PAIR] = "<<1>> / <<2>> MB",
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "Add-On-Speicher (Konsolenanzeige)",
+    [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "Zeichenketten-Größenklassen messen",
+    [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "Länge: Anzeige / Heap / Modell (Bytes pro Zeichenkette)",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "Was senden?",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "Alle Kämpfe (<<1>>)",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "Nur Bosse (<<1>>)",
@@ -981,5 +984,76 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_FINISH] = "Freigabe abschließen",
 }
 for id, str in pairs(shareStrings) do
+    SafeAddString(id, str, 1)
+end
+
+-- Neue Funktionen: Umbenennen, Schlachtzugsschaden, Wiederbelebungen, Balkenfarbe, Ultimative, Krux, Z'en
+local featureStrings = {
+    [BATTLESCROLLS_RENAME] = "Umbenennen",
+    [BATTLESCROLLS_RENAME_TEXT] = "Gebt einen neuen Namen ein. Zum Zurücksetzen den ursprünglichen Namen (<<1>>) eingeben.",
+
+    [BATTLESCROLLS_TAB_RAID_DAMAGE] = "Gruppenschaden",
+    [BATTLESCROLLS_STAT_RAID_DAMAGE] = "Gesamter Gruppenschaden",
+    [BATTLESCROLLS_STAT_RAID_DPS] = "Gruppen-DPS",
+
+    [BATTLESCROLLS_GROUP_COL_RES] = "Wdb",
+
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR] = "Eure Balkenfarbe",
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT] = "Die Farbe Eures eigenen Balkens im Gruppenmesser „Bunte Balken“. Wird an Gruppenmitglieder mit Battle Scrolls übertragen, sodass sie Euren Balken ebenfalls in dieser Farbe sehen.",
+    [BATTLESCROLLS_COLOR_DEFAULT] = "Standard",
+    [BATTLESCROLLS_COLOR_RED] = "Rot",
+    [BATTLESCROLLS_COLOR_ORANGE] = "Orange",
+    [BATTLESCROLLS_COLOR_GOLD] = "Gold",
+    [BATTLESCROLLS_COLOR_GREEN] = "Grün",
+    [BATTLESCROLLS_COLOR_TEAL] = "Türkis",
+    [BATTLESCROLLS_COLOR_CYAN] = "Cyan",
+    [BATTLESCROLLS_COLOR_BLUE] = "Blau",
+    [BATTLESCROLLS_COLOR_PURPLE] = "Violett",
+    [BATTLESCROLLS_COLOR_PINK] = "Rosa",
+    [BATTLESCROLLS_COLOR_WHITE] = "Weiß",
+    [BATTLESCROLLS_COLOR_GREY] = "Grau",
+
+    [BATTLESCROLLS_HEADER_ULTIMATE] = "Ultimative Fähigkeit",
+    [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Ultimative zu Kampfbeginn",
+    [BATTLESCROLLS_STAT_ULT_GENERATED] = "Ultimative erzeugt",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Ultimative verbraucht & entzogen",
+    [BATTLESCROLLS_HEADER_ULT_SOURCES] = "Ultimative-Erzeugung nach Quelle",
+    [BATTLESCROLLS_ULT_BASE_GENERATION] = "Basiserzeugung",
+    [BATTLESCROLLS_ULT_HEROISM_LINE] = "Enthält <<C:1>>: <<2>>% Aktivzeit, ca. <<3>>",
+    [BATTLESCROLLS_HEADER_ULT_CASTS] = "Eingesetzte Ultimative",
+
+    [BATTLESCROLLS_HEADER_CRUX] = "Crux",
+    [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Erzeuger-Einsätze",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Erzeugt bei vollem Crux",
+    [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Verbraucher-Einsätze",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Verbraucht unter 3 Crux",
+    [BATTLESCROLLS_CRUX_AT_N] = "Bei <<1>> Crux: <<2>>",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Crux-Disziplin nach Fähigkeit",
+
+    [BATTLESCROLLS_HEADER_ZEN] = "DoT-Stapel (Z'en)",
+    [BATTLESCROLLS_ZEN_AVG_DOTS] = "Durchschnittliche DoTs",
+    [BATTLESCROLLS_ZEN_UPTIME] = "Z'en-Debuff-Aktivzeit",
+    [BATTLESCROLLS_ZEN_POTENTIAL] = "Zeit mit 1+ DoTs",
+    [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>> DoTs",
+    [BATTLESCROLLS_ZEN_SHARE_LINE] = "Ø <<1>> — <<2>> mit 5 DoTs",
+    [BATTLESCROLLS_ZEN_SHORT] = "Z'en",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "Ø <<1>> DoTs — Z'en <<2>>% — 1+ DoTs <<3>>%",
+
+    [BATTLESCROLLS_HEADER_SUPPORT] = "Unterstützung",
+    [BATTLESCROLLS_STAT_RESURRECTIONS] = "Wiederbelebungen",
+}
+for id, str in pairs(featureStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local cruxPassiveStrings = {
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Außerhalb von Einsätzen verbraucht",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Crux, der ohne nahen Verbraucher-Einsatz verloren ging: natürliches Auslaufen (30 Sekunden) oder Tod.",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Durch Auslösungen dieser Quelle erzeugter Crux (zeitlich den Stapelzuwächsen zugeordnet).",
+    [BATTLESCROLLS_STAT_CRUX_OTHER] = "Sonstige Crux-Zuwächse",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Crux-Zuwächse ohne erfassbare Quelle in der Nähe — etwa periodische Auslösungen von „<<1>>“.",
+    [BATTLESCROLLS_HEADER_CRUX_GAINED] = "Erhaltener Crux nach Fähigkeit",
+}
+for id, str in pairs(cruxPassiveStrings) do
     SafeAddString(id, str, 1)
 end

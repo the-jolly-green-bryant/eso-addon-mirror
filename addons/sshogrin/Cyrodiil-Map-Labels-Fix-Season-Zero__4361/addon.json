@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "sshogrin",
   "canonical_id": "esoui:4361",
   "category_id": "33",
   "compatibility": [
     {
-      "name": "Season Zero",
-      "version": "11.3.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4361",
@@ -17,9 +18,13 @@
     "CyrodiilMapLabels"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4361/",
-  "fingerprint": "13aad9533b83632f27fcd5b412f69925f48a65ebbda4ba46a9fe319b65ceb5f6",
+  "fingerprint": "4c580ff17419ef577d5852ab8cff7fe59904f6fdda70b103abb6566479b6a75f",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw15119.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17081.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17082.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17083.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17060.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17061.png"
   ],
   "platform": "pc",
   "published": true,
@@ -27,11 +32,11 @@
   "source_id": "4361",
   "source_url": "https://www.esoui.com/downloads/info4361-CyrodiilMapLabelsFixSeasonZero.html",
   "stats": {
-    "downloads": 655,
+    "downloads": 802,
     "favorites": 2,
-    "monthly_downloads": 42
+    "monthly_downloads": 144
   },
   "title": "Cyrodiil Map Labels (Fix: Season Zero)",
-  "updated_at": 1769034889000,
-  "version": "1.1"
+  "updated_at": 1787455078000,
+  "version": "1.7"
 }

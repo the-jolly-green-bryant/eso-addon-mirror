@@ -49,6 +49,7 @@ journal.StatsTab = {
     GROUP = 11,
     SETUP = 12,
     ACTIVITY = 13,
+    RAID_DAMAGE = 14,
 }
 
 -------------------------
@@ -57,7 +58,7 @@ journal.StatsTab = {
 ---@alias TabGroupKey "DAMAGE"|"HEALING"|"EFFECTS"
 
 journal.TabGroups = {
-    DAMAGE  = { journal.StatsTab.BOSS_DAMAGE_DONE, journal.StatsTab.DAMAGE_DONE },
+    DAMAGE  = { journal.StatsTab.BOSS_DAMAGE_DONE, journal.StatsTab.DAMAGE_DONE, journal.StatsTab.RAID_DAMAGE },
     HEALING = { journal.StatsTab.HEALING_OUT, journal.StatsTab.SELF_HEALING, journal.StatsTab.HEALING_IN },
     EFFECTS = { journal.StatsTab.EFFECTS_PLAYER, journal.StatsTab.EFFECTS_BOSS, journal.StatsTab.EFFECTS_GROUP },
 }
@@ -75,6 +76,7 @@ end
 journal.SubViewLabels = {
     [journal.StatsTab.BOSS_DAMAGE_DONE] = "BATTLESCROLLS_TAB_BOSS_DAMAGE_DONE",
     [journal.StatsTab.DAMAGE_DONE] = "BATTLESCROLLS_TAB_DAMAGE_DONE",
+    [journal.StatsTab.RAID_DAMAGE] = "BATTLESCROLLS_TAB_RAID_DAMAGE",
     [journal.StatsTab.HEALING_OUT] = "BATTLESCROLLS_TAB_HEALING_OUT",
     [journal.StatsTab.SELF_HEALING] = "BATTLESCROLLS_TAB_SELF_HEALING",
     [journal.StatsTab.HEALING_IN] = "BATTLESCROLLS_TAB_HEALING_IN",
@@ -275,6 +277,7 @@ journal.AbilityIconStyle = {
 ---| 11 # GROUP
 ---| 12 # SETUP
 ---| 13 # ACTIVITY
+---| 14 # RAID_DAMAGE
 
 ---@alias InstanceTab
 ---| 1 # ALL
@@ -320,6 +323,7 @@ journal.AbilityIconStyle = {
 ---@class SharedDeathRecapAttack
 ---@field abilityId number
 ---@field damage number
+---@field attackerName string|nil Enemy name (local-only; never sent to group members)
 
 ---@class SharedDeathRecap
 ---@field timeOffsetMs number Ms from fight start when death occurred
@@ -342,6 +346,12 @@ journal.AbilityIconStyle = {
 ---@field abilityId number
 ---@field damagePercent number 0-1 fraction of known incoming damage, excluding unknown shielded damage
 
+---@class SharedZenBoss
+---@field bossTag string Boss unit tag ("boss1")
+---@field tagSeq number Sequence number within the tag (different bosses can reuse a tag)
+---@field avgStacksTenths number Average DoT stacks x10 while the Z'en debuff was up on this boss
+---@field timeAt5Ms number Time at 5 DoT stacks with Z'en up, in ms
+
 ---@class SharedEncounterData
 ---@field timestampS number Sender's fight start (Unix epoch)
 ---@field durationMs number Sender's fight duration in ms
@@ -359,6 +369,8 @@ journal.AbilityIconStyle = {
 ---@field topDamageTakenAbilities SharedDamageTakenAbility[] Top 5 damage-taken abilities
 ---@field deaths SharedDeaths|nil Death recap data (nil if player never died)
 ---@field setupHash number|nil 16-bit setup hash; nil only for historical shared data
+---@field resurrections number|nil Successful resurrection casts (v19+/protocol 439; nil from older senders)
+---@field zenByBoss SharedZenBoss[]|nil Per-boss Z'en delivery metrics, only bosses the debuff touched (v19+/protocol 439; nil from older senders or when Z'en never landed)
 
 ---@class SharedDataEntry
 ---@field displayName string Sender's display name (undecorated)

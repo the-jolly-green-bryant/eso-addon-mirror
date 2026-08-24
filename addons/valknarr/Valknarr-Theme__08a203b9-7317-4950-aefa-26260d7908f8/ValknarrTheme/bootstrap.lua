@@ -3,6 +3,7 @@ ValknarrTheme = ValknarrTheme or {}
 local Theme = ValknarrTheme
 local Log = ValknarrThemeLog
 local Store = ValknarrThemeStore
+local Format = ValknarrThemeFormat
 local Resources = ValknarrThemeResources
 local Werewolf = ValknarrThemeWerewolf
 local Settings = ValknarrThemeSettings
@@ -39,6 +40,10 @@ function Theme:DescribeEnv()
         LibChatMessage = self:LibPresent("LibChatMessage"),
         LibGamepad = self:LibPresent("LibGamepad") or self:LibPresent("LibGamepadLAM"),
         LibRadialMenu = self:LibPresent("LibRadialMenu"),
+        hudScene = Format and Format.CurrentSceneName and Format.CurrentSceneName() or nil,
+        hudVisible = Format and Format.HudSceneVisible and Format.HudSceneVisible() or nil,
+        barText = Store:GetSetting("showBarText"),
+        preview = Store:GetSetting("previewInSettings"),
     }
 end
 
@@ -59,9 +64,40 @@ function Theme:Diagnose()
     Log:Always("Paste every [Theme] line from chat. After /reloadui they are also in SavedVariables/ValknarrTheme_SavedVariables.lua debugLog (not the engine Logs folder).")
 end
 
+function Theme:SyncHudVisibility()
+    local hud = Format and Format.HudSceneVisible and Format.HudSceneVisible()
+    if hud == nil then
+        hud = true
+    end
+    if Resources and Resources.SyncHudVisibility then
+        Resources:SyncHudVisibility()
+    end
+    if Werewolf and Werewolf.SyncHudVisibility then
+        Werewolf:SyncHudVisibility(hud)
+    end
+end
+
+local function HookHudState(target)
+    if not target or type(target.RegisterCallback) ~= "function" or target.ValknarrThemeHudHook then
+        return
+    end
+    target.ValknarrThemeHudHook = true
+    pcall(target.RegisterCallback, target, "StateChange", function()
+        Theme:SyncHudVisibility()
+    end)
+end
+
+function Theme:RegisterHudScene()
+    HookHudState(_G.PLAYER_ATTRIBUTE_BARS_FRAGMENT)
+    HookHudState(_G.HUD_FRAGMENT)
+    HookHudState(_G.HUD_UI_FRAGMENT)
+    HookHudState(_G.HUD_SCENE)
+    HookHudState(_G.HUD_UI_SCENE)
+end
+
 function Theme:Apply()
     if Log then
-        Log:Always("apply hud=" .. tostring(Store:ThemeId()) .. " wolf=" .. tostring(Store:WolfId()))
+        Log:Debug("apply hud=" .. tostring(Store:ThemeId()) .. " wolf=" .. tostring(Store:WolfId()))
     end
     if Resources and Resources.Apply then
         Resources:Apply()
@@ -99,6 +135,7 @@ function Theme:Initialize()
     if Werewolf and Werewolf.RegisterEvents then
         Werewolf:RegisterEvents()
     end
+    self:RegisterHudScene()
     if EVENT_MANAGER and EVENT_PLAYER_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Activated", EVENT_PLAYER_ACTIVATED, function()
             Theme:Apply()
@@ -115,8 +152,8 @@ function Theme:Initialize()
     self.initialized = true
     self:Apply()
     if Log then
-        Log:Always("Valknarr Theme v" .. tostring(ValknarrThemeVersion or "?") .. " loaded hud=" .. Store:ThemeId() .. " wolf=" .. Store:WolfId())
-        Log:Always("/vtheme help")
+        Log:Always("Valknarr Theme v" .. tostring(ValknarrThemeVersion or "?") .. " loaded")
+        Log:Debug("hud=" .. Store:ThemeId() .. " wolf=" .. Store:WolfId())
     end
 end
 

@@ -8,6 +8,8 @@ local log = Verdant.Log.for_module("visibility")
 local in_hud = true
 local user_visible = { bar = false, graph = false }
 local bar_enabled = true
+local restore = {}
+local AUX_WINDOWS = { "VerdantSettingsPanel", "VerdantLibrary", "VerdantAssignPanel" }
 
 
 local function apply()
@@ -20,8 +22,19 @@ local function apply()
   if VerdantGraphWindowBarBtn then
     VerdantGraphWindowBarBtn:SetHidden(not bar_enabled)
   end
-  if VerdantSettingsPanel and not in_hud then
-    VerdantSettingsPanel:SetHidden(true)
+  for _, name in ipairs(AUX_WINDOWS) do
+    local win = _G[name]
+    if win then
+      if in_hud then
+        if restore[name] then
+          win:SetHidden(false)
+          restore[name] = nil
+        end
+      elseif not win:IsHidden() then
+        restore[name] = true
+        win:SetHidden(true)
+      end
+    end
   end
   if Verdant.Logo then
     Verdant.Logo.sync(in_hud and not user_visible.graph)

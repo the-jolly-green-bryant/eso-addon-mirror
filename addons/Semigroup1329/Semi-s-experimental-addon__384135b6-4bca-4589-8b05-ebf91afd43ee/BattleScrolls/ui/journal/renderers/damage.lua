@@ -694,19 +694,22 @@ local function displayAoeVsSingleTargetBreakdown(list, aoeVsSingleTarget, durati
 end
 
 ---Displays target breakdown (async)
-local function displayTargetBreakdownAsync(list, damageTable, totalDamage, durationSec, unitNames, targetFilter, sourceFilter, encounter, arithmancerInst)
+---@param damageTables table[] Array of nested damage tables (sourceUnitId -> targetUnitId -> DamageDone)
+local function displayTargetBreakdownAsync(list, damageTables, totalDamage, durationSec, unitNames, targetFilter, sourceFilter, encounter, arithmancerInst)
     return LibEffect.Async(function()
         local computeTotal = Arithmancer.ComputeDamageTotal
         local byTarget = {}
         local count = 0
-        for sourceUnitId, targetTable in pairs(damageTable) do
-            if not sourceFilter or sourceFilter[sourceUnitId] then
-                for targetUnitId, damageData in pairs(targetTable) do
-                    if not targetFilter or targetFilter[targetUnitId] then
-                        byTarget[targetUnitId] = (byTarget[targetUnitId] or 0) + computeTotal(damageData)
-                        count = count + 1
-                        if count % YIELD_INTERVAL == 0 then
-                            LibEffect.Yield():Await()
+        for _, damageTable in ipairs(damageTables) do
+            for sourceUnitId, targetTable in pairs(damageTable) do
+                if not sourceFilter or sourceFilter[sourceUnitId] then
+                    for targetUnitId, damageData in pairs(targetTable) do
+                        if not targetFilter or targetFilter[targetUnitId] then
+                            byTarget[targetUnitId] = (byTarget[targetUnitId] or 0) + computeTotal(damageData)
+                            count = count + 1
+                            if count % YIELD_INTERVAL == 0 then
+                                LibEffect.Yield():Await()
+                            end
                         end
                     end
                 end
@@ -827,7 +830,7 @@ function DamageRenderer.renderBossDamageDone(ctx)
         LibEffect.Yield():Await()
 
         -- By Target
-        displayTargetBreakdownAsync(list, filteredDamageTable, totalBossDamage, durationSec, unitNames, nil, nil, encounter, ctx.arithmancer):Await()
+        displayTargetBreakdownAsync(list, { filteredDamageTable }, totalBossDamage, durationSec, unitNames, nil, nil, encounter, ctx.arithmancer):Await()
     end)
 end
 
@@ -905,7 +908,113 @@ function DamageRenderer.renderDamageDone(ctx)
         LibEffect.Yield():Await()
 
         -- By Target
-        displayTargetBreakdownAsync(list, filteredDamageTable, totalDamage, durationSec, unitNames, nil, nil, encounter, ctx.arithmancer):Await()
+        displayTargetBreakdownAsync(list, { filteredDamageTable }, totalDamage, durationSec, unitNames, nil, nil, encounter, ctx.arithmancer):Await()
+    end)
+end
+
+---Renders raid damage tab: damage from every observed source (self, group
+---members, their pets) to all targets. Only target id, ability id and amount
+---are reliable for non-personal sources — no crit/DoT/AoE composition here
+---beyond what the per-ability tick stats carry.
+---@param ctx JournalRenderContext
+---@return Effect
+function DamageRenderer.renderRaidDamage(ctx)
+    return LibEffect.Async(function()
+        local encounter = ctx.encounter
+        local list = ctx.list
+        local abilityInfo = ctx.abilityInfo
+        local unitNames = ctx.unitNames or {}
+        local durationSec = ctx.durationSec
+        local targetFilter = ctx.filters.targetFilter
+
+        if durationSec <= 0 then durationSec = 1 end
+
+        local damageTables = { encounter.damageByUnitId or {}, encounter.damageByUnitIdGroup or {} }
+        local computeTotal = Arithmancer.ComputeDamageTotal
+
+        -- Totals + per-source aggregation in one pass
+        local raidTotal = 0
+        local bySourceName = {}
+        local sourceOrder = {}
+        local playerNames = {
+            [GetRawUnitName("player")] = true,
+            [coreUtils.GetUndecoratedDisplayName()] = true,
+        }
+        local selfName = coreUtils.GetUndecoratedDisplayName()
+        local count = 0
+        for _, damageTable in ipairs(damageTables) do
+            for sourceUnitId, byTarget in pairs(damageTable) do
+                for targetUnitId, damageData in pairs(byTarget) do
+                    if not targetFilter or targetFilter[targetUnitId] then
+                        local total = computeTotal(damageData)
+                        raidTotal = raidTotal + total
+
+                        local rawName = unitNames[sourceUnitId]
+                        local sourceName
+                        if rawName and playerNames[rawName] then
+                            sourceName = selfName
+                        elseif rawName then
+                            sourceName = zo_strformat(SI_UNIT_NAME, rawName)
+                        else
+                            sourceName = GetString(BATTLESCROLLS_UNKNOWN)
+                        end
+                        if not bySourceName[sourceName] then
+                            bySourceName[sourceName] = 0
+                            table.insert(sourceOrder, sourceName)
+                        end
+                        bySourceName[sourceName] = bySourceName[sourceName] + total
+                    end
+                    count = count + 1
+                    if count % YIELD_INTERVAL == 0 then
+                        LibEffect.Yield():Await()
+                    end
+                end
+            end
+        end
+
+        -- Summary
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_RAID_DAMAGE),
+            sublabel = ZO_CommaDelimitNumber(raidTotal),
+            icon = STAT_ICONS.GROUP_DAMAGE,
+            header = GetString(BATTLESCROLLS_STAT_SUMMARY),
+        })
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_RAID_DPS),
+            sublabel = ZO_CommaDelimitNumber(math.floor(raidTotal / durationSec)),
+            icon = STAT_ICONS.GROUP_DPS,
+        })
+        LibEffect.Yield():Await()
+
+        -- By Source (the raid-wide damage meter)
+        table.sort(sourceOrder, function(a, b)
+            return bySourceName[a] > bySourceName[b]
+        end)
+        local isFirst = true
+        for i, sourceName in ipairs(sourceOrder) do
+            if i > DETAILED_UNIT_LIMIT then break end
+            EntryBuilder.addEntry(list, {
+                label = sourceName,
+                sublabel = utils.formatDamageWithPercent(bySourceName[sourceName], raidTotal, durationSec),
+                header = isFirst and GetString(BATTLESCROLLS_HEADER_BY_SOURCE) or nil,
+            })
+            isFirst = false
+            if i % YIELD_INTERVAL == 0 then
+                LibEffect.Yield():Await()
+            end
+        end
+        LibEffect.Yield():Await()
+
+        -- By Ability (across all sources; non-player sources labeled by name)
+        local abilityEntries = buildAbilityEntriesAsync(damageTables[1], targetFilter, nil):Await()
+        local groupEntries = buildAbilityEntriesAsync(damageTables[2], targetFilter, nil):Await()
+        for _, entry in ipairs(groupEntries) do
+            table.insert(abilityEntries, entry)
+        end
+        displayAbilityBreakdownAsync(list, abilityEntries, durationSec, abilityInfo, unitNames, GetString(BATTLESCROLLS_HEADER_BY_ABILITY)):Await()
+
+        -- By Target
+        displayTargetBreakdownAsync(list, damageTables, raidTotal, durationSec, unitNames, targetFilter, nil, encounter, ctx.arithmancer):Await()
     end)
 end
 
@@ -973,6 +1082,10 @@ function DamageRenderer.renderDamageTaken(ctx)
                     resolvedRows[#resolvedRows + 1] = {
                         icon = utils.getAbilityIcon(attack.abilityId),
                         label = utils.getAbilityDisplayName(attack.abilityId),
+                        -- Attacker on its own line under the attack, like the
+                        -- base game's recap screen (name pre-formatted with
+                        -- SI_DEATH_RECAP_ATTACKER_NAME* at capture time)
+                        sublabel = attack.attackerName,
                         value = utils.formatCompact(attack.damage),
                         isHighlighted = (j == #recap.attacks),
                     }
@@ -1053,17 +1166,15 @@ end
 -- These are used by both damage panel and overview panel
 -------------------------
 
----Extracts top abilities sorted by damage from a damage table with detailed stats (async)
+---Extracts top abilities sorted by damage from damage tables with detailed stats (async)
 ---Merges abilities by display name
----@param damageTable table<number, table<number, DamageDoneStorage>>
+---@param damageTables table<number, table<number, DamageDoneStorage>>[] Array of nested damage tables
 ---@param targetFilter table<number, boolean>|nil Optional target filter
 ---@param sourceFilter table<number, boolean>|nil Optional source filter
 ---@param maxCount number Maximum number of abilities to return
 ---@return Effect<{ abilityId: number, name: string, total: number, ticks: number, critTicks: number, maxHit: number }[]>
-function DamageRenderer.extractTopAbilitiesAsync(damageTable, targetFilter, sourceFilter, maxCount)
+function DamageRenderer.extractTopAbilitiesAsync(damageTables, targetFilter, sourceFilter, maxCount)
     return LibEffect.Async(function()
-        if not damageTable then return {} end
-
         local getAbilities = Arithmancer.GetAbilities
         local computeTotal = Arithmancer.ComputeDamageTotal
 
@@ -1072,35 +1183,37 @@ function DamageRenderer.extractTopAbilitiesAsync(damageTable, targetFilter, sour
         local eligibleTotal = 0
         local iterations = 0
 
-        for sourceUnitId, byTarget in pairs(damageTable) do
-            if not sourceFilter or sourceFilter[sourceUnitId] then
-                for targetUnitId, damageData in pairs(byTarget) do
-                    if not targetFilter or targetFilter[targetUnitId] then
-                        for abilityId, breakdown in pairs(getAbilities(damageData)) do
-                            local damage = computeTotal(breakdown)
-                            if not abilityStats[abilityId] then
-                                abilityStats[abilityId] = {
-                                    total = 0,
-                                    ticks = 0,
-                                    critTicks = 0,
-                                    maxHit = 0,
-                                }
-                            end
-                            local stats = abilityStats[abilityId]
-                            stats.total = stats.total + damage
-                            stats.ticks = stats.ticks + (breakdown.ticks or 0)
-                            stats.critTicks = stats.critTicks + (breakdown.critTicks or 0)
-                            if breakdown.maxTick and breakdown.maxTick > stats.maxHit then
-                                stats.maxHit = breakdown.maxTick
-                            end
-                            if not isDamagePercentExcludedAbility(abilityId) then
-                                eligibleTotal = eligibleTotal + damage
+        for _, damageTable in ipairs(damageTables) do
+            for sourceUnitId, byTarget in pairs(damageTable) do
+                if not sourceFilter or sourceFilter[sourceUnitId] then
+                    for targetUnitId, damageData in pairs(byTarget) do
+                        if not targetFilter or targetFilter[targetUnitId] then
+                            for abilityId, breakdown in pairs(getAbilities(damageData)) do
+                                local damage = computeTotal(breakdown)
+                                if not abilityStats[abilityId] then
+                                    abilityStats[abilityId] = {
+                                        total = 0,
+                                        ticks = 0,
+                                        critTicks = 0,
+                                        maxHit = 0,
+                                    }
+                                end
+                                local stats = abilityStats[abilityId]
+                                stats.total = stats.total + damage
+                                stats.ticks = stats.ticks + (breakdown.ticks or 0)
+                                stats.critTicks = stats.critTicks + (breakdown.critTicks or 0)
+                                if breakdown.maxTick and breakdown.maxTick > stats.maxHit then
+                                    stats.maxHit = breakdown.maxTick
+                                end
+                                if not isDamagePercentExcludedAbility(abilityId) then
+                                    eligibleTotal = eligibleTotal + damage
+                                end
                             end
                         end
-                    end
-                    iterations = iterations + 1
-                    if iterations % YIELD_INTERVAL == 0 then
-                        LibEffect.YieldWithGC():Await()
+                        iterations = iterations + 1
+                        if iterations % YIELD_INTERVAL == 0 then
+                            LibEffect.YieldWithGC():Await()
+                        end
                     end
                 end
             end
@@ -1117,30 +1230,30 @@ function DamageRenderer.extractTopAbilitiesAsync(damageTable, targetFilter, sour
     end)
 end
 
----Extracts target damage breakdown from a damage table (async)
----@param damageTable table<number, table<number, DamageDoneStorage>>
+---Extracts target damage breakdown from damage tables (async)
+---@param damageTables table<number, table<number, DamageDoneStorage>>[] Array of nested damage tables
 ---@param unitNames table<number, string>
 ---@param targetFilter table<number, boolean>|nil Optional target filter
 ---@param sourceFilter table<number, boolean>|nil Optional source filter
 ---@param maxCount number Maximum number of targets to return
 ---@return Effect<{ unitId: number, name: string, total: number }[]>
-function DamageRenderer.extractTargetBreakdownAsync(damageTable, unitNames, targetFilter, sourceFilter, maxCount)
+function DamageRenderer.extractTargetBreakdownAsync(damageTables, unitNames, targetFilter, sourceFilter, maxCount)
     return LibEffect.Async(function()
-        if not damageTable then return {} end
-
         local computeTotal = Arithmancer.ComputeDamageTotal
         local targetTotals = {}
         local iterations = 0
 
-        for sourceUnitId, byTarget in pairs(damageTable) do
-            if not sourceFilter or sourceFilter[sourceUnitId] then
-                for targetUnitId, damageData in pairs(byTarget) do
-                    if not targetFilter or targetFilter[targetUnitId] then
-                        targetTotals[targetUnitId] = (targetTotals[targetUnitId] or 0) + computeTotal(damageData)
-                    end
-                    iterations = iterations + 1
-                    if iterations % YIELD_INTERVAL == 0 then
-                        LibEffect.YieldWithGC():Await()
+        for _, damageTable in ipairs(damageTables) do
+            for sourceUnitId, byTarget in pairs(damageTable) do
+                if not sourceFilter or sourceFilter[sourceUnitId] then
+                    for targetUnitId, damageData in pairs(byTarget) do
+                        if not targetFilter or targetFilter[targetUnitId] then
+                            targetTotals[targetUnitId] = (targetTotals[targetUnitId] or 0) + computeTotal(damageData)
+                        end
+                        iterations = iterations + 1
+                        if iterations % YIELD_INTERVAL == 0 then
+                            LibEffect.YieldWithGC():Await()
+                        end
                     end
                 end
             end
@@ -1335,7 +1448,7 @@ local function buildDamageDonePanelSpec(ctx, config)
 
             -- Q3: Top abilities
             local maxAbilities = q3:maxItems(ROW_CONTENT.ABILITY_BAR, 10)
-            local topAbilities = DamageRenderer.extractTopAbilitiesAsync(filteredDamageTable, nil, nil, maxAbilities):Await()
+            local topAbilities = DamageRenderer.extractTopAbilitiesAsync({ filteredDamageTable }, nil, nil, maxAbilities):Await()
             if #topAbilities > 0 then
                 local topValue = topAbilities[1].total
                 local abilityBars = {}
@@ -1350,7 +1463,7 @@ local function buildDamageDonePanelSpec(ctx, config)
 
             -- Q4: Target breakdown
             local maxTargets = q4:maxItems(ROW_CONTENT.STAT_ROW, 10)
-            local targets = DamageRenderer.extractTargetBreakdownAsync(filteredDamageTable, unitNames, nil, nil, maxTargets):Await()
+            local targets = DamageRenderer.extractTargetBreakdownAsync({ filteredDamageTable }, unitNames, nil, nil, maxTargets):Await()
             if #targets > 0 then
                 local targetRows = {}
                 for _, target in ipairs(targets) do
@@ -1381,6 +1494,108 @@ function DamageRenderer.buildDamageDonePanelSpec(ctx)
         useBossFilter = false,
         q4SectionLabel = BATTLESCROLLS_OVERVIEW_TARGETS,
     })
+end
+
+---Builds panel spec for Raid Damage tab (all sources combined)
+---@param ctx { arithmancer: table, encounter: table, durationS: number, unitNames: table, filters: table, abilityInfo: table }
+---@return PanelSpec
+function DamageRenderer.buildRaidDamagePanelSpec(ctx)
+    return {
+        layout = "three-column",
+        build = function(q2, q3, q4)
+            local filters = ctx.filters or {}
+            local targetFilter = filters.targetFilter
+            local encounter = ctx.encounter
+            local durationS = ctx.durationS
+            local unitNames = ctx.unitNames or {}
+
+            local damageTables = { encounter.damageByUnitId or {}, encounter.damageByUnitIdGroup or {} }
+            local computeTotal = Arithmancer.ComputeDamageTotal
+
+            -- Raid total + per-source totals in one pass
+            local raidTotal = 0
+            local personalTotal = 0
+            local bySourceName = {}
+            local sourceOrder = {}
+            local playerNames = {
+                [GetRawUnitName("player")] = true,
+                [coreUtils.GetUndecoratedDisplayName()] = true,
+            }
+            local selfName = coreUtils.GetUndecoratedDisplayName()
+            local iterations = 0
+            for tableIndex, damageTable in ipairs(damageTables) do
+                for sourceUnitId, byTarget in pairs(damageTable) do
+                    for targetUnitId, damageData in pairs(byTarget) do
+                        if not targetFilter or targetFilter[targetUnitId] then
+                            local total = computeTotal(damageData)
+                            raidTotal = raidTotal + total
+                            if tableIndex == 1 then
+                                personalTotal = personalTotal + total
+                            end
+
+                            local rawName = unitNames[sourceUnitId]
+                            local sourceName
+                            if rawName and playerNames[rawName] then
+                                sourceName = selfName
+                            elseif rawName then
+                                sourceName = zo_strformat(SI_UNIT_NAME, rawName)
+                            else
+                                sourceName = GetString(BATTLESCROLLS_UNKNOWN)
+                            end
+                            if not bySourceName[sourceName] then
+                                bySourceName[sourceName] = 0
+                                table.insert(sourceOrder, sourceName)
+                            end
+                            bySourceName[sourceName] = bySourceName[sourceName] + total
+                        end
+                        iterations = iterations + 1
+                        if iterations % YIELD_INTERVAL == 0 then
+                            LibEffect.YieldWithGC():Await()
+                        end
+                    end
+                end
+            end
+
+            -- Q2: Summary
+            local share = raidTotal > 0 and (personalTotal / raidTotal * 100) or 0
+            local summarySection = q2:Section(GetString(BATTLESCROLLS_OVERVIEW_SUMMARY),
+                q2:StatRow(GetString(BATTLESCROLLS_STAT_RAID_DPS), utils.formatNumber(raidTotal / math.max(durationS, 1))),
+                q2:StatRow(GetString(BATTLESCROLLS_OVERVIEW_TOTAL), utils.formatNumber(raidTotal)),
+                q2:StatRow(GetString(BATTLESCROLLS_OVERVIEW_SHARE), utils.formatPercent(share))
+            )
+            q2:mount(SECTION_GAP, 0, summarySection)
+            LibEffect.Yield():Await()
+
+            -- Q3: Top abilities across the raid
+            local maxAbilities = q3:maxItems(ROW_CONTENT.ABILITY_BAR, 10)
+            local topAbilities = DamageRenderer.extractTopAbilitiesAsync(damageTables, targetFilter, nil, maxAbilities):Await()
+            if #topAbilities > 0 then
+                local topValue = topAbilities[1].total
+                local abilityBars = {}
+                for _, ability in ipairs(topAbilities) do
+                    abilityBars[#abilityBars + 1] = q3:AbilityBar(ability, topValue, raidTotal, durationS)
+                end
+                local q3Section = q3:Section(GetString(BATTLESCROLLS_OVERVIEW_TOP_ABILITIES), abilityBars)
+                q3:mount(SECTION_GAP, Q3_INSET, q3Section)
+            end
+            LibEffect.YieldWithGC():Await()
+
+            -- Q4: By source (raid members and their pets)
+            table.sort(sourceOrder, function(a, b)
+                return bySourceName[a] > bySourceName[b]
+            end)
+            local maxSources = q4:maxItems(ROW_CONTENT.STAT_ROW, 10)
+            if #sourceOrder > 0 then
+                local sourceRows = {}
+                for i, sourceName in ipairs(sourceOrder) do
+                    if i > maxSources then break end
+                    sourceRows[#sourceRows + 1] = q4:StatRow(sourceName, utils.formatTargetDPS(bySourceName[sourceName], durationS))
+                end
+                local q4Section = q4:Section(GetString(BATTLESCROLLS_OVERVIEW_SOURCES), sourceRows)
+                q4:mount(SECTION_GAP, Q3_INSET, q4Section)
+            end
+        end
+    }
 end
 
 ---Builds panel spec for Damage Taken tab

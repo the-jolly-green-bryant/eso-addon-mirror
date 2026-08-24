@@ -8,7 +8,9 @@ local Disease = {}
 RN.Disease = Disease
 
 -- State shape: sv.diseaseState[diseaseId] = {
---   severity = 1|2|3, onsetTime = epoch, careCureProgress = 0
+--   severity = 1|2|3, onsetTime = epoch, careCureProgress = 0,
+--   progressionSeconds = 0, progressionRollSeconds = 0,   -- untreated-stage escalation clock (Mild/Moderate only)
+--   recoverySeconds = 0, recoveryRollSeconds = 0,          -- self-cure clock (frostbite/heatstroke, Mild only)
 -- }
 
 local exposureSeconds = {
@@ -53,6 +55,8 @@ function Disease.ContractOrEscalate(sv, diseaseId)
         if newSeverity ~= state.severity then
             state.severity = newSeverity
             state.careCureProgress = 0
+            state.progressionSeconds = 0
+            state.progressionRollSeconds = 0
             Disease.OnDiseaseChanged(diseaseId, newSeverity)
             local severityName = ({ "Mild", "Moderate", "Severe" })[newSeverity] or "?"
             local hint = RN.Feedback.GetCureHintText(diseaseId, newSeverity)
@@ -99,6 +103,8 @@ local function DowngradeOrCure(sv, diseaseId)
     else
         state.severity = state.severity - 1
         state.careCureProgress = 0
+        state.progressionSeconds = 0
+        state.progressionRollSeconds = 0
         Disease.OnDiseaseChanged(diseaseId, state.severity)
     end
 end
@@ -213,6 +219,60 @@ end
 function Disease.OnTick(sv, tickSeconds)
     Disease.CheckSustainedCold(sv, tickSeconds)
     Disease.CheckSustainedHeat(sv, tickSeconds)
+    Disease.CheckProgression(sv, tickSeconds)
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Stage progression: an UNTREATED disease sitting at Mild or Moderate for at
+-- least PROGRESSION_THRESHOLD_SECONDS (30 real-world minutes) starts rolling
+-- a chance, every PROGRESSION_REROLL_INTERVAL_SECONDS thereafter, to worsen
+-- one stage on its own — same threshold-then-reroll shape as the sustained-
+-- exposure contraction logic below (CheckSustainedExposure), just driven by
+-- "still afflicted at this stage" instead of "still exposed," and applying to
+-- ALL 5 diseases, not only the two temperature ones. Severe cases don't
+-- roll — there's no stage above Severe to escalate to.
+--
+-- state.progressionSeconds/progressionRollSeconds live on the disease's own
+-- (saved-variable) state table rather than a session-only local, so the
+-- clock keeps running across a relog instead of resetting — same reasoning
+-- as leaving onsetTime alone: an untreated disease shouldn't get a free
+-- reprieve just because the player logged out. Any severity change (escalate
+-- here, downgrade/cure via care-cure or ingredient, or /rnd debug disease)
+-- resets both fields to 0, so the 30-minute clock always reflects time spent
+-- untreated AT THE CURRENT stage, not cumulative time since original onset.
+--
+-- PROGRESSION_CHANCE isn't spec'd anywhere — 15% per 5-minute reroll (so
+-- roughly even odds of at least one escalation roll landing within the first
+-- ~30 minutes past threshold) is a reasonable starting default, not a
+-- confirmed balance number. Worth exposing in Settings and tuning from
+-- actual play rather than trusting this guess long-term.
+-- ─────────────────────────────────────────────────────────────────────────────
+Disease.PROGRESSION_THRESHOLD_SECONDS = 1800  -- 30 minutes
+Disease.PROGRESSION_REROLL_INTERVAL_SECONDS = 300  -- 5 minutes
+Disease.PROGRESSION_CHANCE = 0.15  -- 15% per reroll once past threshold
+
+function Disease.CheckProgression(sv, tickSeconds)
+    if sv.settings.diseaseSystemEnabled == false then return end
+
+    for diseaseId, state in pairs(sv.diseaseState) do
+        if state.severity < RN.SEVERITY_SEVERE then
+            state.progressionSeconds = (state.progressionSeconds or 0) + tickSeconds
+            if state.progressionSeconds >= Disease.PROGRESSION_THRESHOLD_SECONDS then
+                state.progressionRollSeconds = (state.progressionRollSeconds or 0) + tickSeconds
+                if state.progressionRollSeconds >= Disease.PROGRESSION_REROLL_INTERVAL_SECONDS then
+                    state.progressionRollSeconds = 0
+                    if math.random() < Disease.PROGRESSION_CHANCE then
+                        -- ContractOrEscalate itself resets progressionSeconds/
+                        -- progressionRollSeconds back to 0 on the severity
+                        -- change (see the "else" branch above), and fires the
+                        -- normal "has worsened to <Severity>" notification —
+                        -- no separate messaging needed here.
+                        Disease.ContractOrEscalate(sv, diseaseId)
+                    end
+                end
+            end
+        end
+    end
 end
 
 local function RollContraction(sv, diseaseId)
@@ -221,7 +281,10 @@ local function RollContraction(sv, diseaseId)
     -- further down this file) — gating it here covers new contraction and
     -- severity escalation (ContractOrEscalate handles both) for either path
     -- with one check, rather than needing to gate each caller separately.
-    if sv.settings.diseaseSystemEnabled == false then return end
+    -- masterEnabled is checked here too (not just diseaseSystemEnabled)
+    -- because OnCombatEvent is its own always-registered event handler, not
+    -- something that flows through the main OnTick's masterEnabled gate.
+    if sv.settings.masterEnabled == false or sv.settings.diseaseSystemEnabled == false then return end
 
     local chance = sv.settings.diseaseChances[diseaseId]
     if chance and math.random() < chance then
@@ -281,6 +344,56 @@ local function CheckSustainedExposure(sv, tickSeconds, kind, diseaseId, isExpose
     end
 end
 
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Self-cure: a MILD (stage 1) frostbite/heatstroke case has a chance to clear
+-- up on its own once the player has been OUT of the qualifying temperature
+-- range continuously for RECOVERY_THRESHOLD_SECONDS (30 real-world minutes),
+-- rerolling every RECOVERY_REROLL_INTERVAL_SECONDS after that — the mirror
+-- image of CheckSustainedExposure above (threshold-then-reroll while a
+-- condition holds), just keyed off "no longer exposed" instead of "exposed,"
+-- and off "still Mild" instead of "not yet contracted." Moderate/Severe cases
+-- don't self-cure this way — only the mild stage was asked for; a worse case
+-- still needs an ingredient or the care-cure path.
+--
+-- Counters live on the disease's own state table (state.recoverySeconds/
+-- recoveryRollSeconds), same reasoning as the progression counters above —
+-- persists across a relog rather than resetting one. Cleared automatically
+-- the moment isExposed goes true again, the disease is no longer Mild
+-- (escalated or cured by other means), or it's cured here.
+-- ─────────────────────────────────────────────────────────────────────────────
+Disease.RECOVERY_THRESHOLD_SECONDS = 1800  -- 30 minutes
+Disease.RECOVERY_REROLL_INTERVAL_SECONDS = 300  -- 5 minutes
+Disease.RECOVERY_CHANCE = 0.15  -- 15% per reroll once past threshold — same guessed default as PROGRESSION_CHANCE, tune later
+
+local function CheckRecovery(sv, tickSeconds, diseaseId, isExposed)
+    local state = sv.diseaseState[diseaseId]
+    if not state or state.severity ~= RN.SEVERITY_MILD then return end
+
+    if isExposed then
+        state.recoverySeconds = 0
+        state.recoveryRollSeconds = 0
+        return
+    end
+
+    state.recoverySeconds = (state.recoverySeconds or 0) + tickSeconds
+    if state.recoverySeconds < Disease.RECOVERY_THRESHOLD_SECONDS then return end
+
+    state.recoveryRollSeconds = (state.recoveryRollSeconds or 0) + tickSeconds
+    if state.recoveryRollSeconds >= Disease.RECOVERY_REROLL_INTERVAL_SECONDS then
+        state.recoveryRollSeconds = 0
+        if math.random() < Disease.RECOVERY_CHANCE then
+            local def = RN.Diseases[diseaseId]
+            RN.Feedback.Notify(string.format(
+                "Your %s clears up on its own.", def and def.name or diseaseId
+            ))
+            -- At Mild, DowngradeOrCure's severity<=Mild branch fully cures
+            -- (removes the state entirely), which also drops recoverySeconds/
+            -- recoveryRollSeconds along with it — no separate reset needed.
+            DowngradeOrCure(sv, diseaseId)
+        end
+    end
+end
+
 -- Frostbite: see the long comment on the frostbite entry in Data.lua for why
 -- GetCurrentTemperature()'s existing Frostfall-preferred/LibZoneTemp-fallback
 -- priority already satisfies the "optional Frostfall" requirement with no
@@ -289,6 +402,7 @@ function Disease.CheckSustainedCold(sv, tickSeconds)
     local temp = RN.Calculator.GetCurrentTemperature()
     local isExposed = temp ~= nil and temp < RN.Calculator.COMFORT_MIN
     CheckSustainedExposure(sv, tickSeconds, "sustainedCold", "frostbite", isExposed)
+    CheckRecovery(sv, tickSeconds, "frostbite", isExposed)
 end
 
 -- Heatstroke: mirrors CheckSustainedCold exactly, just the hot side of the
@@ -297,6 +411,7 @@ function Disease.CheckSustainedHeat(sv, tickSeconds)
     local temp = RN.Calculator.GetCurrentTemperature()
     local isExposed = temp ~= nil and temp > RN.Calculator.COMFORT_MAX
     CheckSustainedExposure(sv, tickSeconds, "sustainedHeat", "heatstroke", isExposed)
+    CheckRecovery(sv, tickSeconds, "heatstroke", isExposed)
 end
 
 -- Read-only status for the /rnd debug frostbitetimer / heatstroketimer
@@ -442,13 +557,25 @@ function Disease.Initialize()
     EVENT_MANAGER:AddFilterForEvent("RealisticNeeds_CombatEvent", EVENT_COMBAT_EVENT,
         REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 
-    -- Filtered to BAG_BACKPACK (remedies are eaten from the carried backpack)
+    -- Filtered to BAG_BACKPACK (remedies eaten from the carried backpack)
     -- AND to INVENTORY_UPDATE_REASON_DEFAULT (excluding durability/charge-type
     -- updates this event also fires for). See https://wiki.esoui.com/AddFilterForEvent.
     EVENT_MANAGER:RegisterForEvent("RealisticNeeds_RemedyInventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
         Disease.OnRemedyInventoryChange)
     EVENT_MANAGER:AddFilterForEvent("RealisticNeeds_RemedyInventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
         REGISTER_FILTER_BAG_ID, BAG_BACKPACK,
+        REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+
+    -- Second registration, identical filters aside from the bag id, so
+    -- reagents consumed straight from the craft bag (BAG_VIRTUAL — where
+    -- they live instead of the backpack once a player has craft bag access)
+    -- are also picked up. AddFilterForEvent only takes one bag id per named
+    -- registration, so this needs its own registered name rather than a
+    -- second filter tacked onto the one above.
+    EVENT_MANAGER:RegisterForEvent("RealisticNeeds_RemedyInventory_CraftBag", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+        Disease.OnRemedyInventoryChange)
+    EVENT_MANAGER:AddFilterForEvent("RealisticNeeds_RemedyInventory_CraftBag", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
+        REGISTER_FILTER_BAG_ID, BAG_VIRTUAL,
         REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
 end
 
@@ -468,6 +595,14 @@ end
 -- no LibFoodDrinkBuff timing race to guard against, so the extra snapshot
 -- machinery added no value while introducing the seeding failure.
 --
+-- CRAFT BAG (BAG_VIRTUAL): reagents with ESO Plus / craft bag access don't
+-- live in the backpack at all — they auto-deposit into the account-wide
+-- craft bag, and "use"-consuming one there fires EVENT_INVENTORY_SINGLE_SLOT_UPDATE
+-- against BAG_VIRTUAL instead of BAG_BACKPACK. The handler and its slot-key
+-- cache (bagId .. ":" .. slotId, so BAG_BACKPACK slot 5 and BAG_VIRTUAL slot 5
+-- never collide) both work unchanged for either bag — only the bag-id guard
+-- and the two event registrations below needed to widen.
+--
 -- On every reagent consumed, checks BOTH the direct tier-matched cure AND
 -- the care-cure progress path (a tier-1 ingredient can directly cure a Mild
 -- case OR contribute progress toward downgrading a more severe one).
@@ -475,7 +610,7 @@ end
 local _lastRemedyLinkBySlot = {}
 
 function Disease.OnRemedyInventoryChange(eventCode, bagId, slotId, isNewItem, itemSoundCategory, updateReason, stackCountChange)
-    if bagId ~= BAG_BACKPACK then return end
+    if bagId ~= BAG_BACKPACK and bagId ~= BAG_VIRTUAL then return end
 
     local key         = bagId .. ":" .. slotId
     local prevLink    = _lastRemedyLinkBySlot[key]
@@ -486,6 +621,13 @@ function Disease.OnRemedyInventoryChange(eventCode, bagId, slotId, isNewItem, it
     if stackCountChange >= 0 then return end
     if not itemLink or itemLink == "" then return end
     if RN.IsTradeWindowOpen() then return end
+
+    -- Only masterEnabled gates this, deliberately NOT diseaseSystemEnabled —
+    -- curing an existing disease is meant to keep working even with new
+    -- contraction/progression turned off (see the settings default comment
+    -- block in the main file). masterEnabled is the true "freeze everything,
+    -- including treatment" kill switch.
+    if RN.SavedVars.settings.masterEnabled == false then return end
 
     local itemType = GetItemLinkItemType(itemLink)
     if itemType ~= ITEMTYPE_REAGENT then return end

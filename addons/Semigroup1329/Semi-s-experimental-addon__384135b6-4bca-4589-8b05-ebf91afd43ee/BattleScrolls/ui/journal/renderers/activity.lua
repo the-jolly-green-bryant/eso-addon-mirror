@@ -211,6 +211,435 @@ local function buildProcTooltipText(procData, unitNames)
 end
 
 -------------------------
+-- Ultimate Section
+-------------------------
+
+---Renders the ultimate tracking section into the list
+---Appends "Includes X: uptime%, ~N" lines for fixed-rate silent ultimate
+---sources/drains (Heroism, Timidity) whose uptime lives in the encounter's
+---player-effect stats
+---@param lines string[]
+---@param effectsOnPlayer table<number, EffectStats>|nil
+---@param ratePerTick table<number, number> Buff/debuff ability id -> Ultimate per tick
+---@param durationSec number
+---@return boolean appended True when at least one line was added
+local function appendSilentUltLines(lines, effectsOnPlayer, ratePerTick, durationSec)
+    if not effectsOnPlayer then
+        return false
+    end
+    local ids = {}
+    for buffId in pairs(ratePerTick) do
+        local stats = effectsOnPlayer[buffId]
+        if stats and stats.totalActiveTimeMs > 0 then
+            ids[#ids + 1] = buffId
+        end
+    end
+    table.sort(ids)
+    for _, buffId in ipairs(ids) do
+        local activeMs = effectsOnPlayer[buffId].totalActiveTimeMs
+        local approx = math.ceil(activeMs / BattleScrolls.ultimate.FIXED_RATE_TICK_MS) * ratePerTick[buffId]
+        local uptimePct = durationSec > 0 and (activeMs / (durationSec * 1000) * 100) or 0
+        table.insert(lines, zo_strformat(GetString(BATTLESCROLLS_ULT_HEROISM_LINE),
+            utils.getAbilityDisplayName(buffId), string.format("%.1f", uptimePct), approx))
+    end
+    return #ids > 0
+end
+
+---@param list any
+---@param ult UltimateData
+---@param durationSec number
+---@param effectsOnPlayer table<number, EffectStats>|nil Player-effect stats (source of Heroism/Timidity uptimes for tooltips)
+local function renderUltimateSection(list, ult, durationSec, effectsOnPlayer)
+    -- Ultimate at combat entry
+    EntryBuilder.addEntry(list, {
+        label = GetString(BATTLESCROLLS_STAT_ULT_AT_ENTRY),
+        sublabel = string.format("%d / %d", ult.startUlt, ult.maxUlt),
+        icon = StatIcons.SUMMARY,
+        header = GetString(BATTLESCROLLS_HEADER_ULTIMATE),
+    })
+
+    -- Total generated (+rate) and drained
+    if ult.totalGained > 0 then
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_ULT_GENERATED),
+            sublabel = string.format("%d (%s)", ult.totalGained, formatRate(durationSec > 0 and ult.totalGained / durationSec or 0)),
+            icon = StatIcons.DPS,
+        })
+    end
+    if ult.totalDrained > 0 then
+        -- Minor Timidity drains silently into totalDrained; surface its
+        -- uptime and trait-less estimate here
+        local drainLines = {}
+        appendSilentUltLines(drainLines, effectsOnPlayer, BattleScrolls.ultimate.TIMIDITY_DEBUFFS, durationSec)
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_ULT_DRAINED),
+            sublabel = tostring(ult.totalDrained),
+            icon = StatIcons.DAMAGE_TAKEN,
+            tooltip = #drainLines > 0 and {
+                type = "text",
+                title = GetString(BATTLESCROLLS_STAT_ULT_DRAINED),
+                text = table.concat(drainLines, "\n"),
+            } or nil,
+        })
+    end
+
+    -- Gains by source (id 0 = base generation)
+    local gainTotal = 0
+    local sources = {}
+    for abilityId, gain in pairs(ult.gainByAbilityId) do
+        gainTotal = gainTotal + gain.total
+        sources[#sources + 1] = { abilityId = abilityId, gain = gain }
+    end
+    table.sort(sources, function(a, b) return a.gain.total > b.gain.total end)
+
+    local isFirst = true
+    for _, source in ipairs(sources) do
+        local gain = source.gain
+        local name, icon
+        if source.abilityId == 0 then
+            name = GetString(BATTLESCROLLS_ULT_BASE_GENERATION)
+            icon = StatIcons.DPS
+        else
+            name = zo_strformat("<<C:1>>", utils.getAbilityDisplayName(source.abilityId))
+            icon = utils.getAbilityIcon(source.abilityId)
+        end
+        local pct = gainTotal > 0 and (gain.total / gainTotal * 100) or 0
+
+        local tooltipLines = {
+            string.format("%s: %d (%.1f%%)", GetString(BATTLESCROLLS_TOOLTIP_TOTAL), gain.total, pct),
+            string.format("%s", formatRate(durationSec > 0 and gain.total / durationSec or 0)),
+        }
+        -- Gain amounts vary per source (e.g. scaling energizes) - show the
+        -- usual tick spread; the base bucket has no discrete ticks
+        if gain.ticks > 0 then
+            table.insert(tooltipLines, "")
+            table.insert(tooltipLines, string.format("%s: %d", GetString(BATTLESCROLLS_TOOLTIP_TICKS), gain.ticks))
+            table.insert(tooltipLines, string.format("%s: %.1f", GetString(BATTLESCROLLS_TOOLTIP_AVG_TICK), gain.total / gain.ticks))
+            table.insert(tooltipLines, string.format("%s: %d", GetString(BATTLESCROLLS_TOOLTIP_MIN_TICK), gain.minTick))
+            table.insert(tooltipLines, string.format("%s: %d", GetString(BATTLESCROLLS_TOOLTIP_MAX_TICK), gain.maxTick))
+        end
+        -- Heroism generates silently and lands in the base bucket (the
+        -- Decisive trait makes an exact split impossible); its uptime is
+        -- already in the player-effect stats - list it here with the
+        -- trait-less estimate
+        if source.abilityId == 0 then
+            local heroismLines = {}
+            if appendSilentUltLines(heroismLines, effectsOnPlayer, BattleScrolls.ultimate.HEROISM_BUFFS, durationSec) then
+                table.insert(tooltipLines, "")
+                for _, line in ipairs(heroismLines) do
+                    table.insert(tooltipLines, line)
+                end
+            end
+        end
+        if source.abilityId ~= 0 then
+            table.insert(tooltipLines, "")
+            utils.appendAbilityIdLine(tooltipLines, source.abilityId)
+        end
+
+        EntryBuilder.addEntry(list, {
+            label = name,
+            sublabel = string.format("%d (%.1f%%)", gain.total, pct),
+            icon = icon,
+            frame = source.abilityId ~= 0,
+            header = isFirst and GetString(BATTLESCROLLS_HEADER_ULT_SOURCES) or nil,
+            tooltip = { type = "text", title = name, text = table.concat(tooltipLines, "\n") },
+        })
+        isFirst = false
+    end
+
+    -- Casts, aggregated per ultimate with per-cast times in the tooltip
+    if #ult.casts > 0 then
+        local byUlt = {}
+        local ultOrder = {}
+        for _, cast in ipairs(ult.casts) do
+            if not byUlt[cast.abilityId] then
+                byUlt[cast.abilityId] = {}
+                ultOrder[#ultOrder + 1] = cast.abilityId
+            end
+            table.insert(byUlt[cast.abilityId], cast.timeMs)
+        end
+
+        isFirst = true
+        for _, abilityId in ipairs(ultOrder) do
+            local times = byUlt[abilityId]
+            local name = zo_strformat("<<C:1>>", utils.getAbilityDisplayName(abilityId))
+            local timeStrings = {}
+            for _, timeMs in ipairs(times) do
+                timeStrings[#timeStrings + 1] = utils.formatDuration(timeMs)
+            end
+            local tooltipLines = {
+                string.format("%s: %d", GetString(BATTLESCROLLS_STAT_CASTS), #times),
+                "",
+                table.concat(timeStrings, ", "),
+                "",
+            }
+            utils.appendAbilityIdLine(tooltipLines, abilityId)
+
+            EntryBuilder.addEntry(list, {
+                label = name,
+                sublabel = string.format("%d× (%s)", #times, timeStrings[1]),
+                icon = utils.getAbilityIcon(abilityId),
+                frame = true,
+                header = isFirst and GetString(BATTLESCROLLS_HEADER_ULT_CASTS) or nil,
+                tooltip = { type = "text", title = name, text = table.concat(tooltipLines, "\n") },
+            })
+            isFirst = false
+        end
+    end
+end
+
+-------------------------
+-- Crux Section
+-------------------------
+
+---Renders the Arcanist Crux discipline section into the list
+---@param list any
+---@param crux CruxData
+local function renderCruxSection(list, crux)
+    local underTotal = (crux.spenderUnder[1] or 0) + (crux.spenderUnder[2] or 0) + (crux.spenderUnder[3] or 0)
+    local needsHeader = true
+    local function takeHeader()
+        if needsHeader then
+            needsHeader = false
+            return GetString(BATTLESCROLLS_HEADER_CRUX)
+        end
+        return nil
+    end
+
+    -- Generators
+    if crux.generatorCasts > 0 then
+        local atFullPct = crux.generatorAtFull / crux.generatorCasts * 100
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_CRUX_GENERATORS),
+            sublabel = tostring(crux.generatorCasts),
+            icon = StatIcons.DPS,
+            header = takeHeader(),
+        })
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_CRUX_AT_FULL),
+            sublabel = string.format("%d (%.1f%%)", crux.generatorAtFull, atFullPct),
+            icon = StatIcons.DAMAGE_TAKEN,
+        })
+    end
+
+    -- Spenders
+    if crux.spenderCasts > 0 then
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_CRUX_SPENDERS),
+            sublabel = tostring(crux.spenderCasts),
+            icon = StatIcons.AOE,
+            header = takeHeader(),
+        })
+        local underPct = underTotal / crux.spenderCasts * 100
+        local tooltipLines = {}
+        for cruxCount = 0, 2 do
+            tooltipLines[#tooltipLines + 1] = zo_strformat(GetString(BATTLESCROLLS_CRUX_AT_N), cruxCount, crux.spenderUnder[cruxCount + 1] or 0)
+        end
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_CRUX_UNDER),
+            sublabel = string.format("%d (%.1f%%)", underTotal, underPct),
+            icon = StatIcons.DAMAGE_TAKEN,
+            tooltip = {
+                type = "text",
+                title = GetString(BATTLESCROLLS_STAT_CRUX_UNDER),
+                text = table.concat(tooltipLines, "\n"),
+            },
+        })
+    end
+
+    -- Crux consumed outside tracked casts (natural expiry, death)
+    if crux.passiveEvents and crux.passiveEvents > 0 then
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_CRUX_PASSIVE),
+            sublabel = string.format("%d (%d×)", crux.passiveStacks, crux.passiveEvents),
+            icon = StatIcons.DURATION,
+            header = takeHeader(),
+            tooltip = {
+                type = "text",
+                title = GetString(BATTLESCROLLS_STAT_CRUX_PASSIVE),
+                text = GetString(BATTLESCROLLS_STAT_CRUX_PASSIVE_TT),
+            },
+        })
+    end
+
+    -- Crux gained per ability: cast generators contribute casts minus
+    -- wasted (each non-full cast generates exactly one), proc-attributed
+    -- conditional sources contribute their paired gains
+    local gains = {}
+    for abilityId, activity in pairs(crux.byAbility) do
+        if not BattleScrolls.crux.CRUX_SPENDERS[abilityId] then
+            local gained = (activity.casts or 0) - (activity.bad or 0)
+            if gained > 0 then
+                gains[#gains + 1] = { abilityId = abilityId, count = gained, casts = activity.casts }
+            end
+        end
+    end
+    if crux.conditionalGains then
+        for abilityId, count in pairs(crux.conditionalGains) do
+            if count > 0 then
+                gains[#gains + 1] = { abilityId = abilityId, count = count, proc = true }
+            end
+        end
+    end
+    table.sort(gains, function(a, b) return a.count > b.count end)
+
+    local isFirstGain = true
+    for _, entry in ipairs(gains) do
+        local name = zo_strformat("<<C:1>>", utils.getAbilityDisplayName(entry.abilityId))
+        local tooltipLines = {}
+        if entry.proc then
+            tooltipLines[1] = GetString(BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT)
+        else
+            tooltipLines[1] = string.format("%s: %d", GetString(BATTLESCROLLS_STAT_CASTS), entry.casts)
+        end
+        tooltipLines[2] = ""
+        utils.appendAbilityIdLine(tooltipLines, entry.abilityId)
+        EntryBuilder.addEntry(list, {
+            label = name,
+            sublabel = string.format("+%d", entry.count),
+            icon = utils.getAbilityIcon(entry.abilityId),
+            frame = true,
+            header = isFirstGain and GetString(BATTLESCROLLS_HEADER_CRUX_GAINED) or nil,
+            tooltip = { type = "text", title = name, text = table.concat(tooltipLines, "\n") },
+        })
+        isFirstGain = false
+    end
+    if crux.unattributedGains and crux.unattributedGains > 0 then
+        EntryBuilder.addEntry(list, {
+            label = GetString(BATTLESCROLLS_STAT_CRUX_OTHER),
+            sublabel = string.format("+%d", crux.unattributedGains),
+            icon = StatIcons.DURATION,
+            header = isFirstGain and GetString(BATTLESCROLLS_HEADER_CRUX_GAINED) or nil,
+            tooltip = {
+                type = "text",
+                title = GetString(BATTLESCROLLS_STAT_CRUX_OTHER),
+                -- 217699 = Banner Bearer, the known untracked source
+                text = zo_strformat(GetString(BATTLESCROLLS_STAT_CRUX_OTHER_TT), utils.getAbilityDisplayName(217699)),
+            },
+        })
+    end
+
+    -- Per-ability discipline breakdown (only abilities with bad casts)
+    local badAbilities = {}
+    for abilityId, activity in pairs(crux.byAbility) do
+        if activity.bad > 0 then
+            badAbilities[#badAbilities + 1] = { abilityId = abilityId, casts = activity.casts, bad = activity.bad }
+        end
+    end
+    table.sort(badAbilities, function(a, b) return a.bad > b.bad end)
+
+    local isFirst = true
+    for _, entry in ipairs(badAbilities) do
+        local name = zo_strformat("<<C:1>>", utils.getAbilityDisplayName(entry.abilityId))
+        local badPct = entry.casts > 0 and (entry.bad / entry.casts * 100) or 0
+        local tooltipLines = {
+            string.format("%s: %d", GetString(BATTLESCROLLS_STAT_CASTS), entry.casts),
+            "",
+        }
+        utils.appendAbilityIdLine(tooltipLines, entry.abilityId)
+
+        EntryBuilder.addEntry(list, {
+            label = name,
+            sublabel = string.format("%d / %d (%.1f%%)", entry.bad, entry.casts, badPct),
+            icon = utils.getAbilityIcon(entry.abilityId),
+            frame = true,
+            header = isFirst and GetString(BATTLESCROLLS_HEADER_CRUX_BY_ABILITY) or nil,
+            tooltip = { type = "text", title = name, text = table.concat(tooltipLines, "\n") },
+        })
+        isFirst = false
+    end
+end
+
+-------------------------
+-- Z'en / DoT Stacking Section
+-------------------------
+
+---Computes summary stats from a 12-slot zen bucket array
+---@param buckets number[]
+---@return number totalMs
+---@return number avgDots
+---@return number zenPct Z'en debuff uptime %
+---@return number anyDotPct Time with >=1 DoT %
+local function computeZenSummary(buckets)
+    local totalMs = 0
+    local dotWeightedMs = 0
+    local zenMs = 0
+    for dots = 0, 5 do
+        local noZen = buckets[dots * 2 + 1] or 0
+        local withZen = buckets[dots * 2 + 2] or 0
+        totalMs = totalMs + noZen + withZen
+        dotWeightedMs = dotWeightedMs + dots * (noZen + withZen)
+        zenMs = zenMs + withZen
+    end
+    if totalMs == 0 then
+        return 0, 0, 0, 0
+    end
+    local idleMs = (buckets[1] or 0) + (buckets[2] or 0)
+    return totalMs,
+        dotWeightedMs / totalMs,
+        zenMs / totalMs * 100,
+        (totalMs - idleMs) / totalMs * 100
+end
+
+---Renders the Z'en / DoT stacking section into the list
+---@param list any
+---@param zen ZenData
+---@param encounter DecodedEncounter
+local function renderZenSection(list, zen, encounter)
+    -- Stable boss ordering by unitTag
+    local tags = {}
+    for unitTag in pairs(zen) do
+        tags[#tags + 1] = unitTag
+    end
+    table.sort(tags)
+
+    local isFirst = true
+    for _, unitTag in ipairs(tags) do
+        local buckets = zen[unitTag]
+        local totalMs, avgDots, zenPct, anyDotPct = computeZenSummary(buckets)
+        if totalMs > 0 then
+            -- Keys are "bossTag:tagSeq" - the same shape bossSeqNames uses
+            local rawBossName = (encounter.bossSeqNames and encounter.bossSeqNames[unitTag])
+                or unitTag:match("^(.-):%d+$") or unitTag
+            local bossName = zo_strformat(SI_UNIT_NAME, rawBossName)
+
+            local tooltipLines = {
+                string.format("%s: %.1f", GetString(BATTLESCROLLS_ZEN_AVG_DOTS), avgDots),
+                string.format("%s: %.1f%%", GetString(BATTLESCROLLS_ZEN_UPTIME), zenPct),
+                string.format("%s: %.1f%%", GetString(BATTLESCROLLS_ZEN_POTENTIAL), anyDotPct),
+                "",
+            }
+            for dots = 0, 5 do
+                local noZen = buckets[dots * 2 + 1] or 0
+                local withZen = buckets[dots * 2 + 2] or 0
+                local bucketMs = noZen + withZen
+                if bucketMs > 0 then
+                    local bucketPct = bucketMs / totalMs * 100
+                    local zenShare = withZen / bucketMs * 100
+                    local dotsLabel = zo_strformat(GetString(BATTLESCROLLS_ZEN_DOTS_LABEL), dots)
+                    if withZen > 0 then
+                        tooltipLines[#tooltipLines + 1] = string.format("%s: %.1f%% (%s %.0f%%)",
+                            dotsLabel, bucketPct, GetString(BATTLESCROLLS_ZEN_SHORT), zenShare)
+                    else
+                        tooltipLines[#tooltipLines + 1] = string.format("%s: %.1f%%", dotsLabel, bucketPct)
+                    end
+                end
+            end
+
+            EntryBuilder.addEntry(list, {
+                label = bossName,
+                sublabel = zo_strformat(GetString(BATTLESCROLLS_ZEN_BOSS_SUMMARY),
+                    string.format("%.1f", avgDots), string.format("%.0f", zenPct), string.format("%.0f", anyDotPct)),
+                icon = StatIcons.DOT,
+                header = isFirst and GetString(BATTLESCROLLS_HEADER_ZEN) or nil,
+                tooltip = { type = "text", title = bossName, text = table.concat(tooltipLines, "\n") },
+            })
+            isFirst = false
+        end
+    end
+end
+
+-------------------------
 -- Public Renderer API
 -------------------------
 
@@ -259,6 +688,43 @@ function ActivityRenderer.renderActivity(ctx)
                 })
                 isFirst = false
             end
+        end
+        LibEffect.Yield():Await()
+
+        -------------------------
+        -- Ultimate Section
+        -------------------------
+        if encounter.ultimate then
+            renderUltimateSection(list, encounter.ultimate, durationSec, encounter.effectsOnPlayer)
+            LibEffect.Yield():Await()
+        end
+
+        -------------------------
+        -- Crux Section (Arcanist)
+        -------------------------
+        if encounter.crux then
+            renderCruxSection(list, encounter.crux)
+            LibEffect.Yield():Await()
+        end
+
+        -------------------------
+        -- Resurrections
+        -------------------------
+        if encounter.resurrections and encounter.resurrections > 0 then
+            EntryBuilder.addEntry(list, {
+                label = GetString(BATTLESCROLLS_STAT_RESURRECTIONS),
+                sublabel = tostring(encounter.resurrections),
+                icon = StatIcons.GROUP,
+                header = GetString(BATTLESCROLLS_HEADER_SUPPORT),
+            })
+        end
+
+        -------------------------
+        -- Z'en / DoT Stacking Section
+        -------------------------
+        if encounter.zen then
+            renderZenSection(list, encounter.zen, encounter)
+            LibEffect.Yield():Await()
         end
 
         -------------------------
@@ -434,6 +900,9 @@ function ActivityRenderer.buildActivityPanelSpec(ctx)
             local encounter = ctx.encounter
             local durationS = ctx.durationS
             local weaving = encounter.weaving
+            -- mount() anchors from the column top on every call, so both
+            -- Q2 sections must go through ONE call or they overlap
+            local q2Sections = {}
 
             -------------------------
             -- Q2: Weaving Summary
@@ -479,9 +948,33 @@ function ActivityRenderer.buildActivityPanelSpec(ctx)
                     and q2:StatRow(GetString(BATTLESCROLLS_STAT_DOUBLE_LA), tostring(weaving.doubleLaErrors))
                     or nil
 
-                local weavingSection = q2:Section(GetString(BATTLESCROLLS_HEADER_WEAVING),
+                q2Sections[#q2Sections + 1] = q2:Section(GetString(BATTLESCROLLS_HEADER_WEAVING),
                     avgWeaveRow, timeLostRow, laRow, haRow, skillRow, missedLaRow, doubleLaRow)
-                q2:mount(SECTION_GAP, 0, weavingSection)
+            end
+
+            -------------------------
+            -- Q2: Ultimate Summary
+            -------------------------
+            local ult = encounter.ultimate
+            if ult then
+                local entryRow = q2:StatRow(GetString(BATTLESCROLLS_STAT_ULT_AT_ENTRY), string.format("%d / %d", ult.startUlt, ult.maxUlt))
+                local generatedRow
+                if ult.totalGained > 0 then
+                    generatedRow = q2:StatRow(GetString(BATTLESCROLLS_STAT_ULT_GENERATED),
+                        string.format("%d (%s)", ult.totalGained, formatRate(durationS > 0 and ult.totalGained / durationS or 0)))
+                end
+                local castsRow = #ult.casts > 0
+                    and q2:StatRow(GetString(BATTLESCROLLS_HEADER_ULT_CASTS), tostring(#ult.casts))
+                    or nil
+                local resRow = encounter.resurrections and encounter.resurrections > 0
+                    and q2:StatRow(GetString(BATTLESCROLLS_STAT_RESURRECTIONS), tostring(encounter.resurrections))
+                    or nil
+                q2Sections[#q2Sections + 1] = q2:Section(GetString(BATTLESCROLLS_HEADER_ULTIMATE),
+                    entryRow, generatedRow, castsRow, resRow)
+            end
+
+            if #q2Sections > 0 then
+                q2:mount(SECTION_GAP, 0, unpack(q2Sections))
             end
 
             LibEffect.Yield():Await()

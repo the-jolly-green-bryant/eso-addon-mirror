@@ -18,7 +18,7 @@
     "ArchiveAdvisor"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4787/",
-  "fingerprint": "9811d4161e9507e77d04380af67d5d209e79b3697232c5323aa241cbd7704e14",
+  "fingerprint": "7af7ce7109bebbf73b30641efc9be008bc91f4b484c6dbe1d181745557b5e8d5",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17075.png",
     "https://cdn-eso.mmoui.com/preview/pvw17074.png"
@@ -29,11 +29,11 @@
   "source_id": "4787",
   "source_url": "https://www.esoui.com/downloads/info4787-ArchiveAdvisor.html",
   "stats": {
-    "downloads": 22,
-    "favorites": 2,
-    "monthly_downloads": 18
+    "downloads": 48,
+    "favorites": 3,
+    "monthly_downloads": 46
   },
   "title": "ArchiveAdvisor",
-  "updated_at": 1787408264000,
-  "version": "1.0.0"
+  "updated_at": 1787502854000,
+  "version": "1.0.1"
 }

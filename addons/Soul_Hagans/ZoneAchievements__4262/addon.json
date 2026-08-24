@@ -30,7 +30,7 @@
     "ZoneAchievements"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4262/",
-  "fingerprint": "0a24b2203bd9e00b4a33cf94a001b7271e1b8129073567b475c18d9471b0ce11",
+  "fingerprint": "ea59a30cc64e9dfb506ac2b720e81933743abeb1624ce0dc78099cc39d2f6630",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17051.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw17052.jpg",
@@ -46,11 +46,11 @@
   "source_id": "4262",
   "source_url": "https://www.esoui.com/downloads/info4262-ZoneAchievements.html",
   "stats": {
-    "downloads": 605,
+    "downloads": 680,
     "favorites": 2,
-    "monthly_downloads": 80
+    "monthly_downloads": 159
   },
   "title": "ZoneAchievements",
-  "updated_at": 1787237980000,
-  "version": "2.0.2"
+  "updated_at": 1787471350000,
+  "version": "2.0.3"
 }

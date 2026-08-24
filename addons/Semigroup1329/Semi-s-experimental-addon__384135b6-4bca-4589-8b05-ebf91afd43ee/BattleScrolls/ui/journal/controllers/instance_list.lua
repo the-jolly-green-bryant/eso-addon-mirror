@@ -176,7 +176,7 @@ function InstanceListController.refresh(journalUI)
             if instancePassesFilter(instance, selectedTab) then
                 local encounterCount = instance.encounters and #instance.encounters or 0
 
-                local displayName = string.format("%s (%d)", instance.zone, encounterCount)
+                local displayName = string.format("%s (%d)", instance.customName or instance.zone, encounterCount)
                 local icon = utils.getInstanceIcon(instance)
 
                 local entryData = ZO_GamepadEntryData:New(displayName, icon)

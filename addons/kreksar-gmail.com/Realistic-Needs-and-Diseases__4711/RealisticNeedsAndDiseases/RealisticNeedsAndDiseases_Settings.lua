@@ -42,11 +42,11 @@ function Settings.Initialize(sv)
         { type = "header", name = "Realistic Needs and Diseases" },
         {
             type = "checkbox",
-            name = "Enable the needs/disease system",
-            tooltip = "Master switch for the whole addon's simulation. When OFF: hunger/thirst/fatigue/drunkenness stop decaying or regenerating, no new diseases are rolled, existing disease severities stop progressing or being curable, the status bar hides, and any visible disease overlay tints clear immediately. Nothing is uninstalled or lost — your current needs/disease state is just frozen in place until you turn this back on. All other settings below are ignored while this is off.",
-            getFunc = function() return sv.settings.needsSystemEnabled end,
+            name = "Enable the addon",
+            tooltip = "True master switch for the entire addon's simulation — takes priority over both toggles below. When OFF: hunger/thirst/fatigue/drunkenness stop decaying, food/drink/water no longer restores them, no new disease can be contracted, no active disease can progress or self-cure, curing a disease with an ingredient stops working too, the status bar hides, and any visible disease overlay tints clear immediately. Nothing is uninstalled or lost — your current needs/disease state is just frozen in place until you turn this back on.",
+            getFunc = function() return sv.settings.masterEnabled end,
             setFunc = function(value)
-                sv.settings.needsSystemEnabled = value
+                sv.settings.masterEnabled = value
                 if value then
                     -- Re-enabling: restore the status bar (respecting the
                     -- separate showStatusBar preference) and repaint any
@@ -55,6 +55,9 @@ function Settings.Initialize(sv)
                     -- next severity change.
                     if RN.StatusBar and RN.StatusBar.SetShown then
                         RN.StatusBar.SetShown(sv.settings.showStatusBar)
+                    end
+                    if RN.StatusIconsTransparency and RN.StatusIconsTransparency.SetShown then
+                        RN.StatusIconsTransparency.SetShown(sv.settings.statusIconsTransparencyEnabled)
                     end
                     if RN.Overlay and RN.Overlay.RefreshAll then
                         RN.Overlay.RefreshAll(sv)
@@ -66,6 +69,9 @@ function Settings.Initialize(sv)
                     if RN.StatusBar and RN.StatusBar.SetShown then
                         RN.StatusBar.SetShown(false)
                     end
+                    if RN.StatusIconsTransparency and RN.StatusIconsTransparency.SetShown then
+                        RN.StatusIconsTransparency.SetShown(false)
+                    end
                     if RN.Overlay and RN.Overlay.ClearDisease then
                         for diseaseId in pairs(RN.Diseases) do
                             RN.Overlay.ClearDisease(diseaseId)
@@ -74,6 +80,27 @@ function Settings.Initialize(sv)
                 end
             end,
             default = true,
+        },
+        {
+            type = "checkbox",
+            name = "Enable needs tracking",
+            tooltip = "Independent of \"Enable the disease system\" below — turning this off doesn't touch disease contraction, progression, self-cure, or curing in any way. When OFF (and \"Enable the addon\" above stays on): hunger, thirst, fatigue, and drunkenness stop decaying, and food/drink/water consumption no longer restores them — they're frozen at whatever they were, not reset to anything.",
+            getFunc = function() return sv.settings.needsSystemEnabled end,
+            setFunc = function(value) sv.settings.needsSystemEnabled = value end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = "Use icon-based status display",
+            tooltip = "Shows a second, icon-based status window alongside the text status window above (not instead of it — toggle \"Show needs status window\" separately if you want just one). Fixed icons for all 4 needs and all 5 diseases, always in the same position, where TRANSPARENCY (not color) indicates severity — fully transparent means a need is satisfied or a disease isn't present, fully opaque means a need is completely empty or a disease is Severe. Position is drag-movable in-game, independent of the text window's position.",
+            getFunc = function() return sv.settings.statusIconsTransparencyEnabled end,
+            setFunc = function(value)
+                sv.settings.statusIconsTransparencyEnabled = value
+                if RN.StatusIconsTransparency and RN.StatusIconsTransparency.SetShown then
+                    RN.StatusIconsTransparency.SetShown(value and sv.settings.masterEnabled ~= false)
+                end
+            end,
+            default = false,
         },
         { type = "header", name = "Needs — decay & restoration" },
         {
@@ -164,12 +191,21 @@ function Settings.Initialize(sv)
                 CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r Status window position reset. Reload UI to see the change take effect.")
             end,
         },
+        {
+            type = "button",
+            name = "Reset icon status window position",
+            tooltip = "The icon-based status window is drag-movable in-game separately from the text window. If it gets lost off-screen, use this to bring it back to its default position.",
+            func = function()
+                sv.settings.statusIconsTransparencyPosition = { x = 16, y = 340 }
+                CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r Icon status window position reset. Reload UI to see the change take effect.")
+            end,
+        },
 
         { type = "header", name = "Disease contraction chances" },
         {
             type = "checkbox",
             name = "Enable the disease system",
-            tooltip = "Independent of the master switch above. When OFF: no new disease can be contracted (neither from sustained cold/heat exposure nor from combat damage), and no disease already active can worsen in severity — it just sits frozen at its current severity. Curing a disease you already have still works exactly the same either way. Any disease overlay tints on screen clear immediately while this is off, and reappear at their correct severity the moment you turn it back on. Hunger/thirst/fatigue/drunkenness are unaffected by this — use the master switch above to pause those too.",
+            tooltip = "Independent of \"Enable needs tracking\" above and the master switch further up — turning this off doesn't touch hunger/thirst/fatigue/drunkenness in any way. When OFF (and \"Enable the addon\" stays on): no new disease can be contracted (neither from sustained cold/heat exposure nor from combat damage), and no disease already active can worsen in severity or self-cure on its own — it just sits frozen at its current severity. Curing a disease you already have with an ingredient still works exactly the same either way — this only stops new contraction and progression, not treatment. Any disease overlay tints on screen clear immediately while this is off, and reappear at their correct severity the moment you turn it back on.",
             getFunc = function() return sv.settings.diseaseSystemEnabled end,
             setFunc = function(value)
                 sv.settings.diseaseSystemEnabled = value

@@ -335,6 +335,7 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_AVG_TICK] = "Средний тик",
     [BATTLESCROLLS_TOOLTIP_MIN_TICK] = "Минимальный тик",
     [BATTLESCROLLS_TOOLTIP_MAX_TICK] = "Максимальный тик",
+    [BATTLESCROLLS_TOOLTIP_TICKS] = "Тиков",
 
     [BATTLESCROLLS_TOOLTIP_BY_TARGET] = "По цели",
     [BATTLESCROLLS_TOOLTIP_MEAN_INTERVAL] = "Средний интервал",
@@ -968,6 +969,8 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_VALUE_MB] = "<<1>> МБ",
     [BATTLESCROLLS_MEMDIAG_VALUE_MB_PAIR] = "<<1>> / <<2>> МБ",
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "Память аддонов (консольный индикатор)",
+    [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "Измерить классы размеров строк",
+    [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "длина: индикатор / куча / модель (байт на строку)",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "Что отправить",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "Все бои (<<1>>)",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "Только боссы (<<1>>)",
@@ -985,5 +988,76 @@ local shareStrings = {
     [BATTLESCROLLS_SHARE_FINISH] = "Завершить отправку",
 }
 for id, str in pairs(shareStrings) do
+    SafeAddString(id, str, 1)
+end
+
+-- Новые функции: переименование, рейдовый урон, воскрешения, цвет полосы, ульта, Крукс, З'ен
+local featureStrings = {
+    [BATTLESCROLLS_RENAME] = "Переименовать",
+    [BATTLESCROLLS_RENAME_TEXT] = "Введите новое имя. Чтобы сбросить, введите исходное имя (<<1>>).",
+
+    [BATTLESCROLLS_TAB_RAID_DAMAGE] = "Урон рейда",
+    [BATTLESCROLLS_STAT_RAID_DAMAGE] = "Общий урон рейда",
+    [BATTLESCROLLS_STAT_RAID_DPS] = "УВС рейда",
+
+    [BATTLESCROLLS_GROUP_COL_RES] = "Воскр",
+
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR] = "Цвет вашей полосы",
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT] = "Цвет вашей полосы в групповом счётчике «Цветные полосы». Передаётся согруппникам с Battle Scrolls — они тоже увидят вашу полосу в этом цвете.",
+    [BATTLESCROLLS_COLOR_DEFAULT] = "По умолчанию",
+    [BATTLESCROLLS_COLOR_RED] = "Красный",
+    [BATTLESCROLLS_COLOR_ORANGE] = "Оранжевый",
+    [BATTLESCROLLS_COLOR_GOLD] = "Золотой",
+    [BATTLESCROLLS_COLOR_GREEN] = "Зелёный",
+    [BATTLESCROLLS_COLOR_TEAL] = "Бирюзовый",
+    [BATTLESCROLLS_COLOR_CYAN] = "Голубой",
+    [BATTLESCROLLS_COLOR_BLUE] = "Синий",
+    [BATTLESCROLLS_COLOR_PURPLE] = "Фиолетовый",
+    [BATTLESCROLLS_COLOR_PINK] = "Розовый",
+    [BATTLESCROLLS_COLOR_WHITE] = "Белый",
+    [BATTLESCROLLS_COLOR_GREY] = "Серый",
+
+    [BATTLESCROLLS_HEADER_ULTIMATE] = "Суперспособность",
+    [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Заряд при входе в бой",
+    [BATTLESCROLLS_STAT_ULT_GENERATED] = "Накоплено заряда",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Потрачено и слито",
+    [BATTLESCROLLS_HEADER_ULT_SOURCES] = "Источники накопления",
+    [BATTLESCROLLS_ULT_BASE_GENERATION] = "Базовое накопление",
+    [BATTLESCROLLS_ULT_HEROISM_LINE] = "Включая <<C:1>>: аптайм <<2>>%, примерно <<3>>",
+    [BATTLESCROLLS_HEADER_ULT_CASTS] = "Применённые суперспособности",
+
+    [BATTLESCROLLS_HEADER_CRUX] = "Знаки",
+    [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Создание Знаков (касты)",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Создание при 3 Знаках",
+    [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Траты Знаков (касты)",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Траты при неполных Знаках",
+    [BATTLESCROLLS_CRUX_AT_N] = "Знаков: <<1>> — <<2>>",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Дисциплина Знаков по способностям",
+
+    [BATTLESCROLLS_HEADER_ZEN] = "DoT-эффекты (З'ен)",
+    [BATTLESCROLLS_ZEN_AVG_DOTS] = "Среднее число DoT",
+    [BATTLESCROLLS_ZEN_UPTIME] = "Аптайм дебаффа З'ена",
+    [BATTLESCROLLS_ZEN_POTENTIAL] = "Время с 1+ DoT",
+    [BATTLESCROLLS_ZEN_DOTS_LABEL] = "DoT: <<1>>",
+    [BATTLESCROLLS_ZEN_SHARE_LINE] = "в среднем <<1>> — <<2>> с 5 DoT",
+    [BATTLESCROLLS_ZEN_SHORT] = "З'ен",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "в средн. <<1>> DoT — З'ен <<2>>% — 1+ DoT <<3>>%",
+
+    [BATTLESCROLLS_HEADER_SUPPORT] = "Поддержка",
+    [BATTLESCROLLS_STAT_RESURRECTIONS] = "Воскрешения",
+}
+for id, str in pairs(featureStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local cruxPassiveStrings = {
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Потрачено вне кастов",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Знаки, потерянные без применения тратящей способности: естественное истечение срока (30 секунд) или смерть.",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Знаки, созданные срабатываниями этого источника (сопоставлены с приростами по времени).",
+    [BATTLESCROLLS_STAT_CRUX_OTHER] = "Прочие приросты Знаков",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Приросты Знаков без отслеживаемого источника — например, периодические срабатывания «<<1>>».",
+    [BATTLESCROLLS_HEADER_CRUX_GAINED] = "Получено Знаков по способностям",
+}
+for id, str in pairs(cruxPassiveStrings) do
     SafeAddString(id, str, 1)
 end

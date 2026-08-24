@@ -238,6 +238,17 @@ local function upsertSharedDataEntry(entries, entry)
     end
 
     if existingIndex then
+        -- Same sender encounter arrives on both share protocols (V2 and V3,
+        -- in either order): never let the field-less V2 duplicate clobber
+        -- the richer V3 entry (res and zen ride only V3)
+        local existing = entries[existingIndex]
+        local existingRicher = existing.data
+            and (existing.data.resurrections ~= nil or existing.data.zenByBoss ~= nil)
+        local entryRicher = entry.data
+            and (entry.data.resurrections ~= nil or entry.data.zenByBoss ~= nil)
+        if existingRicher and not entryRicher then
+            return false
+        end
         entries[existingIndex] = entry
         return false
     end
@@ -263,6 +274,11 @@ local function upsertStoredSharedEntry(encounter, entry)
             if existing.d == entry.displayName
                 and existing.t == entry.data.timestampS
                 and existing.u == entry.data.durationMs then
+                -- Keep the richer duplicate (V3 carries res/zen, V2 doesn't)
+                if (existing.s ~= nil or existing.z ~= nil)
+                    and compactEntry.s == nil and compactEntry.z == nil then
+                    return false
+                end
                 entries[i] = compactEntry
                 return false
             end
@@ -557,12 +573,30 @@ function scribe:FinalizeEncounter()
     BattleScrolls.state:Reset()
 end
 
+-- Cheap check (a dozen unit-API calls at most), so retry densely enough
+-- that short holds like the 500ms death linger resolve promptly
+local RESET_RETRY_DELAY_MS = 500
+local resetRetryToken = 0
+
 function scribe:WaitAndMaybeReset()
-    zo_callLater(function()
-        if BattleScrolls.state:ShouldReset() then
-            self:FinalizeEncounter()
+    -- Single-flight: a new trigger supersedes any pending retry chain
+    resetRetryToken = resetRetryToken + 1
+    local token = resetRetryToken
+    local function check()
+        if token ~= resetRetryToken then
+            return
         end
-    end, 150)
+        local state = BattleScrolls.state
+        if state:ShouldReset() then
+            self:FinalizeEncounter()
+        elseif state.initialized and not state.inCombat then
+            -- Something soft is holding the encounter open (dead player,
+            -- group still fighting) and its release may produce no event
+            -- for us - re-check until it resolves or we re-enter combat
+            zo_callLater(check, RESET_RETRY_DELAY_MS)
+        end
+    end
+    zo_callLater(check, 150)
 end
 
 ---Import encounter from state asynchronously
@@ -676,6 +710,16 @@ function scribe:ImportEncounterFromStateAsync()
             end
             encounter.deaths = { deathCount = deathCount, recaps = recaps }
         end
+
+        -- Activity trackers: ultimate economy, Crux usage, resurrections, Z'en.
+        -- Must precede the encounter-share send: resurrections ride in the
+        -- shared summary built from this encounter.
+        encounter.ultimate = BattleScrolls.ultimate.finalize(capturedState.ultimate)
+        encounter.crux = BattleScrolls.crux.finalize(capturedState.cruxActivity, capturedState.lastDamageDoneMs)
+        if (capturedState.resurrectionCount or 0) > 0 then
+            encounter.resurrections = capturedState.resurrectionCount
+        end
+        encounter.zen = BattleScrolls.zen.finalize(capturedState.zen, capturedState.lastDamageDoneMs)
 
         encounter.setup = capturedState.playerSetup
         if encounter.setup and capturedState.effectsOnPlayer then

@@ -160,6 +160,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field bossUnitIdRedirects table<number, number> Maps newUnitId → canonicalUnitId (merging if boss unit recreated on client)
 ---@field failedToAssignBossUnitIds table<number, boolean>
 ---@field lastDamageDoneMs number
+---@field lastPlayerAliveMs number Game time of the last EVENT_PLAYER_ALIVE (death-linger for ShouldReset)
 ---@field effectsOnPlayer table<number, EffectStats> Effects on player with attribution, keyed by abilityId
 ---@field effectsOnBosses table<string, table<number, EffectStats>> Effects on bosses, keyed by unitTag ("boss1")
 ---@field effectsOnGroup table<string, table<number, EffectStats>> Effects on group members, keyed by displayName ("PlayerName")
@@ -175,6 +176,10 @@ BattleScrolls = BattleScrolls or {}
 ---@field cruxStacks number Current Crux stack count (0-3, for Exhausting Fatecarver duration)
 ---@field cruxRecentMax number Max Crux stacks seen within current event burst window
 ---@field cruxWindowStartMs number Start of current Crux event burst window
+---@field ultimate UltimateState Ultimate gen/usage tracking state (managed by combat/ultimate.lua)
+---@field cruxActivity CruxActivityState|nil Crux economy tracking (managed by combat/crux.lua; nil when not an Arcanist)
+---@field resurrectionCount number Successful resurrection casts by the player this fight
+---@field zen ZenState Z'en/DoT-count tracking state (managed by combat/zen.lua)
 local state = {}
 
 BattleScrolls.state = state
@@ -365,9 +370,14 @@ function state:Reset()
     self.pendingSharedData = nil
     self.playerSetup = nil
     self.lastDamageDoneMs = 0
+    self.lastPlayerAliveMs = 0
     self.playerDeathCount = 0
     self.deathRecaps = {}
     self.weaving = BattleScrolls.weaving.newState()
+    self.ultimate = BattleScrolls.ultimate.newState()
+    self.cruxActivity = nil
+    self.resurrectionCount = 0
+    self.zen = BattleScrolls.zen.newState()
 
     -- Clear effect tracking state via effects module
     BattleScrolls.effects.clear(self)
@@ -417,6 +427,10 @@ function state:Snapshot()
     snapshot.playerSetup = self.playerSetup
 
     snapshot.weaving = self.weaving
+    snapshot.ultimate = self.ultimate
+    snapshot.cruxActivity = self.cruxActivity
+    snapshot.resurrectionCount = self.resurrectionCount
+    snapshot.zen = self.zen
 
     return snapshot
 end
@@ -427,7 +441,16 @@ BattleScrolls.state:Reset()
 ---@type table<number, string>
 local BOSS_TAGS = BattleScrolls.constants.BOSS_TAGS
 
----Returns false if in combat, in portal, or bosses are in progress
+-- A dead player is dropped from combat while the group fight goes on; damage
+-- flowing this recently keeps the encounter open (the group-in-combat check
+-- below is the primary guard, this covers units the API misreports)
+local DEAD_RECENT_DAMAGE_HOLD_MS = 4000
+-- EVENT_PLAYER_ALIVE fires before the resurrected player's combat state
+-- settles; keep treating them as dead for this long to dodge the race
+local DEATH_LINGER_MS = 500
+
+---Returns false if in combat, in portal, the group is still fighting, or
+---bosses are in progress
 ---@return boolean
 function state:ShouldReset()
     if not self.initialized then
@@ -441,6 +464,28 @@ function state:ShouldReset()
     end
     if self.isInPortal then
         -- BattleScrolls.log.Trace("ShouldReset: in portal")
+        return false
+    end
+
+    -- The encounter is the GROUP's fight: any member still in combat keeps
+    -- it open (the player may be dead or momentarily dropped from combat).
+    -- Skipped in AvA/battlegrounds - a full PvP group is near-permanently
+    -- in combat and would glue everything into one encounter.
+    if not (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) then
+        for i = 1, GetGroupSize() do
+            local groupTag = ZO_Group_GetUnitTagForGroupIndex(i)
+            if groupTag and not AreUnitsEqual(groupTag, "player") and IsUnitInCombat(groupTag) then
+                -- BattleScrolls.log.Trace("ShouldReset: group member in combat")
+                return false
+            end
+        end
+    end
+
+    local nowMs = GetGameTimeMilliseconds()
+    local deadOrJustRevived = IsUnitDeadOrReincarnating("player")
+        or (nowMs - self.lastPlayerAliveMs) < DEATH_LINGER_MS
+    if deadOrJustRevived and (nowMs - self.lastDamageDoneMs) < DEAD_RECENT_DAMAGE_HOLD_MS then
+        -- BattleScrolls.log.Trace("ShouldReset: dead with damage still flowing")
         return false
     end
 
@@ -486,6 +531,7 @@ function state:RefreshBosses()
                 }
             elseif bossData.name ~= bossName then
                 -- Tag reuse: different boss name on same tag. Old BossData stays in bossesByUnitId.
+                BattleScrolls.zen.onBossTagRotated(self, bossTag, bossData.tagSeq or 0)
                 self.bossesByTag[bossTag] = {
                     name = bossName,
                     unitTag = bossTag,
@@ -547,6 +593,7 @@ function state:CorrelateBossUnitId(unitTag, unitId, unitName)
         if bossData.name ~= unitName then
             -- Tag reuse missed by OnBossUnitCreated/RefreshBosses: different boss on same tag.
             -- Old BossData stays in bossesByUnitId. Create new entry for the new boss.
+            BattleScrolls.zen.onBossTagRotated(self, unitTag, bossData.tagSeq or 0)
             bossData = {
                 name = unitName,
                 unitTag = unitTag,
@@ -598,6 +645,7 @@ function state:OnBossUnitCreated(unitTag)
         }
     elseif bossData.name ~= bossName then
         -- Tag reuse: different boss. Old BossData stays in bossesByUnitId.
+        BattleScrolls.zen.onBossTagRotated(self, unitTag, bossData.tagSeq or 0)
         self.bossesByTag[unitTag] = {
             name = bossName,
             unitTag = unitTag,
@@ -789,6 +837,7 @@ function state:Cleanup()
     combatEventNames = {}
 
     EVENT_MANAGER:UnregisterForEvent("BattleScrolls_State", EVENT_PLAYER_COMBAT_STATE)
+    EVENT_MANAGER:UnregisterForEvent("BattleScrolls_State", EVENT_PLAYER_ALIVE)
     EVENT_MANAGER:UnregisterForEvent("BattleScrolls_State", EVENT_PLAYER_ACTIVATED)
     EVENT_MANAGER:UnregisterForEvent("BattleScrolls_State", EVENT_BOSSES_CHANGED)
     EVENT_MANAGER:UnregisterForEvent("BattleScrolls_Crux", EVENT_EFFECT_CHANGED)
@@ -894,6 +943,10 @@ function state:Initialize()
                 self:ChangePlayerCombatState(inCombat)
             end)
 
+    EVENT_MANAGER:RegisterForEvent("BattleScrolls_State", EVENT_PLAYER_ALIVE, function()
+        self.lastPlayerAliveMs = GetGameTimeMilliseconds()
+    end)
+
     for abilityId, _ in pairs(portalEffectsSet) do
         local eventName = string.format("BattleScrolls_State_%d", abilityId)
         EVENT_MANAGER:RegisterForEvent(eventName, EVENT_EFFECT_CHANGED,
@@ -942,7 +995,9 @@ function state:Initialize()
                     self.cruxRecentMax = zo_max(self.cruxStacks, newStacks)
                     self.cruxWindowStartMs = now
                 end
+                local oldStacks = self.cruxStacks
                 self.cruxStacks = newStacks
+                BattleScrolls.crux.onCruxStacksChanged(self, oldStacks, newStacks)
             end)
     EVENT_MANAGER:AddFilterForEvent("BattleScrolls_Crux", EVENT_EFFECT_CHANGED,
             REGISTER_FILTER_UNIT_TAG, "player",
@@ -1821,6 +1876,12 @@ function state:OnDamageTaken(_, result, _isError, _abilityName, _abilityGraphic,
     end
 
     BattleScrolls.accumulators.damage(self.damageTakenByUnitId, sourceUnitID, targetUnitID, abilityID, hitValue, overflow, isCrit)
+
+    -- Hits on the player themselves (not pet/companion) may proc the
+    -- Fatewoven armor line's Crux generation
+    if targetType == COMBAT_UNIT_TYPE_PLAYER then
+        BattleScrolls.crux.onPlayerDamaged()
+    end
 
     -- Track player fights when taking damage from enemy players
     if sourceType == COMBAT_UNIT_TYPE_OTHER then

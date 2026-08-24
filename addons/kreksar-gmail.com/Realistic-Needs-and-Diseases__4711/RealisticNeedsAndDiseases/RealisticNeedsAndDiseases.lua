@@ -6,7 +6,7 @@ RealisticNeeds = RealisticNeeds or {}
 local RN = RealisticNeeds
 
 RN.NAME    = "RealisticNeedsAndDiseases"
-RN.VERSION = "0.19.13"
+RN.VERSION = "0.19.23"
 
 -- Keybind display name. Must run at file-parse time (not inside
 -- OnAddOnLoaded) — see bindings.xml for the matching Action definition and
@@ -24,18 +24,48 @@ local SV_DEFAULTS = {
     -- deleted the moment a cure lands. See Disease.TIER1_CURE_COOLDOWN_SECONDS.
     tier1CureCooldowns = {},
     settings = {
-        needsSystemEnabled = true,  -- master on/off switch for the whole needs/disease system; see OnTick
-        -- Disease-only switch: independent of needsSystemEnabled above. When
-        -- off, hunger/thirst/fatigue/drunkenness keep decaying/restoring
-        -- normally, but no new disease is rolled (exposure-based or
-        -- combat-triggered) and no already-contracted disease can escalate
-        -- in severity — see RollContraction in Disease.lua, the single choke
-        -- point both contraction paths funnel through. Curing an existing
-        -- disease still works either way. Existing disease state is neither
-        -- deleted nor auto-cured by turning this off; see Settings.lua's
-        -- setFunc for the overlay clear/restore that goes with this toggle.
-        diseaseSystemEnabled = true,
+        -- Three-tier toggle structure (decoupled — each is independent):
+        --   masterEnabled        — true kill switch for the ENTIRE addon
+        --                          simulation: needs decay, disease system,
+        --                          AND all consumption crediting (food/
+        --                          drink/water restoring needs, ingredients
+        --                          curing disease). Nothing in sv.needs/
+        --                          sv.diseaseState changes while this is
+        --                          off, regardless of the two toggles below.
+        --   needsSystemEnabled   — independent of diseaseSystemEnabled.
+        --                          When off (but masterEnabled stays on):
+        --                          hunger/thirst/fatigue/drunkenness decay
+        --                          stops AND food/drink/water consumption
+        --                          no longer restores them either — needs
+        --                          are fully frozen at whatever they were.
+        --                          Disease processing (contraction,
+        --                          progression, self-cure, curing) is
+        --                          entirely unaffected by this toggle.
+        --   diseaseSystemEnabled — independent of needsSystemEnabled. When
+        --                          off (but masterEnabled stays on): no new
+        --                          disease is rolled (exposure-based or
+        --                          combat-triggered) via RollContraction in
+        --                          Disease.lua (the single choke point both
+        --                          contraction paths funnel through), and no
+        --                          already-contracted disease can escalate
+        --                          in severity or self-cure via OnTick.
+        --                          Curing an existing disease with an
+        --                          ingredient still works either way — this
+        --                          toggle only stops new contraction/
+        --                          progression, not treatment. Needs decay/
+        --                          restoration is entirely unaffected by
+        --                          this toggle. Existing disease state is
+        --                          neither deleted nor auto-cured by turning
+        --                          this off; see Settings.lua's setFunc for
+        --                          the overlay clear/restore that goes with it.
+        masterEnabled         = true,
+        needsSystemEnabled    = true,
+        diseaseSystemEnabled  = true,
         showStatusBar     = true,
+        -- Icon-based status display (StatusIconsTransparency.lua) — opt-in
+        -- and off by default, runs ALONGSIDE showStatusBar above, not
+        -- instead of it. Transparency (not color/pips) indicates severity.
+        statusIconsTransparencyEnabled = false,
         showNativeNotifications = true,
         -- Chat logging of notifications is opt-in, separate from the
         -- top-right popups (showNativeNotifications above). Default false —
@@ -120,10 +150,34 @@ end
 -- dependency rather than optional — there's no reliable fallback for this
 -- specific confirmation signal.
 --
+-- BIDIRECTIONAL: ESO does not guarantee EVENT_EFFECT_CHANGED (buff granted)
+-- and EVENT_INVENTORY_SINGLE_SLOT_UPDATE (stack shrinks) fire in a fixed
+-- order relative to each other. The original check only looked BACKWARD
+-- (was a buff granted recently, as of the inventory event?), so whenever
+-- the inventory event happened to be processed first, the buff timestamp
+-- wasn't set yet, the gate rejected a genuine consumption, and that
+-- restore was silently lost — no error, no trace, just a drink that
+-- "didn't work." _pendingConsumption below covers the other direction: if
+-- the inventory shrink arrives with no recent buff, it's held (not
+-- dropped) for BUFF_APPLICATION_WINDOW_MS so a buff event that arrives
+-- shortly AFTER can still credit it retroactively.
+--
 -- LibFoodDrinkBuff:IsAbilityAFoodOrDrinkBuff(abilityId) — real, confirmed method.
 -- EVENT_EFFECT_CHANGED parameter order and EFFECT_RESULT_GAINED/UPDATED — real, confirmed constants.
 local BUFF_APPLICATION_WINDOW_MS = 500
 local _lastFoodDrinkBuffTimeMs = 0
+
+-- Forward-declared: OnFoodDrinkBuffChanged (below) can credit a pending
+-- consumption before HandleConsumedItem's actual definition is reached
+-- further down this file; the assignment there fills this in.
+local HandleConsumedItem
+
+-- Holds { itemType, specializedItemType, itemName, timeMs } for an
+-- inventory shrink that looked like food/drink consumption but hadn't yet
+-- seen a confirming buff event when it was detected. Cleared once credited
+-- or once overwritten by a newer pending shrink — a stale, never-confirmed
+-- entry is harmless since it's simply replaced, never accumulated.
+local _pendingConsumption = nil
 
 local function OnFoodDrinkBuffChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime,
                                        stackCount, iconName, buffType, effectType, abilityType, statusEffectType,
@@ -131,6 +185,15 @@ local function OnFoodDrinkBuffChanged(eventCode, changeType, effectSlot, effectN
     if changeType ~= EFFECT_RESULT_GAINED and changeType ~= EFFECT_RESULT_UPDATED then return end
     if LibFoodDrinkBuff:IsAbilityAFoodOrDrinkBuff(abilityId) then
         _lastFoodDrinkBuffTimeMs = GetGameTimeMilliseconds()
+
+        -- Forward direction: a pending inventory shrink was waiting on this
+        -- confirmation. Credit it now if it's still within the window.
+        if _pendingConsumption and
+           (_lastFoodDrinkBuffTimeMs - _pendingConsumption.timeMs) <= BUFF_APPLICATION_WINDOW_MS then
+            HandleConsumedItem(_pendingConsumption.itemType, _pendingConsumption.specializedItemType,
+                _pendingConsumption.itemName, RN.SavedVars)
+        end
+        _pendingConsumption = nil
     end
 end
 
@@ -149,7 +212,12 @@ end
 -- state (not the current empty slot) is what tells us what was consumed.
 local _lastSlotState = {}
 
-local function HandleConsumedItem(itemType, specializedItemType, itemName, sv)
+HandleConsumedItem = function(itemType, specializedItemType, itemName, sv)
+    -- Consumption crediting follows the same masterEnabled/needsSystemEnabled
+    -- gating as decay in OnTick — if needs are frozen (either toggle off),
+    -- eating/drinking shouldn't silently move a number nobody's tracking.
+    if sv.settings.masterEnabled == false or sv.settings.needsSystemEnabled == false then return end
+
     if itemType == ITEMTYPE_FOOD then
         sv.needs.hunger = ClampNeed(sv.needs.hunger + sv.settings.restoreAmounts.food)
         RN.Feedback.CheckBandTransition(sv, "hunger", sv.needs.hunger)
@@ -187,15 +255,31 @@ local function OnFoodDrinkInventoryChange(eventCode, bagId, slotId, isNewItem, i
 
     local function MaybeHandleConsumption(itemType, specializedItemType, itemName)
         local isFoodOrDrink = (itemType == ITEMTYPE_FOOD) or (itemType == ITEMTYPE_DRINK)
+        if not isFoodOrDrink then return end
         -- Only trust the inventory-shrink signal if a real food/drink buff was JUST
         -- granted — this rules out selling, banking, or stack splits which also fire
         -- EVENT_INVENTORY_SINGLE_SLOT_UPDATE with a decreased count. The trade-window
         -- guard above already handles the common cases; the buff gate is a
         -- belt-and-suspenders check for edge cases.
-        if isFoodOrDrink and not RecentlyGrantedFoodDrinkBuff() then return end
-        if isFoodOrDrink then
+        --
+        -- BACKWARD direction: the buff already arrived before this inventory
+        -- event, so credit immediately, same as before.
+        if RecentlyGrantedFoodDrinkBuff() then
+            _pendingConsumption = nil
             HandleConsumedItem(itemType, specializedItemType, itemName, sv)
+            return
         end
+        -- FORWARD direction: no recent buff yet, but ESO doesn't guarantee
+        -- the buff event arrives first — hold this shrink as pending so
+        -- OnFoodDrinkBuffChanged can still credit it if the buff shows up
+        -- within BUFF_APPLICATION_WINDOW_MS. Not dropped outright, unlike
+        -- before.
+        _pendingConsumption = {
+            itemType             = itemType,
+            specializedItemType  = specializedItemType,
+            itemName             = itemName,
+            timeMs               = GetGameTimeMilliseconds(),
+        }
     end
 
     if currentLink and currentLink ~= "" then
@@ -296,6 +380,9 @@ local function OnLootReceived(eventCode, receivedBy, itemName, stackCount, sound
     if not itemId or not RN.ALCHEMY_WATER_SOLVENT_IDS[itemId] then return end
 
     local sv = RN.SavedVars
+    -- Same needs-frozen gating as HandleConsumedItem — see the comment there.
+    if sv.settings.masterEnabled == false or sv.settings.needsSystemEnabled == false then return end
+
     sv.needs.thirst = ClampNeed(sv.needs.thirst + sv.settings.restoreAmounts.harvest)
     RN.Feedback.CheckBandTransition(sv, "thirst", sv.needs.thirst)
     RN.Feedback.Notify(string.format(
@@ -312,46 +399,65 @@ end
 local function OnTick()
     local sv = RN.SavedVars
 
-    -- Master on/off switch (Settings panel): when disabled, skip decay,
-    -- disease processing, rest handling, and the status bar entirely —
-    -- nothing in sv.needs/sv.diseaseState changes while this is off. See
-    -- Settings.lua's setFunc for the toggle that also hides the status bar
-    -- and clears any visible disease overlays the moment this is switched off.
-    if sv.settings.needsSystemEnabled == false then return end
+    -- True kill switch (Settings panel): when disabled, skip needs decay,
+    -- disease processing, and the status bar entirely — nothing in
+    -- sv.needs/sv.diseaseState changes while this is off, regardless of
+    -- the two independent toggles below. See Settings.lua's setFunc for
+    -- the toggle that also hides the status bar and clears any visible
+    -- disease overlays the moment this is switched off.
+    if sv.settings.masterEnabled == false then return end
 
     local tickSeconds = TICK_INTERVAL_MS / 1000
 
-    local hungerRate  = RN.Calculator.GetBaseRatePerSecond(sv, "hunger")
-    local thirstRate  = RN.Calculator.GetBaseRatePerSecond(sv, "thirst")
-    local fatigueRate = RN.Calculator.GetBaseRatePerSecond(sv, "fatigue")
+    -- Independent of diseaseSystemEnabled below — see the settings default
+    -- comment block for the full three-tier breakdown.
+    if sv.settings.needsSystemEnabled ~= false then
+        local hungerRate  = RN.Calculator.GetBaseRatePerSecond(sv, "hunger")
+        local thirstRate  = RN.Calculator.GetBaseRatePerSecond(sv, "thirst")
+        local fatigueRate = RN.Calculator.GetBaseRatePerSecond(sv, "fatigue")
 
-    if sv.settings.coupleToFrostfall then
-        hungerRate  = RN.Calculator.GetHungerDecayRate(hungerRate)
-        thirstRate  = RN.Calculator.GetThirstDecayRate(thirstRate)
-        fatigueRate = RN.Calculator.GetFatigueDecayRate(fatigueRate)
+        if sv.settings.coupleToFrostfall then
+            hungerRate  = RN.Calculator.GetHungerDecayRate(hungerRate)
+            thirstRate  = RN.Calculator.GetThirstDecayRate(thirstRate)
+            fatigueRate = RN.Calculator.GetFatigueDecayRate(fatigueRate)
+        end
+
+        sv.needs.hunger  = ClampNeed(sv.needs.hunger  - hungerRate  * tickSeconds)
+        sv.needs.thirst  = ClampNeed(sv.needs.thirst  - thirstRate  * tickSeconds)
+        sv.needs.fatigue = ClampNeed(sv.needs.fatigue - fatigueRate * tickSeconds)
+
+        -- Drunkenness (#1): baseline decay always applies; RN.Rest accelerates
+        -- this further while the player is resting (any of its 3 mechanics) —
+        -- see RealisticNeedsAndDiseases_Rest.lua's drunkenness handling.
+        local drunkDecay = sv.settings.drunkennessBaselineDecayPerSecond * tickSeconds
+        sv.needs.drunkenness = math.max(0, sv.needs.drunkenness - drunkDecay)
+
+        RN.Feedback.CheckBandTransition(sv, "hunger", sv.needs.hunger)
+        RN.Feedback.CheckBandTransition(sv, "thirst", sv.needs.thirst)
+        RN.Feedback.CheckBandTransition(sv, "fatigue", sv.needs.fatigue)
+        RN.Feedback.CheckBandTransition(sv, "drunkenness", sv.needs.drunkenness)
+        RN.Feedback.EmoteTick(sv)
+
+        -- Purely a needs mechanic (resting restores fatigue, accelerates
+        -- drunkenness decay) — never touches sv.diseaseState, so it belongs
+        -- under this toggle, not diseaseSystemEnabled.
+        RN.Rest.OnTick(sv, tickSeconds)
     end
 
-    sv.needs.hunger  = ClampNeed(sv.needs.hunger  - hungerRate  * tickSeconds)
-    sv.needs.thirst  = ClampNeed(sv.needs.thirst  - thirstRate  * tickSeconds)
-    sv.needs.fatigue = ClampNeed(sv.needs.fatigue - fatigueRate * tickSeconds)
-
-    -- Drunkenness (#1): baseline decay always applies; RN.Rest accelerates
-    -- this further while the player is resting (any of its 3 mechanics) —
-    -- see RealisticNeedsAndDiseases_Rest.lua's drunkenness handling.
-    local drunkDecay = sv.settings.drunkennessBaselineDecayPerSecond * tickSeconds
-    sv.needs.drunkenness = math.max(0, sv.needs.drunkenness - drunkDecay)
-
-    RN.Feedback.CheckBandTransition(sv, "hunger", sv.needs.hunger)
-    RN.Feedback.CheckBandTransition(sv, "thirst", sv.needs.thirst)
-    RN.Feedback.CheckBandTransition(sv, "fatigue", sv.needs.fatigue)
-    RN.Feedback.CheckBandTransition(sv, "drunkenness", sv.needs.drunkenness)
-    RN.Feedback.EmoteTick(sv)
-
-    RN.Disease.OnTick(sv, tickSeconds)
-    RN.Rest.OnTick(sv, tickSeconds)
+    -- Independent of needsSystemEnabled above. RN.Disease.OnTick drives
+    -- sustained cold/heat exposure contraction, untreated-disease stage
+    -- progression, and frostbite/heatstroke self-cure — all gated on this
+    -- toggle alone now, rather than being silently skipped whenever needs
+    -- decay happened to be off.
+    if sv.settings.diseaseSystemEnabled ~= false then
+        RN.Disease.OnTick(sv, tickSeconds)
+    end
 
     if RN.StatusBar and RN.StatusBar.Refresh then
         RN.StatusBar.Refresh(sv)
+    end
+    if RN.StatusIconsTransparency and RN.StatusIconsTransparency.Refresh then
+        RN.StatusIconsTransparency.Refresh(sv)
     end
 end
 
@@ -360,10 +466,15 @@ end
 -- ─────────────────────────────────────────────────────────────────────────────
 local function PrintCheckNeeds()
     local sv = RN.SavedVars
-    if sv.settings.needsSystemEnabled == false then
-        CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r The needs/disease system is currently turned off (Settings > Realistic Needs and Diseases). Values shown below are frozen from when it was last active.")
-    elseif sv.settings.diseaseSystemEnabled == false then
-        CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r The disease system is currently turned off (Settings > Realistic Needs and Diseases). No new diseases can be contracted and existing ones won't worsen, but needs tracking continues normally below.")
+    if sv.settings.masterEnabled == false then
+        CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r The addon is currently turned off (Settings > Realistic Needs and Diseases). Values shown below are frozen from when it was last active.")
+    else
+        if sv.settings.needsSystemEnabled == false then
+            CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r Needs tracking is currently turned off (Settings > Realistic Needs and Diseases). Values shown below are frozen from when it was last active; the disease system below is unaffected.")
+        end
+        if sv.settings.diseaseSystemEnabled == false then
+            CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r The disease system is currently turned off (Settings > Realistic Needs and Diseases). No new diseases can be contracted and existing ones won't worsen or self-cure, but curing one with an ingredient still works; needs tracking above is unaffected.")
+        end
     end
     CHAT_SYSTEM:AddMessage(string.format(
         "|c88CCFF[Realistic Needs and Diseases]|r Hunger: %d (%s)",
@@ -414,16 +525,18 @@ end
 -- ─────────────────────────────────────────────────────────────────────────────
 local function NotifyCurrentStatus()
     local sv = RN.SavedVars
-    if sv.settings.needsSystemEnabled == false then
-        RN.Feedback.NotifyAlertOnly("The needs/disease system is currently turned off (Settings > Realistic Needs and Diseases).")
+    if sv.settings.masterEnabled == false then
+        RN.Feedback.NotifyAlertOnly("The addon is currently turned off (Settings > Realistic Needs and Diseases).")
         return
     end
 
-    RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("hunger", sv.needs.hunger))
-    RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("thirst", sv.needs.thirst))
-    RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("fatigue", sv.needs.fatigue))
-    if sv.needs.drunkenness > 0 then
-        RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("drunkenness", sv.needs.drunkenness))
+    if sv.settings.needsSystemEnabled ~= false then
+        RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("hunger", sv.needs.hunger))
+        RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("thirst", sv.needs.thirst))
+        RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("fatigue", sv.needs.fatigue))
+        if sv.needs.drunkenness > 0 then
+            RN.Feedback.NotifyAlertOnly(RN.Feedback.GetBandMessage("drunkenness", sv.needs.drunkenness))
+        end
     end
 
     local any = false
@@ -462,6 +575,9 @@ local function PrintDebugUsage()
     CHAT_SYSTEM:AddMessage("  /rnd debug frostbiteTimer  — print how long until Frostbite's next contraction roll (or whether you're even currently exposed)")
     CHAT_SYSTEM:AddMessage("  /rnd debug heatstrokeTimer — same as frostbiteTimer, for Heatstroke")
     CHAT_SYSTEM:AddMessage("  /rnd debug curedisease     — clears all active diseases (does not touch needs)")
+    CHAT_SYSTEM:AddMessage(string.format(
+        "  /rnd debug skipprogression <1-%d> — fast-forwards that disease's untreated-stage progression timer to one tick (~5s) before both its 30-minute threshold and its 5-minute reroll interval, so the very next tick rolls its escalation chance immediately instead of waiting up to 35 minutes. Disease must already be active and below Severe.",
+        #RN.DISEASE_ORDER))
     CHAT_SYSTEM:AddMessage("  /rnd debug resetneeds      — resets hunger/thirst/fatigue/drunkenness to their full/sober defaults (does not touch diseases)")
     CHAT_SYSTEM:AddMessage("  /rnd debug emptyNeeds      — drops hunger/thirst/fatigue/drunkenness to their worst values, for quickly testing recovery mechanisms (does not touch diseases)")
 end
@@ -535,6 +651,47 @@ local function HandleDebugCommand(arg2, arg3, arg4)
             RN.Disease.SetSeverityDirect(sv, diseaseId, 0)
         end
         RN.Feedback.Notify("[debug] All diseases cleared.")
+    elseif arg2 == "skipprogression" then
+        local index = tonumber(arg3)
+        local diseaseId = index and RN.DISEASE_ORDER[index]
+        local def = diseaseId and RN.Diseases[diseaseId]
+        if not diseaseId then
+            CHAT_SYSTEM:AddMessage(string.format(
+                "|c88CCFF[Realistic Needs and Diseases]|r Invalid disease index. Use 1-%d (see /rnd debug for the list).",
+                #RN.DISEASE_ORDER))
+            return
+        end
+
+        local sv = RN.SavedVars
+        local state = sv.diseaseState[diseaseId]
+        if not state then
+            CHAT_SYSTEM:AddMessage(string.format(
+                "|c88CCFF[Realistic Needs and Diseases]|r %s isn't currently active — use /rnd debug disease first to give yourself a case to test progression on.",
+                def and def.name or diseaseId))
+            return
+        end
+        if state.severity >= RN.SEVERITY_SEVERE then
+            CHAT_SYSTEM:AddMessage(string.format(
+                "|c88CCFF[Realistic Needs and Diseases]|r %s is already Severe — there's no higher stage for it to progress to.",
+                def and def.name or diseaseId))
+            return
+        end
+
+        -- Set both counters to one tick short of their own threshold. On the
+        -- very next OnTick (~5s away), CheckProgression's own tickSeconds
+        -- increment pushes progressionSeconds over PROGRESSION_THRESHOLD_SECONDS
+        -- AND, in that same pass, pushes progressionRollSeconds over
+        -- PROGRESSION_REROLL_INTERVAL_SECONDS — so the escalation roll fires
+        -- immediately instead of only starting its 5-minute reroll clock.
+        -- Real play never has both timers this close together at once (the
+        -- reroll clock doesn't even start accumulating until AFTER the
+        -- threshold is crossed) — this is purely a test shortcut.
+        local tickSeconds = TICK_INTERVAL_MS / 1000
+        state.progressionSeconds = RN.Disease.PROGRESSION_THRESHOLD_SECONDS - tickSeconds
+        state.progressionRollSeconds = RN.Disease.PROGRESSION_REROLL_INTERVAL_SECONDS - tickSeconds
+        RN.Feedback.Notify(string.format(
+            "[debug] %s's progression timer skipped to just before threshold — next tick (~%.0fs) rolls a %.0f%% chance to worsen.",
+            def and def.name or diseaseId, tickSeconds, RN.Disease.PROGRESSION_CHANCE * 100))
     elseif arg2 == "resetneeds" then
         local sv = RN.SavedVars
         sv.needs.hunger, sv.needs.thirst, sv.needs.fatigue, sv.needs.drunkenness = 100, 100, 100, 0
@@ -682,6 +839,12 @@ local function OnAddOnLoaded(eventCode, addonName)
         RN.StatusBar.Initialize()
         RN.StatusBar.SetShown(sv.settings.showStatusBar)
         RN.StatusBar.Refresh(sv)
+    end
+
+    if RN.StatusIconsTransparency and RN.StatusIconsTransparency.Initialize then
+        RN.StatusIconsTransparency.Initialize()
+        RN.StatusIconsTransparency.SetShown(sv.settings.statusIconsTransparencyEnabled)
+        RN.StatusIconsTransparency.Refresh(sv)
     end
 
     if RN.Feedback and RN.Feedback.ResolveEmoteDefaults then

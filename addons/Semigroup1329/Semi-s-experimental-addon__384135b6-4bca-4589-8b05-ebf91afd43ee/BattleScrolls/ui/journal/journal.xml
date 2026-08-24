@@ -593,6 +593,18 @@
                         </Label>
                     </Controls>
                 </Control>
+                <Control name="$(parent)Res">
+                    <Dimensions x="60"/>
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Deaths"
+                            offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGamepad27"
+                               horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Dimensions x="45"/>
+                            <Anchor point="LEFT"/>
+                        </Label>
+                    </Controls>
+                </Control>
             </Controls>
         </Control>
 
@@ -726,6 +738,11 @@
                                         <Control name="$(parent)Deaths" inherits="ZO_GamepadInteractiveFilterHeader">
                                             <Dimensions x="80"/>
                                             <Anchor point="TOPLEFT" relativeTo="$(parent)Alive" relativePoint="TOPRIGHT"
+                                                    offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                                        </Control>
+                                        <Control name="$(parent)Res" inherits="ZO_GamepadInteractiveFilterHeader">
+                                            <Dimensions x="60"/>
+                                            <Anchor point="TOPLEFT" relativeTo="$(parent)Deaths" relativePoint="TOPRIGHT"
                                                     offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
                                         </Control>
                                     </Controls>

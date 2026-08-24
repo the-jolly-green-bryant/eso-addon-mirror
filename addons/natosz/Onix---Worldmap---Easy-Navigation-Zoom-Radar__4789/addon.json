@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/natosz/Onix---Worldmap---Easy-Navigation-Zoom-Radar__4789",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "natosz",
+  "canonical_id": "esoui:4789",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4789",
+  "deleted": false,
+  "directories": [
+    "OnixWorldmap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4789/",
+  "fingerprint": "8129e3a55678276c2e8387197d99cf6a944228d272ef1fe074ec3c1202777a74",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17093.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4789",
+  "source_url": "https://www.esoui.com/downloads/info4789-Onix-Worldmap-EasyNavigationZoomRadar.html",
+  "stats": {
+    "downloads": 8,
+    "favorites": 1,
+    "monthly_downloads": 0
+  },
+  "title": "Onix - Worldmap - Easy Navigation ( Zoom & Radar)",
+  "updated_at": 1787532552000,
+  "version": "1.0"
+}
