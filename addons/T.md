@@ -53,7 +53,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tbudko's icons for Makos's ContentHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tbudko/Tbudko-s-icons-for-Makos-s-ContentHelper__4140) | Tbudko | PC / Mac | 1.1.0 |
 | [TDAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/TDAddon__4194) | Masteroshi430 | PC / Mac | 2026.07.30 |
 | [Tea and Toast](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Tea-and-Toast__8394c641-1cb2-45f3-8b73-b6f424d6c630) | SugaComa | Console | — |
-| [TeamShadowBuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/teamfky/TeamShadowBuff__4673) | teamfky | PC / Mac | 1.1.8 |
+| [TeamShadowBuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/teamfky/TeamShadowBuff__4673) | teamfky | PC / Mac | 1.1.9 |
 | [TeamShadowsManager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/teamfky/TeamShadowsManager__4670) | teamfky | PC / Mac | 1.1.18 |
 | [TeilzeitLegende's Restock Style Materials and Auto Repair (Fixed)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jakki/TeilzeitLegende-s-Restock-Style-Materials-and-Auto-Repair-Fixed__3125) | Jakki | PC / Mac | 0.8.6.1 |
 | [Tel Var Counter (TelVar Logger)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mladen90/Tel-Var-Counter-TelVar-Logger__2737) | Mladen90 | PC / Mac | 1.1.0 |
@@ -71,6 +71,9 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TestMapAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/TestMapAddon__cee315a7-bef0-44c7-9a12-dbc6bdb6674d) | PinkBanther | Console | — |
 | [TESTUPDATE2112](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rob82668/TESTUPDATE2112__4435) | rob82668 | PC / Mac | 1.0.0 |
 | [Tetris for Fishing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sem/Tetris-for-Fishing__3314) | Sem | PC / Mac | 1.7 |
+| [Tetsu's Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-FPS-Booster__2edefdf7-97a0-476e-98a0-f76c40976159) | Tetsurion | Console | — |
+| [Tetsu's Housing FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Housing-FPS-Booster__febdb84e-a3d4-46d5-b70c-e9b1e491be5f) | Tetsurion | Console | — |
+| [Tetsu's Writ Crafter: Main & Alts (dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Writ-Crafter-Main-Alts-dev__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
 | [Text Trials Guide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Text-Trials-Guide__2461) | Splat | PC / Mac | 1.2.8 |
 | [TG's Group Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaTerGoTcha/TG-s-Group-Trackers__cd045612-ec90-4885-be99-f35f328691f8) | TaTerGoTcha | Console | — |
 | [Thank A Healer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tevnar/Thank-A-Healer__2958) | Tevnar | PC / Mac | 1.0.0 |

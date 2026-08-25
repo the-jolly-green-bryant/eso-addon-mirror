@@ -31,6 +31,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [New Life Festival](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/New-Life-Festival__3263) | tim99 | PC / Mac | 15.2 |
 | [New Life Festival Wayshrines](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/New-Life-Festival-Wayshrines__3261) | kawamonkey | PC / Mac | 1.1 |
 | [New motifs and fixes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/pesakm/New-motifs-and-fixes__3380) | pesakm | PC / Mac | 11.5.04 |
+| [new test ps5](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/new-test-ps5__2b60cc83-ca16-4441-ac8d-8aeabbf9bf14) | Lofand | Console | — |
 | [New World UI - NWUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/New-World-UI---NWUI__4587) | Wrynch | PC / Mac | 1.0.1 |
 | [Next Boss Stage(Custom Boss Frame)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awfuldead/Next-Boss-Stage-Custom-Boss-Frame__2889) | awfuldead | PC / Mac | 2.0.6 |
 | [NextQuest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/NextQuest__dfed21f9-988b-44b9-a054-89bfcce20639) | dicen9 | Console | — |

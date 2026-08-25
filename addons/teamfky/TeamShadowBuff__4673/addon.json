@@ -18,7 +18,7 @@
     "TeamShadowsBuffs"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4673/",
-  "fingerprint": "d635e080ca8fe50a77d9a9040a95782fba3fa6ba83c3b3d08a07088c5d8a69d6",
+  "fingerprint": "33c2970f08840bdcb4a2a36cb92397c685382f1936813f4a570eee77bea976b9",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16503.png",
     "https://cdn-eso.mmoui.com/preview/pvw17028.png",
@@ -31,11 +31,11 @@
   "source_id": "4673",
   "source_url": "https://www.esoui.com/downloads/info4673-TeamShadowBuff.html",
   "stats": {
-    "downloads": 57,
+    "downloads": 86,
     "favorites": 0,
-    "monthly_downloads": 18
+    "monthly_downloads": 35
   },
   "title": "TeamShadowBuff",
-  "updated_at": 1787052184000,
-  "version": "1.1.8"
+  "updated_at": 1787560820000,
+  "version": "1.1.9"
 }

@@ -1,10 +1,10 @@
 ## Title: |cFFAA33Shopping List|r
 ## Description: A compact shopping list for guild store trips.
 ## Author: Gravvy
-## Version: 0.17.0
+## Version: 0.18.0
 ## APIVersion: 101050
-## AddOnVersion: 30
-## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0
+## AddOnVersion: 31
+## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0 LibSets>=0009000
 ## OptionalDependsOn: AwesomeGuildStore LibCustomMenu
 ## SavedVariables: ShoppingList_Data
 
@@ -30,6 +30,7 @@ Archive.lua
 Bindings.xml
 ContextMenu.lua
 Data.lua
+SetCatalog.lua
 Editor.lua
 Gamepad.lua
 Gamepad.xml

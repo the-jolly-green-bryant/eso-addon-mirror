@@ -20,20 +20,14 @@ Skins.TEMPLATE = {
     icon = "ValknarrTheme_WwIcon",
     ring = "ValknarrTheme_WwRing",
     seg = "ValknarrTheme_WwSeg",
+    well = "ValknarrTheme_WwWell",
+    headfill = "ValknarrTheme_WwWell",
 }
+Skins.WELL = TEX_ROOT .. "well.dds"
 Skins.WOLF = {
-    steel = {
-        icon = TEX_ROOT .. "w3i.dds",
-        ring = TEX_ROOT .. "w3r.dds",
-        wedge = TEX_ROOT .. "wseg.dds",
-        liquid = TEX_ROOT .. "liq.dds",
-        portrait = TEX_ROOT .. "swf.dds",
-    },
-    bronze = {
-        icon = TEX_ROOT .. "w2i.dds",
-        ring = TEX_ROOT .. "w2r.dds",
-        wedge = TEX_ROOT .. "rnw.dds",
-    },
+    nordic = { icon = TEX_ROOT .. "w1i.dds", ring = TEX_ROOT .. "w1r.dds", wedge = TEX_ROOT .. "wseg.dds" },
+    steel = { icon = TEX_ROOT .. "w3i.dds", ring = TEX_ROOT .. "w3r.dds", wedge = TEX_ROOT .. "wseg.dds" },
+    bronze = { icon = TEX_ROOT .. "w2i.dds", ring = TEX_ROOT .. "w2r.dds", wedge = TEX_ROOT .. "wseg.dds" },
 }
 
 function Skins.BarFrame(themeId)
@@ -63,6 +57,7 @@ function Skins.WolfPlate(wolfId)
         tiles = pack.tiles,
         hole = pack.hole,
         circle = frames.wolf.circle or { 0.75, 0.50, 0.24 },
+        well = frames.wolf.well or 0.20,
         cols = frames.wolf.cols or 4,
         rows = frames.wolf.rows or 2,
     }
@@ -134,21 +129,31 @@ end
 
 local EXPECT = {
     [TEX_ROOT .. "u1.dds"] = { 256, 64 },
+    [TEX_ROOT .. "xl.dds"] = { 256, 256 },
+    [TEX_ROOT .. "xm.dds"] = { 256, 256 },
+    [TEX_ROOT .. "xr.dds"] = { 256, 256 },
     [TEX_ROOT .. "a2l.dds"] = { 256, 256 },
     [TEX_ROOT .. "a2m.dds"] = { 256, 256 },
     [TEX_ROOT .. "a2r.dds"] = { 256, 256 },
     [TEX_ROOT .. "a3l.dds"] = { 256, 256 },
     [TEX_ROOT .. "a3m.dds"] = { 256, 256 },
     [TEX_ROOT .. "a3r.dds"] = { 256, 256 },
+    [TEX_ROOT .. "w1i.dds"] = { 256, 256 },
+    [TEX_ROOT .. "w1r.dds"] = { 256, 256 },
     [TEX_ROOT .. "w2i.dds"] = { 256, 256 },
     [TEX_ROOT .. "w2r.dds"] = { 256, 256 },
     [TEX_ROOT .. "w3i.dds"] = { 256, 256 },
     [TEX_ROOT .. "w3r.dds"] = { 256, 256 },
     [TEX_ROOT .. "wseg.dds"] = { 256, 256 },
-    [TEX_ROOT .. "liq.dds"] = { 256, 256 },
-    [TEX_ROOT .. "rnw.dds"] = { 256, 256 },
-    [TEX_ROOT .. "swf.dds"] = { 256, 256 },
-    [TEX_ROOT .. "bwf.dds"] = { 256, 256 },
+    [TEX_ROOT .. "well.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n1.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n2.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n3.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n4.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n5.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n6.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n7.dds"] = { 256, 256 },
+    [TEX_ROOT .. "n8.dds"] = { 256, 256 },
     [TEX_ROOT .. "s1.dds"] = { 256, 256 },
     [TEX_ROOT .. "s2.dds"] = { 256, 256 },
     [TEX_ROOT .. "s3.dds"] = { 256, 256 },
@@ -361,10 +366,11 @@ function Skins.Probe(pass)
     end
     pass = tonumber(pass) or 1
     local specs = {
-        { tag = "probe/wolf", path = TEX_ROOT .. "w3i.dds", want = "256x256" },
-        { tag = "probe/tile", path = TEX_ROOT .. "a2l.dds", want = "256x256" },
+        { tag = "probe/wolf", path = TEX_ROOT .. "w1i.dds", want = "256x256" },
+        { tag = "probe/tile", path = TEX_ROOT .. "xl.dds", want = "256x256" },
         { tag = "probe/strip", path = TEX_ROOT .. "u1.dds", want = "256x64" },
-        { tag = "probe/plate", path = TEX_ROOT .. "s1.dds", want = "256x256" },
+        { tag = "probe/plate", path = TEX_ROOT .. "n1.dds", want = "256x256" },
+        { tag = "probe/well", path = TEX_ROOT .. "well.dds", want = "256x256" },
     }
     if Log then
         Log:Always("probe pass=" .. tostring(pass))

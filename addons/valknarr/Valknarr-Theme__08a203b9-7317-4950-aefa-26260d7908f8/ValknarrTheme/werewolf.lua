@@ -1,5 +1,5 @@
 -- Form-only werewolf widget. Clean: icon + Ult over Fury.
--- Named skins: one 8-tile inverted-L plate (Ult in the bar, Fury on the head).
+-- Named skins: one 8-tile inverted-L plate (Ult in the bar, Fury behind the wolf).
 -- No cooldown ring (console paints that as a spinning white square).
 -- Native ZO_PlayerAttributeWerewolf is hidden while this widget is shown.
 
@@ -32,6 +32,7 @@ local BLINK_MS = 400
 local FILL_WARN = { 0.78, 0.28, 0.16, 1 }
 local SUSTAIN_OK = { 1, 0.92, 0.55, 1 }
 local SUSTAIN_WARN = { 1, 0.32, 0.22, 1 }
+local WELL_EMPTY = { 0.07, 0.04, 0.04, 1 }
 
 local function OverlayTier(control, drawLevel)
     Safe.Try(control, "SetMouseEnabled", false)
@@ -99,6 +100,40 @@ local function SizeOrb(holder, icon, ring, segs, size)
     for index = 1, #segs do
         Safe.Try(segs[index], "SetDimensions", size, size)
     end
+end
+
+local function SizeHead(well, fill, icon, size)
+    Safe.Try(well, "SetDimensions", size, size)
+    Safe.Try(icon, "SetDimensions", size, size)
+    if fill then
+        Safe.Try(fill, "SetDimensions", size, size)
+    end
+end
+
+local function PaintHeadFill(fill, host, size, pct, color)
+    pct = (tonumber(pct) or 0) / 100
+    if pct < 0 then
+        pct = 0
+    end
+    if pct > 1 then
+        pct = 1
+    end
+    if not fill then
+        return
+    end
+    if pct <= 0.01 then
+        Safe.Try(fill, "SetHidden", true)
+        return
+    end
+    local height = math.max(2, math.floor(size * pct + 0.5))
+    Safe.Try(fill, "ClearAnchors")
+    Safe.Try(fill, "SetAnchor", BOTTOM, host or fill, BOTTOM, 0, 0)
+    Safe.Try(fill, "SetDimensions", size, height)
+    Safe.Try(fill, "SetTextureCoords", 0, 1, 1 - pct, 1)
+    if color then
+        Safe.Try(fill, "SetColor", color[1], color[2], color[3], color[4])
+    end
+    Safe.Try(fill, "SetHidden", false)
 end
 
 -- Vanilla werewolf ability art. Not LycanMeter's files.
@@ -228,6 +263,35 @@ function Werewolf:Ensure()
     Safe.Try(icon, "SetDrawLevel", 106)
     self.icon = icon
 
+    local headWell
+    if Skins and Skins.CreateTexture then
+        headWell = Skins.CreateTexture(ADDON_NAME .. "WolfWell", iconHolder, Skins.TEMPLATE.well)
+    else
+        headWell = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfWell", iconHolder, CT_TEXTURE)
+    end
+    Safe.Try(headWell, "SetAnchor", CENTER, iconHolder, CENTER, 0, 0)
+    Safe.Try(headWell, "SetDimensions", ORB_SIZE, ORB_SIZE)
+    Safe.Try(headWell, "SetColor", WELL_EMPTY[1], WELL_EMPTY[2], WELL_EMPTY[3], WELL_EMPTY[4])
+    Safe.Try(headWell, "SetDrawLayer", DL_OVERLAY)
+    Safe.Try(headWell, "SetDrawTier", DT_HIGH)
+    Safe.Try(headWell, "SetDrawLevel", 101)
+    Safe.Try(headWell, "SetHidden", true)
+    self.headWell = headWell
+
+    local headFill
+    if Skins and Skins.CreateTexture then
+        headFill = Skins.CreateTexture(ADDON_NAME .. "WolfHeadFill", iconHolder, Skins.TEMPLATE.headfill)
+    else
+        headFill = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfHeadFill", iconHolder, CT_TEXTURE)
+    end
+    Safe.Try(headFill, "SetAnchor", BOTTOM, headWell, BOTTOM, 0, 0)
+    Safe.Try(headFill, "SetDimensions", ORB_SIZE, 8)
+    Safe.Try(headFill, "SetDrawLayer", DL_OVERLAY)
+    Safe.Try(headFill, "SetDrawTier", DT_HIGH)
+    Safe.Try(headFill, "SetDrawLevel", 102)
+    Safe.Try(headFill, "SetHidden", true)
+    self.headFill = headFill
+
     local ringFrame
     if Skins and Skins.CreateTexture then
         ringFrame = Skins.CreateTexture(ADDON_NAME .. "WolfRing", iconHolder, Skins.TEMPLATE.ring)
@@ -260,20 +324,6 @@ function Werewolf:Ensure()
         Safe.Try(seg, "SetHidden", true)
         self.segments[index] = seg
     end
-
-    local liquid = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfLiquid", iconHolder, CT_TEXTURE)
-    OverlayTier(liquid, 110)
-    Safe.Try(liquid, "SetColor", 1, 1, 1, 1)
-    Safe.Try(liquid, "SetHidden", true)
-    self.liquid = liquid
-
-    local rim = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "WolfLiquidRim", iconHolder, CT_BACKDROP)
-    OverlayTier(rim, 111)
-    Safe.Try(rim, "SetCenterColor", 1.0, 0.62, 0.32, 0.95)
-    Safe.Try(rim, "SetEdgeColor", 0, 0, 0, 0)
-    Safe.Try(rim, "SetEdgeTexture", nil, 1, 1, 1, 0)
-    Safe.Try(rim, "SetHidden", true)
-    self.liquidRim = rim
 
     local cleanUlt = Format.Fill("clean", "ult")
     local cleanFury = Format.Fill("clean", "fury")
@@ -480,6 +530,11 @@ function Werewolf:ClearFrameBinds()
             end
         end
     end
+    if Skins and Skins.ClearBind then
+        Skins.ClearBind(self.icon)
+        Skins.ClearBind(self.headWell)
+        Skins.ClearBind(self.headFill)
+    end
     self.frameArmed = nil
     self.frameRebind = nil
     self.frameSkin = nil
@@ -609,126 +664,26 @@ function Werewolf:SetWarning(on)
     self:PaintWarning(false)
 end
 
-function Werewolf:PaintRing(furyPct, wedgePath, show, count)
-    count = tonumber(count) or Format.RING_SEGMENTS
+function Werewolf:PaintRing(furyPct, wedgePath, show)
     local filled = 0
     if show then
-        filled = Format.RingFilled(furyPct, count)
+        filled = Format.RingFilled(furyPct)
     end
     local twoPi = 2 * math.pi
     local segs = self.segments or {}
     for index = 1, Format.RING_SEGMENTS do
         local seg = segs[index]
         if seg then
-            local showSeg = show and index <= filled and index <= count
+            local showSeg = show and index <= filled
             Safe.Try(seg, "SetHidden", not showSeg)
             if showSeg and Skins and wedgePath then
                 local bind = Skins.Rebind or Skins.Bind
                 bind(seg, wedgePath, "wolf/wedge")
-                Safe.Try(seg, "SetTextureRotation", (index - 1) * (twoPi / count))
+                Safe.Try(seg, "SetTextureRotation", (index - 1) * (twoPi / Format.RING_SEGMENTS))
             end
         end
     end
     return filled
-end
-
-function Werewolf:HideLiquid()
-    Safe.Try(self.liquid, "SetHidden", true)
-    Safe.Try(self.liquidRim, "SetHidden", true)
-end
-
-function Werewolf:PaintPortrait(wolfId)
-    local icon = self.icon
-    if not icon then
-        return
-    end
-    local pack = Skins and Skins.WolfPack and Skins.WolfPack(wolfId)
-    local path = pack and pack.portrait
-    if not path then
-        Safe.Try(icon, "SetHidden", true)
-        return
-    end
-    local size = 0
-    if self.orb and type(self.orb.GetWidth) == "function" then
-        size = tonumber(self.orb:GetWidth()) or 0
-    end
-    if size < 8 then
-        size = ORB_SIZE
-    end
-    local inner = math.max(8, math.floor(size * Format.WolfLiquidScale(wolfId)))
-    OverlayTier(icon, 112)
-    local bind = (Skins and (Skins.Rebind or Skins.Bind)) or nil
-    if bind then
-        bind(icon, path, "wolf/portrait")
-    end
-    Safe.Try(icon, "ClearAnchors")
-    Safe.Try(icon, "SetAnchor", CENTER, self.orb, CENTER, 0, 0)
-    Safe.Try(icon, "SetDimensions", inner, inner)
-    Safe.Try(icon, "SetHidden", false)
-end
-
-function Werewolf:PaintLiquid(furyPct, wolfId)
-    local liquid = self.liquid
-    if not liquid then
-        return 0
-    end
-    local pct = (tonumber(furyPct) or 0) / 100
-    if pct < 0 then
-        pct = 0
-    end
-    if pct > 1 then
-        pct = 1
-    end
-    if pct < 0.02 then
-        self:HideLiquid()
-        return 0
-    end
-    local size = 0
-    if self.orb and type(self.orb.GetWidth) == "function" then
-        size = tonumber(self.orb:GetWidth()) or 0
-    end
-    if size < 8 then
-        size = ORB_SIZE
-    end
-    local inner = math.max(8, math.floor(size * Format.WolfLiquidScale(wolfId)))
-    local height = math.max(2, math.floor(inner * pct))
-    local inset = math.floor((size - inner) * 0.5)
-    local path = "/ValknarrTheme/texture/liq.dds"
-    local pack = Skins and Skins.WolfPack and Skins.WolfPack(wolfId)
-    if pack and pack.liquid then
-        path = pack.liquid
-    end
-    local bind = (Skins and (Skins.Rebind or Skins.Bind)) or nil
-    if bind then
-        bind(liquid, path, "wolf/liquid")
-    end
-    OverlayTier(liquid, 110)
-    Safe.Try(liquid, "ClearAnchors")
-    Safe.Try(liquid, "SetAnchor", BOTTOM, self.orb, BOTTOM, 0, -inset)
-    Safe.Try(liquid, "SetDimensions", inner, height)
-    Safe.Try(liquid, "SetTextureCoords", 0, 1, 1 - pct, 1)
-    Safe.Try(liquid, "SetHidden", false)
-
-    local rim = self.liquidRim
-    if rim then
-        local radius = inner * 0.5
-        local fromCenter = height - radius
-        local under = radius * radius - fromCenter * fromCenter
-        local chord = 0
-        if under > 0 then
-            chord = math.floor(math.sqrt(under) * 2 * 0.92)
-        end
-        if chord >= 10 and pct < 0.98 then
-            OverlayTier(rim, 111)
-            Safe.Try(rim, "ClearAnchors")
-            Safe.Try(rim, "SetAnchor", TOP, liquid, TOP, 0, 0)
-            Safe.Try(rim, "SetDimensions", chord, 3)
-            Safe.Try(rim, "SetHidden", false)
-        else
-            Safe.Try(rim, "SetHidden", true)
-        end
-    end
-    return math.floor(pct * 100)
 end
 
 function Werewolf:LayoutPlate(pack, furyPct, ultPct, wolfId)
@@ -736,7 +691,7 @@ function Werewolf:LayoutPlate(pack, furyPct, ultPct, wolfId)
     Safe.Try(self.barBg, "SetHidden", true)
     Safe.Try(self.fill, "SetHidden", true)
     Safe.Try(self.furyLabel, "SetHidden", true)
-    Safe.Try(self.icon, "SetHidden", true)
+    Safe.Try(self.icon, "SetHidden", false)
     Safe.Try(self.ringFrame, "SetHidden", true)
 
     local host = self.plateHost
@@ -769,6 +724,9 @@ function Werewolf:LayoutPlate(pack, furyPct, ultPct, wolfId)
     if self.sustainLabel then
         local ox = math.floor(x + wellW * 0.5 - PLATE_W * 0.5)
         local oy = math.floor(y + wellH * 0.5 - PLATE_H * 0.5)
+        if wellH < 24 then
+            oy = oy - 3
+        end
         Safe.Try(self.sustainLabel, "ClearAnchors")
         Safe.Try(self.sustainLabel, "SetAnchor", CENTER, host, CENTER, ox, oy)
         Safe.Try(self.sustainLabel, "SetDimensions", wellW, wellH)
@@ -782,30 +740,35 @@ function Werewolf:LayoutPlate(pack, furyPct, ultPct, wolfId)
     local cy = circle[2] * PLATE_H
     local radius = circle[3] * PLATE_W
     local orb = math.max(48, math.floor(radius * 2))
+    local wellFrac = pack.well or 0.20
+    local wellSize = math.max(32, math.floor(wellFrac * PLATE_W * 2))
     Safe.Try(self.orb, "ClearAnchors")
     Safe.Try(self.orb, "SetAnchor", TOPLEFT, host, TOPLEFT, math.floor(cx - orb * 0.5), math.floor(cy - orb * 0.5))
     SizeOrb(self.orb, self.icon, self.ringFrame, self.segments, orb)
-    if Format.WolfLiquid(wolfId) then
-        self:PaintRing(furyPct, nil, false)
-        self:PaintPortrait(wolfId)
-        return self:PaintLiquid(furyPct, wolfId)
+    SizeHead(self.headWell, self.headFill, self.icon, wellSize)
+    local bind = Skins and (Skins.Rebind or Skins.Bind)
+    local wellPath = Skins and Skins.WELL
+    if bind and wellPath then
+        bind(self.headWell, wellPath, "wolf/well")
+        bind(self.headFill, wellPath, "wolf/headfill")
     end
-    self:HideLiquid()
-    OverlayTier(self.icon, 106)
-    Safe.Try(self.icon, "SetHidden", true)
+    Safe.Try(self.headWell, "SetColor", WELL_EMPTY[1], WELL_EMPTY[2], WELL_EMPTY[3], WELL_EMPTY[4])
+    Safe.Try(self.headWell, "SetHidden", false)
     local wolf = Skins and Skins.WolfPack and Skins.WolfPack(wolfId)
-    if Format.WolfRunes(wolfId) then
-        return self:PaintRing(furyPct, wolf and wolf.wedge, true, Format.RUNE_SEGMENTS)
+    if bind and wolf and wolf.icon then
+        bind(self.icon, wolf.icon, "wolf/portrait")
     end
-    return self:PaintRing(furyPct, wolf and wolf.wedge, true)
+    PaintHeadFill(self.headFill, self.headWell, wellSize, furyPct, Format.Fill(wolfId, "fury"))
+    self:PaintRing(furyPct, nil, false)
+    return furyPct
 end
 
 function Werewolf:LayoutClean(furyPct, ultPct, wolfId)
     HideTiles(self.plateTiles, self.plateHost)
-    self:HideLiquid()
-    OverlayTier(self.icon, 106)
     Safe.Try(self.icon, "SetHidden", false)
     Safe.Try(self.ringFrame, "SetHidden", true)
+    Safe.Try(self.headWell, "SetHidden", true)
+    Safe.Try(self.headFill, "SetHidden", true)
     Safe.Try(self.orb, "ClearAnchors")
     Safe.Try(self.orb, "SetAnchor", RIGHT, self.root, RIGHT, 0, 0)
     SizeOrb(self.orb, self.icon, self.ringFrame, self.segments, ORB_SIZE)
@@ -848,15 +811,9 @@ function Werewolf:ApplySkin(furyPct, ultPct)
 
     if self.lastWolfId ~= wolfId then
         if Log then
-            local meter
-            if Format.WolfLiquid(wolfId) then
-                meter = "liquid=" .. tostring(furyPct) .. "%"
-            else
-                meter = "filled=" .. tostring(filled) .. "/" .. tostring(Format.RING_SEGMENTS)
-            end
             Log:Debug(
                 "wolf plate skin=" .. wolfId
-                .. " " .. meter
+                .. " filled=" .. tostring(filled) .. "/" .. tostring(Format.RING_SEGMENTS)
                 .. " fury=" .. tostring(furyPct) .. "%"
                 .. " plated=" .. tostring(framed)
             )
@@ -963,6 +920,8 @@ function Werewolf:Describe()
         barText = Format.ShowBarText() and true or false,
         iconTex = self.icon and self.icon.ValknarrBoundTex or nil,
         ringTex = self.ringFrame and self.ringFrame.ValknarrBoundTex or nil,
+        wellTex = self.headWell and self.headWell.ValknarrBoundTex or nil,
+        headFillTex = self.headFill and self.headFill.ValknarrBoundTex or nil,
         plateTile = self.plateTiles and self.plateTiles[1] and self.plateTiles[1].ValknarrBoundTex or nil,
     }
 end

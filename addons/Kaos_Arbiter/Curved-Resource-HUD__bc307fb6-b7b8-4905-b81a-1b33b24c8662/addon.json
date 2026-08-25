@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Kaos_Arbiter/Curved-Resource-HUD__bc307fb6-b7b8-4905-b81a-1b33b24c8662",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Kaos_Arbiter",
+  "canonical_id": "bethesda:bc307fb6-b7b8-4905-b81a-1b33b24c8662",
+  "content_id": "bc307fb6-b7b8-4905-b81a-1b33b24c8662",
+  "deleted": false,
+  "fingerprint": "34b4bbbf527560bd00969b7d051cc676186714dc846b52b5c78fcb5bf726b382",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "bc307fb6-b7b8-4905-b81a-1b33b24c8662",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/bc307fb6-b7b8-4905-b81a-1b33b24c8662",
+  "title": "Curved Resource HUD"
+}

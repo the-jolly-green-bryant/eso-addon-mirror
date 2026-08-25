@@ -1,0 +1,27 @@
+## To release a new version, edit the two lines below and nothing else.
+## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
+## Title: PB's MiniMap 1.2.2
+## Author: PinkBanther
+## Description: A lightweight minimap for console. Keeps the game's own world map parked on the HUD at a size and position you choose, and hands it straight back when you open the full map. Based on Votan's Minimap by votan, with thanks -- rebuilt so it stays inside the console add-on memory limit.
+## Version: 1.2.2
+## APIVersion: 101050 101051
+## DependsOn: LibHarvensAddonSettings>=20106 LibAsync>=30001
+## OptionalDependsOn: LibGPS>=73 TweakIt TrueExploration LibDebugLogger
+## SavedVariables: PBsMiniMap_Data
+
+## Credit: Based on "Votan's Minimap" by votan (https://www.esoui.com/downloads/info1399-VotansMinimap.html).
+## Original concept and much of the map handling come from that add-on; this version is reworked for console.
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+lang/strings.lua
+lang/$(language).lua
+
+## Controls.xml
+Main.lua
+Settings.lua
+PinLevels.lua
+PinSizes.lua
+Styles.lua
+
+Bindings.xml

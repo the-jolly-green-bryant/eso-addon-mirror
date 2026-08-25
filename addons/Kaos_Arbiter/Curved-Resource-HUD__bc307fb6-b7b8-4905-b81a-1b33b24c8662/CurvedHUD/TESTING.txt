@@ -1,0 +1,76 @@
+CURVEDHUD 0.5.3 RELEASE CHECKLIST
+
+1. In Bethesda.net, set required dependencies to:
+   - LibAddonMenu-2.0
+   - LibVotans (this is LibHarvensAddonSettings inside ESO)
+   The manifest keeps both optional so a missing menu library cannot block the HUD.
+
+2. Install/update, enable CurvedHUD, then reload the UI or relog.
+
+3. Confirm chat prints:
+   [CurvedHUD] Loaded 0.5.3; HUD, shield, mount stamina, and trackers created
+
+4. Type /curvedhud preview. Expected:
+   - red health arc on the left
+   - green stamina inner-right (default)
+   - blue magicka outer-right
+   - raw values over percentages, with Stamina and Magicka in separate rows
+   - gray shield overlay on Health
+   - green Major Resolve and orange Balance-family test trackers beside Health
+
+5. Open and close inventory/settings. CurvedHUD must disappear with the HUD scene and
+   return after the menu closes. Enable Preview Mode from the customization menu: the
+   preview must remain visible while that menu is open.
+
+6. Open Settings > Add-ons and find CurvedHUD. Depending on console library routing,
+   it may be supplied by LibHarvensAddonSettings/LibVotans rather than the LAM panel.
+
+7. Test live Health loss, Stamina/Magicka use, a damage shield, Major Resolve, and
+   Balance/Equilibrium/Spell Symmetry. Bars should crop from the top without stretching.
+   A shield above maximum Health should produce a pulsing gold edge on the Health arc.
+
+8. If anything fails, capture every [CurvedHUD] chat line or Lua error verbatim.
+   /curvedhud status reports the exact Health values returned by ESO.
+
+9. Confirm the three main fills have a dark-to-bright ESO-style gradient. Toggle
+   "Show default ESO resource bars" off and on. Off should hide only ESO's stock
+   player resource frame and lower the self-buff row by about 40 pixels; On should
+   restore both without changing CurvedHUD's scale or placement.
+
+10. Cast Bound Aegis, Major Resolve, and Balance. Aegis and Resolve should have
+    matching horizontal radii as vertical mirrors, while the Aegis icon remains
+    in its previous position. Resolve's icon should sit lower/left, Balance's icon
+    lower/right, and the orange Balance curve must remain visible over Health.
+
+11. Apply and let a damage shield expire repeatedly. Each shield must begin from
+    zero current shield, show only its live amount, and disappear completely on
+    removal. New shields must never inherit a half-bar phantom value.
+
+12. Mount and spend Mount Stamina. Its green auxiliary curve should appear only
+    while mounted (or in Preview): outside in Stacked mode and hugging the selected
+    side of Stamina in Parallel mode. Test both Stamina Inside/Top choices.
+
+13. In Parallel mode confirm the outer Magicka/Stamina resource has a visibly
+    larger concentric radius than the inner resource. Mount Stamina should hug
+    the chosen Stamina radius, and Balance should hug Health's inner edge.
+
+14. Hide the default ESO resource bars. The Buff/debuff vertical offset slider
+    should become active and move ESO's self-buff row vertically. It should be
+    disabled and ignored while the default resource bars are shown.
+
+15. Balance should now form a clearly curved, close inner neighbor to Health;
+    its icon and timer should not have moved. In Parallel mode Mount Stamina
+    should be thin and sit five pixels inside Stamina rather than covering it.
+    In Stacked mode it should sit outside the shared resource arc. Inspect all
+    fixed arc tips for softly rounded rather than square cut ends.
+
+16. Balance's upper-left point should remain fixed while the curve extends farther
+    right. Parallel Mount Stamina should move farther inside when Stamina is inner,
+    but outside when Stamina is outer. Stacked Mount Stamina should be slightly
+    closer than 0.4.15. With stock resources hidden, verify the buff/debuff offset
+    slider spans -750 to +750 and moves only when the setting or layout is applied.
+
+17. Cast Balance and verify its orange tracker is only a smooth lower-curve
+    segment, with no full bow, reversal, or vertical tail. Enable out-of-combat opacity, choose a low value, and
+    verify the whole custom HUD fades out of combat and returns to full opacity
+    immediately upon entering combat. Preview mode should remain full opacity.

@@ -1,9 +1,12 @@
 ## Title: |c66f2ffZoneSets|r
 ## Author: |cff6401Soul_Hagans|r
-## Version: 1.0.1
+## Version: 1.2.0
 ## AddOnVersion: 10001
 ## APIVersion: 101050
 ## SavedVariables: ZoneSets_AccountSavedVariables
+
+lang/default.lua
+lang/$(language).lua
 
 Bindings.xml
 ZoneSets.lua

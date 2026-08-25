@@ -42,6 +42,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CasualClean](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Th3rtythr33/CasualClean__c75df85c-f9c0-4e54-a0f3-d5173e44a850) | Th3rtythr33 | Console | — |
 | [Cat Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cpcharles/Cat-Icons__4228) | cpcharles | PC / Mac | 1.5 |
 | [CatSupportIcons - icon pack for OdySupportIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/def-venom/CatSupportIcons---icon-pack-for-OdySupportIcons__3396) | def venom | PC / Mac | 1.001 |
+| [CB's stamp of manufacture](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/CB-s-stamp-of-manufacture__4e562dc4-090e-42a9-9a27-6c9ef5e1daee) | dicen9 | Console | — |
 | [CBookFontStylist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CBookFontStylist__2505) | Calamath | PC / Mac | 5.0.2 |
 | [cChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/svammy/cChat__93511248-c8d1-4b19-9167-08bbeb5d10ac) | svammy | Console | — |
 | [CCSentinel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist/CCSentinel__070110ba-7a49-4a58-8a9a-a164977f2835) | Synkronist | Console | — |
@@ -281,6 +282,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Currency Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheInfiniti352/Currency-Tracker__2838) | TheInfiniti352 | PC / Mac | 1.0.13 |
 | [CurrencyManager - Stabbed by Ek1](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ek1/CurrencyManager---Stabbed-by-Ek1__2074) | Ek1 | PC / Mac | 18.07.21 |
 | [Currently Equipped -- Equipped Set Display](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlekWithK/Currently-Equipped----Equipped-Set-Display__3524) | AlekWithK | PC / Mac | 1.3.1 |
+| [Curved Resource HUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kaos_Arbiter/Curved-Resource-HUD__bc307fb6-b7b8-4905-b81a-1b33b24c8662) | Kaos_Arbiter | Console | — |
 | [CurvyHud](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/vvarderen/CurvyHud__1712) | vvarderen | PC / Mac | 6.12 - END |
 | [Custom Ability Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vartalus/Custom-Ability-Icons__3978) | Vartalus | PC / Mac | 1.3 |
 | [Custom Ability Icons Ru Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Letiso/Custom-Ability-Icons-Ru-Patch__4282) | Letiso | PC / Mac | 1.3 |

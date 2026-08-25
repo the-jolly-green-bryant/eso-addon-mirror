@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.25.82"
+EPC.version = "0.27.58"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -80,11 +80,6 @@ EPC.defaults = {
     utilityInventoryTracking = true,
     inventoryCharacters = {},
     sharedInventory = { items = {} },
-
-    -- Optional native ESO cinematic graphics preset. This only changes settings
-    -- exposed through ESO's own graphics API and never installs external shaders.
-    cinematicGraphicsEnabled = false,
-    cinematicGraphicsBackup = {},
 
     -- Group Finder Codex preferences
     groupFinderWidgetCategory = nil,
@@ -789,6 +784,14 @@ function EPC:RegisterEvents()
             self.questContinuation.armedUntil = now + 20000
             self.questContinuation.awaitingAdded = false
             self.questContinuation.completedQuestName = tostring(questName or "")
+
+            local function advanceMainQuest()
+                if self.QuestFinder and self.QuestFinder.AdvanceMainQuestAfterCompletion2740 then
+                    self.QuestFinder:AdvanceMainQuestAfterCompletion2740(questName)
+                end
+                if self.ActiveQuest and self.ActiveQuest.Refresh then self.ActiveQuest:Refresh() end
+            end
+            if type(zo_callLater) == "function" then zo_callLater(advanceMainQuest, 250) else advanceMainQuest() end
         end)
     end
 
@@ -839,7 +842,37 @@ function EPC:RegisterEvents()
                 self.UtilitySuite:Invalidate("DAILIES")
                 if eventCode == EVENT_ZONE_CHANGED then self.UtilitySuite:Invalidate("ZONE") end
             end
-            if self.saved.activeTab == "MAP" or self.saved.activeTab == "ACTIVITY" then
+
+            -- v0.27.40: quest objective/counter/advance events must refresh the
+            -- HUD itself, not only Codex Map/Activity pages. ESO can publish an
+            -- event just before all journal text has settled, so refresh now and
+            -- once more shortly afterward.
+            if self.ActiveQuest and self.ActiveQuest.Refresh then
+                if self.ActiveQuest.ReconcileMainQuest2744 then
+                    self.ActiveQuest:ReconcileMainQuest2744(nil, nil)
+                else
+                    self.ActiveQuest:Refresh()
+                end
+                if type(zo_callLater) == "function" then
+                    zo_callLater(function()
+                        if self.ActiveQuest and self.ActiveQuest.ReconcileMainQuest2744 then
+                            self.ActiveQuest:ReconcileMainQuest2744(nil, nil)
+                        elseif self.ActiveQuest and self.ActiveQuest.Refresh then
+                            self.ActiveQuest:Refresh()
+                        end
+                        if self.ActiveQuest and self.ActiveQuest.RefreshNativeQuestTracking2522 then
+                            self.ActiveQuest:RefreshNativeQuestTracking2522(true)
+                        end
+                    end, 180)
+                    zo_callLater(function()
+                        if self.ActiveQuest and self.ActiveQuest.ReconcileMainQuest2744 then
+                            self.ActiveQuest:ReconcileMainQuest2744(nil, nil)
+                        end
+                    end, 600)
+                end
+            end
+
+            if self.saved.activeTab == "MAP" or self.saved.activeTab == "ACTIVITY" or self.saved.activeTab == "QUESTS" then
                 self:RequestRefresh("quest-data")
             end
         end)
@@ -1180,6 +1213,7 @@ function EPC:Initialize()
     initModule("TARGET_BUILD", self.TargetBuild)
     initModule("GEAR_OPTIMIZER", self.GearOptimizer)
     initModule("GEAR_LOADOUT_OVERLAY", self.GearLoadoutOverlay)
+    initModule("LOADOUT_MANAGER", self.LoadoutManager)
     initModule("ADVISOR", self.Advisor)
     initModule("COMBAT_PRESENTATION", self.CombatPresentation)
     initModule("COMBAT", self.Combat)

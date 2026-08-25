@@ -1,0 +1,8 @@
+## Title: PullCard
+## Author: Shawn + ChatGPT
+## Description: Controller-first dungeon boss mechanics cards with group-chat prefill.
+## Version: 0.2.0
+## APIVersion: 101050 101051
+
+Data.lua
+PullCard.lua

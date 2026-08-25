@@ -1,0 +1,24 @@
+## Title: |cFFD700Tetsu's|r Writ Crafter: |c00FF00Main & Alts|r
+## Author: Tetsurion
+## Description: Zero-latency daily writ automation, smart bank logistics, quest turn-in & container opener for PlayStation.
+## Version: 1.1.3
+## AddOnVersion: 10103
+## APIVersion: 101050 101051
+## SavedVariables: TetsuWritCrafterSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+localization/en.lua
+localization/ru.lua
+localization/de.lua
+localization/fr.lua
+localization/es.lua
+localization/zh.lua
+localization/ja.lua
+
+Data.lua
+UI.lua
+Settings.lua
+CraftingEngine.lua
+BankingEngine.lua
+QuestAutomation.lua
+Main.lua

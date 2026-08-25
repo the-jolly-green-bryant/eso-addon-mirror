@@ -4,6 +4,63 @@ Full version history for Frostfall. See README.md for current features, installa
 
 ---
 
+### v3.4.23
+- **New: "Temperature Adaptation Rate" slider** in ConfigMenu (0.25–5.0
+  °C/min, in 0.25 steps) — controls how fast your character's temperature
+  drifts toward ambient, previously a hardcoded constant
+  (`BASE_DRIFT_RATE = 1.75`) with no in-game way to adjust it. Stored as
+  `FV.SV.driftRate`; the default (1.75) matches the old hardcoded value
+  exactly, so nobody's actual drift behavior changes on upgrade unless they
+  move the slider themselves. Insulation-based scaling
+  (`ComputeDriftRate`/armor via `LibArmorInsulation`) is unaffected — it
+  still multiplies on top of whichever base rate is set.
+
+---
+
+### v3.4.22
+- **BUGFIX — the offline-pause persistence added in 3.4.21 could silently
+  fail to reach disk.** `FV.SV.spellResistRemainingSeconds` was written
+  only once, inside the `EVENT_PLAYER_DEACTIVATED` handler
+  (`SaveSpellResistRemaining`). Debug logging plus direct inspection of
+  `FrostfallSV.lua` confirmed the write succeeded in memory every time
+  (the log correctly reported the remaining seconds) but sometimes never
+  made it into the saved file — a race against the client's own
+  SavedVariables flush that a value written *during* the deactivate
+  handler could lose, while values already sitting in `FV.SV` from
+  earlier in the session (like `playerTemp`, updated continuously) were
+  never affected. Fixed by also writing `spellResistRemainingSeconds` on
+  every 1-second `OnSpellResistTick` while the buff is active, mirroring
+  the always-current pattern `playerTemp` already used successfully. The
+  deactivate-time write is kept as a final tightening-up at logout, not
+  the sole write path, so the value in `FV.SV` is now correct well before
+  any flush happens rather than depending on one to land in time.
+- **Cleans up the orphaned `spellResistEndTimestamp` key** left behind in
+  SavedVariables by the pre-3.4.21 (v3.4.19/3.4.20) persistence scheme,
+  which stored an absolute epoch timestamp under that name. Nothing has
+  read it since 3.4.21 replaced it with `spellResistRemainingSeconds`, so
+  it was dead data for anyone upgrading from an older save. Now cleared on
+  the first `Initialize()` after upgrading.
+
+---
+
+### v3.4.21
+- **Spell-resist reagent buff now PAUSES while offline instead of counting
+  down against real-world time regardless of login state.** v3.4.19's
+  persistence used `FV.SV.spellResistEndTimestamp`, an absolute real-world
+  epoch timestamp — meaning a relog gap longer than the buff's own max
+  duration (30-39 minutes, depending on Medicinal Use rank) would always
+  correctly, but perhaps counterintuitively, show it as expired, since the
+  buff genuinely would have worn off by then even if the player had stayed
+  logged in the whole time. Replaced with `FV.SV.spellResistRemainingSeconds`
+  — a plain duration, not a timestamp — captured the moment the player
+  leaves the session (new `SaveSpellResistRemaining`, hooked to
+  `EVENT_PLAYER_DEACTIVATED`) and consumed back into a fresh
+  `spellResistEndTime` on the next `Initialize()`. However long the actual
+  offline gap was, the player now returns to exactly the time that was left
+  when they logged out — the clock doesn't run at all while offline.
+
+---
+
 ### v3.4.20
 - **HUD now indicates when the spell-resist reagent buff is active.** The
   "FEELS LIKE" row's label (the row this buff actually shifts) switches to a

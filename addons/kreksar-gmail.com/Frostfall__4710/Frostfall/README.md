@@ -91,6 +91,8 @@ Swimming in open water equilibrates your body temperature toward the water tempe
 Accessible via [b]/ff config[/b] or the ESO addon settings panel (LibAddonMenu-2.0):
 [list]
 [*]Enable/disable the system entirely — immediately hides the HUD and any active overlay, and stops all temperature checking, until re-enabled
+[*]Temperature update interval (1-10 minutes) — how often your temperature and the HUD/overlay refresh
+[*]Temperature adaptation rate (0.25-5.0 °C/min, default 1.75) — how fast your temperature drifts toward ambient at neutral insulation; scaled further by your armor insulation
 [*]Toggle the HUD (status window), overlay, and emotes independently
 [*]Independently toggle native top-of-screen alert notifications and/or logging those same notifications to chat
 [*]Scale and opacity controls for the HUD

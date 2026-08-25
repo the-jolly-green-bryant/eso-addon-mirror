@@ -18,7 +18,7 @@
     "OnixWorldmap"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4789/",
-  "fingerprint": "8129e3a55678276c2e8387197d99cf6a944228d272ef1fe074ec3c1202777a74",
+  "fingerprint": "8a00598cac87505ceab85eee2eaad6b3b180b0a5e804f5e327c2d2211df40a1b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17093.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4789",
   "source_url": "https://www.esoui.com/downloads/info4789-Onix-Worldmap-EasyNavigationZoomRadar.html",
   "stats": {
-    "downloads": 8,
-    "favorites": 1,
-    "monthly_downloads": 0
+    "downloads": 37,
+    "favorites": 2,
+    "monthly_downloads": 34
   },
   "title": "Onix - Worldmap - Easy Navigation ( Zoom & Radar)",
-  "updated_at": 1787532552000,
-  "version": "1.0"
+  "updated_at": 1787588513000,
+  "version": "1.1"
 }

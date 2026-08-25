@@ -24,7 +24,7 @@ function S:Initialize()
         registerForDefaults = true,
     })
 
-    LAM:RegisterOptionControls(panelName, {
+    local rawOptions = {
         {
             type = "description",
             title = "Gameplay hotkeys",
@@ -40,43 +40,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.enabled end,
             setFunc = function(v) EPC:SetEnabled(v, "settings") end,
             default = EPC.defaults.enabled,
-        },
-        {
-            type = "header", name = "Cinematic Graphics",
-        },
-        {
-            type = "description",
-            title = "Cinematic Maximum (native ESO graphics)",
-            text = "Pushes ESO's own PC graphics settings to their highest cinematic values: Maximum preset, high-resolution textures/characters, Ultra shadows and water reflections, maximum view distance and particle distance, high ambient occlusion, Ultra clutter, bloom, distortion, god rays, and cinematic depth of field. Resolution, monitor, display mode, gamma, HDR, and frame-rate limits are not directly changed by the Suite. ESO's built-in Maximum preset may adjust other quality-linked values such as anti-aliasing/upscaling. This cannot add ray tracing, replacement textures, or external shaders. Expect a large FPS/GPU cost.",
-        },
-        {
-            type = "checkbox", name = "Enable Cinematic Maximum graphics",
-            tooltip = "Backs up the ESO graphics values touched by this preset, applies the native Maximum/cinematic settings, and restores that backup when disabled. Some changes may require /reloadui or a game restart to fully apply.",
-            getFunc = function() return EPC.saved.cinematicGraphicsEnabled == true end,
-            setFunc = function(v)
-                if EPC.GraphicsPreset and EPC.GraphicsPreset.SetEnabled then
-                    EPC.GraphicsPreset:SetEnabled(v == true)
-                else
-                    EPC.saved.cinematicGraphicsEnabled = false
-                end
-            end,
-            default = EPC.defaults.cinematicGraphicsEnabled,
-            disabled = function() return not (EPC.GraphicsPreset and EPC.GraphicsPreset.IsSupported and EPC.GraphicsPreset:IsSupported()) end,
-            warning = "Very GPU-intensive. ESO may require /reloadui or a restart for every native video setting to finish applying.",
-        },
-        {
-            type = "button", name = "Reapply Cinematic Maximum", buttonText = "Reapply Cinematic",
-            tooltip = "Reapplies the cinematic native graphics values without replacing the saved pre-cinematic backup.",
-            func = function() if EPC.GraphicsPreset then EPC.GraphicsPreset:ApplyCinematicMaximum(true) end end,
-            disabled = function() return not (EPC.GraphicsPreset and EPC.GraphicsPreset.IsSupported and EPC.GraphicsPreset:IsSupported()) end,
-            width = "half",
-        },
-        {
-            type = "button", name = "Restore pre-cinematic graphics", buttonText = "Restore Graphics",
-            tooltip = "Restores the ESO graphics values captured immediately before Cinematic Maximum was first enabled.",
-            func = function() if EPC.GraphicsPreset then EPC.GraphicsPreset:RestorePrevious(true) end end,
-            disabled = function() return not (EPC.saved and type(EPC.saved.cinematicGraphicsBackup) == "table" and next(EPC.saved.cinematicGraphicsBackup) ~= nil) end,
-            width = "half",
         },
         {
             type = "dropdown", name = "Combat role awareness",
@@ -281,13 +244,6 @@ function S:Initialize()
         },
         {
             type = "header", name = "World Combat Visibility",
-        },
-        {
-            type = "checkbox", name = "Always show enemy overhead health bars",
-            tooltip = "Keeps hostile NPC and hostile-player health bars visible above nearby enemies, not only the current target.",
-            getFunc = function() return EPC.saved.showEnemyOverheadHealthBars ~= false end,
-            setFunc = function(v) EPC.saved.showEnemyOverheadHealthBars = v == true if EPC.CombatPresentation then EPC.CombatPresentation:Refresh() end end,
-            default = EPC.defaults.showEnemyOverheadHealthBars,
         },
         {
             type = "checkbox", name = "Show outgoing damage numbers",
@@ -804,6 +760,15 @@ function S:Initialize()
             func = function() if EPC.ResetMiniMapPosition then EPC:ResetMiniMapPosition() end end,
         },
         {
+            type = "button", name = "Clear legacy map icons", buttonText = "Clear Legacy Icons",
+            tooltip = "Deletes only the old walk-up/interaction-saved merchant, crafting/service, and remembered POI icons from pre-0.27 minimap builds. Native ESO town icons, checkpoints, routes, and minimap settings are kept. Legacy walk-up icon learning stays disabled so the old duplicates do not return.",
+            func = function()
+                if EPC.MiniMap and EPC.MiniMap.ClearLegacyMapIcons then
+                    EPC.MiniMap:ClearLegacyMapIcons()
+                end
+            end,
+        },
+        {
             type = "button", name = "HUD layout mode", buttonText = "Move Frames",
             tooltip = "Releases the mouse and shows Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, and every Ability icon so each can be dragged independently. Active Quest can also be resized from its edges/corners.",
             func = function() if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(true) end end,
@@ -1038,5 +1003,143 @@ function S:Initialize()
             type = "button", name = "Reset overlay position", buttonText = "Reset",
             func = function() EPC.UI:ResetPosition() end,
         },
-    })
+    }
+
+    -- v0.27.24: Present the same settings in purpose-based groups.
+    -- This only changes organization; every existing getter/setter remains intact.
+    local categoryOrder = {
+        "GENERAL",
+        "CODEX",
+        "COMBAT",
+        "HUD",
+        "FRAMES",
+        "MAP",
+        "GEAR",
+        "ACTIVITIES",
+        "UTILITIES",
+    }
+
+    local categoryInfo = {
+        GENERAL = { name = "General & Getting Started", tooltip = "Core Suite enablement, compatibility information, and basic behavior." },
+        CODEX = { name = "Tamriel Codex & Window", tooltip = "Codex access, menu behavior, main Suite window appearance, and interaction controls." },
+        COMBAT = { name = "Combat, Role & Builds", tooltip = "Role awareness, combat presentation, endgame guidance, target builds, and combat history controls." },
+        HUD = { name = "HUD & Gameplay Overlays", tooltip = "Combat HUD, quest, rank, Champion, ability, clock, stable, repair, and reticle overlays." },
+        FRAMES = { name = "Unit Frames & HUD Layout", tooltip = "Player, target, group, raid, live-stat frames, scaling, backgrounds, and move/reset controls." },
+        MAP = { name = "Mini Map & Navigation", tooltip = "Mini Map visibility, layers, zoom, sizing, opacity, pins, and position controls." },
+        GEAR = { name = "Gear, Maintenance & Loot", tooltip = "Automatic repair/recharge and gear-related maintenance behavior." },
+        ACTIVITIES = { name = "Activities & Group Finder", tooltip = "Group Finder filtering, activity planning, and session goals." },
+        UTILITIES = { name = "Utilities & Inventory", tooltip = "Utility Command Center, inventory snapshots, research/collection alerts, and search tools." },
+    }
+
+    local headerCategory = {
+        ["Live Group Finder"] = "ACTIVITIES",
+        ["Automatic Equipment Maintenance"] = "GEAR",
+        ["Repair / Recharge Estimate Overlay"] = "HUD",
+        ["World Combat Visibility"] = "COMBAT",
+        ["Persistent HUD & Unit Frames"] = "FRAMES",
+        ["Stable Training Timer"] = "HUD",
+        ["Clock"] = "HUD",
+        ["Quest Tracking"] = "HUD",
+        ["Active Quest Overlay"] = "HUD",
+        ["Alliance Rank Overlay"] = "HUD",
+        ["Champion Level Overlay"] = "HUD",
+        ["Ability Overlays"] = "HUD",
+        ["Custom ESO Reticle"] = "HUD",
+        ["Tamriel Codex"] = "CODEX",
+        ["Mini Map"] = "MAP",
+        ["Target Build"] = "COMBAT",
+        ["Utility Command Center"] = "UTILITIES",
+    }
+
+    local nameCategory = {
+        ["Combat role awareness"] = "COMBAT",
+        ["Show combat HUD"] = "HUD",
+        ["Combat HUD visibility"] = "HUD",
+        ["Move compact combat HUD"] = "HUD",
+        ["Lock combat HUD"] = "HUD",
+        ["Reset combat HUD position"] = "HUD",
+        ["Combat HUD scale"] = "HUD",
+        ["Combat HUD opacity"] = "HUD",
+
+        ["Replace ESO default unit frames"] = "FRAMES",
+        ["Show player frame"] = "FRAMES",
+        ["Player frame visibility"] = "FRAMES",
+        ["Show target frame"] = "FRAMES",
+        ["Target frame visibility"] = "FRAMES",
+        ["Show group frame"] = "FRAMES",
+        ["Group frame visibility"] = "FRAMES",
+        ["Show raid frame"] = "FRAMES",
+        ["Raid frame visibility"] = "FRAMES",
+        ["Show live combat stat panel"] = "FRAMES",
+        ["Live Combat Stats visibility"] = "FRAMES",
+        ["HUD layout mode"] = "FRAMES",
+        ["Lock HUD frames"] = "FRAMES",
+        ["Reset HUD frame positions"] = "FRAMES",
+        ["Player frame size"] = "FRAMES",
+        ["Target frame size"] = "FRAMES",
+        ["Group / Raid frame scale"] = "FRAMES",
+        ["Live stats panel scale"] = "FRAMES",
+        ["Use stronger HUD panel backgrounds"] = "FRAMES",
+        ["Dark HUD backgrounds"] = "FRAMES",
+        ["HUD background opacity"] = "FRAMES",
+        ["Floating HUD opacity"] = "FRAMES",
+        ["Target aura icons per type"] = "FRAMES",
+
+        ["Endgame suite focus"] = "COMBAT",
+        ["Intelligent Next Best Move"] = "COMBAT",
+        ["Clear last combat sample"] = "COMBAT",
+
+        ["Session planner mode"] = "ACTIVITIES",
+        ["Custom session length"] = "ACTIVITIES",
+        ["Activity planner goal"] = "ACTIVITIES",
+
+        ["Auto-expand in interaction mode"] = "CODEX",
+        ["Lock window"] = "CODEX",
+        ["Show recommendation reasons"] = "CODEX",
+        ["Window opacity"] = "CODEX",
+        ["Window scale"] = "CODEX",
+        ["Reset overlay position"] = "CODEX",
+    }
+
+    local grouped = {}
+    for _, key in ipairs(categoryOrder) do grouped[key] = {} end
+
+    local currentCategory = "GENERAL"
+    for _, control in ipairs(rawOptions) do
+        local category = currentCategory
+        if control.type == "header" and headerCategory[control.name] then
+            category = headerCategory[control.name]
+            currentCategory = category
+        elseif control.name and nameCategory[control.name] then
+            category = nameCategory[control.name]
+        elseif control.type == "description" and control.title == "Tamriel Codex hotkey" then
+            category = "CODEX"
+        elseif control.name == "Open Tamriel Codex" or control.name == "Hide Suite HUD in menus / map" then
+            category = "CODEX"
+        end
+        grouped[category][#grouped[category] + 1] = control
+    end
+
+    local organizedOptions = {
+        {
+            type = "description",
+            title = "Organized Settings",
+            text = "Settings are grouped by the part of ESO Adventurer Suite they control. Open only the section you want to change; all existing settings and defaults are preserved.",
+        },
+    }
+
+    for _, key in ipairs(categoryOrder) do
+        local controls = grouped[key]
+        if controls and #controls > 0 then
+            local info = categoryInfo[key]
+            organizedOptions[#organizedOptions + 1] = {
+                type = "submenu",
+                name = info.name,
+                tooltip = info.tooltip,
+                controls = controls,
+            }
+        end
+    end
+
+    LAM:RegisterOptionControls(panelName, organizedOptions)
 end

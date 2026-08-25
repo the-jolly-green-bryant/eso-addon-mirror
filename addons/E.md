@@ -53,7 +53,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.26.08 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.27.59 |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
 | [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.2.0 |

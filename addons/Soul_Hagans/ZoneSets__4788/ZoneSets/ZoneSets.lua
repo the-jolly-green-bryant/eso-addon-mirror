@@ -1,4 +1,4 @@
--- ZoneSets.lua (Полная финальная версия: Сетка, Тосты, Сессии, Группа, Конвейер и Авто-Трейд)
+-- ZoneSets.lua (Полная финальная версия: Сетка, Тосты, Сессии, Группа, Конвейер, Авто-Трейд и Автопривязка)
 local ADDON_NAME = "ZoneSets"
 local ZS = {}
 ZS.Cache = {}
@@ -6,96 +6,52 @@ ZS.KnownPieces = {}
 ZS.CurrentTab = "zone"
 ZS.ChatQueue = nil
 ZS.TradeRequests = {} -- Кратковременная память запросов на обмен (15 мин)
+ZS.ToastQueue = {}
+ZS.IsToastActive = false
 
 -- ================= ЛОКАЛИЗАЦИЯ (СЛОВАРЬ) =================
-local lang = GetCVar("language.2")
-local L = {}
-
-if lang == "ru" then
-    L.title = "|c39DB92Zone Sets|r"
-    L.unknownZone = "Неизвестная локация"
-    L.noSetsFound = "В этой локации нет сетов стикербука"
-    L.tabZone = "Зона"
-    L.tabHistory = "История"
-    L.historyTitle = "История привязок"
-    L.currentSession = "|c00FF00[Текущий заход]|r"
-    L.previousSession = "|cAAAAAA[Прошлый заход]|r"
-    L.noCurrentItems = "В этом заходе пока нет новых привязок"
-    L.noPreviousItems = "Нет данных о прошлом заходе"
-    L.groupLootHeader = "|c39DB92[Лут группы — нужно мне]|r"
-    L.noGroupLoot = "В этом рейде сопартийцы пока не выбивали нужных вам вещей"
-    L.askAllBtn = "Попросить всё"
-    L.askSingleBtn = "Спросить"
-    L.itemsNeededCount = "нужно %d шт."
-    L.justNow = "Только что"
-    L.minutesAgo = "%d мин. назад"
-    L.hoursAgo = "%d ч. назад"
-    L.testTitle = "|c39DB92[ZS-Test] Перетащи меня!|r"
-    L.dragMe = "Зажми левую кнопку мыши для переноса"
-    L.addedToColl = "|c00FF00Добавлено в коллекцию!|r"
-    L.chatBtnTooltip = "Сформировать запрос сета в чат группы"
-    L.setCompletedMsg = "Сет уже собран на 100%, просить нечего!"
-    L.bindingToggle = "Открыть/закрыть ZoneSets"
-    L.toastProgressFormat = "%s — Прогресс: |cFFFF00%d / %d|r"
-    L.testShown = "|c39DB92[ZoneSets]|r Тестовое окно открыто. Перетащи его мышкой. Напиши |cFFFF00/zs test|r снова, чтобы скрыть и сохранить позицию."
-    L.testSaved = "|c39DB92[ZoneSets]|r Позиция сохранена, тест скрыт."
-    L.toastDisabled = "|c39DB92[ZoneSets]|r Всплывающие уведомления |cFF0000ОТКЛЮЧЕНЫ|r."
-    L.toastEnabled = "|c39DB92[ZoneSets]|r Всплывающие уведомления |c00FF00ВКЛЮЧЕНЫ|r."
-    L.toastDurationSet = "|c39DB92[ZoneSets]|r Уведомления включены, длительность: |cFFFF00%d|r сек."
-    L.toastStatus = "|c39DB92[ZoneSets]|r Уведомления: %s (Длительность: |cFFFF00%d|r сек.).\nОтключить: |cFFFF00/zs toast off|r. Изменить время: |cFFFF00/zs toast <секунды>|r"
-    L.shareExtraBtn = "Раздать лишний лут (%d)"
-    L.shareExtraBtn = "Раздать лишний лут в чат"
-    L.noTradableDupes = "|c39DB92[ZoneSets]|r В рюкзаке нет лишних сетовых вещей для раздачи."
-    L.shareBtnTooltip = "Сформировать сообщение с вашими лишними сетовыми вещами в чат"
-    L.tradeHelperTitle = "|c39DB92[ZoneSets Помощник обмена]|r"
-    L.tradePutRequested = "Запрошенное (%d)"
-    L.tradeDumpExtra = "Лишний лут (%d)"
-    L.tradeNoItems = "Нет подходящих вещей для обмена"
-    L.tradeFilledMsg = "|c39DB92[ZoneSets]|r Добавлено в обмен: %d предметов"
-else
-    L.title = "|c39DB92Zone Sets|r"
-    L.unknownZone = "Unknown Zone"
-    L.noSetsFound = "No item sets found for this zone"
-    L.tabZone = "Zone"
-    L.tabHistory = "History"
-    L.historyTitle = "Bound History"
-    L.currentSession = "|c00FF00[Current Run]|r"
-    L.previousSession = "|cAAAAAA[Previous Run]|r"
-    L.noCurrentItems = "No new items bound in this run yet"
-    L.noPreviousItems = "No previous run data"
-    L.groupLootHeader = "|c39DB92[Group Loot — Needed by Me]|r"
-    L.noGroupLoot = "No needed items looted by teammates in this run yet"
-    L.askAllBtn = "Ask All"
-    L.askSingleBtn = "Ask"
-    L.itemsNeededCount = "needed: %d"
-    L.justNow = "Just now"
-    L.minutesAgo = "%d m ago"
-    L.hoursAgo = "%d h ago"
-    L.testTitle = "|c39DB92[ZS-Test] Drag Me!|r"
-    L.dragMe = "Hold Left Mouse Button to drag"
-    L.addedToColl = "|c00FF00Added to Collection!|r"
-    L.chatBtnTooltip = "Generate group chat request"
-    L.setCompletedMsg = "Set is already 100% collected, nothing to ask for!"
-    L.bindingToggle = "Toggle ZoneSets Window"
-    L.toastProgressFormat = "%s — Progress: |cFFFF00%d / %d|r"
-    L.testShown = "|c39DB92[ZoneSets]|r Test window is shown. Left-click and drag it anywhere. Type |cFFFF00/zs test|r again to hide and save position."
-    L.testSaved = "|c39DB92[ZoneSets]|r Position saved, test window hidden."
-    L.toastDisabled = "|c39DB92[ZoneSets]|r Screen notifications are now |cFF0000DISABLED|r."
-    L.toastEnabled = "|c39DB92[ZoneSets]|r Screen notifications are now |c00FF00ENABLED|r."
-    L.toastDurationSet = "|c39DB92[ZoneSets]|r Screen notifications enabled, duration set to |cFFFF00%d|r sec."
-    L.toastStatus = "|c39DB92[ZoneSets]|r Screen notifications are currently: %s (Duration: |cFFFF00%d|r sec.).\nTo disable: |cFFFF00/zs toast off|r. To change duration: |cFFFF00/zs toast <seconds>|r"
-    L.shareExtraBtn = "Share Extra Loot (%d)"
-    L.shareExtraBtn = "Share Extra Loot to Chat"
-    L.noTradableDupes = "|c39DB92[ZoneSets]|r No extra tradable set items in backpack to share."
-    L.shareBtnTooltip = "Post all your extra tradable set items to chat"
-    L.tradeHelperTitle = "|c39DB92[ZoneSets Trade Helper]|r"
-    L.tradePutRequested = "Requested (%d)"
-    L.tradeDumpExtra = "Extra Loot (%d)"
-    L.tradeNoItems = "No matching items for trade"
-    L.tradeFilledMsg = "|c39DB92[ZoneSets]|r Added to trade: %d items"
-end
-
-ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_ZONESETS_WINDOW", L.bindingToggle)
+local L = {
+    title = GetString(ZONESETS_TITLE),
+    unknownZone = GetString(ZONESETS_UNKNOWN_ZONE),
+    noSetsFound = GetString(ZONESETS_NO_SETS_FOUND),
+    tabZone = GetString(ZONESETS_TAB_ZONE),
+    tabHistory = GetString(ZONESETS_TAB_HISTORY),
+    historyTitle = GetString(ZONESETS_HISTORY_TITLE),
+    currentSession = GetString(ZONESETS_CURRENT_SESSION),
+    previousSession = GetString(ZONESETS_PREVIOUS_SESSION),
+    noCurrentItems = GetString(ZONESETS_NO_CURRENT_ITEMS),
+    noPreviousItems = GetString(ZONESETS_NO_PREVIOUS_ITEMS),
+    groupLootHeader = GetString(ZONESETS_GROUP_LOOT_HEADER),
+    noGroupLoot = GetString(ZONESETS_NO_GROUP_LOOT),
+    askAllBtn = GetString(ZONESETS_ASK_ALL_BTN),
+    askSingleBtn = GetString(ZONESETS_ASK_SINGLE_BTN),
+    itemsNeededCount = GetString(ZONESETS_ITEMS_NEEDED_COUNT),
+    justNow = GetString(ZONESETS_JUST_NOW),
+    minutesAgo = GetString(ZONESETS_MINUTES_AGO),
+    hoursAgo = GetString(ZONESETS_HOURS_AGO),
+    testTitle = GetString(ZONESETS_TEST_TITLE),
+    dragMe = GetString(ZONESETS_DRAG_ME),
+    addedToColl = GetString(ZONESETS_ADDED_TO_COLL),
+    chatBtnTooltip = GetString(ZONESETS_CHAT_BTN_TOOLTIP),
+    setCompletedMsg = GetString(ZONESETS_SET_COMPLETED_MSG),
+    toastProgressFormat = GetString(ZONESETS_TOAST_PROGRESS_FORMAT),
+    testShown = GetString(ZONESETS_TEST_SHOWN),
+    testSaved = GetString(ZONESETS_TEST_SAVED),
+    toastDisabled = GetString(ZONESETS_TOAST_DISABLED),
+    toastEnabled = GetString(ZONESETS_TOAST_ENABLED),
+    toastDurationSet = GetString(ZONESETS_TOAST_DURATION_SET),
+    toastStatus = GetString(ZONESETS_TOAST_STATUS),
+    shareExtraBtn = GetString(ZONESETS_SHARE_EXTRA_BTN),
+    noTradableDupes = GetString(ZONESETS_NO_TRADABLE_DUPES),
+    shareBtnTooltip = GetString(ZONESETS_SHARE_BTN_TOOLTIP),
+    tradeHelperTitle = GetString(ZONESETS_TRADE_HELPER_TITLE),
+    tradePutRequested = GetString(ZONESETS_TRADE_PUT_REQUESTED),
+    tradeDumpExtra = GetString(ZONESETS_TRADE_DUMP_EXTRA),
+    tradeNoItems = GetString(ZONESETS_TRADE_NO_ITEMS),
+    tradeFilledMsg = GetString(ZONESETS_TRADE_FILLED_MSG),
+    autoBindOn = GetString(ZONESETS_AUTO_BIND_ON),
+    autoBindOff = GetString(ZONESETS_AUTO_BIND_OFF),
+}
 
 local createdRows = {}
 
@@ -557,18 +513,40 @@ closeBtn:SetPressedTexture("EsoUI/Art/Buttons/closebutton_down.dds")
 closeBtn:SetHandler("OnClicked", function() ZSWindow:SetHidden(true) end)
 
 local tabContainer = WINDOW_MANAGER:CreateControl("ZoneSets_TabContainer", ZSWindow, CT_CONTROL)
-tabContainer:SetDimensions(250, 30)
+tabContainer:SetDimensions(360, 30)
 tabContainer:SetAnchor(TOP, zoneLabel, BOTTOM, 0, 6)
 
 local tabZone = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_TabZone", tabContainer, "ZO_DefaultTextButton")
 tabZone:SetText(L.tabZone)
-tabZone:SetDimensions(110, 25)
+tabZone:SetDimensions(105, 25)
 tabZone:SetAnchor(LEFT, tabContainer, LEFT, 0, 0)
 
 local tabHistory = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_TabHistory", tabContainer, "ZO_DefaultTextButton")
 tabHistory:SetText(L.tabHistory)
-tabHistory:SetDimensions(110, 25)
-tabHistory:SetAnchor(RIGHT, tabContainer, RIGHT, 0, 0)
+tabHistory:SetDimensions(105, 25)
+tabHistory:SetAnchor(LEFT, tabZone, RIGHT, 10, 0)
+
+local btnAutoBind = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_BtnAutoBind", tabContainer, "ZO_DefaultTextButton")
+btnAutoBind:SetDimensions(120, 25)
+btnAutoBind:SetAnchor(RIGHT, tabContainer, RIGHT, 0, 0)
+ZS.BtnAutoBind = btnAutoBind
+
+function ZS:UpdateAutoBindVisuals()
+    if not self.BtnAutoBind or not self.SavedVars then return end
+    if self.SavedVars.autoBind then
+        self.BtnAutoBind:SetText(string.format("|c00FF00[%s]|r", L.autoBindOn or "Авто: ВКЛ"))
+    else
+        self.BtnAutoBind:SetText(string.format("|c777777[%s]|r", L.autoBindOff or "Авто: ВЫКЛ"))
+    end
+end
+
+btnAutoBind:SetHandler("OnClicked", function()
+    if ZS.SavedVars then
+        ZS.SavedVars.autoBind = not ZS.SavedVars.autoBind
+        ZS:UpdateAutoBindVisuals()
+        PlaySound(SOUNDS.DEFAULT_CLICK)
+    end
+end)
 
 function ZS:UpdateTabVisuals()
     if self.CurrentTab == "history" then
@@ -1326,6 +1304,41 @@ function ZS:ShowTestToast()
     ZSToast:SetHidden(false)
 end
 
+-- Обработка очереди всплывающих тостов
+function ZS:ProcessToastQueue()
+    if self.IsToastActive then return end
+    if not self.ToastQueue or #self.ToastQueue == 0 then
+        ZSToast:SetHidden(true)
+        return
+    end
+
+    self.IsToastActive = true
+    local item = table.remove(self.ToastQueue, 1)
+
+    toastIcon:SetTexture(item.icon)
+    toastTitle:SetText(item.name)
+    
+    if item.total > 0 then
+        toastProgress:SetText(string.format(L.toastProgressFormat, item.setName, item.done, item.total))
+    else
+        toastProgress:SetText(L.addedToColl)
+    end
+
+    ZSToast:SetHidden(false)
+
+    -- Если в очереди ещё кто-то ждет, показываем чуть бодрее (2.2 сек), если последний — полное время (4 сек)
+    local duration = (#self.ToastQueue > 0) and 2200 or (self.SavedVars.toastDuration or 4000)
+
+    local timerName = "ZS_Toast_Hide_Timer"
+    EVENT_MANAGER:UnregisterForUpdate(timerName)
+    EVENT_MANAGER:RegisterForUpdate(timerName, duration, function()
+        EVENT_MANAGER:UnregisterForUpdate(timerName)
+        ZS.IsToastActive = false
+        ZS:ProcessToastQueue()
+    end)
+end
+
+-- Добавление нового предмета в очередь тостов
 function ZS:ShowToastNotification(pieceData, itemSetData)
     if not self.SavedVars or self.SavedVars.showToast == false then return end
 
@@ -1336,69 +1349,61 @@ function ZS:ShowToastNotification(pieceData, itemSetData)
     local icon = (pieceData and pieceData.GetIcon and pieceData:GetIcon()) or "/esoui/art/icons/icon_missing.dds"
     local pieceName = (pieceData and pieceData.GetFormattedName and zo_strformat("<<1>>", pieceData:GetFormattedName())) or "Новый предмет"
 
-    toastIcon:SetTexture(icon)
-    toastTitle:SetText(pieceName)
-    
-    if total > 0 then
-        toastProgress:SetText(string.format(L.toastProgressFormat, setName, done, total))
-    else
-        toastProgress:SetText(L.addedToColl)
-    end
+    table.insert(self.ToastQueue, {
+        icon = icon,
+        name = pieceName,
+        setName = setName,
+        done = done,
+        total = total,
+    })
 
-    ZSToast:SetHidden(false)
-
-    local timerName = "ZS_Toast_Hide_Timer"
-    EVENT_MANAGER:UnregisterForUpdate(timerName)
-    EVENT_MANAGER:RegisterForUpdate(timerName, self.SavedVars.toastDuration or 4000, function()
-        EVENT_MANAGER:UnregisterForUpdate(timerName)
-        ZSToast:SetHidden(true)
-    end)
+    self:ProcessToastQueue()
 end
 
--- Умный обработчик события привязки (только для Тостов)
+-- Умный обработчик события привязки (ловит ВСЕ открытые кусочки в очередь)
 local function OnItemSetCollectionUpdated(eventCode, itemSetId)
     if not itemSetId or itemSetId <= 0 or not ITEM_SET_COLLECTIONS_DATA_MANAGER then return end
 
     local itemSetData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(itemSetId)
     if not itemSetData or not itemSetData.PieceIterator then return end
 
-    local targetPiece = nil
+    local zoneId = (ZS.GetCurrentZoneInfo and ZS:GetCurrentZoneInfo()) or 0
+    local anyUpdated = false
 
+    -- Проверяем абсолютно все кусочки сета (без преждевременного выхода)
     for _, pieceData in itemSetData:PieceIterator() do
         if pieceData and type(pieceData) == "table" and pieceData.GetId and pieceData.IsUnlocked then
             local pId = pieceData:GetId()
             local isUnlocked = pieceData:IsUnlocked()
 
+            -- Если кусочек открылся и мы его ещё не регистрировали
             if isUnlocked and not ZS.KnownPieces[pId] then
-                targetPiece = pieceData
                 ZS.KnownPieces[pId] = true
-                break
-            end
-        end
-    end
+                anyUpdated = true
 
-    if targetPiece then
-        ZS:ShowToastNotification(targetPiece, itemSetData)
+                -- Отправляем в очередь тостов
+                ZS:ShowToastNotification(pieceData, itemSetData)
 
-        -- Если изучили вещь, подчищаем её из списка нужного лута группы
-        local pieceId = targetPiece.GetId and targetPiece:GetId()
-        local zoneId = (ZS.GetCurrentZoneInfo and ZS:GetCurrentZoneInfo()) or 0
-        if pieceId and zoneId > 0 and ZS.SavedVars and ZS.SavedVars.ZoneGroupLoot and ZS.SavedVars.ZoneGroupLoot[zoneId] then
-            local gList = ZS.SavedVars.ZoneGroupLoot[zoneId]
-            for i = #gList, 1, -1 do
-                if gList[i].pieceId == pieceId then
-                    table.remove(gList, i)
+                -- Подчищаем эту вещь из списка нужного лута группы
+                if zoneId > 0 and ZS.SavedVars and ZS.SavedVars.ZoneGroupLoot and ZS.SavedVars.ZoneGroupLoot[zoneId] then
+                    local gList = ZS.SavedVars.ZoneGroupLoot[zoneId]
+                    for i = #gList, 1, -1 do
+                        if gList[i].pieceId == pId then
+                            table.remove(gList, i)
+                        end
+                    end
                 end
             end
         end
+    end
 
-        if not ZSWindow:IsHidden() then
-            ZS:ShowWindow()
-        end
+    -- Если хотя бы одна вещь изучена и окно аддона открыто — освежаем список
+    if anyUpdated and not ZSWindow:IsHidden() then
+        ZS:ShowWindow()
     end
 end
 
--- ================= СЛЕЖКА ЗА ЛУТОМ ГРУППЫ =================
+-- ================= СЛЕЖКА ЗА ЛУТОМ ГРУППЫ И АВТОПРИВЯЗКА =================
 
 -- Ловец сетовых предметов в нашем рюкзаке
 local function OnInventorySingleSlotUpdate(eventCode, bagId, slotIndex, isNewItem, itemSoundCategory, inventoryUpdateReason, stackCountChange)
@@ -1413,6 +1418,13 @@ local function OnInventorySingleSlotUpdate(eventCode, bagId, slotIndex, isNewIte
 
     local pieceId = GetItemLinkItemId(itemLink)
     if not pieceId or pieceId <= 0 then return end
+
+    -- === АВТОПРИВЯЗКА В СТИКЕРБУК ===
+    if ZS.SavedVars and ZS.SavedVars.autoBind then
+        if not IsItemSetCollectionPieceUnlocked(pieceId) and not IsItemBound(bagId, slotIndex) then
+            BindItem(bagId, slotIndex)
+        end
+    end
 
     -- Отправляем в «Текущий заход»
     ZS:AddLootToHistory(itemLink, pieceId)
@@ -1709,6 +1721,7 @@ local function InitializeSavedVars()
         toastTop = nil,
         toastDuration = 4000,
         showToast = true,
+        autoBind = false,
         ZoneHistory = {},
         ZoneGroupLoot = {},
     }, GetWorldName())
@@ -1861,16 +1874,15 @@ local function OnAddOnLoaded(event, addonName)
     
     ZS.CurrentTab = "zone"
     ZS:UpdateTabVisuals()
+    ZS:UpdateAutoBindVisuals()
     
     -- Запоминаем открытые вещи при старте
-    if ITEM_SET_COLLECTIONS_DATA_MANAGER and ITEM_SET_COLLECTIONS_DATA_MANAGER.ItemSetCollectionIterator then
-        for itemSetId in ITEM_SET_COLLECTIONS_DATA_MANAGER:ItemSetCollectionIterator() do
-            local setData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(itemSetId)
-            if setData and setData.PieceIterator then
-                for _, p in setData:PieceIterator() do
-                    if p and p.IsUnlocked and p:IsUnlocked() then
-                        ZS.KnownPieces[p:GetId()] = true
-                    end
+    for itemSetId in ITEM_SET_COLLECTIONS_DATA_MANAGER:ItemSetCollectionIterator() do
+        local setData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(itemSetId)
+        if setData and setData.PieceIterator then
+            for _, p in setData:PieceIterator() do
+                if p and p.IsUnlocked and p:IsUnlocked() then
+                    ZS.KnownPieces[p:GetId()] = true
                 end
             end
         end
@@ -1889,8 +1901,7 @@ local function OnAddOnLoaded(event, addonName)
     end
     
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnInventorySingleSlotUpdate)
-    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
-    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM, true)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK, REGISTER_FILTER_IS_NEW_ITEM, true)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ITEM_SET_COLLECTION_UPDATED, OnItemSetCollectionUpdated)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_LOOT_RECEIVED, OnLootReceived)

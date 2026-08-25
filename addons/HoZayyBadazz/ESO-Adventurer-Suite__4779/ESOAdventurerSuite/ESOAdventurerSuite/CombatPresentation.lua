@@ -15,23 +15,9 @@ local function setSettingSafe(settingType, settingId, value)
 end
 
 function P:ApplyEnemyHealthBars()
-    if not EPC.saved or EPC.saved.showEnemyOverheadHealthBars == false then return end
-    if SETTING_TYPE_NAMEPLATES == nil then return end
-
-    -- Master health-bar switch plus hostile NPC/player bars. The per-unit settings
-    -- use ESO's Always choice so nearby enemies remain readable even when they are
-    -- not the current reticle target.
-    if NAMEPLATE_TYPE_ALL_HEALTHBARS ~= nil then
-        setSettingSafe(SETTING_TYPE_NAMEPLATES, NAMEPLATE_TYPE_ALL_HEALTHBARS, 1)
-    end
-    if NAMEPLATE_CHOICE_ALWAYS ~= nil then
-        if NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS ~= nil then
-            setSettingSafe(SETTING_TYPE_NAMEPLATES, NAMEPLATE_TYPE_ENEMY_NPC_HEALTHBARS, NAMEPLATE_CHOICE_ALWAYS)
-        end
-        if NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS ~= nil then
-            setSettingSafe(SETTING_TYPE_NAMEPLATES, NAMEPLATE_TYPE_ENEMY_PLAYER_HEALTHBARS, NAMEPLATE_CHOICE_ALWAYS)
-        end
-    end
+    -- ESOUI compliance: leave ESO nameplate/overhead-health-bar presentation
+    -- entirely under the player's native game settings. The Suite does not
+    -- change nameplate settings programmatically.
 end
 
 function P:ApplyOutgoingDamageNumbers()

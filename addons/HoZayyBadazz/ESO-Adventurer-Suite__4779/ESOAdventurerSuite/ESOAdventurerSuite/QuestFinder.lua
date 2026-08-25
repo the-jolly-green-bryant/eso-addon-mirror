@@ -186,6 +186,73 @@ end
 
 -- A small hint table remains for well-known quest starters. The actual browser is
 -- built from ESO's quest records at runtime instead of being capped to this list.
+-- v0.27.37: canonical Prophet/Main Story progression used by the Quest Finder
+-- MAIN QUEST view. ESO exposes quest identity/completion, but not a single API
+-- that returns the full story chain in progression order, so the Suite keeps the
+-- known base-game Main Story order and resolves each entry against ESO quest IDs.
+Q.MAIN_QUEST_CHAIN_2737 = {
+    "Soul Shriven in Coldharbour",
+    "The Harborage",
+    "Daughter of Giants",
+    "Chasing Shadows",
+    "Castle of the Worm",
+    "The Tharn Speaks",
+    "Halls of Torment",
+    "Valley of Blades",
+    "Shadow of Sancre Tor",
+    "Council of the Five Companions",
+    "Messages Across Tamriel",
+    "The Weight of Three Crowns",
+    -- Coldharbour story bridge. Several of these are reported by ESO as
+    -- zone-story quests even though they are required to reach the final
+    -- Main Story assault, so they belong in the Suite's Main Quest path.
+    "The Hollow City",
+    "The Army of Meridia",
+    "Into the Woods",
+    "Light from the Darkness",
+    "Vanus Unleashed",
+    "Breaking the Shackle",
+    "Crossing the Chasm",
+    "The Harvest Heart",
+    "The Citadel Must Fall",
+    "The Final Assault",
+    "God of Schemes",
+}
+
+
+-- v0.27.42: curated pre-acceptance information for Main Story steps where ESO
+-- does not expose an unaccepted quest pin through the API. These hints are used
+-- only until the quest is accepted; live journal objectives take over after that.
+Q.MAIN_QUEST_START_HINTS_2742 = {
+    [lower("Soul Shriven in Coldharbour")] = {
+        giver = "The Hooded Figure",
+        acceptAt = "Your alliance starter city",
+        prerequisite = "Begin the base-game Main Story",
+    },
+    [lower("The Harborage")] = {
+        giver = "The Prophet",
+        acceptAt = "The Harborage",
+    },
+    [lower("The Citadel Must Fall")] = {
+        giver = "King Laloriaran Dynar",
+        acceptAt = "Reaver Citadel, Coldharbour",
+        prerequisite = "Complete the preceding northern Coldharbour story step",
+        routeNote = "Travel toward Reaver Citadel in northern Coldharbour. Once accepted, the Suite switches to its live journal objectives instead of routing to the starter.",
+    },
+    [lower("The Final Assault")] = {
+        giver = "Vanus Galerion",
+        acceptAt = "The Endless Stair, Coldharbour",
+        prerequisite = "Complete The Citadel Must Fall",
+        routeNote = "Travel into northern Coldharbour and approach The Endless Stair. Vanus Galerion starts the quest there.",
+    },
+    [lower("God of Schemes")] = {
+        giver = "The Prophet",
+        acceptAt = "The Harborage",
+        prerequisite = "Complete The Final Assault",
+        routeNote = "After The Final Assault, return to The Harborage. The Prophet starts God of Schemes.",
+    },
+}
+
 Q.curatedHints = {
     [lower("Soul Shriven in Coldharbour")] = {starter="The Hooded Figure / alliance starter city", access="BASE GAME", type="Main Story"},
     [lower("The Harborage")] = {starter="The Prophet", access="BASE GAME", type="Main Story"},
@@ -236,6 +303,7 @@ function Q:Initialize()
     self.scanNextId = 1
     self.scanDone = false
     self.scanStarted = false
+    self.mainQuestSelectedKey2737 = nil
 end
 
 function Q:StartScan()
@@ -336,7 +404,83 @@ function Q:GetCompletedQuestSet()
     return done
 end
 
+function Q:BuildMainQuestEntries2737()
+    local activeById, activeByName = self:GetActiveQuestMap()
+    local completed = self:GetCompletedQuestSet()
+    local byName = {}
+    for i = 1, #self.index do
+        local src = self.index[i]
+        byName[lower(src.name)] = src
+    end
+
+    local rows = {}
+    local firstIncomplete = nil
+    for order, questName in ipairs(self.MAIN_QUEST_CHAIN_2737 or {}) do
+        local src = byName[lower(questName)]
+        local questId = src and tonumber(src.questId) or tonumber(safe(GetQuestIdFromName, 0, questName)) or 0
+        local activeIndex = nil
+        if questId > 0 then activeIndex = activeById[questId] end
+        if not activeIndex then activeIndex = activeByName[lower(questName)] end
+        local isCompleted = questId > 0 and completed[questId] == true or false
+        if not isCompleted and not firstIncomplete then firstIncomplete = order end
+
+        local rawZoneId = src and (src.rawZoneId or src.zoneId) or 0
+        local zoneId, zone, resolvedRawZoneId = getJournalOverlandZone(activeIndex or 0, questId, rawZoneId)
+        if (not zone or zone == "") and src then zone = src.zone end
+        if not zone or zone == "" then zone = "Main Story" end
+
+        local startHint = self.MAIN_QUEST_START_HINTS_2742 and self.MAIN_QUEST_START_HINTS_2742[lower(questName)] or nil
+        rows[#rows + 1] = {
+            key = src and src.key or ("MAIN:" .. tostring(order)),
+            questId = questId,
+            name = questName,
+            zoneId = zoneId or (src and src.zoneId) or 0,
+            rawZoneId = resolvedRawZoneId or rawZoneId,
+            zone = zone,
+            starter = src and src.starter or (startHint and startHint.giver) or "Follow the Main Story starter marker / Prophet objective.",
+            questGiver = startHint and startHint.giver or nil,
+            acceptAt = startHint and startHint.acceptAt or nil,
+            prerequisite = startHint and startHint.prerequisite or nil,
+            routeNote = startHint and startHint.routeNote or nil,
+            type = "Main Story", access = "BASE GAME", dlc = false,
+            questIndex = activeIndex, completed = isCompleted,
+            mainQuest = true, chainOrder = order,
+        }
+    end
+
+    -- Mark progression after the completion/current state is known.
+    local hasCurrent = false
+    for _, row in ipairs(rows) do if row.questIndex then hasCurrent = true break end end
+    for _, row in ipairs(rows) do
+        if row.completed then
+            row.status = "COMPLETED"
+        elseif row.questIndex then
+            row.status = "CURRENT"
+        elseif not hasCurrent and firstIncomplete and row.chainOrder == firstIncomplete then
+            row.status = "NEXT"
+        elseif firstIncomplete and row.chainOrder == firstIncomplete then
+            row.status = "NEXT"
+        else
+            row.status = "LOCKED"
+        end
+    end
+
+    local query = lower(trim(self.searchText))
+    if query ~= "" then
+        local filtered = {}
+        for _, row in ipairs(rows) do
+            local hay = lower(row.name .. " " .. row.zone .. " " .. row.status .. " main story")
+            if string.find(hay, query, 1, true) then filtered[#filtered + 1] = row end
+        end
+        rows = filtered
+    end
+    return rows
+end
+
 function Q:BuildEntries()
+    if self.filter == "MAIN_QUEST" then
+        return self:BuildMainQuestEntries2737()
+    end
     local activeById, activeByName = self:GetActiveQuestMap()
     local completed = self:GetCompletedQuestSet()
     local entries, seenActive = {}, {}
@@ -419,14 +563,15 @@ function Q:BuildView()
         for i = 1, #entries do if entries[i].key == self.selectedKey then selected = entries[i] break end end
     end
     local progress = self.scanDone and "INDEX READY" or string.format("SCANNING %d/%d", math.min(self.scanNextId or 1, self.SCAN_MAX_ID), self.SCAN_MAX_ID)
+    local mainView = self.filter == "MAIN_QUEST"
     local view = {
-        header = "QUEST JOURNAL",
-        title = "Find quests you have not started",
-        description = "Browse a runtime index of ESO quest records instead of a short curated list. Select a quest to route toward its zone. ESO does not expose one global 'currently obtainable quest' iterator, so retired/internal records are filtered on a best-effort basis.",
+        header = mainView and "MAIN QUEST" or "QUEST JOURNAL",
+        title = mainView and "Main Story Progress" or "Find quests you have not started",
+        description = mainView and "Main Story quests in progression order. Completed, current, next, and later steps are shown together. Select the current/next step to track it in the MAIN QUEST overlay source and travel toward its nearest resolved wayshrine." or "Browse a runtime index of ESO quest records instead of a short curated list. Select a quest to route toward its zone. ESO does not expose one global 'currently obtainable quest' iterator, so retired/internal records are filtered on a best-effort basis.",
         filter = self.filter, searchText = self.searchText, rows = rows, total = #entries, offset = self.offset,
         selected = selected, scanDone = self.scanDone, scanProgress = progress, indexed = #self.index,
         stats = {
-            {label="FILTER", value=self.filter == "NOT_STARTED" and "NOT STARTED" or self.filter},
+            {label="FILTER", value=self.filter == "NOT_STARTED" and "NOT STARTED" or (self.filter == "MAIN_QUEST" and "MAIN QUEST" or self.filter)},
             {label="MATCHES", value=tostring(#entries)},
             {label="INDEX", value=self.scanDone and tostring(#self.index) or progress},
             {label="SELECTED", value=selected and selected.status or "NONE"},
@@ -439,7 +584,8 @@ end
 function Q:SetFilter(filter)
     filter = string.upper(tostring(filter or "NOT_STARTED"))
     if filter == "NOT STARTED" then filter = "NOT_STARTED" end
-    if filter ~= "NOT_STARTED" and filter ~= "ACTIVE" and filter ~= "ALL" then return false end
+    if filter == "MAIN QUEST" then filter = "MAIN_QUEST" end
+    if filter ~= "NOT_STARTED" and filter ~= "ACTIVE" and filter ~= "MAIN_QUEST" and filter ~= "ALL" then return false end
     self.filter, self.offset, self.selectedKey = filter, 0, nil
     return true
 end
@@ -515,10 +661,38 @@ function Q:SelectRow(index)
     if not entry then return end
     self.selectedKey = entry.key
 
-    -- Selecting an already-accepted quest in Quest Finder now makes it the
-    -- assisted/tracked quest immediately, so the Active Quest HUD switches
-    -- to the same quest without requiring a separate TRAVEL/ROUTE click.
-    if entry.questIndex then
+    if entry.mainQuest then
+        -- MAIN QUEST selections own the dedicated overlay source. Accepted
+        -- Main Story quests can be fully assisted by ESO. A not-yet-started
+        -- NEXT quest is remembered as a discovery target so the overlay and
+        -- travel tools still show the user's intended next story step.
+        if EPC.saved then
+            EPC.saved.mainQuestDiscoveryTarget = nil
+            EPC.saved.mainQuestFinderSelected = entry.questIndex ~= nil
+            if entry.questIndex then
+                EPC.saved.mainHudQuestIndex = entry.questIndex
+                EPC.saved.mainHudQuestId = tonumber(entry.questId) or 0
+                EPC.saved.mainHudQuestName = tostring(entry.name or "")
+            elseif not entry.completed then
+                EPC.saved.mainQuestDiscoveryTarget = {
+                    key = entry.key, questId = entry.questId, name = entry.name,
+                    zone = entry.zone, zoneId = entry.zoneId, rawZoneId = entry.rawZoneId,
+                    starter = entry.starter, questGiver = entry.questGiver, acceptAt = entry.acceptAt,
+                    prerequisite = entry.prerequisite, routeNote = entry.routeNote,
+                    status = entry.status, chainOrder = entry.chainOrder,
+                }
+            end
+        end
+        if entry.questIndex and EPC.ActiveQuest and EPC.ActiveQuest.SetSelectedQuest2512 then
+            EPC.ActiveQuest:SetSelectedQuest2512(entry.questIndex, entry.questId, entry.name, "MAIN_QUEST")
+        end
+        if EPC.ActiveQuest and EPC.ActiveQuest.SetQuestTrackingSource2513 then
+            EPC.ActiveQuest:SetQuestTrackingSource2513("MAIN_QUEST")
+        elseif EPC.saved then
+            EPC.saved.questTrackingSource = "MAIN_QUEST"
+            if EPC.ActiveQuest and EPC.ActiveQuest.Refresh then EPC.ActiveQuest:Refresh() end
+        end
+    elseif entry.questIndex then
         self:AssistAcceptedQuest2511(entry, false)
     end
 
@@ -543,6 +717,34 @@ function Q:RouteSelected()
     local view = self.lastView or self:BuildView()
     local q = view.selected
     if not q then EPC:Print("Select a quest first.") return end
+
+    if q.mainQuest then
+        -- Keep the dedicated Main Quest HUD source authoritative whenever a
+        -- Main Story row is selected/routed.
+        if q.questIndex then
+            if EPC.saved then EPC.saved.mainQuestFinderSelected = true end
+            if EPC.ActiveQuest and EPC.ActiveQuest.SetSelectedQuest2512 then
+                EPC.ActiveQuest:SetSelectedQuest2512(q.questIndex, q.questId, q.name, "MAIN_QUEST")
+            end
+            if EPC.ActiveQuest and EPC.ActiveQuest.SetQuestTrackingSource2513 then
+                EPC.ActiveQuest:SetQuestTrackingSource2513("MAIN_QUEST")
+            end
+            self:AssistAcceptedQuest2511(q, true)
+            EPC:Print("Tracking Main Quest: " .. q.name)
+            return
+        end
+        if q.completed then
+            EPC:Print("Main Quest already completed: " .. q.name)
+            return
+        end
+        if EPC.saved then
+            EPC.saved.mainQuestDiscoveryTarget = {name=q.name, questId=q.questId, zone=q.zone, zoneId=q.zoneId, rawZoneId=q.rawZoneId, starter=q.starter, questGiver=q.questGiver, acceptAt=q.acceptAt, prerequisite=q.prerequisite, routeNote=q.routeNote, status=q.status, chainOrder=q.chainOrder}
+            EPC.saved.questTrackingSource = "MAIN_QUEST"
+        end
+        if EPC.ActiveQuest and EPC.ActiveQuest.Refresh then EPC.ActiveQuest:Refresh() end
+        EPC:Print(string.format("Next Main Quest: %s - %s. Use TRAVEL NEAREST SHRINE to get close to its start.", q.name, q.zone))
+        return
+    end
 
     if q.questIndex then
         self:AssistAcceptedQuest2511(q, true)
@@ -587,3 +789,80 @@ function Q:AssistAcceptedQuest2511(entry, setMapZone)
     end
     return true
 end
+-- v0.27.40: advance the dedicated Main Quest selection when a story quest
+-- completes. This keeps the overlay on progression rather than leaving it on
+-- the completed journal entry until the player manually reopens Quest Finder.
+function Q:AdvanceMainQuestAfterCompletion2740(completedQuestName)
+    if not EPC.saved then return false end
+    local completedName = lower(trim(completedQuestName))
+    if completedName == "" then return false end
+
+    local completedOrder = nil
+    for order, questName in ipairs(self.MAIN_QUEST_CHAIN_2737 or {}) do
+        if lower(trim(questName)) == completedName then
+            completedOrder = order
+            break
+        end
+    end
+    if not completedOrder then return false end
+
+    -- Completion state can otherwise remain cached for up to five seconds.
+    self.completedCache = nil
+    self.completedCacheAt = nil
+
+    local rows = self:BuildMainQuestEntries2737()
+    local nextRow = nil
+    for _, row in ipairs(rows or {}) do
+        if tonumber(row.chainOrder) > completedOrder and row.completed ~= true then
+            nextRow = row
+            break
+        end
+    end
+
+    EPC.saved.questTrackingSource = "MAIN_QUEST"
+    EPC.saved.mainQuestFinderSelected = false
+    EPC.saved.mainHudQuestIndex = nil
+    EPC.saved.mainHudQuestId = nil
+    EPC.saved.mainHudQuestName = nil
+
+    if not nextRow then
+        EPC.saved.mainQuestDiscoveryTarget = nil
+        if EPC.ActiveQuest and EPC.ActiveQuest.Refresh then EPC.ActiveQuest:Refresh() end
+        return true
+    end
+
+    self.selectedKey = nextRow.key
+    self.mainQuestSelectedKey2737 = nextRow.key
+
+    if nextRow.questIndex then
+        EPC.saved.mainQuestFinderSelected = true
+        EPC.saved.mainQuestDiscoveryTarget = nil
+        EPC.saved.mainHudQuestIndex = nextRow.questIndex
+        EPC.saved.mainHudQuestId = tonumber(nextRow.questId) or 0
+        EPC.saved.mainHudQuestName = tostring(nextRow.name or "")
+        if EPC.ActiveQuest and EPC.ActiveQuest.SetSelectedQuest2512 then
+            EPC.ActiveQuest:SetSelectedQuest2512(nextRow.questIndex, nextRow.questId, nextRow.name, "MAIN_QUEST")
+        end
+    else
+        EPC.saved.mainQuestDiscoveryTarget = {
+            key = nextRow.key, questId = nextRow.questId, name = nextRow.name,
+            zone = nextRow.zone, zoneId = nextRow.zoneId, rawZoneId = nextRow.rawZoneId,
+            starter = nextRow.starter, questGiver = nextRow.questGiver, acceptAt = nextRow.acceptAt,
+            prerequisite = nextRow.prerequisite, routeNote = nextRow.routeNote,
+            status = "NEXT", chainOrder = nextRow.chainOrder,
+        }
+    end
+
+    if EPC.ActiveQuest and EPC.ActiveQuest.SetQuestTrackingSource2513 then
+        EPC.ActiveQuest:SetQuestTrackingSource2513("MAIN_QUEST")
+    elseif EPC.ActiveQuest and EPC.ActiveQuest.Refresh then
+        EPC.ActiveQuest:Refresh()
+    end
+    if EPC.Travel and EPC.Travel.InvalidateQuestPositionCache then
+        EPC.Travel:InvalidateQuestPositionCache()
+    end
+    if EPC.RequestRefresh then EPC:RequestRefresh("main-quest-next") end
+    if EPC.Print then EPC:Print("Next Main Quest: " .. tostring(nextRow.name or "Main Story")) end
+    return true
+end
+

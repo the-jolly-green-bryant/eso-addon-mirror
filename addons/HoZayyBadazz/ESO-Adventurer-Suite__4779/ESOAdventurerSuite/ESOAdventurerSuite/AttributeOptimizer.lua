@@ -97,6 +97,7 @@ function A:ApplyBestAttributes()
         return false
     end
 
+    if EPC and EPC.RefreshNow then EPC:RefreshNow("pre-attribute-redistribute") end
     local p=self:BuildPlan()
     if p.current.total<=0 then
         self:Notify("ATTRIBUTES: there are no attribute points available to redistribute yet.")
@@ -107,12 +108,53 @@ function A:ApplyBestAttributes()
         return true
     end
 
-    -- Update 49 made attribute respecs free and shrine-free through the Character UI.
-    -- Do not call the legacy SendAttributePointAllocationRequest gold path here, because
-    -- that path can still return NOT_AT_SKILL_RESPEC_SHRINE outside a shrine.
-    self:Notify(string.format("ATTRIBUTES TARGET: %d Health / %d Magicka / %d Stamina. Opening Character Attributes; use ESO's Respec control to enter free respec mode.", p.target.health, p.target.magicka, p.target.stamina))
+    if EPC and EPC.Journal and EPC.Journal.window and not EPC.Journal.window:IsHidden() and type(EPC.Journal.Hide)=="function" then
+        EPC.Journal:Hide()
+    end
     if SCENE_MANAGER and type(SCENE_MANAGER.Show)=="function" then
         pcall(function() SCENE_MANAGER:Show("stats") end)
     end
-    return true
+
+    self:Notify(string.format("ATTRIBUTES: opening Character and preparing %d Health / %d Magicka / %d Stamina...", p.target.health, p.target.magicka, p.target.stamina))
+
+    local function tryApply()
+        -- Newer ESO clients may expose a free/shrine-free respec starter. Use it
+        -- when available, then submit the target allocation through the protected
+        -- allocation request. Everything is guarded; unsupported clients stop
+        -- cleanly rather than sending a guessed or partial allocation.
+        if type(StartAttributeRespecFromUI)=="function" then
+            local okStart=pcall(function()
+                if type(CallSecureProtected)=="function" then CallSecureProtected("StartAttributeRespecFromUI") else StartAttributeRespecFromUI() end
+            end)
+            if not okStart then
+                self:Notify("ATTRIBUTES: ESO would not start attribute respec mode from here.")
+                return false
+            end
+        end
+
+        if type(SendAttributePointAllocationRequest)=="function" then
+            local okSend, result=pcall(function()
+                if type(CallSecureProtected)=="function" then
+                    return CallSecureProtected("SendAttributePointAllocationRequest", p.target.health, p.target.magicka, p.target.stamina)
+                end
+                return SendAttributePointAllocationRequest(p.target.health, p.target.magicka, p.target.stamina)
+            end)
+            if okSend and result~=false then
+                self:Notify(string.format("ATTRIBUTES: best-build allocation submitted: %d Health / %d Magicka / %d Stamina.", p.target.health, p.target.magicka, p.target.stamina))
+                if EPC and EPC.RequestRefresh then EPC:RequestRefresh("attribute-respec") end
+                return true
+            end
+            self:Notify("ATTRIBUTES: ESO did not accept the automatic allocation request. The Character Attributes screen is open with the recommended target shown; no partial allocation was submitted.")
+            return false
+        end
+
+        self:Notify(string.format("ATTRIBUTES TARGET: %d Health / %d Magicka / %d Stamina. This ESO client does not expose an automatic allocation request, so the Character Attributes screen is open and no unsafe partial change was attempted.", p.target.health, p.target.magicka, p.target.stamina))
+        return false
+    end
+
+    if type(zo_callLater)=="function" then
+        zo_callLater(tryApply,250)
+        return true
+    end
+    return tryApply()
 end

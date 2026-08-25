@@ -976,6 +976,8 @@ end
 
 function UI:QueueAutocomplete()
     self.selectedNameHash = nil
+    self.selectedItemLink = nil
+    self.selectedSetId = nil
     local text = zo_strtrim(self.nameEdit:GetText())
     local minimum = GetMinLettersInTradingHouseItemNameForCurrentLanguage()
     if #text < minimum then
@@ -1005,10 +1007,29 @@ function UI:OnAutocomplete(taskId)
     self.taskId = nil
     self.suggestionData = {}
     self.suggestionOffset = 0
+    local seen = {}
+    if self.owner.setCatalog then
+        for _, suggestion in ipairs(self.owner.setCatalog:Search(self.nameEdit:GetText())) do
+            local key = ShoppingListData.NormalizeName(suggestion.name)
+            if not seen[key] then
+                self.suggestionData[#self.suggestionData + 1] = suggestion
+                seen[key] = #self.suggestionData
+            end
+        end
+    end
     local count = GetNumMatchTradingHouseItemNamesResults(taskId) or 0
     for index = 1, count do
         local name, nameHash = GetMatchTradingHouseItemNamesResult(taskId, index)
-        self.suggestionData[index] = { name = name, nameHash = nameHash }
+        local key = ShoppingListData.NormalizeName(name)
+        if not seen[key] then
+            self.suggestionData[#self.suggestionData + 1] = {
+                name = name,
+                nameHash = nameHash,
+            }
+            seen[key] = #self.suggestionData
+        else
+            self.suggestionData[seen[key]].nameHash = nameHash
+        end
     end
     self:RenderSuggestions()
 end
@@ -1059,6 +1080,8 @@ function UI:ChooseSuggestion(index)
     self.nameEdit:SetText(suggestion.name)
     self.suppressAutocomplete = false
     self.selectedNameHash = suggestion.nameHash
+    self.selectedItemLink = suggestion.itemLink
+    self.selectedSetId = suggestion.setId
     self.suggestionPanel:SetHidden(true)
 end
 
@@ -1066,12 +1089,17 @@ function UI:AddFromInput()
     local item, message = self.owner:AddItem(
         self.nameEdit:GetText(),
         self.quantityEdit:GetText(),
-        nil,
+        self.selectedItemLink,
         self.selectedNameHash
     )
     if not item then
         self:SetStatus(message, true)
         return
+    end
+    if self.selectedSetId and item.match then
+        -- The set picker does not ask for a trait, so its representative link
+        -- must not quietly turn into an exact-trait shopping rule.
+        item.match.traitType = nil
     end
 
     self.suppressAutocomplete = true
@@ -1079,6 +1107,8 @@ function UI:AddFromInput()
     self.suppressAutocomplete = false
     self.quantityEdit:SetText("1")
     self.selectedNameHash = nil
+    self.selectedItemLink = nil
+    self.selectedSetId = nil
     self.suggestionData = nil
     self.suggestionPanel:SetHidden(true)
     self:SetStatus(zo_strformat(

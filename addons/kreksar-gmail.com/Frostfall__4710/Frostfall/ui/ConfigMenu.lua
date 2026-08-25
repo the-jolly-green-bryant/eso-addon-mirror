@@ -76,6 +76,19 @@ local function BuildOptions()
             default = FV.Defaults.updateIntervalMinutes,
         },
         {
+            type    = "slider",
+            name    = "Temperature Adaptation Rate",
+            tooltip = "How fast your character's temperature drifts toward the ambient zone "
+                   .. "temperature, in \xc2\xb0C per minute at neutral (50) insulation. Higher values "
+                   .. "mean faster swings between hot and cold; lower values mean a slower, more "
+                   .. "gradual adjustment. Actual drift speed is still scaled by your armor "
+                   .. "insulation on top of this base rate.",
+            min     = 0.25, max = 5.0, step = 0.25,
+            getFunc = function() return FV.SV.driftRate end,
+            setFunc = function(val) FV.SV.driftRate = math.max(0.25, math.min(5.0, val)) end,
+            default = FV.Defaults.driftRate,
+        },
+        {
             type    = "checkbox",
             name    = "Display temperatures in Fahrenheit",
             tooltip = "When enabled, all temperatures on the HUD and in chat are shown in \xc2\xb0F. "

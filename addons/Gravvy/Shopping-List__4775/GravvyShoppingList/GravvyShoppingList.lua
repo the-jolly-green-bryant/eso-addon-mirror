@@ -12,6 +12,10 @@ local REQUIRED_LIBRARIES = {
         name = "LibMainMenu-2.0",
         isAvailable = function() return LibMainMenu2 ~= nil end,
     },
+    {
+        name = "LibSets",
+        isAvailable = function() return LibSets ~= nil end,
+    },
 }
 
 function addon:GetBuildVersion()
@@ -37,6 +41,7 @@ function addon:Initialize()
     self.accessibility = ShoppingListAccessibility
     self.accessibility:Initialize(self)
     self.matcher = ShoppingListMatcher
+    self.setCatalog = ShoppingListSetCatalog:New()
     self.ui = ShoppingListUI:New(self)
     self.ui:Initialize()
     self.gamepad = ShoppingListGamepad:New(self)

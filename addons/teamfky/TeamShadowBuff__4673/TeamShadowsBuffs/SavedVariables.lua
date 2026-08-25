@@ -4,7 +4,7 @@ local TSB = TeamShadowsBuffs
 
 TSB.name = "TeamShadowsBuffs"
 TSB.displayName = "Team Shadows Buffs"
-TSB.version = "0.8.3"
+TSB.version = "1.1.9"
 TSB.iconPath = "TeamShadowsBuffs/icons/team_shadows_buffs.dds"
 TSB.savedVariableName = "TeamShadowsBuffsSavedVariables"
 TSB.savedVariableVersion = 1
@@ -12,7 +12,7 @@ TSB.savedVariableVersion = 1
 TSB.defaults = {
     enabled = true,
     debug = false,
-    unlocked = false,
+    unlocked = true,
     layout = "combined",
     scale = 1.0,
     circleSize = 40,
@@ -99,7 +99,7 @@ TSB.defaults = {
         CombatStats = {
             enabled = true,
             targetEnabled = true,
-            unlocked = false,
+            unlocked = true,
             displayMode = "bars",
             showLabels = true,
             penetrationMin = 0,
@@ -137,9 +137,9 @@ TSB.defaults = {
     },
 }
 
--- Ces donnees constituent le profil de trackers propre a chaque personnage.
--- Les reglages generaux (langue, icone, apparence globale, modules) restent
--- conserves au niveau du compte.
+-- Ces données constituent le profil de trackers propre à chaque personnage.
+-- Les réglages généraux (langue, icône, apparence globale, modules) restent
+-- conservés au niveau du compte.
 TSB.characterDefaults = {
     profileInitialized = false,
     effectSettings = {},

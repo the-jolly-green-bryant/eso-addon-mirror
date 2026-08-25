@@ -38,6 +38,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pawksickles Updated and jpFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2ch/Pawksickles-Updated-and-jpFix__1401) | 2ch | PC / Mac | 1.5.2 |
 | [Pawksickles updated for High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/trollusk/Pawksickles-updated-for-High-Isle__3422) | trollusk | PC / Mac | 1.6.1 |
 | [PB](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexdragian/PB__2499) | alexdragian | PC / Mac | 0.0.23 |
+| [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
 | [pChat (Chat customization & help: look/notification/sound/automation/history)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Puddy/pChat-Chat-customization-help-look-notification-sound-automation-history__93) | Puddy | PC / Mac | 10.0.7.4 |
 | [pChat - jp Nickname Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/pChat---jp-Nickname-Patch__2697) | Marify | PC / Mac | 1.3.12 |
 | [pChatZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/pChatZHPatch__3908) | FusRoDah | PC / Mac | 10.0.5.3 |

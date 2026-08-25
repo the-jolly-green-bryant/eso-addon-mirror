@@ -55,8 +55,8 @@ local function ValidPayload(payload)
 end
 
 local function IsShareLocationAllowed()
+    if IsActiveWorldBattleground and IsActiveWorldBattleground() then return true end
     if IsPlayerInAvAWorld and IsPlayerInAvAWorld() then return false end
-    if IsActiveWorldBattleground and IsActiveWorldBattleground() then return false end
     if GetCurrentZoneHouseId and (tonumber(GetCurrentZoneHouseId()) or 0) > 0 then return true end
     if IsInstanceEndlessDungeon and IsInstanceEndlessDungeon() then return true end
     if IsUnitInDungeon and IsUnitInDungeon("player") then
@@ -161,14 +161,14 @@ function Module:FinishTransfer(transfer, success, missingRecipients)
     self.outgoing[transfer.id] = nil
     local expectedCount = CountKeys(transfer.expected)
     if success then
-        Chat(string.format("partage confirme par %d/%d joueur(s).", expectedCount, expectedCount))
+        Chat(string.format("partage confirmé par %d/%d joueur(s).", expectedCount, expectedCount))
         return
     end
 
     local names = {}
     for name in pairs(missingRecipients or {}) do names[#names + 1] = name end
     table.sort(names)
-    Chat(string.format("pas de confirmation fiable de %d joueur(s) (ancienne version ou reception bloquee) : %s. La copie compatible a aussi ete envoyee.",
+    Chat(string.format("pas de confirmation fiable de %d joueur(s) (ancienne version ou réception bloquée) : %s. La copie compatible a aussi été envoyée.",
         #names, #names > 0 and table.concat(names, ", ") or "aucun destinataire compatible"))
 end
 
@@ -222,7 +222,7 @@ function Module:BeginReliableTransfer(transfer)
         local recipientCount = CountKeys(transfer.recipients)
         transfer.done = true
         self.outgoing[transfer.id] = nil
-        Chat(string.format("copie compatible envoyee a %d joueur(s). Confirmation automatique indisponible sur leurs versions.",
+        Chat(string.format("copie compatible envoyée à %d joueur(s). Confirmation automatique indisponible sur leurs versions.",
             recipientCount))
         return
     end
@@ -278,7 +278,7 @@ function Module:StartReliableTransfer(payload)
         packets[#packets + 1] = hello
     end
 
-    Chat(string.format("copie compatible en cours vers %d destinataire(s); detection des confirmations...",
+    Chat(string.format("copie compatible en cours vers %d destinataire(s) ; détection des confirmations...",
         CountKeys(transfer.recipients)))
     zo_callLater(function() Module:BeginReliableTransfer(transfer) end, TransferDelayMs(packets))
     return true
@@ -402,7 +402,7 @@ function Module:InitializeProtocol()
     end)
 
     if not ok or not handler or not protocol then
-        self.lastProtocolError = not ok and tostring(handler) or "finalisation refusee"
+        self.lastProtocolError = not ok and tostring(handler) or "finalisation refusée"
         return false
     end
 
@@ -422,7 +422,7 @@ function Module:Send(payload)
         return false
     end
     if not IsShareLocationAllowed() then
-        Chat("partage impossible en monde ouvert : utilise une maison, un donjon, une epreuve ou une arene.")
+        Chat("partage impossible en Cyrodiil et dans le monde ouvert : utilise une maison, un donjon, une épreuve, une arène ou un champ de bataille.")
         return false
     end
     if not ValidPayload(payload) then
@@ -434,14 +434,14 @@ function Module:Send(payload)
         return false
     end
     if self.protocol.IsEnabled and not self.protocol:IsEnabled() then
-        Chat("partage impossible : le protocole est desactive dans LibGroupBroadcast.")
+        Chat("partage impossible : le protocole est désactivé dans LibGroupBroadcast.")
         return false
     end
     if self:QueuePacket(payload) then
-        Chat("partage envoye au groupe.")
+        Chat("partage envoyé au groupe.")
         return true
     end
-    Chat("l'envoi de la configuration a echoue.")
+    Chat("l'envoi de la configuration a échoué.")
     return false
 end
 
@@ -460,37 +460,37 @@ function Module:FinishDiagnostic(diagnostic)
     table.sort(responders)
     table.sort(missing)
 
-    Chat(string.format("DIAG termine : %d/%d joueur(s) repondent.", #responders, CountKeys(diagnostic.expected)))
+    Chat(string.format("DIAG terminé : %d/%d joueur(s) répondent.", #responders, CountKeys(diagnostic.expected)))
     if #responders > 0 then Chat("DIAG OK : " .. table.concat(responders, ", ")) end
     if #missing > 0 then
         Chat("DIAG SANS RETOUR : " .. table.concat(missing, ", "))
-        Chat("Sur ces joueurs : mettre a jour l'addon puis verifier LibGroupBroadcast > Team Shadows Buffs > Allow Sending.")
+        Chat("Pour ces joueurs : mettre à jour l'addon, puis vérifier LibGroupBroadcast > Team Shadows Buffs > Allow Sending.")
     end
 end
 
 function Module:RunDiagnostic()
     Chat("DIAG Team Shadows Buffs v" .. tostring(TSB.version or "?") .. ".")
     if not IsUnitGrouped or not IsUnitGrouped("player") then
-        Chat("DIAG ARRET : tu n'es pas dans un groupe.")
+        Chat("DIAG ARRÊT : tu n'es pas dans un groupe.")
         return false
     end
     if IsUnitInCombat and IsUnitInCombat("player") then
-        Chat("DIAG ARRET : attends la fin du combat.")
+        Chat("DIAG ARRÊT : attends la fin du combat.")
         return false
     end
     if not self:InitializeProtocol() then
-        Chat("DIAG ARRET : " .. tostring(self.lastProtocolError or "protocole indisponible") .. ".")
+        Chat("DIAG ARRÊT : " .. tostring(self.lastProtocolError or "protocole indisponible") .. ".")
         return false
     end
     if self.protocol.IsEnabled and not self.protocol:IsEnabled() then
-        Chat("DIAG ARRET : Allow Sending est desactive dans LibGroupBroadcast > Team Shadows Buffs.")
+        Chat("DIAG ARRÊT : Allow Sending est désactivé dans LibGroupBroadcast > Team Shadows Buffs.")
         return false
     end
 
     local expected = GroupRecipients()
     local expectedCount = CountKeys(expected)
     if expectedCount == 0 then
-        Chat("DIAG ARRET : aucun autre joueur connecte dans le groupe.")
+        Chat("DIAG ARRÊT : aucun autre joueur connecté dans le groupe.")
         return false
     end
 
@@ -504,11 +504,11 @@ function Module:RunDiagnostic()
     if queued then queued = self:QueuePacket(packet) end
     if not queued then
         self.diagnostics[id] = nil
-        Chat("DIAG ARRET : le signal de test n'a pas pu etre envoye.")
+        Chat("DIAG ARRÊT : le signal de test n'a pas pu être envoyé.")
         return false
     end
 
-    Chat(string.format("DIAG en cours vers %d joueur(s), resultat dans environ 18 secondes...", expectedCount))
+    Chat(string.format("DIAG en cours vers %d joueur(s), résultat dans environ 18 secondes...", expectedCount))
     zo_callLater(function() Module:FinishDiagnostic(diagnostic) end, 18000)
     return true
 end

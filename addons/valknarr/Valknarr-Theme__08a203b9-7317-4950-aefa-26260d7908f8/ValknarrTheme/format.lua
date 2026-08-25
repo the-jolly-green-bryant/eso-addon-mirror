@@ -7,30 +7,26 @@ local Format = ValknarrThemeFormat
 
 Format.THEME_DEFAULT = "default"
 Format.THEME_CLEAN = "clean"
+Format.THEME_NORDIC = "nordic"
 Format.THEME_STEEL = "steel"
 Format.THEME_BRONZE = "bronze"
-Format.THEME_NORDIC = "steel"
-Format.THEME_METAL = "steel"
+Format.THEME_METAL = "nordic"
 Format.THEME_VALKNARR = "clean"
 
 Format.WOLF_VANILLA = "vanilla"
 Format.WOLF_CLEAN = "clean"
+Format.WOLF_NORDIC = "nordic"
 Format.WOLF_STEEL = "steel"
 Format.WOLF_BRONZE = "bronze"
-Format.WOLF_NORDIC = "steel"
-Format.WOLF_1 = "steel"
+Format.WOLF_1 = "nordic"
 Format.WOLF_2 = "steel"
 Format.WOLF_3 = "bronze"
-Format.WOLF_4 = "steel"
-Format.WOLF_METAL = "steel"
+Format.WOLF_4 = "nordic"
+Format.WOLF_METAL = "nordic"
 
 Format.ULTIMATE_TICK = 100
 Format.TICK_SECONDS = 10
 Format.RING_SEGMENTS = 12
-Format.RUNE_SEGMENTS = 8
-Format.LIQUID_SCALE = {
-    steel = 0.73,
-}
 
 -- Muted fills so the paint reads as iron / steel / bronze, not neon.
 Format.FILLS = {
@@ -41,18 +37,25 @@ Format.FILLS = {
         fury = { 0.52, 0.16, 0.14, 0.94 },
         ult = { 0.70, 0.56, 0.24, 0.94 },
     },
+    nordic = {
+        health = { 0.46, 0.16, 0.14, 0.92 },
+        magicka = { 0.22, 0.30, 0.42, 0.92 },
+        stamina = { 0.22, 0.36, 0.24, 0.92 },
+        fury = { 0.52, 0.12, 0.10, 0.94 },
+        ult = { 0.64, 0.48, 0.20, 0.92 },
+    },
     steel = {
         health = { 0.48, 0.20, 0.22, 0.90 },
         magicka = { 0.28, 0.38, 0.48, 0.90 },
         stamina = { 0.26, 0.40, 0.34, 0.90 },
-        fury = { 0.42, 0.18, 0.20, 0.90 },
+        fury = { 0.50, 0.12, 0.11, 0.94 },
         ult = { 0.68, 0.64, 0.46, 0.90 },
     },
     bronze = {
         health = { 0.50, 0.22, 0.14, 0.92 },
         magicka = { 0.26, 0.34, 0.40, 0.92 },
         stamina = { 0.32, 0.40, 0.22, 0.92 },
-        fury = { 0.46, 0.16, 0.10, 0.92 },
+        fury = { 0.52, 0.11, 0.08, 0.94 },
         ult = { 0.66, 0.46, 0.16, 0.92 },
     },
 }
@@ -95,7 +98,7 @@ function Format.NormalizeThemeId(value)
         return Format.THEME_CLEAN
     end
     if value == "nordic" or value == "metal" or value == "metal1" or value == "a" then
-        return Format.THEME_STEEL
+        return Format.THEME_NORDIC
     end
     if value == "steel" or value == "metal2" or value == "b" then
         return Format.THEME_STEEL
@@ -110,15 +113,17 @@ function Format.NormalizeWolfId(value)
     if value == "valknarr" or value == Format.WOLF_CLEAN then
         return Format.WOLF_CLEAN
     end
-    if value == "nordic" or value == "wolf1" or value == "a"
-        or value == "wolf4" or value == "metal" or value == "metal1" then
-        return Format.WOLF_STEEL
+    if value == "nordic" or value == "wolf1" or value == "a" then
+        return Format.WOLF_NORDIC
     end
     if value == "steel" or value == "wolf2" or value == "metal2" or value == "b" then
         return Format.WOLF_STEEL
     end
     if value == "bronze" or value == "wolf3" or value == "metal3" or value == "c" then
         return Format.WOLF_BRONZE
+    end
+    if value == "wolf4" or value == "metal" or value == "metal1" then
+        return Format.WOLF_NORDIC
     end
     return Format.WOLF_VANILLA
 end
@@ -224,7 +229,7 @@ end
 
 function Format.ResourcesMetal(themeId)
     local id = Format.NormalizeThemeId(themeId)
-    return id == Format.THEME_STEEL or id == Format.THEME_BRONZE
+    return id == Format.THEME_NORDIC or id == Format.THEME_STEEL or id == Format.THEME_BRONZE
 end
 
 function Format.IsEditorScene()
@@ -247,32 +252,17 @@ end
 
 function Format.WolfMetal(wolfId)
     local id = Format.NormalizeWolfId(wolfId)
-    return id == Format.WOLF_STEEL or id == Format.WOLF_BRONZE
+    return id == Format.WOLF_NORDIC or id == Format.WOLF_STEEL or id == Format.WOLF_BRONZE
 end
 
-function Format.WolfLiquid(wolfId)
-    local id = Format.NormalizeWolfId(wolfId)
-    return id == Format.WOLF_STEEL
-end
-
-function Format.WolfRunes(wolfId)
-    return Format.NormalizeWolfId(wolfId) == Format.WOLF_BRONZE
-end
-
-function Format.WolfLiquidScale(wolfId)
-    local id = Format.NormalizeWolfId(wolfId)
-    return Format.LIQUID_SCALE[id] or 0.73
-end
-
-function Format.RingFilled(pct, count)
+function Format.RingFilled(pct)
     pct = Format.Percent(pct, 100)
-    count = tonumber(count) or Format.RING_SEGMENTS
-    local filled = math.floor((pct / 100) * count + 0.5)
+    local filled = math.floor((pct / 100) * Format.RING_SEGMENTS + 0.5)
     if filled < 0 then
         return 0
     end
-    if filled > count then
-        return count
+    if filled > Format.RING_SEGMENTS then
+        return Format.RING_SEGMENTS
     end
     return filled
 end

@@ -178,14 +178,41 @@ function C:Notify(msg,good)
     if EPC.GearOptimizer and EPC.GearOptimizer.NotifyResult then EPC.GearOptimizer:NotifyResult(msg,good) elseif d then d("[ESO Adventurer Suite] "..msg) end
 end
 
-function C:ApplyBestChampionBuild()
+function C:_ApplyBestChampionBuildNow()
     if self.Initialize then self:Initialize() end
     if safe(IsUnitInCombat,false,"player")==true then self:Notify("CHAMPION: leave combat before redistributing points.",false) return false end
     if type(IsChampionSystemUnlocked)=="function" and not safe(IsChampionSystemUnlocked,false) then self:Notify("CHAMPION: Champion progression is not unlocked yet.",false) return false end
     if type(PrepareChampionPurchaseRequest)~="function" or type(AddSkillToChampionPurchaseRequest)~="function" or type(SendChampionPurchaseRequest)~="function" then self:Notify("CHAMPION: this ESO client does not expose the Champion allocation API.",false) return false end
-    local cost=num(GetChampionRespecCost,0); local now=num(GetFrameTimeMilliseconds,0)
-    if cost>0 and (not self._confirmUntil or now>self._confirmUntil) then self._confirmUntil=now+8000; self:Notify(string.format("REDISTRIBUTE CP costs %d gold. Click REDISTRIBUTE CP again within 8 seconds to confirm.",cost),false); return false end
-    self._confirmUntil=nil
+    local cost=num(GetChampionRespecCost,0)
+    if cost>0 and self._costConfirmed~=true then
+        local dialogName="EAS_CONFIRM_CHAMPION_REDISTRIBUTE"
+        if type(ZO_Dialogs_RegisterCustomDialog)=="function" and type(ZO_Dialogs_ShowDialog)=="function" then
+            if not self._confirmDialogRegistered then
+                ZO_Dialogs_RegisterCustomDialog(dialogName,
+                {
+                    title={text="CONFIRM CHAMPION REDISTRIBUTION"},
+                    mainText={text="Apply the best detected Champion Point build? ESO will charge the current respec cost shown in the Champion system."},
+                    buttons={
+                        {text=SI_DIALOG_CONFIRM, callback=function()
+                            self._costConfirmed=true
+                            self:_ApplyBestChampionBuildNow()
+                        end},
+                        {text=SI_DIALOG_CANCEL, callback=function()
+                            self._costConfirmed=nil
+                            self:Notify("CHAMPION: redistribution cancelled. No points were changed.",false)
+                        end},
+                    },
+                })
+                self._confirmDialogRegistered=true
+            end
+            self:Notify(string.format("CHAMPION: best-build plan ready. Confirm the %d gold redistribution in the dialog.",cost),true)
+            ZO_Dialogs_ShowDialog(dialogName)
+            return true
+        end
+        self:Notify(string.format("CHAMPION: %d gold respec requires confirmation, but the dialog API is unavailable. No changes were submitted.",cost),false)
+        return false
+    end
+    self._costConfirmed=nil
     local plan=self:BuildPlan()
     local ok=pcall(PrepareChampionPurchaseRequest,true); if not ok then self:Notify("CHAMPION: ESO would not start a Champion respec request here.",false) return false end
     -- A true respec request must describe the complete target state.
@@ -221,6 +248,29 @@ function C:ApplyBestChampionBuild()
     if EPC.RequestRefresh then EPC:RequestRefresh("champion-respec") end
     return true
 end
+
+
+function C:ApplyBestChampionBuild()
+    if safe(IsUnitInCombat,false,"player")==true then self:Notify("CHAMPION: leave combat before redistributing points.",false) return false end
+    if EPC and EPC.RefreshNow then EPC:RefreshNow("pre-champion-redistribute") end
+    if EPC and EPC.Journal and EPC.Journal.window and not EPC.Journal.window:IsHidden() and type(EPC.Journal.Hide)=="function" then
+        EPC.Journal:Hide()
+    end
+    if SCENE_MANAGER and type(SCENE_MANAGER.Show)=="function" then
+        local shown=false
+        for _,sceneName in ipairs({"championPerks","champion"}) do
+            local ok=pcall(function() SCENE_MANAGER:Show(sceneName) end)
+            if ok then shown=true break end
+        end
+    end
+    self:Notify("CHAMPION: opening Champion and preparing the best detected allocation...",true)
+    if type(zo_callLater)=="function" then
+        zo_callLater(function() self:_ApplyBestChampionBuildNow() end,250)
+        return true
+    end
+    return self:_ApplyBestChampionBuildNow()
+end
+
 
 function C:Initialize()
     if self._eventReady or not EVENT_MANAGER or not EVENT_CHAMPION_PURCHASE_RESULT then return end

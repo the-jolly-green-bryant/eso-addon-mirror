@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/DakJaniels/Antiquity-Tooltip-Fix__4792",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4792",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4792",
+  "deleted": false,
+  "directories": [
+    "!AntiquityTooltipFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4792/",
+  "fingerprint": "b2bf70bcb3b2b9ae6f40455dea8d5b27c393aa50e4183116ce0c20a7e080491a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17101.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4792",
+  "source_url": "https://www.esoui.com/downloads/info4792-AntiquityTooltipFix.html",
+  "stats": {
+    "downloads": 9,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "Antiquity Tooltip Fix",
+  "updated_at": 1787586433000,
+  "version": "1"
+}

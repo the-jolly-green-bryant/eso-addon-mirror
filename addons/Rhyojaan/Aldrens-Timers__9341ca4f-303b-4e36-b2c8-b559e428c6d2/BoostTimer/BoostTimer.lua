@@ -79,6 +79,16 @@ local function GetFriendlySourceName(effectName)
     return "Other"
 end
 
+local function GetTimerDisplayName(effectName)
+    local friendlyName = GetFriendlySourceName(effectName)
+
+    if friendlyName == "Other" then
+        return effectName
+    end
+
+    return friendlyName
+end
+
 local function GetTimedBoosts()
     local boosts = {}
     local now = GetFrameTimeSeconds()
@@ -139,7 +149,7 @@ local function UpdateTimerDisplay()
 
     for index = 1, visibleCount do
         local boost = boosts[index]
-        lines[#lines + 1] = string.format("%s  %s", GetFriendlySourceName(boost.name), FormatTime(boost.remaining))
+        lines[#lines + 1] = string.format("%s  %s", GetTimerDisplayName(boost.name), FormatTime(boost.remaining))
     end
 
     timerLabel:SetText(table.concat(lines, "\n"))
@@ -255,7 +265,7 @@ local function CreateSettingsPanel()
         name = DISPLAY_NAME,
         displayName = DISPLAY_NAME,
         author = "Aldren Project",
-        version = "0.0.14",
+        version = "0.0.16",
         registerForRefresh = true,
         registerForDefaults = true,
     }

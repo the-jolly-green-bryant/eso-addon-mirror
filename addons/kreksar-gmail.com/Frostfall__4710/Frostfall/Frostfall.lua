@@ -52,6 +52,33 @@
 --         depositing a reagent fires the same EVENT_INVENTORY_SINGLE_SLOT
 --         _UPDATE as eating one, and was previously mistaken for
 --         consumption, same as the merchant/crafting-station case.
+-- v3.4.22: BUGFIX — FV.SV.spellResistRemainingSeconds (the offline-pause
+--          persistence added in 3.4.21) was being written only once, inside
+--          the EVENT_PLAYER_DEACTIVATED handler, and was confirmed (via
+--          debug logging + direct inspection of FrostfallSV.lua) to
+--          sometimes lose the race against the client's own SavedVariables
+--          flush and never reach disk — silently dropping the buff on
+--          relog despite the save appearing to succeed in memory. Fixed by
+--          also writing spellResistRemainingSeconds on every 1-second
+--          OnSpellResistTick while the buff is active (same
+--          always-current pattern already used for FV.SV.playerTemp),
+--          so a value is already safely in FV.SV well before any flush,
+--          rather than depending on a single deactivate-time write. The
+--          EVENT_PLAYER_DEACTIVATED write is kept as a final tightening-up
+--          at logout, not the sole write path.
+-- v3.4.22: Also clears the orphaned FV.SV.spellResistEndTimestamp key left
+--          behind by the pre-3.4.21 (v3.4.19-3.4.20) persistence scheme —
+--          nothing has read this field since 3.4.21 replaced it with
+--          spellResistRemainingSeconds, so it was just dead weight in
+--          SavedVariables for anyone who used the addon before upgrading.
+-- v3.4.23: New "Temperature Adaptation Rate" slider (ConfigMenu, 0.25-5.0
+--          in 0.25 steps) exposes the previously-hardcoded BASE_DRIFT_RATE
+--          (°C/min at insulation 50) as FV.SV.driftRate. Default matches
+--          the old hardcoded value (1.75) exactly, so existing behavior is
+--          unchanged until a player moves the slider. CalculatePlayerTemperature
+--          now reads FV.SV.driftRate (falling back to the BASE_DRIFT_RATE
+--          constant if FV.SV is unavailable); insulation-based scaling via
+--          ComputeDriftRate is unaffected and still applies on top of it.
 
 Frostfall = Frostfall or {}
 local FV = Frostfall
@@ -60,9 +87,9 @@ local FV = Frostfall
 -- CONSTANTS
 -- ============================================================
 FV.NAME            = "Frostfall"
-FV.VERSION         = "3.4.20"
+FV.VERSION         = "3.4.23"
 FV.DISPLAY_NAME    = "Frostfall Temperature System"
-FV.SAVED_VARS_VER  = 8   -- unchanged: the new spellResistEndTimestamp field (v3.4.19) is additive and needs no data migration
+FV.SAVED_VARS_VER  = 8   -- unchanged: spellResistRemainingSeconds (v3.4.21, replacing v3.4.19's spellResistEndTimestamp) is additive and needs no data migration
 
 -- ============================================================
 -- TEMPERATURE UNITS
@@ -229,7 +256,9 @@ FV.EMOTE_CHOICES_VALUES = { 0 }
 -- BASE_DRIFT_RATE: °C per MINUTE at neutral insulation (50).
 -- 1.75°C/min = 7.0 / 4 — quadrupled drift time per design spec.
 -- ============================================================
-local BASE_DRIFT_RATE = 1.75  -- °C per minute at insulation 50
+local BASE_DRIFT_RATE = 1.75  -- °C per minute at insulation 50 -- fallback/default only; the
+                               -- live value now lives in FV.SV.driftRate (user-adjustable via
+                               -- the "Temperature Adaptation Rate" slider in ConfigMenu).
 local DRIFT_RATE_MIN  = 0.1   -- multiplier floor
 
 local SPELL_RESIST_MAX_SHIFT = 10  -- °C cap on the spell-resist reagent's temperature-steadying effect
@@ -253,6 +282,8 @@ FV.Defaults = {
     debugMode              = false,
     updateIntervalMinutes  = 2,
     useFahrenheit          = false,
+    driftRate              = BASE_DRIFT_RATE,  -- °C/min at insulation 50; user-adjustable via
+                                                -- the "Temperature Adaptation Rate" slider
     -- emoteId* keys store PLAYER_EMOTE_MANAGER emoteIds (stable across patches).
     -- Values are resolved at Initialize() time; 0 = disabled.
     emoteIdVeryCold        = 0,
@@ -275,10 +306,13 @@ FV.State = {
     -- spellResistOffset is a transient display-only delta added on top of
     -- playerTemp by FV:GetEffectiveTemp() while the buff is active.
     -- spellResistEndTime is keyed to GetGameTimeMilliseconds() (this
-    -- session's uptime clock) and is NOT itself saved -- FV.SV.spellResistEndTimestamp
-    -- (real-world epoch time, via GetTimeStamp()) is the persisted source of
-    -- truth, re-derived into this session's spellResistEndTime at Initialize().
-    -- See RestoreSpellResistBuff below.
+    -- session's uptime clock) and is NOT itself saved -- the buff PAUSES
+    -- while offline and resumes with whatever time was left, rather than
+    -- counting down in real time regardless of login state. The remaining
+    -- duration at logout is captured into FV.SV.spellResistRemainingSeconds
+    -- (via EVENT_PLAYER_DEACTIVATED) and consumed back into a fresh
+    -- spellResistEndTime at the next Initialize(). See
+    -- RestoreSpellResistBuff / SaveSpellResistRemaining below.
     spellResistOffset       = 0,
     spellResistEndTime      = nil,  -- game-time seconds when the buff expires (this session only)
     spellResistWarnedMinute = nil,  -- last minute-mark we already warned for
@@ -422,7 +456,8 @@ function FV:CalculatePlayerTemperature(tickSeconds)
     local driftingCold = delta < 0
 
     local rateMultiplier = ComputeDriftRate(insulationFactor, driftingCold)
-    local maxDrift       = BASE_DRIFT_RATE * tickMinutes * rateMultiplier
+    local baseDriftRate  = (FV.SV and FV.SV.driftRate) or BASE_DRIFT_RATE
+    local maxDrift        = baseDriftRate * tickMinutes * rateMultiplier
     local driftAmount    = math.min(math.abs(delta), maxDrift) * (driftingCold and -1 or 1)
     local playerTemp     = currentTemp + driftAmount
 
@@ -886,11 +921,21 @@ function FV:OnSpellResistTick()
     local now = GetGameTimeMilliseconds() / 1000
     local remaining = FV.State.spellResistEndTime - now
 
+    -- Keep FV.SV.spellResistRemainingSeconds continuously current while the
+    -- buff is running, rather than relying solely on the one-shot write in
+    -- SaveSpellResistRemaining (EVENT_PLAYER_DEACTIVATED). That single
+    -- deactivate-time write was observed NOT reaching disk in practice --
+    -- likely a race between our callback and the client's own SavedVariables
+    -- flush -- so mirroring this every tick (same pattern already used
+    -- successfully for FV.SV.playerTemp) means whatever value is sitting in
+    -- FV.SV at flush time is already correct, independent of that race.
+    if FV.SV then FV.SV.spellResistRemainingSeconds = remaining end
+
     if remaining <= 0 then
         FV.State.spellResistOffset       = 0
         FV.State.spellResistEndTime      = nil
         FV.State.spellResistWarnedMinute = nil
-        if FV.SV then FV.SV.spellResistEndTimestamp = nil end
+        if FV.SV then FV.SV.spellResistRemainingSeconds = nil end
         EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_SpellResistTick")
         FV:Notify("|c88CCFFThe reagent's steadying effect on your body temperature fades.|r")
         FV_Log("SpellResist: buff expired — modifier removed, calculations proceed as normal.")
@@ -923,13 +968,17 @@ function FV:ApplySpellResistReagent()
     FV.State.spellResistEndTime      = GetGameTimeMilliseconds() / 1000 + duration
     FV.State.spellResistWarnedMinute = nil
 
-    -- Persisted in real-world epoch time (GetTimeStamp()) alongside the
-    -- in-memory game-time expiry above, so the buff survives a relog --
-    -- see RestoreSpellResistBuff, called from Initialize(). GetGameTimeMilliseconds()
-    -- resets to a new baseline every UI reload and so can't be compared
-    -- across sessions; GetTimeStamp() can.
+    -- No SV write here anymore -- the buff pauses while offline rather than
+    -- counting down in real time, so there's nothing meaningful to persist
+    -- until the player actually logs out. SaveSpellResistRemaining (below,
+    -- registered on EVENT_PLAYER_DEACTIVATED) captures FV.State.spellResistEndTime's
+    -- remaining duration at that point instead. Clear any stale saved value
+    -- from a previous session in case this application is itself happening
+    -- very early (e.g. before EVENT_PLAYER_DEACTIVATED could ever fire) --
+    -- RestoreSpellResistBuff already consumes/clears it on load, so this is
+    -- just defensive.
     if FV.SV then
-        FV.SV.spellResistEndTimestamp = GetTimeStamp() + duration
+        FV.SV.spellResistRemainingSeconds = nil
     end
 
     EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_SpellResistTick")
@@ -973,7 +1022,7 @@ function FV:ResetStatus()
 
     if FV.SV then
         FV.SV.playerTemp = neutral
-        FV.SV.spellResistEndTimestamp = nil
+        FV.SV.spellResistRemainingSeconds = nil
     end
 
     FV_Log(string.format("ResetStatus: playerTemp reset to neutral (%.1f°C), spell-resist buff cleared.", neutral))
@@ -1265,27 +1314,64 @@ end
 -- INITIALIZATION
 -- ============================================================
 
--- Restores an in-progress spell-resist reagent buff across a relog.
--- FV.SV.spellResistEndTimestamp is real-world epoch time (GetTimeStamp()),
--- so — unlike FV.State.spellResistEndTime, which is keyed to
--- GetGameTimeMilliseconds() and resets to a new baseline every UI reload —
--- it's directly comparable to "now" in a brand new session. If time still
--- remains, re-derive spellResistEndTime in THIS session's game-time clock
--- (same remaining-seconds value, just re-based) and resume the 1s tick;
--- FV:OnSpellResistTick/ApplySpellResistReagent take it from there exactly
--- as if the buff had never stopped ticking.
+-- Restores an in-progress spell-resist reagent buff across a relog, PAUSED
+-- while offline rather than counting down in real time. FV.SV.spellResist
+-- RemainingSeconds is a plain duration (seconds left, captured at the
+-- moment of the previous logout by SaveSpellResistRemaining below) — not
+-- an absolute timestamp of any kind — so restoring it is just re-basing
+-- that same duration onto THIS session's GetGameTimeMilliseconds() clock,
+-- with no elapsed-offline-time math involved at all. However long the
+-- player was actually offline, they come back to exactly the time that was
+-- left when they logged out. FV:OnSpellResistTick/ApplySpellResistReagent
+-- take it from there exactly as if the buff had never stopped ticking.
 function FV:RestoreSpellResistBuff()
-    if not FV.SV or not FV.SV.spellResistEndTimestamp then return end
-
-    local remaining = FV.SV.spellResistEndTimestamp - GetTimeStamp()
-    if remaining <= 0 then
+    -- Orphaned field from the pre-3.4.21 (v3.4.19/3.4.20) persistence
+    -- scheme, which stored an absolute epoch timestamp here instead of a
+    -- plain duration. Nothing has read this field since 3.4.21; clear it
+    -- out for anyone upgrading from an older save rather than leaving it
+    -- as permanent dead weight in SavedVariables.
+    if FV.SV and FV.SV.spellResistEndTimestamp ~= nil then
         FV.SV.spellResistEndTimestamp = nil
+    end
+
+    if not FV.SV or not FV.SV.spellResistRemainingSeconds then
+        FV_Log("RestoreSpellResistBuff: no saved spellResistRemainingSeconds found — nothing to restore.")
         return
     end
 
+    local remaining = FV.SV.spellResistRemainingSeconds
+    -- Consumed once, not left sitting around -- the live value going
+    -- forward is FV.State.spellResistEndTime; SaveSpellResistRemaining
+    -- re-populates this field fresh at the NEXT logout. Leaving a stale
+    -- value here after a session that ends without EVENT_PLAYER_DEACTIVATED
+    -- firing (e.g. a crash) is a possible, accepted edge case -- the same
+    -- as any other addon's SavedVariables not surviving an unclean exit.
+    FV.SV.spellResistRemainingSeconds = nil
+    if remaining <= 0 then return end
+
     FV.State.spellResistEndTime = GetGameTimeMilliseconds() / 1000 + remaining
     EVENT_MANAGER:RegisterForUpdate(FV.NAME .. "_SpellResistTick", 1000, function() FV:OnSpellResistTick() end)
-    FV_Log(string.format("SpellResist: restored across a relog with %.0fs remaining.", remaining))
+    FV_Log(string.format("SpellResist: resumed after a relog with %.0fs remaining (paused while offline).", remaining))
+end
+
+-- Captures the buff's current remaining duration into SavedVariables right
+-- before the player leaves this session (reload UI, logout, or camping),
+-- so RestoreSpellResistBuff above can resume it with the exact same time
+-- left next login -- pausing while offline instead of continuing to count
+-- down against real-world wall-clock time regardless of login state.
+-- EVENT_PLAYER_DEACTIVATED is the standard ESO hook for "save state before
+-- the session ends," used the same way by many other addons.
+function FV:SaveSpellResistRemaining()
+    if not FV.SV then return end
+    if not FV.State.spellResistEndTime then
+        FV.SV.spellResistRemainingSeconds = nil
+        FV_Log("SaveSpellResistRemaining: no buff active at logout — nothing to save.")
+        return
+    end
+
+    local remaining = FV.State.spellResistEndTime - (GetGameTimeMilliseconds() / 1000)
+    FV.SV.spellResistRemainingSeconds = (remaining > 0) and remaining or nil
+    FV_Log(string.format("SaveSpellResistRemaining: saved %.0fs remaining at logout.", remaining))
 end
 
 function FV:Initialize()
@@ -1301,6 +1387,14 @@ function FV:Initialize()
     end
 
     self:RestoreSpellResistBuff()
+
+    -- Registered unconditionally (not inside the FV.SV.enabled-gated block
+    -- further down) since it needs to fire and capture remaining time
+    -- regardless of whether the rest of the addon's simulation is enabled —
+    -- an in-progress buff shouldn't silently lose its pause/resume tracking
+    -- just because the player has Frostfall's other features toggled off.
+    EVENT_MANAGER:RegisterForEvent(FV.NAME .. "_SpellResistSaveOnDeactivate", EVENT_PLAYER_DEACTIVATED,
+        function() FV:SaveSpellResistRemaining() end)
 
     -- Resolve stable emoteIds from PLAYER_EMOTE_MANAGER before building the
     -- config menu, so the dropdown is populated when the panel is registered.

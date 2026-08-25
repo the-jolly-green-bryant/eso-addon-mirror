@@ -71,6 +71,16 @@ local function makeButton(name, parent, text, handler)
     local b = wm:CreateControl(name, parent, CT_BUTTON)
     b:SetFont("ZoFontGameBold")
     b:SetText(text)
+    if b.SetHorizontalAlignment then b:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    if b.SetVerticalAlignment then b:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+    local border = wm:CreateControl(name .. "Border", b, CT_BACKDROP)
+    border:SetAnchor(TOPLEFT, b, TOPLEFT, 1, 1)
+    border:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -1, -1)
+    border:SetCenterColor(0.035,0.050,0.072,0.55)
+    border:SetEdgeColor(0.24,0.36,0.54,0.92)
+    border:SetEdgeTexture(nil,1,1,1)
+    if border.SetDrawLevel then border:SetDrawLevel(0) end
+    b.easBorder = border
     if handler then b:SetHandler("OnClicked", handler) end
     return b
 end
@@ -252,7 +262,8 @@ function G:Create()
     window:SetDimensions(tonumber(s.width) or BASE_W, tonumber(s.height) or BASE_H)
     if window.SetDimensionConstraints then window:SetDimensionConstraints(MIN_W, MIN_H, MAX_W, MAX_H) end
     if window.SetResizeHandleSize then window:SetResizeHandleSize(24) end
-    window:SetClampedToScreen(true)
+    -- Allow the overlay to be positioned flush against any screen edge/corner.
+    window:SetClampedToScreen(false)
     window:SetMovable(true)
     window:SetMouseEnabled(true)
     window:SetHidden(true)
@@ -307,7 +318,10 @@ function G:Create()
     subtitle:SetColor(0.55, 0.64, 0.75, 1)
     self.subtitle = subtitle
 
-    self.playerButton = self:CreateActorButton("EAS_GearPreviewPlayer", "PLAYER", 446, 18, 112, function() self:SetActor("PLAYER") end)
+    -- Live Equipment is display-only. Loadout workspace controls live in
+    -- Gear & Sets (OPEN LOADOUTS) and on the Saved Loadouts overlay itself
+    -- (CLOSE LOADOUTS), so this panel stays focused on equipped gear.
+    self.playerButton = nil
     self.companionButton = nil
     self.closeButton = self:CreateActorButton("EAS_GearPreviewClose", "X", 574, 18, 30, function()
         self.manualClosed = true
@@ -737,9 +751,18 @@ end
 
 function G:UpdateVisibility()
     if not self.window then return end
-    local shouldShow = self.gearTabActive == true and self.journalVisible == true and self.manualClosed ~= true
+    local shouldShow = ((self.gearTabActive == true and self.journalVisible == true) or self.loadoutMode == true)
+        and self.manualClosed ~= true
     self.window:SetHidden(not shouldShow)
     if shouldShow then self:Refresh() end
+end
+
+-- Saved Loadouts can detach from the Tamriel Codex.  While this mode is active,
+-- Live Equipment remains visible even though the Codex itself has been closed.
+function G:SetLoadoutMode(active)
+    self.loadoutMode = active == true
+    if self.loadoutMode then self.manualClosed = false end
+    self:UpdateVisibility()
 end
 
 function G:OnGearTabChanged(isGear)

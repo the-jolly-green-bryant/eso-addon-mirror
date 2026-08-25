@@ -16,7 +16,7 @@ local ICON_FRAME = "/esoui/art/actionbar/abilityframe64_up.dds"
 -- [LOOK] constantes du balayage radial, avec repli si l'API change de valeurs
 local CD_RADIAL = (CD_TYPE_RADIAL ~= nil) and CD_TYPE_RADIAL or 1
 local CD_UNTIL = (CD_TIME_TYPE_TIME_UNTIL ~= nil) and CD_TIME_TYPE_TIME_UNTIL or 0
--- seuil "buff bientot fini" (secondes) pour le feedback couleur
+-- Seuil « buff bientôt terminé » (secondes) pour le retour visuel de couleur.
 local LOW_TIME = 3
 local GROUP_ROLE_COLORS = {
     [LFG_ROLE_TANK] = { 1.00, 0.20, 0.16 },
@@ -69,7 +69,7 @@ end
 
 local function WindowWidth(item)
     if StyleValue(item, "showNames") == false and StyleValue(item, "showBar") == false then
-        -- mode icone seule : la fenetre suit la taille reelle du timer (echelle comprise)
+        -- Mode icône seule : la fenêtre suit la taille réelle du timer (échelle comprise).
         -- pour que le texte reste colle a l'icone au lieu de flotter dans un cadre trop large
         local base = zo_round(48 * CellScale(item))
         if StyleValue(item, "showTimers") == false then
@@ -531,7 +531,7 @@ local function LayoutRow(row, parent, index, topOffset)
     row.stacks:SetScale(scale * 1.18)
 
     -- place reelle occupee par le timer une fois l'echelle appliquee (evite que le
-    -- texte agrandi chevauche le nom ou deborde de la fenetre)
+    -- texte agrandi chevauche le nom ou déborde de la fenêtre).
     local timerReserve = showTimers and zo_round(timerWidth * TimerTextScale(item)) or 0
 
     row.name:ClearAnchors()
@@ -822,7 +822,7 @@ local function SafeUpdateHeadMarkerPositions(ui)
     ui.headMarkerAvailable = false
     for _, marker in pairs(ui.headMarkers or {}) do marker:SetHidden(true) end
     if TSB.savedVars and TSB.savedVars.debug and TSB.Chat then
-        TSB.Chat("projection des trackers tête indisponible; les autres trackers restent actifs.")
+        TSB.Chat("projection des trackers de tête indisponible ; les autres trackers restent actifs.")
     end
 end
 
@@ -1022,7 +1022,7 @@ local function DrawIndividualWindows(ui, items)
         win:SetMovable(Saved().unlocked == true)
 
         local scale = CellScale(item)
-        -- [FIX] largeur reelle de la ligne (compact compris) : plus de fenetre trop
+        -- [FIX] largeur réelle de la ligne (mode compact compris) : plus de fenêtre trop
         -- large avec le timer perdu a droite du cadre
         local width = ItemWindowWidth(item)
         local topOffset = CompactOverlayAbove(item) and zo_round(24 * scale) or zo_round(8 * scale)

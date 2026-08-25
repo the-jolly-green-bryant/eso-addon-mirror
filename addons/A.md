@@ -210,6 +210,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Antiquity Deal Intel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thevoidcousine/Antiquity-Deal-Intel__4401) | thevoidcousine | PC / Mac | 2.0.0 |
 | [Antiquity Digging Turn Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Antiquity-Digging-Turn-Counter__3006) | kawamonkey | PC / Mac | 1.0 |
 | [Antiquity Lead Expiry Warnings](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mccalli/Antiquity-Lead-Expiry-Warnings__3813) | mccalli | PC / Mac | 1.0.8 |
+| [Antiquity Tooltip Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/Antiquity-Tooltip-Fix__4792) | DakJaniels | PC / Mac | 1 |
 | [AOEHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/AOEHelper__3342) | m00nyONE | PC / Mac | 1.2.2 |
 | [AP Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ghostbane/AP-Meter__1792) | ghostbane | PC / Mac | 2.0.4 |
 | [arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic__c8823ab9-749b-4180-ad52-c15b1363d974) | Lofand | Console | — |

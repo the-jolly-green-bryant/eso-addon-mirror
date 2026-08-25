@@ -3,7 +3,7 @@ ESO Adventurer Suite was developed with assistance from OpenAI, including AI-ass
 
 [B]# ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.26.08
+Version: 0.27.59
 Status: Public Beta
 
 ESO Adventurer Suite is an all-in-one Elder Scrolls Online gameplay and progression utility built around the Tamriel Codex and configurable HUD overlays. It includes quest and travel tools, Dungeon Finder utilities, gear/set tools, live equipment display, role-aware progression guidance, combat statistics, custom unit frames, minimap features, Golden Pursuits integration, and Active Quest tracking.
@@ -34,10 +34,15 @@ Settings > Quest Tracking lets you choose exactly one tracking source:
 Only the chosen source drives the visible Suite quest tracker and ESO assisted quest/compass at a time. Active Quest, Golden Pursuits, and Main Quest are kept independent so one source does not overwrite another. The Suite uses ESO's native compass guidance for the selected quest; the custom direction-arrow HUD has been removed.
 
 [B]# DEPENDENCIES[/B]
-Required dependency:
-- LibAddonMenu-2.0 r43 or newer (install separately via Minion/ESOUI).
+Required dependencies:
+- LibAddonMenu-2.0 r43 or newer
+- LibMapData (AddOnVersion 101+)
+- LibGPS 3.x (AddOnVersion 30+)
+- LibMapPins-1.0 r47 or newer
 
-ESO Adventurer Suite will not load if this required library is missing or older than AddOnVersion 43.
+Install the libraries separately with Minion/ESOUI. LibGPS also uses its own declared library dependencies.
+
+ESO Adventurer Suite will not load if any required dependency is missing or older than the minimum version declared in the manifest.
 
 [B]# ESOUI REVIEW / PERFORMANCE NOTES[/B]
 - Required LibAddonMenu-2.0 uses DependsOn with the current minimum AddOnVersion check (>=43).
@@ -45,13 +50,13 @@ ESO Adventurer Suite will not load if this required library is missing or older 
 - EVENT_COMBAT_EVENT analytics use EVENT_MANAGER:AddFilterForEvent combat-result/source/target filters rather than broad Lua-side result classification.
 - The manifest declares only two supported API versions: 101050 101051.
 - No executables, DLLs, telemetry upload, external network access, or arbitrary local file access are included.
-- No non-grouped nearby-player detection roster, map-ping data sharing, combat/movement automation, automatic chat sending, or external-service communication is included.
+- No non-grouped nearby-player detection roster, map-ping data sharing, combat/movement automation, automatic chat sending, external-service communication, or Suite-controlled nameplate modification is included.
 
 [B]# CREDITS[/B]
 Author / project owner: HoZayyBadazz
 AI-assisted development and review: OpenAI
 ESO UI API, game UI artwork, and game data exposed to addons: ZeniMax Online Studios / Bethesda Softworks.
-LibAddonMenu-2.0 is a required external library and is not bundled with this package.
+LibAddonMenu-2.0, LibMapData, LibGPS, and LibMapPins-1.0 is required external libraries and are not bundled with this package.
 
 [B]# DISCLAIMER[/B]
 This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related marks are property of their respective owners.

@@ -1,5 +1,5 @@
-## Title: |cF8F8F80nix|r |cFFFABBWorldmap|r - |c55FF55Easy Navigation|r
-## Author: NATOSZ
+## Title: |cc0c0c00nix|r |cFFFABBWorldmap|r - |c55FF55Easy Navigation|r
+## Author: |c00E5FFNATOSZ|r
 ## Version: 1.0.0
 ## Description: Enhances map navigation with extended zoom levels, automatic zone ascension/descension on mouse wheel scroll, and a customizable pulsing player position indicator.
 ## APIVersion: 101050 101051

@@ -33,180 +33,18 @@ function H.CreateSettingsMenu()
         registerForDefaults = true,
     }
 
-    local startModeChoices = { "Manual only", "Any combat", "Boss bar only" }
-    local startModeValues  = { "manual", "combat", "boss" }
     local playChoices = { "Once (park at end)", "Loop" }
     local playValues  = { "once", "loop" }
-    -- No "Off" here — the Capture elites checkbox is on/off. Tier only filters.
-    local eliteChoices = {
-        "Deadly only",
-        "Hard + Deadly",
-        "Normal +",
-        "Any hostile on reticle (pack minis / captains)",
-    }
-    local eliteValues = { 1, 2, 3, 4 }
 
     local optionsData = {
         { type = "header", name = "About" },
         {
             type = "description",
-            text = "Training packs are |cC0E0FFlean keyframes|r (boss/mini), not video streams.\n"
-                .. "Actions: |cC0E0FF/hd|r …  ·  Texture kinds: |cC0E0FF/hd textures|r  ·  Probe: |cC0E0FF/hd record probe|r",
+            text = "|cC0E0FF/hd plant|r  →  |cC0E0FF/hd list|r  →  |cC0E0FF/hd load N|r  →  |cC0E0FF/hd play once|r\n"
+                .. "Library picker is |cC0E0FF/hd list|r. Names: |cC0E0FF/hd names on|off|r",
         },
 
-        { type = "header", name = "Recorder policy" },
-        {
-            type = "checkbox",
-            name = "Auto-arm in dungeons / trials",
-            getFunc = function() return sv.autoArmInInstances == true end,
-            setFunc = function(v) sv.autoArmInInstances = v end,
-            default = true,
-        },
-        {
-            type = "dropdown",
-            name = "Auto-start recording when…",
-            tooltip = "Only while ARMED.\nManual / any combat / boss bar only.\nPack elites often have NO boss bar — use Manual or Any combat.",
-            choices = startModeChoices,
-            choicesValues = startModeValues,
-            getFunc = function() return sv.recordStartMode or "boss" end,
-            setFunc = function(v) sv.recordStartMode = v end,
-            default = "boss",
-        },
-        {
-            type = "checkbox",
-            name = "Auto-stop when combat ends",
-            getFunc = function() return sv.recordAutoStop ~= false end,
-            setFunc = function(v) sv.recordAutoStop = v end,
-            default = true,
-        },
-        {
-            type = "checkbox",
-            name = "Auto-save take",
-            tooltip = "Saves lean pack with zone/target name. Empty takes are not saved.",
-            getFunc = function() return sv.recordAutoSave == true end,
-            setFunc = function(v) sv.recordAutoSave = v end,
-            default = false,
-        },
-        {
-            type = "checkbox",
-            name = "Require /hd plant before record",
-            tooltip = "ON: refuse record start without plant. OFF: auto-plant at player (relative take).",
-            getFunc = function() return sv.recordRequirePlant == true end,
-            setFunc = function(v) sv.recordRequirePlant = v end,
-            default = false,
-        },
-        {
-            type = "slider",
-            name = "Sample interval (ms)",
-            tooltip = "Poll rate while recording. Lean mode still collapses to keyframes.",
-            min = 150, max = 1000, step = 50,
-            getFunc = function() return tonumber(sv.recordIntervalMs) or 400 end,
-            setFunc = function(v) sv.recordIntervalMs = v end,
-            default = 400,
-        },
-
-        { type = "header", name = "What to capture" },
-        {
-            type = "description",
-            text = "Bosses and elites are separate:\n"
-                .. "· |cFFAA66Bosses|r = boss bar only (boss1–8). Pack fights: leave ON, no false bosses.\n"
-                .. "· |cFFAA66Elites|r = soft-aim reticle → mini tracks (not tagged boss).\n"
-                .. "Path sampling: keep crosshair on the mob while it moves — no room scan.\n"
-                .. "Debug: |cC0E0FF/hd record probe|r",
-        },
-        {
-            type = "checkbox",
-            name = "Capture bosses (boss bar boss1–8 only)",
-            tooltip = "Only traditional boss bar units.\nDoes NOT turn reticle mobs into bosses (pack elites use Elites below).",
-            getFunc = function() return sv.recordCaptureBosses ~= false end,
-            setFunc = function(v) sv.recordCaptureBosses = v end,
-            default = true,
-        },
-        {
-            type = "checkbox",
-            name = "Capture elites via reticle (soft aim)",
-            tooltip = "Samples unit under crosshair each poll as mini/elite (not boss).\n"
-                .. "Must keep aiming to record movement — looking away pauses that unit.\n"
-                .. "Not a room scan. Tier filter applies only when this is ON.",
-            getFunc = function() return sv.recordCaptureElites ~= false end,
-            setFunc = function(v)
-                sv.recordCaptureElites = v
-                if v and (not sv.recordEliteTier or tonumber(sv.recordEliteTier) == 0) then
-                    sv.recordEliteTier = 4
-                end
-            end,
-            default = true,
-        },
-        {
-            type = "dropdown",
-            name = "Elite filter (when elites ON)",
-            tooltip = "How picky when difficulty is known.\n"
-                .. "Unknown difficulty: only high-HP (≥200k) or named mini/captain — NOT all trash.\n"
-                .. "'Any hostile' = every hostile under the crosshair (can flood the take).\n"
-                .. "Does NOT turn capture off (use checkbox above).",
-            choices = eliteChoices,
-            choicesValues = eliteValues,
-            getFunc = function()
-                local t = tonumber(sv.recordEliteTier) or 4
-                if t < 1 then t = 4 end
-                if t > 4 then t = 4 end
-                return t
-            end,
-            setFunc = function(v) sv.recordEliteTier = v end,
-            default = 4,
-        },
-        {
-            type = "checkbox",
-            name = "Capture trial team (group)",
-            tooltip = "OFF default. ON = dense review mode with group ghosts.",
-            getFunc = function() return sv.recordCaptureTeam == true end,
-            setFunc = function(v) sv.recordCaptureTeam = v end,
-            default = false,
-        },
-        {
-            type = "checkbox",
-            name = "Capture self",
-            getFunc = function() return sv.recordCaptureSelf == true end,
-            setFunc = function(v) sv.recordCaptureSelf = v end,
-            default = false,
-        },
-
-        { type = "header", name = "Sharing (consumers)" },
-        {
-            type = "description",
-            text = "Most raiders only |cC0E0FFplant + open/play|r. Leaders build packs.\n"
-                .. "Live group broadcast is stubbed; export/open works now.",
-        },
-        {
-            type = "checkbox",
-            name = "Accept shared packs (receive)",
-            tooltip = "When ON, /hd share apply and future group broadcasts can load packs.\nTurn OFF if you never want remote packs applied.",
-            getFunc = function() return sv.shareReceiveEnabled ~= false end,
-            setFunc = function(v) sv.shareReceiveEnabled = v end,
-            default = true,
-        },
-
-        { type = "header", name = "Your saves" },
-        {
-            type = "description",
-            text = "Saved fights open in a |cC0E0FFworld panel|r (not this long settings list).\n"
-                .. "Use the button below, or type |cC0E0FF/hd saves|r in chat.",
-        },
-        {
-            type = "button",
-            name = "Open saved fights panel",
-            tooltip = "Shows a movable list: open with /hd open 1, /hd open last, or full id.",
-            func = function()
-                if type(H.ShowSavesPanel) == "function" then
-                    H.ShowSavesPanel(true)
-                    dhd("Saves panel opened — /hd open 1 .. n  ·  /hd saves off to close")
-                else
-                    dhd("Saves panel not ready — /reloadui or use /hd saves")
-                end
-            end,
-        },
-
-        { type = "header", name = "Playback & panels" },
+        { type = "header", name = "Playback" },
         {
             type = "dropdown",
             name = "Default play mode",
@@ -229,17 +67,22 @@ function H.CreateSettingsMenu()
         },
         {
             type = "checkbox",
-            name = "Path sheet panel on",
-            getFunc = function() return sv.sheetOn == true end,
+            name = "Boss / mini names on pins",
+            tooltip = "World labels from the pack (Vashai vs S'kinrai). Also: /hd names on|off",
+            getFunc = function() return sv.namesOn ~= false end,
             setFunc = function(v)
-                sv.sheetOn = v
+                sv.namesOn = (v == true)
+                if type(H.ApplyTimeline) == "function" then
+                    H.ApplyTimeline(H.playT or 0, false)
+                end
                 if type(H.RefreshUI) == "function" then H.RefreshUI() end
             end,
-            default = false,
+            default = true,
         },
         {
             type = "checkbox",
             name = "Path rings / dots on",
+            tooltip = "Sandbox path overlay. Library packs do not draw ground paths yet.",
             getFunc = function() return sv.pathOn ~= false end,
             setFunc = function(v)
                 sv.pathOn = v

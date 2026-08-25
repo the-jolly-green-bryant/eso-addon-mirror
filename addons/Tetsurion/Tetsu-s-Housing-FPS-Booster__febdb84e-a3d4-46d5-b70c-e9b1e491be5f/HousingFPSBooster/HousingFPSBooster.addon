@@ -1,0 +1,18 @@
+## Title: |c00FF00Tetsu's Housing FPS Booster|r
+## Author: Tetsurion
+## Description: Boosts housing FPS, reduces decoration stutter, and cleans the screen by muting background UI, compass, and combat bars.
+## Version: 1.1.2
+## AddOnVersion: 10102
+## APIVersion: 101050 101051
+## SavedVariables: HousingFPSBoosterSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+localization/en.lua
+localization/ru.lua
+localization/de.lua
+localization/fr.lua
+localization/es.lua
+localization/zh.lua
+localization/ja.lua
+
+HousingFPSBooster.lua

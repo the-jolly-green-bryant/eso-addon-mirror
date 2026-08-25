@@ -87,10 +87,20 @@ local function makeButton(parent, name, text, width, height, handler)
     button:SetDimensions(width, height)
     button:SetFont("ZoFontGameBold")
     button:SetText(text)
+    if button.SetHorizontalAlignment then button:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    if button.SetVerticalAlignment then button:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
     button:SetNormalFontColor(unpack(C.text))
     if button.SetMouseOverFontColor then button:SetMouseOverFontColor(unpack(C.gold)) end
     if button.SetPressedFontColor then button:SetPressedFontColor(unpack(C.white)) end
     if button.SetMouseEnabled then button:SetMouseEnabled(true) end
+    local border = wm:CreateControl(name .. "Border", button, CT_BACKDROP)
+    border:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+    border:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+    border:SetCenterColor(0.035,0.050,0.072,0.55)
+    border:SetEdgeColor(0.24,0.36,0.54,0.92)
+    border:SetEdgeTexture(nil,1,1,1)
+    if border.SetDrawLevel then border:SetDrawLevel(0) end
+    button.easBorder = border
     button:SetHandler("OnClicked", handler)
     return button
 end

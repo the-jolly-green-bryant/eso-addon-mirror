@@ -65,6 +65,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Master Writ Inventory Marker (WritWorthy Extension)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Master-Writ-Inventory-Marker-WritWorthy-Extension__2887) | code65536 | PC / Mac | 4.0.4 |
 | [MasterThief](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Adalan/MasterThief__1014) | Adalan | PC / Mac | 1.8 |
 | [MasterThief](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/MasterThief__f3c99a31-b8b1-46d8-9717-1c3877f00995) | thewizadt | Console | — |
+| [MasterThief](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/MasterThief__f7a31693-2690-4ce0-973f-0af5e5ce92f8) | thewizadt | Console | — |
 | [MatCalc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Claymourn/MatCalc__2733) | Claymourn | PC / Mac | 1.1.3 |
 | [Materialist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeDumCHee/Materialist__2574) | DeDumCHee | PC / Mac | 1.2 |
 | [May I Bash?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/May-I-Bash__2569) | ownedbynico | PC / Mac | 1.1 |

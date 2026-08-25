@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.17"
+R.version     = "3.17.18"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -438,8 +438,12 @@ R._announcements = {
     title = "Build ID · quieter chat · Buffs labels",
     body = "• Chat: only a captured-fight DPS line (ESO-style Result: X DPS, Ys). Skip reasons silent.\n• Build ID: same bars/sets/Mundus/CP should hash the same (slot order + end recapture).\n  New dummy parses needed — old history IDs will still differ.\n• Insights: crit damage uses a Force/Brittle/CP recipe when the sheet API is 0.\n• Buffs: Target Debuffs names fully visible. Skill hit = your skill landing on the dummy.\n• Damage: same-name rows (Sundering Knife, Crystal Fragments) tagged with ability id.",
   },
+  ["3.17.18"] = {
+    title = "FIX: food no longer changes Build ID",
+    body = "Eating or losing food was minting a new Build ID.\n\nMundus detection matched \"mage\" inside \"magicka\" on food buffs, so food-up and food-down hashed differently.\n\n• Mundus is only the 13 stones (Boon: The Thief, etc.)\n• Food is still recorded on the parse — it just cannot change the ID\n\nReload, then parse once with food and once without. Those two should share an ID.",
+  },
 }
-R._latestAnnouncementVersion = "3.17.17"
+R._latestAnnouncementVersion = "3.17.18"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)

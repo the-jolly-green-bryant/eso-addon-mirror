@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Lofand/new-test-ps5__2b60cc83-ca16-4441-ac8d-8aeabbf9bf14",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Lofand",
+  "canonical_id": "bethesda:2b60cc83-ca16-4441-ac8d-8aeabbf9bf14",
+  "content_id": "2b60cc83-ca16-4441-ac8d-8aeabbf9bf14",
+  "deleted": false,
+  "fingerprint": "85c9c62646d1748bc8c1a3ebc39ec65397843cf34efadff807884f4934d0462b",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "2b60cc83-ca16-4441-ac8d-8aeabbf9bf14",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/2b60cc83-ca16-4441-ac8d-8aeabbf9bf14",
+  "title": "new test ps5"
+}

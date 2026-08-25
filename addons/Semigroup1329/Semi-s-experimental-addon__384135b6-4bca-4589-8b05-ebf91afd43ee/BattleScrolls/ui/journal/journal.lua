@@ -390,6 +390,7 @@ end
 function BattleScrolls_Journal_Gamepad:refreshFooter()
     if self.mode == NAVIGATION_MODE.STATS then
         GAMEPAD_GENERIC_FOOTER:Refresh({
+            data1HeaderText = GetString(BATTLESCROLLS_GROUP_COL_NAME),
             data1Text = BattleScrolls.utils.GetUndecoratedDisplayName(),
         })
     else

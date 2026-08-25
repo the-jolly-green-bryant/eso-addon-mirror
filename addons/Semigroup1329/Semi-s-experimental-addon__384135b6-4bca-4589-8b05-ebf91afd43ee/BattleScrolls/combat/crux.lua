@@ -20,8 +20,8 @@
 -- with trackable secondary-effect buffs; Scribing's Class Flourish
 -- signature casts are paired the same way (all verified in game
 -- 2026-08-23). Cruxweaver Armor emits no client event at all, so it is
--- reconstructed: armor buff active + damage taken just before + 5s proc
--- cooldown elapsed. Banner Bearer's in-combat Class Flourish crux pulses
+-- reconstructed: armor buff active + damage taken + adaptive ~5s proc
+-- cooldown elapsed (reset by recasts). Banner Bearer's in-combat Class Flourish crux pulses
 -- are verified to emit nothing observable; they are reclaimed by
 -- elimination (gain unexplained for 1s + banner sighted but silent for
 -- 5s+). Whatever remains lands in unattributedGains.
@@ -112,15 +112,27 @@ local BANNER_TICK_BEFORE_MS = 4000
 local BANNER_TICK_AFTER_MS = 1000
 
 -- Cruxweaver Armor: taking damage while the buff is up generates a Crux
--- on a 5s internal cooldown, and the proc emits NO client event (verified
--- with an unfiltered logger). Reconstructed as a SYNTHETIC proc instead:
--- each damage hit past the cooldown parks a proc entry that rides the
--- same attribution queue as real proc events (claimed last, being a
--- guess). The player buff is id 185908 alone (verified in game
--- 2026-08-23); the other Fatewoven morphs don't generate Crux.
-local ARMOR_PROC_ICD_MS = 5000
--- Attribute slightly early rather than miss a real proc to timing jitter
-local ARMOR_PROC_ICD_GRACE_MS = 300
+-- on a ~5s internal cooldown, and the proc emits NO client event
+-- (verified with an unfiltered logger). Reconstructed as a SYNTHETIC
+-- proc instead: each damage hit past the cooldown parks a proc entry
+-- that rides the same attribution queue as real proc events - including
+-- claiming an already-parked gain, since event order within a batch is
+-- never trustworthy. RECASTING the ability presumably resets the proc
+-- cooldown (UNVERIFIED in game - test this!), so a buff (re)application
+-- clears the gate. The gate is nominal-minus-margin (4950ms) and
+-- COMPENSATES observation jitter: the server cooldown re-anchors at the
+-- real proc, but our anchor is the observed attribution, shifted by
+-- event-delivery jitter. An attribution observed EARLY means the anchor
+-- slipped ahead, so the next real proc sits farther from it - the next
+-- gate becomes (2*nominal - margin) - observedInterval (observed 4980 ->
+-- gate 4970; observed 5000 -> base 4950). A LATE observation never
+-- shortens the gate below base: the proc may genuinely have waited for
+-- a hit past the cooldown's end, which re-anchors the window at the
+-- proc itself.
+-- The player buff is id 185908 alone (verified in game 2026-08-23); the
+-- other Fatewoven morphs don't generate Crux.
+local ARMOR_PROC_NOMINAL_MS = 5000
+local ARMOR_PROC_MARGIN_MS = 50
 local CRUX_ARMOR_BUFF_ID = 185908 -- Cruxweaver Armor
 
 -- Class Mastery: subclassed Crux generation emits no proc event of its
@@ -230,7 +242,28 @@ BattleScrolls.crux = crux
 -- Live armor-buff state (module-local: the buff and the proc cooldown
 -- outlive any single combat)
 local armorBuffActive = false
-local lastArmorAttribMs = 0
+local lastArmorAttribMs = 0 -- 0 = no anchor (fresh cast): next hit is eligible
+local armorIcdFloorMs = ARMOR_PROC_NOMINAL_MS - ARMOR_PROC_MARGIN_MS
+
+---True when the armor proc cooldown has elapsed (or was reset by a cast)
+---@param nowMs number
+---@return boolean
+local function armorIcdReady(nowMs)
+    return lastArmorAttribMs == 0 or (nowMs - lastArmorAttribMs) >= armorIcdFloorMs
+end
+
+---Records a Cruxweaver Armor attribution: anchors the cooldown and sets
+---the next gate to compensate an early observation (longer gate); a late
+---one keeps the base gate - see the constants comment
+---@param nowMs number
+local function onArmorAttributed(nowMs)
+    if lastArmorAttribMs > 0 then
+        local interval = nowMs - lastArmorAttribMs
+        armorIcdFloorMs = zo_max(ARMOR_PROC_NOMINAL_MS - ARMOR_PROC_MARGIN_MS,
+            2 * ARMOR_PROC_NOMINAL_MS - ARMOR_PROC_MARGIN_MS - interval)
+    end
+    lastArmorAttribMs = nowMs
+end
 -- Verve/Major Force pairing timestamps (a match consumes the matched one,
 -- so a later unrelated event can't re-pair with it)
 local lastVerveFadedMs = 0
@@ -342,16 +375,17 @@ local function settlePendingGains(c, nowMs)
 end
 
 ---Handles a conditional-generation proc worth `stacks` Crux: claims recent
----unexplained stack gains, or parks the remainder for the gain still to
----arrive. Synthetic procs (armor guesses) only park - an armor gain never
----precedes its damage hit.
+---unexplained stack gains (event order within a batch is never trusted -
+---the gain may well have landed first), or parks the remainder for the
+---gain still to arrive.
 ---@param canonicalId number
 ---@param stacks number
----@param synthetic boolean|nil
+---@param synthetic boolean|nil Mark parked entries as armor guesses (the gain side claims those last)
+---@return number claimedNow Stacks claimed from already-parked gains
 local function onConditionalProc(canonicalId, stacks, synthetic)
     local state = BattleScrolls.state
     if not state or not state.initialized then
-        return
+        return 0
     end
     local c = getOrCreateActivity(state)
     local now = GetGameTimeMilliseconds()
@@ -359,7 +393,7 @@ local function onConditionalProc(canonicalId, stacks, synthetic)
     local pending = c.pendingGains
     local remaining = stacks
     local i = 1
-    while not synthetic and remaining > 0 and i <= #pending do
+    while remaining > 0 and i <= #pending do
         -- A stack gain arrived first - claim it. Only gains within the
         -- pairing window are claimable; older ones outlived every real
         -- proc and are just waiting out the banner fallback.
@@ -382,21 +416,25 @@ local function onConditionalProc(canonicalId, stacks, synthetic)
         c.pendingProcs[#c.pendingProcs + 1] =
             { ms = now, id = canonicalId, stacks = remaining, synthetic = synthetic or nil }
     end
+    return stacks - remaining
 end
 
----Called from state on every damage hit the player takes. While a Fatewoven
----line armor buff is up and its proc cooldown has elapsed, the hit MAY have
----generated a Crux (the real proc emits no event) - park a synthetic proc
----that an otherwise-unexplained stack gain can claim.
+---Called from state on every damage hit the player takes. While the
+---Cruxweaver Armor buff is up and its proc cooldown has elapsed, the hit
+---MAY have generated a Crux (the real proc emits no event) - claim an
+---already-parked unexplained gain, or park a synthetic proc for the gain
+---still to arrive.
 function crux.onPlayerDamaged()
     if not armorBuffActive then
         return
     end
     local now = GetGameTimeMilliseconds()
-    if (now - lastArmorAttribMs) < (ARMOR_PROC_ICD_MS - ARMOR_PROC_ICD_GRACE_MS) then
+    if not armorIcdReady(now) then
         return
     end
-    onConditionalProc(CRUX_ARMOR_BUFF_ID, 1, true)
+    if onConditionalProc(CRUX_ARMOR_BUFF_ID, 1, true) > 0 then
+        onArmorAttributed(now)
+    end
 end
 
 ---Called from state's Crux effect handler on every stack change.
@@ -452,11 +490,10 @@ function crux.onCruxStacksChanged(state, oldStacks, newStacks)
         -- the cooldown - an earlier claim may have just consumed it)
         i = 1
         while gain > 0 and i <= #procs do
-            if procs[i].synthetic
-                    and (now - lastArmorAttribMs) >= (ARMOR_PROC_ICD_MS - ARMOR_PROC_ICD_GRACE_MS) then
+            if procs[i].synthetic and armorIcdReady(now) then
                 local proc = table.remove(procs, i)
                 c.conditionalGains[proc.id] = (c.conditionalGains[proc.id] or 0) + 1
-                lastArmorAttribMs = now
+                onArmorAttributed(now)
                 gain = gain - 1
             else
                 i = i + 1
@@ -714,7 +751,16 @@ function crux:Initialize()
         registerConditionalSource(eventAbilityId, canonicalId, true, false)
     end
     EVENT_MANAGER:RegisterForEvent("BattleScrolls_Crux_Armor", EVENT_EFFECT_CHANGED, function(_, changeType)
-        armorBuffActive = changeType ~= EFFECT_RESULT_FADED
+        if changeType == EFFECT_RESULT_FADED then
+            armorBuffActive = false
+        else
+            armorBuffActive = true
+            -- Recasting presumably resets the proc cooldown (unverified
+            -- in game - test!): the very next hit may generate. A new
+            -- anchor chain starts, so the gate returns to base.
+            lastArmorAttribMs = 0
+            armorIcdFloorMs = ARMOR_PROC_NOMINAL_MS - ARMOR_PROC_MARGIN_MS
+        end
     end)
     EVENT_MANAGER:AddFilterForEvent("BattleScrolls_Crux_Armor", EVENT_EFFECT_CHANGED,
             REGISTER_FILTER_ABILITY_ID, CRUX_ARMOR_BUFF_ID,

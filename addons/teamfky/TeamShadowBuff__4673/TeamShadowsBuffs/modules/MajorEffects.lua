@@ -30,6 +30,22 @@ local Module = {
     autoEquipped = {},
     spaulderActive = false,
 }
+local lifecycleActive = false
+local lifecycleRefreshQueued = false
+
+local function QueueLifecycleRefresh()
+    if not lifecycleActive or lifecycleRefreshQueued then return end
+    lifecycleRefreshQueued = true
+    zo_callLater(function()
+        lifecycleRefreshQueued = false
+        if not lifecycleActive then return end
+        TSB.SafeCall(MODULE_NAME, "ZoneRefresh", function()
+            Module:RefreshAutoEquippedSets()
+            Module:Scan()
+            if TSB.UI and TSB.UI.ApplySettings then TSB.UI:ApplySettings() end
+        end)
+    end, 600)
+end
 
 -- Les effets viennent désormais du catalogue (TeamShadowsBuffsCatalog.lua),
 -- groupés par cible. "player" -> buffs joueur ; "target" -> debuffs cible/boss.
@@ -45,10 +61,10 @@ else
         { key = "major_courage", shortName = "CM", name = "Courage majeur", ids = { 109966 }, color = { r = 0.22, g = 0.56, b = 0.96 }, defaultEnabled = true },
     }
     effects.bossDebuffs = {
-        { key = "major_vulnerability", shortName = "VM", name = "Vulnerabilite", ids = { 106754, 122389, 122177 }, color = { r = 0.82, g = 0.18, b = 0.22 }, defaultEnabled = true },
-        { key = "off_balance", shortName = "DE", name = "Desequilibre", ids = { 39077, 63003, 102771 }, color = { r = 0.95, g = 0.86, b = 0.18 }, defaultEnabled = true },
+        { key = "major_vulnerability", shortName = "VM", name = "Vulnérabilité", ids = { 106754, 122389, 122177 }, color = { r = 0.82, g = 0.18, b = 0.22 }, defaultEnabled = true },
+        { key = "off_balance", shortName = "DE", name = "Déséquilibre", ids = { 39077, 63003, 102771 }, color = { r = 0.95, g = 0.86, b = 0.18 }, defaultEnabled = true },
     }
-    if TSB.Chat then TSB.Chat("Catalogue absent: charge TeamShadowsBuffsCatalog.lua AVANT MajorEffects dans le .txt.") end
+    if TSB.Chat then TSB.Chat("Catalogue absent : charge TeamShadowsBuffsCatalog.lua AVANT MajorEffects dans le fichier .txt.") end
 end
 
 local effectsByKey = {}
@@ -324,7 +340,7 @@ local TWO_HANDED_WEAPONS = {
 local function EquippedSetRecords()
     -- [FIX] presence sur le PERSONNAGE, pas sur la barre active : le corps compte
     -- toujours, et pour les armes on prend la meilleure des deux barres. Un set
-    -- complete par les armes de la barre arriere reste donc detecte meme quand la
+    -- complété par les armes de la barre arrière reste donc détecté même quand la
     -- barre avant est active (avant : le tracker disparaissait au changement de barre).
     local records = {}
     local function AddSlot(slot, field)
@@ -686,7 +702,7 @@ local function OnEffectChanged(_, changeType, _, effectName, unitTag, beginTime,
     -- effets d'aura classiques : filtres d'unité stricts.
     -- (le Scan 500ms lit directement les buffs de player/boss, donc il rattrape
     --  les events qui arrivent avec un tag vide — pas de perte pour les auras.)
-    -- Les maitrises appliquees a une cible ou un allie peuvent remonter sans
+    -- Les maîtrises appliquées à une cible ou à un allié peuvent remonter sans
     -- unitTag. Accepter uniquement celles dont la source est le joueur et leur
     -- attribuer un tag stable pour associer correctement GAINED et FADED.
     if effect.procTargetType and (unitTag == nil or unitTag == "") then
@@ -746,9 +762,9 @@ end
 
 local function AddTrialDummyEffects()
     if not DoesUnitExist or not DoesUnitExist("reticleover") then return end
-    -- Les mannequins d'epreuve appliquent 120024 au joueur et n'exposent pas
-    -- leurs debuffs integres sur reticleover. On represente donc la vulnerabilite
-    -- majeure integree comme permanente, sans inventer de compte a rebours.
+    -- Les mannequins d'épreuve appliquent 120024 au joueur et n'exposent pas
+    -- leurs débuffs intégrés sur reticleover. On représente donc la vulnérabilité
+    -- majeure intégrée comme permanente, sans inventer de compte à rebours.
     if not UnitHasAbility("player", 120024) then return end
     local effect = effectsByKey.major_vulnerability
     if not effect then return end
@@ -1118,8 +1134,8 @@ local function BuildDisplayItems(targetType, orderText, fallback)
         local destinations = TrackerDestinations(key, false)
         local hasConfiguredDestinations = TSB.AnyTrackerDestinationConfigured and TSB.AnyTrackerDestinationConfigured(key)
         local autoEquipped = Module.autoEquipped and Module.autoEquipped[key] == true
-        -- Une maitrise selectionnee reste toujours visible. Son aura temporaire,
-        -- lorsqu'elle existe, remplace cet etat de repos pendant sa duree.
+        -- Une maîtrise sélectionnée reste toujours visible. Son aura temporaire,
+        -- lorsqu'elle existe, remplace cet état de repos pendant sa durée.
         local state = active[key]
         if hasCooldown then state, isCooldown = ProcDisplayState(effect) end
         local stateRemaining = RemainingSeconds(state)
@@ -1281,8 +1297,8 @@ end
 
 function Module:PrintStatus()
     self:Scan()
-    TSB.Chat(BuildLine("player", "Buffs joueur", effects.playerBuffs))
-    TSB.Chat(BuildLine("boss", "Debuffs boss", effects.bossDebuffs))
+    TSB.Chat(BuildLine("player", "Buffs du joueur", effects.playerBuffs))
+    TSB.Chat(BuildLine("boss", "Débuffs des boss", effects.bossDebuffs))
 end
 
 -- Auras du joueur hors filtres d'id : APPRENTISSAGE PAR NOM.
@@ -1320,6 +1336,7 @@ local function OnPlayerAuraLearn(...)
 end
 
 function Module:Load(savedVars)
+    lifecycleActive = true
     self.savedVars = savedVars or {}
     self.active = { player = {}, boss = {} }
     self.headActive = {}
@@ -1405,6 +1422,17 @@ function Module:Load(savedVars)
         TSB.SafeCall(MODULE_NAME, "Scan", function() self:Scan() end)
     end)
 
+    -- À l'entrée d'un champ de bataille, les tags du groupe et le HUD sont
+    -- reconstruits après le chargement de zone. Une resynchronisation différée
+    -- évite de conserver les anciens tags et réaffiche immédiatement les trackers.
+    EM:RegisterForEvent(EVENT_PREFIX .. "PlayerActivated", EVENT_PLAYER_ACTIVATED, QueueLifecycleRefresh)
+    if EVENT_GROUP_UPDATE then
+        EM:RegisterForEvent(EVENT_PREFIX .. "GroupUpdate", EVENT_GROUP_UPDATE, QueueLifecycleRefresh)
+    end
+    if EVENT_BATTLEGROUND_STATE_CHANGED then
+        EM:RegisterForEvent(EVENT_PREFIX .. "BattlegroundState", EVENT_BATTLEGROUND_STATE_CHANGED, QueueLifecycleRefresh)
+    end
+
     zo_callLater(function()
         TSB.SafeCall(MODULE_NAME, "Scan", function() self:Scan() end)
     end, 800)
@@ -1415,6 +1443,8 @@ function Module:Load(savedVars)
 end
 
 function Module:Unload()
+    lifecycleActive = false
+    lifecycleRefreshQueued = false
     for _, abilityId in ipairs(self.abilityIds or {}) do
         EM:UnregisterForEvent(EVENT_PREFIX .. tostring(abilityId), EVENT_EFFECT_CHANGED)
     end
@@ -1424,6 +1454,13 @@ function Module:Unload()
     EM:UnregisterForEvent(EVENT_PREFIX .. "Combat1", EVENT_COMBAT_EVENT)
     EM:UnregisterForEvent(EVENT_PREFIX .. "Combat2", EVENT_COMBAT_EVENT)
     EM:UnregisterForEvent(EVENT_PREFIX .. "SpaulderToggle", EVENT_COMBAT_EVENT)
+    EM:UnregisterForEvent(EVENT_PREFIX .. "PlayerActivated", EVENT_PLAYER_ACTIVATED)
+    if EVENT_GROUP_UPDATE then
+        EM:UnregisterForEvent(EVENT_PREFIX .. "GroupUpdate", EVENT_GROUP_UPDATE)
+    end
+    if EVENT_BATTLEGROUND_STATE_CHANGED then
+        EM:UnregisterForEvent(EVENT_PREFIX .. "BattlegroundState", EVENT_BATTLEGROUND_STATE_CHANGED)
+    end
     EM:UnregisterForUpdate(SCAN_UPDATE)
     self.active = { player = {}, boss = {} }
     self.headActive = {}

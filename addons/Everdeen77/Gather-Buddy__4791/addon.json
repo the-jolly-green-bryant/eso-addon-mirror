@@ -1,0 +1,44 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Everdeen77/Gather-Buddy__4791",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Everdeen77",
+  "canonical_id": "esoui:4791",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4791",
+  "deleted": false,
+  "directories": [
+    "GatherBuddy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4791/",
+  "fingerprint": "6423a9f8b635c282ec09f53b1181c441845f861100382dc3efb5f4a07ac4f02d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17095.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17097.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17096.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4791",
+  "source_url": "https://www.esoui.com/downloads/info4791-GatherBuddy.html",
+  "stats": {
+    "downloads": 12,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Gather Buddy",
+  "updated_at": 1787575799000,
+  "version": "1.1"
+}

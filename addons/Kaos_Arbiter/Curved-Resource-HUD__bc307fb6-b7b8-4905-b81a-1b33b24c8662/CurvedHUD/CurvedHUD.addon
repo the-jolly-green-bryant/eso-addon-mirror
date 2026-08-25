@@ -1,0 +1,10 @@
+## Title: CurvedHUD
+## Description: Curved player resource HUD for gamepad and console UI.
+## Author: CurvedHUD Project
+## Version: 0.5.3
+## APIVersion: 101050 101051 101052
+## SavedVariables: CurvedHUD_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0 LibHarvensAddonSettings
+
+CurvedHUD.lua
+Settings.lua

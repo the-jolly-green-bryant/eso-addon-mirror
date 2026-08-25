@@ -1,13 +1,14 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 25
+## AddOnVersion: 35
 ## Author: Skye-Forge
-## Description: Holodeck 0.0.25 — boss/elite path capture fix. /hdsettings
-## Version: 0.0.25
+## Description: Holodeck 0.0.35 — gold default boss; PC mem colors. /hdsettings
+## Version: 0.0.35
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua
-Holodeck_Record.lua
-Holodeck_Share.lua
 Holodeck_Settings.lua
 fights/house_demo.lua
+fights/MOL-TwinsClear.lua
+fights/MOL-TwinsPlayers.lua
+fights/MOL-Zhajhassa.lua

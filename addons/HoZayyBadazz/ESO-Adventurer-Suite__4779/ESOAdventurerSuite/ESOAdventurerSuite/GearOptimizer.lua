@@ -1735,8 +1735,29 @@ function G:ApplyFullSkillPlan(plan)
 end
 
 function G:RespecAndApplyBestBuild()
+    if safe(IsUnitInCombat,false,"player")==true then
+        self:NotifyResult("RESPEC BUILD: leave combat first.",false)
+        return false
+    end
+    if EPC and EPC.RefreshNow then EPC:RefreshNow("pre-skill-respec-build") end
     local now=type(GetFrameTimeMilliseconds)=="function" and safeNumber(GetFrameTimeMilliseconds,0) or 0
     local plan=(self._pendingFullSkillPlan and self._respecConfirmUntil and now<=self._respecConfirmUntil) and self._pendingFullSkillPlan or self:BuildFullSkillPlan()
+
+    -- Start-to-finish workflow: when launched from the Codex/world, move into
+    -- ESO's native Skills scene first, then begin the protected respec flow.
+    if EPC and EPC.Journal and EPC.Journal.window and not EPC.Journal.window:IsHidden() and type(EPC.Journal.Hide)=="function" then
+        EPC.Journal:Hide()
+    end
+    if SCENE_MANAGER and type(SCENE_MANAGER.Show)=="function" then
+        pcall(function() SCENE_MANAGER:Show("skills") end)
+    end
+    self:NotifyResult("RESPEC BUILD: opening Skills and preparing the best detected build...",true)
+    if type(zo_callLater)=="function" then
+        zo_callLater(function()
+            self:ApplyFullSkillPlan(plan)
+        end,250)
+        return true
+    end
     return self:ApplyFullSkillPlan(plan)
 end
 

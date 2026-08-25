@@ -1,8 +1,12 @@
+Update 0.27.59
+- ESOUI upload compliance pass: synchronized metadata and dependency floors, and removed Suite-controlled nameplate changes so native ESO nameplate settings remain user-controlled.
+- Required dependencies: LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.
+
 - Custom ESO-style reticle selector with multiple styles, colors, size, and opacity controls.
-Update 0.26.08
+Update 0.27.08
 - ESOUI compliance review completed against the current upload rules, best-practice guidance, and AddOn capability restrictions.
 - Removed the Nearby / Seen Players reticle-tracking source from the public Group Finder. Public listings and guild roster members remain available.
-- Current package uses LibAddonMenu-2.0 r43 as an external required dependency, APIVersion 101050 101051, and contains no executables, nested archives, telemetry, network access, or arbitrary file access.
+- Current package uses LibAddonMenu-2.0 r43, LibMapData, LibGPS 3.x, and LibMapPins-1.0 as external required dependencies, APIVersion 101050 101051, and contains no executables, nested archives, telemetry, network access, or arbitrary file access.
 - Added/retained current travel tools (quest wayshrines, nearest merchant, nearest guild store, guild-leader primary residence) and paged Dungeon / Activity history.
 
 Update 0.25.47
@@ -12,8 +16,6 @@ Update 0.25.47
 - Release metadata, AI disclosure/credits, and server-separated account-wide SavedVariables notes were rechecked for ESOUI review.
 
 Update 0.25.23
-- Added Settings > Cinematic Graphics > Cinematic Maximum. It applies ESO's own Maximum/Ultra-quality graphics values, saves the affected pre-cinematic settings for restore, and does not directly alter resolution/display mode/HDR/FPS-limit choices. ESO's own Maximum preset may adjust other quality-linked video values, including anti-aliasing/upscaling behavior.
-- This is a native ESO graphics preset only; addons cannot install ray tracing, replacement textures, or external post-processing shaders.
 
 Update 0.25.22
 - Removed the custom movable/resizable quest direction arrow and its Settings controls.
@@ -514,7 +516,7 @@ can migrate with the rename.
 Keep your SavedVariables when upgrading so preferences, target settings, combat
 bests, local quest history, inventory snapshots, Tamriel Codex notes/checkpoints, and HUD frame,
 Stable Training, Clock, and Mini Map positions remain available.
-LibAddonMenu-2.0 r43 or newer is required and should be installed separately for the settings
+LibAddonMenu-2.0 r43+, LibMapData, LibGPS 3.x, and LibMapPins-1.0 is required and should be installed separately
 panel.
 
 PRIVACY AND SECURITY

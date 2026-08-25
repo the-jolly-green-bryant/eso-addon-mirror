@@ -886,6 +886,42 @@ local MUNDUS_NAMES = {
   "The Thief", "The Tower", "The Warrior",
 }
 
+-- Strict mundus only. Do NOT substring-match "mage" (that hits "magicka" on food buffs
+-- and minted a new Build ID when food dropped). In-game buff is "Boon: The Thief".
+local function canonicalMundusName(raw)
+  if raw == nil then return nil end
+  local plain = stripColorLocal(tostring(raw))
+  if type(zo_strformat) == "function" then
+    local ok, fmt = pcall(zo_strformat, "<<1>>", plain)
+    if ok and type(fmt) == "string" and fmt ~= "" then plain = fmt end
+  end
+  local low = string.lower(plain)
+  low = low:gsub("^%s+", ""):gsub("%s+$", "")
+  if low == "" then return nil end
+  low = low:gsub("^boon:%s*", "")
+  for i = 1, #MUNDUS_NAMES do
+    local mundus = MUNDUS_NAMES[i]
+    local m = string.lower(mundus)
+    if low == m then return mundus end
+  end
+  for i = 1, #MUNDUS_NAMES do
+    local mundus = MUNDUS_NAMES[i]
+    local m = string.lower(mundus)
+    if #low >= #m and string.sub(low, 1, #m) == m then
+      local rest = string.sub(low, #m + 1)
+      if rest == "" or string.find(rest, "^[%s%p]") then
+        if not string.find(rest, "magicka", 1, true)
+            and not string.find(rest, "stamina", 1, true)
+            and not string.find(rest, "food", 1, true)
+            and not string.find(rest, "drink", 1, true) then
+          return mundus
+        end
+      end
+    end
+  end
+  return nil
+end
+
 -- Major/Minor + common combat statuses (hand-curated; unknown → fallback tag)
 local BUFF_EFFECT_HINTS = {
   ["major sorcery"] = { tag = "Spell Dmg", detail = "+20% Spell Damage" },
@@ -2120,30 +2156,15 @@ local function captureActiveMundus()
     for i = 1, n do
       local ok, buffName = pcall(GetUnitBuffInfo, "player", i)
       if ok and type(buffName) == "string" and buffName ~= "" then
-        local plain = stripColorLocal(buffName)
-        plain = (type(zo_strformat) == "function") and zo_strformat("<<1>>", plain) or plain
-        local low = string.lower(plain)
-        for _, mundus in ipairs(MUNDUS_NAMES) do
-          if low == string.lower(mundus) or string.find(low, string.lower(mundus), 1, true) then
-            return mundus
-          end
-        end
-        if string.find(low, "the ", 1, true) and (
-            string.find(low, "thief", 1, true) or string.find(low, "lover", 1, true)
-            or string.find(low, "shadow", 1, true) or string.find(low, "apprentice", 1, true)
-            or string.find(low, "atronach", 1, true) or string.find(low, "warrior", 1, true)
-            or string.find(low, "mage", 1, true) or string.find(low, "ritual", 1, true)
-            or string.find(low, "serpent", 1, true) or string.find(low, "steed", 1, true)
-            or string.find(low, "lady", 1, true) or string.find(low, "lord", 1, true)
-            or string.find(low, "tower", 1, true)) then
-          return plain
-        end
+        local mundus = canonicalMundusName(buffName)
+        if mundus then return mundus end
       end
     end
   end
   return nil
 end
 M.CaptureActiveMundus = captureActiveMundus
+M.CanonicalMundusName = canonicalMundusName
 
 local function readPlayerStat(statConst, bonusOpt, softOpt)
   if type(GetPlayerStat) ~= "function" or type(statConst) ~= "number" then return nil end
@@ -2493,13 +2514,12 @@ local function buildFingerprintParts(session, championList)
     for _, cp in ipairs(endB.champion) do addCp(cp and cp.id) end
   end
   cpIds = sortedIdList(cpIds)
-  local mundus = string.lower(tostring((session and session.mundus) or ""))
-  if mundus == "" and type(startB) == "table" and startB.mundus then
-    mundus = string.lower(tostring(startB.mundus))
-  end
-  if mundus == "" and type(endB) == "table" and endB.mundus then
-    mundus = string.lower(tostring(endB.mundus))
-  end
+  -- Canonical stone only — food/magicka text must never land in M:
+  local mundus = canonicalMundusName(session and session.mundus)
+    or canonicalMundusName(type(startB) == "table" and startB.mundus)
+    or canonicalMundusName(type(endB) == "table" and endB.mundus)
+    or ""
+  mundus = string.lower(mundus)
   local parts = {
     "F:" .. table.concat(front, ","),
     "B:" .. table.concat(back, ","),
@@ -2606,8 +2626,10 @@ local function captureSessionBuild(session, phase)
       back = snapBars("Back", "back"),
     },
     sets = {},
-    mundus = session.mundus or (stats and stats.mundus)
-      or (session.buildStart and session.buildStart.mundus) or nil,
+    mundus = canonicalMundusName(session.mundus)
+      or canonicalMundusName(stats and stats.mundus)
+      or canonicalMundusName(session.buildStart and session.buildStart.mundus)
+      or nil,
     food = food,
     champion = champion,
     attributes = {

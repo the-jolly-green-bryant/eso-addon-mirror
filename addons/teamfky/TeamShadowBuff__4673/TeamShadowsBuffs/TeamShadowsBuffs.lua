@@ -22,7 +22,7 @@ function TSB.SafeCall(moduleName, actionName, fn, ...)
         TSB.moduleStates[moduleName] = TSB.moduleStates[moduleName] or {}
         TSB.moduleStates[moduleName].failed = true
         TSB.moduleStates[moduleName].error = tostring(result)
-        Chat(string.format("module %s desactive: erreur dans %s.", tostring(moduleName), tostring(actionName)))
+        Chat(string.format("module %s désactivé : erreur dans %s.", tostring(moduleName), tostring(actionName)))
         if TSB.savedVars and TSB.savedVars.debug then
             Chat(tostring(result))
         end
@@ -34,12 +34,12 @@ end
 
 function TSB.RegisterModule(module)
     if type(module) ~= "table" or type(module.name) ~= "string" or module.name == "" then
-        Chat("module ignore: nom invalide.")
+        Chat("module ignoré : nom invalide.")
         return false
     end
 
     if TSB.modules[module.name] then
-        Chat("module ignore: doublon " .. module.name .. ".")
+        Chat("module ignoré : doublon " .. module.name .. ".")
         return false
     end
 
@@ -122,13 +122,13 @@ local function PrintStatus()
 
     for _, moduleName in ipairs(TSB.moduleOrder) do
         local state = TSB.moduleStates[moduleName] or {}
-        local text = "pret"
+        local text = "prêt"
         if state.failed then
             text = "erreur"
         elseif state.loaded then
-            text = "charge"
+            text = "chargé"
         elseif not IsModuleEnabled(moduleName) then
-            text = "desactive"
+            text = "désactivé"
         end
         Chat(string.format("%s : %s", moduleName, text))
     end
@@ -136,7 +136,7 @@ end
 
 local function ToggleModule(moduleName)
     if not TSB.modules[moduleName] then
-        Chat("module inconnu: " .. tostring(moduleName))
+        Chat("module inconnu : " .. tostring(moduleName))
         return
     end
 
@@ -158,7 +158,7 @@ local function OpenSettings()
     elseif TSB.OpenSettingsPanel then
         TSB.SafeCall("Settings", "OpenSettingsPanel", TSB.OpenSettingsPanel)
     else
-        Chat("fenetre de gestion indisponible.")
+        Chat("fenêtre de gestion indisponible.")
     end
 end
 
@@ -195,11 +195,11 @@ local function HandleSlash(args)
         if TSB.UI then
             TSB.SafeCall("UI", "ApplySettings", TSB.UI.ApplySettings, TSB.UI)
         end
-        Chat(TSB.savedVars.unlocked and "fenetres deverrouillees." or "fenetres verrouillees.")
+        Chat(TSB.savedVars.unlocked and "fenêtres déverrouillées." or "fenêtres verrouillées.")
     elseif command == "effects" and TSB.modules.MajorEffects and TSB.modules.MajorEffects.PrintStatus then
         TSB.SafeCall("MajorEffects", "PrintStatus", TSB.modules.MajorEffects.PrintStatus, TSB.modules.MajorEffects)
     else
-        Chat("commandes: /tsb (manager) | /tsbuffs on | off | status | settings | effects | unlock | toggle MajorEffects | debug")
+        Chat("commandes : /tsb (manager) | /tsbuffs on | off | status | settings | effects | unlock | toggle MajorEffects | debug")
     end
 end
 
@@ -209,13 +209,13 @@ local function HandleOpenManagerSlash()
     elseif TSB.Manager and TSB.Manager.Show then
         TSB.Manager:Show()
     else
-        Chat("interface du manager indisponible. Fais /reloadui puis reessaie.")
+        Chat("interface du manager indisponible. Fais /reloadui, puis réessaie.")
     end
 end
 
 local function RegisterSlashCommands()
     SLASH_COMMANDS["/tsb"] = HandleOpenManagerSlash
-    -- commandes texte (debug, on/off, unlock...) : etaient orphelines, re-branchees ici
+    -- Commandes texte (debug, on/off, unlock...) : elles étaient orphelines et sont rebranchées ici.
     SLASH_COMMANDS["/tsbuffs"] = HandleSlash
 end
 
@@ -268,8 +268,8 @@ local function OnAddonLoaded(_, addonName)
         return copy
     end
 
-    -- Au premier chargement de cette version, le personnage actuellement joue
-    -- recupere l'ancien profil global. Les autres personnages commencent vides.
+    -- Au premier chargement de cette version, le personnage actuellement joué
+    -- récupère l'ancien profil global. Les autres personnages commencent vides.
     if characterVars.profileInitialized ~= true then
         local characterId = GetCurrentCharacterId and tostring(GetCurrentCharacterId()) or "unknown"
         if accountVars.trackerProfileMigrationCharacterId == nil then
@@ -289,8 +289,8 @@ local function OnAddonLoaded(_, addonName)
     end
 
     -- Vue commune pour ne modifier aucune logique existante : chaque lecture ou
-    -- ecriture d'un champ de profil est dirigee vers le personnage, le reste vers
-    -- les donnees du compte.
+    -- L'écriture d'un champ de profil est dirigée vers le personnage, le reste vers
+    -- les données du compte.
     TSB.accountSavedVars = accountVars
     accountVars.itemSetCollectionScans = nil
     TSB.characterSavedVars = characterVars
@@ -373,6 +373,35 @@ local function OnAddonLoaded(_, addonName)
     if TSB.EnsureEffectSettingsDefaults then
         TSB.SafeCall("MajorEffects", "EnsureEffectSettingsDefaults", TSB.EnsureEffectSettingsDefaults)
     end
+
+    -- Cette migration ne s'exécute qu'une fois par personnage. Elle applique le
+    -- nouveau choix par défaut sans écraser les verrouillages manuels ultérieurs.
+    if characterVars.defaultUnlockedMigration118 ~= true then
+        TSB.savedVars.unlocked = true
+        TSB.savedVars.modules = TSB.savedVars.modules or {}
+        TSB.savedVars.modules.CombatStats = TSB.savedVars.modules.CombatStats or {}
+        TSB.savedVars.modules.CombatStats.unlocked = true
+        for _, settings in pairs(characterVars.panelSettings or {}) do
+            if type(settings) == "table" then settings.unlocked = true end
+        end
+        for _, settings in pairs(characterVars.effectSettings or {}) do
+            if type(settings) == "table" then settings.unlocked = true end
+        end
+        characterVars.defaultUnlockedMigration118 = true
+    end
+
+    -- Corrige uniquement les anciennes variantes fautives connues. Un nom
+    -- réellement personnalisé par le joueur reste inchangé.
+    local olorimeSettings = characterVars.effectSettings and characterVars.effectSettings.olorime
+    if olorimeSettings and type(olorimeSettings.name) == "string" then
+        local obsoleteOlorimeNames = {
+            ["Vestment d'Olorime"] = true,
+            ["Vestment of Olirime"] = true,
+            ["Vêtement d'Olorime"] = true,
+            ["Vêtement d'Olirime"] = true,
+        }
+        if obsoleteOlorimeNames[olorimeSettings.name] then olorimeSettings.name = nil end
+    end
     TSB.savedVars.modules.GroupSetCoverage = nil
     TSB.savedVars.groupTrackerPositions = TSB.savedVars.groupTrackerPositions or {}
     TSB.savedVars.layout = TSB.NormalizeLayout(TSB.savedVars.layout)
@@ -436,6 +465,10 @@ local function OnAddonLoaded(_, addonName)
         TSB.savedVars.catalogLanguage = "fr"
     end
     TSB.savedVars.catalogNamesByLanguage = TSB.savedVars.catalogNamesByLanguage or {}
+    TSB.savedVars.catalogNamesByLanguage.fr = TSB.savedVars.catalogNamesByLanguage.fr or {}
+    TSB.savedVars.catalogNamesByLanguage.en = TSB.savedVars.catalogNamesByLanguage.en or {}
+    TSB.savedVars.catalogNamesByLanguage.fr.olorime = "Vêtement d'Olorimé"
+    TSB.savedVars.catalogNamesByLanguage.en.olorime = "Vestment of Olorime"
     if TSB.CaptureCatalogLanguageNames then
         TSB.SafeCall("Catalog", "CaptureCatalogLanguageNames", TSB.CaptureCatalogLanguageNames)
     end

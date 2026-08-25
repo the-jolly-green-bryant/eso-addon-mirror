@@ -1,3 +1,8 @@
+0.18.0
+• Added LibSets backed set searching to item autocomplete.
+• Added actual tradeable set pieces for crafted and bind on equip sets while excluding bind on pickup gear from guild store suggestions.
+• Kept ESO's trading house name results as a fallback alongside set searching.
+
 0.17.0
 • Expanded the public API with atomic named-list creation and batch item addition.
 • Added optional set, trait, quality, level, and Champion Point matching overrides for integrations.

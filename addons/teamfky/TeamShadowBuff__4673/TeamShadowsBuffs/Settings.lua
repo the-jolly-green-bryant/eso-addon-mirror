@@ -14,7 +14,7 @@ local function OpenManagerFromSettings()
                 TSB.OpenManager()
             end
         elseif TSB.Chat then
-            TSB.Chat("La fenêtre Team Shadows Manager n'est pas disponible.")
+            TSB.Chat("La fenêtre Team Shadows Buffs n'est pas disponible.")
         end
     end, 0)
 end
@@ -41,15 +41,19 @@ function TSB.RegisterSettingsPanel()
     local panel = LAM:RegisterAddonPanel(SETTINGS_PANEL_NAME, panelData)
     TSB.settingsPanel = panel
 
-    -- Aucun réglage LAM : l'entrée Extensions sert uniquement de raccourci.
-    LAM:RegisterOptionControls(SETTINGS_PANEL_NAME, {})
-
-    if panel and CALLBACK_MANAGER and not TSB.settingsPanelCallbackRegistered then
-        TSB.settingsPanelCallbackRegistered = true
-        CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(openedPanel)
-            if openedPanel == panel then OpenManagerFromSettings() end
-        end)
-    end
+    LAM:RegisterOptionControls(SETTINGS_PANEL_NAME, {
+        {
+            type = "description",
+            text = "Les reglages complets sont disponibles dans la fenetre Team Shadows Buffs.",
+            width = "full",
+        },
+        {
+            type = "button",
+            name = "Ouvrir Team Shadows Buffs",
+            func = OpenManagerFromSettings,
+            width = "full",
+        },
+    })
 end
 
 function TSB.OpenSettingsPanel()

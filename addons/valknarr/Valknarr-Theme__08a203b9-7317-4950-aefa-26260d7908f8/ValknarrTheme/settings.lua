@@ -52,9 +52,9 @@ function Settings:TryLibAddonMenu()
         {
             type = "dropdown",
             name = "Health / Magicka / Stamina",
-            tooltip = "Clean is numbers on a solid bar. Steel / Bronze stitch three tiles; fill shows through the transparent hole.",
-            choices = { "Default (vanilla)", "Clean", "Steel bevel", "Bronze" },
-            choicesValues = { Format.THEME_DEFAULT, Format.THEME_CLEAN, Format.THEME_STEEL, Format.THEME_BRONZE },
+            tooltip = "Clean is numbers on a solid bar. Nordic / Steel / Bronze stitch three tiles; fill shows through the transparent hole.",
+            choices = { "Default (vanilla)", "Clean", "Nordic knot", "Steel bevel", "Bronze runes" },
+            choicesValues = { Format.THEME_DEFAULT, Format.THEME_CLEAN, Format.THEME_NORDIC, Format.THEME_STEEL, Format.THEME_BRONZE },
             getFunc = function()
                 return Store:ThemeId()
             end,
@@ -68,9 +68,9 @@ function Settings:TryLibAddonMenu()
         {
             type = "dropdown",
             name = "Werewolf meter",
-            tooltip = "Named skins are one inverted-L plate: Ult in the bar. Steel fills the globe with liquid; bronze paints Fury on the ring.",
-            choices = { "Vanilla", "Clean", "Steel bevel", "Bronze" },
-            choicesValues = { Format.WOLF_VANILLA, Format.WOLF_CLEAN, Format.WOLF_STEEL, Format.WOLF_BRONZE },
+            tooltip = "Named skins are one inverted-L plate: Ult in the bar, Fury as a dark-red fill behind the wolf.",
+            choices = { "Vanilla", "Clean", "Nordic knot", "Steel bevel", "Bronze runes" },
+            choicesValues = { Format.WOLF_VANILLA, Format.WOLF_CLEAN, Format.WOLF_NORDIC, Format.WOLF_STEEL, Format.WOLF_BRONZE },
             getFunc = function()
                 return Store:WolfId()
             end,
@@ -137,7 +137,7 @@ function Settings:RegisterLibraries()
         if lam then
             Log:Always("Theme also in Add-On Settings (LibAddonMenu)")
         else
-            Log:Always("Theme: /vtheme hud clean|steel|bronze|default   /vtheme wolf clean|steel|bronze|vanilla")
+            Log:Always("Theme: /vtheme hud clean|nordic|steel|bronze|default   /vtheme wolf clean|nordic|steel|bronze|vanilla")
         end
     end
 end
@@ -162,15 +162,17 @@ function Settings:HandleSlash(args)
             Log:Always("/vtheme                show hud + wolf skins")
             Log:Always("/vtheme hud default    native H/M/S")
             Log:Always("/vtheme hud clean      readable Valknarr bars")
+            Log:Always("/vtheme hud nordic     Nordic knot frame")
             Log:Always("/vtheme hud steel      Steel bevel frame")
-            Log:Always("/vtheme hud bronze     Bronze frame")
+            Log:Always("/vtheme hud bronze     Bronze runes frame")
             Log:Always("/vtheme wolf vanilla   native werewolf bar")
             Log:Always("/vtheme wolf clean     current Valknarr widget")
-            Log:Always("/vtheme wolf steel     Steel bevel plate, liquid fury globe")
-            Log:Always("/vtheme wolf bronze    Bronze plate")
+            Log:Always("/vtheme wolf nordic    Nordic knot plate")
+            Log:Always("/vtheme wolf steel     Steel bevel plate")
+            Log:Always("/vtheme wolf bronze    Bronze runes plate")
             Log:Always("/vtheme default        hud default (alias)")
             Log:Always("/vtheme clean          hud clean (alias: valknarr)")
-            Log:Always("/vtheme steel|bronze   hud shortcuts")
+            Log:Always("/vtheme nordic|steel|bronze   hud shortcuts")
             Log:Always("/vtheme toggle         hud default <-> clean")
             Log:Always("/vtheme text on|off    show or hide numbers on the bars")
             Log:Always("/vtheme preview on|off show H/M/S while Theme settings are open")

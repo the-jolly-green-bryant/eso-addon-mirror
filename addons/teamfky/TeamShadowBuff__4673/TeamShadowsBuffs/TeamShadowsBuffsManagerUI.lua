@@ -59,7 +59,7 @@ local LIST_X_LIBRARY, LIST_W_LIBRARY = 206, 400
 -- (et non côté technique). L'ordre des cats fixe l'ordre d'affichage.
 local LIBRARY_FILTERS = {
     { id = "all", label = "Tous" },
-    { id = "buffs", label = "Buffs & Debuffs", cats = { "major_buffs", "boss_debuffs", "support_debuffs" } },
+    { id = "buffs", label = "Buffs et débuffs", cats = { "major_buffs", "boss_debuffs", "support_debuffs" } },
     { id = "sets", label = "Sets", cats = { "set_stacks", "set_procs", "monster_sets", "dungeon_proc_sets", "overland_crafted_pvp_procs", "trial_proc_sets", "mythic_stacks" } },
     { id = "skills", label = "Compétences", cats = { "class_masteries", "skill_stacks", "skill_procs" } },
     { id = "status", label = "Effets de statut", cats = { "status_effects" } },
@@ -89,7 +89,7 @@ end
 local TAB_GROUPS = {
     { id = "library", label = "BIBLIOTHÈQUE", libraryTab = true, cats = LIBRARY_ALL_CATS },
     { id = "actifs", label = "MES TRACKERS", activesOnly = true },
-    { id = "stats", label = "STATS COMBAT", statsOnly = true },
+    { id = "stats", label = "STATS DE COMBAT", statsOnly = true },
 }
 
 -- ---------------------------------------------------------------------
@@ -421,8 +421,8 @@ local DESTINATION_ORDER = {
     { key = "free8", label = "Tracker libre 8 = L8" },
     { key = "free9", label = "Tracker libre 9 = L9" },
     { key = "free10", label = "Tracker libre 10 = L10" },
-    { key = "head", label = "Tracker tête" },
-    { key = "group", label = "Trackers groupe" },
+    { key = "head", label = "Tracker de tête" },
+    { key = "group", label = "Trackers de groupe" },
 }
 local function ConfiguredDestinations(k, includeDisabled)
     if TSB.GetTrackerDestinations then return TSB.GetTrackerDestinations(k, includeDisabled) end
@@ -486,7 +486,7 @@ local function ShowActivationMenu(anchor)
         end
     end)
     AddCustomMenuItem("Tracker tête", function() ActivateIn("head") end)
-    AddCustomMenuItem("Tracker groupe", function() ActivateIn("group") end)
+    AddCustomMenuItem("Tracker de groupe", function() ActivateIn("group") end)
     ShowMenu(anchor)
 end
 
@@ -723,8 +723,8 @@ local function ShowActiveItemMenu(anchor, key, destination)
         end
         AddCustomSubMenuItem("Transférer vers un panel", panelEntries)
         AddCustomSubMenuItem("Transférer en individuel", freeEntries)
-        AddCustomMenuItem((destination == "head" and "✓ " or "") .. "Tracker tête", function() moveTo("head") end)
-        AddCustomMenuItem((destination == "group" and "✓ " or "") .. "Tracker groupe", function() moveTo("group") end)
+        AddCustomMenuItem((destination == "head" and "✓ " or "") .. "Tracker de tête", function() moveTo("head") end)
+        AddCustomMenuItem((destination == "group" and "✓ " or "") .. "Tracker de groupe", function() moveTo("group") end)
     elseif isPanel then
         local panelSettings = EnsurePanelAppearance(destination)
         AddCustomMenuItem(panelSettings.enabled == false and "Activer le panel" or "Désactiver le panel", function()
@@ -863,7 +863,7 @@ local function BindRows(list)
             local panelEnabled = not isPanel or EnsurePanelAppearance(item.destination).enabled ~= false
             row.name:SetFont(FONT_SMALL)
             row.name:SetColor(panelEnabled and accent[1] or C.textDim[1], panelEnabled and accent[2] or C.textDim[2], panelEnabled and accent[3] or C.textDim[3], 1)
-            local headerText = string.upper(item.name or "")
+            local headerText = zo_strupper and zo_strupper(item.name or "") or string.upper(item.name or "")
             if item.count then headerText = headerText .. "  —  " .. tostring(item.count) end
             row.name:SetText(headerText)
             row.gear:SetHidden(activeTab ~= "actifs" or not isPanel)
@@ -1245,7 +1245,7 @@ function UI:ImportConfig(str)
             or scopedDestination == "head"
             or scopedDestination == "group"
         if not validDestination then
-            if TSB.Chat then TSB.Chat("import refuse : destination inconnue.") end
+            if TSB.Chat then TSB.Chat("import refusé : destination inconnue.") end
             return false
         end
         local validEntries = 0
@@ -1254,7 +1254,7 @@ function UI:ImportConfig(str)
             if effectKey and EffectDef(effectKey) then validEntries = validEntries + 1 end
         end
         if validEntries == 0 then
-            if TSB.Chat then TSB.Chat("import refuse : le partage ne contient aucun tracker compatible.") end
+            if TSB.Chat then TSB.Chat("import refusé : le partage ne contient aucun tracker compatible.") end
             return false
         end
         if scopedDestination:match("^panel[1-4]$") or scopedDestination:match("^free%d+$") then
@@ -1318,7 +1318,7 @@ function UI:ImportConfig(str)
             end
         end
         if n == 0 then
-            if TSB.Chat then TSB.Chat("import refuse : aucun tracker n'a pu etre ajoute.") end
+            if TSB.Chat then TSB.Chat("import refusé : aucun tracker n'a pu être ajouté.") end
             return false
         end
         Apply(); self:RebuildList(); self:RefreshForm()
@@ -1447,7 +1447,7 @@ local function BuildTrackerForm(parent)
         Apply()
     end)):SetAnchor(TOPLEFT, q, TOPLEFT, 440, 18)
 
-    Label(q, FONT_SMALL, C.textDim, "Couleur cooldown"):SetAnchor(TOPLEFT, q, TOPLEFT, 440, 52)
+    Label(q, FONT_SMALL, C.textDim, "Couleur du cooldown"):SetAnchor(TOPLEFT, q, TOPLEFT, 440, 52)
     track(MakeSwatch(q, function()
         if not currentKey then return Saved().cooldownColor end
         return EffectSettings(currentKey).cooldownColor or Saved().cooldownColor
@@ -1469,7 +1469,7 @@ local function BuildTrackerForm(parent)
         if currentKey then EffectSettings(currentKey).showStacks = v; Apply() end
     end)):SetAnchor(TOPLEFT, q, TOPLEFT, 0, 70)
 
-    Label(q, FONT_SMALL, C.textDim, "Couleur stacks"):SetAnchor(TOPLEFT, q, TOPLEFT, 90, 52)
+    Label(q, FONT_SMALL, C.textDim, "Couleur des stacks"):SetAnchor(TOPLEFT, q, TOPLEFT, 90, 52)
     track(MakeSwatch(q, function()
         if not currentKey then return Saved().stackTextColor end
         return EffectSettings(currentKey).stackTextColor or Saved().stackTextColor
@@ -1489,7 +1489,7 @@ local function BuildTrackerForm(parent)
     end))
     quickCompactToggle:SetAnchor(TOPLEFT, q, TOPLEFT, 200, 70)
 
-    Label(q, FONT_SMALL, C.textDim, "Timer compact"):SetAnchor(TOPLEFT, q, TOPLEFT, 290, 52)
+    Label(q, FONT_SMALL, C.textDim, "Position du timer"):SetAnchor(TOPLEFT, q, TOPLEFT, 290, 52)
     track(MakeCompactTimerPositionButton(q, function()
         return currentKey and EffectSettings(currentKey) or nil
     end)):SetAnchor(TOPLEFT, q, TOPLEFT, 290, 68)
@@ -1571,10 +1571,10 @@ local function BuildTrackerForm(parent)
         function(r, g, b) AppearanceSettings().borderColor = { r = r, g = g, b = b }; Apply() end)
 
     -- Réglages chiffrés (borderThickness / circleSize / timerTextScale / scale / *Alpha)
-    subHeader("Tailles & transparences", 178)
-    sliderAt("Épaisseur bord", 0, 198, 185, 2, 6, 1, "borderThickness")
-    sliderAt("Taille cellule", 210, 198, 185, 20, 72, 1, "circleSize")
-    sliderAt("Échelle timer", 420, 198, 172, 0.5, 3, 0.05, "timerTextScale")
+    subHeader("Tailles et transparences", 178)
+    sliderAt("Épaisseur de bordure", 0, 198, 185, 2, 6, 1, "borderThickness")
+    sliderAt("Taille des cellules", 210, 198, 185, 20, 72, 1, "circleSize")
+    sliderAt("Échelle du timer", 420, 198, 172, 0.5, 3, 0.05, "timerTextScale")
     sliderAt("Zoom global", 0, 240, 185, 0.6, 1.8, 0.05, "scale")
     sliderAt("Transp. fond", 210, 240, 185, 0, 1, 0.05, "frameAlpha")
     sliderAt("Transp. texte", 420, 240, 172, 0, 1, 0.05, "textAlpha")
@@ -1635,7 +1635,7 @@ local function BuildLibraryForm(parent)
     parent.libMetaValues = {}
     local metaRows = {
         { key = "target", text = "Cible" },
-        { key = "stacks", text = "Stacks max" },
+        { key = "stacks", text = "Stacks maximum" },
         { key = "cd", text = "Cooldown" },
     }
     for idx, def in ipairs(metaRows) do
@@ -1668,7 +1668,7 @@ local function BuildLibraryForm(parent)
     parent.libConfigure:SetAnchor(BOTTOMRIGHT, c, BOTTOMRIGHT, 0, 0)
 
     parent.libNote = Label(parent, FONT_SMALL, C.textDim,
-        "Active ici les effets à suivre.\nNom, acronyme, couleurs et panels\nse règlent dans MES TRACKERS.")
+        "Active ici les effets à suivre.\nLe nom, l'acronyme, les couleurs et les panels\nse règlent dans MES TRACKERS.")
     parent.libNote:SetAnchor(TOPLEFT, parent, TOPLEFT, 4, 360)
     parent.libNote:SetWidth(326)
 end
@@ -1713,7 +1713,7 @@ function UI:RefreshLibraryForm()
         local parts = {}
         for _, destination in ipairs(destinations) do
             local label = DestinationShortLabel(destination)
-            if not DestinationEnabled(key, destination) then label = label .. " (off)" end
+            if not DestinationEnabled(key, destination) then label = label .. " (désactivé)" end
             parts[#parts + 1] = label
         end
         statusText, isActive = "Actif dans : " .. table.concat(parts, ", "), true
@@ -1753,9 +1753,9 @@ local function BuildStatsForm(parent)
     local function track(w) table.insert(parent.widgets, w); return w end
     local function S() return StatsSaved() end
 
-    Label(parent, FONT_HEADER, C.cyan, "TRACKER STATS COMBAT"):SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
+    Label(parent, FONT_HEADER, C.cyan, "TRACKER DE STATS DE COMBAT"):SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
 
-    local general = MakeCard(parent, "GÉNÉRAL & CAPS")
+    local general = MakeCard(parent, "GÉNÉRAL ET CAPS")
     general:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 28); general:SetDimensions(932, 160)
     local g = general.content
 
@@ -1804,13 +1804,13 @@ local function BuildStatsForm(parent)
     swatchAt("Bordure", 260, 20, "borderColor")
     swatchAt("Titres", 390, 20, "labelColor")
     swatchAt("Valeur normale", 520, 20, "normalColor")
-    swatchAt("Sous minimum", 650, 20, "lowColor")
-    swatchAt("Au-dessus max", 780, 20, "highColor")
+    swatchAt("Sous le minimum", 650, 20, "lowColor")
+    swatchAt("Au-dessus du maximum", 780, 20, "highColor")
     swatchAt("Barres PEN/CRIT", 0, 82, "penBarColor")
 
     subHeader("Taille proportionnelle", 144)
     aSlider("Échelle de l’ensemble", 0, 164, 260, 0.5, 2.0, 0.05, "scale")
-    aSlider("Épaisseur bord", 300, 164, 220, 0, 8, 1, "borderThickness")
+    aSlider("Épaisseur de bordure", 300, 164, 220, 0, 8, 1, "borderThickness")
     aSlider("Actualisation", 560, 164, 240, 100, 1000, 50, "updateMs", " ms")
 
     subHeader("Transparences", 248)
@@ -1850,17 +1850,17 @@ function UI:RefreshForm()
     if f.effectColorLabel then f.effectColorLabel:SetText("Couleur de l'effet") end
     if f.displayTitle then
         local dest = currentPanel or currentDestination or (currentKey and EffectSettings(currentKey).destination or nil)
-        local title = "RÉGLAGE AFFICHAGE"
+        local title = "RÉGLAGES D'AFFICHAGE"
         local panelNumber = dest and dest:match("^panel(%d+)$")
         local trackerNumber = dest and dest:match("^free(%d+)$")
         if panelNumber then
-            title = "RÉGLAGE PANEL " .. panelNumber
+            title = "RÉGLAGES DU PANEL " .. panelNumber
         elseif trackerNumber then
-            title = "RÉGLAGE AFFICHAGE TRACKER " .. trackerNumber
+            title = "RÉGLAGES DU TRACKER " .. trackerNumber
         elseif dest == "head" then
-            title = "RÉGLAGE TRACKER TÊTE"
+            title = "RÉGLAGES DU TRACKER DE TÊTE"
         elseif dest == "group" then
-            title = "RÉGLAGE TRACKER GROUPE"
+            title = "RÉGLAGES DU TRACKER DE GROUPE"
         end
         f.displayTitle:SetText(title)
     end
@@ -2128,7 +2128,7 @@ local function BuildWindow()
 
     M.btnSave = FlatButton(M, "SAUVEGARDER", 150, 36, function() Apply(); if TSB.Chat then TSB.Chat("Réglages appliqués.") end end, { 0.12, 0.30, 0.55, 1 }, C.text)
     M.btnSave:SetAnchor(BOTTOMRIGHT, M, BOTTOMRIGHT, -160, -16)
-    M.btnReset = FlatButton(M, "RESET", 130, 36, function()
+    M.btnReset = FlatButton(M, "RÉINITIALISER", 130, 36, function()
         if activeTab == "stats" then
             local defaults = TSB.defaults and TSB.defaults.modules and TSB.defaults.modules.CombatStats or {}
             Saved().modules = Saved().modules or {}
@@ -2353,7 +2353,7 @@ local function RefreshIncomingShareOverlay()
     elseif incoming.kind == "tracker" then
         local trackerNumber = tostring(incoming.destination):match("^free(%d+)$")
         local label = trackerNumber and ("L" .. trackerNumber)
-            or (incoming.destination == "group" and "Tracker groupe" or "Tracker tête")
+            or (incoming.destination == "group" and "Tracker de groupe" or "Tracker de tête")
         local action = incoming.replacesTracker and label .. " sera remplacé." or "Destination automatique : " .. label .. "."
         M.incomingDescription:SetText("Configuration d'un tracker. " .. action)
     else
@@ -2390,7 +2390,7 @@ function UI:AcceptIncomingShare()
         return
     end
     if TSB.GroupShare and TSB.GroupShare.IsLocationAllowed and not TSB.GroupShare:IsLocationAllowed() then
-        if TSB.Chat then TSB.Chat("import impossible en monde ouvert.") end
+        if TSB.Chat then TSB.Chat("import impossible en Cyrodiil et dans le monde ouvert.") end
         return
     end
     local code = incoming.payload
@@ -2491,7 +2491,8 @@ function UI:ToggleShare()
         M.shareEdit:SetText(self:ExportConfig(scope))
         if M.shareTitle then
             local name = scope and (scope.destination or scope.key)
-            M.shareTitle:SetText(name and ("IMPORT / EXPORT - " .. string.upper(name)) or "IMPORT / EXPORT")
+            local upperName = name and (zo_strupper and zo_strupper(name) or string.upper(name))
+            M.shareTitle:SetText(upperName and ("IMPORT / EXPORT - " .. upperName) or "IMPORT / EXPORT")
         end
     end
 end

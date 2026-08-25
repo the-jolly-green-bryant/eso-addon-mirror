@@ -1,0 +1,53 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_PBSMINIMAP">
+			<Action name="PBSMINIMAP_TOGGLE_MAP_SHOW">
+				<Down>PBS_MINIMAP:ToggleShowMap()</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_SHOW_HUD">
+				<Down>PBS_MINIMAP:ToggleShowHUD()</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_SHOW_COMBAT">
+				<Down>PBS_MINIMAP:ToggleShowCombat()</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_OUT">
+				<Down>PBS_MINIMAP:ToogleZoom(true, PBS_MINIMAP.account.zoomOut)</Down>
+				<Up>PBS_MINIMAP:ToogleZoom(false)</Up>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_IN">
+				<Down>PBS_MINIMAP:ToogleZoom(true, PBS_MINIMAP.account.zoomIn)</Down>
+				<Up>PBS_MINIMAP:ToogleZoom(false)</Up>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_PLUS">
+				<Down>PBS_MINIMAP:StepZoom(true)</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_MINUS">
+				<Down>PBS_MINIMAP:StepZoom(false)</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_OFFSET_FIX">
+				<Down>PBS_MINIMAP:ToggleFixedOffset()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="SI_KEYBINDINGS_LAYER_SIEGE" allowFallthrough="false">
+		<Category name="SI_KEYBINDINGS_CATEGORY_PBSMINIMAP">
+			<Action name="PBSMINIMAP_TOGGLE_MAP_SHOW_SIEGE_HUD">
+				<Down>PBS_MINIMAP:ToggleShowSiege()</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_OUT_SIEGE" hideAction="true" inheritsBindFrom="PBSMINIMAP_TOGGLE_MAP_ZOOM_OUT">
+				<Down>PBS_MINIMAP:ToogleZoom(true, PBS_MINIMAP.account.zoomOut)</Down>
+				<Up>PBS_MINIMAP:ToogleZoom(false)</Up>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_IN_SIEGE" hideAction="true" inheritsBindFrom="PBSMINIMAP_TOGGLE_MAP_ZOOM_IN">
+				<Down>PBS_MINIMAP:ToogleZoom(true, PBS_MINIMAP.account.zoomIn)</Down>
+				<Up>PBS_MINIMAP:ToogleZoom(false)</Up>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_PLUS_SIEGE" hideAction="true" inheritsBindFrom="PBSMINIMAP_TOGGLE_MAP_ZOOM_PLUS">
+				<Down>PBS_MINIMAP:StepZoom(true)</Down>
+			</Action>
+			<Action name="PBSMINIMAP_TOGGLE_MAP_ZOOM_MINUS_SIEGE" hideAction="true" inheritsBindFrom="PBSMINIMAP_TOGGLE_MAP_ZOOM_MINUS">
+				<Down>PBS_MINIMAP:StepZoom(false)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,11 +1,11 @@
 -- ============================================================================
--- Daily Pledge Manager v1.2.8
+-- Daily Pledge Manager v1.2.9
 -- Author: DerpyNoodle
 -- ============================================================================
 
 local ADDON_NAME = "DailyPledgeManager"
 local ADDON_DISPLAY_NAME = "Daily Pledge Manager"
-local ADDON_VERSION = "1.2.8"
+local ADDON_VERSION = "1.2.9"
 local LUP = LibUndauntedPledges
 
 local DailyTracker = {}
@@ -15,6 +15,9 @@ _G.DailyPledgeManager = DailyTracker
 -- CHANGELOG (newest first)
 -- ============================================================================
 local CHANGELOG = {
+    ["1.2.9"] = {
+        "Fix — Queue actions now respect the Dungeon Finder cooldown. Previously, if you had a leave-early penalty active, clicking Queue All or a single dungeon would flip the addon to a fake \"queued\" state while ESO silently rejected the request, leaving you waiting for a pop that never came. Now the addon checks the cooldown first, refuses to queue, and tells you how much time is left.",
+    },
     ["1.2.8"] = {
         "Fix — Abandon All now actually leaves the Dungeon Finder queue. Previously it cleared the visual state but the real ESO queue stayed active, so you could still get popped into a dungeon a few seconds after hitting Abandon All.",
     },
@@ -689,6 +692,45 @@ end
 -- ============================================================================
 -- QUEUE LOGIC
 -- ============================================================================
+-- Returns secondsRemaining (>0) if the player has an active Dungeon Finder
+-- "leave early" / activity-started cooldown, else 0. This is the same API
+-- ESO's own ActivityFinderRoot_Manager uses (see eso source:
+-- ActivityFinderRoot_Manager:RegisterForEvents -> OnCooldownsUpdate, which
+-- calls GetLFGCooldownTimeRemainingSeconds(LFG_COOLDOWN_ACTIVITY_STARTED)).
+-- Without this guard, ESO silently refuses StartActivityFinderSearch() while
+-- the cooldown is active and DPM ends up with isQueued=true but no real
+-- matchmaking happening — the player just sits there forever.
+local function GetDungeonFinderCooldownRemaining()
+    if type(GetLFGCooldownTimeRemainingSeconds) ~= "function" then return 0 end
+    if not LFG_COOLDOWN_ACTIVITY_STARTED then return 0 end
+    local remaining = GetLFGCooldownTimeRemainingSeconds(LFG_COOLDOWN_ACTIVITY_STARTED) or 0
+    if remaining < 0 then remaining = 0 end
+    return remaining
+end
+
+local function FormatCooldownRemaining(seconds)
+    if seconds <= 0 then return "0s" end
+    local mins = math.floor(seconds / 60)
+    local secs = math.floor(seconds % 60)
+    if mins > 0 then
+        return string.format("%dm %ds", mins, secs)
+    end
+    return string.format("%ds", secs)
+end
+
+-- Pre-flight check shared by every queue-trigger path.
+-- Returns true if queueing is allowed; returns false (and surfaces a chat
+-- message) if a Dungeon Finder cooldown is currently blocking new queues.
+local function GuardAgainstDungeonFinderCooldown()
+    local remaining = GetDungeonFinderCooldownRemaining()
+    if remaining > 0 then
+        d("|cFF6666[Daily Pledge Manager]|r Dungeon Finder cooldown active — " ..
+            FormatCooldownRemaining(remaining) .. " remaining.")
+        return false
+    end
+    return true
+end
+
 function DailyTracker.CancelQueue()
     -- CancelGroupSearches() is the correct ESO API -- confirmed from ESO's own
     -- LFG_LEAVE_QUEUE_CONFIRMATION dialog callback in ingamedialogs.lua.
@@ -727,6 +769,13 @@ function DailyTracker.ToggleQueue(activityId, dungeonName)
     if DailyTracker.queuedActivityIds[activityId] then
         DailyTracker.CancelQueue()
     else
+        -- Cooldown gate (v1.2.9): refuse to flip into the "queued" state if
+        -- ESO would silently reject the request due to a Leave-Early cooldown.
+        if not GuardAgainstDungeonFinderCooldown() then
+            DailyTracker.UpdateUIDisplay()
+            return
+        end
+
         if ClearActivityFinderSearch then ClearActivityFinderSearch() end
 
         if AddActivityFinderSpecificSearchEntry and StartActivityFinderSearch then
@@ -767,6 +816,13 @@ function DailyTracker.QueueAllPledges()
 
     if IsUnitGrouped("player") and not IsUnitGroupLeader("player") then
         d("|cFF6666[Daily Pledge Manager]|r Must be Group Leader to queue.")
+        return
+    end
+
+    -- Cooldown gate (v1.2.9): see ToggleQueue for rationale. Mirrored here so
+    -- the Queue All button + Queue All keybind both honor the cooldown.
+    if not GuardAgainstDungeonFinderCooldown() then
+        DailyTracker.UpdateUIDisplay()
         return
     end
 
@@ -1554,6 +1610,20 @@ function DailyTracker.OnFinderUpdate(event, status)
 
     DailyTracker.lastFinderStatus = status
     DailyTracker.UpdateUIDisplay()
+end
+
+function DailyTracker.OnCooldownsUpdated()
+    -- Defensive reconcile (v1.2.9): if a Dungeon Finder cooldown becomes
+    -- active while we think the player is still queued, the underlying ESO
+    -- search is no longer valid. Force CancelQueue so the addon's UI matches
+    -- reality. In practice the pre-queue gate prevents this from happening,
+    -- but this catches the edge case where a cooldown starts mid-queue.
+    local remaining = GetDungeonFinderCooldownRemaining()
+    if remaining > 0 and (DailyTracker.isQueued or next(DailyTracker.queuedActivityIds) ~= nil) then
+        DailyTracker.CancelQueue()
+    else
+        DailyTracker.UpdateUIDisplay()
+    end
 end
 
 function DailyTracker.OnPlayerActivated()
@@ -2439,6 +2509,9 @@ local function OnAddOnLoaded(event, addonName)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_QUEST_CONDITION_COUNTER_CHANGED, DailyTracker.UpdateUIDisplay)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_QUEST_COMPLETE_DIALOG, DailyTracker.UpdateUIDisplay)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ACTIVITY_FINDER_STATUS_UPDATE, DailyTracker.OnFinderUpdate)
+    if EVENT_ACTIVITY_FINDER_COOLDOWNS_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ACTIVITY_FINDER_COOLDOWNS_UPDATE, DailyTracker.OnCooldownsUpdated)
+    end
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, DailyTracker.OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ZONE_CHANGED, DailyTracker.OnZoneChanged)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_KEYBINDING_CLEARED, function() DailyTracker.RefreshKeybindHints() end)

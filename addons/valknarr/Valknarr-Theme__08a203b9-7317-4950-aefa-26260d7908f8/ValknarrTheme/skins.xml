@@ -4,5 +4,6 @@
     <Texture name="ValknarrTheme_WwIcon" virtual="true" textureFile="/ValknarrTheme/texture/w2i.dds" />
     <Texture name="ValknarrTheme_WwRing" virtual="true" textureFile="/ValknarrTheme/texture/w2r.dds" />
     <Texture name="ValknarrTheme_WwSeg" virtual="true" textureFile="/ValknarrTheme/texture/wseg.dds" />
+    <Texture name="ValknarrTheme_WwWell" virtual="true" textureFile="/ValknarrTheme/texture/well.dds" />
   </Controls>
 </GuiXml>
