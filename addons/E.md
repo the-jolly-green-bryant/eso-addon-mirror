@@ -53,7 +53,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.27.59 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.28.50 |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
 | [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.2.0 |
@@ -109,6 +109,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Eventor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ek1/Eventor__2793) | Ek1 | PC / Mac | 1049.260402 |
 | [EWPFinder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/EWPFinder__bf9cbf1c-54ac-48f3-b489-a2aeda4996e8) | Vixen_Hunny | Console | — |
 | [EWPFinder 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/EWPFinder-2.0__8f176813-8471-496d-8957-4f8b5c93057a) | Vixen_Hunny | Console | — |
+| [ExcalibursMovableInventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Excalibur_1969/ExcalibursMovableInventory__4794) | Excalibur_1969 | PC / Mac | 1.1 |
 | [Excessive Withdrawals](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/calia1120/Excessive-Withdrawals__1522) | calia1120 | PC / Mac | 18.23.0 |
 | [Excessive Withdrawals - Kith's Build](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitherel/Excessive-Withdrawals---Kith-s-Build__1715) | kitherel | PC / Mac | 1 |
 | [ExecuteAssist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/10becja/ExecuteAssist__3101) | 10becja | PC / Mac | 1.0.0 |

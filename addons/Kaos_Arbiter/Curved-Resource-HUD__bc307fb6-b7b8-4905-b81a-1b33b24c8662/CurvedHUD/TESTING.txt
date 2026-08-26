@@ -1,4 +1,4 @@
-CURVEDHUD 0.5.3 RELEASE CHECKLIST
+CURVED RESOURCE HUD 0.6.9 UPPER ICON ALIGNMENT TEST CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,7 @@ CURVEDHUD 0.5.3 RELEASE CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.5.3; HUD, shield, mount stamina, and trackers created
+   [CurvedHUD] Loaded 0.6.9-test; HUD, shield, mount stamina, and trackers created
 
 4. Type /curvedhud preview. Expected:
    - red health arc on the left
@@ -74,3 +74,90 @@ CURVEDHUD 0.5.3 RELEASE CHECKLIST
     segment, with no full bow, reversal, or vertical tail. Enable out-of-combat opacity, choose a low value, and
     verify the whole custom HUD fades out of combat and returns to full opacity
     immediately upon entering combat. Preview mode should remain full opacity.
+
+18. Change Lower-left major buff from Major Resolve to another timed Major buff.
+    The lower-left outside tracker should follow the selected buff's duration and
+    icon. Select None and confirm it remains hidden outside Preview Mode.
+
+19. Switch Inside timer thickness and Outside timer thickness independently.
+    Balance should follow the Inside choice. The selected Major buff and Bound
+    Aegis should follow the Outside choice. Confirm timer fill remains accurate.
+
+20. Change each timer color preset and verify only its corresponding tracker
+    changes. Test both Parallel and Stacked resource layouts at HUD scales 1 and 1.2.
+
+21. Adjust Resource value font size and Resource percent font size. Health,
+    Magicka, and Stamina labels should resize together without changing their
+    established anchors or overlapping at their default sizes.
+
+22. Under Global Trackers, toggle Balance off and on. Test its eight position
+    choices and several colors in Preview Mode.
+
+23. Under Sorcerer Trackers, toggle Bound Aegis off and on. Test its eight
+    position choices and several colors in Preview Mode.
+
+24. Compare upper/lower inside and outside Thick positions. Inside curves should
+    not kick outward at the base; outside curves should follow a broad arc rather
+    than looking pinched near the middle.
+
+25. Change Major buff, Balance, and Bound Aegis choices on one character, switch
+    characters, and confirm those choices are independent. HUD scale, spacing,
+    sizing, opacity, and general layout should remain shared.
+
+26. Confirm Inside and Outside timer thickness appear once in the shared layout
+    controls and affect every skill in their respective position type.
+
+27. Confirm Global and Sorcerer titles do not open submenus and every setting
+    immediately below them remains selectable. Inspect all timer ends for clean
+    rounded caps without oversized circles.
+
+28. Change Balance and Bound Aegis through all eight positions using the console
+    settings menu. Navigation must not skip unexpectedly, the HUD must not error,
+    and each tracker must immediately move to the selected slot.
+
+29. Inspect outside upper Thick, outside upper Thin, and outside lower Thin.
+    Upper Thick should sit slightly closer; upper Thin should retain its midpoint
+    alignment while fitting at the tip; lower Thin should sweep farther from its
+    upper-left endpoint to its lower-right endpoint.
+
+30. Compare every upper slot to its lower counterpart and every right slot to
+    its left counterpart. Their curves must be exact vertical/horizontal mirrors.
+    Inside Thin slots must use the established lower-left Balance geometry.
+
+31. On the right, verify Thin trackers sit near the inner Mount Stamina radius
+    and outside Thick trackers no longer float far beyond the resource curves.
+    Confirm raw values, maximum values, and percentages appear above tracker toggles.
+
+32. Confirm outer Thick and inner Thin remain unchanged. Inner Thick should sit
+    farther inward. Outer Thin should sit inward with a slightly smaller radius,
+    bringing its lower/far end closer than in 0.6.4.
+
+33. In Parallel, verify both lower-right slots are closer to their resource bars.
+    In Stacked, test all four right slots: upper inside/outside must remain on the
+    upper resource half and lower inside/outside on the lower resource half.
+
+34. Specifically compare Top Right - Inside and Bottom Right - Inside in Stacked.
+    Their displayed halves must match their names rather than appearing exchanged.
+
+35. Inner Thick must move horizontally toward screen center on both left and right.
+    Outer Thin must retain its midpoint placement while its far endpoint bends
+    closer to the parent resource arc.
+
+36. Compare inner Thick with 0.6.6: it should sit three pixels less inward and
+    use a tighter curve. Outer Thin should retain its established center-side
+    contact while its far endpoint moves substantially closer to the resource arc.
+
+37. Put a tracker in Upper Right - Outside and another in Lower Right - Inside.
+    Their icons must be shifted away from the timer endpoints: farther outward
+    for upper outside and farther inward for lower inside.
+
+38. Confirm outer Thin and inner Thick retain their good midpoint anchors but
+    use visibly broader, less tightly bent radii than 0.6.7.
+
+39. Check icons in every quadrant. All inside icons must sit toward screen center;
+    all outside icons must sit away from screen center, with left/right positions
+    forming horizontal mirrors and no icon covering a timer endpoint.
+
+40. Check both upper-inner icons: they should sit closer to their tracker/stat
+    bars than in 0.6.8. Check both upper-outer icons: they should sit substantially
+    farther from screen center and must not cover the tracker or stat bar.

@@ -91,20 +91,31 @@ function A:CreateWidget(slot, ordinal)
     shade:SetCenterColor(0,0,0,0)
     shade:SetEdgeColor(0,0,0,0)
 
+    -- High-contrast timer plate keeps countdowns readable over bright ability artwork.
+    local timerBack = wm:CreateControl(name .. "TimerBack", frame, CT_BACKDROP)
+    timerBack:SetAnchor(CENTER, frame, CENTER, 0, 0)
+    timerBack:SetDimensions(54, 34)
+    timerBack:SetCenterColor(0, 0, 0, 0.94)
+    timerBack:SetEdgeColor(0, 0, 0, 1.00)
+    timerBack:SetEdgeTexture(nil, 1, 1, 1)
+    timerBack:SetHidden(true)
+
     local cooldown = wm:CreateControl(name .. "Cooldown", frame, CT_LABEL)
     cooldown:SetAnchorFill(frame)
-    cooldown:SetFont("ZoFontWinH2")
+    cooldown:SetFont("$(BOLD_FONT)|24|soft-shadow-thick")
     cooldown:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     cooldown:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    cooldown:SetColor(1,1,1,1)
+    -- Red cooldown timer for stronger separation from active-duration timers and skill art.
+    cooldown:SetColor(1.00, 0.20, 0.20, 1)
 
     local effect = wm:CreateControl(name .. "Effect", frame, CT_LABEL)
-    effect:SetAnchor(BOTTOMLEFT, frame, BOTTOMLEFT, 2,-1)
-    effect:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -2,-1)
-    effect:SetHeight(14)
-    effect:SetFont("ZoFontGameSmall")
+    -- Active ability duration: centered, larger, and high contrast.
+    effect:SetAnchorFill(frame)
+    effect:SetFont("$(BOLD_FONT)|24|soft-shadow-thick")
     effect:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    effect:SetColor(0.95,0.82,0.42,1)
+    effect:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    -- Use the same bright orange as cooldowns: one consistent, high-contrast timer color.
+    effect:SetColor(1.00, 0.64, 0.16, 1)
 
     local slotLabel = wm:CreateControl(name .. "Slot", frame, CT_LABEL)
     slotLabel:SetAnchor(TOPLEFT, frame, TOPLEFT, 3,1)
@@ -142,7 +153,7 @@ function A:CreateWidget(slot, ordinal)
         end
     end)
 
-    frame.epcBG,frame.epcIcon,frame.epcShade = bg,icon,shade
+    frame.epcBG,frame.epcIcon,frame.epcShade,frame.epcTimerBack = bg,icon,shade,timerBack
     frame.epcCooldown,frame.epcEffect,frame.epcSlotLabel,frame.epcHint,frame.epcUltimatePct = cooldown,effect,slotLabel,hint,ultimatePct
     self:AnchorWidget(frame, ordinal)
     return frame
@@ -190,6 +201,25 @@ function A:RefreshWidget(widget)
 
     local effectRemaining = tonumber(safe(GetActionSlotEffectTimeRemaining, 0, slot, category)) or 0
     widget.epcEffect:SetText(effectRemaining > 0 and formatMS(effectRemaining) or "")
+    -- Avoid stacking two countdowns in the center. Active effect duration takes priority;
+    -- once it ends, the normal slot cooldown can use the same central area.
+    if effectRemaining > 0 then
+        widget.epcCooldown:SetText("")
+    end
+    if widget.epcTimerBack then
+        local timerVisible = effectRemaining > 0 or (remain > 0 and duration > 0 and not isGlobal)
+        widget.epcTimerBack:SetHidden(not timerVisible)
+        if timerVisible then
+            local timerLabel = effectRemaining > 0 and widget.epcEffect or widget.epcCooldown
+            local textWidth, textHeight = 0, 0
+            if timerLabel and type(timerLabel.GetTextDimensions) == "function" then
+                textWidth, textHeight = timerLabel:GetTextDimensions()
+            end
+            textWidth = tonumber(textWidth) or 0
+            textHeight = tonumber(textHeight) or 0
+            widget.epcTimerBack:SetDimensions(math.max(32, textWidth + 18), math.max(28, textHeight + 10))
+        end
+    end
     widget:SetScale(tonumber(EPC.saved.abilityOverlayScale) or 1.0)
     local isUltimate = widget.epcOrdinal == #self.widgets
     widget.epcSlotLabel:SetText(isUltimate and "U" or tostring(widget.epcOrdinal))
@@ -210,6 +240,7 @@ function A:RefreshWidget(widget)
 
     if self.layoutMode and (not abilityName or abilityName == "") then
         widget.epcCooldown:SetText(widget.epcOrdinal == #self.widgets and "ULT" or tostring(widget.epcOrdinal))
+        if widget.epcTimerBack then widget.epcTimerBack:SetHidden(false) end
     end
 end
 

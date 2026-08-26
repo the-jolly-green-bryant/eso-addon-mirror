@@ -7,9 +7,12 @@ local ENTRY_ID  = 996
 local MENU_ID   = "PvPUA"
 local LCM_SCENE = "LibConsoleMenuScene"
 
-local pendingSelect   = false
-local added           = false
-local preselectHooked = false
+local HIDE_FROM_ADDONS = true
+
+local pendingSelect     = false
+local added             = false
+local preselectHooked   = false
+local removedFromAddons = false
 
 --------------------------------------------------
 -- Helpers
@@ -109,6 +112,31 @@ local function AddToMainMenu()
 end
 
 --------------------------------------------------
+-- Add-Ons Menu
+--------------------------------------------------
+local function RemoveFromAddonsMenu()
+    if removedFromAddons or not HIDE_FROM_ADDONS or not ZO_MENU_ENTRIES then return end
+
+    for i = 1, #ZO_MENU_ENTRIES do
+        local subMenu = ZO_MENU_ENTRIES[i].subMenu
+        if subMenu then
+            for j = #subMenu, 1, -1 do
+                local data = subMenu[j].data
+                if data and data.addon and data.addon.menuId == MENU_ID then
+                    table.remove(subMenu, j)
+                    removedFromAddons = true
+                end
+            end
+        end
+    end
+
+    if removedFromAddons and MAIN_MENU_GAMEPAD then
+        MAIN_MENU_GAMEPAD:RefreshLists()
+        MAIN_MENU_GAMEPAD:UpdateEntryEnabledStates()
+    end
+end
+
+--------------------------------------------------
 -- Wiring
 --------------------------------------------------
 EVENT_MANAGER:RegisterForEvent("PvPUA_MainMenu", EVENT_PLAYER_ACTIVATED, function()
@@ -121,5 +149,6 @@ if MAIN_MENU_GAMEPAD_SCENE then
         if newState ~= SCENE_SHOWING then return end
         AddToMainMenu()
         HookPreselect()
+        RemoveFromAddonsMenu()
     end)
 end

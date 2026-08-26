@@ -139,8 +139,7 @@ function Module:OnBossesChanged( )
 end
 
 function Module:PostLoad( )
-	EVENT_MANAGER:RegisterForEvent("CA_M_U28_EFFECTS", EVENT_EFFECT_CHANGED, self.OutOfCombatEffect)
-	EVENT_MANAGER:AddFilterForEvent("CA_M_U28_EFFECTS", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+	LCA.RegisterForFilteredEvent("CA_M_U28_EFFECTS", EVENT_EFFECT_CHANGED, self.OutOfCombatEffect, REGISTER_FILTER_UNIT_TAG, "player")
 end
 
 function Module:PreUnload( )

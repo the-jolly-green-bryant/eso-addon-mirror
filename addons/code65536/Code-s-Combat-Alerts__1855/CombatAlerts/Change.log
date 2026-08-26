@@ -1,3 +1,21 @@
+Version 2.6.0 (2026/08/25)
+* Migrated Moon Hunter Keep and March of Sacrifices to the CCA2 framework and
+  added support for their solo versions
+* Improved reliability of the Cutthroat's Focus protection
+* Fixed a recent bug with the distance-to-center measurements during the
+  Falgravn encounter in Kyne's Aegis
+* Added an option to disable the marker for Drakeeh's spawn position in
+  Blackrose Prison
+* Removed the banner alert for players not targeted by Cinder Cleave in
+  Rockgrove (the dodge timer will remain); the targeted player will still see
+  the banner, the text and sound of which have been revised for better clarity
+* Improved the Cinder Shot alert in Dreadsail Reef
+* Added chat notification for the Unsinged Boots achievement in Lep Seclusa
+* Added an option to disable the Caustic Carrion and Biting Blaze panel in
+  Ossein Cage
+* Added chat and screen border alerts for Reflective Scales in Ossein Cage,
+  enabled by default for non-tanks; this can be configured in the settings panel
+
 Version 2.5.2 (2026/08/17)
 * Added optional protection against the accidental use of Cutthroat's Focus for
   the following scenarios:

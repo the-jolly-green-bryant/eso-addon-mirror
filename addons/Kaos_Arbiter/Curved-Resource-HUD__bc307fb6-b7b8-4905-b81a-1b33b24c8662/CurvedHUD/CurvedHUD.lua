@@ -1,7 +1,31 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName = "CurvedHUD", "0.5.3", "CurvedHUD_Update"
-CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,showRaw=true,showPercent=true,showMaximum=false,debug=true,layout="Parallel",staminaInside=true}
+CH.name, CH.version, CH.updateName = "CurvedHUD", "0.6.9-test", "CurvedHUD_Update"
+CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="Major Resolve",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",showRaw=true,showPercent=true,showMaximum=false,debug=true,layout="Parallel",staminaInside=true}
+CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true}
+CH.characterDefaults = {majorBuffTracked="Major Resolve",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",initialized=false}
+CH.majorBuffChoices = {"None","Major Resolve","Major Brutality","Major Sorcery","Major Savagery","Major Prophecy","Major Expedition","Major Protection","Major Evasion","Major Berserk","Major Force","Major Courage"}
+CH.colorChoices = {"Purple","Orange","Pale Blue","Blue","Green","Red","Gold","White","Cyan","Pink"}
+CH.colors = {Purple={.58,.24,.92},Orange={.88,.35,.18},["Pale Blue"]={.48,.82,1},Blue={.18,.48,1},Green={.18,.82,.30},Red={.92,.18,.18},Gold={1,.72,.15},White={1,1,1},Cyan={.15,.9,.9},Pink={1,.35,.68}}
+CH.trackerSlots = {
+    topLeftOutside={side="left",vertical="upper",inside=false}, topLeftInside={side="left",vertical="upper",inside=true},
+    bottomLeftOutside={side="left",vertical="lower",inside=false}, bottomLeftInside={side="left",vertical="lower",inside=true},
+    topRightInside={side="right",vertical="upper",inside=true}, topRightOutside={side="right",vertical="upper",inside=false},
+    bottomRightInside={side="right",vertical="lower",inside=true}, bottomRightOutside={side="right",vertical="lower",inside=false},
+}
+CH.trackerSlotNames = {"Top Left - Outside","Top Left - Inside","Bottom Left - Outside","Bottom Left - Inside","Top Right - Inside","Top Right - Outside","Bottom Right - Inside","Bottom Right - Outside"}
+CH.trackerSlotValues = {"topLeftOutside","topLeftInside","bottomLeftOutside","bottomLeftInside","topRightInside","topRightOutside","bottomRightInside","bottomRightOutside"}
+function CH:NormalizeTrackerSlot(value,fallback)
+    if self.trackerSlots[value] then return value end
+    for index,name in ipairs(self.trackerSlotNames) do
+        if value==name then return self.trackerSlotValues[index] end
+    end
+    return fallback
+end
+-- These IDs cover ESO's standardized base effects where confirmed. Name matching
+-- remains the fallback because some sources expose their own ability ID while
+-- retaining the localized standardized buff name.
+local MAJOR_BUFF_IDS = {["Major Resolve"]=61694,["Major Brutality"]=61665,["Major Sorcery"]=61687,["Major Savagery"]=64568,["Major Prophecy"]=64570}
 local WM = WINDOW_MANAGER
 local HEALTH_POWER=_G["COMBAT_MECHANIC_FLAGS_HEALTH"] or POWERTYPE_HEALTH
 local STAMINA_POWER=_G["COMBAT_MECHANIC_FLAGS_STAMINA"] or POWERTYPE_STAMINA
@@ -95,22 +119,33 @@ function CH:CreateMountBar()
     b.bg:SetTextureCoords(b.u1,b.u2,0,1); b.frame:SetTextureCoords(b.u1,b.u2,0,1)
     b:SetHidden(true); self.mountBar=b
 end
-function CH:CreateTracker(key,outside,color,upper)
+function CH:CreateTracker(key,slot,colorSetting,specialTexture)
     local t=WM:CreateControl("CurvedHUD_"..key,self.root,CT_CONTROL); t:SetDimensions(38,180); t.segment="full"
-    -- Both trackers follow Health's orientation; placement determines outside vs. inside.
-    t.u1,t.u2=1,0
-    local suffix=upper and "upper" or "lower"
-    local textureName=key=="balance" and "balance_lower" or "tracker_"..suffix
+    t.key,t.slot,t.colorSetting,t.specialTexture=key,slot,colorSetting,specialTexture
+    local info=self.trackerSlots[slot]; t.u1,t.u2=info.side=="left" and 1 or 0,info.side=="left" and 0 or 1
+    local textureName=specialTexture=="balance" and "balance_lower" or "tracker_"..info.vertical
     t.frame=texture(t,"_Frame",1,"CurvedHUD/textures/"..textureName.."_frame.dds",.35,.35,.35,.7); t.frame:SetAnchorFill(t); t.frame:SetTextureCoords(t.u1,t.u2,0,1)
-    t.fill=texture(t,"_Fill",2,"CurvedHUD/textures/"..textureName..".dds",color[1],color[2],color[3],.9); t.fill:SetAnchor(BOTTOMLEFT,t,BOTTOMLEFT)
+    t.fill=texture(t,"_Fill",2,"CurvedHUD/textures/"..textureName..".dds",1,1,1,.9); t.fill:SetAnchor(BOTTOMLEFT,t,BOTTOMLEFT)
     if key=="balance" then
         -- Balance intentionally nests over Health, so its curve must render above
         -- the Health fill rather than disappearing behind the sibling control.
         t.frame:SetDrawLayer(DL_CONTROLS); t.fill:SetDrawLayer(DL_CONTROLS)
     end
     t.icon=texture(t,"_Icon",3,"/esoui/art/icons/icon_missing.dds",1,1,1,1); t.icon:SetDimensions(38,38); t.icon:SetAnchor(TOP,t,BOTTOM,0,4)
+    t.stackLabel=label(t.icon,"_StackLabel","ZoFontGamepadBold27"); t.stackLabel:SetAnchor(CENTER,t.icon,CENTER); t.stackLabel:SetDimensions(38,38); t.stackLabel:SetDrawLayer(DL_OVERLAY); t.stackLabel:SetHidden(true)
     t.timer=label(t,"_Timer","ZoFontGamepad20"); t.timer:SetDimensions(70,30); t.timer:SetAnchor(BOTTOM,t,TOP,0,-5)
     t.active,t.beginTime,t.endTime,t.duration=false,0,0,0; t:SetHidden(true); self.trackers[key]=t
+end
+
+function CH:ApplyTrackerAppearance(t)
+    local info=self.trackerSlots[t.slot]; local style=info.inside and self.sv.insideTimerStyle or self.sv.outsideTimerStyle
+    local base
+    if t.specialTexture=="balance" and t.slot=="bottomLeftInside" and style=="Thin" then base="balance_lower"
+    else base="tracker_"..info.vertical.."_"..(info.inside and "inside" or "outside").."_"..string.lower(style) end
+    t.frame:SetTexture("CurvedHUD/textures/"..base.."_frame.dds"); t.fill:SetTexture("CurvedHUD/textures/"..base..".dds")
+    t.u1,t.u2=info.side=="left" and 1 or 0,info.side=="left" and 0 or 1
+    local color=self.colors[self.sv[t.colorSetting]] or self.colors.White
+    t.fill:SetColor(color[1],color[2],color[3],self.sv.fillAlpha)
 end
 
 function CH:SyncBarLayers(b)
@@ -145,6 +180,60 @@ function CH:SetResourceTexture(b,kind)
     end
 end
 
+function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
+    local info=self.trackerSlots[t.slot]; if not info then return end
+    local style=info.inside and self.sv.insideTimerStyle or self.sv.outsideTimerStyle
+    local legacyBalance=t.key=="balance" and t.slot=="bottomLeftInside"
+    local legacyAegis=t.key=="aegis" and t.slot=="topLeftOutside"
+    local trackerWidth
+    if info.inside then trackerWidth=style=="Thick" and 52 or 38
+    elseif style=="Thin" then trackerWidth=52
+    else trackerWidth=42 end
+    local trackerHeight=info.inside and 145 or 180
+    t:SetDimensions(trackerWidth*scale,trackerHeight*scale); t:ClearAnchors()
+
+    local innerNudge=style=="Thick" and 5 or 0
+    -- Counter-shift the wider outer-Thin control so its midpoint remains
+    -- stable while the far endpoint gains the missing horizontal sweep.
+    local outerNudge=style=="Thick" and 5 or 22
+    if t.key=="resolve" then t:SetAnchor(BOTTOMRIGHT,h,BOTTOMLEFT,(40+outerNudge)*scale,-42*scale)
+    elseif legacyBalance then t:SetAnchor(BOTTOMLEFT,h,BOTTOMRIGHT,(-46+innerNudge)*scale,-62*scale)
+    elseif legacyAegis then t:SetAnchor(TOPRIGHT,h,TOPLEFT,(40+outerNudge)*scale,42*scale)
+    elseif info.side=="left" then
+        local x=info.inside and (-46+innerNudge) or (40+outerNudge)
+        local y=info.inside and 62 or 42
+        if info.vertical=="upper" then t:SetAnchor(info.inside and TOPLEFT or TOPRIGHT,h,info.inside and TOPRIGHT or TOPLEFT,x*scale,y*scale)
+        else t:SetAnchor(info.inside and BOTTOMLEFT or BOTTOMRIGHT,h,info.inside and BOTTOMRIGHT or BOTTOMLEFT,x*scale,-y*scale) end
+    else
+        -- Parallel uses radial inner/outer resource references. In Stacked,
+        -- ESO's anchored controls render `outer` on the visual upper half and
+        -- `inner` on the visual lower half, so map by the rendered quadrant;
+        -- otherwise the named upper/lower slots appear exchanged.
+        local ref
+        if self.sv.layout=="Stacked" then ref=info.vertical=="upper" and outer or inner
+        else ref=info.inside and inner or outer end
+        local lowerParallelNudge=(self.sv.layout=="Parallel" and info.vertical=="lower") and 5 or 0
+        local rightOuterNudge=style=="Thick" and 10 or 22
+        local x=info.inside and (4-innerNudge+lowerParallelNudge) or (-4-rightOuterNudge-lowerParallelNudge)
+        if info.vertical=="upper" then t:SetAnchor(info.inside and TOPRIGHT or TOPLEFT,ref,info.inside and TOPLEFT or TOPRIGHT,x*scale,42*scale)
+        else t:SetAnchor(info.inside and BOTTOMRIGHT or BOTTOMLEFT,ref,info.inside and BOTTOMLEFT or BOTTOMRIGHT,x*scale,-42*scale) end
+    end
+
+    self:ApplyTrackerAppearance(t); self:SyncTrackerLayers(t)
+    t.timer:SetScale(scale); t.icon:SetScale(scale)
+    -- Icons move radially away from their timer endpoint: toward screen center
+    -- for inside slots and away from center for outside slots.
+    local iconX
+    if info.vertical=="upper" then
+        if info.side=="left" then iconX=info.inside and 40 or -58
+        else iconX=info.inside and -40 or 58 end
+    elseif info.side=="left" then iconX=info.inside and 48 or -42
+    else iconX=info.inside and -48 or 42 end
+    t.icon:ClearAnchors(); t.icon:SetAnchor(TOP,t,BOTTOM,iconX*scale,(legacyAegis and -58 or -40)*scale)
+    t.timer:SetFont(string.format("$(GAMEPAD_MEDIUM_FONT)|%d|soft-shadow-thick",math.floor(self.sv.timerFontSize or 24)))
+    t.timer:ClearAnchors(); t.timer:SetAnchor(BOTTOM,t.icon,TOP,0,-2*scale)
+end
+
 function CH:ApplyLayout()
     if not self.root then return end
     local sv=self.sv; local scale=clamp(sv.scale,.5,1.5)
@@ -152,6 +241,12 @@ function CH:ApplyLayout()
     -- round independently on console and visibly separate above scale 1.
     self.root:SetScale(1); self.root:ClearAnchors(); self.root:SetAnchor(CENTER,GuiRoot,CENTER,0,sv.verticalOffset)
     local h,s,m=self.bars.health,self.bars.stamina,self.bars.magicka; local width=clamp(sv.barWidth,24,80)*scale
+    local balanceSlot=self:NormalizeTrackerSlot(sv.balanceSlot,"bottomLeftInside")
+    local aegisSlot=self:NormalizeTrackerSlot(sv.aegisSlot,"topLeftOutside")
+    if balanceSlot~=sv.balanceSlot then sv.balanceSlot=balanceSlot end
+    if aegisSlot~=sv.aegisSlot then sv.aegisSlot=aegisSlot end
+    self.trackers.balance.slot=balanceSlot
+    self.trackers.aegis.slot=aegisSlot
     h:SetDimensions(width,512*scale); h:ClearAnchors(); h:SetAnchor(CENTER,self.root,CENTER,-sv.spacing*scale,0)
     local inner,outer=sv.staminaInside and s or m,sv.staminaInside and m or s
     if sv.layout=="Stacked" then
@@ -178,31 +273,20 @@ function CH:ApplyLayout()
     end
     self:SyncBarLayers(h); self:SyncBarLayers(s); self:SyncBarLayers(m); self:SyncBarLayers(self.mountBar)
     -- Independent controls keep raw values aligned above percentages on every bar.
-    for _,b in pairs(self.bars) do b.rawLabel:SetScale(scale); b.percentLabel:SetScale(scale) end
+    for _,b in pairs(self.bars) do
+        b.rawLabel:SetFont(string.format("$(GAMEPAD_MEDIUM_FONT)|%d|soft-shadow-thick",math.floor(sv.resourceValueFontSize or 27)))
+        b.percentLabel:SetFont(string.format("$(GAMEPAD_MEDIUM_FONT)|%d|soft-shadow-thick",math.floor(sv.resourcePercentFontSize or 20)))
+        b.rawLabel:SetScale(scale); b.percentLabel:SetScale(scale)
+    end
     h.rawLabel:ClearAnchors(); h.rawLabel:SetAnchor(CENTER,h,CENTER,0,-20*scale)
     h.percentLabel:ClearAnchors(); h.percentLabel:SetAnchor(CENTER,h,CENTER,0,16*scale)
     s.rawLabel:ClearAnchors(); s.rawLabel:SetAnchor(CENTER,s,CENTER,8*scale,-54*scale); s.percentLabel:ClearAnchors(); s.percentLabel:SetAnchor(CENTER,s,CENTER,8*scale,-24*scale)
     m.rawLabel:ClearAnchors(); m.rawLabel:SetAnchor(CENTER,m,CENTER,8*scale,24*scale); m.percentLabel:ClearAnchors(); m.percentLabel:SetAnchor(CENTER,m,CENTER,8*scale,54*scale)
-    self.trackers.resolve:ClearAnchors(); self.trackers.resolve:SetDimensions(42*scale,180*scale); self.trackers.resolve:SetAnchor(BOTTOMRIGHT,h,BOTTOMLEFT,40*scale,-42*scale)
-    self.trackers.balance:ClearAnchors(); self.trackers.balance:SetDimensions(38*scale,145*scale); self.trackers.balance:SetAnchor(BOTTOMLEFT,h,BOTTOMRIGHT,-46*scale,-62*scale)
-    -- Match Resolve's horizontal radius so the two tracker curves vertically mirror
-    -- one another. Aegis' icon is counter-offset below so it does not move with the bar.
-    self.trackers.aegis:ClearAnchors(); self.trackers.aegis:SetDimensions(42*scale,180*scale); self.trackers.aegis:SetAnchor(TOPRIGHT,h,TOPLEFT,36*scale,42*scale)
-    self:SyncTrackerLayers(self.trackers.resolve); self:SyncTrackerLayers(self.trackers.balance); self:SyncTrackerLayers(self.trackers.aegis)
-    for _,t in pairs(self.trackers) do t.timer:SetScale(scale); t.icon:SetScale(scale) end
-    self.trackers.resolve.icon:ClearAnchors(); self.trackers.resolve.icon:SetAnchor(TOP,self.trackers.resolve,BOTTOM,-15*scale,-40*scale)
-    -- Counter-offset the icon by the curve's 14 px leftward move so the icon and
-    -- its timer remain at their established screen position.
-    self.trackers.balance.icon:ClearAnchors(); self.trackers.balance.icon:SetAnchor(TOP,self.trackers.balance,BOTTOM,44*scale,-40*scale)
-    self.trackers.aegis.icon:ClearAnchors(); self.trackers.aegis.icon:SetAnchor(TOP,self.trackers.aegis,BOTTOM,-31*scale,-58*scale)
-    for _,t in pairs(self.trackers) do
-        t.timer:SetFont(string.format("$(GAMEPAD_MEDIUM_FONT)|%d|soft-shadow-thick",math.floor(sv.timerFontSize or 24)))
-        t.timer:ClearAnchors(); t.timer:SetAnchor(BOTTOM,t.icon,TOP,0,-2*scale)
-    end
+    for _,t in pairs(self.trackers) do self:ApplyTrackerSlot(t,h,inner,outer,width,scale) end
     for _,b in pairs(self.bars) do b.bg:SetAlpha(sv.backgroundAlpha); b.fill:SetAlpha(sv.fillAlpha); b.frame:SetAlpha(sv.frameAlpha); b.rawLabel:SetAlpha(sv.textAlpha); b.percentLabel:SetAlpha(sv.textAlpha) end
     self.mountBar.bg:SetAlpha(sv.backgroundAlpha); self.mountBar.fill:SetAlpha(sv.fillAlpha); self.mountBar.frame:SetAlpha(sv.frameAlpha)
     for _,t in pairs(self.trackers) do t.fill:SetAlpha(sv.fillAlpha); t.frame:SetAlpha(sv.frameAlpha); t.timer:SetAlpha(sv.textAlpha); t.icon:SetAlpha(sv.textAlpha) end
-    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateVisibility(); self:UpdateResources()
+    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateVisibility(); self:UpdateResources(); self:RefreshMajorBuff()
 end
 function CH:UpdateCombatOpacity(inCombat)
     if not self.root or not self.sv then return end
@@ -296,19 +380,44 @@ end
 function CH:UpdateTrackers()
     local now=GetGameTimeSeconds()
     for _,t in pairs(self.trackers) do
-        local active,pct,remaining=t.active,0,0
-        if self.sv.preview then active,pct,remaining=true,.62,12.4
+        local enabled=t.key~="balance" and t.key~="aegis" or self.sv[t.key.."Enabled"]~=false
+        local active,pct,remaining=t.active and enabled,0,0
+        if self.sv.preview and enabled then active,pct,remaining=true,.62,12.4
         elseif active then
             remaining=math.max(0,t.endTime-now); pct=remaining/math.max(.01,t.duration or 0)
             if remaining>0 then pct=math.max(.035,pct) else t.active,active=false,false end
         end
-        t:SetHidden(not active); if active then self:SetTexturePercent(t.fill,t,pct); t.timer:SetText(string.format("%.1f",remaining)) end
+        t:SetHidden(not active)
+        if active then
+            self:SetTexturePercent(t.fill,t,pct); t.timer:SetText(string.format("%.1f",remaining))
+            local stacks=tonumber(t.stackCount) or 0; t.stackLabel:SetText(tostring(stacks)); t.stackLabel:SetHidden(stacks<=0)
+        else t.stackLabel:SetHidden(true) end
     end
 end
-function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,iconName,abilityId)
+function CH:MajorBuffMatches(effectName,abilityId)
+    local selected=self.sv.majorBuffTracked or "Major Resolve"; if selected=="None" then return false end
+    local knownId=MAJOR_BUFF_IDS[selected]
+    if knownId and abilityId==knownId then return true end
+    local localized=knownId and GetAbilityName and GetAbilityName(knownId) or nil
+    return effectName==selected or (localized and localized~="" and effectName==localized)
+end
+function CH:RefreshMajorBuff()
+    local t=self.trackers and self.trackers.resolve; if not t then return end
+    t.active,t.stackCount=false,0
+    if self.sv.preview or self.sv.majorBuffTracked=="None" or not GetNumBuffs or not GetUnitBuffInfo then return end
+    for index=1,GetNumBuffs("player") do
+        local name,beginTime,endTime,_,stackCount,iconName,_,_,_,_,abilityId=GetUnitBuffInfo("player",index)
+        if self:MajorBuffMatches(name,abilityId) then
+            t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime or 0,endTime or 0,math.max(.01,(endTime or 0)-(beginTime or 0)),stackCount or 0
+            if iconName and iconName~="" then t.icon:SetTexture(iconName) end
+            break
+        end
+    end
+end
+function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId)
     if unitTag~="player" then return end
     local t
-    if abilityId==61694 then t=self.trackers.resolve
+    if self:MajorBuffMatches(effectName,abilityId) then t=self.trackers.resolve
     elseif abilityId==48136 or abilityId==48131 or abilityId==48141 then t=self.trackers.balance
     elseif abilityId==24163 then t=self.trackers.aegis
     else
@@ -318,6 +427,7 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,icon
     if not t then return end
     local wasActive=t.active
     t.active=changeType~=EFFECT_RESULT_FADED and (endTime or 0)>GetGameTimeSeconds(); t.beginTime,t.endTime=beginTime or 0,endTime or 0
+    t.stackCount=stackCount or 0
     local reportedDuration=(endTime or 0)-(beginTime or 0)
     if t.active and (not wasActive or (reportedDuration>0 and reportedDuration<3600)) then t.duration=reportedDuration end
     if iconName and iconName~="" then t.icon:SetTexture(iconName) end; self:UpdateTrackers()
@@ -326,7 +436,7 @@ end
 function CH:CreateHUD()
     self.root=WM:CreateTopLevelWindow("CurvedHUD_Root"); self.root:SetDimensions(900,600); self.root:SetMouseEnabled(false); self.root:SetClampedToScreen(false); self.root:SetDrawTier(DT_HIGH)
     self.bars,self.trackers={},{}; self:CreateBar("health","left",{.85,.1,.1}); self:CreateBar("stamina","right",{.15,.78,.22}); self:CreateBar("magicka","right",{.12,.42,.95})
-    self:CreateShield(); self:CreateMountBar(); self:CreateTracker("resolve",true,{.58,.24,.92},false); self:CreateTracker("balance",false,{.88,.35,.18},false); self:CreateTracker("aegis",true,{.48,.82,1},true); self:ApplyLayout()
+    self:CreateShield(); self:CreateMountBar(); self:CreateTracker("resolve","bottomLeftOutside","majorBuffColor"); self:CreateTracker("balance","bottomLeftInside","balanceColor","balance"); self:CreateTracker("aegis","topLeftOutside","aegisColor"); self:ApplyLayout()
 end
 function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name,EVENT_POWER_UPDATE,function(_,unitTag,_,powerType,current,maximum,effectiveMaximum)
@@ -335,8 +445,8 @@ function CH:RegisterEvents()
         local usableMax=(maximum or 0)>1 and maximum or (effectiveMaximum or 0)
         if key and usableMax>1 then self.power[key]={current,usableMax}; self:Guard("power event",function() self:UpdateResources() end) end
     end); EVENT_MANAGER:AddFilterForEvent(self.name,EVENT_POWER_UPDATE,REGISTER_FILTER_UNIT_TAG,"player")
-    EVENT_MANAGER:RegisterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,function(_,changeType,_,effectName,unitTag,beginTime,endTime,_,iconName,_,_,_,_,_,_,abilityId)
-        self:Guard("effect event",function() self:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,iconName,abilityId) end)
+    EVENT_MANAGER:RegisterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,function(_,changeType,_,effectName,unitTag,beginTime,endTime,stackCount,iconName,_,_,_,_,_,_,abilityId)
+        self:Guard("effect event",function() self:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId) end)
     end); EVENT_MANAGER:AddFilterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,REGISTER_FILTER_UNIT_TAG,"player")
     EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:Guard("player activation",function() self:ApplyLayout() end) end)
     EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat) self:Guard("combat opacity",function() self:UpdateCombatOpacity(inCombat) end) end)
@@ -351,7 +461,24 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function() self:Guard("periodic update",function() self:UpdateResources(); self:UpdateTrackers(); self:UpdateDefaultUI(false) end) end)
 end
 function CH:Initialize()
-    self.sv=ZO_SavedVars:NewAccountWide("CurvedHUD_SavedVariables",1,nil,self.defaults); self.power={health={0,0},stamina={0,0},magicka={0,0}}; self.shieldValue=0; self.hudVisible=true
+    self.globalSV=ZO_SavedVars:NewAccountWide("CurvedHUD_SavedVariables",1,nil,self.defaults)
+    self.characterSV=ZO_SavedVars:New("CurvedHUD_CharacterSavedVariables",1,nil,self.characterDefaults)
+    -- Preserve the user's existing account-wide tracker choices once when a
+    -- character first adopts the new character-specific tracker profile.
+    if not self.characterSV.initialized then
+        for key in pairs(self.characterKeys) do
+            if self.globalSV[key]~=nil then self.characterSV[key]=self.globalSV[key] end
+        end
+        self.characterSV.initialized=true
+    end
+    -- Existing code and both settings providers can continue using CH.sv. The
+    -- proxy routes only tracker choices to this character; geometry, sizing,
+    -- opacity, fonts, and layout remain account-wide.
+    self.sv=setmetatable({}, {
+        __index=function(_,key) if self.characterKeys[key] then return self.characterSV[key] end return self.globalSV[key] end,
+        __newindex=function(_,key,value) if self.characterKeys[key] then self.characterSV[key]=value else self.globalSV[key]=value end end,
+    })
+    self.power={health={0,0},stamina={0,0},magicka={0,0}}; self.shieldValue=0; self.hudVisible=true
     self:Guard("HUD creation",function() self:CreateHUD() end); self:Guard("settings registration",function() if self.RegisterSettings then self:RegisterSettings() end end); self:Guard("event registration",function() self:RegisterEvents() end)
     SLASH_COMMANDS["/curvedhud"]=function(arg)
         arg=string.lower(arg or "")

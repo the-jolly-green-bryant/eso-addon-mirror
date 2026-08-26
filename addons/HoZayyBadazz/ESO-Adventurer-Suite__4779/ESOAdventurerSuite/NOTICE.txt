@@ -5,7 +5,7 @@ Project: ESO Adventurer Suite
 Internal compatibility namespace: ESOProgressionCoach
 Author / Copyright Owner: HoZayyBadazz
 Copyright: (c) 2026 HoZayyBadazz. All Rights Reserved.
-Release: 0.25.13
+Release: 0.27.85
 
 This package is source-visible because ESO add-ons must be installed locally for
 the game client to load them. Source visibility is not permission to copy,
@@ -26,3 +26,4 @@ Development assistance: OpenAI (AI-assisted code generation and review).
 0.24.79 Premium Figma polish applied to the Codex shell.
 
 0.25.10 removes the Active Quest header label from the quest HUD.
+

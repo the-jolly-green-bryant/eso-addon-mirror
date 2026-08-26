@@ -18,7 +18,7 @@ Module.STRINGS = {
 
 	-- Custom (Settings)
 	eyeLeftRight = { default = "Show left/right arrows for initial Creeping Eye" },
-	groundArrow = { default = "Creeping Eye ground arrows" },
+	eyeArrow = { default = "Creeping Eye ground arrows" },
 	fieryDetonation = { default = "Fiery Detonation timer" },
 	fieryDetonation2 = { default = "On for non-healers" },
 	volatileShellLabels = { default = "Position labels for Xalvakka's Volatile Shells" },
@@ -26,12 +26,11 @@ Module.STRINGS = {
 	volatileShellLabels2 = { default = "Letters" },
 }
 
-local DEFAULT_GROUND_ARROW_COLOR = 0x99CCFF66
 local DEFAULT_VOLATILE_SHELL_MODE = ZO_IsConsoleOrGameCoreUI() and 1 or 2
 
 Module.DEFAULT_SETTINGS = {
 	eyeLeftRight = false,
-	groundArrow = true,
+	eyeArrow = 0x99CCFF66,
 	fieryDetonation = 2,
 	volatileShellLabels = nil,
 }
@@ -121,6 +120,7 @@ function Module:Initialize( )
 	Vars = self.vars
 
 	self:HandleCompatibility()
+	self:MigrateLegacyGroundArrowSettings() -- TODO: Remove in 2027
 end
 
 function Module:PreStartListening( )
@@ -138,9 +138,11 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		local _, name = LCA.IdentifyGroupUnitIdWithRole(targetUnitId, true)
 		CA1.Alert(LCA.GetAbilityName(abilityId), name, 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.cinder) then
-		local _, name = LCA.IdentifyGroupUnitId(targetUnitId, true)
-		CA1.Alert(LCA.GetAbilityName(abilityId), name, 0x00CCFFFF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
-		CA1.AlertCast(abilityId, nil, 2500, { -2, 0, true, { 0, 0.8, 1, 0.2 }, { 0, 0.8, 1, 0.6 } })
+		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
+			CA1.Alert(nil, zo_strformat(SI_LCA_TARGET_YOU, LCA.GetAbilityName(abilityId)), 0xFF9900FF, nil, 2000)
+			LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 3)
+		end
+		CA1.AlertCast(abilityId, nil, 2500, { -2, 0, true, { 1, 0.4, 0, 0.2 }, { 1, 0.4, 0, 0.6 } })
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.deadeye) then
 		if (LCA.DoesPlayerHaveSingleTargetPullSlotted()) then
 			CA1.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC0000FF, SOUNDS.OBJECTIVE_DISCOVERED, hitValue)
@@ -193,6 +195,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 end
 
 function Module:GetSettingsControls( )
+	self:MigrateLegacyGroundArrowSettings() -- TODO: Remove in 2027
 	return {
 		--------------------
 		{
@@ -204,17 +207,16 @@ function Module:GetSettingsControls( )
 		--------------------
 		{
 			type = "checkbox",
-			name = self:GetString("groundArrow"),
-			getFunc = function() return self:GetSetting("groundArrow") ~= false end,
-			setFunc = function(enabled) self:SetSetting("groundArrow", enabled) end,
+			name = self:GetString("eyeArrow"),
+			getFunc = function() return self:GetSetting("eyeArrow") ~= 0 end,
+			setFunc = function(enabled) self:SetSetting("eyeArrow", not enabled and 0 or nil) end,
 		},
 		--------------------
 		{
 			type = "colorpicker",
-			name = string.format("|u40:0::%s|u", GetString(SI_LCA_COLOR)),
-			getFunc = function() return LCA.UnpackRGBA(self:GetGroundArrowColor()) end,
-			setFunc = function(...) self:SetSetting("groundArrow", LCA.PackRGBA(...)) end,
-			disabled = function() return self:GetSetting("groundArrow") == false end,
+			getFunc = function() return LCA.UnpackRGBA(self:GetSetting("eyeArrow")) end,
+			setFunc = function(...) self:SetSetting("eyeArrow", LCA.PackRGBA(...)) end,
+			disabled = function() return self:GetSetting("eyeArrow") == 0 end,
 		},
 		--------------------
 		{
@@ -244,9 +246,15 @@ function Module:HandleCompatibility( )
 	end
 end
 
-function Module:GetGroundArrowColor( )
+-- TODO: Remove in 2027
+function Module:MigrateLegacyGroundArrowSettings( )
 	local color = self:GetSetting("groundArrow")
-	return (type(color) == "number") and color or DEFAULT_GROUND_ARROW_COLOR
+	if (color == false) then
+		self:SetSetting("eyeArrow", 0)
+	elseif (type(color) == "number") then
+		self:SetSetting("eyeArrow", color)
+	end
+	self:SetSetting("groundArrow", nil)
 end
 
 function Module:CreepingEye( textId, orientation, groundTextureId, lrArrow )
@@ -255,12 +263,14 @@ function Module:CreepingEye( textId, orientation, groundTextureId, lrArrow )
 
 	CA1.Alert(nil, string.format("%s%s %s", (self:GetSetting("eyeLeftRight") and Vars.coneCount == 1) and string.format("%s ", lrArrow) or "", GetString(textId), zo_iconFormatInheritColor(LCA.GetTexture("arrow-rotate"), 96, 96 * orientation)), 0xFF0066FF, SOUNDS.CHAMPION_POINTS_COMMITTED, duration)
 
-	if (self:GetSetting("groundArrow") ~= false) then
+	local color = self:GetSetting("eyeArrow")
+
+	if (color ~= 0) then
 		CA2.WorldTexturePlace({
 			pos = { 99900, 42750, 99650 },
 			texture = groundTextureId,
 			size = 3600,
-			color = self:GetGroundArrowColor(),
+			color = color,
 			update = function( elementId, startTime )
 				local elapsed = GetGameTimeMilliseconds() - startTime
 				if (elapsed >= duration) then

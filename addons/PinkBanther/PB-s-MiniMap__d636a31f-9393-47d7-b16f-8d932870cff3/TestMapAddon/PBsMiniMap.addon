@@ -1,9 +1,9 @@
 ## To release a new version, edit the two lines below and nothing else.
 ## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
-## Title: PB's MiniMap 1.2.2
+## Title: PB's MiniMap 1.7.6
 ## Author: PinkBanther
 ## Description: A lightweight minimap for console. Keeps the game's own world map parked on the HUD at a size and position you choose, and hands it straight back when you open the full map. Based on Votan's Minimap by votan, with thanks -- rebuilt so it stays inside the console add-on memory limit.
-## Version: 1.2.2
+## Version: 1.7.6
 ## APIVersion: 101050 101051
 ## DependsOn: LibHarvensAddonSettings>=20106 LibAsync>=30001
 ## OptionalDependsOn: LibGPS>=73 TweakIt TrueExploration LibDebugLogger

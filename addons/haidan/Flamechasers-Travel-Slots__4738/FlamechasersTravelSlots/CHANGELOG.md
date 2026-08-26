@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.8.6
+- Replaced the font-rendered close glyph with a centered texture.
+- Gave the help and close icons identical control geometry for consistent alignment at every UI scale.
+
+## 0.8.5
+- Visually aligned the circled help icon with ESO's rendered close glyph.
+
+## 0.8.4
+- Replaced the header's text-based help marker with a circled help icon.
+- Aligned the help icon precisely with the close button and added a matching hover tint.
+
+## 0.8.3
+- Moved all permanent mouse and resizing guidance into the window-help tooltip.
+- Reserved the footer's status area for actual addon feedback.
+- Added compact status messages that remain readable at minimum window width.
+
+## 0.8.2
+- Shortened the footer guidance so it remains fully readable at minimum width.
+- Added a window-help tooltip explaining resizing and the `/fts reset` command.
+
+## 0.8.1
+- Kept the Quick Destinations divider aligned with its heading at compact window widths.
+- Hides the divider gracefully when the resized header has no safe horizontal space left.
+
+## 0.8.0
+- Added native resizing from every window edge and corner.
+- Made the sixteen travel cards automatically resize and reflow between two and six columns.
+- Added vertical scrolling when the chosen window size cannot display every slot at once.
+- Made headers, dividers, footer text, slot labels, costs, and secondary windows adapt to the resized layout.
+- Saved the selected window dimensions alongside its existing server-specific position.
+- Added `/fts reset` to restore the default window size.
+
 ## 0.7.17
 - Reduced the Travel Command Center outer border thickness from two pixels to one pixel while keeping it aligned to the visible window edge.
 

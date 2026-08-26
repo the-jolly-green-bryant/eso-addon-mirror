@@ -34,7 +34,15 @@ if GetDisplayName() ~= "@Atomic Khaos" then return end
 
 FFOwnership = {}
 local this = FFOwnership
-this.name = "FurnitureFinder_Ownership"
+this.name = "FurnitureFinder_Ownership" -- unique key for EVENT_MANAGER registrations, not the addon's package name
+
+-- The actual addon package name, as declared in FurnitureFinder.addon.
+-- EVENT_ADD_ON_LOADED fires once per ADDON (the whole package), not once
+-- per file, so this must match the manifest -- not this.name above.
+-- (Bug found and fixed 2026-08-24: this file previously compared against
+-- this.name here, which never matched, so Initialize() never ran and
+-- this.settings stayed nil forever.)
+local ADDON_PACKAGE_NAME = "FurnitureFinder"
 
 function this.Initialize()
   this.settings = ZO_SavedVars:NewAccountWide("FurnitureFinderOwnershipData", 1, nil, {
@@ -161,7 +169,7 @@ function this.FormatOwnershipLine(itemLink, itemId)
 end
 
 local function OnAddOnLoaded(_, addOnName)
-  if addOnName ~= this.name then
+  if addOnName ~= ADDON_PACKAGE_NAME then
     return
   end
   this.Initialize()

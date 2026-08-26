@@ -1,4 +1,4 @@
-SECURITY MODEL - ESO ADVENTURER SUITE 0.23.2
+SECURITY MODEL - ESO ADVENTURER SUITE 0.27.78
 ============================================
 
 ESO Adventurer Suite is a recommendation, analytics, inventory-information,
@@ -45,6 +45,13 @@ thresholds, and never use Crown repair kits by default.
 
 This feature does not cast abilities, move the character, select targets, use
 quickslots, or synthesize keyboard/mouse/controller input.
+
+
+NON-GROUPED PLAYER PRIVACY / DETECTION BOUNDARY
+------------------------------------------------
+The public build does not maintain a Nearby/Seen Players roster and does not
+register reticle-target events to collect arbitrary non-grouped players. Guild
+member views use ESO's normal guild roster APIs; group/raid views use group APIs.
 
 COMBAT BOUNDARIES
 -----------------

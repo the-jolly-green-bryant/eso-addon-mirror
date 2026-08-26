@@ -11,6 +11,9 @@ Register("SI_LCA_CCW"					, "Counter-Clockwise")
 
 Register("SI_LCA_TIME_REMAINING"		, "<<1>> remaining")
 Register("SI_LCA_TIME_SINCE_PREVIOUS"	, "<<1>> since previous")
+Register("SI_LCA_TARGET_YOU"		    , "<<1>> (On You)")
+Register("SI_LCA_TARGET_OTHERS"		    , "<<1>> (On Others)")
+Register("SI_LCA_TARGET_BOSS"		    , "<<1>> (On Boss)")
 
 Register("SI_LCA_COLOR_BG"				, "Background color")
 Register("SI_LCA_COLOR_FG"				, "Foreground color")

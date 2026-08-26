@@ -1,8 +1,8 @@
 ## Title: Flamechasers Travel Slots
 ## Description: Configurable fast-travel speed dial with dynamic quest routing.
 ## Author: Flamechasers
-## Version: 0.7.17
-## AddOnVersion: 717
+## Version: 0.8.6
+## AddOnVersion: 806
 ## APIVersion: 101050
 ## SavedVariables: FlamechasersTravelSlotsSavedVariables
 

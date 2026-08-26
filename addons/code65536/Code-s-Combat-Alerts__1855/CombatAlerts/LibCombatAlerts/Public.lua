@@ -134,17 +134,6 @@ function Public.GetTelegraphColor( isFriendly )
 	return Public.PackRGBA(r, g, b, 0.4 * brightness / 50 + 0.2)
 end
 
-function Public.CheckUnitForEffect( unitTag, effectAbilityId )
-	local count = GetNumBuffs(unitTag)
-	for i = 1, count do
-		local _, timeStarted, timeEnding, _, stackCount, _, _, _, _, _, abilityId = GetUnitBuffInfo(unitTag, i)
-		if (abilityId == effectAbilityId) then
-			return timeStarted, timeEnding, stackCount
-		end
-	end
-	return nil
-end
-
 function Public.FormatTime( ms, format )
 	if (ms < 0) then ms = 0 end
 
@@ -171,6 +160,17 @@ function Public.FormatTime( ms, format )
 	end
 end
 
+function Public.CheckUnitForEffect( unitTag, effectAbilityId )
+	local count = GetNumBuffs(unitTag)
+	for i = 1, count do
+		local _, timeStarted, timeEnding, _, stackCount, _, _, _, _, _, abilityId = GetUnitBuffInfo(unitTag, i)
+		if (abilityId == effectAbilityId) then
+			return timeStarted, timeEnding, stackCount
+		end
+	end
+	return nil
+end
+
 function Public.GetUnitHealthPercent( unitTag, invalidReturnsNil )
 	local current, _, effectiveMax = GetUnitPower(unitTag, COMBAT_MECHANIC_FLAGS_HEALTH)
 	if (effectiveMax > 0) then
@@ -180,6 +180,11 @@ function Public.GetUnitHealthPercent( unitTag, invalidReturnsNil )
 	else
 		return 0
 	end
+end
+
+function Public.RegisterForFilteredEvent( name, event, callback, ... )
+	EVENT_MANAGER:RegisterForEvent(name, event, callback)
+	EVENT_MANAGER:AddFilterForEvent(name, event, ...)
 end
 
 function Public.ToggleUIFragment( fragment, enable, additionalSceneNames )
@@ -228,14 +233,16 @@ function Public.GetDistanceSquared( x1, y1, z1, x2, y2, z2 )
 	return dx * dx + dy * dy + dz * dz
 end
 
-function Public.GetDistance( unitTag1, unitTag2, useHeight, validate )
-	local zone1, x1, y1, z1 = GetUnitRawWorldPosition(unitTag1)
+function Public.GetDistance( unitTag1, unitTag2, useHeight, validate, useMapPositionInsteadOfRawPosition )
+	local GetPosition = useMapPositionInsteadOfRawPosition and GetUnitWorldPosition or GetUnitRawWorldPosition
+
+	local zone1, x1, y1, z1 = GetPosition(unitTag1)
 	local zone2, x2, y2, z2
 
 	if (type(unitTag2) == "table") then
 		x2, y2, z2 = unpack(unitTag2)
 	else
-		zone2, x2, y2, z2 = GetUnitRawWorldPosition(unitTag2)
+		zone2, x2, y2, z2 = GetPosition(unitTag2)
 	end
 
 	if (validate and (zone1 == 0 or zone1 ~= zone2)) then
@@ -675,19 +682,23 @@ do
 
 	-- Omit callback to unregister
 	function Public.RegisterInCombatSkillBlock( name, callback )
-		if (type(callback) == "function") then
-			registrants[name] = callback
-		else
-			registrants[name] = nil
+		if (type(callback) ~= "function") then
+			callback = nil
 		end
-		if (not registered and next(registrants)) then
-			registered = true
-			EVENT_MANAGER:RegisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE, combatStateChange)
-			combatStateChange(nil, IsUnitInCombat("player"))
-		elseif (registered and not next(registrants)) then
-			registered = false
-			EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE)
-			eligible = false
+		if (registrants[name] ~= callback) then
+			registrants[name] = callback
+			if (next(registrants)) then
+				if (not registered) then
+					registered = true
+					EVENT_MANAGER:RegisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE, combatStateChange)
+				end
+				-- Always re-run the eligibility check
+				combatStateChange(nil, IsUnitInCombat("player"))
+			elseif (not next(registrants) and registered) then
+				registered = false
+				EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE)
+				eligible = false
+			end
 		end
 	end
 end

@@ -8,9 +8,26 @@ local SAVED_VARIABLES_NAME = "FlamechasersTravelSlotsSavedVariables"
 local SAVED_VARIABLES_VERSION = 3
 local SV
 
-FTS.version = "0.7.17"
+FTS.version = "0.8.6"
 FTS.resultRows = {}
 FTS.resultOffset = 0
+
+local WINDOW_DEFAULT_WIDTH = 820
+local WINDOW_DEFAULT_HEIGHT = 628
+local WINDOW_MIN_WIDTH = 470
+local WINDOW_MIN_HEIGHT = 430
+local WINDOW_MAX_WIDTH = 1280
+local WINDOW_MAX_HEIGHT = 900
+local WINDOW_EDGE_INSET = 8
+local SLOT_AREA_TOP = 98
+local SLOT_AREA_BOTTOM = 58
+local SLOT_AREA_LEFT = 24
+local SLOT_AREA_RIGHT = 12
+local SLOT_SCROLLBAR_RESERVE = 20
+local SLOT_CARD_MIN_WIDTH = 150
+local SLOT_CARD_HEIGHT = 108
+local SLOT_GAP_X = 10
+local SLOT_GAP_Y = 9
 
 -- Bindings.xml is loaded after this file. Register these labels now so the
 -- shared category already exists when ESO parses the binding definitions.
@@ -148,26 +165,37 @@ local function MakeBackdrop(parent, name, fill)
     return c
 end
 
-local function MakeWindowStroke(
-    parent, name, width, height, thickness, inset, color)
+local function MakeWindowStroke(parent, name, thickness, inset, color)
     local frame = WM:CreateControl(name, parent, CT_CONTROL)
-    local frameWidth = width - (inset * 2)
-    local frameHeight = height - (inset * 2)
-    frame:SetDimensions(frameWidth, frameHeight)
     frame:SetAnchor(TOPLEFT, parent, TOPLEFT, inset, inset)
+    frame:SetAnchor(BOTTOMRIGHT, parent, BOTTOMRIGHT, -inset, -inset)
 
-    local function Line(suffix, lineWidth, lineHeight, point, relativePoint)
+    local function HorizontalLine(suffix, point, relativePoint)
         local line = WM:CreateControl(name .. suffix, frame, CT_TEXTURE)
-        line:SetDimensions(lineWidth, lineHeight)
-        line:SetAnchor(point, frame, relativePoint, 0, 0)
+        line:SetHeight(thickness)
+        line:SetAnchor(point == TOP and TOPLEFT or BOTTOMLEFT,
+            frame, relativePoint == TOP and TOPLEFT or BOTTOMLEFT, 0, 0)
+        line:SetAnchor(point == TOP and TOPRIGHT or BOTTOMRIGHT,
+            frame, relativePoint == TOP and TOPRIGHT or BOTTOMRIGHT, 0, 0)
         line:SetColor(unpack(color))
         line:SetDrawLayer(DL_OVERLAY)
         line:SetDrawLevel(250)
     end
-    Line("Top", frameWidth, thickness, TOP, TOP)
-    Line("Bottom", frameWidth, thickness, BOTTOM, BOTTOM)
-    Line("Left", thickness, frameHeight, LEFT, LEFT)
-    Line("Right", thickness, frameHeight, RIGHT, RIGHT)
+    local function VerticalLine(suffix, point, relativePoint)
+        local line = WM:CreateControl(name .. suffix, frame, CT_TEXTURE)
+        line:SetWidth(thickness)
+        line:SetAnchor(point == LEFT and TOPLEFT or TOPRIGHT,
+            frame, relativePoint == LEFT and TOPLEFT or TOPRIGHT, 0, 0)
+        line:SetAnchor(point == LEFT and BOTTOMLEFT or BOTTOMRIGHT,
+            frame, relativePoint == LEFT and BOTTOMLEFT or BOTTOMRIGHT, 0, 0)
+        line:SetColor(unpack(color))
+        line:SetDrawLayer(DL_OVERLAY)
+        line:SetDrawLevel(250)
+    end
+    HorizontalLine("Top", TOP, TOP)
+    HorizontalLine("Bottom", BOTTOM, BOTTOM)
+    VerticalLine("Left", LEFT, LEFT)
+    VerticalLine("Right", RIGHT, RIGHT)
 end
 
 local function MakeEdit(parent, name, hint, width, maxChars)
@@ -210,9 +238,28 @@ local function CategoryForNode(poiType, name, icon)
     return "DESTINATION"
 end
 
-function FTS.SetStatus(message, isError)
+function FTS.RefreshStatus()
+    if not FTS.status then return end
+    local message = FTS.statusMessage or ""
+    if message == "" then
+        FTS.status:SetText("")
+        return
+    end
+    local compact = FTS.window and FTS.window:GetWidth() < 650
+    local displayedMessage = compact
+        and (FTS.statusCompactMessage or message)
+        or message
+    FTS.status:SetText(
+        (FTS.statusIsError and COLOR.red or COLOR.gray) ..
+        displayedMessage .. "|r")
+end
+
+function FTS.SetStatus(message, isError, compactMessage)
+    FTS.statusMessage = message
+    FTS.statusCompactMessage = compactMessage
+    FTS.statusIsError = isError == true
     if FTS.status and FTS.window and not FTS.window:IsHidden() then
-        FTS.status:SetText((isError and COLOR.red or COLOR.gray) .. message .. "|r")
+        FTS.RefreshStatus()
     else
         d((isError and COLOR.red or COLOR.gray) .. "[Flamechasers] " .. message .. "|r")
     end
@@ -237,12 +284,20 @@ function FTS.Open()
     FTS.cursorWasActive = IsGameCameraUIModeActive()
     FTS.window:SetHidden(false)
     FTS.window:BringWindowToTop()
+    FTS.statusMessage = ""
+    FTS.statusCompactMessage = nil
+    FTS.statusIsError = false
+    FTS.RefreshStatus()
     FTS.HoldCursorMode()
     FTS.RefreshTravelCosts()
     local maintainCursor = function(_, time)
         if not FTS.nextCursorCheck or time >= FTS.nextCursorCheck then
             FTS.nextCursorCheck = time + 0.1
             FTS.HoldCursorMode()
+        end
+        if not FTS.nextLayoutCheck or time >= FTS.nextLayoutCheck then
+            FTS.nextLayoutCheck = time + 0.05
+            FTS.UpdateResponsiveLayout(false)
         end
         if not FTS.nextRecallCostCheck or time >= FTS.nextRecallCostCheck then
             FTS.nextRecallCostCheck = time + 0.5
@@ -257,12 +312,14 @@ end
 
 function FTS.Close(forceCursorOff)
     if not FTS.window then return end
+    FTS.UpdateResponsiveLayout(false)
     FTS.closeWhenWorldMapCloses = false
     FTS.closeWorldMapAfterTravel = false
     if FTS.picker then FTS.picker:SetHidden(true) end
     if FTS.slotEditor then FTS.slotEditor:SetHidden(true) end
     if FTS.iconPicker then FTS.iconPicker:SetHidden(true) end
     FTS.window:SetHandler("OnUpdate", nil)
+    FTS.nextLayoutCheck = nil
     FTS.nextRecallCostCheck = nil
     if FTS.picker then FTS.picker:SetHandler("OnUpdate", nil) end
     if FTS.slotEditor then FTS.slotEditor:SetHandler("OnUpdate", nil) end
@@ -380,7 +437,11 @@ function FTS.RefreshSlots()
         local destination = SV.slots[i]
         if destination then
             local displayName = CompactDisplayName(destination)
-            FTS.slotNames[i]:SetFont(#displayName > 23 and "ZoFontGameSmall" or "ZoFontGame")
+            local cardWidth = FTS.slotCards[i]:GetWidth()
+            local fullFontLimit = cardWidth < 170 and 17
+                or (cardWidth < 205 and 23 or 30)
+            FTS.slotNames[i]:SetFont(
+                #displayName > fullFontLimit and "ZoFontGameSmall" or "ZoFontGame")
             FTS.slotNames[i]:SetText(COLOR.white .. displayName .. "|r")
             local note = Trim(destination.note)
             FTS.slotNotes[i]:SetText(note ~= "" and (COLOR.gray .. note .. "|r") or "")
@@ -417,6 +478,22 @@ function FTS.RefreshSlots()
         end
     end
     FTS.RefreshTravelCosts()
+end
+
+function FTS.UpdateSlotTextWidths(index, hasCost)
+    local card = FTS.slotCards and FTS.slotCards[index]
+    if not card then return end
+
+    local cardWidth = card:GetWidth()
+    local contentWidth = math.max(60, cardWidth - 36)
+    local nameWidth = math.max(54, cardWidth - 76)
+    local detailWidth = hasCost
+        and math.max(42, contentWidth - 72)
+        or contentWidth
+
+    FTS.slotNames[index]:SetDimensions(nameWidth, 43)
+    FTS.slotNotes[index]:SetDimensions(contentWidth, 18)
+    FTS.slotDetails[index]:SetDimensions(detailWidth, 20)
 end
 
 local function GetFocusedQuestRecallNode()
@@ -481,10 +558,10 @@ function FTS.RefreshTravelCosts()
             costBackdrop:SetEdgeColor(
                 color[1], color[2], color[3], 0.62)
             costBackdrop:SetHidden(false)
-            FTS.slotDetails[index]:SetDimensions(92, 20)
+            FTS.UpdateSlotTextWidths(index, true)
         else
             costBackdrop:SetHidden(true)
-            FTS.slotDetails[index]:SetDimensions(150, 20)
+            FTS.UpdateSlotTextWidths(index, false)
         end
     end
 end
@@ -503,7 +580,9 @@ function FTS.Assign(destination)
     SV.slots[FTS.editingSlot] = destination
     FTS.ClosePicker()
     FTS.RefreshSlots()
-    FTS.SetStatus("Slot " .. FTS.editingSlot .. " set to " .. destination.name .. ".")
+    FTS.SetStatus(
+        "Slot " .. FTS.editingSlot .. " set to " .. destination.name .. ".",
+        false, "Slot " .. FTS.editingSlot .. " destination saved.")
     FTS.OpenSlotEditor(FTS.editingSlot, true)
 end
 
@@ -660,10 +739,12 @@ function FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind)
     if INSTANCE_ZONE_DISPLAY_TYPES[
         GetFastTravelNodeZoneDisplayType(nodeIndex)] then
         FTS.SetStatus("Travelling directly into " ..
-            zo_strformat("<<C:1>>", nodeName or "the quest instance") .. ".")
+            zo_strformat("<<C:1>>", nodeName or "the quest instance") .. ".",
+            false, "Entering the quest instance...")
     else
         FTS.SetStatus("Travelling near the focused quest via " ..
-            zo_strformat("<<C:1>>", nodeName or "wayshrine") .. ".")
+            zo_strformat("<<C:1>>", nodeName or "wayshrine") .. ".",
+            false, "Travelling via the nearest wayshrine...")
     end
     FTS.CloseAfterTravel(directKeybind)
     return true
@@ -684,7 +765,8 @@ function FTS.RequestFocusedQuestPosition(request)
         if not FTS.CompleteQuestTravel(nodeIndex, nodeName, pending.directKeybind) then
             FTS.questTravelRequest = nil
             SetMapToPlayerLocation()
-            FTS.SetStatus("ESO could not resolve the focused quest objective.", true)
+            FTS.SetStatus("ESO could not resolve the focused quest objective.",
+                true, "Quest destination unavailable.")
         end
     end, 2500)
     return true
@@ -731,13 +813,15 @@ function FTS.ResolveFocusedQuestPosition(taskId, targetX, targetY)
     FTS.questTravelRequest = nil
     SetMapToPlayerLocation()
     FTS.SetStatus(
-        "ESO did not expose a reachable wayshrine for the focused quest objective.", true)
+        "ESO did not expose a reachable wayshrine for the focused quest objective.",
+        true, "No reachable quest wayshrine.")
 end
 
 function FTS.TravelToFocusedQuest(directKeybind)
     local questIndex = FTS.GetFocusedQuestIndex()
     if not questIndex then
-        FTS.SetStatus("Focus a quest first, then use this slot again.", true)
+        FTS.SetStatus("Focus a quest first, then use this slot again.",
+            true, "Focus a quest first.")
         return
     end
 
@@ -785,7 +869,8 @@ function FTS.TravelToFocusedQuest(directKeybind)
         if FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind) then return end
         SetMapToPlayerLocation()
         FTS.SetStatus(
-            "The focused quest has no travel location available at this step.", true)
+            "The focused quest has no travel location available at this step.",
+            true, "No travel point for this quest step.")
         return
     end
 
@@ -805,12 +890,14 @@ function FTS.TravelToFocusedQuest(directKeybind)
         directKeybind = directKeybind,
     }
     FTS.SetStatus("Finding the best travel destination for " ..
-        zo_strformat("<<C:1>>", GetJournalQuestName(questIndex)) .. "...")
+        zo_strformat("<<C:1>>", GetJournalQuestName(questIndex)) .. "...",
+        false, "Finding the quest destination...")
     if not FTS.RequestFocusedQuestPosition(request) then
         local nodeIndex, nodeName = FTS.FindKnownWayshrineInZone(zoneIndex)
         if not FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind) then
             SetMapToPlayerLocation()
-            FTS.SetStatus("ESO could not resolve the focused quest objective.", true)
+            FTS.SetStatus("ESO could not resolve the focused quest objective.",
+                true, "Quest destination unavailable.")
         end
     end
 end
@@ -819,14 +906,16 @@ function FTS.Travel(index, directKeybind)
     local destination = SV.slots[index]
     if not destination then
         if directKeybind then
-            FTS.SetStatus("Travel slot " .. index .. " is empty.", true)
+            FTS.SetStatus("Travel slot " .. index .. " is empty.", true,
+                "Travel slot " .. index .. " is empty.")
         else
             FTS.OpenPicker(index)
         end
         return
     end
     if IsUnitInCombat("player") then
-        FTS.SetStatus("Travel is unavailable during combat.", true)
+        FTS.SetStatus("Travel is unavailable during combat.", true,
+            "Cannot travel during combat.")
         return
     end
     if destination.kind == "node" then
@@ -846,14 +935,18 @@ function FTS.Travel(index, directKeybind)
             end
         end
         if not destination.id then
-            FTS.SetStatus(destination.name .. " is no longer present in the travel database.", true)
+            FTS.SetStatus(
+                destination.name .. " is no longer present in the travel database.",
+                true, "Destination no longer available.")
             return
         end
         local known, name, _, _, _, _, _, _, collectibleLocked = GetFastTravelNodeInfo(destination.id)
         if collectibleLocked then
-            FTS.SetStatus(name .. " is locked by unavailable content.", true)
+            FTS.SetStatus(name .. " is locked by unavailable content.",
+                true, "Destination content is locked.")
         elseif not known then
-            FTS.SetStatus(name .. " has not been discovered on this character.", true)
+            FTS.SetStatus(name .. " has not been discovered on this character.",
+                true, "Destination is undiscovered.")
         else
             FastTravelToNode(destination.id)
             FTS.CloseAfterTravel(directKeybind)
@@ -885,7 +978,8 @@ function FTS.Travel(index, directKeybind)
                 RequestJumpToHouse(houseId, false)
                 FTS.CloseAfterTravel(directKeybind)
             else
-                FTS.SetStatus("No primary residence is currently set.", true)
+                FTS.SetStatus("No primary residence is currently set.",
+                    true, "No primary residence is set.")
             end
         else
             JumpToHouse(destination.owner)
@@ -895,7 +989,10 @@ function FTS.Travel(index, directKeybind)
         if IsUnitGrouped("player") then
             JumpToGroupLeader()
             FTS.CloseAfterTravel(directKeybind)
-        else FTS.SetStatus("You are not currently grouped.", true) end
+        else
+            FTS.SetStatus("You are not currently grouped.", true,
+                "You are not currently grouped.")
+        end
     elseif destination.kind == "focusedQuest" then
         FTS.TravelToFocusedQuest(directKeybind)
     end
@@ -1119,7 +1216,7 @@ end
 function FTS.CreatePicker()
     local p = WM:CreateTopLevelWindow("FlamechasersTravelPicker")
     p:SetDimensions(720, 720)
-    p:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    p:SetAnchor(CENTER, FTS.window, CENTER, 0, 0)
     p:SetDrawLayer(DL_OVERLAY)
     p:SetDrawTier(DT_HIGH)
     p:SetDrawLevel(110)
@@ -1279,7 +1376,8 @@ function FTS.SaveSlotDetails()
     destination.customIcon = FTS.editingIcon
     FTS.RefreshSlots()
     FTS.CloseSlotEditor()
-    FTS.SetStatus("Slot " .. FTS.editingSlot .. " details saved.")
+    FTS.SetStatus("Slot " .. FTS.editingSlot .. " details saved.", false,
+        "Slot " .. FTS.editingSlot .. " details saved.")
 end
 
 function FTS.ResolvedEditingIcon()
@@ -1446,13 +1544,14 @@ function FTS.ClearEditedSlot()
     SV.slots[FTS.editingSlot] = nil
     FTS.RefreshSlots()
     FTS.CloseSlotEditor()
-    FTS.SetStatus("Slot " .. FTS.editingSlot .. " cleared.")
+    FTS.SetStatus("Slot " .. FTS.editingSlot .. " cleared.", false,
+        "Slot " .. FTS.editingSlot .. " cleared.")
 end
 
 function FTS.CreateSlotEditor()
     local e = WM:CreateTopLevelWindow("FlamechasersTravelSlotEditor")
     e:SetDimensions(580, 610)
-    e:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    e:SetAnchor(CENTER, FTS.window, CENTER, 0, 0)
     e:SetDrawLayer(DL_OVERLAY)
     e:SetDrawTier(DT_HIGH)
     e:SetDrawLevel(120)
@@ -1570,7 +1669,7 @@ end
 function FTS.CreateIconPicker()
     local p = WM:CreateTopLevelWindow("FlamechasersTravelIconPicker")
     p:SetDimensions(680, 500)
-    p:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    p:SetAnchor(CENTER, FTS.window, CENTER, 0, 0)
     p:SetDrawLayer(DL_OVERLAY)
     p:SetDrawTier(DT_HIGH)
     p:SetDrawLevel(130)
@@ -1638,10 +1737,123 @@ function FTS.CreateIconPicker()
     end)
 end
 
+local function Clamp(value, minimum, maximum)
+    return math.max(minimum, math.min(maximum, value))
+end
+
+local function GetWindowMaximumDimensions()
+    local maximumWidth = math.max(
+        WINDOW_MIN_WIDTH, math.min(WINDOW_MAX_WIDTH, GuiRoot:GetWidth() - 20))
+    local maximumHeight = math.max(
+        WINDOW_MIN_HEIGHT, math.min(WINDOW_MAX_HEIGHT, GuiRoot:GetHeight() - 20))
+    return maximumWidth, maximumHeight
+end
+
+local function GetSlotColumnCount(contentWidth)
+    local columns = math.floor(
+        (contentWidth + SLOT_GAP_X) / (SLOT_CARD_MIN_WIDTH + SLOT_GAP_X))
+    return Clamp(columns, 2, 6)
+end
+
+function FTS.UpdateResponsiveLayout(force)
+    if not FTS.window or not FTS.slotScrollChild then return end
+
+    local width = math.floor(FTS.window:GetWidth() + 0.5)
+    local height = math.floor(FTS.window:GetHeight() + 0.5)
+    if not force and width == FTS.lastLayoutWidth
+        and height == FTS.lastLayoutHeight then
+        return
+    end
+
+    FTS.lastLayoutWidth = width
+    FTS.lastLayoutHeight = height
+    SV.left = FTS.window:GetLeft()
+    SV.top = FTS.window:GetTop()
+    SV.width = width
+    SV.height = height
+
+    local contentWidth = math.max(
+        1, width - SLOT_AREA_LEFT - SLOT_AREA_RIGHT - SLOT_SCROLLBAR_RESERVE)
+    local columns = GetSlotColumnCount(contentWidth)
+    local rows = math.ceil(16 / columns)
+    local cardWidth = math.floor(
+        (contentWidth - ((columns - 1) * SLOT_GAP_X)) / columns)
+    local contentHeight = 8 + (rows * SLOT_CARD_HEIGHT)
+        + ((rows - 1) * SLOT_GAP_Y)
+
+    FTS.slotScrollChild:SetDimensions(contentWidth, contentHeight)
+    for index = 1, 16 do
+        local column = (index - 1) % columns
+        local row = math.floor((index - 1) / columns)
+        local card = FTS.slotCards[index]
+        card:ClearAnchors()
+        card:SetDimensions(cardWidth, SLOT_CARD_HEIGHT)
+        card:SetAnchor(TOPLEFT, FTS.slotScrollChild, TOPLEFT,
+            column * (cardWidth + SLOT_GAP_X), 4 + row * (SLOT_CARD_HEIGHT + SLOT_GAP_Y))
+        FTS.slotAccents[index]:SetDimensions(4, SLOT_CARD_HEIGHT - 16)
+        FTS.UpdateSlotTextWidths(
+            index, not FTS.slotCostBackdrops[index]:IsHidden())
+        local destination = SV.slots[index]
+        if destination then
+            local displayName = CompactDisplayName(destination)
+            local fullFontLimit = cardWidth < 170 and 17
+                or (cardWidth < 205 and 23 or 30)
+            FTS.slotNames[index]:SetFont(
+                #displayName > fullFontLimit and "ZoFontGameSmall" or "ZoFontGame")
+        end
+    end
+
+    local compactHeader = width < 735
+    FTS.headerTagline:SetHidden(compactHeader)
+    local compactSection = width < 650
+    FTS.clickHint:SetHidden(compactSection)
+    FTS.sectionRule:ClearAnchors()
+    FTS.sectionRule:SetAnchor(LEFT, FTS.sectionTitle, RIGHT, 14, 0)
+    local ruleLeft = 24 + FTS.sectionTitle:GetWidth() + 14
+    local ruleRight = width - 24
+    if not compactSection then
+        ruleRight = ruleRight - FTS.clickHint:GetWidth() - 14
+    end
+    local ruleWidth = math.floor(ruleRight - ruleLeft)
+    local showSectionRule = ruleWidth >= 12
+    FTS.sectionRule:SetHidden(not showSectionRule)
+    if showSectionRule then
+        FTS.sectionRule:SetWidth(ruleWidth)
+    end
+
+    local footerWidth = math.max(1, width - (WINDOW_EDGE_INSET * 2))
+    local autoOpenLeft = footerWidth - 72 - 184
+    FTS.status:SetWidth(math.max(110, autoOpenLeft - 27))
+    FTS.RefreshStatus()
+end
+
+function FTS.ResetWindowSize()
+    SV.width = WINDOW_DEFAULT_WIDTH
+    SV.height = WINDOW_DEFAULT_HEIGHT
+    FTS.CreateWindow()
+    local maximumWidth, maximumHeight = GetWindowMaximumDimensions()
+    FTS.window:SetDimensions(
+        math.min(WINDOW_DEFAULT_WIDTH, maximumWidth),
+        math.min(WINDOW_DEFAULT_HEIGHT, maximumHeight))
+    FTS.UpdateResponsiveLayout(true)
+    FTS.SetStatus("Window size reset to default.", false,
+        "Window size reset to default.")
+end
+
 function FTS.CreateWindow()
     if FTS.window then return end
     local w = WM:CreateTopLevelWindow("FlamechasersTravelSlotsWindow")
-    w:SetDimensions(820, 628)
+    local maximumWidth, maximumHeight = GetWindowMaximumDimensions()
+    local initialWidth = Clamp(
+        tonumber(SV.width) or WINDOW_DEFAULT_WIDTH,
+        WINDOW_MIN_WIDTH, maximumWidth)
+    local initialHeight = Clamp(
+        tonumber(SV.height) or WINDOW_DEFAULT_HEIGHT,
+        WINDOW_MIN_HEIGHT, maximumHeight)
+    w:SetDimensions(initialWidth, initialHeight)
+    w:SetDimensionConstraints(
+        WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, maximumWidth, maximumHeight)
+    w:SetResizeHandleSize(14)
     w:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV.left, SV.top)
     w:SetMovable(true)
     w:SetMouseEnabled(true)
@@ -1658,7 +1870,7 @@ function FTS.CreateWindow()
 
     -- The visible backdrop begins eight pixels inside the top-level control.
     -- Anchor the frame to that real edge so no transparent gap surrounds it.
-    MakeWindowStroke(w, "FTSMainWindowStroke", 820, 628, 1, 8,
+    MakeWindowStroke(w, "FTSMainWindowStroke", 1, WINDOW_EDGE_INSET,
         { 0.25, 0.64, 0.88, 0.82 })
 
     -- The tooltip center texture used by the outer frame is intentionally
@@ -1677,13 +1889,15 @@ function FTS.CreateWindow()
     shadow:SetEdgeColor(0, 0, 0, 0.75)
 
     local header = WM:CreateControl("FTSMainHeader", w, CT_BACKDROP)
-    header:SetDimensions(804, 52)
-    header:SetAnchor(TOP, w, TOP, 0, 8)
+    header:SetHeight(52)
+    header:SetAnchor(TOPLEFT, w, TOPLEFT, WINDOW_EDGE_INSET, WINDOW_EDGE_INSET)
+    header:SetAnchor(TOPRIGHT, w, TOPRIGHT, -WINDOW_EDGE_INSET, WINDOW_EDGE_INSET)
     header:SetCenterColor(0.018, 0.075, 0.12, 0.98)
     header:SetEdgeColor(0, 0, 0, 0)
     local headerGlow = WM:CreateControl("FTSHeaderGlow", header, CT_TEXTURE)
-    headerGlow:SetDimensions(804, 3)
-    headerGlow:SetAnchor(BOTTOM, header, BOTTOM, 0, 0)
+    headerGlow:SetHeight(3)
+    headerGlow:SetAnchor(BOTTOMLEFT, header, BOTTOMLEFT, 0, 0)
+    headerGlow:SetAnchor(BOTTOMRIGHT, header, BOTTOMRIGHT, 0, 0)
     headerGlow:SetColor(0.25, 0.72, 1, 0.95)
 
     local title = MakeLabel(w, "FlamechasersTravelTitle", "FLAMECHASERS", "ZoFontGameSmall")
@@ -1696,11 +1910,65 @@ function FTS.CreateWindow()
         "Sixteen destinations. One click away.", "ZoFontGameSmall")
     tagline:SetColor(0.52, 0.64, 0.75, 1)
     tagline:SetAnchor(LEFT, subtitle, RIGHT, 14, 0)
-    local close = MakeButton(w, "FlamechasersTravelClose", "X")
-    close:SetFont("ZoFontGameBold")
+    local close = MakeButton(w, "FlamechasersTravelClose", "")
     close:SetDimensions(32, 32)
     close:SetAnchor(TOPRIGHT, w, TOPRIGHT, -16, 17)
+    local closeIcon = WM:CreateControl(
+        "FTSWindowCloseIcon", close, CT_TEXTURE)
+    closeIcon:SetDimensions(20, 20)
+    closeIcon:SetAnchor(CENTER, close, CENTER, 0, 0)
+    closeIcon:SetTexture("FlamechasersTravelSlots/close_icon.dds")
+    closeIcon:SetColor(0.9, 0.94, 1, 1)
+    close:SetHandler("OnMouseEnter", function()
+        closeIcon:SetColor(0.35, 0.75, 1, 1)
+    end)
+    close:SetHandler("OnMouseExit", function()
+        closeIcon:SetColor(0.9, 0.94, 1, 1)
+    end)
     close:SetHandler("OnClicked", function() FTS.Close() end)
+
+    local windowHelp = MakeButton(w, "FTSWindowHelp", "")
+    windowHelp:SetDimensions(32, 32)
+    windowHelp:SetAnchor(RIGHT, close, LEFT, -2, 0)
+    local windowHelpIcon = WM:CreateControl(
+        "FTSWindowHelpIcon", windowHelp, CT_TEXTURE)
+    windowHelpIcon:SetDimensions(20, 20)
+    windowHelpIcon:SetAnchor(CENTER, windowHelp, CENTER, 0, 0)
+    windowHelpIcon:SetTexture("FlamechasersTravelSlots/help_icon.dds")
+    windowHelpIcon:SetColor(0.52, 0.64, 0.75, 0.95)
+
+    local windowHelpTooltip = MakeBackdrop(
+        w, "FTSWindowHelpTooltip", false)
+    windowHelpTooltip:SetDimensions(294, 116)
+    windowHelpTooltip:SetAnchor(
+        TOPRIGHT, windowHelp, BOTTOMRIGHT, 0, 6)
+    windowHelpTooltip:SetCenterColor(0.018, 0.03, 0.045, 1)
+    windowHelpTooltip:SetEdgeColor(0.25, 0.64, 0.88, 0.95)
+    windowHelpTooltip:SetDrawLayer(DL_OVERLAY)
+    windowHelpTooltip:SetDrawLevel(280)
+    windowHelpTooltip:SetMouseEnabled(false)
+    windowHelpTooltip:SetHidden(true)
+    local windowHelpText = MakeLabel(
+        windowHelpTooltip, "FTSWindowHelpTooltipText",
+        COLOR.blue .. "TRAVEL SLOTS HELP|r\n" ..
+        COLOR.gray .. "Left-click a slot to travel.\n" ..
+        "Right-click a slot to edit.\n" ..
+        "Drag any edge or corner to resize.\nUse " ..
+        COLOR.gold .. "/fts reset|r" .. COLOR.gray ..
+        " to restore the default size.|r", "ZoFontGameSmall")
+    windowHelpText:SetDimensions(262, 98)
+    windowHelpText:SetAnchor(CENTER, windowHelpTooltip, CENTER, 0, 0)
+    windowHelpText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    windowHelpText:SetDrawLayer(DL_OVERLAY)
+    windowHelpText:SetDrawLevel(281)
+    windowHelp:SetHandler("OnMouseEnter", function()
+        windowHelpIcon:SetColor(0.35, 0.75, 1, 1)
+        windowHelpTooltip:SetHidden(false)
+    end)
+    windowHelp:SetHandler("OnMouseExit", function()
+        windowHelpIcon:SetColor(0.52, 0.64, 0.75, 0.95)
+        windowHelpTooltip:SetHidden(true)
+    end)
 
     local sectionTitle = MakeLabel(w, "FTSSlotsSectionTitle", "QUICK DESTINATIONS", "ZoFontGame")
     sectionTitle:SetColor(0.55, 0.72, 0.84, 1)
@@ -1710,19 +1978,31 @@ function FTS.CreateWindow()
     clickHint:SetColor(0.38, 0.46, 0.54, 0.9)
     clickHint:SetAnchor(TOPRIGHT, w, TOPRIGHT, -24, 75)
     local sectionRule = WM:CreateControl("FTSSlotsSectionRule", w, CT_TEXTURE)
-    sectionRule:SetDimensions(390, 1)
-    sectionRule:SetAnchor(LEFT, sectionTitle, RIGHT, 14, 0)
+    sectionRule:SetHeight(1)
     sectionRule:SetColor(0.15, 0.3, 0.42, 0.9)
+
+    FTS.headerTagline = tagline
+    FTS.sectionTitle = sectionTitle
+    FTS.clickHint = clickHint
+    FTS.sectionRule = sectionRule
+
+    local slotScroll = WM:CreateControlFromVirtual(
+        "FTSSlotScroll", w, "ZO_ScrollContainer")
+    slotScroll:SetAnchor(
+        TOPLEFT, w, TOPLEFT, SLOT_AREA_LEFT, SLOT_AREA_TOP)
+    slotScroll:SetAnchor(
+        BOTTOMRIGHT, w, BOTTOMRIGHT, -SLOT_AREA_RIGHT, -SLOT_AREA_BOTTOM)
+    local slotScrollChild = slotScroll:GetNamedChild("ScrollChild")
+    slotScrollChild:SetResizeToFitDescendents(false)
+    FTS.slotScroll = slotScroll
+    FTS.slotScrollChild = slotScrollChild
 
     FTS.slotNames, FTS.slotNotes, FTS.slotDetails, FTS.slotIcons, FTS.slotAccents,
         FTS.slotCards = {}, {}, {}, {}, {}, {}
     FTS.slotCosts, FTS.slotCostBackdrops, FTS.slotCostIcons = {}, {}, {}
     for i = 1, 16 do
-        local col = (i - 1) % 4
-        local row = math.floor((i - 1) / 4)
-        local card = MakeBackdrop(w, "FTSSlotCard" .. i, false)
+        local card = MakeBackdrop(slotScrollChild, "FTSSlotCard" .. i, false)
         card:SetDimensions(185, 108)
-        card:SetAnchor(TOPLEFT, w, TOPLEFT, 24 + col * 195, 102 + row * 117)
         card:SetCenterColor(0.035, 0.052, 0.075, 0.96)
         card:SetEdgeColor(0.12, 0.25, 0.35, 1)
 
@@ -1746,6 +2026,7 @@ function FTS.CreateWindow()
         local note = MakeLabel(card, "FTSSlotNote" .. i, "", "ZoFontGameSmall")
         note:SetDimensions(150, 18)
         note:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        note:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         note:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 18, -30)
         local detail = MakeLabel(card, "FTSSlotDetail" .. i, "", "ZoFontGameSmall")
         detail:SetDimensions(150, 20)
@@ -1803,13 +2084,15 @@ function FTS.CreateWindow()
             cost, costBackdrop, costIcon
     end
     local footer = WM:CreateControl("FTSFooter", w, CT_BACKDROP)
-    footer:SetDimensions(804, 42)
-    footer:SetAnchor(BOTTOM, w, BOTTOM, 0, -8)
+    footer:SetHeight(42)
+    footer:SetAnchor(BOTTOMLEFT, w, BOTTOMLEFT,
+        WINDOW_EDGE_INSET, -WINDOW_EDGE_INSET)
+    footer:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT,
+        -WINDOW_EDGE_INSET, -WINDOW_EDGE_INSET)
     footer:SetCenterColor(0.018, 0.04, 0.06, 0.98)
     footer:SetEdgeColor(0, 0, 0, 0)
-    FTS.status = MakeLabel(w, "FlamechasersTravelStatus",
-        COLOR.gray .. "Left-click travels. Right-click edits name, note, destination, or clears.|r",
-        "ZoFontGameSmall")
+    FTS.status = MakeLabel(
+        w, "FlamechasersTravelStatus", "", "ZoFontGameSmall")
     FTS.status:SetDimensions(500, 38)
     FTS.status:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     FTS.status:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
@@ -1841,14 +2124,44 @@ function FTS.CreateWindow()
         FTS.RefreshAutoOpenToggle()
         FTS.SetStatus(SV.autoOpenWithMap
             and "Travel Slots will open with the world map."
-            or "Automatic map opening disabled.")
+            or "Automatic map opening disabled.", false,
+            SV.autoOpenWithMap
+                and "Auto-open with map enabled."
+                or "Auto-open with map disabled.")
     end)
     FTS.autoOpenMapCheck = autoOpenCheck
+    FTS.autoOpenMapToggle = autoOpen
     FTS.RefreshAutoOpenToggle()
 
     local version = MakeLabel(w, "FTSVersion", "v" .. FTS.version, "ZoFontGameSmall")
     version:SetColor(0.32, 0.46, 0.56, 1)
-    version:SetAnchor(RIGHT, footer, RIGHT, -14, 0)
+    version:SetAnchor(RIGHT, footer, RIGHT, -30, 0)
+    FTS.footer = footer
+    FTS.versionLabel = version
+
+    local resizeGrip = WM:CreateControl("FTSResizeGrip", w, CT_CONTROL)
+    resizeGrip:SetDimensions(18, 18)
+    resizeGrip:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT, -9, -9)
+    resizeGrip:SetMouseEnabled(false)
+    resizeGrip:SetDrawLayer(DL_OVERLAY)
+    resizeGrip:SetDrawLevel(245)
+    for index = 1, 3 do
+        local length = 3 + (index * 3)
+        local horizontal = WM:CreateControl(
+            "FTSResizeGripHorizontal" .. index, resizeGrip, CT_TEXTURE)
+        horizontal:SetDimensions(length, 1)
+        horizontal:SetAnchor(BOTTOMRIGHT, resizeGrip, BOTTOMRIGHT,
+            -2, -2 - ((index - 1) * 4))
+        horizontal:SetColor(0.30, 0.48, 0.60, 0.68)
+        local vertical = WM:CreateControl(
+            "FTSResizeGripVertical" .. index, resizeGrip, CT_TEXTURE)
+        vertical:SetDimensions(1, length)
+        vertical:SetAnchor(BOTTOMRIGHT, resizeGrip, BOTTOMRIGHT,
+            -2 - ((index - 1) * 4), -2)
+        vertical:SetColor(0.30, 0.48, 0.60, 0.68)
+    end
+
+    FTS.UpdateResponsiveLayout(true)
     FTS.CreatePicker()
     FTS.CreateSlotEditor()
     FTS.CreateIconPicker()
@@ -2026,6 +2339,8 @@ local function InitializeSavedVariables()
     local defaults = {
         left = 500,
         top = 220,
+        width = WINDOW_DEFAULT_WIDTH,
+        height = WINDOW_DEFAULT_HEIGHT,
         slots = {},
         autoOpenWithMap = false,
         serverDataInitialized = false,
@@ -2038,6 +2353,8 @@ local function InitializeSavedVariables()
         if legacy then
             SV.left = legacy.left or SV.left
             SV.top = legacy.top or SV.top
+            SV.width = legacy.width or SV.width
+            SV.height = legacy.height or SV.height
             if legacy.slots and next(legacy.slots) then
                 SV.slots = DeepCopy(legacy.slots)
             end
@@ -2049,8 +2366,15 @@ end
 function FTS.Initialize()
     InitializeSavedVariables()
 
-    SLASH_COMMANDS["/fts"] = function() FTS.Toggle() end
-    SLASH_COMMANDS["/ftravel"] = function() FTS.Toggle() end
+    local function HandleSlashCommand(text)
+        if Lower(Trim(text)) == "reset" then
+            FTS.ResetWindowSize()
+            return
+        end
+        FTS.Toggle()
+    end
+    SLASH_COMMANDS["/fts"] = HandleSlashCommand
+    SLASH_COMMANDS["/ftravel"] = HandleSlashCommand
 
     FTS.CreateMapButton()
     EVENT_MANAGER:RegisterForEvent(

@@ -658,60 +658,69 @@ function Module:PostLoad( )
 
 	-- Vulnerability can only be tracked via EVENT_EFFECT_CHANGED
 
-	EVENT_MANAGER:RegisterForEvent(Identifier("MAJ_VULN"), EVENT_EFFECT_CHANGED, function( _, changeType, _, _, unitTag, _, endTime )
-		Vars.vuln[unitTag] = (changeType == EFFECT_RESULT_FADED) and 0 or zo_floor(endTime * 1000)
-	end)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("MAJ_VULN"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, LCA.IDS.MAJ_VULN)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("MAJ_VULN"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "boss")
+	LCA.RegisterForFilteredEvent(Identifier("MAJ_VULN"), EVENT_EFFECT_CHANGED,
+		function( _, changeType, _, _, unitTag, _, endTime )
+			Vars.vuln[unitTag] = (changeType == EFFECT_RESULT_FADED) and 0 or zo_floor(endTime * 1000)
+		end,
+		REGISTER_FILTER_ABILITY_ID, LCA.IDS.MAJ_VULN,
+		REGISTER_FILTER_UNIT_TAG_PREFIX, "boss"
+	)
 
 	-- Events that need to be tracked at all times, even out of combat
 
-	EVENT_MANAGER:RegisterForEvent(Identifier("ORB"), EVENT_COMBAT_EVENT, self.OrbRefresh)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("ORB"), EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED_DURATION)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("ORB"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.refresh)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("ORB"), EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("B1_L"), EVENT_COMBAT_EVENT, self.MirrorSide)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B1_L"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.mirrorSide.light)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B1_L"), EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("B1_D"), EVENT_COMBAT_EVENT, self.MirrorSide)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B1_D"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.mirrorSide.dark)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B1_D"), EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("B2_L"), EVENT_COMBAT_EVENT, self.ColorImmunity)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_L"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.immunity.light)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_L"), EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED)
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("B2_D"), EVENT_COMBAT_EVENT, self.ColorImmunity)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_D"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.immunity.dark)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_D"), EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED)
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("B2_START"), EVENT_COMBAT_EVENT, function( )
-		self.StartBoss2Panel()
-		self:StartListening()
-	end)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_START"), EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_BEGIN)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_START"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.breakout)
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("B3_START"), EVENT_COMBAT_EVENT, function( )
-		-- The cooldown panel intentionally has no other entry point because if
-		-- this module is loaded mid-encounter, the knot state is incomplete and
-		-- it's better to show no information than misleading information
-		if (self:GetSetting("cooldownPanel") and LCA.isVet) then
-			CA2.GroupPanelEnable({
-				headerText = string.format("%s / %s", LCA.GetAbilityName(DATA.knot.passage.id), LCA.GetAbilityName(DATA.flux.overloaded)),
-				statWidth = 48,
-				useRange = false,
-			})
-		end
-		if (self:GetSetting("suicidePrevention") and LCA.isVet) then
-			self.ToggleSplinteredPassageBlock(true)
-		end
-		self:StartListening()
-	end)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B3_START"), EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED_DURATION)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("B3_START"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.knot.claim)
+	LCA.RegisterForFilteredEvent(Identifier("ORB"), EVENT_COMBAT_EVENT,
+		self.OrbRefresh,
+		REGISTER_FILTER_ABILITY_ID, DATA.refresh,
+		REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER
+	)
+	LCA.RegisterForFilteredEvent(Identifier("B1_L"), EVENT_COMBAT_EVENT,
+		self.MirrorSide,
+		REGISTER_FILTER_ABILITY_ID, DATA.mirrorSide.light,
+		REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER
+	)
+	LCA.RegisterForFilteredEvent(Identifier("B1_D"), EVENT_COMBAT_EVENT,
+		self.MirrorSide,
+		REGISTER_FILTER_ABILITY_ID, DATA.mirrorSide.dark,
+		REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER
+	)
+	LCA.RegisterForFilteredEvent(Identifier("B2_L"), EVENT_COMBAT_EVENT,
+		self.ColorImmunity,
+		REGISTER_FILTER_ABILITY_ID, DATA.immunity.light,
+		REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED
+	)
+	LCA.RegisterForFilteredEvent(Identifier("B2_D"), EVENT_COMBAT_EVENT,
+		self.ColorImmunity,
+		REGISTER_FILTER_ABILITY_ID, DATA.immunity.dark,
+		REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED
+	)
+	LCA.RegisterForFilteredEvent(Identifier("B2_START"), EVENT_COMBAT_EVENT,
+		function( )
+			self.StartBoss2Panel()
+			self:StartListening()
+		end,
+		REGISTER_FILTER_ABILITY_ID, DATA.breakout,
+		REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_BEGIN
+	)
+	LCA.RegisterForFilteredEvent(Identifier("B3_START"), EVENT_COMBAT_EVENT,
+		function( )
+			-- The cooldown panel intentionally has no other entry point because if
+			-- this module is loaded mid-encounter, the knot state is incomplete and
+			-- it's better to show no information than misleading information
+			if (self:GetSetting("cooldownPanel") and LCA.isVet) then
+				CA2.GroupPanelEnable({
+					headerText = string.format("%s / %s", LCA.GetAbilityName(DATA.knot.passage.id), LCA.GetAbilityName(DATA.flux.overloaded)),
+					statWidth = 48,
+					useRange = false,
+				})
+			end
+			if (self:GetSetting("suicidePrevention") and LCA.isVet) then
+				self.ToggleSplinteredPassageBlock(true)
+			end
+			self:StartListening()
+		end,
+		REGISTER_FILTER_ABILITY_ID, DATA.knot.claim,
+		REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED_DURATION
+	)
 end
 
 function Module:PreUnload( )

@@ -134,7 +134,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Clutch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Apogee/Clutch__2302) | Apogee | PC / Mac | 0.9.1 |
 | [CobbDialogueLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DavidJCobb/CobbDialogueLogger__2560) | DavidJCobb | PC / Mac | 1 |
 | [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__fe065445-3217-4a76-8932-23a0a1c9c16c) | code65536 | Console | — |
-| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.5.2 |
+| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.6.0 |
 | [Cogs Assistants](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coginthemachine/Cogs-Assistants__4687) | coginthemachine | PC / Mac | 0.1.5 |
 | [Collect Them All](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97) | Springpeace2575 | Console | — |
 | [CollectablesTesting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970) | brossin13 | Console | — |
@@ -311,7 +311,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Cyrodiil Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Cyrodiil-Alerts__37bd7159-8611-4d29-8767-08434d4fe209) | codeWarrior82 | Console | — |
 | [Cyrodiil Ayleid Wells](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Odylon/Cyrodiil-Ayleid-Wells__3117) | Odylon | PC / Mac | 1.0.0 |
 | [Cyrodiil Map Labels (10.3.5)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Neurowise/Cyrodiil-Map-Labels-10.3.5__4065) | Neurowise | PC / Mac | 1.01 |
-| [Cyrodiil Map Labels (Fix: Season Zero)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361) | sshogrin | PC / Mac | 1.7 |
+| [Cyrodiil Map Labels (Fix: Season Zero)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361) | sshogrin | PC / Mac | 1.8 |
 | [Cyrodiil Mission Share](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Cyrodiil-Mission-Share__1836) | aldericon | PC / Mac | 12.0 |
 | [Cyrodiil Score Viewer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/Cyrodiil-Score-Viewer__3166) | tdenc | PC / Mac | 0.5.0 |
 | [CyroQuickslots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gerrit/CyroQuickslots__3134) | Gerrit | PC / Mac | 1.31.1 |

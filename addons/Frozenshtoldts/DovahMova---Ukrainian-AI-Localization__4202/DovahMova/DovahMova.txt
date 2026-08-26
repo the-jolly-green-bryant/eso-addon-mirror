@@ -1,6 +1,6 @@
 ## Title: |cffdd00Dovah|r|c0057b8Mova|r
 ## APIVersion: 101046
-## Version: 1.4.1
+## Version: 1.4.2
 ## Author: Frozenshtoldts and DovahMova Team
 ## Description: DovahMova - Ukrainian interface AI translation for ESO
 ## SavedVariables: DovahMovaVariables

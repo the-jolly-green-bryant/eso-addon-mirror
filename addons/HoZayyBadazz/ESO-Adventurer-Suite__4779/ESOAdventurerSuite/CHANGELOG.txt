@@ -1,3 +1,1116 @@
+0.28.50
+- Added Dungeon Queue HUD to HUD Layout Mode for preview, moving, and resizing while not queued.
+
+0.28.49
+- Map & Travel only: moved TRAVEL TO PLEDGE MASTER below NEAREST STABLEMASTER.
+
+0.28.48
+- Skills & Champion only: tightened vertical spacing so the wrapped Sets section no longer pushes RESPEC + BUILD into the action buttons.
+
+0.28.47
+- Skills & Champion only: Build Overview set names now use separate lines so long set names are never cut off.
+
+0.28.46
+- Skills & Champion only: fixed overlapping text by dynamically spacing the lower sections under the content above.
+
+0.28.45
+- Skills & Champion only: made Build Overview match Recommended Active Bar, and Champion Point Optimizer match Attribute Optimizer.
+
+0.28.44
+- Skills & Champion only: matched the top section font to the larger bottom section font for a consistent page.
+
+0.28.43
+- Skills & Champion only: fixed collapsed ability and Attribute Optimizer lines by using dedicated rows and routing the page to its custom renderer.
+
+0.28.41
+- Skills & Champion page only: increased readability, applied larger body font, and reflowed the page for a cleaner fit.
+
+0.28.40
+- Matched Achievements left/right fonts exactly.
+- Matched Character Stats left/right fonts exactly at the larger size.
+- Expanded low-density page bounds and spacing to use more of the page.
+
+0.28.39
+- Fixed Achievements nil-function crash caused by helper declaration order.
+- Increased Character Stats font three size steps while preserving the two-page layout.
+
+0.28.38
+- Matched Achievements and Character Stats left/right page fonts for consistent bold readability.
+- Increased low-density document page sizing and spacing to use more page area.
+- Expanded Achievements and Character Stats layouts to better fill empty space.
+
+Version 0.28.37
+- Fixed Journal.lua Achievements syntax error caused by malformed newline string literals.
+
+Version 0.28.36
+- Increased Character Stats readability and used more of both pages with larger text and section spacing.
+
+Version 0.28.34
+- Fixed Skills & Champion bottom text by rendering RESPEC + BUILD and ATTRIBUTES as separate labels so lines cannot overlap.
+
+Version 0.28.33
+- Fixed Skills & Champion bottom text collisions so RESPEC + BUILD and ATTRIBUTES remain fully readable above the buttons.
+
+Version 0.28.32
+- Adjusted Skills & Champion text sizing and spacing so all sections fit above the action buttons without overlap.
+
+Version 0.28.31
+- Enlarged Build Guide and Skills & Champion text while preserving their organized two-page layouts and using more available page space.
+
+Version 0.28.30
+- Increased Achievements and Character Stats document text size and vertical spacing while preserving the existing two-page organization.
+
+Version 0.28.29
+- Increased Character Stats and Achievements document text size while preserving the existing two-page organization and layout.
+
+Version 0.28.26
+- Fixed Quest Finder filter buttons so NOT STARTED and MAIN QUEST are fully readable.
+
+Version 0.28.25
+- Replaced the Live Equipment filler status with a dynamic armor-weight, set-count, and active weapon-bar summary.
+
+Version 0.28.24
+- Kept the Active Weapon Bar panel fully inside the center column so it no longer overlaps the equipment cards.
+
+Version 0.28.23
+- Fixed duplicate last words on Live Equipment item names that already fit on one line.
+
+Version 0.28.22
+- Live Equipment item names now use two physical text rows, guaranteeing long names wrap instead of being flattened by ESO labels.
+
+Version 0.28.21
+- Live Equipment item names now use explicit word-boundary wrapping so long names reliably split across two lines.
+
+Version 0.28.20
+- Live Equipment item names now use natural multi-line wrapping instead of ellipsis/truncation, with taller cards and dedicated set-name spacing.
+
+Version 0.28.19
+- Live Equipment item names now have a dedicated two-line wrapping area.
+- Increased gear-card height and row spacing so wrapped names and set names never overlap.
+
+Version 0.28.18
+- Reverted Live Equipment to the cleaner 0.28.16 card layout after the responsive compact layout reduced readability.
+
+Version 0.28.17
+- Added responsive compact Live Equipment cards: wider gear columns, smaller center stage, two-line item names, and hidden set-name text at small sizes to keep gear readable.
+
+Version 0.28.16
+- Fixed Live Equipment item-name clipping by restoring true two-line wrapping and widening the gear columns.
+
+Version 0.28.15
+- Reworked Live Equipment cards so slot and equipment type share the header row, preventing type/set text collisions at small sizes.
+- Widened gear cards and narrowed the center stage for more readable item names.
+
+Version 0.28.14
+- Redesigned Live Equipment cards for small-size readability: wider gear columns, two-line item names, reduced center stage, and full-item hover tooltips.
+
+Version 0.28.13
+- Live Equipment now uses uniform proportional scaling, so small and large sizes keep the same readable layout.
+- Resizing snaps to the original square aspect ratio instead of stretching or compressing cards and text.
+
+Version 0.28.12
+- Reworked Live Equipment spacing for wider cards, readable equipment type lines, and a larger minimum panel size.
+- Added reliable Light/Medium/Heavy armor and weapon-type fallbacks so type labels do not show UNKNOWN.
+
+Version 0.28.11
+- Live Equipment cards now show a dedicated readable equipment-type line (armor weight, weapon type, ring/necklace).
+
+Version 0.28.10
+- Live Equipment now prefers ESO native race/gender character silhouettes instead of the generic unit silhouette.
+
+Version 0.28.09
+- Tightened Live Equipment header/status/footer text so it stays fully inside the overlay.
+
+Version 0.28.08
+- Fixed Live Equipment text overflowing card and panel boundaries; long labels now truncate cleanly.
+
+Version 0.28.07
+- Challenge Difficulty overlay now switches to ESO's native Normal/Veteran dungeon icon inside dungeons.
+- Added a toggle to hide the dungeon difficulty icon entirely.
+- Overland Challenge Difficulty symbols no longer appear inside dungeons.
+
+Version 0.28.06
+- Restored the verified working Challenge Difficulty settings/overlay build.
+- Documented all seven libraries needed by the full library stack without forcing indirect libraries as direct Suite dependencies.
+
+Version 0.28.04
+- Challenge Difficulty overlay now uses ESO's native selected/highlighted difficulty textures directly.
+- Removed all custom glow layers and custom glow assets from the overlay path.
+
+Version 0.28.03
+- Restored guaranteed-visible native ESO Challenge Difficulty symbols and kept glow as a separate optional visual layer.
+
+Version 0.28.02
+- Replaced the Challenge Difficulty overlay art with in-game style symbol textures that include the proper built-in glow.
+
+Version 0.28.01
+- Replaced the duplicated-icon difficulty glow with a clean dedicated halo so symbols stay sharp.
+
+Version 0.28.00
+- Replaced the blurred Challenge Difficulty halo with a tight, crisp rim glow.
+
+Version 0.27.99
+- Challenge Difficulty symbol now hides when Automatic Challenge Difficulty is inactive, in ESO menus, and while the Tamriel Codex is open.
+
+Version 0.27.98
+- Added a subtle additive glow behind the active Challenge Difficulty symbol overlay.
+
+Version 0.27.97
+- Made armor/potion reminders compact so they can reach screen edges and corners.
+- Added Top Left, Top Right, Bottom Left, Bottom Right, and Custom position presets for each reminder.
+
+Version 0.27.96
+- Added quest/phasing-aware Lore Book 3D marker exceptions.
+- Known quest-dependent books keep map/compass guidance while misleading floating 3D icons are hidden by default.
+- Added a toggle for quest-dependent 3D markers.
+
+Version 0.27.95
+- Companion difficulty is now selectable instead of always forcing Vestige.
+
+Version 0.27.94
+- Added optional Force Vestige while a companion is active.
+- Improved World Boss detection using boss targets, not only POI/subzone data.
+- Added a World Boss wave hold so multi-wave encounters do not revert difficulty between waves.
+
+Version 0.27.93
+- Added a toggleable, movable, resizable Challenge Difficulty symbol overlay.
+
+0.27.92
+- Moved Automatic Challenge Difficulty out of the map/navigation area into a dedicated Gameplay & Challenge Difficulty section near the top of Suite settings.
+
+0.27.91
+- Added Automatic Challenge Difficulty using ESO's native Challenge Difficulty system.
+- Added Leveling Journey with zone levels 1-50 and World Map zone-level display.
+- Added custom rules for Open World, Delves, Public Dungeons, World Bosses, World Events, Dragons, and experimental History Bosses.
+- Added per-zone Open World overrides, configurable nearby-activity detection radius, and optional zone-entry difficulty messages.
+- Leveling Journey preserves custom rules and caps World Boss difficulty at Master.
+
+0.27.90
+- Corrected 3D Lore Book and scroll marker horizontal alignment so markers stay centered over their world coordinates while preserving the existing floating height.
+
+0.27.89
+- Raised 3D Lore Book and scroll markers so they float clearly above the actual collectible.
+- Map and compass marker positions are unchanged.
+
+0.27.88
+- Added a master Enable Lore Books & Scrolls setting.
+- Turning the master switch off hides Lore Book, Eidetic Memory, scroll, compass, map, and 3D-world markers without erasing individual marker preferences.
+- Individual Lore Book, Eidetic, compass, 3D, and distance controls are disabled while the master switch is off and restore when it is re-enabled.
+
+0.27.87
+- Lore book and Eidetic Memory markers now use each entry's native ESO book/scroll icon and original cover colors.
+- Added scroll-style markers automatically when ESO identifies the lore entry with a scroll icon.
+- Distance in meters now appears on compass markers only; removed meter text from 3D world markers.
+- Preserved the LoreBooks serialization/database fix from 0.27.85.
+
+0.27.86
+- Lore Book markers now use distinct book-type colors instead of a single cyan tint.
+- Lore Books use blue markers; Eidetic Memory books use gold markers; tracked books remain red.
+- Added live distance-in-meters labels to Lore Book compass and 3D world markers.
+
+0.27.85
+- Fixed corrupted Lore Book serialization data that could crash map pin loading in some zones.
+- Restored the complete book-location database and validated all 606 serialized zone entries.
+- No changes to Lore Book marker settings or reminder behavior.
+
+0.27.84
+- Added undiscovered Lore Book markers to the World Map, compass, and 3D world.
+- Added optional Eidetic Memory book markers, disabled by default.
+- Added Lore Library Show on Map support and map-filter toggles.
+- Added Suite settings for book marker visibility and compass/3D distance.
+- Made ARMOR NEEDS REPAIR and potion reminders independently movable and resizable.
+
+0.27.83
+- Added small text-only pre-encounter reminders with no background box.
+- Shows ARMOR NEEDS REPAIR when any equipped armor piece is below 100% condition.
+- Shows DRINK POTION BEFORE NEXT ENCOUNTER before new combat pulls.
+- Reminders hide in combat and re-arm for the next encounter.
+- Added reminder toggles, scale, and HUD layout positioning.
+- Removed the unfinished merchant selling module.
+
+0.27.82
+- Added Utilities > SELL for direct NPC vendor selling from the Tamriel Codex.
+- Added backpack item selection with estimated vendor value.
+- Added double-confirm SELL ITEM and SELL JUNK actions.
+- Locked and stolen items are protected from Suite sales.
+- Selling is enabled only while an NPC merchant store is open.
+
+0.27.81
+- Removed unsafe native Dungeon Finder visual synchronization that could taint ESO secure UI code.
+- Random Normal/Veteran queueing remains active using supported Activity Finder APIs.
+- Difficulty is still requested through SetVeteranDifficulty without touching native controls.
+
+0.27.80
+- Random Normal/Veteran now synchronizes ESO's native Dungeon Finder difficulty buttons with the queue request.
+
+0.27.79 - Random Dungeon Queue Fix
+- Fixed RANDOM NORMAL and RANDOM VETERAN not entering the Activity Finder queue.
+- Updated random dungeon queueing to ESO's current activity-set API with legacy fallback.
+- Added queue-result validation so rejected requests show the real failure instead of reporting success.
+
+0.27.78 - Quest Overlay Auto-Hide
+- Active Quest overlay now hides completely whenever no accepted/tracked quest is active.
+- The overlay automatically returns when a quest becomes active again, without resetting its saved position, size, or visibility settings.
+- HUD Layout Mode still shows the quest overlay preview so it can be positioned and resized.
+- Rechecked release metadata and package structure for ESOUI upload.
+
+0.27.77 - ESOUI Upload Readiness
+- Synchronized release version metadata across the manifest, ESOUI description, README, changelog, and security notes.
+- Verified the package contains one ESOAdventurerSuite root folder with no nested archives, executables, hidden development files, or missing manifest references.
+- Rechecked required dependency minimums and API declarations for the current release package.
+- Includes the 0.27.76 Champion Point respec gold-spending tracking fix.
+
+0.27.76 - Champion Respec Spending Tracking
+- Champion Point redistribution gold is now reliably recorded under Character Stats > Gold Spending > Respecs.
+- Uses the actual live Champion respec cost and records it once after a successful redistribution, even when ESO does not expose a distinct money-change reason.
+
+0.27.75
+- Reorganized Character Stats into a cleaner two-page layout.
+- Left page now groups Character Overview, Inventory & Wealth, and Riding Training.
+- Right page is dedicated to Gold Spending with grouped vendor/service categories and a tracked total.
+- Added comma formatting to gold totals for easier reading.
+
+0.27.74
+- Fixed ESO native Dungeon Finder queued/status overlay still appearing behind the Suite HUD.
+- Native queue suppression now safely enumerates UI controls only; it never scans private globals.
+- ESO Accept / Decline ready-check controls remain untouched.
+
+0.27.73
+- Fixed an ESO protected/private-function callstack error in the Dungeon Finder queue HUD suppression.
+- Removed unsafe global-environment scanning from native queue HUD detection.
+- Native queue HUD suppression now uses only an allow-list of known ESO UI control names and ignores non-control globals.
+- Preserved the movable/resizable Suite queue HUD, SEARCHING/DUNGEON FOUND states, menu auto-hide, and required ESO ready-check dialog.
+
+0.27.72
+- Dungeon queue HUD now shows DUNGEON FOUND during ready check.
+- Displays the actual matched dungeon name, including multi-select queues.
+- Suite queue HUD hides when the Activity Finder match transitions into the dungeon.
+
+0.27.70 - Dungeon queue HUD cleanup
+- Suppressed ESO's passive Activity Finder/LFG queued-searching overlay while the Suite queue HUD is active.
+- Added runtime detection for queue/status HUD controls across ESO UI naming variations.
+- Preserved ESO's required dungeon ready-check Accept/Decline dialog.
+
+Version 0.27.69
+- Restyled the Dungeon Finder queue HUD to the Suite ESO gold/bronze palette.
+- Added saved width/height and edge resizing to the movable queue HUD.
+
+0.27.66
+- Moved TRAVEL TO PLEDGE MASTER to the Travel page directly under NEAREST STABLEMASTER.
+- Removed the Activities-only Pledge Master button placement.
+
+
+0.27.62
+- Added a dedicated Cadwell's Almanac view to the Quest Journal.
+- Added the Aldmeri Dominion Cadwell path in zone order: Auridon, Grahtwood, Greenshade, Malabal Tor, and Reaper's March.
+- Almanac progress is grouped by required objective area and shows the required quests, completion progress, current/next objective, and routing target.
+- Cadwell's Silver is treated as the umbrella quest instead of a single ordinary quest step.
+0.27.61 - Accurate wayshrine travel cost
+- Fixed travel cost handling so the Codex uses ESO's live recall fee instead of treating it as a destination-specific price.
+- Travel now shows Free when ESO reports travel is being initiated from a wayshrine.
+- Added compatibility fallback for API versions that expose recall cost/currency with a node index.
+
+0.27.60 - Travel status spacing
+- Added a clearer vertical gap between the selected destination COST/gold value and STATUS so Ready reads as its own section.
+
+0.27.59 - ESOUI upload compliance pass
+- Synchronized release metadata and dependency minimum versions.
+- Requires LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.
+- Removed Suite-controlled enemy nameplate/overhead-health-bar setting so ESO nameplates remain under the player's native game settings.
+- Rechecked package structure, manifest file references, hidden/executable files, AI disclosure, and ESOUI policy notes.
+
+0.27.58 - Slimmer travel controls
+- Reduced Map / Travel button heights slightly while preserving the extra spacing, compact widths, and complete cyan borders.
+
+0.27.57 - Travel button spacing and compact frames
+- Added more vertical spacing between the selected travel, guild, and nearby-service controls.
+- Short actions now use compact centered cyan rectangles instead of unnecessary full-width frames.
+- Increased gaps between the guild selector, guild-home action, service buttons, and stablemaster action so every border stays fully visible.
+
+0.27.56 - Reliable cyan button borders
+- Restored visible cyan four-sided button borders using solid UI strips instead of texture assets.
+- Keeps the v0.27.55 ZONE / COST / STATUS spacing.
+- Removed remaining gold selected-state border styling from Group Finder controls.
+
+0.27.55 - Travel detail spacing fix
+- ZONE, COST, and STATUS now render as separate vertically spaced blocks.
+- Increased the selected destination detail area and shifted travel controls down to prevent overlap.
+
+0.27.54 - Travel status layout
+- Moved STATUS directly below the COST/gold block in Map / Travel selected-location details.
+- Added a little extra vertical room so the selected travel details remain readable without crowding.
+
+0.27.53 - Cyan button borders
+- Restored the cyan border color on the new complete four-sided button frames.
+- Kept the clipping-safe explicit top/bottom/left/right border rendering.
+- Disabled buttons now use a dimmed cyan frame instead of switching to gray.
+
+0.27.52 - Complete button border rendering
+- Replaced fragile backdrop edge rendering on Codex buttons with explicit four-sided border strips.
+- Fixes missing/cut top, bottom, left, and right edges on Travel, Guild, Stablemaster, and other suite buttons.
+- Keeps the same neutral border color for selected and unselected buttons.
+
+0.27.51 - Border clipping cleanup
+- Inset all suite button borders farther inside their controls so all four edges remain visible.
+- Added extra spacing around Travel To Selected, Select Guild, and Nearest Stablemaster.
+- Inset the Luck of the Draw result panel so its right-side border is fully visible.
+
+0.27.50 - Activity History button readability
+- Reworked Activity History category buttons into a wider two-column layout.
+- ARCHIVE HISTORY now uses a full-width row so the label is never clipped.
+- Moved the main Activity History button down to preserve spacing.
+
+0.27.49 - Uniform button borders
+- Removed gold/accent button borders and standardized visible buttons on the suite neutral blue-gray border.
+- Inset button borders by one pixel so all four sides remain visible instead of being clipped at control edges.
+- Applied the same border treatment to Codex navigation, icon buttons, Saved Loadouts, Live Equipment, and primary suite buttons.
+
+0.27.48 - Tracked quest header layout
+- Quest overlay now separates the tracking source header from the quest title.
+- Header dynamically reads MAIN QUEST, ACTIVE QUEST, or GOLDEN PURSUITS.
+- Quest title sits on its own wrapped line with clear spacing before objective bullets.
+- Pending Main Quest cards no longer repeat the quest title inside the bullet list.
+
+0.27.47 - Active Quest title wrapping
+- Pre-wraps long Active/Main Quest titles using the actual overlay width so they cannot clip off the right edge.
+- Wrapped title height now pushes objective text downward and keeps the overlay auto-fit behavior.
+
+0.27.46 - Main Quest title wrapping
+- Long Active/Main Quest overlay titles now wrap to additional lines instead of clipping off the edge.
+- Overlay height automatically grows to fit wrapped quest titles.
+
+0.27.45 - Main Quest Coldharbour progression fix
+- Added the required Coldharbour story bridge to Quest Finder Main Quest progression, including The Citadel Must Fall.
+- Main Quest detection now recognizes required Coldharbour progression quests even when ESO reports them as zone-story quests.
+- Accepted progression quests show as CURRENT and use live objectives; Route to Starter is only for quests not yet accepted.
+- Added starter guidance for The Citadel Must Fall.
+
+0.27.44 - Live Main Quest acceptance and progression sync
+- Accepting the Main Quest selected in Quest Finder now immediately promotes that exact journal quest into the MAIN QUEST overlay.
+- Main Quest objective, advance, tracking, removal, zone, and activation events now reconcile the overlay against live journal state.
+- Added delayed follow-up reconciliation because ESO can fire quest events before objective text and assisted tracking are fully committed.
+- The minimap quest pin and native assisted quest are refreshed with the same Main Quest selection.
+
+0.27.43 - Cleaner Main Quest overlay
+- Simplified unaccepted Main Quest cards to show only the quest name, next action, quest giver, acceptance location, and nearest-wayshrine travel cue.
+- Removed prerequisite and long route-note text from the HUD; full details remain in Quest Finder.
+- Reduced visual clutter while preserving automatic Main Quest progression behavior.
+
+0.27.42 - Main Quest acceptance guidance
+- NEXT Main Quest overlay now shows who gives the quest and where to accept it when curated start information is available.
+- The Final Assault now points to Vanus Galerion at The Endless Stair in Coldharbour and shows its prerequisite.
+- God of Schemes now directs the player back to The Harborage after The Final Assault.
+- Quest Finder details show ACCEPT FROM / ACCEPT AT / REQUIREMENT / ROUTE for unaccepted Main Story steps.
+- Once the quest is accepted, live ESO journal objectives still replace the pre-acceptance guidance automatically.
+
+0.27.41 - Zone-grouped wayshrines
+- Map / Travel now groups discovered wayshrines under expandable zone headers.
+- Current and focused-quest zones are expanded automatically and prioritized.
+- Clicking a zone header expands/collapses its wayshrines; only shrine rows can be selected for travel.
+
+0.27.40 - Live quest-step advancement
+- Quest objective, counter, and journal-advance events now refresh the quest overlay immediately and again after ESO commits the new state.
+- Completing a Main Story quest automatically advances the MAIN QUEST overlay to the next story step.
+- The next unaccepted Main Quest is shown directly in the overlay with its location/travel instruction.
+- Main Quest completion clears stale completion and travel caches so old objectives do not remain on screen.
+
+0.27.39 - Main Quest selection handoff fix
+- Quest Finder MAIN QUEST selections now remain authoritative during overlay refreshes.
+- A selected NEXT Main Quest is automatically recognized when it is accepted into the ESO journal.
+- The overlay immediately switches from travel guidance to live quest objectives after acceptance.
+- Main Quest tracker/map state is re-applied when the selected journal quest changes.
+
+0.27.38 - Main Quest objective HUD + minimap sync
+- Reduced Active Quest objective text size and increased line spacing so wrapped bullets are easier to read.
+- Explicit Main Quest selections from Quest Finder now remain authoritative even when ESO reports inconsistent quest-type metadata.
+- Main Quest overlay now resolves the selected journal quest so its live incomplete objectives are shown.
+- Minimap quest marker now uses the same live ESO breadcrumb objective as the quest direction tracker, with Travel-position fallback.
+
+0.27.37 - Main Quest progression + overlay tracking
+- Added a MAIN QUEST filter to Quest Finder with ordered Main Story steps and COMPLETED/CURRENT/NEXT/LOCKED states.
+- Selecting an accepted Main Quest now switches the HUD to the MAIN QUEST source and tracks that quest.
+- Selecting the next not-yet-started Main Quest remembers it in the Main Quest overlay and keeps nearest-wayshrine travel available.
+- Quest Finder keeps TRAVEL NEAREST SHRINE beside the selected Main Quest for fast routing.
+
+0.27.36 - Centered button text
+- Centered suite button labels horizontally and vertically so text no longer rides against the top edge.
+- Applied the alignment consistently to Codex, loadout, Live Equipment, main UI, sidebar navigation, and guild travel buttons.
+
+0.27.35 - Codex theme button crash hotfix
+- Fixed a nil theme edge-color crash in Journal setButtonStyle when opening or switching Codex tabs.
+- Button styling now safely falls back when a theme wrapper supplies only partial accent/text colors.
+- Includes the v0.27.34 Active Quest overlay text-wrapping fix.
+
+0.27.34 - Active Quest overlay text wrapping fix
+- Added explicit width-aware wrapping for long quest objective bullets.
+- Continuation lines stay indented under their bullet instead of running outside the overlay.
+- Long unbroken objective text is safely split when needed.
+- Resizing the Active Quest overlay now immediately re-wraps the objective text and refits its height.
+
+0.27.33 - Multi-objective quest minimap tracking fix
+- Minimap quest tracking now prefers ESO's currently assisted quest condition instead of blindly using the first incomplete condition.
+- Quest objective coordinates now retain their source map and universal coordinates.
+- The minimap projects quest objectives into the current map before drawing the tracker, fixing wrong-direction guidance across sub-maps/interiors and multi-location tasks.
+- If an objective cannot be safely projected onto the current map, the suite hides the misleading quest pin instead of pointing in a false direction.
+
+0.27.32 - Travel spacing + bordered option buttons
+- Rebalanced the Map / Travel right page so the lower travel actions have more room and larger buttons.
+- Removed the extra selected-destination hint text that was crowding the top detail area.
+- Added visible bordered styling on suite option/toggle controls for clearer UI states.
+
+0.27.31 - Map / Travel layout cleanup
+- Reduced the selected-destination text block so the right page is easier to scan.
+- Kept Travel to Selected directly with the selected destination.
+- Renamed Guild Travel to a compact Guild Home section.
+- Reorganized nearby services into compact Merchant / Guild Store buttons with Stablemaster below.
+- Shortened service button labels to reduce visual clutter.
+
+0.27.30 - Map / Travel destination action layout
+- Moved TRAVEL TO SELECTED directly beneath the selected destination details.
+- Kept Guild Travel and Quick Travel in their own separate sections below the selected destination action.
+- Improved the Map / Travel flow so destination selection and its travel action stay visually connected.
+
+0.27.29 - Start-to-finish optimizer workflow
+- RESPEC + BUILD now exits the Codex, opens ESO Skills, performs a fresh build scan, starts the respec flow, stages the full build, and verifies the result.
+- REDISTRIBUTE CP now exits the Codex, opens Champion, performs a fresh allocation scan, uses a proper confirmation dialog when gold is required, submits the full allocation, and relies on ESO result verification.
+- BEST ATTRIBUTES now exits the Codex, opens Character Attributes, performs a fresh target scan, and attempts the guarded automatic allocation API when supported; unsupported clients stop safely without sending a partial allocation.
+- Optimizer workflows now start cleanly from normal gameplay without requiring the player to pre-open ESO's native Skills, Champion, or Character screens.
+
+0.27.28 - Skills & Champion action layout polish
+- Repositioned the Skills & Champion buttons higher so they no longer crowd the page numbers.
+- Reworked the button layout to be easier to read, with full labels visible and clearer spacing.
+- Renamed the Attributes action button to Best Attributes for clarity.
+- Added a short action lock and follow-up refresh to reduce accidental double-press mistakes on build, CP, and attribute actions.
+
+0.27.27 - Live Equipment cleanup
+- Removed Open/Close Loadouts controls from the Live Equipment overlay.
+- Kept OPEN LOADOUTS in Gear & Sets and CLOSE LOADOUTS on the Saved Loadouts overlay.
+- Live Equipment is now display-only for current equipped gear.
+
+0.27.26 - Cinematic Graphics removed
+- Removed the Cinematic Graphics settings and controls.
+- Removed the GraphicsPreset module from the addon package.
+
+[B]0.27.25[/B]
+* Moved CLOSE LOADOUTS onto the Saved Loadouts overlay header.
+* Gear & Sets now uses OPEN LOADOUTS only.
+* Live Equipment shows LOADOUTS OPEN while the loadout workspace is active instead of acting as the close control.
+
+[B]0.27.24[/B]
+* Reorganized Settings into user-friendly purpose-based sections.
+* Grouped Codex/window, combat/builds, HUD overlays, unit frames, minimap, gear maintenance, activities/group finder, utilities, and graphics controls.
+* No setting behavior or saved values were removed.
+
+0.27.23 - Loadout open/close toggle
+- Renamed the Gear & Sets button to OPEN LOADOUTS.
+- Live Equipment now changes its button to CLOSE LOADOUTS while Saved Loadouts is open.
+- Pressing CLOSE LOADOUTS now closes the Saved Loadouts workspace and returns the button to OPEN LOADOUTS.
+
+[B]0.27.22[/B]
+* Fixed the Suite toggle key while Saved Loadouts is open by adding a dedicated temporary loadout action layer.
+* Pressing the normal ESO Adventurer Suite key from Saved Loadouts now closes the loadout workspace and reopens the Tamriel Codex.
+
+0.27.21 - Suite / Loadouts workspace toggle
+- Pressing the ESO Adventurer Suite key while Saved Loadouts is open now closes the loadout workspace and reopens the Tamriel Codex.
+- Transfers UI/cursor ownership cleanly so the same key can switch between the two workspaces from normal gameplay.
+
+0.27.20 - Loadout rename input fix
+- Made saved loadout name fields explicitly mouse and keyboard editable.
+- Clicking the name field or NAME now takes focus reliably.
+- Enter saves the name; Escape cancels the current edit.
+
+0.27.19 - Loadout naming + Ultimate fix
+- Added an explicit NAME button to every Saved Loadout slot.
+- Loadout names can be edited directly and saved with Enter; names persist through Save, Equip, and Clear.
+- Corrected the physical Ultimate action-bar slot for saving, applying, displaying, and verification on front and back bars.
+
+0.27.18 - Saved Loadout Apply Fix
+- Fixed Saved Loadouts not applying the saved live action bars.
+- Loadout skills now use ESO's protected live slot API instead of the uncommitted Skills UI staging model.
+- Gear pieces are now equipped sequentially so multi-piece swaps are not dropped by asynchronous inventory updates.
+- Added an apply-in-progress guard and refreshed verification after the swap completes.
+
+0.27.17 - Organized Codex control-name hotfix
+- Fixed duplicate named controls when Gear & Sets, Travel, or Activities refreshed.
+- Organization section headers are now created once and safely reused.
+- Corrected the internal addon version string to match the packaged release.
+
+0.27.16 - Codex organization pass
+- Reorganized Gear & Sets into Loadouts, Build Tools, Combat Preset, Armor Weight, and Set Actions sections.
+- Simplified Skills & Champion into separate build, Champion Point, and attribute summaries.
+- Grouped Activity History and Travel actions into clearer sections.
+- Reworked Achievements into progress and recent-completion columns.
+- Reduced dense text and improved spacing across the busiest pages.
+
+0.27.15 - Saved Loadouts world interaction fix
+- Fixed Saved Loadouts losing mouse/UI control when opened from normal gameplay.
+- Transfers UI-mode ownership from the Tamriel Codex to Saved Loadouts instead of releasing it.
+- Opening the Tamriel Codex again transfers UI-mode ownership back and closes the loadout workspace.
+- Keeps inventory/pause-menu UI mode untouched when ESO already owns the cursor.
+
+0.27.14 - Loadout interaction fix
+- Fixed Saved Loadouts becoming non-interactive after the Tamriel Codex closed.
+- Saved Loadouts now keeps ESO UI/mouse mode active while its workspace is open.
+- Opening the Tamriel Codex automatically closes Saved Loadouts and ends detached loadout mode.
+
+0.27.13 - Loadout workspace cleanup
+- Opening Saved Loadouts now closes the Tamriel Codex automatically.
+- Live Equipment stays visible while Saved Loadouts is open.
+- Live Equipment and Saved Loadouts can now be moved flush to screen sides and corners.
+
+0.27.12 - Saved Loadouts UI-only controls
+- Removed all 12 Saved Loadout keybindings.
+- Saved Loadouts are now controlled only through the overlay buttons.
+- Removed the loadout keybinding tip from the window.
+
+0.27.11 - Saved Loadouts overlay improvements
+- Made the Saved Loadouts overlay resizable.
+- Changed the overlay to open beside the Tamriel Codex instead of directly behind it.
+- Added visible front-bar and back-bar skill icon previews to every saved loadout slot.
+
+[B]0.27.10[/B]
+* Added a visible SAVED LOADOUTS button directly to Gear & Sets.
+* Saved Loadouts no longer depends on the Live Equipment overlay being visible.
+
+0.27.09
+- Added Saved Loadouts: save/equip 12 named gear + dual action-bar builds.
+- Added Loadout 1-12 keybinds and a Loadouts button on Live Equipment.
+- Added loadout verification and out-of-combat safety checks.
+
+ESO Adventurer Suite 0.27.08
+- Minimap now switches immediately when crossing town/sub-map boundaries instead of waiting for the watchdog.
+- Linked-world-position changes force an immediate map sync, static-pin refresh, and redraw.
+- Map-ID fallback watchdog tightened from 200 ms to 50 ms to prevent stale-map drift if an event is missed.
+
+ESO Adventurer Suite 0.27.07
+
+- Fixed minimap staying on a town/sub-map after the player leaves the town.
+- Added LibMapData linked-world-position map transition handling.
+- Added a low-frequency LibMapData map-ID watchdog so same-zone sub-map changes force an immediate minimap rebuild.
+- Keeps detailed town service icons scoped to the town map only.
+
+ESO Adventurer Suite 0.27.06
+- Town-detail minimap icons now stay local to town/sub-maps.
+- Prevents captured city service icons from projecting outward onto larger overland/zone maps.
+- Entering a town still shows its detailed ESO service icons automatically.
+- Keeps cross-map quest and service travel behavior from 0.27.05.
+
+ESO Adventurer Suite 0.27.05
+- Travel: nearest Merchant, Guild Store, and Stablemaster now prefer the current map/zone and fall back to known service locations on other maps when needed.
+- Cross-map service travel resolves the destination map first, then selects the closest discovered wayshrine on that destination map.
+- Cross-map service destinations set a pending waypoint after arrival when ESO exposes the destination map.
+- Map / Travel: Travel to Nearest Stablemaster moved to its own row directly below Travel to Nearest Guild Store.
+
+0.27.04
+- Removed the out-of-support-range minimap glow and edge-clamped teammate locator added in 0.27.03.
+- Group members now use the normal group marker behavior only; RANGE status remains available in the group frame.
+- Preserved the 0.27.03 cross-zone quest routing fix so quest travel still ranks wayshrines on the objective's destination map.
+
+0.27.03
+- Quest travel now preserves the objective map and objective zone captured from ESO, so cross-zone quests rank wayshrines on the destination map instead of the player's current map.
+- Out-of-support-range group members now use a pulsing ESO-style group-pip glow on the minimap. When their map position is still available, the locator clamps to the minimap edge to point toward them.
+- No fake direction is shown when ESO does not expose the remote member's map position (for example, another zone or instance).
+
+ESO Adventurer Suite 0.27.02
+
+- Added Settings -> Mini Map -> Clear Legacy Icons.
+- The button removes only the old walk-up/interaction-saved merchant, service/crafting, and remembered POI caches.
+- Native ESO/LibMapPins town icons, checkpoints, routes, and minimap settings are preserved.
+- Retired legacy walk-up icon learning/rendering so cleared duplicate icons do not come back.
+
+ESO Adventurer Suite 0.27.01
+
+- Fixed the ESO manifest dependency identifier for LibMapPins.
+- Changed DependsOn from LibMapPins to LibMapPins-1.0 so ESO correctly recognizes an installed LibMapPins 1.0 library.
+- No minimap behavior or routing logic changed in this build.
+
+ESO Adventurer Suite 0.27.00
+
+- Rebuilt the minimap map-state backend around LibMapData instead of forcing SetMapToPlayerLocation from the minimap update loop.
+- Added LibGPS map-id measurements for town/zone/sub-map pin projection.
+- Added LibMapPins as the standardized map-pin dependency for the rebuilt mapping stack.
+- Native ESO town/service pins are stored in global coordinates and projected onto the player's active local minimap without changing the visible World Map.
+- World Map opening/closing no longer triggers repeated zoom/map-state passes from the minimap.
+- Kept learned nearby merchants/services as a fallback while native ESO town icons take priority.
+- Required libraries are now LibAddonMenu-2.0, LibMapData, LibGPS, and LibMapPins.
+
+0.26.25
+- Fixed town-map ESO icons not reaching the minimap renderer.
+- Captures finalized native map pins after ESO SetData and renders captured town icons on an always-on native service layer.
+
+0.26.24
+- Fixed native town/service icons not appearing on the minimap when ESO builds them on a parent map while the minimap uses a local town/sub-map.
+- Native map pins are now stored in universal coordinates and projected into the current minimap map, so opening/closing the World Map can populate town icons correctly.
+
+[B]0.26.20[/B]
+* Fixed MiniMap native town/service pin capture crash caused by an undefined lower() helper.
+* Native town icons, Stablemaster travel, and activity history features from 0.26.19 are retained.
+
+[B]0.26.19[/B]
+* Town/city minimap now captures and mirrors ESO's native map service/POI icons after ESO exposes them, including stable, bank, crafting, merchant, guild-trader and other native location icons.
+* Travel to Stablemaster is now a dedicated Map / Travel button beside the guild-leader travel area.
+* Stable travel can use captured native town Stablemaster pins when ESO does not expose the stable through normal POI APIs.
+* Added dedicated Trial History, Arena History, Battleground History, PvP History and Archive History buttons alongside the existing history tools.
+
+Version 0.26.18
+- Stabilized quest wayshrine scanning so background map zoom changes no longer redraw each intermediate map.
+- Stablemasters exposed by ESO are promoted to always-on service pins using the native stable icon.
+- Added Map / Travel quick action: NEAREST STABLE, routing through the closest discovered wayshrine and placing a waypoint on the Stablemaster.
+
+Version 0.26.17
+- Fixed Active Quest nearest-wayshrine routing to preserve the exact objective map used by ESO's asynchronous quest-position request.
+- Exact quest-condition coordinates now take priority over breadcrumb/symbolic transition coordinates.
+- Full-zone shrine scans now begin from the captured objective map and restore the previous map afterward.
+
+Version 0.26.16
+- Quest Finder SELECTED now shows zone, then the resolved closest wayshrine name beneath it.
+- Travel SELECTED now shows the destination zone on the first line and the selected wayshrine/destination name underneath.
+
+Version 0.26.13
+- Fixed Active Quest travel crash caused by map helper functions being scoped too narrowly in Travel.lua.
+- Shared map-result and world-map callback helpers are now available to objective routing and full-zone wayshrine scanning.
+
+Version 0.26.12
+- Active Quest travel now uses the Suite-selected journal quest index as the authoritative travel target.
+- Map/Travel resolves the exact active objective condition before requesting position data.
+- Objective-map zone identity now takes priority over broad journal-zone metadata.
+- QUEST BEST caches the closest discovered wayshrine after scanning the full objective-zone map hierarchy.
+
+Version 0.26.11
+- Quest travel now expands from objective sub-maps to the full overland zone before choosing a wayshrine.
+- Uses universal map coordinates so every discovered wayshrine in the destination zone can be compared to the exact quest objective.
+
+Version 0.26.10
+- Fixed quest travel choosing the first/main wayshrine in a zone before exact objective routing could run.
+- Active quest routing now prioritizes condition-position coordinates, including ESO breadcrumb/symbolic coordinates, and compares all discovered wayshrines on that map.
+- Added journal POI coordinate distance ranking before any zone-only fallback.
+
+Version 0.26.09
+- Active Quest/Main Quest objective overlays now auto-grow for wrapped or 3+ objectives and shrink again when the objective list gets shorter.
+- Quest travel now uses ESO quest-position coordinates to select the closest discovered wayshrine to the current objective within the destination map, with the existing instance/zone fallback preserved.
+
+Version 0.26.08
+- Final ESOUI upload-readiness pass for the 0.26 reticle series.
+- Synchronized public description, README, security notes, manifest version, and AddOnVersion.
+- Added current custom ESO reticle, RGB color mode, size, and opacity controls to the public ESOUI description.
+
+Version 0.26.07
+- Fixed the Codex Reticle controls so OPACITY - and OPACITY + are actually created and visible.
+- Added a dedicated opacity row on the Utilities Reticle page.
+
+Version 0.26.06
+- Fixed the Codex Reticle control grid at the source: both button rows now sit well inside the visible Utilities page on shorter/resized Codex layouts.
+- OPACITY - and OPACITY + now share the visible second row with SIZE - and SIZE + instead of sitting near the footer boundary.
+
+Version 0.26.05
+- Moved both Reticle control rows higher in Codex > Utilities so OPACITY - and OPACITY + are always visible above the footer.
+- Reserved more vertical space for the full eight-button Reticle control grid.
+
+Version 0.26.04
+- Reticle STYLE/COLOR/SIZE/OPACITY controls now apply immediately without rebuilding the full Utilities book spread.
+- Static reticles no longer rebuild all reticle geometry every 50ms; geometry is refreshed only when settings change.
+- RGB mode keeps its live color animation while using the lighter control refresh path.
+
+- Added RGB Rainbow reticle color mode with continuous full-spectrum cycling.
+- Added Daedric Diamond, Ayleid Star, and Dragon Eye ESO-inspired reticle styles.
+- Reticle controls now include SIZE -, SIZE +, OPACITY -, and OPACITY + without wraparound.
+- Expanded the Codex Reticle controls to eight buttons and fixed full style cycling beyond Corner Brackets.
+
+- Added a visible RETICLE mode under Tamriel Codex > Utilities with ON/OFF, STYLE, COLOR, SIZE, and OPACITY controls.
+- LibAddonMenu reticle settings remain available under Settings > Addons > ESO Adventurer Suite.
+Version 0.26.01
+- Added selectable custom ESO-style reticles: Tamriel Rune, Corner Brackets, Compass Cross, and Minimal Cross.
+- Added reticle color, size, and opacity settings, plus an ESO Default option that restores the native crosshair.
+- Custom reticles replace only the crosshair graphic; ESO interaction prompts remain intact.
+
+Version 0.26.00 - ESOUI Compliance Review
+- Reviewed the complete package against current ESOUI upload/best-practice guidance and the current AddOn capability restrictions.
+- Removed the Nearby / Seen Players reticle-tracking source from the public Group Finder. Public Groups and Guild Members remain available.
+- Confirmed the package has one addon folder, no executables, no nested archives, no hidden development folders, no bundled LibAddonMenu copy, and only Lua/XML/DDS plus documentation text files.
+- Confirmed LibAddonMenu-2.0 r43 is declared as a required external dependency and API versions remain limited to 101050 101051.
+- Expanded the ESOUI description/security notes to accurately cover current travel/history features and public-build boundaries.
+
+Version 0.25.99
+- Guild leader dropdown now closes automatically when the Codex is closed.
+- Guild leader dropdown also closes whenever you leave Map / Travel or switch to another Codex section.
+- Reopening the selector clears any stale popup state first.
+
+Version 0.25.98
+- Replaced the default ESO guild-leader dropdown with a Suite-native styled popup.
+- Guild selector now renders above the Suite with matching dark panel, accent border, spacing, and highlighted selection.
+
+Version 0.25.97
+- Added Travel to Guild Leader Home on Map / Travel.
+- Detects each joined guild's leader from ESO guild roster data and jumps to that leader's primary residence.
+- When the player belongs to multiple guilds, a guild-selection dropdown appears above the travel button.
+- ESO still enforces the leader's housing permissions and primary-residence availability.
+
+Version 0.25.96
+- Added TRAVEL TO NEAREST MERCHANT to Map / Travel.
+- Added TRAVEL TO NEAREST GUILD STORE to Map / Travel.
+- Service travel finds the nearest known merchant/guild trader on the current zone map, selects the closest discovered wayshrine to it, and leaves an ESO waypoint on the service for the final walk.
+- Merchant routing also uses merchant locations learned by the Suite when ESO does not expose the NPC as a normal map POI.
+
+Version 0.25.95
+- Added Activity History for Trials, Arenas, Battlegrounds, open-world PvP sessions, and Infinite/Endless Archive activity.
+- Activity History uses the same 3-entry paging model with FIRST/PREV/NEXT/LAST and no small page-count cap.
+- Future records store activity type, mode/difficulty where exposed, date/time, duration/session length, and character.
+- Imports older matching completion timestamps from ESO achievement history where available; it does not invent old runs ESO does not expose.
+
+Version 0.25.94
+- Main Story mission zones that report the quest title itself now resolve to the alliance Harborage overland host before numeric instance-zone matching.
+- Added numeric alliance fallbacks so Daggerfall Covenant resolves Glenumbra even if alliance constants are unavailable during early UI initialization.
+- Quest Finder Zone display and nearest-wayshrine routing now share this self-referential Main Story fix.
+
+Version 0.25.93
+- Quest routing now prioritizes the numeric journal location zone index before display labels.
+- Harborage detection now tolerates ESO localization/formatting artifacts instead of requiring exact text equality.
+- Selected quest zone display and wayshrine routing share the same overland-zone resolution.
+
+Version 0.25.92
+- Fixed The Harborage active-quest zone resolver so it no longer depends on an unreliable Main Story quest-type check.
+- Harborage quests now resolve directly to the alliance overland zone and can match discovered wayshrines by zone name when needed.
+
+Version 0.25.91
+- Main Story quests that ESO reports as The Harborage now resolve to the alliance-specific overland host zone for display and wayshrine travel.
+- Daggerfall Covenant Harborage routes through Glenumbra, Aldmeri Dominion through Auridon, and Ebonheart Pact through Stonefalls.
+- Other quests continue to use their own objective and zone data; no global Glenumbra fallback is used.
+
+Version 0.25.90
+- Active Quest Finder entries now prefer ESO journal overland metadata instead of displaying an interior mission/instance name as the Zone.
+- Quest wayshrine routing now falls back to Zone Story / journal starting-zone metadata before the generic quest-record zone, fixing Main Story instances that need an overland wayshrine.
+
+Version 0.25.89
+- Cross-zone quest travel now resolves instanced objectives by universal map containment, selecting a discovered wayshrine from the actual overland destination zone.
+- Prevents quest-instance names such as Castle of the Worm from blocking travel to the surrounding overland zone.
+
+Version 0.25.88
+- Quest wayshrine routing now walks outward from instanced objective maps to the first overland parent map with a discovered wayshrine.
+- Fixes main-story and cross-zone objectives that previously stopped on an instance name such as Castle of the Worm instead of resolving the surrounding destination zone.
+
+Version 0.25.87
+- Dungeon History now shows 3 complete entries per page.
+- Added FIRST and LAST navigation alongside PREV/NEXT for very large histories, including 15,000+ recorded runs.
+- History pagination remains unbounded; entries are not discarded just because the page count is large.
+
+Version 0.25.86
+- Dungeon History now shows only two entries per page with larger text and one field per line so names, dates, mode, duration, and character do not get cut off.
+- New dungeon runs preserve the exact Normal/Veteran mode requested when queued and prefer ESO's live dungeon difficulty when available.
+- Historical achievement entries detect Veteran mode from achievement name/description evidence; entries whose original mode ESO does not expose are labeled clearly instead of generic UNKNOWN.
+
+Version 0.25.85
+- Dungeon History now shows an explicit MODE: NORMAL or MODE: VETERAN line for recorded runs.
+- Dungeon mode capture now falls back to the Suite queue difficulty when ESO has not exposed the live instance mode yet.
+- Historical achievement imports show MODE: VETERAN only when the achievement explicitly identifies Veteran; otherwise MODE: UNKNOWN is shown rather than guessing.
+
+Version 0.25.84
+- Dungeon History now uses paginated pages so long histories do not get cut off.
+- Added PREV and NEXT buttons plus a PAGE X / Y indicator.
+- History shows four full entries per page for consistent readability.
+
+Version 0.25.83
+- Added a visible DUNGEON HISTORY button and history view inside Dungeon Finder.
+- History shows recorded runs with difficulty, date/time, duration and character, plus older dungeon achievement completion dates imported from ESO.
+
+Version 0.25.82
+- Selecting an accepted quest in Quest Finder now focuses the same quest in ESO's native Quest Journal and focused quest tracker.
+- Added automatic Dungeon History logging for Activity Finder completions with dungeon, character, difficulty, completion timestamp, start timestamp, and duration when available.
+- Dungeon History runs in the background whenever the addon is loaded; opening the Suite is not required.
+- Added a one-time historical import of completed Dungeon-category achievements using ESO's stored achievement completion timestamps. This recovers reliable older completion dates where ESO exposes them, but cannot reconstruct every individual pre-addon run.
+
+Version 0.25.81
+- Main Story quest tracking now re-resolves the live Main Quest journal entry whenever the HUD refreshes.
+- Clears stale quest travel-zone cache when the Main Quest advances or changes.
+
+Version 0.25.80
+- Quest Finder now resolves instance/sub-zone quest records to their overland parent zone before displaying the selected Zone field.
+- The selected quest panel and quest list can no longer use an interior/quest-area name such as Castle of the Worm as the travel zone when a parent overland zone exists.
+- Quest routing receives the same normalized zone ID, so the fix remains dynamic for quests in any zone.
+
+Version 0.25.79
+- Quest wayshrine routing now resolves destination zones dynamically per quest instead of treating instance/objective labels or the player current zone as the destination.
+- Accepted quests use GetQuestZoneId/GetZoneNameById as a stable overland fallback when a positional objective is inside an instance or sub-area.
+- Quest Finder now shows the real quest zone for accepted quests instead of an instance or quest-title location label.
+
+Version 0.25.78
+- Cross-zone quest travel now resolves the destination from ESO's current quest-map zone index instead of relying on the fast-travel node isShownInCurrentMap flag.
+- Instance/sub-map destinations now resolve through their canonical parent zone before selecting a discovered wayshrine.
+
+Version 0.25.77
+- Quest wayshrine routing now resolves the current incomplete quest objective before any broad journal-zone fallback.
+- Removed the early best-zone shortcut that could keep cross-zone quests in the player's current zone.
+- Cross-zone objectives now use SetMapToQuestCondition first, then hand-in map, then broad quest-zone fallback.
+
+Version 0.25.76
+- Fixed cross-zone quest wayshrine travel so instanced quests resolve the quest destination map before choosing a shrine.
+- Removed the unsafe current-zone fallback that could keep players in Stormhaven when the quest destination was Glenumbra or another zone.
+
+Version 0.25.75
+- Fixed instanced quest locations such as Castle of the Worm failing to find visible usable wayshrines.
+- Quest travel now falls back to a discovered wayshrine shown on the current quest/area map, preferring the nearest visible shrine when map coordinates are available.
+- Added a final current-zone discovered-wayshrine fallback before reporting that no route can be resolved.
+
+Version 0.25.74
+- Quest travel now adds a final main-zone wayshrine fallback using the canonical zone name as well as zone IDs.
+- Prevents quests in subzones/delves from incorrectly reporting no shrine when the zone main wayshrine is available.
+
+Version 0.25.73
+- Quest nearest-wayshrine travel now reads accepted journal quest zone metadata when Quest Finder only has a location name.
+- Added parent-zone fallback so quests in delves/subzones can use a discovered wayshrine in the main surrounding zone instead of incorrectly reporting that none is available.
+
+Version 0.25.72
+- Buff and debuff timers now use larger centered countdown text with a full dark background behind the entire number.
+- Aura timer backgrounds auto-size so the whole buff/debuff countdown stays readable on player and target frames.
+
+Version 0.25.71
+- Ability timer background now auto-sizes behind the full countdown number instead of clipping on one side.
+- Cooldown timers are red and active-duration timers remain bright orange for clearer separation.
+
+Version 0.25.69
+- Removed cyan from active ability timers.
+- Active-duration and cooldown countdowns now use the same bright orange high-contrast color with the existing dark center plate and bold outline.
+
+Version 0.25.68
+- Added real ESO Random Normal and Random Veteran queue buttons to Dungeon Finder.
+- Random queues use AddActivityFinderRandomSearchEntry so ESO handles daily random XP and reward eligibility normally.
+- Random queueing no longer requires selecting a specific dungeon first.
+- Dungeon Finder shows whether the daily random reward is currently eligible when ESO exposes that status.
+
+Version 0.25.66
+- Improved ability timer readability with a dark translucent center plate.
+- Replaced hard-to-see white/yellow timer text with high-contrast orange cooldown and cyan active-effect countdown colors.
+- Increased the active-effect timer font to match the larger centered cooldown timer.
+
+Version 0.25.64
+- Fixed Undaunted pledge turn-in routing so completed pledges use the enclave for the player's alliance: Elden Root (Aldmeri Dominion), Wayrest (Daggerfall Covenant), or Mournhold (Ebonheart Pact).
+- Completed pledge activities remain available for routing and show the correct alliance-specific hand-in area.
+
+0.25.63 - Respec Hotbar Index Fix
+- Fixed the exact 8/12 staging failure in RESPEC + BUILD.
+- ESO's pending Skills/respec hotbar manager uses +1 slot indexes internally; Primary/Backup normal skills now stage into its 4-8 range and Ultimates into its internal Ultimate slot.
+- Public post-commit verification keeps using the normal action-bar indexes, preventing an off-by-one regression after confirmation.
+
+0.25.62
+- Skill respec now secures all 10 normal bar skills and both Ultimates before spending points on morphs or passives.
+- Final respec confirmation is blocked unless Primary and unlocked Backup bars stage as complete 6/6 bars.
+- Missing slot/Ultimate candidates are reported instead of silently confirming an incomplete build.
+
+0.25.62 - Complete Both Bars Before Confirm
+- RESPEC + BUILD now secures all 12 hotbar targets before offering final confirmation: Primary 1-5 + Ultimate and Backup 1-5 + Ultimate.
+- Skill-point planning prioritizes complete weapon bars before morph upgrades and passives so slot 5 or a Backup Ultimate cannot be silently dropped by the point budget.
+- If either unlocked weapon bar cannot be staged at 6/6, the build stops and reports the missing target instead of committing a partial respec.
+
+0.25.61 - Final Respec Confirmation
+- RESPEC + BUILD now stages the complete build first and shows a final CONFIRM RESPEC BUILD dialog only after skills, morphs, passives, Primary bar, and Backup bar are ready.
+- ESO ApplyChanges() is no longer called before that final confirmation.
+- Cancelling the dialog leaves the staged respec uncommitted instead of reporting success.
+- Post-commit BUILD CONFIRMED / BUILD INCOMPLETE verification still runs after ESO processes the confirmed respec.
+
+0.25.60 - Full Build Confirmation
+- RESPEC + BUILD now performs a final post-transaction verification.
+- Confirms purchased active skills and Ultimates, requested morphs, passive ranks, and all six Primary/Backup bar slots.
+- Reports BUILD CONFIRMED only when the planned build is actually present; otherwise reports BUILD INCOMPLETE with exact counts.
+
+0.25.59
+- Fixed RESPEC + BUILD leaving Skill 5 empty on Primary and Backup bars by rebuilding final bars only from abilities actually included in the respec purchase plan.
+- Reserved skill points for Primary/Backup Ultimates before spending points on normal abilities and passives.
+- Added compatible-skill fallback scanning so each weapon bar keeps searching for legal abilities until Skills 1-5 are filled when enough unlocked skill points/candidates exist.
+- Added Ultimate fallback sharing: if a bar-specific Ultimate cannot be purchased, the planner uses another selected legal Ultimate instead of silently leaving the slot empty.
+
+0.25.58
+- Fixed RESPEC + BUILD backup weapon bar application by staging Primary and Backup hotbar assignments inside ESO respec transaction before ApplyChanges.
+- Added post-commit Primary/Backup 1-5 + Ultimate verification reporting.
+
+0.25.57 - Primary + Backup weapon skill builds
+- RESPEC + BUILD now plans Primary and Backup weapon bars independently from the weapon equipped on each bar.
+- Weapon-skill purchases are filtered to the matching weapon skill line before the respec spends points.
+- Primary favors direct/spammable/execute skills; Backup favors DoTs, buffs, shields, healing, and setup while preserving persistent pets on both bars when useful.
+- Post-respec application writes and validates Skills 1-5 + Ultimate separately for HOTBAR_CATEGORY_PRIMARY and HOTBAR_CATEGORY_BACKUP.
+
+0.25.56
+- Fixed RESPEC + BUILD for Update 49+: it now starts ESO's native free shrine-free respec mode instead of directly submitting the legacy gold/shrine request.
+- Skill rebuild now clears through SKILL_POINT_ALLOCATION_MANAGER, repurchases selected actives/ultimates, applies morphs/passive ranks, then commits through SKILLS_AND_ACTION_BAR_MANAGER:ApplyChanges().
+- Keeps validated front/back hotbar application after the respec completes.
+
+0.25.55
+- Made Skills/Champion/Attributes action buttons wider and taller for readability.
+- Champion redistribution now submits a complete zero-and-rebuild target state so old CP allocations are removed before new Craft/Warfare/Fitness priorities are applied.
+- Champion hotbar request now explicitly clears unused slots and reports the actual purchase result event.
+- Removed the legacy shrine-only gold Attribute respec request; Attributes now opens the current Character respec UI and displays the optimizer target.
+
+0.25.54
+- Added Current-Build Attribute Optimizer to Skills & CP.
+- Added REDISTRIBUTE ATTR with live ESO gold-cost confirmation.
+- Attribute recommendations scale to available points and detected DPS/Healer/Tank/Solo resource build.
+
+0.25.53 - Full build purchase + validated hotbars
+- RESPEC + BUILD now purchases missing unlocked combat actives selected by the current-build planner.
+- Applies the best available morph when the progression is actually morph-ready.
+- Rebuilds relevant combat passives to the highest useful unlocked ranks within the skill-point budget.
+- Removed hotbar writes from the respec transaction so one illegal weapon/slot choice cannot reject the full respec.
+- After the skill transaction, front/back bars are rebuilt from purchased abilities only.
+- Every slot is checked with ESO action-slot mutability/restriction and CanAbilityBeUsedFromHotbar before slotting.
+- Skill 1-5 and Ultimate are selected independently for each weapon bar; incompatible abilities are skipped instead of forced.
+
+0.25.52 - Fixed ChampionOptimizer Lua syntax error in pathToRoot.
+0.25.51 - Champion redistribution optimizer
+- Added REDISTRIBUTE CP to Skills & Champion.
+- Uses ESO live Champion respec cost with second-click gold confirmation.
+- Rebuilds Craft, Warfare, and Fitness priorities for the detected build and slots recommended Champion stars.
+
+0.25.50
+- Fixed RESPEC + BUILD action-bar slot indexing so skills 1-5 and Ultimate target ESO's actual slot constants without an incorrect +1 offset.
+- Added post-respec hotbar verification/re-slotting for both front and back bars.
+- Morph selection now only spends a morph point when ESO reports the skill is at its morph point (or it was already morphed), then chooses the build-scored best morph.
+- Relevant combat passives are included and ranked as high as unlocked skill points allow; unrelated crafting passives remain untouched/unspent.
+
+0.25.48
+- Added a Current-Build Skill Optimizer to Skills & CP.
+- Skill recommendations now consider detected role, Magicka/Stamina profile, equipped weapon types, worn set names, and purchased/morphed active abilities.
+- Added PREVIEW and APPLY BAR actions to the Skills section. APPLY BAR uses ESO's secure slot API while out of combat and never buys skills, changes morphs, or spends Champion Points.
+
+0.25.47 - ESOUI upload/readiness and performance audit
+- Declared LibAddonMenu-2.0 r43+ as a required DependsOn dependency using the ESOUI-recommended >=43 minimum AddOnVersion check.
+- Confirmed EVENT_COMBAT_EVENT analytics use C-side AddFilterForEvent result/source/target filtering and do not fall back to broad Lua-side combat-result classification.
+- Removed two permanent per-frame resize OnUpdate callbacks; Journal and Gear Loadout now attach those callbacks only while the user is actively resizing.
+- Synchronized manifest, runtime, notice, AI disclosure/credits, server-namespaced SavedVariables notes, and release metadata for ESOUI review.
+
+0.25.46 - Activities detail duplicate fix
+- Fixed selected quest/activity details repeating the same detail block twice in the Tamriel Codex Activities page.
+- Estimated gold, XP/location text, and other activity details now render once.
+- A separate activity note is appended only when it contains different text.
+
+0.25.45 - Activities page cleanup
+- Removed ROUTE QUEST from Activities because the page is an activity planner, not a quest browser.
+- Removed TRAVEL TO NEAREST WAYSHRINE from Activities.
+- Activities now focuses on goal selection, ranked activity rows, and activity details only.
+
+0.25.44 - Activities Quest Route + Wayshrine Travel
+- Fixed Activities routing feedback so non-quest recommendations no longer look like a broken ROUTE QUEST button.
+- Selecting a real journal quest in Activities now enables ROUTE QUEST reliably.
+- Added TRAVEL TO NEAREST WAYSHRINE to the Activities detail page for selected journal quests.
+- Wayshrine travel assists the selected quest first so ESO objective-distance routing can be used when available.
+- Non-quest activities clearly show ROUTE UNAVAILABLE and keep both quest-routing actions disabled.
+
+0.25.43 - Group Finder button readability
+- Increased Group Finder control contrast and button height.
+- Shortened source labels to PUBLIC / GUILD / NEARBY / REFRESH so they do not clip.
+- Expanded Normal/Veteran labels and improved category/action button readability.
+- No Group Finder search behavior changed.
+
+0.25.42 - Group Finder Live Tracking Upgrade
+- Public Group Finder listings continue updating from ESO search-manager callbacks while the selected category is monitored.
+- PvP is excluded from category cycling because ESO returns no usable listings there.
+- Listing rows now show actual attained/desired Tank, Healer, and Damage role counts from GetRoleStatusCount.
+- Added instanced-content short codes such as [CR] and [SCP], with guarded fallbacks for other Dungeon/Trial/Arena names.
+- Category can be switched by clicking its button or with the new Group Finder: Next Category keybind.
+- Normal/Veteran can be toggled with the N/V button or the new Group Finder: Toggle Normal / Veteran keybind; the toggle is disabled for categories without difficulty.
+- First search after a category or difficulty change shows a yellow timer/hourglass indicator; an empty completed search shows the infinity monitoring state while live updates remain enabled.
+
+0.25.41 - Group Finder Guild & Nearby Players
+- Expanded the Codex Group Finder with PUBLIC GROUPS, GUILD MEMBERS, and SEEN PLAYERS sources.
+- Guild Members lists online guild roster members with zone/character details where ESO exposes them, plus Whisper and Invite actions.
+- Nearby / Seen Players records player characters legitimately exposed through the reticle target and keeps recent sightings for about 30 minutes.
+- Added direct Whisper and Invite to Group actions for selected guild/seen players.
+- Does not guess private party composition; ESO does not expose a complete nearby-player roster or arbitrary players' private group state.
+- Public Group Finder listings and Last Boss Highlight remain intact.
+
+0.25.40 - Codex Sidebar Dice & Coin Fit
+- Tightened the final Tamriel Codex Workspace navigation spacing when the full 18-entry rail is present.
+- Dice & Coin now sits completely within the left menu with bottom padding instead of being clipped by the window edge.
+- Accounts for both Group Finder and Golden Pursuits when calculating the compact sidebar spacing.
+- Preserved every existing Codex section and navigation action.
+
+0.25.39 - Trade / Price Check Removed
+- Removed the Trade / Price Check workspace from the Tamriel Codex.
+- Removed guild-trader price capture, personal price history, and cheapest-trader waypoint tracking.
+- Removed the TradePrice module and all related runtime initialization.
+- No TTC integration or external trade-price dependency remains.
+
+0.25.38 - Self-Contained Trade / Price Check
+- Removed Tamriel Trade Centre integration and the TamrielTradeCentre optional dependency.
+- Trade / Price Check now works entirely from guild-store searches observed in-game; no TTC addon or desktop client is required.
+- Added personal observed-price statistics: cheapest, average, highest, and number of traders compared.
+- TRACK CHEAPEST still places ESO's blue waypoint on the cheapest learned trader when its map position is available.
+- Updated Codex wording/status so the page clearly explains that its price history grows as the player searches guild traders.
+
+0.25.37 - Trade / Price Check capture feedback
+- Trade / Price Check now clearly explains that observed listings populate after a normal guild-trader search.
+- TTC is explicitly optional; observed prices and blue-waypoint tracking work without TTC.
+- Added chat confirmation showing how many guild-trader listings were learned after each completed store search.
+- Improved empty-state instructions so an empty Codex page no longer looks broken.
+
+0.25.36 - TTC Price Check + Cheapest Trader Waypoint
+- Added a dedicated Trade / Price Check workspace to the Tamriel Codex.
+- Added optional Tamriel Trade Centre integration using TamrielTradeCentrePrice:GetPriceInfo for Min, Avg, SuggestedPrice, SaleAvg, and listing counts.
+- Records live guild-trader search results locally, including observed unit price and the trader map position where the result was seen.
+- Compares the cheapest observed live listing against TTC market pricing and labels deals as GREAT DEAL, FAIR PRICE, HIGH, or OVERPRICED.
+- Added TRACK CHEAPEST: places ESO's blue player waypoint on the cheapest observed trader when that trader location has been learned.
+- TTC remains optional; LibAddonMenu-2.0 remains required.
+- TTC aggregate pricing does not expose a global cheapest trader, so the Suite never fabricates an unverified trader location.
+
+0.25.35 - Core.lua syntax hotfix
+- Removed a stray extra `end` after ESOAdventurerSuite_JournalToggle that caused `<eof> expected near end` on addon load.
+- Preserved the 0.25.34 compact Codex navigation/menu-fit changes.
+
+0.25.34 - Codex navigation fit
+- Compacted Tamriel Codex sidebar navigation after adding the standalone Group Finder chapter.
+- Keeps Dice & Coin fully inside the Workspace menu with additional bottom margin.
+- Preserves Group Finder, Last Boss Highlight, and all existing Codex features.
+
+0.25.33 - Group Finder Codex-only layout
+- Removed the separate floating Group Finder overlay/widget.
+- Group Finder now lives only in its dedicated Tamriel Codex tab.
+- Preserved live ESO listings, categories, ALL/Normal/Veteran filters, Join/Apply, Whisper Leader, Rescind Application, and Refresh.
+- Last Boss Highlight now applies directly to matching Group Finder rows in the Codex tab.
+- Removed widget-only keybinds and settings controls.
+
+0.25.32 - Group Finder Last Boss Highlight
+- Added an optional Last Boss Highlight setting for the live Group Finder widget.
+- Detects common last/final-boss phrases and shorthand in listing titles and descriptions.
+- Matching listings pulse through rainbow colors and display a LAST BOSS marker while the option is enabled.
+- Highlight animation is limited to detected rows and throttled to reduce unnecessary UI work.
+
+0.25.31 - Group Finder live widget rebuild
+- Rebuilt Group Finder around a standalone movable live widget while keeping GROUP FINDER as its own Tamriel Codex tab.
+- Added event-driven live listing monitoring with SEARCHING and infinity/no-listings monitoring states.
+- Added category cycling and Normal/Veteran mode switching from the widget and keybinds.
+- Added double-click Join/Apply, listing tooltips, and right-click Apply/Whisper/Hide/Blacklist actions.
+- Added joined-group green highlighting, pending-application yellow highlighting, CP warning highlighting, and filled-role indicators.
+- Added optional WTS filtering, optional over-CP filtering, persistent leader blacklist, and session-only hidden listings.
+- Added /esosuite groupfinder toggle and LibAddonMenu controls for the live widget.
+- Group Finder remains unavailable below level 10, in Battlegrounds, or while hosting a listing due to ESO API limitations.
+
+0.25.30 - Group Finder broad-search fix
+- Fixed live Group Finder searches becoming empty after category/difficulty changes by using ESO's native GROUP_FINDER_SEARCH_MANAGER ExecuteSearch flow.
+- Added ALL difficulty as the default for Dungeon, Trial, and Arena searches so Normal and Veteran listings are shown together.
+- Normal and Veteran remain available as explicit narrowing filters.
+- Removed manual search-manager state manipulation so ESO owns cooldown, queued-search, current-search ID, and result refresh state.
+
+0.25.29
+- Moved Live Group Finder out of Dungeon Finder into its own GROUP FINDER Tamriel Codex tab.
+- Restored Dungeon Finder to dungeon-only browsing, queueing, hosting, replacement, and role controls.
+- Fixed empty live Group Finder results by using ESO's current RequestGroupFinderSearch flow with category reset, difficulty filter, and all-role search configuration.
+- Added direct search-complete/search-updated synchronization with ESO's Group Finder search manager.
+- Added visible SEARCHING / NO LISTINGS - MONITORING status feedback.
+
+0.25.28 - Live Group Finder browser
+- Added LIVE GROUPS mode to the Tamriel Codex Dungeon Finder.
+- Browses ESO player-created Group Finder listings through the native event-driven search manager.
+- Added category cycling for Dungeons, Trials, Arenas, Infinite Archive/Endless, Zone, Adventure Zone, and Custom where exposed by the client.
+- Added Normal/Veteran selection for supported categories.
+- Live rows show listing title, owner, requested/attained Tank-Healer-DPS counts, and pending-application state.
+- Added JOIN / APPLY using ESO's native application dialog, WHISPER LEADER, RESCIND APPLICATION, and manual refresh actions.
+- Uses Group Finder callbacks instead of a permanent polling loop.
+- Existing dungeon queue, host-listing, and replacement finder remain available in DUNGEONS mode.
+
+0.25.27
+- Added TRAVEL TO NEAREST WAYSHRINE directly under ROUTE TO STARTER in Quest Finder.
+- For active quests, the action uses the existing nearest-objective wayshrine ranking when ESO exposes objective coordinates.
+- For unstarted quests, ESO does not expose exact quest-giver coordinates, so the action chooses a discovered wayshrine in the selected quest zone and travels only after the player clicks the button.
+- Added the same action to the legacy Quest panel for consistency.
+- Updated manifest presentation and made LibAddonMenu-2.0 a required dependency.
+
 Version 0.25.26
 - Fixed Live Combat Stats CD showing -- when ESO reports a valid 0% Critical Damage bonus. CD now displays total Critical Damage as the 50% base plus ESO's current bonus.
 - Added guarded quest-chain continuation: after completing a quest, an immediately offered follow-up quest can be accepted automatically within a short continuation window, then set as the assisted quest. Unrelated quest offers outside that window are not auto-accepted.

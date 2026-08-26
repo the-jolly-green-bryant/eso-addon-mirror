@@ -158,6 +158,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Duel Results](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Duel-Results__47568dd9-5328-4e2a-9862-c59932473a4b) | Vixen_Hunny | Console | — |
 | [DuelRPG](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Neferys/DuelRPG__1100) | Neferys | PC / Mac | 0.6d |
 | [DuesPaid](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TuckerScorpions/DuesPaid__2579) | TuckerScorpions | PC / Mac | 3.7 |
+| [Dungeon Boss Pull Card](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/yodased-mods/Dungeon-Boss-Pull-Card__438e8153-db0e-4264-87cb-29c1d97e20ef) | yodased-mods | Console | — |
 | [Dungeon Boss Pull Cards](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/yodased/Dungeon-Boss-Pull-Cards__4793) | yodased | PC / Mac | 0.20.0 |
 | [Dungeon Champions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scott123/Dungeon-Champions__2023) | Scott123 | PC / Mac | 1.0.16 |
 | [Dungeon Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomkolp/Dungeon-Helper__1956) | tomkolp | PC / Mac | 1.0.3 |

@@ -9,19 +9,19 @@ EPC.Journal = EPC.Journal or {}
 local J = EPC.Journal
 local wm = WINDOW_MANAGER
 
-local TABS = {"NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
+local TABS = {"NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "GROUPFINDER", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
 local TAB_LABELS = {
     NOTES="Notes", PINS="Checkpoints", BUILD="Build Guide", GEAR="Gear & Sets", SKILLS="Skills & CP",
-    COMBAT="Combat", ACTIVITY="Activities", DUNGEONS="Dungeon Finder", QUESTS="Quest Finder", TRAVEL="Map / Travel", TOOLS="Utilities",
+    COMBAT="Combat", ACTIVITY="Activities", DUNGEONS="Dungeon Finder", GROUPFINDER="Group Finder", QUESTS="Quest Finder", TRAVEL="Map / Travel", TOOLS="Utilities",
     ACHIEVEMENTS="Achievements", STATS="Character Stats", CODEX="Crafting Codex", DICE="Dice & Coin",
 }
 local TAB_TITLES = {
     NOTES="TAMRIEL CODEX", PINS="CHECKPOINTS", BUILD="BUILD GUIDE", GEAR="GEAR & SETS", SKILLS="SKILLS & CHAMPION",
-    COMBAT="COMBAT", ACTIVITY="ACTIVITIES", DUNGEONS="DUNGEON FINDER", QUESTS="QUEST FINDER", TRAVEL="MAP & TRAVEL", TOOLS="UTILITIES",
+    COMBAT="COMBAT", ACTIVITY="ACTIVITIES", DUNGEONS="DUNGEON FINDER", GROUPFINDER="GROUP FINDER", QUESTS="QUEST FINDER", TRAVEL="MAP & TRAVEL", TOOLS="UTILITIES",
     ACHIEVEMENTS="ACHIEVEMENTS", STATS="CHARACTER STATS", CODEX="CRAFTING CODEX", DICE="DICE & COIN",
 }
 local TAB_PAGE_NUMBERS = { NOTES="01", PINS="02", BUILD="03", GEAR="04", SKILLS="05", COMBAT="06", ACTIVITY="07", QUESTS="08", TRAVEL="09", TOOLS="10", ACHIEVEMENTS="11", STATS="12", CODEX="13", DICE="14" }
-local SUITE_TABS = { BUILD=true, GEAR=true, SKILLS=true, COMBAT=true, ACTIVITY=true, DUNGEONS=true, QUESTS=true, TRAVEL=true, TOOLS=true }
+local SUITE_TABS = { BUILD=true, GEAR=true, SKILLS=true, COMBAT=true, ACTIVITY=true, DUNGEONS=true, GROUPFINDER=true, QUESTS=true, TRAVEL=true, TOOLS=true }
 local CATEGORIES = {"ALL", "Adventure", "Quests", "Builds", "Crafting", "Roleplay", "Personal"}
 local THEMES = {
     PARCHMENT = { bg={0.0,0.0,0.0,0.0}, panel={0.93,0.88,0.76,0.08}, page={0.955,0.915,0.81,0.992}, page2={0.965,0.925,0.825,0.992}, cover={0.10,0.07,0.035,0.96}, edge={0.50,0.38,0.18,0.92}, text={0.15,0.09,0.04,1}, accent={0.32,0.18,0.08,1} },
@@ -57,22 +57,97 @@ end
 local function nowStamp()
     return tonumber(safe(GetTimeStamp, 0)) or 0
 end
-local function setButtonStyle(button, selected, theme)
+local function setButtonBorderColor(button, r, g, b, a)
     if not button then return end
-    local t = theme or THEMES.PARCHMENT
-    if button.SetNormalFontColor then
-        if selected then button:SetNormalFontColor(t.accent[1],t.accent[2],t.accent[3],1)
-        else button:SetNormalFontColor(t.text[1],t.text[2],t.text[3],0.92) end
-        button:SetMouseOverFontColor(t.accent[1],t.accent[2],t.accent[3],1)
-        button:SetPressedFontColor(t.accent[1],t.accent[2],t.accent[3],1)
+    if button._easBorderLines then
+        for _, line in ipairs(button._easBorderLines) do
+            if line then
+                if line.SetCenterColor then
+                    line:SetCenterColor(r, g, b, a)
+                    if line.SetEdgeColor then line:SetEdgeColor(0, 0, 0, 0) end
+                elseif line.SetColor then
+                    line:SetColor(r, g, b, a)
+                end
+            end
+        end
     end
 end
+
+local function setButtonStyle(button, selected, theme)
+    if not button then return end
+    local fallback = THEMES.PARCHMENT or {}
+    local t = type(theme) == "table" and theme or fallback
+    local accent = type(t.accent) == "table" and t.accent or fallback.accent or {0.43,0.68,0.96,1}
+    local textColor = type(t.text) == "table" and t.text or fallback.text or {0.88,0.92,0.98,1}
+    local ar,ag,ab = tonumber(accent[1]) or 0.43, tonumber(accent[2]) or 0.68, tonumber(accent[3]) or 0.96
+    local tr,tg,tb = tonumber(textColor[1]) or 0.88, tonumber(textColor[2]) or 0.92, tonumber(textColor[3]) or 0.98
+    if button.SetNormalFontColor then
+        if selected then button:SetNormalFontColor(ar,ag,ab,1)
+        else button:SetNormalFontColor(tr,tg,tb,0.92) end
+        button:SetMouseOverFontColor(ar,ag,ab,1)
+        button:SetPressedFontColor(ar,ag,ab,1)
+    end
+    if button._easBorder then
+        if selected then
+            button._easBorder:SetCenterColor(0.055, 0.085, 0.122, 0.70)
+        else
+            button._easBorder:SetCenterColor(0.035, 0.050, 0.072, 0.55)
+        end
+    end
+    -- Selection never changes the frame color: every suite button uses the
+    -- same complete cyan rectangle.
+    setButtonBorderColor(button, 0.18, 0.72, 0.92, 0.96)
+end
+
 local function makeButton(name, parent, text, x, y, w, h, handler)
     local b = wm:CreateControl(name, parent, CT_BUTTON)
     b:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
     b:SetDimensions(w, h)
     b:SetFont("ZoFontGameBold")
     b:SetText(text)
+    if b.SetHorizontalAlignment then b:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    if b.SetVerticalAlignment then b:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+
+    -- Fill is separate from the frame. ESO backdrops using a nil edge texture
+    -- can render as disconnected/cropped lines at small control sizes, so the
+    -- border is four explicit texture strips instead.
+    local bg = wm:CreateControl(name .. "BG", b, CT_BACKDROP)
+    bg:SetAnchor(TOPLEFT, b, TOPLEFT, 2, 2)
+    bg:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -2, -2)
+    if bg.SetDrawLayer then bg:SetDrawLayer(DL_BACKGROUND) end
+    if bg.SetDrawLevel then bg:SetDrawLevel(0) end
+    bg:SetCenterColor(0.035, 0.050, 0.072, 0.55)
+    bg:SetEdgeColor(0, 0, 0, 0)
+    b._easBorder = bg
+
+    local function borderLine(suffix)
+        -- Use a solid backdrop strip instead of a texture asset. This renders
+        -- reliably on every ESO UI scale and keeps the cyan frame visible.
+        local line = wm:CreateControl(name .. "Border" .. suffix, b, CT_BACKDROP)
+        if line.SetDrawLayer then line:SetDrawLayer(DL_CONTROLS) end
+        if line.SetDrawLevel then line:SetDrawLevel(2) end
+        line:SetCenterColor(0.18, 0.72, 0.92, 0.96)
+        line:SetEdgeColor(0, 0, 0, 0)
+        return line
+    end
+    local top = borderLine("Top")
+    top:SetAnchor(TOPLEFT, b, TOPLEFT, 1, 1)
+    top:SetAnchor(TOPRIGHT, b, TOPRIGHT, -1, 1)
+    top:SetHeight(1)
+    local bottom = borderLine("Bottom")
+    bottom:SetAnchor(BOTTOMLEFT, b, BOTTOMLEFT, 1, -1)
+    bottom:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -1, -1)
+    bottom:SetHeight(1)
+    local left = borderLine("Left")
+    left:SetAnchor(TOPLEFT, b, TOPLEFT, 1, 1)
+    left:SetAnchor(BOTTOMLEFT, b, BOTTOMLEFT, 1, -1)
+    left:SetWidth(1)
+    local right = borderLine("Right")
+    right:SetAnchor(TOPRIGHT, b, TOPRIGHT, -1, 1)
+    right:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -1, -1)
+    right:SetWidth(1)
+    b._easBorderLines = {top, bottom, left, right}
+
     if SOUNDS and SOUNDS.DEFAULT_CLICK and b.SetClickSound then b:SetClickSound(SOUNDS.DEFAULT_CLICK) end
     if handler then b:SetHandler("OnClicked", handler) end
     return b
@@ -86,6 +161,43 @@ local function makeLabel(name, parent, text, x, y, w, h, font)
     l:SetText(text or "")
     l:SetVerticalAlignment(TEXT_ALIGN_TOP)
     return l
+end
+
+local function getDocumentFont(fontName, targetSize)
+    if _G[fontName] then return fontName end
+    if type(CreateFont) == "function" then
+        local ok, fontObj = pcall(CreateFont, fontName)
+        if ok and fontObj then
+            local face, flags
+            if ZoFontGame and type(ZoFontGame.GetFontInfo) == "function" then
+                local infoOk, fontFace, _, fontFlags = pcall(ZoFontGame.GetFontInfo, ZoFontGame)
+                if infoOk then face, flags = fontFace, fontFlags end
+            end
+            if type(fontObj.SetFontInfo) == "function" and face then
+                fontObj:SetFontInfo(face, tonumber(targetSize) or 20, flags or "soft-shadow-thin")
+            elseif type(fontObj.SetFont) == "function" then
+                fontObj:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thin", tonumber(targetSize) or 20))
+            end
+            return fontName
+        end
+    end
+    return string.format("$(BOLD_FONT)|%d|soft-shadow-thin", tonumber(targetSize) or 20)
+end
+
+local function getAchievementsDocumentFont()
+    return "$(BOLD_FONT)|24|soft-shadow-thin"
+end
+
+local function getStatsDocumentFont()
+    return "$(BOLD_FONT)|34|soft-shadow-thin"
+end
+
+local function getBuildGuideDocumentFont()
+    return getDocumentFont("EAS_BuildGuideDocumentFont", 20)
+end
+
+local function getSkillsChampionDocumentFont()
+    return getDocumentFont("EAS_SkillsChampionDocumentFont", 18)
 end
 
 local function getStringWidth(label, text)
@@ -166,7 +278,7 @@ local function styleIconButton(button, theme)
     button._theme = theme
     if button.bg then
         button.bg:SetCenterColor(theme.page[1], theme.page[2], theme.page[3], 0.34)
-        button.bg:SetEdgeColor(theme.edge[1], theme.edge[2], theme.edge[3], 0.48)
+        button.bg:SetEdgeColor(0.24, 0.36, 0.54, 0.82)
     end
     if button.label then button.label:SetColor(theme.text[1], theme.text[2], theme.text[3], 1) end
 end
@@ -179,7 +291,8 @@ local function makeIconButton(name, parent, texturePath, labelText, x, y, w, h, 
     if handler then b:SetHandler("OnClicked", handler) end
 
     local bg = wm:CreateControl(name.."_BG", b, CT_BACKDROP)
-    bg:SetAnchorFill(b)
+    bg:SetAnchor(TOPLEFT, b, TOPLEFT, 1, 1)
+    bg:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -1, -1)
     bg:SetEdgeTexture(nil, 1, 1, 1)
     b.bg = bg
 
@@ -203,7 +316,7 @@ local function makeIconButton(name, parent, texturePath, labelText, x, y, w, h, 
         local t = b._theme or THEMES.PARCHMENT
         if b.bg then
             b.bg:SetCenterColor(t.page[1], t.page[2], t.page[3], alpha)
-            b.bg:SetEdgeColor(t.edge[1], t.edge[2], t.edge[3], edge)
+            b.bg:SetEdgeColor(0.24, 0.36, 0.54, math.max(0.72, edge))
         end
     end
     b:SetHandler("OnMouseEnter", function() applyHover(0.48, 0.72) end)
@@ -848,7 +961,7 @@ function J:BuildAchievementText()
     return table.concat(lines, "\n")
 end
 
-function J:BuildStatsText()
+function J:BuildStatsSpread()
     local name = trim(safe(GetUnitName, "Player", "player"))
     local display = trim(safe(GetDisplayName, ""))
     local level = tonumber(safe(GetUnitLevel, 0, "player")) or 0
@@ -857,23 +970,116 @@ function J:BuildStatsText()
     local bagUsed, bagSize = safe(GetNumBagUsedSlots, 0, BAG_BACKPACK), safe(GetBagSize, 0, BAG_BACKPACK)
     local money = tonumber(safe(GetCurrentMoney, 0)) or 0
     local inv,maxInv,stam,maxStam,speed,maxSpeed = safe(GetRidingStats, 0)
-    local lines = {
-        "GAME STATISTICS", "",
-        "Character: " .. name,
-        display ~= "" and ("Account: " .. display) or nil,
-        string.format("Level: %d   Champion Points: %d", level, cp),
-        zone ~= "" and ("Zone: " .. zone) or nil,
-        string.format("Backpack: %d / %d", tonumber(bagUsed) or 0, tonumber(bagSize) or 0),
-        string.format("Gold: %d", money),
+
+    local function commaNumber(value)
+        local n = math.floor((tonumber(value) or 0) + 0.5)
+        local sign = n < 0 and "-" or ""
+        local digits = tostring(math.abs(n))
+        local out = {}
+        while #digits > 3 do
+            table.insert(out, 1, string.sub(digits, -3))
+            digits = string.sub(digits, 1, -4)
+        end
+        table.insert(out, 1, digits)
+        return sign .. table.concat(out, ",")
+    end
+
+    local left = {
+        "CHARACTER OVERVIEW",
         "",
-        "RIDING",
-        string.format("Speed: %d / %d", tonumber(speed) or 0, tonumber(maxSpeed) or 0),
-        string.format("Stamina: %d / %d", tonumber(stam) or 0, tonumber(maxStam) or 0),
-        string.format("Carry Capacity: %d / %d", tonumber(inv) or 0, tonumber(maxInv) or 0),
+        "Name",
+        "  " .. (name ~= "" and name or "Player"),
     }
-    local out = {}
-    for _,v in ipairs(lines) do if v then out[#out+1] = v end end
-    return table.concat(out, "\n")
+    if display ~= "" then
+        left[#left+1] = ""
+        left[#left+1] = "Account"
+        left[#left+1] = "  " .. display
+    end
+    left[#left+1] = ""
+    left[#left+1] = string.format("Level: %d", level)
+    left[#left+1] = string.format("Champion Points: %d", cp)
+    if zone ~= "" then left[#left+1] = "Zone: " .. zone end
+
+    left[#left+1] = ""
+    left[#left+1] = ""
+    left[#left+1] = "INVENTORY & WEALTH"
+    left[#left+1] = ""
+    left[#left+1] = string.format("Backpack: %d / %d", tonumber(bagUsed) or 0, tonumber(bagSize) or 0)
+    left[#left+1] = ""
+    left[#left+1] = string.format("Current Gold: %s", commaNumber(money))
+
+    left[#left+1] = ""
+    left[#left+1] = ""
+    left[#left+1] = "RIDING TRAINING"
+    left[#left+1] = ""
+    left[#left+1] = string.format("Speed: %d / %d", tonumber(speed) or 0, tonumber(maxSpeed) or 0)
+    left[#left+1] = ""
+    left[#left+1] = string.format("Stamina: %d / %d", tonumber(stam) or 0, tonumber(maxStam) or 0)
+    left[#left+1] = ""
+    left[#left+1] = string.format("Carry Capacity: %d / %d", tonumber(inv) or 0, tonumber(maxInv) or 0)
+
+    local spending = EPC.Activities and EPC.Activities.GetGoldSpendingView and EPC.Activities:GetGoldSpendingView() or { total = 0, rows = {} }
+    local byKey = {}
+    for _, row in ipairs(spending.rows or {}) do
+        byKey[tostring(row.key or "")] = row
+    end
+
+    local right = {
+        "GOLD SPENDING",
+        "",
+        "TOTAL TRACKED",
+        "  " .. commaNumber(spending.total) .. " gold",
+        "",
+    }
+
+    local function addSpendGroup(title, keys)
+        local added = false
+        local groupLines = {}
+        for _, key in ipairs(keys) do
+            local row = byKey[key]
+            local amount = row and (tonumber(row.amount) or 0) or 0
+            if amount > 0 then
+                groupLines[#groupLines+1] = string.format("%s: %s", tostring(row.label or key), commaNumber(amount))
+                added = true
+            end
+        end
+        if added then
+            right[#right+1] = ""
+            right[#right+1] = title
+            right[#right+1] = ""
+            for i, line in ipairs(groupLines) do
+                right[#right+1] = line
+                if i < #groupLines then right[#right+1] = "" end
+            end
+            right[#right+1] = ""
+        end
+    end
+
+    addSpendGroup("CRAFTING & EQUIPMENT", {
+        "blacksmith", "clothier", "woodworker", "jeweler", "armsman", "armorer",
+    })
+    addSpendGroup("SUPPLIES & SERVICES", {
+        "alchemist", "enchanter", "grocer", "brewer", "chef", "merchant", "stable", "repairs", "respec",
+    })
+    addSpendGroup("MARKET, TRAVEL & OTHER", {
+        "guildStore", "guildStoreFees", "laundering", "travel", "other",
+    })
+
+    if (tonumber(spending.total) or 0) <= 0 then
+        right[#right+1] = "No tracked spending yet."
+        right[#right+1] = ""
+    end
+    right[#right+1] = ""
+    right[#right+1] = "Tracking starts when this feature is installed."
+    right[#right+1] = ""
+    right[#right+1] = "Bank transfers are not counted as spending."
+
+    return table.concat(left, "\n"), table.concat(right, "\n")
+end
+
+function J:BuildStatsText()
+    local left, right = self:BuildStatsSpread()
+    return left .. "\n\n" .. right
 end
 
 local CODEX = {
@@ -973,12 +1179,30 @@ function J:CreateSuitePage(parent, name)
     self.themeLabels[#self.themeLabels+1] = body
     page.body = body
     page.buttons = {}
-    local gap = 5
-    local bw = math.floor((w - gap*2) / 3)
-    for i=1,6 do
-        local row = i > 3 and 1 or 0
-        local col = (i-1) % 3
-        local b = makeButton("EAS_Journal_SuiteAction_"..name.."_"..i, page, "", col*(bw+gap), h-64 + row*31, bw, 27, function() self:RunSuiteAction(name, i) end)
+    local gap = 7
+    local cols = (name == "SKILLS") and 2 or ((name == "TOOLS") and 4 or 3)
+    local buttonCount = (name == "TOOLS") and 8 or 6
+    local rows = math.ceil(buttonCount / cols)
+    local bw = math.floor((w - gap*(cols-1)) / cols)
+    local buttonH = (name == "SKILLS") and 32 or 27
+    local startY
+    if name == "SKILLS" then
+        startY = h - 103
+        body:SetHeight(h-112)
+    elseif name == "TOOLS" then
+        -- Keep the full two-row Utilities control grid well inside the page.
+        -- Some Codex layouts report a shorter page host than the outer canvas,
+        -- so bottom-anchored rows could place SIZE/OPACITY controls below the
+        -- visible page. Reserve a large footer-safe region and move both rows up.
+        startY = math.max(250, h - 178)
+        body:SetHeight(math.max(210, startY - 12))
+    else
+        startY = h - 64
+    end
+    for i=1,buttonCount do
+        local row = math.floor((i-1) / cols)
+        local col = (i-1) % cols
+        local b = makeButton("EAS_Journal_SuiteAction_"..name.."_"..i, page, "", col*(bw+gap), startY + row*(buttonH+5), bw, buttonH, function() self:RunSuiteAction(name, i) end)
         b:SetHidden(true)
         page.buttons[i] = b
     end
@@ -1010,6 +1234,34 @@ function J:CycleOrder(current, order)
     return order[idx]
 end
 
+function J:RefreshReticleToolsFast()
+    local page = self.pages and self.pages.TOOLS
+    if not page or not page.leftBody or not page.rightBody or not EPC.UtilitySuite then return end
+    local v = EPC.UtilitySuite:BuildReticleView(EPC.lastSnapshot or {}) or {}
+    local left = {tostring(v.title or "Custom Reticle")}
+    if v.description and v.description ~= "" then
+        left[#left+1] = ""
+        left[#left+1] = tostring(v.description)
+    end
+    if v.stats then
+        left[#left+1] = ""
+        addViewStats(left, v.stats)
+    end
+    -- Reticle text is intentionally short and already fits the Utilities page.
+    -- Avoid the expensive wrap/measure/font-fit pass used by the full page renderer.
+    page.leftBody:SetText(table.concat(left, "\n"))
+    local right = {"RETICLE CONTROLS", "",
+        "1. ON / OFF",
+        "2. STYLE",
+        "3. COLOR",
+        "4. SIZE - / SIZE +",
+        "5. OPACITY - / OPACITY +",
+        "",
+        "Changes apply immediately."}
+    page.rightBody:SetText(table.concat(right, "\n"))
+    self:SetSuiteButtons("TOOLS", {"MODE","ON / OFF","STYLE","COLOR","SIZE -","SIZE +","OPACITY -","OPACITY +"})
+end
+
 function J:RunSuiteAction(tab, action)
     if tab == "GEAR" and EPC.SetJournal then
         if action == 1 then EPC.SetJournal:SetFilter(self:CycleOrder(EPC.SetJournal.filter or "ALL", {"ALL","OVERLAND","DUNGEON","TRIAL"}))
@@ -1033,13 +1285,66 @@ function J:RunSuiteAction(tab, action)
     elseif tab == "ACTIVITY" and EPC.Activities then
         if action == 1 then EPC.Activities:SetGoal(self:CycleOrder(EPC.Activities:GetGoal(), {"BALANCED","XP","GOLD"}))
         elseif action == 2 then local v=EPC.Activities:BuildView(EPC.lastSnapshot or {}); local n=#(v.rows or {}); if n>0 then self.suiteRowIndex.ACTIVITY=(self.suiteRowIndex.ACTIVITY % n)+1 EPC.Activities:SelectVisibleRow(self.suiteRowIndex.ACTIVITY) end
-        elseif action == 3 then EPC.Activities:ActivateSelected() end
+        end
     elseif tab == "TOOLS" and EPC.UtilitySuite then
-        if action == 1 then EPC.UtilitySuite:SetMode(self:CycleOrder(EPC.UtilitySuite:GetMode(), {"OVERVIEW","INVENTORY","RESEARCH","COLLECTIONS","DAILIES"})) end
-    elseif tab == "BUILD" or tab == "SKILLS" or tab == "COMBAT" then
+        local mode = EPC.UtilitySuite:GetMode()
+        if action == 1 then EPC.UtilitySuite:SetMode(self:CycleOrder(mode, {"OVERVIEW","INVENTORY","RESEARCH","COLLECTIONS","DAILIES","RETICLE","SELL"}))
+        elseif mode == "RETICLE" and action == 2 then EPC.UtilitySuite:ToggleReticle()
+        elseif mode == "RETICLE" and action == 3 then EPC.UtilitySuite:CycleReticleStyle()
+        elseif mode == "RETICLE" and action == 4 then EPC.UtilitySuite:CycleReticleColor()
+        elseif mode == "RETICLE" and action == 5 then EPC.UtilitySuite:DecreaseReticleSize()
+        elseif mode == "RETICLE" and action == 6 then EPC.UtilitySuite:IncreaseReticleSize()
+        elseif mode == "RETICLE" and action == 7 then EPC.UtilitySuite:DecreaseReticleOpacity()
+        elseif mode == "RETICLE" and action == 8 then EPC.UtilitySuite:IncreaseReticleOpacity()
+        elseif mode == "SELL" and EPC.VendorSell then
+            if action == 2 then EPC.VendorSell:SelectDelta(-1)
+            elseif action == 3 then EPC.VendorSell:SelectDelta(1)
+            elseif action == 4 then EPC.VendorSell:SellSelected()
+            elseif action == 5 then EPC.VendorSell:SellJunk()
+            elseif action == 6 then EPC.VendorSell:ClearConfirmation() EPC.VendorSell:Refresh() end
+        end
+    elseif tab == "SKILLS" then
+        local ts = nowStamp()
+        if self.skillActionLockUntil and ts > 0 and ts < self.skillActionLockUntil then
+            if EPC and EPC.Notify then EPC:Notify("Skills & Champion is already processing the last action.") end
+            return
+        end
+        if action >= 1 and action <= 3 then
+            self.skillActionLockUntil = ts > 0 and (ts + 2) or nil
+        end
+        if action == 1 and EPC.GearOptimizer and EPC.GearOptimizer.RespecAndApplyBestBuild then
+            EPC.GearOptimizer:RespecAndApplyBestBuild()
+            EPC:RefreshNow("codex-skill-respec-build")
+        elseif action == 2 and EPC.ChampionOptimizer and EPC.ChampionOptimizer.ApplyBestChampionBuild then
+            EPC.ChampionOptimizer:ApplyBestChampionBuild()
+            EPC:RefreshNow("codex-champion-redistribute")
+        elseif action == 3 and EPC.AttributeOptimizer and EPC.AttributeOptimizer.ApplyBestAttributes then
+            EPC.AttributeOptimizer:ApplyBestAttributes()
+            EPC:RefreshNow("codex-attribute-redistribute")
+        elseif action == 4 then
+            EPC:RefreshNow("codex-skill-preview")
+        elseif action == 5 then
+            EPC:RefreshNow("codex-refresh")
+        end
+        if action >= 1 and action <= 3 and type(zo_callLater) == "function" then
+            zo_callLater(function()
+                self.skillActionLockUntil = nil
+                if EPC and EPC.RefreshNow then EPC:RefreshNow("codex-skill-followup-refresh") end
+                if self.window and not self.window:IsHidden() then self:RefreshSuitePage("SKILLS") end
+            end, 700)
+        else
+            self.skillActionLockUntil = nil
+        end
+    elseif tab == "BUILD" or tab == "COMBAT" then
         EPC:RefreshNow("codex-refresh")
     end
-    if self.window and not self.window:IsHidden() then self:RefreshSuitePage(tab) end
+    if self.window and not self.window:IsHidden() then
+        if tab == "TOOLS" and EPC.UtilitySuite and EPC.UtilitySuite:GetMode() == "RETICLE" and action >= 2 and action <= 8 then
+            self:RefreshReticleToolsFast()
+        else
+            self:RefreshSuitePage(tab)
+        end
+    end
 end
 
 function J:BuildSuiteText(tab)
@@ -1099,6 +1404,42 @@ function J:BuildSuiteText(tab)
             if row.detailText then lines[#lines+1] = "   " .. tostring(row.detailText) end
         end
         if v.hint then lines[#lines+1] = "" lines[#lines+1] = tostring(v.hint) end
+    elseif tab == "SKILLS" and EPC.GearOptimizer and EPC.GearOptimizer.BuildBestAbilityView then
+        local v = EPC.GearOptimizer:BuildBestAbilityView()
+        local c = v.context or {}
+        lines[#lines+1] = ""
+        lines[#lines+1] = "CURRENT-BUILD SKILL OPTIMIZER"
+        lines[#lines+1] = string.format("Build: %s  -  Role: %s", tostring(c.profile and c.profile.label or "Detected build"), tostring(c.role or "DAMAGE"))
+        lines[#lines+1] = string.format("Weapons: %s / %s", tostring(c.frontWeapon or "Weapon"), tostring(c.backWeapon or "Weapon"))
+        if #(c.sets or {}) > 0 then lines[#lines+1] = "Worn sets: " .. table.concat(c.sets, ", ") end
+        lines[#lines+1] = ""
+        lines[#lines+1] = "RECOMMENDED ACTIVE BAR"
+        for i,a in ipairs(v.abilities or {}) do lines[#lines+1] = string.format("%d. %s", i, tostring(a.name or "Ability")) end
+        lines[#lines+1] = string.format("ULT. %s", tostring(v.ultimate and v.ultimate.name or "No purchased ultimate found"))
+        lines[#lines+1] = ""
+        lines[#lines+1] = "RESPEC + BUILD uses ESO's full skill respec to rebuild combat skills for your current role, resource build, weapons, and worn sets. It buys the recommended actives, chooses the best available morph when a skill is morph-ready, ranks relevant passives, and fills both weapon bars (1-5 + Ultimate). A gold-cost respec requires a second confirmation click. Extra points stay unspent instead of being forced into unrelated crafting skills. PREVIEW recalculates without making changes."
+        if EPC.ChampionOptimizer and EPC.ChampionOptimizer.BuildView then
+            local cpv=EPC.ChampionOptimizer:BuildView()
+            lines[#lines+1] = ""
+            lines[#lines+1] = "CHAMPION POINT OPTIMIZER"
+            lines[#lines+1] = string.format("Redistribution cost: %d gold (ESO live value)", tonumber(cpv.cost) or 0)
+            for _,pool in ipairs(cpv.pools or {}) do
+                lines[#lines+1] = string.format("%s  -  %d/%d points planned", tostring(pool.label), tonumber(pool.spent) or 0, tonumber(pool.budget) or 0)
+                for _,star in ipairs(pool.top or {}) do lines[#lines+1] = string.format("  - %s: %d%s", tostring(star.name), tonumber(star.points) or 0, star.slottable and " [SLOT]" or "") end
+            end
+            lines[#lines+1] = "REDISTRIBUTE CP resets the current Champion allocation, reapplies the best detected Craft/Warfare/Fitness priorities for the current build, and slots the strongest purchased Champion stars. A paid respec requires a second confirmation click."
+        end
+        if EPC.AttributeOptimizer and EPC.AttributeOptimizer.BuildView then
+            local av=EPC.AttributeOptimizer:BuildView()
+            lines[#lines+1] = ""
+            lines[#lines+1] = "ATTRIBUTE OPTIMIZER"
+            lines[#lines+1] = string.format("Detected: %s  -  %s", tostring(av.role or "DAMAGE"), tostring(av.build or "Current build"))
+            lines[#lines+1] = string.format("Current: %d Health / %d Magicka / %d Stamina  (+%d unspent)", tonumber(av.current and av.current.health) or 0, tonumber(av.current and av.current.magicka) or 0, tonumber(av.current and av.current.stamina) or 0, tonumber(av.current and av.current.unspent) or 0)
+            lines[#lines+1] = string.format("Recommended: %d Health / %d Magicka / %d Stamina", tonumber(av.target and av.target.health) or 0, tonumber(av.target and av.target.magicka) or 0, tonumber(av.target and av.target.stamina) or 0)
+            lines[#lines+1] = string.format("Redistribution cost: %d gold (ESO live value)", tonumber(av.cost) or 0)
+            lines[#lines+1] = "REDISTRIBUTE ATTR uses the normal ESO attribute respec request, scales the recommendation to the character's available points, and requires a second confirmation before a paid respec."
+        end
+
     elseif tab == "TOOLS" and EPC.UtilitySuite then
         local v = EPC.UtilitySuite:BuildView(EPC.lastSnapshot or {})
         lines[#lines+1] = tostring(v.title or "Utilities")
@@ -1123,7 +1464,16 @@ function J:RefreshSuitePage(tab)
     elseif tab == "QUESTS" then self:SetSuiteButtons(tab, {"FILTER","< PAGE","PAGE >","SELECT","ROUTE"})
     elseif tab == "TRAVEL" then self:SetSuiteButtons(tab, {"MODE","< PAGE","PAGE >","SELECT","TRAVEL"})
     elseif tab == "ACTIVITY" then self:SetSuiteButtons(tab, {"GOAL","SELECT","ROUTE"})
-    elseif tab == "TOOLS" then self:SetSuiteButtons(tab, {"MODE"})
+    elseif tab == "TOOLS" then
+        local toolMode = EPC.UtilitySuite and EPC.UtilitySuite:GetMode() or "OVERVIEW"
+        if toolMode == "RETICLE" then
+            self:SetSuiteButtons(tab, {"MODE","ON / OFF","STYLE","COLOR","SIZE -","SIZE +","OPACITY -","OPACITY +"})
+        elseif toolMode == "SELL" then
+            self:SetSuiteButtons(tab, {"MODE","< ITEM","ITEM >","SELL ITEM","SELL JUNK","REFRESH"})
+        else
+            self:SetSuiteButtons(tab, {"MODE"})
+        end
+    elseif tab == "SKILLS" then self:SetSuiteButtons(tab, {"RESPEC + BUILD","REDISTRIBUTE CP","BEST ATTRIBUTES"})
     else self:SetSuiteButtons(tab, {"REFRESH"}) end
 end
 
@@ -1583,6 +1933,7 @@ function J:Create()
     self.pages.COMBAT = self:CreateSuitePage(content, "COMBAT")
     self.pages.ACTIVITY = self:CreateSuitePage(content, "ACTIVITY")
     self.pages.DUNGEONS = self:CreateSuitePage(content, "DUNGEONS")
+    self.pages.GROUPFINDER = self:CreateSuitePage(content, "GROUPFINDER")
     self.pages.QUESTS = self:CreateSuitePage(content, "QUESTS")
     self.pages.TRAVEL = self:CreateSuitePage(content, "TRAVEL")
     self.pages.TOOLS = self:CreateSuitePage(content, "TOOLS")
@@ -1590,7 +1941,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentPage(content, "STATS")
     self.pages.CODEX = self:CreateCodexPage(content)
     self.pages.DICE = self:CreateDicePage(content)
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, GROUPFINDER=0 }
 
     local prevPage = makeButton("EAS_CustomJournal_PrevPage", rightPage, "< PREV", 6, pageH-28, 88, 26, function() self:TurnPage(-1) end)
     local pageNumber = makeLabel("EAS_CustomJournal_PageNumber", rightPage, "Page 1 / 7", math.floor((pageW-150)/2), pageH-26, 150, 22, "ZoFontGameSmall")
@@ -1698,6 +2049,30 @@ end
 
 function J:Toggle()
     if not self.window then return end
+
+    -- If the detached Saved Loadouts workspace is open, the suite key should
+    -- switch back to the Tamriel Codex instead of leaving both workspaces open.
+    local loadouts = EPC and EPC.LoadoutManager
+    if loadouts and loadouts.window and not loadouts.window:IsHidden() then
+        local transferred = false
+        if type(loadouts.TransferUIModeToCodex) == "function" then
+            transferred = loadouts:TransferUIModeToCodex() == true
+        end
+        if type(loadouts.Hide) == "function" then
+            loadouts:Hide(true)
+        else
+            loadouts.window:SetHidden(true)
+        end
+
+        self:Show()
+        if transferred then
+            -- Preserve ownership so closing the Codex returns to character control
+            -- when the original workspace was opened from normal gameplay.
+            self.ownsUIMode = true
+        end
+        return
+    end
+
     if self.window:IsHidden() then self:Show() else self:Hide() end
 end
 
@@ -1713,13 +2088,14 @@ end
     book layout with a true two-page spread plus an index and edge chapter tabs.
 ]]
 
-TABS = {"INDEX", "NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
+TABS = {"INDEX", "NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "GROUPFINDER", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
 TAB_LABELS.INDEX = "Index"
+TAB_LABELS.DICE = "Dice & Coin"
 TAB_TITLES.INDEX = "TAMRIEL CODEX"
 
 local EAS_TAB_SHORT = {
     INDEX="INDEX", NOTES="NOTES", PINS="PINS", BUILD="BUILD", GEAR="GEAR", SKILLS="SKILLS", COMBAT="COMBAT",
-    ACTIVITY="ACTIVITY", DUNGEONS="DUNGEONS", QUESTS="QUESTS", TRAVEL="TRAVEL", TOOLS="TOOLS", ACHIEVEMENTS="ACHV", STATS="STATS",
+    ACTIVITY="ACTIVITY", DUNGEONS="DUNGEONS", GROUPFINDER="GROUPS", QUESTS="QUESTS", TRAVEL="TRAVEL", TOOLS="TOOLS", ACHIEVEMENTS="ACHV", STATS="STATS",
     CODEX="CRAFT", DICE="DICE",
 }
 
@@ -1733,6 +2109,7 @@ local EAS_TAB_DESCRIPTIONS = {
     COMBAT="Role-aware combat information and recent fight analysis.",
     ACTIVITY="Activities for XP, gold, quests, and progression goals.",
     DUNGEONS="All detected 4-player dungeons sorted alphabetically, with Base Game versus DLC / Chapter labeling.",
+    GROUPFINDER="Browse live player-created ESO Group Finder listings by category and difficulty.",
     QUESTS="Quest discovery and routing for active and not-yet-started quests.",
     TRAVEL="Wayshrines, group, guild, and social travel destinations.",
     TOOLS="Inventory, research, collections, daily tasks, and utility information.",
@@ -1953,10 +2330,28 @@ function J:CreateSuiteSpread(name)
 
     local gap = 5
     local bw = math.floor((self.pageW - 28 - gap*2) / 3)
-    for i=1,6 do
-        local parent = i <= 3 and spread.left or spread.right
-        local col = (i-1) % 3
-        local b = makeButton("EAS_CodexSuiteAction_"..name.."_"..i, parent, "", 14+col*(bw+gap), self.pageH-50, bw, 28, function() self:RunSuiteAction(name, i) end)
+    local buttonCount = (name == "TOOLS") and 8 or 6
+    for i=1,buttonCount do
+        local parent, x, y, width
+        if name == "TOOLS" and i >= 7 then
+            -- Reticle opacity controls get their own clearly visible row on the
+            -- right Utilities page. The generic Suite spread only had six
+            -- buttons, so actions 7/8 existed in code but could never render.
+            parent = spread.right
+            local opacityGap = 7
+            local opacityW = math.floor((self.pageW - 28 - opacityGap) / 2)
+            x = 14 + (i - 7) * (opacityW + opacityGap)
+            y = self.pageH - 84
+            width = opacityW
+        else
+            parent = i <= 3 and spread.left or spread.right
+            local col = (i-1) % 3
+            x = 14 + col*(bw+gap)
+            y = self.pageH - 50
+            width = bw
+        end
+        local actionIndex = i
+        local b = makeButton("EAS_CodexSuiteAction_"..name.."_"..i, parent, "", x, y, width, 28, function() self:RunSuiteAction(name, actionIndex) end)
         b:SetHidden(true)
         spread.buttons[i] = b
     end
@@ -1966,8 +2361,19 @@ end
 function J:CreateDocumentSpread(name)
     local spread = self:CreateSpreadShell(name)
     self:AddSpreadHeader(spread, TAB_TITLES[name] or name, "CONTINUED")
-    spread.leftBody = makeLabel("EAS_CodexDocLeft_"..name, spread.left, "", 14, 58, self.pageW-28, self.pageH-92, "ZoFontGame")
-    spread.rightBody = makeLabel("EAS_CodexDocRight_"..name, spread.right, "", 14, 58, self.pageW-28, self.pageH-92, "ZoFontGame")
+    local isLowDensity = (name == "ACHIEVEMENTS" or name == "STATS")
+    local bodyX = isLowDensity and 18 or 14
+    local bodyY = isLowDensity and 50 or 58
+    local bodyW = isLowDensity and (self.pageW - 36) or (self.pageW - 28)
+    local bodyH = isLowDensity and (self.pageH - 64) or (self.pageH - 92)
+    local bodyFont = "ZoFontGame"
+    if name == "ACHIEVEMENTS" then
+        bodyFont = getAchievementsDocumentFont()
+    elseif name == "STATS" then
+        bodyFont = getStatsDocumentFont()
+    end
+    spread.leftBody = makeLabel("EAS_CodexDocLeft_"..name, spread.left, "", bodyX, bodyY, bodyW, bodyH, bodyFont)
+    spread.rightBody = makeLabel("EAS_CodexDocRight_"..name, spread.right, "", bodyX, bodyY, bodyW, bodyH, bodyFont)
     self.themeLabels[#self.themeLabels+1] = spread.leftBody
     self.themeLabels[#self.themeLabels+1] = spread.rightBody
     return spread
@@ -2034,7 +2440,7 @@ function J:CreateDiceSpread()
     self.themeLabels[#self.themeLabels+1] = hint
     setBookText(hint, hint:GetText(), hint:GetWidth())
 
-    self.diceResultPanel = makePanel("EAS_CodexDiceResultPanel", spread.right, 22, 58, self.pageW - 44, 246)
+    self.diceResultPanel = makePanel("EAS_CodexDiceResultPanel", spread.right, 24, 58, self.pageW - 50, 244)
     self.diceResultTitle = makeLabel("EAS_CodexDiceResultTitle", self.diceResultPanel, "LUCK OF THE DRAW", 12, 12, self.diceResultPanel:GetWidth() - 24, 28, "ZoFontWinH2")
     self.diceResultTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.themeLabels[#self.themeLabels+1] = self.diceResultTitle
@@ -2076,12 +2482,18 @@ function J:RefreshDocumentPage()
     local page = self.pages and self.pages[self.activeTab]
     if not page or not page.leftBody then return end
     local text = ""
-    if self.activeTab == "ACHIEVEMENTS" then text = self:BuildAchievementText()
-    elseif self.activeTab == "STATS" then text = self:BuildStatsText()
-    else return end
-    local left, right = easSplitSpreadText(text)
-    setBookText(page.leftBody, left, page.leftBody:GetWidth())
-    setBookText(page.rightBody, right, page.rightBody:GetWidth())
+    if self.activeTab == "ACHIEVEMENTS" then
+        text = self:BuildAchievementText()
+        local left, right = easSplitSpreadText(text)
+        setBookText(page.leftBody, left, page.leftBody:GetWidth())
+        setBookText(page.rightBody, right, page.rightBody:GetWidth())
+    elseif self.activeTab == "STATS" then
+        local left, right = self:BuildStatsSpread()
+        setBookText(page.leftBody, left, page.leftBody:GetWidth())
+        setBookText(page.rightBody, right, page.rightBody:GetWidth())
+    else
+        return
+    end
 end
 
 function J:RefreshSuitePage(tab)
@@ -2096,7 +2508,16 @@ function J:RefreshSuitePage(tab)
     elseif tab == "QUESTS" then self:SetSuiteButtons(tab, {"FILTER","< PAGE","PAGE >","SELECT","ROUTE"})
     elseif tab == "TRAVEL" then self:SetSuiteButtons(tab, {"MODE","< PAGE","PAGE >","SELECT","TRAVEL"})
     elseif tab == "ACTIVITY" then self:SetSuiteButtons(tab, {"GOAL","SELECT","ROUTE"})
-    elseif tab == "TOOLS" then self:SetSuiteButtons(tab, {"MODE"})
+    elseif tab == "TOOLS" then
+        local toolMode = EPC.UtilitySuite and EPC.UtilitySuite:GetMode() or "OVERVIEW"
+        if toolMode == "RETICLE" then
+            self:SetSuiteButtons(tab, {"MODE","ON / OFF","STYLE","COLOR","SIZE -","SIZE +","OPACITY -","OPACITY +"})
+        elseif toolMode == "SELL" then
+            self:SetSuiteButtons(tab, {"MODE","< ITEM","ITEM >","SELL ITEM","SELL JUNK","REFRESH"})
+        else
+            self:SetSuiteButtons(tab, {"MODE"})
+        end
+    elseif tab == "SKILLS" then self:SetSuiteButtons(tab, {"RESPEC + BUILD","REDISTRIBUTE CP","BEST ATTRIBUTES"})
     else self:SetSuiteButtons(tab, {"REFRESH"}) end
 end
 
@@ -2212,6 +2633,7 @@ function J:Create()
     self.pages.COMBAT = self:CreateSuiteSpread("COMBAT")
     self.pages.ACTIVITY = self:CreateSuiteSpread("ACTIVITY")
     self.pages.DUNGEONS = self:CreateSuiteSpread("DUNGEONS")
+    self.pages.GROUPFINDER = self:CreateSuiteSpread("GROUPFINDER")
     self.pages.QUESTS = self:CreateSuiteSpread("QUESTS")
     self.pages.TRAVEL = self:CreateSuiteSpread("TRAVEL")
     self.pages.TOOLS = self:CreateSuiteSpread("TOOLS")
@@ -2219,7 +2641,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentSpread("STATS")
     self.pages.CODEX = self:CreateCodexSpread()
     self.pages.DICE = self:CreateDiceSpread()
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, GROUPFINDER=0 }
 
     local prev = makeButton("EAS_CodexPrevSpread", window, "< PREV", 336, 894, 86, 26, function() self:TurnPage(-1) end)
     local spreadNo = makeLabel("EAS_CodexSpreadNumber", window, "1-2", 452, 896, 120, 22, "ZoFontGameSmall")
@@ -2281,12 +2703,25 @@ end
     Left page = filters + clickable rows. Right page = selected details + actions.
 ]]
 
-local EAS_INTERACTIVE_TABS = { GEAR=true, QUESTS=true, TRAVEL=true, ACTIVITY=true, DUNGEONS=true }
+local EAS_INTERACTIVE_TABS = { GEAR=true, QUESTS=true, TRAVEL=true, ACTIVITY=true, DUNGEONS=true, GROUPFINDER=true }
 
 local function easSetEnabled(control, enabled)
     if not control then return end
-    if control.SetEnabled then control:SetEnabled(enabled == true) end
-    if control.SetAlpha then control:SetAlpha(enabled == true and 1 or 0.45) end
+    local active = enabled == true
+    if control.SetEnabled then control:SetEnabled(active) end
+    if control.SetAlpha then control:SetAlpha(active and 1 or 0.45) end
+    if control._easBorder then
+        if active then
+            control._easBorder:SetCenterColor(0.035, 0.050, 0.072, 0.55)
+        else
+            control._easBorder:SetCenterColor(0.020, 0.025, 0.032, 0.42)
+        end
+    end
+    if active then
+        setButtonBorderColor(control, 0.18, 0.72, 0.92, 0.94)
+    else
+        setButtonBorderColor(control, 0.12, 0.44, 0.56, 0.55)
+    end
 end
 
 local function easSetInk(label, selected, muted)
@@ -2302,10 +2737,11 @@ local function easSetInk(label, selected, muted)
 end
 
 function J:RefreshInteractiveDungeons(page)
-    local v = EPC.DungeonFinder and EPC.DungeonFinder:BuildView() or {rows={},total=0,page=1,pageCount=1}
     local D = EPC.DungeonFinder
+    local liveMode = false -- v0.25.29 Group Finder moved to its own Codex tab
+    local v = liveMode and D:BuildLiveView() or (D and D:BuildView() or {rows={},total=0,page=1,pageCount=1})
 
-    local dungeonCtlWidths = {82, 82, 124, 102}
+    local dungeonCtlWidths = {90, 104, 142, 78}
     local dungeonCtlX = 14
     for i=1,4 do
         local b = page.controls[i]
@@ -2316,6 +2752,100 @@ function J:RefreshInteractiveDungeons(page)
             dungeonCtlX = dungeonCtlX + dungeonCtlWidths[i] + 4
         end
     end
+
+    if liveMode then
+        page.controls[1]:SetHidden(false); page.controls[1]:SetText("DUNGEONS")
+        page.controls[2]:SetHidden(false); page.controls[2]:SetText("LIVE GROUPS")
+        page.controls[3]:SetHidden(false); page.controls[3]:SetText(tostring(v.categoryName or "CATEGORY"))
+        page.controls[4]:SetHidden(false); page.controls[4]:SetText("REFRESH")
+        setButtonStyle(page.controls[1], false, self:GetTheme())
+        setButtonStyle(page.controls[2], true, self:GetTheme())
+        setButtonStyle(page.controls[3], false, self:GetTheme())
+        setButtonStyle(page.controls[4], false, self:GetTheme())
+
+        page.secondary[1]:SetText("< PREV")
+        page.secondary[2]:SetText("NEXT >")
+        page.secondary[3]:SetText("NORMAL")
+        page.secondary[4]:SetText("VETERAN")
+        for i=1,4 do page.secondary[i]:SetHidden(false) end
+        setButtonStyle(page.secondary[1], false, self:GetTheme())
+        setButtonStyle(page.secondary[2], false, self:GetTheme())
+        setButtonStyle(page.secondary[3], v.difficulty == "NORMAL", self:GetTheme())
+        setButtonStyle(page.secondary[4], v.difficulty == "VETERAN", self:GetTheme())
+        easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+        easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+
+        local selected = v.selected
+        for i,rowControl in ipairs(page.rows) do
+            local row = v.rows and v.rows[i]
+            if row then
+                rowControl:SetHidden(false)
+                local isSelected = selected and row.data == selected
+                local rowTitle = tostring(row.title or "Group Listing")
+                if row.lastBoss then rowTitle = "LAST BOSS  -  " .. rowTitle end
+                rowControl.titleLabel:SetText(rowTitle)
+                local detail = tostring(row.owner or "")
+                if row.roles and row.roles ~= "" then detail = detail .. "   " .. row.roles end
+                if row.activeApplication then detail = "PENDING   " .. detail end
+                rowControl.detailLabel:SetText(detail)
+                easSetInk(rowControl.titleLabel, isSelected, false)
+                easSetInk(rowControl.detailLabel, isSelected, true)
+                if row.lastBoss and EPC.saved.groupFinderWidgetLastBossHighlight == true and not isSelected then
+                    rowControl._easLastBossPulse = 0
+                    rowControl:SetHandler("OnUpdate", function(control, timeMs)
+                        local now = tonumber(timeMs) or (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or 0
+                        if now - (control._easLastBossPulse or 0) < 90 then return end
+                        control._easLastBossPulse = now
+                        local phase = (now % 4200) / 4200 * 6.283185307
+                        local r = 0.55 + 0.45 * math.sin(phase)
+                        local g = 0.55 + 0.45 * math.sin(phase + 2.094395102)
+                        local b = 0.55 + 0.45 * math.sin(phase + 4.188790205)
+                        control.titleLabel:SetColor(r, g, b, 1)
+                    end)
+                else
+                    rowControl:SetHandler("OnUpdate", nil)
+                end
+            else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
+        end
+
+        page.pageLabel:SetText(string.format("PAGE %d / %d  -  %d LIVE LISTINGS", tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+        if selected then
+            local function get(method, fallback)
+                if type(selected[method]) == "function" then local ok,val=pcall(selected[method],selected); if ok and val ~= nil then return val end end
+                return fallback
+            end
+            local title = cleanName and cleanName(get("GetTitle", "Group Listing")) or tostring(get("GetTitle", "Group Listing"))
+            local owner = tostring(get("GetOwnerDisplayName", "Unknown"))
+            local description = tostring(get("GetDescription", ""))
+            local autoAccept = get("DoesGroupAutoAcceptRequests", false) == true
+            local activeApplication = get("IsActiveApplication", false) == true
+            local roleText = ""
+            if type(selected.GetRoleStatusCount) == "function" then
+                local parts = {}
+                for _,r in ipairs({{LFG_ROLE_TANK,"Tank"},{LFG_ROLE_HEAL,"Healer"},{LFG_ROLE_DPS,"DPS"}}) do
+                    if r[1] ~= nil then local ok,desired,attained=pcall(selected.GetRoleStatusCount,selected,r[1]); if ok and ((tonumber(desired) or 0)>0 or (tonumber(attained) or 0)>0) then parts[#parts+1]=string.format("%s %d/%d",r[2],tonumber(attained) or 0,tonumber(desired) or 0) end end
+                end
+                roleText = table.concat(parts, "  ")
+            end
+            page.detailTitle:SetText((EPC.DungeonFinder and EPC.DungeonFinder:IsLastBossListing(selected) and EPC.saved.groupFinderWidgetLastBossHighlight == true) and ("LAST BOSS  -  " .. title) or title)
+            setBookText(page.detailBody, string.format("LEADER\n%s\n\nCATEGORY\n%s\n\nMODE\n%s\n\nROLES\n%s\n\nAPPLICATION\n%s\n\nDESCRIPTION\n%s", owner, tostring(v.categoryName or "Group Finder"), tostring(v.difficulty or "ALL"), roleText ~= "" and roleText or "Any / listing rules", activeApplication and "PENDING" or (autoAccept and "INSTANT JOIN" or "APPLICATION"), description ~= "" and description or "No description provided."), page.detailBody:GetWidth())
+        else
+            page.detailTitle:SetText((tonumber(v.total) or 0) > 0 and "Select a Live Group" or "Live Group Finder")
+            setBookText(page.detailBody, "Browse ESO's live player-created Group Finder listings without leaving the Tamriel Codex. Switch category, choose Normal or Veteran where supported, select a listing, then JOIN / APPLY. Results update through ESO's Group Finder callbacks instead of a permanent polling loop.", page.detailBody:GetWidth())
+        end
+
+        page.action0:SetText("JOIN / APPLY")
+        page.action1:SetText("WHISPER LEADER")
+        page.action2:SetText("RESCIND APPLICATION")
+        page.action3:SetText("REFRESH")
+        for _, b in ipairs({page.action0,page.action1,page.action2,page.action3}) do b:SetHidden(false); setButtonStyle(b, false, self:GetTheme()) end
+        easSetEnabled(page.action0, selected ~= nil)
+        easSetEnabled(page.action1, selected ~= nil)
+        easSetEnabled(page.action2, true)
+        easSetEnabled(page.action3, true)
+        return
+    end
+
     page.controls[1]:SetHidden(false); page.controls[1]:SetText("NORMAL")
     page.controls[2]:SetHidden(false); page.controls[2]:SetText("VETERAN")
     page.controls[3]:SetHidden(false); page.controls[3]:SetText("ROLE: " .. tostring(v.role or "DPS"))
@@ -2344,7 +2874,7 @@ function J:RefreshInteractiveDungeons(page)
             rowControl.detailLabel:SetText(string.format("%s   [%s]", tostring(row.source or "DLC / CHAPTER"), versions))
             easSetInk(rowControl.titleLabel, isSelected, false)
             easSetInk(rowControl.detailLabel, isSelected, true)
-        else rowControl:SetHidden(true) end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
     end
     if v.scanning then
         page.pageLabel:SetText(string.format("SCANNING ESO ACTIVITIES... %d FOUND", tonumber(v.total) or 0))
@@ -2357,16 +2887,16 @@ function J:RefreshInteractiveDungeons(page)
         local req = (tonumber(selected.championMin) or 0) > 0 and ("CP "..tostring(selected.championMin)) or ((tonumber(selected.levelMin) or 0) > 0 and ("Level "..tostring(selected.levelMin)) or "ESO requirements apply")
         local queueState = v.queued and "QUEUED" or "NOT QUEUED"
         local availability = string.format("Normal: %s   Veteran: %s", selected.normalActivityId and "YES" or "NO", selected.veteranActivityId and "YES" or "NO")
-        setBookText(page.detailBody, string.format("SOURCE\n%s\n\nREQUIREMENT\n%s\n\nMODE\n%s / %s\n\nHOST OPTIONS\nAuto Accept: %s\nEnforce Roles: %s\n1 Tank / 1 Healer / 2 DPS\n\nSTATUS\n%s\n%s\n\n%s", tostring(selected.source or "DLC / CHAPTER"), req, tostring(v.difficulty or "NORMAL"), tostring(v.role or "DPS"), v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF", queueState, availability, tostring(selected.description or "")), page.detailBody:GetWidth())
+        setBookText(page.detailBody, string.format("SOURCE\n%s\n\nREQUIREMENT\n%s\n\nMODE\n%s / %s\n\nHOST OPTIONS\nAuto Accept: %s\nEnforce Roles: %s\n1 Tank / 1 Healer / 2 DPS\n\nSTATUS\n%s\n%s\n\n%s", tostring(selected.source or "DLC / CHAPTER"), req, tostring(v.difficulty or "ALL"), tostring(v.role or "DPS"), v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF", queueState, availability, tostring(selected.description or "")), page.detailBody:GetWidth())
     else
         page.detailTitle:SetText(v.scanning and "Building Dungeon Index" or "Select a Dungeon")
-        setBookText(page.detailBody, "Select a dungeon on the left. Then choose Normal/Veteran and your role. QUEUE SELECTED uses ESO Activity Finder. HOST LISTING creates a Group Finder listing. FIND REPLACEMENT asks Activity Finder to fill an open slot in your current group.", page.detailBody:GetWidth())
+        setBookText(page.detailBody, "Select a dungeon on the left. Then choose Normal/Veteran and your role. QUEUE SELECTED uses ESO Activity Finder. HOST LISTING creates a Group Finder listing. LIVE GROUPS opens the new real-time player-created Group Finder browser.", page.detailBody:GetWidth())
     end
 
     page.action0:SetText(v.queued and "ALREADY QUEUED" or "QUEUE SELECTED")
     page.action1:SetText("HOST / CREATE LISTING")
     page.action2:SetText("FIND REPLACEMENT")
-    page.action3:SetText(v.queued and "CANCEL QUEUE" or "CANCEL QUEUE")
+    page.action3:SetText("CANCEL QUEUE")
     for _, b in ipairs({page.action0,page.action1,page.action2,page.action3}) do b:SetHidden(selected == nil); setButtonStyle(b, false, self:GetTheme()) end
     easSetEnabled(page.action0, selected ~= nil and not v.queued)
     easSetEnabled(page.action1, selected ~= nil and not v.queued)
@@ -2453,6 +2983,15 @@ function J:CreateInteractiveSuiteSpread(name)
                 end
             end)
         end
+        -- v0.27.10: Saved Loadouts must be directly discoverable from the
+        -- Gear & Sets chapter. Do not depend on the optional Live Equipment
+        -- floating panel to expose the Dressing-Room-style manager.
+        spread.savedLoadoutsButton = makeButton("EAS_CodexSavedLoadouts", spread.right, "OPEN LOADOUTS", 10, self.pageH-362, self.pageW-20, 28, function()
+            if EPC.LoadoutManager and type(EPC.LoadoutManager.Show) == "function" then
+                EPC.LoadoutManager:Show()
+            end
+        end)
+
         local loadoutActions = {
             {"WEAPONS", "EquipBestWeapons"},
             {"JEWELRY", "EquipBestJewelry"},
@@ -2488,6 +3027,57 @@ function J:CreateInteractiveSuiteSpread(name)
     spread.action1 = makeButton("EAS_CodexInteractiveAction1_"..name, spread.right, "ACTION", 18, self.pageH-168, self.pageW-36, 32, function() self:RunInteractivePrimary(name) end)
     spread.action2 = makeButton("EAS_CodexInteractiveAction2_"..name, spread.right, "", 18, self.pageH-128, self.pageW-36, 30, function() self:RunInteractiveSecondaryAction(name) end)
     spread.action3 = makeButton("EAS_CodexInteractiveAction3_"..name, spread.right, "", 18, self.pageH-88, self.pageW-36, 30, function() self:RunInteractiveTertiaryAction(name) end)
+
+    if name == "TRAVEL" then
+        spread.guildLeaderSelect = makeButton("EAS_CodexGuildLeaderSelect", spread.right, "GUILD LEADER: NONE", 18, self.pageH-248, self.pageW-36, 30, function()
+            self:ShowGuildLeaderHomeDropdown(spread)
+        end)
+        spread.guildLeaderSelect:SetHidden(false)
+        spread.stableTravelButton = makeButton("EAS_CodexStableTravelButton", spread.right, "TRAVEL TO NEAREST STABLEMASTER", 18, self.pageH-72, self.pageW-36, 30, function()
+            if EPC.Travel and EPC.Travel.TravelToNearestService then EPC.Travel:TravelToNearestService("STABLE") end
+        end)
+        spread.stableTravelButton:SetHidden(false)
+        spread.pledgeMasterTravelButton = makeButton("EAS_CodexPledgeMasterTravelButton", spread.right, "TRAVEL TO PLEDGE MASTER", 18, self.pageH-38, self.pageW-36, 30, function()
+            if EPC.Travel and type(EPC.Travel.TravelToPledgeMaster) == "function" then
+                EPC.Travel:TravelToPledgeMaster()
+            else
+                EPC:Print("Pledge Master travel is unavailable.")
+            end
+        end)
+        spread.pledgeMasterTravelButton:SetHidden(false)
+        spread.action0:SetText("TRAVEL TO GUILD LEADER HOME")
+        spread.action0:SetHidden(false)
+        spread.action0:SetHandler("OnClicked", function()
+            if EPC.Travel and EPC.Travel.TravelToSelectedGuildLeaderHome then
+                EPC.Travel:TravelToSelectedGuildLeaderHome()
+            end
+        end)
+        spread.action0:ClearAnchors()
+        spread.action0:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, self.pageH-210)
+        spread.action0:SetDimensions(self.pageW-36, 32)
+        spread.action0:SetText("GUILD LEADER HOME")
+        -- v0.27.66: compact the direct-travel stack so Pledge Master sits
+        -- immediately below Stablemaster without clipping the page edge.
+        spread.action1:ClearAnchors()
+        spread.action1:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, self.pageH-174)
+        spread.action1:SetDimensions(self.pageW-36, 30)
+        spread.action2:ClearAnchors()
+        spread.action2:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, self.pageH-140)
+        spread.action2:SetDimensions(self.pageW-36, 30)
+        spread.action3:ClearAnchors()
+        spread.action3:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, self.pageH-106)
+        spread.action3:SetDimensions(self.pageW-36, 30)
+        spread.stableTravelButton:ClearAnchors()
+        spread.stableTravelButton:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, self.pageH-72)
+        spread.stableTravelButton:SetDimensions(self.pageW-36, 30)
+        spread.pledgeMasterTravelButton:ClearAnchors()
+        spread.pledgeMasterTravelButton:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, self.pageH-38)
+        spread.pledgeMasterTravelButton:SetDimensions(self.pageW-36, 30)
+
+        spread.detailBody:ClearAnchors()
+        spread.detailBody:SetAnchor(TOPLEFT, spread.right, TOPLEFT, 18, 124)
+        spread.detailBody:SetDimensions(self.pageW-36, self.pageH-398)
+    end
 
     -- v0.24.93: clean selected Gear layout. Keep the detail copy above the
     -- controls, then give every control row its own vertical band.
@@ -2528,7 +3118,7 @@ function J:CreateInteractiveSuiteSpread(name)
         end
     end
 
-    spread.action0:SetHidden(true)
+    spread.action0:SetHidden(name ~= "TRAVEL")
     spread.action2:SetHidden(true)
     spread.action3:SetHidden(true)
 
@@ -2557,8 +3147,11 @@ function J:RunInteractiveControl(tab, index)
         local filters = {"ALL","OVERLAND","DUNGEON","TRIAL"}
         EPC.SetJournal:SetFilter(filters[index] or "ALL")
     elseif tab == "QUESTS" and EPC.QuestFinder then
-        local filters = {"NOT_STARTED","ACTIVE","ALL"}
-        if index <= 3 then EPC.QuestFinder:SetFilter(filters[index]) end
+        -- v0.27.63: the fourth visible Quest filter is CADWELL. The old
+        -- click map still pointed button 4 at ALL, so pressing CADWELL could
+        -- never open the Almanac view even though the button label was right.
+        local filters = {"NOT_STARTED","ACTIVE","MAIN_QUEST","CADWELL"}
+        if index <= 4 then EPC.QuestFinder:SetFilter(filters[index]) end
         if EPC.RefreshNow then EPC:RefreshNow("codex-quest-filter") end
     elseif tab == "TRAVEL" and EPC.Travel then
         local modes = {"SHRINES","FRIENDS","GUILD","GROUP"}
@@ -2567,10 +3160,17 @@ function J:RunInteractiveControl(tab, index)
         local goals = {"BALANCED","XP","GOLD"}
         if index <= 3 then EPC.Activities:SetGoal(goals[index]) end
     elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        EPC.DungeonFinder:SetViewMode("DUNGEONS")
         if index == 1 then EPC.DungeonFinder:SetDifficulty("NORMAL")
         elseif index == 2 then EPC.DungeonFinder:SetDifficulty("VETERAN")
         elseif index == 3 then EPC.DungeonFinder:CycleRole()
         elseif index == 4 then EPC.DungeonFinder:StartScan(true) end
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then
+        EPC.DungeonFinder:SetViewMode("LIVE")
+        if index == 1 then EPC.DungeonFinder:CycleLiveCategory()
+        elseif index == 2 then EPC.DungeonFinder:SetLiveDifficulty("ALL")
+        elseif index == 3 then EPC.DungeonFinder:SetLiveDifficulty("NORMAL")
+        elseif index == 4 then EPC.DungeonFinder:SetLiveDifficulty("VETERAN") end
     end
     self:RefreshSuitePage(tab)
 end
@@ -2598,6 +3198,11 @@ function J:RunInteractiveSecondary(tab, index)
         elseif index == 2 then EPC.DungeonFinder:ChangePage(1)
         elseif index == 3 then EPC.DungeonFinder.autoAccept = not (EPC.DungeonFinder.autoAccept == true)
         elseif index == 4 then EPC.DungeonFinder.enforceRoles = not (EPC.DungeonFinder.enforceRoles == true) end
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then
+        if index == 1 then EPC.DungeonFinder:ChangeLivePage(-1)
+        elseif index == 2 then EPC.DungeonFinder:ChangeLivePage(1)
+        elseif index == 3 then EPC.DungeonFinder:CycleLiveCategory()
+        elseif index == 4 then EPC.DungeonFinder:RefreshLiveListings(true) end
     end
     self:RefreshSuitePage(tab)
 end
@@ -2607,15 +3212,17 @@ function J:SelectInteractiveRow(tab, index)
     elseif tab == "QUESTS" and EPC.QuestFinder then EPC.QuestFinder:SelectRow(index)
     elseif tab == "TRAVEL" and EPC.Travel then EPC.Travel:SelectVisibleRow(index, EPC.Travel.BOOK_PAGE_SIZE or 8)
     elseif tab == "ACTIVITY" and EPC.Activities then EPC.Activities:SelectVisibleRow(index)
-    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:SelectRow(index) end
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:SelectRow(index)
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:SelectLiveRow(index)
+    end
     self:RefreshSuitePage(tab)
 end
 
 function J:RunInteractiveGearOptimizer(tab)
     if tab == "GEAR" and EPC.GearOptimizer and EPC.GearOptimizer.EquipBestRecommended then
         EPC.GearOptimizer:EquipBestRecommended()
-    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
-        EPC.DungeonFinder:QueueSelected()
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:QueueSelected()
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:ApplySelectedLive()
     end
     self:RefreshSuitePage(tab)
 end
@@ -2624,16 +3231,21 @@ function J:RunInteractivePrimary(tab)
     if tab == "GEAR" and EPC.SetJournal then EPC.SetJournal:FastTravelSelected()
     elseif tab == "QUESTS" and EPC.QuestFinder then EPC.QuestFinder:RouteSelected()
     elseif tab == "TRAVEL" and EPC.Travel then EPC.Travel:TravelSelected()
-    elseif tab == "ACTIVITY" and EPC.Activities then EPC.Activities:ActivateSelected()
-    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:CreateHostListing() end
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:CreateHostListing()
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:WhisperSelectedLive()
+    end
     self:RefreshSuitePage(tab)
 end
 
 function J:RunInteractiveSecondaryAction(tab)
     if tab == "GEAR" and EPC.SetJournal and EPC.SetJournal.RouteSelected then
         EPC.SetJournal:RouteSelected()
-    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
-        EPC.DungeonFinder:FindReplacement()
+    elseif tab == "QUESTS" and EPC.QuestFinder and EPC.QuestFinder.TravelNearestWayshrineSelected then
+        EPC.QuestFinder:TravelNearestWayshrineSelected()
+    elseif tab == "TRAVEL" and EPC.Travel and EPC.Travel.TravelToNearestService then
+        EPC.Travel:TravelToNearestService("MERCHANT")
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:FindReplacement()
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:RescindLiveApplication()
     end
     self:RefreshSuitePage(tab)
 end
@@ -2641,10 +3253,100 @@ end
 function J:RunInteractiveTertiaryAction(tab)
     if tab == "GEAR" and EPC.SetJournal and EPC.SetJournal.OpenSourceQuests then
         EPC.SetJournal:OpenSourceQuests()
-    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
-        EPC.DungeonFinder:CancelQueue()
+    elseif tab == "TRAVEL" and EPC.Travel and EPC.Travel.TravelToNearestService then
+        EPC.Travel:TravelToNearestService("GUILD_STORE")
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:CancelQueue()
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:RefreshLiveListings(true)
     end
     self:RefreshSuitePage(tab)
+end
+
+function J:RefreshInteractiveGroupFinder(page)
+    local D = EPC.DungeonFinder
+    if not D then return end
+    D.viewMode = "LIVE"
+    local v = D:BuildLiveView()
+
+    local widths = {142, 70, 78, 78}
+    local x = 14
+    for i=1,4 do
+        local b = page.controls[i]
+        b:ClearAnchors(); b:SetAnchor(TOPLEFT, page.left, TOPLEFT, x, 54); b:SetDimensions(widths[i], 25)
+        x = x + widths[i] + 4
+    end
+    page.controls[1]:SetHidden(false); page.controls[1]:SetText(tostring(v.categoryName or "CATEGORY"))
+    page.controls[2]:SetHidden(false); page.controls[2]:SetText("ALL")
+    page.controls[3]:SetHidden(false); page.controls[3]:SetText("NORMAL")
+    page.controls[4]:SetHidden(false); page.controls[4]:SetText("VETERAN")
+    setButtonStyle(page.controls[1], false, self:GetTheme())
+    setButtonStyle(page.controls[2], v.difficulty == "ALL", self:GetTheme())
+    setButtonStyle(page.controls[3], v.difficulty == "NORMAL", self:GetTheme())
+    setButtonStyle(page.controls[4], v.difficulty == "VETERAN", self:GetTheme())
+
+    page.secondary[1]:SetText("< PREV"); page.secondary[2]:SetText("NEXT >")
+    page.secondary[3]:SetText("NEXT CATEGORY"); page.secondary[4]:SetText("REFRESH")
+    for i=1,4 do page.secondary[i]:SetHidden(false); setButtonStyle(page.secondary[i], false, self:GetTheme()) end
+    easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+    easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+
+    local selected = v.selected
+    for i,rowControl in ipairs(page.rows) do
+        local row = v.rows and v.rows[i]
+        if row then
+            rowControl:SetHidden(false)
+            local isSelected = selected and row.data == selected
+            local rowTitle = tostring(row.title or "Group Listing")
+            if row.lastBoss then rowTitle = "LAST BOSS  -  " .. rowTitle end
+            rowControl.titleLabel:SetText(rowTitle)
+            local detail = tostring(row.owner or "")
+            if row.roles and row.roles ~= "" then detail = detail .. "   " .. row.roles end
+            if row.activeApplication then detail = "PENDING   " .. detail end
+            rowControl.detailLabel:SetText(detail)
+            easSetInk(rowControl.titleLabel, isSelected, false); easSetInk(rowControl.detailLabel, isSelected, true)
+            if row.lastBoss and EPC.saved.groupFinderWidgetLastBossHighlight == true and not isSelected then
+                rowControl._easLastBossPulse = 0
+                rowControl:SetHandler("OnUpdate", function(control, timeMs)
+                    local now = tonumber(timeMs) or (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or 0
+                    if now - (control._easLastBossPulse or 0) < 90 then return end
+                    control._easLastBossPulse = now
+                    local phase = (now % 4200) / 4200 * 6.283185307
+                    local r = 0.55 + 0.45 * math.sin(phase)
+                    local g = 0.55 + 0.45 * math.sin(phase + 2.094395102)
+                    local b = 0.55 + 0.45 * math.sin(phase + 4.188790205)
+                    control.titleLabel:SetColor(r, g, b, 1)
+                end)
+            else
+                rowControl:SetHandler("OnUpdate", nil)
+            end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
+    end
+
+    local stateText = D.liveSearchPending and "SEARCHING..." or ((tonumber(v.total) or 0) == 0 and "NO LISTINGS - MONITORING" or "LIVE")
+    page.pageLabel:SetText(string.format("%s  -  PAGE %d / %d  -  %d LISTINGS", stateText, tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+
+    if selected then
+        local function get(method, fallback)
+            if type(selected[method]) == "function" then local ok,val=pcall(selected[method],selected); if ok and val ~= nil then return val end end
+            return fallback
+        end
+        local title = tostring(get("GetTitle", "Group Listing"))
+        local owner = tostring(get("GetOwnerDisplayName", "Unknown"))
+        local description = tostring(get("GetDescription", ""))
+        local autoAccept = get("DoesGroupAutoAcceptRequests", false) == true
+        local activeApplication = get("IsActiveApplication", false) == true
+        local roleText = liveRoleSummary and liveRoleSummary(selected) or ""
+        page.detailTitle:SetText((EPC.DungeonFinder and EPC.DungeonFinder:IsLastBossListing(selected) and EPC.saved.groupFinderWidgetLastBossHighlight == true) and ("LAST BOSS  -  " .. title) or title)
+        setBookText(page.detailBody, string.format("LEADER\n%s\n\nCATEGORY\n%s\n\nMODE\n%s\n\nROLES\n%s\n\nAPPLICATION\n%s\n\nDESCRIPTION\n%s", owner, tostring(v.categoryName or "Group Finder"), tostring(v.difficulty or "ALL"), roleText ~= "" and roleText or "Any / listing rules", activeApplication and "PENDING" or (autoAccept and "INSTANT JOIN" or "APPLICATION"), description ~= "" and description or "No description provided."), page.detailBody:GetWidth())
+    else
+        page.detailTitle:SetText("Group Finder")
+        setBookText(page.detailBody, "Live ESO player-created listings appear here. Choose a category and Normal/Veteran mode, REFRESH can be used at any time. If the current category has no listings, the page remains ready for ESO search updates. Group Finder search is unavailable while hosting your own listing, in Battlegrounds, or below level 10.", page.detailBody:GetWidth())
+    end
+
+    page.action0:SetText("JOIN / APPLY"); page.action1:SetText("WHISPER LEADER")
+    page.action2:SetText("RESCIND APPLICATION"); page.action3:SetText("REFRESH")
+    for _,b in ipairs({page.action0,page.action1,page.action2,page.action3}) do b:SetHidden(false); setButtonStyle(b,false,self:GetTheme()) end
+    easSetEnabled(page.action0, selected ~= nil); easSetEnabled(page.action1, selected ~= nil)
+    easSetEnabled(page.action2, true); easSetEnabled(page.action3, true)
 end
 
 function J:RefreshInteractiveGear(page)
@@ -2658,6 +3360,11 @@ function J:RefreshInteractiveGear(page)
             b:SetText(preset and preset.label or key)
             setButtonStyle(b, key == active, self:GetTheme())
         end
+    end
+    if page.savedLoadoutsButton then
+        page.savedLoadoutsButton:SetHidden(false)
+        setButtonStyle(page.savedLoadoutsButton, false, self:GetTheme())
+        easSetEnabled(page.savedLoadoutsButton, EPC.LoadoutManager ~= nil and type(EPC.LoadoutManager.Toggle) == "function")
     end
     if page.loadoutButtons and EPC.GearOptimizer then
         local methods = {"EquipBestWeapons","EquipBestJewelry","EquipBestAbilities","EquipBestPotions"}
@@ -2696,7 +3403,7 @@ function J:RefreshInteractiveGear(page)
             rowControl.detailLabel:SetText(string.format("%d/%d collected  -  %s", tonumber(row.unlocked) or 0, tonumber(row.total) or 0, tostring(row.kindText or "Set pieces")))
             easSetInk(rowControl.titleLabel, selected, false)
             easSetInk(rowControl.detailLabel, selected, true)
-        else rowControl:SetHidden(true) end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
     end
     page.pageLabel:SetText(string.format("PAGE %d / %d  -  %d SETS", tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
     if v.selected then
@@ -2723,11 +3430,34 @@ end
 function J:RefreshInteractiveQuests(page)
     if page.action0 then page.action0:SetHidden(true) end
     local v = EPC.QuestFinder and EPC.QuestFinder:BuildView() or {rows={}}
-    local filters = {{"NOT_STARTED","NOT STARTED"},{"ACTIVE","ACTIVE"},{"ALL","ALL"}}
+    local filters = {{"NOT_STARTED","NOT STARTED"},{"ACTIVE","ACTIVE"},{"MAIN_QUEST","MAIN QUEST"},{"CADWELL","CADWELL"}}
+
+    -- Quest filters have unequal label lengths. Give NOT STARTED and MAIN QUEST
+    -- more room instead of forcing all four into identical widths, which clips
+    -- those labels at normal Codex sizes.
+    local gap = 4
+    local usable = self.pageW - 28 - gap * 3
+    local weights = { 1.24, 0.84, 1.18, 0.94 }
+    local totalWeight = 4.20
+    local x = 14
     for i,b in ipairs(page.controls) do
-        if i <= 3 then
-            b:SetHidden(false); b:SetText(filters[i][2]); setButtonStyle(b, v.filter == filters[i][1], self:GetTheme())
-        else b:SetHidden(true) end
+        if i <= 4 then
+            local w
+            if i < 4 then
+                w = math.floor(usable * weights[i] / totalWeight)
+            else
+                w = (14 + usable + gap * 3) - x
+            end
+            b:ClearAnchors()
+            b:SetAnchor(TOPLEFT, page.left, TOPLEFT, x, 54)
+            b:SetDimensions(w, 25)
+            b:SetHidden(false)
+            b:SetText(filters[i][2])
+            setButtonStyle(b, v.filter == filters[i][1], self:GetTheme())
+            x = x + w + gap
+        else
+            b:SetHidden(true)
+        end
     end
     page.secondary[1]:SetText("SEARCH")
     page.secondary[2]:SetText("< PREV")
@@ -2748,30 +3478,104 @@ function J:RefreshInteractiveQuests(page)
             rowControl.detailLabel:SetText(meta)
             easSetInk(rowControl.titleLabel, selected, false)
             easSetInk(rowControl.detailLabel, selected, true)
-        else rowControl:SetHidden(true) end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
     end
     local first = (tonumber(v.offset) or 0) + 1
     local last = math.min(tonumber(v.total) or 0, first + #(v.rows or {}) - 1)
     page.pageLabel:SetText(string.format("%d-%d OF %d  -  %s", (v.total or 0) > 0 and first or 0, last, tonumber(v.total) or 0, tostring(v.scanProgress or "INDEX")))
     if v.selected then
         page.detailTitle:SetText(v.selected.name or "Selected Quest")
+
+        -- Show the resolved wayshrine directly beneath the zone. For accepted
+        -- quests this uses the same Active/Main/Golden objective resolver as
+        -- Map/Travel, so the label reflects the shrine actually chosen for the
+        -- current objective rather than an arbitrary shrine in the zone.
+        local wayshrineName = "Locating closest discovered wayshrine..."
+        if EPC.Travel and type(EPC.Travel.GetFocusedQuest) == "function" then
+            local focused = EPC.Travel:GetFocusedQuest(EPC.lastSnapshot or {})
+            if focused and (tonumber(focused.questIndex) or 0) == (tonumber(v.selected.questIndex) or 0) then
+                local position = focused.position
+                if position and position.bestShrineName and tostring(position.bestShrineName) ~= "" then
+                    wayshrineName = tostring(position.bestShrineName)
+                elseif position and position.available == false then
+                    local entry = nil
+                    if type(EPC.Travel.GetNearestWayshrineForQuestSelection) == "function" then
+                        entry = select(1, EPC.Travel:GetNearestWayshrineForQuestSelection(v.selected))
+                    end
+                    if entry and entry.name then
+                        wayshrineName = tostring(entry.name)
+                    else
+                        wayshrineName = "No discovered wayshrine resolved"
+                    end
+                end
+            elseif (tonumber(v.selected.questIndex) or 0) <= 0 and type(EPC.Travel.GetNearestWayshrineForQuestSelection) == "function" then
+                local entry = select(1, EPC.Travel:GetNearestWayshrineForQuestSelection(v.selected))
+                if entry and entry.name then wayshrineName = tostring(entry.name) end
+            end
+        end
+
         local details = {
             "STATUS\n" .. tostring(v.selected.status or v.selected.type or "Quest"),
             "ZONE\n" .. tostring(v.selected.zone or "Unknown zone"),
-            "STARTER / ACCESS\n" .. tostring(v.selected.starter or "Starter location unknown"),
-            tostring(v.selected.access or ""),
+            "WAYSHRINE\n" .. wayshrineName,
         }
+        if v.selected.mainQuest then
+            details[#details+1] = "MAIN QUEST STEP\n" .. tostring(v.selected.chainOrder or "?")
+        elseif v.selected.cadwell then
+            details[#details+1] = "ALMANAC OBJECTIVE\n" .. tostring(v.selected.objectiveProgress or "0/0")
+            details[#details+1] = "REQUIRED QUESTS\n" .. tostring(v.selected.objectiveQuests or "")
+            if v.selected.targetQuestName and v.selected.targetQuestName ~= "" then
+                details[#details+1] = "NEXT REQUIRED QUEST\n" .. tostring(v.selected.targetQuestName)
+            end
+        end
+        if v.selected.mainQuest and not v.selected.questIndex then
+            if v.selected.questGiver and v.selected.questGiver ~= "" then details[#details+1] = "ACCEPT FROM\n" .. tostring(v.selected.questGiver) end
+            if v.selected.acceptAt and v.selected.acceptAt ~= "" then details[#details+1] = "ACCEPT AT\n" .. tostring(v.selected.acceptAt) end
+            if v.selected.prerequisite and v.selected.prerequisite ~= "" then details[#details+1] = "REQUIREMENT\n" .. tostring(v.selected.prerequisite) end
+            if v.selected.routeNote and v.selected.routeNote ~= "" then details[#details+1] = "ROUTE\n" .. tostring(v.selected.routeNote) end
+        else
+            details[#details+1] = "STARTER / ACCESS\n" .. tostring(v.selected.starter or "Starter location unknown")
+            details[#details+1] = tostring(v.selected.access or "")
+        end
         if v.selected.requires then details[#details+1] = "REQUIRES\n" .. tostring(v.selected.requires) end
-        setBookText(page.detailBody, table.concat(details, "\n\n"), page.detailBody:GetWidth())
-        page.action1:SetText("ROUTE TO STARTER")
-        page.action2:SetHidden(true)
-        easSetEnabled(page.action1, true)
+        -- v0.27.63: Almanac objectives can contain several long quest names.
+        -- Use the compact book font and single-spaced sections for Cadwell so
+        -- the full required-quest list stays inside the Selected page instead
+        -- of being cut off above the action buttons.
+        if v.selected.cadwell then
+            if page.detailBody.SetFont then page.detailBody:SetFont("ZoFontGameSmall") end
+            local cadwellText = table.concat(details, "\n")
+            page.detailBody:SetText(wrapForBook(page.detailBody, cadwellText, page.detailBody:GetWidth()))
+        else
+            setBookText(page.detailBody, table.concat(details, "\n\n"), page.detailBody:GetWidth())
+        end
+        if v.selected.mainQuest then
+            if v.selected.completed then
+                page.action1:SetText("MAIN QUEST COMPLETED")
+            elseif v.selected.questIndex then
+                page.action1:SetText("TRACK MAIN QUEST")
+            else
+                page.action1:SetText("SELECT NEXT MAIN QUEST")
+            end
+        elseif v.selected.cadwell then
+            if v.selected.completed then page.action1:SetText("ALMANAC OBJECTIVE COMPLETE")
+            elseif v.selected.questIndex then page.action1:SetText("TRACK REQUIRED QUEST")
+            else page.action1:SetText("ROUTE TO ALMANAC OBJECTIVE") end
+        else
+            page.action1:SetText("ROUTE TO STARTER")
+        end
+        page.action2:SetText("TRAVEL TO NEAREST WAYSHRINE")
+        page.action2:SetHidden(false)
+        easSetEnabled(page.action1, not (v.selected.mainQuest and v.selected.completed))
+        easSetEnabled(page.action2, not v.selected.completed and EPC.Travel ~= nil and EPC.Travel.TravelToNearestQuestStarterWayshrine ~= nil)
     else
         page.detailTitle:SetText("SELECT A QUEST")
         setBookText(page.detailBody, "Click a quest on the left page to select it. The starter/access information and route button will appear here.", page.detailBody:GetWidth())
         page.action1:SetText("ROUTE TO STARTER")
-        page.action2:SetHidden(true)
+        page.action2:SetText("TRAVEL TO NEAREST WAYSHRINE")
+        page.action2:SetHidden(false)
         easSetEnabled(page.action1, false)
+        easSetEnabled(page.action2, false)
     end
 end
 
@@ -2790,6 +3594,10 @@ function J:RefreshInteractiveTravel(page)
     for i,b in ipairs(page.secondary) do if i <= 3 then b:SetHidden(false) setButtonStyle(b, false, self:GetTheme()) end end
     easSetEnabled(page.secondary[1], v.canPageBack == true)
     easSetEnabled(page.secondary[2], v.canPageForward == true)
+    if page.stableTravelButton then
+        page.stableTravelButton:SetHidden(false)
+        easSetEnabled(page.stableTravelButton, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
+    end
 
     local selectedKey = v.selected and v.selected.key or nil
     for i,rowControl in ipairs(page.rows) do
@@ -2797,29 +3605,230 @@ function J:RefreshInteractiveTravel(page)
         if row then
             local selected = selectedKey ~= nil and selectedKey == row.key
             rowControl:SetHidden(false)
-            rowControl.titleLabel:SetText(tostring(row.name or "Destination"))
-            local detail = string.format("%s  -  %s  -  %s", tostring(row.zoneName or "Unknown zone"), tostring(row.costText or ""), tostring(row.statusText or ""))
-            if row.isQuestBest then detail = "QUEST BEST  -  " .. detail end
-            rowControl.detailLabel:SetText(detail)
-            easSetInk(rowControl.titleLabel, selected, row.canTravel ~= true)
-            easSetInk(rowControl.detailLabel, selected, true)
-        else rowControl:SetHidden(true) end
+            if row.kind == "ZONE_HEADER" then
+                local prefix = row.expanded and "v  " or ">  "
+                local suffix = string.format("  (%d shrine%s)", tonumber(row.shrineCount) or 0, (tonumber(row.shrineCount) or 0) == 1 and "" or "s")
+                rowControl.titleLabel:SetText(prefix .. tostring(row.name or "Zone") .. suffix)
+                local tags = {}
+                if row.hasQuestBest then tags[#tags+1] = "QUEST ZONE" end
+                if row.isCurrentZone then tags[#tags+1] = "CURRENT ZONE" end
+                rowControl.detailLabel:SetText(#tags > 0 and table.concat(tags, "  -  ") or "Click to show wayshrines")
+                easSetInk(rowControl.titleLabel, row.hasQuestBest or row.isQuestZone, false)
+                easSetInk(rowControl.detailLabel, false, true)
+            else
+                rowControl.titleLabel:SetText("   " .. tostring(row.name or "Destination"))
+                local detail = string.format("%s  -  %s", tostring(row.costText or ""), tostring(row.statusText or ""))
+                if row.isQuestBest then detail = "QUEST BEST  -  " .. detail end
+                rowControl.detailLabel:SetText("   " .. detail)
+                easSetInk(rowControl.titleLabel, selected, row.canTravel ~= true)
+                easSetInk(rowControl.detailLabel, selected, true)
+            end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
     end
     page.pageLabel:SetText(string.format("PAGE %d / %d  -  %s", tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tostring(v.modeLabel or v.mode or "TRAVEL")))
+
+    if page.guildLeaderSelect and EPC.Travel and EPC.Travel.GetSelectedGuildLeaderHome then
+        local leaderHome, guildOptions = EPC.Travel:GetSelectedGuildLeaderHome()
+        if leaderHome then
+            local multi = type(guildOptions) == "table" and #guildOptions > 1
+            local label = tostring(leaderHome.guildName or "Guild") .. " - " .. tostring(leaderHome.leaderName ~= "" and leaderHome.leaderName or "Leader unavailable")
+            page.guildLeaderSelect:SetText((multi and "SELECT GUILD: " or "GUILD: ") .. label .. (multi and "  v" or ""))
+            easSetEnabled(page.guildLeaderSelect, true)
+            page.guildLeaderSelect:SetHidden(false)
+            page.action0:SetText("GUILD LEADER HOME")
+            page.action0:SetHidden(false)
+            easSetEnabled(page.action0, leaderHome.leaderName ~= nil and leaderHome.leaderName ~= "")
+        else
+            page.guildLeaderSelect:SetText("GUILD LEADER: NO GUILDS")
+            page.guildLeaderSelect:SetHidden(false)
+            easSetEnabled(page.guildLeaderSelect, false)
+            page.action0:SetText("GUILD LEADER HOME")
+            page.action0:SetHidden(false)
+            easSetEnabled(page.action0, false)
+        end
+    end
+
     if v.selected then
         page.detailTitle:SetText(v.selected.name or "Selected Destination")
-        local details = string.format("ZONE\n%s\n\nCOST\n%s\n\nSTATUS\n%s\n\n%s", tostring(v.selected.zoneName or "Unknown zone"), tostring(v.selected.costText or ""), tostring(v.selected.statusText or ""), tostring(v.hint or ""))
+        local details = string.format("ZONE\n%s\n\nCOST\n%s\n\n\nSTATUS\n%s", tostring(v.selected.zoneName or "Unknown zone"), tostring(v.selected.costText or ""), tostring(v.selected.statusText or ""))
         setBookText(page.detailBody, details, page.detailBody:GetWidth())
-        page.action1:SetText(v.actionText or "TRAVEL")
-        page.action2:SetHidden(true)
+        page.action1:SetText("TRAVEL TO SELECTED")
+        page.action2:SetText("NEAREST MERCHANT")
+        page.action3:SetText("NEAREST GUILD STORE")
+        page.action2:SetHidden(false)
+        page.action3:SetHidden(false)
+        if page.stableTravelButton then
+            page.stableTravelButton:SetText("NEAREST STABLEMASTER")
+            page.stableTravelButton:SetHidden(false)
+            easSetEnabled(page.stableTravelButton, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
+        end
+        if page.pledgeMasterTravelButton then
+            page.pledgeMasterTravelButton:SetText("TRAVEL TO PLEDGE MASTER")
+            page.pledgeMasterTravelButton:SetHidden(false)
+            easSetEnabled(page.pledgeMasterTravelButton, EPC.Travel ~= nil and type(EPC.Travel.TravelToPledgeMaster) == "function")
+        end
         easSetEnabled(page.action1, v.actionEnabled == true)
+        easSetEnabled(page.action2, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
+        easSetEnabled(page.action3, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
     else
         page.detailTitle:SetText("SELECT A DESTINATION")
-        setBookText(page.detailBody, tostring(v.emptyText or "Click a destination on the left page, then use TRAVEL here."), page.detailBody:GetWidth())
-        page.action1:SetText(v.actionText or "TRAVEL")
-        page.action2:SetHidden(true)
+        setBookText(page.detailBody, tostring(v.emptyText or "Click a destination on the left page, then use TRAVEL here. You can also jump directly toward the nearest merchant or guild store."), page.detailBody:GetWidth())
+        page.action1:SetText("TRAVEL TO SELECTED")
+        page.action2:SetText("NEAREST MERCHANT")
+        page.action3:SetText("NEAREST GUILD STORE")
+        page.action2:SetHidden(false)
+        page.action3:SetHidden(false)
+        if page.stableTravelButton then
+            page.stableTravelButton:SetText("NEAREST STABLEMASTER")
+            page.stableTravelButton:SetHidden(false)
+            easSetEnabled(page.stableTravelButton, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
+        end
+        if page.pledgeMasterTravelButton then
+            page.pledgeMasterTravelButton:SetText("TRAVEL TO PLEDGE MASTER")
+            page.pledgeMasterTravelButton:SetHidden(false)
+            easSetEnabled(page.pledgeMasterTravelButton, EPC.Travel ~= nil and type(EPC.Travel.TravelToPledgeMaster) == "function")
+        end
         easSetEnabled(page.action1, false)
+        easSetEnabled(page.action2, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
+        easSetEnabled(page.action3, EPC.Travel ~= nil and EPC.Travel.TravelToNearestService ~= nil)
     end
+end
+
+
+function J:HideGuildLeaderHomeDropdown()
+    if self.guildLeaderHomeDropdown then
+        self.guildLeaderHomeDropdown:SetHidden(true)
+    end
+end
+
+function J:ShowGuildLeaderHomeDropdown(page)
+    if not EPC.Travel or not EPC.Travel.GetGuildLeaderHomeOptions then return end
+    local options = EPC.Travel:GetGuildLeaderHomeOptions()
+    if #options == 0 then
+        if EPC.Print then EPC:Print("You are not currently in a guild.") end
+        self:HideGuildLeaderHomeDropdown()
+        return
+    end
+
+    local anchor = page and page.guildLeaderSelect or nil
+    if not anchor then return end
+
+    -- Use a Suite-native dropdown instead of ESO's global ShowMenu(). The
+    -- global menu can render behind the Codex and does not match this UI.
+    local popup = self.guildLeaderHomeDropdown
+    if not popup then
+        popup = wm:CreateTopLevelWindow("EAS_GuildLeaderHomeDropdown")
+        popup:SetMouseEnabled(true)
+        popup:SetClampedToScreen(true)
+        popup:SetDrawTier(DT_HIGH)
+        popup:SetDrawLayer(DL_OVERLAY)
+        popup:SetDrawLevel(5000)
+        popup:SetHidden(true)
+        self.guildLeaderHomeDropdown = popup
+
+        local bg = wm:CreateControl("EAS_GuildLeaderHomeDropdown_BG", popup, CT_BACKDROP)
+        bg:SetAnchorFill(popup)
+        bg:SetEdgeTexture(nil, 1, 1, 1)
+        popup.epcBG = bg
+
+        local title = wm:CreateControl("EAS_GuildLeaderHomeDropdown_Title", popup, CT_LABEL)
+        title:SetFont("ZoFontGameBold")
+        title:SetAnchor(TOPLEFT, popup, TOPLEFT, 12, 8)
+        title:SetAnchor(TOPRIGHT, popup, TOPRIGHT, -12, 8)
+        title:SetHeight(22)
+        title:SetText("SELECT GUILD LEADER")
+        title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        popup.epcTitle = title
+        popup.epcRows = {}
+    elseif not popup:IsHidden() then
+        popup:SetHidden(true)
+        return
+    end
+
+    local theme = self:GetTheme() or THEMES.MIDNIGHT
+    local accent = theme.accent or {0.43,0.68,0.96,1}
+    local textColor = theme.text or {0.88,0.92,0.98,1}
+    popup.epcBG:SetCenterColor(0.018, 0.024, 0.034, 0.985)
+    popup.epcBG:SetEdgeColor(accent[1], accent[2], accent[3], 0.95)
+    popup.epcTitle:SetColor(textColor[1], textColor[2], textColor[3], 1)
+
+    local width = math.max(300, tonumber(anchor:GetWidth()) or 360)
+    local rowH, titleH, pad = 34, 32, 8
+    local height = titleH + (#options * rowH) + pad
+    popup:SetDimensions(width, height)
+    popup:ClearAnchors()
+    popup:SetAnchor(TOP, anchor, BOTTOM, 0, 5)
+
+    for i = 1, #popup.epcRows do
+        popup.epcRows[i]:SetHidden(true)
+    end
+
+    local selected = EPC.Travel:GetSelectedGuildLeaderHome()
+    for i,row in ipairs(options) do
+        local button = popup.epcRows[i]
+        if not button then
+            button = wm:CreateControl("EAS_GuildLeaderHomeDropdown_Row" .. tostring(i), popup, CT_BUTTON)
+            button:SetFont("ZoFontGameBold")
+            button:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+            button:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+            button:SetDrawLayer(DL_OVERLAY)
+            button:SetDrawLevel(5002)
+
+            local rowBg = wm:CreateControl("EAS_GuildLeaderHomeDropdown_RowBG" .. tostring(i), button, CT_BACKDROP)
+            rowBg:SetAnchorFill(button)
+            rowBg:SetEdgeTexture(nil, 1, 1, 1)
+            rowBg:SetDrawLevel(5001)
+            button.epcBG = rowBg
+            popup.epcRows[i] = button
+        end
+
+        button:ClearAnchors()
+        button:SetAnchor(TOPLEFT, popup, TOPLEFT, 8, titleH + ((i - 1) * rowH))
+        button:SetAnchor(TOPRIGHT, popup, TOPRIGHT, -8, titleH + ((i - 1) * rowH))
+        button:SetHeight(rowH - 3)
+        button:SetHidden(false)
+
+        local guildId = row.guildId
+        local label = tostring(row.guildName or "Guild")
+        local leader = tostring(row.leaderName or "")
+        if leader ~= "" then label = label .. "  -  " .. leader end
+        button:SetText("  " .. label)
+
+        local isSelected = selected and tonumber(selected.guildId) == tonumber(guildId)
+        if isSelected then
+            button.epcBG:SetCenterColor(accent[1], accent[2], accent[3], 0.20)
+            button.epcBG:SetEdgeColor(accent[1], accent[2], accent[3], 0.82)
+            button:SetNormalFontColor(accent[1], accent[2], accent[3], 1)
+        else
+            button.epcBG:SetCenterColor(0.035, 0.045, 0.060, 0.96)
+            button.epcBG:SetEdgeColor(0.16, 0.22, 0.30, 0.78)
+            button:SetNormalFontColor(textColor[1], textColor[2], textColor[3], 0.96)
+        end
+        button:SetMouseOverFontColor(accent[1], accent[2], accent[3], 1)
+        button:SetPressedFontColor(accent[1], accent[2], accent[3], 1)
+        button:SetHandler("OnMouseEnter", function(control)
+            if control.epcBG then control.epcBG:SetCenterColor(accent[1], accent[2], accent[3], 0.16) end
+        end)
+        button:SetHandler("OnMouseExit", function(control)
+            local active = EPC.Travel:GetSelectedGuildLeaderHome()
+            local activeId = active and tonumber(active.guildId) or nil
+            if control.epcBG then
+                if activeId == tonumber(guildId) then
+                    control.epcBG:SetCenterColor(accent[1], accent[2], accent[3], 0.20)
+                else
+                    control.epcBG:SetCenterColor(0.035, 0.045, 0.060, 0.96)
+                end
+            end
+        end)
+        button:SetHandler("OnClicked", function()
+            EPC.Travel:SelectGuildLeaderGuild(guildId)
+            self:HideGuildLeaderHomeDropdown()
+            self:RefreshSuitePage("TRAVEL")
+        end)
+    end
+
+    popup:SetHidden(false)
 end
 
 function J:RefreshInteractiveActivity(page)
@@ -2846,22 +3855,26 @@ function J:RefreshInteractiveActivity(page)
             rowControl.detailLabel:SetText(tostring(row.detailText or row.location or ""))
             easSetInk(rowControl.titleLabel, selected, false)
             easSetInk(rowControl.detailLabel, selected, true)
-        else rowControl:SetHidden(true) end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
     end
     page.pageLabel:SetText(string.format("GOAL: %s", tostring(v.goalLabel or v.goal or "BALANCED")))
+    page.action1:SetHidden(true)
+    page.action2:SetHidden(true)
+    easSetEnabled(page.action1, false)
+    easSetEnabled(page.action2, false)
+
     if v.selected then
         page.detailTitle:SetText(v.selected.name or "Selected Activity")
-        local details = string.format("%s\n\n%s", tostring(v.selected.detailText or v.selected.location or ""), tostring(v.hint or v.selected.note or ""))
+        local primary = tostring(v.selected.detailText or v.selected.location or "")
+        local note = tostring(v.selected.note or "")
+        local details = primary
+        if note ~= "" and note ~= primary then
+            details = primary .. "\n\n" .. note
+        end
         setBookText(page.detailBody, details, page.detailBody:GetWidth())
-        page.action1:SetText(v.actionText or "ROUTE QUEST")
-        page.action2:SetHidden(true)
-        easSetEnabled(page.action1, v.actionEnabled == true)
     else
         page.detailTitle:SetText("SELECT AN ACTIVITY")
-        setBookText(page.detailBody, tostring(v.hint or "Click an activity on the left page to see its details and route/action."), page.detailBody:GetWidth())
-        page.action1:SetText(v.actionText or "ROUTE QUEST")
-        page.action2:SetHidden(true)
-        easSetEnabled(page.action1, false)
+        setBookText(page.detailBody, tostring(v.hint or "Select an activity on the left to view its details."), page.detailBody:GetWidth())
     end
 end
 
@@ -2875,7 +3888,8 @@ function J:RefreshSuitePage(tab)
         elseif tab == "QUESTS" then self:RefreshInteractiveQuests(page)
         elseif tab == "TRAVEL" then self:RefreshInteractiveTravel(page)
         elseif tab == "ACTIVITY" then self:RefreshInteractiveActivity(page)
-        elseif tab == "DUNGEONS" then self:RefreshInteractiveDungeons(page) end
+        elseif tab == "DUNGEONS" then self:RefreshInteractiveDungeons(page)
+        elseif tab == "GROUPFINDER" then self:RefreshInteractiveGroupFinder(page) end
         return
     end
     return easOldRefreshSuitePage_v191(self, tab)
@@ -3178,6 +4192,14 @@ setBookText = easSetBookTextFit
 local easRefreshSuitePage_v194_base = J.RefreshSuitePage
 function J:RefreshSuitePage(tab)
     tab = tab or self.activeTab
+    if tab == "SKILLS" then
+        local page = self.pages and self.pages.SKILLS
+        if page and self.RefreshSkillsOrganized02716 then
+            self:RefreshSkillsOrganized02716(page)
+            self:ApplyTheme()
+            return
+        end
+    end
     if tab == "TOOLS" and EPC.UtilitySuite then
         local page = self.pages and self.pages.TOOLS
         if page and page.leftBody and page.rightBody then
@@ -3214,7 +4236,11 @@ function J:RefreshSuitePage(tab)
 
             easSetBookTextFit(page.leftBody, table.concat(left, "\n"), page.leftBody:GetWidth())
             easSetBookTextFit(page.rightBody, table.concat(right, "\n"), page.rightBody:GetWidth())
-            self:SetSuiteButtons("TOOLS", {"MODE"})
+            if EPC.UtilitySuite:GetMode() == "RETICLE" then
+                self:SetSuiteButtons("TOOLS", {"MODE","ON / OFF","STYLE","COLOR","SIZE -","SIZE +","OPACITY -","OPACITY +"})
+            else
+                self:SetSuiteButtons("TOOLS", {"MODE"})
+            end
             return
         end
     end
@@ -3354,11 +4380,11 @@ function J:ApplyTheme()
         if b and b.figmaBg then
             if name == self.activeTab then
                 b.figmaBg:SetCenterColor(accent[1],accent[2],accent[3],0.16)
-                b.figmaBg:SetEdgeColor(accent[1],accent[2],accent[3],0.50)
+                b.figmaBg:SetEdgeColor(0.24,0.36,0.54,0.94)
                 if b.figmaRail then b.figmaRail:SetColor(accent[1],accent[2],accent[3],1) end
             else
                 b.figmaBg:SetCenterColor(0.05,0.06,0.08,0.16)
-                b.figmaBg:SetEdgeColor(0.20,0.24,0.31,0.16)
+                b.figmaBg:SetEdgeColor(0.24,0.36,0.54,0.78)
                 if b.figmaRail then b.figmaRail:SetColor(0,0,0,0) end
             end
         end
@@ -3471,13 +4497,15 @@ function J:Create()
     local function addNav(key, label, y)
         local b = wm:CreateControl("EAS_FigmaNav_"..key, sidebar, CT_BUTTON)
         b:SetAnchor(TOPLEFT, sidebar, TOPLEFT, 10, y)
-        b:SetDimensions(186, 31)
+        b:SetDimensions(186, 28)
         b:SetFont("ZoFontGame")
-        b:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-        b:SetText("    " .. tostring(label or key))
+        if b.SetHorizontalAlignment then b:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+        if b.SetVerticalAlignment then b:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+        b:SetText(tostring(label or key))
         b:SetHandler("OnClicked", function() self:SetTab(key) end)
         local nb = wm:CreateControl("EAS_FigmaNavBG_"..key, b, CT_BACKDROP)
-        nb:SetAnchorFill(b)
+        nb:SetAnchor(TOPLEFT, b, TOPLEFT, 1, 1)
+        nb:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -1, -1)
         nb:SetEdgeTexture(nil, 1, 1, 1)
         nb:SetDrawLevel(0)
         b.figmaBg = nb
@@ -3490,12 +4518,12 @@ function J:Create()
     end
 
     addNav("INDEX", "Dashboard", 40)
-    local navY = 74
+    local navY = 70
     local navIndex = 0
     for _, tab in ipairs(TABS) do
         if tab ~= "INDEX" then
             navIndex = navIndex + 1
-            addNav(tab, TAB_LABELS[tab] or tab, navY + (navIndex-1)*35)
+            addNav(tab, TAB_LABELS[tab] or tab, navY + (navIndex-1)*32)
         end
     end
 
@@ -3542,6 +4570,7 @@ function J:Create()
     self.pages.COMBAT = self:CreateSuiteSpread("COMBAT")
     self.pages.ACTIVITY = self:CreateSuiteSpread("ACTIVITY")
     self.pages.DUNGEONS = self:CreateSuiteSpread("DUNGEONS")
+    self.pages.GROUPFINDER = self:CreateSuiteSpread("GROUPFINDER")
     self.pages.QUESTS = self:CreateSuiteSpread("QUESTS")
     self.pages.TRAVEL = self:CreateSuiteSpread("TRAVEL")
     self.pages.TOOLS = self:CreateSuiteSpread("TOOLS")
@@ -3549,7 +4578,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentSpread("STATS")
     self.pages.CODEX = self:CreateCodexSpread()
     self.pages.DICE = self:CreateDiceSpread()
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, GROUPFINDER=0 }
 
     local spreadNo = makeLabel("EAS_CodexSpreadNumber", canvas, "", 852, 22, 86, 22, "ZoFontGameSmall")
     spreadNo:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -3934,8 +4963,8 @@ function J:ApplyFigmaCleanLayout2482()
         local b = self.tabButtons and self.tabButtons[key]
         if b and self.figmaSidebar then
             b:ClearAnchors()
-            b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 42 + ((index - 1) * 37))
-            b:SetDimensions(186, 32)
+            b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 40 + ((index - 1) * 35))
+            b:SetDimensions(186, 30)
             b:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
             b:SetText("        " .. tostring(TAB_LABELS[key] or key))
         end
@@ -3945,16 +4974,19 @@ function J:ApplyFigmaCleanLayout2482()
     -- of a resizable TopLevelControl.
     if self.window.SetResizeHandleSize then self.window:SetResizeHandleSize(48) end
 
-    -- Update scaling continuously while the user drags any resize side/corner.
+    -- Only attach the per-frame resize callback while the user is actively
+    -- resizing. Keeping OnUpdate detached the rest of the time avoids an
+    -- unnecessary Lua callback every rendered frame.
     self.figmaResizeActive2482 = false
-    self.window:SetHandler("OnResizeStart", function()
+    self.window:SetHandler("OnResizeStart", function(control)
         self.figmaResizeActive2482 = true
-    end)
-    self.window:SetHandler("OnUpdate", function()
-        if self.figmaResizeActive2482 then self:UpdateFigmaScale() end
+        control:SetHandler("OnUpdate", function()
+            if self.figmaResizeActive2482 then self:UpdateFigmaScale() end
+        end)
     end)
     self.window:SetHandler("OnResizeStop", function(control)
         self.figmaResizeActive2482 = false
+        control:SetHandler("OnUpdate", nil)
         local sv = self:EnsureSaved()
         local w, h = control:GetDimensions()
         sv.figmaWidth = math.floor((tonumber(w) or EAS_FIGMA_BASE_W) + 0.5)
@@ -4413,6 +5445,94 @@ function J:FixGearLoadoutBorders2494(page)
 end
 
 local easLegacyRefreshInteractiveGear_2494 = J.RefreshInteractiveGear
+function J:RefreshInteractiveGroupFinder(page)
+    local D = EPC.DungeonFinder
+    if not D then return end
+    D.viewMode = "LIVE"
+    local v = D:BuildLiveView()
+
+    local widths = {142, 70, 78, 78}
+    local x = 14
+    for i=1,4 do
+        local b = page.controls[i]
+        b:ClearAnchors(); b:SetAnchor(TOPLEFT, page.left, TOPLEFT, x, 54); b:SetDimensions(widths[i], 25)
+        x = x + widths[i] + 4
+    end
+    page.controls[1]:SetHidden(false); page.controls[1]:SetText(tostring(v.categoryName or "CATEGORY"))
+    page.controls[2]:SetHidden(false); page.controls[2]:SetText("ALL")
+    page.controls[3]:SetHidden(false); page.controls[3]:SetText("NORMAL")
+    page.controls[4]:SetHidden(false); page.controls[4]:SetText("VETERAN")
+    setButtonStyle(page.controls[1], false, self:GetTheme())
+    setButtonStyle(page.controls[2], v.difficulty == "ALL", self:GetTheme())
+    setButtonStyle(page.controls[3], v.difficulty == "NORMAL", self:GetTheme())
+    setButtonStyle(page.controls[4], v.difficulty == "VETERAN", self:GetTheme())
+
+    page.secondary[1]:SetText("< PREV"); page.secondary[2]:SetText("NEXT >")
+    page.secondary[3]:SetText("NEXT CATEGORY"); page.secondary[4]:SetText("REFRESH")
+    for i=1,4 do page.secondary[i]:SetHidden(false); setButtonStyle(page.secondary[i], false, self:GetTheme()) end
+    easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+    easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+
+    local selected = v.selected
+    for i,rowControl in ipairs(page.rows) do
+        local row = v.rows and v.rows[i]
+        if row then
+            rowControl:SetHidden(false)
+            local isSelected = selected and row.data == selected
+            local rowTitle = tostring(row.title or "Group Listing")
+            if row.lastBoss then rowTitle = "LAST BOSS  -  " .. rowTitle end
+            rowControl.titleLabel:SetText(rowTitle)
+            local detail = tostring(row.owner or "")
+            if row.roles and row.roles ~= "" then detail = detail .. "   " .. row.roles end
+            if row.activeApplication then detail = "PENDING   " .. detail end
+            rowControl.detailLabel:SetText(detail)
+            easSetInk(rowControl.titleLabel, isSelected, false); easSetInk(rowControl.detailLabel, isSelected, true)
+            if row.lastBoss and EPC.saved.groupFinderWidgetLastBossHighlight == true and not isSelected then
+                rowControl._easLastBossPulse = 0
+                rowControl:SetHandler("OnUpdate", function(control, timeMs)
+                    local now = tonumber(timeMs) or (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or 0
+                    if now - (control._easLastBossPulse or 0) < 90 then return end
+                    control._easLastBossPulse = now
+                    local phase = (now % 4200) / 4200 * 6.283185307
+                    local r = 0.55 + 0.45 * math.sin(phase)
+                    local g = 0.55 + 0.45 * math.sin(phase + 2.094395102)
+                    local b = 0.55 + 0.45 * math.sin(phase + 4.188790205)
+                    control.titleLabel:SetColor(r, g, b, 1)
+                end)
+            else
+                rowControl:SetHandler("OnUpdate", nil)
+            end
+        else rowControl:SetHandler("OnUpdate", nil); rowControl:SetHidden(true) end
+    end
+
+    local stateText = D.liveSearchPending and "SEARCHING..." or ((tonumber(v.total) or 0) == 0 and "NO LISTINGS - MONITORING" or "LIVE")
+    page.pageLabel:SetText(string.format("%s  -  PAGE %d / %d  -  %d LISTINGS", stateText, tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+
+    if selected then
+        local function get(method, fallback)
+            if type(selected[method]) == "function" then local ok,val=pcall(selected[method],selected); if ok and val ~= nil then return val end end
+            return fallback
+        end
+        local title = tostring(get("GetTitle", "Group Listing"))
+        local owner = tostring(get("GetOwnerDisplayName", "Unknown"))
+        local description = tostring(get("GetDescription", ""))
+        local autoAccept = get("DoesGroupAutoAcceptRequests", false) == true
+        local activeApplication = get("IsActiveApplication", false) == true
+        local roleText = liveRoleSummary and liveRoleSummary(selected) or ""
+        page.detailTitle:SetText((EPC.DungeonFinder and EPC.DungeonFinder:IsLastBossListing(selected) and EPC.saved.groupFinderWidgetLastBossHighlight == true) and ("LAST BOSS  -  " .. title) or title)
+        setBookText(page.detailBody, string.format("LEADER\n%s\n\nCATEGORY\n%s\n\nMODE\n%s\n\nROLES\n%s\n\nAPPLICATION\n%s\n\nDESCRIPTION\n%s", owner, tostring(v.categoryName or "Group Finder"), tostring(v.difficulty or "ALL"), roleText ~= "" and roleText or "Any / listing rules", activeApplication and "PENDING" or (autoAccept and "INSTANT JOIN" or "APPLICATION"), description ~= "" and description or "No description provided."), page.detailBody:GetWidth())
+    else
+        page.detailTitle:SetText("Group Finder")
+        setBookText(page.detailBody, "Live ESO player-created listings appear here. Choose a category and Normal/Veteran mode, REFRESH can be used at any time. If the current category has no listings, the page remains ready for ESO search updates. Group Finder search is unavailable while hosting your own listing, in Battlegrounds, or below level 10.", page.detailBody:GetWidth())
+    end
+
+    page.action0:SetText("JOIN / APPLY"); page.action1:SetText("WHISPER LEADER")
+    page.action2:SetText("RESCIND APPLICATION"); page.action3:SetText("REFRESH")
+    for _,b in ipairs({page.action0,page.action1,page.action2,page.action3}) do b:SetHidden(false); setButtonStyle(b,false,self:GetTheme()) end
+    easSetEnabled(page.action0, selected ~= nil); easSetEnabled(page.action1, selected ~= nil)
+    easSetEnabled(page.action2, true); easSetEnabled(page.action3, true)
+end
+
 function J:RefreshInteractiveGear(page)
     easLegacyRefreshInteractiveGear_2494(self, page)
     self:FixGearLoadoutBorders2494(page)
@@ -4436,13 +5556,16 @@ function J:Create()
     if self.figmaSidebar and self.tabButtons then
         local orderedTabs = {"INDEX"}
         for _, key in ipairs(TABS) do if key ~= "INDEX" then orderedTabs[#orderedTabs + 1] = key end end
-        local step = (#orderedTabs > 16) and 36 or 37
+        -- Keep every workspace entry inside the 664px sidebar. Golden Pursuits
+        -- and Group Finder bring the rail to 18 total entries, so use a tighter
+        -- step only when needed and preserve comfortable spacing on shorter rails.
+        local step = (#orderedTabs >= 18) and 34 or ((#orderedTabs > 16) and 36 or 37)
         for index, key in ipairs(orderedTabs) do
             local b = self.tabButtons[key]
             if b then
                 b:ClearAnchors()
                 b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 42 + ((index - 1) * step))
-                b:SetDimensions(186, 31)
+                b:SetDimensions(186, 28)
                 b:SetText("    " .. tostring(TAB_LABELS[key] or key))
             end
         end
@@ -4519,7 +5642,7 @@ function J:RefreshInteractiveDungeons(page)
     local text = string.format(
         "SOURCE\n%s\nREQUIREMENT\n%s\nMODE\n%s\nROLE\n%s\nSTATUS\n%s\nNORMAL\n%s\nVETERAN\n%s\nHOST\nAuto Accept: %s\nEnforce Roles: %s\n1 Tank / 1 Healer / 2 DPS",
         tostring(selected.source or "DLC / CHAPTER"), req,
-        tostring(v.difficulty or "NORMAL"), tostring(v.role or "DPS"),
+        tostring(v.difficulty or "ALL"), tostring(v.role or "DPS"),
         queueState, normalState, veteranState,
         v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF")
     setBookText(page.detailBody, text, page.detailBody:GetWidth())
@@ -4681,7 +5804,7 @@ function J:RefreshInteractiveDungeons(page)
         queueState, normalState, veteranState, tostring(selected.source or "DLC / CHAPTER"))
     local rightText = string.format(
         "MODE\n%s\n\nROLE\n%s\n\nREQUIREMENT\n%s\n\nHOST OPTIONS\nAUTO ACCEPT  %s\nENFORCE ROLES  %s",
-        tostring(v.difficulty or "NORMAL"), tostring(v.role or "DPS"), req,
+        tostring(v.difficulty or "ALL"), tostring(v.role or "DPS"), req,
         v.autoAccept and "ON" or "OFF", v.enforceRoles and "ON" or "OFF")
 
     setBookText(page.detailBody, leftText, colW)
@@ -5150,4 +6273,1593 @@ function J:ActivateGoldenPursuit2497(globalIndex)
         EPC.ActiveQuest:ApplySelectedSourceToESO2516()
     end
     return result
+end
+
+
+-- v0.25.29: Group Finder is its own Codex chapter.
+local easSelectTab02529 = J.SelectTab
+function J:SelectTab(tab, ...)
+    local result = easSelectTab02529(self, tab, ...)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder then
+        EPC.DungeonFinder:SetViewMode("LIVE")
+        EPC.DungeonFinder:RefreshLiveListings(true)
+    elseif tab == "DUNGEONS" and EPC.DungeonFinder then
+        EPC.DungeonFinder:SetViewMode("DUNGEONS")
+    end
+    return result
+end
+
+-- v0.25.41: Group Finder social modes share the Codex chapter with public listings.
+local easRefreshInteractiveGroupFinder02541 = J.RefreshInteractiveGroupFinder
+function J:RefreshInteractiveGroupFinder(page)
+    local D = EPC.DungeonFinder
+    if not D then return end
+    local mode = tostring(D.socialMode or "PUBLIC")
+    if mode == "PUBLIC" then
+        easRefreshInteractiveGroupFinder02541(self, page)
+        -- Replace the top row with clear source selectors; public category/mode controls move to row two.
+        local labels = {"PUBLIC GROUPS", "GUILD MEMBERS", "REFRESH", ""}
+        local widths = {126, 126, 104, 1}
+        local x = 14
+        for i=1,4 do
+            local b = page.controls[i]
+            b:ClearAnchors(); b:SetAnchor(TOPLEFT, page.left, TOPLEFT, x, 54); b:SetDimensions(widths[i],25)
+            b:SetText(labels[i]); b:SetHidden(false); setButtonStyle(b, i==1, self:GetTheme())
+            x = x + widths[i] + 4
+        end
+        local v = D:BuildLiveView()
+        page.secondary[1]:SetText("< PREV")
+        page.secondary[2]:SetText("NEXT >")
+        page.secondary[3]:SetText("DIFF: " .. tostring(v.difficulty or "ALL"))
+        page.secondary[4]:SetText("NEXT CATEGORY")
+        for i=1,4 do page.secondary[i]:SetHidden(false); setButtonStyle(page.secondary[i], false, self:GetTheme()) end
+        easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+        easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+        return
+    end
+
+    local v = D:BuildSocialView()
+    local labels = {"PUBLIC GROUPS", "GUILD MEMBERS", "REFRESH", ""}
+    local widths = {126, 126, 104, 1}
+    local x = 14
+    for i=1,4 do
+        local b = page.controls[i]
+        b:ClearAnchors(); b:SetAnchor(TOPLEFT, page.left, TOPLEFT, x, 54); b:SetDimensions(widths[i],25)
+        b:SetText(labels[i]); b:SetHidden(false); setButtonStyle(b, mode=="GUILD" and i==2, self:GetTheme())
+        x = x + widths[i] + 4
+    end
+    page.secondary[1]:SetText("< PREV"); page.secondary[2]:SetText("NEXT >")
+    page.secondary[3]:SetText("REFRESH"); page.secondary[4]:SetText("PUBLIC GROUPS")
+    for i=1,4 do page.secondary[i]:SetHidden(false); setButtonStyle(page.secondary[i], false, self:GetTheme()) end
+    easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+    easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+
+    local selected = v.selected
+    for i,rowControl in ipairs(page.rows) do
+        rowControl:SetHandler("OnUpdate", nil)
+        local row = v.rows and v.rows[i]
+        if row then
+            rowControl:SetHidden(false)
+            local isSelected = selected and selected.key == row.key
+            local name = tostring(row.displayName or row.characterName or "Player")
+            local charName = tostring(row.characterName or "")
+            rowControl.titleLabel:SetText(name)
+            local status = row.inYourGroup and "IN YOUR GROUP" or tostring(row.guildName or "Guild")
+            local zone = tostring(row.zoneName or "")
+            if zone ~= "" then status = status .. "   " .. zone end
+            if charName ~= "" and charName ~= name then status = charName .. "   " .. status end
+            rowControl.detailLabel:SetText(status)
+            easSetInk(rowControl.titleLabel, isSelected, false); easSetInk(rowControl.detailLabel, isSelected, true)
+        else
+            rowControl:SetHidden(true)
+        end
+    end
+
+    local title = "GUILD MEMBERS"
+    page.pageLabel:SetText(string.format("%s  -  PAGE %d / %d  -  %d PLAYERS", title, tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+
+    if selected then
+        local cp = tonumber(selected.championPoints) or 0
+        local levelText = cp > 0 and ("CP " .. tostring(cp)) or ((tonumber(selected.level) or 0) > 0 and ("LEVEL " .. tostring(selected.level)) or "LEVEL UNKNOWN")
+        page.detailTitle:SetText(tostring(selected.displayName or "Player"))
+        setBookText(page.detailBody, string.format("CHARACTER\n%s\n\nLOCATION\n%s\n\n%s\n\nSTATUS\n%s\n\nACTIONS\nInvite or whisper this player. ESO does not expose another player's private party composition, so the Suite does not claim whether they already have a separate party.", tostring(selected.characterName or selected.displayName or "Unknown"), tostring(selected.zoneName or "Unknown"), levelText, selected.inYourGroup and "Already in your group" or "Available for invite attempt"), page.detailBody:GetWidth())
+    elseif mode == "GUILD" then
+        page.detailTitle:SetText("Guild Members")
+        setBookText(page.detailBody, "Shows online members from your guild rosters. Select a member to WHISPER or INVITE. ESO does not expose whether an ungrouped guild member is privately grouped elsewhere, so party status is not guessed.", page.detailBody:GetWidth())
+    else
+        page.detailTitle:SetText("Guild Members")
+        setBookText(page.detailBody, "Shows online members from your guild rosters. Select a member to WHISPER or INVITE.", page.detailBody:GetWidth())
+    end
+
+    page.action0:SetText("INVITE TO GROUP")
+    page.action1:SetText("WHISPER")
+    page.action2:SetText("REFRESH")
+    page.action3:SetText("PUBLIC GROUPS")
+    for _,b in ipairs({page.action0,page.action1,page.action2,page.action3}) do b:SetHidden(false); setButtonStyle(b,false,self:GetTheme()) end
+    easSetEnabled(page.action0, selected ~= nil and selected.inYourGroup ~= true)
+    easSetEnabled(page.action1, selected ~= nil)
+    easSetEnabled(page.action2, true); easSetEnabled(page.action3, true)
+end
+
+local easRunInteractiveControl02541 = J.RunInteractiveControl
+function J:RunInteractiveControl(tab, index)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder then
+        local D = EPC.DungeonFinder
+        if index == 1 then D:SetSocialMode("PUBLIC")
+        elseif index == 2 then D:SetSocialMode("GUILD")
+        elseif index == 3 then
+            if D.socialMode == "PUBLIC" then D:RefreshLiveListings(true) end
+        end
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveControl02541(self, tab, index)
+end
+
+local easRunInteractiveSecondary02541 = J.RunInteractiveSecondary
+function J:RunInteractiveSecondary(tab, index)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder then
+        local D = EPC.DungeonFinder
+        if D.socialMode == "PUBLIC" then
+            if index == 1 then D:ChangeLivePage(-1)
+            elseif index == 2 then D:ChangeLivePage(1)
+            elseif index == 3 then
+                local current = tostring(D.liveDifficulty or "ALL")
+                D:SetLiveDifficulty(current == "ALL" and "NORMAL" or (current == "NORMAL" and "VETERAN" or "ALL"))
+            elseif index == 4 then D:CycleLiveCategory() end
+        else
+            if index == 1 then D:ChangeSocialPage(-1)
+            elseif index == 2 then D:ChangeSocialPage(1)
+            elseif index == 3 then -- event-backed data; redraw is enough
+            elseif index == 4 then D:SetSocialMode("PUBLIC") end
+        end
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveSecondary02541(self, tab, index)
+end
+
+local easSelectInteractiveRow02541 = J.SelectInteractiveRow
+function J:SelectInteractiveRow(tab, index)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and EPC.DungeonFinder.socialMode ~= "PUBLIC" then
+        EPC.DungeonFinder:SelectSocialRow(index)
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easSelectInteractiveRow02541(self, tab, index)
+end
+
+local easRunInteractiveGearOptimizer02541 = J.RunInteractiveGearOptimizer
+function J:RunInteractiveGearOptimizer(tab)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and EPC.DungeonFinder.socialMode ~= "PUBLIC" then
+        EPC.DungeonFinder:InviteSelectedSocial(); self:RefreshSuitePage(tab); return
+    end
+    return easRunInteractiveGearOptimizer02541(self, tab)
+end
+
+local easRunInteractivePrimary02541 = J.RunInteractivePrimary
+function J:RunInteractivePrimary(tab)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and EPC.DungeonFinder.socialMode ~= "PUBLIC" then
+        EPC.DungeonFinder:WhisperSelectedSocial(); self:RefreshSuitePage(tab); return
+    end
+    return easRunInteractivePrimary02541(self, tab)
+end
+
+local easRunInteractiveSecondaryAction02541 = J.RunInteractiveSecondaryAction
+function J:RunInteractiveSecondaryAction(tab)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and EPC.DungeonFinder.socialMode ~= "PUBLIC" then
+        self:RefreshSuitePage(tab); return
+    end
+    return easRunInteractiveSecondaryAction02541(self, tab)
+end
+
+local easRunInteractiveTertiaryAction02541 = J.RunInteractiveTertiaryAction
+function J:RunInteractiveTertiaryAction(tab)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and EPC.DungeonFinder.socialMode ~= "PUBLIC" then
+        EPC.DungeonFinder:SetSocialMode("PUBLIC"); self:RefreshSuitePage(tab); return
+    end
+    return easRunInteractiveTertiaryAction02541(self, tab)
+end
+
+local easSelectTab02541 = J.SelectTab
+function J:SelectTab(tab, ...)
+    local result = easSelectTab02541(self, tab, ...)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and EPC.DungeonFinder.socialMode == nil then EPC.DungeonFinder.socialMode = "PUBLIC" end
+    return result
+end
+
+
+-- v0.25.42: Public Group Finder live-status/short-code presentation.
+local easRefreshInteractiveGroupFinder02542 = J.RefreshInteractiveGroupFinder
+function J:RefreshInteractiveGroupFinder(page)
+    easRefreshInteractiveGroupFinder02542(self, page)
+    local D = EPC.DungeonFinder
+    if not D or tostring(D.socialMode or "PUBLIC") ~= "PUBLIC" then return end
+
+    local v = D:BuildLiveView()
+    local supportsDifficulty = D.LiveCategorySupportsDifficulty and D:LiveCategorySupportsDifficulty(v.category)
+
+    -- Keep the social source row intact. Use the second row as quick Group Finder controls.
+    page.secondary[1]:SetText("< PREV")
+    page.secondary[2]:SetText("NEXT >")
+    page.secondary[3]:SetText(supportsDifficulty and ((tostring(v.difficulty or "NORMAL") == "VETERAN") and "V" or "N") or "-")
+    page.secondary[4]:SetText(tostring(v.categoryName or "CATEGORY"))
+    for i=1,4 do page.secondary[i]:SetHidden(false); setButtonStyle(page.secondary[i], false, self:GetTheme()) end
+    easSetEnabled(page.secondary[1], (tonumber(v.page) or 1) > 1)
+    easSetEnabled(page.secondary[2], (tonumber(v.page) or 1) < (tonumber(v.pageCount) or 1))
+    easSetEnabled(page.secondary[3], supportsDifficulty == true)
+    easSetEnabled(page.secondary[4], true)
+
+    local selected = v.selected
+    for i,rowControl in ipairs(page.rows) do
+        local row = v.rows and v.rows[i]
+        if row then
+            local isSelected = selected and row.data == selected
+            local rowTitle = tostring(row.title or "Group Listing")
+            if row.shortCode and row.shortCode ~= "" then rowTitle = "[" .. tostring(row.shortCode) .. "] " .. rowTitle end
+            if row.lastBoss then rowTitle = "LAST BOSS  -  " .. rowTitle end
+            rowControl.titleLabel:SetText(rowTitle)
+
+            local detail = tostring(row.owner or "")
+            if row.roles and row.roles ~= "" then detail = detail .. "   " .. tostring(row.roles) end
+            if row.activeApplication then detail = "PENDING   " .. detail end
+            rowControl.detailLabel:SetText(detail)
+            easSetInk(rowControl.titleLabel, isSelected, false)
+            easSetInk(rowControl.detailLabel, isSelected, true)
+        end
+    end
+
+    -- Yellow hourglass on the first search after a category/mode change.
+    if not page.easGfSearchIcon02542 and WINDOW_MANAGER and CT_TEXTURE then
+        local icon = WINDOW_MANAGER:CreateControl(nil, page.left, CT_TEXTURE)
+        icon:SetDimensions(18, 18)
+        icon:SetAnchor(BOTTOMLEFT, page.left, BOTTOMLEFT, 14, -50)
+        icon:SetTexture("EsoUI/Art/Miscellaneous/timer_32.dds")
+        icon:SetColor(1, 0.78, 0, 1)
+        icon:SetDrawLayer(DL_OVERLAY)
+        page.easGfSearchIcon02542 = icon
+    end
+
+    local inf = string.char(226, 136, 158)
+    if D.liveAwaitingResults02542 then
+        if page.easGfSearchIcon02542 then page.easGfSearchIcon02542:SetHidden(false) end
+        page.pageLabel:SetText(string.format("|cFFD700SEARCHING|r  -  %s  -  %s", tostring(v.categoryName or "GROUP FINDER"), supportsDifficulty and tostring(v.difficulty or "NORMAL") or "LIVE"))
+    elseif (tonumber(v.total) or 0) == 0 then
+        if page.easGfSearchIcon02542 then page.easGfSearchIcon02542:SetHidden(true) end
+        page.pageLabel:SetText(string.format("%s  MONITORING  -  %s  -  NO LISTINGS", inf, tostring(v.categoryName or "GROUP FINDER")))
+    else
+        if page.easGfSearchIcon02542 then page.easGfSearchIcon02542:SetHidden(true) end
+        page.pageLabel:SetText(string.format("LIVE  -  %s  -  PAGE %d / %d  -  %d LISTINGS", tostring(v.categoryName or "GROUP FINDER"), tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+    end
+
+    if selected then
+        local function get(method, fallback)
+            if type(selected[method]) == "function" then
+                local ok, value = pcall(selected[method], selected)
+                if ok and value ~= nil then return value end
+            end
+            return fallback
+        end
+        local title = tostring(get("GetTitle", "Group Listing"))
+        local code = D.GetListingShortCode and D:GetListingShortCode(selected) or ""
+        if code ~= "" then title = "[" .. code .. "] " .. title end
+        local owner = tostring(get("GetOwnerDisplayName", "Unknown"))
+        local description = tostring(get("GetDescription", ""))
+        local target = tostring(get("GetSecondaryOptionText", ""))
+        local roles = D.GetActualRoleSummary and D:GetActualRoleSummary(selected) or "ROLES: ANY"
+        page.detailTitle:SetText(title)
+        setBookText(page.detailBody, string.format("LEADER\n%s\n\nINSTANCE\n%s\n\nCATEGORY\n%s\n\nMODE\n%s\n\n%s\n\nDESCRIPTION\n%s", owner, target ~= "" and target or "Not specified", tostring(v.categoryName or "Group Finder"), supportsDifficulty and tostring(v.difficulty or "NORMAL") or "N/A", roles, description ~= "" and description or "No description provided."), page.detailBody:GetWidth())
+    end
+end
+
+
+
+-- v0.25.43: Group Finder control readability pass.
+local function easStyleGroupFinderButton02543(button, selected)
+    if not button then return end
+    button:SetFont("ZoFontGameBold")
+    if button.SetNormalFontColor then
+        if selected then
+            button:SetNormalFontColor(1.00, 0.84, 0.28, 1)
+        else
+            button:SetNormalFontColor(0.94, 0.97, 1.00, 1)
+        end
+        button:SetMouseOverFontColor(0.20, 0.95, 1.00, 1)
+        button:SetPressedFontColor(1.00, 0.84, 0.28, 1)
+        if button.SetDisabledFontColor then button:SetDisabledFontColor(0.55, 0.58, 0.62, 0.95) end
+    end
+    setButtonStyle(button, selected, THEMES.MIDNIGHT or nil)
+    if button.easPremiumSkin then
+        local bg, glow = button.easPremiumSkin.bg, button.easPremiumSkin.glow
+        if selected then
+            bg:SetCenterColor(0.055, 0.085, 0.122, 0.94)
+            bg:SetEdgeColor(0.18, 0.72, 0.92, 0.92)
+            glow:SetEdgeColor(0.18, 0.72, 0.92, 0.28)
+        else
+            bg:SetCenterColor(0.025, 0.045, 0.075, 0.94)
+            bg:SetEdgeColor(0.18, 0.72, 0.92, 0.70)
+            glow:SetEdgeColor(0.18, 0.72, 0.92, 0.18)
+        end
+    end
+end
+
+local easRefreshInteractiveGroupFinder02543 = J.RefreshInteractiveGroupFinder
+function J:RefreshInteractiveGroupFinder(page)
+    easRefreshInteractiveGroupFinder02543(self, page)
+    local D = EPC.DungeonFinder
+    if not D then return end
+
+    -- Use shorter, unambiguous labels so none of the source buttons clip.
+    local mode = tostring(D.socialMode or "PUBLIC")
+    local sourceLabels = {"PUBLIC", "GUILD", "REFRESH", ""}
+    local sourceSelected = {mode == "PUBLIC", mode == "GUILD", false, false}
+    local gap = 6
+    local usable = self.pageW - 28 - gap * 3
+    local w = math.floor(usable / 4)
+    for i=1,4 do
+        local b = page.controls[i]
+        if i <= 3 then
+            local threeW = math.floor((self.pageW - 28 - gap * 2) / 3)
+            b:ClearAnchors()
+            b:SetAnchor(TOPLEFT, page.left, TOPLEFT, 14 + (i-1)*(threeW+gap), 54)
+            b:SetDimensions(threeW, 28)
+            b:SetText(sourceLabels[i])
+            b:SetHidden(false)
+            easStyleGroupFinderButton02543(b, sourceSelected[i])
+        else
+            b:SetHidden(true)
+        end
+    end
+
+    -- The second row is context-sensitive but always uses readable full words.
+    for i=1,4 do
+        local b = page.secondary[i]
+        b:ClearAnchors()
+        b:SetAnchor(TOPLEFT, page.left, TOPLEFT, 14 + (i-1)*(w+gap), 86)
+        b:SetDimensions(w, 28)
+        easStyleGroupFinderButton02543(b, false)
+    end
+
+    if mode == "PUBLIC" then
+        local v = D:BuildLiveView()
+        local supportsDifficulty = D.LiveCategorySupportsDifficulty and D:LiveCategorySupportsDifficulty(v.category)
+        page.secondary[1]:SetText("PREV")
+        page.secondary[2]:SetText("NEXT")
+        page.secondary[3]:SetText(supportsDifficulty and ((tostring(v.difficulty or "NORMAL") == "VETERAN") and "VETERAN" or "NORMAL") or "MODE")
+        local cat = tostring(v.categoryName or "CATEGORY"):upper()
+        if #cat > 10 then cat = cat:sub(1,10) end
+        page.secondary[4]:SetText(cat)
+        easStyleGroupFinderButton02543(page.secondary[3], supportsDifficulty == true)
+        easStyleGroupFinderButton02543(page.secondary[4], true)
+    else
+        page.secondary[1]:SetText("PREV")
+        page.secondary[2]:SetText("NEXT")
+        page.secondary[3]:SetText("REFRESH")
+        page.secondary[4]:SetText("PUBLIC")
+    end
+
+    -- Make the right-side action buttons visually obvious too.
+    for _,b in ipairs({page.action0,page.action1,page.action2,page.action3}) do
+        if b and not b:IsHidden() then
+            b:SetFont("ZoFontGameBold")
+            easStyleGroupFinderButton02543(b, false)
+        end
+    end
+end
+
+local easRunInteractiveSecondary02542 = J.RunInteractiveSecondary
+function J:RunInteractiveSecondary(tab, index)
+    if tab == "GROUPFINDER" and EPC.DungeonFinder and tostring(EPC.DungeonFinder.socialMode or "PUBLIC") == "PUBLIC" then
+        local D = EPC.DungeonFinder
+        if index == 1 then D:ChangeLivePage(-1)
+        elseif index == 2 then D:ChangeLivePage(1)
+        elseif index == 3 then D:ToggleLiveDifficulty()
+        elseif index == 4 then D:CycleLiveCategory() end
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveSecondary02542(self, tab, index)
+end
+
+-- ============================================================================
+-- v0.25.68 - Random Normal / Veteran queue actions in Dungeon Finder
+-- ============================================================================
+function J:SetupDungeonRandomQueue2567(page)
+    if not page or page.randomQueue2567 then return end
+    page.randomQueue2567 = true
+
+    local gap = 8
+    local buttonW = math.floor((self.pageW - 36 - gap) / 2)
+    local y = 422
+
+    page.randomNormal2567 = makeButton(
+        "EAS_DungeonRandomNormal2567", page.right, "RANDOM NORMAL",
+        18, y, buttonW, 34,
+        function()
+            if EPC.DungeonFinder then EPC.DungeonFinder:QueueRandom("NORMAL") end
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+
+    page.randomVeteran2567 = makeButton(
+        "EAS_DungeonRandomVeteran2567", page.right, "RANDOM VETERAN",
+        18 + buttonW + gap, y, buttonW, 34,
+        function()
+            if EPC.DungeonFinder then EPC.DungeonFinder:QueueRandom("VETERAN") end
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+
+    if page.randomNormal2567.SetFont then page.randomNormal2567:SetFont("ZoFontGameBold") end
+    if page.randomVeteran2567.SetFont then page.randomVeteran2567:SetFont("ZoFontGameBold") end
+end
+
+local easLegacyRefreshInteractiveDungeons_2567 = J.RefreshInteractiveDungeons
+function J:RefreshInteractiveDungeons(page)
+    easLegacyRefreshInteractiveDungeons_2567(self, page)
+    if not page then return end
+    self:SetupDungeonRandomQueue2567(page)
+
+    local D = EPC.DungeonFinder
+    local queued = D and D:IsQueued() or false
+    local rewardEligible = D and D:IsDailyRandomRewardEligible() or nil
+
+    page.randomNormal2567:SetHidden(false)
+    page.randomVeteran2567:SetHidden(false)
+    easSetEnabled(page.randomNormal2567, not queued)
+    easSetEnabled(page.randomVeteran2567, not queued)
+
+    setButtonStyle(page.randomNormal2567, D and D.difficulty == "NORMAL" and not queued, self:GetTheme())
+    setButtonStyle(page.randomVeteran2567, D and D.difficulty == "VETERAN" and not queued, self:GetTheme())
+
+    if queued then
+        page.randomNormal2567:SetText("ALREADY QUEUED")
+        page.randomVeteran2567:SetText("ALREADY QUEUED")
+    else
+        page.randomNormal2567:SetText("RANDOM NORMAL")
+        page.randomVeteran2567:SetText("RANDOM VETERAN")
+    end
+
+    -- Keep the random-reward purpose visible even when no specific dungeon is selected.
+    if not (D and D:GetSelected()) and page.detailBody then
+        local rewardText = "DAILY RANDOM REWARD\n"
+        if rewardEligible == true then
+            rewardText = rewardText .. "AVAILABLE - queue Random Normal or Random Veteran to earn the ESO daily random XP and rewards."
+        elseif rewardEligible == false then
+            rewardText = rewardText .. "Daily bonus already claimed; ESO may still grant the repeatable random reward."
+        else
+            rewardText = rewardText .. "Queue Random Normal or Random Veteran for ESO's random dungeon rewards."
+        end
+        setBookText(page.detailBody, rewardText, page.detailBody:GetWidth())
+    end
+end
+
+local easLegacyCreate_2567 = J.Create
+function J:Create()
+    easLegacyCreate_2567(self)
+    if self.pages and self.pages.DUNGEONS then
+        self:SetupDungeonRandomQueue2567(self.pages.DUNGEONS)
+    end
+end
+
+-- ============================================================================
+-- v0.25.83 - Visible Dungeon History view
+-- The history collector already persists exact runs and imported achievement
+-- completion timestamps. Expose that data directly from the Dungeon Finder page.
+-- ============================================================================
+local function easDungeonHistoryDate2583(timestamp, fallbackDate, fallbackTime)
+    timestamp = tonumber(timestamp) or 0
+    if timestamp > 0 and type(GetDateStringFromTimestamp) == "function" then
+        local ok, dateText = pcall(GetDateStringFromTimestamp, timestamp)
+        if ok and dateText and dateText ~= "" then
+            local timeText = ""
+            if type(GetTimeStringFromTimestamp) == "function" then
+                local tok, t = pcall(GetTimeStringFromTimestamp, timestamp)
+                if tok and t then timeText = tostring(t) end
+            end
+            return timeText ~= "" and (tostring(dateText) .. "  " .. timeText) or tostring(dateText)
+        end
+    end
+    local d = tostring(fallbackDate or "")
+    local t = tostring(fallbackTime or "")
+    if d ~= "" and t ~= "" then return d .. "  " .. t end
+    if d ~= "" then return d end
+    if timestamp > 0 then return "Timestamp " .. tostring(timestamp) end
+    return "Date unavailable"
+end
+
+local function easDungeonHistoryDuration2583(seconds)
+    seconds = math.max(0, tonumber(seconds) or 0)
+    if seconds <= 0 then return "--" end
+    local h = math.floor(seconds / 3600)
+    local m = math.floor((seconds % 3600) / 60)
+    local s = math.floor(seconds % 60)
+    if h > 0 then return string.format("%d:%02d:%02d", h, m, s) end
+    return string.format("%d:%02d", m, s)
+end
+
+function J:SetupDungeonHistory2583(page)
+    if not page or page.dungeonHistory2583 then return end
+    page.dungeonHistory2583 = true
+
+    page.historyButton2583 = makeButton(
+        "EAS_DungeonHistoryButton2583", page.right, "DUNGEON HISTORY",
+        18, 464, self.pageW - 36, 32,
+        function()
+            local entering = not (self.dungeonHistoryMode2583 == true)
+            self.dungeonHistoryMode2583 = entering
+            if entering then self.dungeonHistoryPage2584 = 1 end
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+    if page.historyButton2583.SetFont then page.historyButton2583:SetFont("ZoFontGameBold") end
+
+    page.historyFirst2587 = makeButton(
+        "EAS_DungeonHistoryFirst2587", page.right, "FIRST",
+        18, 424, 62, 30,
+        function()
+            self.dungeonHistoryPage2584 = 1
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+    page.historyPrev2584 = makeButton(
+        "EAS_DungeonHistoryPrev2584", page.right, "PREV",
+        84, 424, 62, 30,
+        function()
+            self.dungeonHistoryPage2584 = math.max(1, (tonumber(self.dungeonHistoryPage2584) or 1) - 1)
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+    page.historyNext2584 = makeButton(
+        "EAS_DungeonHistoryNext2584", page.right, "NEXT",
+        self.pageW - 146, 424, 62, 30,
+        function()
+            self.dungeonHistoryPage2584 = (tonumber(self.dungeonHistoryPage2584) or 1) + 1
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+    page.historyLast2587 = makeButton(
+        "EAS_DungeonHistoryLast2587", page.right, "LAST",
+        self.pageW - 80, 424, 62, 30,
+        function()
+            local _, _, totalPages = self:BuildDungeonHistoryText2583(self.dungeonHistoryPage2584)
+            self.dungeonHistoryPage2584 = math.max(1, tonumber(totalPages) or 1)
+            self:RefreshSuitePage("DUNGEONS")
+        end)
+    page.historyPageLabel2584 = makeLabel(
+        "EAS_DungeonHistoryPageLabel2584", page.right, "PAGE 1 / 1",
+        150, 429, self.pageW - 300, 20, "ZoFontGameBold")
+    page.historyPageLabel2584:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    page.historyFirst2587:SetHidden(true)
+    page.historyPrev2584:SetHidden(true)
+    page.historyNext2584:SetHidden(true)
+    page.historyLast2587:SetHidden(true)
+    page.historyPageLabel2584:SetHidden(true)
+end
+
+function J:BuildDungeonHistoryText2583(requestedPage)
+    local runs, imported = {}, {}
+    if EPC.DungeonHistory and EPC.DungeonHistory.GetHistory then
+        runs, imported = EPC.DungeonHistory:GetHistory()
+    end
+    runs = type(runs) == "table" and runs or {}
+    imported = type(imported) == "table" and imported or {}
+
+    local combined = {}
+    for _, run in ipairs(runs) do
+        combined[#combined + 1] = {
+            when = tonumber(run.completedAt) or 0,
+            title = tostring(run.dungeon or "Dungeon"),
+            mode = tostring(run.difficulty or "UNKNOWN"),
+            duration = easDungeonHistoryDuration2583(run.durationSeconds),
+            character = tostring(run.characterName or ""),
+            exact = true,
+        }
+    end
+    for _, row in pairs(imported) do
+        local historicalName = tostring(row.name or "Dungeon completion")
+        local evidence = string.lower(historicalName .. " " .. tostring(row.description or "") .. " " .. tostring(row.category or "") .. " " .. tostring(row.subcategory or ""))
+        local historicalMode = "HISTORICAL - MODE NOT EXPOSED"
+        if string.find(evidence, "veteran", 1, true)
+            or string.find(evidence, "hard mode", 1, true)
+            or string.find(evidence, "challenger", 1, true)
+            or string.find(evidence, "conqueror", 1, true) then
+            historicalMode = "VETERAN"
+        end
+        combined[#combined + 1] = {
+            when = tonumber(row.completedAt) or 0,
+            title = historicalName,
+            mode = historicalMode,
+            duration = "--",
+            character = "",
+            exact = false,
+            date = row.date,
+            time = row.time,
+        }
+    end
+    table.sort(combined, function(a, b) return (tonumber(a.when) or 0) > (tonumber(b.when) or 0) end)
+
+    local exactCount = #runs
+    local importedCount = 0
+    for _ in pairs(imported) do importedCount = importedCount + 1 end
+
+    -- Three complete records fit the history panel while keeping each entry readable.
+    -- Pagination is unbounded, so very large histories (15,000+ runs) remain accessible.
+    local perPage = 3
+    local totalPages = math.max(1, math.ceil(#combined / perPage))
+    local pageNumber = math.max(1, math.min(totalPages, tonumber(requestedPage) or 1))
+    local lines = {
+        string.format("RECORDED RUNS  %d    IMPORTED COMPLETIONS  %d", exactCount, importedCount),
+        "",
+    }
+    if #combined == 0 then
+        lines[#lines + 1] = "No dungeon history has been recorded yet."
+        lines[#lines + 1] = ""
+        lines[#lines + 1] = "New Activity Finder dungeon completions will appear here automatically. Historical entries appear when ESO exposes a dungeon achievement completion date."
+        return table.concat(lines, "\n"), 1, 1
+    end
+
+    local firstIndex = ((pageNumber - 1) * perPage) + 1
+    local lastIndex = math.min(#combined, firstIndex + perPage - 1)
+    for i = firstIndex, lastIndex do
+        local row = combined[i]
+        lines[#lines + 1] = tostring(row.title)
+        lines[#lines + 1] = easDungeonHistoryDate2583(row.when, row.date, row.time)
+        if row.exact then
+            lines[#lines + 1] = "MODE: " .. tostring(row.mode or "UNKNOWN")
+            lines[#lines + 1] = "DURATION: " .. tostring(row.duration or "--")
+            if row.character and row.character ~= "" then
+                lines[#lines + 1] = "CHARACTER: " .. row.character
+            end
+        else
+            lines[#lines + 1] = "MODE: " .. tostring(row.mode or "UNKNOWN")
+            lines[#lines + 1] = "IMPORTED FROM ESO ACHIEVEMENT HISTORY"
+        end
+        lines[#lines + 1] = ""
+    end
+    lines[#lines + 1] = string.format("ENTRIES %d-%d OF %d", firstIndex, lastIndex, #combined)
+    return table.concat(lines, "\n"), pageNumber, totalPages
+end
+
+local easLegacyRefreshInteractiveDungeons_2583 = J.RefreshInteractiveDungeons
+function J:RefreshInteractiveDungeons(page)
+    easLegacyRefreshInteractiveDungeons_2583(self, page)
+    if not page then return end
+    self:SetupDungeonHistory2583(page)
+
+    local historyMode = self.dungeonHistoryMode2583 == true
+    page.historyButton2583:SetHidden(false)
+    page.historyButton2583:SetText(historyMode and "BACK TO DUNGEON FINDER" or "DUNGEON HISTORY")
+    setButtonStyle(page.historyButton2583, historyMode, self:GetTheme())
+
+    if not historyMode then
+        if page.historyFirst2587 then page.historyFirst2587:SetHidden(true) end
+        if page.historyPrev2584 then page.historyPrev2584:SetHidden(true) end
+        if page.historyNext2584 then page.historyNext2584:SetHidden(true) end
+        if page.historyLast2587 then page.historyLast2587:SetHidden(true) end
+        if page.historyPageLabel2584 then page.historyPageLabel2584:SetHidden(true) end
+        return
+    end
+
+    -- Re-purpose the selected side as a dedicated visible history area.
+    page.detailTitle:SetText("Dungeon History")
+    if page.detailBodyRight2496 then page.detailBodyRight2496:SetHidden(true) page.detailBodyRight2496:SetText("") end
+    page.detailBody:SetHidden(false)
+    page.detailBody:ClearAnchors()
+    page.detailBody:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18, 94)
+    page.detailBody:SetDimensions(self.pageW - 36, 300)
+    page.detailBody:SetFont("ZoFontGame")
+
+    local historyText, currentPage, totalPages = self:BuildDungeonHistoryText2583(self.dungeonHistoryPage2584)
+    self.dungeonHistoryPage2584 = currentPage
+    setBookText(page.detailBody, historyText, page.detailBody:GetWidth())
+
+    if page.historyFirst2587 then
+        page.historyFirst2587:SetHidden(false)
+        page.historyFirst2587:SetMouseEnabled(currentPage > 1)
+        page.historyFirst2587:SetAlpha(currentPage > 1 and 1 or 0.45)
+    end
+    if page.historyPrev2584 then
+        page.historyPrev2584:SetHidden(false)
+        page.historyPrev2584:SetMouseEnabled(currentPage > 1)
+        page.historyPrev2584:SetAlpha(currentPage > 1 and 1 or 0.45)
+    end
+    if page.historyNext2584 then
+        page.historyNext2584:SetHidden(false)
+        page.historyNext2584:SetMouseEnabled(currentPage < totalPages)
+        page.historyNext2584:SetAlpha(currentPage < totalPages and 1 or 0.45)
+    end
+    if page.historyLast2587 then
+        page.historyLast2587:SetHidden(false)
+        page.historyLast2587:SetMouseEnabled(currentPage < totalPages)
+        page.historyLast2587:SetAlpha(currentPage < totalPages and 1 or 0.45)
+    end
+    if page.historyPageLabel2584 then
+        page.historyPageLabel2584:SetHidden(false)
+        page.historyPageLabel2584:SetText(string.format("PAGE %d / %d", currentPage, totalPages))
+    end
+
+    for _, button in ipairs({page.action0, page.action1, page.action2, page.action3}) do button:SetHidden(true) end
+    if page.randomNormal2567 then page.randomNormal2567:SetHidden(true) end
+    if page.randomVeteran2567 then page.randomVeteran2567:SetHidden(true) end
+end
+
+local easLegacyCreate_2583 = J.Create
+function J:Create()
+    easLegacyCreate_2583(self)
+    if self.pages and self.pages.DUNGEONS then
+        self:SetupDungeonHistory2583(self.pages.DUNGEONS)
+    end
+end
+
+-- v0.25.95 - Activity History for Trials / Arenas / PvP / Battlegrounds / Archive
+local function easActivityHistoryDate2595(timestamp, fallbackDate, fallbackTime)
+    timestamp = tonumber(timestamp) or 0
+    if timestamp > 0 and type(FormatTimeSeconds) == "function" and type(GetDateStringFromTimestamp) == "function" then
+        local dateText = tostring(GetDateStringFromTimestamp(timestamp) or "")
+        local sec = timestamp % 86400
+        local ok, timeText = pcall(FormatTimeSeconds, sec, TIME_FORMAT_STYLE_CLOCK_TIME, TIME_FORMAT_PRECISION_TWELVE_HOUR)
+        if ok and dateText ~= "" and timeText and timeText ~= "" then return dateText .. "  " .. tostring(timeText) end
+    end
+    local d, t = tostring(fallbackDate or ""), tostring(fallbackTime or "")
+    if d ~= "" and t ~= "" then return d .. "  " .. t end
+    if d ~= "" then return d end
+    return timestamp > 0 and ("Timestamp " .. tostring(timestamp)) or "Date unavailable"
+end
+
+local function easActivityHistoryDuration2595(seconds)
+    seconds = math.max(0, tonumber(seconds) or 0)
+    if seconds <= 0 then return "--" end
+    local h = math.floor(seconds / 3600)
+    local m = math.floor((seconds % 3600) / 60)
+    local s = math.floor(seconds % 60)
+    if h > 0 then return string.format("%d:%02d:%02d", h, m, s) end
+    return string.format("%d:%02d", m, s)
+end
+
+function J:SetupActivityHistory2595(page)
+    if not page or page.activityHistory2595 then return end
+    page.activityHistory2595 = true
+    page.activityHistoryButton2595 = makeButton(
+        "EAS_ActivityHistoryButton2595", page.right, "ACTIVITY HISTORY",
+        18, 464, self.pageW - 36, 32,
+        function()
+            local entering = not (self.activityHistoryMode2595 == true)
+            self.activityHistoryMode2595 = entering
+            if entering then self.activityHistoryFilter2595 = "ALL"; self.activityHistoryPage2595 = 1 end
+            self:RefreshSuitePage("ACTIVITY")
+        end)
+    if page.activityHistoryButton2595.SetFont then page.activityHistoryButton2595:SetFont("ZoFontGameBold") end
+
+    -- v0.26.19: dedicated history buttons matching Dungeon History.
+    -- Users can jump straight to the content type they want instead of opening
+    -- one mixed Activity History list.
+    page.activityHistoryCategoryButtons2619 = {}
+    local historyKinds = {
+        {"TRIAL", "TRIAL HISTORY"}, {"ARENA", "ARENA HISTORY"}, {"BATTLEGROUND", "BG HISTORY"},
+        {"PVP", "PVP HISTORY"}, {"ARCHIVE", "ARCHIVE HISTORY"},
+    }
+    local bw = math.floor((self.pageW - 44) / 3)
+    for i,info in ipairs(historyKinds) do
+        local kind, label = info[1], info[2]
+        local col=(i-1)%3; local row=math.floor((i-1)/3)
+        local b=makeButton("EAS_ActivityHistoryKind2619_"..kind, page.right, label, 18+col*(bw+4), 426+row*34, bw, 30, function()
+            self.activityHistoryFilter2595=kind
+            self.activityHistoryMode2595=true
+            self.activityHistoryPage2595=1
+            self:RefreshSuitePage("ACTIVITY")
+        end)
+        page.activityHistoryCategoryButtons2619[i]=b
+    end
+    page.activityHistoryButton2595:ClearAnchors()
+    page.activityHistoryButton2595:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18, 494)
+    page.activityHistoryButton2595:SetDimensions(self.pageW-36, 30)
+
+    page.activityHistoryFirst2595 = makeButton("EAS_ActivityHistoryFirst2595", page.right, "FIRST", 18, 530, 62, 30, function()
+        self.activityHistoryPage2595 = 1; self:RefreshSuitePage("ACTIVITY")
+    end)
+    page.activityHistoryPrev2595 = makeButton("EAS_ActivityHistoryPrev2595", page.right, "PREV", 84, 530, 62, 30, function()
+        self.activityHistoryPage2595 = math.max(1, (tonumber(self.activityHistoryPage2595) or 1) - 1); self:RefreshSuitePage("ACTIVITY")
+    end)
+    page.activityHistoryNext2595 = makeButton("EAS_ActivityHistoryNext2595", page.right, "NEXT", self.pageW - 146, 530, 62, 30, function()
+        self.activityHistoryPage2595 = (tonumber(self.activityHistoryPage2595) or 1) + 1; self:RefreshSuitePage("ACTIVITY")
+    end)
+    page.activityHistoryLast2595 = makeButton("EAS_ActivityHistoryLast2595", page.right, "LAST", self.pageW - 80, 530, 62, 30, function()
+        local _, _, pages = self:BuildActivityHistoryText2595(self.activityHistoryPage2595)
+        self.activityHistoryPage2595 = math.max(1, tonumber(pages) or 1); self:RefreshSuitePage("ACTIVITY")
+    end)
+    page.activityHistoryPageLabel2595 = makeLabel("EAS_ActivityHistoryPageLabel2595", page.right, "PAGE 1 / 1", 150, 535, self.pageW - 300, 20, "ZoFontGameBold")
+    page.activityHistoryPageLabel2595:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    for _, b in ipairs({page.activityHistoryFirst2595, page.activityHistoryPrev2595, page.activityHistoryNext2595, page.activityHistoryLast2595}) do b:SetHidden(true) end
+    page.activityHistoryPageLabel2595:SetHidden(true)
+end
+
+function J:BuildActivityHistoryText2595(requestedPage)
+    local runs, imported = {}, {}
+    if EPC.ActivityRunHistory and EPC.ActivityRunHistory.GetHistory then runs, imported = EPC.ActivityRunHistory:GetHistory() end
+    runs = type(runs) == "table" and runs or {}
+    imported = type(imported) == "table" and imported or {}
+    local filter = tostring(self.activityHistoryFilter2595 or "ALL")
+    local combined = {}
+
+    for _, run in ipairs(runs) do
+        local runKind = tostring(run.category or "ACTIVITY")
+        if filter == "ALL" or runKind == filter then
+            combined[#combined + 1] = {
+                when = tonumber(run.completedAt) or 0, title = tostring(run.activity or run.category or "Activity"),
+                kind = runKind, mode = tostring(run.mode or "N/A"),
+                duration = easActivityHistoryDuration2595(run.durationSeconds), character = tostring(run.characterName or ""), exact = true,
+                completed = run.completed ~= false,
+            }
+        end
+    end
+    for _, row in pairs(imported) do
+        local rowKind = tostring(row.category or "ACTIVITY")
+        if filter == "ALL" or rowKind == filter then
+            combined[#combined + 1] = {
+                when = tonumber(row.completedAt) or 0, title = tostring(row.activity or "Historical completion"),
+                kind = rowKind, mode = tostring(row.mode or "HISTORICAL - MODE NOT EXPOSED"),
+                duration = "--", character = "", exact = false, date = row.date, time = row.time,
+            }
+        end
+    end
+    table.sort(combined, function(a,b) return (tonumber(a.when) or 0) > (tonumber(b.when) or 0) end)
+
+    local perPage = 3
+    local totalPages = math.max(1, math.ceil(#combined / perPage))
+    local pageNumber = math.max(1, math.min(totalPages, tonumber(requestedPage) or 1))
+    local historyLabel = (filter == "ALL") and "ALL ACTIVITY" or filter
+    local lines = { historyLabel .. " HISTORY", string.format("MATCHING ENTRIES  %d", #combined), "" }
+    if #combined == 0 then
+        lines[#lines + 1] = "No " .. historyLabel .. " history has been recorded yet."
+        lines[#lines + 1] = ""
+        lines[#lines + 1] = "Future activity events are recorded automatically. Older completion dates appear when ESO exposes a matching achievement timestamp."
+        return table.concat(lines, "\n"), 1, 1
+    end
+    local first = ((pageNumber - 1) * perPage) + 1
+    local last = math.min(#combined, first + perPage - 1)
+    for i = first, last do
+        local row = combined[i]
+        lines[#lines + 1] = tostring(row.title)
+        lines[#lines + 1] = easActivityHistoryDate2595(row.when, row.date, row.time)
+        lines[#lines + 1] = string.format("TYPE: %s    MODE: %s", tostring(row.kind), tostring(row.mode))
+        if row.exact then
+            lines[#lines + 1] = (row.completed and "DURATION: " or "SESSION: ") .. tostring(row.duration or "--")
+            if row.character ~= "" then lines[#lines + 1] = "CHARACTER: " .. row.character end
+        else
+            lines[#lines + 1] = "IMPORTED FROM ESO ACHIEVEMENT HISTORY"
+        end
+        lines[#lines + 1] = ""
+    end
+    lines[#lines + 1] = string.format("ENTRIES %d-%d OF %d", first, last, #combined)
+    return table.concat(lines, "\n"), pageNumber, totalPages
+end
+
+local easLegacyRefreshInteractiveActivity2595 = J.RefreshInteractiveActivity
+function J:RefreshInteractiveActivity(page)
+    easLegacyRefreshInteractiveActivity2595(self, page)
+    if not page then return end
+    self:SetupActivityHistory2595(page)
+    local mode = self.activityHistoryMode2595 == true
+    page.activityHistoryButton2595:SetHidden(false)
+    page.activityHistoryButton2595:SetText(mode and "BACK TO ACTIVITIES" or "ALL ACTIVITY HISTORY")
+    setButtonStyle(page.activityHistoryButton2595, mode and tostring(self.activityHistoryFilter2595 or "ALL") == "ALL", self:GetTheme())
+    if page.activityHistoryCategoryButtons2619 then
+        local kinds={"TRIAL","ARENA","BATTLEGROUND","PVP","ARCHIVE"}
+        for i,b in ipairs(page.activityHistoryCategoryButtons2619) do
+            b:SetHidden(false)
+            setButtonStyle(b, mode and tostring(self.activityHistoryFilter2595 or "ALL") == kinds[i], self:GetTheme())
+        end
+    end
+    if not mode then
+        for _, b in ipairs({page.activityHistoryFirst2595, page.activityHistoryPrev2595, page.activityHistoryNext2595, page.activityHistoryLast2595}) do b:SetHidden(true) end
+        page.activityHistoryPageLabel2595:SetHidden(true)
+        return
+    end
+
+    local historyFilterLabel = tostring(self.activityHistoryFilter2595 or "ALL")
+    page.detailTitle:SetText(historyFilterLabel == "ALL" and "Activity History" or (historyFilterLabel .. " History"))
+    page.detailBody:SetHidden(false)
+    page.detailBody:ClearAnchors()
+    page.detailBody:SetAnchor(TOPLEFT, page.right, TOPLEFT, 18, 94)
+    page.detailBody:SetDimensions(self.pageW - 36, 300)
+    page.detailBody:SetFont("ZoFontGame")
+    local text, current, pages = self:BuildActivityHistoryText2595(self.activityHistoryPage2595)
+    self.activityHistoryPage2595 = current
+    setBookText(page.detailBody, text, page.detailBody:GetWidth())
+
+    local nav = {
+        {page.activityHistoryFirst2595, current > 1}, {page.activityHistoryPrev2595, current > 1},
+        {page.activityHistoryNext2595, current < pages}, {page.activityHistoryLast2595, current < pages},
+    }
+    for _, item in ipairs(nav) do
+        local b, enabled = item[1], item[2]
+        b:SetHidden(false); b:SetMouseEnabled(enabled); b:SetAlpha(enabled and 1 or 0.45)
+    end
+    page.activityHistoryPageLabel2595:SetHidden(false)
+    page.activityHistoryPageLabel2595:SetText(string.format("PAGE %d / %d", current, pages))
+    for _, b in ipairs(page.controls or {}) do b:SetHidden(true) end
+    for _, b in ipairs(page.secondary or {}) do b:SetHidden(true) end
+    for _, row in ipairs(page.rows or {}) do row:SetHidden(true) end
+    page.pageLabel:SetText("TRIALS / ARENAS / BATTLEGROUNDS / PVP / ARCHIVE")
+    for _, b in ipairs({page.action0, page.action1, page.action2, page.action3}) do if b then b:SetHidden(true) end end
+end
+
+local easLegacyCreate2595 = J.Create
+function J:Create()
+    easLegacyCreate2595(self)
+    if self.pages and self.pages.ACTIVITY then self:SetupActivityHistory2595(self.pages.ACTIVITY) end
+end
+
+-- v0.25.99 guild leader dropdown lifecycle cleanup ------------------------------
+-- Treat the popup as part of the Travel page: never let it survive Codex close
+-- or a chapter/page change.
+local easGuildDropdownSetTab02599 = J.SetTab
+function J:SetTab(tab)
+    if tab ~= "TRAVEL" and self.HideGuildLeaderHomeDropdown then
+        self:HideGuildLeaderHomeDropdown()
+    end
+    return easGuildDropdownSetTab02599(self, tab)
+end
+
+local easGuildDropdownHide02599 = J.Hide
+function J:Hide()
+    if self.HideGuildLeaderHomeDropdown then
+        self:HideGuildLeaderHomeDropdown()
+    end
+    return easGuildDropdownHide02599(self)
+end
+
+local easGuildDropdownShow02599 = J.ShowGuildLeaderHomeDropdown
+function J:ShowGuildLeaderHomeDropdown(page)
+    -- Opening the selector always closes any stale popup first, then lets the
+    -- existing toggle logic rebuild it for the current Travel page.
+    if self.guildLeaderHomeDropdown and not self.guildLeaderHomeDropdown:IsHidden() then
+        self.guildLeaderHomeDropdown:SetHidden(true)
+    end
+    return easGuildDropdownShow02599(self, page)
+end
+
+
+-- v0.27.14 - Saved Loadouts / Tamriel Codex workspace exclusivity
+-- Opening the Codex closes the detached Saved Loadouts workspace first.
+-- Hide it without dropping UI mode so the Codex can immediately take over.
+local easLoadoutWorkspaceShow02714 = J.Show
+function J:Show()
+    local transferredUIMode = false
+    if EPC.LoadoutManager and EPC.LoadoutManager.window and not EPC.LoadoutManager.window:IsHidden() then
+        if type(EPC.LoadoutManager.TransferUIModeToCodex) == "function" then
+            transferredUIMode = EPC.LoadoutManager:TransferUIModeToCodex() == true
+        end
+        if type(EPC.LoadoutManager.Hide) == "function" then
+            EPC.LoadoutManager:Hide(true)
+        end
+    elseif EPC.GearLoadoutOverlay and type(EPC.GearLoadoutOverlay.SetLoadoutMode) == "function" then
+        EPC.GearLoadoutOverlay:SetLoadoutMode(false)
+    end
+
+    local result = easLoadoutWorkspaceShow02714(self)
+    -- If Saved Loadouts owned the cursor because it came from normal gameplay,
+    -- the Codex now becomes responsible for releasing it when the Codex closes.
+    if transferredUIMode then self.ownsUIMode = true end
+    return result
+end
+
+-- v0.27.16 - Dense-page organization pass
+-- Re-groups the busiest Codex pages into predictable sections with shorter copy,
+-- clearer spacing, and consistent action bands.
+local function easSectionLabel02716(name, parent, text, y, width)
+    -- Section labels are persistent named controls. RefreshSuitePage can call this
+    -- layout pass many times, so reuse an existing control instead of attempting
+    -- to create another control with the same global ESO UI name.
+    local l = rawget(_G, name)
+    if not l and type(GetControl) == "function" then
+        local ok, control = pcall(GetControl, name)
+        if ok then l = control end
+    end
+    if not l then
+        l = makeLabel(name, parent, text, 18, y, width or 394, 18, "ZoFontGameBold")
+    else
+        l:ClearAnchors()
+        l:SetAnchor(TOPLEFT, parent, TOPLEFT, 18, y)
+        l:SetDimensions(width or 394, 18)
+        l:SetFont("ZoFontGameBold")
+        l:SetText(text)
+        l:SetHidden(false)
+    end
+    l:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    l:SetColor(0.55, 0.68, 0.82, 1)
+    return l
+end
+
+function J:OrganizeDensePages02716()
+    if not self.pages then return end
+
+    local gear = self.pages.GEAR
+    if gear and gear.right and gear.interactive then
+        gear.detailTitle:ClearAnchors()
+        gear.detailTitle:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 54)
+        gear.detailTitle:SetDimensions(self.pageW - 36, 38)
+        gear.detailBody:ClearAnchors()
+        gear.detailBody:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 94)
+        gear.detailBody:SetDimensions(self.pageW - 36, 108)
+        gear.detailBody:SetFont("ZoFontGameSmall")
+
+        gear.sectionLoadouts02716 = easSectionLabel02716("EAS_GearSectionLoadouts02716", gear.right, "LOADOUTS", 207, self.pageW-36)
+        gear.sectionBuild02716 = easSectionLabel02716("EAS_GearSectionBuild02716", gear.right, "BUILD TOOLS", 253, self.pageW-36)
+        gear.sectionPreset02716 = easSectionLabel02716("EAS_GearSectionPreset02716", gear.right, "COMBAT PRESET", 333, self.pageW-36)
+        gear.sectionArmor02716 = easSectionLabel02716("EAS_GearSectionArmor02716", gear.right, "ARMOR WEIGHT", 379, self.pageW-36)
+        gear.sectionRoute02716 = easSectionLabel02716("EAS_GearSectionRoute02716", gear.right, "SET ACTIONS", 425, self.pageW-36)
+
+        if gear.savedLoadoutsButton then
+            gear.savedLoadoutsButton:ClearAnchors()
+            gear.savedLoadoutsButton:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 226)
+            gear.savedLoadoutsButton:SetDimensions(self.pageW-36, 25)
+        end
+        if gear.loadoutButtons then
+            local gap, w = 6, math.floor((self.pageW - 42) / 2)
+            for i,b in ipairs(gear.loadoutButtons) do
+                local col, row = (i-1)%2, math.floor((i-1)/2)
+                b:ClearAnchors()
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + col*(w+gap), 273 + row*29)
+                b:SetDimensions(w, 25)
+            end
+        end
+        if gear.optimizerModes then
+            local gap, w = 3, math.floor((self.pageW - 45) / 4)
+            for i,b in ipairs(gear.optimizerModes) do
+                b:ClearAnchors()
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + (i-1)*(w+gap), 352)
+                b:SetDimensions(w, 24)
+            end
+        end
+        if gear.armorWeightButtons then
+            local gap, w = 4, math.floor((self.pageW - 44) / 3)
+            for i,b in ipairs(gear.armorWeightButtons) do
+                b:ClearAnchors()
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + (i-1)*(w+gap), 398)
+                b:SetDimensions(w, 24)
+            end
+        end
+        for i,b in ipairs({gear.action0, gear.action1, gear.action2, gear.action3}) do
+            if b then
+                b:ClearAnchors()
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 444 + (i-1)*30)
+                b:SetDimensions(self.pageW-36, 26)
+            end
+        end
+    end
+
+    local travel = self.pages.TRAVEL
+    if travel and travel.right and travel.interactive then
+        -- v0.27.32: keep the destination area visually dominant while giving
+        -- the lower travel actions larger, clearer click targets.
+        travel.detailTitle:ClearAnchors()
+        travel.detailTitle:SetAnchor(TOPLEFT, travel.right, TOPLEFT, 18, 54)
+        travel.detailTitle:SetDimensions(self.pageW-36, 30)
+        travel.detailTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+
+        travel.detailBody:ClearAnchors()
+        travel.detailBody:SetAnchor(TOPLEFT, travel.right, TOPLEFT, 18, 88)
+        travel.detailBody:SetDimensions(self.pageW-36, 104)
+        travel.detailBody:SetFont("ZoFontGameSmall")
+
+        -- v0.27.58: keep the breathing room while trimming button height slightly
+        -- rectangle to the action instead of stretching every button full width.
+        local innerW = self.pageW - 40
+        local function centerTravelButton(button, width, y, height, font)
+            if not button then return end
+            local w = math.min(width, innerW)
+            local x = 20 + math.floor((innerW - w) / 2)
+            button:ClearAnchors()
+            button:SetAnchor(TOPLEFT, travel.right, TOPLEFT, x, y)
+            button:SetDimensions(w, height)
+            if font then button:SetFont(font) end
+        end
+
+        centerTravelButton(travel.action1, 236, 196, 30, "ZoFontGameBold")
+
+        travel.sectionGuild02716 = easSectionLabel02716("EAS_TravelSectionGuild02716", travel.right, "GUILD HOME", 246, self.pageW-36)
+        centerTravelButton(travel.guildLeaderSelect, 314, 272, 28, "ZoFontGameSmall")
+        centerTravelButton(travel.action0, 206, 314, 30, "ZoFontGameBold")
+
+        travel.sectionQuick02716 = easSectionLabel02716("EAS_TravelSectionQuick02716", travel.right, "NEARBY SERVICES", 368, self.pageW-36)
+        local servicesY = 396
+        local serviceGap = 14
+        local merchantW = 174
+        local storeW = 194
+        local servicesTotalW = merchantW + serviceGap + storeW
+        local servicesX = 20 + math.floor((innerW - servicesTotalW) / 2)
+        if travel.action2 then
+            travel.action2:ClearAnchors()
+            travel.action2:SetAnchor(TOPLEFT, travel.right, TOPLEFT, servicesX, servicesY)
+            travel.action2:SetDimensions(merchantW, 30)
+            travel.action2:SetFont("ZoFontGameSmall")
+            travel.action2:SetText("NEAREST MERCHANT")
+        end
+        if travel.action3 then
+            travel.action3:ClearAnchors()
+            travel.action3:SetAnchor(TOPLEFT, travel.right, TOPLEFT, servicesX + merchantW + serviceGap, servicesY)
+            travel.action3:SetDimensions(storeW, 30)
+            travel.action3:SetFont("ZoFontGameSmall")
+            travel.action3:SetText("NEAREST GUILD STORE")
+        end
+        centerTravelButton(travel.stableTravelButton, 208, 444, 30, "ZoFontGameSmall")
+        if travel.stableTravelButton then travel.stableTravelButton:SetText("NEAREST STABLEMASTER") end
+        centerTravelButton(travel.pledgeMasterTravelButton, 242, 480, 30, "ZoFontGameSmall")
+        if travel.pledgeMasterTravelButton then travel.pledgeMasterTravelButton:SetText("TRAVEL TO PLEDGE MASTER") end
+    end
+
+    local activity = self.pages.ACTIVITY
+    if activity and activity.right and activity.interactive then
+        activity.detailTitle:ClearAnchors()
+        activity.detailTitle:SetAnchor(TOPLEFT, activity.right, TOPLEFT, 18, 54)
+        activity.detailTitle:SetDimensions(self.pageW-36, 38)
+        activity.detailBody:ClearAnchors()
+        activity.detailBody:SetAnchor(TOPLEFT, activity.right, TOPLEFT, 18, 100)
+        activity.detailBody:SetDimensions(self.pageW-36, 205)
+        activity.sectionHistory02716 = easSectionLabel02716("EAS_ActivitySectionHistory02716", activity.right, "ACTIVITY HISTORY", 326, self.pageW-36)
+        if activity.activityHistoryCategoryButtons2619 then
+            -- v0.27.50: history category labels need more horizontal room.
+            -- Use two columns and give ARCHIVE HISTORY a full-width row so no
+            -- label is clipped, even with the uniform inset button borders.
+            local gap = 8
+            local w = math.floor((self.pageW - 36 - gap) / 2)
+            for i,b in ipairs(activity.activityHistoryCategoryButtons2619) do
+                b:ClearAnchors()
+                b:SetFont("ZoFontGameSmall")
+                if i <= 4 then
+                    local col, row = (i-1)%2, math.floor((i-1)/2)
+                    b:SetAnchor(TOPLEFT, activity.right, TOPLEFT, 18 + col*(w+gap), 347 + row*36)
+                    b:SetDimensions(w, 31)
+                else
+                    b:SetAnchor(TOPLEFT, activity.right, TOPLEFT, 18, 419)
+                    b:SetDimensions(self.pageW-36, 31)
+                end
+            end
+        end
+        if activity.activityHistoryButton2595 then
+            activity.activityHistoryButton2595:ClearAnchors()
+            activity.activityHistoryButton2595:SetAnchor(TOPLEFT, activity.right, TOPLEFT, 18, 456)
+            activity.activityHistoryButton2595:SetDimensions(self.pageW-36, 30)
+        end
+        -- History pagination remains lower on the page when history mode is open.
+        local nav = {activity.activityHistoryFirst2595, activity.activityHistoryPrev2595, activity.activityHistoryNext2595, activity.activityHistoryLast2595}
+        local xs = {18, 84, self.pageW-146, self.pageW-80}
+        for i,b in ipairs(nav) do if b then b:ClearAnchors(); b:SetAnchor(TOPLEFT, activity.right, TOPLEFT, xs[i], 525) end end
+        if activity.activityHistoryPageLabel2595 then
+            activity.activityHistoryPageLabel2595:ClearAnchors()
+            activity.activityHistoryPageLabel2595:SetAnchor(TOPLEFT, activity.right, TOPLEFT, 150, 530)
+        end
+    end
+
+    local skills = self.pages.SKILLS
+    if skills and skills.leftBody and skills.rightBody then
+        skills.leftBody:ClearAnchors()
+        skills.leftBody:SetAnchor(TOPLEFT, skills.left, TOPLEFT, 18, 62)
+        skills.leftBody:SetDimensions(self.pageW-36, self.pageH-202)
+        skills.rightBody:ClearAnchors()
+        skills.rightBody:SetAnchor(TOPLEFT, skills.right, TOPLEFT, 18, 62)
+        skills.rightBody:SetDimensions(self.pageW-36, self.pageH-202)
+
+        local leftY = self.pageH - 88
+        local leftY2 = self.pageH - 56
+        local rightY = self.pageH - 72
+        local halfGap = 8
+        local halfW = math.floor((self.pageW - 36 - halfGap) / 2)
+        local fullW = self.pageW - 36
+        local fontSmall = "ZoFontGameSmall"
+        local fontBold = "ZoFontGameBold"
+
+        for i,b in ipairs(skills.buttons or {}) do
+            b:ClearAnchors()
+            b:SetFont((i == 1 or i == 2 or i == 3) and fontSmall or fontBold)
+            if i == 1 then
+                b:SetAnchor(TOPLEFT, skills.left, TOPLEFT, 18, leftY)
+                b:SetDimensions(halfW, 26)
+            elseif i == 2 then
+                b:SetAnchor(TOPLEFT, skills.left, TOPLEFT, 18 + halfW + halfGap, leftY)
+                b:SetDimensions(halfW, 26)
+            elseif i == 3 then
+                b:SetAnchor(TOPLEFT, skills.left, TOPLEFT, 18, leftY2)
+                b:SetDimensions(fullW, 24)
+            elseif i == 4 then
+                b:SetAnchor(TOPLEFT, skills.right, TOPLEFT, 18, rightY)
+                b:SetDimensions(halfW, 26)
+            elseif i == 5 then
+                b:SetAnchor(TOPLEFT, skills.right, TOPLEFT, 18 + halfW + halfGap, rightY)
+                b:SetDimensions(halfW, 26)
+            end
+        end
+    end
+
+    local achievements = self.pages.ACHIEVEMENTS
+    if achievements and achievements.leftBody and achievements.rightBody then
+        achievements.leftBody:ClearAnchors()
+        achievements.leftBody:SetAnchor(TOPLEFT, achievements.left, TOPLEFT, 18, 50)
+        achievements.leftBody:SetDimensions(self.pageW-36, self.pageH-64)
+        achievements.rightBody:ClearAnchors()
+        achievements.rightBody:SetAnchor(TOPLEFT, achievements.right, TOPLEFT, 18, 50)
+        achievements.rightBody:SetDimensions(self.pageW-36, self.pageH-64)
+        achievements.leftBody:SetFont(getAchievementsDocumentFont())
+        achievements.rightBody:SetFont(getAchievementsDocumentFont())
+    end
+
+    local stats = self.pages.STATS
+    if stats and stats.leftBody and stats.rightBody then
+        stats.leftBody:ClearAnchors()
+        stats.leftBody:SetAnchor(TOPLEFT, stats.left, TOPLEFT, 18, 50)
+        stats.leftBody:SetDimensions(self.pageW-36, self.pageH-64)
+        stats.rightBody:ClearAnchors()
+        stats.rightBody:SetAnchor(TOPLEFT, stats.right, TOPLEFT, 18, 50)
+        stats.rightBody:SetDimensions(self.pageW-36, self.pageH-64)
+        stats.leftBody:SetFont(getStatsDocumentFont())
+        stats.rightBody:SetFont(getStatsDocumentFont())
+    end
+end
+
+local easCreateOrganized02716 = J.Create
+function J:Create()
+    local result = easCreateOrganized02716(self)
+    self:OrganizeDensePages02716()
+    return result
+end
+
+function J:RefreshSkillsOrganized02716(page)
+    if not page or not page.leftBody or not page.rightBody then return end
+    local v = EPC.GearOptimizer and EPC.GearOptimizer.BuildBestAbilityView and EPC.GearOptimizer:BuildBestAbilityView() or {}
+    local c = v.context or {}
+    local font = "$(BOLD_FONT)|20|soft-shadow-thin"
+    local lineH = 22
+    local contentW = self.pageW - 40
+
+    page.leftBody:SetText("")
+    page.rightBody:SetText("")
+    if page.leftBody.SetHidden then page.leftBody:SetHidden(false) end
+    if page.rightBody.SetHidden then page.rightBody:SetHidden(false) end
+
+    local function ensureLabel(field, name, parent, x, y, w, h, labelFont)
+        local label = page[field]
+        if not label then
+            label = makeLabel(name, parent, "", x, y, w, h, labelFont or font)
+            page[field] = label
+            self.themeLabels[#self.themeLabels + 1] = label
+        else
+            label:ClearAnchors()
+            label:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+            label:SetDimensions(w, h)
+            label:SetFont(labelFont or font)
+        end
+        label:SetVerticalAlignment(TEXT_ALIGN_TOP)
+        if label.SetHidden then label:SetHidden(false) end
+        return label
+    end
+
+    local function syncLines(prefix, baseName, parent, x, startY, lines, width, labelFont)
+        for i, line in ipairs(lines) do
+            local field = prefix .. tostring(i)
+            local name = baseName .. tostring(i)
+            local label = ensureLabel(field, name, parent, x, startY + (i - 1) * lineH, width, lineH, labelFont or font)
+            label:SetText(tostring(line or ""))
+        end
+        for i = #lines + 1, 24 do
+            local label = page[prefix .. tostring(i)]
+            if label then
+                label:SetText("")
+                if label.SetHidden then label:SetHidden(true) end
+            end
+        end
+    end
+
+    local buildTitleY = 58
+    ensureLabel("buildOverviewTitle2845", "EAS_BuildOverviewTitle2845", page.left, 20, buildTitleY, contentW, 22, font):SetText("BUILD OVERVIEW")
+    local buildLines = {
+        string.format("Build: %s", tostring(c.profile and c.profile.label or "Detected build")),
+        string.format("Role: %s", tostring(c.role or "DAMAGE")),
+        string.format("Front: %s", tostring(c.frontWeapon or "Weapon")),
+        string.format("Back: %s", tostring(c.backWeapon or "Weapon")),
+    }
+    if #(c.sets or {}) > 0 then
+        buildLines[#buildLines + 1] = "Sets:"
+        for _, setName in ipairs(c.sets or {}) do
+            buildLines[#buildLines + 1] = "- " .. tostring(setName)
+        end
+    end
+    syncLines("buildOverviewLine2845_", "EAS_BuildOverviewLine2845_", page.left, 20, buildTitleY + 26, buildLines, contentW, font)
+
+    local activeTitleY = buildTitleY + 26 + (#buildLines * lineH) + 18
+    ensureLabel("activeBarTitle2845", "EAS_SkillsActiveBarTitle2845", page.left, 20, activeTitleY, contentW, 22, font):SetText("RECOMMENDED ACTIVE BAR")
+    local activeLines = {}
+    for i = 1, 5 do
+        local a = v.abilities and v.abilities[i]
+        activeLines[#activeLines + 1] = string.format("%d. %s", i, tostring(a and a.name or "Empty"))
+    end
+    activeLines[#activeLines + 1] = "ULT. " .. tostring(v.ultimate and v.ultimate.name or "No purchased ultimate")
+    syncLines("activeBarLine2845_", "EAS_SkillsActiveBarLine2845_", page.left, 20, activeTitleY + 26, activeLines, contentW, font)
+
+    local respecTitleY = activeTitleY + 26 + (#activeLines * lineH) + 12
+    ensureLabel("respecTitle2845", "EAS_SkillsRespecTitle2845", page.left, 20, respecTitleY, contentW, 22, font):SetText("RESPEC + BUILD")
+    ensureLabel("respecLine12845", "EAS_SkillsRespecLine12845", page.left, 20, respecTitleY + 22, contentW, 22, font):SetText("Rebuilds both weapon bars, morphs, and passives.")
+    ensureLabel("respecLine22845", "EAS_SkillsRespecLine22845", page.left, 20, respecTitleY + 44, contentW, 22, font):SetText("Paid changes require confirmation.")
+
+    local cpTitleY = 58
+    ensureLabel("cpTitle2845", "EAS_SkillsCPTitle2845", page.right, 20, cpTitleY, contentW, 22, font):SetText("CHAMPION POINT OPTIMIZER")
+    local cpLines = {}
+    if EPC.ChampionOptimizer and EPC.ChampionOptimizer.BuildView then
+        local cpv = EPC.ChampionOptimizer:BuildView() or {}
+        cpLines[#cpLines + 1] = string.format("Redistribution: %d gold", tonumber(cpv.cost) or 0)
+        for _, pool in ipairs(cpv.pools or {}) do
+            cpLines[#cpLines + 1] = ""
+            cpLines[#cpLines + 1] = string.format("%s %d/%d", tostring(pool.label or "POOL"), tonumber(pool.spent) or 0, tonumber(pool.budget) or 0)
+            for i, star in ipairs(pool.top or {}) do
+                if i > 2 then break end
+                cpLines[#cpLines + 1] = string.format("- %s: %d%s", tostring(star.name or "Star"), tonumber(star.points) or 0, star.slottable and " [SLOT]" or "")
+            end
+        end
+    else
+        cpLines[#cpLines + 1] = "Champion optimizer unavailable."
+    end
+    syncLines("cpLine2845_", "EAS_SkillsCPLine2845_", page.right, 20, cpTitleY + 26, cpLines, contentW, font)
+
+    local av = EPC.AttributeOptimizer and EPC.AttributeOptimizer.BuildView and EPC.AttributeOptimizer:BuildView() or nil
+    local attrTitleY = cpTitleY + 26 + (#cpLines * lineH) + 12
+    ensureLabel("attrTitle2845", "EAS_SkillsAttrTitle2845", page.right, 20, attrTitleY, contentW, 22, font):SetText("ATTRIBUTE OPTIMIZER")
+    local attrLines = {}
+    if av then
+        attrLines[#attrLines + 1] = string.format("Detected: %s", tostring(av.role or "DAMAGE"))
+        attrLines[#attrLines + 1] = string.format("Build: %s", tostring(av.build or "Current build"))
+        attrLines[#attrLines + 1] = string.format("Current: %d H / %d M / %d S", tonumber(av.current and av.current.health) or 0, tonumber(av.current and av.current.magicka) or 0, tonumber(av.current and av.current.stamina) or 0)
+        attrLines[#attrLines + 1] = string.format("Recommended: %d H / %d M / %d S", tonumber(av.target and av.target.health) or 0, tonumber(av.target and av.target.magicka) or 0, tonumber(av.target and av.target.stamina) or 0)
+        attrLines[#attrLines + 1] = string.format("Redistribution: %d gold", tonumber(av.cost) or 0)
+        attrLines[#attrLines + 1] = "Paid changes require confirmation."
+    else
+        attrLines[#attrLines + 1] = "Attribute optimizer unavailable."
+    end
+    syncLines("attrLine2845_", "EAS_SkillsAttrLine2845_", page.right, 20, attrTitleY + 26, attrLines, contentW, font)
+
+    self:SetSuiteButtons("SKILLS", {"RESPEC + BUILD", "REDISTRIBUTE CP", "BEST ATTRIBUTES"})
+    local buttons = page.buttons or {}
+    local gap = 8
+    local halfW = math.floor((self.pageW - 40 - gap) / 2)
+    if buttons[1] then
+        buttons[1]:SetHidden(false)
+        buttons[1]:ClearAnchors(); buttons[1]:SetAnchor(TOPLEFT, page.left, TOPLEFT, 20, self.pageH - 84); buttons[1]:SetDimensions(halfW, 28); buttons[1]:SetFont("ZoFontGameSmall")
+    end
+    if buttons[2] then
+        buttons[2]:SetHidden(false)
+        buttons[2]:ClearAnchors(); buttons[2]:SetAnchor(TOPLEFT, page.left, TOPLEFT, 20 + halfW + gap, self.pageH - 84); buttons[2]:SetDimensions(halfW, 28); buttons[2]:SetFont("ZoFontGameSmall")
+    end
+    if buttons[3] then
+        buttons[3]:SetHidden(false)
+        buttons[3]:ClearAnchors(); buttons[3]:SetAnchor(TOPLEFT, page.left, TOPLEFT, 20, self.pageH - 50); buttons[3]:SetDimensions(self.pageW - 40, 26); buttons[3]:SetFont("ZoFontGameSmall")
+    end
+    if buttons[4] then buttons[4]:SetHidden(true) end
+    if buttons[5] then buttons[5]:SetHidden(true) end
+end
+
+local function easEstimateAchievementLines(text, maxChars)
+    text = trim(text)
+    if text == "" then return 0 end
+    maxChars = math.max(18, tonumber(maxChars) or 38)
+    local lines = 0
+    for rawLine in string.gmatch(text .. "\n", "(.-)\n") do
+        local line = trim(rawLine)
+        if line == "" then
+            lines = lines + 1
+        else
+            local current, wrapped = 0, 1
+            for word in string.gmatch(line, "%S+") do
+                local extra = (current > 0 and 1 or 0) + #word
+                if current > 0 and current + extra > maxChars then
+                    wrapped = wrapped + 1
+                    current = #word
+                else
+                    current = current + extra
+                end
+            end
+            lines = lines + math.max(1, wrapped)
+        end
+    end
+    return lines
+end
+
+local function easGetRecentAchievementIds(count)
+    count = tonumber(count) or 10
+    local ids = { safe(GetRecentlyCompletedAchievements, nil, count) }
+    if #ids == 0 then ids = { safe(GetRecentlyCompletedAchievements, nil) } end
+    local out, seen = {}, {}
+    for i = 1, #ids do
+        local id = tonumber(ids[i]) or 0
+        if id > 0 and not seen[id] then
+            seen[id] = true
+            out[#out+1] = id
+        end
+    end
+    return out
+end
+
+local function easPadLowDensityText02838(text, targetLines)
+    local lines = {}
+    for rawLine in string.gmatch(tostring(text or "") .. "\n", "(.-)\n") do
+        lines[#lines+1] = rawLine
+    end
+    targetLines = tonumber(targetLines) or 28
+    while #lines < targetLines do
+        lines[#lines+1] = ""
+    end
+    return table.concat(lines, "\n")
+end
+
+function J:RefreshAchievementsOrganized02716(page)
+    if not page or not page.leftBody or not page.rightBody then return end
+    local earned = tonumber(safe(GetEarnedAchievementPoints, 0)) or 0
+    local total = tonumber(safe(GetTotalAchievementPoints, 0)) or 0
+    local ids = easGetRecentAchievementIds(10)
+    local entries = {}
+    for i = 1, #ids do
+        local id = tonumber(ids[i]) or 0
+        if id > 0 and type(GetAchievementInfo) == "function" then
+            local name, description, points, _, completed = safe(GetAchievementInfo, "", id)
+            name = trim(name)
+            if name ~= "" then
+                local entry = {
+                    name = name,
+                    description = trim(description),
+                    points = tonumber(points) or 0,
+                    completed = completed == true,
+                }
+                local title = string.format("%s%s", entry.name, entry.points > 0 and string.format("  (%d pts)", entry.points) or "")
+                entry._estimatedLines = easEstimateAchievementLines(title, 29) + easEstimateAchievementLines(entry.description, 33) + 3
+                entries[#entries+1] = entry
+            end
+        end
+    end
+
+    local left = {"PROGRESS", "", string.format("Achievement Points: %d / %d", earned, total), "", "RECENT COMPLETIONS"}
+    local right = {"MORE RECENT COMPLETIONS"}
+    if #entries == 0 then
+        left[#left+1] = ""
+        left[#left+1] = "Recent achievement details are not currently exposed by ESO."
+        right[#right+1] = ""
+        right[#right+1] = "Complete achievements to populate this page."
+    else
+        local totalWeight = 0
+        for _, e in ipairs(entries) do totalWeight = totalWeight + (e._estimatedLines or 4) end
+        local targetLeft = math.floor(totalWeight / 2)
+        local leftWeight, split = 0, 0
+        for i, e in ipairs(entries) do
+            local remaining = #entries - i
+            local weight = e._estimatedLines or 4
+            local minimumRight = 2
+            if i == 1 or (leftWeight + weight <= targetLeft or remaining >= minimumRight) then
+                split = i
+                leftWeight = leftWeight + weight
+            else
+                break
+            end
+        end
+        if split < 1 then split = math.max(1, math.floor(#entries / 2)) end
+        if split >= #entries then split = math.max(1, #entries - 1) end
+
+        local leftCount = split
+        local rightCount = #entries - split
+        local leftSpacer = (#entries <= 8 and leftCount <= 4) and 2 or 1
+        local rightSpacer = (#entries <= 8 and rightCount <= 4) and 2 or 1
+
+        local function appendEntry(target, index, entry, extraSpacer)
+            target[#target+1] = ""
+            target[#target+1] = string.format("%d. %s%s", index, entry.name, entry.points > 0 and string.format("  (%d pts)", entry.points) or "")
+            if entry.description ~= "" then
+                target[#target+1] = entry.description
+            end
+            for _ = 1, extraSpacer do target[#target+1] = "" end
+        end
+
+        for i, e in ipairs(entries) do
+            if i <= split then
+                appendEntry(left, i, e, leftSpacer)
+            else
+                appendEntry(right, i, e, rightSpacer)
+            end
+        end
+    end
+    local font = getAchievementsDocumentFont()
+    page.leftBody:SetFont(font)
+    page.rightBody:SetFont(font)
+    page.leftBody:ClearAnchors()
+    page.leftBody:SetAnchor(TOPLEFT, page.left, TOPLEFT, 20, 48)
+    page.leftBody:SetDimensions(self.pageW-40, self.pageH-58)
+    page.rightBody:ClearAnchors()
+    page.rightBody:SetAnchor(TOPLEFT, page.right, TOPLEFT, 20, 48)
+    page.rightBody:SetDimensions(self.pageW-40, self.pageH-58)
+    setBookText(page.leftBody, easPadLowDensityText02838(table.concat(left, "\n"), 30), page.leftBody:GetWidth())
+    setBookText(page.rightBody, easPadLowDensityText02838(table.concat(right, "\n"), 30), page.rightBody:GetWidth())
+end
+
+
+local function easSpaceStatsText02836(text)
+    text = tostring(text or "")
+    local sections = {
+        "CHARACTER OVERVIEW", "INVENTORY & WEALTH", "RIDING TRAINING",
+        "GOLD SPENDING", "TOTAL TRACKED", "CRAFTING & EQUIPMENT",
+        "SUPPLIES & SERVICES", "MARKET, TRAVEL & OTHER",
+    }
+    for _, heading in ipairs(sections) do
+        text = text:gsub(heading .. "\n", heading .. "\n\n")
+    end
+    -- Keep deliberate section breathing room; do not compress it back down.
+    text = text:gsub("\n\n\n\n+", "\n\n\n")
+    return text
+end
+
+function J:RefreshStatsReadable02836(page)
+    if not page or not page.leftBody or not page.rightBody then return end
+    local left, right = self:BuildStatsSpread()
+    local font = getStatsDocumentFont()
+    page.leftBody:SetFont(font)
+    page.rightBody:SetFont(font)
+    page.leftBody:ClearAnchors()
+    page.leftBody:SetAnchor(TOPLEFT, page.left, TOPLEFT, 20, 50)
+    page.leftBody:SetDimensions(self.pageW-40, self.pageH-62)
+    page.rightBody:ClearAnchors()
+    page.rightBody:SetAnchor(TOPLEFT, page.right, TOPLEFT, 20, 50)
+    page.rightBody:SetDimensions(self.pageW-40, self.pageH-62)
+    setBookText(page.leftBody, easSpaceStatsText02836(left), page.leftBody:GetWidth())
+    setBookText(page.rightBody, easSpaceStatsText02836(right), page.rightBody:GetWidth())
+end
+
+local easRefreshDocumentOrganized02716 = J.RefreshDocumentPage
+function J:RefreshDocumentPage()
+    if self.activeTab == "ACHIEVEMENTS" then
+        local page = self.pages and self.pages.ACHIEVEMENTS
+        if page then self:RefreshAchievementsOrganized02716(page); return end
+    elseif self.activeTab == "STATS" then
+        local page = self.pages and self.pages.STATS
+        if page then self:RefreshStatsReadable02836(page); return end
+    end
+    return easRefreshDocumentOrganized02716(self)
+end
+
+-- ============================================================================
+-- v0.27.67 - Dungeon Finder multi-select presentation
+-- Selected rows stay visibly checked while paging so a player can build a
+-- specific queue containing one, three, or any desired set of dungeons.
+-- ============================================================================
+local easLegacyRefreshInteractiveDungeons2767 = J.RefreshInteractiveDungeons
+function J:RefreshInteractiveDungeons(page)
+    easLegacyRefreshInteractiveDungeons2767(self, page)
+    if not page or self.dungeonHistoryMode2583 == true then return end
+    local D = EPC.DungeonFinder
+    if not D or tostring(D.viewMode or "DUNGEONS") ~= "DUNGEONS" then return end
+
+    local v = D:BuildView()
+    local selectedCount = D.GetMultiSelectedCount and D:GetMultiSelectedCount() or 0
+
+    for i, rowControl in ipairs(page.rows or {}) do
+        local entry = v.rows and v.rows[i]
+        if entry and rowControl and rowControl.titleLabel then
+            local checked = D.IsEntrySelected and D:IsEntrySelected(entry)
+            rowControl.titleLabel:SetText((checked and "[X] " or "[ ] ") .. tostring(entry.name or "Dungeon"))
+            easSetInk(rowControl.titleLabel, checked, false)
+            if rowControl.detailLabel then easSetInk(rowControl.detailLabel, checked, true) end
+        end
+    end
+
+    if page.pageLabel and not v.scanning then
+        page.pageLabel:SetText(string.format("PAGE %d / %d  -  %d DUNGEONS  -  %d SELECTED", tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0, selectedCount))
+    end
+
+    if page.action0 then
+        local effectiveCount = selectedCount
+        if effectiveCount == 0 and D:GetSelected() then effectiveCount = 1 end
+        page.action0:SetText(v.queued and "ALREADY QUEUED" or (effectiveCount > 1 and ("QUEUE " .. tostring(effectiveCount) .. " SELECTED") or "QUEUE SELECTED"))
+        page.action0:SetHidden(effectiveCount == 0)
+        easSetEnabled(page.action0, effectiveCount > 0 and not v.queued)
+    end
+
+    if page.detailBody and D:GetSelected() then
+        local focused = D:GetSelected()
+        local checked = D.IsEntrySelected and D:IsEntrySelected(focused)
+        local prefix = string.format("QUEUE SELECTION\n%s  -  %d dungeon%s selected\n\n", checked and "SELECTED" or "NOT SELECTED", selectedCount, selectedCount == 1 and "" or "s")
+        local currentText = page.detailBody:GetText() or ""
+        if not currentText:find("^QUEUE SELECTION") then
+            setBookText(page.detailBody, prefix .. currentText, page.detailBody:GetWidth())
+        end
+    elseif page.detailBody and selectedCount > 0 then
+        setBookText(page.detailBody, string.format("%d dungeons selected. Click any dungeon row to add or remove it from your specific queue. Then press QUEUE SELECTED.", selectedCount), page.detailBody:GetWidth())
+    end
 end

@@ -2,8 +2,8 @@
 ## Author: valknarr
 ## Description: Readable Health, Magicka, and Stamina bars plus a werewolf-form Fury and sustain meter. Optional: ValknarrUIE to move Theme H/M/S and the wolf widget.
 ## APIVersion: 101049 101050
-## AddOnVersion: 34
-## Version: 0.1.33
+## AddOnVersion: 35
+## Version: 0.1.34
 ## SavedVariables: ValknarrTheme_SavedVariables
 ## OptionalDependsOn: ValknarrUIE LibAddonMenu-2.0
 ## IsLibrary: False

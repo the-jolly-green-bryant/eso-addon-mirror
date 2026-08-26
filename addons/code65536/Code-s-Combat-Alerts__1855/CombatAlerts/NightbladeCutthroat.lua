@@ -28,8 +28,8 @@ end
 
 function CA2.SetNightbladeCutthroatExclusion( timeOfExpectedHit )
 	if (timeOfExpectedHit > 0 and CA2.sv.cutthroatProtection and IsNightbladeCutthroatPassiveActive()) then
-		start = timeOfExpectedHit - 400
-		stop = timeOfExpectedHit + 50
+		start = timeOfExpectedHit - 500
+		stop = timeOfExpectedHit + 100
 		LCA.RegisterInCombatSkillBlock(NAME, SkillBlockerCallback)
 	else
 		LCA.RegisterInCombatSkillBlock(NAME)

@@ -69,21 +69,6 @@ CombatAlertsData = {
 			[99527] = { -2, 2 }, -- Scalecaller Peak -- Lacerate
 			[101494] = { -2, 2 }, -- Scalecaller Peak -- Lacerate
 			[101685] = { -2, 2 }, -- Scalecaller Peak -- Power Bash
-			[102107] = { -2, 2 }, -- Moon Hunter Keep -- Crushing Leap
-			[103951] = { -2, 2 }, -- Moon Hunter Keep -- Lunge (Dire Wolf)
-			[103994] = { -2, 2 }, -- Moon Hunter Keep -- Rending Slash
-			[105324] = { -2, 2 }, -- Moon Hunter Keep -- Devastating Leap
-			[106808] = { -2, 2 }, -- March of Sacrifices -- Ravaging Blow (Dagrund the Bulky)
-			[106885] = { -2, 2 }, -- March of Sacrifices -- Crushing Limbs
-			[107323] = { -3, 2 }, -- March of Sacrifices -- Horn Burst
-			[107697] = { -2, 2 }, -- March of Sacrifices -- Power Bash
-			[107711] = { -2, 2 }, -- March of Sacrifices -- Shield Charge
-			[108152] = { -2, 2 }, -- March of Sacrifices -- Dire Lunge
-			[108155] = { -2, 2 }, -- March of Sacrifices -- Crushing Leap
-			[108569] = { -2, 2 }, -- March of Sacrifices -- Ravaging Blow (Bloodscent Thundermaul)
-			[103587] = { -2, 2 }, -- Moon Hunter Keep -- Shred
-			[105494] = { -2, 2 }, -- Moon Hunter Keep -- Crushing Limbs
-			[110225] = { -2, 2 }, -- Moon Hunter Keep -- Crushing Leap
 			[109205] = { -3, 1 }, -- Frostvault -- Bola Ball
 			[113465] = { -2, 2 }, -- Frostvault -- Reverberating Smash
 			[112767] = { -2, 2 }, -- Depths of Malatar - Dissonant Blow
@@ -205,17 +190,12 @@ CombatAlertsData = {
 			[76848] = { -3, 2, true }, -- Ruins of Mazzatun
 			[78781] = { -3, 2, true },
 			[100947] = { -3, 2, true }, -- Scalecaller Peak
-			[101651] = { -3, 2, true },
-			[105303] = { -3, 2, true }, -- March of Sacrifices / Moon Hunter Keep
-			[107654] = { -3, 2, true }, -- March of Sacrifices (Wyress Strigidae)
-			[108397] = { -3, 2, true },
+			--[101651] = { -3, 2, true }, -- Scalecaller Peak (Mortieu -> Jorvuld)
+			[108397] = { -3, 2, true }, -- Unhallowed Grave
 
 			-- Misc
 			[52825] = { -3, 2, true }, -- Dragonstar Arena -- Lethal Arrow
 			[92892] = { -2, 2 }, -- Falkreath Hold / Fang Lair -- Clash of Bones
-			[107955] = { -2, 1 }, -- March of Sacrifices -- Slaughtering Strike
-			[108564] = { -3, 2 }, -- March of Sacrifices -- Fetid Globule
-			[111420] = { -3, 1, true }, -- March of Sacrifices -- Trapping Bolt
 			[112995] = { -2, 2 }, -- Frostvault -- Hammer
 			[112999] = { -3, 1, true }, -- Frostvault -- Targeted Salvo
 			[117287] = { -2, 2 }, -- Frostvault -- Crushing Blow
@@ -326,33 +306,6 @@ CombatAlertsData = {
 		beadSpawn = 105363,
 		beadCharge = 105373,
 		beadName = LCA.GetAbilityName(105371),
-	},
-
-
-	-- March of Sacrifices -----------------------------------------------------
-	march = {
-		fireId = 112386,
-		hardHealth = 6300000, -- 5645195 non-HM, 6491974 HM (pre-U35: 6272440 non-HM, 7213306 HM)
-		water = {
-			name = LCA.GetAbilityName(107624), -- Electric Water
-			color = 0x66CCFFFF,
-		},
-		venom = {
-			name = LCA.GetAbilityName(107777), -- Venomous Spores
-			color = 0x00CC00FF,
-		},
-		[106541] = "water", -- Thunder Stomp
-		[106727] = "venom", -- Venomous Slam
-		[107624] = "water", -- Electric Water
-		[107740] = "venom", -- Venom Slam
-	},
-
-
-	-- Moon Hunter Keep --------------------------------------------------------
-	moonhunter = {
-		root = 104196,
-		pounce = 104863,
-		switch = 113626,
 	},
 
 

@@ -29,6 +29,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Gear overview](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ronnie.vd.c/Gear-overview__3340) | ronnie.vd.c | PC / Mac | 0.11.0 |
 | [Gear Status Color](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Gear-Status-Color__3055) | buldezir | PC / Mac | 1.0.6 |
 | [Gear Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Gear-Tracker__3174) | M0R | PC / Mac | 1.1 |
+| [GearExporter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bobbyroylee/GearExporter__4795) | bobbyroylee | PC / Mac | 1.0 |
 | [GearSetsSort](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/megawriter/GearSetsSort__1608) | megawriter | PC / Mac | 2.0.0.5 |
 | [Gearswap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Adalan/Gearswap__961) | Adalan | PC / Mac | 1.46 |
 | [GearTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/GearTracker__fa5da270-ccfe-454b-ba19-4599992e272a) | thewizadt | Console | — |

@@ -13,6 +13,13 @@ Module.ZONES = {
 Module.STRINGS = {
 	-- Extracted
 	["8290981-0-86045"] = { default = "Drakeeh the Unchained^M", de = "Drakeeh der Entfesselte^M", es = "Drakeeh el Desencadenado^M", fr = "Drakeeh le Déchaîné^M", jp = "解き放たれしドラキー^M", ru = "Драки Освобожденный^M", zh = "被解放的德拉基^M" },
+
+	-- Custom (Settings)
+	drakeehSpawn = { default = "Mark Drakeeh's spawn location" },
+}
+
+Module.DEFAULT_SETTINGS = {
+	drakeehSpawn = true,
 }
 
 Module.DATA = {
@@ -81,7 +88,7 @@ function Module:Initialize( )
 end
 
 function Module:OnBossesChanged( )
-	if (LCA.MatchStrings(GetUnitName("boss1"), self:GetString("8290981-0-86045"))) then
+	if (self:GetSetting("drakeehSpawn") and LCA.MatchStrings(GetUnitName("boss1"), self:GetString("8290981-0-86045"))) then
 		CA2.WorldTexturePlace({
 			pos = { 96000, 48100, 30709 },
 			texture = "world-circle-bordered",
@@ -129,6 +136,18 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 			CA2.ScreenBorderDisable("u20purge")
 		end
 	end
+end
+
+function Module:GetSettingsControls( )
+	return {
+		--------------------
+		{
+			type = "checkbox",
+			name = self:GetString("drakeehSpawn"),
+			getFunc = function() return self:GetSetting("drakeehSpawn") end,
+			setFunc = function(enabled) self:SetSetting("drakeehSpawn", enabled) end,
+		},
+	}
 end
 
 CA2.RegisterModule(Module)

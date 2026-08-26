@@ -93,10 +93,6 @@ CombatAlerts = {
 		},
 	},
 
-	march = {
-		lastMechanic = 0,
-	},
-
 	frostvault = {
 		effluviumEnd = 0,
 		skeevCharged = 0,
@@ -521,32 +517,6 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		CombatAlerts.cloudrest.shadowRealm = false
 	elseif (result == ACTION_RESULT_DIED and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		CombatAlerts.AlertBorder(false)
-
-
-	-- March of Sacrifices -----------------------------------------------------
-
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.march.fireId) then
-		local _, _, effectiveMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
-		if (effectiveMax >= CombatAlertsData.march.hardHealth) then
-			CombatAlerts.AlertCast(abilityId, nil, hitValue, { -3, 1 })
-		end
-	elseif ((result == ACTION_RESULT_BEGIN or result == ACTION_RESULT_EFFECT_GAINED_DURATION) and CombatAlertsData.march[abilityId]) then
-		if (GetGameTimeMilliseconds() - CombatAlerts.march.lastMechanic >= 3000) then
-			CombatAlerts.march.lastMechanic = GetGameTimeMilliseconds()
-
-			local mechanic = CombatAlertsData.march[CombatAlertsData.march[abilityId]]
-			CombatAlerts.Alert(nil, mechanic.name, mechanic.color, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
-		end
-
-
-	-- Moon Hunter Keep --------------------------------------------------------
-
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.moonhunter.root) then
-		CombatAlerts.AlertCast(abilityId, nil, hitValue, { -2, 1 })
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.moonhunter.pounce) then
-		CombatAlerts.AlertCast(abilityId, nil, hitValue, { -2, 2 })
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.moonhunter.switch) then
-		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC3366FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
 
 
 	-- Frostvault --------------------------------------------------------------
@@ -1506,7 +1476,7 @@ function CombatAlerts.Poll( )
 			end
 		elseif (CombatAlerts.ka.panelMode == 2) then
 			CombatAlerts.panel.rows[1].data:SetText(CombatAlerts.ka.chains)
-			CombatAlerts.panel.rows[2].data:SetText(string.format("%.1fm", CombatAlerts.GetDistance("player", CombatAlertsData.ka.falgRoomCenter)))
+			CombatAlerts.panel.rows[2].data:SetText(string.format("%.1fm", CombatAlerts.GetDistance("player", CombatAlertsData.ka.falgRoomCenter, false, false, true)))
 		elseif (CombatAlerts.ka.panelMode == 3) then
 			local time = CombatAlerts.ka.ichor.endTime - GetGameTimeMilliseconds()
 			CombatAlerts.panel.rows[1].data:SetText(CombatAlerts.FormatTime(time, false, true) .. string.format(" (%d)", CombatAlerts.ka.ichor.counter))

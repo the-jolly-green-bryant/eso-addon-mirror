@@ -1,3 +1,9 @@
+Version 0.8.1 (2026/08/24)
+* Fixed an issue where RegisterInCombatSkillBlock could sometimes be ineffective
+  if it was called during combat
+* Added optional useMapPositionInsteadOfRawPosition parameter to GetDistance
+* Added RegisterForFilteredEvent
+
 Version 0.8.0 (2026/08/17)
 * Added RegisterInCombatSkillBlock
 

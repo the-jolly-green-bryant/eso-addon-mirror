@@ -561,7 +561,7 @@ function AC:CreateSettings()
             options = {
                 {
                     type    = "toggle",
-                    name    = "Enable",
+                    name    = "Enabled",
                     default = DEFAULTS.hudEnabled,
                     getFunc = function() return AC.savedVariables.hudEnabled end,
                     setFunc = function(val)
@@ -590,7 +590,7 @@ function AC:CreateSettings()
                 },
                 {
                     type    = "slider",
-                    name    = "Icon Size",
+                    name    = "Size",
                     min     = 20,
                     max     = 100,
                     step    = 2,

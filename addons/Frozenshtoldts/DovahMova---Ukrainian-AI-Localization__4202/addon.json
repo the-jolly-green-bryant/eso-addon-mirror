@@ -8,6 +8,10 @@
   "category_id": "163",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     },
@@ -36,7 +40,7 @@
     "gamedata"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4202/",
-  "fingerprint": "676627c830ef74839d68213e7181456e0425493d535ab1e55ce3b6d46c3c282b",
+  "fingerprint": "9f486b93ea1baa3ec88f010eaca1b33b35381b35596dbd364e30f25838a4bcd4",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14525.png",
     "https://cdn-eso.mmoui.com/preview/pvw14363.png",
@@ -52,11 +56,11 @@
   ],
   "omitted_files": [
     {
-      "bytes": 143456651,
+      "bytes": 143461920,
       "download_url": "https://www.esoui.com/downloads/dl4202/",
       "path": "gamedata/lang/ua.lang",
       "reason": "exceeds the mirror's 95 MiB per-file Git limit",
-      "sha256": "0e98a1eb569b6e812531c0eedb4bc7664e2debf6e9f1912e7075682cc763aad4"
+      "sha256": "a69017fe835b021c5e798b6bfe3aef2788df09635d02ec55ba1120d7535ec8d3"
     }
   ],
   "platform": "pc",
@@ -65,11 +69,11 @@
   "source_id": "4202",
   "source_url": "https://www.esoui.com/downloads/info4202-DovahMova-UkrainianAILocalization.html",
   "stats": {
-    "downloads": 3719,
+    "downloads": 3899,
     "favorites": 13,
-    "monthly_downloads": 219
+    "monthly_downloads": 283
   },
   "title": "DovahMova - Ukrainian AI Localization",
-  "updated_at": 1785927046000,
-  "version": "1.4.1"
+  "updated_at": 1787629138000,
+  "version": "1.4.2"
 }

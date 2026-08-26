@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.25.23"
+EPC.version = "0.28.50"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -27,6 +27,8 @@ if type(ZO_CreateStringId) == "function" then
     ZO_CreateStringId("SI_BINDING_NAME_ESO_PROGRESSION_COACH_TOGGLE", "Open / Close Tamriel Codex")
     ZO_CreateStringId("SI_BINDING_NAME_ESO_PROGRESSION_COACH_INTERACT", "Interact with Suite")
     ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_JOURNAL", "Open / Close Tamriel Codex")
+    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_GF_NEXT_CATEGORY", "Group Finder: Next Category")
+    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_GF_TOGGLE_DIFFICULTY", "Group Finder: Toggle Normal / Veteran")
 end
 
 EPC.defaults = {
@@ -48,6 +50,13 @@ EPC.defaults = {
     travelBookPage = 1,
     activityGoal = "BALANCED",
     activityHistory = {},
+    goldSpendingByCharacter = {},
+    dungeonHistory = { runs = {}, importedAchievements = {} },
+    dungeonQueueHudLeft = -1,
+    dungeonQueueHudTop = -1,
+    dungeonQueueHudWidth = 360,
+    dungeonQueueHudHeight = 128,
+    activityRunHistory = { runs = {}, importedAchievements = {} },
     autoExpandInteract = true,
     coachFocus = "AUTO",
     combatHudWhenHidden = true,
@@ -77,10 +86,13 @@ EPC.defaults = {
     inventoryCharacters = {},
     sharedInventory = { items = {} },
 
-    -- Optional native ESO cinematic graphics preset. This only changes settings
-    -- exposed through ESO's own graphics API and never installs external shaders.
-    cinematicGraphicsEnabled = false,
-    cinematicGraphicsBackup = {},
+    -- Group Finder Codex preferences
+    groupFinderWidgetCategory = nil,
+    groupFinderWidgetDifficulty = "NORMAL",
+    groupFinderWidgetHideWTS = true,
+    groupFinderWidgetHideHighCP = false,
+    groupFinderWidgetLastBossHighlight = false,
+    groupFinderWidgetBlacklist = {},
 
     -- Persistent HUD / unit frames. These are independent of the large suite window.
     showPlayerFrame = true,
@@ -187,12 +199,35 @@ EPC.defaults = {
     abilityOverlayScale = 1.0,
     abilityOverlaySize = 56,
 
+    -- Optional Suite-owned reticle. DEFAULT restores ESO's native crosshair.
+    customReticleEnabled = false,
+    customReticleStyle = "RUNE",
+    customReticleColor = "GOLD",
+    customReticleSize = 100,
+    customReticleOpacity = 0.95,
+
     -- Movable equipment repair/recharge estimate overlay.
     showRepairCostOverlay = true,
     repairCostVisibility = "INVENTORY",
     repairCostScale = 1.0,
     repairCostLeft = -1,
     repairCostTop = -1,
+
+    -- Small text-only reminders shown before the next combat encounter.
+    showEncounterReminders = true,
+    showEncounterRepairReminder = true,
+    showEncounterPotionReminder = true,
+    encounterReminderScale = 1.0, -- legacy migration fallback
+    encounterReminderLeft = -1, -- legacy migration fallback
+    encounterReminderTop = -1, -- legacy migration fallback
+    encounterRepairScale = 1.0,
+    encounterRepairLeft = -1,
+    encounterRepairTop = -1,
+    encounterRepairPreset = "CUSTOM",
+    encounterPotionScale = 1.0,
+    encounterPotionLeft = -1,
+    encounterPotionTop = -1,
+    encounterPotionPreset = "CUSTOM",
 
     -- Lightweight tile-based minimap. It follows the player map without replacing
     -- or skinning ESO's full World Map.
@@ -231,6 +266,31 @@ EPC.defaults = {
     autoMaintenanceOnCombatEnd = true,
     maintenanceNeverUseCrown = true,
     maintenanceMessages = true,
+
+    -- Automatic Challenge Difficulty. Disabled by default so installing the Suite
+    -- never changes ESO's native difficulty until the player opts in.
+    overlandDifficultyEnabled = false,
+    overlandDifficultyLevelingJourney = false,
+    overlandDifficultyShowZoneLevelsMap = true,
+    overlandDifficultyZoneMessages = false,
+    overlandDifficultyPoiRadius = 85,
+    overlandDifficultyOpenWorld = 0,
+    overlandDifficultyDelve = 1,
+    overlandDifficultyPublicDungeon = 2,
+    overlandDifficultyWorldBoss = 2,
+    overlandDifficultyWorldEvent = 2,
+    overlandDifficultyDragon = 2,
+    overlandDifficultyHistoryBoss = 2,
+    overlandDifficultyHistoryBosses = false,
+    overlandDifficultyCompanionEnabled = false,
+    overlandDifficultyCompanion = 3,
+    overlandDifficultyWorldBossHoldSeconds = 45,
+    overlandDifficultyShowOverlay = true,
+    overlandDifficultyShowDungeonOverlay = true,
+    overlandDifficultyOverlayScale = 1.0,
+    overlandDifficultyOverlayLeft = -1,
+    overlandDifficultyOverlayTop = -1,
+    overlandDifficultyZoneOverrides = {},
 }
 
 function EPC:Print(message)
@@ -323,6 +383,8 @@ function EPC:RefreshGameplayOverlays()
     if self.ChampionOverlay and self.ChampionOverlay.Refresh then self.ChampionOverlay:Refresh() end
     if self.AbilityOverlays and self.AbilityOverlays.Refresh then self.AbilityOverlays:Refresh() end
     if self.RepairCostOverlay and self.RepairCostOverlay.Refresh then self.RepairCostOverlay:Refresh() end
+    if self.EncounterReminders and self.EncounterReminders.Refresh then self.EncounterReminders:Refresh() end
+    if self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.Refresh then self.ChallengeDifficultyOverlay:Refresh() end
     if self.UI and self.UI.UpdateCombatHUD and self.Combat then self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary()) end
 end
 
@@ -448,7 +510,10 @@ function EPC:SetUnitFramesMoveMode(active)
     local canChampionOverlay = self.ChampionOverlay and self.ChampionOverlay.SetLayoutMode
     local canAbilities = self.AbilityOverlays and self.AbilityOverlays.SetLayoutMode
     local canRepairCosts = self.RepairCostOverlay and self.RepairCostOverlay.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canRepairCosts then return end
+    local canEncounterReminders = self.EncounterReminders and self.EncounterReminders.SetLayoutMode
+    local canChallengeOverlay = self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.SetLayoutMode
+    local canDungeonQueue = self.DungeonFinder and self.DungeonFinder.SetLayoutMode
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canRepairCosts and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue then return end
     active = active == true
 
     if active then
@@ -467,7 +532,10 @@ function EPC:SetUnitFramesMoveMode(active)
         if canChampionOverlay then self.ChampionOverlay:SetLayoutMode(true) end
         if canAbilities then self.AbilityOverlays:SetLayoutMode(true) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(true) end
-        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Repair Estimate, and each Ability icon, then use /esosuite frames lock.")
+        if canEncounterReminders then self.EncounterReminders:SetLayoutMode(true) end
+        if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(true) end
+        if canDungeonQueue then self.DungeonFinder:SetLayoutMode(true) end
+        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Repair Estimate, Encounter Reminders, Challenge Difficulty icon, Dungeon Queue, and each Ability icon, then use /esosuite frames lock.")
     else
         self.unitFramesMoveMode = false
         if canFrames then self.UnitFrames:SetLayoutMode(false) end
@@ -480,6 +548,9 @@ function EPC:SetUnitFramesMoveMode(active)
         if canChampionOverlay then self.ChampionOverlay:SetLayoutMode(false) end
         if canAbilities then self.AbilityOverlays:SetLayoutMode(false) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(false) end
+        if canEncounterReminders then self.EncounterReminders:SetLayoutMode(false) end
+        if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(false) end
+        if canDungeonQueue then self.DungeonFinder:SetLayoutMode(false) end
         if self.unitFramesMoveOwned and not self.interactionMode and not self.combatHudMoveMode and not self.miniMapMoveMode then setCameraUIMode(false) end
         self.unitFramesMoveOwned = false
         self:Print("HUD unit frames locked.")
@@ -582,6 +653,7 @@ function ESOAdventurerSuite_JournalToggle()
         ESOProgressionCoach.Journal:Toggle()
     end
 end
+
 
 function EPC:RefreshNow(reason)
     if not self.Engine or not self.UI then return end
@@ -769,6 +841,14 @@ function EPC:RegisterEvents()
             self.questContinuation.armedUntil = now + 20000
             self.questContinuation.awaitingAdded = false
             self.questContinuation.completedQuestName = tostring(questName or "")
+
+            local function advanceMainQuest()
+                if self.QuestFinder and self.QuestFinder.AdvanceMainQuestAfterCompletion2740 then
+                    self.QuestFinder:AdvanceMainQuestAfterCompletion2740(questName)
+                end
+                if self.ActiveQuest and self.ActiveQuest.Refresh then self.ActiveQuest:Refresh() end
+            end
+            if type(zo_callLater) == "function" then zo_callLater(advanceMainQuest, 250) else advanceMainQuest() end
         end)
     end
 
@@ -819,7 +899,37 @@ function EPC:RegisterEvents()
                 self.UtilitySuite:Invalidate("DAILIES")
                 if eventCode == EVENT_ZONE_CHANGED then self.UtilitySuite:Invalidate("ZONE") end
             end
-            if self.saved.activeTab == "MAP" or self.saved.activeTab == "ACTIVITY" then
+
+            -- v0.27.40: quest objective/counter/advance events must refresh the
+            -- HUD itself, not only Codex Map/Activity pages. ESO can publish an
+            -- event just before all journal text has settled, so refresh now and
+            -- once more shortly afterward.
+            if self.ActiveQuest and self.ActiveQuest.Refresh then
+                if self.ActiveQuest.ReconcileMainQuest2744 then
+                    self.ActiveQuest:ReconcileMainQuest2744(nil, nil)
+                else
+                    self.ActiveQuest:Refresh()
+                end
+                if type(zo_callLater) == "function" then
+                    zo_callLater(function()
+                        if self.ActiveQuest and self.ActiveQuest.ReconcileMainQuest2744 then
+                            self.ActiveQuest:ReconcileMainQuest2744(nil, nil)
+                        elseif self.ActiveQuest and self.ActiveQuest.Refresh then
+                            self.ActiveQuest:Refresh()
+                        end
+                        if self.ActiveQuest and self.ActiveQuest.RefreshNativeQuestTracking2522 then
+                            self.ActiveQuest:RefreshNativeQuestTracking2522(true)
+                        end
+                    end, 180)
+                    zo_callLater(function()
+                        if self.ActiveQuest and self.ActiveQuest.ReconcileMainQuest2744 then
+                            self.ActiveQuest:ReconcileMainQuest2744(nil, nil)
+                        end
+                    end, 600)
+                end
+            end
+
+            if self.saved.activeTab == "MAP" or self.saved.activeTab == "ACTIVITY" or self.saved.activeTab == "QUESTS" then
                 self:RequestRefresh("quest-data")
             end
         end)
@@ -1152,12 +1262,15 @@ function EPC:Initialize()
     initModule("TRAVEL", self.Travel)
     initModule("ACTIVITIES", self.Activities)
     initModule("DUNGEON_FINDER", self.DungeonFinder)
+    initModule("DUNGEON_HISTORY", self.DungeonHistory)
+    initModule("ACTIVITY_RUN_HISTORY", self.ActivityRunHistory)
     initModule("QUEST_FINDER", self.QuestFinder)
     initModule("SET_JOURNAL", self.SetJournal)
     initModule("ENDGAME", self.Endgame)
     initModule("TARGET_BUILD", self.TargetBuild)
     initModule("GEAR_OPTIMIZER", self.GearOptimizer)
     initModule("GEAR_LOADOUT_OVERLAY", self.GearLoadoutOverlay)
+    initModule("LOADOUT_MANAGER", self.LoadoutManager)
     initModule("ADVISOR", self.Advisor)
     initModule("COMBAT_PRESENTATION", self.CombatPresentation)
     initModule("COMBAT", self.Combat)
@@ -1166,7 +1279,11 @@ function EPC:Initialize()
     initModule("ALLIANCE_RANK", self.AllianceRank)
     initModule("CHAMPION_OVERLAY", self.ChampionOverlay)
     initModule("ABILITY_OVERLAYS", self.AbilityOverlays)
+    initModule("CUSTOM_RETICLE", self.Reticle)
     initModule("REPAIR_COST_OVERLAY", self.RepairCostOverlay)
+    initModule("ENCOUNTER_REMINDERS", self.EncounterReminders)
+    initModule("OVERLAND_DIFFICULTY", self.OverlandDifficulty)
+    initModule("CHALLENGE_DIFFICULTY_OVERLAY", self.ChallengeDifficultyOverlay)
     initModule("STABLE_TIMER", self.StableTimer)
     initModule("CLOCK", self.Clock)
     initModule("ACTIVE_QUEST", self.ActiveQuest)
@@ -1174,6 +1291,12 @@ function EPC:Initialize()
     initModule("JOURNAL", self.Journal)
     initModule("MINI_MAP", self.MiniMap)
     initModule("UTILITY_SUITE", self.UtilitySuite)
+
+    -- Book-location subsystem is namespaced and initialized as part of the Suite.
+    if EASLoreLibrary and EASLoreLibrary.Initialize then
+        local ok, err = pcall(EASLoreLibrary.Initialize, EASLoreLibrary)
+        if not ok then self:Print("Book locations could not initialize: " .. tostring(err)) end
+    end
 
     local uiOk = true
     if self.Compatibility then
@@ -1276,6 +1399,11 @@ function EPC:Initialize()
             self.saved.activeTab = "QUESTS"
             self:RefreshNow("slash-quest")
             if self.Journal then self.Journal:Show() self.Journal:SetTab("QUESTS") end
+        elseif (arg == "groupfinder" or arg == "gf") and self.DungeonFinder then
+            self.saved.activeTab = "GROUPFINDER"
+            self.DungeonFinder:SetViewMode("LIVE")
+            self.DungeonFinder:RefreshLiveListings(true)
+            if self.Journal then self.Journal:Show() self.Journal:SetTab("GROUPFINDER") end
         elseif arg == "set" and self.SetJournal then
             self.saved.activeTab = "GEAR"
             self:RefreshNow("slash-set-journal")
@@ -1490,7 +1618,7 @@ function EPC:Initialize()
         elseif arg == "show" or arg == "" then
             if self.Journal then self.Journal:Show() end
         else
-            self:Print("Commands: show, hide, toggle, codex, checkpoint save/go/delete/list/open, clock show/hide/move/lock/reset, lock, unlock, reset, quest <name/zone>, maintain, hud move/lock/reset, frames move/lock/reset/show/hide, minimap show/hide/move/lock/reset/mode/zoom <0.70-2.00>, compat, tools overview/inventory/research/collections/dailies, scan, find <item>, set <name>, role auto/damage/healer/tank, focus auto/dps/gold/xp_cp/gear/dungeons/trials/solo/questing, goal xp/gold/balanced, session continuous/30/60/120/custom/<15-240>, target auto/damage/healer/tank/solo, targetset 1/2 <set name>")
+            self:Print("Commands: show, hide, toggle, codex, groupfinder, checkpoint save/go/delete/list/open, clock show/hide/move/lock/reset, lock, unlock, reset, quest <name/zone>, maintain, hud move/lock/reset, frames move/lock/reset/show/hide, minimap show/hide/move/lock/reset/mode/zoom <0.70-2.00>, compat, tools overview/inventory/research/collections/dailies, scan, find <item>, set <name>, role auto/damage/healer/tank, focus auto/dps/gold/xp_cp/gear/dungeons/trials/solo/questing, goal xp/gold/balanced, session continuous/30/60/120/custom/<15-240>, target auto/damage/healer/tank/solo, targetset 1/2 <set name>")
         end
     end
     SLASH_COMMANDS["/esosuite"] = handleSlash

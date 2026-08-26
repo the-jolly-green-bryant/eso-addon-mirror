@@ -3,7 +3,7 @@ local ADDON_NAME = "AOD"
 local ADDON_DISPLAY_NAME = "Automatic Overland Difficulty"
 local LAM_PANEL_NAME = "AutomaticOverlandDifficulty_LAM"
 local ADDON_AUTHOR = "|cFFFF00Wrynch|r"
-local ADDON_VERSION = "1.1.0"
+local ADDON_VERSION = "1.4.0"
 local EVENT_NAMESPACE = ADDON_NAME
 local SAVED_VARS_NAME = "AODifficulty_SavedVariables"
 local SAVED_VARS_VERSION = 1
@@ -15,6 +15,10 @@ local SITUATION_DELVES = "delves"
 local SITUATION_PUBLIC_DUNGEONS = "publicDungeons"
 local SITUATION_OLD_GROUP_DUNGEONS = "groupDungeons"
 local SITUATION_OPEN_WORLD = "openWorld"
+local SITUATION_HISTORY_BOSSES = "historyBosses"
+
+local HISTORY_BOSS_TOOLTIP = "Experimental: applies when ESO identifies the current area as a Solo Instance or Zone Story and AOD detects a Hard/Deadly monster or an official boss unit. ESO does not expose a dedicated story boss flag, so some bosses may not be detected."
+local RETICLE_OVER_UNIT_TAG = "reticleover"
 
 local NEARBY_PIN_DRAGONS = "dragons"
 local NEARBY_PIN_WORLD_BOSSES = "worldBosses"
@@ -22,7 +26,8 @@ local NEARBY_PIN_WORLD_EVENTS = "worldEvents"
 local NEARBY_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_NearbyPins"
 local NEARBY_UPDATE_INTERVAL_MS = 2000
 local DIFFICULTY_RETRY_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_DifficultyRetry"
--- The local ESO docs expose the cooldown alert text, but not a remaining-time API.
+local LEVELING_JOURNEY_MAP_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_LevelingJourneyMap"
+local LEVELING_JOURNEY_MAP_UPDATE_INTERVAL_MS = 200
 local DIFFICULTY_REQUEST_COOLDOWN_MS = 6000
 local DEFAULT_NEARBY_PIN_RADIUS_METERS = 120
 local MIN_NEARBY_PIN_RADIUS_METERS = 25
@@ -33,6 +38,77 @@ local ANNOUNCEMENT_CHAT = "chat"
 local ANNOUNCEMENT_TITLE = "title"
 local ANNOUNCEMENT_TITLE_SOUND = "titleSound"
 local CENTER_SCREEN_ANNOUNCEMENT_LIFESPAN_MS = 3500
+
+local LEVELING_JOURNEY_CHAT_ICONS =
+{
+    [OVERLAND_DIFFICULTY_TYPE_BASEGAME] = "EsoUI/Art/ChallengeDifficulty/Gamepad/gp_challengeDifficulty_basegame.dds",
+    [OVERLAND_DIFFICULTY_TYPE_JOURNEYMAN] = "EsoUI/Art/ChallengeDifficulty/Gamepad/gp_challengeDifficulty_journeyman.dds",
+    [OVERLAND_DIFFICULTY_TYPE_ADVENTURER] = "EsoUI/Art/ChallengeDifficulty/Gamepad/gp_challengeDifficulty_adventurer.dds",
+    [OVERLAND_DIFFICULTY_TYPE_VETERAN] = "EsoUI/Art/ChallengeDifficulty/Gamepad/gp_challengeDifficulty_veteran.dds",
+}
+
+local LEVELING_JOURNEY_CHAT_COLORS =
+{
+    [OVERLAND_DIFFICULTY_TYPE_BASEGAME] = "66CC66",
+    [OVERLAND_DIFFICULTY_TYPE_JOURNEYMAN] = "E6D35C",
+    [OVERLAND_DIFFICULTY_TYPE_ADVENTURER] = "E68A3A",
+    [OVERLAND_DIFFICULTY_TYPE_VETERAN] = "E85A5A",
+}
+
+local LEVELING_JOURNEY_ZONE_LEVELS =
+{
+    [280] = 3,  -- Bleakrock Isle
+    [534] = 3,  -- Stros M'Kai
+    [281] = 5,  -- Bal Foyen
+    [535] = 5,  -- Betnikh
+    [537] = 5,  -- Khenarthi's Roost
+    [41] = 10,  -- Stonefalls
+    [3] = 10,   -- Glenumbra
+    [381] = 10, -- Auridon
+    [57] = 20,  -- Deshaan
+    [19] = 20,  -- Stormhaven
+    [383] = 20, -- Grahtwood
+    [117] = 28, -- Shadowfen
+    [20] = 28,  -- Rivenspire
+    [108] = 28, -- Greenshade
+    [101] = 35, -- Eastmarch
+    [104] = 35, -- Alik'r Desert
+    [58] = 35,  -- Malabal Tor
+    [103] = 43, -- The Rift
+    [92] = 43,  -- Bangkorai
+    [382] = 43, -- Reaper's March
+    [347] = 48, -- Coldharbour
+    [888] = 50, -- Craglorn
+    [816] = 25, -- Hew's Bane
+    [726] = 30, -- Murkmire
+    [823] = 35, -- Gold Coast
+    [684] = 45, -- Wrothgar
+    [849] = 15, -- Vvardenfell
+    [980] = 32, -- Clockwork City
+    [1011] = 45, -- Summerset
+    [1086] = 15, -- Northern Elsweyr
+    [1133] = 40, -- Southern Elsweyr
+    [1160] = 15, -- Western Skyrim
+    [1207] = 40, -- The Reach
+    [1261] = 15, -- Blackwood
+    [1286] = 40, -- The Deadlands
+    [1318] = 15, -- High Isle
+    [1383] = 40, -- Galen
+    [1414] = 25, -- Telvanni Peninsula
+    [1413] = 25, -- Apocrypha
+    [1443] = 40, -- West Weald
+    [1502] = 50, -- Solstice
+}
+
+local LEVELING_JOURNEY_ZONE_DISPLAY_TYPES =
+{
+    [ZONE_DISPLAY_TYPE_NONE] = true,
+    [ZONE_DISPLAY_TYPE_DELVE] = true,
+    [ZONE_DISPLAY_TYPE_GROUP_DELVE] = true,
+    [ZONE_DISPLAY_TYPE_PUBLIC_DUNGEON] = true,
+    [ZONE_DISPLAY_TYPE_SOLO] = true,
+    [ZONE_DISPLAY_TYPE_ZONE_STORY] = true,
+}
 
 local NEARBY_PIN_SETTINGS =
 {
@@ -55,11 +131,19 @@ local NEARBY_PIN_SETTINGS =
 local SETTINGS_DEFAULTS =
 {
     enabled = true,
+    levelingJourney =
+    {
+        enabled = false,
+        chatMessages = true,
+        showMapLevel = true,
+    },
+    historyBossesExperimentalEnabled = false,
     situations =
     {
         [SITUATION_DELVES] = NO_CHANGE,
         [SITUATION_PUBLIC_DUNGEONS] = NO_CHANGE,
         [SITUATION_OPEN_WORLD] = NO_CHANGE,
+        [SITUATION_HISTORY_BOSSES] = NO_CHANGE,
     },
     regions =
     {
@@ -194,6 +278,104 @@ local function GetDifficultyName(difficulty)
     return GetString("SI_OVERLANDDIFFICULTYTYPE", difficulty)
 end
 
+function Addon.BuildLevelingJourneyZoneLevels()
+    local validatedZoneLevels = {}
+    local regionId = GetNextZoneStoryZoneId(nil)
+
+    while regionId do
+        local targetLevel = LEVELING_JOURNEY_ZONE_LEVELS[regionId]
+        if targetLevel then
+            validatedZoneLevels[regionId] = targetLevel
+        end
+        regionId = GetNextZoneStoryZoneId(regionId)
+    end
+
+    Addon.levelingJourneyZoneLevels = validatedZoneLevels
+end
+
+function Addon.IsLevelingJourneyEnabled()
+    local savedVars = Addon.savedVars
+    return savedVars
+        and type(savedVars.levelingJourney) == "table"
+        and savedVars.levelingJourney.enabled == true
+end
+
+function Addon.IsLevelingJourneyChatMessagesEnabled()
+    local savedVars = Addon.savedVars
+    return savedVars
+        and type(savedVars.levelingJourney) == "table"
+        and savedVars.levelingJourney.chatMessages ~= false
+end
+
+function Addon.IsLevelingJourneyMapLevelEnabled()
+    local savedVars = Addon.savedVars
+    return savedVars
+        and type(savedVars.levelingJourney) == "table"
+        and savedVars.levelingJourney.showMapLevel ~= false
+end
+
+function Addon.SetLevelingJourneyEnabled(enabled)
+    enabled = enabled == true
+    if Addon.savedVars.levelingJourney.enabled ~= enabled then
+        Addon.savedVars.levelingJourney.enabled = enabled
+    end
+
+    Addon.lastLevelingJourneyRegionId = nil
+    Addon.pendingLevelingJourneyAnnouncement = nil
+    Addon.historyBossActive = false
+    Addon.historyBossRestoreDifficulty = nil
+
+    if enabled then
+        Addon.RefreshLevelingJourneyRegionState()
+    end
+
+    Addon.RefreshNearbyUpdateRegistration()
+    Addon.RefreshHistoryBossEventRegistration()
+    Addon.RefreshLevelingJourneyEventRegistration()
+    Addon.RefreshWorldMapLevelUpdateRegistration()
+    Addon.ApplyCurrentSituation()
+end
+
+function Addon.SetLevelingJourneyChatMessagesEnabled(enabled)
+    Addon.savedVars.levelingJourney.chatMessages = enabled == true
+    if not enabled then
+        Addon.pendingLevelingJourneyAnnouncement = nil
+    end
+end
+
+function Addon.SetLevelingJourneyMapLevelEnabled(enabled)
+    Addon.savedVars.levelingJourney.showMapLevel = enabled == true
+    Addon.RefreshWorldMapLevelUpdateRegistration()
+end
+
+function Addon.GetLevelingJourneyTargetLevel(regionId)
+    if not regionId or not Addon.levelingJourneyZoneLevels then
+        return nil
+    end
+    return Addon.levelingJourneyZoneLevels[regionId]
+end
+
+function Addon.GetLevelingJourneyDifficulty(targetLevel, playerLevel)
+    if not targetLevel or not playerLevel then
+        return NO_CHANGE
+    end
+
+    local levelGap = targetLevel - playerLevel
+    if levelGap <= 0 then
+        return OVERLAND_DIFFICULTY_TYPE_BASEGAME
+    elseif levelGap <= 4 then
+        return OVERLAND_DIFFICULTY_TYPE_JOURNEYMAN
+    elseif levelGap <= 9 then
+        return OVERLAND_DIFFICULTY_TYPE_ADVENTURER
+    end
+    return OVERLAND_DIFFICULTY_TYPE_VETERAN
+end
+
+function Addon.IsLevelingJourneyContext()
+    local zoneDisplayType = Addon.currentZoneDisplayType or ZONE_DISPLAY_TYPE_NONE
+    return LEVELING_JOURNEY_ZONE_DISPLAY_TYPES[zoneDisplayType] == true
+end
+
 function Addon.GetSituationSettings(situation)
     local savedVars = Addon.savedVars
     if not savedVars or not savedVars.situations then
@@ -202,11 +384,35 @@ function Addon.GetSituationSettings(situation)
     return NormalizeDifficulty(savedVars.situations[situation])
 end
 
+function Addon.IsHistoryBossExperimentalEnabled()
+    return Addon.savedVars and Addon.savedVars.historyBossesExperimentalEnabled == true
+end
+
+function Addon.SetHistoryBossExperimentalEnabled(enabled)
+    enabled = enabled == true
+    if Addon.savedVars.historyBossesExperimentalEnabled ~= enabled then
+        Addon.savedVars.historyBossesExperimentalEnabled = enabled
+    end
+
+    Addon.RefreshHistoryBossEventRegistration()
+    Addon.ApplyCurrentSituation()
+end
+
 function Addon.SetSituationSettings(situation, difficulty)
     difficulty = NormalizeDifficulty(difficulty)
     if Addon.savedVars.situations[situation] ~= difficulty then
         Addon.savedVars.situations[situation] = difficulty
     end
+    Addon.ApplyCurrentSituation()
+end
+
+function Addon.SetHistoryBossSettings(difficulty)
+    difficulty = NormalizeDifficulty(difficulty)
+    if Addon.savedVars.situations[SITUATION_HISTORY_BOSSES] ~= difficulty then
+        Addon.savedVars.situations[SITUATION_HISTORY_BOSSES] = difficulty
+    end
+
+    Addon.RefreshHistoryBossEventRegistration()
     Addon.ApplyCurrentSituation()
 end
 
@@ -431,7 +637,6 @@ function Addon.GetNearbyDragonDifficulty()
 
     local worldEventInstanceId = GetNextWorldEventInstanceId(nil)
     while worldEventInstanceId do
-        -- Verified in esoui/ingame/map/worldmap.lua: unit-context world events are currently dragons.
         if GetWorldEventLocationContext(worldEventInstanceId) == WORLD_EVENT_LOCATION_CONTEXT_UNIT then
             local numUnits = GetNumWorldEventInstanceUnits(worldEventInstanceId)
             for unitIndex = 1, numUnits do
@@ -505,8 +710,74 @@ function Addon.GetNearbyMapPOIDifficulty()
     return NO_CHANGE
 end
 
+function Addon.IsNearbyWorldBoss()
+    local zoneIndex, poiIndex = GetCurrentSubZonePOIIndices()
+    if zoneIndex and poiIndex
+        and GetPOIZoneCompletionType(zoneIndex, poiIndex) == ZONE_COMPLETION_TYPE_GROUP_BOSSES
+        and Addon.IsCurrentPOIWithinRadius(zoneIndex, poiIndex) then
+        return true
+    end
+
+    local gps, playerX, playerY = Addon.GetPlayerPositionForNearbyCheck()
+    if not gps then
+        return false
+    end
+
+    zoneIndex = GetCurrentMapZoneIndex()
+    if not zoneIndex then
+        return false
+    end
+
+    local numPOIs = GetNumPOIs(zoneIndex)
+    for currentPOIIndex = 1, numPOIs do
+        if GetPOIZoneCompletionType(zoneIndex, currentPOIIndex) == ZONE_COMPLETION_TYPE_GROUP_BOSSES
+            and Addon.IsPOIWithinRadius(zoneIndex, currentPOIIndex, gps, playerX, playerY) then
+            return true
+        end
+    end
+
+    return false
+end
+
+function Addon.GetLevelingJourneyDesiredDifficulty()
+    if not Addon.IsLevelingJourneyContext() then
+        return NO_CHANGE
+    end
+
+    local regionId = Addon.GetPlayerRegionId()
+    local targetLevel = Addon.GetLevelingJourneyTargetLevel(regionId)
+    if not targetLevel then
+        return NO_CHANGE
+    end
+
+    local desiredDifficulty = Addon.GetLevelingJourneyDifficulty(targetLevel, GetUnitLevel("player"))
+    if desiredDifficulty == OVERLAND_DIFFICULTY_TYPE_VETERAN and Addon.IsNearbyWorldBoss() then
+        -- OVERLAND_DIFFICULTY_TYPE_ADVENTURER is the visible Master tier.
+        desiredDifficulty = OVERLAND_DIFFICULTY_TYPE_ADVENTURER
+    end
+
+    return desiredDifficulty, regionId, targetLevel
+end
+
 function Addon.MigrateSavedVars()
     local savedVars = Addon.savedVars
+    if type(savedVars.levelingJourney) ~= "table" then
+        savedVars.levelingJourney = {}
+    end
+    local levelingJourney = savedVars.levelingJourney
+    levelingJourney.enabled = levelingJourney.enabled == true
+    if rawget(levelingJourney, "chatMessages") == nil then
+        levelingJourney.chatMessages = SETTINGS_DEFAULTS.levelingJourney.chatMessages
+    else
+        levelingJourney.chatMessages = levelingJourney.chatMessages == true
+    end
+    if rawget(levelingJourney, "showMapLevel") == nil then
+        levelingJourney.showMapLevel = SETTINGS_DEFAULTS.levelingJourney.showMapLevel
+    else
+        levelingJourney.showMapLevel = levelingJourney.showMapLevel == true
+    end
+
+    savedVars.historyBossesExperimentalEnabled = savedVars.historyBossesExperimentalEnabled == true
     savedVars.situations = savedVars.situations or {}
     if type(savedVars.regions) ~= "table" then
         savedVars.regions = {}
@@ -561,13 +832,158 @@ function Addon.GetCurrentSituation()
     return SITUATION_BY_ZONE_DISPLAY_TYPE[Addon.currentZoneDisplayType or ZONE_DISPLAY_TYPE_NONE]
 end
 
+function Addon.IsHistoryBossContext()
+    local zoneDisplayType = Addon.currentZoneDisplayType
+    return zoneDisplayType == ZONE_DISPLAY_TYPE_SOLO or zoneDisplayType == ZONE_DISPLAY_TYPE_ZONE_STORY
+end
+
+function Addon.IsHistoryBossReticleTarget()
+    if not DoesUnitExist(RETICLE_OVER_UNIT_TAG) or not IsUnitMonster(RETICLE_OVER_UNIT_TAG) then
+        return false
+    end
+
+    local reaction = GetUnitReaction(RETICLE_OVER_UNIT_TAG)
+    if reaction ~= UNIT_REACTION_NEUTRAL and reaction ~= UNIT_REACTION_HOSTILE then
+        return false
+    end
+
+    local difficulty = GetUnitDifficulty(RETICLE_OVER_UNIT_TAG)
+    return difficulty == MONSTER_DIFFICULTY_HARD or difficulty == MONSTER_DIFFICULTY_DEADLY
+end
+
+function Addon.HasActiveBossUnit()
+    for bossRank = BOSS_RANK_ITERATION_BEGIN, BOSS_RANK_ITERATION_END do
+        if DoesUnitExist("boss" .. bossRank) then
+            return true
+        end
+    end
+
+    return false
+end
+
+function Addon.HasHistoryBossSignal()
+    return Addon.IsHistoryBossContext()
+        and (Addon.HasActiveBossUnit() or Addon.IsHistoryBossReticleTarget())
+end
+
+function Addon.ShouldProcessHistoryBossState()
+    return (Addon.savedVars
+            and Addon.savedVars.enabled
+            and not Addon.IsLevelingJourneyEnabled()
+            and Addon.IsHistoryBossExperimentalEnabled()
+            and Addon.GetSituationSettings(SITUATION_HISTORY_BOSSES) ~= NO_CHANGE)
+        or Addon.historyBossActive == true
+        or Addon.historyBossRestoreDifficulty ~= nil
+end
+
+function Addon.RefreshHistoryBossState()
+    local wasActive = Addon.historyBossActive == true
+    local shouldDetect = Addon.savedVars
+        and Addon.savedVars.enabled
+        and not Addon.IsLevelingJourneyEnabled()
+        and Addon.IsHistoryBossExperimentalEnabled()
+        and Addon.GetSituationSettings(SITUATION_HISTORY_BOSSES) ~= NO_CHANGE
+
+    if not shouldDetect then
+        Addon.historyBossActive = false
+        if not Addon.savedVars
+            or not Addon.savedVars.enabled
+            or Addon.IsLevelingJourneyEnabled()
+            or (Addon.historyBossRestoreDifficulty ~= nil and not Addon.IsHistoryBossContext()) then
+            Addon.historyBossRestoreDifficulty = nil
+        end
+        return wasActive
+    end
+
+    local isActive = false
+    if wasActive and IsUnitInCombat("player") then
+        -- Keep the override stable while combat is active even if the reticle moves away from the boss.
+        isActive = true
+    else
+        isActive = Addon.HasHistoryBossSignal()
+    end
+
+    if isActive and not wasActive and Addon.historyBossRestoreDifficulty == nil then
+        local currentDifficulty = GetOverlandDifficulty()
+        if VALID_DIFFICULTIES[currentDifficulty] then
+            Addon.historyBossRestoreDifficulty = currentDifficulty
+        end
+    elseif not Addon.IsHistoryBossContext() or not Addon.savedVars or not Addon.savedVars.enabled then
+        Addon.historyBossRestoreDifficulty = nil
+    end
+
+    Addon.historyBossActive = isActive
+    return isActive ~= wasActive
+end
+
 function Addon.SetPendingZoneDisplayType(zoneDisplayType)
     Addon.pendingZoneDisplayType = zoneDisplayType
     Addon.hasPendingZoneDisplayType = true
 end
 
+function Addon.RefreshLevelingJourneyRegionState()
+    local regionId = Addon.GetPlayerRegionId()
+    if regionId == Addon.lastLevelingJourneyRegionId then
+        return
+    end
+
+    Addon.lastLevelingJourneyRegionId = regionId
+    Addon.pendingLevelingJourneyAnnouncement = nil
+
+    if Addon.savedVars
+        and Addon.savedVars.enabled
+        and Addon.IsLevelingJourneyEnabled()
+        and Addon.IsLevelingJourneyChatMessagesEnabled()
+        and Addon.GetLevelingJourneyTargetLevel(regionId) then
+        Addon.pendingLevelingJourneyAnnouncement = regionId
+    end
+end
+
+function Addon.TryAnnounceLevelingJourneyEntry()
+    local pendingRegionId = Addon.pendingLevelingJourneyAnnouncement
+    if not pendingRegionId then
+        return
+    end
+
+    if not Addon.savedVars
+        or not Addon.savedVars.enabled
+        or not Addon.IsLevelingJourneyEnabled()
+        or not Addon.IsLevelingJourneyChatMessagesEnabled() then
+        Addon.pendingLevelingJourneyAnnouncement = nil
+        return
+    end
+
+    local desiredDifficulty, regionId, targetLevel = Addon.GetLevelingJourneyDesiredDifficulty()
+    if regionId ~= pendingRegionId
+        or desiredDifficulty == NO_CHANGE
+        or GetOverlandDifficultyDisabledReason() ~= OVERLAND_DIFFICULTY_DISABLED_REASON_NONE
+        or GetOverlandDifficulty() ~= desiredDifficulty then
+        return
+    end
+
+    local regionName = GetZoneNameById(regionId)
+    if not regionName or regionName == "" then
+        return
+    end
+
+    Addon.pendingLevelingJourneyAnnouncement = nil
+    if CHAT_ROUTER then
+        local formattedRegionName = ZO_CachedStrFormat(SI_ZONE_NAME, regionName)
+        local messageText = string.format(
+            "Entering %s (Level %d) - World set to %s.",
+            formattedRegionName,
+            targetLevel,
+            GetDifficultyName(desiredDifficulty)
+        )
+        local iconPath = LEVELING_JOURNEY_CHAT_ICONS[desiredDifficulty]
+        local color = LEVELING_JOURNEY_CHAT_COLORS[desiredDifficulty]
+        local message = string.format("|t24:24:%s|t |c%s%s|r", iconPath, color, messageText)
+        CHAT_ROUTER:AddSystemMessage(message)
+    end
+end
+
 function Addon.AnnounceDifficultyChanged(difficulty)
-    if not VALID_DIFFICULTIES[difficulty] then
+    if Addon.IsLevelingJourneyEnabled() or not VALID_DIFFICULTIES[difficulty] then
         return
     end
 
@@ -618,32 +1034,57 @@ end
 
 function Addon.ApplyCurrentSituation()
     if not Addon.savedVars or not Addon.savedVars.enabled then
+        Addon.pendingLevelingJourneyAnnouncement = nil
         Addon.ClearDeferredDifficultyRequest()
         return
     end
 
-    local desiredDifficulty = Addon.GetNearbyPinDifficulty()
-    if desiredDifficulty == NO_CHANGE then
-        local situation = Addon.GetCurrentSituation()
-        if not situation then
+    local isRestoringHistoryBossDifficulty = false
+    local desiredDifficulty = NO_CHANGE
+    if Addon.IsLevelingJourneyEnabled() then
+        desiredDifficulty = Addon.GetLevelingJourneyDesiredDifficulty()
+        if desiredDifficulty == NO_CHANGE then
             Addon.ClearDeferredDifficultyRequest()
             return
         end
-
-        if situation == SITUATION_OPEN_WORLD then
-            desiredDifficulty = Addon.GetRegionSettings(Addon.GetPlayerRegionId())
+    else
+        if Addon.IsHistoryBossExperimentalEnabled() and Addon.historyBossActive then
+            desiredDifficulty = Addon.GetSituationSettings(SITUATION_HISTORY_BOSSES)
+        else
+            desiredDifficulty = Addon.GetNearbyPinDifficulty()
+            if desiredDifficulty == NO_CHANGE and Addon.historyBossRestoreDifficulty ~= nil then
+                desiredDifficulty = Addon.historyBossRestoreDifficulty
+                isRestoringHistoryBossDifficulty = true
+            elseif desiredDifficulty ~= NO_CHANGE then
+                Addon.historyBossRestoreDifficulty = nil
+            end
         end
 
         if desiredDifficulty == NO_CHANGE then
-            desiredDifficulty = Addon.GetSituationSettings(situation)
-            if desiredDifficulty == NO_CHANGE then
+            local situation = Addon.GetCurrentSituation()
+            if not situation then
                 Addon.ClearDeferredDifficultyRequest()
                 return
+            end
+
+            if situation == SITUATION_OPEN_WORLD then
+                desiredDifficulty = Addon.GetRegionSettings(Addon.GetPlayerRegionId())
+            end
+
+            if desiredDifficulty == NO_CHANGE then
+                desiredDifficulty = Addon.GetSituationSettings(situation)
+                if desiredDifficulty == NO_CHANGE then
+                    Addon.ClearDeferredDifficultyRequest()
+                    return
+                end
             end
         end
     end
 
     if GetOverlandDifficultyDisabledReason() ~= OVERLAND_DIFFICULTY_DISABLED_REASON_NONE then
+        if Addon.IsLevelingJourneyEnabled() then
+            Addon.pendingLevelingJourneyAnnouncement = nil
+        end
         Addon.ClearDeferredDifficultyRequest()
         return
     end
@@ -671,6 +1112,10 @@ function Addon.ApplyCurrentSituation()
     else
         Addon.ClearDeferredDifficultyRequest()
         Addon.lastRequestedDifficulty = nil
+        Addon.TryAnnounceLevelingJourneyEntry()
+        if isRestoringHistoryBossDifficulty then
+            Addon.historyBossRestoreDifficulty = nil
+        end
     end
 end
 
@@ -681,6 +1126,10 @@ function Addon.OnPlayerActivated()
         Addon.hasPendingZoneDisplayType = false
     end
 
+    Addon.RefreshLevelingJourneyRegionState()
+    if Addon.ShouldProcessHistoryBossState() then
+        Addon.RefreshHistoryBossState()
+    end
     Addon.ApplyCurrentSituation()
 end
 
@@ -693,16 +1142,31 @@ function Addon.OnAreaLoadStarted(_, _, _, _, _, _, zoneDisplayType)
 end
 
 function Addon.OnZoneChanged()
+    Addon.RefreshLevelingJourneyRegionState()
+    if Addon.ShouldProcessHistoryBossState() then
+        Addon.RefreshHistoryBossState()
+    end
     Addon.ApplyCurrentSituation()
 end
 
 function Addon.OnPlayerCombatState(_, inCombat)
-    if inCombat or not Addon.hasDeferredDifficultyRequest then
+    local historyBossStateChanged = false
+    if not inCombat and Addon.ShouldProcessHistoryBossState() then
+        historyBossStateChanged = Addon.RefreshHistoryBossState()
+    end
+
+    if inCombat or (not Addon.hasDeferredDifficultyRequest and not historyBossStateChanged) then
         return
     end
 
     Addon.hasDeferredDifficultyRequest = false
     Addon.ApplyCurrentSituation()
+end
+
+function Addon.OnLevelUpdate(_, unitTag)
+    if unitTag == "player" and Addon.IsLevelingJourneyEnabled() then
+        Addon.ApplyCurrentSituation()
+    end
 end
 
 function Addon.OnOverlandDifficultyChanged(_, newDifficulty)
@@ -719,6 +1183,7 @@ function Addon.OnOverlandDifficultyChanged(_, newDifficulty)
             if GetOverlandDifficultyDisabledReason() == OVERLAND_DIFFICULTY_DISABLED_REASON_NONE
                 and GetOverlandDifficulty() == newDifficulty then
                 Addon.AnnounceDifficultyChanged(newDifficulty)
+                Addon.TryAnnounceLevelingJourneyEntry()
             end
         end
     end
@@ -728,11 +1193,173 @@ function Addon.OnOverlandDifficultyChanged(_, newDifficulty)
     end
 end
 
+function Addon.HideWorldMapLevelLabel()
+    if Addon.worldMapLevelLabel then
+        Addon.worldMapLevelLabel:SetHidden(true)
+    end
+    Addon.worldMapDisplayedTargetLevel = nil
+end
+
+function Addon.UpdateWorldMapLevelLabel()
+    local label = Addon.worldMapLevelLabel
+    if not label then
+        return
+    end
+
+    local isGamepadMode = IsInGamepadPreferredMode()
+    if Addon.worldMapLevelLabelUsesGamepadFont ~= isGamepadMode then
+        label:SetFont(isGamepadMode and "ZoFontGamepadBold34" or "ZoFontHeader3")
+        Addon.worldMapLevelLabelUsesGamepadFont = isGamepadMode
+    end
+
+    local normalizedX, normalizedY
+    if isGamepadMode then
+        local centerX, centerY = ZO_WorldMapScroll:GetCenter()
+        normalizedX, normalizedY = NormalizePointToControl(centerX, centerY, ZO_WorldMapContainer)
+    else
+        normalizedX, normalizedY = NormalizeMousePositionToControl(ZO_WorldMapContainer)
+    end
+
+    if normalizedX <= 0 or normalizedX >= 1 or normalizedY <= 0 or normalizedY >= 1 then
+        Addon.HideWorldMapLevelLabel()
+        return
+    end
+
+    local _, _, _, _, _, _, mapId = GetMapMouseoverInfo(normalizedX, normalizedY)
+    if not mapId or mapId == 0 then
+        Addon.HideWorldMapLevelLabel()
+        return
+    end
+
+    local zoneIndex = GetZoneIndexByMapId(mapId)
+    if not zoneIndex or zoneIndex == 0 then
+        Addon.HideWorldMapLevelLabel()
+        return
+    end
+
+    local zoneId = GetZoneId(zoneIndex)
+    local regionId = GetZoneStoryZoneIdForZoneId(zoneId)
+    local targetLevel = Addon.GetLevelingJourneyTargetLevel(regionId)
+    if not targetLevel then
+        Addon.HideWorldMapLevelLabel()
+        return
+    end
+
+    if Addon.worldMapDisplayedTargetLevel ~= targetLevel then
+        label:SetText(string.format("Leveling Journey - Level %d", targetLevel))
+        Addon.worldMapDisplayedTargetLevel = targetLevel
+    end
+    label:SetHidden(false)
+end
+
+function Addon.RefreshWorldMapLevelUpdateRegistration()
+    local shouldRegister = Addon.worldMapLevelLabel
+        and Addon.worldMapIsShowing
+        and Addon.savedVars
+        and Addon.savedVars.enabled
+        and Addon.IsLevelingJourneyEnabled()
+        and Addon.IsLevelingJourneyMapLevelEnabled()
+
+    if shouldRegister and not Addon.worldMapLevelUpdateRegistered then
+        EVENT_MANAGER:RegisterForUpdate(LEVELING_JOURNEY_MAP_UPDATE_NAMESPACE, LEVELING_JOURNEY_MAP_UPDATE_INTERVAL_MS, function()
+            Addon.UpdateWorldMapLevelLabel()
+        end)
+        Addon.worldMapLevelUpdateRegistered = true
+        Addon.UpdateWorldMapLevelLabel()
+    elseif not shouldRegister and Addon.worldMapLevelUpdateRegistered then
+        EVENT_MANAGER:UnregisterForUpdate(LEVELING_JOURNEY_MAP_UPDATE_NAMESPACE)
+        Addon.worldMapLevelUpdateRegistered = false
+        Addon.HideWorldMapLevelLabel()
+    elseif not shouldRegister then
+        Addon.HideWorldMapLevelLabel()
+    end
+end
+
+function Addon.InitializeWorldMapLevelLabel()
+    local label = WINDOW_MANAGER:CreateControl("AODLevelingJourneyMapLevel", ZO_WorldMap, CT_LABEL)
+    label:SetAnchor(TOPLEFT, ZO_WorldMapMouseOverDescription, BOTTOMLEFT, 0, 4)
+    label:SetAnchor(TOPRIGHT, ZO_WorldMapMouseOverDescription, BOTTOMRIGHT, 0, 4)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetColor(ZO_WorldMapMouseoverName:GetColor())
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetHidden(true)
+    Addon.worldMapLevelLabel = label
+
+    WORLD_MAP_FRAGMENT:RegisterCallback("StateChange", function(_, newState)
+        if newState == SCENE_FRAGMENT_SHOWING or newState == SCENE_FRAGMENT_SHOWN then
+            Addon.worldMapIsShowing = true
+        elseif newState == SCENE_FRAGMENT_HIDING or newState == SCENE_FRAGMENT_HIDDEN then
+            Addon.worldMapIsShowing = false
+        end
+        Addon.RefreshWorldMapLevelUpdateRegistration()
+    end)
+end
+
+function Addon.CreateLevelingJourneyEnabledCheckbox()
+    return
+    {
+        type = "checkbox",
+        name = "Enable Leveling Journey",
+        tooltip = "Gives each zone a level and automatically adjusts the world difficulty as you explore.",
+        getFunc = function()
+            return Addon.IsLevelingJourneyEnabled()
+        end,
+        setFunc = function(value)
+            Addon.SetLevelingJourneyEnabled(value)
+        end,
+        default = SETTINGS_DEFAULTS.levelingJourney.enabled,
+        width = "full",
+    }
+end
+
+function Addon.CreateLevelingJourneyChatCheckbox()
+    return
+    {
+        type = "checkbox",
+        name = "Show zone entry message in chat",
+        tooltip = "Shows the zone level and world difficulty in chat when you enter a new zone.",
+        disabled = function()
+            return not Addon.IsLevelingJourneyEnabled()
+        end,
+        getFunc = function()
+            return Addon.IsLevelingJourneyChatMessagesEnabled()
+        end,
+        setFunc = function(value)
+            Addon.SetLevelingJourneyChatMessagesEnabled(value)
+        end,
+        default = SETTINGS_DEFAULTS.levelingJourney.chatMessages,
+        width = "full",
+    }
+end
+
+function Addon.CreateLevelingJourneyMapCheckbox()
+    return
+    {
+        type = "checkbox",
+        name = "Show zone level on the world map",
+        tooltip = "Shows each zone's level as you browse the world map.",
+        disabled = function()
+            return not Addon.IsLevelingJourneyEnabled()
+        end,
+        getFunc = function()
+            return Addon.IsLevelingJourneyMapLevelEnabled()
+        end,
+        setFunc = function(value)
+            Addon.SetLevelingJourneyMapLevelEnabled(value)
+        end,
+        default = SETTINGS_DEFAULTS.levelingJourney.showMapLevel,
+        width = "full",
+    }
+end
+
 function Addon.CreateSituationDropdown(situation, name, choices, values)
     return
     {
         type = "dropdown",
         name = name,
+        disabled = function()
+            return Addon.IsLevelingJourneyEnabled()
+        end,
         choices = choices,
         choicesValues = values,
         sort = "numericvalue-up",
@@ -747,11 +1374,57 @@ function Addon.CreateSituationDropdown(situation, name, choices, values)
     }
 end
 
+function Addon.CreateHistoryBossDropdown(choices, values)
+    return
+    {
+        type = "dropdown",
+        name = "History Bosses*",
+        tooltip = HISTORY_BOSS_TOOLTIP,
+        disabled = function()
+            return Addon.IsLevelingJourneyEnabled() or not Addon.IsHistoryBossExperimentalEnabled()
+        end,
+        choices = choices,
+        choicesValues = values,
+        sort = "numericvalue-up",
+        getFunc = function()
+            return Addon.GetSituationSettings(SITUATION_HISTORY_BOSSES)
+        end,
+        setFunc = function(value)
+            Addon.SetHistoryBossSettings(value)
+        end,
+        default = SETTINGS_DEFAULTS.situations[SITUATION_HISTORY_BOSSES],
+        width = "full",
+    }
+end
+
+function Addon.CreateHistoryBossExperimentalCheckbox()
+    return
+    {
+        type = "checkbox",
+        name = "Enable experimental",
+        tooltip = "Enables experimental History Bosses detection. While disabled, no boss detection events are registered and the History Bosses setting has no effect.",
+        disabled = function()
+            return Addon.IsLevelingJourneyEnabled()
+        end,
+        getFunc = function()
+            return Addon.IsHistoryBossExperimentalEnabled()
+        end,
+        setFunc = function(value)
+            Addon.SetHistoryBossExperimentalEnabled(value)
+        end,
+        default = SETTINGS_DEFAULTS.historyBossesExperimentalEnabled,
+        width = "full",
+    }
+end
+
 function Addon.CreateNearbyPinDropdown(nearbyPinSettings, choices, values)
     return
     {
         type = "dropdown",
         name = nearbyPinSettings.name,
+        disabled = function()
+            return Addon.IsLevelingJourneyEnabled()
+        end,
         choices = choices,
         choicesValues = values,
         sort = "numericvalue-up",
@@ -771,7 +1444,7 @@ function Addon.CreateNearbyPinRadiusSlider()
     {
         type = "slider",
         name = "POI Radius",
-        tooltip = "How close you must be to a world boss or world event map pin before this addon uses that pin's difficulty setting. Smaller numbers mean closer.",
+        tooltip = "How close you must be to a world boss or world event map pin. Leveling Journey uses this radius to cap World Boss difficulty at Master. Smaller numbers mean closer.",
         min = MIN_NEARBY_PIN_RADIUS_METERS,
         max = MAX_NEARBY_PIN_RADIUS_METERS,
         step = NEARBY_PIN_RADIUS_STEP_METERS,
@@ -792,7 +1465,15 @@ function Addon.CreateAnnouncementCheckbox(announcementType, name, disabled)
     {
         type = "checkbox",
         name = name,
-        disabled = disabled,
+        disabled = function()
+            if Addon.IsLevelingJourneyEnabled() then
+                return true
+            end
+            if type(disabled) == "function" then
+                return disabled()
+            end
+            return disabled == true
+        end,
         getFunc = function()
             return Addon.GetAnnouncementSettings(announcementType)
         end,
@@ -809,6 +1490,9 @@ function Addon.CreateResetRegionsButton()
     {
         type = "button",
         name = "Reset Zones",
+        disabled = function()
+            return Addon.IsLevelingJourneyEnabled()
+        end,
         func = function()
             Addon.ResetRegionSettings()
         end,
@@ -823,6 +1507,9 @@ function Addon.CreateRegionDropdown(regionId, regionName, choices, values)
     {
         type = "dropdown",
         name = regionName,
+        disabled = function()
+            return Addon.IsLevelingJourneyEnabled()
+        end,
         choices = choices,
         choicesValues = values,
         sort = "numericvalue-up",
@@ -883,7 +1570,15 @@ function Addon.LoadActiveSettings()
     end
 
     Addon.MigrateSavedVars()
+    Addon.lastLevelingJourneyRegionId = nil
+    Addon.pendingLevelingJourneyAnnouncement = nil
+    if Addon.savedVars.enabled and Addon.IsLevelingJourneyEnabled() then
+        Addon.RefreshLevelingJourneyRegionState()
+    end
     Addon.RefreshNearbyUpdateRegistration()
+    Addon.RefreshHistoryBossEventRegistration()
+    Addon.RefreshLevelingJourneyEventRegistration()
+    Addon.RefreshWorldMapLevelUpdateRegistration()
 end
 
 function Addon.LoadScopeSettings()
@@ -931,7 +1626,15 @@ function Addon.RegisterSettings()
                 if Addon.savedVars.enabled ~= value then
                     Addon.savedVars.enabled = value
                 end
+                Addon.lastLevelingJourneyRegionId = nil
+                Addon.pendingLevelingJourneyAnnouncement = nil
+                if value and Addon.IsLevelingJourneyEnabled() then
+                    Addon.RefreshLevelingJourneyRegionState()
+                end
                 Addon.RefreshNearbyUpdateRegistration()
+                Addon.RefreshHistoryBossEventRegistration()
+                Addon.RefreshLevelingJourneyEventRegistration()
+                Addon.RefreshWorldMapLevelUpdateRegistration()
                 Addon.ApplyCurrentSituation()
             end,
             default = SETTINGS_DEFAULTS.enabled,
@@ -951,6 +1654,15 @@ function Addon.RegisterSettings()
             default = SCOPE_DEFAULTS.accountBoundSettings,
             width = "full",
         },
+        {
+            type = "header",
+            name = "Leveling Journey",
+            width = "full",
+        },
+        Addon.CreateLevelingJourneyEnabledCheckbox(),
+        Addon.CreateNearbyPinRadiusSlider(),
+        Addon.CreateLevelingJourneyChatCheckbox(),
+        Addon.CreateLevelingJourneyMapCheckbox(),
         {
             type = "header",
             name = "Situations",
@@ -977,7 +1689,6 @@ function Addon.RegisterSettings()
         Addon.CreateNearbyPinDropdown(NEARBY_PIN_SETTINGS[1], choices, values),
         Addon.CreateNearbyPinDropdown(NEARBY_PIN_SETTINGS[2], choices, values),
         Addon.CreateNearbyPinDropdown(NEARBY_PIN_SETTINGS[3], dragonChoices, dragonValues),
-        Addon.CreateNearbyPinRadiusSlider(),
         {
             type = "header",
             name = "Announcements",
@@ -1001,8 +1712,18 @@ function Addon.RegisterSettings()
         {
             type = "submenu",
             name = "Zones",
+            disabled = function()
+                return Addon.IsLevelingJourneyEnabled()
+            end,
             controls = Addon.BuildRegionDropdownControls(choices, values),
         },
+        {
+            type = "header",
+            name = "Experimental",
+            width = "full",
+        },
+        Addon.CreateHistoryBossExperimentalCheckbox(),
+        Addon.CreateHistoryBossDropdown(choices, values),
     }
 
     LAM:RegisterAddonPanel(LAM_PANEL_NAME, panelData)
@@ -1010,7 +1731,9 @@ function Addon.RegisterSettings()
 end
 
 function Addon.RefreshNearbyUpdateRegistration()
-    local shouldRegister = Addon.savedVars and Addon.savedVars.enabled and Addon.HasNearbyPinSettings()
+    local shouldRegister = Addon.savedVars
+        and Addon.savedVars.enabled
+        and (Addon.IsLevelingJourneyEnabled() or Addon.HasNearbyPinSettings())
     if shouldRegister and not Addon.nearbyUpdateRegistered then
         EVENT_MANAGER:RegisterForUpdate(NEARBY_UPDATE_NAMESPACE, NEARBY_UPDATE_INTERVAL_MS, function()
             Addon.ApplyCurrentSituation()
@@ -1019,6 +1742,54 @@ function Addon.RefreshNearbyUpdateRegistration()
     elseif not shouldRegister and Addon.nearbyUpdateRegistered then
         EVENT_MANAGER:UnregisterForUpdate(NEARBY_UPDATE_NAMESPACE)
         Addon.nearbyUpdateRegistered = false
+    end
+end
+
+function Addon.RefreshHistoryBossEventRegistration()
+    local shouldRegister = Addon.savedVars
+        and Addon.savedVars.enabled
+        and not Addon.IsLevelingJourneyEnabled()
+        and Addon.IsHistoryBossExperimentalEnabled()
+        and Addon.GetSituationSettings(SITUATION_HISTORY_BOSSES) ~= NO_CHANGE
+
+    if shouldRegister and not Addon.historyBossEventsRegistered then
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_RETICLE_TARGET_CHANGED, function()
+            if Addon.RefreshHistoryBossState() then
+                Addon.ApplyCurrentSituation()
+            end
+        end)
+
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_BOSSES_CHANGED, function()
+            if Addon.RefreshHistoryBossState() then
+                Addon.ApplyCurrentSituation()
+            end
+        end)
+
+        Addon.historyBossEventsRegistered = true
+    elseif not shouldRegister and Addon.historyBossEventsRegistered then
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_RETICLE_TARGET_CHANGED)
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_BOSSES_CHANGED)
+        Addon.historyBossEventsRegistered = false
+    end
+
+    if Addon.ShouldProcessHistoryBossState() then
+        Addon.RefreshHistoryBossState()
+    end
+end
+
+function Addon.RefreshLevelingJourneyEventRegistration()
+    local shouldRegister = Addon.savedVars
+        and Addon.savedVars.enabled
+        and Addon.IsLevelingJourneyEnabled()
+
+    if shouldRegister and not Addon.levelingJourneyEventRegistered then
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_LEVEL_UPDATE, function(...)
+            Addon.OnLevelUpdate(...)
+        end)
+        Addon.levelingJourneyEventRegistered = true
+    elseif not shouldRegister and Addon.levelingJourneyEventRegistered then
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_LEVEL_UPDATE)
+        Addon.levelingJourneyEventRegistered = false
     end
 end
 
@@ -1037,7 +1808,6 @@ function Addon.RegisterEvents()
         Addon.OnPrepareForJump(...)
     end)
 
-    -- Verified in esoui/app/loadingscreen/sharedloadingscreen.lua. This event is not listed in ESOUIDocumentation.txt.
     if EVENT_AREA_LOAD_STARTED ~= nil then
         eventManager:RegisterForEvent(EVENT_NAMESPACE, EVENT_AREA_LOAD_STARTED, function(...)
             Addon.OnAreaLoadStarted(...)
@@ -1058,10 +1828,12 @@ function Addon.RegisterEvents()
 end
 
 function Addon.Initialize()
+    Addon.BuildLevelingJourneyZoneLevels()
     Addon.LoadScopeSettings()
     Addon.LoadActiveSettings()
     Addon.lastObservedDifficulty = GetOverlandDifficulty()
     Addon.RegisterSettings()
+    Addon.InitializeWorldMapLevelLabel()
     Addon.RegisterEvents()
 end
 

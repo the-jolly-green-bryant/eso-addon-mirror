@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Excalibur_1969/ExcalibursMovableInventory__4794",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Excalibur_1969",
+  "canonical_id": "esoui:4794",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4794",
+  "deleted": false,
+  "directories": [
+    "ExcalibursMovableInventory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4794/",
+  "fingerprint": "b3b45056bc9be8631483534efca72e9b03a06e184579e89be2de8c4fddd85515",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17103.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17104.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17105.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4794",
+  "source_url": "https://www.esoui.com/downloads/info4794-ExcalibursMovableInventory.html",
+  "stats": {
+    "downloads": 30,
+    "favorites": 0,
+    "monthly_downloads": 27
+  },
+  "title": "ExcalibursMovableInventory",
+  "updated_at": 1787706430000,
+  "version": "1.1"
+}

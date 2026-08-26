@@ -1,6 +1,42 @@
+Required Libraries
+
+- LibAddonMenu-2.0
+- LibChatMessage
+- LibDebugLogger
+- LibGPS
+- LibMapData
+- LibMapPing
+- LibMapPins-1.0
+
+Update 0.27.78
+- Active Quest overlay now disappears when there is no accepted/tracked quest and returns automatically when one becomes active.
+- HUD Layout Mode still provides the quest overlay preview for positioning/resizing.
+- ESOUI release metadata and package structure rechecked for upload.
+
+Update 0.27.77
+- ESOUI upload-readiness pass: synchronized manifest, description, README, changelog, and security metadata.
+- Verified a single ESOAdventurerSuite root folder, all manifest file references, required dependency declarations, and absence of nested archives/executables/hidden development files.
+- Includes the 0.27.76 Champion Point respec spending fix, organized Character Stats, Cadwell Almanac support, specific multi-dungeon queue selection, and the movable/resizable Suite Dungeon Finder queue HUD.
+- Required dependencies: LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.
+
+Update 0.27.59
+- ESOUI upload compliance pass: synchronized metadata and dependency floors, and removed Suite-controlled nameplate changes so native ESO nameplate settings remain user-controlled.
+- Required dependencies: LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.
+
+- Custom ESO-style reticle selector with multiple styles, colors, size, and opacity controls.
+Update 0.27.08
+- ESOUI compliance review completed against the current upload rules, best-practice guidance, and AddOn capability restrictions.
+- Removed the Nearby / Seen Players reticle-tracking source from the public Group Finder. Public listings and guild roster members remain available.
+- Current package uses LibAddonMenu-2.0 r43, LibMapData, LibGPS 3.x, and LibMapPins-1.0 as external required dependencies, APIVersion 101050 101051, and contains no executables, nested archives, telemetry, network access, or arbitrary file access.
+- Added/retained current travel tools (quest wayshrines, nearest merchant, nearest guild store, guild-leader primary residence) and paged Dungeon / Activity history.
+
+Update 0.25.47
+- ESOUI upload-readiness audit: LibAddonMenu-2.0 is declared as a required DependsOn dependency with minimum AddOnVersion 43.
+- EVENT_COMBAT_EVENT analytics use ESO event-manager result/source/target filters instead of broad Lua-side result classification.
+- Reduced idle Lua work by attaching Codex and Gear Loadout resize OnUpdate handlers only while resizing.
+- Release metadata, AI disclosure/credits, and server-separated account-wide SavedVariables notes were rechecked for ESOUI review.
+
 Update 0.25.23
-- Added Settings > Cinematic Graphics > Cinematic Maximum. It applies ESO's own Maximum/Ultra-quality graphics values, saves the affected pre-cinematic settings for restore, and does not directly alter resolution/display mode/HDR/FPS-limit choices. ESO's own Maximum preset may adjust other quality-linked video values, including anti-aliasing/upscaling behavior.
-- This is a native ESO graphics preset only; addons cannot install ray tracing, replacement textures, or external post-processing shaders.
 
 Update 0.25.22
 - Removed the custom movable/resizable quest direction arrow and its Settings controls.
@@ -501,7 +537,7 @@ can migrate with the rename.
 Keep your SavedVariables when upgrading so preferences, target settings, combat
 bests, local quest history, inventory snapshots, Tamriel Codex notes/checkpoints, and HUD frame,
 Stable Training, Clock, and Mini Map positions remain available.
-LibAddonMenu-2.0 is optional and should be installed separately for the settings
+LibAddonMenu-2.0 r43+, LibMapData, LibGPS 3.x, and LibMapPins-1.0 is required and should be installed separately
 panel.
 
 PRIVACY AND SECURITY
@@ -628,3 +664,15 @@ Update 0.24.90
 - Golden Pursuits detail action now reads TRAVEL / QUEST instead of OPEN ESO GOLDEN PURSUITS.
 - The button tracks the selected pursuit, assists a matching journal quest when available, and routes to the nearest safe discovered wayshrine using the Suite's existing Golden Pursuits routing logic.
 
+
+
+LIVE GROUP FINDER
+------------------------
+The GROUP FINDER Codex tab monitors ESO player-created listings with real-time event-driven updates, category cycling, Normal/Veteran switching where applicable, actual role counts, instanced-content short codes, and live empty-category monitoring.
+
+Use /esosuite groupfinder or assign the Group Finder keybinds under Controls > Keybindings > General > ESO Adventurer Suite.
+
+
+CURRENT-BUILD SKILL OPTIMIZER
+- Skills & CP previews a recommended active skill bar from role, resource build, equipped weapons, worn sets, and unlocked/morphed abilities.
+- RESPEC + BUILD uses ESO's current free, shrine-free skill respec flow to rebuild combat actives, choose the best available morphs when morph-ready, rank relevant passives, and fill both weapon bars (1-5 + Ultimate) from the detected current build. The complete build is staged first and requires one final confirmation before it is committed. Surplus points remain unspent.

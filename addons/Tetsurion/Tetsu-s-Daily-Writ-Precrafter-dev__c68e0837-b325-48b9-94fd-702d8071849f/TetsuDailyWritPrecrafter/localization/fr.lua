@@ -1,0 +1,52 @@
+TetsuDailyWritPrecrafter = TetsuDailyWritPrecrafter or {}
+local L = TetsuDailyWritPrecrafter.L
+if not L then return end
+
+L.TITLE                   = "|cFFD700Tetsu's|r Daily Writ Precrafter"
+
+L.OPTIONS_SECTION_LABEL   = "Automatisation"
+L.OPTIONS_SECTION_TT      = "Options d'automatisation compatibles manette."
+L.AUTO_QUEST_LABEL        = "Accepter et rendre les commandes d'artisanat automatiquement"
+L.AUTO_QUEST_TT           = "Prendre les commandes au tableau et les rendre aux caisses automatiquement."
+L.AUTO_BOX_LABEL          = "Ouvrir les coffres de récompense automatiquement"
+L.AUTO_BOX_TT             = "Ouvrir les conteneurs de commandes quotidiennes dès qu'ils apparaissent dans le sac."
+
+L.PRECRAFT_SECTION_LABEL  = "Pré-craft (ce personnage)"
+L.PRECRAFT_SECTION_TT     = "Les paramètres sont sauvegardés par personnage."
+L.PRECRAFT_ENABLED_LABEL  = "Pré-crafter pour le futur"
+L.PRECRAFT_ENABLED_TT     = "Si activé, R3 fabrique les objets pour plusieurs jours selon la rotation quotidienne. Si désactivé, R3 fabrique uniquement ce que demande la commande active."
+L.PRECRAFT_DAYS_LABEL     = "Jours à l'avance"
+L.PRECRAFT_DAYS_TT        = "Nombre de jours à pré-crafter (aujourd'hui inclus). Curseur 1–10."
+
+L.KEYBIND_PRECRAFT        = "|c00FF00[R3]|r Pré-craft <<1>> j. (<<2>> pces)"
+L.KEYBIND_QUEST_CRAFT     = "|c00FF00[R3]|r Fabriquer la commande active (<<1>> pces)"
+L.KEYBIND_NOTHING         = "|c888888[R3]|r Rien à fabriquer"
+
+L.CONFIRM_TITLE_PRECRAFT  = "Pré-craft des commandes quotidiennes"
+L.CONFIRM_PROMPT_PRECRAFT = "Fabriquer les objets pour <<1>> jours ? (<<2>> objets)"
+L.CONFIRM_TITLE_QUEST     = "Fabriquer la commande active"
+L.CONFIRM_PROMPT_QUEST    = "Fabriquer les objets requis par la commande active ? (<<1>> pces)"
+
+L.PROGRESS_CRAFTING       = "Fabrication..."
+L.PROGRESS_STATUS         = "Traité : <<1>> sur <<2>>"
+
+L.ERR_BAG_FULL            = "Pas assez de place dans le sac (il faut ~<<1>> emplacements libres)."
+L.ERR_NO_STYLE            = "Aucun matériau de style connu trouvé dans le sac ou le sac d'artisanat."
+L.ERR_MISSING_RUNES       = "Runes d'enchantement manquantes (puissance / essence / Ta)."
+L.ERR_CANNOT_CRAFT        = "Impossible de fabriquer <<1>> (matériaux, style ou compétence manquants)."
+L.ERR_CRAFT_FAILED        = "Échec de fabrication (<<1>>/<<2>>). Ignoré."
+L.ERR_NOT_AT_STATION      = "Vous n'êtes pas à un atelier d'artisanat."
+L.ERR_PROV_SKIP_UNKNOWN   = "Ignoré (recette inconnue) : <<1>>"
+L.ERR_NOTHING_TO_CRAFT    = "Rien à fabriquer."
+L.ERR_NO_ACTIVE_WRIT      = "Aucune commande d'artisanat active pour cet atelier."
+
+L.PRECHECK_HEADER         = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Matériaux insuffisants. Fabrication annulée :"
+L.PRECHECK_JOBS           = "Tâches en file : |cFFFFFF<<1>>|r"
+L.PRECHECK_LINE           = "  - |cFFD700<<1>>|r : besoin |cFFFFFF<<2>>|r, possédé |cFFFFFF<<3>>|r (|cFF6666-<<4>>|r)"
+L.PRECHECK_ABORT          = "Ajoutez les matériaux manquants et appuyez à nouveau sur R3."
+L.PRECHECK_OK             = "Vérification des matériaux OK. Fabrication de |c00FF00<<1>>|r objets..."
+
+L.USING_QUEST_DATA        = "Utilisation des données de la commande active."
+L.USING_PREDICTED         = "Mode pré-craft : rotation quotidienne pour <<1>> jours."
+L.CRAFT_DONE              = "Terminé. Fabriqués : |c00FF00<<1>>|r, ignorés : |cFFFF00<<2>>|r."
+L.PATTERN_TODAY           = "Motif du jour : |cFFD700<<1>>|r"

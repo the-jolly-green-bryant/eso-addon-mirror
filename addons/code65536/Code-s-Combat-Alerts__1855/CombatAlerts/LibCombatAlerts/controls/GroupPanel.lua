@@ -196,8 +196,7 @@ function LCA_GroupPanel:Enable( options )
 		EVENT_MANAGER:RegisterForEvent(self.ID, EVENT_GROUP_SUPPORT_RANGE_UPDATE, function(_, ...) self:OnGroupSupportRangeUpdate(...) end)
 	end
 	if (self.options.strikeDead) then
-		EVENT_MANAGER:RegisterForEvent(self.ID, EVENT_UNIT_DEATH_STATE_CHANGED, function(_, unitTag) self:UpdatePaneDisplayForUnit(unitTag) end)
-		EVENT_MANAGER:AddFilterForEvent(self.ID, EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+		LCA.RegisterForFilteredEvent(self.ID, EVENT_UNIT_DEATH_STATE_CHANGED, function(_, unitTag) self:UpdatePaneDisplayForUnit(unitTag) end, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 	end
 	if (self.options.useUnitId) then
 		LCA.ToggleUnitIdTracking(self.ID, true)

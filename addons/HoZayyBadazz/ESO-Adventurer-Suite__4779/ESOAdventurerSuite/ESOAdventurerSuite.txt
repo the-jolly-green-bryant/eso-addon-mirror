@@ -1,26 +1,49 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
 ## Description: |cFFD700Tamriel Codex, HUD, minimap, quests, combat stats, travel, gear, and adventure tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.25.26
-## AddOnVersion: 2526
+## Version: 0.28.50
+## AddOnVersion: 2850
 ## APIVersion: 101050 101051
-## SavedVariables: ESOProgressionCoachSavedVars
-## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
+## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47
 
 Core.lua
 Compatibility.lua
+
+LoreBooks/EASLoreLibrary.lua
+LoreBooks/EASLoreLibraryData.lua
+LoreBooks/Main/PinTypes.lua
+LoreBooks/Main/Utils.lua
+LoreBooks/Main/QuestDependent.lua
+LoreBooks/Main/Settings.lua
+LoreBooks/Data/ZoneCache.lua
+LoreBooks/Data/Serialization.lua
+LoreBooks/Data/Data.lua
+LoreBooks/UI/LoreLibraryMenu.lua
+LoreBooks/UI/LoreLibraryGamepadMenu.lua
+LoreBooks/UI/FilterMenu.lua
+LoreBooks/Pins/MapPinController.lua
+LoreBooks/Pins/MapPins.lua
+LoreBooks/Pins/MarkerPin.lua
+LoreBooks/Pins/ProximityPinSet.lua
+LoreBooks/Pins/CompassPins.lua
+LoreBooks/Pins/WorldPins.xml
+LoreBooks/Pins/WorldPins.lua
 Data.lua
 Engine.lua
 Role.lua
 Travel.lua
 Activities.lua
 DungeonFinder.lua
+DungeonHistory.lua
+ActivityRunHistory.lua
 QuestFinder.lua
 SetJournal.lua
 Endgame.lua
 TargetBuild.lua
 GearOptimizer.lua
 GearLoadoutOverlay.lua
+LoadoutManager.lua
 Advisor.lua
 CombatPresentation.lua
 Combat.lua
@@ -28,8 +51,14 @@ Maintenance.lua
 UnitFrames.lua
 AllianceRank.lua
 ChampionOverlay.lua
+ChampionOptimizer.lua
+AttributeOptimizer.lua
 AbilityOverlays.lua
+Reticle.lua
 RepairCostOverlay.lua
+EncounterReminders.lua
+OverlandDifficulty.lua
+ChallengeDifficultyOverlay.lua
 StableTimer.lua
 Clock.lua
 ActiveQuest.lua
@@ -38,6 +67,5 @@ Journal.lua
 MiniMap.lua
 UtilitySuite.lua
 UI.lua
-GraphicsPreset.lua
 Settings.lua
 Bindings.xml

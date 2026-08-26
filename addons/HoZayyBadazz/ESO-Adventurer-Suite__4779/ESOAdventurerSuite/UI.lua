@@ -87,10 +87,20 @@ local function makeButton(parent, name, text, width, height, handler)
     button:SetDimensions(width, height)
     button:SetFont("ZoFontGameBold")
     button:SetText(text)
+    if button.SetHorizontalAlignment then button:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    if button.SetVerticalAlignment then button:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
     button:SetNormalFontColor(unpack(C.text))
     if button.SetMouseOverFontColor then button:SetMouseOverFontColor(unpack(C.gold)) end
     if button.SetPressedFontColor then button:SetPressedFontColor(unpack(C.white)) end
     if button.SetMouseEnabled then button:SetMouseEnabled(true) end
+    local border = wm:CreateControl(name .. "Border", button, CT_BACKDROP)
+    border:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+    border:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+    border:SetCenterColor(0.035,0.050,0.072,0.55)
+    border:SetEdgeColor(0.24,0.36,0.54,0.92)
+    border:SetEdgeTexture(nil,1,1,1)
+    if border.SetDrawLevel then border:SetDrawLevel(0) end
+    button.easBorder = border
     button:SetHandler("OnClicked", handler)
     return button
 end
@@ -507,12 +517,12 @@ function U:Create()
         card:SetAnchor(TOPLEFT, self.statsArea, TOPLEFT, col * (statWidth + statGap), row * 66)
 
         local label = makeLabel(card, "EPC_StatLabel_" .. tostring(i), "ZoFontGameSmall", C.muted)
-        label:SetAnchor(TOPLEFT, card, TOPLEFT, 11, 7)
-        label:SetDimensions(statWidth - 22, 18)
+        label:SetAnchor(TOPLEFT, card, TOPLEFT, 9, 7)
+        label:SetDimensions(statWidth - 18, 18)
 
         local value = makeLabel(card, "EPC_StatValue_" .. tostring(i), "ZoFontGameBold", C.white)
         value:SetAnchor(TOPLEFT, label, BOTTOMLEFT, 0, 1)
-        value:SetDimensions(statWidth - 22, 25)
+        value:SetDimensions(statWidth - 18, 25)
 
         self.statCards[i], self.statLabels[i], self.statValues[i] = card, label, value
     end
@@ -684,6 +694,7 @@ function U:Create()
         local b=makeButton(self.questPanel,"EPC_QuestFilter_"..key,label,fw,27,function()
             if EPC.QuestFinder and EPC.QuestFinder:SetFilter(key) then EPC.UI:RenderQuest(EPC.QuestFinder:BuildView()) end
         end)
+        if b.SetFont then b:SetFont("ZoFontGame") end
         if i==1 then b:SetAnchor(TOPLEFT,self.questPanel,TOPLEFT,0,0) else b:SetAnchor(LEFT,self.questFilters[i-1],RIGHT,5,0) end
         self.questFilters[i]=b
     end
@@ -707,8 +718,10 @@ function U:Create()
         detail:SetAnchor(BOTTOMLEFT,card,BOTTOMLEFT,8,-3) detail:SetDimensions(contentWidth-16,17)
         self.questRows[i]={card=card,title=title,meta=meta,detail=detail}
     end
-    self.questRoute=makeButton(self.questPanel,"EPC_QuestRoute","ROUTE TO STARTER",170,30,function() if EPC.QuestFinder then EPC.QuestFinder:RouteSelected() end end)
-    self.questRoute:SetAnchor(BOTTOMRIGHT,self.questPanel,BOTTOMRIGHT,0,0)
+    self.questRoute=makeButton(self.questPanel,"EPC_QuestRoute","ROUTE TO STARTER",190,30,function() if EPC.QuestFinder then EPC.QuestFinder:RouteSelected() end end)
+    self.questRoute:SetAnchor(BOTTOMRIGHT,self.questPanel,BOTTOMRIGHT,0,-34)
+    self.questTravelNearest=makeButton(self.questPanel,"EPC_QuestTravelNearest","TRAVEL TO NEAREST WAYSHRINE",190,30,function() if EPC.QuestFinder and EPC.QuestFinder.TravelNearestWayshrineSelected then EPC.QuestFinder:TravelNearestWayshrineSelected() end end)
+    self.questTravelNearest:SetAnchor(BOTTOMRIGHT,self.questPanel,BOTTOMRIGHT,0,0)
     self.questHint=makeLabel(self.questPanel,"EPC_QuestHint","ZoFontGameSmall",C.muted,{wrapped=true,maxLines=2})
     self.questHint:SetAnchor(BOTTOMLEFT,self.questPanel,BOTTOMLEFT,0,0) self.questHint:SetDimensions(contentWidth-185,34)
 
@@ -881,20 +894,14 @@ function U:Create()
     self.activityFooter = wm:CreateControl("EPC_ActivityFooter", self.activityPanel, CT_CONTROL)
     self.activityFooter:SetAnchor(TOPLEFT, self.activityPanel, TOPLEFT, 0, 361)
     self.activityFooter:SetDimensions(contentWidth, 32)
-    self.activityAction = makeButton(self.activityFooter, "EPC_ActivityAction", "ROUTE QUEST", 140, 30, function()
-        if EPC.Activities then EPC.Activities:ActivateSelected() end
-    end)
-    self.activityAction:SetAnchor(RIGHT, self.activityFooter, RIGHT, 0, 0)
-    self.activityAction:SetNormalFontColor(unpack(C.gold))
-
     self.activityHint = makeLabel(self.activityFooter, "EPC_ActivityHint", "ZoFontGameSmall", C.muted, {
         wrapped = true,
         maxLines = 2,
         lineSpacing = 1,
     })
     self.activityHint:SetAnchor(LEFT, self.activityFooter, LEFT, 0, 0)
-    self.activityHint:SetDimensions(contentWidth - 155, 32)
-    self.activityHint.epcWrapWidth = contentWidth - 155
+    self.activityHint:SetDimensions(contentWidth, 32)
+    self.activityHint.epcWrapWidth = contentWidth
 
     -- Adaptive utility command center. This consolidates the high-value non-combat
     -- workflows without turning the coach into a permanent wall of panels.
@@ -1202,10 +1209,7 @@ function U:RenderActivity(activity)
     end
 
     self:RefreshSessionControls()
-    setButtonEnabled(self.activityAction, activity.actionEnabled == true)
-    if activity.actionEnabled then self.activityAction:SetNormalFontColor(unpack(C.gold)) end
-    self.activityAction:SetText(activity.actionText or "ROUTE QUEST")
-    local hint = activity.hint or "Select a journal quest to route it."
+    local hint = activity.hint or "Select an activity to view details."
     if not activity.selected and EPC.Advisor and EPC.lastSnapshot then
         local plan = EPC.Advisor:BuildSessionPlan(EPC.lastSnapshot)
         if #plan > 0 then
@@ -1300,9 +1304,11 @@ function U:RenderQuest(q)
         local access=sel.access or "Unknown access"
         self.questHint:SetText((sel.starter or "Starter location unknown").."  |  "..access)
         setButtonEnabled(self.questRoute,true)
+        if self.questTravelNearest then setButtonEnabled(self.questTravelNearest,true) end
     else
         self.questHint:SetText(string.format("%d matches | %s | mouse-wheel | /esosuite quest <name/zone>", q.total or 0, q.scanProgress or "INDEX"))
         setButtonEnabled(self.questRoute,false)
+        if self.questTravelNearest then setButtonEnabled(self.questTravelNearest,false) end
     end
 end
 
@@ -1358,7 +1364,7 @@ function U:Render(model)
         local stat = stats[i]
         self.statLabels[i]:SetText(stat and stat.label or "")
         local value = stat and tostring(stat.value or "") or ""
-        self.statValues[i]:SetText(fitSingleLine(self.statValues[i], value, math.floor(((EPC.saved.width or 620) - 32 - 8) / 2) - 22))
+        self.statValues[i]:SetText(fitSingleLine(self.statValues[i], value, math.floor(((EPC.saved.width or 620) - 32 - 8) / 2) - 18))
     end
 
     local showFocus = activeTab == "BUILD" and snapshot.level >= 50 and self.focusPanel ~= nil

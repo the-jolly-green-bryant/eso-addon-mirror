@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/natosz/Onix---Worldmap---Easy-Navigation-Zoom-Radar__4789",
+  "archive_path": "addons/natosz/Onix---Worldmap---Easy-Navigation-More-Zoom-Radar__4789",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "natosz",
@@ -18,7 +18,7 @@
     "OnixWorldmap"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4789/",
-  "fingerprint": "8a00598cac87505ceab85eee2eaad6b3b180b0a5e804f5e327c2d2211df40a1b",
+  "fingerprint": "449695fcc24b9be7c59b576416b4d83d3251c893d9c2da39258ebc249adfe3b9",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17093.png"
   ],
@@ -26,13 +26,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4789",
-  "source_url": "https://www.esoui.com/downloads/info4789-Onix-Worldmap-EasyNavigationZoomRadar.html",
+  "source_url": "https://www.esoui.com/downloads/info4789-Onix-Worldmap-EasyNavigationMoreZoomRadar.html",
   "stats": {
-    "downloads": 37,
+    "downloads": 65,
     "favorites": 2,
-    "monthly_downloads": 34
+    "monthly_downloads": 63
   },
-  "title": "Onix - Worldmap - Easy Navigation ( Zoom & Radar)",
+  "title": "Onix - Worldmap - Easy Navigation ( More Zoom & Radar)",
   "updated_at": 1787588513000,
   "version": "1.1"
 }

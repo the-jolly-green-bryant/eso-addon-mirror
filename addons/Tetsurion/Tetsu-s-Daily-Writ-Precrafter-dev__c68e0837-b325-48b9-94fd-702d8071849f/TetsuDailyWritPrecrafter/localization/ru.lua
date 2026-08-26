@@ -1,0 +1,52 @@
+TetsuDailyWritPrecrafter = TetsuDailyWritPrecrafter or {}
+local L = TetsuDailyWritPrecrafter.L
+if not L then return end
+
+L.TITLE                   = "|cFFD700Tetsu's|r Daily Writ Precrafter"
+
+L.OPTIONS_SECTION_LABEL   = "Автоматизация"
+L.OPTIONS_SECTION_TT      = "Безопасные для геймпада опции."
+L.AUTO_QUEST_LABEL        = "Автопринятие и сдача ремесленных заказов"
+L.AUTO_QUEST_TT           = "Принимать заказы с доски и сдавать их у ящиков автоматически."
+L.AUTO_BOX_LABEL          = "Автооткрытие ящиков с наградами"
+L.AUTO_BOX_TT             = "Открывать контейнеры ежедневных заказов сразу после появления в сумке."
+
+L.PRECRAFT_SECTION_LABEL  = "Прекрафт (этот персонаж)"
+L.PRECRAFT_SECTION_TT     = "Настройки сохраняются на персонажа."
+L.PRECRAFT_ENABLED_LABEL  = "Прекрафтить на будущее"
+L.PRECRAFT_ENABLED_TT     = "Если включено — R3 крафтит вещи на несколько дней вперёд по ротации. Если выключено — R3 крафтит только то, что нужно активному заказу."
+L.PRECRAFT_DAYS_LABEL     = "Дней вперёд"
+L.PRECRAFT_DAYS_TT        = "Сколько дней прекрафтить (включая сегодня). Ползунок 1–10."
+
+L.KEYBIND_PRECRAFT        = "|c00FF00[R3]|r Прекрафт <<1>> дн. (<<2>> шт.)"
+L.KEYBIND_QUEST_CRAFT     = "|c00FF00[R3]|r Крафт по активному заказу (<<1>> шт.)"
+L.KEYBIND_NOTHING         = "|c888888[R3]|r Нечего крафтить"
+
+L.CONFIRM_TITLE_PRECRAFT  = "Прекрафт ежедневных заказов"
+L.CONFIRM_PROMPT_PRECRAFT = "Скрафтить вещи на <<1>> дн. вперёд? (<<2>> предметов)"
+L.CONFIRM_TITLE_QUEST     = "Крафт по активному заказу"
+L.CONFIRM_PROMPT_QUEST    = "Скрафтить предметы для активного заказа? (<<1>> шт.)"
+
+L.PROGRESS_CRAFTING       = "Крафт..."
+L.PROGRESS_STATUS         = "Обработано: <<1>> из <<2>>"
+
+L.ERR_BAG_FULL            = "Не хватает места в сумке (нужно ~<<1>> свободных слотов)."
+L.ERR_NO_STYLE            = "Не найден материал стиля в сумке или крафт-баге."
+L.ERR_MISSING_RUNES       = "Не хватает рун зачарования (potency / essence / Ta)."
+L.ERR_CANNOT_CRAFT        = "Не могу скрафтить <<1>> (нет материалов, стиля или навыка)."
+L.ERR_CRAFT_FAILED        = "Крафт не удался (<<1>>/<<2>>). Пропуск."
+L.ERR_NOT_AT_STATION      = "Вы не у ремесленного станка."
+L.ERR_PROV_SKIP_UNKNOWN   = "Пропуск (рецепт не изучен): <<1>>"
+L.ERR_NOTHING_TO_CRAFT    = "Нечего крафтить."
+L.ERR_NO_ACTIVE_WRIT      = "Нет активного ремесленного заказа для этого станка."
+
+L.PRECHECK_HEADER         = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Не хватает материалов. Крафт отменён:"
+L.PRECHECK_JOBS           = "Заданий в очереди: |cFFFFFF<<1>>|r"
+L.PRECHECK_LINE           = "  - |cFFD700<<1>>|r: нужно |cFFFFFF<<2>>|r, есть |cFFFFFF<<3>>|r (|cFF6666-<<4>>|r)"
+L.PRECHECK_ABORT          = "Добавьте недостающие материалы и нажмите R3 снова."
+L.PRECHECK_OK             = "Проверка материалов OK. Крафт |c00FF00<<1>>|r предметов..."
+
+L.USING_QUEST_DATA        = "Использую данные активного заказа."
+L.USING_PREDICTED         = "Режим прекрафта: ротация на <<1>> дн."
+L.CRAFT_DONE              = "Готово. Скрафчено: |c00FF00<<1>>|r, пропущено: |cFFFF00<<2>>|r."
+L.PATTERN_TODAY           = "Сегодняшний шаблон: |cFFD700<<1>>|r"

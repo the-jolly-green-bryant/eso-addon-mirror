@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/Tetsurion/Tetsu-s-Writ-Crafter-Main-Alts-dev__c68e0837-b325-48b9-94fd-702d8071849f",
+  "archive_path": "addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter-dev__c68e0837-b325-48b9-94fd-702d8071849f",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "Tetsurion",
   "canonical_id": "bethesda:c68e0837-b325-48b9-94fd-702d8071849f",
   "content_id": "c68e0837-b325-48b9-94fd-702d8071849f",
   "deleted": false,
-  "fingerprint": "51757cd712f473ab0a554d1ba41ab4b8616cccdc67066907f9a2dfff3c2f7f06",
+  "fingerprint": "7896c7bca2591e5bc493568dd0e09c2a5b20904d9a6d894d48edb21054c94c68",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "c68e0837-b325-48b9-94fd-702d8071849f",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/c68e0837-b325-48b9-94fd-702d8071849f",
-  "title": "Tetsu's Writ Crafter: Main & Alts (dev)"
+  "title": "Tetsu's Daily Writ Precrafter (dev)"
 }

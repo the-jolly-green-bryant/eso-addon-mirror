@@ -25,6 +25,12 @@
 -- so we can see exactly what the game reports vs. what's hardcoded below.
 d("[FurnitureFinder] real display name is: " .. tostring(GetDisplayName()))
 
+-- DIAGNOSTIC: confirm the manifest's APIVersion (101051, from Wookiefriseur's
+-- PTS dump header) actually matches what this live client expects. If they
+-- don't match, ESO would have silently refused to load this addon at all --
+-- so seeing this line print is itself proof they matched closely enough.
+d("[FurnitureFinder] live client APIVersion=" .. tostring(GetAPIVersion()) .. " (manifest declares 101050)")
+
 -- TESTING GATE: while this addon is being tested before wider release, it
 -- only activates for the account below. Replace "@YourAccountName" with
 -- your actual Bethesda/Xbox display name (the @Handle shown in-game), or
@@ -100,47 +106,54 @@ local function BuildFurnitureLines(itemLink)
         end
     end
 
+    -- Recipe/furnishing-plan known status, via LibCharacterKnowledge if
+    -- present (bundled alongside this addon, OptionalDependsOn in the
+    -- manifest -- confirmed console-compatible, has its own console/
+    -- settings). Confirmed real API: LibCharacterKnowledge.GetItemKnowledgeForCharacter
+    -- returns KNOWLEDGE_INVALID for ordinary furnishings (not a plan
+    -- item), so this correctly stays silent except on actual "Recipe:"/
+    -- "Diagram:" plan items.
+    if ok and LibCharacterKnowledge then
+        -- Same validity check as before: try the item itself first, fall
+        -- back to LibCharacterKnowledge's reverse lookup (crafted
+        -- furnishing -> its recipe/diagram) if the item isn't itself a
+        -- recipe. This just determines whether we have a valid target to
+        -- check at all -- the actual per-character breakdown comes from
+        -- GetItemKnowledgeList below.
+        local targetItem = itemLink
+        local ok4, knowledge = pcall(LibCharacterKnowledge.GetItemKnowledgeForCharacter, targetItem)
+
+        if ok4 and knowledge == LibCharacterKnowledge.KNOWLEDGE_INVALID then
+            local ok5, recipeItemId = pcall(LibCharacterKnowledge.GetSourceItemIdFromResultItem, itemId)
+            if ok5 and recipeItemId and recipeItemId ~= 0 then
+                targetItem = recipeItemId
+                ok4, knowledge = pcall(LibCharacterKnowledge.GetItemKnowledgeForCharacter, targetItem)
+            end
+        end
+
+        -- Only worth building the character list if we ended up with a
+        -- genuinely valid recipe/plan target (known OR unknown for the
+        -- current character -- i.e. IsKnowledgeUsable). NODATA/INVALID at
+        -- this point means there's nothing meaningful to show.
+        if ok4 and LibCharacterKnowledge.IsKnowledgeUsable(knowledge) then
+            local ok6, charList = pcall(LibCharacterKnowledge.GetItemKnowledgeList, targetItem)
+            if ok6 and charList then
+                local namesWhoDontKnow = {}
+                for _, entry in ipairs(charList) do
+                    if entry.knowledge == LibCharacterKnowledge.KNOWLEDGE_UNKNOWN then
+                        table.insert(namesWhoDontKnow, entry.name)
+                    end
+                end
+                if #namesWhoDontKnow > 0 then
+                    table.insert(lines, zo_strformat("|cc00000Not known by: <<1>>|r", table.concat(namesWhoDontKnow, ", ")))
+                end
+                -- If the list is empty, every tracked character already
+                -- knows it -- deliberately silent per request, no line shown.
+            end
+        end
+    end
+
     return lines
-end
-
-local FF_lastDiagnosedLink = nil
-
-local function AppendFurnitureTooltip(tooltipControl, itemLink)
-    if not itemLink or itemLink == "" then return end
-
-    local isDuplicate = (itemLink == FF_lastDiagnosedLink)
-    FF_lastDiagnosedLink = itemLink
-
-    local ok, isPlaceable = pcall(IsItemLinkPlaceableFurniture, itemLink)
-    if not isDuplicate then
-        d("[FurnitureFinder] IsItemLinkPlaceableFurniture=" .. tostring(isPlaceable))
-    end
-
-    if not IsFurnishingLink(itemLink) then return end
-    if not tooltipControl or not tooltipControl.AddLine then
-        if not isDuplicate then
-            d("[FurnitureFinder] tooltipControl missing AddLine method")
-        end
-        return
-    end
-
-    local lines = BuildFurnitureLines(itemLink)
-    if not isDuplicate then
-        d("[FurnitureFinder] furnishing recognized, adding " .. #lines .. " lines")
-    end
-    if #lines == 0 then return end
-
-    if tooltipControl.AddVerticalPadding then
-        tooltipControl:AddVerticalPadding(8)
-    end
-    for _, line in ipairs(lines) do
-        local ok2, err2 = pcall(function()
-            tooltipControl:AddLine(line, "ZoFontGame", ZO_NORMAL_TEXT:UnpackRGB())
-        end)
-        if not ok2 then
-            d("[FurnitureFinder] AddLine error: " .. tostring(err2))
-        end
-    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -167,20 +180,53 @@ local function HookItemTooltip()
     for _, tooltipType in pairs(tooltipTypes) do
         local ok, tooltip = pcall(function() return GAMEPAD_TOOLTIPS:GetTooltip(tooltipType) end)
         if ok and tooltip and tooltip.AddItemTitle then
-            ZO_PostHook(tooltip, "AddItemTitle", function(self, ...)
-                -- DIAGNOSTIC: dump every argument's type and value, whatever
-                -- shape they turn out to be. Previous attempt wrongly assumed
-                -- arg 1 was a table (itemData) -- it's actually a string
-                -- (almost certainly the title text itself), which crashed
-                -- pairs(). Not guessing again: just dump raw types/values
-                -- for every arg so we can see the real signature.
-                local argCount = select("#", ...)
-                local parts = { "argCount=" .. argCount }
-                for i = 1, argCount do
-                    local v = select(i, ...)
-                    table.insert(parts, string.format("arg%d(%s)=%s", i, type(v), tostring(v)))
+            ZO_PostHook(tooltip, "AddItemTitle", function(self, itemLink, name)
+                -- CONFIRMED against real ESOUI source and in-game testing
+                -- (2026-08-25): AddItemTitle(itemLink, name) -- arg1 is the
+                -- real itemLink. itemId/isFurnishing resolve correctly.
+                local ok, err = pcall(function()
+                    local itemId = GetItemLinkItemId(itemLink)
+
+                    -- Gate widened 2026-08-25: a "Recipe:"/"Diagram:" item is
+                    -- NOT itself placeable furniture (it's the separate,
+                    -- consumable item that teaches you one) -- the original
+                    -- IsItemLinkPlaceableFurniture-only gate silently skipped
+                    -- every recipe item, including the LibCharacterKnowledge
+                    -- lookup, before BuildFurnitureLines ever ran. Now also
+                    -- let actual recipe items through so the known/unknown
+                    -- line can show.
+                    local okType, itemType = pcall(GetItemLinkItemType, itemLink)
+                    local isRecipeItem = okType and itemType == ITEMTYPE_RECIPE
+                    local isFurnishing = IsItemLinkPlaceableFurniture(itemLink)
+
+                    if not isFurnishing and not isRecipeItem then
+                        return
+                    end
+
+                    local lines = BuildFurnitureLines(itemLink)
+                    if not lines or #lines == 0 then
+                        return
+                    end
+
+                    -- CONFIRMED pattern from real ESOUI source
+                    -- (esoui/esoui/publicallingames/tooltip/itemtooltips.lua):
+                    -- real game code always adds body content via
+                    -- AcquireSection -> section:AddLine -> AddSection,
+                    -- never a raw AddLine call directly on the tooltip
+                    -- object itself. The earlier crash-causing build did
+                    -- exactly that (raw tooltipControl:AddLine), which is
+                    -- the most likely root cause of the corruption that
+                    -- crashed ZO_GamepadInventory:Select downstream.
+                    local section = self:AcquireSection(self:GetStyle("bodySection"))
+                    for _, line in ipairs(lines) do
+                        section:AddLine(line, self:GetStyle("bodyDescription"))
+                    end
+                    self:AddSection(section)
+                end)
+
+                if not ok then
+                    d("[FurnitureFinder] tooltip section error (safely caught): " .. tostring(err))
                 end
-                d("[FurnitureFinder] AddItemTitle args: " .. table.concat(parts, ", "))
             end)
             hookedCount = hookedCount + 1
         end

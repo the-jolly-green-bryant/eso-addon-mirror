@@ -75,7 +75,8 @@ Format.HUD_FONTS_THIN = {
 }
 
 function Format.HudFonts(themeId, wellH)
-    local thin = (wellH and wellH < 32) or Format.NormalizeThemeId(themeId) == Format.THEME_STEEL
+    local id = Format.NormalizeThemeId(themeId)
+    local thin = (wellH and wellH < 32) or id == Format.THEME_STEEL or id == Format.THEME_BRONZE
     if thin then
         return Format.HUD_FONTS_THIN
     end

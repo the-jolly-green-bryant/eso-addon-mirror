@@ -1,8 +1,8 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 325
-## LastProdVersionCommitID: 7139b01
+## AddOnVersion: 326
+## LastProdVersionCommitID: bff8be7
 ## LastDevVersionCommitID: f23ffcb
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariables NQOLLanguageSettings

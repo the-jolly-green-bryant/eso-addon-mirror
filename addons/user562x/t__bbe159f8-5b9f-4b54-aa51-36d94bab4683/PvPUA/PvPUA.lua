@@ -1992,16 +1992,17 @@ function PvPUA:CreateUI()
 
     self.controls.empSlices = {}
     local sliceW = empW / 2
-    local sliceH = empH / 3
+    local empBands = { { 0, 0.4082 }, { 0.4082, 0.5918 }, { 0.5918, 1 } }
     for slot = 1, #PvPUA.constants.emperorKeeps do
         local def = PvPUA.constants.emperorKeeps[slot]
+        local band = empBands[def.row + 1]
         local slice = wm:CreateControl(nil, self.controls.infoEmpIcon, CT_TEXTURE)
         slice:SetTexture("esoui/art/campaign/gamepad/gp_overview_menuicon_emperor.dds")
-        slice:SetDimensions(sliceW, sliceH)
+        slice:SetDimensions(sliceW, empH * (band[2] - band[1]))
         slice:SetAnchor(TOPLEFT, self.controls.infoEmpIcon, TOPLEFT,
-            def.col * sliceW, def.row * sliceH)
+            def.col * sliceW, empH * band[1])
         slice:SetTextureCoords(def.col * 0.5, def.col * 0.5 + 0.5,
-            def.row / 3, def.row / 3 + 1 / 3)
+            band[1], band[2])
         slice:SetColor(0.35, 0.35, 0.35, 1)
         slice:SetDrawLayer(2)
         self.controls.empSlices[slot] = slice
@@ -4641,7 +4642,7 @@ function P:GetOptions()
         },
         {
             type    = "toggle",
-            name    = "Enable",
+            name    = "Enabled",
             default = POTION_DEFAULTS.potionEnabled,
             getFunc = function() return P:SV().potionEnabled end,
             setFunc = function(val)
@@ -4773,7 +4774,7 @@ function P:GetOptions()
         },
         {
             type    = "colorpicker",
-            name    = "Color",
+            name    = RainbowText("Color"),
             default = POTION_DEFAULTS.potionColor,
             getFunc = function()
                 local c = P:SV().potionColor
@@ -5220,6 +5221,19 @@ function PvPUA:CreateSettings()
         },
           } },
         { type = "submenu",
+          name = "|cE6C800Alerts|r",
+          align = "left",
+          indent = true,
+          icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_communications.dds",
+          options = {
+        self:HKBuildSettings(EA_DEFS[1]),
+        self:EABuildSettings(EA_DEFS[2]),
+        self:EABuildSettings(EA_DEFS[3]),
+        { type = "submenu", name = "Potions", align = "left", indent = true,
+          icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
+          options = PvPUA.Potion and PvPUA.Potion:GetOptions() or {} },
+          } },
+        { type = "submenu",
           name = "|c00FF00AP in Chat|r",
           align = "left",
           indent = true,
@@ -5244,19 +5258,6 @@ function PvPUA:CreateSettings()
           default = PvPUA.defaults.consolidateCombatDelay,
           getFunc = function() return self.savedVariables.consolidateCombatDelay end,
           setFunc = function(v) self.savedVariables.consolidateCombatDelay = v end },
-          } },
-        { type = "submenu",
-          name = "|cE6C800Alerts|r",
-          align = "left",
-          indent = true,
-          icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_communications.dds",
-          options = {
-        self:HKBuildSettings(EA_DEFS[1]),
-        self:EABuildSettings(EA_DEFS[2]),
-        self:EABuildSettings(EA_DEFS[3]),
-        { type = "submenu", name = "Potions", align = "left", indent = true,
-          icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
-          options = PvPUA.Potion and PvPUA.Potion:GetOptions() or {} },
           } },
         { type = "submenu",
           name = "|cCC2222Auto Invite|r",

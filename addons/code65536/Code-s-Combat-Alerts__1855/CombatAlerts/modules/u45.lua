@@ -59,6 +59,7 @@ Module.DATA = {
 		[224515] = true,
 		[232982] = true,
 	},
+	molting = 228535,
 	forbidden = 229247,
 	fracture = 229633,
 }
@@ -110,7 +111,7 @@ function Module:Initialize( )
 		},
 		sporesEnd = 0,
 		springIdx = 1,
-		bombState = 0,
+		achState = 0,
 	}
 	Vars = self.vars
 
@@ -227,9 +228,9 @@ function Module:PreStartListening( )
 		self.StartLB1Panel()
 	elseif (LCA.MatchStrings(GetUnitName("boss1"), self:GetString("8290981-0-122914"))) then
 		Vars.springIdx = 1
-		Vars.bombState = 0
 		self.StartLB2Panel()
 	end
+	Vars.achState = 0
 end
 
 function Module:PostStopListening( )
@@ -314,10 +315,15 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.spring.id) then
 		Vars.springIdx = Vars.springIdx + 1
 	elseif (LCA.isVet and LCA.DAMAGE_EVENTS[result] and DATA.bombLine[abilityId]) then
-		if (Vars.bombState == 0 and not IsAchievementComplete(4138)) then
+		if (Vars.achState == 0 and not IsAchievementComplete(4138)) then
 			CA2.ChatMessage(string.format("|cCC0000%s|r |H1:achievement:4138:0:0|h|h", zo_iconFormatInheritColor(LCA.GetTexture("misc-x"), "100%", "100%")), true)
 		end
-		Vars.bombState = 1
+		Vars.achState = 1
+	elseif (abilityId == DATA.molting and LCA.DAMAGE_EVENTS[result] and GetUnitName("boss1") ~= "") then
+		if (Vars.achState == 0 and not IsAchievementComplete(4252)) then
+			CA2.ChatMessage(string.format("|cCC0000%s|r |H1:achievement:4252:0:0|h|h", zo_iconFormatInheritColor(LCA.GetTexture("misc-x"), "100%", "100%")), true)
+		end
+		Vars.achState = 1
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.forbidden and hitValue < 1000 and not LCA.isTank) then
 		LCA.PlaySounds("DUEL_BOUNDARY_WARNING", 2, 750, "DUEL_BOUNDARY_WARNING", 3, 750, "DUEL_BOUNDARY_WARNING", 4)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == DATA.fracture) then

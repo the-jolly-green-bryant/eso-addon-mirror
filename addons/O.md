@@ -33,14 +33,14 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [One More Rockgrove Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/One-More-Rockgrove-Helper__38f0df90-e793-4c9c-af2b-44a958ed38cf) | M0R | Console | — |
 | [One More Rockgrove Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/One-More-Rockgrove-Helper__3985) | M0R | PC / Mac | 1.3.0 |
 | [OneKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ancillae_Secretorum/OneKey__4188) | Ancillae_Secretorum | PC / Mac | 0.1 |
-| [Onix - Worldmap - Easy Navigation ( Zoom & Radar)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/natosz/Onix---Worldmap---Easy-Navigation-Zoom-Radar__4789) | natosz | PC / Mac | 1.1 |
+| [Onix - Worldmap - Easy Navigation ( More Zoom & Radar)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/natosz/Onix---Worldmap---Easy-Navigation-More-Zoom-Radar__4789) | natosz | PC / Mac | 1.1 |
 | [Only Cast Crystal Fragments Proc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/stybbe/Only-Cast-Crystal-Fragments-Proc__2577) | stybbe | PC / Mac | 1.7 |
 | [Oops I Did It Again](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/Oops-I-Did-It-Again__1946) | Cardinal05 | PC / Mac | 1.0.2 |
 | [Open Glaza (Cloudrest Assistant)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fortan/Open-Glaza-Cloudrest-Assistant__2055) | Fortan | PC / Mac | 1.003 |
 | [Optimal Weave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VollständigerName/Optimal-Weave__4211) | VollständigerName | PC / Mac | 1.17.0 |
 | [Opulent Ordeal Navigator (OON)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/donlup/Opulent-Ordeal-Navigator-OON__4647) | donlup | PC / Mac | 0.1.1 |
 | [Orgeborn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/Orgeborn__4278) | Lledos | PC / Mac | 1.0 |
-| [OSI Icon Pack for guilds MEPTBbIE and KPYTbIE CKEJIETbI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MËPTB/OSI-Icon-Pack-for-guilds-MEPTBbIE-and-KPYTbIE-CKEJIETbI__4656) | MËPTB | PC / Mac | 1.12 |
+| [OSI Icon Pack for guilds MEPTBbIE and KPYTbIE CKEJIETbI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MËPTB/OSI-Icon-Pack-for-guilds-MEPTBbIE-and-KPYTbIE-CKEJIETbI__4656) | MËPTB | PC / Mac | 1.13 |
 | [Ossein Assist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/goron_spice/Ossein-Assist__fea36b82-af6d-4ba4-803b-94703baf934a) | goron_spice | Console | — |
 | [Ossein Cage Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wondernuts/Ossein-Cage-Helper__4127) | Wondernuts | PC / Mac | 0.6.0 |
 | [Otter Icons For Ody's](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mr_coops/Otter-Icons-For-Ody-s__3540) | mr_coops | PC / Mac | 2 |

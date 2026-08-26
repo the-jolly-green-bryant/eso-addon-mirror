@@ -56,7 +56,7 @@ function Skins.WolfPlate(wolfId)
     return {
         tiles = pack.tiles,
         hole = pack.hole,
-        circle = frames.wolf.circle or { 0.75, 0.50, 0.24 },
+        circle = pack.circle or frames.wolf.circle or { 0.75, 0.50, 0.24 },
         well = frames.wolf.well or 0.20,
         cols = frames.wolf.cols or 4,
         rows = frames.wolf.rows or 2,

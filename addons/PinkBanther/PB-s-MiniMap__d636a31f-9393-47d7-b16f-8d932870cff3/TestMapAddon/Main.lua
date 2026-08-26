@@ -30,7 +30,12 @@ local addon = {
 --   addon.baseTitle  "PB's MiniMap"        -> sub-panel headings
 --   addon.version    "1.0.3"               -> version field in the settings panel
 --   addon.title      "PB's MiniMap 1.0.3"  -> settings panel heading
-local DISPLAY_NAME = "PB's MiniMap"
+-- Typographic apostrophe (U+2019), not ASCII '.
+--
+-- With the ASCII one the settings panel rendered the name as "MINIMAP 1.4.2": the "PB's "
+-- prefix was being eaten somewhere in the settings library's string handling. U+2019 is not
+-- a quoting character to any of that, and it is what was asked for in the first place.
+local DISPLAY_NAME = "PB’s MiniMap"
 local AUTHOR = "PinkBanther"
 
 local function ReadManifestVersion()
@@ -136,6 +141,224 @@ local function HookHotPath(container, key, addonImpl)
 	container[key] = addonImpl
 	return vanilla
 end
+-- The API list shows a proper setter for this; assigning the field directly was a guess at
+-- its name and had no effect, which is part of why the view still clamped to the map edge.
+-- Clearing the place-name labels.
+--
+-- ZO_MapLocationPins_Manager is the class table, not the live pool: calling ReleaseAllObjects
+-- on it walks a nil object list and throws. The instance is only reachable as the self handed
+-- to RefreshLocations, so the hook stores it and everything else goes through here.
+function addon:ClearMapLocationLabels()
+	local manager = self.locationPinManager
+	if manager and manager.ReleaseAllObjects then
+		manager:ReleaseAllObjects()
+	end
+	if self.pinManager then
+		self.pinManager:RemovePins("loc")
+	end
+end
+
+-- Place names attached to pins.
+--
+-- These are the Label child of each ZO_MapPin, not the ZO_MapLocationPins_Manager labels the
+-- first attempt went after -- which is why hiding those changed nothing. The game decides per
+-- pin and per zoom whether a label shows, so rather than trying to predict that, walk the live
+-- pins and hide what is showing.
+--
+-- Only ever hides. Unhiding selectively would mean guessing which labels the game wanted
+-- visible; instead the standard map gets a refresh, which rebuilds the pins with the game's
+-- own choices.
+function addon:HidePinLabels()
+	if not self.pinManager or not self.pinManager.GetActiveObjects then
+		return
+	end
+	for _, pin in pairs(self.pinManager:GetActiveObjects()) do
+		local control = pin.GetControl and pin:GetControl()
+		local label = control and control.GetNamedChild and control:GetNamedChild("Label")
+		if label and not label:IsHidden() then
+			label:SetHidden(true)
+		end
+	end
+end
+
+-- Zone name above the minimap.
+--
+-- A control of our own rather than ZO_WorldMapTitle: that one belongs to the map window and
+-- is driven by InitMiniMap, which the lite path skips. It is also parented to GuiRoot rather
+-- than to ZO_WorldMap, so the opacity setting does not fade the text along with the map, and
+-- anchored to the map window so it follows wherever the minimap is put.
+local zoneTitle
+local lastTitleFontSize
+
+function addon:EnsureZoneTitle()
+	if zoneTitle or not ZO_WorldMap then
+		return zoneTitle
+	end
+	local wm = GetWindowManager()
+	if not wm then
+		return nil
+	end
+	-- Parented to ZO_WorldMap, the way the original parents its own title.
+	--
+	-- It was on GuiRoot so the opacity setting would not fade the text, but nothing appeared
+	-- there, and a name that fades with the map beats one that never shows. The label-hiding
+	-- pass walks ZO_WorldMap, but skips anything named PBsMiniMap*, so this is left alone.
+	zoneTitle = wm:CreateControl("PBsMiniMapZoneTitle", ZO_WorldMap, CT_LABEL)
+	zoneTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+	zoneTitle:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
+	-- -4 rather than -2: at -2 the descenders of the text touched the map's top border.
+	zoneTitle:SetAnchor(BOTTOM, ZO_WorldMap, TOP, 0, -4)
+	-- Explicit colour, draw layer and tier. A fresh control has none of these settled, and as
+	-- a child of GuiRoot it otherwise sits at the bottom of the pile where the rest of the HUD
+	-- can cover it -- which is the likely reason nothing appeared.
+	zoneTitle:SetColor(1, 1, 1, 1)
+	zoneTitle:SetDrawLayer(DL_TEXT)
+	zoneTitle:SetMouseEnabled(false)
+	zoneTitle:SetExcludeFromResizeToFitExtents(true)
+	zoneTitle:SetHidden(true)
+	return zoneTitle
+end
+
+local function CurrentZoneName()
+	local name = GetPlayerActiveSubzoneName()
+	if not name or name == "" then
+		name = GetPlayerLocationName()
+	end
+	if not name or name == "" then
+		name = GetMapName()
+	end
+	if not name or name == "" then
+		name = GetZoneNameByIndex(GetUnitZoneIndex("player"))
+	end
+	return name or ""
+end
+
+function addon:UpdateZoneTitle()
+	local account = self.account
+	if not account then
+		return
+	end
+
+	-- The label is anchored above the map window rather than inside it, so whether the map is
+	-- showing has to be checked here: otherwise the name is left floating once the minimap is
+	-- hidden.
+	local mapShowing = ZO_WorldMap and not ZO_WorldMap:IsHidden()
+	local wanted = account.showZoneTitle and mapShowing and not self.dormant and (self.initLevel or 0) < 3 and account.enableMap
+
+	if not wanted then
+		if zoneTitle then
+			zoneTitle:SetHidden(true)
+		end
+		return
+	end
+
+	local control = self:EnsureZoneTitle()
+	if not control then
+		return
+	end
+
+	local size = account.zoneTitleSize or 24
+	if lastTitleFontSize ~= size then
+		lastTitleFontSize = size
+		local face = ZO_IsConsoleOrGameCoreUI() and "$(GAMEPAD_BOLD_FONT)" or "$(BOLD_FONT)"
+		control:SetFont(string.format("%s|%d|soft-shadow-thick", face, size))
+	end
+
+	-- Size it explicitly. A label with no dimensions can end up zero-width, in which case the
+	-- text is there but nothing is drawn. Width follows the minimap so the name sits over it.
+	local width = ZO_WorldMap and ZO_WorldMap:GetWidth() or 0
+	if width < 120 then
+		width = 120
+	end
+	control:SetDimensions(width, size * 1.6)
+
+	local name = CurrentZoneName()
+	local text = ZO_CachedStrFormat(SI_ZONE_NAME, name)
+	if not text or text == "" then
+		-- The zone-name grammar can come back empty for some inputs; the raw name beats
+		-- showing nothing.
+		text = name
+	end
+	control:SetText(text)
+	control:SetHidden(text == "")
+
+end
+
+-- Walk the map area and hide every label that is actually rendering text.
+--
+-- Going through pinManager:GetActiveObjects() was not enough -- names like "Elden Root
+-- Wayshrine" survived it, so whatever draws them is not reachable that way. Rather than keep
+-- guessing which manager owns which label, work on the control tree: everything inside
+-- ZO_WorldMapContainer is map content, so a visible label in there is a place name.
+--
+-- Scoped to the container deliberately. The title bar and the add-on's own controls live
+-- outside it and are left alone.
+local function ForEachLabel(control, depth, callback)
+	if not control or depth > 8 then
+		return
+	end
+	local childCount = control.GetNumChildren and control:GetNumChildren() or 0
+	for index = 1, childCount do
+		local child = control:GetChild(index)
+		if child then
+			if child.GetType and child:GetType() == CT_LABEL then
+				callback(child)
+			end
+			ForEachLabel(child, depth + 1, callback)
+		end
+	end
+end
+
+-- Search from ZO_WorldMap, not ZO_WorldMapContainer.
+--
+-- The name of whatever the cursor was last over -- "Elden Root Wayshrine" and the like -- is
+-- drawn over the map frame but is not a child of the container, so a search scoped to the
+-- container never saw it.
+--
+-- Two things are skipped: this add-on's own controls, and the map title. Everything else
+-- inside the map window that is showing text is a leftover from the full map.
+local function IsOurControl(control)
+	local name = control.GetName and control:GetName()
+	return name ~= nil and (zo_plainstrfind(name, "PBsMiniMap") or name == "ZO_WorldMapTitle")
+end
+
+function addon:HideMapAreaLabels()
+	if not ZO_WorldMap then
+		return
+	end
+	ForEachLabel(
+		ZO_WorldMap,
+		0,
+		function(label)
+			if not label:IsHidden() and not IsOurControl(label) then
+				local text = label.GetText and label:GetText()
+				if text and text ~= "" then
+					label:SetHidden(true)
+				end
+			end
+		end
+	)
+end
+
+function addon:RefreshMapLocationLabels()
+	local manager = self.locationPinManager
+	if manager and manager.RefreshLocations then
+		manager:RefreshLocations()
+	end
+end
+
+function addon:SetAllowPanPastMapEdge(allow)
+	local panZoom = self.panZoom
+	if not panZoom then
+		return
+	end
+	if panZoom.SetAllowPanPastMapEdge then
+		panZoom:SetAllowPanPastMapEdge(allow)
+	else
+		panZoom.allowPanPastMapEdge = allow
+	end
+end
+
 function addon:SetHotPathHooksActive(active)
 	for i = 1, #hotPathHooks do
 		local hook = hotPathHooks[i]
@@ -186,6 +409,23 @@ function addon:SetDormant(value)
 		if (self.initLevel or 0) < 3 and self.RestoreDefaultMapLayout then
 			self:RestoreDefaultMapLayout()
 		end
+		if self.orgAllowPanPastMapEdge ~= nil then
+			self:SetAllowPanPastMapEdge(self.orgAllowPanPastMapEdge)
+		end
+		if self.ApplyLiteAlpha then
+			self:ApplyLiteAlpha()
+		end
+		if self.UpdateZoneTitle then
+			self:UpdateZoneTitle()
+		end
+		-- Labels were hidden one by one; let the game rebuild the pins rather than trying to
+		-- work out which ones it wanted visible.
+		if (self.initLevel or 0) < 3 and self.account and self.account.hideMapLabels then
+			self:RefreshMapLocationLabels()
+			if ZO_WorldMap_UpdateMap then
+				ZO_WorldMap_UpdateMap()
+			end
+		end
 	else
 		if self.SetMinimapAttached and self.account and self.account.enableMap then
 			self:SetMinimapAttached(true)
@@ -198,6 +438,28 @@ function addon:SetDormant(value)
 		self:SetHotPathHooksActive(true)
 		if self.SetWorldMapUpdateHandler then
 			self:SetWorldMapUpdateHandler(true)
+		end
+		-- Minimap is up again: let the view sit past the map edge so the player marker can stay
+		-- in the middle even at the border of a small map.
+		if (self.initLevel or 0) < 3 and self.orgAllowPanPastMapEdge ~= nil then
+			self:SetAllowPanPastMapEdge(true)
+		end
+		if self.ApplyLiteAlpha then
+			self:ApplyLiteAlpha()
+		end
+		-- Labels built while the full map was open are still on the map, and the name of
+		-- whatever was last focused there lingers too. Clear both on the way back.
+		if (self.initLevel or 0) < 3 and self.account and self.account.hideMapLabels then
+			self:ClearMapLocationLabels()
+			-- Immediately, rather than waiting up to a tick for the maintenance pass.
+			self:HidePinLabels()
+			self:HideMapAreaLabels()
+		end
+		if ZO_WorldMap_HandlePinExit then
+			ZO_WorldMap_HandlePinExit()
+		end
+		if self.UpdateZoneTitle then
+			self:UpdateZoneTitle()
 		end
 		-- ShowClock only exists once InitMiniMap has run (see initLevel).
 		if self.ShowClock and self.account and self.account.showClock then
@@ -2032,10 +2294,17 @@ function addon:Initialize()
 		initLevel = 2,
 		miniPart = 3,
 		followPlayer = true,
-		liteZoom = 0.5,
-		liteZoomSubZone = 0.2,
-		liteZoomDungeon = 0.3,
-		liteZoomBattleground = 0.3,
+		liteAlpha = 100,
+		hideMapLabels = true,
+		showZoneTitle = true,
+		zoneTitleSize = 24,
+		-- Scale relative to the map's native resolution, same meaning as the original's zoom
+		-- settings (and the same defaults). Renamed from the old liteZoom* keys because those
+		-- held 0..1 values with a completely different meaning.
+		liteScale = 1.3,
+		liteScaleSubZone = 0.35,
+		liteScaleDungeon = 0.5,
+		liteScaleBattleground = 0.5,
 		zoom = 1.3,
 		mountedZoom = 1,
 		subZoneZoom = 1,
@@ -2240,14 +2509,62 @@ function addon:Initialize()
 			ZO_WorldMap_OnResizeStop(ZO_WorldMap)
 		end
 
+		-- Outer window: pinned with min == max, so nothing the game does can resize it.
 		ZO_WorldMap:SetDimensionConstraints(wantW, wantH, wantW, wantH)
 		ZO_WorldMap:SetDimensions(wantW, wantH)
+
+		-- Scroll viewport: pinned as well.
+		--
+		-- The visible size is the scroll's, not the outer window's. With loose constraints the
+		-- map system put it back to full size on the next map update, so the minimap looked
+		-- correct until the first step and then snapped to standard map size.
+		--
+		-- Pinning it was blamed for the off-centre view in 1.2.2, but that turned out to be the
+		-- zoom never being applied (it sat at 1.00 regardless of the setting), so the scroll is
+		-- pinned again here. RestoreDefaultMapLayout puts its original constraints back when
+		-- the standard map takes over.
 		if ZO_WorldMapScroll then
 			ZO_WorldMapScroll:SetDimensionConstraints(wantW, wantH, wantW, wantH)
 			ZO_WorldMapScroll:SetDimensions(wantW, wantH)
 		end
 
 		ZO_WorldMap_UpdateMap = orgZO_WorldMap_UpdateMap
+	end
+
+	-- Opacity.
+	--
+	-- Applied to ZO_WorldMap itself, so tiles, pins and frame fade together. The standard map
+	-- shares that control, so full opacity has to be handed back the moment it comes forward --
+	-- same arrangement as the size, position and pan-past-edge settings.
+	function addon:ApplyLiteAlpha()
+		if not ZO_WorldMap then
+			return
+		end
+		local account = self.account
+		if not account then
+			return
+		end
+
+		local wantAlpha = 1
+		if not self.dormant and (self.initLevel or 0) < 3 and account.enableMap then
+			wantAlpha = (account.liteAlpha or 100) / 100
+		end
+
+		if zo_abs((ZO_WorldMap:GetAlpha() or 1) - wantAlpha) > 0.005 then
+			ZO_WorldMap:SetAlpha(wantAlpha)
+		end
+	end
+
+	-- Position only: no resize calls, so it never disturbs the pan offset. Used from the
+	-- frame-anchor hook, where the game has just re-anchored the window underneath us.
+	function addon:ApplyLiteAnchorOnly()
+		local account = self.account
+		if not account or not ZO_WorldMap then
+			return
+		end
+		local uiWidth, uiHeight = GuiRoot:GetDimensions()
+		ZO_WorldMap:ClearAnchors()
+		ZO_WorldMap:SetAnchor(CENTER, nil, CENTER, account.x or (uiWidth / 2 - 304), account.y or (uiHeight / 2 - 368))
 	end
 
 	-- The game re-anchors and re-sizes ZO_WorldMap on its own (RefreshMapFrameAnchor and the
@@ -2272,6 +2589,15 @@ function addon:Initialize()
 		local haveW, haveH = ZO_WorldMap:GetDimensions()
 		if zo_abs(haveW - wantW) > 0.5 or zo_abs(haveH - wantH) > 0.5 then
 			return false
+		end
+
+		-- The scroll is the control whose size is actually visible, so drift there matters
+		-- just as much as drift on the outer window.
+		if ZO_WorldMapScroll then
+			local scrollW, scrollH = ZO_WorldMapScroll:GetDimensions()
+			if zo_abs(scrollW - wantW) > 0.5 or zo_abs(scrollH - wantH) > 0.5 then
+				return false
+			end
 		end
 
 		local uiWidth, uiHeight = GuiRoot:GetDimensions()
@@ -2332,10 +2658,56 @@ function addon:Initialize()
 	-- Everything here is gated on "not dormant", so none of it runs while the standard World
 	-- Map is in front -- the full Tamriel view stays untouched.
 	local lastPlayerX, lastPlayerY = -1, -1
-	local lastZoomRequest, zoomAttempts = nil, 0
+	local lastMapTile
+	local lastContainerW, lastContainerH = -1, -1
+	local forceMapResync = false
 	function addon:ResetFollowState()
 		lastPlayerX, lastPlayerY = -1, -1
-		lastZoomRequest, zoomAttempts = nil, 0
+		lastMapTile = nil
+		lastContainerW, lastContainerH = -1, -1
+		if self.ResetLiteZoomState then
+			self:ResetLiteZoomState()
+		end
+	end
+
+	-- Crossing between a city and the open world does not always leave
+	-- DoesCurrentMapMatchMapForPlayerLocation() reporting a mismatch, so on its own that check
+	-- let the minimap sit on the area just left. The zone events force a resync on the next
+	-- tick, and the tile texture is watched as a second signal for map changes that arrive
+	-- without an event.
+	function addon:RequestMapResync()
+		forceMapResync = true
+	end
+
+	-- Switching the map is two steps, not one.
+	--
+	-- SetMapToPlayerLocation only changes which map is selected; the tiles and pins on screen
+	-- are refreshed by the OnWorldMapChanged callbacks. Without firing those, the selection
+	-- moved but the picture stayed on the area just left -- which is exactly the symptom. The
+	-- original add-on does the same pairing wherever it calls SetMapToPlayerLocation itself.
+	local function ApplyMapToPlayer()
+		local result = SetMapToPlayerLocation()
+		addon.lastSetMapResult = result
+		if result == SET_MAP_RESULT_MAP_CHANGED then
+			CALLBACK_MANAGER:FireCallbacks("OnWorldMapChanged")
+			if ZO_WorldMap_UpdateMap then
+				ZO_WorldMap_UpdateMap()
+			end
+		end
+		return result
+	end
+
+	function addon:StartLiteZoneWatch()
+		local function resync()
+			self:RequestMapResync()
+			self:UpdateZoneTitle()
+		end
+		em:RegisterForEvent(self.name .. "LiteZone", EVENT_ZONE_CHANGED, resync)
+		em:RegisterForEvent(self.name .. "LiteActivated", EVENT_PLAYER_ACTIVATED, resync)
+		-- Not present on every API version, so only wire it up when it exists.
+		if EVENT_LINKED_WORLD_POSITION_CHANGED then
+			em:RegisterForEvent(self.name .. "LiteLinked", EVENT_LINKED_WORLD_POSITION_CHANGED, resync)
+		end
 	end
 
 	-- Which zoom setting applies right now.
@@ -2344,32 +2716,260 @@ function addon:Initialize()
 	-- dungeon is MAP_CONTENT_DUNGEON). A zoom level that frames a whole zone nicely is far too
 	-- close on one of those, so each context gets its own setting -- the same split the
 	-- original add-on makes.
-	local function CurrentZoomLevel(account)
+	-- Zoom on a small window is not set through SetCurrentNormalizedZoom.
+	--
+	-- That call is gated, and even when it is not, normalized zoom is a position inside the
+	-- map's allowed zoom range -- a range the game computed for a full-screen map. In a 314px
+	-- window that range is meaningless, which is why the reading sat at 1.00 no matter what
+	-- was requested and an arbitrary magnified corner was on screen.
+	--
+	-- The original add-on does it the other way round: it computes what the maximum zoom
+	-- should be for this window from the map's real tile resolution, installs it with
+	-- SetMapZoomMinMax, and leaves the normalized zoom at maximum. The setting is therefore a
+	-- scale relative to the map's native resolution, not a 0..1 position. Same approach here.
+	local MIN_SCALE = 0.1
+
+	local function CurrentZoomContext()
 		local contentType = GetMapContentType()
 		if contentType == MAP_CONTENT_BATTLEGROUND then
-			return account.liteZoomBattleground or account.liteZoom or 0.5
+			return "bg"
 		elseif contentType == MAP_CONTENT_DUNGEON then
-			return account.liteZoomDungeon or account.liteZoom or 0.5
+			return "dungeon"
 		elseif GetMapType() == MAPTYPE_SUBZONE then
-			return account.liteZoomSubZone or account.liteZoom or 0.5
+			return "subzone"
 		end
-		return account.liteZoom or 0.5
+		return "outdoor"
+	end
+	addon.CurrentZoomContext = CurrentZoomContext
+
+	local function CurrentScale(account)
+		local function clamp(value)
+			if not value or value < MIN_SCALE then
+				return MIN_SCALE
+			end
+			return value
+		end
+		local context = CurrentZoomContext()
+		if context == "bg" then
+			return clamp(account.liteScaleBattleground or account.liteScale)
+		elseif context == "dungeon" then
+			return clamp(account.liteScaleDungeon or account.liteScale)
+		elseif context == "subzone" then
+			return clamp(account.liteScaleSubZone or account.liteScale)
+		end
+		return clamp(account.liteScale)
 	end
 	addon.CurrentZoomLevel = function(self)
-		return CurrentZoomLevel(self.account)
+		return CurrentScale(self.account)
+	end
+
+	local lastMaxZoom, lastZoomW, lastZoomH, lastZoomContext = nil, -1, -1, nil
+	function addon:ResetLiteZoomState()
+		lastMaxZoom, lastZoomW, lastZoomH, lastZoomContext = nil, -1, -1, nil
+	end
+
+	-- Returns true when it changed the zoom range, i.e. when the pan needs re-centring.
+	function addon:AdjustLiteZoom()
+		local account = self.account
+		local panZoom = self.panZoom
+		if not account or not panZoom or not ZO_WorldMapScroll then
+			return false
+		end
+
+		local w, h = ZO_WorldMapScroll:GetDimensions()
+		w, h = zo_round(w), zo_round(h)
+		local mapAreaUIUnits = zo_min(w, h)
+		if mapAreaUIUnits < 1 then
+			return false
+		end
+
+		local context = CurrentZoomContext()
+		local targetScale = CurrentScale(account)
+
+		local numTiles = GetMapNumTiles()
+		local tilePixelWidth = ZO_WorldMapContainer1 and ZO_WorldMapContainer1:GetTextureFileDimensions() or 1
+		local totalPixels = numTiles * tilePixelWidth
+		local mapAreaPixels = mapAreaUIUnits * GetUIGlobalScale()
+		if mapAreaPixels < 1 then
+			mapAreaPixels = 1
+		end
+
+		local r = zo_max(w, h) / mapAreaUIUnits
+		local maxZoom = math.floor((totalPixels / mapAreaPixels - r) * 500 * targetScale) / 500 + r
+
+		if lastMaxZoom == maxZoom and lastZoomW == w and lastZoomH == h and lastZoomContext == context then
+			return false
+		end
+		lastMaxZoom, lastZoomW, lastZoomH, lastZoomContext = maxZoom, w, h, context
+
+		panZoom:SetMapZoomMinMax(panZoom:ComputeMinZoom(), maxZoom)
+		return true
+	end
+
+	-- Putting the player in the middle.
+	--
+	-- ZO_WorldMap_JumpToPlayer alone was not doing it: the view stayed where it was and the
+	-- player simply walked out of the middle, which is why it looked right immediately after
+	-- closing the full map and drifted from the first step. It seems to depend on map state we
+	-- do not have on the HUD.
+	--
+	-- Rather than guess at one replacement, try the routes in order of directness and remember
+	-- which one worked. The chosen route is reported once in the debug log, so if this still
+	-- misbehaves the answer is in the log rather than in another round of guessing.
+	-- Putting the player in the middle, written against the API this build actually has
+	-- (dumped via DumpPanZoomApi).
+	--
+	-- The earlier attempts failed for two separate reasons. SetCurrentOffset on its own is
+	-- undone by the next Update, which eases the current offset back towards the pending
+	-- target -- and the "clear the target" code was assigning made-up field names instead of
+	-- calling ClearTargetOffset. Meanwhile PanToNormalizedPosition, the call actually built
+	-- for this, was never reached because the SetCurrentOffset branch matched first.
+	local centreRoute
+	function addon:CentreOnPlayer(normalizedX, normalizedY)
+		self.centreCalls = (self.centreCalls or 0) + 1
+
+		local panZoom = self.panZoom
+		if not panZoom then
+			return
+		end
+
+		local function route(name)
+			if centreRoute ~= name then
+				centreRoute = name
+				self:ReportCentreRoute(name)
+			end
+		end
+
+		-- 1. The purpose-built call. It routes through GetNormalizedPositionFocusZoomAndOffset,
+		-- which we override, so it lands on our centred offsets and follows the game's own
+		-- sequencing rather than fighting it.
+		if panZoom.PanToNormalizedPosition then
+			panZoom:PanToNormalizedPosition(normalizedX, normalizedY)
+			route("PanToNormalizedPosition")
+			return
+		end
+
+		-- 2. Drive the offsets directly, cancelling any pan already in flight first -- this
+		-- time through the real ClearTargetOffset/SetFinalTargetOffset entry points.
+		if panZoom.GetNormalizedPositionFocusZoomAndOffset and panZoom.SetCurrentOffset then
+			local _, offsetX, offsetY = panZoom:GetNormalizedPositionFocusZoomAndOffset(normalizedX, normalizedY)
+			if offsetX and offsetY then
+				if panZoom.ClearTargetOffset then
+					panZoom:ClearTargetOffset()
+				end
+				if panZoom.ClearJumpToPinWhenAvailable then
+					panZoom:ClearJumpToPinWhenAvailable()
+				end
+				panZoom:SetCurrentOffset(offsetX, offsetY)
+				if panZoom.SetFinalTargetOffset then
+					panZoom:SetFinalTargetOffset(offsetX, offsetY)
+				end
+				route("SetCurrentOffset")
+				return
+			end
+		end
+
+		-- 3. The global helper, which is where this started.
+		if ZO_WorldMap_JumpToPlayer then
+			ZO_WorldMap_JumpToPlayer()
+			route("ZO_WorldMap_JumpToPlayer")
+		end
+	end
+
+	-- What ZO_MapPanAndZoom actually offers.
+	--
+	-- The first attempt printed nothing, because it only looked at getmetatable(panZoom).__index
+	-- and gave up unless that was a table -- yet SetCurrentOffset clearly resolves, so the
+	-- methods live somewhere else. This walks the whole metatable chain, also lists functions
+	-- sitting directly on the object, and says what it found, so a blank result is now
+	-- distinguishable from a lookup that went the wrong way.
+	function addon:DumpPanZoomApi()
+		local panZoom = self.panZoom
+		if not panZoom then
+			df("[PBsMiniMap] panZoom is nil")
+			return
+		end
+
+		local function emitList(label, items)
+			if #items == 0 then
+				df("[PBsMiniMap] %s: (none)", label)
+				return
+			end
+			table.sort(items)
+			local line = ""
+			for index = 1, #items do
+				local piece = items[index]
+				if #line + #piece + 2 > 180 then
+					df("[PBsMiniMap] %s: %s", label, line)
+					line = piece
+				else
+					line = (#line > 0) and (line .. ", " .. piece) or piece
+				end
+			end
+			df("[PBsMiniMap] %s: %s", label, line)
+		end
+
+		df("[PBsMiniMap] panZoom type=%s meta=%s", type(panZoom), type(getmetatable(panZoom)))
+
+		local methods, fields, seen = {}, {}, {}
+		local function collect(source, depth)
+			if type(source) ~= "table" or seen[source] or depth > 6 then
+				return
+			end
+			seen[source] = true
+			for key, value in pairs(source) do
+				local name = tostring(key)
+				if type(value) == "function" then
+					if not seen["m" .. name] then
+						seen["m" .. name] = true
+						methods[#methods + 1] = name
+					end
+				elseif type(value) ~= "table" and depth == 0 then
+					fields[#fields + 1] = string.format("%s=%s", name, tostring(value))
+				end
+			end
+
+			local meta = getmetatable(source)
+			if type(meta) == "table" then
+				collect(rawget(meta, "__index"), depth + 1)
+				collect(meta, depth + 1)
+			end
+		end
+		collect(panZoom, 0)
+
+		emitList("panZoom methods", methods)
+		emitList("panZoom fields", fields)
+	end
+
+	function addon:ReportCentreRoute(route)
+		self.centreRoute = route
+		if self.account and self.account.debug then
+			df("[PBsMiniMap] centring via %s", tostring(route))
+		end
 	end
 
 	function addon:FollowPlayerTick()
+		self.followTicks = (self.followTicks or 0) + 1
+
 		if self.dormant then
+			self.followSkip = "dormant"
 			return
 		end
 		local account = self.account
 		if not account or not account.followPlayer then
+			self.followSkip = "off"
 			return
 		end
-		if not ZO_WorldMap or ZO_WorldMap:IsHidden() then
+		if not ZO_WorldMap then
+			self.followSkip = "nomap"
 			return
 		end
+		if ZO_WorldMap:IsHidden() then
+			self.followSkip = "hidden"
+			return
+		end
+		self.followSkip = "-"
+
 
 		-- Order matters, and getting it wrong is what caused the centred/not-centred flicker:
 		-- re-asserting the layout runs the map through a resize, which resets the pan offset.
@@ -2384,34 +2984,31 @@ function addon:Initialize()
 		-- 1. Stay on the player's own map; walking into a new zone otherwise leaves the
 		-- minimap showing the old one.
 		local disturbed = false
-		if not DoesCurrentMapMatchMapForPlayerLocation() then
-			SetMapToPlayerLocation()
+
+		local mapTile = GetMapTileTexture()
+		if mapTile ~= lastMapTile then
+			-- The map changed underneath us: the zoom range was computed for the old one.
+			lastMapTile = mapTile
 			lastPlayerX, lastPlayerY = -1, -1
+			self:ResetLiteZoomState()
+			disturbed = true
+		end
+
+		if forceMapResync or not DoesCurrentMapMatchMapForPlayerLocation() then
+			forceMapResync = false
+			ApplyMapToPlayer()
+			lastMapTile = GetMapTileTexture()
+			lastPlayerX, lastPlayerY = -1, -1
+			self:ResetLiteZoomState()
 			disturbed = true
 		end
 
 		-- 2. Hold the requested zoom. Re-asserted rather than set once, because the game
 		-- resets it on map changes.
-		local panZoom = self.panZoom
-		local wantZoom = CurrentZoomLevel(account)
-		if panZoom and wantZoom then
-			local current = panZoom:GetCurrentNormalizedZoom()
-			if not current or zo_abs(current - wantZoom) > 0.005 then
-				if wantZoom ~= lastZoomRequest then
-					-- A new target: always worth trying, and it resets the give-up counter.
-					lastZoomRequest, zoomAttempts = wantZoom, 0
-				end
-				-- Safety valve. If the game will not accept the zoom, asking again every frame
-				-- is a tug of war that never lets the map finish an update -- which is what
-				-- stopped the player pin from ever appearing. Try a few times, then leave it.
-				if zoomAttempts < 10 then
-					zoomAttempts = zoomAttempts + 1
-					panZoom:SetCurrentNormalizedZoom(wantZoom)
-					disturbed = true
-				end
-			else
-				zoomAttempts = 0
-			end
+		-- 2. Hold the zoom range for this window. Only does work when the window size, the
+		-- map or the applicable setting actually changed.
+		if self:AdjustLiteZoom() then
+			disturbed = true
 		end
 
 		-- 3. Restore our size and position. Only touches anything when it has actually
@@ -2424,15 +3021,38 @@ function addon:Initialize()
 
 		-- 4. Centre on the player. Done whenever they moved, and also whenever anything above
 		-- disturbed the map, since that is exactly when the pan offset was thrown away.
+		-- The map's drawn size is what centring is measured against, so a change in it means
+		-- the previous centring was computed against something else.
+		--
+		-- This is what left the player off-centre until the first step after a reload: the
+		-- first tick ran before the container had been laid out, centred against nothing
+		-- useful, and recorded the player position as done -- after which "has the player
+		-- moved?" stayed false and it was never retried.
+		local containerW, containerH = -1, -1
+		if ZO_WorldMapContainer then
+			containerW, containerH = ZO_WorldMapContainer:GetDimensions()
+		end
+		if containerW <= 0 or containerH <= 0 then
+			-- Not laid out yet. Leave lastPlayer* alone so the next tick still counts as moved.
+			self.followSkip = "nolayout"
+			return
+		end
+		if zo_abs(containerW - lastContainerW) > 0.5 or zo_abs(containerH - lastContainerH) > 0.5 then
+			lastContainerW, lastContainerH = containerW, containerH
+			disturbed = true
+		end
+
 		local x, y = GetMapPlayerPosition("player")
 		local moved = x and (zo_abs(x - lastPlayerX) >= 0.00005 or zo_abs(y - lastPlayerY) >= 0.00005)
-		if (moved or disturbed) and ZO_WorldMap_JumpToPlayer then
-			if x then
-				lastPlayerX, lastPlayerY = x, y
-			end
-			-- Jump rather than pan: panning eases towards the player and always lags behind,
-			-- which is not "always centred".
-			ZO_WorldMap_JumpToPlayer()
+		if (moved or disturbed) and x then
+			lastPlayerX, lastPlayerY = x, y
+			self:CentreOnPlayer(x, y)
+		end
+
+		-- Also here, not just on the 200ms maintenance pass: the game puts these labels back
+		-- on its own schedule, and at 200ms they were visible long enough to read.
+		if account.hideMapLabels then
+			self:HideMapAreaLabels()
 		end
 	end
 
@@ -2455,17 +3075,31 @@ function addon:Initialize()
 	end
 
 	function addon:InitLiteHooks()
+		-- Our focus offsets are deliberately unclamped, but the pan machinery clamps again on
+		-- its own unless this is set. Captured here so dormancy can hand the original value
+		-- back to the standard map.
+		if self.panZoom and self.orgAllowPanPastMapEdge == nil then
+			self.orgAllowPanPastMapEdge = self.panZoom.allowPanPastMapEdge or false
+			-- Apply it now as well: dormancy only toggles it on a transition, and at startup
+			-- there has not been one.
+			self:SetAllowPanPastMapEdge(true)
+		end
+
 		local orgRefreshMapFrameAnchor
 		orgRefreshMapFrameAnchor =
 			HookHotPath(
 			ZO_WorldMapManager,
 			"RefreshMapFrameAnchor",
 			function(manager, ...)
+				local result = orgRefreshMapFrameAnchor(manager, ...)
 				if LiteMinimapActive() then
-					-- We own the window while the minimap is up.
-					return
+					-- Suppressing this entirely also stopped the internal layout work the pin
+					-- system depends on, and the player pin stopped appearing. Let it run and
+					-- only put our position back afterwards -- the size is already held by the
+					-- dimension constraints, and this touches nothing else.
+					addon:ApplyLiteAnchorOnly()
 				end
-				return orgRefreshMapFrameAnchor(manager, ...)
+				return result
 			end
 		)
 
@@ -2478,12 +3112,116 @@ function addon:Initialize()
 				return orgCanMapZoom(...) or LiteMinimapActive() or false
 			end
 		)
+
+		-- Place names.
+		--
+		-- The labels drawn across the map ("Elden Root", "Snugpod", ...) come from
+		-- ZO_MapLocationPins_Manager. On a full-screen map they are useful; squeezed into a
+		-- 300px minimap they cover most of it.
+		--
+		-- Suppress the refresh rather than deleting the labels afterwards, so none are built
+		-- in the first place. Registered as a hot-path hook like the rest, so the standard map
+		-- gets the game's own version back and keeps its names.
+		if ZO_MapLocationPins_Manager then
+			local orgRefreshLocations
+			orgRefreshLocations =
+				HookHotPath(
+				ZO_MapLocationPins_Manager,
+				"RefreshLocations",
+				function(manager, ...)
+					-- The only place the live pool is reachable from.
+					addon.locationPinManager = manager
+					if LiteMinimapActive() and addon.account and addon.account.hideMapLabels then
+						if manager.ReleaseAllObjects then
+							manager:ReleaseAllObjects()
+						end
+						if addon.pinManager then
+							addon.pinManager:RemovePins("loc")
+						end
+						return
+					end
+					return orgRefreshLocations(manager, ...)
+				end
+			)
+		end
+
+		-- Centring the player needs this one too.
+		--
+		-- ZO_WorldMap_JumpToPlayer does not position the map itself: it asks the pan machinery
+		-- to focus a normalized position, and the machinery works out the offsets through
+		-- GetNormalizedPositionFocusZoomAndOffset. Left as the game's own version, that returns
+		-- offsets that frame the map the way the full-screen map wants -- which is why the
+		-- centre of the minimap was the centre of the map rather than the player, most
+		-- obviously on the small subzone maps.
+		--
+		-- This is the same override the original add-on installs; the maths is its
+		-- FocusZoomAndOffset, which is what actually puts a given point in the middle.
+		local function IsNormalizedPointInsideMapBounds(x, y)
+			return x > 0 and x < 1 and y > 0 and y < 1
+		end
+
+		local function FocusZoomAndOffset(panZoom, normalizedX, normalizedY)
+			if not (normalizedX and normalizedY and IsNormalizedPointInsideMapBounds(normalizedX, normalizedY)) then
+				return nil
+			end
+
+			local targetNormalizedZoom = 1
+
+			-- Offsets are a displacement of the map's centre from the viewport's centre, so
+			-- what matters is how large the map is actually drawn -- per axis.
+			--
+			-- The original derives that from zo_max(ZO_WorldMapScroll:GetDimensions()): the
+			-- longer edge, used for both axes. It gets away with it because it keeps its
+			-- minimap square. Here the window is any size the user picks, so the shorter axis
+			-- was being scaled by the longer one's length and the marker sat off-centre --
+			-- most visibly on a small window, where that error is a bigger share of the view.
+			--
+			-- Measure the rendered map instead. ZO_WorldMapContainer is the map itself and its
+			-- dimensions already include the zoom, so no zoom maths is needed at all.
+			local mapWidth, mapHeight
+			if ZO_WorldMapContainer then
+				mapWidth, mapHeight = ZO_WorldMapContainer:GetDimensions()
+			end
+			if not mapWidth or mapWidth <= 0 or not mapHeight or mapHeight <= 0 then
+				-- Container not laid out yet: fall back to the original's estimate.
+				local units = zo_max(ZO_WorldMapScroll:GetDimensions())
+				local curvedTargetZoom = panZoom:ComputeCurvedZoom(targetNormalizedZoom)
+				mapWidth = units * curvedTargetZoom
+				mapHeight = mapWidth
+			end
+
+			-- Deliberately NOT clamped to the map edge. The original keeps the view inside the
+			-- map, so a player near an edge drifts away from the middle and can end up half out
+			-- of a small subzone map. On a minimap that reads as a bug rather than a feature.
+			return targetNormalizedZoom, (0.5 - normalizedX) * mapWidth, (0.5 - normalizedY) * mapHeight
+		end
+
+		local panZoomClass = getmetatable(ZO_WorldMap_GetPanAndZoom()).__index
+		local orgFocusZoomAndOffset
+		orgFocusZoomAndOffset =
+			HookHotPath(
+			panZoomClass,
+			"GetNormalizedPositionFocusZoomAndOffset",
+			function(panZoom, normalizedX, normalizedY, useCurrentZoom)
+				if LiteMinimapActive() then
+					local zoom, offsetX, offsetY = FocusZoomAndOffset(panZoom, normalizedX, normalizedY)
+					if zoom then
+						return zoom, offsetX, offsetY
+					end
+				end
+				return orgFocusZoomAndOffset(panZoom, normalizedX, normalizedY, useCurrentZoom)
+			end
+		)
 	end
 
 	function addon:StartLiteFollowWatch()
+		-- 10Hz, not every frame. Re-centring drives a map update, and asking for one on every
+		-- single frame never let the previous one finish -- pins are created at the end of
+		-- that cycle, so the player pin never got as far as existing. Ten times a second is
+		-- indistinguishable while walking and leaves the map room to complete its work.
 		EVENT_MANAGER:RegisterForUpdate(
 			self.name .. "LiteFollow",
-			0,
+			100,
 			function()
 				self:FollowPlayerTick()
 			end
@@ -2496,6 +3234,12 @@ function addon:Initialize()
 			200,
 			function()
 				self:MaintainLiteMinimapLayout()
+				self:ApplyLiteAlpha()
+				if not self.dormant and self.account and self.account.hideMapLabels then
+					self:HidePinLabels()
+					self:HideMapAreaLabels()
+				end
+				self:UpdateZoneTitle()
 			end
 		)
 	end
@@ -2595,6 +3339,14 @@ function addon:Initialize()
 		self:InitLiteHooks()
 		self:StartLiteMinimapLayoutWatch()
 		self:StartLiteFollowWatch()
+		self:StartLiteZoneWatch()
+		-- EVENT_PLAYER_ACTIVATED may already have fired by the time the watch registers, so
+		-- ask for the first sync outright rather than waiting for an event that has been and
+		-- gone.
+		self:RequestMapResync()
+		if self.account.debug then
+			self:DumpPanZoomApi()
+		end
 	end
 
 	if self.account.debug then
@@ -2785,7 +3537,7 @@ local function InitMemoryWatchdog()
 		-- State half of the line: everything the suppression logic depends on.
 		local state =
 			string.format(
-			"front=%s (kb=%s gp=%s api=%s gpMode=%s) dormant=%s attached=%s mode=%s mapType=%s",
+			"front=%s (kb=%s gp=%s api=%s gpMode=%s) dormant=%s attached=%s mode=%s mapType=%s zoom=%.2f/%.2f(%s) player=%.3f,%.3f onOwnMap=%s size=%dx%d scroll=%dx%d follow=%d/%s centre=%d/%s setMap=%s container=%dx%d",
 			Bool(inFront),
 			Bool(WORLD_MAP_SCENE and WORLD_MAP_SCENE:IsShowing()),
 			Bool(GAMEPAD_WORLD_MAP_SCENE and GAMEPAD_WORLD_MAP_SCENE:IsShowing()),
@@ -2794,7 +3546,24 @@ local function InitMemoryWatchdog()
 			Bool(addon.dormant),
 			Bool(addon.minimapAttached),
 			tostring(WORLD_MAP_MANAGER:GetMode()),
-			tostring(GetMapType())
+			tostring(GetMapType()),
+			addon.panZoom and (addon.panZoom:GetCurrentNormalizedZoom() or -1) or -1,
+			addon.CurrentZoomLevel and addon:CurrentZoomLevel() or -1,
+			addon.CurrentZoomContext and addon.CurrentZoomContext() or "?",
+			select(1, GetMapPlayerPosition("player")) or -1,
+			select(2, GetMapPlayerPosition("player")) or -1,
+			Bool(DoesCurrentMapMatchMapForPlayerLocation()),
+			zo_round(select(1, ZO_WorldMap:GetDimensions())),
+			zo_round(select(2, ZO_WorldMap:GetDimensions())),
+			ZO_WorldMapScroll and zo_round(select(1, ZO_WorldMapScroll:GetDimensions())) or -1,
+			ZO_WorldMapScroll and zo_round(select(2, ZO_WorldMapScroll:GetDimensions())) or -1,
+			addon.followTicks or 0,
+			tostring(addon.followSkip or "never"),
+			addon.centreCalls or 0,
+			tostring(addon.centreRoute or "none"),
+			tostring(addon.lastSetMapResult or "-"),
+			ZO_WorldMapContainer and zo_round(select(1, ZO_WorldMapContainer:GetDimensions())) or -1,
+			ZO_WorldMapContainer and zo_round(select(2, ZO_WorldMapContainer:GetDimensions())) or -1
 		)
 		return used, state
 	end

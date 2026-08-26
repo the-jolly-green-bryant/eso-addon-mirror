@@ -53,7 +53,7 @@ function Settings:TryLibAddonMenu()
             type = "dropdown",
             name = "Health / Magicka / Stamina",
             tooltip = "Clean is numbers on a solid bar. Nordic / Steel / Bronze stitch three tiles; fill shows through the transparent hole.",
-            choices = { "Default (vanilla)", "Clean", "Nordic knot", "Steel bevel", "Bronze runes" },
+            choices = { "Default (vanilla)", "Clean", "Nordic knot", "Steel bevel", "Bronze bevel" },
             choicesValues = { Format.THEME_DEFAULT, Format.THEME_CLEAN, Format.THEME_NORDIC, Format.THEME_STEEL, Format.THEME_BRONZE },
             getFunc = function()
                 return Store:ThemeId()
@@ -69,7 +69,7 @@ function Settings:TryLibAddonMenu()
             type = "dropdown",
             name = "Werewolf meter",
             tooltip = "Named skins are one inverted-L plate: Ult in the bar, Fury as a dark-red fill behind the wolf.",
-            choices = { "Vanilla", "Clean", "Nordic knot", "Steel bevel", "Bronze runes" },
+            choices = { "Vanilla", "Clean", "Nordic knot", "Steel bevel", "Bronze bevel" },
             choicesValues = { Format.WOLF_VANILLA, Format.WOLF_CLEAN, Format.WOLF_NORDIC, Format.WOLF_STEEL, Format.WOLF_BRONZE },
             getFunc = function()
                 return Store:WolfId()
@@ -164,12 +164,12 @@ function Settings:HandleSlash(args)
             Log:Always("/vtheme hud clean      readable Valknarr bars")
             Log:Always("/vtheme hud nordic     Nordic knot frame")
             Log:Always("/vtheme hud steel      Steel bevel frame")
-            Log:Always("/vtheme hud bronze     Bronze runes frame")
+            Log:Always("/vtheme hud bronze     Bronze bevel frame")
             Log:Always("/vtheme wolf vanilla   native werewolf bar")
             Log:Always("/vtheme wolf clean     current Valknarr widget")
             Log:Always("/vtheme wolf nordic    Nordic knot plate")
             Log:Always("/vtheme wolf steel     Steel bevel plate")
-            Log:Always("/vtheme wolf bronze    Bronze runes plate")
+            Log:Always("/vtheme wolf bronze    Bronze bevel plate")
             Log:Always("/vtheme default        hud default (alias)")
             Log:Always("/vtheme clean          hud clean (alias: valknarr)")
             Log:Always("/vtheme nordic|steel|bronze   hud shortcuts")

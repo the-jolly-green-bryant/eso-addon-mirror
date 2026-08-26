@@ -29,8 +29,6 @@ Module.STRINGS = {
 	-- Custom (Alerts)
 	teleportCounter = { default = "<<i:1>> Teleport Position" },
 	bridgeStatusLabel = { default = "Channelers" },
-	delugeSelf = { default = " (You)" },
-	delugeOthers = { default = " (Others)" },
 	delugeSwim = { default = "Swim!" },
 
 	-- Custom (Settings)
@@ -71,7 +69,7 @@ Module.DATA = {
 		[166929] = 0x9966FFFF, -- Summon Siren
 	},
 	targeted = 170523,
-	cinderShot = 170392,
+	cinderShot = 170409,
 	marksman = {
 		target = 170434,
 		damage = 170438,
@@ -138,8 +136,8 @@ Module.DATA = {
 	deluge = {
 		start = 167124,
 		icon = 174966,
-		delugeSelf = 0x3399FFFF,
-		delugeOthers = 0xBBDDFFFF,
+		[SI_LCA_TARGET_YOU] = 0x3399FFFF,
+		[SI_LCA_TARGET_OTHERS] = 0xBBDDFFFF,
 		[174959] = true, -- Normal
 		[174960] = true, -- Veteran
 		[174961] = true, -- Hard Mode
@@ -194,6 +192,7 @@ function Module:Initialize( )
 	self.MONITOR_UNIT_IDS = true
 
 	self.TIMER_ALERTS_LEGACY = {
+		[150308] = { -2, 2 }, -- Power Bash (Daihjara-la; same as Rockgrove's Havocrel Goliath)
 		[163987] = { -2, 2 }, -- Coral Slam
 		[166019] = { -2, 2 }, -- Crush
 		[166020] = { -2, 2 }, -- Claw
@@ -238,7 +237,7 @@ function Module:Initialize( )
 			targeted = false,
 		},
 		deluge = {
-			type = "delugeOthers",
+			type = SI_LCA_TARGET_OTHERS,
 			units = { },
 			eruptionTime = 0,
 		},
@@ -489,10 +488,11 @@ end
 
 function Module:PostLoad( )
 	for abilityId in pairs(DATA.dome) do
-		local identifier = Module.ID .. abilityId
-		EVENT_MANAGER:RegisterForEvent(identifier, EVENT_EFFECT_CHANGED, self.DomeEffect)
-		EVENT_MANAGER:AddFilterForEvent(identifier, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, abilityId)
-		EVENT_MANAGER:AddFilterForEvent(identifier, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+		LCA.RegisterForFilteredEvent(Module.ID .. abilityId, EVENT_EFFECT_CHANGED,
+			self.DomeEffect,
+			REGISTER_FILTER_ABILITY_ID, abilityId,
+			REGISTER_FILTER_UNIT_TAG_PREFIX, "group"
+		)
 	end
 end
 
@@ -532,8 +532,9 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		elseif (result == ACTION_RESULT_EFFECT_FADED) then
 			CA2.ScreenBorderDisable("u34target")
 		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.cinderShot and self:GetSetting("extraSounds")) then
-		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 4, 125, "FRIEND_INVITE_RECEIVED", 3, 125, "FRIEND_INVITE_RECEIVED", 2)
+	elseif (result == ACTION_RESULT_BEGIN and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.cinderShot) then
+		CA1.Alert(nil, zo_strformat(SI_LCA_TARGET_YOU, LCA.GetAbilityName(abilityId)), 0xFF9900FF, nil, 1500)
+		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 3)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.marksman.target) then
 		local id = CA1.AlertCast(DATA.marksman.damage, sourceName, 3000, { -3, 2, true })
 		if (LCA.IsUnitIdValid(sourceUnitId)) then
@@ -660,7 +661,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.wave.target and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		Vars.wave.targeted = true
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.deluge.start) then
-		Vars.deluge.type = "delugeOthers"
+		Vars.deluge.type = SI_LCA_TARGET_OTHERS
 		ZO_ClearTable(Vars.deluge.units)
 	elseif (result == ACTION_RESULT_DAMAGE and DATA.deluge.damage[abilityId] and self:GetSetting("delugeBlame")) then
 		local currentTime = GetGameTimeMilliseconds()
@@ -680,7 +681,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (targetUnitId and DATA.deluge[abilityId]) then
 		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
 			LCA.CoalescedDelayedCall("u34deluge", 10, function( )
-				CA1.Alert(nil, LCA.GetAbilityName(abilityId) .. self:GetString(Vars.deluge.type), DATA.deluge[Vars.deluge.type], nil, hitValue)
+				CA1.Alert(nil, zo_strformat(Vars.deluge.type, LCA.GetAbilityName(abilityId)), DATA.deluge[Vars.deluge.type], nil, hitValue)
 				if (self:GetSetting("delugeBlame")) then
 					Vars.deluge.pollingStop = GetGameTimeMilliseconds() + hitValue + 500
 					EVENT_MANAGER:RegisterForUpdate(self.ID, 10, function( )
@@ -703,7 +704,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 			end
 
 			if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-				Vars.deluge.type = "delugeSelf"
+				Vars.deluge.type = SI_LCA_TARGET_YOU
 				CA1.CastAlertsStart(DATA.deluge.icon, LCA.GetAbilityName(abilityId), hitValue, nil, { 0.3, 0.9, 1, 0.6 }, { 1750, self:GetString("delugeSwim"), 0, 0.5, 1, 1, SOUNDS.FRIEND_INVITE_RECEIVED })
 				LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 3, 200, "DUEL_BOUNDARY_WARNING", 1, 150, "DUEL_BOUNDARY_WARNING", 2, 150, "DUEL_BOUNDARY_WARNING", 3)
 			end

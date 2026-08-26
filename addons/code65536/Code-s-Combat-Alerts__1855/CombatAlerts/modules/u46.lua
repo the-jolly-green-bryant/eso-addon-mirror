@@ -11,7 +11,18 @@ Module.ZONES = {
 }
 
 Module.STRINGS = {
-	-- Extracted
+	-- Custom (Settings)
+	groupPanel = { default = "Enable group-wide Carrion/Blaze panel" },
+	scalesChat = { default = "Reflective Scales chat messages" },
+	scalesBorder = { default = "Reflective Scales screen border" },
+	scalesNoTanks = { default = "Ignore Reflective Scales for tanks" },
+}
+
+Module.DEFAULT_SETTINGS = {
+	groupPanel = true,
+	scalesChat = true,
+	scalesBorder = 0xFF990099,
+	scalesNoTanks = true,
 }
 
 Module.DATA = {
@@ -29,6 +40,11 @@ Module.DATA = {
 	},
 	stricken = 235594,
 	blaze = 235356,
+	scales = {
+		[233320] = true, -- Myrinax
+		[233328] = true, -- Valneer
+	},
+	scalesNameId = 233321,
 }
 local DATA = Module.DATA
 local Vars
@@ -42,14 +58,19 @@ function Module:Initialize( )
 		-- Cast time 3000, actual windup time 2567
 		[233596] = { 0, 0, false, { 1, 0, 0.6, 0.8 }, offset = -433, cutthroat = true }, -- Spark Smash
 		[233606] = { 0, 0, false, { 1, 0, 0.6, 0.8 }, offset = -433, cutthroat = true }, -- Blazing Smash
+		[245149] = { -2, 2, offset = -433 }, -- Spark Smash (portal)
+		[245157] = { -2, 2, offset = -433 }, -- Blazing Smash (portal)
 
 		-- Cast time 3000, actual windup time 1650, projectile ranges from 100 to 700 (using 150)
 		[233720] = { 0, 0, false, { 1, 0, 0.6, 0.8 }, offset = -1200, cutthroat = true }, -- Spark Surge Bolt
 		[233751] = { 0, 0, false, { 1, 0, 0.6, 0.8 }, offset = -1200, cutthroat = true }, -- Forge Fire Bolt
+		[245131] = { -3, 2, offset = -1200 }, -- Spark Surge Bolt (portal)
+		[245140] = { -3, 2, offset = -1200 }, -- Forge Fire Bolt (portal)
 
 		[235146] = { -2, 2, offset = 100 }, -- Shadow Strike
 		[236458] = { -3, 2 }, -- Potent Ethereal Burst
 		[236569] = { -2, 1, vet = true }, -- Spectral Revenge
+		[240984] = { -2, 2 }, -- Heavy Strike
 		[245273] = { -2, 1 }, -- Bone Saw
 	}
 
@@ -60,6 +81,7 @@ function Module:Initialize( )
 
 	self.vars = {
 		lastBarrage = 0,
+		scales = { },
 	}
 	Vars = self.vars
 
@@ -115,27 +137,41 @@ function Module:Initialize( )
 			CA2.GroupPanelUpdate(unitTag)
 		end
 	end
+
+	self.ScalesUpdate = function( _, result, _, _, _, _, _, _, _, _, hitValue, _, _, _, _, targetUnitId, abilityId )
+		Vars.scales[targetUnitId] = (result ~= ACTION_RESULT_EFFECT_FADED) and true or nil
+	end
 end
 
 function Module:PostLoad( )
 	self:TogglePanelMode("carrion")
-	EVENT_MANAGER:RegisterForEvent(Identifier("CARRION"), EVENT_EFFECT_CHANGED, self.CarrionUpdate)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("CARRION"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, DATA.carrion)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("CARRION"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("CARRION_B2"), EVENT_EFFECT_CHANGED, self.CarrionUpdate)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("CARRION_B2"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, DATA.carrionB2)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("CARRION_B2"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
-
-	EVENT_MANAGER:RegisterForEvent(Identifier("BLAZE"), EVENT_EFFECT_CHANGED, self.BlazeUpdate)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("BLAZE"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, DATA.blaze)
-	EVENT_MANAGER:AddFilterForEvent(Identifier("BLAZE"), EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+	LCA.RegisterForFilteredEvent(Identifier("CARRION"), EVENT_EFFECT_CHANGED,
+		self.CarrionUpdate,
+		REGISTER_FILTER_ABILITY_ID, DATA.carrion,
+		REGISTER_FILTER_UNIT_TAG_PREFIX, "group"
+	)
+	LCA.RegisterForFilteredEvent(Identifier("CARRION_B2"), EVENT_EFFECT_CHANGED,
+		self.CarrionUpdate,
+		REGISTER_FILTER_ABILITY_ID, DATA.carrionB2,
+		REGISTER_FILTER_UNIT_TAG_PREFIX, "group"
+	)
+	LCA.RegisterForFilteredEvent(Identifier("BLAZE"), EVENT_EFFECT_CHANGED,
+		self.BlazeUpdate,
+		REGISTER_FILTER_ABILITY_ID, DATA.blaze,
+		REGISTER_FILTER_UNIT_TAG_PREFIX, "group"
+	)
+	for abilityId in pairs(DATA.scales) do
+		LCA.RegisterForFilteredEvent(Identifier(abilityId), EVENT_COMBAT_EVENT, self.ScalesUpdate, REGISTER_FILTER_ABILITY_ID, abilityId)
+	end
 end
 
 function Module:PreUnload( )
 	EVENT_MANAGER:UnregisterForEvent(Identifier("CARRION"), EVENT_EFFECT_CHANGED)
 	EVENT_MANAGER:UnregisterForEvent(Identifier("CARRION_B2"), EVENT_EFFECT_CHANGED)
 	EVENT_MANAGER:UnregisterForEvent(Identifier("BLAZE"), EVENT_EFFECT_CHANGED)
+	for abilityId in pairs(DATA.scales) do
+		EVENT_MANAGER:UnregisterForEvent(Identifier(abilityId), EVENT_COMBAT_EVENT)
+	end
 	CA2.GroupPanelDisable()
 end
 
@@ -161,12 +197,63 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	-- Boss 2
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and hitValue > 100 and DATA.twinsHeavyProjectile[abilityId]) then
 		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue)
+	elseif (sourceType == COMBAT_UNIT_TYPE_PLAYER and LCA.DAMAGE_EVENTS[result] and Vars.scales[targetUnitId] and not (LCA.isTank and self:GetSetting("scalesNoTanks"))) then
+		if (self:GetSetting("scalesChat")) then
+			CA2.ChatMessage(zo_strformat("[<<1>>] <<2>>", LCA.GetAbilityName(DATA.scalesNameId), LCA.GetAbilityName(abilityId)))
+		end
+		self:ShowScalesBorder()
 
 	-- Boss 3
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == DATA.stricken and (targetType == COMBAT_UNIT_TYPE_PLAYER or LCA.DoesPlayerHaveTauntSlotted())) then
 		local _, name = LCA.IdentifyGroupUnitIdWithRole(targetUnitId, true)
 		CA1.Alert(LCA.GetAbilityName(abilityId), name, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	end
+end
+
+function Module:GetSettingsControls( )
+	return {
+		--------------------
+		{
+			type = "checkbox",
+			name = self:GetString("groupPanel"),
+			getFunc = function() return self:GetSetting("groupPanel") end,
+			setFunc = function(enabled) self:SetSetting("groupPanel", enabled) end,
+		},
+		--------------------
+		{
+			type = "checkbox",
+			name = self:GetString("scalesChat"),
+			getFunc = function() return self:GetSetting("scalesChat") end,
+			setFunc = function(enabled) self:SetSetting("scalesChat", enabled) end,
+		},
+		--------------------
+		{
+			type = "checkbox",
+			name = self:GetString("scalesBorder"),
+			getFunc = function() return self:GetSetting("scalesBorder") ~= 0 end,
+			setFunc = function( enabled )
+				self:SetSetting("scalesBorder", not enabled and 0 or nil)
+				self:ShowScalesBorder()
+			end,
+		},
+		--------------------
+		{
+			type = "colorpicker",
+			getFunc = function() return LCA.UnpackRGBA(self:GetSetting("scalesBorder")) end,
+			setFunc = function( ... )
+				self:SetSetting("scalesBorder", LCA.PackRGBA(...))
+				self:ShowScalesBorder()
+			end,
+			disabled = function() return self:GetSetting("scalesBorder") == 0 end,
+		},
+		--------------------
+		{
+			type = "checkbox",
+			name = self:GetString("scalesNoTanks"),
+			getFunc = function() return self:GetSetting("scalesNoTanks") end,
+			setFunc = function(enabled) self:SetSetting("scalesNoTanks", enabled) end,
+		},
+	}
 end
 
 function Module:TogglePanelMode( mode )
@@ -181,6 +268,13 @@ function Module:TogglePanelMode( mode )
 		useUnitId = false,
 		useRange = false,
 	})
+end
+
+function Module:ShowScalesBorder( )
+	local color = self:GetSetting("scalesBorder")
+	if (color ~= 0) then
+		CA2.ScreenBorderEnable(color, 1100, "CA_M_U46_SCALES")
+	end
 end
 
 CA2.RegisterModule(Module)

@@ -48,7 +48,7 @@ Module.DATA = {
 	overchargeHealth = 91004,
 	overchargeTether = 91082,
 	fireWhirl = 90293,
-	fireWhirlEmpoweredText = LocalizeString("<<t:1>> (<<t:2>>: %d)", GetAbilityName(90293), GetAbilityName(91316)),
+	fireWhirlEmpoweredText = zo_strformat("<<t:1>> (<<t:2>>: %d)", GetAbilityName(90293), GetAbilityName(91316)),
 
 	-- Boss 5
 	feedback = 91038,
@@ -262,7 +262,7 @@ function Module:Initialize( )
 		if (Vars.feedback.alert) then
 			Vars.feedback.alert = false
 
-			CA2.ChatMessage(LocalizeString(
+			CA2.ChatMessage(zo_strformat(
 				self:GetString("feedback"),
 				Vars.feedback.strength,
 				GetAbilityName(DATA.feedback),

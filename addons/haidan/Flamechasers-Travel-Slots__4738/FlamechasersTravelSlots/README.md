@@ -11,6 +11,10 @@ A configurable ESO fast-travel speed dial with sixteen personal destination slot
 - Save player houses, the current house, group leader travel, and focused-quest routing.
 - Focused Quest slots enter matching dungeons, trials, arenas, and Infinite Archive directly when ESO permits it, with nearest-wayshrine fallback.
 - Customize each slot with a name, note, icon, and accent color.
+- Resize the main window from any edge or corner; slot cards automatically
+  resize, reflow, and scroll to remain usable at every supported size.
+- Preserve the chosen window size and position between sessions. Use
+  `/fts reset` to restore the default size.
 - Open from `/fts`, `/ftravel`, the world-map button, or an assigned keybind.
 - Optionally open Travel Slots automatically whenever ESO's full world map opens.
 - Assign separate keybinds for all sixteen travel slots.

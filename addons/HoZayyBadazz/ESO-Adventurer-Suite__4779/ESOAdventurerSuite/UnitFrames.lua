@@ -407,14 +407,21 @@ function F:CreatePlayerEffectsFrame()
         local icon = wm:CreateControl("EPC_PlayerEffects_" .. prefix .. tostring(index) .. "_Icon", slot, CT_TEXTURE)
         icon:SetAnchor(TOPLEFT, slot, TOPLEFT, 1, 1)
         icon:SetAnchor(BOTTOMRIGHT, slot, BOTTOMRIGHT, -1, -1)
-        local timer = makeLabel(slot, "EPC_PlayerEffects_" .. prefix .. tostring(index) .. "_Timer", "ZoFontGameSmall", C.white, TEXT_ALIGN_CENTER)
-        timer:SetAnchor(BOTTOMLEFT, slot, BOTTOMLEFT, 0, 0)
-        timer:SetAnchor(BOTTOMRIGHT, slot, BOTTOMRIGHT, 0, 0)
-        timer:SetHeight(11)
+        local timerBack = wm:CreateControl("EPC_PlayerEffects_" .. prefix .. tostring(index) .. "_TimerBack", slot, CT_BACKDROP)
+        timerBack:SetAnchor(CENTER, slot, CENTER, 0, 0)
+        timerBack:SetDimensions(22, 16)
+        timerBack:SetCenterColor(0, 0, 0, 0.94)
+        timerBack:SetEdgeColor(0, 0, 0, 1)
+        timerBack:SetEdgeTexture(nil, 1, 1, 1)
+        timerBack:SetHidden(true)
+        local timer = makeLabel(slot, "EPC_PlayerEffects_" .. prefix .. tostring(index) .. "_Timer", "$(BOLD_FONT)|16|soft-shadow-thick", C.white, TEXT_ALIGN_CENTER)
+        timer:SetAnchorFill(slot)
+        timer:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        timer:SetColor(1.00, 0.64, 0.16, 1)
         local stack = makeLabel(slot, "EPC_PlayerEffects_" .. prefix .. tostring(index) .. "_Stack", "ZoFontGameSmall", C.gold, TEXT_ALIGN_RIGHT)
         stack:SetAnchor(TOPRIGHT, slot, TOPRIGHT, -1, -1)
         stack:SetDimensions(13, 11)
-        slot.epcIcon, slot.epcTimer, slot.epcStack, slot.epcName = icon, timer, stack, ""
+        slot.epcIcon, slot.epcTimerBack, slot.epcTimer, slot.epcStack, slot.epcName = icon, timerBack, timer, stack, ""
         slot:SetHidden(true)
         return slot
     end
@@ -793,8 +800,22 @@ function F:RenderAuraSlots(slots, data, maxVisible, edgeColor)
             slot:SetHidden(false)
             slot.epcName = aura.name
             if aura.icon and aura.icon ~= "" then slot.epcIcon:SetTexture(aura.icon) end
-            slot.epcTimer:SetText(formatAuraTime(aura.endTime))
+            local timerText = formatAuraTime(aura.endTime)
+            slot.epcTimer:SetText(timerText)
             slot.epcStack:SetText((aura.stackCount or 0) > 1 and tostring(aura.stackCount) or "")
+            if slot.epcTimerBack then
+                local showTimerBack = timerText ~= ""
+                slot.epcTimerBack:SetHidden(not showTimerBack)
+                if showTimerBack then
+                    local textWidth, textHeight = 0, 0
+                    if slot.epcTimer and type(slot.epcTimer.GetTextDimensions) == "function" then
+                        textWidth, textHeight = slot.epcTimer:GetTextDimensions()
+                    end
+                    textWidth = tonumber(textWidth) or 0
+                    textHeight = tonumber(textHeight) or 0
+                    slot.epcTimerBack:SetDimensions(math.max(18, textWidth + 10), math.max(14, textHeight + 6))
+                end
+            end
             if aura.castByPlayer then slot:SetEdgeColor(unpack(C.gold))
             else slot:SetEdgeColor(unpack(edgeColor)) end
         else
@@ -802,6 +823,7 @@ function F:RenderAuraSlots(slots, data, maxVisible, edgeColor)
             slot.epcName = ""
             slot.epcTimer:SetText("")
             slot.epcStack:SetText("")
+            if slot.epcTimerBack then slot.epcTimerBack:SetHidden(true) end
         end
     end
 end
@@ -1927,14 +1949,21 @@ local function createIntegratedAuraSlot(frame, name, prefix, index, edgeColor)
     slot:SetDrawLevel(prefix == "Debuff" and 80 or 70)
     local icon = wm:CreateControl(name .. "_" .. prefix .. tostring(index) .. "_Icon", slot, CT_TEXTURE)
     icon:SetAnchorFill(slot)
-    local timer = makeLabel(slot, name .. "_" .. prefix .. tostring(index) .. "_Timer", "ZoFontGameSmall", C.white, TEXT_ALIGN_CENTER)
-    timer:SetAnchor(BOTTOMLEFT, slot, BOTTOMLEFT, 0, -1)
-    timer:SetAnchor(BOTTOMRIGHT, slot, BOTTOMRIGHT, 0, -1)
-    timer:SetHeight(11)
+    local timerBack = wm:CreateControl(name .. "_" .. prefix .. tostring(index) .. "_TimerBack", slot, CT_BACKDROP)
+    timerBack:SetAnchor(CENTER, slot, CENTER, 0, 0)
+    timerBack:SetDimensions(22, 16)
+    timerBack:SetCenterColor(0, 0, 0, 0.94)
+    timerBack:SetEdgeColor(0, 0, 0, 1)
+    timerBack:SetEdgeTexture(nil, 1, 1, 1)
+    timerBack:SetHidden(true)
+    local timer = makeLabel(slot, name .. "_" .. prefix .. tostring(index) .. "_Timer", "$(BOLD_FONT)|16|soft-shadow-thick", C.white, TEXT_ALIGN_CENTER)
+    timer:SetAnchorFill(slot)
+    timer:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    timer:SetColor(1.00, 0.64, 0.16, 1)
     local stack = makeLabel(slot, name .. "_" .. prefix .. tostring(index) .. "_Stack", "ZoFontGameSmall", C.gold, TEXT_ALIGN_RIGHT)
     stack:SetAnchor(TOPRIGHT, slot, TOPRIGHT, -1, 0)
     stack:SetDimensions(14,11)
-    slot.epcIcon, slot.epcTimer, slot.epcStack, slot.epcName = icon, timer, stack, ""
+    slot.epcIcon, slot.epcTimerBack, slot.epcTimer, slot.epcStack, slot.epcName = icon, timerBack, timer, stack, ""
     slot:SetHidden(true)
     return slot
 end

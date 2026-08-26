@@ -1,0 +1,13 @@
+## Title: Excalibur's Movable Inventory
+## Author: _Excalibur_1969
+## Version: 1.1
+## AddOnVersion: 10100
+## APIVersion: 101050 101051
+## Description: Makes the default inventory window movable, draggable, and centered. Full vanilla inventory, just repositioned. No auto-junk — that lives in a separate addon now.
+## SavedVariables: ExcalibursMovableInventory_SavedVars
+## DependsOn: LibAddonMenu-2.0>=43
+##
+## Unique addon name to stand out in Minion searches.
+##
+ExcalibursMovableInventory.lua
+settings.lua

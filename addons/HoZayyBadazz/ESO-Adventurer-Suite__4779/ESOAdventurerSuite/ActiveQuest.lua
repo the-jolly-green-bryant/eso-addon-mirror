@@ -202,6 +202,134 @@ function Q:GetActiveQuestIndex()
     return fallbackTracked
 end
 
+
+function Q:WrapTitleText(text)
+    text = tostring(text or "")
+    if text == "" then return "" end
+
+    local width = 0
+    if self.title and type(self.title.GetWidth) == "function" then
+        width = tonumber(self.title:GetWidth()) or 0
+    end
+    if width <= 0 and self.frame and type(self.frame.GetWidth) == "function" then
+        width = math.max(80, (tonumber(self.frame:GetWidth()) or DEFAULT_WIDTH) - 24)
+    end
+    if width <= 0 then width = DEFAULT_WIDTH - 24 end
+
+    -- ZoFontGameBold is wider than the objective font, so use a conservative
+    -- character estimate and insert real newlines instead of relying on the
+    -- label's implicit wrapping behavior.
+    local maxChars = math.max(14, math.floor((width - 8) / 9.0))
+    local lines, current = {}, ""
+
+    local function flush()
+        if current ~= "" then
+            lines[#lines + 1] = current
+            current = ""
+        end
+    end
+
+    for word in string.gmatch(text, "%S+") do
+        local candidate = current == "" and word or (current .. " " .. word)
+        if string.len(candidate) > maxChars and current ~= "" then
+            flush()
+            current = word
+        else
+            current = candidate
+        end
+    end
+    flush()
+    return table.concat(lines, "\n")
+end
+
+function Q:WrapObjectiveText(text)
+    text = tostring(text or "")
+    if text == "" then return "" end
+
+    local width = 0
+    if self.steps and type(self.steps.GetWidth) == "function" then
+        width = tonumber(self.steps:GetWidth()) or 0
+    end
+    if width <= 0 and self.frame and type(self.frame.GetWidth) == "function" then
+        width = math.max(80, (tonumber(self.frame:GetWidth()) or DEFAULT_WIDTH) - 24)
+    end
+    if width <= 0 then width = DEFAULT_WIDTH - 24 end
+
+    -- ZoFontGame averages roughly 7.5-8.5 px per character. Keeping a little
+    -- safety room prevents ESO from placing the final word outside the HUD edge.
+    local maxChars = math.max(18, math.floor((width - 10) / 8.2))
+    local wrapped = {}
+
+    local function appendWrappedLine(line)
+        line = tostring(line or "")
+        if line == "" then
+            wrapped[#wrapped + 1] = ""
+            return
+        end
+
+        local bullet = string.sub(line, 1, 4) == "• "
+        local content = bullet and string.sub(line, 5) or line
+        local firstPrefix = bullet and "• " or ""
+        local continuationPrefix = bullet and "  " or ""
+        local availableFirst = math.max(8, maxChars - string.len(firstPrefix))
+        local availableNext = math.max(8, maxChars - string.len(continuationPrefix))
+        local current = ""
+        local first = true
+
+        local function flush()
+            if current ~= "" then
+                wrapped[#wrapped + 1] = (first and firstPrefix or continuationPrefix) .. current
+                current = ""
+                first = false
+            end
+        end
+
+        local function limitForCurrent()
+            return first and availableFirst or availableNext
+        end
+
+        for word in string.gmatch(content, "%S+") do
+            local limit = limitForCurrent()
+            if current == "" and string.len(word) > limit then
+                local remaining = word
+                while string.len(remaining) > limit do
+                    current = string.sub(remaining, 1, limit)
+                    flush()
+                    remaining = string.sub(remaining, limit + 1)
+                    limit = limitForCurrent()
+                end
+                current = remaining
+            else
+                local candidate = current == "" and word or (current .. " " .. word)
+                if string.len(candidate) > limit and current ~= "" then
+                    flush()
+                    limit = limitForCurrent()
+                    if string.len(word) > limit then
+                        local remaining = word
+                        while string.len(remaining) > limit do
+                            current = string.sub(remaining, 1, limit)
+                            flush()
+                            remaining = string.sub(remaining, limit + 1)
+                            limit = limitForCurrent()
+                        end
+                        current = remaining
+                    else
+                        current = word
+                    end
+                else
+                    current = candidate
+                end
+            end
+        end
+        flush()
+    end
+
+    for line in string.gmatch(text .. "\n", "(.-)\n") do
+        appendWrappedLine(line)
+    end
+    return table.concat(wrapped, "\n")
+end
+
 function Q:BuildObjectiveText(index)
     if not index then return "Track or focus a quest to see its next steps." end
 
@@ -311,6 +439,13 @@ function Q:BuildObjectiveText(index)
     return normalizeProgressCounters(table.concat(lines, "\n"))
 end
 
+function Q:GetTrackedQuestHeader()
+    local source = self.GetQuestTrackingSource2513 and self:GetQuestTrackingSource2513() or "ACTIVE_QUEST"
+    if source == "MAIN_QUEST" then return "MAIN QUEST" end
+    if source == "GOLDEN_PURSUITS" then return "GOLDEN PURSUITS" end
+    return "ACTIVE QUEST"
+end
+
 function Q:Create()
     -- v0.25.09: migrate the older tall HUD once while preserving width/position.
     if EPC.saved and EPC.saved.activeQuestCompactHeightVersion ~= 2509 then
@@ -354,33 +489,38 @@ function Q:Create()
     layoutGuide:SetHidden(true)
 
     local header = wm:CreateControl("EAS_ActiveQuestOverlay_Header", frame, CT_LABEL)
-    header:SetFont("ZoFontGameSmall")
+    header:SetFont("ZoFontGameBold")
     header:SetColor(0.96, 0.80, 0.36, 1)
-    header:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 7)
-    header:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 7)
-    header:SetHeight(18)
-    header:SetText("")
-    header:SetHidden(true)
+    header:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 8)
+    header:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 8)
+    header:SetHeight(20)
+    header:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    header:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    header:SetText("ACTIVE QUEST")
+    header:SetHidden(false)
 
     local title = wm:CreateControl("EAS_ActiveQuestOverlay_Title", frame, CT_LABEL)
     title:SetFont("ZoFontGameBold")
-    title:SetColor(0.96, 0.80, 0.36, 1)
-    title:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 10)
-    title:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 10)
+    title:SetColor(0.96, 0.96, 0.94, 1)
+    title:SetAnchor(TOPLEFT, header, BOTTOMLEFT, 0, 2)
+    title:SetAnchor(TOPRIGHT, header, BOTTOMRIGHT, 0, 2)
     title:SetHeight(36)
     title:SetVerticalAlignment(TEXT_ALIGN_TOP)
     title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    if title.SetMaxLineCount then title:SetMaxLineCount(0) end
+    if title.SetWrapMode and TEXT_WRAP_MODE_TRUNCATE then title:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE) end
+    if title.SetLineSpacing then title:SetLineSpacing(2) end
 
     local steps = wm:CreateControl("EAS_ActiveQuestOverlay_Steps", frame, CT_LABEL)
-    steps:SetFont("ZoFontGame")
+    steps:SetFont("ZoFontGameSmall")
     steps:SetColor(0.92, 0.94, 0.97, 1)
-    steps:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 46)
-    steps:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -12, -8)
+    steps:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 8)
+    steps:SetAnchor(TOPRIGHT, title, BOTTOMRIGHT, 0, 8)
+    steps:SetHeight(56)
     steps:SetVerticalAlignment(TEXT_ALIGN_TOP)
     steps:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    if steps.SetLineSpacing then steps:SetLineSpacing(2) end
-    -- Do not set TEXT_WRAP_MODE_ELLIPSIS here. With a bounded label width,
-    -- ESO wraps normal text naturally; ellipsis mode was clipping objectives.
+    if steps.SetMaxLineCount then steps:SetMaxLineCount(0) end
+    if steps.SetLineSpacing then steps:SetLineSpacing(4) end
 
     local moveHint = wm:CreateControl("EAS_ActiveQuestOverlay_MoveHint", frame, CT_LABEL)
     moveHint:SetFont("ZoFontGameSmall")
@@ -403,11 +543,45 @@ function Q:Create()
             EPC.saved.activeQuestWidth = math.floor((tonumber(width) or DEFAULT_WIDTH) + 0.5)
             EPC.saved.activeQuestHeight = math.floor((tonumber(height) or DEFAULT_HEIGHT) + 0.5)
         end
+        self:Refresh()
     end)
 
-    self.frame, self.title, self.steps, self.moveHint = frame, title, steps, moveHint
+    self.frame, self.header, self.title, self.steps, self.moveHint = frame, header, title, steps, moveHint
     self.background2505 = background
     self.layoutGuide = layoutGuide
+end
+
+-- Keep the HUD only as tall as the rendered title/objectives require. This uses
+-- the label's real wrapped-text height, so 3+ objectives and long objective text
+-- expand the card automatically, then shrink again when the quest gets shorter.
+function Q:AutoFitHeight()
+    if not self.frame or not self.title or not self.steps or self.layoutMode then return end
+
+    local headerHeight = 20
+    if self.header then self.header:SetHeight(headerHeight) end
+
+    local titleHeight = 36
+    if type(self.title.GetTextHeight) == "function" then
+        local ok, value = pcall(self.title.GetTextHeight, self.title)
+        if ok and tonumber(value) then titleHeight = math.max(36, math.ceil(tonumber(value)) + 2) end
+    end
+    self.title:SetHeight(titleHeight)
+
+    local stepsHeight = 24
+    if type(self.steps.GetTextHeight) == "function" then
+        local ok, value = pcall(self.steps.GetTextHeight, self.steps)
+        if ok and tonumber(value) then stepsHeight = math.max(24, math.ceil(tonumber(value))) end
+    else
+        local text = tostring(self.steps:GetText() or "")
+        local lines = 1
+        for _ in string.gmatch(text, "\n") do lines = lines + 1 end
+        stepsHeight = math.max(24, lines * 22)
+    end
+    self.steps:SetHeight(stepsHeight)
+
+    local desiredHeight = math.max(MIN_HEIGHT, math.min(MAX_HEIGHT, 10 + headerHeight + 2 + titleHeight + 8 + stepsHeight + 10))
+    self.frame:SetHeight(desiredHeight)
+    if EPC.saved then EPC.saved.activeQuestHeight = math.floor(desiredHeight + 0.5) end
 end
 
 function Q:Refresh()
@@ -420,20 +594,54 @@ function Q:Refresh()
     if not show then return end
 
     local index = self:GetActiveQuestIndex()
+    if not self.layoutMode and not index then
+        -- No accepted/tracked quest means no gameplay quest overlay. Keep the
+        -- saved position/size/settings intact so it returns when a quest is active.
+        self.frame:SetHidden(true)
+        return
+    end
     if self.layoutMode and not index then
-        self.title:SetText("Quest Overlay Preview")
-        self.steps:SetText("• Current objective\n• Next quest step")
+        if self.header then self.header:SetText("ACTIVE QUEST") end
+        self.title:SetText(self:WrapTitleText("Quest Overlay Preview"))
+        self.steps:SetText(self:WrapObjectiveText("• Current objective\n• Next quest step"))
+        self:AutoFitHeight()
         return
     end
     if not index then
-        self.title:SetText("No Focused Quest")
-        self.steps:SetText("Track or focus a quest to see its next steps.")
+        local source = self.GetQuestTrackingSource2513 and self:GetQuestTrackingSource2513() or "ACTIVE_QUEST"
+        if self.header then self.header:SetText(self:GetTrackedQuestHeader()) end
+        local pendingMain = source == "MAIN_QUEST" and EPC.saved.mainQuestDiscoveryTarget or nil
+        if pendingMain and trim(pendingMain.name) ~= "" then
+            -- Keep the unaccepted Main Quest HUD intentionally minimal. Detailed
+            -- prerequisites and route notes stay in Quest Finder.
+            self.title:SetText(self:WrapTitleText(tostring(pendingMain.name or "Main Story")))
+            local zone = tostring(pendingMain.zone or "Main Story")
+            local giver = trim(pendingMain.questGiver or pendingMain.starter or "")
+            local acceptAt = trim(pendingMain.acceptAt or "")
+            local lines = {
+                "• NEXT: ACCEPT QUEST",
+            }
+            if giver ~= "" then lines[#lines+1] = "• FROM: " .. giver end
+            if acceptAt ~= "" then
+                lines[#lines+1] = "• AT: " .. acceptAt
+            else
+                lines[#lines+1] = "• IN: " .. zone
+            end
+            lines[#lines+1] = "• TRAVEL: Nearest wayshrine"
+            self.steps:SetText(self:WrapObjectiveText(table.concat(lines, "\n")))
+        else
+            self.title:SetText(self:WrapTitleText("No Focused Quest"))
+            self.steps:SetText(self:WrapObjectiveText("Track or focus a quest to see its next steps."))
+        end
+        self:AutoFitHeight()
         return
     end
     local name = trim(safe(GetJournalQuestInfo, "", index))
     if name == "" then name = "Active Quest" end
-    self.title:SetText(name)
-    self.steps:SetText(normalizeProgressCounters(self:BuildObjectiveText(index)))
+    if self.header then self.header:SetText(self:GetTrackedQuestHeader()) end
+    self.title:SetText(self:WrapTitleText(name))
+    self.steps:SetText(self:WrapObjectiveText(normalizeProgressCounters(self:BuildObjectiveText(index))))
+    self:AutoFitHeight()
 end
 
 function Q:SetLayoutMode(active)
@@ -482,7 +690,13 @@ function Q:Initialize()
         local eventId = events[i]
         if eventId and not seen[eventId] then
             seen[eventId] = true
-            EVENT_MANAGER:RegisterForEvent(prefix .. "_" .. tostring(eventId), eventId, function() self:Refresh() end)
+            EVENT_MANAGER:RegisterForEvent(prefix .. "_" .. tostring(eventId), eventId, function(eventCode, ...)
+                if self.HandleQuestLifecycle2744 then
+                    self:HandleQuestLifecycle2744(eventCode, ...)
+                else
+                    self:Refresh()
+                end
+            end)
         end
     end
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 500, function() self:Refresh() end)
@@ -1164,14 +1378,45 @@ end
 -- Main Story quests no longer override the Active Quest source. The Suite now
 -- exposes MAIN_QUEST as a third, explicit tracker/arrow source.
 -- ============================================================================
+local EAS_MAIN_PROGRESSION_NAMES_2745 = {
+    ["soul shriven in coldharbour"] = true,
+    ["the harborage"] = true,
+    ["daughter of giants"] = true,
+    ["chasing shadows"] = true,
+    ["castle of the worm"] = true,
+    ["the tharn speaks"] = true,
+    ["halls of torment"] = true,
+    ["valley of blades"] = true,
+    ["shadow of sancre tor"] = true,
+    ["council of the five companions"] = true,
+    ["messages across tamriel"] = true,
+    ["the weight of three crowns"] = true,
+    ["the hollow city"] = true,
+    ["the army of meridia"] = true,
+    ["into the woods"] = true,
+    ["light from the darkness"] = true,
+    ["vanus unleashed"] = true,
+    ["breaking the shackle"] = true,
+    ["crossing the chasm"] = true,
+    ["the harvest heart"] = true,
+    ["the citadel must fall"] = true,
+    ["the final assault"] = true,
+    ["god of schemes"] = true,
+}
+
+local function easIsKnownMainProgressionName2745(name)
+    name = easLower2512(trim(name))
+    return name ~= "" and EAS_MAIN_PROGRESSION_NAMES_2745[name] == true
+end
+
 local function easIsMainQuest2514(questIndex)
-    if QUEST_TYPE_MAIN_STORY == nil or not questIndex then return false end
-    local _, _, _, _, _, _, _, _, _, questType = safe(GetJournalQuestInfo, "", questIndex)
-    return questType == QUEST_TYPE_MAIN_STORY
+    if not questIndex then return false end
+    local name, _, _, _, _, _, _, _, _, questType = safe(GetJournalQuestInfo, "", questIndex)
+    if QUEST_TYPE_MAIN_STORY ~= nil and questType == QUEST_TYPE_MAIN_STORY then return true end
+    return easIsKnownMainProgressionName2745(name)
 end
 
 function Q:ResolveMainQuest2514()
-    if QUEST_TYPE_MAIN_STORY == nil then return nil end
     local max = tonumber(MAX_JOURNAL_QUESTS) or 25
     local firstMain, trackedMain = nil, nil
 
@@ -1180,7 +1425,8 @@ function Q:ResolveMainQuest2514()
         if valid then
             local name, _, _, _, _, completed, tracked, _, _, questType = safe(GetJournalQuestInfo, "", index)
             name = trim(name)
-            if name ~= "" and completed ~= true and questType == QUEST_TYPE_MAIN_STORY then
+            local mainProgression = (QUEST_TYPE_MAIN_STORY ~= nil and questType == QUEST_TYPE_MAIN_STORY) or easIsKnownMainProgressionName2745(name)
+            if name ~= "" and completed ~= true and mainProgression then
                 if not firstMain then firstMain = index end
                 if TRACK_TYPE_QUEST ~= nil and type(GetTrackedIsAssisted) == "function" then
                     local assisted = safe(GetTrackedIsAssisted, false, TRACK_TYPE_QUEST, index, 0) == true
@@ -1834,9 +2080,36 @@ function Q:ResolveQuestSource2520(source)
         return nil
     end
 
-    -- Main Quest may discover the currently accepted Main Story quest, but it
-    -- is still constrained to QUEST_TYPE_MAIN_STORY and can never borrow the
-    -- Active Quest or Golden Pursuits selection.
+    -- A quest explicitly selected from Quest Finder's MAIN QUEST section is
+    -- authoritative for this source. Some Main Story journal entries do not
+    -- consistently report QUEST_TYPE_MAIN_STORY, so do not discard the user's
+    -- explicit selection solely because of that metadata.
+    if EPC.saved.mainQuestFinderSelected == true then
+        local wantedIndex = tonumber(EPC.saved.mainHudQuestIndex) or 0
+        local wantedId = tonumber(EPC.saved.mainHudQuestId) or 0
+        local wantedName = trim(EPC.saved.mainHudQuestName)
+        local max = tonumber(MAX_JOURNAL_QUESTS) or 25
+        local function matches(index)
+            local valid = type(IsValidQuestIndex) ~= "function" or safe(IsValidQuestIndex, false, index) == true
+            if not valid then return false end
+            local name = easQuestName2512(index)
+            if name == "" then return false end
+            local id = easQuestId2512(index)
+            if wantedId > 0 and id == wantedId then return true end
+            return wantedName ~= "" and easLower2512(name) == easLower2512(wantedName)
+        end
+        if wantedIndex > 0 and matches(wantedIndex) then return wantedIndex end
+        for index = 1, max do
+            if matches(index) then
+                EPC.saved.mainHudQuestIndex = index
+                EPC.saved.mainHudQuestId = easQuestId2512(index)
+                EPC.saved.mainHudQuestName = easQuestName2512(index)
+                return index
+            end
+        end
+    end
+
+    -- Otherwise discover ESO's currently accepted Main Story quest normally.
     local remembered = easResolveRememberedQuest2516("MAIN_QUEST")
     if remembered and easIsMainQuest2514(remembered) then return remembered end
 
@@ -2420,4 +2693,193 @@ function Q:Initialize()
 
     easHideRemovedQuestArrow2522(self)
     self:RefreshNativeQuestTracking2522(true)
+end
+
+-- ============================================================================
+-- v0.27.44 - live Main Quest acceptance/progression reconciliation
+-- A Quest Finder NEXT selection may exist before ESO has a journal entry. When
+-- ESO adds that quest, promote the exact journal quest immediately and keep the
+-- overlay bound to it through objective/advance/removal events.
+-- ============================================================================
+local function easNormalizeQuestTitle2744(value)
+    local s = trim(value)
+    if s == "" then return "" end
+    if type(zo_strformat) == "function" then
+        local ok, formatted = pcall(zo_strformat, "<<z:1>>", s)
+        if ok and formatted then s = tostring(formatted) end
+    end
+    s = s:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    s = s:gsub("%s+", " ")
+    return easLower2512(trim(s))
+end
+
+function Q:PromotePendingMainQuest2744(preferredIndex, preferredName)
+    if not EPC.saved then return nil end
+    if self:GetQuestTrackingSource2513() ~= "MAIN_QUEST" then return nil end
+    local pending = EPC.saved.mainQuestDiscoveryTarget
+    if type(pending) ~= "table" then return nil end
+
+    local wantedId = tonumber(pending.questId) or 0
+    local wantedName = easNormalizeQuestTitle2744(pending.name)
+    local preferred = tonumber(preferredIndex) or 0
+
+    local function matches(index, suppliedName)
+        if not index or index <= 0 then return false end
+        if type(IsValidQuestIndex) == "function" and safe(IsValidQuestIndex, false, index) ~= true then return false end
+        local id = easQuestId2512(index)
+        local name = trim(suppliedName)
+        if name == "" then name = easQuestName2512(index) end
+        if wantedId > 0 and id > 0 and id == wantedId then return true end
+        return wantedName ~= "" and easNormalizeQuestTitle2744(name) == wantedName
+    end
+
+    local found = nil
+    if preferred > 0 and matches(preferred, preferredName) then
+        found = preferred
+    else
+        local max = tonumber(MAX_JOURNAL_QUESTS) or 25
+        for index = 1, max do
+            if matches(index, nil) then found = index break end
+        end
+    end
+    if not found then return nil end
+
+    local id = easQuestId2512(found)
+    local name = easQuestName2512(found)
+    EPC.saved.mainQuestFinderSelected = true
+    EPC.saved.mainHudQuestIndex = found
+    EPC.saved.mainHudQuestId = id
+    EPC.saved.mainHudQuestName = name
+    EPC.saved.selectedHudQuestIndex = found
+    EPC.saved.selectedHudQuestId = id
+    EPC.saved.selectedHudQuestName = name
+    EPC.saved.selectedHudQuestSource = "MAIN_QUEST"
+    EPC.saved.mainQuestDiscoveryTarget = nil
+
+    if EPC.Travel and EPC.Travel.InvalidateQuestPositionCache then
+        EPC.Travel:InvalidateQuestPositionCache()
+    end
+    if self.ApplySelectedSourceToESO2520 then self:ApplySelectedSourceToESO2520() end
+    if self.RefreshNativeQuestTracking2522 then self:RefreshNativeQuestTracking2522(true) end
+    return found
+end
+
+function Q:ReconcileMainQuest2744(preferredIndex, preferredName)
+    if not EPC.saved or self:GetQuestTrackingSource2513() ~= "MAIN_QUEST" then return end
+
+    local promoted = self:PromotePendingMainQuest2744(preferredIndex, preferredName)
+    if not promoted then
+        local current = self.ResolveQuestSource2520 and self:ResolveQuestSource2520("MAIN_QUEST") or nil
+        if current then
+            local id = easQuestId2512(current)
+            local name = easQuestName2512(current)
+            EPC.saved.mainHudQuestIndex = current
+            EPC.saved.mainHudQuestId = id
+            EPC.saved.mainHudQuestName = name
+            EPC.saved.selectedHudQuestIndex = current
+            EPC.saved.selectedHudQuestId = id
+            EPC.saved.selectedHudQuestName = name
+            EPC.saved.selectedHudQuestSource = "MAIN_QUEST"
+            EPC.saved.mainQuestDiscoveryTarget = nil
+        end
+    end
+
+    if EPC.Travel and EPC.Travel.InvalidateQuestPositionCache then
+        EPC.Travel:InvalidateQuestPositionCache()
+    end
+    self:Refresh()
+    if EPC.MiniMap and EPC.MiniMap.RefreshQuestPin then EPC.MiniMap:RefreshQuestPin() end
+end
+
+function Q:HandleQuestLifecycle2744(eventCode, ...)
+    local args = {...}
+    local preferredIndex, preferredName = nil, nil
+    if eventCode == EVENT_QUEST_ADDED then
+        preferredIndex = tonumber(args[1])
+        preferredName = args[2]
+    end
+
+    self:ReconcileMainQuest2744(preferredIndex, preferredName)
+
+    -- ESO can fire the lifecycle event slightly before journal conditions and
+    -- assisted tracking are finalized. Reconcile again after the journal settles.
+    if type(zo_callLater) == "function" then
+        zo_callLater(function() self:ReconcileMainQuest2744(preferredIndex, preferredName) end, 120)
+        zo_callLater(function() self:ReconcileMainQuest2744(nil, nil) end, 450)
+    end
+end
+
+-- ============================================================================
+-- v0.25.81 - live Main Quest source refresh
+-- Main Story quests use their own tracker source. Re-resolve that source on
+-- every HUD refresh so a newly advanced/replaced Main Quest cannot keep stale
+-- journal index/id data or a cached travel destination from the previous step.
+-- ============================================================================
+local function easResolvePendingMainQuest2739()
+    if not EPC.saved then return nil end
+    local pending = EPC.saved.mainQuestDiscoveryTarget
+    if type(pending) ~= "table" then return nil end
+    local wantedId = tonumber(pending.questId) or 0
+    local wantedName = trim(pending.name)
+    local max = tonumber(MAX_JOURNAL_QUESTS) or 25
+    for index = 1, max do
+        local valid = type(IsValidQuestIndex) ~= "function" or safe(IsValidQuestIndex, false, index) == true
+        if valid then
+            local name = easQuestName2512(index)
+            local id = easQuestId2512(index)
+            if (wantedId > 0 and id == wantedId) or (wantedName ~= "" and easLower2512(name) == easLower2512(wantedName)) then
+                EPC.saved.mainQuestFinderSelected = true
+                EPC.saved.mainHudQuestIndex = index
+                EPC.saved.mainHudQuestId = id
+                EPC.saved.mainHudQuestName = name
+                EPC.saved.mainQuestDiscoveryTarget = nil
+                return index
+            end
+        end
+    end
+    return nil
+end
+
+local easLegacyRefresh_2581 = Q.Refresh
+function Q:Refresh()
+    if EPC.saved and self.GetQuestTrackingSource2513 and self:GetQuestTrackingSource2513() == "MAIN_QUEST" then
+        local previousIndex = tonumber(EPC.saved.selectedHudQuestIndex) or 0
+        local previousId = tonumber(EPC.saved.selectedHudQuestId) or 0
+
+        -- If the user selected a NEXT Main Quest before accepting it, promote
+        -- that exact quest as soon as ESO adds it to the journal.
+        easResolvePendingMainQuest2739()
+
+        -- Respect the Quest Finder's explicit Main Quest selection first.
+        -- The old refresh used ResolveMainQuest2514 directly, which could
+        -- replace the user's selection with a different ESO Main Story entry.
+        local currentIndex = self.ResolveQuestSource2520 and self:ResolveQuestSource2520("MAIN_QUEST") or nil
+        if not currentIndex and self.ResolveMainQuest2514 then
+            currentIndex = self:ResolveMainQuest2514()
+        end
+        local currentId = currentIndex and easQuestId2512(currentIndex) or 0
+        local currentName = currentIndex and easQuestName2512(currentIndex) or ""
+
+        EPC.saved.selectedHudQuestIndex = currentIndex
+        EPC.saved.selectedHudQuestId = currentId
+        EPC.saved.selectedHudQuestName = currentName
+        EPC.saved.selectedHudQuestSource = "MAIN_QUEST"
+
+        if currentIndex then
+            EPC.saved.mainHudQuestIndex = currentIndex
+            EPC.saved.mainHudQuestId = currentId
+            EPC.saved.mainHudQuestName = currentName
+            EPC.saved.mainQuestDiscoveryTarget = nil
+        end
+
+        if previousIndex ~= (tonumber(currentIndex) or 0) or previousId ~= currentId then
+            if EPC.Travel and EPC.Travel.InvalidateQuestPositionCache then
+                EPC.Travel:InvalidateQuestPositionCache()
+            end
+            if self.ApplySelectedSourceToESO2520 then
+                self:ApplySelectedSourceToESO2520()
+            end
+        end
+    end
+    return easLegacyRefresh_2581(self)
 end

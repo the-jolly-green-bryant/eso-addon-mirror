@@ -8,8 +8,8 @@ local EPC = ESOProgressionCoach
 EPC.UtilitySuite = EPC.UtilitySuite or {}
 local U = EPC.UtilitySuite
 
-U.validModes = { OVERVIEW=true, INVENTORY=true, RESEARCH=true, COLLECTIONS=true, DAILIES=true }
-U.modeLabels = { OVERVIEW="OVERVIEW", INVENTORY="INVENTORY", RESEARCH="RESEARCH", COLLECTIONS="COLLECTIONS", DAILIES="DAILIES" }
+U.validModes = { OVERVIEW=true, INVENTORY=true, RESEARCH=true, COLLECTIONS=true, DAILIES=true, RETICLE=true, SELL=true }
+U.modeLabels = { OVERVIEW="OVERVIEW", INVENTORY="INVENTORY", RESEARCH="RESEARCH", COLLECTIONS="COLLECTIONS", DAILIES="DAILIES", RETICLE="RETICLE", SELL="SELL" }
 U.setIdCache = U.setIdCache or {}
 U.lastInventoryScanMs = 0
 U.inventoryCache = nil
@@ -707,6 +707,89 @@ function U:BuildDailiesView(snapshot)
     }
 end
 
+
+function U:BuildReticleView(snapshot)
+    local enabled = EPC.saved and EPC.saved.customReticleEnabled == true
+    local style = tostring(EPC.saved and EPC.saved.customReticleStyle or "RUNE")
+    local color = tostring(EPC.saved and EPC.saved.customReticleColor or "GOLD")
+    local styleNames = { DEFAULT="ESO Default", RUNE="Tamriel Rune", BRACKETS="Corner Brackets", COMPASS="Compass Cross", MINIMAL="Minimal Cross", DAEDRIC="Daedric Diamond", AYLEID="Ayleid Star", DRAGON="Dragon Eye" }
+    local colorNames = { GOLD="ESO Gold", IVORY="Ivory", CRIMSON="Crimson", BLUE="Arcane Blue", RGB="RGB Rainbow" }
+    local size = tonumber(EPC.saved and EPC.saved.customReticleSize) or 100
+    local opacity = math.floor((tonumber(EPC.saved and EPC.saved.customReticleOpacity) or 0.95) * 100 + 0.5)
+    return {
+        header="CUSTOM ESO RETICLE",
+        title=enabled and "Custom reticle enabled" or "Custom reticle disabled",
+        description="Change the Suite-owned crosshair directly from the Tamriel Codex. ESO interaction prompts and target text remain intact.",
+        stats={
+            {label="STATUS", value=enabled and "ON" or "OFF"},
+            {label="STYLE", value=styleNames[style] or style},
+            {label="COLOR", value=colorNames[color] or color},
+            {label="SIZE", value=tostring(size) .. "%"},
+            {label="OPACITY", value=tostring(opacity) .. "%"},
+        },
+        rows={
+            "ON / OFF toggles the custom reticle.",
+            "STYLE cycles through ESO Default and the custom ESO-style designs.",
+            "COLOR cycles through the available reticle colors, including RGB Rainbow.",
+            "SIZE - / SIZE + decrease or increase reticle size.",
+            "OPACITY - / OPACITY + decrease or increase reticle opacity.",
+        },
+        hint="You can also change these under Settings > Addons > ESO Adventurer Suite > Custom ESO Reticle.",
+    }
+end
+
+function U:ToggleReticle()
+    if not EPC.saved then return end
+    EPC.saved.customReticleEnabled = not (EPC.saved.customReticleEnabled == true)
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
+function U:CycleReticleStyle()
+    if not EPC.saved then return end
+    local order={"DEFAULT","RUNE","BRACKETS","COMPASS","MINIMAL","DAEDRIC","AYLEID","DRAGON"}
+    local current=tostring(EPC.saved.customReticleStyle or "RUNE")
+    local idx=1
+    for i,v in ipairs(order) do if v==current then idx=i break end end
+    EPC.saved.customReticleStyle=order[(idx % #order)+1]
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
+function U:CycleReticleColor()
+    if not EPC.saved then return end
+    local order={"GOLD","IVORY","CRIMSON","BLUE","RGB"}
+    local current=tostring(EPC.saved.customReticleColor or "GOLD")
+    local idx=1
+    for i,v in ipairs(order) do if v==current then idx=i break end end
+    EPC.saved.customReticleColor=order[(idx % #order)+1]
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
+function U:DecreaseReticleSize()
+    if not EPC.saved then return end
+    EPC.saved.customReticleSize=math.max(60,(tonumber(EPC.saved.customReticleSize) or 100)-10)
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
+function U:IncreaseReticleSize()
+    if not EPC.saved then return end
+    EPC.saved.customReticleSize=math.min(180,(tonumber(EPC.saved.customReticleSize) or 100)+10)
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
+function U:DecreaseReticleOpacity()
+    if not EPC.saved then return end
+    local pct=math.floor((tonumber(EPC.saved.customReticleOpacity) or 0.95)*100+0.5)-10
+    EPC.saved.customReticleOpacity=math.max(25,pct)/100
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
+function U:IncreaseReticleOpacity()
+    if not EPC.saved then return end
+    local pct=math.floor((tonumber(EPC.saved.customReticleOpacity) or 0.95)*100+0.5)+10
+    EPC.saved.customReticleOpacity=math.min(100,pct)/100
+    if EPC.Reticle then EPC.Reticle:Refresh(true) end
+end
+
 function U:BuildModeView(mode, snapshot, force)
     mode = string.upper(tostring(mode or self:GetMode()))
     if not self.validModes[mode] then mode = "OVERVIEW" end
@@ -721,6 +804,8 @@ function U:BuildModeView(mode, snapshot, force)
     elseif mode=="RESEARCH" then view=self:BuildResearchView(snapshot)
     elseif mode=="COLLECTIONS" then view=self:BuildCollectionsView(snapshot)
     elseif mode=="DAILIES" then view=self:BuildDailiesView(snapshot)
+    elseif mode=="RETICLE" then view=self:BuildReticleView(snapshot)
+    elseif mode=="SELL" and EPC.VendorSell and EPC.VendorSell.BuildView then view=EPC.VendorSell:BuildView()
     else view=self:BuildOverview(snapshot) end
     view.mode=mode
     view.modeLabel=self.modeLabels[mode] or mode
@@ -735,7 +820,7 @@ end
 
 function U:Prewarm(snapshot)
     snapshot = snapshot or EPC.lastSnapshot or {}
-    local modes = {"INVENTORY", "RESEARCH", "COLLECTIONS", "DAILIES", "OVERVIEW"}
+    local modes = {"INVENTORY", "RESEARCH", "COLLECTIONS", "DAILIES", "RETICLE", "SELL", "OVERVIEW"}
     for i=1,#modes do
         local mode = modes[i]
         local function warm()

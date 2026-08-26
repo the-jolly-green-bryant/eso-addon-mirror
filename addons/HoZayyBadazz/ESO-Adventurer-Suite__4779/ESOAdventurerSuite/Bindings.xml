@@ -13,7 +13,13 @@
             <Action name="ESO_PROGRESSION_COACH_INTERACT">
                 <Down>ESOProgressionCoach_Interact()</Down>
             </Action>
-        </Category>
+            <Action name="ESO_ADVENTURER_SUITE_GF_NEXT_CATEGORY">
+                <Down>ESOAdventurerSuite_GroupFinderNextCategory()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_GF_TOGGLE_DIFFICULTY">
+                <Down>ESOAdventurerSuite_GroupFinderToggleDifficulty()</Down>
+            </Action>
+</Category>
     </Layer>
 
     <!--
@@ -28,4 +34,17 @@
             </Action>
         </Category>
     </Layer>
+
+    <!--
+      Saved Loadouts also owns ESO UI mode. Keep listening for the user's
+      normal Suite toggle key while this detached workspace is open.
+    -->
+    <Layer name="ESOAdventurerSuiteLoadoutLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_PROGRESSION_COACH_TOGGLE_LOADOUTS" hideAction="true" inheritsBindFrom="ESO_PROGRESSION_COACH_TOGGLE">
+                <Down>ESOProgressionCoach_Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
 </Bindings>

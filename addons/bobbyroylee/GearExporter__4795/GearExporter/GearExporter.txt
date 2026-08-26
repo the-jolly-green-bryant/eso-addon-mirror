@@ -1,0 +1,9 @@
+## Title: Gear Exporter
+## Author: Bobby
+## Version: 1.0.0
+## AddOnVersion: 1
+## APIVersion: 101049 101048 101047 101046 101045 101044 101043
+## Description: Scans your equipped gear, inventory, bank, and ESO Plus bank for weapons/armor/jewelry and dumps a readable, copy-pasteable text report (item, slot, trait, quality, set name, and the exact set bonus text from the game) via /gearexport. Built for feeding straight into an AI for build advice.
+## SavedVariables: GearExporterSavedVars
+
+GearExporter.lua

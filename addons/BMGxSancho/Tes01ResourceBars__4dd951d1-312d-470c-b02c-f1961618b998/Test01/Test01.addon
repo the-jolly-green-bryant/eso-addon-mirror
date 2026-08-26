@@ -1,0 +1,14 @@
+; Standalone resource-bar validation harness extracted from Better Buffs v0.3.16.
+## Title: Test01 Resource Bars
+## Description: Standalone validation build for the Better Buffs custom Health, Magicka, Stamina, and Damage Shield resource bars.
+## Author: BMGxSancho
+## Version: 0.0.06
+## AddOnVersion: 6
+## APIVersion: 101050
+## SavedVariables: Test01ResourceBarsSavedVariables
+## ConsoleDependsOn: LibHarvensAddonSettings>=20007
+
+Test01.lua
+Core/Constants.lua
+UI/ResourceBars.lua
+Settings/Settings.lua

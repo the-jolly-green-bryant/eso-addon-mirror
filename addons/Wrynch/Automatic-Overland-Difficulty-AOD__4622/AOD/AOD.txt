@@ -1,8 +1,8 @@
 ## Title: Automatic Overland Difficulty
-## Version: 1.3.0
+## Version: 1.4.0
 ## APIVersion: 101050
 ## Author: |cFFFF00Wrynch|r
-## Description: Automatically requests Challenge Difficulty changes for configured zone situations.
+## Description: Automatically requests Challenge Difficulty changes from custom rules or Leveling Journey zone levels.
 ## DependsOn: LibAddonMenu-2.0>=43 LibGPS>=73
 ## SavedVariables: AODifficulty_SavedVariables
 

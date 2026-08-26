@@ -13,6 +13,7 @@ local function OnPlayerActivated(eventCode)
 			["@Sheogar92"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/Sheogar.dds",
 			["@TJIEHOCOC"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/raskumar.dds",
 			["@CKEJIET"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/CKEJIET.dds",
+			["@BO3HECJIACb"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/Mike.dds",
 			
         }
         

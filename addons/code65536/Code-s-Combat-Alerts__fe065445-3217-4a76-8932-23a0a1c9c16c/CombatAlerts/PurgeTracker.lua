@@ -54,8 +54,7 @@ function PT.ToggleListen( )
 	if (not PT.listening and next(PT.registrants)) then
 		PT.listening = true
 		ZO_ClearTable(PT.units)
-		EVENT_MANAGER:RegisterForEvent(PT.name, EVENT_EFFECT_CHANGED, PT.OnEffectChanged)
-		EVENT_MANAGER:AddFilterForEvent(PT.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+		LCA.RegisterForFilteredEvent(PT.name, EVENT_EFFECT_CHANGED, PT.OnEffectChanged, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 	elseif (PT.listening and not next(PT.registrants)) then
 		PT.listening = false
 		EVENT_MANAGER:UnregisterForEvent(PT.name, EVENT_EFFECT_CHANGED)

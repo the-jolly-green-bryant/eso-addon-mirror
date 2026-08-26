@@ -164,7 +164,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AlignGrid](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/AlignGrid__1292) | Crabby654 | PC / Mac | 1.4.4 |
 | [Alik'r Dolmen Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haipahaipa/Alik-r-Dolmen-Helper__2399) | haipahaipa | PC / Mac | v0.1.0 |
 | [Alkosh Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Alkosh-Timer__e1b107d5-082e-4ed1-9cfc-81b9a42e0528) | Eldibabalo | Console | — |
-| [All The Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/All-The-Collectibles__4638) | DakJaniels | PC / Mac | 2.0 |
+| [All The Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/All-The-Collectibles__4638) | DakJaniels | PC / Mac | 2.1 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/AllAP__2086) | Ace'r | PC / Mac | 1.3.3 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace.r/AllAP__c0c82f16-9b5b-4707-bf96-be0f3c78a77a) | Ace.r | Console | — |
 | [AllCraft](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MethosFrost/AllCraft__2488) | MethosFrost | PC / Mac | 0.935Alpha |
@@ -346,7 +346,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AutoLootKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goemaat/AutoLootKey__1125) | Goemaat | PC / Mac | 0.1 |
 | [AutoLootToggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/AutoLootToggler__4087) | Konten | PC / Mac | 1.0 |
 | [Automate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Automate__2852) | peniku8 | PC / Mac | 1.2.22 |
-| [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.3.0 |
+| [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.4.0 |
 | [Automatically Accept Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/Automatically-Accept-Quests__1994) | marlonbrando | PC / Mac | 1.28 |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/AutoReadyCheck__be99bdeb-a9e3-4b63-abe8-9aa886190e8e) | L_cky | Console | — |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirWoach/AutoReadyCheck__3688) | SirWoach | PC / Mac | 2.4.1 |

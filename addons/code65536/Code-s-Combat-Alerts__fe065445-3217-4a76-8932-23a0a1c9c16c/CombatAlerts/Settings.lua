@@ -184,12 +184,18 @@ function CA2.BuildModulesSettings( )
 	}
 
 	local zoneNames = { }
+	local zoneNamesSeen = { }
 	for _, moduleId in ipairs(LCA.GetSortedKeys(CA2.registeredModules)) do
 		local module = CA2.registeredModules[moduleId]
 
 		ZO_ClearTable(zoneNames)
+		ZO_ClearTable(zoneNamesSeen)
 		for _, zoneId in ipairs(module.ZONES) do
-			table.insert(zoneNames, LCA.GetZoneName(zoneId, true))
+			local zoneName = LCA.GetZoneName(zoneId)
+			if (zoneName ~= "" and not zoneNamesSeen[zoneName]) then
+				zoneNamesSeen[zoneName] = true
+				table.insert(zoneNames, zoneName)
+			end
 		end
 
 		local settingsControls = module:GetSettingsControls()

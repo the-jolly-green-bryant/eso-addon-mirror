@@ -22,18 +22,18 @@
     "ESOAdventurerSuite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4779/",
-  "fingerprint": "226c87c2f27e240b79e2ad65bd27f67fbb4c084a4f6401b09de209a916435479",
+  "fingerprint": "ce398104daff78f994409697a67f55e56b100256aa4a9a64754f2c252f4fb1ed",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw17072.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17071.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17070.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17069.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17068.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17067.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17066.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17065.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17064.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17063.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17114.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17115.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17116.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17118.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17119.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17120.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17121.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17113.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17109.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17117.png"
   ],
   "platform": "pc",
   "published": true,
@@ -41,11 +41,11 @@
   "source_id": "4779",
   "source_url": "https://www.esoui.com/downloads/info4779-ESOAdventurerSuite.html",
   "stats": {
-    "downloads": 99,
+    "downloads": 152,
     "favorites": 3,
-    "monthly_downloads": 96
+    "monthly_downloads": 144
   },
   "title": "ESO Adventurer Suite",
-  "updated_at": 1787624825000,
-  "version": "0.27.59"
+  "updated_at": 1787708930000,
+  "version": "0.28.50"
 }

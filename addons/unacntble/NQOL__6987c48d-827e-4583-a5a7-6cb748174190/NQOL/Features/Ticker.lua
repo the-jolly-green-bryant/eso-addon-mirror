@@ -33,6 +33,18 @@ local ROW_CHOICES = { ROW_OFF, ROW_1, ROW_2, ROW_3 }
 local ROW_CHOICE_NAMES = NQOL.Lexicon.LocalizedList({
     "features.ticker.row_hidden", "features.ticker.row_one", "features.ticker.row_two", "features.ticker.row_three",
 })
+local ALIGNMENT_LEFT = "left"
+local ALIGNMENT_RIGHT = "right"
+local ALIGNMENT_CENTER = "center"
+local ALIGNMENT_CHOICES = { ALIGNMENT_LEFT, ALIGNMENT_RIGHT, ALIGNMENT_CENTER }
+local ALIGNMENT_CHOICE_NAMES = NQOL.Lexicon.LocalizedList({
+    "features.ticker.alignment_left", "features.ticker.alignment_right", "features.ticker.alignment_center",
+})
+local VALID_ALIGNMENTS = {
+    [ALIGNMENT_LEFT] = true,
+    [ALIGNMENT_RIGHT] = true,
+    [ALIGNMENT_CENTER] = true,
+}
 local DEFAULT_FONT_SIZE = 34
 local FONT_SIZE_MIN = 16
 local FONT_SIZE_MAX = 48
@@ -70,6 +82,7 @@ local defaults = {
         verticalPosition = 0,
         showInSettings = true,
         coloredIcons = true,
+        alignment = ALIGNMENT_CENTER,
         font = NQOL.Util.GetDefaultFont(),
         fontSize = DEFAULT_FONT_SIZE,
         backgroundOpacity = DEFAULT_BACKGROUND_OPACITY,
@@ -871,6 +884,7 @@ local function GetSettings()
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "verticalPosition", 0, 100)
     NQOL.Settings.Boolean(settings, defaultSettings, "showInSettings")
     NQOL.Settings.Boolean(settings, defaultSettings, "coloredIcons")
+    NQOL.Settings.Choice(settings, defaultSettings, "alignment", VALID_ALIGNMENTS)
     if not NQOL.Util.IsFontChoice(settings.font) then
         settings.font = defaultSettings.font
     end
@@ -1390,10 +1404,15 @@ Refresh = function()
             local row = rowControls[rowIndex]
             local controls = tickerScratch.controls[rowIndex]
 
-            local left = -totalWidth / 2
+            local left = TICKER_HORIZONTAL_PADDING
+            if settings.alignment == ALIGNMENT_RIGHT then
+                left = row:GetWidth() - totalWidth - TICKER_HORIZONTAL_PADDING
+            elseif settings.alignment == ALIGNMENT_CENTER then
+                left = (row:GetWidth() - totalWidth) / 2
+            end
             for _, control in ipairs(controls) do
                 control:ClearAnchors()
-                control:SetAnchor(LEFT, row, CENTER, left, 0)
+                control:SetAnchor(LEFT, row, LEFT, left, 0)
                 control:SetHidden(false)
                 left = left + control:GetWidth() + ENTRY_GAP
             end
@@ -1489,6 +1508,14 @@ function Ticker.GetRowChoiceNames()
     return ROW_CHOICE_NAMES
 end
 
+function Ticker.GetAlignmentChoices()
+    return ALIGNMENT_CHOICES
+end
+
+function Ticker.GetAlignmentChoiceNames()
+    return ALIGNMENT_CHOICE_NAMES
+end
+
 function Ticker.GetFontChoices()
     return NQOL.Util.GetFontChoices()
 end
@@ -1560,6 +1587,15 @@ end
 function Ticker.SetVerticalPosition(value)
     GetSettings().verticalPosition = Clamp(value, 0, 100)
     ApplyPosition()
+end
+
+function Ticker.GetAlignment()
+    return GetSettings().alignment
+end
+
+function Ticker.SetAlignment(value)
+    GetSettings().alignment = VALID_ALIGNMENTS[value] and value or ALIGNMENT_CENTER
+    Refresh()
 end
 
 function Ticker.GetFont()
@@ -1684,6 +1720,14 @@ end
 
 function Ticker.GetBackgroundOpacityTooltip()
     return NQOL.L("features.ticker.background_opacity_tooltip")
+end
+
+function Ticker.GetAlignmentLabel()
+    return NQOL.L("features.ticker.alignment_label")
+end
+
+function Ticker.GetAlignmentTooltip()
+    return NQOL.L("features.ticker.alignment_tooltip")
 end
 
 function Ticker.GetFontSizeMin()

@@ -11,12 +11,6 @@ Module.ZONES = {
 	1390, -- Scrivener's Hall
 }
 
-Module.STRINGS = {
-	-- Custom
-	you = { default = "You" },
-	boss = { default = "Boss" },
-}
-
 Module.DATA = {
 	banners = {
 		[182334] = 0xFF6600FF, -- Rain of Fire
@@ -32,12 +26,12 @@ Module.DATA = {
 	verge = {
 		boss = 177646,
 		shade = 177942,
-		name = LCA.GetAbilityName(177660) .. " (<<1>>)",
+		nameId = 177660,
 	},
 	darklight = {
 		start = 177112,
 		star = 177228,
-		name = LCA.GetAbilityName(177235),
+		nameId = 177235,
 	},
 	summonNix = 177573,
 	choking = 182495,
@@ -53,7 +47,7 @@ Module.DATA = {
 	thirst = 182214,
 	web = 179938,
 	trapTrip = 183080,
-	trapName = LCA.GetAbilityName(182393),
+	trapDamageId = 182393,
 	meteor = {
 		start = 185833,
 		damage = 185834,
@@ -120,12 +114,12 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		local unitTag, name = LCA.IdentifyGroupUnitIdWithRole(targetUnitId)
 		if (LCA.isTank) then sound = nil end
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CA1.Alert(nil, zo_strformat(DATA.verge.name, self:GetString("you")), 0xCC3399FF, sound, 1000)
+			CA1.Alert(nil, zo_strformat(SI_LCA_TARGET_YOU, LCA.GetAbilityName(DATA.verge.nameId)), 0xCC3399FF, sound, 1000)
 		elseif (unitTag and LCA.GetDistance("player", unitTag) <= 5) then
-			CA1.Alert(nil, zo_strformat(DATA.verge.name, name), 0xCC3399FF, sound, 1000)
+			CA1.Alert(nil, zo_strformat(SI_LCA_TARGET_OTHERS, LCA.GetAbilityName(DATA.verge.nameId)), 0xCC3399FF, sound, 1000)
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == DATA.verge.shade) then
-		CA1.Alert(nil, zo_strformat(DATA.verge.name, self:GetString("boss")), 0xCC3399FF, nil, 1000)
+		CA1.Alert(nil, zo_strformat(SI_LCA_TARGET_BOSS, LCA.GetAbilityName(DATA.verge.nameId)), 0xCC3399FF, nil, 1000)
 		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 1, 100, "DUEL_BOUNDARY_WARNING", 2)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == DATA.summonNix and LCA.DoesPlayerHaveTauntSlotted()) then
 		CA1.Alert(nil, LCA.GetAbilityName(abilityId), 0xFF9900FF, nil, 2000)
@@ -145,7 +139,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		ZO_ClearTable(Vars.darklight)
 		CA2.StatusEnable({
 			ownerId = "u37dl",
-			rowLabels = DATA.darklight.name,
+			rowLabels = LCA.GetAbilityName(DATA.darklight.nameId),
 		})
 	elseif (abilityId == DATA.darklight.star) then
 		if ((result == ACTION_RESULT_EFFECT_GAINED or result == ACTION_RESULT_EFFECT_FADED) and LCA.IsUnitIdValid(targetUnitId)) then
@@ -190,7 +184,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		CA1.Alert(LCA.GetAbilityName(abilityId), name, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == DATA.trapTrip) then
 		local _, name = LCA.IdentifyGroupUnitId(targetUnitId, true)
-		CA1.AlertChat(string.format("[%s] %s: %s", DATA.trapName, LCA.GetAbilityName(abilityId), name))
+		CA1.AlertChat(string.format("[%s] %s: %s", LCA.GetAbilityName(DATA.trapDamageId), LCA.GetAbilityName(abilityId), name))
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == DATA.meteor.start) then
 		local id = CA1.CastAlertsStart(DATA.meteor.damage, LCA.GetAbilityName(DATA.meteor.damage), hitValue, DATA.meteor.timer, nil, { hitValue, GetString(SI_LCA_BLOCK), 1, 0.4, 0, 0.5, nil })
 		if (LCA.IsUnitIdValid(targetUnitId)) then

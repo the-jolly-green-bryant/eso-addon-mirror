@@ -1,0 +1,18 @@
+## Title: |cFFD700Tetsu's|r Daily Writ Precrafter
+## Author: Tetsurion
+## Description: Gamepad-first daily writ helper. Pre-craft for yourself (1-10 days) or craft only what the active writ needs. Auto-accept, auto-turn-in, auto-open reward boxes. No bank, no main/alts.
+## Version: 2.0.2
+## AddOnVersion: 20002
+## APIVersion: 101050 101051
+## SavedVariables: TetsuDailyWritPrecrafterSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+localization/en.lua
+localization/$(language).lua
+
+Data.lua
+UI.lua
+Settings.lua
+CraftingEngine.lua
+QuestAutomation.lua
+Main.lua
