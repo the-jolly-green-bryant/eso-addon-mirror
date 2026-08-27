@@ -1,0 +1,18 @@
+## Title: |cFFD700Tetsu's|r Daily Writ Precrafter
+## Author: Tetsurion
+## Description: Daily writ crafter for heavy crafters with option to craft for several dailies ahead. Disable Dolgubon's Lazy Writ Creator first. Both on - conflict. Modes in settings: Default: crafts only the active writ (nothing if you have none). Pre-craft (click R3 on station): 1-10 dailies on every station. Auto-accept, turn-in, open reward boxes. Checks mats and bag space before crafting. Need writ craft for 1 day only? Use better Lazy Writ instead.
+## Version: 2.4.1
+## AddOnVersion: 24001
+## APIVersion: 101050 101051
+## SavedVariables: TetsuDailyWritPrecrafterSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+localization/en.lua
+localization/$(language).lua
+
+Data.lua
+UI.lua
+Settings.lua
+CraftingEngine.lua
+QuestAutomation.lua
+Main.lua

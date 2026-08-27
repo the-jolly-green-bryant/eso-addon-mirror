@@ -1,0 +1,21 @@
+Shopping List compatibility baseline
+====================================
+
+Verified for the 0.18.0 hardening cycle on 2026-08-25:
+
+- ESO API 101051
+- LibAddonMenu-2.0 2.0 r43 / AddOnVersion 43
+- LibMainMenu-2.0 4.5.0 / AddOnVersion 40500
+- LibSets 0.9.3 / AddOnVersion 0009030
+
+Manifest minimums reflect the oldest supported library interfaces. LibSets
+0.9.0 remains the functional minimum because Shopping List uses API calls that
+are present there; 0.9.3 is the tested and recommended release.
+
+AwesomeGuildStore and LibCustomMenu remain optional integrations.
+
+WritWorthy 7.5.8 is verified as an optional crafting integration. When both
+WritWorthy and LibCustomMenu are enabled, Master Writ context menus can send
+the writ's calculated material requirements to the current shopping list.
+Shopping List calls WritWorthy.ToMatKnowList and does not read its saved
+variables or alter its queued-writ state.

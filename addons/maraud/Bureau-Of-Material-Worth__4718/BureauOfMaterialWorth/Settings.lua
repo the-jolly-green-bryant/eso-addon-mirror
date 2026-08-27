@@ -27,13 +27,16 @@ local stringformat = string.format
 --   showInGuildStore      show the panel while the guild store is open (shifted clear of the store UI)
 --   lastVisitGold         grand total at the last manually acknowledged visit baseline
 --   lastVisitItems        item count at that baseline, retained for legacy-save migration
---   priceHistory          [itemId] = compact "unit price~unix timestamp" baseline for the detail window's price-change column
+--   priceHistory          [itemId] = compact bounded series "price~time~source|..."
+--   priceTrendThreshold   minimum absolute movement shown in the seven-day price trend view
+--   priceTrendAlerts      compact per-item notification state for deduplication/cooldown
 --   showValueHistory      draw the grand-total sparkline (Craft Bag value over time) in the footer
 --   showProfile           show the @account handle + character name on the panel's title line
 --   notificationMode      "off", "summary", "important", or "detailed" chat notification mode
 --   valueHistory          ring buffer of grand-total samples; { head = <last index, 0 = empty>,
---                         entries = { { t = unix, gold, items }, ... } }. See Valuation's
---                         RecordValuePoint/GetValueHistory for the wrap-around bookkeeping.
+--                         entries = { { t = unix, gold, items }, ... } }. One point per UI
+--                         session (login or /reloadui); later Craft Bag opens do not add
+--                         another. See Valuation's RecordValuePoint/GetValueHistory.
 --   snapshot              manual single snapshot of bag composition for the detail window's
 --                         diff view; nil until "Remember" is pressed (then overwritten). Material
 --                         entries are compact strings decoded by Valuation's CaptureSnapshot/GetDiffMaterials.
@@ -57,7 +60,9 @@ local DEFAULT_SAVED_VARS = {
     windowWidth = 400,
     windowOffsetX = -25,
     windowOffsetY = 0,
+    priceTrendThreshold = 20,
     priceHistory = {},
+    priceTrendAlerts = {},
     valueHistory = { head = 0, entries = {} },
 }
 
@@ -103,6 +108,7 @@ function Settings.InitializeSavedVariables()
     end
 
     Settings.NormalizeWindowWidth()
+    private.savedVars.priceTrendThreshold = Settings.GetPriceTrendThreshold()
 
     return private.savedVars
 end
@@ -174,6 +180,20 @@ end
 
 private.GetNotificationMode = Settings.GetNotificationMode
 
+function Settings.GetPriceTrendThreshold()
+    local threshold = tonumber(GetSavedVarsOrDefaults().priceTrendThreshold)
+        or DEFAULT_SAVED_VARS.priceTrendThreshold
+    threshold = zo_round(threshold / 5) * 5
+    if threshold < 5 then
+        return 5
+    elseif threshold > 100 then
+        return 100
+    end
+    return threshold
+end
+
+private.GetPriceTrendThreshold = Settings.GetPriceTrendThreshold
+
 function Settings.SetDebugMode(level, suppressOutput)
     level = tonumber(level) or 0
     if level >= 0 and level <= 4 then
@@ -226,6 +246,7 @@ function Settings.RegisterSettingsPanel()
     local function IsValueHistoryOn() return GetSavedVarsOrDefaults().showValueHistory ~= false end
     local function IsProfileOn()      return GetSavedVarsOrDefaults().showProfile ~= false end
     local function GetNotificationMode() return Settings.GetNotificationMode() end
+    local function GetPriceTrendThreshold() return Settings.GetPriceTrendThreshold() end
     local function IsGuildStoreOn()   return GetSavedVarsOrDefaults().showInGuildStore ~= false end
     local function GetDeltaMode()     return GetSavedVarsOrDefaults().deltaMode or DEFAULT_SAVED_VARS.deltaMode end
 
@@ -446,6 +467,26 @@ function Settings.RegisterSettingsPanel()
                 end
             end,
             default = DEFAULT_SAVED_VARS.detailColumnMode,
+            width = "full",
+        },
+        {
+            type = "slider",
+            name = GetString(SI_BMW_SETTING_PRICE_TREND_THRESHOLD_NAME),
+            tooltip = GetString(SI_BMW_SETTING_PRICE_TREND_THRESHOLD_TOOLTIP),
+            min = 5,
+            max = 100,
+            step = 5,
+            getFunc = GetPriceTrendThreshold,
+            setFunc = function(value)
+                private.savedVars.priceTrendThreshold = value
+                if addon.Window then
+                    addon.Window.Update()
+                end
+                if addon.DetailWindow then
+                    addon.DetailWindow.Refresh()
+                end
+            end,
+            default = DEFAULT_SAVED_VARS.priceTrendThreshold,
             width = "full",
         },
         {

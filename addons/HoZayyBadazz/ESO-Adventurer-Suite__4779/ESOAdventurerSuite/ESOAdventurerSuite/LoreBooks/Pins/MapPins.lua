@@ -1,0 +1,67 @@
+-- Integrated into ESO Adventurer Suite; original data/marker architecture retained and namespaced.
+
+local PinController = EASLoreLibrary.pinController
+
+local MapPins = {}
+EASLoreLibrary:RegisterModule("mapPins", MapPins)
+
+--[[
+Draws a pin for every book in the zone of the currently viewed map
+(EASLoreLibraryData is keyed by zoneId, not by individual map/sub-map).
+]]--
+
+function MapPins:Initialize()
+
+	for _, pinTypeId in ipairs(EASLoreLibrary.PINTYPES) do
+		-- MARKER (the tracked-book pin) is drawn via the game's own custom
+		-- pin API instead - see Pins/MarkerPin.lua
+		if pinTypeId ~= EASLoreLibrary.MARKER then
+			PinController:RegisterPinType(pinTypeId, EASLoreLibrary.mapPinLayout[pinTypeId])
+		end
+	end
+
+	-- player switched map (left/right click, zoom, initial map open)
+	ZO_PreHook("ZO_WorldMap_UpdateMap", function() self:RedrawPins() end)
+
+	EASLoreLibrary.data:RegisterCallback("BookRemoved", function(zoneId, nodeId, pinTypeId) self:RemovePin(zoneId, nodeId, pinTypeId) end)
+	EASLoreLibrary.settings:RegisterCallback("FilterChanged", function() self:RedrawPins() end)
+end
+
+-- drops the pin for a node that was removed from its ZoneCache (e.g. the book was just discovered)
+function MapPins:RemovePin(zoneId, nodeId, pinTypeId)
+	if not self.zoneCache or self.zoneCache.zoneId ~= zoneId then return end
+	PinController:RemovePinForNodeId(pinTypeId, nodeId)
+end
+
+function MapPins:RedrawPins()
+	self:Debug("Refresh of pins requested.")
+	PinController:RemoveAllPins()
+
+	local zoneId = EASLoreLibrary.GetViewedZoneId()
+
+	if self.zoneCache then
+		self.zoneCache:UnregisterAccess(self)
+	end
+	self.zoneCache = EASLoreLibrary.data:GetZoneCache(zoneId)
+	self.zoneCache:RegisterAccess(self)
+
+	PinController:RemoveAllPins() -- called again because creation of the cache could have created unknown pins
+	PinController:SetZoneCache(self.zoneCache)
+	self:DrawNodes()
+end
+
+function MapPins:DrawNodes()
+	local zoneCache = self.zoneCache
+	local previousPinTypeId
+	for _, pinTypeId in ipairs(EASLoreLibrary.PINTYPES) do
+		if EASLoreLibrary.settings:IsPinTypeEnabled(pinTypeId) then
+			local firstNodeId, lastNodeId = zoneCache:GetNodeIdRange(pinTypeId, previousPinTypeId)
+			for nodeId = firstNodeId, lastNodeId do
+				if zoneCache.bookId[nodeId] then
+					PinController:CreatePinForNodeId(pinTypeId, nodeId)
+				end
+			end
+		end
+		previousPinTypeId = pinTypeId
+	end
+end

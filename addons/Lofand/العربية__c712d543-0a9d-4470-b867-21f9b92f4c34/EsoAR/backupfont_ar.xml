@@ -1,0 +1,26 @@
+<GuiXml>
+    <BackupFont originalFont="$(FTN47_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(GAMEPAD_LIGHT_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+
+    <BackupFont originalFont="$(FTN57_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(GAMEPAD_MEDIUM_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+
+    <BackupFont originalFont="$(FTN87_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(HANDWRITTEN_BOLD_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(GAMEPAD_BOLD_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+
+    <BackupFont originalFont="$(PROSE_ANTIQUE_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(ANTIQUE_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+
+    <BackupFont originalFont="$(BOLD_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(HANDWRITTEN_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(UNIVERS67_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+
+    <BackupFont originalFont="$(UNIVERS55_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(STONE_TABLET_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(CONSOLAS_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+
+    <BackupFont originalFont="$(CHAT_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(MEDIUM_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+    <BackupFont originalFont="$(UNIVERS57_FONT)" backupFont="EsoTH/fonts/1_AndalusArabic.slug"/>
+</GuiXml>

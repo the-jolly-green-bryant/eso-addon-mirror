@@ -87,7 +87,7 @@ local FV = Frostfall
 -- CONSTANTS
 -- ============================================================
 FV.NAME            = "Frostfall"
-FV.VERSION         = "3.4.23"
+FV.VERSION         = "3.4.24"
 FV.DISPLAY_NAME    = "Frostfall Temperature System"
 FV.SAVED_VARS_VER  = 8   -- unchanged: spellResistRemainingSeconds (v3.4.21, replacing v3.4.19's spellResistEndTimestamp) is additive and needs no data migration
 
@@ -277,6 +277,11 @@ FV.Defaults = {
     hudAlpha               = 0.9,
     enableEmotes           = true,
     enableOverlay          = true,
+    -- Caps the hot/cold overlay's alpha ramp (see OverlayEffects.lua's
+    -- ColdAlpha/HotAlpha) — was a hardcoded MAX_ALPHA=0.75 local constant
+    -- with zero Settings exposure; this default matches that original
+    -- value exactly, so nobody's overlay changes strength on upgrade.
+    overlayMaxOpacity      = 0.75,
     showTopNotifications  = true,   -- native top-of-screen ZO_Alert banner
     alsoLogChat            = false, -- also print the same notification to chat
     debugMode              = false,
@@ -711,6 +716,11 @@ function FV:TickEmote()
     if IsUnitInCombat("player") then return end
     if IsMounted()              then return end
     if IsAnyMajorUIOpen()       then return end
+    -- Don't let a temperature emote cancel a sit or sleep pose already in
+    -- progress — whether that pose came from a native /sit-/sleep-family
+    -- command or from interacting with a real chair/bench. See the
+    -- "Sit/Sleep detection" section above.
+    if FV:IsResting()           then return end
 
     local temp = FV:GetEffectiveTemp()
 
@@ -1229,6 +1239,160 @@ local function OnStationWarm(_, craftingType, sameStation)
         end
 end
 
+-- ── Sit/Sleep detection (for gating temperature emotes) ─────────────────
+-- Ported and scoped down from Realistic Needs and Diseases' own Rest.lua —
+-- RND needed full sit/sleep tracking for its fatigue-recovery mechanics
+-- (three separate regen rates, drunkenness sober-up acceleration, etc.);
+-- Frostfall only needs the single FV:IsResting() boolean this produces, to
+-- stop TickEmote from firing a cold/hot emote that cancels an already-in-
+-- progress sit/sleep pose. No recovery/regen logic is ported, only the
+-- detection itself. See RND's Rest.lua for the fuller history/reasoning
+-- behind each piece below — it's reproduced here essentially unchanged.
+--
+-- Two independent detection paths, both confirmed against the current
+-- ESOUI source (same as RND's own comments document):
+--   1. Native /sit-/sleep-family slash commands, HOOKED (original handler
+--      preserved and still called).
+--   2. Interacting with a real in-world object whose reticle prompt reads
+--      "Sit" (a placeable chair, bench, etc.) — via ZO_PreHook on
+--      RETICLE:TryHandlingInteraction (to read the prompt text) plus
+--      reassigning INTERACTIVE_WHEEL_MANAGER.StartInteraction (the actual
+--      "interact key was just pressed" trigger point; unprotected, unlike
+--      GameCameraInteractStart).
+--
+-- A generous, position-based tolerance clears the resting flag once the
+-- player actually stands up and walks away — deliberately looser than a
+-- normal "did the player move" check, since a sit/sleep pose's own settle-
+-- in animation and idle sway can shift the tracked root position more than
+-- a tight tolerance would allow without falsely canceling the pose seconds
+-- after it starts (this was RND's own hard-won fix; ported directly).
+local REST_POSITION_EPSILON = 150
+local _restLastPosition = nil
+local _isSeated  = false
+local _isSleeping = false
+
+local function HasRestPositionChanged()
+    local x, y, z = GetUnitWorldPosition("player")
+    if not x then return true end  -- fail safe: assume moved if the API fails, rather than getting stuck resting forever
+
+    if not _restLastPosition then
+        _restLastPosition = { x = x, y = y, z = z }
+        return false
+    end
+
+    local dx, dy, dz = x - _restLastPosition.x, y - _restLastPosition.y, z - _restLastPosition.z
+    local distSq = dx * dx + dy * dy + dz * dz
+    _restLastPosition = { x = x, y = y, z = z }
+    return distSq > (REST_POSITION_EPSILON * REST_POSITION_EPSILON)
+end
+
+-- "Meditate" has no literal ESO emote — /pray and /kneelpray are the
+-- closest thematic stand-ins, same as RND documents for its own copy of
+-- this list.
+local REST_SIT_COMMANDS   = { "/sit", "/sit2", "/sit3", "/sit4", "/sit5", "/sit6", "/sitchair" }
+local REST_SLEEP_COMMANDS = { "/sleep", "/sleep2", "/faint", "/pray", "/kneelpray" }
+
+local function HookRestCommand(commandString, onTriggered)
+    local original = SLASH_COMMANDS[commandString]
+    if not original then return end  -- command not available in this client; nothing to hook
+    SLASH_COMMANDS[commandString] = function(args)
+        original(args)
+        onTriggered()
+    end
+end
+
+local function OnRestSitTriggered()
+    _isSeated  = true
+    _isSleeping = false
+    -- Re-baseline rather than comparing against a pre-pose position — the
+    -- act of sitting down itself shifts the tracked root position, and
+    -- without this reset that shift alone could immediately read as
+    -- "moved" on the very next check.
+    _restLastPosition = nil
+end
+
+local function OnRestSleepTriggered()
+    _isSleeping = true
+    _isSeated  = false
+    _restLastPosition = nil
+end
+
+-- Only "Sit" (action verb) and "Chair" (object name) have actually been
+-- observed in-game here — the rest is speculative/defensive, same caveat
+-- RND's own copy of this list carries.
+local REST_SIT_INTERACTION_WORDS = {
+    "sit", "seat", "chair", "bench", "stool", "pew", "throne",
+    "couch", "sofa", "settee", "loveseat", "ottoman", "stump", "log",
+}
+local REST_SLEEP_INTERACTION_WORDS = { "sleep" }
+
+local function RestInteractionMatchesAnyWord(text, words)
+    if not text then return false end
+    for token in text:gmatch("%a+") do
+        local lowerToken = token:lower()
+        for _, word in ipairs(words) do
+            if lowerToken == word then return true end
+        end
+    end
+    return false
+end
+
+local _lastRestInteractionText = nil
+
+local function HookRestWorldInteractionDetection()
+    -- Never blocks anything (always returns false) — only records what the
+    -- current interaction prompt says.
+    ZO_PreHook(RETICLE, "TryHandlingInteraction", function(interactionPossible)
+        if interactionPossible then
+            local action, interactableName = GetGameCameraInteractableActionInfo()
+            _lastRestInteractionText = (action or "") .. " " .. (interactableName or "")
+        end
+        return false
+    end)
+
+    if INTERACTIVE_WHEEL_MANAGER then
+        local originalWheelStartInteraction = INTERACTIVE_WHEEL_MANAGER.StartInteraction
+        INTERACTIVE_WHEEL_MANAGER.StartInteraction = function(...)
+            if RestInteractionMatchesAnyWord(_lastRestInteractionText, REST_SIT_INTERACTION_WORDS) then
+                OnRestSitTriggered()
+            elseif RestInteractionMatchesAnyWord(_lastRestInteractionText, REST_SLEEP_INTERACTION_WORDS) then
+                OnRestSleepTriggered()
+            end
+            return originalWheelStartInteraction(...)
+        end
+    end
+    -- If INTERACTIVE_WHEEL_MANAGER doesn't exist (future API change), this
+    -- silently skips the world-interaction path — the native /sit-/sleep-
+    -- family slash-command hooks above still work independently of this.
+end
+
+-- Exposed for TickEmote's gate above.
+function FV:IsResting()
+    return _isSeated or _isSleeping
+end
+
+-- Dedicated 5-second poll, deliberately decoupled from Frostfall's own
+-- (much slower, user-configurable 1-10 minute) Drift update interval —
+-- resting state needs to clear promptly once the player actually stands up
+-- and walks away, regardless of how that unrelated interval is configured.
+local function OnRestPositionCheck()
+    if not (_isSeated or _isSleeping) then return end
+    if HasRestPositionChanged() then
+        _isSeated  = false
+        _isSleeping = false
+    end
+end
+
+local function InitializeRestDetection()
+    for _, cmd in ipairs(REST_SIT_COMMANDS) do
+        HookRestCommand(cmd, OnRestSitTriggered)
+    end
+    for _, cmd in ipairs(REST_SLEEP_COMMANDS) do
+        HookRestCommand(cmd, OnRestSleepTriggered)
+    end
+    HookRestWorldInteractionDetection()
+end
+
 -- ============================================================
 -- EVENT REGISTRATION, GATED ON FV.SV.enabled
 --
@@ -1279,6 +1443,7 @@ CheckIfEventsNeeded = function()
         EVENT_MANAGER:RegisterForUpdate(FV.NAME .. "_Emote", EMOTE_LOOP_INTERVAL, function()
             FV:TickEmote()
         end)
+        EVENT_MANAGER:RegisterForUpdate(FV.NAME .. "_RestCheck", 5000, OnRestPositionCheck)
 
         _eventsRegistered = true
     else
@@ -1299,6 +1464,7 @@ CheckIfEventsNeeded = function()
         UnregisterReagentListener()
         EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_Drift")
         EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_Emote")
+        EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_RestCheck")
 
         -- Reset trade-window state so a stale "open" flag can't linger
         -- across a disable/re-enable cycle.
@@ -1387,6 +1553,16 @@ function FV:Initialize()
     end
 
     self:RestoreSpellResistBuff()
+
+    -- Sit/sleep command + world-interaction hooks (see the section above
+    -- for full reasoning) are registered unconditionally, once, same as
+    -- the spell-resist-save hook just above — they're cheap, passive state
+    -- tracking regardless of FV.SV.enabled, and SLASH_COMMANDS/
+    -- INTERACTIVE_WHEEL_MANAGER hooks aren't the kind of thing that's safe
+    -- or meaningful to install/remove repeatedly across an enable/disable
+    -- cycle. Only the periodic position-poll timer that clears the resting
+    -- flag is tied to FV.SV.enabled, inside CheckIfEventsNeeded below.
+    InitializeRestDetection()
 
     -- Registered unconditionally (not inside the FV.SV.enabled-gated block
     -- further down) since it needs to fire and capture remaining time

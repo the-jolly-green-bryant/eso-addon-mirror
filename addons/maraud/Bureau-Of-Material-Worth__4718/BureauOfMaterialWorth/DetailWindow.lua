@@ -6,6 +6,8 @@ local private = addon.private
 
 local GetString = GetString
 local stringformat = string.format
+local stringlower = string.lower
+local stringfind = string.find
 local zo_round = zo_round
 local zo_floor = zo_floor
 local mathabs = math.abs
@@ -204,12 +206,13 @@ local suppressSearchEvent = false  -- guards the search box against its own SetT
 local currentResultCount = 0  -- rows in the list just built by Populate; feeds the
                               -- search-result counter in the title
 local priceFilter = "all"  -- "all" | "priced" | "unpriced"
+local searchBackdrop
+local snapshotGroupLabel, rememberButton, clearButton, filterGroupLabel
 
 -- Which list the window is showing. "category" is the normal per-category table
--- (with the whole-bag search as a sub-state, driven by searchQuery); "diff" is
--- the snapshot comparison, where the Qty/Value/Cum/Change columns are repurposed
--- to signed deltas / share-of-change / status (see SetupRow and UpdateHeaders).
-local viewMode = "category"  -- "category" | "diff"
+-- (with whole-bag search as a sub-state), "diff" is the snapshot comparison,
+-- and "trend" is the trailing seven-day price-movement analysis.
+local viewMode = "category"  -- "category" | "diff" | "trend"
 local diffSource = "snapshot"  -- "snapshot" | "visit"
 
 -- Column sort state. The list is re-sorted in Populate() before it fills, so it
@@ -221,20 +224,144 @@ local diffSource = "snapshot"  -- "snapshot" | "visit"
 --            first); the name column defaults to ascending (A->Z).
 local sortKey = "value"
 local sortAsc = false
+local sortState = {
+    category = { key = "value", asc = false },
+    diff = { key = "value", asc = false },
+    trend = { key = "change", asc = false },
+}
+
+local function CaptureSortState()
+    local state = sortState[viewMode]
+    if state then
+        state.key = sortKey
+        state.asc = sortAsc
+    end
+end
+
+local function RestoreSortState()
+    local state = sortState[viewMode]
+    if not state then
+        sortKey = "value"
+        sortAsc = false
+        return
+    end
+    sortKey = state.key
+    sortAsc = state.asc
+end
 
 -- Forward declarations so the search-box handlers built in Initialize can
 -- capture these as upvalues; they are defined (as plain assignments) further
 -- down, after Initialize.
 local FillList, Populate, UpdateTitle, UpdateContext, UpdateHeaders, UpdateColumnLayout, UpdatePriceFilterButtons, UpdateSnapshotStatus
 
+local function ShowWindow()
+    if not windowControl then
+        return
+    end
+    if SCENE_MANAGER and SCENE_MANAGER.ShowTopLevel then
+        SCENE_MANAGER:ShowTopLevel(windowControl)
+    else
+        windowControl:SetHidden(false)
+    end
+    windowControl:BringWindowToTop()
+end
+
+local columnModeButtons = {}
+local selectedColumnModeFrame
+local linkHintLabel
+
 -- The basic table focuses on the immediate inventory decision: what it is, how
 -- much is held, and what it is worth. Analytics adds the Pareto and price-drift
 -- columns. Snapshot comparison always keeps its full delta/share/status layout.
 local function UsesAnalyticsColumns()
-    if viewMode == "diff" then
+    if viewMode == "diff" or viewMode == "trend" then
         return true
     end
     return private.savedVars and private.savedVars.detailColumnMode == "analytics"
+end
+
+local function GetDetailColumnMode()
+    return (private.savedVars and private.savedVars.detailColumnMode == "analytics")
+        and "analytics" or "basic"
+end
+
+local function HasItemLink(data)
+    return data and type(data.link) == "string" and data.link ~= ""
+end
+
+local function ShowGameItemTooltip(anchorControl, itemLink)
+    InitializeTooltip(ItemTooltip, anchorControl, LEFT, 8, 0, RIGHT)
+    ItemTooltip:SetLink(itemLink)
+end
+
+local function HideGameItemTooltip()
+    ClearTooltip(ItemTooltip)
+end
+
+local function TryLinkItemToChat(itemLink)
+    if type(itemLink) ~= "string" or itemLink == "" then
+        return
+    end
+    if ZO_LinkHandler_InsertLink then
+        ZO_LinkHandler_InsertLink(itemLink)
+    end
+end
+
+local QUALITY_SEARCH_TERMS = {
+    [ITEM_FUNCTIONAL_QUALITY_TRASH] = { "trash", "grey", "gray", "мусор", "серый" },
+    [ITEM_FUNCTIONAL_QUALITY_NORMAL] = { "normal", "white", "обычный", "белый" },
+    [ITEM_FUNCTIONAL_QUALITY_MAGIC] = { "magic", "green", "зеленый", "зелёный" },
+    [ITEM_FUNCTIONAL_QUALITY_ARCANE] = { "arcane", "blue", "синий" },
+    [ITEM_FUNCTIONAL_QUALITY_ARTIFACT] = { "artifact", "epic", "purple", "эпический", "фиолетовый" },
+    [ITEM_FUNCTIONAL_QUALITY_LEGENDARY] = { "legendary", "gold", "легендарный", "золотой" },
+}
+
+local function RowMatchesQuery(row, needle)
+    if not needle or needle == "" then
+        return true
+    end
+    if row.name and stringfind(stringlower(row.name), needle, 1, true) then
+        return true
+    end
+    if row.source then
+        local shortName = addon.Valuation.GetSourceShortName(row.source)
+        if shortName and stringfind(stringlower(shortName), needle, 1, true) then
+            return true
+        end
+        local displayName = addon.Valuation.GetSourceDisplayName(row.source)
+        if displayName and stringfind(stringlower(displayName), needle, 1, true) then
+            return true
+        end
+    end
+    if row.priced == false and (needle == "unpriced" or needle == "без цены") then
+        return true
+    end
+    local qualityTerms = QUALITY_SEARCH_TERMS[row.quality]
+    if qualityTerms then
+        for i = 1, #qualityTerms do
+            if qualityTerms[i] == needle then
+                return true
+            end
+        end
+    end
+    if row.status and stringfind(row.status, needle, 1, true) then
+        return true
+    end
+    return false
+end
+
+local function ApplySearchFilter(materials)
+    if searchQuery == "" then
+        return materials
+    end
+    local needle = stringlower(searchQuery)
+    local filtered = {}
+    for i = 1, #materials do
+        if RowMatchesQuery(materials[i], needle) then
+            filtered[#filtered + 1] = materials[i]
+        end
+    end
+    return filtered
 end
 
 -- Coalesce a burst of search keystrokes into a single rebuild. Each keystroke
@@ -272,6 +399,53 @@ local function FormatGrowthText(data)
             stringformat(GetString(SI_BMW_DETAIL_GROWTH), magnitude))
     end
     return nil
+end
+
+local function AppendValueTooltip(rowData)
+    UI.TipSection(InformationTooltip, GetString(SI_BMW_ROW_TOOLTIP_VALUE_SECTION))
+    UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_QTY),
+        ZO_LocalizeDecimalNumber(rowData.count or 0)), "soft")
+
+    if rowData.priced and rowData.unitPrice and rowData.unitPrice > 0 then
+        UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_UNIT),
+            FormatGold(rowData.unitPrice)), "soft")
+        UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_TOTAL),
+            FormatGold(rowData.gold)), "gold")
+        UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_LISTING_FEE),
+            FormatGold(rowData.gold * FEE_LISTING_RATE)), "warn")
+        UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_SALES_TAX),
+            FormatGold(rowData.gold * FEE_SALES_RATE)), "warn")
+        UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_NET),
+            FormatGold(private.NetAfterFees(rowData.gold))), "accent")
+    else
+        UI.TipLine(InformationTooltip, GetString(SI_BMW_ROW_TOOLTIP_UNPRICED), "warn")
+    end
+
+    local sourceName = rowData.source and addon.Valuation.GetSourceDisplayName(rowData.source)
+    local growthText = FormatGrowthText(rowData)
+    if sourceName or growthText then
+        UI.TipDivider(InformationTooltip)
+        UI.TipSection(InformationTooltip, GetString(SI_BMW_ROW_TOOLTIP_TECHNICAL_SECTION))
+        if sourceName then
+            UI.TipCaption(InformationTooltip, stringformat(
+                GetString(SI_BMW_ROW_TOOLTIP_SOURCE), sourceName))
+        end
+        if growthText then
+            UI.TipCaption(InformationTooltip, stringformat(
+                GetString(SI_BMW_ROW_TOOLTIP_CHANGE), growthText))
+        end
+    end
+end
+
+local function FormatTrendPercent(percent)
+    if percent == nil then
+        return Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_GROWTH_NEW))
+    end
+    local gain = percent >= 0
+    local color = gain and COLOR_GAIN or COLOR_LOSS
+    local arrow = gain and ARROW_UP or ARROW_DOWN
+    return arrow .. " " .. Colorize(color, stringformat(GetString(SI_BMW_DETAIL_GROWTH),
+        stringformat("%.1f", mathabs(percent))))
 end
 
 -- Render the Qty / Value / Cumulative / Change columns for a normal material row
@@ -374,6 +548,15 @@ local function SetupDiffColumns(rowControl, data)
     end
 end
 
+-- Trend rows repurpose the numeric columns as current unit price, net movement
+-- from the oldest point in the window, maximum observed rise, and maximum fall.
+local function SetupTrendColumns(rowControl, data)
+    rowControl:GetNamedChild("Qty"):SetText(FormatGold(data.unitPrice or 0))
+    rowControl:GetNamedChild("Value"):SetText(FormatTrendPercent(data.trendOverallPercent))
+    rowControl:GetNamedChild("Cum"):SetText(FormatTrendPercent(data.trendMaxGainPercent))
+    rowControl:GetNamedChild("Change"):SetText(FormatTrendPercent(data.trendMaxLossPercent))
+end
+
 -- Populate one recycled row from its material record. Mirrors the column
 -- geometry declared in DetailWindow.xml.
 local function SetupRow(rowControl, data)
@@ -387,7 +570,9 @@ local function SetupRow(rowControl, data)
     -- the summary panel. No-ops after the first time this control is used.
     UI.ApplyRowFonts(rowControl, ROW_COLUMNS)
 
-    rowControl:GetNamedChild("Icon"):SetTexture(data.icon)
+    local icon = rowControl:GetNamedChild("Icon")
+    icon:SetTexture(data.icon)
+    icon:SetMouseEnabled(HasItemLink(data))
 
     local nameLabel = rowControl:GetNamedChild("Name")
     -- The name column is a fixed width (anchored both sides), so long material
@@ -419,7 +604,14 @@ local function SetupRow(rowControl, data)
     -- Diff rows repurpose the four numeric/status columns; a category/search row
     -- renders them as the normal Qty / Value / Cumulative / Change. Branch once on
     -- the diff flag rather than threading mode through every column.
-    if data.diff then
+    local qtyLabel = rowControl:GetNamedChild("Qty")
+    local valueLabel = rowControl:GetNamedChild("Value")
+    qtyLabel:SetWidth(data.trend and 100 or 70)
+    valueLabel:SetWidth(data.trend and 120 or 150)
+
+    if data.trend then
+        SetupTrendColumns(rowControl, data)
+    elseif data.diff then
         SetupDiffColumns(rowControl, data)
     else
         SetupMaterialColumns(rowControl, data)
@@ -442,7 +634,6 @@ local function SetupRow(rowControl, data)
     queueButton:SetHidden(true)
 
     local useAnalytics = UsesAnalyticsColumns()
-    local valueLabel = rowControl:GetNamedChild("Value")
     valueLabel:ClearAnchors()
     if useAnalytics then
         valueLabel:SetAnchor(RIGHT, rowControl:GetNamedChild("Cum"), LEFT, -6, 0)
@@ -473,6 +664,10 @@ local function SetupRow(rowControl, data)
 
         local function ShowActions()
             CancelActionHide()
+            local rowData = rowControl.bmwData
+            if not rowData or rowData.diff or rowData.trend then
+                return
+            end
             rowControl:GetNamedChild("Withdraw"):SetHidden(false)
             rowControl:GetNamedChild("Queue"):SetHidden(false)
         end
@@ -500,7 +695,7 @@ local function SetupRow(rowControl, data)
         withdrawButton:SetPressedTexture("EsoUI/Art/Buttons/accept_down.dds")
         withdrawButton:SetHandler("OnClicked", function(self)
             local rowData = self:GetParent().bmwData
-            if rowData and not rowData.diff and addon.WithdrawDialog then
+            if rowData and not rowData.diff and not rowData.trend and addon.WithdrawDialog then
                 addon.WithdrawDialog.Open(rowData)
             end
         end)
@@ -521,7 +716,7 @@ local function SetupRow(rowControl, data)
         queueButton:SetPressedTexture("EsoUI/Art/Buttons/plus_down.dds")
         queueButton:SetHandler("OnClicked", function(self)
             local rowData = self:GetParent().bmwData
-            if rowData and not rowData.diff and addon.WithdrawDialog then
+            if rowData and not rowData.diff and not rowData.trend and addon.WithdrawDialog then
                 addon.WithdrawDialog.AddToQueue(rowData)
             end
         end)
@@ -536,12 +731,62 @@ local function SetupRow(rowControl, data)
             QueueActionHide()
         end)
 
+        local iconControl = rowControl:GetNamedChild("Icon")
+        iconControl:SetHandler("OnMouseEnter", function(self)
+            local rowData = rowControl.bmwData
+            if not HasItemLink(rowData) then
+                return
+            end
+            rowControl.bmwActionHovered = true
+            CancelActionHide()
+            ClearTooltip(InformationTooltip)
+            ShowGameItemTooltip(self, rowData.link)
+        end)
+        iconControl:SetHandler("OnMouseExit", function()
+            rowControl.bmwActionHovered = false
+            HideGameItemTooltip()
+            QueueActionHide()
+        end)
+
+        rowControl:SetHandler("OnMouseUp", function(self, button, upInside)
+            if not upInside or button ~= MOUSE_BUTTON_INDEX_LEFT or not IsShiftKeyDown() then
+                return
+            end
+            local rowData = self.bmwData
+            if HasItemLink(rowData) then
+                TryLinkItemToChat(rowData.link)
+            end
+        end)
+
         rowControl:SetHandler("OnMouseEnter", function(self)
             self.bmwRowHovered = true
             local rowData = self.bmwData
-            -- Diff rows carry a different shape (deltas/status, no source slot) and
-            -- no withdraw affordance, so they get no hover tooltip.
-            if not rowData or rowData.diff then
+            if not rowData then
+                return
+            end
+
+            if rowData.diff then
+                self:GetNamedChild("Hover"):SetHidden(false)
+                InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -2, TOP)
+                UI.TipTitle(InformationTooltip,
+                    addon.Valuation.ColorizeMaterialName(rowData.name, rowData.quality))
+                local up = (rowData.countDelta or 0) >= 0
+                local sign = up and "+" or "-"
+                UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_DETAIL_QTY_DELTA),
+                    sign, ZO_LocalizeDecimalNumber(mathabs(rowData.countDelta or 0))),
+                    up and "gain" or "loss")
+                if rowData.priced and rowData.goldDelta ~= nil then
+                    UI.TipLine(InformationTooltip, FormatGold(mathabs(rowData.goldDelta or 0)),
+                        (rowData.goldDelta or 0) >= 0 and "gain" or "loss")
+                end
+                local statusStringId = DIFF_STATUS_STRING[rowData.status]
+                if statusStringId then
+                    UI.TipCaption(InformationTooltip, GetString(statusStringId))
+                end
+                if HasItemLink(rowData) then
+                    UI.TipDivider(InformationTooltip)
+                    UI.TipCaption(InformationTooltip, GetString(SI_BMW_DETAIL_LINK_HINT), "accent")
+                end
                 return
             end
 
@@ -549,61 +794,34 @@ local function SetupRow(rowControl, data)
             ShowActions()
 
             InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -2, TOP)
-
-            -- Composed in the shared tooltip voice: a title, block openers, and
-            -- one line per fact whose tone names the KIND of fact it carries (a
-            -- gold figure, a fee leaving the sale, the take-home amount, a plain
-            -- count, a warning). No font or colour is decided here.
-            --
-            -- Title: the quality-colored material name (the |c codes are carried in
-            -- the string itself, so the tone underneath it is just the base).
             UI.TipTitle(InformationTooltip,
                 addon.Valuation.ColorizeMaterialName(rowData.name, rowData.quality))
 
-            -- Value block: stock, market price, explicit guild-trader deductions,
-            -- and take-home amount. Technical provenance follows in its own block.
-            UI.TipSection(InformationTooltip, GetString(SI_BMW_ROW_TOOLTIP_VALUE_SECTION))
-            UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_QTY),
-                ZO_LocalizeDecimalNumber(rowData.count or 0)), "soft")
-
-            if rowData.priced and rowData.unitPrice and rowData.unitPrice > 0 then
-                UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_UNIT),
-                    FormatGold(rowData.unitPrice)), "soft")
-                UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_TOTAL),
-                    FormatGold(rowData.gold)), "gold")
-                UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_LISTING_FEE),
-                    FormatGold(rowData.gold * FEE_LISTING_RATE)), "warn")
-                UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_SALES_TAX),
-                    FormatGold(rowData.gold * FEE_SALES_RATE)), "warn")
-                UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_ROW_TOOLTIP_NET),
-                    FormatGold(private.NetAfterFees(rowData.gold))), "accent")
+            if rowData.trend then
+                UI.TipSection(InformationTooltip, GetString(SI_BMW_PRICE_TREND_TOOLTIP_SECTION))
+                UI.TipLine(InformationTooltip, stringformat(
+                    GetString(SI_BMW_PRICE_TREND_TOOLTIP_CURRENT), FormatGold(rowData.unitPrice)), "gold")
+                UI.TipLine(InformationTooltip, stringformat(
+                    GetString(SI_BMW_PRICE_TREND_TOOLTIP_OVERALL),
+                    FormatTrendPercent(rowData.trendOverallPercent)), "soft")
+                UI.TipLine(InformationTooltip, stringformat(
+                    GetString(SI_BMW_PRICE_TREND_TOOLTIP_MAX_GAIN),
+                    FormatTrendPercent(rowData.trendMaxGainPercent)), "gain")
+                UI.TipLine(InformationTooltip, stringformat(
+                    GetString(SI_BMW_PRICE_TREND_TOOLTIP_MAX_LOSS),
+                    FormatTrendPercent(rowData.trendMaxLossPercent)), "loss")
+                UI.TipCaption(InformationTooltip, stringformat(
+                    GetString(SI_BMW_PRICE_TREND_TOOLTIP_POINTS), rowData.trendPointCount or 0))
+                UI.TipDivider(InformationTooltip)
+                AppendValueTooltip(rowData)
             else
-                UI.TipLine(InformationTooltip, GetString(SI_BMW_ROW_TOOLTIP_UNPRICED), "warn")
+                AppendValueTooltip(rowData)
             end
 
-            if rowData.priced and rowData.unitPrice and rowData.unitPrice > 0 then
-                local sourceName = rowData.source and addon.Valuation.GetSourceDisplayName(rowData.source)
-                local growthText = FormatGrowthText(rowData)
-                if sourceName or growthText then
-                    UI.TipDivider(InformationTooltip)
-                    UI.TipSection(InformationTooltip,
-                        GetString(SI_BMW_ROW_TOOLTIP_TECHNICAL_SECTION))
-                end
-                -- Provenance is a footnote about the figures above, not another
-                -- figure, so both lines drop to the caption size.
-                if sourceName then
-                    UI.TipCaption(InformationTooltip, stringformat(
-                        GetString(SI_BMW_ROW_TOOLTIP_SOURCE), sourceName))
-                end
-                -- Price-change line, only when there's a comparable figure (shares
-                -- the arrow+color idiom of the Change column via FormatGrowthText).
-                if growthText then
-                    UI.TipCaption(InformationTooltip, stringformat(
-                        GetString(SI_BMW_ROW_TOOLTIP_CHANGE), growthText))
-                end
+            if HasItemLink(rowData) then
+                UI.TipDivider(InformationTooltip)
+                UI.TipCaption(InformationTooltip, GetString(SI_BMW_DETAIL_LINK_HINT), "accent")
             end
-
-
         end)
         rowControl:SetHandler("OnMouseExit", function(self)
             self.bmwRowHovered = false
@@ -635,6 +853,9 @@ function DetailWindow.Initialize()
     windowControl:SetHidden(true)
     windowControl:SetMouseEnabled(true)
     windowControl:SetMovable(true)
+    if SCENE_MANAGER and SCENE_MANAGER.RegisterTopLevel then
+        SCENE_MANAGER:RegisterTopLevel(windowControl, false)
+    end
     -- Restore the player's last placement. A new installation has no saved
     -- coordinates, so it starts centered once and then remembers drag stops.
     local savedVars = private.savedVars or {}
@@ -650,6 +871,11 @@ function DetailWindow.Initialize()
             vars.detailWindowLeft = zo_round(self:GetLeft())
             vars.detailWindowTop = zo_round(self:GetTop())
         end
+    end)
+    windowControl:SetHandler("OnHide", function()
+        EVENT_MANAGER:UnregisterForUpdate(SEARCH_TIMER_NAME)
+        HideGameItemTooltip()
+        ClearTooltip(InformationTooltip)
     end)
 
     -- Confirmation dialog for the destructive "Clear snapshot" action. Registered
@@ -729,8 +955,20 @@ function DetailWindow.Initialize()
     contextLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     contextLabel:SetMaxLineCount(1)
     contextLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-    contextLabel:SetDimensions(WINDOW_WIDTH - PADDING * 2, CONTEXT_HEIGHT)
     contextLabel:SetAnchor(TOPLEFT, windowControl, TOPLEFT, PADDING, PADDING + TITLE_HEIGHT)
+    contextLabel:SetDimensions(WINDOW_WIDTH - PADDING * 2 - 230, CONTEXT_HEIGHT)
+
+    -- Persistent Shift-click reminder: always visible in the header, not only
+    -- on row hover, so linking a material to chat stays discoverable.
+    linkHintLabel = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailLinkHint", windowControl, CT_LABEL)
+    linkHintLabel:SetFont(FONT.small)
+    linkHintLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    linkHintLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    linkHintLabel:SetMaxLineCount(1)
+    linkHintLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    linkHintLabel:SetDimensions(220, CONTEXT_HEIGHT)
+    linkHintLabel:SetAnchor(TOPRIGHT, windowControl, TOPRIGHT, -PADDING, PADDING + TITLE_HEIGHT)
+    linkHintLabel:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_LINK_HINT)))
 
     -- Close button (built-in virtual) anchored top-right.
     local closeButton = WINDOW_MANAGER:CreateControlFromVirtual(
@@ -750,16 +988,16 @@ function DetailWindow.Initialize()
 
     -- Search box (whole-bag). Typing here switches the list to materials matching
     -- the query across every category; clearing it returns to the opened category.
-    local SEARCH_WIDTH = 240
-    local searchBg = WINDOW_MANAGER:CreateControlFromVirtual(
+    local SEARCH_WIDTH = 200
+    searchBackdrop = WINDOW_MANAGER:CreateControlFromVirtual(
         addon.name .. "_DetailSearchBg", windowControl, "ZO_DefaultBackdrop")
-    searchBg:SetDimensions(SEARCH_WIDTH, TITLE_HEIGHT)
-    searchBg:ClearAnchors()
-    searchBg:SetAnchor(TOPRIGHT, windowControl, TOPRIGHT, -PADDING, filterToolbarY)
+    searchBackdrop:SetDimensions(SEARCH_WIDTH, TITLE_HEIGHT)
+    searchBackdrop:ClearAnchors()
+    searchBackdrop:SetAnchor(TOPRIGHT, windowControl, TOPRIGHT, -PADDING, filterToolbarY)
     -- Clicking anywhere on the backdrop (incl. its padding) focuses the editbox,
     -- so the hit target is the whole field, not just the text glyphs.
-    searchBg:SetMouseEnabled(true)
-    searchBg:SetHandler("OnMouseUp", function()
+    searchBackdrop:SetMouseEnabled(true)
+    searchBackdrop:SetHandler("OnMouseUp", function()
         if searchBox then
             searchBox:TakeFocus()
         end
@@ -768,16 +1006,16 @@ function DetailWindow.Initialize()
     -- Faint placeholder shown only while the box is empty. Created BEFORE the
     -- editbox (so the editbox is the top-most sibling for mouse hits) and with
     -- mouse explicitly disabled so it never intercepts clicks meant for the box.
-    searchHint = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailSearchHint", searchBg, CT_LABEL)
+    searchHint = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailSearchHint", searchBackdrop, CT_LABEL)
     searchHint:SetFont(FONT.body)
     searchHint:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    searchHint:SetAnchor(LEFT, searchBg, LEFT, 8, 0)
+    searchHint:SetAnchor(LEFT, searchBackdrop, LEFT, 8, 0)
     searchHint:SetMouseEnabled(false)
     searchHint:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_SEARCH_HINT)))
 
-    searchBox = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailSearch", searchBg, CT_EDITBOX)
-    searchBox:SetAnchor(TOPLEFT, searchBg, TOPLEFT, 8, 2)
-    searchBox:SetAnchor(BOTTOMRIGHT, searchBg, BOTTOMRIGHT, -8, -2)
+    searchBox = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailSearch", searchBackdrop, CT_EDITBOX)
+    searchBox:SetAnchor(TOPLEFT, searchBackdrop, TOPLEFT, 8, 2)
+    searchBox:SetAnchor(BOTTOMRIGHT, searchBackdrop, BOTTOMRIGHT, -8, -2)
     searchBox:SetFont(FONT.body)
     searchBox:SetMaxInputChars(50)
     searchBox:SetMouseEnabled(true)
@@ -800,16 +1038,21 @@ function DetailWindow.Initialize()
         searchHint:SetHidden((searchBox:GetText() or "") ~= "")
         UpdatePriceFilterButtons()
     end)
-    -- Escape clears the search and drops focus, returning to the category view.
+    -- Escape first clears an active search, then closes the window.
     searchBox:SetHandler("OnEscape", function(self)
-        self:SetText("")
+        local text = self:GetText() or ""
         self:LoseFocus()
+        if text ~= "" then
+            self:SetText("")
+            return
+        end
+        DetailWindow.Hide()
     end)
 
     searchClearButton = WINDOW_MANAGER:CreateControlFromVirtual(
         addon.name .. "_DetailSearchClear", windowControl, "ZO_CloseButton")
     searchClearButton:SetDimensions(20, 20)
-    searchClearButton:SetAnchor(RIGHT, searchBg, LEFT, -4, 0)
+    searchClearButton:SetAnchor(RIGHT, searchBackdrop, LEFT, -4, 0)
     searchClearButton:SetHandler("OnClicked", function()
         suppressSearchEvent = true
         searchBox:SetText("")
@@ -838,7 +1081,7 @@ function DetailWindow.Initialize()
     local GROUP_LABEL_WIDTH = 62
     local GROUP_LABEL_GAP = 8
 
-    local snapshotGroupLabel = WINDOW_MANAGER:CreateControl(
+    snapshotGroupLabel = WINDOW_MANAGER:CreateControl(
         addon.name .. "_DetailSnapshotGroupLabel", windowControl, CT_LABEL)
     snapshotGroupLabel:SetFont(FONT.small)
     snapshotGroupLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
@@ -858,7 +1101,7 @@ function DetailWindow.Initialize()
         end)
     end
 
-    local rememberButton = WINDOW_MANAGER:CreateControlFromVirtual(
+    rememberButton = WINDOW_MANAGER:CreateControlFromVirtual(
         addon.name .. "_DetailRemember", windowControl, "ZO_DefaultButton")
     rememberButton:SetDimensions(BUTTON_WIDTH, TITLE_HEIGHT)
     rememberButton:SetAnchor(LEFT, snapshotGroupLabel, RIGHT, GROUP_LABEL_GAP, 0)
@@ -891,7 +1134,7 @@ function DetailWindow.Initialize()
     -- in step by UpdateChangesButton (called from each Show*). Its action and
     -- tooltip read viewMode at event time so the single bound handler covers both.
     changesButton:SetHandler("OnClicked", function()
-        if viewMode == "diff" then
+        if viewMode ~= "category" then
             DetailWindow.ShowMaterials()
         else
             DetailWindow.ShowDiff()
@@ -899,7 +1142,7 @@ function DetailWindow.Initialize()
     end)
     changesButton:SetHandler("OnMouseEnter", function(self)
         local titleId, bodyId
-        if viewMode == "diff" then
+        if viewMode ~= "category" then
             titleId, bodyId = SI_BMW_DETAIL_BTN_BACK_TOOLTIP_TITLE, SI_BMW_DETAIL_BTN_BACK_TOOLTIP_BODY
         else
             titleId, bodyId = SI_BMW_DETAIL_BTN_CHANGES_TOOLTIP_TITLE, SI_BMW_DETAIL_BTN_CHANGES_TOOLTIP_BODY
@@ -916,7 +1159,7 @@ function DetailWindow.Initialize()
     -- Because clearing is destructive and cannot be undone, it opens a confirmation
     -- dialog. When the diff view is open, a confirmed clear refreshes it into the
     -- "press Remember" empty state immediately.
-    local clearButton = WINDOW_MANAGER:CreateControlFromVirtual(
+    clearButton = WINDOW_MANAGER:CreateControlFromVirtual(
         addon.name .. "_DetailClear", windowControl, "ZO_DefaultButton")
     clearButton:SetDimensions(BUTTON_WIDTH, TITLE_HEIGHT)
     clearButton:SetAnchor(TOPLEFT, changesButton, TOPRIGHT, 8, 0)
@@ -945,7 +1188,7 @@ function DetailWindow.Initialize()
     -- Price coverage filters live on their own row beside the search box. They
     -- filter the current category/search view and are hidden for the snapshot
     -- diff, where priced/unpriced has a different meaning.
-    local filterGroupLabel = WINDOW_MANAGER:CreateControl(
+    filterGroupLabel = WINDOW_MANAGER:CreateControl(
         addon.name .. "_DetailFilterGroupLabel", windowControl, CT_LABEL)
     filterGroupLabel:SetFont(FONT.small)
     filterGroupLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
@@ -1006,6 +1249,34 @@ function DetailWindow.Initialize()
     end)
     resetFiltersButton:SetHidden(true)
 
+    local COLUMN_MODE_WIDTH = 80
+    local columnModeDefinitions = {
+        { key = "analytics", stringId = SI_BMW_SETTING_DETAIL_COLUMNS_ANALYTICS },
+        { key = "basic", stringId = SI_BMW_SETTING_DETAIL_COLUMNS_BASIC },
+    }
+    local previousColumnModeButton = searchBackdrop
+    for i = 1, #columnModeDefinitions do
+        local definition = columnModeDefinitions[i]
+        local button = WINDOW_MANAGER:CreateControlFromVirtual(
+            addon.name .. "_DetailColumnMode" .. definition.key, windowControl, "ZO_DefaultButton")
+        button:SetDimensions(COLUMN_MODE_WIDTH, TITLE_HEIGHT)
+        button:SetAnchor(RIGHT, previousColumnModeButton, LEFT, i == 1 and -8 or -FILTER_BUTTON_GAP, 0)
+        button:SetText(GetString(definition.stringId))
+        button:SetHandler("OnClicked", function()
+            if GetDetailColumnMode() == definition.key then
+                return
+            end
+            if private.savedVars then
+                private.savedVars.detailColumnMode = definition.key
+            end
+            DetailWindow.ApplyColumnMode()
+        end)
+        columnModeButtons[definition.key] = button
+        previousColumnModeButton = button
+    end
+    selectedColumnModeFrame = UI.CreateSelectionFrame(
+        addon.name .. "_DetailSelectedColumnModeFrame", windowControl)
+
     -- Column headers, aligned to the same geometry as the XML row template. They
     -- sit below the toolbar row.
     local headerY = filterToolbarY + TITLE_HEIGHT + TOOLBAR_GAP
@@ -1027,20 +1298,6 @@ function DetailWindow.Initialize()
     headerCum:SetDimensions(70, HEADER_HEIGHT)
     headerCum:SetAnchor(TOPRIGHT, headerChange, TOPLEFT, -6, 0)
     headerCum:SetText(Colorize(COLOR_MUTED, CumulativeHeaderText()))
-
-    -- The column abbreviation can't carry its full meaning, so a hover tooltip on
-    -- the header spells it out: a title line, a divider, then the explanation --
-    -- the shared title/body pair every other hover in the addon uses.
-    -- InformationTooltip wraps a long line to its own width.
-    headerCum:SetMouseEnabled(true)
-    headerCum:SetHandler("OnMouseEnter", function(self)
-        InitializeTooltip(InformationTooltip, self, TOP, 0, 4, BOTTOM)
-        UI.TipTitle(InformationTooltip, GetString(SI_BMW_DETAIL_CUM_TOOLTIP_TITLE))
-        UI.TipLine(InformationTooltip, GetString(SI_BMW_DETAIL_CUM_TOOLTIP_BODY))
-    end)
-    headerCum:SetHandler("OnMouseExit", function()
-        ClearTooltip(InformationTooltip)
-    end)
 
     headerValue = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailHeaderValue", windowControl, CT_LABEL)
     headerValue:SetFont(FONT.small)
@@ -1072,8 +1329,9 @@ function DetailWindow.Initialize()
     local function WireHeaderSort(headerControl, key, defaultAsc)
         headerControl:SetMouseEnabled(true)
         headerControl:SetHandler("OnMouseUp", function(_, button, upInside)
-            -- Headers do not sort in diff mode (the order is fixed); ignore clicks.
-            if viewMode == "diff" then
+            -- Cumulative share is a derived rank of value, so sorting by it in
+            -- the category view would be identical to sorting by value.
+            if viewMode == "category" and key == "cum" then
                 return
             end
             if not upInside or button ~= MOUSE_BUTTON_INDEX_LEFT then
@@ -1085,27 +1343,47 @@ function DetailWindow.Initialize()
                 sortKey = key
                 sortAsc = defaultAsc
             end
+            CaptureSortState()
             UpdateHeaders()
             Populate()
         end)
         headerControl:SetHandler("OnMouseEnter", function(self)
-            -- No brighten-on-hover affordance when the header isn't clickable.
-            if viewMode == "diff" then
+            local titleId, bodyId
+            if viewMode == "trend" then
+                if key == "value" then
+                    titleId = SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_TITLE
+                    bodyId = SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_BODY
+                elseif key == "cum" then
+                    titleId = SI_BMW_PRICE_TREND_GAIN_TOOLTIP_TITLE
+                    bodyId = SI_BMW_PRICE_TREND_GAIN_TOOLTIP_BODY
+                elseif key == "change" then
+                    titleId = SI_BMW_PRICE_TREND_LOSS_TOOLTIP_TITLE
+                    bodyId = SI_BMW_PRICE_TREND_LOSS_TOOLTIP_BODY
+                end
+            elseif viewMode == "category" and key == "cum" then
+                titleId = SI_BMW_DETAIL_CUM_TOOLTIP_TITLE
+                bodyId = SI_BMW_DETAIL_CUM_TOOLTIP_BODY
+            end
+            if titleId then
+                InitializeTooltip(InformationTooltip, self, TOP, 0, 4, BOTTOM)
+                UI.TipTitle(InformationTooltip, GetString(titleId))
+                UI.TipLine(InformationTooltip, GetString(bodyId))
+            end
+            if viewMode == "category" and key == "cum" then
                 return
             end
-            -- Hovering promotes the header from the secondary reading tone to the
-            -- primary one. Both come from the palette, so the affordance is a step
-            -- along the addon's own scale rather than a jump to raw white.
             local r, g, b = UI.Tone("name")
             self:SetColor(r, g, b, 1)
         end)
         headerControl:SetHandler("OnMouseExit", function()
+            ClearTooltip(InformationTooltip)
             UpdateHeaders()
         end)
     end
     WireHeaderSort(headerName, "name", true)
     WireHeaderSort(headerQty, "qty", false)
     WireHeaderSort(headerValue, "value", false)
+    WireHeaderSort(headerCum, "cum", false)
     WireHeaderSort(headerChange, "change", false)
     UpdateColumnLayout()
     UpdateHeaders()
@@ -1203,29 +1481,44 @@ end
 -- Unpriced rows carry gold = 0 and growthPercent = nil. On the numeric columns
 -- they always sink to the bottom regardless of direction, so toggling a column
 -- never buries a real figure beneath the priceless ones.
-local function SortMaterials(materials)
-    -- Diff mode has a fixed order: biggest absolute gold movement first, so the
-    -- materials that moved the most value sit on top. Secondary by absolute count
-    -- delta so a large unpriced add/remove (no gold figure) still surfaces, then
-    -- name/itemId for stability. The column headers do not sort in this mode.
-    if viewMode == "diff" then
-        tablesort(materials, function(a, b)
-            local ag, bg = mathabs(a.goldDelta or 0), mathabs(b.goldDelta or 0)
-            if ag ~= bg then
-                return ag > bg
-            end
-            local ac, bc = mathabs(a.countDelta or 0), mathabs(b.countDelta or 0)
-            if ac ~= bc then
-                return ac > bc
-            end
-            if a.name ~= b.name then
-                return a.name < b.name
-            end
-            return a.itemId < b.itemId
-        end)
-        return
+local function SortValueOf(row)
+    if viewMode == "trend" then
+        if sortKey == "qty" then
+            return row.unitPrice
+        elseif sortKey == "value" then
+            return row.trendOverallPercent
+        elseif sortKey == "cum" then
+            return row.trendMaxGainPercent
+        elseif sortKey == "change" then
+            return row.trendMaxLossPercent
+        end
+        return nil
     end
 
+    if viewMode == "diff" then
+        if sortKey == "qty" then
+            return row.countDelta
+        elseif sortKey == "value" then
+            return row.goldDelta
+        elseif sortKey == "cum" then
+            return row.cumPercent
+        elseif sortKey == "change" then
+            return row.status
+        end
+        return nil
+    end
+
+    if sortKey == "qty" then
+        return row.count or 0
+    elseif sortKey == "change" then
+        return (row.priced and not row.isNew) and row.growthPercent or nil
+    elseif sortKey == "cum" then
+        return row.cumPercent
+    end
+    return row.gold or 0
+end
+
+local function SortMaterials(materials)
     if sortKey == "name" then
         tablesort(materials, function(a, b)
             if a.name ~= b.name then
@@ -1238,17 +1531,7 @@ local function SortMaterials(materials)
     end
 
     tablesort(materials, function(a, b)
-        local av, bv
-        if sortKey == "qty" then
-            av, bv = a.count or 0, b.count or 0
-        elseif sortKey == "change" then
-            -- Unpriced or no-baseline rows have no comparable change; treat as
-            -- the lowest so they sink. nil < any real percentage.
-            av = (a.priced and not a.isNew) and a.growthPercent or nil
-            bv = (b.priced and not b.isNew) and b.growthPercent or nil
-        else  -- "value"
-            av, bv = a.gold or 0, b.gold or 0
-        end
+        local av, bv = SortValueOf(a), SortValueOf(b)
 
         -- Push nils to the bottom irrespective of sort direction.
         if av == nil or bv == nil then
@@ -1262,7 +1545,6 @@ local function SortMaterials(materials)
             if sortAsc then return av < bv end
             return av > bv
         end
-        -- Stable tie-break: alphabetical, then itemId.
         if a.name ~= b.name then
             return a.name < b.name
         end
@@ -1352,6 +1634,22 @@ end
 local function UpdateFooter(materials)
     currentResultCount = #materials
 
+    if viewMode == "trend" then
+        local gains, losses = 0, 0
+        for i = 1, #materials do
+            if (materials[i].trendStrongestPercent or 0) >= 0 then
+                gains = gains + 1
+            else
+                losses = losses + 1
+            end
+        end
+        footerLabel:SetText(table.concat({
+            Colorize(COLOR_GAIN, stringformat(GetString(SI_BMW_PRICE_TREND_FOOTER_GAINS), gains)),
+            Colorize(COLOR_LOSS, stringformat(GetString(SI_BMW_PRICE_TREND_FOOTER_LOSSES), losses)),
+        }, Colorize(COLOR_MUTED, "  ·  ")))
+        return
+    end
+
     if viewMode == "diff" then
         local net, up, down = 0, 0, 0
         for i = 1, #materials do
@@ -1420,9 +1718,14 @@ end
 -- visibility, not its text.
 function Populate()
     local materials
-    if viewMode == "diff" then
+    local emptyId
+    if viewMode == "trend" then
+        local threshold = private.GetPriceTrendThreshold and private.GetPriceTrendThreshold() or 20
+        materials = addon.Valuation.GetPriceTrendMaterials(threshold)
+        emptyId = (addon.Valuation.HasPriceTrendHistory and addon.Valuation.HasPriceTrendHistory())
+            and SI_BMW_PRICE_TREND_EMPTY or SI_BMW_PRICE_TREND_EMPTY_HISTORY
+    elseif viewMode == "diff" then
         if diffSource == "snapshot" and not addon.Valuation.HasSnapshot() then
-            -- No snapshot to diff against: show the "press Remember" prompt.
             emptyLabel:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_NO_SNAPSHOT)))
             FillList({})
             UpdateFooter({})
@@ -1433,32 +1736,42 @@ function Populate()
         end
         if diffSource == "visit" then
             materials = addon.Valuation.GetLastVisitDiffMaterials()
-            emptyLabel:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_VISIT_DIFF_EMPTY)))
+            emptyId = SI_BMW_DETAIL_VISIT_DIFF_EMPTY
         else
             materials = addon.Valuation.GetDiffMaterials()
-            emptyLabel:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_DIFF_EMPTY)))
+            emptyId = SI_BMW_DETAIL_DIFF_EMPTY
         end
+    elseif currentCategoryId then
+        materials = addon.Valuation.GetCategoryMaterials(currentCategoryId)
+        emptyId = SI_BMW_DETAIL_EMPTY
     else
-        if searchQuery ~= "" then
-            materials = addon.Valuation.GetMaterialsMatching(searchQuery)
-        elseif currentCategoryId then
-            materials = addon.Valuation.GetCategoryMaterials(currentCategoryId)
-        else
-            materials = addon.Valuation.GetAllMaterials()
-        end
-        emptyLabel:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_EMPTY)))
+        materials = addon.Valuation.GetAllMaterials()
+        emptyId = SI_BMW_DETAIL_EMPTY_BAG
     end
 
-    if viewMode ~= "diff" then
+    if viewMode == "category" then
         materials = ApplyPriceFilter(materials)
+        if emptyId == SI_BMW_DETAIL_EMPTY or emptyId == SI_BMW_DETAIL_EMPTY_BAG then
+            if #materials == 0 and priceFilter ~= "all" then
+                emptyId = SI_BMW_DETAIL_EMPTY_FILTER
+            end
+        end
     end
+
+    materials = ApplySearchFilter(materials)
+    if searchQuery ~= "" and #materials == 0 then
+        emptyId = SI_BMW_DETAIL_EMPTY_SEARCH
+    end
+
+    emptyLabel:SetText(Colorize(COLOR_MUTED, GetString(emptyId or SI_BMW_DETAIL_EMPTY)))
     SortMaterials(materials)
     AssignCumulativeShare(materials)
+    if viewMode == "diff" and sortKey == "cum" then
+        -- Share is assigned after the first pass; re-sort so that column uses it.
+        SortMaterials(materials)
+    end
     FillList(materials)
     UpdateFooter(materials)
-    -- The title's search counter reflects what was just built, so refresh it here
-    -- (after UpdateFooter set the count) rather than at each call site. This also
-    -- keeps the live Refresh path's counter truthful as stock changes.
     UpdateTitle()
     UpdateContext()
     UpdateSnapshotStatus()
@@ -1467,7 +1780,9 @@ end
 -- Keep the title in step with the view: the diff label while comparing, the
 -- searched-across-bag label while a query is active, otherwise the category name.
 function UpdateTitle()
-    if viewMode == "diff" then
+    if viewMode == "trend" then
+        titleLabel:SetText(Colorize(COLOR_ACCENT, GetString(SI_BMW_PRICE_TREND_TITLE)))
+    elseif viewMode == "diff" then
         if diffSource == "visit" then
             titleLabel:SetText(Colorize(COLOR_ACCENT, GetString(SI_BMW_DETAIL_VISIT_DIFF_TITLE)))
         else
@@ -1499,7 +1814,14 @@ end
 -- displayed rows after filters are applied, so the count always matches the list
 -- rather than the broader category or search before narrowing.
 function UpdateContext()
-    if viewMode == "diff" then
+    if viewMode == "trend" and searchQuery == "" then
+        local threshold = private.GetPriceTrendThreshold and private.GetPriceTrendThreshold() or 20
+        contextLabel:SetText(Colorize(COLOR_MUTED, stringformat(
+            GetString(SI_BMW_PRICE_TREND_CONTEXT), currentResultCount, threshold)))
+        return
+    end
+
+    if viewMode == "diff" and searchQuery == "" then
         if diffSource == "visit" then
             local details = addon.Valuation.GetLastVisitDeltaDetails()
             local function SignedAmount(value)
@@ -1528,9 +1850,15 @@ function UpdateContext()
     local filterText = GetString(filterId)
 
     if searchQuery ~= "" then
+        local extra = filterText
+        if viewMode == "trend" then
+            extra = GetString(SI_BMW_PRICE_TREND_TITLE)
+        elseif viewMode == "diff" then
+            extra = GetString(SI_BMW_DETAIL_BTN_CHANGES)
+        end
         contextLabel:SetText(Colorize(COLOR_MUTED,
             stringformat(GetString(SI_BMW_DETAIL_CONTEXT_SEARCH), searchQuery,
-                currentResultCount, filterText)))
+                currentResultCount, extra)))
     elseif currentCategoryId then
         contextLabel:SetText(Colorize(COLOR_MUTED,
             stringformat(GetString(SI_BMW_DETAIL_CONTEXT_CATEGORY), currentCategoryName or "",
@@ -1566,40 +1894,38 @@ end
 -- the hover handlers can brighten a header without fighting an embedded color.
 -- Called after any sort-state change and on each open.
 function UpdateHeaders()
-    -- Diff mode relabels the four columns to their delta/status meaning and shows
-    -- no sort arrow (the order is fixed to abs-gold-desc). The name header keeps
-    -- its label. Cum is repurposed to "Share".
-    if viewMode == "diff" then
-        headerName:SetText(GetString(SI_BMW_DETAIL_COL_NAME))
-        headerQty:SetText(GetString(SI_BMW_DETAIL_COL_QTY_DELTA))
-        headerValue:SetText(GetString(SI_BMW_DETAIL_COL_VALUE_DELTA))
-        headerCum:SetText(GetString(SI_BMW_DETAIL_COL_SHARE))
-        headerChange:SetText(GetString(SI_BMW_DETAIL_COL_STATUS))
-        headerName:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
-        headerQty:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
-        headerValue:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
-        headerCum:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
-        headerChange:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
-        return
-    end
-
     local arrow = sortAsc and ARROW_UP or ARROW_DOWN
-    local function apply(headerControl, stringId, key)
-        local text = GetString(stringId)
-        if sortKey == key then
+    local function apply(headerControl, text, key, sortable)
+        if sortable ~= false and sortKey == key then
             text = text .. " " .. arrow
         end
         headerControl:SetText(text)
         headerControl:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
     end
-    apply(headerName, SI_BMW_DETAIL_COL_NAME, "name")
-    apply(headerQty, SI_BMW_DETAIL_COL_QTY, "qty")
-    apply(headerValue, SI_BMW_DETAIL_COL_VALUE, "value")
-    apply(headerChange, SI_BMW_DETAIL_COL_CHANGE, "change")
-    -- The Cum header is non-sortable; restore its plain label (UpdateHeaders may
-    -- be returning from diff mode, which overwrote it with "Share").
-    headerCum:SetText(CumulativeHeaderText())
-    headerCum:SetColor(HEADER_MUTED_R, HEADER_MUTED_G, HEADER_MUTED_B, 1)
+
+    if viewMode == "trend" then
+        apply(headerName, GetString(SI_BMW_DETAIL_COL_NAME), "name")
+        apply(headerQty, GetString(SI_BMW_PRICE_TREND_COL_PRICE), "qty")
+        apply(headerValue, GetString(SI_BMW_PRICE_TREND_COL_OVERALL), "value")
+        apply(headerCum, GetString(SI_BMW_PRICE_TREND_COL_GAIN), "cum")
+        apply(headerChange, GetString(SI_BMW_PRICE_TREND_COL_LOSS), "change")
+        return
+    end
+
+    if viewMode == "diff" then
+        apply(headerName, GetString(SI_BMW_DETAIL_COL_NAME), "name")
+        apply(headerQty, GetString(SI_BMW_DETAIL_COL_QTY_DELTA), "qty")
+        apply(headerValue, GetString(SI_BMW_DETAIL_COL_VALUE_DELTA), "value")
+        apply(headerCum, GetString(SI_BMW_DETAIL_COL_SHARE), "cum")
+        apply(headerChange, GetString(SI_BMW_DETAIL_COL_STATUS), "change")
+        return
+    end
+
+    apply(headerName, GetString(SI_BMW_DETAIL_COL_NAME), "name")
+    apply(headerQty, GetString(SI_BMW_DETAIL_COL_QTY), "qty")
+    apply(headerValue, GetString(SI_BMW_DETAIL_COL_VALUE), "value")
+    apply(headerChange, GetString(SI_BMW_DETAIL_COL_CHANGE), "change")
+    apply(headerCum, CumulativeHeaderText(), "cum", false)
 end
 
 -- Re-anchor the Value header around the visible columns and hide analytics-only
@@ -1608,6 +1934,8 @@ end
 UpdateColumnLayout = function()
     local useAnalytics = UsesAnalyticsColumns()
 
+    headerQty:SetWidth(viewMode == "trend" and 100 or 70)
+    headerValue:SetWidth(viewMode == "trend" and 120 or 150)
     headerCum:SetHidden(not useAnalytics)
     headerChange:SetHidden(not useAnalytics)
     headerValue:ClearAnchors()
@@ -1624,22 +1952,67 @@ end
 -- without ESO's grey disabled treatment. In diff view filters are irrelevant, so
 -- hide the controls instead of leaving inert UI.
 UpdatePriceFilterButtons = function()
-    local hide = viewMode == "diff"
+    local hideFilters = viewMode ~= "category"
     for key, button in pairs(filterButtons) do
-        button:SetHidden(hide)
-        button:SetEnabled(not hide)
+        button:SetHidden(hideFilters)
+        button:SetEnabled(not hideFilters)
     end
 
     if selectedFilterFrame then
         selectedFilterFrame:ClearAnchors()
         selectedFilterFrame:SetAnchorFill(filterButtons[priceFilter])
-        selectedFilterFrame:SetHidden(hide)
+        selectedFilterFrame:SetHidden(hideFilters)
     end
     if searchClearButton then
-        searchClearButton:SetHidden(hide or searchQuery == "")
+        searchClearButton:SetHidden(searchQuery == "")
     end
     if resetFiltersButton then
-        resetFiltersButton:SetHidden(hide or (priceFilter == "all" and searchQuery == ""))
+        resetFiltersButton:SetHidden(hideFilters or (priceFilter == "all" and searchQuery == ""))
+    end
+    if searchBackdrop then
+        searchBackdrop:SetHidden(false)
+    end
+    if filterGroupLabel then
+        filterGroupLabel:SetHidden(hideFilters)
+    end
+
+    local hideColumnMode = viewMode ~= "category"
+    for _, button in pairs(columnModeButtons) do
+        button:SetHidden(hideColumnMode)
+        button:SetEnabled(not hideColumnMode)
+    end
+    if selectedColumnModeFrame then
+        local active = columnModeButtons[GetDetailColumnMode()]
+        selectedColumnModeFrame:ClearAnchors()
+        if active then
+            selectedColumnModeFrame:SetAnchorFill(active)
+        end
+        selectedColumnModeFrame:SetHidden(hideColumnMode or not active)
+    end
+
+    local trend = viewMode == "trend"
+    if snapshotGroupLabel then
+        snapshotGroupLabel:SetText(Colorize(COLOR_MUTED, GetString(
+            trend and SI_BMW_PRICE_TREND_GROUP or SI_BMW_DETAIL_GROUP_SNAPSHOT)))
+    end
+    if rememberButton then
+        rememberButton:SetEnabled(not trend)
+        rememberButton:SetHidden(trend)
+    end
+    if clearButton then
+        clearButton:SetEnabled(not trend)
+        clearButton:SetHidden(trend)
+    end
+    if snapshotStatusLabel then
+        snapshotStatusLabel:SetHidden(trend)
+    end
+    if changesButton and snapshotGroupLabel and rememberButton then
+        changesButton:ClearAnchors()
+        if trend then
+            changesButton:SetAnchor(LEFT, snapshotGroupLabel, RIGHT, 8, 0)
+        else
+            changesButton:SetAnchor(TOPLEFT, rememberButton, TOPRIGHT, 8, 0)
+        end
     end
 end
 
@@ -1650,7 +2023,7 @@ local function UpdateChangesButton()
     if not changesButton then
         return
     end
-    if viewMode == "diff" then
+    if viewMode ~= "category" then
         changesButton:SetText(GetString(SI_BMW_DETAIL_BTN_BACK))
     else
         changesButton:SetText(GetString(SI_BMW_DETAIL_BTN_CHANGES))
@@ -1665,32 +2038,40 @@ function DetailWindow.Show(categoryId, categoryName)
     viewMode = "category"
     currentCategoryId = categoryId
     currentCategoryName = categoryName
-    priceFilter = "all"
-
-    -- A fresh category open clears any prior search so the user sees the category
-    -- they clicked, not stale search results.
-    searchQuery = ""
-    suppressSearchEvent = true
-    searchBox:SetText("")
-    suppressSearchEvent = false
-
-    -- Start every open from the value-descending default - the "what to sell
-    -- right now" order - regardless of how the previous view was sorted.
-    sortKey = "value"
-    sortAsc = false
+    RestoreSortState()
 
     UpdateChangesButton()
     UpdateColumnLayout()
     UpdateHeaders()
     UpdatePriceFilterButtons()
     Populate()
-    windowControl:SetHidden(false)
-    windowControl:BringWindowToTop()
+    ShowWindow()
 end
 
--- Return from the diff view to the material list, restoring the category that was
--- open before (remembered in currentCategoryId). Reached via the toolbar toggle,
--- which reads "Back" in diff mode. Leaves the window open; only the mode flips.
+-- Whole-bag material list, the same table as a category open without a
+-- profession filter. Reached from the main panel's grand total.
+function DetailWindow.ShowAll()
+    if not windowControl then
+        return
+    end
+
+    viewMode = "category"
+    currentCategoryId = nil
+    currentCategoryName = nil
+    RestoreSortState()
+
+    UpdateChangesButton()
+    UpdateColumnLayout()
+    UpdateHeaders()
+    UpdatePriceFilterButtons()
+    Populate()
+    ShowWindow()
+end
+
+-- Return from the diff or price-dynamics view to the material list, restoring
+-- the category that was open before (remembered in currentCategoryId). Reached
+-- via the toolbar toggle, which reads "Back" outside category mode. Leaves the
+-- window open; only the mode flips.
 function DetailWindow.ShowMaterials()
     if not windowControl then
         return
@@ -1698,14 +2079,7 @@ function DetailWindow.ShowMaterials()
 
     viewMode = "category"
     diffSource = "snapshot"
-    searchQuery = ""
-    suppressSearchEvent = true
-    searchBox:SetText("")
-    suppressSearchEvent = false
-
-    -- Back to the default value-descending order, matching a fresh category open.
-    sortKey = "value"
-    sortAsc = false
+    RestoreSortState()
 
     UpdateChangesButton()
     UpdateColumnLayout()
@@ -1725,19 +2099,14 @@ function DetailWindow.ShowDiff()
 
     viewMode = "diff"
     diffSource = "snapshot"
-    -- The diff spans the whole bag, so any active search is irrelevant here.
-    searchQuery = ""
-    suppressSearchEvent = true
-    searchBox:SetText("")
-    suppressSearchEvent = false
+    RestoreSortState()
 
     UpdateChangesButton()
     UpdateColumnLayout()
     UpdateHeaders()
     UpdatePriceFilterButtons()
     Populate()
-    windowControl:SetHidden(false)
-    windowControl:BringWindowToTop()
+    ShowWindow()
 end
 
 -- Open the same delta table for the material movement behind the latest
@@ -1750,18 +2119,14 @@ function DetailWindow.ShowVisitDiff()
 
     viewMode = "diff"
     diffSource = "visit"
-    searchQuery = ""
-    suppressSearchEvent = true
-    searchBox:SetText("")
-    suppressSearchEvent = false
+    RestoreSortState()
 
     UpdateChangesButton()
     UpdateColumnLayout()
     UpdateHeaders()
     UpdatePriceFilterButtons()
     Populate()
-    windowControl:SetHidden(false)
-    windowControl:BringWindowToTop()
+    ShowWindow()
 end
 
 -- Open the whole-bag material list pre-filtered to entries with no available
@@ -1776,20 +2141,33 @@ function DetailWindow.ShowUnpriced()
     currentCategoryId = nil
     currentCategoryName = nil
     priceFilter = "unpriced"
-    searchQuery = ""
-    suppressSearchEvent = true
-    searchBox:SetText("")
-    suppressSearchEvent = false
-    sortKey = "value"
-    sortAsc = false
+    RestoreSortState()
 
     UpdateChangesButton()
     UpdateColumnLayout()
     UpdateHeaders()
     UpdatePriceFilterButtons()
     Populate()
-    windowControl:SetHidden(false)
-    windowControl:BringWindowToTop()
+    ShowWindow()
+end
+
+function DetailWindow.ShowPriceTrends()
+    if not windowControl then
+        return
+    end
+
+    viewMode = "trend"
+    -- Do not clear currentCategoryId/Name: Back must restore the category that
+    -- was open, not drop the player into the whole-bag list.
+    RestoreSortState()
+    searchBox:LoseFocus()
+
+    UpdateChangesButton()
+    UpdateColumnLayout()
+    UpdateHeaders()
+    UpdatePriceFilterButtons()
+    Populate()
+    ShowWindow()
 end
 
 function DetailWindow.Hide()
@@ -1798,6 +2176,9 @@ function DetailWindow.Hide()
     -- hidden window ~SEARCH_DEBOUNCE_MS later, wasted work with nothing on screen.
     EVENT_MANAGER:UnregisterForUpdate(SEARCH_TIMER_NAME)
     if windowControl then
+        if SCENE_MANAGER and SCENE_MANAGER.HideTopLevel then
+            SCENE_MANAGER:HideTopLevel(windowControl)
+        end
         windowControl:SetHidden(true)
     end
 end
@@ -1819,12 +2200,14 @@ function DetailWindow.ApplyColumnMode()
     if not windowControl then
         return
     end
-    if not UsesAnalyticsColumns() and sortKey == "change" then
+    if viewMode == "category" and not UsesAnalyticsColumns() and sortKey == "change" then
         sortKey = "value"
         sortAsc = false
+        CaptureSortState()
     end
     UpdateColumnLayout()
     UpdateHeaders()
+    UpdatePriceFilterButtons()
     DetailWindow.Refresh()
 end
 
@@ -1833,6 +2216,10 @@ end
 -- floating windows. Returns nil before Initialize.
 function DetailWindow.GetWindowControl()
     return windowControl
+end
+
+function DetailWindow.IsShown()
+    return windowControl and not windowControl:IsHidden()
 end
 
 -- Hide the detail window when the craft bag closes, so it doesn't linger over

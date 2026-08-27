@@ -169,6 +169,52 @@ local function Menu_Init()
 		}
 	BUI.Menu.RegisterPanel("BUI_MenuCustomBar",Panel)
 
+	-- Controller/LAM version of the Custom Bar settings.  Keep every setting in
+	-- the single Bandit UI panel so the gamepad menu is one vertical column.
+	if BUI.SettingsBridge and BUI.SettingsBridge.AddGroupedSection then
+		local LamOptions={}
+		table.insert(LamOptions,{
+			type="checkbox", name="CustomBar",
+			getFunc=function() return BUI.Vars.CustomBar.Enable end,
+			setFunc=function(value) BUI.Vars.CustomBar.Enable=value BUI.CustomBarUpdate() end,
+		})
+		table.insert(LamOptions,{type="header",name="LeaderCommands"})
+		for i,data in ipairs(LeaderCommands) do
+			local idx=i
+			table.insert(LamOptions,{
+				type="checkbox", name=data.mess,
+				getFunc=function() return BUI.Vars.CustomBar.Leader[idx] end,
+				setFunc=function(value) BUI.Vars.CustomBar.Leader[idx]=value BUI.CustomBarUpdate() end,
+			})
+		end
+		table.insert(LamOptions,{type="header",name="CustomCommands"})
+		for i,_ in ipairs(SlashCommands) do
+			local idx=i
+			local function Label()
+				local cmd=BUI.Vars.CustomBar.Slash[idx] and BUI.Vars.CustomBar.Slash[idx].command or ""
+				if cmd=="" then return "Command "..idx end
+				return "Command "..idx..": "..cmd
+			end
+			table.insert(LamOptions,{
+				type="submenu", name=Label, controls={
+					{type="checkbox",name="Enabled",
+						getFunc=function() return BUI.Vars.CustomBar.Slash[idx].enable end,
+						setFunc=function(value) BUI.Vars.CustomBar.Slash[idx].enable=value BUI.CustomBarUpdate() end},
+					{type="editbox",name="TextureFilename",
+						getFunc=function() return tostring(BUI.Vars.CustomBar.Slash[idx].icon or "") end,
+						setFunc=function(value) BUI.Vars.CustomBar.Slash[idx].icon=value BUI.CustomBarUpdate() end},
+					{type="editbox",name="SlashCommand",isMultiline=true,width="full",
+						getFunc=function() return tostring(BUI.Vars.CustomBar.Slash[idx].command or "") end,
+						setFunc=function(value) BUI.Vars.CustomBar.Slash[idx].command=value BUI.CustomBarUpdate() end},
+				},
+			})
+		end
+		BUI.SettingsBridge.AddGroupedSection("BUI_BanditUI", {
+			id="CustomBar",
+			order=20, name=Panel.name, options=LamOptions,
+		})
+	end
+
 	local theme_color=BUI.Vars.Theme==6 and {1,204/255,248/255,1} or BUI.Vars.Theme==7 and BUI.Vars.AdvancedThemeColor or BUI.Vars.Theme>3 and BUI.Vars.CustomEdgeColor or {1,1,1,1}
 	local container=WINDOW_MANAGER:CreateControlFromVirtual("BUI_MenuCustomBarContainer", BUI_MenuCustomBar, "ZO_ScrollContainer")
 	container:SetAnchor(TOPLEFT, BUI_MenuCustomBar, TOPLEFT, 0, 50)

@@ -217,7 +217,10 @@ function Module:GetSettingsControls( )
 			type = "checkbox",
 			name = self:GetString("groupPanel"),
 			getFunc = function() return self:GetSetting("groupPanel") end,
-			setFunc = function(enabled) self:SetSetting("groupPanel", enabled) end,
+			setFunc = function( enabled )
+				self:SetSetting("groupPanel", enabled)
+				self:TogglePanelMode("carrion")
+			end,
 		},
 		--------------------
 		{
@@ -261,13 +264,15 @@ function Module:TogglePanelMode( mode )
 	if (CA2.GroupPanelIsEnabled()) then
 		CA2.GroupPanelDisable()
 	end
-	CA2.GroupPanelEnable({
-		headerText = LCA.GetAbilityName(DATA[mode]),
-		statWidth = 48,
-		colorStat = 0x66CCFFFF,
-		useUnitId = false,
-		useRange = false,
-	})
+	if (self:GetSetting("groupPanel")) then
+		CA2.GroupPanelEnable({
+			headerText = LCA.GetAbilityName(DATA[mode]),
+			statWidth = 48,
+			colorStat = 0x66CCFFFF,
+			useUnitId = false,
+			useRange = false,
+		})
+	end
 end
 
 function Module:ShowScalesBorder( )

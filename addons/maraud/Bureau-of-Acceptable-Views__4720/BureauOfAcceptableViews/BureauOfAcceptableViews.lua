@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.7.105247",
+    version = "3.8.145105",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -1014,6 +1014,11 @@ local function ResetCameraState(suppressOutput)
     -- snapshot. Clear the shoulder swing first, then the preset hold/snapshot, so
     -- the zoom reset below lands on a neutral, un-held, un-swung camera. Each is
     -- a no-op when its feature is off or idle.
+    local OffsetNudge = BureauOfAcceptableViews.OffsetNudge
+    if OffsetNudge and OffsetNudge.StopAll then
+        OffsetNudge.StopAll()
+    end
+
     local ShoulderControl = BureauOfAcceptableViews.ShoulderControl
     if ShoulderControl and ShoulderControl.EmergencyRestore then
         ShoulderControl.EmergencyRestore()

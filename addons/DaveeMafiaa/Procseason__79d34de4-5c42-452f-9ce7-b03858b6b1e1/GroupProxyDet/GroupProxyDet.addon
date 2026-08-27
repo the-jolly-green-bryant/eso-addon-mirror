@@ -1,0 +1,10 @@
+## Title: Group Burst Timers
+## Author: Daveemafiaa
+## Version: 7.8.0
+## AddOnVersion: 78
+## APIVersion: 101050
+## Description: PS5 compact stacked shared timers with readable names even at minimum HUD scale.
+## SavedVariables: GroupProxyDetSaved
+## DependsOn: LibAddonMenu-2.0 LibGroupBroadcast
+
+GroupProxyDet.lua

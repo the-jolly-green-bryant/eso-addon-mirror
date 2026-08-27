@@ -197,7 +197,15 @@ local function SettingsWindow_Init()
 		keyboardOptions.panelNames = keyboardOptions.panelNames or {}
 		keyboardOptions.panelNames[ui.id] = data.name
 	end
-	if type(ZO_GameMenu_AddSettingPanel) == "function" then
+	-- The original Bandits settings panel is a custom keyboard-style panel.
+	-- Registering that same panel through ZO_GameMenu_AddSettingPanel while our
+	-- LibGamepad/LAM bridge is active creates a second "Bandit UI" entry with
+	-- no GAMEPAD_SETTINGS_DATA; the gamepad screen displays that duplicate as
+	-- "Unavailable". Keep the legacy panel only when no external settings
+	-- bridge is available. /bui can still open the original Bandits window.
+	local hasExternalBridge = BUI.SettingsBridge and BUI.SettingsBridge.Available
+		and BUI.SettingsBridge.Available()
+	if not hasExternalBridge and type(ZO_GameMenu_AddSettingPanel) == "function" then
 		ZO_GameMenu_AddSettingPanel(data)
 	else
 		BUI.SettingsPanelData = data
@@ -207,6 +215,16 @@ local function SettingsWindow_Init()
 end
 
 function BUI.Menu.Open()
+	-- In controller mode, the Side Panel settings button should open the native
+	-- LibGamepad Bandit UI panel directly. Opening the legacy keyboard window in
+	-- the gamepad UI makes its fixed-size labels appear extremely small.
+	if BUI.SettingsBridge and BUI.SettingsBridge.UsingDirectGamepad
+		and BUI.SettingsBridge.UsingDirectGamepad()
+		and BUI.SettingsBridge.OpenDirect
+		and BUI.SettingsBridge.OpenDirect("BUI_BanditUI") then
+		return
+	end
+
 	-- When LibAddonMenu is active, open its registered Satuve panel. LibGamepad
 	-- can expose that same panel inside ESO's controller UI.
 	if BUI.SettingsBridge and BUI.SettingsBridge.UsingLAM and BUI.SettingsBridge.UsingLAM() then

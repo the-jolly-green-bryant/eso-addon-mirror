@@ -1,0 +1,44 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Muffins714/Muffin-s-Utility-Tree__4797",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Muffins714",
+  "canonical_id": "esoui:4797",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4797",
+  "deleted": false,
+  "directories": [
+    "MuffinsUtilityTree"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4797/",
+  "fingerprint": "b9eda2faa9c079a0539ff4d91b6bca9665b4d17685e463a4302c2383208e2fcf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17149.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17150.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17151.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4797",
+  "source_url": "https://www.esoui.com/downloads/info4797-MuffinsUtilityTree.html",
+  "stats": {
+    "downloads": 20,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Muffin's Utility Tree",
+  "updated_at": 1787799458000,
+  "version": "1.0"
+}

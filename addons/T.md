@@ -73,7 +73,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TESTUPDATE2112](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rob82668/TESTUPDATE2112__4435) | rob82668 | PC / Mac | 1.0.0 |
 | [Tetris for Fishing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sem/Tetris-for-Fishing__3314) | Sem | PC / Mac | 1.7 |
 | [Tetsu's Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-FPS-Booster__2edefdf7-97a0-476e-98a0-f76c40976159) | Tetsurion | Console | — |
-| [Tetsu's Daily Writ Precrafter (dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter-dev__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
+| [Tetsu's Combat Healer Helper(dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-Healer-Helper-dev__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |
+| [Tetsu's Daily Writ Precrafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
 | [Tetsu's Housing FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Housing-FPS-Booster__febdb84e-a3d4-46d5-b70c-e9b1e491be5f) | Tetsurion | Console | — |
 | [Text Trials Guide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Text-Trials-Guide__2461) | Splat | PC / Mac | 1.2.8 |
 | [TG's Group Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaTerGoTcha/TG-s-Group-Trackers__cd045612-ec90-4885-be99-f35f328691f8) | TaTerGoTcha | Console | — |

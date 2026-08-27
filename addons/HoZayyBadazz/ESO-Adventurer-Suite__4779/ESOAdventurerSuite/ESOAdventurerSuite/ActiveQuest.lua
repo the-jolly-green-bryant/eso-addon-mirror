@@ -594,6 +594,12 @@ function Q:Refresh()
     if not show then return end
 
     local index = self:GetActiveQuestIndex()
+    if not self.layoutMode and not index then
+        -- No accepted/tracked quest means no gameplay quest overlay. Keep the
+        -- saved position/size/settings intact so it returns when a quest is active.
+        self.frame:SetHidden(true)
+        return
+    end
     if self.layoutMode and not index then
         if self.header then self.header:SetText("ACTIVE QUEST") end
         self.title:SetText(self:WrapTitleText("Quest Overlay Preview"))

@@ -1,0 +1,13 @@
+<GuiXml>
+    <String name="EsoAR_ARABIC_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="EsoAR_ARABIC_MEDIUM_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="EsoAR_ARABIC_BOLD_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="EsoAR_ANDALUS_FONT" value="EsoAR/fonts/1_AndalusArabic.slug" />
+    <String name="Esoar_SARABUN_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="Esoar_SARABUN_MEDIUM_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="Esoar_SARABUN_BOLD_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="Esoar_NOTO_SERIF_MEDIUM_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="Esoar_UNIVERS_BOLD_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="Esoar_UNIVERS_MEDIUM_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+    <String name="Esoar_UNIVERS_CONDENSED_FONT" value="EsoAR/fonts/NotoNaskhArabic.slug" />
+</GuiXml>

@@ -1,14 +1,6 @@
 -- Translation by @snorunt361(ESOUI),@Warashi-JP(github)
 local strings = {
 	SI_KEYBINDINGS_CATEGORY_PBSMINIMAP = "Mini Map",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_HUD = "ミニマップを表示",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_SIEGE_HUD = "シナジー発動時の表示",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_COMBAT = "戦闘時の表示",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_IN_HOUSING = "住宅内での表示",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_OUT = "最大ズームアウト",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_IN = "最大ズームイン",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_PLUS = "拡大時の変更単位",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_MINUS = "縮小時の変更単位",
 	SI_PBSMINIMAP_WORLD_MAP_TWEAKS = "ワールドマップの最適化",
 	SI_PBSMINIMAP_WORLD_MAP_TWEAKS_TOOLTIP = "一時的なCPU負荷分散の最適化を有効にします",
 	SI_PBSMINIMAP_MINI_MAP = "ミニマップ",
@@ -85,7 +77,6 @@ local strings = {
 	SI_PBSMINIMAP_COMPASSMODE_SHOWN = "表示",
 	SI_PBSMINIMAP_KEEP_SQUARE = "正方形を維持",
 	SI_PBSMINIMAP_KEEP_SQUARE_TOOLTIP = "マップの表示面積を正方形に保ちます。デフォルトでの動作です",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_OFFSET_FIX = "ミニマップの位置を初期に戻します",
 	SI_PBSMINIMAP_ASYNC_UPDATE = "非同期更新",
 	SI_PBSMINIMAP_ASYNC_UPDATE_TOOLTIP = "On: Framerate over update.\nOff: Update over framerate.",
 	SI_PBSMINIMAP_PINSIZE_KEEP_FAST_TRAVEL = "トランシタスの祠",
@@ -113,7 +104,7 @@ local strings = {
 	SI_PBSMINIMAP_LITE_FOLLOW = "プレイヤーを追従",
 	SI_PBSMINIMAP_LITE_FOLLOW_TOOLTIP = "プレイヤーをミニマップの中央に固定し、移動に合わせて地図を動かします。",
 	SI_PBSMINIMAP_LITE_ZOOM_OUTDOOR = "拡大率　屋外",
-	SI_PBSMINIMAP_LITE_ZOOM_OUTDOOR_TOOLTIP = "屋外での拡大率です。地図本来の解像度に対する倍率で、大きいほど狭い範囲を詳細に表示します。即座に反映されます。",
+	SI_PBSMINIMAP_LITE_ZOOM_OUTDOOR_TOOLTIP = "屋外での拡大率です。1.00で地図本来の解像度、大きいほど狭い範囲を詳細に、小さいほど広い範囲を表示します。0.30程度より下では地図が枠より小さくなり、周囲に余白が出ます。即座に反映されます。",
 	SI_PBSMINIMAP_LITE_ZOOM_SUBZONE = "拡大率　建物・街",
 	SI_PBSMINIMAP_LITE_ZOOM_SUBZONE_TOOLTIP = "建物や住宅、街の地図での拡大率です。これらの地図は狭いため、低めにするとプレイヤー周辺が見やすくなります。",
 	SI_PBSMINIMAP_LITE_ZOOM_DUNGEON = "拡大率　ダンジョン",
@@ -136,6 +127,10 @@ local strings = {
 	SI_PBSMINIMAP_LITE_ZONE_TITLE_TOOLTIP = "現在いるエリアの名前を、ミニマップのすぐ上に表示します。",
 	SI_PBSMINIMAP_LITE_ZONE_TITLE_SIZE = "エリア名の文字サイズ",
 	SI_PBSMINIMAP_LITE_ZONE_TITLE_SIZE_TOOLTIP = "ミニマップ上部に表示するエリア名の文字サイズです。",
+	SI_PBSMINIMAP_LITE_BORDER = "枠線を表示",
+	SI_PBSMINIMAP_LITE_BORDER_TOOLTIP = "ミニマップの周囲に地図の枠を描画します。オフにすると枠のない地図だけの表示になります。通常のマップの枠には影響しません。",
+	SI_PBSMINIMAP_APPLY_LABEL = "設定を反映",
+	SI_PBSMINIMAP_APPLY_TOOLTIP = "上のスイッチの変更を反映するため、UIを再読み込みします。",
 }
 
 for stringId, stringValue in pairs(strings) do

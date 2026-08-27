@@ -466,6 +466,17 @@ local function AcquireRow(index)
         -- figure, a take-home figure, a plain count, a warning), and a caption for
         -- the click hint. No colour is decided here.
         UI.TipTitle(InformationTooltip, data.name)
+        if data.isPriceTrend then
+            UI.TipLine(InformationTooltip, stringformat(
+                GetString(SI_BMW_PRICE_TREND_TOOLTIP_WINDOW), data.threshold), "soft")
+            UI.TipLine(InformationTooltip, stringformat(
+                GetString(SI_BMW_PRICE_TREND_TOOLTIP_GAINS), data.gains), "gain")
+            UI.TipLine(InformationTooltip, stringformat(
+                GetString(SI_BMW_PRICE_TREND_TOOLTIP_LOSSES), data.losses), "loss")
+            UI.TipDivider(InformationTooltip)
+            UI.TipCaption(InformationTooltip, GetString(SI_BMW_PRICE_TREND_CLICK_HINT), "accent")
+            return
+        end
         if row.isLeader then
             UI.TipLine(InformationTooltip, GetString(SI_BMW_TOOLTIP_TOP_CATEGORY), "accent")
             UI.TipDivider(InformationTooltip)
@@ -510,7 +521,11 @@ local function AcquireRow(index)
         end
         local detail = addon.DetailWindow
         if detail then
-            detail.Show(data.id, data.name)
+            if data.isPriceTrend then
+                detail.ShowPriceTrends()
+            else
+                detail.Show(data.id, data.name)
+            end
         end
     end)
 
@@ -620,10 +635,21 @@ function Window.Initialize()
         UI.TipDivider(InformationTooltip)
         UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_NET_TOOLTIP_NET),
             FormatGold(net)), "accent")
+        UI.TipDivider(InformationTooltip)
+        UI.TipCaption(InformationTooltip, GetString(SI_BMW_NET_TOOLTIP_CLICK), "accent")
     end)
     totalLabel:SetHandler("OnMouseExit", function()
         StopTotalGlow()
         ClearTooltip(InformationTooltip)
+    end)
+    totalLabel:SetHandler("OnMouseUp", function(_, button, upInside)
+        if button ~= MOUSE_BUTTON_INDEX_LEFT or not upInside then
+            return
+        end
+        local detail = addon.DetailWindow
+        if detail and detail.ShowAll then
+            detail.ShowAll()
+        end
     end)
 
     subtitleLabel = WINDOW_MANAGER:CreateControl(addon.name .. "_Subtitle", windowControl, CT_LABEL)
@@ -642,6 +668,32 @@ function Window.Initialize()
     footerPricesRow = CreateFooterRow(addon.name .. "_FooterPrices")
     footerDeltaRow = CreateFooterRow(addon.name .. "_FooterDelta")
     footerGuidanceRow = CreateGuidanceRow(addon.name .. "_FooterGuidance")
+
+    -- The prices-age row is the in-panel counterpart of /bmw refresh: a click
+    -- clears the session price cache and re-queries LibPrice, which is the usual
+    -- next step after MM/TTC finishes importing. Hover explains; the "X ago"
+    -- value jumping to "just now" is the completion signal.
+    footerPriceRefreshRow.container:SetMouseEnabled(true)
+    footerPriceRefreshRow.container:SetHandler("OnMouseUp", function(_, button, upInside)
+        if button ~= MOUSE_BUTTON_INDEX_LEFT or not upInside then
+            return
+        end
+        local valuation = addon.Valuation
+        if valuation and valuation.ForceRefresh then
+            valuation.ForceRefresh()
+        end
+    end)
+    footerPriceRefreshRow.container:SetHandler("OnMouseEnter", function(self)
+        footerPriceRefreshRow.container:SetAlpha(1)
+        InitializeTooltip(InformationTooltip, self, TOPRIGHT, -6, 0, BOTTOMRIGHT)
+        UI.TipTitle(InformationTooltip, GetString(SI_BMW_FOOTER_PRICES_TOOLTIP_TITLE))
+        UI.TipLine(InformationTooltip, GetString(SI_BMW_FOOTER_PRICES_TOOLTIP_BODY), "soft")
+        UI.TipCaption(InformationTooltip, GetString(SI_BMW_FOOTER_PRICES_TOOLTIP_CLICK), "accent")
+    end)
+    footerPriceRefreshRow.container:SetHandler("OnMouseExit", function()
+        footerPriceRefreshRow.container:SetAlpha(FOOTER_ALPHA)
+        ClearTooltip(InformationTooltip)
+    end)
 
     footerPricesRow.container:SetMouseEnabled(true)
     footerPricesRow.container:SetHandler("OnMouseUp", function(_, button, upInside)
@@ -774,8 +826,6 @@ function Window.Initialize()
             FormatGold(first.gold or 0)), "soft")
         UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_HISTORY_TOOLTIP_NEWEST),
             FormatGold(last.gold or 0)), "gold")
-        -- Net change across the recorded window, in the same gain/loss tones that
-        -- tint the silhouette being hovered.
         local change = (last.gold or 0) - (first.gold or 0)
         UI.TipLine(InformationTooltip, stringformat(GetString(SI_BMW_HISTORY_TOOLTIP_CHANGE),
             FormatGold(change)), change < 0 and "loss" or "gain")
@@ -1119,13 +1169,44 @@ function Window.Update()
                 leaderGold = rows[i].gold
             end
         end
+
+        -- Price dynamics is analytical rather than a crafting category. Insert
+        -- it immediately after Other (regardless of value sorting), with its own
+        -- rise/fall summary. If Other is absent, keep the entry at the end so
+        -- the feature remains reachable for a non-empty bag.
+        local displayRows = {}
+        local trendInserted = false
+        local threshold = private.GetPriceTrendThreshold and private.GetPriceTrendThreshold() or 20
+        local trendGains, trendLosses = addon.Valuation.GetPriceTrendSummary(threshold)
+        local trendData = {
+            id = "priceTrend",
+            name = GetString(SI_BMW_PRICE_TREND_ROW),
+            isPriceTrend = true,
+            threshold = threshold,
+            gains = trendGains,
+            losses = trendLosses,
+        }
+        for i = 1, #rows do
+            displayRows[#displayRows + 1] = rows[i]
+            if rows[i].id == "other" then
+                displayRows[#displayRows + 1] = trendData
+                trendInserted = true
+            end
+        end
+        if not trendInserted and snapshot.slots > 0 then
+            displayRows[#displayRows + 1] = trendData
+        end
+        rows = displayRows
+
         for i = 1, #rows do
             local data = rows[i]
             local row = AcquireRow(i)
             row.data = data
-            row.isLeader = data.id == leaderCategoryId
+            row.isPriceTrend = data.isPriceTrend == true
+            row.isLeader = not row.isPriceTrend and data.id == leaderCategoryId
             row.leaderMarker:SetHidden(not row.isLeader)
-            local share = grandTotal and grandTotal > 0 and data.gold / grandTotal or 0
+            local share = not row.isPriceTrend and grandTotal and grandTotal > 0
+                and data.gold / grandTotal or 0
             if share > 0 then
                 row.shareFill:SetWidth(mathmax(2,
                     zo_round((CurrentWidth() - PADDING * 2) * share)))
@@ -1137,23 +1218,38 @@ function Window.Update()
             -- total, so it reads "[icon] Blacksmithing 42%" at a glance. Guard
             -- against a zero total (an all-unpriced bag) so the share is simply
             -- omitted rather than NaN.
-            local nameText = Colorize(COLOR_NAME, data.name)
-            if showIcons then
+            local nameText = Colorize(row.isPriceTrend and COLOR_ACCENT or COLOR_NAME, data.name)
+            if showIcons and not row.isPriceTrend then
                 nameText = CategoryIcon(data.id) .. nameText
             end
-            if grandTotal and grandTotal > 0 then
+            if not row.isPriceTrend and grandTotal and grandTotal > 0 then
                 local percent = zo_round(data.gold / grandTotal * 100)
                 nameText = nameText .. " " .. Colorize(COLOR_MUTED,
                     stringformat(GetString(SI_BMW_ROW_PERCENT), percent))
+            elseif row.isPriceTrend then
+                nameText = nameText .. " " .. Colorize(COLOR_MUTED,
+                    stringformat(GetString(SI_BMW_ROW_PERCENT), data.threshold))
             end
+            row.name:ClearAnchors()
+            row.name:SetAnchor(LEFT, row.container, LEFT, LEADER_MARKER_WIDTH + 5, 0)
+            row.name:SetWidth(CurrentWidth() * 0.5 - LEADER_MARKER_WIDTH - 5)
             row.name:SetText(nameText)
             -- Flag categories that have unpriced slots with a subtle marker so
             -- the total reads honestly at a glance, detail is in the tooltip.
-            local goldText = FormatGold(data.gold, colorScale and GoldScaleColor(data.gold) or nil)
-            if data.unpricedSlots > 0 then
-                goldText = goldText .. " " .. Colorize(COLOR_WARN, "*")
+            local goldText
+            if row.isPriceTrend then
+                goldText = ARROW_UP .. " " .. Colorize(COLOR_GAIN, tostring(data.gains))
+                    .. "  " .. ARROW_DOWN .. " " .. Colorize(COLOR_LOSS, tostring(data.losses))
+            else
+                goldText = FormatGold(data.gold, colorScale and GoldScaleColor(data.gold) or nil)
+                if data.unpricedSlots > 0 then
+                    goldText = goldText .. " " .. Colorize(COLOR_WARN, "*")
+                end
             end
             row.gold:SetText(goldText)
+            if row.isPriceTrend then
+                y = y + SECTION_GAP * 2
+            end
             row.container:ClearAnchors()
             row.container:SetAnchor(TOPLEFT, windowControl, TOPLEFT, PADDING, y)
             row.container:SetHidden(false)
@@ -1175,6 +1271,7 @@ function Window.Update()
     for i = rowCount + 1, #rowPool do
         rowPool[i].data = nil
         rowPool[i].isLeader = nil
+        rowPool[i].isPriceTrend = nil
         rowPool[i].leaderMarker:SetHidden(true)
         rowPool[i].shareFill:SetHidden(true)
         -- Also drop the hover wash: a row hidden while the pointer was over it

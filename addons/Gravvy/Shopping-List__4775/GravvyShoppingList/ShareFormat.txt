@@ -1,8 +1,8 @@
-Shopping List SL2 Format
+Shopping List SL3 Format
 ========================
 
-SL2 is the lightweight single-list exchange format used by Shopping List
-0.17.0 and companion add-ons. It preserves enough information to create a
+SL3 is the lightweight single-list exchange format used by Shopping List
+0.18.5 and companion add-ons. It preserves enough information to create a
 fresh shopping list with linked items and matching rules. It does not contain
 purchase progress, history, archived lists, or settings; those belong to the
 SLB1 full-backup format.
@@ -10,9 +10,9 @@ SLB1 full-backup format.
 Code envelope
 -------------
 
-An SL2 code is:
+An SL3 code is:
 
-    SL2: + base64url(payload)
+    SL3: + base64url(payload)
 
 The base64url alphabet is:
 
@@ -34,9 +34,10 @@ Primitive fields
 Payload body
 ------------
 
-    u8       format version; always 2
+    u8       format version; always 3
     string16 list name; 1-512 bytes
     string16 list note; 0-2000 bytes
+    u8       recurring list: 0 no, 1 yes
     u16      item count; 0-500
 
 Each item follows immediately:
@@ -54,6 +55,7 @@ Each item follows immediately:
     u16      required level plus 1; 0 means absent
     u32      Champion Points plus 1; 0 means absent
     u32      maximum unit price; 0 means absent
+    u8       quantity target: 0 buy more, 1 own total
 
 A nonzero set ID requires a non-empty set name. Minimum or exact quality mode
 requires a quality value. Exact level mode requires both level and Champion
@@ -68,11 +70,13 @@ base64url encoding. Use modulus 65521, initial A = 1 and B = 0, and return:
     (B * 65536) + A
 
 The checksum covers the body beginning with the format-version byte and ending
-with the final item's maximum-unit-price field. It does not cover its own four
-bytes or the SL2 prefix.
+with the final item's quantity-target field. It does not cover its own four
+bytes or the SL3 prefix.
 
 Compatibility
 -------------
 
-Shopping List continues to import SL1 codes. New exports use SL2. Companion
-add-ons should generate SL2 and should not generate SLB1 backup data.
+Shopping List continues to import SL1 and SL2 codes. Imported SL1 and SL2
+quantities use Buy More behavior and import as non-recurring lists. New exports
+use SL3. Companion add-ons
+should generate SL3 and should not generate SLB1 backup data.

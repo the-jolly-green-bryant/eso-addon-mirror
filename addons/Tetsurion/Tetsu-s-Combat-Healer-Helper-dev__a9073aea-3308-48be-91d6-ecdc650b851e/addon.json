@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Tetsurion/Tetsu-s-Combat-Healer-Helper-dev__a9073aea-3308-48be-91d6-ecdc650b851e",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Tetsurion",
+  "canonical_id": "bethesda:a9073aea-3308-48be-91d6-ecdc650b851e",
+  "content_id": "a9073aea-3308-48be-91d6-ecdc650b851e",
+  "deleted": false,
+  "fingerprint": "be5b8645644f11bffdeed4677a133e4fae5f9e3eae975040c19a46bd05ef6f90",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "a9073aea-3308-48be-91d6-ecdc650b851e",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/a9073aea-3308-48be-91d6-ecdc650b851e",
+  "title": "Tetsu's Combat Healer Helper(dev)"
+}

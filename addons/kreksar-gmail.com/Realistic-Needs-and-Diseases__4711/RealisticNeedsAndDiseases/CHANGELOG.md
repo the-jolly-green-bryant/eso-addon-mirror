@@ -4,6 +4,85 @@ Full version history. See README.md for current features, installation, and usag
 
 ---
 
+### 0.19.28
+- **"Thirst restored per wild water node harvested" slider's minimum
+  lowered from 5 to 0.** Setting it to 0 now disables the mechanic
+  entirely — no thirst restore *and* no "You drink from the water source"
+  chat message, rather than printing a message about an effect that no
+  longer happens.
+
+---
+
+### 0.19.27
+- **New: "Disease overlay max opacity" slider** in Settings (0.1–1.0) —
+  caps how strong the full-screen disease tint (`RN.Overlay.lua`) can get,
+  even at Severe. Scales the existing per-severity ceilings
+  (`Overlay.MAX_ALPHA_BY_SEVERITY`: 0.25/0.45/0.75 for Mild/Moderate/
+  Severe) proportionally down together via a multiplier, rather than
+  replacing them individually — at 0.5, for example, Severe renders at
+  half its normal strength and Mild/Moderate scale down right along with
+  it. Default (1.0) is unscaled, matching prior behavior exactly. Reads
+  live (not cached) each time an overlay refreshes, and the slider's
+  setFunc also calls `Overlay.RefreshAll` immediately, so adjusting it
+  updates any already-visible overlay right away rather than waiting for
+  the next severity change. Mirrors the same overlay-opacity slider added
+  to Frostfall's hot/cold screen effect (v3.4.24).
+
+---
+
+### 0.19.26
+- **Size and opacity/transparency sliders for both the icon and bar status
+  displays.** 4 new Settings sliders, all live-updating (no reload needed):
+  - "Icon status display size" (`statusIconsTransparencyScale`, 0.5-2.0)
+    and "Icon status display max opacity" (`statusIconsTransparencyMaxOpacity`,
+    0.2-1.0) — the opacity slider caps how opaque an icon can get even at
+    its worst, multiplying on top of the existing severity-driven
+    transparency rather than replacing it.
+  - "Bar status display size" (`statusBarsScale`, 0.5-2.0) and "Bar status
+    display opacity" (`statusBarsOpacity`, 0.2-1.0) — the opacity slider
+    covers the whole window (background, bars, and labels together).
+  - Implemented via each display's top-level window's native `SetScale`/
+    `SetAlpha`, which cascade to every child control automatically — no
+    per-icon or per-row layout/alpha math needed to support this.
+
+---
+
+### 0.19.25
+- **Drunkenness bar in the bar-based status display (0.19.24) is no longer
+  inverted.** Previously shown as an always-visible "Sobriety" bar (full =
+  sober) to keep all 4 needs bars reading the same full-is-good direction.
+  Now it's a dynamic row instead — hidden entirely while sober (drunkenness
+  0), appearing only once actually inebriated, and filling UP as
+  drunkenness increases (raw value, no inversion) — the same shape as the
+  disease rows below it, rather than a 4th always-shown fixed row.
+  Hunger/thirst/fatigue are unchanged (always shown, full = good).
+
+---
+
+### 0.19.24
+- **New: bar-based status display.** New file
+  `RealisticNeedsAndDiseases_StatusBars.lua`, opt-in via Settings > "Use
+  bar-based status display" (off by default). A fourth status display
+  option — mini health-bar-style bars using ESO's native `CT_STATUSBAR`
+  control type (the same control the game's own health/magicka/stamina
+  bars use), one per need (always shown) plus one per currently-active
+  disease (shown/hidden dynamically). Independent toggle — can run
+  alongside the text window and/or the transparency-based icon display.
+  - Needs bars are full = satisfied, empty = critical, matching a health
+    bar's own metaphor directly. Drunkenness is displayed inverted as a
+    "Sobriety" bar so all 4 needs bars read the same direction (full =
+    good) instead of one filling the "wrong" way.
+  - Disease bars fill UP as severity worsens (full = Severe) rather than
+    down, since a disease is something being accumulated, not a resource
+    being spent.
+  - Same color ramp and tooltip text (reusing `GetBandMessage`/
+    `GetCureHintText`) as the other display variants.
+  - `CT_STATUSBAR` is new to this codebase specifically (though standard
+    and well-established across ESO addons generally) — worth a quick
+    in-game sanity check on first load.
+
+---
+
 ### 0.19.23
 - **Real icon art replaces the placeholder icons.** The 9 files in
   `textures/icons/` (Hunger.dds, Thirst.dds, Fatigue.dds, Drunkenness.dds,

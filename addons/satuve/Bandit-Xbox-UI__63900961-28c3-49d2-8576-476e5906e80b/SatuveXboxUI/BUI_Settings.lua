@@ -2090,7 +2090,7 @@ function BUI.Menu.Initialize()
 	if useGroupedLAM then
 		local sections={}
 		for _,entry in ipairs(prepared) do
-			table.insert(sections,{id=entry.index,name=entry.name,options=entry.options})
+			table.insert(sections,{id=entry.index,name=entry.name,options=entry.options,order=entry.order})
 		end
 		BUI.SettingsBridge.RegisterGrouped("BUI_BanditUI",{
 			name="Bandit UI",
@@ -2098,15 +2098,18 @@ function BUI.Menu.Initialize()
 			author="Satuve",
 			version=tostring(BUI.Version or ""),
 		},sections)
-	else
-		for _,entry in ipairs(prepared) do
-			local index=entry.index
-			MenuPanel[index].name=entry.name
-			local panel=BUI.Menu.RegisterPanel("BUI_"..index, MenuPanel[index])
-			BUI.Menu.RegisterOptions("BUI_"..index, entry.options)
-			if MenuHandlers[index] and panel and panel.SetHandler then
-				for event,handler in pairs(MenuHandlers[index]) do panel:SetHandler(event, handler) end
-			end
+	end
+
+	-- Keep the original Bandit window complete as a mouse/keyboard fallback too.
+	-- Previously, enabling the grouped LAM path skipped these pages, leaving only
+	-- the separately-created 2/9/18/20 pages in the old window.
+	for _,entry in ipairs(prepared) do
+		local index=entry.index
+		MenuPanel[index].name=entry.name
+		local panel=BUI.Menu.RegisterPanel("BUI_"..index, MenuPanel[index])
+		BUI.Menu.RegisterOptions("BUI_"..index, entry.options)
+		if MenuHandlers[index] and panel and panel.SetHandler then
+			for event,handler in pairs(MenuHandlers[index]) do panel:SetHandler(event, handler) end
 		end
 	end
 	BUI.init.Menu=true

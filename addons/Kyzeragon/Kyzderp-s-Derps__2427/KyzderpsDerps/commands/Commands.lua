@@ -1,4 +1,5 @@
-KyzderpsDerps = KyzderpsDerps or {}
+local KD = KyzderpsDerps
+
 
 ---------------------------------------------------------------------
 local function StartsWith(str, prefix)
@@ -16,14 +17,14 @@ local function HandleKDDCommand(argString)
         length = length + 1
     end
 
-    local usage = "Usage: /kdd <settings || grievous || bosstimer || played || points || totalpoints || armory || junkstyle || hidelogout || normlogout || questtracker || openall || writhing || resetcraft || pocket>"
+    local usage = "Usage: /kdd <settings || grievous || bosstimer || played || points || totalpoints || armory || junkstyle || hidelogout || normlogout || questtracker || openall || writhing || resetcraft || pocket || multi>"
 
     if (length == 0) then
         CHAT_ROUTER:AddSystemMessage(usage)
         return
     end
 
-    KyzderpsDerps:dbg(args)
+    KD:dbg(args)
 
     -- Toggle grievous retaliation overlay
     if (args[1] == "grievous") then
@@ -34,7 +35,7 @@ local function HandleKDDCommand(argString)
 
     -- toggle bosstimer
     elseif (args[1] == "bosstimer") then
-        KyzderpsDerps.savedOptions.spawnTimer.enable = not KyzderpsDerps.savedOptions.spawnTimer.enable
+        KD.savedOptions.spawnTimer.enable = not KD.savedOptions.spawnTimer.enable
         SpawnTimerContainer:SetHidden(not SpawnTimerContainer:IsHidden())
         if (WINDOW_MANAGER:GetControlByName("KyzderpsDerps#SpawnTimerEnable")) then
             WINDOW_MANAGER:GetControlByName("KyzderpsDerps#SpawnTimerEnable"):UpdateValue()
@@ -42,19 +43,19 @@ local function HandleKDDCommand(argString)
 
     -- played
     elseif (args[1] == "played") then
-        CHAT_ROUTER:AddSystemMessage(KyzderpsDerps.Altoholic.BuildPlayed())
+        CHAT_ROUTER:AddSystemMessage(KD.Altoholic.BuildPlayed())
 
     -- points
     elseif (args[1] == "points") then
-        CHAT_ROUTER:AddSystemMessage(KyzderpsDerps.Altoholic.BuildPoints())
+        CHAT_ROUTER:AddSystemMessage(KD.Altoholic.BuildPoints())
 
     -- totalpoints
     elseif (args[1] == "totalpoints") then
-        CHAT_ROUTER:AddSystemMessage(KyzderpsDerps.Altoholic.BuildTotalPoints())
+        CHAT_ROUTER:AddSystemMessage(KD.Altoholic.BuildTotalPoints())
 
     -- armory
     elseif (args[1] == "armory") then
-        CHAT_ROUTER:AddSystemMessage(KyzderpsDerps.Altoholic.BuildArmory())
+        CHAT_ROUTER:AddSystemMessage(KD.Altoholic.BuildArmory())
 
     -- junk style pages
     elseif (args[1] == "junkstyle" or args[1] == "junkstyles") then
@@ -79,11 +80,11 @@ local function HandleKDDCommand(argString)
         for itemLink, num in pairs(junkedItems) do
             displayMessage = string.format("%s\n|cDDDDDD%s x%d", displayMessage, itemLink, num)
         end
-        KyzderpsDerps:msg(displayMessage)
+        KD:msg(displayMessage)
 
     -- resetchests
     elseif (args[1] == "resetchests") then
-        KyzderpsDerps.ChatSpam.ResetCounter()
+        KD.ChatSpam.ResetCounter()
 
     -- List furnishings in a home with a filter, undocumented because could be... controversial
     elseif (args[1] == "furn") then
@@ -92,7 +93,7 @@ local function HandleKDDCommand(argString)
             return
         end
 
-        KyzderpsDerps:msg("Furnishings in this house matching \"" .. args[2] .. "\":")
+        KD:msg("Furnishings in this house matching \"" .. args[2] .. "\":")
         local furnitureId = nil
         local itemId = nil
         repeat
@@ -107,13 +108,13 @@ local function HandleKDDCommand(argString)
 
     -- toggles hiding on logout
     elseif (args[1] == "hide") then
-        KyzderpsDerps.savedOptions.misc.hideOnLogout = not KyzderpsDerps.savedOptions.misc.hideOnLogout
-        KyzderpsDerps:msg(string.format("Hiding upon logout is now set to %s", tostring(KyzderpsDerps.savedOptions.misc.hideOnLogout)))
+        KD.savedOptions.misc.hideOnLogout = not KD.savedOptions.misc.hideOnLogout
+        KD:msg(string.format("Hiding upon logout is now set to %s", tostring(KD.savedOptions.misc.hideOnLogout)))
 
     -- logs out without loading few addons
     elseif (args[1] == "normlogout") then
-        KyzderpsDerps.PreLogout.doNotLoadOverride = true
-        KyzderpsDerps:msg("Logging out without loading few addons...")
+        KD.PreLogout.doNotLoadOverride = true
+        KD:msg("Logging out without loading few addons...")
         Logout()
 
     -- toggles the quest tracker panel
@@ -122,31 +123,62 @@ local function HandleKDDCommand(argString)
 
     -- re-scans and opens containers
     elseif (args[1] == "openall") then
-        KyzderpsDerps.Opener.OpenAllInBackpack()
+        KD.Opener.OpenAllInBackpack()
 
     -- opens writhing wall event crafting boxes
     elseif (args[1] == "writhing") then
-        KyzderpsDerps.Opener.OpenAllWrithingCrafting()
+        KD.Opener.OpenAllWrithingCrafting()
 
     -- janky manual reset for priority craft reroll
     elseif (args[1] == "resetcraft") then
-        KyzderpsDerps.Chatter.ResetPriority()
+        KD.Chatter.ResetPriority()
 
     -- i am forgerful
     elseif (args[1] == "kyzerg") then
-        KyzderpsDerps.Sync.Kyzerg.PrintCommands()
+        KD.Sync.Kyzerg.PrintCommands()
 
     -- attach jogroup frame to the unit (for pocket healing!)
     elseif (args[1] == "pocket") then
         if (length ~= 2) then
-            KyzderpsDerps:msg("Usage: /kdd pocket <@name> | /kdd pocket clear ")
+            KD:msg("Usage: /kdd pocket <@name> | /kdd pocket clear ")
             return
         end
         if (args[2] == "clear") then
-            KyzderpsDerps.JoGroup.ClearPockets()
+            KD.JoGroup.ClearPockets()
         else
-            KyzderpsDerps.JoGroup.Pocket(args[2])
+            KD.JoGroup.Pocket(args[2])
         end
+
+    -- Equip multi rider mount
+    elseif (args[1] == "multi") then
+        local multiMounts = {
+            13808, -- Warparty Timber Mammoth
+            13897, -- Duo-Dynamo Dungeon Delver Spider
+            6972, -- Duo-Dynamo Dwarven Spider
+            13552, -- Duo-Dynamo Hollowsteel Spider
+            11887, -- Nightmare Pillion Courser
+            10254, -- Wayrest Vanner Pillion Steed
+            12662, -- Black Fredas Pillion Walker
+            11959, -- Dark Brotherhood Crew Steed
+            8512, -- Duo-Dynamo Argent Spider
+            8379, -- Duo-Dynamo Burnished Spider
+            9576, -- Grand Pillion Draft Horse
+            13504, -- Grimshadow Pillion Moose
+            10708, -- Hew's Bane Pillion Palfrey
+            10586, -- Mara's Pledge Mare
+            11643, -- Seaghost Pillion Moose
+            10384, -- Skingrad Pillion Courser
+            12661, -- Spiritwalker Pillion Elk
+        }
+
+        for _, id in ipairs(multiMounts) do
+            if (IsCollectibleUnlocked(id) and not IsCollectibleActive(id, GAMEPLAY_ACTOR_CATEGORY_PLAYER)) then
+                KD:msg(string.format("Equipping %s (%d)", GetCollectibleName(id), id))
+                UseCollectible(id)
+                return
+            end
+        end
+        KD:msg("No multi-rider mounts available (or data hasn't been added, yell at Kyzer?)")
 
     -- Unknown
     else
@@ -174,12 +206,12 @@ end
 
 local function ToggleLuiIds()
     if (not LUIE or not LUIE.SpellCastBuffs) then
-        KyzderpsDerps:msg("LUI SpellCastBuffs is not enabled")
+        KD:msg("LUI SpellCastBuffs is not enabled")
         return
     end
     LUIE.SpellCastBuffs.SV.ShowDebugAbilityId = not LUIE.SpellCastBuffs.SV.ShowDebugAbilityId
     LUIE.SpellCastBuffs.Reset()
-    KyzderpsDerps:msg("Toggled showing IDs on LUI buffs/debuffs")
+    KD:msg("Toggled showing IDs on LUI buffs/debuffs")
 end
 
 
@@ -189,26 +221,26 @@ local function StartsWith(str, prefix)
 end
 
 ---------------------------------------------------------------------
-function KyzderpsDerps.InitializeCommands()
+function KD.InitializeCommands()
     SLASH_COMMANDS["/kdd"] = HandleKDDCommand
     SLASH_COMMANDS["/fixui"] = FixUI
     SLASH_COMMANDS["/ids"] = ToggleLuiIds
 
     -- Porting to player
-    SLASH_COMMANDS["/wayshrine"] = function() KyzderpsDerps.PortToPlayerInZone(KyzderpsDerps.savedOptions.misc.wayshrineZoneId, true) end
-    SLASH_COMMANDS["/currentshrine"] = function() KyzderpsDerps.PortToPlayerInZone(GetZoneId(GetUnitZoneIndex("player")), true) end
-    SLASH_COMMANDS["/ktp"] = KyzderpsDerps.PortToAny
+    SLASH_COMMANDS["/wayshrine"] = function() KD.PortToPlayerInZone(KD.savedOptions.misc.wayshrineZoneId, true) end
+    SLASH_COMMANDS["/currentshrine"] = function() KD.PortToPlayerInZone(GetZoneId(GetUnitZoneIndex("player")), true) end
+    SLASH_COMMANDS["/ktp"] = KD.PortToAny
     SLASH_COMMANDS["/ktpp"] = function(argString)
         if (argString == "") then
-            KyzderpsDerps:msg("Usage: /ktpp <@name>")
-            KyzderpsDerps:msg("Note: You can now use /ktp to port to both players in zones and specific players, but /ktpp will only search for specific player.")
+            KD:msg("Usage: /ktpp <@name>")
+            KD:msg("Note: You can now use /ktp to port to both players in zones and specific players, but /ktpp will only search for specific player.")
             return
         end
         if (not StartsWith(argString, "@")) then
             argString = "@" .. argString
         end
-        KyzderpsDerps.PortToAny(argString)
+        KD.PortToAny(argString)
     end
 
-    SLASH_COMMANDS["/refreshsurvey"] = KyzderpsDerps.Loot.RefreshSurvey
+    SLASH_COMMANDS["/refreshsurvey"] = KD.Loot.RefreshSurvey
 end

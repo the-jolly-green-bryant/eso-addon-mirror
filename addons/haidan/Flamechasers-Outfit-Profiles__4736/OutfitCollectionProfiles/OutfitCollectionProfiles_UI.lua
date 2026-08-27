@@ -138,6 +138,51 @@ local function ShowTooltip(control, text)
     SetTooltipText(InformationTooltip, text)
 end
 
+function OCP.HideOverwriteConfirmation()
+    if OCP.overwriteModal then OCP.overwriteModal:SetHidden(true) end
+    OCP.pendingOverwrite = nil
+end
+
+function OCP.ConfirmOverwriteConfirmation()
+    local pending = OCP.pendingOverwrite
+    if not pending then return end
+
+    local confirmationType = pending.confirmationType
+    local outfitIndex = pending.outfitIndex
+    OCP.HideOverwriteConfirmation()
+
+    if confirmationType == "capture" then
+        OCP.ConfirmCapture(outfitIndex)
+    elseif confirmationType == "draft" then
+        OCP.SaveDraftConfirmed()
+    end
+end
+
+function OCP.ShowOverwriteConfirmation(confirmationType, outfitIndex)
+    if not OCP.overwriteModal or not OCP.window or OCP.window:IsHidden() then return end
+
+    local outfitName = OCP.GetOutfitName(outfitIndex)
+    local message
+    if confirmationType == "capture" then
+        message = string.format(
+            "%s already has a saved Collection setup. Replace it with everything currently active?",
+            outfitName)
+    else
+        message = string.format(
+            "%s already has a saved Collection setup. Replace it with the settings currently shown?",
+            outfitName)
+    end
+
+    OCP.pendingOverwrite = {
+        confirmationType = confirmationType,
+        outfitIndex = outfitIndex,
+    }
+    ClearTooltip(InformationTooltip)
+    OCP.overwriteMessage:SetText(message)
+    OCP.overwriteModal:SetHidden(false)
+    OCP.overwriteModal:BringWindowToTop()
+end
+
 function OCP.CreateWindow()
     local window = WINDOW_MANAGER:CreateTopLevelWindow("OCPWindow")
     OCP.window = window
@@ -329,6 +374,67 @@ function OCP.CreateWindow()
     end)
     delayEdit:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
 
+    -- This addon-owned confirmation overlay intentionally does not call ESO's
+    -- global dialog manager. It therefore cannot release cursor/UI mode while
+    -- the Outfit Profiles window remains open.
+    local overwriteModal = WINDOW_MANAGER:CreateTopLevelWindow("OCPOverwriteModal")
+    OCP.overwriteModal = overwriteModal
+    overwriteModal:SetDimensions(760, 744)
+    overwriteModal:SetAnchor(CENTER, window, CENTER, 0, 0)
+    overwriteModal:SetDrawLayer(DL_OVERLAY)
+    overwriteModal:SetDrawTier(DT_HIGH)
+    overwriteModal:SetDrawLevel(110)
+    overwriteModal:SetMouseEnabled(true)
+    overwriteModal:SetClampedToScreen(true)
+    overwriteModal:SetHidden(true)
+    overwriteModal:SetHandler("OnMouseDown", function() end)
+
+    local overwriteShade = CreatePanel(overwriteModal, "OCPOverwriteShade",
+        { 0.002, 0.003, 0.005, 0.76 })
+    overwriteShade:SetAnchorFill()
+
+    local overwritePanel = CreatePanel(overwriteModal, "OCPOverwritePanel",
+        { 0.014, 0.017, 0.022, 1 }, { 0.48, 0.24, 0.15, 1 })
+    overwritePanel:SetDimensions(520, 230)
+    overwritePanel:SetAnchor(CENTER, overwriteModal, CENTER, 0, 0)
+    CreateOutline(overwritePanel, "OCPOverwriteOutline", 520, 230, 1,
+        { 0.72, 0.34, 0.19, 1 })
+
+    local overwriteHeader = CreatePanel(overwritePanel, "OCPOverwriteHeader",
+        { 0.026, 0.025, 0.028, 1 })
+    overwriteHeader:SetAnchor(TOPLEFT, overwritePanel, TOPLEFT, 1, 1)
+    overwriteHeader:SetAnchor(TOPRIGHT, overwritePanel, TOPRIGHT, -1, 1)
+    overwriteHeader:SetHeight(52)
+
+    local overwriteTitle = CreateLabel(overwriteHeader, "OCPOverwriteTitle",
+        "ZoFontWinH3", COLORS.text)
+    overwriteTitle:SetAnchor(LEFT, overwriteHeader, LEFT, 20, 0)
+    overwriteTitle:SetText("OVERWRITE PROFILE?")
+
+    local overwriteLine = WINDOW_MANAGER:CreateControl("OCPOverwriteHeaderLine",
+        overwritePanel, CT_TEXTURE)
+    overwriteLine:SetDimensions(518, 2)
+    overwriteLine:SetAnchor(TOP, overwritePanel, TOP, 0, 52)
+    overwriteLine:SetColor(COLORS.emberBright:UnpackRGBA())
+
+    local overwriteMessage = CreateLabel(overwritePanel, "OCPOverwriteMessage",
+        "ZoFontGame", COLORS.muted)
+    OCP.overwriteMessage = overwriteMessage
+    overwriteMessage:SetDimensions(472, 82)
+    overwriteMessage:SetAnchor(TOPLEFT, overwritePanel, TOPLEFT, 24, 72)
+    overwriteMessage:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    overwriteMessage:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+
+    local overwriteCancel = CreateActionButton(overwritePanel,
+        "OCPOverwriteCancel", "CANCEL", 210, false)
+    overwriteCancel:SetAnchor(BOTTOMLEFT, overwritePanel, BOTTOMLEFT, 24, -20)
+    overwriteCancel:SetHandler("OnClicked", function() OCP.HideOverwriteConfirmation() end)
+
+    local overwriteConfirm = CreateActionButton(overwritePanel,
+        "OCPOverwriteConfirm", "OVERWRITE", 210, true)
+    overwriteConfirm:SetAnchor(BOTTOMRIGHT, overwritePanel, BOTTOMRIGHT, -24, -20)
+    overwriteConfirm:SetHandler("OnClicked", function() OCP.ConfirmOverwriteConfirmation() end)
+
     window:SetHandler("OnShow", function()
         OCP.activatedCursorForWindow = not IsGameCameraUIModeActive()
         if OCP.activatedCursorForWindow then SetGameCameraUIMode(true) end
@@ -337,6 +443,7 @@ function OCP.CreateWindow()
         OCP.RefreshWindow()
     end)
     window:SetHandler("OnHide", function()
+        OCP.HideOverwriteConfirmation()
         if OCP.activatedCursorForWindow and IsGameCameraUIModeActive() then
             SetGameCameraUIMode(false)
         end

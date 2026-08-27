@@ -2,7 +2,7 @@
 ## Author: Geldis1306
 ## Description: Based ui
 ## APIVersion: 101049 101050
-## Version: 1.3.8
+## Version: 1.3.9
 ## SavedVariables: ERUiVars
 
 HUD\BossBar.xml
@@ -19,6 +19,8 @@ SimpleImage.lua
 SimpleFoodTracker.lua
 
 CustomCompass.lua
+
+SimpleChat.lua
 
 
 

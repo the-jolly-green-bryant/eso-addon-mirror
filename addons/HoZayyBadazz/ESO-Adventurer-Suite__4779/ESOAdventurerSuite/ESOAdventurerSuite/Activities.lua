@@ -71,6 +71,50 @@ local function average(oldAverage, oldSamples, newValue)
     return ((oldAverage * weight) + newValue) / (weight + 1), nextSamples
 end
 
+
+local SPEND_LABELS = {
+    blacksmith = "Blacksmith",
+    clothier = "Clothier",
+    woodworker = "Woodworker",
+    jeweler = "Jeweler / Mystic",
+    alchemist = "Alchemist",
+    enchanter = "Enchanter",
+    grocer = "Grocer",
+    brewer = "Brewer",
+    chef = "Chef",
+    armsman = "Armsman",
+    armorer = "Armorer",
+    merchant = "General Merchant",
+    stable = "Stable Master",
+    guildStore = "Guild Store Purchases",
+    guildStoreFees = "Guild Store Fees",
+    repairs = "Repairs",
+    laundering = "Fence / Laundering",
+    respec = "Respecs",
+    travel = "Fast Travel",
+    other = "Other Purchases / Fees",
+}
+
+local SPEND_ORDER = {
+    "blacksmith", "clothier", "woodworker", "jeweler", "alchemist", "enchanter",
+    "grocer", "brewer", "chef", "armsman", "armorer", "merchant", "stable",
+    "guildStore", "guildStoreFees", "repairs", "laundering", "respec", "travel", "other",
+}
+
+local function currentCharacterKey()
+    if type(GetCurrentCharacterId) == "function" then
+        local ok, value = pcall(GetCurrentCharacterId)
+        if ok and value ~= nil and tostring(value) ~= "" then return tostring(value) end
+    end
+    local name = type(GetUnitName) == "function" and GetUnitName("player") or "Player"
+    return tostring(name or "Player")
+end
+
+local function currencyReasonMatches(reason, constantName)
+    local value = rawget(_G, constantName)
+    return value ~= nil and reason == value
+end
+
 local function isRepeatable(repeatType)
     local candidates = {
         QUEST_REPEAT_DAILY,
@@ -109,6 +153,7 @@ end
 function A:Initialize()
     EPC.saved.activityGoal = self.validGoals[EPC.saved.activityGoal] and EPC.saved.activityGoal or "BALANCED"
     EPC.saved.activityHistory = EPC.saved.activityHistory or {}
+    EPC.saved.goldSpendingByCharacter = EPC.saved.goldSpendingByCharacter or {}
     self.selectedKey = nil
     self.lastView = nil
     self.pendingQuestCompletion = nil
@@ -227,9 +272,145 @@ function A:OnQuestComplete(questName, level, previousExperience, currentExperien
     end
 end
 
+function A:GetGoldSpendingLedger()
+    if not EPC.saved then return { total = 0, categories = {} } end
+    EPC.saved.goldSpendingByCharacter = EPC.saved.goldSpendingByCharacter or {}
+    local key = currentCharacterKey()
+    local ledger = EPC.saved.goldSpendingByCharacter[key]
+    if type(ledger) ~= "table" then
+        ledger = { total = 0, categories = {} }
+        EPC.saved.goldSpendingByCharacter[key] = ledger
+    end
+    ledger.total = safeNumber(ledger.total, 0)
+    ledger.categories = type(ledger.categories) == "table" and ledger.categories or {}
+    return ledger
+end
+
+function A:GetGoldSpendingView()
+    local ledger = self:GetGoldSpendingLedger()
+    local rows = {}
+    for _, key in ipairs(SPEND_ORDER) do
+        rows[#rows + 1] = { key = key, label = SPEND_LABELS[key] or key, amount = safeNumber(ledger.categories[key], 0) }
+    end
+    return { total = safeNumber(ledger.total, 0), rows = rows }
+end
+
+function A:ClassifyGoldSpend(reason)
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRADINGHOUSE_PURCHASE") then return "guildStore" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRADINGHOUSE_LISTING") then return "guildStoreFees" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_VENDOR_REPAIR") then return "repairs" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_VENDOR_LAUNDER") then return "laundering" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRAVEL_GRAVEYARD") then return "travel" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_STABLESPACE") then return "stable" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_ATTRIBUTES")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_CHAMPION")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_MORPHS")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_SKILLS") then
+        return "respec"
+    end
+
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_VENDOR") then
+        local storeType = nil
+        if EPC.MiniMap and type(EPC.MiniMap.GetCurrentStoreIdentity) == "function" then
+            local ok, _, detectedType = pcall(EPC.MiniMap.GetCurrentStoreIdentity, EPC.MiniMap)
+            if ok then storeType = tostring(detectedType or "") end
+        end
+        local map = {
+            blacksmith = "blacksmith", clothier = "clothier", woodworker = "woodworker",
+            alchemist = "alchemist", enchanter = "enchanter", grocer = "grocer",
+            brewer = "brewer", chef = "chef", mystic = "jeweler", stable = "stable",
+            armsman = "armsman", armorer = "armorer", merchant = "merchant",
+        }
+        return map[storeType] or "merchant"
+    end
+
+    -- Count only reasons that represent an actual purchase/fee. Character-money
+    -- decreases caused by bank deposits, trades, mail attachments, etc. are not
+    -- spending and must not inflate the lifetime total.
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_REFORGE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RECONSTRUCTION")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESEARCH_TRAIT")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRAIT_REVEAL")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RECIPE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_ABILITY_UPGRADE_PURCHASE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_SOUL_HEAL")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_STUCK") then
+        return "other"
+    end
+    return nil
+end
+
+function A:RecordGoldSpend(amount, category)
+    amount = math.floor(safeNumber(amount, 0) + 0.5)
+    if amount <= 0 or not category then return end
+    local ledger = self:GetGoldSpendingLedger()
+    ledger.total = safeNumber(ledger.total, 0) + amount
+    ledger.categories[category] = safeNumber(ledger.categories[category], 0) + amount
+end
+
+-- Some ESO builds do not expose a distinct currency-change reason for Champion
+-- redistribution.  Keep the confirmed live cost briefly so EVENT_MONEY_UPDATE can
+-- still classify the matching decrease as a respec without counting unrelated gold.
+function A:SetPendingGoldSpend(category, amount)
+    amount = math.floor(safeNumber(amount, 0) + 0.5)
+    if amount <= 0 or not category then
+        self.pendingGoldSpend = nil
+        return
+    end
+    self.pendingGoldSpend = {
+        category = tostring(category),
+        amount = amount,
+        time = nowMs(),
+    }
+end
+
+function A:ClearPendingGoldSpend(category)
+    if not self.pendingGoldSpend then return end
+    if category == nil or tostring(self.pendingGoldSpend.category) == tostring(category) then
+        self.pendingGoldSpend = nil
+    end
+end
+
+function A:CommitPendingGoldSpend(category)
+    local pending = self.pendingGoldSpend
+    if not pending then return false end
+    if category ~= nil and tostring(pending.category) ~= tostring(category) then return false end
+    self:RecordGoldSpend(pending.amount, pending.category)
+    self.pendingGoldSpend = nil
+    if EPC.saved and EPC.saved.activeTab == "JOURNAL" and EPC.Journal and EPC.Journal.Refresh then
+        EPC.Journal:Refresh()
+    end
+    return true
+end
+
 function A:OnMoneyUpdate(newMoney, oldMoney, reason)
+    local delta = safeNumber(newMoney, 0) - safeNumber(oldMoney, 0)
+
+    if delta < 0 then
+        local spent = math.floor((-delta) + 0.5)
+        local category = self:ClassifyGoldSpend(reason)
+        local pending = self.pendingGoldSpend
+        local pendingMatches = pending
+            and (nowMs() - safeNumber(pending.time, 0) <= 10000)
+            and spent == safeNumber(pending.amount, 0)
+
+        if pendingMatches and (category == nil or category == pending.category) then
+            category = pending.category
+            self.pendingGoldSpend = nil
+        elseif pending and nowMs() - safeNumber(pending.time, 0) > 10000 then
+            self.pendingGoldSpend = nil
+        end
+
+        if category then
+            self:RecordGoldSpend(spent, category)
+            if EPC.saved and EPC.saved.activeTab == "JOURNAL" and EPC.Journal and EPC.Journal.Refresh then
+                EPC.Journal:Refresh()
+            end
+        end
+    end
+
     if CURRENCY_CHANGE_REASON_QUESTREWARD == nil or reason ~= CURRENCY_CHANGE_REASON_QUESTREWARD then return end
-    local gain = safeNumber(newMoney, 0) - safeNumber(oldMoney, 0)
+    local gain = delta
     if gain <= 0 then return end
 
     local stamp = nowMs()

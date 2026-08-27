@@ -2,7 +2,7 @@
 ## APIVersion: 101046
 ## AddOnVersion: 2.1
 ## Author: Vixen Hunny
-## SavedVariables: HPSMeterSavedVars
+## SavedVariables: HPSMeterSavedVars HPSMeterHealingData
 ## DependsOn: LibAddonMenu-2.0
 ## Description: HPS and SPS Meter
 

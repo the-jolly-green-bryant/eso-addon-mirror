@@ -2,6 +2,7 @@ local Addon = LarvalTearMod
 local LTM = Addon
 local Log = Addon.Common.Log
 local LTM_SKILL_RESPEC_APPLY = Addon.Modules.SkillRespecApply
+local LTM_APPLY_START_STATE = Addon.Modules.ApplyStartState
 local LTM_APPLY_COOLDOWN_GATE = Addon.Modules.ApplyCooldownGate
 local SHARED_UTIL = Addon.Common.Util
 local LTM_ACTIVE_SKILL_RESTORE = Addon.Modules.ActiveSkillRestore
@@ -189,6 +190,19 @@ end
 function LTM_SKILL_RESPEC_APPLY:MarkSkillRespecCommitExecuted(context)
     local pipelineContext = context and context.pipelineContext or nil
     LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "priorSkillRespecCommitted", true)
+end
+
+local function MarkRouteBRespecInterfaceUsed(context)
+    if type(context) ~= "table" or context.respecInterfaceUsed == true then
+        return
+    end
+
+    context.respecInterfaceUsed = true
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
+        context.pipelineContext,
+        "routeBRespecInterfaceUsed",
+        true
+    )
 end
 
 function LTM_SKILL_RESPEC_APPLY:ResolveRouteBSkillConfig(config)
@@ -643,8 +657,13 @@ function LTM_SKILL_RESPEC_APPLY:RevertRouteBPendingPreparation(context)
 
     context.modifiedAllocators = {}
 
-    if type(SKILL_LINE_ASSIGNMENT_MANAGER) == "table" and type(SKILL_LINE_ASSIGNMENT_MANAGER.Reset) == "function" then
-        pcall(SKILL_LINE_ASSIGNMENT_MANAGER.Reset, SKILL_LINE_ASSIGNMENT_MANAGER)
+    local shouldResetPreparedState = context.respecInterfaceUsed == true
+        or #pendingAllocators > 0
+        or contextModifiedAllocatorCount > 0
+    if shouldResetPreparedState then
+        -- ResetRespecState is the ESO-owned full reset. Its callbacks release
+        -- the active allocator pool and reset skill-line and player-hotbar caches.
+        LTM_APPLY_START_STATE:ResetRespecInterface()
     end
 
     LTM_PIPELINE_CONTEXT:SetRuntimeFlag(context.pipelineContext, "priorSkillRespecCommitted", false)
@@ -849,54 +868,10 @@ function LTM_SKILL_RESPEC_APPLY:ClearPendingContext()
     self.pendingContext = nil
 end
 
-function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, extra)
-    if type(context) == "table" and context.routeBFinalized == true then
-        return
-    end
+local function CompleteRouteBSuccessAfterCleanup(self, context, details)
+    local pipelineContext = context.pipelineContext
 
-    local details = type(extra) == "table" and type(extra.readiness) == "table"
-        and { readiness = extra.readiness }
-        or {}
-
-    local expectedMissing = type(context.expectedMissingActiveTargets) == "table"
-        and context.expectedMissingActiveTargets
-        or {}
-    local expectedMissingPurchases = type(expectedMissing.purchases) == "table"
-        and expectedMissing.purchases
-        or {}
-    local expectedMissingMorphs = type(expectedMissing.morphs) == "table"
-        and expectedMissing.morphs
-        or {}
-    local expectedMissingPurchaseCount = #expectedMissingPurchases
-    local expectedMissingMorphCount = #expectedMissingMorphs
-    if self:IsActivePriorityShortagePolicy(context)
-        and expectedMissingPurchaseCount + expectedMissingMorphCount > 0 then
-        details.resultCode = "route_b_active_priority_insufficient_points"
-    end
-
-    local pipelineContext = type(context) == "table" and context.pipelineContext or nil
-
-    if type(context) == "table"
-        and type(context.classMasteryPurchaseSummary) == "table"
-        and (context.classMasteryPurchaseSummary.attemptedCount or 0) > 0 then
-        local committedAudit = LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE:AuditCommittedTargets(context)
-        if type(committedAudit) == "table" and committedAudit.ok ~= true then
-            self:FinalizeRouteBFailure(context, "class_mastery_purchase_commit_mismatch", {
-                classMasteryPurchaseSummary = context.classMasteryPurchaseSummary,
-                classMasteryCommittedAudit = committedAudit,
-            })
-            return
-        end
-    end
-
-    if type(context) == "table" then
-        context.routeBFinalized = true
-    end
-
-    self:ClearPendingContext()
-    context.finished = true
-    RecordSharedCooldownMutation("skill", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
-
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "routeBRespecInterfaceUsed", false)
     LTM_PIPELINE_CONTEXT:SetRuntimeFlag(pipelineContext, "routeBCompleted", true)
     LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
         pipelineContext,
@@ -925,7 +900,7 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, extra)
 
     LTM_SKILL_RESPEC_VERIFY:VerifyTransformSnapshotsPostCommit(context)
 
-    if type(context) == "table" and context.passiveSummary ~= nil then
+    if context.passiveSummary ~= nil then
         LTM_SKILL_PASSIVE_APPLY:RecordAutoFillPartialSuccess(
             pipelineContext,
             context.passiveSummary
@@ -935,6 +910,81 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, extra)
     self:SetLastResult(CreateSuccessResult(details), pipelineContext)
     Log.Debug("Skill respec Route B finished")
     self:NotifyPipelineContinuation(context, true)
+end
+
+function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, extra)
+    if type(context) == "table" and context.routeBFinalized == true then
+        return
+    end
+
+    local details = type(extra) == "table" and type(extra.readiness) == "table"
+        and { readiness = extra.readiness }
+        or {}
+
+    local expectedMissing = type(context.expectedMissingActiveTargets) == "table"
+        and context.expectedMissingActiveTargets
+        or {}
+    local expectedMissingPurchases = type(expectedMissing.purchases) == "table"
+        and expectedMissing.purchases
+        or {}
+    local expectedMissingMorphs = type(expectedMissing.morphs) == "table"
+        and expectedMissing.morphs
+        or {}
+    local expectedMissingPurchaseCount = #expectedMissingPurchases
+    local expectedMissingMorphCount = #expectedMissingMorphs
+    if self:IsActivePriorityShortagePolicy(context)
+        and expectedMissingPurchaseCount + expectedMissingMorphCount > 0 then
+        details.resultCode = "route_b_active_priority_insufficient_points"
+    end
+
+    if type(context) == "table"
+        and type(context.classMasteryPurchaseSummary) == "table"
+        and (context.classMasteryPurchaseSummary.attemptedCount or 0) > 0 then
+        local committedAudit = LTM_SKILL_RESPEC_CLASS_MASTERY_PURCHASE:AuditCommittedTargets(context)
+        if type(committedAudit) == "table" and committedAudit.ok ~= true then
+            self:FinalizeRouteBFailure(context, "class_mastery_purchase_commit_mismatch", {
+                classMasteryPurchaseSummary = context.classMasteryPurchaseSummary,
+                classMasteryCommittedAudit = committedAudit,
+            })
+            return
+        end
+    end
+
+    if type(context) == "table" then
+        context.routeBFinalized = true
+    end
+
+    self:ClearPendingContext()
+    context.finished = true
+    RecordSharedCooldownMutation("skill", SHARED_UTIL:GetFrameTimeMillisecondsSafe())
+
+    if context.respecInterfaceUsed ~= true then
+        CompleteRouteBSuccessAfterCleanup(self, context, details)
+        return
+    end
+
+    local normalizeStarted, normalizeErr = LTM_APPLY_START_STATE:NormalizeToHudBaseline(function(ok, cleanReason)
+        if ok ~= true then
+            local failureCode = "route_b_baseline_cleanup_failed"
+            context.failureCode = failureCode
+            self:SetLastResult(CreateFailureResult(failureCode, {
+                cleanupReason = cleanReason,
+            }), context.pipelineContext)
+            Log.Debug("Route B baseline cleanup failed error=" .. tostring(cleanReason))
+            self:NotifyPipelineContinuation(context, false)
+            return
+        end
+
+        CompleteRouteBSuccessAfterCleanup(self, context, details)
+    end)
+    if normalizeStarted ~= true then
+        context.failureCode = "route_b_baseline_cleanup_failed"
+        self:SetLastResult(CreateFailureResult(context.failureCode, {
+            cleanupReason = normalizeErr,
+        }), context.pipelineContext)
+        Log.Debug("Route B baseline cleanup failed error=" .. tostring(normalizeErr))
+        self:NotifyPipelineContinuation(context, false)
+    end
 end
 
 function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBFailure(context, code, details)
@@ -976,18 +1026,47 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBFailure(context, code, details)
 
     self:ClearPendingContext()
     context.finished = true
-    context.failureCode = code
-    self:SetLastResult(CreateFailureResult(code, details), context.pipelineContext)
-    Log.Debug("Route B failed error=" .. tostring(code))
-    logging.Log(
-        "Route B failure detail",
-        "error=" .. tostring(code),
-        "originalError=" .. tostring(originalCode),
-        "cleanupIncomplete=" .. tostring(
-            type(cleanupResult) == "table" and cleanupResult.incomplete == true or false
+
+    local function finishFailure(cleanOk, cleanReason)
+        if cleanOk == true then
+            LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
+                context.pipelineContext,
+                "routeBRespecInterfaceUsed",
+                false
+            )
+        else
+            details.originalFailureCode = details.originalFailureCode or code
+            details.baselineCleanupReason = cleanReason
+            code = "route_b_baseline_cleanup_failed"
+        end
+
+        context.failureCode = code
+        self:SetLastResult(CreateFailureResult(code, details), context.pipelineContext)
+        Log.Debug("Route B failed error=" .. tostring(code))
+        logging.Log(
+            "Route B failure detail",
+            "error=" .. tostring(code),
+            "originalError=" .. tostring(originalCode),
+            "cleanupIncomplete=" .. tostring(
+                type(cleanupResult) == "table" and cleanupResult.incomplete == true or false
+            ),
+            "baselineCleanup=" .. tostring(cleanOk == true),
+            "baselineCleanupReason=" .. tostring(cleanReason)
         )
-    )
-    self:NotifyPipelineContinuation(context, false)
+        self:NotifyPipelineContinuation(context, false)
+    end
+
+    if context.respecInterfaceUsed ~= true then
+        finishFailure(true, nil)
+        return
+    end
+
+    local normalizeStarted, normalizeErr = LTM_APPLY_START_STATE:NormalizeToHudBaseline(function(ok, cleanReason)
+        finishFailure(ok == true, cleanReason)
+    end)
+    if normalizeStarted ~= true then
+        finishFailure(false, normalizeErr or "normalize_start_failed")
+    end
 end
 
 -- Route B commit cooldown failure previously short-circuited into immediate
@@ -1680,6 +1759,7 @@ function LTM_SKILL_RESPEC_APPLY:ContinueRouteBReadyCheck(context, startAttemptIn
     local ready, state = self:IsReadyForSubclass(context)
 
     if ready then
+        MarkRouteBRespecInterfaceUsed(context)
         self:LogRouteBRespecEntryStart(context)
         self:CommitRouteBSubclassOnly(context)
         return
@@ -1700,6 +1780,7 @@ function LTM_SKILL_RESPEC_APPLY:ContinueRouteBReadyCheck(context, startAttemptIn
             })
             return
         end
+        MarkRouteBRespecInterfaceUsed(context)
     end
 
     if waitAttemptIndex >= #SKILL_RESPEC_READY_RETRY_DELAYS_MS then
@@ -1756,6 +1837,7 @@ function LTM_SKILL_RESPEC_APPLY:CreateRouteBContext(config, subclassPlan)
         postCommitVerifyRetryAttemptIndex = 0,
         finished = false,
         routeBFinalized = false,
+        respecInterfaceUsed = false,
         modifiedAllocators = {},
         pendingActivatedSkillLinesById = {},
         resultReceived = false,
@@ -1841,6 +1923,7 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBSubclassOnly(config)
     self.pendingContext = context
 
     if ready then
+        MarkRouteBRespecInterfaceUsed(context)
         self:LogRouteBRespecEntryStart(context)
         self:CommitRouteBSubclassOnly(context)
         return true, "deferred"

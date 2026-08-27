@@ -6,7 +6,7 @@ CALLBACK_MANAGER:RegisterCallback(ALT_GROUP_FRAMES.EVENT.MANAGER_CREATED, functi
 		type = "panel",
 		name = "Alternative Group Frames",
 		displayName = "Alternative Group Frames",
-		author = "|c943810BulDeZir|r",
+		author = "|c943810BulDeZir|r, Glande-Pas",
 		version = string.format("|c00FF00%s|r", ALT_GROUP_FRAMES.VERSION),
 		slashCommand = "/altgf",
 		registerForRefresh = true,
@@ -135,62 +135,85 @@ CALLBACK_MANAGER:RegisterCallback(ALT_GROUP_FRAMES.EVENT.MANAGER_CREATED, functi
 				UnitFramesManager:RefreshView(true)
 			end,
 		},
-		-- ── Third-party Integrations ──────────────────────────────────────────
+		-- ── Frame Ordering ───────────────────────────────────────────────────
 		{
 			type = "header",
-			name = "Third-party Integrations",
+			name = "Frame Ordering",
 		},
 		{
 			type = "checkbox",
-			name = "Show icons from Player Role Indicator",
-			tooltip = "When Player Role Indicator is installed, shows its custom role icons on frames instead of the standard class or LFG role icons.",
+			name = "Enable drag to reorder",
+			tooltip = "Left-click and drag a frame to set a custom order. When enabled, role-based ordering is replaced by your saved custom order.",
 			default = function()
-				return UnitFramesManager.DEFAULTS["SHOW_CUSTOM_ROLE_ICONS"]
+				return UnitFramesManager.DEFAULTS["USE_CUSTOM_ORDER"]
 			end,
 			getFunc = function()
-				return UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_ICONS
+				return UnitFramesManager.SAVEVARS.USE_CUSTOM_ORDER
 			end,
 			setFunc = function(newValue)
-				UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_ICONS = newValue
+				UnitFramesManager.SAVEVARS.USE_CUSTOM_ORDER = newValue
 				UnitFramesManager:RefreshData()
-				UnitFramesManager:RefreshView(true)
 			end,
 		},
 		{
-			type = "checkbox",
-			name = "Show Player Role Indicator roles in frames menu",
-			tooltip = "When right-clicking a frame, shows options to assign or remove Player Role Indicator roles. Requires 'Show icons from Player Role Indicator' to be enabled.",
+			type = "slider",
+			name = "Max saved entries",
+			tooltip = "Maximum number of players kept in the custom order list. When a drag pushes the list over this limit, the least recently seen entry is removed.",
+			min = 12,
+			max = 100,
+			step = 1,
 			default = function()
-				return UnitFramesManager.DEFAULTS["SHOW_CUSTOM_ROLE_MENU"]
+				return UnitFramesManager.DEFAULTS["CUSTOM_ORDER_MAX_SIZE"]
 			end,
 			getFunc = function()
-				return UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_MENU
+				return zo_round(UnitFramesManager.SAVEVARS.CUSTOM_ORDER_MAX_SIZE)
 			end,
 			setFunc = function(newValue)
-				UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_MENU = newValue
-			end,
-			disabled = function()
-				return not UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_ICONS
+				UnitFramesManager.SAVEVARS.CUSTOM_ORDER_MAX_SIZE = zo_round(newValue)
 			end,
 		},
 		{
-			type = "checkbox",
-			name = "Show icons from Ody Support Icons",
-			tooltip = "When OdySupportIcons is installed, shows its support role icons on frames. Requires the OdySupportIcons addon to be active.",
+			type = "dropdown",
+			name = "Auto-clear entries after",
+			tooltip = "Saved order entries that haven't been seen for this long are removed on login. Set to 'Never' to keep entries indefinitely.",
+			choices = { "1 hour", "1 day", "10 days", "1 month", "Never" },
+			choicesValues = { 3600, 86400, 864000, 2592000, 0 },
 			default = function()
-				return UnitFramesManager.DEFAULTS["SHOW_CUSTOM_ODY_ICONS"]
+				return UnitFramesManager.DEFAULTS["CUSTOM_ORDER_TTL"]
 			end,
 			getFunc = function()
-				return UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ODY_ICONS
+				return UnitFramesManager.SAVEVARS.CUSTOM_ORDER_TTL
 			end,
 			setFunc = function(newValue)
-				UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ODY_ICONS = newValue
+				UnitFramesManager.SAVEVARS.CUSTOM_ORDER_TTL = newValue
+			end,
+		},
+		{
+			type = "description",
+			text = function()
+				return string.format("Saved entries: |cFFFFFF%d|r", #UnitFramesManager.SAVEVARS.CUSTOM_ORDER)
+			end,
+		},
+		{
+			type = "button",
+			name = "Clear order list",
+			tooltip = "Remove all saved entries from the custom order list. Frames will fall back to role-based ordering until reordered again.",
+			func = function()
+				UnitFramesManager.SAVEVARS.CUSTOM_ORDER = {}
 				UnitFramesManager:RefreshData()
-				UnitFramesManager:RefreshView(true)
 			end,
-			disabled = function()
-				return OSI == nil
+			width = "half",
+		},
+		{
+			type = "button",
+			name = "Reset to role order",
+			tooltip = "Clear the saved custom order and disable drag-to-reorder, reverting to role-based ordering (Tank → Healer → DPS).",
+			func = function()
+				UnitFramesManager.SAVEVARS.CUSTOM_ORDER = {}
+				UnitFramesManager.SAVEVARS.USE_CUSTOM_ORDER = false
+				UnitFramesManager:RefreshData()
 			end,
+			width = "half",
 		},
 		-- ── Layout ────────────────────────────────────────────────────────────
 		{
@@ -349,85 +372,62 @@ CALLBACK_MANAGER:RegisterCallback(ALT_GROUP_FRAMES.EVENT.MANAGER_CREATED, functi
 				UnitFramesManager:RefreshView(true)
 			end,
 		},
-		-- ── Frame Ordering ───────────────────────────────────────────────────
+		-- ── Third-party Integrations ──────────────────────────────────────────
 		{
 			type = "header",
-			name = "Frame Ordering",
+			name = "Third-party Integrations",
 		},
 		{
 			type = "checkbox",
-			name = "Enable drag to reorder",
-			tooltip = "Left-click and drag a frame to set a custom order. When enabled, role-based ordering is replaced by your saved custom order.",
+			name = "Show icons from Player Role Indicator",
+			tooltip = "When Player Role Indicator is installed, shows its custom role icons on frames instead of the standard class or LFG role icons.",
 			default = function()
-				return UnitFramesManager.DEFAULTS["USE_CUSTOM_ORDER"]
+				return UnitFramesManager.DEFAULTS["SHOW_CUSTOM_ROLE_ICONS"]
 			end,
 			getFunc = function()
-				return UnitFramesManager.SAVEVARS.USE_CUSTOM_ORDER
+				return UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_ICONS
 			end,
 			setFunc = function(newValue)
-				UnitFramesManager.SAVEVARS.USE_CUSTOM_ORDER = newValue
+				UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_ICONS = newValue
 				UnitFramesManager:RefreshData()
+				UnitFramesManager:RefreshView(true)
 			end,
 		},
 		{
-			type = "slider",
-			name = "Max saved entries",
-			tooltip = "Maximum number of players kept in the custom order list. When a drag pushes the list over this limit, the least recently seen entry is removed.",
-			min = 12,
-			max = 100,
-			step = 1,
+			type = "checkbox",
+			name = "Show Player Role Indicator roles in frames menu",
+			tooltip = "When right-clicking a frame, shows options to assign or remove Player Role Indicator roles. Requires 'Show icons from Player Role Indicator' to be enabled.",
 			default = function()
-				return UnitFramesManager.DEFAULTS["CUSTOM_ORDER_MAX_SIZE"]
+				return UnitFramesManager.DEFAULTS["SHOW_CUSTOM_ROLE_MENU"]
 			end,
 			getFunc = function()
-				return zo_round(UnitFramesManager.SAVEVARS.CUSTOM_ORDER_MAX_SIZE)
+				return UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_MENU
 			end,
 			setFunc = function(newValue)
-				UnitFramesManager.SAVEVARS.CUSTOM_ORDER_MAX_SIZE = zo_round(newValue)
+				UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_MENU = newValue
+			end,
+			disabled = function()
+				return not UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ROLE_ICONS
 			end,
 		},
 		{
-			type = "dropdown",
-			name = "Auto-clear entries after",
-			tooltip = "Saved order entries that haven't been seen for this long are removed on login. Set to 'Never' to keep entries indefinitely.",
-			choices = { "1 hour", "1 day", "10 days", "1 month", "Never" },
-			choicesValues = { 3600, 86400, 864000, 2592000, 0 },
+			type = "checkbox",
+			name = "Show icons from Ody Support Icons",
+			tooltip = "When OdySupportIcons is installed, shows its support role icons on frames. Requires the OdySupportIcons addon to be active.",
 			default = function()
-				return UnitFramesManager.DEFAULTS["CUSTOM_ORDER_TTL"]
+				return UnitFramesManager.DEFAULTS["SHOW_CUSTOM_ODY_ICONS"]
 			end,
 			getFunc = function()
-				return UnitFramesManager.SAVEVARS.CUSTOM_ORDER_TTL
+				return UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ODY_ICONS
 			end,
 			setFunc = function(newValue)
-				UnitFramesManager.SAVEVARS.CUSTOM_ORDER_TTL = newValue
-			end,
-		},
-		{
-			type = "description",
-			text = function()
-				return string.format("Saved entries: |cFFFFFF%d|r", #UnitFramesManager.SAVEVARS.CUSTOM_ORDER)
-			end,
-		},
-		{
-			type = "button",
-			name = "Clear order list",
-			tooltip = "Remove all saved entries from the custom order list. Frames will fall back to role-based ordering until reordered again.",
-			func = function()
-				UnitFramesManager.SAVEVARS.CUSTOM_ORDER = {}
+				UnitFramesManager.SAVEVARS.SHOW_CUSTOM_ODY_ICONS = newValue
 				UnitFramesManager:RefreshData()
+				UnitFramesManager:RefreshView(true)
 			end,
-			width = "half",
-		},
-		{
-			type = "button",
-			name = "Reset to role order",
-			tooltip = "Clear the saved custom order and disable drag-to-reorder, reverting to role-based ordering (Tank → Healer → DPS).",
-			func = function()
-				UnitFramesManager.SAVEVARS.CUSTOM_ORDER = {}
-				UnitFramesManager.SAVEVARS.USE_CUSTOM_ORDER = false
-				UnitFramesManager:RefreshData()
+			disabled = function()
+				return OSI == nil
 			end,
-			width = "half",
 		},
 		-- ── Colors ────────────────────────────────────────────────────────────
 		{

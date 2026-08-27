@@ -448,6 +448,7 @@ local popupTitle, popupIcon
 local popupFreeLabel, popupMaxLabel, popupValueLabel
 local popupQtyLabel, popupEditBg, popupEdit
 local popupPresetButtons = {}
+local popupMaxPresetButton
 local popupConfirm, popupAddToQueue, popupCancel
 local popupProgressBar, popupProgressLabel
 local popupBatchSummaryLabel
@@ -516,6 +517,9 @@ UpdatePopupMode = function()
 
     for i = 1, #popupPresetButtons do
         popupPresetButtons[i]:SetHidden(batchMode)
+    end
+    if popupMaxPresetButton then
+        popupMaxPresetButton:SetHidden(batchMode)
     end
 
     if batchMode then
@@ -613,6 +617,9 @@ local function OnPopupFinish(moved, total, requested)
     for i = 1, #popupPresetButtons do
         popupPresetButtons[i]:SetEnabled(true)
     end
+    if popupMaxPresetButton then
+        popupMaxPresetButton:SetEnabled(true)
+    end
     popupEdit:SetEditEnabled(true)
     popupCancel:SetEnabled(true)
     popupCancel:SetText(GetString(SI_BMW_WITHDRAW_CANCEL))
@@ -651,6 +658,9 @@ function WithdrawDialog.Confirm()
     for i = 1, #popupPresetButtons do
         popupPresetButtons[i]:SetEnabled(false)
     end
+    if popupMaxPresetButton then
+        popupMaxPresetButton:SetEnabled(false)
+    end
     popupEdit:SetEditEnabled(false)
     popupConfirm:SetEnabled(false)
     popupAddToQueue:SetEnabled(false)
@@ -665,6 +675,9 @@ end
 
 local function HidePopup()
     if popup then
+        if SCENE_MANAGER and SCENE_MANAGER.HideTopLevel then
+            SCENE_MANAGER:HideTopLevel(popup)
+        end
         popup:SetHidden(true)
     end
 end
@@ -674,6 +687,10 @@ function WithdrawDialog.CancelPopup()
     -- be cancelled. Hiding leaves the watcher active so the final result remains
     -- accurate and the engine cleans itself up on completion.
     HidePopup()
+end
+
+function WithdrawDialog.IsShown()
+    return popup and not popup:IsHidden()
 end
 
 -- Height of the header wash: the identity block this window opens with (the
@@ -695,6 +712,9 @@ local function InitializePopup()
     popup:SetMovable(true)
     popup:SetDrawLayer(DL_OVERLAY)
     popup:SetDrawTier(DT_HIGH)
+    if SCENE_MANAGER and SCENE_MANAGER.RegisterTopLevel then
+        SCENE_MANAGER:RegisterTopLevel(popup, false)
+    end
     -- The unified withdraw window is independent from the material list. Center
     -- it on first use, then preserve its dragged position across opens/reloads.
     local savedVars = private.savedVars or {}
@@ -801,7 +821,20 @@ local function InitializePopup()
         button:SetHandler("OnClicked", function() SetRequested(count) end)
         popupPresetButtons[i] = button
     end
-    local presetRows = mathfloor((#PRESETS - 1) / presetsPerRow) + 1
+    popupMaxPresetButton = WINDOW_MANAGER:CreateControlFromVirtual(
+        addon.name .. "_WithdrawPresetMax", popup, "ZO_DefaultButton")
+    popupMaxPresetButton:SetDimensions(btnWidth, BUTTON_HEIGHT)
+    popupMaxPresetButton:SetText(GetString(SI_BMW_WITHDRAW_PRESET_MAX))
+    local maxIndex = #PRESETS + 1
+    local maxCol = (maxIndex - 1) % presetsPerRow
+    local maxRow = mathfloor((maxIndex - 1) / presetsPerRow)
+    popupMaxPresetButton:SetAnchor(TOPLEFT, popup, TOPLEFT,
+        PADDING + maxCol * (btnWidth + btnGap), y + maxRow * (BUTTON_HEIGHT + btnGap))
+    popupMaxPresetButton:SetHandler("OnClicked", function()
+        ComputeMax()
+        SetRequested(curMax)
+    end)
+    local presetRows = mathfloor((#PRESETS) / presetsPerRow) + 1
     y = y + presetRows * (BUTTON_HEIGHT + btnGap) + SECTION_GAP
 
     -- Quantity row: label on the left, editbox to its right.
@@ -853,6 +886,10 @@ local function InitializePopup()
     popupEdit:SetHandler("OnEnter", function(self)
         self:LoseFocus()
         WithdrawDialog.Confirm()
+    end)
+    popupEdit:SetHandler("OnEscape", function(self)
+        self:LoseFocus()
+        WithdrawDialog.CancelPopup()
     end)
     y = y + BUTTON_HEIGHT + SECTION_GAP
 
@@ -934,7 +971,11 @@ function WithdrawDialog.Open(materialData)
 
     UpdateQueueSectionVisibility()
 
-    popup:SetHidden(false)
+    if SCENE_MANAGER and SCENE_MANAGER.ShowTopLevel then
+        SCENE_MANAGER:ShowTopLevel(popup)
+    else
+        popup:SetHidden(false)
+    end
     popup:BringWindowToTop()
 end
 
@@ -1174,6 +1215,9 @@ function WithdrawDialog.WithdrawAll()
     popupEdit:SetEditEnabled(false)
     for i = 1, #popupPresetButtons do
         popupPresetButtons[i]:SetEnabled(false)
+    end
+    if popupMaxPresetButton then
+        popupMaxPresetButton:SetEnabled(false)
     end
     queueRunGoldValue = allPriced and totalGold or nil
     StartRun(jobs, total, OnQueueProgress, OnQueueFinish)

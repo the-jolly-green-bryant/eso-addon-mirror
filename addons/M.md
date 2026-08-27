@@ -156,6 +156,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Mudballed - Memento Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Mudballed---Memento-Counter__3218) | Kyzeragon | PC / Mac | 1.0.2 |
 | [Mudcrab Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TwinLamps/Mudcrab-Counter__4383) | TwinLamps | PC / Mac | 1.1 |
 | [Mudcrab Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/snay/Mudcrab-Tracker__4312) | snay | PC / Mac | 0.1.4 |
+| [Muffin's Utility Tree](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Utility-Tree__4797) | Muffins714 | PC / Mac | 1.0 |
 | [Muffin’s Set & Recipe Tracker for Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Set-Recipe-Tracker-for-Gamepad__4090) | Muffins714 | PC / Mac | 1.6.1 |
 | [Mundus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/probo11/Mundus__2698) | probo11 | PC / Mac | 5.0 |
 | [MundusMap Revived](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marazota/MundusMap-Revived__3069) | Marazota | PC / Mac | 0.28 |

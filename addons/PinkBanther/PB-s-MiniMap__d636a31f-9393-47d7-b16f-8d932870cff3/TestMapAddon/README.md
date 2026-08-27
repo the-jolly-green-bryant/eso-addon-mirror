@@ -42,6 +42,7 @@ Settings live under **PB's MiniMap** (LibHarvensAddonSettings).
 | Width / Height | Minimap size (min 20) |
 | Offset X / Offset Y | Position relative to screen centre |
 | Opacity | How solid the minimap is; the full map stays solid |
+| Show border | Draw the map's frame around the minimap |
 | Show zone name | Name of the current area, just above the minimap |
 | Zone name size | Text size for that name |
 | Hide place names | Keep location labels off the minimap; the full map keeps them |

@@ -63,7 +63,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [RdK Group Tool Patcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/RdK-Group-Tool-Patcher__2512) | Phuein | PC / Mac | 1.02 |
 | [Ready Check Randomiser](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/calexus1986/Ready-Check-Randomiser__2477) | calexus1986 | PC / Mac | 1.4 |
 | [Real Bound Armor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ArtOfShred/Real-Bound-Armor__1974) | ArtOfShred | PC / Mac | 2.3 |
-| [Realistic Needs and Diseases](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Realistic-Needs-and-Diseases__4711) | kreksar@gmail.com | PC / Mac | 0.19.23 |
+| [Realistic Needs and Diseases](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Realistic-Needs-and-Diseases__4711) | kreksar@gmail.com | PC / Mac | 0.19.28 |
 | [Rebar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Rebar__1e6ecfd4-9947-49dc-9392-c5fab2256ab2) | Vixen_Hunny | Console | — |
 | [Recall Rotator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ookimus/Recall-Rotator__4765) | Ookimus | PC / Mac | 1.0 |
 | [Recipe and Motif Price For Writ Worthy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alezhu/Recipe-and-Motif-Price-For-Writ-Worthy__3625) | alezhu | PC / Mac | 1.1.1 |

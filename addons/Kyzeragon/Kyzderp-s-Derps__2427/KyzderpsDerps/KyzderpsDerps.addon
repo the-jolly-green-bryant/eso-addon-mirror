@@ -7,8 +7,8 @@
 ## Title: KyzderpsDerps
 ## Description: A collection of random utilities
 ## Author: Kyzeragon
-## Version: 1.51.0
-## AddOnVersion: 1510
+## Version: 1.52.0
+## AddOnVersion: 1520
 ## APIVersion: 101050 101051
 ## SavedVariables: KyzderpsDerpsSavedVariables ACACUpdateCheckDisabled ACACUC_KyzderpsDerps
 ## DependsOn: LibAddonMenu-2.0>=43

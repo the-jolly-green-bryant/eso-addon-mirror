@@ -1,12 +1,12 @@
 ## Title: |cFFAA33Shopping List|r
 ## Description: A compact shopping list for guild store trips.
 ## Author: Gravvy
-## Version: 0.18.0
-## APIVersion: 101050
-## AddOnVersion: 31
-## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0 LibSets>=0009000
-## OptionalDependsOn: AwesomeGuildStore LibCustomMenu
-## SavedVariables: ShoppingList_Data
+## Version: 0.18.8
+## APIVersion: 101051
+## AddOnVersion: 33
+## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0>=40500 LibSets>=0009000
+## OptionalDependsOn: AwesomeGuildStore LibCustomMenu ShoppingList WritWorthy
+## SavedVariables: ShoppingList_Data ShoppingList_BackupData
 
 # The manifest filename is the internal add-on identifier. Keep it unique from
 # the discontinued Master Merchant ShoppingList importer.
@@ -23,28 +23,33 @@
 Localization/en.lua
 Localization/es.lua
 Localization/fr.lua
+Localization/release_notes.lua
 
-Accessibility.lua
-AGSAdapter.lua
-Archive.lua
+UI/Shared/Accessibility.lua
+UI/Shared/Controls.lua
+Core/Model.lua
+Features/Share.lua
+Features/Backup.lua
+Integrations/AGSAdapter.lua
+Integrations/Crafting.lua
+Features/Archive.lua
 Bindings.xml
-ContextMenu.lua
-Data.lua
-SetCatalog.lua
-Editor.lua
-Gamepad.lua
-Gamepad.xml
-GamepadManagement.lua
-Help.lua
-History.lua
-ListTools.lua
-MainMenu.lua
-Matcher.lua
-Inventory.lua
-PurchaseTracker.lua
-Settings.lua
-Share.lua
-Backup.lua
+Integrations/ContextMenu.lua
+Core/Data.lua
+Features/SetCatalog.lua
+UI/Keyboard/Editor.lua
+UI/Gamepad/Gamepad.lua
+UI/Gamepad/Gamepad.xml
+UI/Gamepad/GamepadManagement.lua
+UI/Shared/Help.lua
+Features/History.lua
+Features/SessionSummary.lua
+Features/ListTools.lua
+Integrations/MainMenu.lua
+Core/Matcher.lua
+Core/Inventory.lua
+Core/PurchaseTracker.lua
+UI/Shared/Settings.lua
 GravvyShoppingList.lua
-PublicAPI.lua
-UI.lua
+Integrations/PublicAPI.lua
+UI/Keyboard/UI.lua

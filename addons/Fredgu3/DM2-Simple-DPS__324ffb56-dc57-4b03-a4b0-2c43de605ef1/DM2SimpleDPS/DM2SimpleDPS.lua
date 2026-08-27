@@ -1,10 +1,13 @@
 -- -----------------------------------------------------------------------------
 -- DM2 Simple DPS
 -- Description: A simple, libHarvens-free app for tracking DPS during fights/parses
--- Current Version: 1.0.12
--- Release Notes: Fight and Session columns nudged left so 9-figure comma-
---                delimited totals fit without clipping (HM vet boss fights).
--- Prior Notes:  1.0.11 -- Panel reorganized into Live / Fight / Session columns
+-- Current Version: 1.0.13
+-- Release Notes: Fight DPS is bold. Optional Fight DPS label color. Checkbox
+--                swaps only the Live DPS and Fight DPS headlines (Fight Total
+--                and Duration stay put). Labels: Live DPS / Fight DPS.
+-- Prior Notes:  1.0.12 -- Fight and Session columns nudged left so 9-figure
+--                comma-delimited totals fit without clipping (HM vet boss fights).
+--                1.0.11 -- Panel reorganized into Live / Fight / Session columns
 --                with Session Total and Total DPS Time (active damage seconds
 --                only). Location-aware subtitle plus bottom-left branding.
 --                1.0.10 -- Accuracy fix: pet/summon damage now included.
@@ -35,9 +38,9 @@ local ZONE_DUNGEON  = "dungeon"   -- group dungeons, trials, arenas
 local ZONE_HOME     = "home"
 
 -- Bump this when you want the one-time upgrade notice to fire again.
--- AddOnVersion (manifest only) = major*10000 + minor*100 + patch  →  1.0.12 = 10012
+-- AddOnVersion (manifest only) = major*10000 + minor*100 + patch  →  1.0.13 = 10013
 -- ESO compares that integer monotonically; never publish a lower AddOnVersion than live.
-local VERSION = "1.0.12"
+local VERSION = "1.0.13"
 
 -- Compact 3-column layout: Live | Fight | Session
 local PANEL_W = 480
@@ -97,6 +100,17 @@ ADDON.defaults = {
 
   -- internal: last version we showed the upgrade notice for (one-time per version)
   lastSeenVersion = "",
+
+  -- Swap only the Live DPS / Fight DPS headlines. Fight Total and Duration stay
+  -- in the Fight column.
+  swapLiveFight = false,
+
+  -- Optional color on the "Fight DPS:" prefix only. The number uses text color.
+  fightLabelColorEnabled = false,
+  fightLabelR = 1,
+  fightLabelG = 0.84,
+  fightLabelB = 0,
+  fightLabelA = 1,
 }
 
 -- Runtime fight state
@@ -163,6 +177,32 @@ local function FormatDps(dps)
   else
     return string.format("%.0f", dps)
   end
+end
+
+-- |cRRGGBB in ESO labels is RGB only (no alpha). fightLabelA is stored so the
+-- colorpicker round-trips; it does not tint the prefix independently of SetColor.
+local function RgbToHex(r, g, b)
+  local ri = math.floor(Clamp01(r) * 255 + 0.5)
+  local gi = math.floor(Clamp01(g) * 255 + 0.5)
+  local bi = math.floor(Clamp01(b) * 255 + 0.5)
+  return string.format("%02X%02X%02X", ri, gi, bi)
+end
+
+local function FormatLiveDpsLabel(dps)
+  return "Live DPS: " .. FormatDps(dps)
+end
+
+local function FormatFightDpsLabel(dps)
+  local body = FormatDps(dps)
+  local vars = ADDON.vars
+  if vars and vars.fightLabelColorEnabled then
+    -- Encode both colors in the string and pair with SetColor(1,1,1,a) so a
+    -- custom text color cannot tint the Fight DPS: prefix.
+    local tagHex = RgbToHex(vars.fightLabelR or 1, vars.fightLabelG or 0.84, vars.fightLabelB or 0)
+    local numHex = RgbToHex(vars.textR or 1, vars.textG or 1, vars.textB or 1)
+    return "|c" .. tagHex .. "Fight DPS:|r |c" .. numHex .. body .. "|r"
+  end
+  return "Fight DPS: " .. body
 end
 
 local function FormatInt(n)
@@ -275,6 +315,12 @@ local function _fontRow(size)
   return string.format("EsoUI/Common/Fonts/univers57.otf|%d|soft-shadow-thin", size)
 end
 
+-- Same size as the KPI rows, bold weight (univers67). Shadow stays thin so the
+-- line still sits with its neighbors; weight is the emphasis, not size or color.
+local function _fontFight(size)
+  return string.format("EsoUI/Common/Fonts/univers67.otf|%d|soft-shadow-thin", size)
+end
+
 local function CreateDPSFonts(vars)
   if not DM2SimpleDPS_BrandFont then DM2SimpleDPS_BrandFont = CreateFont("DM2SimpleDPS_BrandFont") end
   DM2SimpleDPS_BrandFont:SetFont("EsoUI/Common/Fonts/univers67.otf|14|soft-shadow-thick")
@@ -282,16 +328,20 @@ local function CreateDPSFonts(vars)
   if not DM2SimpleDPS_SubtitleFont then DM2SimpleDPS_SubtitleFont = CreateFont("DM2SimpleDPS_SubtitleFont") end
   DM2SimpleDPS_SubtitleFont:SetFont("EsoUI/Common/Fonts/univers57.otf|13|soft-shadow-thin")
 
-  if not DM2SimpleDPS_RowFont then DM2SimpleDPS_RowFont = CreateFont("DM2SimpleDPS_RowFont") end
   local size = vars.fontSize or 16
+
+  if not DM2SimpleDPS_RowFont then DM2SimpleDPS_RowFont = CreateFont("DM2SimpleDPS_RowFont") end
   DM2SimpleDPS_RowFont:SetFont(_fontRow(size))
+
+  if not DM2SimpleDPS_FightFont then DM2SimpleDPS_FightFont = CreateFont("DM2SimpleDPS_FightFont") end
+  DM2SimpleDPS_FightFont:SetFont(_fontFight(size))
 end
 
 local function ApplyRowFont(ui)
   if not ui then return end
   local font = "DM2SimpleDPS_RowFont"
   if ui.rtLabel then ui.rtLabel:SetFont(font) end
-  if ui.avgLabel then ui.avgLabel:SetFont(font) end
+  if ui.avgLabel then ui.avgLabel:SetFont("DM2SimpleDPS_FightFont") end
   if ui.sustLabel then ui.sustLabel:SetFont(font) end
   if ui.totalLabel then ui.totalLabel:SetFont(font) end
   if ui.sessTotalLabel then ui.sessTotalLabel:SetFont(font) end
@@ -326,6 +376,25 @@ end
 -- ----------------------------
 -- UI
 -- ----------------------------
+-- Moves only the Live DPS and Fight DPS headline controls. Fight Total,
+-- Duration, Session, brand, and subtitle stay where they are.
+function ADDON:ApplyHeadlineLayout()
+  local ui = self.ui
+  local vars = self.vars
+  if not ui or not ui.win or not ui.rtLabel or not ui.avgLabel or not vars then return end
+
+  local liveX = COL_LIVE
+  local fightX = COL_FIGHT
+  if vars.swapLiveFight then
+    liveX, fightX = COL_FIGHT, COL_LIVE
+  end
+
+  ui.rtLabel:ClearAnchors()
+  ui.rtLabel:SetAnchor(TOPLEFT, ui.win, TOPLEFT, liveX, ROW1_Y)
+  ui.avgLabel:ClearAnchors()
+  ui.avgLabel:SetAnchor(TOPLEFT, ui.win, TOPLEFT, fightX, ROW1_Y)
+end
+
 function ADDON:ApplyStyles()
   local vars = self.vars
   local ui = self.ui
@@ -353,7 +422,13 @@ function ADDON:ApplyStyles()
     ui.brandLabel:SetColor(BRAND_R, BRAND_G, BRAND_B, ta or 1)
   end
   ui.rtLabel:SetColor(r,g,b,ta)
-  ui.avgLabel:SetColor(r,g,b,ta)
+  -- White vertex color while the Fight DPS prefix is |c-encoded, so the tag
+  -- color is exact. Number color is also |c-encoded in FormatFightDpsLabel.
+  if vars.fightLabelColorEnabled then
+    ui.avgLabel:SetColor(1, 1, 1, ta)
+  else
+    ui.avgLabel:SetColor(r,g,b,ta)
+  end
   ui.sustLabel:SetColor(r,g,b,ta)
   ui.totalLabel:SetColor(r,g,b,ta)
   ui.sessTotalLabel:SetColor(r,g,b,ta)
@@ -361,6 +436,7 @@ function ADDON:ApplyStyles()
   ui.sessTimeLabel:SetColor(r,g,b,ta)
 
   self:UpdateSessionSubtitle()
+  self:ApplyHeadlineLayout()
 
   ui.win:SetMouseEnabled(not vars.locked)
   ui.win:SetMovable(not vars.locked)
@@ -406,13 +482,13 @@ function ADDON:CreateUI()
   local rt = WM:CreateControl("$(parent)RT", win, CT_LABEL)
   rt:SetFont("DM2SimpleDPS_RowFont")
   rt:SetAnchor(TOPLEFT, win, TOPLEFT, COL_LIVE, ROW1_Y)
-  rt:SetText("Real-time: 0")
+  rt:SetText(FormatLiveDpsLabel(0))
   rt:SetDrawLayer(DL_OVERLAY); rt:SetDrawTier(DT_HIGH); rt:SetDrawLevel(340010)
 
   local avg = WM:CreateControl("$(parent)Avg", win, CT_LABEL)
-  avg:SetFont("DM2SimpleDPS_RowFont")
+  avg:SetFont("DM2SimpleDPS_FightFont")
   avg:SetAnchor(TOPLEFT, win, TOPLEFT, COL_FIGHT, ROW1_Y)
-  avg:SetText("Fight Avg: 0")
+  avg:SetText(FormatFightDpsLabel(0))
   avg:SetDrawLayer(DL_OVERLAY); avg:SetDrawTier(DT_HIGH); avg:SetDrawLevel(340010)
 
   local sust = WM:CreateControl("$(parent)Sust", win, CT_LABEL)
@@ -523,8 +599,8 @@ function ADDON:UpdateUI(force)
   self:UpdateSessionMetrics()
 
   if (not self.inCombat) and self.hasFrozen then
-    self.ui.rtLabel:SetText("Real-time: " .. FormatDps(self.frozenCurrentDps))
-    self.ui.avgLabel:SetText("Fight Avg: " .. FormatDps(self.frozenFightDps))
+    self.ui.rtLabel:SetText(FormatLiveDpsLabel(self.frozenCurrentDps))
+    self.ui.avgLabel:SetText(FormatFightDpsLabel(self.frozenFightDps))
     self.ui.totalLabel:SetText("Fight Total: " .. FormatInt(self.frozenFightTotal))
     self.ui.durLabel:SetText("Duration: " .. FormatDurMs(self.frozenFightDurMs))
     return
@@ -532,8 +608,8 @@ function ADDON:UpdateUI(force)
 
   -- If we haven't started the fight yet, don't show ramp numbers
   if not self.fightStartMs or self.fightStartMs <= 0 then
-    self.ui.rtLabel:SetText("Real-time: 0")
-    self.ui.avgLabel:SetText("Fight Avg: 0")
+    self.ui.rtLabel:SetText(FormatLiveDpsLabel(0))
+    self.ui.avgLabel:SetText(FormatFightDpsLabel(0))
     self.ui.totalLabel:SetText("Fight Total: 0")
     self.ui.durLabel:SetText("Duration: 0:00.0")
     return
@@ -546,8 +622,8 @@ function ADDON:UpdateUI(force)
   local rollingSum = GetRollingDamageSum(now, windowMs)
   local currentDps = (rollingSum * 1000) / windowMs
 
-  self.ui.rtLabel:SetText("Real-time: " .. FormatDps(currentDps))
-  self.ui.avgLabel:SetText("Fight Avg: " .. FormatDps(fightDps))
+  self.ui.rtLabel:SetText(FormatLiveDpsLabel(currentDps))
+  self.ui.avgLabel:SetText(FormatFightDpsLabel(fightDps))
   self.ui.totalLabel:SetText("Fight Total: " .. FormatInt(self.fightDamage))
   self.ui.durLabel:SetText("Duration: " .. FormatDurMs(durMs))
 end
@@ -657,8 +733,8 @@ function ADDON:MaybeShowVersionNotice()
   self.vars.lastSeenVersion = VERSION
 
   local g, r = "|cFFD700", "|r"  -- gold highlight / reset
-  PrintToChat(g .. "DM2 Simple DPS v" .. VERSION .. r .. " -- Fight and Session columns shifted left so " ..
-    g .. "9-figure comma totals" .. r .. " fit without clipping.")
+  PrintToChat(g .. "DM2 Simple DPS v" .. VERSION .. r .. " -- " ..
+    g .. "Fight DPS" .. r .. " is bold. Settings: lead with Fight DPS (swaps only that line with Live DPS), optional Fight DPS label color.")
 end
 
 -- Fires on every zone load (and login/reloadui). We reset the Sustained session
@@ -793,6 +869,49 @@ function ADDON:TryRegisterLAM()
     },
     {
       type = "header",
+      name = "Display",
+    },
+    {
+      type = "checkbox",
+      name = "Lead with Fight DPS",
+      tooltip = "Swaps only the Live DPS and Fight DPS lines at the top. Fight Total and Duration stay in the Fight column.",
+      getFunc = function() return self.vars.swapLiveFight end,
+      setFunc = function(v)
+        self.vars.swapLiveFight = v
+        self:ApplyHeadlineLayout()
+      end,
+      default = self.defaults.swapLiveFight,
+    },
+    {
+      type = "checkbox",
+      name = "Custom Fight DPS label color",
+      tooltip = "Colors the Fight DPS: prefix only. The number still uses your text color.",
+      getFunc = function() return self.vars.fightLabelColorEnabled end,
+      setFunc = function(v)
+        self.vars.fightLabelColorEnabled = v
+        self:ApplyStyles()
+        if self.vars.visible then self:UpdateUI(true) end
+      end,
+      default = self.defaults.fightLabelColorEnabled,
+    },
+    {
+      type = "colorpicker",
+      name = "Fight DPS label color",
+      tooltip = "Color of the Fight DPS: prefix when the custom color is enabled.",
+      getFunc = function()
+        local v = self.vars
+        return v.fightLabelR, v.fightLabelG, v.fightLabelB, v.fightLabelA
+      end,
+      setFunc = function(r, g, b, a)
+        local v = self.vars
+        v.fightLabelR, v.fightLabelG, v.fightLabelB, v.fightLabelA = r, g, b, a
+        if self.vars.visible then self:UpdateUI(true) end
+      end,
+      default = { self.defaults.fightLabelR, self.defaults.fightLabelG, self.defaults.fightLabelB, self.defaults.fightLabelA },
+      disabled = function() return not self.vars.fightLabelColorEnabled end,
+    },
+    {
+      type = "header",
       name = "Panel",
     },
     {
@@ -853,6 +972,7 @@ function ADDON:TryRegisterLAM()
         local v = self.vars
         v.textR, v.textG, v.textB, v.textA = r,g,b,a
         self:ApplyStyles()
+        if v.fightLabelColorEnabled and v.visible then self:UpdateUI(true) end
       end,
       default = { self.defaults.textR, self.defaults.textG, self.defaults.textB, self.defaults.textA },
     },

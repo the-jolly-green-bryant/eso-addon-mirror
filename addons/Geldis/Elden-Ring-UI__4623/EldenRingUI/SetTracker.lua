@@ -14,7 +14,7 @@ local function CreateUI()
     local wm = GetWindowManager()
     UI_Container = wm:CreateTopLevelWindow("ERUI_SetTrackerControl")
     UI_Container:SetAnchor(BOTTOMLEFT, GuiRoot, BOTTOMLEFT, 0, 0)
-    UI_Container:SetDimensions(82, 82)
+    UI_Container:SetDimensions(75, 75) -- 82
     UI_Container:SetDrawLayer(DL_OVERLAY)
 
     local fragment = ZO_HUDFadeSceneFragment:New(UI_Container)
@@ -28,7 +28,7 @@ local function GetIconControl(index)
     local wm = GetWindowManager()
     if not IconPool[index] then
         local icon = wm:CreateControl("ERUI_SetTrackerIcon" .. index, UI_Container, CT_TEXTURE)
-        icon:SetDimensions(82, 82)
+        icon:SetDimensions(75, 75) -- 82
         local offset = SLOT_OFFSETS[index]
         icon:SetAnchor(CENTER, UI_Container, BOTTOMLEFT, offset.x, offset.y)
         IconPool[index] = icon

@@ -37,6 +37,7 @@ local tablesort                   = table.sort
 local stringlower                 = string.lower
 local stringfind                  = string.find
 local stringformat                = string.format
+local stringgmatch                = string.gmatch
 local stringmatch                 = string.match
 local tonumber                    = tonumber
 
@@ -55,28 +56,34 @@ local STACK_SIZE = private.STACK_SIZE
 
 -- Price-history bookkeeping for the detail window's "price change" column.
 -- ---------------------------------------------------------------------------
--- We keep one baseline price per itemId in savedVars and compare the current
--- price against it to show a growth %. RECORD_INTERVAL_SECONDS gates how often
--- the baseline advances: recording on every view would make the delta read ~0%
--- forever (you'd be comparing a price against itself seconds later), so the
--- baseline only moves once roughly a day has passed -- the figure then reflects
--- day-over-day market drift. PRUNE_MAX_AGE_SECONDS drops baselines for
--- materials the user hasn't viewed in a month so the table can't grow forever.
-local RECORD_INTERVAL_SECONDS = 20 * 60 * 60   -- ~20h
+-- We keep a compact series of price points per itemId in savedVars. The newest
+-- point remains the baseline for the detail table's day-over-day change, while
+-- the whole series supports seven-day trend analysis. Writes are session-gated:
+-- the first LibPrice observation of a UI session (login or /reloadui) appends a
+-- point even if the previous session was only minutes ago, and later lookups in
+-- the same session (a bag reopen, or /bmw refresh) update that session's point
+-- in place so the bounded series is not filled with near-duplicates. Opening,
+-- sorting, or searching the table never writes history. The source key is stored
+-- with every new point: switching from MM to TTC/ATT starts a fresh comparable
+-- run instead of creating a false market spike. PRUNE_MAX_AGE_SECONDS drops
+-- entries for materials not observed in a month; the per-item point count is
+-- bounded separately.
 local PRUNE_MAX_AGE_SECONDS   = 30 * 24 * 60 * 60  -- 30 days
+local PRICE_TREND_WINDOW_SECONDS = 7 * 24 * 60 * 60
+-- Session-gated writes can land more than one point a day, so keep enough room
+-- for a week of typical play (a few logins per day) inside the seven-day window.
+local PRICE_HISTORY_MAX_POINTS = 30
 
 -- Grand-total value history (the footer sparkline)
 -- ---------------------------------------------------------------------------
--- One sample of the whole-bag valuation is recorded per craft-bag open, into a
--- fixed-size ring buffer in savedVars (valueHistory). The ring is capacity-
--- bounded so it can never grow without limit -- old samples are overwritten in
--- place rather than shifted, so a write is O(1) and there is nothing to prune.
--- VALUE_HISTORY_MIN_INTERVAL collapses an "open/close/open" burst into a single
--- moving sample: within the window the latest open just updates the newest
--- point instead of appending, so the sparkline keeps a meaningful time scale
--- rather than filling with points minutes apart.
-local VALUE_HISTORY_CAPACITY     = 90
-local VALUE_HISTORY_MIN_INTERVAL = 4 * 60 * 60  -- ~4h
+-- One sample of the whole-bag valuation is recorded per UI session (login or
+-- /reloadui), into a fixed-size ring buffer in savedVars (valueHistory). The
+-- ring is capacity-bounded so it can never grow without limit -- old samples are
+-- overwritten in place rather than shifted, so a write is O(1) and there is
+-- nothing to prune. Reopening the Craft Bag in the same session is a no-op, so
+-- a 20-minute relog still adds a fresh point without filling the graph from
+-- every bag visit.
+local VALUE_HISTORY_CAPACITY = 90
 
 -- SavedVariables are serialized as verbose Lua tables: one material with four
 -- named fields consumes six or more lines. The Craft Bag commonly holds several
@@ -86,6 +93,7 @@ local VALUE_HISTORY_MIN_INTERVAL = 4 * 60 * 60  -- ~4h
 -- file, and %.17g round-trips Lua numbers without intentionally reducing price
 -- precision.
 local SAVE_SEPARATOR = "~"
+local PRICE_POINT_SEPARATOR = "|"
 
 local function EncodeNumber(value)
     return stringformat("%.17g", value or 0)
@@ -129,17 +137,87 @@ local function DecodeVisitMaterial(entry)
     return { count = tonumber(count) or 0, unitPrice = tonumber(unitPrice) or 0 }
 end
 
-local function EncodePriceHistoryEntry(price, stamp)
-    return EncodeNumber(price) .. SAVE_SEPARATOR .. EncodeNumber(stamp)
+local function EncodePriceHistorySeries(points)
+    local encoded = {}
+    for index = 1, #points do
+        local point = points[index]
+        encoded[index] = table.concat({
+            EncodeNumber(point.p),
+            EncodeNumber(point.t),
+            point.s or "",
+        }, SAVE_SEPARATOR)
+    end
+    return table.concat(encoded, PRICE_POINT_SEPARATOR)
 end
 
-local function DecodePriceHistoryEntry(entry)
-    if type(entry) ~= "string" then
-        return entry or {}
+-- Decode both the current multi-point format ("p~t~source|...") and the legacy
+-- single baseline ("p~t"). Table-shaped entries are accepted for one-time save
+-- migration in CompactSavedVariables.
+local function DecodePriceHistorySeries(entry)
+    if type(entry) == "table" then
+        if entry.p then
+            return { { p = entry.p or 0, t = entry.t or 0, s = entry.s } }
+        end
+        return entry
     end
-    local price, stamp = stringmatch(entry,
-        "^([^" .. SAVE_SEPARATOR .. "]*)" .. SAVE_SEPARATOR .. "(.*)$")
-    return { p = tonumber(price) or 0, t = tonumber(stamp) or 0 }
+    if type(entry) ~= "string" or entry == "" then
+        return {}
+    end
+
+    local points = {}
+    for encodedPoint in stringgmatch(entry, "([^" .. PRICE_POINT_SEPARATOR .. "]+)") do
+        local price, stamp, source = stringmatch(encodedPoint,
+            "^([^" .. SAVE_SEPARATOR .. "]*)" .. SAVE_SEPARATOR
+            .. "([^" .. SAVE_SEPARATOR .. "]*)" .. SAVE_SEPARATOR .. "(.*)$")
+        if not price then
+            price, stamp = stringmatch(encodedPoint,
+                "^([^" .. SAVE_SEPARATOR .. "]*)" .. SAVE_SEPARATOR .. "(.*)$")
+        end
+        points[#points + 1] = {
+            p = tonumber(price) or 0,
+            t = tonumber(stamp) or 0,
+            s = source ~= "" and source or nil,
+        }
+    end
+    return points
+end
+
+local function LatestComparablePricePoint(points, source)
+    local latest = points[#points]
+    if not latest then
+        return nil
+    end
+    if latest.s ~= source then
+        return nil
+    end
+    return latest
+end
+
+local function AppendPriceHistoryPoint(points, price, stamp, source)
+    points[#points + 1] = { p = zo_round(price), t = stamp, s = source }
+    while #points > PRICE_HISTORY_MAX_POINTS do
+        table.remove(points, 1)
+    end
+end
+
+local function EncodePriceTrendAlert(direction, magnitude, stamp)
+    return table.concat({ direction, EncodeNumber(magnitude), EncodeNumber(stamp) }, SAVE_SEPARATOR)
+end
+
+local function DecodePriceTrendAlert(entry)
+    if type(entry) == "table" then
+        return entry
+    end
+    if type(entry) ~= "string" then
+        return nil
+    end
+    local direction, magnitude, stamp = stringmatch(entry,
+        "^([^" .. SAVE_SEPARATOR .. "]*)" .. SAVE_SEPARATOR
+        .. "([^" .. SAVE_SEPARATOR .. "]*)" .. SAVE_SEPARATOR .. "(.*)$")
+    if not direction then
+        return nil
+    end
+    return { d = direction, m = tonumber(magnitude) or 0, t = tonumber(stamp) or 0 }
 end
 
 local function EncodeVisitDiffRow(row)
@@ -209,7 +287,7 @@ local function CompactSavedVariables()
 
     for itemId, entry in pairs(sv.priceHistory or {}) do
         if type(entry) == "table" then
-            sv.priceHistory[itemId] = EncodePriceHistoryEntry(entry.p, entry.t)
+            sv.priceHistory[itemId] = EncodePriceHistorySeries(DecodePriceHistorySeries(entry))
         end
     end
 
@@ -470,11 +548,49 @@ local visitFinalizePending = false  -- an open is waiting to finalize its delta/
 -- its timer callback once the last unpriced slot heals or the budget is spent.
 local FinalizeVisit
 local UpdatePriceHistoryBaselines
+local NotifySignificantPriceTrends
 
 local lastInventoryUpdateMs = nil  -- GetGameTimeMilliseconds() of the last inventory valuation
 local lastPriceRefreshMs = nil     -- GetGameTimeMilliseconds() of the last LibPrice lookup
 local priceHistoryUpdatePending = false
 local priceLookupItemIds = {}      -- itemIds queried from LibPrice in the current pass
+local valueHistoryRecordedThisSession = false
+local priceHistoryWrittenThisSession = {} -- [itemId] = true after this session's point exists
+-- Seven-day analysis does not depend on stack-size changes. Window.Update
+-- reuses this summary until bag composition, prices, history, or the threshold
+-- actually change; a deposit of an already-held material must not re-walk
+-- every earlier/later price pair. The material list itself is rebuilt on demand
+-- so an open trend view still shows live quantities.
+local PRICE_TREND_SUMMARY_MAX_AGE_SECONDS = 10 * 60
+local priceTrendSummaryCache = {
+    threshold = nil,
+    computedAt = 0,
+    gains = 0,
+    losses = 0,
+    total = 0,
+}
+
+local function InvalidatePriceTrendCache()
+    priceTrendSummaryCache.threshold = nil
+    priceTrendSummaryCache.computedAt = 0
+end
+
+local function StorePriceTrendSummary(threshold, materials)
+    local gains, losses = 0, 0
+    for index = 1, #materials do
+        if (materials[index].trendStrongestPercent or 0) >= 0 then
+            gains = gains + 1
+        else
+            losses = losses + 1
+        end
+    end
+    priceTrendSummaryCache.threshold = threshold
+    priceTrendSummaryCache.computedAt = GetTimeStamp()
+    priceTrendSummaryCache.gains = gains
+    priceTrendSummaryCache.losses = losses
+    priceTrendSummaryCache.total = #materials
+end
+
 local isDirty = true        -- valuation may be stale; rescan on next show
 local isBagVisible = false
 
@@ -487,15 +603,17 @@ local isBagVisible = false
 local INCREMENTAL_DRIFT_LIMIT = 250
 local incrementalApplies = 0
 
--- Append the current grand total to the value-history ring buffer. Called once
--- per craft-bag open (after the delta block, so grandGold/grandItems are the
--- just-computed figures). The buffer never shifts: `head` is the index of the
--- newest sample and writes wrap modulo VALUE_HISTORY_CAPACITY, overwriting the
--- oldest entry once full. A new open within VALUE_HISTORY_MIN_INTERVAL of the
--- newest sample updates that sample in place instead of appending, so a rapid
--- open/close/open burst stays one point and the sparkline keeps a real time
--- scale. No-op without savedVars (pre-init) so it is safe to call unguarded.
+-- Append the current grand total to the value-history ring buffer. Called from
+-- FinalizeVisit after the delta block, so grandGold/grandItems are the
+-- just-computed figures. The first write of a UI session always appends, even
+-- if the previous session was only minutes ago; later Craft Bag opens in the
+-- same session are a no-op so the graph stays one sample per login. No-op
+-- without savedVars (pre-init) so it is safe to call unguarded.
 local function RecordValuePoint()
+    if valueHistoryRecordedThisSession then
+        return
+    end
+
     local sv = private.savedVars
     if not sv then
         return
@@ -515,20 +633,10 @@ local function RecordValuePoint()
         hist.head = 0
     end
 
-    local now = GetTimeStamp()
-    local newest = hist.head > 0 and hist.entries[hist.head] or nil
-    if newest and newest.t and (now - newest.t) < VALUE_HISTORY_MIN_INTERVAL then
-        -- Still inside the same sampling window: move the newest point forward
-        -- rather than adding a near-duplicate.
-        newest.t = now
-        newest.gold = grandGold
-        newest.items = grandItems
-        return
-    end
-
     local nextHead = (hist.head % VALUE_HISTORY_CAPACITY) + 1
-    hist.entries[nextHead] = { t = now, gold = grandGold, items = grandItems }
+    hist.entries[nextHead] = { t = GetTimeStamp(), gold = grandGold, items = grandItems }
     hist.head = nextHead
+    valueHistoryRecordedThisSession = true
 end
 
 -- Capture only the data needed to explain the next visit delta. This is a
@@ -987,7 +1095,11 @@ local function FullRescan()
     isDirty = false
     -- Totals are exact again, so the incremental drift budget starts over.
     incrementalApplies = 0
+    InvalidatePriceTrendCache()
     UpdatePriceHistoryBaselines()
+    if NotifySignificantPriceTrends then
+        NotifySignificantPriceTrends()
+    end
     LogInfo(SI_BMW_LOG_RESCAN_DONE, scanned, private.FormatGold(grandGold))
 end
 
@@ -1170,6 +1282,9 @@ local function OnSingleSlotUpdate(eventCode, bagId, slotIndex, isNewItem, soundC
         RemoveSlotFromAggregates(slotIndex)
         info = ComputeSlot(slotIndex)
         AddSlotToAggregates(slotIndex, info)
+        -- A new, removed, or swapped material can add or drop a trend signal.
+        -- Quantity-only updates of an already-held material do not.
+        InvalidatePriceTrendCache()
     end
 
     if oldItemId then
@@ -1441,7 +1556,7 @@ function Valuation.OnCraftBagHidden()
     StopPriceRetry()
     -- Backstop: if the bag is closed before the self-heal finished (or was never
     -- fully priced), finalize now so the visit baseline still advances and the
-    -- history point is recorded exactly once per open.
+    -- session's history point is recorded exactly once.
     FinalizeVisit(false)
 end
 
@@ -1669,23 +1784,24 @@ end
 -- Price changes captured when a price lookup refreshed a material. Keeping this
 -- transient result lets the UI show the just-observed change even though the
 -- persisted baseline has already advanced for the next comparison interval.
-local priceGrowthCache = {}  -- [itemId] = { unitPrice, growthPercent, growthDir, isNew }
+local priceGrowthCache = {}  -- [itemId] = { unitPrice, source, growthPercent, growthDir, isNew }
 
 -- Read a persisted baseline without changing it. Row building must be pure: a
 -- search, sort, or category open should never alter the user's price history.
-local function ResolvePriceGrowth(itemId, curUnit)
+local function ResolvePriceGrowth(itemId, curUnit, source)
     local sv = private.savedVars
     if not sv or not curUnit or curUnit <= 0 then
         return nil, nil, false
     end
 
     local cached = priceGrowthCache[itemId]
-    if cached and cached.unitPrice == curUnit then
+    if cached and cached.unitPrice == curUnit and cached.source == source then
         return cached.growthPercent, cached.growthDir, cached.isNew
     end
 
-    local storedOld = sv.priceHistory and sv.priceHistory[itemId]
-    local old = storedOld and DecodePriceHistoryEntry(storedOld) or nil
+    local storedSeries = sv.priceHistory and sv.priceHistory[itemId]
+    local points = DecodePriceHistorySeries(storedSeries)
+    local old = LatestComparablePricePoint(points, source)
 
     local growthPercent, growthDir, isNew
     if old and old.p and old.p > 0 then
@@ -1707,6 +1823,7 @@ UpdatePriceHistoryBaselines = function()
         return
     end
     priceHistoryUpdatePending = false
+    InvalidatePriceTrendCache()
     local lookupItemIds = priceLookupItemIds
     priceLookupItemIds = {}
 
@@ -1724,8 +1841,8 @@ UpdatePriceHistoryBaselines = function()
     for _, info in pairs(slotInfo) do
         if lookupItemIds[info.itemId] and info.priced and info.stack and info.stack > 0 then
             local unitPrice = info.value / info.stack
-            local storedOld = history[info.itemId]
-            local old = storedOld and DecodePriceHistoryEntry(storedOld) or nil
+            local points = DecodePriceHistorySeries(history[info.itemId])
+            local old = LatestComparablePricePoint(points, info.source)
             local growthPercent, growthDir, isNew
             if old and old.p and old.p > 0 then
                 growthPercent = (unitPrice - old.p) / old.p * 100
@@ -1736,13 +1853,29 @@ UpdatePriceHistoryBaselines = function()
             end
             priceGrowthCache[info.itemId] = {
                 unitPrice = unitPrice,
+                source = info.source,
                 growthPercent = growthPercent,
                 growthDir = growthDir,
                 isNew = isNew,
             }
 
-            if not old or not old.t or (now - old.t) >= RECORD_INTERVAL_SECONDS then
-                history[info.itemId] = EncodePriceHistoryEntry(zo_round(unitPrice), now)
+            local latest = points[#points]
+            local sourceChanged = latest and latest.s and info.source and latest.s ~= info.source
+            local needsSourceAnchor = latest and not latest.s and info.source ~= nil
+            local alreadyWritten = priceHistoryWrittenThisSession[info.itemId]
+            -- A new UI session always appends, even if the previous login was only
+            -- minutes ago. Later lookups in the same session (bag reopen or a
+            -- manual refresh) keep a single point and update it in place.
+            if not latest or not latest.t or sourceChanged or needsSourceAnchor
+                or not alreadyWritten then
+                AppendPriceHistoryPoint(points, unitPrice, now, info.source)
+                history[info.itemId] = EncodePriceHistorySeries(points)
+                priceHistoryWrittenThisSession[info.itemId] = true
+            else
+                latest.p = zo_round(unitPrice)
+                latest.t = now
+                latest.s = info.source
+                history[info.itemId] = EncodePriceHistorySeries(points)
             end
         end
     end
@@ -1762,7 +1895,8 @@ local function BuildMaterialRow(slotIndex, info)
         unitPrice = 0
     end
 
-    local growthPercent, growthDir, isNew = ResolvePriceGrowth(info.itemId, info.priced and unitPrice or nil)
+    local growthPercent, growthDir, isNew = ResolvePriceGrowth(
+        info.itemId, info.priced and unitPrice or nil, info.source)
 
     return {
         itemId = info.itemId,
@@ -1784,6 +1918,8 @@ local function BuildMaterialRow(slotIndex, info)
         -- the detail-row tooltip can name where the figure originates. nil when
         -- unpriced. Resolve to a display name via Valuation.GetSourceDisplayName.
         source = info.source,
+        -- Live item link for the game tooltip and Shift-click chat linking.
+        link = itemLink,
         growthPercent = growthPercent,
         growthDir = growthDir,
         isNew = isNew,
@@ -1859,6 +1995,214 @@ function Valuation.GetMaterialsMatching(query)
 
     SortMaterialsByName(materials)
     return materials
+end
+
+-- Significant price movements observed anywhere inside the trailing seven-day
+-- window. Every earlier/later pair in the current source run is compared, so a
+-- one- or two-day surge remains visible even if the price later returns near its
+-- starting level. The live price is included as an unsaved endpoint, allowing a
+-- fresh refresh to surface immediately without shortening the recording cadence.
+function Valuation.GetPriceTrendMaterials(thresholdPercent)
+    local threshold = tonumber(thresholdPercent) or 20
+    local now = GetTimeStamp()
+    local cutoff = now - PRICE_TREND_WINDOW_SECONDS
+    local materials = {}
+    local history = private.savedVars and private.savedVars.priceHistory or {}
+
+    for slotIndex, info in pairs(slotInfo) do
+        if info.priced and info.stack and info.stack > 0 then
+            local currentPrice = info.value / info.stack
+            local storedPoints = DecodePriceHistorySeries(history[info.itemId])
+            local points = {}
+            local hasTaggedCurrentRun = false
+
+            -- Walk backward through only the newest uninterrupted source run.
+            -- Once a source-tagged point is found, an older untagged legacy point
+            -- is a boundary too: its provider is unknowable, so comparing across
+            -- it could manufacture a false MM/TTC/ATT movement after migration.
+            for index = #storedPoints, 1, -1 do
+                local point = storedPoints[index]
+                if point.s and point.s ~= info.source then
+                    break
+                end
+                if point.s then
+                    hasTaggedCurrentRun = true
+                elseif hasTaggedCurrentRun then
+                    break
+                end
+                if point.t and point.t >= cutoff and point.p and point.p > 0 then
+                    table.insert(points, 1, point)
+                end
+            end
+
+            if not hasTaggedCurrentRun then
+                points = {}
+            end
+            local latest = points[#points]
+            if not latest or latest.p ~= currentPrice or latest.t ~= now then
+                points[#points + 1] = { p = currentPrice, t = now, s = info.source }
+            end
+
+            if #points >= 2 then
+                local maxGain, maxLoss = nil, nil
+                for earlierIndex = 1, #points - 1 do
+                    local earlier = points[earlierIndex]
+                    for laterIndex = earlierIndex + 1, #points do
+                        local later = points[laterIndex]
+                        local percent = (later.p - earlier.p) / earlier.p * 100
+                        if percent > 0 and (not maxGain or percent > maxGain) then
+                            maxGain = percent
+                        elseif percent < 0 and (not maxLoss or percent < maxLoss) then
+                            maxLoss = percent
+                        end
+                    end
+                end
+
+                local overall = (points[#points].p - points[1].p) / points[1].p * 100
+                local strongest = overall
+                if maxGain and mathabs(maxGain) > mathabs(strongest) then
+                    strongest = maxGain
+                end
+                if maxLoss and mathabs(maxLoss) > mathabs(strongest) then
+                    strongest = maxLoss
+                end
+
+                if mathabs(strongest) >= threshold then
+                    local row = BuildMaterialRow(slotIndex, info)
+                    row.trend = true
+                    row.trendOverallPercent = overall
+                    row.trendMaxGainPercent = maxGain
+                    row.trendMaxLossPercent = maxLoss
+                    row.trendStrongestPercent = strongest
+                    row.trendPointCount = #points
+                    row.growthPercent = strongest
+                    row.growthDir = strongest >= 0
+                    row.isNew = false
+                    materials[#materials + 1] = row
+                end
+            end
+        end
+    end
+
+    tablesort(materials, function(a, b)
+        local aMagnitude = mathabs(a.trendStrongestPercent or 0)
+        local bMagnitude = mathabs(b.trendStrongestPercent or 0)
+        if aMagnitude ~= bMagnitude then
+            return aMagnitude > bMagnitude
+        end
+        if a.name ~= b.name then
+            return a.name < b.name
+        end
+        return a.itemId < b.itemId
+    end)
+    StorePriceTrendSummary(threshold, materials)
+    return materials
+end
+
+function Valuation.GetPriceTrendSummary(thresholdPercent)
+    local threshold = tonumber(thresholdPercent) or 20
+    local now = GetTimeStamp()
+    if priceTrendSummaryCache.threshold == threshold
+        and (now - (priceTrendSummaryCache.computedAt or 0)) < PRICE_TREND_SUMMARY_MAX_AGE_SECONDS then
+        return priceTrendSummaryCache.gains, priceTrendSummaryCache.losses,
+            priceTrendSummaryCache.total
+    end
+    local materials = Valuation.GetPriceTrendMaterials(threshold)
+    return priceTrendSummaryCache.gains, priceTrendSummaryCache.losses, #materials
+end
+
+-- True once any held, priced material has two comparable observations in the
+-- current source run. Distinguishes "history is still collecting" from "nothing
+-- crossed the threshold yet".
+function Valuation.HasPriceTrendHistory()
+    local history = private.savedVars and private.savedVars.priceHistory or {}
+    for _, info in pairs(slotInfo) do
+        if info.priced and info.stack and info.stack > 0 then
+            local points = DecodePriceHistorySeries(history[info.itemId])
+            local comparable = 0
+            for index = #points, 1, -1 do
+                local point = points[index]
+                if point.s and point.s ~= info.source then
+                    break
+                end
+                if point.s and point.p and point.p > 0 then
+                    -- One stored observation plus the live price already makes a pair.
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+-- Report only newly significant, reversed, or materially stronger signals.
+-- Notification state persists across reloads so the same crossing is not
+-- repeated; dropping below the threshold clears the state so a later
+-- crossing can announce immediately.
+NotifySignificantPriceTrends = function()
+    local mode = GetNotificationMode()
+    local sv = private.savedVars
+    if not sv then
+        return
+    end
+    if mode ~= "important" and mode ~= "detailed" then
+        if sv.priceTrendAlerts then
+            ZO_ClearTable(sv.priceTrendAlerts)
+        end
+        return
+    end
+    local threshold = private.GetPriceTrendThreshold and private.GetPriceTrendThreshold() or 20
+    local materials = Valuation.GetPriceTrendMaterials(threshold)
+    local alerts = sv.priceTrendAlerts or {}
+    sv.priceTrendAlerts = alerts
+    local active = {}
+    local changed = {}
+    local now = GetTimeStamp()
+    local strongerBy = 10
+
+    for index = 1, #materials do
+        local row = materials[index]
+        active[row.itemId] = true
+        local magnitude = mathabs(row.trendStrongestPercent or 0)
+        local direction = (row.trendStrongestPercent or 0) >= 0 and "up" or "down"
+        local previous = DecodePriceTrendAlert(alerts[row.itemId])
+        local shouldNotify = previous == nil
+        if previous then
+            if previous.d ~= direction then
+                shouldNotify = true
+            elseif magnitude >= (previous.m or 0) + strongerBy then
+                shouldNotify = true
+            end
+        end
+        if shouldNotify then
+            changed[#changed + 1] = row
+            alerts[row.itemId] = EncodePriceTrendAlert(direction, magnitude, now)
+        end
+    end
+
+    for itemId in pairs(alerts) do
+        if not active[itemId] then
+            alerts[itemId] = nil
+        end
+    end
+
+    if #changed == 0 then
+        return
+    end
+
+    local parts = {}
+    local shown = math.min(3, #changed)
+    for index = 1, shown do
+        local row = changed[index]
+        local stringId = (row.trendStrongestPercent or 0) >= 0
+            and SI_BMW_MSG_PRICE_TREND_GAIN or SI_BMW_MSG_PRICE_TREND_LOSS
+        parts[#parts + 1] = stringformat(GetString(stringId), row.name,
+            stringformat("%.1f", mathabs(row.trendStrongestPercent or 0)))
+    end
+    if #changed > shown then
+        parts[#parts + 1] = stringformat(GetString(SI_BMW_MSG_PRICE_TREND_MORE), #changed - shown)
+    end
+    ChatInfo(SI_BMW_MSG_PRICE_TRENDS, threshold, table.concat(parts, "; "))
 end
 
 -- Snapshot + diff
@@ -2038,6 +2382,7 @@ function Valuation.GetDiffMaterials()
                 name = GetMaterialDisplayName(itemId, itemLink),
                 icon = GetItemLinkIcon(itemLink),
                 quality = GetItemLinkFunctionalQuality(itemLink),
+                link = itemLink,
                 diff = true,
                 countDelta = cur.count,
                 goldDelta = cur.unitPrice * cur.count,
@@ -2056,6 +2401,7 @@ function Valuation.GetDiffMaterials()
                 name = SnapshotMaterialName(old),
                 icon = icon,
                 quality = quality,
+                link = GetItemLink(BAG, cur.slotIndex) or old.link,
                 diff = true,
                 countDelta = countDelta,
                 goldDelta = cur.unitPrice * countDelta,
@@ -2075,6 +2421,7 @@ function Valuation.GetDiffMaterials()
                 itemId = itemId,
                 name = SnapshotMaterialName(old),
                 icon = icon,
+                link = old.link,
                 quality = quality,
                 diff = true,
                 countDelta = -old.count,
@@ -2114,6 +2461,7 @@ function Valuation.GetLastVisitDiffMaterials()
             itemId = entry.itemId,
             name = SnapshotMaterialName(material) or tostring(entry.itemId),
             icon = icon,
+            link = entry.link,
             quality = quality,
             diff = true,
             countDelta = entry.countDelta,
@@ -2153,9 +2501,12 @@ function Valuation.PrunePriceHistory()
 
     local now = GetTimeStamp()
     for itemId, storedEntry in pairs(sv.priceHistory) do
-        local entry = DecodePriceHistoryEntry(storedEntry)
-        if not entry.t or (now - entry.t) >= PRUNE_MAX_AGE_SECONDS then
+        local points = DecodePriceHistorySeries(storedEntry)
+        local newest = points[#points]
+        if not newest or not newest.t or (now - newest.t) >= PRUNE_MAX_AGE_SECONDS then
             sv.priceHistory[itemId] = nil
+        else
+            sv.priceHistory[itemId] = EncodePriceHistorySeries(points)
         end
     end
 end

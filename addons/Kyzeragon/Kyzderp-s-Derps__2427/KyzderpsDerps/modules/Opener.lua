@@ -85,7 +85,7 @@ end
 -- EVENT_INVENTORY_SINGLE_SLOT_UPDATE (number eventCode, Bag bagId, number slotIndex, boolean isNewItem, ItemUISoundCategory itemSoundCategory, number inventoryUpdateReason, number stackCountChange)
 local function OnInventorySlotUpdate(_, bagId, slotIndex, isNewItem, _, _, _)
     local itemId = GetItemId(bagId, slotIndex)
-    if (toLoot[itemId] and not IsItemStolen(bagId, slotIndex)) then
+    if (toLoot[itemId] and (KD.savedOptions.opener.includeStolen or not IsItemStolen(bagId, slotIndex))) then
         toLootNames[GetItemName(bagId, slotIndex)] = true
         zo_callLater(function()
             OpenContainer(bagId, slotIndex)
@@ -96,7 +96,7 @@ end
 local function OpenAllInBackpack()
     local bagCache = SHARED_INVENTORY:GetOrCreateBagCache(BAG_BACKPACK)
     for _, item in pairs(bagCache) do
-        if (toLoot[GetItemId(item.bagId, item.slotIndex)] and not IsItemStolen(item.bagId, item.slotIndex)) then
+        if (toLoot[GetItemId(item.bagId, item.slotIndex)] and (KD.savedOptions.opener.includeStolen or not IsItemStolen(item.bagId, item.slotIndex))) then
             toLootNames[GetItemName(item.bagId, item.slotIndex)] = true
             OpenContainer(item.bagId, item.slotIndex)
         end
@@ -191,11 +191,6 @@ function Opener.Initialize()
         toLoot[188144] = true
         shouldRegister = true
     end
-    -- Probably don't do this, because it's stolen
-    -- if (KD.savedOptions.opener.openEmberWallet) then
-    --     toLoot[187747] = true
-    --     shouldRegister = true
-    -- end
 
     for _, id in ipairs(KD.savedOptions.opener.extraIds) do
         toLoot[id] = true
@@ -243,6 +238,17 @@ function Opener.GetSettings()
         },
         {
             type = "checkbox",
+            name = "Include stolen containers",
+            tooltip = "When you loot any of the below containers, open even the stolen containers. You might get a bounty if you're seen!",
+            default = false,
+            getFunc = function() return KD.savedOptions.opener.includeStolen end,
+            setFunc = function(value)
+                KD.savedOptions.opener.includeStolen = value
+            end,
+            width = "full",
+        },
+        {
+            type = "checkbox",
             name = "Auto open Hidden Treasure Bag",
             tooltip = "When you loot a Hidden Treasure Bag from Mirri's bonus, automatically open and loot it",
             default = false,
@@ -253,18 +259,6 @@ function Opener.GetSettings()
             end,
             width = "full",
         },
-        -- {
-        --     type = "checkbox",
-        --     name = "Auto open Hidden Wallet",
-        --     tooltip = "When you loot a Hidden Wallet from Ember's bonus, automatically open and loot it",
-        --     default = false,
-        --     getFunc = function() return KD.savedOptions.opener.openEmberWallet end,
-        --     setFunc = function(value)
-        --         KD.savedOptions.opener.openEmberWallet = value
-        --         Opener.Initialize()
-        --     end,
-        --     width = "full",
-        -- },
         {
             type = "checkbox",
             name = "Auto open Wet Gunny Sack",
@@ -292,7 +286,7 @@ function Opener.GetSettings()
         {
             type = "checkbox",
             name = "Auto open Zenithar's Delightful Parcel",
-            tooltip = "When you loot a (purple) Zenithar's Delightful Parcel, automatically open and loot it. Will NOT loot stolen ones!",
+            tooltip = "When you loot a (purple) Zenithar's Delightful Parcel, automatically open and loot it",
             default = false,
             getFunc = function() return KD.savedOptions.opener.openPurpleZenithar end,
             setFunc = function(value)

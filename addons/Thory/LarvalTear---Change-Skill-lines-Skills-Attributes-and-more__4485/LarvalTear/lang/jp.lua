@@ -564,6 +564,7 @@ LTM_LOCALIZATION["jp"] = {
     SI_LTM_ERROR_REASON_ATTR_E_CANCELLED = "能力値変更を中止しました。",
     SI_LTM_ERROR_REASON_ROUTE_B_COMPLETION_TIMEOUT = "スキル変更が時間内に完了しませんでした。",
     SI_LTM_ERROR_REASON_ROUTE_B_VERIFY_RETRY_EXHAUSTED = "スキル変更を確認できませんでした。",
+    SI_LTM_ERROR_REASON_ROUTE_B_BASELINE_CLEANUP_FAILED = "スキル再配分画面を通常状態へ戻せませんでした。",
     SI_LTM_ERROR_REASON_SUBCLASS_VERIFY_MISMATCH = "サブクラス変更を確認できませんでした。",
     SI_LTM_ERROR_REASON_TARGET_STAR_NOT_ACTIVE = "保存済みの Champion star がアクティブではありません。",
     SI_LTM_ERROR_REASON_CHAMPION_SKILL_NOT_SLOTTABLE = "保存済みの Champion star はスロットに登録できません。",

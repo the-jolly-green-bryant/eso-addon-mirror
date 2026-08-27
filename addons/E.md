@@ -23,7 +23,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Effective Damage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/harog/Effective-Damage__3975) | harog | PC / Mac | 1.5 |
 | [Eidetic Memory Of Item](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2ch/Eidetic-Memory-Of-Item__1854) | 2ch | PC / Mac | 4.7 |
 | [EisherzGuildIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SamoAquila/EisherzGuildIcons__4495) | SamoAquila | PC / Mac | 1.0.2 |
-| [Elden Ring UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Geldis/Elden-Ring-UI__4623) | Geldis | PC / Mac | 1.3.8 |
+| [Elden Ring UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Geldis/Elden-Ring-UI__4623) | Geldis | PC / Mac | 1.3.9 |
 | [Elden Ring UI - Cmx Module](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Geldis/Elden-Ring-UI---Cmx-Module__4624) | Geldis | PC / Mac | 1.0.1 |
 | [ElderScrollsOfAlts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Echomap/ElderScrollsOfAlts__2070) | Echomap | PC / Mac | 2.00.09 |
 | [ElderScrollsOfAlts 1.00.53.beta](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Echomap/ElderScrollsOfAlts-1.00.53.beta__3969) | Echomap | PC / Mac | 1.00.53.beta |
@@ -53,7 +53,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.28.50 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.28.60 |
+| [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__a46a8bd0-fa70-4d6a-817e-5f69d01e04ec) | Lofand | Console | — |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
 | [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.2.0 |

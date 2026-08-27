@@ -1,0 +1,68 @@
+TetsuDailyWritPrecrafter = TetsuDailyWritPrecrafter or {    ERR_CRAFT_STUCK          = "Craft did not start. Open the Creation tab, then press R3 again.",
+    MISSING_LWC_TITLE       = "Lazy Writ Creator not found",
+    MISSING_LWC_BODY        = "Install Dolgubon's Lazy Writ Creator, or turn OFF Work together in settings to use stand-alone.",
+    MISSING_LWC_CHAT        = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Lazy Writ Creator is not enabled. Install it, or disable Work together for stand-alone.",
+    CONFLICT_TITLE          = "Addon conflict",
+    CONFLICT_BODY           = "Turn OFF <<1>>. It crafts the same writs and will clash with Tetsu's Daily Writ Precrafter.",
+    CONFLICT_CHAT           = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Disable |cFFD700<<1>>|r. Auto-craft is paused until that addon is off.",
+}
+
+TetsuDailyWritPrecrafter.L = {
+    TITLE                   = "|cFFD700Tetsu's|r Daily Writ Precrafter ",
+
+    OPTIONS_SECTION_LABEL   = "Automation",
+    OPTIONS_SECTION_TT      = "Gamepad-safe automation toggles.",
+    QUIET_INFO_LABEL        = "Hide routine chat messages",
+    QUIET_INFO_TT           = "Hides: pre-craft started, rotation phase, materials OK, done. Errors and missing materials always stay visible.",
+    INFO_LABEL              = "Info",
+    INFO_TT                 = "If this addon helped you, a little in-game gold by mail to @Tetsurion is appreciated. Same mail for bugs and ideas.\n\nWITH Lazy Writ (default): Lazy Writ does today's writ, accept, turn-in and boxes. Open a station and press R3 to pre-craft from TOMORROW for the days on the slider.\n\nSTAND-ALONE (turn the Lazy Writ option OFF, disable Lazy Writ): default crafts only the active writ. Enable pre-craft + R3 for today + extra days. Auto-accept / turn-in / boxes are in Automation.",
+    COMPAT_LWC_LABEL        = "Work together with Lazy Writ Creator",
+    COMPAT_LWC_TT           = "Default ON. Lazy Writ does today's writ, accept, turn-in and boxes. This addon only R3 pre-craft from tomorrow.\nDisable Dolgubon's Lazy Writ Creator BEFORE switching to stand-alone.\nChanging this option reloads the UI.",
+    AUTO_QUEST_LABEL        = "Auto-accept and turn in crafting writs",
+    AUTO_QUEST_TT           = "Pick up writs from the board and turn them in at the crates automatically.",
+    AUTO_BOX_LABEL          = "Auto-open writ reward boxes",
+    AUTO_BOX_TT             = "Open daily writ containers as soon as they appear in the backpack.",
+
+    PRECRAFT_SECTION_LABEL  = "Pre-craft (this character)",
+    PRECRAFT_SECTION_TT     = "Settings are saved per character.",
+    PRECRAFT_ENABLED_LABEL  = "Pre-craft for the future",
+    PRECRAFT_ENABLED_TT     = "When enabled, R3 crafts items for several days ahead using the daily rotation. When disabled, R3 crafts only what the active writ quest needs.",
+    PRECRAFT_DAYS_LABEL     = "Days ahead",
+    PRECRAFT_DAYS_TT        = "Extra days after today. 1 = today + tomorrow. 3 = today + next 3 days.",
+    PRECRAFT_DAYS_TT_COMPAT = "Days AFTER today. Lazy Writ Creator already crafts today. 1 = tomorrow only. 3 = tomorrow + the next 2 days.",
+
+    KEYBIND_PRECRAFT        = "|c00FF00[R3]|r Pre-craft <<1>> days (<<2>> pcs)",
+    KEYBIND_QUEST_CRAFT     = "|c00FF00[R3]|r Craft for active writ (<<1>> pcs)",
+    KEYBIND_NOTHING         = "|c888888[R3]|r Nothing to craft",
+
+    CONFIRM_TITLE_PRECRAFT  = "Pre-craft Daily Writs",
+    CONFIRM_PROMPT_PRECRAFT = "Craft items for <<1>> days ahead? (<<2>> items)",
+    CONFIRM_TITLE_QUEST     = "Craft Active Writ",
+    CONFIRM_PROMPT_QUEST    = "Craft the items required by your active writ? (<<1>> items)",
+
+    PROGRESS_CRAFTING       = "Crafting...",
+    PROGRESS_STATUS         = "Processed: <<1>> of <<2>>",
+
+    ERR_BAG_FULL            = "Not enough bag space (need ~<<1>> free slots).",
+    ERR_NO_STYLE            = "No known style material found in backpack or craft bag.",
+    ERR_MISSING_RUNES       = "Missing enchanting runes (potency / essence / Ta).",
+    ERR_CANNOT_CRAFT        = "Cannot craft <<1>> (missing materials, style, or skill).",
+    ERR_CRAFT_FAILED        = "Craft failed (<<1>>/<<2>>). Skipping.",
+    ERR_NOT_AT_STATION      = "You are not at a crafting station.",
+    ERR_PROV_SKIP_UNKNOWN   = "Skip (recipe not known): <<1>>",
+    ERR_NOTHING_TO_CRAFT    = "Nothing to craft.",
+    ERR_NO_ACTIVE_WRIT      = "No active crafting writ for this station.",
+
+    PRECHECK_HEADER         = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Not enough materials. Craft aborted:",
+    PRECHECK_JOBS           = "Jobs in queue: |cFFFFFF<<1>>|r",
+    PRECHECK_LINE           = "  - |cFFD700<<1>>|r: need |cFFFFFF<<2>>|r, have |cFFFFFF<<3>>|r (|cFF6666-<<4>>|r)",
+    PRECHECK_ABORT          = "Add the missing materials and press R3 again.",
+    PRECHECK_OK             = "Materials check OK. Crafting |c00FF00<<1>>|r items...",
+
+    USING_QUEST_DATA        = "Using active writ quest data.",
+    USING_PREDICTED         = "Pre-craft mode: using daily rotation for <<1>> days.",
+    CRAFT_DONE              = "Done. Crafted: |c00FF00<<1>>|r, skipped: |cFFFF00<<2>>|r.",
+    PATTERN_TODAY           = "Today's pattern: |cFFD700<<1>>|r",
+    ERR_PHASE_UNKNOWN     = "Rotation phase unknown. Take today's crafting writ for this station once — the addon will learn your cycle and then pre-craft will work for future days.",
+    PHASE_LEARNED         = "Your rotation phase for this craft: |cFFD700<<1>>|r",
+}

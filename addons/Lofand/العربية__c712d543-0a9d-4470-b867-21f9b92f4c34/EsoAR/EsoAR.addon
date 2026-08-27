@@ -1,0 +1,31 @@
+## Title: MATREX-X
+## Author: MATREX-X
+## Description: Arabic language + fonts + UI files
+## AddOnVersion: 1
+## APIVersion: 1010XX
+
+gamedata\lang\ar.lang
+gamedata\lang\f1.png
+gamedata\lang\f2.png
+
+EsoUI\lang\ar_client.str
+EsoUI\lang\ar_pregame.str
+
+EsoAR\backupfont_ar.xml
+EsoAR\backupfont_th.xml
+EsoAR\bindings.xml
+EsoAR\EsoAR.lua
+EsoAR\EsoAR.xml
+EsoAR\EsoAR.txt
+EsoAR\fontFace.lua
+EsoAR\fontstrings_shared.xml
+EsoAR\fonts_ar_sizes.xml
+EsoAR\keyboard.lua
+EsoAR\Lua Strings.lua
+
+EsoAR\fonts\1_AndalusArabic.slug
+
+EsoAR\ttc\default.lua
+EsoAR\ttc\th.lua
+EsoAR\ttc\ItemLookUpTable_TH.lua
+EsoAR\ttc\TamrielTradeCentre.lua

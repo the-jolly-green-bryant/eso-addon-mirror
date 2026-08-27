@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/atharti/PvP-QoL__4358",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "atharti",
   "canonical_id": "esoui:4358",
   "category_id": "96",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4358",
@@ -17,7 +18,7 @@
     "PvPQoL"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4358/",
-  "fingerprint": "a8bde1090bcf5123e3a052b9c47b9c382a4d7474df33c4257d520f204f52fec7",
+  "fingerprint": "571c4cdb574510c29900cb688d5c4eaff930849d3c1e08d67491094562c06c6d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15099.png",
     "https://cdn-eso.mmoui.com/preview/pvw15100.png",
@@ -29,11 +30,11 @@
   "source_id": "4358",
   "source_url": "https://www.esoui.com/downloads/info4358-PvPQoL.html",
   "stats": {
-    "downloads": 1613,
+    "downloads": 1703,
     "favorites": 4,
-    "monthly_downloads": 107
+    "monthly_downloads": 117
   },
   "title": "PvP QoL",
-  "updated_at": 1785319985000,
-  "version": "4.3"
+  "updated_at": 1787811973000,
+  "version": "4.4"
 }

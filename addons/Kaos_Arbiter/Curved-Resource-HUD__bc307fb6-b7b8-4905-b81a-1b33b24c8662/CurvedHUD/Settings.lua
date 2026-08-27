@@ -38,6 +38,27 @@ function CH:RegisterLAM()
         check("Track Bound Aegis", "aegisEnabled"),
         dropdown("Bound Aegis position", "aegisSlot", CH.trackerSlotNames, "Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.aegisEnabled end),
         dropdown("Bound Aegis timer color", "aegisColor", CH.colorChoices,nil,nil,function() return not CH.sv.aegisEnabled end),
+        check("Track Bound Armaments", "armamentsEnabled", "Shows its current weapon count over the skill icon and tracks the stack duration."),
+        dropdown("Bound Armaments position", "armamentsSlot", CH.trackerSlotNames, "Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv.armamentsEnabled end),
+        dropdown("Bound Armaments timer color", "armamentsColor", CH.colorChoices,nil,nil,function() return not CH.sv.armamentsEnabled end),
+        check("Show Crystal Fragments proc", "fragmentsEnabled", "Displays the proc-ready Crystal Fragments icon only while its instant-cast proc is active."),
+        dropdown("Crystal Fragments proc position", "fragmentsPosition", CH.procPositionChoices, "Top, Right, Bottom, and Left use HUD-relative presets; Center uses the middle of the screen.",nil,function() return not CH.sv.fragmentsEnabled end),
+        {type="slider",name="Crystal Fragments proc size",min=.35,max=1.5,step=.05,getFunc=function() return CH.sv.fragmentsScale end,setFunc=function(v) apply("fragmentsScale",v) end,default=CH.defaults.fragmentsScale,disabled=function() return not CH.sv.fragmentsEnabled end},
+        check("Track Critical Surge", "surgeEnabled", "Tracks Critical Surge's unique 33-second self-buff rather than the shared Major Brutality/Sorcery effects."),
+        dropdown("Critical Surge position", "surgeSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.surgeEnabled end),
+        dropdown("Critical Surge timer color", "surgeColor", CH.colorChoices,nil,nil,function() return not CH.sv.surgeEnabled end),
+        check("Track Vibrant Shroud / Encase", "shroudEnabled", "Tracks Vibrant Shroud, Encase, and Shattering Spines with a 10-second cast fallback for target-applied effects."),
+        dropdown("Shroud / Encase position", "shroudSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.shroudEnabled end),
+        dropdown("Shroud / Encase timer color", "shroudColor", CH.colorChoices,nil,nil,function() return not CH.sv.shroudEnabled end),
+        {type="description",text="SCRIBING SKILLS - PER CHARACTER"},
+        check("Track Soul Burst", "soulBurstEnabled", "Tracks the configured duration whenever Soul Burst or one of its focus-script variants is cast."),
+        dropdown("Soul Burst position", "soulBurstSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.soulBurstEnabled end),
+        dropdown("Soul Burst timer color", "soulBurstColor", CH.colorChoices,nil,nil,function() return not CH.sv.soulBurstEnabled end),
+        {type="slider",name="Soul Burst duration",tooltip="Set this to the duration supplied by your chosen scripts.",min=1,max=30,step=1,getFunc=function() return CH.sv.soulBurstDuration end,setFunc=function(v) apply("soulBurstDuration",v) end,default=CH.defaults.soulBurstDuration,disabled=function() return not CH.sv.soulBurstEnabled end},
+        check("Track Ulfsild's Contingency", "contingencyEnabled", "Tracks the armed Contingency window. Its known effect refines the timer when ESO exposes it."),
+        dropdown("Contingency position", "contingencySlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.contingencyEnabled end),
+        dropdown("Contingency timer color", "contingencyColor", CH.colorChoices,nil,nil,function() return not CH.sv.contingencyEnabled end),
+        {type="slider",name="Contingency duration",tooltip="Adjust this if your current scribed setup uses a different active window.",min=1,max=30,step=1,getFunc=function() return CH.sv.contingencyDuration end,setFunc=function(v) apply("contingencyDuration",v) end,default=CH.defaults.contingencyDuration,disabled=function() return not CH.sv.contingencyEnabled end},
     })
     CH:Log("LibAddonMenu-2.0 settings registered")
     return true
@@ -85,6 +106,27 @@ function CH:RegisterHarvens()
     checkbox("Track Bound Aegis","aegisEnabled")
     dropdown("Bound Aegis position","aegisSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.aegisEnabled end)
     dropdown("Bound Aegis timer color","aegisColor",CH.colorChoices,nil,nil,function() return not CH.sv.aegisEnabled end)
+    checkbox("Track Bound Armaments","armamentsEnabled")
+    dropdown("Bound Armaments position","armamentsSlot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv.armamentsEnabled end)
+    dropdown("Bound Armaments timer color","armamentsColor",CH.colorChoices,nil,nil,function() return not CH.sv.armamentsEnabled end)
+    checkbox("Show Crystal Fragments proc","fragmentsEnabled")
+    dropdown("Crystal Fragments proc position","fragmentsPosition",CH.procPositionChoices,"Top, Right, Bottom, and Left use HUD-relative presets; Center uses the middle of the screen.",nil,function() return not CH.sv.fragmentsEnabled end)
+    panel:AddSetting({type=HAS.ST_SLIDER,label="Crystal Fragments proc size",min=.35,max=1.5,step=.05,getFunction=function() return CH.sv.fragmentsScale end,setFunction=function(v) apply("fragmentsScale",v) end,default=CH.defaults.fragmentsScale,disable=function() return not CH.sv.fragmentsEnabled end})
+    checkbox("Track Critical Surge","surgeEnabled")
+    dropdown("Critical Surge position","surgeSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.surgeEnabled end)
+    dropdown("Critical Surge timer color","surgeColor",CH.colorChoices,nil,nil,function() return not CH.sv.surgeEnabled end)
+    checkbox("Track Vibrant Shroud / Encase","shroudEnabled")
+    dropdown("Shroud / Encase position","shroudSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.shroudEnabled end)
+    dropdown("Shroud / Encase timer color","shroudColor",CH.colorChoices,nil,nil,function() return not CH.sv.shroudEnabled end)
+    title("SCRIBING SKILLS - PER CHARACTER")
+    checkbox("Track Soul Burst","soulBurstEnabled")
+    dropdown("Soul Burst position","soulBurstSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.soulBurstEnabled end)
+    dropdown("Soul Burst timer color","soulBurstColor",CH.colorChoices,nil,nil,function() return not CH.sv.soulBurstEnabled end)
+    slider("Soul Burst duration","soulBurstDuration",1,30,1)
+    checkbox("Track Ulfsild's Contingency","contingencyEnabled")
+    dropdown("Contingency position","contingencySlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.contingencyEnabled end)
+    dropdown("Contingency timer color","contingencyColor",CH.colorChoices,nil,nil,function() return not CH.sv.contingencyEnabled end)
+    slider("Contingency duration","contingencyDuration",1,30,1)
     CH:Log("LibHarvensAddonSettings settings registered")
     return true
 end

@@ -134,6 +134,9 @@ end
 ---@field pvpLowHealthThreshold number
 ---@field pvpCriticalHealthThreshold number
 ---@field pvpBurstThreshold number
+---@field offsetNudgeSpeed number
+---@field offsetNudgeOverlay boolean
+---@field offsetNudgeHome table|nil
 ---@field debugMode number
 
 ---@type BAVSavedVars
@@ -255,6 +258,15 @@ local DEFAULT_SAVED_VARS = {
     pvpLowHealthThreshold = 0.35,
     pvpCriticalHealthThreshold = 0.20,
     pvpBurstThreshold = 0.25,
+    -- Live hold-to-nudge for horizontal/vertical camera offsets. Speed is a
+    -- multiplier on the module's units-per-second rates (0.5..2.0). Overlay
+    -- shows both axes while a bind is held and for two seconds after.
+    offsetNudgeSpeed = 1.0,
+    offsetNudgeOverlay = true,
+    -- Single remembered horizontal/vertical pose. nil until the player
+    -- explicitly captures it from the settings panel; without it, offset
+    -- binds refuse to move the camera.
+    offsetNudgeHome = nil,
 }
 
 ---@type BAVSavedVars|nil (accessible via private.savedVars after initialization)
@@ -512,6 +524,49 @@ function Settings.SetPvpBurstThreshold(value)
     if not vars then return end
     vars.pvpBurstThreshold = private.ClampNumber(tonumber(value) or 0.25, 0.05, 1.0)
     Settings.ApplyOptionalFeatureConfig()
+end
+
+-- Hold-to-nudge speed multiplier (0.5..2.0) on the module's units-per-second
+-- rates. 1.0 is the shipped, responsive default.
+function Settings.GetOffsetNudgeSpeed()
+    local vars = GetSavedVarsOrDefaults()
+    return private.ClampNumber(tonumber(vars.offsetNudgeSpeed) or 1.0, 0.5, 2.0)
+end
+
+function Settings.IsOffsetNudgeOverlayEnabled()
+    local vars = GetSavedVarsOrDefaults()
+    return NormalizeBoolean(vars.offsetNudgeOverlay, true)
+end
+
+local function NormalizeOffsetHome(home)
+    if type(home) ~= "table" then
+        return nil
+    end
+    local horizontal = tonumber(home.horizontal)
+    local vertical = tonumber(home.vertical)
+    if horizontal == nil or vertical == nil then
+        return nil
+    end
+    return {
+        horizontal = private.ClampNumber(horizontal, -1, 1),
+        vertical = private.ClampNumber(vertical, -0.3, 0.5),
+    }
+end
+
+function Settings.GetOffsetNudgeHome()
+    return NormalizeOffsetHome(GetSavedVarsOrDefaults().offsetNudgeHome)
+end
+
+function Settings.HasOffsetNudgeHome()
+    return Settings.GetOffsetNudgeHome() ~= nil
+end
+
+function Settings.SetOffsetNudgeHome(home)
+    local vars = Settings.GetSavedVars()
+    if not vars then
+        return
+    end
+    vars.offsetNudgeHome = NormalizeOffsetHome(home)
 end
 
 function Settings.ArePresetsEnabled()
@@ -894,6 +949,9 @@ function Settings.NormalizeSavedSettings()
     savedVars.pvpLowHealthThreshold = Settings.GetPvpLowHealthThreshold()
     savedVars.pvpCriticalHealthThreshold = Settings.GetPvpCriticalHealthThreshold()
     savedVars.pvpBurstThreshold = Settings.GetPvpBurstThreshold()
+    savedVars.offsetNudgeSpeed = Settings.GetOffsetNudgeSpeed()
+    savedVars.offsetNudgeOverlay = Settings.IsOffsetNudgeOverlayEnabled()
+    savedVars.offsetNudgeHome = Settings.GetOffsetNudgeHome()
 
     -- Verbosity is a live runtime value as well as a stored one, so normalizing it
     -- also pushes it back onto the addon table: this is what makes the persisted
@@ -996,6 +1054,14 @@ function Settings.ApplyOptionalFeatureConfig()
         })
     end
 
+    if addon.OffsetNudge and addon.OffsetNudge.Configure then
+        addon.OffsetNudge.Configure({
+            speed = Settings.GetOffsetNudgeSpeed(),
+            overlay = Settings.IsOffsetNudgeOverlayEnabled(),
+            home = Settings.GetOffsetNudgeHome() or false,
+        })
+    end
+
 end
 
 function Settings.ApplyConfigurationChanges()
@@ -1067,6 +1133,9 @@ function Settings.ResetConfigurationToDefaults(suppressOutput)
     savedVars.pvpLowHealthThreshold = 0.35
     savedVars.pvpCriticalHealthThreshold = 0.20
     savedVars.pvpBurstThreshold = 0.25
+    savedVars.offsetNudgeSpeed = 1.0
+    savedVars.offsetNudgeOverlay = true
+    savedVars.offsetNudgeHome = nil
     savedVars.zoomStepDefaultRevision = ZOOM_STEP_DEFAULT_REVISION
     -- Verbosity is part of "back to shipped defaults" too: a reset silences the
     -- log again (ApplyConfigurationChanges -> NormalizeSavedSettings pushes this
@@ -1257,6 +1326,50 @@ function Settings.RegisterSettingsPanel()
         return StatusTag(Settings.GetShoulderMode() ~= "off", ShoulderModeWord())
     end
 
+    local function OffsetNudgeTag()
+        return StatusTag(Settings.HasOffsetNudgeHome(),
+            GetString(Settings.HasOffsetNudgeHome() and SI_BAV_STATUS_ON or SI_BAV_STATUS_OFF))
+    end
+
+    local function OffsetHomeDisabled()
+        return not Settings.HasOffsetNudgeHome()
+    end
+
+    local function FormatHomeAxis(key, value)
+        local minValue, maxValue
+        if addon.CameraSettings and addon.CameraSettings.GetRange then
+            minValue, maxValue = addon.CameraSettings.GetRange(key)
+        end
+        if minValue == nil or value == nil then
+            return GetString(SI_BAV_NUDGE_OVERLAY_CENTER)
+        end
+        local span = value >= 0 and maxValue or math.abs(minValue)
+        if span <= 0 then
+            return GetString(SI_BAV_NUDGE_OVERLAY_CENTER)
+        end
+        local percent = zo_round((math.abs(value) / span) * 100)
+        if percent <= 0 then
+            return GetString(SI_BAV_NUDGE_OVERLAY_CENTER)
+        end
+        local arrow = "."
+        if key == "horizontalOffset" then
+            arrow = value < 0 and "<" or ">"
+        else
+            arrow = value < 0 and "v" or "^"
+        end
+        return string.format("%s %s", arrow, string.format(GetString(SI_BAV_NUDGE_OVERLAY_PERCENT), percent))
+    end
+
+    local function BuildOffsetHomeStatus()
+        local home = Settings.GetOffsetNudgeHome()
+        if not home then
+            return GetString(SI_BAV_SETTING_OFFSET_HOME_STATUS_NONE)
+        end
+        return string.format(GetString(SI_BAV_SETTING_OFFSET_HOME_STATUS_SET),
+            FormatHomeAxis("horizontalOffset", home.horizontal),
+            FormatHomeAxis("verticalOffset", home.vertical))
+    end
+
     -- Build the dashboard text: one "Label  value" row per line. The camera row
     -- shows first person when at/under the FPV sentinel, else the third-person
     -- distance. Reads through the same getters the panel controls use, so the
@@ -1279,6 +1392,7 @@ function Settings.RegisterSettingsPanel()
             StatusRow(SI_BAV_STATUS_LABEL_DYNAMIC_FOV, StatusOnOff(Settings.IsDynamicFovEnabled())),
             StatusRow(SI_BAV_STATUS_LABEL_PRESETS, StatusOnOff(Settings.ArePresetsEnabled())),
             StatusRow(SI_BAV_STATUS_LABEL_SHOULDER, ShoulderStatusWord()),
+            StatusRow(SI_BAV_STATUS_LABEL_OFFSET_NUDGE, StatusOnOff(Settings.HasOffsetNudgeHome())),
             StatusRow(SI_BAV_STATUS_LABEL_PVP_MODE, StatusOnOff(Settings.IsPvpModeEnabled())),
         }
         return table.concat(rows, "\n")
@@ -1501,6 +1615,118 @@ end
             default = ZOOM_MIN_MOUNTED,
             width = "full",
             reference = "BAVSettingsMountedFallback",
+        },
+        {
+            type = "submenu",
+            name = function()
+                return GetString(SI_BAV_HEADER_OFFSET_NUDGE) .. "  " .. OffsetNudgeTag()
+            end,
+            tooltip = GetString(SI_BAV_SECTION_OFFSET_NUDGE_DESCRIPTION),
+            controls = {
+        {
+            type = "description",
+            text = GetString(SI_BAV_SECTION_OFFSET_NUDGE_DESCRIPTION),
+            width = "full",
+        },
+        {
+            type = "description",
+            text = BuildOffsetHomeStatus,
+            width = "full",
+            reference = "BAVSettingsOffsetHomeStatus",
+        },
+        {
+            type = "button",
+            name = GetString(SI_BAV_SETTING_OFFSET_HOME_REMEMBER_NAME),
+            tooltip = GetString(SI_BAV_SETTING_OFFSET_HOME_REMEMBER_TOOLTIP),
+            func = function()
+                local nudge = addon.OffsetNudge
+                if nudge and nudge.RememberHome then
+                    nudge.RememberHome()
+                end
+                if Settings.panel then
+                    CALLBACK_MANAGER:FireCallbacks("LAM-RefreshPanel", Settings.panel)
+                end
+            end,
+            width = "full",
+            reference = "BAVSettingsOffsetHomeRemember",
+        },
+        {
+            type = "button",
+            name = GetString(SI_BAV_SETTING_OFFSET_HOME_RESTORE_NAME),
+            tooltip = GetString(SI_BAV_SETTING_OFFSET_HOME_RESTORE_TOOLTIP),
+            func = function()
+                local nudge = addon.OffsetNudge
+                if nudge and nudge.Recenter then
+                    nudge.Recenter()
+                end
+                if Settings.panel then
+                    CALLBACK_MANAGER:FireCallbacks("LAM-RefreshPanel", Settings.panel)
+                end
+            end,
+            width = "half",
+            disabled = OffsetHomeDisabled,
+            reference = "BAVSettingsOffsetHomeRestore",
+        },
+        {
+            type = "button",
+            name = GetString(SI_BAV_SETTING_OFFSET_HOME_CLEAR_NAME),
+            tooltip = GetString(SI_BAV_SETTING_OFFSET_HOME_CLEAR_TOOLTIP),
+            func = function()
+                local nudge = addon.OffsetNudge
+                if nudge and nudge.ClearHome then
+                    nudge.ClearHome()
+                end
+                if Settings.panel then
+                    CALLBACK_MANAGER:FireCallbacks("LAM-RefreshPanel", Settings.panel)
+                end
+            end,
+            width = "half",
+            isDangerous = true,
+            warning = GetString(SI_BAV_SETTING_OFFSET_HOME_CLEAR_CONFIRM),
+            disabled = OffsetHomeDisabled,
+            reference = "BAVSettingsOffsetHomeClear",
+        },
+        {
+            type = "slider",
+            name = GetString(SI_BAV_SETTING_OFFSET_NUDGE_SPEED_NAME),
+            tooltip = GetString(SI_BAV_SETTING_OFFSET_NUDGE_SPEED_TOOLTIP),
+            min = 50,
+            max = 200,
+            step = 10,
+            getFunc = function() return zo_round(Settings.GetOffsetNudgeSpeed() * 100) end,
+            setFunc = function(value)
+                local vars = private.savedVars
+                if not vars then
+                    return
+                end
+
+                vars.offsetNudgeSpeed = private.ClampNumber(value / 100, 0.5, 2.0)
+                Settings.ApplyOptionalFeatureConfig()
+            end,
+            default = 100,
+            width = "full",
+            disabled = OffsetHomeDisabled,
+            reference = "BAVSettingsOffsetNudgeSpeed",
+        },
+        {
+            type = "checkbox",
+            name = GetString(SI_BAV_SETTING_OFFSET_NUDGE_OVERLAY_NAME),
+            tooltip = GetString(SI_BAV_SETTING_OFFSET_NUDGE_OVERLAY_TOOLTIP),
+            getFunc = function() return Settings.IsOffsetNudgeOverlayEnabled() end,
+            setFunc = function(value)
+                local vars = private.savedVars
+                if not vars then
+                    return
+                end
+
+                vars.offsetNudgeOverlay = value and true or false
+                Settings.ApplyOptionalFeatureConfig()
+            end,
+            default = true,
+            width = "full",
+            reference = "BAVSettingsOffsetNudgeOverlay",
+        },
+            },
         },
         {
             type = "header",

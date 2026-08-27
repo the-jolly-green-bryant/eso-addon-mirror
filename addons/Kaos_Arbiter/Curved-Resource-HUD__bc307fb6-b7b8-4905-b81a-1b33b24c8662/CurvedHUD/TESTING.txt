@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.6.9 UPPER ICON ALIGNMENT TEST CHECKLIST
+CURVED RESOURCE HUD 0.8.0 SCRIBING TRACKERS TEST CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,7 @@ CURVED RESOURCE HUD 0.6.9 UPPER ICON ALIGNMENT TEST CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.6.9-test; HUD, shield, mount stamina, and trackers created
+   [CurvedHUD] Loaded 0.8.0-test; HUD, shield, mount stamina, and trackers created
 
 4. Type /curvedhud preview. Expected:
    - red health arc on the left
@@ -161,3 +161,43 @@ CURVED RESOURCE HUD 0.6.9 UPPER ICON ALIGNMENT TEST CHECKLIST
 40. Check both upper-inner icons: they should sit closer to their tracker/stat
     bars than in 0.6.8. Check both upper-outer icons: they should sit substantially
     farther from screen center and must not cover the tracker or stat bar.
+
+41. Enable Bound Armaments under Sorcerer Trackers. In Preview it must show a
+    stack count of 4. Test all eight positions and several colors. In combat,
+    Light/Heavy Attack stacks must update the icon count and 10-second timer.
+
+42. Enable Crystal Fragments proc and test Top, Right, Bottom, Left, and Center
+    in Preview. Center must use true screen center; the other four must remain
+    HUD-relative when scale, spacing, or vertical offset changes.
+
+43. Outside Preview, the Crystal Fragments alert must remain hidden normally,
+    appear with the pink proc-ready icon when the proc activates, and disappear
+    immediately when consumed or expired. Test after bar swapping as well.
+
+44. Disable each new Sorcerer tracker independently and confirm it remains hidden
+    in both live play and Preview. Switch characters and confirm enablement,
+    position, and color choices remain character-specific.
+
+45. Move the Crystal Fragments proc-size slider through its full range. Confirm
+    the icon remains centered and follows both normal and out-of-combat HUD opacity.
+
+46. Build four Bound Armaments weapons. Confirm the rotating gold/white ready
+    border appears at four stacks, then disappears when the stacks are consumed.
+
+47. Enable and cast Critical Surge. Its unique timer should begin near 33 seconds
+    and must not refresh from unrelated Major Brutality or Major Sorcery effects.
+
+48. Enable Vibrant Shroud / Encase and test every available morph. Each cast
+    should start a 10-second timer in the selected per-character position/color.
+
+49. Under Scribing Skills, enable Soul Burst and select a timer slot, color, and
+    duration matching the equipped scripts. Cast the current Soul Burst variant;
+    its actual action-bar icon should appear and the timer should start once per cast.
+
+50. Enable Ulfsild's Contingency and cast the currently scribed variant. Confirm
+    the armed timer starts once, uses the current action-bar icon, and ends when
+    effect 222285 fades or when the configured duration expires.
+
+51. Recast both skills while their timers are active, swap weapon bars, and test
+    after relogging. Confirm icons refresh from either bar and all Scribing Skills
+    choices persist independently per character.

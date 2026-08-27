@@ -8,12 +8,29 @@ PullCardData.bosses = PullCardData.bosses or {}
 PullCardData.dungeons = PullCardData.dungeons or {}
 
 local function AddBoss(dungeon, name, data)
+    local key = name
+    if PullCardData.bosses[key] then
+        key = string.format("%s (%s)", name, dungeon)
+        data.aliases = data.aliases or {}
+
+        local hasBaseAlias = false
+        for _, alias in ipairs(data.aliases) do
+            if alias == name then
+                hasBaseAlias = true
+                break
+            end
+        end
+        if not hasBaseAlias then
+            table.insert(data.aliases, name)
+        end
+    end
+
     data.dungeon = dungeon
     data.title = data.title or name
     data.aliases = data.aliases or {}
-    PullCardData.bosses[name] = data
+    PullCardData.bosses[key] = data
     PullCardData.dungeons[dungeon] = PullCardData.dungeons[dungeon] or { bosses = {} }
-    table.insert(PullCardData.dungeons[dungeon].bosses, name)
+    table.insert(PullCardData.dungeons[dungeon].bosses, key)
 end
 
 

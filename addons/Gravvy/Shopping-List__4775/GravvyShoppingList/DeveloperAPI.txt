@@ -3,7 +3,9 @@ Shopping List Public API
 
 Add-ons can create and populate
 shopping lists without reading saved variables or touching Shopping List UI
-objects. The API version 1 GetLists and AddItem calls remain compatible.
+objects. API version 3 adds list management, progress queries, matching
+previews, update callbacks, and crafting-material transfers. Every version 1
+and version 2 call remains compatible.
 
 Loading the API
 ---------------
@@ -16,7 +18,7 @@ Use DependsOn instead if your add-on cannot function without Shopping List.
 Check the API after your add-on has loaded:
 
     local api = GravvyShoppingList and GravvyShoppingList.API
-    if not api or api:GetVersion() < 2 then
+    if not api or api:GetVersion() < 3 then
         return
     end
 
@@ -56,6 +58,7 @@ CreateList accepts one specification table:
 
 - name: Required non-empty list name, up to 512 bytes.
 - note: Optional list note. The normal 2,000-character limit applies.
+- category: Optional list category, up to 80 bytes.
 - items: Optional array of item specifications. At most 500 items.
 - onNameConflict: "error" by default, or "unique" to append a number.
 - select: Select the new list when true or omitted. Set false to keep the
@@ -86,9 +89,14 @@ Add several items to an existing list
         silent = true,
     })
 
-The options table accepts listId, listName, and silent. Pass either listId or
-listName, not both. When neither is supplied, the currently selected list is
-used. Targeting another list does not select it.
+The options table accepts listId, listName, silent, and duplicatePolicy. Pass
+either listId or listName, not both. When neither is supplied, the currently
+selected list is used. Targeting another list does not select it.
+
+duplicatePolicy defaults to "keep". Integrations can use "merge" to add the
+new quantity to a matching entry or "replace" to replace its target quantity.
+The interactive "prompt" policy is intentionally unavailable through the API.
+Duplicate identity includes item identity, matching rules, and targetMode.
 
 On success, AddItems returns true and a new array of created item IDs. On an
 item validation failure, the third return value identifies the failing entry.
@@ -103,12 +111,58 @@ Each CreateList or AddItems entry accepts:
   item link or a non-empty plain item name. itemLink must be an item link, and
   name is intended for name-only entries.
 - quantity: Optional whole number from 1 through 1,000,000. Defaults to 1.
+- targetMode: Optional "buy" or "own". "buy" tracks how many more should be
+  purchased and is the default. "own" treats quantity as the total number the
+  player wants across backpack, bank, subscriber bank, and craft bag.
 - note: Optional item note.
 - match: Optional matching-rule overrides described below.
 
 Every specification creates a separate shopping-list entry. Entries are not
 combined because links with the same displayed name can represent different
 sets, traits, qualities, or levels.
+
+Send crafting materials
+-----------------------
+
+Crafting integrations can send a complete material requirement in one atomic
+call:
+
+    local success, resultOrError, itemIndex = api:AddCraftingMaterials({
+        { itemLink = rubediteIngotLink, quantity = 120 },
+        { itemLink = honingStoneLink, quantity = 8 },
+        { name = "Mundane Rune", quantity = 12 },
+    }, {
+        listName = "New Tank Gear",
+        note = "Required by MyCraftingAddon",
+        silent = true,
+    })
+
+Each material requires exactly one of item, itemLink, or name and a whole
+quantity from 1 through 1,000,000. A material can supply its own note or match
+table; options.note is used when that row has no note.
+
+By default, AddCraftingMaterials creates Own Total entries and merges exact
+duplicates. This is deliberate: the requested quantities describe the total
+recipe requirement, while Shopping List's live backpack, bank, subscriber
+bank, and Craft Bag counts determine what still needs to be bought. Adding a
+second recipe merges its requirement into the same material target without
+counting owned stock as a purchase.
+
+The options table also accepts listId or listName, silent, targetMode, and
+duplicatePolicy. targetMode can be "own" (default) or "buy". duplicatePolicy
+can be "merge" (default), "replace", or "keep". The call validates every row
+before committing, so one invalid material leaves the list unchanged.
+
+On success, the result contains listId, listName, unique itemIds,
+materialCount, requiredQuantity, targetMode, and duplicatePolicy. On failure,
+the second value is a stable error code and itemIndex identifies a bad row
+when applicable.
+
+Shopping List itself uses this contract for its optional WritWorthy support.
+When WritWorthy and LibCustomMenu are enabled, players can right-click a
+Master Writ in inventory or chat and choose "Add required materials to ...".
+Companion add-ons should call AddCraftingMaterials directly rather than
+reading Shopping List saved variables or UI controls.
 
 Matching rules
 --------------
@@ -145,7 +199,8 @@ Add one item
     )
 
 AddItem remains compatible with API version 1. Its options table accepts
-listId, listName, note, silent, and the API version 2 match table.
+listId, listName, note, targetMode, silent, duplicatePolicy, and the API
+version 2 match table.
 
     local success, result = api:AddItem(itemLink, 1, {
         listName = "Stamina Warden - Base Light",
@@ -175,19 +230,189 @@ names:
 Archived lists are not returned. Changing these snapshots does not change
 Shopping List data.
 
+Read list progress
+------------------
+
+    local list, errorCode = api:GetList({
+        listId = 7,
+        includeItems = true,
+    })
+
+GetList accepts listId or listName. When neither is supplied, it returns the
+currently selected list. includeItems defaults to true; set it to false when
+only list totals are needed. The returned copy contains:
+
+    {
+        id = 7,
+        name = "Stamina Warden - Base Light",
+        note = "Gear from the base light setup",
+        category = "Builds",
+        budget = 50000,
+        allocatedSpent = 12000,
+        transactionSpent = 14500,
+        favorite = true,
+        pinned = false,
+        recurring = false,
+        selected = true,
+        archived = false,
+        itemCount = 2,
+        remainingEntryCount = 1,
+        remainingQuantity = 3,
+        items = { ... },
+    }
+
+Each item copy includes id, listId, name, itemLink, note, desired, purchased,
+owned, remaining, completed, targetMode, maxUnitPrice, addedAt, and a copy of
+its matching rules. owned and remaining include live inventory information for
+Own Total entries. Editing any returned table never changes Shopping List.
+
+For one known item ID:
+
+    local remaining, itemOrError = api:GetRemainingQuantity(itemId)
+
+On success the first result is the live remaining quantity and the second is
+the same safe item snapshot used by GetList. An unknown ID returns nil and
+ITEM_NOT_FOUND.
+
+Manage lists
+------------
+
+All active-list targeting tables accept either listId or listName. Omitting
+both targets the selected list.
+
+Update one or more properties atomically validated before any change:
+
+    local success, listOrError = api:UpdateList({
+        name = "Stamina Warden - Finished",
+        note = "Ready for reconstruction",
+        category = "Builds",
+        budget = 75000,
+        favorite = true,
+        pinned = true,
+        recurring = false,
+    }, {
+        listId = 7,
+    })
+
+Supported fields are name, note, category, budget, favorite, pinned, and
+recurring. Set budget to 0 to clear it. The result is a full list snapshot.
+
+Other list-management calls are:
+
+    api:SelectList({ listId = 7 })
+    api:MoveList({ listId = 7 }, -1) -- -1 up, 1 down
+    api:DeleteList({ listId = 7 })
+    api:ArchiveList({ listId = 7 })
+    api:ResetListProgress({ listId = 7 })
+
+DeleteList refuses to remove the final active list. ArchiveList can archive
+the final active list because Shopping List creates a new empty replacement.
+ResetListProgress returns true and the number of reset entries; it returns
+true, 0 when the list already has no progress.
+
+DuplicateList copies entries and matching rules while resetting purchase
+progress and history:
+
+    local success, copyOrError = api:DuplicateList({
+        listId = 7,
+        name = "Stamina Warden - Alternate",
+        onNameConflict = "unique",
+        select = false,
+    })
+
+The specification accepts listId or listName, required name, optional note and
+category overrides, onNameConflict set to "error" or "unique", and select.
+
+Archived list discovery and restoration use:
+
+    local archivedLists, errorCode = api:GetArchivedLists()
+    local success, listOrError = api:RestoreList({ listId = archivedId })
+
+GetArchivedLists returns list snapshots without their item arrays. RestoreList
+accepts an archived listId or listName and returns the restored full snapshot.
+
+Preview matching
+----------------
+
+PreviewMatch runs the same specificity ordering and quantity allocation used
+for a real guild-store purchase, but never changes a list:
+
+    local preview, errorCode = api:PreviewMatch(itemLink, {
+        quantity = 10,
+        listId = 7,
+        includeCompleted = false,
+    })
+
+Pass listId or listName to inspect one list, allLists = true to inspect every
+active list, or omit all three to mirror the player's current shopping-trip
+selection. includeCompleted defaults to false.
+
+The result contains candidate itemName, itemLink, quantity, matched,
+applicableQuantity, unallocatedQuantity, and ordered matches. Each match has
+listId, listName, itemId, itemName, score, remaining, wouldApply, and
+wouldComplete. A more specific linked/set/trait/rule match has a higher score
+and receives quantity first, exactly as purchase tracking would.
+
+Update callbacks
+----------------
+
+Version 3 exposes three event constants:
+
+    api.EVENT.LIST_UPDATED
+    api.EVENT.ITEM_UPDATED
+    api.EVENT.PURCHASE_RECORDED
+
+Register the same function object that will later be unregistered:
+
+    local function OnListUpdated(payload)
+        if payload.listId then
+            local list = api:GetList({ listId = payload.listId })
+        end
+    end
+
+    local success, errorCode = api:RegisterCallback(
+        api.EVENT.LIST_UPDATED,
+        OnListUpdated
+    )
+
+    api:UnregisterCallback(api.EVENT.LIST_UPDATED, OnListUpdated)
+
+Callbacks receive a fresh payload copy and cannot modify Shopping List data.
+Errors inside one callback are contained so they cannot interrupt another
+add-on or Shopping List. Callbacks are runtime registrations and must be
+registered again after a UI reload.
+
+LIST_UPDATED payloads include action and listId when applicable. Actions
+include created, duplicated, selected, moved, updated, progressReset, deleted,
+archived, restored, restoredDeleted, and restoredAll. Field-specific updates
+also include field. Removal/archive payloads retain the former name and the
+new selectedListId when applicable.
+
+ITEM_UPDATED payloads include action, listId, and itemId or itemIds. Actions
+include added, merged, replaced, changedBatch, addedBatch, updated, moved,
+completionChanged, inventoryChanged, removed, removedBatch, and restoredBatch.
+inventoryChanged contains the tracked item IDs whose backpack, bank, or Craft
+Bag quantities changed, allowing integrations to refresh Own Total progress.
+
+PURCHASE_RECORDED fires once per matched guild-store transaction. Its payload
+contains transactionId, listIds, itemIds, quantity, totalPrice, itemLink, and
+itemName. Quantity and totalPrice describe the full purchased listing, not
+only the portion allocated to incomplete list entries.
+
 Fallback sharing without Shopping List
 --------------------------------------
 
-A companion add-on can show an SL2 code when Shopping List is not installed.
-SL2 preserves the list note plus each item's link, note, desired quantity,
-matching rules, and maximum unit price. Shopping List 0.17.0 can import that
-code after it is installed and the UI is reloaded.
+A companion add-on can show an SL3 code when Shopping List is not installed.
+SL3 preserves the recurring-list state and list note plus each item's link,
+note, desired quantity, quantity target mode, matching rules, and maximum unit
+price. Shopping List 0.18.8 can import that code after it is installed and the
+UI is reloaded.
 
 The complete language-neutral binary contract is included in ShareFormat.txt.
 Companion add-ons should implement that contract directly rather than copying
-Shopping List internal functions. SL1 remains importable, but new integrations
-should generate SL2. SLB1 is a full-account backup format and must not be used
-for companion exports.
+Shopping List internal functions. SL1 and SL2 remain importable, but new
+integrations should generate SL3. SLB1 is a full-account backup format and
+must not be used for companion exports.
 
 Error codes
 -----------
@@ -206,6 +431,12 @@ Stable strings are also exposed through GravvyShoppingList.API.ERROR:
 - LIST_NOT_FOUND: The requested active list does not exist.
 - LIST_EXISTS: The requested list name is already in use.
 - BATCH_FAILED: A validated operation could not be committed.
+- ITEM_NOT_FOUND: The requested active item does not exist.
+- ARCHIVED_LIST_NOT_FOUND: The requested archived list does not exist.
+- LAST_LIST_REQUIRED: DeleteList cannot remove the final active list.
+- INVALID_EVENT: The callback event is not one of the API version 3 constants.
+- INVALID_CALLBACK: The callback value is not a function.
+- CALLBACK_NOT_FOUND: That function was not registered for the event.
 
 Example without hard-coding the error value:
 

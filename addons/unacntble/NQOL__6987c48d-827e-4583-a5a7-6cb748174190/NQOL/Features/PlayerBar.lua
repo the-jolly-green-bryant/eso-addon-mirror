@@ -1315,21 +1315,6 @@ local function HidePlayerBars()
     end
 end
 
-local function HidePlayerBarsForCombat()
-    for _, preset in pairs(presets) do
-        if preset.root then
-            SetFrameCombatVisibility(preset.root, false)
-        end
-
-        local widgets = preset.controls and preset.controls.widgets
-        if widgets then
-            for _, widget in pairs(widgets) do
-                HideClassicChangeLabels(widget)
-            end
-        end
-    end
-end
-
 local function Refresh()
     refreshQueued = false
 
@@ -1344,10 +1329,8 @@ local function Refresh()
         return
     end
 
-    if combatOnly and not (IsUnitInCombat and IsUnitInCombat("player") == true) then
-        HidePlayerBarsForCombat()
-        return
-    end
+    -- Build the active preset while hidden so its textures are loaded before the first combat fade-in.
+    local inCombat = IsUnitInCombat and IsUnitInCombat("player") == true
 
     local preset = GetActivePreset()
     if not EnsurePresetControls(preset) then
@@ -1376,7 +1359,7 @@ local function Refresh()
         Shared.SetSettingsPreviewDrawOrder(preset.root)
     end
     if combatOnly then
-        SetFrameCombatVisibility(preset.root, true)
+        SetFrameCombatVisibility(preset.root, inCombat)
     else
         SetFrameVisibilityImmediate(preset.root, true)
     end

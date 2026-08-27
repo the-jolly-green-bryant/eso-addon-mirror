@@ -1,0 +1,25 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_CATEGORY_BAV">
+            <Action name="BAV_HORIZONTAL_OFFSET_LEFT">
+                <Down>BureauOfAcceptableViews.OffsetNudge.StartHorizontal(-1) return true</Down>
+                <Up>BureauOfAcceptableViews.OffsetNudge.StopHorizontal(-1) return true</Up>
+            </Action>
+            <Action name="BAV_HORIZONTAL_OFFSET_RIGHT">
+                <Down>BureauOfAcceptableViews.OffsetNudge.StartHorizontal(1) return true</Down>
+                <Up>BureauOfAcceptableViews.OffsetNudge.StopHorizontal(1) return true</Up>
+            </Action>
+            <Action name="BAV_VERTICAL_OFFSET_UP">
+                <Down>BureauOfAcceptableViews.OffsetNudge.StartVertical(1) return true</Down>
+                <Up>BureauOfAcceptableViews.OffsetNudge.StopVertical(1) return true</Up>
+            </Action>
+            <Action name="BAV_VERTICAL_OFFSET_DOWN">
+                <Down>BureauOfAcceptableViews.OffsetNudge.StartVertical(-1) return true</Down>
+                <Up>BureauOfAcceptableViews.OffsetNudge.StopVertical(-1) return true</Up>
+            </Action>
+            <Action name="BAV_OFFSET_RECENTER">
+                <Down>BureauOfAcceptableViews.OffsetNudge.Recenter() return true</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

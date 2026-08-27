@@ -1,0 +1,16 @@
+{
+  "name": "gravvy-shopping-list-tests",
+  "private": true,
+  "scripts": {
+    "test": "npm run test:source && npm run test:localization && npm run test:data && npm run test:behavior",
+    "test:source": "node Tests/check-source.js",
+    "test:localization": "node Tests/check-localization.js",
+    "test:data": "fengari Tests/DataSafetyTests.lua",
+    "test:behavior": "fengari Tests/BehaviorTests.lua"
+  },
+  "devDependencies": {
+    "fast-xml-parser": "^5.2.5",
+    "fengari-node-cli": "^0.1.0",
+    "luaparse": "^0.3.1"
+  }
+}

@@ -1,14 +1,6 @@
 local strings = {
 	-- Translation updated by @lucelem
 	SI_KEYBINDINGS_CATEGORY_PBSMINIMAP = "Мини-карта",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_HUD = "Показывать мини-карту",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_SIEGE_HUD = "Показывать мини-карту",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_COMBAT = "Показывать мини-карту в бою",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_IN_HOUSING = "Показывать мини-карту в жилище",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_OUT = "Макс. отдаление",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_IN = "Макс. приближение",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_PLUS = "Приблизить",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_MINUS = "Отдалить",
 	SI_PBSMINIMAP_WORLD_MAP_TWEAKS = "Настройки карты мира",
 	SI_PBSMINIMAP_WORLD_MAP_TWEAKS_TOOLTIP = "Включает настройки распределения нагрузки на ЦП с течением времени.",
 	SI_PBSMINIMAP_MINI_MAP = "Мини-карта",
@@ -79,7 +71,6 @@ local strings = {
 	SI_PBSMINIMAP_COMPASSMODE_SHOWN = "Показать",
 	SI_PBSMINIMAP_KEEP_SQUARE = "Хранить площадь",
 	SI_PBSMINIMAP_KEEP_SQUARE_TOOLTIP = "Сохраняет квадрат зоны на карте. Стандартное поведение.",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_OFFSET_FIX = "Показывать фиксированние положение мини-карты",
 	SI_PBSMINIMAP_ASYNC_UPDATE = "Асинхронное обновление",
 	SI_PBSMINIMAP_ASYNC_UPDATE_TOOLTIP = "Вкл: Частота кадров поверх обновлений.\nOff: Обновления поверх частоты кадров.",
 	SI_PBSMINIMAP_PINSIZE_KEEP_FAST_TRAVEL = "Транзитные святыни",

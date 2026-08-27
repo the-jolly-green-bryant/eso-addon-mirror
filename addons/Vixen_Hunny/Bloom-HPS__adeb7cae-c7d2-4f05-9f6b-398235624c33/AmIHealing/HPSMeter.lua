@@ -21,7 +21,11 @@ HPSMeterUI.defaults = {
     shieldColor = "b8f7ff",
     showOverall = true,
     overallColor = "d6ffd6",
-    resetTimer = 300
+    resetTimer = 300,
+    topHealing = 0,
+    topShielding = 0,
+    topMitigation = 0,
+    bgHistory = {}
 }
 
 -- Saved variables
@@ -55,6 +59,7 @@ HPSMeterUI.lastEnemyHealTick = 0
 HPSMeterUI.myShieldedTargets = {} -- Key: unitName, Value: currentShieldValue
 HPSMeterUI.currentTotalShields = 0
 HPSMeterUI.overallMitigatedTotal = 0
+HPSMeterUI.overallPostShieldDamageTotal = 0
 HPSMeterUI.personalHealTotal = 0
 HPSMeterUI.groupHealTotal = 0
 HPSMeterUI.personalShieldTotal = 0
@@ -185,6 +190,7 @@ end
 -- FormatShortNumber(12000)   -> "12k"
 -- FormatShortNumber(1000000) -> "1m"
 function HPSMeterUI:Reset()
+    HPSMeterUI:SavePreviousBGStats()
     HPSMeterUI.bucketTotal = 0
     HPSMeterUI.shieldBucketTotal = 0
     HPSMeterUI.overallHealingTotal = 0
@@ -200,6 +206,7 @@ function HPSMeterUI:Reset()
     HPSMeterUI:InitBuckets()
     HPSMeterUI:InitShieldBuckets()
     HPSMeterUI.overallMitigatedTotal = 0
+    HPSMeterUI.overallPostShieldDamageTotal = 0
     HPSMeterUI.firstShieldTimeMs = 0
 
     HPSMeterUI.myShieldedTargets = {}
@@ -214,10 +221,99 @@ end
 
 function HPSMeterUI:GetMitigatedPercent()
     local mitigated = HPSMeterUI.overallMitigatedTotal or 0
-    local post = HPSMeterUI.overallPostShieldDamageTotal or 0
+    local post = HPSMeterUI.overallShieldingTotal or 0
     local total = mitigated + post
     if total <= 0 then return 0 end
     return (mitigated / total) * 100
+end
+
+function HPSMeterUI:GetSavedBGMaxStats()
+    if not HPSMeterUI.saved then
+        return 0, 0, 0
+    end
+
+    local maxHealing = HPSMeterUI.saved.topHealing or 0
+    local maxShielding = HPSMeterUI.saved.topShielding or 0
+    local maxMitigation = HPSMeterUI.saved.topMitigation or 0
+
+    if HPSMeterUI.saved.bgHistory then
+        for _, entry in ipairs(HPSMeterUI.saved.bgHistory) do
+            if entry then
+                maxHealing = math.max(maxHealing, tonumber(entry.healing) or 0)
+                maxShielding = math.max(maxShielding, tonumber(entry.shielding) or 0)
+                maxMitigation = math.max(maxMitigation, tonumber(entry.mitigation) or 0)
+            end
+        end
+    end
+
+    return maxHealing, maxShielding, maxMitigation
+end
+
+function HPSMeterUI:SavePreviousBGStats()
+    if not HPSMeterUI.saved then return end
+
+    local healing = HPSMeterUI.overallHealingTotal or 0
+    local shielding = HPSMeterUI.overallShieldingTotal or 0
+    local mitigation = HPSMeterUI:GetMitigatedPercent()
+
+    HPSMeterUI.saved.topHealing = math.max(HPSMeterUI.saved.topHealing or 0, healing)
+    HPSMeterUI.saved.topShielding = math.max(HPSMeterUI.saved.topShielding or 0, shielding)
+    HPSMeterUI.saved.topMitigation = math.max(HPSMeterUI.saved.topMitigation or 0, mitigation)
+
+    HPSMeterUI.saved.bgHistory = HPSMeterUI.saved.bgHistory or {}
+    table.insert(HPSMeterUI.saved.bgHistory, {
+        healing = healing,
+        shielding = shielding,
+        mitigation = mitigation,
+        timestamp = GetDateStringFromTimestamp(GetTimeStamp()) or ""
+    })
+
+    while #HPSMeterUI.saved.bgHistory > 20 do
+        table.remove(HPSMeterUI.saved.bgHistory, 1)
+    end
+end
+
+function HPSMeterUI:PrintSavedBGStats()
+    if not HPSMeterUI.saved then return end
+
+    local maxHealing, maxShielding, maxMitigation = HPSMeterUI:GetSavedBGMaxStats()
+    local msg = string.format(
+        "Bloom HPS Best Stats | Healing: %s | Shielding: %s | Mitigation: %.1f%% | Entries: %d",
+        FormatShortNumber(math.floor(maxHealing)),
+        FormatShortNumber(math.floor(maxShielding)),
+        maxMitigation,
+        #(HPSMeterUI.saved.bgHistory or {})
+    )
+
+    if IsConsoleUI() then
+        if CHAT_ROUTER then
+            CHAT_ROUTER:AddSystemMessage(msg)
+        else
+            d(msg)
+        end
+    else
+        d(msg)
+    end
+end
+
+function HPSMeterUI:ResetSavedBGStats()
+    if not HPSMeterUI.saved then return end
+
+    HPSMeterUI.saved.topHealing = 0
+    HPSMeterUI.saved.topShielding = 0
+    HPSMeterUI.saved.topMitigation = 0
+    HPSMeterUI.saved.bgHistory = {}
+
+    local msg = "Bloom HPS saved BG history cleared."
+    if IsConsoleUI() then
+        if CHAT_ROUTER then
+            CHAT_ROUTER:AddSystemMessage(msg)
+        else
+            d(msg)
+        end
+    else
+        StartChatInput(msg)
+    end
 end
 
 
@@ -695,6 +791,21 @@ function HPSMeterUI:CreateLAM()
         width = "full",
         warning = "This will permanently clear current Bloom HPS data",
     },
+    {
+        type = "button",
+        name = "Reset Bloom HPS BG Stats",
+        tooltip = "Clears Bloom HPS BG stats (top healing, shielding, mitigation)",
+        func = function() HPSMeterUI:ResetSavedBGStats() end,
+        width = "full",
+        warning = "This will permanently clear current Bloom HPS BG stats",
+    },
+    {
+        type = "button",
+        name = "Bloom HPS Help Data",
+        tooltip = "Outputs Bloom HPS data to chat for the list of slash commands",
+        func = function() HPSMeterUI:GetHelp() end,
+        width = "full"
+    },
         {
             type = "header",
             name = "Healing per second"
@@ -979,6 +1090,16 @@ end
 -- ======================
 -- Event: AddOn Loaded
 -- ======================
+function HPSMeterUI:PrintHelp()
+    d("Bloom HPS: /bloomhpslink - Link healing data to chat (PC ONLY)")
+    d("Bloom HPS: /bloomhpsstats - Show saved battleground stats")
+    d("Bloom HPS: /bloomhpsbg - Show saved battleground stats")
+    d("Bloom HPS: /bloomhpsmax - Show max healing stats")
+    d("Bloom HPS: /bloomhpsbest - Show best healing stats")
+    d("Bloom HPS: /bloomhpsresetstats - Reset saved battleground stats")
+    d("Bloom HPS: /bloomhpsclear - Clear all saved stats")
+end
+
 local function OnAddOnLoaded(event, addonName)
     if addonName ~= "HPSMeter" then return end
     HPSMeterUI.saved = ZO_SavedVars:NewAccountWide("HPSMeterSavedVars", 2, nil, HPSMeterUI.defaults)
@@ -996,8 +1117,26 @@ local function OnAddOnLoaded(event, addonName)
     end
     for i=1,HPSMeterUI.saved.window do HPSMeterUI.buckets[i] = 0 end
     d("Loaded")
-    SLASH_COMMANDS["/bloomhps"] =  function()
+    SLASH_COMMANDS["/bloomhpslink"] = function()
         HPSMeterUI:LinkHealingData()
+    end
+    SLASH_COMMANDS["/bloomhpsstats"] = function()
+        HPSMeterUI:PrintSavedBGStats()
+    end
+    SLASH_COMMANDS["/bloomhpsbg"] = function()
+        HPSMeterUI:PrintSavedBGStats()
+    end
+    SLASH_COMMANDS["/bloomhpsmax"] = function()
+        HPSMeterUI:PrintSavedBGStats()
+    end
+    SLASH_COMMANDS["/bloomhpsbest"] = function()
+        HPSMeterUI:PrintSavedBGStats()
+    end
+    SLASH_COMMANDS["/bloomhpsresetstats"] = function()
+        HPSMeterUI:ResetSavedBGStats()
+    end
+    SLASH_COMMANDS["/bloomhpsclear"] = function()
+        HPSMeterUI:ResetSavedBGStats()
     end
     EVENT_MANAGER:UnregisterForEvent("HPSMeter", EVENT_ADD_ON_LOADED)
     -- Safe LibAddonMenu2
@@ -1081,7 +1220,17 @@ end)
             HPSMeterUI.lastAlliedHealTick = 0
         end
     end)
-
+    EVENT_MANAGER:RegisterForEvent("HPSMeter_Dataset", EVENT_BATTLEGROUND_STATE_CHANGED, function(ec, prevState, newState) 
+        if newState == BATTLEGROUND_STATE_FINISHED or newState == BATTLEGROUND_STATE_POSTGAME then
+            HPSMeterUI:SavePreviousBGStats()
+            HPSMeterUI.lastHealTime = 0
+            HPSMeterUI.firstHealTime = 0
+            HPSMeterUI.alliedHP = 0
+            HPSMeterUI.bucketTotal = 0
+            HPSMeterUI.lastAlliedHealTick = 0
+            HPSMeterUI:Reset()
+        end
+    end)
     -- ======================
     -- Label Update
     -- ======================

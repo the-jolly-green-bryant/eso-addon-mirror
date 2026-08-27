@@ -1,9 +1,9 @@
 <Bindings>
   <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
-    <Category name="|cFFD700PvP QoL|r">
-      <Action name="PVPQOL_STATS">
-        <Down>PvPQoL_ShowStatsTooltip()</Down>
-      </Action>
-    </Category>
+	<Category name="|cFFD700PvP QoL|r">
+	  <Action name="PVPQOL_STATS">
+		<Down>PvPQoL_ShowStatsTooltip()</Down>
+	  </Action>
+	</Category>
   </Layer>
 </Bindings>

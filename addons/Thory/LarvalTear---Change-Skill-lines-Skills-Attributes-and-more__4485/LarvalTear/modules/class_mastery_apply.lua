@@ -3,6 +3,7 @@ local Log = Addon.Common.Log
 local M = Addon.Modules.ClassMasteryApply
 local SHARED_UTIL = Addon.Common.Util
 local LTM_APPLY_COOLDOWN_GATE = Addon.Modules.ApplyCooldownGate
+local LTM_PIPELINE_CONTEXT = Addon.Modules.PipelineContext
 local ClassMasteryLookup = Addon.Modules.ClassMasteryLookup
 
 local MASTERY_READY_RETRY_MS = 200
@@ -304,6 +305,26 @@ local function ShowMasteryPurchaseScene()
     return true
 end
 
+local function MarkSkillsSceneOpenedByClassMastery(context, snapshot)
+    if type(context) ~= "table"
+        or context.skillsSceneOpenRequested ~= true
+        or context.skillsSceneOpened == true then
+        return
+    end
+
+    snapshot = type(snapshot) == "table" and snapshot or {}
+    if snapshot.isShowingKeyboardSkills ~= true and snapshot.isShowingGamepadSkills ~= true then
+        return
+    end
+
+    context.skillsSceneOpened = true
+    LTM_PIPELINE_CONTEXT:SetRuntimeFlag(
+        context.pipelineContext,
+        "classMasterySkillsSceneOpened",
+        true
+    )
+end
+
 local function AreTargetsSatisfied(skillLineData, purchasedAbilities)
     local currentRanks = ClassMasteryLookup:CaptureCommittedRanks(skillLineData)
     for abilityId, targetRank in pairs(purchasedAbilities or {}) do
@@ -590,6 +611,7 @@ function M:ContinueReadyCheck(context)
 
     context.readyAttemptIndex = (context.readyAttemptIndex or 0) + 1
     local readySnapshot = BuildMasteryReadySnapshot(context)
+    MarkSkillsSceneOpenedByClassMastery(context, readySnapshot)
     if ShouldLogMasteryReadyAttempt(readySnapshot) then
         LogMasteryReadySnapshot("Mastery ready check", readySnapshot)
     end
@@ -606,11 +628,14 @@ function M:ContinueReadyCheck(context)
     end
 
     if context.startInvoked ~= true then
+        local skillsSceneWasShowing = readySnapshot.isShowingKeyboardSkills == true
+            or readySnapshot.isShowingGamepadSkills == true
         if not ShowMasteryPurchaseScene() then
             self:Finalize(context, false, "show_mastery_purchase_scene_unavailable", BuildPipelinePhaseResult(false, context.summary, "show_mastery_purchase_scene_unavailable"))
             return
         end
         context.startInvoked = true
+        context.skillsSceneOpenRequested = not skillsSceneWasShowing
     end
 
     zo_callLater(function()
@@ -681,6 +706,9 @@ function M:Run(config)
             end
         end,
         finished = false,
+        pipelineContext = pipelineContext,
+        skillsSceneOpened = false,
+        skillsSceneOpenRequested = false,
         startInvoked = false,
         readyAttemptIndex = 0,
         purchasedAbilities = purchasedAbilities,

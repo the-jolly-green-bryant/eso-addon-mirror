@@ -1,3 +1,60 @@
+Required Libraries
+
+- LibAddonMenu-2.0
+- LibChatMessage
+- LibDebugLogger
+- LibGPS
+- LibMapData
+- LibMapPing
+- LibMapPins-1.0
+
+Update 0.28.60
+- Fixed active companion names in BEST COMPANION ABILITIES + ULT so ESO grammar metadata is stripped from all optimizer labels and result messages.
+
+Update 0.28.59
+- Fixed BEST COMPANION ABILITIES + ULT so it no longer calls ESO's protected companion cursor-pickup API.
+- Companion skills are now assigned through ESO's native action-bar assignment manager, with corrected companion slot indexes and delayed verification.
+
+Update 0.28.58
+- Added BEST COMPANION ABILITIES + ULT to Gear & Sets.
+- Detects the active companion automatically and chooses from that companion's unlocked skills.
+- Infers Tank, Healer, or Damage from the companion's equipped weapon/armor and prioritizes role-appropriate abilities and ultimate.
+- Supports every companion through ESO's live companion skill APIs instead of a single hard-coded companion list.
+
+Update 0.28.57
+- Added HOST CURRENT GROUP DUNGEON for four-player instanced dungeons, including automatic current-dungeon and Normal/Veteran detection.
+- The Group Finder host action now works for both Public Dungeons and four-player Group Dungeons.
+
+Update 0.28.56
+- Public Dungeon detection is now more reliable for hosting the dungeon you are currently inside.
+- Added HOST CURRENT PUBLIC DUNGEON to the Group Finder for help with the Public Dungeon you are currently inside.
+- Pre-encounter reminders are now contextual instead of staying visible throughout dungeons or raids.
+- They appear only while out of combat around an attackable target and briefly linger when the reticle moves away.
+
+Update 0.28.53
+- Team Visibility now reserves red for downed/dead states only; living grouped players and the active companion cannot use red, and DPS uses amber instead.
+- Downed/dead grouped players and companions slowly pulse red until they revive or recover, then return to their configured glow color.
+- Companion, group-default, and per-player glow intensity can reach full brightness, with a separate brightness slider for the downed/dead red glow.
+
+Update 0.28.52
+- Fixed RESPEC + BUILD detail text clipping so the full passives line is readable.
+
+Update 0.28.51
+- Added Team Visibility glow for companions and grouped players.
+- Companion glow defaults to purple with independent color, width, height, intensity, and through-obstacle settings.
+- Added per-player group glow overrides saved by account/name with the same customization controls.
+
+Update 0.27.78
+- Active Quest overlay now disappears when there is no accepted/tracked quest and returns automatically when one becomes active.
+- HUD Layout Mode still provides the quest overlay preview for positioning/resizing.
+- ESOUI release metadata and package structure rechecked for upload.
+
+Update 0.27.77
+- ESOUI upload-readiness pass: synchronized manifest, description, README, changelog, and security metadata.
+- Verified a single ESOAdventurerSuite root folder, all manifest file references, required dependency declarations, and absence of nested archives/executables/hidden development files.
+- Includes the 0.27.76 Champion Point respec spending fix, organized Character Stats, Cadwell Almanac support, specific multi-dungeon queue selection, and the movable/resizable Suite Dungeon Finder queue HUD.
+- Required dependencies: LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.
+
 Update 0.27.59
 - ESOUI upload compliance pass: synchronized metadata and dependency floors, and removed Suite-controlled nameplate changes so native ESO nameplate settings remain user-controlled.
 - Required dependencies: LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/codeWarrior82/Hardened-Ward-Tracker__268f4e04-0e98-4b2c-874e-c9da484f991e",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "codeWarrior82",
+  "canonical_id": "bethesda:268f4e04-0e98-4b2c-874e-c9da484f991e",
+  "content_id": "268f4e04-0e98-4b2c-874e-c9da484f991e",
+  "deleted": false,
+  "fingerprint": "68397b05856dc8c718f018bf9d889270077f48c5cc92affb4b4e7101032530d2",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "268f4e04-0e98-4b2c-874e-c9da484f991e",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/268f4e04-0e98-4b2c-874e-c9da484f991e",
+  "title": "Hardened Ward Tracker"
+}

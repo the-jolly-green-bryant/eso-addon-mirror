@@ -13,6 +13,44 @@ function S:Initialize()
     if not LAM then return end
 
     local panelName = "ESOProgressionCoachSettings"
+
+    local groupSlotChoices, groupSlotValues = {}, {}
+    for i = 1, 12 do
+        groupSlotChoices[i] = "Group Member " .. tostring(i)
+        groupSlotValues[i] = i
+    end
+
+    local function selectedGroupTag()
+        local slot = tonumber(EPC.saved.teamVisibilitySelectedGroupSlot) or 1
+        slot = zo_clamp(slot, 1, 12)
+        return "group" .. tostring(slot)
+    end
+
+    local function selectedGroupAvailable()
+        local tag = selectedGroupTag()
+        if type(DoesUnitExist) ~= "function" or not DoesUnitExist(tag) then return false end
+        if type(AreUnitsEqual) == "function" and AreUnitsEqual(tag, "player") then return false end
+        return true
+    end
+
+    local function selectedGroupOverride(create)
+        if not selectedGroupAvailable() or not EPC.TeamVisibility or not EPC.TeamVisibility.GetGroupOverride then return nil end
+        return EPC.TeamVisibility:GetGroupOverride(selectedGroupTag(), create == true)
+    end
+
+    local function selectedGroupRoleColor()
+        if EPC.TeamVisibility and EPC.TeamVisibility.GetBaseRoleColor then
+            return EPC.TeamVisibility:GetBaseRoleColor(selectedGroupTag())
+        elseif EPC.TeamVisibility and EPC.TeamVisibility.GetRoleColor then
+            return EPC.TeamVisibility:GetRoleColor(selectedGroupTag())
+        end
+        return 0.15, 0.95, 1.00, 1.00
+    end
+
+    local challengeNames, challengeValues = { "Adventurer", "Seasoned", "Master", "Vestige" }, { 0, 1, 2, 3 }
+    if EPC.OverlandDifficulty and EPC.OverlandDifficulty.GetDifficultyChoices then
+        challengeNames, challengeValues = EPC.OverlandDifficulty:GetDifficultyChoices()
+    end
     LAM:RegisterAddonPanel(panelName, {
         type = "panel",
         name = EPC.displayName,
@@ -51,6 +89,202 @@ function S:Initialize()
                 if EPC.Role then EPC.Role:SetMode(v) else EPC.saved.combatRoleMode = v EPC:RequestRefresh("role-mode") end
             end,
             default = EPC.defaults.combatRoleMode,
+        },
+        {
+            type = "header", name = "Gameplay & Challenge Difficulty",
+        },
+        {
+            type = "description",
+            title = "Automatically control ESO's native Challenge Difficulty",
+            text = "Choose a difficulty for overland situations, or enable Leveling Journey to let your character level and the current zone choose it automatically. Difficulty changes wait until combat ends and use ESO's native Challenge Difficulty system.",
+        },
+        {
+            type = "checkbox", name = "Enable automatic Challenge Difficulty",
+            getFunc = function() return EPC.saved.overlandDifficultyEnabled == true end,
+            setFunc = function(v) EPC.saved.overlandDifficultyEnabled = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            default = EPC.defaults.overlandDifficultyEnabled,
+        },
+        {
+            type = "checkbox", name = "Leveling Journey",
+            tooltip = "Assigns adventure zones levels from 1 to 50 and automatically chooses a Challenge Difficulty based on your character's level. Your custom rules are preserved and return when this is turned off. World Bosses are capped at Master.",
+            getFunc = function() return EPC.saved.overlandDifficultyLevelingJourney == true end,
+            setFunc = function(v) EPC.saved.overlandDifficultyLevelingJourney = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RefreshMapLevelLabel() EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyLevelingJourney,
+        },
+        {
+            type = "checkbox", name = "Show zone levels on World Map",
+            getFunc = function() return EPC.saved.overlandDifficultyShowZoneLevelsMap ~= false end,
+            setFunc = function(v) EPC.saved.overlandDifficultyShowZoneLevelsMap = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RefreshMapLevelLabel() end end,
+            disabled = function() return EPC.saved.overlandDifficultyLevelingJourney ~= true end,
+            default = EPC.defaults.overlandDifficultyShowZoneLevelsMap,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Zone entry difficulty message",
+            tooltip = "Shows the zone level and the difficulty icon/name when you enter a zone.",
+            getFunc = function() return EPC.saved.overlandDifficultyZoneMessages == true end,
+            setFunc = function(v) EPC.saved.overlandDifficultyZoneMessages = v == true end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyZoneMessages,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Use Companion difficulty rule",
+            tooltip = "When a companion is active, temporarily use the Companion difficulty selected below. When the companion is dismissed, the normal zone/activity rule returns.",
+            getFunc = function() return EPC.saved.overlandDifficultyCompanionEnabled == true end,
+            setFunc = function(v) EPC.saved.overlandDifficultyCompanionEnabled = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyCompanionEnabled,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Companion difficulty",
+            tooltip = "Challenge Difficulty used while your companion is summoned.",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyCompanion) or 3 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyCompanion = tonumber(v) or 3 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyCompanionEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyCompanion,
+            width = "half",
+        },
+        {
+            type = "slider", name = "World Boss wave hold", min = 15, max = 120, step = 5,
+            tooltip = "Keeps the World Boss difficulty rule active for this many seconds after a World Boss is detected. Prevents multi-wave bosses from reverting to Open World difficulty between waves.",
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyWorldBossHoldSeconds) or 45 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyWorldBossHoldSeconds = tonumber(v) or 45 end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyWorldBossHoldSeconds,
+        },
+        {
+            type = "checkbox", name = "Show Challenge Difficulty symbol overlay",
+            tooltip = "Displays the currently active Challenge Difficulty symbol as a movable HUD overlay. Move it with the Suite's HUD layout mode and scale it below.",
+            getFunc = function() return EPC.saved.overlandDifficultyShowOverlay == true end,
+            setFunc = function(v) EPC.saved.overlandDifficultyShowOverlay = v == true if EPC.ChallengeDifficultyOverlay then EPC.ChallengeDifficultyOverlay:Refresh() end end,
+            default = EPC.defaults.overlandDifficultyShowOverlay,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Challenge Difficulty symbol size", min = 50, max = 200, step = 5,
+            tooltip = "Scales the Challenge Difficulty symbol overlay from 50% to 200%.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.overlandDifficultyOverlayScale) or 1.0) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.overlandDifficultyOverlayScale = (tonumber(v) or 100) / 100 if EPC.ChallengeDifficultyOverlay then EPC.ChallengeDifficultyOverlay:Refresh() end end,
+            default = (EPC.defaults.overlandDifficultyOverlayScale or 1.0) * 100,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset Challenge Difficulty overlay position", buttonText = "Reset Position",
+            func = function() if EPC.ChallengeDifficultyOverlay then EPC.ChallengeDifficultyOverlay:ResetPosition() EPC.ChallengeDifficultyOverlay:Refresh() end end,
+            width = "half",
+        },
+        {
+            type = "description",
+            text = "To move the Challenge Difficulty symbol, use the Suite's HUD layout mode and drag the icon where you want it.",
+            width = "full",
+        },
+        {
+            type = "slider", name = "Nearby activity detection radius", min = 30, max = 200, step = 5,
+            tooltip = "Distance in meters used to detect nearby World Boss, World Event, Dragon, and Public Dungeon POIs.",
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyPoiRadius) or 85 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyPoiRadius = tonumber(v) or 85 end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyPoiRadius,
+        },
+        {
+            type = "dropdown", name = "Open World difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyOpenWorld) or 0 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyOpenWorld = tonumber(v) or 0 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyOpenWorld,
+        },
+        {
+            type = "dropdown", name = "Delve difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyDelve) or 1 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyDelve = tonumber(v) or 1 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyDelve,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Public Dungeon difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyPublicDungeon) or 2 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyPublicDungeon = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyPublicDungeon,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "World Boss difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyWorldBoss) or 2 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyWorldBoss = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyWorldBoss,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "World Event difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyWorldEvent) or 2 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyWorldEvent = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyWorldEvent,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Dragon difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyDragon) or 2 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyDragon = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyDragon,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "History Bosses (Experimental)",
+            tooltip = "When enabled, a boss targeted by your reticle can temporarily use the History Boss difficulty rule. Experimental because not every story boss is exposed consistently by ESO.",
+            getFunc = function() return EPC.saved.overlandDifficultyHistoryBosses == true end,
+            setFunc = function(v) EPC.saved.overlandDifficultyHistoryBosses = v == true end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
+            default = EPC.defaults.overlandDifficultyHistoryBosses,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "History Boss difficulty",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return tonumber(EPC.saved.overlandDifficultyHistoryBoss) or 2 end,
+            setFunc = function(v) EPC.saved.overlandDifficultyHistoryBoss = tonumber(v) or 2 end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyHistoryBosses ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyHistoryBoss,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Current zone override",
+            tooltip = "Sets an Open World-only override for the zone you are standing in. Delves, Public Dungeons, bosses, events, and Dragons keep their own rules.",
+            choices = challengeNames,
+            choicesValues = challengeValues,
+            getFunc = function() return EPC.OverlandDifficulty:GetCurrentZoneOverride() or tonumber(EPC.saved.overlandDifficultyOpenWorld) or 0 end,
+            setFunc = function(v) EPC.OverlandDifficulty:SetCurrentZoneOverride(v) end,
+            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
+            default = EPC.defaults.overlandDifficultyOpenWorld,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear current zone override", buttonText = "Use Open World Rule",
+            func = function() if EPC.OverlandDifficulty then EPC.OverlandDifficulty:SetCurrentZoneOverride(nil) end end,
+            disabled = function() return not EPC.OverlandDifficulty or EPC.OverlandDifficulty:GetCurrentZoneOverride() == nil end,
+            width = "half",
         },
         {
             type = "header", name = "Live Group Finder",
@@ -241,6 +475,384 @@ function S:Initialize()
         {
             type = "button", name = "Reset repair estimate position", buttonText = "Reset Repair Estimate",
             func = function() if EPC.RepairCostOverlay then EPC.RepairCostOverlay:ResetPosition() EPC.RepairCostOverlay:Refresh() end end,
+        },
+        {
+            type = "header", name = "Pre-Encounter Reminders",
+        },
+        {
+            type = "description",
+            title = "Small text-only readiness reminders",
+            text = "Shows no background box. In dungeons, trials, arenas, delves and public dungeons the reminders stay ready while you are out of combat. In overland and quest areas they appear when you aim at an attackable target before the pull.",
+        },
+        {
+            type = "checkbox", name = "Show pre-encounter reminders",
+            getFunc = function() return EPC.saved.showEncounterReminders ~= false end,
+            setFunc = function(v) EPC.saved.showEncounterReminders = v == true if EPC.EncounterReminders then EPC.EncounterReminders:Refresh() end end,
+            default = EPC.defaults.showEncounterReminders,
+        },
+        {
+            type = "checkbox", name = "Armor repair reminder",
+            tooltip = "Shows ARMOR NEEDS REPAIR before an encounter when at least one equipped armor piece is below 100% condition.",
+            getFunc = function() return EPC.saved.showEncounterRepairReminder ~= false end,
+            setFunc = function(v) EPC.saved.showEncounterRepairReminder = v == true if EPC.EncounterReminders then EPC.EncounterReminders:Refresh() end end,
+            default = EPC.defaults.showEncounterRepairReminder,
+        },
+        {
+            type = "checkbox", name = "Potion reminder",
+            tooltip = "Shows DRINK POTION BEFORE NEXT ENCOUNTER before each new pull, then hides when combat starts.",
+            getFunc = function() return EPC.saved.showEncounterPotionReminder ~= false end,
+            setFunc = function(v) EPC.saved.showEncounterPotionReminder = v == true if EPC.EncounterReminders then EPC.EncounterReminders:Refresh() end end,
+            default = EPC.defaults.showEncounterPotionReminder,
+        },
+        {
+            type = "slider", name = "Armor reminder scale", min = 65, max = 180, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.encounterRepairScale) or 1.0) * 100) end,
+            setFunc = function(v) EPC.saved.encounterRepairScale = v / 100 if EPC.EncounterReminders then EPC.EncounterReminders:Refresh() end end,
+            default = math.floor((EPC.defaults.encounterRepairScale or 1.0) * 100),
+            width = "half",
+        },
+        {
+            type = "slider", name = "Potion reminder scale", min = 65, max = 180, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.encounterPotionScale) or 1.0) * 100) end,
+            setFunc = function(v) EPC.saved.encounterPotionScale = v / 100 if EPC.EncounterReminders then EPC.EncounterReminders:Refresh() end end,
+            default = math.floor((EPC.defaults.encounterPotionScale or 1.0) * 100),
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Armor reminder position",
+            tooltip = "Choose a screen corner, or Custom to place it anywhere with HUD layout mode.",
+            choices = { "Custom", "Top Left", "Top Right", "Bottom Left", "Bottom Right" },
+            choicesValues = { "CUSTOM", "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" },
+            getFunc = function() return EPC.saved.encounterRepairPreset or "CUSTOM" end,
+            setFunc = function(v) if EPC.EncounterReminders then EPC.EncounterReminders:SetRepairPreset(v) EPC.EncounterReminders:Refresh() else EPC.saved.encounterRepairPreset = v end end,
+            default = EPC.defaults.encounterRepairPreset,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Potion reminder position",
+            tooltip = "Choose a screen corner, or Custom to place it anywhere with HUD layout mode.",
+            choices = { "Custom", "Top Left", "Top Right", "Bottom Left", "Bottom Right" },
+            choicesValues = { "CUSTOM", "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" },
+            getFunc = function() return EPC.saved.encounterPotionPreset or "CUSTOM" end,
+            setFunc = function(v) if EPC.EncounterReminders then EPC.EncounterReminders:SetPotionPreset(v) EPC.EncounterReminders:Refresh() else EPC.saved.encounterPotionPreset = v end end,
+            default = EPC.defaults.encounterPotionPreset,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset armor reminder position", buttonText = "Reset Armor",
+            func = function() if EPC.EncounterReminders then EPC.EncounterReminders:ResetRepairPosition() EPC.EncounterReminders:Refresh() end end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset potion reminder position", buttonText = "Reset Potion",
+            func = function() if EPC.EncounterReminders then EPC.EncounterReminders:ResetPotionPosition() EPC.EncounterReminders:Refresh() end end,
+            width = "half",
+        },
+        {
+            type = "header", name = "Lore Book Locations",
+        },
+        {
+            type = "checkbox", name = "Enable Lore Books & Scrolls",
+            tooltip = "Master switch for all Lore Book, Eidetic Memory, and scroll location markers. Turn this off when you are not hunting books to hide the feature everywhere.",
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("loreBooksEnabled", v == true) end end,
+            default = true,
+        },
+        {
+            type = "description",
+            title = "Undiscovered books on map, compass and in the world",
+            text = "Use the master switch to hide all Lore Book and scroll hunting markers when you are not looking for them. Lore Books are enabled by default and Eidetic Memory books start disabled. Some locations are quest-gated: the marker can show where the book will be, but ESO may not spawn the book until its related quest has been completed. Right-click a book in Journal > Lore Library to use Show on Map.",
+        },
+        {
+            type = "checkbox", name = "Show undiscovered Lore Books",
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:IsPinTypeEnabled(EASLoreLibrary.LOREBOOK) or false end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:SetPinTypeEnabled(EASLoreLibrary.LOREBOOK, v == true) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = true,
+        },
+        {
+            type = "checkbox", name = "Show Eidetic Memory books",
+            tooltip = "Disabled by default. You can also toggle this from the World Map filter panel.",
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:IsPinTypeEnabled(EASLoreLibrary.EIDETICBOOK) or false end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:SetPinTypeEnabled(EASLoreLibrary.EIDETICBOOK, v == true) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = false,
+        },
+        {
+            type = "checkbox", name = "Book markers on compass",
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("compassPinsEnabled") ~= false end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("compassPinsEnabled", v == true) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Book markers in 3D world",
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("worldPinsEnabled") ~= false end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("worldPinsEnabled", v == true) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Hide quest-dependent books in 3D",
+            tooltip = "Recommended. Suppresses floating 3D icons for known quest-phased books/documents whose physical object may not exist at that location yet. Map and compass guidance remain available.",
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("hideQuestDependentWorldPins") ~= false end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("hideQuestDependentWorldPins", v == true) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = true,
+        },
+        {
+            type = "description",
+            text = "Known phased examples include Tava's Bounty Ledger and other quest-linked Eidetic documents. The location stays visible on the map/compass; only the potentially misleading floating 3D icon is hidden.",
+        },
+        {
+            type = "slider", name = "Compass book distance", min = 100, max = 2000, step = 100,
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and (tonumber(EASLoreLibrary.settings:Get("compassPinsDistance")) or 300) or 300 end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("compassPinsDistance", tonumber(v) or 300) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = 300,
+            width = "half",
+        },
+        {
+            type = "slider", name = "3D book distance", min = 100, max = 1000, step = 50,
+            getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and (tonumber(EASLoreLibrary.settings:Get("worldPinsDistance")) or 250) or 250 end,
+            setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("worldPinsDistance", tonumber(v) or 250) end end,
+            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
+            default = 250,
+            width = "half",
+        },
+        {
+            type = "header", name = "Team Visibility",
+        },
+        {
+            type = "description",
+            text = "Companions and grouped teammates use the soft 3D visibility glow. Companion settings are independent and default to purple. Group defaults can be overridden per player; overrides are saved by that player's account/name so they follow the player instead of a temporary group slot. Glow intensity can now reach full brightness. Red is reserved for dead grouped players and downed companions, with a separate red brightness control. Their glow slowly pulses until they revive or recover. Type /easteam for renderer status.",
+        },
+        {
+            type = "checkbox", name = "Enable Team Visibility",
+            tooltip = "Enables the Suite's enhanced native group markers and teammate visibility system.",
+            getFunc = function() return EPC.saved.teamVisibilityEnabled ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityEnabled = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            default = EPC.defaults.teamVisibilityEnabled,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Show teammate glow",
+            tooltip = "Shows the visibility glow on companions and group members where ESO allows addon 3D controls.",
+            getFunc = function() return EPC.saved.teamVisibilityLightsEnabled ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityLightsEnabled = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false end,
+            default = EPC.defaults.teamVisibilityLightsEnabled,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Downed/dead red glow brightness", min = 20, max = 100, step = 5,
+            tooltip = "Controls the brightness of the reserved flashing red glow used when a grouped player dies or the active companion goes down. This setting is independent from their normal glow intensity.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityDeadOpacity) or 1.00) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityDeadOpacity = (tonumber(v) or 100) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "header", name = "Companion Glow",
+        },
+        {
+            type = "description",
+            text = "The active companion has its own visibility settings. The default companion color is purple. If the companion goes down, the glow temporarily turns red and slowly pulses until recovery.",
+        },
+        {
+            type = "colorpicker", name = "Companion color",
+            tooltip = "Sets the active companion's normal glow color. Red is reserved for the downed state and is converted to amber while the companion is active.",
+            getFunc = function()
+                local c = EPC.saved.teamVisibilityCompanionColor or EPC.defaults.teamVisibilityCompanionColor
+                return c.r or 0.72, c.g or 0.38, c.b or 1.00, 1
+            end,
+            setFunc = function(r, g, b, a)
+                if EPC.TeamVisibility and EPC.TeamVisibility.NormalizeAlivePlayerColor then
+                    r, g, b = EPC.TeamVisibility:NormalizeAlivePlayerColor(r, g, b)
+                end
+                EPC.saved.teamVisibilityCompanionColor = { r = r, g = g, b = b }
+                if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end
+            end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = { r = 0.72, g = 0.38, b = 1.00 },
+            width = "full",
+        },
+        {
+            type = "slider", name = "Companion glow width", min = 25, max = 250, step = 5,
+            tooltip = "Adjusts the companion glow width independently from group members.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityCompanionBeamWidth) or 3.55) / 3.55) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionBeamWidth = 3.55 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Companion glow height", min = 25, max = 150, step = 5,
+            tooltip = "Adjusts the companion glow height independently from group members.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityCompanionBeamHeight) or 8.20) / 8.20) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionBeamHeight = 8.20 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Companion glow intensity", min = 10, max = 100, step = 5,
+            tooltip = "Controls how transparent or bright the companion glow appears. Higher values now render at full additive brightness instead of being capped low.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityCompanionOpacity) or 0.24) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionOpacity = (tonumber(v) or 24) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 24,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Companion glow through obstacles",
+            tooltip = "Keeps the companion glow visible through walls, trees, and world geometry where ESO permits it.",
+            getFunc = function() return EPC.saved.teamVisibilityCompanionThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionThroughWalls = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset companion glow", buttonText = "Reset Companion",
+            func = function()
+                EPC.saved.teamVisibilityCompanionColor = { r = 0.72, g = 0.38, b = 1.00 }
+                EPC.saved.teamVisibilityCompanionBeamWidth = 3.55
+                EPC.saved.teamVisibilityCompanionBeamHeight = 8.20
+                EPC.saved.teamVisibilityCompanionOpacity = 0.24
+                EPC.saved.teamVisibilityCompanionThroughWalls = true
+                if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end
+            end,
+            width = "half",
+        },
+        {
+            type = "header", name = "Group Default Glow",
+        },
+        {
+            type = "checkbox", name = "Default group glow through obstacles",
+            tooltip = "Default obstacle visibility for group members that do not have a player-specific override.",
+            getFunc = function() return EPC.saved.teamVisibilityThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityThroughWalls = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = EPC.defaults.teamVisibilityThroughWalls,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Default group glow width", min = 25, max = 250, step = 5,
+            tooltip = "Default width for group members without a player-specific override.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityBeamWidth) or 3.55) / 3.55) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityBeamWidth = 3.55 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Default group glow height", min = 25, max = 150, step = 5,
+            tooltip = "Default height for group members without a player-specific override.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityBeamHeight) or 8.20) / 8.20) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityBeamHeight = 8.20 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Default group glow intensity", min = 10, max = 100, step = 5,
+            tooltip = "Default brightness for group members without a player-specific override. Higher values now render at full additive brightness instead of being capped low.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityOpacity) or 0.24) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityOpacity = (tonumber(v) or 24) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 24,
+            width = "half",
+        },
+        {
+            type = "header", name = "Per-Player Group Glow",
+        },
+        {
+            type = "description",
+            text = "Choose a current group slot, then customize that teammate. The override is stored by the player's account/name and follows them if their group slot changes later. If the selected slot is empty or is your own character, the controls are disabled.",
+        },
+        {
+            type = "dropdown", name = "Group member to customize",
+            choices = groupSlotChoices,
+            choicesValues = groupSlotValues,
+            getFunc = function() return tonumber(EPC.saved.teamVisibilitySelectedGroupSlot) or 1 end,
+            setFunc = function(v) EPC.saved.teamVisibilitySelectedGroupSlot = tonumber(v) or 1 end,
+            default = 1,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Use custom settings for selected player",
+            getFunc = function() local p = selectedGroupOverride(false) return p ~= nil and p.enabled ~= false end,
+            setFunc = function(v) local p = selectedGroupOverride(v == true) if p then p.enabled = v == true end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return not selectedGroupAvailable() end,
+            default = false,
+            width = "full",
+        },
+        {
+            type = "colorpicker", name = "Selected player color",
+            tooltip = "Overrides the normal leader/role color for the selected teammate. Red is reserved for dead players and cannot be used as a living-player glow.",
+            getFunc = function()
+                local p = selectedGroupOverride(false)
+                if p and p.color then return p.color.r or 0.15, p.color.g or 0.95, p.color.b or 1.00, 1 end
+                return selectedGroupRoleColor()
+            end,
+            setFunc = function(r, g, b, a) local p = selectedGroupOverride(true) if p then if EPC.TeamVisibility and EPC.TeamVisibility.NormalizeAlivePlayerColor then r, g, b = EPC.TeamVisibility:NormalizeAlivePlayerColor(r, g, b) end p.enabled = true p.color = { r = r, g = g, b = b } end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = { r = 0.15, g = 0.95, b = 1.00 },
+            width = "full",
+        },
+        {
+            type = "slider", name = "Selected player glow width", min = 25, max = 250, step = 5,
+            getFunc = function() local p = selectedGroupOverride(false) local width = p and p.width or EPC.saved.teamVisibilityBeamWidth or 3.55 return math.floor((width / 3.55) * 100 + 0.5) end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.width = 3.55 * ((tonumber(v) or 100) / 100) end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Selected player glow height", min = 25, max = 150, step = 5,
+            getFunc = function() local p = selectedGroupOverride(false) local height = p and p.height or EPC.saved.teamVisibilityBeamHeight or 8.20 return math.floor((height / 8.20) * 100 + 0.5) end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.height = 8.20 * ((tonumber(v) or 100) / 100) end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Selected player glow intensity", min = 10, max = 100, step = 5,
+            tooltip = "Controls the selected teammate's normal glow brightness up to full additive brightness. Red remains reserved for the dead/downed state.",
+            getFunc = function() local p = selectedGroupOverride(false) return math.floor(((p and p.opacity) or EPC.saved.teamVisibilityOpacity or 0.24) * 100 + 0.5) end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.opacity = (tonumber(v) or 24) / 100 end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = 24,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Selected player glow through obstacles",
+            getFunc = function() local p = selectedGroupOverride(false) return p and p.throughWalls ~= false or false end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.throughWalls = v == true end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset selected player override", buttonText = "Reset Player",
+            func = function()
+                if EPC.TeamVisibility and EPC.TeamVisibility.GetGroupOverride then
+                    local _, key = EPC.TeamVisibility:GetGroupOverride(selectedGroupTag(), false)
+                    if key and EPC.saved.teamVisibilityPlayerOverrides then EPC.saved.teamVisibilityPlayerOverrides[key] = nil end
+                    EPC.TeamVisibility:RefreshSettings()
+                end
+            end,
+            disabled = function() return not selectedGroupAvailable() end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear all player overrides", buttonText = "Clear All Players",
+            func = function() EPC.saved.teamVisibilityPlayerOverrides = {} if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            width = "half",
         },
         {
             type = "header", name = "World Combat Visibility",
@@ -1011,6 +1623,7 @@ function S:Initialize()
         "GENERAL",
         "CODEX",
         "COMBAT",
+        "DIFFICULTY",
         "HUD",
         "FRAMES",
         "MAP",
@@ -1023,6 +1636,7 @@ function S:Initialize()
         GENERAL = { name = "General & Getting Started", tooltip = "Core Suite enablement, compatibility information, and basic behavior." },
         CODEX = { name = "Tamriel Codex & Window", tooltip = "Codex access, menu behavior, main Suite window appearance, and interaction controls." },
         COMBAT = { name = "Combat, Role & Builds", tooltip = "Role awareness, combat presentation, endgame guidance, target builds, and combat history controls." },
+        DIFFICULTY = { name = "Gameplay & Difficulty", tooltip = "Automatic Challenge Difficulty, Leveling Journey, activity rules, zone overrides, and zone-entry difficulty behavior." },
         HUD = { name = "HUD & Gameplay Overlays", tooltip = "Combat HUD, quest, rank, Champion, ability, clock, stable, repair, and reticle overlays." },
         FRAMES = { name = "Unit Frames & HUD Layout", tooltip = "Player, target, group, raid, live-stat frames, scaling, backgrounds, and move/reset controls." },
         MAP = { name = "Mini Map & Navigation", tooltip = "Mini Map visibility, layers, zoom, sizing, opacity, pins, and position controls." },
@@ -1036,6 +1650,7 @@ function S:Initialize()
         ["Automatic Equipment Maintenance"] = "GEAR",
         ["Repair / Recharge Estimate Overlay"] = "HUD",
         ["World Combat Visibility"] = "COMBAT",
+        ["Team Visibility"] = "HUD",
         ["Persistent HUD & Unit Frames"] = "FRAMES",
         ["Stable Training Timer"] = "HUD",
         ["Clock"] = "HUD",
@@ -1047,6 +1662,7 @@ function S:Initialize()
         ["Custom ESO Reticle"] = "HUD",
         ["Tamriel Codex"] = "CODEX",
         ["Mini Map"] = "MAP",
+        ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Target Build"] = "COMBAT",
         ["Utility Command Center"] = "UTILITIES",
     }

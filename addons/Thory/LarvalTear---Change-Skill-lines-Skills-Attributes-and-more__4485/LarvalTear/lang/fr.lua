@@ -564,6 +564,7 @@ LTM_LOCALIZATION["fr"] = {
     SI_LTM_ERROR_REASON_ATTR_E_CANCELLED = "Les changements de caractéristiques ont été annulés.",
     SI_LTM_ERROR_REASON_ROUTE_B_COMPLETION_TIMEOUT = "Les changements de compétences ne se sont pas terminés à temps.",
     SI_LTM_ERROR_REASON_ROUTE_B_VERIFY_RETRY_EXHAUSTED = "Impossible de vérifier les changements de compétences.",
+    SI_LTM_ERROR_REASON_ROUTE_B_BASELINE_CLEANUP_FAILED = "Impossible de réinitialiser l'interface de redistribution des compétences.",
     SI_LTM_ERROR_REASON_SUBCLASS_VERIFY_MISMATCH = "Impossible de vérifier le changement de sous-classe.",
     SI_LTM_ERROR_REASON_TARGET_STAR_NOT_ACTIVE = "L'étoile de Champion enregistrée n'est pas active.",
     SI_LTM_ERROR_REASON_CHAMPION_SKILL_NOT_SLOTTABLE = "L'étoile de Champion enregistrée ne peut pas être placée.",

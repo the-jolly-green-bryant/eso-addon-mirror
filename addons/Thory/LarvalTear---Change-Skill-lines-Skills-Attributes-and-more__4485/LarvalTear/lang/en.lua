@@ -564,6 +564,7 @@ LTM_LOCALIZATION["en"] = {
     SI_LTM_ERROR_REASON_ATTR_E_CANCELLED = "Attribute changes were cancelled.",
     SI_LTM_ERROR_REASON_ROUTE_B_COMPLETION_TIMEOUT = "Skill changes did not finish in time.",
     SI_LTM_ERROR_REASON_ROUTE_B_VERIFY_RETRY_EXHAUSTED = "Skill changes could not be verified.",
+    SI_LTM_ERROR_REASON_ROUTE_B_BASELINE_CLEANUP_FAILED = "Could not reset the skill respec interface to a clean state.",
     SI_LTM_ERROR_REASON_SUBCLASS_VERIFY_MISMATCH = "The subclass change could not be verified.",
     SI_LTM_ERROR_REASON_TARGET_STAR_NOT_ACTIVE = "The saved Champion star is not active.",
     SI_LTM_ERROR_REASON_CHAMPION_SKILL_NOT_SLOTTABLE = "The saved Champion star cannot be slotted.",

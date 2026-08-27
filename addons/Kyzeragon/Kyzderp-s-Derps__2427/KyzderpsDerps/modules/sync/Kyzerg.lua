@@ -296,16 +296,16 @@ local COMMANDS = {
         local groupInvite = GetGroupInviteInfo()
         if (groupInvite and groupInvite ~= "") then
             AcceptGroupInvite()
-            KyzderpsDerps:msg("Accepting group invite")
+            KD:msg("Accepting group invite")
         elseif (HasLFGReadyCheckNotification()) then
             AcceptLFGReadyCheckNotification()
-            KyzderpsDerps:msg("Accepting ready check")
+            KD:msg("Accepting ready check")
         elseif (GetOfferedQuestShareIds()) then
             local id = GetOfferedQuestShareIds()
             AcceptSharedQuest(id)
-            KyzderpsDerps:msg("Accepting quest " .. tostring(id))
+            KD:msg("Accepting quest " .. tostring(id))
         else
-            KyzderpsDerps:msg("Nothing to accept")
+            KD:msg("Nothing to accept")
         end
     end,
 
@@ -332,31 +332,6 @@ local COMMANDS = {
 
     -- Get on multi rider mount as passenger
     kmount = KMount,
-
-    -- Equip multi rider mount
-    kmm = function(fromName)
-        if (not IsSelfOrJWPD2(fromName)) then
-            KD:msg("Unauthorized kmm from " .. fromName)
-            return
-        end
-
-        local multiMounts = { -- Incomprehensive. Just the ones I have
-            13808, -- Warparty Timber Mammoth
-            13897, -- Duo-Dynamo Dungeon Delver Spider
-            6972, -- Duo-Dynamo Dwarven Spider
-            13552, -- Duo-Dynamo Hollowsteel Spider
-            11887, -- Nightmare Pillion Courser
-            10254, -- Wayrest Vanner Pillion Steed
-        }
-
-        for _, id in ipairs(multiMounts) do
-            if (IsCollectibleUnlocked(id) and not IsCollectibleActive(id, GAMEPLAY_ACTOR_CATEGORY_PLAYER)) then
-                KD:msg(string.format("Equipping %s (%d)", GetCollectibleName(id), id))
-                UseCollectible(id)
-                return
-            end
-        end
-    end,
 
     -- Give crown
     kcrown = function(fromName)
@@ -398,7 +373,7 @@ local COMMANDS = {
 
 function Kyzerg.PrintCommands()
     for cmd, _ in pairs(COMMANDS) do
-        KyzderpsDerps:msg(cmd)
+        KD:msg(cmd)
     end
 end
 
@@ -407,7 +382,7 @@ end
 -- Chat handler
 ---------------------------------------------------------------------
 local validChannels = {}
-local attnChannel
+local attnChannel, fcChannel
 
 local function OnChatMessage(_, channelType, fromName, text)
     -- jwpd2 autoinvite
@@ -420,6 +395,16 @@ local function OnChatMessage(_, channelType, fromName, text)
                 local atName, characterName = GetGuildMemberAccountAndCharName(fromName)
                 GroupInviteByName(FormatName(characterName))
             end
+        end
+        return
+    end
+
+    if (channelType == fcChannel and text == "x") then
+        if (NameIsPlayer(fromName)) then return end
+        -- and is group leader or not in group
+        if (GetGroupSize() < 2 or IsUnitGroupLeader("player")) then
+            local atName, characterName = GetGuildMemberAccountAndCharName(fromName)
+            GroupInviteByName(FormatName(characterName))
         end
         return
     end
@@ -495,6 +480,7 @@ function Kyzerg.Initialize()
             for i = 1, GetNumGuilds() do
                 if (GetGuildId(i) == 580319) then -- FC
                     local channel = _G["CHAT_CHANNEL_GUILD_" .. tostring(i)]
+                    fcChannel = channel
                     validChannels[channel] = true
                 end
             end

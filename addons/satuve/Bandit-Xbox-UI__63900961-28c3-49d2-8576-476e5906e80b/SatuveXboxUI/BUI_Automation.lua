@@ -707,6 +707,14 @@ local function Menu_Init()
 			name="18. |t32:32:/esoui/art/treeicons/store_indexicon_bundle_up.dds|t"..BUI.Loc("AutomationHeader"),
 			})
 	BUI.Menu.RegisterOptions("BUI_MenuAutomation", Options)
+	if BUI.SettingsBridge and BUI.SettingsBridge.AddGroupedSection then
+		BUI.SettingsBridge.AddGroupedSection("BUI_BanditUI", {
+			id="Automation",
+			order=18,
+			name="18. |t32:32:/esoui/art/treeicons/store_indexicon_bundle_up.dds|t"..BUI.Loc("AutomationHeader"),
+			options=Options,
+		})
+	end
 end
 
 function BUI.Automation_Init()

@@ -1,14 +1,35 @@
+Required Libraries
+
+- LibAddonMenu-2.0
+- LibChatMessage
+- LibDebugLogger
+- LibGPS
+- LibMapData
+- LibMapPing
+- LibMapPins-1.0
+
 [B]# AI DEVELOPMENT DISCLOSURE[/B]
 ESO Adventurer Suite was developed with assistance from OpenAI, including AI-assisted code generation and review. The author, HoZayyBadazz, is responsible for publishing, testing, maintaining, and responding to issues in the addon.
 
 [B]# ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.27.59
+Version: 0.28.60
 Status: Public Beta
 
 ESO Adventurer Suite is an all-in-one Elder Scrolls Online gameplay and progression utility built around the Tamriel Codex and configurable HUD overlays. It includes quest and travel tools, Dungeon Finder utilities, gear/set tools, live equipment display, role-aware progression guidance, combat statistics, custom unit frames, minimap features, Golden Pursuits integration, and Active Quest tracking.
 
+- Gear & Sets can optimize the currently summoned companion's unlocked abilities and ultimate, with role inference from companion equipment.
+- Companion optimizer labels now normalize ESO companion names so internal grammar metadata is never displayed.
 
+
+
+[B]# TEAM VISIBILITY[/B]
+- Soft glow tracking for the active companion and grouped players.
+- Companion defaults to purple and can be customized independently.
+- Per-player group overrides support color, width, height, intensity, and through-obstacle visibility.
+- Player-specific overrides are saved by account/name so they remain associated with that player.
+- Glow intensity controls now reach much brighter additive output, including a dedicated downed/dead red brightness control.
+- Red is reserved for dead grouped players and downed companions; their glow slowly pulses while down and returns to the configured color after revival or recovery.
 
 [B]# CUSTOM ESO RETICLE[/B]
 - Optional Suite-owned ESO-style reticles with ESO Default available at any time.
@@ -24,6 +45,7 @@ ESO Adventurer Suite is an all-in-one Elder Scrolls Online gameplay and progress
 - Dungeon History records future dungeon completions, mode when ESO exposes it, character, date/time, and duration; older achievement timestamps are imported only where ESO exposes reliable historical evidence.
 - Activity History covers supported Trials, Arenas, Battlegrounds, PvP sessions, and Archive-style activities with paged history.
 - Group Finder social tools use ESO public listings and guild rosters only. The public build does not collect or retain an arbitrary nearby/non-grouped-player roster.
+- Group Finder can host the Public Dungeon or four-player Group Dungeon you are currently inside; Group Dungeons use the detected Normal/Veteran instance difficulty and exact dungeon option when ESO exposes it.
 
 [B]# QUEST TRACKING[/B]
 Settings > Quest Tracking lets you choose exactly one tracking source:

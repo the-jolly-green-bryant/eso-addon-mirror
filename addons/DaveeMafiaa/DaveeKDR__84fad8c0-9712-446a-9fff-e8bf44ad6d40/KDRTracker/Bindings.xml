@@ -1,0 +1,16 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="KDR TRACKER">
+            <Action name="KDR_TOGGLE_SETTINGS"><Down>KDR_TOGGLE_SETTINGS()</Down></Action>
+            <Action name="KDR_SCALE_UP"><Down>KDR_SCALE_UP()</Down></Action>
+            <Action name="KDR_SCALE_DOWN"><Down>KDR_SCALE_DOWN()</Down></Action>
+            <Action name="KDR_BG_UP"><Down>KDR_BG_UP()</Down></Action>
+            <Action name="KDR_BG_DOWN"><Down>KDR_BG_DOWN()</Down></Action>
+            <Action name="KDR_MOVE_LEFT"><Down>KDR_MOVE_LEFT()</Down></Action>
+            <Action name="KDR_MOVE_RIGHT"><Down>KDR_MOVE_RIGHT()</Down></Action>
+            <Action name="KDR_MOVE_UP"><Down>KDR_MOVE_UP()</Down></Action>
+            <Action name="KDR_MOVE_DOWN"><Down>KDR_MOVE_DOWN()</Down></Action>
+            <Action name="KDR_RESET_SESSION"><Down>KDR_RESET_SESSION()</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

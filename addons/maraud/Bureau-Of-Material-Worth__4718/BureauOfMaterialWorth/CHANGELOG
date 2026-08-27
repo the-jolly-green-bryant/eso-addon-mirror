@@ -3,6 +3,30 @@
 
 
 
+[color=#6FCB9F]Version: 4.3.174707[/color]
+
+Session-based history sampling and an in-panel price refresh.
+
+- Session History: The value sparkline and per-material price history now record one point per login or /reloadui instead of waiting 4 hours / ~20 hours. Later Craft Bag opens in the same session do not add another sparkline sample; a later price lookup in the same session updates that material's latest point in place. A 20-minute relog is captured without filling the graph from every bag visit.
+- Price Refresh: The Market prices footer row is now clickable and re-queries LibPrice, matching /bmw refresh, so a mid-session import from Master Merchant or Tamriel Trade Centre does not require the settings panel.
+
+
+
+[color=#6FCB9F]Version: 4.3.160544[/color]
+
+Seven-day price dynamics, market-movement alerts, and table-quality refinements.
+
+- Price Dynamics: Added an analytical row below Other with rise/fall counters and the configured threshold beside the name. The row opens a dedicated whole-bag view with current price, change from the oldest available observation, maximum rise, and maximum fall. Back returns to the category that was open.
+- Seven-day Analysis: Every earlier/later price pair inside the trailing seven-day window is analyzed, so short one- or two-day spikes and dips remain visible even if the price later returns near its starting point. The panel summary is cached until bag composition, prices, history, or the threshold change.
+- Price History: Replaced the single per-material baseline with a compact bounded series, including automatic legacy migration and source-aware boundaries that prevent MM, TTC, or ATT changes from appearing as market movement.
+- Configuration: Added a significant-movement threshold from 5% to 100% (20% by default).
+- Notifications: Important and Detailed modes announce new significant price signals, direction reversals, and materially stronger movements immediately, with persistent duplicate suppression. Chat reports now include the active threshold.
+- Material Table: Click the grand total for the whole Craft Bag. Hover an icon for the game item tooltip; Shift-click a row to insert the item link in chat, with a persistent header reminder. Escape closes the table and the withdraw window. Basic/Analytics can be switched from the table toolbar. Search filters the list already on screen, including Changes and Price dynamics, by name, price source, quality, or unpriced. Sort order and the price filter persist while moving between views. Column headers sort in category, Changes, and Price dynamics. Empty states distinguish an empty category, empty bag, unmatched filter, unmatched search, collecting history, and no threshold crossing. Row tooltips now keep stock, fees, and source on Price dynamics rows and describe Changes rows.
+- Withdrawals: Added a Max quantity preset for the current withdrawable amount.
+- Interface: Added contextual explanations for the seven-day change, maximum rise, and maximum fall columns, plus English and Russian localization for the complete feature.
+
+
+
 [color=#6FCB9F]Version: 4.2.112030[/color]
 
 Visual clarity and Update 51 compatibility review.

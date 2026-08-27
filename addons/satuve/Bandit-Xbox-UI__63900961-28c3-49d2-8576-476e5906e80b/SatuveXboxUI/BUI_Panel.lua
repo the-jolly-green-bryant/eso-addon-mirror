@@ -417,7 +417,14 @@ local function UI_Init()
 					if tip and tip~="" then
 						InitializeTooltip(InformationTooltip, self, RIGHT, 18, 0, LEFT)
 						InformationTooltip:ClearLines()
-						InformationTooltip:AddLine(tip,'$(BOLD_FONT)|20|soft-shadow-thick',1,1,1,CENTER,MODIFY_TEXT_TYPE_NONE,TEXT_ALIGN_CENTER,true)
+						local gamepadMode=type(IsInGamepadPreferredMode)=="function" and IsInGamepadPreferredMode()
+						if not gamepadMode and type(GetSetting_Bool)=="function" then
+							local settingType=rawget(_G,"SETTING_TYPE_ACCESSIBILITY")
+							local settingId=rawget(_G,"ACCESSIBILITY_SETTING_ACCESSIBILITY_MODE")
+							if settingType and settingId then gamepadMode=GetSetting_Bool(settingType,settingId) end
+						end
+						local tooltipFont=gamepadMode and "ZoFontGamepad34" or '$(BOLD_FONT)|20|soft-shadow-thick'
+						InformationTooltip:AddLine(tip,tooltipFont,1,1,1,CENTER,MODIFY_TEXT_TYPE_NONE,TEXT_ALIGN_CENTER,true)
 					end
 				end
 				if BUI_Panel.context then BUI_Panel.context:SetHidden(true) end
@@ -539,6 +546,14 @@ local function Menu_Init()
 		})
 	end
 	BUI.Menu.RegisterOptions("BUI_MenuSidePanel", Options)
+	if BUI.SettingsBridge and BUI.SettingsBridge.AddGroupedSection then
+		BUI.SettingsBridge.AddGroupedSection("BUI_BanditUI", {
+			id="SidePanel",
+			order=2,
+			name="2.  |t32:32:/esoui/art/tutorial/ordering_up.dds|t"..BUI.Loc("PanelHeader"),
+			options=Options,
+		})
+	end
 	BUI_MenuSidePanel:SetHandler("OnEffectivelyShown",function()BUI.inMenu=true if BUI_Panel then BUI_Panel:SetHidden(false)end end)
 	BUI_MenuSidePanel:SetHandler("OnEffectivelyHidden",function()BUI.inMenu=false if BUI_Panel then BUI_Panel:SetHidden(true)end end)
 end

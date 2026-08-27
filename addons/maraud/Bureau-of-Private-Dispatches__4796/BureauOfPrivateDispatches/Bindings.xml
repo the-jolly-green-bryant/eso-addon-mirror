@@ -1,0 +1,36 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_BPD_KEYBIND_CATEGORY">
+			<Action name="BPD_REPLY">
+				<Down>BureauOfPrivateDispatches:KeybindReply()</Down>
+			</Action>
+			<Action name="BPD_FOCUS_NEXT">
+				<Down>BureauOfPrivateDispatches:KeybindFocusNext()</Down>
+			</Action>
+			<Action name="BPD_FOCUS_PREV">
+				<Down>BureauOfPrivateDispatches:KeybindFocusPrevious()</Down>
+			</Action>
+			<Action name="BPD_MARK_READ">
+				<Down>BureauOfPrivateDispatches:KeybindMarkRead()</Down>
+			</Action>
+			<Action name="BPD_TOGGLE">
+				<Down>BureauOfPrivateDispatches:KeybindToggleCollapsed()</Down>
+			</Action>
+			<Action name="BPD_CLEAR">
+				<Down>BureauOfPrivateDispatches:KeybindClearAll()</Down>
+			</Action>
+			<Action name="BPD_MUTE">
+				<Down>BureauOfPrivateDispatches:KeybindMute()</Down>
+			</Action>
+			<Action name="BPD_DND">
+				<Down>BureauOfPrivateDispatches:KeybindDnd()</Down>
+			</Action>
+			<Action name="BPD_RESTORE">
+				<Down>BureauOfPrivateDispatches:KeybindRestore()</Down>
+			</Action>
+			<Action name="BPD_LOCK">
+				<Down>BureauOfPrivateDispatches:KeybindLock()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

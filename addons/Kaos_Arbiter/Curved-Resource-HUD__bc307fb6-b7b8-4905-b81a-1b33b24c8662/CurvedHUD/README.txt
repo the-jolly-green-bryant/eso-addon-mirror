@@ -1,4 +1,4 @@
-Curved Resource HUD 0.6.9 UPPER ICON ALIGNMENT TEST BUILD
+Curved Resource HUD 0.8.0 SCRIBING TRACKERS TEST BUILD
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -12,14 +12,14 @@ If neither library loads, the HUD still renders. Chat commands:
   /curvedhud debug    - toggle diagnostic logging
   /curvedhud          - show version/load status
 
-0.6.9 includes ESO-style gradient fills for Health, Stamina, and Magicka. The
+0.7.0 includes ESO-style gradient fills for Health, Stamina, and Magicka. The
 "Show default ESO resource bars" setting can hide the stock player resource
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.6.9-test; HUD, shield, mount stamina, and trackers created
+  [CurvedHUD] Loaded 0.8.0-test; HUD, shield, mount stamina, and trackers created
 
-0.6.9 tracker framework additions:
+0.7.0 tracker framework additions:
 - selectable standardized Major buff in the lower-left outside slot
 - independent Thin/Thick styles for inside and outside timer slots
 - color presets for the current Major buff, Balance, and Bound Aegis timers
@@ -55,6 +55,21 @@ Expected startup chat line:
 - replaced skill-specific icon offsets with consistent mirrored inside/outside icon placement
 - upper-inner icons moved eight pixels closer to their tracker/stat bars
 - upper-outer icons moved sixteen pixels farther horizontally from screen center
+- toggleable Bound Armaments stack/duration tracker using any of the eight timer slots
+- per-character Bound Armaments position and color settings
+- toggleable Crystal Fragments proc-ready alert with Top/Right/Bottom/Left/Center presets
+- dual Crystal Fragments detection through effect 46327 and proc action ID 114716
+- reusable HUD-relative proc-alert positioning framework for future class proc skills
+- Crystal Fragments proc-size slider; the alert inherits the HUD's combat and out-of-combat opacity
+- rotating gold/white Bound Armaments ready highlight at four weapon stacks
+- toggleable Critical Surge timer using its unique self-buff
+- toggleable Vibrant Shroud, Encase, and Shattering Spines timer with a 10-second cast fallback
+- Vibrant Shroud timer prefers the slotted/cast skill artwork over Minor Vitality artwork
+- guaranteed overlay-layer gold/white Bound Armaments ready border at four stacks
+- right-side inside and outside timer bars moved closer to their resource arcs
+- per-character Soul Burst and Ulfsild's Contingency trackers in a dedicated Scribing Skills section
+- configurable position, color, and script-dependent duration for both scribing timers
+- current cast artwork is retained for each character's scribed variant
 
 Diagnosis of the silent v0.2 result:
 The prior ZIP was not recoverable from the referenced task, so exact line-level attribution

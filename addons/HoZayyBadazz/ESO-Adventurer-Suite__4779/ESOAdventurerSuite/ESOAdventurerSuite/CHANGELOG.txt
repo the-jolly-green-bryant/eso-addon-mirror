@@ -1,3 +1,366 @@
+0.28.60
+- Fixed companion names in the Gear & Sets ability optimizer so ESO grammar metadata is never shown in button, confirmation, or status text.
+- Companion names are now normalized through ESO formatting with a safe fallback scrub for raw grammar suffixes.
+
+0.28.59
+- Fixed the companion ability optimizer private/protected API error.
+- Removed the protected companion cursor-pickup path and now stages companion skills through ESO's native Action Bar Assignment Manager.
+- Corrected companion action-slot indexing and added delayed server confirmation before reporting the result.
+
+0.28.58
+- Added a Gear & Sets button to optimize the active companion's unlocked abilities and ultimate.
+- Automatically detects the summoned companion and infers Tank, Healer, or Damage from its equipped weapon/armor.
+- Uses ESO companion ability role data and current equipment compatibility, so the optimizer works across different companions without hard-coding one companion.
+- Verifies the companion hotbar after slotting and reports partial/blocked changes instead of claiming success blindly.
+
+0.28.57
+- Added HOST CURRENT GROUP DUNGEON support for four-player instanced dungeons.
+- Detects the dungeon you are currently inside, matches it to ESO Group Finder, and uses the current Normal/Veteran difficulty.
+- The Group Finder host action now supports both Public Dungeons and four-player Group Dungeons while preventing duplicate listings.
+
+0.28.56
+- Fixed Public Dungeon detection for HOST CURRENT PUBLIC DUNGEON.
+- Uses the live player map plus zone-type/POI fallbacks and includes missing Public Dungeon map IDs.
+
+0.28.55
+- Added HOST CURRENT PUBLIC DUNGEON to the Group Finder.
+- Detects the Public Dungeon the player is currently inside and creates a help listing for it.
+- Uses the Zone / Public Dungeon activity when ESO exposes it, with a Custom listing fallback.
+- Auto Accept is enabled, role enforcement is disabled, and duplicate hosting is prevented.
+
+0.28.54
+- Pre-encounter reminders no longer stay visible just because you are inside a dungeon or raid.
+- Reminders now appear only while out of combat when an attackable target is lined up, with a brief grace period after the reticle moves away.
+
+0.28.53
+- Team Visibility: red is now reserved for the downed/dead state; living grouped players and the active companion cannot use red, and DPS defaults to amber.
+- Downed/dead grouped players and companions now switch to a red glow that pulses slowly until revival or recovery, then returns to the configured normal color.
+- Companion, group-default, and per-player glow intensity controls can now reach full brightness, with a separate brightness control for the downed/dead red glow.
+
+0.28.52
+- Skills & Champion: reduced the RESPEC + BUILD detail text size so the full word "passives" stays visible without clipping.
+
+0.28.51
+- Added Team Visibility glow for companions and grouped players using a soft obstacle-visible light effect.
+- Companion glow defaults to purple and has independent color, width, height, intensity, and through-obstacle settings.
+- Added per-player group glow overrides saved by account/name with the same customization controls.
+- Added balanced mirrored glow falloff and reset controls for companion, selected player, and all player overrides.
+
+0.28.50
+- Added Dungeon Queue HUD to HUD Layout Mode for preview, moving, and resizing while not queued.
+
+0.28.49
+- Map & Travel only: moved TRAVEL TO PLEDGE MASTER below NEAREST STABLEMASTER.
+
+0.28.48
+- Skills & Champion only: tightened vertical spacing so the wrapped Sets section no longer pushes RESPEC + BUILD into the action buttons.
+
+0.28.47
+- Skills & Champion only: Build Overview set names now use separate lines so long set names are never cut off.
+
+0.28.46
+- Skills & Champion only: fixed overlapping text by dynamically spacing the lower sections under the content above.
+
+0.28.45
+- Skills & Champion only: made Build Overview match Recommended Active Bar, and Champion Point Optimizer match Attribute Optimizer.
+
+0.28.44
+- Skills & Champion only: matched the top section font to the larger bottom section font for a consistent page.
+
+0.28.43
+- Skills & Champion only: fixed collapsed ability and Attribute Optimizer lines by using dedicated rows and routing the page to its custom renderer.
+
+0.28.41
+- Skills & Champion page only: increased readability, applied larger body font, and reflowed the page for a cleaner fit.
+
+0.28.40
+- Matched Achievements left/right fonts exactly.
+- Matched Character Stats left/right fonts exactly at the larger size.
+- Expanded low-density page bounds and spacing to use more of the page.
+
+0.28.39
+- Fixed Achievements nil-function crash caused by helper declaration order.
+- Increased Character Stats font three size steps while preserving the two-page layout.
+
+0.28.38
+- Matched Achievements and Character Stats left/right page fonts for consistent bold readability.
+- Increased low-density document page sizing and spacing to use more page area.
+- Expanded Achievements and Character Stats layouts to better fill empty space.
+
+Version 0.28.37
+- Fixed Journal.lua Achievements syntax error caused by malformed newline string literals.
+
+Version 0.28.36
+- Increased Character Stats readability and used more of both pages with larger text and section spacing.
+
+Version 0.28.34
+- Fixed Skills & Champion bottom text by rendering RESPEC + BUILD and ATTRIBUTES as separate labels so lines cannot overlap.
+
+Version 0.28.33
+- Fixed Skills & Champion bottom text collisions so RESPEC + BUILD and ATTRIBUTES remain fully readable above the buttons.
+
+Version 0.28.32
+- Adjusted Skills & Champion text sizing and spacing so all sections fit above the action buttons without overlap.
+
+Version 0.28.31
+- Enlarged Build Guide and Skills & Champion text while preserving their organized two-page layouts and using more available page space.
+
+Version 0.28.30
+- Increased Achievements and Character Stats document text size and vertical spacing while preserving the existing two-page organization.
+
+Version 0.28.29
+- Increased Character Stats and Achievements document text size while preserving the existing two-page organization and layout.
+
+Version 0.28.26
+- Fixed Quest Finder filter buttons so NOT STARTED and MAIN QUEST are fully readable.
+
+Version 0.28.25
+- Replaced the Live Equipment filler status with a dynamic armor-weight, set-count, and active weapon-bar summary.
+
+Version 0.28.24
+- Kept the Active Weapon Bar panel fully inside the center column so it no longer overlaps the equipment cards.
+
+Version 0.28.23
+- Fixed duplicate last words on Live Equipment item names that already fit on one line.
+
+Version 0.28.22
+- Live Equipment item names now use two physical text rows, guaranteeing long names wrap instead of being flattened by ESO labels.
+
+Version 0.28.21
+- Live Equipment item names now use explicit word-boundary wrapping so long names reliably split across two lines.
+
+Version 0.28.20
+- Live Equipment item names now use natural multi-line wrapping instead of ellipsis/truncation, with taller cards and dedicated set-name spacing.
+
+Version 0.28.19
+- Live Equipment item names now have a dedicated two-line wrapping area.
+- Increased gear-card height and row spacing so wrapped names and set names never overlap.
+
+Version 0.28.18
+- Reverted Live Equipment to the cleaner 0.28.16 card layout after the responsive compact layout reduced readability.
+
+Version 0.28.17
+- Added responsive compact Live Equipment cards: wider gear columns, smaller center stage, two-line item names, and hidden set-name text at small sizes to keep gear readable.
+
+Version 0.28.16
+- Fixed Live Equipment item-name clipping by restoring true two-line wrapping and widening the gear columns.
+
+Version 0.28.15
+- Reworked Live Equipment cards so slot and equipment type share the header row, preventing type/set text collisions at small sizes.
+- Widened gear cards and narrowed the center stage for more readable item names.
+
+Version 0.28.14
+- Redesigned Live Equipment cards for small-size readability: wider gear columns, two-line item names, reduced center stage, and full-item hover tooltips.
+
+Version 0.28.13
+- Live Equipment now uses uniform proportional scaling, so small and large sizes keep the same readable layout.
+- Resizing snaps to the original square aspect ratio instead of stretching or compressing cards and text.
+
+Version 0.28.12
+- Reworked Live Equipment spacing for wider cards, readable equipment type lines, and a larger minimum panel size.
+- Added reliable Light/Medium/Heavy armor and weapon-type fallbacks so type labels do not show UNKNOWN.
+
+Version 0.28.11
+- Live Equipment cards now show a dedicated readable equipment-type line (armor weight, weapon type, ring/necklace).
+
+Version 0.28.10
+- Live Equipment now prefers ESO native race/gender character silhouettes instead of the generic unit silhouette.
+
+Version 0.28.09
+- Tightened Live Equipment header/status/footer text so it stays fully inside the overlay.
+
+Version 0.28.08
+- Fixed Live Equipment text overflowing card and panel boundaries; long labels now truncate cleanly.
+
+Version 0.28.07
+- Challenge Difficulty overlay now switches to ESO's native Normal/Veteran dungeon icon inside dungeons.
+- Added a toggle to hide the dungeon difficulty icon entirely.
+- Overland Challenge Difficulty symbols no longer appear inside dungeons.
+
+Version 0.28.06
+- Restored the verified working Challenge Difficulty settings/overlay build.
+- Documented all seven libraries needed by the full library stack without forcing indirect libraries as direct Suite dependencies.
+
+Version 0.28.04
+- Challenge Difficulty overlay now uses ESO's native selected/highlighted difficulty textures directly.
+- Removed all custom glow layers and custom glow assets from the overlay path.
+
+Version 0.28.03
+- Restored guaranteed-visible native ESO Challenge Difficulty symbols and kept glow as a separate optional visual layer.
+
+Version 0.28.02
+- Replaced the Challenge Difficulty overlay art with in-game style symbol textures that include the proper built-in glow.
+
+Version 0.28.01
+- Replaced the duplicated-icon difficulty glow with a clean dedicated halo so symbols stay sharp.
+
+Version 0.28.00
+- Replaced the blurred Challenge Difficulty halo with a tight, crisp rim glow.
+
+Version 0.27.99
+- Challenge Difficulty symbol now hides when Automatic Challenge Difficulty is inactive, in ESO menus, and while the Tamriel Codex is open.
+
+Version 0.27.98
+- Added a subtle additive glow behind the active Challenge Difficulty symbol overlay.
+
+Version 0.27.97
+- Made armor/potion reminders compact so they can reach screen edges and corners.
+- Added Top Left, Top Right, Bottom Left, Bottom Right, and Custom position presets for each reminder.
+
+Version 0.27.96
+- Added quest/phasing-aware Lore Book 3D marker exceptions.
+- Known quest-dependent books keep map/compass guidance while misleading floating 3D icons are hidden by default.
+- Added a toggle for quest-dependent 3D markers.
+
+Version 0.27.95
+- Companion difficulty is now selectable instead of always forcing Vestige.
+
+Version 0.27.94
+- Added optional Force Vestige while a companion is active.
+- Improved World Boss detection using boss targets, not only POI/subzone data.
+- Added a World Boss wave hold so multi-wave encounters do not revert difficulty between waves.
+
+Version 0.27.93
+- Added a toggleable, movable, resizable Challenge Difficulty symbol overlay.
+
+0.27.92
+- Moved Automatic Challenge Difficulty out of the map/navigation area into a dedicated Gameplay & Challenge Difficulty section near the top of Suite settings.
+
+0.27.91
+- Added Automatic Challenge Difficulty using ESO's native Challenge Difficulty system.
+- Added Leveling Journey with zone levels 1-50 and World Map zone-level display.
+- Added custom rules for Open World, Delves, Public Dungeons, World Bosses, World Events, Dragons, and experimental History Bosses.
+- Added per-zone Open World overrides, configurable nearby-activity detection radius, and optional zone-entry difficulty messages.
+- Leveling Journey preserves custom rules and caps World Boss difficulty at Master.
+
+0.27.90
+- Corrected 3D Lore Book and scroll marker horizontal alignment so markers stay centered over their world coordinates while preserving the existing floating height.
+
+0.27.89
+- Raised 3D Lore Book and scroll markers so they float clearly above the actual collectible.
+- Map and compass marker positions are unchanged.
+
+0.27.88
+- Added a master Enable Lore Books & Scrolls setting.
+- Turning the master switch off hides Lore Book, Eidetic Memory, scroll, compass, map, and 3D-world markers without erasing individual marker preferences.
+- Individual Lore Book, Eidetic, compass, 3D, and distance controls are disabled while the master switch is off and restore when it is re-enabled.
+
+0.27.87
+- Lore book and Eidetic Memory markers now use each entry's native ESO book/scroll icon and original cover colors.
+- Added scroll-style markers automatically when ESO identifies the lore entry with a scroll icon.
+- Distance in meters now appears on compass markers only; removed meter text from 3D world markers.
+- Preserved the LoreBooks serialization/database fix from 0.27.85.
+
+0.27.86
+- Lore Book markers now use distinct book-type colors instead of a single cyan tint.
+- Lore Books use blue markers; Eidetic Memory books use gold markers; tracked books remain red.
+- Added live distance-in-meters labels to Lore Book compass and 3D world markers.
+
+0.27.85
+- Fixed corrupted Lore Book serialization data that could crash map pin loading in some zones.
+- Restored the complete book-location database and validated all 606 serialized zone entries.
+- No changes to Lore Book marker settings or reminder behavior.
+
+0.27.84
+- Added undiscovered Lore Book markers to the World Map, compass, and 3D world.
+- Added optional Eidetic Memory book markers, disabled by default.
+- Added Lore Library Show on Map support and map-filter toggles.
+- Added Suite settings for book marker visibility and compass/3D distance.
+- Made ARMOR NEEDS REPAIR and potion reminders independently movable and resizable.
+
+0.27.83
+- Added small text-only pre-encounter reminders with no background box.
+- Shows ARMOR NEEDS REPAIR when any equipped armor piece is below 100% condition.
+- Shows DRINK POTION BEFORE NEXT ENCOUNTER before new combat pulls.
+- Reminders hide in combat and re-arm for the next encounter.
+- Added reminder toggles, scale, and HUD layout positioning.
+- Removed the unfinished merchant selling module.
+
+0.27.82
+- Added Utilities > SELL for direct NPC vendor selling from the Tamriel Codex.
+- Added backpack item selection with estimated vendor value.
+- Added double-confirm SELL ITEM and SELL JUNK actions.
+- Locked and stolen items are protected from Suite sales.
+- Selling is enabled only while an NPC merchant store is open.
+
+0.27.81
+- Removed unsafe native Dungeon Finder visual synchronization that could taint ESO secure UI code.
+- Random Normal/Veteran queueing remains active using supported Activity Finder APIs.
+- Difficulty is still requested through SetVeteranDifficulty without touching native controls.
+
+0.27.80
+- Random Normal/Veteran now synchronizes ESO's native Dungeon Finder difficulty buttons with the queue request.
+
+0.27.79 - Random Dungeon Queue Fix
+- Fixed RANDOM NORMAL and RANDOM VETERAN not entering the Activity Finder queue.
+- Updated random dungeon queueing to ESO's current activity-set API with legacy fallback.
+- Added queue-result validation so rejected requests show the real failure instead of reporting success.
+
+0.27.78 - Quest Overlay Auto-Hide
+- Active Quest overlay now hides completely whenever no accepted/tracked quest is active.
+- The overlay automatically returns when a quest becomes active again, without resetting its saved position, size, or visibility settings.
+- HUD Layout Mode still shows the quest overlay preview so it can be positioned and resized.
+- Rechecked release metadata and package structure for ESOUI upload.
+
+0.27.77 - ESOUI Upload Readiness
+- Synchronized release version metadata across the manifest, ESOUI description, README, changelog, and security notes.
+- Verified the package contains one ESOAdventurerSuite root folder with no nested archives, executables, hidden development files, or missing manifest references.
+- Rechecked required dependency minimums and API declarations for the current release package.
+- Includes the 0.27.76 Champion Point respec gold-spending tracking fix.
+
+0.27.76 - Champion Respec Spending Tracking
+- Champion Point redistribution gold is now reliably recorded under Character Stats > Gold Spending > Respecs.
+- Uses the actual live Champion respec cost and records it once after a successful redistribution, even when ESO does not expose a distinct money-change reason.
+
+0.27.75
+- Reorganized Character Stats into a cleaner two-page layout.
+- Left page now groups Character Overview, Inventory & Wealth, and Riding Training.
+- Right page is dedicated to Gold Spending with grouped vendor/service categories and a tracked total.
+- Added comma formatting to gold totals for easier reading.
+
+0.27.74
+- Fixed ESO native Dungeon Finder queued/status overlay still appearing behind the Suite HUD.
+- Native queue suppression now safely enumerates UI controls only; it never scans private globals.
+- ESO Accept / Decline ready-check controls remain untouched.
+
+0.27.73
+- Fixed an ESO protected/private-function callstack error in the Dungeon Finder queue HUD suppression.
+- Removed unsafe global-environment scanning from native queue HUD detection.
+- Native queue HUD suppression now uses only an allow-list of known ESO UI control names and ignores non-control globals.
+- Preserved the movable/resizable Suite queue HUD, SEARCHING/DUNGEON FOUND states, menu auto-hide, and required ESO ready-check dialog.
+
+0.27.72
+- Dungeon queue HUD now shows DUNGEON FOUND during ready check.
+- Displays the actual matched dungeon name, including multi-select queues.
+- Suite queue HUD hides when the Activity Finder match transitions into the dungeon.
+
+0.27.70 - Dungeon queue HUD cleanup
+- Suppressed ESO's passive Activity Finder/LFG queued-searching overlay while the Suite queue HUD is active.
+- Added runtime detection for queue/status HUD controls across ESO UI naming variations.
+- Preserved ESO's required dungeon ready-check Accept/Decline dialog.
+
+Version 0.27.69
+- Restyled the Dungeon Finder queue HUD to the Suite ESO gold/bronze palette.
+- Added saved width/height and edge resizing to the movable queue HUD.
+
+0.27.66
+- Moved TRAVEL TO PLEDGE MASTER to the Travel page directly under NEAREST STABLEMASTER.
+- Removed the Activities-only Pledge Master button placement.
+
+
+0.27.62
+- Added a dedicated Cadwell's Almanac view to the Quest Journal.
+- Added the Aldmeri Dominion Cadwell path in zone order: Auridon, Grahtwood, Greenshade, Malabal Tor, and Reaper's March.
+- Almanac progress is grouped by required objective area and shows the required quests, completion progress, current/next objective, and routing target.
+- Cadwell's Silver is treated as the umbrella quest instead of a single ordinary quest step.
+0.27.61 - Accurate wayshrine travel cost
+- Fixed travel cost handling so the Codex uses ESO's live recall fee instead of treating it as a destination-specific price.
+- Travel now shows Free when ESO reports travel is being initiated from a wayshrine.
+- Added compatibility fallback for API versions that expose recall cost/currency with a node index.
+
+0.27.60 - Travel status spacing
+- Added a clearer vertical gap between the selected destination COST/gold value and STATUS so Ready reads as its own section.
+
 0.27.59 - ESOUI upload compliance pass
 - Synchronized release metadata and dependency minimum versions.
 - Requires LibAddonMenu-2.0>=43, LibMapData>=101, LibGPS>=30, and LibMapPins-1.0>=47.

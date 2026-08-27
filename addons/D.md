@@ -30,6 +30,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [DarkScrollsUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beholder/DarkScrollsUI__4532) | Beholder | PC / Mac | 0.1.3 |
 | [DarkUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/DarkUI__1576) | Sharlikran | PC / Mac | 2.76 |
 | [Darwin Award](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tombaa/Darwin-Award__3565) | tombaa | PC / Mac | 0.1 |
+| [DaveeKDR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DaveeMafiaa/DaveeKDR__84fad8c0-9712-446a-9fff-e8bf44ad6d40) | DaveeMafiaa | Console | — |
 | [DBGN & DCGN (Change notes for Guild members)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/DBGN-DCGN-Change-notes-for-Guild-members__1563) | ForgottenLight | PC / Mac | 1.1.9 |
 | [DDPositions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/DDPositions__3910) | Konten | PC / Mac | 3.3.0 |
 | [Dead Man's Tally - Session & All-time Deaths Tally](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Dead-Man-s-Tally---Session-All-time-Deaths-Tally__4595) | Kyzeragon | PC / Mac | 1.0.0 |

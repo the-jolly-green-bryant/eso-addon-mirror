@@ -30,7 +30,7 @@ STATUS OF EACH LOCATION:
 -- TESTING GATE: matches the same gate in FurnitureFinder.lua. Remove
 -- this whole if-block (or the one in FurnitureFinder.lua) once ready
 -- to publish for everyone -- keep them in sync until then.
-if GetDisplayName() ~= "@Atomic Khaos" then return end
+-- Testing gate removed 2026-08-25 -- addon now open to everyone.
 
 FFOwnership = {}
 local this = FFOwnership

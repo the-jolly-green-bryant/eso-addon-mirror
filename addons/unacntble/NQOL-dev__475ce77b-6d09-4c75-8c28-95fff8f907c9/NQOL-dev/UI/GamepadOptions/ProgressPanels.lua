@@ -260,6 +260,7 @@ function GamepadOptions.BuildTickerOptionsData()
         GamepadOptions.BuildTickerShowInSettingsOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildTickerHorizontalPositionOption(), NQOL.L("ui.headers.position_and_appearance_346f660")),
         GamepadOptions.BuildTickerVerticalPositionOption(),
+        GamepadOptions.BuildTickerAlignmentOption(),
         GamepadOptions.BuildTickerFontOption(),
         GamepadOptions.BuildTickerFontSizeOption(),
         GamepadOptions.BuildTickerColoredIconsOption(),

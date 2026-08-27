@@ -1,30 +1,55 @@
+0.18.8
+• Added a shopping session summary for matched purchases, actual spending, updated lists, and live remaining entry counts.
+• Expanded the public API to manage, inspect, select, reorder, archive, restore, duplicate, delete, and reset shopping lists.
+• Added live remaining quantity snapshots and non-mutating matching previews that use purchase allocation order.
+• Added protected list, item, and purchase update callbacks for companion addons while retaining API v1 and v2 compatibility.
+• Added atomic crafting material transfers for companion addons, defaulting to merged Own Total targets so live inventory determines what remains.
+• Added optional WritWorthy integration to send a Master Writ's required materials to the current list from its right click menu.
+
+0.18.7
+• Reorganized runtime code into Core, Features, Integrations, and shared, keyboard, and gamepad UI modules without changing saved variable identities.
+• Added per list item searching plus sorting by name, quantity, owned quantity, completion, price target, and date added in keyboard and gamepad interfaces.
+• Added persistent favorite and pinned lists plus optional list categories; pinned lists appear first while preserving manual list order.
+
+0.18.5
+• Added duplicate detection for keyboard, gamepad, linked item, and bulk adds with Merge, Replace, and Keep Separate choices.
+• Duplicate comparisons respect item identity, matching rules, and Buy More versus Own Total target modes; batch choices commit atomically.
+• Reset Progress now clears purchased and manual completion quantities only, preserving list contents, notes, rules, budgets, purchase history, and recorded spending.
+• Added per item Buy More and Own Total quantity targets in the keyboard and gamepad editors.
+• Own Total entries now calculate remaining quantity and completion from matching backpack, bank, subscriber bank, and craft bag inventory without recording owned items as purchases.
+• Added deactivation and logout checkpoints while retaining ten distinct recovery states without filling the history with identical copies.
+• Separated full guild store transaction spending from the cost allocated to quantities that shopping list entries actually needed; list budgets now use full transaction spending.
+• Added backup size and health reporting before SLB1 codes approach their hard limit.
+• Cleared retained AwesomeGuildStore filters before Shopping List searches, including name only searches.
+• Centralized matching rules, quantities, prices, item counts, names, notes, and link limits across data, editors, sharing, backup validation, bulk entry, and the public API.
+
 0.18.0
 • Added LibSets backed set searching to item autocomplete.
 • Added actual tradeable set pieces for crafted and bind on equip sets while excluding bind on pickup gear from guild store suggestions.
 • Kept ESO's trading house name results as a fallback alongside set searching.
 
 0.17.0
-• Expanded the public API with atomic named-list creation and batch item addition.
+• Expanded the public API with atomic named list creation and batch item addition.
 • Added optional set, trait, quality, level, and Champion Point matching overrides for integrations.
-• Added explicit list-name conflict handling, stable API v2 errors, and failing-item indexes.
+• Added explicit list name conflict handling, stable API v2 errors, and failing item indexes.
 • Added checksummed SL2 sharing for item links, notes, matching rules, and price targets while retaining SL1 imports.
-• Kept API v1 item addition and active-list discovery compatible.
+• Kept API v1 item addition and active list discovery compatible.
 
 0.16.4
 • Added complete Spanish and French localizations with English fallback.
 • Corrected localization files not loading because ESO manifests do not expand wildcard paths.
-• Kept the main list selector label independent from the item-filter dropdown.
-• Prevented runtime-only SavedVariables metadata from invalidating full backup generation.
+• Kept the main list selector label independent from the item filter dropdown.
+• Prevented runtime only SavedVariables metadata from invalidating full backup generation.
 
 0.16.3
-• Added a versioned public API that allows other add-ons to add linked or name-only items to active shopping lists.
-• Added safe list discovery, current-list defaults, optional notes, and stable API error codes.
-• Added developer integration documentation and ESOUI-ready BBCode examples.
-• Distinguished same-named weapon, armor, and jewelry traits in item-editor dropdowns.
+• Added a versioned public API that allows other add ons to add linked or name only items to active shopping lists.
+• Added safe list discovery, current list defaults, optional notes, and stable API error codes.
+• Added developer integration documentation and ESOUI ready BBCode examples.
+• Distinguished same named weapon, armor, and jewelry traits in item editor dropdowns.
 • Renamed the manifest and Lua namespaces to GravvyShoppingList to avoid Master Merchant's legacy ShoppingList importer warning.
 
 0.16.2
-• Added an option to add linked chat items to the current shopping list from their right-click menu.
+• Added an option to add linked chat items to the current shopping list from their right click menu.
 
 0.16.1
 • Restored the Trait, Quality Rule, Quality, and Level Rule dropdowns in the keyboard item editor.
@@ -33,32 +58,32 @@
 0.16.0
 • Added live owned quantities from the backpack, bank, subscriber bank, and craft bag without changing purchase progress.
 • Added persistent notes for lists and individual items.
-• Added full-data SLB1 backup and restore codes while keeping lightweight SL1 list-sharing codes unchanged.
-• Added font scaling, stronger contrast, and optional non-color-only status indicators.
-• Added keyboard and gamepad workflows for notes and full-data backup and restore.
+• Added full data SLB1 backup and restore codes while keeping lightweight SL1 list sharing codes unchanged.
+• Added font scaling, stronger contrast, and optional non color only status indicators.
+• Added keyboard and gamepad workflows for notes and full data backup and restore.
 
 0.15.4
-• Completed gamepad list management with create, rename, duplicate, delete, reorder, budget, and clear-completed actions.
+• Completed gamepad list management with create, rename, duplicate, delete, reorder, budget, and clear completed actions.
 • Added persistent Undo for deleted items, deleted lists, and batches cleared with Clear Completed.
 • Added bulk item entry with support for pasted item and quantity lines.
-• Added All, Needed, Completed, Over Price Target, and Rule-Restricted item filters.
+• Added All, Needed, Completed, Over Price Target, and Rule Restricted item filters.
 • Added optional merged shopping trips across selected active lists while keeping inactive lists untouched.
-• Kept the mouse cursor active after closing the item-removal confirmation while the shopping list remains open.
+• Kept the mouse cursor active after closing the item removal confirmation while the shopping list remains open.
 • Corrected the Active Shopping Lists description layout so the full text wraps inside the window.
-• Restored the shopping-list cursor when returning to ESO after switching to another application.
+• Restored the shopping list cursor when returning to ESO after switching to another application.
 
 0.15.3
 • Minor bug fixes and improvements.
 
 0.15.2
-• Added an in-game chat warning that names any required libraries that are missing.
+• Added an in game chat warning that names any required libraries that are missing.
 
 0.15.1
 • Lists can now be archived whether they are unfinished, completed, or empty.
 • Corrected the Archive button appearing unresponsive for unfinished lists.
 
 0.15.0
-• Added in-game help and recent release notes for keyboard and gamepad.
+• Added in game help and recent release notes for keyboard and gamepad.
 • Added the /shoppinglisthelp command and a ? button in the main window.
 
 0.14.0
@@ -70,7 +95,7 @@
 • Corrected Import dialog layering above the Share window.
 
 0.13.5
-• Added the optional NA-only in-game donation-mail shortcut.
+• Added the optional NA only in game donation mail shortcut.
 
 0.13.4
-• Added a dedicated import paste dialog and item-removal confirmation.
+• Added a dedicated import paste dialog and item removal confirmation.

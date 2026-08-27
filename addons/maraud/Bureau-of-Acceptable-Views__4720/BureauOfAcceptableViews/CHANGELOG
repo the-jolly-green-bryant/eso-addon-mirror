@@ -3,6 +3,17 @@
 
 
 
+[color=#6FCB9F]Version: 3.8.145105[/color]
+
+Live camera-offset keybinds with a remembered home pose.
+
+- Added hold-to-nudge keybinds for third-person horizontal offset (left/right) and vertical offset (up/down). Movement is continuous and speed-scaled (50-200% in settings).
+- Offset binds stay locked until one home pose is captured from the Live offset nudge settings tab.
+- Restore returns horizontal and vertical offsets to that remembered pose; nudging never overwrites home. Zoom, field of view, and shoulder are unchanged.
+- Added Remember, Restore, and Delete buttons, plus a centred on-screen notice for live offsets and for blocked, remembered, restored, and deleted states.
+- Context-preset restore snapshots follow live offset nudges, so leaving a state does not rewind the framing you just set.
+
+
 [color=#6FCB9F]Version: 3.7.105247[/color]
 
 Update 51 compatibility and sprint-state reliability update.

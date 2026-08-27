@@ -1,36 +1,36 @@
 <GuiXml>
-    <Controls>
-        <TopLevelControl name="PvPQoLAlertBorder" alpha="0" tier="HIGH" mouseEnabled="false">
-            <AnchorFill/>
-            <Controls>
-                <Backdrop name="$(parent)Overlay">
-                    <AnchorFill/>
-                    <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
-                    <Edge file="PvPQoL/Textures/flash.dds"
-                          edgeColor="FFFFFF"
-                          edgeFileWidth="2048"
-                          edgeFileHeight="256" />
-                    <Insets left="512" top="512" right="-512" bottom="-512"/>
-                </Backdrop>
-            </Controls>
-        </TopLevelControl>
-    </Controls>
+	<Controls>
+		<TopLevelControl name="PvPQoLAlertBorder" alpha="0" tier="HIGH" mouseEnabled="false">
+			<AnchorFill/>
+			<Controls>
+				<Backdrop name="$(parent)Overlay">
+					<AnchorFill/>
+					<Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+					<Edge file="PvPQoL/Textures/flash.dds"
+						  edgeColor="FFFFFF"
+						  edgeFileWidth="2048"
+						  edgeFileHeight="256" />
+					<Insets left="512" top="512" right="-512" bottom="-512"/>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
 
-    <Animations>
-        <AnimationTimeline name="PvPQoLAlertBorderAnimation">
-            <Animations>
-                <AlphaAnimation startAlpha="0.0" endAlpha="0.6" duration="200">
-                    <EasingFunction>
-                        return ZO_EaseInQuadratic(progress)
-                    </EasingFunction>
-                </AlphaAnimation>
+	<Animations>
+		<AnimationTimeline name="PvPQoLAlertBorderAnimation">
+			<Animations>
+				<AlphaAnimation startAlpha="0.0" endAlpha="0.6" duration="200">
+					<EasingFunction>
+						return ZO_EaseInQuadratic(progress)
+					</EasingFunction>
+				</AlphaAnimation>
 
-                <AlphaAnimation startAlpha="0.6" endAlpha="0.0" delay="200" duration="800">
-                    <EasingFunction>
-                        return ZO_EaseOutQuadratic(progress)
-                    </EasingFunction>
-                </AlphaAnimation>
-            </Animations>
-        </AnimationTimeline>
-    </Animations>
+				<AlphaAnimation startAlpha="0.6" endAlpha="0.0" delay="200" duration="800">
+					<EasingFunction>
+						return ZO_EaseOutQuadratic(progress)
+					</EasingFunction>
+				</AlphaAnimation>
+			</Animations>
+		</AnimationTimeline>
+	</Animations>
 </GuiXml>

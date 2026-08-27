@@ -11,6 +11,7 @@ local C = {
     DRAW_LEVEL = 70,
     PADDING = 14,
     HEADER_HEIGHT = 70,
+    EMPTY_LABEL_TOP_MARGIN = 70,
     ROW_GAP = 6,
     ROW_HEIGHT = 78,
     BASE_FONT_SIZE = 24,
@@ -372,7 +373,7 @@ local function Render()
         end
         empty:SetColor(textRed, textGreen, textBlue, textAlpha * 0.68)
         empty:ClearAnchors()
-        empty:SetAnchor(CENTER, control, CENTER, 0, 0)
+        empty:SetAnchor(TOP, control, TOP, 0, C.EMPTY_LABEL_TOP_MARGIN)
         empty:SetDimensions(width - (C.PADDING * 2) - 24, rowHeight)
         empty:SetHidden(false)
         HideRows(1)

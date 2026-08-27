@@ -3,7 +3,7 @@ local OCP = OutfitCollectionProfiles
 
 OCP.name = "OutfitCollectionProfiles"
 OCP.displayName = "Flamechasers Outfit Profiles"
-OCP.version = "0.4.1"
+OCP.version = "0.4.5"
 OCP.pollIntervalMs = 500
 OCP.applyDelayMs = 900
 OCP.maxUseAttempts = 5
@@ -165,7 +165,7 @@ end
 function OCP.RequestSaveDraft()
     local outfitIndex = OCP.selectedOutfitIndex or OCP.GetEquippedOutfitIndex()
     if OCP.HasSavedProfile(outfitIndex) then
-        ZO_Dialogs_ShowDialog("OCP_CONFIRM_DRAFT_OVERWRITE", { outfitIndex = outfitIndex })
+        OCP.ShowOverwriteConfirmation("draft", outfitIndex)
     else
         OCP.SaveDraftConfirmed()
     end
@@ -250,7 +250,7 @@ end
 function OCP.RequestCapture(outfitIndex)
     outfitIndex = outfitIndex == nil and OCP.GetEquippedOutfitIndex() or outfitIndex
     if OCP.HasSavedProfile(outfitIndex) then
-        ZO_Dialogs_ShowDialog("OCP_CONFIRM_PROFILE_OVERWRITE", { outfitIndex = outfitIndex })
+        OCP.ShowOverwriteConfirmation("capture", outfitIndex)
     else
         OCP.ConfirmCapture(outfitIndex)
     end
@@ -529,38 +529,6 @@ function OCP.Initialize()
     OCP.applyState = "idle"
     OCP.LoadDraft(OCP.selectedOutfitIndex)
     OCP.CreateWindow()
-
-    ZO_Dialogs_RegisterCustomDialog("OCP_CONFIRM_PROFILE_OVERWRITE", {
-        title = { text = "Overwrite Collection Profile?" },
-        mainText = {
-            text = function(dialog)
-                local index = dialog.data and dialog.data.outfitIndex or 0
-                return string.format("%s already has a saved Collection setup. Replace it with everything currently active?", OCP.GetOutfitName(index))
-            end,
-        },
-        buttons = {
-            {
-                text = SI_DIALOG_CONFIRM,
-                callback = function(dialog)
-                    OCP.ConfirmCapture(dialog.data.outfitIndex)
-                end,
-            },
-            { text = SI_DIALOG_CANCEL },
-        },
-    })
-    ZO_Dialogs_RegisterCustomDialog("OCP_CONFIRM_DRAFT_OVERWRITE", {
-        title = { text = "Overwrite Collection Profile?" },
-        mainText = {
-            text = function(dialog)
-                local index = dialog.data and dialog.data.outfitIndex or 0
-                return string.format("%s already has a saved Collection setup. Replace it with the settings currently shown in the addon window?", OCP.GetOutfitName(index))
-            end,
-        },
-        buttons = {
-            { text = SI_DIALOG_CONFIRM, callback = function() OCP.SaveDraftConfirmed() end },
-            { text = SI_DIALOG_CANCEL },
-        },
-    })
 
     EVENT_MANAGER:RegisterForEvent(OCP.name, EVENT_PLAYER_ACTIVATED, function() OCP.OnPlayerActivated() end)
     EVENT_MANAGER:RegisterForEvent(OCP.name, EVENT_PLAYER_DEACTIVATED,

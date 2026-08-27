@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/buldezir/Alternative-Group-Frames__3053",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "buldezir",
   "canonical_id": "esoui:3053",
   "category_id": "21",
   "compatibility": [
     {
-      "name": "Season Zero",
-      "version": "11.3.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:3053",
@@ -17,7 +18,7 @@
     "AltGroupFrames"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3053/",
-  "fingerprint": "a5142cfd4456b6f9c2f12613c2d6e8963a7c01034376d71f9a3a8f4f27582e08",
+  "fingerprint": "3a081f47af7a46ca28a8bcd1e4318d4abacf06fb07ec3e37ba18c4bd667e46c0",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10248.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "3053",
   "source_url": "https://www.esoui.com/downloads/info3053-AlternativeGroupFrames.html",
   "stats": {
-    "downloads": 31753,
-    "favorites": 38,
-    "monthly_downloads": 1486
+    "downloads": 32294,
+    "favorites": 40,
+    "monthly_downloads": 520
   },
   "title": "Alternative Group Frames",
-  "updated_at": 1783012590000,
-  "version": "1.2.30"
+  "updated_at": 1787763614000,
+  "version": "1.3.32"
 }

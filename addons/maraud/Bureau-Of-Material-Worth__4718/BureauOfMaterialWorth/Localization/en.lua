@@ -44,6 +44,8 @@ local strings = {
     SI_BMW_SETTING_DETAIL_COLUMNS_TOOLTIP = "Basic shows material, quantity, and value for quicker scanning. Analytics also shows cumulative value share and price change. The Changes view always keeps its delta, share, and status columns.",
     SI_BMW_SETTING_DETAIL_COLUMNS_BASIC = "Basic",
     SI_BMW_SETTING_DETAIL_COLUMNS_ANALYTICS = "Analytics",
+    SI_BMW_SETTING_PRICE_TREND_THRESHOLD_NAME = "Significant price movement (%)",
+    SI_BMW_SETTING_PRICE_TREND_THRESHOLD_TOOLTIP = "Minimum rise or fall shown in Price dynamics over the trailing seven days. Every movement inside the window is analyzed, so a short one- or two-day spike remains visible even if the price later returns near its starting point.",
     SI_BMW_SETTING_DELTA_MODE_NAME = "Stock-change baseline",
     SI_BMW_SETTING_DELTA_MODE_TOOLTIP = "What the footer's change line compares against. \"Since last review\": the state when you last clicked the change line; new changes accumulate across Craft Bag opens and persist across restarts. \"This session\": works the same way, but resets on logout or /reloadui. A pure price change with the same stock shows no delta. Click the row to inspect the breakdown and mark it reviewed.",
     SI_BMW_SETTING_DELTA_MODE_VISIT = "Since last review",
@@ -53,11 +55,11 @@ local strings = {
     SI_BMW_SETTING_BORDER_NAME = "Show border",
     SI_BMW_SETTING_BORDER_TOOLTIP = "Draw the panel's border edge. Turn off for a cleaner, frameless look.",
     SI_BMW_SETTING_VALUE_HISTORY_NAME = "Show value history",
-    SI_BMW_SETTING_VALUE_HISTORY_TOOLTIP = "Draw a small sparkline of your Craft Bag's total value over time at the bottom of the panel. One point is recorded each time you open the Craft Bag (at most once every few hours), keeping the last 90 points. Hover the sparkline for the oldest, newest, and net-change figures.",
+    SI_BMW_SETTING_VALUE_HISTORY_TOOLTIP = "Draw a small sparkline of your Craft Bag's total value over time at the bottom of the panel. One point is recorded per login or /reloadui; later Craft Bag opens in the same session do not add another point. The last 90 points are kept. Hover the sparkline for the oldest, newest, and net-change figures.",
     SI_BMW_SETTING_PROFILE_NAME = "Show account label",
     SI_BMW_SETTING_PROFILE_TOOLTIP = "Show your @account handle and current character name on the panel's title line. The Craft Bag is shared across your whole account, so the handle names whose bag this is. Turn off for a cleaner title.",
     SI_BMW_SETTING_NOTIFY_VISIT_NAME = "Chat notifications",
-    SI_BMW_SETTING_NOTIFY_VISIT_TOOLTIP = "Off: no automatic messages.\nSummary: Craft Bag value on the first open each session.\nImportant: report changes of at least 1%% of the selected baseline.\nDetailed: summary plus withdrawal results and completed price updates.",
+    SI_BMW_SETTING_NOTIFY_VISIT_TOOLTIP = "Off: no automatic messages.\nSummary: Craft Bag value on the first open each session.\nImportant: report stock changes of at least 1%% and new significant seven-day price signals.\nDetailed: summary and price signals plus withdrawal results and completed price updates.",
     SI_BMW_SETTING_NOTIFY_MODE_OFF = "Off",
     SI_BMW_SETTING_NOTIFY_MODE_SUMMARY = "Summary",
     SI_BMW_SETTING_NOTIFY_MODE_IMPORTANT = "Important changes",
@@ -73,7 +75,7 @@ local strings = {
     SI_BMW_SETTING_DEBUG_MODE_NAME = "Debug mode",
     SI_BMW_SETTING_DEBUG_MODE_TOOLTIP = "Controls how much diagnostic output the addon prints to chat.",
     SI_BMW_SETTING_REFRESH_NAME = "Refresh prices now",
-    SI_BMW_SETTING_REFRESH_TOOLTIP = "Clear the cached prices and recompute the Craft Bag value. Useful after Master Merchant or Tamriel Trade Centre finishes importing fresh data.",
+    SI_BMW_SETTING_REFRESH_TOOLTIP = "Clear the cached prices and recompute the Craft Bag value. Useful after Master Merchant or Tamriel Trade Centre finishes importing fresh data. The same action is available by clicking Market prices on the panel.",
 
     -- Window
     -- Account/character label on the title line. %s = @account handle, %s =
@@ -106,6 +108,36 @@ local strings = {
     SI_BMW_TOOLTIP_TOP_CATEGORY = "Most valuable category",
     SI_BMW_TOOLTIP_CLICK_HINT = "Click for the full material list",
 
+    -- Analytical row below Other and its seven-day detail view.
+    SI_BMW_PRICE_TREND_ROW = "Price dynamics",
+    SI_BMW_PRICE_TREND_TOOLTIP_WINDOW = "Strongest price movements observed anywhere in the trailing seven days (threshold: %d%%).",
+    SI_BMW_PRICE_TREND_TOOLTIP_GAINS = "Strong rises: %d",
+    SI_BMW_PRICE_TREND_TOOLTIP_LOSSES = "Strong falls: %d",
+    SI_BMW_PRICE_TREND_CLICK_HINT = "Click to inspect price movements",
+    SI_BMW_PRICE_TREND_TITLE = "Price dynamics",
+    SI_BMW_PRICE_TREND_GROUP = "Analysis",
+    SI_BMW_PRICE_TREND_CONTEXT = "%d signals · trailing 7 days · threshold %d%%",
+    SI_BMW_PRICE_TREND_EMPTY = "No price movements reached the selected threshold yet.",
+    SI_BMW_PRICE_TREND_EMPTY_HISTORY = "Price history is still collecting. A material needs two recorded observations before it can produce a signal.",
+    SI_BMW_PRICE_TREND_COL_PRICE = "Price",
+    SI_BMW_PRICE_TREND_COL_OVERALL = "7 days",
+    SI_BMW_PRICE_TREND_COL_GAIN = "Max rise",
+    SI_BMW_PRICE_TREND_COL_LOSS = "Max fall",
+    SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_TITLE = "Seven-day change",
+    SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_BODY = "The percentage difference between the oldest available recorded price within the trailing seven-day window and the current price. Before a full week is collected, it uses the oldest observation available.",
+    SI_BMW_PRICE_TREND_GAIN_TOOLTIP_TITLE = "Maximum rise",
+    SI_BMW_PRICE_TREND_GAIN_TOOLTIP_BODY = "The largest percentage increase between any earlier and later recorded price within the trailing seven days. A short spike remains visible even if the price later falls back.",
+    SI_BMW_PRICE_TREND_LOSS_TOOLTIP_TITLE = "Maximum fall",
+    SI_BMW_PRICE_TREND_LOSS_TOOLTIP_BODY = "The largest percentage decrease between any earlier and later recorded price within the trailing seven days. A short dip remains visible even if the price later recovers.",
+    SI_BMW_PRICE_TREND_FOOTER_GAINS = "Rising: %d",
+    SI_BMW_PRICE_TREND_FOOTER_LOSSES = "Falling: %d",
+    SI_BMW_PRICE_TREND_TOOLTIP_SECTION = "Seven-day movement",
+    SI_BMW_PRICE_TREND_TOOLTIP_CURRENT = "Current price: %s",
+    SI_BMW_PRICE_TREND_TOOLTIP_OVERALL = "From oldest point: %s",
+    SI_BMW_PRICE_TREND_TOOLTIP_MAX_GAIN = "Maximum rise: %s",
+    SI_BMW_PRICE_TREND_TOOLTIP_MAX_LOSS = "Maximum fall: %s",
+    SI_BMW_PRICE_TREND_TOOLTIP_POINTS = "Compared observations: %d",
+
     -- Detail window: per-category material table (opened by clicking a row)
     SI_BMW_DETAIL_TITLE = "%s - materials",
     SI_BMW_DETAIL_COL_NAME = "Material",
@@ -128,12 +160,15 @@ local strings = {
     -- Shown when a material has no recorded price baseline yet, or no price.
     SI_BMW_DETAIL_GROWTH_NEW = "-",
     SI_BMW_DETAIL_EMPTY = "No materials in this category.",
+    SI_BMW_DETAIL_EMPTY_BAG = "No materials in the Craft Bag.",
+    SI_BMW_DETAIL_EMPTY_SEARCH = "No materials match this search.",
+    SI_BMW_DETAIL_EMPTY_FILTER = "No materials match this filter.",
     -- Search box (whole craft bag) in the detail window. The title carries the
     -- number of matches; %d = result count.
     SI_BMW_DETAIL_SEARCH_HINT = "Search...",
     SI_BMW_DETAIL_SEARCH_TITLE = "Search results (%d)",
     SI_BMW_DETAIL_CONTEXT_CATEGORY = "%s · %d materials · %s",
-    SI_BMW_DETAIL_CONTEXT_SEARCH = "Search \"%s\" · %d results · whole Craft Bag · %s",
+    SI_BMW_DETAIL_CONTEXT_SEARCH = "Search \"%s\" · %d results · %s",
     SI_BMW_DETAIL_CONTEXT_BAG = "Whole Craft Bag · %d materials · %s",
     SI_BMW_DETAIL_CONTEXT_DIFF = "Compared with snapshot %s",
     SI_BMW_DETAIL_CONTEXT_VISIT_DIFF = "Stock: %s · Prices: %s",
@@ -148,6 +183,7 @@ local strings = {
     SI_BMW_DETAIL_FILTER_UNPRICED = "No price",
     SI_BMW_DETAIL_FILTER_RESET = "Reset",
     SI_BMW_DETAIL_SEARCH_CLEAR_TOOLTIP = "Clear search",
+    SI_BMW_DETAIL_LINK_HINT = "Shift-click to link",
 
     -- Row hover tooltip in the detail window: the figures already computed for the
     -- columns, spelled out on hover. %s carries a gold-formatted figure
@@ -201,11 +237,11 @@ local strings = {
     SI_BMW_DETAIL_CLEAR_CONFIRM_BODY = "This forgets the saved snapshot. The changes view will show nothing until you press \"Remember\" again. There is only one snapshot, so this cannot be undone.",
     SI_BMW_DETAIL_CLEAR_CONFIRM_ACCEPT = "Clear",
     SI_BMW_DETAIL_CLEAR_CONFIRM_CANCEL = "Cancel",
-    -- In the diff view the "Changes" button becomes a "Back" toggle that returns
-    -- to the material list.
+    -- Outside the category view the "Changes" button becomes a "Back" toggle
+    -- that returns to the material list from Changes or Price dynamics.
     SI_BMW_DETAIL_BTN_BACK = "Back",
     SI_BMW_DETAIL_BTN_BACK_TOOLTIP_TITLE = "Back to materials",
-    SI_BMW_DETAIL_BTN_BACK_TOOLTIP_BODY = "Return from the changes view to the material list.",
+    SI_BMW_DETAIL_BTN_BACK_TOOLTIP_BODY = "Return to the material list.",
     -- Diff title; %s = relative time of the snapshot (e.g. "5m ago").
     SI_BMW_DETAIL_DIFF_TITLE = "Changes since %s",
     SI_BMW_DETAIL_DIFF_EMPTY = "Nothing changed since the snapshot.",
@@ -241,6 +277,7 @@ local strings = {
     SI_BMW_WITHDRAW_PRESET_STACK = "%d stack",
     SI_BMW_WITHDRAW_PRESET_STACKS_FEW = "%d stacks",
     SI_BMW_WITHDRAW_PRESET_STACKS = "%d stacks",
+    SI_BMW_WITHDRAW_PRESET_MAX = "Max",
     SI_BMW_WITHDRAW_CONFIRM = "Withdraw",
     SI_BMW_WITHDRAW_ADD_TO_QUEUE = "Add to queue",
     SI_BMW_WITHDRAW_BATCH_TITLE = "Batch withdraw",
@@ -268,6 +305,9 @@ local strings = {
     -- Window: footer (two-column label -> value rows)
     SI_BMW_FOOTER_INVENTORY_LABEL = "Bag contents",
     SI_BMW_FOOTER_PRICES_LABEL = "Market prices",
+    SI_BMW_FOOTER_PRICES_TOOLTIP_TITLE = "Market prices",
+    SI_BMW_FOOTER_PRICES_TOOLTIP_BODY = "Prices are cached for this login. Re-query them after Master Merchant or Tamriel Trade Centre finishes importing fresh data.",
+    SI_BMW_FOOTER_PRICES_TOOLTIP_CLICK = "Click to refresh prices now.",
     SI_BMW_FOOTER_COVERAGE_LABEL = "Price coverage",
     SI_BMW_FOOTER_COVERAGE_VALUE = "%d/%d priced",
     SI_BMW_FOOTER_LOW_COVERAGE = "%d/%d unpriced!",
@@ -290,6 +330,7 @@ local strings = {
     SI_BMW_NET_TOOLTIP_LISTING = "Listing fee (1%%): -%s",
     SI_BMW_NET_TOOLTIP_SALES = "Sales tax (7%%): -%s",
     SI_BMW_NET_TOOLTIP_NET = "You receive (92%%): %s",
+    SI_BMW_NET_TOOLTIP_CLICK = "Click to inspect every material in the Craft Bag",
     -- Value-history sparkline caption + hover tooltip.
     SI_BMW_FOOTER_HISTORY_LABEL = "Value history",
     -- Min/max scale line beneath the area chart. %s = lowest recorded value, %s =
@@ -361,6 +402,10 @@ local strings = {
     SI_BMW_MSG_VISIT_DELTA = "Craft Bag is worth %s (%s since last review).",
     SI_BMW_MSG_VISIT_TOTAL = "Craft Bag is worth %s.",
     SI_BMW_MSG_SIGNIFICANT_DELTA = "Craft Bag value changed by %s (%d%%).",
+    SI_BMW_MSG_PRICE_TRENDS = "Price dynamics · threshold %d%%: %s.",
+    SI_BMW_MSG_PRICE_TREND_GAIN = "%s rose by %s%%",
+    SI_BMW_MSG_PRICE_TREND_LOSS = "%s fell by %s%%",
+    SI_BMW_MSG_PRICE_TREND_MORE = "and %d more",
     SI_BMW_MSG_PRICES_RECOVERED = "Prices are now available for all Craft Bag materials (%d updated).",
     SI_BMW_MSG_WITHDRAW_RESULT = "Withdrawn: %s/%s items, value: %s.",
     SI_BMW_MSG_WITHDRAW_PARTIAL = "Withdrawn: %s/%s items, value: %s. Backpack space or inventory changes prevented the rest.",

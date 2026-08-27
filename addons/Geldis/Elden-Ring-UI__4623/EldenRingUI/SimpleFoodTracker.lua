@@ -31,7 +31,7 @@ function SimpleFoodTracker.UpdateFood()
     end
     
     SimpleFoodTrackerWindowLabel:SetText(currentFood)
-    SimpleFoodTrackerWindowLabel:SetAlpha(0.85)
+    SimpleFoodTrackerWindowLabel:SetAlpha(0.75)
 end
 
 function SimpleFoodTracker.OnEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
@@ -42,7 +42,7 @@ function SimpleFoodTracker.OnEffectChanged(eventCode, changeType, effectSlot, ef
         if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
             local currentFood = effectName:gsub("^%l", string.upper)
             SimpleFoodTrackerWindowLabel:SetText(currentFood)
-            SimpleFoodTrackerWindowLabel:SetAlpha(0.85)
+            SimpleFoodTrackerWindowLabel:SetAlpha(0.75)
             
         elseif changeType == EFFECT_RESULT_FADED then
             SimpleFoodTracker.UpdateFood()

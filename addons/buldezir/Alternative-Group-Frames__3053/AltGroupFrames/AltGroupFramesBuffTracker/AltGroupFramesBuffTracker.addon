@@ -4,14 +4,15 @@
 ; other countries. All rights reserved.
 ; https://account.elderscrollsonline.com/add-on-terms
 
-## APIVersion: 101049
+## APIVersion: 101050
 ## Title: Alternative Group Frames : Buffs
 ## Author: |c943810BulDeZir|r, Glande-Pas
-## Version: 1.1
-## AddOnVersion: 11
+## Version: 1.3
+## AddOnVersion: 13
 ## SavedVariables: AltGroupFramesBuffTrackerSV AltGroupFramesBuffTrackerAccountSV
-## DependsOn: LibAddonMenu-2.0>=41 AltGroupFrames>=11
+## DependsOn: LibAddonMenu-2.0>=43 AltGroupFrames>=11
 
-Buffs.lua
 BuffTracker.lua
+Settings.lua
+Buffs.lua
 BuffTracker.xml

@@ -1,9 +1,9 @@
 ## Title: DM2 Parse & Fight Stats
 ## APIVersion: 101048 101047
-## AddOnVersion: 31718
+## AddOnVersion: 31719
 ## Author: Skye-Forge
-## Description: Parse + fight stats. v3.17.18 food no longer changes Build ID.
-## Version: 3.17.18
+## Description: Parse + fight stats. v3.17.19 top Warfare CP Eligible % visible.
+## Version: 3.17.19
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: DM2_ParseFightStats_SV
 

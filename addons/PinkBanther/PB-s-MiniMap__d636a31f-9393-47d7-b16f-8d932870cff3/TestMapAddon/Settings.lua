@@ -110,11 +110,51 @@ function addon:InitSettings()
 
 	-- Credit to the add-on this one is based on, kept out of the author field so that stays
 	-- the actual author of this version.
-	settings:AddSetting(
+	local creditSetting =
+		settings:AddSetting(
 		{
 			type = LibHarvensAddonSettings.ST_LABEL,
 			label = GetString(SI_PBSMINIMAP_CREDIT)
 		}
+	)
+
+	-- Set a size on the credit line rather than a font.
+	--
+	-- The panel's rows are built by the settings library and only exist once the panel has
+	-- been opened, so this runs on selection rather than now. Taking the size out of whatever
+	-- font is already there keeps the platform's own face and styling: on console that is a
+	-- gamepad font, on PC it is not, and hardcoding either would look wrong somewhere.
+	local creditResized = false
+	local function ShrinkCreditLine()
+		if creditResized or not creditSetting then
+			return
+		end
+		local control = creditSetting.control
+		local label = control and (control.label or (control.GetNamedChild and control:GetNamedChild("Label")))
+		if not label or not label.GetFont or not label.SetFont then
+			return
+		end
+		local font = label:GetFont()
+		if not font then
+			return
+		end
+		-- "face|size|style" - scale only the middle field, and only once.
+		local scaled, replacements =
+			font:gsub("|(%d+)", function(size)
+				return "|" .. tostring(math.max(10, math.floor(tonumber(size) * 0.8)))
+			end, 1)
+		if replacements > 0 then
+			label:SetFont(scaled)
+			creditResized = true
+		end
+	end
+	CALLBACK_MANAGER:RegisterCallback(
+		"LibHarvensAddonSettings_AddonSelected",
+		function(_, addonSettings)
+			if addonSettings == settings then
+				ShrinkCreditLine()
+			end
+		end
 	)
 
 	-- World Map Tweaks is dead weight on console: Initialize() forces enableTweaks off there,
@@ -151,77 +191,13 @@ function addon:InitSettings()
 			end
 		}
 	)
-	-- Diagnostic bisection switch for the console memory crash. See initLevel in Main.lua.
-	settings:AddSetting(
-		{
-			type = LibHarvensAddonSettings.ST_SLIDER,
-			label = GetString(SI_PBSMINIMAP_DEBUG_INIT_LEVEL),
-			tooltip = GetString(SI_PBSMINIMAP_DEBUG_INIT_LEVEL_TOOLTIP),
-			min = 0,
-			max = 4,
-			step = 1,
-			default = self.accountDefaults.initLevel,
-			format = "%d",
-			unit = "",
-			getFunction = function()
-				return self.account.initLevel or 4
-			end,
-			setFunction = function(value)
-				self.account.initLevel = value
-			end,
-			disable = true
-		}
-	)
-	settings:AddSetting(
-		{
-			type = LibHarvensAddonSettings.ST_SLIDER,
-			label = GetString(SI_PBSMINIMAP_DEBUG_MINIMAP_PART),
-			tooltip = GetString(SI_PBSMINIMAP_DEBUG_MINIMAP_PART_TOOLTIP),
-			min = 0,
-			max = 3,
-			step = 1,
-			default = self.accountDefaults.miniPart,
-			format = "%d",
-			unit = "",
-			getFunction = function()
-				return self.account.miniPart or 3
-			end,
-			setFunction = function(value)
-				self.account.miniPart = value
-			end,
-			disable = true
-		}
-	)
-	settings:AddSetting(
-		{
-			type = LibHarvensAddonSettings.ST_CHECKBOX,
-			label = GetString(SI_PBSMINIMAP_DEBUG_LOG),
-			tooltip = GetString(SI_PBSMINIMAP_DEBUG_LOG_TOOLTIP),
-			default = self.accountDefaults.debug,
-			getFunction = function()
-				return self.account.debug
-			end,
-			setFunction = function(value)
-				self.account.debug = value
-				-- Print the pan/zoom API right away, so it can be read without a reload.
-				if value and self.DumpPanZoomApi then
-					self:DumpPanZoomApi()
-				end
-			end,
-			disable = true
-		}
-	)
-	settings:AddSetting(
-		{
-			type = LibHarvensAddonSettings.ST_LABEL,
-			label = ""
-		}
-	)
+	-- A button row still needs a label: the row text is what the panel draws, and with an
+	-- empty one the entry came out blank. The empty spacer above it was the visible gap.
 	settings:AddSetting(
 		{
 			type = LibHarvensAddonSettings.ST_BUTTON,
-			label = "",
-			tooltip = nil,
+			label = GetString(SI_PBSMINIMAP_APPLY_LABEL),
+			tooltip = GetString(SI_PBSMINIMAP_APPLY_TOOLTIP),
 			buttonText = GetString(SI_PBSMINIMAP_APPLY_BUTTON),
 			clickHandler = function()
 				SLASH_COMMANDS["/reloadui"]()
@@ -416,6 +392,21 @@ function addon:InitSettings()
 		settings:AddSetting(
 			{
 				type = LibHarvensAddonSettings.ST_CHECKBOX,
+				label = GetString(SI_PBSMINIMAP_LITE_BORDER),
+				tooltip = GetString(SI_PBSMINIMAP_LITE_BORDER_TOOLTIP),
+				default = self.accountDefaults.showBorder,
+				getFunction = function()
+					return self.account.showBorder
+				end,
+				setFunction = function(value)
+					self.account.showBorder = value
+					self:ApplyLiteBorder()
+				end
+			}
+		)
+		settings:AddSetting(
+			{
+				type = LibHarvensAddonSettings.ST_CHECKBOX,
 				label = GetString(SI_PBSMINIMAP_LITE_ZONE_TITLE),
 				tooltip = GetString(SI_PBSMINIMAP_LITE_ZONE_TITLE_TOOLTIP),
 				default = self.accountDefaults.showZoneTitle,
@@ -462,7 +453,6 @@ function addon:InitSettings()
 					-- Take effect now: clear what is on screen when switching it on, and ask
 					-- the game to rebuild the labels when switching it off.
 					if value then
-						self:ClearMapLocationLabels()
 						self:HidePinLabels()
 					else
 						self:RefreshMapLocationLabels()
@@ -500,7 +490,7 @@ function addon:InitSettings()
 					tooltip = tooltip,
 					-- Scale relative to the map's native resolution, not a 0..1 position -- see
 					-- AdjustLiteZoom in Main.lua. Higher means more magnified.
-					min = 0.1,
+					min = 0.05,
 					max = 2,
 					step = 0.05,
 					default = self.accountDefaults[key],
@@ -542,7 +532,7 @@ function addon:InitSettings()
 		settings:AddSetting(
 			{
 				type = LibHarvensAddonSettings.ST_BUTTON,
-				label = "",
+				label = GetString(SI_PBSMINIMAP_LITE_REAPPLY),
 				tooltip = GetString(SI_PBSMINIMAP_LITE_REAPPLY_TOOLTIP),
 				buttonText = GetString(SI_PBSMINIMAP_LITE_REAPPLY),
 				clickHandler = applyLayout
@@ -1419,4 +1409,65 @@ function addon:InitSettings()
 			}
 		)
 	end
+
+	-- Diagnostics last: locked, and of no use in normal play.
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_SLIDER,
+			label = GetString(SI_PBSMINIMAP_DEBUG_INIT_LEVEL),
+			tooltip = GetString(SI_PBSMINIMAP_DEBUG_INIT_LEVEL_TOOLTIP),
+			min = 0,
+			max = 4,
+			step = 1,
+			default = self.accountDefaults.initLevel,
+			format = "%d",
+			unit = "",
+			getFunction = function()
+				return self.account.initLevel or 4
+			end,
+			setFunction = function(value)
+				self.account.initLevel = value
+			end,
+			disable = true
+		}
+	)
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_SLIDER,
+			label = GetString(SI_PBSMINIMAP_DEBUG_MINIMAP_PART),
+			tooltip = GetString(SI_PBSMINIMAP_DEBUG_MINIMAP_PART_TOOLTIP),
+			min = 0,
+			max = 3,
+			step = 1,
+			default = self.accountDefaults.miniPart,
+			format = "%d",
+			unit = "",
+			getFunction = function()
+				return self.account.miniPart or 3
+			end,
+			setFunction = function(value)
+				self.account.miniPart = value
+			end,
+			disable = true
+		}
+	)
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_CHECKBOX,
+			label = GetString(SI_PBSMINIMAP_DEBUG_LOG),
+			tooltip = GetString(SI_PBSMINIMAP_DEBUG_LOG_TOOLTIP),
+			default = self.accountDefaults.debug,
+			getFunction = function()
+				return self.account.debug
+			end,
+			setFunction = function(value)
+				self.account.debug = value
+				-- Print the pan/zoom API right away, so it can be read without a reload.
+				if value and self.DumpPanZoomApi then
+					self:DumpPanZoomApi()
+				end
+			end,
+			disable = true
+		}
+	)
 end

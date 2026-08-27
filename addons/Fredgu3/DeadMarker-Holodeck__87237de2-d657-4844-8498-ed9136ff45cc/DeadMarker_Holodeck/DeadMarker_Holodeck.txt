@@ -1,9 +1,9 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 35
+## AddOnVersion: 36
 ## Author: Skye-Forge
-## Description: Holodeck 0.0.35 — gold default boss; PC mem colors. /hdsettings
-## Version: 0.0.35
+## Description: Holodeck 0.0.36 — Rakkhat pack. /hdsettings
+## Version: 0.0.36
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua
@@ -12,3 +12,4 @@ fights/house_demo.lua
 fights/MOL-TwinsClear.lua
 fights/MOL-TwinsPlayers.lua
 fights/MOL-Zhajhassa.lua
+fights/MOL-Rakkhat.lua

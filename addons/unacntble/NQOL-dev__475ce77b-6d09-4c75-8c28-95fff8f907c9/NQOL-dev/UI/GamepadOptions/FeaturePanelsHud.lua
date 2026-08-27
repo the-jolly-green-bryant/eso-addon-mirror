@@ -344,6 +344,11 @@ function GamepadOptions.BuildTickerVerticalPositionOption()
     return GamepadOptions.BuildPositionSliderOption(TICKER_PANEL_ID, 3, ticker.GetVerticalPositionLabel(), ticker.GetVerticalPositionTooltip(), 0, 100, "%.0f", ticker.GetVerticalPosition, ticker.SetVerticalPosition)
 end
 
+function GamepadOptions.BuildTickerAlignmentOption()
+    local ticker = NQOL.Features.Ticker
+    return GamepadOptions.BuildFiniteListOption(TICKER_PANEL_ID, 9, ticker.GetAlignmentLabel(), ticker.GetAlignmentTooltip(), ticker.GetAlignmentChoices(), ticker.GetAlignmentChoiceNames(), ticker.GetAlignment, ticker.SetAlignment)
+end
+
 function GamepadOptions.BuildTickerFontOption()
     local ticker = NQOL.Features.Ticker
     return GamepadOptions.BuildFiniteListOption(TICKER_PANEL_ID, 4, ticker.GetFontLabel(), ticker.GetFontTooltip(), ticker.GetFontChoices(), ticker.GetFontChoiceNames(), ticker.GetFont, ticker.SetFont)

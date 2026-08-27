@@ -4,7 +4,7 @@ local PLAYER_RESOURCES = {
     [POWERTYPE_STAMINA] = { name = "Stamina", color = {0.15, 0.47, 0.22, 1}, width = 300 },
 }
 
-local WIDTH_SCALE_FACTOR = 55 -- 45
+local WIDTH_SCALE_FACTOR = 65 -- 55
 local SHIELD_BAR_COLOR = {0.85, 0.32, 0.18, 0.85} 
 
 local function FormatResource(value)

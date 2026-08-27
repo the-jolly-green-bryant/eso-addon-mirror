@@ -1,3 +1,6 @@
+Version 2.6.1 (2026/08/26)
+* Fixed an issue with the option to disable the group panel in Ossein Cage
+
 Version 2.6.0 (2026/08/25)
 * Migrated Moon Hunter Keep and March of Sacrifices to the CCA2 framework and
   added support for their solo versions

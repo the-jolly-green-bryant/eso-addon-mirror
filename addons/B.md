@@ -63,6 +63,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [BestFriends 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/BestFriends-2018__1975) | Phuein | PC / Mac | 2.16 |
 | [BetaScry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Latetide/BetaScry__3783) | Latetide | PC / Mac | 1.0.0 |
 | [Better Antiquities Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DH8Wolf/Better-Antiquities-Journal__2701) | DH8Wolf | PC / Mac | 0.3 |
+| [Better Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Better-Bars__784b8f46-2797-426a-ab85-f1e5b4776b01) | BMGxSancho | Console | — |
 | [Better Buffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Better-Buffs__ecd02472-565e-4f7f-83ce-812e8a5b0bde) | BMGxSancho | Console | — |
 | [Better Difficulties](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Better-Difficulties__3003) | kawamonkey | PC / Mac | 1.0.1 |
 | [Better Guard](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmp/Better-Guard__3974) | tmp | PC / Mac | 2.8 |
@@ -171,8 +172,9 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [bugfixxxxx](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/bugfixxxxx__b057d22b-1ffd-455c-834a-af582e3e270a) | Vixen_Hunny | Console | — |
 | [Bulk buy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Bulk-buy__0ad00225-1c8b-4f4a-8e95-ca8986209a7f) | Copper0 | Console | — |
 | [Bunny's Dice Roller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheBunnynator1001/Bunny-s-Dice-Roller__2931) | TheBunnynator1001 | PC / Mac | 1.0.1.1a |
-| [Bureau of Acceptable Views](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-of-Acceptable-Views__4720) | maraud | PC / Mac | 3.7.105247 |
-| [Bureau Of Material Worth](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-Of-Material-Worth__4718) | maraud | PC / Mac | 4.2.112030 |
+| [Bureau of Acceptable Views](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-of-Acceptable-Views__4720) | maraud | PC / Mac | 3.8.145105 |
+| [Bureau Of Material Worth](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-Of-Material-Worth__4718) | maraud | PC / Mac | 4.3.174707 |
+| [Bureau of Private Dispatches](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maraud/Bureau-of-Private-Dispatches__4796) | maraud | PC / Mac | 1.0.131353 |
 | [Burning Language Selector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IBurningTV/Burning-Language-Selector__2869) | IBurningTV | PC / Mac | 1.2 |
 | [Burning Light Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Yaeg/Burning-Light-Tracker__4786) | Yaeg | PC / Mac | 1.2.1 |
 | [BurstSync](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eyr0n/BurstSync__4662) | Eyr0n | PC / Mac | 1.0.0 |

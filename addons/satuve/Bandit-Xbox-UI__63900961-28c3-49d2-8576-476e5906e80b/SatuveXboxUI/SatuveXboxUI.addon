@@ -1,12 +1,16 @@
 ## Title: |c4B8BFESatuve|r Xbox UI
-## Description: Xbox-server PC interface fork with mouse and keyboard support, compatibility fixes, minimap, combat notifications, buffs and combat statistics. Based on Bandits User Interface.
+## Description: Xbox-server PC interface fork with controller settings, minimap and resource navigation. Optional HarvestMap + HarvestMap-Data community-node integration. Based on Bandits User Interface.
 ## Author: Satuve (Xbox adaptation); original Bandits UI by secretrob and Hoft
-## Version: 1.1.19-xbox-menu-nav
+## Version: 1.1.62-harvestmap-zone-cache-fix
 ## APIVersion: 101050
 ## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS SATUVE_XBOX_UI_CP_CHAR
-## OptionalDependsOn: LibAddonMenu-2.0 LibGamepad
+## DependsOn: LibGamepad>=107
+## OptionalDependsOn: LibAddonMenu-2.0>=41 HarvestMap
 
 ; Satuve Xbox UI is a modified fork of Bandits User Interface.
+; Controller settings require LibGamepad AddOnVersion 107 (1.0.7) or newer.
+; LibGamepad is a required manifest dependency so ESO lists it under Required Add-Ons.
+; LibAddonMenu-2.0 r41+ is recommended for the classic settings path and fallback.
 ; Xbox adaptation and maintenance: Satuve.
 ; Thanks and original credit: secretrob, Hoft, and the Bandits UI contributors.
 ; Originally based in part on Foundry Tactical Combat by Atropos.
@@ -31,6 +35,7 @@ BUI_Events.lua
 BUI_Frames.lua
 BUI_Curved.lua
 BUI_Menu.lua
+SXUI_GamepadOptions.xml
 SXUI_LAMBridge.lua
 SXUI_GamepadQuickNav.lua
 BUI_Settings.lua
@@ -42,6 +47,9 @@ BUI_Buffs.lua
 proctemplate.xml
 BUI_Actions.lua
 BUI_MiniMap.lua
+BUI_ResourceData.lua
+BUI_ResourceHarvestMap.lua
+BUI_ResourceNavigator.lua
 BUI_QuickSlots.lua
 BUI_StatShare.lua
 BUI_OnScreen.lua

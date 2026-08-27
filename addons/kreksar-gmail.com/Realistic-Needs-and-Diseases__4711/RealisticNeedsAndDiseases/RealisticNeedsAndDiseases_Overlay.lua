@@ -71,7 +71,14 @@ function Overlay.RefreshDisease(diseaseId, severity)
     end
 
     entry.currentTier = severity
-    local alpha = Overlay.MAX_ALPHA_BY_SEVERITY[severity] or 0
+    -- Settings slider ("Disease Overlay Max Opacity") scales the per-severity
+    -- ceiling proportionally rather than replacing it — read live (not
+    -- cached) so the slider takes effect immediately on any already-active
+    -- overlay, not just the next severity change. Same live-read pattern
+    -- Frostfall's OverlayEffects.lua uses for its own max-opacity slider.
+    local sv = RN.SavedVars
+    local opacityScale = (sv and sv.settings.diseaseOverlayMaxOpacity) or 1.0
+    local alpha = (Overlay.MAX_ALPHA_BY_SEVERITY[severity] or 0) * opacityScale
     entry.window:SetAlpha(alpha)
     entry.window:SetHidden(false)
 end

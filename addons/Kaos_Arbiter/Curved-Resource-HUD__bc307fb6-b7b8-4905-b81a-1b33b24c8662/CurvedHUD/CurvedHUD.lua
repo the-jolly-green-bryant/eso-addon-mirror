@@ -1,9 +1,9 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName = "CurvedHUD", "0.6.9-test", "CurvedHUD_Update"
-CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="Major Resolve",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",showRaw=true,showPercent=true,showMaximum=false,debug=true,layout="Parallel",staminaInside=true}
-CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true}
-CH.characterDefaults = {majorBuffTracked="Major Resolve",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",initialized=false}
+CH.name, CH.version, CH.updateName = "CurvedHUD", "0.8.0-test", "CurvedHUD_Update"
+CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="Major Resolve",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=true,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=true,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=true,layout="Parallel",staminaInside=true}
+CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
+CH.characterDefaults = {majorBuffTracked="Major Resolve",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=true,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=true,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
 CH.majorBuffChoices = {"None","Major Resolve","Major Brutality","Major Sorcery","Major Savagery","Major Prophecy","Major Expedition","Major Protection","Major Evasion","Major Berserk","Major Force","Major Courage"}
 CH.colorChoices = {"Purple","Orange","Pale Blue","Blue","Green","Red","Gold","White","Cyan","Pink"}
 CH.colors = {Purple={.58,.24,.92},Orange={.88,.35,.18},["Pale Blue"]={.48,.82,1},Blue={.18,.48,1},Green={.18,.82,.30},Red={.92,.18,.18},Gold={1,.72,.15},White={1,1,1},Cyan={.15,.9,.9},Pink={1,.35,.68}}
@@ -15,6 +15,7 @@ CH.trackerSlots = {
 }
 CH.trackerSlotNames = {"Top Left - Outside","Top Left - Inside","Bottom Left - Outside","Bottom Left - Inside","Top Right - Inside","Top Right - Outside","Bottom Right - Inside","Bottom Right - Outside"}
 CH.trackerSlotValues = {"topLeftOutside","topLeftInside","bottomLeftOutside","bottomLeftInside","topRightInside","topRightOutside","bottomRightInside","bottomRightOutside"}
+CH.procPositionChoices = {"Top","Right","Bottom","Left","Center"}
 function CH:NormalizeTrackerSlot(value,fallback)
     if self.trackerSlots[value] then return value end
     for index,name in ipairs(self.trackerSlotNames) do
@@ -26,6 +27,11 @@ end
 -- remains the fallback because some sources expose their own ability ID while
 -- retaining the localized standardized buff name.
 local MAJOR_BUFF_IDS = {["Major Resolve"]=61694,["Major Brutality"]=61665,["Major Sorcery"]=61687,["Major Savagery"]=64568,["Major Prophecy"]=64570}
+local BOUND_ARMAMENTS_SKILL_ID,BOUND_ARMAMENTS_STACK_ID=24165,203447
+local CRYSTAL_FRAGMENTS_PROC_EFFECT_ID,CRYSTAL_FRAGMENTS_PROC_SLOT_ID=46327,114716
+local CRITICAL_SURGE_EFFECT_ID=23678
+local SHROUD_ICON_PATH="CurvedHUD/textures/vibrant_shroud.dds"
+local ULFSILD_EFFECT_ID=222285
 local WM = WINDOW_MANAGER
 local HEALTH_POWER=_G["COMBAT_MECHANIC_FLAGS_HEALTH"] or POWERTYPE_HEALTH
 local STAMINA_POWER=_G["COMBAT_MECHANIC_FLAGS_STAMINA"] or POWERTYPE_STAMINA
@@ -137,6 +143,138 @@ function CH:CreateTracker(key,slot,colorSetting,specialTexture)
     t.active,t.beginTime,t.endTime,t.duration=false,0,0,0; t:SetHidden(true); self.trackers[key]=t
 end
 
+function CH:CreateProcAlert()
+    local p=WM:CreateControl("CurvedHUD_FragmentsProc",self.root,CT_CONTROL); p:SetDimensions(72,72)
+    p.bg=WM:CreateControl("CurvedHUD_FragmentsProc_Background",p,CT_BACKDROP); p.bg:SetAnchorFill(p); p.bg:SetCenterColor(.45,.02,.24,.72); p.bg:SetEdgeColor(1,.25,.72,1)
+    p.icon=texture(p,"_Icon",4,"/esoui/art/icons/icon_missing.dds",1,1,1,1); p.icon:SetDimensions(64,64); p.icon:SetAnchor(CENTER,p,CENTER)
+    local fallback=GetAbilityIcon and GetAbilityIcon(CRYSTAL_FRAGMENTS_PROC_SLOT_ID)
+    if (not fallback or fallback=="") and GetAbilityIcon then fallback=GetAbilityIcon(CRYSTAL_FRAGMENTS_PROC_EFFECT_ID) end
+    if fallback and fallback~="" then p.icon:SetTexture(fallback) end
+    p:SetHidden(true); self.procAlert=p; self.fragmentsEventActive=false; self.fragmentsEndTime=0
+end
+
+function CH:ApplyProcLayout(scale)
+    local p=self.procAlert; if not p then return end
+    local procScale=clamp(tonumber(self.sv.fragmentsScale) or .75,.35,1.5)
+    local size=72*scale*procScale; p:SetDimensions(size,size); p.icon:SetDimensions(64*scale*procScale,64*scale*procScale)
+    p:ClearAnchors(); local position=self.sv.fragmentsPosition or "Top"; local spacing=self.sv.spacing*scale
+    if position~="Top" and position~="Right" and position~="Bottom" and position~="Left" and position~="Center" then
+        position="Top"; self.sv.fragmentsPosition=position
+    end
+    local x,y=0,0
+    if position=="Center" then p:SetAnchor(CENTER,GuiRoot,CENTER,0,0); return
+    elseif position=="Top" then y=-225*scale
+    elseif position=="Bottom" then y=225*scale
+    elseif position=="Left" then x=-spacing+92*scale
+    elseif position=="Right" then x=spacing-92*scale end
+    p:SetAnchor(CENTER,self.root,CENTER,x,y)
+end
+
+function CH:IsCrystalFragmentsProcActive()
+    local active=self.fragmentsEventActive and (self.fragmentsEndTime<=0 or self.fragmentsEndTime>GetGameTimeSeconds())
+    local iconName=nil
+    if GetNumBuffs and GetUnitBuffInfo then
+        for index=1,GetNumBuffs("player") do
+            local name,_,endTime,_,_,icon,_,_,_,_,abilityId=GetUnitBuffInfo("player",index)
+            if abilityId==CRYSTAL_FRAGMENTS_PROC_EFFECT_ID or string.find(string.lower(name or ""),"crystal fragments proc",1,true) then
+                active=true; self.fragmentsEndTime=endTime or 0; iconName=icon; break
+            end
+        end
+    end
+    if GetSlotBoundId then
+        local first=_G["ACTION_BAR_FIRST_NORMAL_SLOT_INDEX"] or 3; local last=_G["ACTION_BAR_ULTIMATE_SLOT_INDEX"] or 8
+        for slot=first,last do
+            local ok,boundId=pcall(GetSlotBoundId,slot)
+            if ok and boundId==CRYSTAL_FRAGMENTS_PROC_SLOT_ID then
+                active=true
+                if GetSlotTexture then local okIcon,slotIcon=pcall(GetSlotTexture,slot); if okIcon then iconName=slotIcon end end
+                break
+            end
+        end
+    end
+    return active,iconName
+end
+
+function CH:UpdateProcAlert()
+    local p=self.procAlert; if not p then return end
+    local enabled=self.sv.fragmentsEnabled~=false; local active,iconName=false,nil
+    if self.sv.preview and enabled then active=true
+    elseif enabled then active,iconName=self:IsCrystalFragmentsProcActive() end
+    p:SetHidden(not active)
+    if active then
+        if iconName and iconName~="" then p.icon:SetTexture(iconName) end
+        -- The alert inherits both normal HUD opacity and the optional
+        -- out-of-combat opacity through its parent. Keep only a subtle local pulse.
+        p.bg:SetAlpha(.72+.28*math.abs(math.sin(GetGameTimeMilliseconds()/300)))
+    end
+end
+
+function CH:UpdateArmamentsReadyEffect()
+    local t=self.trackers and self.trackers.armaments; if not t or not t.readyBorder then return end
+    local stacks=self.sv.preview and 4 or (tonumber(t.stackCount) or 0)
+    local ready=self.sv.armamentsEnabled~=false and stacks>=4
+    t.readyBorder:SetHidden(not ready)
+    local selected=self.colors[self.sv.armamentsColor] or self.colors.Gold
+    t.stackLabel:SetColor(ready and math.min(1,selected[1]+.25) or 1,ready and math.min(1,selected[2]+.25) or 1,ready and math.min(1,selected[3]+.25) or 1,1)
+    if ready then
+        local pulse=.55+.45*math.abs(math.sin(GetGameTimeMilliseconds()/260))
+        -- Same larger-backdrop construction used by the Crystal Fragments alert:
+        -- the icon remains above it while the white-gold perimeter stays visible.
+        local blend=.30+.25*pulse
+        t.readyBorder:SetCenterColor(selected[1]+(1-selected[1])*blend,selected[2]+(1-selected[2])*blend,selected[3]+(1-selected[3])*blend,.65+.3*pulse)
+        t.readyBorder:SetEdgeColor(1,1,1,.8+.2*pulse)
+    end
+end
+
+function CH:FindSlottedSkillIcon(...)
+    if not GetSlotBoundId or not GetAbilityName or not GetSlotTexture then return nil end
+    local wanted={...}; local first=_G["ACTION_BAR_FIRST_NORMAL_SLOT_INDEX"] or 3; local last=_G["ACTION_BAR_ULTIMATE_SLOT_INDEX"] or 8
+    local categories={false,_G["HOTBAR_CATEGORY_PRIMARY"] or false,_G["HOTBAR_CATEGORY_BACKUP"] or false}
+    for _,category in ipairs(categories) do
+        for slot=first,last do
+            local ok,id
+            if category then ok,id=pcall(GetSlotBoundId,slot,category) else ok,id=pcall(GetSlotBoundId,slot) end
+            if ok and id and id>0 then
+                local name=string.lower(GetAbilityName(id) or "")
+                for _,needle in ipairs(wanted) do
+                    if string.find(name,needle,1,true) then
+                        local okIcon,iconName
+                        if category then okIcon,iconName=pcall(GetSlotTexture,slot,category) else okIcon,iconName=pcall(GetSlotTexture,slot) end
+                        if okIcon and iconName and iconName~="" then return iconName,id end
+                        if GetAbilityIcon then local fallback=GetAbilityIcon(id); if fallback and fallback~="" then return fallback,id end end
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+function CH:FindLearnedSkillIcon(...)
+    if not GetNumSkillTypes or not GetNumSkillLines or not GetNumSkillAbilities or not GetSkillAbilityInfo then return nil end
+    local wanted={...}
+    for skillType=1,GetNumSkillTypes() do
+        for lineIndex=1,GetNumSkillLines(skillType) do
+            for abilityIndex=1,GetNumSkillAbilities(skillType,lineIndex) do
+                local ok,name,textureName=pcall(GetSkillAbilityInfo,skillType,lineIndex,abilityIndex)
+                local lowerName=ok and string.lower(name or "") or ""
+                for _,needle in ipairs(wanted) do
+                    if string.find(lowerName,needle,1,true) and textureName and textureName~="" then return textureName end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+function CH:RefreshScribingBindings()
+    if not self.trackers then return end
+    local soulIcon,soulId=self:FindSlottedSkillIcon("soul burst","binding burst","bloody burst","chilling burst","fiery burst","healing burst","leashing burst","magical burst","pestilent burst","shocking burst","sundering burst","warding burst")
+    if soulIcon and self.trackers.soulBurst then self.soulBurstAbilityId=soulId; self.trackers.soulBurst.preferredIcon=soulIcon; self.trackers.soulBurst.icon:SetTexture(soulIcon) end
+    local contingencyIcon,contingencyId=self:FindSlottedSkillIcon("contingency")
+    if contingencyIcon and self.trackers.contingency then self.contingencyAbilityId=contingencyId; self.trackers.contingency.preferredIcon=contingencyIcon; self.trackers.contingency.icon:SetTexture(contingencyIcon) end
+end
+
 function CH:ApplyTrackerAppearance(t)
     local info=self.trackerSlots[t.slot]; local style=info.inside and self.sv.insideTimerStyle or self.sv.outsideTimerStyle
     local base
@@ -189,6 +327,7 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
     if info.inside then trackerWidth=style=="Thick" and 52 or 38
     elseif style=="Thin" then trackerWidth=52
     else trackerWidth=42 end
+    if info.side=="right" and not info.inside then trackerWidth=math.max(28,trackerWidth-14) end
     local trackerHeight=info.inside and 145 or 180
     t:SetDimensions(trackerWidth*scale,trackerHeight*scale); t:ClearAnchors()
 
@@ -212,15 +351,18 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
         local ref
         if self.sv.layout=="Stacked" then ref=info.vertical=="upper" and outer or inner
         else ref=info.inside and inner or outer end
-        local lowerParallelNudge=(self.sv.layout=="Parallel" and info.vertical=="lower") and 5 or 0
         local rightOuterNudge=style=="Thick" and 10 or 22
-        local x=info.inside and (4-innerNudge+lowerParallelNudge) or (-4-rightOuterNudge-lowerParallelNudge)
+        -- Upper/lower inside slots share one horizontal alignment. Outside slots
+        -- retain identical curve geometry but use independent quadrant offsets.
+        local outsideBase=info.vertical=="upper" and -18 or -15
+        local x=info.inside and (24-innerNudge) or (outsideBase-rightOuterNudge)
         if info.vertical=="upper" then t:SetAnchor(info.inside and TOPRIGHT or TOPLEFT,ref,info.inside and TOPLEFT or TOPRIGHT,x*scale,42*scale)
         else t:SetAnchor(info.inside and BOTTOMRIGHT or BOTTOMLEFT,ref,info.inside and BOTTOMLEFT or BOTTOMRIGHT,x*scale,-42*scale) end
     end
 
     self:ApplyTrackerAppearance(t); self:SyncTrackerLayers(t)
     t.timer:SetScale(scale); t.icon:SetScale(scale)
+    if t.readyBorder then t.readyBorder:SetScale(scale) end
     -- Icons move radially away from their timer endpoint: toward screen center
     -- for inside slots and away from center for outside slots.
     local iconX
@@ -243,10 +385,25 @@ function CH:ApplyLayout()
     local h,s,m=self.bars.health,self.bars.stamina,self.bars.magicka; local width=clamp(sv.barWidth,24,80)*scale
     local balanceSlot=self:NormalizeTrackerSlot(sv.balanceSlot,"bottomLeftInside")
     local aegisSlot=self:NormalizeTrackerSlot(sv.aegisSlot,"topLeftOutside")
+    local armamentsSlot=self:NormalizeTrackerSlot(sv.armamentsSlot,"topRightInside")
+    local surgeSlot=self:NormalizeTrackerSlot(sv.surgeSlot,"topRightOutside")
+    local shroudSlot=self:NormalizeTrackerSlot(sv.shroudSlot,"bottomRightOutside")
+    local soulBurstSlot=self:NormalizeTrackerSlot(sv.soulBurstSlot,"topRightInside")
+    local contingencySlot=self:NormalizeTrackerSlot(sv.contingencySlot,"bottomRightInside")
     if balanceSlot~=sv.balanceSlot then sv.balanceSlot=balanceSlot end
     if aegisSlot~=sv.aegisSlot then sv.aegisSlot=aegisSlot end
+    if armamentsSlot~=sv.armamentsSlot then sv.armamentsSlot=armamentsSlot end
+    if surgeSlot~=sv.surgeSlot then sv.surgeSlot=surgeSlot end
+    if shroudSlot~=sv.shroudSlot then sv.shroudSlot=shroudSlot end
+    if soulBurstSlot~=sv.soulBurstSlot then sv.soulBurstSlot=soulBurstSlot end
+    if contingencySlot~=sv.contingencySlot then sv.contingencySlot=contingencySlot end
     self.trackers.balance.slot=balanceSlot
     self.trackers.aegis.slot=aegisSlot
+    self.trackers.armaments.slot=armamentsSlot
+    self.trackers.surge.slot=surgeSlot
+    self.trackers.shroud.slot=shroudSlot
+    self.trackers.soulBurst.slot=soulBurstSlot
+    self.trackers.contingency.slot=contingencySlot
     h:SetDimensions(width,512*scale); h:ClearAnchors(); h:SetAnchor(CENTER,self.root,CENTER,-sv.spacing*scale,0)
     local inner,outer=sv.staminaInside and s or m,sv.staminaInside and m or s
     if sv.layout=="Stacked" then
@@ -283,10 +440,11 @@ function CH:ApplyLayout()
     s.rawLabel:ClearAnchors(); s.rawLabel:SetAnchor(CENTER,s,CENTER,8*scale,-54*scale); s.percentLabel:ClearAnchors(); s.percentLabel:SetAnchor(CENTER,s,CENTER,8*scale,-24*scale)
     m.rawLabel:ClearAnchors(); m.rawLabel:SetAnchor(CENTER,m,CENTER,8*scale,24*scale); m.percentLabel:ClearAnchors(); m.percentLabel:SetAnchor(CENTER,m,CENTER,8*scale,54*scale)
     for _,t in pairs(self.trackers) do self:ApplyTrackerSlot(t,h,inner,outer,width,scale) end
+    self:ApplyProcLayout(scale)
     for _,b in pairs(self.bars) do b.bg:SetAlpha(sv.backgroundAlpha); b.fill:SetAlpha(sv.fillAlpha); b.frame:SetAlpha(sv.frameAlpha); b.rawLabel:SetAlpha(sv.textAlpha); b.percentLabel:SetAlpha(sv.textAlpha) end
     self.mountBar.bg:SetAlpha(sv.backgroundAlpha); self.mountBar.fill:SetAlpha(sv.fillAlpha); self.mountBar.frame:SetAlpha(sv.frameAlpha)
     for _,t in pairs(self.trackers) do t.fill:SetAlpha(sv.fillAlpha); t.frame:SetAlpha(sv.frameAlpha); t.timer:SetAlpha(sv.textAlpha); t.icon:SetAlpha(sv.textAlpha) end
-    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateVisibility(); self:UpdateResources(); self:RefreshMajorBuff()
+    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateVisibility(); self:UpdateResources(); self:RefreshMajorBuff(); self:RefreshSorcererTrackers(); self:RefreshScribingBindings(); self:UpdateProcAlert()
 end
 function CH:UpdateCombatOpacity(inCombat)
     if not self.root or not self.sv then return end
@@ -380,7 +538,7 @@ end
 function CH:UpdateTrackers()
     local now=GetGameTimeSeconds()
     for _,t in pairs(self.trackers) do
-        local enabled=t.key~="balance" and t.key~="aegis" or self.sv[t.key.."Enabled"]~=false
+        local enabled=t.key=="resolve" or self.sv[t.key.."Enabled"]~=false
         local active,pct,remaining=t.active and enabled,0,0
         if self.sv.preview and enabled then active,pct,remaining=true,.62,12.4
         elseif active then
@@ -390,9 +548,11 @@ function CH:UpdateTrackers()
         t:SetHidden(not active)
         if active then
             self:SetTexturePercent(t.fill,t,pct); t.timer:SetText(string.format("%.1f",remaining))
-            local stacks=tonumber(t.stackCount) or 0; t.stackLabel:SetText(tostring(stacks)); t.stackLabel:SetHidden(stacks<=0)
+            local stacks=self.sv.preview and t.key=="armaments" and 4 or (tonumber(t.stackCount) or 0)
+            t.stackLabel:SetText(tostring(stacks)); t.stackLabel:SetHidden(stacks<=0)
         else t.stackLabel:SetHidden(true) end
     end
+    self:UpdateArmamentsReadyEffect()
 end
 function CH:MajorBuffMatches(effectName,abilityId)
     local selected=self.sv.majorBuffTracked or "Major Resolve"; if selected=="None" then return false end
@@ -414,15 +574,91 @@ function CH:RefreshMajorBuff()
         end
     end
 end
+function CH:RefreshBoundArmaments()
+    local t=self.trackers and self.trackers.armaments; if not t then return end
+    t.active,t.stackCount=false,0
+    if self.sv.preview or self.sv.armamentsEnabled==false or not GetNumBuffs or not GetUnitBuffInfo then return end
+    for index=1,GetNumBuffs("player") do
+        local name,beginTime,endTime,_,stackCount,iconName,_,_,_,_,abilityId=GetUnitBuffInfo("player",index)
+        if abilityId==BOUND_ARMAMENTS_STACK_ID or ((stackCount or 0)>0 and string.find(string.lower(name or ""),"bound armament",1,true)) then
+            t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime or 0,endTime or 0,math.max(.01,(endTime or 0)-(beginTime or 0)),stackCount or 0
+            if iconName and iconName~="" then t.icon:SetTexture(iconName) end
+            break
+        end
+    end
+end
+function CH:RefreshSorcererTrackers()
+    self:RefreshBoundArmaments()
+    local surge=self.trackers and self.trackers.surge
+    local shroud=self.trackers and self.trackers.shroud
+    if surge then surge.active,surge.stackCount=false,0 end
+    if shroud then shroud.active,shroud.stackCount=false,0 end
+    if shroud then
+        shroud.preferredIcon=SHROUD_ICON_PATH; shroud.icon:SetTexture(SHROUD_ICON_PATH)
+    end
+    if self.sv.preview or not GetNumBuffs or not GetUnitBuffInfo then return end
+    for index=1,GetNumBuffs("player") do
+        local name,beginTime,endTime,_,stackCount,iconName,_,_,_,_,abilityId=GetUnitBuffInfo("player",index)
+        local lowerName=string.lower(name or "")
+        local t
+        if surge and self.sv.surgeEnabled~=false and (abilityId==CRITICAL_SURGE_EFFECT_ID or string.find(lowerName,"critical surge",1,true)) then t=surge
+        elseif shroud and self.sv.shroudEnabled~=false and (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") then t=shroud end
+        if t then
+            t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime or 0,endTime or 0,math.max(.01,(endTime or 0)-(beginTime or 0)),stackCount or 0
+            if t~=shroud and iconName and iconName~="" then t.icon:SetTexture(iconName)
+            elseif t==shroud and not t.preferredIcon and iconName and iconName~="" then t.icon:SetTexture(iconName) end
+        end
+    end
+end
+function CH:IsSoulBurstName(lowerName)
+    if lowerName=="soul burst" then return true end
+    for _,prefix in ipairs({"binding ","bloody ","chilling ","fiery ","healing ","leashing ","magical ","pestilent ","shocking ","sundering ","warding "}) do
+        if lowerName==prefix.."burst" then return true end
+    end
+    return false
+end
+function CH:StartCastTracker(t,duration,abilityGraphic,abilityId)
+    if not t then return end
+    local beginTime=GetGameTimeSeconds(); duration=clamp(tonumber(duration) or 20,1,60)
+    t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime,beginTime+duration,duration,0
+    local iconName=abilityGraphic
+    if (not iconName or iconName=="") and GetAbilityIcon then iconName=GetAbilityIcon(abilityId) end
+    if iconName and iconName~="" then t.icon:SetTexture(iconName); t.preferredIcon=iconName end
+    self:UpdateTrackers()
+end
+function CH:HandleScribingCast(abilityName,abilityGraphic,abilityId,allowActive)
+    local lowerName=string.lower(abilityName or "")
+    if self.sv.soulBurstEnabled and ((self.soulBurstAbilityId and abilityId==self.soulBurstAbilityId) or self:IsSoulBurstName(lowerName)) then
+        if allowActive or not self.trackers.soulBurst.active then self:StartCastTracker(self.trackers.soulBurst,self.sv.soulBurstDuration,abilityGraphic,abilityId) end
+        return true
+    elseif self.sv.contingencyEnabled and ((self.contingencyAbilityId and abilityId==self.contingencyAbilityId) or string.find(lowerName,"contingency",1,true)) then
+        if allowActive or not self.trackers.contingency.active then self:StartCastTracker(self.trackers.contingency,self.sv.contingencyDuration,abilityGraphic,abilityId) end
+        return true
+    end
+    return false
+end
 function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId)
     if unitTag~="player" then return end
+    local lowerName=string.lower(effectName or "")
+    if abilityId==CRYSTAL_FRAGMENTS_PROC_EFFECT_ID or string.find(lowerName,"crystal fragments proc",1,true) then
+        self.fragmentsEventActive=changeType~=EFFECT_RESULT_FADED
+        self.fragmentsEndTime=endTime or 0
+        if iconName and iconName~="" and self.procAlert then self.procAlert.icon:SetTexture(iconName) end
+        self:UpdateProcAlert()
+        return
+    end
     local t
     if self:MajorBuffMatches(effectName,abilityId) then t=self.trackers.resolve
     elseif abilityId==48136 or abilityId==48131 or abilityId==48141 then t=self.trackers.balance
     elseif abilityId==24163 then t=self.trackers.aegis
+    elseif abilityId==BOUND_ARMAMENTS_STACK_ID then t=self.trackers.armaments
+    elseif abilityId==CRITICAL_SURGE_EFFECT_ID or string.find(lowerName,"critical surge",1,true) then t=self.trackers.surge
+    elseif string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase" then t=self.trackers.shroud
+    elseif abilityId==ULFSILD_EFFECT_ID or string.find(lowerName,"ulfsild",1,true) and string.find(lowerName,"contingency",1,true) then t=self.trackers.contingency
     else
-        local lowerName=string.lower(effectName or ""); local duration=(endTime or 0)-(beginTime or 0)
+        local duration=(endTime or 0)-(beginTime or 0)
         if duration>0 and duration<30 and (string.find(lowerName,"bound aegis",1,true) or string.find(lowerName,"bound armor",1,true)) then t=self.trackers.aegis end
+        if stackCount and stackCount>0 and string.find(lowerName,"bound armament",1,true) then t=self.trackers.armaments end
     end
     if not t then return end
     local wasActive=t.active
@@ -430,13 +666,27 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
     t.stackCount=stackCount or 0
     local reportedDuration=(endTime or 0)-(beginTime or 0)
     if t.active and (not wasActive or (reportedDuration>0 and reportedDuration<3600)) then t.duration=reportedDuration end
-    if iconName and iconName~="" then t.icon:SetTexture(iconName) end; self:UpdateTrackers()
+    if t.key~="shroud" and t.key~="contingency" and iconName and iconName~="" then t.icon:SetTexture(iconName)
+    elseif (t.key=="shroud" or t.key=="contingency") and t.preferredIcon then t.icon:SetTexture(t.preferredIcon) end
+    self:UpdateTrackers()
 end
 
 function CH:CreateHUD()
     self.root=WM:CreateTopLevelWindow("CurvedHUD_Root"); self.root:SetDimensions(900,600); self.root:SetMouseEnabled(false); self.root:SetClampedToScreen(false); self.root:SetDrawTier(DT_HIGH)
     self.bars,self.trackers={},{}; self:CreateBar("health","left",{.85,.1,.1}); self:CreateBar("stamina","right",{.15,.78,.22}); self:CreateBar("magicka","right",{.12,.42,.95})
-    self:CreateShield(); self:CreateMountBar(); self:CreateTracker("resolve","bottomLeftOutside","majorBuffColor"); self:CreateTracker("balance","bottomLeftInside","balanceColor","balance"); self:CreateTracker("aegis","topLeftOutside","aegisColor"); self:ApplyLayout()
+    self:CreateShield(); self:CreateMountBar(); self:CreateTracker("resolve","bottomLeftOutside","majorBuffColor"); self:CreateTracker("balance","bottomLeftInside","balanceColor","balance"); self:CreateTracker("aegis","topLeftOutside","aegisColor"); self:CreateTracker("armaments","topRightInside","armamentsColor"); self:CreateTracker("surge","topRightOutside","surgeColor"); self:CreateTracker("shroud","bottomRightOutside","shroudColor"); self:CreateTracker("soulBurst","topRightInside","soulBurstColor"); self:CreateTracker("contingency","bottomRightInside","contingencyColor")
+    local armamentsIcon=GetAbilityIcon and GetAbilityIcon(BOUND_ARMAMENTS_SKILL_ID); if armamentsIcon and armamentsIcon~="" then self.trackers.armaments.icon:SetTexture(armamentsIcon) end
+    local armaments=self.trackers.armaments
+    local readyBorder=WM:CreateControl("CurvedHUD_armaments_ReadyBorder",armaments,CT_BACKDROP); readyBorder:SetDimensions(44,44); readyBorder:SetAnchor(CENTER,armaments.icon,CENTER); readyBorder:SetDrawLayer(DL_OVERLAY); readyBorder:SetDrawLevel(50); readyBorder:SetCenterColor(1,.78,.2,.9); readyBorder:SetEdgeColor(1,1,1,1); readyBorder:SetHidden(true)
+    armaments.icon:SetDrawLayer(DL_OVERLAY); armaments.icon:SetDrawLevel(51); armaments.stackLabel:SetDrawLayer(DL_OVERLAY); armaments.stackLabel:SetDrawLevel(52); armaments.readyBorder=readyBorder
+    -- Fixed ESO asset path for Vibrant Shroud; cast/slotted detection may replace
+    -- it with Encase or Shattering Spines artwork when those variants are used.
+    self.trackers.shroud.preferredIcon=SHROUD_ICON_PATH; self.trackers.shroud.icon:SetTexture(SHROUD_ICON_PATH)
+    local soulIcon,soulId=self:FindSlottedSkillIcon("soul burst","binding burst","bloody burst","chilling burst","fiery burst","healing burst","leashing burst","magical burst","pestilent burst","shocking burst","sundering burst","warding burst")
+    if soulIcon then self.soulBurstAbilityId=soulId; self.trackers.soulBurst.preferredIcon=soulIcon; self.trackers.soulBurst.icon:SetTexture(soulIcon) end
+    local contingencyIcon,contingencyId=self:FindSlottedSkillIcon("contingency")
+    if contingencyIcon then self.contingencyAbilityId=contingencyId; self.trackers.contingency.preferredIcon=contingencyIcon; self.trackers.contingency.icon:SetTexture(contingencyIcon) end
+    self:CreateProcAlert(); self:ApplyLayout()
 end
 function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name,EVENT_POWER_UPDATE,function(_,unitTag,_,powerType,current,maximum,effectiveMaximum)
@@ -448,6 +698,25 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,function(_,changeType,_,effectName,unitTag,beginTime,endTime,stackCount,iconName,_,_,_,_,_,_,abilityId)
         self:Guard("effect event",function() self:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId) end)
     end); EVENT_MANAGER:AddFilterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,REGISTER_FILTER_UNIT_TAG,"player")
+    EVENT_MANAGER:RegisterForEvent(self.name.."TrackedCasts",EVENT_COMBAT_EVENT,function(_,result,_,abilityName,abilityGraphic,_,sourceName,sourceType,_,_,_,_,_,_,_,_,abilityId)
+        if sourceType~=COMBAT_UNIT_TYPE_PLAYER then return end
+        local lowerName=string.lower(abilityName or "")
+        if self.sv.shroudEnabled and (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") then
+            local beginTime=GetGameTimeSeconds(); local t=self.trackers.shroud; t.active,t.beginTime,t.endTime,t.duration=true,beginTime,beginTime+10,10
+            t.preferredIcon=SHROUD_ICON_PATH; t.icon:SetTexture(SHROUD_ICON_PATH)
+            self:UpdateTrackers()
+        else
+            self:HandleScribingCast(abilityName,abilityGraphic,abilityId,false)
+        end
+    end)
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EVENT_MANAGER:RegisterForEvent(self.name.."SlotUsed",EVENT_ACTION_SLOT_ABILITY_USED,function(_,slotNum)
+            local ok,id=pcall(GetSlotBoundId,slotNum); if not ok or not id or id<=0 then return end
+            local abilityName=GetAbilityName and GetAbilityName(id) or ""; local abilityGraphic=nil
+            if GetSlotTexture then local okIcon,icon=pcall(GetSlotTexture,slotNum); if okIcon then abilityGraphic=icon end end
+            self:HandleScribingCast(abilityName,abilityGraphic,id,true)
+        end)
+    end
     EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:Guard("player activation",function() self:ApplyLayout() end) end)
     EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat) self:Guard("combat opacity",function() self:UpdateCombatOpacity(inCombat) end) end)
     local shieldCallback=function(eventCode,unitTag,visualType,statType,attributeType,powerType,value1,value2)
@@ -458,7 +727,7 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name.."ShieldRemoved",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED,shieldCallback)
     local callback=function(_,state) self:UpdateVisibility(state) end
     SCENE_MANAGER:GetScene("hud"):RegisterCallback("StateChange",callback); SCENE_MANAGER:GetScene("hudui"):RegisterCallback("StateChange",callback)
-    EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function() self:Guard("periodic update",function() self:UpdateResources(); self:UpdateTrackers(); self:UpdateDefaultUI(false) end) end)
+    EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function() self:Guard("periodic update",function() self:UpdateResources(); self:UpdateTrackers(); self:UpdateProcAlert(); self:UpdateDefaultUI(false) end) end)
 end
 function CH:Initialize()
     self.globalSV=ZO_SavedVars:NewAccountWide("CurvedHUD_SavedVariables",1,nil,self.defaults)

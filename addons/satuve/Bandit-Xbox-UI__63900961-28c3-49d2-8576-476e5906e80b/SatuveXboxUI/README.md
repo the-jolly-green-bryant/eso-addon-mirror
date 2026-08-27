@@ -2,6 +2,15 @@
 
 Satuve Xbox UI is a modified fork of **Bandits User Interface**, adapted and maintained by **Satuve** for the ESO client on PC that connects to Xbox servers and is used with mouse and keyboard.
 
+## Controller settings requirements
+
+The controller settings libraries are installed and enabled separately:
+
+- **Required and shown by ESO under Required Add-Ons:** LibGamepad AddOnVersion 107 (1.0.7) or newer
+- **Recommended for the classic settings path and fallback:** LibAddonMenu-2.0 r41 or newer
+
+Open the controller settings through ESO's **Extensions / Manage My Extensions** area and select **Bandit UI**. The Side Panel settings button also opens this controller panel directly. LibGamepad is a required manifest dependency for this console-focused package. LibAddonMenu remains optional because it is used only for the classic settings path and fallback.
+
 ## Credits
 
 - Xbox adaptation, packaging and maintenance: **Satuve**
@@ -23,6 +32,29 @@ Thank you to the Bandits UI authors and contributors for the original foundation
 ## Installation
 
 Extract the folder `SatuveXboxUI` into the add-on directory used by your ESO Xbox-server PC client. Do not install it alongside an enabled copy of the original Bandits User Interface because both still use parts of the internal `BUI` Lua namespace.
+
+## Version 1.1.60 - Resource Navigation
+
+- Added controller-friendly **Resource Navigation** settings as page 22.
+- Added nearest-node and short farm-route modes for ore, wood, clothing materials, alchemy plants and runestones.
+- Added a smooth direction arrow, approximate distance, a distinct minimap target and optional next-route markers.
+- Resource positions learned while gathering are persisted and deduplicated. The data layer also accepts separately registered map-node datasets for a future HarvestMap-style importer.
+- Route searches use map-local spatial buckets and only recalculate on relevant state changes; the 40 ms update is limited to the HUD direction and distance.
+- Movement and gathering remain completely manual. ESO does not expose a complete live resource-node database, so a fresh installation must first learn locations while the player gathers or receive a compatible external dataset later.
+- Controller settings still require **LibGamepad AddOnVersion 107**; the dependency was not raised to 108.
+
+## Version 1.1.61 - HarvestMap community data
+
+- Resource Navigation can now read the active map cache from **HarvestMap**.
+- Install and enable **HarvestMap** plus **HarvestMap-Data** to obtain the community collection instead of starting with an empty database.
+- HarvestMap remains optional: without it, SatuveXboxUI continues using its own learned locations.
+- The adapter reads only resource categories supported by the navigator and rebuilds its spatial index when HarvestMap reports a relevant cache change.
+
+## Version 1.1.62 - HarvestMap cache fix
+
+- Reads HarvestMap's already active current-zone caches directly, matching the source used for its compass and 3D resource pins.
+- No longer rejects valid HarvestMap data because of missing or temporarily stale map-ID metadata.
+- Added `/rnav` diagnostic output showing the current map, target, HarvestMap connection and imported-node count.
 
 ## License
 
@@ -63,3 +95,17 @@ The original package includes an MIT-style permission notice. This fork keeps th
 - Restored the top boss-bar adjustment from v1.0.29.
 - Kept the syntax/loading safety correction from v1.0.30.
 - Removed the later boss-frame/background shifting experiments.
+
+## Version 1.1.28
+
+- Documented the libraries and location required for controller settings.
+- The Side Panel settings button opens Bandit UI's LibGamepad panel directly.
+- Side Panel mouse tooltips use a readable gamepad font in controller mode.
+- Restored page 21, Meters, in the controller menu.
+
+## Version 1.1.29
+
+- LibGamepad is now declared as a required dependency so ESO displays it under Required Add-Ons.
+- LibAddonMenu-2.0 remains listed as an optional/recommended dependency.
+- Minimap size values are normalized, saved and applied directly to every existing Minimap control.
+- Minimap resizing no longer rebuilds event and scene callbacks.

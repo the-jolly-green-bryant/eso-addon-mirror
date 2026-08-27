@@ -1080,6 +1080,23 @@ local function displayName(name, maxLen)
   return string.sub(name, 1, maxLen - 1) .. "..."
 end
 
+-- Strip |cRRGGBB / |r before truncating. A dangling |c after string.sub makes
+-- ESO hide the entire label (Build & Sets row 1 Warfare star went blank).
+local function stripColorMarkup(s)
+  s = tostring(s or "")
+  s = s:gsub("|c%x%x%x%x%x%x%x%x", "")
+  s = s:gsub("|C%x%x%x%x%x%x%x%x", "")
+  s = s:gsub("|c%x%x%x%x%x%x", "")
+  s = s:gsub("|C%x%x%x%x%x%x", "")
+  s = s:gsub("|r", "")
+  s = s:gsub("|R", "")
+  return s
+end
+
+local function displayNamePlain(name, maxLen)
+  return displayName(stripColorMarkup(name), maxLen)
+end
+
 -- Show ability/champion skill ids as "Name · id 12345" so users know it is an id
 local function formatAbilityDisplay(name, abilityId, maxLen)
   name = tostring(name or "?")
@@ -8248,7 +8265,7 @@ local BUILD_SET_PROC_ROWS = 6
 local BUILD_SET_CP_ROWS = 8
 
 local function createProcsUI(screen)
-  if screen.procsUI and not screen.procsUI._v3141 then screen.procsUI = nil end
+  if screen.procsUI and not screen.procsUI._v31719 then screen.procsUI = nil end
   if screen.procsUI then return screen.procsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.procs
@@ -8259,7 +8276,7 @@ local function createProcsUI(screen)
     cpRows = {},
     barIcons = { front = {}, back = {} },
     buildLines = {},
-    _v3141 = true,
+    _v31719 = true,
   }
 
   ui.root = WM:CreateControl("DM2StatsMenuBuildSetsRootV4", panel, CT_CONTROL)
@@ -8457,9 +8474,12 @@ local function layoutProcsUI(ui, hostW, hostH)
       ui.cpNote:SetAnchor(TOPLEFT, ui.cpPanel, TOPLEFT, 12, 18)
       ui.cpNote:SetWidth(W - 24)
       if ui.cpNote.SetMaxLineCount then ui.cpNote:SetMaxLineCount(1) end
+      if ui.cpNote.SetWrapMode then
+        ui.cpNote:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+      end
     end
-    -- Leave clear gap under note so it never overwrites first CP row
-    local cpTop = 36
+    -- Gap under the one-line note so it cannot cover Warfare row 1
+    local cpTop = 42
     local cpRowH = math.max(15, math.floor((cpH - cpTop - 4) / BUILD_SET_CP_ROWS))
     for i = 1, BUILD_SET_CP_ROWS do
       local r = ui.cpRows and ui.cpRows[i]
@@ -8714,16 +8734,13 @@ local function refreshProcsUI(screen, session)
         if cp.fitKey == "na" or cp.fitKey == "surv" then
           impactTxt = string.format("#%s  %s", cp.rankTxt or "—", cp.impact or cp.eligibleNote or "")
         elseif cp.marginalDps ~= nil then
+          -- Plain text only — color chips + truncate made console hide this line
           impactTxt = string.format(
-            "#%s Eligible %s · A/B ΔDPS %s %s",
+            "#%s Eligible %s · A/B %s",
             cp.rankTxt or tostring(i),
             fmtPct(cp.eligiblePct or 0),
-            fmtDpsDelta(cp.marginalDps),
-            confidenceChip(cp.marginalConf or CONFIDENCE.ESTIMATED)
+            fmtDpsDelta(cp.marginalDps)
           )
-          if cp.abPair and cp.abPair.swapLabel then
-            impactTxt = impactTxt .. " · " .. cp.abPair.swapLabel
-          end
         else
           impactTxt = string.format(
             "#%s Eligible %s · %s",
@@ -8732,7 +8749,7 @@ local function refreshProcsUI(screen, session)
             cp.eligibleNote or "category"
           )
         end
-        r.impact:SetText(displayName(impactTxt, 78))
+        r.impact:SetText(displayNamePlain(impactTxt, 72))
       else
         r.row:SetHidden(i ~= 1 or #cps > 0)
         if i == 1 and #cps == 0 then
@@ -10858,10 +10875,9 @@ local function refreshInsightsUI(screen, session, mode)
         impactTxt = c.impact or c.eligibleNote or c.reason or ""
       elseif c.marginalDps ~= nil then
         impactTxt = string.format(
-          "Eligible %s · A/B ΔDPS %s %s",
+          "Eligible %s · A/B %s",
           fmtPct(c.eligiblePct or 0),
-          fmtDpsDelta(c.marginalDps),
-          confidenceChip(c.marginalConf or CONFIDENCE.ESTIMATED)
+          fmtDpsDelta(c.marginalDps)
         )
       else
         impactTxt = string.format(
@@ -10871,7 +10887,7 @@ local function refreshInsightsUI(screen, session, mode)
         )
       end
       if c.rankTxt then impactTxt = "#" .. c.rankTxt .. " · " .. impactTxt end
-      r.impact:SetText(displayName(impactTxt, 68))
+      r.impact:SetText(displayNamePlain(impactTxt, 68))
     else
       r.row:SetHidden(i ~= 1 or #cps > 0)
       if i == 1 and #cps == 0 then

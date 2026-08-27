@@ -1248,53 +1248,62 @@ function UnitFramesManager:ApplyCustomReorder(frame, targetIndex)
 	local byIndex = {}
 	for _, unitFrame in pairs(self.unitFrames) do
 		if unitFrame:IsActive() and not unitFrame:IsCompanion() then
-			byIndex[unitFrame.index] = unitFrame
+			table.insert(byIndex, unitFrame)
 		end
 	end
-	local sorted = {}
-	for i = 1, self.groupSize do
-		if byIndex[i] then
-			sorted[#sorted + 1] = byIndex[i]
-		end
-	end
+	table.sort(byIndex, function(a, b) return a.index < b.index end)
 
-	-- Remove the dragged frame from its current position
-	for i = #sorted, 1, -1 do
-		if sorted[i] == frame then
-			table.remove(sorted, i)
-			break
-		end
-	end
+	local upwards = targetIndex < frame.index
+	local customOrder = self.SAVEVARS.CUSTOM_ORDER
 
-	-- Insert at the target slot
-	targetIndex = zo_clamp(targetIndex, 1, #sorted + 1)
-	table.insert(sorted, targetIndex, frame)
+	local frameIdx = 1
+	local orderIdx = 1
+	local insertPos = nil
+	local removedFrame = false
 
-	-- Persist only entries up to and including the drop position.
-	-- Frames beyond targetIndex have no explicit placement and will fall
-	-- back to role-based ordering via the second pass in ReorderFrames.
-	local now = GetTimeStamp()
-	local newOrder = {}
-	for i = 1, targetIndex do
-		local unitFrame = sorted[i]
-		if unitFrame and unitFrame.accountName ~= "" then
-			newOrder[#newOrder + 1] = { name = unitFrame.accountName, lastSeen = now }
-		end
-	end
-
-	-- Enforce max size by dropping the oldest entry until within cap
-	local maxSize = self.SAVEVARS.CUSTOM_ORDER_MAX_SIZE
-	while #newOrder > maxSize do
-		local oldestIdx, oldestTime = 1, newOrder[1].lastSeen
-		for i = 2, #newOrder do
-			if newOrder[i].lastSeen < oldestTime then
-				oldestIdx, oldestTime = i, newOrder[i].lastSeen
+	while frameIdx <= #byIndex and orderIdx <= #customOrder do
+		if customOrder[orderIdx].name == frame.accountName then
+			table.remove(customOrder, orderIdx)
+			removedFrame = true
+		elseif byIndex[frameIdx].accountName == frame.accountName then
+			if frameIdx == targetIndex then
+				insertPos = upwards and orderIdx or orderIdx + 1
+				break
 			end
+			frameIdx = frameIdx + 1
+		elseif customOrder[orderIdx].name == byIndex[frameIdx].accountName then
+			if frameIdx == targetIndex then
+				insertPos = upwards and orderIdx or orderIdx + 1
+				break
+			end
+			frameIdx = frameIdx + 1
+			orderIdx = orderIdx + 1
+		else
+			orderIdx = orderIdx + 1
 		end
-		table.remove(newOrder, oldestIdx)
 	end
 
-	self.SAVEVARS.CUSTOM_ORDER = newOrder
+	while not removedFrame and orderIdx <= #customOrder do
+		if customOrder[orderIdx].name == frame.accountName then
+			table.remove(customOrder, orderIdx)
+			removedFrame = true
+		end
+		orderIdx = orderIdx + 1
+	end
+
+	local now = GetTimeStamp()
+	if insertPos ~= nil then
+		table.insert(customOrder, insertPos, { name = frame.accountName, lastSeen = now })
+	else
+		-- If we ended customOrder without reaching targetIndex, append all preceding frames
+		while frameIdx < targetIndex do
+			if byIndex[frameIdx] ~= frame then
+				table.insert(customOrder, { name = byIndex[frameIdx].accountName, lastSeen = now })
+			end
+			frameIdx = frameIdx + 1
+		end
+		table.insert(customOrder, { name = frame.accountName, lastSeen = now })
+	end
 end
 
 function UnitFramesManager:PruneCustomOrder()

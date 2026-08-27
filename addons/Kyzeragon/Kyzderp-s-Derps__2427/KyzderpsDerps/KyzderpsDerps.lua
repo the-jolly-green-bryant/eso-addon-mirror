@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 KyzderpsDerps = {
     name = "KyzderpsDerps",
-    version = "1.51.0",
+    version = "1.52.0",
 }
 local KD = KyzderpsDerps
 
@@ -132,6 +132,7 @@ local defaultOptions = {
         skills = {
             classMastery = 0,
         },
+        checkSetupChange = false,
     },
     hodor = {
         horn = false,
@@ -172,6 +173,7 @@ local defaultOptions = {
     },
     opener = {
         delay = 0,
+        includeStolen = false,
         openMirriBag = false,
         openGunnySack = false,
         openToxinSatchel = false,

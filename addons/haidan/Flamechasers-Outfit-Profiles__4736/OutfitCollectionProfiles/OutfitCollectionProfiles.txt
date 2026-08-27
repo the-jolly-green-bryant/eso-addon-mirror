@@ -1,8 +1,8 @@
 ## Title: Flamechasers Outfit Profiles
 ## Description: Links appearance collectibles, mounts, and pets to each outfit slot.
 ## Author: Flamechasers
-## Version: 0.4.1
-## AddOnVersion: 401
+## Version: 0.4.5
+## AddOnVersion: 405
 ## APIVersion: 101050
 ## SavedVariables: OutfitCollectionProfilesSavedVariables
 

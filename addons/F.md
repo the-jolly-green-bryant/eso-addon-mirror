@@ -80,7 +80,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FixedCombatString](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/FixedCombatString__3831) | MelanAster | PC / Mac | 0.30 |
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
 | [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.58 |
-| [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.4.1 |
+| [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.4.5 |
 | [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.18 |
 | [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.8.6 |
 | [Flappy Nord – Mini Game](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Traybair/Flappy-Nord-Mini-Game__4492) | Traybair | PC / Mac | 1.0.5 |
@@ -116,7 +116,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Friend Auto Trade](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Quazzert/Friend-Auto-Trade__1168) | Quazzert | PC / Mac | 0.1 |
 | [Friend Removed Notification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Friend-Removed-Notification__1225) | CaptainBlagbird | PC / Mac | 2.01 |
 | [Friendly Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crunatus/Friendly-Reminder__2882) | Crunatus | PC / Mac | 1.3 |
-| [Frostfall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Frostfall__4710) | kreksar@gmail.com | PC / Mac | 3.4.23 |
+| [Frostfall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/Frostfall__4710) | kreksar@gmail.com | PC / Mac | 3.4.24 |
 | [FsBountyDecay](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FelipeS11/FsBountyDecay__2486) | FelipeS11 | PC / Mac | 3.0 |
 | [Full Moon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Full-Moon__2107) | g4rr3t | PC / Mac | 1.2.4 |
 | [Fun Kill Feed - (tested on console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Fun-Kill-Feed---tested-on-console__4286) | SugaComa | PC / Mac | 1.3.5 |

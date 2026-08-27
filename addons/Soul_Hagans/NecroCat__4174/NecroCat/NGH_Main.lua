@@ -1,9 +1,11 @@
+NecroCat = NecroCat or {}
 local AddonName="NecroCat"
 local lang=GetCVar("language.2")
 local Settings={
 Guilds={
         [839248] = "NecroCat/imgs/GuildHall.dds",         -- Castle of Necro-Cat
         [698160] = "NecroCat/imgs/GardenOfSouls.dds",   -- Garden of Souls
+        [766278] = "NecroCat/imgs/gym.dds",   -- Master of this gym
     },
     Logo=true,
     Label={en="Guildhalls",ru="|c66f2ffГильд Холлы|r"},
@@ -154,10 +156,14 @@ function NecroCat.UpdateGuildHomeVisibility()
         mode = NecroCat.savedVars.guildHomeVisibility or 1
     end
 
-    local currentGuildId = GUILD_SELECTOR.guildId
+    -- Безопасно получаем ID текущей открытой гильдии (ПК и Геймпад)
+    local currentGuildId = (GUILD_SHARED_INFO and GUILD_SHARED_INFO.guildId)
+                        or (GUILD_HOME_KEYBOARD and GUILD_HOME_KEYBOARD.guildId)
+                        or (GUILD_SELECTOR and GUILD_SELECTOR.guildId)
+                        or GetGuildId(1)
     
     -- 1. Получаем путь к картинке для логотипа текущей гильдии
-    local guildTexture = Settings.Guilds[currentGuildId] 
+    local guildTexture = currentGuildId and Settings.Guilds[currentGuildId]
     local isOurGuild = (guildTexture ~= nil) 
 
     local isMainGuild = (currentGuildId == 839248)
@@ -168,7 +174,7 @@ function NecroCat.UpdateGuildHomeVisibility()
         hideBackground = false
         
         -- Меняем картинку подложки на ту, которая привязана к открытой гильдии
-        if ZO_GuildHome_Castle then
+        if ZO_GuildHome_Castle and guildTexture then
             ZO_GuildHome_Castle:SetTexture(guildTexture)
         end
     end

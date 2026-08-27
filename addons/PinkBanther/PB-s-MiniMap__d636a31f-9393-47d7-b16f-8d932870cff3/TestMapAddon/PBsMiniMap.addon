@@ -1,9 +1,11 @@
-## To release a new version, edit the two lines below and nothing else.
+## To release a new version, edit the version in the two lines below and nothing else.
+## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
+## is read back through that markup, so it can sit inside or outside the colour.
 ## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
-## Title: PB's MiniMap 1.7.6
-## Author: PinkBanther
+## Title: |cFF69B4PB’s MiniMap|r 1.9.34
+## Author: |cFF69B4PinkBanther|r
 ## Description: A lightweight minimap for console. Keeps the game's own world map parked on the HUD at a size and position you choose, and hands it straight back when you open the full map. Based on Votan's Minimap by votan, with thanks -- rebuilt so it stays inside the console add-on memory limit.
-## Version: 1.7.6
+## Version: 1.9.34
 ## APIVersion: 101050 101051
 ## DependsOn: LibHarvensAddonSettings>=20106 LibAsync>=30001
 ## OptionalDependsOn: LibGPS>=73 TweakIt TrueExploration LibDebugLogger
@@ -17,11 +19,8 @@
 lang/strings.lua
 lang/$(language).lua
 
-## Controls.xml
 Main.lua
 Settings.lua
-PinLevels.lua
 PinSizes.lua
 Styles.lua
 
-Bindings.xml

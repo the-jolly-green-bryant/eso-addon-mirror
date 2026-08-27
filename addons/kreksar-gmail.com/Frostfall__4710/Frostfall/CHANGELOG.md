@@ -4,6 +4,31 @@ Full version history for Frostfall. See README.md for current features, installa
 
 ---
 
+### v3.4.24
+- **Temperature emotes no longer interrupt sitting or sleeping.** Previously,
+  a cold/hot temperature emote firing while the player was mid-sit or
+  mid-sleep would cancel that pose outright (ESO cancels a sit/sleep
+  animation whenever any other emote plays), making it hard to actually
+  rest while cold or hot. Ported and scoped down from Realistic Needs and
+  Diseases' own sit/sleep detection (which RND built for its fatigue-
+  recovery mechanics) — `FV:IsResting()` now gates `TickEmote`, backed by
+  the same two detection paths RND uses: hooked `/sit`-/`/sleep`-family
+  slash commands, and a real in-world "Sit" interaction prompt (chairs,
+  benches). A dedicated 5-second position-poll clears the resting flag
+  once the player actually stands up and walks away, independent of
+  Frostfall's own (much slower, user-configurable) update interval. No new
+  Settings — this is a pure bugfix, always on.
+- **New: "Screen Overlay Max Opacity" slider** in ConfigMenu (0.1–1.0) —
+  caps how strong the hot/cold screen vignette can get at the temperature
+  extremes. Previously a hardcoded `MAX_ALPHA = 0.75` constant in
+  `OverlayEffects.lua` with zero Settings exposure — separate from the
+  existing HUD Opacity slider, which only ever affected the status window,
+  not the screen-tint overlay itself. Default (0.75) matches the old
+  hardcoded value exactly, so nobody's overlay changes strength on
+  upgrade.
+
+---
+
 ### v3.4.23
 - **New: "Temperature Adaptation Rate" slider** in ConfigMenu (0.25–5.0
   °C/min, in 0.25 steps) — controls how fast your character's temperature

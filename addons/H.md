@@ -9,6 +9,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Halls of Fabrication Status Panel jpFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/Halls-of-Fabrication-Status-Panel-jpFix__2977) | tdenc | PC / Mac | 1.4.3.5 |
 | [Hammerfell Name Change](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mattiellosa/Hammerfell-Name-Change__1801) | mattiellosa | PC / Mac | 1.1.2 |
 | [HARDCORE](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/HARDCORE__4480) | Wrynch | PC / Mac | 1.5.0 |
+| [Hardened Ward Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Hardened-Ward-Tracker__268f4e04-0e98-4b2c-874e-c9da484f991e) | codeWarrior82 | Console | — |
 | [Harven's Aliases](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Harven/Harven-s-Aliases__380) | Harven | PC / Mac | 1.5.0 |
 | [Harven's All Experience Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Harven/Harven-s-All-Experience-Bars__467) | Harven | PC / Mac | 2.8.4 |
 | [Harven's AS to LAM adapter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Harven/Harven-s-AS-to-LAM-adapter__937) | Harven | PC / Mac | 2.3.0 |

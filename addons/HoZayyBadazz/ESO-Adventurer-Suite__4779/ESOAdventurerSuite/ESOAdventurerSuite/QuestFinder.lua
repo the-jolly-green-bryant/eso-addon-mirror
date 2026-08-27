@@ -223,6 +223,45 @@ Q.MAIN_QUEST_CHAIN_2737 = {
 -- v0.27.42: curated pre-acceptance information for Main Story steps where ESO
 -- does not expose an unaccepted quest pin through the API. These hints are used
 -- only until the quest is accepted; live journal objectives take over after that.
+-- v0.27.62: Cadwell's Almanac - Aldmeri Dominion objective path.
+-- Cadwell's Silver/Gold is an umbrella quest; progression is earned by completing
+-- the required Almanac objectives inside the opposing alliance zones. Keep the
+-- objective locations grouped exactly as the player sees the journey: Auridon,
+-- Grahtwood, Greenshade, Malabal Tor, then Reaper's March.
+Q.CADWELL_AD_ALMANAC_2762 = {
+    {zone="Auridon", area="Vulkhel Guard", quests={"Ensuring Security","A Hostile Situation"}},
+    {zone="Auridon", area="Tanzelwil", quests={"In the Name of the Queen","Rites of the Queen"}},
+    {zone="Auridon", area="Mathiisen", quests={"Putting the Pieces Together","The Unveiling"}},
+    {zone="Auridon", area="Skywatch", quests={"Lifting the Veil","Wearing the Veil","The Veil Falls"}},
+    {zone="Auridon", area="Firsthold", quests={"Breaking the Barrier","Sever All Ties"}},
+
+    {zone="Grahtwood", area="Southpoint", quests={"The Grip of Madness"}},
+    {zone="Grahtwood", area="Reliquary of Stars", quests={"Lost in Study","Heart of the Matter"}},
+    {zone="Grahtwood", area="Falinesti Winter Site", quests={"A Lasting Winter"}},
+    {zone="Grahtwood", area="Elden Root", quests={"The Honor of the Queen","Fit to Rule","The Orrery of Elden Root"}},
+
+    {zone="Greenshade", area="Bramblebreach", quests={"Frighten the Fearsome","Audience with the Wilderking"}},
+    {zone="Greenshade", area="Greenheart", quests={"Throne of the Wilderking","The Staff of Magnus"}},
+    {zone="Greenshade", area="Woodhearth", quests={"Veil of Illusion","Double Jeopardy"}},
+    {zone="Greenshade", area="Seaside Sanctuary", quests={"A Storm Upon the Shore","Pelidil's End"}},
+    {zone="Greenshade", area="Dread Vullain", quests={"Right of Theft"}},
+    {zone="Greenshade", area="Verrant Morass", quests={"The Blight of the Bosmer"}},
+    {zone="Greenshade", area="Driladan Pass", quests={"Retaking the Pass"}},
+    {zone="Greenshade", area="Hectahame", quests={"Striking at the Heart"}},
+
+    {zone="Malabal Tor", area="Velyn Harbor", quests={"House and Home","One Fell Swoop","The Drublog of Dra'bul"}},
+    {zone="Malabal Tor", area="Dra'bul", quests={"Reap What Is Sown"}},
+    {zone="Malabal Tor", area="Jathsogur", quests={"The Prisoner of Jathsogur"}},
+    {zone="Malabal Tor", area="Silvenar", quests={"Restore the Silvenar"}},
+
+    {zone="Reaper's March", area="Fort Grimwatch", quests={"Grim Situation","Grimmer Still"}},
+    {zone="Reaper's March", area="Arenthia", quests={"The Colovian Occupation","Stonefire Machinations","A Door Into Moonlight"}},
+    {zone="Reaper's March", area="Rawl'kha", quests={"The First Step"}},
+    {zone="Reaper's March", area="Moonmont", quests={"Motes in the Moonlight"}},
+    {zone="Reaper's March", area="Dune", quests={"The Fires of Dune"}},
+    {zone="Reaper's March", area="Two Moons Path", quests={"The Moonlit Path","The Den of Lorkhaj"}},
+}
+
 Q.MAIN_QUEST_START_HINTS_2742 = {
     [lower("Soul Shriven in Coldharbour")] = {
         giver = "The Hooded Figure",
@@ -477,9 +516,75 @@ function Q:BuildMainQuestEntries2737()
     return rows
 end
 
+function Q:BuildCadwellADEntries2762()
+    local activeById, activeByName = self:GetActiveQuestMap()
+    local completed = self:GetCompletedQuestSet()
+    local byName = {}
+    for i = 1, #self.index do
+        local src = self.index[i]
+        byName[lower(src.name)] = src
+    end
+
+    local rows, firstIncomplete = {}, nil
+    for order, objective in ipairs(self.CADWELL_AD_ALMANAC_2762 or {}) do
+        local total, doneCount, activeQuestIndex = #(objective.quests or {}), 0, nil
+        local target = nil
+        local questLines = {}
+        for _, questName in ipairs(objective.quests or {}) do
+            local src = byName[lower(questName)]
+            local questId = src and tonumber(src.questId) or tonumber(safe(GetQuestIdFromName, 0, questName)) or 0
+            local activeIndex = (questId > 0 and activeById[questId]) or activeByName[lower(questName)]
+            local isDone = questId > 0 and completed[questId] == true or false
+            if isDone then doneCount = doneCount + 1 end
+            if not activeQuestIndex and activeIndex then activeQuestIndex = activeIndex end
+            if not target and not isDone then
+                target = {
+                    questId=questId, name=questName, questIndex=activeIndex,
+                    zoneId=src and src.zoneId or 0, rawZoneId=src and (src.rawZoneId or src.zoneId) or 0,
+                    starter=src and src.starter or "Follow the Cadwell's Almanac objective marker in this area.",
+                }
+            end
+            questLines[#questLines+1] = (isDone and "[DONE] " or (activeIndex and "[ACTIVE] " or "[ ] ")) .. questName
+        end
+        local complete = total > 0 and doneCount >= total
+        if not complete and not firstIncomplete then firstIncomplete = order end
+        target = target or {questId=0, name=objective.quests and objective.quests[1] or objective.area, zoneId=0, rawZoneId=0, starter="Objective complete"}
+        local zoneId, zone, rawZoneId = getJournalOverlandZone(target.questIndex or 0, target.questId, target.rawZoneId)
+        if zone == "" then zone = objective.zone end
+        rows[#rows+1] = {
+            key="CADWELL_AD:" .. tostring(order), name=objective.area, zone=objective.zone,
+            zoneId=zoneId or target.zoneId or 0, rawZoneId=rawZoneId or target.rawZoneId or 0,
+            questId=target.questId, questIndex=target.questIndex or activeQuestIndex,
+            starter=target.starter, access="BASE GAME - CADWELL'S ALMANAC", type="Cadwell's Almanac",
+            completed=complete, cadwell=true, chainOrder=order,
+            objectiveProgress=string.format("%d/%d", doneCount, total),
+            objectiveQuests=table.concat(questLines, "\n"),
+            targetQuestName=target.name,
+        }
+    end
+    for _, row in ipairs(rows) do
+        if row.completed then row.status="COMPLETED"
+        elseif row.questIndex then row.status="CURRENT"
+        elseif row.chainOrder == firstIncomplete then row.status="NEXT"
+        else row.status="LOCKED" end
+    end
+    local query=lower(trim(self.searchText))
+    if query ~= "" then
+        local filtered={}
+        for _,row in ipairs(rows) do
+            local hay=lower(row.name.." "..row.zone.." "..row.status.." "..(row.objectiveQuests or "").." cadwell silver almanac")
+            if string.find(hay, query, 1, true) then filtered[#filtered+1]=row end
+        end
+        rows=filtered
+    end
+    return rows
+end
+
 function Q:BuildEntries()
     if self.filter == "MAIN_QUEST" then
         return self:BuildMainQuestEntries2737()
+    elseif self.filter == "CADWELL" then
+        return self:BuildCadwellADEntries2762()
     end
     local activeById, activeByName = self:GetActiveQuestMap()
     local completed = self:GetCompletedQuestSet()
@@ -564,14 +669,15 @@ function Q:BuildView()
     end
     local progress = self.scanDone and "INDEX READY" or string.format("SCANNING %d/%d", math.min(self.scanNextId or 1, self.SCAN_MAX_ID), self.SCAN_MAX_ID)
     local mainView = self.filter == "MAIN_QUEST"
+    local cadwellView = self.filter == "CADWELL"
     local view = {
-        header = mainView and "MAIN QUEST" or "QUEST JOURNAL",
-        title = mainView and "Main Story Progress" or "Find quests you have not started",
-        description = mainView and "Main Story quests in progression order. Completed, current, next, and later steps are shown together. Select the current/next step to track it in the MAIN QUEST overlay source and travel toward its nearest resolved wayshrine." or "Browse a runtime index of ESO quest records instead of a short curated list. Select a quest to route toward its zone. ESO does not expose one global 'currently obtainable quest' iterator, so retired/internal records are filtered on a best-effort basis.",
+        header = mainView and "MAIN QUEST" or (cadwellView and "CADWELL'S ALMANAC" or "QUEST JOURNAL"),
+        title = mainView and "Main Story Progress" or (cadwellView and "Cadwell's Silver - Aldmeri Dominion" or "Find quests you have not started"),
+        description = mainView and "Main Story quests in progression order. Completed, current, next, and later steps are shown together. Select the current/next step to track it in the MAIN QUEST overlay source and travel toward its nearest resolved wayshrine." or (cadwellView and "Cadwell's Silver is an umbrella quest. This view tracks the required Aldmeri Dominion Almanac objectives by area across Auridon, Grahtwood, Greenshade, Malabal Tor, and Reaper's March." or "Browse a runtime index of ESO quest records instead of a short curated list. Select a quest to route toward its zone. ESO does not expose one global 'currently obtainable quest' iterator, so retired/internal records are filtered on a best-effort basis."),
         filter = self.filter, searchText = self.searchText, rows = rows, total = #entries, offset = self.offset,
         selected = selected, scanDone = self.scanDone, scanProgress = progress, indexed = #self.index,
         stats = {
-            {label="FILTER", value=self.filter == "NOT_STARTED" and "NOT STARTED" or (self.filter == "MAIN_QUEST" and "MAIN QUEST" or self.filter)},
+            {label="FILTER", value=self.filter == "NOT_STARTED" and "NOT STARTED" or (self.filter == "MAIN_QUEST" and "MAIN QUEST" or (self.filter == "CADWELL" and "CADWELL" or self.filter))},
             {label="MATCHES", value=tostring(#entries)},
             {label="INDEX", value=self.scanDone and tostring(#self.index) or progress},
             {label="SELECTED", value=selected and selected.status or "NONE"},
@@ -585,7 +691,8 @@ function Q:SetFilter(filter)
     filter = string.upper(tostring(filter or "NOT_STARTED"))
     if filter == "NOT STARTED" then filter = "NOT_STARTED" end
     if filter == "MAIN QUEST" then filter = "MAIN_QUEST" end
-    if filter ~= "NOT_STARTED" and filter ~= "ACTIVE" and filter ~= "MAIN_QUEST" and filter ~= "ALL" then return false end
+    if filter == "CADWELL'S ALMANAC" or filter == "CADWELL SILVER" then filter = "CADWELL" end
+    if filter ~= "NOT_STARTED" and filter ~= "ACTIVE" and filter ~= "MAIN_QUEST" and filter ~= "CADWELL" and filter ~= "ALL" then return false end
     self.filter, self.offset, self.selectedKey = filter, 0, nil
     return true
 end

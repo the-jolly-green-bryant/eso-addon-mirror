@@ -162,6 +162,20 @@ local function BuildOptions()
             default = FV.Defaults.enableOverlay,
         },
         {
+            type = "slider", name = "Screen Overlay Max Opacity",
+            tooltip = "Caps how strong the hot/cold screen vignette can get even at the most "
+                   .. "extreme temperatures (Freeze Danger / Heat Danger) — the overlay still "
+                   .. "fades in gradually from 0 as you approach those extremes, this just lowers "
+                   .. "the ceiling it fades up to. Separate from HUD Opacity above, which only "
+                   .. "affects the status window. Only relevant while \"Enable Screen Overlay\" "
+                   .. "above is enabled. Default (0.75) matches the overlay's original, "
+                   .. "previously-fixed strength.",
+            min = 0.1, max = 1.0, step = 0.05, decimals = 2,
+            getFunc = function() return FV.SV.overlayMaxOpacity end,
+            setFunc = function(val) FV.SV.overlayMaxOpacity = val end,
+            default = FV.Defaults.overlayMaxOpacity,
+        },
+        {
             type    = "checkbox",
             name    = "Show native top-screen notifications",
             tooltip = "Show Frostfall's notifications (band transitions, spell-resist reagent "

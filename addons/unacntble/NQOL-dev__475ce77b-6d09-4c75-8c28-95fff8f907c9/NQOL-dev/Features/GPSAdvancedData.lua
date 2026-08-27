@@ -97,6 +97,45 @@ local function HashInteraction(action, name)
     return value
 end
 
+-- ESO may keep a nearby player, companion, pet, or NPC in `reticleover` while
+-- the interactable-action API and visible prompt already identify a writ
+-- fixture. Keep arbitrary unit names private, but permit only these exact,
+-- fixed game-owned writ interactions through that overlap. The allowlist is
+-- keyed by both normalized object name and action, so it cannot emit a hash of
+-- an unknown unit identity.
+local PRIVACY_SAFE_WRIT_INTERACTIONS = {
+    ["Equipment Crafting Writs"] = { Use = true, Examine = true },
+    ["Consumables Crafting Writs"] = { Use = true, Examine = true },
+    ["Blacksmithing Station"] = { Use = true },
+    ["Clothing Station"] = { Use = true },
+    ["Woodworking Station"] = { Use = true },
+    ["Jewelry Crafting Station"] = { Use = true },
+    ["Provisioning Station"] = { Use = true },
+    ["Cooking Fire"] = { Use = true },
+    ["Enchanting Table"] = { Use = true },
+    ["Alchemy Station"] = { Use = true },
+    ["Blacksmith Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Blacksmithing Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Clothier Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Clothing Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Woodworker Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Woodworking Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Jewelry Crafting Delivery"] = { Deliver = true, Use = true, Examine = true },
+    ["Jewelry Crafting Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Jewelry Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Enchanter Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Enchanting Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Alchemist Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Alchemy Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Provisioner Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+    ["Provisioning Delivery Crate"] = { Deliver = true, Use = true, Examine = true },
+}
+
+local function IsPrivacySafeWritInteraction(action, name)
+    local actions = PRIVACY_SAFE_WRIT_INTERACTIONS[NormalizeInteractionText(name)]
+    return actions and actions[NormalizeInteractionText(action)] == true or false
+end
+
 local function IsReticleUnit()
     if type(DoesUnitExist) == "function" then
         return DoesUnitExist("reticleover") == true
@@ -115,7 +154,7 @@ local function CollectInteraction()
         return 0, 0, true
     end
 
-    if IsReticleUnit() then
+    if IsReticleUnit() and not IsPrivacySafeWritInteraction(action, name) then
         return 0, 16, true
     end
 

@@ -1,0 +1,38 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ShoppingListGamepadWindow" hidden="true" tier="HIGH" level="10">
+            <Dimensions x="680"/>
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-60" offsetY="90"/>
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-60" offsetY="-110"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontGamepadBold48" color="FFFFFF" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" offsetX="30" offsetY="20"/>
+                    <Anchor point="TOPRIGHT" offsetX="-30" offsetY="20"/>
+                    <Dimensions y="52"/>
+                </Label>
+                <Label name="$(parent)ListName" font="ZoFontGamepadCondensed42" color="C5C29E" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="8"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+                    <Dimensions y="46"/>
+                </Label>
+                <Label name="$(parent)Summary" font="ZoFontGamepad34" color="FFFFFF" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ListName" relativePoint="BOTTOMLEFT"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)ListName" relativePoint="BOTTOMRIGHT"/>
+                    <Dimensions y="38"/>
+                </Label>
+                <Control name="$(parent)List" inherits="ZO_VerticalParametricScrollListTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Summary" relativePoint="BOTTOMLEFT" offsetY="12"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-62"/>
+                </Control>
+                <Label name="$(parent)Status" font="ZoFontGamepad27" color="A6D18C" horizontalAlignment="LEFT">
+                    <Anchor point="BOTTOMLEFT" offsetX="30" offsetY="-16"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-30" offsetY="-16"/>
+                    <Dimensions y="38"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

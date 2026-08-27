@@ -37,7 +37,15 @@ local function formatGold(value)
 end
 
 function addon:Initialize()
-    self.data = ShoppingListData:New()
+    local data, message = ShoppingListData:New()
+    if not data then
+        d(message or GetString(SI_SHOPPING_LIST_DATA_MIGRATION_FAILED))
+        return
+    end
+    self.data = data
+    if self.API and self.API._AttachData then
+        self.API:_AttachData(data)
+    end
     self.accessibility = ShoppingListAccessibility
     self.accessibility:Initialize(self)
     self.matcher = ShoppingListMatcher
@@ -47,9 +55,12 @@ function addon:Initialize()
     self.gamepad = ShoppingListGamepad:New(self)
     self.gamepad:Initialize()
     self.inventory = ShoppingListInventory:New(self)
+    self.data:SetInventory(self.inventory)
     self.inventory:Initialize()
     self.history = ShoppingListHistory:New(self)
     self.history:Initialize()
+    self.session = ShoppingListSessionSummary:New(self)
+    self.session:Initialize()
     self.archive = ShoppingListArchive:New(self)
     self.archive:Initialize()
     self.share = ShoppingListShare:New(self)
@@ -62,6 +73,7 @@ function addon:Initialize()
     self.help:Initialize()
     self.listTools = ShoppingListListTools:New(self)
     self.listTools:Initialize()
+    self.crafting = ShoppingListCraftingIntegration:New(self)
 
     self.ags = ShoppingListAGSAdapter:New(self)
     local hasAGS = self.ags:Initialize()
@@ -74,39 +86,112 @@ function addon:Initialize()
     ShoppingListMainMenu:Initialize(self)
     self:RegisterEvents()
     self:RegisterCommands()
+
+    if self.data.legacyRecoveredCount then
+        d(zo_strformat(
+            GetString(SI_SHOPPING_LIST_LEGACY_RECOVERED),
+            self.data.legacyRecoveredCount
+        ))
+    elseif self.data.legacyRecoveryError then
+        d(self.data.legacyRecoveryError)
+    end
+end
+
+function addon:HandleStoreOpened()
+    self.storeOpen = true
+    if self.storeOpenQueued then
+        return
+    end
+    self.storeOpenQueued = true
+    zo_callLater(function()
+        self.storeOpenQueued = false
+        if not self.storeOpen then
+            return
+        end
+        if self.data:GetSettings().autoOpen then
+            if IsInGamepadPreferredMode() then
+                self.gamepad:ShowForStore()
+            else
+                self.ui:ShowForStore()
+            end
+        else
+            self.ui:Refresh()
+            self.gamepad:Refresh()
+        end
+    end, 100)
+end
+
+function addon:HandleStoreClosed()
+    if not self.storeOpen then
+        return
+    end
+    self.storeOpen = false
+    self.storeOpenQueued = false
+    self.ui:HideForStore()
+    self.gamepad:HideForStore()
+    self.ui:Refresh()
+    self.gamepad:Refresh()
 end
 
 function addon:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(
         "GravvyShoppingList_OpenStore",
         EVENT_OPEN_TRADING_HOUSE,
-        function()
-            self.storeOpen = true
-            zo_callLater(function()
-                if self.data:GetSettings().autoOpen then
-                    if IsInGamepadPreferredMode() then
-                        self.gamepad:ShowForStore()
-                    else
-                        self.ui:ShowForStore()
-                    end
-                else
-                    self.ui:Refresh()
-                    self.gamepad:Refresh()
-                end
-            end, 100)
-        end
+        function() self:HandleStoreOpened() end
     )
     EVENT_MANAGER:RegisterForEvent(
         "GravvyShoppingList_CloseStore",
         EVENT_CLOSE_TRADING_HOUSE,
-        function()
-            self.storeOpen = false
-            self.ui:HideForStore()
-            self.gamepad:HideForStore()
-            self.ui:Refresh()
-            self.gamepad:Refresh()
-        end
+        function() self:HandleStoreClosed() end
     )
+    EVENT_MANAGER:RegisterForEvent(
+        "GravvyShoppingList_SaveCheckpoint",
+        EVENT_PLAYER_DEACTIVATED,
+        function() self.data:CreateDeactivationBackup() end
+    )
+
+    local registeredScenes = {}
+    for _, scene in pairs({
+        TRADING_HOUSE_SCENE,
+        GAMEPAD_TRADING_HOUSE_SCENE,
+        TRADING_HOUSE_GAMEPAD_SCENE,
+    }) do
+        if scene and scene.RegisterCallback and not registeredScenes[scene] then
+            registeredScenes[scene] = true
+            scene:RegisterCallback("StateChange", function(_, newState)
+                if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                    self:HandleStoreOpened()
+                elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN then
+                    self:HandleStoreClosed()
+                end
+            end)
+        end
+    end
+end
+
+function addon:RestoreStartupDataIfNeeded()
+    if self.startupRecoveryChecked then
+        return
+    end
+    self.startupRecoveryChecked = true
+    local restored, message, attempted = self.data:RestorePendingExternalSnapshot()
+    if not attempted then
+        return
+    end
+    if not restored then
+        self.startupRecoveryChecked = false
+        d(zo_strformat(
+            GetString(SI_SHOPPING_LIST_EXTERNAL_RESTORE_FAILED),
+            message or GetString(SI_SHOPPING_LIST_BACKUP_ERROR_DATA)
+        ))
+        return
+    end
+    self.ui.listSignature = nil
+    self.accessibility:Apply()
+    if self.inventory then
+        self.inventory:Refresh()
+    end
+    d(GetString(SI_SHOPPING_LIST_EXTERNAL_RESTORED))
 end
 
 function addon:RegisterCommands()
@@ -130,31 +215,69 @@ function addon:ToggleWindow()
     end
 end
 
-function addon:AddItem(name, quantity, itemLink, nameHash)
+function addon:AddItem(name, quantity, itemLink, nameHash, duplicatePolicy)
     return self:AddItemToList(
         self.data:GetCurrentList().id,
         name,
         quantity,
         itemLink,
-        nameHash
+        nameHash,
+        nil,
+        nil,
+        duplicatePolicy
     )
 end
 
-function addon:AddItemToList(listId, name, quantity, itemLink, nameHash, note)
-    local item, message = self.data:AddItemToList(
+function addon:AddItemSource(source, duplicatePolicy)
+    return self:AddItemSourceToList(
+        self.data:GetCurrentList().id,
+        source,
+        duplicatePolicy
+    )
+end
+
+function addon:AddItemSourceToList(listId, source, duplicatePolicy)
+    local item, message, result = self.data:AddPreparedItemToList(
         listId,
-        name,
-        quantity,
-        itemLink,
-        nameHash,
-        note
+        source,
+        duplicatePolicy
     )
     if item then
         self.ui:Refresh()
         self.gamepad:Refresh()
         self:RefreshInventory()
     end
-    return item, message
+    return item, message, result
+end
+
+function addon:AddItemToList(
+    listId,
+    name,
+    quantity,
+    itemLink,
+    nameHash,
+    note,
+    targetMode,
+    duplicatePolicy,
+    match
+)
+    local item, message, result = self.data:AddItemToList(
+        listId,
+        name,
+        quantity,
+        itemLink,
+        nameHash,
+        note,
+        targetMode,
+        duplicatePolicy,
+        match
+    )
+    if item then
+        self.ui:Refresh()
+        self.gamepad:Refresh()
+        self:RefreshInventory()
+    end
+    return item, message, result
 end
 
 function addon:RefreshInventory()
@@ -204,35 +327,42 @@ function addon:RecordPurchase(itemLink, itemName, quantity, purchase)
     local shoppingLists = self.data:GetShoppingLists()
     local spendingBefore = {}
     for _, list in ipairs(shoppingLists) do
-        spendingBefore[list.id] = tonumber(list.totalSpent) or 0
+        spendingBefore[list.id] = tonumber(list.transactionSpent)
+            or tonumber(list.totalSpent) or 0
     end
     local changes = self.matcher:ApplyPurchase(
         self.data:GetShoppingItems(),
         itemLink,
         itemName,
-        quantity
+        quantity,
+        function(entry) return self.data:GetRemainingQuantity(entry) end
     )
     if #changes == 0 then
         return
     end
 
-    for _, change in ipairs(changes) do
-        self.data:RecordPurchase(change.entry, change.quantity, purchase)
+    purchase.quantity = purchase.quantity or quantity
+    local transaction = self.data:RecordPurchaseTransaction(changes, purchase)
+    if transaction and self.session then
+        self.session:RecordTransaction(transaction)
     end
     for _, list in ipairs(shoppingLists) do
+        local transactionSpent = tonumber(list.transactionSpent)
+            or tonumber(list.totalSpent) or 0
         if list.budget
             and spendingBefore[list.id] <= list.budget
-            and list.totalSpent > list.budget
+            and transactionSpent > list.budget
         then
             d(zo_strformat(
                 GetString(SI_SHOPPING_LIST_CHAT_OVER_BUDGET),
                 list.name,
-                formatGold(list.totalSpent - list.budget)
+                formatGold(transactionSpent - list.budget)
             ))
         end
     end
     self.ui:Refresh()
     self.gamepad:Refresh()
+    self:RefreshInventory()
     if self.data:GetSettings().announcePurchases then
         for _, change in ipairs(changes) do
             local entry = change.entry

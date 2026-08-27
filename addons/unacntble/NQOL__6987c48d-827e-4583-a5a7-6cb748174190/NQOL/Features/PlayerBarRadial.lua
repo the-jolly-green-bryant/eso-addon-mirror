@@ -20,6 +20,33 @@ local MASKS = {
     [PlayerBars.SIEGE_HEALTH] = TEXTURE_ROOT .. "nqol_radial_secondary.dds",
 }
 local OUTER_MASK = TEXTURE_ROOT .. "nqol_radial_outer.dds"
+-- Keep directional alpha in the texture: console can discard runtime gradients when a hidden DDS first loads.
+local SHADOW_TEXTURES = {
+    [MASKS[C.RESOURCE_HEALTH]] = {
+        [Shadow.TOP] = TEXTURE_ROOT .. "nqol_radial_shadow_health_top.dds",
+        [Shadow.BOTTOM] = TEXTURE_ROOT .. "nqol_radial_shadow_health_bottom.dds",
+        [Shadow.LEFT] = TEXTURE_ROOT .. "nqol_radial_shadow_health_left.dds",
+        [Shadow.RIGHT] = TEXTURE_ROOT .. "nqol_radial_shadow_health_right.dds",
+    },
+    [OUTER_MASK] = {
+        [Shadow.TOP] = TEXTURE_ROOT .. "nqol_radial_shadow_outer_top.dds",
+        [Shadow.BOTTOM] = TEXTURE_ROOT .. "nqol_radial_shadow_outer_bottom.dds",
+        [Shadow.LEFT] = TEXTURE_ROOT .. "nqol_radial_shadow_outer_left.dds",
+        [Shadow.RIGHT] = TEXTURE_ROOT .. "nqol_radial_shadow_outer_right.dds",
+    },
+    [MASKS[C.RESOURCE_MOUNT_STAMINA]] = {
+        [Shadow.TOP] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_outer_top.dds",
+        [Shadow.BOTTOM] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_outer_bottom.dds",
+        [Shadow.LEFT] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_outer_left.dds",
+        [Shadow.RIGHT] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_outer_right.dds",
+    },
+    [MASKS[PlayerBars.SIEGE_HEALTH]] = {
+        [Shadow.TOP] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_top.dds",
+        [Shadow.BOTTOM] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_bottom.dds",
+        [Shadow.LEFT] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_left.dds",
+        [Shadow.RIGHT] = TEXTURE_ROOT .. "nqol_radial_shadow_secondary_right.dds",
+    },
+}
 local STACK_BREAK_SIZE = 3
 local OUTER_CURVE = {
     { 116, 42 }, { 56, 166 }, { 55, 342 }, { 118, 474 },
@@ -117,8 +144,11 @@ local function CreateWidget(root, resourceType)
         widget.trauma = CreateTexture(widget, widget.mask, C.DRAW_LEVEL + 4, C.PLAYER_TRAUMA_COLOR[1], C.PLAYER_TRAUMA_COLOR[2], C.PLAYER_TRAUMA_COLOR[3], C.PLAYER_TRAUMA_COLOR[4])
         widget.trauma:SetHidden(true)
     end
-    widget.shadow = CreateTexture(widget, widget.mask, C.DRAW_LEVEL + 5, 0, 0, 0, 1)
-
+    widget.shadow = WINDOW_MANAGER:CreateControl(nil, widget, CT_TEXTURE)
+    widget.shadow:SetDimensions(WIDTH, HEIGHT)
+    widget.shadow:SetColor(1, 1, 1, 1)
+    widget.shadow:SetHidden(true)
+    MoveAboveHud(widget.shadow, C.DRAW_LEVEL + 5)
     if resourceType == C.RESOURCE_HEALTH or resourceType == C.RESOURCE_MAGICKA or resourceType == C.RESOURCE_STAMINA then
         widget.maximumLabel = CreateLabel(root)
         widget.currentLabel = CreateLabel(root)
@@ -256,6 +286,7 @@ local function LayoutTextureSegment(control, bounds, mirrored)
 end
 
 local function SetWidgetMask(widget, texture, bounds, inverseFill, mirrored, borderSize, tip, showBorder, borderBounds)
+    widget.mask = texture
     widget.verticalBounds = bounds
     widget.inverseFill = inverseFill == true
     widget.mirrored = mirrored == true
@@ -268,7 +299,6 @@ local function SetWidgetMask(widget, texture, bounds, inverseFill, mirrored, bor
     if widget.trauma then
         SetAddonTexture(widget.trauma, texture)
     end
-    SetAddonTexture(widget.shadow, texture)
     LayoutTextureSegment(widget.track, bounds, mirrored)
     LayoutTextureSegment(widget.shadow, bounds, mirrored)
     SetMirrored(widget.fill, mirrored)
@@ -290,16 +320,28 @@ local function LayoutShadow(widget, settings)
     local shadow = widget.shadow
     local direction = settings.shadow
     local alpha = NQOL.Util.Clamp(tonumber(settings.shadowIntensity) or 0, 0, 100) * 0.01
-    if direction == Shadow.NONE or alpha <= 0 then shadow:SetHidden(true); return end
-    local top, bottom, left, right = 0, 0, 0, 0
-    if direction == Shadow.TOP then top = alpha
-    elseif direction == Shadow.BOTTOM then bottom = alpha
-    elseif direction == Shadow.LEFT then left = alpha
-    elseif direction == Shadow.RIGHT then right = alpha end
-    shadow:SetVertexColors(VERTEX_POINTS_TOPLEFT, 0, 0, 0, math.max(top, left))
-    shadow:SetVertexColors(VERTEX_POINTS_TOPRIGHT, 0, 0, 0, math.max(top, right))
-    shadow:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT, 0, 0, 0, math.max(bottom, left))
-    shadow:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0, 0, 0, math.max(bottom, right))
+    if direction == Shadow.NONE or not Shadow.VALID[direction] or alpha <= 0 then
+        shadow:SetHidden(true)
+        return
+    end
+
+    local textureDirection = direction
+    if widget.mirrored == true then
+        if direction == Shadow.LEFT then textureDirection = Shadow.RIGHT
+        elseif direction == Shadow.RIGHT then textureDirection = Shadow.LEFT end
+    end
+    local textureSet = SHADOW_TEXTURES[widget.mask]
+    local texture = textureSet and textureSet[textureDirection]
+    if not texture then
+        shadow:SetHidden(true)
+        return
+    end
+
+    if shadow.nqolTexture ~= texture then
+        shadow.nqolTexture = texture
+        SetAddonTexture(shadow, texture)
+    end
+    shadow:SetAlpha(alpha)
     shadow:SetHidden(false)
 end
 
@@ -403,7 +445,6 @@ function Radial.Layout(preset)
     local labelFont = NQOL.Util.CreateFontString(settings.font, settings.fontSize, "ZoFontGamepad18")
     for _, widget in pairs(controls.widgets) do
         if widget.currentLabel then widget.currentLabel:SetFont(labelFont); widget.maximumLabel:SetFont(labelFont) end
-        LayoutShadow(widget, settings)
     end
     local healthX = GetWidgetX(controls.widgets[C.RESOURCE_HEALTH], settings.healthSide, screenCenter, halfGap)
     local magickaX = GetWidgetX(controls.widgets[C.RESOURCE_MAGICKA], magickaSide, screenCenter, halfGap)
@@ -487,6 +528,10 @@ function Radial.Layout(preset)
         for _, changeLabel in ipairs(widget.changeLabels) do
             AnchorLabel(changeLabel, root, widgetX, clusterY, resourceType == C.RESOURCE_HEALTH and 146 or 42, 210, mirrored)
         end
+    end
+
+    for _, widget in pairs(controls.widgets) do
+        LayoutShadow(widget, settings)
     end
 
     local health = controls.widgets[C.RESOURCE_HEALTH]

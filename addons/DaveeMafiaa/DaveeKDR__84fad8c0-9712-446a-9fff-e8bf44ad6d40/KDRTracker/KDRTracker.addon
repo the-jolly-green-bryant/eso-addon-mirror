@@ -1,0 +1,12 @@
+## Title: KDR Tracker
+## Description: PS5 PvP KDR tracker using native PvP kill-feed and Battleground kill events for reliable kill/streak tracking.
+## Author: Daveemafiaa
+## Version: 1.6.0
+## APIVersion: 101050 101051
+## SavedVariables: KDRTrackerSavedVariables
+## OptionalDependsOn: LibHarvensAddonSettings
+
+KDRTracker.xml
+KDRTracker.lua
+KDRTracker_Settings.lua
+Bindings.xml

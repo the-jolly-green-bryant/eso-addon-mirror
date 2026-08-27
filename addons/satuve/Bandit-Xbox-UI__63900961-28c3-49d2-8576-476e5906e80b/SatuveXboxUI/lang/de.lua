@@ -821,4 +821,6 @@ SXUI_CP_PreviewDesc='Zeigt, wie deine verfügbaren blauen Warfare-Championpunkte
 SXUI_CP_Apply='CP-Build anwenden',
 SXUI_CP_ApplyDesc='Wendet die gespeicherte Warfare-CP-Prioritätenliste an. Wenn vorhandene Punkte im Weg sind, kann ESO eine Neuverteilung mit den normalen Goldkosten verlangen.',
 
+
+	MinimapTransparency="Minimap-Transparenz",
 }

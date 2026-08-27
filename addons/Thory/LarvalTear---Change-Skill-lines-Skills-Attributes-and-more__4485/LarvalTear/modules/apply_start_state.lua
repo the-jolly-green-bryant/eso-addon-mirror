@@ -466,32 +466,28 @@ function LTM_APPLY_START_STATE:ShowConfirmDialog(onConfirm, onCancel)
     return true
 end
 
-function LTM_APPLY_START_STATE:CancelToClean()
+function LTM_APPLY_START_STATE:ClearAddonPendingContexts()
     pcall(LTM_SKILL_RESPEC_APPLY.ClearPendingContext, LTM_SKILL_RESPEC_APPLY)
     pcall(LTM_ATTRIBUTE_APPLY.ClearPendingContext, LTM_ATTRIBUTE_APPLY)
+end
 
-    if type(SKILLS_AND_ACTION_BAR_MANAGER) == "table" then
-        local manager = SKILLS_AND_ACTION_BAR_MANAGER
-        if type(manager.CancelChanges) == "function" then
-            pcall(manager.CancelChanges, manager)
-        elseif type(manager.ClearPendingChanges) == "function" then
-            pcall(manager.ClearPendingChanges, manager)
-        elseif type(manager.Reset) == "function" then
-            pcall(manager.Reset, manager)
-        end
-    end
+function LTM_APPLY_START_STATE:ResetRespecInterface()
+    -- ESO's reset callback releases skill allocators and resets skill-line and
+    -- player-hotbar pending caches even when the allocation mode is already the
+    -- purchase-only default.
+    SKILLS_AND_ACTION_BAR_MANAGER:ResetRespecState()
+end
 
-    if type(SKILL_POINT_ALLOCATION_MANAGER) == "table" and type(SKILL_POINT_ALLOCATION_MANAGER.Reset) == "function" then
-        pcall(SKILL_POINT_ALLOCATION_MANAGER.Reset, SKILL_POINT_ALLOCATION_MANAGER)
-    end
+function LTM_APPLY_START_STATE:RequestHudBaseline()
+    -- Skills and Stats both accept a non-nil bypass reason in their hide-scene
+    -- confirmation callbacks. This is the same leader-scene route ESO uses when
+    -- a skill respec UI must be left unconditionally on player deactivation.
+    SCENE_MANAGER:RequestShowLeaderBaseScene(ZO_BHSCR_SKILLS_PLAYER_DEACTIVATED)
+end
 
-    if type(ACTION_BAR_ASSIGNMENT_MANAGER) == "table" and type(ACTION_BAR_ASSIGNMENT_MANAGER.Reset) == "function" then
-        pcall(ACTION_BAR_ASSIGNMENT_MANAGER.Reset, ACTION_BAR_ASSIGNMENT_MANAGER)
-    end
-
-    if type(SKILL_LINE_ASSIGNMENT_MANAGER) == "table" and type(SKILL_LINE_ASSIGNMENT_MANAGER.Reset) == "function" then
-        pcall(SKILL_LINE_ASSIGNMENT_MANAGER.Reset, SKILL_LINE_ASSIGNMENT_MANAGER)
-    end
+function LTM_APPLY_START_STATE:CancelToClean()
+    self:ClearAddonPendingContexts()
+    self:ResetRespecInterface()
 end
 
 function LTM_APPLY_START_STATE:NormalizeToHudBaseline(onComplete)
@@ -501,7 +497,7 @@ function LTM_APPLY_START_STATE:NormalizeToHudBaseline(onComplete)
 
     self:CancelToClean()
 
-    SCENE_MANAGER:ShowBaseScene()
+    self:RequestHudBaseline()
 
     local context = {
         attemptIndex = 0,
@@ -519,7 +515,7 @@ function LTM_APPLY_START_STATE:NormalizeToHudBaseline(onComplete)
             context.dismissedDialogName = dismissedDialogName or context.dismissedDialogName
             context.dismissedDialogControl = dismissedDialogControl or context.dismissedDialogControl
         end
-        SCENE_MANAGER:ShowBaseScene()
+        self:RequestHudBaseline()
         snapshot = self:BuildSnapshot()
         if self:IsHudBaseline(snapshot) then
             if context.dismissedDialog == true then
@@ -617,7 +613,7 @@ function LTM_APPLY_START_STATE:Begin(request, completion, startPipeline)
     end
 
     if IsCleanStartFastPathEligible(snapshot, classification) then
-        self:CancelToClean()
+        self:ClearAddonPendingContexts()
         startAfterClean("no", snapshot, "clean_fast_path")
         return true, "handled"
     end

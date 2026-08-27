@@ -39,6 +39,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pawksickles updated for High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/trollusk/Pawksickles-updated-for-High-Isle__3422) | trollusk | PC / Mac | 1.6.1 |
 | [PB](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexdragian/PB__2499) | alexdragian | PC / Mac | 0.0.23 |
 | [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
+| [PB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
 | [pChat (Chat customization & help: look/notification/sound/automation/history)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Puddy/pChat-Chat-customization-help-look-notification-sound-automation-history__93) | Puddy | PC / Mac | 10.0.7.4 |
 | [pChat - jp Nickname Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/pChat---jp-Nickname-Patch__2697) | Marify | PC / Mac | 1.3.12 |
 | [pChatZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/pChatZHPatch__3908) | FusRoDah | PC / Mac | 10.0.5.3 |
@@ -150,6 +151,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Priority Recast](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Amerlite/Priority-Recast__4655) | Amerlite | PC / Mac | 1.3 |
 | [Prismatic Warning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pretz333/Prismatic-Warning__2985) | Pretz333 | PC / Mac | 4.5.4 |
 | [Proc Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Proc-Reminder__541ab871-9386-4990-a3c7-32563ded9243) | Vixen_Hunny | Console | — |
+| [Procseason](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DaveeMafiaa/Procseason__79d34de4-5c42-452f-9ce7-b03858b6b1e1) | DaveeMafiaa | Console | — |
 | [Profanity+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scribe_Rob/Profanity__e5945fc9-cef6-468d-9335-b4657a89f1f1) | Scribe_Rob | Console | — |
 | [Profit Calculator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/anufi/Profit-Calculator__2947) | anufi | PC / Mac | 1.1.1 |
 | [Provinatus - Heads Up Display](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlbinoPython/Provinatus---Heads-Up-Display__1943) | AlbinoPython | PC / Mac | 2.6.1 |
@@ -180,7 +182,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PvDoor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/skineh/PvDoor__3098) | skineh | PC / Mac | 1.0.2 |
 | [PVP Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Alpha-AC/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d) | Alpha-AC | Console | — |
 | [PvP FPS 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/PvP-FPS-2018__2011) | Phuein | PC / Mac | 1.22 |
-| [PvP QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/PvP-QoL__4358) | atharti | PC / Mac | 4.3 |
+| [PvP QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/PvP-QoL__4358) | atharti | PC / Mac | 4.4 |
 | [PvP Ranks (patch for Update 28 - Markarth)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/PvP-Ranks-patch-for-Update-28---Markarth__2824) | ForgottenLight | PC / Mac | 2.5d |
 | [PvP Ranks and Veterancy: Update 50](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sufia_Heolcyn/PvP-Ranks-and-Veterancy-Update-50__4640) | Sufia_Heolcyn | PC / Mac | 3.01 |
 | [Pvp Ready Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/Pvp-Ready-Emotes__2d86078c-b982-4ffc-a7f0-7905e41c2354) | Architectofmusic | Console | — |

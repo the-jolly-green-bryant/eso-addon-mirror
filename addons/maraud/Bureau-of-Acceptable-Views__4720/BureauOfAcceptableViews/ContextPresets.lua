@@ -86,6 +86,22 @@ local function ShoulderOwnedExternally()
     return shoulder ~= nil and shoulder.OwnsShoulder and shoulder.OwnsShoulder()
 end
 
+-- True while OffsetNudge is holding an axis bind. ContextPresets then skips
+-- horizontalOffset and verticalOffset so a reassert or glide cannot fight the
+-- live nudge. Recenter is a tap, not a hold, so it does not set this.
+local HORIZONTAL_OFFSET_KEY = "horizontalOffset"
+local VERTICAL_OFFSET_KEY = "verticalOffset"
+
+local function OffsetNudgeOwnsAxes()
+    local nudge = addon.OffsetNudge
+    return nudge ~= nil and nudge.IsHolding and nudge.IsHolding()
+end
+
+local function SkipNudgeAxis(key)
+    return OffsetNudgeOwnsAxes()
+        and (key == HORIZONTAL_OFFSET_KEY or key == VERTICAL_OFFSET_KEY)
+end
+
 -- ---------------------------------------------------------------------------
 -- Preset shape
 -- ---------------------------------------------------------------------------
@@ -163,6 +179,7 @@ function ContextPresets.Apply(preset, isRestore)
     for _, key in ipairs(PRESET_KEYS) do
         local value = preset[key]
         if value ~= nil and not (skipShoulder and key == SHOULDER_KEY)
+            and not SkipNudgeAxis(key)
             and CameraSettings.IsSupported(key) then
             if key == FOV_KEY and arbiter and not isRestore then
                 -- FOV is arbitrated: pin it through a hold so a subsequent zoom
@@ -669,7 +686,8 @@ local function OnTransitionStep(t)
         return
     end
     for _, g in ipairs(transitionKeys) do
-        if g.key ~= SHOULDER_KEY or not ShoulderOwnedExternally() then
+        if (g.key ~= SHOULDER_KEY or not ShoulderOwnedExternally())
+            and not SkipNudgeAxis(g.key) then
             CameraSettings.Set(g.key, g.from + (g.to - g.from) * t)
         end
     end
@@ -748,6 +766,7 @@ local function StartTransition(target, isRestore, clearRestoreSnapshotOnLand)
         for _, key in ipairs(GLIDE_KEYS) do
             local to = target[key]
             if to ~= nil and not (key == SHOULDER_KEY and ShoulderOwnedExternally())
+                and not SkipNudgeAxis(key)
                 and CameraSettings.IsSupported(key) then
                 local from, ok = CameraSettings.Get(key)
                 if ok and from ~= nil then
@@ -1284,6 +1303,109 @@ end
 -- Returns the currently active state id (STATE_DEFAULT when idle/disabled).
 function ContextPresets.GetActiveState()
     return controller.activeState
+end
+
+-- Stop an in-flight spatial glide without landing it. OffsetNudge uses this so
+-- a hold-to-nudge bind is not fighting a 250 ms preset transition. When the
+-- interrupted glide was a restore, the live horizontal/vertical offsets are
+-- copied into the snapshot so the player's seen framing becomes the new base
+-- for those axes. An interrupted apply leaves the original player snapshot
+-- intact -- the live camera is mid-preset, and OffsetNudge then deltas both.
+function ContextPresets.InterruptTransition()
+    if not Ease.IsActive(TRANSITION_UPDATE_NAME) then
+        return false
+    end
+
+    if transitionIsRestore then
+        local snapshot = slots[RESTORE_SLOT]
+        if type(snapshot) == "table" then
+            local horizontal, hasHorizontal = CameraSettings.Get("horizontalOffset")
+            if hasHorizontal then
+                snapshot.horizontalOffset = horizontal
+            end
+            local vertical, hasVertical = CameraSettings.Get("verticalOffset")
+            if hasVertical then
+                snapshot.verticalOffset = vertical
+            end
+        end
+
+        local clears = transitionClearsRestoreSnapshot
+        local target = snapshot or transitionTarget
+        StopTransition()
+        if type(target) == "table" then
+            local _, failed = ContextPresets.Apply(target, true)
+            if clears and failed == 0 then
+                ContextPresets.ClearCapture(RESTORE_SLOT)
+                PersistRestoreSnapshot(nil)
+            elseif clears then
+                PersistRestoreSnapshot(snapshot)
+            end
+        end
+        return true
+    end
+
+    StopTransition()
+    return true
+end
+
+-- Shift one restore-snapshot axis by a live delta. Used while OffsetNudge is
+-- writing the camera so leaving the preset does not rewind the nudge. Skipped
+-- while the options window is open: that path already shows the real camera
+-- and re-snapshots it on close. Does not persist; FlushRestoreSnapshot does.
+function ContextPresets.AdjustRestoreOffset(key, delta)
+    if OptionsWatch.IsOpen() then
+        return false
+    end
+    local snapshot = slots[RESTORE_SLOT]
+    if type(snapshot) ~= "table" then
+        return false
+    end
+    delta = tonumber(delta)
+    if delta == nil or snapshot[key] == nil then
+        return false
+    end
+    snapshot[key] = snapshot[key] + delta
+    return true
+end
+
+-- Write one restore-snapshot axis to an absolute value (recenter). Same
+-- options-window and persistence rules as AdjustRestoreOffset.
+function ContextPresets.SetRestoreOffset(key, value)
+    if OptionsWatch.IsOpen() then
+        return false
+    end
+    local snapshot = slots[RESTORE_SLOT]
+    if type(snapshot) ~= "table" then
+        return false
+    end
+    value = tonumber(value)
+    if value == nil then
+        return false
+    end
+    snapshot[key] = value
+    return true
+end
+
+-- Persist the in-memory restore snapshot. OffsetNudge calls this when a hold
+-- ends so a mid-nudge /reloadui still recovers the player's real framing.
+function ContextPresets.FlushRestoreSnapshot()
+    local snapshot = slots[RESTORE_SLOT]
+    if type(snapshot) ~= "table" then
+        return false
+    end
+    PersistRestoreSnapshot(snapshot)
+    return true
+end
+
+-- Read one axis from the pre-preset snapshot, or nil when no snapshot is live.
+-- OffsetNudge uses this so "remember home" stores the player's real framing
+-- rather than a cinematic bundle currently sitting on the camera.
+function ContextPresets.GetRestoreOffset(key)
+    local snapshot = slots[RESTORE_SLOT]
+    if type(snapshot) ~= "table" then
+        return nil
+    end
+    return tonumber(snapshot[key])
 end
 
 -- Request a temporary profile from a detector module while keeping camera

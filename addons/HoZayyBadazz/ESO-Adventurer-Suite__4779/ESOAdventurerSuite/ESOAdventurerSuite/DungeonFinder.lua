@@ -165,6 +165,618 @@ local function findOptionIndex(userType, countFn, infoFn, wanted)
     return nil
 end
 
+-- v0.28.56: Public Dungeon hosting/detection support.
+-- ESO does not expose a simple current-player IsInPublicDungeon() query.
+-- Detection therefore combines the live player map, a maintained public-
+-- dungeon map list, the zone-display type supplied during zone travel,
+-- optional LibZone support, and the current sub-zone POI when available.
+local PUBLIC_DUNGEON_MAP_IDS = {
+    -- Kept in sync with the current LibZone public-dungeon map list.
+    [31]=true, [42]=true, [65]=true, [71]=true, [72]=true, [76]=true, [98]=true, [99]=true,
+    [115]=true, [140]=true, [142]=true, [144]=true, [175]=true, [189]=true, [268]=true, [278]=true,
+    [283]=true, [317]=true, [318]=true, [339]=true, [669]=true, [719]=true, [763]=true, [764]=true,
+    [937]=true, [938]=true, [975]=true, [979]=true, [980]=true, [981]=true, [982]=true, [983]=true,
+    [984]=true, [989]=true, [990]=true, [1276]=true, [1310]=true, [1311]=true, [1312]=true,
+    [1314]=true, [1315]=true, [1316]=true, [1317]=true, [1318]=true, [1397]=true, [1438]=true,
+    [1636]=true, [1637]=true, [1638]=true, [1639]=true, [1751]=true, [1774]=true, [1933]=true,
+    [1942]=true, [1943]=true, [1958]=true, [1959]=true, [1973]=true, [1985]=true, [1986]=true,
+    [1987]=true, [1988]=true, [1989]=true, [2000]=true, [2053]=true, [2054]=true, [2055]=true,
+    [2056]=true, [2077]=true, [2171]=true, [2211]=true, [2302]=true, [2350]=true, [2351]=true,
+    [2352]=true, [2353]=true, [2441]=true, [2456]=true, [2728]=true,
+}
+
+-- EVENT_PREPARE_FOR_JUMP directly tells us the destination ZoneDisplayType.
+-- Cache it through activation so public dungeons added in future updates can
+-- still be recognized even before their map IDs are added to the table.
+if EVENT_MANAGER and EVENT_PREPARE_FOR_JUMP then
+    EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_PublicDungeonJump02856", EVENT_PREPARE_FOR_JUMP,
+        function(_, zoneName, zoneDescription, loadingTexture, zoneDisplayType)
+            D._pendingZoneDisplayType02856 = zoneDisplayType
+            D._pendingZoneName02856 = cleanName(zoneName)
+        end)
+end
+if EVENT_MANAGER and EVENT_PLAYER_ACTIVATED then
+    EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_PublicDungeonActivated02856", EVENT_PLAYER_ACTIVATED,
+        function()
+            if D._pendingZoneDisplayType02856 ~= nil then
+                D._currentZoneDisplayType02856 = D._pendingZoneDisplayType02856
+                D._currentZoneName02856 = D._pendingZoneName02856
+                D._pendingZoneDisplayType02856 = nil
+                D._pendingZoneName02856 = nil
+            elseif type(IsUnitInDungeon) == "function" then
+                local ok, inDungeon = pcall(IsUnitInDungeon, "player")
+                if ok and not inDungeon then
+                    D._currentZoneDisplayType02856 = nil
+                    D._currentZoneName02856 = nil
+                end
+            end
+            if EPC.Journal and EPC.Journal.activeTab == "GROUPFINDER" and EPC.Journal.RefreshSuitePage then
+                EPC.Journal:RefreshSuitePage("GROUPFINDER")
+            end
+        end)
+end
+
+local function findOptionIndexContaining(userType, countFn, infoFn, terms)
+    if type(countFn) ~= "function" or type(infoFn) ~= "function" then return nil end
+    local okCount, count = pcall(countFn, userType)
+    if not okCount then return nil end
+    for i = 1, tonumber(count) or 0 do
+        local ok, name = pcall(infoFn, userType, i)
+        if ok then
+            local haystack = norm(name)
+            local matches = true
+            for _, term in ipairs(terms or {}) do
+                if not haystack:find(norm(term), 1, true) then matches = false; break end
+            end
+            if matches then return i end
+        end
+    end
+    return nil
+end
+
+local function clipText(text, maxLen)
+    text = tostring(text or "")
+    maxLen = tonumber(maxLen) or 40
+    if #text <= maxLen then return text end
+    if type(zo_strsub) == "function" then
+        local ok, value = pcall(zo_strsub, text, 1, maxLen)
+        if ok and value then return value end
+    end
+    return string.sub(text, 1, maxLen)
+end
+
+function D:IsHostingGroupFinderListing()
+    local createdType = GROUP_FINDER_GROUP_LISTING_USER_TYPE_CREATED_GROUP_LISTING
+    if createdType ~= nil and type(HasGroupListingForUserType) == "function" then
+        local ok, hasListing = pcall(HasGroupListingForUserType, createdType)
+        if ok and hasListing then return true end
+    end
+    if createdType ~= nil and type(GetCurrentGroupFinderUserType) == "function" then
+        local ok, currentType = pcall(GetCurrentGroupFinderUserType)
+        if ok and currentType == createdType then return true end
+    end
+    return false
+end
+
+local function getPlayerZoneIds()
+    local zoneIndex, zoneId, parentZoneId = nil, nil, nil
+    if type(GetUnitZoneIndex) == "function" then
+        local ok, value = pcall(GetUnitZoneIndex, "player")
+        if ok then zoneIndex = tonumber(value) end
+    end
+    if zoneIndex and type(GetZoneId) == "function" then
+        local ok, value = pcall(GetZoneId, zoneIndex)
+        if ok then zoneId = tonumber(value) end
+    end
+    if zoneId and type(GetParentZoneId) == "function" then
+        local ok, value = pcall(GetParentZoneId, zoneId)
+        if ok then parentZoneId = tonumber(value) end
+    end
+    return zoneIndex, zoneId, parentZoneId
+end
+
+local function getZoneDisplayName(zoneId)
+    if not zoneId or type(GetZoneNameById) ~= "function" then return "" end
+    local ok, value = pcall(GetZoneNameById, zoneId)
+    if not ok then return "" end
+    return cleanName(value)
+end
+
+local function getMapDisplayName(mapId)
+    if not mapId or type(GetMapNameById) ~= "function" then return "" end
+    local ok, value = pcall(GetMapNameById, mapId)
+    if not ok then return "" end
+    return cleanName(value)
+end
+
+function D:GetCurrentPublicDungeonInfo()
+    local inDungeon = nil
+    if type(IsUnitInDungeon) == "function" then
+        local ok, value = pcall(IsUnitInDungeon, "player")
+        if ok then inDungeon = value == true end
+    end
+
+    local zoneDisplaySaysPublic = ZONE_DISPLAY_TYPE_PUBLIC_DUNGEON ~= nil
+        and self._currentZoneDisplayType02856 == ZONE_DISPLAY_TYPE_PUBLIC_DUNGEON
+
+    local libZoneSaysPublic = false
+    if type(LibZone) == "table" and type(LibZone.IsInPublicDungeon) == "function" then
+        local ok, value = pcall(LibZone.IsInPublicDungeon, LibZone)
+        libZoneSaysPublic = ok and value == true
+    end
+
+    -- A definite "not in a dungeon" result wins unless the travel event or
+    -- LibZone explicitly identifies this location as a public dungeon.
+    if inDungeon == false and not zoneDisplaySaysPublic and not libZoneSaysPublic then
+        return nil
+    end
+
+    local _, zoneId, parentZoneId = getPlayerZoneIds()
+    local candidateMapIds = {}
+    local seen = {}
+    local function addMapId(value)
+        value = tonumber(value)
+        if value and value > 0 and not seen[value] then
+            seen[value] = true
+            candidateMapIds[#candidateMapIds + 1] = value
+        end
+    end
+
+    -- IMPORTANT: use the live current map directly. Public dungeons can report
+    -- their parent zone through the zone-id path and can also fail the
+    -- DoesCurrentMapMatchMapForPlayerLocation() test even while the player is
+    -- physically inside. This is the same map source used by LibZone.
+    local currentMapId = nil
+    if type(GetCurrentMapId) == "function" then
+        local ok, value = pcall(GetCurrentMapId)
+        if ok then currentMapId = tonumber(value); addMapId(value) end
+    end
+
+    if zoneId and type(GetMapIdByZoneId) == "function" then
+        local ok, mapId = pcall(GetMapIdByZoneId, zoneId)
+        if ok then addMapId(mapId) end
+    end
+
+    -- The minimap keeps a player-location map in normal gameplay. Include it
+    -- as another source when present, but never require it.
+    if EPC.MiniMap and tonumber(EPC.MiniMap.currentMapId) then
+        addMapId(EPC.MiniMap.currentMapId)
+    end
+
+    local detectedMapId = nil
+    for _, mapId in ipairs(candidateMapIds) do
+        if PUBLIC_DUNGEON_MAP_IDS[mapId] then detectedMapId = mapId; break end
+    end
+
+    local locationNames = {}
+    local locationSeen = {}
+    local function addLocationValue(value)
+        value = cleanName(value)
+        local key = norm(value)
+        if value ~= "" and key ~= "" and not locationSeen[key] then
+            locationSeen[key] = true
+            locationNames[#locationNames + 1] = value
+        end
+    end
+    local function addLocationName(fn)
+        if type(fn) ~= "function" then return end
+        local ok, value = pcall(fn)
+        if ok then addLocationValue(value) end
+    end
+    addLocationValue(self._currentZoneName02856)
+    addLocationName(GetPlayerLocationName)
+    addLocationName(GetPlayerActiveSubzoneName)
+    addLocationName(GetPlayerActiveZoneName)
+
+    -- Name fallback for odd maps/floors where ESO exposes the dungeon name but
+    -- the current map ID is a neighboring floor or parent map.
+    if not detectedMapId then
+        for mapId in pairs(PUBLIC_DUNGEON_MAP_IDS) do
+            local mapName = getMapDisplayName(mapId)
+            local mapNorm = norm(mapName)
+            if mapNorm ~= "" then
+                for _, locationName in ipairs(locationNames) do
+                    local locNorm = norm(locationName)
+                    if locNorm ~= "" and (locNorm == mapNorm
+                        or (#locNorm >= 6 and mapNorm:find(locNorm, 1, true))
+                        or (#mapNorm >= 6 and locNorm:find(mapNorm, 1, true))) then
+                        detectedMapId = mapId
+                        break
+                    end
+                end
+            end
+            if detectedMapId then break end
+        end
+    end
+
+    -- Some clients expose the current sub-zone POI even while inside. Use the
+    -- game's own Public Dungeon classification when it is available.
+    local poiSaysPublic = false
+    if type(GetCurrentSubZonePOIIndices) == "function" and type(IsPOIPublicDungeon) == "function" then
+        local ok, poiZoneIndex, poiIndex = pcall(GetCurrentSubZonePOIIndices)
+        if ok and tonumber(poiZoneIndex) and tonumber(poiIndex) and tonumber(poiIndex) > 0 then
+            local okPublic, value = pcall(IsPOIPublicDungeon, poiZoneIndex, poiIndex)
+            poiSaysPublic = okPublic and value == true
+        end
+    end
+
+    if not detectedMapId and not zoneDisplaySaysPublic and not libZoneSaysPublic and not poiSaysPublic then
+        return nil
+    end
+
+    local mapName = getMapDisplayName(detectedMapId or currentMapId)
+    local dungeonName = ""
+    if mapName ~= "" then dungeonName = mapName end
+
+    -- Prefer the cached destination/sub-zone name when the map is generic.
+    if zoneDisplaySaysPublic and cleanName(self._currentZoneName02856) ~= "" then
+        dungeonName = cleanName(self._currentZoneName02856)
+    else
+        for _, locationName in ipairs(locationNames) do
+            if norm(locationName) == norm(mapName) then dungeonName = locationName; break end
+        end
+    end
+    if dungeonName == "" then dungeonName = locationNames[1] or "Public Dungeon" end
+
+    local zoneName = getZoneDisplayName(parentZoneId)
+    if zoneName == "" or norm(zoneName) == norm(dungeonName) then
+        zoneName = getZoneDisplayName(zoneId)
+    end
+    if (zoneName == "" or norm(zoneName) == norm(dungeonName)) and type(GetPlayerActiveZoneName) == "function" then
+        local ok, value = pcall(GetPlayerActiveZoneName)
+        if ok then zoneName = cleanName(value) end
+    end
+
+    return {
+        mapId = detectedMapId or currentMapId,
+        name = dungeonName,
+        zoneId = zoneId,
+        parentZoneId = parentZoneId,
+        zoneName = zoneName,
+        detectedByZoneDisplayType = zoneDisplaySaysPublic,
+        detectedByLibZone = libZoneSaysPublic,
+        detectedByPOI = poiSaysPublic,
+    }
+end
+
+
+-- v0.28.57: Detect the four-player Group Dungeon the player is currently
+-- inside by matching ESO's live location/map names against the runtime
+-- Activity Finder dungeon index. This avoids maintaining a second hardcoded
+-- map table for every normal/veteran Group Dungeon.
+local function getCurrentGroupDungeonDifficulty02857()
+    -- Prefer the difficulty of the instance the player is physically inside.
+    -- Unlike IsUnitInDungeon(), GetCurrentZoneDungeonDifficulty() reports
+    -- DUNGEON_DIFFICULTY_NONE for delves/public dungeons and NORMAL/VETERAN
+    -- for instanced group content, so it is also a useful first-stage guard.
+    if type(GetCurrentZoneDungeonDifficulty) == "function" then
+        local ok, value = pcall(GetCurrentZoneDungeonDifficulty)
+        if ok and value ~= nil then
+            if DUNGEON_DIFFICULTY_NONE ~= nil and value == DUNGEON_DIFFICULTY_NONE then
+                return nil, value, false
+            end
+            local isVeteran = DUNGEON_DIFFICULTY_VETERAN ~= nil and value == DUNGEON_DIFFICULTY_VETERAN
+            local isNormal = DUNGEON_DIFFICULTY_NORMAL ~= nil and value == DUNGEON_DIFFICULTY_NORMAL
+            if isVeteran or isNormal then
+                return isVeteran and "VETERAN" or "NORMAL", value, isVeteran
+            end
+        end
+    end
+
+    -- Fallback for clients where the current-zone query is unavailable.
+    local difficulty = DUNGEON_DIFFICULTY_NORMAL
+    if type(ZO_GetEffectiveDungeonDifficulty) == "function" then
+        local ok, value = pcall(ZO_GetEffectiveDungeonDifficulty)
+        if ok and value ~= nil then difficulty = value end
+    else
+        local isVeteran = false
+        if type(IsUnitGrouped) == "function" then
+            local okGrouped, grouped = pcall(IsUnitGrouped, "player")
+            if okGrouped and grouped and type(IsGroupUsingVeteranDifficulty) == "function" then
+                local okVeteran, value = pcall(IsGroupUsingVeteranDifficulty)
+                if okVeteran then isVeteran = value == true end
+            elseif type(IsUnitUsingVeteranDifficulty) == "function" then
+                local okVeteran, value = pcall(IsUnitUsingVeteranDifficulty, "player")
+                if okVeteran then isVeteran = value == true end
+            end
+        elseif type(IsUnitUsingVeteranDifficulty) == "function" then
+            local okVeteran, value = pcall(IsUnitUsingVeteranDifficulty, "player")
+            if okVeteran then isVeteran = value == true end
+        end
+        if isVeteran and DUNGEON_DIFFICULTY_VETERAN ~= nil then
+            difficulty = DUNGEON_DIFFICULTY_VETERAN
+        end
+    end
+    local isVeteran = DUNGEON_DIFFICULTY_VETERAN ~= nil and difficulty == DUNGEON_DIFFICULTY_VETERAN
+    return isVeteran and "VETERAN" or "NORMAL", difficulty, isVeteran
+end
+
+local function getCurrentDungeonLocationNames02857()
+    local names, seen = {}, {}
+    local function add(value)
+        value = cleanName(value)
+        local key = norm(value)
+        if value ~= "" and key ~= "" and not seen[key] then
+            seen[key] = true
+            names[#names + 1] = value
+        end
+    end
+    local function addFrom(fn, ...)
+        if type(fn) ~= "function" then return end
+        local ok, value = pcall(fn, ...)
+        if ok then add(value) end
+    end
+
+    addFrom(GetPlayerLocationName)
+    addFrom(GetPlayerActiveSubzoneName)
+    addFrom(GetPlayerActiveZoneName)
+
+    if type(GetCurrentMapId) == "function" then
+        local ok, mapId = pcall(GetCurrentMapId)
+        if ok then add(getMapDisplayName(tonumber(mapId))) end
+    end
+
+    local _, zoneId, parentZoneId = getPlayerZoneIds()
+    add(getZoneDisplayName(zoneId))
+    add(getZoneDisplayName(parentZoneId))
+    return names, zoneId, parentZoneId
+end
+
+local function dungeonNameMatches02857(a, b)
+    a, b = norm(a), norm(b)
+    if a == "" or b == "" then return false, 0 end
+    if a == b then return true, 1000 + #a end
+    if #a >= 6 and #b >= 6 then
+        if a:find(b, 1, true) then return true, 500 + #b end
+        if b:find(a, 1, true) then return true, 500 + #a end
+    end
+    return false, 0
+end
+
+function D:GetCurrentGroupDungeonInfo()
+    if type(IsUnitInDungeon) == "function" then
+        local ok, inDungeon = pcall(IsUnitInDungeon, "player")
+        if ok and not inDungeon then return nil end
+    end
+
+    local difficulty, difficultyConstant, isVeteran = getCurrentGroupDungeonDifficulty02857()
+    -- A definite NONE result means this is a delve/public dungeon rather than
+    -- a four-player Group Dungeon. The runtime dungeon-name match below also
+    -- filters out other instanced content such as trials and arenas.
+    if difficulty == nil then return nil end
+
+    local locationNames, zoneId, parentZoneId = getCurrentDungeonLocationNames02857()
+    if #locationNames == 0 then return nil end
+
+    local bestEntry, bestScore, bestLocation = nil, 0, nil
+    for _, entry in ipairs(self.entries or {}) do
+        local entryName = cleanName(entry and entry.name)
+        if entryName ~= "" then
+            for _, locationName in ipairs(locationNames) do
+                local matched, score = dungeonNameMatches02857(entryName, locationName)
+                if matched and score > bestScore then
+                    bestEntry, bestScore, bestLocation = entry, score, locationName
+                end
+            end
+        end
+    end
+    if not bestEntry then return nil end
+
+    local activityId = isVeteran and (bestEntry.veteranActivityId or bestEntry.activityId)
+        or (bestEntry.normalActivityId or bestEntry.activityId)
+
+    return {
+        name = cleanName(bestEntry.name),
+        matchedLocationName = cleanName(bestLocation),
+        difficulty = difficulty,
+        difficultyConstant = difficultyConstant,
+        isVeteran = isVeteran,
+        activityId = activityId,
+        normalActivityId = bestEntry.normalActivityId,
+        veteranActivityId = bestEntry.veteranActivityId,
+        zoneId = zoneId,
+        parentZoneId = parentZoneId,
+        zoneName = getZoneDisplayName(parentZoneId),
+        aliases = locationNames,
+    }
+end
+
+local function findOptionIndexLoose02857(userType, countFn, infoFn, wantedNames)
+    if type(countFn) ~= "function" or type(infoFn) ~= "function" then return nil end
+    local okCount, count = pcall(countFn, userType)
+    if not okCount then return nil end
+    if type(wantedNames) ~= "table" then wantedNames = {wantedNames} end
+    local bestIndex, bestScore = nil, 0
+    for i = 1, tonumber(count) or 0 do
+        local ok, optionName = pcall(infoFn, userType, i)
+        if ok then
+            for _, wanted in ipairs(wantedNames) do
+                local matched, score = dungeonNameMatches02857(optionName, wanted)
+                if matched and score > bestScore then
+                    bestIndex, bestScore = i, score
+                end
+            end
+        end
+    end
+    return bestIndex
+end
+
+function D:CreateCurrentGroupDungeonListing(info)
+    info = info or self:GetCurrentGroupDungeonInfo()
+    if not info then message("You must be inside a supported 4-player Group Dungeon to host it."); return false end
+    if self:IsQueued() then message("Leave the Activity Finder queue before creating a Group Finder listing."); return false end
+    if self:IsHostingGroupFinderListing() then message("You are already hosting a Group Finder listing."); return false end
+    if type(RequestCreateGroupListing) ~= "function" or type(SetGroupFinderUserTypeGroupListingCategory) ~= "function" then
+        message("ESO Group Finder creation API is unavailable on this client.")
+        return false
+    end
+    if type(IsUnitSoloOrGroupLeader) == "function" then
+        local ok, leader = pcall(IsUnitSoloOrGroupLeader, "player")
+        if ok and not leader then message("Only the group leader can host a listing."); return false end
+    end
+
+    local ut = GROUP_FINDER_GROUP_LISTING_USER_TYPE_GROUP_LISTING_DRAFT
+    if ut == nil or GROUP_FINDER_CATEGORY_DUNGEON == nil then
+        message("ESO Group Finder dungeon listing options are unavailable.")
+        return false
+    end
+
+    pcall(SetGroupFinderUserTypeGroupListingCategory, ut, GROUP_FINDER_CATEGORY_DUNGEON)
+    if type(UpdateGroupFinderUserTypeGroupListingOptions) == "function" then
+        pcall(UpdateGroupFinderUserTypeGroupListingOptions, ut)
+    end
+
+    local primaryWanted = info.isVeteran and "Veteran" or "Normal"
+    local primary = findOptionIndex(ut, GetGroupFinderUserTypeGroupListingNumPrimaryOptions, GetGroupFinderUserTypeGroupListingPrimaryOptionByIndex, primaryWanted)
+    if primary and type(SetGroupFinderUserTypeGroupListingPrimaryOption) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingPrimaryOption, ut, primary)
+        if type(UpdateGroupFinderUserTypeGroupListingOptions) == "function" then
+            pcall(UpdateGroupFinderUserTypeGroupListingOptions, ut)
+        end
+    end
+
+    local wantedNames = {info.name}
+    for _, alias in ipairs(info.aliases or {}) do wantedNames[#wantedNames + 1] = alias end
+    local secondary = findOptionIndexLoose02857(ut, GetGroupFinderUserTypeGroupListingNumSecondaryOptions, GetGroupFinderUserTypeGroupListingSecondaryOptionByIndex, wantedNames)
+    if not secondary or type(SetGroupFinderUserTypeGroupListingSecondaryOption) ~= "function" then
+        message(string.format("ESO could not match %s to a Group Finder dungeon option.", tostring(info.name or "this dungeon")))
+        return false
+    end
+    pcall(SetGroupFinderUserTypeGroupListingSecondaryOption, ut, secondary)
+
+    if GROUP_FINDER_SIZE_STANDARD and type(SetGroupFinderUserTypeGroupListingGroupSize) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingGroupSize, ut, GROUP_FINDER_SIZE_STANDARD)
+    end
+    if GROUP_FINDER_PLAYSTYLE_STANDARD and type(SetGroupFinderUserTypeGroupListingPlaystyle) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingPlaystyle, ut, GROUP_FINDER_PLAYSTYLE_STANDARD)
+    end
+    if type(SetGroupFinderUserTypeGroupListingAutoAcceptRequests) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingAutoAcceptRequests, ut, self.autoAccept == true)
+    end
+    if type(SetGroupFinderUserTypeGroupListingEnforceRoles) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingEnforceRoles, ut, self.enforceRoles == true)
+    end
+    if type(GroupFinderUserTypeGroupListingClearDesiredRoles) == "function" then
+        pcall(GroupFinderUserTypeGroupListingClearDesiredRoles, ut)
+    end
+    if type(SetGroupFinderUserTypeGroupListingRoleCount) == "function" then
+        if LFG_ROLE_TANK then pcall(SetGroupFinderUserTypeGroupListingRoleCount, ut, LFG_ROLE_TANK, 1) end
+        if LFG_ROLE_HEAL then pcall(SetGroupFinderUserTypeGroupListingRoleCount, ut, LFG_ROLE_HEAL, 1) end
+        if LFG_ROLE_DPS then pcall(SetGroupFinderUserTypeGroupListingRoleCount, ut, LFG_ROLE_DPS, 2) end
+    end
+    if type(SetGroupFinderUserTypeGroupListingRequiresInviteCode) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingRequiresInviteCode, ut, false)
+    end
+
+    local title = clipText("Need Help - " .. tostring(info.name or "Group Dungeon"), 40)
+    local description = string.format("Currently inside %s on %s. Looking for players to help continue and finish the run.", tostring(info.name or "this Group Dungeon"), tostring(info.difficulty or "NORMAL"))
+    if type(SetGroupFinderUserTypeGroupListingTitle) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingTitle, ut, title)
+    end
+    if type(SetGroupFinderUserTypeGroupListingDescription) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingDescription, ut, clipText(description, 200))
+    end
+
+    local ok = pcall(RequestCreateGroupListing)
+    if ok then
+        message(string.format("Group Dungeon host listing requested: %s [%s]", tostring(info.name or "Group Dungeon"), tostring(info.difficulty or "NORMAL")))
+    else
+        message("ESO rejected the Group Finder listing request.")
+    end
+    return ok
+end
+
+function D:CreateCurrentPublicDungeonListing()
+    local info = self:GetCurrentPublicDungeonInfo()
+    if not info then message("You must be inside a supported Public Dungeon to host it."); return false end
+    if self:IsQueued() then message("Leave the Activity Finder queue before creating a Group Finder listing."); return false end
+    if self:IsHostingGroupFinderListing() then message("You are already hosting a Group Finder listing."); return false end
+    if type(RequestCreateGroupListing) ~= "function" or type(SetGroupFinderUserTypeGroupListingCategory) ~= "function" then
+        message("ESO Group Finder creation API is unavailable on this client.")
+        return false
+    end
+    if type(IsUnitSoloOrGroupLeader) == "function" then
+        local ok, leader = pcall(IsUnitSoloOrGroupLeader, "player")
+        if ok and not leader then message("Only the group leader can host a listing."); return false end
+    end
+
+    local ut = GROUP_FINDER_GROUP_LISTING_USER_TYPE_GROUP_LISTING_DRAFT
+    if ut == nil then message("ESO Group Finder draft type is unavailable."); return false end
+
+    local category = GROUP_FINDER_CATEGORY_ZONE
+    local usedPublicDungeonActivity = false
+    if category ~= nil then
+        pcall(SetGroupFinderUserTypeGroupListingCategory, ut, category)
+        if type(UpdateGroupFinderUserTypeGroupListingOptions) == "function" then pcall(UpdateGroupFinderUserTypeGroupListingOptions, ut) end
+        local primary = findOptionIndexContaining(ut, GetGroupFinderUserTypeGroupListingNumPrimaryOptions, GetGroupFinderUserTypeGroupListingPrimaryOptionByIndex, {"public", "dungeon"})
+        if primary and type(SetGroupFinderUserTypeGroupListingPrimaryOption) == "function" then
+            pcall(SetGroupFinderUserTypeGroupListingPrimaryOption, ut, primary)
+            usedPublicDungeonActivity = true
+            if type(UpdateGroupFinderUserTypeGroupListingOptions) == "function" then pcall(UpdateGroupFinderUserTypeGroupListingOptions, ut) end
+        end
+    end
+
+    -- If ESO does not expose a localized Public Dungeon activity option for
+    -- the Zone category, Custom remains a valid player-created help listing.
+    if not usedPublicDungeonActivity then
+        category = GROUP_FINDER_CATEGORY_CUSTOM
+        if category == nil then message("ESO Group Finder does not expose a usable Zone or Custom category."); return false end
+        pcall(SetGroupFinderUserTypeGroupListingCategory, ut, category)
+        if type(UpdateGroupFinderUserTypeGroupListingOptions) == "function" then pcall(UpdateGroupFinderUserTypeGroupListingOptions, ut) end
+    else
+        local secondary = findOptionIndex(ut, GetGroupFinderUserTypeGroupListingNumSecondaryOptions, GetGroupFinderUserTypeGroupListingSecondaryOptionByIndex, info.zoneName)
+        if secondary and type(SetGroupFinderUserTypeGroupListingSecondaryOption) == "function" then
+            pcall(SetGroupFinderUserTypeGroupListingSecondaryOption, ut, secondary)
+        elseif type(SetGroupFinderUserTypeGroupListingSecondaryOptionDefault) == "function" then
+            pcall(SetGroupFinderUserTypeGroupListingSecondaryOptionDefault, ut)
+        end
+    end
+
+    if GROUP_FINDER_SIZE_STANDARD and type(SetGroupFinderUserTypeGroupListingGroupSize) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingGroupSize, ut, GROUP_FINDER_SIZE_STANDARD)
+    end
+    if GROUP_FINDER_PLAYSTYLE_STANDARD and type(SetGroupFinderUserTypeGroupListingPlaystyle) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingPlaystyle, ut, GROUP_FINDER_PLAYSTYLE_STANDARD)
+    end
+    if type(SetGroupFinderUserTypeGroupListingAutoAcceptRequests) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingAutoAcceptRequests, ut, true)
+    end
+    if type(SetGroupFinderUserTypeGroupListingEnforceRoles) == "function" then
+        pcall(SetGroupFinderUserTypeGroupListingEnforceRoles, ut, false)
+    end
+    if type(GroupFinderUserTypeGroupListingClearDesiredRoles) == "function" then pcall(GroupFinderUserTypeGroupListingClearDesiredRoles, ut) end
+    if type(SetGroupFinderUserTypeGroupListingRoleCount) == "function" then
+        if LFG_ROLE_TANK then pcall(SetGroupFinderUserTypeGroupListingRoleCount, ut, LFG_ROLE_TANK, 1) end
+        if LFG_ROLE_HEAL then pcall(SetGroupFinderUserTypeGroupListingRoleCount, ut, LFG_ROLE_HEAL, 1) end
+        if LFG_ROLE_DPS then pcall(SetGroupFinderUserTypeGroupListingRoleCount, ut, LFG_ROLE_DPS, 2) end
+    end
+    if type(SetGroupFinderUserTypeGroupListingRequiresInviteCode) == "function" then pcall(SetGroupFinderUserTypeGroupListingRequiresInviteCode, ut, false) end
+
+    local title = clipText("Need Help - " .. tostring(info.name or "Public Dungeon"), 40)
+    local description = string.format("Currently inside %s%s. Looking for players to help clear bosses and the group event.", tostring(info.name or "this Public Dungeon"), (info.zoneName and info.zoneName ~= "") and (" in " .. tostring(info.zoneName)) or "")
+    if type(SetGroupFinderUserTypeGroupListingTitle) == "function" then pcall(SetGroupFinderUserTypeGroupListingTitle, ut, title) end
+    if type(SetGroupFinderUserTypeGroupListingDescription) == "function" then pcall(SetGroupFinderUserTypeGroupListingDescription, ut, clipText(description, 200)) end
+
+    local ok = pcall(RequestCreateGroupListing)
+    if ok then
+        message(string.format("Public Dungeon host listing requested: %s", tostring(info.name or "Public Dungeon")))
+        if not usedPublicDungeonActivity then message("ESO did not expose the Public Dungeon activity option; the listing was created under Custom.") end
+    else
+        message("ESO rejected the Group Finder listing request.")
+    end
+    return ok
+end
+
+
+function D:CreateCurrentDungeonListing()
+    local groupDungeon = self:GetCurrentGroupDungeonInfo()
+    if groupDungeon then return self:CreateCurrentGroupDungeonListing(groupDungeon) end
+    local publicDungeon = self:GetCurrentPublicDungeonInfo()
+    if publicDungeon then return self:CreateCurrentPublicDungeonListing() end
+    message("You must be inside a Public Dungeon or 4-player Group Dungeon to host the current dungeon.")
+    return false
+end
+
 function D:CreateHostListing()
     local selected = self:GetSelected()
     if not selected then message("Select a dungeon first."); return false end
@@ -289,7 +901,10 @@ function D:StartScan(force)
             table.sort(self.entries, function(a,b) return string.lower(a.name) < string.lower(b.name) end)
             self.scanning = false
             self.ready = true
-            if EPC.Journal and EPC.Journal.activeTab == "DUNGEONS" and EPC.Journal.RefreshSuitePage then EPC.Journal:RefreshSuitePage("DUNGEONS") end
+            if EPC.Journal and EPC.Journal.RefreshSuitePage then
+                if EPC.Journal.activeTab == "DUNGEONS" then EPC.Journal:RefreshSuitePage("DUNGEONS")
+                elseif EPC.Journal.activeTab == "GROUPFINDER" then EPC.Journal:RefreshSuitePage("GROUPFINDER") end
+            end
         end
     end
     step()
@@ -1174,8 +1789,50 @@ function D:Initialize()
     self._easLiveReadyCallbacks02542 = true
 end
 
--- v0.25.68 - Real ESO random dungeon queue support.
--- Uses the Activity Finder random queue type so ESO awards the normal daily/random rewards.
+-- v0.27.79 - Current ESO random dungeon queue support.
+-- Current ESO clients expose Random Dungeon as an Activity Finder SET rather
+-- than through the retired AddActivityFinderRandomSearchEntry API.
+local function easFindRandomDungeonSet(activityType)
+    if type(GetNumActivitySetsByType) ~= "function"
+        or type(GetActivitySetIdByTypeAndIndex) ~= "function" then
+        return nil
+    end
+
+    local okCount, count = pcall(GetNumActivitySetsByType, activityType)
+    if not okCount then return nil end
+
+    local fallbackId
+    for index = 1, tonumber(count) or 0 do
+        local okId, setId = pcall(GetActivitySetIdByTypeAndIndex, activityType, index)
+        if okId and setId and setId ~= 0 then
+            fallbackId = fallbackId or setId
+            -- The Random Dungeon set is the dungeon set that carries reward data.
+            if type(DoesActivitySetHaveRewardData) == "function" then
+                local okReward, hasReward = pcall(DoesActivitySetHaveRewardData, setId)
+                if okReward and hasReward then
+                    return setId
+                end
+            end
+        end
+    end
+    return fallbackId
+end
+
+local function easQueueResultAccepted(result)
+    if result == nil then return false end
+    return result == ACTIVITY_QUEUE_RESULT_SUCCESS
+        or result == ACTIVITY_QUEUE_RESULT_REQUEST_QUEUED
+        or result == ACTIVITY_QUEUE_RESULT_NEW_SEARCH_INITIATED
+end
+
+local function easQueueResultText(result)
+    if type(GetString) == "function" and result ~= nil then
+        local ok, text = pcall(GetString, "SI_ACTIVITYQUEUERESULT", result)
+        if ok and text and text ~= "" then return text end
+    end
+    return "Activity Finder result " .. tostring(result)
+end
+
 function D:QueueRandom(difficulty)
     difficulty = tostring(difficulty or self.difficulty or "NORMAL"):upper()
     self:SetDifficulty(difficulty)
@@ -1189,19 +1846,21 @@ function D:QueueRandom(difficulty)
         pcall(UpdateSelectedLFGRole, self:GetRoleConstant())
     end
 
+    -- Match ESO's normal/veteran state before building the request.
+    if type(SetVeteranDifficulty) == "function" then
+        local isVeteran = self.difficulty == "VETERAN"
+        pcall(SetVeteranDifficulty, isVeteran)
+    end
+
     if type(ClearActivityFinderSearch) ~= "function"
-        or type(AddActivityFinderRandomSearchEntry) ~= "function"
         or type(StartActivityFinderSearch) ~= "function" then
-        message("ESO random Activity Finder API is unavailable on this client.")
+        message("ESO Activity Finder API is unavailable on this client.")
         return false
     end
 
-    local activityType
-    if self.difficulty == "VETERAN" then
-        activityType = LFG_ACTIVITY_MASTER_DUNGEON
-    else
-        activityType = LFG_ACTIVITY_DUNGEON
-    end
+    local activityType = self.difficulty == "VETERAN"
+        and LFG_ACTIVITY_MASTER_DUNGEON
+        or LFG_ACTIVITY_DUNGEON
 
     if activityType == nil then
         message("ESO random dungeon activity type is unavailable on this client.")
@@ -1209,23 +1868,45 @@ function D:QueueRandom(difficulty)
     end
 
     pcall(ClearActivityFinderSearch)
-    local okAdd = pcall(AddActivityFinderRandomSearchEntry, activityType)
-    if not okAdd then
-        message("Could not add the random dungeon queue to Activity Finder.")
+
+    local added = false
+
+    -- Current API (Update 47 / API 101050+): random queues are activity sets.
+    if type(AddActivityFinderSetSearchEntry) == "function" then
+        local setId = easFindRandomDungeonSet(activityType)
+        if setId then
+            local okAdd = pcall(AddActivityFinderSetSearchEntry, setId)
+            added = okAdd == true
+        end
+    end
+
+    -- Compatibility fallback for older clients that still expose this call.
+    if not added and type(AddActivityFinderRandomSearchEntry) == "function" then
+        local okAdd = pcall(AddActivityFinderRandomSearchEntry, activityType)
+        added = okAdd == true
+    end
+
+    if not added then
+        message("Could not add Random Dungeon to Activity Finder.")
         return false
     end
 
     local ok, result = pcall(StartActivityFinderSearch)
-    if ok then
-        if EPC.DungeonHistory and EPC.DungeonHistory.RememberQueuedDifficulty then
-            EPC.DungeonHistory:RememberQueuedDifficulty(self.difficulty)
-        end
-        message(string.format("Random %s dungeon queue requested [%s].", self.difficulty == "VETERAN" and "Veteran" or "Normal", self.role or "DPS"))
-        return true, result
+    if not ok then
+        message("ESO rejected the random dungeon queue request.")
+        return false
     end
 
-    message("ESO rejected the random dungeon queue request.")
-    return false
+    if not easQueueResultAccepted(result) then
+        message("Random dungeon queue failed: " .. easQueueResultText(result))
+        return false, result
+    end
+
+    if EPC.DungeonHistory and EPC.DungeonHistory.RememberQueuedDifficulty then
+        EPC.DungeonHistory:RememberQueuedDifficulty(self.difficulty)
+    end
+    message(string.format("Queued Random %s Dungeon [%s].", self.difficulty == "VETERAN" and "Veteran" or "Normal", self.role or "DPS"))
+    return true, result
 end
 
 function D:IsDailyRandomRewardEligible()
@@ -1234,4 +1915,447 @@ function D:IsDailyRandomRewardEligible()
         if ok then return eligible == true end
     end
     return nil
+end
+
+-- ============================================================================
+-- v0.27.67 - Specific dungeon multi-select queue
+-- Clicking dungeon rows toggles them in/out of a queue selection. ESO Activity
+-- Finder accepts multiple specific search entries, so players can queue for any
+-- chosen combination (one dungeon, three dungeons, etc.) in one request.
+-- ============================================================================
+D.multiSelected = D.multiSelected or {}
+
+local function easDungeonSelectionKey2767(entry)
+    if not entry then return nil end
+    local key = norm(entry.name or "")
+    if key == "" then key = tostring(entry.activityId or "") end
+    return key ~= "" and key or nil
+end
+
+function D:IsEntrySelected(entry)
+    local key = easDungeonSelectionKey2767(entry)
+    return key ~= nil and self.multiSelected and self.multiSelected[key] == true
+end
+
+function D:GetMultiSelectedEntries()
+    local out = {}
+    for _, entry in ipairs(self.entries or {}) do
+        if self:IsEntrySelected(entry) then out[#out + 1] = entry end
+    end
+    return out
+end
+
+function D:GetMultiSelectedCount()
+    return #self:GetMultiSelectedEntries()
+end
+
+function D:ClearMultiSelection()
+    self.multiSelected = {}
+end
+
+function D:SelectRow(row)
+    local idx = ((tonumber(self.page) or 1)-1) * self.PAGE_SIZE + (tonumber(row) or 1)
+    local entry = self.entries and self.entries[idx]
+    if not entry then return end
+    self.selectedIndex = idx -- keep a focused row for details / host listing
+    self.multiSelected = self.multiSelected or {}
+    local key = easDungeonSelectionKey2767(entry)
+    if key then self.multiSelected[key] = not (self.multiSelected[key] == true) end
+end
+
+function D:QueueSelected()
+    local selectedEntries = self:GetMultiSelectedEntries()
+    local focused = self:GetSelected()
+
+    -- Backward compatibility: if nothing has been toggled yet, queue the focused
+    -- dungeon as a single specific selection.
+    if #selectedEntries == 0 and focused then selectedEntries[1] = focused end
+    if #selectedEntries == 0 then message("Select one or more dungeons first."); return false end
+    if self:IsQueued() then message("You are already in an Activity Finder queue."); return false end
+
+    if type(UpdateSelectedLFGRole) == "function" then
+        pcall(UpdateSelectedLFGRole, self:GetRoleConstant())
+    end
+    if type(SetVeteranDifficulty) == "function" then
+        pcall(SetVeteranDifficulty, self.difficulty == "VETERAN")
+    end
+    if type(ClearActivityFinderSearch) ~= "function"
+        or type(AddActivityFinderSpecificSearchEntry) ~= "function"
+        or type(StartActivityFinderSearch) ~= "function" then
+        message("ESO Activity Finder API is unavailable on this client.")
+        return false
+    end
+
+    pcall(ClearActivityFinderSearch)
+    local added, skipped = 0, 0
+    for _, entry in ipairs(selectedEntries) do
+        local activityId
+        if self.difficulty == "VETERAN" then
+            activityId = entry.veteranActivityId
+        else
+            activityId = entry.normalActivityId
+        end
+        -- Some ESO clients expose only a generic activity id. Use it only when
+        -- there is no explicit mode-specific mapping at all.
+        if not activityId and not entry.normalActivityId and not entry.veteranActivityId then
+            activityId = entry.activityId
+        end
+        if activityId then
+            local okAdd = pcall(AddActivityFinderSpecificSearchEntry, activityId)
+            if okAdd then added = added + 1 else skipped = skipped + 1 end
+        else
+            skipped = skipped + 1
+        end
+    end
+
+    if added == 0 then
+        message(string.format("None of the selected dungeons are available in %s mode.", self.difficulty))
+        return false
+    end
+
+    local ok, result = pcall(StartActivityFinderSearch)
+    if ok then
+        if EPC.DungeonHistory and EPC.DungeonHistory.RememberQueuedDifficulty then
+            EPC.DungeonHistory:RememberQueuedDifficulty(self.difficulty)
+        end
+        local suffix = skipped > 0 and string.format(" (%d unavailable skipped)", skipped) or ""
+        message(string.format("Queue requested: %d selected dungeon%s [%s / %s]%s", added, added == 1 and "" or "s", self.difficulty, self.role, suffix))
+        return true, result
+    end
+
+    message("ESO rejected the selected dungeon queue request.")
+    return false
+end
+
+-- v0.27.69 - ESO-styled movable and resizable dungeon queue HUD.
+-- Replaces the passive ESO Activity Finder queue indicator while deliberately
+-- leaving ESO's ready-check dialog intact so ACCEPT / DECLINE remains usable.
+local QUEUE_HUD_DEFAULT_LEFT = 1480
+local QUEUE_HUD_DEFAULT_TOP = 250
+local QUEUE_HUD_DEFAULT_WIDTH = 360
+local QUEUE_HUD_DEFAULT_HEIGHT = 128
+local QUEUE_HUD_MIN_WIDTH = 300
+local QUEUE_HUD_MIN_HEIGHT = 118
+local QUEUE_HUD_MAX_WIDTH = 720
+local QUEUE_HUD_MAX_HEIGHT = 300
+
+local function easQueueStatusText2768(status)
+    if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then return "DUNGEON FOUND" end
+    if ACTIVITY_FINDER_STATUS_QUEUED ~= nil and status == ACTIVITY_FINDER_STATUS_QUEUED then return "SEARCHING" end
+    if ACTIVITY_FINDER_STATUS_IN_PROGRESS ~= nil and status == ACTIVITY_FINDER_STATUS_IN_PROGRESS then return "IN DUNGEON" end
+    return "NOT QUEUED"
+end
+
+local function easQueueIsActive2768(status)
+    return (ACTIVITY_FINDER_STATUS_QUEUED ~= nil and status == ACTIVITY_FINDER_STATUS_QUEUED)
+        or (ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK)
+end
+
+-- v0.27.70 - Hide ESO's passive Activity Finder queue HUD completely.
+-- ESO has used several different global/control names across UI revisions, so we
+-- keep an explicit list and also discover queue/status controls once at runtime.
+-- The secure ready-check dialog is deliberately excluded.
+local EAS_NATIVE_QUEUE_HUD_NAMES_2770 = {
+    "ZO_ActivityFinderStatus",
+    "ZO_ActivityFinderStatus_Keyboard",
+    "ZO_ActivityFinderQueueStatus",
+    "ZO_ActivityFinderQueueStatus_Keyboard",
+    "ZO_LFG_ActivityFinderStatus",
+    "ZO_LFG_ActivityFinderStatus_Keyboard",
+    "ZO_LFG_QueueStatus",
+    "ZO_LFG_QueueStatus_Keyboard",
+    "ZO_LFGQueueStatus",
+    "ZO_LFGQueueStatus_Keyboard",
+    "ZO_LFG_Status",
+    "ZO_LFG_Status_Keyboard",
+    "ZO_GroupFinderStatus",
+    "ZO_GroupFinderStatus_Keyboard",
+}
+
+-- v0.27.73 - Safe native queue HUD lookup.
+--
+-- IMPORTANT: Do not enumerate _G or inspect arbitrary global values here. ESO
+-- exposes private/protected C functions in the global environment; merely
+-- indexing one of those values from insecure addon code can taint the callstack.
+-- Only resolve the small allow-list of known UI control names, and only keep
+-- actual userdata controls.
+function D:DiscoverNativeQueueHud2770()
+    if self.nativeQueueHudDiscoveryDone2770 then return end
+    self.nativeQueueHudDiscoveryDone2770 = true
+    self.nativeQueueHudControls2770 = self.nativeQueueHudControls2770 or {}
+    local seen = {}
+
+    local function remember(control)
+        if type(control) == "userdata" and control ~= self.queueHud2768 and not seen[control] then
+            seen[control] = true
+            self.nativeQueueHudControls2770[#self.nativeQueueHudControls2770 + 1] = control
+        end
+    end
+
+    -- First resolve only explicit, known global CONTROL names. rawget is used so
+    -- no metatable lookup can touch ESO's private/protected API functions.
+    for _, name in ipairs(EAS_NATIVE_QUEUE_HUD_NAMES_2770) do
+        remember(rawget(_G, name))
+    end
+
+    -- v0.27.74: ESO's current queue widget name can vary by keyboard/gamepad/UI
+    -- revision. Instead of scanning _G (unsafe), enumerate WINDOW_MANAGER's UI
+    -- controls only. This cannot touch private C functions. We accept only names
+    -- that clearly identify an Activity Finder/LFG queue/status control, and we
+    -- deliberately exclude anything containing READY or CHECK so ESO's secure
+    -- Accept / Decline ready-check remains available.
+    local wm = WINDOW_MANAGER
+    if wm and type(wm.GetNumControls) == "function" and type(wm.GetControlByIndex) == "function" then
+        local okCount, count = pcall(wm.GetNumControls, wm)
+        if okCount and type(count) == "number" then
+            for i = 1, count do
+                local okControl, control = pcall(wm.GetControlByIndex, wm, i)
+                if okControl and type(control) == "userdata" and control ~= self.queueHud2768 then
+                    local okName, controlName = pcall(control.GetName, control)
+                    if okName and type(controlName) == "string" and controlName ~= "" then
+                        local lowerName = string.lower(controlName)
+                        local finderName = string.find(lowerName, "activityfinder", 1, true)
+                            or string.find(lowerName, "lfg", 1, true)
+                        local statusName = string.find(lowerName, "queue", 1, true)
+                            or string.find(lowerName, "status", 1, true)
+                        local readyName = string.find(lowerName, "ready", 1, true)
+                            or string.find(lowerName, "check", 1, true)
+                        local suiteName = string.find(lowerName, "eas_", 1, true)
+                            or string.find(lowerName, "esoadventurersuite", 1, true)
+                        if finderName and statusName and not readyName and not suiteName then
+                            remember(control)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+function D:SuppressNativeQueueHud2768()
+    -- Suppress only ESO's passive queued/searching display. The required
+    -- ACCEPT / DECLINE ready-check remains untouched.
+    self:DiscoverNativeQueueHud2770()
+    for _, control in ipairs(self.nativeQueueHudControls2770 or {}) do
+        if control and control ~= self.queueHud2768 then
+            pcall(control.SetHidden, control, true)
+        end
+    end
+end
+
+function D:CreateQueueHud2768()
+    if self.queueHud2768 or not WINDOW_MANAGER then return self.queueHud2768 end
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("EAS_DungeonQueueHUD2768")
+    local savedWidth = EPC.saved and tonumber(EPC.saved.dungeonQueueHudWidth) or nil
+    local savedHeight = EPC.saved and tonumber(EPC.saved.dungeonQueueHudHeight) or nil
+    savedWidth = math.max(QUEUE_HUD_MIN_WIDTH, math.min(QUEUE_HUD_MAX_WIDTH, savedWidth or QUEUE_HUD_DEFAULT_WIDTH))
+    savedHeight = math.max(QUEUE_HUD_MIN_HEIGHT, math.min(QUEUE_HUD_MAX_HEIGHT, savedHeight or QUEUE_HUD_DEFAULT_HEIGHT))
+    frame:SetDimensions(savedWidth, savedHeight)
+    if frame.SetDimensionConstraints then frame:SetDimensionConstraints(QUEUE_HUD_MIN_WIDTH, QUEUE_HUD_MIN_HEIGHT, QUEUE_HUD_MAX_WIDTH, QUEUE_HUD_MAX_HEIGHT) end
+    if frame.SetResizeHandleSize then frame:SetResizeHandleSize(20) end
+    frame:SetClampedToScreen(true)
+    frame:SetMouseEnabled(true)
+    frame:SetMovable(true)
+    frame:SetHidden(true)
+    if frame.SetDrawLayer then frame:SetDrawLayer(DL_OVERLAY) end
+    if DT_HIGH ~= nil and frame.SetDrawTier then frame:SetDrawTier(DT_HIGH) end
+
+    local left = EPC.saved and tonumber(EPC.saved.dungeonQueueHudLeft) or nil
+    local top = EPC.saved and tonumber(EPC.saved.dungeonQueueHudTop) or nil
+    if left == nil or left < 0 then left = QUEUE_HUD_DEFAULT_LEFT end
+    if top == nil or top < 0 then top = QUEUE_HUD_DEFAULT_TOP end
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+
+    local bg = WINDOW_MANAGER:CreateControl("EAS_DungeonQueueHUDBG2768", frame, CT_BACKDROP)
+    bg:SetAnchor(TOPLEFT, frame, TOPLEFT, 2, 2)
+    bg:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -2, -2)
+    bg:SetCenterColor(0.025, 0.022, 0.018, 0.92)
+    bg:SetEdgeTexture(nil, 1, 1, 2)
+    bg:SetEdgeColor(0.92, 0.72, 0.25, 0.95)
+
+    local title = WINDOW_MANAGER:CreateControl("EAS_DungeonQueueHUDTitle2768", frame, CT_LABEL)
+    title:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 9)
+    title:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 9)
+    title:SetHeight(22)
+    title:SetFont("ZoFontGameBold")
+    title:SetColor(0.96, 0.80, 0.36, 1)
+    title:SetText("DUNGEON FINDER")
+
+    local status = WINDOW_MANAGER:CreateControl("EAS_DungeonQueueHUDStatus2768", frame, CT_LABEL)
+    status:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 34)
+    status:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 34)
+    status:SetHeight(24)
+    status:SetFont("ZoFontGameBold")
+    status:SetColor(0.96, 0.80, 0.36, 1)
+
+    local details = WINDOW_MANAGER:CreateControl("EAS_DungeonQueueHUDDetails2768", frame, CT_LABEL)
+    details:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 60)
+    details:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 60)
+    details:SetHeight(22)
+    details:SetFont("ZoFontGame")
+    details:SetColor(0.92, 0.94, 0.97, 1)
+
+    local selected = WINDOW_MANAGER:CreateControl("EAS_DungeonQueueHUDSelected2768", frame, CT_LABEL)
+    selected:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 84)
+    selected:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -12, 84)
+    selected:SetHeight(20)
+    selected:SetFont("ZoFontGameSmall")
+    selected:SetColor(0.72, 0.78, 0.84, 1)
+
+    local hint = WINDOW_MANAGER:CreateControl("EAS_DungeonQueueHUDHint2768", frame, CT_LABEL)
+    hint:SetAnchor(BOTTOMLEFT, frame, BOTTOMLEFT, 12, -8)
+    hint:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -12, -8)
+    hint:SetHeight(16)
+    hint:SetFont("ZoFontGameSmall")
+    hint:SetColor(0.96, 0.80, 0.36, 1)
+    hint:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    hint:SetText("DRAG TO MOVE - EDGES TO RESIZE")
+
+    frame:SetHandler("OnMoveStop", function(control)
+        if not EPC.saved then return end
+        EPC.saved.dungeonQueueHudLeft = math.max(0, tonumber(control:GetLeft()) or 0)
+        EPC.saved.dungeonQueueHudTop = math.max(0, tonumber(control:GetTop()) or 0)
+    end)
+    frame:SetHandler("OnResizeStop", function(control)
+        if not EPC.saved then return end
+        local w, h = control:GetDimensions()
+        EPC.saved.dungeonQueueHudWidth = math.floor((tonumber(w) or QUEUE_HUD_DEFAULT_WIDTH) + 0.5)
+        EPC.saved.dungeonQueueHudHeight = math.floor((tonumber(h) or QUEUE_HUD_DEFAULT_HEIGHT) + 0.5)
+    end)
+
+    self.queueHud2768 = frame
+    self.queueHudStatus2768 = status
+    self.queueHudDetails2768 = details
+    self.queueHudSelected2768 = selected
+    return frame
+end
+
+-- v0.27.71 - Resolve the actual Activity Finder match during the ready check.
+-- This is important for multi-select queues: the matched activity may be only
+-- one of several dungeons the player selected.
+function D:GetMatchedDungeonName2771()
+    if type(GetCurrentLFGActivityId) == "function" and type(GetActivityInfo) == "function" then
+        local okId, activityId = pcall(GetCurrentLFGActivityId)
+        activityId = okId and tonumber(activityId) or 0
+        if activityId and activityId > 0 then
+            local okInfo, name = pcall(GetActivityInfo, activityId)
+            if okInfo and type(name) == "string" and name ~= "" then
+                return name
+            end
+        end
+    end
+
+    -- Safe fallback for clients where the matched activity is not exposed yet.
+    local list = self.GetMultiSelectedEntries and self:GetMultiSelectedEntries() or {}
+    if #list == 1 and list[1] and list[1].name then
+        return tostring(list[1].name)
+    end
+    local focused = self.GetSelected and self:GetSelected() or nil
+    if focused and focused.name and #list <= 1 then
+        return tostring(focused.name)
+    end
+    return "Matched dungeon"
+end
+
+function D:GetQueueSelectionSummary2768()
+    local list = self.GetMultiSelectedEntries and self:GetMultiSelectedEntries() or {}
+    if #list > 0 then
+        if #list == 1 then return tostring(list[1].name or "1 selected dungeon") end
+        return string.format("%d specific dungeons selected", #list)
+    end
+    local focused = self.GetSelected and self:GetSelected() or nil
+    return focused and tostring(focused.name or "Selected dungeon") or "Dungeon queue"
+end
+
+-- v0.27.72 - Queue HUD is gameplay-only. Hide it while the Tamriel Codex
+-- or an ESO menu (Inventory, Character, Map, etc.) owns the screen, then
+-- restore it automatically when gameplay resumes if the queue is still active.
+function D:IsQueueHudTemporarilySuppressed2772()
+    local journal = EPC and EPC.Journal
+    if journal and journal.window and type(journal.window.IsHidden) == "function" then
+        local ok, hidden = pcall(journal.window.IsHidden, journal.window)
+        if ok and hidden == false then return true end
+    end
+
+    if EPC and type(EPC.IsGameplayHudSuppressed) == "function" then
+        local ok, suppressed = pcall(EPC.IsGameplayHudSuppressed, EPC)
+        if ok and suppressed == true then return true end
+    end
+    return false
+end
+
+function D:SetLayoutMode(active)
+    active = active == true
+    self.queueHudLayoutMode2768 = active
+    local frame = self:CreateQueueHud2768()
+    if not frame then return end
+
+    if active then
+        frame:SetHidden(false)
+        frame:SetMouseEnabled(true)
+        frame:SetMovable(true)
+        if frame.SetResizeHandleSize then frame:SetResizeHandleSize(20) end
+        if self.queueHudStatus2768 then self.queueHudStatus2768:SetText("LAYOUT PREVIEW") end
+        if self.queueHudDetails2768 then self.queueHudDetails2768:SetText("NORMAL  |  DPS") end
+        if self.queueHudSelected2768 then self.queueHudSelected2768:SetText("DUNGEON QUEUE HUD") end
+    else
+        self:RefreshQueueHud2768()
+    end
+end
+
+function D:RefreshQueueHud2768(status)
+    local frame = self:CreateQueueHud2768()
+    if not frame then return end
+    if self.queueHudLayoutMode2768 == true then
+        frame:SetHidden(false)
+        if self.queueHudStatus2768 then self.queueHudStatus2768:SetText("LAYOUT PREVIEW") end
+        if self.queueHudDetails2768 then self.queueHudDetails2768:SetText("NORMAL  |  DPS") end
+        if self.queueHudSelected2768 then self.queueHudSelected2768:SetText("DUNGEON QUEUE HUD") end
+        return
+    end
+    if status == nil and type(GetActivityFinderStatus) == "function" then
+        local ok, value = pcall(GetActivityFinderStatus)
+        if ok then status = value end
+    end
+    local active = easQueueIsActive2768(status)
+    local temporarilySuppressed = active and self:IsQueueHudTemporarilySuppressed2772()
+    frame:SetHidden((not active) or temporarilySuppressed)
+    if not active then return end
+
+    -- Keep ESO's passive queue HUD suppressed even while the Suite HUD is
+    -- temporarily hidden by a menu, so the native overlay does not leak through.
+    self:SuppressNativeQueueHud2768()
+    if temporarilySuppressed then return end
+    self.queueHudStatus2768:SetText(easQueueStatusText2768(status))
+    self.queueHudDetails2768:SetText(string.format("%s  |  %s", tostring(self.difficulty or "NORMAL"), tostring(self.role or "DPS")))
+
+    if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then
+        self.queueHudSelected2768:SetText(self:GetMatchedDungeonName2771())
+    else
+        self.queueHudSelected2768:SetText(self:GetQueueSelectionSummary2768())
+    end
+end
+
+function D:InitializeQueueHud2768()
+    if self.queueHudInitialized2768 then return end
+    self.queueHudInitialized2768 = true
+    self:CreateQueueHud2768()
+    if EVENT_ACTIVITY_FINDER_STATUS_UPDATE ~= nil and EVENT_MANAGER then
+        EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_DungeonQueueHUD2768", EVENT_ACTIVITY_FINDER_STATUS_UPDATE,
+            function(_, status) self:RefreshQueueHud2768(status) end)
+    end
+    if EVENT_MANAGER then
+        EVENT_MANAGER:RegisterForUpdate("ESOAdventurerSuite_DungeonQueueHUDPoll2768", 750, function()
+            self:RefreshQueueHud2768()
+        end)
+    end
+    self:RefreshQueueHud2768()
+end
+
+if EVENT_MANAGER and EVENT_ADD_ON_LOADED then
+    EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_DungeonQueueHUDLoad2768", EVENT_ADD_ON_LOADED, function(_, addonName)
+        if addonName ~= EPC.name and addonName ~= EPC.legacyName then return end
+        EVENT_MANAGER:UnregisterForEvent("ESOAdventurerSuite_DungeonQueueHUDLoad2768", EVENT_ADD_ON_LOADED)
+        if zo_callLater then zo_callLater(function() D:InitializeQueueHud2768() end, 500) else D:InitializeQueueHud2768() end
+    end)
 end

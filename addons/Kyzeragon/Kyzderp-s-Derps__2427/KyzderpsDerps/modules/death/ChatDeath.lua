@@ -58,7 +58,7 @@ local function OnKillingBlow(_, result, _, _, _, _, sourceName, sourceType, targ
         displayName or "",
         GetAbilityIcon(abilityId),
         damageTypeColors[damageType] or "444444",
-        GetAbilityName(abilityId))
+        ZO_CachedStrFormat(SI_ABILITY_NAME, GetAbilityName(abilityId)))
 
     -- Without prefix
     if (CHAT_ROUTER) then

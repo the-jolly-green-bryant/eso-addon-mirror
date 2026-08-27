@@ -1,7 +1,7 @@
 ## Title: Frostfall - Temperature System
 ## Description: A temperature survival system for ESO inspired by (not a port of, or affiliated with) Skyrim's Frostfall by Chesko. Tracks ambient zone temps, armor insulation, swimming exposure. Powered by LibZoneTemp/LibArmorInsulation. AI-ASSISTED, written with Claude.ai — see README.
 ## Author: @Kreksar5 and Claude.ai
-## Version: 3.4.23
+## Version: 3.4.24
 ## AddOnVersion: 20
 ## APIVersion: 101050 101051
 ## SavedVariables: FrostfallSV

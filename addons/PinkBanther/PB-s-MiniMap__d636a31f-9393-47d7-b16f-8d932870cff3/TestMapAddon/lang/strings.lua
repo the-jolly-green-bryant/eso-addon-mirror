@@ -1,14 +1,5 @@
 local strings = {
 	SI_KEYBINDINGS_CATEGORY_PBSMINIMAP = "Mini Map",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW = "Toggle Show Map",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_HUD = "Toggle Show HUD",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_SIEGE_HUD = "Toggle Show Siege",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_IN_HOUSING = "Toggle Show in Housing",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_SHOW_COMBAT = "Toggle Show Map In Combat",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_OUT = "Zoom Max Out",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_IN = "Zoom Max In",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_PLUS = "Zoom Step In",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_ZOOM_MINUS = "Zoom Step Out",
 	SI_PBSMINIMAP_WORLD_MAP_TWEAKS = "World Map Tweaks",
 	SI_PBSMINIMAP_WORLD_MAP_TWEAKS_TOOLTIP = "Enable tweaks to spread CPU load over time.",
 	SI_PBSMINIMAP_MINI_MAP = "Mini Map",
@@ -86,7 +77,6 @@ local strings = {
 	SI_PBSMINIMAP_COMPASSMODE_SHOWN = "Shown",
 	SI_PBSMINIMAP_KEEP_SQUARE = "Keep Square",
 	SI_PBSMINIMAP_KEEP_SQUARE_TOOLTIP = "Keep the map area square. Default behavior.",
-	SI_BINDING_NAME_PBSMINIMAP_TOGGLE_MAP_OFFSET_FIX = "Toggle Fixed Mini Map Position",
 	SI_PBSMINIMAP_ASYNC_UPDATE = "Asynchronous Update",
 	SI_PBSMINIMAP_ASYNC_UPDATE_TOOLTIP = "On: Framerate over update.\nOff: Update over framerate.",
 	SI_PBSMINIMAP_PINSIZE_KEEP_FAST_TRAVEL = "Transitus Shrine",
@@ -115,7 +105,7 @@ local strings = {
 	SI_PBSMINIMAP_LITE_FOLLOW = "Follow player",
 	SI_PBSMINIMAP_LITE_FOLLOW_TOOLTIP = "Keep the player centred on the minimap and move the map as you travel.",
 	SI_PBSMINIMAP_LITE_ZOOM_OUTDOOR = "Zoom: outdoors",
-	SI_PBSMINIMAP_LITE_ZOOM_OUTDOOR_TOOLTIP = "Magnification in the open world, relative to the map's native resolution. Higher shows a smaller area in more detail. Applies immediately.",
+	SI_PBSMINIMAP_LITE_ZOOM_OUTDOOR_TOOLTIP = "Magnification in the open world. 1.00 draws the map at its own resolution; higher shows a smaller area in more detail, lower shows more. Below roughly 0.30 the map becomes smaller than the window and is drawn with space around it. Applies immediately.",
 	SI_PBSMINIMAP_LITE_ZOOM_SUBZONE = "Zoom: buildings & cities",
 	SI_PBSMINIMAP_LITE_ZOOM_SUBZONE_TOOLTIP = "Magnification inside buildings, houses and city maps. These maps are much smaller, so a lower value here keeps the area around the player visible.",
 	SI_PBSMINIMAP_LITE_ZOOM_DUNGEON = "Zoom: dungeons",
@@ -136,6 +126,10 @@ local strings = {
 	SI_PBSMINIMAP_LITE_ZONE_TITLE_TOOLTIP = "Show the name of the area you are in, just above the minimap.",
 	SI_PBSMINIMAP_LITE_ZONE_TITLE_SIZE = "Zone name size",
 	SI_PBSMINIMAP_LITE_ZONE_TITLE_SIZE_TOOLTIP = "Text size of the zone name above the minimap.",
+	SI_PBSMINIMAP_LITE_BORDER = "Show border",
+	SI_PBSMINIMAP_LITE_BORDER_TOOLTIP = "Draw the map's frame around the minimap. Turn it off for a plain rectangle of map. The full map keeps its frame either way.",
+	SI_PBSMINIMAP_APPLY_LABEL = "Apply changes",
+	SI_PBSMINIMAP_APPLY_TOOLTIP = "Reloads the interface so a change to the switches above takes effect.",
 }
 
 for stringId, stringValue in pairs(strings) do

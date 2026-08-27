@@ -87,18 +87,23 @@ function Spud.InitializeGearSetup()
 
     Spud.Display(nil, Spud.SETUP)
 
-    Spud.RegisterStateListener("Setup", OnSpudStateChanged)
-
-    local checkSetup = KD.savedOptions.general.experimental -- TODO
+    local checkSetup = KD.savedOptions.antispud.checkSetupChange
 
     if (checkSetup and not agPrehooked and AG and AG.LoadSetInternal) then
         ZO_PreHook(AG, "LoadSet", OnSetupChanged)
         agPrehooked = true
     end
 
+    -- Check whenever bosses change
     EVENT_MANAGER:UnregisterForEvent(KD.name .. "AntiSpudSetupBossChanged", EVENT_BOSSES_CHANGED)
     if (checkSetup) then
         EVENT_MANAGER:RegisterForEvent(KD.name .. "AntiSpudSetupBossChanged", EVENT_BOSSES_CHANGED, OnBossesChanged)
+    end
+
+    -- Check when scored instance starts
+    EVENT_MANAGER:UnregisterForEvent(KD.name .. "AntiSpudSetupTrialStart", EVENT_RAID_TRIAL_STARTED)
+    if (checkSetup) then
+        EVENT_MANAGER:RegisterForEvent(KD.name .. "AntiSpudSetupTrialStart", EVENT_RAID_TRIAL_STARTED, OnSetupNeedsChanging)
     end
 
     -- Listen for combat state to avoid showing warning in combat
@@ -108,6 +113,7 @@ function Spud.InitializeGearSetup()
     end
 
     -- Clear message when gear changes
+    EVENT_MANAGER:UnregisterForEvent(KD.name .. "SpudSetupEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
     if (checkSetup) then
         EVENT_MANAGER:RegisterForEvent(KD.name .. "SpudSetupEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnSlotUpdated)
         EVENT_MANAGER:AddFilterForEvent(KD.name .. "SpudSetupEquipped", EVENT_INVENTORY_SINGLE_SLOT_UPDATE,

@@ -363,7 +363,7 @@ function LTM_PIPELINE_FINALIZE:Run(config)
         return true
     end
 
-    SCENE_MANAGER:ShowBaseScene()
+    LTM_APPLY_START_STATE:RequestHudBaseline()
 
     if type(zo_callLater) ~= "function" then
         local current = BuildFinalizeSnapshot()

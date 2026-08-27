@@ -211,7 +211,6 @@ local function VersionCheck()
 
 	local accessibilityModeEnabled = GetSetting_Bool(SETTING_TYPE_ACCESSIBILITY, ACCESSIBILITY_SETTING_ACCESSIBILITY_MODE)
 	if BUI.Vars.DisableHelpAnnounce==false then
-		if IsInGamepadPreferredMode() then bui_pl("|c4B8BFESatuve|r Xbox UI: " .. BUI.Loc("GamepadHelpAnnouncement")) end
 		if accessibilityModeEnabled then bui_pl("|c4B8BFESatuve|r Xbox UI: " .. BUI.Loc("AccessibilityHelpAnnouncement")) end
 	end
 end
@@ -249,10 +248,16 @@ local function Initialize(eventCode, addOnName)
 	BUI.Menu.Init()
 	BUI.Menu.Initialize()
 	BUI.MiniMap.Initialize()
+	if BUI.ResourceNavigator and BUI.ResourceNavigator.Initialize then BUI.ResourceNavigator:Initialize() end
 	BUI.Automation_Init()
 --	BUI.Champion_Init()
 	BUI.Panel_Init()
 	BUI.CustomBar_Init()
+	-- All numbered controller-menu pages are known now. Register them once, sorted
+	-- numerically, including the Resource Navigation page 22.
+	if BUI.SettingsBridge and BUI.SettingsBridge.FinalizeGrouped then
+		BUI.SettingsBridge.FinalizeGrouped("BUI_BanditUI")
+	end
 	--Register Event Handlers
 	BUI.RegisterEvents()
 	--Synergy

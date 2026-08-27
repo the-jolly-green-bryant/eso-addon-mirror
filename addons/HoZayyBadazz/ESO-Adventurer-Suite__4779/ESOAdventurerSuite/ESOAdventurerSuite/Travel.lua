@@ -920,6 +920,57 @@ function T:SelectVisibleRow(rowIndex, pageSize)
     EPC:RefreshNow("travel-selection")
 end
 
+function T:IsWayshrineTravelFreeNow()
+    -- ESO charges a recall fee when teleporting from the world, but travel
+    -- initiated from an active wayshrine is free. Prefer the map travel mode
+    -- when the API exposes it; otherwise fall back to the normal recall fee.
+    if type(GetMapMode) == "function" and MAP_MODE_FAST_TRAVEL ~= nil then
+        local ok, mode = pcall(GetMapMode)
+        if ok and mode == MAP_MODE_FAST_TRAVEL then
+            return true
+        end
+    end
+
+    if type(ZO_WorldMap_IsTravelingFromWayshrine) == "function" then
+        local ok, fromWayshrine = pcall(ZO_WorldMap_IsTravelingFromWayshrine)
+        if ok and fromWayshrine == true then
+            return true
+        end
+    end
+
+    return false
+end
+
+function T:GetLiveWayshrineTravelCost(nodeIndex)
+    local currency = CURT_MONEY
+    if type(GetRecallCurrency) == "function" then
+        local currencyOk, returnedCurrency = pcall(GetRecallCurrency)
+        if not currencyOk and nodeIndex ~= nil then
+            currencyOk, returnedCurrency = pcall(GetRecallCurrency, nodeIndex)
+        end
+        if currencyOk and returnedCurrency ~= nil then
+            currency = returnedCurrency
+        end
+    end
+
+    if self:IsWayshrineTravelFreeNow() then
+        return 0, currency
+    end
+
+    local cost = 0
+    if type(GetRecallCost) == "function" then
+        -- Current ESO UI uses the live recall fee. It is not destination-specific.
+        local costOk, returnedCost = pcall(GetRecallCost)
+        -- Compatibility fallback for API revisions that accepted a node index.
+        if not costOk and nodeIndex ~= nil then
+            costOk, returnedCost = pcall(GetRecallCost, nodeIndex)
+        end
+        if costOk then cost = safeNumber(returnedCost, 0) end
+    end
+
+    return cost, currency
+end
+
 function T:CanLeaveNow()
     if type(IsUnitInCombat) == "function" then
         local ok, inCombat = pcall(IsUnitInCombat, "player")
@@ -965,17 +1016,7 @@ function T:GetWayshrineNodeEntry(nodeIndex)
     end
     local zoneId, parentZoneId = getZoneIdentity(zoneIndex)
 
-    local cost = 0
-    if type(GetRecallCost) == "function" then
-        local costOk, returnedCost = pcall(GetRecallCost, nodeIndex)
-        if costOk then cost = safeNumber(returnedCost, 0) end
-    end
-
-    local currency = CURT_MONEY
-    if type(GetRecallCurrency) == "function" then
-        local currencyOk, returnedCurrency = pcall(GetRecallCurrency, nodeIndex)
-        if currencyOk and returnedCurrency ~= nil then currency = returnedCurrency end
-    end
+    local cost, currency = self:GetLiveWayshrineTravelCost(nodeIndex)
 
     local canAfford = true
     if cost > 0 and type(GetCurrencyAmount) == "function" and CURRENCY_LOCATION_CHARACTER ~= nil then
@@ -2260,17 +2301,7 @@ function T:GetWayshrines(snapshot)
                 end
 
                 local zoneId, parentZoneId = getZoneIdentity(zoneIndex)
-                local cost = 0
-                if type(GetRecallCost) == "function" then
-                    local costOk, returnedCost = pcall(GetRecallCost, nodeIndex)
-                    if costOk then cost = safeNumber(returnedCost, 0) end
-                end
-
-                local currency = CURT_MONEY
-                if type(GetRecallCurrency) == "function" then
-                    local currencyOk, returnedCurrency = pcall(GetRecallCurrency, nodeIndex)
-                    if currencyOk and returnedCurrency ~= nil then currency = returnedCurrency end
-                end
+                local cost, currency = self:GetLiveWayshrineTravelCost(nodeIndex)
 
                 local canAfford = true
                 if cost > 0 and type(GetCurrencyAmount) == "function" and CURRENCY_LOCATION_CHARACTER ~= nil then
@@ -2966,4 +2997,36 @@ function T:TravelSelected()
     if not ok then
         EPC:Print("ESO rejected the travel request. Try the normal map or Social menu.")
     end
+end
+
+-- ==========================================================================
+-- v0.27.64 - Direct Undaunted Pledge Master travel
+-- Uses the same alliance-aware enclave lookup as pledge turn-in routing.
+-- ==========================================================================
+function T:TravelToPledgeMaster()
+    local snapshot = EPC.lastSnapshot or {}
+    local entries = self:GetWayshrines(snapshot)
+    local shrine, enclave = self:GetAlliancePledgeTurnInWayshrine(entries)
+
+    if not enclave then
+        EPC:Print("Could not determine your alliance Undaunted Enclave.")
+        return false
+    end
+
+    if not shrine then
+        EPC:Print(string.format(
+            "No discovered wayshrine was found for the Undaunted Pledge Masters in %s, %s.",
+            tostring(enclave.city or "your alliance enclave"),
+            tostring(enclave.zone or "")
+        ))
+        return false
+    end
+
+    EPC:Print(string.format(
+        "Pledge Masters: traveling to %s, %s via %s.",
+        tostring(enclave.city or "Undaunted Enclave"),
+        tostring(enclave.zone or ""),
+        tostring(shrine.name or enclave.wayshrine or "wayshrine")
+    ))
+    return self:TravelToWayshrineNode(shrine.nodeIndex, shrine.name or enclave.wayshrine)
 end

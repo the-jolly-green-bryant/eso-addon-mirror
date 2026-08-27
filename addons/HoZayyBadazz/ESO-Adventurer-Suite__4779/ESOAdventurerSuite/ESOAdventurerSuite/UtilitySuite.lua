@@ -8,8 +8,8 @@ local EPC = ESOProgressionCoach
 EPC.UtilitySuite = EPC.UtilitySuite or {}
 local U = EPC.UtilitySuite
 
-U.validModes = { OVERVIEW=true, INVENTORY=true, RESEARCH=true, COLLECTIONS=true, DAILIES=true, RETICLE=true }
-U.modeLabels = { OVERVIEW="OVERVIEW", INVENTORY="INVENTORY", RESEARCH="RESEARCH", COLLECTIONS="COLLECTIONS", DAILIES="DAILIES", RETICLE="RETICLE" }
+U.validModes = { OVERVIEW=true, INVENTORY=true, RESEARCH=true, COLLECTIONS=true, DAILIES=true, RETICLE=true, SELL=true }
+U.modeLabels = { OVERVIEW="OVERVIEW", INVENTORY="INVENTORY", RESEARCH="RESEARCH", COLLECTIONS="COLLECTIONS", DAILIES="DAILIES", RETICLE="RETICLE", SELL="SELL" }
 U.setIdCache = U.setIdCache or {}
 U.lastInventoryScanMs = 0
 U.inventoryCache = nil
@@ -805,6 +805,7 @@ function U:BuildModeView(mode, snapshot, force)
     elseif mode=="COLLECTIONS" then view=self:BuildCollectionsView(snapshot)
     elseif mode=="DAILIES" then view=self:BuildDailiesView(snapshot)
     elseif mode=="RETICLE" then view=self:BuildReticleView(snapshot)
+    elseif mode=="SELL" and EPC.VendorSell and EPC.VendorSell.BuildView then view=EPC.VendorSell:BuildView()
     else view=self:BuildOverview(snapshot) end
     view.mode=mode
     view.modeLabel=self.modeLabels[mode] or mode
@@ -819,7 +820,7 @@ end
 
 function U:Prewarm(snapshot)
     snapshot = snapshot or EPC.lastSnapshot or {}
-    local modes = {"INVENTORY", "RESEARCH", "COLLECTIONS", "DAILIES", "RETICLE", "OVERVIEW"}
+    local modes = {"INVENTORY", "RESEARCH", "COLLECTIONS", "DAILIES", "RETICLE", "SELL", "OVERVIEW"}
     for i=1,#modes do
         local mode = modes[i]
         local function warm()

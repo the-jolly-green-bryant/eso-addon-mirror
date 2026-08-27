@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Geldis/Elden-Ring-UI__4623",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Geldis",
   "canonical_id": "esoui:4623",
   "category_id": "17",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -21,7 +26,7 @@
     "EldenRingUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4623/",
-  "fingerprint": "a11b6878bede49edba5a2ce2ac2efe9e2d52ec6b02916c74c1919045cfe4a271",
+  "fingerprint": "8415f2f6217b5c8bafb2992d91711ea95350f032c82d5f1a594ce6cc08b023af",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16280.png",
     "https://cdn-eso.mmoui.com/preview/pvw16286.png"
@@ -32,11 +37,11 @@
   "source_id": "4623",
   "source_url": "https://www.esoui.com/downloads/info4623-EldenRingUI.html",
   "stats": {
-    "downloads": 432,
+    "downloads": 508,
     "favorites": 4,
-    "monthly_downloads": 104
+    "monthly_downloads": 75
   },
   "title": "Elden Ring UI",
-  "updated_at": 1781613065000,
-  "version": "1.3.8"
+  "updated_at": 1787828498000,
+  "version": "1.3.9"
 }

@@ -1,0 +1,21 @@
+Better Bars v0.0.01
+
+First public release.
+
+- Promoted the validated standalone resource-bar implementation to Better Bars.
+- Replaced development Test01 identifiers with production Better Bars identifiers.
+- Preserved the known-good Vertical Crescent and Horizontal renderers.
+- Preserved shared absolute resource sizing and dynamic max-resource updates.
+- Preserved Damage Shield peak-capacity sizing and hide-when-empty behavior.
+- Preserved character-specific layouts and settings.
+- Preserved native ESO resource-bar suppression/restoration behavior.
+- Preserved scene-aware visibility and settings preview behavior.
+- Preserved event-driven runtime updates and self-terminating smoothing.
+- Added production manifest metadata, public credits, README, and changelog.
+
+Shield state correction (pre-release v0.0.01)
+- Shield state now consumes ESO's authoritative add/update/remove event values directly.
+- Invalid or stale shield visualizer values are rejected at the state owner.
+- Shield capacity now uses ESO's reported shield maximum rather than a synthetic peak-current value.
+- Health shield event acceptance now recognizes either Health attribute identity or Health power identity, improving Frost Staff / Wall shield compatibility.
+- No renderer, texture, resource-bar, positioning, or smoothing behavior changed.

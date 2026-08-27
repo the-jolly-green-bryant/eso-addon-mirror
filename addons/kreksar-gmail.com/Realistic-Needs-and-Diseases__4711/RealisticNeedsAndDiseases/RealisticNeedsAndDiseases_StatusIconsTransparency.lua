@@ -95,6 +95,7 @@ function StatusIconsTransparency.Initialize()
         sv.settings.statusIconsTransparencyPosition.y = window:GetTop()
     end)
     window:SetHidden(true)
+    StatusIconsTransparency.ApplyDisplaySettings(sv)
 
     for _, needName in ipairs(NEEDS_ORDER) do
         table.insert(ICON_ORDER, needName)
@@ -114,6 +115,23 @@ function StatusIconsTransparency.Initialize()
     window:SetDimensions(offsetX - ICON_GAP + PAD, ICON_SIZE + PAD * 2)
 
     StatusIconsTransparency._initialized = true
+end
+
+-- Applies the "Icon Size" and "Icon Max Opacity" sliders (Settings.lua) to
+-- the whole display in one shot. SetScale/SetAlpha on the TOP-LEVEL window
+-- cascade to every child control automatically (ESO's standard alpha/scale
+-- compositing down a control's hierarchy) — so this needs no per-icon
+-- layout math at all, and critically, the opacity slider multiplies
+-- MULTIPLICATIVELY with each icon's own severity-driven alpha (set in
+-- Refresh() below) rather than replacing it: a need at band 4 (alpha 1.0)
+-- with a 50% max-opacity setting renders at 0.5, exactly as if that need's
+-- own alpha had been 0.5 to begin with. Called from Initialize() and
+-- directly from the Settings sliders' setFunc — no need to also call this
+-- from Refresh(), since it only needs to run when the setting itself
+-- changes, not on every periodic tick.
+function StatusIconsTransparency.ApplyDisplaySettings(sv)
+    window:SetScale(sv.settings.statusIconsTransparencyScale or 1.0)
+    window:SetAlpha(sv.settings.statusIconsTransparencyMaxOpacity or 1.0)
 end
 
 function StatusIconsTransparency.Refresh(sv)

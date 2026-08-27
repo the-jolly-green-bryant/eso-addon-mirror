@@ -517,12 +517,12 @@ function U:Create()
         card:SetAnchor(TOPLEFT, self.statsArea, TOPLEFT, col * (statWidth + statGap), row * 66)
 
         local label = makeLabel(card, "EPC_StatLabel_" .. tostring(i), "ZoFontGameSmall", C.muted)
-        label:SetAnchor(TOPLEFT, card, TOPLEFT, 11, 7)
-        label:SetDimensions(statWidth - 22, 18)
+        label:SetAnchor(TOPLEFT, card, TOPLEFT, 9, 7)
+        label:SetDimensions(statWidth - 18, 18)
 
         local value = makeLabel(card, "EPC_StatValue_" .. tostring(i), "ZoFontGameBold", C.white)
         value:SetAnchor(TOPLEFT, label, BOTTOMLEFT, 0, 1)
-        value:SetDimensions(statWidth - 22, 25)
+        value:SetDimensions(statWidth - 18, 25)
 
         self.statCards[i], self.statLabels[i], self.statValues[i] = card, label, value
     end
@@ -694,6 +694,7 @@ function U:Create()
         local b=makeButton(self.questPanel,"EPC_QuestFilter_"..key,label,fw,27,function()
             if EPC.QuestFinder and EPC.QuestFinder:SetFilter(key) then EPC.UI:RenderQuest(EPC.QuestFinder:BuildView()) end
         end)
+        if b.SetFont then b:SetFont("ZoFontGame") end
         if i==1 then b:SetAnchor(TOPLEFT,self.questPanel,TOPLEFT,0,0) else b:SetAnchor(LEFT,self.questFilters[i-1],RIGHT,5,0) end
         self.questFilters[i]=b
     end
@@ -1363,7 +1364,7 @@ function U:Render(model)
         local stat = stats[i]
         self.statLabels[i]:SetText(stat and stat.label or "")
         local value = stat and tostring(stat.value or "") or ""
-        self.statValues[i]:SetText(fitSingleLine(self.statValues[i], value, math.floor(((EPC.saved.width or 620) - 32 - 8) / 2) - 22))
+        self.statValues[i]:SetText(fitSingleLine(self.statValues[i], value, math.floor(((EPC.saved.width or 620) - 32 - 8) / 2) - 18))
     end
 
     local showFocus = activeTab == "BUILD" and snapshot.level >= 50 and self.focusPanel ~= nil

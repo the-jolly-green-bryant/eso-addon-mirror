@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.5
+- Replaced ESO's global overwrite dialog with an addon-owned confirmation window so cursor mode remains active until Outfit Profiles is closed.
+
+## 0.4.4
+- Kept cursor mode active after closing an overwrite confirmation while the addon window remains open.
+
+## 0.4.3
+- Fixed overwrite confirmation prompts rendering behind the addon window.
+
 ## 0.4.1
 - Fixed dropdown menus rendering behind the main window.
 - Matched every dropdown popup to the width of its field.

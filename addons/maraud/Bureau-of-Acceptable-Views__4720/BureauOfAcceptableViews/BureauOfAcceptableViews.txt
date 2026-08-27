@@ -1,6 +1,6 @@
 ## Title: |c6FCB9FBureau|r of Acceptable Views
-## Version: 3.7.105247
-## AddOnVersion: 37
+## Version: 3.8.145105
+## AddOnVersion: 38
 ## Author: |c6FCB9Fmeshlg|r @ArtieFox
 ## APIVersion: 101050 101051
 ## Description: Free camera zoom in restricted states, with Dynamic FOV, adaptive PvP framing, context presets, and over-the-shoulder control.
@@ -26,7 +26,9 @@ FovArbiter.lua
 ContextPresets.lua
 ShoulderControl.lua
 PvpMode.lua
+OffsetNudge.lua
 Settings.lua
+Bindings.xml
 ; ---------------------------------------------------------------------------
 
 

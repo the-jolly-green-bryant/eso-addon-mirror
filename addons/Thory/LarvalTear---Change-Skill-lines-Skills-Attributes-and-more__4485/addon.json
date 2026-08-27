@@ -26,7 +26,7 @@
     "LarvalTear"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4485/",
-  "fingerprint": "de4c3e0dfe7b55eadde4022b8a026731150dc1ee51bff315ba602a4430a22bf4",
+  "fingerprint": "613d98fdac2f4403c2062a9fd06a36f8e8f1d125e8c23394f4ad432836e37590",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15643.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16135.png",
@@ -43,11 +43,11 @@
   "source_id": "4485",
   "source_url": "https://www.esoui.com/downloads/info4485-LarvalTear-ChangeSkilllinesSkillsAttributesandmore.html",
   "stats": {
-    "downloads": 4264,
+    "downloads": 4468,
     "favorites": 13,
-    "monthly_downloads": 571
+    "monthly_downloads": 601
   },
   "title": "LarvalTear - Change Skill lines, Skills, Attributes, and more",
-  "updated_at": 1787408845000,
-  "version": "1.4.0.0"
+  "updated_at": 1787754234000,
+  "version": "1.4.0.1"
 }

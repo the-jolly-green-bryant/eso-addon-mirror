@@ -2897,7 +2897,7 @@ local function GetCrownStoreSourceLabel(sourceDef)
 end
 
 function CollectiblesTrackerAllTheThings.BuildCrownStoreTabData()
-    local emptySeen = {}
+    local crateSeen = CollectiblesTrackerAllTheThings.BuildCrateCollectibleIdSet()
     local tabData =
     {
         {
@@ -2909,7 +2909,7 @@ function CollectiblesTrackerAllTheThings.BuildCrownStoreTabData()
     local storeSources = CollectiblesTrackerAllTheThings.GetAllTheThingsStoreSources()
     for _, sourceDef in ipairs(storeSources) do
         local rawIds = sourceDef[1]
-        local filtered = FilterCollectibleList(rawIds, emptySeen)
+        local filtered = FilterCollectibleList(rawIds, crateSeen)
         if (#filtered > 0) then
             tabData[#tabData + 1] = {
                 GetCrownStoreSourceLabel(sourceDef),

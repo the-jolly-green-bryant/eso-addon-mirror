@@ -22,6 +22,32 @@ ZO_PlayerAttributeSiegeHealth:SetHidden(true)
 
 ZO_CompassAreaOverrideLabel:SetHidden(true)
 
+ZO_GetPrimaryPlayerNameWithSecondary = function(displayName, characterName) return displayName end
+
+local INVbackground = ZO_SharedWideLeftPanelBackgroundLeft
+INVbackground:ClearAnchors()
+INVbackground:SetAnchor(LEFT, GuiRoot, LEFT, -20, -50)
+INVbackground:SetDimensions(240, 650)
+
+ZO_CharacterWindowStatsScrollScrollChildStatEntry4:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry5:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry7:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry8:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry29:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry30:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry25:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry23:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry34:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry35:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry16:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry33:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry13:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry22:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildStatEntry24:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildZO_MundusStonesStatsEntry:SetHidden(true)
+ZO_CharacterWindowStatsScrollScrollChildZO_MundusStonesStatsEntryMundusIcon1:SetHidden(true)
+
+	
 RedirectTexture("esoui/art/actionbar/abilityframe64_up.dds", "EldenRingUI/Textures/abilityframe64_up.dds")
 RedirectTexture("esoui/art/actionbar/abilityframe64_down.dds", "EldenRingUI/Textures/abilityframe64_up.dds")
 RedirectTexture("esoui/art/miscellaneous/interactkeyframe_center.dds", "EldenRingUI/Textures/interactkeyframe_center.dds")
@@ -48,7 +74,7 @@ local function RunOneTimeSetup()
         local c = ZO_SynergyTopLevel:GetNamedChild('Container')
         if c then
             c:ClearAnchors()
-            c:SetAnchor(BOTTOM, GuiRoot, BOTTOM, 40, -300)
+            c:SetAnchor(BOTTOM, GuiRoot, BOTTOM, 40, -260)
 
             local a = c:GetNamedChild('Action')
             local x = c:GetNamedChild('Key')

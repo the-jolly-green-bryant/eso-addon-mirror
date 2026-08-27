@@ -59,6 +59,9 @@ function Settings.Initialize(sv)
                     if RN.StatusIconsTransparency and RN.StatusIconsTransparency.SetShown then
                         RN.StatusIconsTransparency.SetShown(sv.settings.statusIconsTransparencyEnabled)
                     end
+                    if RN.StatusBars and RN.StatusBars.SetShown then
+                        RN.StatusBars.SetShown(sv.settings.statusBarsEnabled)
+                    end
                     if RN.Overlay and RN.Overlay.RefreshAll then
                         RN.Overlay.RefreshAll(sv)
                     end
@@ -71,6 +74,9 @@ function Settings.Initialize(sv)
                     end
                     if RN.StatusIconsTransparency and RN.StatusIconsTransparency.SetShown then
                         RN.StatusIconsTransparency.SetShown(false)
+                    end
+                    if RN.StatusBars and RN.StatusBars.SetShown then
+                        RN.StatusBars.SetShown(false)
                     end
                     if RN.Overlay and RN.Overlay.ClearDisease then
                         for diseaseId in pairs(RN.Diseases) do
@@ -101,6 +107,79 @@ function Settings.Initialize(sv)
                 end
             end,
             default = false,
+        },
+        {
+            type = "slider", name = "Icon status display size", min = 0.5, max = 2.0, step = 0.05, decimals = 2,
+            tooltip = "Scales the entire icon-based status window (icons and their spacing together) up or down. 1.0 = default size.",
+            getFunc = function() return sv.settings.statusIconsTransparencyScale end,
+            setFunc = function(value)
+                sv.settings.statusIconsTransparencyScale = value
+                if RN.StatusIconsTransparency and RN.StatusIconsTransparency.ApplyDisplaySettings then
+                    RN.StatusIconsTransparency.ApplyDisplaySettings(sv)
+                end
+            end,
+            default = 1.0,
+        },
+        {
+            type = "slider", name = "Icon status display max opacity", min = 0.2, max = 1.0, step = 0.05, decimals = 2,
+            tooltip = "Caps how opaque an icon can get even at its worst (a completely empty need or a Severe disease). This multiplies on top of the normal transparency-by-severity effect rather than replacing it — at 0.5, for example, a Severe disease renders at half the opacity it normally would, and everything below Severe scales down proportionally with it. 1.0 = default (full opacity at worst).",
+            getFunc = function() return sv.settings.statusIconsTransparencyMaxOpacity end,
+            setFunc = function(value)
+                sv.settings.statusIconsTransparencyMaxOpacity = value
+                if RN.StatusIconsTransparency and RN.StatusIconsTransparency.ApplyDisplaySettings then
+                    RN.StatusIconsTransparency.ApplyDisplaySettings(sv)
+                end
+            end,
+            default = 1.0,
+        },
+        {
+            type = "checkbox",
+            name = "Use bar-based status display",
+            tooltip = "Shows a mini health-bar-style status window — one bar each for hunger/thirst/fatigue (always shown, full = satisfied, empty = critical), plus a drunkenness bar that only appears once you're actually inebriated and fills up as it increases, and one bar per currently-active disease (fills up as severity worsens). Independent toggle — can run alongside the text window and/or the icon display above. Position is drag-movable in-game.",
+            getFunc = function() return sv.settings.statusBarsEnabled end,
+            setFunc = function(value)
+                sv.settings.statusBarsEnabled = value
+                if RN.StatusBars and RN.StatusBars.SetShown then
+                    RN.StatusBars.SetShown(value and sv.settings.masterEnabled ~= false)
+                end
+            end,
+            default = false,
+        },
+        {
+            type = "slider", name = "Bar status display size", min = 0.5, max = 2.0, step = 0.05, decimals = 2,
+            tooltip = "Scales the entire bar-based status window (bars, labels, and spacing together) up or down. 1.0 = default size.",
+            getFunc = function() return sv.settings.statusBarsScale end,
+            setFunc = function(value)
+                sv.settings.statusBarsScale = value
+                if RN.StatusBars and RN.StatusBars.ApplyDisplaySettings then
+                    RN.StatusBars.ApplyDisplaySettings(sv)
+                end
+            end,
+            default = 1.0,
+        },
+        {
+            type = "slider", name = "Bar status display opacity", min = 0.2, max = 1.0, step = 0.05, decimals = 2,
+            tooltip = "Overall transparency of the whole bar-based status window (background panel, bars, and labels together) — lower values make the whole window more see-through. 1.0 = fully opaque (default).",
+            getFunc = function() return sv.settings.statusBarsOpacity end,
+            setFunc = function(value)
+                sv.settings.statusBarsOpacity = value
+                if RN.StatusBars and RN.StatusBars.ApplyDisplaySettings then
+                    RN.StatusBars.ApplyDisplaySettings(sv)
+                end
+            end,
+            default = 1.0,
+        },
+        {
+            type = "slider", name = "Disease overlay max opacity", min = 0.1, max = 1.0, step = 0.05, decimals = 2,
+            tooltip = "Caps how strong the full-screen disease tint can get, even at Severe. This scales the existing per-severity ceilings (Mild/Moderate/Severe each already fade in to a different strength) proportionally down together, rather than replacing them individually — at 0.5, for example, Severe renders at half its normal strength, and Mild/Moderate scale down right along with it. 1.0 = default (unscaled). Mirrors the same overlay opacity slider added to Frostfall's hot/cold screen effect.",
+            getFunc = function() return sv.settings.diseaseOverlayMaxOpacity end,
+            setFunc = function(value)
+                sv.settings.diseaseOverlayMaxOpacity = value
+                if RN.Overlay and RN.Overlay.RefreshAll then
+                    RN.Overlay.RefreshAll(sv)
+                end
+            end,
+            default = 1.0,
         },
         { type = "header", name = "Needs — decay & restoration" },
         {
@@ -145,7 +224,8 @@ function Settings.Initialize(sv)
             default = 30,
         },
         {
-            type = "slider", name = "Thirst restored per wild water node harvested", min = 5, max = 100, step = 5,
+            type = "slider", name = "Thirst restored per wild water node harvested", min = 0, max = 100, step = 5,
+            tooltip = "Set to 0 to disable this entirely — no thirst restore and no chat message when harvesting a water node.",
             getFunc = function() return sv.settings.restoreAmounts.harvest end,
             setFunc = function(value) sv.settings.restoreAmounts.harvest = value end,
             default = 15,
@@ -198,6 +278,15 @@ function Settings.Initialize(sv)
             func = function()
                 sv.settings.statusIconsTransparencyPosition = { x = 16, y = 340 }
                 CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r Icon status window position reset. Reload UI to see the change take effect.")
+            end,
+        },
+        {
+            type = "button",
+            name = "Reset bar status window position",
+            tooltip = "The bar-based status window is drag-movable in-game separately from the other status windows. If it gets lost off-screen, use this to bring it back to its default position.",
+            func = function()
+                sv.settings.statusBarsPosition = { x = 16, y = 220 }
+                CHAT_SYSTEM:AddMessage("|c88CCFF[Realistic Needs and Diseases]|r Bar status window position reset. Reload UI to see the change take effect.")
             end,
         },
 

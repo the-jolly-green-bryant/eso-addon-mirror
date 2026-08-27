@@ -3,9 +3,10 @@
 --
 -- Design:
 --   • One window for cold (blue), one for heat (red).
---   • Alpha is a pure linear ramp driven by playerTemp (in °C):
---       Cold: alpha 0 at FV.TEMP.COLD (10°C), MAX_ALPHA at FV.TEMP.FREEZE_DANGER (-10°C)
---       Hot:  alpha 0 at FV.TEMP.HOT  (35°C), MAX_ALPHA at FV.TEMP.HEAT_DANGER   (41°C)
+--   • Alpha is a pure linear ramp driven by playerTemp (in °C), scaled by
+--     the live "Screen Overlay Max Opacity" Settings slider (FV.SV.overlayMaxOpacity):
+--       Cold: alpha 0 at FV.TEMP.COLD (10°C), max at FV.TEMP.FREEZE_DANGER (-10°C)
+--       Hot:  alpha 0 at FV.TEMP.HOT  (35°C), max at FV.TEMP.HEAT_DANGER   (41°C)
 --   • Both overlays are fully hidden between COLD (10°C) and HOT (35°C) — the
 --     same thresholds that gate the emote system.
 --   • No layered windows, no warning text, no pulse.
@@ -20,8 +21,15 @@ local OVL = Frostfall_Overlay
 local FV = Frostfall
 
 -- Maximum alpha at the temperature extremes.
--- Kept below 1.0 so the world remains visible.
-local MAX_ALPHA = 0.75
+-- Now a live Settings-panel slider (FV.SV.overlayMaxOpacity) rather than a
+-- fixed constant — see ConfigMenu.lua's "Screen Overlay Max Opacity"
+-- slider and FV.Defaults.overlayMaxOpacity (default 0.75, matching what
+-- this constant used to be, so nobody's overlay changes on upgrade).
+-- Read live in ColdAlpha/HotAlpha below rather than cached, so the slider
+-- takes effect immediately without needing a reload.
+local function GetMaxAlpha()
+    return (FV.SV and FV.SV.overlayMaxOpacity) or 0.75
+end
 
 -- ============================================================
 -- TOP-LEVEL WINDOWS  (file scope — created before Initialize)
@@ -34,26 +42,28 @@ local hotWindow  = WINDOW_MANAGER:CreateTopLevelWindow("FrostfallHotWindow")
 -- ALPHA CALCULATION
 -- ============================================================
 
--- Cold ramp: alpha 0 at COLD threshold (10°C), MAX_ALPHA at FREEZE_DANGER (-10°C).
--- playerTemp below FREEZE_DANGER stays clamped at MAX_ALPHA.
+-- Cold ramp: alpha 0 at COLD threshold (10°C), max at FREEZE_DANGER (-10°C).
+-- playerTemp below FREEZE_DANGER stays clamped at the max.
 local function ColdAlpha(playerTemp)
     local T = FV.TEMP
+    local maxAlpha = GetMaxAlpha()
     if playerTemp >= T.COLD then return 0 end
-    if playerTemp <= T.FREEZE_DANGER then return MAX_ALPHA end
-    -- Linear interpolation between COLD (alpha 0) and FREEZE_DANGER (alpha MAX_ALPHA)
+    if playerTemp <= T.FREEZE_DANGER then return maxAlpha end
+    -- Linear interpolation between COLD (alpha 0) and FREEZE_DANGER (alpha maxAlpha)
     local frac = (T.COLD - playerTemp) / (T.COLD - T.FREEZE_DANGER)
-    return frac * MAX_ALPHA
+    return frac * maxAlpha
 end
 
--- Hot ramp: alpha 0 at HOT threshold (35°C), MAX_ALPHA at HEAT_DANGER (41°C).
--- playerTemp above HEAT_DANGER stays clamped at MAX_ALPHA.
+-- Hot ramp: alpha 0 at HOT threshold (35°C), max at HEAT_DANGER (41°C).
+-- playerTemp above HEAT_DANGER stays clamped at the max.
 local function HotAlpha(playerTemp)
     local T = FV.TEMP
+    local maxAlpha = GetMaxAlpha()
     if playerTemp <= T.HOT then return 0 end
-    if playerTemp >= T.HEAT_DANGER then return MAX_ALPHA end
-    -- Linear interpolation between HOT (alpha 0) and HEAT_DANGER (alpha MAX_ALPHA)
+    if playerTemp >= T.HEAT_DANGER then return maxAlpha end
+    -- Linear interpolation between HOT (alpha 0) and HEAT_DANGER (alpha maxAlpha)
     local frac = (playerTemp - T.HOT) / (T.HEAT_DANGER - T.HOT)
-    return frac * MAX_ALPHA
+    return frac * maxAlpha
 end
 
 -- ============================================================

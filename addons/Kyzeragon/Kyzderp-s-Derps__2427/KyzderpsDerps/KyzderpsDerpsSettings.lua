@@ -633,6 +633,23 @@ function KyzderpsDerps:CreateSettingsMenu()
                 },
                 {
                     type = "checkbox",
+                    name = "Remind about setup change",
+                    tooltip = "Just puts a message on your screen whenever you start a veteran trial or approach or leave a boss in PvE content. For those who prefer to manually load setups. The message will disappear when you enter combat, if you change gear, or if you load an AlphaGear set",
+                    default = false,
+                    getFunc = function() return KyzderpsDerps.savedOptions.antispud.checkSetupChange end,
+                    setFunc = function(value)
+                        KyzderpsDerps.savedOptions.antispud.checkSetupChange = value
+                        KD.AntiSpud.InitializeGearSetup()
+                    end,
+                    width = "full",
+                },
+                {
+                    type = "description",
+                    title = "|c08BD1DMundus Stones|r",
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
                     name = "Check Mundus Stone in PvE",
                     tooltip = "Enables the check for PvE: dungeons, trials, and arenas",
                     default = false,

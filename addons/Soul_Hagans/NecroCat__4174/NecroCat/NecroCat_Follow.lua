@@ -1,4 +1,5 @@
-NecroCat.Follow = {}
+NecroCat = NecroCat or {}
+NecroCat.Follow = NecroCat.Follow or {}
 local FM = NecroCat.Follow
 
 ---------------------------------------------------------
@@ -159,8 +160,8 @@ local function OnPlayerActivated(eventCode)
         return
     end
 
-    -- Проверяем: включен ли наш авторежим?
-    if not NecroCat.savedVars.followAutoPrepare then return end
+    -- Безопасная проверка: загружены ли сохранения и включен ли авторежим
+    if not (NecroCat.savedVars and NecroCat.savedVars.followAutoPrepare) then return end
 
     -- Проверяем: находимся ли мы вообще в группе?
     if not IsUnitGrouped("player") then return end

@@ -43,6 +43,47 @@ local function FormatTime(seconds)
     return string.format("%d:%02d", minutes, remainingSeconds)
 end
 
+local function FormatNumber(value)
+    value = math.max(0, math.floor(tonumber(value) or 0))
+    local reversed = string.reverse(tostring(value))
+    reversed = string.gsub(reversed, "(%d%d%d)", "%1,")
+    return string.gsub(string.reverse(reversed), "^,", "")
+end
+
+local function GetXPRemainingText()
+    local playerLevel = GetUnitLevel and GetUnitLevel("player") or 0
+
+    if playerLevel >= 50 and GetPlayerChampionXP and GetNumChampionXPInChampionPoint then
+        local championPoints = 0
+
+        if GetUnitChampionPoints then
+            championPoints = GetUnitChampionPoints("player") or 0
+        end
+
+        if championPoints <= 0 and GetPlayerChampionPointsEarned then
+            championPoints = GetPlayerChampionPointsEarned() or 0
+        end
+
+        local currentChampionXP = GetPlayerChampionXP() or 0
+        local championXPMax = GetNumChampionXPInChampionPoint(championPoints) or 0
+
+        if championXPMax > 0 then
+            local remainingChampionXP = math.max(0, championXPMax - currentChampionXP)
+            return string.format("XP to next CP: %s", FormatNumber(remainingChampionXP))
+        end
+    end
+
+    local currentXP = GetUnitXP and GetUnitXP("player") or 0
+    local maxXP = GetUnitXPMax and GetUnitXPMax("player") or 0
+
+    if maxXP > 0 then
+        local remainingXP = math.max(0, maxXP - currentXP)
+        return string.format("XP to next level: %s", FormatNumber(remainingXP))
+    end
+
+    return "XP to next level: --"
+end
+
 local function GetFriendlySourceName(effectName)
     local normalizedName = string.lower(effectName or "")
 
@@ -135,23 +176,25 @@ end
 
 local function UpdateTimerDisplay()
     local boosts = GetTimedBoosts()
+    local xpText = GetXPRemainingText()
 
     if #boosts == 0 then
-        visibleTimerRows = 1
-        timerLabel:SetText("No timed boosts found")
+        visibleTimerRows = 2
+        timerLabel:SetText("No timed boosts found\n" .. xpText)
         ApplyPanelSettings()
         return
     end
 
     local lines = {}
     local visibleCount = math.min(#boosts, MAX_VISIBLE_TIMERS)
-    visibleTimerRows = visibleCount
+    visibleTimerRows = visibleCount + 1
 
     for index = 1, visibleCount do
         local boost = boosts[index]
         lines[#lines + 1] = string.format("%s  %s", GetTimerDisplayName(boost.name), FormatTime(boost.remaining))
     end
 
+    lines[#lines + 1] = xpText
     timerLabel:SetText(table.concat(lines, "\n"))
     ApplyPanelSettings()
 end
@@ -265,7 +308,7 @@ local function CreateSettingsPanel()
         name = DISPLAY_NAME,
         displayName = DISPLAY_NAME,
         author = "Aldren Project",
-        version = "0.0.16",
+        version = "0.0.17",
         registerForRefresh = true,
         registerForDefaults = true,
     }

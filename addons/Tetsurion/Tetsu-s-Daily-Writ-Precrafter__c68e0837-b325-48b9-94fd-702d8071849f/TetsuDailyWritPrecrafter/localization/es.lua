@@ -1,0 +1,67 @@
+TetsuDailyWritPrecrafter = TetsuDailyWritPrecrafter or {}
+local L = TetsuDailyWritPrecrafter.L
+if not L then return end
+
+L.TITLE                   = "|cFFD700Tetsu's|r Daily Writ Precrafter "
+
+L.OPTIONS_SECTION_LABEL   = "Automatización"
+L.OPTIONS_SECTION_TT      = "Opciones de automatización seguras para mando."
+L.INFO_LABEL              = "Info"
+L.INFO_TT                 = "Si el addon te ha ayudado, agradezco un poco de oro por correo a @Tetsurion. El mismo correo para errores e ideas.\n\nCON Lazy Writ (predeterminado): Lazy Writ hace el encargo de hoy, aceptar, entregar y cajas. En la estación, R3 precraftea desde MAÑANA según el control deslizante.\n\nSOLO (desactiva la opción Lazy Writ y el propio Lazy Writ): por defecto solo el encargo activo. Activa precraft + R3 para hoy y días extra. Autoaceptar / entregar / cajas está en Automatización."
+L.COMPAT_LWC_LABEL        = "Usar junto con Lazy Writ Creator"
+L.COMPAT_LWC_TT           = "Por defecto ON. Lazy Writ: encargo de hoy, aceptar, entregar y cajas. Este addon: precraft R3 desde mañana.\nDesactiva Dolgubon's Lazy Writ Creator ANTES de pasar a modo independiente.\nCambiar esta opción recarga la interfaz."
+L.AUTO_QUEST_LABEL        = "Aceptar y entregar encargos de artesanía automáticamente"
+L.AUTO_QUEST_TT           = "Coger encargos del tablón y entregarlos en las cajas automáticamente."
+L.AUTO_BOX_LABEL          = "Abrir cajas de recompensa automáticamente"
+L.AUTO_BOX_TT             = "Abrir los contenedores de encargos diarios en cuanto aparezcan en la mochila."
+
+L.PRECRAFT_SECTION_LABEL  = "Precraft (este personaje)"
+L.PRECRAFT_SECTION_TT     = "Los ajustes se guardan por personaje."
+L.PRECRAFT_ENABLED_LABEL  = "Precraft para el futuro"
+L.PRECRAFT_ENABLED_TT     = "Si está activado, R3 fabrica objetos para varios días según la rotación diaria. Si está desactivado, R3 solo fabrica lo que pide el encargo activo."
+L.PRECRAFT_DAYS_LABEL     = "Días por delante"
+L.PRECRAFT_DAYS_TT        = "Cuántos días precraftear (incluido hoy). Deslizador 1–10."
+L.PRECRAFT_DAYS_TT_COMPAT = "Días DESPUÉS de hoy. El encargo de hoy lo hace Lazy Writ Creator. 1 = solo mañana. 3 = mañana y 2 días más."
+
+L.KEYBIND_PRECRAFT        = "|c00FF00[R3]|r Precraft <<1>> días (<<2>> uds.)"
+L.KEYBIND_QUEST_CRAFT     = "|c00FF00[R3]|r Fabricar encargo activo (<<1>> uds.)"
+L.KEYBIND_NOTHING         = "|c888888[R3]|r Nada que fabricar"
+
+L.CONFIRM_TITLE_PRECRAFT  = "Precraft de encargos diarios"
+L.CONFIRM_PROMPT_PRECRAFT = "¿Fabricar objetos para <<1>> días? (<<2>> objetos)"
+L.CONFIRM_TITLE_QUEST     = "Fabricar encargo activo"
+L.CONFIRM_PROMPT_QUEST    = "¿Fabricar los objetos del encargo activo? (<<1>> uds.)"
+
+L.PROGRESS_CRAFTING       = "Fabricando..."
+L.PROGRESS_STATUS         = "Procesado: <<1>> de <<2>>"
+
+L.ERR_BAG_FULL            = "No hay espacio suficiente en la mochila (hacen falta ~<<1>> ranuras libres)."
+L.ERR_NO_STYLE            = "No se encontró material de estilo conocido en la mochila o en la bolsa de artesanía."
+L.ERR_MISSING_RUNES       = "Faltan runas de encantamiento (potencia / esencia / Ta)."
+L.ERR_CANNOT_CRAFT        = "No se puede fabricar <<1>> (faltan materiales, estilo o habilidad)."
+L.ERR_CRAFT_FAILED        = "Fallo al fabricar (<<1>>/<<2>>). Omitido."
+L.ERR_NOT_AT_STATION      = "No estás en una estación de artesanía."
+L.ERR_PROV_SKIP_UNKNOWN   = "Omitido (receta desconocida): <<1>>"
+L.ERR_NOTHING_TO_CRAFT    = "Nada que fabricar."
+L.ERR_NO_ACTIVE_WRIT      = "No hay un encargo de artesanía activo para esta estación."
+
+L.PRECHECK_HEADER         = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Materiales insuficientes. Fabricación cancelada:"
+L.PRECHECK_JOBS           = "Trabajos en cola: |cFFFFFF<<1>>|r"
+L.PRECHECK_LINE           = "  - |cFFD700<<1>>|r: necesita |cFFFFFF<<2>>|r, tiene |cFFFFFF<<3>>|r (|cFF6666-<<4>>|r)"
+L.PRECHECK_ABORT          = "Añade los materiales que faltan y pulsa R3 de nuevo."
+L.PRECHECK_OK             = "Comprobación de materiales OK. Fabricando |c00FF00<<1>>|r objetos..."
+
+L.USING_QUEST_DATA        = "Usando datos del encargo activo."
+L.USING_PREDICTED         = "Modo precraft: rotación diaria para <<1>> días."
+L.CRAFT_DONE              = "Listo. Fabricados: |c00FF00<<1>>|r, omitidos: |cFFFF00<<2>>|r."
+L.PATTERN_TODAY           = "Patrón de hoy: |cFFD700<<1>>|r"
+L.ERR_PHASE_UNKNOWN     = "Fase de rotación desconocida. Acepta el encargo de hoy en esta estación una vez — el addon aprenderá tu ciclo y el precraft funcionará."
+L.PHASE_LEARNED         = "Tu fase de rotación para este oficio: |cFFD700<<1>>|r"
+L.CONFLICT_TITLE          = "Conflicto de addons"
+L.CONFLICT_BODY           = "Desactiva <<1>>. Fabrica los mismos encargos y choca con Tetsu's Daily Writ Precrafter."
+L.CONFLICT_CHAT           = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Desactiva |cFFD700<<1>>|r. El auto-crafteo está pausado mientras ese addon esté activo."
+L.MISSING_LWC_TITLE       = "No se encontró Lazy Writ Creator"
+L.MISSING_LWC_BODY        = "Instala Dolgubon's Lazy Writ Creator o desactiva «Usar junto con Lazy Writ» (modo independiente)."
+L.MISSING_LWC_CHAT        = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Lazy Writ Creator no está activo. Instálalo o desactiva el modo conjunto."
+L.QUIET_INFO_LABEL        = "Ocultar mensajes rutinarios del chat"
+L.QUIET_INFO_TT           = "Oculta: precraft iniciado, fase, materiales OK, listo. Errores y faltantes siempre se ven."

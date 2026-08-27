@@ -25,6 +25,8 @@ local INTERPHASE_RESET_POLL_INTERVAL_MS = 200
 local INTERPHASE_RESET_TIMEOUT_MS = 7000
 local INTERPHASE_RESET_SETTLE_DELAY_MS = 750
 local PIPE_E_INTERPHASE_RESET_TIMEOUT = "PIPE_E_INTERPHASE_RESET_TIMEOUT"
+local INTERPHASE_CLEANUP_ROUTE_B_RESPEC = "route_b_respec"
+local INTERPHASE_CLEANUP_CLASS_MASTERY_SCENE = "class_mastery_scene"
 local PIPELINE_ABORT_REASON_DEFAULT = "unsafe_to_continue"
 local DOMAIN_PHASE_ORDER = {
     Equipment = 1,
@@ -40,6 +42,7 @@ local DOMAIN_PHASE_ORDER = {
 }
 
 LTM_PIPELINE.SAFE_ABORT_REASONS = {
+    [PIPE_E_INTERPHASE_RESET_TIMEOUT] = true,
     ATTR_E_SCENE_READY_TIMEOUT = true,
     combat_entered_after_apply_start = true,
     equipment_final_verify_timeout = true,
@@ -50,6 +53,7 @@ LTM_PIPELINE.SAFE_ABORT_REASONS = {
     mythic_target_not_equipped = true,
     player_in_combat = true,
     route_b_cleanup_incomplete = true,
+    route_b_baseline_cleanup_failed = true,
     route_b_completion_timeout = true,
     route_b_unresolved_slot_target_before_commit = true,
     route_b_verify_retry_exhausted = true,
@@ -860,6 +864,11 @@ local function BuildInterphaseResetSnapshot(context)
         skillSettingsActiveAction = type(skillSettings) == "table" and skillSettings.activeAction or nil,
         skillSettingsPassiveAction = type(skillSettings) == "table" and skillSettings.passiveAction or nil,
         routeBSubclassOnly = type(runtime) == "table" and runtime.routeBSubclassOnly == true,
+        routeBRespecInterfaceUsed = type(runtime) == "table"
+            and runtime.routeBRespecInterfaceUsed == true,
+        classMasterySkillsSceneOpened = type(runtime) == "table"
+            and runtime.classMasterySkillsSceneOpened == true,
+        interphaseCleanupKind = type(context) == "table" and context.interphaseCleanupKind or nil,
     }
 end
 
@@ -898,6 +907,9 @@ local function LogInterphaseResetTimeoutSnapshotOnce(resetContext, snapshot)
         "skillSettings.activeAction=" .. tostring(snapshot.skillSettingsActiveAction),
         "skillSettings.passiveAction=" .. tostring(snapshot.skillSettingsPassiveAction),
         "routeBSubclassOnly=" .. tostring(snapshot.routeBSubclassOnly),
+        "routeBRespecInterfaceUsed=" .. tostring(snapshot.routeBRespecInterfaceUsed),
+        "classMasterySkillsSceneOpened=" .. tostring(snapshot.classMasterySkillsSceneOpened),
+        "interphaseCleanupKind=" .. tostring(snapshot.interphaseCleanupKind),
         "attemptCount=" .. tostring(snapshot.attemptCount),
         "elapsedMs=" .. tostring(snapshot.elapsedMs)
     )
@@ -909,36 +921,61 @@ function LTM_PIPELINE:IsInterphaseResetReady(context)
     return ready, snapshot
 end
 
-function LTM_PIPELINE:ShouldResetBetweenPhases(pendingContext)
+local function ResolveInterphaseCleanupKind(pendingContext)
     if type(pendingContext) ~= "table" then
-        return false
+        return nil
     end
 
     if HasInterphaseResetAttempted(pendingContext) then
-        return false
+        return nil
     end
 
     local nextPhase = pendingContext.phases and pendingContext.phases[pendingContext.nextPhaseIndex] or nil
-    if type(nextPhase) ~= "table" or (nextPhase.name ~= "Attribute" and nextPhase.name ~= "ClassMastery") then
-        return false
+    if type(nextPhase) ~= "table" then
+        return nil
     end
 
-    return LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
+    if LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
         pendingContext.context,
-        "priorSkillRespecCommitted"
-    ) == true
+        "routeBRespecInterfaceUsed"
+    ) == true then
+        return INTERPHASE_CLEANUP_ROUTE_B_RESPEC
+    end
+
+    if nextPhase.name == "Attribute" and LTM_PIPELINE_CONTEXT:GetRuntimeFlag(
+        pendingContext.context,
+        "classMasterySkillsSceneOpened"
+    ) == true then
+        return INTERPHASE_CLEANUP_CLASS_MASTERY_SCENE
+    end
+
+    return nil
+end
+
+function LTM_PIPELINE:ShouldResetBetweenPhases(pendingContext)
+    return ResolveInterphaseCleanupKind(pendingContext) ~= nil
 end
 
 function LTM_PIPELINE:ResetBeforePhaseIfNeeded(boundaryContext)
-    if not self:ShouldResetBetweenPhases(boundaryContext) then
+    local cleanupKind = ResolveInterphaseCleanupKind(boundaryContext)
+    if cleanupKind == nil then
         return false
     end
 
     MarkInterphaseResetAttempted(boundaryContext)
+    boundaryContext.interphaseCleanupKind = cleanupKind
     NotifyStatusUpdate(boundaryContext.context, "deferred", "interphase_reset")
-    local resetOk, resetErr = self:ResetAfterMutatingRespec(boundaryContext, function(ready, resetFailureErr)
+    local cleanupMethod = cleanupKind == INTERPHASE_CLEANUP_ROUTE_B_RESPEC
+        and self.ResetAfterMutatingRespec
+        or self.ReturnToHudAfterClassMastery
+    local resetOk, resetErr = cleanupMethod(self, boundaryContext, function(ready, resetFailureErr)
         if not ready then
             RecordPhaseFailure(boundaryContext.context, "Pipeline", resetFailureErr)
+            MarkPipelineAbortRequested(
+                boundaryContext.context,
+                resetFailureErr or PIPE_E_INTERPHASE_RESET_TIMEOUT,
+                "Pipeline"
+            )
             self:RunPhases(
                 boundaryContext.build,
                 boundaryContext.nextPhaseIndex,
@@ -958,13 +995,23 @@ function LTM_PIPELINE:ResetBeforePhaseIfNeeded(boundaryContext)
 
     if not resetOk then
         RecordPhaseFailure(boundaryContext.context, "Pipeline", resetErr)
-        return false
+        MarkPipelineAbortRequested(
+            boundaryContext.context,
+            resetErr or PIPE_E_INTERPHASE_RESET_TIMEOUT,
+            "Pipeline"
+        )
+        NotifyPipelineCompletion(
+            boundaryContext.context,
+            false,
+            resetErr or PIPE_E_INTERPHASE_RESET_TIMEOUT
+        )
+        return true
     end
 
     return true
 end
 
-function LTM_PIPELINE:ResetAfterMutatingRespec(context, continuation)
+local function StartInterphaseBaselineCleanup(pipeline, context, continuation, options)
     if type(continuation) ~= "function" then
         return false, "continuation_required"
     end
@@ -979,6 +1026,7 @@ function LTM_PIPELINE:ResetAfterMutatingRespec(context, continuation)
         attemptCount = 0,
         timeoutSnapshotLogged = false,
     }
+    options = type(options) == "table" and options or {}
     context.resetStartedAt = resetContext.startedAt
 
     local function finish(success, err, snapshot)
@@ -990,7 +1038,10 @@ function LTM_PIPELINE:ResetAfterMutatingRespec(context, continuation)
         continuation(success, err, snapshot)
     end
 
-    SCENE_MANAGER:ShowBaseScene()
+    if options.resetRespecInterface == true then
+        LTM_APPLY_START_STATE:ResetRespecInterface()
+    end
+    LTM_APPLY_START_STATE:RequestHudBaseline()
 
     local function poll()
         if resetContext.completed then
@@ -999,10 +1050,13 @@ function LTM_PIPELINE:ResetAfterMutatingRespec(context, continuation)
 
         resetContext.attemptCount = resetContext.attemptCount + 1
         context.resetAttemptCount = resetContext.attemptCount
-        local ready, snapshot = self:IsInterphaseResetReady(context)
+        local ready, snapshot = pipeline:IsInterphaseResetReady(context)
         local waitElapsedMs = SHARED_UTIL:GetFrameTimeMillisecondsSafe() - resetContext.startedAt
 
         if ready then
+            for _, runtimeFlag in ipairs(options.clearRuntimeFlags or {}) do
+                LTM_PIPELINE_CONTEXT:SetRuntimeFlag(context.context, runtimeFlag, false)
+            end
             zo_callLater(function()
                 finish(true, nil, snapshot)
             end, INTERPHASE_RESET_SETTLE_DELAY_MS)
@@ -1020,6 +1074,25 @@ function LTM_PIPELINE:ResetAfterMutatingRespec(context, continuation)
 
     poll()
     return true
+end
+
+function LTM_PIPELINE:ResetAfterMutatingRespec(context, continuation)
+    return StartInterphaseBaselineCleanup(self, context, continuation, {
+        resetRespecInterface = true,
+        clearRuntimeFlags = {
+            "routeBRespecInterfaceUsed",
+            "classMasterySkillsSceneOpened",
+        },
+    })
+end
+
+function LTM_PIPELINE:ReturnToHudAfterClassMastery(context, continuation)
+    return StartInterphaseBaselineCleanup(self, context, continuation, {
+        resetRespecInterface = false,
+        clearRuntimeFlags = {
+            "classMasterySkillsSceneOpened",
+        },
+    })
 end
 
 function LTM_PIPELINE:Validate(build)

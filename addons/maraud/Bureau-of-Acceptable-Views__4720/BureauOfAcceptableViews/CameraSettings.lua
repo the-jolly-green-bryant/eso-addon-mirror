@@ -98,6 +98,10 @@ local DESCRIPTORS = {
         settingId = CAMERA_SETTING_SCREEN_SHAKE,
         decimals = 2, min = 0.0, max = 1.0,
     },
+    smoothing = {
+        settingId = CAMERA_SETTING_SMOOTHING,
+        decimals = 0, min = 0, max = 1, isBool = true,
+    },
 }
 
 -- Default epsilon used to confirm a written value actually applied. Matches the
@@ -119,12 +123,16 @@ local function ClampToRange(descriptor, value)
     return value
 end
 
--- Encode a numeric value into the fixed-decimal string the settings API wants.
--- Returns nil when the value is not numeric.
+-- Encode a numeric value into the string the settings API wants.
+-- Returns nil when the value is not numeric. Checkbox settings are stored as
+-- "0"/"1"; everything else keeps its fixed-decimal encoding.
 local function Encode(descriptor, value)
     value = tonumber(value)
-    if not value then
+    if value == nil then
         return nil
+    end
+    if descriptor.isBool then
+        return (value ~= 0) and "1" or "0"
     end
     return stringformat("%." .. descriptor.decimals .. "f", value)
 end

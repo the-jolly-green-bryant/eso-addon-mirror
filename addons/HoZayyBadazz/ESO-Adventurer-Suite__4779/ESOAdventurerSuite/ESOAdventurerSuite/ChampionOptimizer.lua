@@ -242,8 +242,17 @@ function C:_ApplyBestChampionBuildNow()
     local expected=type(GetExpectedResultForChampionPurchaseRequest)=="function" and safe(GetExpectedResultForChampionPurchaseRequest,nil) or nil
     local successConst=rawget(_G,"CHAMPION_PURCHASE_SUCCESS")
     if expected~=nil and successConst~=nil and expected~=successConst then self:Notify("CHAMPION: ESO reports the planned Champion allocation is not currently valid (result "..tostring(expected)..").",false) return false end
+    if cost > 0 and EPC.Activities and type(EPC.Activities.SetPendingGoldSpend) == "function" then
+        EPC.Activities:SetPendingGoldSpend("respec", cost)
+    end
     local sent=pcall(SendChampionPurchaseRequest)
-    if not sent then self:Notify("CHAMPION: ESO rejected the Champion respec request.",false) return false end
+    if not sent then
+        if EPC.Activities and type(EPC.Activities.ClearPendingGoldSpend) == "function" then
+            EPC.Activities:ClearPendingGoldSpend("respec")
+        end
+        self:Notify("CHAMPION: ESO rejected the Champion respec request.",false)
+        return false
+    end
     self:Notify(string.format("CHAMPION: best-build redistribution submitted for Craft, Warfare, and Fitness. Respec cost: %d gold.",cost),true)
     if EPC.RequestRefresh then EPC:RequestRefresh("champion-respec") end
     return true
@@ -278,8 +287,21 @@ function C:Initialize()
     EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_ChampionOptimizer", EVENT_CHAMPION_PURCHASE_RESULT, function(_, result)
         local success=rawget(_G,"CHAMPION_PURCHASE_SUCCESS")
         if success~=nil and result==success then
+            -- EVENT_MONEY_UPDATE normally consumes the pending cost first. If ESO
+            -- does not emit a usable money reason/update, commit the confirmed cost
+            -- shortly after the successful Champion purchase result instead.
+            if EPC.Activities and type(EPC.Activities.CommitPendingGoldSpend) == "function" and type(zo_callLater) == "function" then
+                zo_callLater(function()
+                    if EPC.Activities then EPC.Activities:CommitPendingGoldSpend("respec") end
+                end, 500)
+            elseif EPC.Activities and type(EPC.Activities.CommitPendingGoldSpend) == "function" then
+                EPC.Activities:CommitPendingGoldSpend("respec")
+            end
             C:Notify("CHAMPION: redistribution completed. Craft, Warfare, and Fitness were rebuilt.",true)
         else
+            if EPC.Activities and type(EPC.Activities.ClearPendingGoldSpend) == "function" then
+                EPC.Activities:ClearPendingGoldSpend("respec")
+            end
             C:Notify("CHAMPION: ESO rejected the redistribution (result "..tostring(result).."). No success was reported.",false)
         end
         if EPC.RequestRefresh then EPC:RequestRefresh("champion-purchase-result") end

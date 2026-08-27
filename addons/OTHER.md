@@ -19,3 +19,4 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [\[Obsolete\] Rollplay Integration](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheBobbyLlama/Obsolete-Rollplay-Integration__2871) | TheBobbyLlama | PC / Mac | 1.0 |
 | [\[Outdated\] Alternative Endeavor Tracking for VEQ](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rengaru/Outdated-Alternative-Endeavor-Tracking-for-VEQ__3857) | Rengaru | PC / Mac | 1.3 |
 | [\[RU\] Harven's Custom Map Pins (Markers) (old)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/A5ha/RU-Harven-s-Custom-Map-Pins-Markers-old__4354) | A5ha | PC / Mac | 3.2.7 |
+| [العربية](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/العربية__c712d543-0a9d-4470-b867-21f9b92f4c34) | Lofand | Console | — |

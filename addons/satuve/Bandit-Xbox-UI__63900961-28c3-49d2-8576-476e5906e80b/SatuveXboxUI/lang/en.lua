@@ -834,4 +834,6 @@ SXUI_CP_PreviewDesc='Shows how your available Warfare Champion Points will be di
 SXUI_CP_Apply='Apply CP Build',
 SXUI_CP_ApplyDesc='Applies the saved Warfare CP priority list. If existing allocations conflict, ESO may require a Champion Point redistribution and its normal gold cost.',
 
+
+	MinimapTransparency="Minimap transparency",
 }

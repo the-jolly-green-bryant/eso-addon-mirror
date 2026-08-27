@@ -26,6 +26,8 @@ On top of that, several **optional** systems can shape the camera further:
 - **Adaptive PvP mode** *(on by default)* - stable scouting, pursuit, combat,
   and pressure framing with critical-moment safety locks. This mode is currently
   in testing and will continue to be improved and fixed based on test results.
+- **Live offset nudge** - hold keybinds to slide the third-person camera
+  horizontally or vertically, then recenter those two axes with one tap.
 
 Every disabled optional system is fully inert. Adaptive PvP also registers no
 combat, health, sprint, or safety observers outside PvP, even while enabled.
@@ -50,6 +52,25 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
   synchronized too. FOV is recalculated only when the observed value changes.
 - Your manual FOV is snapshotted and persisted before the first dynamic override,
   then restored when the feature is disabled - including after a `/reloadui`.
+
+### Live offset nudge
+- Offset binds stay locked until you **remember one home pose** from the
+  dedicated settings tab. Restore always returns to that pose; nudging never
+  overwrites it.
+- Hold keybinds to slide the third-person **horizontal** and **vertical**
+  offsets in real time, the same axes CameraControl used to expose.
+- Movement is continuous (units per second), not a slow once-per-tick step.
+  A **nudge speed** slider in settings scales that rate from 50% to 200%.
+- One **restore** bind (and a matching settings button) returns both axes to
+  the remembered home. Zoom, FOV, and shoulder are left alone.
+- An optional centred on-screen readout shows both offsets while you nudge,
+  restore, remember, or delete the home pose, then hides after two seconds.
+- Assign the binds under Controls -> Bureau of Acceptable Views. They do
+  nothing until a home pose exists.
+- If a context preset is active, the same delta is written into its restore
+  snapshot so leaving combat or stealth does not rewind the framing you just
+  set. Remembering home stores the player's real framing, not the cinematic
+  overlay.
 
 ### Over-the-shoulder swap *(optional, off by default)*
 - Swings the third-person camera over one shoulder for a focused, cinematic
@@ -212,8 +233,8 @@ the field of view. Everything else is a consumer of those two contracts.
                  │ Configure(...)
   ┌──────────┬──────────────┬─────────────────┬───────────┬──────────────┐
   ▼          ▼              ▼                 ▼           ▼              ▼
-DynamicFov ContextPresets ShoulderControl   PvpMode     Free-zoom core
-  │          ▲              │ (owns shoulder) │ detector  (BureauOf…Views.lua)
+DynamicFov ContextPresets ShoulderControl   PvpMode     OffsetNudge
+  │          ▲              │ (owns shoulder) │ detector  (hold-to-nudge)
   │          └──────────────┴─────────────────┘ profile request
   └────┬──────┘
    FovArbiter            │  single owner of FOV precedence
@@ -255,6 +276,7 @@ is what keeps a fix or a client change a single edit.
 | `ContextPresets.lua` | State-driven cinematic bundles with snapshot/restore and persistence. |
 | `ShoulderControl.lua` | Optional over-the-shoulder swap (auto-by-state or manual); single owner of the shoulder offset. |
 | `PvpMode.lua` | Optional PvP situation state machine; requests one conservative external profile from ContextPresets and owns no camera setting directly. |
+| `OffsetNudge.lua` | Hold-to-nudge for horizontal and vertical offsets, recenter bind, and the short-lived on-screen readout. |
 | `Settings.lua` | SavedVariables, defaults, and the LibAddonMenu panel. |
 
 ---

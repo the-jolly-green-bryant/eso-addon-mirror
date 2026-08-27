@@ -5,10 +5,12 @@ local EPC = ESOProgressionCoach
 EPC.GearLoadoutOverlay = EPC.GearLoadoutOverlay or {}
 local G = EPC.GearLoadoutOverlay
 local wm = WINDOW_MANAGER
+local WRAP_ELLIPSIS = TEXT_WRAP_MODE_ELLIPSIS or TEXT_WRAP_MODE_TRUNCATE
+local WRAP_TRUNCATE = TEXT_WRAP_MODE_TRUNCATE or TEXT_WRAP_MODE_ELLIPSIS
 
-local BASE_W, BASE_H = 620, 660
-local MIN_W, MIN_H = 465, 495
-local MAX_W, MAX_H = 900, 960
+local BASE_W, BASE_H = 700, 700
+local MIN_W, MIN_H = 500, 500
+local MAX_W, MAX_H = 980, 980
 
 local SLOT_ROWS_LEFT = {
     {key="HEAD", label="HEAD", slot=EQUIP_SLOT_HEAD},
@@ -67,6 +69,15 @@ local function makeLabel(name, parent, text, font)
     return l
 end
 
+local function keepInside(label, maxLines, wrapped)
+    if not label then return end
+    if label.SetMaxLineCount then label:SetMaxLineCount(maxLines or 1) end
+    if label.SetWrapMode then
+        local mode = wrapped and WRAP_TRUNCATE or WRAP_ELLIPSIS
+        if mode then label:SetWrapMode(mode) end
+    end
+end
+
 local function makeButton(name, parent, text, handler)
     local b = wm:CreateControl(name, parent, CT_BUTTON)
     b:SetFont("ZoFontGameBold")
@@ -105,6 +116,116 @@ local function cleanName(value)
         if ok and formatted then text = formatted end
     end
     return text
+end
+
+-- ESO flattens line breaks in this compact equipment label on some clients.
+-- Split the item name ourselves and render each line in a separate label so
+-- long names are guaranteed to appear on two physical rows.
+local function splitItemName(text, maxCharsPerLine)
+    text = cleanName(text)
+    maxCharsPerLine = tonumber(maxCharsPerLine) or 23
+    if text == "" then return "", "" end
+
+    local words = {}
+    for word in text:gmatch("%S+") do words[#words + 1] = word end
+    if #words == 0 then return text, "" end
+
+    local first, second = "", ""
+    local splitAt = nil
+    for i = 1, #words do
+        local candidate = first == "" and words[i] or (first .. " " .. words[i])
+        if #candidate <= maxCharsPerLine or first == "" then
+            first = candidate
+        else
+            splitAt = i
+            break
+        end
+    end
+    -- Only populate the second physical label when the first line actually
+    -- overflowed. Short names that fit remain entirely on the first row.
+    if splitAt then
+        for i = splitAt, #words do
+            second = second == "" and words[i] or (second .. " " .. words[i])
+        end
+    end
+    return first, second
+end
+
+local function enumText(stringId, value)
+    if value == nil or type(GetString) ~= "function" then return "" end
+    local ok, text = pcall(GetString, stringId, value)
+    if ok and text and text ~= "" then return cleanName(text) end
+    return ""
+end
+
+local ARMOR_TYPE_NAMES = {
+    [rawget(_G, "ARMORTYPE_LIGHT") or 1] = "LIGHT ARMOR",
+    [rawget(_G, "ARMORTYPE_MEDIUM") or 2] = "MEDIUM ARMOR",
+    [rawget(_G, "ARMORTYPE_HEAVY") or 3] = "HEAVY ARMOR",
+}
+
+local WEAPON_TYPE_NAMES = {
+    [rawget(_G, "WEAPONTYPE_AXE") or -101] = "AXE",
+    [rawget(_G, "WEAPONTYPE_HAMMER") or -102] = "MACE",
+    [rawget(_G, "WEAPONTYPE_SWORD") or -103] = "SWORD",
+    [rawget(_G, "WEAPONTYPE_TWO_HANDED_AXE") or -104] = "BATTLE AXE",
+    [rawget(_G, "WEAPONTYPE_TWO_HANDED_HAMMER") or -105] = "MAUL",
+    [rawget(_G, "WEAPONTYPE_TWO_HANDED_SWORD") or -106] = "GREATSWORD",
+    [rawget(_G, "WEAPONTYPE_DAGGER") or -107] = "DAGGER",
+    [rawget(_G, "WEAPONTYPE_BOW") or -108] = "BOW",
+    [rawget(_G, "WEAPONTYPE_FIRE_STAFF") or -109] = "INFERNO STAFF",
+    [rawget(_G, "WEAPONTYPE_FROST_STAFF") or -110] = "ICE STAFF",
+    [rawget(_G, "WEAPONTYPE_LIGHTNING_STAFF") or -111] = "LIGHTNING STAFF",
+    [rawget(_G, "WEAPONTYPE_HEALING_STAFF") or -112] = "RESTORATION STAFF",
+    [rawget(_G, "WEAPONTYPE_SHIELD") or -113] = "SHIELD",
+}
+
+local function usableTypeText(text)
+    text = tostring(text or "")
+    local upper = zo_strupper(text)
+    if upper == "" or upper == "UNKNOWN" or upper == "NONE" then return "" end
+    return upper
+end
+
+local function equipmentTypeText(link, def)
+    if not link or link == "" then return "" end
+
+    -- Weapons (including shields where the API reports a weapon type).
+    local weaponType = safe(GetItemLinkWeaponType, nil, link)
+    local noneWeapon = rawget(_G, "WEAPONTYPE_NONE")
+    if weaponType ~= nil and weaponType ~= noneWeapon then
+        local mapped = WEAPON_TYPE_NAMES[weaponType]
+        if mapped then return mapped end
+        local text = usableTypeText(enumText(SI_WEAPONTYPE, weaponType))
+        if text ~= "" then return text end
+    end
+
+    -- Worn armor pieces.
+    local armorType = safe(GetItemLinkArmorType, nil, link)
+    local noneArmor = rawget(_G, "ARMORTYPE_NONE")
+    if armorType ~= nil and armorType ~= noneArmor then
+        local mapped = ARMOR_TYPE_NAMES[armorType]
+        if mapped then return mapped end
+        local text = usableTypeText(enumText(SI_ARMORTYPE, armorType))
+        if text ~= "" then
+            if not text:find("ARMOR", 1, true) then text = text .. " ARMOR" end
+            return text
+        end
+    end
+
+    -- Jewelry is clearer by equipped slot than by generic item type.
+    if def then
+        if def.slot == EQUIP_SLOT_NECK then return "NECKLACE" end
+        if def.slot == EQUIP_SLOT_RING1 or def.slot == EQUIP_SLOT_RING2 then return "RING" end
+    end
+
+    -- Last-resort ESO item type string.
+    local itemType = safe(GetItemLinkItemType, nil, link)
+    if itemType ~= nil then
+        local text = usableTypeText(enumText(SI_ITEMTYPE, itemType))
+        if text ~= "" then return text end
+    end
+    return "EQUIPMENT"
 end
 
 function G:GetTheme()
@@ -195,7 +316,7 @@ function G:CreateSlotCard(def, x, y)
     local name = "EAS_GearPreviewSlot_" .. def.key
     local card = makeBackdrop(name, self.canvas)
     card:SetAnchor(TOPLEFT, self.canvas, TOPLEFT, x, y)
-    card:SetDimensions(190, 62)
+    card:SetDimensions(262, 80)
     card:SetCenterColor(0.032, 0.043, 0.060, 0.80)
     card:SetEdgeColor(0.20, 0.27, 0.36, 0.40)
     local insetBorder = makeInsetBorder(name .. "_InsetBorder", card, 2)
@@ -203,42 +324,76 @@ function G:CreateSlotCard(def, x, y)
 
     local iconBG = makeBackdrop(name .. "_IconBG", card)
     iconBG:SetAnchor(LEFT, card, LEFT, 8, 0)
-    iconBG:SetDimensions(44, 44)
+    iconBG:SetDimensions(48, 48)
     iconBG:SetCenterColor(0.02, 0.025, 0.035, 0.88)
     iconBG:SetEdgeColor(0.30, 0.34, 0.42, 0.75)
 
     local icon = wm:CreateControl(name .. "_Icon", iconBG, CT_TEXTURE)
     icon:SetAnchor(CENTER, iconBG, CENTER, 0, 0)
-    icon:SetDimensions(38, 38)
+    icon:SetDimensions(42, 42)
     icon:SetHidden(true)
 
     local slotLabel = makeLabel(name .. "_SlotLabel", card, def.label, "ZoFontGameSmall")
-    slotLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 60, 7)
-    slotLabel:SetDimensions(122, 15)
+    slotLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 62, 5)
+    slotLabel:SetDimensions(92, 14)
     slotLabel:SetColor(0.52, 0.62, 0.75, 1)
     slotLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    keepInside(slotLabel, 1, false)
 
     local itemLabel = makeLabel(name .. "_ItemLabel", card, "EMPTY", "ZoFontGame")
-    itemLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 60, 23)
-    itemLabel:SetDimensions(122, 20)
+    itemLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 62, 19)
+    itemLabel:SetDimensions(192, 18)
     itemLabel:SetColor(0.72, 0.76, 0.82, 1)
     itemLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
-    if itemLabel.SetMaxLineCount then itemLabel:SetMaxLineCount(1) end
+    keepInside(itemLabel, 1, false)
+
+    local itemLabel2 = makeLabel(name .. "_ItemLabel2", card, "", "ZoFontGame")
+    itemLabel2:SetAnchor(TOPLEFT, card, TOPLEFT, 62, 36)
+    itemLabel2:SetDimensions(192, 18)
+    itemLabel2:SetColor(0.72, 0.76, 0.82, 1)
+    itemLabel2:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    keepInside(itemLabel2, 1, false)
+
+    -- Put equipment type on the same header row as the slot. This avoids
+    -- stacking four text rows into a compact card and keeps type/set text
+    -- from colliding at small overlay scales.
+    local typeLabel = makeLabel(name .. "_TypeLabel", card, "", "ZoFontGameSmall")
+    typeLabel:SetAnchor(TOPRIGHT, card, TOPRIGHT, -8, 5)
+    typeLabel:SetDimensions(108, 14)
+    typeLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    typeLabel:SetColor(0.88, 0.72, 0.34, 1)
+    typeLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    keepInside(typeLabel, 1, false)
 
     local setLabel = makeLabel(name .. "_SetLabel", card, "", "ZoFontGameSmall")
-    setLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 60, 43)
-    setLabel:SetDimensions(122, 14)
+    setLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 62, 60)
+    setLabel:SetDimensions(192, 14)
     setLabel:SetColor(0.48, 0.58, 0.68, 1)
     setLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
-    if setLabel.SetMaxLineCount then setLabel:SetMaxLineCount(1) end
+    keepInside(setLabel, 1, false)
 
     card.insetBorder = insetBorder
     card.iconBG = iconBG
     card.icon = icon
     card.slotLabel = slotLabel
     card.itemLabel = itemLabel
+    card.itemLabel2 = itemLabel2
+    card.typeLabel = typeLabel
     card.setLabel = setLabel
     card.def = def
+    card:SetMouseEnabled(true)
+    card:SetHandler("OnMouseEnter", function(control)
+        if not control.easItemLink or control.easItemLink == "" or not InformationTooltip then return end
+        if type(InitializeTooltip) == "function" then InitializeTooltip(InformationTooltip, control, TOPLEFT, 0, 0, TOPRIGHT) end
+        if type(InformationTooltip.SetLink) == "function" then
+            InformationTooltip:SetLink(control.easItemLink)
+        else
+            InformationTooltip:AddLine(control.easFullItemName or (control.itemLabel and control.itemLabel:GetText()) or "Equipped Item")
+            if control.typeLabel and control.typeLabel:GetText() ~= "" then InformationTooltip:AddLine(control.typeLabel:GetText()) end
+            if control.setLabel and control.setLabel:GetText() ~= "" then InformationTooltip:AddLine(control.setLabel:GetText()) end
+        end
+    end)
+    card:SetHandler("OnMouseExit", function() if type(ClearTooltip) == "function" and InformationTooltip then ClearTooltip(InformationTooltip) end end)
     return card
 end
 
@@ -247,11 +402,31 @@ function G:UpdateScale()
     local w,h = self.window:GetDimensions()
     w = tonumber(w) or BASE_W
     h = tonumber(h) or BASE_H
-    local scale = math.min(w / BASE_W, h / BASE_H)
-    scale = math.max(0.74, math.min(1.35, scale))
+
+    -- The Live Equipment UI is authored as a fixed 700x700 canvas. Treat
+    -- window resizing as a uniform zoom, never as a reflow/stretch. This keeps
+    -- cards, fonts, icons, spacing and the character stage identical at every
+    -- size.
+    local side = math.min(w, h)
+    side = math.max(MIN_W, math.min(MAX_W, side))
+    local scale = side / BASE_W
+
     self.canvas:SetScale(scale)
     self.canvas:ClearAnchors()
     self.canvas:SetAnchor(CENTER, self.window, CENTER, 0, 0)
+end
+
+function G:NormalizeWindowSize(save)
+    if not self.window then return end
+    local w,h = self.window:GetDimensions()
+    local side = math.min(tonumber(w) or BASE_W, tonumber(h) or BASE_H)
+    side = math.floor(math.max(MIN_W, math.min(MAX_W, side)) + 0.5)
+    self.window:SetDimensions(side, side)
+    if save then
+        local sv = self:EnsureSaved()
+        sv.width, sv.height = side, side
+    end
+    self:UpdateScale()
 end
 
 function G:Create()
@@ -259,7 +434,10 @@ function G:Create()
     local s = self:EnsureSaved()
 
     local window = wm:CreateTopLevelWindow("EAS_GearLoadoutOverlay")
-    window:SetDimensions(tonumber(s.width) or BASE_W, tonumber(s.height) or BASE_H)
+    local savedW = tonumber(s.width) or BASE_W
+    local savedH = tonumber(s.height) or BASE_H
+    local initialSide = math.floor(math.max(MIN_W, math.min(MAX_W, math.min(savedW, savedH))) + 0.5)
+    window:SetDimensions(initialSide, initialSide)
     if window.SetDimensionConstraints then window:SetDimensionConstraints(MIN_W, MIN_H, MAX_W, MAX_H) end
     if window.SetResizeHandleSize then window:SetResizeHandleSize(24) end
     -- Allow the overlay to be positioned flush against any screen edge/corner.
@@ -310,12 +488,14 @@ function G:Create()
     title:SetAnchor(TOPLEFT, canvas, TOPLEFT, 18, 12)
     title:SetDimensions(230, 26)
     title:SetColor(0.94, 0.97, 1.00, 1)
+    keepInside(title, 1, false)
     self.title = title
 
     local subtitle = makeLabel("EAS_GearLoadoutSubtitle", canvas, "Gear & Sets  /  updates as equipment changes", "ZoFontGameSmall")
     subtitle:SetAnchor(TOPLEFT, canvas, TOPLEFT, 19, 40)
     subtitle:SetDimensions(310, 18)
     subtitle:SetColor(0.55, 0.64, 0.75, 1)
+    keepInside(subtitle, 1, false)
     self.subtitle = subtitle
 
     -- Live Equipment is display-only. Loadout workspace controls live in
@@ -323,29 +503,28 @@ function G:Create()
     -- (CLOSE LOADOUTS), so this panel stays focused on equipped gear.
     self.playerButton = nil
     self.companionButton = nil
-    self.closeButton = self:CreateActorButton("EAS_GearPreviewClose", "X", 574, 18, 30, function()
+    self.closeButton = self:CreateActorButton("EAS_GearPreviewClose", "X", 654, 18, 30, function()
         self.manualClosed = true
         self:UpdateVisibility()
     end)
 
-    local live = makeLabel("EAS_GearLoadoutLive", canvas, "LIVE", "ZoFontGameBold")
-    live:SetAnchor(TOPLEFT, canvas, TOPLEFT, 356, 57)
-    live:SetDimensions(46, 18)
-    live:SetColor(0.40, 0.92, 0.66, 1)
-    self.live = live
-    local liveText = makeLabel("EAS_GearLoadoutLiveText", canvas, "equipment changes refresh automatically", "ZoFontGameSmall")
-    liveText:SetAnchor(TOPLEFT, canvas, TOPLEFT, 407, 57)
-    liveText:SetDimensions(196, 18)
-    liveText:SetColor(0.52, 0.61, 0.72, 1)
+    -- Useful at-a-glance gear summary replaces the old filler status.
+    local liveText = makeLabel("EAS_GearLoadoutLiveText", canvas, "", "ZoFontGameBold")
+    liveText:SetAnchor(TOPRIGHT, canvas, TOPRIGHT, -66, 57)
+    liveText:SetDimensions(350, 18)
+    liveText:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    liveText:SetColor(0.62, 0.78, 0.92, 1)
+    keepInside(liveText, 1, false)
+    self.live = nil
     self.liveText = liveText
 
     self.slotCards = {}
     for i,def in ipairs(SLOT_ROWS_LEFT) do
-        local card = self:CreateSlotCard(def, 14, 104 + (i-1)*71)
+        local card = self:CreateSlotCard(def, 8, 104 + (i-1)*80)
         if card then self.slotCards[#self.slotCards+1] = card end
     end
     for i,def in ipairs(SLOT_ROWS_RIGHT) do
-        local card = self:CreateSlotCard(def, 416, 104 + (i-1)*71)
+        local card = self:CreateSlotCard(def, 430, 104 + (i-1)*80)
         if card then self.slotCards[#self.slotCards+1] = card end
     end
 
@@ -353,8 +532,8 @@ function G:Create()
     -- to addons, so this uses the game-provided player silhouette with a
     -- layered accent treatment and the live character identity underneath.
     local portraitBG = makeBackdrop("EAS_GearPreviewPortraitBG", canvas)
-    portraitBG:SetAnchor(TOPLEFT, canvas, TOPLEFT, 216, 104)
-    portraitBG:SetDimensions(188, 358)
+    portraitBG:SetAnchor(TOPLEFT, canvas, TOPLEFT, 278, 104)
+    portraitBG:SetDimensions(144, 370)
     portraitBG:SetCenterColor(0.022, 0.030, 0.044, 0.84)
     portraitBG:SetEdgeColor(0.22, 0.34, 0.48, 0.38)
     local portraitBorder = makeInsetBorder("EAS_GearPreviewPortraitInsetBorder", portraitBG, 2)
@@ -364,28 +543,28 @@ function G:Create()
 
     local modelHeader = makeLabel("EAS_GearPreviewModelHeader", portraitBG, "CURRENT CHARACTER", "ZoFontGameBold")
     modelHeader:SetAnchor(TOPLEFT, portraitBG, TOPLEFT, 8, 8)
-    modelHeader:SetDimensions(172, 18)
+    modelHeader:SetDimensions(128, 18)
     modelHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     modelHeader:SetColor(0.62, 0.72, 0.84, 1)
     self.modelHeader = modelHeader
 
     local portraitGlow = wm:CreateControl("EAS_GearPreviewPortraitGlow", portraitBG, CT_TEXTURE)
     portraitGlow:SetAnchor(CENTER, portraitBG, CENTER, 4, 9)
-    portraitGlow:SetDimensions(180, 304)
-    portraitGlow:SetColor(0.34, 0.68, 1.00, 0.16)
+    portraitGlow:SetDimensions(132, 250)
+    portraitGlow:SetColor(0.28, 0.62, 0.92, 0.12)
     portraitGlow:SetHidden(true)
     self.portraitGlow = portraitGlow
 
     local portrait = wm:CreateControl("EAS_GearPreviewPortrait", portraitBG, CT_TEXTURE)
     portrait:SetAnchor(CENTER, portraitBG, CENTER, 0, 5)
-    portrait:SetDimensions(172, 296)
-    portrait:SetColor(0.88, 0.93, 0.98, 0.92)
+    portrait:SetDimensions(152, 264)
+    portrait:SetColor(0.92, 0.86, 0.72, 0.96)
     portrait:SetHidden(true)
     self.portrait = portrait
 
     local portraitFallback = makeLabel("EAS_GearPreviewPortraitFallback", portraitBG, "CHARACTER PREVIEW\nUNAVAILABLE", "ZoFontGameBold")
     portraitFallback:SetAnchor(CENTER, portraitBG, CENTER, 0, 8)
-    portraitFallback:SetDimensions(172, 44)
+    portraitFallback:SetDimensions(156, 44)
     portraitFallback:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     portraitFallback:SetColor(0.58, 0.65, 0.74, 1)
     portraitFallback:SetHidden(true)
@@ -393,29 +572,31 @@ function G:Create()
 
     local stageLine = makeBackdrop("EAS_GearPreviewStageLine", portraitBG)
     stageLine:SetAnchor(BOTTOMLEFT, portraitBG, BOTTOMLEFT, 18, -14)
-    stageLine:SetDimensions(152, 1)
+    stageLine:SetDimensions(136, 1)
     stageLine:SetCenterColor(0.34, 0.68, 1.00, 0.42)
     stageLine:SetEdgeColor(0,0,0,0)
     self.stageLine = stageLine
 
     local actorName = makeLabel("EAS_GearPreviewActorName", canvas, "", "ZoFontWinH3")
-    actorName:SetAnchor(TOPLEFT, canvas, TOPLEFT, 212, 472)
-    actorName:SetDimensions(196, 28)
+    actorName:SetAnchor(TOPLEFT, canvas, TOPLEFT, 260, 484)
+    actorName:SetDimensions(180, 28)
     actorName:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     actorName:SetColor(0.94, 0.97, 1.00, 1)
+    keepInside(actorName, 1, false)
     self.actorName = actorName
 
     local actorMeta = makeLabel("EAS_GearPreviewActorMeta", canvas, "", "ZoFontGameSmall")
-    actorMeta:SetAnchor(TOPLEFT, canvas, TOPLEFT, 212, 503)
-    actorMeta:SetDimensions(196, 38)
+    actorMeta:SetAnchor(TOPLEFT, canvas, TOPLEFT, 260, 515)
+    actorMeta:SetDimensions(180, 38)
     actorMeta:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     actorMeta:SetVerticalAlignment(TEXT_ALIGN_TOP)
     actorMeta:SetColor(0.56, 0.66, 0.78, 1)
+    keepInside(actorMeta, 2, true)
     self.actorMeta = actorMeta
 
     local barPanel = makeBackdrop("EAS_GearPreviewBarPanel", canvas)
-    barPanel:SetAnchor(TOPLEFT, canvas, TOPLEFT, 212, 548)
-    barPanel:SetDimensions(196, 78)
+    barPanel:SetAnchor(TOPLEFT, canvas, TOPLEFT, 278, 562)
+    barPanel:SetDimensions(144, 80)
     barPanel:SetCenterColor(0.030, 0.040, 0.056, 0.80)
     barPanel:SetEdgeColor(0.20, 0.28, 0.39, 0.34)
     local barBorder = makeInsetBorder("EAS_GearPreviewBarInsetBorder", barPanel, 2)
@@ -425,30 +606,34 @@ function G:Create()
 
     local barTitle = makeLabel("EAS_GearPreviewBarTitle", barPanel, "ACTIVE WEAPON BAR", "ZoFontGameSmall")
     barTitle:SetAnchor(TOPLEFT, barPanel, TOPLEFT, 8, 8)
-    barTitle:SetDimensions(180, 16)
+    barTitle:SetDimensions(128, 16)
     barTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     barTitle:SetColor(0.52, 0.62, 0.74, 1)
+    keepInside(barTitle, 1, false)
     self.barTitle = barTitle
 
     local barValue = makeLabel("EAS_GearPreviewBarValue", barPanel, "FRONT", "ZoFontGameBold")
     barValue:SetAnchor(TOPLEFT, barPanel, TOPLEFT, 8, 29)
-    barValue:SetDimensions(180, 20)
+    barValue:SetDimensions(128, 20)
     barValue:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     barValue:SetColor(0.44, 0.78, 1.00, 1)
+    keepInside(barValue, 1, false)
     self.barValue = barValue
 
     local countLabel = makeLabel("EAS_GearPreviewCount", barPanel, "", "ZoFontGameSmall")
     countLabel:SetAnchor(TOPLEFT, barPanel, TOPLEFT, 8, 54)
-    countLabel:SetDimensions(180, 16)
+    countLabel:SetDimensions(128, 16)
     countLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     countLabel:SetColor(0.50, 0.58, 0.68, 1)
+    keepInside(countLabel, 1, false)
     self.countLabel = countLabel
 
     local footer = makeLabel("EAS_GearPreviewFooter", canvas, "Hover your Gear & Sets workspace while this panel tracks the equipped loadout.", "ZoFontGameSmall")
-    footer:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, 18, -2)
-    footer:SetDimensions(BASE_W-36, 18)
+    footer:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, 22, -12)
+    footer:SetDimensions(BASE_W-44, 16)
     footer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     footer:SetColor(0.44, 0.52, 0.62, 1)
+    keepInside(footer, 1, false)
     self.footer = footer
 
     window:SetHandler("OnMoveStop", function(control)
@@ -458,7 +643,7 @@ function G:Create()
     window:SetHandler("OnResizeStart", function(control)
         control:SetHandler("OnUpdate", function(_, timeMs)
             local now = tonumber(timeMs) or 0
-            if not self.lastScaleUpdate or now - self.lastScaleUpdate > 70 then
+            if not self.lastScaleUpdate or now - self.lastScaleUpdate > 40 then
                 self.lastScaleUpdate = now
                 self:UpdateScale()
             end
@@ -466,10 +651,7 @@ function G:Create()
     end)
     window:SetHandler("OnResizeStop", function(control)
         control:SetHandler("OnUpdate", nil)
-        local sv = self:EnsureSaved()
-        local w,h = control:GetDimensions()
-        sv.width, sv.height = math.floor(w+0.5), math.floor(h+0.5)
-        self:UpdateScale()
+        self:NormalizeWindowSize(true)
     end)
 
     self.actor = "PLAYER"
@@ -488,6 +670,7 @@ function G:RefreshSlot(card, bagId, activePair)
     local slot = card.def.slot
     local link = safe(GetItemLink, "", bagId, slot, LINK_STYLE_DEFAULT or 0) or ""
     local hasItem = link ~= ""
+    card.easItemLink = link
 
     if hasItem then
         local icon = safe(GetItemLinkIcon, "", link) or ""
@@ -501,8 +684,16 @@ function G:RefreshSlot(card, bagId, activePair)
 
         local itemName = safe(GetItemLinkName, "", link) or ""
         if itemName == "" then itemName = "Equipped Item" end
-        card.itemLabel:SetText(itemName)
+        local itemLine1, itemLine2 = splitItemName(itemName, 23)
+        card.easFullItemName = itemName
+        card.itemLabel:SetText(itemLine1)
+        if card.itemLabel2 then card.itemLabel2:SetText(itemLine2) end
         card.itemLabel:SetColor(0.92, 0.95, 0.99, 1)
+        if card.itemLabel2 then card.itemLabel2:SetColor(0.92, 0.95, 0.99, 1) end
+        if card.typeLabel then
+            card.typeLabel:SetText(equipmentTypeText(link, card.def))
+            card.typeLabel:SetColor(0.88, 0.72, 0.34, 1)
+        end
 
         local hasSet, setName = safe(GetItemLinkSetInfo, false, link, true)
         if hasSet and setName and setName ~= "" then card.setLabel:SetText(setName) else card.setLabel:SetText("") end
@@ -511,8 +702,13 @@ function G:RefreshSlot(card, bagId, activePair)
         card.iconBG:SetEdgeColor(r,g,b,0.92)
     else
         card.icon:SetHidden(true)
+        card.easItemLink = ""
+        card.easFullItemName = "EMPTY"
         card.itemLabel:SetText("EMPTY")
+        if card.itemLabel2 then card.itemLabel2:SetText("") end
         card.itemLabel:SetColor(0.48, 0.53, 0.61, 1)
+        if card.itemLabel2 then card.itemLabel2:SetColor(0.48, 0.53, 0.61, 1) end
+        if card.typeLabel then card.typeLabel:SetText("") end
         card.setLabel:SetText("")
         card.iconBG:SetEdgeColor(0.23, 0.28, 0.35, 0.55)
     end
@@ -541,10 +737,15 @@ end
 function G:ClearSlots(message)
     for _,card in ipairs(self.slotCards or {}) do
         if card.icon then card.icon:SetHidden(true) end
+        card.easItemLink = ""
         if card.itemLabel then
+            card.easFullItemName = message or "EMPTY"
             card.itemLabel:SetText(message or "EMPTY")
+            if card.itemLabel2 then card.itemLabel2:SetText("") end
             card.itemLabel:SetColor(0.48, 0.53, 0.61, 1)
+            if card.itemLabel2 then card.itemLabel2:SetColor(0.48, 0.53, 0.61, 1) end
         end
+        if card.typeLabel then card.typeLabel:SetText("") end
         if card.setLabel then card.setLabel:SetText("") end
         if card.iconBG then card.iconBG:SetEdgeColor(0.23, 0.28, 0.35, 0.55) end
         card:SetEdgeColor(0.20, 0.27, 0.36, 0.36)
@@ -588,6 +789,50 @@ function G:ApplyTheme()
     self:SetButtonState(self.playerButton, self.actor == "PLAYER", true)
     self:SetButtonState(self.companionButton, self.actor == "COMPANION", self:IsCompanionGearSupported())
     self:SetButtonState(self.closeButton, false, true)
+end
+
+local BODY_ARMOR_SLOTS = {
+    EQUIP_SLOT_HEAD, EQUIP_SLOT_SHOULDERS, EQUIP_SLOT_CHEST,
+    EQUIP_SLOT_HAND, EQUIP_SLOT_WAIST, EQUIP_SLOT_LEGS, EQUIP_SLOT_FEET,
+}
+
+function G:BuildGearSummary(bagId, activePair)
+    if bagId == nil then return "" end
+    local light, medium, heavy = 0, 0, 0
+    for _, slot in ipairs(BODY_ARMOR_SLOTS) do
+        local link = safe(GetItemLink, "", bagId, slot, LINK_STYLE_DEFAULT or 0) or ""
+        if link ~= "" then
+            local armorType = safe(GetItemLinkArmorType, nil, link)
+            if armorType == rawget(_G, "ARMORTYPE_LIGHT") then light = light + 1
+            elseif armorType == rawget(_G, "ARMORTYPE_MEDIUM") then medium = medium + 1
+            elseif armorType == rawget(_G, "ARMORTYPE_HEAVY") then heavy = heavy + 1 end
+        end
+    end
+
+    local armorText
+    if light > 0 and medium == 0 and heavy == 0 then armorText = tostring(light) .. " LIGHT"
+    elseif medium > 0 and light == 0 and heavy == 0 then armorText = tostring(medium) .. " MEDIUM"
+    elseif heavy > 0 and light == 0 and medium == 0 then armorText = tostring(heavy) .. " HEAVY"
+    else armorText = string.format("%dL/%dM/%dH", light, medium, heavy) end
+
+    local seen, setCount = {}, 0
+    for _, card in ipairs(self.slotCards or {}) do
+        local slot = card.def and card.def.slot
+        if slot ~= nil then
+            local link = safe(GetItemLink, "", bagId, slot, LINK_STYLE_DEFAULT or 0) or ""
+            if link ~= "" then
+                local hasSet, setName = safe(GetItemLinkSetInfo, false, link, true)
+                setName = cleanName(setName)
+                if hasSet and setName ~= "" and not seen[setName] then
+                    seen[setName] = true
+                    setCount = setCount + 1
+                end
+            end
+        end
+    end
+
+    local bar = activePair == (ACTIVE_WEAPON_PAIR_BACKUP or 2) and "BACK" or "FRONT"
+    return string.format("ARMOR %s  •  SETS %d  •  %s BAR", armorText, setCount, bar)
 end
 
 function G:Refresh()
@@ -644,11 +889,13 @@ function G:Refresh()
         self.actorMeta:SetText((identityLine ~= "" and (identityLine .. "\n") or "") .. "Companion equipment")
 
         local silhouette = ""
-        if type(DoesUnitExist) == "function" and safe(DoesUnitExist, false, "companion") == true then
-            silhouette = safe(GetUnitSilhouetteTexture, "", "companion") or ""
-        end
-        if silhouette == "" and raceId > 0 and type(GetRaceAndGenderSilhouetteTexture) == "function" then
+        -- Prefer ESO's race/gender character silhouette so the center stage
+        -- looks like an actual character instead of the broad generic unit mask.
+        if raceId > 0 and type(GetRaceAndGenderSilhouetteTexture) == "function" then
             silhouette = safe(GetRaceAndGenderSilhouetteTexture, "", raceId, gender) or ""
+        end
+        if silhouette == "" and type(DoesUnitExist) == "function" and safe(DoesUnitExist, false, "companion") == true then
+            silhouette = safe(GetUnitSilhouetteTexture, "", "companion") or ""
         end
         if silhouette ~= "" then
             self.portrait:SetTexture(silhouette)
@@ -687,11 +934,16 @@ function G:Refresh()
             self.actorMeta:SetText(progressLine ~= "" and progressLine or "Player equipment")
         end
 
-        local silhouette = safe(GetUnitSilhouetteTexture, "", "player") or ""
-        if silhouette == "" and type(GetRaceAndGenderSilhouetteTexture) == "function" then
-            local raceId = tonumber(safe(GetUnitRaceId, 0, "player")) or 0
-            local gender = safe(GetUnitGender, GENDER_NEUTER or 0, "player")
-            if raceId > 0 then silhouette = safe(GetRaceAndGenderSilhouetteTexture, "", raceId, gender) or "" end
+        local silhouette = ""
+        local raceId = tonumber(safe(GetUnitRaceId, 0, "player")) or 0
+        local gender = safe(GetUnitGender, GENDER_NEUTER or 0, "player")
+        -- Prefer ESO's native race/gender silhouette. The generic unit
+        -- silhouette remains only as a fallback for unusual cases.
+        if raceId > 0 and type(GetRaceAndGenderSilhouetteTexture) == "function" then
+            silhouette = safe(GetRaceAndGenderSilhouetteTexture, "", raceId, gender) or ""
+        end
+        if silhouette == "" then
+            silhouette = safe(GetUnitSilhouetteTexture, "", "player") or ""
         end
         if silhouette ~= "" then
             self.portrait:SetTexture(silhouette)
@@ -722,6 +974,13 @@ function G:Refresh()
         self:ClearSlots("--")
     end
     if self.countLabel then self.countLabel:SetText(string.format("%d equipped slots", equipped)) end
+    if self.liveText then
+        if self.actor == "PLAYER" then
+            self.liveText:SetText(self:BuildGearSummary(bagId, activePair))
+        else
+            self.liveText:SetText("COMPANION EQUIPMENT")
+        end
+    end
 
     if self.barValue then
         if self.actor == "COMPANION" then

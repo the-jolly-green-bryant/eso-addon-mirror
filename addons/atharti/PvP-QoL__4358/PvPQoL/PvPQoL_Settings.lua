@@ -1,27 +1,19 @@
 local PQ = PvPQoL
 
 function PQ.RegisterLAMPanel()
-    local LAM = LibAddonMenu2
-    if not LAM then return end
+	local LAM = LibAddonMenu2
+	local SV = PQ.SV
 
-    local SV = PQ.SV
+	local panelData = {
+		type = "panel",
+		name = "PvP QoL",
+		displayName = "|cFFD700PvP QoL|r",
+		author = "|cFFD700@Atharti|r",
+		registerForRefresh = true,
+		registerForDefaults = true,
+	}
 
-    -- =========================
-    -- Panel
-    -- =========================
-    local panelData = {
-        type = "panel",
-        name = "PvP QoL",
-        displayName = "PvP QoL",
-        author = "|cFFD700@Atharti|r",
-        registerForRefresh = true,
-        registerForDefaults = true,
-    }
-
-    -- =========================
-    -- Options
-    -- =========================
-    local optionsData = {
+	local optionsData = {
 
 			{
 				type = "header",
@@ -66,7 +58,7 @@ function PQ.RegisterLAMPanel()
 				setFunc = function(r, g, b)
 					SV.arrowColor = ZO_ColorDef:New(r, g, b):ToHex()
 				end,
-				default = {1, 0.843, 0}, 
+				default = {1, 0.843, 0},
 			},
 			{
 				type = "colorpicker",
@@ -79,7 +71,7 @@ function PQ.RegisterLAMPanel()
 				setFunc = function(r, g, b)
 					SV.abilityColor = ZO_ColorDef:New(r, g, b):ToHex()
 				end,
-				default = {1, 0.843, 0}, 
+				default = {1, 0.843, 0},
 			},
 			{
 				type = "checkbox",
@@ -98,17 +90,29 @@ function PQ.RegisterLAMPanel()
 				setFunc = function(value) SV.hideKillIcons = value end,
 				default = false,
 			},
+
+			{
+				type = "checkbox",
+				name = "Hide Kill Messages",
+				tooltip = "Completely prevents kill messages from appearing in chat.",
+				getFunc = function() return SV.hideKillMessages end,
+				setFunc = function(value)
+					SV.hideKillMessages = value
+					PQ.ManageEventHandlers()
+				end,
+				default = false,
+			},
 			{
 				type = "checkbox",
 				name = "Hide Death Messages",
 				tooltip = "Prevents death messages from appearing in chat.",
 				getFunc = function() return SV.hideDeathMessages end,
-				setFunc = function(value) 
+				setFunc = function(value)
 					SV.hideDeathMessages = value
 					PQ.ManageEventHandlers()
 				end,
 				default = false,
-			},		
+			},
 			{
 				type = "checkbox",
 				name = "Use @Account Names",
@@ -122,13 +126,13 @@ function PQ.RegisterLAMPanel()
 				name = "Show PvP Rank Icons",
 				tooltip = "Display PvP rank icons next to player names.",
 				getFunc = function() return SV.showRankIcon end,
-				setFunc = function(value) 
+				setFunc = function(value)
 					SV.showRankIcon = value
 				end,
 				default = false,
 				requiresReload = true,
 			},
-			
+
 			{
 				type = "header",
 				name = "|t35:35:esoui/art/armory/buildicons/buildicon_59.dds|tEffects",
@@ -148,8 +152,6 @@ function PQ.RegisterLAMPanel()
 				end,
 				default = {1, 0.647, 0},
 			},
-
-
 			{
 				type = "checkbox",
 				name = "Disable Kill Sound",
@@ -167,7 +169,7 @@ function PQ.RegisterLAMPanel()
 				setFunc = function(value) SV.disableKillFlash = value end,
 				default = false,
 			},
-			
+
 			{
 			type = "header",
 			name = "|t35:35:esoui/art/options/gamepad/gp_options_account.dds|tPlayers",
@@ -178,7 +180,7 @@ function PQ.RegisterLAMPanel()
 			name = "Enable Black Silhouettes",
 			tooltip = "Players that are not loaded yet will be displayed as black models allowing you to interact with them instead of being fully invisible. Good to have on crowded momemnts if your graphics card is struggling. Will auto disable outside of PvP zones.",
 			getFunc = function() return SV.enableStandIns end,
-			setFunc = function(value) 
+			setFunc = function(value)
 				SV.enableStandIns = value
 				PQ.ApplyStandInsSetting()
 			end,
@@ -190,34 +192,34 @@ function PQ.RegisterLAMPanel()
 			name = "Silhouettes At Once",
 			tooltip = "Number of players showed as black silhouettes at once.",
 			min = 1,
-			max = 32,          
+			max = 32,
 			step = 1,
 			getFunc = function() return SV.standInsPerFrame end,
-			setFunc = function(value) 
+			setFunc = function(value)
 				SV.standInsPerFrame = value
 				PQ.ApplyStandInsSetting()
 			end,
 			default = 8,
 		},
 
-        {
-            type = "header",
-            name = "|t30:30:esoui/art/addons/gamepad/gp_mod_listing_category_libraries.dds|t Statistics",
-        },
+		{
+			type = "header",
+			name = "|t30:30:esoui/art/addons/gamepad/gp_mod_listing_category_libraries.dds|t Statistics",
+		},
 
-        {
-            type = "checkbox",
-            name = "Disable Battlegrounds Mode",
-            tooltip = "Battlegrounds wont have separate temporary stats.",
-            getFunc = function() return SV.useUnifiedStats end,
-            setFunc = function(value)
-                SV.useUnifiedStats = value
-                PQ.FlushBGCountersIfLeft()
-                PQ.UpdateUI()
-            end,
-            default = false,
-        },
-		
+		{
+			type = "checkbox",
+			name = "Disable Battlegrounds Mode",
+			tooltip = "Battlegrounds wont have separate temporary stats.",
+			getFunc = function() return SV.useUnifiedStats end,
+			setFunc = function(value)
+				SV.useUnifiedStats = value
+				PQ.FlushBGCountersIfLeft()
+				PQ.UpdateUI()
+			end,
+			default = false,
+		},
+
 		{
 			type = "checkbox",
 			name = "Track Daily Proofs, Merits & Tokens |t30:30:esoui/art/icons/fragment_gladiator_proof.dds|t",
@@ -230,10 +232,10 @@ function PQ.RegisterLAMPanel()
 			requiresReload = true,
 		},
 
-        {
-            type = "header",
-            name = "|t30:30:esoui/art/notifications/gamepad/gp_notificationicon_trade.dds|tCurrency Messages",
-        },
+		{
+			type = "header",
+			name = "|t30:30:esoui/art/notifications/gamepad/gp_notificationicon_trade.dds|tCurrency Messages",
+		},
 
 		{
 			type = "checkbox",
@@ -252,7 +254,7 @@ function PQ.RegisterLAMPanel()
 			setFunc = function(value) SV.hideTelvarGains = value end,
 			default = false,
 		},
-		
+
 		{
 			type = "slider",
 			name = "Hide Telvar prints below:",
@@ -282,11 +284,11 @@ function PQ.RegisterLAMPanel()
 				SV.minAPMessage = value
 			end,
 			default = 100,
-		},		
-        {
-            type = "header",
-            name = "|t35:35:esoui/art/icons/poi/poi_areaofinterest_complete.dds|tVisibility",
-        },
+		},
+		{
+			type = "header",
+			name = "|t35:35:esoui/art/icons/poi/poi_areaofinterest_complete.dds|tVisibility",
+		},
 
 		{
 			type = "checkbox",
@@ -296,11 +298,11 @@ function PQ.RegisterLAMPanel()
 			setFunc = function(value)
 				SV.showEverywhere = value
 				PQ.UpdateVisibility()
-				PQ.ManageEventHandlers() 
+				PQ.ManageEventHandlers()
 			end,
 			default = false,
 		},
-		
+
 		{
 			type = "slider",
 			name = "UI Scale",
@@ -309,16 +311,16 @@ function PQ.RegisterLAMPanel()
 			max = 2.0,
 			step = 0.1,
 			decimals = 1,
-			getFunc = function() 
-				return PQ.SV.uiScale 
+			getFunc = function()
+				return PQ.SV.uiScale
 			end,
-			setFunc = function(value) 
+			setFunc = function(value)
 				PQ.SetUIScale(value)
 				PQ.UpdateUI()
 			end,
 			default = 1.0,
 		},
-			
+
 		-- =========================
 		-- Auto-Accept Queues
 		-- =========================
@@ -332,13 +334,12 @@ function PQ.RegisterLAMPanel()
 			name = "Auto Accept Cyrodiil and IC Queues",
 			tooltip = "Automatically accepts PvP campaign queues.",
 			getFunc = function() return SV.autoQueue end,
-			setFunc = function(value) 
+			setFunc = function(value)
 				SV.autoQueue = value
 			end,
 			default = false,
 			requiresReload = true,
-	    },
-
+		},
 
 		{
 			type = "checkbox",
@@ -355,14 +356,14 @@ function PQ.RegisterLAMPanel()
 			type = "header",
 			name = "|t35:35:/esoui/art/notifications/gamepad/gp_notificationicon_quest.dds|tQuest Helpers",
 		},
-		
+
 		{
 			type = "checkbox",
 			name = "Suppress Temporarily",
 			tooltip = "Temporarily disables all quest helper auto-abandon functionality until next UI reload or relog.",
 			getFunc = function() return PQ.suppressQuestHelpers end,
-			setFunc = function(value) 
-				PQ.suppressQuestHelpers = value 
+			setFunc = function(value)
+				PQ.suppressQuestHelpers = value
 			end,
 			default = false,
 		},
@@ -380,45 +381,45 @@ function PQ.RegisterLAMPanel()
 			name = "BG: Win A Match",
 			tooltip = "Will auto abandon all battleground quests except one to win a match. Will auto turn-off once acquired once per day.",
 			getFunc = function() return SV.helpBG end,
-			setFunc = function(value) 
-				SV.helpBG = value 
+			setFunc = function(value)
+				SV.helpBG = value
 			end,
 			default = false,
 			requiresReload = true,
 		},
-	    {
+		{
 			type = "checkbox",
 			name = "AvA: Capture Any 9 Resources",
 			tooltip = "Will auto abandon all Cyrodiil Conquest Missions Board quests except the one to capture any 9 resourses. Not as reliable as other two, as cant really be rerolled but can save some time in combination with switching campaigns. Will auto turn-off once acquired once per day.",
 			getFunc = function() return SV.helpCYRO end,
-			setFunc = function(value) 
+			setFunc = function(value)
 				SV.helpCYRO = value
 			end,
 			default = false,
 			requiresReload = true,
 		},
-		
-        -- =========================
-        -- Miscellaneous
-        -- =========================
-        {
-            type = "header",
-            name = "|t35:35:esoui/art/lfg/gamepad/gp_lfg_menuicon_random.dds|tMiscellaneous",
-        },
 
-        {
-            type = "checkbox",
-            name = "Hide Keep Tooltip Ownership",
-            tooltip = "Hides the Alliance and Guild owner information from keep tooltips.",
-            getFunc = function() return SV.hideKeepTooltip end,
-            setFunc = function(value) 
-                SV.hideKeepTooltip = value
-            end,
-            default = true,
-            requiresReload = true,
-        },				
-    }
+		-- =========================
+		-- Miscellaneous
+		-- =========================
+		{
+			type = "header",
+			name = "|t35:35:esoui/art/lfg/gamepad/gp_lfg_menuicon_random.dds|tMiscellaneous",
+		},
 
-    LAM:RegisterAddonPanel("PvPQoLPanel", panelData)
-    LAM:RegisterOptionControls("PvPQoLPanel", optionsData)
+		{
+			type = "checkbox",
+			name = "Hide Keep Tooltip Ownership",
+			tooltip = "Hides the Alliance and Guild owner information from keep tooltips.",
+			getFunc = function() return SV.hideKeepTooltip end,
+			setFunc = function(value)
+				SV.hideKeepTooltip = value
+			end,
+			default = true,
+			requiresReload = true,
+		},
+	}
+
+	LAM:RegisterAddonPanel("PvPQoLPanel", panelData)
+	LAM:RegisterOptionControls("PvPQoLPanel", optionsData)
 end

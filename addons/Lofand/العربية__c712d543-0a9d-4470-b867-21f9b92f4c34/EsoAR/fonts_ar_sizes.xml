@@ -1,0 +1,21 @@
+<GuiXml>
+  <!-- Arabic font path -->
+  <String name="ESOAR_FONT" value="EsoAR/fonts/1_AndalusArabic.slug" />
+
+  <!-- Replace common fonts (smaller to avoid tooltip clipping) -->
+  <Font name="ZoFontGame" font="$(ESOAR_FONT)|16|soft-shadow-thin" />
+  <Font name="ZoFontGameBold" font="$(ESOAR_FONT)|16|soft-shadow-thin" />
+  <Font name="ZoFontGameMedium" font="$(ESOAR_FONT)|16|soft-shadow-thin" />
+
+  <!-- Tooltip / long text -->
+  <Font name="ZoFontWinH4" font="$(ESOAR_FONT)|14|soft-shadow-thin" />
+  <Font name="ZoFontWinH5" font="$(ESOAR_FONT)|14|soft-shadow-thin" />
+  <Font name="ZoFontWinH6" font="$(ESOAR_FONT)|14|soft-shadow-thin" />
+
+  <!-- Tooltip title/subtitle (optional but helps) -->
+  <Font name="ZoFontTooltipTitle" font="$(ESOAR_FONT)|18" />
+  <Font name="ZoFontTooltipSubtitle" font="$(ESOAR_FONT)|14" />
+
+  <!-- Chat (optional) -->
+  <Font name="ZoFontChat" font="$(ESOAR_FONT)|16|soft-shadow-thin" />
+</GuiXml>

@@ -1,0 +1,52 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="KDRTrackerHUD" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true">
+            <Dimensions x="520" y="72" />
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-55" offsetY="105" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill /></Backdrop>
+                <Label name="$(parent)Session" font="ZoFontGamepadBold20" color="B7B7B7" text="PVP SESSION">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="0" />
+                </Label>
+                <Label name="$(parent)KillsKey" font="ZoFontGamepadBold27" color="7DFF74" text="K">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="4" offsetY="-3" />
+                </Label>
+                <Label name="$(parent)KillsValue" font="ZoFontGamepadBold34" color="7DFF74" text="0">
+                    <Anchor point="LEFT" relativeTo="$(parent)KillsKey" relativePoint="RIGHT" offsetX="7" offsetY="0" />
+                </Label>
+                <Label name="$(parent)DeathsKey" font="ZoFontGamepadBold27" color="FF5B62" text="D">
+                    <Anchor point="LEFT" relativeTo="$(parent)KillsValue" relativePoint="RIGHT" offsetX="28" offsetY="0" />
+                </Label>
+                <Label name="$(parent)DeathsValue" font="ZoFontGamepadBold34" color="FF5B62" text="0">
+                    <Anchor point="LEFT" relativeTo="$(parent)DeathsKey" relativePoint="RIGHT" offsetX="7" offsetY="0" />
+                </Label>
+                <Label name="$(parent)RatioKey" font="ZoFontGamepadBold27" color="55D7FF" text="R">
+                    <Anchor point="LEFT" relativeTo="$(parent)DeathsValue" relativePoint="RIGHT" offsetX="28" offsetY="0" />
+                </Label>
+                <Label name="$(parent)RatioValue" font="ZoFontGamepadBold34" color="55D7FF" text="0.00">
+                    <Anchor point="LEFT" relativeTo="$(parent)RatioKey" relativePoint="RIGHT" offsetX="7" offsetY="0" />
+                </Label>
+                <Label name="$(parent)StreakKey" font="ZoFontGamepadBold27" color="FFD45A" text="S">
+                    <Anchor point="LEFT" relativeTo="$(parent)RatioValue" relativePoint="RIGHT" offsetX="28" offsetY="0" />
+                </Label>
+                <Label name="$(parent)StreakValue" font="ZoFontGamepadBold34" color="FFD45A" text="0">
+                    <Anchor point="LEFT" relativeTo="$(parent)StreakKey" relativePoint="RIGHT" offsetX="7" offsetY="0" />
+                </Label>
+            </Controls>
+            <OnMouseUp>KDRTracker_OnHudMouseUp(self, button, upInside)</OnMouseUp>
+            <OnMoveStop>KDRTracker_OnHudMoveStop(self)</OnMoveStop>
+        </TopLevelControl>
+
+        <TopLevelControl name="KDRTrackerAnnouncement" hidden="true" mouseEnabled="false">
+            <Dimensions x="700" y="70" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="245" />
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" verticalAlignment="CENTER" color="FFFFFF">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+
+    </Controls>
+</GuiXml>

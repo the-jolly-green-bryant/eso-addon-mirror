@@ -5,6 +5,7 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- 0.0.36: MOL-Rakkhat library pack (real fight 35)
 -- 0.0.35: Default boss gold (not dead-red); mem meter PC vs console thresholds
 -- 0.0.34: Lua mem readout (lower left) during playback
 -- 0.0.33: Early first-key (<1s) present at t=0; bosses stay visible when dead
@@ -30,7 +31,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.35"
+Holodeck.version     = "0.0.36"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)

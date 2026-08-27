@@ -1,6 +1,6 @@
 ## Title: Realistic Needs and Diseases
 ## Author: @Kreksar5 and Claude.ai
-## Version: 0.19.23
+## Version: 0.19.28
 ## AddOnVersion: 23
 ## APIVersion: 101050 101051
 ## SavedVariables: RealisticNeedsAndDiseasesSavedVars
@@ -16,6 +16,7 @@ RealisticNeedsAndDiseases_Disease.lua
 RealisticNeedsAndDiseases_Overlay.lua
 RealisticNeedsAndDiseases_StatusBar.lua
 RealisticNeedsAndDiseases_StatusIconsTransparency.lua
+RealisticNeedsAndDiseases_StatusBars.lua
 RealisticNeedsAndDiseases_Settings.lua
 RealisticNeedsAndDiseases.lua
 bindings.xml

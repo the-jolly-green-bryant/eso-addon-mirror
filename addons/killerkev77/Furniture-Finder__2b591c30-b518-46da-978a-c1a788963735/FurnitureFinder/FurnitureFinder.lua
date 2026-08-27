@@ -21,21 +21,16 @@
 -- fix is adding one more hook in HookHousingEditorTooltip() below, same
 -- pattern as the inventory hook.
 
--- DIAGNOSTIC: print the real display name unconditionally, before the gate,
--- so we can see exactly what the game reports vs. what's hardcoded below.
-d("[FurnitureFinder] real display name is: " .. tostring(GetDisplayName()))
-
--- DIAGNOSTIC: confirm the manifest's APIVersion (101051, from Wookiefriseur's
--- PTS dump header) actually matches what this live client expects. If they
--- don't match, ESO would have silently refused to load this addon at all --
--- so seeing this line print is itself proof they matched closely enough.
-d("[FurnitureFinder] live client APIVersion=" .. tostring(GetAPIVersion()) .. " (manifest declares 101050)")
+-- Public release 2026-08-25: removed the always-on display-name and
+-- APIVersion diagnostic prints that used to be here (were spamming chat
+-- on every login for every user, not just during testing) -- APIVersion
+-- 101050 has been confirmed against a live client already.
 
 -- TESTING GATE: while this addon is being tested before wider release, it
 -- only activates for the account below. Replace "@YourAccountName" with
 -- your actual Bethesda/Xbox display name (the @Handle shown in-game), or
 -- delete this whole if-block once you're ready to publish for everyone.
-if GetDisplayName() ~= "@Atomic Khaos" then return end
+-- Testing gate removed 2026-08-25 -- addon now open to everyone.
 
 FurnitureFinder = FurnitureFinder or {}
 local FF = FurnitureFinder
@@ -93,7 +88,16 @@ local function BuildFurnitureLines(itemLink)
             table.insert(lines, zo_strformat("|c888888<<1>>|r", data.notes))
         end
     else
-        table.insert(lines, "|c888888Source: not in local database yet|r")
+        -- Only show the "missing" fallback for items that are actually
+        -- placeable furnishings -- i.e. the kind of item this database is
+        -- keyed by. A recipe/diagram item will ALWAYS miss here, since the
+        -- database is keyed by the crafted furnishing's item ID, not the
+        -- recipe's own ID -- showing "not in local database" on a recipe
+        -- is misleading, not a real gap, so stay silent for those.
+        local okFurn, isFurnishing = pcall(IsItemLinkPlaceableFurniture, itemLink)
+        if okFurn and isFurnishing then
+            table.insert(lines, "|c888888Source: not in local database yet|r")
+        end
     end
 
     -- Ownership info (FurnitureFinder_Ownership.lua). Guarded with pcall
@@ -138,17 +142,23 @@ local function BuildFurnitureLines(itemLink)
         if ok4 and LibCharacterKnowledge.IsKnowledgeUsable(knowledge) then
             local ok6, charList = pcall(LibCharacterKnowledge.GetItemKnowledgeList, targetItem)
             if ok6 and charList then
+                local namesWhoKnow = {}
                 local namesWhoDontKnow = {}
                 for _, entry in ipairs(charList) do
-                    if entry.knowledge == LibCharacterKnowledge.KNOWLEDGE_UNKNOWN then
+                    if entry.knowledge == LibCharacterKnowledge.KNOWLEDGE_KNOWN then
+                        table.insert(namesWhoKnow, entry.name)
+                    elseif entry.knowledge == LibCharacterKnowledge.KNOWLEDGE_UNKNOWN then
                         table.insert(namesWhoDontKnow, entry.name)
                     end
+                end
+                if #namesWhoKnow > 0 then
+                    table.insert(lines, zo_strformat("|c00c000Known by: <<1>>|r", table.concat(namesWhoKnow, ", ")))
                 end
                 if #namesWhoDontKnow > 0 then
                     table.insert(lines, zo_strformat("|cc00000Not known by: <<1>>|r", table.concat(namesWhoDontKnow, ", ")))
                 end
-                -- If the list is empty, every tracked character already
-                -- knows it -- deliberately silent per request, no line shown.
+                -- If both lists are empty, no tracked characters have data
+                -- for this item yet -- stay silent, nothing meaningful to show.
             end
         end
     end

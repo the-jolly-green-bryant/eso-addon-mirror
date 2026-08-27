@@ -6,7 +6,7 @@ RealisticNeeds = RealisticNeeds or {}
 local RN = RealisticNeeds
 
 RN.NAME    = "RealisticNeedsAndDiseases"
-RN.VERSION = "0.19.23"
+RN.VERSION = "0.19.28"
 
 -- Keybind display name. Must run at file-parse time (not inside
 -- OnAddOnLoaded) — see bindings.xml for the matching Action definition and
@@ -66,6 +66,21 @@ local SV_DEFAULTS = {
         -- and off by default, runs ALONGSIDE showStatusBar above, not
         -- instead of it. Transparency (not color/pips) indicates severity.
         statusIconsTransparencyEnabled = false,
+        statusIconsTransparencyScale = 1.0,       -- Settings slider: overall display size, 0.5-2.0
+        statusIconsTransparencyMaxOpacity = 1.0,  -- Settings slider: opacity cap, multiplies with per-icon severity alpha, 0.2-1.0
+        -- Bar-based status display (StatusBars.lua) — opt-in and off by
+        -- default, mini health-bar-style bars per need/disease. Independent
+        -- toggle; can run alongside either of the above.
+        statusBarsEnabled = false,
+        statusBarsScale = 1.0,    -- Settings slider: overall display size, 0.5-2.0
+        statusBarsOpacity = 1.0,  -- Settings slider: overall window opacity, 0.2-1.0
+        -- Disease screen-tint overlay (RN.Overlay.lua) — a proportional
+        -- multiplier on top of Overlay.MAX_ALPHA_BY_SEVERITY's existing
+        -- per-severity ceilings (0.25/0.45/0.75 for Mild/Moderate/Severe),
+        -- not a replacement for them. 1.0 = unscaled (matches pre-existing
+        -- behavior exactly). Mirrors the same "max opacity" slider pattern
+        -- added to Frostfall's hot/cold screen overlay.
+        diseaseOverlayMaxOpacity = 1.0,
         showNativeNotifications = true,
         -- Chat logging of notifications is opt-in, separate from the
         -- top-right popups (showNativeNotifications above). Default false —
@@ -383,7 +398,14 @@ local function OnLootReceived(eventCode, receivedBy, itemName, stackCount, sound
     -- Same needs-frozen gating as HandleConsumedItem — see the comment there.
     if sv.settings.masterEnabled == false or sv.settings.needsSystemEnabled == false then return end
 
-    sv.needs.thirst = ClampNeed(sv.needs.thirst + sv.settings.restoreAmounts.harvest)
+    -- A restore amount of 0 (the slider's new floor) means the player has
+    -- deliberately disabled this mechanic entirely — skip both the (now
+    -- zero, no-op) restore and the chat message, rather than announcing an
+    -- effect that didn't actually happen.
+    local restoreAmount = sv.settings.restoreAmounts.harvest
+    if restoreAmount <= 0 then return end
+
+    sv.needs.thirst = ClampNeed(sv.needs.thirst + restoreAmount)
     RN.Feedback.CheckBandTransition(sv, "thirst", sv.needs.thirst)
     RN.Feedback.Notify(string.format(
         "You drink from the %s, easing your thirst.",
@@ -458,6 +480,9 @@ local function OnTick()
     end
     if RN.StatusIconsTransparency and RN.StatusIconsTransparency.Refresh then
         RN.StatusIconsTransparency.Refresh(sv)
+    end
+    if RN.StatusBars and RN.StatusBars.Refresh then
+        RN.StatusBars.Refresh(sv)
     end
 end
 
@@ -845,6 +870,12 @@ local function OnAddOnLoaded(eventCode, addonName)
         RN.StatusIconsTransparency.Initialize()
         RN.StatusIconsTransparency.SetShown(sv.settings.statusIconsTransparencyEnabled)
         RN.StatusIconsTransparency.Refresh(sv)
+    end
+
+    if RN.StatusBars and RN.StatusBars.Initialize then
+        RN.StatusBars.Initialize()
+        RN.StatusBars.SetShown(sv.settings.statusBarsEnabled)
+        RN.StatusBars.Refresh(sv)
     end
 
     if RN.Feedback and RN.Feedback.ResolveEmoteDefaults then
