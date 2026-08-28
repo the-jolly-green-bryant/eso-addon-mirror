@@ -1,4 +1,4 @@
--- Group Burst Timers v7.8.0
+-- Group Burst Timers v7.9.0
 -- Created by Daveemafiaa
 --
 -- Compact PlayStation group timer HUD.
@@ -98,6 +98,10 @@ local settingsRegistered = false
 local hud
 local rows = {}
 local timers = {}
+local lastLocalStart = {}
+local lastBroadcast = {}
+local DEDUPE_WINDOW = 0.75
+
 
 local LGB
 local lgbHandler
@@ -467,8 +471,55 @@ local function UpdateHUD()
     end
 end
 
+local function IsSameAsPlayer(unitTag)
+    if not unitTag or unitTag == "" then return false end
+    if unitTag == "player" then return true end
+
+    if AreUnitsEqual then
+        local ok, result = pcall(AreUnitsEqual, "player", unitTag)
+        if ok and result then return true end
+    end
+
+    if GetUnitDisplayName then
+        local mine = GetUnitDisplayName("player")
+        local theirs = GetUnitDisplayName(unitTag)
+        if mine and mine ~= "" and theirs and theirs ~= "" and mine == theirs then
+            return true
+        end
+    end
+
+    if GetUnitName then
+        local mine = GetUnitName("player")
+        local theirs = GetUnitName(unitTag)
+        if mine and mine ~= "" and theirs and theirs ~= "" and mine == theirs then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function ShouldStartLocal(abilityType)
+    local now = Now()
+    local last = lastLocalStart[abilityType] or 0
+    if now - last < DEDUPE_WINDOW then return false end
+    lastLocalStart[abilityType] = now
+    return true
+end
+
+local function ShouldBroadcast(abilityType)
+    local now = Now()
+    local last = lastBroadcast[abilityType] or 0
+    if now - last < DEDUPE_WINDOW then return false end
+    lastBroadcast[abilityType] = now
+    return true
+end
+
 local function BroadcastTimer(abilityType, duration)
     if not lgbReady or not timerProtocol then
+        return
+    end
+    if not ShouldBroadcast(abilityType) then
         return
     end
 
@@ -544,6 +595,9 @@ local function SetupGroupBroadcast()
             if not unitTag or not data then
                 return
             end
+            if IsSameAsPlayer(unitTag) then
+                return
+            end
 
             local abilityType = data.abilityType
 
@@ -574,6 +628,10 @@ local function SetupGroupBroadcast()
 end
 
 local function StartAndBroadcast(abilityType, duration)
+    if not ShouldStartLocal(abilityType) then
+        return
+    end
+
     local d = duration or GetDuration(abilityType)
 
     SetTimer(
@@ -604,6 +662,10 @@ local function OnActionSlotAbilityUsed(_, slotNum)
         )
 
     if not abilityType then
+        return
+    end
+
+    if abilityType == ABILITY_PROXY then
         return
     end
 
@@ -703,7 +765,7 @@ local function RegisterLAMSettings()
         name = "Group Burst Timers",
         displayName = "Group Burst Timers",
         author = "Daveemafiaa",
-        version = "7.8.0",
+        version = "7.9.0",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -952,7 +1014,7 @@ local function SlashCommand(text)
     if command == "test" then
         StartTest()
     else
-        d("|cFFD43DGroup Burst Timers|r v7.8 - Created by Daveemafiaa")
+        d("|cFFD43DGroup Burst Timers|r v7.9 - Created by Daveemafiaa")
         d("Purple = Proxy Det")
         d("Blue = Deep Fissure")
         d("Orange = Soul of Flame")

@@ -132,7 +132,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [More Camera Sensitivity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Camera-Sensitivity__c12b4c6f-c657-4d0b-ac4e-77374335877c) | M0R | Console | — |
 | [More Colourful Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Colourful-Group-Frames__4607) | M0R | PC / Mac | 1 |
 | [More Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Markers__c41f5a50-974f-45e6-a218-e99590da3841) | M0R | Console | — |
-| [More Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Markers__4266) | M0R | PC / Mac | 2.2.1 |
+| [More Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Markers__4266) | M0R | PC / Mac | 2.2.2 |
 | [More Target Information](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lordrichter/More-Target-Information__b2507553-0888-4fae-9f69-5b1f89f1b266) | lordrichter | Console | — |
 | [More Target Information](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lordrichter/More-Target-Information__1189) | lordrichter | PC / Mac | 3.49 |
 | [MoreEmotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/relas/MoreEmotes__1646) | relas | PC / Mac | 2.0 |

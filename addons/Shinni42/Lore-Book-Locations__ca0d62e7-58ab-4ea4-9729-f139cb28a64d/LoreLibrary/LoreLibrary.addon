@@ -1,8 +1,8 @@
 ## Title: Lore Book Locations
 ## Author: Shinni
 ## Description: Display undiscovered books on map, compass, and 3D world.
-## Version: 1.0.36
-## AddOnVersion: 01000036
+## Version: 1.0.37
+## AddOnVersion: 01000037
 ## APIVersion: 101051 101050
 ## DependsOn: LibHarvensAddonSettings
 ## OptionalDependsOn: MiniMap VotansMiniMap AUI LibHarvensAddonSettings

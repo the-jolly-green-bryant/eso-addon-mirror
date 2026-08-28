@@ -67,6 +67,7 @@ function C:Initialize()
         ZONE_COMPLETION = allFunctions({"GetUnitZoneIndex", "GetNumPOIs", "GetPOIMapInfo", "GetPOIZoneCompletionType"}),
         SKYSHARDS = allFunctions({"GetNumSkyshardsInZone", "GetZoneSkyshardId", "GetSkyshardDiscoveryStatus"}),
         UNIT_FRAMES = allFunctions({"DoesUnitExist", "GetUnitName", "GetUnitPower", "GetNumBuffs", "GetUnitBuffInfo", "GetGroupSize"}),
+        DUNGEON_CHEST_FINDER = allFunctions({"GetUnitRawWorldPosition", "WorldPositionToGuiRender3DPosition", "GetGameCameraInteractableActionInfo", "IsUnitInDungeon"}),
         ABILITY_OVERLAYS = allFunctions({"GetSlotTexture", "GetSlotName", "GetSlotCooldownInfo", "IsSlotUsed", "GetActiveHotbarCategory"}),
         REPAIR_COST_OVERLAY = allFunctions({"GetItemLink", "GetItemRepairCost", "GetItemCondition", "GetChargeInfoForItem"}),
         ADVANCED_STATS = allFunctions({"GetPlayerStat", "GetAdvancedStatValue"}),
@@ -154,7 +155,7 @@ function C:GetDiagnosticLines()
     local order = {
         "CORE", "GEAR", "ACTIVITIES", "QUEST_ROUTING", "QUEST_INDEX", "SHRINE_TRAVEL", "SOCIAL_TRAVEL",
         "CHAMPION", "COMBAT", "ROLE_AUTO", "UI_MODE", "INVENTORY", "RESEARCH", "COLLECTIONS", "SET_JOURNAL",
-        "ZONE_COMPLETION", "SKYSHARDS", "UNIT_FRAMES", "ABILITY_OVERLAYS", "REPAIR_COST_OVERLAY", "ADVANCED_STATS", "MINI_MAP", "STABLE_TIMER", "AUTO_MAINTENANCE",
+        "ZONE_COMPLETION", "SKYSHARDS", "UNIT_FRAMES", "DUNGEON_CHEST_FINDER", "ABILITY_OVERLAYS", "REPAIR_COST_OVERLAY", "ADVANCED_STATS", "MINI_MAP", "STABLE_TIMER", "AUTO_MAINTENANCE",
         "ROLE", "TRAVEL", "QUEST_FINDER", "SET_JOURNAL", "ENDGAME", "TARGET_BUILD", "ADVISOR", "MAINTENANCE", "STABLE_TIMER", "UTILITY_SUITE", "ENGINE", "UI", "EVENTS"
     }
     local seen = {}

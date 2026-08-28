@@ -1129,10 +1129,27 @@ function D:RefreshLiveListings(force)
 end
 
 function D:GetLiveResults()
-    if type(GROUP_FINDER_SEARCH_MANAGER) ~= "table" or type(GROUP_FINDER_SEARCH_MANAGER.GetSearchResults) ~= "function" then return {} end
-    local ok, results = pcall(GROUP_FINDER_SEARCH_MANAGER.GetSearchResults, GROUP_FINDER_SEARCH_MANAGER)
-    if not ok or type(results) ~= "table" then return {} end
-    return results
+    local results = nil
+    if type(GROUP_FINDER_SEARCH_MANAGER) == "table" and type(GROUP_FINDER_SEARCH_MANAGER.GetSearchResults) == "function" then
+        local ok, value = pcall(GROUP_FINDER_SEARCH_MANAGER.GetSearchResults, GROUP_FINDER_SEARCH_MANAGER)
+        if ok and type(value) == "table" then results = value end
+    end
+    if results and #results > 0 then return results end
+
+    -- v0.29.63: on some current-client event paths SEARCH_UPDATED can arrive
+    -- without the manager exposing a populated cache yet. The underlying ESO
+    -- search result API is already populated at that point, so build the same
+    -- ZO_GroupListingSearchData objects directly as a guarded fallback.
+    local fallback = {}
+    if type(GetGroupFinderSearchNumListings) == "function" and type(ZO_GroupListingSearchData) == "table" and type(ZO_GroupListingSearchData.New) == "function" then
+        local okCount, count = pcall(GetGroupFinderSearchNumListings)
+        count = okCount and (tonumber(count) or 0) or 0
+        for listingIndex = 1, count do
+            local okData, data = pcall(ZO_GroupListingSearchData.New, ZO_GroupListingSearchData, listingIndex)
+            if okData and data then fallback[#fallback+1] = data end
+        end
+    end
+    return fallback
 end
 
 function D:ChangeLivePage(delta)
@@ -1531,18 +1548,28 @@ function D:SetViewMode(mode)
     mode = tostring(mode or "DUNGEONS"):upper()
     if mode == "LIVE" and not self._easDifficultyInitialized02542 then
         local saved = EPC.saved and EPC.saved.groupFinderWidgetDifficulty or nil
-        saved = tostring(saved or "NORMAL"):upper()
-        if saved ~= "VETERAN" then saved = "NORMAL" end
+        saved = tostring(saved or "ALL"):upper()
+        if saved ~= "NORMAL" and saved ~= "VETERAN" then saved = "ALL" end
         self.liveDifficulty = saved
         self._easDifficultyInitialized02542 = true
     end
+
+    -- v0.29.63: ModernAppUI rebuilds its page frequently. Re-entering LIVE
+    -- mode during every redraw used to restart the ESO search and immediately
+    -- put the page back into a waiting state, so completed results never had a
+    -- chance to remain visible. Only transition/search when the mode actually
+    -- changes; the explicit REFRESH GROUPS button handles manual refreshes.
+    if mode == "LIVE" and self.viewMode == "LIVE" then
+        return true
+    end
+
     return easOldSetViewMode02542(self, mode)
 end
 
 function D:SetLiveDifficulty(value)
     if not self:LiveCategorySupportsDifficulty() then return false end
-    value = tostring(value or "NORMAL"):upper()
-    if value ~= "VETERAN" then value = "NORMAL" end
+    value = tostring(value or "ALL"):upper()
+    if value ~= "NORMAL" and value ~= "VETERAN" then value = "ALL" end
     if EPC.saved then EPC.saved.groupFinderWidgetDifficulty = value end
     self._filteredLiveResults = {}
     self.liveSearchPending = true
@@ -1706,12 +1733,7 @@ end
 function D:BuildLiveView()
     local view = easOldBuildLiveView02542(self)
     if self.liveSearchPending then
-        view.rows = {}
-        view.total = 0
-        view.page = 1
-        view.pageCount = 1
-        view.selected = nil
-        return view
+        view.searching = true
     end
     for _, row in ipairs(view.rows or {}) do
         row.shortCode = self:GetListingShortCode(row.data)
@@ -1759,11 +1781,21 @@ end
 function D:BuildLiveView()
     local view = easOldBuildLiveView02542b(self)
     if self.liveAwaitingResults02542 then
-        view.rows = {}
-        view.total = 0
-        view.page = 1
-        view.pageCount = 1
-        view.selected = nil
+        view.searching = true
+    end
+
+    -- v0.29.63: never leave the Group Finder as a silent blank panel. Show a
+    -- non-selectable status row while ESO is searching, or a clear empty-state
+    -- prompt after a completed search. Real listing rows replace this instantly
+    -- when ESO returns results.
+    if not view.rows or #view.rows == 0 then
+        view.rows = {
+            {
+                placeholder = true,
+                title = view.searching and "Searching ESO Group Finder..." or "No groups found",
+                roles = view.searching and "Waiting for ESO to return listings." or "Press REFRESH GROUPS to check again.",
+            }
+        }
     end
     return view
 end
@@ -1787,6 +1819,32 @@ function D:Initialize()
         end)
     end
     self._easLiveReadyCallbacks02542 = true
+end
+
+-- v0.29.63: current ESO clients can emit SEARCH_UPDATED around result delivery.
+-- Mirror ESO's search manager refresh and clear the Suite waiting state without
+-- starting any automatic polling loop. Searches happen only when the page opens,
+-- the user changes category/difficulty, or REFRESH GROUPS is pressed.
+function D:MarkLiveSearchReady02963()
+    self.liveSearchPending = false
+    self.liveAwaitingResults02542 = false
+
+    if type(GROUP_FINDER_SEARCH_MANAGER) == "table" and type(GROUP_FINDER_SEARCH_MANAGER.RefreshSearchResults) == "function" then
+        pcall(GROUP_FINDER_SEARCH_MANAGER.RefreshSearchResults, GROUP_FINDER_SEARCH_MANAGER)
+    end
+
+    if self.viewMode == "LIVE" and EPC.Journal and EPC.Journal.activeTab == "GROUPFINDER" and EPC.Journal.RefreshSuitePage then
+        EPC.Journal:RefreshSuitePage("GROUPFINDER")
+    end
+end
+
+if EVENT_MANAGER and EVENT_GROUP_FINDER_SEARCH_UPDATED then
+    EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_GroupFinderReady02963", EVENT_GROUP_FINDER_SEARCH_UPDATED, function(_, searchId)
+        if D.viewMode ~= "LIVE" then return end
+        local manager = GROUP_FINDER_SEARCH_MANAGER
+        if type(manager) == "table" and manager.currentSearchId ~= nil and searchId ~= nil and searchId ~= manager.currentSearchId then return end
+        D:MarkLiveSearchReady02963()
+    end)
 end
 
 -- v0.27.79 - Current ESO random dungeon queue support.
@@ -1871,7 +1929,7 @@ function D:QueueRandom(difficulty)
 
     local added = false
 
-    -- Current API (Update 47 / API 101050+): random queues are activity sets.
+    -- Current API (API 101050+): random queues are activity sets.
     if type(AddActivityFinderSetSearchEntry) == "function" then
         local setId = easFindRandomDungeonSet(activityType)
         if setId then
@@ -2039,10 +2097,11 @@ local QUEUE_HUD_MIN_HEIGHT = 118
 local QUEUE_HUD_MAX_WIDTH = 720
 local QUEUE_HUD_MAX_HEIGHT = 300
 
-local function easQueueStatusText2768(status)
-    if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then return "DUNGEON FOUND" end
+local function easQueueStatusText2768(status, queueKind)
+    local label = queueKind == "BATTLEGROUND" and "BATTLEGROUND" or (queueKind == "ACTIVITY" and "ACTIVITY" or "DUNGEON")
+    if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then return label .. " FOUND" end
     if ACTIVITY_FINDER_STATUS_QUEUED ~= nil and status == ACTIVITY_FINDER_STATUS_QUEUED then return "SEARCHING" end
-    if ACTIVITY_FINDER_STATUS_IN_PROGRESS ~= nil and status == ACTIVITY_FINDER_STATUS_IN_PROGRESS then return "IN DUNGEON" end
+    if ACTIVITY_FINDER_STATUS_IN_PROGRESS ~= nil and status == ACTIVITY_FINDER_STATUS_IN_PROGRESS then return "IN " .. label end
     return "NOT QUEUED"
 end
 
@@ -2224,6 +2283,7 @@ function D:CreateQueueHud2768()
     end)
 
     self.queueHud2768 = frame
+    self.queueHudTitle2768 = title
     self.queueHudStatus2768 = status
     self.queueHudDetails2768 = details
     self.queueHudSelected2768 = selected
@@ -2295,9 +2355,10 @@ function D:SetLayoutMode(active)
         frame:SetMouseEnabled(true)
         frame:SetMovable(true)
         if frame.SetResizeHandleSize then frame:SetResizeHandleSize(20) end
+        if self.queueHudTitle2768 then self.queueHudTitle2768:SetText("ACTIVITY FINDER") end
         if self.queueHudStatus2768 then self.queueHudStatus2768:SetText("LAYOUT PREVIEW") end
-        if self.queueHudDetails2768 then self.queueHudDetails2768:SetText("NORMAL  |  DPS") end
-        if self.queueHudSelected2768 then self.queueHudSelected2768:SetText("DUNGEON QUEUE HUD") end
+        if self.queueHudDetails2768 then self.queueHudDetails2768:SetText("DUNGEON  /  BATTLEGROUND") end
+        if self.queueHudSelected2768 then self.queueHudSelected2768:SetText("ACTIVITY FINDER QUEUE HUD") end
     else
         self:RefreshQueueHud2768()
     end
@@ -2308,9 +2369,10 @@ function D:RefreshQueueHud2768(status)
     if not frame then return end
     if self.queueHudLayoutMode2768 == true then
         frame:SetHidden(false)
+        if self.queueHudTitle2768 then self.queueHudTitle2768:SetText("ACTIVITY FINDER") end
         if self.queueHudStatus2768 then self.queueHudStatus2768:SetText("LAYOUT PREVIEW") end
-        if self.queueHudDetails2768 then self.queueHudDetails2768:SetText("NORMAL  |  DPS") end
-        if self.queueHudSelected2768 then self.queueHudSelected2768:SetText("DUNGEON QUEUE HUD") end
+        if self.queueHudDetails2768 then self.queueHudDetails2768:SetText("DUNGEON  /  BATTLEGROUND") end
+        if self.queueHudSelected2768 then self.queueHudSelected2768:SetText("ACTIVITY FINDER QUEUE HUD") end
         return
     end
     if status == nil and type(GetActivityFinderStatus) == "function" then
@@ -2326,13 +2388,36 @@ function D:RefreshQueueHud2768(status)
     -- temporarily hidden by a menu, so the native overlay does not leak through.
     self:SuppressNativeQueueHud2768()
     if temporarilySuppressed then return end
-    self.queueHudStatus2768:SetText(easQueueStatusText2768(status))
-    self.queueHudDetails2768:SetText(string.format("%s  |  %s", tostring(self.difficulty or "NORMAL"), tostring(self.role or "DPS")))
+    local queueInfo = EPC.BattlegroundFinder and EPC.BattlegroundFinder.GetCurrentQueueInfo and EPC.BattlegroundFinder:GetCurrentQueueInfo() or nil
+    local queueKind = queueInfo and tostring(queueInfo.kind or "DUNGEON") or "DUNGEON"
+    if self.queueHudTitle2768 then
+        if queueKind == "BATTLEGROUND" then self.queueHudTitle2768:SetText("BATTLEGROUND FINDER")
+        elseif queueKind == "ACTIVITY" then self.queueHudTitle2768:SetText("ACTIVITY FINDER")
+        else self.queueHudTitle2768:SetText("DUNGEON FINDER") end
+    end
+    self.queueHudStatus2768:SetText(easQueueStatusText2768(status, queueKind))
 
-    if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then
-        self.queueHudSelected2768:SetText(self:GetMatchedDungeonName2771())
+    if queueKind == "BATTLEGROUND" then
+        self.queueHudDetails2768:SetText("PVP  |  BATTLEGROUND")
+        if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then
+            self.queueHudSelected2768:SetText(self:GetMatchedDungeonName2771())
+        else
+            self.queueHudSelected2768:SetText(queueInfo and tostring(queueInfo.name or "Battleground queue") or "Battleground queue")
+        end
+    elseif queueKind == "ACTIVITY" then
+        self.queueHudDetails2768:SetText("ACTIVITY FINDER")
+        if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then
+            self.queueHudSelected2768:SetText(self:GetMatchedDungeonName2771())
+        else
+            self.queueHudSelected2768:SetText(queueInfo and tostring(queueInfo.name or "Activity Finder queue") or "Activity Finder queue")
+        end
     else
-        self.queueHudSelected2768:SetText(self:GetQueueSelectionSummary2768())
+        self.queueHudDetails2768:SetText(string.format("%s  |  %s", tostring(self.difficulty or "NORMAL"), tostring(self.role or "DPS")))
+        if ACTIVITY_FINDER_STATUS_READY_CHECK ~= nil and status == ACTIVITY_FINDER_STATUS_READY_CHECK then
+            self.queueHudSelected2768:SetText(self:GetMatchedDungeonName2771())
+        else
+            self.queueHudSelected2768:SetText(self:GetQueueSelectionSummary2768())
+        end
     end
 end
 

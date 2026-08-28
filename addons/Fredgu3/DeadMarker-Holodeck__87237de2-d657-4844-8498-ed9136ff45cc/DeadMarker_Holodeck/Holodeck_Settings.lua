@@ -40,14 +40,15 @@ function H.CreateSettingsMenu()
         { type = "header", name = "About" },
         {
             type = "description",
-            text = "|cC0E0FF/hd plant|r  →  |cC0E0FF/hd list|r  →  |cC0E0FF/hd load N|r  →  |cC0E0FF/hd play once|r\n"
-                .. "Library picker is |cC0E0FF/hd list|r. Names: |cC0E0FF/hd names on|off|r",
+            text = "|cC0E0FF/hd plant|r  →  |cC0E0FF/hd list|r  →  |cC0E0FF/hd load N|r  →  |cC0E0FF/hd play|r\n"
+                .. "Library picker is |cC0E0FF/hd list|r (left). Cue card is the legend (right).",
         },
 
         { type = "header", name = "Playback" },
         {
             type = "dropdown",
-            name = "Default play mode",
+            name = "When playback ends",
+            tooltip = "Once parks ghosts at the last pose (training). Loop only if you want the movie to restart by itself.",
             choices = playChoices,
             choicesValues = playValues,
             getFunc = function() return sv.playMode or "once" end,

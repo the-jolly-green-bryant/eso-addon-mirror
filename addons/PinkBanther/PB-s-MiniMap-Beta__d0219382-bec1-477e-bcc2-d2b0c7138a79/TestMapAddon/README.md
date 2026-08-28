@@ -43,9 +43,9 @@ Settings live under **PB's MiniMap** (LibHarvensAddonSettings).
 | Offset X / Offset Y | Position relative to screen centre |
 | Opacity | How solid the minimap is; the full map stays solid |
 | Show border | Draw the map's frame around the minimap |
+| Draw order | Where the minimap sits among the other HUD elements; full-screen menus stay on top |
 | Show zone name | Name of the current area, just above the minimap |
 | Zone name size | Text size for that name |
-| Hide place names | Keep location labels off the minimap; the full map keeps them |
 | Follow player | Keep the player centred and pan the map as you move |
 | Zoom: outdoors | Zoom in the open world. Centring needs this above 0 |
 | Zoom: buildings & cities | Zoom on subzone maps, which are much smaller |
@@ -71,8 +71,8 @@ The displayed name is fixed in `Main.lua`; the version comes from the manifest. 
 version, edit these two adjacent lines in `PBsMiniMap.addon` and nothing else:
 
 ```
-## Title: PB's MiniMap 1.0.5
-## Version: 1.0.5
+## Title: PB's MiniMap 2.0.0
+## Version: 2.0.0
 ```
 
 Console builds are distributed through **Bethesda.net**, not ESOUI — use the ZOS Console

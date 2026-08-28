@@ -128,6 +128,15 @@ local function IsWorldMapShownElsewhere()
 	if not ZO_WorldMap or ZO_WorldMap:IsHidden() then
 		return false
 	end
+	-- Not elsewhere: it is ours.
+	--
+	-- The settings panel's live preview parks the map fragment in whatever scene the panel is
+	-- showing in, which is not one of the HUD scenes. Without this the add-on stands down for
+	-- its own preview -- the window goes back to the standard map's size and the border comes
+	-- back, which is precisely what the dormant state looks like.
+	if addon.litePreviewAdded then
+		return false
+	end
 	local current = SCENE_MANAGER and SCENE_MANAGER.GetCurrentScene and SCENE_MANAGER:GetCurrentScene()
 	if not current then
 		return false
@@ -524,6 +533,9 @@ function addon:SetDormant(value)
 		end
 		if self.ApplyLiteBorder then
 			self:ApplyLiteBorder()
+			self:ApplyLiteDrawOrder()
+			-- Standard map owns the window: stop refusing its geometry changes.
+			self:SetLiteAnchorGuard(false)
 		end
 		if self.UpdateZoneTitle then
 			self:UpdateZoneTitle()
@@ -596,6 +608,11 @@ function addon:SetDormant(value)
 		end
 		if self.ApplyLiteBorder then
 			self:ApplyLiteBorder()
+			self:ApplyLiteDrawOrder()
+			-- Only guarded while the minimap is actually up. Installing is idempotent, and
+			-- doing it here covers the minimap being switched on after load rather than at it.
+			self:InstallLiteAnchorOverride()
+			self:SetLiteAnchorGuard(true)
 		end
 		-- Labels built while the full map was open are still on the map, and the name of
 		-- whatever was last focused there lingers too. Hide both on the way back.
@@ -2490,6 +2507,7 @@ function addon:Initialize()
 		followPlayer = true,
 		liteAlpha = 100,
 		hideMapLabels = true,
+		liteDrawOrder = "default",
 		showBorder = true,
 		showZoneTitle = true,
 		zoneTitleSize = 24,
@@ -2540,6 +2558,11 @@ function addon:Initialize()
 	self.accountDefaults = accountDefaults
 
 	self.account = ZO_SavedVars:NewAccountWide("PBsMiniMap_Data", 1, nil, accountDefaults)
+
+	-- Place names are always hidden now, and the setting for it is gone from the panel. The
+	-- value is still read in the few places that act on it, so anyone who had switched it off
+	-- is brought back to on rather than being left with a setting they can no longer reach.
+	self.account.hideMapLabels = true
 
 	local defaults = {
 		showMap = true
@@ -2601,10 +2624,13 @@ function addon:Initialize()
 		}
 	end
 
+	-- Restoring the game's own layout is also us moving the window on purpose, so the whole
+	-- function is exempt -- size as well as anchors, since both are refused from outside now.
 	local function RestoreControlLayout(control, layout)
 		if not control or not layout then
 			return
 		end
+		addon:BeginOwnAnchor()
 		if layout.minWidth and type(control.SetDimensionConstraints) == "function" then
 			control:SetDimensionConstraints(layout.minWidth, layout.minHeight, layout.maxWidth, layout.maxHeight)
 		end
@@ -2616,6 +2642,7 @@ function addon:Initialize()
 			end
 		end
 		control:SetDimensions(layout.width, layout.height)
+		addon:EndOwnAnchor()
 	end
 
 	local function CaptureDefaultLayout()
@@ -2670,6 +2697,10 @@ function addon:Initialize()
 			return
 		end
 		CaptureDefaultLayout()
+
+		-- Everything below is this add-on moving the window on purpose, so the anchor guard
+		-- has to let it through.
+		self:BeginOwnAnchor()
 
 		-- Skip the full map update while only moving/resizing the window.
 		local orgZO_WorldMap_UpdateMap = ZO_WorldMap_UpdateMap
@@ -2735,6 +2766,7 @@ function addon:Initialize()
 		end
 
 		ZO_WorldMap_UpdateMap = orgZO_WorldMap_UpdateMap
+		self:EndOwnAnchor()
 	end
 
 	-- Opacity.
@@ -2756,7 +2788,12 @@ function addon:Initialize()
 			wantAlpha = (account.liteAlpha or 100) / 100
 			-- Held transparent until the window is the shape it is supposed to be. The 200ms
 			-- watch calls this too, so the gate has to live here rather than at the call site.
-			if (self.settleTicks or 0) > 0 then
+			--
+			-- Not every settle hides the window. A map change runs the same phases while the
+			-- minimap stays on screen: the window keeps its size and place across the change,
+			-- so there is nothing misplaced to hide, and blanking it every time the player
+			-- crosses a city boundary would be worse than the moment of settling it covers.
+			if (self.settleTicks or 0) > 0 and not self.settleVisible then
 				wantAlpha = 0
 			end
 		end
@@ -2777,13 +2814,29 @@ function addon:Initialize()
 	-- Rather than a fourth guess at which call to pre-empt, the window is simply held
 	-- transparent until its geometry matches what was asked for. Whoever moves it and whenever
 	-- they do, the player does not see it happen.
-	function addon:BeginLiteSettle()
+	-- keepVisible: run the phases without hiding the window. Used for map changes, where the
+	-- window itself does not move and only what is drawn in it has to catch up.
+	function addon:BeginLiteSettle(keepVisible)
 		if (self.initLevel or 0) >= 3 or not ZO_WorldMap then
 			return
 		end
 		-- A ceiling, not a target: normally this clears on the first or second sample. If the
 		-- layout can never be satisfied the map still comes back rather than staying invisible.
-		self.settleTicks = 40
+		--
+		-- The ceiling is only started when there is not one running. Map changes can arrive in
+		-- a run -- crossing a city boundary on a mount, or a fast travel that lands next to
+		-- one -- and restarting the clock on each would keep the window transparent for as
+		-- long as they kept coming. The phases below are reset either way, so a settle already
+		-- under way still refreshes and re-clamps for the map that has just arrived; it simply
+		-- has to finish within the two seconds the first one started.
+		if (self.settleTicks or 0) <= 0 then
+			self.settleTicks = 40
+			self.settleVisible = keepVisible and true or false
+		elseif not keepVisible then
+			-- A settle that has to hide the window outranks one that does not: whatever asked
+			-- for hiding has something it does not want seen.
+			self.settleVisible = false
+		end
 		self.settleRefreshed = false
 		self.settleReclamped = false
 		self.settleHold = 0
@@ -2924,16 +2977,192 @@ function addon:Initialize()
 		end
 	end
 
+	-- Where the minimap sits in the UI stack.
+	--
+	-- ZO_WorldMap is the standard map's window as well, so the game's own draw order has to be
+	-- captured before anything is changed and handed straight back the moment the full map
+	-- comes forward -- the same arrangement as size, position, opacity and the border.
+	--
+	-- Ordering happens within the window's own tier, never by changing it.
+	--
+	-- The tier is the coarse control -- DT_HIGH would put the map over every other tier, full
+	-- screen menus included, which is not what "in front" should mean for a HUD element. So
+	-- the captured tier is kept and only the layer inside it moves: DL_OVERLAY draws after the
+	-- other HUD controls, DL_BACKGROUND before them. Anything in a higher tier still covers
+	-- the minimap, which is the behaviour to want.
+	--
+	-- "default" restores exactly what the game had rather than assuming what that was.
+	local orgDrawTier, orgDrawLayer, orgDrawLevel
+	function addon:ApplyLiteDrawOrder()
+		if not ZO_WorldMap or not ZO_WorldMap.SetDrawTier then
+			return
+		end
+		local account = self.account
+		if not account then
+			return
+		end
+
+		if orgDrawTier == nil then
+			orgDrawTier = ZO_WorldMap:GetDrawTier()
+			orgDrawLayer = ZO_WorldMap:GetDrawLayer()
+			orgDrawLevel = ZO_WorldMap:GetDrawLevel()
+		end
+
+		local order = account.liteDrawOrder or "default"
+		if self.dormant or (self.initLevel or 0) >= 3 or not account.enableMap then
+			order = "default"
+		end
+
+		local wantLayer = orgDrawLayer
+		if order == "front" and DL_OVERLAY then
+			wantLayer = DL_OVERLAY
+		elseif order == "back" and DL_BACKGROUND then
+			wantLayer = DL_BACKGROUND
+		end
+
+		-- The tier and level are always the game's own; only the layer carries the setting.
+		ZO_WorldMap:SetDrawTier(orgDrawTier)
+		ZO_WorldMap:SetDrawLayer(wantLayer)
+		ZO_WorldMap:SetDrawLevel(orgDrawLevel)
+	end
+
 	-- Position only: no resize calls, so it never disturbs the pan offset. Used from the
 	-- frame-anchor hook, where the game has just re-anchored the window underneath us.
+	-- Refuse the move rather than undo it.
+	--
+	-- Size never flickers because the game cannot change it: SetDimensionConstraints with
+	-- min == max means a size it asks for simply does not take. Position had no equivalent, so
+	-- every defence so far has been reactive -- notice it moved, put it back -- and reactive is
+	-- always at least one frame late. Correcting per frame narrowed the window and did not
+	-- close it, because handler order is not ours to decide and the game can move the window
+	-- after we have looked.
+	--
+	-- So give position the same property. While the minimap is up, anchor changes from anywhere
+	-- but this add-on are ignored. Nothing to notice, nothing to hide, nothing to put back.
+	--
+	-- The guard is off whenever the standard map owns the window, so the game lays its own map
+	-- out exactly as it always did.
+	local anchorGuardActive = false
+	-- A depth rather than a flag: our own anchor calls nest (the layout pass runs through the
+	-- same helpers), and a plain boolean would be cleared by the inner one on the way out.
+	local ownAnchorDepth = 0
+	addon.anchorBlocks = 0
+
+	function addon:SetLiteAnchorGuard(active)
+		anchorGuardActive = active and true or false
+	end
+
+	-- Whether an anchor change from outside should be refused, decided at the moment of the
+	-- call rather than from a flag a timer keeps up to date.
+	--
+	-- The flag alone was not enough, and got the mirror image of the bug it was meant to fix.
+	-- Opening the standard map lays the window out before dormancy has been confirmed -- that
+	-- takes up to a sample -- so the game's own anchoring was refused, and the full map could
+	-- appear at the minimap's position for those 50ms. Asking the live question closes it:
+	-- the moment the map is genuinely being shown, anchor calls go through.
+	--
+	-- Anchor calls are rare, so this costs nothing measurable.
+	local function ShouldRefuseAnchor()
+		if not anchorGuardActive or ownAnchorDepth > 0 then
+			return false
+		end
+		if IsWorldMapInFront() then
+			return false
+		end
+		if IsWorldMapShownElsewhere() then
+			return false
+		end
+		return true
+	end
+
+	function addon:BeginOwnAnchor()
+		ownAnchorDepth = ownAnchorDepth + 1
+	end
+
+	function addon:EndOwnAnchor()
+		if ownAnchorDepth > 0 then
+			ownAnchorDepth = ownAnchorDepth - 1
+		end
+	end
+
+	-- Per-instance override. Whether it takes is not knowable from here, so everything else
+	-- stays in place: if these assignments do not shadow the control's own methods, behaviour
+	-- is exactly what it was before.
+	function addon:InstallLiteAnchorOverride()
+		if self.liteAnchorOverrideInstalled or not ZO_WorldMap then
+			return
+		end
+		local orgSetAnchor = ZO_WorldMap.SetAnchor
+		local orgClearAnchors = ZO_WorldMap.ClearAnchors
+		if type(orgSetAnchor) ~= "function" or type(orgClearAnchors) ~= "function" then
+			return
+		end
+
+		ZO_WorldMap.SetAnchor = function(control, ...)
+			if ShouldRefuseAnchor() then
+				addon.anchorBlocks = addon.anchorBlocks + 1
+				return
+			end
+			return orgSetAnchor(control, ...)
+		end
+		ZO_WorldMap.ClearAnchors = function(control, ...)
+			if ShouldRefuseAnchor() then
+				addon.anchorBlocks = addon.anchorBlocks + 1
+				return
+			end
+			return orgClearAnchors(control, ...)
+		end
+
+		-- Size needs the same refusal, and it turned out to need it more.
+		--
+		-- Measurement of the flash showed the anchor correct throughout and the size going
+		-- from 274x240 to 769x769. Centred on one anchor, a window that grows expands in every
+		-- direction, which is why this read as the minimap appearing where the full map sits.
+		-- The position was never the problem.
+		--
+		-- SetDimensionConstraints with min == max was supposed to make that impossible, and it
+		-- does -- right up until the game applies a map mode, which installs constraints of its
+		-- own over ours. Once they are gone the size it asks for goes straight through. So the
+		-- constraints are defended the same way the anchor is: while the minimap is up, the
+		-- game may ask, and the answer is no.
+		local orgSetDimensions = ZO_WorldMap.SetDimensions
+		local orgSetDimensionConstraints = ZO_WorldMap.SetDimensionConstraints
+		if type(orgSetDimensions) == "function" and type(orgSetDimensionConstraints) == "function" then
+			ZO_WorldMap.SetDimensions = function(control, ...)
+				if ShouldRefuseAnchor() then
+					addon.anchorBlocks = addon.anchorBlocks + 1
+					return
+				end
+				return orgSetDimensions(control, ...)
+			end
+			ZO_WorldMap.SetDimensionConstraints = function(control, ...)
+				if ShouldRefuseAnchor() then
+					addon.anchorBlocks = addon.anchorBlocks + 1
+					return
+				end
+				return orgSetDimensionConstraints(control, ...)
+			end
+		end
+
+		self.liteAnchorOverrideInstalled = true
+	end
+
 	function addon:ApplyLiteAnchorOnly()
 		local account = self.account
 		if not account or not ZO_WorldMap then
 			return
 		end
-		local uiWidth, uiHeight = GuiRoot:GetDimensions()
+		local wantX, wantY = account.x, account.y
+		if not wantX or not wantY then
+			local uiWidth, uiHeight = GuiRoot:GetDimensions()
+			wantX = wantX or (uiWidth / 2 - 304)
+			wantY = wantY or (uiHeight / 2 - 368)
+		end
+
+		self:BeginOwnAnchor()
 		ZO_WorldMap:ClearAnchors()
-		ZO_WorldMap:SetAnchor(CENTER, nil, CENTER, account.x or (uiWidth / 2 - 304), account.y or (uiHeight / 2 - 368))
+		ZO_WorldMap:SetAnchor(CENTER, nil, CENTER, wantX, wantY)
+		self:EndOwnAnchor()
 	end
 
 	-- The game re-anchors and re-sizes ZO_WorldMap on its own (RefreshMapFrameAnchor and the
@@ -2980,13 +3209,22 @@ function addon:Initialize()
 	end
 
 	local function LitePositionMatches(account)
-		local uiWidth, uiHeight = GuiRoot:GetDimensions()
-		local wantX = account.x or (uiWidth / 2 - 304)
-		local wantY = account.y or (uiHeight / 2 - 368)
-
+		-- Read the anchor first and the screen only if it is needed.
+		--
+		-- This runs on the 50ms watch, and GuiRoot:GetDimensions() is only there to work out
+		-- a default for a position that has not been set. Once the player has placed the
+		-- minimap -- which is the case whenever this matters -- it is a wasted call on every
+		-- sample. A mismatched anchor point is likewise decided without knowing the offsets.
 		local isValid, point, _, relativePoint, offsetX, offsetY = ZO_WorldMap:GetAnchor(0)
 		if not isValid or point ~= CENTER or relativePoint ~= CENTER then
 			return false
+		end
+
+		local wantX, wantY = account.x, account.y
+		if not wantX or not wantY then
+			local uiWidth, uiHeight = GuiRoot:GetDimensions()
+			wantX = wantX or (uiWidth / 2 - 304)
+			wantY = wantY or (uiHeight / 2 - 368)
 		end
 		if zo_abs(offsetX - wantX) > 0.5 or zo_abs(offsetY - wantY) > 0.5 then
 			return false
@@ -3092,6 +3330,19 @@ function addon:Initialize()
 			if ZO_WorldMap_UpdateMap then
 				ZO_WorldMap_UpdateMap()
 			end
+
+			-- A different map is a different picture, a different tile set and a different
+			-- zoom, and the view is still pointed where it was on the last one. That is the
+			-- same position the add-on is in coming back from a map the game opened, and it
+			-- is why the zoom comes out wrong crossing between a city and the open world --
+			-- reported twice, and treated then as a fault in the zoom arithmetic.
+			--
+			-- No dormancy transition happens here, so nothing was starting a settle. Start one:
+			-- hold the window until the layout and zoom agree, refresh the tiles, hand the view
+			-- back to the game, and only then show it.
+			if addon.BeginLiteSettle and (addon.initLevel or 0) < 3 then
+				addon:BeginLiteSettle(true)
+			end
 		end
 		return result
 	end
@@ -3100,6 +3351,21 @@ function addon:Initialize()
 		local function resync()
 			self:RequestMapResync()
 			self:UpdateZoneTitle()
+		end
+		-- The original restores its position on this one, and we were not listening at all.
+		-- The preferred mode flipping is already known to move things here: it is what picks
+		-- the scene the dormancy check looks at, and a flip mid-frame was the cause of the
+		-- wayshrine view being torn down in 1.9.17.
+		if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then
+			em:RegisterForEvent(
+				self.name .. "LiteInputMode",
+				EVENT_GAMEPAD_PREFERRED_MODE_CHANGED,
+				function()
+					if not self.dormant and self.ApplyLiteAnchorOnly then
+						self:ApplyLiteAnchorOnly()
+					end
+				end
+			)
 		end
 		em:RegisterForEvent(self.name .. "LiteZone", EVENT_ZONE_CHANGED, resync)
 		em:RegisterForEvent(self.name .. "LiteActivated", EVENT_PLAYER_ACTIVATED, resync)
@@ -3445,6 +3711,35 @@ function addon:Initialize()
 		end
 	end
 
+	-- The picture can change without the map changing.
+	--
+	-- A settle is started on SET_MAP_RESULT_MAP_CHANGED, and a dungeon floor swap is not that:
+	-- the map id stays the same and only the tiles under it are replaced. The zoom is computed
+	-- from those tiles, so it comes out for the floor that has just been left, and the view is
+	-- still pointed where it was -- the same failure the antiquity route had, reached by a
+	-- different door.
+	--
+	-- So watch what actually decides the picture rather than the map's identity. Three numbers,
+	-- no allocation, on the 100ms tick.
+	local lastMapId, lastFloor, lastTiles
+	function addon:CheckLiteMapPicture()
+		local mapId = (GetCurrentMapId and GetCurrentMapId()) or 0
+		local floor = (GetMapFloorInfo and GetMapFloorInfo()) or 0
+		local tiles = (GetMapNumTiles and GetMapNumTiles()) or 0
+		if mapId == lastMapId and floor == lastFloor and tiles == lastTiles then
+			return
+		end
+
+		local first = lastMapId == nil
+		lastMapId, lastFloor, lastTiles = mapId, floor, tiles
+		-- Nothing to settle on the first reading: there was no previous picture to differ from.
+		if first or not self.BeginLiteSettle then
+			return
+		end
+		-- Visible: the window itself does not move for this, only what is drawn in it.
+		self:BeginLiteSettle(true)
+	end
+
 	function addon:FollowPlayerTick()
 		self.followTicks = (self.followTicks or 0) + 1
 
@@ -3465,6 +3760,15 @@ function addon:Initialize()
 		if self.IsWorldMapShownElsewhere and self.IsWorldMapShownElsewhere() then
 			self.followSkip = "foreign"
 			return
+		end
+
+		-- Before anything is computed from the map: has the picture underneath changed?
+		--
+		-- Ahead of the followPlayer guard, because a floor swap gets the zoom wrong whether or
+		-- not the player is being followed, and behind a visibility check, because there is
+		-- nothing to settle while the window is not on screen.
+		if ZO_WorldMap and not ZO_WorldMap:IsHidden() then
+			self:CheckLiteMapPicture()
 		end
 		local account = self.account
 		if not account or not account.followPlayer then
@@ -3645,16 +3949,23 @@ function addon:Initialize()
 				function(manager, ...)
 					-- The only place the live pool is reachable from.
 					addon.locationPinManager = manager
+
+					-- Let the game build its location pins.
+					--
+					-- This used to suppress the call outright and release the pool instead,
+					-- which is not hiding names but refusing to have the pins at all -- and
+					-- the merchant and service icons the standard map shows are those pins.
+					-- The same deletion had a second home in ClearMapLocationLabels, removed
+					-- in 1.9.33; this one kept doing it on every refresh, which is why that
+					-- changed nothing.
+					--
+					-- The names are hidden afterwards, by the sweep that hides each pin's
+					-- Label child and leaves the pin alone.
+					local result = orgRefreshLocations(manager, ...)
 					if LiteMinimapActive() and addon.account and addon.account.hideMapLabels then
-						if manager.ReleaseAllObjects then
-							manager:ReleaseAllObjects()
-						end
-						if addon.pinManager then
-							addon.pinManager:RemovePins("loc")
-						end
-						return
+						addon:RequestLabelSweep()
 					end
-					return orgRefreshLocations(manager, ...)
+					return result
 				end
 			)
 		end
@@ -3750,6 +4061,7 @@ function addon:Initialize()
 				self:MaintainLiteMinimapLayout()
 				self:ApplyLiteAlpha()
 				self:ApplyLiteBorder()
+				self:ApplyLiteDrawOrder()
 				local mapVisible = ZO_WorldMap and not ZO_WorldMap:IsHidden()
 				if mapVisible and not self.dormant and self.account and self.account.hideMapLabels then
 					self:SweepMapLabelsIfDue()
@@ -3899,6 +4211,8 @@ function addon:Initialize()
 		if self.BeginLiteSettle then
 			self:BeginLiteSettle()
 		end
+		self:InstallLiteAnchorOverride()
+		self:SetLiteAnchorGuard(true)
 		if self.account.debug then
 			self:DumpPanZoomApi()
 		end
@@ -4138,7 +4452,7 @@ local function InitMemoryWatchdog()
 		-- State half of the line: everything the suppression logic depends on.
 		local state =
 			string.format(
-			"front=%s (kb=%s gp=%s api=%s gpMode=%s) dormant=%s attached=%s hooks=%s hidden=%s anchor=%d,%d range=%.3f-%.3f eff=%.3f want=%.3f settle=%d scene=%s elsewhere=%s mode=%s mapType=%s zoom=%.2f/%.2f(%s) player=%.3f,%.3f onOwnMap=%s size=%dx%d scroll=%dx%d flips=%d follow=%d/%s centre=%d/%s setMap=%s container=%dx%d",
+			"front=%s (kb=%s gp=%s api=%s gpMode=%s) dormant=%s attached=%s hooks=%s hidden=%s anchor=%d,%d blocks=%d range=%.3f-%.3f eff=%.3f want=%.3f settle=%d scene=%s elsewhere=%s mode=%s mapType=%s zoom=%.2f/%.2f(%s) player=%.3f,%.3f onOwnMap=%s size=%dx%d scroll=%dx%d flips=%d follow=%d/%s centre=%d/%s setMap=%s container=%dx%d",
 			Bool(inFront),
 			Bool(WORLD_MAP_SCENE and WORLD_MAP_SCENE:IsShowing()),
 			Bool(GAMEPAD_WORLD_MAP_SCENE and GAMEPAD_WORLD_MAP_SCENE:IsShowing()),
@@ -4150,6 +4464,7 @@ local function InitMemoryWatchdog()
 			Bool(ZO_WorldMap and ZO_WorldMap:IsHidden()),
 			anchorX,
 			anchorY,
+			addon.anchorBlocks or 0,
 			rangeMin,
 			rangeMax,
 			effZoom,

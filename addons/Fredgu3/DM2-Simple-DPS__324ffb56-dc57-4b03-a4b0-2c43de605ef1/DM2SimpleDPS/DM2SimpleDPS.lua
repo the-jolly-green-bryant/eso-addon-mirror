@@ -1,11 +1,12 @@
 -- -----------------------------------------------------------------------------
 -- DM2 Simple DPS
 -- Description: A simple, libHarvens-free app for tracking DPS during fights/parses
--- Current Version: 1.0.13
--- Release Notes: Fight DPS is bold. Optional Fight DPS label color. Checkbox
+-- Current Version: 1.0.14
+-- Release Notes: Custom Fight DPS color now tints the number, not the prefix.
+-- Prior Notes:  1.0.13 -- Fight DPS is bold. Optional Fight DPS color. Checkbox
 --                swaps only the Live DPS and Fight DPS headlines (Fight Total
 --                and Duration stay put). Labels: Live DPS / Fight DPS.
--- Prior Notes:  1.0.12 -- Fight and Session columns nudged left so 9-figure
+--                1.0.12 -- Fight and Session columns nudged left so 9-figure
 --                comma-delimited totals fit without clipping (HM vet boss fights).
 --                1.0.11 -- Panel reorganized into Live / Fight / Session columns
 --                with Session Total and Total DPS Time (active damage seconds
@@ -38,9 +39,9 @@ local ZONE_DUNGEON  = "dungeon"   -- group dungeons, trials, arenas
 local ZONE_HOME     = "home"
 
 -- Bump this when you want the one-time upgrade notice to fire again.
--- AddOnVersion (manifest only) = major*10000 + minor*100 + patch  →  1.0.13 = 10013
+-- AddOnVersion (manifest only) = major*10000 + minor*100 + patch  →  1.0.14 = 10014
 -- ESO compares that integer monotonically; never publish a lower AddOnVersion than live.
-local VERSION = "1.0.13"
+local VERSION = "1.0.14"
 
 -- Compact 3-column layout: Live | Fight | Session
 local PANEL_W = 480
@@ -105,7 +106,7 @@ ADDON.defaults = {
   -- in the Fight column.
   swapLiveFight = false,
 
-  -- Optional color on the "Fight DPS:" prefix only. The number uses text color.
+  -- Optional color on the Fight DPS number only. The "Fight DPS:" prefix uses text color.
   fightLabelColorEnabled = false,
   fightLabelR = 1,
   fightLabelG = 0.84,
@@ -180,7 +181,7 @@ local function FormatDps(dps)
 end
 
 -- |cRRGGBB in ESO labels is RGB only (no alpha). fightLabelA is stored so the
--- colorpicker round-trips; it does not tint the prefix independently of SetColor.
+-- colorpicker round-trips; it does not tint the number independently of SetColor.
 local function RgbToHex(r, g, b)
   local ri = math.floor(Clamp01(r) * 255 + 0.5)
   local gi = math.floor(Clamp01(g) * 255 + 0.5)
@@ -197,9 +198,9 @@ local function FormatFightDpsLabel(dps)
   local vars = ADDON.vars
   if vars and vars.fightLabelColorEnabled then
     -- Encode both colors in the string and pair with SetColor(1,1,1,a) so a
-    -- custom text color cannot tint the Fight DPS: prefix.
-    local tagHex = RgbToHex(vars.fightLabelR or 1, vars.fightLabelG or 0.84, vars.fightLabelB or 0)
-    local numHex = RgbToHex(vars.textR or 1, vars.textG or 1, vars.textB or 1)
+    -- custom text color cannot tint the Fight DPS number.
+    local tagHex = RgbToHex(vars.textR or 1, vars.textG or 1, vars.textB or 1)
+    local numHex = RgbToHex(vars.fightLabelR or 1, vars.fightLabelG or 0.84, vars.fightLabelB or 0)
     return "|c" .. tagHex .. "Fight DPS:|r |c" .. numHex .. body .. "|r"
   end
   return "Fight DPS: " .. body
@@ -422,8 +423,8 @@ function ADDON:ApplyStyles()
     ui.brandLabel:SetColor(BRAND_R, BRAND_G, BRAND_B, ta or 1)
   end
   ui.rtLabel:SetColor(r,g,b,ta)
-  -- White vertex color while the Fight DPS prefix is |c-encoded, so the tag
-  -- color is exact. Number color is also |c-encoded in FormatFightDpsLabel.
+  -- White vertex color while the Fight DPS number is |c-encoded, so the number
+  -- color is exact. Prefix color is also |c-encoded in FormatFightDpsLabel.
   if vars.fightLabelColorEnabled then
     ui.avgLabel:SetColor(1, 1, 1, ta)
   else
@@ -734,7 +735,7 @@ function ADDON:MaybeShowVersionNotice()
 
   local g, r = "|cFFD700", "|r"  -- gold highlight / reset
   PrintToChat(g .. "DM2 Simple DPS v" .. VERSION .. r .. " -- " ..
-    g .. "Fight DPS" .. r .. " is bold. Settings: lead with Fight DPS (swaps only that line with Live DPS), optional Fight DPS label color.")
+    g .. "Fight DPS" .. r .. " is bold. Settings: lead with Fight DPS (swaps only that line with Live DPS), optional Fight DPS number color.")
 end
 
 -- Fires on every zone load (and login/reloadui). We reset the Sustained session
@@ -884,8 +885,8 @@ function ADDON:TryRegisterLAM()
     },
     {
       type = "checkbox",
-      name = "Custom Fight DPS label color",
-      tooltip = "Colors the Fight DPS: prefix only. The number still uses your text color.",
+      name = "Custom Fight DPS number color",
+      tooltip = "Colors the Fight DPS number only. The Fight DPS: prefix still uses your text color.",
       getFunc = function() return self.vars.fightLabelColorEnabled end,
       setFunc = function(v)
         self.vars.fightLabelColorEnabled = v
@@ -896,8 +897,8 @@ function ADDON:TryRegisterLAM()
     },
     {
       type = "colorpicker",
-      name = "Fight DPS label color",
-      tooltip = "Color of the Fight DPS: prefix when the custom color is enabled.",
+      name = "Fight DPS number color",
+      tooltip = "Color of the Fight DPS number when the custom color is enabled.",
       getFunc = function()
         local v = self.vars
         return v.fightLabelR, v.fightLabelG, v.fightLabelB, v.fightLabelA

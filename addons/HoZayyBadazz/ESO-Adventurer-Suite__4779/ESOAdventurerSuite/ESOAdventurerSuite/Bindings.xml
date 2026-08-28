@@ -35,6 +35,20 @@
         </Category>
     </Layer>
 
+
+    <!--
+      While LibAddonMenu is open, ESO's normal GENERAL binding layer is not
+      always active. Keep the user's normal Suite toggle key available so the
+      same hotkey can close settings and reopen the Suite.
+    -->
+    <Layer name="ESOAdventurerSuiteSettingsLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_PROGRESSION_COACH_TOGGLE_SETTINGS" hideAction="true" inheritsBindFrom="ESO_PROGRESSION_COACH_TOGGLE">
+                <Down>ESOProgressionCoach_Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
     <!--
       Saved Loadouts also owns ESO UI mode. Keep listening for the user's
       normal Suite toggle key while this detached workspace is open.

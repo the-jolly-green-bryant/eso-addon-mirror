@@ -18,13 +18,14 @@ Authoring:
   PC: bake from a public esologs.com report
   (scripts live in ../HolodeckDocs/tools — not this upload folder):
     cd ..\HolodeckDocs
-    python tools\bake_esologs_pack.py REPORTCODE --id MoL-TwinsJump --fight 8 --install
-    python tools\bake_esologs_pack.py REPORTCODE --id MoL-TwinsJump-Wipe --fight 4 --players --install
+    python tools\bake_esologs_pack.py REPORTCODE --id vMoL-TwinsJump --fight 8 --trial vMoL --boss Twins --install
+    python tools\bake_esologs_pack.py REPORTCODE --id vMoLHM-Rakkhat --fight 15 --trial vMoLHM --boss Rakkhat --install
+    Trial tags: MoL (normal), vMoL (veteran), vMoLHM (vet hard mode).
     (see HolodeckDocs\tools\ESOLOGS_PROBE.md)
 
-  Load key is fight.id inside the lua (e.g. /hd load MoL-TwinsJump), not the esologs hash.
+  Load key is fight.id inside the lua (e.g. /hd load vMoL-TwinsClear), not the esologs hash.
   Renaming: edit id/name/trial/boss/variant in the lua + the filename + both manifests. No recapture.
 
 Team training:
   Everyone installs same Holodeck version + same fight packs,
-  plant on the same landmark, /hd load <id>, /hd play once, walk the room.
+  plant on the same landmark, /hd load <id>, /hd play, walk the room.

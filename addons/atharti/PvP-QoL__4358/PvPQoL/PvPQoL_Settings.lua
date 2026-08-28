@@ -356,17 +356,6 @@ function PQ.RegisterLAMPanel()
 			type = "header",
 			name = "|t35:35:/esoui/art/notifications/gamepad/gp_notificationicon_quest.dds|tQuest Helpers",
 		},
-
-		{
-			type = "checkbox",
-			name = "Suppress Temporarily",
-			tooltip = "Temporarily disables all quest helper auto-abandon functionality until next UI reload or relog.",
-			getFunc = function() return PQ.suppressQuestHelpers end,
-			setFunc = function(value)
-				PQ.suppressQuestHelpers = value
-			end,
-			default = false,
-		},
 		{
 			type = "checkbox",
 			name = "AvA: Eliminate 20 Players",

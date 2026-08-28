@@ -1,0 +1,19 @@
+## Title: |cE5B558AetherChat|r (Skyrim & Tamriel Edition)
+## APIVersion: 101050 101051
+## Version: 2.30.0
+## Author: @AlexQuiet
+## Description: A modern, immersive chat & messenger replacement inspired by Skyrim. Drag-and-drop channel reordering, collapsible guild folders, real-time loot feed with 1-click Need requests (synced with LootLog), audible whisper alerts, and live unread mail notifications. |cFFD700For optimal use, please bind a keyboard shortcut in Esc -> Controls -> AetherChat (Show/Hide).|r
+## SavedVariables: AetherChat_SavedVariables
+## DependsOn: LibAddonMenu-2.0 LootLog
+
+src/Localization.lua
+src/Theme.lua
+src/Settings.lua
+src/Modules/SoundManager.lua
+src/Modules/History.lua
+src/ChatEngine.lua
+src/UI/Messenger.lua
+src/Core.lua
+
+AetherChat.xml
+Bindings.xml

@@ -1,0 +1,13 @@
+## Title: |c4B8BFESatuve|r Coordinate Bridge
+## Description: Read-only visual player coordinate and movement bridge (protocol V2).
+## Author: Satuve
+## Version: 2.0.1
+## APIVersion: 101050 101051
+## SavedVariables: SatuveCoordinateBridgeSavedVariables
+
+SatuveCoordinateBridge.lua
+SCB_Motion.lua
+SCB_Encoder.lua
+SCB_Display.lua
+SCB_Menu.lua
+SCB_Core.lua

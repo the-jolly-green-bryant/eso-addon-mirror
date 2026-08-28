@@ -169,7 +169,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibItemLinkDecoder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/LibItemLinkDecoder__3265) | olegbl | PC / Mac | 1.03 |
 | [LibItemLinkPreview](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Xhrysanth/LibItemLinkPreview__075222fe-7845-484e-a060-69ddb8d571d8) | Xhrysanth | Console | — |
 | [LibItemSets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibItemSets__d85860ca-4b0a-47c6-8a0b-45472e2f1878) | code65536 | Console | — |
-| [LibItemSets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibItemSets__4753) | code65536 | PC / Mac | 1.0.0 |
+| [LibItemSets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibItemSets__4753) | code65536 | PC / Mac | 1.0.1 |
 | [LibItemsFetcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibItemsFetcher__2426) | zelenin | PC / Mac | 1.0.2 |
 | [LibJson](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibJson__3794) | akamatsu02 | PC / Mac | 1.0 |
 | [LibKeepTooltip](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibKeepTooltip__4037) | imPDA | PC / Mac | 1.0.1 |

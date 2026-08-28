@@ -1,89 +1,45 @@
-Required Libraries
+[B]AI DEVELOPMENT DISCLOSURE[/B]
+ESO Adventurer Suite uses AI-assisted code generation and review. HoZayyBadazz is responsible for testing, publishing, maintaining, and supporting the addon.
 
-- LibAddonMenu-2.0
-- LibChatMessage
-- LibDebugLogger
-- LibGPS
-- LibMapData
-- LibMapPing
-- LibMapPins-1.0
-
-[B]# AI DEVELOPMENT DISCLOSURE[/B]
-ESO Adventurer Suite was developed with assistance from OpenAI, including AI-assisted code generation and review. The author, HoZayyBadazz, is responsible for publishing, testing, maintaining, and responding to issues in the addon.
-
-[B]# ESO ADVENTURER SUITE[/B]
+[B]ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.28.60
+Version: 0.28.61
 Status: Public Beta
 
-ESO Adventurer Suite is an all-in-one Elder Scrolls Online gameplay and progression utility built around the Tamriel Codex and configurable HUD overlays. It includes quest and travel tools, Dungeon Finder utilities, gear/set tools, live equipment display, role-aware progression guidance, combat statistics, custom unit frames, minimap features, Golden Pursuits integration, and Active Quest tracking.
+ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It includes quest and travel tools, Suite-native finders, combat statistics, HUD tools, minimap features, gear/build tools, companion tools, notes, checkpoints, Golden Pursuits integration, and configurable utility overlays.
 
-- Gear & Sets can optimize the currently summoned companion's unlocked abilities and ultimate, with role inference from companion equipment.
-- Companion optimizer labels now normalize ESO companion names so internal grammar metadata is never displayed.
+[B]REQUIRED LIBRARIES[/B]
+* LibAddonMenu-2.0 >= 43
+* LibMapData >= 101
+* LibGPS >= 73
+* LibMapPins-1.0 >= 47
+
+Install required libraries separately through Minion/ESOUI.
+
+[B]MAIN FEATURES[/B]
+* Tamriel Codex interface
+* Quest Finder and active quest tracking
+* Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours
+* Dynamic quest and wayshrine routing
+* Merchant, Guild Store, Stablemaster, Pledge Master, and guild-leader-home travel tools
+* Multiple saved notes and checkpoints
+* Mini Map and native ESO map integration
+* Companion, group, raid, combat, ability, XP, Champion Point, and utility HUD tools
+* Live Combat Stats
+* Gear, set, skill, Champion Point, and attribute optimization tools
+* RESPEC + BUILD workflow
+* Dungeon/activity history
+* Golden Pursuits integration
+* Configurable difficulty, reticle, glow, repair, recharge, stable, and utility systems
 
 
+[B]CREATOR, SUPPORT & COMMUNITY[/B]
+Creator: HoZayyBadazz
+In Game User ID: @ShadowOps187
+Discord Community: The Legends Den
+Discord Invite: discord.gg/Tj72TAEqat
 
-[B]# TEAM VISIBILITY[/B]
-- Soft glow tracking for the active companion and grouped players.
-- Companion defaults to purple and can be customized independently.
-- Per-player group overrides support color, width, height, intensity, and through-obstacle visibility.
-- Player-specific overrides are saved by account/name so they remain associated with that player.
-- Glow intensity controls now reach much brighter additive output, including a dedicated downed/dead red brightness control.
-- Red is reserved for dead grouped players and downed companions; their glow slowly pulses while down and returns to the configured color after revival or recovery.
+Optional gifts: in-game gold or Crown Store gifts. ESO Adventurer Suite and community support are free. No feature, update, addon access, Discord membership, or support is sold, required, or exchanged for gold, Crowns, gifts, or real money.
 
-[B]# CUSTOM ESO RETICLE[/B]
-- Optional Suite-owned ESO-style reticles with ESO Default available at any time.
-- Styles include Tamriel Rune, Corner Brackets, Compass Cross, Minimal Cross, Daedric Diamond, Ayleid Star, and Dragon Eye.
-- Reticle controls are available in Tamriel Codex > Utilities and in Settings > Addons > ESO Adventurer Suite.
-- Size and opacity include both decrease and increase controls.
-- Color choices include ESO Gold, Ivory, Crimson, Arcane Blue, and RGB Rainbow cycling.
-- Custom reticles replace only the center crosshair graphic; ESO interaction prompts and target text remain intact.
-
-[B]# CURRENT TRAVEL & HISTORY FEATURES[/B]
-- Quest travel resolves the selected/current objective to a discovered wayshrine in the proper destination zone, with Main Story/Harborage alliance handling where ESO reports an instance instead of an overland zone.
-- Direct travel tools include nearest merchant, nearest guild store/trader, and guild-leader primary residence (with a guild selector when the player belongs to multiple guilds). All travel requires an explicit player click and remains subject to ESO travel/access restrictions.
-- Dungeon History records future dungeon completions, mode when ESO exposes it, character, date/time, and duration; older achievement timestamps are imported only where ESO exposes reliable historical evidence.
-- Activity History covers supported Trials, Arenas, Battlegrounds, PvP sessions, and Archive-style activities with paged history.
-- Group Finder social tools use ESO public listings and guild rosters only. The public build does not collect or retain an arbitrary nearby/non-grouped-player roster.
-- Group Finder can host the Public Dungeon or four-player Group Dungeon you are currently inside; Group Dungeons use the detected Normal/Veteran instance difficulty and exact dungeon option when ESO exposes it.
-
-[B]# QUEST TRACKING[/B]
-Settings > Quest Tracking lets you choose exactly one tracking source:
-- Active Quest: follows the selected non-main Quest Finder / ESO journal quest.
-- Golden Pursuits: follows the journal quest linked to the selected Golden Pursuit.
-- Main Quest: follows an accepted Main Story quest only.
-
-Only the chosen source drives the visible Suite quest tracker and ESO assisted quest/compass at a time. Active Quest, Golden Pursuits, and Main Quest are kept independent so one source does not overwrite another. The Suite uses ESO's native compass guidance for the selected quest; the custom direction-arrow HUD has been removed.
-
-[B]# DEPENDENCIES[/B]
-Required dependencies:
-- LibAddonMenu-2.0 r43 or newer
-- LibMapData (AddOnVersion 101+)
-- LibGPS 3.x (AddOnVersion 30+)
-- LibMapPins-1.0 r47 or newer
-
-Install the libraries separately with Minion/ESOUI. LibGPS also uses its own declared library dependencies.
-
-ESO Adventurer Suite will not load if any required dependency is missing or older than the minimum version declared in the manifest.
-
-[B]# ESOUI REVIEW / PERFORMANCE NOTES[/B]
-- Required LibAddonMenu-2.0 uses DependsOn with the current minimum AddOnVersion check (>=43).
-- Account-wide SavedVariables are namespaced by GetWorldName() so NA, EU, and PTS data do not overwrite one another.
-- EVENT_COMBAT_EVENT analytics use EVENT_MANAGER:AddFilterForEvent combat-result/source/target filters rather than broad Lua-side result classification.
-- The manifest declares only two supported API versions: 101050 101051.
-- No executables, DLLs, telemetry upload, external network access, or arbitrary local file access are included.
-- No non-grouped nearby-player detection roster, map-ping data sharing, combat/movement automation, automatic chat sending, external-service communication, or Suite-controlled nameplate modification is included.
-
-[B]# CREDITS[/B]
-Author / project owner: HoZayyBadazz
-AI-assisted development and review: OpenAI
-ESO UI API, game UI artwork, and game data exposed to addons: ZeniMax Online Studios / Bethesda Softworks.
-LibAddonMenu-2.0, LibMapData, LibGPS, and LibMapPins-1.0 is required external libraries and are not bundled with this package.
-
-[B]# DISCLAIMER[/B]
+[B]DISCLAIMER[/B]
 This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related marks are property of their respective owners.
-
-
-[B]CURRENT-BUILD SKILL OPTIMIZER[/B]
-* Skills & CP can preview a recommended active skill bar from the character's detected role, resource build, equipped weapons, worn sets, and unlocked/morphed abilities.
-* RESPEC + BUILD uses ESO's current free, shrine-free skill respec flow. It stages the full combat rebuild first, then asks for one final confirmation before committing: recommended actives, the best available morph when a skill is morph-ready, relevant passives to the highest useful unlocked rank, and both weapon bars (1-5 + Ultimate). Extra points remain unspent for personal/crafting choices.

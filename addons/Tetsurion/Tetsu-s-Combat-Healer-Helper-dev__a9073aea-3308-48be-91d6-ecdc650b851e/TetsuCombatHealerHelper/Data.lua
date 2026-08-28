@@ -4,54 +4,79 @@ local T = TetsuCombatHealerHelper
 -- Ability ids collected from morph + rank tables. First live test may add extra
 -- tick-ids if a morph applies a child effect.
 T.Ability = {
+    -- Ground HoT family. Allies in the circle get a HoT; tick id 91342 is the
+    -- live aura Combat Metrics sees, ranks are the skill itself.
     illustrious = {
-        40058, 41251, 41253, 41255, -- Illustrious Healing ranks
-        28385,                      -- Grand Healing (base)
-        40060, 41244, 41247, 41250, -- Healing Springs ranks (same puddle family)
+        91342, 40058, 41251, 41253, 41255,
+        28385,
+        40060, 41244, 41247, 41250,
+        41257, 41261, 41265,
     },
+    -- Combat Prayer itself rarely lands as that name. Allies get Minor Berserk
+    -- + Minor Resolve for 10s. Blessing of Protection / Restoration = resolve only.
     prayer = {
-        40094, 41175, 41182, 41189, -- Combat Prayer ranks
-        22265,                      -- Blessing of Protection
-        40103, 35696,               -- Blessing of Restoration (other morph)
+        40094, 41175, 41182, 41189, 41151,
+        22265, 40103, 35696,
     },
     minorBerserk = {
-        61735, 61687,
+        61735, 61687, 62175,
     },
     minorResolve = {
-        61693, 61737,
+        61693, 61737, 61665,
     },
+    -- Set: cast any Assault skill in combat -> WD/SD buff on you + 5 allies 12m 15s.
     powerfulAssault = {
-        61771, 61763, 61772,
+        61771, 61763, 61772, 40225,
     },
+    -- Echoing Vigor (group HoT 15m / up to 16s). Cap 6 targets.
     echoingVigor = {
-        63227, 61507,
+        63240, 63227, 61507, 61505, 63232, 63234, 63236,
     },
+    -- Self-only morph.
     resolvingVigor = {
-        63231, 61798,
+        63231, 61798, 63229,
+    },
+    vigor = {
+        63240, 63227, 61507, 61505, 63232, 63234, 63236,
+        63231, 61798, 63229, 61720,
     },
     radiatingRegen = {
-        40079, 41278, 41283, 40066, 27062,
+        40079, 41278, 41283, 40066, 27062, 40069,
     },
     rapidRegen = {
-        27068, 40076,
+        27068, 40076, 40072,
     },
+    -- Olorime puddle, Spell Power Cure overheal, WW roar, etc. Same named buff.
     majorCourage = {
-        61708, 109966, 142305, 147417,
+        61708, 109966, 142305, 147417, 121878, 121877, 62799,
     },
     energyOrb = {
-        85434, 85431, 85432, 95057,
+        85431, 85432, 95057, 26188, 26192, 42038, 43439, 43443,
     },
     majorForce = {
-        61747,
+        61747, 40225,
     },
     majorSlayer = {
-        93109,
+        93109, 121910,
+    },
+    minorCourage = {
+        61707, 147417, 121876,
     },
     minorMagickasteal = {
-        88401, 39173,
+        88401, 39173, 26220,
     },
     orbLockout = {
-        63512, 48052, 95924,
+        85434, 63512, 48052, 95924, 26869, 67717, 22270,
+    },
+    -- Heal cut: Major/Minor Defile + named absorb / anti-heal auras.
+    healCut = {
+        61726, 61727, 61742, 79851, 21927,
+    },
+    offBalance = {
+        39077, 63003, 62988, 115001,
+    },
+    offBalanceImm = {
+        134599, 102771,
     },
 }
 
@@ -63,17 +88,19 @@ T.PRAYER_ARM_DELAY_MS = 4000
 -- on old sample ids was returning unrelated buffs like Major Sorcery).
 T.SlotCatalog = {
     { key = "off" },
-    { key = "powerfulAssault" },
-    { key = "echoingVigor" },
-    { key = "resolvingVigor" },
+    { key = "prayer" },
     { key = "radiatingRegen" },
     { key = "rapidRegen" },
-    { key = "majorCourage" },
     { key = "energyOrb" },
+    { key = "orbLockout" },
+    { key = "powerfulAssault" },
+    { key = "majorCourage" },
+    { key = "minorCourage" },
     { key = "majorForce" },
     { key = "majorSlayer" },
+    { key = "minorBerserk" },
+    { key = "minorResolve" },
     { key = "minorMagickasteal" },
-    { key = "orbLockout" },
 }
 
 -- Name needles, lowercase. Matched against GetAbilityName(abilityId) so we do
@@ -81,51 +108,164 @@ T.SlotCatalog = {
 T.NameNeedles = {
     illustrious = {
         "illustrious healing", "healing springs", "grand healing",
-        "блистательн", "исцеляющие родник", "великое исцеление",
+        "блистательное исцеление", "блистательн", "прославленное исцеление",
+        "великое исцеление", "высшее лечение",
+        "исцеляющие источники", "целительные источники", "исцеляющие родник",
+        "erhabene heilung", "heilende quellen", "heilendequellen", "große heilung", "grosse heilung",
+        "guérison illustre", "sources de soins", "grande guérison",
+        "sanación ilustre", "manantiales curativos", "gran sanación",
+        "輝かしい治癒", "華麗なる治癒", "グランドヒーリング", "ヒーリングスプリング",
+        "辉煌治疗", "宏伟治疗", "治疗之泉",
     },
     prayer = {
         "combat prayer", "blessing of protection", "blessing of restoration",
         "боевая молитва", "благословение защиты", "благословение восстанов",
+        "kampfgebet", "segen des schutzes", "segen der wiederherstellung",
+        "prière de combat", "bénédiction de protection", "bénédiction de rétablissement",
+        "oración de combate", "rezo de combate", "bendición de protección", "bendición de restauración",
+        "戦闘の祈り", "戦闘祈", "加護の祝福",
+        "战斗祈祷", "战斗祷告", "防护祝福",
     },
     minorBerserk = {
-        "minor berserk", "малое ожесточение", "kleiner berserker",
+        "minor berserk", "kleiner raserei", "kleinere raserei",
+        "малая ярость", "малое ожесточение",
+        "berserk mineur",
+        "locura menor", "rabia menor",
+        "マイナーバーサーク",
+        "次级狂怒",
     },
     minorResolve = {
-        "minor resolve", "малая решимость", "geringe entschlossenheit",
+        "minor resolve", "kleinere entschlossenheit", "kleine entschlossenheit",
+        "малая решимость",
+        "résolution mineure",
+        "resolución menor",
+        "マイナーリゾルブ",
+        "次级坚定", "次级决心",
     },
     powerfulAssault = {
-        "powerful assault", "мощный натиск",
+        "powerful assault",
+        "мощный натиск", "мощное нападение",
+        "kraftvoller ansturm",
+        "assaut puissant",
+        "asalto poderoso",
+        "強力な襲撃",
+        "强力突击",
+    },
+    vigor = {
+        "echoing vigor", "resolving vigor", "vigor",
+        "гулкая бодрость", "отголосок бодрости", "эхо бодрости", "бодрость",
+        "widerhallender elan", "widerhallende stärke", "lösender elan", "elan",
+        "vigueur retentissante", "vigueur résolue", "vigueur",
+        "vigor resonante", "vigor resolutivo",
+        "反響する活力", "決意の活力",
+        "回响活力", "回响的活力", "坚定活力",
     },
     echoingVigor = {
-        "echoing vigor", "раздающаяся бодрость", "эхо бодрости",
+        "echoing vigor", "vigor",
+        "гулкая бодрость", "отголосок бодрости", "эхо бодрости", "бодрость",
+        "widerhallender elan", "widerhallende stärke", "elan",
+        "vigueur retentissante", "vigueur",
+        "vigor resonante",
+        "反響する活力",
+        "回响活力", "回响的活力",
     },
     resolvingVigor = {
-        "resolving vigor", "крепнущая бодрость",
+        "resolving vigor",
+        "крепнущая бодрость", "разрешающая бодрость",
+        "lösender elan", "lösende stärke",
+        "vigueur résolue",
+        "vigor resolutivo",
+        "決意の活力",
+        "坚定活力",
     },
     radiatingRegen = {
-        "radiating regeneration", "излучающая регенерация",
-        "излучающее восстановление",
+        "radiating regeneration",
+        "излучающая регенерация", "излучающее восстановление",
+        "strahlende regeneration",
+        "régénération rayonnante",
+        "regeneración radiante",
+        "放射再生",
+        "辐射再生",
     },
     rapidRegen = {
-        "rapid regeneration", "быстрая регенерация",
+        "rapid regeneration",
+        "быстрая регенерация",
+        "schnelle regeneration",
+        "régénération rapide",
+        "regeneración rápida",
+        "迅速再生",
+        "快速再生",
     },
     majorCourage = {
-        "major courage", "великая храбрость",
+        "major courage",
+        "великая храбрость", "великий мужество",
+        "größerer mut", "großer mut",
+        "courage majeur",
+        "valentía mayor",
+        "メジャーカレッジ", "大勇気",
+        "强效勇气", "主要勇气",
+    },
+    minorCourage = {
+        "minor courage",
+        "малая храбрость",
+        "kleinerer mut", "kleiner mut",
+        "courage mineur",
+        "valentía menor",
+        "マイナーカレッジ",
+        "次级勇气",
     },
     energyOrb = {
-        "energy orb", "necrotic orb", "энергетическая сфера", "некротическая сфера",
+        "energy orb", "necrotic orb",
+        "энергетическая сфера", "некротическая сфера",
+        "energetische kugel", "nekrotische kugel",
+        "orbe d'énergie", "orbe nécrotique",
+        "orbe de energía", "orbe necrótico",
+        "エネルギーオーブ",
+        "能量球", "死灵球",
     },
     majorForce = {
-        "major force", "великая сила",
+        "major force",
+        "великая сила",
+        "größere kraft", "große kraft",
+        "force majeure",
+        "fuerza mayor",
+        "メジャーフォース",
+        "强效力",
     },
     majorSlayer = {
-        "major slayer", "великая решимость убийцы",
+        "major slayer",
+        "великий палач", "великая резня",
+        "großer schlächter", "größerer schlächter",
+        "tueur majeur",
+        "exterminador mayor",
+        "メジャースレイヤー",
+        "强效杀戮",
     },
     minorMagickasteal = {
-        "minor magickasteal", "малое похищение магии",
+        "minor magickasteal", "minor magicka steal",
+        "малое похищение магии",
+        "kleiner magickaraub",
+        "vol de magie mineur",
+        "robo de magia menor",
+        "マイナーマジカスチール",
+        "次级法力偷取",
     },
     orbLockout = {
-        "healing combustion", "spear shards",
+        "healing combustion", "combustion",
+        "spear shards", "luminous shards",
+        "исцеляющее возгорание", "возгорание", "осколки копья",
+        "heilende verbrennung", "verbrennung",
+        "combustion curative",
+        "combustión curativa",
+        "combustion curative",
+    },
+    healCut = {
+        "major defile", "minor defile", "defile",
+        "heal absorb", "healing absorb", "healing immunity", "anti-heal",
+        "осквернение", "хилорез", "поглощение исцеления",
+        "entweihung", "heilungsabsor",
+        "souillure", "absorption de soins",
+        "profanación",
     },
 }
 
@@ -170,13 +310,23 @@ end
 function T.IsIllustriousAbility(abilityId)
     if not abilityId then return false end
     if T.IsIllustrious and T.IsIllustrious[abilityId] then return true end
-    return T.NameMatches(abilityId, "illustrious")
+    return T.LookupKeyForAbilityId(abilityId, nil) == "illustrious"
+end
+
+local function CleanName(text)
+    if not text or text == "" then return "" end
+    text = tostring(text)
+    text = text:gsub("|c%x%x%x%x%x%x%x%x", "")
+    text = text:gsub("|r", "")
+    text = text:gsub("|t.-|t", "")
+    return zo_strlower(text)
 end
 
 function T.TextMatchesNeedles(text, key)
     local needles = T.NameNeedles and T.NameNeedles[key]
-    if not needles or not text or text == "" then return false end
-    local name = zo_strlower(text)
+    if not needles then return false end
+    local name = CleanName(text)
+    if name == "" then return false end
     for i = 1, #needles do
         if name:find(needles[i], 1, true) then
             return true
@@ -185,52 +335,98 @@ function T.TextMatchesNeedles(text, key)
     return false
 end
 
-local INTERNAL_KEYS = { "prayer", "illustrious", "minorBerserk", "minorResolve" }
+local INTERNAL_KEYS = { "prayer", "illustrious", "minorBerserk", "minorResolve", "healCut" }
 
-function T.LookupKeyForAbilityId(abilityId, effectName)
-    for i = 1, #INTERNAL_KEYS do
-        local k = INTERNAL_KEYS[i]
-        if T.TextMatchesNeedles(effectName, k) then
-            return k
+local function AliasKey(key)
+    if key == "echoingVigor" or key == "resolvingVigor" then
+        return "vigor"
+    end
+    return key
+end
+
+-- O(1) after first sighting. The old scanner allocated dozens of strings
+-- per EVENT_EFFECT_CHANGED and ran on every combat tick.
+local idToKey = {}
+local nameToKey = {}
+local needleList = {}
+
+function T.BuildLookupIndex()
+    needleList = {}
+    if T.Ability then
+        for key, ids in pairs(T.Ability) do
+            local mapped = AliasKey(key)
+            for i = 1, #ids do
+                idToKey[ids[i]] = mapped
+            end
         end
     end
-    if abilityId then
-        if T.IsPrayer and T.IsPrayer[abilityId] then return "prayer" end
-        if T.IsIllustrious and T.IsIllustrious[abilityId] then return "illustrious" end
-        for i = 1, #INTERNAL_KEYS do
-            local k = INTERNAL_KEYS[i]
-            local ids = T.Ability[k]
-            if ids then
-                for j = 1, #ids do
-                    if ids[j] == abilityId then return k end
-                end
-            end
-            if T.NameMatches(abilityId, k) then return k end
+    local function addNeedles(key, list)
+        if not list then return end
+        local mapped = AliasKey(key)
+        for i = 1, #list do
+            needleList[#needleList + 1] = { list[i], mapped }
         end
-        for _, entry in ipairs(T.SlotCatalog) do
-            if entry.key ~= "off" then
-                local ids = T.Ability[entry.key]
-                if ids then
-                    for i = 1, #ids do
-                        if ids[i] == abilityId then
-                            return entry.key
-                        end
-                    end
-                end
-                if T.TextMatchesNeedles(effectName, entry.key) then
-                    return entry.key
-                end
-                if T.NameMatches(abilityId, entry.key) then
-                    return entry.key
-                end
+    end
+    if T.NameNeedles then
+        for key, list in pairs(T.NameNeedles) do
+            addNeedles(key, list)
+        end
+    end
+    if T.PairNeedles then
+        for key, list in pairs(T.PairNeedles) do
+            addNeedles(key, list)
+        end
+    end
+end
+
+T.BuildLookupIndex()
+
+function T.LookupKeyForAbilityId(abilityId, effectName)
+    if abilityId and abilityId ~= 0 then
+        local cached = idToKey[abilityId]
+        if cached ~= nil then
+            if cached == false then return nil end
+            return cached
+        end
+        if T.IsPrayer and T.IsPrayer[abilityId] then
+            idToKey[abilityId] = "prayer"
+            return "prayer"
+        end
+        if T.IsIllustrious and T.IsIllustrious[abilityId] then
+            idToKey[abilityId] = "illustrious"
+            return "illustrious"
+        end
+    end
+    local name = CleanName(effectName)
+    if name ~= "" then
+        local cached = nameToKey[name]
+        if cached ~= nil then
+            if abilityId and abilityId ~= 0 then idToKey[abilityId] = cached end
+            if cached == false then return nil end
+            return cached
+        end
+        if name:find("immun", 1, true) and (name:find("off", 1, true) or name:find("равновес", 1, true) or name:find("gleichgewicht", 1, true)) then
+            nameToKey[name] = "offBalanceImm"
+            if abilityId and abilityId ~= 0 then idToKey[abilityId] = "offBalanceImm" end
+            return "offBalanceImm"
+        end
+        local hitKey, hitLen = nil, 0
+        for i = 1, #needleList do
+            local needle = needleList[i][1]
+            if needle ~= "" and name:find(needle, 1, true) and #needle > hitLen then
+                hitKey = needleList[i][2]
+                hitLen = #needle
             end
         end
-    else
-        for _, entry in ipairs(T.SlotCatalog) do
-            if entry.key ~= "off" and T.TextMatchesNeedles(effectName, entry.key) then
-                return entry.key
-            end
+        if hitKey then
+            nameToKey[name] = hitKey
+            if abilityId and abilityId ~= 0 then idToKey[abilityId] = hitKey end
+            return hitKey
         end
+        nameToKey[name] = false
+    end
+    if abilityId and abilityId ~= 0 then
+        idToKey[abilityId] = false
     end
     return nil
 end
@@ -256,6 +452,7 @@ function T.SlotLabel(key)
     end
     local map = {
         powerfulAssault = L.SLOT_PA or "Powerful Assault",
+        vigor           = L.SLOT_VIGOR or "Vigor",
         echoingVigor    = L.SLOT_VIGOR_ECHO or "Echoing Vigor",
         resolvingVigor  = L.SLOT_VIGOR_RES or "Resolving Vigor",
         radiatingRegen  = L.SLOT_RAD_REGEN or "Radiating Regeneration",
@@ -265,9 +462,12 @@ function T.SlotLabel(key)
         majorForce         = L.SLOT_FORCE or "Major Force",
         majorSlayer        = L.SLOT_SLAYER or "Major Slayer",
         minorMagickasteal  = L.SLOT_MSTEAL or "Minor Magickasteal",
-        orbLockout         = L.SLOT_ORB_LOCK or "Orb synergy lock",
+        orbLockout         = L.SLOT_ORB_LOCK or "Orb synergy CD",
         illustrious        = L.SLOT_IH or "Illustrious Healing",
         prayer             = L.SLOT_PRAYER or "Combat Prayer",
+        minorCourage       = L.SLOT_MINOR_COURAGE or "Minor Courage",
+        minorBerserk       = L.SLOT_MINOR_BERSERK or "Minor Berserk",
+        minorResolve       = L.SLOT_MINOR_RESOLVE or "Minor Resolve",
     }
     return map[key] or key
 end
@@ -277,6 +477,7 @@ function T.SlotShort(key)
     local map = {
         off               = "",
         powerfulAssault   = L.SHORT_PA or "PA",
+        vigor             = L.SHORT_VG or "Vig",
         echoingVigor      = L.SHORT_VE or "EVig",
         resolvingVigor    = L.SHORT_VR or "RVig",
         radiatingRegen    = L.SHORT_RAD or "RadR",
@@ -286,9 +487,12 @@ function T.SlotShort(key)
         majorForce        = L.SHORT_FRC or "Forc",
         majorSlayer       = L.SHORT_SLY or "Slay",
         minorMagickasteal = L.SHORT_MS or "MStl",
-        orbLockout        = L.SHORT_OLK or "Lock",
+        orbLockout        = L.SHORT_OLK or "OrbCD",
         illustrious       = L.SHORT_IH or "IH",
         prayer            = L.SHORT_PR or "Pray",
+        minorCourage      = L.SHORT_MCRG or "mCou",
+        minorBerserk      = L.SHORT_MBRK or "mBer",
+        minorResolve      = L.SHORT_MRES or "mRes",
     }
     return map[key] or zo_strsub(T.SlotLabel(key) or key, 1, 4)
 end
@@ -359,34 +563,23 @@ function T.UnitHere(unitTag)
     if IsUnitOnline and unitTag ~= "player" and not IsUnitOnline(unitTag) then
         return false
     end
-    local myZone, mx = GetUnitRawWorldPosition("player")
-    local theirZone, tx = GetUnitRawWorldPosition(unitTag)
-    if myZone and theirZone and myZone ~= theirZone then
-        return false
-    end
-    if GetUnitZoneIndex and GetUnitZoneIndex("player") and GetUnitZoneIndex(unitTag) then
-        if GetUnitZoneIndex("player") ~= GetUnitZoneIndex(unitTag) then
-            return false
-        end
-    end
-    if not tx or (tx == 0 and select(3, GetUnitRawWorldPosition(unitTag)) == 0) then
-        if unitTag ~= "player" then
-            return false
-        end
-    end
     return true
 end
 
+local seenName = {}
+
 function T.EachGroupTag(callback)
-    local seenName = {}
+    for k in pairs(seenName) do
+        seenName[k] = nil
+    end
     local function emit(tag)
-        if not tag or not DoesUnitExist or not DoesUnitExist(tag) then
-            return
+        if not tag or tag == "" then return end
+        if DoesUnitExist and not DoesUnitExist(tag) then return end
+        if IsUnitOnline and tag ~= "player" and not IsUnitOnline(tag) then return end
+        local name = tag
+        if GetUnitDisplayName then
+            name = GetUnitDisplayName(tag) or name
         end
-        if T.UnitHere and not T.UnitHere(tag) then
-            return
-        end
-        local name = GetUnitDisplayName(tag) or GetUnitName(tag) or tag
         if seenName[name] then return end
         seenName[name] = true
         callback(tag)
@@ -394,6 +587,8 @@ function T.EachGroupTag(callback)
     emit("player")
     local n = GetGroupSize and GetGroupSize() or 0
     for i = 1, n do
-        emit(GetGroupUnitTagByIndex and GetGroupUnitTagByIndex(i))
+        if GetGroupUnitTagByIndex then
+            emit(GetGroupUnitTagByIndex(i))
+        end
     end
 end

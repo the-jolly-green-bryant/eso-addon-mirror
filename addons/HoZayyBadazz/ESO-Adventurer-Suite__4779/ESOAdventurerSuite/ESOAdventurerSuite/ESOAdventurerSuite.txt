@@ -1,8 +1,8 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
-## Description: |cFFD700Tamriel Codex, HUD, minimap, quests, combat stats, travel, gear, and adventure tools.|r
+## Description: |cFFD700Modern adventure dashboard, HUD, minimap, quests, finders, combat, travel, gear, and build tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.28.60
-## AddOnVersion: 2860
+## Version: 0.28.61
+## AddOnVersion: 2861
 ## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
 ## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47
@@ -34,6 +34,7 @@ Engine.lua
 Role.lua
 Travel.lua
 Activities.lua
+BattlegroundFinder.lua
 DungeonFinder.lua
 DungeonHistory.lua
 ActivityRunHistory.lua
@@ -41,6 +42,8 @@ QuestFinder.lua
 SetJournal.lua
 Endgame.lua
 TargetBuild.lua
+EndgameMeta.lua
+SkillMeta.lua
 GearOptimizer.lua
 CompanionOptimizer.lua
 GearLoadoutOverlay.lua
@@ -51,11 +54,13 @@ Combat.lua
 Maintenance.lua
 UnitFrames.lua
 TeamVisibility.lua
+DungeonChestFinder.lua
 AllianceRank.lua
 ChampionOverlay.lua
 ChampionOptimizer.lua
 AttributeOptimizer.lua
 AbilityOverlays.lua
+SynergyOverlay.lua
 Reticle.lua
 RepairCostOverlay.lua
 EncounterReminders.lua
@@ -65,7 +70,9 @@ StableTimer.lua
 Clock.lua
 ActiveQuest.lua
 GoldenPursuits.lua
+FinderSuite.lua
 Journal.lua
+ModernAppUI.lua
 MiniMap.lua
 UtilitySuite.lua
 UI.lua

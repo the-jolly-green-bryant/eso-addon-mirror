@@ -1,2 +1,6 @@
+Version 1.0.1 (2026/08/27)
+* Changed the internal name lookup table for GetItemSetCollectionSlotName to
+  work around issues reported by some players
+
 Version 1.0.0 (2026/08/04)
 * Initial version

@@ -64,7 +64,7 @@ do
 		if (sourceId and sourceId > 0) then
 			return ZO_CachedStrFormat(SI_ZONE_NAME, GetZoneNameById(sourceId))
 		else
-			return SPECIAL_SOURCE_NAMES[sourceId or 0] or ""
+			return SPECIAL_SOURCE_NAMES[sourceId] or ""
 		end
 	end
 end
@@ -183,13 +183,13 @@ do
 			43559, -- Lightning Staff
 			43556, -- Shield
 		}) do
-			names[NumberToId64(2 ^ (i - 1))] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName("|H0:item:" .. itemId .. ":0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
+			names[2 ^ (i - 1)] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName("|H0:item:" .. itemId .. ":0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
 		end
 	end
 
 	function LIS.GetItemSetCollectionSlotName( slot )
 		if (not names) then initialize() end
-		return names[slot] or ""
+		return names[Id64ToNumber(slot)] or ""
 	end
 end
 

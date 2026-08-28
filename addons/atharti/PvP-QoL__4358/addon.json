@@ -18,7 +18,7 @@
     "PvPQoL"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4358/",
-  "fingerprint": "571c4cdb574510c29900cb688d5c4eaff930849d3c1e08d67491094562c06c6d",
+  "fingerprint": "38432f5f5e7b9e28a623bc84bb4b4839f7bea4fbe7deb441c7070038c1686ee2",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15099.png",
     "https://cdn-eso.mmoui.com/preview/pvw15100.png",
@@ -30,11 +30,11 @@
   "source_id": "4358",
   "source_url": "https://www.esoui.com/downloads/info4358-PvPQoL.html",
   "stats": {
-    "downloads": 1703,
+    "downloads": 1719,
     "favorites": 4,
-    "monthly_downloads": 117
+    "monthly_downloads": 125
   },
   "title": "PvP QoL",
-  "updated_at": 1787811973000,
-  "version": "4.4"
+  "updated_at": 1787904533000,
+  "version": "4.5"
 }

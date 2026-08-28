@@ -1,3 +1,15 @@
+0.28.61
+- Reworked the Suite interface for better readability at smaller sizes, including responsive top tabs, tighter resize limits, improved left-rail spacing, and clearer alliance/class/companion presentation.
+- Expanded the Finders section with Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours views without handing off to ESO menus.
+- Improved Group Finder reliability so live results remain visible, manual refresh works correctly, finder style and difficulty controls are clearly labeled, and the current dungeon can be hosted directly.
+- Simplified Group Finder navigation by removing unnecessary PREV/NEXT controls and shortening the host action to HOST DUNGEON.
+- Improved Map / Travel readability with distinct zone and wayshrine rows plus a guild selector for traveling to the leader home of any joined guild.
+- Fixed Notes and Checkpoints editing, added reliable multiple-note and multiple-checkpoint saving, and separated SAVE NEW from UPDATE SELECTED so multiple checkpoints can be stored in the same zone.
+- Fixed the Suite hotkey while editing Notes/Checkpoints and while using the full addon settings panel.
+- Improved Tales of Tribute and Home Tours detail layouts so requirements/status information stays organized and readable.
+- Added Creator / In Game User ID / Discord community information to Suite Settings with optional-support wording that does not gate addon features or support.
+- Cleaned public-facing branding and release metadata for ESOUI/Minion distribution while preserving existing SavedVariables compatibility identifiers.
+
 0.28.60
 - Fixed companion names in the Gear & Sets ability optimizer so ESO grammar metadata is never shown in button, confirmation, or status text.
 - Companion names are now normalized through ESO formatting with a safe fallback scrub for raw grammar suffixes.

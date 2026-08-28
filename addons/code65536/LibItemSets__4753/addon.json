@@ -22,7 +22,7 @@
     "LibItemSets"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4753/",
-  "fingerprint": "cbfb57e8faf227f0fcc4c6fac487e1180ff3ab74c1b5ab5b8a0d2aef5e1c38dd",
+  "fingerprint": "d93528838b2939c6e3cf70d0bb408646093395d3ed83603f6c01e04dc187112b",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4753",
   "source_url": "https://www.esoui.com/downloads/info4753-LibItemSets.html",
   "stats": {
-    "downloads": 394,
-    "favorites": 2,
-    "monthly_downloads": 393
+    "downloads": 645,
+    "favorites": 4,
+    "monthly_downloads": 551
   },
   "title": "LibItemSets",
-  "updated_at": 1785856451000,
-  "version": "1.0.0"
+  "updated_at": 1787882533000,
+  "version": "1.0.1"
 }

@@ -5,6 +5,7 @@ PC.name = "PullCard"
 PC.version = "0.3.0"
 PC.window = nil
 PC.tipsWindow = nil
+PC.settingsWindow = nil
 PC.miniButton = nil
 PC.currentBossName = nil
 PC.currentBossData = nil
@@ -14,6 +15,12 @@ PC.tipsBossIndex = 1
 PC.detectedBossNames = {}
 PC.debugMode = false
 PC.settingsPanelRegistered = false
+PC.settingsPanelRetryCount = 0
+PC.hotkeyPollId = "PullCardHotkeyPoll"
+PC.leftShoulderDown = false
+PC.rightShoulderDown = false
+PC.hotkeyChordHandled = false
+PC.suppressedAutoBossName = nil
 PC.savedVars = nil
 PC.defaults = {
     debugMode = false,
@@ -75,18 +82,78 @@ local function IsActivateKey(key)
         or key == KEY_GAMEPAD_BUTTON_3
 end
 
+local function IsLeftToggleKey(key)
+    return key == KEY_GAMEPAD_LEFT_SHOULDER
+end
+
+local function IsRightToggleKey(key)
+    return key == KEY_GAMEPAD_BUTTON_1
+end
+
 local function SetReadableFont(control, size, isBold)
     if not control then return end
     local base = isBold and "$(BOLD_FONT)" or "$(MEDIUM_FONT)"
     control:SetFont(string.format("%s|%d|soft-shadow-thick", base, size))
 end
 
+local function NormalizeButtonFontSize(size)
+    local requested = tonumber(size) or 20
+    if requested < 22 then
+        return 22
+    end
+    return requested
+end
+
 local function SetButtonReadableFont(button, size, isBold)
     if not button then return end
-    local text = button:GetNamedChild("Text")
-    if text then
-        SetReadableFont(text, size, isBold)
+    size = NormalizeButtonFontSize(size)
+    local base = isBold and "$(BOLD_FONT)" or "$(MEDIUM_FONT)"
+    local font = string.format("%s|%d|soft-shadow-thick", base, size)
+
+    if button.SetFont then
+        button:SetFont(font)
     end
+
+    local text = button.GetNamedChild and button:GetNamedChild("Text") or nil
+    if not text and button.GetNamedChild then
+        text = button:GetNamedChild("Label")
+    end
+    if text and text.SetFont then
+        text:SetFont(font)
+    end
+
+    local customLabel = button.pullCardLabel
+    if customLabel and customLabel.SetFont then
+        customLabel:SetFont(font)
+    end
+end
+
+local function SetActionButtonLabel(button, text)
+    if not button then return end
+    if button.pullCardLabel then
+        button.pullCardLabel:SetText(text)
+    else
+        button:SetText(text)
+    end
+end
+
+local function EnsureLargeButtonLabel(button, text, size, isBold)
+    if not button then return end
+    size = NormalizeButtonFontSize(size)
+    if not button.pullCardLabel then
+        local label = WINDOW_MANAGER:CreateControl(nil, button, CT_LABEL)
+        button.pullCardLabel = label
+        label:SetAnchor(TOPLEFT, button, TOPLEFT, 6, 2)
+        label:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -6, -2)
+        label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        label:SetMouseEnabled(false)
+    end
+
+    SetReadableFont(button.pullCardLabel, size, isBold)
+    button.pullCardLabel:SetColor(1, 1, 1, 1)
+    button.pullCardLabel:SetText(text or "")
+    button:SetText("")
 end
 
 local function IsActionEnabled(action)
@@ -132,10 +199,11 @@ local function SetWindowActionFocus(window, index)
     for i, action in ipairs(actions) do
         if action and action.control and action.label then
             if i == index then
-                action.control:SetText("[ " .. action.label .. " ]")
+                SetActionButtonLabel(action.control, "[ " .. action.label .. " ]")
             else
-                action.control:SetText(action.label)
+                SetActionButtonLabel(action.control, action.label)
             end
+            SetButtonReadableFont(action.control, 20, true)
         end
     end
 end
@@ -177,6 +245,13 @@ local function GetPreferredDungeonName()
         return zoneName
     end
     return nil
+end
+
+local function IsInDungeonContext()
+    if IsUnitInDungeon then
+        return IsUnitInDungeon("player")
+    end
+    return true
 end
 
 local function BuildDungeonCatalog(vanillaOnly)
@@ -327,7 +402,7 @@ function PC:GetBestDetectedBoss()
         end
     end
 
-    return found[1]
+    return nil
 end
 
 function PC:GetPlayerRoleText(data)
@@ -378,11 +453,120 @@ function PC:ShouldShowMiniButton()
     return self.savedVars and self.savedVars.showMiniButton == true
 end
 
+function PC:GetOnOffText(value)
+    return value and "ON" or "OFF"
+end
+
+function PC:IsAnyWindowVisible()
+    local liveVisible = self.window and not self.window:IsHidden()
+    local tipsVisible = self.tipsWindow and not self.tipsWindow:IsHidden()
+    local settingsVisible = self.settingsWindow and not self.settingsWindow:IsHidden()
+    return liveVisible or tipsVisible or settingsVisible
+end
+
+function PC:ToggleAnyWindow()
+    if self.settingsWindow and not self.settingsWindow:IsHidden() then
+        self:CloseSettingsWindow()
+        return
+    end
+    if self.tipsWindow and not self.tipsWindow:IsHidden() then
+        self:CloseTipsLibrary()
+        return
+    end
+    if self.window and not self.window:IsHidden() then
+        self:CloseWindow()
+        return
+    end
+    self:OpenWindow(true)
+end
+
+function PC:CreateGlobalHotkeyListener()
+    EVENT_MANAGER:RegisterForUpdate(self.hotkeyPollId, 80, function()
+        local leftDown = IsKeyDown and IsKeyDown(KEY_GAMEPAD_LEFT_SHOULDER)
+        local rightDown = IsKeyDown and IsKeyDown(KEY_GAMEPAD_BUTTON_1)
+
+        if leftDown and rightDown then
+            if not PC.hotkeyChordHandled then
+                PC.hotkeyChordHandled = true
+                PC:ToggleAnyWindow()
+            end
+        else
+            PC.hotkeyChordHandled = false
+        end
+    end)
+end
+
+function PC:ToggleOpenOnStartupSetting()
+    if not self.savedVars then return end
+    self.savedVars.openOnStartup = not self.savedVars.openOnStartup
+    self:RenderSettingsWindow()
+end
+
+function PC:SetActiveInputWindow(activeWindow)
+    if self.window then
+        self.window:SetKeyboardEnabled(activeWindow == self.window)
+    end
+    if self.tipsWindow then
+        self.tipsWindow:SetKeyboardEnabled(activeWindow == self.tipsWindow)
+    end
+    if self.settingsWindow then
+        self.settingsWindow:SetKeyboardEnabled(activeWindow == self.settingsWindow)
+    end
+end
+
+function PC:ToggleMiniButtonSetting()
+    if not self.savedVars then return end
+    self.savedVars.showMiniButton = not self.savedVars.showMiniButton
+
+    if self.miniButton then
+        local shouldShow = self:ShouldShowMiniButton() and (not self.window or self.window:IsHidden()) and (not self.tipsWindow or self.tipsWindow:IsHidden())
+        self.miniButton:SetHidden(not shouldShow)
+    end
+
+    self:RenderSettingsWindow()
+end
+
+function PC:OpenSettingsWindow()
+    if not self.settingsWindow then return end
+    if self.window then self.window:SetHidden(true) end
+    if self.tipsWindow then self.tipsWindow:SetHidden(true) end
+    if self.miniButton then self.miniButton:SetHidden(true) end
+
+    self.settingsWindow:SetHidden(false)
+    self:SetActiveInputWindow(self.settingsWindow)
+    SetWindowActionFocus(self.settingsWindow, self.settingsWindow.focusedActionIndex or 1)
+    self:RenderSettingsWindow()
+end
+
+function PC:CloseSettingsWindow()
+    if not self.settingsWindow then return end
+    self.settingsWindow:SetHidden(true)
+    self:SetActiveInputWindow(nil)
+    self:OpenWindow(true)
+end
+
+function PC:RenderSettingsWindow()
+    if not self.settingsWindow or not self.savedVars then return end
+
+    local startupLabel = "Startup: " .. self:GetOnOffText(self.savedVars.openOnStartup)
+    local miniLabel = "Mini Button: " .. self:GetOnOffText(self.savedVars.showMiniButton)
+    local debugLabel = "Debug: " .. self:GetOnOffText(self.debugMode)
+
+    self.settingsWindow.startupToggle.label = startupLabel
+    self.settingsWindow.miniToggle.label = miniLabel
+    self.settingsWindow.debugToggle.label = debugLabel
+
+    self.settingsWindow.summary:SetText("Controller-first local settings. No chat command required.")
+    SetWindowActionFocus(self.settingsWindow, self.settingsWindow.focusedActionIndex or 1)
+end
+
 function PC:RegisterSettingsPanel()
     if self.settingsPanelRegistered then return true end
 
     local LAM2 = GetLAM2()
-    if not LAM2 then return false end
+    if not LAM2 or not LAM2.RegisterAddonPanel or not LAM2.RegisterOptionControls then
+        return false
+    end
 
     local panelId = "PullCardSettingsPanel"
     local panelData = {
@@ -391,6 +575,7 @@ function PC:RegisterSettingsPanel()
         displayName = "PullCard",
         author = "yodased-mods",
         version = tostring(self.version),
+        slashCommand = "/pullcard",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -461,7 +646,23 @@ function PC:RegisterSettingsPanel()
     LAM2:RegisterAddonPanel(panelId, panelData)
     LAM2:RegisterOptionControls(panelId, optionsData)
     self.settingsPanelRegistered = true
+    self.settingsPanelRetryCount = 0
     return true
+end
+
+function PC:RetrySettingsPanelRegistration()
+    if self.settingsPanelRegistered then return end
+    if self:RegisterSettingsPanel() then return end
+
+    self.settingsPanelRetryCount = (self.settingsPanelRetryCount or 0) + 1
+    if self.settingsPanelRetryCount >= 20 then
+        d("PullCard: Could not register Add-On settings panel. Use PullCard Settings in the UI.")
+        return
+    end
+
+    zo_callLater(function()
+        PC:RetrySettingsPanelRegistration()
+    end, 1000)
 end
 
 function PC:SetBoss(name, source)
@@ -536,7 +737,11 @@ function PC:OpenWindow(preserveMiniButton)
     if self.tipsWindow then
         self.tipsWindow:SetHidden(true)
     end
+    if self.settingsWindow then
+        self.settingsWindow:SetHidden(true)
+    end
     self.window:SetHidden(false)
+    self:SetActiveInputWindow(self.window)
     if self.miniButton and not preserveMiniButton then
         self.miniButton:SetHidden(true)
     end
@@ -552,7 +757,11 @@ end
 
 function PC:CloseWindow()
     if not self.window then return end
+    if self.currentSource == "auto" and self.currentBossName then
+        self.suppressedAutoBossName = self.currentBossName
+    end
     self.window:SetHidden(true)
+    self:SetActiveInputWindow(nil)
     if self.miniButton then
         self.miniButton:SetHidden(not self:ShouldShowMiniButton())
     end
@@ -562,6 +771,9 @@ function PC:OpenTipsLibrary()
     if not self.tipsWindow then return end
     if self.window then
         self.window:SetHidden(true)
+    end
+    if self.settingsWindow then
+        self.settingsWindow:SetHidden(true)
     end
 
     local dungeonOrder, dungeonLookup, dungeonName, dungeonEntry, bossName, bossNames
@@ -585,6 +797,7 @@ function PC:OpenTipsLibrary()
     end
 
     self.tipsWindow:SetHidden(false)
+    self:SetActiveInputWindow(self.tipsWindow)
     if self.miniButton then
         self.miniButton:SetHidden(true)
     end
@@ -595,18 +808,30 @@ end
 function PC:CloseTipsLibrary()
     if not self.tipsWindow then return end
     self.tipsWindow:SetHidden(true)
+    self:SetActiveInputWindow(nil)
     if self.miniButton then
         self.miniButton:SetHidden(not self:ShouldShowMiniButton())
     end
 end
 
 function PC:RefreshAuto()
+    if not IsInDungeonContext() then
+        return
+    end
+
     local detected = self:GetBestDetectedBoss()
 
     if detected then
+        if self.suppressedAutoBossName and detected ~= self.suppressedAutoBossName then
+            self.suppressedAutoBossName = nil
+        end
+
         self:SetBoss(detected, "auto")
-        self:OpenWindow()
+        if self.suppressedAutoBossName ~= detected then
+            self:OpenWindow()
+        end
     else
+        self.suppressedAutoBossName = nil
         self.currentBossName = nil
         self.currentBossData = nil
         self.currentSource = "none"
@@ -796,7 +1021,7 @@ function PC:CreateWindow()
     top:SetAnchor(CENTER, GuiRoot, CENTER, 0, 80)
     top:SetMovable(true)
     top:SetMouseEnabled(true)
-    top:SetKeyboardEnabled(true)
+    top:SetKeyboardEnabled(false)
     top:SetClampedToScreen(true)
     top:SetHidden(true)
     top:SetHandler("OnKeyDown", function(_, key)
@@ -866,51 +1091,59 @@ function PC:CreateWindow()
 
     local controlsHint = wm:CreateControl(nil, top, CT_LABEL)
     SetReadableFont(controlsHint, 18, false)
-    controlsHint:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -56)
-    controlsHint:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -56)
+    controlsHint:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -102)
+    controlsHint:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -102)
     controlsHint:SetHeight(28)
     controlsHint:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     controlsHint:SetColor(0.84, 0.84, 0.84, 1)
-    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close")
+    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close   L1+O: toggle")
 
     local prev = wm:CreateControlFromVirtual("PullCardPrevButton", top, "ZO_DefaultButton")
-    prev:SetDimensions(96, 36)
+    prev:SetDimensions(104, 38)
     prev:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -16)
     local prevAction = function() PC:Browse(-1) end
-    prev:SetText("< Prev")
+    EnsureLargeButtonLabel(prev, "< Prev", 20, true)
     SetButtonReadableFont(prev, 20, true)
     prev:SetHandler("OnClicked", prevAction)
 
     local next = wm:CreateControlFromVirtual("PullCardNextButton", top, "ZO_DefaultButton")
-    next:SetDimensions(96, 36)
+    next:SetDimensions(104, 38)
     next:SetAnchor(LEFT, prev, RIGHT, 10, 0)
     local nextAction = function() PC:Browse(1) end
-    next:SetText("Next >")
+    EnsureLargeButtonLabel(next, "Next >", 20, true)
     SetButtonReadableFont(next, 20, true)
     next:SetHandler("OnClicked", nextAction)
 
     local chatButton = wm:CreateControlFromVirtual("PullCardChatButton", top, "ZO_DefaultButton")
     top.chatButton = chatButton
-    chatButton:SetDimensions(185, 36)
+    chatButton:SetDimensions(220, 38)
     chatButton:SetAnchor(LEFT, next, RIGHT, 10, 0)
     local chatAction = function() PC:PrefillGroupChat() end
-    chatButton:SetText("Explain to Group")
+    EnsureLargeButtonLabel(chatButton, "Explain to Group", 20, true)
     SetButtonReadableFont(chatButton, 20, true)
     chatButton:SetHandler("OnClicked", chatAction)
 
     local hide = wm:CreateControlFromVirtual("PullCardHideButton", top, "ZO_DefaultButton")
-    hide:SetDimensions(90, 36)
-    hide:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -16)
+    hide:SetDimensions(96, 38)
+    hide:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -58)
     local hideAction = function() PC:CloseWindow() end
-    hide:SetText("Hide")
+    EnsureLargeButtonLabel(hide, "Hide", 20, true)
     SetButtonReadableFont(hide, 20, true)
     hide:SetHandler("OnClicked", hideAction)
 
+    local settings = wm:CreateControlFromVirtual("PullCardSettingsButton", top, "ZO_DefaultButton")
+    settings:SetDimensions(120, 38)
+    settings:SetAnchor(RIGHT, hide, LEFT, -10, 0)
+    local settingsAction = function() PC:OpenSettingsWindow() end
+    EnsureLargeButtonLabel(settings, "Settings", 20, true)
+    SetButtonReadableFont(settings, 20, true)
+    settings:SetHandler("OnClicked", settingsAction)
+
     local tips = wm:CreateControlFromVirtual("PullCardTipsButton", top, "ZO_DefaultButton")
-    tips:SetDimensions(90, 36)
-    tips:SetAnchor(RIGHT, hide, LEFT, -10, 0)
+    tips:SetDimensions(96, 38)
+    tips:SetAnchor(RIGHT, settings, LEFT, -10, 0)
     local tipsAction = function() PC:OpenTipsLibrary() end
-    tips:SetText("Tips")
+    EnsureLargeButtonLabel(tips, "Tips", 20, true)
     SetButtonReadableFont(tips, 20, true)
     tips:SetHandler("OnClicked", tipsAction)
 
@@ -919,6 +1152,7 @@ function PC:CreateWindow()
         { control = next, label = "Next >", callback = nextAction },
         { control = chatButton, label = "Explain to Group", callback = chatAction },
         { control = tips, label = "Tips", callback = tipsAction },
+        { control = settings, label = "Settings", callback = settingsAction },
         { control = hide, label = "Hide", callback = hideAction },
     }
     top.focusedActionIndex = 1
@@ -972,7 +1206,7 @@ function PC:CreateTipsWindow()
     top:SetAnchor(CENTER, GuiRoot, CENTER, 0, 80)
     top:SetMovable(true)
     top:SetMouseEnabled(true)
-    top:SetKeyboardEnabled(true)
+    top:SetKeyboardEnabled(false)
     top:SetClampedToScreen(true)
     top:SetHidden(true)
     top:SetHandler("OnKeyDown", function(_, key)
@@ -1042,71 +1276,79 @@ function PC:CreateTipsWindow()
 
     local controlsHint = wm:CreateControl(nil, top, CT_LABEL)
     SetReadableFont(controlsHint, 18, false)
-    controlsHint:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -56)
-    controlsHint:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -56)
+    controlsHint:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -102)
+    controlsHint:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -102)
     controlsHint:SetHeight(28)
     controlsHint:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     controlsHint:SetColor(0.84, 0.84, 0.84, 1)
-    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close")
+    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close   L1+O: toggle")
 
     local prevDungeon = wm:CreateControlFromVirtual("PullCardTipsPrevDungeonButton", top, "ZO_DefaultButton")
-    prevDungeon:SetDimensions(120, 36)
+    prevDungeon:SetDimensions(132, 38)
     prevDungeon:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -16)
     local prevDungeonAction = function() PC:BrowseTipsDungeon(-1) end
-    prevDungeon:SetText("< Dungeon")
+    EnsureLargeButtonLabel(prevDungeon, "< Dungeon", 20, true)
     SetButtonReadableFont(prevDungeon, 20, true)
     prevDungeon:SetHandler("OnClicked", prevDungeonAction)
 
     local nextDungeon = wm:CreateControlFromVirtual("PullCardTipsNextDungeonButton", top, "ZO_DefaultButton")
-    nextDungeon:SetDimensions(120, 36)
+    nextDungeon:SetDimensions(132, 38)
     nextDungeon:SetAnchor(LEFT, prevDungeon, RIGHT, 10, 0)
     local nextDungeonAction = function() PC:BrowseTipsDungeon(1) end
-    nextDungeon:SetText("Dungeon >")
+    EnsureLargeButtonLabel(nextDungeon, "Dungeon >", 20, true)
     SetButtonReadableFont(nextDungeon, 20, true)
     nextDungeon:SetHandler("OnClicked", nextDungeonAction)
 
     local prev = wm:CreateControlFromVirtual("PullCardTipsPrevButton", top, "ZO_DefaultButton")
-    prev:SetDimensions(96, 36)
+    prev:SetDimensions(104, 38)
     prev:SetAnchor(TOPLEFT, prevDungeon, TOPRIGHT, 18, 0)
     local prevAction = function() PC:BrowseTips(-1) end
-    prev:SetText("< Prev")
+    EnsureLargeButtonLabel(prev, "< Prev", 20, true)
     SetButtonReadableFont(prev, 20, true)
     prev:SetHandler("OnClicked", prevAction)
 
     local next = wm:CreateControlFromVirtual("PullCardTipsNextButton", top, "ZO_DefaultButton")
-    next:SetDimensions(96, 36)
+    next:SetDimensions(104, 38)
     next:SetAnchor(LEFT, prev, RIGHT, 10, 0)
     local nextAction = function() PC:BrowseTips(1) end
-    next:SetText("Next >")
+    EnsureLargeButtonLabel(next, "Next >", 20, true)
     SetButtonReadableFont(next, 20, true)
     next:SetHandler("OnClicked", nextAction)
 
-    local explain = wm:CreateControlFromVirtual("PullCardTipsExplainButton", top, "ZO_DefaultButton")
-    explain:SetDimensions(150, 36)
-    explain:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -16)
-    local explainAction = function() PC:PrefillGroupChat() end
-    explain:SetText("Explain to Group")
-    SetButtonReadableFont(explain, 20, true)
-    explain:SetHandler("OnClicked", explainAction)
-
     local live = wm:CreateControlFromVirtual("PullCardLiveButton", top, "ZO_DefaultButton")
-    live:SetDimensions(120, 36)
-    live:SetAnchor(LEFT, explain, LEFT, -266, 0)
+    live:SetDimensions(120, 38)
+    live:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -16)
     local liveAction = function()
         PC:CloseTipsLibrary()
         PC:OpenWindow(true)
     end
-    live:SetText("Live View")
+    EnsureLargeButtonLabel(live, "Live View", 20, true)
     SetButtonReadableFont(live, 20, true)
     live:SetHandler("OnClicked", liveAction)
 
     local hide = wm:CreateControlFromVirtual("PullCardTipsHideButton", top, "ZO_DefaultButton")
-    hide:SetDimensions(90, 36)
-    hide:SetAnchor(LEFT, explain, RIGHT, 10, 0)
+    hide:SetDimensions(96, 38)
+    hide:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -58)
     local hideAction = function() PC:CloseTipsLibrary() end
-    hide:SetText("Hide")
+    EnsureLargeButtonLabel(hide, "Hide", 20, true)
     SetButtonReadableFont(hide, 20, true)
     hide:SetHandler("OnClicked", hideAction)
+
+    local settings = wm:CreateControlFromVirtual("PullCardTipsSettingsButton", top, "ZO_DefaultButton")
+    settings:SetDimensions(120, 38)
+    settings:SetAnchor(RIGHT, hide, LEFT, -10, 0)
+    local settingsAction = function() PC:OpenSettingsWindow() end
+    EnsureLargeButtonLabel(settings, "Settings", 20, true)
+    SetButtonReadableFont(settings, 20, true)
+    settings:SetHandler("OnClicked", settingsAction)
+
+    local explain = wm:CreateControlFromVirtual("PullCardTipsExplainButton", top, "ZO_DefaultButton")
+    explain:SetDimensions(180, 38)
+    explain:SetAnchor(RIGHT, settings, LEFT, -10, 0)
+    local explainAction = function() PC:PrefillGroupChat() end
+    EnsureLargeButtonLabel(explain, "Explain to Group", 20, true)
+    SetButtonReadableFont(explain, 20, true)
+    explain:SetHandler("OnClicked", explainAction)
 
     top.chatButton = explain
     top.actionButtons = {
@@ -1116,7 +1358,102 @@ function PC:CreateTipsWindow()
         { control = next, label = "Next >", callback = nextAction },
         { control = live, label = "Live View", callback = liveAction },
         { control = explain, label = "Explain to Group", callback = explainAction },
+        { control = settings, label = "Settings", callback = settingsAction },
         { control = hide, label = "Hide", callback = hideAction },
+    }
+    top.focusedActionIndex = 1
+    SetWindowActionFocus(top, 1)
+end
+
+function PC:CreateSettingsWindow()
+    local wm = WINDOW_MANAGER
+
+    local top = wm:CreateTopLevelWindow("PullCardSettingsWindow")
+    self.settingsWindow = top
+    top:SetDimensions(620, 350)
+    top:SetAnchor(CENTER, GuiRoot, CENTER, 0, 80)
+    top:SetMovable(true)
+    top:SetMouseEnabled(true)
+    top:SetKeyboardEnabled(false)
+    top:SetClampedToScreen(true)
+    top:SetHidden(true)
+    top:SetHandler("OnKeyDown", function(_, key)
+        if IsDismissKey(key) then
+            PC:CloseSettingsWindow()
+            return true
+        end
+        if IsFocusPrevKey(key) then
+            StepWindowActionFocus(top, -1)
+            return true
+        end
+        if IsFocusNextKey(key) then
+            StepWindowActionFocus(top, 1)
+            return true
+        end
+        if IsActivateKey(key) then
+            return ActivateFocusedWindowAction(top)
+        end
+    end)
+
+    local bg = wm:CreateControl(nil, top, CT_BACKDROP)
+    bg:SetAnchorFill()
+    bg:SetCenterColor(0.05, 0.05, 0.05, 0.94)
+    bg:SetEdgeColor(0.5, 0.5, 0.5, 0.9)
+    bg:SetEdgeTexture("", 1, 1, 1)
+
+    local title = wm:CreateControl(nil, top, CT_LABEL)
+    SetReadableFont(title, 34, true)
+    title:SetAnchor(TOPLEFT, top, TOPLEFT, 18, 16)
+    title:SetText("PullCard Local Settings")
+
+    local summary = wm:CreateControl(nil, top, CT_LABEL)
+    top.summary = summary
+    SetReadableFont(summary, 20, false)
+    summary:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 12)
+    summary:SetAnchor(TOPRIGHT, top, TOPRIGHT, -18, 12)
+    summary:SetHeight(38)
+    summary:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    local startup = wm:CreateControlFromVirtual("PullCardSettingsStartupButton", top, "ZO_DefaultButton")
+    startup:SetDimensions(220, 42)
+    startup:SetAnchor(TOPLEFT, summary, BOTTOMLEFT, 0, 18)
+    local startupAction = function() PC:ToggleOpenOnStartupSetting() end
+    EnsureLargeButtonLabel(startup, "Startup: ON", 20, true)
+    SetButtonReadableFont(startup, 20, true)
+    startup:SetHandler("OnClicked", startupAction)
+
+    local mini = wm:CreateControlFromVirtual("PullCardSettingsMiniButton", top, "ZO_DefaultButton")
+    mini:SetDimensions(220, 42)
+    mini:SetAnchor(TOPLEFT, startup, BOTTOMLEFT, 0, 10)
+    local miniAction = function() PC:ToggleMiniButtonSetting() end
+    EnsureLargeButtonLabel(mini, "Mini Button: ON", 20, true)
+    SetButtonReadableFont(mini, 20, true)
+    mini:SetHandler("OnClicked", miniAction)
+
+    local debug = wm:CreateControlFromVirtual("PullCardSettingsDebugButton", top, "ZO_DefaultButton")
+    debug:SetDimensions(220, 42)
+    debug:SetAnchor(TOPLEFT, mini, BOTTOMLEFT, 0, 10)
+    local debugAction = function() PC:ToggleDebug() end
+    EnsureLargeButtonLabel(debug, "Debug: OFF", 20, true)
+    SetButtonReadableFont(debug, 20, true)
+    debug:SetHandler("OnClicked", debugAction)
+
+    local back = wm:CreateControlFromVirtual("PullCardSettingsBackButton", top, "ZO_DefaultButton")
+    back:SetDimensions(120, 42)
+    back:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -16)
+    local backAction = function() PC:CloseSettingsWindow() end
+    EnsureLargeButtonLabel(back, "Back", 20, true)
+    SetButtonReadableFont(back, 20, true)
+    back:SetHandler("OnClicked", backAction)
+
+    top.startupToggle = { control = startup, label = "Startup: ON", callback = startupAction }
+    top.miniToggle = { control = mini, label = "Mini Button: ON", callback = miniAction }
+    top.debugToggle = { control = debug, label = "Debug: OFF", callback = debugAction }
+    top.actionButtons = {
+        top.startupToggle,
+        top.miniToggle,
+        top.debugToggle,
+        { control = back, label = "Back", callback = backAction },
     }
     top.focusedActionIndex = 1
     SetWindowActionFocus(top, 1)
@@ -1126,23 +1463,11 @@ function PC:Initialize()
     self:LoadSettings()
     self:CreateWindow()
     self:CreateTipsWindow()
+    self:CreateSettingsWindow()
     self:CreateMiniButton()
+    self:CreateGlobalHotkeyListener()
     self:RegisterSlashCommands()
-    self:RegisterSettingsPanel()
-    zo_callLater(function()
-        if not PC.settingsPanelRegistered then PC:RegisterSettingsPanel() end
-    end, 500)
-    zo_callLater(function()
-        if not PC.settingsPanelRegistered then PC:RegisterSettingsPanel() end
-    end, 2000)
-    zo_callLater(function()
-        if not PC.settingsPanelRegistered then PC:RegisterSettingsPanel() end
-    end, 5000)
-    zo_callLater(function()
-        if not PC.settingsPanelRegistered then
-            d("PullCard: LibAddonMenu-2.0 not found. Use /pullcard for built-in controls.")
-        end
-    end, 5500)
+    self:RetrySettingsPanelRegistration()
 
     EVENT_MANAGER:RegisterForEvent(self.name .. "_LAM", EVENT_ADD_ON_LOADED, function(_, addonName)
         if addonName == "LibAddonMenu-2.0" or addonName == "LibAddonMenu" then
@@ -1162,6 +1487,9 @@ function PC:Initialize()
         zo_callLater(function()
             PC:RefreshAuto()
         end, 500)
+        if not PC.settingsPanelRegistered then
+            PC:RetrySettingsPanelRegistration()
+        end
     end)
 
     if self.savedVars and self.savedVars.openOnStartup then

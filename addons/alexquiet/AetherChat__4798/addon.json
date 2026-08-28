@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/alexquiet/AetherChat__4798",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "alexquiet",
+  "canonical_id": "esoui:4798",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4798",
+  "deleted": false,
+  "directories": [
+    "AetherChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4798/",
+  "fingerprint": "a74e49f44c4fec01939b5bc4b46259b076155b797d28f686c57de2963abdc833",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17160.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17159.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4798",
+  "source_url": "https://www.esoui.com/downloads/info4798-AetherChat.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "AetherChat",
+  "updated_at": 1787883554000,
+  "version": "1.0"
+}

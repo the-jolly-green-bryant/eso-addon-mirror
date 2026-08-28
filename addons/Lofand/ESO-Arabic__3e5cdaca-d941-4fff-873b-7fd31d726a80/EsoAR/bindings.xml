@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cd98484EsoAR - ﻲﺑﺮﻌﻟﺍ ﺐﻳﺮﻌﺘﻟﺍ|r">
+			<Action name="CHANGE_LANG_KEYBOARD">
+				<Down>EsoAR:SwitchLangKeyboard()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

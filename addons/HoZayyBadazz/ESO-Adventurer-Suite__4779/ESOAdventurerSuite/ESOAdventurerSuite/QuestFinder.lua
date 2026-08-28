@@ -408,19 +408,52 @@ function Q:ScanChunk()
     if type(zo_callLater) == "function" then zo_callLater(again, 20) else again() end
 end
 
-function Q:GetActiveQuestMap()
-    local byId, byName = {}, {}
-    local max = MAX_JOURNAL_QUESTS or 25
-    if type(GetJournalQuestName) ~= "function" then return byId, byName end
-    for i = 1, max do
+-- v0.28.61: build one authoritative live-journal snapshot instead of assuming
+-- every client stores accepted quests inside a fixed 1..25 slot range. current live ESO
+-- exposes a live journal count, but long-running clients and compatibility
+-- layers can still differ, so scan a small safe range and use both
+-- journal-name APIs before deciding that a slot is empty.
+function Q:GetLiveJournalEntries2861()
+    local entries = {}
+    local expected = tonumber(safe(GetNumJournalQuests, 0)) or 0
+    local declaredMax = tonumber(rawget(_G, "MAX_JOURNAL_QUESTS")) or 0
+    local scanMax = math.max(25, expected, declaredMax)
+    -- A 100-slot scan is trivial on the Quest Finder page and protects against
+    -- future journal-cap changes without hard failing accepted-quest detection.
+    scanMax = math.min(math.max(scanMax, 100), 200)
+
+    for i = 1, scanMax do
+        -- Read the slot directly even when IsValidQuestIndex is unavailable or a
+        -- compatibility layer reports a stale validity result. These calls are
+        -- protected by safe(), so an invalid slot simply resolves to no name.
         local name = trim(safe(GetJournalQuestName, "", i))
+        if name == "" then
+            name = trim(safe(GetJournalQuestInfo, "", i))
+        end
+
         if name ~= "" then
             local questId = tonumber(safe(GetJournalQuestId, 0, i)) or 0
-            if questId > 0 then byId[questId] = i end
-            byName[lower(name)] = i
+            if questId <= 0 and type(GetQuestIdFromName) == "function" then
+                questId = tonumber(safe(GetQuestIdFromName, 0, name)) or 0
+            end
+            entries[#entries + 1] = {
+                questIndex = i,
+                questId = questId,
+                name = name,
+            }
         end
     end
-    return byId, byName
+    return entries
+end
+
+function Q:GetActiveQuestMap()
+    local byId, byName = {}, {}
+    local journalEntries = self:GetLiveJournalEntries2861()
+    for _, entry in ipairs(journalEntries) do
+        if (tonumber(entry.questId) or 0) > 0 then byId[entry.questId] = entry.questIndex end
+        byName[lower(entry.name)] = entry.questIndex
+    end
+    return byId, byName, journalEntries
 end
 
 function Q:GetCompletedQuestSet()
@@ -586,7 +619,7 @@ function Q:BuildEntries()
     elseif self.filter == "CADWELL" then
         return self:BuildCadwellADEntries2762()
     end
-    local activeById, activeByName = self:GetActiveQuestMap()
+    local activeById, activeByName, liveJournal = self:GetActiveQuestMap()
     local completed = self:GetCompletedQuestSet()
     local entries, seenActive = {}, {}
     local query = lower(trim(self.searchText))
@@ -620,11 +653,11 @@ function Q:BuildEntries()
     -- Always include accepted journal quests even if their quest ID sits outside the
     -- scanned range or uses a record filtered from the discovery index.
     if self.filter == "ACTIVE" or self.filter == "ALL" then
-        local max = MAX_JOURNAL_QUESTS or 25
-        for i = 1, max do
-            local name = trim(safe(GetJournalQuestName, "", i))
-            if name ~= "" and not seenActive[i] then
-                local questId = tonumber(safe(GetJournalQuestId, 0, i)) or 0
+        for _, journalEntry in ipairs(liveJournal or self:GetLiveJournalEntries2861()) do
+            local i = tonumber(journalEntry.questIndex) or 0
+            local name = trim(journalEntry.name)
+            if i > 0 and name ~= "" and not seenActive[i] then
+                local questId = tonumber(journalEntry.questId) or 0
                 -- Do not use GetJournalQuestLocationInfo() as the zone label here.
                 -- For instanced objectives it may return an objective/instance name
                 -- (for example the quest title) rather than the overland zone.
@@ -668,13 +701,19 @@ function Q:BuildView()
         for i = 1, #entries do if entries[i].key == self.selectedKey then selected = entries[i] break end end
     end
     local progress = self.scanDone and "INDEX READY" or string.format("SCANNING %d/%d", math.min(self.scanNextId or 1, self.SCAN_MAX_ID), self.SCAN_MAX_ID)
+    local pageSize = math.max(1, tonumber(self.PAGE_SIZE) or 8)
+    local pageCount = math.max(1, math.ceil(#entries / pageSize))
+    local page = 1
+    if (tonumber(self.offset) or 0) > 0 then
+        page = math.min(pageCount, math.floor(((tonumber(self.offset) or 0) - 1) / pageSize) + 2)
+    end
     local mainView = self.filter == "MAIN_QUEST"
     local cadwellView = self.filter == "CADWELL"
     local view = {
         header = mainView and "MAIN QUEST" or (cadwellView and "CADWELL'S ALMANAC" or "QUEST JOURNAL"),
         title = mainView and "Main Story Progress" or (cadwellView and "Cadwell's Silver - Aldmeri Dominion" or "Find quests you have not started"),
         description = mainView and "Main Story quests in progression order. Completed, current, next, and later steps are shown together. Select the current/next step to track it in the MAIN QUEST overlay source and travel toward its nearest resolved wayshrine." or (cadwellView and "Cadwell's Silver is an umbrella quest. This view tracks the required Aldmeri Dominion Almanac objectives by area across Auridon, Grahtwood, Greenshade, Malabal Tor, and Reaper's March." or "Browse a runtime index of ESO quest records instead of a short curated list. Select a quest to route toward its zone. ESO does not expose one global 'currently obtainable quest' iterator, so retired/internal records are filtered on a best-effort basis."),
-        filter = self.filter, searchText = self.searchText, rows = rows, total = #entries, offset = self.offset,
+        filter = self.filter, searchText = self.searchText, rows = rows, total = #entries, offset = self.offset, page = page, pageCount = pageCount, pageSize = pageSize,
         selected = selected, scanDone = self.scanDone, scanProgress = progress, indexed = #self.index,
         stats = {
             {label="FILTER", value=self.filter == "NOT_STARTED" and "NOT STARTED" or (self.filter == "MAIN_QUEST" and "MAIN QUEST" or (self.filter == "CADWELL" and "CADWELL" or self.filter))},
@@ -726,7 +765,7 @@ function Q:AssistAcceptedQuest2511(entry, setMapZone)
         nativeFocused = ok == true
     end
 
-    -- Update the native keyboard Quest Journal selection too. Update 50 moved
+    -- Update the native keyboard Quest Journal selection too. ESO's current API moved
     -- this method to ZO_QUEST_JOURNAL_QUESTS_KEYBOARD; keep the older object as
     -- a compatibility fallback for clients where it still exists.
     local nativeJournal = rawget(_G, "ZO_QUEST_JOURNAL_QUESTS_KEYBOARD") or rawget(_G, "QUEST_JOURNAL_KEYBOARD")

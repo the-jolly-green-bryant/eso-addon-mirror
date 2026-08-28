@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/maraud/Bureau-Of-Material-Worth__4718",
+  "archive_path": "addons/maraud/Bureau-of-Material-Worth__4718",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "maraud",
@@ -18,7 +18,7 @@
     "BureauOfMaterialWorth"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4718/",
-  "fingerprint": "7494897b544cbdfb696b5618ce6a21e59934555273871c61767cee6583c93323",
+  "fingerprint": "1b8db2387a804d21076fd702825baac5f8028b8105f2165c7d12c630c833072b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17123.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw17122.jpg",
@@ -34,13 +34,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4718",
-  "source_url": "https://www.esoui.com/downloads/info4718-BureauOfMaterialWorth.html",
+  "source_url": "https://www.esoui.com/downloads/info4718-BureauofMaterialWorth.html",
   "stats": {
-    "downloads": 294,
+    "downloads": 308,
     "favorites": 1,
-    "monthly_downloads": 148
+    "monthly_downloads": 167
   },
-  "title": "Bureau Of Material Worth",
+  "title": "Bureau of Material Worth",
   "updated_at": 1787756115000,
   "version": "4.3.174707"
 }

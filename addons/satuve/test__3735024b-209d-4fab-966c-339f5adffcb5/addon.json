@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/satuve/test__3735024b-209d-4fab-966c-339f5adffcb5",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "satuve",
+  "canonical_id": "bethesda:3735024b-209d-4fab-966c-339f5adffcb5",
+  "content_id": "3735024b-209d-4fab-966c-339f5adffcb5",
+  "deleted": false,
+  "fingerprint": "fd7adc656fc4f57b31544a70a50741a2c1363af9fdf97883ec6eee4e03da333c",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "3735024b-209d-4fab-966c-339f5adffcb5",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/3735024b-209d-4fab-966c-339f5adffcb5",
+  "title": "test"
+}

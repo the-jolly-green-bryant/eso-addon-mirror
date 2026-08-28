@@ -1,8 +1,8 @@
 ## Title: |cFFD700Tetsu's|r Combat Healer Helper
 ## Author: Tetsurion
-## Description: Healer helper: missing Illustrious / Combat Prayer / extra heal icons over heads. HUD grid of up to 5 buffs (green = has buff). PS5.
-## Version: 1.3.2
-## AddOnVersion: 10302
+## Description: Healer HUD: up to 5 buff columns. Green dot = the player HAS that buff. PS5.
+## Version: 1.5.12
+## AddOnVersion: 10512
 ## APIVersion: 101050 101051
 ## SavedVariables: TetsuCombatHealerHelperSavedVars
 ## DependsOn: LibHarvensAddonSettings
@@ -12,7 +12,8 @@ localization/$(language).lua
 
 Data.lua
 Catalog.lua
-Puddle.lua
-HeadMarkers.lua
+PairData.lua
+Hud.lua
+Panels.lua
 Settings.lua
 Main.lua

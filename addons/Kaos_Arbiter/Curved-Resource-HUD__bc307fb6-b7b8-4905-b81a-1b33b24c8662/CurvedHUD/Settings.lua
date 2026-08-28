@@ -13,7 +13,7 @@ function CH:RegisterLAM()
     local function check(name, key, tip) return { type="checkbox", name=name, tooltip=tip, getFunc=function() return CH.sv[key] end, setFunc=function(v) apply(key,v) end, default=CH.defaults[key] } end
     local function slider(name,key,min,max,step) return { type="slider", name=name, min=min,max=max,step=step, getFunc=function() return CH.sv[key] end,setFunc=function(v) apply(key,v) end,default=CH.defaults[key] } end
     local function dropdown(name,key,choices,tip,values,disabled) return {type="dropdown",name=name,tooltip=tip,choices=choices,choicesValues=values,getFunc=function() return CH.sv[key] end,setFunc=function(v) apply(key,v) end,default=CH.defaults[key],disabled=disabled} end
-    LAM:RegisterOptionControls(panelName, {
+    local options = {
         {type="description", text="Core HUD loading does not depend on a settings library. Use /curvedhud preview to test rendering."},
         check("Enabled", "enabled"), check("Preview mode", "preview"), check("Show default ESO resource bars", "showDefaultResources", "When off, hides ESO's stock player resource display and lowers the self-buff row into the freed space."), check("Debug chat logging", "debug"),
         check("Use out-of-combat opacity", "useOutOfCombatOpacity", "Apply a separate overall HUD opacity while not in combat."),
@@ -24,6 +24,7 @@ function CH:RegisterLAM()
         {type="slider", name="Buff/debuff vertical offset", tooltip="Active when the default ESO resource bars are hidden.", min=-750,max=750,step=5, getFunc=function() return CH.sv.buffVerticalOffset end,setFunc=function(v) apply("buffVerticalOffset",v) end,default=CH.defaults.buffVerticalOffset,disabled=function() return CH.sv.showDefaultResources end},
         slider("Fill opacity", "fillAlpha", 0.1, 1, 0.05), slider("Frame opacity", "frameAlpha", 0, 1, 0.05), slider("Background opacity", "backgroundAlpha", 0, 1, 0.05),
         slider("Tracker timer font size", "timerFontSize", 16, 36, 1),
+        check("Imminent expiration alerts", "expirationAlerts", "When enabled, positive timers turn red and pulse around their icon at three seconds or less. Negative effects such as Balance are excluded."),
         dropdown("Inside timer thickness", "insideTimerStyle", {"Thin","Thick"}, "Shared by every tracker assigned to an inside position."),
         dropdown("Outside timer thickness", "outsideTimerStyle", {"Thin","Thick"}, "Shared by every tracker assigned to an outside position."),
         slider("Resource value font size", "resourceValueFontSize", 16, 42, 1), slider("Resource percent font size", "resourcePercentFontSize", 14, 34, 1),
@@ -50,16 +51,49 @@ function CH:RegisterLAM()
         check("Track Vibrant Shroud / Encase", "shroudEnabled", "Tracks Vibrant Shroud, Encase, and Shattering Spines with a 10-second cast fallback for target-applied effects."),
         dropdown("Shroud / Encase position", "shroudSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.shroudEnabled end),
         dropdown("Shroud / Encase timer color", "shroudColor", CH.colorChoices,nil,nil,function() return not CH.sv.shroudEnabled end),
-        {type="description",text="SCRIBING SKILLS - PER CHARACTER"},
-        check("Track Soul Burst", "soulBurstEnabled", "Tracks the configured duration whenever Soul Burst or one of its focus-script variants is cast."),
-        dropdown("Soul Burst position", "soulBurstSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.soulBurstEnabled end),
-        dropdown("Soul Burst timer color", "soulBurstColor", CH.colorChoices,nil,nil,function() return not CH.sv.soulBurstEnabled end),
-        {type="slider",name="Soul Burst duration",tooltip="Set this to the duration supplied by your chosen scripts.",min=1,max=30,step=1,getFunc=function() return CH.sv.soulBurstDuration end,setFunc=function(v) apply("soulBurstDuration",v) end,default=CH.defaults.soulBurstDuration,disabled=function() return not CH.sv.soulBurstEnabled end},
-        check("Track Ulfsild's Contingency", "contingencyEnabled", "Tracks the armed Contingency window. Its known effect refines the timer when ESO exposes it."),
-        dropdown("Contingency position", "contingencySlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.contingencyEnabled end),
-        dropdown("Contingency timer color", "contingencyColor", CH.colorChoices,nil,nil,function() return not CH.sv.contingencyEnabled end),
-        {type="slider",name="Contingency duration",tooltip="Adjust this if your current scribed setup uses a different active window.",min=1,max=30,step=1,getFunc=function() return CH.sv.contingencyDuration end,setFunc=function(v) apply("contingencyDuration",v) end,default=CH.defaults.contingencyDuration,disabled=function() return not CH.sv.contingencyEnabled end},
-    })
+    }
+    for _,definition in ipairs(CH.sorcererTrackerDefinitions) do
+        local key=definition.key
+        options[#options+1]=check("Track "..definition.label,key.."Enabled","Tracks every base ability and morph in this Sorcerer skill family.")
+        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        options[#options+1]=dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    options[#options+1]={type="description",text="WARDEN TRACKERS - PER CHARACTER"}
+    for _,definition in ipairs(CH.wardenTrackerDefinitions) do
+        local key=definition.key
+        options[#options+1]=check("Track "..definition.label,key.."Enabled",key=="shalk" and "Counts through both eruptions and reaches zero when Scorch/Shalks should be recast." or "Tracks every base ability and morph in this Warden skill family.")
+        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        options[#options+1]=dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    options[#options+1]={type="description",text="ARCANIST TRACKERS - PER CHARACTER"}
+    for _,definition in ipairs(CH.arcanistTrackerDefinitions) do
+        local key=definition.key
+        local tip=definition.stackOnly and "Displays current Crux count from 1 to 3; the arc fills by one third per Crux." or "Tracks every base ability and morph in this Arcanist skill family."
+        options[#options+1]=check("Track "..definition.label,key.."Enabled",tip)
+        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        options[#options+1]=dropdown(definition.label.." color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    local function addStandardDefinition(definition)
+        local key=definition.key
+        options[#options+1]=check("Track "..definition.label,key.."Enabled","Tracks the meaningful duration or stack window for this skill family.")
+        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        options[#options+1]=dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    local function addScribingDefinition(definition)
+        addStandardDefinition(definition)
+        local key=definition.key
+        options[#options+1]={type="slider",name=definition.label.." fallback duration",tooltip="Used only when ESO reports no duration for the current scripts.",min=1,max=120,step=1,getFunc=function() return CH.sv[key.."Duration"] end,setFunc=function(v) apply(key.."Duration",v) end,default=CH.defaults[key.."Duration"],disabled=function() return not CH.sv[key.."Enabled"] end}
+    end
+    local function addSkillLine(line)
+        options[#options+1]={type="description",text=line:upper()}
+        for _,definition in ipairs(CH.nonClassTrackerDefinitions) do if definition.line==line then addStandardDefinition(definition) end end
+        for _,definition in ipairs(CH.scribingTrackerDefinitions) do if CH.scribingSkillLineByKey[definition.key]==line then addScribingDefinition(definition) end end
+    end
+    options[#options+1]={type="description",text="WEAPON SKILL LINES - PER CHARACTER"}
+    for _,line in ipairs(CH.weaponSkillLines) do addSkillLine(line) end
+    options[#options+1]={type="description",text="GUILD / OTHER SKILL LINES - PER CHARACTER"}
+    for _,line in ipairs(CH.otherSkillLines) do addSkillLine(line) end
+    LAM:RegisterOptionControls(panelName,options)
     CH:Log("LibAddonMenu-2.0 settings registered")
     return true
 end
@@ -92,6 +126,7 @@ function CH:RegisterHarvens()
     panel:AddSetting({type=HAS.ST_SLIDER,label="Buff/debuff vertical offset",tooltip="Active when the default ESO resource bars are hidden.",min=-750,max=750,step=5,getFunction=function() return CH.sv.buffVerticalOffset end,setFunction=function(v) apply("buffVerticalOffset",v) end,default=CH.defaults.buffVerticalOffset,disable=function() return CH.sv.showDefaultResources end})
     slider("Parallel gap","resourceGap",0,80,1); slider("Bar width","barWidth",24,80,1); slider("Fill opacity","fillAlpha",0.1,1,0.05)
     slider("Tracker timer font size","timerFontSize",16,36,1)
+    checkbox("Imminent expiration alerts","expirationAlerts")
     dropdown("Inside timer thickness","insideTimerStyle",{"Thin","Thick"},"Shared by every tracker assigned to an inside position.")
     dropdown("Outside timer thickness","outsideTimerStyle",{"Thin","Thick"},"Shared by every tracker assigned to an outside position.")
     slider("Resource value font size","resourceValueFontSize",16,42,1); slider("Resource percent font size","resourcePercentFontSize",14,34,1)
@@ -118,15 +153,45 @@ function CH:RegisterHarvens()
     checkbox("Track Vibrant Shroud / Encase","shroudEnabled")
     dropdown("Shroud / Encase position","shroudSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.shroudEnabled end)
     dropdown("Shroud / Encase timer color","shroudColor",CH.colorChoices,nil,nil,function() return not CH.sv.shroudEnabled end)
-    title("SCRIBING SKILLS - PER CHARACTER")
-    checkbox("Track Soul Burst","soulBurstEnabled")
-    dropdown("Soul Burst position","soulBurstSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.soulBurstEnabled end)
-    dropdown("Soul Burst timer color","soulBurstColor",CH.colorChoices,nil,nil,function() return not CH.sv.soulBurstEnabled end)
-    slider("Soul Burst duration","soulBurstDuration",1,30,1)
-    checkbox("Track Ulfsild's Contingency","contingencyEnabled")
-    dropdown("Contingency position","contingencySlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.contingencyEnabled end)
-    dropdown("Contingency timer color","contingencyColor",CH.colorChoices,nil,nil,function() return not CH.sv.contingencyEnabled end)
-    slider("Contingency duration","contingencyDuration",1,30,1)
+    for _,definition in ipairs(CH.sorcererTrackerDefinitions) do
+        local key=definition.key
+        checkbox("Track "..definition.label,key.."Enabled")
+        dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    title("WARDEN TRACKERS - PER CHARACTER")
+    for _,definition in ipairs(CH.wardenTrackerDefinitions) do
+        local key=definition.key
+        checkbox("Track "..definition.label,key.."Enabled")
+        dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    title("ARCANIST TRACKERS - PER CHARACTER")
+    for _,definition in ipairs(CH.arcanistTrackerDefinitions) do
+        local key=definition.key
+        checkbox("Track "..definition.label,key.."Enabled")
+        dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        dropdown(definition.label.." color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    local function addStandardDefinition(definition)
+        local key=definition.key
+        checkbox("Track "..definition.label,key.."Enabled")
+        dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    local function addScribingDefinition(definition)
+        addStandardDefinition(definition)
+        slider(definition.label.." fallback duration",definition.key.."Duration",1,120,1)
+    end
+    local function addSkillLine(line)
+        title(line:upper())
+        for _,definition in ipairs(CH.nonClassTrackerDefinitions) do if definition.line==line then addStandardDefinition(definition) end end
+        for _,definition in ipairs(CH.scribingTrackerDefinitions) do if CH.scribingSkillLineByKey[definition.key]==line then addScribingDefinition(definition) end end
+    end
+    title("WEAPON SKILL LINES - PER CHARACTER")
+    for _,line in ipairs(CH.weaponSkillLines) do addSkillLine(line) end
+    title("GUILD / OTHER SKILL LINES - PER CHARACTER")
+    for _,line in ipairs(CH.otherSkillLines) do addSkillLine(line) end
     CH:Log("LibHarvensAddonSettings settings registered")
     return true
 end

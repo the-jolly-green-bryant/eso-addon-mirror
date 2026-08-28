@@ -5,6 +5,9 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- 0.0.39: Operator HUD (side legend + library); /hd play; compact on clear
+-- 0.0.38: Compact pack tracks until /hd load; recycle pins; idle tick
+-- 0.0.37: /hd flip x|z (mirror pack; wrong-way orbits)
 -- 0.0.36: MOL-Rakkhat library pack (real fight 35)
 -- 0.0.35: Default boss gold (not dead-red); mem meter PC vs console thresholds
 -- 0.0.34: Lua mem readout (lower left) during playback
@@ -31,7 +34,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.36"
+Holodeck.version     = "0.0.39"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -289,10 +292,13 @@ local DEFAULTS = {
     yOffsetM = 1.8, opacity = 1.0, debug = false,
     legendOn = true, sheetOn = false, pathOn = true, namesOn = true,
     playScalePct = 100,
-    playMode = "once", -- once | loop
+    flipXByPack = {},
+    flipZByPack = {},
+    playMode = "once", -- once (park at end) | loop (power)
     saves = {},        -- name -> fight table
     lastExport = nil,
     sheetX = 40, sheetY = 120,
+    listX = nil, listY = nil,
     -- Recorder policy (LAM)
     autoArmInInstances = true,
     recordStartMode = "boss",  -- manual | combat | boss
@@ -317,6 +323,8 @@ Holodeck.fragment = nil
 Holodeck.idseq = 0
 Holodeck.wsPins = {}
 Holodeck.actors = {}      -- name -> actor pin
+Holodeck.ctlPool = {}     -- recycled SPACE_WORLD textures
+Holodeck.platePool = {}   -- recycled nameplates
 Holodeck.pathGfx = {}     -- list of ring/line controls
 Holodeck.origin = nil
 Holodeck.fight = nil
@@ -579,11 +587,27 @@ local function WS_CreateLabel(sizeM)
     return nil
 end
 
+local function PopPool(pool)
+    local n = #pool
+    if n < 1 then return nil end
+    local c = pool[n]
+    pool[n] = nil
+    return c
+end
+
+local function RecycleControl(ctl, pool)
+    if not ctl then return end
+    ctl:SetHidden(true)
+    pool[#pool + 1] = ctl
+end
+
 local function EnsureNameplate(act)
     if act.plate then return act.plate end
     local sizeM = (act.kind == "boss") and 2.6 or 2.1
-    local lbl = WS_CreateLabel(sizeM)
+    local lbl = PopPool(Holodeck.platePool)
+    if not lbl then lbl = WS_CreateLabel(sizeM) end
     act.plate = lbl
+    act._plateText = nil
     return lbl
 end
 
@@ -623,11 +647,26 @@ local function PlayScale()
     return pct / 100
 end
 
+local function PackFlipXZ()
+    local fx, fz = false, false
+    local s = Holodeck.savedVars
+    local id = Holodeck.loadedId
+    if type(s) == "table" and type(id) == "string" and id ~= "" then
+        if type(s.flipXByPack) == "table" then fx = s.flipXByPack[id] == true end
+        if type(s.flipZByPack) == "table" then fz = s.flipZByPack[id] == true end
+    end
+    return fx, fz
+end
+
 local function LocalToWorld(lx, ly, lz)
     local o = Holodeck.origin
     if not o then return nil end
     local s = PlayScale()
-    return o.x + (lx or 0) * 100 * s, o.y + (ly or 0) * 100, o.z + (lz or 0) * 100 * s
+    local x, z = lx or 0, lz or 0
+    local fx, fz = PackFlipXZ()
+    if fx then x = -x end
+    if fz then z = -z end
+    return o.x + x * 100 * s, o.y + (ly or 0) * 100, o.z + z * 100 * s
 end
 
 local function PlayerLocalXZ()
@@ -664,7 +703,13 @@ local function EnsureActor(name, kind)
         if act.ctl.SetTransformScale then act.ctl:SetTransformScale(SizeFor(kind)) end
         return act
     end
-    local ctl = WS_CreateTexture(name, SizeFor(kind), tex, def.color, nil, fb)
+    local ctl = PopPool(Holodeck.ctlPool)
+    if ctl then
+        _SetTextureSafe(ctl, tex, fb)
+        if ctl.SetTransformScale then ctl:SetTransformScale(SizeFor(kind)) end
+    else
+        ctl = WS_CreateTexture(name, SizeFor(kind), tex, def.color, nil, fb)
+    end
     if not ctl then
         dhd("|cFF5555Pin create failed|r for " .. tostring(name) .. " (" .. tostring(kind) .. ")")
         return nil
@@ -705,15 +750,8 @@ end
 local function DestroyAllActors()
     for _, act in pairs(Holodeck.actors) do
         HideNameplate(act)
-        if act.plate then
-            local pn = act.plate.GetName and act.plate:GetName()
-            if pn then Holodeck.wsPins[pn] = nil end
-        end
-        if act.ctl then
-            act.ctl:SetHidden(true)
-            local n = act.ctl:GetName()
-            if n then Holodeck.wsPins[n] = nil end
-        end
+        RecycleControl(act.plate, Holodeck.platePool)
+        RecycleControl(act.ctl, Holodeck.ctlPool)
     end
     Holodeck.actors = {}
 end
@@ -1127,20 +1165,63 @@ local function ApplyTimeline(tSec, announce)
 end
 
 -- ============================= Legend / Sheet ===========================
+local function HudFont(size)
+    local n = tonumber(size) or 16
+    if type(IsConsoleUI) == "function" then
+        local ok, v = pcall(IsConsoleUI)
+        if ok and v then n = n + 2 end
+    end
+    return "EsoUI/Common/Fonts/univers57.otf|" .. tostring(n) .. "|soft-shadow-thick"
+end
+
 local function LegendText()
-    local pack = Holodeck.loadedId or (Holodeck.fight and Holodeck.fight.id) or "none"
-    local mode = Holodeck.playMode or "once"
-    local o = Holodeck.origin and "SET" or "no"
-    local namesState = NamesOn() and "ON" or "off"
-    local playBit = Holodeck.playing and " RUN" or (Holodeck.playFinished and " END" or "")
-    local lines = {
-        string.format("Holodeck v%s | pack:%s | plant:%s | t=%.1fs | play:%s%s | names:%s | scale:%d%%",
-            Holodeck.version, tostring(pack), o, Holodeck.playT or 0, mode, playBit, namesState,
-            math.floor(PlayScale() * 100 + 0.5)),
-        "/hd plant  →  /hd list  →  /hd load N|<id>  →  /hd play once|loop",
-        "/hd pause · replay · halt   ·  /hd names on|off   ·  /hdsettings",
-    }
-    return table.concat(lines, "\n")
+    local pack = Holodeck.loadedId or (Holodeck.fight and Holodeck.fight.id)
+    local title = (Holodeck.fight and Holodeck.fight.name) or pack or "no fight loaded"
+    local planted = Holodeck.origin and true or false
+    local t = Holodeck.playT or 0
+    local phase
+    if Holodeck.playing then
+        phase = "|c55FF88RUN|r"
+    elseif Holodeck.playFinished then
+        phase = "|cFFCC55END|r"
+    else
+        phase = "|c88AACCidle|r"
+    end
+
+    local nextLine
+    if not planted then
+        nextLine = "|cFFEE55Stand on the mark|r  →  |cC0E0FF/hd plant|r"
+    elseif not pack then
+        nextLine = "|cC0E0FF/hd list|r   then   |cC0E0FF/hd load 1|r"
+    elseif Holodeck.playing then
+        nextLine = "|cC0E0FF/hd pause|r  ·  /hd halt"
+    elseif Holodeck.playFinished then
+        nextLine = "|cC0E0FF/hd play|r  to restart"
+    else
+        nextLine = "|cC0E0FF/hd play|r"
+    end
+
+    local extras = {}
+    local pct = math.floor(PlayScale() * 100 + 0.5)
+    if pct ~= 100 then extras[#extras + 1] = pct .. "%" end
+    local fx, fz = PackFlipXZ()
+    if fx and fz then
+        extras[#extras + 1] = "flip xz"
+    elseif fx then
+        extras[#extras + 1] = "flip x"
+    elseif fz then
+        extras[#extras + 1] = "flip z"
+    end
+    local extra = ""
+    if #extras > 0 then extra = "  ·  " .. table.concat(extras, "  ·  ") end
+
+    return table.concat({
+        "|cAADDFFHolodeck|r",
+        planted and ("|cFFFFFF" .. tostring(title) .. "|r") or "|c888888no fight loaded|r",
+        string.format("%s  ·  plant %s  ·  t=%.1fs%s",
+            phase, planted and "SET" or "no", t, extra),
+        nextLine,
+    }, "\n")
 end
 
 local function EnsureLegend()
@@ -1153,25 +1234,25 @@ local function EnsureLegend()
     tlw:SetDrawLayer(DL_OVERLAY)
     tlw:SetDrawTier(DT_HIGH)
     tlw:SetDrawLevel(320000)
-    local w = select(1, GuiRoot:GetDimensions()) or 1920
-    tlw:SetDimensions(math.min(w - 20, 1500), 128)
+    tlw:SetDimensions(420, 118)
     tlw:ClearAnchors()
-    tlw:SetAnchor(BOTTOM, GuiRoot, BOTTOM, 0, -8)
+    -- Right side: away from chat + skill bar (controller).
+    tlw:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -16, 72)
 
     local back = _SafeCreateControl("HolodeckLegendBack", tlw, CT_BACKDROP)
     if back then
         back:SetAnchorFill()
-        back:SetCenterColor(0, 0, 0, 0.62)
-        back:SetEdgeColor(0.4, 0.7, 1, 0.5)
+        back:SetCenterColor(0, 0, 0, 0.84)
+        back:SetEdgeColor(0.45, 0.75, 1, 0.9)
         if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
     end
 
     local lbl = _SafeCreateControl("HolodeckLegendLabel", tlw, CT_LABEL)
     if lbl then
         lbl:ClearAnchors()
-        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 10, 6)
-        lbl:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, -10, -6)
-        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|15|soft-shadow-thin")
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 14, 8)
+        lbl:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, -14, -8)
+        lbl:SetFont(HudFont(17))
         lbl:SetColor(0.92, 0.95, 1, 1)
         if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
         if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
@@ -1179,26 +1260,6 @@ local function EnsureLegend()
     end
     Holodeck.legendTLW = tlw
     Holodeck.legendLabel = lbl
-
-    -- tiny hint when legend off (also NOT on a scene fragment)
-    local hint = _SafeCreateTLW("HolodeckLegendHint")
-    if hint then
-        hint:SetMouseEnabled(false)
-        hint:SetDimensions(280, 22)
-        hint:ClearAnchors()
-        hint:SetAnchor(BOTTOMLEFT, GuiRoot, BOTTOMLEFT, 12, -6)
-        hint:SetDrawLayer(DL_OVERLAY)
-        hint:SetDrawTier(DT_HIGH)
-        hint:SetDrawLevel(319000)
-        local hl = _SafeCreateControl("HolodeckLegendHintLbl", hint, CT_LABEL)
-        if hl then
-            hl:SetAnchorFill()
-            hl:SetFont("EsoUI/Common/Fonts/univers57.otf|14|soft-shadow-thin")
-            hl:SetColor(0.7, 0.85, 1, 0.85)
-            hl:SetText("|c88AACCHolodeck|r  /hd legend on")
-        end
-        Holodeck.legendHint = hint
-    end
     -- No ZO_SimpleSceneFragment: it re-shows the bar after /hd legend off (same bug as sheet).
 end
 
@@ -1216,20 +1277,18 @@ local function ApplyLegendVisibility()
         Holodeck.legendTLW:SetAlpha(on and 1 or 0)
     end
     if Holodeck.legendHint then
-        Holodeck.legendHint:SetHidden(on)
+        Holodeck.legendHint:SetHidden(true)
     end
     -- Re-assert after chat/layers (console) so off stays off
     zo_callLater(function()
         if not Holodeck.legendTLW then return end
-        local still = IsLegendOn()
-        Holodeck.legendTLW:SetHidden(not still)
-        if Holodeck.legendHint then Holodeck.legendHint:SetHidden(still) end
+        Holodeck.legendTLW:SetHidden(not IsLegendOn())
+        if Holodeck.legendHint then Holodeck.legendHint:SetHidden(true) end
     end, 50)
     zo_callLater(function()
         if not Holodeck.legendTLW then return end
-        local still = IsLegendOn()
-        Holodeck.legendTLW:SetHidden(not still)
-        if Holodeck.legendHint then Holodeck.legendHint:SetHidden(still) end
+        Holodeck.legendTLW:SetHidden(not IsLegendOn())
+        if Holodeck.legendHint then Holodeck.legendHint:SetHidden(true) end
     end, 250)
 end
 
@@ -1378,9 +1437,91 @@ local function RefreshUI()
     UpdateSheet()
 end
 
+-- Packed keyframes: "tcs xcs zcs flags;..."  flags: 1 vis, 2 dead, 4 lunar, 8 shadow.
+-- Resident packs keep this string; working tables exist only for the loaded fight.
+local function EncodeTrack(track)
+    if type(track) ~= "table" or #track == 0 then return "" end
+    local parts = {}
+    for i = 1, #track do
+        local k = track[i]
+        local flags = 0
+        if k.visible ~= false then flags = flags + 1 end
+        if k.dead == true or k.dead == 1 then flags = flags + 2 end
+        local asp = k.aspect
+        if asp == "lunar" or asp == "light" or asp == "holy" then
+            flags = flags + 4
+        elseif asp == "shadow" or asp == "dark" then
+            flags = flags + 8
+        end
+        parts[i] = string.format("%d %d %d %d",
+            math.floor((k.t or 0) * 100 + 0.5),
+            math.floor((k.x or 0) * 100 + 0.5),
+            math.floor((k.z or 0) * 100 + 0.5),
+            flags)
+    end
+    return table.concat(parts, ";")
+end
+
+local function DecodeTrack(enc)
+    if type(enc) ~= "string" or enc == "" then return {} end
+    local track = {}
+    for a, b, c, d in string.gmatch(enc, "(-?%d+) (-?%d+) (-?%d+) (%d+)") do
+        local flags = tonumber(d) or 0
+        local kf = {
+            t = (tonumber(a) or 0) / 100,
+            x = (tonumber(b) or 0) / 100,
+            z = (tonumber(c) or 0) / 100,
+            visible = (flags % 2 == 1),
+        }
+        if math.floor(flags / 2) % 2 == 1 then kf.dead = true end
+        if math.floor(flags / 4) % 2 == 1 then
+            kf.aspect = "lunar"
+        elseif math.floor(flags / 8) % 2 == 1 then
+            kf.aspect = "shadow"
+        end
+        track[#track + 1] = kf
+    end
+    return track
+end
+
+local function CompactFight(fight)
+    local ents = fight and fight.entities
+    if type(ents) ~= "table" then return end
+    for i = 1, #ents do
+        local e = ents[i]
+        if type(e) == "table" and type(e.track) == "table" then
+            e.trackEnc = EncodeTrack(e.track)
+            e.track = nil
+        end
+    end
+end
+
+local function ExpandFight(fight)
+    local ents = fight and fight.entities
+    if type(ents) ~= "table" then return end
+    for i = 1, #ents do
+        local e = ents[i]
+        if type(e) == "table" and type(e.track) ~= "table" and type(e.trackEnc) == "string" then
+            e.track = DecodeTrack(e.trackEnc)
+        end
+    end
+end
+
+function Holodeck.RegisterFight(fight)
+    if type(fight) == "table" and fight.id then
+        CompactFight(fight)
+        Holodeck.Fights[fight.id] = fight
+    end
+end
+
 -- ============================= Load fight ===============================
 local function LoadFightTable(fight, source, resetTime)
     if not fight then return false end
+    if Holodeck.fight and Holodeck.fight ~= fight then
+        CompactFight(Holodeck.fight)
+    end
+    ExpandFight(fight)
+    DestroyAllActors()
     Holodeck.fight = fight
     Holodeck.fightSource = source
     Holodeck.loadedId = fight.id
@@ -1537,15 +1678,22 @@ local function _StartTick()
                     Holodeck.playT = dur
                     Holodeck.playing = false
                     Holodeck.playFinished = true
-                    dhd("Play once finished — actors stay at end. /hd play once|loop to restart from start.")
+                    dhd("Playback finished — actors stay at end. /hd play to restart.")
                 end
             end
             ApplyTimeline(Holodeck.playT, true)
         else
-            for _, act in pairs(Holodeck.actors) do
-                if act.visible ~= false then PlaceActor(act) end
+            -- Parked pins: billboard with camera, but not at 20 Hz.
+            local idle = Holodeck._idlePlaceMs or 0
+            idle = idle + ((now - last) or 0)
+            if idle >= 200 then
+                idle = 0
+                for _, act in pairs(Holodeck.actors) do
+                    if act.visible ~= false then PlaceActor(act) end
+                end
+                if Holodeck.origin then EnsureOriginMarker() end
             end
-            if Holodeck.origin then EnsureOriginMarker() end
+            Holodeck._idlePlaceMs = idle
         end
         -- light legend refresh while playing (never force-show if user turned it off)
         if (Holodeck.playing or Holodeck.playFinished) and IsLegendOn() and Holodeck.legendLabel then
@@ -1571,7 +1719,7 @@ local function CmdPlant()
     end
     RefreshUI()
     dhd("Planted |cFFEE55origin / coord ZERO|r at your feet.")
-    dhd("Then: |cC0E0FF/hd list|r  ·  |cC0E0FF/hd load <id>|r  ·  |cC0E0FF/hd play once|r")
+    dhd("Then: |cC0E0FF/hd list|r  ·  |cC0E0FF/hd load <id>|r  ·  |cC0E0FF/hd play|r")
 end
 
 local function CmdEdit(arg)
@@ -1857,10 +2005,12 @@ local function CmdPlay(arg)
     ApplyTimeline(0, true)
     _StartTick()
     UpdateMemMeter(GetFrameTimeMilliseconds())
+    if Holodeck.savesPanel then Holodeck.savesPanel:SetHidden(true) end
     local mode = Holodeck.playMode or "once"
     local dur = (Holodeck.fight and Holodeck.fight.durationSec) or PathEndTime() or 0
-    dhd(string.format("Playing \"%s\" [%s] mode=%s dur=%.1fs. Once parks at end.",
-        (Holodeck.fight and Holodeck.fight.name) or "?", Holodeck.fightSource or "?", mode, dur))
+    local park = (mode == "loop") and "Loop restarts at 0." or "Parks at end."
+    dhd(string.format("Playing \"%s\"  dur=%.1fs. %s",
+        (Holodeck.fight and Holodeck.fight.name) or "?", dur, park))
     if dur < 0.6 then
         dhd("|cFFAA66Short clock|r — markers may look static (single keyframe or tiny duration).")
     end
@@ -1965,7 +2115,7 @@ local function CmdLegend(arg)
         Holodeck.savedVars.legendOn = not IsLegendOn()
     end
     UpdateLegend()
-    dhd("Legend: |cC0E0FF" .. (IsLegendOn() and "ON" or "OFF") .. "|r  (hint stays: /hd legend on)")
+    dhd("Legend: |cC0E0FF" .. (IsLegendOn() and "ON" or "OFF") .. "|r")
 end
 
 local function CmdNames(arg)
@@ -2008,12 +2158,7 @@ local function PackSpanMeters(fight)
     return math.sqrt(dx * dx + dz * dz)
 end
 
-local function ApplyPlayScale(pct)
-    pct = math.floor(tonumber(pct) or 100)
-    if pct < 25 then pct = 25 end
-    if pct > 400 then pct = 400 end
-    if not Holodeck.savedVars then return pct end
-    Holodeck.savedVars.playScalePct = pct
+local function RefreshPlaybackPlacement()
     if Holodeck.origin and Holodeck.fight then
         ApplyTimeline(Holodeck.playT or 0, false)
     elseif Holodeck.origin then
@@ -2022,6 +2167,15 @@ local function ApplyPlayScale(pct)
         end
     end
     RefreshUI()
+end
+
+local function ApplyPlayScale(pct)
+    pct = math.floor(tonumber(pct) or 100)
+    if pct < 25 then pct = 25 end
+    if pct > 400 then pct = 400 end
+    if not Holodeck.savedVars then return pct end
+    Holodeck.savedVars.playScalePct = pct
+    RefreshPlaybackPlacement()
     return pct
 end
 
@@ -2050,6 +2204,45 @@ local function CmdScale(arg)
     else
         dhd(string.format("Scale %d%%", pct))
     end
+end
+
+local function CmdFlip(arg)
+    arg = (arg or ""):lower():match("^%s*(.-)%s*$") or ""
+    local id = Holodeck.loadedId
+    if type(id) ~= "string" or id == "" then
+        dhd("Load a pack first, then /hd flip z  (mirrors orbit direction)")
+        return
+    end
+    local s = Holodeck.savedVars
+    if type(s) ~= "table" then return end
+    if type(s.flipXByPack) ~= "table" then s.flipXByPack = {} end
+    if type(s.flipZByPack) ~= "table" then s.flipZByPack = {} end
+    if arg == "off" or arg == "none" or arg == "reset" then
+        s.flipXByPack[id] = nil
+        s.flipZByPack[id] = nil
+    elseif arg == "x" then
+        s.flipXByPack[id] = not s.flipXByPack[id]
+    elseif arg == "z" or arg == "" then
+        s.flipZByPack[id] = not s.flipZByPack[id]
+    elseif arg == "xz" or arg == "zx" or arg == "180" then
+        local on = not (s.flipXByPack[id] and s.flipZByPack[id])
+        s.flipXByPack[id] = on
+        s.flipZByPack[id] = on
+    else
+        dhd("Usage: /hd flip   or  /hd flip z|x|xz|off   (z = reverse orbit)")
+        return
+    end
+    RefreshPlaybackPlacement()
+    local fx, fz = PackFlipXZ()
+    local bits = "off"
+    if fx and fz then
+        bits = "x+z (180)"
+    elseif fx then
+        bits = "x"
+    elseif fz then
+        bits = "z"
+    end
+    dhd("Flip " .. bits .. " for |cC0E0FF" .. id .. "|r  ·  /hd flip z|x|off")
 end
 
 local function CmdNew()
@@ -2418,6 +2611,7 @@ local function LoadSerialized(data, name)
     ClearPathGfx()
     Holodeck.stops = {}
     Holodeck.types = {}
+    if Holodeck.fight then CompactFight(Holodeck.fight) end
     Holodeck.fight = nil
     Holodeck.fightSource = nil
     Holodeck.loadedId = nil
@@ -2526,7 +2720,7 @@ local function LoadSerialized(data, name)
     if nPins == 0 then
         dhd("|cFF5555No pins|r — /hd sheet on · try /hd load house_demo to confirm plant")
     else
-        dhd("/hd play once  ·  |cC0E0FFstand at yellow origin|r — pins in ~50m arena (not 6m)")
+        dhd("/hd play  ·  |cC0E0FFstand at yellow origin|r — pins in ~50m arena (not 6m)")
     end
     -- Rewrite save in flat format so next open is reliable
     if name and Holodeck.savedVars and Holodeck.savedVars.saves and nStops > 0 then
@@ -2688,6 +2882,7 @@ local function CmdOpen(arg)
 end
 
 Holodeck.libraryList = Holodeck.libraryList or {} -- ordered ids for /hd load 1..n
+Holodeck.listFilter = nil -- trial/boss substring; /hd list vMoL
 Holodeck.savesPanel = nil
 Holodeck.savesPanelLabel = nil
 
@@ -2745,43 +2940,106 @@ local function RefreshLibraryList()
     return arr
 end
 
-local LIBS_PER_PAGE = 5
+local LIBS_PER_PAGE = 12
+local TRIAL_INDEX_AT = 12
+
+local function TrialKey(e)
+    local t = e and e.trial
+    if type(t) ~= "string" or t == "" then return "Demo" end
+    return t
+end
+
+local function PackMatchesFilter(e, filter)
+    if type(filter) ~= "string" or filter == "" then return true end
+    local q = string.lower(filter)
+    if string.lower(TrialKey(e)):find(q, 1, true) then return true end
+    if string.lower(tostring(e.boss or "")):find(q, 1, true) then return true end
+    if string.lower(tostring(e.id or "")):find(q, 1, true) then return true end
+    return false
+end
 
 local function LibraryPanelText()
     local arr = RefreshLibraryList()
-    local pages = math.max(1, math.ceil(#arr / LIBS_PER_PAGE))
+    local filter = Holodeck.listFilter
+    local loaded = Holodeck.loadedId or ""
+
+    local filtered = {}
+    for i = 1, #arr do
+        if PackMatchesFilter(arr[i], filter) then
+            filtered[#filtered + 1] = i
+        end
+    end
+
+    local trials, trialOrder = {}, {}
+    for i = 1, #arr do
+        local k = TrialKey(arr[i])
+        if not trials[k] then
+            trials[k] = 0
+            trialOrder[#trialOrder + 1] = k
+        end
+        trials[k] = trials[k] + 1
+    end
+
+    local showTrials = (not filter or filter == "") and #trialOrder >= 2 and #arr > TRIAL_INDEX_AT
+    if showTrials then
+        local lines = {
+            "|cAADDFFFIGHT LIBRARY|r",
+            "Pick a trial (keeps /hd load N numbers)",
+            "|cC0E0FF/hd list vMoL|r  ·  /hd list all  ·  off",
+            "",
+        }
+        for i = 1, #trialOrder do
+            local k = trialOrder[i]
+            lines[#lines + 1] = string.format("  |cC0E0FF%-10s|r  %d pack%s",
+                k, trials[k], trials[k] == 1 and "" or "s")
+        end
+        return table.concat(lines, "\n")
+    end
+
+    local pages = math.max(1, math.ceil(#filtered / LIBS_PER_PAGE))
     local page = tonumber(Holodeck.savesPage) or 1
     if page < 1 then page = 1 end
     if page > pages then page = pages end
     Holodeck.savesPage = page
 
-    local loaded = Holodeck.loadedId or ""
     local lines = {
-        "FIGHT LIBRARY",
-        string.format("Page %d/%d  ·  /hd list next|prev  ·  load: /hd load N", page, pages),
-        "Plant first, then load.  Close: /hd list off",
-        "------------------------------",
+        "|cAADDFFFIGHT LIBRARY|r",
+        string.format("Page %d/%d  ·  |cC0E0FF/hd load N|r  ·  list next|prev|off", page, pages),
     }
-    if #arr == 0 then
-        lines[#lines + 1] = "(no packs registered — check fights/*.lua in the manifest)"
+    if filter and filter ~= "" then
+        lines[#lines + 1] = "Filter |cC0E0FF" .. tostring(filter) .. "|r  ·  /hd list all"
+    else
+        lines[#lines + 1] = "Filter: |cC0E0FF/hd list vMoL|r"
+    end
+    lines[#lines + 1] = ""
+
+    if #filtered == 0 then
+        lines[#lines + 1] = "(no packs — check fights/*.lua in the manifest)"
     else
         local i0 = (page - 1) * LIBS_PER_PAGE + 1
-        local i1 = math.min(#arr, page * LIBS_PER_PAGE)
-        for i = i0, i1 do
-            local e = arr[i]
-            local mark = (e.id == loaded) and "  [loaded]" or ""
-            lines[#lines + 1] = string.format("%2d) %s%s", i, e.name, mark)
-            local bits = {}
-            if e.dur > 0 then bits[#bits + 1] = string.format("%.0fs", e.dur) end
-            if e.nBoss > 0 then bits[#bits + 1] = e.nBoss .. " boss" end
-            if e.nMini > 0 then bits[#bits + 1] = e.nMini .. " mini" end
-            if e.nPlayer > 0 then bits[#bits + 1] = e.nPlayer .. " players" end
-            lines[#lines + 1] = string.format("    %s", e.id)
-            lines[#lines + 1] = string.format("    →  /hd load %d     %s", i, table.concat(bits, "  ·  "))
+        local i1 = math.min(#filtered, page * LIBS_PER_PAGE)
+        local lastTrial = nil
+        for n = i0, i1 do
+            local gi = filtered[n]
+            local e = arr[gi]
+            local tk = TrialKey(e)
+            if tk ~= lastTrial then
+                lastTrial = tk
+                lines[#lines + 1] = "|c88AACC" .. tk .. "|r"
+            end
+            local mark = (e.id == loaded) and " |c55FF88[loaded]|r" or ""
+            local ply = (e.nPlayer or 0) > 0 and " |cFFAA66players|r" or ""
+            local dur = (e.dur or 0) > 0 and string.format(" %3.0fs", e.dur) or ""
+            local short = e.name or e.id
+            if tk ~= "Demo" and type(short) == "string" then
+                local pfx = tk .. " · "
+                if short:sub(1, #pfx) == pfx then short = short:sub(#pfx + 1) end
+            end
+            lines[#lines + 1] = string.format("|cFFFFFF%2d|r  %s%s%s%s", gi, short, dur, ply, mark)
         end
     end
-    lines[#lines + 1] = "------------------------------"
-    lines[#lines + 1] = "Then: /hd play once"
+    lines[#lines + 1] = ""
+    lines[#lines + 1] = "Then |cC0E0FF/hd play|r"
     return table.concat(lines, "\n")
 end
 
@@ -2796,15 +3054,30 @@ local function EnsureSavesPanel()
     tlw:SetDrawTier(DT_HIGH)
     tlw:SetDrawLevel(410000)
     if tlw.SetTopmost then pcall(function() tlw:SetTopmost(true) end) end
-    -- Wider + taller: 3 lines per save (title, open cmd, id)
-    tlw:SetDimensions(560, 480)
+    tlw:SetDimensions(400, 520)
     tlw:ClearAnchors()
-    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -40)
+    local lx, ly = sv().listX, sv().listY
+    if type(lx) == "number" and type(ly) == "number" then
+        tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, lx, ly)
+    else
+        -- Left side: room stays visible in the middle; legend is top-right.
+        tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 16, 72)
+    end
+    if tlw.SetHandler then
+        pcall(function()
+            tlw:SetHandler("OnMoveStop", function()
+                local s = sv()
+                if type(s) ~= "table" then return end
+                s.listX = math.floor((tlw.GetLeft and tlw:GetLeft()) or 16)
+                s.listY = math.floor((tlw.GetTop and tlw:GetTop()) or 72)
+            end)
+        end)
+    end
 
     local back = _SafeCreateControl("HolodeckSavesPanelBack", tlw, CT_BACKDROP)
     if back then
         back:SetAnchorFill()
-        back:SetCenterColor(0, 0, 0, 0.94)
+        back:SetCenterColor(0, 0, 0, 0.90)
         back:SetEdgeColor(0.45, 0.75, 1, 0.95)
         if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
     end
@@ -2812,9 +3085,9 @@ local function EnsureSavesPanel()
     local lbl = _SafeCreateControl("HolodeckSavesPanelLabel", tlw, CT_LABEL)
     if lbl then
         lbl:ClearAnchors()
-        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 16, 12)
-        lbl:SetDimensions(528, 452)
-        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|14|soft-shadow-thin")
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 14, 10)
+        lbl:SetDimensions(372, 500)
+        lbl:SetFont(HudFont(16))
         lbl:SetColor(0.95, 0.97, 1, 1)
         if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
         if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
@@ -2834,7 +3107,7 @@ local function ShowSavesPanel(show)
     if show then
         if Holodeck.savesPanelLabel then
             Holodeck.savesPanelLabel:SetText(LibraryPanelText())
-            Holodeck.savesPanelLabel:SetDimensions(528, 452)
+            Holodeck.savesPanelLabel:SetDimensions(372, 500)
         end
         Holodeck.savesPanel:SetHidden(false)
         Holodeck.savesPanel:SetAlpha(1)
@@ -2869,6 +3142,13 @@ local function CmdList(arg)
         dhd("Library page " .. tostring(Holodeck.savesPage))
         return
     end
+    if arg == "all" or arg == "*" then
+        Holodeck.listFilter = nil
+        Holodeck.savesPage = 1
+        ShowSavesPanel(true)
+        dhd("Library — all trials")
+        return
+    end
     if arg == "chat" then
         local arr = RefreshLibraryList()
         dhd("Library — /hd load N  or  /hd load <id>")
@@ -2877,9 +3157,16 @@ local function CmdList(arg)
         end
         return
     end
+    if arg ~= "" then
+        Holodeck.listFilter = arg
+        Holodeck.savesPage = 1
+        ShowSavesPanel(true)
+        dhd("Library filter |cC0E0FF" .. arg .. "|r  ·  /hd list all")
+        return
+    end
     Holodeck.savesPage = Holodeck.savesPage or 1
     ShowSavesPanel(true)
-    dhd("Library — /hd load N  ·  /hd list next|prev  ·  /hd list off")
+    dhd("Library — /hd load N  ·  /hd list vMoL  ·  next|prev|off")
 end
 
 -- ============================= Texture palette panel ====================
@@ -2913,7 +3200,7 @@ local function TexturesPanelText()
         end
     end
     lines[#lines + 1] = "--------------------------------"
-    lines[#lines + 1] = "Demo: /hd load house_demo · play once"
+    lines[#lines + 1] = "Demo: /hd load house_demo · play"
     lines[#lines + 1] = "Soft-aim reticle samples elites (no hard-lock)."
     return table.concat(lines, "\n")
 end
@@ -3086,15 +3373,18 @@ local function CmdLoad(arg)
     if Holodeck.savesPanel and not Holodeck.savesPanel:IsHidden() then
         ShowSavesPanel(true)
     end
-    dhd("Loaded |cC0E0FF" .. id .. "|r  ·  /hd play once")
+    dhd("Loaded |cC0E0FF" .. id .. "|r  ·  /hd play")
     RefreshUI()
 end
 
 local function CmdClear()
     Holodeck.playing = false
     Holodeck.playFinished = false
+    if Holodeck.fight then CompactFight(Holodeck.fight) end
     Holodeck.origin = nil
     Holodeck.fight = nil
+    Holodeck.loadedId = nil
+    Holodeck.fightSource = nil
     Holodeck.workingName = "sandbox"
     ClearStops(true)
     ClearPathGfx()
@@ -3114,8 +3404,8 @@ end
 
 local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
-    d("|cAADDFFPLAY|r    plant · list · load N|<id> · play once|loop · pause · replay · halt")
-    d("|cAADDFFLOOK|r    names on|off · scale N% · legend · textures · /hdsettings")
+    d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
+    d("|cAADDFFLOOK|r    names on|off · scale N% · flip z|x · legend · textures · /hdsettings")
     d("plant = coord ZERO.  list = fight library.  load 1 = first pack on that list.")
 end
 
@@ -3139,6 +3429,8 @@ local function OnSlash(args)
         labels = function() CmdNames(rest) end,
         scale = function() CmdScale(rest) end,
         size = function() CmdScale(rest) end,
+        flip = function() CmdFlip(rest) end,
+        mirror = function() CmdFlip(rest) end,
         textures = function() CmdTextures(rest) end,
         texture = function() CmdTextures(rest) end,
         palette = function() CmdTextures(rest) end,
@@ -3185,6 +3477,8 @@ local function OnAddOnLoaded(_, addonName)
     if s.pathOn == nil then s.pathOn = true end
     if s.namesOn == nil then s.namesOn = true end
     if s.playScalePct == nil then s.playScalePct = 100 end
+    if type(s.flipXByPack) ~= "table" then s.flipXByPack = {} end
+    if type(s.flipZByPack) ~= "table" then s.flipZByPack = {} end
     if s.autoArmInInstances == nil then s.autoArmInInstances = true end
     if s.recordStartMode == nil then s.recordStartMode = "boss" end
     if s.recordAutoStop == nil then s.recordAutoStop = true end
@@ -3201,49 +3495,8 @@ local function OnAddOnLoaded(_, addonName)
     end
     if s.recordRequirePlant == nil then s.recordRequirePlant = false end
     if s.shareReceiveEnabled == nil then s.shareReceiveEnabled = true end
-    if not s.saves then s.saves = {} end
-    -- Migrate legacy saves (stops-only) → entities[] so open/play works after SavedVars
-    local migrated = 0
-    for name, data in pairs(s.saves) do
-        if type(data) == "table" then
-            local entCount = 0
-            if type(data.entities) == "table" then
-                for _ in pairs(data.entities) do entCount = entCount + 1 end
-            end
-            if entCount == 0 and type(data.stops) == "table" then
-                local entities = {}
-                for id, rawList in pairs(data.stops) do
-                    local track = NormalizeKeyframeList(rawList)
-                    if #track > 0 then
-                        local sid = tostring(id)
-                        entities[#entities + 1] = {
-                            id = sid,
-                            kind = (data.types and (data.types[id] or data.types[sid])) or InferType(sid),
-                            label = sid,
-                            track = track,
-                        }
-                    end
-                end
-                if #entities > 0 then
-                    data.entities = entities
-                    migrated = migrated + 1
-                end
-            end
-            if not data.displayName or data.displayName == "" then
-                if data.meta and data.meta.zone then
-                    data.displayName = string.format("%s · %s · %.0fs",
-                        tostring(data.meta.zone),
-                        tostring(data.meta.target or "fight"),
-                        tonumber(data.meta.duration) or 0)
-                else
-                    data.displayName = tostring(name)
-                end
-            end
-        end
-    end
-    if migrated > 0 then
-        dhd(string.format("Migrated %d save(s) to playable entities format.", migrated))
-    end
+    -- Recording/saves are no longer a product path. Drop deserialized takes from SV.
+    s.saves = {}
 
     -- Export helpers for Holodeck_Settings (loaded after this file)
     Holodeck.EnsureOriginMarker = EnsureOriginMarker
@@ -3300,7 +3553,7 @@ local function OnAddOnLoaded(_, addonName)
 
     local n = 0
     for _ in pairs(Holodeck.Fights) do n = n + 1 end
-    dhd(string.format("v%s | packs=%d | /hd plant · /hd list · /hd load · /hd play once", Holodeck.version, n))
+    dhd(string.format("v%s | packs=%d | /hd plant · /hd list · /hd load · /hd play", Holodeck.version, n))
 end
 
 EVENT_MANAGER:RegisterForEvent(Holodeck.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

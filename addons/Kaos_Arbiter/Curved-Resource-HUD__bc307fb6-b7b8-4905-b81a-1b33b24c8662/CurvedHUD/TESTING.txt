@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.8.0 SCRIBING TRACKERS TEST CHECKLIST
+CURVED RESOURCE HUD 0.8.4 ARCANIST + CRUX TRACKERS TEST CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,7 @@ CURVED RESOURCE HUD 0.8.0 SCRIBING TRACKERS TEST CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.8.0-test; HUD, shield, mount stamina, and trackers created
+   [CurvedHUD] Loaded 0.8.4-test; HUD, shield, and trackers created
 
 4. Type /curvedhud preview. Expected:
    - red health arc on the left
@@ -201,3 +201,63 @@ CURVED RESOURCE HUD 0.8.0 SCRIBING TRACKERS TEST CHECKLIST
 51. Recast both skills while their timers are active, swap weapon bars, and test
     after relogging. Confirm icons refresh from either bar and all Scribing Skills
     choices persist independently per character.
+
+52. Slot and cast Soul Burst and Ulfsild's Contingency. Their bundled grimoire
+    icons must display on console even if GetSlotTexture returns an unusable path.
+    Change the selected scripts and confirm ESO's reported crafted duration is
+    used; the fallback slider should matter only when the API reports no duration.
+
+53. Test Vibrant Shroud, Encase, and Shattering Spines one at a time. Each must
+    display its own bundled icon, including after bar swaps, relogs, and casts.
+
+54. Confirm Imminent expiration alerts defaults Off. Enable it, let each positive
+    timer reach 3.0 seconds, and verify its number turns red while a thin red icon
+    border pulses. The alert must clear on refresh/expiration. Cast Balance and
+    confirm its negative timer never receives either expiration warning.
+
+55. Under Scribing Skills, test Elemental Explosion, Mender's Bond, Shield Throw,
+    Smash, Torchbearer, Trample, Traveling Knife, Vault, and
+    Wield Soul. Each toggle must expose position/color/fallback settings, use its
+    bundled icon, and prefer the duration reported by the equipped scripts.
+
+56. Under Warden Trackers, test Betty Netch, Blue Betty, and Bull Netch. The
+    timer must use the equipped morph's icon and live self-buff duration (22
+    seconds base or 25 seconds for either morph).
+
+57. Test Swarm, Fetcher Infection, and Growing Swarm. Each cast should use the
+    correct family icon and count down the full 20-second application.
+
+58. Test Scorch and Deep Fissure: the timer must run 9 seconds through both the
+    3-second and 9-second eruptions. Subterranean Assault must run 6 seconds
+    through its 3-second and 6-second eruptions. Zero is the suggested recast.
+0.8.2 expanded Sorcerer/Warden checklist:
+- Enable each new tracker independently and assign it to a different slot.
+- Cast each base skill and equipped morph; confirm the correct icon appears and
+  the timer resets immediately on recast.
+- Verify Haunting Curse counts 12 seconds, Daedric Curse/Prey 6 seconds,
+  Liquid Lightning 15 seconds, Boundless Storm 30 seconds, Regenerative Ward
+  10 seconds, and the remaining morphs use their documented family fallback.
+- Activate Volatile Familiar and Twilight Tormentor after summoning; their
+  trackers should follow the 20-second activated ability, not pet lifetime.
+- Temporarily bar-swap before casting and confirm icon fallback still resolves.
+Weapon and guild/other checklist:
+- Confirm settings appear in this order: class, weapon, then guild/other.
+- Confirm every scribing grimoire appears under its associated skill line and
+  no separate Scribing section remains.
+- Enable one tracker from each skill line, cast it from both weapon bars, and
+  confirm its equipped morph icon and live duration are used.
+- Reload UI after icons have resolved once, then confirm cached artwork remains
+  available even if the ability is no longer on the active bar.
+- Confirm all new trackers default off and retain per-character position/color.
+
+0.8.4 Arcanist checklist:
+- Enable Crux under Arcanist Trackers. Generate one, two, then three Crux and
+  confirm the icon count reads 1/2/3 while the chosen arc fills 1/3, 2/3, 3/3.
+- Spend Crux with Fatecarver or another consumer. The count and arc must update
+  immediately and disappear at zero; no countdown number should be displayed.
+- In Preview, Crux should display three stacks and a fully filled selected arc.
+- Test all eight Crux positions and several colors in Parallel and Stacked modes.
+- Enable each Arcanist duration family independently. Test base skills and both
+  morphs, including Cruxweaver Armor's longer 30-second duration.
+- Confirm each family uses the equipped/cast skill icon, falls back safely when
+  ESO omits event artwork, and preserves enablement/position/color per character.

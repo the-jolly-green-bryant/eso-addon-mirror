@@ -40,6 +40,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Empyrean Dice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manaphoenix/Empyrean-Dice__1891) | manaphoenix | PC / Mac | 4.2 |
 | [Enchant Maker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/facit/Enchant-Maker__544) | facit | PC / Mac | 2.1.6 |
 | [Enchant Maker+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fenixs/Enchant-Maker__2707) | Fenixs | PC / Mac | 1.1.7b-2 |
+| [Enchant+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Enchant__4800) | atharti | PC / Mac | 1.0 |
 | [Enchanted Quality](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Enchanted-Quality__1635) | Rhyono | PC / Mac | 1.35.1 |
 | [Encounter Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Encounter-Toggle__2842) | Turbo1 | PC / Mac | 1.1 |
 | [Endeavor Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AshTech/Endeavor-Assistant__3936) | AshTech | PC / Mac | 1.2 |
@@ -53,7 +54,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.28.60 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.28.61 |
+| [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__3e5cdaca-d941-4fff-873b-7fd31d726a80) | Lofand | Console | — |
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__a46a8bd0-fa70-4d6a-817e-5f69d01e04ec) | Lofand | Console | — |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |

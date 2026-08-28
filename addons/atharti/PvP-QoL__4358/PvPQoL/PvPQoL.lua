@@ -6,6 +6,7 @@ local PQ = PvPQoL
 local ICON_DEATH = "esoui/art/treeicons/gamepad/gp_tutorial_idexicon_death.dds"
 local ICON_EXECUTE = "esoui/art/icons/poi/poi_battlefield_complete.dds"
 local ICON_SUCCESS = "PvPQoL/Textures/yes.dds"
+local ICON_NO = "PvPQoL/Textures/no.dds"
 
 ZO_CreateStringId("SI_BINDING_NAME_PVPQOL_STATS", "Show Stats")
 
@@ -1002,6 +1003,14 @@ function PQ.OnAddOnLoaded(eventCode, addonName)
 	LibDailyReset:RegisterCallback("OnDailyReset", function()
 		PQ.ResetDaily()
 	end)
+
+	SLASH_COMMANDS["/pqh"] = function()
+		PQ.suppressQuestHelpers = not PQ.suppressQuestHelpers
+
+		local statusIcon = PQ.suppressQuestHelpers and ICON_NO or ICON_SUCCESS
+
+		d(string.format("|cFFD700[PvP QoL]|r |cFFFFFFQuest Helpers|r |t20:20:%s|t", statusIcon))
+	end
 
 	EVENT_MANAGER:UnregisterForEvent(PQ.name, EVENT_ADD_ON_LOADED)
 end

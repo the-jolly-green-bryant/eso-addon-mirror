@@ -85,20 +85,35 @@ local SPEND_LABELS = {
     armsman = "Armsman",
     armorer = "Armorer",
     merchant = "General Merchant",
-    stable = "Stable Master",
+    stable = "Stable / Riding Training",
     guildStore = "Guild Store Purchases",
     guildStoreFees = "Guild Store Fees",
     repairs = "Repairs",
     laundering = "Fence / Laundering",
     respec = "Respecs",
     travel = "Fast Travel",
+    bagSpace = "Backpack Upgrades",
+    bankSpace = "Bank Upgrades",
+    bankFees = "Bank Fees",
+    bounty = "Bounties / Justice Fines",
+    buyback = "Buyback",
+    cashOnDelivery = "Cash on Delivery",
+    crafting = "Crafting / Reconstruction",
+    guildCosts = "Guild Costs",
+    pvpCosts = "PvP / Keep Costs",
+    mail = "Mail Gold Outflow",
+    playerTrade = "Player Trades",
+    tribute = "Tales of Tribute",
     other = "Other Purchases / Fees",
+    unclassified = "Unclassified Gold Outflow",
 }
 
 local SPEND_ORDER = {
     "blacksmith", "clothier", "woodworker", "jeweler", "alchemist", "enchanter",
     "grocer", "brewer", "chef", "armsman", "armorer", "merchant", "stable",
-    "guildStore", "guildStoreFees", "repairs", "laundering", "respec", "travel", "other",
+    "repairs", "respec", "travel", "laundering", "bagSpace", "bankSpace", "bankFees", "bounty", "buyback",
+    "guildStore", "guildStoreFees", "cashOnDelivery", "playerTrade", "mail", "crafting",
+    "guildCosts", "pvpCosts", "tribute", "other", "unclassified",
 }
 
 local function currentCharacterKey()
@@ -295,18 +310,73 @@ function A:GetGoldSpendingView()
     return { total = safeNumber(ledger.total, 0), rows = rows }
 end
 
+function A:IsIgnoredGoldOutflow(reason)
+    -- Internal storage moves are not purchases. They can reduce character gold,
+    -- but the same gold still belongs to the player/account, so do not count them
+    -- as spending. Refund reasons are also excluded if ESO ever reports them with
+    -- an unusual negative delta.
+    local ignored = {
+        "CURRENCY_CHANGE_REASON_BANK_DEPOSIT",
+        "CURRENCY_CHANGE_REASON_BANK_WITHDRAWAL",
+        "CURRENCY_CHANGE_REASON_GUILD_BANK_DEPOSIT",
+        "CURRENCY_CHANGE_REASON_GUILD_BANK_WITHDRAWAL",
+        "CURRENCY_CHANGE_REASON_TRADINGHOUSE_REFUND",
+        "CURRENCY_CHANGE_REASON_JUMP_FAILURE_REFUND",
+        "CURRENCY_CHANGE_REASON_PLAYER_INIT",
+    }
+    for _, constantName in ipairs(ignored) do
+        if currencyReasonMatches(reason, constantName) then return true end
+    end
+    return false
+end
+
 function A:ClassifyGoldSpend(reason)
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRADINGHOUSE_PURCHASE") then return "guildStore" end
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRADINGHOUSE_LISTING") then return "guildStoreFees" end
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_VENDOR_REPAIR") then return "repairs" end
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_VENDOR_LAUNDER") then return "laundering" end
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRAVEL_GRAVEYARD") then return "travel" end
-    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_STABLESPACE") then return "stable" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_STABLESPACE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_FEED_MOUNT") then return "stable" end
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_ATTRIBUTES")
         or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_CHAMPION")
         or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_MORPHS")
         or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESPEC_SKILLS") then
         return "respec"
+    end
+
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BAGSPACE") then return "bagSpace" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BANKSPACE") then return "bankSpace" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BANK_FEE") then return "bankFees" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BOUNTY_CONFISCATED")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BOUNTY_PAID_FENCE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BOUNTY_PAID_GUARD") then return "bounty" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_BUYBACK") then return "buyback" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_CASH_ON_DELIVERY") then return "cashOnDelivery" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRADE") then return "playerTrade" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_MAIL") then return "mail" end
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRIBUTE") then return "tribute" end
+
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_REFORGE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RECONSTRUCTION")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESEARCH_TRAIT")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRAIT_REVEAL")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_CRAFT")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RECIPE") then
+        return "crafting"
+    end
+
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_EDIT_GUILD_HERALDRY")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_GUILD_FORWARD_CAMP")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_GUILD_TABARD")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_GUILD_STANDARD") then
+        return "guildCosts"
+    end
+
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_KEEP_REPAIR")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_KEEP_UPGRADE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_PVP_RESURRECT") then
+        return "pvpCosts"
     end
 
     if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_VENDOR") then
@@ -318,25 +388,24 @@ function A:ClassifyGoldSpend(reason)
         local map = {
             blacksmith = "blacksmith", clothier = "clothier", woodworker = "woodworker",
             alchemist = "alchemist", enchanter = "enchanter", grocer = "grocer",
-            brewer = "brewer", chef = "chef", mystic = "jeweler", stable = "stable",
+            brewer = "brewer", chef = "chef", mystic = "jeweler", jeweler = "jeweler", stable = "stable",
             armsman = "armsman", armorer = "armorer", merchant = "merchant",
         }
         return map[storeType] or "merchant"
     end
 
-    -- Count only reasons that represent an actual purchase/fee. Character-money
-    -- decreases caused by bank deposits, trades, mail attachments, etc. are not
-    -- spending and must not inflate the lifetime total.
-    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_REFORGE")
-        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RECONSTRUCTION")
-        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RESEARCH_TRAIT")
-        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_TRAIT_REVEAL")
-        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_RECIPE")
-        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_ABILITY_UPGRADE_PURCHASE")
+    -- Known gold costs that do not have a more useful UI category yet.
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_ABILITY_UPGRADE_PURCHASE")
         or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_SOUL_HEAL")
-        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_STUCK") then
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_STUCK")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_CHARACTER_UPGRADE")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_ACTION")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_CONVERSATION")
+        or currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_DEATH") then
         return "other"
     end
+
+    if currencyReasonMatches(reason, "CURRENCY_CHANGE_REASON_UNKNOWN") then return "unclassified" end
     return nil
 end
 
@@ -399,6 +468,15 @@ function A:OnMoneyUpdate(newMoney, oldMoney, reason)
             self.pendingGoldSpend = nil
         elseif pending and nowMs() - safeNumber(pending.time, 0) > 10000 then
             self.pendingGoldSpend = nil
+        end
+
+        -- Track every real negative character-gold outflow. Known categories
+        -- get a descriptive bucket; future/new ESO reasons fall back to
+        -- Unclassified instead of silently disappearing. Internal bank and guild-
+        -- bank moves are the only intentional exclusions because they are storage
+        -- transfers, not spending.
+        if not category and not self:IsIgnoredGoldOutflow(reason) then
+            category = "unclassified"
         end
 
         if category then

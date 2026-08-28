@@ -8,8 +8,8 @@
 ## Description: Library for information about item sets
 ## Author: @code65536
 ## IsLibrary: true
-## Version: 1.0.0
-## AddOnVersion: 100000
+## Version: 1.0.1
+## AddOnVersion: 100010
 ## APIVersion: 101050 101051
 
 LibItemSets.lua

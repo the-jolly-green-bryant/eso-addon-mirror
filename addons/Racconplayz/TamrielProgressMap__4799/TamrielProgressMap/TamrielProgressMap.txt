@@ -1,0 +1,12 @@
+## Title: |cE6C45CTamriel Progress Map|r
+## Author: |c66CCFFRaccoonplayz|r
+## Description: Shows zone completion, native ESO-style fonts and focused quest rewards directly on the ESO world map. / Zeigt den allgemeinen Gebietsfortschritt direkt auf der ESO-Weltkarte. Requires LibAddonMenu-2.0.
+## Version: 2.0.6
+## AddOnVersion: 2006
+## APIVersion: 101050 101051
+## SavedVariables: TamrielProgressMap_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+localization/en.lua
+localization/de.lua
+TamrielProgressMap.lua

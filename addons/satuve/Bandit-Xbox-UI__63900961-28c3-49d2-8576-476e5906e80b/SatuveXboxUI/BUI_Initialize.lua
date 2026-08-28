@@ -248,13 +248,11 @@ local function Initialize(eventCode, addOnName)
 	BUI.Menu.Init()
 	BUI.Menu.Initialize()
 	BUI.MiniMap.Initialize()
-	if BUI.ResourceNavigator and BUI.ResourceNavigator.Initialize then BUI.ResourceNavigator:Initialize() end
 	BUI.Automation_Init()
 --	BUI.Champion_Init()
 	BUI.Panel_Init()
 	BUI.CustomBar_Init()
-	-- All numbered controller-menu pages are known now. Register them once, sorted
-	-- numerically, including the Resource Navigation page 22.
+	-- All numbered controller-menu pages are known now. Register them once, sorted numerically.
 	if BUI.SettingsBridge and BUI.SettingsBridge.FinalizeGrouped then
 		BUI.SettingsBridge.FinalizeGrouped("BUI_BanditUI")
 	end

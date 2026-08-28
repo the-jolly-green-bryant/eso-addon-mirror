@@ -1,16 +1,6 @@
 TetsuCombatHealerHelper = TetsuCombatHealerHelper or {}
 local T = TetsuCombatHealerHelper
 
-local function ColorGet(tbl, dr, dg, db, da)
-    tbl = tbl or {}
-    return tbl.r or dr, tbl.g or dg, tbl.b or db, tbl.a or da
-end
-
-local function ColorSet(tbl, r, g, b, a)
-    tbl.r, tbl.g, tbl.b, tbl.a = r, g, b, a
-    return tbl
-end
-
 local function SlotItems()
     local items = {}
     for i = 1, #T.SlotCatalog do
@@ -35,7 +25,7 @@ local function Dropdown(settings, label, tooltip, defaultKey, getter, setter)
         setFunction = function(control, itemName, itemData)
             local key = (itemData and itemData.data) or "off"
             setter(key)
-            if T.Heads then T.Heads.RefreshAll() end
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
 end
@@ -49,7 +39,7 @@ function T.RegisterSettings()
 
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true, allowDefaults = true })
     if not settings then return end
-    settings.version = "1.3.2"
+    settings.version = "1.5.12"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -69,159 +59,103 @@ function T.RegisterSettings()
         end,
         setFunction = function(val)
             vars.enabled = val and true or false
-            if T.Heads then T.Heads.RefreshAll() end
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
-        label = L.HUD_LABEL,
-        tooltip = L.HUD_TT,
+        label = L.HUD_LABEL or "Show healer HUD",
+        tooltip = L.HUD_TT or "Name grid with per-player dots.",
         default = true,
         getFunction = function()
             return vars.hudList ~= false
         end,
         setFunction = function(val)
             vars.hudList = val and true or false
-            if T.Heads then T.Heads.RefreshAll() end
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
-        label = L.WORLD_PIPS_LABEL,
-        tooltip = L.WORLD_PIPS_TT,
+        label = L.PAIR_PANELS_LABEL or "Show buff / debuff panels",
+        tooltip = L.PAIR_PANELS_TT or "Raid buffs and boss debuffs. Independent from the healer HUD.",
         default = true,
         getFunction = function()
-            return vars.worldPips ~= false
+            return vars.showPairPanels ~= false
         end,
         setFunction = function(val)
-            vars.worldPips = val and true or false
-            if T.Heads then T.Heads.RefreshAll() end
+            vars.showPairPanels = val and true or false
+            if T.Panels then T.Panels.Refresh() end
+            if T.Hud then T.Hud.RefreshAll() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L.SORT_ROLE_LABEL or "Sort HUD by role",
+        tooltip = L.SORT_ROLE_TT or "Tanks first, then healers, then DPS.",
+        default = true,
+        getFunction = function()
+            return vars.sortByRole ~= false
+        end,
+        setFunction = function(val)
+            vars.sortByRole = val and true or false
+            if T.Hud then T.Hud.RefreshAll() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L.HEALCUT_LABEL or "Mark heal cut / Defile",
+        tooltip = L.HEALCUT_TT or "Red ✖ next to the name when the player has Defile or a heal-absorb.",
+        default = true,
+        getFunction = function()
+            return vars.showHealCut ~= false
+        end,
+        setFunction = function(val)
+            vars.showHealCut = val and true or false
+            if T.Hud then T.Hud.RefreshAll() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L.LOWHP_TANKS_LABEL or "Low HP warning: tanks only",
+        tooltip = L.LOWHP_TANKS_TT or "Off = color any low-HP row red.",
+        default = true,
+        getFunction = function()
+            return vars.lowHpTanksOnly ~= false
+        end,
+        setFunction = function(val)
+            vars.lowHpTanksOnly = val and true or false
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SLIDER,
-        label = L.ICON_SIZE_LABEL,
-        tooltip = L.ICON_SIZE_TT,
-        min = 24,
-        max = 72,
-        step = 4,
-        default = 40,
+        label = L.LOWHP_PCT_LABEL or "Low HP threshold %",
+        tooltip = L.LOWHP_PCT_TT or "Row name turns red at or below this health percent.",
+        min = 15,
+        max = 60,
+        step = 5,
+        default = 35,
         getFunction = function()
-            return vars.iconSize or 40
+            return vars.lowHpPercent or 35
         end,
         setFunction = function(val)
-            vars.iconSize = tonumber(val) or 40
-        end,
-    })
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_SLIDER,
-        label = L.HEAD_HEIGHT_LABEL or "Head icon height",
-        tooltip = L.HEAD_HEIGHT_TT or "Metres above the unit origin (feet). Raise if icons sit in the chest.",
-        min = 12,
-        max = 32,
-        step = 1,
-        default = 22,
-        getFunction = function()
-            return math.floor(((vars.headHeight or 2.15) * 10) + 0.5)
-        end,
-        setFunction = function(val)
-            vars.headHeight = (tonumber(val) or 22) / 10
-        end,
-    })
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_DROPDOWN,
-        label = L.HEAD_MODE_LABEL or "Head icon mode",
-        tooltip = L.HEAD_MODE_TT or "Auto uses 3D render space (same as the old puddle). Screen pins icons on the HUD if 3D fails in a zone.",
-        items = {
-            { name = L.HEAD_MODE_AUTO or "Auto (3D world)", data = "auto" },
-            { name = L.HEAD_MODE_SCREEN or "Screen overlay", data = "screen" },
-        },
-        default = L.HEAD_MODE_AUTO or "Auto (3D world)",
-        getFunction = function()
-            if vars.headMode == "screen" then
-                return L.HEAD_MODE_SCREEN or "Screen overlay"
-            end
-            return L.HEAD_MODE_AUTO or "Auto (3D world)"
-        end,
-        setFunction = function(control, itemName, itemData)
-            vars.headMode = (itemData and itemData.data) or "auto"
-            if T.Heads then T.Heads.RefreshAll() end
+            vars.lowHpPercent = tonumber(val) or 35
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SECTION,
-        label = L.HEAD_SECTION,
-        tooltip = L.HEAD_SECTION_TT,
+        label = L.POS_SECTION or "HUD position",
+        tooltip = L.POS_SECTION_TT or "Move and scale the windows.",
     })
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_COLOR,
-        label = L.IH_COLOR_LABEL,
-        tooltip = L.IH_COLOR_TT,
-        default = { 0.25, 0.95, 0.45, 1 },
-        getFunction = function()
-            return ColorGet(vars.ihColor, 0.25, 0.95, 0.45, 1)
-        end,
-        setFunction = function(r, g, b, a)
-            vars.ihColor = ColorSet(vars.ihColor or {}, r, g, b, a)
-        end,
-    })
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_COLOR,
-        label = L.PRAYER_COLOR_LABEL,
-        tooltip = L.PRAYER_COLOR_TT,
-        default = { 1, 0.2, 0.2, 1 },
-        getFunction = function()
-            return ColorGet(vars.prayerColor, 1, 0.2, 0.2, 1)
-        end,
-        setFunction = function(r, g, b, a)
-            vars.prayerColor = ColorSet(vars.prayerColor or {}, r, g, b, a)
-        end,
-    })
-
-    Dropdown(settings, L.HEAD_EXTRA_LABEL, L.HEAD_EXTRA_TT, "off",
-        function() return vars.headExtraKey or "off" end,
-        function(key) vars.headExtraKey = key end)
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_COLOR,
-        label = L.HEAD_EXTRA_COLOR_LABEL,
-        tooltip = L.HEAD_EXTRA_COLOR_TT,
-        default = { 1, 0.45, 0.15, 1 },
-        getFunction = function()
-            return ColorGet(vars.headExtraColor, 1, 0.45, 0.15, 1)
-        end,
-        setFunction = function(r, g, b, a)
-            vars.headExtraColor = ColorSet(vars.headExtraColor or {}, r, g, b, a)
-        end,
-    })
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_SECTION,
-        label = L.HUD_SECTION,
-        tooltip = L.HUD_SECTION_TT,
-    })
-
-    for i = 1, 5 do
-        local idx = i
-        Dropdown(settings,
-            (L.HUD_COL_LABEL or "HUD buff %d"):format(idx),
-            L.HUD_COL_TT or "Green dot in this column when the player HAS the buff.",
-            (idx == 1 and "powerfulAssault") or (idx == 2 and "majorCourage") or (idx == 3 and "echoingVigor") or "off",
-            function()
-                return vars["hudBuff" .. idx] or "off"
-            end,
-            function(key)
-                vars["hudBuff" .. idx] = key
-            end)
-    end
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SLIDER,
@@ -236,7 +170,7 @@ function T.RegisterSettings()
         end,
         setFunction = function(val)
             vars.hudOffsetX = tonumber(val) or 0
-            if T.Heads then T.Heads.RefreshAll() end
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
 
@@ -253,7 +187,41 @@ function T.RegisterSettings()
         end,
         setFunction = function(val)
             vars.hudOffsetY = tonumber(val) or 0
-            if T.Heads then T.Heads.RefreshAll() end
+            if T.Hud then T.Hud.RefreshAll() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SLIDER,
+        label = L.PAIR_X_LABEL or "Buff/debuff offset X",
+        tooltip = L.PAIR_X_TT or "Used when the healer HUD is off. Moves raid + boss panels together.",
+        min = -400,
+        max = 80,
+        step = 10,
+        default = 0,
+        getFunction = function()
+            return vars.pairOffsetX or 0
+        end,
+        setFunction = function(val)
+            vars.pairOffsetX = tonumber(val) or 0
+            if T.Panels then T.Panels.Refresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SLIDER,
+        label = L.PAIR_Y_LABEL or "Buff/debuff offset Y",
+        tooltip = L.PAIR_Y_TT or "Used when the healer HUD is off. Moves raid + boss panels together.",
+        min = -80,
+        max = 400,
+        step = 10,
+        default = 0,
+        getFunction = function()
+            return vars.pairOffsetY or 0
+        end,
+        setFunction = function(val)
+            vars.pairOffsetY = tonumber(val) or 0
+            if T.Panels then T.Panels.Refresh() end
         end,
     })
 
@@ -270,7 +238,115 @@ function T.RegisterSettings()
         end,
         setFunction = function(val)
             vars.hudScale = (tonumber(val) or 100) / 100
-            if T.Heads then T.Heads.RefreshAll() end
+            if T.Hud then T.Hud.RefreshAll() end
         end,
     })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SLIDER,
+        label = L.OOC_ALPHA_LABEL or "Out of combat opacity %",
+        tooltip = L.OOC_ALPHA_TT or "How solid the HUDs are when you are not in combat. Combat is always 100%.",
+        min = 25,
+        max = 100,
+        step = 5,
+        default = 70,
+        getFunction = function()
+            return vars.oocAlpha or 70
+        end,
+        setFunction = function(val)
+            vars.oocAlpha = tonumber(val) or 70
+            if T.Hud then T.Hud.RefreshAll() end
+            if T.Panels then T.Panels.Refresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SECTION,
+        label = L.HUD_SECTION or "Healer buff columns",
+        tooltip = L.HUD_SECTION_TT or "Per-player dots on the healer HUD.",
+    })
+
+    for i = 1, 5 do
+        local idx = i
+        Dropdown(settings,
+            (L.HUD_COL_LABEL or "HUD buff %d"):format(idx),
+            L.HUD_COL_TT or "Green dot in this column when the player HAS the buff.",
+            (idx == 1 and "prayer") or (idx == 2 and "powerfulAssault") or (idx == 3 and "majorCourage") or (idx == 4 and "orbLockout") or "off",
+            function()
+                return vars["hudBuff" .. idx] or "off"
+            end,
+            function(key)
+                vars["hudBuff" .. idx] = key
+            end)
+    end
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SECTION,
+        label = L.RAID_BUFFS or "Raid buffs",
+        tooltip = L.RAID_BUFFS_TT or "Group Major/Minor coverage. One toggle per pair.",
+    })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L.SHOW_RAID_PANEL or "Show raid buff panel",
+        tooltip = "",
+        default = true,
+        getFunction = function() return vars.showRaidPanel ~= false end,
+        setFunction = function(val)
+            vars.showRaidPanel = val and true or false
+            if T.Panels then T.Panels.Refresh() end
+        end,
+    })
+    if T.RaidBuffPairs then
+        for i = 1, #T.RaidBuffPairs do
+            local id = T.RaidBuffPairs[i].id
+            settings:AddSetting({
+                type = LibHarvensAddonSettings.ST_CHECKBOX,
+                label = (L["PAIR_" .. string.upper(id)]) or id,
+                tooltip = L["PAIR_DESC_" .. string.upper(id)] or L.PAIR_TT or "Major and Minor together.",
+                default = true,
+                getFunction = function()
+                    return vars["buffPair_" .. id] ~= false
+                end,
+                setFunction = function(val)
+                    vars["buffPair_" .. id] = val and true or false
+                    if T.Panels then T.Panels.Refresh() end
+                end,
+            })
+        end
+    end
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SECTION,
+        label = L.BOSS_DEBUFFS or "Boss debuffs",
+        tooltip = L.BOSS_DEBUFFS_TT or "Named Major/Minor on nearby bosses. Off-Balance shows Active / Immune.",
+    })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L.SHOW_BOSS_PANEL or "Show boss debuff panel",
+        tooltip = "",
+        default = true,
+        getFunction = function() return vars.showBossPanel ~= false end,
+        setFunction = function(val)
+            vars.showBossPanel = val and true or false
+            if T.Panels then T.Panels.Refresh() end
+        end,
+    })
+    if T.BossDebuffPairs then
+        for i = 1, #T.BossDebuffPairs do
+            local id = T.BossDebuffPairs[i].id
+            settings:AddSetting({
+                type = LibHarvensAddonSettings.ST_CHECKBOX,
+                label = (L["PAIR_" .. string.upper(id)]) or id,
+                tooltip = L["PAIR_DESC_" .. string.upper(id)] or L.PAIR_TT or "Major and Minor together.",
+                default = true,
+                getFunction = function()
+                    return vars["debuffPair_" .. id] ~= false
+                end,
+                setFunction = function(val)
+                    vars["debuffPair_" .. id] = val and true or false
+                    if T.Panels then T.Panels.Refresh() end
+                end,
+            })
+        end
+    end
 end

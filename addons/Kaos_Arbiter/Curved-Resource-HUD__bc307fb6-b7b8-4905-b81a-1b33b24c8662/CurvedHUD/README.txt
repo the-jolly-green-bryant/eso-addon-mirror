@@ -1,4 +1,4 @@
-Curved Resource HUD 0.8.0 SCRIBING TRACKERS TEST BUILD
+Curved Resource HUD 0.8.4 ARCANIST + CRUX TRACKERS TEST BUILD
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -17,7 +17,7 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.8.0-test; HUD, shield, mount stamina, and trackers created
+  [CurvedHUD] Loaded 0.8.4-test; HUD, shield, and trackers created
 
 0.7.0 tracker framework additions:
 - selectable standardized Major buff in the lower-left outside slot
@@ -70,6 +70,51 @@ Expected startup chat line:
 - per-character Soul Burst and Ulfsild's Contingency trackers in a dedicated Scribing Skills section
 - configurable position, color, and script-dependent duration for both scribing timers
 - current cast artwork is retained for each character's scribed variant
+- bundled console-safe icons for Soul Burst and Ulfsild's Contingency
+- bundled individual icons for Vibrant Shroud, Encase, and Shattering Spines
+- automatic scribed duration lookup from the equipped crafted ability, with the
+  per-character duration setting retained as a fallback for unsupported scripts
+- optional global imminent-expiration alerts: positive timers turn red and gain
+  a pulsing red icon border at three seconds; negative Balance is excluded
+- toggleable trackers for all eleven duration-capable Scribing grimoires, each with a bundled
+  console-safe icon, one of eight positions, a color, and automatic configured
+  duration lookup with a per-character fallback (the persistent Banner Bearer
+  toggle is intentionally excluded because it has no recast-duration window)
+- new Warden section with Betty Netch/Blue Betty/Bull Netch, Swarm/Fetcher
+  Infection/Growing Swarm, and Scorch/Deep Fissure/Subterranean Assault
+- Shalk timing covers both eruptions: 9 seconds for Scorch/Deep Fissure and
+  6 seconds for Subterranean Assault before the suggested recast
+- added Impaling Shards/Gripping Shards/Winter's Revenge, Lotus Flower/Green
+  Lotus/Lotus Blossom, Healing Seed/Budding Seeds/Corrupting Pollen, and
+  Crystallized Shield/Shimmering Shield/Crystallized Slab tracker families
+- new Warden families resolve the equipped or learned morph's ESO icon at run time
+- expanded Sorcerer tracking for Daedric Curse/Prey/Haunting Curse, Lightning
+  Splash/Flood/Liquid Lightning, Volatile Familiar and Twilight Tormentor
+  activations, Conjured Ward, Lightning Form/Hurricane, Dark Exchange, and
+  Daedric Mines families; ultimate abilities remain intentionally excluded
+- all definition-driven trackers now share a defensive icon chain: bundled
+  artwork, equipped-slot texture, ability-ID texture, learned-skill texture,
+  live event artwork, and finally the last valid cached texture
+- added optional duration tracking across all six standard weapon lines:
+  Two Handed, One Hand and Shield, Dual Wield, Bow, Destruction Staff, and
+  Restoration Staff
+- added optional Fighters Guild, Mages Guild, Undaunted, Psijic Order,
+  Assault, Support, armor, Soul Magic, Vampire, and Werewolf timers
+- reorganized customization in the order Class Skills, Weapon Skill Lines,
+  then Guild / Other Skill Lines; each scribing grimoire now appears beneath
+  the weapon, guild, Alliance War, or Soul Magic line that grants it
+- instant-only abilities, passive-only bonuses, permanent toggles, and all
+  ultimate abilities are intentionally excluded from selectable timers
+- corrected the preceding weapon/guild build's release designation to 0.8.3
+- added a dedicated Arcanist section with per-character position, color, and
+  enablement settings for ten duration-based skill families
+- added a Crux stack tracker: the icon count shows 1-3 and its selected timer
+  arc fills one third per active Crux instead of displaying a false duration
+- Crux is read defensively from the player's live buff stack and uses ESO's
+  Crux artwork when available, with the shared equipped/learned/cached icon chain
+- Arcanist duration trackers cover Abyssal Impact, Tome-Bearer's Inspiration,
+  The Imperfect Ring, Runic Jolt, Runespite Ward, Fatewoven Armor, Runic
+  Defense, Rune of Eldritch Horror, Chakram Shields, and Arcanist's Domain
 
 Diagnosis of the silent v0.2 result:
 The prior ZIP was not recoverable from the referenced task, so exact line-level attribution

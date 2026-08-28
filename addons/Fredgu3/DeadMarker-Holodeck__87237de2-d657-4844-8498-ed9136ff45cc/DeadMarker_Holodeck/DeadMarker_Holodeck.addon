@@ -1,15 +1,16 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 36
+## AddOnVersion: 39
 ## Author: Skye-Forge
-## Description: Holodeck 0.0.36 — Rakkhat pack. /hdsettings
-## Version: 0.0.36
+## Description: Holodeck 0.0.39 — plant, list, load, play. /hdsettings
+## Version: 0.0.39
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua
 Holodeck_Settings.lua
 fights/house_demo.lua
-fights/MOL-TwinsClear.lua
-fights/MOL-TwinsPlayers.lua
-fights/MOL-Zhajhassa.lua
-fights/MOL-Rakkhat.lua
+fights/vMoL-TwinsClear.lua
+fights/vMoL-TwinsPlayers.lua
+fights/vMoL-Zhajhassa.lua
+fights/vMoL-Rakkhat.lua
+fights/vMoL-Rakkhat-Players.lua

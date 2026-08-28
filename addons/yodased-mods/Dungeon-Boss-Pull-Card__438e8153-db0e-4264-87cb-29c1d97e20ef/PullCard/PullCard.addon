@@ -2,9 +2,9 @@
 ## Author: yodased-mods
 ## Description: Controller-first dungeon boss mechanics cards with group-chat prefill.
 ## Version: 0.3.0
-## AddOnVersion: 56
+## AddOnVersion: 78
 ## APIVersion: 101050 101051
-## OptionalDependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibAddonMenu-2.0 ConsoleMenu
 
 Data.lua
 PullCard.lua

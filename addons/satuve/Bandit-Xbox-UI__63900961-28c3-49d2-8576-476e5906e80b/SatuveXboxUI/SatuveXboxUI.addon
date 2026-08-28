@@ -1,11 +1,11 @@
 ## Title: |c4B8BFESatuve|r Xbox UI
-## Description: Xbox-server PC interface fork with controller settings, minimap and resource navigation. Optional HarvestMap + HarvestMap-Data community-node integration. Based on Bandits User Interface.
+## Description: Xbox-server PC interface fork with controller settings and minimap. Based on Bandits User Interface.
 ## Author: Satuve (Xbox adaptation); original Bandits UI by secretrob and Hoft
-## Version: 1.1.62-harvestmap-zone-cache-fix
+## Version: 1.1.63-resource-navigation-extracted
 ## APIVersion: 101050
 ## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS SATUVE_XBOX_UI_CP_CHAR
 ## DependsOn: LibGamepad>=107
-## OptionalDependsOn: LibAddonMenu-2.0>=41 HarvestMap
+## OptionalDependsOn: LibAddonMenu-2.0>=41
 
 ; Satuve Xbox UI is a modified fork of Bandits User Interface.
 ; Controller settings require LibGamepad AddOnVersion 107 (1.0.7) or newer.
@@ -47,9 +47,6 @@ BUI_Buffs.lua
 proctemplate.xml
 BUI_Actions.lua
 BUI_MiniMap.lua
-BUI_ResourceData.lua
-BUI_ResourceHarvestMap.lua
-BUI_ResourceNavigator.lua
 BUI_QuickSlots.lua
 BUI_StatShare.lua
 BUI_OnScreen.lua

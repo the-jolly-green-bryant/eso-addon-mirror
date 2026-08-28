@@ -1,0 +1,147 @@
+[font=Palatino Linotype][center][size=6][b][color=#6FCB9F]Bureau of Material Worth[/color][/b][/size]
+[color=#8C8A82]Know what your Craft Bag is worth.[/color][/center]
+
+
+
+[color=#6FCB9F]Version: 4.3.174707[/color]
+
+Session-based history sampling and an in-panel price refresh.
+
+- Session History: The value sparkline and per-material price history now record one point per login or /reloadui instead of waiting 4 hours / ~20 hours. Later Craft Bag opens in the same session do not add another sparkline sample; a later price lookup in the same session updates that material's latest point in place. A 20-minute relog is captured without filling the graph from every bag visit.
+- Price Refresh: The Market prices footer row is now clickable and re-queries LibPrice, matching /bmw refresh, so a mid-session import from Master Merchant or Tamriel Trade Centre does not require the settings panel.
+
+
+
+[color=#6FCB9F]Version: 4.3.160544[/color]
+
+Seven-day price dynamics, market-movement alerts, and table-quality refinements.
+
+- Price Dynamics: Added an analytical row below Other with rise/fall counters and the configured threshold beside the name. The row opens a dedicated whole-bag view with current price, change from the oldest available observation, maximum rise, and maximum fall. Back returns to the category that was open.
+- Seven-day Analysis: Every earlier/later price pair inside the trailing seven-day window is analyzed, so short one- or two-day spikes and dips remain visible even if the price later returns near its starting point. The panel summary is cached until bag composition, prices, history, or the threshold change.
+- Price History: Replaced the single per-material baseline with a compact bounded series, including automatic legacy migration and source-aware boundaries that prevent MM, TTC, or ATT changes from appearing as market movement.
+- Configuration: Added a significant-movement threshold from 5% to 100% (20% by default).
+- Notifications: Important and Detailed modes announce new significant price signals, direction reversals, and materially stronger movements immediately, with persistent duplicate suppression. Chat reports now include the active threshold.
+- Material Table: Click the grand total for the whole Craft Bag. Hover an icon for the game item tooltip; Shift-click a row to insert the item link in chat, with a persistent header reminder. Escape closes the table and the withdraw window. Basic/Analytics can be switched from the table toolbar. Search filters the list already on screen, including Changes and Price dynamics, by name, price source, quality, or unpriced. Sort order and the price filter persist while moving between views. Column headers sort in category, Changes, and Price dynamics. Empty states distinguish an empty category, empty bag, unmatched filter, unmatched search, collecting history, and no threshold crossing. Row tooltips now keep stock, fees, and source on Price dynamics rows and describe Changes rows.
+- Withdrawals: Added a Max quantity preset for the current withdrawable amount.
+- Interface: Added contextual explanations for the seven-day change, maximum rise, and maximum fall columns, plus English and Russian localization for the complete feature.
+
+
+
+[color=#6FCB9F]Version: 4.2.112030[/color]
+
+Visual clarity and Update 51 compatibility review.
+
+- Category Share: Added subtle fill bars behind profession rows, making each category's share of the total readable before looking at the percentage.
+- Price Coverage: The footer now shows the priced-material percentage alongside the priced/total count and active price source.
+- Price Sources: Material rows now carry compact MM, TTC, ATT, FurC, NPC, Crown, or Rolis source badges using the same centralized source labels as the footer and tooltips.
+- Value History: Added a clear marker for the newest history sample and an overall percentage trend beside the current value.
+- Update 51: Added API 101051 support while retaining API 101050. Reviewed the addon and its required libraries against the published Update 51 API patch notes and documentation; no direct use of removed APIs or incompatible changed signatures was found. Final runtime verification is still recommended on the final PTS/live build.
+
+
+
+[color=#6FCB9F]Version: 4.1.223952[/color]
+
+An update aimed at optimizing the existing functionality and improving the Live valuation and price-cache release.
+
+- Live Delta: The "Since last review" row now updates immediately while the Craft Bag remains open, including zero-value material swaps and changes that return to the acknowledged baseline.
+- Incremental Updates: Quantity changes for an existing material now reuse its cached unit price and update only the affected aggregates instead of recomputing the entire slot through LibPrice.
+- Price Refresh: Missing prices receive only one delayed retry per UI session instead of eight repeated attempts. An explicit `/bmw refresh` starts a new refresh cycle when needed.
+- Price Cache: Manual refresh now clears both cached prices and their source metadata before revaluation.
+- Change Details: The material breakdown for "Since last review" is maintained incrementally for changed materials; full comparison remains reserved for full inventory updates and baseline initialization.
+
+
+
+[color=#6FCB9F]Version: 4.0.045741[/color]
+
+Stability and correctness release. UI, Window, and Settings Fixes.
+
+- Accessibility: The settings panel and /bmwsettings command now work even if LibPrice is missing.
+- Window Sizing: Fixed window width desynchronization. The saved width is now validated and snapped to the slider step to ensure the settings panel matches the actual rendered size.
+- Charts: The value-history chart no longer overflows the panel. If the number of samples exceeds the available pixels, the oldest ones are dropped.
+- Data Display: The panel no longer shows stale totals while prices are being retried. Removed a hidden category row that held outdated snapshots.
+- Zero-Delta Swaps: Material swaps with no gold difference are now visible in the UI and can be reviewed.
+- Formatting: The "Cum. 80%" column header is now dynamically formatted from the actual threshold constant. The version and release date are consistently formatted across the footer, settings dashboard, and chat banner.
+
+Core Stability and Logic
+
+- Withdrawals: Fixed "not enough space" errors, silently skipped queue jobs, and early run terminations caused by unrelated item arrivals. Increased the silent confirmation timeout from 2 to 8 seconds for laggy servers. Fixed duplicate chat reports and overstated run values.
+- Valuation: Fixed chart reordering and dropped points, running total drift over long sessions, and negative category counters. Debug chat output is now disabled by default for new installs.
+
+
+
+[color=#6FCB9F]Version: 3.6.163246[/color]
+
+- Added a hover explanation for the green marker on the most valuable category.
+- Reworked the footer change summary: material changes now accumulate from the last manual review instead of resetting whenever the Craft Bag is opened.
+- Clicking the change summary now opens its material breakdown and marks that batch as reviewed; later changes begin accumulating as a new batch.
+- Added clear Russian and English labels, settings descriptions, and hover help explaining the manual-review behavior in both the main panel and the change-detail window.
+- Simplified the footer guidance row: it now appears only when the valuation has materials without market prices, avoiding duplicate or competing change summaries.
+- Added a subtle hover pulse directly to the grand-total text and gold icon, while retaining the net-sale tooltip.
+- Redesigned the footer release block into separate addon-name and version lines, with a muted accent name, muted version text, and stable spacing.
+
+
+
+[color=#6FCB9F]Version: 3.5.231844[/color]
+
+- Excluded Chameleon Crown Gems from valuation, snapshots, and unpriced-material warnings because they cannot be sold.
+
+
+
+[color=#6FCB9F]Version: 3.4.201855[/color]
+
+- Delayed the one-time automatic snapshot until LibPrice prices have settled, preventing zero-value entries for later-removed materials.
+- Fixed visit/session value changes so material swaps are reported even when the total item count is unchanged.
+- Fixed queued withdrawal quantities so an edit in the single-material view is retained for batch withdrawal.
+- Corrected Russian stack preset captions for the singular, few, and many forms.
+- Fixed legacy SavedVariables migration so NA, EU, and PTS can each inherit an independent copy without removing the shared Default profile after the first login.
+- Coalesced bursts of full inventory updates into a single delayed Craft Bag rescan while preserving lazy updates when the bag is closed.
+- Added session counters for full inventory updates and coalesced rescans to `/bmw status` for in-game performance diagnostics.
+- Replaced unsafe vertical-bar separators in `/bmw status` messages to prevent ESO chat-link parsing.
+
+
+
+[color=#6FCB9F]Version: 3.3.195326[/color]
+
+- Fixed an error when rendering the value-change footer for deltas with localized thousands separators.
+
+
+
+[color=#6FCB9F]Version: 3.2.174352[/color]
+
+- Standardized monetary values on the gold icon across chat messages, tooltips, history, and detail views.
+- Added a breakdown for the visit/session delta: hover the existing footer row to separate stock movement from price revaluation, or click it to inspect changed materials.
+- Corrected delta descriptions to clarify that a stock change can coincide with market-price revaluation.
+- Added spacing between the footer guidance and the value-history graph.
+- Compacted price history and material baselines in SavedVariables while preserving existing snapshots, price changes, and visit-delta diagnostics.
+
+
+
+[color=#6FCB9F]Version: 3.1.071108[/color]
+
+- Improved English and Russian localization: clarified material-change labels, corrected terminology, and completed missing Russian UI strings.
+- Reduced SavedVariables size for new material snapshots by storing only the data required for comparison.
+- Added chat notification modes: Off, Summary, Important changes, and Detailed withdrawal/price-update reports.
+
+
+
+[color=#6FCB9F]Version: 3.0.220726[/color]
+
+Major Milestone Release – First 3.0 Launch
+
+- Fixed extraction, queue, price update, and Coverage display errors.
+- Added context lines in the detail window: category, search, filters, snapshot.
+- Explicit material actions: ✓ for extraction, + for adding to a package.
+- Added table modes: Main / Analytics; Analytics is now the default view.
+- Merged single and batch extraction into a single unified window.
+- Positions of the detail window and extraction window are now preserved.
+- Batch interface is shown only when two or more materials are selected.
+- Queue now includes a summary: materials, required cells, cost, and readiness status.
+- Improved filters: visible active state, reset, and search clearing.
+- Reworked material tooltips: guild trader commissions, technical data, row hover highlighting.
+- Main panel now serves as a guide: tips for unset prices, top categories, and snapshot changes.
+- Added persistent micro-tips: Accumulated 80%, snapshot status, clear freshness labels for bag and prices.
+- Redesigned main panel: enhanced total, subdued footer, highlighted most valuable category, action link with arrow, compact chart.
+- Added version date at the bottom of the main window: Addon version as of 22.07.2026.
+- Added ReleaseDate to the manifest along with a reminder to update both version and date together.
+
+[/font]

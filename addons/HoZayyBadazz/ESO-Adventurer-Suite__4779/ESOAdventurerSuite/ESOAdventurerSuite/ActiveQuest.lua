@@ -11,8 +11,8 @@ local wm = WINDOW_MANAGER
 
 local DEFAULT_WIDTH = 420
 local DEFAULT_HEIGHT = 128
-local MIN_WIDTH = 280
-local MIN_HEIGHT = 104
+local MIN_WIDTH = 180
+local MIN_HEIGHT = 76
 local MAX_WIDTH = 900
 local MAX_HEIGHT = 520
 
@@ -439,8 +439,31 @@ function Q:BuildObjectiveText(index)
     return normalizeProgressCounters(table.concat(lines, "\n"))
 end
 
-function Q:GetTrackedQuestHeader()
+-- v0.28.72: quest overlay visibility/content is independent from the single
+-- authoritative assisted-quest/compass source. If Golden Pursuits owns the
+-- compass, the Active Quest overlay still shows the remembered Active Quest so
+-- both dedicated overlays can be visible together. Main Quest keeps its legacy
+-- behavior in the Active Quest frame when Main Quest is the selected source.
+function Q:GetOverlayQuestSource2872()
     local source = self.GetQuestTrackingSource2513 and self:GetQuestTrackingSource2513() or "ACTIVE_QUEST"
+    if source == "GOLDEN_PURSUITS" then return "ACTIVE_QUEST" end
+    return source
+end
+
+function Q:GetOverlayQuestIndex2872()
+    local source = self:GetOverlayQuestSource2872()
+    if self.ResolveQuestSource2520 then
+        return self:ResolveQuestSource2520(source)
+    end
+    if source == "ACTIVE_QUEST" and self.ResolveTrackedSourceQuest2513 then
+        return self:ResolveTrackedSourceQuest2513("ACTIVE_QUEST")
+    end
+    return self:GetActiveQuestIndex()
+end
+
+function Q:GetTrackedQuestHeader()
+    local source = self.GetOverlayQuestSource2872 and self:GetOverlayQuestSource2872()
+        or (self.GetQuestTrackingSource2513 and self:GetQuestTrackingSource2513() or "ACTIVE_QUEST")
     if source == "MAIN_QUEST" then return "MAIN QUEST" end
     if source == "GOLDEN_PURSUITS" then return "GOLDEN PURSUITS" end
     return "ACTIVE QUEST"
@@ -542,7 +565,11 @@ function Q:Create()
             local width, height = control:GetDimensions()
             EPC.saved.activeQuestWidth = math.floor((tonumber(width) or DEFAULT_WIDTH) + 0.5)
             EPC.saved.activeQuestHeight = math.floor((tonumber(height) or DEFAULT_HEIGHT) + 0.5)
+            -- v0.28.75: once the player manually resizes the overlay, preserve
+            -- that exact viewport instead of auto-growing it back to fit text.
+            EPC.saved.activeQuestManualSize2875 = true
         end
+        if self.ApplyManualLayout2875 then self:ApplyManualLayout2875() end
         self:Refresh()
     end)
 
@@ -551,11 +578,45 @@ function Q:Create()
     self.layoutGuide = layoutGuide
 end
 
+-- v0.28.75: manual quest-overlay sizing is a viewport. The frame is allowed
+-- to be substantially smaller than the full wrapped text; labels are constrained
+-- to the available room rather than forcing the top-level window to grow again.
+function Q:ApplyManualLayout2875()
+    if not self.frame or not self.title or not self.steps then return end
+    local frameHeight = math.max(MIN_HEIGHT, tonumber(self.frame:GetHeight()) or DEFAULT_HEIGHT)
+    local headerHeight = 20
+    if self.header then self.header:SetHeight(headerHeight) end
+
+    local titleDesired = 36
+    if type(self.title.GetTextHeight) == "function" then
+        local ok, value = pcall(self.title.GetTextHeight, self.title)
+        if ok and tonumber(value) then titleDesired = math.max(18, math.ceil(tonumber(value)) + 2) end
+    end
+
+    -- Header starts at y=8; title begins two pixels below it. Keep at least one
+    -- readable title row and give the remainder to objectives.
+    local contentBottom = frameHeight - 8
+    local titleTop = 8 + headerHeight + 2
+    local minStepsRoom = 18
+    local titleHeight = math.max(18, math.min(titleDesired, math.max(18, contentBottom - titleTop - 4 - minStepsRoom)))
+    self.title:SetHeight(titleHeight)
+
+    local stepsTop = titleTop + titleHeight + 4
+    local stepsHeight = math.max(0, contentBottom - stepsTop)
+    self.steps:SetHeight(stepsHeight)
+    self.steps:SetHidden(stepsHeight < 8)
+end
+
 -- Keep the HUD only as tall as the rendered title/objectives require. This uses
 -- the label's real wrapped-text height, so 3+ objectives and long objective text
 -- expand the card automatically, then shrink again when the quest gets shorter.
 function Q:AutoFitHeight()
     if not self.frame or not self.title or not self.steps or self.layoutMode then return end
+    if EPC.saved and EPC.saved.activeQuestManualSize2875 == true then
+        self:ApplyManualLayout2875()
+        return
+    end
+    self.steps:SetHidden(false)
 
     local headerHeight = 20
     if self.header then self.header:SetHeight(headerHeight) end
@@ -593,7 +654,7 @@ function Q:Refresh()
     self.frame:SetHidden(not show)
     if not show then return end
 
-    local index = self:GetActiveQuestIndex()
+    local index = self.GetOverlayQuestIndex2872 and self:GetOverlayQuestIndex2872() or self:GetActiveQuestIndex()
     if not self.layoutMode and not index then
         -- No accepted/tracked quest means no gameplay quest overlay. Keep the
         -- saved position/size/settings intact so it returns when a quest is active.
@@ -661,6 +722,8 @@ function Q:SetSize(width, height)
     self.frame:SetDimensions(width, height)
     EPC.saved.activeQuestWidth = math.floor(width + 0.5)
     EPC.saved.activeQuestHeight = math.floor(height + 0.5)
+    EPC.saved.activeQuestManualSize2875 = true
+    self:ApplyManualLayout2875()
     self:Refresh()
 end
 
@@ -668,7 +731,9 @@ function Q:ResetSize()
     if not self.frame or not EPC.saved then return end
     EPC.saved.activeQuestWidth = DEFAULT_WIDTH
     EPC.saved.activeQuestHeight = DEFAULT_HEIGHT
+    EPC.saved.activeQuestManualSize2875 = false
     self.frame:SetDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    self.steps:SetHidden(false)
     self:Refresh()
 end
 
@@ -1337,10 +1402,8 @@ end
 
 local easLegacyRefresh_2513 = Q.Refresh
 function Q:Refresh()
-    if EPC.saved and self:GetQuestTrackingSource2513() == "GOLDEN_PURSUITS" and not self.layoutMode then
-        if self.frame then self.frame:SetHidden(true) end
-        return
-    end
+    -- v0.28.72: do not hide the Active Quest overlay just because Golden
+    -- Pursuits owns the assisted quest/compass. Its own show setting decides.
     return easLegacyRefresh_2513(self)
 end
 

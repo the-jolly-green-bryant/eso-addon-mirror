@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/M0R/More-Markers__4266",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "M0R",
   "canonical_id": "esoui:4266",
   "category_id": "45",
@@ -17,7 +18,7 @@
     "M0RMarkers"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4266/",
-  "fingerprint": "5a8b6fd2187be2d50cb65b945e17f7d26ef531926580b5962cb3e69bb14ecd2e",
+  "fingerprint": "9b2945b07637dc4c93de67a6de321299ec3dfd96db569a897192398474f1f0e3",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14650.png",
     "https://cdn-eso.mmoui.com/preview/pvw14651.png",
@@ -34,11 +35,11 @@
   "source_id": "4266",
   "source_url": "https://www.esoui.com/downloads/info4266-MoreMarkers.html",
   "stats": {
-    "downloads": 16324,
+    "downloads": 17621,
     "favorites": 24,
-    "monthly_downloads": 4113
+    "monthly_downloads": 1098
   },
   "title": "More Markers",
-  "updated_at": 1783831036000,
-  "version": "2.2.1"
+  "updated_at": 1787921226000,
+  "version": "2.2.2"
 }

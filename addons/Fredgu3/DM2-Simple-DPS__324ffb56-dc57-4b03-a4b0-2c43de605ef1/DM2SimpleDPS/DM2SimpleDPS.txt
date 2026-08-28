@@ -1,9 +1,9 @@
 ## Title: DM2 Simple DPS
 ## APIVersion: 101048 101047
-## AddOnVersion: 10013
+## AddOnVersion: 10014
 ## Author: Skye-Forge (DM2-inspired)
 ## Description: Minimal DPS meter: Live / Fight / Session columns with location-aware subtitle.
-## Version: 1.0.13
+## Version: 1.0.14
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: DM2SimpleDPSVars
 

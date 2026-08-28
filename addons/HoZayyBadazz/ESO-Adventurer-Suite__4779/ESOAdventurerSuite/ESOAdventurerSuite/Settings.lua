@@ -51,7 +51,8 @@ function S:Initialize()
     if EPC.OverlandDifficulty and EPC.OverlandDifficulty.GetDifficultyChoices then
         challengeNames, challengeValues = EPC.OverlandDifficulty:GetDifficultyChoices()
     end
-    LAM:RegisterAddonPanel(panelName, {
+    S.panelName = panelName
+    S.panelObject = LAM:RegisterAddonPanel(panelName, {
         type = "panel",
         name = EPC.displayName,
         displayName = "|cE8B347ESO Adventurer Suite|r",
@@ -623,6 +624,106 @@ function S:Initialize()
             width = "half",
         },
         {
+            type = "header", name = "Dungeon / Trial Chest Finder",
+        },
+        {
+            type = "description",
+            title = "Chest-centered 3D glow",
+            text = "Works only inside supported instanced PvE content such as Group Dungeons, Trials, and Arenas. ESO does not expose the chest model's exact world coordinates, so the Suite estimates the center when your reticle identifies a Chest or Heavy Sack at interaction range. Confirmed objects use one compact glow centered on that learned position until looted. Possible-spawn glows are optional and are automatically suppressed whenever a confirmed chest/Heavy Sack is being shown, preventing multiple glows from surrounding the real chest.",
+        },
+        {
+            type = "checkbox", name = "Enable Dungeon / Trial Chest Finder",
+            tooltip = "Enables learned 3D chest/Heavy Sack spawn glows only in supported instanced PvE content.",
+            getFunc = function() return EPC.saved.dungeonChestFinderEnabled ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestFinderEnabled = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            default = EPC.defaults.dungeonChestFinderEnabled,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Show possible chest spawn locations",
+            tooltip = "Shows remembered possible spawn points only when no confirmed chest/Heavy Sack is currently being rendered. Leave this off if you only want the actual detected chest location to glow.",
+            getFunc = function() return EPC.saved.dungeonChestShowPossible ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestShowPossible = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestShowPossible,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Show Heavy Sack glows",
+            getFunc = function() return EPC.saved.dungeonChestShowHeavySacks ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestShowHeavySacks = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestShowHeavySacks,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Learn new chest locations",
+            tooltip = "Saves a chest/Heavy Sack spawn point when ESO identifies it under your reticle at interaction range. Existing learned locations remain visible if this is turned off.",
+            getFunc = function() return EPC.saved.dungeonChestLearnLocations ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestLearnLocations = v == true end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestLearnLocations,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Chest glows through obstacles",
+            tooltip = "When enabled, 3D chest glows ignore the depth buffer so they can remain visible through dungeon geometry where ESO permits it.",
+            getFunc = function() return EPC.saved.dungeonChestThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestThroughWalls = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestThroughWalls,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Chest glow distance", min = 25, max = 250, step = 5,
+            tooltip = "Maximum distance in meters for learned dungeon/trial chest glows.",
+            getFunc = function() return tonumber(EPC.saved.dungeonChestDistance) or 120 end,
+            setFunc = function(v) EPC.saved.dungeonChestDistance = tonumber(v) or 120 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestDistance,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Chest glow size", min = 50, max = 200, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.dungeonChestMarkerScale) or 1.0) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.dungeonChestMarkerScale = (tonumber(v) or 100) / 100 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = math.floor((EPC.defaults.dungeonChestMarkerScale or 1.0) * 100),
+            width = "half",
+        },
+        {
+            type = "slider", name = "Chest glow intensity", min = 5, max = 100, step = 5,
+            tooltip = "Controls the brightness of chest/Heavy Sack glows. Confirmed spawns stay brighter and pulse until looted.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.dungeonChestGlowOpacity) or 0.60) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.dungeonChestGlowOpacity = (tonumber(v) or 60) / 100 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = math.floor((EPC.defaults.dungeonChestGlowOpacity or 0.60) * 100),
+            width = "half",
+        },
+        {
+            type = "colorpicker", name = "Chest glow color",
+            getFunc = function() local c = EPC.saved.dungeonChestColor or EPC.defaults.dungeonChestColor return c.r or 1.0, c.g or 0.74, c.b or 0.14, 1 end,
+            setFunc = function(r, g, b, a) EPC.saved.dungeonChestColor = { r = r, g = g, b = b } if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestColor,
+            width = "half",
+        },
+        {
+            type = "colorpicker", name = "Heavy Sack glow color",
+            getFunc = function() local c = EPC.saved.dungeonChestSackColor or EPC.defaults.dungeonChestSackColor return c.r or 0.62, c.g or 0.92, c.b or 0.52, 1 end,
+            setFunc = function(r, g, b, a) EPC.saved.dungeonChestSackColor = { r = r, g = g, b = b } if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false or EPC.saved.dungeonChestShowHeavySacks == false end,
+            default = EPC.defaults.dungeonChestSackColor,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear learned dungeon chest locations", buttonText = "Clear Learned Chests",
+            tooltip = "Deletes every dungeon/trial Chest and Heavy Sack spawn learned by this feature. This does not affect Lore Books, minimap locations, or other Suite data.",
+            func = function() if EPC.DungeonChestFinder then EPC.DungeonChestFinder:ClearLearnedLocations() EPC:Print("Dungeon / Trial Chest Finder learned locations cleared.") end end,
+            disabled = function() return not EPC.DungeonChestFinder end,
+            width = "full",
+        },
+        {
             type = "header", name = "Team Visibility",
         },
         {
@@ -931,7 +1032,7 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "Quest tracker source",
-            tooltip = "Choose the single authoritative quest source used by the Suite tracker and ESO assisted quest/compass. Active Quest follows your selected non-main Suite Quest Finder/journal quest. Golden Pursuits follows the journal quest linked to your selected Golden Pursuit. Main Quest follows the remembered Main Story quest. The selected Suite source takes priority over ESO native tracking; the other two selections are remembered but cannot intervene.",
+            tooltip = "Choose the single authoritative quest source used for ESO assisted quest/compass behavior. Active Quest follows your selected non-main Suite Quest Finder/journal quest. Golden Pursuits follows the journal quest linked to your selected Golden Pursuit. Main Quest follows the remembered Main Story quest. Overlay visibility is independent: Active Quest and Golden Pursuits overlays can both be enabled at the same time below.",
             choices = { "Active Quest", "Golden Pursuits", "Main Quest" },
             choicesValues = { "ACTIVE_QUEST", "GOLDEN_PURSUITS", "MAIN_QUEST" },
             getFunc = function()
@@ -971,15 +1072,15 @@ function S:Initialize()
             func = function() if EPC.ActiveQuest then EPC.ActiveQuest:ResetPosition() EPC.ActiveQuest:Refresh() end end,
         },
         {
-            type = "slider", name = "Active quest width", min = 280, max = 900, step = 10,
+            type = "slider", name = "Active quest width", min = 180, max = 900, step = 10,
             tooltip = "Changes the quest overlay width. Long quest names and objectives wrap inside this width.",
             getFunc = function() return tonumber(EPC.saved.activeQuestWidth) or 420 end,
             setFunc = function(v) EPC.saved.activeQuestWidth = v if EPC.ActiveQuest then EPC.ActiveQuest:SetSize(v, tonumber(EPC.saved.activeQuestHeight) or 160) end end,
             default = EPC.defaults.activeQuestWidth or 420,
         },
         {
-            type = "slider", name = "Active quest height", min = 120, max = 520, step = 10,
-            tooltip = "Changes how much wrapped objective text can be visible at once.",
+            type = "slider", name = "Active quest height", min = 80, max = 520, step = 10,
+            tooltip = "Changes the Active Quest viewport height. Manual sizes are respected; smaller heights simply show less wrapped objective text.",
             getFunc = function() return tonumber(EPC.saved.activeQuestHeight) or 160 end,
             setFunc = function(v) EPC.saved.activeQuestHeight = v if EPC.ActiveQuest then EPC.ActiveQuest:SetSize(tonumber(EPC.saved.activeQuestWidth) or 420, v) end end,
             default = EPC.defaults.activeQuestHeight or 160,
@@ -987,6 +1088,45 @@ function S:Initialize()
         {
             type = "button", name = "Reset active quest size", buttonText = "Reset Quest Size",
             func = function() if EPC.ActiveQuest then EPC.ActiveQuest:ResetSize() end end,
+        },
+        {
+            type = "header", name = "Golden Pursuits Overlay",
+        },
+        {
+            type = "checkbox", name = "Show Golden Pursuits overlay",
+            tooltip = "Shows the selected Golden Pursuit, its linked quest, and live progress. This is independent from Quest Tracker Source, so it can stay visible at the same time as the Active Quest overlay.",
+            getFunc = function() return EPC.saved.showGoldenPursuitsOverlay ~= false end,
+            setFunc = function(v) EPC.saved.showGoldenPursuitsOverlay = v == true if EPC.GoldenPursuits then EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
+            default = EPC.defaults.showGoldenPursuitsOverlay,
+        },
+        {
+            type = "dropdown", name = "Golden Pursuits visibility",
+            choices = { "Always", "Combat Only" }, choicesValues = { "ALWAYS", "COMBAT" },
+            getFunc = function() return EPC.saved.goldenPursuitsVisibility or "ALWAYS" end,
+            setFunc = function(v) EPC.saved.goldenPursuitsVisibility = v if EPC.GoldenPursuits then EPC.GoldenPursuits:RefreshVisibility2496() end end,
+            default = EPC.defaults.goldenPursuitsVisibility or "ALWAYS",
+        },
+        {
+            type = "button", name = "Reset Golden Pursuits position", buttonText = "Reset Golden Pursuits",
+            func = function() if EPC.GoldenPursuits then EPC.GoldenPursuits:ResetPosition() EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
+        },
+        {
+            type = "slider", name = "Golden Pursuits width", min = 180, max = 900, step = 10,
+            tooltip = "Changes the Golden Pursuits overlay width.",
+            getFunc = function() return tonumber(EPC.saved.goldenPursuitsWidth) or 420 end,
+            setFunc = function(v) EPC.saved.goldenPursuitsWidth = v if EPC.GoldenPursuits then EPC.GoldenPursuits:SetSize(v, tonumber(EPC.saved.goldenPursuitsHeight) or 136) end end,
+            default = EPC.defaults.goldenPursuitsWidth or 420,
+        },
+        {
+            type = "slider", name = "Golden Pursuits height", min = 90, max = 420, step = 10,
+            tooltip = "Changes the Golden Pursuits viewport height. Compact sizes clip extra rows instead of forcing the overlay larger.",
+            getFunc = function() return tonumber(EPC.saved.goldenPursuitsHeight) or 136 end,
+            setFunc = function(v) EPC.saved.goldenPursuitsHeight = v if EPC.GoldenPursuits then EPC.GoldenPursuits:SetSize(tonumber(EPC.saved.goldenPursuitsWidth) or 420, v) end end,
+            default = EPC.defaults.goldenPursuitsHeight or 136,
+        },
+        {
+            type = "button", name = "Reset Golden Pursuits size", buttonText = "Reset Golden Size",
+            func = function() if EPC.GoldenPursuits then EPC.GoldenPursuits:ResetSize() EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
         },
         {
             type = "header", name = "Alliance Rank Overlay",
@@ -1139,7 +1279,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Hide Suite HUD in menus / map",
-            tooltip = "Recommended and enabled by default. Hides Player, Target, Group, Raid, Live Stats, Stable Training timer, Clock, Active Quest, Mini Map, Alliance Rank, and combat HUD while Pause, Character, Inventory, the full World Map, Journal, Crafting, Store, Collections, and similar UI scenes are open. Restores them automatically in gameplay.",
+            tooltip = "Recommended and enabled by default. Hides Player, Target, Group, Raid, Live Stats, Stable Training timer, Clock, Active Quest, Golden Pursuits, Mini Map, Alliance Rank, and combat HUD while Pause, Character, Inventory, the full World Map, Journal, Crafting, Store, Collections, and similar UI scenes are open. Restores them automatically in gameplay.",
             getFunc = function() return EPC.saved.hudHideInMenus ~= false end,
             setFunc = function(v) EPC.saved.hudHideInMenus = v == true if EPC.RefreshGameplayOverlays then EPC:RefreshGameplayOverlays() end end,
             default = EPC.defaults.hudHideInMenus,
@@ -1382,7 +1522,7 @@ function S:Initialize()
         },
         {
             type = "button", name = "HUD layout mode", buttonText = "Move Frames",
-            tooltip = "Releases the mouse and shows Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, and every Ability icon so each can be dragged independently. Active Quest can also be resized from its edges/corners.",
+            tooltip = "Releases the mouse and shows the movable HUD frames. ESO's native Use Synergy prompt can be dragged directly while a real synergy prompt is active; no custom synergy preview is drawn. Active Quest can also be resized from its edges/corners.",
             func = function() if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(true) end end,
             width = "half",
         },
@@ -1394,7 +1534,7 @@ function S:Initialize()
         },
         {
             type = "button", name = "Reset HUD frame positions", buttonText = "Reset Frames",
-            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, and every Ability icon.",
+            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, Use Synergy, and every Ability icon.",
             func = function() if EPC.ResetUnitFramePositions then EPC:ResetUnitFramePositions() end end,
         },
         {
@@ -1473,6 +1613,20 @@ function S:Initialize()
                 if EPC.Endgame then EPC.Endgame:SetFocus(v) else EPC.saved.coachFocus = v end
             end,
             default = EPC.defaults.coachFocus,
+        },
+        {
+            type = "dropdown", name = "Endgame gear preset",
+            tooltip = "Chooses the content profile used by BEST ENDGAME. Current templates cover all seven classes for Damage, Tank, and Healer roles. AUTO uses the selected LFG role, and Combat role awareness can force a role profile.",
+            choices = { "Trial / Endgame", "Single Target", "AoE / Trash", "Solo" },
+            choicesValues = { "TRIAL", "SINGLE_TARGET", "AOE_TRASH", "SOLO" },
+            getFunc = function()
+                return EPC.GearOptimizer and select(1, EPC.GearOptimizer:GetPreset()) or (EPC.saved.gearOptimizerPreset or "TRIAL")
+            end,
+            setFunc = function(v)
+                if EPC.GearOptimizer then EPC.GearOptimizer:SetPreset(v) else EPC.saved.gearOptimizerPreset = v end
+                EPC:RequestRefresh("gear-endgame-preset")
+            end,
+            default = EPC.defaults.gearOptimizerPreset or "TRIAL",
         },
         {
             type = "checkbox", name = "Intelligent Next Best Move",
@@ -1650,12 +1804,14 @@ function S:Initialize()
         ["Automatic Equipment Maintenance"] = "GEAR",
         ["Repair / Recharge Estimate Overlay"] = "HUD",
         ["World Combat Visibility"] = "COMBAT",
+        ["Dungeon / Trial Chest Finder"] = "HUD",
         ["Team Visibility"] = "HUD",
         ["Persistent HUD & Unit Frames"] = "FRAMES",
         ["Stable Training Timer"] = "HUD",
         ["Clock"] = "HUD",
         ["Quest Tracking"] = "HUD",
         ["Active Quest Overlay"] = "HUD",
+        ["Golden Pursuits Overlay"] = "HUD",
         ["Alliance Rank Overlay"] = "HUD",
         ["Champion Level Overlay"] = "HUD",
         ["Ability Overlays"] = "HUD",
@@ -1714,6 +1870,12 @@ function S:Initialize()
         ["Show recommendation reasons"] = "CODEX",
         ["Window opacity"] = "CODEX",
         ["Window scale"] = "CODEX",
+        ["Show Golden Pursuits overlay"] = "HUD",
+        ["Golden Pursuits visibility"] = "HUD",
+        ["Reset Golden Pursuits position"] = "HUD",
+        ["Golden Pursuits width"] = "HUD",
+        ["Golden Pursuits height"] = "HUD",
+        ["Reset Golden Pursuits size"] = "HUD",
         ["Reset overlay position"] = "CODEX",
     }
 

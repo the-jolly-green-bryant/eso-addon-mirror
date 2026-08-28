@@ -27,6 +27,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Trade Centre jpPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Tamriel-Trade-Centre-jpPatch__2193) | Marify | PC / Mac | 0.11.0 |
 | [Tamriel Trade Centre Simple Price](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kriax/Tamriel-Trade-Centre-Simple-Price__3078) | _Kriax | PC / Mac | 1.1.3 |
 | [TamrielGuard - disable accidental stealing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/TamrielGuard---disable-accidental-stealing__2780) | Schrodi | PC / Mac | 1.0 |
+| [TamrielProgressMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/TamrielProgressMap__4799) | Racconplayz | PC / Mac | 2.0.6 |
 | [TamrielTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NWDD/TamrielTime__232) | NWDD | PC / Mac | 0.9.9.3 |
 | [TamrielTradeCentre-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/TamrielTradeCentre-KR__4505) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Tank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Tank__1192) | Criscal | PC / Mac | 1.1.42 |
@@ -62,6 +63,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Teleport Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/deagl0r/Teleport-Tool__1333) | deagl0r | PC / Mac | 1.24.0.0 |
 | [Tes01ResourceBars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Tes01ResourceBars__4dd951d1-312d-470c-b02c-f1961618b998) | BMGxSancho | Console | — |
 | [TESO Ingame Messenger - TIM (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Migoda/TESO-Ingame-Messenger---TIM-for-Update-6__944) | Migoda | PC / Mac | 5.52 |
+| [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/test__3735024b-209d-4fab-966c-339f5adffcb5) | satuve | Console | — |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/test__081b2e52-b426-454f-9be3-3a9a4aa5678f) | sirinsidiator | Console | — |
 | [Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wh0c4r35ab0utth15/Test__43eacadc-428c-4ca4-b0da-e2777148a4fb) | wh0c4r35ab0utth15 | Console | — |
 | [Test addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Test-addon__0633023c-b987-4b33-ba10-4437f11b6efd) | Copper0 | Console | — |

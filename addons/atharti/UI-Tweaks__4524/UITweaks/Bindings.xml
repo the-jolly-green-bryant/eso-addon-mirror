@@ -1,15 +1,15 @@
 <Bindings>
-    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
-        <Category name="UI Tweaks">
-            <Action name="UITWEAKS_CONTAINERS">
-                <Down>UITweaks_Open()</Down>
-            </Action>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFFD700UI Tweaks|r">
+			<Action name="UITWEAKS_CONTAINERS">
+				<Down>UITweaks_Open()</Down>
+			</Action>
 			<Action name="UITWEAKS_FULLSCREEN">
-                <Down>UITweaks_Fullscreen()</Down>
-            </Action>
+				<Down>UITweaks_Fullscreen()</Down>
+			</Action>
 			<Action name="UITWEAKS_RELOAD">
-                <Down>UIT_ReloadUI()</Down>
-            </Action>
-        </Category>
-    </Layer>
+				<Down>UIT_ReloadUI()</Down>
+			</Action>
+		</Category>
+	</Layer>
 </Bindings>

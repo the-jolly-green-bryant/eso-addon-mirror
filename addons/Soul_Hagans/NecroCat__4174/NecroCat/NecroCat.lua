@@ -89,7 +89,7 @@ function NC.OnActivityFinderStatusUpdate(eventCode, status)
     if status == ACTIVITY_FINDER_STATUS_READY_CHECK then
         zo_callLater(function()
             if GetActivityFinderStatus() == ACTIVITY_FINDER_STATUS_READY_CHECK then
-                AcceptActivityFinderInvite()
+                AcceptLFGReadyCheckNotification()
                 d("|c66f2ff[NecroCat]|r Данж найден! Готовность принята автоматически.")
             end
         end, 500) -- Небольшая задержка в 0.5 сек, чтобы движок игры успел проинициализировать окно
@@ -846,9 +846,9 @@ function NC.CreateGroupMenuAutoAcceptUI()
 
     check:ClearAnchors()
     if ZO_SearchingForGroupStatus then
-        check:SetAnchor(BOTTOMLEFT, ZO_SearchingForGroupStatus, TOPLEFT, 0, -8)
+        check:SetAnchor(BOTTOMLEFT, ZO_SearchingForGroupStatus, TOPLEFT, 0, -25)
     else
-        check:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 20, -70)
+        check:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 20, -90)
     end
 
     check:SetDrawTier(DT_HIGH)

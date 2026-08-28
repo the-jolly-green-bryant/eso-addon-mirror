@@ -1,4 +1,252 @@
 -- ZA_Data.lua
+
+-- =========================================================================
+-- БАЗА ОСОБЫХ ИСПЫТАНИЙ (ВЕТ, СПИДРАН, НЕУМИРАЙКА, ХМ, ТРИФЕКТА)
+-- =========================================================================
+ZA_SPECIAL_TYPES = {
+    -- ==================== ТРИАЛЫ (TRIALS) ====================
+    -- Цитадель Хель-Ра (Hel Ra Citadel)
+    [1474] = "VET",      -- Ветеран: Цитадель Хель-Ра
+    [1080] = "SPEED",    -- Испытание на время: цитадель Хель-Ра
+    [1136] = "HM",       -- Цитадель Хель-Ра: сложный режим
+
+    -- Этерианский архив (Aetherian Archive)
+    [1503] = "VET",      -- Ветеран: Этерианский архив
+    [1081] = "SPEED",    -- Испытание на время: Этерианский архив
+    [1137] = "HM",       -- Этерианский архив: сложный режим
+
+    -- Санктум-Офидия (Sanctum Ophidia)
+    [1462] = "VET",      -- Ветеран: Санктум-Офидия
+    [1124] = "SPEED",    -- Испытание на время: Санктум-Офидия
+    [1138] = "HM",       -- Санктум-Офидия: сложный режим
+
+    -- Пасть Лоркаджа (Maw of Lorkhaj)
+    [1368] = "VET",      -- Ветеран: Пасть Лоркаджа
+    [1367] = "SPEED",    -- Испытание на время: Пасть Лоркаджа
+    [1392] = "NODEATH",  -- Пасть Лоркаджа: безупречный триумф
+    [1344] = "HM",       -- Пасть Лоркаджа: сложный режим
+
+    -- Залы фабрикации (Halls of Fabrication)
+    [1810] = "VET",      -- Ветеран: Залы фабрикации
+    [1809] = "SPEED",    -- Испытание на время: Залы фабрикации
+    [1811] = "NODEATH",  -- Отлаженный механизм
+    [1829] = "HM",       -- Манипуляции механика (HM)
+    [1838] = "TRIFECTA", -- Как часы
+
+    -- Изоляционный санктуарий (Asylum Sanctorium)
+    [2077] = "VET",      -- Ветеран: Изоляционный санктуарий
+    [2081] = "SPEED",    -- Быстрое милосердие
+    [2080] = "NODEATH",  -- Освящение
+    [2085] = "HM",       -- Праведный приговор (+1)
+    [2086] = "HM",       -- Суд палачей (+1)
+    [2079] = "HM",       -- Триумфатор Изоляционного санктуария (+2)
+    [2087] = "TRIFECTA", -- Превосходное очищение
+
+    -- Клаудрест (Cloudrest)
+    [2133] = "VET",      -- Ветеран: Клаудрест
+    [2137] = "SPEED",    -- Скоростной истребитель слоадов
+    [2138] = "NODEATH",  -- Неподвластные теням
+    [2134] = "HM",       -- Слоад и ее тень (+1)
+    [2135] = "HM",       -- Опасная троица (+2)
+    [2136] = "HM",       -- Чем больше, тем лучше (+3)
+    [2139] = "TRIFECTA", -- Путь к Алаксону
+
+    -- Солнечный Шпиль (Sunspire)
+    [2435] = "VET",      -- Ветеран: Солнечный Шпиль
+    [2434] = "SPEED",    -- Бегун Солнечного Шпиля
+    [2436] = "NODEATH",  -- Бич драконов
+    [2469] = "HM",       -- Разжигая пламя (Yolna)
+    [2470] = "HM",       -- Охотник за бурями (Lokke)
+    [2466] = "HM",       -- Триумфатор Солнечного Шпиля (Nahvi)
+    [2467] = "TRIFECTA", -- Убийца богов Солнечного Шпиля
+
+    -- Эгида Кин (Kyne's Aegis)
+    [2734] = "VET",      -- Ветеран: Эгида Кин
+    [2733] = "SPEED",    -- Бегун Эгиды Кин
+    [2735] = "NODEATH",  -- Безупречная буря
+    [2736] = "HM",       -- Мясорубка (Yandir)
+    [2737] = "HM",       -- Корабль идет ко дну (Vrol)
+    [2739] = "HM",       -- Спаситель Оплота (Falgravn)
+    [2740] = "TRIFECTA", -- Безупречный прорыв осады
+
+    -- Каменная Роща (Rockgrove)
+    [2987] = "VET",      -- Ветеран: Каменная Роща
+    [2986] = "SPEED",    -- Бегун Каменной Рощи
+    [2988] = "NODEATH",  -- Несгибаемая воля
+    [3005] = "HM",       -- Загнанное чудовище (Oaxiltso)
+    [3006] = "HM",       -- Убить посланника! (Bahsei)
+    [3007] = "HM",       -- Защитник занмира (Xalvakka)
+    [3003] = "TRIFECTA", -- Спаситель душ
+
+    -- Риф Зловещих Парусов (Dreadsail Reef)
+    [3244] = "VET",      -- Ветеран: Риф Зловещих Парусов
+    [3243] = "SPEED",    -- Острие гарпуна
+    [3245] = "NODEATH",  -- Непотопляемый
+    [3250] = "HM",       -- Весь вечер на арене (Twins)
+    [3251] = "HM",       -- Крушитель рифов (Reef)
+    [3252] = "HM",       -- Опытный матрос (Taleria)
+    [3248] = "TRIFECTA", -- Погибель повелительницы флота
+
+    -- Грань Безумия (Sanity's Edge)
+    [3560] = "VET",      -- Ветеран: Грань Безумия
+    [3559] = "SPEED",    -- Бегун Грани Безумия
+    [3561] = "NODEATH",  -- Осознанные сновидения
+    [3566] = "HM",       -- Защитник магов (Yaseyla)
+    [3567] = "HM",       -- Разгоняющий сны (Twelvane)
+    [3568] = "HM",       -- Упорный сновидец (Ansuul)
+    [3564] = "TRIFECTA", -- Мастер разума
+
+    -- Цитадель Люцентов (Lucent Citadel)
+    [4015] = "VET",      -- Ветеран: Цитадель Люцентов
+    [4014] = "SPEED",    -- Ускоренная экскурсия
+    [4016] = "NODEATH",  -- Выжившие среди кристаллов
+    [4021] = "HM",       -- Зеркальное содействие (Count)
+    [4022] = "HM",       -- Кончина осколочника (Orphic)
+    [4023] = "HM",       -- Специалист по поискам (Arcane Knot)
+    [4019] = "TRIFECTA", -- Усмиритель тайного
+
+    -- Костяная Клетка (Ossein Cage)
+    [4268] = "VET",      -- Ветеран: Костяная Клетка
+    [4267] = "SPEED",    -- Быстроногий боец
+    [4269] = "NODEATH",  -- Наперекор невзгодам
+    [4274] = "HM",       -- Ужасы плоти (Shapers)
+    [4275] = "HM",       -- Титанический триумф (Jynorah)
+    [4276] = "HM",       -- Вкус страданий (Kazpian)
+    [4272] = "TRIFECTA", -- Повелитель страданий
+
+    -- ==================== АРЕНЫ (ARENAS) ====================
+    -- Blackrose Prison
+    [2363] = "VET",      [2366] = "SPEED",   [2365] = "NODEATH",  [2364] = "HM",       [2368] = "TRIFECTA",
+    -- Vateshran Arena
+    [2908] = "VET",      [2913] = "NODEATH", [2912] = "TRIFECTA",
+    -- Maelstrom Arena
+    [1305] = "VET",
+    -- Dragonstar Arena
+    [1140] = "VET",
+
+    -- ==================== DLC ДАНЖИ С ТРИФЕКТАМИ ====================
+    -- Fang Lair
+    [1960] = "VET",      [1963] = "SPEED",   [1964] = "NODEATH",  [1965] = "HM",       [2102] = "TRIFECTA",
+    -- Scalecaller Peak
+    [1976] = "VET",      [1979] = "SPEED",   [1980] = "NODEATH",  [1981] = "HM",       [1983] = "TRIFECTA",
+    -- Moon Hunter Keep
+    [2153] = "VET",      [2155] = "SPEED",   [2156] = "NODEATH",  [2154] = "HM",       [2159] = "TRIFECTA",
+    -- March of Sacrifices
+    [2163] = "VET",      [2165] = "SPEED",   [2166] = "NODEATH",  [2164] = "HM",       [2168] = "TRIFECTA",
+    -- Frostvault
+    [2261] = "VET",      [2263] = "SPEED",   [2264] = "NODEATH",  [2262] = "HM",       [2267] = "TRIFECTA",
+    -- Depths of Malatar
+    [2271] = "VET",      [2273] = "SPEED",   [2274] = "NODEATH",  [2272] = "HM",       [2276] = "TRIFECTA",
+    -- Lair of Maarselok
+    [2426] = "VET",      [2428] = "SPEED",   [2429] = "NODEATH",  [2431] = "TRIFECTA", [2427] = "HM",
+    -- Moongrave Fane
+    [2416] = "VET",      [2418] = "SPEED",   [2419] = "NODEATH",  [2417] = "HM",       [2422] = "TRIFECTA",
+    -- Icereach
+    [2540] = "VET",      [2542] = "SPEED",   [2543] = "NODEATH",  [2541] = "HM",       [2546] = "TRIFECTA",
+    -- Unhallowed Grave
+    [2550] = "VET",      [2552] = "SPEED",   [2553] = "NODEATH",  [2551] = "HM",       [2555] = "TRIFECTA",
+    -- Stone Garden
+    [2695] = "VET",      [2697] = "SPEED",   [2698] = "NODEATH",  [2755] = "HM",       [2701] = "TRIFECTA",
+    -- Castle Thorn
+    [2705] = "VET",      [2707] = "SPEED",   [2708] = "NODEATH",  [2706] = "HM",       [2710] = "TRIFECTA",
+    -- Black Drake Villa
+    [2832] = "VET",      [2834] = "SPEED",   [2835] = "NODEATH",  [2833] = "HM",       [2838] = "TRIFECTA",
+    -- The Cauldron
+    [2842] = "VET",      [2844] = "SPEED",   [2845] = "NODEATH",  [2843] = "HM",       [2847] = "TRIFECTA",
+    -- Red Petal Bastion
+    [3017] = "VET",      [3019] = "SPEED",   [3020] = "NODEATH",  [3018] = "HM",       [3023] = "TRIFECTA",
+    -- Dread Cellar
+    [3027] = "VET",      [3029] = "SPEED",   [3030] = "NODEATH",  [3028] = "HM",       [3032] = "TRIFECTA",
+    -- Coral Aerie
+    [3105] = "VET",      [3107] = "SPEED",   [3108] = "NODEATH",  [3153] = "HM",       [3111] = "TRIFECTA",
+    -- Shipwright's Regret
+    [3115] = "VET",      [3117] = "SPEED",   [3118] = "NODEATH",  [3154] = "HM",       [3120] = "TRIFECTA",
+    -- Earthen Root Enclave
+    [3376] = "VET",      [3378] = "SPEED",   [3379] = "NODEATH",  [3377] = "HM",       [3381] = "TRIFECTA",
+    -- Graven Deep
+    [3395] = "VET",      [3397] = "SPEED",   [3398] = "NODEATH",  [3396] = "HM",       [3400] = "TRIFECTA",
+    -- Bal Sunnar
+    [3469] = "VET",      [3471] = "SPEED",   [3472] = "NODEATH",  [3470] = "HM",       [3474] = "TRIFECTA",
+    -- Scrivener's Hall
+    [3530] = "VET",      [3532] = "SPEED",   [3533] = "NODEATH",  [3531] = "HM",       [3535] = "TRIFECTA",
+    -- Oathsworn Pit
+    [3811] = "VET",      [3813] = "SPEED",   [3814] = "NODEATH",  [3812] = "HM",       [3816] = "TRIFECTA",
+    -- Bedlam Veil
+    [3852] = "VET",      [3854] = "SPEED",   [3855] = "NODEATH",  [3853] = "HM",       [3857] = "TRIFECTA",
+    -- Exiled Redoubt
+    [4110] = "VET",      [4112] = "SPEED",   [4113] = "NODEATH",  [4111] = "HM",       [4115] = "TRIFECTA",
+    -- Lep Seclusa
+    [4129] = "VET",      [4131] = "SPEED",   [4132] = "NODEATH",  [4130] = "HM",       [4134] = "TRIFECTA",
+    -- Naj-Caldeesh
+    [4312] = "VET",      [4314] = "SPEED",   [4315] = "NODEATH",  [4313] = "HM",       [4317] = "TRIFECTA",
+    -- Black Gem Foundry
+    [4335] = "VET",      [4337] = "SPEED",   [4338] = "NODEATH",  [4336] = "HM",       [4340] = "TRIFECTA",
+
+    -- ==================== БАЗОВЫЕ ДАНЖИ (I / II) ====================
+    -- Fungal Grotto I
+    [1556] = "VET",      [1559] = "SPEED",   [1560] = "NODEATH",  [1561] = "HM",
+    -- Fungal Grotto II
+    [343]  = "VET",      [340]  = "SPEED",   [1563] = "NODEATH",  [342]  = "HM",
+    -- Banished Cells I
+    [1549] = "VET",      [1552] = "SPEED",   [1553] = "NODEATH",  [1554] = "HM",
+    -- Banished Cells II
+    [545]  = "VET",      [449]  = "SPEED",   [1564] = "NODEATH",  [451]  = "HM",
+    -- Elden Hollow I
+    [1573] = "VET",      [1576] = "SPEED",   [1577] = "NODEATH",  [1578] = "HM",
+    -- Elden Hollow II
+    [459]  = "VET",      [461]  = "SPEED",   [1580] = "NODEATH",  [463]  = "HM",
+    -- City of Ash I
+    [1597] = "VET",      [1600] = "SPEED",   [1601] = "NODEATH",  [1602] = "HM",
+    -- City of Ash II
+    [878]  = "VET",      [1108] = "SPEED",   [1107] = "NODEATH",  [1114] = "HM",
+    -- Crypt of Hearts I
+    [1610] = "VET",      [1613] = "SPEED",   [1614] = "NODEATH",  [1615] = "HM",
+    -- Crypt of Hearts II
+    [876]  = "VET",      [941]  = "SPEED",   [942]  = "NODEATH",  [1084] = "HM",
+    -- Darkshade Caverns I
+    [1581] = "VET",      [1584] = "SPEED",   [1585] = "NODEATH",  [1586] = "HM",
+    -- Darkshade Caverns II
+    [464]  = "VET",      [465]  = "SPEED",   [1588] = "NODEATH",  [467]  = "HM",
+    -- Spindleclutch I
+    [1565] = "VET",      [1568] = "SPEED",   [1569] = "NODEATH",  [1570] = "HM",
+    -- Spindleclutch II
+    [421]  = "VET",      [446]  = "SPEED",   [1572] = "NODEATH",  [448]  = "HM",
+    -- Wayrest Sewers I
+    [1589] = "VET",      [1592] = "SPEED",   [1593] = "NODEATH",  [1594] = "HM",
+    -- Wayrest Sewers II
+    [678]  = "VET",      [679]  = "SPEED",   [1596] = "NODEATH",  [681]  = "HM",
+
+    -- ==================== БАЗОВЫЕ ДАНЖИ (ОДИНОЧНЫЕ) ====================
+    -- Arx Corinium
+    [1604] = "VET",      [1607] = "SPEED",   [1608] = "NODEATH",  [1609] = "HM",
+    -- Blackheart Haven
+    [1647] = "VET",      [1650] = "SPEED",   [1651] = "NODEATH",  [1652] = "HM",
+    -- Blessed Crucible
+    [1641] = "VET",      [1644] = "SPEED",   [1645] = "NODEATH",  [1646] = "HM",
+    -- Direfrost Keep
+    [1623] = "VET",      [1626] = "SPEED",   [1627] = "NODEATH",  [1628] = "HM",
+    -- Selene's Web
+    [1635] = "VET",      [1638] = "SPEED",   [1639] = "NODEATH",  [1640] = "HM",
+    -- Tempest Island
+    [1617] = "VET",      [1620] = "SPEED",   [1621] = "NODEATH",  [1622] = "HM",
+    -- Vaults of Madness
+    [1653] = "VET",      [1656] = "SPEED",   [1657] = "NODEATH",  [1658] = "HM",
+    -- Volenfell
+    [1629] = "VET",      [1632] = "SPEED",   [1633] = "NODEATH",  [1634] = "HM",
+    -- White Gold Tower
+    [1120] = "VET",      [1275] = "SPEED",   [1276] = "NODEATH",  [1279] = "HM",
+    -- Imperial City Prison
+    [880]  = "VET",      [1128] = "SPEED",   [1129] = "NODEATH",  [1303] = "HM",
+    -- Ruins of Mazzatun
+    [1505] = "VET",      [1507] = "SPEED",   [1508] = "NODEATH",  [1506] = "HM",
+    -- Cradle of Shadows
+    [1523] = "VET",      [1525] = "SPEED",   [1526] = "NODEATH",  [1524] = "HM",
+    -- Falkreath Hold
+    [1699] = "VET",      [1702] = "SPEED",   [1703] = "NODEATH",  [1704] = "HM",
+    -- Bloodroot Forge
+    [1691] = "VET",      [1694] = "SPEED",   [1695] = "NODEATH",  [1696] = "HM",
+}
+
 ZONE_ACHIEVEMENTS = {
     -- Dungeon -- 
     [148] = {272,1604,1609,1606,1605,1607,1608}, --Аркс-Кориниум

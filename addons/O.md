@@ -18,7 +18,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [OdyHybridHeal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Odylon/OdyHybridHeal__2830) | Odylon | PC / Mac | 1.8.3 |
 | [OdySupportIcons - Group Role Icons & More](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Odylon/OdySupportIcons---Group-Role-Icons-More__2834) | Odylon | PC / Mac | 1.13.3 |
 | [OdySupportIcons-CrutchAlerts Bridge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/OdySupportIcons-CrutchAlerts-Bridge__4333) | Kyzeragon | PC / Mac | 1.0.0 |
-| [Off Balance Tracker (PC & Console) + Boss Focus (Offbalance)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Off-Balance-Tracker-PC-Console-Boss-Focus-Offbalance__4443) | Duesentrieb | PC / Mac | 20260526-0001 |
+| [Off Balance Tracker (PC & Console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Off-Balance-Tracker-PC-Console__4443) | Duesentrieb | PC / Mac | 20260828-0002 |
 | [Offered Items](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Offered-Items__2321) | Marify | PC / Mac | 0.9.23 |
 | [Offline Notify](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cidan/Offline-Notify__3450) | Cidan | PC / Mac | v1.0.2 |
 | [OffTaunt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jarva/OffTaunt__2965) | Jarva | PC / Mac | 1.0.0 |

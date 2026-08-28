@@ -33,28 +33,11 @@ Thank you to the Bandits UI authors and contributors for the original foundation
 
 Extract the folder `SatuveXboxUI` into the add-on directory used by your ESO Xbox-server PC client. Do not install it alongside an enabled copy of the original Bandits User Interface because both still use parts of the internal `BUI` Lua namespace.
 
-## Version 1.1.60 - Resource Navigation
+## Version 1.1.63
 
-- Added controller-friendly **Resource Navigation** settings as page 22.
-- Added nearest-node and short farm-route modes for ore, wood, clothing materials, alchemy plants and runestones.
-- Added a smooth direction arrow, approximate distance, a distinct minimap target and optional next-route markers.
-- Resource positions learned while gathering are persisted and deduplicated. The data layer also accepts separately registered map-node datasets for a future HarvestMap-style importer.
-- Route searches use map-local spatial buckets and only recalculate on relevant state changes; the 40 ms update is limited to the HUD direction and distance.
-- Movement and gathering remain completely manual. ESO does not expose a complete live resource-node database, so a fresh installation must first learn locations while the player gathers or receive a compatible external dataset later.
-- Controller settings still require **LibGamepad AddOnVersion 107**; the dependency was not raised to 108.
-
-## Version 1.1.61 - HarvestMap community data
-
-- Resource Navigation can now read the active map cache from **HarvestMap**.
-- Install and enable **HarvestMap** plus **HarvestMap-Data** to obtain the community collection instead of starting with an empty database.
-- HarvestMap remains optional: without it, SatuveXboxUI continues using its own learned locations.
-- The adapter reads only resource categories supported by the navigator and rebuilds its spatial index when HarvestMap reports a relevant cache change.
-
-## Version 1.1.62 - HarvestMap cache fix
-
-- Reads HarvestMap's already active current-zone caches directly, matching the source used for its compass and 3D resource pins.
-- No longer rejects valid HarvestMap data because of missing or temporarily stale map-ID metadata.
-- Added `/rnav` diagnostic output showing the current map, target, HarvestMap connection and imported-node count.
+- The gathering-navigation feature was extracted into the independent `SatuveResourceNavigator` add-on.
+- SatuveXboxUI no longer owns its settings, HUD controls, events, routes, node data or optional HarvestMap integration.
+- The minimap, normal map handling, combat UI and other Bandits UI systems are unchanged.
 
 ## License
 

@@ -38,6 +38,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pawksickles Updated and jpFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2ch/Pawksickles-Updated-and-jpFix__1401) | 2ch | PC / Mac | 1.5.2 |
 | [Pawksickles updated for High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/trollusk/Pawksickles-updated-for-High-Isle__3422) | trollusk | PC / Mac | 1.6.1 |
 | [PB](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexdragian/PB__2499) | alexdragian | PC / Mac | 0.0.23 |
+| [PB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
 | [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
 | [PB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
 | [pChat (Chat customization & help: look/notification/sound/automation/history)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Puddy/pChat-Chat-customization-help-look-notification-sound-automation-history__93) | Puddy | PC / Mac | 10.0.7.4 |
@@ -182,7 +183,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PvDoor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/skineh/PvDoor__3098) | skineh | PC / Mac | 1.0.2 |
 | [PVP Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Alpha-AC/PVP-Buddy__643e39fa-2b3f-46f8-aef4-eee9ff92360d) | Alpha-AC | Console | — |
 | [PvP FPS 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/PvP-FPS-2018__2011) | Phuein | PC / Mac | 1.22 |
-| [PvP QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/PvP-QoL__4358) | atharti | PC / Mac | 4.4 |
+| [PvP QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/PvP-QoL__4358) | atharti | PC / Mac | 4.5 |
 | [PvP Ranks (patch for Update 28 - Markarth)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/PvP-Ranks-patch-for-Update-28---Markarth__2824) | ForgottenLight | PC / Mac | 2.5d |
 | [PvP Ranks and Veterancy: Update 50](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sufia_Heolcyn/PvP-Ranks-and-Veterancy-Update-50__4640) | Sufia_Heolcyn | PC / Mac | 3.01 |
 | [Pvp Ready Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/Pvp-Ready-Emotes__2d86078c-b982-4ffc-a7f0-7905e41c2354) | Architectofmusic | Console | — |

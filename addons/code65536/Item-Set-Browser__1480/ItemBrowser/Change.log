@@ -1,3 +1,7 @@
+Version 4.7.1 (2026/08/27)
+* Work around an issue with weapon slot names in the set collection tooltip
+  reported by some players
+
 Version 4.7.0 (2026/08/04)
 * Moved the item set data into a new bundled library (LibItemSets) so that other
   addons can make use of this data
