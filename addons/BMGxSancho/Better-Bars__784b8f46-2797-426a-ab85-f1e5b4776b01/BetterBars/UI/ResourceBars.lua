@@ -307,6 +307,11 @@ function RB:GetDynamicLengthTarget(key, maximum)
     -- Every resource uses this same scale instead of creating its own login
     -- reference, so 31k Stamina is visibly longer than 26k Health, etc.
     local target = configuredLength * (maximum / STANDARD_RESOURCE_AMOUNT)
+    if key == "shield" then
+        -- Shield Length is a hard visual cap. Large Barrier-style shields can
+        -- auto-size below this value, but never grow beyond the chosen length.
+        return zo_clamp(target, math.min(MIN_AUTO_LENGTH, configuredLength), configuredLength)
+    end
     return zo_clamp(target, MIN_AUTO_LENGTH, MAX_AUTO_LENGTH)
 end
 
@@ -520,23 +525,29 @@ function RB:RenderPercent(key, percent, force)
     else
         local thickness = zo_clamp(tonumber(saved.thickness) or 34, 14, 72)
         local width = math.max(86, thickness + 70)
-        local visibleHeight = math.max(1, effectiveLength * percent)
+        -- Use one pixel-rounded geometry source for both the visible fill and
+        -- its texture crop. This prevents half-pixel drift against the frame,
+        -- especially on Crescent Depths 3-5.
+        local renderLength = math.max(1, zo_round(effectiveLength))
+        local renderWidth = math.max(1, zo_round(width))
+        local visibleHeight = math.max(1, zo_round(renderLength * percent))
         local depth = zo_clamp(tonumber(saved.crescentDepth) or 3, 1, 5)
         local side = saved.crescentSide or "RIGHT"
         local mirror = side == "LEFT"
         local left, right = mirror and 1 or 0, mirror and 0 or 1
-        local topV = 1 - percent
+        local renderedPercent = visibleHeight / renderLength
+        local topV = 1 - renderedPercent
 
         bar.fill:SetHidden(percent <= 0)
         bar.fill:ClearAnchors(); bar.fill:SetAnchor(BOTTOMLEFT, bar.crescentBody, BOTTOMLEFT, 0, 0)
-        bar.fill:SetDimensions(width, visibleHeight)
+        bar.fill:SetDimensions(renderWidth, visibleHeight)
         bar.fill:SetTexture(self:GetTexturePath("fill", depth))
         bar.fill:SetTextureCoords(left, right, topV, 1)
 
         local capHeight = math.min(8, visibleHeight)
         bar.leading:SetHidden(percent <= 0.01)
         if percent > 0.01 then
-            local vSpan = math.min(0.025, capHeight / math.max(1, effectiveLength))
+            local vSpan = math.min(0.025, capHeight / renderLength)
             bar.leading:ClearAnchors()
             -- Anchor the highlight directly to the visible fill instead of
             -- reconstructing its screen position from a bottom-origin offset.
@@ -544,7 +555,7 @@ function RB:RenderPercent(key, percent, force)
             -- and avoids ESO positive-Y offsets pushing the highlight below
             -- the resource bar.
             bar.leading:SetAnchor(TOPLEFT, bar.fill, TOPLEFT, 0, 0)
-            bar.leading:SetDimensions(width, capHeight)
+            bar.leading:SetDimensions(renderWidth, capHeight)
             bar.leading:SetTexture(self:GetTexturePath("fill", depth))
             bar.leading:SetTextureCoords(left, right, topV, math.min(1, topV + vSpan))
         end

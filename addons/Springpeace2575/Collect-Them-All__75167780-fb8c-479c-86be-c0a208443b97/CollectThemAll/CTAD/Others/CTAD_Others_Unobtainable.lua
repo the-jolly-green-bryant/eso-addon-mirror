@@ -17,7 +17,6 @@ CollectThemAllData_Others_Unobtainable = {
             { name = "Painting: Lair of Maarselok", info = "Unreleased" },
             { name = "Painting: Systres Seaside Manor", info = "Datamined" },
             { name = "Statuette: Imperial Warrior", info = "Datamined" },
-            { name = "Statuette: St. Olms the Just", info = "Unreleased" },
             { name = "Statuette: Telvanni Magister", info = "Datamined" },
         },
         [COLLECTIBLE_CATEGORY_TYPE_ASSISTANT] = {

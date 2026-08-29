@@ -28,7 +28,7 @@ local function AddResourceBarSettings(panel,key,label)
     end
     table.insert(settings, depthSetting)
     local autoLabel = key == "shield" and "Auto-size Damage Shield from Shield Capacity" or "Auto-size "..label.." from Max Resource"
-    local autoTooltip = key == "shield" and "Sizes the Shield bar from the peak aggregate shield amount of the current shield application. The fill then drains independently as the shield is consumed." or "Sizes this bar from the actual maximum resource using the shared standard: 30,000 resource equals the configured Length value. Food, gear, and other max-resource changes update automatically."
+    local autoTooltip = key == "shield" and "Auto-sizes below the configured Damage Shield Length. Length is a hard cap, so even very large Barrier shields never grow beyond it." or "Sizes this bar from the actual maximum resource using the shared standard: 30,000 resource equals the configured Length value. Food, gear, and other max-resource changes update automatically."
     table.insert(settings, {type=LHAS.ST_CHECKBOX,label=autoLabel,tooltip=autoTooltip,getFunction=function() return saved().dynamicMaxSize~=false end,setFunction=function(v) T.ResourceBars:SetBarOption(key,"dynamicMaxSize",v==true) end})
     table.insert(settings, {type=LHAS.ST_DROPDOWN,label=label.." Crescent Direction",items=function() return RESOURCE_SIDE_ITEMS end,getFunction=function() return {data=saved().crescentSide or "RIGHT"} end,setFunction=function(_,_,data) T.ResourceBars:SetBarOption(key,"crescentSide",data.data) end})
     table.insert(settings, {type=LHAS.ST_BUTTON,buttonText=label.." Up",clickHandler=function() T.ResourceBars:Nudge(key,0,-T.Constants.POSITION_STEP) end})
@@ -67,4 +67,5 @@ function Settings:Initialize()
     panel:AddSettings({
         {type=LHAS.ST_CHECKBOX,label="Hide Damage Shield When Empty",getFunction=function() return T.saved.resourceBars.shield.hideWhenEmpty~=false end,setFunction=function(v) T.ResourceBars:SetBarOption("shield","hideWhenEmpty",v==true) end},
     })
+    if T.ChatHUD and T.ChatHUD.AddSettings then T.ChatHUD:AddSettings(panel) end
 end

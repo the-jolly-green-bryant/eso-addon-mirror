@@ -1,0 +1,14 @@
+<Bindings>
+	<!-- General layer, so the action is live on the HUD rather than only inside a menu.
+
+	     preventAutomaticInputModeChange mirrors the game's own START_CHAT_ENTER action. Without
+	     it a key press coming from the keyboard flips the UI out of gamepad-preferred mode,
+	     which on console swaps the entire interface. The stock chat bindings all set it. -->
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_PBSCHATASSISTANT">
+			<Action name="PBSCHATASSISTANT_START_CHAT" preventAutomaticInputModeChange="true">
+				<Down>PBS_CHAT_ASSISTANT:StartChat()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

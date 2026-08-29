@@ -3,7 +3,7 @@ local ADDON_NAME = "AOD"
 local ADDON_DISPLAY_NAME = "Automatic Overland Difficulty"
 local LAM_PANEL_NAME = "AutomaticOverlandDifficulty_LAM"
 local ADDON_AUTHOR = "|cFFFF00Wrynch|r"
-local ADDON_VERSION = "1.4.0"
+local ADDON_VERSION = "1.5.0"
 local EVENT_NAMESPACE = ADDON_NAME
 local SAVED_VARS_NAME = "AODifficulty_SavedVariables"
 local SAVED_VARS_VERSION = 1
@@ -28,6 +28,7 @@ local NEARBY_UPDATE_INTERVAL_MS = 2000
 local DIFFICULTY_RETRY_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_DifficultyRetry"
 local LEVELING_JOURNEY_MAP_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_LevelingJourneyMap"
 local LEVELING_JOURNEY_MAP_UPDATE_INTERVAL_MS = 200
+local LEVELING_JOURNEY_BASE_MAX_LEVEL = 50
 local DIFFICULTY_REQUEST_COOLDOWN_MS = 6000
 local DEFAULT_NEARBY_PIN_RADIUS_METERS = 120
 local MIN_NEARBY_PIN_RADIUS_METERS = 25
@@ -35,9 +36,37 @@ local MAX_NEARBY_PIN_RADIUS_METERS = 300
 local NEARBY_PIN_RADIUS_STEP_METERS = 5
 
 local ANNOUNCEMENT_CHAT = "chat"
-local ANNOUNCEMENT_TITLE = "title"
-local ANNOUNCEMENT_TITLE_SOUND = "titleSound"
-local CENTER_SCREEN_ANNOUNCEMENT_LIFESPAN_MS = 3500
+
+local LEVELING_JOURNEY_MAX_LEVEL_CHOICES =
+{
+    "50",
+    "CP 160",
+    "CP 300",
+    "CP 600",
+    "CP 900",
+    "CP 1400",
+    "CP 1800",
+    "CP 2400",
+    "CP 3600",
+}
+
+local LEVELING_JOURNEY_MAX_LEVEL_VALUES =
+{
+    50,
+    160,
+    300,
+    600,
+    900,
+    1400,
+    1800,
+    2400,
+    3600,
+}
+
+local VALID_LEVELING_JOURNEY_MAX_LEVELS = {}
+for index = 1, #LEVELING_JOURNEY_MAX_LEVEL_VALUES do
+    VALID_LEVELING_JOURNEY_MAX_LEVELS[LEVELING_JOURNEY_MAX_LEVEL_VALUES[index]] = true
+end
 
 local LEVELING_JOURNEY_CHAT_ICONS =
 {
@@ -134,6 +163,8 @@ local SETTINGS_DEFAULTS =
     levelingJourney =
     {
         enabled = false,
+        maxLevel = LEVELING_JOURNEY_BASE_MAX_LEVEL,
+        adaptiveMaxLevel = false,
         chatMessages = true,
         showMapLevel = true,
     },
@@ -159,8 +190,6 @@ local SETTINGS_DEFAULTS =
     announcements =
     {
         [ANNOUNCEMENT_CHAT] = false,
-        [ANNOUNCEMENT_TITLE] = false,
-        [ANNOUNCEMENT_TITLE_SOUND] = true,
     },
     migrations =
     {
@@ -224,6 +253,14 @@ local function NormalizeNearbyPinRadiusMeters(value)
     end
 
     return math.floor((radiusMeters / NEARBY_PIN_RADIUS_STEP_METERS) + 0.5) * NEARBY_PIN_RADIUS_STEP_METERS
+end
+
+local function NormalizeLevelingJourneyMaxLevel(value)
+    local maxLevel = tonumber(value)
+    if VALID_LEVELING_JOURNEY_MAX_LEVELS[maxLevel] then
+        return maxLevel
+    end
+    return LEVELING_JOURNEY_BASE_MAX_LEVEL
 end
 
 local function BuildDifficultyChoices()
@@ -314,6 +351,39 @@ function Addon.IsLevelingJourneyMapLevelEnabled()
         and savedVars.levelingJourney.showMapLevel ~= false
 end
 
+function Addon.IsLevelingJourneyAdaptiveMaxLevelEnabled()
+    local savedVars = Addon.savedVars
+    return savedVars
+        and type(savedVars.levelingJourney) == "table"
+        and savedVars.levelingJourney.adaptiveMaxLevel == true
+end
+
+function Addon.GetLevelingJourneyAdaptiveMaxLevel()
+    if (GetUnitLevel("player") or 1) < LEVELING_JOURNEY_BASE_MAX_LEVEL then
+        return LEVELING_JOURNEY_BASE_MAX_LEVEL
+    end
+
+    local championPoints = math.max(GetPlayerChampionPointsEarned() or 0, 0)
+    for index = 2, #LEVELING_JOURNEY_MAX_LEVEL_VALUES do
+        local maxLevel = LEVELING_JOURNEY_MAX_LEVEL_VALUES[index]
+        if championPoints < maxLevel then
+            return maxLevel
+        end
+    end
+    return LEVELING_JOURNEY_MAX_LEVEL_VALUES[#LEVELING_JOURNEY_MAX_LEVEL_VALUES]
+end
+
+function Addon.GetLevelingJourneyMaxLevel()
+    local savedVars = Addon.savedVars
+    if not savedVars or type(savedVars.levelingJourney) ~= "table" then
+        return LEVELING_JOURNEY_BASE_MAX_LEVEL
+    end
+    if Addon.IsLevelingJourneyAdaptiveMaxLevelEnabled() then
+        return Addon.GetLevelingJourneyAdaptiveMaxLevel()
+    end
+    return NormalizeLevelingJourneyMaxLevel(savedVars.levelingJourney.maxLevel)
+end
+
 function Addon.SetLevelingJourneyEnabled(enabled)
     enabled = enabled == true
     if Addon.savedVars.levelingJourney.enabled ~= enabled then
@@ -348,11 +418,66 @@ function Addon.SetLevelingJourneyMapLevelEnabled(enabled)
     Addon.RefreshWorldMapLevelUpdateRegistration()
 end
 
-function Addon.GetLevelingJourneyTargetLevel(regionId)
+function Addon.SetLevelingJourneyAdaptiveMaxLevelEnabled(enabled)
+    enabled = enabled == true
+    if Addon.savedVars.levelingJourney.adaptiveMaxLevel == enabled then
+        return
+    end
+
+    Addon.savedVars.levelingJourney.adaptiveMaxLevel = enabled
+    Addon.pendingLevelingJourneyAnnouncement = nil
+    Addon.worldMapDisplayedTargetText = nil
+    Addon.RefreshLevelingJourneyEventRegistration()
+    Addon.ApplyCurrentSituation()
+end
+
+function Addon.SetLevelingJourneyMaxLevel(maxLevel)
+    maxLevel = NormalizeLevelingJourneyMaxLevel(maxLevel)
+    if Addon.savedVars.levelingJourney.maxLevel == maxLevel then
+        return
+    end
+
+    Addon.savedVars.levelingJourney.maxLevel = maxLevel
+    Addon.pendingLevelingJourneyAnnouncement = nil
+    Addon.worldMapDisplayedTargetText = nil
+    Addon.RefreshLevelingJourneyEventRegistration()
+    Addon.ApplyCurrentSituation()
+end
+
+function Addon.GetLevelingJourneyTargetProgression(regionId)
     if not regionId or not Addon.levelingJourneyZoneLevels then
         return nil
     end
-    return Addon.levelingJourneyZoneLevels[regionId]
+
+    local baseTargetLevel = Addon.levelingJourneyZoneLevels[regionId]
+    if not baseTargetLevel then
+        return nil
+    end
+
+    local maxLevel = Addon.GetLevelingJourneyMaxLevel()
+    if maxLevel == LEVELING_JOURNEY_BASE_MAX_LEVEL then
+        return baseTargetLevel, nil, baseTargetLevel
+    end
+
+    local targetChampionPoints = math.floor(((baseTargetLevel * maxLevel) / LEVELING_JOURNEY_BASE_MAX_LEVEL) + 0.5)
+    return LEVELING_JOURNEY_BASE_MAX_LEVEL, targetChampionPoints, baseTargetLevel
+end
+
+function Addon.GetLevelingJourneyPlayerProgress()
+    local maxLevel = Addon.GetLevelingJourneyMaxLevel()
+    if maxLevel == LEVELING_JOURNEY_BASE_MAX_LEVEL then
+        return GetUnitLevel("player")
+    end
+
+    local championPoints = math.max(GetPlayerChampionPointsEarned() or 0, 0)
+    return (championPoints * LEVELING_JOURNEY_BASE_MAX_LEVEL) / maxLevel
+end
+
+function Addon.GetLevelingJourneyTargetText(targetLevel, targetChampionPoints)
+    if targetChampionPoints then
+        return string.format("CP %d", targetChampionPoints)
+    end
+    return string.format("Level %d", targetLevel)
 end
 
 function Addon.GetLevelingJourneyDifficulty(targetLevel, playerLevel)
@@ -745,18 +870,18 @@ function Addon.GetLevelingJourneyDesiredDifficulty()
     end
 
     local regionId = Addon.GetPlayerRegionId()
-    local targetLevel = Addon.GetLevelingJourneyTargetLevel(regionId)
+    local targetLevel, targetChampionPoints, baseTargetLevel = Addon.GetLevelingJourneyTargetProgression(regionId)
     if not targetLevel then
         return NO_CHANGE
     end
 
-    local desiredDifficulty = Addon.GetLevelingJourneyDifficulty(targetLevel, GetUnitLevel("player"))
+    local desiredDifficulty = Addon.GetLevelingJourneyDifficulty(baseTargetLevel, Addon.GetLevelingJourneyPlayerProgress())
     if desiredDifficulty == OVERLAND_DIFFICULTY_TYPE_VETERAN and Addon.IsNearbyWorldBoss() then
         -- OVERLAND_DIFFICULTY_TYPE_ADVENTURER is the visible Master tier.
         desiredDifficulty = OVERLAND_DIFFICULTY_TYPE_ADVENTURER
     end
 
-    return desiredDifficulty, regionId, targetLevel
+    return desiredDifficulty, regionId, targetLevel, targetChampionPoints
 end
 
 function Addon.MigrateSavedVars()
@@ -766,6 +891,8 @@ function Addon.MigrateSavedVars()
     end
     local levelingJourney = savedVars.levelingJourney
     levelingJourney.enabled = levelingJourney.enabled == true
+    levelingJourney.maxLevel = NormalizeLevelingJourneyMaxLevel(levelingJourney.maxLevel)
+    levelingJourney.adaptiveMaxLevel = levelingJourney.adaptiveMaxLevel == true
     if rawget(levelingJourney, "chatMessages") == nil then
         levelingJourney.chatMessages = SETTINGS_DEFAULTS.levelingJourney.chatMessages
     else
@@ -809,12 +936,6 @@ function Addon.MigrateSavedVars()
     end
 
     savedVars.announcements[ANNOUNCEMENT_CHAT] = savedVars.announcements[ANNOUNCEMENT_CHAT] == true
-    savedVars.announcements[ANNOUNCEMENT_TITLE] = savedVars.announcements[ANNOUNCEMENT_TITLE] == true
-    if savedVars.announcements[ANNOUNCEMENT_TITLE_SOUND] == nil then
-        savedVars.announcements[ANNOUNCEMENT_TITLE_SOUND] = SETTINGS_DEFAULTS.announcements[ANNOUNCEMENT_TITLE_SOUND]
-    else
-        savedVars.announcements[ANNOUNCEMENT_TITLE_SOUND] = savedVars.announcements[ANNOUNCEMENT_TITLE_SOUND] == true
-    end
 
     if savedVars.migrations.publicDungeonsFromGroupDungeons then
         return
@@ -934,7 +1055,7 @@ function Addon.RefreshLevelingJourneyRegionState()
         and Addon.savedVars.enabled
         and Addon.IsLevelingJourneyEnabled()
         and Addon.IsLevelingJourneyChatMessagesEnabled()
-        and Addon.GetLevelingJourneyTargetLevel(regionId) then
+        and Addon.GetLevelingJourneyTargetProgression(regionId) then
         Addon.pendingLevelingJourneyAnnouncement = regionId
     end
 end
@@ -953,7 +1074,7 @@ function Addon.TryAnnounceLevelingJourneyEntry()
         return
     end
 
-    local desiredDifficulty, regionId, targetLevel = Addon.GetLevelingJourneyDesiredDifficulty()
+    local desiredDifficulty, regionId, targetLevel, targetChampionPoints = Addon.GetLevelingJourneyDesiredDifficulty()
     if regionId ~= pendingRegionId
         or desiredDifficulty == NO_CHANGE
         or GetOverlandDifficultyDisabledReason() ~= OVERLAND_DIFFICULTY_DISABLED_REASON_NONE
@@ -969,10 +1090,11 @@ function Addon.TryAnnounceLevelingJourneyEntry()
     Addon.pendingLevelingJourneyAnnouncement = nil
     if CHAT_ROUTER then
         local formattedRegionName = ZO_CachedStrFormat(SI_ZONE_NAME, regionName)
+        local targetText = Addon.GetLevelingJourneyTargetText(targetLevel, targetChampionPoints)
         local messageText = string.format(
-            "Entering %s (Level %d) - World set to %s.",
+            "Entering %s (%s) - World set to %s.",
             formattedRegionName,
-            targetLevel,
+            targetText,
             GetDifficultyName(desiredDifficulty)
         )
         local iconPath = LEVELING_JOURNEY_CHAT_ICONS[desiredDifficulty]
@@ -992,15 +1114,6 @@ function Addon.AnnounceDifficultyChanged(difficulty)
 
     if Addon.GetAnnouncementSettings(ANNOUNCEMENT_CHAT) and CHAT_ROUTER then
         CHAT_ROUTER:AddSystemMessage(message)
-    end
-
-    if Addon.GetAnnouncementSettings(ANNOUNCEMENT_TITLE) and CENTER_SCREEN_ANNOUNCE then
-        local titleSound = Addon.GetAnnouncementSettings(ANNOUNCEMENT_TITLE_SOUND) and SOUNDS.DISPLAY_ANNOUNCEMENT or nil
-        local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT, titleSound)
-        messageParams:SetText("Difficulty Changed", difficultyName)
-        messageParams:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_DISPLAY_ANNOUNCEMENT)
-        messageParams:SetLifespanMS(CENTER_SCREEN_ANNOUNCEMENT_LIFESPAN_MS)
-        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
     end
 end
 
@@ -1163,8 +1276,10 @@ function Addon.OnPlayerCombatState(_, inCombat)
     Addon.ApplyCurrentSituation()
 end
 
-function Addon.OnLevelUpdate(_, unitTag)
+function Addon.OnLevelingJourneyProgressUpdate(_, unitTag)
     if unitTag == "player" and Addon.IsLevelingJourneyEnabled() then
+        Addon.worldMapDisplayedTargetText = nil
+        Addon.RefreshLevelingJourneyEventRegistration()
         Addon.ApplyCurrentSituation()
     end
 end
@@ -1197,7 +1312,7 @@ function Addon.HideWorldMapLevelLabel()
     if Addon.worldMapLevelLabel then
         Addon.worldMapLevelLabel:SetHidden(true)
     end
-    Addon.worldMapDisplayedTargetLevel = nil
+    Addon.worldMapDisplayedTargetText = nil
 end
 
 function Addon.UpdateWorldMapLevelLabel()
@@ -1239,15 +1354,16 @@ function Addon.UpdateWorldMapLevelLabel()
 
     local zoneId = GetZoneId(zoneIndex)
     local regionId = GetZoneStoryZoneIdForZoneId(zoneId)
-    local targetLevel = Addon.GetLevelingJourneyTargetLevel(regionId)
+    local targetLevel, targetChampionPoints = Addon.GetLevelingJourneyTargetProgression(regionId)
     if not targetLevel then
         Addon.HideWorldMapLevelLabel()
         return
     end
 
-    if Addon.worldMapDisplayedTargetLevel ~= targetLevel then
-        label:SetText(string.format("Leveling Journey - Level %d", targetLevel))
-        Addon.worldMapDisplayedTargetLevel = targetLevel
+    local targetText = Addon.GetLevelingJourneyTargetText(targetLevel, targetChampionPoints)
+    if Addon.worldMapDisplayedTargetText ~= targetText then
+        label:SetText(string.format("World Progression - %s", targetText))
+        Addon.worldMapDisplayedTargetText = targetText
     end
     label:SetHidden(false)
 end
@@ -1299,7 +1415,7 @@ function Addon.CreateLevelingJourneyEnabledCheckbox()
     return
     {
         type = "checkbox",
-        name = "Enable Leveling Journey",
+        name = "Enable World Progression",
         tooltip = "Gives each zone a level and automatically adjusts the world difficulty as you explore.",
         getFunc = function()
             return Addon.IsLevelingJourneyEnabled()
@@ -1328,6 +1444,50 @@ function Addon.CreateLevelingJourneyChatCheckbox()
             Addon.SetLevelingJourneyChatMessagesEnabled(value)
         end,
         default = SETTINGS_DEFAULTS.levelingJourney.chatMessages,
+        width = "full",
+    }
+end
+
+function Addon.CreateLevelingJourneyAdaptiveMaxLevelCheckbox()
+    return
+    {
+        type = "checkbox",
+        name = "Adaptive max level",
+        tooltip = "Automatically advances the World Progression cap as you progress. It keeps the cap at Level 50 while your character is below Level 50, switches to CP 160 at Level 50, then advances whenever you reach the current CP tier.",
+        disabled = function()
+            return not Addon.IsLevelingJourneyEnabled()
+        end,
+        getFunc = function()
+            return Addon.IsLevelingJourneyAdaptiveMaxLevelEnabled()
+        end,
+        setFunc = function(value)
+            Addon.SetLevelingJourneyAdaptiveMaxLevelEnabled(value)
+        end,
+        default = SETTINGS_DEFAULTS.levelingJourney.adaptiveMaxLevel,
+        width = "full",
+    }
+end
+
+function Addon.CreateLevelingJourneyMaxLevelDropdown()
+    return
+    {
+        type = "dropdown",
+        name = "Max level",
+        tooltip = "Sets the end of World Progression. Selecting a CP value scales every zone target across that Champion Point range and uses your earned Champion Points instead of character level.",
+        disabled = function()
+            return not Addon.IsLevelingJourneyEnabled()
+                or Addon.IsLevelingJourneyAdaptiveMaxLevelEnabled()
+        end,
+        choices = LEVELING_JOURNEY_MAX_LEVEL_CHOICES,
+        choicesValues = LEVELING_JOURNEY_MAX_LEVEL_VALUES,
+        sort = "numericvalue-up",
+        getFunc = function()
+            return Addon.GetLevelingJourneyMaxLevel()
+        end,
+        setFunc = function(value)
+            Addon.SetLevelingJourneyMaxLevel(value)
+        end,
+        default = SETTINGS_DEFAULTS.levelingJourney.maxLevel,
         width = "full",
     }
 end
@@ -1444,7 +1604,7 @@ function Addon.CreateNearbyPinRadiusSlider()
     {
         type = "slider",
         name = "POI Radius",
-        tooltip = "How close you must be to a world boss or world event map pin. Leveling Journey uses this radius to cap World Boss difficulty at Master. Smaller numbers mean closer.",
+        tooltip = "How close you must be to a world boss or world event map pin. World Progression uses this radius to cap World Boss difficulty at Master. Smaller numbers mean closer.",
         min = MIN_NEARBY_PIN_RADIUS_METERS,
         max = MAX_NEARBY_PIN_RADIUS_METERS,
         step = NEARBY_PIN_RADIUS_STEP_METERS,
@@ -1656,10 +1816,12 @@ function Addon.RegisterSettings()
         },
         {
             type = "header",
-            name = "Leveling Journey",
+            name = "World Progression",
             width = "full",
         },
         Addon.CreateLevelingJourneyEnabledCheckbox(),
+        Addon.CreateLevelingJourneyAdaptiveMaxLevelCheckbox(),
+        Addon.CreateLevelingJourneyMaxLevelDropdown(),
         Addon.CreateNearbyPinRadiusSlider(),
         Addon.CreateLevelingJourneyChatCheckbox(),
         Addon.CreateLevelingJourneyMapCheckbox(),
@@ -1697,17 +1859,6 @@ function Addon.RegisterSettings()
         Addon.CreateAnnouncementCheckbox(
             ANNOUNCEMENT_CHAT,
             "Chat"
-        ),
-        Addon.CreateAnnouncementCheckbox(
-            ANNOUNCEMENT_TITLE,
-            "ESO Title Announcement"
-        ),
-        Addon.CreateAnnouncementCheckbox(
-            ANNOUNCEMENT_TITLE_SOUND,
-            "ESO Title Announcement Sound",
-            function()
-                return not Addon.GetAnnouncementSettings(ANNOUNCEMENT_TITLE)
-            end
         ),
         {
             type = "submenu",
@@ -1784,12 +1935,28 @@ function Addon.RefreshLevelingJourneyEventRegistration()
 
     if shouldRegister and not Addon.levelingJourneyEventRegistered then
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_LEVEL_UPDATE, function(...)
-            Addon.OnLevelUpdate(...)
+            Addon.OnLevelingJourneyProgressUpdate(...)
         end)
+        EVENT_MANAGER:AddFilterForEvent(EVENT_NAMESPACE, EVENT_LEVEL_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
         Addon.levelingJourneyEventRegistered = true
     elseif not shouldRegister and Addon.levelingJourneyEventRegistered then
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_LEVEL_UPDATE)
         Addon.levelingJourneyEventRegistered = false
+    end
+
+    local effectiveMaxLevel = Addon.GetLevelingJourneyMaxLevel()
+    local shouldRegisterChampionPoints = shouldRegister
+        and effectiveMaxLevel > LEVELING_JOURNEY_BASE_MAX_LEVEL
+        and GetPlayerChampionPointsEarned() < effectiveMaxLevel
+    if shouldRegisterChampionPoints and not Addon.levelingJourneyChampionPointEventRegistered then
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_CHAMPION_POINT_UPDATE, function(...)
+            Addon.OnLevelingJourneyProgressUpdate(...)
+        end)
+        EVENT_MANAGER:AddFilterForEvent(EVENT_NAMESPACE, EVENT_CHAMPION_POINT_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
+        Addon.levelingJourneyChampionPointEventRegistered = true
+    elseif not shouldRegisterChampionPoints and Addon.levelingJourneyChampionPointEventRegistered then
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_CHAMPION_POINT_UPDATE)
+        Addon.levelingJourneyChampionPointEventRegistered = false
     end
 end
 

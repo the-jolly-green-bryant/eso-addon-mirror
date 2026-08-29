@@ -7,6 +7,7 @@ CollectThemAllData_Others_ESOPlusFreeItems = {
         [COLLECTIBLE_CATEGORY_TYPE_HOUSE_BANK] = {},
         [COLLECTIBLE_CATEGORY_TYPE_HOUSE] = {},
         [COLLECTIBLE_CATEGORY_TYPE_FURNITURE] = {
+            { name = "Statuette: St. Olms the Just" },
             { name = "Statuette: Defending Tojay-Raht" },
             { name = "Statuette: Boethiah, Schemer" },
             { name = "Painting: Sunport Approach" },

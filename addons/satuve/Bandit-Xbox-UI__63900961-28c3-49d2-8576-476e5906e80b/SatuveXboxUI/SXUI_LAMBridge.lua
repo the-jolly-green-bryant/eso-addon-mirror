@@ -809,14 +809,20 @@ function Bridge.FinalizeGrouped(panelName)
             end
 
             if rawget(_G, "EVENT_MANAGER") and rawget(_G, "EVENT_PLAYER_ACTIVATED") then
-                EVENT_MANAGER:RegisterForEvent(eventName, EVENT_PLAYER_ACTIVATED, function()
-                    EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_PLAYER_ACTIVATED)
-                    if type(zo_callLater) == "function" then
-                        zo_callLater(function() TryRegister(1) end, 250)
-                    else
-                        TryRegister(1)
-                    end
-                end)
+				EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_PLAYER_ACTIVATED)
+				local function RegisterAfterActivation()
+					EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_PLAYER_ACTIVATED)
+					if type(zo_callLater) == "function" then
+						zo_callLater(function() TryRegister(1) end, 250)
+					else
+						TryRegister(1)
+					end
+				end
+				if BUI.Initialization and BUI.Initialization.playerActivated then
+					RegisterAfterActivation()
+				else
+					EVENT_MANAGER:RegisterForEvent(eventName, EVENT_PLAYER_ACTIVATED, RegisterAfterActivation)
+				end
             else
                 TryRegister(1)
             end

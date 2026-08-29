@@ -1,6 +1,6 @@
 <Bindings>
-    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
-        <Category name="AetherChat">
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="SI_BINDINGS_CATEGORY_AETHERCHAT">
             <Action name="AETHERCHAT_TOGGLE">
                 <Down>AetherChat.Messenger.Toggle()</Down>
             </Action>

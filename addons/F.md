@@ -131,4 +131,5 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Furniture Preview modified by Teva](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Teva/Furniture-Preview-modified-by-Teva__2970) | Teva | PC / Mac | 2.60 |
 | [Furniture Shopping List (FurC 2.0 patch)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Shopping-List-FurC-2.0-patch__1865) | manavortex | PC / Mac | 1.4.11 |
 | [Furniture Snap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/Furniture-Snap__1944) | Cardinal05 | PC / Mac | 1.3 |
+| [Furniture Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Tracker__655e721d-2e85-48fd-83f9-bcbb1e9c7392) | killerkev77 | Console | — |
 | [Fury](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DustyWarehouse/Fury__2422) | DustyWarehouse | PC / Mac | 1.11 |

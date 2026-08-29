@@ -1,5 +1,5 @@
 -----------------------------------------------------------
--- Author: SpringPeace2575 | Version: 1.2.0
+-- Author: SpringPeace2575 | Version: 1.2.1
 -- CollectThemAll add-on
 -----------------------------------------------------------
 
@@ -13,7 +13,7 @@ CTA.name = "CollectThemAll"
 CTA.displayName = "Collect Them All"
 CTA.savedVarsName = "CollectThemAllSavedVars"
 CTA.settingsPanelId = "CollectThemAllPanel"
-CTA.version = "1.2.0"
+CTA.version = "1.2.1"
 
 CTA.savedVarsVersion = 1
 CTA.commandSlashCommand = "/cta"

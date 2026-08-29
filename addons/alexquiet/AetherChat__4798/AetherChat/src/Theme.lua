@@ -2,8 +2,9 @@
 -- AetherChat : Skyrim & Elder Scrolls Theme Engine (Authentic Tamriel Palette)
 -- ============================================================================
 AetherChat = AetherChat or {}
-AetherChat.Theme = {}
+local AetherChat = AetherChat
 
+AetherChat.Theme = {}
 local Theme = AetherChat.Theme
 
 Theme.Hex = {
@@ -26,7 +27,7 @@ Theme.Presets = {
         accentR = 0.22, accentG = 0.74, accentB = 0.97,
         selfHex = "38BDF8", -- Skyrim Ice / Frost Cyan for player's own name
         headerColor = "38BDF8",
-        titleText = "|c38BDF8AETHER|r|cFFFFFFCHAT|r |c888888• Bordeciel & Dragonborn|r",
+        titleText = "|c38BDF8AETHER|r|cFFFFFFCHAT|r",
     },
     gold_dwemer = {
         name = "Dwemer Gold (Machines & Bronze Antique)",
@@ -34,7 +35,7 @@ Theme.Presets = {
         accentR = 0.83, accentG = 0.69, accentB = 0.22,
         selfHex = "FFD700", -- Radiant Dwemer Gold for player's own name
         headerColor = "D4AF37",
-        titleText = "|cD4AF37AETHER|r|cFFFFFFCHAT|r |c888888• Forge Dwemer|r",
+        titleText = "|cD4AF37AETHER|r|cFFFFFFCHAT|r",
     },
     emerald_nordic = {
         name = "Nordic Emerald (Forêts de Bordeciel & Jade)",
@@ -42,7 +43,7 @@ Theme.Presets = {
         accentR = 0.34, accentG = 0.95, accentB = 0.53,
         selfHex = "57F287", -- Spriggan Forest Emerald for player's own name
         headerColor = "57F287",
-        titleText = "|c57F287AETHER|r|cFFFFFFCHAT|r |c888888• Forêt de Bordeciel|r",
+        titleText = "|c57F287AETHER|r|cFFFFFFCHAT|r",
     },
     ruby_crimson = {
         name = "Crimson Brotherhood (Confrérie Noire & Sanctuaire)",
@@ -50,7 +51,7 @@ Theme.Presets = {
         accentR = 0.95, accentG = 0.25, accentB = 0.26,
         selfHex = "F23F43", -- Shadow Blood Ruby for player's own name
         headerColor = "F23F43",
-        titleText = "|cF23F43AETHER|r|cFFFFFFCHAT|r |c888888• Confrérie Noire|r",
+        titleText = "|cF23F43AETHER|r|cFFFFFFCHAT|r",
     },
     dark_glass = {
         name = "Dark Glass (Moderne Épuré)",
@@ -58,7 +59,7 @@ Theme.Presets = {
         accentR = 0.35, accentG = 0.40, accentB = 0.95,
         selfHex = "5865F2", -- Electric Discord Indigo for player's own name
         headerColor = "5865F2",
-        titleText = "|c5865F2AetherChat|r |c888888Messenger & Chat|r",
+        titleText = "|c5865F2AETHER|r|cFFFFFFCHAT|r",
     },
 }
 

@@ -103,6 +103,14 @@ function Matcher:MatchesItem(entry, itemLink, itemName)
     return self:GetScore(entry, details, true) ~= nil
 end
 
+function Matcher:GetItemMatchScore(entry, itemLink, itemName)
+    return self:GetScore(
+        entry,
+        getPurchaseDetails(itemLink, itemName),
+        true
+    )
+end
+
 function Matcher:PreviewPurchase(items, itemLink, itemName, quantity, getRemaining)
     local purchase = getPurchaseDetails(itemLink, itemName)
     local matches = {}

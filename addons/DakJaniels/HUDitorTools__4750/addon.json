@@ -18,7 +18,7 @@
     "HUDitorTools"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4750/",
-  "fingerprint": "4d72721142fe701ebe4d2b867200bbb1a5e3da7ab82fb1cc130fcb726386374b",
+  "fingerprint": "7553382813c54fafd9f8935eace947d13eeee90fa275ff77f7d769381e49a673",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16914.png",
     "https://cdn-eso.mmoui.com/preview/pvw16968.png",
@@ -32,11 +32,11 @@
   "source_id": "4750",
   "source_url": "https://www.esoui.com/downloads/info4750-HUDitorTools.html",
   "stats": {
-    "downloads": 83,
+    "downloads": 153,
     "favorites": 2,
-    "monthly_downloads": 81
+    "monthly_downloads": 142
   },
   "title": "HUDitorTools",
-  "updated_at": 1787223863000,
-  "version": "1.0.2"
+  "updated_at": 1787967494000,
+  "version": "1.1.0"
 }

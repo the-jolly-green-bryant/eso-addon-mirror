@@ -36,6 +36,21 @@ FurnitureFinder = FurnitureFinder or {}
 local FF = FurnitureFinder
 FF.name = "FurnitureFinder"
 
+-- Real Furniture Catalogue data, via Wookiefriseur's export + accessor
+-- files (FurnitureFinder_ExportData.lua / FurnitureFinder_ExportAPI.lua,
+-- loaded earlier per the manifest). Built once here rather than per
+-- tooltip. Replaces the older flat FurnitureFinderData.lua lookup, which
+-- only carried a category label -- this gives real vendor/location/
+-- price/achievement detail via db.Describe(), confirmed working against
+-- a real Lua interpreter before this went in-game.
+local FFDB = nil
+if FurnitureFinder_ExportData and FurnitureFinder_ExportAPI then
+    local okDb, db = pcall(FurnitureFinder_ExportAPI, FurnitureFinder_ExportData)
+    if okDb then
+        FFDB = db
+    end
+end
+
 -- ---------------------------------------------------------------------------
 -- Helpers
 -- ---------------------------------------------------------------------------
@@ -47,56 +62,104 @@ local function IsFurnishingLink(itemLink)
     return isPlaceable == true
 end
 
-local function GetQualityLine(itemLink)
-    local ok, quality = pcall(GetItemLinkDisplayQuality, itemLink)
-    if not ok or not quality then return nil end
-
-    local ok2, colorDef = pcall(GetItemQualityColor, quality)
-    local qualityName = ok2 and GetString("SI_ITEMQUALITY", quality) or tostring(quality)
-
-    if ok2 and colorDef then
-        return zo_strformat("Quality: |c<<1>><<2>>|r", colorDef:ToHex(), qualityName)
-    end
-    return zo_strformat("Quality: <<1>>", qualityName)
+-- Builds a minimal but valid item link from a bare item ID, so we can
+-- query info (quality color, in this case) about an item we don't have
+-- in our own bag -- e.g. a crafting material referenced by id only.
+-- Confirmed as a real, working pattern from Wookiefriseur's own data:
+-- their freeform source text embeds exactly this shape
+-- (|H1:item:<id>:0:0:...|h|h) to reference a related item by id alone.
+local function BuildRawItemLink(itemId)
+    return "|H1:item:" .. tostring(itemId) .. ":0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"
 end
+
+-- Resolves a material's quality color as a hex string, or nil if it
+-- can't be determined (guarded with pcall since this is a synthetic
+-- link, not a real bag item -- some material ids may not resolve cleanly).
+local function GetMaterialQualityHex(materialId)
+    local ok, itemLink = pcall(BuildRawItemLink, materialId)
+    if not ok then return nil end
+
+    local ok2, quality = pcall(GetItemLinkDisplayQuality, itemLink)
+    if not ok2 or not quality then return nil end
+
+    local ok3, colorDef = pcall(GetItemQualityColor, quality)
+    if not ok3 or not colorDef then return nil end
+
+    return colorDef:ToHex()
+end
+
+-- GetQualityLine() removed 2026-08-28 -- was only used to display the
+-- Quality line, which was removed as redundant (visible on the item
+-- itself already). No other caller, so removed rather than left dead.
 
 local function BuildFurnitureLines(itemLink)
     local lines = {}
 
+    -- Item ID and Quality lines removed 2026-08-28 -- both are already
+    -- visible from the item itself, redundant in the tooltip. itemId is
+    -- still resolved here since the database lookup, ownership check, and
+    -- recipe-knowledge lookup all need it internally.
     local ok, itemId = pcall(GetItemLinkItemId, itemLink)
-    if ok and itemId then
-        table.insert(lines, zo_strformat("Item ID: <<1>>", itemId))
-    end
 
-    local qualityLine = GetQualityLine(itemLink)
-    if qualityLine then
-        table.insert(lines, qualityLine)
-    end
+    if FFDB and ok and itemId then
+        local okDesc, sources = pcall(FFDB.Describe, itemId)
+        if okDesc and sources and #sources > 0 then
+            for i, src in ipairs(sources) do
+                -- Multiple sources per item are real (e.g. both a drop AND
+                -- a festival drop) -- show each on its own line, numbered
+                -- only when there's more than one so the common case (one
+                -- source) stays clean.
+                local prefix = (#sources > 1) and zo_strformat("Source <<1>>: <<2>>", i, src.label) or zo_strformat("Source: <<1>>", src.label)
+                table.insert(lines, prefix)
 
-    local data = ok and FF.GetFurnitureData(itemId) or nil
-    if data then
-        if data.source then
-            table.insert(lines, zo_strformat("Source: <<1>>", data.source))
-        end
-        if data.materials then
-            table.insert(lines, zo_strformat("Materials: <<1>>", data.materials))
-        end
-        if data.collection then
-            table.insert(lines, zo_strformat("Collection: <<1>>", data.collection))
-        end
-        if data.notes then
-            table.insert(lines, zo_strformat("|c888888<<1>>|r", data.notes))
-        end
-    else
-        -- Only show the "missing" fallback for items that are actually
-        -- placeable furnishings -- i.e. the kind of item this database is
-        -- keyed by. A recipe/diagram item will ALWAYS miss here, since the
-        -- database is keyed by the crafted furnishing's item ID, not the
-        -- recipe's own ID -- showing "not in local database" on a recipe
-        -- is misleading, not a real gap, so stay silent for those.
-        local okFurn, isFurnishing = pcall(IsItemLinkPlaceableFurniture, itemLink)
-        if okFurn and isFurnishing then
-            table.insert(lines, "|c888888Source: not in local database yet|r")
+                if src.vendor then
+                    table.insert(lines, zo_strformat("  Vendor: <<1>>", src.vendor))
+                end
+                if src.location then
+                    table.insert(lines, zo_strformat("  Location: <<1>>", src.location))
+                end
+                if src.event then
+                    table.insert(lines, zo_strformat("  Event: <<1>>", src.event))
+                end
+                if src.price then
+                    table.insert(lines, zo_strformat("  Price: <<1>>", src.price))
+                end
+                if src.achievement then
+                    local achText = src.achievementText or zo_strformat("Achievement #<<1>>", src.achievement)
+                    table.insert(lines, zo_strformat("  Requires: <<1>>", achText))
+                end
+                if src.text then
+                    -- Sources the underlying addon only has as a sentence
+                    -- rather than structured vendor/location/price fields.
+                    table.insert(lines, zo_strformat("  <<1>>", src.text))
+                end
+            end
+
+            local okMat, materials = pcall(FFDB.Materials, itemId)
+            if okMat and materials and #materials > 0 then
+                local parts = {}
+                for _, mat in ipairs(materials) do
+                    local matName = mat.name or ("Item#" .. mat.id)
+                    local hex = GetMaterialQualityHex(mat.id)
+                    if hex then
+                        table.insert(parts, zo_strformat("<<1>>x |c<<2>><<3>>|r", mat.quantity, hex, matName))
+                    else
+                        table.insert(parts, zo_strformat("<<1>>x <<2>>", mat.quantity, matName))
+                    end
+                end
+                table.insert(lines, zo_strformat("Materials: <<1>>", table.concat(parts, ", ")))
+            end
+        else
+            -- Only show the "missing" fallback for items that are actually
+            -- placeable furnishings -- i.e. the kind of item this database
+            -- is keyed by. A recipe/diagram item will ALWAYS miss here,
+            -- since the database is keyed by the crafted furnishing's item
+            -- ID, not the recipe's own ID -- showing "not in local
+            -- database" on a recipe is misleading, not a real gap.
+            local okFurn, isFurnishing = pcall(IsItemLinkPlaceableFurniture, itemLink)
+            if okFurn and isFurnishing then
+                table.insert(lines, "|c888888Source: not in local database yet|r")
+            end
         end
     end
 

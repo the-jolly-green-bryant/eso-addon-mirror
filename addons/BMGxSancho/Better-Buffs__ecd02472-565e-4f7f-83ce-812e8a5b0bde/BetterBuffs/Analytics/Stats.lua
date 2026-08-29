@@ -221,9 +221,18 @@ function Stats:GetSnapshot()
     }
 end
 
+local function IsDisplayPreviewActive(display)
+    if not display or not display.previewScene or not SCENE_MANAGER then return false end
+    return display.previewScene == SCENE_MANAGER:GetCurrentScene()
+end
+
+local function CanDisplayLiveHUD(display)
+    return (BB.IsGameplayHUDSceneActive and BB:IsGameplayHUDSceneActive()) or IsDisplayPreviewActive(display)
+end
+
 function Stats:Refresh()
     if not self.display then return end
-    local visible = self:IsSelfVisible()
+    local visible = self:IsSelfVisible() and CanDisplayLiveHUD(self.display)
     self.display.fragment:SetHiddenForReason("BetterBuffsStats", not visible, 0, 0)
     self.display.control:SetHidden(not visible)
     if not visible then return end
@@ -380,7 +389,7 @@ end
 function Stats:RefreshDamage()
     if not self.damageDisplay then return end
     local saved = self:GetDamageSaved()
-    local visible = BB.saved and BB.saved.enabled and saved and saved.enabled == true
+    local visible = BB.saved and BB.saved.enabled and saved and saved.enabled == true and CanDisplayLiveHUD(self.damageDisplay)
     self.damageDisplay.fragment:SetHiddenForReason(self.damageDisplay.reason, not visible, 0, 0)
     self.damageDisplay.control:SetHidden(not visible)
     if not visible then return end
@@ -393,7 +402,7 @@ end
 function Stats:RefreshResistance()
     if not self.resistanceDisplay then return end
     local saved = self:GetResistanceSaved()
-    local visible = BB.saved and BB.saved.enabled and saved and saved.enabled == true
+    local visible = BB.saved and BB.saved.enabled and saved and saved.enabled == true and CanDisplayLiveHUD(self.resistanceDisplay)
     self.resistanceDisplay.fragment:SetHiddenForReason(self.resistanceDisplay.reason, not visible, 0, 0)
     self.resistanceDisplay.control:SetHidden(not visible)
     if not visible then return end

@@ -1,5 +1,5 @@
 -- -----------------------------------------------------------------------------
--- HUDitorTools — live HUD editor color picker (cloned ZOS keyboard widgets)
+-- HUDitorTools - live HUD editor color picker (cloned ZOS keyboard widgets)
 -- -----------------------------------------------------------------------------
 
 local HT = HUDitorTools

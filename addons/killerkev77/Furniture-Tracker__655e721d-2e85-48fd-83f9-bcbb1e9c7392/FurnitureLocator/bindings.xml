@@ -1,0 +1,24 @@
+<!--
+Furniture Locator - Keybind definition
+
+This file MUST be named exactly "bindings.xml" -- that's a hard
+requirement of the addon keybind system, confirmed against several
+real working addons (ESO-MailLooter, ESO-RaidNotifier) that all use
+this exact filename.
+
+Attaching to the built-in "SI_KEYBINDINGS_LAYER_GENERAL" layer (the
+same layer other simple addon keybinds use) means this shows up under
+Controls > Keybindings and works any time, without needing any custom
+action-layer push/pop logic of our own.
+-->
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Furniture Locator">
+            <Action name="FURNITURE_LOCATOR_TOGGLE">
+                <Down>
+                    SCENE_MANAGER:Toggle("FurnitureLocatorSceneGamepad")
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

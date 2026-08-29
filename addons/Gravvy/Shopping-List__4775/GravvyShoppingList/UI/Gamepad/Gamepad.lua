@@ -43,6 +43,9 @@ local function formatListName(list)
     if list.recurring then
         name = zo_strformat(GetString(SI_SHOPPING_LIST_RECURRING_MARKER), name)
     end
+    if list.locked then
+        name = zo_strformat(GetString(SI_SHOPPING_LIST_LOCKED_MARKER), name)
+    end
     return name
 end
 
@@ -102,7 +105,11 @@ function Gamepad:InitializeKeybinds()
             keybind = "UI_SHORTCUT_PRIMARY",
             enabled = function()
                 local item = self:GetTargetItem()
-                return item ~= nil and self.owner.data:GetTargetMode(item) == "buy"
+                local list = item and self.owner.data:GetListForItem(item.id)
+                return item ~= nil
+                    and list ~= nil
+                    and not list.locked
+                    and self.owner.data:GetTargetMode(item) == "buy"
             end,
             callback = function()
                 local item = self:GetTargetItem()
@@ -124,12 +131,19 @@ function Gamepad:InitializeKeybinds()
         {
             name = GetString(SI_SHOPPING_LIST_GAMEPAD_ADD_ITEM),
             keybind = "UI_SHORTCUT_TERTIARY",
+            enabled = function()
+                return not self.owner.data:GetCurrentList().locked
+            end,
             callback = function() self:ShowAddItemDialog() end,
         },
         {
             name = GetString(SI_SHOPPING_LIST_GAMEPAD_REMOVE_ITEM),
             keybind = "UI_SHORTCUT_QUATERNARY",
-            enabled = function() return self:GetTargetItem() ~= nil end,
+            enabled = function()
+                local item = self:GetTargetItem()
+                local list = item and self.owner.data:GetListForItem(item.id)
+                return item ~= nil and list ~= nil and not list.locked
+            end,
             callback = function() self:ConfirmRemoveTargetItem() end,
         },
         {
@@ -466,7 +480,9 @@ function Gamepad:Refresh(force)
     end
 
     local selectedItem = self:GetTargetItem()
-    local selectedItemId = selectedItem and selectedItem.id
+    local selectedItemId = self.nextSelectionItemId
+        or (selectedItem and selectedItem.id)
+    self.nextSelectionItemId = nil
     local selectedIndex
     local current = self.owner.data:GetCurrentList()
     local shoppingLists = self.owner.data:GetShoppingLists()
@@ -596,6 +612,7 @@ function Gamepad:SwitchList(direction)
     end
     local target = ((index - 1 + direction) % #lists) + 1
     self.owner.data:SelectList(lists[target].id)
+    self.owner:RefreshInventory()
     self:SetStatus("")
     self:Refresh(true)
     PlaySound(direction < 0 and SOUNDS.GAMEPAD_PAGE_BACK or SOUNDS.GAMEPAD_PAGE_FORWARD)
@@ -612,6 +629,32 @@ function Gamepad:FindTargetItem()
     else
         self:SetStatus(message, true)
     end
+end
+
+function Gamepad:FindNextItem(searchNow, afterItemId)
+    local current = self:GetTargetItem()
+    local item = self.owner.data:GetNextNeededItem(
+        afterItemId or (current and current.id)
+    )
+    if not item then
+        self:SetStatus(GetString(SI_SHOPPING_LIST_STATUS_NO_NEEDED_ITEMS), true)
+        return nil
+    end
+    self.nextSelectionItemId = item.id
+    self:Refresh(true)
+    self:SetStatus(zo_strformat(
+        GetString(SI_SHOPPING_LIST_STATUS_NEXT_SELECTED),
+        item.name
+    ))
+    if searchNow then
+        local ok, message = self.owner.ags:Search(item)
+        if ok then
+            self:Hide()
+        else
+            self:SetStatus(message, true)
+        end
+    end
+    return item
 end
 
 function Gamepad:ConfirmRemoveTargetItem()

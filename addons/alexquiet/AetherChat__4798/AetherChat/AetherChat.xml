@@ -1,20 +1,20 @@
 <GuiXml>
     <Controls>
-        <!-- ============================================================== -->
-        <!-- Moveable Floating HUD Button (Skyrim Dragonborn Style)         -->
-        <!-- ============================================================== -->
-        <TopLevelControl name="AetherChat_FloatingIcon" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="false">
+        <!-- Moveable MinBar Dock Button (HUD Floating Icon with Live Unread Notification Badge) -->
+        <TopLevelControl name="AetherChat_MinBar" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="false">
             <Dimensions x="38" y="38" />
-            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="130" offsetY="60" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="60" offsetY="60" />
             <Controls>
-                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+                <!-- Sleek Dark Slate Tile with Nordic Gold Edge matching Channel Buttons -->
+                <Backdrop name="$(parent)_BG" edgeColor="E5B558" centerColor="121212" alpha="0.92">
                     <AnchorFill />
+                    <Edge edgeSize="1" />
                 </Backdrop>
                 <Texture name="$(parent)_Texture" textureFile="/esoui/art/journal/journal_tabicon_lorelibrary_up.dds">
                     <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
-                    <Dimensions x="26" y="26" />
+                    <Dimensions x="24" y="24" />
                 </Texture>
-                <!-- Crimson Dragonborn Notification Badge -->
+                <!-- Crimson Notification Badge with Gold Edge -->
                 <Backdrop name="$(parent)_Badge" edgeColor="E5B558" centerColor="B81414" hidden="true" tier="HIGH">
                     <Dimensions x="18" y="18" />
                     <Anchor point="TOPRIGHT" offsetX="4" offsetY="-4" />
@@ -30,9 +30,9 @@
 
         <!-- Virtual Template for Channel / Contact Items on Left Sidebar -->
         <Button name="AetherChat_ChannelBtnTemplate" virtual="true" mouseEnabled="true">
-            <Dimensions x="208" y="34" />
+            <Dimensions x="198" y="34" />
             <Controls>
-                <Backdrop name="$(parent)BG" alpha="0.18" centerColor="FFFFFF" edgeColor="505050">
+                <Backdrop name="$(parent)BG" alpha="0.25" centerColor="121212" edgeColor="3A3A3A">
                     <AnchorFill />
                     <Edge edgeSize="1" />
                 </Backdrop>
@@ -47,13 +47,14 @@
                 </Backdrop>
                 <!-- Official ESO Texture Icon (Guild Shield, Group, Whisper, Loot, etc.) -->
                 <Texture name="$(parent)Icon" textureFile="/esoui/art/inventory/inventory_tabicon_misc_up.dds">
-                    <Dimensions x="20" y="20" />
+                    <Dimensions x="22" y="22" />
                     <Anchor point="LEFT" offsetX="8" />
                 </Texture>
-                <!-- Clean Skyrim Styled Channel Name -->
-                <Label name="$(parent)Name" font="ZoFontGame" color="E0E0E0" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT">
-                    <Dimensions x="135" y="26" />
+                <!-- Clean Skyrim Styled Channel Name (Strict single line with ellipsis, never wraps) -->
+                <Label name="$(parent)Name" font="ZoFontGame" color="E0E0E0" wrapMode="ELLIPSIS" maxLineCount="1" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions y="24" />
                     <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="6" />
+                    <Anchor point="RIGHT" offsetX="-28" />
                 </Label>
                 <!-- Small Discreet Close 'X' Button (Private Messages Only) -->
                 <Button name="$(parent)CloseBtn" mouseEnabled="true" tier="HIGH" layer="CONTROLS" hidden="true">
@@ -66,7 +67,7 @@
                 <!-- Crimson Notification Badge with Gold Edge -->
                 <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="B81414" hidden="true" tier="HIGH">
                     <Dimensions x="18" y="18" />
-                    <Anchor point="RIGHT" offsetX="-6" />
+                    <Anchor point="RIGHT" offsetX="-4" />
                     <Edge edgeSize="1" />
                     <Controls>
                         <Label name="$(parent)Count" font="ZoFontGameSmall" text="1" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
@@ -87,18 +88,31 @@
                     <AnchorFill />
                 </Backdrop>
 
+                <!-- Sidebar Collapse / Expand Toggle Button -->
+                <Button name="$(parent)CollapseSidebarBtn" mouseEnabled="true">
+                    <Dimensions x="22" y="22" />
+                    <Anchor point="TOPLEFT" offsetX="8" offsetY="12" />
+                    <Textures normal="/esoui/art/buttons/tree_open_up.dds"
+                              pressed="/esoui/art/buttons/tree_open_down.dds"
+                              mouseOver="/esoui/art/buttons/tree_open_over.dds" />
+                </Button>
+
                 <!-- Skyrim Header Area -->
                 <Texture name="$(parent)HeaderIcon" textureFile="/esoui/art/journal/journal_tabicon_lorelibrary_up.dds">
-                    <Dimensions x="28" y="28" />
-                    <Anchor point="TOPLEFT" offsetX="12" offsetY="10" />
+                    <Dimensions x="26" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)CollapseSidebarBtn" relativePoint="RIGHT" offsetX="6" />
                 </Texture>
-                <Label name="$(parent)Title" font="ZoFontWinH2" color="E5B558" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="|cE5B558AETHER|r|cFFFFFFCHAT|r |c888888• Bordeciel &amp; Tamriel|r">
-                    <Anchor point="LEFT" relativeTo="$(parent)HeaderIcon" relativePoint="RIGHT" offsetX="10" />
+                <Label name="$(parent)Title" font="ZoFontWinH2" color="E5B558" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="|cE5B558AETHER|r|cFFFFFFCHAT|r">
+                    <Anchor point="LEFT" relativeTo="$(parent)HeaderIcon" relativePoint="RIGHT" offsetX="8" />
                 </Label>
 
-                <!-- Header Action Buttons (Close, Settings, Friends, Mail, Donate Header Button) -->
-                <Button name="$(parent)CloseBtn" inherits="ZO_CloseButton">
+                <!-- Header Action Buttons (Minimize, Settings, Friends, Mail, Donate) -->
+                <Button name="$(parent)CollapseWindowBtn" mouseEnabled="true">
+                    <Dimensions x="24" y="24" />
                     <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <Textures normal="/esoui/art/buttons/tree_open_up.dds"
+                              pressed="/esoui/art/buttons/tree_open_down.dds"
+                              mouseOver="/esoui/art/buttons/tree_open_over.dds" />
                 </Button>
                 <Button name="$(parent)SettingsBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
@@ -113,6 +127,18 @@
                     <Textures normal="/esoui/art/contacts/tabicon_friends_up.dds"
                               pressed="/esoui/art/contacts/tabicon_friends_down.dds"
                               mouseOver="/esoui/art/contacts/tabicon_friends_over.dds" />
+                    <Controls>
+                        <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="1B5E20" hidden="true" tier="HIGH">
+                            <Dimensions x="16" y="16" />
+                            <Anchor point="TOPRIGHT" offsetX="4" offsetY="-4" />
+                            <Edge edgeSize="1" />
+                            <Controls>
+                                <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Backdrop>
+                    </Controls>
                 </Button>
                 <Button name="$(parent)MailBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
@@ -151,24 +177,135 @@
                     <Anchor point="TOPRIGHT" offsetX="-4" offsetY="42" />
                 </Texture>
 
-                <!-- Left Column: Channels List Container -->
-                <Control name="$(parent)ChannelsList" mouseEnabled="true">
-                    <Dimensions x="214" />
-                    <Anchor point="TOPLEFT" offsetX="8" offsetY="46" />
-                    <Anchor point="BOTTOMLEFT" offsetX="8" offsetY="-8" />
+                <!-- Left Column Sidebar Background Panel (Gives Skyrim/Nordic framed structure to the sidebar) -->
+                <Backdrop name="$(parent)SidebarBG" alpha="0.3" centerColor="050505" edgeColor="282828">
+                    <Dimensions x="216" />
+                    <Anchor point="TOPLEFT" offsetX="6" offsetY="46" />
+                    <Anchor point="BOTTOMLEFT" offsetX="6" offsetY="-8" />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+
+                <!-- Left Column: Channels Scrollable Container (ZO_ScrollContainer with strict clipping) -->
+                <Control name="$(parent)ChannelsScroll" inherits="ZO_ScrollContainer" mouseEnabled="true">
+                    <Dimensions x="216" />
+                    <Anchor point="TOPLEFT" offsetX="6" offsetY="46" />
+                    <Anchor point="BOTTOMLEFT" offsetX="6" offsetY="-8" />
                 </Control>
 
                 <!-- Vertical Nordic Divider between Channels and Conversation -->
                 <Texture name="$(parent)VerticalDivider" textureFile="/esoui/art/interaction/conversation_verticalborder.dds">
                     <Dimensions x="2" />
-                    <Anchor point="TOPLEFT" offsetX="224" offsetY="44" />
-                    <Anchor point="BOTTOMLEFT" offsetX="224" offsetY="-6" />
+                    <Anchor point="TOPLEFT" offsetX="226" offsetY="44" />
+                    <Anchor point="BOTTOMLEFT" offsetX="226" offsetY="-6" />
                 </Texture>
 
                 <!-- Right Column: Active Conversation Header & Actions -->
                 <Label name="$(parent)ActiveChannelLabel" font="ZoFontWinH3" color="E5B558" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Canal Zone">
-                    <Anchor point="TOPLEFT" offsetX="234" offsetY="48" />
+                    <Anchor point="TOPLEFT" offsetX="236" offsetY="48" />
                 </Label>
+                <!-- Zone Multi-Language Selector Pills -->
+                <Control name="$(parent)ZoneLangBar" hidden="true">
+                    <Dimensions x="280" y="24" />
+                    <Anchor point="TOPRIGHT" offsetX="-38" offsetY="48" />
+                    <Controls>
+                        <Button name="$(parent)All" mouseEnabled="true">
+                            <Dimensions x="50" y="22" />
+                            <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" edgeColor="E5B558" centerColor="111827" alpha="0.9">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                                <Label name="$(parent)Label" font="ZoFontGameSmall" color="E5B558" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Toutes">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)FR" mouseEnabled="true">
+                            <Dimensions x="36" y="22" />
+                            <Anchor point="LEFT" relativeTo="$(parent)All" relativePoint="RIGHT" offsetX="3" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" edgeColor="444444" centerColor="111827" alpha="0.9">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                                <Label name="$(parent)Label" font="ZoFontGameSmall" color="888888" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="FR">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)EN" mouseEnabled="true">
+                            <Dimensions x="36" y="22" />
+                            <Anchor point="LEFT" relativeTo="$(parent)FR" relativePoint="RIGHT" offsetX="3" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" edgeColor="444444" centerColor="111827" alpha="0.9">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                                <Label name="$(parent)Label" font="ZoFontGameSmall" color="888888" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="EN">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)DE" mouseEnabled="true">
+                            <Dimensions x="36" y="22" />
+                            <Anchor point="LEFT" relativeTo="$(parent)EN" relativePoint="RIGHT" offsetX="3" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" edgeColor="444444" centerColor="111827" alpha="0.9">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                                <Label name="$(parent)Label" font="ZoFontGameSmall" color="888888" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="DE">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)ES" mouseEnabled="true">
+                            <Dimensions x="36" y="22" />
+                            <Anchor point="LEFT" relativeTo="$(parent)DE" relativePoint="RIGHT" offsetX="3" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" edgeColor="444444" centerColor="111827" alpha="0.9">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                                <Label name="$(parent)Label" font="ZoFontGameSmall" color="888888" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="ES">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)Global" mouseEnabled="true">
+                            <Dimensions x="50" y="22" />
+                            <Anchor point="LEFT" relativeTo="$(parent)ES" relativePoint="RIGHT" offsetX="3" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" edgeColor="444444" centerColor="111827" alpha="0.9">
+                                    <AnchorFill />
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                                <Label name="$(parent)Label" font="ZoFontGameSmall" color="888888" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Global">
+                                    <AnchorFill />
+                                </Label>
+                            </Controls>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Button name="$(parent)SetFilterBtn" mouseEnabled="true" hidden="true">
+                    <Dimensions x="170" y="24" />
+                    <Anchor point="TOPRIGHT" offsetX="-38" offsetY="48" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" edgeColor="E5B558" centerColor="111827" alpha="0.9">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Texture name="$(parent)Icon" textureFile="/esoui/art/inventory/inventory_tabicon_armor_up.dds">
+                            <Dimensions x="18" y="18" />
+                            <Anchor point="LEFT" offsetX="6" />
+                        </Texture>
+                        <Label name="$(parent)Label" font="ZoFontGameSmall" color="E5B558" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="[✓] Sets Uniquement">
+                            <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="4" />
+                            <Anchor point="RIGHT" offsetX="-4" />
+                        </Label>
+                    </Controls>
+                </Button>
                 <Button name="$(parent)ClearBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
                     <Anchor point="TOPRIGHT" offsetX="-10" offsetY="48" />
@@ -180,20 +317,20 @@
                 <!-- Middle Divider below Channel Title -->
                 <Texture name="$(parent)MidDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
                     <Dimensions y="2" />
-                    <Anchor point="TOPLEFT" offsetX="228" offsetY="76" />
+                    <Anchor point="TOPLEFT" offsetX="230" offsetY="76" />
                     <Anchor point="TOPRIGHT" offsetX="-8" offsetY="76" />
                 </Texture>
 
                 <!-- Message TextBuffer (Native ESO Chat Buffer with Skyrim Styling) -->
                 <TextBuffer name="$(parent)Messages" font="ZoFontChat" linkEnabled="true" mouseEnabled="true" maxHistoryLines="400">
-                    <Anchor point="TOPLEFT" offsetX="232" offsetY="82" />
+                    <Anchor point="TOPLEFT" offsetX="234" offsetY="82" />
                     <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-48" />
                 </TextBuffer>
 
                 <!-- Bottom Horizontal Divider -->
                 <Texture name="$(parent)BottomDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
                     <Dimensions y="2" />
-                    <Anchor point="BOTTOMLEFT" offsetX="228" offsetY="-44" />
+                    <Anchor point="BOTTOMLEFT" offsetX="230" offsetY="-44" />
                     <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-44" />
                 </Texture>
 
@@ -345,6 +482,26 @@
                     <Dimensions x="120" y="28" />
                     <Anchor point="BOTTOM" offsetY="-12" />
                 </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- On-Screen Friend Status Toast Notification (6cm - 8cm / ~220px from Top) -->
+        <TopLevelControl name="AetherChat_FriendNotification" tier="MEDIUM" clampedToScreen="true" mouseEnabled="false" hidden="true">
+            <Dimensions x="480" y="44" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="220" />
+            <Controls>
+                <Backdrop name="$(parent)BG" edgeColor="E5B558" centerColor="0D131C" alpha="0.92">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/contacts/tabicon_friends_up.dds">
+                    <Dimensions x="26" y="26" />
+                    <Anchor point="LEFT" offsetX="14" offsetY="0" />
+                </Texture>
+                <Label name="$(parent)Text" font="ZoFontWinH3" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="10" />
+                    <Anchor point="RIGHT" offsetX="-14" />
+                </Label>
             </Controls>
         </TopLevelControl>
     </Controls>

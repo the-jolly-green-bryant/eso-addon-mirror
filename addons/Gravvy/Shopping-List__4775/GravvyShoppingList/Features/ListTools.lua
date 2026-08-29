@@ -442,6 +442,7 @@ function ListTools:RefreshTripWindow()
 end
 
 function ListTools:TripSelectionChanged()
+    self.owner:RefreshInventory()
     self.owner.ui.listSignature = nil
     self.owner.ui:Refresh()
     self.owner.gamepad:Refresh()

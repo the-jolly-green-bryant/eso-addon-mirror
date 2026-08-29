@@ -1,9 +1,6 @@
-## Title: Shopping List Legacy Data Recovery
-## Description: One-time compatibility loader for Shopping List data saved before the GravvyShoppingList manifest rename.
+## Title: Shopping List Legacy Data Recovery (Retired)
+## Description: Retired compatibility marker. Saved data is no longer loaded from this manifest.
 ## Author: Gravvy
-## Version: 1.0.0
-## APIVersion: 101051
+## Version: 1.0.1
+## APIVersion: 101050 101051
 ## IsLibrary: true
-## SavedVariables: ShoppingList_Data
-
-LegacyRecovery.lua

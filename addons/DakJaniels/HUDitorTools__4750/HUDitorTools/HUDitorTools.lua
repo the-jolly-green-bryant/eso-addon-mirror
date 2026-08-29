@@ -10,7 +10,7 @@ local HT = HUDitorTools
 
 -- Addon data
 local addonWebsite = "https://www.esoui.com/downloads/info4750"
-HT.version = "1.0.2"
+HT.version = "1.1.0"
 HT.name = "HUDitor Tools"
 HT.displayName = "|c00FF00HUD|cFFFF00itor|r Tools"
 HT.eventName = "HUDitorTools"
@@ -96,7 +96,22 @@ HT.Defaults =
     HUDEditorAlwaysShowAllNames        = false,
     HUDEditorHideNamesShorterThan      = 50,
     HUDEditHiddenControls              = {},
+
+    -- Named HUD layouts (snapshots of HUD_MANAGER.savedVars.profiles[1])
+    hudLayoutNextId                    = 1,
+    hudLayoutsAccount                  = {},
+    hudLayoutsCharacter                = {},
+    hudLayoutSelectionByCharacter      = {},
+    showChatMessages                   = false,
 }
+
+-- CHAT_ROUTER:AddSystemMessage (EsoUI/Ingame/ChatSystem/ChatHandlers.lua)
+function HT.AddChatSystemMessage(message)
+    if not HT.SV or not HT.SV.showChatMessages then
+        return
+    end
+    CHAT_ROUTER:AddSystemMessage(message)
+end
 
 -- local vanilla ZOs class and manager object variables
 --- CLASSES
@@ -345,7 +360,7 @@ local function hideElementUIInHUDOrEditor(elementCtrl, hideInHUDEditor)
     if hideInHUDEditor == false then hideInHUDEditor = nil end
     local elementName = getElementRealTLCName(elementCtrl, nil)
     if setHUDElementHiddenState(elementName, hideInHUDEditor, elementCtrl) == true then
-        d("[HT]HUD Editor element '" .. tostring((hideInHUDEditor == true and SCENE_HIDDEN) or SCENE_SHOWN) .. "': '" .. tostring(getElementDisplayName(elementCtrl) .. "' - " .. tostring(elementName)))
+        HT.AddChatSystemMessage("[HT]HUD Editor element '" .. tostring((hideInHUDEditor == true and SCENE_HIDDEN) or SCENE_SHOWN) .. "': '" .. tostring(getElementDisplayName(elementCtrl) .. "' - " .. tostring(elementName)))
         return true
     end
 end
@@ -777,6 +792,40 @@ local function getHUDEditorInfoBoxSettingsContextMenu()
         },
     }
     addCustomScrollableSubMenuEntry("Colors", colorSlotSubmenu)
+    addCustomScrollableMenuHeader(GetString(SI_HUDITORTOOLS_LAYOUTS))
+    addCustomScrollableMenuEntry(GetString(SI_HUDITORTOOLS_LAYOUT_SAVE), function()
+                                     HT.SaveActiveLayout()
+                                 end, LSM_ENTRY_TYPE_NORMAL, {
+                                     tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_SAVE_TOOLTIP),
+                                     enabled = function()
+                                         return HT.IsLiveLayoutDirty()
+                                     end,
+                                 })
+    addCustomScrollableMenuEntry(GetString(SI_HUDITORTOOLS_LAYOUT_NEW), function()
+                                     HT.ShowLayoutNameDialog("new")
+                                 end, LSM_ENTRY_TYPE_NORMAL, {
+                                     tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_NEW_TOOLTIP),
+                                 })
+    addCustomScrollableMenuEntry(GetString(SI_HUDITORTOOLS_LAYOUT_IMPORT), function()
+                                     HT.ShowLayoutImportDialog()
+                                 end, LSM_ENTRY_TYPE_NORMAL, {
+                                     tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_IMPORT_TOOLTIP),
+                                 })
+    addCustomScrollableMenuEntry(GetString(SI_HUDITORTOOLS_LAYOUT_EXPORT), function()
+                                     HT.ShowLayoutExportDialog()
+                                 end, LSM_ENTRY_TYPE_NORMAL, {
+                                     tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_EXPORT_TOOLTIP),
+                                 })
+    addCustomScrollableMenuEntry(GetString(SI_HUDITORTOOLS_LAYOUT_RENAME), function()
+                                     HT.ShowLayoutNameDialog("rename")
+                                 end, LSM_ENTRY_TYPE_NORMAL)
+    addCustomScrollableMenuEntry(GetString(SI_HUDITORTOOLS_LAYOUT_DELETE), function()
+                                     HT.ShowLayoutDeleteConfirmation()
+                                 end, LSM_ENTRY_TYPE_NORMAL, {
+                                     enabled = function()
+                                         return HT.CountAllLayoutsForCharacter() > 1
+                                     end,
+                                 })
     showCustomScrollableMenu(nil, { minDropdownWidth = 325 }, specialCallbackData)
 end
 
@@ -829,7 +878,7 @@ local function InstallEditorHooks(fromSceneChange)
 
     ----------------------------
     -- LibScrollableMenu usage at InfoBox
-    if not HEKDropdownLibScrollableMenuHooked and HE_KB.infoBoxSelector ~= nil and LSM ~= nil and addCustomScrollableComboBoxDropdownMenu ~= nil then
+    if not HEKDropdownLibScrollableMenuHooked then
         local function customFilterFunc(p_item, p_filterString)
             -- local name = p_item.label or p_item.name
             -- local nameStr = getValueOrCallback(name)
@@ -965,6 +1014,7 @@ local function InstallEditorHooks(fromSceneChange)
 
             -- For the Grid Snap
             HT.UpdateInfoBoxSectionVisibility()
+            HT.RefreshLayoutInfoBoxSection()
         end)
     end
 
@@ -1005,7 +1055,7 @@ local function InstallEditorHooks(fromSceneChange)
                 end
             end
             if HUDEditContextMenu and numUserHiddenHUDEditorElements > 0 then
-                d("[HT]HUD Editor hides '" .. tostring(numUserHiddenHUDEditorElements) .. "' user-hidden elements!")
+                HT.AddChatSystemMessage("[HT]HUD Editor hides '" .. tostring(numUserHiddenHUDEditorElements) .. "' user-hidden elements!")
             end
         end)
         HEEKRefreshColorsHooked = true
@@ -1074,14 +1124,8 @@ local function CoerceSavedColorTable(colorTable, defaultColor)
 end
 
 function HT.HUDUI_RefreshEditorElementColors()
-    if not HE_KB or not HE_KB.elementControls then
-        return
-    end
     for _, element in ipairs(HE_KB.elementControls) do
-        local elementObject = element.object
-        if elementObject then
-            elementObject:RefreshColors()
-        end
+        element.object:RefreshColors()
     end
 end
 
@@ -1179,6 +1223,7 @@ local function OnEditorSceneStateChange(oldState, newState)
         editorShowing = false
         HT.HideGridOverlay()
         HT.RefreshColorPickerVisibility()
+        HT.HideLayoutDialogs()
     end
 end
 
@@ -1192,14 +1237,6 @@ local function OnAddOnLoaded(_, addonName)
     end
     EM:UnregisterForEvent(HT.eventName, EVENT_ADD_ON_LOADED)
 
-    -- Security check -> Abort if the HUD Manager etc. are missing (older API versions)
-    --[[
-    if HM_Class == nil or HM == nil then
-        d("[" .. HT.displayName .."]ERROR - This addon only works with API101051 or newer (HUD Editor must exist!)")
-        return
-    end
-]]
-
     -- SavedVariables
     local worldName = nil -- GetWorldName() no need to split between servers, maybe even "AllAccountsTheSame" as displayName would be a good idea?
     local displayName = GetDisplayName()
@@ -1212,6 +1249,8 @@ local function OnAddOnLoaded(_, addonName)
     -- Create controls etc.
     HT.InstallInfoBoxControls()
     HT.InstallColorPicker()
+    HT.InstallLayoutInfoBoxSection()
+    HT.InitializeHudLayouts()
 
     -- Scenes and hooks
     SM:GetScene("hud_editor_keyboard"):RegisterCallback("StateChange", OnEditorSceneStateChange)

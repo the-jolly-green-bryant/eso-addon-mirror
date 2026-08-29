@@ -1,3 +1,16 @@
+Better Bars v0.0.02-dev2
+
+- Corrected native Chat HUD GetAnchor return-value handling on PlayStation.
+- Added anchor-type validation before restoring the captured native layout.
+
+Better Bars v0.0.02-dev1
+
+- Built directly from the live v0.0.01 Shield Fix baseline.
+- Made configured Damage Shield Length a hard maximum for auto-sizing.
+- Pixel-aligned Crescent fill and leading-edge geometry with the frame.
+- Added opt-in native Chat HUD position, size, scale, preview, nudge, preset, and restore controls.
+- Preserved the complete v0.0.01 Shield Fix state owner and native event flow.
+
 Better Bars v0.0.01
 
 First public release.

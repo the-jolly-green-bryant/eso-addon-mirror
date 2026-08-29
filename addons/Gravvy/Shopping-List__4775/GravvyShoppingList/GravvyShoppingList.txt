@@ -1,11 +1,11 @@
 ## Title: |cFFAA33Shopping List|r
-## Description: A compact shopping list for guild store trips.
+## Description: A compact shopping list for guild store trips. Version 0.19.0
 ## Author: Gravvy
-## Version: 0.18.8
-## APIVersion: 101051
-## AddOnVersion: 33
+## Version: 0.19.0
+## APIVersion: 101050 101051
+## AddOnVersion: 34
 ## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0>=40500 LibSets>=0009000
-## OptionalDependsOn: AwesomeGuildStore LibCustomMenu ShoppingList WritWorthy
+## OptionalDependsOn: AwesomeGuildStore LibCustomMenu WritWorthy
 ## SavedVariables: ShoppingList_Data ShoppingList_BackupData
 
 # The manifest filename is the internal add-on identifier. Keep it unique from
@@ -49,6 +49,7 @@ Integrations/MainMenu.lua
 Core/Matcher.lua
 Core/Inventory.lua
 Core/PurchaseTracker.lua
+Integrations/TradingIndicators.lua
 UI/Shared/Settings.lua
 GravvyShoppingList.lua
 Integrations/PublicAPI.lua

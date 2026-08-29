@@ -462,6 +462,7 @@ function CTAResults.BuildResultsChunk(categoryTypeIndex, from)
         CTAResults.sv.lastVersion = CTAResults.sv.nextVersion
         CTAResults.DisplayUnmatched(CTAResults.state._matchingItems, "item")
         CTAResults.DisplayUnmatched(CTAResults.state._matchingFragments, "fragment")
+        CTAResults.state._matchingItems = {}
         return
     end
 

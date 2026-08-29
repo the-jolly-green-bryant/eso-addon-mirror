@@ -66,7 +66,32 @@ local function ApplyStamp(entryData, itemData)
     if entryData.cbStamped then return end
     entryData.cbStamped = true
 
-    entryData.name = string.format("|c%s%s|r%s", sv.color or defaults.color, sv.stampText or defaults.stampText, entryData.name)
+    local color = sv.color or defaults.color
+    local r = tonumber(color:sub(1,2),16)/255
+    local g = tonumber(color:sub(3,4),16)/255
+    local b = tonumber(color:sub(5,6),16)/255
+
+    -- Path A: whole-name markup (what we already had, minus the old prefix-only
+    -- approach - now the ENTIRE name is wrapped, matching how quality colors
+    -- recolor the whole name rather than adding a separate marker).
+    local before = entryData.name
+    entryData.name = string.format("|c%s%s|r", color, entryData.name)
+
+    -- Path B: if this entry supports a dedicated name-color override (the same
+    -- mechanism the game likely uses for quality-tier coloring, which can take
+    -- precedence over embedded markup), set it too. Fully guarded - does
+    -- nothing if the method doesn't exist on this client.
+    local pathBAvailable = (entryData.SetNameColors ~= nil)
+    if pathBAvailable then
+        local colorDef = ZO_ColorDef and ZO_ColorDef:New(r, g, b, 1)
+        if colorDef then
+            local ok2 = pcall(function() entryData:SetNameColors(colorDef, colorDef) end)
+            Dbg("Path B (SetNameColors) call " .. (ok2 and "succeeded" or "FAILED"))
+        end
+    end
+
+    Dbg(string.format("STAMP on %s -> before=[%s] after=[%s] pathB_available=%s",
+        itemData.name or "?", tostring(before), tostring(entryData.name), tostring(pathBAvailable)))
 end
 
 -- ---------------------------------------------------------------------------
@@ -138,7 +163,7 @@ local function BuildSettingsPanel()
 
     LAM:RegisterAddonPanel("CBStampPanel", {
         type = "panel", name = "CB's Stamp of Manufacture",
-        author = "@Dicen95728", version = "1.0", registerForRefresh = true,
+        author = "@Dicen95728", version = "1.2", registerForRefresh = true,
     })
     LAM:RegisterOptionControls("CBStampPanel", {
         { type = "checkbox", name = "Enabled",

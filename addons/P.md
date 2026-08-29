@@ -38,6 +38,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pawksickles Updated and jpFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2ch/Pawksickles-Updated-and-jpFix__1401) | 2ch | PC / Mac | 1.5.2 |
 | [Pawksickles updated for High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/trollusk/Pawksickles-updated-for-High-Isle__3422) | trollusk | PC / Mac | 1.6.1 |
 | [PB](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexdragian/PB__2499) | alexdragian | PC / Mac | 0.0.23 |
+| [PB's ChatAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant__416eb892-aa32-4a10-8d1a-7ba7cf27cedf) | PinkBanther | Console | — |
 | [PB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
 | [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
 | [PB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |

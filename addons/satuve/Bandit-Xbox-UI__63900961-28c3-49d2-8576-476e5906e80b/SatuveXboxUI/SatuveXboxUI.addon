@@ -1,7 +1,7 @@
 ## Title: |c4B8BFESatuve|r Xbox UI
 ## Description: Xbox-server PC interface fork with controller settings and minimap. Based on Bandits User Interface.
 ## Author: Satuve (Xbox adaptation); original Bandits UI by secretrob and Hoft
-## Version: 1.1.63-resource-navigation-extracted
+## Version: 1.1.64-reloadui-init-fix
 ## APIVersion: 101050
 ## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS SATUVE_XBOX_UI_CP_CHAR
 ## DependsOn: LibGamepad>=107

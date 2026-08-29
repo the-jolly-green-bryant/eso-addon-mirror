@@ -1,0 +1,74 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Duesentrieb/Berserk-Tracker-PC-Console__4801",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4801",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4801",
+  "deleted": false,
+  "directories": [
+    "BerserkTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4801/",
+  "fingerprint": "bec76dfc03c6aaebab7469eef0ea4f5628d7275f8ec377619fb2e2baf72a2b63",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17170.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4801",
+  "source_url": "https://www.esoui.com/downloads/info4801-BerserkTrackerPCConsole.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Berserk Tracker (PC & Console)",
+  "updated_at": 1787957974000,
+  "version": "20260829-0001"
+}

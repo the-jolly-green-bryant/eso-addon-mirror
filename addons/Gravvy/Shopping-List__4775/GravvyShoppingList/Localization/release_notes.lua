@@ -1,7 +1,12 @@
 local releaseNotes = {
     en = [[
 
-Current release · 0.18.8
+Current release · 0.19.0
+• Owned inventory is now allocated once across matching Own Total entries in active shopping trips.
+• Added purchase corrections, persistent list locking, Find Next, and optional next item selection after purchases.
+• Added Shopping List status markers to current guild store results without remote searches.
+
+0.18.8
 • Added a shopping-session summary with purchases, spending, updated lists, and remaining entries.
 • Expanded the public API with list management, progress snapshots, and non-mutating matching previews.
 • Added protected list, item, and purchase update callbacks while retaining API v1 and v2 compatibility.
@@ -30,7 +35,12 @@ Current release · 0.18.8
 • Added inventory-aware quantities, notes, full SLB1 backup, accessibility settings, chat-link actions, and Spanish and French translations.]],
     es = [[
 
-Versión actual · 0.18.8
+Versión actual · 0.19.0
+• El inventario propio se asigna una sola vez entre entradas Total propio coincidentes de los viajes activos.
+• Se añadieron correcciones de compras, bloqueo de listas, Buscar siguiente y selección opcional tras comprar.
+• Se añadieron indicadores de Lista de compras a los resultados de la tienda actual sin búsquedas remotas.
+
+0.18.8
 • Se añadió un resumen de la sesión de compras con compras, gastos, listas actualizadas y entradas pendientes.
 • Se amplió la API pública con gestión de listas, datos de progreso y vistas previas de coincidencia sin modificaciones.
 • Se añadieron eventos protegidos para cambios de listas, artículos y compras, conservando la compatibilidad con las API v1 y v2.
@@ -59,7 +69,12 @@ Versión actual · 0.18.8
 • Se añadieron cantidades de inventario, notas, copia completa SLB1, accesibilidad, acciones de enlaces del chat y traducciones al español y francés.]],
     fr = [[
 
-Version actuelle · 0.18.8
+Version actuelle · 0.19.0
+• L'inventaire possédé est attribué une seule fois entre les entrées Total possédé des trajets actifs.
+• Ajout des corrections d'achat, du verrouillage des listes, de Trouver suivant et de la sélection facultative après achat.
+• Ajout d'indicateurs Liste de courses aux résultats de la boutique actuelle sans recherche distante.
+
+0.18.8
 • Ajout d'un résumé de session avec achats, dépenses, listes mises à jour et entrées restantes.
 • Extension de l'API publique avec gestion des listes, états de progression et aperçus de correspondance sans modification.
 • Ajout de rappels protégés pour les mises à jour des listes, articles et achats, tout en conservant la compatibilité avec les API v1 et v2.

@@ -2,8 +2,9 @@
 -- AetherChat : Settings & LibAddonMenu-2.0 Data Manager (Clean & Streamlined)
 -- ============================================================================
 AetherChat = AetherChat or {}
-AetherChat.Settings = {}
+local AetherChat = AetherChat
 
+AetherChat.Settings = {}
 local Settings = AetherChat.Settings
 
 local DEFAULTS = {
@@ -11,6 +12,9 @@ local DEFAULTS = {
     language = 'auto',
     enableFloatingIcon = true,
     hideOfficialChat = false,
+    backdropAlpha = 95,
+    sidebarCollapsed = false,
+    autoCollapseOnMenus = true,
     soundOnWhisper = true,
     whisperSound = 'champion',
     persistHistory = true,
@@ -21,8 +25,10 @@ local DEFAULTS = {
     notifyWhispers = true,
     notifyGuilds = true,
     notifyParty = true,
+    notifyFriendStatus = true,
+    notifySales = true,
     guildsExpanded = false,
-    floatingIconPos = { x = 130, y = 60 },
+    floatingIconPos = { x = 60, y = 60 },
     windowPos = nil,
     windowDimensions = { width = 940, height = 520 },
     history = {},
@@ -50,7 +56,8 @@ function AetherChat.SendInGameDonation()
 end
 
 function Settings.Initialize()
-    AetherChat.savedVars = ZO_SavedVars:NewAccountWide('AetherChat_SavedVariables', 2, nil, DEFAULTS)
+    local worldName = GetWorldName()
+    AetherChat.savedVars = ZO_SavedVars:NewAccountWide('AetherChat_SavedVariables', 2, nil, DEFAULTS, worldName)
     Settings.data = AetherChat.savedVars
 
     if not Settings.data.history then
@@ -111,9 +118,9 @@ function Settings.RegisterLAM()
     local panelData = {
         type = "panel",
         name = "AetherChat",
-        displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r (" .. L('SET_PANEL_NAME') .. ")",
+        displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "2.30.0",
+        version = "1.1",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -321,6 +328,22 @@ function Settings.RegisterLAM()
             default = true,
         },
         {
+            type = "checkbox",
+            name = L('SET_NOTIF_FRIENDS_STATUS'),
+            tooltip = L('SET_NOTIF_FRIENDS_STATUS_TT'),
+            getFunc = function() return Settings.Get('notifyFriendStatus', true) end,
+            setFunc = function(value) Settings.Set('notifyFriendStatus', value) end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_NOTIF_SALES'),
+            tooltip = L('SET_NOTIF_SALES_TT'),
+            getFunc = function() return Settings.Get('notifySales', true) end,
+            setFunc = function(value) Settings.Set('notifySales', value) end,
+            default = true,
+        },
+        {
             type = "header",
             name = L('SET_LOOT_HEADER'),
         },
@@ -364,14 +387,41 @@ function Settings.RegisterLAM()
             name = L('SET_GEN_HEADER'),
         },
         {
+            type = "slider",
+            name = L('SET_WINDOW_ALPHA'),
+            tooltip = L('SET_WINDOW_ALPHA_TT'),
+            min = 20,
+            max = 100,
+            step = 5,
+            getFunc = function() return Settings.Get('backdropAlpha', 95) end,
+            setFunc = function(value)
+                Settings.Set('backdropAlpha', value)
+                if AetherChat.Messenger and AetherChat.Messenger.ApplyBackdropAlpha then
+                    AetherChat.Messenger.ApplyBackdropAlpha(value)
+                end
+            end,
+            default = 95,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_AUTO_COLLAPSE_MENUS'),
+            tooltip = L('SET_AUTO_COLLAPSE_MENUS_TT'),
+            getFunc = function() return Settings.Get('autoCollapseOnMenus', true) end,
+            setFunc = function(value)
+                Settings.Set('autoCollapseOnMenus', value)
+            end,
+            default = true,
+        },
+        {
             type = "checkbox",
             name = L('SET_GEN_ICON'),
             tooltip = L('SET_GEN_ICON_TT'),
             getFunc = function() return Settings.Get('enableFloatingIcon', true) end,
             setFunc = function(value)
                 Settings.Set('enableFloatingIcon', value)
-                if AetherChat_FloatingIcon then
-                    AetherChat_FloatingIcon:SetHidden(not value)
+                if AetherChat_MinBar then
+                    local isWindowHidden = (not AetherChat_MessengerWindow) or AetherChat_MessengerWindow:IsHidden()
+                    AetherChat_MinBar:SetHidden(not (value and isWindowHidden))
                 end
             end,
             default = true,
@@ -419,20 +469,30 @@ function Settings.RegisterLAM()
             tooltip = L('SET_RESET_TT'),
             func = function()
                 Settings.Set('channelOrder', {})
-                Settings.Set('floatingIconPos', { x = 130, y = 60 })
+                Settings.Set('floatingIconPos', { x = 60, y = 60 })
                 Settings.Set('windowPos', nil)
                 Settings.Set('windowDimensions', { width = 940, height = 520 })
-                if AetherChat_FloatingIcon then
-                    AetherChat_FloatingIcon:ClearAnchors()
-                    AetherChat_FloatingIcon:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 130, 60)
+                Settings.Set('sidebarCollapsed', false)
+                Settings.Set('backdropAlpha', 95)
+                if AetherChat_MinBar then
+                    AetherChat_MinBar:ClearAnchors()
+                    AetherChat_MinBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 60, 60)
                 end
                 if AetherChat_MessengerWindow then
                     AetherChat_MessengerWindow:ClearAnchors()
                     AetherChat_MessengerWindow:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
                     AetherChat_MessengerWindow:SetDimensions(940, 520)
                 end
-                if AetherChat.Messenger and AetherChat.Messenger.RefreshChannelList then
-                    AetherChat.Messenger.RefreshChannelList()
+                if AetherChat.Messenger then
+                    if AetherChat.Messenger.ApplyBackdropAlpha then
+                        AetherChat.Messenger.ApplyBackdropAlpha(95)
+                    end
+                    if AetherChat.Messenger.SetSidebarCollapsed then
+                        AetherChat.Messenger.SetSidebarCollapsed(false)
+                    end
+                    if AetherChat.Messenger.RefreshChannelList then
+                        AetherChat.Messenger.RefreshChannelList()
+                    end
                 end
             end,
             width = "half",

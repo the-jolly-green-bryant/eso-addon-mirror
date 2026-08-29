@@ -121,6 +121,10 @@ function UI:ShowSlayerMissAlert(preview)
     if not self.slayerAlert then return end
     local saved=self:GetSlayerAlertSaved()
     if not preview and saved.enabled ~= true then self:HideSlayerMissAlert(); return end
+    if not preview and BB.IsGameplayHUDSceneActive and not BB:IsGameplayHUDSceneActive() then
+        self:HideSlayerMissAlert()
+        return
+    end
     self:ApplySlayerAlertSettings()
     self.slayerAlert.generation=(self.slayerAlert.generation or 0)+1
     local generation=self.slayerAlert.generation
@@ -527,10 +531,25 @@ function UI:LayoutCompact(effectType,definitions)
     return n
 end
 
+function UI:IsPanelPreviewActive(effectType)
+    local currentScene=SCENE_MANAGER and SCENE_MANAGER:GetCurrentScene() or nil
+    return currentScene~=nil and self.previewScene[effectType]==currentScene
+end
+
 function UI:RefreshPanel(effectType,force)
     local panel=self:GetPanel(effectType)
     local saved=self:GetSaved(effectType)
     if not BB.saved.enabled or saved.enabled==false then
+        panel.fragment:SetHiddenForReason("BetterBuffsContent",true,0,0)
+        panel.control:SetHidden(true)
+        return
+    end
+
+    -- Scene ownership is authoritative. Effect/timer refreshes may continue while
+    -- a menu is open, but they are not allowed to make the live HUD visible.
+    -- Explicit preview/positioning is allowed only in the scene it was attached to.
+    local sceneVisible=(BB.IsGameplayHUDSceneActive and BB:IsGameplayHUDSceneActive()) or self:IsPanelPreviewActive(effectType)
+    if not sceneVisible then
         panel.fragment:SetHiddenForReason("BetterBuffsContent",true,0,0)
         panel.control:SetHidden(true)
         return
@@ -555,6 +574,18 @@ end
 
 function UI:RefreshAll(force)
     self:RefreshPanel("BUFF",force); self:RefreshPanel("DEBUFF",force)
+end
+
+function UI:RefreshSceneVisibility()
+    self:RefreshAll(false)
+    if not self.slayerAlert then return end
+    local currentScene=SCENE_MANAGER and SCENE_MANAGER:GetCurrentScene() or nil
+    local previewActive=self.slayerAlert.previewScene~=nil and self.slayerAlert.previewScene==currentScene
+    local hudActive=BB.IsGameplayHUDSceneActive and BB:IsGameplayHUDSceneActive()
+    if not hudActive and not previewActive then
+        self.slayerAlert.fragment:SetHiddenForReason("BetterBuffsSlayerAlert",true,0,0)
+        self.slayerAlert.control:SetHidden(true)
+    end
 end
 
 function UI:BuildPreview(effectType)

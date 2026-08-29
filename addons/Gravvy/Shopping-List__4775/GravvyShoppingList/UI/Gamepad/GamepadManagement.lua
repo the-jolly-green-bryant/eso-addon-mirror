@@ -21,6 +21,9 @@ local TRIP_DIALOG = "SHOPPING_LIST_GAMEPAD_TRIP_LISTS"
 local FILTER_DIALOG = "SHOPPING_LIST_GAMEPAD_FILTER"
 local SEARCH_SORT_DIALOG = "SHOPPING_LIST_GAMEPAD_SEARCH_SORT"
 local SESSION_DIALOG = "SHOPPING_LIST_GAMEPAD_SESSION_SUMMARY"
+local PURCHASES_DIALOG = "SHOPPING_LIST_GAMEPAD_PURCHASES"
+local PURCHASE_CORRECTION_DIALOG = "SHOPPING_LIST_GAMEPAD_PURCHASE_CORRECTION"
+local REMOVE_PURCHASE_DIALOG = "SHOPPING_LIST_GAMEPAD_REMOVE_PURCHASE"
 local FILTER_ORDER = { "all", "needed", "completed", "overTarget", "restricted" }
 
 local function showError(message)
@@ -169,6 +172,7 @@ function Gamepad:InitializeManagementDialogs()
     self:InitializeFilterManagementDialog()
     self:InitializeSearchSortDialog()
     self:InitializeSessionSummaryDialog()
+    self:InitializePurchaseCorrectionDialogs()
     self:InitializeEditDialog()
     self:InitializeArchivesDialog()
     self:InitializeShareDialog()
@@ -196,8 +200,18 @@ function Gamepad:InitializeManageDialog()
                 function() self:OpenListNameFromManagement("new") end
             ),
             actionEntry(
+                function()
+                    return GetString(self.owner.data:GetCurrentList().locked
+                        and SI_SHOPPING_LIST_UNLOCK_LIST
+                        or SI_SHOPPING_LIST_LOCK_LIST)
+                end,
+                function() self:ToggleLockedFromManagement() end
+            ),
+            actionEntry(
                 SI_SHOPPING_LIST_BUTTON_RENAME,
-                function() self:OpenListNameFromManagement("rename") end
+                function() self:OpenListNameFromManagement("rename") end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_DUPLICATE,
@@ -209,14 +223,17 @@ function Gamepad:InitializeManageDialog()
                         and SI_SHOPPING_LIST_RECURRING_ON
                         or SI_SHOPPING_LIST_RECURRING_OFF)
                 end,
-                function() self:ToggleRecurringFromManagement() end
+                function() self:ToggleRecurringFromManagement() end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_RESET_PROGRESS,
                 function() self:OpenResetProgressFromManagement() end,
                 nil,
                 function()
-                    return self.owner.data:ListHasPurchaseProgress(
+                    return not self.owner.data:GetCurrentList().locked
+                        and self.owner.data:ListHasPurchaseProgress(
                         self.owner.data:GetCurrentList()
                     )
                 end
@@ -225,7 +242,10 @@ function Gamepad:InitializeManageDialog()
                 SI_SHOPPING_LIST_BUTTON_DELETE,
                 function() self:OpenDeleteListFromManagement() end,
                 nil,
-                function() return #self.owner.data:GetLists() > 1 end
+                function()
+                    return not self.owner.data:GetCurrentList().locked
+                        and #self.owner.data:GetLists() > 1
+                end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_MOVE_UP,
@@ -235,7 +255,8 @@ function Gamepad:InitializeManageDialog()
                     local _, index = self.owner.data:FindList(
                         self.owner.data:GetCurrentList().id
                     )
-                    return index and index > 1
+                    return not self.owner.data:GetCurrentList().locked
+                        and index and index > 1
                 end
             ),
             actionEntry(
@@ -246,18 +267,24 @@ function Gamepad:InitializeManageDialog()
                     local _, index = self.owner.data:FindList(
                         self.owner.data:GetCurrentList().id
                     )
-                    return index and index < #self.owner.data:GetLists()
+                    return not self.owner.data:GetCurrentList().locked
+                        and index and index < #self.owner.data:GetLists()
                 end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_BUDGET,
-                function() self:OpenBudgetFromManagement() end
+                function() self:OpenBudgetFromManagement() end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_CLEAR_COMPLETED,
                 function() self:ClearCompletedFromManagement() end,
                 nil,
                 function()
+                    if self.owner.data:GetCurrentList().locked then
+                        return false
+                    end
                     for _, item in ipairs(self.owner.data:GetItems()) do
                         if self.owner.data:IsItemComplete(item) then
                             return true
@@ -290,7 +317,9 @@ function Gamepad:InitializeManageDialog()
                         and SI_SHOPPING_LIST_FAVORITE_ON
                         or SI_SHOPPING_LIST_FAVORITE_OFF)
                 end,
-                function() self:ToggleFavoriteFromManagement() end
+                function() self:ToggleFavoriteFromManagement() end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 function()
@@ -298,7 +327,9 @@ function Gamepad:InitializeManageDialog()
                         and SI_SHOPPING_LIST_PINNED_ON
                         or SI_SHOPPING_LIST_PINNED_OFF)
                 end,
-                function() self:TogglePinnedFromManagement() end
+                function() self:TogglePinnedFromManagement() end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_UNDO,
@@ -308,7 +339,9 @@ function Gamepad:InitializeManageDialog()
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_BULK_ADD,
-                function() self:OpenBulkFromManagement() end
+                function() self:OpenBulkFromManagement() end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_BUTTON_TRIP,
@@ -319,13 +352,47 @@ function Gamepad:InitializeManageDialog()
                 function() self:OpenSessionSummaryFromManagement() end
             ),
             actionEntry(
+                SI_SHOPPING_LIST_FIND_NEXT,
+                function()
+                    ZO_Dialogs_ReleaseDialogOnButtonPress(MANAGE_DIALOG)
+                    self:FindNextItem(true)
+                end,
+                nil,
+                function()
+                    return self.owner.ags
+                        and self.owner.ags:IsStoreReady()
+                        and self.owner.data:GetNextNeededItem(
+                            self:GetTargetItem() and self:GetTargetItem().id
+                        ) ~= nil
+                end
+            ),
+            actionEntry(
                 SI_SHOPPING_LIST_GAMEPAD_EDIT_MATCHING,
                 function() self:OpenEditDialogFromManagement() end,
-                function() return self:GetTargetItem() ~= nil end
+                function() return self:GetTargetItem() ~= nil end,
+                function()
+                    local item = self:GetTargetItem()
+                    local list = item and self.owner.data:GetListForItem(item.id)
+                    return list ~= nil and not list.locked
+                end
+            ),
+            actionEntry(
+                SI_SHOPPING_LIST_HISTORY_MANAGE,
+                function() self:OpenPurchasesFromManagement() end,
+                function() return self:GetTargetItem() ~= nil end,
+                function()
+                    local item = self:GetTargetItem()
+                    local list = item and self.owner.data:GetListForItem(item.id)
+                    return list ~= nil
+                        and not list.locked
+                        and self.owner.data:GetTargetMode(item) == "buy"
+                end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_GAMEPAD_ARCHIVE_CURRENT,
-                function() self:ArchiveCurrentListFromManagement() end
+                function() self:ArchiveCurrentListFromManagement() end,
+                nil,
+                function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
                 function()
@@ -370,6 +437,146 @@ function Gamepad:InitializeManageDialog()
             },
         },
     })
+end
+
+function Gamepad:InitializePurchaseCorrectionDialogs()
+    ZO_Dialogs_RegisterCustomDialog(PURCHASES_DIALOG, {
+        blockDialogReleaseOnPress = true,
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS.PARAMETRIC },
+        setup = function(dialog)
+            dialog.info.parametricList = self:BuildPurchaseEntries(dialog.data.itemId)
+            dialog:setupFunc()
+        end,
+        title = { text = SI_SHOPPING_LIST_HISTORY_MANAGE },
+        mainText = { text = SI_SHOPPING_LIST_HISTORY_GAMEPAD_HELP },
+        parametricList = {},
+        buttons = {
+            {
+                keybind = "DIALOG_PRIMARY",
+                text = SI_GAMEPAD_SELECT_OPTION,
+                callback = selectDialogEntry,
+            },
+            {
+                keybind = "DIALOG_SECONDARY",
+                text = SI_SHOPPING_LIST_BUTTON_REMOVE,
+                visible = function(dialog)
+                    local data = dialog.entryList:GetTargetData()
+                    return data and data.historyIndex ~= nil
+                end,
+                callback = function(dialog)
+                    local data = dialog.entryList:GetTargetData()
+                    if data and data.historyIndex then
+                        self:ConfirmGamepadPurchaseRemoval(
+                            dialog.data.itemId,
+                            data.historyIndex
+                        )
+                    end
+                end,
+            },
+            {
+                keybind = "DIALOG_NEGATIVE",
+                text = SI_GAMEPAD_BACK_OPTION,
+                callback = cancelDialog(PURCHASES_DIALOG),
+            },
+        },
+    })
+
+    ZO_Dialogs_RegisterCustomDialog(PURCHASE_CORRECTION_DIALOG, {
+        blockDialogReleaseOnPress = true,
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS.PARAMETRIC },
+        setup = function(dialog)
+            local item = self.owner.data:FindItem(dialog.data.itemId)
+            local purchase = item and dialog.data.historyIndex
+                and item.purchaseHistory[dialog.data.historyIndex] or nil
+            self.pendingPurchaseQuantity = tostring(
+                purchase and purchase.quantity or 1
+            )
+            self.pendingPurchasePrice = tostring(math.floor(
+                tonumber(purchase and purchase.unitPrice) or 0
+            ))
+            dialog:setupFunc()
+        end,
+        title = {
+            text = function(dialog)
+                return GetString(dialog.data.mode == "edit"
+                    and SI_SHOPPING_LIST_HISTORY_EDIT_TITLE
+                    or SI_SHOPPING_LIST_HISTORY_ADJUST_TITLE)
+            end,
+        },
+        mainText = {
+            text = function(dialog)
+                return GetString(dialog.data.mode == "edit"
+                    and SI_SHOPPING_LIST_HISTORY_EDIT_HELP
+                    or (dialog.data.mode == "reduce"
+                        and SI_SHOPPING_LIST_HISTORY_REDUCE_HELP
+                        or SI_SHOPPING_LIST_HISTORY_ADD_HELP))
+            end,
+        },
+        parametricList = {
+            textFieldEntry(SI_SHOPPING_LIST_HISTORY_QUANTITY, {
+                value = function() return self.pendingPurchaseQuantity end,
+                changed = function(value) self.pendingPurchaseQuantity = value end,
+                defaultText = "1",
+                maxChars = #tostring(ShoppingListModel.MAX_QUANTITY),
+                numeric = true,
+            }),
+            textFieldEntry(SI_SHOPPING_LIST_HISTORY_UNIT_PRICE, {
+                value = function() return self.pendingPurchasePrice end,
+                changed = function(value) self.pendingPurchasePrice = value end,
+                defaultText = "0",
+                maxChars = #tostring(ShoppingListModel.MAX_PRICE),
+                numeric = true,
+            }),
+        },
+        buttons = {
+            {
+                keybind = "DIALOG_PRIMARY",
+                text = SI_GAMEPAD_SELECT_OPTION,
+                callback = selectDialogEntry,
+            },
+            {
+                keybind = "DIALOG_SECONDARY",
+                text = SI_SHOPPING_LIST_BUTTON_SAVE,
+                callback = function(dialog)
+                    self:SaveGamepadPurchaseCorrection(dialog.data)
+                end,
+            },
+            {
+                keybind = "DIALOG_NEGATIVE",
+                text = SI_DIALOG_CANCEL,
+                callback = cancelDialog(PURCHASE_CORRECTION_DIALOG),
+            },
+        },
+    })
+
+    ZO_Dialogs_RegisterCustomDialog(REMOVE_PURCHASE_DIALOG, {
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS.BASIC },
+        title = { text = SI_SHOPPING_LIST_HISTORY_REMOVE_TITLE },
+        mainText = { text = SI_SHOPPING_LIST_HISTORY_REMOVE_CONFIRM },
+        buttons = {
+            {
+                keybind = "DIALOG_PRIMARY",
+                text = SI_DIALOG_CONFIRM,
+                callback = function(dialog)
+                    self:RemoveGamepadPurchase(dialog.data)
+                end,
+            },
+            { keybind = "DIALOG_NEGATIVE", text = SI_DIALOG_CANCEL },
+        },
+    })
+end
+
+function Gamepad:ToggleLockedFromManagement()
+    local list = self.owner.data:GetCurrentList()
+    local ok, message = self.owner.data:SetListLocked(list.id, not list.locked)
+    if not ok then
+        showError(message)
+        return
+    end
+    ZO_Dialogs_ReleaseDialogOnButtonPress(MANAGE_DIALOG)
+    self:RefreshAfterManagement(GetString(list.locked
+        and SI_SHOPPING_LIST_STATUS_LIST_LOCKED
+        or SI_SHOPPING_LIST_STATUS_LIST_UNLOCKED))
 end
 
 function Gamepad:InitializeListNameDialog()
@@ -1483,7 +1690,11 @@ function Gamepad:SaveBudgetFromManagement()
 end
 
 function Gamepad:ClearCompletedFromManagement()
-    local count = self.owner.data:ClearCompleted()
+    local count, message = self.owner.data:ClearCompleted()
+    if count == nil then
+        showError(message)
+        return
+    end
     if count == 0 then
         showError(GetString(SI_SHOPPING_LIST_STATUS_NO_COMPLETED_ITEMS))
         return
@@ -1564,6 +1775,142 @@ function Gamepad:OpenSearchSortFromManagement()
     releaseAndOpen(MANAGE_DIALOG, function()
         ZO_Dialogs_ShowGamepadDialog(SEARCH_SORT_DIALOG)
     end)
+end
+
+function Gamepad:OpenPurchasesFromManagement()
+    local item = self:GetTargetItem()
+    if not item then
+        showError(GetString(SI_SHOPPING_LIST_ERROR_ITEM_MISSING))
+        return
+    end
+    local itemId = item.id
+    releaseAndOpen(MANAGE_DIALOG, function()
+        ZO_Dialogs_ShowGamepadDialog(PURCHASES_DIALOG, { itemId = itemId })
+    end)
+end
+
+function Gamepad:BuildPurchaseEntries(itemId)
+    local item = self.owner.data:FindItem(itemId)
+    if not item then
+        return {}
+    end
+    local entries = {
+        actionEntry(
+            SI_SHOPPING_LIST_HISTORY_ADD,
+            function() self:OpenGamepadPurchaseCorrection(itemId, "add") end
+        ),
+        actionEntry(
+            SI_SHOPPING_LIST_HISTORY_REDUCE,
+            function() self:OpenGamepadPurchaseCorrection(itemId, "reduce") end,
+            nil,
+            function() return (item.purchased or 0) > 0 end
+        ),
+        actionEntry(
+            SI_SHOPPING_LIST_HISTORY_UNDO_LATEST,
+            function() self:UndoLatestGamepadPurchase(itemId) end,
+            nil,
+            function() return #(item.purchaseHistory or {}) > 0 end
+        ),
+    }
+    for index = #(item.purchaseHistory or {}), 1, -1 do
+        local historyIndex = index
+        local purchase = item.purchaseHistory[index]
+        local date = GetDateStringFromTimestamp
+            and GetDateStringFromTimestamp(purchase.timestamp)
+            or tostring(purchase.timestamp or "")
+        local entry = actionEntry(
+            zo_strformat(
+                GetString(SI_SHOPPING_LIST_HISTORY_GAMEPAD_ROW),
+                date,
+                purchase.quantity or 0,
+                formatGold(purchase.unitPrice)
+            ),
+            function()
+                self:OpenGamepadPurchaseCorrection(
+                    itemId,
+                    "edit",
+                    historyIndex
+                )
+            end
+        )
+        entry.templateData.historyIndex = historyIndex
+        entries[#entries + 1] = entry
+    end
+    return entries
+end
+
+function Gamepad:OpenGamepadPurchaseCorrection(itemId, mode, historyIndex)
+    releaseAndOpen(PURCHASES_DIALOG, function()
+        ZO_Dialogs_ShowGamepadDialog(PURCHASE_CORRECTION_DIALOG, {
+            itemId = itemId,
+            mode = mode,
+            historyIndex = historyIndex,
+        })
+    end)
+end
+
+function Gamepad:SaveGamepadPurchaseCorrection(data)
+    local quantity = tonumber(self.pendingPurchaseQuantity)
+    local unitPrice = tonumber(self.pendingPurchasePrice) or 0
+    local ok, message
+    if data.mode == "edit" then
+        ok, message = self.owner.data:UpdatePurchaseHistory(
+            data.itemId,
+            data.historyIndex,
+            quantity,
+            unitPrice
+        )
+    else
+        local change = data.mode == "reduce" and -quantity or quantity
+        ok, message = self.owner.data:AdjustPurchasedQuantity(
+            data.itemId,
+            change,
+            unitPrice
+        )
+    end
+    if not ok then
+        showError(message)
+        return
+    end
+    ZO_Dialogs_ReleaseDialogOnButtonPress(PURCHASE_CORRECTION_DIALOG)
+    self:RefreshAfterManagement(
+        GetString(SI_SHOPPING_LIST_STATUS_PURCHASE_CORRECTED)
+    )
+end
+
+function Gamepad:UndoLatestGamepadPurchase(itemId)
+    local ok, message = self.owner.data:UndoLatestPurchase(itemId)
+    if not ok then
+        showError(message)
+        return
+    end
+    ZO_Dialogs_ReleaseDialogOnButtonPress(PURCHASES_DIALOG)
+    self:RefreshAfterManagement(
+        GetString(SI_SHOPPING_LIST_STATUS_PURCHASE_UNDONE)
+    )
+end
+
+function Gamepad:ConfirmGamepadPurchaseRemoval(itemId, historyIndex)
+    releaseAndOpen(PURCHASES_DIALOG, function()
+        ZO_Dialogs_ShowGamepadDialog(REMOVE_PURCHASE_DIALOG, {
+            itemId = itemId,
+            historyIndex = historyIndex,
+        })
+    end)
+end
+
+function Gamepad:RemoveGamepadPurchase(data)
+    local ok, message = self.owner.data:RemovePurchaseHistory(
+        data.itemId,
+        data.historyIndex
+    )
+    if not ok then
+        showError(message)
+        return
+    end
+    self:RefreshAfterManagement(
+        GetString(SI_SHOPPING_LIST_STATUS_PURCHASE_REMOVED)
+    )
 end
 
 function Gamepad:SaveSearchSortFromManagement()

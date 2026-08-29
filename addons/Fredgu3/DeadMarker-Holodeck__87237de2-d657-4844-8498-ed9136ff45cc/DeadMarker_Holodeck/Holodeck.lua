@@ -5,6 +5,7 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- 0.0.40: Fight frame (center plant, ring, cardinals, split, 30s boss path)
 -- 0.0.39: Operator HUD (side legend + library); /hd play; compact on clear
 -- 0.0.38: Compact pack tracks until /hd load; recycle pins; idle tick
 -- 0.0.37: /hd flip x|z (mirror pack; wrong-way orbits)
@@ -34,7 +35,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.39"
+Holodeck.version     = "0.0.40"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -86,6 +87,8 @@ local PATH_SPEED_M_S     = 5.0
 local PATH_Y_M           = 0.12
 local PATH_DOT_SPACING   = 1.1
 local SNAP_TRAVEL_EPS    = 0.05
+local FRAME_LOOKAHEAD_SEC = 30
+local FRAME_RING_DOTS     = 28
 
 -- Public kind set for markers / fight packs / future team roles.
 -- group: enemy | role | spot | system
@@ -230,10 +233,11 @@ end
 local function ShouldNameplate(act)
     if not act or not NamesOn() then return false end
     if act.visible == false then return false end
-    local k = act.kind
-    if k ~= "boss" and k ~= "mini" then return false end
     local lab = act.label
-    return type(lab) == "string" and lab ~= "" and lab ~= "origin"
+    if type(lab) ~= "string" or lab == "" or lab == "origin" then return false end
+    if act.guide then return true end
+    local k = act.kind
+    return k == "boss" or k == "mini"
 end
 
 -- Exact-name → kind (before substring heuristics)
@@ -290,7 +294,7 @@ Holodeck.KIND_ORDER = KIND_ORDER
 local DEFAULTS = {
     bossSizeM = 1.6, minibossSizeM = 1.25, originSizeM = 0.7, roleSizeM = 1.1,
     yOffsetM = 1.8, opacity = 1.0, debug = false,
-    legendOn = true, sheetOn = false, pathOn = true, namesOn = true,
+    legendOn = true, sheetOn = false, pathOn = true, frameOn = true, namesOn = true,
     playScalePct = 100,
     flipXByPack = {},
     flipZByPack = {},
@@ -658,14 +662,28 @@ local function PackFlipXZ()
     return fx, fz
 end
 
+-- Library packs: plant is the fight CENTER (midpoint of boss starts), not first-boss feet.
+local function PackShiftXZ()
+    if Holodeck.fightSource ~= "library" then return 0, 0 end
+    local fr = Holodeck.fight and Holodeck.fight._frame
+    if type(fr) ~= "table" then return 0, 0 end
+    return fr.cx or 0, fr.cz or 0
+end
+
 local function LocalToWorld(lx, ly, lz)
     local o = Holodeck.origin
     if not o then return nil end
     local s = PlayScale()
-    local x, z = lx or 0, lz or 0
+    local sx, sz = PackShiftXZ()
+    local x, z = (lx or 0) - sx, (lz or 0) - sz
     local fx, fz = PackFlipXZ()
     if fx then x = -x end
     if fz then z = -z end
+    local yaw = o.yaw
+    if yaw and yaw ~= 0 then
+        local c, si = math.cos(yaw), math.sin(yaw)
+        x, z = x * c - z * si, x * si + z * c
+    end
     return o.x + x * 100 * s, o.y + (ly or 0) * 100, o.z + z * 100 * s
 end
 
@@ -742,7 +760,9 @@ end
 local function EnsureOriginMarker()
     local act = EnsureActor("origin", "origin")
     if not act then return end
-    act.x, act.z = ORIGIN_PIN_LOCAL_X, ORIGIN_PIN_LOCAL_Z
+    -- Sit on the plant. PackShift maps fight-center → plant, so use pack center coords.
+    local sx, sz = PackShiftXZ()
+    act.x, act.z = sx, sz
     act.visible = true
     PlaceActor(act)
 end
@@ -786,9 +806,219 @@ local function PlaceFlatMarker(tag, lx, lz, texture, col, sizeM, alpha, dims)
     return AddPathControl(ctl)
 end
 
+local function FirstTrackXZ(track)
+    if type(track) ~= "table" then return nil end
+    local i = 1
+    while i <= #track do
+        local k = track[i]
+        if k and (k.x ~= nil or k.z ~= nil) then
+            return k.x or 0, k.z or 0
+        end
+        i = i + 1
+    end
+    return nil
+end
+
+local function ComputeFightFrame(fight)
+    local ents = fight and fight.entities
+    if type(ents) ~= "table" then return nil end
+    local bosses = {}
+    local i = 1
+    while i <= #ents do
+        local e = ents[i]
+        if e and NormalizeKind(e.kind) == "boss" then
+            local x, z = FirstTrackXZ(e.track)
+            if x ~= nil then
+                bosses[#bosses + 1] = { x = x, z = z, e = e }
+            end
+        end
+        i = i + 1
+    end
+    local cx, cz, n = 0, 0, 0
+    if #bosses > 0 then
+        i = 1
+        while i <= #bosses do
+            cx = cx + bosses[i].x
+            cz = cz + bosses[i].z
+            n = n + 1
+            i = i + 1
+        end
+    else
+        i = 1
+        while i <= #ents do
+            local x, z = FirstTrackXZ(ents[i] and ents[i].track)
+            if x ~= nil then
+                cx = cx + x
+                cz = cz + z
+                n = n + 1
+            end
+            i = i + 1
+        end
+    end
+    if n == 0 then return nil end
+    cx, cz = cx / n, cz / n
+    local r2 = 0
+    local function acc(track)
+        if type(track) ~= "table" then return end
+        local j = 1
+        while j <= #track do
+            local k = track[j]
+            if k and k.x ~= nil then
+                local dx = k.x - cx
+                local dz = (k.z or 0) - cz
+                local d = dx * dx + dz * dz
+                if d > r2 then r2 = d end
+            end
+            j = j + 1
+        end
+    end
+    local used = false
+    i = 1
+    while i <= #ents do
+        local k = NormalizeKind(ents[i] and ents[i].kind)
+        if k == "boss" or k == "mini" or k == "trash" then
+            acc(ents[i].track)
+            used = true
+        end
+        i = i + 1
+    end
+    if not used then
+        i = 1
+        while i <= #ents do
+            acc(ents[i] and ents[i].track)
+            i = i + 1
+        end
+    end
+    local r = math.sqrt(r2)
+    if r < 4 then r = 4 end
+    local splitPx, splitPz = nil, nil
+    if #bosses >= 2 then
+        local dx = bosses[2].x - bosses[1].x
+        local dz = bosses[2].z - bosses[1].z
+        local px, pz = -dz, dx
+        local plen = math.sqrt(px * px + pz * pz)
+        if plen > 0.2 then
+            splitPx, splitPz = px / plen, pz / plen
+        end
+    end
+    return { cx = cx, cz = cz, r = r, splitPx = splitPx, splitPz = splitPz, bosses = bosses }
+end
+
+local function FrameOn()
+    local s = Holodeck.savedVars
+    if s and s.frameOn ~= nil then return s.frameOn == true end
+    return true
+end
+
+local function PlaceFrameCardinals(fr)
+    if not fr or not Holodeck.origin then return end
+    local r = fr.r or 8
+    local cx, cz = fr.cx or 0, fr.cz or 0
+    local marks = {
+        { id = "_frame_N", lab = "N", x = cx, z = cz + r },
+        { id = "_frame_E", lab = "E", x = cx + r, z = cz },
+        { id = "_frame_S", lab = "S", x = cx, z = cz - r },
+        { id = "_frame_W", lab = "W", x = cx - r, z = cz },
+    }
+    local i = 1
+    while i <= #marks do
+        local m = marks[i]
+        local act = EnsureActor(m.id, "origin")
+        if act then
+            act.guide = true
+            act.label = m.lab
+            act.x, act.z = m.x, m.z
+            act.visible = true
+            act.dead = false
+            act.aspect = nil
+            act.baseColor = KIND.origin.color
+            PlaceActor(act)
+        end
+        i = i + 1
+    end
+end
+
+local function DrawLibraryFrame()
+    if not FrameOn() then return end
+    if Holodeck.fightSource ~= "library" then return end
+    local fight = Holodeck.fight
+    if not fight then return end
+    if not fight._frame then
+        fight._frame = ComputeFightFrame(fight)
+    end
+    local fr = fight._frame
+    if not fr then return end
+    local cx, cz, r = fr.cx or 0, fr.cz or 0, fr.r or 8
+    local ringCol = { 0.45, 0.72, 0.95 }
+    local i = 1
+    while i <= FRAME_RING_DOTS do
+        local a = (i - 1) / FRAME_RING_DOTS * math.pi * 2
+        local x = cx + math.cos(a) * r
+        local z = cz + math.sin(a) * r
+        PlaceFlatMarker("frame_ring_" .. i, x, z, TEX_DOT, ringCol, 0.42, 0.85, { 64, 64 })
+        i = i + 1
+    end
+    if fr.splitPx then
+        local splitCol = { 1.00, 0.92, 0.38 }
+        local n = 18
+        i = 0
+        while i <= n do
+            local u = (i / n) * 2 - 1
+            local x = cx + fr.splitPx * r * u
+            local z = cz + fr.splitPz * r * u
+            PlaceFlatMarker("frame_split_" .. i, x, z, TEX_DOT, splitCol, 0.48, 0.95, { 64, 64 })
+            i = i + 1
+        end
+    end
+    local ents = fight.entities
+    if type(ents) == "table" then
+        i = 1
+        while i <= #ents do
+            local e = ents[i]
+            if e and NormalizeKind(e.kind) == "boss" and type(e.track) == "table" then
+                local col = ResolveEntityColor(e) or KIND.boss.color
+                local prev = nil
+                local j = 1
+                local di = 0
+                while j <= #e.track do
+                    local k = e.track[j]
+                    if k and k.x ~= nil and (k.t or 0) <= FRAME_LOOKAHEAD_SEC then
+                        if prev then
+                            local dx, dz = k.x - prev.x, (k.z or 0) - (prev.z or 0)
+                            local len = math.sqrt(dx * dx + dz * dz)
+                            if len > 0.2 then
+                                local steps = math.max(1, math.floor(len / 1.6))
+                                local s = 1
+                                while s <= steps do
+                                    local u = s / (steps + 1)
+                                    di = di + 1
+                                    PlaceFlatMarker(
+                                        "frame_look_" .. i .. "_" .. di,
+                                        prev.x + dx * u, (prev.z or 0) + dz * u,
+                                        TEX_DOT, col, 0.38, 0.8, { 64, 64 })
+                                    s = s + 1
+                                end
+                            end
+                        end
+                        prev = k
+                    elseif k and (k.t or 0) > FRAME_LOOKAHEAD_SEC then
+                        break
+                    end
+                    j = j + 1
+                end
+            end
+            i = i + 1
+        end
+    end
+    PlaceFrameCardinals(fr)
+end
+
 local function RebuildPathGfx()
     ClearPathGfx()
     if not Holodeck.origin then return end
+
+    DrawLibraryFrame()
+
     if not sv().pathOn then return end
 
     for name, list in pairs(Holodeck.stops) do
@@ -1141,9 +1371,12 @@ local function ApplyTimeline(tSec, announce)
         end
     end
 
-    -- Hide leftover actors from a previous pack/save
+    -- Hide leftover actors from a previous pack/save (keep plant-frame guides)
     for name, act in pairs(Holodeck.actors) do
-        if not live[name] then
+        if act and act.guide then
+            live[name] = true
+            PlaceActor(act)
+        elseif not live[name] then
             act.visible = false
             if act.ctl then act.ctl:SetHidden(true) end
             HideNameplate(act)
@@ -1494,6 +1727,7 @@ local function CompactFight(fight)
             e.track = nil
         end
     end
+    fight._frame = nil
 end
 
 local function ExpandFight(fight)
@@ -1505,6 +1739,7 @@ local function ExpandFight(fight)
             e.track = DecodeTrack(e.trackEnc)
         end
     end
+    fight._frame = ComputeFightFrame(fight)
 end
 
 function Holodeck.RegisterFight(fight)
@@ -1708,7 +1943,12 @@ end
 local function CmdPlant()
     local _, x, y, z = GetUnitRawWorldPosition("player")
     if not x then dhd("Could not read position.") return end
-    Holodeck.origin = { x = x, y = y, z = z }
+    local yaw = 0
+    if type(GetPlayerCameraHeading) == "function" then
+        yaw = GetPlayerCameraHeading() or 0
+    end
+    -- +90°: stand on the split, face a boss — gold line runs left-right through plant.
+    Holodeck.origin = { x = x, y = y, z = z, yaw = yaw + math.pi / 2 }
     Holodeck.playing = false
     Holodeck.playFinished = false
     Holodeck.playT = 0
@@ -1717,9 +1957,14 @@ local function CmdPlant()
     if Holodeck.fight and Holodeck.fightSource == "library" then
         ApplyTimeline(0, false)
     end
+    RebuildPathGfx()
     RefreshUI()
-    dhd("Planted |cFFEE55origin / coord ZERO|r at your feet.")
-    dhd("Then: |cC0E0FF/hd list|r  ·  |cC0E0FF/hd load <id>|r  ·  |cC0E0FF/hd play|r")
+    dhd("Planted |cFFEE55fight center|r at your feet (facing locked).")
+    if Holodeck.fight and Holodeck.fightSource == "library" then
+        dhd("Gold dots = split. Face a boss side. /hd rot = 90°  ·  /hd flip z = mirror")
+    else
+        dhd("Then: |cC0E0FF/hd list|r  ·  |cC0E0FF/hd load <id>|r  ·  |cC0E0FF/hd play|r")
+    end
 end
 
 local function CmdEdit(arg)
@@ -2065,6 +2310,21 @@ local function CmdPath(arg)
     dhd("Path rings/lines: " .. (sv().pathOn and "ON" or "OFF"))
 end
 
+local function CmdFrame(arg)
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    local s = Holodeck.savedVars
+    if not s then return end
+    if arg == "on" then
+        s.frameOn = true
+    elseif arg == "off" then
+        s.frameOn = false
+    else
+        s.frameOn = not FrameOn()
+    end
+    RebuildPathGfx()
+    dhd("Fight frame: |cC0E0FF" .. (FrameOn() and "ON" or "OFF") .. "|r  ·  ring / N-E-S-W / split / 30s boss path")
+end
+
 local function CmdSheet(arg)
     arg = (arg or ""):lower():match("^%s*(%S*)") or ""
     if arg == "next" or arg == "+" or arg == "n" then
@@ -2166,6 +2426,7 @@ local function RefreshPlaybackPlacement()
             PlaceActor(act)
         end
     end
+    RebuildPathGfx()
     RefreshUI()
 end
 
@@ -2242,7 +2503,17 @@ local function CmdFlip(arg)
     elseif fz then
         bits = "z"
     end
-    dhd("Flip " .. bits .. " for |cC0E0FF" .. id .. "|r  ·  /hd flip z|x|off")
+    dhd("Flip " .. bits .. " for |cC0E0FF" .. id .. "|r  ·  /hd flip z|x|off  ·  /hd rot = 90°")
+end
+
+local function CmdRot(arg)
+    if not Holodeck.origin then dhd("Plant first: /hd plant") return end
+    local step = tonumber(arg)
+    if not step then step = 90 end
+    local rad = step * math.pi / 180
+    Holodeck.origin.yaw = (Holodeck.origin.yaw or 0) + rad
+    RefreshPlaybackPlacement()
+    dhd(string.format("Rotated %d°. /hd rot  again, or /hd rot -90", step))
 end
 
 local function CmdNew()
@@ -3369,11 +3640,14 @@ local function CmdLoad(arg)
     Holodeck.playFinished = false
     HideMemMeter()
     LoadFightTable(f, "library", true)
-    ClearPathGfx()
+    RebuildPathGfx()
     if Holodeck.savesPanel and not Holodeck.savesPanel:IsHidden() then
         ShowSavesPanel(true)
     end
-    dhd("Loaded |cC0E0FF" .. id .. "|r  ·  /hd play")
+    dhd("Loaded |cC0E0FF" .. id .. "|r  ·  plant is fight center  ·  /hd play")
+    if f._frame and f._frame.splitPx then
+        dhd("Gold dots = room split (candles). Stand on it, /hd flip z until bosses sit on either side.")
+    end
     RefreshUI()
 end
 
@@ -3405,8 +3679,8 @@ end
 local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
     d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
-    d("|cAADDFFLOOK|r    names on|off · scale N% · flip z|x · legend · textures · /hdsettings")
-    d("plant = coord ZERO.  list = fight library.  load 1 = first pack on that list.")
+    d("|cAADDFFLOOK|r    names on|off · scale N% · rot · flip z · frame · legend")
+    d("plant = fight CENTER, uses facing.  Gold dots = Twins split.  /hd rot = 90°.")
 end
 
 local function OnSlash(args)
@@ -3431,6 +3705,11 @@ local function OnSlash(args)
         size = function() CmdScale(rest) end,
         flip = function() CmdFlip(rest) end,
         mirror = function() CmdFlip(rest) end,
+        rot = function() CmdRot(rest) end,
+        rotate = function() CmdRot(rest) end,
+        spin = function() CmdRot(rest) end,
+        frame = function() CmdFrame(rest) end,
+        path = function() CmdPath(rest) end,
         textures = function() CmdTextures(rest) end,
         texture = function() CmdTextures(rest) end,
         palette = function() CmdTextures(rest) end,
@@ -3475,6 +3754,7 @@ local function OnAddOnLoaded(_, addonName)
     if s.bossSizeM then KIND.boss.sizeM = s.bossSizeM end
     if s.legendOn == nil then s.legendOn = true end
     if s.pathOn == nil then s.pathOn = true end
+    if s.frameOn == nil then s.frameOn = true end
     if s.namesOn == nil then s.namesOn = true end
     if s.playScalePct == nil then s.playScalePct = 100 end
     if type(s.flipXByPack) ~= "table" then s.flipXByPack = {} end

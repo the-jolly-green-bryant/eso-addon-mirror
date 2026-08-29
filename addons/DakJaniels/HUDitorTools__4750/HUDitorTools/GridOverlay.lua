@@ -1,5 +1,5 @@
 -- -----------------------------------------------------------------------------
--- HUDitorTools — grid overlay (adapted from LuiExtended GridOverlay)
+-- HUDitorTools - grid overlay (adapted from LuiExtended GridOverlay)
 -- Pooled CT_LINE lattice for the HUD editor. Style is factory/color-only;
 -- rebuilds skip when size is unchanged; hide keeps the pool for the next show.
 -- -----------------------------------------------------------------------------

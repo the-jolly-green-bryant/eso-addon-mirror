@@ -3,7 +3,7 @@ local T = BetterBars
 
 T.name = "BetterBars"
 T.displayName = "Better Bars"
-T.version = "0.0.01"
+T.version = "0.0.02-dev2"
 T.savedVariableVersion = 1
 
 local defaults = {
@@ -14,6 +14,14 @@ local defaults = {
         magicka = { enabled=true, layout="CRESCENT", scale=1.0, opacity=0.92, offsetX=-155, offsetY=-20, length=350, thickness=32, crescentDepth=3, crescentSide="RIGHT", dynamicMaxSize=true },
         stamina = { enabled=true, layout="CRESCENT", scale=1.0, opacity=0.92, offsetX=155, offsetY=-20, length=350, thickness=32, crescentDepth=3, crescentSide="LEFT", dynamicMaxSize=true },
         shield = { enabled=true, layout="CRESCENT", scale=1.0, opacity=0.92, offsetX=240, offsetY=-20, length=350, thickness=30, crescentDepth=3, crescentSide="LEFT", hideWhenEmpty=true, dynamicMaxSize=true },
+    },
+    chatHUD = {
+        enabled = false,
+        offsetX = -520,
+        offsetY = 250,
+        width = 620,
+        height = 320,
+        scale = 1.0,
     },
 }
 
@@ -35,6 +43,7 @@ function T:Initialize()
     self.saved = ZO_SavedVars:NewCharacterIdSettings("BetterBarsSavedVariables", self.savedVariableVersion, nil, defaults)
     self:RegisterSceneVisibilityGuard()
     if self.ResourceBars and self.ResourceBars.Initialize then self.ResourceBars:Initialize() end
+    if self.ChatHUD and self.ChatHUD.Initialize then self.ChatHUD:Initialize() end
     if self.Settings and self.Settings.Initialize then self.Settings:Initialize() end
 end
 

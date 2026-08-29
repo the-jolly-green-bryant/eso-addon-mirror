@@ -80,6 +80,8 @@ function addon:Initialize()
 
     self.purchaseTracker = ShoppingListPurchaseTracker:New(self)
     self.purchaseTracker:Initialize(hasAGS)
+    self.tradingIndicators = ShoppingListTradingIndicators:New(self)
+    self.tradingIndicators:Initialize()
 
     ShoppingListSettings:Initialize(self)
     ShoppingListContextMenu:Initialize(self)
@@ -94,6 +96,12 @@ function addon:Initialize()
         ))
     elseif self.data.legacyRecoveryError then
         d(self.data.legacyRecoveryError)
+    end
+    if self.data.legacyDuplicateRepairCount then
+        d(zo_strformat(
+            GetString(SI_SHOPPING_LIST_LEGACY_DUPLICATES_REMOVED),
+            self.data.legacyDuplicateRepairCount
+        ))
     end
 end
 
@@ -117,6 +125,9 @@ function addon:HandleStoreOpened()
         else
             self.ui:Refresh()
             self.gamepad:Refresh()
+        end
+        if self.tradingIndicators then
+            self.tradingIndicators:Refresh()
         end
     end, 100)
 end
@@ -282,7 +293,11 @@ end
 
 function addon:RefreshInventory()
     if self.inventory then
+        self.inventory:RefreshAllocations()
         self.inventory:QueueRefresh(0)
+    end
+    if self.tradingIndicators then
+        self.tradingIndicators:Refresh()
     end
 end
 
@@ -290,6 +305,7 @@ function addon:RemoveItem(id)
     if self.data:RemoveItem(id) then
         self.ui:Refresh()
         self.gamepad:Refresh()
+        self:RefreshInventory()
     end
 end
 
@@ -363,6 +379,14 @@ function addon:RecordPurchase(itemLink, itemName, quantity, purchase)
     self.ui:Refresh()
     self.gamepad:Refresh()
     self:RefreshInventory()
+    if self.data:GetSettings().autoFindNext then
+        local afterItemId = changes[#changes] and changes[#changes].entry.id
+        if IsInGamepadPreferredMode and IsInGamepadPreferredMode() then
+            self.gamepad:FindNextItem(false, afterItemId)
+        else
+            self.ui:FindNextItem(false, afterItemId)
+        end
+    end
     if self.data:GetSettings().announcePurchases then
         for _, change in ipairs(changes) do
             local entry = change.entry

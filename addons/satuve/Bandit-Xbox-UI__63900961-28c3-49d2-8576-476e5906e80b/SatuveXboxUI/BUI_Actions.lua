@@ -557,9 +557,15 @@ end
 function BUI.Actions.Initialize()
 	theme_color=BUI.Vars.Theme==6 and {1,204/255,248/255,1} or BUI.Vars.Theme==7 and BUI.Vars.AdvancedThemeColor or BUI.Vars.CustomEdgeColor
 	if BUI.Vars.Actions or BUI.Vars.ProcAnimation or BUI.Vars.NotificationsGroup or BUI.Vars.EnableWidgets then
+		EVENT_MANAGER:UnregisterForEvent("BUI_Actions", EVENT_ACTIVE_WEAPON_PAIR_CHANGED)
+		EVENT_MANAGER:UnregisterForEvent("BUI_Actions", EVENT_ACTION_SLOT_ABILITY_SLOTTED)
+		EVENT_MANAGER:UnregisterForEvent("BUI_Actions", EVENT_PLAYER_ACTIVATED)
 		EVENT_MANAGER:RegisterForEvent("BUI_Actions", EVENT_ACTIVE_WEAPON_PAIR_CHANGED,	BUI.Actions.OnPairChanged)
 		EVENT_MANAGER:RegisterForEvent("BUI_Actions", EVENT_ACTION_SLOT_ABILITY_SLOTTED,	OnAbilitySlotted)
 		EVENT_MANAGER:RegisterForEvent("BUI_Actions", EVENT_PLAYER_ACTIVATED,			function()BUI.CallLater("Actions_Activated",3000,BUI.Actions.OnPairChanged)end)
+		if not BUI.init.Actions and BUI.Initialization and BUI.Initialization.playerActivated then
+			BUI.CallLater("Actions_Activated",3000,BUI.Actions.OnPairChanged)
+		end
 	else
 		EVENT_MANAGER:UnregisterForEvent("BUI_Actions", EVENT_ACTIVE_WEAPON_PAIR_CHANGED)
 		EVENT_MANAGER:UnregisterForEvent("BUI_Actions", EVENT_ACTION_SLOT_ABILITY_SLOTTED)

@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.14"
+BB.version = "0.3.15"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -104,6 +104,17 @@ function BB:NormalizeAccount(value)
     if text == "" then return "" end
     if string.sub(text, 1, 1) ~= "@" then text = "@" .. text end
     return zo_strlower(text)
+end
+
+-- Live Better Buffs HUD controls belong only to ESO's gameplay HUD scenes.
+-- A renderer or stat refresh must never be able to unhide a control while Map,
+-- Inventory, Skills, Character, or another menu scene is active. Preview code
+-- explicitly attaches its fragment to the current settings scene and is the only
+-- intentional exception to this gate.
+function BB:IsGameplayHUDSceneActive()
+    if not SCENE_MANAGER then return false end
+    local scene = SCENE_MANAGER:GetCurrentScene()
+    return scene == HUD_SCENE or scene == HUD_UI_SCENE
 end
 
 function BB:GetGroupTargetCount()
@@ -324,6 +335,17 @@ function BB:Initialize()
     self.API:Initialize()
     self.Settings:Initialize()
     self:SetEnabled(self.saved.enabled)
+
+    -- Re-evaluate HUD visibility when ESO changes scenes. This is event-driven,
+    -- not polled. It restores enabled HUD elements when gameplay returns and
+    -- guarantees that live refreshes cannot leave them above menus or the Map.
+    if SCENE_MANAGER and SCENE_MANAGER.RegisterCallback and not self._sceneVisibilityCallbackRegistered then
+        self._sceneVisibilityCallbackRegistered = true
+        SCENE_MANAGER:RegisterCallback("SceneStateChanged", function()
+            if BB.UI and BB.UI.RefreshSceneVisibility then BB.UI:RefreshSceneVisibility() end
+            if BB.Stats then BB.Stats:RefreshAll() end
+        end)
+    end
 end
 
 local function OnAddonLoaded(_, addonName)

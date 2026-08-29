@@ -77,6 +77,7 @@ CollectThemAllData_Store_LimitedMounts = {
             { name = "Meadowglass Wolf" },
             { name = "Meridian Sabre Cat" },
             { name = "Midnight Cantor Senche-Raht" },
+            { name = "Kagouti Fabricant" },
             { name = "Mnemoflare Kagouti Fabricant" },
             { name = "New Moon Fox" },
             { name = "Nighthaunt Gloomspore Senche" },

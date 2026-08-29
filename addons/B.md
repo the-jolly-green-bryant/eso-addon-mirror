@@ -60,6 +60,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Bear Synergies](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bjørn/Bear-Synergies__2519) | Bjørn | PC / Mac | 1.1.4 |
 | [BeggingTheGear](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jellyalex978/BeggingTheGear__1546) | jellyalex978 | PC / Mac | 2.3.2 |
 | [Beltalowda - testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kickimanjaro/Beltalowda---testing__4395) | Kickimanjaro | PC / Mac | 0.5.4 |
+| [Berserk Tracker (PC & Console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Berserk-Tracker-PC-Console__4801) | Duesentrieb | PC / Mac | 20260829-0001 |
 | [BestFriends 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/BestFriends-2018__1975) | Phuein | PC / Mac | 2.16 |
 | [BetaScry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Latetide/BetaScry__3783) | Latetide | PC / Mac | 1.0.0 |
 | [Better Antiquities Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DH8Wolf/Better-Antiquities-Journal__2701) | DH8Wolf | PC / Mac | 0.3 |

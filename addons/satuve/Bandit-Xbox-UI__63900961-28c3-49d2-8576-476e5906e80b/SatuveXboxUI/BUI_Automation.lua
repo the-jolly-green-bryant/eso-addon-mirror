@@ -718,6 +718,8 @@ local function Menu_Init()
 end
 
 function BUI.Automation_Init()
+	if BUI.init.Automation then return true end
+	BUI.init.Automation=true
 	Menu_Init()
 	SynergyHandler()
 
@@ -849,7 +851,12 @@ function BUI.Automation_Init()
 				scene:RegisterCallback('StateChange', OnSceneStateChange)
 			end
 		end
-		EVENT_MANAGER:RegisterForEvent("BUI_Event_Announce",EVENT_PLAYER_ACTIVATED,OnPlayerActivated)
+		EVENT_MANAGER:UnregisterForEvent("BUI_Event_Announce",EVENT_PLAYER_ACTIVATED)
+		if BUI.Initialization and BUI.Initialization.playerActivated then
+			OnPlayerActivated(nil,true)
+		else
+			EVENT_MANAGER:RegisterForEvent("BUI_Event_Announce",EVENT_PLAYER_ACTIVATED,OnPlayerActivated)
+		end
 	end
 
 	local BuiltInGlobalCooldownOn=false
@@ -1109,21 +1116,24 @@ function BUI.Automation_Init()
 
 	--Queue auto confirm
 	local function SwitchQueue()
+		local function RegisterQueueUpdate()
+			EVENT_MANAGER:RegisterForEvent("BUI_Event_Queue", EVENT_ACTIVITY_FINDER_STATUS_UPDATE, function(_,status)
+				if status==ACTIVITY_FINDER_STATUS_READY_CHECK and not IsActiveWorldBattleground() then
+					BUI.CallLater("ReadyCheck",1000,AcceptLFGReadyCheckNotification)
+				end
+			end)
+		end
+		EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_ACTIVITY_FINDER_STATUS_UPDATE)
+		EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_PLAYER_ACTIVATED)
+		EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_PLAYER_DEACTIVATED)
 		if BUI.Vars.AutoQueue then
 			EVENT_MANAGER:RegisterForEvent("BUI_Event_Queue", EVENT_PLAYER_ACTIVATED,function()
-				EVENT_MANAGER:RegisterForEvent("BUI_Event_Queue", EVENT_ACTIVITY_FINDER_STATUS_UPDATE, function(_,status)
-					if status==ACTIVITY_FINDER_STATUS_READY_CHECK and not IsActiveWorldBattleground() then
-						BUI.CallLater("ReadyCheck",1000,AcceptLFGReadyCheckNotification)
-					end
-				end)
+				RegisterQueueUpdate()
 			end)
 			EVENT_MANAGER:RegisterForEvent("BUI_Event_Queue", EVENT_PLAYER_DEACTIVATED, function()
 				EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_ACTIVITY_FINDER_STATUS_UPDATE)
 			end)
-		else
-			EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_ACTIVITY_FINDER_STATUS_UPDATE)
-			EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_PLAYER_ACTIVATED)
-			EVENT_MANAGER:UnregisterForEvent("BUI_Event_Queue", EVENT_PLAYER_DEACTIVATED)
+			if BUI.Initialization and BUI.Initialization.playerActivated then RegisterQueueUpdate() end
 		end
 	end
 	if ZO_SearchingForGroupStatus then
@@ -1149,4 +1159,5 @@ function BUI.Automation_Init()
 	if not SXUI_UpdateChatDimensions() and BUI and type(BUI.CallLater)=="function" then
 		BUI.CallLater("SXUI_UpdateChatDimensions",1000,SXUI_UpdateChatDimensions)
 	end
+	return true
 end

@@ -3,7 +3,7 @@ Shopping List compatibility baseline
 
 Verified for the 0.18.0 hardening cycle on 2026-08-25:
 
-- ESO API 101051
+- ESO APIs 101050 and 101051
 - LibAddonMenu-2.0 2.0 r43 / AddOnVersion 43
 - LibMainMenu-2.0 4.5.0 / AddOnVersion 40500
 - LibSets 0.9.3 / AddOnVersion 0009030

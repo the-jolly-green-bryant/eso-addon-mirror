@@ -4,7 +4,6 @@ local function OnUIError(eventCode,errorString)
 --	or string.match(errorString,"LibMapPins")~=nil
 	if string.match(errorString,"AG_PanelMenuButton")
 	or string.match(errorString,"TooltipControlSetOwnerLua")
-	or string.match(errorString,"OnGamepadPreferredModeChanged")
 	then
 		--d(errorString)
 		ZO_UIErrors_HideCurrent()
@@ -13,6 +12,37 @@ local function OnUIError(eventCode,errorString)
 		ZO_UIErrorsTextEdit:SetText(BUI.DisplayName.." v:"..ver.."\n"..errorString)
 		ZO_UIErrorsTextEdit:SetCursorPosition(1)
 	end
+end
+
+-- Keep permanent initialization separate from recurring player/scene refreshes.
+-- Every stage is guarded so an accidental second entry cannot add controls,
+-- callbacks or hooks again during the same UI session.
+BUI.Initialization=BUI.Initialization or {stages={}}
+local Initialization=BUI.Initialization
+Initialization.stages=Initialization.stages or {}
+BUI.InitDebug=BUI.InitDebug==true
+
+local function InitLog(message)
+	if BUI.InitDebug then d("[BXUI] "..tostring(message)) end
+end
+
+function BUI.SetInitializationDebug(enabled)
+	BUI.InitDebug=enabled==true
+	d("[BXUI] initialization debug "..(BUI.InitDebug and "enabled" or "disabled"))
+end
+
+local function RunInitializationStage(name,callback)
+	local state=Initialization.stages[name]
+	if state then
+		InitLog(name.." skipped - already "..state)
+		return false
+	end
+	Initialization.stages[name]="running"
+	InitLog(name.." started")
+	callback()
+	Initialization.stages[name]="complete"
+	InitLog(name.." complete")
+	return true
 end
 
 local function Slash(option)
@@ -113,15 +143,22 @@ local function ScanObj(control_name,compact)
 end
 
 local function UI_Initialize()
+	if Initialization.uiInitialized then
+		InitLog("UI initialization skipped - already initialized")
+		return
+	end
+	Initialization.uiInitialized=true
 	BUI.UI.TopLevelWindow("SatuveUI", GuiRoot, {GuiRoot:GetWidth(),GuiRoot:GetHeight()}, {CENTER,CENTER,0,0}, true) SatuveUI:SetDrawLayer(0)
 	--Reference the SatuveUI layer as a scene fragment
-	BUI.UI.fragment=ZO_HUDFadeSceneFragment:New(SatuveUI)
-	--Add the fragment to select scenes
-	SCENE_MANAGER:GetScene("hud"):AddFragment(BUI.UI.fragment)
-	SCENE_MANAGER:GetScene("hudui"):AddFragment(BUI.UI.fragment)
-	SCENE_MANAGER:GetScene("siegeBar"):AddFragment(BUI.UI.fragment)
+	if not BUI.UI.fragment then
+		BUI.UI.fragment=ZO_HUDFadeSceneFragment:New(SatuveUI)
+		--Add the fragment to select scenes once
+		SCENE_MANAGER:GetScene("hud"):AddFragment(BUI.UI.fragment)
+		SCENE_MANAGER:GetScene("hudui"):AddFragment(BUI.UI.fragment)
+		SCENE_MANAGER:GetScene("siegeBar"):AddFragment(BUI.UI.fragment)
+	end
 	--Create 3D Render Space
-	ParticleUI=WINDOW_MANAGER:CreateTopLevelWindow(PARTICLE_PREFIX)
+	ParticleUI=rawget(_G,PARTICLE_PREFIX) or WINDOW_MANAGER:CreateTopLevelWindow(PARTICLE_PREFIX)
 	ParticleUI:SetHidden(false)
 	ParticleUI:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,0,0)
 	ParticleUI:SetDimensions(1,1)
@@ -218,56 +255,94 @@ end
 local function Initialize(eventCode, addOnName)
 	if addOnName~=BUI.name then return end
 	EVENT_MANAGER:UnregisterForEvent("BUI_Event", EVENT_ADD_ON_LOADED)
-	--Load Saved Variables
-	BUI.Vars=ZO_SavedVars:NewAccountWide('SATUVE_XBOX_UI_VARS', 3, nil, BUI.Defaults)
-	BUI.Reports=ZO_SavedVars:NewAccountWide('SATUVE_XBOX_UI_REPORTS', 1, nil, {data={}})
-	--Check old version settings
-	VersionCheck()
-	--Error window
-	ZO_UIErrors:ClearAnchors()  ZO_UIErrors:SetAnchor(BOTTOMRIGHT, GuiRoot, BOTTOMRIGHT, 0, 0) --ZO_UIErrors:SetDimensions(600,300)
-	EVENT_MANAGER:RegisterForEvent("BUI_ErrorManager", EVENT_LUA_ERROR, OnUIError)
-	--Initialize UI
-	UI_Initialize()
-	BUI.Player:Initialize()
---	BUI.Player.StatSection()
-	BUI.Reticle.Initialize()
-	BUI.Target:Initialize()
-	BUI.Damage.Initialize()
-	BUI.Stats.Initialize()
-	BUI.Themes_Initialize()
-	BUI.Buffs.Initialize()
-	BUI.Actions.Initialize()
-	BUI.Frames:Initialize()
-	BUI.QuickSlots:Initialize()
-	BUI.StatShare.Initialize()
-	BUI.RG:Initialize()
-	BUI.OnScreen.Initialize()
-	BUI.Meters.Initialize()
-	--BUI.Markers.Initialize()
-	if BUI.ChampionPriority and BUI.ChampionPriority.Initialize then BUI.ChampionPriority:Initialize() end
-	BUI.Menu.Init()
-	BUI.Menu.Initialize()
-	BUI.MiniMap.Initialize()
-	BUI.Automation_Init()
---	BUI.Champion_Init()
-	BUI.Panel_Init()
-	BUI.CustomBar_Init()
-	-- All numbered controller-menu pages are known now. Register them once, sorted numerically.
-	if BUI.SettingsBridge and BUI.SettingsBridge.FinalizeGrouped then
-		BUI.SettingsBridge.FinalizeGrouped("BUI_BanditUI")
+	if Initialization.addOnLoadedHandled then
+		InitLog("ADD_ON_LOADED skipped - already handled")
+		return
 	end
-	--Register Event Handlers
-	BUI.RegisterEvents()
-	--Synergy
---	ZO_Synergy.container:SetAnchor(BOTTOM, nil, BOTTOM, 0, -230)
-	--Register Slash Commands
-	SLASH_COMMANDS["/bui"]=Slash
-	SLASH_COMMANDS["/daily"]=BUI.DailyPledges
-	SLASH_COMMANDS["/ab"]=function(id) id=tonumber(id) if id>0 then StartChatInput('['..id..']=true,--'..GetAbilityName(id)) end end
-	SLASH_COMMANDS["/rl"]=function() BUI.OnScreen.Notification(8,"Reloading UI") BUI.CallLater("ReloadUI",1000,ReloadUI) end	--SLASH_COMMANDS["/reloadui"]
-	SLASH_COMMANDS["/scan"]=function(params) params={string.match(params, "^(%S*)%s*(.-)$")} ScanObj(params[1], params[2]~="") end
-	--Fire Setup Callback
-	CALLBACK_MANAGER:FireCallbacks("BUI_Ready")
+	Initialization.addOnLoadedHandled=true
+	InitLog("ADD_ON_LOADED")
+
+	-- Track the first activation without doing permanent work in that event.
+	local lifecycleEvent="SatuveXboxUI_InitLifecycle"
+	EVENT_MANAGER:UnregisterForEvent(lifecycleEvent,EVENT_PLAYER_ACTIVATED)
+	EVENT_MANAGER:RegisterForEvent(lifecycleEvent,EVENT_PLAYER_ACTIVATED,function()
+		Initialization.playerActivated=true
+		InitLog("PLAYER_ACTIVATED")
+		EVENT_MANAGER:UnregisterForEvent(lifecycleEvent,EVENT_PLAYER_ACTIVATED)
+	end)
+	local isPlayerActivated=rawget(_G,"IsPlayerActivated")
+	if type(isPlayerActivated)=="function" and isPlayerActivated() then
+		Initialization.playerActivated=true
+	end
+
+	RunInitializationStage("saved variables",function()
+		BUI.Vars=ZO_SavedVars:NewAccountWide('SATUVE_XBOX_UI_VARS', 3, nil, BUI.Defaults)
+		BUI.Reports=ZO_SavedVars:NewAccountWide('SATUVE_XBOX_UI_REPORTS', 1, nil, {data={}})
+		VersionCheck()
+	end)
+
+	RunInitializationStage("root UI",function()
+		ZO_UIErrors:ClearAnchors()
+		ZO_UIErrors:SetAnchor(BOTTOMRIGHT, GuiRoot, BOTTOMRIGHT, 0, 0)
+		EVENT_MANAGER:UnregisterForEvent("BUI_ErrorManager", EVENT_LUA_ERROR)
+		EVENT_MANAGER:RegisterForEvent("BUI_ErrorManager", EVENT_LUA_ERROR, OnUIError)
+		UI_Initialize()
+	end)
+
+	-- Split the former single-frame startup burst into bounded one-shot stages.
+	BUI.CallLater("BXUI_InitPlayer",25,function()
+		RunInitializationStage("player UI",function()
+			BUI.Player:Initialize()
+			BUI.Reticle.Initialize()
+			BUI.Target:Initialize()
+		end)
+	end)
+
+	BUI.CallLater("BXUI_InitCombat",75,function()
+		RunInitializationStage("combat UI",function()
+			BUI.Damage.Initialize()
+			BUI.Stats.Initialize()
+			BUI.Buffs.Initialize()
+		end)
+	end)
+
+	BUI.CallLater("BXUI_InitActionBars",150,function()
+		RunInitializationStage("action bars and frames",function()
+			BUI.Themes_Initialize()
+			BUI.Actions.Initialize()
+			BUI.Frames:Initialize()
+			BUI.QuickSlots:Initialize()
+			BUI.StatShare.Initialize()
+			BUI.RG:Initialize()
+			BUI.OnScreen.Initialize()
+			BUI.Meters.Initialize()
+			if BUI.ChampionPriority and BUI.ChampionPriority.Initialize then BUI.ChampionPriority:Initialize() end
+		end)
+	end)
+
+	BUI.CallLater("BXUI_InitIntegrations",250,function()
+		RunInitializationStage("menus and integrations",function()
+			BUI.Menu.Init()
+			BUI.Menu.Initialize()
+			BUI.MiniMap.Initialize()
+			BUI.Automation_Init()
+			BUI.Panel_Init()
+			BUI.CustomBar_Init()
+			if BUI.SettingsBridge and BUI.SettingsBridge.FinalizeGrouped then
+				BUI.SettingsBridge.FinalizeGrouped("BUI_BanditUI")
+			end
+			BUI.RegisterEvents(Initialization.playerActivated)
+			SLASH_COMMANDS["/bui"]=Slash
+			SLASH_COMMANDS["/daily"]=BUI.DailyPledges
+			SLASH_COMMANDS["/ab"]=function(id) id=tonumber(id) if id and id>0 then StartChatInput('['..id..']=true,--'..GetAbilityName(id)) end end
+			SLASH_COMMANDS["/rl"]=function() BUI.OnScreen.Notification(8,"Reloading UI") BUI.CallLater("ReloadUI",1000,ReloadUI) end
+			SLASH_COMMANDS["/scan"]=function(params) params={string.match(params, "^(%S*)%s*(.-)$")} ScanObj(params[1], params[2]~="") end
+			if not Initialization.readyFired then
+				Initialization.readyFired=true
+				CALLBACK_MANAGER:FireCallbacks("BUI_Ready")
+			end
+		end)
+	end)
 end
 
 EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_ADD_ON_LOADED, Initialize)

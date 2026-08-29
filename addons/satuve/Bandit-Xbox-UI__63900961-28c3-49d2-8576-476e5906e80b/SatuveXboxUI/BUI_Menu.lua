@@ -503,6 +503,8 @@ function BUI.Menu.RegisterPanel(name, data)
 end
 
 function BUI.Menu.Init()
+	if BUI.InternalMenu then return true end
 	SettingsWindow_Init()
 	BUI.InternalMenu=true
+	return true
 end

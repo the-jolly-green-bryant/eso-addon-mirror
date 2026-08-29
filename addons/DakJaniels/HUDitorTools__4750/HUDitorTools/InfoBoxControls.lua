@@ -1,5 +1,5 @@
 -- -----------------------------------------------------------------------------
--- HUDitorTools — GridSnap inject settings into the ZOS HUD Editor info box popup
+-- HUDitorTools - GridSnap inject settings into the ZOS HUD Editor info box popup
 -- Observed host: ZO_HUDEditor_Keyboard_TLInfoBox (hudeditor_keyboard.xml)
 -- -----------------------------------------------------------------------------
 local HT = HUDitorTools

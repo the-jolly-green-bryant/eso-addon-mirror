@@ -2,13 +2,17 @@
 -- AetherChat : Main Addon Initialization & Keybindings
 -- ============================================================================
 AetherChat = AetherChat or {}
+local AetherChat = AetherChat
+
 AetherChat.name = 'AetherChat'
-AetherChat.version = '2.6.0'
+AetherChat.version = '1.1'
 
--- Keybinding String
-ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_TOGGLE", "Ouvrir / Masquer AetherChat")
+-- Keybinding Strings (Must be created before Bindings.xml is loaded by C++ engine)
+local L = AetherChat.L or function(k) return k end
+ZO_CreateStringId("SI_BINDINGS_CATEGORY_AETHERCHAT", "AetherChat")
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_TOGGLE", L('BINDING_NAME'))
 
--- Register slash commands immediately
+-- Register Slash Commands
 SLASH_COMMANDS['/aetherc'] = function()
     if AetherChat.Messenger and AetherChat.Messenger.Toggle then
         AetherChat.Messenger.Toggle()
@@ -34,11 +38,11 @@ SLASH_COMMANDS['/aethertest'] = function()
 end
 
 SLASH_COMMANDS['/aethericon'] = function()
-    if AetherChat_FloatingIcon then
-        local isHidden = AetherChat_FloatingIcon:IsHidden()
-        AetherChat_FloatingIcon:SetHidden(not isHidden)
-        local status = isHidden and '|c23A55AVisible|r' or '|cF23F43Masquée|r'
-        d('|c5865F2[AetherChat]|r Icône HUD : ' .. status)
+    if AetherChat.Messenger and AetherChat.Messenger.minBar then
+        local isHidden = AetherChat.Messenger.minBar:IsHidden()
+        AetherChat.Messenger.minBar:SetHidden(not isHidden)
+        local status = isHidden and '|c23A55AVisible|r' or '|cF23F43Hidden|r'
+        d('|c5865F2[AetherChat]|r MinBar : ' .. status)
     end
 end
 
@@ -48,10 +52,14 @@ local function OnAddOnLoaded(event, addOnName)
 
     -- Initialize Modules in strict safe order
     AetherChat.Settings.Initialize()
+    if AetherChat.History and AetherChat.History.CleanAllDuplicates then
+        AetherChat.History.CleanAllDuplicates()
+    end
     AetherChat.ChatEngine.Initialize()
     AetherChat.Messenger.Initialize()
 
-    d('|c5865F2[AetherChat Messenger]|r v' .. AetherChat.version .. ' actif ! Appuyez sur votre touche ou tapez |cFFFFFF/aetherc|r pour ouvrir.')
+    local loadedMsg = AetherChat.L('CHAT_LOADED_MSG', AetherChat.version)
+    d(loadedMsg)
 end
 
 EVENT_MANAGER:RegisterForEvent(AetherChat.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

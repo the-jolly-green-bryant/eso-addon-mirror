@@ -2,8 +2,9 @@
 -- AetherChat : Sound Manager (Customizable High-Audibility Sound Catalog)
 -- ============================================================================
 AetherChat = AetherChat or {}
-AetherChat.SoundManager = {}
+local AetherChat = AetherChat
 
+AetherChat.SoundManager = {}
 local SoundManager = AetherChat.SoundManager
 local Settings = AetherChat.Settings
 

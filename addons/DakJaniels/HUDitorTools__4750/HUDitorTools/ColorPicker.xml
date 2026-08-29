@@ -1,5 +1,5 @@
 <!--
-  HUDitorTools — live HUD editor color picker (LAM/ZOS keyboard layout, not COLOR_PICKER dialog)
+  HUDitorTools - live HUD editor color picker (LAM/ZOS keyboard layout, not COLOR_PICKER dialog)
 -->
 <GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/DakJaniels/esoui_gui_xsd/main/esoui_gui_xml.xsd">

@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.8.4 ARCANIST + CRUX TRACKERS TEST CHECKLIST
+CURVED RESOURCE HUD 0.9.0 REMAINING CLASS TRACKERS TEST CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,7 @@ CURVED RESOURCE HUD 0.8.4 ARCANIST + CRUX TRACKERS TEST CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.8.4-test; HUD, shield, and trackers created
+   [CurvedHUD] Loaded 0.9.0-test; HUD, shield, and trackers created
 
 4. Type /curvedhud preview. Expected:
    - red health arc on the left
@@ -251,13 +251,50 @@ Weapon and guild/other checklist:
 - Confirm all new trackers default off and retain per-character position/color.
 
 0.8.4 Arcanist checklist:
-- Enable Crux under Arcanist Trackers. Generate one, two, then three Crux and
-  confirm the icon count reads 1/2/3 while the chosen arc fills 1/3, 2/3, 3/3.
-- Spend Crux with Fatecarver or another consumer. The count and arc must update
-  immediately and disappear at zero; no countdown number should be displayed.
-- In Preview, Crux should display three stacks and a fully filled selected arc.
-- Test all eight Crux positions and several colors in Parallel and Stacked modes.
+- Enable Crux under Arcanist Trackers and select a quadrant. Generate one, two,
+  then three Crux. The outside arc must fill 1/3, 2/3, 3/3 with the count over
+  its icon, while the matching inside arc counts down the live expiration time.
+- Spend Crux with Fatecarver or another consumer. Both arcs must update and
+  disappear at zero without leaving either half of the paired tracker visible.
+- In Preview, Crux should display three stacks outside and a sample timer inside.
+- Test all four quadrants and several colors in Parallel and Stacked modes.
 - Enable each Arcanist duration family independently. Test base skills and both
   morphs, including Cruxweaver Armor's longer 30-second duration.
 - Confirm each family uses the equipped/cast skill icon, falls back safely when
   ESO omits event artwork, and preserves enablement/position/color per character.
+
+0.8.5 settings organization checklist:
+- With both settings libraries enabled, open CurvedHUD and confirm LibAddonMenu
+  supplies expandable Global, Sorcerer, Warden, Arcanist, weapon-line, and
+  guild/other submenus. Expanding one must expose selectable working controls.
+- Change toggles, positions, colors, and fallback durations inside several
+  submenus. Navigation must not skip rows, crash the UI, or ignore changes.
+- Confirm Light Armor, Medium Armor, and Heavy Armor options appear together in
+  one Armor submenu and nowhere else.
+- Confirm Wield Soul appears under Soul Magic beside Soul Burst, not Psijic Order.
+- Temporarily disable LibAddonMenu while leaving LibHarvens/LibVotans enabled.
+  CurvedHUD settings should still load as functional native sections.
+
+0.9.0 remaining-class checklist:
+- Confirm blue section titles cleanly separate Global Timers, Class Timers,
+  Weapon Timers, and Guild/Vampire/Werewolf Timers. No section title should
+  appear buried inside or visually attached to the preceding submenu.
+- Expand the last submenu in each section and verify the following category
+  heading remains a full-width blue heading rather than a white submenu row.
+- On console, Class, Weapon, and Guild/Vampire/Werewolf use blue informational
+  category rows because its LAM build reparents ordinary headers after a
+  submenu. They must remain visible at the root and never appear inside Global,
+  Necromancer, Restoration Staff, Armor, or another tracker submenu.
+- Confirm Global is also character-specific by changing its tracked Major buff
+  or Balance settings on one character and checking another character.
+- Confirm Dragonknight, Nightblade, Templar, and Necromancer each have an
+  expandable class submenu and every option defaults off per character.
+- Test at least one base skill and both morphs from every enabled family. Live
+  effect durations should override the documented fallback duration.
+- Verify Stone Giant and Seething Fury show up to 3 stacks, Grim Focus up to 5,
+  and Nothing Wasted up to 10. Stack counts must clear when their window fades.
+- Confirm equipped-skill artwork appears when available. Unslot/reload and
+  confirm ability lookup, learned-skill lookup, event artwork, or cached artwork
+  prevents a previously resolved icon from reverting to a blank square.
+- Check every new tracker in Parallel and Stacked layouts, all eight positions,
+  both global thickness choices, expiration alerts, and HUD opacity.

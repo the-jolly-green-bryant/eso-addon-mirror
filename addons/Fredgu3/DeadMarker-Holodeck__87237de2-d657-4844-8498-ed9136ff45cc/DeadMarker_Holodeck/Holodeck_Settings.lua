@@ -83,12 +83,23 @@ function H.CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Path rings / dots on",
-            tooltip = "Sandbox path overlay. Library packs do not draw ground paths yet.",
+            tooltip = "Sandbox path overlay.",
             getFunc = function() return sv.pathOn ~= false end,
             setFunc = function(v)
                 sv.pathOn = v
                 if type(H.RebuildPathGfx) == "function" then H.RebuildPathGfx() end
                 if type(H.RefreshUI) == "function" then H.RefreshUI() end
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = "Fight frame (ring / split / 30s path)",
+            tooltip = "After load: room-size ring, N/E/S/W, gold split line (Twins candles), first 30s of boss paths. Plant is the fight center.",
+            getFunc = function() return sv.frameOn ~= false end,
+            setFunc = function(v)
+                sv.frameOn = (v == true)
+                if type(H.RebuildPathGfx) == "function" then H.RebuildPathGfx() end
             end,
             default = true,
         },

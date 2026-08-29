@@ -1,0 +1,18 @@
+## Title: |cFF7F00Berserk|r |cFFFFFFTracker|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## AddOnVersion: 0001
+## Version: 20260829
+## APIVersion: 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: BerserkTrackerVariables
+## Description: Tracks Major Berserk, remaining duration and uptime.
+
+BT_Global.lua
+BT_Menu.lua
+BT_Display.lua
+BT_Functions.lua
+BT_Initialize.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

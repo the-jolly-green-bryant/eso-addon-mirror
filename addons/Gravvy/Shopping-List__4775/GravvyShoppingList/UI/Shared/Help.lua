@@ -67,10 +67,23 @@ function Help:Initialize()
     self.sectionTitle:SetAnchor(TOPLEFT, window, TOPLEFT, 18, 48)
     self.sectionTitle:SetDimensions(WINDOW_WIDTH - 36, 28)
 
-    self.content = makeLabel(window, "ZoFontGame")
-    self.content:SetAnchor(TOPLEFT, window, TOPLEFT, 18, 84)
-    self.content:SetDimensions(WINDOW_WIDTH - 36, 410)
-    self.content:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE)
+    self.scroll = WINDOW_MANAGER:CreateControlFromVirtual(
+        "ShoppingListHelpScroll",
+        window,
+        "ZO_ScrollContainer"
+    )
+    self.scroll:SetAnchor(TOPLEFT, window, TOPLEFT, 18, 84)
+    self.scroll:SetAnchor(BOTTOMRIGHT, window, BOTTOMRIGHT, -18, -60)
+    if ZO_Scroll_SetUseFadeGradient then
+        ZO_Scroll_SetUseFadeGradient(self.scroll, false)
+    end
+
+    self.scrollChild = self.scroll:GetNamedChild("ScrollChild")
+    self.scrollChild:SetResizeToFitPadding(0, 16)
+
+    self.content = makeLabel(self.scrollChild, "ZoFontGame")
+    self.content:SetAnchor(TOPLEFT, self.scrollChild, TOPLEFT, 0, 0)
+    self.content:SetWidth(WINDOW_WIDTH - 72)
 
     self.gettingStarted = makeButton(
         window,
@@ -115,6 +128,9 @@ function Help:ShowSection(section)
             .. content
     end
     self.content:SetText(content)
+    if ZO_Scroll_ResetToTop then
+        ZO_Scroll_ResetToTop(self.scroll)
+    end
     self.gettingStarted:SetEnabled(not showingHelp)
     self.releaseNotes:SetEnabled(showingHelp)
 end

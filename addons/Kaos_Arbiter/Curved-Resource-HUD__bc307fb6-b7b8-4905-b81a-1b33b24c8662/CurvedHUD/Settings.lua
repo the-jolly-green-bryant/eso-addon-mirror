@@ -29,70 +29,93 @@ function CH:RegisterLAM()
         dropdown("Outside timer thickness", "outsideTimerStyle", {"Thin","Thick"}, "Shared by every tracker assigned to an outside position."),
         slider("Resource value font size", "resourceValueFontSize", 16, 42, 1), slider("Resource percent font size", "resourcePercentFontSize", 14, 34, 1),
         check("Show raw values", "showRaw"), check("Show maximum values", "showMaximum"), check("Show percentages", "showPercent"),
-        {type="description",text="GLOBAL TRACKERS - PER CHARACTER"},
-        dropdown("Lower-left major buff", "majorBuffTracked", CH.majorBuffChoices, "Select the standardized Major buff tracked by the lower-left outside timer."),
-        dropdown("Major buff timer color", "majorBuffColor", CH.colorChoices),
-        check("Track Balance debuff", "balanceEnabled"),
-        dropdown("Balance position", "balanceSlot", CH.trackerSlotNames, "Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end),
-        dropdown("Balance timer color", "balanceColor", CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end),
-        {type="description",text="SORCERER TRACKERS - PER CHARACTER"},
-        check("Track Bound Aegis", "aegisEnabled"),
-        dropdown("Bound Aegis position", "aegisSlot", CH.trackerSlotNames, "Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.aegisEnabled end),
-        dropdown("Bound Aegis timer color", "aegisColor", CH.colorChoices,nil,nil,function() return not CH.sv.aegisEnabled end),
-        check("Track Bound Armaments", "armamentsEnabled", "Shows its current weapon count over the skill icon and tracks the stack duration."),
-        dropdown("Bound Armaments position", "armamentsSlot", CH.trackerSlotNames, "Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv.armamentsEnabled end),
-        dropdown("Bound Armaments timer color", "armamentsColor", CH.colorChoices,nil,nil,function() return not CH.sv.armamentsEnabled end),
-        check("Show Crystal Fragments proc", "fragmentsEnabled", "Displays the proc-ready Crystal Fragments icon only while its instant-cast proc is active."),
-        dropdown("Crystal Fragments proc position", "fragmentsPosition", CH.procPositionChoices, "Top, Right, Bottom, and Left use HUD-relative presets; Center uses the middle of the screen.",nil,function() return not CH.sv.fragmentsEnabled end),
-        {type="slider",name="Crystal Fragments proc size",min=.35,max=1.5,step=.05,getFunc=function() return CH.sv.fragmentsScale end,setFunc=function(v) apply("fragmentsScale",v) end,default=CH.defaults.fragmentsScale,disabled=function() return not CH.sv.fragmentsEnabled end},
-        check("Track Critical Surge", "surgeEnabled", "Tracks Critical Surge's unique 33-second self-buff rather than the shared Major Brutality/Sorcery effects."),
-        dropdown("Critical Surge position", "surgeSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.surgeEnabled end),
-        dropdown("Critical Surge timer color", "surgeColor", CH.colorChoices,nil,nil,function() return not CH.sv.surgeEnabled end),
-        check("Track Vibrant Shroud / Encase", "shroudEnabled", "Tracks Vibrant Shroud, Encase, and Shattering Spines with a 10-second cast fallback for target-applied effects."),
-        dropdown("Shroud / Encase position", "shroudSlot", CH.trackerSlotNames, "Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.shroudEnabled end),
-        dropdown("Shroud / Encase timer color", "shroudColor", CH.colorChoices,nil,nil,function() return not CH.sv.shroudEnabled end),
     }
-    for _,definition in ipairs(CH.sorcererTrackerDefinitions) do
+    local function standardControls(definition,tip)
         local key=definition.key
-        options[#options+1]=check("Track "..definition.label,key.."Enabled","Tracks every base ability and morph in this Sorcerer skill family.")
-        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
-        options[#options+1]=dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+        local positionControl
+        if definition.stackOnly then
+            positionControl=dropdown(definition.label.." quadrant","cruxQuadrant",CH.cruxQuadrantNames,"Uses the outside slot for stack count and the matching inside slot for expiration time.",CH.cruxQuadrantValues,function() return not CH.sv[key.."Enabled"] end)
+        else
+            positionControl=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        end
+        return {
+            check("Track "..definition.label,key.."Enabled",tip or "Tracks the meaningful duration or stack window for this skill family."),
+            positionControl,
+            dropdown(definition.label.." color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end),
+        }
     end
-    options[#options+1]={type="description",text="WARDEN TRACKERS - PER CHARACTER"}
-    for _,definition in ipairs(CH.wardenTrackerDefinitions) do
+    local function append(target,source) for _,control in ipairs(source) do target[#target+1]=control end end
+    local function submenu(name,controls) options[#options+1]={type="submenu",name=name,controls=controls} end
+    local headerIndex=0
+    local function header(name)
+        headerIndex=headerIndex+1
+        options[#options+1]={
+            type="header",
+            name="|c45CFFF"..name.."|r",
+            width="full",
+            reference="CurvedHUD_CategoryHeader_"..headerIndex,
+        }
+    end
+    local function categoryRow(name)
+        -- The console LAM build reparents header/description controls that
+        -- follow a submenu into that preceding submenu. Submenu controls are
+        -- the only reliable top-level rows after the first submenu, so later
+        -- category separators intentionally use a colored, informational row.
+        submenu("|c45CFFF"..name.."|r",{
+            {type="description",text="The expandable tracker submenus for this character-specific category are listed directly below."},
+        })
+    end
+    local function addScribingControls(target,definition)
+        append(target,standardControls(definition))
         local key=definition.key
-        options[#options+1]=check("Track "..definition.label,key.."Enabled",key=="shalk" and "Counts through both eruptions and reaches zero when Scorch/Shalks should be recast." or "Tracks every base ability and morph in this Warden skill family.")
-        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
-        options[#options+1]=dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+        target[#target+1]={type="slider",name=definition.label.." fallback duration",tooltip="Used only when ESO reports no duration for the current scripts.",min=1,max=120,step=1,getFunc=function() return CH.sv[key.."Duration"] end,setFunc=function(v) apply(key.."Duration",v) end,default=CH.defaults[key.."Duration"],disabled=function() return not CH.sv[key.."Enabled"] end}
     end
-    options[#options+1]={type="description",text="ARCANIST TRACKERS - PER CHARACTER"}
-    for _,definition in ipairs(CH.arcanistTrackerDefinitions) do
-        local key=definition.key
-        local tip=definition.stackOnly and "Displays current Crux count from 1 to 3; the arc fills by one third per Crux." or "Tracks every base ability and morph in this Arcanist skill family."
-        options[#options+1]=check("Track "..definition.label,key.."Enabled",tip)
-        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
-        options[#options+1]=dropdown(definition.label.." color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    local globalControls={
+        dropdown("Lower-left major buff","majorBuffTracked",CH.majorBuffChoices,"Select the standardized Major buff tracked by the lower-left outside timer."),
+        dropdown("Major buff timer color","majorBuffColor",CH.colorChoices),check("Track Balance debuff","balanceEnabled"),
+        dropdown("Balance position","balanceSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end),
+        dropdown("Balance timer color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end),
+    }
+    header("GLOBAL TIMERS - CHARACTER SPECIFIC")
+    submenu("Global",globalControls)
+    categoryRow("CLASS TIMERS - CHARACTER SPECIFIC")
+    local sorc={
+        check("Track Bound Aegis","aegisEnabled"),dropdown("Bound Aegis position","aegisSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.aegisEnabled end),dropdown("Bound Aegis color","aegisColor",CH.colorChoices,nil,nil,function() return not CH.sv.aegisEnabled end),
+        check("Track Bound Armaments","armamentsEnabled","Shows its current weapon count over the skill icon."),dropdown("Bound Armaments position","armamentsSlot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv.armamentsEnabled end),dropdown("Bound Armaments color","armamentsColor",CH.colorChoices,nil,nil,function() return not CH.sv.armamentsEnabled end),
+        check("Show Crystal Fragments proc","fragmentsEnabled"),dropdown("Crystal Fragments proc position","fragmentsPosition",CH.procPositionChoices,nil,nil,function() return not CH.sv.fragmentsEnabled end),
+        {type="slider",name="Crystal Fragments proc size",min=.35,max=1.5,step=.05,getFunc=function() return CH.sv.fragmentsScale end,setFunc=function(v) apply("fragmentsScale",v) end,default=CH.defaults.fragmentsScale,disabled=function() return not CH.sv.fragmentsEnabled end},
+        check("Track Critical Surge","surgeEnabled"),dropdown("Critical Surge position","surgeSlot",CH.trackerSlotNames,nil,CH.trackerSlotValues,function() return not CH.sv.surgeEnabled end),dropdown("Critical Surge color","surgeColor",CH.colorChoices,nil,nil,function() return not CH.sv.surgeEnabled end),
+        check("Track Vibrant Shroud / Encase","shroudEnabled"),dropdown("Shroud / Encase position","shroudSlot",CH.trackerSlotNames,nil,CH.trackerSlotValues,function() return not CH.sv.shroudEnabled end),dropdown("Shroud / Encase color","shroudColor",CH.colorChoices,nil,nil,function() return not CH.sv.shroudEnabled end),
+    }
+    for _,definition in ipairs(CH.sorcererTrackerDefinitions) do append(sorc,standardControls(definition,"Tracks every base ability and morph in this Sorcerer skill family.")) end
+    submenu("Sorcerer",sorc)
+    local warden={}; for _,definition in ipairs(CH.wardenTrackerDefinitions) do append(warden,standardControls(definition,definition.key=="shalk" and "Counts through both eruptions and reaches zero when Shalks should be recast." or nil)) end; submenu("Warden",warden)
+    local arcanist={}; for _,definition in ipairs(CH.arcanistTrackerDefinitions) do append(arcanist,standardControls(definition,definition.stackOnly and "Uses a full quadrant: outside shows 1-3 Crux stacks and inside counts down their expiration." or nil)) end; submenu("Arcanist",arcanist)
+    for _,group in ipairs(CH.remainingClassDefinitionGroups) do
+        local controls={}
+        for _,definition in ipairs(group.definitions) do
+            local tip=definition.stackMaximum and ("Shows the current stacks (maximum "..definition.stackMaximum..") and the remaining stack window.") or "Tracks every base ability and morph in this class skill family."
+            append(controls,standardControls(definition,tip))
+        end
+        submenu(group.name,controls)
     end
-    local function addStandardDefinition(definition)
-        local key=definition.key
-        options[#options+1]=check("Track "..definition.label,key.."Enabled","Tracks the meaningful duration or stack window for this skill family.")
-        options[#options+1]=dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
-        options[#options+1]=dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    categoryRow("WEAPON TIMERS - CHARACTER SPECIFIC")
+    local function addSkillLineSubmenu(line,lines)
+        local controls={}
+        for _,definition in ipairs(CH.nonClassTrackerDefinitions) do
+            local match=lines and lines[definition.line] or definition.line==line
+            if match then append(controls,standardControls(definition)) end
+        end
+        for _,definition in ipairs(CH.scribingTrackerDefinitions) do
+            local mapped=CH.scribingSkillLineByKey[definition.key]; local match=lines and lines[mapped] or mapped==line
+            if match then addScribingControls(controls,definition) end
+        end
+        submenu(line,controls)
     end
-    local function addScribingDefinition(definition)
-        addStandardDefinition(definition)
-        local key=definition.key
-        options[#options+1]={type="slider",name=definition.label.." fallback duration",tooltip="Used only when ESO reports no duration for the current scripts.",min=1,max=120,step=1,getFunc=function() return CH.sv[key.."Duration"] end,setFunc=function(v) apply(key.."Duration",v) end,default=CH.defaults[key.."Duration"],disabled=function() return not CH.sv[key.."Enabled"] end}
-    end
-    local function addSkillLine(line)
-        options[#options+1]={type="description",text=line:upper()}
-        for _,definition in ipairs(CH.nonClassTrackerDefinitions) do if definition.line==line then addStandardDefinition(definition) end end
-        for _,definition in ipairs(CH.scribingTrackerDefinitions) do if CH.scribingSkillLineByKey[definition.key]==line then addScribingDefinition(definition) end end
-    end
-    options[#options+1]={type="description",text="WEAPON SKILL LINES - PER CHARACTER"}
-    for _,line in ipairs(CH.weaponSkillLines) do addSkillLine(line) end
-    options[#options+1]={type="description",text="GUILD / OTHER SKILL LINES - PER CHARACTER"}
-    for _,line in ipairs(CH.otherSkillLines) do addSkillLine(line) end
+    for _,line in ipairs(CH.weaponSkillLines) do addSkillLineSubmenu(line) end
+    categoryRow("GUILD / VAMPIRE / WEREWOLF TIMERS - CHARACTER SPECIFIC")
+    for _,line in ipairs(CH.otherSkillLines) do addSkillLineSubmenu(line) end
+    addSkillLineSubmenu("Armor",{["Light Armor"]=true,["Medium Armor"]=true,["Heavy Armor"]=true})
     LAM:RegisterOptionControls(panelName,options)
     CH:Log("LibAddonMenu-2.0 settings registered")
     return true
@@ -117,7 +140,7 @@ function CH:RegisterHarvens()
         end
         panel:AddSetting({type=HAS.ST_DROPDOWN,label=label,tooltip=tooltip,items=items,getFunction=function() return displayValue(CH.sv[key]) end,setFunction=function(_,name,item) apply(key,(item and item.data) or name) end,default=displayValue(CH.defaults[key]),disable=disabled})
     end
-    local function title(label) panel:AddSetting({type=HAS.ST_LABEL,label="|c66CCFF"..label.."|r"}) end
+    local function title(label) panel:AddSetting({type=HAS.ST_SECTION or HAS.ST_LABEL,label=label}) end
     checkbox("Enabled","enabled"); checkbox("Preview mode","preview"); checkbox("Show default ESO resource bars","showDefaultResources"); checkbox("Use out-of-combat opacity","useOutOfCombatOpacity")
     panel:AddSetting({type=HAS.ST_SLIDER,label="Out-of-combat opacity",min=0.05,max=1,step=0.05,getFunction=function() return CH.sv.outOfCombatOpacity end,setFunction=function(v) apply("outOfCombatOpacity",v) end,default=CH.defaults.outOfCombatOpacity,disable=function() return not CH.sv.useOutOfCombatOpacity end})
     checkbox("Stamina inside / top","staminaInside"); checkbox("Debug chat logging","debug")
@@ -131,13 +154,14 @@ function CH:RegisterHarvens()
     dropdown("Outside timer thickness","outsideTimerStyle",{"Thin","Thick"},"Shared by every tracker assigned to an outside position.")
     slider("Resource value font size","resourceValueFontSize",16,42,1); slider("Resource percent font size","resourcePercentFontSize",14,34,1)
     checkbox("Show raw values","showRaw"); checkbox("Show maximum values","showMaximum"); checkbox("Show percentages","showPercent")
-    title("GLOBAL TRACKERS - PER CHARACTER")
+    title("GLOBAL TIMERS - CHARACTER SPECIFIC")
     dropdown("Lower-left major buff","majorBuffTracked",CH.majorBuffChoices,"Select the standardized Major buff tracked by the lower-left outside timer.")
     dropdown("Major buff timer color","majorBuffColor",CH.colorChoices)
     checkbox("Track Balance debuff","balanceEnabled")
     dropdown("Balance position","balanceSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end)
     dropdown("Balance timer color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end)
-    title("SORCERER TRACKERS - PER CHARACTER")
+    title("CLASS TIMERS - CHARACTER SPECIFIC")
+    title("SORCERER")
     checkbox("Track Bound Aegis","aegisEnabled")
     dropdown("Bound Aegis position","aegisSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.aegisEnabled end)
     dropdown("Bound Aegis timer color","aegisColor",CH.colorChoices,nil,nil,function() return not CH.sv.aegisEnabled end)
@@ -159,18 +183,22 @@ function CH:RegisterHarvens()
         dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
         dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
     end
-    title("WARDEN TRACKERS - PER CHARACTER")
+    title("WARDEN")
     for _,definition in ipairs(CH.wardenTrackerDefinitions) do
         local key=definition.key
         checkbox("Track "..definition.label,key.."Enabled")
         dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
         dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
     end
-    title("ARCANIST TRACKERS - PER CHARACTER")
+    title("ARCANIST")
     for _,definition in ipairs(CH.arcanistTrackerDefinitions) do
         local key=definition.key
         checkbox("Track "..definition.label,key.."Enabled")
-        dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        if definition.stackOnly then
+            dropdown(definition.label.." quadrant","cruxQuadrant",CH.cruxQuadrantNames,"Uses the outside slot for stack count and the matching inside slot for expiration time.",CH.cruxQuadrantValues,function() return not CH.sv[key.."Enabled"] end)
+        else
+            dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer/stack positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
+        end
         dropdown(definition.label.." color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
     end
     local function addStandardDefinition(definition)
@@ -178,6 +206,10 @@ function CH:RegisterHarvens()
         checkbox("Track "..definition.label,key.."Enabled")
         dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
         dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
+    end
+    for _,group in ipairs(CH.remainingClassDefinitionGroups) do
+        title(group.name:upper())
+        for _,definition in ipairs(group.definitions) do addStandardDefinition(definition) end
     end
     local function addScribingDefinition(definition)
         addStandardDefinition(definition)
@@ -188,23 +220,28 @@ function CH:RegisterHarvens()
         for _,definition in ipairs(CH.nonClassTrackerDefinitions) do if definition.line==line then addStandardDefinition(definition) end end
         for _,definition in ipairs(CH.scribingTrackerDefinitions) do if CH.scribingSkillLineByKey[definition.key]==line then addScribingDefinition(definition) end end
     end
-    title("WEAPON SKILL LINES - PER CHARACTER")
+    title("WEAPON TIMERS - CHARACTER SPECIFIC")
     for _,line in ipairs(CH.weaponSkillLines) do addSkillLine(line) end
-    title("GUILD / OTHER SKILL LINES - PER CHARACTER")
+    title("GUILD / VAMPIRE / WEREWOLF TIMERS - CHARACTER SPECIFIC")
     for _,line in ipairs(CH.otherSkillLines) do addSkillLine(line) end
+    title("ARMOR")
+    for _,definition in ipairs(CH.nonClassTrackerDefinitions) do
+        for _,line in ipairs(CH.armorSkillLines) do if definition.line==line then addStandardDefinition(definition); break end end
+    end
     CH:Log("LibHarvensAddonSettings settings registered")
     return true
 end
 
 function CH:RegisterSettings()
     local lam, harvens = false, false
-    local okHarvens, resultHarvens = pcall(function() return self:RegisterHarvens() end)
-    if okHarvens then harvens = resultHarvens else self:Log("LibHarvens registration failed: " .. tostring(resultHarvens), true) end
-    -- Register exactly one provider. LibHarvens/LibVotans is preferred on console;
-    -- LAM remains the fallback for environments where Harven's library is absent.
-    if not harvens then
-        local okLam, resultLam = pcall(function() return self:RegisterLAM() end)
-        if okLam then lam = resultLam else self:Log("LibAddonMenu registration failed: " .. tostring(resultLam), true) end
+    -- LAM supplies true collapsible submenus and is preferred when present.
+    -- LibHarvens/LibVotans remains the console-safe functional fallback; it
+    -- exposes section controls but does not provide nested child containers.
+    local okLam, resultLam = pcall(function() return self:RegisterLAM() end)
+    if okLam then lam = resultLam else self:Log("LibAddonMenu registration failed: " .. tostring(resultLam), true) end
+    if not lam then
+        local okHarvens, resultHarvens = pcall(function() return self:RegisterHarvens() end)
+        if okHarvens then harvens = resultHarvens else self:Log("LibHarvens registration failed: " .. tostring(resultHarvens), true) end
     end
     if not lam and not harvens then self:Log("No settings library found; HUD remains active. Use /curvedhud preview for diagnostics.", true) end
 end

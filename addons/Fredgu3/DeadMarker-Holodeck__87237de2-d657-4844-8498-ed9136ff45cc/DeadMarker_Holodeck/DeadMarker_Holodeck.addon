@@ -1,9 +1,9 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 39
+## AddOnVersion: 40
 ## Author: Skye-Forge
-## Description: Holodeck 0.0.39 — plant, list, load, play. /hdsettings
-## Version: 0.0.39
+## Description: House trainer for trial rooms. Plant, load a fight, play. /hd
+## Version: 0.0.40
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua

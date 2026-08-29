@@ -219,12 +219,12 @@ Discover active lists
 
     local lists, errorCode = api:GetLists()
 
-On success, lists is a new array containing copies of active list IDs and
-names:
+On success, lists is a new array containing copies of active list IDs, names,
+and lock states:
 
     {
-        { id = 1, name = "Crafting Materials" },
-        { id = 4, name = "Items to Resell" },
+        { id = 1, name = "Crafting Materials", locked = false },
+        { id = 4, name = "Items to Resell", locked = true },
     }
 
 Archived lists are not returned. Changing these snapshots does not change
@@ -253,6 +253,7 @@ only list totals are needed. The returned copy contains:
         favorite = true,
         pinned = false,
         recurring = false,
+        locked = false,
         selected = true,
         archived = false,
         itemCount = 2,
@@ -290,12 +291,16 @@ Update one or more properties atomically validated before any change:
         favorite = true,
         pinned = true,
         recurring = false,
+        locked = true,
     }, {
         listId = 7,
     })
 
-Supported fields are name, note, category, budget, favorite, pinned, and
-recurring. Set budget to 0 to clear it. The result is a full list snapshot.
+Supported fields are name, note, category, budget, favorite, pinned,
+recurring, and locked. Set budget to 0 to clear it. A locked list rejects
+changes with LIST_LOCKED. Call UpdateList with only locked = false to unlock
+it. Locking can be included with other changes because it is applied last.
+The result is a full list snapshot.
 
 Other list-management calls are:
 
@@ -434,6 +439,7 @@ Stable strings are also exposed through GravvyShoppingList.API.ERROR:
 - ITEM_NOT_FOUND: The requested active item does not exist.
 - ARCHIVED_LIST_NOT_FOUND: The requested archived list does not exist.
 - LAST_LIST_REQUIRED: DeleteList cannot remove the final active list.
+- LIST_LOCKED: The requested list is locked against changes.
 - INVALID_EVENT: The callback event is not one of the API version 3 constants.
 - INVALID_CALLBACK: The callback value is not a function.
 - CALLBACK_NOT_FOUND: That function was not registered for the event.

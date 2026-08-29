@@ -1,3 +1,11 @@
+Better Buffs v0.3.15
+- Corrected live HUD scene layering for Buff/Debuff dashboards and all Analytics stat panels.
+- Live refreshes can no longer re-show Better Buffs controls above Map, Inventory, Skills, Character, or other non-HUD scenes.
+- Added one event-driven scene-state visibility reevaluation; no polling loop added.
+- Preserved explicit Settings preview behavior as the only non-HUD visibility exception.
+- Added the same scene gate to the Slayer miss alert.
+- No Effect Runtime, registry, analytics calculation, combat context, or performance-loop changes.
+
 Better Buffs v0.3.14
 
 - Performance-only optimization pass; no new gameplay features or effect definitions.

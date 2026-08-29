@@ -1,5 +1,5 @@
 SATUVE XBOX UI - GAMEPAD MENU INTEGRATION
-Version 1.1.59-libgamepad-107-map-alignment-fix
+Version 1.1.64-reloadui-init-fix
 
 CHANGES
 1. Native ESO main menu focus transfer:
@@ -70,3 +70,9 @@ coordinates, with universal coordinates used only as a temporary fallback when
 the native position is unavailable. The 1.1.58 event-based tile initialization,
 delayed viewport stabilization, combat visibility and LibGamepad 107 requirement
 remain intact.
+
+1.1.64: Made /reloadui startup idempotent and split the former single-frame
+initialization burst into four one-shot stages. Scene fragments, global template
+hooks, action-bar OnShow hooks, menu registration and event registration are now
+guarded against duplicate installation. LibGamepad registration also handles the
+case where PLAYER_ACTIVATED already fired. No layout or SavedVariables changed.

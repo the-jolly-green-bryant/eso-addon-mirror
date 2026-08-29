@@ -6,6 +6,29 @@
 -- Global table
 local HT = HUDitorTools
 
+-- LAM dropdown choices must be tables (dropdown.lua UpdateChoices uses #).
+-- Functions are valid for name/tooltip/getFunc, not for choices/choicesValues.
+local LAM_ACTIVE_LAYOUT_DROPDOWN_REFERENCE = "HUDitorTools_LAM_ActiveLayoutDropdown"
+local lamLayoutChoices = {}
+local lamLayoutChoiceValues = {}
+
+function HT.RefreshLamLayoutDropdown()
+    local names, values = HT.GetLayoutDropdownChoices()
+    ZO_ClearNumericallyIndexedTable(lamLayoutChoices)
+    ZO_ClearNumericallyIndexedTable(lamLayoutChoiceValues)
+    for index = 1, #names do
+        lamLayoutChoices[index] = names[index]
+        lamLayoutChoiceValues[index] = values[index]
+    end
+
+    local dropdownControl = _G[LAM_ACTIVE_LAYOUT_DROPDOWN_REFERENCE]
+    if not dropdownControl or not dropdownControl.UpdateChoices then
+        return
+    end
+    dropdownControl:UpdateChoices(lamLayoutChoices, lamLayoutChoiceValues)
+    dropdownControl:UpdateValue()
+end
+
 function HT.buildSettingsMenu()
     local LAM = LibAddonMenu2
     local defaults = HT.Defaults
@@ -27,6 +50,12 @@ function HT.buildSettingsMenu()
     }
     local lamSettingsPanelName = HT.eventName .. "_LAM"
     HT.LAMSettingsPanel = LAM:RegisterAddonPanel(lamSettingsPanelName, panelData)
+
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(panel)
+        if panel == HT.LAMSettingsPanel then
+            HT.RefreshLamLayoutDropdown()
+        end
+    end)
 
     local optionsTable =
     {
@@ -149,6 +178,78 @@ function HT.buildSettingsMenu()
                 return defaultGridColor.r, defaultGridColor.g, defaultGridColor.b, defaultGridColor.a
             end,
             width = "full",
+        },
+        {
+            type = "header",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_LAM_HEADER),
+        },
+        {
+            type = "dropdown",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_LAM_ACTIVE),
+            tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_LAM_ACTIVE_TOOLTIP),
+            choices = lamLayoutChoices,
+            choicesValues = lamLayoutChoiceValues,
+            getFunc = function()
+                return HT.GetActiveLayoutChoiceValue()
+            end,
+            setFunc = function(value)
+                HT.SwitchHudLayoutFromChoiceValue(value)
+            end,
+            scrollable = true,
+            width = "full",
+            reference = LAM_ACTIVE_LAYOUT_DROPDOWN_REFERENCE,
+        },
+        {
+            type = "checkbox",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_LAM_CHAT),
+            tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_LAM_CHAT_TOOLTIP),
+            getFunc = function()
+                return settings.showChatMessages
+            end,
+            setFunc = function(value)
+                settings.showChatMessages = value
+            end,
+            default = defaults.showChatMessages,
+            width = "full",
+        },
+        {
+            type = "button",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_SAVE),
+            tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_SAVE_TOOLTIP),
+            func = function()
+                HT.SaveActiveLayout()
+            end,
+            disabled = function()
+                return not HT.IsLiveLayoutDirty()
+            end,
+            width = "half",
+        },
+        {
+            type = "button",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_NEW),
+            tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_NEW_TOOLTIP),
+            func = function()
+                HT.ShowLayoutNameDialog("new")
+            end,
+            width = "half",
+        },
+        {
+            type = "button",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_IMPORT),
+            tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_IMPORT_TOOLTIP),
+            func = function()
+                HT.ShowLayoutImportDialog()
+            end,
+            width = "half",
+        },
+        {
+            type = "button",
+            name = GetString(SI_HUDITORTOOLS_LAYOUT_EXPORT),
+            tooltip = GetString(SI_HUDITORTOOLS_LAYOUT_EXPORT_TOOLTIP),
+            func = function()
+                HT.ShowLayoutExportDialog()
+            end,
+            width = "half",
         },
     }
 

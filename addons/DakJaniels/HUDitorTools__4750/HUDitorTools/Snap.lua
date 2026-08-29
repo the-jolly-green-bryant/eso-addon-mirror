@@ -1,5 +1,5 @@
 -- -----------------------------------------------------------------------------
--- HUDitorTools - GridSnap — grid snap helpers (adapted from LuiExtended)
+-- HUDitorTools - GridSnap - grid snap helpers (adapted from LuiExtended)
 -- -----------------------------------------------------------------------------
 
 local zo_floor = zo_floor

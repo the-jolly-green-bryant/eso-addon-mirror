@@ -2,6 +2,8 @@
 -- AetherChat : Chat Engine (LootLog Sync, Roster Mapping & Reliable Alerts)
 -- ============================================================================
 AetherChat = AetherChat or {}
+local AetherChat = AetherChat
+
 AetherChat.ChatEngine = {}
 AetherChat.ItemLooters = AetherChat.ItemLooters or {}
 AetherChat.PlayerAccountMap = AetherChat.PlayerAccountMap or {}
@@ -15,8 +17,14 @@ local CHANNEL_KEYS = {
     [CHAT_CHANNEL_ZONE_LANGUAGE_1] = 'zone',
     [CHAT_CHANNEL_ZONE_LANGUAGE_2] = 'zone',
     [CHAT_CHANNEL_ZONE_LANGUAGE_3] = 'zone',
-    [CHAT_CHANNEL_SAY]             = 'say',
-    [CHAT_CHANNEL_YELL]            = 'yell',
+    [CHAT_CHANNEL_ZONE_LANGUAGE_4] = 'zone',
+    [CHAT_CHANNEL_ZONE_LANGUAGE_5] = 'zone',
+    [CHAT_CHANNEL_ZONE_LANGUAGE_6] = 'zone',
+    [CHAT_CHANNEL_SAY]             = 'general',
+    [CHAT_CHANNEL_YELL]            = 'general',
+    [CHAT_CHANNEL_MONSTER_SAY]     = 'general',
+    [CHAT_CHANNEL_MONSTER_YELL]    = 'general',
+    [CHAT_CHANNEL_SYSTEM]          = 'general',
     [CHAT_CHANNEL_PARTY]           = 'party',
     [CHAT_CHANNEL_GUILD_1]         = 'guild1',
     [CHAT_CHANNEL_GUILD_2]         = 'guild2',
@@ -155,50 +163,65 @@ function AetherChat.FormatLootLogLine(itemLink, quantity, looterName, isSelf)
     local strLink = tostring(itemLink)
     if strLink == '' then return '' end
 
-    local icon = GetItemLinkInfo(strLink) or GetItemLinkIcon(strLink) or '/esoui/art/icons/icon_missing.dds'
-    local iconTag = string.format('|t22:22:%s:inheritcolor|t ', icon)
+    local qty = (quantity and quantity > 0) and quantity or 1
+    local myAccount = GetDisplayName()
+    local isPersonal = isSelf or (myAccount and looterName == myAccount) or looterName == "@Moi" or looterName == "You" or looterName == "Vous"
 
-    -- Category (Jewelry, Light, Medium, Heavy, Weapon, etc.)
-    local armorType = GetItemLinkArmorType(strLink)
-    local weaponType = GetItemLinkWeaponType(strLink)
-    local equipType = GetItemLinkEquipType(strLink)
-    local category = ""
-    if equipType == EQUIP_TYPE_RING or equipType == EQUIP_TYPE_NECK then
-        category = "Jewelry"
-    elseif armorType == ARMORTYPE_LIGHT then
-        category = "Light"
-    elseif armorType == ARMORTYPE_MEDIUM then
-        category = "Medium"
-    elseif armorType == ARMORTYPE_HEAVY then
-        category = "Heavy"
-    elseif weaponType ~= WEAPONTYPE_NONE then
-        category = "Weapon"
+    -- 1. Currency drop (gold)
+    if tonumber(strLink) then
+        local goldIcon = zo_iconTextFormat("/esoui/art/currency/currency_gold.dds", 22, 22, "", false)
+        local recipient = isPersonal and ((LootLog and LootLog.self and LootLog.self.you) or "|c57F287Vous|r") or string.format("|c38BDF8%s|r", looterName or "Groupe")
+        return string.format("|H0:lootlog|h[Loot Log]|h %s%s |c57F287Pièces d'or|r → %s", goldIcon, strLink, recipient)
     end
-    local catTag = (category ~= "") and string.format("|cE0E0E0%s|r ", category) or ""
 
-    -- Quantity
-    local qty = (quantity and quantity > 1) and string.format(" x%d", quantity) or ""
-
-    -- Trait
-    local traitType = GetItemLinkTraitType(strLink)
-    local traitName = ""
-    if traitType and traitType ~= ITEM_TRAIT_TYPE_NONE then
-        local tStr = GetString("SI_ITEMTRAITTYPE", traitType)
-        if tStr and tStr ~= "" then
-            traitName = zo_strformat("<<1>>", tStr)
+    -- 2. Indicator (LootLog exact method: uncollectedColor + zo_iconFormatInheritColor)
+    local formattedIndicator = ""
+    local isUncollected, uncollectedColor, uncollectedIcon = false, nil, nil
+    if LootLogMulti and LootLogMulti.ShouldFlagAsUncollected then
+        isUncollected, uncollectedColor, uncollectedIcon = LootLogMulti.ShouldFlagAsUncollected(strLink, isPersonal)
+    elseif LootLog and LootLog.GetItemLinkCollectionStatus then
+        if LootLog.GetItemLinkCollectionStatus(strLink) == 1 then
+            isUncollected = true
+            uncollectedColor = isPersonal and 0xCC0000 or 0xCCCC00
+            uncollectedIcon = "LootLog/art/uncollected.dds"
+        end
+    elseif IsItemLinkSetCollectionPiece and IsItemSetCollectionPieceUnlocked then
+        local itemId = GetItemLinkItemId(strLink)
+        if IsItemLinkSetCollectionPiece(strLink) and not IsItemSetCollectionPieceUnlocked(itemId) then
+            isUncollected = true
+            uncollectedColor = isPersonal and 0xCC0000 or 0xCCCC00
+            uncollectedIcon = "LootLog/art/uncollected.dds"
         end
     end
-    local traitTag = (traitName ~= "") and string.format(" |cC5C29E(%s)|r", traitName) or ""
 
-    -- Notable / Set indicator
-    local hasSet = GetItemLinkSetInfo(strLink)
-    local notableTag = hasSet and " |cFFCC00!!!|r" or ""
+    if isUncollected then
+        local uColor = uncollectedColor or (isPersonal and 0xCC0000 or 0xCCCC00)
+        local uIcon = uncollectedIcon or "LootLog/art/uncollected.dds"
+        formattedIndicator = string.format("|c%06X%s|r", uColor, zo_iconFormatInheritColor(uIcon, 22, 22))
+    end
 
-    -- Recipient (@AccountName Resolution)
-    local myAccount = GetDisplayName()
+    -- 3. Item Icon (LootLog exact method: zo_iconTextFormat)
+    local iconPath = (LootLog and LootLog.GetLinkIcon and LootLog.GetLinkIcon(strLink)) or GetItemLinkInfo(strLink) or GetItemLinkIcon(strLink) or '/esoui/art/icons/icon_missing.dds'
+    local formattedIcon = zo_iconTextFormat(iconPath, 22, 22, "", false)
+
+    -- 4. Quantity (LootLog exact method)
+    local formattedQuantity = (qty > 1) and string.format("×%d", qty) or ""
+
+    -- 5. Trait (LootLog exact method)
+    local traitName = (LootLog and LootLog.GetGearTraitName and LootLog.GetGearTraitName(strLink)) or ""
+    if traitName == "" then
+        local traitType = GetItemLinkTraitType(strLink)
+        if traitType and traitType ~= ITEM_TRAIT_TYPE_NONE then
+            local tStr = GetString("SI_ITEMTRAITTYPE", traitType)
+            if tStr and tStr ~= "" then traitName = zo_strformat("<<1>>", tStr) end
+        end
+    end
+    local formattedTrait = (traitName ~= "") and string.format(" |cC5C29E(%s)|r", traitName) or ""
+
+    -- 6. Recipient (LootLog exact method)
     local recipient = ""
-    if isSelf or (myAccount and looterName == myAccount) or looterName == "@Moi" or looterName == "You" then
-        recipient = "|c57F287You|r"
+    if isPersonal then
+        recipient = (LootLog and LootLog.self and LootLog.self.you) or "|c57F287Vous|r"
     else
         local resolvedAccount = AetherChat.ResolveAccountName(looterName) or (looterName or "Groupe")
         local cleanName = resolvedAccount
@@ -209,24 +232,62 @@ function AetherChat.FormatLootLogLine(itemLink, quantity, looterName, isSelf)
         end
         recipient = string.format("|c38BDF8%s|r", cleanName)
     end
+    local formattedRecipient = string.format(" → %s", recipient)
 
-    -- Remember who looted this item for 1-click whisper Need
+    -- Remember looter for 1-click Need
     if looterName then
         local resolved = AetherChat.ResolveAccountName(looterName) or looterName
         AetherChat.ItemLooters[strLink] = resolved
         local itemId = strLink:match("item:(%d+)") or strLink:match("^(%d+)$")
-        if itemId then
-            AetherChat.ItemLooters[itemId] = resolved
+        if itemId then AetherChat.ItemLooters[itemId] = resolved end
+    end
+
+    local cleanItemLink = (type(strLink) == "string") and strLink:gsub("^|H0", "|H1", 1) or strLink
+    return string.format("|H0:lootlog|h[Loot Log]|h %s%s%s%s%s%s", formattedIndicator, formattedIcon, cleanItemLink, formattedQuantity, formattedTrait, formattedRecipient)
+end
+
+AetherChat.RecentLootCache = AetherChat.RecentLootCache or {}
+
+function AetherChat.IsLootDuplicate(itemLink, quantity, looter)
+    if not itemLink or itemLink == '' then return true end
+    local strLink = tostring(itemLink)
+    local qty = tostring(quantity or 1)
+    local looterStr = tostring(looter or "")
+    local key = string.format("%s_%s_%s", strLink, qty, looterStr)
+    local now = GetGameTimeMilliseconds()
+
+    if AetherChat.RecentLootCache[key] and (now - AetherChat.RecentLootCache[key] < 3000) then
+        return true
+    end
+
+    AetherChat.RecentLootCache[key] = now
+
+    -- Cleanup cache if needed
+    for k, timestamp in pairs(AetherChat.RecentLootCache) do
+        if (now - timestamp) > 15000 then
+            AetherChat.RecentLootCache[k] = nil
         end
     end
 
-    return string.format("|cFFFF00Loot:|r %s%s%s%s%s%s |c888888->|r %s", iconTag, catTag, strLink, qty, traitTag, notableTag, recipient)
+    return false
 end
 
 function AetherChat.SyncFromLootLog()
     if not LootLog or not LootLog.history then return end
 
-    for key, group in pairs(LootLog.history) do
+    local existing = History.GetMessages('loot')
+    if existing and #existing > 0 then
+        return
+    end
+
+    local sortedKeys = {}
+    for k in pairs(LootLog.history) do
+        table.insert(sortedKeys, k)
+    end
+    table.sort(sortedKeys)
+
+    for _, key in ipairs(sortedKeys) do
+        local group = LootLog.history[key]
         if type(group) == 'table' then
             for i = 1, #group do
                 local entry = LootLog.Unpack(group[i])
@@ -239,13 +300,63 @@ function AetherChat.SyncFromLootLog()
                     local looter = (userId and userId ~= "") and userId or charName
                     local isSelf = (LootLog.self and userId == LootLog.self.userId) or (LootLog.self and charName == LootLog.self.name)
 
-                    local formattedLine = AetherChat.FormatLootLogLine(itemLink, count, looter, isSelf)
-                    local timeStr = GetTimeString():sub(1, 5)
-
-                    History.AddMessage('loot', '|cFFFF00Loot|r', formattedLine, timeStr, 0, isSelf, false)
+                    if not AetherChat.IsLootDuplicate(itemLink, count, looter) then
+                        local formattedLine = AetherChat.FormatLootLogLine(itemLink, count, looter, isSelf)
+                        local timeStr = GetTimeString():sub(1, 5)
+                        History.AddMessage('loot', '|cFFFF00Loot Log|r', formattedLine, timeStr, 0, isSelf, false)
+                    end
                 end
             end
         end
+    end
+
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshChannelList then
+        AetherChat.Messenger.RefreshChannelList()
+    end
+end
+
+local processedSalesMails = {}
+
+function ChatEngine.CheckGuildStoreSales()
+    local mailId = GetNextMailId()
+    while mailId do
+        local mailIdStr = Id64ToString(mailId)
+        if not processedSalesMails[mailIdStr] then
+            local senderDisplayName, senderCharacterName, subject, icon, unread, fromSystem, fromCS, returned, numAttachments, attachedMoney, codAmount, numBodyCharacters, timeUntilExpiration, isInvoice = GetMailHeaderInfo(mailId)
+
+            if fromSystem and unread and attachedMoney and attachedMoney > 0 then
+                processedSalesMails[mailIdStr] = true
+
+                local notifySales = Settings.Get('notifySales', true)
+                if notifySales then
+                    local L = AetherChat.L
+                    local goldFormatted = ZO_Currency_FormatPlatform(CURT_MONEY, attachedMoney, ZO_CURRENCY_FORMAT_AMOUNT_ICON)
+                    local cleanSubject = subject or "Item"
+                    local alertTitle = L('SALES_ALERT_TITLE')
+                    local saleNotice = string.format("%s %s (+%s)", alertTitle, cleanSubject, goldFormatted)
+
+                    -- 1. In-game Center Screen Announcement (CSA) & Sound
+                    if CENTER_SCREEN_ANNOUNCE then
+                        local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS)
+                        params:SetText(saleNotice)
+                        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
+                    else
+                        ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS, saleNotice)
+                    end
+
+                    -- 2. Post to General & Ventes channel in AetherChat
+                    local timeStr = GetTimeString():sub(1, 5)
+                    local author = L('SALES_STORE_AUTHOR')
+                    local msgText = L('SALES_MSG_FORMAT', cleanSubject, goldFormatted)
+                    History.AddMessage('general', author, msgText, timeStr, 0, false, false, nil)
+
+                    if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+                        AetherChat.Messenger.OnMessageReceived('general', author, msgText, false, false, nil)
+                    end
+                end
+            end
+        end
+        mailId = GetNextMailId(mailId)
     end
 end
 
@@ -256,11 +367,25 @@ function ChatEngine.Initialize()
     -- Track group changes to map character names -> @AccountName
     EVENT_MANAGER:RegisterForEvent('AetherChat_GroupJoin', EVENT_GROUP_MEMBER_JOINED, AetherChat.UpdateGroupPlayerMap)
     EVENT_MANAGER:RegisterForEvent('AetherChat_GroupLeft', EVENT_GROUP_MEMBER_LEFT, AetherChat.UpdateGroupPlayerMap)
-    EVENT_MANAGER:RegisterForEvent('AetherChat_PlayerAct', EVENT_PLAYER_ACTIVATED, AetherChat.UpdateGroupPlayerMap)
+    EVENT_MANAGER:RegisterForEvent('AetherChat_PlayerAct', EVENT_PLAYER_ACTIVATED, function()
+        AetherChat.UpdateGroupPlayerMap()
+        ChatEngine.CheckGuildStoreSales()
+    end)
+
+    -- Real-time Guild Store Sales tracking & notifications
+    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Mail', EVENT_MAIL_NUM_UNREAD_CHANGED, function(_, numUnread)
+        if numUnread and numUnread > 0 then
+            ChatEngine.CheckGuildStoreSales()
+        end
+    end)
+    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Readable', EVENT_MAIL_READABLE, function(_, mailId)
+        ChatEngine.CheckGuildStoreSales()
+    end)
 
     AetherChat.UpdateGroupPlayerMap()
+    ChatEngine.CheckGuildStoreSales()
 
-    -- Hook directly into LootLog if available
+    -- Hook directly into LootLog.LogItem so EVERY drop (personal/group) is captured cleanly
     if LootLog and LootLog.LogItem then
         local originalLogItem = LootLog.LogItem
         LootLog.LogItem = function(itemLink, quantity, notable, receivedBy)
@@ -269,42 +394,54 @@ function ChatEngine.Initialize()
             local isSelf = not receivedBy
             local looter = receivedBy
             if isSelf and LootLog.self then
-                looter = LootLog.self.name
+                looter = LootLog.self.name or GetDisplayName()
             end
 
-            local formattedLine = AetherChat.FormatLootLogLine(itemLink, quantity or 1, looter, isSelf)
-            local timeStr = GetTimeString():sub(1, 5)
+            if not AetherChat.IsLootDuplicate(itemLink, quantity or 1, looter) then
+                local formattedLine = AetherChat.FormatLootLogLine(itemLink, quantity or 1, looter, isSelf)
+                local timeStr = GetTimeString():sub(1, 5)
 
-            History.AddMessage('loot', '|cFFFF00Loot|r', formattedLine, timeStr, 0, isSelf, false)
+                History.AddMessage('loot', '|cFFFF00Loot Log|r', formattedLine, timeStr, 0, isSelf, false)
 
-            if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-                AetherChat.Messenger.OnMessageReceived('loot', '|cFFFF00Loot|r', formattedLine, isSelf, false)
+                if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+                    AetherChat.Messenger.OnMessageReceived('loot', '|cFFFF00Loot Log|r', formattedLine, isSelf, false)
+                end
             end
         end
     end
 
-    -- Initial sync from LootLog
+    -- Initial sync from LootLog if loot tab history is empty
     zo_callLater(function()
         AetherChat.SyncFromLootLog()
     end, 1000)
 end
 
 function ChatEngine.OnLootReceived(eventCode, receivedBy, itemName, quantity, soundCategory, lootType, self, isPickpocketLoot, questItemIcon, itemId, isStolen)
+    -- If LootLog is installed, LootLog.LogItem handles 100% of drops
+    if LootLog and LootLog.LogItem then
+        return
+    end
+
     if not itemName or itemName == '' then return end
 
     local qty = (quantity and quantity > 0) and quantity or 1
-    local timeStr = GetTimeString():sub(1, 5)
     local isSelf = self and true or false
     local rawLooter = isSelf and GetDisplayName() or ((receivedBy and receivedBy ~= '') and CleanName(receivedBy) or "Groupe")
     local looter = AetherChat.ResolveAccountName(rawLooter) or rawLooter
 
+    -- Prevent duplicate if another event handler already logged this loot
+    if AetherChat.IsLootDuplicate(itemName, qty, looter) then
+        return
+    end
+
+    local timeStr = GetTimeString():sub(1, 5)
     local formattedLine = AetherChat.FormatLootLogLine(itemName, qty, looter, isSelf)
 
     -- Save to Loot channel history
-    History.AddMessage('loot', '|cFFFF00Loot|r', formattedLine, timeStr, 0, isSelf, false)
+    History.AddMessage('loot', '|cFFFF00Loot Log|r', formattedLine, timeStr, 0, isSelf, false)
 
     if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-        AetherChat.Messenger.OnMessageReceived('loot', '|cFFFF00Loot|r', formattedLine, isSelf, false)
+        AetherChat.Messenger.OnMessageReceived('loot', '|cFFFF00Loot Log|r', formattedLine, isSelf, false)
     end
 end
 
@@ -331,6 +468,7 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
 
     local author = nil
     local channelKey = nil
+    local msgText = text
 
     if isWhisper then
         local otherPlayer = (fromDisplayName and fromDisplayName ~= '') and fromDisplayName or CleanName(fromName)
@@ -347,6 +485,32 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
             author = (myAccount and myAccount ~= '') and myAccount or myCharName
         else
             author = (fromDisplayName and fromDisplayName ~= '') and fromDisplayName or CleanName(fromName)
+        end
+
+        local zoneLang = nil
+        -- Add clean language tag for zone channels
+        if channelType == CHAT_CHANNEL_ZONE_LANGUAGE_2 then
+            msgText = "|c38BDF8[FR]|r " .. text
+            zoneLang = 'fr'
+        elseif channelType == CHAT_CHANNEL_ZONE_LANGUAGE_1 then
+            msgText = "|c57F287[EN]|r " .. text
+            zoneLang = 'en'
+        elseif channelType == CHAT_CHANNEL_ZONE_LANGUAGE_3 then
+            msgText = "|cE5B558[DE]|r " .. text
+            zoneLang = 'de'
+        elseif channelType == CHAT_CHANNEL_ZONE_LANGUAGE_6 then
+            msgText = "|cF23F43[ES]|r " .. text
+            zoneLang = 'es'
+        elseif channelType == CHAT_CHANNEL_ZONE then
+            msgText = "|c888888[Global]|r " .. text
+            zoneLang = 'global'
+        end
+
+        -- Enhance Guild Store sale notifications
+        if channelKey == 'general' and (text:find("vendu") or text:find("sold") or text:find("verkauft") or text:find("Guilde") or text:find("Guild")) then
+            if not author or author == "" or author:lower() == "system" then
+                author = AetherChat.L('SALES_STORE_AUTHOR')
+            end
         end
     end
 
@@ -365,7 +529,7 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     end
 
     local timeStr = GetTimeString():sub(1, 5)
-    History.AddMessage(channelKey, author, text, timeStr, 0, isSelf, isWhisper)
+    History.AddMessage(channelKey, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang)
 
     -- Play customizable high-audibility alert on incoming message
     if not isSelf then
@@ -373,7 +537,7 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     end
 
     if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-        AetherChat.Messenger.OnMessageReceived(channelKey, author, text, isSelf, isWhisper)
+        AetherChat.Messenger.OnMessageReceived(channelKey, author, msgText, isSelf, isWhisper, zoneLang)
     end
 end
 

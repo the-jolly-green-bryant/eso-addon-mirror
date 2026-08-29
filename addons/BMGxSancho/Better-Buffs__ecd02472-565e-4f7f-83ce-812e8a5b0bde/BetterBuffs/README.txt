@@ -1,4 +1,4 @@
-Better Buffs v0.3.14
+Better Buffs v0.3.15
 
 Better Buffs is a lightweight ESO raid-effect intelligence addon built around one Combat Context, one Effect Runtime, and one canonical effect cache.
 

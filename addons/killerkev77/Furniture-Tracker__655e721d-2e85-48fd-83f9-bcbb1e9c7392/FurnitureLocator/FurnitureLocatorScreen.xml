@@ -1,0 +1,20 @@
+<!--
+Furniture Locator - Gamepad list screen XML
+
+ZO_Gamepad_ParametricList_Screen is a virtual TopLevelControl template
+already built into the base game (confirmed from the real ESOUI source,
+esoui/common/gamepad/zo_gamepadparametricscrolllisttemplates.xml) -- it
+already provides the header, mask, container, and scroll-list wiring.
+We just inherit it and hook up our own Lua class in OnInitialized,
+the same pattern the game's own screens use (e.g.
+ZO_PostClaimLevelUpRewards_Gamepad).
+-->
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="FurnitureLocatorScreenGamepad" inherits="ZO_Gamepad_ParametricList_Screen">
+            <OnInitialized>
+                FurnitureLocatorScreen_OnInitialized(self)
+            </OnInitialized>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

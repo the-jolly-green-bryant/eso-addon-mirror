@@ -1,6 +1,6 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName = "CurvedHUD", "0.8.4-test", "CurvedHUD_Update"
+CH.name, CH.version, CH.updateName = "CurvedHUD", "0.9.0-test", "CurvedHUD_Update"
 CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="Major Resolve",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=true,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=true,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=true,layout="Parallel",staminaInside=true,iconCache={}}
 CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
 CH.characterDefaults = {majorBuffTracked="Major Resolve",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=true,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=true,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
@@ -15,6 +15,8 @@ CH.trackerSlots = {
 }
 CH.trackerSlotNames = {"Top Left - Outside","Top Left - Inside","Bottom Left - Outside","Bottom Left - Inside","Top Right - Inside","Top Right - Outside","Bottom Right - Inside","Bottom Right - Outside"}
 CH.trackerSlotValues = {"topLeftOutside","topLeftInside","bottomLeftOutside","bottomLeftInside","topRightInside","topRightOutside","bottomRightInside","bottomRightOutside"}
+CH.cruxQuadrantNames = {"Top Left","Bottom Left","Top Right","Bottom Right"}
+CH.cruxQuadrantValues = {"topLeft","bottomLeft","topRight","bottomRight"}
 CH.procPositionChoices = {"Top","Right","Bottom","Left","Center"}
 CH.scribingTrackerDefinitions = {
     {key="soulBurst",label="Soul Burst",icon="CurvedHUD/textures/soul_burst.dds",slot="topRightInside",color="Purple",duration=20,needles={"soul burst","binding burst","bloody burst","chilling burst","fiery burst","healing burst","leashing burst","magical burst","pestilent burst","shocking burst","sundering burst","warding burst"}},
@@ -60,6 +62,61 @@ CH.arcanistTrackerDefinitions = {
     {key="eldritchHorror",label="Rune of Eldritch Horror",slot="topLeftInside",color="Pink",duration=20,needles={"rune of eldritch horror","rune of uncanny adoration","rune of the colorless pool"}},
     {key="chakramShields",label="Chakram Shields",slot="bottomLeftInside",color="Cyan",duration=6,needles={"chakram shields","chakram of destiny","tidal chakram"}},
     {key="arcanistDomain",label="Arcanist's Domain",slot="topRightOutside",color="Green",duration=20,needles={"arcanist's domain","arcanists domain","reconstructive domain","zenas' empowering disc","zenas empowering disc"}},
+}
+CH.dragonknightTrackerDefinitions = {
+    {key="dkSearingStrike",label="Searing Strike",slot="topLeftInside",color="Orange",duration=20,needles={"searing strike","venomous claw","burning embers"}},
+    {key="dkFieryBreath",label="Fiery Breath",slot="bottomLeftInside",color="Orange",duration=20,needles={"fiery breath","noxious breath","engulfing flames"}},
+    {key="dkInferno",label="Inferno",slot="topLeftOutside",color="Red",duration=15,needles={"inferno","flames of oblivion","cauterize"}},
+    {key="dkSpikedArmor",label="Spiked Armor",slot="bottomLeftOutside",color="Orange",duration=20,needles={"spiked armor","hardened armor","volatile armor"}},
+    {key="dkProtectiveScale",label="Protective Scale",slot="topRightInside",color="Gold",duration=6,needles={"protective scale","dragon fire scale","protective plate"}},
+    {key="dkDarkTalons",label="Dark Talons",slot="bottomRightInside",color="Red",duration=4,needles={"dark talons","burning talons","choking talons"}},
+    {key="dkMoltenWeapons",label="Molten Weapons",slot="topRightOutside",color="Gold",duration=45,needles={"molten weapons","igneous weapons","molten armaments"},durations={["molten weapons"]=45,["igneous weapons"]=60,["molten armaments"]=45}},
+    {key="dkAshCloud",label="Ash Cloud",slot="bottomRightOutside",color="Orange",duration=15,needles={"ash cloud","cinder storm","eruption"}},
+    {key="dkObsidianShield",label="Obsidian Shield / Major Mending",slot="topLeftOutside",color="Gold",duration=4,needles={"obsidian shield","igneous shield","fragmented shield","major mending"},durations={["fragmented shield"]=6}},
+    {key="dkStoneGiant",label="Stone Giant Stagger",slot="bottomRightInside",color="Orange",duration=5,stackMaximum=3,needles={"stone giant","stagger"}},
+    {key="dkSeethingFury",label="Seething Fury",slot="topRightInside",color="Red",duration=15,stackMaximum=3,needles={"seething fury","molten whip"}},
+}
+CH.nightbladeTrackerDefinitions = {
+    {key="nbGrimFocus",label="Grim Focus",slot="topLeftOutside",color="Red",duration=40,stackMaximum=5,needles={"grim focus","relentless focus","merciless resolve"}},
+    {key="nbBlur",label="Blur",slot="topLeftInside",color="Purple",duration=20,needles={"blur","mirage","phantasmal escape"}},
+    {key="nbPath",label="Path of Darkness",slot="bottomLeftInside",color="Purple",duration=10,needles={"path of darkness","twisting path","refreshing path"}},
+    {key="nbCloak",label="Shadow Cloak",slot="bottomLeftOutside",color="Purple",duration=3,needles={"shadow cloak","shadowy disguise","dark cloak"},durations={["dark cloak"]=6}},
+    {key="nbShade",label="Summon Shade",slot="topRightOutside",color="Purple",duration=20,needles={"summon shade","dark shade","shadow image"}},
+    {key="nbMark",label="Mark Target",slot="topRightInside",color="Red",duration=20,needles={"mark target","piercing mark","reaper's mark","reapers mark"}},
+    {key="nbCripple",label="Cripple",slot="bottomRightInside",color="Purple",duration=20,needles={"cripple","debilitate","crippling grasp"}},
+    {key="nbSiphoning",label="Siphoning Strikes",slot="bottomRightOutside",color="Red",duration=20,needles={"siphoning strikes","leeching strikes","siphoning attacks"}},
+    {key="nbDrainPower",label="Drain Power",slot="topRightOutside",color="Red",duration=20,needles={"drain power","power extraction","sap essence"}},
+    {key="nbLotusFan",label="Lotus Fan",slot="bottomRightInside",color="Pink",duration=20,needles={"lotus fan"}},
+}
+CH.templarTrackerDefinitions = {
+    {key="tpSunFire",label="Sun Fire",slot="topLeftInside",color="Gold",duration=20,needles={"sun fire","reflective light","vampire's bane","vampires bane"}},
+    {key="tpSolarFlare",label="Solar Flare",slot="bottomLeftInside",color="Gold",duration=10,needles={"solar flare","dark flare","solar barrage"},durations={["solar barrage"]=20}},
+    {key="tpBacklash",label="Backlash",slot="topLeftOutside",color="Gold",duration=6,needles={"backlash","power of the light","purifying light"}},
+    {key="tpEclipse",label="Eclipse",slot="bottomLeftOutside",color="Purple",duration=4,needles={"eclipse","living dark","unstable core"},durations={["living dark"]=10}},
+    {key="tpSpearShards",label="Spear Shards",slot="topRightInside",color="Gold",duration=10,needles={"spear shards","luminous shards","blazing spear"}},
+    {key="tpSunShield",label="Sun Shield",slot="bottomRightInside",color="Gold",duration=6,needles={"sun shield","radiant ward","blazing shield"}},
+    {key="tpRuneFocus",label="Rune Focus",slot="topRightOutside",color="Pale Blue",duration=20,needles={"rune focus","channeled focus","restoring focus"},durations={["channeled focus"]=25}},
+    {key="tpCleansingRitual",label="Cleansing Ritual",slot="bottomRightOutside",color="White",duration=20,needles={"cleansing ritual","extended ritual","ritual of retribution"},durations={["extended ritual"]=24}},
+    {key="tpRestoringAura",label="Restoring Aura",slot="topLeftOutside",color="Green",duration=20,needles={"restoring aura","radiant aura","repentance"}},
+    {key="tpIlluminate",label="Illuminate / Minor Sorcery",slot="topRightOutside",color="Gold",duration=20,needles={"illuminate","minor sorcery"}},
+}
+CH.necromancerTrackerDefinitions = {
+    {key="necroSacrificialBones",label="Sacrificial Bones",slot="topLeftInside",color="Purple",duration=10,needles={"sacrificial bones","grave lord's sacrifice","grave lords sacrifice"},durations={["grave lord's sacrifice"]=20,["grave lords sacrifice"]=20}},
+    {key="necroBoneyard",label="Boneyard",slot="bottomLeftInside",color="Purple",duration=10,needles={"boneyard","avid boneyard","unnerving boneyard"}},
+    {key="necroSkeletalMage",label="Skeletal Mage",slot="topLeftOutside",color="Pale Blue",duration=20,needles={"skeletal mage","skeletal archer","skeletal arcanist"}},
+    {key="necroSiphon",label="Shocking Siphon",slot="bottomLeftOutside",color="Purple",duration=12,needles={"shocking siphon","detonating siphon","mystic siphon"}},
+    {key="necroBoneArmor",label="Bone Armor",slot="topRightInside",color="White",duration=20,needles={"bone armor","beckoning armor","summoner's armor","summoners armor"},durations={["summoner's armor"]=30,["summoners armor"]=30}},
+    {key="necroBoneTotem",label="Bone Totem",slot="bottomRightInside",color="Purple",duration=11,needles={"bone totem","agony totem","remote totem"},durations={["agony totem"]=13}},
+    {key="necroSpiritMender",label="Spirit Mender",slot="topRightOutside",color="Green",duration=16,needles={"spirit mender","intensive mender","spirit guardian"},durations={["intensive mender"]=8}},
+    {key="necroRestoringTether",label="Restoring Tether",slot="bottomRightOutside",color="Green",duration=12,needles={"restoring tether","braided tether","mortal coil"}},
+    {key="necroLifeAmidDeath",label="Life amid Death",slot="topLeftInside",color="Green",duration=5,needles={"life amid death","renewing undeath","enduring undeath"}},
+    {key="necroNothingWasted",label="Nothing Wasted",slot="bottomRightOutside",color="Gold",duration=15,stackMaximum=10,needles={"nothing wasted"}},
+}
+CH.remainingClassDefinitionGroups = {
+    {name="Dragonknight",definitions=CH.dragonknightTrackerDefinitions,cache="dragonknightAbilityIds"},
+    {name="Nightblade",definitions=CH.nightbladeTrackerDefinitions,cache="nightbladeAbilityIds"},
+    {name="Templar",definitions=CH.templarTrackerDefinitions,cache="templarAbilityIds"},
+    {name="Necromancer",definitions=CH.necromancerTrackerDefinitions,cache="necromancerAbilityIds"},
 }
 CH.nonClassTrackerDefinitions = {
     -- Two Handed
@@ -128,11 +185,12 @@ CH.nonClassTrackerDefinitions = {
     {line="Werewolf",key="werewolfClaws",label="Infectious Claws",slot="bottomRightOutside",color="Green",duration=20,needles={"infectious claws","claws of anguish","claws of life"}},
 }
 CH.weaponSkillLines = {"Two Handed","One Hand and Shield","Dual Wield","Bow","Destruction Staff","Restoration Staff"}
-CH.otherSkillLines = {"Fighters Guild","Mages Guild","Undaunted","Psijic Order","Assault","Support","Light Armor","Medium Armor","Heavy Armor","Soul Magic","Vampire","Werewolf"}
+CH.otherSkillLines = {"Fighters Guild","Mages Guild","Undaunted","Psijic Order","Assault","Support","Soul Magic","Vampire","Werewolf"}
+CH.armorSkillLines = {"Light Armor","Medium Armor","Heavy Armor"}
 CH.scribingSkillLineByKey = {
     smash="Two Handed",shieldThrow="One Hand and Shield",travelingKnife="Dual Wield",vault="Bow",
     elementalExplosion="Destruction Staff",mendersBond="Restoration Staff",torchbearer="Fighters Guild",
-    contingency="Mages Guild",wieldSoul="Psijic Order",trample="Assault",soulBurst="Soul Magic",
+    contingency="Mages Guild",wieldSoul="Soul Magic",trample="Assault",soulBurst="Soul Magic",
 }
 for _,definition in ipairs(CH.scribingTrackerDefinitions) do
     local key=definition.key
@@ -153,6 +211,15 @@ for _,definition in ipairs(CH.arcanistTrackerDefinitions) do
     CH.characterKeys[key.."Enabled"]=true; CH.characterKeys[key.."Slot"]=true; CH.characterKeys[key.."Color"]=true
     CH.characterDefaults[key.."Enabled"]=false; CH.characterDefaults[key.."Slot"]=definition.slot; CH.characterDefaults[key.."Color"]=definition.color
 end
+for _,group in ipairs(CH.remainingClassDefinitionGroups) do
+    for _,definition in ipairs(group.definitions) do
+        local key=definition.key
+        CH.defaults[key.."Enabled"]=false; CH.defaults[key.."Slot"]=definition.slot; CH.defaults[key.."Color"]=definition.color
+        CH.characterKeys[key.."Enabled"]=true; CH.characterKeys[key.."Slot"]=true; CH.characterKeys[key.."Color"]=true
+        CH.characterDefaults[key.."Enabled"]=false; CH.characterDefaults[key.."Slot"]=definition.slot; CH.characterDefaults[key.."Color"]=definition.color
+    end
+end
+CH.defaults.cruxQuadrant="topLeft"; CH.characterKeys.cruxQuadrant=true; CH.characterDefaults.cruxQuadrant="topLeft"
 for _,definition in ipairs(CH.sorcererTrackerDefinitions) do
     local key=definition.key
     CH.defaults[key.."Enabled"]=false; CH.defaults[key.."Slot"]=definition.slot; CH.defaults[key.."Color"]=definition.color
@@ -171,6 +238,13 @@ function CH:NormalizeTrackerSlot(value,fallback)
         if value==name then return self.trackerSlotValues[index] end
     end
     return fallback
+end
+function CH:NormalizeCruxQuadrant(value)
+    if value=="topLeft" or value=="bottomLeft" or value=="topRight" or value=="bottomRight" then return value end
+    local slot=value or self.sv.cruxSlot
+    if slot and string.find(slot,"bottom",1,true) then return string.find(slot,"Right",1,true) and "bottomRight" or "bottomLeft" end
+    if slot and string.find(slot,"Right",1,true) then return "topRight" end
+    return "topLeft"
 end
 -- These IDs cover ESO's standardized base effects where confirmed. Name matching
 -- remains the fallback because some sources expose their own ability ID while
@@ -541,6 +615,14 @@ function CH:RefreshNonClassBindings()
     self:RefreshDefinitionBindings(self.nonClassTrackerDefinitions,self.nonClassAbilityIds)
 end
 
+function CH:RefreshRemainingClassBindings()
+    if not self.trackers then return end
+    for _,group in ipairs(self.remainingClassDefinitionGroups) do
+        self[group.cache]=self[group.cache] or {}
+        self:RefreshDefinitionBindings(group.definitions,self[group.cache])
+    end
+end
+
 function CH:RefreshLegacyIconFallbacks()
     if not self.trackers then return end
     local definitions={
@@ -575,6 +657,7 @@ function CH:RefreshAllTrackerIcons()
     self:RefreshSorcererBindings()
     self:RefreshWardenBindings()
     self:RefreshArcanistBindings()
+    self:RefreshRemainingClassBindings()
     self:RefreshNonClassBindings()
     self:RefreshLegacyIconFallbacks()
 end
@@ -703,13 +786,21 @@ function CH:ApplyLayout()
     self.trackers.armaments.slot=armamentsSlot
     self.trackers.surge.slot=surgeSlot
     self.trackers.shroud.slot=shroudSlot
-    for _,definitions in ipairs({self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions}) do
+    local layoutGroups={self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions}
+    for _,group in ipairs(self.remainingClassDefinitionGroups) do layoutGroups[#layoutGroups+1]=group.definitions end
+    for _,definitions in ipairs(layoutGroups) do
         for _,definition in ipairs(definitions) do
-            local setting=definition.key.."Slot"; local slot=self:NormalizeTrackerSlot(sv[setting],definition.slot)
-            if slot~=sv[setting] then sv[setting]=slot end
-            self.trackers[definition.key].slot=slot
+            if not definition.stackOnly then
+                local setting=definition.key.."Slot"; local slot=self:NormalizeTrackerSlot(sv[setting],definition.slot)
+                if slot~=sv[setting] then sv[setting]=slot end
+                self.trackers[definition.key].slot=slot
+            end
         end
     end
+    local cruxQuadrant=self:NormalizeCruxQuadrant(sv.cruxQuadrant)
+    if cruxQuadrant~=sv.cruxQuadrant then sv.cruxQuadrant=cruxQuadrant end
+    self.trackers.crux.slot=cruxQuadrant.."Outside"
+    self.trackers.cruxDuration.slot=cruxQuadrant.."Inside"
     h:SetDimensions(width,512*scale); h:ClearAnchors(); h:SetAnchor(CENTER,self.root,CENTER,-sv.spacing*scale,0)
     local inner,outer=sv.staminaInside and s or m,sv.staminaInside and m or s
     if sv.layout=="Stacked" then
@@ -844,7 +935,7 @@ end
 function CH:UpdateTrackers()
     local now=GetGameTimeSeconds()
     for _,t in pairs(self.trackers) do
-        local enabled=t.key=="resolve" or self.sv[t.key.."Enabled"]~=false
+        local enabled=t.key=="resolve" or self.sv[t.enableSetting or (t.key.."Enabled")]~=false
         local active,pct,remaining=t.active and enabled,0,0
         if self.sv.preview and enabled then
             active=true
@@ -862,7 +953,7 @@ function CH:UpdateTrackers()
         if active then
             self:SetTexturePercent(t.fill,t,pct); t.timer:SetText(t.stackMaximum and "" or string.format("%.1f",remaining))
             local expiring=not t.stackMaximum and self.sv.expirationAlerts==true and not t.isNegative and remaining>0 and remaining<=3
-            t.expiryAlertActive=expiring; t.expiryBorder:SetHidden(not expiring)
+            t.expiryAlertActive=expiring; t.expiryBorder:SetHidden(not expiring or t.suppressIcon)
             if expiring then
                 local pulse=.5+.5*math.abs(math.sin(GetGameTimeMilliseconds()/240))
                 t.timer:SetColor(1,.08,.08,1)
@@ -952,7 +1043,9 @@ function CH:RefreshWardenTrackers()
 end
 function CH:RefreshCrux()
     local t=self.trackers and self.trackers.crux; if not t then return end
+    local durationTracker=self.trackers.cruxDuration
     t.active,t.stackCount=false,0
+    if durationTracker then durationTracker.active,durationTracker.stackCount=false,0 end
     if self.sv.preview or self.sv.cruxEnabled==false or not GetNumBuffs or not GetUnitBuffInfo then return end
     local definition=self.arcanistTrackerDefinitions[1]
     for index=1,GetNumBuffs("player") do
@@ -961,6 +1054,9 @@ function CH:RefreshCrux()
         if (stackCount or 0)>0 and string.find(lowerName,"crux",1,true) then
             t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime or 0,endTime or 0,math.max(.01,(endTime or 0)-(beginTime or 0)),math.min(3,stackCount or 0)
             self:ResolveTrackerIcon(definition,name,abilityId,nil,iconName,t)
+            if durationTracker then
+                durationTracker.active,durationTracker.beginTime,durationTracker.endTime,durationTracker.duration,durationTracker.stackCount=true,beginTime or 0,endTime or 0,math.max(.01,(endTime or 0)-(beginTime or 0)),0
+            end
             break
         end
     end
@@ -1046,6 +1142,26 @@ function CH:HandleArcanistCast(abilityName,abilityGraphic,abilityId,allowActive)
     return false
 end
 
+function CH:HandleRemainingClassCast(abilityName,abilityGraphic,abilityId,allowActive)
+    local lowerName=string.lower(abilityName or "")
+    for _,group in ipairs(self.remainingClassDefinitionGroups) do
+        local idCache=self[group.cache]
+        for _,definition in ipairs(group.definitions) do
+            if self:DefinitionMatches(definition,lowerName,abilityId,idCache) and self.sv[definition.key.."Enabled"] then
+                local tracker=self.trackers[definition.key]
+                self:ResolveTrackerIcon(definition,abilityName,abilityId,nil,abilityGraphic,tracker)
+                local fallback=definition.durations and definition.durations[lowerName] or definition.duration
+                if definition.key=="dkStoneGiant" then
+                    local now=GetGameTimeSeconds(); local stacks=(tracker.active and tracker.endTime>now) and (tracker.stackCount or 0)+1 or 1
+                    self:StartCastTracker(tracker,fallback,abilityGraphic,abilityId); tracker.stackCount=math.min(definition.stackMaximum,stacks)
+                elseif allowActive or not tracker.active then self:StartCastTracker(tracker,fallback,abilityGraphic,abilityId) end
+                return true
+            end
+        end
+    end
+    return false
+end
+
 
 function CH:HandleNonClassCast(abilityName,abilityGraphic,abilityId,allowActive)
     local lowerName=string.lower(abilityName or "")
@@ -1085,7 +1201,9 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
         local iconPath=self:GetFamilyIcon(self.wardenTrackerDefinitions[1],effectName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
     else
         if self.sv.cruxEnabled and stackCount and stackCount>0 and string.find(lowerName,"crux",1,true) then t=self.trackers.crux end
-        for _,group in ipairs({{self.wardenTrackerDefinitions,self.wardenAbilityIds},{self.sorcererTrackerDefinitions,self.sorcererAbilityIds},{self.arcanistTrackerDefinitions,self.arcanistAbilityIds},{self.nonClassTrackerDefinitions,self.nonClassAbilityIds}}) do
+        local effectGroups={{self.wardenTrackerDefinitions,self.wardenAbilityIds},{self.sorcererTrackerDefinitions,self.sorcererAbilityIds},{self.arcanistTrackerDefinitions,self.arcanistAbilityIds},{self.nonClassTrackerDefinitions,self.nonClassAbilityIds}}
+        for _,classGroup in ipairs(self.remainingClassDefinitionGroups) do effectGroups[#effectGroups+1]={classGroup.definitions,self[classGroup.cache]} end
+        for _,group in ipairs(effectGroups) do
             if t then break end
             for _,definition in ipairs(group[1]) do
                 if not definition.stackOnly and self.sv[definition.key.."Enabled"] and self:DefinitionMatches(definition,lowerName,abilityId,group[2]) then
@@ -1115,12 +1233,18 @@ function CH:CreateHUD()
     self.root=WM:CreateTopLevelWindow("CurvedHUD_Root"); self.root:SetDimensions(900,600); self.root:SetMouseEnabled(false); self.root:SetClampedToScreen(false); self.root:SetDrawTier(DT_HIGH)
     self.bars,self.trackers={},{}; self:CreateBar("health","left",{.85,.1,.1}); self:CreateBar("stamina","right",{.15,.78,.22}); self:CreateBar("magicka","right",{.12,.42,.95})
     self:CreateShield(); self:CreateMountBar(); self:CreateTracker("resolve","bottomLeftOutside","majorBuffColor"); self:CreateTracker("balance","bottomLeftInside","balanceColor","balance"); self:CreateTracker("aegis","topLeftOutside","aegisColor"); self:CreateTracker("armaments","topRightInside","armamentsColor"); self:CreateTracker("surge","topRightOutside","surgeColor"); self:CreateTracker("shroud","bottomRightOutside","shroudColor")
-    for _,definitions in ipairs({self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions}) do
+    local hudGroups={self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions}
+    for _,group in ipairs(self.remainingClassDefinitionGroups) do hudGroups[#hudGroups+1]=group.definitions end
+    for _,definitions in ipairs(hudGroups) do
         for _,definition in ipairs(definitions) do
             self:CreateTracker(definition.key,definition.slot,definition.key.."Color")
             self.trackers[definition.key].stackMaximum=definition.stackMaximum
         end
     end
+    self:CreateTracker("cruxDuration","topLeftInside","cruxColor")
+    self.trackers.cruxDuration.enableSetting="cruxEnabled"
+    self.trackers.cruxDuration.suppressIcon=true
+    self.trackers.cruxDuration.icon:SetHidden(true)
     local armamentsIcon=GetAbilityIcon and GetAbilityIcon(BOUND_ARMAMENTS_SKILL_ID); if armamentsIcon and armamentsIcon~="" then self.trackers.armaments.icon:SetTexture(armamentsIcon) end
     local armaments=self.trackers.armaments
     local readyBorder=WM:CreateControl("CurvedHUD_armaments_ReadyBorder",armaments,CT_BACKDROP); readyBorder:SetDimensions(44,44); readyBorder:SetAnchor(CENTER,armaments.icon,CENTER); readyBorder:SetDrawLayer(DL_OVERLAY); readyBorder:SetDrawLevel(50); readyBorder:SetCenterColor(1,.78,.2,.9); readyBorder:SetEdgeColor(1,1,1,1); readyBorder:SetHidden(true)
@@ -1147,7 +1271,7 @@ function CH:RegisterEvents()
             local iconPath=self:GetShroudIcon(abilityName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
             self:UpdateTrackers()
         else
-            if not self:HandleScribingCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleSorcererCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleWardenCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleArcanistCast(abilityName,abilityGraphic,abilityId,false) then self:HandleNonClassCast(abilityName,abilityGraphic,abilityId,false) end
+            if not self:HandleScribingCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleSorcererCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleWardenCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleArcanistCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleRemainingClassCast(abilityName,abilityGraphic,abilityId,false) then self:HandleNonClassCast(abilityName,abilityGraphic,abilityId,false) end
         end
     end)
     if EVENT_ACTION_SLOT_ABILITY_USED then
@@ -1155,7 +1279,7 @@ function CH:RegisterEvents()
             local ok,id=pcall(GetSlotBoundId,slotNum); if not ok or not id or id<=0 then return end
             local abilityName=GetAbilityName and GetAbilityName(id) or ""; local abilityGraphic=nil
             if GetSlotTexture then local okIcon,icon=pcall(GetSlotTexture,slotNum); if okIcon then abilityGraphic=icon end end
-            if not self:HandleScribingCast(abilityName,abilityGraphic,id,true) and not self:HandleSorcererCast(abilityName,abilityGraphic,id,true) and not self:HandleWardenCast(abilityName,abilityGraphic,id,true) and not self:HandleArcanistCast(abilityName,abilityGraphic,id,true) then self:HandleNonClassCast(abilityName,abilityGraphic,id,true) end
+            if not self:HandleScribingCast(abilityName,abilityGraphic,id,true) and not self:HandleSorcererCast(abilityName,abilityGraphic,id,true) and not self:HandleWardenCast(abilityName,abilityGraphic,id,true) and not self:HandleArcanistCast(abilityName,abilityGraphic,id,true) and not self:HandleRemainingClassCast(abilityName,abilityGraphic,id,true) then self:HandleNonClassCast(abilityName,abilityGraphic,id,true) end
         end)
     end
     EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:Guard("player activation",function() self:ApplyLayout() end) end)

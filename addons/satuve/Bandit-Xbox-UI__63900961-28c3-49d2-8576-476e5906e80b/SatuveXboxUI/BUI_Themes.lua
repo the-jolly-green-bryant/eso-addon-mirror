@@ -456,7 +456,9 @@ function BUI.Frames.ZO_PlayerAttribute_reposition()
 	end
 end
 
-function BUI.Frames.ZO_Frame_reposition()	
+function BUI.Frames.ZO_Frame_reposition()
+	BUI.ThemeHooks=BUI.ThemeHooks or {methods={}}
+	local hookState=BUI.ThemeHooks
 	local function SetupFunction(control, data)
 		control:SetWidth(GuiRoot:GetRight()-ZO_Compass:GetRight()-40)
 		control:SetText(data.text)
@@ -479,6 +481,9 @@ function BUI.Frames.ZO_Frame_reposition()
 	end
 
 	local function ApplyTemplateHook(obj,name,func)
+		local key=name..":"..func
+		if hookState.methods[key] then return end
+		hookState.methods[key]=true
 		local ZO_Func=obj[func]
 		obj[func]=function(self)
 			local result=ZO_Func(self)
@@ -490,8 +495,11 @@ function BUI.Frames.ZO_Frame_reposition()
 	end
 
 	local block={ZO_CompassFrame_Keyboard_Template=true,ZO_CompassFrame_Gamepad_Template=true,ZO_PlayerProgressTemplate=true,ZO_PlayerChampionProgressTemplate=true,ZO_GamepadPlayerProgressTemplate=true,ZO_GamepadPlayerChampionProgressTemplate=true}	--ZO_ActionButton_Keyboard_Template=true
-	local ZO_ApplyTemplateToControl=ApplyTemplateToControl
-	ApplyTemplateToControl=function(control, templateName) if block[templateName] then return else ZO_ApplyTemplateToControl(control,templateName) end end
+	if not hookState.applyTemplateInstalled then
+		hookState.applyTemplateInstalled=true
+		local ZO_ApplyTemplateToControl=ApplyTemplateToControl
+		ApplyTemplateToControl=function(control, templateName) if block[templateName] then return else ZO_ApplyTemplateToControl(control,templateName) end end
+	end
 	for name in pairs(BUI.DefaultFrames) do
 		local var=BUI.Vars[name]
 		if var then
@@ -509,14 +517,17 @@ function BUI.Frames.ZO_Frame_reposition()
 	end
 	if BUI.Vars.RepositionFrames then BUI.Frames.ZO_PlayerAttribute_reposition() end
 
-	ZO_PreHookHandler(ZO_ActionBar1, 'OnShow', function()
-		local scenename=SCENE_MANAGER:GetCurrentSceneName() if scenename=="skills" or scenename=="inventory" then return end
-		local name="ZO_ActionBar1"
-		if BUI.Vars[name] then
-			ZO_ActionBar1:ClearAnchors() ZO_ActionBar1:SetAnchor(BUI.Vars[name][1],GuiRoot,BUI.Vars[name][2],BUI.Vars[name][3],BUI.Vars[name][4])
-		end
-		ZO_ActionBar1KeybindBG:SetHidden(true)
-	end)
+	if not hookState.actionBarOnShowInstalled then
+		hookState.actionBarOnShowInstalled=true
+		ZO_PreHookHandler(ZO_ActionBar1, 'OnShow', function()
+			local scenename=SCENE_MANAGER:GetCurrentSceneName() if scenename=="skills" or scenename=="inventory" then return end
+			local name="ZO_ActionBar1"
+			if BUI.Vars[name] then
+				ZO_ActionBar1:ClearAnchors() ZO_ActionBar1:SetAnchor(BUI.Vars[name][1],GuiRoot,BUI.Vars[name][2],BUI.Vars[name][3],BUI.Vars[name][4])
+			end
+			ZO_ActionBar1KeybindBG:SetHidden(true)
+		end)
+	end
 end
 
 function BUI.Themes_Initialize()		
@@ -527,11 +538,17 @@ function BUI.Themes_Initialize()
 	BUI.Frames.ZO_PlayerAttribute_toggle()
 	if BUI.Vars.RepositionFrames then BUI.Frames.ZO_PlayerAttribute_reposition() end
 
-	EVENT_MANAGER:RegisterForEvent("BUI_Theme_Event", EVENT_PLAYER_ACTIVATED,	function()
+	local function ApplyInitialTheme()
 		EVENT_MANAGER:UnregisterForEvent("BUI_Theme_Event", EVENT_PLAYER_ACTIVATED)
 		BUI.Frames.ZO_Frame_reposition()
 		BUI.Themes_Setup()
-	end)
+	end
+	EVENT_MANAGER:UnregisterForEvent("BUI_Theme_Event", EVENT_PLAYER_ACTIVATED)
+	if BUI.Initialization and BUI.Initialization.playerActivated then
+		BUI.CallLater("BUI_Theme_Activated",25,ApplyInitialTheme)
+	else
+		EVENT_MANAGER:RegisterForEvent("BUI_Theme_Event", EVENT_PLAYER_ACTIVATED,ApplyInitialTheme)
+	end
 end
 
 --[[

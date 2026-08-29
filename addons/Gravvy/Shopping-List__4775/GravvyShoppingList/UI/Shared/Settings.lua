@@ -68,6 +68,14 @@ function Settings:Initialize(owner)
             default = true,
         },
         {
+            type = "checkbox",
+            name = GetString(SI_SHOPPING_LIST_SETTINGS_AUTO_FIND_NEXT),
+            tooltip = GetString(SI_SHOPPING_LIST_SETTINGS_AUTO_FIND_NEXT_TOOLTIP),
+            getFunc = function() return saved().autoFindNext end,
+            setFunc = function(value) saved().autoFindNext = value end,
+            default = false,
+        },
+        {
             type = "dropdown",
             name = GetString(SI_SHOPPING_LIST_SETTINGS_PANEL_SIDE),
             choices = {
@@ -94,7 +102,11 @@ function Settings:Initialize(owner)
             type = "button",
             name = GetString(SI_SHOPPING_LIST_SETTINGS_CLEAR_COMPLETED),
             func = function()
-                owner.data:ClearCompleted()
+                local count, message = owner.data:ClearCompleted()
+                if count == nil then
+                    owner.ui:SetStatus(message, true)
+                    return
+                end
                 owner.ui:Refresh()
                 owner.gamepad:Refresh()
             end,

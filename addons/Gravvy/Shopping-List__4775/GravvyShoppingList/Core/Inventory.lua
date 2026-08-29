@@ -83,7 +83,7 @@ local function addCandidate(index, key, candidate)
     entries[#entries + 1] = candidate
 end
 
-local function readSlot(byName, byItemId, bag, slotIndex)
+local function readSlot(byName, byItemId, items, bag, slotIndex)
     local stack = GetSlotStackSize(bag.id, slotIndex) or 0
     if stack == 0 then
         return
@@ -102,6 +102,7 @@ local function readSlot(byName, byItemId, bag, slotIndex)
         name = itemName,
         stack = stack,
     }
+    items[#items + 1] = candidate
     addCandidate(byName, normalizedName, candidate)
     addCandidate(byItemId, GetItemLinkItemId(link), candidate)
 end
@@ -109,36 +110,101 @@ end
 function Inventory:ReadItems()
     local byName = {}
     local byItemId = {}
+    local items = {}
     for _, bag in ipairs(self.bags) do
         if bag.id == BAG_VIRTUAL then
             local slotIndex = GetNextVirtualBagSlotId()
             while slotIndex do
-                readSlot(byName, byItemId, bag, slotIndex)
+                readSlot(byName, byItemId, items, bag, slotIndex)
                 slotIndex = GetNextVirtualBagSlotId(slotIndex)
             end
         else
             local size = GetBagSize(bag.id) or 0
             for slotIndex = 0, size - 1 do
-                readSlot(byName, byItemId, bag, slotIndex)
+                readSlot(byName, byItemId, items, bag, slotIndex)
             end
         end
     end
-    return byName, byItemId
+    return byName, byItemId, items
+end
+
+local function emptyCounts()
+    return {
+        backpack = 0,
+        bank = 0,
+        craftBag = 0,
+        total = 0,
+    }
+end
+
+function Inventory:AllocateShoppingInventory(inventoryItems)
+    local entries = {}
+    local needed = {}
+    local allocated = {}
+    for index, item in ipairs(self.owner.data:GetShoppingItems()) do
+        if self.owner.data:GetTargetMode(item) == "own" then
+            entries[#entries + 1] = { item = item, index = index }
+            needed[item.id] = math.max(0, tonumber(item.desired) or 0)
+            allocated[item.id] = emptyCounts()
+        end
+    end
+
+    for _, candidate in ipairs(inventoryItems or {}) do
+        local matches = {}
+        for _, entry in ipairs(entries) do
+            local score = self.owner.matcher:GetItemMatchScore(
+                entry.item,
+                candidate.link,
+                candidate.name
+            )
+            if score then
+                matches[#matches + 1] = {
+                    entry = entry,
+                    score = score,
+                }
+            end
+        end
+        table.sort(matches, function(left, right)
+            if left.score == right.score then
+                return left.entry.index < right.entry.index
+            end
+            return left.score > right.score
+        end)
+
+        local available = candidate.stack
+        for _, match in ipairs(matches) do
+            if available <= 0 then
+                break
+            end
+            local itemId = match.entry.item.id
+            local quantity = math.min(available, needed[itemId])
+            if quantity > 0 then
+                local counts = allocated[itemId]
+                counts[candidate.kind] = counts[candidate.kind] + quantity
+                counts.total = counts.total + quantity
+                needed[itemId] = needed[itemId] - quantity
+                available = available - quantity
+            end
+        end
+        if available > 0 and matches[1] then
+            local itemId = matches[1].entry.item.id
+            local counts = allocated[itemId]
+            counts[candidate.kind] = counts[candidate.kind] + available
+            counts.total = counts.total + available
+        end
+    end
+
+    self.allocatedCounts = allocated
 end
 
 function Inventory:Refresh()
-    local inventoryByName, inventoryByItemId = self:ReadItems()
+    local inventoryByName, inventoryByItemId, inventoryItems = self:ReadItems()
     local counts = {}
     local changedItemIds = {}
 
     for _, list in ipairs(self.owner.data:GetLists()) do
         for _, item in ipairs(list.items) do
-            local owned = {
-                backpack = 0,
-                bank = 0,
-                craftBag = 0,
-                total = 0,
-            }
+            local owned = emptyCounts()
             local candidates = item.itemId and inventoryByItemId[item.itemId]
                 or inventoryByName[item.normalizedName] or {}
             for _, candidate in ipairs(candidates) do
@@ -163,6 +229,8 @@ function Inventory:Refresh()
     end
 
     self.counts = counts
+    self.inventoryItems = inventoryItems
+    self:AllocateShoppingInventory(inventoryItems)
     if self.owner.data.RefreshInventoryCompletion then
         for _, list in ipairs(self.owner.data:GetLists()) do
             for _, item in ipairs(list.items) do
@@ -185,5 +253,29 @@ function Inventory:Refresh()
 end
 
 function Inventory:GetCounts(item)
+    if not item then
+        return nil
+    end
+    if self.owner.data:GetTargetMode(item) == "own"
+        and self.allocatedCounts
+        and self.allocatedCounts[item.id]
+    then
+        return self.allocatedCounts[item.id]
+    end
+    return self.counts[item.id]
+end
+
+function Inventory:GetRawCounts(item)
     return item and self.counts[item.id] or nil
+end
+
+function Inventory:RefreshAllocations()
+    self:AllocateShoppingInventory(self.inventoryItems or {})
+    if self.owner.data.RefreshInventoryCompletion then
+        for _, list in ipairs(self.owner.data:GetLists()) do
+            for _, item in ipairs(list.items) do
+                self.owner.data:RefreshInventoryCompletion(item)
+            end
+        end
+    end
 end

@@ -21,6 +21,7 @@ local ERROR = {
     INVALID_EVENT = "INVALID_EVENT",
     INVALID_CALLBACK = "INVALID_CALLBACK",
     CALLBACK_NOT_FOUND = "CALLBACK_NOT_FOUND",
+    LIST_LOCKED = "LIST_LOCKED",
 }
 
 local EVENT = {
@@ -401,6 +402,7 @@ local function snapshotList(data, list, archived, includeItems)
         favorite = list.favorite == true,
         pinned = list.pinned == true,
         recurring = list.recurring == true,
+        locked = list.locked == true,
         selected = not archived and data:GetCurrentList().id == list.id,
         archived = archived == true,
         archivedAt = list.archivedAt,
@@ -518,6 +520,7 @@ function API:GetLists()
         lists[#lists + 1] = {
             id = list.id,
             name = list.name,
+            locked = list.locked == true,
         }
     end
     return lists
@@ -698,7 +701,7 @@ function API:AddItem(itemLinkOrName, quantity, options)
 
     local items = data:AddItemsToList(list.id, { prepared }, duplicatePolicy)
     if not items then
-        return false, ERROR.BATCH_FAILED
+        return false, list.locked and ERROR.LIST_LOCKED or ERROR.BATCH_FAILED
     end
 
     refresh()
@@ -740,7 +743,7 @@ function API:AddItems(sources, options)
 
     local items = data:AddItemsToList(list.id, prepared, duplicatePolicy)
     if not items then
-        return false, ERROR.BATCH_FAILED
+        return false, list.locked and ERROR.LIST_LOCKED or ERROR.BATCH_FAILED
     end
 
     refresh()
@@ -973,6 +976,7 @@ function API:UpdateList(changes, options)
         favorite = true,
         pinned = true,
         recurring = true,
+        locked = true,
     }
     local count = 0
     for key in pairs(changes) do
@@ -983,6 +987,9 @@ function API:UpdateList(changes, options)
     end
     if count == 0 then
         return false, ERROR.INVALID_OPTIONS
+    end
+    if list.locked and not (count == 1 and changes.locked == false) then
+        return false, ERROR.LIST_LOCKED
     end
 
     local name
@@ -1015,7 +1022,7 @@ function API:UpdateList(changes, options)
             return false, ERROR.INVALID_OPTIONS
         end
     end
-    for _, field in ipairs({ "favorite", "pinned", "recurring" }) do
+    for _, field in ipairs({ "favorite", "pinned", "recurring", "locked" }) do
         if changes[field] ~= nil and type(changes[field]) ~= "boolean" then
             return false, ERROR.INVALID_OPTIONS
         end
@@ -1034,6 +1041,9 @@ function API:UpdateList(changes, options)
     if changes.pinned ~= nil then data:SetListPinned(list.id, changes.pinned) end
     if changes.recurring ~= nil then
         data:SetListRecurring(list.id, changes.recurring)
+    end
+    if changes.locked ~= nil then
+        data:SetListLocked(list.id, changes.locked)
     end
     self:_ResumeUpdates()
 
@@ -1074,6 +1084,7 @@ function API:MoveList(options, direction)
     if not list then
         return false, listError
     end
+    if list.locked then return false, ERROR.LIST_LOCKED end
     if not data:MoveList(list.id, direction) then
         return false, ERROR.BATCH_FAILED
     end
@@ -1150,6 +1161,7 @@ function API:DeleteList(options)
     if #data:GetLists() <= 1 then
         return false, ERROR.LAST_LIST_REQUIRED
     end
+    if list.locked then return false, ERROR.LIST_LOCKED end
     local snapshot = snapshotList(data, list, false, true)
     local ok = data:DeleteList(list.id)
     if not ok then
@@ -1171,6 +1183,7 @@ function API:ArchiveList(options)
     if not list then
         return false, listError
     end
+    if list.locked then return false, ERROR.LIST_LOCKED end
     local ok, archived = data:ArchiveList(list.id)
     if not ok then
         return false, ERROR.BATCH_FAILED
@@ -1211,6 +1224,7 @@ function API:ResetListProgress(options)
     if not list then
         return false, listError
     end
+    if list.locked then return false, ERROR.LIST_LOCKED end
     if not data:ListHasPurchaseProgress(list) then
         return true, 0
     end

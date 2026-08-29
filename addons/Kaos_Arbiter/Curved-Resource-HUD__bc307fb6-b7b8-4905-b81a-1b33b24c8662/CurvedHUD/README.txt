@@ -1,4 +1,4 @@
-Curved Resource HUD 0.8.4 ARCANIST + CRUX TRACKERS TEST BUILD
+Curved Resource HUD 0.9.0 REMAINING CLASS TRACKERS TEST BUILD
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -17,7 +17,19 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.8.4-test; HUD, shield, and trackers created
+  [CurvedHUD] Loaded 0.9.0-test; HUD, shield, and trackers created
+
+0.9.0 completes the initial class-tracker framework with dedicated expandable
+Dragonknight, Nightblade, Templar, and Necromancer submenus. Each tracker is
+off by default and remains per-character, with its own position and color.
+The new families cover actionable damage-over-time effects, buffs, defenses,
+ground effects, summons, and stack windows. Stone Giant, Seething Fury, Grim
+Focus, and Nothing Wasted include stack-count support. All new class families
+use the shared resilient icon chain: equipped skill, ability data, learned
+skill, live event artwork, then the last successfully cached icon.
+Settings are grouped beneath blue character-specific section headers: Global
+Timers, Class Timers, Weapon Timers, and Guild/Vampire/Werewolf Timers. Every
+expandable tracker submenu beneath these headings stores its choices per character.
 
 0.7.0 tracker framework additions:
 - selectable standardized Major buff in the lower-left outside slot
@@ -108,13 +120,21 @@ Expected startup chat line:
 - corrected the preceding weapon/guild build's release designation to 0.8.3
 - added a dedicated Arcanist section with per-character position, color, and
   enablement settings for ten duration-based skill families
-- added a Crux stack tracker: the icon count shows 1-3 and its selected timer
-  arc fills one third per active Crux instead of displaying a false duration
+- added a paired Crux tracker occupying one selectable quadrant: the outside arc
+  and icon show 1-3 stacks while the matching inside arc counts down the live
+  expiration time reported by ESO
 - Crux is read defensively from the player's live buff stack and uses ESO's
   Crux artwork when available, with the shared equipped/learned/cached icon chain
 - Arcanist duration trackers cover Abyssal Impact, Tome-Bearer's Inspiration,
   The Imperfect Ring, Runic Jolt, Runespite Ward, Fatewoven Armor, Runic
   Defense, Rune of Eldritch Horror, Chakram Shields, and Arcanist's Domain
+- customization now prefers LibAddonMenu-2.0 when available so every Global,
+  class, weapon, guild, Alliance War, armor, world, and Scribing subsection is
+  a real collapsible submenu instead of an always-expanded wall of controls
+- LibHarvens/LibVotans remains a functional fallback and uses its native section
+  controls because that provider does not expose nested child containers
+- Light, Medium, and Heavy Armor trackers are consolidated into one Armor section
+- Wield Soul and its Scribing fallback controls now appear under Soul Magic
 
 Diagnosis of the silent v0.2 result:
 The prior ZIP was not recoverable from the referenced task, so exact line-level attribution

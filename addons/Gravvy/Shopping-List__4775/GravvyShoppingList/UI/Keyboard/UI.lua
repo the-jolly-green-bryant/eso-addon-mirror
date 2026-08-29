@@ -197,6 +197,15 @@ function UI:Initialize()
     self.page:SetAnchor(BOTTOMRIGHT, window, BOTTOMRIGHT, -14, -110)
     self.page:SetDimensions(160, 20)
 
+    local findNext = makeButton(
+        window,
+        GetString(SI_SHOPPING_LIST_FIND_NEXT),
+        92
+    )
+    findNext:SetAnchor(BOTTOMLEFT, window, BOTTOMLEFT, 14, -108)
+    findNext:SetHandler("OnClicked", function() self:FindNextItem(true) end)
+    self.findNextButton = findNext
+
     local filterContainer, filterCombo = makeCombo(window, "ItemFilter", 105)
     filterContainer:SetAnchor(BOTTOMLEFT, window, BOTTOMLEFT, 14, -84)
     local filterChoices = {
@@ -300,6 +309,7 @@ function UI:Initialize()
     local addButton = makeButton(window, "+", 34)
     addButton:SetAnchor(LEFT, quantityBackdrop, RIGHT, 5, 0)
     addButton:SetHandler("OnClicked", function() self:AddFromInput() end)
+    self.addButton = addButton
 
     self.status = makeLabel(window, "ZoFontGameSmall")
     self.status:SetAnchor(BOTTOMLEFT, window, BOTTOMLEFT, 16, -14)
@@ -519,7 +529,7 @@ end
 
 function UI:CreateListDialog()
     local dialog = WINDOW_MANAGER:CreateTopLevelWindow("ShoppingListNameWindow")
-    dialog:SetDimensions(420, 510)
+    dialog:SetDimensions(420, 565)
     dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     dialog:SetClampedToScreen(true)
     dialog:SetMouseEnabled(true)
@@ -697,6 +707,17 @@ function UI:CreateListDialog()
     end)
     self.listDialogSession = session
 
+    local locked = makeButton(
+        dialog,
+        GetString(SI_SHOPPING_LIST_LOCK_LIST),
+        368
+    )
+    locked:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 474)
+    locked:SetHandler("OnClicked", function()
+        self:ToggleCurrentListLocked()
+    end)
+    self.listDialogLocked = locked
+
     local duplicate = makeButton(dialog, GetString(SI_SHOPPING_LIST_BUTTON_DUPLICATE), 90)
     duplicate:SetAnchor(BOTTOMLEFT, dialog, BOTTOMLEFT, 18, -16)
     duplicate:SetHidden(true)
@@ -723,13 +744,15 @@ end
 function UI:UpdateListMoveButtons()
     local list, index = self.owner.data:FindList(self.owner.data:GetCurrentList().id)
     local count = #self.owner.data:GetLists()
-    self.listDialogMoveUp:SetEnabled(list ~= nil and index > 1)
-    self.listDialogMoveDown:SetEnabled(list ~= nil and index < count)
+    local unlocked = list ~= nil and not list.locked
+    self.listDialogMoveUp:SetEnabled(unlocked and index > 1)
+    self.listDialogMoveDown:SetEnabled(unlocked and index < count)
 end
 
 function UI:UpdateListArchiveButtons()
     local list = self.owner.data:GetCurrentList()
-    self.listDialogArchive:SetEnabled(true)
+    local unlocked = not list.locked
+    self.listDialogArchive:SetEnabled(unlocked)
     self.listDialogUndo:SetEnabled(self.owner.data:CanUndoDeletion())
     local completed = 0
     for _, item in ipairs(self.owner.data:GetItems()) do
@@ -737,7 +760,7 @@ function UI:UpdateListArchiveButtons()
             completed = completed + 1
         end
     end
-    self.listDialogClearCompleted:SetEnabled(completed > 0)
+    self.listDialogClearCompleted:SetEnabled(unlocked and completed > 0)
     self.listDialogRecurring:SetText(GetString(list.recurring
         and SI_SHOPPING_LIST_RECURRING_ON
         or SI_SHOPPING_LIST_RECURRING_OFF))
@@ -748,12 +771,43 @@ function UI:UpdateListArchiveButtons()
         and SI_SHOPPING_LIST_PINNED_ON
         or SI_SHOPPING_LIST_PINNED_OFF))
     self.listDialogResetProgress:SetEnabled(
-        self.owner.data:ListHasPurchaseProgress(list)
+        unlocked and self.owner.data:ListHasPurchaseProgress(list)
     )
+    self.listDialogRecurring:SetEnabled(unlocked)
+    self.listDialogFavorite:SetEnabled(unlocked)
+    self.listDialogPinned:SetEnabled(unlocked)
+    self.listDialogBulk:SetEnabled(unlocked)
+    self.listDialogLocked:SetText(GetString(list.locked
+        and SI_SHOPPING_LIST_UNLOCK_LIST
+        or SI_SHOPPING_LIST_LOCK_LIST))
+    local editable = self.listDialogMode == "new"
+        or self.listDialogMode == "duplicate"
+        or unlocked
+    self.listDialogConfirm:SetEnabled(editable)
+    self.listDialogName:SetEditEnabled(editable)
+    self.listDialogNote:SetEditEnabled(editable)
+    self.listDialogCategory:SetEditEnabled(editable)
     self.listDialogArchived:SetText(zo_strformat(
         GetString(SI_SHOPPING_LIST_ARCHIVED_COUNT),
         #self.owner.data:GetArchivedLists()
     ))
+end
+
+function UI:ToggleCurrentListLocked()
+    local list = self.owner.data:GetCurrentList()
+    local ok, message = self.owner.data:SetListLocked(list.id, not list.locked)
+    if not ok then
+        self:SetStatus(message, true)
+        return
+    end
+    self.listSignature = nil
+    self:UpdateListMoveButtons()
+    self:UpdateListArchiveButtons()
+    self:Refresh()
+    self.owner.gamepad:Refresh()
+    self:SetStatus(GetString(list.locked
+        and SI_SHOPPING_LIST_STATUS_LIST_LOCKED
+        or SI_SHOPPING_LIST_STATUS_LIST_UNLOCKED))
 end
 
 function UI:ToggleCurrentListFavorite()
@@ -842,7 +896,11 @@ function UI:UndoLastDeletion()
 end
 
 function UI:ClearCompletedItems()
-    local count = self.owner.data:ClearCompleted()
+    local count, message = self.owner.data:ClearCompleted()
+    if count == nil then
+        self:SetStatus(message, true)
+        return
+    end
     if count == 0 then
         self:SetStatus(GetString(SI_SHOPPING_LIST_STATUS_NO_COMPLETED_ITEMS), true)
         return
@@ -858,7 +916,9 @@ end
 
 function UI:MoveCurrentList(direction)
     local list = self.owner.data:GetCurrentList()
-    if not self.owner.data:MoveList(list.id, direction) then
+    local ok, message = self.owner.data:MoveList(list.id, direction)
+    if not ok then
+        self:SetStatus(message, true)
         return
     end
     self.listSignature = nil
@@ -1015,6 +1075,7 @@ function UI:RefreshListSelector()
             tostring(list.recurring),
             tostring(list.favorite),
             tostring(list.pinned),
+            tostring(list.locked),
             list.category or "",
             tostring(tripEnabled),
         }, ":")
@@ -1052,6 +1113,12 @@ function UI:RefreshListSelector()
             if list.recurring then
                 displayName = zo_strformat(
                     GetString(SI_SHOPPING_LIST_RECURRING_MARKER),
+                    displayName
+                )
+            end
+            if list.locked then
+                displayName = zo_strformat(
+                    GetString(SI_SHOPPING_LIST_LOCKED_MARKER),
                     displayName
                 )
             end
@@ -1095,6 +1162,12 @@ function UI:RefreshListSelector()
             currentName
         )
     end
+    if current.locked then
+        currentName = zo_strformat(
+            GetString(SI_SHOPPING_LIST_LOCKED_MARKER),
+            currentName
+        )
+    end
     local selectedLabel = tripEnabled and zo_strformat(
         GetString(current.tripActive
             and SI_SHOPPING_LIST_TRIP_LIST_ACTIVE
@@ -1102,7 +1175,7 @@ function UI:RefreshListSelector()
         currentName
     ) or currentName
     self.listCombo:SetSelectedItem(selectedLabel)
-    self.deleteListButton:SetEnabled(#lists > 1)
+    self.deleteListButton:SetEnabled(#lists > 1 and not current.locked)
 end
 
 function UI:SelectList(id)
@@ -1117,6 +1190,7 @@ function UI:SelectList(id)
         self.owner.history:Hide()
     end
     self:CloseBudgetDialog()
+    self.owner:RefreshInventory()
     self:Refresh()
 end
 
@@ -1141,12 +1215,13 @@ function UI:OpenListDialog(mode)
     self.listDialogSession:SetHidden(mode ~= "rename")
     self.listDialogFavorite:SetHidden(mode ~= "rename")
     self.listDialogPinned:SetHidden(mode ~= "rename")
+    self.listDialogLocked:SetHidden(mode ~= "rename")
     self.listDialogNoteLabel:SetHidden(mode == "delete")
     self.listDialogNoteBackdrop:SetHidden(mode == "delete")
     self.listDialogCategoryLabel:SetHidden(mode == "delete")
     self.listDialogCategoryBackdrop:SetHidden(mode == "delete")
     self.listDialog:SetHeight(mode == "delete" and 290
-        or (mode == "rename" and 510 or 450))
+        or (mode == "rename" and 565 or 450))
 
     if mode == "new" then
         self.listDialogTitle:SetText(GetString(SI_SHOPPING_LIST_NEW_LIST_TITLE))
@@ -1519,6 +1594,10 @@ function UI:AddSourceWithDuplicatePrompt(source, callback)
 end
 
 function UI:AddFromInput()
+    if self.owner.data:IsListLocked() then
+        self:SetStatus(GetString(SI_SHOPPING_LIST_ERROR_LIST_LOCKED), true)
+        return
+    end
     local source = {
         name = self.nameEdit:GetText(),
         quantity = self.quantityEdit:GetText(),
@@ -1656,6 +1735,12 @@ function UI:Refresh()
     self:RefreshSummary(completed, #self.owner.data:GetShoppingItems())
 
     local canSearch = self.owner.ags and self.owner.ags:IsStoreReady()
+    self.findNextButton:SetHidden(not canSearch)
+    local currentList = self.owner.data:GetCurrentList()
+    local currentUnlocked = not currentList.locked
+    self.nameEdit:SetEditEnabled(currentUnlocked)
+    self.quantityEdit:SetEditEnabled(currentUnlocked)
+    self.addButton:SetEnabled(currentUnlocked)
     for rowIndex, row in ipairs(self.rows) do
         local item = rowIndex <= capacity and items[self.offset + rowIndex] or nil
         row.item = item
@@ -1665,8 +1750,11 @@ function UI:Refresh()
             local isComplete = self.owner.data:IsItemComplete(item)
             local targetMode = self.owner.data:GetTargetMode(item)
             row.toggle:SetText(isComplete and "[x]" or "[ ]")
-            row.toggle:SetEnabled(targetMode == "buy")
             local sourceList = self.owner.data:GetListForItem(item.id)
+            local sourceUnlocked = sourceList and not sourceList.locked
+            row.toggle:SetEnabled(targetMode == "buy" and sourceUnlocked)
+            row.remove:SetEnabled(sourceUnlocked)
+            row.edit:SetEnabled(sourceUnlocked)
             if self.owner.data:IsMultiListTripEnabled() and sourceList then
                 local itemName = zo_strformat(
                     GetString(SI_SHOPPING_LIST_TRIP_ITEM_NAME),
@@ -1724,7 +1812,11 @@ function UI:Refresh()
                     and 0.72 or 0.5
                 row.name:SetColor(dim, dim, dim, 1)
             else
-                row.name:SetColor(0.92, 0.92, 0.92, 1)
+                if item.id == self.focusedItemId then
+                    row.name:SetColor(1, 0.82, 0.35, 1)
+                else
+                    row.name:SetColor(0.92, 0.92, 0.92, 1)
+                end
             end
             if isOverTarget then
                 row.progress:SetColor(1, 0.4, 0.3, 1)
@@ -1798,6 +1890,11 @@ function UI:Search(itemId)
         return
     end
     local ok, message = self.owner.ags:Search(item)
+    if ok then
+        self.focusedItemId = item.id
+        self.lastFindItemId = item.id
+        self:Refresh()
+    end
     if ok and item.maxUnitPrice then
         message = message .. " " .. zo_strformat(
             GetString(SI_SHOPPING_LIST_SEARCH_TARGET),
@@ -1805,6 +1902,34 @@ function UI:Search(itemId)
         )
     end
     self:SetStatus(message, not ok)
+end
+
+function UI:FindNextItem(searchNow, afterItemId)
+    local item, index = self.owner.data:GetNextNeededItem(
+        afterItemId or self.lastFindItemId or self.focusedItemId
+    )
+    if not item then
+        self:SetStatus(GetString(SI_SHOPPING_LIST_STATUS_NO_NEEDED_ITEMS), true)
+        return nil
+    end
+    self.focusedItemId = item.id
+    self.lastFindItemId = item.id
+    local capacity = self:GetRowCapacity()
+    if index <= self.offset then
+        self.offset = index - 1
+    elseif index > self.offset + capacity then
+        self.offset = index - capacity
+    end
+    self:Refresh()
+    if searchNow then
+        self:Search(item.id)
+    else
+        self:SetStatus(zo_strformat(
+            GetString(SI_SHOPPING_LIST_STATUS_NEXT_SELECTED),
+            item.name
+        ))
+    end
+    return item
 end
 
 function UI:Scroll(delta)

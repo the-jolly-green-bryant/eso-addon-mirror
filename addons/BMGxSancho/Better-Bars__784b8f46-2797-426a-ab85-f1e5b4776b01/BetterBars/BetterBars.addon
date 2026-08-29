@@ -1,8 +1,8 @@
 ## Title: Better Bars
 ## Description: Custom Health, Magicka, Stamina, and Damage Shield resource bars for ESO, featuring Vertical Crescent and Horizontal layouts.
 ## Author: @BMGXSANCHO
-## Version: 0.0.01
-## AddOnVersion: 1
+## Version: 0.0.02-dev2
+## AddOnVersion: 2
 ## APIVersion: 101050
 ## SavedVariables: BetterBarsSavedVariables
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20007
@@ -10,4 +10,5 @@
 BetterBars.lua
 Core/Constants.lua
 UI/ResourceBars.lua
+UI/ChatHUD.lua
 Settings/Settings.lua

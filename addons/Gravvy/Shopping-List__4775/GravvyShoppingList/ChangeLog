@@ -1,3 +1,11 @@
+0.19.0
+• Allocated backpack, bank, and craft bag stock once across matching Own Total entries in active shopping trips, with specific matching rules receiving stock first.
+• Added purchase corrections for acquired quantities, reductions, unit prices, incorrect history records, and undoing the latest matched transaction.
+• Added automatic safety copies before purchase corrections.
+• Added persistent list locking while keeping searching, sharing, session viewing, and automatic purchase tracking available.
+• Added Find Next for the current item view and an optional setting that selects the next needed entry after a matched purchase.
+• Added current guild store result markers for Shopping List matches, price targets, completion, and specific matching rules in the standard store and AwesomeGuildStore.
+
 0.18.8
 • Added a shopping session summary for matched purchases, actual spending, updated lists, and live remaining entry counts.
 • Expanded the public API to manage, inspect, select, reorder, archive, restore, duplicate, delete, and reset shopping lists.

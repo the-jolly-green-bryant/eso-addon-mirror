@@ -1,0 +1,53 @@
+<GuiXml>
+	<!-- Key catchers.
+	     
+	     Bindings.xml is a dead end on console: AreKeyboardBindingsSupportedInGamepadUI() reports
+	     false there, so a keyboard key never reaches a bindable action. A TopLevelControl with
+	     keyboardEnabled="true" is the only other way Lua is handed a key, and the game itself
+	     uses exactly that on a console-only screen (ZO_ControllerDisconnect).
+	     
+	     It works, and it costs too much. Measured on PS5, the default-tier catcher receives the
+	     keyboard's Enter as key 3, receives no gamepad keys at all, and yet kills every gamepad
+	     BUTTON for as long as it is shown, leaving the sticks working. So the buttons are not
+	     being swallowed by the handler. Their events go to the UI instead of to the gameplay
+	     bindings simply because a control is up and wants input, and the sticks survive because
+	     DIRECTIONAL_INPUT is a separate path.
+	     
+	     Which leaves the question of whether some tier and layer is handed keys without taking
+	     the buttons. These four are the candidates worth trying; /pbchat trial turns one on for
+	     20 seconds and takes it away again on its own. All are 1x1 and untextured, none pushes
+	     an action layer, and all start hidden, since a hidden control receives nothing. -->
+	<Controls>
+		<TopLevelControl name="PBsChatAssistantKeyCatcher" hidden="true" keyboardEnabled="true">
+			<Dimensions x="1" y="1"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot"/>
+			<OnKeyDown>
+				PBS_CHAT_ASSISTANT:OnCatcherKey(self, key)
+			</OnKeyDown>
+		</TopLevelControl>
+
+		<TopLevelControl name="PBsChatAssistantKeyCatcherHigh" hidden="true" keyboardEnabled="true" tier="HIGH" layer="OVERLAY">
+			<Dimensions x="1" y="1"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot"/>
+			<OnKeyDown>
+				PBS_CHAT_ASSISTANT:OnCatcherKey(self, key)
+			</OnKeyDown>
+		</TopLevelControl>
+
+		<TopLevelControl name="PBsChatAssistantKeyCatcherLow" hidden="true" keyboardEnabled="true" tier="LOW" layer="BACKGROUND">
+			<Dimensions x="1" y="1"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot"/>
+			<OnKeyDown>
+				PBS_CHAT_ASSISTANT:OnCatcherKey(self, key)
+			</OnKeyDown>
+		</TopLevelControl>
+
+		<TopLevelControl name="PBsChatAssistantKeyCatcherMedium" hidden="true" keyboardEnabled="true" tier="MEDIUM" layer="BACKGROUND">
+			<Dimensions x="1" y="1"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot"/>
+			<OnKeyDown>
+				PBS_CHAT_ASSISTANT:OnCatcherKey(self, key)
+			</OnKeyDown>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -125,7 +125,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Aenathel's Lazy Antiquarian](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Antiquarian__3084) | Aenathel | PC / Mac | 1.2.1 |
 | [Aenathel's Lazy Chat Linker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Chat-Linker__3083) | Aenathel | PC / Mac | 1.1.0 |
 | [Aenathel's Lazy Riding Skill Trainer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Riding-Skill-Trainer__2614) | Aenathel | PC / Mac | 1.4.0 |
-| [AetherChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexquiet/AetherChat__4798) | alexquiet | PC / Mac | 1.0 |
+| [AetherChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexquiet/AetherChat__4798) | alexquiet | PC / Mac | 1.1 |
 | [Aetherius Badge Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Aetherius-Badge-Filter__1354) | sirinsidiator | PC / Mac | 1.11.0 |
 | [Aetherius GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MecHaN1ck/Aetherius-GuildHalls__2813) | MecHaN1ck | PC / Mac | V0.0.6 |
 | [Aethluna Antiquarian's Eye Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luocangli/Aethluna-Antiquarian-s-Eye-Helper__4646) | luocangli | PC / Mac | 1.1.1 |
@@ -347,7 +347,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AutoLootKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goemaat/AutoLootKey__1125) | Goemaat | PC / Mac | 0.1 |
 | [AutoLootToggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/AutoLootToggler__4087) | Konten | PC / Mac | 1.0 |
 | [Automate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Automate__2852) | peniku8 | PC / Mac | 1.2.22 |
-| [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.4.0 |
+| [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.5.0 |
 | [Automatically Accept Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/Automatically-Accept-Quests__1994) | marlonbrando | PC / Mac | 1.28 |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/AutoReadyCheck__be99bdeb-a9e3-4b63-abe8-9aa886190e8e) | L_cky | Console | — |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirWoach/AutoReadyCheck__3688) | SirWoach | PC / Mac | 2.4.1 |

@@ -1,4 +1,4 @@
-Better Bars v0.0.01
+Better Bars v0.0.02-dev2
 
 A BMG Addon
 Created and maintained by @BMGXSANCHO
@@ -18,6 +18,7 @@ Features
 - Optional hiding of the Damage Shield bar when empty
 - Character-specific settings
 - Native player resource bars restored when Better Bars is disabled
+- Optional native Chat HUD positioning, sizing, and scale controls
 - HUD-scene visibility with settings preview support
 - Event-driven resource updates with temporary smoothing only while values move
 

@@ -763,21 +763,30 @@ d("["..id.."] |t28:28:"..icon.."|t "..name)
 end
 end
 --]]
-function BUI.RegisterEvents()
+function BUI.RegisterEvents(playerAlreadyActivated)
+	if BUI.EventRegistrationComplete then return false end
+	BUI.EventRegistrationComplete=true
 		--Dafault frames events
 	BUI.SwitchUnitFramesEvents()
 		--User Interface Events
-	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_PLAYER_ACTIVATED,			OnLoad)
+	EVENT_MANAGER:UnregisterForEvent("BUI_Event", EVENT_PLAYER_ACTIVATED)
+	if playerAlreadyActivated then
+		BUI.CallLater("BUI_InitialOnLoad",25,OnLoad)
+	else
+		EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_PLAYER_ACTIVATED,			OnLoad)
+	end
 --	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_ACTION_LAYER_POPPED,			OnLayerChange)
 --	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_ACTION_LAYER_PUSHED,			OnLayerChange)
 	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_SCREEN_RESIZED,				OnScreenResize)
 	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED,	function(_,gamepadPreferred)
 		BUI.GamepadMode=gamepadPreferred
-		BUI.Actions.Initialize()
-		BUI.Frames.ZO_Frame_reposition()
-		BUI.Themes_Setup()
-		if BUI.Vars.QuickSlots then BUI.QuickSlots.Update() end
-		BUI.CustomBarUpdate()
+		BUI.CallLater("BUI_GamepadModeRefresh",50,function()
+			if BUI.init.Actions then BUI.Actions.Initialize() end
+			if BUI.init.Frames then BUI.Frames.ZO_Frame_reposition() end
+			BUI.Themes_Setup()
+			if BUI.Vars.QuickSlots then BUI.QuickSlots.Update() end
+			BUI.CustomBarUpdate()
+		end)
 	end)
 		--Target Events
 	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_RETICLE_TARGET_CHANGED,		OnTargetChanged)
@@ -823,8 +832,9 @@ function BUI.RegisterEvents()
 --	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_ALLIANCE_POINT_UPDATE,		OnAPUpdate)
 	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_LEVEL_UPDATE,				OnLevel)
 	EVENT_MANAGER:RegisterForEvent("BUI_Event", EVENT_CHAMPION_POINT_UPDATE,		OnLevel)
-		--Combat Events
+	--Combat Events
 	CombatEvents()
+	return true
 end
 
 --Message functions
