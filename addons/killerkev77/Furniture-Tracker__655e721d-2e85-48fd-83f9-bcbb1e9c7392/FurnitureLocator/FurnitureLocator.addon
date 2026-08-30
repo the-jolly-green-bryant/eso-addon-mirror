@@ -1,11 +1,13 @@
 ## Title: Furniture Locator
 ## Author: Atomic Khaos
 ## APIVersion: 101050
+## Version: 8
 ## SavedVariables: FurnitureLocatorData
 
 FurnitureLocator_Data.lua
 FurnitureLocatorUI.lua
 FurnitureLocatorScreen.lua
 FurnitureLocatorScreen.xml
+FurnitureLocatorWheelHook.lua
 FurnitureLocator.lua
 bindings.xml

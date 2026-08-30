@@ -36,9 +36,9 @@ end
 function FurnitureLocatorScreenClass:Initialize(control)
     FURNITURE_LOCATOR_SCENE_GAMEPAD = ZO_Scene:New("FurnitureLocatorSceneGamepad", SCENE_MANAGER)
 
-    local CREATE_TAB_BAR = ZO_GAMEPAD_HEADER_TABBAR_CREATE
+    local DONT_CREATE_TAB_BAR = ZO_GAMEPAD_HEADER_TABBAR_DONT_CREATE
     local ACTIVATE_ON_SHOW = true
-    ZO_Gamepad_ParametricList_Screen.Initialize(self, control, CREATE_TAB_BAR, ACTIVATE_ON_SHOW, FURNITURE_LOCATOR_SCENE_GAMEPAD)
+    ZO_Gamepad_ParametricList_Screen.Initialize(self, control, DONT_CREATE_TAB_BAR, ACTIVATE_ON_SHOW, FURNITURE_LOCATOR_SCENE_GAMEPAD)
 
     local fragment = ZO_SimpleSceneFragment:New(control)
     fragment:SetHideOnSceneHidden(true)
@@ -73,59 +73,58 @@ function FurnitureLocatorScreenClass:Initialize(control)
     self:InitializeHeader()
 end
 
--- nil selectedCategory means "All" (no filter).
 function FurnitureLocatorScreenClass:InitializeHeader()
-    self.selectedCategory = nil
-    self:RebuildCategoryTabs()
-end
-
--- Builds one tab per distinct category actually present among owned
--- items, plus an "All" tab, sorted alphabetically. Rebuilt from a fresh
--- data snapshot each time it's called (e.g. on PerformUpdate) so newly
--- discovered categories (from visiting a new house, etc.) show up next
--- time the screen is refreshed.
-function FurnitureLocatorScreenClass:RebuildCategoryTabs()
-    local categorySet = {}
-    local ok = pcall(function()
-        local items = FurnitureLocator.GetAllOwnedItems()
-        for _, item in ipairs(items) do
-            categorySet[item.category] = true
-        end
-    end)
-
-    local categoryNames = {}
-    if ok then
-        for name, _ in pairs(categorySet) do
-            table.insert(categoryNames, name)
-        end
-        table.sort(categoryNames)
-    end
-
-    local tabBarEntries = {
-        {
-            text = "All",
-            callback = function()
-                self.selectedCategory = nil
-                self:RefreshList()
-            end,
-        },
-    }
-
-    for _, categoryName in ipairs(categoryNames) do
-        table.insert(tabBarEntries, {
-            text = categoryName,
-            callback = function()
-                self.selectedCategory = categoryName
-                self:RefreshList()
-            end,
-        })
-    end
-
-    self.headerData = {
-        titleText = "Furniture Locator",
-        tabBarEntries = tabBarEntries,
-    }
+    self.headerData = { titleText = "Furniture Locator - Categories" }
     ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
+
+    -- Drill-down state: "categories" shows the short category list;
+    -- "items" shows just that category's items (short too). Nothing here
+    -- needs a button press -- scrolling to a "jump" entry (a category, or
+    -- the back row) immediately switches view via this confirmed-working
+    -- scroll-highlight callback.
+    self.viewMode = "categories"
+    self.currentCategory = nil
+
+    self.list:SetOnSelectedDataChangedCallback(function(_, selectedData)
+        if not selectedData then
+            return
+        end
+
+        -- Right after any Clear()+AddEntry()+Commit(), the list
+        -- auto-selects row 1 and fires this callback once -- that's not
+        -- the player actually scrolling, just the rebuild settling. Acting
+        -- on it caused an infinite bounce (rebuild -> auto-select row 1,
+        -- which is itself a jump target -> rebuild -> ...).
+        if self.suppressNextSelectionChange then
+            self.suppressNextSelectionChange = false
+            return
+        end
+
+        -- Debounce: only drill in if the player actually pauses on this
+        -- entry, not on every row highlighted while scrolling past it.
+        -- Without this, walking down the list drills into whatever you
+        -- pass through, and landing on "Back" immediately bounces you
+        -- back out -- which is exactly what was happening.
+        self.pendingDrillGeneration = (self.pendingDrillGeneration or 0) + 1
+        local thisGeneration = self.pendingDrillGeneration
+        local capturedData = selectedData
+
+        zo_callLater(function()
+            if self.pendingDrillGeneration ~= thisGeneration then
+                return -- selection moved on again before the pause completed
+            end
+
+            if capturedData.jumpToCategory ~= nil then
+                self.viewMode = "items"
+                self.currentCategory = capturedData.jumpToCategory
+                self:RefreshList()
+            elseif capturedData.jumpBack then
+                self.viewMode = "categories"
+                self.currentCategory = nil
+                self:RefreshList()
+            end
+        end, 500)
+    end)
 end
 
 -- SetInUIMode(true) is what redirects the left stick to UI navigation
@@ -159,16 +158,59 @@ function FurnitureLocatorScreenClass:PerformUpdate()
     self.dirty = false
 end
 
--- Pulls the confirmed-working data from FurnitureLocator_Data.lua and
--- populates the real scrollable list. Wrapped in pcall so a problem here
--- surfaces as a chat error rather than a UI crash.
+-- Drill-down list builder. "categories" mode shows one short row per
+-- category (fast to scroll, e.g. 14 rows instead of 800+). Scrolling to
+-- one immediately drills into "items" mode for just that category
+-- (via the SelectedDataChanged callback in InitializeHeader) -- a
+-- "< Back to Categories" row at the top returns the same way, purely by
+-- scrolling to it. No buttons, no second screen, no long list to hunt
+-- through.
 function FurnitureLocatorScreenClass:RefreshList()
     self.list:Clear()
 
     local ok, err = pcall(function()
         local items = FurnitureLocator.GetAllOwnedItems()
-        for _, item in ipairs(items) do
-            if self.selectedCategory == nil or item.category == self.selectedCategory then
+
+        if self.viewMode == "categories" then
+            self.headerData.titleText = "Furniture Locator - Categories"
+            ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
+
+            local categoryCounts = {}
+            for _, item in ipairs(items) do
+                categoryCounts[item.category] = (categoryCounts[item.category] or 0) + 1
+            end
+
+            local categoryNames = {}
+            for name, _ in pairs(categoryCounts) do
+                table.insert(categoryNames, name)
+            end
+            table.sort(categoryNames)
+
+            for _, categoryName in ipairs(categoryNames) do
+                local label = string.format("%s (%d)", categoryName, categoryCounts[categoryName])
+                local entryData = ZO_GamepadEntryData:New(label)
+                entryData.jumpToCategory = categoryName
+                self.list:AddEntry("ZO_GamepadMenuEntryTemplate", entryData)
+            end
+        else
+            self.headerData.titleText = string.format("Furniture Locator - %s", self.currentCategory)
+            ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
+
+            local backEntry = ZO_GamepadEntryData:New("< Back to Categories")
+            backEntry.jumpBack = true
+            self.list:AddEntry("ZO_GamepadMenuEntryTemplate", backEntry)
+
+            local filtered = {}
+            for _, item in ipairs(items) do
+                if item.category == self.currentCategory then
+                    table.insert(filtered, item)
+                end
+            end
+            table.sort(filtered, function(a, b)
+                return tostring(a.name) < tostring(b.name)
+            end)
+
+            for _, item in ipairs(filtered) do
                 local entryData = ZO_GamepadEntryData:New(item.name, item.icon)
                 for _, loc in ipairs(item.locations) do
                     entryData:AddSubLabel(string.format("%d in %s", loc.count, loc.name))
@@ -182,6 +224,7 @@ function FurnitureLocatorScreenClass:RefreshList()
         d("Furniture Locator list ERROR: " .. tostring(err))
     end
 
+    self.suppressNextSelectionChange = true
     self.list:Commit()
 
     if self.keybindStripDescriptor then

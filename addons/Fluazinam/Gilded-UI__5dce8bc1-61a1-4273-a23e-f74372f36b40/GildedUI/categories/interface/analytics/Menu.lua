@@ -120,7 +120,7 @@ Addon:RegisterMenuSection(function(menu, H)
         {
             type = "submenu",
             name = "Analytics",
-            centerSubmenu = false,
+            align = "leftIndent",
             icon = "/esoui/art/menubar/gamepad/gp_playermenu_icon_terms.dds",
             options = controls,
         },

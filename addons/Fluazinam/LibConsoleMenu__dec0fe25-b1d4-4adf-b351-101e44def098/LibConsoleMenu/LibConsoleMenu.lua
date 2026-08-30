@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 102
+LibConsoleMenu.version = 105
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -177,12 +177,12 @@ function AddonMenu:New(title, options)
 		object.version = options.version
 		object.category = options.category
 		object.menuId = options.menuId or options.addonID
-		-- Center submenu labels to match options-style headers (default: stock left nav look).
-		object.centerSubmenus = options.centerSubmenus == true
+		object.childrenAlign = options.childrenAlign
 		-- Unfocused toggles show only the active On/Off label (native). Opt out with false.
 		object.collapseToggleLabels = options.collapseToggleLabels ~= false
 		-- Unfocused sliders hide min/max/value labels. Opt out with false.
 		object.collapseSliderLabels = options.collapseSliderLabels ~= false
+		object.screenHeaderConfig = options.screenHeader
 		-- Always refresh sibling rows after a change (disabled callbacks, live values).
 		object.callbackManager = ZO_CallbackObject:New()
 	end
@@ -342,6 +342,7 @@ end
 function AddonMenu:Clear()
 	self.controls = {}
 	self.selected = false
+	self._pendingHeader = nil
 end
 -----
 

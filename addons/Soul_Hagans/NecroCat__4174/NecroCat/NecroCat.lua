@@ -2,7 +2,7 @@
 NecroCat = NecroCat or {
     name    = "NecroCat",
     author  = "Soul_Hagans",
-    version = "1.9.4",
+    version = "1.9.6",
 }
 
 local NC = NecroCat
@@ -1504,6 +1504,45 @@ local function InitializeMenu()
                     getFunc = function() return NC.savedVars.autoConfirmDestroy end,
                     setFunc = function(v) NC.savedVars.autoConfirmDestroy = v end,
                 },
+
+                { type = "header", name = "Маркеры боя над врагами" },
+                {
+                    type = "checkbox",
+                    name = "Отображать метки над врагами в бою",
+                    tooltip = "Отображает 3D-маркер над головами всех противников, вступивших в бой с вами или вашей группой (видно даже за препятствиями)",
+                    getFunc = function() return NC.savedVars.aggroMarkerEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.aggroMarkerEnabled = v 
+                        NC.UpdateAggroMarker()
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер маркера",
+                    tooltip = "Размер отображаемого значка над головой врага в пикселях",
+                    min = 16, max = 96, step = 2,
+                    getFunc = function() return NC.savedVars.aggroMarkerSize or 48 end,
+                    setFunc = function(v) 
+                        NC.savedVars.aggroMarkerSize = v 
+                        NC.UpdateAggroMarker()
+                    end,
+                },
+
+                { type = "header", name = "Авто-привязка сетов (Коллекция)" },
+                {
+                    type = "checkbox",
+                    name = "Авто-привязка сетов в коллекцию",
+                    tooltip = "Автоматически привязывает найденную экипировку сетов, если этой вещи еще нет в вашей книге наклеек (коллекции наборов)",
+                    getFunc = function() return NC.savedVars.autoBindSetItems end,
+                    setFunc = function(v) NC.savedVars.autoBindSetItems = v end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показывать всплывающий тост",
+                    tooltip = "Отображает стильное всплывающее окно вверху экрана с иконкой вещи, названием сета и счетчиком собранных предметов (например: 14/25)",
+                    getFunc = function() return NC.savedVars.showAutoBindToast end,
+                    setFunc = function(v) NC.savedVars.showAutoBindToast = v end,
+                },
             },
         },
         -- =====================================================
@@ -1804,6 +1843,119 @@ end
 -- 6. ЗАГРУЗКА
 ---------------------------------------------------------
 
+function NC.UpdateAggroMarker()
+    if NC.savedVars.aggroMarkerEnabled then
+        local size = NC.savedVars.aggroMarkerSize or 48
+        local texture = NC.savedVars.aggroMarkerTexture or "NecroCat/imgs/aggro.dds"
+        SetFloatingMarkerInfo(MAP_PIN_TYPE_AGGRO, size, texture)
+    else
+        SetFloatingMarkerInfo(MAP_PIN_TYPE_AGGRO, 0, "")
+    end
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: АВТО-ПРИВЯЗКА СЕТОВ И ТОСТ
+---------------------------------------------------------
+
+function NC.CreateSetToastUI()
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_SetToastFrame")
+    frame:SetDimensions(360, 54)
+    frame:SetAnchor(TOP, GuiRoot, TOP, 0, 140)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+    frame:SetDrawTier(DT_HIGH)
+
+    local bg = WINDOW_MANAGER:CreateControl("$(parent)BG", frame, CT_BACKDROP)
+    bg:SetAnchorFill(frame)
+    bg:SetCenterColor(0.05, 0.05, 0.05, 0.85)
+    bg:SetEdgeColor(0.4, 0.95, 1, 0.8)
+    bg:SetEdgeTexture("", 8, 1, 1)
+
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", frame, CT_TEXTURE)
+    icon:SetDimensions(40, 40)
+    icon:SetAnchor(LEFT, frame, LEFT, 8, 0)
+
+    local nameLabel = WINDOW_MANAGER:CreateControl("$(parent)Name", frame, CT_LABEL)
+    nameLabel:SetAnchor(TOPLEFT, icon, TOPRIGHT, 10, -2)
+    nameLabel:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -8, -2)
+    nameLabel:SetFont("ZoFontWinH4")
+    nameLabel:SetMaxLineCount(1)
+    nameLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+
+    local setLabel = WINDOW_MANAGER:CreateControl("$(parent)Set", frame, CT_LABEL)
+    setLabel:SetAnchor(BOTTOMLEFT, icon, BOTTOMRIGHT, 10, 2)
+    setLabel:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -8, 2)
+    setLabel:SetFont("ZoFontGameSmall")
+    setLabel:SetMaxLineCount(1)
+
+    NC.SetToastFrame = frame
+    NC.SetToastIcon  = icon
+    NC.SetToastName  = nameLabel
+    NC.SetToastSet   = setLabel
+end
+
+function NC.ShowSetToast(itemLink, setId, setName)
+    if not NC.SetToastFrame then return end
+
+    local icon = GetItemLinkIcon(itemLink) or "EsoUI/Art/Icons/icon_missing.dds"
+    local pieceName = zo_strformat("<<1>>", GetItemLinkName(itemLink))
+
+    local done, total = 0, 0
+    if setId and setId > 0 and ITEM_SET_COLLECTIONS_DATA_MANAGER then
+        local itemSetData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(setId)
+        if itemSetData then
+            done = itemSetData:GetNumUnlockedPieces()
+            total = itemSetData:GetNumPieces()
+            -- Визуально прибавляем текущую привязываемую вещь
+            done = math.min(done + 1, total)
+        end
+    end
+
+    NC.SetToastIcon:SetTexture(icon)
+    NC.SetToastName:SetText(pieceName)
+    if total > 0 then
+        NC.SetToastSet:SetText(string.format("|c66f2ff%s|r  |c00FF00(%d/%d)|r", setName, done, total))
+    else
+        NC.SetToastSet:SetText(string.format("|c66f2ff%s|r", setName))
+    end
+
+    NC.SetToastFrame:SetHidden(false)
+    PlaySound("Item_Unlocked")
+
+    local showTime = GetFrameTimeSeconds()
+    NC.lastSetToastTime = showTime
+    zo_callLater(function()
+        if NC.SetToastFrame and NC.lastSetToastTime == showTime then
+            NC.SetToastFrame:SetHidden(true)
+        end
+    end, 3500)
+end
+
+function NC.OnInventorySlotUpdateForAutoBind(eventCode, bagId, slotIndex, isNewItem)
+    if not NC.savedVars.autoBindSetItems then return end
+    if bagId ~= BAG_BACKPACK then return end
+
+    local itemLink = GetItemLink(bagId, slotIndex)
+    if not itemLink or itemLink == "" then return end
+
+    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
+    if not hasSet or not setName or setName == "" then return end
+
+    local pieceId = GetItemLinkItemId(itemLink)
+    if not pieceId or pieceId <= 0 then return end
+
+    -- Если вещь еще не открыта в наклейках (Stickerbook)
+    if not IsItemSetCollectionPieceUnlocked(pieceId) then
+        if not IsItemBound(bagId, slotIndex) then
+            BindItem(bagId, slotIndex)
+        end
+
+        if NC.savedVars.showAutoBindToast then
+            NC.ShowSetToast(itemLink, setId, setName)
+        end
+    end
+end
+
 function NC.OnAddOnLoaded(eventCode, addOnName)
     if not addOnName or string.lower(addOnName) ~= string.lower(NC.name) then return end
 
@@ -1850,22 +2002,31 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         storedPetId          = 0,
         autoConfirmCrafting  = false,
         autoConfirmDestroy   = false,
-        showRecipeButton     = true,
+        showRecipeButton     = false,
         recipeButtonLeft     = 400,
         recipeButtonTop      = 300,
-        includeMotifs        = true,
-        includeStylePages    = true,
+        includeMotifs        = false,
+        includeStylePages    = false,
         -- Smart Auto-Recharge & Auto-Repair
-        autoRechargeEnabled     = true,
+        autoRechargeEnabled     = false,
         autoRechargeThreshold   = 20,
-        autoRechargePriority    = 2, -- 1: Только обычные, 2: Обычные -> Кронные, 3: Кронные -> Обычные, 4: Только кронные
+        autoRechargePriority    = 2,
         
-        autoRepairKitsEnabled   = true,
+        autoRepairKitsEnabled   = false,
         autoRepairKitsThreshold = 20,
-        autoRepairKitsPriority  = 2, -- 1: Только обычные, 2: Обычные -> Кронные, 3: Кронные -> Обычные, 4: Только кронные
+        autoRepairKitsPriority  = 2,
         
         autoVendorRepairEnabled = true,
         showGearStatus          = false,
+
+        -- Маркер агро над врагами
+        aggroMarkerEnabled      = false,
+        aggroMarkerSize         = 48,
+        aggroMarkerTexture      = "NecroCat/imgs/aggro.dds",
+
+        -- Авто-привязка сетов (Stickerbook) и всплывающий тост
+        autoBindSetItems        = false,
+        showAutoBindToast       = true,
     }, GetWorldName())
     -- Бесшовная миграция старой настройки банка со слота на ID
     if (not NC.savedVars.guildBankDefaultGuildId or NC.savedVars.guildBankDefaultGuildId == 0) and NC.savedVars.guildBankDefaultIndex and NC.savedVars.guildBankDefaultIndex > 0 then
@@ -1940,6 +2101,12 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.CreateGuildBankUI()
     NC.CreateRecipeLearnerUI()
     NC.CreateGroupMenuAutoAcceptUI()
+    NC.CreateSetToastUI()
+    NC.UpdateAggroMarker()
+
+    -- Регистрация авто-привязки сетов со скоростным фильтром (только новые вещи в рюкзаке)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_AutoBind", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, NC.OnInventorySlotUpdateForAutoBind)
+    EVENT_MANAGER:AddFilterForEvent(NC.name .. "_AutoBind", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK, REGISTER_FILTER_IS_NEW_ITEM, true)
     
 -- Сцена банка гильдии
     local bankScene = SCENE_MANAGER:GetScene("guildBank")
@@ -1977,6 +2144,7 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_ACTIVITY_FINDER_STATUS_UPDATE, NC.OnActivityFinderStatusUpdate)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_PLAYER_ACTIVATED, function()
         NC.CheckTrialPets()
+        NC.UpdateAggroMarker()
     end)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_GROUP_MEMBER_JOINED, function()
         NC.CheckAutoConvertToRaid()

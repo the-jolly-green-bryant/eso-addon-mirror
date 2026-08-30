@@ -1,8 +1,9 @@
--- Row align + indent helpers (shared; not a control type).
--- align = "center" | "left" (default center)
--- indent = true | false (default true; ignored when align == "center")
---   left + indent   → ZO_GAMEPAD_DEFAULT_LIST_ENTRY_INDENT (nav / icon column)
---   left + no indent → flush to content edge
+-- Row align helpers (shared; not a control type).
+-- align = "center" | "leftIndent" | "leftFlush" (default center)
+--   center     → options-style centered labels
+--   leftIndent → left + ZO_GAMEPAD_DEFAULT_LIST_ENTRY_INDENT (nav / icon column)
+--   leftFlush  → left flush to the content edge
+-- Unsupported values are silently clamped (see ClampAlign).
 
 if not LibConsoleMenu or not IsConsoleUI() then
 	return
@@ -10,7 +11,11 @@ end
 
 local LCM = LibConsoleMenu
 
--- Full: center / left+indent / left+flush
+local ALIGN_CENTER = "center"
+local ALIGN_LEFT_INDENT = "leftIndent"
+local ALIGN_LEFT_FLUSH = "leftFlush"
+
+-- Full: center / leftIndent / leftFlush
 local ALIGN_FULL = {
 	[LCM.CT_DROPDOWN] = true,
 	[LCM.CT_CHECKLIST] = true,
@@ -18,99 +23,78 @@ local ALIGN_FULL = {
 	[LCM.CT_EDITBOX] = true,
 }
 
--- Submenu: center / left+indent only (flush coerced to indented)
-local ALIGN_LEFT_CENTER = {
+-- Submenu: center / leftIndent only (leftFlush → center)
+local ALIGN_SUBMENU = {
 	[LCM.CT_SUBMENU] = true,
 }
 
--- Standalone headers use string type "header" via Normalize only.
-
 function LCM.NormalizeAlign(align)
-	if align == "left" then
-		return "left"
+	if align == ALIGN_LEFT_INDENT or align == ALIGN_LEFT_FLUSH then
+		return align
 	end
-	return "center"
+	return ALIGN_CENTER
 end
 
--- Effective left inset in pixels. Center → 0. Left + indent false → 0. Else nav indent.
-function LCM.ResolveIndent(align, indent)
+function LCM.IsLeftAlign(align)
 	align = LCM.NormalizeAlign(align)
-	if align ~= "left" then
-		return 0
+	return align == ALIGN_LEFT_INDENT or align == ALIGN_LEFT_FLUSH
+end
+
+function LCM.AlignIndentPx(align)
+	align = LCM.NormalizeAlign(align)
+	if align == ALIGN_LEFT_INDENT then
+		return ZO_GAMEPAD_DEFAULT_LIST_ENTRY_INDENT or 0
 	end
-	if indent == false then
-		return 0
+	return 0
+end
+
+-- Clamp to what this control type supports.
+function LCM.ClampAlign(controlType, align)
+	align = LCM.NormalizeAlign(align)
+	if ALIGN_FULL[controlType] then
+		return align
 	end
-	return ZO_GAMEPAD_DEFAULT_LIST_ENTRY_INDENT or 0
+	if ALIGN_SUBMENU[controlType] then
+		if align == ALIGN_LEFT_FLUSH then
+			return ALIGN_CENTER
+		end
+		return align
+	end
+	-- Center-only types (toggle, slider, selector, colorpicker, iconpicker, …).
+	return ALIGN_CENTER
 end
 
--- Whether this control type allows flush-left (indent = false).
-function LCM.SupportsFlushAlign(controlType)
-	return ALIGN_FULL[controlType] == true
+-- Resolve the page-level childrenAlign for a setting.
+local function GetPageChildrenAlign(setting, panel)
+	if setting and setting.currentSubmenu then
+		return setting.currentSubmenu.childrenAlign
+	end
+	return panel and panel.childrenAlign
 end
 
--- Whether this control type allows left (indented or flush where supported).
-function LCM.SupportsLeftAlign(controlType)
-	return ALIGN_FULL[controlType] == true or ALIGN_LEFT_CENTER[controlType] == true
-end
-
--- Returns align, indentBool, indentPx for a setting row.
--- Submenu: centerSubmenu / panel.centerSubmenus when align unset; flush coerced off.
--- Center-only types: always center.
+-- Returns align, indentPx for a setting row.
 function LCM.ResolveRowAlign(setting, panel)
 	local controlType = setting and setting.type
 	local align = setting and setting.align
-	local indent = setting and setting.indent
 
-	if controlType == LCM.CT_SUBMENU then
-		if align == nil then
-			local center = setting.centerSubmenu
-			if center == nil and panel then
-				center = panel.centerSubmenus
-			end
-			align = (center == true) and "center" or "left"
-		end
-		align = LCM.NormalizeAlign(align)
-		-- Submenu never flush.
-		indent = true
-		return align, indent, LCM.ResolveIndent(align, indent)
+	if align == nil then
+		align = GetPageChildrenAlign(setting, panel)
 	end
 
-	if not LCM.SupportsLeftAlign(controlType) then
-		return "center", true, 0
-	end
-
-	align = LCM.NormalizeAlign(align)
-	if align == "center" then
-		return "center", true, 0
-	end
-
-	if indent == nil then
-		indent = true
-	else
-		indent = indent ~= false
-	end
-
-	if not LCM.SupportsFlushAlign(controlType) then
-		indent = true
-	end
-
-	return align, indent, LCM.ResolveIndent(align, indent)
+	align = LCM.ClampAlign(controlType, align)
+	return align, LCM.AlignIndentPx(align)
 end
 
--- Header rows: align + indent (full support). Returns align, indentPx.
-function LCM.ResolveHeaderAlign(align, indent)
+-- Header / section: same precedence as rows. Returns align, indentPx.
+function LCM.ResolveHeaderAlign(align, setting, panel)
+	if align == nil then
+		align = GetPageChildrenAlign(setting, panel)
+	end
 	align = LCM.NormalizeAlign(align)
-	if align == "center" then
-		return "center", 0
-	end
-	if indent == nil then
-		indent = true
-	end
-	return "left", LCM.ResolveIndent(align, indent)
+	return align, LCM.AlignIndentPx(align)
 end
 
--- Re-anchor a full-width Name label for center / left+indent / left+flush.
+-- Re-anchor a full-width Name label for center / leftIndent / leftFlush.
 -- Prefer RootSpacer (ZO_GAMEPAD_CONTENT_WIDTH) — same as stock FullWidthLabel /
 -- indented ComboBox. Anchoring to the list entry parent stretches past content
 -- and pushes dropdown/checklist OpenDropdown off-screen.
@@ -128,7 +112,7 @@ function LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
 	end
 	local relativeTo = parent:GetNamedChild("RootSpacer") or parent
 	nameControl:ClearAnchors()
-	if align == "left" then
+	if LCM.IsLeftAlign(align) then
 		nameControl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
 		nameControl:SetAnchor(TOPLEFT, relativeTo, TOPLEFT, indentPx, 0)
 		nameControl:SetAnchor(TOPRIGHT, relativeTo, TOPRIGHT, 0, 0)

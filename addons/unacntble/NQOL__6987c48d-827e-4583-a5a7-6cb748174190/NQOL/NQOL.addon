@@ -1,9 +1,9 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 328
-## LastProdVersionCommitID: cf75c00
-## LastDevVersionCommitID: 1970dcb
+## AddOnVersion: 330
+## LastProdVersionCommitID: 3873085
+## LastDevVersionCommitID: 5a2dd4c
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariables NQOLLanguageSettings
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibGPS>=73 LibQRC>=046
@@ -43,6 +43,7 @@ Features/Freeport.lua
 Features/Camera.lua
 Features/UI.lua
 Features/UIPlayerInfo.lua
+Data/OffBalanceAbilityIds.lua
 Features/UICombatReticle.lua
 Features/UILootLog.lua
 Features/SharedBar.lua

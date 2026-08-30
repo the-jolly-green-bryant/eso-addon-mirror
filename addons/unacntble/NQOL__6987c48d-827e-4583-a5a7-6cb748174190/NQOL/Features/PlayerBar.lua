@@ -75,6 +75,7 @@ local presets = {}
 local resourceValues = {}
 local healthVisuals = {
     shield = 0,
+    showShield = false,
     trauma = 0,
     noHealing = 0,
 }
@@ -164,6 +165,7 @@ function PlayerBars.UpdateHealthVisualValues(force)
     local settings = GetSettings()
     local shouldPreviewHealthVisuals = settingsPanelVisible and settings.showInSettings == true
     local shield = 0
+    local showShield = settings.showShield == true
     local trauma = 0
     local noHealing = 0
 
@@ -173,6 +175,11 @@ function PlayerBars.UpdateHealthVisualValues(force)
         noHealing = settings.showNoHealing == true and PlayerBars.GetAttributeVisualValue(ATTRIBUTE_VISUAL_NO_HEALING) or 0
     end
 
+    if shouldPreviewHealthVisuals and showShield and shield <= 0 then
+        local health = resourceValues[C.RESOURCE_HEALTH]
+        local maximum = health and health.maximum or 0
+        shield = math.max(1, zo_floor(maximum * 0.25))
+    end
     if shouldPreviewHealthVisuals and settings.showTrauma == true then
         local health = resourceValues[C.RESOURCE_HEALTH]
         local maximum = health and health.maximum or 0
@@ -184,11 +191,12 @@ function PlayerBars.UpdateHealthVisualValues(force)
     if shouldPreviewHealthVisuals and settings.showNoHealing == true and noHealing <= 0 then
         noHealing = 1
     end
-    if not force and healthVisuals.shield == shield and healthVisuals.trauma == trauma and healthVisuals.noHealing == noHealing then
+    if not force and healthVisuals.shield == shield and healthVisuals.showShield == showShield and healthVisuals.trauma == trauma and healthVisuals.noHealing == noHealing then
         return false
     end
 
     healthVisuals.shield = shield
+    healthVisuals.showShield = showShield
     healthVisuals.trauma = trauma
     healthVisuals.noHealing = noHealing
     return true
@@ -322,29 +330,97 @@ function PlayerBars.ApplyLossFill(widget, resourceType, rangeMaximum, innerWidth
     widget.loss:SetHidden(false)
 end
 
-function PlayerBars.GetTraumaAmountForHealth(resourceValue, visualValues)
-    visualValues = visualValues or healthVisuals
-    local current = visualValues.currentOverride or (resourceValue and resourceValue.current) or 0
-    if not resourceValue or current <= 0 or (visualValues.trauma or 0) <= 0 then
-        return 0
+function PlayerBars.GetHealthSegmentValues(resourceValue, visualValues, currentOverride, shieldOverride)
+    if not resourceValue then
+        return 0, 0, 0
     end
 
-    return math.min(current, visualValues.trauma)
+    visualValues = visualValues or healthVisuals
+    local maximum = math.max(1, tonumber(resourceValue.maximum) or 0)
+    if currentOverride == nil then
+        currentOverride = visualValues.currentOverride
+    end
+    if shieldOverride == nil then
+        shieldOverride = visualValues.shield
+    end
+    local current = Clamp(tonumber(currentOverride ~= nil and currentOverride or resourceValue.current) or 0, 0, maximum)
+    local shieldAmount = visualValues.showShield == false and 0 or math.min(math.max(0, tonumber(shieldOverride) or 0), maximum)
+    local shieldOverflow = math.max(0, current + shieldAmount - maximum)
+    local healthBeforeShield = math.max(0, current - shieldOverflow)
+    local traumaAmount = math.min(math.max(0, tonumber(visualValues.trauma) or 0), healthBeforeShield)
+    local normalHealth = healthBeforeShield - traumaAmount
+    return normalHealth, traumaAmount, shieldAmount
+end
+
+function PlayerBars.ResetPlayerHealthAnimations(widget)
+    if not widget then
+        return
+    end
+
+    if PlayerBars.Smooth then
+        PlayerBars.Smooth.Reset(widget, C.RESOURCE_HEALTH)
+        if widget.nqolShieldSmoothInitialized == true then
+            PlayerBars.Smooth.Reset(widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+        end
+    end
+    widget.nqolShieldSmoothInitialized = nil
+end
+
+function PlayerBars.GetAnimatedPlayerHealthSegments(widget, resourceValue, settings, onUpdate)
+    local maximum = math.max(1, tonumber(resourceValue and resourceValue.maximum) or 0)
+    local current = Clamp(tonumber(resourceValue and resourceValue.current) or 0, 0, maximum)
+    local shield = healthVisuals.showShield == true and Clamp(tonumber(healthVisuals.shield) or 0, 0, maximum) or 0
+
+    if settings.smoothTransitions == true and PlayerBars.Smooth then
+        current = PlayerBars.Smooth.GetValue(widget, C.RESOURCE_HEALTH, current, onUpdate, maximum)
+        if healthVisuals.showShield == true and shield > 0 then
+            shield = PlayerBars.Smooth.GetValue(widget, C.PLAYER_SHIELD_SMOOTH_KEY, shield, onUpdate, nil, false)
+            widget.nqolShieldSmoothInitialized = true
+        elseif widget.nqolShieldSmoothInitialized == true then
+            PlayerBars.Smooth.Reset(widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+            widget.nqolShieldSmoothInitialized = nil
+        end
+    elseif PlayerBars.Smooth then
+        PlayerBars.Smooth.Reset(widget, C.RESOURCE_HEALTH)
+        if widget.nqolShieldSmoothInitialized == true then
+            PlayerBars.Smooth.Reset(widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+            widget.nqolShieldSmoothInitialized = nil
+        end
+    end
+
+    return PlayerBars.GetHealthSegmentValues(resourceValue, healthVisuals, current, shield)
+end
+
+function PlayerBars.GetTraumaAmountForHealth(resourceValue, visualValues)
+    local _, traumaAmount = PlayerBars.GetHealthSegmentValues(resourceValue, visualValues)
+    return traumaAmount
 end
 
 function PlayerBars.GetVisibleHealthForFill(resourceValue, visualValues)
-    if not resourceValue then
+    local normalHealth = PlayerBars.GetHealthSegmentValues(resourceValue, visualValues)
+    return normalHealth
+end
+
+function PlayerBars.GetNoHealingHealthAmount(normalHealth, visualValues)
+    visualValues = visualValues or healthVisuals
+    if (visualValues.noHealing or 0) <= 0 then
         return 0
     end
 
-    visualValues = visualValues or healthVisuals
-    local current = visualValues.currentOverride or resourceValue.current
-    return math.max(0, current - PlayerBars.GetTraumaAmountForHealth(resourceValue, visualValues))
+    return math.max(0, tonumber(normalHealth) or 0)
 end
 
 function PlayerBars.HideHealthVisualOverlays(widget)
     if widget and widget.trauma then
         widget.trauma:SetHidden(true)
+    end
+
+    if widget and widget.shield then
+        widget.shield:SetHidden(true)
+    end
+
+    if widget and widget.noHealing then
+        widget.noHealing:SetHidden(true)
     end
 
     if widget and widget.noHealingFractureGlowTiles then
@@ -508,38 +584,61 @@ function PlayerBars.ApplyVerticalNoHealingFractures(widget, tiles, texture, draw
     PlayerBars.HideUnusedNoHealingFractureTiles(tiles, 2)
 end
 
-function PlayerBars.ApplyHealthVisualOverlays(widget, resourceValue, rangeMaximum, innerWidth, innerHeight, borderSize, reverse, vertical, visualValues)
+function PlayerBars.ApplyHealthVisualOverlays(widget, resourceValue, rangeMaximum, innerWidth, innerHeight, borderSize, reverse, vertical, visualValues, normalHealth, traumaAmount, shieldAmount)
     visualValues = visualValues or healthVisuals
-    local current = visualValues.currentOverride or (resourceValue and resourceValue.current) or 0
-    if not widget or not resourceValue or resourceValue.hidden == true or current <= 0 then
+    if not widget or not resourceValue or resourceValue.hidden == true then
         PlayerBars.HideHealthVisualOverlays(widget)
         return
     end
 
-    local traumaAmount = PlayerBars.GetTraumaAmountForHealth(resourceValue, visualValues)
-    local normalHealth = math.max(0, current - traumaAmount)
+    if normalHealth == nil then
+        normalHealth, traumaAmount, shieldAmount = PlayerBars.GetHealthSegmentValues(resourceValue, visualValues)
+        if visualValues.normalOverride ~= nil then
+            normalHealth = Clamp(tonumber(visualValues.normalOverride) or 0, 0, rangeMaximum)
+        end
+    end
+    local remaining = math.max(0, rangeMaximum - normalHealth)
+    traumaAmount = math.min(traumaAmount, remaining)
+    shieldAmount = math.min(shieldAmount, math.max(0, remaining - traumaAmount))
+    if normalHealth <= 0 and traumaAmount <= 0 and shieldAmount <= 0 then
+        PlayerBars.HideHealthVisualOverlays(widget)
+        return
+    end
+
     local activeSize = vertical and innerHeight or innerWidth
     local crossSize = vertical and innerWidth or innerHeight
     local normalSize = zo_floor(activeSize * Clamp(normalHealth / rangeMaximum, 0, 1))
     local traumaSize = zo_floor(activeSize * Clamp(traumaAmount / rangeMaximum, 0, 1))
-    local noHealingSize = zo_floor(activeSize * Clamp(current / rangeMaximum, 0, 1))
+    local shieldSize = zo_floor(activeSize * Clamp(shieldAmount / rangeMaximum, 0, 1))
+    local noHealingAmount = PlayerBars.GetNoHealingHealthAmount(normalHealth, visualValues)
+    local noHealingSize = zo_floor(activeSize * Clamp(noHealingAmount / rangeMaximum, 0, 1))
 
     if traumaAmount > 0 and traumaSize < 1 then
         traumaSize = 1
     end
 
-    if (visualValues.noHealing or 0) > 0 and noHealingSize < 1 then
+    if shieldAmount > 0 and shieldSize < 1 then
+        shieldSize = 1
+    end
+
+    local remainingPixels = math.max(0, zo_floor(activeSize) - normalSize)
+    traumaSize = math.min(traumaSize, remainingPixels)
+    shieldSize = math.min(shieldSize, math.max(0, remainingPixels - traumaSize))
+
+    if noHealingAmount > 0 and noHealingSize < 1 then
         noHealingSize = 1
     end
 
     if vertical then
         PlayerBars.ApplyVerticalHealthVisual(widget.trauma, normalSize, traumaSize, activeSize, crossSize, reverse, borderSize)
+        PlayerBars.ApplyVerticalHealthVisual(widget.shield, normalSize + traumaSize, shieldSize, activeSize, crossSize, reverse, borderSize)
         PlayerBars.ApplyVerticalNoHealingFractures(widget, widget.noHealingFractureGlowTiles, nil, C.DRAW_LEVEL + 3, 0.78, 0.96, 1, 0.24, 0, activeSize, crossSize, reverse, borderSize)
-        PlayerBars.ApplyVerticalNoHealingFractures(widget, widget.noHealingFractureTiles, PlayerBars.TEXTURE_NO_HEALING, C.DRAW_LEVEL + 4, 0.86, 0.94, 0.96, 0.42, (visualValues.noHealing or 0) > 0 and noHealingSize or 0, activeSize, crossSize, reverse, borderSize)
+        PlayerBars.ApplyVerticalNoHealingFractures(widget, widget.noHealingFractureTiles, PlayerBars.TEXTURE_NO_HEALING, C.DRAW_LEVEL + 4, 0.86, 0.94, 0.96, 0.42, noHealingSize, activeSize, crossSize, reverse, borderSize)
     else
         PlayerBars.ApplyHorizontalHealthVisual(widget.trauma, normalSize, traumaSize, activeSize, crossSize, reverse, borderSize)
+        PlayerBars.ApplyHorizontalHealthVisual(widget.shield, normalSize + traumaSize, shieldSize, activeSize, crossSize, reverse, borderSize)
         PlayerBars.ApplyHorizontalNoHealingFractures(widget, widget.noHealingFractureGlowTiles, nil, C.DRAW_LEVEL + 3, 0.78, 0.96, 1, 0.24, 0, activeSize, crossSize, reverse, borderSize)
-        PlayerBars.ApplyHorizontalNoHealingFractures(widget, widget.noHealingFractureTiles, PlayerBars.TEXTURE_NO_HEALING, C.DRAW_LEVEL + 4, 0.86, 0.94, 0.96, 0.42, (visualValues.noHealing or 0) > 0 and noHealingSize or 0, activeSize, crossSize, reverse, borderSize)
+        PlayerBars.ApplyHorizontalNoHealingFractures(widget, widget.noHealingFractureTiles, PlayerBars.TEXTURE_NO_HEALING, C.DRAW_LEVEL + 4, 0.86, 0.94, 0.96, 0.42, noHealingSize, activeSize, crossSize, reverse, borderSize)
     end
 end
 
@@ -562,7 +661,7 @@ local function SetStyledValueLabels(widget, resourceValue, resourceType, setting
         local totalText
         if resourceType == C.RESOURCE_HEALTH then
             if healthVisuals.shield > 0 then
-                totalText = FormatNumber(resourceValue.maximum) .. " + " .. FormatNumber(healthVisuals.shield)
+                totalText = FormatNumber(resourceValue.maximum) .. " + " .. FormatCompactNumber(healthVisuals.shield)
             else
                 totalText = FormatNumber(resourceValue.maximum)
             end
@@ -587,7 +686,11 @@ local function ApplyResourceValueToStyledWidget(widget, resourceValue, resourceT
         if staticUpdate then
             PlayerBars.HideLossFill(widget)
             if PlayerBars.Smooth then
-                PlayerBars.Smooth.Reset(widget, resourceType)
+                if resourceType == C.RESOURCE_HEALTH then
+                    PlayerBars.ResetPlayerHealthAnimations(widget)
+                else
+                    PlayerBars.Smooth.Reset(widget, resourceType)
+                end
             end
         end
         return
@@ -601,8 +704,17 @@ local function ApplyResourceValueToStyledWidget(widget, resourceValue, resourceT
     local width = widget:GetWidth() or 0
     local height = widget:GetHeight() or 0
     local borderSize = Clamp(settings.borderSize, C.CLASSIC_BORDER_SIZE_MIN, math.max(C.CLASSIC_BORDER_SIZE_MIN, zo_floor((height - 1) * 0.5)))
-    local fillCurrent = resourceType == C.RESOURCE_HEALTH and PlayerBars.GetVisibleHealthForFill(resourceValue) or resourceValue.current
-    if settings.smoothTransitions == true and PlayerBars.Smooth then
+    local fillCurrent = resourceValue.current
+    local traumaAmount = 0
+    local shieldAmount = 0
+    if resourceType == C.RESOURCE_HEALTH then
+        if not widget.nqolStyledSmoothUpdateCallback then
+            widget.nqolStyledSmoothUpdateCallback = function()
+                ApplyResourceValueToStyledWidget(widget, resourceValue, resourceType, settings, false, true)
+            end
+        end
+        fillCurrent, traumaAmount, shieldAmount = PlayerBars.GetAnimatedPlayerHealthSegments(widget, resourceValue, settings, widget.nqolStyledSmoothUpdateCallback)
+    elseif settings.smoothTransitions == true and PlayerBars.Smooth then
         if not widget.nqolStyledSmoothUpdateCallback then
             widget.nqolStyledSmoothUpdateCallback = function()
                 ApplyResourceValueToStyledWidget(widget, resourceValue, resourceType, settings, false, true)
@@ -647,10 +759,10 @@ local function ApplyResourceValueToStyledWidget(widget, resourceValue, resourceT
         if staticUpdate then
             local red, green, blue, alpha = Shared.GetPlayerTraumaColor(settings)
             widget.trauma:SetCenterColor(red, green, blue, alpha)
+            red, green, blue, alpha = Shared.GetPlayerShieldColor(settings)
+            widget.shield:SetCenterColor(red, green, blue, alpha)
         end
-        healthVisuals.currentOverride = fillCurrent + PlayerBars.GetTraumaAmountForHealth(resourceValue)
-        PlayerBars.ApplyHealthVisualOverlays(widget, resourceValue, rangeMaximum, innerWidth, innerHeight, borderSize, settings.reverse == true, false)
-        healthVisuals.currentOverride = nil
+        PlayerBars.ApplyHealthVisualOverlays(widget, resourceValue, rangeMaximum, innerWidth, innerHeight, borderSize, settings.reverse == true, false, nil, fillCurrent, traumaAmount, shieldAmount)
     elseif staticUpdate then
         PlayerBars.HideHealthVisualOverlays(widget)
     end
@@ -672,7 +784,11 @@ local function ApplyResourceValueToVerticalWidget(widget, resourceValue, resourc
         if staticUpdate then
             PlayerBars.HideLossFill(widget)
             if PlayerBars.Smooth then
-                PlayerBars.Smooth.Reset(widget, resourceType)
+                if resourceType == C.RESOURCE_HEALTH then
+                    PlayerBars.ResetPlayerHealthAnimations(widget)
+                else
+                    PlayerBars.Smooth.Reset(widget, resourceType)
+                end
             end
         end
         return
@@ -686,8 +802,17 @@ local function ApplyResourceValueToVerticalWidget(widget, resourceValue, resourc
     local width = widget:GetWidth() or 0
     local height = widget:GetHeight() or 0
     local borderSize = Clamp(settings.borderSize, C.CLASSIC_BORDER_SIZE_MIN, math.max(C.CLASSIC_BORDER_SIZE_MIN, zo_floor((math.min(width, height) - 1) * 0.5)))
-    local fillCurrent = resourceType == C.RESOURCE_HEALTH and PlayerBars.GetVisibleHealthForFill(resourceValue) or resourceValue.current
-    if settings.smoothTransitions == true and PlayerBars.Smooth then
+    local fillCurrent = resourceValue.current
+    local traumaAmount = 0
+    local shieldAmount = 0
+    if resourceType == C.RESOURCE_HEALTH then
+        if not widget.nqolVerticalSmoothUpdateCallback then
+            widget.nqolVerticalSmoothUpdateCallback = function()
+                ApplyResourceValueToVerticalWidget(widget, resourceValue, resourceType, settings, false, true)
+            end
+        end
+        fillCurrent, traumaAmount, shieldAmount = PlayerBars.GetAnimatedPlayerHealthSegments(widget, resourceValue, settings, widget.nqolVerticalSmoothUpdateCallback)
+    elseif settings.smoothTransitions == true and PlayerBars.Smooth then
         if not widget.nqolVerticalSmoothUpdateCallback then
             widget.nqolVerticalSmoothUpdateCallback = function()
                 ApplyResourceValueToVerticalWidget(widget, resourceValue, resourceType, settings, false, true)
@@ -733,10 +858,10 @@ local function ApplyResourceValueToVerticalWidget(widget, resourceValue, resourc
         if staticUpdate then
             local red, green, blue, alpha = Shared.GetPlayerTraumaColor(settings)
             widget.trauma:SetCenterColor(red, green, blue, alpha)
+            red, green, blue, alpha = Shared.GetPlayerShieldColor(settings)
+            widget.shield:SetCenterColor(red, green, blue, alpha)
         end
-        healthVisuals.currentOverride = fillCurrent + PlayerBars.GetTraumaAmountForHealth(resourceValue)
-        PlayerBars.ApplyHealthVisualOverlays(widget, resourceValue, rangeMaximum, innerWidth, innerHeight, borderSize, reverse, true)
-        healthVisuals.currentOverride = nil
+        PlayerBars.ApplyHealthVisualOverlays(widget, resourceValue, rangeMaximum, innerWidth, innerHeight, borderSize, reverse, true, nil, fillCurrent, traumaAmount, shieldAmount)
     elseif staticUpdate then
         PlayerBars.HideHealthVisualOverlays(widget)
     end
@@ -1311,6 +1436,7 @@ local function HidePlayerBars()
             for _, widget in pairs(widgets) do
                 HideClassicChangeLabels(widget)
             end
+            PlayerBars.ResetPlayerHealthAnimations(widgets[C.RESOURCE_HEALTH])
         end
     end
 end
@@ -1479,13 +1605,23 @@ local function RefreshAfterHealthVisualChanged()
         return
     end
 
+    local previousShield = healthVisuals.showShield == true and healthVisuals.shield or 0
     PlayerBars.UpdateHealthVisualValues(true)
+    local currentShield = healthVisuals.showShield == true and healthVisuals.shield or 0
+    local shieldVisibilityChanged = (previousShield > 0) ~= (currentShield > 0)
 
     local preset = GetActivePreset()
-    if preset.root and not preset.root:IsHidden() then
-        ApplyResourceValuesToPreset(preset)
-    else
+    if shieldVisibilityChanged and PlayerBars.Smooth then
+        local widgets = preset.controls and preset.controls.widgets
+        local healthWidget = widgets and widgets[C.RESOURCE_HEALTH]
+        if healthWidget then
+            PlayerBars.ResetPlayerHealthAnimations(healthWidget)
+        end
+    end
+    if not preset.root then
         QueueRefresh()
+    elseif not preset.root:IsHidden() then
+        ApplyResourceValueToPreset(preset, C.RESOURCE_HEALTH, GetPresetSettings(preset), true)
     end
 end
 

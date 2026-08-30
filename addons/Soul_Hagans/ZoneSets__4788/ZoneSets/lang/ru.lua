@@ -12,6 +12,9 @@ SafeAddString(ZONESETS_NO_CURRENT_ITEMS, "В этом заходе пока не
 SafeAddString(ZONESETS_NO_PREVIOUS_ITEMS, "Нет данных о прошлом заходе", 1)
 SafeAddString(ZONESETS_GROUP_LOOT_HEADER, "|c39DB92[Лут группы — нужно мне]|r", 1)
 SafeAddString(ZONESETS_NO_GROUP_LOOT, "В этом рейде сопартийцы пока не выбивали нужных вам вещей", 1)
+SafeAddString(ZONESETS_GROUP_REQUESTS_HEADER, "|c39DB92[Просьбы группы — нужно им]|r", 1)
+SafeAddString(ZONESETS_NO_GROUP_REQUESTS, "Никто в группе пока не просил сетовых вещей", 1)
+SafeAddString(ZONESETS_IN_BAG_TOOLTIP, "У вас в рюкзаке есть подходящий предмет для передачи!", 1)
 SafeAddString(ZONESETS_ASK_ALL_BTN, "Попросить всё", 1)
 SafeAddString(ZONESETS_ASK_SINGLE_BTN, "Спросить", 1)
 SafeAddString(ZONESETS_ITEMS_NEEDED_COUNT, "нужно %d шт.", 1)
@@ -40,6 +43,7 @@ SafeAddString(ZONESETS_TRADE_NO_ITEMS, "Нет подходящих вещей �
 SafeAddString(ZONESETS_TRADE_FILLED_MSG, "|c39DB92[ZoneSets]|r Добавлено в обмен: %d предметов", 1)
 ZO_CreateStringId("ZONESETS_AUTO_BIND_ON", "Авто: ВКЛ")
 ZO_CreateStringId("ZONESETS_AUTO_BIND_OFF", "Авто: ВЫКЛ")
+
 
 -- Горячая клавиша
 SafeAddString(SI_BINDING_NAME_TOGGLE_ZONESETS_WINDOW, "Открыть/закрыть ZoneSets", 1)

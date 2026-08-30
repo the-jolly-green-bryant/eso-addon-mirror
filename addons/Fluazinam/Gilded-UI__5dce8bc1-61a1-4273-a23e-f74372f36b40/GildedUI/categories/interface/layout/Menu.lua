@@ -7,7 +7,7 @@ Addon:RegisterMenuSection(function(menu, H)
         {
             type = "submenu",
             name = "Layout",
-            centerSubmenu = false,
+            align = "leftIndent",
             icon = "/esoui/art/menubar/gamepad/gp_playermenu_icon_settings.dds",
             options = {
                 Addon:BuildTrackerColumnMenu(H),

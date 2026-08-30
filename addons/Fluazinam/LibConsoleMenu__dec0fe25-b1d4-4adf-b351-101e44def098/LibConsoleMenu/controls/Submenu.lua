@@ -507,11 +507,12 @@ LCM.setupControlFunctions[LCM.CT_SUBMENU] = function(self, params)
 	self.popAfterSubmenu = params.popAfterSubmenu
 	self.popAfterSubmenuIndex = params.popAfterSubmenuIndex
 	self.align = params.align
-	self.centerSubmenu = params.centerSubmenu -- legacy alias for align
+	self.childrenAlign = params.childrenAlign
 	self.icon = params.icon
 	self.disable = params.disable
 	self.onEnter = params.onEnter
 	self.onExit = params.onExit
+	self.screenHeaderConfig = params.screenHeaderConfig
 end
 
 function LCM.CreateSubmenuPoolFactory()

@@ -1,13 +1,13 @@
 -- LCM Demo: realistic settings menu that exercises every LibConsoleMenu control
 -- and field. Root uses options-style centering; left-aligned sections showcase
--- indent vs no-indent layout on the root page.
+-- leftIndent vs leftFlush layout on the root page.
 
 LCMDemo = LCMDemo or {}
 local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
 Addon.title = "LCM Demo"
-Addon.version = "1.1.5"
+Addon.version = "1.1.6"
 
 Addon.defaults = {
 	-- General
@@ -65,11 +65,11 @@ Addon.defaults = {
 	apThreshold = 50000,
 	telVarThreshold = 1000,
 	writThreshold = 50,
-	-- Left alignment (indent)
+	-- Left indent
 	navTheme = "dark",
 	navChecklist = { "ui" },
 	navNote = "ok",
-	-- Left alignment, no indent
+	-- Left flush
 	toolsTheme = "system",
 	toolsChecklist = { "map" },
 	toolsNote = "flush",
@@ -138,12 +138,14 @@ local function OnAddOnLoaded(_, name)
 		category = "UTILITY",
 		enableDefaults = true,
 		enableReset = true,
-		centerSubmenus = true,
 		collapseToggleLabels = true,
 		collapseSliderLabels = true,
 		resetFunc = function()
 			Addon:ResetToDefaults()
 		end,
+		screenHeader = {
+			messageText = "Sample menu for LibConsoleMenu. Scroll to try each control type.",
+		},
 	})
 
 	menu:AddOptions({
@@ -543,7 +545,7 @@ local function OnAddOnLoaded(_, name)
 			},
 			maxSelections = 3,
 			noSelectionText = "No Tags",
-			multiSelectionTextFormatter = "<<1[$d Tag/$d Tags]>>",
+			selectionTextFormat = "<<1[$d Tag/$d Tags]>>",
 			getFunc = function()
 				return sv.featureTags
 			end,
@@ -955,15 +957,13 @@ local function OnAddOnLoaded(_, name)
 		{
 			type = "section",
 			name = "Left Alignment",
-			align = "left",
-			indent = true,
+			align = "leftIndent",
 			options = {
 				{
 					type = "dropdown",
 					name = "Nav Theme",
 					tooltip = "Theme used by the diagnostics sample.",
-					align = "left",
-					indent = true,
+					align = "leftIndent",
 					choices = {
 						{ name = "Dark", value = "dark" },
 						{ name = "Light", value = "light" },
@@ -981,8 +981,7 @@ local function OnAddOnLoaded(_, name)
 					type = "checklist",
 					name = "Nav Modules",
 					tooltip = "Which modules the diagnostics sample reports on.",
-					align = "left",
-					indent = true,
+					align = "leftIndent",
 					choices = {
 						{ name = "UI", value = "ui" },
 						{ name = "Combat", value = "combat" },
@@ -1001,8 +1000,7 @@ local function OnAddOnLoaded(_, name)
 					type = "editbox",
 					name = "Nav Note",
 					tooltip = "Free-text note included in the diagnostics printout.",
-					align = "left",
-					indent = true,
+					align = "leftIndent",
 					getFunc = function()
 						return sv.navNote
 					end,
@@ -1017,8 +1015,7 @@ local function OnAddOnLoaded(_, name)
 					type = "button",
 					name = "Run Diagnostics",
 					tooltip = "Prints theme, module count, and note to chat.",
-					align = "left",
-					indent = true,
+					align = "leftIndent",
 					func = function()
 						d(string.format(
 							"[LCM Demo] theme=%s modules=%d note=%s",
@@ -1033,15 +1030,13 @@ local function OnAddOnLoaded(_, name)
 		{
 			type = "section",
 			name = "Left Alignment Without Indent",
-			align = "left",
-			indent = false,
+			align = "leftFlush",
 			options = {
 				{
 					type = "dropdown",
 					name = "Tools Theme",
 					tooltip = "Theme shown in this left-aligned section.",
-					align = "left",
-					indent = false,
+					align = "leftFlush",
 					choices = {
 						{ name = "Dark", value = "dark" },
 						{ name = "Light", value = "light" },
@@ -1059,8 +1054,7 @@ local function OnAddOnLoaded(_, name)
 					type = "checklist",
 					name = "Tools Modules",
 					tooltip = "Modules included in this left-aligned section.",
-					align = "left",
-					indent = false,
+					align = "leftFlush",
 					choices = {
 						{ name = "UI", value = "ui" },
 						{ name = "Combat", value = "combat" },
@@ -1079,8 +1073,7 @@ local function OnAddOnLoaded(_, name)
 					type = "editbox",
 					name = "Tools Note",
 					tooltip = "Optional note for this left-aligned section.",
-					align = "left",
-					indent = false,
+					align = "leftFlush",
 					getFunc = function()
 						return sv.toolsNote
 					end,
@@ -1094,8 +1087,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "button",
 					name = "Restore Player Tag",
-					align = "left",
-					indent = false,
+					align = "leftFlush",
 					func = function()
 						sv.playerTag = defaults.playerTag
 						d("[LCM Demo] Player tag restored to default.")
@@ -1104,8 +1096,7 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "button",
 					name = "Locked Button",
-					align = "left",
-					indent = false,
+					align = "leftFlush",
 					func = function()
 					end,
 					disabled = true,

@@ -519,14 +519,14 @@ function Addon:FindCurrencyMenuSettingsBlock(groupKey)
     local menu = self.settingsMenu
     local LCM = LibConsoleMenu
     if not meta or not menu or not LCM then
-        return nil, 0, nil
+        return nil, 0
     end
 
     local controls = menu.controls
     for i = 1, #controls do
         local control = controls[i]
         if control.type == LCM.CT_SUBMENU and control.labelText == meta.submenuName then
-            local settingsStart = i + 2
+            local settingsStart = i + 1
             local count = 0
             for j = settingsStart, #controls do
                 if controls[j].type == LCM.CT_SUBMENU then
@@ -534,10 +534,10 @@ function Addon:FindCurrencyMenuSettingsBlock(groupKey)
                 end
                 count = count + 1
             end
-            return settingsStart, count, i + 1
+            return settingsStart, count
         end
     end
-    return nil, 0, nil
+    return nil, 0
 end
 
 function Addon:RebuildCurrencyMenuGroup(groupKey)
@@ -580,6 +580,14 @@ function Addon:RebuildCurrencyMenuGroup(groupKey)
     if #compiled > 0 then
         menu:AddControls(compiled, settingsStart)
     end
+
+    if LCM.currentMenu == menu then
+        local list = LCM.scrollList and LCM.scrollList:GetCurrentList()
+        local submenu = list and list.currentSubmenu
+        if submenu and submenu.labelText == meta.submenuName then
+            LCM:RefreshSceneHeader()
+        end
+    end
 end
 
 local function BuildCurrencyGroupSubmenu(addon, H, groupKey, defs)
@@ -596,26 +604,28 @@ local function BuildCurrencyGroupSubmenu(addon, H, groupKey, defs)
     local selectedDef = addon:GetCurrencyDef(selectedId) or defs[1]
     addon[meta.selectedField] = selectedDef.id
 
-    local page = {
-        {
-            type = "dropdown",
-            name = "Currency",
-            choices = BuildCurrencyDropdownChoices(defs),
-            getFunc = function() return addon[meta.selectedField] end,
-            setFunc = function(id)
-                if addon[meta.selectedField] == id then
-                    return
-                end
-                addon[meta.selectedField] = id
-                addon:RebuildCurrencyMenuGroup(groupKey)
-            end,
-        },
-    }
-    H.Append(page, addon:BuildCurrencySettingsPage(selectedDef, H))
+    local page = addon:BuildCurrencySettingsPage(selectedDef, H)
 
     return {
         type = "submenu",
         name = meta.submenuName,
+        screenHeader = {
+            control = {
+                type = "dropdown",
+                name = "Currency",
+                choices = BuildCurrencyDropdownChoices(defs),
+                getFunc = function()
+                    return addon[meta.selectedField]
+                end,
+                setFunc = function(id)
+                    if addon[meta.selectedField] == id then
+                        return
+                    end
+                    addon[meta.selectedField] = id
+                    addon:RebuildCurrencyMenuGroup(groupKey)
+                end,
+            },
+        },
         options = page,
     }
 end
@@ -643,22 +653,6 @@ function Addon:BuildCurrenciesMenu(H)
     end
 
     return controls
-end
-
--- Page Defaults should reset the selected currency's settings only, not the Currency dropdown.
-function Addon:FinalizeCurrencyMenuPages()
-    local menu = self.settingsMenu
-    if not menu then
-        return
-    end
-
-    for _, groupKey in ipairs({ "character", "account" }) do
-        local _, _, dropdownIndex = self:FindCurrencyMenuSettingsBlock(groupKey)
-        local dropdown = dropdownIndex and menu.controls[dropdownIndex]
-        if dropdown then
-            dropdown.ignoreDefault = true
-        end
-    end
 end
 
 -- Thin wrappers kept for any leftover call sites / defaults reset.

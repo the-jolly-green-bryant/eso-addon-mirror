@@ -18,7 +18,7 @@
     "GravvyShoppingList"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4775/",
-  "fingerprint": "ddade338fba350150c55dde60fa4a0709034669f9b54eb3f9c9c3cffd489ef90",
+  "fingerprint": "1578746af422b156502406911dc8aac40bb727e0d993baab4d5b0b7bb6f00b06",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17020.png",
     "https://cdn-eso.mmoui.com/preview/pvw17012.jpg",
@@ -37,11 +37,11 @@
   "source_id": "4775",
   "source_url": "https://www.esoui.com/downloads/info4775-ShoppingList.html",
   "stats": {
-    "downloads": 817,
+    "downloads": 900,
     "favorites": 3,
-    "monthly_downloads": 790
+    "monthly_downloads": 885
   },
   "title": "Shopping List",
-  "updated_at": 1787958110000,
-  "version": "0.19.0"
+  "updated_at": 1788014815000,
+  "version": "0.19.2"
 }

@@ -73,6 +73,11 @@ GamepadOptions.PanelIds = {
     TRIAL_TIMER = 9185,
     CAMERA = 9186,
     GPS = 9189,
+    RETICLE_INFO = 9190,
+    RETICLE_INFO_TOP_LEFT = 9191,
+    RETICLE_INFO_TOP_RIGHT = 9192,
+    RETICLE_INFO_BOTTOM_LEFT = 9193,
+    RETICLE_INFO_BOTTOM_RIGHT = 9194,
 }
 
 local PanelIds = GamepadOptions.PanelIds
@@ -91,6 +96,19 @@ local UI_PANEL_ID = PanelIds.UI
 local CAMERA_PANEL_ID = PanelIds.CAMERA
 local DEFAULT_FRAMES_PANEL_ID = PanelIds.DEFAULT_FRAMES
 local COMBAT_RETICLE_PANEL_ID = PanelIds.COMBAT_RETICLE
+local RETICLE_INFO_PANEL_ID = PanelIds.RETICLE_INFO
+local RETICLE_INFO_TOP_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_LEFT
+local RETICLE_INFO_TOP_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_RIGHT
+local RETICLE_INFO_BOTTOM_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_LEFT
+local RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_RIGHT
+local COMBAT_RETICLE_PREVIEW_PANEL_IDS = {
+    [COMBAT_RETICLE_PANEL_ID] = true,
+    [RETICLE_INFO_PANEL_ID] = true,
+    [RETICLE_INFO_TOP_LEFT_PANEL_ID] = true,
+    [RETICLE_INFO_TOP_RIGHT_PANEL_ID] = true,
+    [RETICLE_INFO_BOTTOM_LEFT_PANEL_ID] = true,
+    [RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID] = true,
+}
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 local SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
@@ -157,6 +175,11 @@ GamepadOptions.PLAYER_INFO_PANEL_ID = PanelIds.PLAYER_INFO
 GamepadOptions.PLAYER_INTERACTION_PANEL_ID = PanelIds.PLAYER_INTERACTION
 GamepadOptions.SUBTITLES_PANEL_ID = PanelIds.SUBTITLES
 GamepadOptions.COMBAT_PANEL_ID = PanelIds.COMBAT
+GamepadOptions.RETICLE_INFO_PANEL_ID = PanelIds.RETICLE_INFO
+GamepadOptions.RETICLE_INFO_TOP_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_LEFT
+GamepadOptions.RETICLE_INFO_TOP_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_RIGHT
+GamepadOptions.RETICLE_INFO_BOTTOM_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_LEFT
+GamepadOptions.RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_RIGHT
 GamepadOptions.COMBAT_INFINITE_ARCHIVE_PANEL_ID = PanelIds.COMBAT_INFINITE_ARCHIVE
 GamepadOptions.COMBAT_MISCELLANEOUS_PANEL_ID = PanelIds.COMBAT_MISCELLANEOUS
 GamepadOptions.TRIAL_TIMER_PANEL_ID = PanelIds.TRIAL_TIMER
@@ -411,7 +434,12 @@ local SUBPANEL_PARENT_IDS = {
     [UI_PANEL_ID] = ROOT_PANEL_ID,
     [CAMERA_PANEL_ID] = UI_PANEL_ID,
     [DEFAULT_FRAMES_PANEL_ID] = UI_PANEL_ID,
-    [COMBAT_RETICLE_PANEL_ID] = UI_PANEL_ID,
+    [COMBAT_RETICLE_PANEL_ID] = COMBAT_PANEL_ID,
+    [RETICLE_INFO_PANEL_ID] = COMBAT_RETICLE_PANEL_ID,
+    [RETICLE_INFO_TOP_LEFT_PANEL_ID] = RETICLE_INFO_PANEL_ID,
+    [RETICLE_INFO_TOP_RIGHT_PANEL_ID] = RETICLE_INFO_PANEL_ID,
+    [RETICLE_INFO_BOTTOM_LEFT_PANEL_ID] = RETICLE_INFO_PANEL_ID,
+    [RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID] = RETICLE_INFO_PANEL_ID,
     [ACTIVE_QUEST_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
     [ACTIVE_COMBAT_TIPS_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
     [SYNERGY_PROMPTS_PANEL_ID] = DEFAULT_FRAMES_PANEL_ID,
@@ -465,7 +493,7 @@ PANEL_RESET_PATHS = {
     [AUTO_CHARGE_PANEL_ID] = { { "gear" } },
     [AUTO_REPAIR_PANEL_ID] = { { "gear" } },
     [AUTO_BOUND_PANEL_ID] = { { "gear" } },
-    [COMBAT_PANEL_ID] = { { "trialTimer" }, { "ultimateCountdown" }, { "combat", "infiniteArchive" }, { "combat", "miscellaneous" } },
+    [COMBAT_PANEL_ID] = { { "trialTimer" }, { "ultimateCountdown" }, { "combat", "infiniteArchive" }, { "combat", "miscellaneous" }, { "ui", "combatReticle" } },
     [COMBAT_INFINITE_ARCHIVE_PANEL_ID] = { { "combat", "infiniteArchive" } },
     [COMBAT_MISCELLANEOUS_PANEL_ID] = { { "combat", "miscellaneous" } },
     [TRIAL_TIMER_PANEL_ID] = { { "trialTimer" } },
@@ -479,10 +507,30 @@ PANEL_RESET_PATHS = {
     [GPS_PANEL_ID] = { { "gps" } },
     [FISHING_PANEL_ID] = { { "fishing" } },
     [FISHING_TRACKER_PANEL_ID] = { { "fishing", "tracker" } },
-    [UI_PANEL_ID] = { { "ui" } },
+    [UI_PANEL_ID] = {
+        { "ui", "camera" },
+        { "ui", "disableAlertTexts" },
+        { "ui", "sortDungeonsFinder" },
+        { "ui", "activeQuest" },
+        { "ui", "activeCombatTips" },
+        { "ui", "synergyPrompts" },
+        { "ui", "centerScreenAnnounce" },
+        { "ui", "announcements" },
+        { "ui", "infiniteArchive" },
+        { "ui", "playerInteraction" },
+        { "ui", "subtitles" },
+        { "ui", "lootLog" },
+        { "ui", "customFrames" },
+        { "ui", "playerInfo" },
+    },
     [CAMERA_PANEL_ID] = { { "ui", "camera" } },
     [DEFAULT_FRAMES_PANEL_ID] = { { "ui", "activeQuest" }, { "ui", "activeCombatTips" }, { "ui", "synergyPrompts" }, { "ui", "centerScreenAnnounce" }, { "ui", "announcements" }, { "ui", "infiniteArchive" }, { "ui", "playerInteraction" }, { "ui", "subtitles" } },
     [COMBAT_RETICLE_PANEL_ID] = { { "ui", "combatReticle" } },
+    [RETICLE_INFO_PANEL_ID] = { { "ui", "combatReticle", "info" } },
+    [RETICLE_INFO_TOP_LEFT_PANEL_ID] = { { "ui", "combatReticle", "info", "topLeft" } },
+    [RETICLE_INFO_TOP_RIGHT_PANEL_ID] = { { "ui", "combatReticle", "info", "topRight" } },
+    [RETICLE_INFO_BOTTOM_LEFT_PANEL_ID] = { { "ui", "combatReticle", "info", "bottomLeft" } },
+    [RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID] = { { "ui", "combatReticle", "info", "bottomRight" } },
     [ACTIVE_QUEST_PANEL_ID] = { { "ui", "activeQuest" } },
     [ACTIVE_COMBAT_TIPS_PANEL_ID] = { { "ui", "activeCombatTips" } },
     [SYNERGY_PROMPTS_PANEL_ID] = { { "ui", "synergyPrompts" } },
@@ -598,6 +646,7 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
     end
 
     if NQOL.Features and NQOL.Features.UI then
+        NQOL.Features.UI.SetCombatReticleSettingsPanelVisible(COMBAT_RETICLE_PREVIEW_PANEL_IDS[panelId] == true)
         NQOL.Features.UI.SetActiveQuestSettingsPanelVisible(panelId == ACTIVE_QUEST_PANEL_ID)
         NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(panelId == ACTIVE_COMBAT_TIPS_PANEL_ID)
         NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(panelId == SYNERGY_PROMPTS_PANEL_ID)
@@ -1689,6 +1738,21 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. COMBAT_RETICLE_PANEL_ID, NQOL.L("ui.gamepad_options.combat_reticle_7a159a7"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. COMBAT_RETICLE_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_PANEL_ID, NQOL.L("features.ui_combat_reticle.reticle_info_label"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_PANEL_ID, 1)
+
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_TOP_LEFT_PANEL_ID, NQOL.L("features.ui_combat_reticle.top_left_label"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_TOP_LEFT_PANEL_ID, 1)
+
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_TOP_RIGHT_PANEL_ID, NQOL.L("features.ui_combat_reticle.top_right_label"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_TOP_RIGHT_PANEL_ID, 1)
+
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_BOTTOM_LEFT_PANEL_ID, NQOL.L("features.ui_combat_reticle.bottom_left_label"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_BOTTOM_LEFT_PANEL_ID, 1)
+
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID, NQOL.L("features.ui_combat_reticle.bottom_right_label"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. ACTIVE_QUEST_PANEL_ID, NQOL.L("ui.gamepad_options.active_quest_8036d24"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. ACTIVE_QUEST_PANEL_ID, 1)
 
@@ -1987,6 +2051,26 @@ function GamepadOptions.RegisterPanels()
         GamepadOptions.RegisterPanel(COMBAT_RETICLE_PANEL_ID, GamepadOptions.BuildCombatReticleOptionsData())
     end
 
+    if not GAMEPAD_SETTINGS_DATA[RETICLE_INFO_PANEL_ID] then
+        GamepadOptions.RegisterPanel(RETICLE_INFO_PANEL_ID, GamepadOptions.BuildReticleInfoOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[RETICLE_INFO_TOP_LEFT_PANEL_ID] then
+        GamepadOptions.RegisterPanel(RETICLE_INFO_TOP_LEFT_PANEL_ID, GamepadOptions.BuildReticleInfoTopLeftOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[RETICLE_INFO_TOP_RIGHT_PANEL_ID] then
+        GamepadOptions.RegisterPanel(RETICLE_INFO_TOP_RIGHT_PANEL_ID, GamepadOptions.BuildReticleInfoTopRightOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[RETICLE_INFO_BOTTOM_LEFT_PANEL_ID] then
+        GamepadOptions.RegisterPanel(RETICLE_INFO_BOTTOM_LEFT_PANEL_ID, GamepadOptions.BuildReticleInfoBottomLeftOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID] then
+        GamepadOptions.RegisterPanel(RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID, GamepadOptions.BuildReticleInfoBottomRightOptionsData())
+    end
+
     if not GAMEPAD_SETTINGS_DATA[ACTIVE_QUEST_PANEL_ID] then
         GamepadOptions.RegisterPanel(ACTIVE_QUEST_PANEL_ID, GamepadOptions.BuildActiveQuestOptionsData())
     end
@@ -2162,6 +2246,7 @@ local function OpenRootPanel()
 
     GAMEPAD_OPTIONS.currentCategory = ROOT_PANEL_ID
     if NQOL.Features and NQOL.Features.UI then
+        NQOL.Features.UI.SetCombatReticleSettingsPanelVisible(false)
         NQOL.Features.UI.SetActiveQuestSettingsPanelVisible(false)
         NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(false)
         NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(false)
@@ -2451,11 +2536,15 @@ function GamepadOptions.InstallSubpanelBackOverride()
 
     panelScene:RegisterCallback("StateChange", function(_, newState)
         if newState == SCENE_SHOWING or newState == "showing" then
+            if NQOL.Features and NQOL.Features.UI and GAMEPAD_OPTIONS then
+                NQOL.Features.UI.SetCombatReticleSettingsPanelVisible(COMBAT_RETICLE_PREVIEW_PANEL_IDS[GAMEPAD_OPTIONS.currentCategory] == true)
+            end
             if GAMEPAD_OPTIONS and GamepadOptions.IsSubpanel(GAMEPAD_OPTIONS.currentCategory) then
                 GamepadOptions.ReplaceSubpanelBackKeybind()
             end
         elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN or newState == "hiding" or newState == "hidden" then
             if NQOL.Features and NQOL.Features.UI then
+                NQOL.Features.UI.SetCombatReticleSettingsPanelVisible(false)
                 NQOL.Features.UI.SetActiveQuestSettingsPanelVisible(false)
                 NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(false)
                 NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(false)

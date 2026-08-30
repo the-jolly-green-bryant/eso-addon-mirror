@@ -13,7 +13,25 @@ end
 
 function History.PruneExpiredMessages()
     if not AetherChat.savedVars or not AetherChat.savedVars.history then return end
-    local retentionSeconds = AetherChat.savedVars.historyRetention or 604800 -- default: 1 week (604800s)
+    local rawRetention = AetherChat.savedVars.historyRetention
+    local retentionSeconds = tonumber(rawRetention) or 604800
+
+    -- Repair legacy string retention values if present in saved vars
+    if type(rawRetention) == 'string' then
+        if rawRetention:find('1 jour') or rawRetention:find('1 day') then
+            retentionSeconds = 86400
+        elseif rawRetention:find('3 jour') or rawRetention:find('3 day') then
+            retentionSeconds = 259200
+        elseif rawRetention:find('1 semaine') or rawRetention:find('1 week') then
+            retentionSeconds = 604800
+        elseif rawRetention:find('1 mois') or rawRetention:find('1 month') then
+            retentionSeconds = 2592000
+        elseif rawRetention:find('Illim') or rawRetention:find('Unlimit') then
+            retentionSeconds = 0
+        end
+        AetherChat.savedVars.historyRetention = retentionSeconds
+    end
+
     if retentionSeconds <= 0 then return end -- 0 = Unlimited
 
     local now = GetTimeStamp()
@@ -21,7 +39,7 @@ function History.PruneExpiredMessages()
         if type(list) == 'table' then
             for i = #list, 1, -1 do
                 local msg = list[i]
-                if msg.timestamp and (now - msg.timestamp > retentionSeconds) then
+                if msg.timestamp and tonumber(msg.timestamp) and (now - msg.timestamp > retentionSeconds) then
                     table.remove(list, i)
                 end
             end

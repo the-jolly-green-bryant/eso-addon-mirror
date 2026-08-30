@@ -7,6 +7,14 @@ This file handles creation and maintenance of texture controls, i.e., map pins.
 It also handles compatibility between different kind of maps, such as
 main map or the various minimap addons.
 Adapted from HarvestMap Console's Pins/MapPinController.lua.
+
+The map can show pins from more than one ZoneCache at once (the viewed map's
+zone and the player's zone - see MapPins.lua), so each pin type gets one
+PinTypeManager (and one composite control) per "cache slot" instead of just
+one. A cache slot is an arbitrary caller-chosen key (MapPins.lua uses
+"viewed"/"player") identifying which ZoneCache a PinTypeManager is currently
+bound to; PinController itself doesn't care what the key means.
+self.pinTypeManagers is therefore keyed [pinTypeId][cacheSlot].
 ]]--
 
 local NO_MAP_MODE, MAIN_MAP_MODE, VOTAN_MODE, FYR_MODE, AUI_MODE
@@ -55,22 +63,42 @@ function PinController:Initialize()
 	--self:InitializeGamepadMagnetism()
 end
 
+--[[
+Calls func(self, pinTypeId, cacheSlot, pinTypeManager, ...) for every
+registered PinTypeManager, forwarding any extra arguments given here.
+
+func must be a predefined (module-level local) function, never an anonymous
+function created at the call site: some callers (the mouse-hover poll, the
+AUI minimap hook) run this every frame or several times a second, and a
+`function(...) ... end` literal at the call site allocates a brand new
+closure on every single call. Passing state through as extra arguments (or,
+where a running "best match" needs to be accumulated across iterations,
+through fields on self) avoids that allocation entirely.
+]]--
+function PinController:ForEachPinTypeManager(func, ...)
+	for pinTypeId, managers in pairs(self.pinTypeManagers) do
+		for cacheSlot, pinTypeManager in pairs(managers) do
+			func(self, pinTypeId, cacheSlot, pinTypeManager, ...)
+		end
+	end
+end
+
 function PinController:InitializeMouseHandling()
 	self.onClickHandlers = {}
 	self.mouseOverPin = CreateControl("LL-mouseover", self.container, CT_TEXTURE)
 	self.mouseOverPin:SetHidden(true)
 	self.mouseOverPin:SetDrawTier(DT_HIGH)
 	self.mouseOverPin:SetPixelRoundingEnabled(false)
-	
+
 	if ZO_IsConsoleOrGameCoreUI() then return end
-	
+
 	ZO_PreHook("ZO_WorldMap_MouseEnter", function()
 
 		-- check 20/second if mouse is over a pin
 		EVENT_MANAGER:RegisterForUpdate("LoreLibrary-MouseOver", 50, function()
-			local pinIndex, pinTypeId = self:GetMouseOverPinIndexAndType()
+			local pinIndex, pinTypeId, cacheSlot = self:GetMouseOverPinIndexAndType()
 			if not pinIndex then return end
-			self:ShowSelectionControl(pinIndex, pinTypeId)
+			self:ShowSelectionControl(pinIndex, pinTypeId, cacheSlot)
 		end)
 	end)
 
@@ -80,8 +108,7 @@ function PinController:InitializeMouseHandling()
 
 	self.mouseOverPin:SetHandler("OnMouseEnter", function()
 		self.mouseOverPin:SetScale(1.3)
-		local nodeId = self:GetNodeId(self.mouseOverPin.pinIndex, self.mouseOverPin.pinTypeId)
-		local title = self:GetBookTitle(self.mouseOverPin.pinTypeId, nodeId)
+		local title = self:GetBookTitle(self.mouseOverPin.pinTypeId, self.mouseOverPin.cacheSlot, self.mouseOverPin.pinIndex)
 		if title then
 			ZO_Tooltips_ShowTextTooltip(self.mouseOverPin, TOP, title)
 		end
@@ -97,13 +124,13 @@ function PinController:InitializeMouseHandling()
 			return
 		end
 
-		local pinIndex, pinTypeId = self:GetMouseOverPinIndexAndType()
+		local pinIndex, pinTypeId, cacheSlot = self:GetMouseOverPinIndexAndType()
 		if not pinIndex then return end
 
 		for i, handler in ipairs(self.onClickHandlers) do
 			if (not handler.isActive) or handler.isActive() then
-				if (not handler.show) or handler.show(pinIndex, pinTypeId, self) then
-					handler.callback(pinIndex, pinTypeId, self)
+				if (not handler.show) or handler.show(pinIndex, pinTypeId, cacheSlot, self) then
+					handler.callback(pinIndex, pinTypeId, cacheSlot, self)
 					return
 				end
 			end
@@ -115,20 +142,17 @@ function PinController:SetClickHandlers(handlers)
 	self.onClickHandlers = handlers
 end
 
-function PinController:GetNodeId(pinIndex, pinTypeId)
-	return self.pinTypeManagers[pinTypeId].nodeId[pinIndex]
-end
-
--- returns the title of the book at nodeId, or nil if it can't be resolved
-function PinController:GetBookTitle(pinTypeId, nodeId)
-	local zoneCache = self.pinTypeManagers[pinTypeId].zoneCache
-	local bookId = zoneCache and zoneCache.bookId[nodeId]
+-- returns the title of the book drawn at pinIndex within the (pinTypeId, cacheSlot) pin type manager, or nil if it can't be resolved
+function PinController:GetBookTitle(pinTypeId, cacheSlot, pinIndex)
+	local pinTypeManager = self.pinTypeManagers[pinTypeId][cacheSlot]
+	local zoneCache = pinTypeManager.zoneCache
+	local bookId = zoneCache and zoneCache.bookId[pinTypeManager.nodeId[pinIndex]]
 	if not bookId then return nil end
 	return LoreLibrary.GetBookTitle(bookId)
 end
 
-function PinController:ShowSelectionControl(pinIndex, pinTypeId)
-	local composite = self.pinTypeManagers[pinTypeId].composite
+function PinController:ShowSelectionControl(pinIndex, pinTypeId, cacheSlot)
+	local composite = self.pinTypeManagers[pinTypeId][cacheSlot].composite
 	local x, _, y, _ = composite:GetInsets(pinIndex)
 	self.mouseOverPin:SetAnchor(CENTER, self.container, TOPLEFT, x, y)
 	self.mouseOverPin:SetDimensions(composite:GetDimensions())
@@ -140,26 +164,30 @@ function PinController:ShowSelectionControl(pinIndex, pinTypeId)
 	self.mouseOverPin:SetDrawLevel(composite:GetDrawLevel() + 1)
 	self.mouseOverPin:SetMouseEnabled(true)
 	self.mouseOverPin.pinTypeId = pinTypeId
+	self.mouseOverPin.cacheSlot = cacheSlot
 	self.mouseOverPin.pinIndex = pinIndex
+end
+
+-- accumulates the closest match so far into self.min* - see
+-- PinController:ForEachPinTypeManager for why this isn't an inline closure
+local function AccumulateClosestMouseOverPin(self, pinTypeId, cacheSlot, pinTypeManager, x, y)
+	local pinIndex, pinDist = pinTypeManager:GetMouseOverPinAndDistance(x, y)
+	if pinDist and pinDist < self.minPinDistance then
+		self.minPinDistance = pinDist
+		self.minPinTypeId = pinTypeId
+		self.minCacheSlot = cacheSlot
+		self.minPinIndex = pinIndex
+	end
 end
 
 function PinController:GetMouseOverPinIndexAndType()
 	local x, y = GetUIMousePosition()
 	x = x - ZO_WorldMapContainer:GetLeft()
 	y = y - ZO_WorldMapContainer:GetTop()
-	local minPinDistance = math.huge
-	local minPinTypeId, minPinIndex
-	for pinTypeId, pinTypeManager in pairs(self.pinTypeManagers) do
-		local pinIndex, pinDist = pinTypeManager:GetMouseOverPinAndDistance(x, y)
-		if pinDist then
-			if pinDist < minPinDistance then
-				minPinDistance = pinDist
-				minPinTypeId = pinTypeId
-				minPinIndex = pinIndex
-			end
-		end
-	end
-	return minPinIndex, minPinTypeId
+	self.minPinDistance = math.huge
+	self.minPinTypeId, self.minCacheSlot, self.minPinIndex = nil, nil, nil
+	self:ForEachPinTypeManager(AccumulateClosestMouseOverPin, x, y)
+	return self.minPinIndex, self.minPinTypeId, self.minCacheSlot
 end
 
 --[[
@@ -183,20 +211,23 @@ If a real pin already won magnetism this frame, we defer to it.
 -- GetMouseOverPinAndDistance), and also returns the winning (squared,
 -- screen-pixel) distance - so callers can apply their own, much larger,
 -- magnetism threshold and compare against the native sticky pin's candidate
-function PinController:FindNearestPinAt(x, y)
-	local minPinDistance = math.huge
-	local minPinTypeId, minPinIndex
-	for pinTypeId, pinTypeManager in pairs(self.pinTypeManagers) do
-		local pinIndex, pinDist = pinTypeManager:GetNearestPinAndDistance(x, y)
-		if pinDist then
-			if pinDist < minPinDistance then
-				minPinDistance = pinDist
-				minPinTypeId = pinTypeId
-				minPinIndex = pinIndex
-			end
-		end
+-- accumulates the closest match so far into self.min* - see
+-- PinController:ForEachPinTypeManager for why this isn't an inline closure
+local function AccumulateNearestPin(self, pinTypeId, cacheSlot, pinTypeManager, x, y)
+	local pinIndex, pinDist = pinTypeManager:GetNearestPinAndDistance(x, y)
+	if pinDist and pinDist < self.minPinDistance then
+		self.minPinDistance = pinDist
+		self.minPinTypeId = pinTypeId
+		self.minCacheSlot = cacheSlot
+		self.minPinIndex = pinIndex
 	end
-	return minPinIndex, minPinTypeId, minPinDistance
+end
+
+function PinController:FindNearestPinAt(x, y)
+	self.minPinDistance = math.huge
+	self.minPinTypeId, self.minCacheSlot, self.minPinIndex = nil, nil, nil
+	self:ForEachPinTypeManager(AccumulateNearestPin, x, y)
+	return self.minPinIndex, self.minPinTypeId, self.minCacheSlot, self.minPinDistance
 end
 
 --[[
@@ -249,7 +280,7 @@ function PinController:OnGamepadMouseOverPinsBuilt(cursorPositionX, cursorPositi
 
 	local x = cursorPositionX - ZO_WorldMapContainer:GetLeft()
 	local y = cursorPositionY - ZO_WorldMapContainer:GetTop()
-	local pinIndex, pinTypeId, pinDistance = self:FindNearestPinAt(x, y)
+	local pinIndex, pinTypeId, cacheSlot, pinDistance = self:FindNearestPinAt(x, y)
 
 	local stickyPin = ZO_WorldMap_GetStickyPin()
 	if pinIndex and pinDistance > stickyPin.thresholdDistanceSq then
@@ -272,24 +303,26 @@ function PinController:OnGamepadMouseOverPinsBuilt(cursorPositionX, cursorPositi
 		return
 	end
 
-	local nodeId = self:GetNodeId(pinIndex, pinTypeId)
-	if self.gamepadFocusedNodeId == nodeId then
+	local pinTypeManager = self.pinTypeManagers[pinTypeId][cacheSlot]
+	local nodeId = pinTypeManager.nodeId[pinIndex]
+	local zoneCache = pinTypeManager.zoneCache
+	if self.gamepadFocusedZoneCache == zoneCache and self.gamepadFocusedNodeId == nodeId then
 		return -- already focused on this one; don't keep re-panning/re-showing every tick
 	end
+	self.gamepadFocusedZoneCache = zoneCache
 	self.gamepadFocusedNodeId = nodeId
 	self.gamepadFocusOwner = "ours"
 
 	-- reuse the same mouseOverPin highlight control the keyboard hover uses
 	-- (created in InitializeMouseHandling regardless of ZO_IsConsoleOrGameCoreUI), so the
 	-- currently-focused pin is visibly highlighted in gamepad mode too
-	self:ShowSelectionControl(pinIndex, pinTypeId)
+	self:ShowSelectionControl(pinIndex, pinTypeId, cacheSlot)
 	self.mouseOverPin:SetScale(1.3)
 
-	local zoneCache = self.pinTypeManagers[pinTypeId].zoneCache
 	local normalizedX, normalizedY = zoneCache:GetLocal(nodeId)
 	ZO_WorldMap_PanToNormalizedPosition(normalizedX, normalizedY)
 
-	local title = self:GetBookTitle(pinTypeId, nodeId)
+	local title = self:GetBookTitle(pinTypeId, cacheSlot, pinIndex)
 	if title then
 		-- ZO_WorldMap_ShowGamepadTooltip returns ZO_MapLocationTooltip_Gamepad,
 		-- which lays out content as sections (AcquireSection/AddSection) via
@@ -313,6 +346,7 @@ end
 function PinController:ClearGamepadFocus()
 	if not self.gamepadFocusedNodeId then return end
 	self.gamepadFocusedNodeId = nil
+	self.gamepadFocusedZoneCache = nil
 	if self.gamepadFocusOwner == "ours" then
 		self.gamepadFocusOwner = nil
 	end
@@ -337,6 +371,13 @@ function PinController:InitializeFyr()
 	end
 end
 
+-- see PinController:ForEachPinTypeManager for why this isn't an inline closure
+local function UpdateAllPinLocationsOfManager(self, pinTypeId, cacheSlot, pinManager)
+	for pinIndex, nodeId in pairs(pinManager.nodeId) do
+		pinManager:UpdateLocationOfPinWithIndex(pinIndex)
+	end
+end
+
 function PinController:InitializeAUI()
 	if not (AUI and AUI.Minimap) then return end
 	self:HookMinimap(AUI_MapContainer)
@@ -348,11 +389,7 @@ function PinController:InitializeAUI()
 			AUI_MODE.offsetX = AUI.MapData.mapContainerSize * AUI.MapData.playerX
 			AUI_MODE.offsetY = AUI.MapData.mapContainerSize * AUI.MapData.playerY
 
-			for pinTypeId, pinManager in pairs(self.pinTypeManagers) do
-				for pinIndex, nodeId in pairs(pinManager.nodeId) do
-					pinManager:UpdateLocationOfPinWithIndex(pinIndex)
-				end
-			end
+			self:ForEachPinTypeManager(UpdateAllPinLocationsOfManager)
 		end
 	end)
 end
@@ -383,55 +420,68 @@ function PinController:CheckMapMode()
 	self:SetMode(mode)
 end
 
+-- see PinController:ForEachPinTypeManager for why this isn't an inline closure
+local function UpdateManagerSizeAndPinLocations(self, pinTypeId, cacheSlot, pinManager)
+	pinManager:UpdateSize()
+	for pinIndex, nodeId in pairs(pinManager.nodeId) do
+		pinManager:UpdateLocationOfPinWithIndex(pinIndex)
+	end
+end
+
 function PinController:OnMapSizeChange(width, height)
 	assert(width and height)
 	self.MAP_WIDTH = width
 	self.MAP_HEIGHT = height
 	self:CheckMapMode()
 
-	for pinTypeId, pinManager in pairs(self.pinTypeManagers) do
-		pinManager:UpdateSize()
-		for pinIndex, nodeId in pairs(pinManager.nodeId) do
-			pinManager:UpdateLocationOfPinWithIndex(pinIndex)
-		end
-	end
+	self:ForEachPinTypeManager(UpdateManagerSizeAndPinLocations)
 
 	if not self.mouseOverPin:IsHidden() then
-		local composite = self.pinTypeManagers[self.mouseOverPin.pinTypeId].composite
+		local composite = self.pinTypeManagers[self.mouseOverPin.pinTypeId][self.mouseOverPin.cacheSlot].composite
 		local x, _, y, _ = composite:GetInsets(self.mouseOverPin.pinIndex)
 		self.mouseOverPin:SetAnchor(CENTER, self.container, TOPLEFT, x, y)
 	end
 end
 
+-- see PinController:ForEachPinTypeManager for why these aren't inline closures
+local function RemoveAllPinsOfManager(self, pinTypeId, cacheSlot, pinTypeManager)
+	pinTypeManager:RemoveAllPins()
+end
+
+local function RefreshLayoutOfManager(self, pinTypeId, cacheSlot, pinTypeManager)
+	pinTypeManager:RefreshLayout()
+end
+
 function PinController:RemoveAllPins()
-	for pinTypeId, pinTypeManager in pairs(self.pinTypeManagers) do
-		pinTypeManager:RemoveAllPins()
-	end
+	self:ForEachPinTypeManager(RemoveAllPinsOfManager)
 end
 
 function PinController:RefreshLayout()
-	for pinTypeId, pinTypeManager in pairs(self.pinTypeManagers) do
-		pinTypeManager:RefreshLayout()
-	end
+	self:ForEachPinTypeManager(RefreshLayoutOfManager)
 end
 
-function PinController:RegisterPinType(pinTypeId, layout)
-	local pinTypeManager = PinTypeManager:New(layout, pinTypeId)
-	self.pinTypeManagers[pinTypeId] = pinTypeManager
+function PinController:RegisterPinType(pinTypeId, cacheSlot, layout)
+	self.pinTypeManagers[pinTypeId] = self.pinTypeManagers[pinTypeId] or {}
+	self.pinTypeManagers[pinTypeId][cacheSlot] = PinTypeManager:New(layout, pinTypeId)
 end
 
-function PinController:CreatePinForNodeId(pinTypeId, nodeId)
-	self.pinTypeManagers[pinTypeId]:GetNewPinForNodeId(nodeId)
+function PinController:CreatePinForNodeId(pinTypeId, cacheSlot, nodeId)
+	self.pinTypeManagers[pinTypeId][cacheSlot]:GetNewPinForNodeId(nodeId)
 end
 
-function PinController:SetZoneCache(zoneCache)
-	for pinTypeId, pinTypeManager in pairs(self.pinTypeManagers) do
+-- see PinController:ForEachPinTypeManager for why this isn't an inline closure
+local function SetZoneCacheOfMatchingSlot(self, pinTypeId, managerCacheSlot, pinTypeManager, cacheSlot, zoneCache)
+	if managerCacheSlot == cacheSlot then
 		pinTypeManager:SetZoneCache(zoneCache)
 	end
 end
 
-function PinController:RemovePinForNodeId(pinTypeId, nodeId)
-	self.pinTypeManagers[pinTypeId]:RemovePinForNodeId(nodeId)
+function PinController:SetZoneCache(cacheSlot, zoneCache)
+	self:ForEachPinTypeManager(SetZoneCacheOfMatchingSlot, cacheSlot, zoneCache)
+end
+
+function PinController:RemovePinForNodeId(pinTypeId, cacheSlot, nodeId)
+	self.pinTypeManagers[pinTypeId][cacheSlot]:RemovePinForNodeId(nodeId)
 end
 
 function PinController:HookMinimap(minimapContainer)

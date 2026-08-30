@@ -15,7 +15,6 @@ function Addon:BuildSettingsMenu()
         category = "ui_graphics",
         enableDefaults = true,
         enableReset = true,
-        centerSubmenus = true,
         resetFunc = function()
             Addon:ResetToDefaults()
         end,

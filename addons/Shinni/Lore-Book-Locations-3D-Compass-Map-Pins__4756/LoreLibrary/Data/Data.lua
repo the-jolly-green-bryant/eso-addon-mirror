@@ -47,8 +47,10 @@ function Data:RemoveBook(bookId)
 		local nodeIds = zoneCache:GetNodeIdsForBookId(bookId)
 		for _, nodeId in pairs(nodeIds) do
 			local pinTypeId = zoneCache:GetPinTypeIdForNodeId(nodeId)
-			zoneCache:RemoveNodeId(nodeId)
 			self:FireCallbacks("BookRemoved", zoneId, nodeId, pinTypeId, bookId)
+		end
+		for _, nodeId in pairs(nodeIds) do
+			zoneCache:RemoveNodeId(nodeId)
 		end
 	end
 end
@@ -81,7 +83,7 @@ end
 function Data:GetBookLocations(bookId)
 	local locations = Serialization:FindBookLocations(bookId)
 
-	for _, location in ipairs(locations) do
+	for _, location in pairs(locations) do
 		location.mapId = GetMapIdByZoneId(location.zoneId)
 		location.zoneName = GetZoneNameById(location.zoneId)
 		if location.mapId == 0 then

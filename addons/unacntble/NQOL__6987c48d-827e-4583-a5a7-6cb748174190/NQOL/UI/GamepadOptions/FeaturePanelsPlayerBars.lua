@@ -72,6 +72,11 @@ function GamepadOptions.BuildPresetTraumaBarColorOption(panelId, settingId, pres
     return BuildPresetBarColorOption(panelId, settingId, presetKey, "trauma", playerBars.GetTraumaBarColorLabel(), playerBars.GetTraumaBarColorTooltip())
 end
 
+function GamepadOptions.BuildPresetShieldBarColorOption(panelId, settingId, presetKey)
+    local playerBars = NQOL.Features.PlayerBars
+    return BuildPresetBarColorOption(panelId, settingId, presetKey, "shield", playerBars.GetShieldBarColorLabel(), playerBars.GetShieldBarColorTooltip())
+end
+
 local function BuildRadialSideOption(settingId, label, tooltip, getFunc, setFunc, enabled)
     local playerBars = NQOL.Features.PlayerBars
     local option = GamepadOptions.BuildFiniteListOption(GamepadOptions.PLAYER_FRAME_RADIAL_PANEL_ID, settingId, label, tooltip, playerBars.GetFlyingOrientationChoices(), playerBars.GetFlyingOrientationChoiceNames(), getFunc, setFunc)
@@ -199,6 +204,11 @@ end
 function GamepadOptions.BuildPlayerBarsShowTraumaOption()
     local playerBars = NQOL.Features.PlayerBars
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.PLAYER_FRAME_PANEL_ID, 4, playerBars.GetShowTraumaLabel(), playerBars.GetShowTraumaTooltip(), playerBars.GetShowTrauma, playerBars.SetShowTrauma)
+end
+
+function GamepadOptions.BuildPlayerBarsShowShieldOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildCheckboxOption(GamepadOptions.PLAYER_FRAME_PANEL_ID, 12, playerBars.GetShowShieldLabel(), playerBars.GetShowShieldTooltip(), playerBars.GetShowShield, playerBars.SetShowShield)
 end
 
 function GamepadOptions.BuildPlayerBarsShowNoHealingOption()

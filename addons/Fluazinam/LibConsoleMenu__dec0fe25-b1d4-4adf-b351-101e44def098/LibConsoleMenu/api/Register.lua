@@ -5,10 +5,11 @@
 -- type = "header" / type = "section" become native inline list headers.
 -- type = "section" is authoring sugar: expands to a header + its options (same page).
 -- Nested author key on submenu/section is options (not controls).
--- align = "center" | "left" (default center). indent = true | false (default true;
---   ignored when center). left+indent = nav icon column; left+indent false = flush.
--- Supported: Dropdown/Checklist/Button/Edit/Header = all three; Submenu = center|left+indent;
---   other controls = center only. centerSubmenu remains an alias for submenu align.
+-- align = "center" | "leftIndent" | "leftFlush" (default center).
+--   leftIndent = nav icon column; leftFlush = content edge.
+-- Supported: Dropdown/Checklist/Button/Edit/Header = all three; Submenu = center|leftIndent;
+--   other controls = center only. Unsupported values are clamped.
+-- childrenAlign on menu / submenu sets the default for immediate children of that page.
 -- iconpicker: choices = path list, or texture + atlasSizeX/Y for a spritesheet.
 
 if not LibConsoleMenu or not IsConsoleUI() then
@@ -40,7 +41,6 @@ local function ExpandSections(optionsTable)
 					type = "header",
 					name = entry.name,
 					align = entry.align,
-					indent = entry.indent,
 				}
 				local children = ExpandSections(entry.options or {})
 				for j = 1, #children do
@@ -62,16 +62,12 @@ local function ExpandSections(optionsTable)
 	return out
 end
 
--- pendingHeader is { text, align, indent } from a preceding type = "header" / section.
+-- pendingHeader is { text, align } from a preceding type = "header" / section.
 local function ConsumePendingHeader(pendingHeader)
 	if pendingHeader then
-		return pendingHeader.text, pendingHeader.align, pendingHeader.indent
+		return pendingHeader.text, pendingHeader.align
 	end
-	return nil, nil, nil
-end
-
-local function ResolveEntryAlign(entry)
-	return entry.align, entry.indent
+	return nil, nil
 end
 
 local function BuildChoiceItems(entry)
@@ -84,7 +80,7 @@ local function BuildChoiceItems(entry)
 		local value
 		local tooltip
 		if type(choice) == "table" then
-			name = choice.name or choice.label
+			name = choice.name
 			value = choice.value
 			if value == nil then
 				value = name
@@ -109,7 +105,7 @@ local function ConvertSelector(entry, out, pendingHeader)
 	local items, labelMap = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
+	local header, headerAlign = ConsumePendingHeader(pendingHeader)
 	AddToIndexed(out, {
 		type = LCM.CT_SELECTOR,
 		label = entry.name,
@@ -118,7 +114,6 @@ local function ConvertSelector(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
-		headerIndent = headerIndent,
 		items = items,
 		getFunction = function()
 			if not getFunc then
@@ -141,8 +136,8 @@ local function ConvertDropdown(entry, out, pendingHeader)
 	local items, labelMap = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
-	local align, indent = ResolveEntryAlign(entry)
+	local header, headerAlign = ConsumePendingHeader(pendingHeader)
+	local align = entry.align
 	AddToIndexed(out, {
 		type = LCM.CT_DROPDOWN,
 		label = entry.name,
@@ -151,10 +146,8 @@ local function ConvertDropdown(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
-		headerIndent = headerIndent,
 		items = items,
 		align = align,
-		indent = indent,
 		getFunction = function()
 			if not getFunc then
 				return items[1] and items[1].name
@@ -176,8 +169,8 @@ local function ConvertChecklist(entry, out, pendingHeader)
 	local items = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
-	local align, indent = ResolveEntryAlign(entry)
+	local header, headerAlign = ConsumePendingHeader(pendingHeader)
+	local align = entry.align
 	local default = entry.default
 	if type(default) ~= "table" then
 		default = {}
@@ -190,13 +183,11 @@ local function ConvertChecklist(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
-		headerIndent = headerIndent,
 		items = items,
 		maxSelections = entry.maxSelections,
 		noSelectionText = entry.noSelectionText,
-		multiSelectionTextFormatter = entry.multiSelectionTextFormatter,
+		selectionTextFormat = entry.selectionTextFormat,
 		align = align,
-		indent = indent,
 		getFunction = function()
 			if not getFunc then
 				return {}
@@ -218,7 +209,7 @@ local function ConvertChecklist(entry, out, pendingHeader)
 end
 
 local function ConvertIconPicker(entry, out, pendingHeader)
-	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
+	local header, headerAlign = ConsumePendingHeader(pendingHeader)
 	local atlasEnd = entry.atlasEnd
 	if not atlasEnd and entry.atlasSizeX and entry.atlasSizeY then
 		atlasEnd = entry.atlasSizeX * entry.atlasSizeY
@@ -231,8 +222,7 @@ local function ConvertIconPicker(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
-		headerIndent = headerIndent,
-		items = entry.choices or entry.icons or entry.items,
+		items = entry.choices,
 		texture = entry.texture,
 		atlasSizeX = entry.atlasSizeX,
 		atlasSizeY = entry.atlasSizeY,
@@ -253,24 +243,19 @@ end
 local ConvertOptions
 
 local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
-	local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
-	local align = entry.align
-	-- Legacy: centerSubmenu true/false maps to align when align unset.
-	if align == nil and entry.centerSubmenu ~= nil then
-		align = entry.centerSubmenu and "center" or "left"
-	end
+	local header, headerAlign = ConsumePendingHeader(pendingHeader)
 	local submenu = {
 		type = LCM.CT_SUBMENU,
 		label = entry.name,
 		tooltip = entry.tooltip,
 		header = header,
 		headerAlign = headerAlign,
-		headerIndent = headerIndent,
+		screenHeaderConfig = entry.screenHeader,
 		nested = depth > 0,
 		popSubmenu = needPop and depth > 0,
 		popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
-		align = align,
-		centerSubmenu = entry.centerSubmenu,
+		align = entry.align,
+		childrenAlign = entry.childrenAlign,
 		icon = entry.icon,
 		disable = entry.disabled,
 		onEnter = entry.onEnter,
@@ -283,11 +268,11 @@ local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
 	return submenuIndex
 end
 
-ConvertOptions = function(optionsTable, out, depth)
+ConvertOptions = function(optionsTable, out, depth, initialPendingHeader)
 	out = out or {}
 	depth = depth or 0
 	local closedSubmenu = nil
-	local pendingHeader = nil
+	local pendingHeader = initialPendingHeader
 	optionsTable = ExpandSections(optionsTable or {})
 
 	for i = 1, #optionsTable do
@@ -304,7 +289,6 @@ ConvertOptions = function(optionsTable, out, depth)
 				pendingHeader = {
 					text = entry.name,
 					align = entry.align,
-					indent = entry.indent,
 				}
 			elseif entryType == "submenu" then
 				closedSubmenu = ConvertSubmenu(entry, out, depth, entry._popSubmenu, pendingHeader)
@@ -324,7 +308,7 @@ ConvertOptions = function(optionsTable, out, depth)
 				ConvertIconPicker(entry, out, pendingHeader)
 				pendingHeader = nil
 			elseif entryType == "toggle" then
-				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
+				local header, headerAlign = ConsumePendingHeader(pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_TOGGLE,
 					label = entry.name,
@@ -333,7 +317,6 @@ ConvertOptions = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
-					headerIndent = headerIndent,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					togglePreset = entry.preset,
@@ -343,7 +326,7 @@ ConvertOptions = function(optionsTable, out, depth)
 				})
 				pendingHeader = nil
 			elseif entryType == "slider" then
-				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
+				local header, headerAlign = ConsumePendingHeader(pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_SLIDER,
 					label = entry.name,
@@ -352,7 +335,6 @@ ConvertOptions = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
-					headerIndent = headerIndent,
 					min = entry.min,
 					max = entry.max,
 					step = entry.step,
@@ -366,7 +348,7 @@ ConvertOptions = function(optionsTable, out, depth)
 				})
 				pendingHeader = nil
 			elseif entryType == "colorpicker" then
-				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
+				local header, headerAlign = ConsumePendingHeader(pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_COLORPICKER,
 					label = entry.name,
@@ -375,7 +357,6 @@ ConvertOptions = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
-					headerIndent = headerIndent,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					popSubmenu = entry._popSubmenu,
@@ -383,8 +364,8 @@ ConvertOptions = function(optionsTable, out, depth)
 				})
 				pendingHeader = nil
 			elseif entryType == "button" then
-				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
-				local align, indent = ResolveEntryAlign(entry)
+				local header, headerAlign = ConsumePendingHeader(pendingHeader)
+				local align = entry.align
 				AddToIndexed(out, {
 					type = LCM.CT_BUTTON,
 					label = entry.name,
@@ -393,17 +374,15 @@ ConvertOptions = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
-					headerIndent = headerIndent,
 					align = align,
-					indent = indent,
 					clickHandler = entry.func,
 					popSubmenu = entry._popSubmenu,
 					popAfterSubmenuIndex = entry._popAfterSubmenuIndex,
 				})
 				pendingHeader = nil
 			elseif entryType == "editbox" then
-				local header, headerAlign, headerIndent = ConsumePendingHeader(pendingHeader)
-				local align, indent = ResolveEntryAlign(entry)
+				local header, headerAlign = ConsumePendingHeader(pendingHeader)
+				local align = entry.align
 				local label = entry.name
 				if label == "" then
 					label = nil
@@ -416,9 +395,7 @@ ConvertOptions = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
-					headerIndent = headerIndent,
 					align = align,
-					indent = indent,
 					maxInputCharacters = entry.maxInputCharacters,
 					textType = entry.textType,
 					multiLine = entry.multiLine,
@@ -434,10 +411,10 @@ ConvertOptions = function(optionsTable, out, depth)
 		end
 	end
 
-	return out
+	return out, pendingHeader
 end
 
--- menuId = unique string (folder / Addon.name); menuData = { title, author, version, category, enableDefaults, enableReset, resetFunc, centerSubmenus, collapseToggleLabels, collapseSliderLabels, ... }
+-- menuId = unique string (folder / Addon.name); menuData = { title, author, version, category, enableDefaults, enableReset, resetFunc, childrenAlign, collapseToggleLabels, collapseSliderLabels, ... }
 -- category = MOD_BROWSER_CATEGORY_TYPE_* or string alias (e.g. "UTILITY"); drives Add-ons submenu icon.
 function LCM:CreateAddonMenu(menuId, menuData)
 	if not IsConsoleUI() then
@@ -456,16 +433,19 @@ function LCM:CreateAddonMenu(menuId, menuData)
 		author = menuData.author,
 		version = menuData.version,
 		category = menuData.category,
-		centerSubmenus = menuData.centerSubmenus,
+		childrenAlign = menuData.childrenAlign,
 		collapseToggleLabels = menuData.collapseToggleLabels,
 		collapseSliderLabels = menuData.collapseSliderLabels,
+		screenHeader = menuData.screenHeader,
 	})
 end
 
 -- Append author options (callable again). Nested submenu/section children use options = { ... }.
+-- A trailing type = "header" with no row in the same batch is kept for the next AddOptions call.
 function LCM.AddonMenu:AddOptions(optionsTable)
 	assert(type(optionsTable) == "table", "AddOptions: optionsTable required")
-	local compiled = ConvertOptions(optionsTable, {}, 0)
+	local compiled, pendingHeader = ConvertOptions(optionsTable, {}, 0, self._pendingHeader)
+	self._pendingHeader = pendingHeader
 	if #compiled > 0 then
 		self:AddControls(compiled)
 	end
@@ -474,5 +454,6 @@ end
 
 -- Compile an options table without attaching to a menu (advanced).
 function LCM:ConvertOptions(optionsTable)
-	return ConvertOptions(optionsTable or {}, {}, 0)
+	local out = ConvertOptions(optionsTable or {}, {}, 0)
+	return out
 end

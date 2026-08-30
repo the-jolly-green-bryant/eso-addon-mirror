@@ -19,6 +19,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Chronos - Clock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gandalf/Tamriel-Chronos---Clock__3348) | Gandalf | PC / Mac | 20101 |
 | [Tamriel Master Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger__1e746db5-8418-4a6f-9f17-4449e0d7e3f0) | xPricee | Console | — |
 | [Tamriel Master Ledger - DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger---DEV__89ecfc27-e76b-48ae-8d40-e76bbf0c5c13) | xPricee | Console | — |
+| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.4.57 Hotfix |
 | [Tamriel Races](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Tamriel-Races__167ff6ab-0d5c-4582-83cc-0ec8ced35cc1) | SugaComa | Console | — |
 | [Tamriel Tomes Map Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/Tamriel-Tomes-Map-Pins__4591) | runcarsnowpen | PC / Mac | 1.2.1 |
 | [Tamriel Trade Centre](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cyxui/Tamriel-Trade-Centre__1245) | cyxui | PC / Mac | 4.27.281.39281 |
@@ -27,7 +28,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Trade Centre jpPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Tamriel-Trade-Centre-jpPatch__2193) | Marify | PC / Mac | 0.11.0 |
 | [Tamriel Trade Centre Simple Price](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kriax/Tamriel-Trade-Centre-Simple-Price__3078) | _Kriax | PC / Mac | 1.1.3 |
 | [TamrielGuard - disable accidental stealing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/TamrielGuard---disable-accidental-stealing__2780) | Schrodi | PC / Mac | 1.0 |
-| [TamrielProgressMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/TamrielProgressMap__4799) | Racconplayz | PC / Mac | 2.0.6 |
 | [TamrielTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NWDD/TamrielTime__232) | NWDD | PC / Mac | 0.9.9.3 |
 | [TamrielTradeCentre-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/TamrielTradeCentre-KR__4505) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Tank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Tank__1192) | Criscal | PC / Mac | 1.1.42 |
@@ -61,7 +61,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tel Var Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/EHansonn/Tel-Var-Saver__3664) | EHansonn | PC / Mac | 1.9 |
 | [Teleport - general purpose teleporting tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/Teleport---general-purpose-teleporting-tool__2781) | Schrodi | PC / Mac | 1.1.3 |
 | [Teleport Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/deagl0r/Teleport-Tool__1333) | deagl0r | PC / Mac | 1.24.0.0 |
-| [Tes01ResourceBars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Tes01ResourceBars__4dd951d1-312d-470c-b02c-f1961618b998) | BMGxSancho | Console | — |
 | [TESO Ingame Messenger - TIM (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Migoda/TESO-Ingame-Messenger---TIM-for-Update-6__944) | Migoda | PC / Mac | 5.52 |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/test__3735024b-209d-4fab-966c-339f5adffcb5) | satuve | Console | — |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/test__081b2e52-b426-454f-9be3-3a9a4aa5678f) | sirinsidiator | Console | — |
@@ -70,14 +69,15 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Test Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Test-Addon__f7a014ce-5df1-49ee-80fd-7ef4f53bec84) | xbutch | Console | — |
 | [Test suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite__dc420d92-00cf-428d-8c89-a7cb5ceecd44) | Tekatsu | Console | — |
 | [Test suite 2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite-2__e1fa49c2-830c-41dc-9927-0d013ba1f21d) | Tekatsu | Console | — |
+| [Test01 Better Twins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Test01-Better-Twins__4dd951d1-312d-470c-b02c-f1961618b998) | BMGxSancho | Console | — |
 | [Testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiNk3F13/Testing__8cd10e06-846e-4b81-9858-f1a6943f0b32) | FiNk3F13 | Console | — |
 | [TestMapAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/TestMapAddon__cee315a7-bef0-44c7-9a12-dbc6bdb6674d) | PinkBanther | Console | — |
 | [TESTUPDATE2112](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rob82668/TESTUPDATE2112__4435) | rob82668 | PC / Mac | 1.0.0 |
 | [Tetris for Fishing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sem/Tetris-for-Fishing__3314) | Sem | PC / Mac | 1.7 |
 | [Tetsu's Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-FPS-Booster__2edefdf7-97a0-476e-98a0-f76c40976159) | Tetsurion | Console | — |
-| [Tetsu's Combat Healer Helper(dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-Healer-Helper-dev__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |
 | [Tetsu's Daily Writ Precrafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
 | [Tetsu's Housing FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Housing-FPS-Booster__febdb84e-a3d4-46d5-b70c-e9b1e491be5f) | Tetsurion | Console | — |
+| [Tetsu's Raid Lead Assistant(dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-dev__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |
 | [Text Trials Guide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Text-Trials-Guide__2461) | Splat | PC / Mac | 1.2.8 |
 | [TG's Group Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaTerGoTcha/TG-s-Group-Trackers__cd045612-ec90-4885-be99-f35f328691f8) | TaTerGoTcha | Console | — |
 | [Thank A Healer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tevnar/Thank-A-Healer__2958) | Tevnar | PC / Mac | 1.0.0 |
@@ -155,6 +155,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TraitBuster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jacoboon/TraitBuster__2075) | Jacoboon | PC / Mac | 1.1 |
 | [TraitCraft](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/saranicole1980/TraitCraft__6214b947-f6ff-4d1b-b443-987daf528ecb) | saranicole1980 | Console | — |
 | [TraitCraft](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/TraitCraft__4207) | thisbeaurielle | PC / Mac | 2.4.2 |
+| [TraitScout](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/TraitScout__4b83f722-f447-4d05-a262-1f0427f9fca2) | dicen9 | Console | — |
 | [TraitTimer and Missing Traits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goozer/TraitTimer-and-Missing-Traits__4473) | Goozer | PC / Mac | 1.4.2 |
 | [tralce's Collectible Keybinds - Companions, Armory, Assistants, Decon, and more!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tralce/tralce-s-Collectible-Keybinds---Companions-Armory-Assistants-Decon-and-more__2907) | tralce | PC / Mac | 2025-06-03 |
 | [tralce's Vanity Keybinds -  Costumes, Polymorphs, Mounts, Pets, Skins, Mementos, and more!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tralce/tralce-s-Vanity-Keybinds---Costumes-Polymorphs-Mounts-Pets-Skins-Mementos-and-mo__3233) | tralce | PC / Mac | 2025-06-06 |

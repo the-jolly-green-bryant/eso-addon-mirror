@@ -427,6 +427,14 @@ function PlayerBars.GetTraumaBarColorTooltip()
     return NQOL.L("features.player_bars.trauma_bar_color_tooltip")
 end
 
+function PlayerBars.GetShieldBarColorLabel()
+    return NQOL.L("features.player_bars.shield_bar_color_label")
+end
+
+function PlayerBars.GetShieldBarColorTooltip()
+    return NQOL.L("features.player_bars.shield_bar_color_tooltip")
+end
+
 function PlayerBars.GetShowInSettingsLabel()
     return NQOL.L("features.player_bars.show_in_settings_label")
 end
@@ -441,6 +449,14 @@ end
 
 function PlayerBars.GetShowTraumaTooltip()
     return NQOL.L("features.player_bars.show_trauma_tooltip")
+end
+
+function PlayerBars.GetShowShieldLabel()
+    return NQOL.L("features.player_bars.show_shield_label")
+end
+
+function PlayerBars.GetShowShieldTooltip()
+    return NQOL.L("features.player_bars.show_shield_tooltip")
 end
 
 function PlayerBars.GetShowNoHealingLabel()

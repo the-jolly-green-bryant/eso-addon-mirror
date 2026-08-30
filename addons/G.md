@@ -22,7 +22,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GammaScry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Latetide/GammaScry__3991) | Latetide | PC / Mac | 1.0.2 |
 | [GampeadChatNoFade](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/GampeadChatNoFade__3224) | Baertram | PC / Mac | 2 |
 | [Gank Probability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Gank-Probability__3890) | Drako-Ei | PC / Mac | 1.0.0 |
-| [Gather Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Everdeen77/Gather-Buddy__4791) | Everdeen77 | PC / Mac | 1.1 |
+| [Gather Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Everdeen77/Gather-Buddy__4791) | Everdeen77 | PC / Mac | 1.2 |
 | [GatherUp - Rapidly Gather Teammates for Trials](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/GatherUp---Rapidly-Gather-Teammates-for-Trials__3906) | MelanAster | PC / Mac | 0.20 |
 | [GCD Weave Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/GCD-Weave-Timer__902fc32f-1993-4f03-8d5c-0b17986d5681) | BLKx777 | Console | — |
 | [GCDMonitor Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/GCDMonitor-Revised__4050) | CaffeinatedMayhem | PC / Mac | 2.01 |
@@ -54,7 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Go Fast Don't Die](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drezzek/Go-Fast-Don-t-Die__3332) | Drezzek | PC / Mac | 1.4 |
 | [Go Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/static_recharge/Go-Home__1604) | static_recharge | PC / Mac | 8.0.0 |
 | [GoA_DolgubonsLazyWritCreatorUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_DolgubonsLazyWritCreatorUAPatch__4703) | Iriya_Altmer | PC / Mac | 1.7 |
-| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 46.27 |
+| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 46.37 |
 | [GoA_FCOLockpickerUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733) | Iriya_Altmer | PC / Mac | 1.0 |
 | [GoA_HarvestMapUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707) | Iriya_Altmer | PC / Mac | 1.1 |
 | [GoA_TamrielTradeCentreUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705) | Iriya_Altmer | PC / Mac | 1.2 |

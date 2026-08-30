@@ -155,7 +155,7 @@ function WorldPins:TickMarker(heading)
 	local layout = LoreLibrary.mapPinLayout[LoreLibrary.MARKER]
 	local playerZoneId = LoreLibrary.GetPlayerZoneId()
 
-	for locationIndex, location in ipairs(self.markerLocations) do
+	for locationIndex, location in pairs(self.markerLocations) do
 		local key = "marker-" .. locationIndex
 
 		if location.zoneId == playerZoneId then

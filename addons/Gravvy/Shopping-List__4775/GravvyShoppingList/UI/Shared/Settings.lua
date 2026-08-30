@@ -114,6 +114,35 @@ function Settings:Initialize(owner)
         },
         {
             type = "header",
+            name = GetString(SI_SHOPPING_LIST_SETTINGS_PRICE_PLANNING),
+        },
+        {
+            type = "checkbox",
+            name = GetString(SI_SHOPPING_LIST_SETTINGS_PRICE_SUGGESTIONS),
+            tooltip = GetString(SI_SHOPPING_LIST_SETTINGS_PRICE_SUGGESTIONS_TOOLTIP),
+            getFunc = function() return saved().showPriceSuggestions end,
+            setFunc = function(value) saved().showPriceSuggestions = value end,
+            default = true,
+        },
+        {
+            type = "dropdown",
+            name = GetString(SI_SHOPPING_LIST_SETTINGS_PRICE_SOURCE),
+            tooltip = GetString(SI_SHOPPING_LIST_SETTINGS_PRICE_SOURCE_TOOLTIP),
+            choices = {
+                GetString(SI_SHOPPING_LIST_PRICE_SOURCE_AUTO),
+                GetString(SI_SHOPPING_LIST_PRICE_SOURCE_TTC),
+                GetString(SI_SHOPPING_LIST_PRICE_SOURCE_ESOHUB),
+                GetString(SI_SHOPPING_LIST_PRICE_SOURCE_MM),
+                GetString(SI_SHOPPING_LIST_PRICE_SOURCE_ATT),
+            },
+            choicesValues = { "auto", "ttc", "esohub", "mm", "att" },
+            getFunc = function() return saved().priceSource end,
+            setFunc = function(value) saved().priceSource = value end,
+            disabled = function() return not saved().showPriceSuggestions end,
+            default = "auto",
+        },
+        {
+            type = "header",
             name = GetString(SI_SHOPPING_LIST_SETTINGS_ACCESSIBILITY),
         },
         {

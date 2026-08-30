@@ -120,7 +120,7 @@ end
 function MarkerPin:AddPins(pinManager)
 	if not LoreLibrary.settings:IsPinTypeEnabled(LoreLibrary.MARKER) then return end
 
-	for _, location in ipairs(self.locations) do
+	for _, location in pairs(self.locations) do
 		local normalizedX, normalizedY = GetNormalizedWorldPosition(location.zoneId, location.worldX * 100, location.worldZ * 100, location.worldY * 100)
 		if normalizedX and normalizedY then
 			pinManager:CreatePin(self.pinType, location, normalizedX, normalizedY)

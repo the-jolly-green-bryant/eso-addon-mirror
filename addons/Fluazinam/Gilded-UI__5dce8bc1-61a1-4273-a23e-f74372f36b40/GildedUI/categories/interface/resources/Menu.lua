@@ -41,10 +41,9 @@ Addon:RegisterMenuSection(function(menu, H)
         {
             type = "submenu",
             name = "Resources",
-            centerSubmenu = false,
+            align = "leftIndent",
             icon = "/esoui/art/inventory/gamepad/gp_inventory_icon_currencies.dds",
             options = controls,
         },
     })
-    Addon:FinalizeCurrencyMenuPages()
 end)

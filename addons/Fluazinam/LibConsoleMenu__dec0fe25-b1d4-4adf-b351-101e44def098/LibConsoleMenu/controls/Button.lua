@@ -14,7 +14,7 @@ LCM.updateControlFunctions[LCM.CT_BUTTON] = function(self, control)
 	control:SetHidden(false)
 	local nameControl = control:GetNamedChild("Name")
 	local text = self:GetString(self:GetValueOrCallback(self.labelText) or self:GetValueOrCallback(self.buttonText))
-	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
+	local align, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
 	if nameControl then
 		nameControl:SetText(text)
 		LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
@@ -35,5 +35,4 @@ LCM.setupControlFunctions[LCM.CT_BUTTON] = function(self, params)
 	self.disable = params.disable
 	self.buttonText = params.buttonText
 	self.align = params.align
-	self.indent = params.indent
 end

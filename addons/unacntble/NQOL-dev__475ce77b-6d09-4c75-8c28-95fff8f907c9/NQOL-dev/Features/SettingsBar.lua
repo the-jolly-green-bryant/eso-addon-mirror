@@ -1454,6 +1454,16 @@ function PlayerBars.GetShowTrauma()
     return GetSettings().showTrauma
 end
 
+function PlayerBars.GetShowShield()
+    return GetSettings().showShield
+end
+
+function PlayerBars.SetShowShield(value)
+    GetSettings().showShield = value == true
+    PlayerBars.UpdateHealthVisualValues(true)
+    PlayerBars.QueueRefresh()
+end
+
 function PlayerBars.SetShowTrauma(value)
     GetSettings().showTrauma = value == true
     PlayerBars.UpdateHealthVisualValues(true)

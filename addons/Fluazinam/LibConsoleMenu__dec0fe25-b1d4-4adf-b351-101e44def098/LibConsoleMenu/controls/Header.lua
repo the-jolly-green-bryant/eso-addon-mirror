@@ -50,7 +50,7 @@ function LCM.HeaderSetup(headerControl, data)
 	end
 
 	local align = LCM.NormalizeAlign(data.headerAlign)
-	local zoAlign = (align == "left") and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER
+	local zoAlign = LCM.IsLeftAlign(align) and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER
 
 	local function ApplyText(label)
 		if not label then
@@ -70,13 +70,13 @@ function LCM.HeaderSetup(headerControl, data)
 	end
 end
 
--- align: "center" | "left". indentPx: left inset when align is left (0 = flush).
+-- align: "center" | "leftIndent" | "leftFlush". indentPx: left inset when leftIndent.
 function LCM.LayoutHeaderControl(headerControl, control, align, indentPx)
 	local gap = 18
 	align = LCM.NormalizeAlign(align)
 	indentPx = indentPx or 0
 	headerControl:ClearAnchors()
-	if align == "left" then
+	if LCM.IsLeftAlign(align) then
 		headerControl:SetAnchor(BOTTOMLEFT, control, TOPLEFT, indentPx, -gap)
 		headerControl:SetAnchor(BOTTOMRIGHT, control, TOPRIGHT, 0, -gap)
 	else
@@ -138,11 +138,11 @@ function LCM.ResolveSettingEntryTemplate(list, setting, templateName)
 	if header and header ~= "" and header ~= list.lastLcmHeader then
 		list.lastLcmHeader = header
 		setting.header = header
-		local align, indentPx = LCM.ResolveHeaderAlign(setting.headerAlign, setting.headerIndent)
+		local align, indentPx = LCM.ResolveHeaderAlign(setting.headerAlign, setting, LCM.currentMenu)
 		setting.headerAlign = align
 		setting.headerIndentPx = indentPx
-		-- Nav template only when left + indented (icon column).
-		if align == "left" and indentPx > 0 then
+		-- Nav template only when leftIndent (icon column).
+		if align == "leftIndent" then
 			templateName = templateName .. LCM.WITH_NAV_HEADER_SUFFIX
 		else
 			templateName = templateName .. LCM.WITH_HEADER_SUFFIX

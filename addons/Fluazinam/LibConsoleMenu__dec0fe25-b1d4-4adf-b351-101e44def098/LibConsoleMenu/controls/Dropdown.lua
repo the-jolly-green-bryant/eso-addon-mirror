@@ -178,6 +178,9 @@ local function EnsureDropdownLayout(dropdown)
 	EnsureClassLevelItemLayoutHook()
 end
 
+LCM.EnsureDropdownLayout = EnsureDropdownLayout
+LCM.ApplyClosedSelectedTextLayout = ApplyClosedSelectedTextLayout
+
 -- Match toggle/selector: disabled rows show SI_CHECK_BUTTON_DISABLED instead of the value.
 local function ApplyDropdownSelectedText(dropdown, enabled)
 	if not dropdown then
@@ -219,7 +222,7 @@ end
 LCM.updateControlFunctions[LCM.CT_DROPDOWN] = function(self, control, selected, enabled)
 	local nameControl = control:GetNamedChild("Name")
 	local label = self:GetString(self:GetValueOrCallback(self.labelText))
-	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
+	local align, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
 	if nameControl then
 		nameControl:SetText(label)
 		LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
@@ -228,7 +231,7 @@ LCM.updateControlFunctions[LCM.CT_DROPDOWN] = function(self, control, selected, 
 	local dropdown = control.dropdown
 	dropdown:SetSortsItems(false)
 	dropdown:SetName(label)
-	dropdown._lcmDropdownCenterItems = align ~= "left"
+	dropdown._lcmDropdownCenterItems = not LCM.IsLeftAlign(align)
 	dropdown._lcmLeftIndentPx = 0
 	ApplyClosedSelectedTextLayout(dropdown)
 
@@ -308,7 +311,6 @@ LCM.setupControlFunctions[LCM.CT_DROPDOWN] = function(self, params)
 	self.ignoreDefault = params.ignoreDefault
 	self.disable = params.disable
 	self.align = params.align
-	self.indent = params.indent
 end
 
 function LCM.CreateDropdownPoolFactory()

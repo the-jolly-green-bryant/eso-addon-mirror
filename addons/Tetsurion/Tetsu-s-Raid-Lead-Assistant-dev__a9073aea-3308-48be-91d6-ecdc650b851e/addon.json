@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/Tetsurion/Tetsu-s-Combat-Healer-Helper-dev__a9073aea-3308-48be-91d6-ecdc650b851e",
+  "archive_path": "addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-dev__a9073aea-3308-48be-91d6-ecdc650b851e",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "Tetsurion",
   "canonical_id": "bethesda:a9073aea-3308-48be-91d6-ecdc650b851e",
   "content_id": "a9073aea-3308-48be-91d6-ecdc650b851e",
   "deleted": false,
-  "fingerprint": "3b7b61ccda991e380edfa89f67d20f6b559ed3bc1825b25c8b81440ec8b7be86",
+  "fingerprint": "07e12a3bed152c08e2fe274a963d650d2ebf474eb3a7800aff170c9cc32e6f5f",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "a9073aea-3308-48be-91d6-ecdc650b851e",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/a9073aea-3308-48be-91d6-ecdc650b851e",
-  "title": "Tetsu's Combat Healer Helper(dev)"
+  "title": "Tetsu's Raid Lead Assistant(dev)"
 }

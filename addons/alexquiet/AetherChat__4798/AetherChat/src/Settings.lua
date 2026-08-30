@@ -22,17 +22,35 @@ local DEFAULTS = {
     maxHistory = 150,
     activeTheme = 'skyrim_nordic',
     needTemplate = 'LF <<item>> please :)',
+    showBadgeMessages = true,
+    showBadgeFriends = true,
+    showBadgeMail = true,
     notifyWhispers = true,
     notifyGuilds = true,
     notifyParty = true,
     notifyFriendStatus = true,
+    notifyGuildStatus = false,
+    notifyGuild_1 = true,
+    notifyGuild_2 = true,
+    notifyGuild_3 = true,
+    notifyGuild_4 = true,
+    notifyGuild_5 = true,
     notifySales = true,
     guildsExpanded = false,
+    -- Keywords & Mentions
+    keywordEnable = true,
+    keywordList = '',
+    keywordSound = 'champion',
+    keywordColor = 'FFD700',
+    -- Resolution & Scaling
+    scaleMode = 'auto',
+    windowScale = 1.0,
     floatingIconPos = { x = 60, y = 60 },
     windowPos = nil,
     windowDimensions = { width = 940, height = 520 },
     history = {},
     channelOrder = {},
+    processedSalesMails = {},  -- persisted across sessions to avoid double-fire
 }
 
 function AetherChat.SendInGameDonation()
@@ -120,7 +138,7 @@ function Settings.RegisterLAM()
         name = "AetherChat",
         displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "1.1",
+        version = "1.2",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -183,12 +201,24 @@ function Settings.RegisterLAM()
         'Illimité (Jamais) / Unlimited',
     }
 
-    local retentionValues = {
-        86400,
-        259200,
-        604800,
-        2592000,
-        0,
+    local keywordColorChoices = {
+        L('COLOR_GOLD'),
+        L('COLOR_PINK'),
+        L('COLOR_CYAN'),
+        L('COLOR_GREEN'),
+        L('COLOR_ORANGE'),
+        L('COLOR_PURPLE'),
+        L('COLOR_YELLOW'),
+    }
+
+    local keywordColorValues = {
+        'FFD700',
+        'F43F5E',
+        '38BDF8',
+        '10B981',
+        'FB923C',
+        'A855F7',
+        'FACC15',
     }
 
     local optionsData = {
@@ -290,6 +320,45 @@ function Settings.RegisterLAM()
         },
         {
             type = "checkbox",
+            name = L('SET_BADGE_MESSAGES'),
+            tooltip = L('SET_BADGE_MESSAGES_TT'),
+            getFunc = function() return Settings.Get('showBadgeMessages', true) end,
+            setFunc = function(value)
+                Settings.Set('showBadgeMessages', value)
+                if AetherChat.Messenger and AetherChat.Messenger.UpdateTotalBadge then
+                    AetherChat.Messenger.UpdateTotalBadge()
+                end
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_BADGE_FRIENDS'),
+            tooltip = L('SET_BADGE_FRIENDS_TT'),
+            getFunc = function() return Settings.Get('showBadgeFriends', true) end,
+            setFunc = function(value)
+                Settings.Set('showBadgeFriends', value)
+                if AetherChat.Messenger and AetherChat.Messenger.UpdateFriendsBadge then
+                    AetherChat.Messenger.UpdateFriendsBadge()
+                end
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_BADGE_MAIL'),
+            tooltip = L('SET_BADGE_MAIL_TT'),
+            getFunc = function() return Settings.Get('showBadgeMail', true) end,
+            setFunc = function(value)
+                Settings.Set('showBadgeMail', value)
+                if AetherChat.Messenger and AetherChat.Messenger.UpdateMailBadge then
+                    AetherChat.Messenger.UpdateMailBadge()
+                end
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
             name = L('SET_BADGE_WHISPER'),
             tooltip = L('SET_BADGE_WHISPER_TT'),
             getFunc = function() return Settings.Get('notifyWhispers', true) end,
@@ -328,11 +397,98 @@ function Settings.RegisterLAM()
             default = true,
         },
         {
+            type = "header",
+            name = L('SET_STATUS_HEADER'),
+        },
+        {
             type = "checkbox",
             name = L('SET_NOTIF_FRIENDS_STATUS'),
             tooltip = L('SET_NOTIF_FRIENDS_STATUS_TT'),
             getFunc = function() return Settings.Get('notifyFriendStatus', true) end,
             setFunc = function(value) Settings.Set('notifyFriendStatus', value) end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_NOTIF_GUILD_STATUS'),
+            tooltip = L('SET_NOTIF_GUILD_STATUS_TT'),
+            getFunc = function() return Settings.Get('notifyGuildStatus', false) end,
+            setFunc = function(value) Settings.Set('notifyGuildStatus', value) end,
+            default = false,
+        },
+        {
+            type = "checkbox",
+            name = function()
+                local gId = GetGuildId(1)
+                return (gId and gId > 0 and GetGuildName(gId)) or (L('CH_GUILD_PREFIX') .. ' 1')
+            end,
+            tooltip = L('SET_NOTIF_GUILD_X_TT'),
+            getFunc = function() return Settings.Get('notifyGuild_1', true) end,
+            setFunc = function(value) Settings.Set('notifyGuild_1', value) end,
+            disabled = function()
+                local gId = GetGuildId(1)
+                return not Settings.Get('notifyGuildStatus', false) or (not gId or gId == 0)
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = function()
+                local gId = GetGuildId(2)
+                return (gId and gId > 0 and GetGuildName(gId)) or (L('CH_GUILD_PREFIX') .. ' 2')
+            end,
+            tooltip = L('SET_NOTIF_GUILD_X_TT'),
+            getFunc = function() return Settings.Get('notifyGuild_2', true) end,
+            setFunc = function(value) Settings.Set('notifyGuild_2', value) end,
+            disabled = function()
+                local gId = GetGuildId(2)
+                return not Settings.Get('notifyGuildStatus', false) or (not gId or gId == 0)
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = function()
+                local gId = GetGuildId(3)
+                return (gId and gId > 0 and GetGuildName(gId)) or (L('CH_GUILD_PREFIX') .. ' 3')
+            end,
+            tooltip = L('SET_NOTIF_GUILD_X_TT'),
+            getFunc = function() return Settings.Get('notifyGuild_3', true) end,
+            setFunc = function(value) Settings.Set('notifyGuild_3', value) end,
+            disabled = function()
+                local gId = GetGuildId(3)
+                return not Settings.Get('notifyGuildStatus', false) or (not gId or gId == 0)
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = function()
+                local gId = GetGuildId(4)
+                return (gId and gId > 0 and GetGuildName(gId)) or (L('CH_GUILD_PREFIX') .. ' 4')
+            end,
+            tooltip = L('SET_NOTIF_GUILD_X_TT'),
+            getFunc = function() return Settings.Get('notifyGuild_4', true) end,
+            setFunc = function(value) Settings.Set('notifyGuild_4', value) end,
+            disabled = function()
+                local gId = GetGuildId(4)
+                return not Settings.Get('notifyGuildStatus', false) or (not gId or gId == 0)
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = function()
+                local gId = GetGuildId(5)
+                return (gId and gId > 0 and GetGuildName(gId)) or (L('CH_GUILD_PREFIX') .. ' 5')
+            end,
+            tooltip = L('SET_NOTIF_GUILD_X_TT'),
+            getFunc = function() return Settings.Get('notifyGuild_5', true) end,
+            setFunc = function(value) Settings.Set('notifyGuild_5', value) end,
+            disabled = function()
+                local gId = GetGuildId(5)
+                return not Settings.Get('notifyGuildStatus', false) or (not gId or gId == 0)
+            end,
             default = true,
         },
         {
@@ -343,6 +499,115 @@ function Settings.RegisterLAM()
             setFunc = function(value) Settings.Set('notifySales', value) end,
             default = true,
         },
+
+        -- ===================== KEYWORDS & MENTIONS =====================
+        {
+            type = "header",
+            name = L('SET_KEYWORD_HEADER'),
+        },
+        {
+            type = "checkbox",
+            name = L('SET_KEYWORD_ENABLE'),
+            tooltip = L('SET_KEYWORD_ENABLE_TT'),
+            getFunc = function() return Settings.Get('keywordEnable', true) end,
+            setFunc = function(value)
+                Settings.Set('keywordEnable', value)
+                if AetherChat.Messenger and AetherChat.Messenger.RefreshActiveChannel then
+                    AetherChat.Messenger.RefreshActiveChannel()
+                end
+            end,
+            default = true,
+        },
+        {
+            type = "editbox",
+            name = L('SET_KEYWORD_LIST'),
+            tooltip = L('SET_KEYWORD_LIST_TT'),
+            getFunc = function() return Settings.Get('keywordList', '') end,
+            setFunc = function(value)
+                Settings.Set('keywordList', value or '')
+                -- Rebuild keyword table immediately after save
+                if AetherChat.ChatEngine and AetherChat.ChatEngine.RebuildKeywordTable then
+                    AetherChat.ChatEngine.RebuildKeywordTable()
+                end
+                if AetherChat.Messenger and AetherChat.Messenger.RefreshActiveChannel then
+                    AetherChat.Messenger.RefreshActiveChannel()
+                end
+            end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = '',
+        },
+        {
+            type = "dropdown",
+            name = L('SET_KEYWORD_SOUND'),
+            tooltip = L('SET_KEYWORD_SOUND_TT'),
+            choices = soundChoices,
+            choicesValues = soundKeys,
+            getFunc = function() return Settings.Get('keywordSound', 'champion') end,
+            setFunc = function(value) Settings.Set('keywordSound', value) end,
+            default = 'champion',
+        },
+        {
+            type = "dropdown",
+            name = L('SET_KEYWORD_COLOR'),
+            tooltip = L('SET_KEYWORD_COLOR_TT'),
+            choices = keywordColorChoices,
+            choicesValues = keywordColorValues,
+            getFunc = function() return Settings.Get('keywordColor', 'FFD700') end,
+            setFunc = function(value)
+                Settings.Set('keywordColor', value)
+                if AetherChat.Messenger and AetherChat.Messenger.RefreshActiveChannel then
+                    AetherChat.Messenger.RefreshActiveChannel()
+                end
+            end,
+            default = 'FFD700',
+        },
+
+        -- ===================== RESOLUTION & SCALE =====================
+        {
+            type = "header",
+            name = L('SET_SCALE_HEADER'),
+        },
+        {
+            type = "dropdown",
+            name = L('SET_SCALE_MODE'),
+            tooltip = L('SET_SCALE_MODE_TT'),
+            choices = {
+                L('SET_SCALE_AUTO'),
+                L('SET_SCALE_720'),
+                L('SET_SCALE_1080'),
+                L('SET_SCALE_1440'),
+                L('SET_SCALE_2160'),
+            },
+            choicesValues = { 'auto', '720', '1080', '1440', '2160' },
+            getFunc = function() return Settings.Get('scaleMode', 'auto') end,
+            setFunc = function(value)
+                Settings.Set('scaleMode', value)
+                if AetherChat.Messenger and AetherChat.Messenger.ApplyResolutionScale then
+                    AetherChat.Messenger.ApplyResolutionScale()
+                end
+            end,
+            default = 'auto',
+        },
+        {
+            type = "slider",
+            name = L('SET_SCALE_SLIDER'),
+            tooltip = L('SET_SCALE_SLIDER_TT'),
+            min = 60,
+            max = 150,
+            step = 5,
+            getFunc = function() return math.floor(Settings.Get('windowScale', 1.0) * 100) end,
+            setFunc = function(value)
+                Settings.Set('windowScale', value / 100)
+                if AetherChat.Messenger and AetherChat.Messenger.ApplyResolutionScale then
+                    AetherChat.Messenger.ApplyResolutionScale()
+                end
+            end,
+            disabled = function() return Settings.Get('scaleMode', 'auto') ~= 'manual' end,
+            default = 100,
+        },
+
+        -- ===================== LOOT HEADER =====================
         {
             type = "header",
             name = L('SET_LOOT_HEADER'),

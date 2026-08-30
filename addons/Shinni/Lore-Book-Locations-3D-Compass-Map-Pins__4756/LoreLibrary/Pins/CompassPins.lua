@@ -215,7 +215,7 @@ function CompassPins:TickMarker(playerX, playerY, playerZ, heading, compassWidth
 	-- rather than per-location, since it's the same for all of them
 	local playerNormX, playerNormY = GetNormalizedWorldPosition(playerZoneId, playerX * 100, playerZ * 100, playerY * 100)
 
-	for locationIndex, location in ipairs(self.markerLocations) do
+	for locationIndex, location in pairs(self.markerLocations) do
 		local sameZone = location.zoneId == playerZoneId
 		local relevant = sameZone or GetParentZoneId(location.zoneId) == playerZoneId
 		local pinIndex = self.markerPinIndex[locationIndex]

@@ -15,8 +15,6 @@ local MIN_HEIGHT = GB.MIN_HEIGHT or 220
 local MAX_WIDTH = GB.MAX_WIDTH or 900
 local MAX_HEIGHT = GB.MAX_HEIGHT or 900
 
-local ROW_HEIGHT = 18
-
 ------------------------------------------------------------
 -- UI REFERENCES
 ------------------------------------------------------------
@@ -26,7 +24,9 @@ local mainWindowFragment
 local scrollContainer
 local scrollChild
 local emptyText
+local totalTitleLabel
 local totalValueLabel
+local sessionTimeTitleLabel
 local sessionTimeValueLabel
 local mainBackground
 local resizeHint
@@ -34,6 +34,43 @@ local resizeHint
 local rowControls = {}
 
 local USER_HIDDEN_REASON = "GatherBuddyUserHidden"
+
+------------------------------------------------------------
+-- FONT HELPERS
+------------------------------------------------------------
+
+local function GetMainFontSize()
+    if GB.savedVariables == nil then
+        return 13
+    end
+
+    local fontSize =
+        tonumber(
+            GB.savedVariables.mainFontSize
+        ) or 13
+
+    return math.max(
+        10,
+        math.min(
+            20,
+            math.floor(fontSize + 0.5)
+        )
+    )
+end
+
+local function GetMainFont()
+    return string.format(
+        "$(MEDIUM_FONT)|%d|soft-shadow-thin",
+        GetMainFontSize()
+    )
+end
+
+local function GetRowHeight()
+    return math.max(
+        18,
+        GetMainFontSize() + 5
+    )
+end
 
 ------------------------------------------------------------
 -- MAIN WINDOW SCENE VISIBILITY
@@ -45,8 +82,6 @@ local function SetupMainWindowSceneFragment()
         return
     end
 
-    -- Start hidden and let ESO's scene manager decide
-    -- when the window belongs on screen.
     mainWindow:SetHidden(true)
 
     mainWindowFragment =
@@ -100,6 +135,51 @@ function GB.ApplyMainWindowVisibility()
 end
 
 ------------------------------------------------------------
+-- APPLY MAIN FONT SIZE
+------------------------------------------------------------
+
+function GB.ApplyMainFontSize()
+    local font =
+        GetMainFont()
+
+    if emptyText then
+        emptyText:SetFont(font)
+    end
+
+    if totalTitleLabel then
+        totalTitleLabel:SetFont(font)
+    end
+
+    if totalValueLabel then
+        totalValueLabel:SetFont(font)
+    end
+
+    if sessionTimeTitleLabel then
+        sessionTimeTitleLabel:SetFont(font)
+    end
+
+    if sessionTimeValueLabel then
+        sessionTimeValueLabel:SetFont(font)
+    end
+
+    for _, row in ipairs(
+        rowControls
+    ) do
+        if row.nameLabel then
+            row.nameLabel:SetFont(font)
+        end
+
+        if row.quantityLabel then
+            row.quantityLabel:SetFont(font)
+        end
+    end
+
+    if GB.UpdateMaterialList then
+        GB.UpdateMaterialList()
+    end
+end
+
+------------------------------------------------------------
 -- UPDATE SESSION TIMER
 ------------------------------------------------------------
 
@@ -135,7 +215,9 @@ function GB.UpdateMaterialList()
     local sortedItems = {}
     local totalQuantity = 0
 
-    for itemId, data in pairs(GB.sessionItems) do
+    for itemId, data in pairs(
+        GB.sessionItems
+    ) do
         table.insert(
             sortedItems,
             {
@@ -169,12 +251,18 @@ function GB.UpdateMaterialList()
     -- RESPONSIVE LIST SIZE
     --------------------------------------------------------
 
-    local windowWidth = DEFAULT_WIDTH
-    local windowHeight = DEFAULT_HEIGHT
+    local windowWidth =
+        DEFAULT_WIDTH
+
+    local windowHeight =
+        DEFAULT_HEIGHT
 
     if mainWindow then
-        windowWidth = mainWindow:GetWidth()
-        windowHeight = mainWindow:GetHeight()
+        windowWidth =
+            mainWindow:GetWidth()
+
+        windowHeight =
+            mainWindow:GetHeight()
     end
 
     local childWidth =
@@ -189,6 +277,12 @@ function GB.UpdateMaterialList()
             windowHeight - 105
         )
 
+    local rowHeight =
+        GetRowHeight()
+
+    local font =
+        GetMainFont()
+
     if scrollChild then
         scrollChild:SetWidth(
             childWidth
@@ -199,7 +293,9 @@ function GB.UpdateMaterialList()
     -- HIDE OLD ROWS
     --------------------------------------------------------
 
-    for _, row in ipairs(rowControls) do
+    for _, row in ipairs(
+        rowControls
+    ) do
         row:SetHidden(true)
     end
 
@@ -210,6 +306,7 @@ function GB.UpdateMaterialList()
     if #sortedItems == 0 then
         if emptyText then
             emptyText:SetHidden(false)
+            emptyText:SetFont(font)
         end
 
         if scrollChild then
@@ -233,8 +330,11 @@ function GB.UpdateMaterialList()
     -- MATERIAL ROWS
     --------------------------------------------------------
 
-    for index, item in ipairs(sortedItems) do
-        local row = rowControls[index]
+    for index, item in ipairs(
+        sortedItems
+    ) do
+        local row =
+            rowControls[index]
 
         if row == nil then
             row =
@@ -253,10 +353,6 @@ function GB.UpdateMaterialList()
                     CT_LABEL
                 )
 
-            nameLabel:SetFont(
-                "ZoFontGameSmall"
-            )
-
             nameLabel:SetAnchor(
                 LEFT,
                 row,
@@ -273,10 +369,6 @@ function GB.UpdateMaterialList()
                     CT_LABEL
                 )
 
-            quantityLabel:SetFont(
-                "ZoFontGameSmall"
-            )
-
             quantityLabel:SetAnchor(
                 RIGHT,
                 row,
@@ -291,18 +383,38 @@ function GB.UpdateMaterialList()
 
             quantityLabel:SetWidth(45)
 
-            row.nameLabel = nameLabel
-            row.quantityLabel = quantityLabel
+            row.nameLabel =
+                nameLabel
 
-            rowControls[index] = row
+            row.quantityLabel =
+                quantityLabel
+
+            rowControls[index] =
+                row
         end
+
+        ----------------------------------------------------
+        -- FONT
+        ----------------------------------------------------
+
+        row.nameLabel:SetFont(
+            font
+        )
+
+        row.quantityLabel:SetFont(
+            font
+        )
+
+        ----------------------------------------------------
+        -- ROW SIZE
+        ----------------------------------------------------
 
         local rowWidth =
             childWidth - 5
 
         row:SetDimensions(
             rowWidth,
-            ROW_HEIGHT
+            rowHeight
         )
 
         row.nameLabel:SetWidth(
@@ -319,14 +431,22 @@ function GB.UpdateMaterialList()
             scrollChild,
             TOPLEFT,
             0,
-            (index - 1) * ROW_HEIGHT
+            (index - 1)
+                * rowHeight
         )
 
+        ----------------------------------------------------
+        -- ITEM DISPLAY
+        ----------------------------------------------------
+
         local quality =
-            item.quality or ITEM_QUALITY_NORMAL
+            item.quality
+            or ITEM_QUALITY_NORMAL
 
         local qualityColor =
-            GetItemQualityColor(quality)
+            GetItemQualityColor(
+                quality
+            )
 
         row.nameLabel:SetText(
             qualityColor:Colorize(
@@ -335,9 +455,10 @@ function GB.UpdateMaterialList()
         )
 
         row.quantityLabel:SetText(
-            "x" .. tostring(
-                item.quantity
-            )
+            "x"
+                .. tostring(
+                    item.quantity
+                )
         )
 
         row:SetHidden(false)
@@ -348,9 +469,12 @@ function GB.UpdateMaterialList()
     --------------------------------------------------------
 
     local contentHeight =
-        #sortedItems * ROW_HEIGHT
+        #sortedItems
+        * rowHeight
 
-    if contentHeight < visibleListHeight then
+    if contentHeight
+        < visibleListHeight then
+
         contentHeight =
             visibleListHeight
     end
@@ -457,13 +581,34 @@ function GB.ApplyWindowLockState()
     end
 
     if resizeHint then
-        resizeHint:SetHidden(isLocked)
+        resizeHint:SetHidden(
+            isLocked
+        )
     end
 
-    -- Apply the same lock state to the Stats window.
     if GB.ApplyStatsWindowLockState then
         GB.ApplyStatsWindowLockState()
     end
+
+    if GB.ApplyHistoryWindowLockState then
+        GB.ApplyHistoryWindowLockState()
+    end
+end
+
+function GB.LockWindow()
+    if GB.savedVariables == nil then
+        return
+    end
+
+    GB.savedVariables.isLocked =
+        true
+
+    GB.ApplyWindowLockState()
+
+    CHAT_SYSTEM:AddMessage(
+        "|c66CCFF[Gather Buddy]|r "
+            .. "Window locked."
+    )
 end
 
 function GB.UnlockWindow()
@@ -471,12 +616,14 @@ function GB.UnlockWindow()
         return
     end
 
-    GB.savedVariables.isLocked = false
+    GB.savedVariables.isLocked =
+        false
 
     GB.ApplyWindowLockState()
 
     CHAT_SYSTEM:AddMessage(
-        "|c66CCFF[Gather Buddy]|r Window unlocked."
+        "|c66CCFF[Gather Buddy]|r "
+            .. "Window unlocked."
     )
 end
 
@@ -490,12 +637,17 @@ function GB.HideWindow()
         return
     end
 
-    GB.savedVariables.isHidden = true
+    GB.savedVariables.isHidden =
+        true
 
     GB.ApplyMainWindowVisibility()
 
     if GB.HideStatsWindow then
         GB.HideStatsWindow()
+    end
+
+    if GB.HideHistoryWindow then
+        GB.HideHistoryWindow()
     end
 end
 
@@ -513,10 +665,14 @@ function GB.ToggleWindow()
 
     GB.ApplyMainWindowVisibility()
 
-    if GB.savedVariables.isHidden
-        and GB.HideStatsWindow then
+    if GB.savedVariables.isHidden then
+        if GB.HideStatsWindow then
+            GB.HideStatsWindow()
+        end
 
-        GB.HideStatsWindow()
+        if GB.HideHistoryWindow then
+            GB.HideHistoryWindow()
+        end
     end
 end
 
@@ -530,7 +686,8 @@ function GB.CreateWindow()
             "GatherBuddyWindow"
         )
 
-    GB.mainWindow = mainWindow
+    GB.mainWindow =
+        mainWindow
 
     --------------------------------------------------------
     -- LOAD SAVED SIZE
@@ -578,11 +735,15 @@ function GB.CreateWindow()
         MAX_HEIGHT
     )
 
-    mainWindow:SetResizeHandleSize(16)
+    mainWindow:SetResizeHandleSize(
+        16
+    )
 
     mainWindow:SetMovable(true)
     mainWindow:SetMouseEnabled(true)
-    mainWindow:SetClampedToScreen(true)
+    mainWindow:SetClampedToScreen(
+        true
+    )
 
     --------------------------------------------------------
     -- SAVED POSITION
@@ -687,8 +848,10 @@ function GB.CreateWindow()
     titleBar:SetHandler(
         "OnMouseDown",
         function(self, button)
-            if button == MOUSE_BUTTON_INDEX_LEFT
-                and GB.savedVariables.isLocked ~= true then
+            if button
+                == MOUSE_BUTTON_INDEX_LEFT
+                and GB.savedVariables.isLocked
+                    ~= true then
 
                 mainWindow:StartMoving()
             end
@@ -698,8 +861,11 @@ function GB.CreateWindow()
     titleBar:SetHandler(
         "OnMouseUp",
         function(self, button)
-            if button == MOUSE_BUTTON_INDEX_LEFT then
-                mainWindow:StopMovingOrResizing()
+            if button
+                == MOUSE_BUTTON_INDEX_LEFT then
+
+                mainWindow:
+                    StopMovingOrResizing()
 
                 GB.savedVariables.left =
                     mainWindow:GetLeft()
@@ -727,7 +893,10 @@ function GB.CreateWindow()
 
     title:SetText(
         "|c66CCFFGATHER BUDDY v"
-            .. (GB.ADDON_VERSION or "1.1")
+            .. (
+                GB.ADDON_VERSION
+                or "1.2"
+            )
             .. "|r"
     )
 
@@ -915,10 +1084,6 @@ function GB.CreateWindow()
             CT_LABEL
         )
 
-    emptyText:SetFont(
-        "ZoFontGameSmall"
-    )
-
     emptyText:SetText(
         "No materials gathered yet."
     )
@@ -935,16 +1100,12 @@ function GB.CreateWindow()
     -- TOTAL
     --------------------------------------------------------
 
-    local totalTitleLabel =
+    totalTitleLabel =
         WINDOW_MANAGER:CreateControl(
             "GatherBuddyTotalTitle",
             mainWindow,
             CT_LABEL
         )
-
-    totalTitleLabel:SetFont(
-        "ZoFontGameSmall"
-    )
 
     totalTitleLabel:SetText(
         "TOTAL THIS SESSION:"
@@ -965,10 +1126,6 @@ function GB.CreateWindow()
             CT_LABEL
         )
 
-    totalValueLabel:SetFont(
-        "ZoFontGameSmall"
-    )
-
     totalValueLabel:SetText("0")
     totalValueLabel:SetWidth(70)
 
@@ -988,16 +1145,12 @@ function GB.CreateWindow()
     -- SESSION TIME
     --------------------------------------------------------
 
-    local sessionTimeTitleLabel =
+    sessionTimeTitleLabel =
         WINDOW_MANAGER:CreateControl(
             "GatherBuddySessionTimeTitle",
             mainWindow,
             CT_LABEL
         )
-
-    sessionTimeTitleLabel:SetFont(
-        "ZoFontGameSmall"
-    )
 
     sessionTimeTitleLabel:SetText(
         "SESSION TIME:"
@@ -1018,15 +1171,13 @@ function GB.CreateWindow()
             CT_LABEL
         )
 
-    sessionTimeValueLabel:SetFont(
-        "ZoFontGameSmall"
-    )
-
     sessionTimeValueLabel:SetText(
         "00:00:00"
     )
 
-    sessionTimeValueLabel:SetWidth(90)
+    sessionTimeValueLabel:SetWidth(
+        90
+    )
 
     sessionTimeValueLabel:SetHorizontalAlignment(
         TEXT_ALIGN_RIGHT
@@ -1075,6 +1226,7 @@ function GB.CreateWindow()
 
     GB.ApplyWindowLockState()
     GB.ApplyBackgroundTransparency()
+    GB.ApplyMainFontSize()
 
     --------------------------------------------------------
     -- INITIAL UPDATE

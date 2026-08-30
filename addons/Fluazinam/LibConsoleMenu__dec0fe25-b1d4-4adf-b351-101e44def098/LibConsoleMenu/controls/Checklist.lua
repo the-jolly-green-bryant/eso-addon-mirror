@@ -277,7 +277,7 @@ end
 LCM.updateControlFunctions[LCM.CT_CHECKLIST] = function(self, control, selected, enabled)
 	local nameControl = control:GetNamedChild("Name")
 	local label = self:GetString(self:GetValueOrCallback(self.labelText))
-	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
+	local align, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
 	if nameControl then
 		nameControl:SetText(label)
 		LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
@@ -286,7 +286,7 @@ LCM.updateControlFunctions[LCM.CT_CHECKLIST] = function(self, control, selected,
 	local dropdown = control.dropdown
 	dropdown:SetSortsItems(false)
 	dropdown:SetName(label)
-	dropdown._lcmChecklistCenterItems = align ~= "left"
+	dropdown._lcmChecklistCenterItems = not LCM.IsLeftAlign(align)
 	dropdown._lcmLeftIndentPx = 0
 	ApplyClosedSelectedTextLayout(dropdown)
 
@@ -309,7 +309,7 @@ LCM.updateControlFunctions[LCM.CT_CHECKLIST] = function(self, control, selected,
 		dropdown:SetNoSelectionText()
 	end
 
-	local formatter = self:GetValueOrCallback(self.multiSelectionTextFormatter)
+	local formatter = self:GetValueOrCallback(self.selectionTextFormat)
 	if formatter then
 		dropdown:SetMultiSelectionTextFormatter(formatter)
 	else
@@ -369,9 +369,8 @@ LCM.setupControlFunctions[LCM.CT_CHECKLIST] = function(self, params)
 	self.disable = params.disable
 	self.maxSelections = params.maxSelections
 	self.noSelectionText = params.noSelectionText
-	self.multiSelectionTextFormatter = params.multiSelectionTextFormatter
+	self.selectionTextFormat = params.selectionTextFormat
 	self.align = params.align
-	self.indent = params.indent
 end
 
 function LCM.CreateChecklistPoolFactory()

@@ -1,0 +1,17 @@
+## Title: My Little Journal
+## Description: A personal strategy journal for dungeons, trials, and arenas. Write your own boss tactics, browse them in a journal window, send them to chat, and share them with other users via group broadcast or chat links. Requires LibAddonMenu-2.0, LibSets, LibChatMessage and LibGroupBroadcast.
+## Author: Lledos
+## Version: 1.0
+## AddOnVersion: 100
+## APIVersion: 101046
+## SavedVariables: MyLittleJournal_SavedVariables
+
+## DependsOn: LibAddonMenu-2.0>=43 LibSets>=0009030 LibChatMessage>=120 LibGroupBroadcast>=91
+
+MyLittleJournal_Data.lua
+MyLittleJournal_Chat.lua
+MyLittleJournal_Discovery.lua
+MyLittleJournal_Share.lua
+MyLittleJournal_UI.lua
+MyLittleJournal.lua
+Bindings.xml

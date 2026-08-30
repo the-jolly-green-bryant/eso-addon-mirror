@@ -7,7 +7,7 @@ local GB = GatherBuddy
 ------------------------------------------------------------
 
 GB.ADDON_NAME = "GatherBuddy"
-GB.ADDON_VERSION = "1.1"
+GB.ADDON_VERSION = "1.2"
 
 local ADDON_NAME = GB.ADDON_NAME
 local ADDON_VERSION = GB.ADDON_VERSION
@@ -41,22 +41,45 @@ local defaults = {
     left = nil,
     top = nil,
 
+    -- Main window size
     width = GB.DEFAULT_WIDTH,
     height = GB.DEFAULT_HEIGHT,
 
+    -- Stats window position
     statsLeft = nil,
     statsTop = nil,
 
-    sessionItems = {},
+    -- History window position
+    historyLeft = nil,
+    historyTop = nil,
 
+    -- Current session
+    sessionItems = {},
+    sessionStartTime = nil,
+
+    -- Used to determine when the previous session actually ended.
+    -- This prevents offline time from being counted.
+    sessionLastSeenTime = nil,
+    sessionLastDateText = nil,
+    sessionLastClockText = nil,
+
+    -- Last completed farming sessions
+    sessionHistory = {},
+
+    -- Main window visibility
     isHidden = false,
+
+    -- Window movement / resizing lock
     isLocked = false,
 
     -- 0 = solid black
     -- 255 = fully transparent
     backgroundTransparency = 64,
 
-    sessionStartTime = nil,
+    -- Independent font sizes
+    mainFontSize = 13,
+    statsFontSize = 13,
+    historyFontSize = 13,
 }
 
 ------------------------------------------------------------
@@ -64,11 +87,24 @@ local defaults = {
 ------------------------------------------------------------
 
 function GB.FormatSessionTime(totalSeconds)
-    totalSeconds = math.max(0, math.floor(totalSeconds))
+    totalSeconds =
+        math.max(
+            0,
+            math.floor(totalSeconds)
+        )
 
-    local hours = math.floor(totalSeconds / 3600)
-    local minutes = math.floor((totalSeconds % 3600) / 60)
-    local seconds = totalSeconds % 60
+    local hours =
+        math.floor(
+            totalSeconds / 3600
+        )
+
+    local minutes =
+        math.floor(
+            (totalSeconds % 3600) / 60
+        )
+
+    local seconds =
+        totalSeconds % 60
 
     return string.format(
         "%02d:%02d:%02d",
@@ -81,13 +117,33 @@ end
 function GB.GetElapsedSessionTime()
     if GB.savedVariables == nil
         or GB.savedVariables.sessionStartTime == nil then
+
         return 0
     end
 
     return math.max(
         0,
-        GetTimeStamp() - GB.savedVariables.sessionStartTime
+        GetTimeStamp()
+            - GB.savedVariables.sessionStartTime
     )
+end
+
+------------------------------------------------------------
+-- START NEW SESSION
+------------------------------------------------------------
+
+local function StartNewSession()
+    GB.savedVariables.sessionItems = {}
+
+    GB.sessionItems =
+        GB.savedVariables.sessionItems
+
+    GB.savedVariables.sessionStartTime =
+        GetTimeStamp()
+
+    if GB.ResetSessionCheckpoint then
+        GB.ResetSessionCheckpoint()
+    end
 end
 
 ------------------------------------------------------------
@@ -95,11 +151,19 @@ end
 ------------------------------------------------------------
 
 function GB.ClearSession()
-    for itemId in pairs(GB.sessionItems) do
-        GB.sessionItems[itemId] = nil
+    --------------------------------------------------------
+    -- ARCHIVE CURRENT SESSION FIRST
+    --------------------------------------------------------
+
+    if GB.ArchiveCurrentSession then
+        GB.ArchiveCurrentSession(false)
     end
 
-    GB.savedVariables.sessionStartTime = GetTimeStamp()
+    --------------------------------------------------------
+    -- START FRESH SESSION
+    --------------------------------------------------------
+
+    StartNewSession()
 
     if GB.UpdateMaterialList then
         GB.UpdateMaterialList()
@@ -115,35 +179,40 @@ end
 ------------------------------------------------------------
 
 local function RegisterSlashCommands()
-    SLASH_COMMANDS["/gbuddy"] = function(args)
-        local command = string.lower(
-            zo_strtrim(args or "")
-        )
+    SLASH_COMMANDS["/gbuddy"] =
+        function(args)
+            local command =
+                string.lower(
+                    zo_strtrim(
+                        args or ""
+                    )
+                )
 
-        if command == "" then
-            if GB.ToggleWindow then
-                GB.ToggleWindow()
+            if command == "" then
+                if GB.ToggleWindow then
+                    GB.ToggleWindow()
+                end
+
+            elseif command == "lock" then
+                if GB.LockWindow then
+                    GB.LockWindow()
+                end
+
+            elseif command == "unlock" then
+                if GB.UnlockWindow then
+                    GB.UnlockWindow()
+                end
+
+            else
+                CHAT_SYSTEM:AddMessage(
+                    "|c66CCFF[Gather Buddy]|r "
+                        .. "Commands: "
+                        .. "/gbuddy, "
+                        .. "/gbuddy lock, "
+                        .. "/gbuddy unlock"
+                )
             end
-
-        elseif command == "lock" then
-            if GB.LockWindow then
-                GB.LockWindow()
-            end
-
-        elseif command == "unlock" then
-            if GB.UnlockWindow then
-                GB.UnlockWindow()
-            end
-
-        else
-            CHAT_SYSTEM:AddMessage(
-                "|c66CCFF[Gather Buddy]|r "
-                    .. "Commands: /gbuddy, "
-                    .. "/gbuddy lock, "
-                    .. "/gbuddy unlock"
-            )
         end
-    end
 end
 
 ------------------------------------------------------------
@@ -153,6 +222,10 @@ end
 local function ValidateSavedVariables()
     if GB.savedVariables.sessionItems == nil then
         GB.savedVariables.sessionItems = {}
+    end
+
+    if GB.savedVariables.sessionHistory == nil then
+        GB.savedVariables.sessionHistory = {}
     end
 
     if GB.savedVariables.isHidden == nil then
@@ -167,12 +240,71 @@ local function ValidateSavedVariables()
         GB.savedVariables.backgroundTransparency = 64
     end
 
+    if GB.savedVariables.mainFontSize == nil then
+        GB.savedVariables.mainFontSize = 13
+    end
+
+    if GB.savedVariables.statsFontSize == nil then
+        GB.savedVariables.statsFontSize = 13
+    end
+
+    if GB.savedVariables.historyFontSize == nil then
+        GB.savedVariables.historyFontSize = 13
+    end
+
     if GB.savedVariables.width == nil then
-        GB.savedVariables.width = GB.DEFAULT_WIDTH
+        GB.savedVariables.width =
+            GB.DEFAULT_WIDTH
     end
 
     if GB.savedVariables.height == nil then
-        GB.savedVariables.height = GB.DEFAULT_HEIGHT
+        GB.savedVariables.height =
+            GB.DEFAULT_HEIGHT
+    end
+end
+
+------------------------------------------------------------
+-- RESTORE OR START SESSION
+------------------------------------------------------------
+
+local function PrepareSession(initial)
+    --------------------------------------------------------
+    -- MAKE SAVED SESSION AVAILABLE TO HISTORY MODULE
+    --------------------------------------------------------
+
+    GB.sessionItems =
+        GB.savedVariables.sessionItems
+
+    --------------------------------------------------------
+    -- FULL LOGIN
+    --------------------------------------------------------
+
+    if initial then
+        -- Archive the session that was active when the player
+        -- last logged out. Empty sessions are ignored.
+        if GB.ArchiveCurrentSession then
+            GB.ArchiveCurrentSession(true)
+        end
+
+        StartNewSession()
+        return
+    end
+
+    --------------------------------------------------------
+    -- /RELOADUI
+    --------------------------------------------------------
+
+    -- A UI reload must continue the existing session.
+    if GB.savedVariables.sessionStartTime == nil then
+        GB.savedVariables.sessionStartTime =
+            GetTimeStamp()
+    end
+
+    GB.sessionItems =
+        GB.savedVariables.sessionItems
+
+    if GB.ResetSessionCheckpoint then
+        GB.ResetSessionCheckpoint()
     end
 end
 
@@ -180,28 +312,23 @@ end
 -- PLAYER ACTIVATED
 ------------------------------------------------------------
 
-local function OnPlayerActivated(eventCode, initial)
+local function OnPlayerActivated(
+    eventCode,
+    initial
+)
     EVENT_MANAGER:UnregisterForEvent(
         ADDON_NAME,
         EVENT_PLAYER_ACTIVATED
     )
 
     --------------------------------------------------------
-    -- SESSION RESET / RESTORE
+    -- SESSION
     --------------------------------------------------------
 
-    if initial then
-        GB.savedVariables.sessionItems = {}
-        GB.savedVariables.sessionStartTime = GetTimeStamp()
-
-    elseif GB.savedVariables.sessionStartTime == nil then
-        GB.savedVariables.sessionStartTime = GetTimeStamp()
-    end
-
-    GB.sessionItems = GB.savedVariables.sessionItems
+    PrepareSession(initial)
 
     --------------------------------------------------------
-    -- CREATE UI
+    -- CREATE WINDOWS
     --------------------------------------------------------
 
     if GB.CreateWindow then
@@ -210,6 +337,10 @@ local function OnPlayerActivated(eventCode, initial)
 
     if GB.CreateStatsWindow then
         GB.CreateStatsWindow()
+    end
+
+    if GB.CreateHistoryWindow then
+        GB.CreateHistoryWindow()
     end
 
     --------------------------------------------------------
@@ -227,7 +358,7 @@ local function OnPlayerActivated(eventCode, initial)
     end
 
     --------------------------------------------------------
-    -- SESSION TIMER
+    -- SESSION TIMER / CHECKPOINT
     --------------------------------------------------------
 
     EVENT_MANAGER:RegisterForUpdate(
@@ -236,6 +367,10 @@ local function OnPlayerActivated(eventCode, initial)
         function()
             if GB.UpdateSessionTimer then
                 GB.UpdateSessionTimer()
+            end
+
+            if GB.UpdateSessionCheckpoint then
+                GB.UpdateSessionCheckpoint()
             end
         end
     )
@@ -258,7 +393,10 @@ end
 -- ADDON LOADED
 ------------------------------------------------------------
 
-local function OnAddOnLoaded(eventCode, addonName)
+local function OnAddOnLoaded(
+    eventCode,
+    addonName
+)
     if addonName ~= ADDON_NAME then
         return
     end
@@ -272,7 +410,8 @@ local function OnAddOnLoaded(eventCode, addonName)
     -- SERVER-SPECIFIC SAVED VARIABLES
     --------------------------------------------------------
 
-    GB.worldName = GetWorldName()
+    GB.worldName =
+        GetWorldName()
 
     GB.savedVariables =
         ZO_SavedVars:NewAccountWide(
@@ -283,6 +422,14 @@ local function OnAddOnLoaded(eventCode, addonName)
         )
 
     ValidateSavedVariables()
+
+    --------------------------------------------------------
+    -- HISTORY
+    --------------------------------------------------------
+
+    if GB.InitializeHistory then
+        GB.InitializeHistory()
+    end
 
     --------------------------------------------------------
     -- SETTINGS

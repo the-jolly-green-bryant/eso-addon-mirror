@@ -66,3 +66,5 @@ L.MISSING_LWC_BODY        = "Установи Dolgubon's Lazy Writ Creator ил�
 L.MISSING_LWC_CHAT        = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Lazy Writ Creator не включён. Поставь его или выключи совместный режим."
 L.QUIET_INFO_LABEL        = "Скрыть обычные сообщения в чат"
 L.QUIET_INFO_TT           = "Прячет: режим прекрафта, фазу ротации, проверка OK, готово. Ошибки и нехватка материалов всегда видны."
+L.ERR_WAIT_LWC            = "Подожди: Lazy Writ Creator ещё крафтит сегодняшний заказ. R3 — после того как он закроет станок."
+L.ERR_STATION_CLOSED      = "Крафт отменён: станок закрыт. Открой снова и нажми R3."

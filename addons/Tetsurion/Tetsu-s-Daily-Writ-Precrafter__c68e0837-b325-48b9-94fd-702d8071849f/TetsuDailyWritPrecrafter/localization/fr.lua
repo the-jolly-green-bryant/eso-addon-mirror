@@ -65,3 +65,5 @@ L.MISSING_LWC_BODY        = "Installez Dolgubon's Lazy Writ Creator ou désactiv
 L.MISSING_LWC_CHAT        = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Lazy Writ Creator n'est pas activé. Installez-le ou désactivez le mode conjoint."
 L.QUIET_INFO_LABEL        = "Masquer les messages de chat habituels"
 L.QUIET_INFO_TT           = "Masque : pré-craft lancé, phase, matériaux OK, terminé. Les erreurs et manques restent visibles."
+L.ERR_WAIT_LWC            = "Attendez : Lazy Writ Creator fabrique encore la commande du jour. R3 après qu'il ferme l'atelier."
+L.ERR_STATION_CLOSED      = "Craft annulé : atelier quitté. Rouvrez et appuyez sur R3."

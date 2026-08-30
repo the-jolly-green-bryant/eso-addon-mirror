@@ -17,6 +17,11 @@ local UI_PANEL_ID = PanelIds.UI
 local CAMERA_PANEL_ID = PanelIds.CAMERA
 local DEFAULT_FRAMES_PANEL_ID = PanelIds.DEFAULT_FRAMES
 local COMBAT_RETICLE_PANEL_ID = PanelIds.COMBAT_RETICLE
+local RETICLE_INFO_PANEL_ID = PanelIds.RETICLE_INFO
+local RETICLE_INFO_TOP_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_LEFT
+local RETICLE_INFO_TOP_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_RIGHT
+local RETICLE_INFO_BOTTOM_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_LEFT
+local RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_RIGHT
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 local SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
@@ -643,9 +648,9 @@ end
 
 function GamepadOptions.BuildCombatReticleEntry()
     return {
-        panel = UI_PANEL_ID,
-        system = UI_PANEL_ID,
-        settingId = 11,
+        panel = COMBAT_PANEL_ID,
+        system = COMBAT_PANEL_ID,
+        settingId = 5,
         controlType = OPTIONS_INVOKE_CALLBACK,
         text = NQOL.L("ui.navigation.combat_reticle_7a159a7"),
         gamepadTextOverride = NQOL.L("ui.navigation.combat_reticle_7a159a7"),
@@ -659,6 +664,63 @@ function GamepadOptions.BuildCombatReticleEntry()
             GamepadOptions.ShowPanel(COMBAT_RETICLE_PANEL_ID)
         end,
     }
+end
+
+function GamepadOptions.BuildReticleInfoEntry()
+    return {
+        panel = COMBAT_RETICLE_PANEL_ID,
+        system = COMBAT_RETICLE_PANEL_ID,
+        settingId = 6,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = NQOL.Features.UI.GetReticleInfoLabel(),
+        gamepadTextOverride = NQOL.Features.UI.GetReticleInfoLabel(),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.Features.UI.GetReticleInfoTooltip())
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(RETICLE_INFO_PANEL_ID)
+        end,
+    }
+end
+
+function GamepadOptions.BuildReticleInfoPositionEntry(settingId, positionKey, targetPanelId)
+    local ui = NQOL.Features.UI
+    return {
+        panel = RETICLE_INFO_PANEL_ID,
+        system = RETICLE_INFO_PANEL_ID,
+        settingId = settingId,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = ui.GetReticleInfoPositionLabel(positionKey),
+        gamepadTextOverride = ui.GetReticleInfoPositionLabel(positionKey),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, ui.GetReticleInfoPositionTooltip())
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(targetPanelId)
+        end,
+    }
+end
+
+function GamepadOptions.BuildReticleInfoTopLeftEntry()
+    return GamepadOptions.BuildReticleInfoPositionEntry(1, "topLeft", RETICLE_INFO_TOP_LEFT_PANEL_ID)
+end
+
+function GamepadOptions.BuildReticleInfoTopRightEntry()
+    return GamepadOptions.BuildReticleInfoPositionEntry(2, "topRight", RETICLE_INFO_TOP_RIGHT_PANEL_ID)
+end
+
+function GamepadOptions.BuildReticleInfoBottomLeftEntry()
+    return GamepadOptions.BuildReticleInfoPositionEntry(3, "bottomLeft", RETICLE_INFO_BOTTOM_LEFT_PANEL_ID)
+end
+
+function GamepadOptions.BuildReticleInfoBottomRightEntry()
+    return GamepadOptions.BuildReticleInfoPositionEntry(4, "bottomRight", RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID)
 end
 
 function GamepadOptions.BuildDefaultFramesEntry()

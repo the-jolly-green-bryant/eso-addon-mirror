@@ -50,6 +50,45 @@ local function LeaveCraftingStation()
     end, 500)
 end
 
+local function StopStationGuard()
+    pcall(function() EVENT_MANAGER:UnregisterForUpdate("TDWP_StationGuard") end)
+end
+
+function Crafting.AbortBecauseStationClosed()
+    local wasRunning = isCrafting or waitingForCraft
+    StopStationGuard()
+    pcall(function() EVENT_MANAGER:UnregisterForUpdate("TDWP_CraftWatch") end)
+    isCrafting = false
+    waitingForCraft = false
+    craftingQueue = {}
+    currentQueueIndex = 0
+    successCount = 0
+    skipCount = 0
+    Crafting._stationLock = false
+    if TetsuDailyWritPrecrafter.UI and TetsuDailyWritPrecrafter.UI.HideProgress then
+        TetsuDailyWritPrecrafter.UI.HideProgress()
+    end
+    pcall(function() EVENT_MANAGER:UnregisterForEvent("TDWP_CraftEngine", EVENT_CRAFT_COMPLETED) end)
+    pcall(function() EVENT_MANAGER:UnregisterForEvent("TDWP_CraftEngine", EVENT_CRAFT_FAILED) end)
+    if wasRunning then
+        Chat(L().ERR_STATION_CLOSED or "Craft cancelled: left the station. Open it again and press R3 to restart.")
+    end
+end
+
+local function StartStationGuard()
+    StopStationGuard()
+    EVENT_MANAGER:RegisterForUpdate("TDWP_StationGuard", 150, function()
+        if not isCrafting and not waitingForCraft then
+            StopStationGuard()
+            return
+        end
+        local t = GetCraftingInteractionType and GetCraftingInteractionType() or 0
+        if t == 0 then
+            Crafting.AbortBecauseStationClosed()
+        end
+    end)
+end
+
 local function EnsureData()
     Data = TetsuDailyWritPrecrafter.Data
     return Data
@@ -743,6 +782,7 @@ end
 
 local function FinishQueue()
     ClearCraftWatch()
+    StopStationGuard()
     isCrafting = false
     waitingForCraft = false
     craftingQueue = {}
@@ -771,6 +811,10 @@ end
 
 local function ProcessNextCraftItem()
     if not isCrafting then return end
+    if not GetCraftingInteractionType or GetCraftingInteractionType() == 0 then
+        Crafting.AbortBecauseStationClosed()
+        return
+    end
     currentQueueIndex = currentQueueIndex + 1
     if currentQueueIndex > #craftingQueue then
         FinishQueue()
@@ -984,6 +1028,10 @@ function Crafting.ExecuteBulkCraft(itemsList, craftType)
         Chat(L().CONFLICT_CHAT or "Disable Dolgubon's Lazy Writ Crafter — auto-craft paused.")
         return
     end
+    if not GetCraftingInteractionType or GetCraftingInteractionType() == 0 then
+        Chat(L().ERR_NOT_AT_STATION)
+        return
+    end
     if isCrafting then return end
     if not itemsList or #itemsList == 0 then
         Chat(L().ERR_NOTHING_TO_CRAFT)
@@ -1026,6 +1074,7 @@ function Crafting.ExecuteBulkCraft(itemsList, craftType)
     skipCount = 0
     isCrafting = true
     waitingForCraft = false
+    StartStationGuard()
 
     Crafting.RemoveStationKeybind()
 

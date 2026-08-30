@@ -1,17 +1,16 @@
 {
-  "archive_path": "addons/BMGxSancho/Tes01ResourceBars__4dd951d1-312d-470c-b02c-f1961618b998",
+  "archive_path": "addons/BMGxSancho/Test01-Better-Twins__4dd951d1-312d-470c-b02c-f1961618b998",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "BMGxSancho",
   "canonical_id": "bethesda:4dd951d1-312d-470c-b02c-f1961618b998",
   "content_id": "4dd951d1-312d-470c-b02c-f1961618b998",
-  "deleted": true,
-  "deleted_at": "2026-08-27T15:42:22.367803+00:00",
-  "fingerprint": "b0f806cb5e96a3bdd57af424465d1836c02f31a5a1d032e42ca508b47087e868",
+  "deleted": false,
+  "fingerprint": "15c346b1c5c3e6426f9c7964b2c05a675d8efa2d5d6b88332a8e5824ad9ba479",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "4dd951d1-312d-470c-b02c-f1961618b998",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/4dd951d1-312d-470c-b02c-f1961618b998",
-  "title": "Tes01ResourceBars"
+  "title": "Test01 Better Twins"
 }

@@ -315,39 +315,100 @@ function AetherChat.SyncFromLootLog()
     end
 end
 
+-- IDs already processed during this session (reset on reloadui is fine - we save processed state)
 local processedSalesMails = {}
 
+-- Initialize processedSalesMails from saved vars so we don't double-fire after reloadui
+local function InitProcessedSalesMails()
+    if AetherChat.savedVars and AetherChat.savedVars.processedSalesMails then
+        processedSalesMails = AetherChat.savedVars.processedSalesMails
+    else
+        if AetherChat.savedVars then
+            AetherChat.savedVars.processedSalesMails = processedSalesMails
+        end
+    end
+end
+
 function ChatEngine.CheckGuildStoreSales()
+    if not GetNextMailId or not GetMailItemInfo then return end
+
+    -- Try to init persistence link
+    if AetherChat.savedVars and not AetherChat.savedVars.processedSalesMails then
+        AetherChat.savedVars.processedSalesMails = processedSalesMails
+    elseif AetherChat.savedVars and AetherChat.savedVars.processedSalesMails ~= processedSalesMails then
+        processedSalesMails = AetherChat.savedVars.processedSalesMails
+    end
+
     local mailId = GetNextMailId()
     while mailId do
         local mailIdStr = Id64ToString(mailId)
         if not processedSalesMails[mailIdStr] then
-            local senderDisplayName, senderCharacterName, subject, icon, unread, fromSystem, fromCS, returned, numAttachments, attachedMoney, codAmount, numBodyCharacters, timeUntilExpiration, isInvoice = GetMailHeaderInfo(mailId)
+            local senderDisplayName, senderCharacterName, subject, icon, unread,
+                  fromSystem, fromCS, returned, numAttachments, attachedMoney,
+                  codAmount, numBodyCharacters, timeUntilExpiration, isInvoice = GetMailItemInfo(mailId)
 
-            if fromSystem and unread and attachedMoney and attachedMoney > 0 then
+            -- A Guild Store sale mail has: fromSystem=true, isInvoice=true, attachedMoney > 0
+            local isSaleMail = fromSystem and (isInvoice == true or isInvoice == 1)
+                               and attachedMoney and attachedMoney > 0
+
+            if isSaleMail then
                 processedSalesMails[mailIdStr] = true
 
-                local notifySales = Settings.Get('notifySales', true)
-                if notifySales then
+                local notifySales = AetherChat.Settings and AetherChat.Settings.Get
+                                    and AetherChat.Settings.Get('notifySales', true)
+                if notifySales ~= false then
                     local L = AetherChat.L
                     local goldFormatted = ZO_Currency_FormatPlatform(CURT_MONEY, attachedMoney, ZO_CURRENCY_FORMAT_AMOUNT_ICON)
-                    local cleanSubject = subject or "Item"
-                    local alertTitle = L('SALES_ALERT_TITLE')
-                    local saleNotice = string.format("%s %s (+%s)", alertTitle, cleanSubject, goldFormatted)
 
-                    -- 1. In-game Center Screen Announcement (CSA) & Sound
-                    if CENTER_SCREEN_ANNOUNCE then
-                        local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS)
-                        params:SetText(saleNotice)
-                        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
-                    else
-                        ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS, saleNotice)
+                    -- Try to extract real sold item name or itemLink from mail body
+                    local soldItem = nil
+                    if ReadMail then
+                        local isReady = (not IsReadMailInfoReady) or IsReadMailInfoReady(mailId)
+                        if isReady then
+                            local body = ReadMail(mailId)
+                            if body and body ~= "" then
+                                -- Check for itemLink (|H1:item:...|h[...]|h)
+                                local link = body:match("(|H%d+:item:[^|]+|h[^|]*|h)")
+                                if link then
+                                    soldItem = link
+                                else
+                                    -- Check for item name pattern in ESO store invoices
+                                    local name = body:match("objet%s+([^\n\r,]+)%s+a%s+été%s+vendu")
+                                              or body:match("item%s+([^\n\r,]+)%s+was%s+sold")
+                                              or body:match("Gegenstand%s+([^\n\r,]+)%s+wurde")
+                                    if name and name ~= "" then
+                                        soldItem = name
+                                    end
+                                end
+                            end
+                        elseif RequestReadMail then
+                            RequestReadMail(mailId)
+                        end
                     end
 
-                    -- 2. Post to General & Ventes channel in AetherChat
+                    -- Format the message cleanly
+                    local msgText = ""
+                    local csaText = ""
+                    if soldItem and soldItem ~= "" then
+                        msgText = L('SALES_MSG_FORMAT', soldItem, goldFormatted)
+                        csaText = string.format("%s (+%s)", soldItem, goldFormatted)
+                    else
+                        msgText = L('SALES_MSG_FORMAT_NO_ITEM', goldFormatted)
+                        csaText = string.format("%s (+%s)", L('SALES_ALERT_TITLE'), goldFormatted)
+                    end
+
+                    -- 1. Center Screen Announcement (CSA) + Son
+                    if CENTER_SCREEN_ANNOUNCE then
+                        local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS)
+                        params:SetText('|c57F287[Vente] |r' .. csaText)
+                        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
+                    else
+                        ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS, csaText)
+                    end
+
+                    -- 2. Post dans le canal General & Ventes d'AetherChat
                     local timeStr = GetTimeString():sub(1, 5)
-                    local author = L('SALES_STORE_AUTHOR')
-                    local msgText = L('SALES_MSG_FORMAT', cleanSubject, goldFormatted)
+                    local author = 'Boutique'
                     History.AddMessage('general', author, msgText, timeStr, 0, false, false, nil)
 
                     if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
@@ -360,7 +421,113 @@ function ChatEngine.CheckGuildStoreSales()
     end
 end
 
+-- ============================================================================
+-- KEYWORD & URL DETECTION ENGINE
+-- ============================================================================
+
+-- Compiled table of lowercase keyword patterns for fast matching
+-- Exposed as ChatEngine.keywordTable so external code can inspect it
+ChatEngine.keywordTable = {}
+local keywordTable = ChatEngine.keywordTable
+
+function ChatEngine.RebuildKeywordTable()
+    -- Reset and re-link the shared reference
+    local newTable = {}
+    local rawList = AetherChat.Settings and AetherChat.Settings.Get and AetherChat.Settings.Get('keywordList', '') or ''
+    if rawList ~= '' then
+        for kw in rawList:gmatch('[^,]+') do
+            local trimmed = kw:match('^%s*(.-)%s*$')
+            if trimmed and trimmed ~= '' then
+                table.insert(newTable, trimmed:lower())
+            end
+        end
+    end
+    -- Update in-place so existing references (keywordTable local) stay valid
+    while #keywordTable > 0 do table.remove(keywordTable) end
+    for _, v in ipairs(newTable) do table.insert(keywordTable, v) end
+    ChatEngine.keywordTable = keywordTable
+end
+
+-- Returns: highlighted text with custom color badge [KEYWORD], true if any keyword matched, and the hexColor
+-- Uses Lua character class [aA] trick for true case-insensitive matching
+function ChatEngine.ApplyKeywordHighlight(text)
+    if not text or text == '' then return text, false, nil end
+    if not AetherChat.Settings or not AetherChat.Settings.Get then return text, false, nil end
+    if not AetherChat.Settings.Get('keywordEnable', true) then return text, false, nil end
+    if #keywordTable == 0 then return text, false, nil end
+
+    local hexColor = AetherChat.Settings.Get('keywordColor', 'FFD700') or 'FFD700'
+
+    -- Clean any existing highlight tags to prevent nesting
+    local result = text
+    local lowerText = result:lower()
+    local matched = false
+
+    for _, kw in ipairs(keywordTable) do
+        if kw ~= '' and lowerText:find(kw, 1, true) then
+            matched = true
+            -- Build a case-insensitive pattern using [aA] character classes for each letter
+            local ciPattern = kw:gsub('(.)', function(c)
+                local lo = c:lower()
+                local hi = c:upper()
+                if lo ~= hi then
+                    return '[' .. lo .. hi .. ']'
+                else
+                    local specials = { ['%'] = '%%', ['.'] = '%.', ['+'] = '%+',
+                                       ['-'] = '%-', ['*'] = '%*', ['?'] = '%?',
+                                       ['['] = '%[', [']'] = '%]', ['^'] = '%^',
+                                       ['$'] = '%$', ['('] = '%(', [')'] = '%)' }
+                    return specials[c] or c
+                end
+            end)
+
+            -- Clean previous tags around the word if already formatted
+            result = result:gsub('|c%x%x%x%x%x%x%[?(' .. ciPattern .. ')%]?|r', '%1')
+
+            -- Format as clean, distinct bracketed badge with selected accent color: [WTS]
+            result = result:gsub('(' .. ciPattern .. ')', '|c' .. hexColor .. '[%1]|r')
+        end
+    end
+
+    return result, matched, hexColor
+end
+
+-- Detects URLs/Discord links in text and returns a list of found links
+function ChatEngine.ExtractURLs(text)
+    if not text or text == '' then return {} end
+    local urls = {}
+    -- Match common URL patterns: http(s)://, discord.gg/, www.
+    for url in text:gmatch('https?://[%w%.%-%_/%?%=%&%%%#%+:@!~]+') do
+        table.insert(urls, url)
+    end
+    for url in text:gmatch('discord%.gg/[%w%-_]+') do
+        local full = 'https://' .. url
+        -- Avoid duplicates
+        local dup = false
+        for _, u in ipairs(urls) do if u == full or u:find(url, 1, true) then dup = true break end end
+        if not dup then table.insert(urls, 'https://' .. url) end
+    end
+    for url in text:gmatch('www%.[%w%.%-%_/%?%=%&%%%#%+:@!~]+') do
+        local full = 'https://' .. url
+        local dup = false
+        for _, u in ipairs(urls) do if u == full or u:find(url:gsub('%.', '%%.'), 1, false) then dup = true break end end
+        if not dup then table.insert(urls, 'https://' .. url) end
+    end
+    return urls
+end
+
+-- Returns text with URL highlights in sky-blue color
+function ChatEngine.HighlightURLs(text)
+    if not text or text == '' then return text end
+    local result = text
+    result = result:gsub('(https?://[%w%.%-%_/%?%=%&%%%#%+:@!~]+)', '|c38BDF8[🔗 %1]|r')
+    result = result:gsub('(discord%.gg/[%w%-_]+)', '|c38BDF8[🔗 discord.gg/%1]|r')  -- already covered but safe
+    return result
+end
+
 function ChatEngine.Initialize()
+    ChatEngine.RebuildKeywordTable()
+
     EVENT_MANAGER:RegisterForEvent('AetherChat_Engine', EVENT_CHAT_MESSAGE_CHANNEL, ChatEngine.OnChatMessage)
     EVENT_MANAGER:RegisterForEvent('AetherChat_Loot', EVENT_LOOT_RECEIVED, ChatEngine.OnLootReceived)
 
@@ -373,14 +540,26 @@ function ChatEngine.Initialize()
     end)
 
     -- Real-time Guild Store Sales tracking & notifications
-    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Mail', EVENT_MAIL_NUM_UNREAD_CHANGED, function(_, numUnread)
-        if numUnread and numUnread > 0 then
-            ChatEngine.CheckGuildStoreSales()
-        end
-    end)
-    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Readable', EVENT_MAIL_READABLE, function(_, mailId)
+    -- EVENT_MAIL_NUM_UNREAD_CHANGED : fires when unread count changes (new mail arrives)
+    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Mail', EVENT_MAIL_NUM_UNREAD_CHANGED, function()
+        -- No guard on numUnread - scan always, processed table prevents double-fire
         ChatEngine.CheckGuildStoreSales()
     end)
+    -- EVENT_MAIL_READABLE : fires when a mail becomes readable/opened
+    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Readable', EVENT_MAIL_READABLE, function()
+        ChatEngine.CheckGuildStoreSales()
+    end)
+    -- EVENT_MAIL_INBOX_UPDATE : most reliable - fires when the inbox list changes
+    if EVENT_MAIL_INBOX_UPDATE then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Inbox', EVENT_MAIL_INBOX_UPDATE, function()
+            ChatEngine.CheckGuildStoreSales()
+        end)
+    end
+
+    -- Initialize processedSalesMails persistence so we don't double-fire after reloadui
+    zo_callLater(function()
+        InitProcessedSalesMails()
+    end, 500)
 
     AetherChat.UpdateGroupPlayerMap()
     ChatEngine.CheckGuildStoreSales()
@@ -529,7 +708,25 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     end
 
     local timeStr = GetTimeString():sub(1, 5)
+
+    -- ========= URL HIGHLIGHT =========
+    local detectedURLs = ChatEngine.ExtractURLs(msgText)
+    if #detectedURLs > 0 then
+        msgText = ChatEngine.HighlightURLs(msgText)
+    end
+
+    -- ========= KEYWORD SOUND ALERT CHECK =========
+    local _, keywordMatched = ChatEngine.ApplyKeywordHighlight(msgText)
+
     History.AddMessage(channelKey, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang)
+
+    -- Play keyword alert sound if matched (only for messages from others)
+    if keywordMatched and not isSelf then
+        local kwSound = AetherChat.Settings and AetherChat.Settings.Get and AetherChat.Settings.Get('keywordSound', 'champion') or 'champion'
+        if AetherChat.SoundManager and AetherChat.SoundManager.PlaySoundPreview then
+            AetherChat.SoundManager.PlaySoundPreview(kwSound)
+        end
+    end
 
     -- Play customizable high-audibility alert on incoming message
     if not isSelf then

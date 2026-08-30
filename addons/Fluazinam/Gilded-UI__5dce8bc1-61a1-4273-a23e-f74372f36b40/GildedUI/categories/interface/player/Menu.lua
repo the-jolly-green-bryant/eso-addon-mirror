@@ -10,7 +10,7 @@ Addon:RegisterMenuSection(function(menu, H)
         {
             type = "submenu",
             name = "Player",
-            centerSubmenu = false,
+            align = "leftIndent",
             icon = "/esoui/art/menubar/gamepad/gp_playermenu_icon_character.dds",
             options = controls,
         },

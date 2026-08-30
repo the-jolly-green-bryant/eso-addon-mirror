@@ -12,6 +12,9 @@ ZO_CreateStringId("ZONESETS_NO_CURRENT_ITEMS", "No new items bound in this run y
 ZO_CreateStringId("ZONESETS_NO_PREVIOUS_ITEMS", "No previous run data")
 ZO_CreateStringId("ZONESETS_GROUP_LOOT_HEADER", "|c39DB92[Group Loot — Needed by Me]|r")
 ZO_CreateStringId("ZONESETS_NO_GROUP_LOOT", "No needed items looted by teammates in this run yet")
+ZO_CreateStringId("ZONESETS_GROUP_REQUESTS_HEADER", "|c39DB92[Group Requests — Needed by Them]|r")
+ZO_CreateStringId("ZONESETS_NO_GROUP_REQUESTS", "No one in your group has requested any sets yet")
+ZO_CreateStringId("ZONESETS_IN_BAG_TOOLTIP", "You have a tradable matching item in your backpack!")
 ZO_CreateStringId("ZONESETS_ASK_ALL_BTN", "Ask All")
 ZO_CreateStringId("ZONESETS_ASK_SINGLE_BTN", "Ask")
 ZO_CreateStringId("ZONESETS_ITEMS_NEEDED_COUNT", "needed: %d")
@@ -41,5 +44,6 @@ ZO_CreateStringId("ZONESETS_TRADE_FILLED_MSG", "|c39DB92[ZoneSets]|r Added to tr
 ZO_CreateStringId("ZONESETS_AUTO_BIND_ON", "Auto: ON")
 ZO_CreateStringId("ZONESETS_AUTO_BIND_OFF", "Auto: OFF")
 
--- Горячая клавиша
+
+-- Hotkey
 ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_ZONESETS_WINDOW", "Toggle ZoneSets Window")

@@ -5,7 +5,7 @@ AetherChat = AetherChat or {}
 local AetherChat = AetherChat
 
 AetherChat.name = 'AetherChat'
-AetherChat.version = '1.1'
+AetherChat.version = '1.2'
 
 -- Keybinding Strings (Must be created before Bindings.xml is loaded by C++ engine)
 local L = AetherChat.L or function(k) return k end
@@ -34,6 +34,21 @@ end
 SLASH_COMMANDS['/aethertest'] = function()
     if AetherChat.Messenger and AetherChat.Messenger.TestWhisper then
         AetherChat.Messenger.TestWhisper()
+    end
+end
+
+-- Debug: test keyword detection (/aetherkw WTT)
+SLASH_COMMANDS['/aetherkw'] = function(args)
+    local testWord = args and args ~= '' and args or 'test'
+    -- Simulate a message FROM another player containing the test word
+    local fakeMsg = 'WTS Motif vSS ' .. testWord .. ' LFG Tank'
+    if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+        AetherChat.Messenger.OnMessageReceived('zone', '@TestPlayer', fakeMsg, false, false, 'global')
+    end
+    -- Also force rebuild the keyword table first
+    if AetherChat.ChatEngine and AetherChat.ChatEngine.RebuildKeywordTable then
+        AetherChat.ChatEngine.RebuildKeywordTable()
+        d('|c5865F2[AetherChat]|r Keywords chargés : ' .. tostring(#(AetherChat.ChatEngine.keywordTable or {})))
     end
 end
 

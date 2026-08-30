@@ -25,7 +25,7 @@ function LCM.CreateControlListEntry(control)
 	LCM:AddControlEntry(control)
 end
 
--- Control setup stores headerIndent for ResolveSettingEntryTemplate.
+-- Control setup stores headerAlign for ResolveSettingEntryTemplate.
 function LCM.Control:Setup(params)
 	local setup = LCM.setupControlFunctions[self.type]
 	if setup then
@@ -36,7 +36,6 @@ function LCM.Control:Setup(params)
 	self.popAfterSubmenuIndex = params.popAfterSubmenuIndex
 	self.headerText = params.header
 	self.headerAlign = params.headerAlign
-	self.headerIndent = params.headerIndent
 end
 
 function LCM.Control:CreateControl(lastControl)

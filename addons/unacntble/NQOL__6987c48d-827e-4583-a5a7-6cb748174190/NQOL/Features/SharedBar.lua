@@ -90,6 +90,7 @@ local C = {
     RESOURCE_MAGICKA = COMBAT_MECHANIC_FLAGS_MAGICKA,
     RESOURCE_STAMINA = COMBAT_MECHANIC_FLAGS_STAMINA,
     RESOURCE_MOUNT_STAMINA = COMBAT_MECHANIC_FLAGS_MOUNT_STAMINA,
+    PLAYER_SHIELD_SMOOTH_KEY = "playerShield",
 }
 C.FLYING_ORIENTATION_CHOICES = { C.FLYING_ORIENTATION_LEFT, C.FLYING_ORIENTATION_RIGHT }
 C.RADIAL_STACK_CHOICES = { C.RADIAL_STACK_NOTHING, C.RADIAL_STACK_MAGICKA_STAMINA, C.RADIAL_STACK_STAMINA_MAGICKA }
@@ -131,6 +132,7 @@ C.RESOURCE_COLORS = {
     [PlayerBars.SIEGE_HEALTH] = { 0.86, 0.12, 0.09, 1.00 },
 }
 C.PLAYER_TRAUMA_COLOR = { 0.42, 0.76, 0.82, 0.82 }
+C.PLAYER_SHIELD_COLOR = { 1.00, 0.50, 0.00, 1.00 }
 C.PLAYER_RESOURCE_COLOR_KEYS = {
     [C.RESOURCE_HEALTH] = "health",
     [C.RESOURCE_MAGICKA] = "magicka",
@@ -267,6 +269,7 @@ local function DefaultPlayerBarColors()
         magicka = { r = C.RESOURCE_COLORS[C.RESOURCE_MAGICKA][1], g = C.RESOURCE_COLORS[C.RESOURCE_MAGICKA][2], b = C.RESOURCE_COLORS[C.RESOURCE_MAGICKA][3], a = C.RESOURCE_COLORS[C.RESOURCE_MAGICKA][4] },
         stamina = { r = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][1], g = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][2], b = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][3], a = C.RESOURCE_COLORS[C.RESOURCE_STAMINA][4] },
         trauma = { r = C.PLAYER_TRAUMA_COLOR[1], g = C.PLAYER_TRAUMA_COLOR[2], b = C.PLAYER_TRAUMA_COLOR[3], a = C.PLAYER_TRAUMA_COLOR[4] },
+        shield = { r = C.PLAYER_SHIELD_COLOR[1], g = C.PLAYER_SHIELD_COLOR[2], b = C.PLAYER_SHIELD_COLOR[3], a = C.PLAYER_SHIELD_COLOR[4] },
     }
 end
 local function DefaultCompanionXpColor()
@@ -285,6 +288,7 @@ local defaults = {
                 showOnlyInCombat = false,
                 preset = C.CLASSIC,
                 showInSettings = true,
+                showShield = false,
                 showTrauma = false,
                 showNoHealing = false,
                 classic = {
@@ -576,6 +580,7 @@ local function EnsurePlayerBarColors(settings, presetDefaults)
     PlayerBars.Group.EnsureColor(barColors, barColorDefaults, "magicka")
     PlayerBars.Group.EnsureColor(barColors, barColorDefaults, "stamina")
     PlayerBars.Group.EnsureColor(barColors, barColorDefaults, "trauma")
+    PlayerBars.Group.EnsureColor(barColors, barColorDefaults, "shield")
 end
 
 local function EnsurePyramidSettings(frameSettings, frameDefaults)
@@ -769,6 +774,7 @@ local function GetSettings()
     NQOL.Settings.Boolean(frameSettings, frameDefaults, "showOnlyInCombat")
     NQOL.Settings.Choice(frameSettings, frameDefaults, "preset", C.VALID_PRESETS)
     NQOL.Settings.Boolean(frameSettings, frameDefaults, "showInSettings")
+    NQOL.Settings.Boolean(frameSettings, frameDefaults, "showShield")
     NQOL.Settings.Boolean(frameSettings, frameDefaults, "showTrauma")
     NQOL.Settings.Boolean(frameSettings, frameDefaults, "showNoHealing")
 
@@ -834,6 +840,15 @@ local function GetPlayerTraumaColor(settings)
     end
 
     return C.PLAYER_TRAUMA_COLOR[1], C.PLAYER_TRAUMA_COLOR[2], C.PLAYER_TRAUMA_COLOR[3], C.PLAYER_TRAUMA_COLOR[4]
+end
+
+local function GetPlayerShieldColor(settings)
+    local color = settings and settings.barColors and settings.barColors.shield or nil
+    if color then
+        return color.r, color.g, color.b, color.a or 1
+    end
+
+    return C.PLAYER_SHIELD_COLOR[1], C.PLAYER_SHIELD_COLOR[2], C.PLAYER_SHIELD_COLOR[3], C.PLAYER_SHIELD_COLOR[4]
 end
 
 local function GetCompanionSettings()
@@ -1510,6 +1525,13 @@ local function CreateClassicResourceWidget(parent, resourceType)
         widget.trauma:SetEdgeTexture(C.TEXTURE_WHITE, 1, 1, 1)
         widget.trauma:SetHidden(true)
 
+        widget.shield = WINDOW_MANAGER:CreateControl(nil, widget, CT_BACKDROP)
+        widget.shield:SetDimensions(1, 1)
+        widget.shield:SetCenterColor(C.PLAYER_SHIELD_COLOR[1], C.PLAYER_SHIELD_COLOR[2], C.PLAYER_SHIELD_COLOR[3], C.PLAYER_SHIELD_COLOR[4])
+        widget.shield:SetEdgeColor(0, 0, 0, 0)
+        widget.shield:SetEdgeTexture(C.TEXTURE_WHITE, 1, 1, 1)
+        widget.shield:SetHidden(true)
+
         widget.noHealingFractureGlowTiles = {}
         widget.noHealingFractureTiles = {}
     end
@@ -1549,6 +1571,9 @@ local function CreateClassicResourceWidget(parent, resourceType)
     if widget.trauma then
         MoveAboveHud(widget.trauma)
     end
+    if widget.shield then
+        MoveAboveHud(widget.shield)
+    end
     MoveAboveHud(widget.leftLabel)
     MoveAboveHud(widget.rightLabel)
     if widget.icon then
@@ -1564,6 +1589,9 @@ local function CreateClassicResourceWidget(parent, resourceType)
     widget.fill:SetDrawLevel(C.DRAW_LEVEL + 2)
     if widget.trauma then
         widget.trauma:SetDrawLevel(C.DRAW_LEVEL + 3)
+    end
+    if widget.shield then
+        widget.shield:SetDrawLevel(C.DRAW_LEVEL + 3)
     end
     widget.leftLabel:SetDrawLevel(C.DRAW_LEVEL + 5)
     widget.rightLabel:SetDrawLevel(C.DRAW_LEVEL + 5)
@@ -2031,6 +2059,7 @@ Shared.defaults = defaults
 Shared.GetPlayerSettings = GetSettings
 Shared.GetPlayerResourceColor = GetPlayerResourceColor
 Shared.GetPlayerTraumaColor = GetPlayerTraumaColor
+Shared.GetPlayerShieldColor = GetPlayerShieldColor
 Shared.GetCompanionSettings = GetCompanionSettings
 Shared.GetClassicSettings = GetClassicSettings
 Shared.GetPyramidSettings = GetPyramidSettings

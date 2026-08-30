@@ -4,6 +4,6 @@ local Addon = GildedUI
 
 Addon:RegisterMenuSection(function(menu, H)
 	menu:AddOptions({
-		{ type = "header", name = "Interface", align = "left" },
+		{ type = "header", name = "Interface", align = "leftIndent" },
 	})
 end)

@@ -961,7 +961,7 @@ end
 
 function UI:CreateBudgetDialog()
     local dialog = WINDOW_MANAGER:CreateTopLevelWindow("ShoppingListBudgetWindow")
-    dialog:SetDimensions(390, 225)
+    dialog:SetDimensions(390, 355)
     dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     dialog:SetClampedToScreen(true)
     dialog:SetMouseEnabled(true)
@@ -987,11 +987,11 @@ function UI:CreateBudgetDialog()
 
     self.budgetSpent = makeLabel(dialog, "ZoFontGameSmall")
     self.budgetSpent:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 71)
-    self.budgetSpent:SetDimensions(354, 40)
+    self.budgetSpent:SetDimensions(354, 160)
     self.budgetSpent:SetVerticalAlignment(TEXT_ALIGN_TOP)
 
     local budgetBackdrop, budgetEdit = makeEdit(dialog, 220)
-    budgetBackdrop:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 116)
+    budgetBackdrop:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 246)
     budgetEdit:SetTextType(TEXT_TYPE_NUMERIC)
     budgetEdit:SetMaxInputChars(#tostring(ShoppingListModel.MAX_PRICE))
     budgetEdit:SetDefaultText(GetString(SI_SHOPPING_LIST_NO_BUDGET))
@@ -1019,13 +1019,18 @@ end
 
 function UI:OpenBudgetDialog()
     local list = self.owner.data:GetCurrentList()
+    local projection = self.owner.costPlanning:GetProjection(list)
     self.budgetListId = list.id
     self.budgetListName:SetText(list.name)
-    self.budgetSpent:SetText(zo_strformat(
-        GetString(SI_SHOPPING_LIST_RECORDED_SPENDING),
-        formatCompactGold(list.transactionSpent or list.totalSpent),
-        formatCompactGold(list.totalSpent)
+    self.budgetSpent:SetText(self.owner.costPlanning:FormatProjection(
+        projection,
+        formatCompactGold
     ))
+    if projection.projectedBudget and projection.projectedBudget < 0 then
+        self.budgetSpent:SetColor(1, 0.45, 0.35, 1)
+    else
+        self.budgetSpent:SetColor(0.75, 0.82, 0.65, 1)
+    end
     self.budgetEdit:SetText(list.budget and tostring(list.budget) or "")
     self.budgetDialog:SetHidden(false)
     self.budgetEdit:TakeFocus()

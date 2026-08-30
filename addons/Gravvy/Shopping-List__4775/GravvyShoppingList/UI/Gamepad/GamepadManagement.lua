@@ -740,10 +740,9 @@ function Gamepad:InitializeBudgetManagementDialog()
         mainText = {
             text = function()
                 local list = self.owner.data:GetCurrentList()
-                return zo_strformat(
-                    GetString(SI_SHOPPING_LIST_RECORDED_SPENDING),
-                    formatGold(list.transactionSpent or list.totalSpent),
-                    formatGold(list.totalSpent)
+                return self.owner.costPlanning:FormatProjection(
+                    self.owner.costPlanning:GetProjection(list),
+                    formatGold
                 )
             end,
         },
@@ -1080,6 +1079,7 @@ function Gamepad:InitializeEditDialog()
                 maxUnitPrice = item.maxUnitPrice and tostring(item.maxUnitPrice) or "",
                 note = item.note or "",
             }
+            self.pendingPriceSuggestion = self.owner.costPlanning:GetSuggestion(item)
             dialog:setupFunc()
         end,
         title = {
@@ -1149,6 +1149,24 @@ function Gamepad:InitializeEditDialog()
                 maxChars = #tostring(ShoppingListModel.MAX_CHAMPION_POINTS),
                 numeric = true,
             }),
+            actionEntry(
+                function()
+                    local suggestion = self.pendingPriceSuggestion
+                    return suggestion and zo_strformat(
+                        GetString(SI_SHOPPING_LIST_GAMEPAD_USE_SUGGESTED_PRICE),
+                        formatGold(suggestion.price),
+                        suggestion.sourceName
+                    ) or ""
+                end,
+                function()
+                    if self.pendingPriceSuggestion then
+                        self.pendingEdit.maxUnitPrice = tostring(
+                            self.pendingPriceSuggestion.price
+                        )
+                    end
+                end,
+                function() return self.pendingPriceSuggestion ~= nil end
+            ),
             textFieldEntry(SI_SHOPPING_LIST_EDITOR_MAX_UNIT_PRICE, {
                 value = function() return self.pendingEdit.maxUnitPrice end,
                 changed = function(value) self.pendingEdit.maxUnitPrice = value end,

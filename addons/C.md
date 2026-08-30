@@ -219,7 +219,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Courage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Courage__2746) | iiJonno | PC / Mac | 1.5 |
 | [Courteous Dungeoneer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ancillae_Secretorum/Courteous-Dungeoneer__4160) | Ancillae_Secretorum | PC / Mac | 0.52 |
 | [Coveted](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Coveted__3011) | kawamonkey | PC / Mac | 1.0 |
-| [Covetous Countess Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Covetous-Countess-Assistant__4778) | AlexD | PC / Mac | 1.1.1 |
+| [Covetous Countess Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlexD/Covetous-Countess-Assistant__4778) | AlexD | PC / Mac | 1.2.1 |
 | [CovetousCountess - Abah's Watch farming helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/CovetousCountess---Abah-s-Watch-farming-helper__1372) | Shinni | PC / Mac | 5 |
 | [CovetousCountess ZH](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NeiL978/CovetousCountess-ZH__3600) | NeiL978 | PC / Mac | 1.0 |
 | [Cowl - helm/hat toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Binary-Heart/Cowl---helm-hat-toggle__1913) | Binary Heart | PC / Mac | 1.1.4.4.3 |

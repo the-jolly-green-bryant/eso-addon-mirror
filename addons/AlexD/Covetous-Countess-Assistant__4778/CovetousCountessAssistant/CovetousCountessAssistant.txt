@@ -1,8 +1,8 @@
 ## Title: Covetous Countess Assistant
-## Description: Highlights treasure-hunt items in your inventory for the Covetous Countess (and optionally Bursar of Tributes).
+## Description: Highlights items in your inventory required for "The Covetous Countess" and optionally "Bursar of Tributes" (Crow) daily quests.
 ## Author: @AlexD
-## Version: 1.1.1
-## AddOnVersion: 1787406574
+## Version: 1.2.1
+## AddOnVersion: 1788026943
 ## APIVersion: 101050
 ## OptionalDependsOn: LibAddonMenu-2.0
 ## SavedVariables: CovetousCountessAssistant_SV

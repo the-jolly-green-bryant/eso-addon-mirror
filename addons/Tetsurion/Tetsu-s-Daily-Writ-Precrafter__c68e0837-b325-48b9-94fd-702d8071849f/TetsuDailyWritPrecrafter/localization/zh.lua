@@ -65,3 +65,5 @@ L.MISSING_LWC_BODY        = "请安装 Dolgubon's Lazy Writ Creator，或在设�
 L.MISSING_LWC_CHAT        = "|cFF6666[Tetsu's Daily Writ Precrafter]|r 未启用 Lazy Writ Creator。请安装，或关闭共用模式。"
 L.QUIET_INFO_LABEL        = "隐藏普通聊天提示"
 L.QUIET_INFO_TT           = "隐藏：开始预制作、轮换、材料OK、完成。缺材料和错误始终显示。"
+L.ERR_WAIT_LWC            = "请稍候：Lazy Writ Creator 仍在做今日委托。等它关闭制作台后再按 R3。"
+L.ERR_STATION_CLOSED      = "已取消：离开了制作台。再打开后按 R3 即可重来。"

@@ -7,6 +7,7 @@ local C = {
     EVENT_NAMESPACE = "NQOL_GroupFinderMonitor",
     TIMER_SUFFIX = "_Timer",
     SEARCH_TIMEOUT_SUFFIX = "_SearchTimeout",
+    SINGLE_CATEGORY_REFRESH_INTERVAL_SECONDS = 30,
     REFRESH_INTERVAL_SECONDS = 60,
     SEARCH_TIMEOUT_MS = 30000,
     ROLE_ICON_SIZE = 20,
@@ -270,6 +271,19 @@ local function BuildTasks(tasks, categorySettings)
     return tasks
 end
 
+local function GetRefreshIntervalMilliseconds(categorySettings)
+    local selectedCategoryCount = 0
+    for _, definition in ipairs(CATEGORY_DEFINITIONS) do
+        local selection = categorySettings[definition.key]
+        if selection == true or (definition.usesDifficulty and selection ~= "off") then
+            selectedCategoryCount = selectedCategoryCount + 1
+            if selectedCategoryCount > 1 then return C.REFRESH_INTERVAL_SECONDS * 1000 end
+        end
+    end
+    if selectedCategoryCount == 0 then return nil end
+    return C.SINGLE_CATEGORY_REFRESH_INTERVAL_SECONDS * 1000
+end
+
 local function ExpandSearchTasks(tasks, expanded)
     ClearArray(expanded)
     for _, task in ipairs(tasks) do
@@ -514,7 +528,7 @@ local function FinishScan(commit)
     ResetScanState()
     if commit then NotifyHudStatus() else NotifyHudResults() end
     if GetSettings().enabled == true and ScheduleNextScan then
-        ScheduleNextScan(C.REFRESH_INTERVAL_SECONDS * 1000)
+        ScheduleNextScan(GetRefreshIntervalMilliseconds(GetSettings().categories))
     end
 end
 
@@ -641,20 +655,22 @@ end
 ScheduleNextScan = function(delayMs)
     StopTimer()
     local settings = GetSettings()
-    if settings.enabled ~= true or pausedForDisabledZone or scanActive or not EVENT_MANAGER then return end
+    if not delayMs or settings.enabled ~= true or pausedForDisabledZone or scanActive or not EVENT_MANAGER then return end
     scanTimerScheduled = true
     nextScanAtMilliseconds = GetNowMilliseconds() + delayMs
     EVENT_MANAGER:RegisterForUpdate(C.EVENT_NAMESPACE .. C.TIMER_SUFFIX, delayMs, function()
         StopTimer()
         if not TryStartScan() and GetSettings().enabled == true and not scanActive then
-            ScheduleNextScan(C.REFRESH_INTERVAL_SECONDS * 1000)
+            ScheduleNextScan(GetRefreshIntervalMilliseconds(GetSettings().categories))
         end
     end)
 end
 
 local function StartTimer(immediate)
     if scanActive or scanTimerScheduled then return end
-    ScheduleNextScan(immediate and 250 or (C.REFRESH_INTERVAL_SECONDS * 1000))
+    local refreshDelayMs = GetRefreshIntervalMilliseconds(GetSettings().categories)
+    if not refreshDelayMs then StopTimer() return end
+    ScheduleNextScan(immediate and 250 or refreshDelayMs)
 end
 
 local function StopMonitoring()
@@ -669,6 +685,19 @@ local function StopMonitoring()
             manager:SetSearchState(ZO_GROUP_FINDER_SEARCH_STATES.NONE)
         end
     end
+    NotifyHudStatus()
+end
+
+local function RefreshCategorySelection()
+    local refreshDelayMs = GetRefreshIntervalMilliseconds(GetSettings().categories)
+    if not refreshDelayMs then
+        StopMonitoring()
+        ClearArray(rows)
+        hasCompletedScan = false
+        NotifyHudResults()
+        return
+    end
+    if not scanActive and not TryStartScan() then ScheduleNextScan(refreshDelayMs) end
     NotifyHudStatus()
 end
 
@@ -1003,14 +1032,13 @@ end
 function Monitor.GetAlarmText() return GetSettings().alarmText end
 function Monitor.SetAlarmText(value) GetSettings().alarmText = tostring(value or ""); if not scanActive then TryStartScan() end; NotifyHudStatus() end
 function Monitor.GetCategoryEnabled(key) return GetSettings().categories[key] == true end
-function Monitor.SetCategoryEnabled(key, value) if defaults.groupFinderMonitor.categories[key] ~= nil then GetSettings().categories[key] = value == true; if not scanActive then TryStartScan() end; NotifyHudStatus() end end
+function Monitor.SetCategoryEnabled(key, value) if defaults.groupFinderMonitor.categories[key] ~= nil then GetSettings().categories[key] = value == true; RefreshCategorySelection() end end
 function Monitor.GetCategoryDefault(key) return defaults.groupFinderMonitor.categories[key] == true end
 function Monitor.GetCategoryMode(key) return GetSettings().categories[key] end
 function Monitor.SetCategoryMode(key, value)
     if VALID_ACTIVITY_MODES[value] and type(defaults.groupFinderMonitor.categories[key]) == "string" then
         GetSettings().categories[key] = value
-        if not scanActive then TryStartScan() end
-        NotifyHudStatus()
+        RefreshCategorySelection()
     end
 end
 function Monitor.GetCategoryModeDefault(key) return defaults.groupFinderMonitor.categories[key] end

@@ -65,3 +65,5 @@ L.MISSING_LWC_BODY        = "Dolgubon's Lazy Writ Creator を入れるか、「L
 L.MISSING_LWC_CHAT        = "|cFF6666[Tetsu's Daily Writ Precrafter]|r Lazy Writ Creator が有効ではありません。導入するか併用をオフにしてください。"
 L.QUIET_INFO_LABEL        = "通常のチャット通知を隠す"
 L.QUIET_INFO_TT           = "開始・ローテ・材料OK・完了を隠します。不足やエラーは常に表示します。"
+L.ERR_WAIT_LWC            = "待機：Lazy Writ Creator が今日の依頼を製作中です。ステーションを閉じた後に R3 を押してください。"
+L.ERR_STATION_CLOSED      = "キャンセル：ステーションを離れました。開き直して R3。"

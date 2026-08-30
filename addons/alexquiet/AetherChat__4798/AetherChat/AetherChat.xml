@@ -1,6 +1,6 @@
 <GuiXml>
     <Controls>
-        <!-- Moveable MinBar Dock Button (HUD Floating Icon with Live Unread Notification Badge) -->
+        <!-- Moveable HUD Icon Widget (Hover-Only Tooltip & Tri-Color Badges: Red Messages, Green Friends, Blue Mail) -->
         <TopLevelControl name="AetherChat_MinBar" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="false">
             <Dimensions x="38" y="38" />
             <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="60" offsetY="60" />
@@ -14,13 +14,35 @@
                     <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
                     <Dimensions x="24" y="24" />
                 </Texture>
-                <!-- Crimson Notification Badge with Gold Edge -->
+                <!-- 1. Crimson Notification Badge (Unread Chat Messages) with Gold Edge (Top-Right) -->
                 <Backdrop name="$(parent)_Badge" edgeColor="E5B558" centerColor="B81414" hidden="true" tier="HIGH">
-                    <Dimensions x="18" y="18" />
+                    <Dimensions x="17" y="17" />
                     <Anchor point="TOPRIGHT" offsetX="4" offsetY="-4" />
                     <Edge edgeSize="1" />
                     <Controls>
-                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="1" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Backdrop>
+                <!-- 2. Emerald Forest Badge (Friends Online) with Gold Edge (Top-Left) -->
+                <Backdrop name="$(parent)_FriendsBadge" edgeColor="E5B558" centerColor="1B5E20" hidden="true" tier="HIGH">
+                    <Dimensions x="17" y="17" />
+                    <Anchor point="TOPLEFT" offsetX="-4" offsetY="-4" />
+                    <Edge edgeSize="1" />
+                    <Controls>
+                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Backdrop>
+                <!-- 3. Celestial Blue Badge (Unread Mails) with Gold Edge (Bottom-Right) -->
+                <Backdrop name="$(parent)_MailBadge" edgeColor="E5B558" centerColor="0369A1" hidden="true" tier="HIGH">
+                    <Dimensions x="17" y="17" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4" />
+                    <Edge edgeSize="1" />
+                    <Controls>
+                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
                             <AnchorFill />
                         </Label>
                     </Controls>
@@ -106,24 +128,17 @@
                     <Anchor point="LEFT" relativeTo="$(parent)HeaderIcon" relativePoint="RIGHT" offsetX="8" />
                 </Label>
 
-                <!-- Header Action Buttons (Minimize, Settings, Friends, Mail, Donate) -->
-                <Button name="$(parent)CollapseWindowBtn" mouseEnabled="true">
-                    <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
-                    <Textures normal="/esoui/art/buttons/tree_open_up.dds"
-                              pressed="/esoui/art/buttons/tree_open_down.dds"
-                              mouseOver="/esoui/art/buttons/tree_open_over.dds" />
-                </Button>
+                <!-- Header Action Buttons (Settings, Friends, Mail, Donate) -->
                 <Button name="$(parent)SettingsBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-38" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
                     <Textures normal="/esoui/art/chatwindow/chat_options_up.dds"
                               pressed="/esoui/art/chatwindow/chat_options_down.dds"
                               mouseOver="/esoui/art/chatwindow/chat_options_over.dds" />
                 </Button>
                 <Button name="$(parent)FriendsBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-68" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-40" offsetY="10" />
                     <Textures normal="/esoui/art/contacts/tabicon_friends_up.dds"
                               pressed="/esoui/art/contacts/tabicon_friends_down.dds"
                               mouseOver="/esoui/art/contacts/tabicon_friends_over.dds" />
@@ -142,17 +157,18 @@
                 </Button>
                 <Button name="$(parent)MailBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-98" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-70" offsetY="10" />
                     <Textures normal="/esoui/art/mainmenu/menubar_mail_up.dds"
                               pressed="/esoui/art/mainmenu/menubar_mail_down.dds"
                               mouseOver="/esoui/art/mainmenu/menubar_mail_over.dds" />
                     <Controls>
-                        <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="B81414" hidden="true" tier="HIGH">
+                        <!-- Celestial Blue Badge for Unread Mails -->
+                        <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="0369A1" hidden="true" tier="HIGH">
                             <Dimensions x="16" y="16" />
                             <Anchor point="TOPRIGHT" offsetX="4" offsetY="-4" />
                             <Edge edgeSize="1" />
                             <Controls>
-                                <Label name="$(parent)Count" font="ZoFontGameSmall" text="1" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                                <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
                                     <AnchorFill />
                                 </Label>
                             </Controls>
@@ -162,13 +178,37 @@
                 <!-- Dedicated Donation Button with Gold Coin -->
                 <Button name="$(parent)DonateBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-128" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-100" offsetY="10" />
                     <Controls>
                         <Texture name="$(parent)Icon" textureFile="/esoui/art/currency/currency_gold.dds">
                             <AnchorFill />
                         </Texture>
                     </Controls>
                 </Button>
+
+                <!-- Live Chat Search Box -->
+                <Backdrop name="$(parent)SearchBox" edgeColor="3A3A3A" centerColor="0D1117" alpha="0.9" mouseEnabled="true" tier="HIGH">
+                    <Dimensions x="175" y="24" />
+                    <Anchor point="TOPRIGHT" offsetX="-132" offsetY="10" />
+                    <Edge edgeSize="1" />
+                    <Controls>
+                        <Texture name="$(parent)Icon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" mouseEnabled="true">
+                            <Dimensions x="16" y="16" />
+                            <Anchor point="LEFT" offsetX="6" offsetY="0" />
+                        </Texture>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" font="ZoFontGameSmall" maxInputCharacters="60" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="6" offsetY="-2" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-22" offsetY="2" />
+                        </EditBox>
+                        <Button name="$(parent)ClearBtn" mouseEnabled="true" hidden="true">
+                            <Dimensions x="14" y="14" />
+                            <Anchor point="RIGHT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/buttons/edit_cancel_up.dds"
+                                      pressed="/esoui/art/buttons/edit_cancel_down.dds"
+                                      mouseOver="/esoui/art/buttons/edit_cancel_over.dds" />
+                        </Button>
+                    </Controls>
+                </Backdrop>
 
                 <!-- Top Horizontal Divider (Flush across whole window) -->
                 <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
@@ -485,23 +525,70 @@
             </Controls>
         </TopLevelControl>
 
-        <!-- On-Screen Friend Status Toast Notification (6cm - 8cm / ~220px from Top) -->
+        <!-- On-Screen Player Status Toast Notification (Friends & Guilds) -->
         <TopLevelControl name="AetherChat_FriendNotification" tier="MEDIUM" clampedToScreen="true" mouseEnabled="false" hidden="true">
-            <Dimensions x="480" y="44" />
+            <Dimensions x="560" y="44" />
             <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="220" />
             <Controls>
-                <Backdrop name="$(parent)BG" edgeColor="E5B558" centerColor="0D131C" alpha="0.92">
+                <Backdrop name="$(parent)BG" edgeColor="E5B558" centerColor="0D131C" alpha="0.94">
                     <AnchorFill />
                     <Edge edgeSize="1" />
                 </Backdrop>
                 <Texture name="$(parent)Icon" textureFile="/esoui/art/contacts/tabicon_friends_up.dds">
-                    <Dimensions x="26" y="26" />
+                    <Dimensions x="24" y="24" />
                     <Anchor point="LEFT" offsetX="14" offsetY="0" />
                 </Texture>
-                <Label name="$(parent)Text" font="ZoFontWinH3" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
-                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="10" />
-                    <Anchor point="RIGHT" offsetX="-14" />
+                <Label name="$(parent)Text" font="ZoFontHeader" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" maxLineCount="1">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="12" />
+                    <Anchor point="RIGHT" offsetX="-16" />
                 </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Dedicated Copy Text & URL Modal Window -->
+        <TopLevelControl name="AetherChat_CopyModal" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="520" y="220" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <!-- Header -->
+                <Texture name="$(parent)HeaderIcon" textureFile="/esoui/art/journal/journal_tabicon_lorelibrary_up.dds">
+                    <Dimensions x="22" y="22" />
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="12" />
+                </Texture>
+                <Label name="$(parent)Title" font="ZoFontWinH2" color="E5B558" text="|cE5B558AetherChat|r — Copier le texte / Lien">
+                    <Anchor point="LEFT" relativeTo="$(parent)HeaderIcon" relativePoint="RIGHT" offsetX="8" />
+                </Label>
+                <Button name="$(parent)CloseBtn" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8" />
+                </Button>
+
+                <Label name="$(parent)Desc" font="ZoFontGameSmall" color="C5C29E" text="Appuyez sur Ctrl+C pour copier le contenu dans votre presse-papiers :">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="42" />
+                    <Anchor point="TOPRIGHT" offsetX="-14" offsetY="42" />
+                </Label>
+
+                <!-- Multi-line EditBox for Copy -->
+                <Backdrop name="$(parent)Box" edgeColor="505050" centerColor="111111" alpha="0.8">
+                    <Dimensions y="95" />
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="66" />
+                    <Anchor point="TOPRIGHT" offsetX="-14" offsetY="66" />
+                    <Edge edgeSize="1" />
+                    <Controls>
+                        <EditBox name="$(parent)Edit" font="ZoFontGame" color="FFFFFF" multiLine="true" maxInputCharacters="2000" mouseEnabled="true">
+                            <AnchorFill offsetX="8" offsetY="6" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <!-- Close Button -->
+                <Button name="$(parent)BottomCloseBtn" inherits="ZO_DefaultButton" text="Fermer">
+                    <Dimensions x="110" y="26" />
+                    <Anchor point="BOTTOM" offsetY="-10" />
+                </Button>
             </Controls>
         </TopLevelControl>
     </Controls>

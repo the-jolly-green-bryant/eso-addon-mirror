@@ -22,7 +22,7 @@
     "ZoneSets"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4788/",
-  "fingerprint": "fad6a1ea83e2a46dce19a3d097c57f48104b087be2d9b7dd4c1c5c4349a101d0",
+  "fingerprint": "32ea11bd1885f225e245baa0dde91b748ff5ab771b2047a88a766e57380a5676",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17084.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw17085.jpg",
@@ -35,11 +35,11 @@
   "source_id": "4788",
   "source_url": "https://www.esoui.com/downloads/info4788-ZoneSets.html",
   "stats": {
-    "downloads": 33,
+    "downloads": 87,
     "favorites": 0,
-    "monthly_downloads": 25
+    "monthly_downloads": 81
   },
   "title": "ZoneSets",
-  "updated_at": 1787600594000,
-  "version": "1.2.0"
+  "updated_at": 1788037759000,
+  "version": "1.3.1"
 }

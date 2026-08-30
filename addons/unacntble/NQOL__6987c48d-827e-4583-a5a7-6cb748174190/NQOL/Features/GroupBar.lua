@@ -924,9 +924,9 @@ ApplyGroupRowValue = function(row, data, settings, smoothUpdate)
     if data.showResurrecting then
         PlayerBars.HideHealthVisualOverlays(widget)
     else
-        data.healthVisuals.currentOverride = fillCurrent + PlayerBars.GetTraumaAmountForHealth(data, data.healthVisuals)
+        data.healthVisuals.normalOverride = fillCurrent
         PlayerBars.ApplyHealthVisualOverlays(widget, data, rangeMaximum, innerWidth, innerHeight, borderSize, settings.reverse == true, false, data.healthVisuals)
-        data.healthVisuals.currentOverride = nil
+        data.healthVisuals.normalOverride = nil
     end
 
     local nameText = data.nameText or PlayerBars.Group.GetRowNameText(data, settings, height)

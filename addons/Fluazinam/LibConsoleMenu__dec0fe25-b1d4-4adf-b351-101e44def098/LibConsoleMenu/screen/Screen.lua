@@ -224,7 +224,7 @@ function LibConsoleMenu:SelectFirstAddon()
 	end
 end
 
--- Root: addon name + version. Nested: submenu title only. Never author/messageText.
+-- Root: addon name + version. Nested: submenu title only. Author screenHeader merges on top.
 function LibConsoleMenu:RefreshSceneHeader()
 	local header = self.scrollList and self.scrollList.header
 	local addon = self.currentMenu
@@ -239,14 +239,16 @@ function LibConsoleMenu:RefreshSceneHeader()
 	if submenu then
 		headerData.titleText = submenu:GetString(submenu:GetValueOrCallback(submenu.labelText))
 		headerData.subtitleText = nil
-		headerData.messageText = nil
 	else
 		headerData.titleText = addon.displayTitle or addon.title
 		headerData.subtitleText = addon.version
-		headerData.messageText = nil
 	end
 
+	local config = LibConsoleMenu.GetActiveScreenHeaderConfig()
+	LibConsoleMenu.MergeScreenHeaderData(headerData, config)
+
 	ZO_GamepadGenericHeader_RefreshData(header, headerData)
+	LibConsoleMenu.RefreshScreenHeaderControl(config)
 end
 
 function LibConsoleMenu:GoBack()
@@ -300,6 +302,43 @@ end
 function Settings_ParametricList:PerformUpdate()
 end
 
+function Settings_ParametricList:OnDeferredInitialize()
+	LibConsoleMenu.InitializeScreenHeaderWidget(self)
+end
+
+function Settings_ParametricList:CanEnterHeader()
+	local widget = self.headerControlWidget
+	return widget and not widget:IsHidden()
+end
+
+function Settings_ParametricList:OnEnterHeader()
+	local config = LibConsoleMenu.GetActiveScreenHeaderConfig()
+	local controlConfig = config and config.control
+	if controlConfig and controlConfig.tooltip then
+		local tooltip = controlConfig.tooltip
+		local text
+		if type(tooltip) == "function" then
+			text = tooltip()
+		elseif type(tooltip) == "number" then
+			text = GetString(tooltip)
+		else
+			text = tooltip
+		end
+		if type(text) == "string" and #text > 0 then
+			GAMEPAD_TOOLTIPS:LayoutSettingTooltip(GAMEPAD_LEFT_TOOLTIP, text, "")
+		end
+	end
+	KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+end
+
+function Settings_ParametricList:OnLeaveHeader()
+	GAMEPAD_TOOLTIPS:Reset(GAMEPAD_LEFT_TOOLTIP)
+	if self.headerControlDropdown then
+		self.headerControlDropdown:Deactivate()
+	end
+	KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+end
+
 function Settings_ParametricList:InitializeKeybindStripDescriptors()
 	local CONTROL_TYPES_WITH_PRIMARY_ACTION = {
 		[LibConsoleMenu.CT_TOGGLE] = true,
@@ -332,6 +371,12 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 			keybind = "UI_SHORTCUT_PRIMARY",
 			gamepadOrder = 1, -- PRIMARY already maps to 1, but just to be explicit. 
 			callback = function()
+				if self:IsHeaderActive() then
+					if self.headerControlDropdown then
+						self.headerControlDropdown:Activate()
+					end
+					return
+				end
 				local control = LibConsoleMenu.list:GetSelectedControl()
 				local data = LibConsoleMenu.list:GetSelectedData()
 				if not data then
@@ -353,10 +398,21 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 				end
 			end,
 			enabled = function()
+				if self:IsHeaderActive() then
+					return true
+				end
 				local data = LibConsoleMenu.list:GetSelectedData()
 				return data and not data:IsDisabled()
 			end,
 			visible = function()
+				if self:IsHeaderActive() then
+					if lastActiveInput then
+						lastActiveInput:Deactivate()
+						lastActiveInput = nil
+					end
+					GAMEPAD_TOOLTIPS:Reset(GAMEPAD_LEFT_TOOLTIP)
+					return true
+				end
 				local data = LibConsoleMenu.list:GetSelectedData()
 				local control = LibConsoleMenu.list:GetSelectedControl()
 				if lastActiveInput then
@@ -437,6 +493,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 					lastActiveInput:Deactivate()
 					lastActiveInput = nil
 				end
+				LibConsoleMenu.DeactivateScreenHeaderControl()
 				local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
 				if selectedControl and selectedControl.Deactivate then
 					selectedControl:Deactivate()
@@ -463,6 +520,7 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 			submenu.onExit(submenu)
 		end
 		-- Also close ComboBox popups if scene hide was skipped (e.g. fragment-only hide).
+		LibConsoleMenu.DeactivateScreenHeaderControl()
 		local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
 		if selectedControl and selectedControl.Deactivate then
 			selectedControl:Deactivate()
@@ -517,6 +575,7 @@ function LibConsoleMenu:CreateSharedMenuScene()
 	self.scene = scene
 
 	self.scrollList = Settings_ParametricList:New(control)
+	LibConsoleMenu.InitializeScreenHeaderWidget(self.scrollList)
 	self.list = self.scrollList:GetMainList()
 	local headerPadding = GAMEPAD_HEADER_DEFAULT_PADDING or 80
 	local headerSelectedPadding = GAMEPAD_HEADER_SELECTED_PADDING or -40

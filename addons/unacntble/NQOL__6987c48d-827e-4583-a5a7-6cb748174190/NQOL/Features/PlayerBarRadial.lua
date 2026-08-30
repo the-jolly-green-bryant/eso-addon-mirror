@@ -74,7 +74,7 @@ local BORDER_DIRECTIONS = {
 }
 local BAR_LANE_GAP = 8
 local TOP_VALUE_Y = 10
-local BOTTOM_VALUE_Y = 410
+local BOTTOM_VALUE_Y = 414
 local MAGICKA_VALUE_X = 42
 local STAMINA_VALUE_X = 43
 
@@ -143,15 +143,22 @@ local function CreateWidget(root, resourceType)
     if resourceType == C.RESOURCE_HEALTH then
         widget.trauma = CreateTexture(widget, widget.mask, C.DRAW_LEVEL + 4, C.PLAYER_TRAUMA_COLOR[1], C.PLAYER_TRAUMA_COLOR[2], C.PLAYER_TRAUMA_COLOR[3], C.PLAYER_TRAUMA_COLOR[4])
         widget.trauma:SetHidden(true)
+        widget.shield = CreateTexture(widget, widget.mask, C.DRAW_LEVEL + 5, C.PLAYER_SHIELD_COLOR[1], C.PLAYER_SHIELD_COLOR[2], C.PLAYER_SHIELD_COLOR[3], C.PLAYER_SHIELD_COLOR[4])
+        widget.shield:SetHidden(true)
+        widget.noHealing = CreateTexture(widget, widget.mask, C.DRAW_LEVEL + 6, 0.86, 0.94, 0.96, 0.42)
+        widget.noHealing:SetHidden(true)
     end
     widget.shadow = WINDOW_MANAGER:CreateControl(nil, widget, CT_TEXTURE)
     widget.shadow:SetDimensions(WIDTH, HEIGHT)
     widget.shadow:SetColor(1, 1, 1, 1)
     widget.shadow:SetHidden(true)
-    MoveAboveHud(widget.shadow, C.DRAW_LEVEL + 5)
+    MoveAboveHud(widget.shadow, C.DRAW_LEVEL + 7)
     if resourceType == C.RESOURCE_HEALTH or resourceType == C.RESOURCE_MAGICKA or resourceType == C.RESOURCE_STAMINA then
         widget.maximumLabel = CreateLabel(root)
         widget.currentLabel = CreateLabel(root)
+        if resourceType == C.RESOURCE_HEALTH then
+            widget.maximumLabel:SetDimensions(112, 22)
+        end
     else
         widget.icon = WINDOW_MANAGER:CreateControl(nil, root, CT_TEXTURE)
         if resourceType == COMBAT_MECHANIC_FLAGS_WEREWOLF then
@@ -299,11 +306,19 @@ local function SetWidgetMask(widget, texture, bounds, inverseFill, mirrored, bor
     if widget.trauma then
         SetAddonTexture(widget.trauma, texture)
     end
+    if widget.shield then
+        SetAddonTexture(widget.shield, texture)
+    end
+    if widget.noHealing then
+        SetAddonTexture(widget.noHealing, texture)
+    end
     LayoutTextureSegment(widget.track, bounds, mirrored)
     LayoutTextureSegment(widget.shadow, bounds, mirrored)
     SetMirrored(widget.fill, mirrored)
     SetMirrored(widget.loss, mirrored)
     SetMirrored(widget.trauma, mirrored)
+    SetMirrored(widget.shield, mirrored)
+    SetMirrored(widget.noHealing, mirrored)
     for _, border in ipairs(widget.borderTextures) do
         SetAddonTexture(border, texture)
     end
@@ -692,24 +707,44 @@ local function ApplyWidget(widget, resourceValue, resourceType, settings, static
             if widget.trauma then
                 SetClippedTextureRange(widget.trauma, 0, 0, 0, widget)
             end
+            if widget.shield then
+                SetClippedTextureRange(widget.shield, 0, 0, 0, widget)
+            end
+            if widget.noHealing then
+                SetClippedTextureRange(widget.noHealing, 0, 0, 0, widget)
+            end
             if PlayerBars.Smooth then
-                PlayerBars.Smooth.Reset(widget, resourceType)
+                if resourceType == C.RESOURCE_HEALTH then
+                    PlayerBars.ResetPlayerHealthAnimations(widget)
+                else
+                    PlayerBars.Smooth.Reset(widget, resourceType)
+                end
             end
         end
         return
     end
 
-    local maximum = resourceValue.maximum
-    maximum = math.max(1, maximum)
-    local current = resourceType == C.RESOURCE_HEALTH and PlayerBars.GetVisibleHealthForFill(resourceValue) or resourceValue.current
+    local maximum = math.max(1, resourceValue.maximum)
+    local current = resourceValue.current
+    local traumaAmount = 0
+    local shieldAmount = 0
     settings = settings or Shared.GetRadialSettings()
-    if settings.smoothTransitions == true and PlayerBars.Smooth then
+    if resourceType == C.RESOURCE_HEALTH then
+        if not widget.nqolRadialSmoothUpdateCallback then
+            widget.nqolRadialSmoothUpdateCallback = function()
+                ApplyWidget(widget, resourceValue, resourceType, settings, false, true)
+            end
+        end
+        current, traumaAmount, shieldAmount = PlayerBars.GetAnimatedPlayerHealthSegments(widget, resourceValue, settings, widget.nqolRadialSmoothUpdateCallback)
+    elseif settings.smoothTransitions == true and PlayerBars.Smooth then
         if not widget.nqolRadialSmoothUpdateCallback then
             widget.nqolRadialSmoothUpdateCallback = function()
                 ApplyWidget(widget, resourceValue, resourceType, settings, false, true)
             end
         end
         current = PlayerBars.Smooth.GetValue(widget, resourceType, current, widget.nqolRadialSmoothUpdateCallback, maximum)
+    elseif staticUpdate and PlayerBars.Smooth then
+        PlayerBars.Smooth.Reset(widget, resourceType)
     end
 
     if staticUpdate then
@@ -720,12 +755,22 @@ local function ApplyWidget(widget, resourceValue, resourceType, settings, static
     end
     SetClippedTexture(widget.fill, current / maximum, 1, widget)
     if widget.trauma then
-        local traumaAmount = PlayerBars.GetTraumaAmountForHealth(resourceValue)
         if staticUpdate then
             local traumaRed, traumaGreen, traumaBlue, traumaAlpha = Shared.GetPlayerTraumaColor(settings)
             widget.trauma:SetColor(traumaRed, traumaGreen, traumaBlue, traumaAlpha)
+            local shieldRed, shieldGreen, shieldBlue, shieldAlpha = Shared.GetPlayerShieldColor(settings)
+            widget.shield:SetColor(shieldRed, shieldGreen, shieldBlue, shieldAlpha)
         end
         SetClippedTextureRange(widget.trauma, current / maximum, (current + traumaAmount) / maximum, 1, widget)
+    end
+    if widget.shield then
+        local shieldStart = current + traumaAmount
+        local visibleShieldAmount = math.min(shieldAmount, maximum)
+        SetClippedTextureRange(widget.shield, shieldStart / maximum, (shieldStart + visibleShieldAmount) / maximum, 1, widget)
+    end
+    if widget.noHealing then
+        local noHealingAmount = PlayerBars.GetNoHealingHealthAmount(current, PlayerBars.GetHealthVisualValues())
+        SetClippedTextureRange(widget.noHealing, 0, noHealingAmount / maximum, 1, widget)
     end
     if settings.smoothTransitions == true and settings.transitionShadow == true and PlayerBars.Smooth then
         local lossValue, lossAlpha = PlayerBars.Smooth.GetLoss(widget, resourceType)

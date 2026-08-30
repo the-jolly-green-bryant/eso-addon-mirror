@@ -216,6 +216,9 @@ local function OnAddOnLoaded(event, addonName)
     local function ClearStationKeybind()
         EVENT_MANAGER:UnregisterForUpdate("TDWP_KeybindRefresh")
         if TetsuDailyWritPrecrafter.Crafting then
+            if TetsuDailyWritPrecrafter.Crafting.AbortBecauseStationClosed then
+                TetsuDailyWritPrecrafter.Crafting.AbortBecauseStationClosed()
+            end
             TetsuDailyWritPrecrafter.Crafting._stationSessionDone = false
             TetsuDailyWritPrecrafter.Crafting._autoQuestStarted = false
             TetsuDailyWritPrecrafter.Crafting._stationLock = false

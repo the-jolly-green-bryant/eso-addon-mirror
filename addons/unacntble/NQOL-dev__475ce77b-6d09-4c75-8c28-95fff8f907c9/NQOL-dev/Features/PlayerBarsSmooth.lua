@@ -104,7 +104,7 @@ local function StartUpdates()
     end
 end
 
-function Smooth.GetValue(owner, key, targetValue, onUpdate, rangeMaximum)
+function Smooth.GetValue(owner, key, targetValue, onUpdate, rangeMaximum, trackLoss)
     targetValue = tonumber(targetValue) or 0
     local ownerAnimations = GetOwnerAnimations(owner, true)
     local animation = ownerAnimations[key]
@@ -145,7 +145,7 @@ function Smooth.GetValue(owner, key, targetValue, onUpdate, rangeMaximum)
     animation.rangeMaximum = rangeMaximum
     if animation.targetValue ~= targetValue then
         local wasUpdating = IsUpdating(animation)
-        if targetValue < animation.targetValue then
+        if targetValue < animation.targetValue and trackLoss ~= false then
             animation.lossValue = math.max(animation.targetValue, animation.displayValue or 0)
             animation.lossAlpha = 0.32
             animation.lossStartTime = GetNow()

@@ -32,7 +32,7 @@ function Addon:BuildStayMountedMenu(H)
                 end,
                 default = Addon.defaults.stayMountedAllowedInteractions,
                 noSelectionText = "No interactions selected",
-                multiSelectionTextFormatter = "<<1[$d interaction selected/$d interactions selected]>>",
+                selectionTextFormat = "<<1[$d interaction selected/$d interactions selected]>>",
                 disabled = function()
                     return not sv.stayMounted
                 end,
@@ -68,7 +68,7 @@ function Addon:BuildStayMountedMenu(H)
                 end,
                 default = Addon.defaults.stayMountedAllowedActions,
                 noSelectionText = "No actions selected",
-                multiSelectionTextFormatter = "<<1[$d action selected/$d actions selected]>>",
+                selectionTextFormat = "<<1[$d action selected/$d actions selected]>>",
                 disabled = function()
                     return not sv.stayMountedBlockActions
                 end,
@@ -101,7 +101,7 @@ function Addon:BuildStayMountedMenu(H)
                 end,
                 default = Addon.defaults.stayMountedAllowedSpecialMoves,
                 noSelectionText = "No special moves selected",
-                multiSelectionTextFormatter = "<<1[$d special move selected/$d special moves selected]>>",
+                selectionTextFormat = "<<1[$d special move selected/$d special moves selected]>>",
                 disabled = function()
                     return not sv.stayMountedBlockSpecialMoves
                 end,

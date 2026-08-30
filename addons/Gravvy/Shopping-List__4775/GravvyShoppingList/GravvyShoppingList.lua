@@ -48,6 +48,8 @@ function addon:Initialize()
     end
     self.accessibility = ShoppingListAccessibility
     self.accessibility:Initialize(self)
+    self.priceData = ShoppingListPriceData:New()
+    self.costPlanning = ShoppingListCostPlanning:New(self)
     self.matcher = ShoppingListMatcher
     self.setCatalog = ShoppingListSetCatalog:New()
     self.ui = ShoppingListUI:New(self)

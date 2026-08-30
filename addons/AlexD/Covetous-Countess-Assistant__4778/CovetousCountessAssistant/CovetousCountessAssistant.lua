@@ -1,7 +1,7 @@
 local ADDON_TITLE   = "Covetous Countess Assistant"
 local ADDON_NAME    = "CovetousCountessAssistant"
 local ADDON_AUTHOR  = "@AlexD"
-local ADDON_VERSION = "1.1.1"
+local ADDON_VERSION = "1.2.1"
 local ADDON_WEBSITE = "https://www.esoui.com/downloads/info4778-CovetousCountessAssistant.html"
 local SV_VERSION    = 1
 local LANGUAGE_CVAR = "Language.2"
@@ -45,6 +45,15 @@ local tinsert                       = table.insert
 local tremove                       = table.remove
 local tconcat                       = table.concat
 
+local string_lower                  = zo_strlower
+local string_sub                    = zo_strsub
+local string_len                    = string.len
+local string_byte                   = string.byte
+local string_gsub                   = string.gsub
+local string_format                 = string.format
+local table_insert                  = table.insert
+local table_concat                  = table.concat
+
 --[[
 Treasure categories used by The Covetous Countess:
 https://en.uesp.net/wiki/Online:Treasures
@@ -64,7 +73,7 @@ local COUNTESS_DUMMY_IDS = {
     ["Curiosities"]                 = {
         ["Ritual Objects"]          = "64413",
         ["Oddities"]                = "61442",
-        ["Magic Curiosities"]       = "64389",
+        -- ["Magic Curiosities"]       = "64389", -- does not count as a curiosity
     },
     ["Documents"]                   = {
         ["Writings"]                = "61207",
@@ -83,56 +92,65 @@ local COUNTESS_DUMMY_IDS = {
     },
 }
 
-local DELIVERY_CITIES    = {
-    ["en"]               = {
-        ["Collectibles"] = { ["Davon's Watch"] = true, },
-        ["Curiosities"]  = { ["Mournhold"] = true, },
-        ["Documents"]    = { ["Stormhold"] = true, },
-        ["Accessories"]  = { ["Windhelm"] = true, },
-        ["Kitchenware"]  = { ["Riften"] = true, },
+local MAPS_DUMMY_IDS = {
+    ["Collectibles"] = { ["Davon's Watch"] = "24",  },
+    ["Curiosities"]  = { ["Mournhold"]     = "205", },
+    ["Documents"]    = { ["Stormhold"]     = "217", },
+    ["Accessories"]  = { ["Windhelm"]      = "160", },
+    ["Kitchenware"]  = { ["Riften"]        = "198", },
+}
+
+local COUNTESS_EXTRA_TAGS = {
+    ["jp"] = {
+        ["Collectibles"]                = {
+            ["Games"]                   = "ゲーム",
+            ["Dolls"]                   = "人形",
+            ["Statues"]                 = "像",
+        },
+        ["Curiosities"]                 = {
+            ["Ritual Objects"]          = "儀式用品",
+            ["Oddities"]                = { "半端もの", "奇妙な品" },
+        },
+        ["Documents"]                   = {
+            ["Writings"]                = "文書",
+            ["Maps"]                    = { "マップ", "地図" },
+        },
+        ["Accessories"]  = {
+            ["Cosmetics"]               = "化粧品",
+            ["Dry Goods"]               = "下着",
+            ["Wardrobe Accessories"]    = { "小物", "服飾小物" },
+        },
+        ["Kitchenware"]  = {
+            ["Drinkware"]               = "カップ",
+            ["Utensils"]                = { "台所器具", "台所用品" },
+            ["Dishes and Cookware"]     = "皿",
+        },
     },
-    ["de"]                = {
-        ["Collectibles"] = { ["Davons Wacht"] = true, },
-        ["Curiosities"]  = { ["Gramfeste"] = true, },
-        ["Documents"]    = { ["Sturmfeste"] = true, },
-        ["Accessories"]  = { ["Windhelm"] = true, },
-        ["Kitchenware"]  = { ["Riften"] = true, },
+    ["zh"] = {
+        ["Collectibles"]                = {
+            ["Games"]                   = "玩具",
+            ["Dolls"]                   = "玩偶",
+            ["Statues"]                 = "雕像",
+        },
+        ["Curiosities"]                 = {
+            ["Ritual Objects"]          = "仪式物品",
+            ["Oddities"]                = "奇异物品",
+        },
+        ["Documents"]                   = {
+            ["Writings"]                = "文字作品",
+            ["Maps"]                    = "地图",
+        },
+        ["Accessories"]  = {
+            ["Cosmetics"]               = "装扮品",
+            ["Dry Goods"]               = "织物",
+            ["Wardrobe Accessories"]    = { "配件", "其他物品" },
+        },
+        ["Kitchenware"]  = {
+            ["Drinkware"]               = "杯具",
+            ["Utensils"]                = "器皿",
+            ["Dishes and Cookware"]     = "盘子",
+        }
     },
-    ["fr"]                = {
-        ["Collectibles"] = { ["Le Guet de Davon"] = true, },
-        ["Curiosities"]  = { ["Longsanglot"] = true, },
-        ["Documents"]    = { ["Fort-Tempête"] = true, },
-        ["Accessories"]  = { ["Vendeaume"] = true, },
-        ["Kitchenware"]  = { ["Faillaise"] = true, },
-    },
-    ["es"]                = {
-        ["Collectibles"] = { ["Vigilia de Davon"] = true, },
-        ["Curiosities"]  = { ["El Duelo"] = true, },
-        ["Documents"]    = { ["Fuerte de la Tormenta"] = true, },
-        ["Accessories"]  = { ["Ventalia"] = true, },
-        ["Kitchenware"]  = { ["Riften"] = true, },
-    },
-    ["ru"]                = {
-        ["Collectibles"] = { ["Дозор Давона"] = true, },
-        ["Curiosities"]  = { ["Морнхолд"] = true, },
-        ["Documents"]    = { ["Стормхолд"] = true, },
-        ["Accessories"]  = { ["Виндхельм"] = true, },
-        ["Kitchenware"]  = { ["Рифтен"] = true, },
-    },
-    ["jp"]                = {
-        ["Collectibles"] = { ["ダボンズ・ウォッチ"] = true, },
-        ["Curiosities"]  = { ["モーンホールド"] = true, },
-        ["Documents"]    = { ["ストームホールド"] = true, },
-        ["Accessories"]  = { ["ウィンドヘルム"] = true, },
-        ["Kitchenware"]  = { ["リフテン"] = true, },
-    },
-    ["zh"]                = {
-        ["Collectibles"] = { ["达望城"] = true, },
-        ["Curiosities"]  = { ["哀伤之城"] = true, },
-        ["Documents"]    = { ["风暴城"] = true, },
-        ["Accessories"]  = { ["风盔城"] = true, },
-        ["Kitchenware"]  = { ["裂谷城"] = true, },
-    }
 }
 
 --[[
@@ -423,6 +441,7 @@ end
 ----------------------------------------------------------------------
 -- Treasure tag tables (built once at load)
 ----------------------------------------------------------------------
+local COUNTESS_CITIES   = {}
 local COUNTESS_TAGS     = {} -- category -> { tag = true }
 local COUNTESS_TAGS_SET = {} -- flat set
 local CROW_TAGS         = {}
@@ -438,6 +457,15 @@ local tagCache          = {}
 local function ToItemLink(itemId)
     if not itemId then return nil end
     return "|H0:item:" .. itemId .. ":0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"
+end
+
+local function NormalizeLanguageKey(lang)
+    if not lang or lang == "" then return "en" end
+    local key = string_lower(string_sub(lang, 1, 2))
+    if key == "ja" then return "jp" end
+    if key == "ko" then return "kr" end
+    if key == "pt" then return "br" end
+    return key
 end
 
 local function GetTreasureTags(itemLink)
@@ -482,9 +510,46 @@ local function BuildTagTables(source, dest, flatSet)
     end
 end
 
+local function BuildCitiesNames(source, dest)
+    for category, items in pairs(source) do
+        dest[category] = {}
+        for _, mapId in pairs(items) do
+            local rawMapName = GetMapNameById(mapId)
+            local mapName = ZO_CachedStrFormat(SI_ZONE_NAME, rawMapName)
+            dest[category][mapName] = true
+        end
+    end
+end
+
+local function MergeExtraTags(langKey)
+    local extraLang = COUNTESS_EXTRA_TAGS[langKey]
+    if not extraLang then return end
+
+    for category, items in pairs(extraLang) do
+        COUNTESS_TAGS[category] = COUNTESS_TAGS[category] or {}
+        for subCategory, tagOrTable in pairs(items) do
+            if type(tagOrTable) == "table" then
+                for _, tag in ipairs(tagOrTable) do
+                    COUNTESS_TAGS[category][tag] = true
+                    COUNTESS_TAGS_SET[tag] = true
+                end
+            else
+                COUNTESS_TAGS[category][tagOrTable] = true
+                COUNTESS_TAGS_SET[tagOrTable] = true
+            end
+        end
+    end
+end
+
 local function BuildTreasureTags()
     BuildTagTables(COUNTESS_DUMMY_IDS, COUNTESS_TAGS, COUNTESS_TAGS_SET)
     BuildTagTables(CROW_DUMMY_IDS, CROW_TAGS, CROW_TAGS_SET)
+    BuildCitiesNames(MAPS_DUMMY_IDS, COUNTESS_CITIES)
+
+    -- Merge language-specific extra tags for JP/ZH
+    local rawLang = GetCVar(LANGUAGE_CVAR)
+    local langKey = NormalizeLanguageKey(rawLang)
+    MergeExtraTags(langKey)
 
     for tag in pairs(COUNTESS_TAGS_SET) do COMBINED_TAGS_SET[tag] = true end
     for tag in pairs(CROW_TAGS_SET) do COMBINED_TAGS_SET[tag] = true end
@@ -514,8 +579,31 @@ end
 ----------------------------------------------------------------------
 -- Inventory icon hooks
 ----------------------------------------------------------------------
+
+local function IsQuestItem(itemLink)
+    if not itemLink or itemLink == "" then return false end
+    local itemTags = GetTreasureTags(itemLink)
+
+    local matchesQuest = false
+    if itemTags then
+        for _, questTags in pairs(ACTIVE_QUESTS_TAGS) do
+            if questTags then
+                for _, tag in ipairs(itemTags) do
+                    if questTags[tag] then
+                        matchesQuest = true
+                        break
+                    end
+                end
+            end
+            if matchesQuest then break end     -- stop scanning quests too
+        end
+    end
+
+    return matchesQuest
+end
+
 -- create local function to avoid globals for hooks
-local function UpdateStatusControlIcons() 
+local function UpdateStatusControlIcons()
 
     -- PreHook: inject (or strip) our icon path into additionalIcons before vanilla runs.
     ZO_PreHook("ZO_UpdateStatusControlIcons", function(inventorySlot, slotData)
@@ -561,34 +649,19 @@ local function UpdateStatusControlIcons()
         local statusControl = inventorySlot:GetNamedChild("StatusTexture")
         if not statusControl or not statusControl.iconData then return end
 
-        local itemLink = slotData.bagId and slotData.slotIndex
-            and GetItemLink(slotData.bagId, slotData.slotIndex)
-        local itemTags = itemLink and GetTreasureTags(itemLink)
-
-        local matchesQuest = false
-        if itemTags then
-            for _, questTags in pairs(ACTIVE_QUESTS_TAGS) do
-                if questTags then
-                    for _, tag in ipairs(itemTags) do
-                        if questTags[tag] then
-                            matchesQuest = true
-                            break
-                        end
-                    end
-                end
-                if matchesQuest then break end -- stop scanning quests too
-            end
+        local itemLink
+        if slotData and slotData.bagId and slotData.slotIndex then
+            itemLink = GetItemLink(slotData.bagId, slotData.slotIndex)
         end
+
+        local color = (CCA.SV.highlightQuestItems and IsQuestItem(itemLink))
+            and FENCE_ICON_COLOR_GREEN
+            or FENCE_ICON_COLOR_WHITE
 
         local tinted = false
         for _, data in ipairs(statusControl.iconData) do
-            if data.iconTexture == FENCE_ICON then
-                -- highlighting is enabled AND item matches quest
-                if CCA.SV.highlightQuestItems and matchesQuest then
-                    data.iconTint = FENCE_ICON_COLOR_GREEN
-                else
-                    data.iconTint = FENCE_ICON_COLOR_WHITE
-                end
+            if data.iconTexture == FENCE_ICON and data.iconTint ~= color then
+                data.iconTint = color
                 tinted = true
             end
         end
@@ -634,19 +707,10 @@ end
 --   4. Coverage score = |category ∩ quest| / |category|
 ----------------------------------------------------------------------
 
-local string_lower         = zo_strlower
-local string_sub           = zo_strsub
-local string_len           = string.len
-local string_byte          = string.byte
-local string_gsub          = string.gsub
-local string_format        = string.format
-local table_insert         = table.insert
-local table_concat         = table.concat
-
 -- Language → preferred n-gram orders
 local NGRAM_ORDERS         = {
-    -- zh = { 1, 2 }, -- Chinese
-    -- jp = { 1, 2 }, -- Japanese
+    zh = { 1, 2 }, -- Chinese
+    jp = { 1, 2 }, -- Japanese
     -- kr = { 1, 2 }, -- Korean
     -- th = { 1, 2 }, -- Thai
     de = { 2, 3 },
@@ -668,34 +732,7 @@ local DEFAULT_NGRAM_ORDERS = { 2, 3 }
 -- Tune freely; falls back to `n` itself for any order not listed here.
 local NGRAM_ORDER_WEIGHT   = { [1] = 1, [2] = 5, [3] = 50 }
 
--- OPTIONAL SWITCH ------------------------------------------------------
--- false (default): score = weighted_intersection / weighted_total
---   Plain coverage fraction, bounded [0,1]. Simple, but a category with
---   many tags (many grams) needs almost all of them to match to score
---   high — long tag lists get penalized relative to short ones.
--- true: score = weighted_intersection / log(1 + weighted_total)
---   Sub-linear denominator, so absolute overlap matters more than exact
---   fraction covered — long categories aren't punished just for being
---   long. Score is NOT bounded to [0,1] anymore, so it needs its own
---   floor constant (MATCH_SCORE_FLOOR_LOG below) and some retuning by
---   watching the debug output for your real tag lists.
---------------------------------------------------------------------------
-local USE_LOG_NORMALIZED_SCORE = false -- does not work well, will remove in the future
-
 local MATCH_SCORE_FLOOR      = 0.08  -- floor for the plain-fraction score
-local MATCH_SCORE_FLOOR_LOG  = 1.50  -- floor for the log-normalized score (starting guess, retune)
-
-----------------------------------------------------------------------
--- Language key normalization
-----------------------------------------------------------------------
-local function NormalizeLanguageKey(lang)
-    if not lang or lang == "" then return "en" end
-    local key = string_lower(string_sub(lang, 1, 2))
-    if key == "ja" then return "jp" end
-    if key == "ko" then return "kr" end
-    if key == "pt" then return "br" end
-    return key
-end
 
 ----------------------------------------------------------------------
 -- Multi-byte safe UTF-8 character iterator (Lua 5.1)
@@ -753,13 +790,23 @@ end
 local function NormalizeForNgrams(langKey, text)
     if not text then return "" end
     local s = tostring(text)
+    
+    -- Strip ESO formatting tags (|cFFFFFF, |t...|t, |H...|h, etc.)
+    s = string_gsub(s, "|c%x%x%x%x%x%x", "")
+    s = string_gsub(s, "|r", "")
+    s = string_gsub(s, "|t.-|t", "")
+    s = string_gsub(s, "|H.-|h", "")
+    s = string_gsub(s, "|h", "")
 
-    s = string_lower(s)
+    -- Lowercase ONLY for non-CJK languages
+    if langKey ~= "zh" and langKey ~= "jp" and langKey ~= "kr" and langKey ~= "th" then
+        s = string_lower(s)
+    end
 
-    -- Trim + collapse whitespace
-    s = string_gsub(s, "^%s+", "")
-    s = string_gsub(s, "%s+$", "")
-    s = string_gsub(s, "%s+", " ")
+    -- UTF-8 Safe Control Char Stripping (Explicit byte numbers: 9=Tab, 10=LF, 13=CR)
+    s = string_gsub(s, "\009", " ")
+    s = string_gsub(s, "\010", " ")
+    s = string_gsub(s, "\013", " ")
 
     -- Strip ONLY pure ASCII control (0x01-0x1F, 0x7F)
     -- Explicit byte ranges – never use %c (locale-dependent)
@@ -769,21 +816,59 @@ local function NormalizeForNgrams(langKey, text)
     -- of input. Game text won't contain real NULs anyway.
     s = string_gsub(s, "[\1-\31\127]", " ") -- removes controls
 
-    -- Strip ONLY pure ASCII punctuation (explicit ranges, never %p)
-    -- Ranges: !-/  :@  [-`  {-~
-    s = string_gsub(s, "[!-/:-@[-`{-~]", " ")
+    -- Replace ASCII punctuation (including dots and commas) with spaces
+    -- (Listed individually to avoid byte range UTF-8 corruption)
+    s = string_gsub(s, "[-.,?!:*%+~#@^&()%[%]{}<>\"'_=/\\]", " ")
 
-    -- Strip punctuation common to CJK 
-    s = string_gsub(s, "[、。，！？「」]", " ")
+    -- In Lua 5.1 pattern classes, a trailing colon :] breaks character matching, causing the full-width colon to be ignored completely.
 
-    -- Trim + collapse whitespace
-    s = string_gsub(s, "^%s+", "")
-    s = string_gsub(s, "%s+$", "")
-    s = string_gsub(s, "%s+", " ")
+    -- UTF-8 Safe Quote Stripping (Explicit hex bytes, no bracket classes)
+    s = string_gsub(s, "\194\171", " ") -- «
+    s = string_gsub(s, "\194\187", " ") -- »
+    s = string_gsub(s, "\226\128\152", " ") -- ‘
+    s = string_gsub(s, "\226\128\153", " ") -- ’
+    s = string_gsub(s, "\226\128\154", " ") -- ‚
+    s = string_gsub(s, "\226\128\155", " ") -- ‛
+    s = string_gsub(s, "\226\128\156", " ") -- “
+    s = string_gsub(s, "\226\128\157", " ") -- ”
+    s = string_gsub(s, "\226\128\158", " ") -- „
+    s = string_gsub(s, "\226\128\159", " ") -- ‟
+    s = string_gsub(s, "\226\128\185", " ") -- ‹
+    s = string_gsub(s, "\226\128\186", " ") -- ›
+    
+    -- UTF-8 Safe CJK Punctuation (Explicit byte replacement outside of [...])
+    s = string_gsub(s, "\227\128\129", " ") -- 、
+    s = string_gsub(s, "\227\128\130", " ") -- 。
+    s = string_gsub(s, "\239\188\140", " ") -- ，
+    s = string_gsub(s, "\239\188\129", " ") -- ！
+    s = string_gsub(s, "\239\188\159", " ") -- ？
+    s = string_gsub(s, "\239\188\154", " ") -- ：
+    s = string_gsub(s, "\227\128\140", " ") -- 「
+    s = string_gsub(s, "\227\128\141", " ") -- 」
+    s = string_gsub(s, "\227\128\142", " ") -- 『
+    s = string_gsub(s, "\227\128\143", " ") -- 』
+    s = string_gsub(s, "\227\128\144", " ") -- 【
+    s = string_gsub(s, "\227\128\145", " ") -- 】
+    s = string_gsub(s, "\227\128\158", " ") -- 〝
+    s = string_gsub(s, "\227\128\159", " ") -- 〞
 
-    -- Continuous character stream for CJK languages
+    -- In Lua 5.1, %d is locale-dependent via C's isdigit(). In multi-byte CJK encodings, the second or third byte of certain Japanese/Chinese characters happens to fall into the byte range that standard C library locale headers classify as "digits" or digit-adjacent encodings. When %d+ runs, it strips out those specific bytes from inside multi-byte characters, corrupting Japanese text.
+    -- Strip numbers & counter formatting (e.g. 0/3)
+    s = string_gsub(s, "[0-9]+", "")
+
+    -- Strips non-breaking spaces (0xC2 0xA0) explicitly
+    s = string_gsub(s, "\194\160", " ")
+
+    -- Safe whitespace handling (explicit ASCII space " " instead of %s)
     if langKey == "zh" or langKey == "jp" or langKey == "kr" or langKey == "th" then
-        s = string_gsub(s, "%s+", "")
+        -- Completely strip ASCII spaces for continuous CJK stream
+        s = string_gsub(s, " ", "")
+    else
+        -- Collapse multiple ASCII spaces for Latin/Cyrillic
+        s = string_gsub(s, " +", " ")
+        -- Trim ASCII leading/trailing spaces
+        s = string_gsub(s, "^ +", "")
+        s = string_gsub(s, " +$", "")
     end
 
     return s
@@ -866,10 +951,7 @@ end
 -- Sums weight (per NGRAM_ORDER_WEIGHT) instead of raw gram counts, so
 -- bigram matches (more specific) count more than unigram matches.
 --
---   USE_LOG_NORMALIZED_SCORE = false:
---       score = Σ weight(matched)     / Σ weight(category)
---   USE_LOG_NORMALIZED_SCORE = true:
---       score = Σ weight(matched)     / log(1 + Σ weight(category))
+-- score = Σ weight(matched) / Σ weight(category)
 --
 -- Returns score, weighted_intersection, weighted_total (last two are
 -- handy for debug/tuning output).
@@ -895,15 +977,11 @@ local function ScoreCoverageWeighted(catByOrder, questByOrder, orders)
         return 0, 0, 0
     end
 
-    if USE_LOG_NORMALIZED_SCORE then
-        return weighted_intersection / math.log(1 + weighted_total), weighted_intersection, weighted_total
-    end
-
     return weighted_intersection / weighted_total, weighted_intersection, weighted_total
 end
 
 ----------------------------------------------------------------------
--- Cache for category n-grams by order
+-- Cache for n-grams
 ----------------------------------------------------------------------
 
 -- module-level cache, keyed by langKey
@@ -919,11 +997,30 @@ local function GetCategorySets(sourceTags, langKey, orders)
     return built
 end
 
+local questNgramCache = {}
+
+local function GetQuestNgramsCached(normalizedText, langKey, orders)
+    local cacheKey = langKey .. ":" .. normalizedText
+    local cached = questNgramCache[cacheKey]
+    if cached then
+        return cached
+    end
+
+    local questChars = StringToChars(normalizedText)
+    local questNgramsByOrder = {}
+    for _, n in ipairs(orders) do
+        questNgramsByOrder[n] = GetNgramsOfOrder(questChars, n)
+    end
+
+    questNgramCache[cacheKey] = questNgramsByOrder
+    return questNgramsByOrder
+end
+
 ----------------------------------------------------------------------
 -- Main matcher
 ----------------------------------------------------------------------
-local function FindMatchingGroup(quest_text, sourceTags, langKey)
-    if not quest_text or quest_text == "" then
+local function FindMatchingGroup(questText, sourceTags, langKey)
+    if not questText or questText == "" then
         return nil, 0
     end
 
@@ -933,24 +1030,20 @@ local function FindMatchingGroup(quest_text, sourceTags, langKey)
     local categorySets = GetCategorySets(sourceTags, langKey, orders)
 
     -- Quest n-grams (once)
-    local normalized_quest = NormalizeForNgrams(langKey, quest_text)
+    local normalizedText = NormalizeForNgrams(langKey, questText)
 
     if DEBUG then
-        ddebug("Original text: " .. quest_text)
-        ddebug("Normalized text: " .. normalized_quest)
-        -- DumpBytes("Original bytes", quest_text)
-        -- DumpBytes("Normalized bytes", normalized_quest)
+        ddebug("Original text: " .. questText)
+        ddebug("Normalized text: " .. normalizedText)
+        -- DumpBytes("Original bytes", questText)
+        -- DumpBytes("Normalized bytes", normalizedText)
     end
 
-    local quest_chars = StringToChars(normalized_quest)
-    local questNgramsByOrder = {}
-    for _, n in ipairs(orders) do
-        questNgramsByOrder[n] = GetNgramsOfOrder(quest_chars, n)
-    end
+    local questNgramsByOrder = GetQuestNgramsCached(normalizedText, langKey, orders)
 
     local best_group_id = nil
     local max_score = -1
-    local floor = USE_LOG_NORMALIZED_SCORE and MATCH_SCORE_FLOOR_LOG or MATCH_SCORE_FLOOR
+    local floor = MATCH_SCORE_FLOOR
 
     for group_id, catByOrder in pairs(categorySets) do
         local score, matched_w, total_w = ScoreCoverageWeighted(catByOrder, questNgramsByOrder, orders)
@@ -1013,7 +1106,7 @@ local function ActivateQuestTracking(questId, journalIndex)
 
     ACTIVE_QUESTS_ID[questId] = true
 
-    -- LocalDebugTools.PrintQuestDebugInfo(journalIndex)
+    -- LDebug.PrintQuestDebugInfo(journalIndex)
 
     if questId == QUEST_NAME_ID["The Covetous Countess"] then
         local questText = ""
@@ -1047,7 +1140,7 @@ local function ActivateQuestTracking(questId, journalIndex)
             ddebug("IsDeliveryStep: " .. tostring(isDeliveryStep))
         end
 
-        local sourceTags = isDeliveryStep and DELIVERY_CITIES[langKey] or COUNTESS_TAGS
+        local sourceTags = isDeliveryStep and COUNTESS_CITIES or COUNTESS_TAGS
 
         local best_group_id, max_score = FindBestGroup(questText, sourceTags)
 
@@ -1236,9 +1329,11 @@ local function OnPlayerActivated()
 
     RegisterQuestEvents()
     ScanActiveQuests()
-    if not CheckTreasureTagsLoaded() then
-        d("[" .. ADDON_NAME .. "] Missing treasure tags — please report to the author.")
-    end
+
+    -- TODO: disabled for now, as it does not work for all languages
+    -- if not CheckTreasureTagsLoaded() then
+    --     d("[" .. ADDON_NAME .. "] Missing treasure tags — please report to the author.")
+    -- end
 end
 
 local function OnLoaded(_, name)

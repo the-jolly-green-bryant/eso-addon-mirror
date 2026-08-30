@@ -2,7 +2,7 @@ ShoppingListEditor = {}
 
 local Editor = ShoppingListEditor
 local WINDOW_WIDTH = 460
-local WINDOW_HEIGHT = 730
+local WINDOW_HEIGHT = 770
 
 local function makeLabel(parent, text, x, y, width)
     local label = WINDOW_MANAGER:CreateControl(nil, parent, CT_LABEL)
@@ -56,6 +56,17 @@ end
 local function makeButton(parent, text, x, width)
     local button = WINDOW_MANAGER:CreateControl(nil, parent, CT_BUTTON)
     button:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, x, -16)
+    button:SetDimensions(width, 30)
+    ShoppingListAccessibility:SetFont(button, "ZoFontGame")
+    button:SetText(text)
+    button:SetNormalFontColor(0.85, 0.78, 0.62, 1)
+    button:SetMouseOverFontColor(1, 1, 1, 1)
+    return button
+end
+
+local function makeInlineButton(parent, text, x, y, width)
+    local button = WINDOW_MANAGER:CreateControl(nil, parent, CT_BUTTON)
+    button:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
     button:SetDimensions(width, 30)
     ShoppingListAccessibility:SetFont(button, "ZoFontGame")
     button:SetText(text)
@@ -241,24 +252,39 @@ function Editor:Initialize()
     self.maxUnitPrice = makeEdit(window, 174, 366, 120, true, #tostring(ShoppingListModel.MAX_PRICE))
     makeLabel(window, GetString(SI_SHOPPING_LIST_EDITOR_GOLD_NONE), 302, 366, 140)
 
-    self.purchaseSummary = makeLabel(window, "", 18, 406, WINDOW_WIDTH - 36)
+    self.priceSuggestion = makeLabel(window, "", 18, 400, 250)
+    ShoppingListAccessibility:SetFont(self.priceSuggestion, "ZoFontGameSmall")
+    self.priceSuggestion:SetColor(0.72, 0.82, 0.92, 1)
+    self.priceSuggestion:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    self.usePriceSuggestion = makeInlineButton(
+        window,
+        GetString(SI_SHOPPING_LIST_USE_SUGGESTED_PRICE),
+        276,
+        400,
+        150
+    )
+    self.usePriceSuggestion:SetHandler("OnClicked", function()
+        self:ApplySuggestedPrice()
+    end)
+
+    self.purchaseSummary = makeLabel(window, "", 18, 442, WINDOW_WIDTH - 36)
     ShoppingListAccessibility:SetFont(self.purchaseSummary, "ZoFontGameSmall")
     self.purchaseSummary:SetColor(0.75, 0.82, 0.65, 1)
     self.purchaseSummary:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     self.purchaseSummary:SetHeight(44)
 
-    self.ownedSummary = makeLabel(window, "", 18, 448, WINDOW_WIDTH - 36)
+    self.ownedSummary = makeLabel(window, "", 18, 484, WINDOW_WIDTH - 36)
     ShoppingListAccessibility:SetFont(self.ownedSummary, "ZoFontGameSmall")
     self.ownedSummary:SetColor(0.75, 0.82, 0.9, 1)
 
-    makeLabel(window, GetString(SI_SHOPPING_LIST_EDITOR_NOTE), 18, 482, 120)
-    self.note = makeNoteEdit(window, 18, 512, WINDOW_WIDTH - 36, 100)
+    makeLabel(window, GetString(SI_SHOPPING_LIST_EDITOR_NOTE), 18, 518, 120)
+    self.note = makeNoteEdit(window, 18, 548, WINDOW_WIDTH - 36, 100)
 
     local hint = makeLabel(
         window,
         GetString(SI_SHOPPING_LIST_EDITOR_HINT),
         18,
-        616,
+        652,
         WINDOW_WIDTH - 36
     )
     ShoppingListAccessibility:SetFont(hint, "ZoFontGameSmall")
@@ -315,6 +341,7 @@ function Editor:Open(item)
     self.level:SetText(tostring(rule.level or 1))
     self.championPoints:SetText(tostring(rule.championPoints or 0))
     self.maxUnitPrice:SetText(item.maxUnitPrice and tostring(item.maxUnitPrice) or "")
+    self:UpdatePriceSuggestion()
     self.note:SetText(item.note or "")
     self.historyButton:SetEnabled(#(item.purchaseHistory or {}) > 0)
     self:UpdateMoveButtons()
@@ -383,6 +410,30 @@ end
 function Editor:Hide()
     self.note:LoseFocus()
     self.window:SetHidden(true)
+end
+
+function Editor:UpdatePriceSuggestion()
+    self.suggestedPrice = self.owner.costPlanning:GetSuggestion(self.item)
+    if self.suggestedPrice then
+        self.priceSuggestion:SetText(zo_strformat(
+            GetString(SI_SHOPPING_LIST_LOCAL_PRICE_SUGGESTION),
+            formatGold(self.suggestedPrice.price),
+            self.suggestedPrice.sourceName
+        ))
+        self.usePriceSuggestion:SetHidden(false)
+        self.usePriceSuggestion:SetEnabled(true)
+    else
+        self.priceSuggestion:SetText(
+            GetString(SI_SHOPPING_LIST_LOCAL_PRICE_UNAVAILABLE)
+        )
+        self.usePriceSuggestion:SetHidden(true)
+    end
+end
+
+function Editor:ApplySuggestedPrice()
+    if self.suggestedPrice then
+        self.maxUnitPrice:SetText(tostring(self.suggestedPrice.price))
+    end
 end
 
 function Editor:UpdateMoveButtons()

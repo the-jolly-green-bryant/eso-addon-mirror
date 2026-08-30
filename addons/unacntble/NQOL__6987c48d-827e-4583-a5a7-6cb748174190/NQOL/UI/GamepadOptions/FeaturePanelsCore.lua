@@ -14,6 +14,10 @@ local FISHING_PANEL_ID = PanelIds.FISHING
 local UI_PANEL_ID = PanelIds.UI
 local CAMERA_PANEL_ID = PanelIds.CAMERA
 local COMBAT_RETICLE_PANEL_ID = PanelIds.COMBAT_RETICLE
+local RETICLE_INFO_TOP_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_LEFT
+local RETICLE_INFO_TOP_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_TOP_RIGHT
+local RETICLE_INFO_BOTTOM_LEFT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_LEFT
+local RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID = PanelIds.RETICLE_INFO_BOTTOM_RIGHT
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local ACTIVE_COMBAT_TIPS_PANEL_ID = PanelIds.ACTIVE_COMBAT_TIPS
 local SYNERGY_PROMPTS_PANEL_ID = PanelIds.SYNERGY_PROMPTS
@@ -479,6 +483,11 @@ function GamepadOptions.BuildCombatReticleColorOption()
     return GamepadOptions.BuildColorOption(COMBAT_RETICLE_PANEL_ID, 1, ui.GetCombatReticleColorLabel(), ui.GetCombatReticleColorTooltip(), ui.GetCombatReticleColor, ui.SetCombatReticleColor)
 end
 
+function GamepadOptions.BuildCombatReticleFightColorOption()
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildColorOption(COMBAT_RETICLE_PANEL_ID, 5, ui.GetCombatReticleFightColorLabel(), ui.GetCombatReticleFightColorTooltip(), ui.GetCombatReticleFightColor, ui.SetCombatReticleFightColor)
+end
+
 function GamepadOptions.BuildCombatReticleShapeOption()
     local ui = NQOL.Features.UI
     return GamepadOptions.BuildFiniteListOption(COMBAT_RETICLE_PANEL_ID, 2, ui.GetCombatReticleShapeLabel(), ui.GetCombatReticleShapeTooltip(), ui.GetCombatReticleShapeChoices(), ui.GetCombatReticleShapeChoiceNames(), ui.GetCombatReticleShape, ui.SetCombatReticleShape, ui.GetCombatReticleShapeDefault)
@@ -492,6 +501,101 @@ end
 function GamepadOptions.BuildAnimatedCombatReticleOption()
     local ui = NQOL.Features.UI
     return GamepadOptions.BuildCheckboxOption(COMBAT_RETICLE_PANEL_ID, 4, ui.GetAnimatedCombatReticleLabel(), ui.GetAnimatedCombatReticleTooltip(), ui.GetAnimatedCombatReticle, ui.SetAnimatedCombatReticle, nil, ui.GetAnimatedCombatReticleDefault)
+end
+
+function GamepadOptions.BuildReticleInfoContentOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildFiniteListOption(panelId, 1, ui.GetReticleInfoContentLabel(), ui.GetReticleInfoContentTooltip(), ui.GetReticleInfoContentChoices(), ui.GetReticleInfoContentChoiceNames(), function()
+        return ui.GetReticleInfoContent(positionKey)
+    end, function(value)
+        ui.SetReticleInfoContent(positionKey, value)
+    end, ui.GetReticleInfoContentDefault)
+end
+
+function GamepadOptions.BuildReticleInfoIconPositionOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildFiniteListOption(panelId, 7, ui.GetReticleInfoIconPositionLabel(), ui.GetReticleInfoIconPositionTooltip(), ui.GetReticleInfoIconPositionChoices(), ui.GetReticleInfoIconPositionChoiceNames(), function()
+        return ui.GetReticleInfoIconPosition(positionKey)
+    end, function(value)
+        ui.SetReticleInfoIconPosition(positionKey, value)
+    end, ui.GetReticleInfoIconPositionDefault)
+end
+
+function GamepadOptions.BuildReticleInfoFontOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildFiniteListOption(panelId, 4, ui.GetReticleInfoFontLabel(), ui.GetReticleInfoFontTooltip(), ui.GetReticleInfoFontChoices(), ui.GetReticleInfoFontChoiceNames(), function()
+        return ui.GetReticleInfoFont(positionKey)
+    end, function(value)
+        ui.SetReticleInfoFont(positionKey, value)
+    end)
+end
+
+function GamepadOptions.BuildReticleInfoColorOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildColorOption(panelId, 6, ui.GetReticleInfoColorLabel(), ui.GetReticleInfoColorTooltip(), function()
+        return ui.GetReticleInfoColor(positionKey)
+    end, function(red, green, blue, alpha)
+        ui.SetReticleInfoColor(positionKey, red, green, blue, alpha)
+    end)
+end
+
+function GamepadOptions.BuildReticleInfoFontSizeOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildValueStepSliderOption(panelId, 5, ui.GetReticleInfoFontSizeLabel(), ui.GetReticleInfoFontSizeTooltip(), ui.GetReticleInfoFontSizeMin(), ui.GetReticleInfoFontSizeMax(), "%.0f", function()
+        return ui.GetReticleInfoFontSize(positionKey)
+    end, function(value)
+        ui.SetReticleInfoFontSize(positionKey, value)
+    end, 1, nil, ui.GetReticleInfoFontSizeDefault)
+end
+
+function GamepadOptions.BuildReticleInfoHorizontalOffsetOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildPositionSliderOption(panelId, 2, ui.GetReticleInfoHorizontalOffsetLabel(), ui.GetReticleInfoHorizontalOffsetTooltip(), ui.GetReticleInfoOffsetMin(), ui.GetReticleInfoOffsetMax(), "%.0f", function()
+        return ui.GetReticleInfoHorizontalOffset(positionKey)
+    end, function(value)
+        ui.SetReticleInfoHorizontalOffset(positionKey, value)
+    end, nil, function()
+        return ui.GetReticleInfoHorizontalOffsetDefault(positionKey)
+    end)
+end
+
+function GamepadOptions.BuildReticleInfoVerticalOffsetOption(panelId, positionKey)
+    local ui = NQOL.Features.UI
+    return GamepadOptions.BuildPositionSliderOption(panelId, 3, ui.GetReticleInfoVerticalOffsetLabel(), ui.GetReticleInfoVerticalOffsetTooltip(), ui.GetReticleInfoOffsetMin(), ui.GetReticleInfoOffsetMax(), "%.0f", function()
+        return ui.GetReticleInfoVerticalOffset(positionKey)
+    end, function(value)
+        ui.SetReticleInfoVerticalOffset(positionKey, value)
+    end, nil, function()
+        return ui.GetReticleInfoVerticalOffsetDefault(positionKey)
+    end)
+end
+
+function GamepadOptions.BuildReticleInfoPositionOptions(panelId, positionKey)
+    return {
+        GamepadOptions.BuildReticleInfoContentOption(panelId, positionKey),
+        GamepadOptions.BuildReticleInfoIconPositionOption(panelId, positionKey),
+        GamepadOptions.BuildReticleInfoHorizontalOffsetOption(panelId, positionKey),
+        GamepadOptions.BuildReticleInfoVerticalOffsetOption(panelId, positionKey),
+        GamepadOptions.BuildReticleInfoFontOption(panelId, positionKey),
+        GamepadOptions.BuildReticleInfoFontSizeOption(panelId, positionKey),
+        GamepadOptions.BuildReticleInfoColorOption(panelId, positionKey),
+    }
+end
+
+function GamepadOptions.BuildReticleInfoTopLeftPositionOptions()
+    return GamepadOptions.BuildReticleInfoPositionOptions(RETICLE_INFO_TOP_LEFT_PANEL_ID, "topLeft")
+end
+
+function GamepadOptions.BuildReticleInfoTopRightPositionOptions()
+    return GamepadOptions.BuildReticleInfoPositionOptions(RETICLE_INFO_TOP_RIGHT_PANEL_ID, "topRight")
+end
+
+function GamepadOptions.BuildReticleInfoBottomLeftPositionOptions()
+    return GamepadOptions.BuildReticleInfoPositionOptions(RETICLE_INFO_BOTTOM_LEFT_PANEL_ID, "bottomLeft")
+end
+
+function GamepadOptions.BuildReticleInfoBottomRightPositionOptions()
+    return GamepadOptions.BuildReticleInfoPositionOptions(RETICLE_INFO_BOTTOM_RIGHT_PANEL_ID, "bottomRight")
 end
 
 function GamepadOptions.BuildDisableAlertTextsOption()

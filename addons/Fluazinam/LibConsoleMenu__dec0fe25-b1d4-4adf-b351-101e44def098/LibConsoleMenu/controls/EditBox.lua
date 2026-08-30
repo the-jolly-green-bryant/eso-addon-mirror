@@ -30,7 +30,7 @@ LCM.updateControlFunctions[LCM.CT_EDITBOX] = function(self, control)
 	control:SetHidden(false)
 	local nameControl = control:GetNamedChild("Name")
 	local valueControl = control:GetNamedChild("Value")
-	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
+	local align, indentPx = LCM.ResolveRowAlign(self, LCM.currentMenu)
 	indentPx = indentPx or 0
 	local showLabel = hasLabel(self)
 
@@ -49,8 +49,8 @@ LCM.updateControlFunctions[LCM.CT_EDITBOX] = function(self, control)
 		valueControl:ClearAnchors()
 		local root = control:GetNamedChild("RootSpacer") or control
 		if showLabel and nameControl then
-			-- Value is stock FullWidth under Name. When Name is left-indented, keep
-			-- the box at RootSpacer left (offset -indent) so it stays full content width.
+			-- Value is stock FullWidth under Name. When Name is leftIndent, keep
+			-- the box at RootSpacer left (offset -indentPx) so it stays full content width.
 			valueControl:SetAnchor(TOPLEFT, nameControl, BOTTOMLEFT, -indentPx, 0)
 		else
 			valueControl:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
@@ -94,7 +94,6 @@ LCM.setupControlFunctions[LCM.CT_EDITBOX] = function(self, params)
 	self.ignoreDefault = params.ignoreDefault
 	self.disable = params.disable
 	self.align = params.align
-	self.indent = params.indent
 end
 
 local function editGetData(editControl)

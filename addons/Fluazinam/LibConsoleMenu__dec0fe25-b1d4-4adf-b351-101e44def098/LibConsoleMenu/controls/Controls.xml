@@ -1,6 +1,46 @@
 <GuiXml>
   <Controls>
-    <TopLevelControl name="LibConsoleMenuGamepadTopLevel" inherits="ZO_Gamepad_ParametricList_Screen" virtual="true" />
+    <TopLevelControl name="LibConsoleMenuGamepadTopLevel" inherits="ZO_Gamepad_ParametricList_Screen" virtual="true">
+      <Controls>
+        <Scroll name="$(parent)Mask" override="true">
+          <Controls>
+            <Control name="$(parent)Container" override="true">
+              <Controls>
+                <Control name="$(parent)HeaderContainer" override="true">
+                  <Controls>
+                    <Control name="$(parent)Header" override="true">
+                      <Controls>
+                        <Control name="$(parent)HeaderControl" hidden="true">
+                          <Dimensions x="ZO_GAMEPAD_CONTENT_WIDTH" y="75"/>
+                          <Anchor point="TOP" relativeTo="$(parent)Message" relativePoint="BOTTOM" offsetY="25"/>
+                          <Controls>
+                            <Label name="$(parent)Title" font="ZoFontGamepad27" modifyTextType="UPPERCASE" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER">
+                              <Anchor point="TOPLEFT"/>
+                              <Anchor point="TOPRIGHT"/>
+                            </Label>
+                            <Control name="$(parent)Dropdown" inherits="ZO_ComboBox_Gamepad">
+                              <Dimensions y="28"/>
+                              <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="8"/>
+                              <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+                              <Controls>
+                                <Texture name="$(parent)OpenDropdown" override="true">
+                                  <Dimensions x="24" y="24"/>
+                                  <Anchor point="RIGHT" offsetX="-3"/>
+                                </Texture>
+                              </Controls>
+                            </Control>
+                          </Controls>
+                        </Control>
+                      </Controls>
+                    </Control>
+                  </Controls>
+                </Control>
+              </Controls>
+            </Control>
+          </Controls>
+        </Scroll>
+      </Controls>
+    </TopLevelControl>
     <Control name="LibConsoleMenuGamepadSlider" inherits="ZO_GamepadOptionsSliderRow" virtual="true">
       <OnInitialized>
         -- Child OnInitialized replaces ZO_GamepadOptionsSliderRow's; re-bind Name/Slider.

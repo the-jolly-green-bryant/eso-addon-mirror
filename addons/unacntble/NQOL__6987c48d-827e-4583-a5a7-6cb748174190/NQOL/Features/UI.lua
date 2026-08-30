@@ -122,6 +122,13 @@ local defaults = {
             scale = 1,
             animated = true,
             color = { r = 1, g = 1, b = 1, a = 1 },
+            fightColor = { r = 1, g = 1, b = 1, a = 1 },
+            info = {
+                topLeft = { content = "off", iconPosition = "off", horizontalOffset = -60, verticalOffset = -30, font = NQOL.Util.GetDefaultFont(), fontSize = 28, color = { r = 1, g = 1, b = 1, a = 1 } },
+                topRight = { content = "off", iconPosition = "off", horizontalOffset = 60, verticalOffset = -30, font = NQOL.Util.GetDefaultFont(), fontSize = 28, color = { r = 1, g = 1, b = 1, a = 1 } },
+                bottomLeft = { content = "off", iconPosition = "off", horizontalOffset = -60, verticalOffset = 30, font = NQOL.Util.GetDefaultFont(), fontSize = 28, color = { r = 1, g = 1, b = 1, a = 1 } },
+                bottomRight = { content = "off", iconPosition = "off", horizontalOffset = 60, verticalOffset = 30, font = NQOL.Util.GetDefaultFont(), fontSize = 28, color = { r = 1, g = 1, b = 1, a = 1 } },
+            },
         },
         disableAlertTexts = false,
         sortDungeonsFinder = false,
@@ -262,6 +269,43 @@ local function GetSettings()
     combatReticleSettings.color.g = Clamp(tonumber(combatReticleSettings.color.g) or combatReticleDefaults.color.g, 0, 1)
     combatReticleSettings.color.b = Clamp(tonumber(combatReticleSettings.color.b) or combatReticleDefaults.color.b, 0, 1)
     combatReticleSettings.color.a = 1
+    if type(combatReticleSettings.fightColor) ~= "table" then
+        combatReticleSettings.fightColor = {}
+    end
+    combatReticleSettings.fightColor.r = Clamp(tonumber(combatReticleSettings.fightColor.r) or combatReticleDefaults.fightColor.r, 0, 1)
+    combatReticleSettings.fightColor.g = Clamp(tonumber(combatReticleSettings.fightColor.g) or combatReticleDefaults.fightColor.g, 0, 1)
+    combatReticleSettings.fightColor.b = Clamp(tonumber(combatReticleSettings.fightColor.b) or combatReticleDefaults.fightColor.b, 0, 1)
+    combatReticleSettings.fightColor.a = 1
+    local reticleInfoSettings = NQOL.Settings.EnsureTable(combatReticleSettings, "info")
+    for _, positionKey in ipairs({ "topLeft", "topRight", "bottomLeft", "bottomRight" }) do
+        local positionSettings = NQOL.Settings.EnsureTable(reticleInfoSettings, positionKey)
+        local positionDefaults = combatReticleDefaults.info[positionKey]
+        NQOL.Settings.Default(positionSettings, positionDefaults, "content")
+        if positionSettings.content ~= "off" and positionSettings.content ~= "crux" and positionSettings.content ~= "offBalance" and positionSettings.content ~= "offBalanceImmunity" and positionSettings.content ~= "taunt" and positionSettings.content ~= "zensRedress" then
+            positionSettings.content = positionDefaults.content
+        end
+        NQOL.Settings.Default(positionSettings, positionDefaults, "iconPosition")
+        if positionSettings.iconPosition ~= "off" and positionSettings.iconPosition ~= "left" and positionSettings.iconPosition ~= "right" then
+            positionSettings.iconPosition = positionDefaults.iconPosition
+        end
+        NQOL.Settings.ClampedNumber(positionSettings, positionDefaults, "horizontalOffset", -500, 500)
+        positionSettings.horizontalOffset = math.floor(positionSettings.horizontalOffset + 0.5)
+        NQOL.Settings.ClampedNumber(positionSettings, positionDefaults, "verticalOffset", -500, 500)
+        positionSettings.verticalOffset = math.floor(positionSettings.verticalOffset + 0.5)
+        NQOL.Settings.Default(positionSettings, positionDefaults, "font")
+        if not NQOL.Util.IsFontChoice(positionSettings.font) then
+            positionSettings.font = positionDefaults.font
+        end
+        NQOL.Settings.ClampedNumber(positionSettings, positionDefaults, "fontSize", 12, 60)
+        positionSettings.fontSize = math.floor(positionSettings.fontSize + 0.5)
+        if type(positionSettings.color) ~= "table" then
+            positionSettings.color = {}
+        end
+        positionSettings.color.r = Clamp(tonumber(positionSettings.color.r) or positionDefaults.color.r, 0, 1)
+        positionSettings.color.g = Clamp(tonumber(positionSettings.color.g) or positionDefaults.color.g, 0, 1)
+        positionSettings.color.b = Clamp(tonumber(positionSettings.color.b) or positionDefaults.color.b, 0, 1)
+        positionSettings.color.a = 1
+    end
 
     local activeQuestSettings = NQOL.Settings.EnsureTable(settings, "activeQuest")
     local activeQuestDefaults = defaults.ui.activeQuest

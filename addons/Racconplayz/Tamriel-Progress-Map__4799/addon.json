@@ -1,0 +1,45 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Racconplayz/Tamriel-Progress-Map__4799",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Racconplayz",
+  "canonical_id": "esoui:4799",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4799",
+  "deleted": false,
+  "directories": [
+    "TamrielProgressMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4799/",
+  "fingerprint": "e16ffb72385a55b683bb63a7b1d9506aa8cd2227ef33e042013f8f8c091ce0e2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17187.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17185.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17188.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17189.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17183.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17184.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17182.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4799",
+  "source_url": "https://www.esoui.com/downloads/info4799-TamrielProgressMap.html",
+  "stats": {
+    "downloads": 82,
+    "favorites": 1,
+    "monthly_downloads": 50
+  },
+  "title": "Tamriel Progress Map",
+  "updated_at": 1788069158000,
+  "version": "2.4.57 Hotfix"
+}

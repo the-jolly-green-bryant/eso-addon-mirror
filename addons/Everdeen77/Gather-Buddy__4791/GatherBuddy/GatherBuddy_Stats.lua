@@ -17,120 +17,56 @@ local statsItemsPerHourValue
 local statsMostName
 local statsMostQuantity
 
-------------------------------------------------------------
--- STATS WINDOW VISIBILITY
-------------------------------------------------------------
+local statsTextControls = {}
 
 local statsUserHidden = true
 local USER_HIDDEN_REASON = "GatherBuddyStatsUserHidden"
 
-local function SetupStatsWindowSceneFragment()
-    if statsWindow == nil
-        or statsWindowFragment ~= nil then
-        return
-    end
-
-    -- Start hidden and let ESO's scene manager control
-    -- visibility while moving between HUD and menus.
-    statsWindow:SetHidden(true)
-
-    statsWindowFragment =
-        ZO_HUDFadeSceneFragment:New(
-            statsWindow
-        )
-
-    statsWindowFragment:SetHiddenForReason(
-        USER_HIDDEN_REASON,
-        statsUserHidden
-    )
-
-    local hudScene =
-        SCENE_MANAGER:GetScene("hud")
-
-    local hudUiScene =
-        SCENE_MANAGER:GetScene("hudui")
-
-    if hudScene then
-        hudScene:AddFragment(
-            statsWindowFragment
-        )
-    end
-
-    if hudUiScene then
-        hudUiScene:AddFragment(
-            statsWindowFragment
-        )
-    end
-end
-
-local function ApplyStatsWindowVisibility()
-    if statsWindow == nil then
-        return
-    end
-
-    if statsWindowFragment then
-        statsWindowFragment:SetHiddenForReason(
-            USER_HIDDEN_REASON,
-            statsUserHidden
-        )
-    else
-        statsWindow:SetHidden(
-            statsUserHidden
-        )
-    end
-end
-
 ------------------------------------------------------------
--- BACKGROUND TRANSPARENCY
+-- FONT HELPERS
 ------------------------------------------------------------
 
-function GB.ApplyStatsBackgroundTransparency()
-    if statsBackground == nil
-        or GB.savedVariables == nil then
-        return
+local function GetStatsFontSize()
+    if GB.savedVariables == nil then
+        return 13
     end
 
-    local transparency =
+    local fontSize =
         tonumber(
-            GB.savedVariables.backgroundTransparency
-        ) or 64
+            GB.savedVariables.statsFontSize
+        ) or 13
 
-    transparency =
-        math.max(
-            0,
-            math.min(
-                255,
-                transparency
-            )
+    return math.max(
+        10,
+        math.min(
+            20,
+            math.floor(fontSize + 0.5)
         )
+    )
+end
 
-    local alpha =
-        1 - (transparency / 255)
-
-    statsBackground:SetCenterColor(
-        0,
-        0,
-        0,
-        alpha
+local function GetStatsFont()
+    return string.format(
+        "$(MEDIUM_FONT)|%d|soft-shadow-thin",
+        GetStatsFontSize()
     )
 end
 
 ------------------------------------------------------------
--- STATS WINDOW LOCK
+-- APPLY STATS FONT SIZE
 ------------------------------------------------------------
 
-function GB.ApplyStatsWindowLockState()
-    if statsWindow == nil
-        or GB.savedVariables == nil then
-        return
+function GB.ApplyStatsFontSize()
+    local font =
+        GetStatsFont()
+
+    for _, control in ipairs(
+        statsTextControls
+    ) do
+        if control then
+            control:SetFont(font)
+        end
     end
-
-    local isLocked =
-        GB.savedVariables.isLocked == true
-
-    statsWindow:SetMovable(
-        not isLocked
-    )
 end
 
 ------------------------------------------------------------
@@ -142,19 +78,26 @@ local function CalculateSessionStats()
     local uniqueItems = 0
     local mostGathered = nil
 
-    for itemId, data in pairs(GB.sessionItems) do
+    for itemId, data in pairs(
+        GB.sessionItems
+    ) do
         totalQuantity =
-            totalQuantity + data.quantity
+            totalQuantity
+            + data.quantity
 
         uniqueItems =
             uniqueItems + 1
 
         if mostGathered == nil
-            or data.quantity > mostGathered.quantity
+            or data.quantity
+                > mostGathered.quantity
             or (
-                data.quantity == mostGathered.quantity
+                data.quantity
+                    == mostGathered.quantity
                 and string.lower(data.name)
-                    < string.lower(mostGathered.name)
+                    < string.lower(
+                        mostGathered.name
+                    )
             ) then
 
             mostGathered = {
@@ -212,19 +155,25 @@ function GB.UpdateStatsWindow()
 
     if statsTotalValue then
         statsTotalValue:SetText(
-            tostring(totalQuantity)
+            tostring(
+                totalQuantity
+            )
         )
     end
 
     if statsUniqueValue then
         statsUniqueValue:SetText(
-            tostring(uniqueItems)
+            tostring(
+                uniqueItems
+            )
         )
     end
 
     if statsItemsPerHourValue then
         statsItemsPerHourValue:SetText(
-            tostring(itemsPerHour)
+            tostring(
+                itemsPerHour
+            )
         )
     end
 
@@ -258,13 +207,132 @@ function GB.UpdateStatsWindow()
             statsMostQuantity:SetText("")
         end
     end
+end
 
-    GB.ApplyStatsBackgroundTransparency()
+------------------------------------------------------------
+-- BACKGROUND TRANSPARENCY
+------------------------------------------------------------
+
+function GB.ApplyStatsBackgroundTransparency()
+    if statsBackground == nil
+        or GB.savedVariables == nil then
+        return
+    end
+
+    local transparency =
+        tonumber(
+            GB.savedVariables.backgroundTransparency
+        ) or 64
+
+    transparency =
+        math.max(
+            0,
+            math.min(
+                255,
+                transparency
+            )
+        )
+
+    local alpha =
+        1
+        - (
+            transparency
+            / 255
+        )
+
+    statsBackground:SetCenterColor(
+        0,
+        0,
+        0,
+        alpha
+    )
+end
+
+------------------------------------------------------------
+-- WINDOW LOCK
+------------------------------------------------------------
+
+function GB.ApplyStatsWindowLockState()
+    if statsWindow == nil
+        or GB.savedVariables == nil then
+        return
+    end
+
+    local isLocked =
+        GB.savedVariables.isLocked
+        == true
+
+    statsWindow:SetMovable(
+        not isLocked
+    )
+end
+
+------------------------------------------------------------
+-- HUD SCENE INTEGRATION
+------------------------------------------------------------
+
+local function SetupStatsWindowSceneFragment()
+    if statsWindow == nil
+        or statsWindowFragment ~= nil then
+        return
+    end
+
+    statsWindow:SetHidden(true)
+
+    statsWindowFragment =
+        ZO_HUDFadeSceneFragment:New(
+            statsWindow
+        )
+
+    statsWindowFragment:SetHiddenForReason(
+        USER_HIDDEN_REASON,
+        statsUserHidden
+    )
+
+    local hudScene =
+        SCENE_MANAGER:GetScene(
+            "hud"
+        )
+
+    local hudUiScene =
+        SCENE_MANAGER:GetScene(
+            "hudui"
+        )
+
+    if hudScene then
+        hudScene:AddFragment(
+            statsWindowFragment
+        )
+    end
+
+    if hudUiScene then
+        hudUiScene:AddFragment(
+            statsWindowFragment
+        )
+    end
 end
 
 ------------------------------------------------------------
 -- STATS WINDOW SHOW / HIDE
 ------------------------------------------------------------
+
+local function ApplyStatsVisibility()
+    if statsWindow == nil then
+        return
+    end
+
+    if statsWindowFragment then
+        statsWindowFragment:
+            SetHiddenForReason(
+                USER_HIDDEN_REASON,
+                statsUserHidden
+            )
+    else
+        statsWindow:SetHidden(
+            statsUserHidden
+        )
+    end
+end
 
 function GB.ToggleStatsWindow()
     if statsWindow == nil then
@@ -278,7 +346,7 @@ function GB.ToggleStatsWindow()
         GB.UpdateStatsWindow()
     end
 
-    ApplyStatsWindowVisibility()
+    ApplyStatsVisibility()
 end
 
 function GB.HideStatsWindow()
@@ -288,7 +356,7 @@ function GB.HideStatsWindow()
 
     statsUserHidden = true
 
-    ApplyStatsWindowVisibility()
+    ApplyStatsVisibility()
 end
 
 ------------------------------------------------------------
@@ -297,11 +365,13 @@ end
 
 function GB.CreateStatsWindow()
     statsWindow =
-        WINDOW_MANAGER:CreateTopLevelWindow(
-            "GatherBuddyStatsWindow"
-        )
+        WINDOW_MANAGER:
+            CreateTopLevelWindow(
+                "GatherBuddyStatsWindow"
+            )
 
-    GB.statsWindow = statsWindow
+    GB.statsWindow =
+        statsWindow
 
     statsWindow:SetDimensions(
         280,
@@ -310,7 +380,13 @@ function GB.CreateStatsWindow()
 
     statsWindow:SetMovable(true)
     statsWindow:SetMouseEnabled(true)
-    statsWindow:SetClampedToScreen(true)
+    statsWindow:SetClampedToScreen(
+        true
+    )
+
+    --------------------------------------------------------
+    -- SAVED POSITION
+    --------------------------------------------------------
 
     if GB.savedVariables.statsLeft
         and GB.savedVariables.statsTop then
@@ -395,10 +471,13 @@ function GB.CreateStatsWindow()
     titleBar:SetHandler(
         "OnMouseDown",
         function(self, button)
-            if button == MOUSE_BUTTON_INDEX_LEFT
-                and GB.savedVariables.isLocked ~= true then
+            if button
+                == MOUSE_BUTTON_INDEX_LEFT
+                and GB.savedVariables.isLocked
+                    ~= true then
 
-                statsWindow:StartMoving()
+                statsWindow:
+                    StartMoving()
             end
         end
     )
@@ -406,8 +485,11 @@ function GB.CreateStatsWindow()
     titleBar:SetHandler(
         "OnMouseUp",
         function(self, button)
-            if button == MOUSE_BUTTON_INDEX_LEFT then
-                statsWindow:StopMovingOrResizing()
+            if button
+                == MOUSE_BUTTON_INDEX_LEFT then
+
+                statsWindow:
+                    StopMovingOrResizing()
 
                 GB.savedVariables.statsLeft =
                     statsWindow:GetLeft()
@@ -478,8 +560,48 @@ function GB.CreateStatsWindow()
     closeButton:SetHandler(
         "OnClicked",
         function()
-            statsUserHidden = true
-            ApplyStatsWindowVisibility()
+            GB.HideStatsWindow()
+        end
+    )
+
+    --------------------------------------------------------
+    -- HISTORY BUTTON
+    --------------------------------------------------------
+
+    local historyButton =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryButton",
+            statsWindow,
+            CT_BUTTON
+        )
+
+    historyButton:SetDimensions(
+        62,
+        24
+    )
+
+    historyButton:SetAnchor(
+        TOPRIGHT,
+        statsWindow,
+        TOPRIGHT,
+        -34,
+        3
+    )
+
+    historyButton:SetFont(
+        "ZoFontGameSmall"
+    )
+
+    historyButton:SetText(
+        "HISTORY"
+    )
+
+    historyButton:SetHandler(
+        "OnClicked",
+        function()
+            if GB.ToggleHistoryWindow then
+                GB.ToggleHistoryWindow()
+            end
         end
     )
 
@@ -499,10 +621,6 @@ function GB.CreateStatsWindow()
                 CT_LABEL
             )
 
-        label:SetFont(
-            "ZoFontGameSmall"
-        )
-
         label:SetText(
             labelText
         )
@@ -515,16 +633,17 @@ function GB.CreateStatsWindow()
             yPosition
         )
 
+        table.insert(
+            statsTextControls,
+            label
+        )
+
         local value =
             WINDOW_MANAGER:CreateControl(
                 name .. "Value",
                 statsWindow,
                 CT_LABEL
             )
-
-        value:SetFont(
-            "ZoFontGameSmall"
-        )
 
         value:SetWidth(100)
 
@@ -540,11 +659,16 @@ function GB.CreateStatsWindow()
             yPosition
         )
 
+        table.insert(
+            statsTextControls,
+            value
+        )
+
         return value
     end
 
     --------------------------------------------------------
-    -- STAT ROWS
+    -- SESSION TIME
     --------------------------------------------------------
 
     statsSessionTimeValue =
@@ -554,6 +678,10 @@ function GB.CreateStatsWindow()
             38
         )
 
+    --------------------------------------------------------
+    -- TOTAL GATHERED
+    --------------------------------------------------------
+
     statsTotalValue =
         CreateStatRow(
             "GatherBuddyStatsTotal",
@@ -561,12 +689,20 @@ function GB.CreateStatsWindow()
             58
         )
 
+    --------------------------------------------------------
+    -- UNIQUE ITEMS
+    --------------------------------------------------------
+
     statsUniqueValue =
         CreateStatRow(
             "GatherBuddyStatsUnique",
             "UNIQUE ITEMS:",
             78
         )
+
+    --------------------------------------------------------
+    -- ITEMS / HOUR
+    --------------------------------------------------------
 
     statsItemsPerHourValue =
         CreateStatRow(
@@ -576,7 +712,7 @@ function GB.CreateStatsWindow()
         )
 
     --------------------------------------------------------
-    -- MOST GATHERED
+    -- MOST GATHERED TITLE
     --------------------------------------------------------
 
     local mostTitle =
@@ -585,10 +721,6 @@ function GB.CreateStatsWindow()
             statsWindow,
             CT_LABEL
         )
-
-    mostTitle:SetFont(
-        "ZoFontGameSmall"
-    )
 
     mostTitle:SetText(
         "MOST GATHERED"
@@ -602,6 +734,15 @@ function GB.CreateStatsWindow()
         127
     )
 
+    table.insert(
+        statsTextControls,
+        mostTitle
+    )
+
+    --------------------------------------------------------
+    -- MOST GATHERED NAME
+    --------------------------------------------------------
+
     statsMostName =
         WINDOW_MANAGER:CreateControl(
             "GatherBuddyStatsMostName",
@@ -609,11 +750,9 @@ function GB.CreateStatsWindow()
             CT_LABEL
         )
 
-    statsMostName:SetFont(
-        "ZoFontGameSmall"
+    statsMostName:SetWidth(
+        205
     )
-
-    statsMostName:SetWidth(205)
 
     statsMostName:SetAnchor(
         TOPLEFT,
@@ -623,6 +762,15 @@ function GB.CreateStatsWindow()
         150
     )
 
+    table.insert(
+        statsTextControls,
+        statsMostName
+    )
+
+    --------------------------------------------------------
+    -- MOST GATHERED QUANTITY
+    --------------------------------------------------------
+
     statsMostQuantity =
         WINDOW_MANAGER:CreateControl(
             "GatherBuddyStatsMostQuantity",
@@ -630,15 +778,14 @@ function GB.CreateStatsWindow()
             CT_LABEL
         )
 
-    statsMostQuantity:SetFont(
-        "ZoFontGameSmall"
+    statsMostQuantity:SetWidth(
+        50
     )
 
-    statsMostQuantity:SetWidth(50)
-
-    statsMostQuantity:SetHorizontalAlignment(
-        TEXT_ALIGN_RIGHT
-    )
+    statsMostQuantity:
+        SetHorizontalAlignment(
+            TEXT_ALIGN_RIGHT
+        )
 
     statsMostQuantity:SetAnchor(
         TOPRIGHT,
@@ -648,10 +795,16 @@ function GB.CreateStatsWindow()
         150
     )
 
+    table.insert(
+        statsTextControls,
+        statsMostQuantity
+    )
+
     --------------------------------------------------------
     -- APPLY SAVED SETTINGS
     --------------------------------------------------------
 
+    GB.ApplyStatsFontSize()
     GB.ApplyStatsBackgroundTransparency()
     GB.ApplyStatsWindowLockState()
 

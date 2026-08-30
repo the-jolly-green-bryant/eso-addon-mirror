@@ -11,6 +11,8 @@ local HOOK_DELAY_MS = 500
 local MAX_HOOK_ATTEMPTS = 20
 local MOUNT_RETRY_DELAY_MS = 1500
 local PLAYER_JUMP_TIMEOUT_MS = 15000
+local MOVEMENT_CHECK_INTERVAL_MS = 50
+local MOVEMENT_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_Movement"
 local GUILD_SCAN_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_GuildScan"
 local GUILD_SCAN_BATCH_SIZE = 40
 local PAID_FALLBACK_DIALOG_NAME = "NQOL_FREEPORT_PAID_FALLBACK_CONFIRM"
@@ -486,6 +488,49 @@ local function HandlePaidFallback(runId, target)
     end
 end
 
+local function StopMovementMonitor()
+    if EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForUpdate(MOVEMENT_UPDATE_NAMESPACE)
+    end
+end
+
+local function IsTeleportCancelMovement()
+    return (IsPlayerMoving and IsPlayerMoving())
+        or (IsPlayerTryingToMove and IsPlayerTryingToMove())
+end
+
+local function MarkTravelStarted()
+    local activeRun = Freeport.activeRun
+    if activeRun and activeRun.currentCandidate then
+        activeRun.travelStarted = true
+        StopMovementMonitor()
+    end
+end
+
+local function StartMovementMonitor(activeRun)
+    StopMovementMonitor()
+
+    activeRun.movementArmed = not IsTeleportCancelMovement()
+    EVENT_MANAGER:RegisterForUpdate(MOVEMENT_UPDATE_NAMESPACE, MOVEMENT_CHECK_INTERVAL_MS, function()
+        local currentRun = Freeport.activeRun
+        if not currentRun
+            or currentRun.id ~= activeRun.id
+            or currentRun.currentCandidate ~= activeRun.currentCandidate
+            or currentRun.travelStarted
+        then
+            StopMovementMonitor()
+            return
+        end
+
+        local moving = IsTeleportCancelMovement()
+        if not currentRun.movementArmed then
+            currentRun.movementArmed = not moving
+        elseif moving then
+            Freeport.Cancel()
+        end
+    end)
+end
+
 local function OnPlayerActivated()
     local runId = activeRunId
     local activeRun = Freeport.activeRun
@@ -494,71 +539,78 @@ local function OnPlayerActivated()
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_DEACTIVATED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PREPARE_FOR_JUMP)
-        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_JUMP_FAILED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_SOCIAL_ERROR)
+        StopMovementMonitor()
         Chat(NQOL.L("features.freeport.traveled", activeRun.target.zoneName, activeRun.currentCandidate.displayName))
         Freeport.activeRun = nil
     end
 end
 
 local function OnPlayerDeactivated()
-    local activeRun = Freeport.activeRun
-    if activeRun and activeRun.currentCandidate then
-        activeRun.travelStarted = true
-    end
+    MarkTravelStarted()
 end
 
 local function OnPrepareForJump()
-    local activeRun = Freeport.activeRun
-    if activeRun and activeRun.currentCandidate then
-        activeRun.travelStarted = true
-    end
+    MarkTravelStarted()
 end
 
-local function ContinueAfterJumpFailure(errorCode)
+local function IsConfirmedUnavailablePlayerError(errorCode)
+    return (SOCIAL_RESULT_NO_LOCATION ~= nil and errorCode == SOCIAL_RESULT_NO_LOCATION)
+        or (SOCIAL_RESULT_CHARACTER_NOT_FOUND ~= nil and errorCode == SOCIAL_RESULT_CHARACTER_NOT_FOUND)
+end
+
+local function OnSocialError(_, errorCode)
     local activeRun = Freeport.activeRun
     if not activeRun or not activeRun.currentCandidate or activeRun.travelStarted then
         return
     end
 
+    if IsTeleportCancelMovement() or not IsConfirmedUnavailablePlayerError(errorCode) then
+        Freeport.Cancel()
+        return
+    end
+
     activeRun.lastErrorCode = errorCode or 0
     local runId = activeRun.id
+    local candidate = activeRun.currentCandidate
 
     zo_callLater(function()
         local currentRun = Freeport.activeRun
-        if currentRun and currentRun.id == runId and currentRun.lastErrorCode ~= nil and not currentRun.travelStarted then
-            TryNextCandidate(runId)
+        if currentRun
+            and currentRun.id == runId
+            and currentRun.currentCandidate == candidate
+            and currentRun.lastErrorCode == errorCode
+            and not currentRun.travelStarted
+        then
+            if IsTeleportCancelMovement() then
+                Freeport.Cancel()
+            else
+                TryNextCandidate(runId)
+            end
         end
     end, 100)
 end
 
-local function OnJumpFailed(_, result)
-    ContinueAfterJumpFailure(result)
-end
-
-local function OnSocialError(_, errorCode)
-    ContinueAfterJumpFailure(errorCode)
-end
-
 local function RegisterTravelEvents()
+    -- EVENT_JUMP_FAILED cannot distinguish an unavailable target from a cancelled cast.
+    -- Only the specific social errors handled above are allowed to advance the chain.
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_DEACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PREPARE_FOR_JUMP)
-    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_JUMP_FAILED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_SOCIAL_ERROR)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_DEACTIVATED, OnPlayerDeactivated)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PREPARE_FOR_JUMP, OnPrepareForJump)
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_JUMP_FAILED, OnJumpFailed)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_SOCIAL_ERROR, OnSocialError)
+    StartMovementMonitor(Freeport.activeRun)
 end
 
 local function UnregisterTravelEvents()
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_DEACTIVATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PREPARE_FOR_JUMP)
-    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_JUMP_FAILED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_SOCIAL_ERROR)
+    StopMovementMonitor()
 end
 
 local function AttemptCandidateJump(activeRun, candidate)
@@ -576,7 +628,11 @@ local function AttemptCandidateJump(activeRun, candidate)
         zo_callLater(function()
             local currentRun = Freeport.activeRun
             if currentRun and currentRun.id == runId and currentRun.currentCandidate == candidate and not currentRun.travelStarted and currentRun.lastErrorCode == nil then
-                pcall(candidate.jump)
+                if IsTeleportCancelMovement() then
+                    Freeport.Cancel()
+                else
+                    pcall(candidate.jump)
+                end
             end
         end, MOUNT_RETRY_DELAY_MS)
     end
@@ -616,15 +672,15 @@ TryNextCandidate = function(runId)
 
     local succeeded = AttemptCandidateJump(activeRun, candidate)
     if not succeeded then
-        UnregisterTravelEvents()
-        TryNextCandidate(runId)
+        Freeport.Cancel()
         return
     end
 
     zo_callLater(function()
         local currentRun = Freeport.activeRun
         if currentRun and currentRun.id == runId and currentRun.currentCandidate == candidate and not currentRun.travelStarted then
-            TryNextCandidate(runId)
+            -- Silence is ambiguous, so stop instead of risking an unwanted retry or fallback.
+            Freeport.Cancel()
         end
     end, PLAYER_JUMP_TIMEOUT_MS)
 end

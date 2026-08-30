@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="General">
+        <Category name="My Little Journal">
+            <Action name="MLJ_TOGGLE_JOURNAL">
+                <Down>MyLittleJournal_ToggleUI()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

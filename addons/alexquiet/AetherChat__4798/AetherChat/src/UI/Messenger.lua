@@ -77,7 +77,7 @@ function Messenger.Initialize()
 
     isGuildsExpanded = Settings.Get('guildsExpanded', false)
 
-    -- 1. MinBar Moveable Dock Button Setup (Registered to HUD Scenes with Live Unread Notification Badge)
+    -- 1. MinBar Moveable HUD Widget (Hover-Only Tooltip & Tri-Color Notification Badges)
     if Messenger.minBar then
         local iconPos = Settings.Get('floatingIconPos')
         if iconPos and iconPos.x and iconPos.y then
@@ -92,19 +92,46 @@ function Messenger.Initialize()
 
         Messenger.minBar:SetHandler('OnMouseEnter', function(self)
             InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 5)
-            InformationTooltip:AddLine("|cE5B558" .. L('TT_FLOATING_ICON') .. "|r", "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
-            InformationTooltip:AddLine("|c888888" .. L('TT_MINIMIZE_WINDOW_SUB') .. "|r", "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            InformationTooltip:AddLine("|cE5B558AETHER|r|cFFFFFFCHAT|r", "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+
+            -- 1. Unread chat messages
+            local totalUnread = Messenger.GetTotalUnreadCount and Messenger.GetTotalUnreadCount() or 0
+            if totalUnread > 0 then
+                InformationTooltip:AddLine(string.format("|cF23F43• %s|r", L('TT_UNREAD_COUNT', totalUnread)), "ZoFontGame", 1, 0.4, 0.4, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            else
+                InformationTooltip:AddLine("|c888888• " .. L('TT_MAIL_NONE') .. "|r", "ZoFontGameSmall", 0.7, 0.7, 0.7, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
+
+            -- 2. Friends online
+            local numFriendsOnline = 0
+            local numFriends = GetNumFriends() or 0
+            for i = 1, numFriends do
+                local _, _, status = GetFriendInfo(i)
+                if status ~= PLAYER_STATUS_OFFLINE then
+                    numFriendsOnline = numFriendsOnline + 1
+                end
+            end
+            if numFriendsOnline > 0 then
+                InformationTooltip:AddLine(string.format("|c57F287• " .. L('TT_FRIENDS_ONLINE') .. "|r", numFriendsOnline), "ZoFontGame", 0.3, 1, 0.5, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            else
+                InformationTooltip:AddLine("|c888888• " .. L('TT_FRIENDS_NONE') .. "|r", "ZoFontGameSmall", 0.7, 0.7, 0.7, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
+
+            -- 3. Unread Mails
+            local numUnreadMail = GetNumUnreadMail() or 0
+            if numUnreadMail > 0 then
+                InformationTooltip:AddLine(string.format("|c38BDF8• " .. L('TT_MAIL_UNREAD') .. "|r", numUnreadMail), "ZoFontGame", 0.2, 0.7, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
+
+            InformationTooltip:AddLine("|c888888" .. L('BINDING_NAME') .. " : Raccourci clavier|r", "ZoFontGameSmall", 0.6, 0.6, 0.6, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
         end)
 
         Messenger.minBar:SetHandler('OnMouseExit', function(self)
             ClearTooltip(InformationTooltip)
         end)
 
-        Messenger.minBar:SetHandler('OnMouseUp', function(self, button, upInside)
-            if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
-                Messenger.Toggle()
-            end
-        end)
+        -- MinBar does NOT toggle on click (prevents crosshair cursor lock issues)
+        Messenger.minBar:SetHandler('OnMouseUp', nil)
 
         -- Register MinBar as official HUD Fragment so ESO never confuses it with modal UI
         if SCENE_MANAGER then
@@ -114,6 +141,8 @@ function Messenger.Initialize()
         end
 
         Messenger.UpdateTotalBadge()
+        Messenger.UpdateFriendsBadge()
+        Messenger.UpdateMailBadge()
     end
 
     -- 2. Messenger Window Position & Saved Dimensions
@@ -150,22 +179,6 @@ function Messenger.Initialize()
             InformationTooltip:AddLine("|c888888" .. L('TT_COLLAPSE_SIDEBAR_SUB') .. "|r", "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
         end)
         collapseSidebarBtn:SetHandler('OnMouseExit', function(self)
-            ClearTooltip(InformationTooltip)
-        end)
-    end
-
-    -- Collapse Window (Minimize) Button
-    local collapseWinBtn = Messenger.window:GetNamedChild('CollapseWindowBtn')
-    if collapseWinBtn then
-        collapseWinBtn:SetHandler('OnClicked', function()
-            Messenger.Hide()
-        end)
-        collapseWinBtn:SetHandler('OnMouseEnter', function(self)
-            InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 5)
-            InformationTooltip:AddLine(L('TT_MINIMIZE_WINDOW'), "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
-            InformationTooltip:AddLine("|c888888" .. L('TT_MINIMIZE_WINDOW_SUB') .. "|r", "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
-        end)
-        collapseWinBtn:SetHandler('OnMouseExit', function(self)
             ClearTooltip(InformationTooltip)
         end)
     end
@@ -284,6 +297,15 @@ function Messenger.Initialize()
 
     -- Setup Donation Modal Window Handlers
     Messenger.SetupDonationWindow()
+
+    -- Setup Live Search Box
+    Messenger.SetupSearchBox()
+
+    -- Setup Copy Modal Handlers
+    Messenger.SetupCopyModal()
+
+    -- Apply Resolution Scale
+    Messenger.ApplyResolutionScale()
 
     -- Clear History Button
     local clearBtn = Messenger.window:GetNamedChild('ClearBtn')
@@ -533,6 +555,9 @@ function Messenger.Initialize()
     EVENT_MANAGER:RegisterForEvent('AetherChat_FriendRemoved', EVENT_FRIEND_REMOVED, Messenger.UpdateFriendsBadge)
     EVENT_MANAGER:RegisterForEvent('AetherChat_FriendAct', EVENT_PLAYER_ACTIVATED, Messenger.UpdateFriendsBadge)
 
+    -- Guild Member Status Events (Login/Logout for Selected Guilds)
+    EVENT_MANAGER:RegisterForEvent('AetherChat_GuildStatus', EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, Messenger.OnGuildMemberPlayerStatusChanged)
+
     -- Global mouse up for drag-and-drop channel order and edge resizing finalization
     EVENT_MANAGER:RegisterForEvent('AetherChat_GlobalMouseUp', EVENT_GLOBAL_MOUSE_UP, function()
         if dragState then
@@ -757,35 +782,65 @@ function Messenger.DockNativeChatEntry()
     ZO_ChatWindowTextEntry:SetHidden(Messenger.window:IsHidden())
 end
 
-function Messenger.UpdateMailBadge()
-    if not Messenger.window then return end
-    local mailBtn = Messenger.window:GetNamedChild('MailBtn')
-    if not mailBtn then return end
+function Messenger.GetTotalUnreadCount()
+    local total = 0
+    local notifyWhispers = Settings.Get('notifyWhispers', true)
+    local notifyGuilds = Settings.Get('notifyGuilds', true)
+    local notifyParty = Settings.Get('notifyParty', true)
 
-    local badge = mailBtn:GetNamedChild('Badge')
-    if not badge then return end
-
-    local numUnread = GetNumUnreadMail() or 0
-    if numUnread > 0 then
-        badge:SetHidden(false)
-        local countLabel = badge:GetNamedChild('Count')
-        if countLabel then
-            countLabel:SetText(tostring(numUnread))
+    for key, count in pairs(unreadCounts) do
+        if count > 0 then
+            if notifyWhispers and key:sub(1, 3) == 'dm:' then
+                total = total + count
+            elseif notifyGuilds and key:find('^guild') then
+                total = total + count
+            elseif notifyParty and key == 'party' then
+                total = total + count
+            end
         end
-    else
-        badge:SetHidden(true)
+    end
+    return total
+end
+
+function Messenger.UpdateMailBadge()
+    local numUnread = GetNumUnreadMail() or 0
+    local showBadge = Settings.Get('showBadgeMail', true)
+
+    -- 1. Window Header Button Badge (Celestial Blue)
+    if Messenger.window then
+        local mailBtn = Messenger.window:GetNamedChild('MailBtn')
+        if mailBtn then
+            local badge = mailBtn:GetNamedChild('Badge')
+            if badge then
+                if numUnread > 0 then
+                    badge:SetHidden(false)
+                    local countLabel = badge:GetNamedChild('Count')
+                    if countLabel then countLabel:SetText(tostring(numUnread)) end
+                else
+                    badge:SetHidden(true)
+                end
+            end
+        end
+    end
+
+    -- 2. HUD MinBar Badge (Celestial Blue, Bottom-Right)
+    if Messenger.minBar then
+        local minMailBadge = Messenger.minBar:GetNamedChild('_MailBadge')
+        if minMailBadge then
+            if showBadge and numUnread > 0 then
+                minMailBadge:SetHidden(false)
+                local countLabel = minMailBadge:GetNamedChild('Count')
+                if countLabel then countLabel:SetText(tostring(numUnread)) end
+            else
+                minMailBadge:SetHidden(true)
+            end
+        end
     end
 end
 
 function Messenger.UpdateFriendsBadge()
-    if not Messenger.window then return end
-    local friendsBtn = Messenger.window:GetNamedChild('FriendsBtn')
-    if not friendsBtn then return end
-
-    local badge = friendsBtn:GetNamedChild('Badge')
-    if not badge then return end
-
     local numFriends = GetNumFriends() or 0
+    local showBadge = Settings.Get('showBadgeFriends', true)
     local onlineCount = 0
     for i = 1, numFriends do
         local _, _, status = GetFriendInfo(i)
@@ -794,14 +849,35 @@ function Messenger.UpdateFriendsBadge()
         end
     end
 
-    if onlineCount > 0 then
-        badge:SetHidden(false)
-        local countLabel = badge:GetNamedChild('Count')
-        if countLabel then
-            countLabel:SetText(tostring(onlineCount))
+    -- 1. Window Header Button Badge (Emerald Green)
+    if Messenger.window then
+        local friendsBtn = Messenger.window:GetNamedChild('FriendsBtn')
+        if friendsBtn then
+            local badge = friendsBtn:GetNamedChild('Badge')
+            if badge then
+                if onlineCount > 0 then
+                    badge:SetHidden(false)
+                    local countLabel = badge:GetNamedChild('Count')
+                    if countLabel then countLabel:SetText(tostring(onlineCount)) end
+                else
+                    badge:SetHidden(true)
+                end
+            end
         end
-    else
-        badge:SetHidden(true)
+    end
+
+    -- 2. HUD MinBar Badge (Emerald Green, Top-Left)
+    if Messenger.minBar then
+        local minFriendsBadge = Messenger.minBar:GetNamedChild('_FriendsBadge')
+        if minFriendsBadge then
+            if showBadge and onlineCount > 0 then
+                minFriendsBadge:SetHidden(false)
+                local countLabel = minFriendsBadge:GetNamedChild('Count')
+                if countLabel then countLabel:SetText(tostring(onlineCount)) end
+            else
+                minFriendsBadge:SetHidden(true)
+            end
+        end
     end
 end
 
@@ -900,6 +976,89 @@ function Messenger.OnFriendPlayerStatusChanged(eventCode, displayName, character
         -- 4. Native chat fallback
         if CHAT_SYSTEM then
             CHAT_SYSTEM:AddMessage(notifText)
+        end
+    end
+end
+
+function Messenger.OnGuildMemberPlayerStatusChanged(eventCode, guildId, displayName, oldStatus, newStatus)
+    if not Settings.Get('notifyGuildStatus', false) then
+        return
+    end
+
+    if not displayName or displayName == "" then return end
+
+    -- Determine which guild slot (1..5) corresponds to this guildId
+    local guildSlot = nil
+    for g = 1, GetNumGuilds() do
+        if GetGuildId(g) == guildId then
+            guildSlot = g
+            break
+        end
+    end
+
+    if not guildSlot then return end
+    if not Settings.Get('notifyGuild_' .. guildSlot, true) then return end
+
+    local wasOnline = (oldStatus ~= nil and oldStatus ~= PLAYER_STATUS_OFFLINE)
+    local isOnline = (newStatus ~= nil and newStatus ~= PLAYER_STATUS_OFFLINE)
+
+    if wasOnline == isOnline then
+        return
+    end
+
+    local guildName = GetGuildName(guildId) or ("Guilde " .. tostring(guildSlot))
+    local theme = Theme.GetCurrentTheme()
+    local accentColor = (theme and (theme.selfHex or theme.accentHex)) or "38BDF8"
+
+    local disp = displayName
+    if disp:sub(1, 1) ~= '@' then disp = '@' .. disp end
+    local linkedDisplay = ZO_LinkHandler_CreateDisplayNameLink(disp)
+
+    local toastText = ""
+    local guildChatText = ""
+    local generalChatText = ""
+
+    if not wasOnline and isOnline then
+        -- Connected: Green / Bright Accent Color
+        local greenPlayer = string.format("|c57F287%s|r", linkedDisplay)
+        toastText = string.format("[%s] %s s'est connecté.", guildName, disp)
+        guildChatText = string.format("%s s'est connecté.", greenPlayer)
+        generalChatText = string.format("|c888888[%s]|r %s s'est connecté.", guildName, greenPlayer)
+    elseif wasOnline and not isOnline then
+        -- Disconnected: Clean Grey Color
+        local greyPlayer = string.format("|c888888%s|r", linkedDisplay)
+        toastText = string.format("[%s] %s s'est déconnecté.", guildName, disp)
+        guildChatText = string.format("%s s'est déconnecté.", greyPlayer)
+        generalChatText = string.format("|c888888[%s]|r %s s'est déconnecté.", guildName, greyPlayer)
+    end
+
+    if guildChatText ~= "" then
+        local timeStr = GetTimeString():sub(1, 5)
+
+        -- 1. On-Screen In-Game HUD Toast Banner
+        Messenger.ShowFriendToastNotification(toastText, theme)
+
+        -- 2. Save to guild channel (clean, no guild prefix) and general channel (subtle tag)
+        local guildChannelKey = 'guild' .. tostring(guildSlot)
+        History.AddMessage(guildChannelKey, 'Guilde', guildChatText, timeStr, 0, false, false)
+        History.AddMessage('general', 'Guilde', generalChatText, timeStr, 0, false, false)
+
+        -- 3. Live buffer update if currently viewing this guild or general
+        if Messenger.window and not Messenger.window:IsHidden() then
+            local textToDisplay = (activeChannelKey == guildChannelKey) and guildChatText or generalChatText
+            if activeChannelKey == guildChannelKey or activeChannelKey == 'general' then
+                local buffer = Messenger.window:GetNamedChild('Messages')
+                if buffer then
+                    local timeTag = string.format('|c%s[%s]|r', Theme.Hex.MUTED, timeStr)
+                    buffer:AddMessage(string.format('%s %s', timeTag, textToDisplay))
+                    buffer:SetScrollPosition(0)
+                end
+            end
+        end
+
+        -- 4. Native chat fallback
+        if CHAT_SYSTEM then
+            CHAT_SYSTEM:AddMessage(toastText)
         end
     end
 end
@@ -1010,54 +1169,6 @@ function Messenger.DockNativeChatEntry()
     ZO_ChatWindowTextEntry:SetAnchor(BOTTOMRIGHT, Messenger.window, BOTTOMRIGHT, -10, -8)
     ZO_ChatWindowTextEntry:SetMovable(false)
     ZO_ChatWindowTextEntry:SetHidden(Messenger.window:IsHidden())
-end
-
-function Messenger.UpdateMailBadge()
-    if not Messenger.window then return end
-    local mailBtn = Messenger.window:GetNamedChild('MailBtn')
-    if not mailBtn then return end
-
-    local badge = mailBtn:GetNamedChild('Badge')
-    if not badge then return end
-
-    local numUnread = GetNumUnreadMail() or 0
-    if numUnread > 0 then
-        badge:SetHidden(false)
-        local countLabel = badge:GetNamedChild('Count')
-        if countLabel then
-            countLabel:SetText(tostring(numUnread))
-        end
-    else
-        badge:SetHidden(true)
-    end
-end
-
-function Messenger.UpdateFriendsBadge()
-    if not Messenger.window then return end
-    local friendsBtn = Messenger.window:GetNamedChild('FriendsBtn')
-    if not friendsBtn then return end
-
-    local badge = friendsBtn:GetNamedChild('Badge')
-    if not badge then return end
-
-    local numFriends = GetNumFriends() or 0
-    local onlineCount = 0
-    for i = 1, numFriends do
-        local _, _, status = GetFriendInfo(i)
-        if status ~= PLAYER_STATUS_OFFLINE then
-            onlineCount = onlineCount + 1
-        end
-    end
-
-    if onlineCount > 0 then
-        badge:SetHidden(false)
-        local countLabel = badge:GetNamedChild('Count')
-        if countLabel then
-            countLabel:SetText(tostring(onlineCount))
-        end
-    else
-        badge:SetHidden(true)
-    end
 end
 
 function Messenger.ApplyBackdropAlpha(alphaPercent)
@@ -1738,8 +1849,18 @@ function Messenger.LoadMessages(channelKey)
     buffer:Clear()
 
     local messages = History.GetMessages(channelKey)
+    local hasResults = false
     for _, msg in ipairs(messages) do
-        Messenger.RenderMessageToBuffer(buffer, msg)
+        -- Apply live search filter
+        if Messenger.MessagePassesFilter(msg.author, msg.text) then
+            hasResults = true
+            Messenger.RenderMessageToBuffer(buffer, msg)
+        end
+    end
+
+    -- Show "no results" hint if search active and nothing found
+    if not hasResults and searchFilter ~= '' then
+        buffer:AddMessage('|c888888' .. L('SEARCH_NO_RESULTS') .. '|r')
     end
 
     buffer:SetScrollPosition(0)
@@ -1801,9 +1922,18 @@ function Messenger.RenderMessageToBuffer(buffer, msg)
         end
     end
 
-    local authorName = msg.author
-    if authorName == 'Amis' or authorName == '|c57F287Amis|r' then
+    local authorName = msg.author or ""
+
+    -- System announcements: Amis, Guilde status
+    if authorName == 'Amis' or authorName == '|c57F287Amis|r' or authorName == 'Guilde' or authorName:find('^Guilde') then
         buffer:AddMessage(string.format('%s %s', timeTag, msg.text))
+        return
+    end
+
+    -- Guild Store Sales announcement
+    if authorName == 'Boutique' or authorName:find('Boutique') or authorName:find('Guild Store') then
+        local formattedText = FormatItemLinksInText(msg.text)
+        buffer:AddMessage(string.format('%s |cFFD700[Boutique de Guilde]|r %s', timeTag, formattedText))
         return
     end
 
@@ -1837,8 +1967,22 @@ function Messenger.RenderMessageToBuffer(buffer, msg)
 
     local authorTag = string.format('|c%s%s:|r', authorColor, linkedAuthor)
     local formattedText = FormatItemLinksInText(msg.text)
+    local starTag = ""
+    if AetherChat.ChatEngine and AetherChat.ChatEngine.ApplyKeywordHighlight then
+        local highlighted, matched, hexColor = AetherChat.ChatEngine.ApplyKeywordHighlight(formattedText)
+        if matched then
+            formattedText = highlighted
+            starTag = string.format('|c%s★|r ', hexColor or 'FFD700')
+        end
+    end
 
-    buffer:AddMessage(string.format('%s %s %s', timeTag, authorTag, formattedText))
+    buffer:AddMessage(string.format('%s%s %s %s', starTag, timeTag, authorTag, formattedText))
+end
+
+function Messenger.RefreshActiveChannel()
+    if activeChannelKey then
+        Messenger.LoadMessages(activeChannelKey)
+    end
 end
 
 function Messenger.OnMessageReceived(channelKey, author, text, isSelf, isWhisper, zoneLang)
@@ -1877,6 +2021,7 @@ end
 
 function Messenger.UpdateTotalBadge()
     local total = 0
+    local showBadge = Settings.Get('showBadgeMessages', true)
     local notifyWhispers = Settings.Get('notifyWhispers', true)
     local notifyGuilds = Settings.Get('notifyGuilds', true)
     local notifyParty = Settings.Get('notifyParty', true)
@@ -1897,7 +2042,7 @@ function Messenger.UpdateTotalBadge()
         local badge = Messenger.minBar:GetNamedChild('_Badge')
         if badge then
             local count = badge:GetNamedChild('Count')
-            if total > 0 then
+            if showBadge and total > 0 then
                 badge:SetHidden(false)
                 if count then count:SetText(tostring(total)) end
             else
@@ -1911,3 +2056,211 @@ function Messenger.TestWhisper()
     Messenger.OnMessageReceived('zone', '@AlexQuiet', 'Bonjour à tous / Hello everyone!', true, false)
     Messenger.OnMessageReceived('dm:@TestUser', '@TestUser', 'Test whisper notification in AetherChat.', false, true)
 end
+
+-- ============================================================================
+-- LIVE CHAT SEARCH (Real-time filter on current channel messages)
+-- ============================================================================
+
+local searchFilter = ''
+
+function Messenger.SetupSearchBox()
+    if not Messenger.window then return end
+    local searchBox = Messenger.window:GetNamedChild('SearchBox')
+    if not searchBox then
+        searchBox = _G['AetherChat_MessengerWindowSearchBox']
+    end
+    if not searchBox then return end
+
+    local editBox  = searchBox:GetNamedChild('Edit')
+    if not editBox then
+        editBox = _G['AetherChat_MessengerWindowSearchBoxEdit']
+    end
+    local clearBtn = searchBox:GetNamedChild('ClearBtn')
+    if not clearBtn then
+        clearBtn = _G['AetherChat_MessengerWindowSearchBoxClearBtn']
+    end
+
+    if not editBox then return end
+
+    -- Set text color to white
+    editBox:SetColor(1, 1, 1, 1)
+
+    -- Initialize default placeholder text cleanly
+    if ZO_EditDefaultText_Initialize then
+        ZO_EditDefaultText_Initialize(editBox, L('SEARCH_PLACEHOLDER'))
+    end
+
+    -- Focus handling
+    editBox:SetHandler('OnMouseUp', function(self, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            self:TakeFocus()
+        end
+    end)
+
+    searchBox:SetHandler('OnMouseUp', function(self, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            editBox:TakeFocus()
+        end
+    end)
+
+    local icon = searchBox:GetNamedChild('Icon')
+    if not icon then icon = _G['AetherChat_MessengerWindowSearchBoxIcon'] end
+    if icon then
+        icon:SetMouseEnabled(true)
+        icon:SetHandler('OnMouseUp', function(self, button)
+            if button == MOUSE_BUTTON_INDEX_LEFT then
+                editBox:TakeFocus()
+            end
+        end)
+    end
+
+    -- Text change handler: filter messages in real-time
+    editBox:SetHandler('OnTextChanged', function(self)
+        if ZO_EditDefaultText_OnTextChanged then
+            ZO_EditDefaultText_OnTextChanged(self)
+        end
+        local query = self:GetText() or ''
+        searchFilter = query:lower():match('^%s*(.-)%s*$') or ''
+        if clearBtn then clearBtn:SetHidden(query == '') end
+        if activeChannelKey then
+            Messenger.LoadMessages(activeChannelKey)
+        end
+    end)
+
+    -- Escape clears and releases focus (lets player go back to game)
+    editBox:SetHandler('OnEscape', function(self)
+        self:SetText('')
+        searchFilter = ''
+        if clearBtn then clearBtn:SetHidden(true) end
+        self:LoseFocus()
+        if activeChannelKey then
+            Messenger.LoadMessages(activeChannelKey)
+        end
+    end)
+
+    -- Enter releases focus
+    editBox:SetHandler('OnEnter', function(self)
+        self:LoseFocus()
+    end)
+
+    if clearBtn then
+        clearBtn:SetHandler('OnClicked', function()
+            editBox:SetText('')
+            searchFilter = ''
+            clearBtn:SetHidden(true)
+            if activeChannelKey then
+                Messenger.LoadMessages(activeChannelKey)
+            end
+            editBox:TakeFocus()
+        end)
+    end
+end
+
+-- Returns true if a message passes the current search filter
+function Messenger.MessagePassesFilter(author, text)
+    if searchFilter == '' then return true end
+    local lowerAuthor = (author or ''):lower()
+    local lowerText   = (text   or ''):lower()
+    return lowerAuthor:find(searchFilter, 1, true) or lowerText:find(searchFilter, 1, true)
+end
+
+-- ============================================================================
+-- COPY MODAL (Texte & Liens)
+-- ============================================================================
+
+function Messenger.SetupCopyModal()
+    local modal = AetherChat_CopyModal
+    if not modal then return end
+
+    local closeBtn       = modal:GetNamedChild('CloseBtn')
+    local bottomCloseBtn = modal:GetNamedChild('BottomCloseBtn')
+    local editBox        = modal:GetNamedChild('BoxEdit')
+
+    if closeBtn then
+        closeBtn:SetHandler('OnClicked', function()
+            modal:SetHidden(true)
+        end)
+    end
+    if bottomCloseBtn then
+        bottomCloseBtn:SetHandler('OnClicked', function()
+            modal:SetHidden(true)
+        end)
+    end
+
+    -- Update text on the description label to use localization
+    local descLabel = modal:GetNamedChild('Desc')
+    if descLabel then descLabel:SetText(L('MODAL_COPY_DESC')) end
+
+    local titleLabel = modal:GetNamedChild('Title')
+    if titleLabel then titleLabel:SetText('|cE5B558AetherChat|r — ' .. L('MODAL_COPY_TITLE')) end
+
+    if bottomCloseBtn then bottomCloseBtn:SetText(L('MODAL_COPY_CLOSE')) end
+end
+
+-- Call this to open the copy modal with a specific content string
+function Messenger.OpenCopyModal(content)
+    local modal = AetherChat_CopyModal
+    if not modal then return end
+
+    local editBox = modal:GetNamedChild('BoxEdit')
+    if editBox then
+        editBox:SetText(content or '')
+        -- Select all so the player just presses Ctrl+C immediately
+        editBox:SelectAll()
+    end
+
+    modal:SetHidden(false)
+end
+
+-- ============================================================================
+-- RESOLUTION & SCALE MANAGEMENT
+-- ============================================================================
+
+-- Coefficient table: base window dimensions reference is 940×520 (designed at 1440p)
+local SCALE_MAP = {
+    ['720']  = 0.72,
+    ['1080'] = 0.86,
+    ['1440'] = 1.00,
+    ['2160'] = 1.32,
+}
+
+function Messenger.ApplyResolutionScale()
+    if not Messenger.window then return end
+
+    local mode = Settings.Get('scaleMode', 'auto')
+    local scale = 1.0
+
+    if mode == 'auto' then
+        -- Detect screen height via GuiRoot
+        local screenH = GuiRoot:GetHeight()
+        if screenH <= 768 then
+            scale = SCALE_MAP['720']
+        elseif screenH <= 1100 then
+            scale = SCALE_MAP['1080']
+        elseif screenH <= 1550 then
+            scale = SCALE_MAP['1440']
+        else
+            scale = SCALE_MAP['2160']
+        end
+    elseif SCALE_MAP[mode] then
+        scale = SCALE_MAP[mode]
+    else
+        -- manual mode: use slider value
+        scale = Settings.Get('windowScale', 1.0)
+    end
+
+    -- Base dimensions: 940×520
+    local baseW, baseH = 940, 520
+    local newW = math.floor(baseW * scale)
+    local newH = math.floor(baseH * scale)
+
+    -- Clamp to safe limits
+    newW = math.max(560, math.min(1920, newW))
+    newH = math.max(320, math.min(1200, newH))
+
+    Messenger.window:SetDimensions(newW, newH)
+
+    -- Save new dimensions
+    Settings.Set('windowDimensions', { width = newW, height = newH })
+end
+

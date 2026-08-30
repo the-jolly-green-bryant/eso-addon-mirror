@@ -1,11 +1,11 @@
 -- ZoneSets.lua (Полная финальная версия: Сетка, Тосты, Сессии, Группа, Конвейер, Авто-Трейд и Автопривязка)
 local ADDON_NAME = "ZoneSets"
-local ZS = {}
+ZoneSets = ZoneSets or {}
+local ZS = ZoneSets
 ZS.Cache = {}
-ZS.KnownPieces = {}
 ZS.CurrentTab = "zone"
 ZS.ChatQueue = nil
-ZS.TradeRequests = {} -- Кратковременная память запросов на обмен (15 мин)
+ZS.PlayerRequests = {}
 ZS.ToastQueue = {}
 ZS.IsToastActive = false
 
@@ -51,6 +51,9 @@ local L = {
     tradeFilledMsg = GetString(ZONESETS_TRADE_FILLED_MSG),
     autoBindOn = GetString(ZONESETS_AUTO_BIND_ON),
     autoBindOff = GetString(ZONESETS_AUTO_BIND_OFF),
+    groupRequestsHeader = GetString(ZONESETS_GROUP_REQUESTS_HEADER),
+    noGroupRequests = GetString(ZONESETS_NO_GROUP_REQUESTS),
+    inBagTooltip = GetString(ZONESETS_IN_BAG_TOOLTIP),
 }
 
 local createdRows = {}
@@ -74,17 +77,31 @@ local function CleanZoneString(str)
     return clean
 end
 
+
+-- Очистка названия для строки поиска стикербука (убираем цвета, [Класс] и (Второй язык RuESO))
+local function CleanSetNameForSearch(str)
+    if not str then return "" end
+    local clean = zo_strformat("<<1>>", str)
+    clean = string.gsub(clean, "|c%x%x%x%x%x%x", "") -- убираем теги цвета
+    clean = string.gsub(clean, "|r", "")             -- убираем закрытие цвета
+    clean = string.gsub(clean, "%s*%b[]", "")        -- убираем скобки классов [..]
+    clean = string.gsub(clean, "%s*%b()", "")        -- убираем второй язык RuESO (..)
+    clean = string.match(clean, "^%s*(.-)%s*$") or clean
+    return clean
+end
+
 -- Переход в стикербук через авто-поиск по названию
 function ZS:ShowItemSetInJournal(itemSetDataOrName)
     if not itemSetDataOrName then return end
 
-    local setName = ""
+    local rawName = ""
     if type(itemSetDataOrName) == "string" then
-        setName = zo_strformat("<<1>>", itemSetDataOrName)
+        rawName = itemSetDataOrName
     elseif type(itemSetDataOrName) == "table" and itemSetDataOrName.GetFormattedName then
-        setName = zo_strformat("<<1>>", itemSetDataOrName:GetFormattedName())
+        rawName = itemSetDataOrName:GetFormattedName()
     end
 
+    local setName = CleanSetNameForSearch(rawName)
     if setName == "" then return end
 
     if MAIN_MENU_KEYBOARD and MAIN_MENU_KEYBOARD.ShowSceneGroup then
@@ -187,9 +204,42 @@ end
 
 -- ================= УМНЫЙ КОНВЕЙЕР ШЕПОТОВ И РАЗДАЧИ ЛУТА =================
 
--- Поиск всех передаваемых дубликатов сетов в рюкзаке
+local slotNamesEN = {
+    [EQUIP_TYPE_HEAD] = "Helm", [EQUIP_TYPE_CHEST] = "Chest", [EQUIP_TYPE_LEGS] = "Legs",
+    [EQUIP_TYPE_SHOULDERS] = "Shoulders", [EQUIP_TYPE_FEET] = "Boots", [EQUIP_TYPE_HAND] = "Gloves",
+    [EQUIP_TYPE_WAIST] = "Belt", [EQUIP_TYPE_RING] = "Ring", [EQUIP_TYPE_NECK] = "Necklace",
+}
+local weaponNamesEN = {
+    [WEAPONTYPE_DAGGER] = "Dagger", [WEAPONTYPE_SWORD] = "1H Sword", [WEAPONTYPE_TWO_HANDED_SWORD] = "2H Sword",
+    [WEAPONTYPE_AXE] = "1H Axe", [WEAPONTYPE_TWO_HANDED_AXE] = "2H Axe", [WEAPONTYPE_HAMMER] = "1H Mace",
+    [WEAPONTYPE_TWO_HANDED_HAMMER] = "2H Mace", [WEAPONTYPE_BOW] = "Bow", [WEAPONTYPE_FIRE_STAFF] = "Inferno Staff",
+    [WEAPONTYPE_FROST_STAFF] = "Ice Staff", [WEAPONTYPE_LIGHTNING_STAFF] = "Lightning Staff",
+    [WEAPONTYPE_HEALING_STAFF] = "Resto Staff", [WEAPONTYPE_SHIELD] = "Shield",
+}
+
+-- Преобразование ссылки в ультра-компактный английский вид [Set - Slot]
+local function FormatItemLinkToEnglish(itemLink)
+    if not itemLink or itemLink == "" then return itemLink end
+    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
+    if not hasSet or not setId or setId <= 0 then return itemLink end
+
+    local rawSetName = setName or GetItemSetName(setId) or ""
+    local enSetName = string.match(rawSetName, "%((.-)%)")
+        or (RuESO and RuESO.Settings and RuESO.Settings.Data and RuESO.Settings.Data.Sets and RuESO.Settings.Data.Sets[setId])
+        or rawSetName
+
+    local equipType = GetItemLinkEquipType(itemLink)
+    local weaponType = GetItemLinkWeaponType(itemLink)
+    local enSlot = weaponNamesEN[weaponType] or slotNamesEN[equipType] or "Piece"
+
+    local compactName = string.format("%s - %s", enSetName, enSlot)
+    return string.gsub(itemLink, "|h.-|h", string.format("|h[%s]|h", compactName))
+end
+
+-- Поиск всех передаваемых дубликатов сетов в рюкзаке с группировкой (×2, ×3)
 function ZS:GetTradableDuplicatesInBag()
-    local items = {}
+    local itemsMap = {}
+    local itemsOrder = {}
     local bagSize = GetBagSize(BAG_BACKPACK)
 
     for slotIndex = 0, bagSize - 1 do
@@ -201,39 +251,84 @@ function ZS:GetTradableDuplicatesInBag()
                 local pieceId = GetItemLinkItemId(itemLink)
 
                 if hasSet and pieceId and pieceId > 0 and IsItemSetCollectionPieceUnlocked(pieceId) then
-                    table.insert(items, itemLink)
+                    if not itemsMap[pieceId] then
+                        local compactLink = FormatItemLinkToEnglish(itemLink)
+                        itemsMap[pieceId] = { link = compactLink, count = 1 }
+                        table.insert(itemsOrder, pieceId)
+                    else
+                        itemsMap[pieceId].count = itemsMap[pieceId].count + 1
+                    end
                 end
             end
         end
     end
 
-    return items
+    local formattedList = {}
+    for _, pieceId in ipairs(itemsOrder) do
+        local itemData = itemsMap[pieceId]
+        if itemData.count > 1 then
+            table.insert(formattedList, string.format("%s×%d", itemData.link, itemData.count))
+        else
+            table.insert(formattedList, itemData.link)
+        end
+    end
+
+    return formattedList
+end
+
+-- Жадный упаковщик сообщений (стиль LootLog: сразу ссылки без префиксов)
+function ZS.BuildChatMessages(mode, targetPlayer, linksList)
+    local messages = {}
+    if not linksList or #linksList == 0 then return messages end
+
+    local firstPrefix, nextPrefix, finalSuffix
+    if mode == "whisper" then
+        firstPrefix = "Hi! If you don't need "
+        nextPrefix = "... "
+        finalSuffix = ", please share! :)"
+    else
+        -- Раздача лута в группу: 0 лишних слов, сразу чистые ссылки
+        firstPrefix = ""
+        nextPrefix = "... "
+        finalSuffix = ""
+    end
+
+    local MAX_LEN = 345 -- Лимит игры 350
+    local currentMsg = firstPrefix
+
+    for _, link in ipairs(linksList) do
+        local testMsg = currentMsg .. ((currentMsg == "" or currentMsg == nextPrefix) and "" or " ") .. link
+
+        if string.len(testMsg) <= MAX_LEN then
+            currentMsg = testMsg
+        else
+            table.insert(messages, currentMsg)
+            currentMsg = nextPrefix .. link
+        end
+    end
+
+    if currentMsg ~= "" and currentMsg ~= nextPrefix then
+        if finalSuffix ~= "" and string.len(currentMsg .. finalSuffix) <= MAX_LEN then
+            currentMsg = currentMsg .. finalSuffix
+        end
+        table.insert(messages, currentMsg)
+    end
+
+    return messages
 end
 
 function ZS:LoadNextChatChunk()
-    if not self.ChatQueue or not self.ChatQueue.chunks then return end
-    local chunk = self.ChatQueue.chunks[self.ChatQueue.currentIdx]
-    if not chunk then
+    if not self.ChatQueue or not self.ChatQueue.messages then return end
+    local message = self.ChatQueue.messages[self.ChatQueue.currentIdx]
+    if not message then
         self.ChatQueue = nil
         return
     end
 
-    local totalChunks = #self.ChatQueue.chunks
-    local currentIdx = self.ChatQueue.currentIdx
-    local linksStr = table.concat(chunk, " ")
     local mode = self.ChatQueue.mode or "whisper"
     local target = self.ChatQueue.target
 
-    local message = ""
-
-    -- 1. Режим индивидуального шепота
-    if mode == "whisper" then
-        if totalChunks == 1 then
-            message = string.format("Hi! If you don't need %s, could you share please? :)", linksStr)
-        else
-            message = string.format("(%d/%d) Hi! If you don't need %s, please share! :)", currentIdx, totalChunks, linksStr)
-        end
-
+    if mode == "whisper" and target and target ~= "" then
         if CHAT_SYSTEM and CHAT_SYSTEM.StartTextEntry then
             CHAT_SYSTEM:StartTextEntry(message, CHAT_CHANNEL_WHISPER, target)
         elseif CHAT_SYSTEM and CHAT_SYSTEM.textEntry then
@@ -243,15 +338,7 @@ function ZS:LoadNextChatChunk()
                 CHAT_SYSTEM.textEntry.editControl:SetCursorPosition(string.len(message))
             end
         end
-
-    -- 2. Режим раздачи лишнего лута в чат группы / текущий канал
     else
-        if totalChunks == 1 then
-            message = string.format("Free / Up for grabs: %s (let me know if you need! :)", linksStr)
-        else
-            message = string.format("(%d/%d) Free / Up for grabs: %s (let me know!)", currentIdx, totalChunks, linksStr)
-        end
-
         if CHAT_SYSTEM and CHAT_SYSTEM.textEntry then
             CHAT_SYSTEM.textEntry:Open()
             if CHAT_SYSTEM.textEntry.editControl then
@@ -274,32 +361,19 @@ function ZS:QueueChatMessages(targetPlayer, itemsList)
 
     if #links == 0 then return end
 
-    local chunks = {}
-    local currentChunk = {}
-
-    for _, link in ipairs(links) do
-        table.insert(currentChunk, link)
-        if #currentChunk == 3 then
-            table.insert(chunks, currentChunk)
-            currentChunk = {}
-        end
-    end
-
-    if #currentChunk > 0 then
-        table.insert(chunks, currentChunk)
-    end
+    local messages = ZS.BuildChatMessages("whisper", targetPlayer, links)
 
     self.ChatQueue = {
         mode = "whisper",
         target = targetPlayer,
-        chunks = chunks,
+        messages = messages,
         currentIdx = 1,
     }
 
     self:LoadNextChatChunk()
 end
 
--- Запуск раздачи всех лишних вещей в чат
+-- Запуск раздачи всех лишних вещей в чат (кнопка внизу окна)
 function ZS:ShareExtraLootInChat()
     local dupes = self:GetTradableDuplicatesInBag()
     if #dupes == 0 then
@@ -308,24 +382,11 @@ function ZS:ShareExtraLootInChat()
         return
     end
 
-    local chunks = {}
-    local currentChunk = {}
-
-    for _, link in ipairs(dupes) do
-        table.insert(currentChunk, link)
-        if #currentChunk == 3 then
-            table.insert(chunks, currentChunk)
-            currentChunk = {}
-        end
-    end
-
-    if #currentChunk > 0 then
-        table.insert(chunks, currentChunk)
-    end
+    local messages = ZS.BuildChatMessages("offer", nil, dupes)
 
     self.ChatQueue = {
         mode = "offer",
-        chunks = chunks,
+        messages = messages,
         currentIdx = 1,
     }
 
@@ -722,7 +783,7 @@ function ZS:FormatTimeElapsed(timestamp)
     end
 end
 
--- Добавление полученного сетового предмета в историю захода
+-- Добавление полученного сетового предмета в историю текущего захода
 function ZS:AddLootToHistory(itemLink, pieceId)
     if not self.SavedVars or not itemLink then return end
     self.SavedVars.ZoneHistory = self.SavedVars.ZoneHistory or {}
@@ -730,7 +791,7 @@ function ZS:AddLootToHistory(itemLink, pieceId)
     local zoneId, zoneName = self:GetCurrentZoneInfo()
     if zoneId <= 0 then return end
 
-    self.SavedVars.ZoneHistory[zoneId] = self.SavedVars.ZoneHistory[zoneId] or { current = {}, previous = {} }
+    self.SavedVars.ZoneHistory[zoneId] = self.SavedVars.ZoneHistory[zoneId] or {}
     local zoneHistory = self.SavedVars.ZoneHistory[zoneId]
 
     local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
@@ -746,7 +807,7 @@ function ZS:AddLootToHistory(itemLink, pieceId)
     local icon = GetItemLinkIcon(itemLink) or "/esoui/art/icons/icon_missing.dds"
     local pName = zo_strformat("<<1>>", GetItemLinkName(itemLink))
 
-    table.insert(zoneHistory.current, 1, {
+    table.insert(zoneHistory, 1, {
         pieceId = pieceId,
         name = pName,
         setName = zo_strformat("<<1>>", setName or ""),
@@ -768,7 +829,7 @@ function ZS:AddLootToHistory(itemLink, pieceId)
     end
 end
 
--- Проверка перехода зон и архивация сессий
+-- Проверка перехода зон и очистка лута прошлого данжа
 function ZS:CheckZoneTransition()
     if not self.SavedVars then return end
     self.SavedVars.ZoneHistory = self.SavedVars.ZoneHistory or {}
@@ -780,21 +841,18 @@ function ZS:CheckZoneTransition()
 
     if self.LastZoneId and self.LastZoneId ~= zoneId then
         local oldId = self.LastZoneId
-        local oldHistory = self.SavedVars.ZoneHistory[oldId]
-        
-        if oldHistory and oldHistory.current and #oldHistory.current > 0 then
-            oldHistory.previous = oldHistory.current
-            oldHistory.current = {}
+        -- Вышли из локации — сразу стираем временный лут и запросы
+        if self.SavedVars.ZoneHistory[oldId] then
+            self.SavedVars.ZoneHistory[oldId] = nil
         end
-
         if self.SavedVars.ZoneGroupLoot and self.SavedVars.ZoneGroupLoot[oldId] then
-            self.SavedVars.ZoneGroupLoot[oldId] = {}
+            self.SavedVars.ZoneGroupLoot[oldId] = nil
         end
     end
 
     self.LastZoneId = zoneId
     self.LastZoneTime = now
-    ZS.TradeRequests = {} -- Очищаем запросы на обмен при смене зоны
+    ZS.PlayerRequests = {} -- Сбрасываем память просьб при выходе из подземелья/смене зоны
 end
 
 -- ================== ПОКАЗ ОКНА ==================
@@ -822,7 +880,7 @@ function ZS:ShowWindow()
         self.SavedVars.ZoneHistory = self.SavedVars.ZoneHistory or {}
         self.SavedVars.ZoneGroupLoot = self.SavedVars.ZoneGroupLoot or {}
 
-        local historyData = self.SavedVars.ZoneHistory[zoneId] or { current = {}, previous = {} }
+        local historyData = self.SavedVars.ZoneHistory[zoneId] or {}
         local rawGroupLoot = self.SavedVars.ZoneGroupLoot[zoneId] or {}
 
         -- 1. СЕКЦИЯ: ЛУТ ГРУППЫ (НУЖНО МНЕ)
@@ -985,6 +1043,150 @@ function ZS:ShowWindow()
             end
         end
 
+        -- === СЕКЦИЯ: ПРОСЬБЫ ГРУППЫ (НУЖНО ИМ) ===
+        local function CheckTradableInBag(targetPieceId)
+            if not targetPieceId or targetPieceId <= 0 then return false end
+            local bagSize = GetBagSize(BAG_BACKPACK)
+            for slotIndex = 0, bagSize - 1 do
+                local itemLink = GetItemLink(BAG_BACKPACK, slotIndex)
+                if itemLink and itemLink ~= "" then
+                    local isTradable = (not IsItemBound(BAG_BACKPACK, slotIndex)) or (IsItemBoPAndTradeable and IsItemBoPAndTradeable(BAG_BACKPACK, slotIndex))
+                    if isTradable then
+                        local pId = GetItemLinkItemId(itemLink)
+                        if pId == targetPieceId then
+                            return true
+                        end
+                    end
+                end
+            end
+            return false
+        end
+
+        local reqHeader = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
+        reqHeader:SetWidth(blockWidth - 10)
+        reqHeader:SetHeight(28)
+
+        local reqLabel = WINDOW_MANAGER:CreateControl(nil, reqHeader, CT_LABEL)
+        reqLabel:SetFont("ZoFontWinH3")
+        reqLabel:SetAnchor(TOPLEFT, reqHeader, TOPLEFT, 4, 0)
+        reqLabel:SetText(L.groupRequestsHeader or "|c39DB92[Просьбы группы — нужно им]|r")
+
+        table.insert(rows, reqHeader)
+        table.insert(createdRows, reqHeader)
+
+        local hasAnyRequests = false
+        local now = GetTimeStamp()
+
+        if ZS.PlayerRequests then
+            for pName, pData in pairs(ZS.PlayerRequests) do
+                if pData.pieces then
+                    for pieceId, ts in pairs(pData.pieces) do
+                        if (now - ts) <= 7200 then
+                            hasAnyRequests = true
+
+                            local itemLink = GetItemSetCollectionPieceItemLink and GetItemSetCollectionPieceItemLink(pieceId, LINK_STYLE_BRACKETS)
+                            local hasSet, setName = GetItemLinkSetInfo(itemLink or "")
+                            local pItemName = (itemLink and itemLink ~= "") and zo_strformat("<<1>>", GetItemLinkName(itemLink)) or string.format("Item #%d", pieceId)
+                            local icon = (itemLink and itemLink ~= "") and GetItemLinkIcon(itemLink) or "/esoui/art/icons/icon_missing.dds"
+
+                            local rRow = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_BUTTON)
+                            rRow:SetWidth(blockWidth - 10)
+                            rRow:SetHeight(44)
+
+                            local rBg = WINDOW_MANAGER:CreateControl(nil, rRow, CT_BACKDROP)
+                            rBg:SetAnchorFill()
+                            rBg:SetCenterColor(0, 0, 0, 0.5)
+                            rBg:SetEdgeColor(0.2, 0.5, 0.3, 0.5)
+                            rBg:SetEdgeTexture(nil, 1, 1, 1, 0)
+                            rBg:SetMouseEnabled(false)
+
+                            local rIcon = WINDOW_MANAGER:CreateControl(nil, rRow, CT_TEXTURE)
+                            rIcon:SetDimensions(34, 34)
+                            rIcon:SetAnchor(LEFT, rRow, LEFT, 6, 0)
+                            rIcon:SetTexture(icon)
+                            rIcon:SetMouseEnabled(false)
+
+                            local hasItem = CheckTradableInBag(pieceId)
+                            local timeStr = ZS:FormatTimeElapsed(ts)
+
+                            local rName = WINDOW_MANAGER:CreateControl(nil, rRow, CT_LABEL)
+                            rName:SetFont("ZoFontWinH4")
+                            rName:SetAnchor(TOPLEFT, rIcon, TOPRIGHT, 8, 2)
+                            rName:SetText(string.format("|c00FFFF%s|r: %s", pName, pItemName))
+                            rName:SetMouseEnabled(false)
+
+                            local rSub = WINDOW_MANAGER:CreateControl(nil, rRow, CT_LABEL)
+                            rSub:SetFont("ZoFontGameSmall")
+                            rSub:SetAnchor(BOTTOMLEFT, rIcon, BOTTOMRIGHT, 8, -2)
+                            rSub:SetText(string.format("|cFFD700%s|r  |cAAAAAA(%s)|r", zo_strformat("<<1>>", setName or ""), timeStr))
+                            rSub:SetMouseEnabled(false)
+
+                            if hasItem then
+                                local checkMark = WINDOW_MANAGER:CreateControl(nil, rRow, CT_LABEL)
+                                checkMark:SetFont("ZoFontGameBold")
+                                checkMark:SetAnchor(RIGHT, rRow, RIGHT, -10, 0)
+                                checkMark:SetText("|t20:20:EsoUI/Art/Cadwell/check.dds|t")
+                                checkMark:SetMouseEnabled(true)
+                                checkMark:SetHandler("OnMouseEnter", function()
+                                    InitializeTooltip(InformationTooltip, checkMark, TOP, 0, -5)
+                                    SetTooltipText(InformationTooltip, L.inBagTooltip or "У вас в рюкзаке есть подходящий предмет для передачи!")
+                                end)
+                                checkMark:SetHandler("OnMouseExit", function()
+                                    ClearTooltip(InformationTooltip)
+                                end)
+                            end
+
+                            rRow:SetHandler("OnMouseEnter", function()
+                                rBg:SetCenterColor(0.2, 0.4, 0.8, 0.3)
+                                if itemLink and itemLink ~= "" then
+                                    local rCenterX = rRow:GetCenter()
+                                    local sCenterX = GuiRoot:GetWidth() / 2
+                                    if rCenterX and sCenterX and rCenterX < sCenterX then
+                                        InitializeTooltip(ItemTooltip, rRow, LEFT, 10, 0, RIGHT)
+                                    else
+                                        InitializeTooltip(ItemTooltip, rRow, RIGHT, -10, 0, LEFT)
+                                    end
+                                    ItemTooltip:SetLink(itemLink)
+                                end
+                            end)
+
+                            rRow:SetHandler("OnMouseExit", function()
+                                rBg:SetCenterColor(0, 0, 0, 0.5)
+                                ClearTooltip(ItemTooltip)
+                            end)
+
+                            rRow:SetHandler("OnMouseUp", function(_, button, upInside)
+                                if not upInside then return end
+                                if button == MOUSE_BUTTON_INDEX_LEFT and itemLink and itemLink ~= "" then
+                                    ZO_LinkHandler_InsertLink(itemLink)
+                                elseif button == MOUSE_BUTTON_INDEX_RIGHT and setName and setName ~= "" then
+                                    ZS:ShowItemSetInJournal(setName)
+                                end
+                            end)
+
+                            table.insert(rows, rRow)
+                            table.insert(createdRows, rRow)
+                        end
+                    end
+                end
+            end
+        end
+
+        if not hasAnyRequests then
+            local emptyRow = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
+            emptyRow:SetWidth(blockWidth - 10)
+            emptyRow:SetHeight(24)
+
+            local emptyLbl = WINDOW_MANAGER:CreateControl(nil, emptyRow, CT_LABEL)
+            emptyLbl:SetFont("ZoFontGame")
+            emptyLbl:SetAnchor(TOPLEFT, emptyRow, TOPLEFT, 12, 0)
+            emptyLbl:SetColor(0.6, 0.6, 0.6, 1)
+            emptyLbl:SetText(L.noGroupRequests or "Никто в группе пока не просил сетовых вещей")
+
+            table.insert(rows, emptyRow)
+            table.insert(createdRows, emptyRow)
+        end
+
         -- 2. СЕКЦИИ: МОЙ ТЕКУЩИЙ И ПРОШЛЫЙ ЗАХОД
         local function RenderSessionBlock(titleText, itemsList, emptyText)
             local secHeader = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
@@ -1081,8 +1283,7 @@ function ZS:ShowWindow()
             end
         end
 
-        RenderSessionBlock(L.currentSession, historyData.current or {}, L.noCurrentItems)
-        RenderSessionBlock(L.previousSession, historyData.previous or {}, L.noPreviousItems)
+        RenderSessionBlock(L.currentSession, historyData or {}, L.noCurrentItems)
 
     -- === ВКЛАДКА ЗОНЫ ===
     else
@@ -1338,21 +1539,29 @@ function ZS:ProcessToastQueue()
     end)
 end
 
--- Добавление нового предмета в очередь тостов
-function ZS:ShowToastNotification(pieceData, itemSetData)
-    if not self.SavedVars or self.SavedVars.showToast == false then return end
+-- Добавление нового предмета в очередь тостов напрямую по ссылке
+function ZS:ShowToastNotificationForItem(itemLink, setId)
+    if not self.SavedVars or self.SavedVars.showToast == false or not itemLink then return end
 
-    local setName = (itemSetData and zo_strformat("<<1>>", itemSetData:GetFormattedName())) or "Новый сет"
-    local done = (itemSetData and itemSetData:GetNumUnlockedPieces()) or 0
-    local total = (itemSetData and itemSetData:GetNumPieces()) or 0
+    local hasSet, setName = GetItemLinkSetInfo(itemLink)
+    local icon = GetItemLinkIcon(itemLink) or "/esoui/art/icons/icon_missing.dds"
+    local pieceName = zo_strformat("<<1>>", GetItemLinkName(itemLink))
 
-    local icon = (pieceData and pieceData.GetIcon and pieceData:GetIcon()) or "/esoui/art/icons/icon_missing.dds"
-    local pieceName = (pieceData and pieceData.GetFormattedName and zo_strformat("<<1>>", pieceData:GetFormattedName())) or "Новый предмет"
+    local done, total = 0, 0
+    if setId and setId > 0 and ITEM_SET_COLLECTIONS_DATA_MANAGER then
+        local itemSetData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(setId)
+        if itemSetData then
+            done = itemSetData:GetNumUnlockedPieces()
+            total = itemSetData:GetNumPieces()
+            -- Если вещь еще не успела зарегистрироваться в базе, визуально прибавляем 1
+            done = math.min(done + 1, total)
+        end
+    end
 
     table.insert(self.ToastQueue, {
         icon = icon,
         name = pieceName,
-        setName = setName,
+        setName = zo_strformat("<<1>>", setName or "Новый сет"),
         done = done,
         total = total,
     })
@@ -1360,69 +1569,48 @@ function ZS:ShowToastNotification(pieceData, itemSetData)
     self:ProcessToastQueue()
 end
 
--- Умный обработчик события привязки (ловит ВСЕ открытые кусочки в очередь)
+-- Просто обновляем окно аддона, если оно открыто в момент привязки
 local function OnItemSetCollectionUpdated(eventCode, itemSetId)
-    if not itemSetId or itemSetId <= 0 or not ITEM_SET_COLLECTIONS_DATA_MANAGER then return end
-
-    local itemSetData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(itemSetId)
-    if not itemSetData or not itemSetData.PieceIterator then return end
-
-    local zoneId = (ZS.GetCurrentZoneInfo and ZS:GetCurrentZoneInfo()) or 0
-    local anyUpdated = false
-
-    -- Проверяем абсолютно все кусочки сета (без преждевременного выхода)
-    for _, pieceData in itemSetData:PieceIterator() do
-        if pieceData and type(pieceData) == "table" and pieceData.GetId and pieceData.IsUnlocked then
-            local pId = pieceData:GetId()
-            local isUnlocked = pieceData:IsUnlocked()
-
-            -- Если кусочек открылся и мы его ещё не регистрировали
-            if isUnlocked and not ZS.KnownPieces[pId] then
-                ZS.KnownPieces[pId] = true
-                anyUpdated = true
-
-                -- Отправляем в очередь тостов
-                ZS:ShowToastNotification(pieceData, itemSetData)
-
-                -- Подчищаем эту вещь из списка нужного лута группы
-                if zoneId > 0 and ZS.SavedVars and ZS.SavedVars.ZoneGroupLoot and ZS.SavedVars.ZoneGroupLoot[zoneId] then
-                    local gList = ZS.SavedVars.ZoneGroupLoot[zoneId]
-                    for i = #gList, 1, -1 do
-                        if gList[i].pieceId == pId then
-                            table.remove(gList, i)
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    -- Если хотя бы одна вещь изучена и окно аддона открыто — освежаем список
-    if anyUpdated and not ZSWindow:IsHidden() then
+    if not ZSWindow:IsHidden() then
         ZS:ShowWindow()
     end
 end
 
+
 -- ================= СЛЕЖКА ЗА ЛУТОМ ГРУППЫ И АВТОПРИВЯЗКА =================
 
--- Ловец сетовых предметов в нашем рюкзаке
+-- Ловец сетовых предметов в нашем рюкзаке (только Стикербук, без крафта)
 local function OnInventorySingleSlotUpdate(eventCode, bagId, slotIndex, isNewItem, itemSoundCategory, inventoryUpdateReason, stackCountChange)
     if bagId ~= BAG_BACKPACK or not isNewItem then return end
 
     local itemLink = GetItemLink(bagId, slotIndex)
     if not itemLink or itemLink == "" then return end
 
-    -- Проверяем, есть ли у предмета сет
-    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
-    if not hasSet or not setId or setId <= 0 then return end
+    -- 1. ЖЕЛЕЗНЫЙ ЩИТ: проверяем, входит ли вещь в Стикербук (отсекает весь крафт!)
+    if not IsItemLinkSetCollectionPiece(itemLink) then return end
 
     local pieceId = GetItemLinkItemId(itemLink)
     if not pieceId or pieceId <= 0 then return end
 
-    -- === АВТОПРИВЯЗКА В СТИКЕРБУК ===
-    if ZS.SavedVars and ZS.SavedVars.autoBind then
-        if not IsItemSetCollectionPieceUnlocked(pieceId) and not IsItemBound(bagId, slotIndex) then
+    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
+    if not hasSet or not setId or setId <= 0 then return end
+
+    -- 2. Проверяем статус в Стикербуке
+    local isUnlocked = IsItemSetCollectionPieceUnlocked(pieceId)
+    if not isUnlocked then
+        local didBind = false
+
+        -- Если включена автопривязка и вещь не привязана
+        if ZS.SavedVars and ZS.SavedVars.autoBind and not IsItemBound(bagId, slotIndex) then
             BindItem(bagId, slotIndex)
+            didBind = true
+        elseif IsItemBound(bagId, slotIndex) then
+            didBind = true
+        end
+
+        -- Показываем тост ТОЛЬКО если вещь реально привязана в коллекцию!
+        if didBind then
+            ZS:ShowToastNotificationForItem(itemLink, setId)
         end
     end
 
@@ -1447,11 +1635,22 @@ local function OnLootReceived(eventCode, receivedBy, itemName, quantity, itemSou
         return
     end
 
-    local hasSet, setName = GetItemLinkSetInfo(itemName)
+    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemName)
     if not hasSet or not setName or setName == "" then return end
 
     local pieceId = GetItemLinkItemId(itemName)
     if not pieceId or pieceId <= 0 then return end
+    
+    -- === АВТО-ОЧИСТКА ПРОСЬБ: если сопартиец сам выбил то, что просил ===
+    if ZS.PlayerRequests and ZS.PlayerRequests[receiver] then
+        local pReq = ZS.PlayerRequests[receiver]
+        if pReq.pieces and pReq.pieces[pieceId] then
+            pReq.pieces[pieceId] = nil
+        end
+        if not pReq.pieces or next(pReq.pieces) == nil then
+            ZS.PlayerRequests[receiver] = nil
+        end
+    end
 
     -- Если у нас уже есть эта вещь — игнорируем
     local isUnlocked = IsItemSetCollectionPieceUnlocked(pieceId)
@@ -1491,10 +1690,14 @@ end
 -- ================= ОТСЛЕЖИВАНИЕ ЧАТА ДЛЯ ТРЕЙДА И КОНВЕЙЕРА =================
 
 local function OnChatMessage(eventCode, channelType, fromName, text, isCustomerService, fromDisplayName)
-    -- Конвейер сообщений (если отправили мы сами)
-    if fromDisplayName == GetDisplayName() or channelType == CHAT_CHANNEL_WHISPER_SENT then
-        if ZS.ChatQueue and ZS.ChatQueue.chunks then
-            if ZS.ChatQueue.currentIdx < #ZS.ChatQueue.chunks then
+    -- 1. Конвейер наших собственных сообщений
+    local isMyMessage = (fromDisplayName == GetDisplayName())
+        or (fromName and fromName ~= "" and zo_strformat("<<1>>", fromName) == zo_strformat("<<1>>", GetUnitName("player")))
+        or (channelType == CHAT_CHANNEL_WHISPER_SENT)
+
+    if isMyMessage then
+        if ZS.ChatQueue and ZS.ChatQueue.messages then
+            if ZS.ChatQueue.currentIdx < #ZS.ChatQueue.messages then
                 ZS.ChatQueue.currentIdx = ZS.ChatQueue.currentIdx + 1
                 zo_callLater(function()
                     ZS:LoadNextChatChunk()
@@ -1506,16 +1709,29 @@ local function OnChatMessage(eventCode, channelType, fromName, text, isCustomerS
         return
     end
 
-    -- Если пишет кто-то другой — ловим ВСЕ ссылки на сеты без исключений
+    -- 2. Слушаем ТОЛЬКО группу и личный шепот
+    if channelType ~= CHAT_CHANNEL_PARTY and channelType ~= CHAT_CHANNEL_WHISPER then
+        return
+    end
+
     if not text or text == "" then return end
 
+    local sender = zo_strformat("<<1>>", fromDisplayName or fromName or "")
+    if sender == "" or sender == GetDisplayName() then return end
+
+    local now = GetTimeStamp()
+
+    -- Ловим прямые ссылки на сетовые предметы (|H...|h)
     for itemLink in string.gmatch(text, "|H.-|h.-|h") do
         local hasSet = GetItemLinkSetInfo(itemLink)
         local pieceId = GetItemLinkItemId(itemLink)
 
         if hasSet and pieceId and pieceId > 0 then
-            ZS.RecentRequestedPieces = ZS.RecentRequestedPieces or {}
-            ZS.RecentRequestedPieces[pieceId] = GetTimeStamp()
+            ZS.PlayerRequests = ZS.PlayerRequests or {}
+            ZS.PlayerRequests[sender] = ZS.PlayerRequests[sender] or { pieces = {}, timestamp = now }
+            ZS.PlayerRequests[sender].pieces = ZS.PlayerRequests[sender].pieces or {}
+            ZS.PlayerRequests[sender].pieces[pieceId] = now
+            ZS.PlayerRequests[sender].timestamp = now
         end
     end
 end
@@ -1539,12 +1755,18 @@ local function GetTradePartnerName()
     return ""
 end
 
--- Поиск запрошенных вещей в сумке (напрямую по списку линков из чата)
+-- Поиск запрошенных вещей в сумке с памятью на 2 часа (7200 сек)
 local function FindRequestedItemsInBag(partnerName)
     local results = {}
-    if not ZS.RecentRequestedPieces then return results end
+    if not ZS.PlayerRequests then return results end
 
     local now = GetTimeStamp()
+    local maxAge = 7200 -- 2 часа (время жизни таймера передачи лута в ESO)
+    local cleanPartner = zo_strformat("<<1>>", partnerName or "")
+
+    -- Ищем запросы конкретно для нашего партнера по трейду
+    local targetPieces = (cleanPartner ~= "" and ZS.PlayerRequests[cleanPartner]) and ZS.PlayerRequests[cleanPartner].pieces or nil
+
     local bagSize = GetBagSize(BAG_BACKPACK)
 
     for slotIndex = 0, bagSize - 1 do
@@ -1556,8 +1778,22 @@ local function FindRequestedItemsInBag(partnerName)
                 local pieceId = GetItemLinkItemId(itemLink)
 
                 if hasSet and pieceId and pieceId > 0 then
-                    -- Если эту вещь линковали в чате за последние 15 минут:
-                    if ZS.RecentRequestedPieces[pieceId] and (now - ZS.RecentRequestedPieces[pieceId]) <= 900 then
+                    local isRequested = false
+
+                    -- 1. Сначала проверяем точный запрос от нашего партнера по трейду
+                    if targetPieces and targetPieces[pieceId] and (now - targetPieces[pieceId]) <= maxAge then
+                        isRequested = true
+                    else
+                        -- 2. Запасной вариант: проверяем общие запросы группы
+                        for _, reqData in pairs(ZS.PlayerRequests) do
+                            if reqData.pieces and reqData.pieces[pieceId] and (now - reqData.pieces[pieceId]) <= maxAge then
+                                isRequested = true
+                                break
+                            end
+                        end
+                    end
+
+                    if isRequested then
                         table.insert(results, slotIndex)
                         if #results == 5 then break end
                     end
@@ -1702,8 +1938,8 @@ end
 
 local function OnTradeSucceeded()
     local partner = GetTradePartnerName()
-    if partner and ZS.TradeRequests[partner] then
-        ZS.TradeRequests[partner] = nil
+    if partner and ZS.PlayerRequests and ZS.PlayerRequests[partner] then
+        ZS.PlayerRequests[partner] = nil -- Обмен прошел, закрываем запрос для этого игрока
     end
     if tradeHelper then
         tradeHelper:SetHidden(true)
@@ -1827,30 +2063,106 @@ local function RegisterSlashCommands()
                 end
             end
 
-        -- Тестовая имитация запроса вещи из рюкзака
-        elseif cmd == "fake" or cmd == "req" then
-            local bagSize = GetBagSize(BAG_BACKPACK)
-            local found = false
-            for slotIndex = 0, bagSize - 1 do
-                local itemLink = GetItemLink(BAG_BACKPACK, slotIndex)
-                if itemLink and itemLink ~= "" then
-                    local isTradable = (not IsItemBound(BAG_BACKPACK, slotIndex)) or (IsItemBoPAndTradeable and IsItemBoPAndTradeable(BAG_BACKPACK, slotIndex))
-                    if isTradable then
-                        local hasSet = GetItemLinkSetInfo(itemLink)
-                        local pieceId = GetItemLinkItemId(itemLink)
-                        if hasSet and pieceId and pieceId > 0 then
-                            ZS.RecentRequestedPieces = ZS.RecentRequestedPieces or {}
-                            ZS.RecentRequestedPieces[pieceId] = GetTimeStamp()
-                            d("|c39DB92[ZoneSets Test]|r Сымитирован запрос на: " .. itemLink)
-                            found = true
-                            break
+        -- Тестовая имитация раздачи НАСТОЯЩИХ сетов текущей зоны на английском
+        elseif cmd == "testshare" or cmd == "sharetest" then
+            local zoneId, zoneName = ZS:GetCurrentZoneInfo()
+            local zoneSets = ZS:GetZoneSets(zoneId, zoneName)
+
+            if not zoneSets or #zoneSets == 0 then
+                d("|cFF5555[ZoneSets Test]|r В этой зоне не найдено сетов. Зайдите в данж или зону с сетами!")
+                return
+            end
+
+            -- Слоты на английском для максимальной компактности
+            local slotNamesEN = {
+                [EQUIP_TYPE_HEAD] = "Helm", [EQUIP_TYPE_CHEST] = "Chest", [EQUIP_TYPE_LEGS] = "Legs",
+                [EQUIP_TYPE_SHOULDERS] = "Shoulders", [EQUIP_TYPE_FEET] = "Boots", [EQUIP_TYPE_HAND] = "Gloves",
+                [EQUIP_TYPE_WAIST] = "Belt", [EQUIP_TYPE_RING] = "Ring", [EQUIP_TYPE_NECK] = "Necklace",
+            }
+            local weaponNamesEN = {
+                [WEAPONTYPE_DAGGER] = "Dagger", [WEAPONTYPE_SWORD] = "1H Sword", [WEAPONTYPE_TWO_HANDED_SWORD] = "2H Sword",
+                [WEAPONTYPE_AXE] = "1H Axe", [WEAPONTYPE_TWO_HANDED_AXE] = "2H Axe", [WEAPONTYPE_HAMMER] = "1H Mace",
+                [WEAPONTYPE_TWO_HANDED_HAMMER] = "2H Mace", [WEAPONTYPE_BOW] = "Bow", [WEAPONTYPE_FIRE_STAFF] = "Inferno Staff",
+                [WEAPONTYPE_FROST_STAFF] = "Ice Staff", [WEAPONTYPE_LIGHTNING_STAFF] = "Lightning Staff",
+                [WEAPONTYPE_HEALING_STAFF] = "Resto Staff", [WEAPONTYPE_SHIELD] = "Shield",
+            }
+
+            local realLinks = {}
+            local countSimulator = { 2, 1, 3, 1, 2, 1, 1, 2, 1, 2, 1, 1 }
+            local itemIndex = 1
+
+            for _, setInfo in ipairs(zoneSets) do
+                local rawSetName = setInfo.rawName or GetItemSetName(setInfo.id) or ""
+                -- Достаем чистое английское название из скобок (Viper's Sting), если RuESO показывает оба языка
+                local enSetName = string.match(rawSetName, "%((.-)%)") 
+                    or (RuESO and RuESO.Settings and RuESO.Settings.Data and RuESO.Settings.Data.Sets and RuESO.Settings.Data.Sets[setInfo.id])
+                    or rawSetName
+
+                if setInfo.itemSetData and setInfo.itemSetData.PieceIterator then
+                    local pieceCount = 0
+                    for _, pieceData in setInfo.itemSetData:PieceIterator() do
+                        if pieceData and pieceCount < 3 then -- берем по 2-3 вещи из каждого сета зоны
+                            local pieceId = pieceData:GetId()
+                            local realLink = GetItemSetCollectionPieceItemLink(pieceId, LINK_STYLE_BRACKETS)
+
+                            if realLink and realLink ~= "" then
+                                local equipType = GetItemLinkEquipType(realLink)
+                                local weaponType = GetItemLinkWeaponType(realLink)
+                                local enSlot = weaponNamesEN[weaponType] or slotNamesEN[equipType] or "Piece"
+
+                                -- Делаем красивую компактную английскую ссылку
+                                local compactName = string.format("%s - %s", enSetName, enSlot)
+                                local formattedLink = string.gsub(realLink, "|h.-|h", string.format("|h[%s]|h", compactName))
+
+                                local simulatedCount = countSimulator[itemIndex] or 1
+                                if simulatedCount > 1 then
+                                    table.insert(realLinks, string.format("%s×%d", formattedLink, simulatedCount))
+                                else
+                                    table.insert(realLinks, formattedLink)
+                                end
+
+                                pieceCount = pieceCount + 1
+                                itemIndex = itemIndex + 1
+                            end
                         end
                     end
                 end
             end
-            if not found then
-                d("|c39DB92[ZoneSets Test]|r В рюкзаке не найдено подходящих сетовых вещей для теста.")
+
+            local messages = ZS.BuildChatMessages("offer", nil, realLinks)
+            ZS.ChatQueue = {
+                mode = "offer",
+                messages = messages,
+                currentIdx = 1,
+            }
+            ZS:LoadNextChatChunk()
+            d(string.format("|c00FF00[ZoneSets Test]|r Сгенерировано %d НАСТОЯЩИХ сетовых предметов на английском (всего %d строк в чате). Нажмите Enter!", #realLinks, #messages))
+        -- Тестовая имитация запроса вещи по ссылке
+        elseif cmd == "fake" or cmd == "req" or cmd == "testreq" then
+            local rawQuery = string.match(extra, "^%S+%s+(.*)$") or ""
+            local itemLink = string.match(rawQuery, "|H.-|h.-|h")
+            if not itemLink then
+                d("|c39DB92[ZoneSets Test]|r Использование: /zs testreq <ссылка на предмет>")
+                d("Пример: /zs testreq [Посох огня Материнской скорби]")
+                return
             end
+
+            local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
+            local pieceId = GetItemLinkItemId(itemLink)
+            if not hasSet or not pieceId or pieceId <= 0 then
+                d("|cFF5555[ZoneSets Test]|r Указанный предмет не является сетовым!")
+                return
+            end
+
+            local now = GetTimeStamp()
+            ZS.PlayerRequests = ZS.PlayerRequests or {}
+            ZS.PlayerRequests["TestPlayer"] = {
+                pieces = { [pieceId] = now },
+                timestamp = now,
+            }
+
+            d(string.format("|c00FF00[ZoneSets Test]|r Запрос записан для TestPlayer: %s (ID: %d)", itemLink, pieceId))
+            d("|c00FF00[ZoneSets Test]|r Откройте окно трейда или вкладку Истории для проверки!")
 
         else
             ZoneSets_ToggleWindow()
@@ -1876,17 +2188,7 @@ local function OnAddOnLoaded(event, addonName)
     ZS:UpdateTabVisuals()
     ZS:UpdateAutoBindVisuals()
     
-    -- Запоминаем открытые вещи при старте
-    for itemSetId in ITEM_SET_COLLECTIONS_DATA_MANAGER:ItemSetCollectionIterator() do
-        local setData = ITEM_SET_COLLECTIONS_DATA_MANAGER:GetItemSetCollectionData(itemSetId)
-        if setData and setData.PieceIterator then
-            for _, p in setData:PieceIterator() do
-                if p and p.IsUnlocked and p:IsUnlocked() then
-                    ZS.KnownPieces[p:GetId()] = true
-                end
-            end
-        end
-    end
+    
     
     -- Подключаем сцену торговли
     local tradeScene = SCENE_MANAGER:GetScene("trade")

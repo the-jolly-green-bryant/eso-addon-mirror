@@ -4,11 +4,11 @@ local Addon = GildedUI
 
 Addon:RegisterMenuSection(function(menu, H)
     menu:AddOptions({
-        { type = "header", name = "System", align = "left" },
+        { type = "header", name = "System", align = "leftIndent" },
         {
             type = "submenu",
             name = "Mount",
-            centerSubmenu = false,
+            align = "leftIndent",
             icon = "/esoui/art/collections/default/collections_default_mount.dds",
             options = {
                 Addon:BuildStayMountedMenu(H),

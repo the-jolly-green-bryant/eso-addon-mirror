@@ -149,6 +149,7 @@ function GamepadOptions.BuildCombatOptionsData()
         GamepadOptions.BuildTrialTimerEntry(),
         GamepadOptions.BuildCombatInfiniteArchiveEntry(),
         GamepadOptions.BuildCombatMiscellaneousEntry(),
+        GamepadOptions.BuildCombatReticleEntry(),
         GamepadOptions.BuildUltimateCountdownEntry(),
     }
 end
@@ -334,7 +335,6 @@ end
 function GamepadOptions.BuildUIOptionsData()
     return {
         GamepadOptions.BuildCameraEntry(),
-        GamepadOptions.BuildCombatReticleEntry(),
         GamepadOptions.BuildDefaultFramesEntry(),
         GamepadOptions.BuildDisableAlertTextsOption(),
         GamepadOptions.BuildFrameStylingEntry(),
@@ -369,10 +369,37 @@ end
 function GamepadOptions.BuildCombatReticleOptionsData()
     return {
         GamepadOptions.BuildCombatReticleColorOption(),
+        GamepadOptions.BuildCombatReticleFightColorOption(),
         GamepadOptions.BuildCombatReticleShapeOption(),
         GamepadOptions.BuildCombatReticleScaleOption(),
         GamepadOptions.BuildAnimatedCombatReticleOption(),
+        GamepadOptions.BuildReticleInfoEntry(),
     }
+end
+
+function GamepadOptions.BuildReticleInfoOptionsData()
+    return {
+        GamepadOptions.BuildReticleInfoTopLeftEntry(),
+        GamepadOptions.BuildReticleInfoTopRightEntry(),
+        GamepadOptions.BuildReticleInfoBottomLeftEntry(),
+        GamepadOptions.BuildReticleInfoBottomRightEntry(),
+    }
+end
+
+function GamepadOptions.BuildReticleInfoTopLeftOptionsData()
+    return GamepadOptions.BuildReticleInfoTopLeftPositionOptions()
+end
+
+function GamepadOptions.BuildReticleInfoTopRightOptionsData()
+    return GamepadOptions.BuildReticleInfoTopRightPositionOptions()
+end
+
+function GamepadOptions.BuildReticleInfoBottomLeftOptionsData()
+    return GamepadOptions.BuildReticleInfoBottomLeftPositionOptions()
+end
+
+function GamepadOptions.BuildReticleInfoBottomRightOptionsData()
+    return GamepadOptions.BuildReticleInfoBottomRightPositionOptions()
 end
 
 function GamepadOptions.BuildLootLogOptionsData()

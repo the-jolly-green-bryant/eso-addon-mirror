@@ -1,7 +1,7 @@
 ## Title: Gather Buddy
 ## Description: Tracks gathered materials during your current farming session.
 ## Author: @everdeen
-## Version: 1.1
+## Version: 1.2
 ## APIVersion: 101050 101051
 ## SavedVariables: GatherBuddySavedVariables
 ## DependsOn: LibAddonMenu-2.0
@@ -9,5 +9,6 @@
 GatherBuddy.lua
 GatherBuddy_Stats.lua
 GatherBuddy_UI.lua
+GatherBuddy_History.lua
 GatherBuddy_Tracking.lua
 GatherBuddy_Settings.lua

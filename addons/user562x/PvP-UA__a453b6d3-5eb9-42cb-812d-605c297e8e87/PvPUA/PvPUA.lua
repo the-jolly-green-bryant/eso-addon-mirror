@@ -48,6 +48,7 @@ PvPUA.config.height = PvPUA.config.entryHeight * 10
 PvPUA.config.backdropAlphaOdd = 0.25
 PvPUA.config.backdropAlphaEven = 0.15
 PvPUA.config.flagBackdropColor = { r = 0.1, g = 0.1, b = 0.1 }
+PvPUA.config.iconOutline = false
 
 --------------------------------------------------
 -- Constants
@@ -114,9 +115,16 @@ PvPUA.creditCycle = 0
 
 PvPUA.session = { killingBlows = 0, deaths = 0 }
 
+--------------------------------------------------
+-- Alliance Hex
+--------------------------------------------------
+local DC_HEX = GetAllianceColor(ALLIANCE_DAGGERFALL_COVENANT):ToHex()
+local AD_HEX = GetAllianceColor(ALLIANCE_ALDMERI_DOMINION):ToHex()
+local EP_HEX = GetAllianceColor(ALLIANCE_EBONHEART_PACT):ToHex()
+
 local CREDIT_STATES = {}
 local ALLIANCE_STR  = "Alliance!"
-local CYCLE_COLORS  = { "2A6FFF", "E6C800", "CC2222" }
+local CYCLE_COLORS  = { DC_HEX, AD_HEX, EP_HEX }
 local totalSteps    = #ALLIANCE_STR * #CYCLE_COLORS
 for step = 0, totalSteps - 1 do
     local colorIndex  = math.floor(step / #ALLIANCE_STR) + 1
@@ -131,7 +139,7 @@ for step = 0, totalSteps - 1 do
             animated = animated .. "|c" .. prevColor .. ch .. "|r"
         end
     end
-    CREDIT_STATES[step] = "|c2A6FFFDC|r, |c00FF00the BEST|r " .. animated .. " - |c00FF00user562|r"
+    CREDIT_STATES[step] = "|c" .. DC_HEX .. "DC|r, |c00FF00the BEST|r " .. animated .. " - |c00FF00user562|r"
 end
 
 --------------------------------------------------
@@ -380,15 +388,8 @@ end
 --------------------------------------------------
 -- Alliance Colors
 --------------------------------------------------
-local allianceColors = {
-    [ALLIANCE_ALDMERI_DOMINION]    = { r = 0.9, g = 0.78, b = 0 },
-    [ALLIANCE_DAGGERFALL_COVENANT] = { r = 0.16, g = 0.44, b = 1 },
-    [ALLIANCE_EBONHEART_PACT]      = { r = 0.8, g = 0.13, b = 0.13 },
-}
-local noAllianceColor = { r = 1, g = 1, b = 1 }
-
 local function GetColorForAlliance(alliance)
-    return allianceColors[alliance] or noAllianceColor
+    return GetAllianceColor(alliance)
 end
 
 local function ToHex(r, g, b)
@@ -417,7 +418,7 @@ local function RainbowText(text)
 end
 
 local function GetGuildAllianceColor(guildId)
-    if not guildId or guildId <= 0 then return noAllianceColor end
+    if not guildId or guildId <= 0 then return GetAllianceColor(ALLIANCE_NONE) end
     local alliance = GetGuildAlliance(guildId)
     return GetColorForAlliance(alliance)
 end
@@ -1722,6 +1723,7 @@ local function CreateEntryControl(parent)
     control.imageOutline:SetDimensions(PvPUA.config.imageWidth + 4 + 4, PvPUA.config.entryHeight + 4 + 4)
     control.imageOutline:SetColor(0, 0, 0, 1)
     control.imageOutline:SetDrawLayer(1)
+    control.imageOutline:SetHidden(not PvPUA.config.iconOutline)
 
     control.image = wm:CreateControl(nil, control, CT_TEXTURE)
     control.image:SetAnchor(TOPLEFT, control, TOPLEFT, -2, -2)
@@ -1867,7 +1869,7 @@ function PvPUA:CreateUI()
     self.controls.infoBg:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT, 0, 20)
     self.controls.infoBg:SetDimensions(self.config.width, self.config.entryHeight)
     self.controls.infoBg.baseX, self.controls.infoBg.baseY = 0, 20
-    self.controls.infoBg:SetCenterColor(0, 0, 0, 0.5)
+    self.controls.infoBg:SetCenterColor(0, 0, 0, self.config.backdropAlphaOdd)
     self.controls.infoBg:SetEdgeColor(0, 0, 0, 0)
     self.controls.infoBg:SetDrawLayer(0)
     self.controls.infoBg:SetHidden(true)
@@ -1965,7 +1967,7 @@ function PvPUA:CreateUI()
     self.controls.scoreRowBg = wm:CreateControl(nil, self.controls.scoreRow, CT_BACKDROP)
     self.controls.scoreRowBg:SetAnchor(TOPLEFT, self.controls.scoreRow, TOPLEFT, 0, 0)
     self.controls.scoreRowBg:SetDimensions(self.config.width, self.config.entryHeight)
-    self.controls.scoreRowBg:SetCenterColor(0, 0, 0, 0.5)
+    self.controls.scoreRowBg:SetCenterColor(0, 0, 0, self.config.backdropAlphaEven)
     self.controls.scoreRowBg:SetEdgeColor(0, 0, 0, 0)
     self.controls.scoreRowBg:SetDrawLayer(0)
 
@@ -1992,16 +1994,17 @@ function PvPUA:CreateUI()
 
     self.controls.empSlices = {}
     local sliceW = empW / 2
-    local sliceH = empH / 3
+    local empBands = { { 0, 0.4082 }, { 0.4082, 0.5918 }, { 0.5918, 1 } }
     for slot = 1, #PvPUA.constants.emperorKeeps do
         local def = PvPUA.constants.emperorKeeps[slot]
+        local band = empBands[def.row + 1]
         local slice = wm:CreateControl(nil, self.controls.infoEmpIcon, CT_TEXTURE)
         slice:SetTexture("esoui/art/campaign/gamepad/gp_overview_menuicon_emperor.dds")
-        slice:SetDimensions(sliceW, sliceH)
+        slice:SetDimensions(sliceW, empH * (band[2] - band[1]))
         slice:SetAnchor(TOPLEFT, self.controls.infoEmpIcon, TOPLEFT,
-            def.col * sliceW, def.row * sliceH)
+            def.col * sliceW, empH * band[1])
         slice:SetTextureCoords(def.col * 0.5, def.col * 0.5 + 0.5,
-            def.row / 3, def.row / 3 + 1 / 3)
+            band[1], band[2])
         slice:SetColor(0.35, 0.35, 0.35, 1)
         slice:SetDrawLayer(2)
         self.controls.empSlices[slot] = slice
@@ -2380,16 +2383,16 @@ function PvPUA:RefreshBackdropColors()
     local bb = bc and bc.b or 0
     if self.controls.scoreRowBg then
         if useAlliance then
-            self.controls.scoreRowBg:SetCenterColor(0, 0, 0, 0.5)
+            self.controls.scoreRowBg:SetCenterColor(0, 0, 0, self.config.backdropAlphaEven)
         else
-            self.controls.scoreRowBg:SetCenterColor(br, bg_c, bb, 0.5)
+            self.controls.scoreRowBg:SetCenterColor(br, bg_c, bb, self.config.backdropAlphaEven)
         end
     end
     if self.controls.infoBg then
         if useAlliance then
-            self.controls.infoBg:SetCenterColor(0, 0, 0, 0.5)
+            self.controls.infoBg:SetCenterColor(0, 0, 0, self.config.backdropAlphaOdd)
         else
-            self.controls.infoBg:SetCenterColor(br, bg_c, bb, 0.5)
+            self.controls.infoBg:SetCenterColor(br, bg_c, bb, self.config.backdropAlphaOdd)
         end
     end
     if self.state and self.state.visibleControls then
@@ -2503,7 +2506,7 @@ function PvPUA:UpdateEntries(itemsOfInterest)
                 control.imageOutline:SetDimensions(self.config.imageWidth + offset * 2 + OL * 2,
                                                    self.config.entryHeight + offset * 2 + OL * 2)
                 control.imageOutline:SetColor(0, 0, 0, 1)
-                control.imageOutline:SetHidden(texture == nil or texture == "")
+                control.imageOutline:SetHidden(not self.config.iconOutline or texture == nil or texture == "")
             end
         end
 
@@ -2966,8 +2969,8 @@ function PvPUA:RefreshKDText()
     local c = self.controls
     if not c or not c.infoKD then return end
     local gap = self.config.kdGap or " "
-    c.infoKD:SetText("|cFF8C00K:|r " .. self.session.killingBlows
-                     .. gap .. "|cCC2222D:|r " .. self.session.deaths)
+    c.infoKD:SetText("|c00FF00K:|r " .. self.session.killingBlows
+                     .. gap .. "|cFF0000D:|r " .. self.session.deaths)
 end
 
 --------------------------------------------------
@@ -3200,11 +3203,11 @@ end
 PvPUA.aiListening = false
 
 local function AIEcho(msg)
-    CHAT_ROUTER:AddSystemMessage("|cFFFFFF[|r|c2A6FFFP|r|cE6C800v|r|cCC2222P|r|cFF8800 UA!|r|cFFFFFF]|r |cE6C800" .. msg)
+    CHAT_ROUTER:AddSystemMessage("|cFFFFFF[|r|c" .. DC_HEX .. "P|r|c" .. AD_HEX .. "v|r|c" .. EP_HEX .. "P|r|cFF8800 UA!|r|cFFFFFF]|r |c" .. AD_HEX .. "" .. msg)
 end
 
 local function AIEchoRed(msg)
-    CHAT_ROUTER:AddSystemMessage("|cFFFFFF[|r|c2A6FFFP|r|cE6C800v|r|cCC2222P|r|cFF8800 UA!|r|cFFFFFF]|r |cCC2222" .. msg)
+    CHAT_ROUTER:AddSystemMessage("|cFFFFFF[|r|c" .. DC_HEX .. "P|r|c" .. AD_HEX .. "v|r|c" .. EP_HEX .. "P|r|cFF8800 UA!|r|cFFFFFF]|r |c" .. EP_HEX .. "" .. msg)
 end
 
 local function AIGuildChannelToIndex(messageType)
@@ -3401,7 +3404,7 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
     if not matched then return end
 
     if GetGroupSize() >= 12 then
-        AIEcho("Group is full. |cCC2222Pausing|r auto invite.")
+        AIEcho("Group is full. |c" .. EP_HEX .. "Pausing|r auto invite.")
         PvPUA:AIStop(true)
         return
     end
@@ -3499,11 +3502,9 @@ local function RSSetupDeathButtons()
     RSStyleButton(btnCamp)
     RSStyleButton(btnKeep)
 
-    local aColor = GetUnitAlliance("player") == ALLIANCE_DAGGERFALL_COVENANT and "2A6FFF"
-                or GetUnitAlliance("player") == ALLIANCE_ALDMERI_DOMINION    and "E6C800"
-                or GetUnitAlliance("player") == ALLIANCE_EBONHEART_PACT      and "CC2222" or "FFFFFF"
+    local aColor = GetAllianceColor(GetUnitAlliance("player")):ToHex()
 
-    local suffix = " |cFFFFFF[|r|c2A6FFFP|r|cE6C800v|r|cCC2222P|r|cFF8800 UA!|r|cFFFFFF]|r"
+    local suffix = " |cFFFFFF[|r|c" .. DC_HEX .. "P|r|c" .. AD_HEX .. "v|r|c" .. EP_HEX .. "P|r|cFF8800 UA!|r|cFFFFFF]|r"
 
     local campIndex = RSFindNearestCamp()
     if campIndex then
@@ -3597,7 +3598,7 @@ local function AIOnLeaderUpdate()
 
     if not AICanInvite() then
         if PvPUA.aiListening then
-            AIEcho("Not group leader. |cCC2222Pausing|r auto invite.")
+            AIEcho("Not group leader. |c" .. EP_HEX .. "Pausing|r auto invite.")
             PvPUA:AIStop(true)
         end
         return
@@ -3630,12 +3631,12 @@ end
 local function AICheckGroupFull()
     if not PvPUA.aiListening then return end
     if GetGroupSize() >= 12 then
-        AIEcho("Group is full. |cCC2222Pausing|r auto invite.")
+        AIEcho("Group is full. |c" .. EP_HEX .. "Pausing|r auto invite.")
         PvPUA:AIStop(true)
         return
     end
     if not AICanInvite() then
-        AIEcho("Not group leader. |cCC2222Pausing|r auto invite.")
+        AIEcho("Not group leader. |c" .. EP_HEX .. "Pausing|r auto invite.")
         PvPUA:AIStop(true)
     end
 end
@@ -3669,7 +3670,7 @@ local function AIKickByName(name)
             local mins = PvPUA.charVariables.aiKickMinutes or 5
             local shown = GetUnitDisplayName(tag)
             if not shown or shown == "" then shown = name end
-            AIEcho("|cCC2222Kicked|r |c00FF00" .. shown .. "|r - offline " .. mins .. " min.")
+            AIEcho("|c" .. EP_HEX .. "Kicked|r |c00FF00" .. shown .. "|r - offline " .. mins .. " min.")
             GroupKick(tag)
             return
         end
@@ -3692,7 +3693,7 @@ local function AIOnConnectedStatus(_, unitTag, isOnline)
             local mins = PvPUA.charVariables.aiKickMinutes or 5
             local shown = GetUnitDisplayName(unitTag)
             if not shown or shown == "" then shown = n end
-            AIEcho("|c00FF00" .. shown .. "|r went offline. |cCC2222Kicking|r in " .. mins .. " min.")
+            AIEcho("|c00FF00" .. shown .. "|r went offline. |c" .. EP_HEX .. "Kicking|r in " .. mins .. " min.")
         end
     end
 end
@@ -3747,7 +3748,7 @@ function PvPUA:AIStart(internal)
     if not AICanInvite() then
         if not internal then
             PvPUA.charVariables.aiEnabled = true
-            AIEcho("Not group leader. |cCC2222Pausing|r auto invite.")
+            AIEcho("Not group leader. |c" .. EP_HEX .. "Pausing|r auto invite.")
         end
         return
     end
@@ -3773,7 +3774,7 @@ function PvPUA:AIStop(internal)
         PvPUA.charVariables.aiEnabled = false
         EVENT_MANAGER:UnregisterForEvent(PvPUA.name .. "_AIGroup", EVENT_GROUP_MEMBER_LEFT)
         EVENT_MANAGER:UnregisterForEvent(PvPUA.name .. "_AILeader", EVENT_LEADER_UPDATE)
-        AIEchoRed("|cE6C800Auto invite |cCC2222disabled|r.")
+        AIEchoRed("|c" .. AD_HEX .. "Auto invite |c" .. EP_HEX .. "disabled|r.")
     end
 end
 
@@ -3812,7 +3813,7 @@ local EA_DEFS = {
       mode = "effect",
       icon = "EsoUI/Art/Options/Gamepad/gp_options_combat.dds",
       names = { "Negate Magic", "Suppression Field", "Absorption Field" } },
-    { key = "corrosive", label = "|cCC2222Corrosive|r",
+    { key = "corrosive", label = "|c" .. EP_HEX .. "Corrosive|r",
       defaultText = "ENEMY CORROSIVE!",
       defaultColor = { r = 1, g = 0.2, b = 0.2, a = 1 },
       defaultPosY = -160,
@@ -4203,7 +4204,7 @@ function PvPUA:HKBuildSettings(def)
     local key = def.key
     local screenW, screenH = ScreenBounds()
     local halfW, halfH = math.ceil(screenW / 10) * 5, math.ceil(screenH / 10) * 5
-    return { type = "submenu", name = def.label, align = "left", indent = true, icon = def.icon, options = {
+    return { type = "submenu", name = def.label, icon = def.icon, options = {
         { type = "toggle", name = "Preview",
           getFunc = function() return self.effectAlerts[key] and self.effectAlerts[key].preview or false end,
           setFunc = function(v)
@@ -4218,7 +4219,7 @@ function PvPUA:HKBuildSettings(def)
           setFunc = function(v) self:EAVars(key).posY = v; self:EAApplyPosition(key) end },
 
 
-        { type = "toggle", name = "Enabled",
+        { type = "toggle", name = "Enabled", preset = "YES_NO",
           tooltip = "Shows an alert when a home keep comes under attack.",
           default = PvPUA.defaults.alertsEnabled,
           getFunc = function() return self.savedVariables.alertsEnabled end,
@@ -4234,7 +4235,6 @@ function PvPUA:HKBuildSettings(def)
           setFunc = function(v) self.savedVariables.alertLifespan = v end },
 
 
-        { type = "header", name = "Message" },
         { type = "slider", name = "Size", min = 25, max = 90, step = 1,
           getFunc = function() return self:EAVars(key).fontSize end,
           setFunc = function(v) self:EAVars(key).fontSize = v; self:EARefresh(key) end },
@@ -4242,7 +4242,7 @@ function PvPUA:HKBuildSettings(def)
           choices = EA_FONT_CHOICES,
           getFunc = function() return self:EAVars(key).font end,
           setFunc = function(v) self:EAVars(key).font = v; self:EARefresh(key) end },
-        { type = "toggle", name = "Pulsate",
+        { type = "toggle", name = "Pulsate", preset = "YES_NO",
           getFunc = function() return self:EAVars(key).pulsate end,
           setFunc = function(v) self:EAVars(key).pulsate = v; self:EARefresh(key) end },
         { type = "slider", name = "Pulse Speed", min = 1, max = 10, step = 1,
@@ -4256,7 +4256,7 @@ function PvPUA:EABuildSettings(def)
     local key = def.key
     local screenW, screenH = ScreenBounds()
     local halfW, halfH = math.ceil(screenW / 10) * 5, math.ceil(screenH / 10) * 5
-    return { type = "submenu", name = def.label, align = "left", indent = true, icon = def.icon, options = {
+    return { type = "submenu", name = def.label, icon = def.icon, options = {
         { type = "toggle", name = "Preview",
           getFunc = function() return self.effectAlerts[key] and self.effectAlerts[key].preview or false end,
           setFunc = function(v)
@@ -4271,7 +4271,7 @@ function PvPUA:EABuildSettings(def)
           setFunc = function(v) self:EAVars(key).posY = v; self:EAApplyPosition(key) end },
 
 
-        { type = "toggle", name = "Enabled",
+        { type = "toggle", name = "Enabled", preset = "YES_NO",
           getFunc = function() return self:EAVars(key).enabled end,
           setFunc = function(v)
               self:EAVars(key).enabled = v
@@ -4280,7 +4280,6 @@ function PvPUA:EABuildSettings(def)
           end },
 
 
-        { type = "header", name = "Message" },
         { type = "editbox", name = "Text",
           getFunc = function() return self:EAVars(key).messageText end,
           setFunc = function(v)
@@ -4305,7 +4304,7 @@ function PvPUA:EABuildSettings(def)
               self:EAVars(key).textColor = { r = r, g = g, b = b, a = 1 }
               self:EARefresh(key)
           end },
-        { type = "toggle", name = "Pulsate",
+        { type = "toggle", name = "Pulsate", preset = "YES_NO",
           getFunc = function() return self:EAVars(key).pulsate end,
           setFunc = function(v) self:EAVars(key).pulsate = v; self:EARefresh(key) end },
         { type = "slider", name = "Pulse Speed", min = 1, max = 10, step = 1,
@@ -4641,7 +4640,8 @@ function P:GetOptions()
         },
         {
             type    = "toggle",
-            name    = "Enable",
+            name    = "Enabled",
+            preset = "YES_NO",
             default = POTION_DEFAULTS.potionEnabled,
             getFunc = function() return P:SV().potionEnabled end,
             setFunc = function(val)
@@ -4652,6 +4652,7 @@ function P:GetOptions()
         {
             type    = "toggle",
             name    = "Always On",
+            preset = "YES_NO",
             tooltip = "Show the alert whenever you are in combat with a potion ready, ignoring the resource options below.",
             default = POTION_DEFAULTS.potionAlwaysOn,
             getFunc = function() return P:SV().potionAlwaysOn end,
@@ -4662,7 +4663,7 @@ function P:GetOptions()
         },
         {
             type     = "toggle",
-            name     = "|cCC2222Health|r",
+            name     = "|c" .. EP_HEX .. "Health|r",
             tooltip  = "Show the alert when you are in combat with a potion ready and your health has dropped to or below the threshold.",
             default  = POTION_DEFAULTS.potionHealthGate,
             disabled = function() return P:SV().potionAlwaysOn end,
@@ -4688,7 +4689,7 @@ function P:GetOptions()
         },
         {
             type     = "toggle",
-            name     = "|c2A6FFFMagicka|r",
+            name     = "|c" .. DC_HEX .. "Magicka|r",
             tooltip  = "Show the alert when you are in combat with a potion ready and your magicka has dropped to or below the threshold.",
             default  = POTION_DEFAULTS.potionMagickaGate,
             disabled = function() return P:SV().potionAlwaysOn end,
@@ -4738,7 +4739,6 @@ function P:GetOptions()
                 P:RefreshDisplay()
             end,
         },
-        { type = "header", name = "Message" },
         {
             type    = "editbox",
             name    = "Text",
@@ -4773,7 +4773,7 @@ function P:GetOptions()
         },
         {
             type    = "colorpicker",
-            name    = "Color",
+            name    = RainbowText("Color"),
             default = POTION_DEFAULTS.potionColor,
             getFunc = function()
                 local c = P:SV().potionColor
@@ -4790,6 +4790,7 @@ function P:GetOptions()
         {
             type    = "toggle",
             name    = "Pulsate",
+            preset = "YES_NO",
             default = POTION_DEFAULTS.potionPulsate,
             getFunc = function() return P:SV().potionPulsate end,
             setFunc = function(val)
@@ -4874,6 +4875,233 @@ function P:Initialize()
             P:RefreshDisplay()
         end
     )
+end
+
+--------------------------------------------------
+-- PvP Ranks
+--------------------------------------------------
+local R = {}
+PvPUA.Ranks = R
+
+local RANKS_MAX = 50
+local RANKS_ICON_SIZE = 35
+local RANKS_SKILL_ICON_SIZE = 32
+local RANKS_MAX_SKILL_RANK = 10
+
+function R:Data()
+    if self.data then return self.data end
+    local gender = GetUnitGender("player")
+    local data = {}
+    local points = 0
+    for rank = 0, RANKS_MAX do
+        local _, _, startsAt, nextRankAt = GetAvARankProgress(points)
+        local endsAt = startsAt ~= nextRankAt and nextRankAt - 1 or nil
+        points = nextRankAt + 1
+        data[rank] = {
+            name = zo_strformat(SI_STAT_RANK_NAME_FORMAT, GetAvARankName(gender, rank)),
+            icon = zo_iconFormatInheritColor(GetAvARankIcon(rank), RANKS_ICON_SIZE, RANKS_ICON_SIZE),
+            startsAt = startsAt,
+            endsAt = endsAt,
+        }
+    end
+    self.data = data
+    return data
+end
+
+function R:Label(rank)
+    local entry = self:Data()[rank]
+    if not entry then return "" end
+
+    local current = GetUnitAvARank("player")
+    local alliance = GetUnitAlliance("player")
+    if current ~= self.lastRank or alliance ~= self.lastAlliance then
+        self.lastRank = current
+        self.lastAlliance = alliance
+        local data = self:Data()
+        for i = 0, RANKS_MAX do
+            data[i].label = nil
+        end
+    end
+
+    if not entry.label then
+        local text = rank .. ")  " .. entry.icon .. " " .. entry.name
+        if rank == current then
+            text = "|c" .. GetAllianceColor(alliance):ToHex() .. text .. "|r"
+        end
+        entry.label = text
+    end
+
+    return entry.label
+end
+
+function R:LineRankSpread(lineIndex)
+    local lineData = SKILLS_DATA_MANAGER and SKILLS_DATA_MANAGER.GetSkillLineDataByIndices
+                 and SKILLS_DATA_MANAGER:GetSkillLineDataByIndices(SKILL_TYPE_AVA, lineIndex)
+    if not (lineData and lineData.GetNumSkills) then return 0 end
+    local seen, distinct = {}, 0
+    for i = 1, lineData:GetNumSkills() do
+        local skillData = lineData:GetSkillDataByIndex(i)
+        local lineRank = skillData and skillData.GetLineRankNeededToPurchase
+                     and skillData:GetLineRankNeededToPurchase() or 0
+        if lineRank > 0 and not seen[lineRank] then
+            seen[lineRank] = true
+            distinct = distinct + 1
+        end
+    end
+    return distinct
+end
+
+function R:SkillLines()
+    if self.lines then return self.lines end
+    local lines = {}
+    local count = GetNumSkillLines and GetNumSkillLines(SKILL_TYPE_AVA) or 0
+    for lineIndex = 1, count do
+        if GetSkillLineRankXPExtents(SKILL_TYPE_AVA, lineIndex, 2)
+           and self:LineRankSpread(lineIndex) >= 2 then
+            lines[#lines + 1] = lineIndex
+        end
+    end
+    self.lines = lines
+    return lines
+end
+
+function R:Unlocks()
+    if self.unlocks then return self.unlocks end
+
+    local lines = self:SkillLines()
+    if #lines == 0 then return nil end
+
+    local byLineRank = {}
+    for lineRank = 1, RANKS_MAX_SKILL_RANK do
+        local startsAt
+        if lineRank == RANKS_MAX_SKILL_RANK then
+            local _, nextExtent = GetSkillLineRankXPExtents(SKILL_TYPE_AVA, lines[1], lineRank - 1)
+            startsAt = nextExtent
+        else
+            startsAt = GetSkillLineRankXPExtents(SKILL_TYPE_AVA, lines[1], lineRank)
+        end
+        if not startsAt then return nil end
+        byLineRank[lineRank] = { startsAt = startsAt, skills = {} }
+    end
+
+    for _, lineIndex in ipairs(lines) do
+        local lineData = SKILLS_DATA_MANAGER and SKILLS_DATA_MANAGER.GetSkillLineDataByIndices
+                     and SKILLS_DATA_MANAGER:GetSkillLineDataByIndices(SKILL_TYPE_AVA, lineIndex)
+        if lineData and lineData.GetNumSkills then
+            for i = 1, lineData:GetNumSkills() do
+                local skillData = lineData:GetSkillDataByIndex(i)
+                if skillData then
+                    local lineRank = skillData.GetLineRankNeededToPurchase
+                                 and skillData:GetLineRankNeededToPurchase() or 0
+                    if byLineRank[lineRank] then
+                        local prog = skillData.GetCurrentProgressionData and skillData:GetCurrentProgressionData()
+                        local name = prog and prog.GetFormattedName and prog:GetFormattedName() or ""
+                        local icon = prog and prog.GetIcon and prog:GetIcon() or ""
+                        if name ~= "" then
+                            table.insert(byLineRank[lineRank].skills, { name = name, icon = icon })
+                        end
+                    end
+                end
+            end
+        elseif GetNumSkillAbilities and GetSkillAbilityLineRankNeededToUnlock then
+            for i = 1, GetNumSkillAbilities(SKILL_TYPE_AVA, lineIndex) do
+                local lineRank = GetSkillAbilityLineRankNeededToUnlock(SKILL_TYPE_AVA, lineIndex, i) or 0
+                if byLineRank[lineRank] and GetSkillAbilityInfo then
+                    local name, icon = GetSkillAbilityInfo(SKILL_TYPE_AVA, lineIndex, i)
+                    table.insert(byLineRank[lineRank].skills, { name = name or "", icon = icon or "" })
+                end
+            end
+        end
+    end
+
+    self.unlocks = byLineRank
+    return self.unlocks
+end
+
+function R:UnlocksFor(startsAt, endsAt)
+    local byLineRank = self:Unlocks()
+    if not byLineRank then return nil end
+    for lineRank = 1, RANKS_MAX_SKILL_RANK do
+        local entry = byLineRank[lineRank]
+        if entry and entry.startsAt >= startsAt and (not endsAt or entry.startsAt <= endsAt) then
+            return entry.skills
+        end
+    end
+    return nil
+end
+
+function R:APIcon()
+    if not self.apIcon then
+        if ZO_Currency_GetPlatformFormattedCurrencyIcon and CURT_ALLIANCE_POINTS then
+            self.apIcon = ZO_Currency_GetPlatformFormattedCurrencyIcon(CURT_ALLIANCE_POINTS, nil, true)
+        end
+        if not self.apIcon or self.apIcon == "" then
+            self.apIcon = "AP"
+        end
+    end
+    return self.apIcon
+end
+
+function R:Tooltip(rank)
+    local entry = self:Data()[rank]
+    if not entry then return "" end
+    if not entry.tip then
+        local ap = self:APIcon()
+        local text = "Starts at " .. ZO_CommaDelimitNumber(entry.startsAt) .. " " .. ap
+        if entry.endsAt then
+            text = text .. "\nEnds at " .. ZO_CommaDelimitNumber(entry.endsAt) .. " " .. ap
+        end
+
+        local ready = self:Unlocks() ~= nil
+        local skills = self:UnlocksFor(entry.startsAt, entry.endsAt)
+        if skills and #skills > 0 then
+            text = text .. "\n"
+            for i = 1, #skills do
+                local skill = skills[i]
+                local mark = skill.icon ~= "" and zo_iconFormat(skill.icon, RANKS_SKILL_ICON_SIZE, RANKS_SKILL_ICON_SIZE) .. " " or ""
+                text = text .. "\n" .. mark .. skill.name
+            end
+        end
+
+        if not ready then return text end
+        entry.tip = text
+    end
+    return entry.tip
+end
+
+function R.Jump()
+    local list = LibConsoleMenu and LibConsoleMenu.list
+    if not list then return end
+    local index = GetUnitAvARank("player") + 1
+    if list.SetSelectedIndexWithoutAnimation then
+        list:SetSelectedIndexWithoutAnimation(index)
+    elseif list.SetSelectedIndex then
+        list:SetSelectedIndex(index)
+    end
+end
+
+
+function R:GetOptions()
+    local out = {}
+    for rank = 0, RANKS_MAX do
+        out[#out + 1] = {
+            type = "button",
+            name = function() return R:Label(rank) end,
+            tooltip = function() return R:Tooltip(rank) end,
+            func = R.Jump,
+        }
+    end
+    return out
+end
+
+function R:PatchKeybind(menu)
+    if not (menu and menu.controls) then return end
+    for i = 1, #menu.controls do
+        local control = menu.controls[i]
+        if control and control.clickHandler == R.Jump then
+            control.buttonText = "My Rank"
+        end
+    end
 end
 
 --------------------------------------------------
@@ -4984,8 +5212,8 @@ function PvPUA:AIChannelChoices()
     return choices
 end
 
-PVPUA_MENU_TITLE_COLORED = "|c2A6FFFP|r|cE6C800v|r|cCC2222P|r |cFF8800UA!|r"
-PVPUA_TOOLTIP_AUTHOR_COLORED = "user|c2A6FFF5|r|cE6C8006|r|cCC22222|r"
+PVPUA_MENU_TITLE_COLORED = "|c" .. DC_HEX .. "P|r|c" .. AD_HEX .. "v|r|c" .. EP_HEX .. "P|r |cFF8800UA!|r"
+PVPUA_TOOLTIP_AUTHOR_COLORED = "user|c" .. DC_HEX .. "5|r|c" .. AD_HEX .. "6|r|c" .. EP_HEX .. "2|r"
 
 local function PvPUA_PaintMenuEntry(entry)
     if not entry then return false end
@@ -5093,10 +5321,11 @@ function PvPUA:CreateSettings()
     local menu = LibConsoleMenu:CreateAddonMenu("PvPUA", {
         title          = "PvP UA!",
         author         = "user562",
-        version        = "4.7",
+        version        = "4.8",
         category       = addonCategory,
         enableDefaults = true,
         enableReset    = true,
+        childrenAlign  = "center",
         resetFunc      = function() PvPUA:ResetAllSettings() end,
     })
     if not menu then return end
@@ -5105,13 +5334,12 @@ function PvPUA:CreateSettings()
 
     menu:AddOptions({
         { type = "submenu",
-          name = "|c2A6FFFAppearance|r",
-          align = "left",
-          indent = true,
+          name = "|c" .. DC_HEX .. "Appearance|r",
           icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_uiGraphics.dds",
           options = {
         { type = "toggle",
           name = "Show List Now",
+          preset = "YES_NO",
           getFunc = function() return self.showInMenu end,
           setFunc = function(v)
               self.showInMenu = v
@@ -5140,6 +5368,7 @@ function PvPUA:CreateSettings()
               { name = "Scroll Carriers", value = "showScrollCarriers" },
               { name = "Volendrung", value = "showVolendrungRow" },
           },
+          default = { "showMilegates", "showBridges", "showTowns", "showResources", "showScrollCarriers", "showVolendrungRow" },
           getFunc = function()
               local sv = PvPUA.savedVariables
               local sel = {}
@@ -5220,16 +5449,25 @@ function PvPUA:CreateSettings()
         },
           } },
         { type = "submenu",
+          name = "|c" .. AD_HEX .. "Alerts|r",
+          childrenAlign = "center",
+          icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_communications.dds",
+          options = {
+        self:HKBuildSettings(EA_DEFS[1]),
+        self:EABuildSettings(EA_DEFS[2]),
+        self:EABuildSettings(EA_DEFS[3]),
+        { type = "submenu", name = "Potions", icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
+          options = PvPUA.Potion and PvPUA.Potion:GetOptions() or {} },
+          } },
+        { type = "submenu",
           name = "|c00FF00AP in Chat|r",
-          align = "left",
-          indent = true,
           icon = "EsoUI/Art/HUD/Gamepad/gp_HUDNotification_notification.dds",
           options = {
-        { type = "toggle", name = "Enabled",
+        { type = "toggle", name = "Enabled", preset = "YES_NO",
           default = PvPUA.defaults.enableAPChat,
           getFunc = function() return self.savedVariables.enableAPChat end,
           setFunc = function(v) self.savedVariables.enableAPChat = v end },
-        { type = "toggle", name = "Consolidate",
+        { type = "toggle", name = "Consolidate", preset = "YES_NO",
           tooltip = "Consolidates Repair and Combat AP instead of printing each one individually.\nPrints after the last gain of that type based on the duration set below.",
           default = PvPUA.defaults.consolidateAPChat,
           getFunc = function() return self.savedVariables.consolidateAPChat end,
@@ -5246,26 +5484,12 @@ function PvPUA:CreateSettings()
           setFunc = function(v) self.savedVariables.consolidateCombatDelay = v end },
           } },
         { type = "submenu",
-          name = "|cE6C800Alerts|r",
-          align = "left",
-          indent = true,
-          icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_communications.dds",
-          options = {
-        self:HKBuildSettings(EA_DEFS[1]),
-        self:EABuildSettings(EA_DEFS[2]),
-        self:EABuildSettings(EA_DEFS[3]),
-        { type = "submenu", name = "Potions", align = "left", indent = true,
-          icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
-          options = PvPUA.Potion and PvPUA.Potion:GetOptions() or {} },
-          } },
-        { type = "submenu",
-          name = "|cCC2222Auto Invite|r",
-          align = "left",
-          indent = true,
+          name = "|c" .. EP_HEX .. "Auto Invite|r",
           icon = "EsoUI/Art/HUD/Gamepad/gp_radialIcon_inviteGroup_down.dds",
           options = {
         { type = "toggle",
           name = "Enabled",
+          preset = "YES_NO",
           tooltip = "Pauses automatically when the group is full and un-pauses when a spot opens.",
           getFunc = function() return PvPUA.charVariables.aiEnabled end,
           setFunc = function(val)
@@ -5286,7 +5510,7 @@ function PvPUA:CreateSettings()
               end
           end },
         { type = "editbox",
-          name = "Keyword",
+          name = "Keyword(s)",
           tooltip = "Words that trigger an invite. Separate multiple with commas (e.g., \"lfg, inv, x\"). Any ONE of them works on its own; a person is invited if their message is EXACTLY one of these words.",
           getFunc = function() return PvPUA.charVariables.aiKeyword end,
           setFunc = function(val)
@@ -5304,6 +5528,7 @@ function PvPUA:CreateSettings()
               { name = "PvP", value = "pvp" },
               { name = "PvE", value = "pve" },
           },
+          default = { "pvp", "pve" },
           getFunc = function()
               local cv = PvPUA.charVariables
               local sel = {}
@@ -5324,6 +5549,7 @@ function PvPUA:CreateSettings()
           tooltip = "Channels the auto invite listens to for your keyword.",
           noSelectionText = "None",
           choices = PvPUA:AIChannelChoices(),
+          default = { "whisper" },
           getFunc = function()
               local cv = PvPUA.charVariables
               local sel = {}
@@ -5354,9 +5580,8 @@ function PvPUA:CreateSettings()
           name = "|cFF8800ReloadUI|r",
           tooltip = "Guild names in the Channels list are read once when the addon loads. If you have joined or left a guild this session, reloadui to refresh them.",
           func = function() ReloadUI("ingame") end },
-        { type = "header", name = "Auto Kick" },
         { type = "toggle",
-          name = "Kick Offline Members",
+          name = "Auto Kick",
           tooltip = "Automatically removes group members who have been offline longer than the time below.",
           default = PvPUA.charDefaults.aiKickOffline,
           getFunc = function() return PvPUA.charVariables.aiKickOffline end,
@@ -5371,9 +5596,12 @@ function PvPUA:CreateSettings()
           disabled = function() return not PvPUA.charVariables.aiKickOffline end },
           } },
         { type = "submenu",
-          name = "|c2A6FFFIcon|r",
-          align = "left",
-          indent = true,
+          name = "|c" .. DC_HEX .. "P|r|c" .. AD_HEX .. "v|r|c" .. EP_HEX .. "P|r |cFFFFFFRanks|r",
+          childrenAlign = "leftFlush",
+          icon = PVPUA_ADDON_ICON,
+          options = PvPUA.Ranks and PvPUA.Ranks:GetOptions() or {} },
+        { type = "submenu",
+          name = "|c" .. DC_HEX .. "Icon|r",
           icon = "EsoUI/Art/Options/Gamepad/gp_options_nameplates.dds",
           options = {
         { type = "checklist",
@@ -5383,6 +5611,7 @@ function PvPUA:CreateSettings()
               { name = "Self",   value = "self", tooltip = "Exclusive to certain players." },
               { name = "Others", value = "others" },
           },
+          default = { "self", "others" },
           getFunc = function()
               local sv = PvPUA.savedVariables
               local sel = {}
@@ -5400,6 +5629,8 @@ function PvPUA:CreateSettings()
           end },
           } },
     })
+
+    if PvPUA.Ranks then PvPUA.Ranks:PatchKeybind(menu) end
 end
 --------------------------------------------------
 -- Kill Feed
@@ -5477,19 +5708,20 @@ local WHATS_NEW_DIALOG = "PVPUA_WHATS_NEW"
 local whatsNewRegistered = false
 
 PvPUA.whatsNew = {
-    version = "1.2",
+    version = "1.4",
     title = "PvP UA!",
     message = table.concat({
-        "PvP UA! has been updated to version 4.7.",
+        "Updated to version 4.8.",
         "",
-        "- New Potion alert, found under Alerts.",
-        "- Now works on XBPA (PC).",
+        "- New PvP Ranks list.",
+        "- Settings moved to the main menu after Campaigns, no longer in Add-ons.",
+        "- Alliance colors now match the game's own.",
+        "- Emperor icon corners are easier to read.",
+        "- Fixed Defaults unchecking everything in the checklists.",
         "",
         "Any bugs, message me:",
         "Xbox: user562",
-        "Discord: user562.",
-        "",
-        "Thanks for using PvP UA!",
+        "Discord: user562. (period included)",
     }, "\n"),
 }
 
@@ -5699,9 +5931,7 @@ local function FlushAPBucket(reason)
     if not bucket or bucket.total <= 0 then return end
     local source = AP_REASONS[reason]
     local alliance = GetUnitAlliance("player")
-    local aColor = alliance == ALLIANCE_DAGGERFALL_COVENANT and "2A6FFF"
-                or alliance == ALLIANCE_ALDMERI_DOMINION    and "E6C800"
-                or alliance == ALLIANCE_EBONHEART_PACT      and "CC2222" or "FFFFFF"
+    local aColor = GetAllianceColor(alliance):ToHex()
     local msg = "|c00FF00+" .. FormatAP(bucket.total) .. " AP|r"
     if source then msg = msg .. " |c" .. aColor .. "(" .. source .. ")|r" end
     d(msg)
@@ -5718,9 +5948,7 @@ local function OnAPGain(eventCode, alliancePoints, playSound, difference, reason
 
     local source = AP_REASONS[reason]
     local alliance = GetUnitAlliance("player")
-    local aColor = alliance == ALLIANCE_DAGGERFALL_COVENANT and "2A6FFF"
-                or alliance == ALLIANCE_ALDMERI_DOMINION    and "E6C800"
-                or alliance == ALLIANCE_EBONHEART_PACT      and "CC2222" or "FFFFFF"
+    local aColor = GetAllianceColor(alliance):ToHex()
 
     if PvPUA.savedVariables.consolidateAPChat
     and (reason == CURRENCY_CHANGE_REASON_KILL or reason == CURRENCY_CHANGE_REASON_KEEP_REPAIR) then
