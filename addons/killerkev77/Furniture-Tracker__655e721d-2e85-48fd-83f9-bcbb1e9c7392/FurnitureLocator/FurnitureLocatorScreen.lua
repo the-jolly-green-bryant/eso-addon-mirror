@@ -1,30 +1,26 @@
 --[[
-Furniture Locator - Gamepad List Screen (Milestone 3b: real controller nav)
+Furniture Locator - Gamepad List Screen (item browser)
 
 Subclasses ZO_Gamepad_ParametricList_Screen, the actual base class the
-game's own gamepad screens use (confirmed directly from ESOUI source,
-esoui/ingame/leveluprewards/gamepad/leveluprewardspostclaim_gamepad.lua,
-which is the minimal real example this is modeled on).
+game's own gamepad screens use (confirmed directly from ESOUI source).
 
-This gives real D-pad/stick navigation, selection highlighting, and
-proper scrolling "for free" -- none of that is hand-rolled here, it's
-all inherited from the base class.
+This screen ONLY shows a filtered, sorted item list for a given
+category + style (theme) -- picking the category and style themselves
+now happens via LibConsoleDialogs (FurnitureLocatorDialogs.lua), which
+has real, confirmed-working A-confirm/B-back button support (unlike
+this screen, which we proved KEYBIND_STRIP doesn't render/respond for).
+This screen only ever needs scrolling, which IS confirmed working here,
+so it keeps that responsibility and nothing else.
 
-Each row shows the item name (entry text) with a sub-label line per
-location (e.g. "1 in Alinor Crest Townhouse"), via the confirmed
-ZO_GamepadEntryData:AddSubLabel API.
-
-Toggle with /flocator2 (kept separate from the Milestone 3a /flocator
-plain-text preview so that one still works as a fallback if this
-breaks).
+"< Back" (first row, scroll-to-select via the same debounced
+SelectedDataChanged pattern used elsewhere) returns to the style
+dialog for the current category.
 ]]
 
 local ADDON_PACKAGE_NAME = "FurnitureLocator"
 
 -- Required so "Open Furniture Locator" is what shows up under
--- Controls > Keybindings, rather than the raw action name. Must exist
--- before the Controls menu tries to display it -- placing it at file
--- scope here means it runs as soon as this file loads.
+-- Controls > Keybindings, rather than the raw action name.
 ZO_CreateStringId("SI_BINDING_NAME_FURNITURE_LOCATOR_TOGGLE", "Open Furniture Locator")
 
 FurnitureLocatorScreenClass = ZO_Gamepad_ParametricList_Screen:Subclass()
@@ -44,94 +40,78 @@ function FurnitureLocatorScreenClass:Initialize(control)
     fragment:SetHideOnSceneHidden(true)
     self.scene:AddFragment(fragment)
 
-    -- GAMEPAD_UI_MODE_FRAGMENT is a pre-built fragment the base game uses
-    -- on every real gamepad screen -- it pushes a keybind layer that
-    -- blocks crouch/sprint/other gameplay actions while active. Without
-    -- it, D-pad input still reaches those raw keybinds even with
-    -- SetInUIMode(true) on, which is exactly the crouch-toggling seen.
+    -- Blocks crouch/sprint/other gameplay actions while this screen is up.
     self.scene:AddFragment(GAMEPAD_UI_MODE_FRAGMENT)
 
-    -- The inherited template only positions the list against a fixed
-    -- left-side panel meant to sit next to the game's own pause-menu
-    -- background artwork -- which we never trigger, since we're not
-    -- going through that menu system. Re-anchor to screen center and
-    -- draw our own simple box behind it instead of fighting that coupling.
+    -- Re-anchor to screen center with our own backdrop box, since the
+    -- inherited template only positions against a left-side panel meant
+    -- to sit next to the game's own pause-menu artwork we never trigger.
     local mask = control:GetNamedChild("Mask")
     mask:ClearAnchors()
     mask:SetDimensions(900, 900)
     mask:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
 
     local backdrop = WINDOW_MANAGER:CreateControl("FurnitureLocatorScreenBackdrop", control, CT_BACKDROP)
-    backdrop:SetDrawLayer(DL_BACKGROUND) -- forces it behind the list regardless of creation order
+    backdrop:SetDrawLayer(DL_BACKGROUND)
     backdrop:SetAnchor(TOPLEFT, mask, TOPLEFT, -30, -30)
     backdrop:SetAnchor(BOTTOMRIGHT, mask, BOTTOMRIGHT, 30, 30)
     backdrop:SetCenterColor(0, 0, 0, 0.85)
     backdrop:SetEdgeColor(1, 1, 1, 0.4)
 
     self.list = self:GetMainList()
+    self.currentCategory = nil
+    self.currentTheme = nil -- nil = "All Styles"
 
     self:InitializeHeader()
 end
 
 function FurnitureLocatorScreenClass:InitializeHeader()
-    self.headerData = { titleText = "Furniture Locator - Categories" }
+    self.headerData = { titleText = "Furniture Locator" }
     ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
-
-    -- Drill-down state: "categories" shows the short category list;
-    -- "items" shows just that category's items (short too). Nothing here
-    -- needs a button press -- scrolling to a "jump" entry (a category, or
-    -- the back row) immediately switches view via this confirmed-working
-    -- scroll-highlight callback.
-    self.viewMode = "categories"
-    self.currentCategory = nil
 
     self.list:SetOnSelectedDataChangedCallback(function(_, selectedData)
         if not selectedData then
             return
         end
 
-        -- Right after any Clear()+AddEntry()+Commit(), the list
-        -- auto-selects row 1 and fires this callback once -- that's not
-        -- the player actually scrolling, just the rebuild settling. Acting
-        -- on it caused an infinite bounce (rebuild -> auto-select row 1,
-        -- which is itself a jump target -> rebuild -> ...).
+        -- Ignore the automatic row-1 selection that fires right after
+        -- every Clear()+AddEntry()+Commit() -- not real player scrolling.
         if self.suppressNextSelectionChange then
             self.suppressNextSelectionChange = false
             return
         end
 
-        -- Debounce: only drill in if the player actually pauses on this
-        -- entry, not on every row highlighted while scrolling past it.
-        -- Without this, walking down the list drills into whatever you
-        -- pass through, and landing on "Back" immediately bounces you
-        -- back out -- which is exactly what was happening.
-        self.pendingDrillGeneration = (self.pendingDrillGeneration or 0) + 1
-        local thisGeneration = self.pendingDrillGeneration
-        local capturedData = selectedData
+        -- Debounce: only trigger "Back" if the player actually pauses on
+        -- it, not on every row highlighted while scrolling past it.
+        if not selectedData.jumpBack then
+            return
+        end
+
+        self.pendingBackGeneration = (self.pendingBackGeneration or 0) + 1
+        local thisGeneration = self.pendingBackGeneration
 
         zo_callLater(function()
-            if self.pendingDrillGeneration ~= thisGeneration then
-                return -- selection moved on again before the pause completed
+            if self.pendingBackGeneration ~= thisGeneration then
+                return
             end
-
-            if capturedData.jumpToCategory ~= nil then
-                self.viewMode = "items"
-                self.currentCategory = capturedData.jumpToCategory
-                self:RefreshList()
-            elseif capturedData.jumpBack then
-                self.viewMode = "categories"
-                self.currentCategory = nil
-                self:RefreshList()
+            SCENE_MANAGER:HideCurrentScene()
+            if FurnitureLocatorDialogs then
+                FurnitureLocatorDialogs.ShowStyleDialogForCategory(self.currentCategory)
             end
         end, 500)
     end)
 end
 
--- SetInUIMode(true) is what redirects the left stick to UI navigation
--- instead of camera/character movement -- confirmed from the base
--- game's ZO_IngameSceneManager source. Without this, the stick drives
--- both the list AND the character at the same time, which is exactly
--- what was happening before this was added.
+-- Called from the style dialog (FurnitureLocatorDialogs.lua) when a
+-- category+style has been picked with real A-button confirmation.
+-- theme == nil means "All Styles" within that category.
+function FurnitureLocatorScreenClass:ShowFiltered(category, theme)
+    self.currentCategory = category
+    self.currentTheme = theme
+    SCENE_MANAGER:Show("FurnitureLocatorSceneGamepad")
+    self:RefreshList()
+end
+
 function FurnitureLocatorScreenClass:OnShowing()
     ZO_Gamepad_ParametricList_Screen.OnShowing(self)
     SCENE_MANAGER:SetInUIMode(true)
@@ -158,65 +138,52 @@ function FurnitureLocatorScreenClass:PerformUpdate()
     self.dirty = false
 end
 
--- Drill-down list builder. "categories" mode shows one short row per
--- category (fast to scroll, e.g. 14 rows instead of 800+). Scrolling to
--- one immediately drills into "items" mode for just that category
--- (via the SelectedDataChanged callback in InitializeHeader) -- a
--- "< Back to Categories" row at the top returns the same way, purely by
--- scrolling to it. No buttons, no second screen, no long list to hunt
--- through.
+-- Shows items matching self.currentCategory (required) and
+-- self.currentTheme (optional -- nil means all styles within that
+-- category). A "< Back" row at the top returns to the style dialog.
 function FurnitureLocatorScreenClass:RefreshList()
     self.list:Clear()
 
     local ok, err = pcall(function()
+        local titleSuffix = self.currentCategory or "?"
+        if self.currentTheme ~= nil then
+            titleSuffix = string.format("%s - %s", titleSuffix, self.currentTheme)
+        end
+        self.headerData.titleText = string.format("Furniture Locator - %s", titleSuffix)
+        ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
+
+        local backEntry = ZO_GamepadEntryData:New("< Back")
+        backEntry.jumpBack = true
+        self.list:AddEntry("ZO_GamepadMenuEntryTemplate", backEntry)
+
         local items = FurnitureLocator.GetAllOwnedItems()
-
-        if self.viewMode == "categories" then
-            self.headerData.titleText = "Furniture Locator - Categories"
-            ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
-
-            local categoryCounts = {}
-            for _, item in ipairs(items) do
-                categoryCounts[item.category] = (categoryCounts[item.category] or 0) + 1
+        local filtered = {}
+        for _, item in ipairs(items) do
+            local categoryMatches = (item.category == self.currentCategory)
+            local themeMatches = (self.currentTheme == nil) or (item.theme == self.currentTheme)
+            if categoryMatches and themeMatches then
+                table.insert(filtered, item)
             end
+        end
+        table.sort(filtered, function(a, b)
+            return tostring(a.name) < tostring(b.name)
+        end)
 
-            local categoryNames = {}
-            for name, _ in pairs(categoryCounts) do
-                table.insert(categoryNames, name)
+        for _, item in ipairs(filtered) do
+            local entryData = ZO_GamepadEntryData:New(item.name, item.icon)
+            for _, loc in ipairs(item.locations) do
+                entryData:AddSubLabel(string.format("%d in %s", loc.count, loc.name))
             end
-            table.sort(categoryNames)
+            self.list:AddEntry("ZO_GamepadMenuEntryTemplate", entryData)
+        end
 
-            for _, categoryName in ipairs(categoryNames) do
-                local label = string.format("%s (%d)", categoryName, categoryCounts[categoryName])
-                local entryData = ZO_GamepadEntryData:New(label)
-                entryData.jumpToCategory = categoryName
-                self.list:AddEntry("ZO_GamepadMenuEntryTemplate", entryData)
-            end
-        else
-            self.headerData.titleText = string.format("Furniture Locator - %s", self.currentCategory)
-            ZO_GamepadGenericHeader_Refresh(self.header, self.headerData)
-
-            local backEntry = ZO_GamepadEntryData:New("< Back to Categories")
-            backEntry.jumpBack = true
-            self.list:AddEntry("ZO_GamepadMenuEntryTemplate", backEntry)
-
-            local filtered = {}
-            for _, item in ipairs(items) do
-                if item.category == self.currentCategory then
-                    table.insert(filtered, item)
-                end
-            end
-            table.sort(filtered, function(a, b)
-                return tostring(a.name) < tostring(b.name)
-            end)
-
-            for _, item in ipairs(filtered) do
-                local entryData = ZO_GamepadEntryData:New(item.name, item.icon)
-                for _, loc in ipairs(item.locations) do
-                    entryData:AddSubLabel(string.format("%d in %s", loc.count, loc.name))
-                end
-                self.list:AddEntry("ZO_GamepadMenuEntryTemplate", entryData)
-            end
+        -- Second "< Back" row at the bottom too, so a long list doesn't
+        -- force scrolling all the way back to the top just to leave --
+        -- whichever end you're nearer to, backing out is a few scrolls away.
+        if #filtered > 0 then
+            local bottomBackEntry = ZO_GamepadEntryData:New("< Back")
+            bottomBackEntry.jumpBack = true
+            self.list:AddEntry("ZO_GamepadMenuEntryTemplate", bottomBackEntry)
         end
     end)
 
@@ -242,11 +209,6 @@ local function OnAddOnLoaded(_, addOnName)
         return
     end
     EVENT_MANAGER:UnregisterForEvent("FurnitureLocatorScreenLoader", EVENT_ADD_ON_LOADED)
-
-    SLASH_COMMANDS["/flocator2"] = function()
-        SCENE_MANAGER:Toggle("FurnitureLocatorSceneGamepad")
-    end
-    d("Furniture Locator real list loaded. Type /flocator2 to open/close (controller-navigable).")
 end
 
 EVENT_MANAGER:RegisterForEvent("FurnitureLocatorScreenLoader", EVENT_ADD_ON_LOADED, OnAddOnLoaded)

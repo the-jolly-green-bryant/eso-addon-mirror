@@ -1056,9 +1056,17 @@ function Data:GetLatestExternalSnapshot()
     if type(store) ~= "table" or type(store.snapshots) ~= "table" then
         return nil
     end
+    local duplicateRepair = type(self.saved) == "table"
+        and type(self.saved.legacyRecovery) == "table"
+        and self.saved.legacyRecovery.duplicateRepair or nil
+    local ignoreThroughId = type(duplicateRepair) == "table"
+        and tonumber(duplicateRepair.startupSnapshotId) or nil
     for index = #store.snapshots, 1, -1 do
         local snapshot = store.snapshots[index]
         if type(snapshot) == "table"
+            and snapshot.restoreRejected ~= true
+            and (not ignoreThroughId
+                or (tonumber(snapshot.id) or 0) > ignoreThroughId)
             and (type(snapshot.code) == "string" or type(snapshot.data) == "table")
         then
             return snapshot
@@ -1119,9 +1127,23 @@ end
 
 function Data:DetectStartupDataLoss(startupSnapshot, previousSnapshot)
     local current = getContentCounts(self.saved)
-    if snapshotHasMore(startupSnapshot, current) then
+    local duplicateRepair = type(self.saved.legacyRecovery) == "table"
+        and self.saved.legacyRecovery.duplicateRepair or nil
+    local ignoreExternalThroughId = type(duplicateRepair) == "table"
+        and tonumber(duplicateRepair.startupSnapshotId) or nil
+    local function mayRestoreExternal(snapshot)
+        return type(snapshot) == "table"
+            and snapshot.restoreRejected ~= true
+            and (not ignoreExternalThroughId
+                or (tonumber(snapshot.id) or 0) > ignoreExternalThroughId)
+    end
+    if mayRestoreExternal(startupSnapshot)
+        and snapshotHasMore(startupSnapshot, current)
+    then
         self.pendingExternalRestore = startupSnapshot
-    elseif snapshotHasMore(previousSnapshot, current) then
+    elseif mayRestoreExternal(previousSnapshot)
+        and snapshotHasMore(previousSnapshot, current)
+    then
         self.pendingExternalRestore = previousSnapshot
     end
     if not self.pendingExternalRestore then
@@ -1132,8 +1154,10 @@ function Data:DetectStartupDataLoss(startupSnapshot, previousSnapshot)
             and tonumber(duplicateRepair.lastSafetySnapshotId) or nil
         for index = #snapshots, 1, -1 do
             local safety = snapshots[index]
-            local mayRestore = not ignoreSafetyThroughId
-                or (tonumber(safety.id) or 0) > ignoreSafetyThroughId
+            local mayRestore = type(safety) == "table"
+                and safety.restoreRejected ~= true
+                and (not ignoreSafetyThroughId
+                    or (tonumber(safety.id) or 0) > ignoreSafetyThroughId)
             local recovered = mayRestore and type(safety) == "table"
                 and type(safety.code) == "string"
                 and ShoppingListBackup.Decode(safety.code) or nil
@@ -1141,6 +1165,7 @@ function Data:DetectStartupDataLoss(startupSnapshot, previousSnapshot)
                 local candidate = {
                     code = safety.code,
                     kind = "internal_safety",
+                    sourceSnapshot = safety,
                 }
                 for key, value in pairs(getContentCounts(recovered)) do
                     candidate[key] = value
@@ -1160,6 +1185,17 @@ function Data:RestorePendingExternalSnapshot()
     if not pending then
         return false, nil, false
     end
+    self.pendingExternalRestore = nil
+
+    local function reject(message)
+        local source = pending.sourceSnapshot or pending
+        if type(source) == "table" then
+            source.restoreRejected = true
+            source.restoreRejectedAt = GetTimeStamp()
+        end
+        return false, message, true
+    end
+
     local snapshot, message
     if type(pending.code) == "string" then
         snapshot, message = ShoppingListBackup.Decode(pending.code)
@@ -1167,14 +1203,13 @@ function Data:RestorePendingExternalSnapshot()
         snapshot = deepCopy(pending.data)
     end
     if not snapshot then
-        return false, message, true
+        return reject(message)
     end
     local ok
     ok, message = self:RestoreBackup(snapshot)
     if not ok then
-        return false, message, true
+        return reject(message)
     end
-    self.pendingExternalRestore = nil
     self:CreateExternalSnapshot("automatic_restore", self.saved)
     return true, nil, true
 end

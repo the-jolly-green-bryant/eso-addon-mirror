@@ -75,7 +75,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [World Map Wayshrines Controller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ErianKalil/World-Map-Wayshrines-Controller__2381) | ErianKalil | PC / Mac | 1.9 |
 | [World Map Wayshrines Controller Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Simon_111/World-Map-Wayshrines-Controller-Updated__3889) | Simon_111 | PC / Mac | 1.9.1 |
 | [World of Warcraft Chat Colors](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Faustus/World-of-Warcraft-Chat-Colors__631) | Faustus | PC / Mac | 1.2.2 |
-| [WPamA (What Pledges at my Alts)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/WPamA-What-Pledges-at-my-Alts__1190) | ForgottenLight | PC / Mac | 2.6.6 |
+| [WPamA (What Pledges at my Alts)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/WPamA-What-Pledges-at-my-Alts__1190) | ForgottenLight | PC / Mac | 2.6.7 |
 | [Writ Style Price](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bulton-fr/Writ-Style-Price__2818) | bulton-fr | PC / Mac | 1.0.0 |
 | [Writ2Style - Find Motifs for Master Writs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/Writ2Style---Find-Motifs-for-Master-Writs__3849) | MelanAster | PC / Mac | 2.02 |
 | [Writcraft API 100018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/retired_adventurer/Writcraft-API-100018__1603) | retired_adventurer | PC / Mac | 100018 |

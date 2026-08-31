@@ -7,11 +7,17 @@ local EVENT_NAMESPACE = "NQOL_Fishing"
 local REEL_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_Reel"
 local TRACKER_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_Tracker"
 local TRACKER_LAYOUT_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_TrackerLayout"
-local ICON_TEXTURE = "/esoui/art/icons/crafting_fishing_merringar.dds"
+local ICON_TEXTURE_FILE = "nqol_reel_fish.dds"
 local ICON_SIZE = 420
+local NOTIFICATION_DRAW_LEVEL = 220100
 local NOTIFY_DELAY_MS = 250
 local NOTIFY_TIMEOUT_MS = 3000
 local SOUND_REPEAT_INTERVAL_MS = 650
+local NOTIFY_ANIMATION_INTERVAL_MS = 33
+local NOTIFY_ANIMATION_CYCLE_MS = 900
+local NOTIFY_MIN_SCALE = 0.78
+local NOTIFY_MAX_SCALE = 1.25
+local FISH_BITE_VIBRATION_DURATION_MS = 2500
 local TRACKER_DRAW_LEVEL = 215
 local TRACKER_FALLBACK_WIDTH = 120
 local TRACKER_PADDING = 8
@@ -252,7 +258,8 @@ local fishingInteractableName
 local lastAction
 local reelWindow
 local reelTexture
-local reelTimeline
+local notificationActive = false
+local notificationAnimationElapsedMs = 0
 local trackerWindow
 local trackerTitle
 local trackerMeasureLabel
@@ -472,19 +479,15 @@ local function CountCurrentBait()
 end
 
 local function StopNotification()
-    if reelTimeline then
-        reelTimeline:SetHandler("OnStop", nil)
-        reelTimeline:Stop()
-        reelTimeline:SetHandler("OnStop", StopNotification)
-    end
+    notificationActive = false
 
     if reelWindow then
-        reelWindow:SetAlpha(0)
         reelWindow:SetHidden(true)
     end
 
     EVENT_MANAGER:UnregisterForUpdate(REEL_UPDATE_NAMESPACE)
     EVENT_MANAGER:UnregisterForUpdate(REEL_UPDATE_NAMESPACE .. "_Sound")
+    EVENT_MANAGER:UnregisterForUpdate(REEL_UPDATE_NAMESPACE .. "_Animation")
 end
 
 local function GetSelectedSound()
@@ -513,54 +516,76 @@ local function EnsureNotificationControl()
     reelWindow:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     reelWindow:SetDrawTier(DT_HIGH)
     reelWindow:SetDrawLayer(DL_OVERLAY)
-    reelWindow:SetDrawLevel(200)
+    reelWindow:SetDrawLevel(NOTIFICATION_DRAW_LEVEL)
     reelWindow:SetMouseEnabled(false)
+    reelWindow:SetAlpha(1)
     reelWindow:SetHidden(true)
-    reelWindow:SetAlpha(0)
 
     reelTexture = wm:CreateControl("$(parent)Icon", reelWindow, CT_TEXTURE)
     reelTexture:SetAnchorFill(reelWindow)
-    reelTexture:SetTexture(ICON_TEXTURE)
+    reelTexture:SetDrawTier(DT_HIGH)
+    reelTexture:SetDrawLayer(DL_OVERLAY)
+    reelTexture:SetDrawLevel(NOTIFICATION_DRAW_LEVEL + 1)
+    reelTexture:SetTexture("/" .. tostring(NQOL.name or "NQOL") .. "/Art/Fishing/" .. ICON_TEXTURE_FILE)
+    reelTexture:SetTextureCoords(0, 1, 0, 1)
     reelTexture:SetBlendMode(TEX_BLEND_MODE_ALPHA)
+    reelTexture:SetColor(1, 1, 1, 1)
+    reelTexture:SetAlpha(1)
+    reelTexture:SetHidden(false)
+end
 
-    local animationManager = GetAnimationManager()
-    reelTimeline = animationManager:CreateTimeline()
+local function UpdateNotificationAnimation()
+    if not notificationActive or not reelWindow then
+        return
+    end
 
-    local fadeIn = reelTimeline:InsertAnimation(ANIMATION_ALPHA, reelWindow, 0)
-    fadeIn:SetDuration(180)
-    fadeIn:SetAlphaValues(0, 1)
+    notificationAnimationElapsedMs = notificationAnimationElapsedMs + NOTIFY_ANIMATION_INTERVAL_MS
+    local progress = (notificationAnimationElapsedMs % NOTIFY_ANIMATION_CYCLE_MS) / (NOTIFY_ANIMATION_CYCLE_MS * 0.5)
+    if progress > 1 then
+        progress = 2 - progress
+    end
 
-    local scale = reelTimeline:InsertAnimation(ANIMATION_SCALE, reelWindow, 0)
-    scale:SetDuration(700)
-    scale:SetScaleValues(0.45, 1.45)
-    scale:SetEasingFunction(ZO_EaseOutQuadratic)
-
-    local fadeOut = reelTimeline:InsertAnimation(ANIMATION_ALPHA, reelWindow, 700)
-    fadeOut:SetDuration(500)
-    fadeOut:SetAlphaValues(1, 0)
-
-    reelTimeline:SetPlaybackType(ANIMATION_PLAYBACK_LOOP, 2)
-    reelTimeline:SetHandler("OnStop", StopNotification)
+    local easedProgress = progress * progress * (3 - 2 * progress)
+    local scale = NOTIFY_MIN_SCALE + ((NOTIFY_MAX_SCALE - NOTIFY_MIN_SCALE) * easedProgress)
+    local size = Round(ICON_SIZE * scale)
+    reelWindow:SetDimensions(size, size)
 end
 
 local function PlayNotification()
+    if notificationActive then
+        return
+    end
+
     EVENT_MANAGER:UnregisterForUpdate(REEL_UPDATE_NAMESPACE)
     if not IsEnabled() then
         return
     end
 
+    notificationActive = true
     EnsureNotificationControl()
+    notificationAnimationElapsedMs = 0
     reelWindow:ClearAnchors()
     reelWindow:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
-    reelWindow:SetScale(0.45)
-    reelWindow:SetAlpha(0)
+    reelWindow:SetDrawTier(DT_HIGH)
+    reelWindow:SetDrawLayer(DL_OVERLAY)
+    reelWindow:SetDrawLevel(NOTIFICATION_DRAW_LEVEL)
+    reelWindow:SetAlpha(1)
+    reelTexture:SetAlpha(1)
+    reelTexture:SetHidden(false)
     reelWindow:SetHidden(false)
-    reelTimeline:PlayFromStart()
+    UpdateNotificationAnimation()
+    EVENT_MANAGER:RegisterForUpdate(REEL_UPDATE_NAMESPACE .. "_Animation", NOTIFY_ANIMATION_INTERVAL_MS, UpdateNotificationAnimation)
 
     PlaySelectedSound()
     EVENT_MANAGER:RegisterForUpdate(REEL_UPDATE_NAMESPACE .. "_Sound", SOUND_REPEAT_INTERVAL_MS, PlaySelectedSound)
 
     EVENT_MANAGER:RegisterForUpdate(REEL_UPDATE_NAMESPACE, NOTIFY_TIMEOUT_MS, StopNotification)
+end
+
+local function OnVibration(_, duration)
+    if fishing and duration == FISH_BITE_VIBRATION_DURATION_MS then
+        PlayNotification()
+    end
 end
 
 local function GetCurrentFishingAchievements()
@@ -1003,7 +1028,7 @@ local function RefreshFishingTrackerRegistrations()
 end
 
 local function OnSlotUpdate(_, bagId, _, isNew)
-    if not fishing or isNew or (bagId ~= BAG_BACKPACK and bagId ~= BAG_VIRTUAL) then
+    if not fishing or notificationActive or isNew or (bagId ~= BAG_BACKPACK and bagId ~= BAG_VIRTUAL) then
         return
     end
 
@@ -1015,7 +1040,7 @@ local function OnSlotUpdate(_, bagId, _, isNew)
     currentBaitCount = count
 end
 
-local function StopFishing()
+local function StopFishingSession(keepNotification)
     if not fishing then
         return
     end
@@ -1024,7 +1049,13 @@ local function StopFishing()
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_LOOT_RECEIVED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_LOOT_CLOSED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
-    StopNotification()
+    if not keepNotification then
+        StopNotification()
+    end
+end
+
+local function StopFishing()
+    StopFishingSession(false)
 end
 
 local function StartFishing()
@@ -1034,7 +1065,9 @@ local function StartFishing()
         return
     end
 
-    StopNotification()
+    if not notificationActive then
+        StopNotification()
+    end
     currentBaitCount = CountCurrentBait()
     fishing = true
 
@@ -1070,7 +1103,7 @@ local function OnInteractionShown()
     if isFishingNode then
         fishingInteractableName = interactableName
         AutoSelectBait(interactableName)
-        StopFishing()
+        StopFishingSession(notificationActive)
     elseif interactableName == fishingInteractableName then
         StartFishing()
     else
@@ -1119,6 +1152,10 @@ function Fishing.Initialize()
 
     initialized = true
     HookInteraction()
+    EnsureNotificationControl()
+    if EVENT_VIBRATION then
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_Vibration", EVENT_VIBRATION, OnVibration)
+    end
     RefreshFishingTrackerRegistrations()
     QueueFishingTrackerRefresh()
 end

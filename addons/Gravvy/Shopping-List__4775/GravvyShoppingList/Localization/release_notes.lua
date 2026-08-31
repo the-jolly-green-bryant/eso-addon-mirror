@@ -4,6 +4,7 @@ local releaseNotes = {
 Current release · 0.19.2
 • Added cost projections with spending, remaining target cost, projected totals, budget balances, and entries without maximum prices.
 • Added optional local price suggestions from supported price addons with explicit keyboard and gamepad actions.
+• Prevented invalid recovery copies and copies made before legacy cleanup from retrying whenever the window opens.
 
 0.19.1
 • Removed duplicate lists created by the retired legacy recovery, including saves where some copies were already deleted.
@@ -46,6 +47,7 @@ Current release · 0.19.2
 Versión actual · 0.19.2
 • Se añadieron previsiones de costes con gastos, coste objetivo restante, total previsto, saldos de presupuesto y entradas sin precio máximo.
 • Se añadieron sugerencias opcionales de precios locales con acciones explícitas para teclado y mando.
+• Se evitó que las copias de recuperación inválidas o creadas antes de la limpieza volvieran a intentarse cada vez que se abre la ventana.
 
 0.19.1
 • Se eliminaron las listas duplicadas creadas por la recuperación heredada retirada, incluso si algunas copias ya se habían borrado.
@@ -88,6 +90,7 @@ Versión actual · 0.19.2
 Version actuelle · 0.19.2
 • Ajout des projections de coûts avec dépenses, coût cible restant, total prévu, soldes du budget et entrées sans prix maximal.
 • Ajout de suggestions facultatives de prix locales avec des actions explicites au clavier et à la manette.
+• Les copies de récupération invalides ou créées avant le nettoyage ne sont plus retentées à chaque ouverture de la fenêtre.
 
 0.19.1
 • Suppression des listes dupliquées par l'ancien outil de récupération, même si certaines copies avaient déjà été supprimées.

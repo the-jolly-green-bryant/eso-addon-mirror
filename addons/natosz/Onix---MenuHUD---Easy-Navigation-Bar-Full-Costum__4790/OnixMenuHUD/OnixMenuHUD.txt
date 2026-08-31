@@ -1,0 +1,9 @@
+## Title: |cc0c0c00nix|r |cFFFABBMenuHUD|r - |c55FF55Easy Navigation|r
+## Description: A fully customizable, animated quick navigation bar essential for your main ESC menu.
+## Author: |c00E5FFNATOSZ|r
+## Version: |c00FF001.1.1|r
+## APIVersion: 101050 101051
+## SavedVariables: OnixMenuHUDSavedVars
+## DependsOn: LibAddonMenu-2.0>=43
+
+OnixMenuHUD.lua

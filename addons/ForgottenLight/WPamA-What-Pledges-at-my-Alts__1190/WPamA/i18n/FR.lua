@@ -102,7 +102,8 @@ WPamA.i18n = {
         [5] = {N=GetIcon(31,28), NC=GetIcon(31,28,true), W=28, S=true,
                A=GetString(SI_GAMEPAD_PLAYER_INVENTORY_CAPACITY_FOOTER_LABEL)},
         [6] = {N=GetIcon(61,24), NC=GetIcon(61,24,true), W=28, S=true,
-               A=zo_strformat("<<1>>, <<2>>", GetString(SI_SPECIALIZEDITEMTYPE100), GetString(SI_SPECIALIZEDITEMTYPE101))},
+               A=zo_strformat("<<1>>,\n<<2>>,\n<<3>>", GetString(SI_SPECIALIZEDITEMTYPE100),
+                              GetString(SI_SPECIALIZEDITEMTYPE101), GetString(SI_SPECIALIZEDITEMTYPE2750) )},
         [7] = {N=GetIcon(65,28), NC=GetIcon(65,28,true), W=28, S=true, A=GetString(SI_ITEMTYPEDISPLAYCATEGORY26)},
       },
     },
@@ -145,6 +146,7 @@ WPamA.i18n = {
         [1] = {N="Festivals saisonniers", W=164},
         [2] = {N=GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES803), W=70},
         [3] = {N=GetString(SI_RECIPECRAFTINGSYSTEM6), W=100},
+        [4] = {N=GetString(SI_QUESTTYPE19), W=100}, -- Favors
       },
     },
     [8] = {
@@ -162,32 +164,32 @@ WPamA.i18n = {
   },
   ModeSettings = {
     [25] = {
-      HdT = {
-        [1] = "Le total",
-        [2] = "Utilisé",
-        [3] = "Libérer",
-      },
+      HdT = { [1] = "Le total", [2] = "Utilisé", [3] = "Libérer" }
     },
 --------
     [42] = {
       HdT = {
         [1] = GetString(SI_COLLECTIBLERESTRICTIONTYPE1), -- Race
         [2] = GetString(SI_COLLECTIBLERESTRICTIONTYPE3), -- Class
-        [3] = "PdC", [4] = "Dernière connexion", [5] = "Temps joué",
+        [3] = "PdC", [4] = "Dernière connexion", [5] = "Temps joué"
       },
     },
 --------
     [50] = {
       HdT = {
         [1] = GetString(SI_CAMPAIGN_OVERVIEW_CATEGORY_BONUSES), -- Bonuses
-        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", ""), -- time remaining
+        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", "") -- time remaining
       },
     },
 --------
+    [51] = {
+      HdT = { [1] = GetMailListName(1), [2] = GetMailListName(2), [3] = GetMailListName(3) }
+    },
+--------
   }, -- ModeSettings
-  SelModeWin = {x = 210, y = 2, dy = 24,},
+  SelModeWin = {x = 210, y = 2, dy = 24},
 -- Labels
-  TotalRow = {[1] = "BANQUE",[2] = "TOTAL",},
+  TotalRow = {[1] = "BANQUE", [2] = "TOTAL"},
   HdrLvl = "Niv.",
   HdrName = "Nom",
   HdrClnd = "Calendrier",
@@ -294,6 +296,13 @@ WPamA.i18n = {
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_THOUSANDS_NARRATION),     " : 1234 K\n",
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_TEN_THOUSANDS_NARRATION), " : 12345 K"
                          } ),
+  OptDynEncounterNotify = zo_strformat("<<1>>: <<2>>", DynamicEncounterText, GetString(SI_MAIN_MENU_NOTIFICATIONS)),
+  OptDynEncounterNotifyF = table.concat(
+                           { "Afficher des notifications à l'écran et dans le chat concernant le début, ",
+                             "l'activité, la fin et la progression des Rencontres Dynamiques.\n\n",
+                             GetString(SI_ACTIONBARSETTINGCHOICE2), " - masquer les notifications pendant qu'un personnage ",
+                             "participe à une Rencontre, sinon afficher les notifications de Rencontre Dynamique."
+                           } ),
   OptCompanionRapport = "Afficher la relation de compagnons comme...",
   OptCompanionRprtList = {"de nombre", "de texte"},
   OptCompanionRprtMax = "Afficher la valeur maximale",
@@ -445,8 +454,9 @@ WPamA.i18n = {
   Login1DayAgo = "Hier",
 -- Dynamic Encounter Status
   DynamicEncounter = {
-    Start = DynamicEncounterText .. ":\n L'événement a commencé",
-    Stop  = DynamicEncounterText .. ":\n L'événement est terminé",
+    Start = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n L'événement a commencé" }),
+    Stop  = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n L'événement est terminé" }),
+    Activ = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n L'événement est actif" }),
     Progr = table.concat({ GetIcon(73,20), DynamicEncounterText, ": ",
             GetString(SI_ENDLESS_DUNGEON_SUMMARY_PROGRESS_HEADER),
             " ", GetString(SI_SPECTACLE_EVENTS_PROGRESS_PERCENT) })
@@ -682,6 +692,7 @@ WPamA.i18n.ToolTip = {
   [270] = "Hantise de la mande-âmes\n - la mande-âmes",
   [271] = "Antre de Wo-Xeeth\n - Wo-xeeth",
   [272] = "Site rituel de Zyv-Elehk\n - Ghishzor",
+--273-280 Item name
 }
 --
 WPamA.i18n.ToolTip[215] = WPamA.i18n.ToolTip[34]

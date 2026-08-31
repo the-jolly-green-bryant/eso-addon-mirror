@@ -10,9 +10,6 @@ end
 function Addon:BuildIndicatorsMenu(H)
     local sv = self.state.sv
     local limits = self.limits
-    local controls = {
-        { type = "header", name = "Indicators" },
-    }
 
     local bagControls = {
         H.Toggle(
@@ -41,11 +38,6 @@ function Addon:BuildIndicatorsMenu(H)
         "Bag X Position", "Bag Y Position", "bagPosX", "bagPosY",
         function() Addon:ApplyBagPosition() end
     ))
-    controls[#controls + 1] = {
-        type = "submenu",
-        name = "Bag Space",
-        options = bagControls,
-    }
 
     local bankControls = {
         H.Toggle(
@@ -74,11 +66,23 @@ function Addon:BuildIndicatorsMenu(H)
         "Bank X Position", "Bank Y Position", "bankPosX", "bankPosY",
         function() Addon:ApplyBankPosition() end
     ))
-    controls[#controls + 1] = {
-        type = "submenu",
-        name = "Bank Space",
-        options = bankControls,
-    }
 
-    return controls
+    return {
+        {
+            type = "section",
+            name = "Indicators",
+            options = {
+                {
+                    type = "submenu",
+                    name = "Bag Space",
+                    options = bagControls,
+                },
+                {
+                    type = "submenu",
+                    name = "Bank Space",
+                    options = bankControls,
+                },
+            },
+        },
+    }
 end

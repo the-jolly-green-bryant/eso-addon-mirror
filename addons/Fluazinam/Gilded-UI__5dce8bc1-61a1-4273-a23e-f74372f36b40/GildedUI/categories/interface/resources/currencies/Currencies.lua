@@ -609,7 +609,7 @@ local function BuildCurrencyGroupSubmenu(addon, H, groupKey, defs)
     return {
         type = "submenu",
         name = meta.submenuName,
-        screenHeader = {
+        header = {
             control = {
                 type = "dropdown",
                 name = "Currency",
@@ -632,7 +632,11 @@ end
 
 function Addon:BuildCurrenciesMenu(H)
     local controls = {
-        { type = "header", name = "Currencies" },
+        {
+            type = "section",
+            name = "Currencies",
+            options = {},
+        },
     }
 
     if not self.currencies then
@@ -644,12 +648,12 @@ function Addon:BuildCurrenciesMenu(H)
 
     local characterSubmenu = BuildCurrencyGroupSubmenu(self, H, "character", characterDefs)
     if characterSubmenu then
-        controls[#controls + 1] = characterSubmenu
+        controls[1].options[#controls[1].options + 1] = characterSubmenu
     end
 
     local accountSubmenu = BuildCurrencyGroupSubmenu(self, H, "account", accountDefs)
     if accountSubmenu then
-        controls[#controls + 1] = accountSubmenu
+        controls[1].options[#controls[1].options + 1] = accountSubmenu
     end
 
     return controls

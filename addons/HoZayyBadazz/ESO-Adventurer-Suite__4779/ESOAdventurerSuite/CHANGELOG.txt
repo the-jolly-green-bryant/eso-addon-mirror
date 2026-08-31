@@ -1,3 +1,402 @@
+0.29.28
+- Companion gallery now prefers the Suite's full portrait artwork instead of tiny collectible icons, making each companion card much easier to recognize.
+- Kept the full-card art layout, rounded UI shell, and runtime texture-root fix from 0.29.27.
+
+0.29.27
+- Removed the temporary /easuiassets texture diagnostic and asset-test output.
+- Kept the proven runtime-source texture-root detection that restored the correct rounded Suite UI and class artwork.
+- Simplified the texture-root code to only the working protected-error source-path method plus the normal fallback.
+- No visual layout or resource-pin behavior changes.
+
+0.29.26
+- Replaced unreliable addon-manager texture-root detection with a protected-error source-path detector that reads the actual user:/AddOns/.../ModernAppUI.lua runtime path.
+- Custom UI DDS paths now automatically include any real outer/nested install folder instead of assuming ESOAdventurerSuite is directly under AddOns.
+- /easuiassets now reports method, source, addonDir, textureRoot, nested state, and live shell/class texture load results.
+
+0.29.25
+- Fixed Suite UI asset-root detection for ESO clients that expose GetAddonsInstalled()/GetAddonName(index) instead of GetNumAddOns().
+- The UI now resolves the actual loaded add-on folder before building custom DDS paths, while retaining compatibility fallbacks for older API variants.
+- /easuiassets now reports the detected addon name, numeric index, root-resolution method, directory, and texture load states.
+
+0.29.24
+- Fixed custom UI texture-root detection by calling GetAddOnRootDirectoryPath with the addon numeric index, as required by ESO.
+- The Modern UI now derives custom shell, panel, class, companion, and app-icon paths from the actual folder ESO reports for the running addon.
+- /easuiassets now reports the matched addon index, ESO root directory, texture root, and shell/class load states.
+
+0.29.23
+- Restored the exact known-good 0.29.14 Modern App UI and its direct Suite texture paths.
+- Removed the experimental normal/nested texture retry system that could switch away from a valid DDS path before ESO finished loading it.
+- Restored the known-good rounded shell, rounded panel, pill, and class portrait DDS assets.
+- Preserved current resource-pin, Farm Focus, Bug Catcher, and scan functionality.
+
+0.29.22
+- Fixed Modern UI custom DDS loading for both normal and double-nested ESOAdventurerSuite installs.
+- The rounded shell, class portraits, rounded panels, and pill/button artwork now retry both ESOAdventurerSuite/Art and ESOAdventurerSuite/ESOAdventurerSuite/Art paths.
+- Removed the unreliable runtime-source/addon-root detection experiment.
+- /easuiassets now reports which normal or nested texture candidate actually loaded.
+
+0.29.21
+- UI texture paths now derive from ModernAppUI.lua's actual runtime source path instead of relying on an unavailable addon-root API.
+- Added a third custom-texture retry using the runtime user:/AddOns path when the normal addon-relative path fails.
+- /easuiassets now reports the exact Lua source path ESO loaded for ModernAppUI.lua.
+
+0.29.20
+- Custom UI texture paths now resolve from ESO's actual loaded addon directory instead of assuming the Windows folder name.
+- Fixes rounded shell and class portrait loading when manual extraction renames the addon folder.
+- /easuiassets now reports the real ESO addon directory plus the detected texture root and live texture load state.
+- Preserved the known-good rounded UI layout and all current resource-pin, Farm Focus, and Bug Catcher functionality.
+
+0.29.19
+- Restored the exact hardcoded Suite custom texture path form used by the known-good 0.29.14 UI.
+- Added automatic retry with a leading-slash custom texture path when ESO reports a Suite DDS as not loaded.
+- Added an internal native dark shell fallback so the Suite cannot become fully transparent while custom artwork is retried.
+- Expanded /easuiassets to report the live shell and class texture paths plus loaded state.
+
+0.29.18
+- Fixed modern UI custom artwork loading when the addon is installed inside an extra extraction/nested folder.
+- Rounded shell, rounded panels, class artwork, companion artwork fallbacks, and Suite app icons now resolve from the actual addon root reported by ESO.
+- Prevents the modern UI from falling back to the transparent/square appearance when hard-coded custom texture paths cannot be found.
+- Added /easuiassets as a diagnostic command that reports the detected Suite texture root.
+
+0.29.17
+- Restored the known-good 0.29.14 modern UI package and shell exactly as the visual baseline.
+- Corrected the addon archive to contain exactly one top-level ESOAdventurerSuite folder so ESO loads the intended ModernAppUI.lua and rounded shell assets.
+- Preserved the later Farm Focus resource filtering, resource-pin updates, and /easscan Bug Catcher scan functionality.
+
+0.29.16
+- Added the missing /easscan Bug Catcher command.
+- Added /easbugs scan as an equivalent runtime addon health scan.
+- The scan groups captured Lua/runtime errors by addon source and reports enabled addon load-state/out-of-date warnings when ESO exposes them.
+- Clarified that the scan checks runtime health; ESO addons cannot statically compile or inspect every other addon's source files.
+
+0.29.15
+- Added Farm Focus for Suite Resource Pins. Enable it to render only selected farming target categories while preserving the normal pin filters underneath.
+- Added independent Farm Focus targets for ore/seams, wood, cloth, alchemy plants, runestones, water/solvents, fishing holes, special resources, and other/unknown nodes.
+- Added Select All and Clear All Farm Targets controls for quick farming presets.
+- Resource pin status now reports the active Farm Focus target set.
+
+0.29.14
+- Removed the visible bottom-right resize grip/button from the modern Suite UI.
+- Added invisible resize hit zones along the right edge, bottom edge, and bottom-right corner.
+- The Suite remains resizable without adding any visible resize control or outer border.
+
+0.29.13
+- Removed the small character/profile information block from the top-right header so it no longer crowds or clips beside the close button.
+- Kept the close button in the top-right with a clear unobstructed area.
+
+0.29.12
+- Removed rounded corners from list-style sections and content panes such as quest/finder lists, pursuits, travel-style rows, notes, pins, codex, settings, and similar modern app areas.
+- Interactive row backgrounds now use square edges instead of pill/rounded shapes.
+- Kept rounded styling for the main outside shell and gallery/card areas where appropriate.
+- Preserved the custom resize grip and full-card artwork changes from 0.29.11.
+
+0.29.11
+- Character and companion gallery artwork now covers the full card art area instead of rendering as a small centered square.
+- Restored Suite window resizing with a custom bottom-right resize grip so the UI stays resizable without bringing back the bright outer border.
+- Kept the rounded shell-only outer window treatment from 0.29.10.
+
+0.29.10
+- Removed the rectangular native backdrop behind the modern Suite window so only the rounded shell is drawn.
+- Rebuilt the outer shell as a plain control with the rounded DDS as its only visible surface, eliminating the transparent rectangular background/outline.
+- Preserved all internal panels, navigation, movement, and Suite styling.
+
+0.29.09
+- Removed the bright native resize outline around the outside of the modern Suite window.
+- Preserved the rounded dark shell, internal card styling, and window movement.
+
+0.29.08
+- Fixed brief empty-pin depletion not firing reliably after the pin-specific 0.29.07 changes.
+- Loosened the approach-facing requirement and allows exact empty-pin confirmation at very close range without perfect camera aim.
+- Exact temporary-depletion records now use unique position/type keys so adjacent resources cannot overwrite each other's cooldown state.
+- Preserved same-resource isolation and post-harvest protection so unrelated nearby resource types remain visible.
+
+0.29.07
+- Expanded the brief missing-resource approach check to 4 meters so an empty pin can disappear before the player has to stand inside its icon.
+- Missing-resource fallback now stores an exact-pin depletion record instead of a broad depletion area, preventing unrelated neighboring resource pins from being hidden.
+- Added a stricter facing requirement for proximity-only depletion while preserving confirmed harvest, fishing-cluster, chest, and other-player depletion paths.
+- The empty-pin timer can continue while approaching the same selected pin instead of restarting from normal movement.
+
+0.29.06
+- Fixed empty resource markers remaining visible when a learned pin shadows the bundled community record.
+- The brief missing-node depletion check now applies to both community and learned resource pins.
+- Learned pins now use horizontal distance for the nearby depletion check, avoiding terrain/height offsets that prevented empty spots from timing out.
+- Preserved same-resource-type depletion isolation and the post-harvest protection window so collecting one node does not hide a different nearby resource.
+
+0.29.05
+- Fixed successful harvesting incorrectly hiding a different nearby resource type.
+- Depletion records from harvesting, missing-community checks, and confirmed other-player harvests now match the same resource type only.
+- Added a short post-harvest protection window so the missing-pin proximity detector cannot consume a neighboring pin while ESO clears the completed interaction.
+- Preserved fishing-cluster handling, chest depletion, and the configured respawn cooldown.
+
+0.29.04
+- Added a brief nearest-community-pin proximity fallback: if you walk directly up to a community resource pin, face the spot, and ESO exposes no harvest/fish/chest interaction for about 0.9 seconds, that pin is temporarily hidden.
+- The proximity fallback only affects the nearest community pin and cancels immediately if a supported resource interaction appears.
+- Preserved harvest-confirmed depletion, fishing cluster depletion, chest/lockpick depletion, and confirmed other-player harvest detection.
+
+0.29.03
+- Fishing completion now finds and temporarily hides the actual nearby community fishing records instead of relying only on one approximate depletion radius.
+- Expanded fishing duplicate matching around the completed hole while keeping the match fishing-only and height-aware.
+- Preserved the normal depletion timer and all non-fishing resource behavior.
+
+0.29.02
+- Fishing-hole depletion now suppresses nearby duplicate fishing community records for the same physical fishing spot.
+- Fishing cluster suppression is type-specific, so nearby chests, ore, plants, and other resource pins are not hidden with the fishing hole.
+- Preserved the normal depletion cooldown; all clustered fishing pins return when the timer expires.
+
+0.29.01
+- Fixed fishing resource pins not entering temporary depletion after a successful catch by giving fishing interactions a dedicated long completion window.
+- Fixed locked treasure chest pins not entering temporary depletion by detecting chest targets even when ESO reports INTERACTION_TYPE_NONE.
+- Added EVENT_LOCKPICK_SUCCESS support so long lockpick interactions keep the correct chest pending until its loot is received.
+- Unlocked chest interactions are also tracked through the normal interaction-result/loot path.
+
+0.29.00
+- Removed Suite World Marker from the Resource Pin icon-style options.
+- Removed World Marker from all Custom Per Type resource-icon dropdowns.
+- Existing saved Suite World Marker mode automatically migrates to Suite Resource Icons; per-type World Marker selections migrate to Automatic.
+- Kept Suite Glow, Suite Resource Icons, Custom Per Type, color tinting, rarity glow, community data and depletion behavior unchanged.
+
+0.28.99
+- Changed Suite World Marker mode so resource types no longer share one generic icon with only different colors.
+- Ore, wood, cloth, alchemy, runes, water, fishing, loot and special resources now select distinct resource-shaped world symbols.
+- Kept resource color tint, rarity/value glow, icon-size controls, community data and depletion behavior unchanged.
+
+0.28.98
+- Removed proximity-only empty-community depletion because it could hide valid nodes that were still available.
+- Community pins are now auto-hidden for other-player depletion only after the Suite first confirms the node was harvestable and then sees that same node vanish while you remain nearby and facing it.
+- Your own harvested nodes still hide immediately after loot confirmation and return after the configured cooldown.
+- Walking near a pin, looking away from a pin, or simply lacking a harvest prompt no longer removes the pin.
+
+0.28.97
+- Reduced the empty-community depletion confirmation hold time so depleted community pins disappear faster when you reach an already-collected location.
+- Slightly relaxed the movement tolerance while checking an empty community node so normal small foot movement does not keep restarting the probe.
+- Preserved harvest-confirmed depletion and the unified cooldown timer.
+
+0.28.96
+- Restored temporary depletion for empty community pins, but kept personally learned pins on collection-only depletion to avoid false positives.
+- Empty community pins now hide only after you stay close to the spot, have no supported resource target, and are not actively harvesting.
+- Added safer confirmation logic for empty community pins, including a short hold time, stationary check, and reticle-target guard.
+
+0.28.95
+- Removed automatic walk-up / empty-location depletion detection from Suite Resource Pins.
+- Resource pins now enter the temporary depletion cooldown only after ESO confirms the player actually received loot from that resource interaction.
+- Walking near, standing on, or inspecting an uncollected community pin no longer hides it.
+- Kept the shared temporary cooldown: personally collected pins disappear immediately, then return automatically after the configured timer.
+- Updated /easresources status to report COLLECTION ONLY depletion mode.
+
+0.28.94
+- Fixed already-empty community resource pins not disappearing when the player walks up to them.
+- Depletion proximity now uses horizontal distance instead of full 3D distance, avoiding terrain/elevation offsets in community coordinates.
+- Increased the empty-node probe radius to 4.25m and reduced the hold time to 1.25 seconds.
+- Added a short anti-cascade lock so one empty node cannot instantly suppress a whole nearby cluster.
+- Added depletion-probe distance/state diagnostics to /easresources.
+
+0.28.93
+- Unified personal and community resource depletion into one temporary cooldown system instead of permanently treating personally harvested nodes as collected.
+- Nodes harvested by the player now hide temporarily and automatically return after the configured cooldown.
+- Nearby community pins that appear already depleted can also hide temporarily after the player reaches the pin with no supported harvest interaction available.
+- Temporary depletion works even when Learn resources when gathered is disabled, so users can rely on community data without maintaining a separate permanent personal-collected state.
+- Added Hide temporarily depleted resource pins, Depleted node cooldown (1-30 minutes), Reset Depleted Pins, and /easresources resetdepleted.
+- Community resource records are never deleted by depletion handling.
+
+0.28.92
+- Changed non-Glow resource marker styles to use a tighter rune-style halo glow around the icon.
+- Added a new Resource icon size slider for direct size control over Suite Resource Icons, World Marker, and Custom Per Type styles.
+- Added a new Resource icon color strength slider so icons are no longer forced plain white and can tint by resource type.
+- Kept value/rarity glow colors: common stays light, better materials use blue, valuable containers use purple, and top-value treasure uses gold.
+- Preserved the working visible icon renderer, community data, and nearest-pin performance cap.
+
+0.28.91
+- Normalized Suite Resource Icon sizes so native ESO textures with different built-in padding no longer appear wildly larger or smaller than one another.
+- Reduced excessive icon growth at distance for a sharper, more consistent 3D presentation.
+- Rarity/value now changes glow color and intensity without changing the physical icon footprint.
+- Tightened the glow halo around each icon so it frames the symbol instead of becoming a large floating aura.
+- Preserved the proven 0.28.90 visible-icon renderer, community database, and dynamic nearest-pin performance cap.
+
+0.28.90
+- Added sharper 3D resource-icon presentation so Suite Resource Icons read more clearly in-world with less soft distance scaling.
+- Added value/rarity-based icon glow for non-Glow resource marker styles.
+- Common materials now use a lighter glow, better materials use blue, valuable containers use purple, and top-value treasure pins use gold.
+- Added new settings for Sharper 3D resource icons, Glow icons by value / rarity, and Resource icon glow strength.
+- Preserved the proven 0.28.89 visible resource-icon renderer, community data, and dynamic nearest-pin performance cap.
+
+0.28.89
+- Replaced book/page-looking master-writ and LoreBooks fallback textures in Suite Resource Icons with distinct ESO-native resource-style symbols.
+- Ore now uses the smithing refine symbol, wood uses the lumbermill symbol, cloth uses the clothier symbol, alchemy uses reagent/solvent symbols, enchanting uses the essence symbol, and fishing uses a fish icon.
+- Chest/trove, heavy sack, justice/stash and generic world markers now use non-book native ESO map/service symbols.
+- Kept the proven 0.28.88 single-control 3D renderer, raw-axis placement, community database, and dynamic nearest-72 performance cap unchanged.
+
+0.28.88
+- Moved Suite Resource Icons onto the exact same 3D Texture control already proven to display Suite Glow, eliminating the unproven secondary icon child.
+- Suite Resource Icons now use ESO-native crafting/resource-style textures for reliable 3D rendering while preserving per-resource colors.
+- Custom Per Type still attempts the supplied resource DDS files on the proven control and automatically falls back to the matching native ESO icon if the texture reports as unloaded.
+- Restored the original supplied resource DDS files unchanged for Custom Per Type and 2D use.
+- Added texture load/dimension diagnostics to /easresources status.
+- Preserved the verified raw-axis placement path, full community database, and dynamic nearest-72 performance cap.
+
+0.28.87
+- Kept the verified 0.28.86 raw-world placement path and rebuilt only the non-Glow icon layer.
+- Suite Resource Icons and Custom Per Type now use a guaranteed native Glow anchor plus a separate camera-facing resource icon child.
+- Resource icons are forced to full white/full alpha so their original artwork is not darkened by category tinting.
+- Rebuilt the supplied resource DDS artwork with complete mip chains for stable 3D texture sampling.
+- Preserved the dynamic nearest-pin performance cap and the full bundled community database.
+
+0.28.86
+- Fixed Resource Pins being counted as rendered but placed off-screen because 0.28.85 swapped ESO raw world-position axes during 3D conversion.
+- Restored the proven raw X / vertical / horizontal axis order used by the last visibly working Glow renderer.
+- The 4m test pin, Suite Glow, Suite Resource Icons, World Marker, and Custom Per Type now share the corrected placement path.
+- Preserved the performance-safe nearest-pin cap and full bundled community database.
+
+0.28.85
+- Rebuilt Suite Resource Pins on the exact single-Texture 3D renderer used by the working LoreBooks world pins.
+- Removed the separate beam/icon child render-space path that could break all Resource Pins.
+- Resource icons now use LoreBooks' proven world-position conversion, camera-facing orientation, depth handling, and pooled 3D texture controls.
+- Preserved the full community database with the performance-safe dynamic nearest-pin cap.
+
+0.28.84
+- Replaced the temporary forced-Glow compatibility path with the native two-part 3D resource marker renderer.
+- Suite Resource Icons now use an XML-backed 3D control tree matching the proven resource-pin structure: world beam plus category icon.
+- Restored the original supplied resource DDS artwork unchanged for its intended 3D marker path.
+- Resource world positions now use the native local-meter coordinate pattern under the GUI world-origin root instead of double-converting each marker.
+- Kept the performance-safe dynamic nearest-pin cap so the full community database remains available without creating thousands of 3D controls at once.
+
+0.28.83
+- Reworked community 3D pins for performance: the full current-zone database remains available, but only a bounded nearest set receives live 3D controls.
+- Removed the 5,000-control all-zone renderer that could cause severe FPS loss in dense zones when custom icon planes failed to display.
+- Added Maximum visible 3D resource pins (24-120, default 72) and expanded the dynamic selection range to 500m.
+- Added Safe Glow fallback for custom 3D icons. It is enabled by default so failed custom DDS planes cannot consume FPS invisibly; the user's requested icon style remains saved.
+- Existing 0.28.82 installs are automatically migrated to the safe 72-marker pool on reload.
+
+0.28.82
+- Added Show all community pins in current zone.
+- All-zone mode removes the normal distance filter and 56-pin nearby cap for community data.
+- Added status reporting for eligible/currently rendered community pins and a high-density safety cap.
+- Nearby mode remains available for lower FPS impact.
+
+0.28.81
+- Fixed Suite Resource Icons showing only the translucent World Marker base instead of the selected category/custom icon.
+- Category and Custom Per Type modes now render the selected resource artwork directly on the proven 3D marker plane; the extra World Marker background layer is no longer used behind category icons.
+- Fixed Glow-to-icon style switching so the texture cache always reloads the selected resource texture.
+- Added explicit RGB texture sampling for custom 3D DDS artwork and cleaned the Suite World Marker alpha falloff.
+
+0.28.80
+- Fixed Suite Resource Icons and Suite World Marker textures rendering invisibly in 3D while Suite Glow remained visible.
+- Rebuilt every ResourcePins DDS with a complete DXT5 mip chain required for reliable in-world 3D texture sampling; the artwork and Suite icon choices are unchanged.
+- Kept the working 3D anchor, community database, per-type icon replacement, and HUD visibility fixes intact.
+
+0.28.79
+- Fixed non-glow Suite Resource Icons and World Marker 3D orientation by billboard-rotating world-pin planes to the current camera heading.
+- Resource nodes now use the same exact WorldPositionToGuiRender3DPosition conversion as the Suite's working LoreBooks 3D pins instead of assuming raw meters map directly to GUI render space.
+- Resource pins are prepared while the HUD scene fragment is temporarily hidden, so chat/settings transitions no longer leave status at 0 candidates / 0 rendered; the fragment still controls actual menu visibility.
+
+0.28.78
+- Fixed Suite Resource Icons and Suite World Marker not appearing in 3D while Suite Glow worked.
+- Rebuilt non-glow resource markers as a proper 3D world-marker base plus a separate category icon child.
+- Removed camera-heading rotation from resource icon planes and kept the proven Suite Glow renderer unchanged.
+- Resource Pins status now reports the active icon mode for easier diagnostics.
+
+0.28.77
+- Fixed Suite Resource Pins remaining permanently queued after closing Settings because parent menu scenes could still report as showing.
+- 3D resource visibility now follows ESO's HUD scene fragment directly, matching the established world-pin lifecycle.
+- Resource Pins status now reports HUD fragment visibility and clears stale candidate/render counters while hidden.
+
+0.28.76
+- Fixed Suite Resource Pin test previews being hidden/expired by the Settings menu that launches them; test pins now wait until Settings is closed, then remain visible for 10 seconds.
+- Reworked the 3D resource-pin root to use a HUD scene fragment without off-screen 2D anchoring/dimensions, preventing valid world markers from being clipped or detached from the gameplay HUD.
+- Kept the bundled community database, per-type icon replacement, filters, learned-node merging, and ESOUI-ready packaging intact.
+
+0.28.75
+- Cleaned public release changelog history while preserving feature and bug-fix entries.
+
+0.28.74
+- Preserved community resource data, 3D pins, icon replacement, Bug Catcher, and all 0.28.72 functionality.
+
+0.28.69
+- Added Suite Community Resource Data with 124,625 pre-collected resource records across alliance, DLC, neutral/faction and newer zones.
+- Community nodes are decoded only for the current zone into a 50m spatial index, keeping the full packed database compact while 3D pin lookups stay fast.
+- Added automatic deduplication: personal learned nodes take priority over matching community locations; ore/jewelry and rune/portal aliases are merged.
+- Added a "Use Suite Community Resource Data" setting. Community nodes use the same Suite icon replacer, filters, range, brightness, size, and through-obstacle controls.
+- Resource Pin status now reports learned nodes, community nodes in the current zone, visible markers, and bundled database size.
+
+0.28.68
+- Bug Catcher now ignores LibDebugLogger's intentional Time Sync B marker/error codes instead of reporting them as addon failures.
+- Existing stored LibDebugLogger Time Sync marker entries are automatically removed without clearing genuine stored errors.
+
+0.28.67
+- Integrated Suite Resource Pin icon pack under Art/ResourcePins.
+- Added Resource Pin Icon Replacer: Suite Glow, automatic Suite resource icons, World Marker, and per-type custom icon selection.
+- Expanded resource classification for flowers, mushrooms, water plants, Heavy Sacks, Giant Clams, Troves, hidden stashes, and similar supported nodes.
+ESO Adventurer Suite 0.28.66
+- Added Suite-owned Resource 3D Pins. Harvesting a resource automatically learns an approximate raw-world location and renders remembered nodes as color-coded 3D glows.
+- Added filters for ore/seams, wood, cloth, alchemy, runestones, water/solvents, fishing holes, and unknown resources plus range, scale, brightness, through-walls, test, status, and clear controls.
+- Added a built-in Bug Catcher using EVENT_LUA_ERROR, EVENT_SCRIPT_ACCESS_VIOLATION, and EVENT_LUA_LOW_MEMORY. Errors are deduplicated, saved, summarized in chat, and available through /easbugs.
+- Added optional suppression of ESO's standard Lua error popup after the error is safely captured.
+- Compatibility pcall failures are forwarded into the Bug Catcher so Suite module initialization/runtime failures are not silently swallowed.
+
+0.28.65
+- Fixed Champion Point Gain Only overlay visibility by watching the real earned Champion Point total in addition to ESO events.
+
+0.28.63
+- Added a Suite-managed Infinite Archive overlay. ESO's native F5/title/Arc-Cycle-Stage tracker can now be moved with HUD Layout Mode, scaled in Suite settings, reset to the ESO default position, and hidden from Suite settings without creating a duplicate tracker.
+
+0.28.61
+- Reworked the Suite interface for better readability at smaller sizes, including responsive top tabs, tighter resize limits, improved left-rail spacing, and clearer alliance/class/companion presentation.
+- Expanded the Finders section with Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours views without handing off to ESO menus.
+- Improved Group Finder reliability so live results remain visible, manual refresh works correctly, finder style and difficulty controls are clearly labeled, and the current dungeon can be hosted directly.
+- Simplified Group Finder navigation by removing unnecessary PREV/NEXT controls and shortening the host action to HOST DUNGEON.
+- Improved Map / Travel readability with distinct zone and wayshrine rows plus a guild selector for traveling to the leader home of any joined guild.
+- Fixed Notes and Checkpoints editing, added reliable multiple-note and multiple-checkpoint saving, and separated SAVE NEW from UPDATE SELECTED so multiple checkpoints can be stored in the same zone.
+- Fixed the Suite hotkey while editing Notes/Checkpoints and while using the full addon settings panel.
+- Improved Tales of Tribute and Home Tours detail layouts so requirements/status information stays organized and readable.
+- Added Creator / In Game User ID / Discord community information to Suite Settings with optional-support wording that does not gate addon features or support.
+
+0.28.60
+- Fixed companion names in the Gear & Sets ability optimizer so ESO grammar metadata is never shown in button, confirmation, or status text.
+- Companion names are now normalized through ESO formatting with a safe fallback scrub for raw grammar suffixes.
+
+0.28.59
+- Fixed the companion ability optimizer private/protected API error.
+- Removed the protected companion cursor-pickup path and now stages companion skills through ESO's native Action Bar Assignment Manager.
+- Corrected companion action-slot indexing and added delayed server confirmation before reporting the result.
+
+0.28.58
+- Added a Gear & Sets button to optimize the active companion's unlocked abilities and ultimate.
+- Automatically detects the summoned companion and infers Tank, Healer, or Damage from its equipped weapon/armor.
+- Uses ESO companion ability role data and current equipment compatibility, so the optimizer works across different companions without hard-coding one companion.
+- Verifies the companion hotbar after slotting and reports partial/blocked changes instead of claiming success blindly.
+
+0.28.57
+- Added HOST CURRENT GROUP DUNGEON support for four-player instanced dungeons.
+- Detects the dungeon you are currently inside, matches it to ESO Group Finder, and uses the current Normal/Veteran difficulty.
+- The Group Finder host action now supports both Public Dungeons and four-player Group Dungeons while preventing duplicate listings.
+
+0.28.56
+- Fixed Public Dungeon detection for HOST CURRENT PUBLIC DUNGEON.
+- Uses the live player map plus zone-type/POI fallbacks and includes missing Public Dungeon map IDs.
+
+0.28.55
+- Added HOST CURRENT PUBLIC DUNGEON to the Group Finder.
+- Detects the Public Dungeon the player is currently inside and creates a help listing for it.
+- Uses the Zone / Public Dungeon activity when ESO exposes it, with a Custom listing fallback.
+- Auto Accept is enabled, role enforcement is disabled, and duplicate hosting is prevented.
+
+0.28.54
+- Pre-encounter reminders no longer stay visible just because you are inside a dungeon or raid.
+- Reminders now appear only while out of combat when an attackable target is lined up, with a brief grace period after the reticle moves away.
+
+0.28.53
+- Team Visibility: red is now reserved for the downed/dead state; living grouped players and the active companion cannot use red, and DPS defaults to amber.
+- Downed/dead grouped players and companions now switch to a red glow that pulses slowly until revival or recovery, then returns to the configured normal color.
+- Companion, group-default, and per-player glow intensity controls can now reach full brightness, with a separate brightness control for the downed/dead red glow.
+
+0.28.52
+- Skills & Champion: reduced the RESPEC + BUILD detail text size so the full word "passives" stays visible without clipping.
+
+0.28.51
+- Added Team Visibility glow for companions and grouped players using a soft obstacle-visible light effect.
+- Companion glow defaults to purple and has independent color, width, height, intensity, and through-obstacle settings.
+- Added per-player group glow overrides saved by account/name with the same customization controls.
+- Added balanced mirrored glow falloff and reset controls for companion, selected player, and all player overrides.
+
 0.28.50
 - Added Dungeon Queue HUD to HUD Layout Mode for preview, moving, and resizing while not queued.
 
@@ -298,7 +697,6 @@ Version 0.27.69
 0.27.66
 - Moved TRAVEL TO PLEDGE MASTER to the Travel page directly under NEAREST STABLEMASTER.
 - Removed the Activities-only Pledge Master button placement.
-
 
 0.27.62
 - Added a dedicated Cadwell's Almanac view to the Quest Journal.
@@ -952,7 +1350,6 @@ Version 0.25.64
 - Every slot is checked with ESO action-slot mutability/restriction and CanAbilityBeUsedFromHotbar before slotting.
 - Skill 1-5 and Ultimate are selected independently for each weapon bar; incompatible abilities are skipped instead of forced.
 
-0.25.52 - Fixed ChampionOptimizer Lua syntax error in pathToRoot.
 0.25.51 - Champion redistribution optimizer
 - Added REDISTRIBUTE CP to Skills & Champion.
 - Uses ESO live Champion respec cost with second-click gold confirmation.
@@ -1375,7 +1772,6 @@ Version 0.25.26
 - Fixed startup error: duplicate EAS_FigmaNav_INDEX control.
 - Figma navigation now creates INDEX exactly once even when compatibility code includes INDEX in the shared tab list.
 - Premium Figma glass UI remains intact.
-
 
 [Version 0.24.79]
 - Premium Figma polish pass for Tamriel Codex.
@@ -1832,21 +2228,19 @@ ESO Adventurer Suite 0.13.0
 ESO Adventurer Suite - Changelog
 
 0.12.0
-- Renamed the public addon to ESO Adventurer Suite to reflect its broader progression, combat, travel, journal, HUD, utility, and maintenance feature set.
 - Added an Equipment Set Journal on GEAR using ESO's live Item Set Collection, with source filters, collection progress, source routing, and matching-zone quest leads.
 - Replaced the old 20-entry quest discovery catalog with an asynchronous best-effort runtime quest index, including NOT STARTED / ACTIVE / ALL filtering and zone routing.
 - Added a movable Stable Training timer based on ESO's riding-training cooldown; 0 - READY means a new mount/stable stat upgrade is available.
 - Player unit frame now renders all buffs/debuffs exposed by ESO instead of collapsing extra player effects into +N. Target aura overflow behavior remains compact.
 - Added /esosuite as the primary slash command while retaining /esocoach as a legacy compatibility alias.
 - Kept ESOProgressionCoachSavedVars and the internal Lua namespace for upgrade continuity.
-- Preserved automatic recharge/repair, Quest/footer fixes, Session Play responsiveness, minimap/tools, Live Combat Stats fixes, and HoZayyBadazz ownership protection.
-
+- Preserved automatic recharge/repair, Quest/footer fixes, Session Play responsiveness, minimap/tools, Live Combat Stats fixes, and ESO Adventurer Suite ownership protection.
 
 0.11.2
 - Fixed Live Combat Stats penetration reads by combining ESO derived-stat and advanced-stat flat-value paths.
 - Fixed Critical Damage showing 0.0% when the live client exposes its usable value through the advanced stat flat-value channel.
 - Added the aggregate critical-percent API as a fallback when the Critical Damage percentage channel is empty.
-- Preserved auto recharge/repair, Quest/footer fixes, Session Play responsiveness, HUD/minimap/tools, and HoZayyBadazz ownership protection.
+- Preserved auto recharge/repair, Quest/footer fixes, Session Play responsiveness, HUD/minimap/tools, and ESO Adventurer Suite ownership protection.
 
 0.11.1
 - Removed the dedicated Lore Library / Lorebook tab and /esocoach lore commands.
@@ -1953,7 +2347,6 @@ ESO Progression Coach 0.8.5
 - Optional default-on replacement mode reason-scope-hides ESO native player resource bars, target frame, group/raid frames, and local companion frame while EPC replacements are enabled.
 - All EPC persistent HUD elements, including Mini Map and compact Combat HUD, hide in Pause, Character, Inventory, World Map, Journal, Crafting, Store, Collections, and similar UI scenes, then restore in gameplay.
 - Existing independent Mini Map drag surface and saved positioning retained.
-
 
 0.8.4 - Resource-Only Player Frame + Reliable Mini Map Drag
 - Player frame now shows only Health, Magicka, and Stamina.
@@ -2178,9 +2571,8 @@ CHANGELOG
 - Added endgame-oriented build and skill language so max-level players are not treated as leveling characters.
 - Preserved player-initiated-only travel and the existing focused-quest wayshrine ranking.
 
-0.1.6 - Quest-aware routing, character branding, and hotkey
+0.1.6 - Quest-aware routing and hotkey
 - Replaced the static overlay title with the current character's name.
-- Set the public add-on author to HoZayyBadazz in metadata, settings, and documentation.
 - Added a standard user-configurable ESO keybinding to show or hide the coach window.
 - Added /esocoach toggle and centralized visibility state so settings, slash commands, and the hotkey remain synchronized.
 - Added focused/assisted quest detection through ESO's tracked-quest API.

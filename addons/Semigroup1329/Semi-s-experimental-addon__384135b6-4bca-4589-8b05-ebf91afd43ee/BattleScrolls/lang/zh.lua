@@ -1035,11 +1035,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ZEN] = "持续伤害叠加（祖恩）",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "平均DoT数",
     [BATTLESCROLLS_ZEN_UPTIME] = "祖恩减益覆盖率",
-    [BATTLESCROLLS_ZEN_POTENTIAL] = "至少1个DoT的时间",
+    [BATTLESCROLLS_ZEN_PEAK_TIME] = "<<1>>的时间",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>>个DoT",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "平均<<1>> — 5个DoT时<<2>>",
     [BATTLESCROLLS_ZEN_SHORT] = "祖恩",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — 祖恩<<2>>% — 1+DoT <<3>>%",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — 祖恩<<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "辅助",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "复活次数",

@@ -112,25 +112,16 @@ function O:Refresh()
 
     local texture = nil
 
-    if self.layoutMode == true then
-        -- Layout preview uses the current context when possible.
-        if inDungeon and EPC.saved.overlandDifficultyShowDungeonOverlay ~= false then
-            texture = self:GetDungeonDifficultyIcon()
-        end
-        if not texture then
+    -- Dungeon difficulty has no reliable matching Challenge Difficulty symbol.
+    -- Hide this overlay completely while inside a dungeon/trial and restore the
+    -- normal overland symbol automatically after returning to the open world.
+    if not inDungeon then
+        if self.layoutMode == true then
             local value = self:GetShownDifficulty() or 0
             local keys = { [0] = "basegame", [1] = "journeyman", [2] = "adventurer", [3] = "veteran" }
             local key = keys[value] or "basegame"
             texture = string.format("EsoUI/Art/ChallengeDifficulty/challengeDifficulty_%s_down_over.dds", key)
-        end
-    elseif not suppressed and overlayEnabled then
-        if inDungeon then
-            -- Never display an overland Challenge Difficulty symbol in a dungeon.
-            -- Use ESO's own Normal/Veteran dungeon icon when enabled and available.
-            if EPC.saved.overlandDifficultyShowDungeonOverlay ~= false then
-                texture = self:GetDungeonDifficultyIcon()
-            end
-        elseif autoEnabled then
+        elseif not suppressed and overlayEnabled and autoEnabled then
             local value = self:GetShownDifficulty()
             if value ~= nil then
                 local keys = { [0] = "basegame", [1] = "journeyman", [2] = "adventurer", [3] = "veteran" }

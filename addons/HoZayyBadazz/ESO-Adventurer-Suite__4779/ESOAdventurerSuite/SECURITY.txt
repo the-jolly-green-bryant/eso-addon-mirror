@@ -1,4 +1,4 @@
-SECURITY MODEL - ESO ADVENTURER SUITE 0.27.78
+SECURITY MODEL - ESO ADVENTURER SUITE 0.28.61
 ============================================
 
 ESO Adventurer Suite is a recommendation, analytics, inventory-information,

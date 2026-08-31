@@ -103,7 +103,8 @@ WPamA.i18n = {
         [5] = {N=GetIcon(31,28), NC=GetIcon(31,28,true), W=28, S=true,
                A=GetString(SI_GAMEPAD_PLAYER_INVENTORY_CAPACITY_FOOTER_LABEL)},
         [6] = {N=GetIcon(61,24), NC=GetIcon(61,24,true), W=28, S=true,
-               A=zo_strformat("<<1>>, <<2>>", GetString(SI_SPECIALIZEDITEMTYPE100), GetString(SI_SPECIALIZEDITEMTYPE101))},
+               A=zo_strformat("<<1>>,\n<<2>>,\n<<3>>", GetString(SI_SPECIALIZEDITEMTYPE100),
+                              GetString(SI_SPECIALIZEDITEMTYPE101), GetString(SI_SPECIALIZEDITEMTYPE2750) )},
         [7] = {N=GetIcon(65,28), NC=GetIcon(65,28,true), W=28, S=true, A=GetString(SI_ITEMTYPEDISPLAYCATEGORY26)},
       },
     },
@@ -146,6 +147,7 @@ WPamA.i18n = {
         [1] = {N="季節のお祭り", W=100},
         [2] = {N=GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES803), W=70},
         [3] = {N=GetString(SI_RECIPECRAFTINGSYSTEM6), W=100},
+        [4] = {N=GetString(SI_QUESTTYPE19), W=100}, -- Favors
       },
     },
     [8] = {
@@ -163,32 +165,32 @@ WPamA.i18n = {
   },
   ModeSettings = {
     [25] = {
-      HdT = {
-        [1] = "合計",
-        [2] = "中古",
-        [3] = "自由",
-      },
+      HdT = { [1] = "合計", [2] = "中古", [3] = "自由" }
     },
 --------
     [42] = {
       HdT = {
         [1] = GetString(SI_COLLECTIBLERESTRICTIONTYPE1), -- Race
         [2] = GetString(SI_COLLECTIBLERESTRICTIONTYPE3), -- Class
-        [3] = "SP", [4] = "Last login", [5] = "Played time",
+        [3] = "SP", [4] = "Last login", [5] = "Played time"
       },
     },
 --------
     [50] = {
       HdT = {
         [1] = GetString(SI_CAMPAIGN_OVERVIEW_CATEGORY_BONUSES), -- Bonuses
-        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", ""), -- time remaining
+        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", "") -- time remaining
       },
     },
 --------
+    [51] = {
+      HdT = { [1] = GetMailListName(1), [2] = GetMailListName(2), [3] = GetMailListName(3) }
+    },
+--------
   }, -- ModeSettings
-  SelModeWin = {x = 170, y = 2, dy = 24,},
+  SelModeWin = {x = 170, y = 2, dy = 24},
 -- Labels
-  TotalRow = {[1] = "銀行",[2] = "合計",},
+  TotalRow = {[1] = "銀行", [2] = "合計"},
   HdrLvl = "レベル",
   HdrName = "名前",
   HdrClnd = "カレンダー",
@@ -278,6 +280,13 @@ WPamA.i18n = {
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_THOUSANDS_NARRATION),     " : 1234 K\n",
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_TEN_THOUSANDS_NARRATION), " : 12345 K"
                          } ),
+  OptDynEncounterNotify = zo_strformat("<<1>>: <<2>>", DynamicEncounterText, GetString(SI_MAIN_MENU_NOTIFICATIONS)),
+  OptDynEncounterNotifyF = table.concat(
+                           { "Show notifications at screen and in chat about the start, activity, completion, ",
+                             "progress of Dynamic Encounters.\n\n",
+                             GetString(SI_ACTIONBARSETTINGCHOICE2), " - hide notifications while the character is ",
+                             "participating in an Encounter, otherwise show Dynamic Encounter notifications."
+                           } ),
   OptCompanionRapport = "Show companions rapport as...",
   OptCompanionRprtList = {"number", "text"},
   OptCompanionRprtMax = "Also show maximum value",
@@ -428,8 +437,9 @@ WPamA.i18n = {
   Login1DayAgo = "Yesterday",
 -- Dynamic Encounter Status
   DynamicEncounter = {
-    Start = DynamicEncounterText .. ":\n The event started",
-    Stop  = DynamicEncounterText .. ":\n The event completed",
+    Start = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n The event started" }),
+    Stop  = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n The event completed" }),
+    Activ = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n The event is active" }),
     Progr = table.concat({ GetIcon(73,20), DynamicEncounterText, ": ",
             GetString(SI_ENDLESS_DUNGEON_SUMMARY_PROGRESS_HEADER),
             " ", GetString(SI_SPECTACLE_EVENTS_PROGRESS_PERCENT) })
@@ -664,6 +674,7 @@ WPamA.i18n.ToolTip = {
   [270] = "ソウルコーラーのうろつく場所\n - ソウルコーラー",
   [271] = "ウォ・ジースの巣\n - ウォ・ジース",
   [272] = "ジブ・エレークの儀式の地\n - ギシュゾル",
+--273-280 Item name
 }
 --
 WPamA.i18n.ToolTip[215] = WPamA.i18n.ToolTip[34]

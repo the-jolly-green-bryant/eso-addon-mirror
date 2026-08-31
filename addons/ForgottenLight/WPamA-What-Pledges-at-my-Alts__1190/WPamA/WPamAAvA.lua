@@ -452,7 +452,7 @@ function WPamA:UpdRowModeAvAXPBuffs(v, r, ttl, TS)
     r.B[2]:SetText("---")
   end
   ---
-  for j = 3, 5 do
+  for j = 3, 8 do
     if map[j] then
       local k = v.Invt[ map[j] ] or 0
       ttl[j] = ttl[j] + k

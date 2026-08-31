@@ -102,11 +102,11 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibCraftText](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ziggr/LibCraftText__2184) | ziggr | PC / Mac | 5.3.1 |
 | [LibCrypto](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibCrypto__4010) | akamatsu02 | PC / Mac | 1.1 |
 | [LibCustomDialog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/LibCustomDialog__2708) | MrPikPik | PC / Mac | 0.3 |
-| [LibCustomIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomIcons__4161) | m00nyONE | PC / Mac | 2026-08-16 |
+| [LibCustomIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomIcons__4161) | m00nyONE | PC / Mac | 2026-08-31 |
 | [LibCustomMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mYoda01/LibCustomMenu__fff7f7e3-b518-4545-9e96-a4f6c2a28dea) | mYoda01 | Console | — |
 | [LibCustomMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan/LibCustomMenu__1146) | votan | PC / Mac | 7.3.0 |
 | [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__5eaa0d91-47f8-4c5e-8673-db3ab518a752) | m00nyONE | Console | — |
-| [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__4155) | m00nyONE | PC / Mac | 2026-08-23 |
+| [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__4155) | m00nyONE | PC / Mac | 2026-08-31 |
 | [LibDailyReset](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/LibDailyReset__4424) | atharti | PC / Mac | 1.8 |
 | [LibDataEncode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/LibDataEncode__3980) | Solinur | PC / Mac | 2 |
 | [LibDataPacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibDataPacker__4082) | imPDA | PC / Mac | v5 |
@@ -135,6 +135,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibFonts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheJoltman/LibFonts__4004) | TheJoltman | PC / Mac | 1.0.0 |
 | [LibFoodDrinkBuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibFoodDrinkBuff__1902) | Baertram | PC / Mac | 19 |
 | [LibFsCommons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FelipeS11/LibFsCommons__2439) | FelipeS11 | PC / Mac | 3.0 |
+| [LibFurnitureCatalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wookiefriseur/LibFurnitureCatalogue__4804) | wookiefriseur | PC / Mac | 1.0.0 |
 | [LibGamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YeOldeDragon/LibGamepad__37661fa7-7702-4eeb-b3ed-7e840aa17647) | YeOldeDragon | Console | — |
 | [LibGamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YeOldeDragon/LibGamepad__4441) | YeOldeDragon | PC / Mac | 1.0.8 |
 | [LibGamepadOptions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OfficialZoruah/LibGamepadOptions__4614) | OfficialZoruah | PC / Mac | 0.2.4 |

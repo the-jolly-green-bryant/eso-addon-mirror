@@ -13,11 +13,46 @@ function S:Initialize()
     if not LAM then return end
 
     local panelName = "ESOProgressionCoachSettings"
+
+    local groupSlotChoices, groupSlotValues = {}, {}
+    for i = 1, 12 do
+        groupSlotChoices[i] = "Group Member " .. tostring(i)
+        groupSlotValues[i] = i
+    end
+
+    local function selectedGroupTag()
+        local slot = tonumber(EPC.saved.teamVisibilitySelectedGroupSlot) or 1
+        slot = zo_clamp(slot, 1, 12)
+        return "group" .. tostring(slot)
+    end
+
+    local function selectedGroupAvailable()
+        local tag = selectedGroupTag()
+        if type(DoesUnitExist) ~= "function" or not DoesUnitExist(tag) then return false end
+        if type(AreUnitsEqual) == "function" and AreUnitsEqual(tag, "player") then return false end
+        return true
+    end
+
+    local function selectedGroupOverride(create)
+        if not selectedGroupAvailable() or not EPC.TeamVisibility or not EPC.TeamVisibility.GetGroupOverride then return nil end
+        return EPC.TeamVisibility:GetGroupOverride(selectedGroupTag(), create == true)
+    end
+
+    local function selectedGroupRoleColor()
+        if EPC.TeamVisibility and EPC.TeamVisibility.GetBaseRoleColor then
+            return EPC.TeamVisibility:GetBaseRoleColor(selectedGroupTag())
+        elseif EPC.TeamVisibility and EPC.TeamVisibility.GetRoleColor then
+            return EPC.TeamVisibility:GetRoleColor(selectedGroupTag())
+        end
+        return 0.15, 0.95, 1.00, 1.00
+    end
+
     local challengeNames, challengeValues = { "Adventurer", "Seasoned", "Master", "Vestige" }, { 0, 1, 2, 3 }
     if EPC.OverlandDifficulty and EPC.OverlandDifficulty.GetDifficultyChoices then
         challengeNames, challengeValues = EPC.OverlandDifficulty:GetDifficultyChoices()
     end
-    LAM:RegisterAddonPanel(panelName, {
+    S.panelName = panelName
+    S.panelObject = LAM:RegisterAddonPanel(panelName, {
         type = "panel",
         name = EPC.displayName,
         displayName = "|cE8B347ESO Adventurer Suite|r",
@@ -44,6 +79,16 @@ function S:Initialize()
             getFunc = function() return EPC.saved.enabled end,
             setFunc = function(v) EPC:SetEnabled(v, "settings") end,
             default = EPC.defaults.enabled,
+        },
+        {
+            type = "checkbox", name = "Combat Rotation Assistant",
+            tooltip = "Shows the safest next-ability recommendation during combat. It never casts abilities, presses keys, or automates gameplay.",
+            getFunc = function() return EPC.saved.rotationAssistantEnabled ~= false end,
+            setFunc = function(v)
+                if EPC.RotationAssistant then EPC.RotationAssistant:SetEnabled(v)
+                else EPC.saved.rotationAssistantEnabled = v end
+            end,
+            default = EPC.defaults.rotationAssistantEnabled,
         },
         {
             type = "dropdown", name = "Combat role awareness",
@@ -129,14 +174,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.overlandDifficultyShowOverlay == true end,
             setFunc = function(v) EPC.saved.overlandDifficultyShowOverlay = v == true if EPC.ChallengeDifficultyOverlay then EPC.ChallengeDifficultyOverlay:Refresh() end end,
             default = EPC.defaults.overlandDifficultyShowOverlay,
-            width = "half",
-        },
-        {
-            type = "checkbox", name = "Show Normal/Veteran dungeon symbol",
-            tooltip = "While inside a dungeon, replaces the overland Challenge Difficulty symbol with ESO's native Normal or Veteran dungeon difficulty icon. Turn this off to hide the difficulty overlay entirely in dungeons.",
-            getFunc = function() return EPC.saved.overlandDifficultyShowDungeonOverlay ~= false end,
-            setFunc = function(v) EPC.saved.overlandDifficultyShowDungeonOverlay = v == true if EPC.ChallengeDifficultyOverlay then EPC.ChallengeDifficultyOverlay:Refresh() end end,
-            default = EPC.defaults.overlandDifficultyShowDungeonOverlay,
             width = "half",
         },
         {
@@ -597,6 +634,763 @@ function S:Initialize()
             width = "half",
         },
         {
+            type = "header", name = "Dungeon / Trial Chest Finder",
+        },
+        {
+            type = "description",
+            title = "Chest-centered 3D glow",
+            text = "Works only inside supported instanced PvE content such as Group Dungeons, Trials, and Arenas. ESO does not expose the chest model's exact world coordinates, so the Suite estimates the center when your reticle identifies a Chest or Heavy Sack at interaction range. Confirmed objects use one compact glow centered on that learned position until looted. Possible-spawn glows are optional and are automatically suppressed whenever a confirmed chest/Heavy Sack is being shown, preventing multiple glows from surrounding the real chest.",
+        },
+        {
+            type = "checkbox", name = "Enable Dungeon / Trial Chest Finder",
+            tooltip = "Enables learned 3D chest/Heavy Sack spawn glows only in supported instanced PvE content.",
+            getFunc = function() return EPC.saved.dungeonChestFinderEnabled ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestFinderEnabled = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            default = EPC.defaults.dungeonChestFinderEnabled,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Show possible chest spawn locations",
+            tooltip = "Shows remembered possible spawn points only when no confirmed chest/Heavy Sack is currently being rendered. Leave this off if you only want the actual detected chest location to glow.",
+            getFunc = function() return EPC.saved.dungeonChestShowPossible ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestShowPossible = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestShowPossible,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Show Heavy Sack glows",
+            getFunc = function() return EPC.saved.dungeonChestShowHeavySacks ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestShowHeavySacks = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestShowHeavySacks,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Learn new chest locations",
+            tooltip = "Saves a chest/Heavy Sack spawn point when ESO identifies it under your reticle at interaction range. Existing learned locations remain visible if this is turned off.",
+            getFunc = function() return EPC.saved.dungeonChestLearnLocations ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestLearnLocations = v == true end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestLearnLocations,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Chest glows through obstacles",
+            tooltip = "When enabled, 3D chest glows ignore the depth buffer so they can remain visible through dungeon geometry where ESO permits it.",
+            getFunc = function() return EPC.saved.dungeonChestThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.dungeonChestThroughWalls = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestThroughWalls,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Chest glow distance", min = 25, max = 250, step = 5,
+            tooltip = "Maximum distance in meters for learned dungeon/trial chest glows.",
+            getFunc = function() return tonumber(EPC.saved.dungeonChestDistance) or 120 end,
+            setFunc = function(v) EPC.saved.dungeonChestDistance = tonumber(v) or 120 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestDistance,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Chest glow size", min = 50, max = 200, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.dungeonChestMarkerScale) or 1.0) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.dungeonChestMarkerScale = (tonumber(v) or 100) / 100 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = math.floor((EPC.defaults.dungeonChestMarkerScale or 1.0) * 100),
+            width = "half",
+        },
+        {
+            type = "slider", name = "Chest glow intensity", min = 5, max = 100, step = 5,
+            tooltip = "Controls the brightness of chest/Heavy Sack glows. Confirmed spawns stay brighter and pulse until looted.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.dungeonChestGlowOpacity) or 0.60) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.dungeonChestGlowOpacity = (tonumber(v) or 60) / 100 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = math.floor((EPC.defaults.dungeonChestGlowOpacity or 0.60) * 100),
+            width = "half",
+        },
+        {
+            type = "colorpicker", name = "Chest glow color",
+            getFunc = function() local c = EPC.saved.dungeonChestColor or EPC.defaults.dungeonChestColor return c.r or 1.0, c.g or 0.74, c.b or 0.14, 1 end,
+            setFunc = function(r, g, b, a) EPC.saved.dungeonChestColor = { r = r, g = g, b = b } if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
+            default = EPC.defaults.dungeonChestColor,
+            width = "half",
+        },
+        {
+            type = "colorpicker", name = "Heavy Sack glow color",
+            getFunc = function() local c = EPC.saved.dungeonChestSackColor or EPC.defaults.dungeonChestSackColor return c.r or 0.62, c.g or 0.92, c.b or 0.52, 1 end,
+            setFunc = function(r, g, b, a) EPC.saved.dungeonChestSackColor = { r = r, g = g, b = b } if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
+            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false or EPC.saved.dungeonChestShowHeavySacks == false end,
+            default = EPC.defaults.dungeonChestSackColor,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear learned dungeon chest locations", buttonText = "Clear Learned Chests",
+            tooltip = "Deletes every dungeon/trial Chest and Heavy Sack spawn learned by this feature. This does not affect Lore Books, minimap locations, or other Suite data.",
+            func = function() if EPC.DungeonChestFinder then EPC.DungeonChestFinder:ClearLearnedLocations() EPC:Print("Dungeon / Trial Chest Finder learned locations cleared.") end end,
+            disabled = function() return not EPC.DungeonChestFinder end,
+            width = "full",
+        },
+        {
+            type = "header", name = "Suite Resource Pins",
+        },
+        {
+            type = "description",
+            title = "Learned + Suite Community Resource Data",
+            text = "Suite Resource Pins combines your personally learned resource locations with 124,625 bundled community resource records. The full current-zone database stays available, but only the nearest capped set receives 3D controls at one time. Personal and community locations share the same temporary depletion system: harvested or already-empty nodes hide for the configured cooldown and then return automatically. As you move, the pool automatically swaps to the next nearby community pins. This avoids the severe FPS loss caused by trying to create thousands of 3D markers simultaneously.",
+        },
+        {
+            type = "checkbox", name = "Enable Suite Resource Pins",
+            tooltip = "Turns the Suite resource-node system on or off.",
+            getFunc = function() return EPC.saved.resourcePinsEnabled ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsEnabled = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            default = EPC.defaults.resourcePinsEnabled,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Use Suite Community Resource Data",
+            tooltip = "Shows pre-collected resource locations bundled with the Suite. Only the current zone is decoded into the fast 3D spatial cache. Your personally learned pins remain separate and take priority over nearby community records.",
+            getFunc = function() return EPC.saved.resourcePinsCommunityEnabled ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsCommunityEnabled = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
+            default = EPC.defaults.resourcePinsCommunityEnabled,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Learn resources when gathered",
+            tooltip = "Optionally records a personal copy of resource locations after you gather them. Temporary depleted-node hiding works even when personal learning is turned off.",
+            getFunc = function() return EPC.saved.resourcePinsLearn ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsLearn = v == true end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
+            default = EPC.defaults.resourcePinsLearn,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Hide temporarily depleted resource pins",
+            tooltip = "Hides a resource pin only after ESO confirms that you personally collected loot from that resource interaction. Simply walking up to a community pin never hides it. The pin returns after the cooldown.",
+            getFunc = function() return EPC.saved.resourcePinsHideDepleted ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsHideDepleted = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
+            default = EPC.defaults.resourcePinsHideDepleted,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Depleted node cooldown (minutes)", min = 1, max = 30, step = 1,
+            tooltip = "How long a resource location stays hidden after you personally collect it before it becomes eligible to appear again.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsDepletedCooldownMinutes) or 5) end,
+            setFunc = function(v) EPC.saved.resourcePinsDepletedCooldownMinutes = math.floor(tonumber(v) or 5) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsHideDepleted == false end,
+            default = EPC.defaults.resourcePinsDepletedCooldownMinutes or 5,
+            width = "half",
+        },
+        {
+            type = "button", name = "Temporary depleted resource states", buttonText = "Reset Depleted Pins",
+            tooltip = "Immediately makes every resource pin hidden by your own recent collections eligible to show again. Community data itself is never deleted.",
+            func = function() if EPC.ResourcePins then EPC.ResourcePins:ClearDepletedLocations() EPC:Print("Temporary depleted resource pins reset.") end end,
+            disabled = function() return not EPC.ResourcePins or EPC.saved.resourcePinsEnabled == false end,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Show resource pins in 3D world",
+            getFunc = function() return EPC.saved.resourcePinsShow3D ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShow3D = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
+            default = EPC.defaults.resourcePinsShow3D,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Resource pins through obstacles",
+            tooltip = "Lets Suite learned and community 3D resource markers remain visible through terrain/objects where ESO permits addon 3D controls.",
+            getFunc = function() return EPC.saved.resourcePinsThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsThroughWalls = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
+            default = EPC.defaults.resourcePinsThroughWalls,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Resource pin distance", min = 15, max = 500, step = 5,
+            tooltip = "Maximum distance used to select nearby learned and community nodes for the dynamic 3D pool.",
+            getFunc = function() return tonumber(EPC.saved.resourcePinsDistance) or 200 end,
+            setFunc = function(v) EPC.saved.resourcePinsDistance = tonumber(v) or 200 if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
+            default = EPC.defaults.resourcePinsDistance,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Maximum visible 3D resource pins", min = 24, max = 120, step = 8,
+            tooltip = "Hard performance cap for active 3D resource controls. The full community database remains available; this only limits how many nearest pins are drawn at the same time.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsMaxVisible) or 72) end,
+            setFunc = function(v) EPC.saved.resourcePinsMaxVisible = math.floor(tonumber(v) or 72) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
+            default = EPC.defaults.resourcePinsMaxVisible or 72,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Resource pin size", min = 45, max = 250, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.resourcePinsScale) or 1.0) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.resourcePinsScale = (tonumber(v) or 100) / 100 if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
+            default = math.floor((EPC.defaults.resourcePinsScale or 1.0) * 100),
+            width = "half",
+        },
+        {
+            type = "slider", name = "Resource pin brightness", min = 15, max = 100, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.resourcePinsOpacity) or 0.72) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.resourcePinsOpacity = (tonumber(v) or 72) / 100 if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
+            default = math.floor((EPC.defaults.resourcePinsOpacity or 0.72) * 100),
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Sharper 3D resource icons",
+            tooltip = "Uses normalized per-resource sizing and reduced distance growth so all resource symbols stay crisp and visually consistent in the world.",
+            getFunc = function() return EPC.saved.resourcePinsSharpIcons ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsSharpIcons = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
+            default = EPC.defaults.resourcePinsSharpIcons,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Glow icons by value / rarity",
+            tooltip = "Adds a colored glow behind resource icons. Rarity changes glow color and intensity only; it no longer makes higher-tier icons physically larger.",
+            getFunc = function() return EPC.saved.resourcePinsValueGlow ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsValueGlow = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
+            default = EPC.defaults.resourcePinsValueGlow,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Resource icon glow strength", min = 20, max = 100, step = 5,
+            tooltip = "Controls how bright the rune-style value/rarity glow appears behind resource icons.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsGlowStrength) or 78) end,
+            setFunc = function(v) EPC.saved.resourcePinsGlowStrength = math.floor(tonumber(v) or 78) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
+            default = EPC.defaults.resourcePinsGlowStrength or 78,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Resource icon size", min = 70, max = 180, step = 5,
+            tooltip = "Changes the physical size of non-Glow resource icons in the 3D world without changing the general resource-pin distance settings.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsIconSize) or 100) end,
+            setFunc = function(v) EPC.saved.resourcePinsIconSize = math.floor(tonumber(v) or 100) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
+            default = EPC.defaults.resourcePinsIconSize or 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Resource icon color strength", min = 0, max = 100, step = 5,
+            tooltip = "Adds category color to the resource symbol itself. 0 keeps icons white, 100 fully tints them by resource type.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsIconTintStrength) or 85) end,
+            setFunc = function(v) EPC.saved.resourcePinsIconTintStrength = math.floor(tonumber(v) or 85) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
+            default = EPC.defaults.resourcePinsIconTintStrength or 85,
+            width = "half",
+        },
+        {
+            type = "header", name = "Resource Pin Icon Replacer",
+        },
+        {
+            type = "description",
+            title = "Choose how Suite resource markers look",
+            text = "Suite Glow uses the proven glowing marker. Suite Resource Icons uses distinct ESO-native resource symbols on the same proven 3D control: mining/refining, lumber, clothier, alchemy, enchanting, water, fishing, loot and justice markers. All non-Glow icon styles use a tighter rune-style halo glow, can be resized independently, and can tint the icon itself by resource type. The glow can still shift by value/rarity: common materials use a lighter glow, better materials use blue, valuable containers use purple, and top-value treasure pins use gold. Custom Per Type lets you replace each category independently.",
+        },
+        {
+            type = "dropdown", name = "Resource pin icon style",
+            choices = { "Suite Glow", "Suite Resource Icons", "Custom Per Type" },
+            choicesValues = { "SUITE_GLOW", "CATEGORY", "CUSTOM" },
+            getFunc = function() return EPC.saved.resourcePinsIconMode or "SUITE_GLOW" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconMode = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
+            default = EPC.defaults.resourcePinsIconMode,
+            width = "full",
+        },
+        {
+            type = "dropdown", name = "Ore / seams icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconOre or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconOre = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconOre,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Wood icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconWood or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconWood = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconWood,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Cloth icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconCloth or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconCloth = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconCloth,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Alchemy icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconAlchemy or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconAlchemy = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconAlchemy,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Runestone icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconRunes or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconRunes = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconRunes,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Water / solvent icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconWater or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconWater = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconWater,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Fishing icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconFishing or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconFishing = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconFishing,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Special resource icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconSpecial or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconSpecial = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconSpecial,
+            width = "half",
+        },
+        {
+            type = "dropdown", name = "Other / unknown icon",
+            choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
+            getFunc = function() return EPC.saved.resourcePinsIconOther or "AUTO" end,
+            setFunc = function(v) EPC.saved.resourcePinsIconOther = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
+            default = EPC.defaults.resourcePinsIconOther,
+            width = "half",
+        },
+        {
+            type = "header", name = "Farm Focus",
+        },
+        {
+            type = "description",
+            text = "Turn Farm Focus on when you only want to see specific resource types. Your normal Resource Pin Filters below are preserved and automatically return when Farm Focus is turned off.",
+        },
+        {
+            type = "checkbox", name = "Enable Farm Focus",
+            tooltip = "When enabled, only the checked Farm Targets below are rendered as resource pins.",
+            getFunc = function() return EPC.saved.resourcePinsFarmFocusEnabled == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmFocusEnabled = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
+            default = EPC.defaults.resourcePinsFarmFocusEnabled or false,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Farm ore / seams",
+            getFunc = function() return EPC.saved.resourcePinsFarmOre == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmOre = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm wood",
+            getFunc = function() return EPC.saved.resourcePinsFarmWood == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmWood = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm cloth",
+            getFunc = function() return EPC.saved.resourcePinsFarmCloth == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmCloth = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm alchemy plants",
+            getFunc = function() return EPC.saved.resourcePinsFarmAlchemy == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmAlchemy = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm runestones",
+            getFunc = function() return EPC.saved.resourcePinsFarmRunes == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmRunes = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm water / solvents",
+            getFunc = function() return EPC.saved.resourcePinsFarmWater == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmWater = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm fishing holes",
+            getFunc = function() return EPC.saved.resourcePinsFarmFishing == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmFishing = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm special resources",
+            tooltip = "Chests, Heavy Sacks, Giant Clams, Troves, Justice containers and hidden stashes.",
+            getFunc = function() return EPC.saved.resourcePinsFarmSpecial == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmSpecial = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "checkbox", name = "Farm other / unknown",
+            getFunc = function() return EPC.saved.resourcePinsFarmOther == true end,
+            setFunc = function(v) EPC.saved.resourcePinsFarmOther = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            default = false, width = "half",
+        },
+        {
+            type = "button", name = "Farm targets", buttonText = "Select All",
+            func = function() if EPC.ResourcePins then EPC.ResourcePins:SetAllFarmTargets(true) end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Farm targets", buttonText = "Clear All",
+            func = function() if EPC.ResourcePins then EPC.ResourcePins:SetAllFarmTargets(false) end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            width = "half",
+        },
+        {
+            type = "header", name = "Normal Resource Pin Filters",
+        },
+        {
+            type = "checkbox", name = "Show ore / seams",
+            getFunc = function() return EPC.saved.resourcePinsShowOre ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowOre = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show wood",
+            getFunc = function() return EPC.saved.resourcePinsShowWood ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowWood = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show cloth",
+            getFunc = function() return EPC.saved.resourcePinsShowCloth ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowCloth = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show alchemy plants",
+            getFunc = function() return EPC.saved.resourcePinsShowAlchemy ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowAlchemy = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show runestones",
+            getFunc = function() return EPC.saved.resourcePinsShowRunes ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowRunes = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show water / solvents",
+            getFunc = function() return EPC.saved.resourcePinsShowWater ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowWater = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show fishing holes",
+            getFunc = function() return EPC.saved.resourcePinsShowFishing ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowFishing = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show special resources",
+            tooltip = "Shows recognized special resource locations such as Chests, Heavy Sacks, Giant Clams, Troves and hidden stashes from learned and community data.",
+            getFunc = function() return EPC.saved.resourcePinsShowSpecial ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowSpecial = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show other / unknown",
+            tooltip = "Shows resource nodes whose type could not be classified.",
+            getFunc = function() return EPC.saved.resourcePinsShowOther ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowOther = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
+            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "button", name = "Test Suite Resource Pin", buttonText = "Show Test Pin",
+            tooltip = "Queues an ore test marker about four meters in front of you. Close Settings to view it; the 10-second preview waits while menus are open. It is not saved.",
+            func = function()
+                if EPC.ResourcePins and EPC.ResourcePins:StartDebugTestGlow() then EPC:Print("Suite Resource Pins test marker queued about 4m ahead. Close Settings to view it for 10 seconds.")
+                else EPC:Print("Suite Resource Pins could not get your current world position.") end
+            end,
+            disabled = function() return not EPC.ResourcePins or EPC.saved.resourcePinsEnabled == false end, width = "half",
+        },
+        {
+            type = "button", name = "Resource Pin status", buttonText = "Print Status",
+            func = function() if EPC.ResourcePins then EPC:Print(EPC.ResourcePins:GetStatusText()) end end,
+            disabled = function() return not EPC.ResourcePins end, width = "half",
+        },
+        {
+            type = "button", name = "Clear learned resource locations", buttonText = "Clear Resource Pins",
+            tooltip = "Deletes every resource location learned by ESO Adventurer Suite.",
+            func = function() if EPC.ResourcePins then EPC.ResourcePins:ClearLearnedLocations() EPC:Print("Suite Resource Pins learned locations cleared.") end end,
+            disabled = function() return not EPC.ResourcePins end, width = "full",
+        },
+        {
+            type = "header", name = "Team Visibility",
+        },
+        {
+            type = "description",
+            text = "Companions and grouped teammates use the soft 3D visibility glow. Companion settings are independent and default to purple. Group defaults can be overridden per player; overrides are saved by that player's account/name so they follow the player instead of a temporary group slot. Glow intensity can now reach full brightness. Red is reserved for dead grouped players and downed companions, with a separate red brightness control. Their glow slowly pulses until they revive or recover. Type /easteam for renderer status.",
+        },
+        {
+            type = "checkbox", name = "Enable Team Visibility",
+            tooltip = "Enables the Suite's enhanced native group markers and teammate visibility system.",
+            getFunc = function() return EPC.saved.teamVisibilityEnabled ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityEnabled = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            default = EPC.defaults.teamVisibilityEnabled,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Show teammate glow",
+            tooltip = "Shows the visibility glow on companions and group members where ESO allows addon 3D controls.",
+            getFunc = function() return EPC.saved.teamVisibilityLightsEnabled ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityLightsEnabled = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false end,
+            default = EPC.defaults.teamVisibilityLightsEnabled,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Downed/dead red glow brightness", min = 20, max = 100, step = 5,
+            tooltip = "Controls the brightness of the reserved flashing red glow used when a grouped player dies or the active companion goes down. This setting is independent from their normal glow intensity.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityDeadOpacity) or 1.00) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityDeadOpacity = (tonumber(v) or 100) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "header", name = "Companion Glow",
+        },
+        {
+            type = "description",
+            text = "The active companion has its own visibility settings. The default companion color is purple. If the companion goes down, the glow temporarily turns red and slowly pulses until recovery.",
+        },
+        {
+            type = "colorpicker", name = "Companion color",
+            tooltip = "Sets the active companion's normal glow color. Red is reserved for the downed state and is converted to amber while the companion is active.",
+            getFunc = function()
+                local c = EPC.saved.teamVisibilityCompanionColor or EPC.defaults.teamVisibilityCompanionColor
+                return c.r or 0.72, c.g or 0.38, c.b or 1.00, 1
+            end,
+            setFunc = function(r, g, b, a)
+                if EPC.TeamVisibility and EPC.TeamVisibility.NormalizeAlivePlayerColor then
+                    r, g, b = EPC.TeamVisibility:NormalizeAlivePlayerColor(r, g, b)
+                end
+                EPC.saved.teamVisibilityCompanionColor = { r = r, g = g, b = b }
+                if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end
+            end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = { r = 0.72, g = 0.38, b = 1.00 },
+            width = "full",
+        },
+        {
+            type = "slider", name = "Companion glow width", min = 25, max = 250, step = 5,
+            tooltip = "Adjusts the companion glow width independently from group members.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityCompanionBeamWidth) or 3.55) / 3.55) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionBeamWidth = 3.55 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Companion glow height", min = 25, max = 150, step = 5,
+            tooltip = "Adjusts the companion glow height independently from group members.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityCompanionBeamHeight) or 8.20) / 8.20) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionBeamHeight = 8.20 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Companion glow intensity", min = 10, max = 100, step = 5,
+            tooltip = "Controls how transparent or bright the companion glow appears. Higher values now render at full additive brightness instead of being capped low.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityCompanionOpacity) or 0.24) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionOpacity = (tonumber(v) or 24) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 24,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Companion glow through obstacles",
+            tooltip = "Keeps the companion glow visible through walls, trees, and world geometry where ESO permits it.",
+            getFunc = function() return EPC.saved.teamVisibilityCompanionThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityCompanionThroughWalls = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset companion glow", buttonText = "Reset Companion",
+            func = function()
+                EPC.saved.teamVisibilityCompanionColor = { r = 0.72, g = 0.38, b = 1.00 }
+                EPC.saved.teamVisibilityCompanionBeamWidth = 3.55
+                EPC.saved.teamVisibilityCompanionBeamHeight = 8.20
+                EPC.saved.teamVisibilityCompanionOpacity = 0.24
+                EPC.saved.teamVisibilityCompanionThroughWalls = true
+                if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end
+            end,
+            width = "half",
+        },
+        {
+            type = "header", name = "Group Default Glow",
+        },
+        {
+            type = "checkbox", name = "Default group glow through obstacles",
+            tooltip = "Default obstacle visibility for group members that do not have a player-specific override.",
+            getFunc = function() return EPC.saved.teamVisibilityThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.teamVisibilityThroughWalls = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = EPC.defaults.teamVisibilityThroughWalls,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Default group glow width", min = 25, max = 250, step = 5,
+            tooltip = "Default width for group members without a player-specific override.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityBeamWidth) or 3.55) / 3.55) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityBeamWidth = 3.55 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Default group glow height", min = 25, max = 150, step = 5,
+            tooltip = "Default height for group members without a player-specific override.",
+            getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityBeamHeight) or 8.20) / 8.20) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityBeamHeight = 8.20 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Default group glow intensity", min = 10, max = 100, step = 5,
+            tooltip = "Default brightness for group members without a player-specific override. Higher values now render at full additive brightness instead of being capped low.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityOpacity) or 0.24) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.teamVisibilityOpacity = (tonumber(v) or 24) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
+            default = 24,
+            width = "half",
+        },
+        {
+            type = "header", name = "Per-Player Group Glow",
+        },
+        {
+            type = "description",
+            text = "Choose a current group slot, then customize that teammate. The override is stored by the player's account/name and follows them if their group slot changes later. If the selected slot is empty or is your own character, the controls are disabled.",
+        },
+        {
+            type = "dropdown", name = "Group member to customize",
+            choices = groupSlotChoices,
+            choicesValues = groupSlotValues,
+            getFunc = function() return tonumber(EPC.saved.teamVisibilitySelectedGroupSlot) or 1 end,
+            setFunc = function(v) EPC.saved.teamVisibilitySelectedGroupSlot = tonumber(v) or 1 end,
+            default = 1,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Use custom settings for selected player",
+            getFunc = function() local p = selectedGroupOverride(false) return p ~= nil and p.enabled ~= false end,
+            setFunc = function(v) local p = selectedGroupOverride(v == true) if p then p.enabled = v == true end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() return not selectedGroupAvailable() end,
+            default = false,
+            width = "full",
+        },
+        {
+            type = "colorpicker", name = "Selected player color",
+            tooltip = "Overrides the normal leader/role color for the selected teammate. Red is reserved for dead players and cannot be used as a living-player glow.",
+            getFunc = function()
+                local p = selectedGroupOverride(false)
+                if p and p.color then return p.color.r or 0.15, p.color.g or 0.95, p.color.b or 1.00, 1 end
+                return selectedGroupRoleColor()
+            end,
+            setFunc = function(r, g, b, a) local p = selectedGroupOverride(true) if p then if EPC.TeamVisibility and EPC.TeamVisibility.NormalizeAlivePlayerColor then r, g, b = EPC.TeamVisibility:NormalizeAlivePlayerColor(r, g, b) end p.enabled = true p.color = { r = r, g = g, b = b } end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = { r = 0.15, g = 0.95, b = 1.00 },
+            width = "full",
+        },
+        {
+            type = "slider", name = "Selected player glow width", min = 25, max = 250, step = 5,
+            getFunc = function() local p = selectedGroupOverride(false) local width = p and p.width or EPC.saved.teamVisibilityBeamWidth or 3.55 return math.floor((width / 3.55) * 100 + 0.5) end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.width = 3.55 * ((tonumber(v) or 100) / 100) end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Selected player glow height", min = 25, max = 150, step = 5,
+            getFunc = function() local p = selectedGroupOverride(false) local height = p and p.height or EPC.saved.teamVisibilityBeamHeight or 8.20 return math.floor((height / 8.20) * 100 + 0.5) end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.height = 8.20 * ((tonumber(v) or 100) / 100) end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = 100,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Selected player glow intensity", min = 10, max = 100, step = 5,
+            tooltip = "Controls the selected teammate's normal glow brightness up to full additive brightness. Red remains reserved for the dead/downed state.",
+            getFunc = function() local p = selectedGroupOverride(false) return math.floor(((p and p.opacity) or EPC.saved.teamVisibilityOpacity or 0.24) * 100 + 0.5) end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.opacity = (tonumber(v) or 24) / 100 end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = 24,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Selected player glow through obstacles",
+            getFunc = function() local p = selectedGroupOverride(false) return p and p.throughWalls ~= false or false end,
+            setFunc = function(v) local p = selectedGroupOverride(true) if p then p.enabled = true p.throughWalls = v == true end if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            disabled = function() local p = selectedGroupOverride(false) return not selectedGroupAvailable() or not p or p.enabled == false end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset selected player override", buttonText = "Reset Player",
+            func = function()
+                if EPC.TeamVisibility and EPC.TeamVisibility.GetGroupOverride then
+                    local _, key = EPC.TeamVisibility:GetGroupOverride(selectedGroupTag(), false)
+                    if key and EPC.saved.teamVisibilityPlayerOverrides then EPC.saved.teamVisibilityPlayerOverrides[key] = nil end
+                    EPC.TeamVisibility:RefreshSettings()
+                end
+            end,
+            disabled = function() return not selectedGroupAvailable() end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear all player overrides", buttonText = "Clear All Players",
+            func = function() EPC.saved.teamVisibilityPlayerOverrides = {} if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
+            width = "half",
+        },
+        {
             type = "header", name = "World Combat Visibility",
         },
         {
@@ -673,7 +1467,7 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "Quest tracker source",
-            tooltip = "Choose the single authoritative quest source used by the Suite tracker and ESO assisted quest/compass. Active Quest follows your selected non-main Suite Quest Finder/journal quest. Golden Pursuits follows the journal quest linked to your selected Golden Pursuit. Main Quest follows the remembered Main Story quest. The selected Suite source takes priority over ESO native tracking; the other two selections are remembered but cannot intervene.",
+            tooltip = "Choose the single authoritative quest source used for ESO assisted quest/compass behavior. Active Quest follows your selected non-main Suite Quest Finder/journal quest. Golden Pursuits follows the journal quest linked to your selected Golden Pursuit. Main Quest follows the remembered Main Story quest. Overlay visibility is independent: Active Quest and Golden Pursuits overlays can both be enabled at the same time below.",
             choices = { "Active Quest", "Golden Pursuits", "Main Quest" },
             choicesValues = { "ACTIVE_QUEST", "GOLDEN_PURSUITS", "MAIN_QUEST" },
             getFunc = function()
@@ -713,15 +1507,15 @@ function S:Initialize()
             func = function() if EPC.ActiveQuest then EPC.ActiveQuest:ResetPosition() EPC.ActiveQuest:Refresh() end end,
         },
         {
-            type = "slider", name = "Active quest width", min = 280, max = 900, step = 10,
+            type = "slider", name = "Active quest width", min = 180, max = 900, step = 10,
             tooltip = "Changes the quest overlay width. Long quest names and objectives wrap inside this width.",
             getFunc = function() return tonumber(EPC.saved.activeQuestWidth) or 420 end,
             setFunc = function(v) EPC.saved.activeQuestWidth = v if EPC.ActiveQuest then EPC.ActiveQuest:SetSize(v, tonumber(EPC.saved.activeQuestHeight) or 160) end end,
             default = EPC.defaults.activeQuestWidth or 420,
         },
         {
-            type = "slider", name = "Active quest height", min = 120, max = 520, step = 10,
-            tooltip = "Changes how much wrapped objective text can be visible at once.",
+            type = "slider", name = "Active quest height", min = 80, max = 520, step = 10,
+            tooltip = "Changes the Active Quest viewport height. Manual sizes are respected; smaller heights simply show less wrapped objective text.",
             getFunc = function() return tonumber(EPC.saved.activeQuestHeight) or 160 end,
             setFunc = function(v) EPC.saved.activeQuestHeight = v if EPC.ActiveQuest then EPC.ActiveQuest:SetSize(tonumber(EPC.saved.activeQuestWidth) or 420, v) end end,
             default = EPC.defaults.activeQuestHeight or 160,
@@ -729,6 +1523,45 @@ function S:Initialize()
         {
             type = "button", name = "Reset active quest size", buttonText = "Reset Quest Size",
             func = function() if EPC.ActiveQuest then EPC.ActiveQuest:ResetSize() end end,
+        },
+        {
+            type = "header", name = "Golden Pursuits Overlay",
+        },
+        {
+            type = "checkbox", name = "Show Golden Pursuits overlay",
+            tooltip = "Shows the selected Golden Pursuit, its linked quest, and live progress. This is independent from Quest Tracker Source, so it can stay visible at the same time as the Active Quest overlay.",
+            getFunc = function() return EPC.saved.showGoldenPursuitsOverlay ~= false end,
+            setFunc = function(v) EPC.saved.showGoldenPursuitsOverlay = v == true if EPC.GoldenPursuits then EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
+            default = EPC.defaults.showGoldenPursuitsOverlay,
+        },
+        {
+            type = "dropdown", name = "Golden Pursuits visibility",
+            choices = { "Always", "Combat Only" }, choicesValues = { "ALWAYS", "COMBAT" },
+            getFunc = function() return EPC.saved.goldenPursuitsVisibility or "ALWAYS" end,
+            setFunc = function(v) EPC.saved.goldenPursuitsVisibility = v if EPC.GoldenPursuits then EPC.GoldenPursuits:RefreshVisibility2496() end end,
+            default = EPC.defaults.goldenPursuitsVisibility or "ALWAYS",
+        },
+        {
+            type = "button", name = "Reset Golden Pursuits position", buttonText = "Reset Golden Pursuits",
+            func = function() if EPC.GoldenPursuits then EPC.GoldenPursuits:ResetPosition() EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
+        },
+        {
+            type = "slider", name = "Golden Pursuits width", min = 180, max = 900, step = 10,
+            tooltip = "Changes the Golden Pursuits overlay width.",
+            getFunc = function() return tonumber(EPC.saved.goldenPursuitsWidth) or 420 end,
+            setFunc = function(v) EPC.saved.goldenPursuitsWidth = v if EPC.GoldenPursuits then EPC.GoldenPursuits:SetSize(v, tonumber(EPC.saved.goldenPursuitsHeight) or 136) end end,
+            default = EPC.defaults.goldenPursuitsWidth or 420,
+        },
+        {
+            type = "slider", name = "Golden Pursuits height", min = 90, max = 420, step = 10,
+            tooltip = "Changes the Golden Pursuits viewport height. Compact sizes clip extra rows instead of forcing the overlay larger.",
+            getFunc = function() return tonumber(EPC.saved.goldenPursuitsHeight) or 136 end,
+            setFunc = function(v) EPC.saved.goldenPursuitsHeight = v if EPC.GoldenPursuits then EPC.GoldenPursuits:SetSize(tonumber(EPC.saved.goldenPursuitsWidth) or 420, v) end end,
+            default = EPC.defaults.goldenPursuitsHeight or 136,
+        },
+        {
+            type = "button", name = "Reset Golden Pursuits size", buttonText = "Reset Golden Size",
+            func = function() if EPC.GoldenPursuits then EPC.GoldenPursuits:ResetSize() EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
         },
         {
             type = "header", name = "Alliance Rank Overlay",
@@ -826,6 +1659,103 @@ function S:Initialize()
             func = function() if EPC.AbilityOverlays then EPC.AbilityOverlays:ResetPositions() EPC.AbilityOverlays:Refresh() end end,
         },
         {
+            type = "header", name = "Quickslot Overlay",
+        },
+        {
+            type = "checkbox", name = "Show quickslot overlay",
+            tooltip = "Master switch for the quickslot overlay. When enabled, the visibility setting below controls when it appears.",
+            getFunc = function() return EPC.saved.showQuickslotOverlay ~= false end,
+            setFunc = function(v)
+                EPC.saved.showQuickslotOverlay = v == true
+                if EPC.QuickslotOverlay then EPC.QuickslotOverlay:Refresh() end
+            end,
+            default = EPC.defaults.showQuickslotOverlay,
+        },
+        {
+            type = "dropdown", name = "When quickslot overlay appears",
+            tooltip = "Before & During Combat = hidden while roaming, appears when you line up an attackable enemy, stays visible during combat, then hides again when combat ends. Before Combat Only = show only while an attackable enemy is targeted before combat. In Combat Only = show only while fighting.",
+            choices = { "Before & During Combat", "Before Combat Only", "In Combat Only" },
+            choicesValues = { "BEFORE_AND_DURING", "BEFORE_ONLY", "COMBAT" },
+            getFunc = function()
+                local mode = EPC.saved.quickslotOverlayVisibility or "BEFORE_AND_DURING"
+                -- Migration: the previous version used ALWAYS/BEFORE_COMBAT.
+                -- The requested behavior is to keep the quickslot visible both
+                -- before combat and during combat, so migrate those values to
+                -- the explicit Before & During Combat option.
+                if mode == "ALWAYS" or mode == "BEFORE_COMBAT" then
+                    mode = "BEFORE_AND_DURING"
+                    EPC.saved.quickslotOverlayVisibility = mode
+                elseif mode == "OUT_OF_COMBAT" then
+                    mode = "BEFORE_ONLY"
+                    EPC.saved.quickslotOverlayVisibility = mode
+                end
+                return mode
+            end,
+            setFunc = function(v)
+                EPC.saved.quickslotOverlayVisibility = v or "BEFORE_AND_DURING"
+                if EPC.QuickslotOverlay then EPC.QuickslotOverlay:Refresh() end
+            end,
+            default = "BEFORE_AND_DURING",
+        },
+        {
+            type = "description",
+            text = "Tip: use HUD Layout Mode to move the quickslot overlay. Its normal visibility rule is ignored while you are positioning it.",
+        },
+        {
+            type = "button", name = "Reset quickslot overlay position", buttonText = "Reset Quickslot",
+            func = function()
+                if EPC.QuickslotOverlay then
+                    EPC.QuickslotOverlay:ResetPosition()
+                    EPC.QuickslotOverlay:Refresh()
+                end
+            end,
+        },
+        {
+            type = "header", name = "Infinite Archive Overlay",
+        },
+        {
+            type = "checkbox", name = "Show Infinite Archive overlay",
+            tooltip = "Lets ESO Adventurer Suite manage the real ESO Infinite Archive tracker. It keeps the native F5 button, localized Infinite Archive title, and Arc/Cycle/Stage icons, but its position and scale are controlled here.",
+            getFunc = function() return EPC.saved.showInfiniteArchiveOverlay ~= false end,
+            setFunc = function(v)
+                EPC.saved.showInfiniteArchiveOverlay = v == true
+                if EPC.InfiniteArchiveOverlay then EPC.InfiniteArchiveOverlay:Refresh() end
+            end,
+            default = EPC.defaults.showInfiniteArchiveOverlay,
+        },
+        {
+            type = "slider", name = "Infinite Archive overlay scale", min = 65, max = 180, step = 5,
+            tooltip = "Changes the size of the Infinite Archive tracker while preserving ESO's original layout and graphics.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.infiniteArchiveOverlayScale) or 1.0) * 100) end,
+            setFunc = function(v)
+                EPC.saved.infiniteArchiveOverlayScale = v / 100
+                if EPC.InfiniteArchiveOverlay then EPC.InfiniteArchiveOverlay:Refresh() end
+            end,
+            default = math.floor((EPC.defaults.infiniteArchiveOverlayScale or 1.0) * 100),
+        },
+        {
+            type = "description",
+            text = "Use HUD Layout Mode to drag the Infinite Archive tracker anywhere. While Settings are open, the Suite shows its own movable preview above the settings window; the live ESO tracker uses that saved position inside Infinite Archive.",
+        },
+        {
+            type = "button", name = "Move Infinite Archive overlay", buttonText = "Move Infinite Archive",
+            tooltip = "Starts HUD Layout Mode and immediately shows the Suite-owned Infinite Archive preview above Settings so you can drag it.",
+            func = function()
+                if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(true)
+                elseif EPC.InfiniteArchiveOverlay then EPC.InfiniteArchiveOverlay:SetLayoutMode(true) end
+            end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset Infinite Archive overlay position", buttonText = "Reset Infinite Archive",
+            width = "half",
+            func = function()
+                if EPC.InfiniteArchiveOverlay then
+                    EPC.InfiniteArchiveOverlay:ResetPosition()
+                end
+            end,
+        },
+        {
             type = "header", name = "Custom ESO Reticle",
         },
         {
@@ -881,7 +1811,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Hide Suite HUD in menus / map",
-            tooltip = "Recommended and enabled by default. Hides Player, Target, Group, Raid, Live Stats, Stable Training timer, Clock, Active Quest, Mini Map, Alliance Rank, and combat HUD while Pause, Character, Inventory, the full World Map, Journal, Crafting, Store, Collections, and similar UI scenes are open. Restores them automatically in gameplay.",
+            tooltip = "Recommended and enabled by default. Hides Player, Target, Group, Raid, Live Stats, Stable Training timer, Clock, Active Quest, Golden Pursuits, Mini Map, Alliance Rank, and combat HUD while Pause, Character, Inventory, the full World Map, Journal, Crafting, Store, Collections, and similar UI scenes are open. Restores them automatically in gameplay.",
             getFunc = function() return EPC.saved.hudHideInMenus ~= false end,
             setFunc = function(v) EPC.saved.hudHideInMenus = v == true if EPC.RefreshGameplayOverlays then EPC:RefreshGameplayOverlays() end end,
             default = EPC.defaults.hudHideInMenus,
@@ -1124,7 +2054,7 @@ function S:Initialize()
         },
         {
             type = "button", name = "HUD layout mode", buttonText = "Move Frames",
-            tooltip = "Releases the mouse and shows Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, and every Ability icon so each can be dragged independently. Active Quest can also be resized from its edges/corners.",
+            tooltip = "Releases the mouse and shows the movable HUD frames. ESO's native Use Synergy prompt can be dragged directly while a real synergy prompt is active; no custom synergy preview is drawn. Active Quest and Rotation Assistant can also be resized from their edges/corners.",
             func = function() if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(true) end end,
             width = "half",
         },
@@ -1136,7 +2066,7 @@ function S:Initialize()
         },
         {
             type = "button", name = "Reset HUD frame positions", buttonText = "Reset Frames",
-            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, and every Ability icon.",
+            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, Use Synergy, Rotation Assistant, and every Ability icon.",
             func = function() if EPC.ResetUnitFramePositions then EPC:ResetUnitFramePositions() end end,
         },
         {
@@ -1217,6 +2147,20 @@ function S:Initialize()
             default = EPC.defaults.coachFocus,
         },
         {
+            type = "dropdown", name = "Endgame gear preset",
+            tooltip = "Chooses the content profile used by BEST ENDGAME. Current templates cover all seven classes for Damage, Tank, and Healer roles. AUTO uses the selected LFG role, and Combat role awareness can force a role profile.",
+            choices = { "Trial / Endgame", "Single Target", "AoE / Trash", "Solo" },
+            choicesValues = { "TRIAL", "SINGLE_TARGET", "AOE_TRASH", "SOLO" },
+            getFunc = function()
+                return EPC.GearOptimizer and select(1, EPC.GearOptimizer:GetPreset()) or (EPC.saved.gearOptimizerPreset or "TRIAL")
+            end,
+            setFunc = function(v)
+                if EPC.GearOptimizer then EPC.GearOptimizer:SetPreset(v) else EPC.saved.gearOptimizerPreset = v end
+                EPC:RequestRefresh("gear-endgame-preset")
+            end,
+            default = EPC.defaults.gearOptimizerPreset or "TRIAL",
+        },
+        {
             type = "checkbox", name = "Intelligent Next Best Move",
             tooltip = "Combines role, build, gear, activities, combat history, and current context into one recommended next action on the BUILD tab.",
             getFunc = function() return EPC.saved.smartCoach ~= false end,
@@ -1257,6 +2201,59 @@ function S:Initialize()
             getFunc = function() return EPC.saved.targetLootAlerts ~= false end,
             setFunc = function(v) EPC.saved.targetLootAlerts = v == true end,
             default = EPC.defaults.targetLootAlerts,
+        },
+        {
+            type = "header", name = "Built-in Bug Catcher",
+        },
+        {
+            type = "description",
+            title = "Suite error log",
+            text = "Captures Lua errors, protected-function violations, and low-Lua-memory notices into ESO Adventurer Suite without replacing ESO's own error handler. Repeated identical errors are grouped together. Use /easscan (or /easbugs scan) for a runtime addon health scan, /easbugs to list recent errors, or /easbugs last to print the full latest stack trace to chat for copying/reporting.",
+        },
+        {
+            type = "checkbox", name = "Enable built-in Bug Catcher",
+            getFunc = function() return EPC.saved.bugCatcherEnabled ~= false end,
+            setFunc = function(v) EPC.saved.bugCatcherEnabled = v == true end,
+            default = EPC.defaults.bugCatcherEnabled, width = "half",
+        },
+        {
+            type = "checkbox", name = "Bug Catcher chat notice",
+            tooltip = "Prints a short notice when an error is caught. Full stack traces are stored instead of spammed into chat automatically.",
+            getFunc = function() return EPC.saved.bugCatcherNotifyChat ~= false end,
+            setFunc = function(v) EPC.saved.bugCatcherNotifyChat = v == true end,
+            disabled = function() return EPC.saved.bugCatcherEnabled == false end,
+            default = EPC.defaults.bugCatcherNotifyChat, width = "half",
+        },
+        {
+            type = "checkbox", name = "Suppress ESO Lua error popup",
+            tooltip = "After the Bug Catcher records a live Lua error, ask ESO to close its standard error dialog. The error remains stored in the Suite and can be viewed with /easbugs last.",
+            getFunc = function() return EPC.saved.bugCatcherSuppressPopup == true end,
+            setFunc = function(v) EPC.saved.bugCatcherSuppressPopup = v == true end,
+            disabled = function() return EPC.saved.bugCatcherEnabled == false end,
+            default = EPC.defaults.bugCatcherSuppressPopup, width = "full",
+        },
+        {
+            type = "slider", name = "Bug Catcher stored errors", min = 10, max = 100, step = 5,
+            tooltip = "Maximum number of unique error records kept in SavedVariables. Duplicate occurrences are counted on the existing record.",
+            getFunc = function() return tonumber(EPC.saved.bugCatcherMaxErrors) or 40 end,
+            setFunc = function(v) EPC.saved.bugCatcherMaxErrors = tonumber(v) or 40 if EPC.BugCatcher then EPC.BugCatcher:TrimToLimit() end end,
+            disabled = function() return EPC.saved.bugCatcherEnabled == false end,
+            default = EPC.defaults.bugCatcherMaxErrors, width = "full",
+        },
+        {
+            type = "button", name = "Show last caught error", buttonText = "Print Last Error",
+            func = function() if EPC.BugCatcher then EPC.BugCatcher:PrintLast() end end,
+            disabled = function() return not EPC.BugCatcher end, width = "half",
+        },
+        {
+            type = "button", name = "Bug Catcher status", buttonText = "Print Bug Status",
+            func = function() if EPC.BugCatcher then EPC:Print(EPC.BugCatcher:GetStatusText()) end end,
+            disabled = function() return not EPC.BugCatcher end, width = "half",
+        },
+        {
+            type = "button", name = "Clear Bug Catcher log", buttonText = "Clear Error Log",
+            func = function() if EPC.BugCatcher then EPC.BugCatcher:Clear() EPC:Print("Bug Catcher log cleared.") end end,
+            disabled = function() return not EPC.BugCatcher end, width = "full",
         },
         {
             type = "header", name = "Utility Command Center",
@@ -1392,19 +2389,26 @@ function S:Initialize()
         ["Automatic Equipment Maintenance"] = "GEAR",
         ["Repair / Recharge Estimate Overlay"] = "HUD",
         ["World Combat Visibility"] = "COMBAT",
+        ["Dungeon / Trial Chest Finder"] = "HUD",
+        ["Resource 3D Pins"] = "HUD",
+        ["Team Visibility"] = "HUD",
         ["Persistent HUD & Unit Frames"] = "FRAMES",
         ["Stable Training Timer"] = "HUD",
         ["Clock"] = "HUD",
         ["Quest Tracking"] = "HUD",
         ["Active Quest Overlay"] = "HUD",
+        ["Golden Pursuits Overlay"] = "HUD",
         ["Alliance Rank Overlay"] = "HUD",
         ["Champion Level Overlay"] = "HUD",
         ["Ability Overlays"] = "HUD",
+        ["Quickslot Overlay"] = "HUD",
+        ["Infinite Archive Overlay"] = "HUD",
         ["Custom ESO Reticle"] = "HUD",
         ["Tamriel Codex"] = "CODEX",
         ["Mini Map"] = "MAP",
         ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Target Build"] = "COMBAT",
+        ["Built-in Bug Catcher"] = "UTILITIES",
         ["Utility Command Center"] = "UTILITIES",
     }
 
@@ -1455,6 +2459,12 @@ function S:Initialize()
         ["Show recommendation reasons"] = "CODEX",
         ["Window opacity"] = "CODEX",
         ["Window scale"] = "CODEX",
+        ["Show Golden Pursuits overlay"] = "HUD",
+        ["Golden Pursuits visibility"] = "HUD",
+        ["Reset Golden Pursuits position"] = "HUD",
+        ["Golden Pursuits width"] = "HUD",
+        ["Golden Pursuits height"] = "HUD",
+        ["Reset Golden Pursuits size"] = "HUD",
         ["Reset overlay position"] = "CODEX",
     }
 

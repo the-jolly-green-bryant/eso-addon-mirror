@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 105
+LibConsoleMenu.version = 115
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -182,7 +182,7 @@ function AddonMenu:New(title, options)
 		object.collapseToggleLabels = options.collapseToggleLabels ~= false
 		-- Unfocused sliders hide min/max/value labels. Opt out with false.
 		object.collapseSliderLabels = options.collapseSliderLabels ~= false
-		object.screenHeaderConfig = options.screenHeader
+		object.headerConfig = options.header
 		-- Always refresh sibling rows after a change (disabled callbacks, live values).
 		object.callbackManager = ZO_CallbackObject:New()
 	end
@@ -211,7 +211,17 @@ function AddonMenu:RefreshAfterControlsChange(playAnimation)
 
 	-- Force the page to update immediately if currently showing.
 	if self.selected then
+		local scrollList = LibConsoleMenu.scrollList
+		if scrollList then
+			if scrollList.headerControlDropdown and scrollList.headerControlDropdown:IsDropdownVisible() then
+				scrollList.headerControlDropdown:Deactivate()
+			end
+			if scrollList:IsHeaderActive() then
+				scrollList:ExitHeader()
+			end
+		end
 		self:CreateControls()
+		LibConsoleMenu.RefreshSelectedListRow()
 	end
 end
 
@@ -342,7 +352,7 @@ end
 function AddonMenu:Clear()
 	self.controls = {}
 	self.selected = false
-	self._pendingHeader = nil
+	self._pendingSection = nil
 end
 -----
 

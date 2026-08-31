@@ -48,7 +48,7 @@ local function PrintCategoryErrorOnce(message)
 end
 
 function this.Initialize()
-  this.settings = ZO_SavedVars:NewAccountWide("FurnitureLocatorData", 2, nil, {
+  this.settings = ZO_SavedVars:NewAccountWide("FurnitureLocatorData", 3, nil, {
     bags = {},     -- [itemId] = count (current character's backpack)
     bank = {},     -- [itemId] = count (current character's bank)
     vault = {},    -- [itemId] = count (account-wide furnishing vault)
@@ -98,24 +98,40 @@ function this.CacheItemInfo(itemId, link)
   end
 
   local category = nil
+  local theme = nil
   local okFurnId, furnitureDataId = pcall(GetItemLinkFurnitureDataId, link)
   if not okFurnId then
     PrintCategoryErrorOnce(string.format("CATEGORY ERROR (furnitureDataId) for item %d: %s", itemId, tostring(furnitureDataId)))
   elseif furnitureDataId ~= nil and furnitureDataId ~= 0 then
-    local okDataInfo, categoryId = pcall(GetFurnitureDataInfo, furnitureDataId)
+    local okDataInfo, categoryId, subcategoryId, furnitureTheme = pcall(GetFurnitureDataInfo, furnitureDataId)
     if not okDataInfo then
       PrintCategoryErrorOnce(string.format("CATEGORY ERROR (GetFurnitureDataInfo) for item %d: %s", itemId, tostring(categoryId)))
-    elseif categoryId ~= nil and categoryId ~= 0 then
-      local okCatInfo, categoryName = pcall(GetFurnitureCategoryInfo, categoryId)
-      if not okCatInfo then
-        PrintCategoryErrorOnce(string.format("CATEGORY ERROR (GetFurnitureCategoryInfo) for item %d: %s", itemId, tostring(categoryName)))
-      elseif categoryName ~= nil and categoryName ~= "" then
-        category = categoryName
+    else
+      if categoryId ~= nil and categoryId ~= 0 then
+        local okCatInfo, categoryName = pcall(GetFurnitureCategoryInfo, categoryId)
+        if not okCatInfo then
+          PrintCategoryErrorOnce(string.format("CATEGORY ERROR (GetFurnitureCategoryInfo) for item %d: %s", itemId, tostring(categoryName)))
+        elseif categoryName ~= nil and categoryName ~= "" then
+          category = categoryName
+        end
+      end
+
+      -- Style/theme: same GetFurnitureDataInfo call, third return value.
+      -- Confirmed via base game source (ZO_HousingSettingsTheme_SetupDropdown)
+      -- that GetString("SI_FURNITURETHEMETYPE", furnitureTheme) resolves it
+      -- to a readable name (High Elf, Breton, Nord, etc.).
+      if furnitureTheme ~= nil then
+        local okThemeInfo, themeName = pcall(GetString, "SI_FURNITURETHEMETYPE", furnitureTheme)
+        if not okThemeInfo then
+          PrintCategoryErrorOnce(string.format("CATEGORY ERROR (theme GetString) for item %d: %s", itemId, tostring(themeName)))
+        elseif themeName ~= nil and themeName ~= "" then
+          theme = themeName
+        end
       end
     end
   end
 
-  this.settings.itemInfo[itemId] = { name = name, icon = icon, category = category }
+  this.settings.itemInfo[itemId] = { name = name, icon = icon, category = category, theme = theme }
 end
 
 -- Generic bag scanner. destKey is "bags" or "bank" -- which table in
@@ -248,6 +264,7 @@ function this.GetAllOwnedItems()
       name = info.name or ("Item " .. tostring(itemId)),
       icon = info.icon,
       category = info.category or "Uncategorized",
+      theme = info.theme or "Unstyled",
       locations = locations,
     })
   end

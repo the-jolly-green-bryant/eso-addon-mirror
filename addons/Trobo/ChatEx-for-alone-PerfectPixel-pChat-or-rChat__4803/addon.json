@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Trobo/ChatEx-for-alone-PerfectPixel-pChat-or-rChat__4803",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Trobo",
+  "canonical_id": "esoui:4803",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4803",
+  "deleted": false,
+  "directories": [
+    "ChatEx"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4803/",
+  "fingerprint": "98ea1dae2f1eccc0733d59fd91ecdaac42c9d6aee1651f64367a39a2b8552b6f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17197.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17198.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17199.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17200.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4803",
+  "source_url": "https://www.esoui.com/downloads/info4803-ChatExforalonePerfectPixelpChatorrChat.html",
+  "stats": {
+    "downloads": 10,
+    "favorites": 0,
+    "monthly_downloads": 4
+  },
+  "title": "ChatEx (for alone / PerfectPixel / pChat or rChat)",
+  "updated_at": 1788081450000,
+  "version": "2.5.1"
+}

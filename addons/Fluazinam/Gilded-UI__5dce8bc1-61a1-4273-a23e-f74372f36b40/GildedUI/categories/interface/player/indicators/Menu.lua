@@ -8,9 +8,6 @@ end
 
 function Addon:BuildPlayerIndicatorsMenu(H)
     local sv = self.state.sv
-    local controls = {
-        { type = "header", name = "Indicators" },
-    }
 
     local combatControls = {
         H.Toggle(
@@ -39,17 +36,24 @@ function Addon:BuildPlayerIndicatorsMenu(H)
         "combatStatusPosX", "combatStatusPosY",
         function() Addon:ApplyCombatStatusPosition() end
     ))
-    controls[#controls + 1] = {
-        type = "submenu",
-        name = "Combat Status",
-        onEnter = function()
-            Addon:SetCombatStatusMenuPreview(true)
-        end,
-        onExit = function()
-            Addon:SetCombatStatusMenuPreview(false)
-        end,
-        options = combatControls,
-    }
 
-    return controls
+    return {
+        {
+            type = "section",
+            name = "Indicators",
+            options = {
+                {
+                    type = "submenu",
+                    name = "Combat Status",
+                    onEnter = function()
+                        Addon:SetCombatStatusMenuPreview(true)
+                    end,
+                    onExit = function()
+                        Addon:SetCombatStatusMenuPreview(false)
+                    end,
+                    options = combatControls,
+                },
+            },
+        },
+    }
 end

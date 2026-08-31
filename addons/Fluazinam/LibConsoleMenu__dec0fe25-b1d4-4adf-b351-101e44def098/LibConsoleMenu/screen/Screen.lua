@@ -54,7 +54,7 @@ end
 function LibConsoleMenu.AddonMenu:CreateControls()
 	local list = LibConsoleMenu.scrollList:GetCurrentList() or LibConsoleMenu.scrollList:GetMainList()
 	list:Clear()
-	list.lastLcmHeader = nil
+	list.lastLcmSection = nil
 	LibConsoleMenu.list = list
 
 	local hasDefaults = false
@@ -224,7 +224,7 @@ function LibConsoleMenu:SelectFirstAddon()
 	end
 end
 
--- Root: addon name + version. Nested: submenu title only. Author screenHeader merges on top.
+-- Root: addon name + version. Nested: submenu title only. Author header merges on top.
 function LibConsoleMenu:RefreshSceneHeader()
 	local header = self.scrollList and self.scrollList.header
 	local addon = self.currentMenu
@@ -244,17 +244,40 @@ function LibConsoleMenu:RefreshSceneHeader()
 		headerData.subtitleText = addon.version
 	end
 
-	local config = LibConsoleMenu.GetActiveScreenHeaderConfig()
-	LibConsoleMenu.MergeScreenHeaderData(headerData, config)
+	local config = LibConsoleMenu.GetActiveHeaderConfig()
+	LibConsoleMenu.MergeHeaderData(headerData, config)
 
+	LibConsoleMenu.UpdateHeaderFocusControlRegistration(config)
+	LibConsoleMenu.PrepareMessageBandForRefresh(header, headerData)
 	ZO_GamepadGenericHeader_RefreshData(header, headerData)
-	LibConsoleMenu.RefreshScreenHeaderControl(config)
+	LibConsoleMenu.ApplyHeaderControlLayout(header, headerData)
+	LibConsoleMenu.RefreshHeaderControl(config)
+end
+
+function LibConsoleMenu.RefreshSelectedListRow()
+	local list = LibConsoleMenu.list
+	if not list then
+		return
+	end
+	local selectedControl = list:GetSelectedControl()
+	local selectedData = list:GetSelectedData()
+	if selectedControl then
+		selectedControl:SetAlpha(ZO_GamepadMenuEntryTemplate_GetAlpha(true))
+	end
+	if selectedData and selectedData.control then
+		selectedData:SetEnabled(not selectedData:IsDisabled(), true)
+	end
+	list:RefreshVisible()
 end
 
 function LibConsoleMenu:GoBack()
 	local submenu = self.list and self.list.currentSubmenu
 	if submenu then
 		self:CancelDeferredSelectFirstRow()
+		local scrollList = self.scrollList
+		if scrollList and scrollList:IsHeaderActive() then
+			scrollList:ExitHeader()
+		end
 		if type(submenu.onExit) == "function" then
 			submenu.onExit(submenu)
 		end
@@ -276,6 +299,11 @@ function LibConsoleMenu:GoBack()
 			LibConsoleMenu.currentMenu:RefreshSelection()
 		end
 		self:RefreshSceneHeader()
+		if scrollList then
+			scrollList:ActivateCurrentList()
+			scrollList:RefreshKeybinds()
+		end
+		LibConsoleMenu.RefreshSelectedListRow()
 		PlaySound(SOUNDS.GAMEPAD_MENU_BACK)
 	else
 		SCENE_MANAGER:HideCurrentScene()
@@ -303,7 +331,7 @@ function Settings_ParametricList:PerformUpdate()
 end
 
 function Settings_ParametricList:OnDeferredInitialize()
-	LibConsoleMenu.InitializeScreenHeaderWidget(self)
+	LibConsoleMenu.InitializeHeaderWidget(self)
 end
 
 function Settings_ParametricList:CanEnterHeader()
@@ -312,7 +340,7 @@ function Settings_ParametricList:CanEnterHeader()
 end
 
 function Settings_ParametricList:OnEnterHeader()
-	local config = LibConsoleMenu.GetActiveScreenHeaderConfig()
+	local config = LibConsoleMenu.GetActiveHeaderConfig()
 	local controlConfig = config and config.control
 	if controlConfig and controlConfig.tooltip then
 		local tooltip = controlConfig.tooltip
@@ -337,6 +365,21 @@ function Settings_ParametricList:OnLeaveHeader()
 		self.headerControlDropdown:Deactivate()
 	end
 	KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+end
+
+function Settings_ParametricList:RequestLeaveHeader()
+	if not self.headerFocus or not self.headerFocus:IsActive() then
+		return
+	end
+
+	if self:CanLeaveHeader() then
+		self.headerFocus:Deactivate()
+		self:OnLeaveHeader()
+		local REQUESTED_BY_HEADER = true
+		self:ActivateCurrentList(REQUESTED_BY_HEADER)
+		self:RefreshKeybinds()
+		LibConsoleMenu.RefreshSelectedListRow()
+	end
 end
 
 function Settings_ParametricList:InitializeKeybindStripDescriptors()
@@ -493,7 +536,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 					lastActiveInput:Deactivate()
 					lastActiveInput = nil
 				end
-				LibConsoleMenu.DeactivateScreenHeaderControl()
+				LibConsoleMenu.DeactivateHeaderControl()
 				local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
 				if selectedControl and selectedControl.Deactivate then
 					selectedControl:Deactivate()
@@ -520,7 +563,7 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 			submenu.onExit(submenu)
 		end
 		-- Also close ComboBox popups if scene hide was skipped (e.g. fragment-only hide).
-		LibConsoleMenu.DeactivateScreenHeaderControl()
+		LibConsoleMenu.DeactivateHeaderControl()
 		local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
 		if selectedControl and selectedControl.Deactivate then
 			selectedControl:Deactivate()
@@ -575,7 +618,7 @@ function LibConsoleMenu:CreateSharedMenuScene()
 	self.scene = scene
 
 	self.scrollList = Settings_ParametricList:New(control)
-	LibConsoleMenu.InitializeScreenHeaderWidget(self.scrollList)
+	LibConsoleMenu.InitializeHeaderWidget(self.scrollList)
 	self.list = self.scrollList:GetMainList()
 	local headerPadding = GAMEPAD_HEADER_DEFAULT_PADDING or 80
 	local headerSelectedPadding = GAMEPAD_HEADER_SELECTED_PADDING or -40
@@ -641,13 +684,13 @@ function LibConsoleMenu:CreateControlPools()
 			local showHeader = data.header ~= nil and data.header ~= ""
 			headerControl:SetHidden(not showHeader)
 			if showHeader then
-				LibConsoleMenu.LayoutHeaderControl(
+				LibConsoleMenu.LayoutSectionLabel(
 					headerControl,
 					control,
-					data.headerAlign,
-					data.headerIndentPx or 0
+					data.sectionAlign,
+					data.sectionIndentPx or 0
 				)
-				LibConsoleMenu.HeaderSetup(headerControl, data)
+				LibConsoleMenu.SectionSetup(headerControl, data)
 			end
 		end
 	end
@@ -669,12 +712,12 @@ function LibConsoleMenu:CreateControlPools()
 			update,
 			ZO_GamepadMenuEntryTemplateParametricListFunction,
 			nil,
-			LibConsoleMenu.HEADER_TEMPLATE_OPTIONS,
-			LibConsoleMenu.HeaderSetup,
+			LibConsoleMenu.SECTION_TEMPLATE_OPTIONS,
+			LibConsoleMenu.SectionSetup,
 			poolSuffix,
 			reset
 		)
-		LibConsoleMenu.RegisterWithNavHeader(list, templateName, poolSuffix, update, reset)
+		LibConsoleMenu.RegisterWithNavSection(list, templateName, poolSuffix, update, reset)
 	end
 
 	local function ExtendTemplateFactories(list, names, factory)
@@ -705,8 +748,8 @@ function LibConsoleMenu:CreateControlPools()
 		local list = self.scrollList:GetMainList()
 		local names = {
 			templateName,
-			templateName .. LibConsoleMenu.WITH_HEADER_SUFFIX,
-			templateName .. LibConsoleMenu.WITH_NAV_HEADER_SUFFIX,
+			templateName .. LibConsoleMenu.WITH_SECTION_SUFFIX,
+			templateName .. LibConsoleMenu.WITH_NAV_SECTION_SUFFIX,
 		}
 
 		RegisterTemplateVariants(list, templateName, poolSuffix)

@@ -1,11 +1,13 @@
 ## Title: Furniture Locator
 ## Author: Atomic Khaos
 ## APIVersion: 101050
-## Version: 8
+## Version: 10
 ## SavedVariables: FurnitureLocatorData
+## DependsOn: LibConsoleDialogs LibHarvensAddonSettings
+## Description: Find any piece of furniture you own, wherever it is. Browse by category and style, see the icon, name, and every location it's in (bag, bank, vault, or a specific house), all with full gamepad navigation.
 
 FurnitureLocator_Data.lua
-FurnitureLocatorUI.lua
+FurnitureLocatorDialogs.lua
 FurnitureLocatorScreen.lua
 FurnitureLocatorScreen.xml
 FurnitureLocatorWheelHook.lua

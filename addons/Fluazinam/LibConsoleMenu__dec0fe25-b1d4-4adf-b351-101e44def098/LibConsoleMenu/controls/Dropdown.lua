@@ -86,6 +86,25 @@ local function ApplyDropdownItemLabelLayout(dropdown, control)
 	end
 end
 
+-- Header dropdown: center value on the row; chevron hugs the text (not the far edge).
+local function CenterClosedSelectedTextChevronHug(dropdown)
+	local label = dropdown.m_selectedItemText
+	local container = dropdown.m_container
+	if not label or not container then
+		return
+	end
+	local arrow = container:GetNamedChild("OpenDropdown")
+	local font = dropdown.m_font or ZO_GAMEPAD_COMBO_BOX_FONT
+	label:SetFont(font)
+	label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+	label:ClearAnchors()
+	label:SetAnchor(CENTER, container, CENTER, 0, 0)
+	if arrow then
+		arrow:ClearAnchors()
+		arrow:SetAnchor(LEFT, label, RIGHT, 3, 0)
+	end
+end
+
 -- Closed selected text spans TOPLEFT→arrow, so plain CENTER alignment looks left-leaning.
 -- Inset both sides by the arrow width so the text center matches the control center.
 -- Use the popup unselected font (27) instead of stock SelectedItemText (34).
@@ -132,7 +151,23 @@ local function ApplyClosedSelectedTextLayout(dropdown)
 	if not dropdown then
 		return
 	end
-	if dropdown._lcmDropdownCenterItems then
+	if dropdown._lcmHeaderDropdownOutfitLayout then
+		local label = dropdown.m_selectedItemText
+		local container = dropdown.m_container
+		if label and container then
+			local arrow = container:GetNamedChild("OpenDropdown")
+			label:SetFont("ZoFontGamepad34")
+			label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+			label:ClearAnchors()
+			label:SetAnchor(CENTER, container, CENTER, 0, 0)
+			if arrow then
+				arrow:ClearAnchors()
+				arrow:SetAnchor(LEFT, label, RIGHT, 10, 4)
+			end
+		end
+	elseif dropdown._lcmHeaderDropdownChevronHug then
+		CenterClosedSelectedTextChevronHug(dropdown)
+	elseif dropdown._lcmDropdownCenterItems then
 		CenterClosedSelectedText(dropdown)
 	else
 		RestoreStockClosedSelectedText(dropdown, dropdown._lcmLeftIndentPx or 0)

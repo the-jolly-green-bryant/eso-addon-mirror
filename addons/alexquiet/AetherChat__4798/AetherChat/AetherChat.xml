@@ -128,17 +128,20 @@
                     <Anchor point="LEFT" relativeTo="$(parent)HeaderIcon" relativePoint="RIGHT" offsetX="8" />
                 </Label>
 
-                <!-- Header Action Buttons (Settings, Friends, Mail, Donate) -->
+                <!-- Header Action Buttons (Close, Settings, Friends, Mail, Donate) -->
+                <Button name="$(parent)CloseBtn" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8" />
+                </Button>
                 <Button name="$(parent)SettingsBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-36" offsetY="10" />
                     <Textures normal="/esoui/art/chatwindow/chat_options_up.dds"
                               pressed="/esoui/art/chatwindow/chat_options_down.dds"
                               mouseOver="/esoui/art/chatwindow/chat_options_over.dds" />
                 </Button>
                 <Button name="$(parent)FriendsBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-40" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-66" offsetY="10" />
                     <Textures normal="/esoui/art/contacts/tabicon_friends_up.dds"
                               pressed="/esoui/art/contacts/tabicon_friends_down.dds"
                               mouseOver="/esoui/art/contacts/tabicon_friends_over.dds" />
@@ -157,7 +160,7 @@
                 </Button>
                 <Button name="$(parent)MailBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-70" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-96" offsetY="10" />
                     <Textures normal="/esoui/art/mainmenu/menubar_mail_up.dds"
                               pressed="/esoui/art/mainmenu/menubar_mail_down.dds"
                               mouseOver="/esoui/art/mainmenu/menubar_mail_over.dds" />
@@ -178,7 +181,7 @@
                 <!-- Dedicated Donation Button with Gold Coin -->
                 <Button name="$(parent)DonateBtn" mouseEnabled="true">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-100" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-126" offsetY="10" />
                     <Controls>
                         <Texture name="$(parent)Icon" textureFile="/esoui/art/currency/currency_gold.dds">
                             <AnchorFill />
@@ -189,7 +192,7 @@
                 <!-- Live Chat Search Box -->
                 <Backdrop name="$(parent)SearchBox" edgeColor="3A3A3A" centerColor="0D1117" alpha="0.9" mouseEnabled="true" tier="HIGH">
                     <Dimensions x="175" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-132" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-158" offsetY="10" />
                     <Edge edgeSize="1" />
                     <Controls>
                         <Texture name="$(parent)Icon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" mouseEnabled="true">

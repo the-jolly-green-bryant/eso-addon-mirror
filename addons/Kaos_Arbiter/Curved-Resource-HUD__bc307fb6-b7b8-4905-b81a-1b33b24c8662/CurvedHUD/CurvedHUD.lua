@@ -1,10 +1,18 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName = "CurvedHUD", "0.9.0-test", "CurvedHUD_Update"
-CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="Major Resolve",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=true,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=true,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=true,layout="Parallel",staminaInside=true,iconCache={}}
+CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "0.9.16", "CurvedHUD_Update", 1
+CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,leftTimerOffset=-6,leftTimerSpacing=15,rightTimerOffset=3,rightTimerSpacing=3,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="None",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=false,layout="Parallel",staminaInside=true,iconCache={},abilityIdCache={}}
 CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
-CH.characterDefaults = {majorBuffTracked="Major Resolve",majorBuffColor="Purple",balanceEnabled=true,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=true,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=true,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=true,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
-CH.majorBuffChoices = {"None","Major Resolve","Major Brutality","Major Sorcery","Major Savagery","Major Prophecy","Major Expedition","Major Protection","Major Evasion","Major Berserk","Major Force","Major Courage"}
+CH.characterDefaults = {majorBuffTracked="None",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
+CH.defaults.martialKnowledgeStaminaCue=false
+CH.defaults.setEffectIconCache={}
+CH.defaults.reduceQuestTrackersInCombat=false
+CH.defaults.reduceQuestTrackersInInstances=false
+CH.defaults.reducedQuestTrackerOpacity=0
+CH.characterKeys.martialKnowledgeStaminaCue=true
+CH.characterDefaults.martialKnowledgeStaminaCue=false
+CH.majorBuffChoices = {"None","Major Resolve","Major Brutality","Major Sorcery","Major Savagery","Major Prophecy","Major Expedition","Major Protection","Major Evasion","Major Berserk","Major Force","Major Courage","Major Heroism","Major Vitality","Major Endurance","Major Intellect","Major Fortitude","Major Gallop"}
+CH.minorBuffChoices = {"None","Minor Resolve","Minor Brutality","Minor Sorcery","Minor Savagery","Minor Prophecy","Minor Expedition","Minor Protection","Minor Evasion","Minor Berserk","Minor Force","Minor Courage","Minor Heroism","Minor Vitality","Minor Endurance","Minor Intellect","Minor Fortitude","Minor Mending","Minor Toughness","Minor Lifesteal","Minor Magickasteal","Empower"}
 CH.colorChoices = {"Purple","Orange","Pale Blue","Blue","Green","Red","Gold","White","Cyan","Pink"}
 CH.colors = {Purple={.58,.24,.92},Orange={.88,.35,.18},["Pale Blue"]={.48,.82,1},Blue={.18,.48,1},Green={.18,.82,.30},Red={.92,.18,.18},Gold={1,.72,.15},White={1,1,1},Cyan={.15,.9,.9},Pink={1,.35,.68}}
 CH.trackerSlots = {
@@ -18,6 +26,79 @@ CH.trackerSlotValues = {"topLeftOutside","topLeftInside","bottomLeftOutside","bo
 CH.cruxQuadrantNames = {"Top Left","Bottom Left","Top Right","Bottom Right"}
 CH.cruxQuadrantValues = {"topLeft","bottomLeft","topRight","bottomRight"}
 CH.procPositionChoices = {"Top","Right","Bottom","Left","Center"}
+CH.standardBuffTrackerDefinitions = {
+    {key="resolve",label="Major Buff 1",selectionSetting="majorBuffTracked",slotSetting="majorBuffSlot",colorSetting="majorBuffColor",slot="bottomLeftOutside",color="Purple",choices=CH.majorBuffChoices},
+    {key="majorBuff2",label="Major Buff 2",selectionSetting="majorBuff2Tracked",slotSetting="majorBuff2Slot",colorSetting="majorBuff2Color",slot="topLeftOutside",color="Gold",choices=CH.majorBuffChoices},
+    {key="minorBuff1",label="Minor Buff 1",selectionSetting="minorBuff1Tracked",slotSetting="minorBuff1Slot",colorSetting="minorBuff1Color",slot="bottomRightInside",color="Pale Blue",choices=CH.minorBuffChoices},
+    {key="minorBuff2",label="Minor Buff 2",selectionSetting="minorBuff2Tracked",slotSetting="minorBuff2Slot",colorSetting="minorBuff2Color",slot="topRightInside",color="Green",choices=CH.minorBuffChoices},
+}
+CH.setTrackerDefinitions = {
+    -- DPS
+    {category="DPS Sets",key="setRelequen",label="Arms of Relequen",setNames={"arms of relequen","perfected arms of relequen"},slot="topRightOutside",color="Gold",duration=5,displayStacks=true,stackLimit=10,needles={"harmful winds","relequen"}},
+    {category="DPS Sets",key="setKinras",label="Kinras's Wrath",setNames={"kinras's wrath"},slot="bottomRightOutside",color="Red",duration=5,displayStacks=true,stackLimit=5,needles={"burning heart","kinras"}},
+    {category="DPS Sets",key="setSiroria",label="Mantle of Siroria",setNames={"mantle of siroria","perfected mantle of siroria"},slot="topRightInside",color="Orange",duration=5,displayStacks=true,stackLimit=10,needles={"siren's call","siroria"}},
+    {category="DPS Sets",key="setWhorl",label="Whorl of the Depths",setNames={"whorl of the depths","perfected whorl of the depths"},slot="bottomRightInside",color="Cyan",duration=18,cooldown=18,readyMode="cooldown",needles={"whorl of the depths"}},
+    {category="DPS Sets",key="setPillar",label="Pillar of Nirn",setNames={"pillar of nirn"},slot="topRightOutside",color="Red",duration=10,cooldown=10,readyMode="cooldown",needles={"pillar of nirn","bleeding pillar"}},
+    {category="DPS Sets",key="setMechanicalAcuity",label="Mechanical Acuity",setNames={"mechanical acuity"},slot="bottomRightOutside",color="White",duration=5,cooldown=21,readyMode="cooldown",needles={"mechanical acuity"}},
+    {category="DPS Sets",key="setZens",label="Z'en's Redress",setNames={"z'en's redress"},slot="topRightInside",color="Red",duration=20,needles={"touch of z'en","touch of zen","z'en's redress"}},
+    {category="DPS Sets",key="setElementalCatalyst",label="Elemental Catalyst",setNames={"elemental catalyst"},slot="bottomRightInside",color="Purple",duration=3,displayStacks=true,stackLimit=3,needles={"flame weakness","frost weakness","shock weakness","elemental catalyst"}},
+    {category="DPS Sets",key="setAlkosh",label="Roar of Alkosh",setNames={"roar of alkosh"},slot="topRightOutside",color="Gold",duration=10,needles={"roar of alkosh","alkosh"}},
+    {category="DPS Sets",key="setAegisCaller",label="Aegis Caller",setNames={"aegis caller"},slot="bottomRightOutside",color="Gold",duration=11,cooldown=12,readyMode="cooldown",needles={"aegis caller","lesser aegis"}},
+    {category="DPS Sets",key="setBurningSpellweave",label="Burning Spellweave",setNames={"burning spellweave"},slot="topRightInside",color="Orange",duration=8,cooldown=12,readyMode="cooldown",needles={"burning spellweave"}},
+    {category="DPS Sets",key="setBriarheart",label="Briarheart",setNames={"briarheart"},slot="bottomRightInside",color="Red",duration=10,cooldown=15,readyMode="cooldown",needles={"briarheart"}},
+    -- Healer/support
+    {category="Healer & Support Sets",key="setPowerfulAssault",label="Powerful Assault",setNames={"powerful assault"},slot="topLeftOutside",color="Gold",duration=15,needles={"powerful assault"}},
+    {category="Healer & Support Sets",key="setRoaringOpportunist",label="Roaring Opportunist",setNames={"roaring opportunist","perfected roaring opportunist"},slot="bottomLeftOutside",color="Gold",duration=12,cooldown=22,readyMode="cooldown",needles={"roaring opportunist","major slayer"}},
+    {category="Healer & Support Sets",key="setPillagersProfit",label="Pillager's Profit",setNames={"pillager's profit","perfected pillager's profit"},slot="topLeftInside",color="Purple",duration=10,cooldown=45,readyMode="cooldown",needles={"pillager's profit","pillagers profit"}},
+    {category="Healer & Support Sets",key="setSpellPowerCure",label="Spell Power Cure",setNames={"spell power cure"},slot="bottomLeftInside",color="Gold",duration=5,needles={"spell power cure","major courage"}},
+    {category="Healer & Support Sets",key="setSymphony",label="Symphony of Blades",setNames={"symphony of blades"},slot="topLeftOutside",color="Cyan",duration=6,cooldown=18,readyMode="cooldown",needles={"symphony of blades","meridia's favor","meridias favor"}},
+    {category="Healer & Support Sets",key="setJorvulds",label="Jorvuld's Guidance (5-piece)",setNames={"jorvuld's guidance"},slot="bottomLeftOutside",color="Green",passive=true,readyMode="equipped",needles={"jorvuld's guidance"}},
+    {category="Healer & Support Sets",key="setOlorime",label="Vestment of Olorime",setNames={"vestment of olorime","perfected vestment of olorime"},slot="topLeftOutside",color="Gold",duration=20,cooldown=10,readyMode="cooldown",needles={"vestment of olorime","major courage","circle of might"}},
+    {category="Healer & Support Sets",key="setSaxhleel",label="Saxhleel Champion",setNames={"saxhleel champion","perfected saxhleel champion"},slot="bottomLeftOutside",color="Gold",duration=21,needles={"saxhleel champion","major force"}},
+    {category="Healer & Support Sets",key="setMasterArchitect",label="Master Architect",setNames={"master architect"},slot="topLeftInside",color="Gold",duration=12,needles={"master architect","major slayer"}},
+    {category="Healer & Support Sets",key="setWarMachine",label="War Machine",setNames={"war machine"},slot="bottomLeftInside",color="Gold",duration=12,needles={"war machine","major slayer"}},
+    -- Tank
+    {category="Tank Sets",key="setTurningTide",label="Turning Tide",setNames={"turning tide"},requiredPieces=3,slot="topLeftOutside",color="Cyan",duration=15,cooldown=15,readyMode="condition",conditionNeedles={"flowing water"},needles={"turning tide"}},
+    {category="Tank Sets",key="setArchdruid",label="Archdruid Devyric",setNames={"archdruid devyric"},slot="bottomLeftOutside",color="Purple",duration=15,cooldown=15,readyMode="cooldown",needles={"archdruid devyric"}},
+    {category="Tank Sets",key="setNazaray",label="Nazaray",setNames={"nazaray"},slot="topLeftInside",color="Purple",duration=30,cooldown=30,readyMode="cooldown",needles={"nazaray"}},
+    {category="Tank Sets",key="setCrimsonOath",label="Crimson Oath's Rive",setNames={"crimson oath's rive"},slot="bottomLeftInside",color="Red",duration=15,needles={"crimson oath","crimson oath's rive"}},
+    {category="Tank Sets",key="setTremorscale",label="Tremorscale",setNames={"tremorscale"},slot="topLeftOutside",color="Orange",duration=15,cooldown=10,readyMode="cooldown",needles={"tremorscale"}},
+    {category="Tank Sets",key="setDrakesRush",label="Drake's Rush",setNames={"drake's rush"},slot="bottomLeftOutside",color="Gold",duration=12,cooldown=18,readyMode="cooldown",needles={"drake's rush","major heroism"}},
+    {category="Tank Sets",key="setArkasis",label="Arkasis's Genius",setNames={"arkasis's genius"},slot="topLeftInside",color="Purple",duration=30,cooldown=30,readyMode="cooldown",needles={"arkasis's genius","arkasis"}},
+    {category="Tank Sets",key="setYolnahkriin",label="Claw of Yolnahkriin",setNames={"claw of yolnahkriin","perfected claw of yolnahkriin"},slot="bottomLeftInside",color="Gold",duration=15,cooldown=8,readyMode="cooldown",needles={"claw of yolnahkriin","minor courage","yolnahkriin"}},
+    {category="Tank Sets",key="setEncratis",label="Encratis's Behemoth",setNames={"encratis's behemoth"},slot="topLeftOutside",color="Orange",duration=12,cooldown=15,readyMode="cooldown",needles={"encratis's behemoth","behemoth's aura","behemoths aura"}},
+    {category="Tank Sets",key="setRushOfAgony",label="Rush of Agony",setNames={"rush of agony"},slot="bottomLeftOutside",color="Purple",duration=2,cooldown=8,readyMode="cooldown",needles={"rush of agony","call of the pack"}},
+    {category="Tank Sets",key="setDarkConvergence",label="Dark Convergence",setNames={"dark convergence"},slot="topLeftInside",color="Purple",duration=4,cooldown=25,readyMode="cooldown",needles={"dark convergence"}},
+    -- Arena weapons
+    {category="Arena Weapons",key="setVoidBash",label="Void Bash",setNames={"void bash","perfected void bash"},slot="topRightOutside",color="Purple",duration=13,cooldown=13,readyMode="cooldown",needles={"call of the void","void bash"}},
+    {category="Arena Weapons",key="setWrathElements",label="Wrath of Elements",setNames={"wrath of elements","perfected wrath of elements"},slot="bottomRightOutside",color="Cyan",duration=10,cooldown=10,readyMode="cooldown",needles={"wrath of elements","elemental tether"}},
+    {category="Arena Weapons",key="setSpectralCloak",label="Spectral Cloak",setNames={"spectral cloak","perfected spectral cloak"},slot="topRightInside",color="Purple",duration=2,needles={"spectral cloak"}},
+    {category="Arena Weapons",key="setMercilessCharge",label="Merciless Charge",setNames={"merciless charge","perfected merciless charge"},slot="bottomRightInside",color="Red",duration=7,needles={"merciless charge"}},
+    -- Infinite Archive class sets
+    {category="Infinite Archive Class Sets",key="setBasalt",label="Basalt-Blooded Warrior",setNames={"basalt-blooded warrior"},slot="topLeftOutside",color="Orange",duration=10,needles={"rock stance","molten stance","obsidian stance"}},
+    {category="Infinite Archive Class Sets",key="setWrathsun",label="Wrathsun",setNames={"wrathsun"},slot="bottomLeftOutside",color="Gold",duration=10,needles={"wrathsun","sunlight"}},
+    {category="Infinite Archive Class Sets",key="setMonolith",label="Monolith of Storms",setNames={"monolith of storms"},slot="topRightOutside",color="Cyan",duration=10,needles={"monolith of storms","monolith"}},
+    {category="Infinite Archive Class Sets",key="setSoulcleaver",label="Soulcleaver",setNames={"soulcleaver"},slot="bottomRightOutside",color="Purple",duration=20,needles={"soulcleaver"}},
+    {category="Infinite Archive Class Sets",key="setNobility",label="Nobility in Decay",setNames={"nobility in decay"},slot="topLeftInside",color="Green",duration=16,needles={"beautiful corpse","death's favor","deaths favor"}},
+    {category="Infinite Archive Class Sets",key="setGardener",label="Gardener of Seasons",setNames={"gardener of seasons"},slot="bottomLeftInside",color="Green",duration=10,needles={"gardener of seasons","herald of spring","harbinger of fall"}},
+    {category="Infinite Archive Class Sets",key="setHierophant",label="Reawakened Hierophant",setNames={"reawakened hierophant"},slot="topRightInside",color="Green",duration=10,needles={"reawakened hierophant","hierophant"}},
+}
+CH.setTrackerCategories={"DPS Sets","Healer & Support Sets","Tank Sets","Arena Weapons","Infinite Archive Class Sets"}
+for _,definition in ipairs(CH.standardBuffTrackerDefinitions) do
+    if CH.defaults[definition.selectionSetting]==nil then CH.defaults[definition.selectionSetting]="None" end
+    CH.defaults[definition.slotSetting]=CH.defaults[definition.slotSetting] or definition.slot
+    CH.defaults[definition.colorSetting]=CH.defaults[definition.colorSetting] or definition.color
+    CH.characterKeys[definition.selectionSetting]=true; CH.characterKeys[definition.slotSetting]=true; CH.characterKeys[definition.colorSetting]=true
+    CH.characterDefaults[definition.selectionSetting]=CH.characterDefaults[definition.selectionSetting] or CH.defaults[definition.selectionSetting]
+    CH.characterDefaults[definition.slotSetting]=CH.characterDefaults[definition.slotSetting] or definition.slot
+    CH.characterDefaults[definition.colorSetting]=CH.characterDefaults[definition.colorSetting] or definition.color
+end
+for _,definition in ipairs(CH.setTrackerDefinitions) do
+    local key=definition.key
+    CH.defaults[key.."Enabled"]=false; CH.defaults[key.."Slot"]=definition.slot; CH.defaults[key.."Color"]=definition.color
+    CH.characterKeys[key.."Enabled"]=true; CH.characterKeys[key.."Slot"]=true; CH.characterKeys[key.."Color"]=true
+    CH.characterDefaults[key.."Enabled"]=false; CH.characterDefaults[key.."Slot"]=definition.slot; CH.characterDefaults[key.."Color"]=definition.color
+end
 CH.scribingTrackerDefinitions = {
     {key="soulBurst",label="Soul Burst",icon="CurvedHUD/textures/soul_burst.dds",slot="topRightInside",color="Purple",duration=20,needles={"soul burst","binding burst","bloody burst","chilling burst","fiery burst","healing burst","leashing burst","magical burst","pestilent burst","shocking burst","sundering burst","warding burst"}},
     {key="contingency",label="Ulfsild's Contingency",icon="CurvedHUD/textures/ulfsilds_contingency.dds",slot="bottomRightInside",color="Cyan",duration=20,needles={"contingency"}},
@@ -87,6 +168,7 @@ CH.nightbladeTrackerDefinitions = {
     {key="nbSiphoning",label="Siphoning Strikes",slot="bottomRightOutside",color="Red",duration=20,needles={"siphoning strikes","leeching strikes","siphoning attacks"}},
     {key="nbDrainPower",label="Drain Power",slot="topRightOutside",color="Red",duration=20,needles={"drain power","power extraction","sap essence"}},
     {key="nbLotusFan",label="Lotus Fan",slot="bottomRightInside",color="Pink",duration=20,needles={"lotus fan"}},
+    {key="nbOfferingPenalty",label="Offering Health Drain",slot="bottomLeftInside",color="Red",duration=3,negative=true,needles={"malevolent offering","healthy offering","shrewd offering"},durations={["malevolent offering"]=3,["healthy offering"]=3,["shrewd offering"]=2}},
 }
 CH.templarTrackerDefinitions = {
     {key="tpSunFire",label="Sun Fire",slot="topLeftInside",color="Gold",duration=20,needles={"sun fire","reflective light","vampire's bane","vampires bane"}},
@@ -140,7 +222,7 @@ CH.nonClassTrackerDefinitions = {
     {line="Bow",key="acidSpray",label="Acid Spray",slot="topRightOutside",color="Green",duration=5,needles={"acid spray"}},
     {line="Bow",key="hawkEye",label="Hawk Eye Stacks",slot="bottomRightOutside",color="Gold",duration=5,needles={"hawk eye"}},
     -- Destruction Staff
-    {line="Destruction Staff",key="wallElements",label="Wall of Elements",slot="topRightInside",color="Cyan",duration=10,needles={"wall of elements","unstable wall","elemental blockade"},durations={ ["wall of elements"]=10,["unstable wall of elements"]=10,["elemental blockade"]=15}},
+    {line="Destruction Staff",key="wallElements",label="Wall of Elements",slot="topRightInside",color="Cyan",duration=10,needles={"wall of elements","wall of fire","wall of frost","wall of storms","unstable wall","elemental blockade"},durations={ ["wall of elements"]=10,["unstable wall of elements"]=10,["elemental blockade"]=15,["elemental blockade of fire"]=15,["elemental blockade of frost"]=15,["elemental blockade of storms"]=15}},
     {line="Destruction Staff",key="destructiveTouch",label="Destructive Touch",slot="bottomRightInside",color="Orange",duration=20,needles={"destructive touch","destructive clench","destructive reach"}},
     {line="Destruction Staff",key="weaknessElements",label="Weakness to Elements",slot="topRightOutside",color="Purple",duration=30,needles={"weakness to elements","elemental drain","elemental susceptibility"}},
     {line="Destruction Staff",key="pulsar",label="Pulsar",slot="bottomRightOutside",color="Pale Blue",duration=10,needles={"pulsar"}},
@@ -179,8 +261,11 @@ CH.nonClassTrackerDefinitions = {
     {line="Light Armor",key="annulment",label="Annulment",slot="topLeftInside",color="Pale Blue",duration=6,needles={"annulment","dampen magic","harness magicka"}},
     {line="Medium Armor",key="evasion",label="Evasion",slot="topRightInside",color="Green",duration=20,needles={"evasion","shuffle","elude"}},
     {line="Heavy Armor",key="unstoppable",label="Unstoppable",slot="bottomLeftInside",color="Gold",duration=20,needles={"unstoppable","immovable","unstoppable brute"}},
+    {line="Heavy Armor",key="unstoppableSnare",label="Unstoppable Self-Snare",slot="bottomLeftOutside",color="Red",duration=6,negative=true,needles={"unstoppable","immovable","unstoppable brute"}},
     {line="Soul Magic",key="soulTrap",label="Soul Trap",slot="topLeftOutside",color="Purple",duration=20,needles={"soul trap","consuming trap","soul splitting trap"}},
     {line="Vampire",key="mistForm",label="Mist Form",slot="bottomLeftOutside",color="Purple",duration=4,needles={"mist form","blood mist","elusive mist"}},
+    {line="Vampire",key="bloodForBloodPenalty",label="Blood for Blood Ally-Heal Lockout",slot="topLeftInside",color="Red",duration=3,negative=true,needles={"blood for blood"}},
+    {line="Vampire",key="bloodFrenzyPenalty",label="Blood Frenzy Risk",slot="topLeftOutside",color="Red",duration=2,negative=true,stackMaximum=5,needles={"blood frenzy","sated fury","simmering frenzy"}},
     {line="Werewolf",key="werewolfRoar",label="Roar",slot="topRightOutside",color="Red",duration=10,needles={"roar","ferocious roar","deafening roar"}},
     {line="Werewolf",key="werewolfClaws",label="Infectious Claws",slot="bottomRightOutside",color="Green",duration=20,needles={"infectious claws","claws of anguish","claws of life"}},
 }
@@ -232,6 +317,24 @@ for _,definition in ipairs(CH.nonClassTrackerDefinitions) do
     CH.characterKeys[key.."Enabled"]=true; CH.characterKeys[key.."Slot"]=true; CH.characterKeys[key.."Color"]=true
     CH.characterDefaults[key.."Enabled"]=false; CH.characterDefaults[key.."Slot"]=definition.slot; CH.characterDefaults[key.."Color"]=definition.color
 end
+-- Enemy-bound durations are removed by ESO when combat ends. Keep self buffs,
+-- heals, shields, proc cooldowns, and utility windows intact; only hostile DoTs,
+-- ground effects, target debuffs, and their combat-only stacks are purged.
+CH.combatBoundTrackerKeys = {
+    daedricCurse=true,lightningSplash=true,daedricMines=true,
+    swarm=true,shalk=true,shards=true,
+    abyssalImpact=true,imperfectRing=true,runicJolt=true,
+    dkSearingStrike=true,dkFieryBreath=true,dkDarkTalons=true,dkAshCloud=true,dkStoneGiant=true,
+    nbPath=true,nbMark=true,nbCripple=true,nbLotusFan=true,
+    tpSunFire=true,tpBacklash=true,tpEclipse=true,tpSpearShards=true,
+    necroBoneyard=true,necroSiphon=true,necroBoneTotem=true,
+    twoHandCleave=true,stampede=true,puncture=true,lowSlash=true,twinSlashes=true,
+    volley=true,poisonArrow=true,acidSpray=true,wallElements=true,destructiveTouch=true,
+    weaknessElements=true,pulsar=true,trapBeast=true,fireRune=true,entropy=true,
+    trappingWebs=true,innerFire=true,timeStop=true,caltrops=true,magickaDetonation=true,
+    soulTrap=true,werewolfClaws=true,
+    setRelequen=true,setZens=true,setElementalCatalyst=true,setAlkosh=true,
+}
 function CH:NormalizeTrackerSlot(value,fallback)
     if self.trackerSlots[value] then return value end
     for index,name in ipairs(self.trackerSlotNames) do
@@ -265,6 +368,12 @@ local HEALTH_POWER=_G["COMBAT_MECHANIC_FLAGS_HEALTH"] or POWERTYPE_HEALTH
 local STAMINA_POWER=_G["COMBAT_MECHANIC_FLAGS_STAMINA"] or POWERTYPE_STAMINA
 local MAGICKA_POWER=_G["COMBAT_MECHANIC_FLAGS_MAGICKA"] or POWERTYPE_MAGICKA
 local MOUNT_POWER=_G["COMBAT_MECHANIC_FLAGS_MOUNT_STAMINA"] or POWERTYPE_MOUNT_STAMINA
+local PERIODIC_COMBAT_RESULTS={}
+for _,name in ipairs({
+    "ACTION_RESULT_DAMAGE","ACTION_RESULT_CRITICAL_DAMAGE","ACTION_RESULT_DOT_TICK","ACTION_RESULT_DOT_TICK_CRITICAL",
+    "ACTION_RESULT_HEAL","ACTION_RESULT_CRITICAL_HEAL","ACTION_RESULT_HOT_TICK","ACTION_RESULT_HOT_TICK_CRITICAL",
+    "ACTION_RESULT_BLOCKED_DAMAGE","ACTION_RESULT_DAMAGE_SHIELDED","ACTION_RESULT_EFFECT_FADED",
+}) do local value=_G[name]; if value then PERIODIC_COMBAT_RESULTS[value]=true end end
 local function clamp(v,lo,hi) return math.max(lo,math.min(hi,v or 0)) end
 
 function CH:Log(message, always)
@@ -273,7 +382,13 @@ function CH:Log(message, always)
 end
 function CH:Guard(label,fn)
     local ok,err=pcall(fn)
-    if not ok then self:Log("ERROR in "..label..": "..tostring(err),true) end
+    if not ok then
+        self.errorCount=(self.errorCount or 0)+1
+        self.errorLog=self.errorLog or {}
+        self.errorLog[#self.errorLog+1]=tostring(label)..": "..tostring(err)
+        if #self.errorLog>5 then table.remove(self.errorLog,1) end
+        self:Log("ERROR in "..label..": "..tostring(err),true)
+    end
     return ok
 end
 local function texture(parent,suffix,level,path,r,g,b,a)
@@ -353,11 +468,19 @@ function CH:CreateMountBar()
     b.bg:SetTextureCoords(b.u1,b.u2,0,1); b.frame:SetTextureCoords(b.u1,b.u2,0,1)
     b:SetHidden(true); self.mountBar=b
 end
+function CH:GetTrackerAppearanceBase(slot,specialTexture)
+    local info=self.trackerSlots[slot]
+    local style=info.inside and self.sv.insideTimerStyle or self.sv.outsideTimerStyle
+    if specialTexture=="balance" and slot=="bottomLeftInside" and style=="Thin" then return "balance_lower" end
+    if info.side=="right" then return "tracker_"..info.vertical.."_right_"..string.lower(self.sv.layout).."_"..(info.inside and "inside" or "outside").."_"..string.lower(style) end
+    return "tracker_"..info.vertical.."_"..(info.inside and "inside" or "outside").."_"..string.lower(style)
+end
+
 function CH:CreateTracker(key,slot,colorSetting,specialTexture)
     local t=WM:CreateControl("CurvedHUD_"..key,self.root,CT_CONTROL); t:SetDimensions(38,180); t.segment="full"
     t.key,t.slot,t.colorSetting,t.specialTexture=key,slot,colorSetting,specialTexture; t.isNegative=key=="balance"
     local info=self.trackerSlots[slot]; t.u1,t.u2=info.side=="left" and 1 or 0,info.side=="left" and 0 or 1
-    local textureName=specialTexture=="balance" and "balance_lower" or "tracker_"..info.vertical
+    local textureName=self:GetTrackerAppearanceBase(slot,specialTexture)
     t.frame=texture(t,"_Frame",1,"CurvedHUD/textures/"..textureName.."_frame.dds",.35,.35,.35,.7); t.frame:SetAnchorFill(t); t.frame:SetTextureCoords(t.u1,t.u2,0,1)
     t.fill=texture(t,"_Fill",2,"CurvedHUD/textures/"..textureName..".dds",1,1,1,.9); t.fill:SetAnchor(BOTTOMLEFT,t,BOTTOMLEFT)
     if key=="balance" then
@@ -370,6 +493,7 @@ function CH:CreateTracker(key,slot,colorSetting,specialTexture)
     t.icon:SetDrawLayer(DL_OVERLAY); t.icon:SetDrawLevel(49)
     t.stackLabel=label(t.icon,"_StackLabel","ZoFontGamepadBold27"); t.stackLabel:SetAnchor(CENTER,t.icon,CENTER); t.stackLabel:SetDimensions(38,38); t.stackLabel:SetDrawLayer(DL_OVERLAY); t.stackLabel:SetDrawLevel(50); t.stackLabel:SetHidden(true)
     t.timer=label(t,"_Timer","ZoFontGamepad20"); t.timer:SetDimensions(70,30); t.timer:SetAnchor(BOTTOM,t,TOP,0,-5)
+    t.appearanceBase=textureName
     t.active,t.beginTime,t.endTime,t.duration=false,0,0,0; t:SetHidden(true); self.trackers[key]=t
 end
 
@@ -456,6 +580,23 @@ function CH:UpdateArmamentsReadyEffect()
     end
 end
 
+function CH:PhraseMatches(text,phrase)
+    text,phrase=string.lower(text or ""),string.lower(phrase or "")
+    if phrase=="" then return false end
+    local start=1
+    while true do
+        local first,last=string.find(text,phrase,start,true)
+        if not first then return false end
+        local before=first>1 and string.sub(text,first-1,first-1) or ""
+        local after=last<#text and string.sub(text,last+1,last+1) or ""
+        local phraseFirst,phraseLast=string.sub(phrase,1,1),string.sub(phrase,-1)
+        local leftOk=not string.find(phraseFirst,"[%w]") or before=="" or not string.find(before,"[%w]")
+        local rightOk=not string.find(phraseLast,"[%w]") or after=="" or not string.find(after,"[%w]")
+        if leftOk and rightOk then return true end
+        start=first+1
+    end
+end
+
 function CH:FindSlottedSkillIcon(...)
     if not GetSlotBoundId or not GetAbilityName then return nil end
     local wanted={...}; local first=_G["ACTION_BAR_FIRST_NORMAL_SLOT_INDEX"] or 3; local last=_G["ACTION_BAR_ULTIMATE_SLOT_INDEX"] or 8
@@ -467,7 +608,7 @@ function CH:FindSlottedSkillIcon(...)
             if ok and id and id>0 then
                 local name=string.lower(GetAbilityName(id) or "")
                 for _,needle in ipairs(wanted) do
-                    if string.find(name,needle,1,true) then
+                    if self:PhraseMatches(name,needle) then
                         local okIcon,iconName
                         if GetSlotTexture and category then okIcon,iconName=pcall(GetSlotTexture,slot,category)
                         elseif GetSlotTexture then okIcon,iconName=pcall(GetSlotTexture,slot) end
@@ -494,7 +635,7 @@ function CH:FindLearnedSkillIcon(...)
                 local ok,name,textureName=pcall(GetSkillAbilityInfo,skillType,lineIndex,abilityIndex)
                 local lowerName=ok and string.lower(name or "") or ""
                 for _,needle in ipairs(wanted) do
-                    if string.find(lowerName,needle,1,true) and textureName and textureName~="" then return textureName end
+                    if self:PhraseMatches(lowerName,needle) and textureName and textureName~="" then return textureName end
                 end
             end
         end
@@ -525,7 +666,10 @@ function CH:GetConfiguredAbilityDuration(abilityId,fallback)
         durationMs=ok and tonumber(durationMs) or 0
         -- Crafted ability IDs reflect the currently selected scripts. Some
         -- combinations still return zero, so preserve the character setting as fallback.
-        if durationMs>=1000 and durationMs<=120000 then duration=durationMs/1000 end
+        -- Some abilities expose the interval to their next pulse instead of
+        -- the complete parent effect. API data may extend a known duration,
+        -- but must never partition it into a shorter tick window.
+        if durationMs>=1000 and durationMs<=120000 then duration=math.max(duration,durationMs/1000) end
     end
     return clamp(duration,1,120)
 end
@@ -534,11 +678,13 @@ function CH:RefreshScribingBindings()
     if not self.trackers then return end
     self.scribingAbilityIds=self.scribingAbilityIds or {}
     for _,definition in ipairs(self.scribingTrackerDefinitions) do
-        local slottedIcon,abilityId=self:FindSlottedSkillIcon(unpack(definition.needles))
-        if abilityId then self.scribingAbilityIds[definition.key]=abilityId end
         local tracker=self.trackers[definition.key]
-        local abilityName=abilityId and GetAbilityName and GetAbilityName(abilityId) or definition.needles[1]
-        if tracker then self:ResolveTrackerIcon(definition,abilityName,abilityId,slottedIcon,nil,tracker) end
+        if tracker then
+            local slottedIcon,abilityId=self:FindSlottedDefinitionIcon(definition)
+            if abilityId then self.scribingAbilityIds[definition.key]=abilityId end
+            local abilityName=abilityId and GetAbilityName and GetAbilityName(abilityId) or definition.needles[1]
+            self:ResolveTrackerIcon(definition,abilityName,abilityId,slottedIcon,nil,tracker)
+        end
     end
     self:RefreshShroudBinding()
 end
@@ -551,12 +697,76 @@ function CH:GetFamilyIcon(definition,abilityName)
     return definition.icons and definition.icons[definition.needles[1]] or nil
 end
 
+function CH:RememberDefinitionAbilityId(definition,abilityId)
+    abilityId=tonumber(abilityId)
+    if not definition or definition.category or not abilityId or abilityId<=0 then return end
+    local cache=self.globalSV and self.globalSV.abilityIdCache
+    if not cache then return end
+    if type(cache[definition.key])~="table" then cache[definition.key]={} end
+    cache[definition.key][tostring(abilityId)]=true
+end
+
+function CH:IsDefinitionAbilityId(definition,abilityId,idCache)
+    abilityId=tonumber(abilityId)
+    if not abilityId or abilityId<=0 then return false end
+    if idCache and idCache[definition.key] then
+        local value=idCache[definition.key]
+        if value==abilityId or type(value)=="table" and (value[abilityId] or value[tostring(abilityId)]) then return true end
+    end
+    for _,knownId in ipairs(definition.abilityIds or {}) do if tonumber(knownId)==abilityId then return true end end
+    local learned=self.globalSV and self.globalSV.abilityIdCache and self.globalSV.abilityIdCache[definition.key]
+    return type(learned)=="table" and (learned[abilityId] or learned[tostring(abilityId)]) or false
+end
+
 function CH:DefinitionMatches(definition,lowerName,abilityId,idCache)
-    if idCache and idCache[definition.key] and idCache[definition.key]==abilityId then return true end
+    if self:IsDefinitionAbilityId(definition,abilityId,idCache) then return true end
     for _,needle in ipairs(definition.needles or {}) do
-        if lowerName==needle or string.find(lowerName,needle,1,true) then return true end
+        if self:PhraseMatches(lowerName,needle) then
+            self:RememberDefinitionAbilityId(definition,abilityId)
+            return true
+        end
     end
     return false
+end
+
+function CH:FindSlottedDefinitionIcon(definition)
+    if not GetSlotBoundId then return nil end
+    local expected={}
+    if definition.icon then expected[string.lower(definition.icon)]=true end
+    for _,path in pairs(definition.icons or {}) do expected[string.lower(path)]=true end
+    local cached=self.globalSV and self.globalSV.iconCache and self.globalSV.iconCache[definition.key]
+    if cached and cached~="" then expected[string.lower(cached)]=true end
+    local first=_G["ACTION_BAR_FIRST_NORMAL_SLOT_INDEX"] or 3; local last=_G["ACTION_BAR_ULTIMATE_SLOT_INDEX"] or 8
+    local categories={false,_G["HOTBAR_CATEGORY_PRIMARY"] or false,_G["HOTBAR_CATEGORY_BACKUP"] or false}
+    for _,category in ipairs(categories) do
+        for slot=first,last do
+            local ok,id
+            if category then ok,id=pcall(GetSlotBoundId,slot,category) else ok,id=pcall(GetSlotBoundId,slot) end
+            if ok and id and id>0 then
+                local iconName
+                if GetSlotTexture then
+                    local okIcon
+                    if category then okIcon,iconName=pcall(GetSlotTexture,slot,category) else okIcon,iconName=pcall(GetSlotTexture,slot) end
+                    if not okIcon then iconName=nil end
+                end
+                if (not iconName or iconName=="") and GetAbilityIcon then
+                    local okIcon,value=pcall(GetAbilityIcon,id); if okIcon then iconName=value end
+                end
+                local idMatch=self:IsDefinitionAbilityId(definition,id)
+                local iconMatch=iconName and expected[string.lower(iconName)]
+                local nameMatch=false
+                if not idMatch and not iconMatch and GetAbilityName then
+                    local name=string.lower(GetAbilityName(id) or "")
+                    for _,needle in ipairs(definition.needles or {}) do if self:PhraseMatches(name,needle) then nameMatch=true; break end end
+                end
+                if idMatch or iconMatch or nameMatch then
+                    self:RememberDefinitionAbilityId(definition,id)
+                    return iconName,id
+                end
+            end
+        end
+    end
+    return nil
 end
 
 -- Shared, defensive icon chain for every definition-driven tracker. Bundled
@@ -564,19 +774,26 @@ end
 -- event paths provide independent fallbacks. A previously valid texture is
 -- retained if a later API call temporarily returns no artwork.
 function CH:ResolveTrackerIcon(definition,abilityName,abilityId,slottedIcon,eventIcon,tracker)
+    local isSetTracker=definition.category~=nil and self.setTrackerCategories~=nil
     local iconPath=self:GetFamilyIcon(definition,abilityName) or definition.icon
     if not iconPath or iconPath=="" then iconPath=slottedIcon end
+    -- For item sets, ESO's live effect artwork is authoritative. It must win
+    -- over the icon of the staff, shield, or armor piece that grants the set.
+    if isSetTracker and eventIcon and eventIcon~="" then iconPath=eventIcon end
     if (not iconPath or iconPath=="") and abilityId and abilityId>0 and GetAbilityIcon then
         local ok,value=pcall(GetAbilityIcon,abilityId); if ok then iconPath=value end
     end
-    if not iconPath or iconPath=="" then iconPath=self:FindLearnedSkillIcon(unpack(definition.needles or {})) end
+    if (not iconPath or iconPath=="") and not isSetTracker then iconPath=self:FindLearnedSkillIcon(unpack(definition.needles or {})) end
     if not iconPath or iconPath=="" then iconPath=eventIcon end
-    local savedCache=self.globalSV and self.globalSV.iconCache
+    local savedCache=self.globalSV and (isSetTracker and self.globalSV.setEffectIconCache or self.globalSV.iconCache)
     if (not iconPath or iconPath=="") and savedCache then iconPath=savedCache[definition.key] end
-    if (not iconPath or iconPath=="") and tracker then iconPath=tracker.preferredIcon end
+    if (not iconPath or iconPath=="") and tracker then iconPath=isSetTracker and (tracker.effectIcon or tracker.equipmentFallbackIcon) or tracker.preferredIcon end
     if iconPath and iconPath~="" then
         if savedCache then savedCache[definition.key]=iconPath end
-        if tracker then tracker.preferredIcon=iconPath; tracker.icon:SetTexture(iconPath) end
+        if tracker then
+            if isSetTracker then tracker.effectIcon=iconPath else tracker.preferredIcon=iconPath end
+            tracker.icon:SetTexture(iconPath)
+        end
     end
     return iconPath
 end
@@ -584,10 +801,13 @@ end
 function CH:RefreshDefinitionBindings(definitions,idCache)
     if not self.trackers then return end
     for _,definition in ipairs(definitions) do
-        local slottedIcon,abilityId=self:FindSlottedSkillIcon(unpack(definition.needles))
-        if abilityId then idCache[definition.key]=abilityId end
-        local abilityName=abilityId and GetAbilityName and GetAbilityName(abilityId) or definition.needles[1]
-        self:ResolveTrackerIcon(definition,abilityName,abilityId,slottedIcon,nil,self.trackers[definition.key])
+        local tracker=self.trackers[definition.key]
+        if tracker then
+            local slottedIcon,abilityId=self:FindSlottedDefinitionIcon(definition)
+            if abilityId then idCache[definition.key]=abilityId end
+            local abilityName=abilityId and GetAbilityName and GetAbilityName(abilityId) or definition.needles[1]
+            self:ResolveTrackerIcon(definition,abilityName,abilityId,slottedIcon,nil,tracker)
+        end
     end
 end
 
@@ -623,19 +843,205 @@ function CH:RefreshRemainingClassBindings()
     end
 end
 
+function CH:SetNameMatches(definition,setName)
+    local lower=string.lower(setName or "")
+    for _,needle in ipairs(definition.setNames or {}) do if string.find(lower,needle,1,true) then return true end end
+    return false
+end
+function CH:RefreshEquippedSets()
+    if not self.trackers then return end
+    local counts,ownedCounts,icons={},{},{}
+    if GetBagSize and GetItemLink and GetItemLinkSetInfo then
+        local size=GetBagSize(BAG_WORN) or 0
+        for slot=0,size do
+            local link=GetItemLink(BAG_WORN,slot)
+            if link and link~="" then
+                local result={pcall(GetItemLinkSetInfo,link,false)}
+                if result[1] and result[2] then
+                    local setName=result[3] or ""; local lower=string.lower(setName)
+                    local apiEquipped=(tonumber(result[5]) or 0)+(tonumber(result[8]) or 0)
+                    counts[lower]=math.max(counts[lower] or 0,apiEquipped>0 and apiEquipped or ((counts[lower] or 0)+1))
+                    -- GetItemLinkSetInfo reports only the currently active
+                    -- weapon bar. Count every physically worn set item as a
+                    -- second availability signal so back-bar sets survive a
+                    -- weapon swap. Two-handed weapons supply two set pieces.
+                    local pieceWeight=1
+                    if GetItemLinkEquipType then
+                        local equipType=GetItemLinkEquipType(link)
+                        if EQUIP_TYPE_TWO_HAND and equipType==EQUIP_TYPE_TWO_HAND then pieceWeight=2 end
+                    end
+                    ownedCounts[lower]=(ownedCounts[lower] or 0)+pieceWeight
+                    if GetItemLinkIcon then icons[lower]=GetItemLinkIcon(link) end
+                end
+            end
+        end
+    end
+    self.jorvuldActive=false
+    self.martialKnowledgeEquipped=false
+    for setName,count in pairs(counts) do
+        if string.find(setName,"martial knowledge",1,true) and math.max(count,ownedCounts[setName] or 0)>=5 then self.martialKnowledgeEquipped=true; break end
+    end
+    for _,definition in ipairs(self.setTrackerDefinitions) do
+        local required=definition.requiredPieces or ((definition.category=="Arena Weapons" or definition.label=="Archdruid Devyric" or definition.label=="Nazaray" or definition.label=="Tremorscale" or definition.label=="Symphony of Blades") and 2 or 5)
+        local equipped,icon=false,nil
+        for setName,count in pairs(counts) do
+            local availableCount=math.max(count,ownedCounts[setName] or 0)
+            if self:SetNameMatches(definition,setName) and availableCount>=required then equipped,icon=true,icons[setName]; break end
+        end
+        local t=self.trackers[definition.key]
+        if t then
+            t.equipped=equipped
+            local effectCache=self.globalSV and self.globalSV.setEffectIconCache
+            if icon and icon~="" then t.equipmentFallbackIcon=icon end
+            if t.effectIcon and t.effectIcon~="" then t.icon:SetTexture(t.effectIcon)
+            elseif effectCache and effectCache[definition.key] then
+                t.effectIcon=effectCache[definition.key]; t.icon:SetTexture(t.effectIcon)
+            elseif t.equipmentFallbackIcon then t.icon:SetTexture(t.equipmentFallbackIcon) end
+            if definition.passive then t.active=equipped end
+            local now=GetGameTimeSeconds()
+            local liveEffect=t.active and ((t.endTime or t.cooldownEnd or 0)>now)
+            if not equipped and not liveEffect then
+                t.active=false; t.stackCount=0; t.cooldownEnd=0; t.conditionActive=false; t.conditionEndTime=0; t.setEffectInstances={}
+            end
+        end
+        if definition.key=="setJorvulds" then self.jorvuldActive=equipped end
+    end
+end
+
+function CH:UpdateMartialKnowledgeStaminaCue(current,maximum)
+    local bar=self.bars and self.bars.stamina
+    if not bar or not bar.fill then return end
+    if self.sv.martialKnowledgeStaminaCue and (self.sv.preview or self.martialKnowledgeEquipped) and (maximum or 0)>0 then
+        if current/maximum<.5 then bar.fill:SetColor(.52,1,.58,self.sv.fillAlpha)
+        else bar.fill:SetColor(1,.48,.48,self.sv.fillAlpha) end
+    else
+        -- The resource textures already contain their authored gradient; white
+        -- restores the normal Stamina artwork without flattening that gradient.
+        bar.fill:SetColor(1,1,1,self.sv.fillAlpha)
+    end
+end
+
+function CH:CacheExternalTrackerControls()
+    local controls={}
+    local function add(control)
+        if not control or not control.SetAlpha then return end
+        for _,existing in ipairs(controls) do if existing==control then return end end
+        controls[#controls+1]=control
+    end
+    if FOCUSED_QUEST_TRACKER and FOCUSED_QUEST_TRACKER.GetContainerControl then add(FOCUSED_QUEST_TRACKER:GetContainerControl()) end
+    add(ZO_FocusedQuestTrackerPanel)
+    add(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssisted)
+    add(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1)
+    add(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader2)
+    add(PROMOTIONAL_EVENT_TRACKER)
+    add(ZO_PromotionalEventTracker_TL)
+    self.externalTrackerControls=controls
+end
+
+function CH:UpdateExternalTrackerOpacity()
+    if not self.sv.reduceQuestTrackersInCombat and not self.sv.reduceQuestTrackersInInstances and not self.externalTrackersReduced then return end
+    local inCombat=IsUnitInCombat and IsUnitInCombat("player") or false
+    local inInstance=IsUnitInDungeon and IsUnitInDungeon("player") or false
+    if not inInstance and GetUnitZoneIndex and GetZoneDisplayType then
+        local displayType=GetZoneDisplayType(GetUnitZoneIndex("player"))
+        inInstance=(ZONE_DISPLAY_TYPE_DUNGEON and displayType==ZONE_DISPLAY_TYPE_DUNGEON)
+            or (ZONE_DISPLAY_TYPE_RAID and displayType==ZONE_DISPLAY_TYPE_RAID)
+            or (ZONE_DISPLAY_TYPE_ENDLESS_DUNGEON and displayType==ZONE_DISPLAY_TYPE_ENDLESS_DUNGEON)
+    end
+    local restricted=(self.sv.reduceQuestTrackersInCombat and inCombat) or (self.sv.reduceQuestTrackersInInstances and inInstance)
+    local targetAlpha=restricted and clamp(tonumber(self.sv.reducedQuestTrackerOpacity) or 0,0,1) or 1
+    self.externalTrackerBaseAlpha=self.externalTrackerBaseAlpha or {}
+    if not self.externalTrackerControls then self:CacheExternalTrackerControls() end
+    for _,control in ipairs(self.externalTrackerControls) do
+        if self.externalTrackerBaseAlpha[control]==nil then
+            self.externalTrackerBaseAlpha[control]=control.GetAlpha and control:GetAlpha() or 1
+        end
+        control:SetAlpha(restricted and targetAlpha or self.externalTrackerBaseAlpha[control])
+    end
+    self.externalTrackersReduced=restricted
+end
+function CH:SetEffectMatches(needles,effectName)
+    local lower=string.lower(effectName or "")
+    for _,needle in ipairs(needles or {}) do if string.find(lower,needle,1,true) then return true end end
+    return false
+end
+function CH:RefreshSetDurationFromInstances(t,definition,now)
+    local latestEnd,latestBegin,totalStacks=0,now,0
+    for key,instance in pairs(t.setEffectInstances or {}) do
+        if (instance.endTime or 0)<=now then
+            t.setEffectInstances[key]=nil
+        else
+            if instance.endTime>latestEnd then latestEnd,latestBegin=instance.endTime,instance.beginTime or now end
+            if definition.displayStacks then totalStacks=totalStacks+math.max(1,tonumber(instance.stackCount) or 0) end
+        end
+    end
+    if latestEnd>now then
+        t.active=true; t.beginTime=latestBegin; t.endTime=latestEnd
+        t.duration=math.max(.01,latestEnd-latestBegin)
+        if definition.displayStacks then t.stackCount=math.min(definition.stackLimit or totalStacks,totalStacks) end
+    else
+        t.active=false; t.stackCount=0
+    end
+end
+
+function CH:OnSetEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId)
+    if not self.trackers then return end
+    local now=GetGameTimeSeconds()
+    for _,definition in ipairs(self.setTrackerDefinitions) do
+        if self.sv[definition.key.."Enabled"] and (self.sv.preview or (self.trackers[definition.key] and self.trackers[definition.key].equipped)) then
+            local t=self.trackers[definition.key]
+            local conditionMatch=self:SetEffectMatches(definition.conditionNeedles,effectName)
+            local effectMatch=self:SetEffectMatches(definition.needles,effectName)
+            if conditionMatch then
+                t.conditionActive=changeType~=EFFECT_RESULT_FADED
+                t.conditionEndTime=endTime or 0
+            end
+            if effectMatch then
+                self:ResolveTrackerIcon(definition,effectName,abilityId,nil,iconName,t)
+                if changeType==EFFECT_RESULT_FADED and not definition.cooldown then
+                    local instanceKey=tostring(unitTag or "").."|"..tostring(abilityId or 0).."|"..string.lower(effectName or "")
+                    t.setEffectInstances=t.setEffectInstances or {}
+                    local instance=t.setEffectInstances[instanceKey]
+                    -- ESO can deliver the FADED event for an older application
+                    -- after UPDATED/Gained has already supplied a later end time.
+                    -- Never let that stale fade erase the refreshed instance.
+                    if not instance or (endTime or 0)<=0 or (instance.endTime or 0)<=(endTime or 0)+.1 then t.setEffectInstances[instanceKey]=nil end
+                    self:RefreshSetDurationFromInstances(t,definition,now)
+                elseif changeType~=EFFECT_RESULT_FADED then
+                    if definition.cooldown then
+                        t.cooldownEnd=now+definition.cooldown; t.active=true; t.beginTime=now; t.endTime=t.cooldownEnd; t.duration=definition.cooldown
+                    else
+                        local duration=(endTime or 0)-(beginTime or 0); if duration<=0 then duration=definition.duration or 1 end
+                        local instanceKey=tostring(unitTag or "").."|"..tostring(abilityId or 0).."|"..string.lower(effectName or "")
+                        t.setEffectInstances=t.setEffectInstances or {}
+                        t.setEffectInstances[instanceKey]={beginTime=(beginTime or 0)>0 and beginTime or now,endTime=(endTime or 0)>now and endTime or now+duration,stackCount=stackCount or 0}
+                        self:RefreshSetDurationFromInstances(t,definition,now)
+                    end
+                end
+            end
+        end
+    end
+    self:UpdateTrackers()
+end
+
 function CH:RefreshLegacyIconFallbacks()
     if not self.trackers then return end
     local definitions={
-        {key="resolve",needles={string.lower(self.sv.majorBuffTracked or "major resolve")},abilityId=MAJOR_BUFF_IDS[self.sv.majorBuffTracked or "Major Resolve"]},
-        {key="balance",needles={"balance"},abilityId=48136},
+        {key="balance",needles={"equilibrium","balance","spell symmetry"},abilityId=48136},
         {key="aegis",needles={"bound aegis","bound armor"},abilityId=24163},
         {key="armaments",needles={"bound armaments"},abilityId=BOUND_ARMAMENTS_SKILL_ID},
         {key="surge",needles={"critical surge","surge"},abilityId=CRITICAL_SURGE_EFFECT_ID},
     }
+    for _,buffDefinition in ipairs(self.standardBuffTrackerDefinitions) do
+        local selected=self.sv[buffDefinition.selectionSetting]
+        if selected and selected~="None" then definitions[#definitions+1]={key=buffDefinition.key,needles={string.lower(selected)},abilityId=MAJOR_BUFF_IDS[selected]} end
+    end
     for _,definition in ipairs(definitions) do
         local tracker=self.trackers[definition.key]
-        local slottedIcon,slottedId=self:FindSlottedSkillIcon(unpack(definition.needles))
-        self:ResolveTrackerIcon(definition,definition.needles[1],slottedId or definition.abilityId,slottedIcon,nil,tracker)
+        if tracker then
+            local slottedIcon,slottedId=self:FindSlottedSkillIcon(unpack(definition.needles))
+            self:ResolveTrackerIcon(definition,definition.needles[1],slottedId or definition.abilityId,slottedIcon,nil,tracker)
+        end
     end
     self:RefreshShroudBinding()
     local proc=self.procAlert
@@ -663,11 +1069,13 @@ function CH:RefreshAllTrackerIcons()
 end
 
 function CH:ApplyTrackerAppearance(t)
-    local info=self.trackerSlots[t.slot]; local style=info.inside and self.sv.insideTimerStyle or self.sv.outsideTimerStyle
-    local base
-    if t.specialTexture=="balance" and t.slot=="bottomLeftInside" and style=="Thin" then base="balance_lower"
-    else base="tracker_"..info.vertical.."_"..(info.inside and "inside" or "outside").."_"..string.lower(style) end
-    t.frame:SetTexture("CurvedHUD/textures/"..base.."_frame.dds"); t.fill:SetTexture("CurvedHUD/textures/"..base..".dds")
+    local info=self.trackerSlots[t.slot]
+    local base=self:GetTrackerAppearanceBase(t.slot,t.specialTexture)
+    if t.appearanceBase~=base then
+        t.frame:SetTexture("CurvedHUD/textures/"..base.."_frame.dds")
+        t.fill:SetTexture("CurvedHUD/textures/"..base..".dds")
+        t.appearanceBase=base
+    end
     t.u1,t.u2=info.side=="left" and 1 or 0,info.side=="left" and 0 or 1
     local color=self.colors[self.sv[t.colorSetting]] or self.colors.White
     t.fill:SetColor(color[1],color[2],color[3],self.sv.fillAlpha)
@@ -711,22 +1119,35 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
     local legacyBalance=t.key=="balance" and t.slot=="bottomLeftInside"
     local legacyAegis=t.key=="aegis" and t.slot=="topLeftOutside"
     local trackerWidth
-    if info.inside then trackerWidth=style=="Thick" and 52 or 38
-    elseif style=="Thin" then trackerWidth=52
-    else trackerWidth=42 end
-    if info.side=="right" and not info.inside then trackerWidth=math.max(28,trackerWidth-14) end
+    if style=="Thick" then trackerWidth=42
+    elseif info.inside then trackerWidth=38
+    else trackerWidth=52 end
+    if style=="Thin" and info.side=="right" and not info.inside then trackerWidth=38 end
     local trackerHeight=info.inside and 145 or 180
-    t:SetDimensions(trackerWidth*scale,trackerHeight*scale); t:ClearAnchors()
+    local radiusScale=info.side=="right" and not info.inside and self.sv.layout=="Parallel" and (style=="Thin" and .8 or .5) or 1
+    -- Every timer curve was calibrated at Bar Width 72. Scale only its
+    -- horizontal texture dimension with Bar Width so its radius continues to
+    -- match the resource curve; HUD Scale is applied independently afterward.
+    local barRadiusScale=clamp(tonumber(self.sv.barWidth) or 72,24,80)/72
+    t:SetDimensions(trackerWidth*radiusScale*barRadiusScale*scale,trackerHeight*scale); t:ClearAnchors()
 
     local innerNudge=style=="Thick" and 5 or 0
     -- Counter-shift the wider outer-Thin control so its midpoint remains
     -- stable while the far endpoint gains the missing horizontal sweep.
     local outerNudge=style=="Thick" and 5 or 22
-    if t.key=="resolve" then t:SetAnchor(BOTTOMRIGHT,h,BOTTOMLEFT,(40+outerNudge)*scale,-42*scale)
-    elseif legacyBalance then t:SetAnchor(BOTTOMLEFT,h,BOTTOMRIGHT,(-46+innerNudge)*scale,-62*scale)
-    elseif legacyAegis then t:SetAnchor(TOPRIGHT,h,TOPLEFT,(40+outerNudge)*scale,42*scale)
+    local function widthCorrection(ideal,current)
+        local delta=(ideal-current)*.5
+        return delta>=0 and delta*.90 or delta*.35
+    end
+    local leftCorrection=widthCorrection(72,h:GetWidth()/scale)
+    local leftOffset=tonumber(self.sv.leftTimerOffset) or 0
+    local leftSpacing=(tonumber(self.sv.leftTimerSpacing) or 0)*.5
+    if t.key=="resolve" then t:SetAnchor(BOTTOMRIGHT,h,BOTTOMLEFT,(40+outerNudge-leftCorrection-leftSpacing+leftOffset)*scale,-42*scale)
+    elseif legacyBalance then t:SetAnchor(BOTTOMLEFT,h,BOTTOMRIGHT,(-46+innerNudge+leftCorrection+leftSpacing+leftOffset)*scale,-62*scale)
+    elseif legacyAegis then t:SetAnchor(TOPRIGHT,h,TOPLEFT,(40+outerNudge-leftCorrection-leftSpacing+leftOffset)*scale,42*scale)
     elseif info.side=="left" then
-        local x=info.inside and (-46+innerNudge) or (40+outerNudge)
+        local x=info.inside and (-46+innerNudge+leftCorrection+leftSpacing) or (40+outerNudge-leftCorrection-leftSpacing)
+        x=x+leftOffset
         local y=info.inside and 62 or 42
         if info.vertical=="upper" then t:SetAnchor(info.inside and TOPLEFT or TOPRIGHT,h,info.inside and TOPRIGHT or TOPLEFT,x*scale,y*scale)
         else t:SetAnchor(info.inside and BOTTOMLEFT or BOTTOMRIGHT,h,info.inside and BOTTOMRIGHT or BOTTOMLEFT,x*scale,-y*scale) end
@@ -738,11 +1159,18 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
         local ref
         if self.sv.layout=="Stacked" then ref=info.vertical=="upper" and outer or inner
         else ref=info.inside and inner or outer end
+        local idealRightWidth=self.sv.layout=="Stacked" and 72 or math.floor(72*.62)
+        local rightCorrection=widthCorrection(idealRightWidth,ref:GetWidth()/scale)
+        local rightOffset=tonumber(self.sv.rightTimerOffset) or 0
+        -- The shared spacing slider is calibrated to Thin. Thick retains its
+        -- tested five-point inward correction without adding another setting.
+        local rightSpacing=((tonumber(self.sv.rightTimerSpacing) or 0)+(style=="Thick" and -5 or 0))*.5
         local rightOuterNudge=style=="Thick" and 10 or 22
         -- Upper/lower inside slots share one horizontal alignment. Outside slots
         -- retain identical curve geometry but use independent quadrant offsets.
-        local outsideBase=info.vertical=="upper" and -18 or -15
-        local x=info.inside and (24-innerNudge) or (outsideBase-rightOuterNudge)
+        local outsideBase=-18
+        local x=info.inside and (24-innerNudge-rightCorrection-rightSpacing) or (outsideBase-rightOuterNudge+rightCorrection+rightSpacing)
+        x=x+rightOffset
         if info.vertical=="upper" then t:SetAnchor(info.inside and TOPRIGHT or TOPLEFT,ref,info.inside and TOPLEFT or TOPRIGHT,x*scale,42*scale)
         else t:SetAnchor(info.inside and BOTTOMRIGHT or BOTTOMLEFT,ref,info.inside and BOTTOMLEFT or BOTTOMRIGHT,x*scale,-42*scale) end
     end
@@ -755,8 +1183,8 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
     -- for inside slots and away from center for outside slots.
     local iconX
     if info.vertical=="upper" then
-        if info.side=="left" then iconX=info.inside and 40 or -58
-        else iconX=info.inside and -40 or 58 end
+        if info.side=="left" then iconX=info.inside and 40 or -64
+        else iconX=info.inside and -40 or 64 end
     elseif info.side=="left" then iconX=info.inside and 48 or -42
     else iconX=info.inside and -48 or 42 end
     t.icon:ClearAnchors(); t.icon:SetAnchor(TOP,t,BOTTOM,iconX*scale,(legacyAegis and -58 or -40)*scale)
@@ -764,8 +1192,69 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
     t.timer:ClearAnchors(); t.timer:SetAnchor(BOTTOM,t.icon,TOP,0,-2*scale)
 end
 
+function CH:ConfigureDefinitionTracker(definition)
+    local t=self.trackers[definition.key]
+    if not t then
+        self:CreateTracker(definition.key,definition.slot,definition.key.."Color")
+        t=self.trackers[definition.key]
+    end
+    t.trackerDefinition=definition
+    t.stackMaximum=definition.stackMaximum
+    t.isNegative=definition.negative==true
+    if definition.category and self.setTrackerCategories then
+        t.setDefinition=definition; t.cooldownMode=definition.cooldown~=nil; t.cooldownDuration=definition.cooldown
+        t.readyMode=definition.readyMode; t.passiveMode=definition.passive==true
+        t.displayStacks=definition.displayStacks; t.stackLimit=definition.stackLimit
+    end
+    return t
+end
+
+function CH:EnsureEnabledDefinitionTrackers()
+    local groups={self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions,self.setTrackerDefinitions}
+    for _,group in ipairs(self.remainingClassDefinitionGroups) do groups[#groups+1]=group.definitions end
+    for _,definitions in ipairs(groups) do
+        for _,definition in ipairs(definitions) do
+            if self.sv[definition.key.."Enabled"] and not self.trackers[definition.key] then self:ConfigureDefinitionTracker(definition) end
+        end
+    end
+end
+
+function CH:EnsureOptionalCoreTrackers()
+    local function ensureLegacy(key,slot,color,special)
+        if self.sv[key.."Enabled"] and not self.trackers[key] then self:CreateTracker(key,slot,color,special) end
+    end
+    ensureLegacy("balance","bottomLeftInside","balanceColor","balance")
+    ensureLegacy("aegis","topLeftOutside","aegisColor")
+    ensureLegacy("armaments","topRightInside","armamentsColor")
+    ensureLegacy("surge","topRightOutside","surgeColor")
+    ensureLegacy("shroud","bottomRightOutside","shroudColor")
+    if self.trackers.armaments and not self.trackers.armaments.readyBorder then
+        local armaments=self.trackers.armaments
+        local armamentsIcon=GetAbilityIcon and GetAbilityIcon(BOUND_ARMAMENTS_SKILL_ID)
+        if armamentsIcon and armamentsIcon~="" then armaments.icon:SetTexture(armamentsIcon) end
+        local readyBorder=WM:CreateControl("CurvedHUD_armaments_ReadyBorder",armaments,CT_BACKDROP)
+        readyBorder:SetDimensions(44,44); readyBorder:SetAnchor(CENTER,armaments.icon,CENTER); readyBorder:SetDrawLayer(DL_OVERLAY); readyBorder:SetDrawLevel(50); readyBorder:SetCenterColor(1,.78,.2,.9); readyBorder:SetEdgeColor(1,1,1,1); readyBorder:SetHidden(true)
+        armaments.icon:SetDrawLayer(DL_OVERLAY); armaments.icon:SetDrawLevel(51); armaments.stackLabel:SetDrawLayer(DL_OVERLAY); armaments.stackLabel:SetDrawLevel(52); armaments.readyBorder=readyBorder
+    end
+    if self.sv.fragmentsEnabled and not self.procAlert then self:CreateProcAlert() end
+    for _,definition in ipairs(self.standardBuffTrackerDefinitions) do
+        if self.sv[definition.selectionSetting]~="None" and not self.trackers[definition.key] then
+            self:CreateTracker(definition.key,definition.slot,definition.colorSetting)
+            self.trackers[definition.key].selectionSetting=definition.selectionSetting
+        end
+    end
+    if self.sv.cruxEnabled and not self.trackers.crux then
+        self:CreateTracker("crux","topLeftOutside","cruxColor")
+        for _,definition in ipairs(self.arcanistTrackerDefinitions) do if definition.key=="crux" then self:ConfigureDefinitionTracker(definition); break end end
+        self:CreateTracker("cruxDuration","topLeftInside","cruxColor")
+        self.trackers.cruxDuration.enableSetting="cruxEnabled"; self.trackers.cruxDuration.suppressIcon=true; self.trackers.cruxDuration.icon:SetHidden(true)
+    end
+end
+
 function CH:ApplyLayout()
     if not self.root then return end
+    self:EnsureOptionalCoreTrackers()
+    self:EnsureEnabledDefinitionTrackers()
     local sv=self.sv; local scale=clamp(sv.scale,.5,1.5)
     -- Scale dimensions and offsets explicitly. Root transforms caused texture layers to
     -- round independently on console and visibly separate above scale 1.
@@ -781,26 +1270,32 @@ function CH:ApplyLayout()
     if armamentsSlot~=sv.armamentsSlot then sv.armamentsSlot=armamentsSlot end
     if surgeSlot~=sv.surgeSlot then sv.surgeSlot=surgeSlot end
     if shroudSlot~=sv.shroudSlot then sv.shroudSlot=shroudSlot end
-    self.trackers.balance.slot=balanceSlot
-    self.trackers.aegis.slot=aegisSlot
-    self.trackers.armaments.slot=armamentsSlot
-    self.trackers.surge.slot=surgeSlot
-    self.trackers.shroud.slot=shroudSlot
-    local layoutGroups={self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions}
+    if self.trackers.balance then self.trackers.balance.slot=balanceSlot end
+    if self.trackers.aegis then self.trackers.aegis.slot=aegisSlot end
+    if self.trackers.armaments then self.trackers.armaments.slot=armamentsSlot end
+    if self.trackers.surge then self.trackers.surge.slot=surgeSlot end
+    if self.trackers.shroud then self.trackers.shroud.slot=shroudSlot end
+    for _,definition in ipairs(self.standardBuffTrackerDefinitions) do
+        local slot=self:NormalizeTrackerSlot(sv[definition.slotSetting],definition.slot)
+        if slot~=sv[definition.slotSetting] then sv[definition.slotSetting]=slot end
+        if self.trackers[definition.key] then self.trackers[definition.key].slot=slot end
+    end
+    local layoutGroups={self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions,self.setTrackerDefinitions}
     for _,group in ipairs(self.remainingClassDefinitionGroups) do layoutGroups[#layoutGroups+1]=group.definitions end
     for _,definitions in ipairs(layoutGroups) do
         for _,definition in ipairs(definitions) do
             if not definition.stackOnly then
                 local setting=definition.key.."Slot"; local slot=self:NormalizeTrackerSlot(sv[setting],definition.slot)
                 if slot~=sv[setting] then sv[setting]=slot end
-                self.trackers[definition.key].slot=slot
+                local tracker=self.trackers[definition.key]
+                if tracker then tracker.slot=slot end
             end
         end
     end
     local cruxQuadrant=self:NormalizeCruxQuadrant(sv.cruxQuadrant)
     if cruxQuadrant~=sv.cruxQuadrant then sv.cruxQuadrant=cruxQuadrant end
-    self.trackers.crux.slot=cruxQuadrant.."Outside"
-    self.trackers.cruxDuration.slot=cruxQuadrant.."Inside"
+    if self.trackers.crux then self.trackers.crux.slot=cruxQuadrant.."Outside" end
+    if self.trackers.cruxDuration then self.trackers.cruxDuration.slot=cruxQuadrant.."Inside" end
     h:SetDimensions(width,512*scale); h:ClearAnchors(); h:SetAnchor(CENTER,self.root,CENTER,-sv.spacing*scale,0)
     local inner,outer=sv.staminaInside and s or m,sv.staminaInside and m or s
     if sv.layout=="Stacked" then
@@ -812,11 +1307,13 @@ function CH:ApplyLayout()
         mount:ClearAnchors(); mount:SetAnchor(CENTER,s,CENTER,width*.22,0)
         self:SetMountTexture("stacked_outer"); self:SetBarSegment(mount,s.segment)
     else
-        local narrow=math.max(20*scale,math.floor(width*.62)); inner:SetDimensions(narrow,512*scale); outer:SetDimensions(narrow,512*scale)
+        local narrow=math.max(20*scale,math.floor(width*.62))
+        local outerRadiusScale=.8
+        inner:SetDimensions(narrow,512*scale); outer:SetDimensions(narrow*outerRadiusScale,512*scale)
         inner:ClearAnchors(); inner:SetAnchor(CENTER,self.root,CENTER,sv.spacing*scale,0); outer:ClearAnchors(); outer:SetAnchor(CENTER,inner,CENTER,math.max(4*scale,math.floor(narrow*.28))+sv.resourceGap*scale,0)
         self:SetBarSegment(inner,"full"); self:SetBarSegment(outer,"full")
         self:SetResourceTexture(inner,"inner"); self:SetResourceTexture(outer,"outer")
-        local mount=self.mountBar; mount:SetDimensions(narrow,512*scale)
+        local mount=self.mountBar; mount:SetDimensions(narrow*(sv.staminaInside and 1 or outerRadiusScale),512*scale)
         mount:ClearAnchors()
         if sv.staminaInside then
             mount:SetAnchor(CENTER,s,CENTER,-11*scale,0); self:SetMountTexture("parallel_inner")
@@ -841,7 +1338,7 @@ function CH:ApplyLayout()
     for _,b in pairs(self.bars) do b.bg:SetAlpha(sv.backgroundAlpha); b.fill:SetAlpha(sv.fillAlpha); b.frame:SetAlpha(sv.frameAlpha); b.rawLabel:SetAlpha(sv.textAlpha); b.percentLabel:SetAlpha(sv.textAlpha) end
     self.mountBar.bg:SetAlpha(sv.backgroundAlpha); self.mountBar.fill:SetAlpha(sv.fillAlpha); self.mountBar.frame:SetAlpha(sv.frameAlpha)
     for _,t in pairs(self.trackers) do t.fill:SetAlpha(sv.fillAlpha); t.frame:SetAlpha(sv.frameAlpha); t.timer:SetAlpha(sv.textAlpha); t.icon:SetAlpha(sv.textAlpha) end
-    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateVisibility(); self:UpdateResources(); self:RefreshMajorBuff(); self:RefreshSorcererTrackers(); self:RefreshWardenTrackers(); self:RefreshArcanistTrackers(); self:RefreshAllTrackerIcons(); self:UpdateProcAlert()
+    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateExternalTrackerOpacity(); self:UpdateVisibility(); self:RefreshEquippedSets(); self:UpdateResources(); self:RefreshStandardBuffs(); self:RefreshSorcererTrackers(); self:RefreshWardenTrackers(); self:RefreshArcanistTrackers(); self:RefreshAllTrackerIcons(); self:UpdateProcAlert()
 end
 function CH:UpdateCombatOpacity(inCombat)
     if not self.root or not self.sv then return end
@@ -900,6 +1397,7 @@ function CH:UpdateResources()
         if hm and hm>0 then v.health={hc,hm} end; if sm and sm>0 then v.stamina={sc,sm} end; if mm and mm>0 then v.magicka={mc,mm} end
     end
     self:SetBarValue(self.bars.health,v.health[1],v.health[2]); self:SetBarValue(self.bars.stamina,v.stamina[1],v.stamina[2]); self:SetBarValue(self.bars.magicka,v.magicka[1],v.magicka[2])
+    self:UpdateMartialKnowledgeStaminaCue(v.stamina[1],v.stamina[2])
     local shield=self.sv.preview and 14000 or self:GetShieldValue()
     self:SetTexturePercent(self.bars.health.shield,self.bars.health,shield/math.max(1,v.health[2]))
     local healthValid=(v.health[2] or 0)>1
@@ -935,11 +1433,30 @@ end
 function CH:UpdateTrackers()
     local now=GetGameTimeSeconds()
     for _,t in pairs(self.trackers) do
-        local enabled=t.key=="resolve" or self.sv[t.enableSetting or (t.key.."Enabled")]~=false
-        local active,pct,remaining=t.active and enabled,0,0
-        if self.sv.preview and enabled then
+        local enabled=t.selectionSetting and self.sv[t.selectionSetting]~="None" or (not t.selectionSetting and (t.key=="resolve" or self.sv[t.enableSetting or (t.key.."Enabled")]~=false))
+        local active,pct,remaining,ready=t.active and enabled,0,0,false
+        -- A one-bar set remains displayable while its already-applied effect
+        -- runs, even if an equipment refresh temporarily reports fewer active
+        -- pieces during the swap.
+        if t.setDefinition and not self.sv.preview and not t.equipped and not t.active then active=false end
+        if t.setDefinition and enabled and (self.sv.preview or t.equipped) and (t.cooldownMode or t.passiveMode) then
+            if self.sv.preview then active,ready,pct=true,true,1
+            elseif t.passiveMode then active,ready,pct=t.equipped,t.equipped,1
+            else
+                remaining=math.max(0,(t.cooldownEnd or 0)-now)
+                if remaining>0 then active=true; pct=remaining/math.max(.01,t.cooldownDuration or 1)
+                elseif t.readyMode=="condition" and t.conditionActive and ((t.conditionEndTime or now)>=now) then active,ready,pct=true,true,1
+                else
+                    ready=t.readyMode=="cooldown" or (t.readyMode=="condition" and t.conditionActive and ((t.conditionEndTime or now)>=now))
+                    -- Conditional sets remain visible while equipped even when
+                    -- their proc condition is not armed. Only the green READY
+                    -- state is conditional; visibility is not.
+                    active,pct=t.readyMode=="condition" or ready,ready and 1 or 0
+                end
+            end
+        elseif self.sv.preview and enabled then
             active=true
-            if t.stackMaximum then t.stackCount=t.stackMaximum; pct=1 else pct,remaining=.62,12.4 end
+            if t.stackMaximum then t.stackCount=t.stackMaximum; pct=1 else pct,remaining=.62,12.4; if t.displayStacks then t.stackCount=t.stackLimit or 5 end end
         elseif active then
             if t.stackMaximum then
                 pct=clamp((tonumber(t.stackCount) or 0)/t.stackMaximum,0,1)
@@ -951,40 +1468,55 @@ function CH:UpdateTrackers()
         end
         t:SetHidden(not active)
         if active then
-            self:SetTexturePercent(t.fill,t,pct); t.timer:SetText(t.stackMaximum and "" or string.format("%.1f",remaining))
-            local expiring=not t.stackMaximum and self.sv.expirationAlerts==true and not t.isNegative and remaining>0 and remaining<=3
-            t.expiryAlertActive=expiring; t.expiryBorder:SetHidden(not expiring or t.suppressIcon)
+            self:SetTexturePercent(t.fill,t,pct)
+            local waiting=t.readyMode=="condition" and not ready and remaining<=0
+            t.timer:SetText(ready and (t.passiveMode and "ACTIVE" or "READY") or (waiting and "WAIT" or (t.stackMaximum and "" or string.format("%.1f",remaining))))
+            t.readyIndicatorActive=ready
+            if ready then
+                local pulse=.72+.28*math.abs(math.sin(GetGameTimeMilliseconds()/360))
+                t.expiryBorder:SetHidden(t.suppressIcon); t.expiryBorder:SetCenterColor(.05,.55,.12,.10); t.expiryBorder:SetEdgeColor(.25,1,.35,pulse)
+                t.timer:SetColor(.35,1,.42,1)
+            end
+            local expiring=not t.stackMaximum and not t.cooldownMode and self.sv.expirationAlerts==true and not t.isNegative and remaining>0 and remaining<=3
+            t.expiryAlertActive=expiring; if not ready then t.expiryBorder:SetHidden(not expiring or t.suppressIcon) end
             if expiring then
                 local pulse=.5+.5*math.abs(math.sin(GetGameTimeMilliseconds()/240))
                 t.timer:SetColor(1,.08,.08,1)
                 t.expiryBorder:SetCenterColor(.8,0,0,.05+.10*pulse)
                 t.expiryBorder:SetEdgeColor(1,.03,.03,.62+.38*pulse)
-            else t.timer:SetColor(1,1,1,1) end
+            elseif not ready then t.timer:SetColor(1,1,1,1) end
             local stacks=self.sv.preview and t.key=="armaments" and 4 or (tonumber(t.stackCount) or 0)
             t.stackLabel:SetText(tostring(stacks)); t.stackLabel:SetHidden(stacks<=0)
         else
-            t.expiryAlertActive=false; t.expiryBorder:SetHidden(true); t.timer:SetColor(1,1,1,1); t.stackLabel:SetHidden(true)
+            t.expiryAlertActive=false; t.readyIndicatorActive=false; t.expiryBorder:SetHidden(true); t.timer:SetColor(1,1,1,1); t.stackLabel:SetHidden(true)
         end
     end
     self:UpdateArmamentsReadyEffect()
 end
-function CH:MajorBuffMatches(effectName,abilityId)
-    local selected=self.sv.majorBuffTracked or "Major Resolve"; if selected=="None" then return false end
+function CH:StandardBuffMatches(selected,effectName,abilityId)
+    if not selected or selected=="None" then return false end
     local knownId=MAJOR_BUFF_IDS[selected]
     if knownId and abilityId==knownId then return true end
     local localized=knownId and GetAbilityName and GetAbilityName(knownId) or nil
-    return effectName==selected or (localized and localized~="" and effectName==localized)
+    return string.lower(effectName or "")==string.lower(selected) or (localized and localized~="" and effectName==localized)
 end
-function CH:RefreshMajorBuff()
-    local t=self.trackers and self.trackers.resolve; if not t then return end
-    t.active,t.stackCount=false,0
-    if self.sv.preview or self.sv.majorBuffTracked=="None" or not GetNumBuffs or not GetUnitBuffInfo then return end
+function CH:FindStandardBuffTracker(effectName,abilityId)
+    for _,definition in ipairs(self.standardBuffTrackerDefinitions) do
+        if self:StandardBuffMatches(self.sv[definition.selectionSetting],effectName,abilityId) then return self.trackers and self.trackers[definition.key] end
+    end
+end
+function CH:RefreshStandardBuffs()
+    if not self.trackers then return end
+    for _,definition in ipairs(self.standardBuffTrackerDefinitions) do
+        local t=self.trackers[definition.key]; if t then t.active,t.stackCount=false,0 end
+    end
+    if self.sv.preview or not GetNumBuffs or not GetUnitBuffInfo then return end
     for index=1,GetNumBuffs("player") do
         local name,beginTime,endTime,_,stackCount,iconName,_,_,_,_,abilityId=GetUnitBuffInfo("player",index)
-        if self:MajorBuffMatches(name,abilityId) then
+        local t=self:FindStandardBuffTracker(name,abilityId)
+        if t then
             t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime or 0,endTime or 0,math.max(.01,(endTime or 0)-(beginTime or 0)),stackCount or 0
             if iconName and iconName~="" then t.icon:SetTexture(iconName) end
-            break
         end
     end
 end
@@ -1077,20 +1609,68 @@ function CH:StartCastTracker(t,duration,abilityGraphic,abilityId)
     if not t then return end
     local beginTime=GetGameTimeSeconds(); duration=self:GetConfiguredAbilityDuration(abilityId,duration)
     t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,beginTime,beginTime+duration,duration,0
+    t.castDriven,t.lastCastAt=true,beginTime
     local iconName=t.preferredIcon or abilityGraphic
     if (not iconName or iconName=="") and GetAbilityIcon then iconName=GetAbilityIcon(abilityId) end
+    if iconName and iconName~="" then t.icon:SetTexture(iconName); t.preferredIcon=iconName end
+    self:UpdateTrackers()
+end
+function CH:IsCarveCast(lowerName,abilityId)
+    if self:PhraseMatches(lowerName,"carve") then
+        if abilityId and abilityId>0 then
+            self.globalSV.carveAbilityIds=self.globalSV.carveAbilityIds or {}
+            self.globalSV.carveAbilityIds[tostring(abilityId)]=true
+        end
+        return true
+    end
+    if abilityId and self.globalSV.carveAbilityIds and self.globalSV.carveAbilityIds[tostring(abilityId)] then return true end
+    if abilityId and abilityId>0 and GetAbilityDuration then
+        local ok,durationMs=pcall(GetAbilityDuration,abilityId)
+        if ok and tonumber(durationMs) and durationMs>=11500 and durationMs<=13000 then
+            self.globalSV.carveAbilityIds=self.globalSV.carveAbilityIds or {}
+            self.globalSV.carveAbilityIds[tostring(abilityId)]=true
+            return true
+        end
+    end
+    return false
+end
+function CH:IsBrawlerCast(lowerName,abilityId)
+    if self:PhraseMatches(lowerName,"brawler") then return true end
+    if abilityId and abilityId>0 and GetAbilityDuration then
+        local ok,durationMs=pcall(GetAbilityDuration,abilityId)
+        return ok and tonumber(durationMs) and durationMs>0 and durationMs<=6500
+    end
+    return false
+end
+function CH:StartCarveTracker(t,abilityGraphic,abilityId)
+    if not t then return end
+    local now=GetGameTimeSeconds()
+    -- Combat and action-slot events may both report the same cast. Count it
+    -- once so one button press cannot jump directly from 12 to 22 seconds.
+    if t.lastCarveCastAt and now-t.lastCarveCastAt<.75 then return end
+    t.lastCarveCastAt=now
+    local stillApplied=t.active and (t.endTime or 0)>now
+    local duration=stillApplied and math.min(32,math.max(12,tonumber(t.carveDuration) or 12)+10) or 12
+    t.carveDuration=duration
+    t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,now,now+duration,duration,math.floor((duration-2)/10)
+    t.castDriven,t.lastCastAt=true,now
+    local iconName=t.preferredIcon or abilityGraphic
+    if (not iconName or iconName=="") and GetAbilityIcon then
+        local ok,value=pcall(GetAbilityIcon,abilityId); if ok then iconName=value end
+    end
     if iconName and iconName~="" then t.icon:SetTexture(iconName); t.preferredIcon=iconName end
     self:UpdateTrackers()
 end
 function CH:HandleScribingCast(abilityName,abilityGraphic,abilityId,allowActive)
     local lowerName=string.lower(abilityName or "")
     for _,definition in ipairs(self.scribingTrackerDefinitions) do
-        local matched=self.scribingAbilityIds and self.scribingAbilityIds[definition.key]==abilityId
+        local matched=self:IsDefinitionAbilityId(definition,abilityId,self.scribingAbilityIds)
         if not matched then
             if definition.key=="soulBurst" then matched=self:IsSoulBurstName(lowerName)
-            else for _,needle in ipairs(definition.needles) do if string.find(lowerName,needle,1,true) then matched=true; break end end end
+            else for _,needle in ipairs(definition.needles) do if self:PhraseMatches(lowerName,needle) then matched=true; break end end end
         end
         if matched and self.sv[definition.key.."Enabled"] then
+            self:RememberDefinitionAbilityId(definition,abilityId)
             local tracker=self.trackers[definition.key]
             if allowActive or not tracker.active then self:StartCastTracker(tracker,self.sv[definition.key.."Duration"],abilityGraphic,abilityId) end
             return true
@@ -1165,16 +1745,22 @@ end
 
 function CH:HandleNonClassCast(abilityName,abilityGraphic,abilityId,allowActive)
     local lowerName=string.lower(abilityName or "")
+    local handled=false
     for _,definition in ipairs(self.nonClassTrackerDefinitions) do
         if self:DefinitionMatches(definition,lowerName,abilityId,self.nonClassAbilityIds) and self.sv[definition.key.."Enabled"] then
             local tracker=self.trackers[definition.key]
             self:ResolveTrackerIcon(definition,abilityName,abilityId,nil,abilityGraphic,tracker)
             local fallback=definition.durations and definition.durations[lowerName] or definition.duration
-            if allowActive or not tracker.active then self:StartCastTracker(tracker,fallback,abilityGraphic,abilityId) end
-            return true
+            if definition.key=="twoHandCleave" and self:IsCarveCast(lowerName,abilityId) then
+                self:StartCarveTracker(tracker,abilityGraphic,abilityId)
+            elseif definition.key=="twoHandCleave" and self:IsBrawlerCast(lowerName,abilityId) then
+                -- Brawler's short effect is its damage shield, not the bleed
+                -- duration this tracker represents.
+            elseif allowActive or not tracker.active then self:StartCastTracker(tracker,fallback,abilityGraphic,abilityId) end
+            handled=true
         end
     end
-    return false
+    return handled
 end
 function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId)
     if unitTag~="player" then return end
@@ -1187,16 +1773,17 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
         return
     end
     local t
-    if self:MajorBuffMatches(effectName,abilityId) then t=self.trackers.resolve
+    t=self:FindStandardBuffTracker(effectName,abilityId)
+    if t then
     elseif abilityId==48136 or abilityId==48131 or abilityId==48141 then t=self.trackers.balance
     elseif abilityId==24163 then t=self.trackers.aegis
     elseif abilityId==BOUND_ARMAMENTS_STACK_ID then t=self.trackers.armaments
     elseif abilityId==CRITICAL_SURGE_EFFECT_ID or string.find(lowerName,"critical surge",1,true) then t=self.trackers.surge
-    elseif string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase" then
+    elseif (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") and self.trackers.shroud then
         t=self.trackers.shroud
         local iconPath=self:GetShroudIcon(effectName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
-    elseif abilityId==ULFSILD_EFFECT_ID or string.find(lowerName,"ulfsild",1,true) and string.find(lowerName,"contingency",1,true) then t=self.trackers.contingency
-    elseif string.find(lowerName,"betty netch",1,true) or string.find(lowerName,"blue betty",1,true) or string.find(lowerName,"bull netch",1,true) then
+    elseif (abilityId==ULFSILD_EFFECT_ID or string.find(lowerName,"ulfsild",1,true) and string.find(lowerName,"contingency",1,true)) and self.trackers.contingency then t=self.trackers.contingency
+    elseif (string.find(lowerName,"betty netch",1,true) or string.find(lowerName,"blue betty",1,true) or string.find(lowerName,"bull netch",1,true)) and self.trackers.netch then
         t=self.trackers.netch
         local iconPath=self:GetFamilyIcon(self.wardenTrackerDefinitions[1],effectName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
     else
@@ -1219,11 +1806,45 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
         if not t and stackCount and stackCount>0 and string.find(lowerName,"bound armament",1,true) then t=self.trackers.armaments end
     end
     if not t then return end
-    local wasActive=t.active
-    t.active=changeType~=EFFECT_RESULT_FADED and (endTime or 0)>GetGameTimeSeconds(); t.beginTime,t.endTime=beginTime or 0,endTime or 0
+    local now=GetGameTimeSeconds()
+    local wasActive=t.active and (t.endTime or 0)>now
+    local definition=t.trackerDefinition
+    local eventDuration=(endTime or 0)-(beginTime or 0)
+    if definition and definition.key=="twoHandCleave" and (self:PhraseMatches(lowerName,"brawler") or eventDuration>0 and eventDuration<=6.5) then
+        -- Ignore Brawler's shield application/fade entirely. It must never
+        -- start, shorten, clear, or otherwise replace the Carve bleed timer.
+        return
+    end
+    local fallback=definition and ((definition.durations and definition.durations[lowerName]) or definition.duration) or nil
+    local reportedBegin=(beginTime or 0)>0 and beginTime or now
+    local reportedEnd=endTime or 0
+    if definition and t.castDriven then
+        -- Cast handlers own the complete parent window. EVENT_EFFECT_CHANGED
+        -- may also emit short child pulses and a final tick after that parent
+        -- expires. Those events must not manufacture another full duration.
+        if changeType==EFFECT_RESULT_FADED then return end
+        local parentDuration=math.max(1,tonumber(fallback) or tonumber(t.duration) or 1)
+        if eventDuration<=0 or eventDuration<parentDuration*.65 then return end
+        if not wasActive and now-(tonumber(t.lastCastAt) or 0)>1 then return end
+        -- A same/earlier endpoint adds no information. A genuinely later full
+        -- endpoint is retained for API-reported duration extensions.
+        if wasActive and reportedEnd<=(t.endTime or 0)+.15 then return end
+    end
+    -- Periodic skills often emit a short event for every heal, pulse, or damage
+    -- tick. Keep the parent skill's full cast/effect window and only extend it
+    -- when ESO reports a later endpoint (for example additional Carve stacks).
+    if changeType==EFFECT_RESULT_FADED and wasActive and (t.endTime or 0)>now+.15 then return end
+    if changeType~=EFFECT_RESULT_FADED then
+        local fallbackEnd=not t.castDriven and fallback and (reportedBegin+fallback) or 0
+        local mergedEnd=math.max(reportedEnd,fallbackEnd,wasActive and (t.endTime or 0) or 0)
+        local mergedBegin=wasActive and (t.beginTime or reportedBegin) or reportedBegin
+        t.active=mergedEnd>now or (t.stackMaximum and (stackCount or 0)>0)
+        t.beginTime,t.endTime=mergedBegin,mergedEnd
+        if t.active then t.duration=math.max(.01,mergedEnd-mergedBegin) end
+    else
+        t.active=false; t.beginTime,t.endTime=reportedBegin,reportedEnd
+    end
     t.stackCount=stackCount or 0
-    local reportedDuration=(endTime or 0)-(beginTime or 0)
-    if t.active and (not wasActive or (reportedDuration>0 and reportedDuration<3600)) then t.duration=reportedDuration end
     if t.preferredIcon then t.icon:SetTexture(t.preferredIcon)
     elseif iconName and iconName~="" then t.icon:SetTexture(iconName) end
     self:UpdateTrackers()
@@ -1232,26 +1853,34 @@ end
 function CH:CreateHUD()
     self.root=WM:CreateTopLevelWindow("CurvedHUD_Root"); self.root:SetDimensions(900,600); self.root:SetMouseEnabled(false); self.root:SetClampedToScreen(false); self.root:SetDrawTier(DT_HIGH)
     self.bars,self.trackers={},{}; self:CreateBar("health","left",{.85,.1,.1}); self:CreateBar("stamina","right",{.15,.78,.22}); self:CreateBar("magicka","right",{.12,.42,.95})
-    self:CreateShield(); self:CreateMountBar(); self:CreateTracker("resolve","bottomLeftOutside","majorBuffColor"); self:CreateTracker("balance","bottomLeftInside","balanceColor","balance"); self:CreateTracker("aegis","topLeftOutside","aegisColor"); self:CreateTracker("armaments","topRightInside","armamentsColor"); self:CreateTracker("surge","topRightOutside","surgeColor"); self:CreateTracker("shroud","bottomRightOutside","shroudColor")
-    local hudGroups={self.scribingTrackerDefinitions,self.sorcererTrackerDefinitions,self.wardenTrackerDefinitions,self.arcanistTrackerDefinitions,self.nonClassTrackerDefinitions}
-    for _,group in ipairs(self.remainingClassDefinitionGroups) do hudGroups[#hudGroups+1]=group.definitions end
-    for _,definitions in ipairs(hudGroups) do
-        for _,definition in ipairs(definitions) do
-            self:CreateTracker(definition.key,definition.slot,definition.key.."Color")
-            self.trackers[definition.key].stackMaximum=definition.stackMaximum
-        end
-    end
-    self:CreateTracker("cruxDuration","topLeftInside","cruxColor")
-    self.trackers.cruxDuration.enableSetting="cruxEnabled"
-    self.trackers.cruxDuration.suppressIcon=true
-    self.trackers.cruxDuration.icon:SetHidden(true)
-    local armamentsIcon=GetAbilityIcon and GetAbilityIcon(BOUND_ARMAMENTS_SKILL_ID); if armamentsIcon and armamentsIcon~="" then self.trackers.armaments.icon:SetTexture(armamentsIcon) end
-    local armaments=self.trackers.armaments
-    local readyBorder=WM:CreateControl("CurvedHUD_armaments_ReadyBorder",armaments,CT_BACKDROP); readyBorder:SetDimensions(44,44); readyBorder:SetAnchor(CENTER,armaments.icon,CENTER); readyBorder:SetDrawLayer(DL_OVERLAY); readyBorder:SetDrawLevel(50); readyBorder:SetCenterColor(1,.78,.2,.9); readyBorder:SetEdgeColor(1,1,1,1); readyBorder:SetHidden(true)
-    armaments.icon:SetDrawLayer(DL_OVERLAY); armaments.icon:SetDrawLevel(51); armaments.stackLabel:SetDrawLayer(DL_OVERLAY); armaments.stackLabel:SetDrawLevel(52); armaments.readyBorder=readyBorder
+    self:CreateShield(); self:CreateMountBar()
+    -- Every tracker/proc control is allocated on demand from this character's
+    -- saved configuration, including the original legacy trackers.
+    self:EnsureOptionalCoreTrackers()
     -- Fixed ESO asset path for Vibrant Shroud; cast/slotted detection may replace
     -- it with Encase or Shattering Spines artwork when those variants are used.
-    self:CreateProcAlert(); self:RefreshAllTrackerIcons(); self:ApplyLayout()
+    self:EnsureEnabledDefinitionTrackers(); self:RefreshAllTrackerIcons(); self:ApplyLayout()
+end
+function CH:ClearCombatBoundTrackers()
+    if not self.trackers then return end
+    for key in pairs(self.combatBoundTrackerKeys or {}) do
+        local tracker=self.trackers[key]
+        if tracker then
+            tracker.active=false
+            tracker.beginTime,tracker.endTime,tracker.duration=0,0,0
+            tracker.stackCount=0
+            tracker.carveDuration=nil
+            tracker.lastCarveCastAt=nil
+            tracker.lastCastAt=nil
+            tracker.expiryAlertActive=false
+            if tracker.stackLabel then tracker.stackLabel:SetText("") end
+            if tracker.readyLabel then tracker.readyLabel:SetText("") end
+            if tracker.readyBorder then tracker.readyBorder:SetHidden(true) end
+            if tracker.expiryBorder then tracker.expiryBorder:SetHidden(true) end
+            tracker:SetHidden(true)
+        end
+    end
+    self:UpdateTrackers()
 end
 function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name,EVENT_POWER_UPDATE,function(_,unitTag,_,powerType,current,maximum,effectiveMaximum)
@@ -1263,10 +1892,23 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,function(_,changeType,_,effectName,unitTag,beginTime,endTime,stackCount,iconName,_,_,_,_,_,_,abilityId)
         self:Guard("effect event",function() self:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId) end)
     end); EVENT_MANAGER:AddFilterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,REGISTER_FILTER_UNIT_TAG,"player")
+    EVENT_MANAGER:RegisterForEvent(self.name.."SetEffects",EVENT_EFFECT_CHANGED,function(_,changeType,_,effectName,unitTag,beginTime,endTime,stackCount,iconName,_,_,_,_,_,_,abilityId)
+        self:Guard("set effect event",function() self:OnSetEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId) end)
+    end)
+    if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(self.name.."WornSets",EVENT_INVENTORY_SINGLE_SLOT_UPDATE,function(_,bagId)
+            if bagId==BAG_WORN then self:Guard("worn set refresh",function() self:RefreshEquippedSets(); self:UpdateResources(); self:UpdateTrackers() end) end
+        end)
+    end
     EVENT_MANAGER:RegisterForEvent(self.name.."TrackedCasts",EVENT_COMBAT_EVENT,function(_,result,_,abilityName,abilityGraphic,_,sourceName,sourceType,_,_,_,_,_,_,_,_,abilityId)
         if sourceType~=COMBAT_UNIT_TYPE_PLAYER then return end
+        -- Direct action-slot events are authoritative when available. Combat
+        -- events also report every DoT/HoT pulse; accepting those as casts made
+        -- the final tick restart an expired parent timer.
+        if EVENT_ACTION_SLOT_ABILITY_USED and ACTION_RESULT_BEGIN and result~=ACTION_RESULT_BEGIN then return end
+        if PERIODIC_COMBAT_RESULTS[result] then return end
         local lowerName=string.lower(abilityName or "")
-        if self.sv.shroudEnabled and (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") then
+        if self.sv.shroudEnabled and self.trackers.shroud and (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") then
             local beginTime=GetGameTimeSeconds(); local t=self.trackers.shroud; t.active,t.beginTime,t.endTime,t.duration=true,beginTime,beginTime+10,10
             local iconPath=self:GetShroudIcon(abilityName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
             self:UpdateTrackers()
@@ -1283,7 +1925,12 @@ function CH:RegisterEvents()
         end)
     end
     EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:Guard("player activation",function() self:ApplyLayout() end) end)
-    EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat) self:Guard("combat opacity",function() self:UpdateCombatOpacity(inCombat) end) end)
+    EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat)
+        self:Guard("combat state",function()
+            self:UpdateCombatOpacity(inCombat); self:UpdateExternalTrackerOpacity()
+            if not inCombat then self:ClearCombatBoundTrackers() end
+        end)
+    end)
     local shieldCallback=function(eventCode,unitTag,visualType,statType,attributeType,powerType,value1,value2)
         self:Guard("shield event",function() self:OnShieldVisual(eventCode,unitTag,visualType,statType,attributeType,powerType,value1,value2) end)
     end
@@ -1292,17 +1939,65 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name.."ShieldRemoved",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED,shieldCallback)
     local callback=function(_,state) self:UpdateVisibility(state) end
     SCENE_MANAGER:GetScene("hud"):RegisterCallback("StateChange",callback); SCENE_MANAGER:GetScene("hudui"):RegisterCallback("StateChange",callback)
-    EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function() self:Guard("periodic update",function() self:UpdateResources(); self:RefreshCrux(); self:UpdateTrackers(); self:UpdateProcAlert(); self:UpdateDefaultUI(false) end) end)
+    EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function() self:Guard("periodic update",function() self:UpdateResources(); self:RefreshCrux(); self:UpdateTrackers(); self:UpdateProcAlert(); self:UpdateDefaultUI(false); self:UpdateExternalTrackerOpacity() end) end)
 end
+
+function CH:MigrateSavedVariables()
+    local global,character=self.globalSV,self.characterSV
+    local globalVersion=tonumber(global.schemaVersion) or 0
+    if globalVersion<1 then
+        -- Pre-1.0 calibration builds exposed several temporary geometry keys.
+        -- Current shared controls and baked/fixed radii supersede them.
+        for _,key in ipairs({
+            "thinLeftTimerOffset","thinLeftTimerSpacing","thickLeftTimerOffset","thickLeftTimerSpacing",
+            "thinRightParallelTimerOffset","thinRightParallelTimerSpacing","thickRightParallelTimerOffset","thickRightParallelTimerSpacing",
+            "thinRightStackedTimerOffset","thinRightStackedTimerSpacing","thickRightStackedTimerOffset","thickRightStackedTimerSpacing",
+            "parallelOuterResourceRadiusScale","thinRightParallelOutsideRadiusScale","thickRightParallelOutsideRadiusScale",
+            "thinLeftInsideRadiusScale","thinLeftOutsideRadiusScale","thinRightParallelInsideRadiusScale",
+            "thinRightStackedInsideRadiusScale","thinRightStackedOutsideRadiusScale","thickLeftOutsideRadiusScale",
+            "thickRightParallelInsideRadiusScale","thickRightStackedInsideRadiusScale","thickRightStackedOutsideRadiusScale",
+        }) do global[key]=nil end
+        -- Earlier builds enabled diagnostic chat by default. Release profiles
+        -- start quiet; users can still opt in with /curvedhud debug.
+        global.debug=false
+    end
+    if type(global.iconCache)~="table" then global.iconCache={} end
+    if type(global.setEffectIconCache)~="table" then global.setEffectIconCache={} end
+    if type(global.abilityIdCache)~="table" then global.abilityIdCache={} end
+    if type(global.carveAbilityIds)~="table" then global.carveAbilityIds={} end
+    global.schemaVersion=self.dataVersion
+    character.schemaVersion=self.dataVersion
+end
+
+function CH:PrintDiagnosticReport()
+    local enabled,instantiated,active,learned=0,0,0,0
+    for key in pairs(self.characterKeys or {}) do
+        if string.sub(key,-7)=="Enabled" and self.sv[key] then enabled=enabled+1 end
+    end
+    for _,definition in ipairs(self.standardBuffTrackerDefinitions or {}) do
+        if self.sv[definition.selectionSetting] and self.sv[definition.selectionSetting]~="None" then enabled=enabled+1 end
+    end
+    for _,tracker in pairs(self.trackers or {}) do instantiated=instantiated+1; if tracker.active then active=active+1 end end
+    for _,ids in pairs(self.globalSV.abilityIdCache or {}) do if type(ids)=="table" then for _ in pairs(ids) do learned=learned+1 end end end
+    local libraries={}
+    if LibAddonMenu2 then libraries[#libraries+1]="LibAddonMenu" end
+    if LibHarvensAddonSettings then libraries[#libraries+1]="LibVotans" end
+    local libraryText=#libraries>0 and table.concat(libraries," + ") or "none"
+    local api=GetAPIVersion and GetAPIVersion() or "unknown"
+    local memoryKb=collectgarbage and collectgarbage("count") or 0
+    self:Log(string.format("REPORT v%s schema=%s API=%s libraries=%s",self.version,tostring(self.globalSV.schemaVersion),tostring(api),libraryText),true)
+    self:Log(string.format("layout=%s width=%s scale=%.2f styles=%s/%s enabled=%d instantiated=%d active=%d",tostring(self.sv.layout),tostring(self.sv.barWidth),tonumber(self.sv.scale) or 1,tostring(self.sv.insideTimerStyle),tostring(self.sv.outsideTimerStyle),enabled,instantiated,active),true)
+    self:Log(string.format("learned ability IDs=%d total UI Lua memory=%.0f KB guarded errors=%d",learned,memoryKb,self.errorCount or 0),true)
+    if self.errorLog and #self.errorLog>0 then self:Log("latest error: "..self.errorLog[#self.errorLog],true) end
+end
+
 function CH:Initialize()
     self.globalSV=ZO_SavedVars:NewAccountWide("CurvedHUD_SavedVariables",1,nil,self.defaults)
     self.characterSV=ZO_SavedVars:New("CurvedHUD_CharacterSavedVariables",1,nil,self.characterDefaults)
-    -- Preserve the user's existing account-wide tracker choices once when a
-    -- character first adopts the new character-specific tracker profile.
+    self:MigrateSavedVariables()
+    -- A genuinely new character starts with every optional tracker disabled.
+    -- Existing initialized character profiles retain all of their choices.
     if not self.characterSV.initialized then
-        for key in pairs(self.characterKeys) do
-            if self.globalSV[key]~=nil then self.characterSV[key]=self.globalSV[key] end
-        end
         self.characterSV.initialized=true
     end
     -- Existing code and both settings providers can continue using CH.sv. The
@@ -1321,7 +2016,12 @@ function CH:Initialize()
         elseif arg=="status" then
             local hc,hm,he=GetUnitPower("player",HEALTH_POWER)
             self:Log(string.format("Health API: type=%s current=%s max=%s effective=%s cached=%s/%s shield=%s",tostring(HEALTH_POWER),tostring(hc),tostring(hm),tostring(he),tostring(self.power.health[1]),tostring(self.power.health[2]),tostring(self.shieldValue)),true)
-        else self:Log("Loaded "..self.version..". Commands: /curvedhud preview, /curvedhud debug, /curvedhud status",true) end
+        elseif arg=="report" then self:PrintDiagnosticReport()
+        elseif arg=="memory" then
+            local trackerCount=0; for _ in pairs(self.trackers or {}) do trackerCount=trackerCount+1 end
+            local memoryKb=collectgarbage and collectgarbage("count") or 0
+            self:Log(string.format("Runtime footprint: %d instantiated trackers; total UI Lua memory %.0f KB",trackerCount,memoryKb),true)
+        else self:Log("Loaded "..self.version..". Commands: /curvedhud preview, /curvedhud debug, /curvedhud status, /curvedhud memory, /curvedhud report",true) end
     end
     self:Log("Loaded "..self.version.."; HUD, shield, and trackers created",true)
 end

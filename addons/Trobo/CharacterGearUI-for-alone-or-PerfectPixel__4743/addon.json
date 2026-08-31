@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/Trobo/CharacterGearUI__4743",
+  "archive_path": "addons/Trobo/CharacterGearUI-for-alone-or-PerfectPixel__4743",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "Trobo",
@@ -18,7 +18,7 @@
     "CharacterGearUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4743/",
-  "fingerprint": "1dec42733004f15cec437a1bad34f5c17fc99975d04eca21a685aab4c8897e43",
+  "fingerprint": "e1ff639bbaf108eab7390b155e2907ff6058fabff0b9135c7015e4bea94cd5ca",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16874.png",
     "https://cdn-eso.mmoui.com/preview/pvw16875.png",
@@ -30,13 +30,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4743",
-  "source_url": "https://www.esoui.com/downloads/info4743-CharacterGearUI.html",
+  "source_url": "https://www.esoui.com/downloads/info4743-CharacterGearUIforaloneorPerfectPixel.html",
   "stats": {
-    "downloads": 60,
+    "downloads": 174,
     "favorites": 2,
-    "monthly_downloads": 60
+    "monthly_downloads": 171
   },
-  "title": "CharacterGearUI",
+  "title": "CharacterGearUI (for alone or PerfectPixel)",
   "updated_at": 1785772375000,
   "version": "0.4.6"
 }

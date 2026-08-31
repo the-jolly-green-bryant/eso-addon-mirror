@@ -5,6 +5,7 @@ local isInCombat = IsUnitInCombat("player")
 local wardWarningPercentage = 0.50
 local wardThreshold = 0
 local shieldStr = 0
+local isMenuOpen = false
 
 wardTracker = {}
 
@@ -127,11 +128,13 @@ end
 
 --when UI opens
 local function onMenuOpened()
+	isMenuOpen = true
     wardTrackAddonText:SetHidden(true)
 end
 
 --when UI closes
 local function onMenuClosed()
+	isMenuOpen = false
     wardTrackAddonText:SetHidden(false)--if player has shield show when exiting menu
 end
 

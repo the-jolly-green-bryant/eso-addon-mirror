@@ -1035,11 +1035,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ZEN] = "継続ダメージの重ね掛け（ズェン）",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "平均DoT数",
     [BATTLESCROLLS_ZEN_UPTIME] = "ズェンの弱体化の維持率",
-    [BATTLESCROLLS_ZEN_POTENTIAL] = "DoT1個以上の時間",
+    [BATTLESCROLLS_ZEN_PEAK_TIME] = "<<1>>の時間",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "DoT <<1>>個",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "平均<<1>> — DoT5個で<<2>>",
     [BATTLESCROLLS_ZEN_SHORT] = "ズェン",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — ズェン<<2>>% — 1+DoT <<3>>%",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — ズェン<<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "サポート",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "蘇生",

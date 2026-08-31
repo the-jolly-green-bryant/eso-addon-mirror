@@ -3,7 +3,7 @@
 ---
 
 ```bbcode
-[SIZE="5"][COLOR="Gold"][B]AETHERCHAT (v1.2)[/B][/COLOR][/SIZE]
+[SIZE="5"][COLOR="Gold"][B]AETHERCHAT (v1.2.2)[/B][/COLOR][/SIZE]
 [SIZE="3"][I]Modern, Immersive Chat & Messenger Interface for The Elder Scrolls Online[/I][/SIZE]
 
 [HR][/HR]
@@ -94,6 +94,13 @@ AetherChat remplace l'interface de discussion classique par une messagerie fluid
 [HR][/HR]
 
 [SIZE="4"][COLOR="Yellow"][B]📋 CHANGELOG[/B][/COLOR][/SIZE]
+[B]Version 1.2.2[/B]
+[LIST]
+[*]Fixed native ESO chat text entry restoration: text input is immediately undocked back to native chat upon closing AetherChat, ensuring 100% full compatibility when typing in the default interface.
+[*]Re-enabled direct left-click toggle on the floating moveable HUD icon to open and close AetherChat.
+[*]Added dedicated official Skyrim close button (ZO_CloseButton) in the top-right window header.
+[/LIST]
+
 [B]Version 1.2.0[/B]
 [LIST]
 [*]Added Custom Keywords & Mention Alerts system with ★ star prefix, [KEYWORD] bracketed badges, and 7 selectable accent colors.

@@ -1,11 +1,16 @@
 ## Title: FurnitureCatalogue
 ## Author: manavortex
-## Version: 6.3.0
-## AddOnVersion: 6003000
+## Version: 7.0.0
+## AddOnVersion: 7000000
 ## APIVersion: 101050 101051
 ## SavedVariables: FurnitureCatalogue_Settings
-## DependsOn: LibCustomMenu>=730 LibAddonMenu-2.0>=43 LibAsync>=30103
-## OptionalDependsOn: LibDebugLogger LibDebugViewer LibCharacterKnowledge>=201020
+## DependsOn: LibFurnitureCatalogue>=10000
+## DependsOn: LibAddonMenu-2.0>=43
+## DependsOn: LibAsync>=30103
+## DependsOn: LibCustomMenu>=730
+## OptionalDependsOn: LibDebugLogger
+## OptionalDependsOn: LibDebugViewer
+## OptionalDependsOn: LibCharacterKnowledge
 
 locale\en.lua
 locale\$(language).lua
@@ -13,37 +18,24 @@ locale\$(language).lua
 xml\Bindings.xml
 xml\FurnitureCatalogue.xml
 
-FurCConstants.lua
+Startup.lua
+Internal.lua
+Knowledge.lua
 
-startup.lua
-FurCUtil.lua
-Lib.lua
+SettingsAdapter.lua
+SettingsMenu.lua
+Events.lua
+InventoryIcons.lua
 
-FurCSettingsAdapter.lua
-FurCMenu.lua
-FurCEvents.lua
-
-data\RumourRecipes.lua
-data\Rumours.lua
-
-data\MiscItemSources.lua
-
-data\AchievementVendors.lua
-data\EventItems.lua
-data\LuxuryFurnisher.lua
-data\PvP.lua
-data\Recipes.lua
-data\Rolis.lua
-data\RecipeSources.lua
-
-FurCDatabaseQuery.lua
-FurCData.lua
-FurCDataParser.lua
-FurCFilter.lua
-FurCGui.lua
-FurCContextMenu.lua
-FurCControlBridge.lua
-FurCTooltip.lua
+Favorites.lua
+Migrations.lua
+Chat.lua
+SearchIndex.lua
+Filter.lua
+Gui.lua
+ContextMenu.lua
+GuiXmlBridge.lua
+Tooltip.lua
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax
 ; Media Inc. or its affiliates. The Elder Scrolls? and related logos are

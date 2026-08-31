@@ -21,7 +21,7 @@ EASLoreLibrary.PINTYPES = {
 
 -- GetLoreBookIndicesFromBookId returns the lore category a book belongs to.
 -- category 1 is "Shalidor's Library" (regular lore books), category 3 is "Eidetic Memory".
--- see HarvestMap's Main/Interaction.lua for reference.
+-- see the reference map system's Main/Interaction.lua for reference.
 local SHALIDOR_CATEGORY = 1
 local EIDETIC_CATEGORY = 3
 local LoreCategoryIndexToPinTypeId = {

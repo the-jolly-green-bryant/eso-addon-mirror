@@ -39,7 +39,7 @@ function T.RegisterSettings()
 
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true, allowDefaults = true })
     if not settings then return end
-    settings.version = "1.6.0"
+    settings.version = "1.6.10"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -271,9 +271,13 @@ function T.RegisterSettings()
         Dropdown(settings,
             (L.HUD_COL_LABEL or "HUD buff %d"):format(idx),
             L.HUD_COL_TT or "Green dot in this column when the player HAS the buff.",
-            (idx == 1 and "prayer") or (idx == 2 and "powerfulAssault") or (idx == 3 and "majorCourage") or (idx == 4 and "orbLockout") or "off",
+            (idx == 1 and "prayer") or (idx == 2 and "powerfulAssault") or (idx == 3 and "majorCourage") or "off",
             function()
-                return vars["hudBuff" .. idx] or "off"
+                local key = vars["hudBuff" .. idx] or "off"
+                if T.ResolveSlotKey then
+                    key = T.ResolveSlotKey(key)
+                end
+                return key
             end,
             function(key)
                 vars["hudBuff" .. idx] = key
@@ -365,6 +369,18 @@ function T.RegisterSettings()
             if T.Panels then T.Panels.Refresh() end
         end,
     })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L.DEBUFF_ON_TARGET or "Debuffs on reticle target",
+        tooltip = L.DEBUFF_ON_TARGET_TT or "On = also show the enemy under the crosshair when there is no boss bar. Off = official bosses only.",
+        default = true,
+        getFunction = function() return vars.debuffOnTarget ~= false end,
+        setFunction = function(val)
+            vars.debuffOnTarget = val and true or false
+            if T.Panels then T.Panels.Refresh() end
+            if T.Hud and T.Hud.ScanGroupBuffs then T.Hud.ScanGroupBuffs() end
+        end,
+    })
     if T.BossDebuffPairs then
         for i = 1, #T.BossDebuffPairs do
             local id = T.BossDebuffPairs[i].id
@@ -387,7 +403,7 @@ function T.RegisterSettings()
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SECTION,
         label = L.CUSTOM_LABELS or "HUD names",
-        tooltip = L.CUSTOM_LABELS_TT or "Your text is shown on the HUDs. Healer columns use the first 5 letters, raid/boss panels the first 8.",
+        tooltip = L.CUSTOM_LABELS_TT or "Your text is shown on the HUDs. Healer columns use the first 4 letters, raid/boss panels the first 8.",
     })
 
     local editType = LibHarvensAddonSettings.ST_EDIT or LibHarvensAddonSettings.ST_EDITBOX or LibHarvensAddonSettings.ST_TEXT

@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/natosz/Onix---MenuHUD---Easy-Navigation-Bar-Full-Costum__4790",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "natosz",
+  "canonical_id": "esoui:4790",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4790",
+  "deleted": false,
+  "directories": [
+    "OnixMenuHUD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4790/",
+  "fingerprint": "0129bce63447dbe9d4a2faba49091c017db4e4897b085d53aa60906a6b86af40",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17100.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17099.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17094.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17098.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4790",
+  "source_url": "https://www.esoui.com/downloads/info4790-Onix-MenuHUD-EasyNavigationBarFullCostum.html",
+  "stats": {
+    "downloads": 55,
+    "favorites": 0,
+    "monthly_downloads": 49
+  },
+  "title": "Onix - MenuHUD - Easy Navigation Bar (Full Costum)",
+  "updated_at": 1787780603000,
+  "version": "1.1.1"
+}

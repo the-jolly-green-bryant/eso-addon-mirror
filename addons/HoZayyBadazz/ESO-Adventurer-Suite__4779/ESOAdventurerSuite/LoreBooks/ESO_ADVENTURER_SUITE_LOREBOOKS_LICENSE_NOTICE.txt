@@ -1,0 +1,49 @@
+ESO ADVENTURER SUITE - LOREBOOKS THIRD-PARTY LICENSE NOTICE
+===================================
+
+The files under this LoreBooks/ directory incorporate code and/or data from the
+LoreBooks addon maintained by the ESOUIMods project. ESO Adventurer Suite
+namespaces and integrates that functionality, but does not replace the original
+third-party licensing.
+
+Original / contributing authors include:
+- Ales Machat (Garkin)
+- Ayantir
+- Kyoma
+- Sharlikran
+- community data contributors credited by the upstream project
+
+Upstream project: https://github.com/ESOUIMods/LoreBooks
+
+LICENSES
+--------
+1. Original work by Ales Machat (Garkin), 2014-2015: MIT License.
+
+Copyright (c) 2014, 2015 Ales Machat
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+2. Contributions by Ayantir (2015-2020) and Sharlikran (2022-present):
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+(CC BY-NC-SA 4.0). Appropriate attribution must be retained, commercial use is
+not permitted, and adaptations must be distributed under the same license.
+License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+This notice is legal attribution only. The normal in-game product branding
+remains ESO Adventurer Suite.

@@ -34,6 +34,15 @@ local function cleanItemName(name)
     return name
 end
 
+local function setDrawOrder(control, tier, layer, level)
+    if not control then return end
+    pcall(function()
+        if control.SetDrawTier and tier ~= nil then control:SetDrawTier(tier) end
+        if control.SetDrawLayer and layer ~= nil then control:SetDrawLayer(layer) end
+        if control.SetDrawLevel and level ~= nil then control:SetDrawLevel(level) end
+    end)
+end
+
 local function itemName(slot)
     if BAG_WORN == nil then return "" end
     local link = safe(GetItemLink, "", BAG_WORN, slot, LINK_STYLE_DEFAULT or 0)
@@ -155,6 +164,7 @@ function R:Create()
     self.frame, self.bg, self.title, self.subtitle = frame, bg, title, subtitle
     self.rows, self.total, self.wallet, self.hint = rows, total, wallet, hint
     self:Anchor()
+    self:ApplyNormalDrawOrder()
 end
 
 function R:BuildRows()
@@ -272,6 +282,53 @@ function R:Refresh()
     end
 end
 
+function R:ApplyNormalDrawOrder()
+    if not self.frame then return end
+    local tier = DT_MEDIUM or DT_LOW
+    local layer = DL_CONTROLS or DL_OVERLAY
+    setDrawOrder(self.frame, tier, layer, 40)
+    setDrawOrder(self.bg, tier, layer, 41)
+    setDrawOrder(self.title, tier, layer, 50)
+    setDrawOrder(self.subtitle, tier, layer, 50)
+    for _, row in ipairs(self.rows or {}) do
+        setDrawOrder(row, tier, layer, 48)
+        setDrawOrder(row.epcLeft, tier, layer, 50)
+        setDrawOrder(row.epcRight, tier, layer, 50)
+    end
+    setDrawOrder(self.total, tier, layer, 50)
+    setDrawOrder(self.wallet, tier, layer, 50)
+    setDrawOrder(self.hint, tier, layer, 50)
+end
+
+function R:RaiseForLayout()
+    if not self.frame then return end
+
+    -- Raise the top-level window as one unit, then give its contents explicit
+    -- levels. Previously every child was forced to level 1000, which made the
+    -- backdrop and labels ambiguous and could render the text underneath it.
+    pcall(function()
+        if self.frame.SetTopLevel then self.frame:SetTopLevel(true) end
+        if self.frame.SetDrawTier and DT_HIGH then self.frame:SetDrawTier(DT_HIGH) end
+        if self.frame.SetDrawLayer and DL_OVERLAY then self.frame:SetDrawLayer(DL_OVERLAY) end
+        if self.frame.SetDrawLevel then self.frame:SetDrawLevel(900) end
+        if self.frame.BringWindowToTop then self.frame:BringWindowToTop() end
+    end)
+
+    local tier = DT_HIGH or DT_MEDIUM
+    local layer = DL_OVERLAY or DL_CONTROLS
+    setDrawOrder(self.bg, tier, layer, 901)
+    setDrawOrder(self.title, tier, layer, 920)
+    setDrawOrder(self.subtitle, tier, layer, 920)
+    for _, row in ipairs(self.rows or {}) do
+        setDrawOrder(row, tier, layer, 910)
+        setDrawOrder(row.epcLeft, tier, layer, 920)
+        setDrawOrder(row.epcRight, tier, layer, 920)
+    end
+    setDrawOrder(self.total, tier, layer, 920)
+    setDrawOrder(self.wallet, tier, layer, 920)
+    setDrawOrder(self.hint, tier, layer, 925)
+end
+
 function R:SetLayoutMode(active)
     self.layoutMode = active == true
     if not self.frame then return end
@@ -279,6 +336,14 @@ function R:SetLayoutMode(active)
     self.frame:SetMovable(self.layoutMode)
     if self.hint then self.hint:SetHidden(not self.layoutMode) end
     self:Refresh()
+    -- Refresh can unhide the window after LibAddonMenu has already taken the
+    -- top-level z-order. Raise it only after it is visible so it remains
+    -- draggable with Settings still open.
+    if self.layoutMode then
+        self:RaiseForLayout()
+    else
+        self:ApplyNormalDrawOrder()
+    end
 end
 
 function R:ResetPosition()

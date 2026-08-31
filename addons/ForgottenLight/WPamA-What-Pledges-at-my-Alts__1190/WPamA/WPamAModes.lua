@@ -27,7 +27,7 @@ WPamA.WindSettings = {
     Mds = {[1]=29,[2]=46,[3]=32,[4]=36,[5]=39,[6]=40},
   },
   [7] = {
-    Mds = {[1]=10,[2]=34,[3]=49},
+    Mds = {[1]=10,[2]=34,[3]=49,[4]=51},
   },
   [8] = {
     Mds = {[1]=27,[2]=31,[3]=38,[4]=42,[5]=48},
@@ -192,7 +192,7 @@ WPamA.ModeSettings = {
     },
   },
   [6] = {
-    WinX = 800, --
+    WinX = 800,
     TT = 19,
     --UpdV_ShowLoc = nil,
     --UpdV_ENDung = nil,
@@ -812,9 +812,9 @@ WPamA.ModeSettings = {
     --UpdV_FreqRedrawMode = nil,
     FavRadMenuIcon = "esoui/art/journal/journal_tabicon_cadwell_up.dds",
     isVisibleDef = true,
-    Col = {[1]=63,[2]=63},
+    Col = {[1]=63,[2]=63,[3]=63,[4]=63,[5]=63,[6]=63},
     BTT = {},
-    Map = {[1]=32,[2]=33},
+    Map = {[1]=32,[2]=46,[3]=33,[4]=47,[5]=48,[6]=49},
     HdT = {},
   },
   [36] = {
@@ -1135,12 +1135,34 @@ WPamA.ModeSettings = {
     UpdV_FreqRedrawMode = 1,
     FavRadMenuIcon = "esoui/art/treeicons/provisioner_indexicon_baked_up.dds",
     isVisibleDef = true,
-    Col = {[1]=100,[2]=130,[3]=63,[4]=63,[5]=63},
+    Col = {[1]=100,[2]=130,[3]=63,[4]=63,[5]=63,[6]=63,[7]=63,[8]=63},
     BTT = {[1]=-1},
     BTTA = {[1]=GetString(SI_CHAMPION_TOOLTIP_CURRENT_BONUS)},
     HdT = {},
-    Map = {[3]=38,[4]=39,[5]=40},
+    Map = {[3]=38,[4]=39,[5]=40,[6]=50,[7]=51,[8]=52},
   }, -- mode 50
+-----
+  [51] = {
+    WinX = 890,
+    TT = -1,
+    UpdV_ShowLoc = false,
+    UpdV_ENDung = false,
+    UpdV_DontShowNone = false,
+    UpdV_TitleToolTip = true,
+    --UpdV_CharVisible = nil,
+    --UpdV_DateTime = false,
+    --UpdV_TrialAvl = nil,
+    --UpdV_LFGRndAvl = nil,
+    UpdV_ShowMonsterSet = false,
+    --UpdV_FreqRedrawMode = nil,
+    FavRadMenuIcon = "esoui/art/inventory/inventory_tabicon_favors_up.dds",
+    ----esoui/art/inventory/gamepad/gp_inventory_tabicon_favors.dds -- big white icon
+    isVisibleDef = true,
+    Col = {[1]=226,[2]=226,[3]=226},
+    BTT = {[1]=-1,[2]=-1,[3]=-1},
+    BTTA = {[1] = GetMailListName(1), [2] = GetMailListName(2), [3] = GetMailListName(3)},
+    HdT = {},
+  }, -- mode 51
 -----
 } -- ModeSettings end
 --================================================================
@@ -1178,6 +1200,7 @@ WPamA.Inventory.CreateModesHeaders()
 WPamA.Equipment.CreateIterators()
 WPamA.GroupDungeons.CreateIterators()
 WPamA.DailyWrits.CreateIterators()
+WPamA.Favors.CreateIterators()
 WPamA.CraftCerts.CreateIterators()
 WPamA.Companions.CreateIterators()
 WPamA.EndlessDungeons.CreateIterators()

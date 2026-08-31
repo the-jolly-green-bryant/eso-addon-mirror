@@ -18,9 +18,17 @@ function CH:RegisterLAM()
         check("Enabled", "enabled"), check("Preview mode", "preview"), check("Show default ESO resource bars", "showDefaultResources", "When off, hides ESO's stock player resource display and lowers the self-buff row into the freed space."), check("Debug chat logging", "debug"),
         check("Use out-of-combat opacity", "useOutOfCombatOpacity", "Apply a separate overall HUD opacity while not in combat."),
         {type="slider", name="Out-of-combat opacity", min=0.05,max=1,step=0.05,getFunc=function() return CH.sv.outOfCombatOpacity end,setFunc=function(v) apply("outOfCombatOpacity",v) end,default=CH.defaults.outOfCombatOpacity,disabled=function() return not CH.sv.useOutOfCombatOpacity end},
+        {type="header",name="QUEST & GOLDEN PURSUITS TRACKERS"},
+        check("Reduce trackers in combat","reduceQuestTrackersInCombat","Applies the selected reduced opacity to ESO's focused Quest Tracker and Golden Pursuits tracker while in combat."),
+        check("Reduce trackers in dungeons and trials","reduceQuestTrackersInInstances","Applies the selected reduced opacity while inside dungeon or trial instances."),
+        {type="slider",name="Reduced tracker opacity",tooltip="Set to 0% to hide both trackers completely in the selected situations, or choose a higher value to keep them dimmed.",min=0,max=1,step=0.05,getFunc=function() return CH.sv.reducedQuestTrackerOpacity end,setFunc=function(v) apply("reducedQuestTrackerOpacity",v) end,default=CH.defaults.reducedQuestTrackerOpacity,disabled=function() return not CH.sv.reduceQuestTrackersInCombat and not CH.sv.reduceQuestTrackersInInstances end},
         {type="dropdown", name="Right resource layout", choices={"Parallel","Stacked"}, getFunc=function() return CH.sv.layout end, setFunc=function(v) apply("layout",v) end, default=CH.defaults.layout},
         check("Stamina inside / top", "staminaInside"), slider("HUD scale", "scale", 0.5, 1.5, 0.05), slider("Character spacing", "spacing", 100, 450, 5),
         slider("Vertical offset", "verticalOffset", -250, 250, 5), slider("Parallel gap", "resourceGap", 0, 80, 1), slider("Bar width", "barWidth", 24, 80, 1),
+        slider("Left timer horizontal offset", "leftTimerOffset", -60, 60, 1),
+        slider("Left inside/outside timer spacing", "leftTimerSpacing", -120, 120, 1),
+        slider("Right timer horizontal offset", "rightTimerOffset", -60, 60, 1),
+        slider("Right inside/outside timer spacing", "rightTimerSpacing", -120, 120, 1),
         {type="slider", name="Buff/debuff vertical offset", tooltip="Active when the default ESO resource bars are hidden.", min=-750,max=750,step=5, getFunc=function() return CH.sv.buffVerticalOffset end,setFunc=function(v) apply("buffVerticalOffset",v) end,default=CH.defaults.buffVerticalOffset,disabled=function() return CH.sv.showDefaultResources end},
         slider("Fill opacity", "fillAlpha", 0.1, 1, 0.05), slider("Frame opacity", "frameAlpha", 0, 1, 0.05), slider("Background opacity", "backgroundAlpha", 0, 1, 0.05),
         slider("Tracker timer font size", "timerFontSize", 16, 36, 1),
@@ -70,12 +78,13 @@ function CH:RegisterLAM()
         local key=definition.key
         target[#target+1]={type="slider",name=definition.label.." fallback duration",tooltip="Used only when ESO reports no duration for the current scripts.",min=1,max=120,step=1,getFunc=function() return CH.sv[key.."Duration"] end,setFunc=function(v) apply(key.."Duration",v) end,default=CH.defaults[key.."Duration"],disabled=function() return not CH.sv[key.."Enabled"] end}
     end
-    local globalControls={
-        dropdown("Lower-left major buff","majorBuffTracked",CH.majorBuffChoices,"Select the standardized Major buff tracked by the lower-left outside timer."),
-        dropdown("Major buff timer color","majorBuffColor",CH.colorChoices),check("Track Balance debuff","balanceEnabled"),
-        dropdown("Balance position","balanceSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end),
-        dropdown("Balance timer color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end),
-    }
+    local globalControls={}
+    for _,definition in ipairs(CH.standardBuffTrackerDefinitions) do
+        local disabled=function() return CH.sv[definition.selectionSetting]=="None" end
+        globalControls[#globalControls+1]=dropdown(definition.label,definition.selectionSetting,definition.choices,"Select the standardized buff tracked in this slot.")
+        globalControls[#globalControls+1]=dropdown(definition.label.." position",definition.slotSetting,CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,disabled)
+        globalControls[#globalControls+1]=dropdown(definition.label.." color",definition.colorSetting,CH.colorChoices,nil,nil,disabled)
+    end
     header("GLOBAL TIMERS - CHARACTER SPECIFIC")
     submenu("Global",globalControls)
     categoryRow("CLASS TIMERS - CHARACTER SPECIFIC")
@@ -110,12 +119,31 @@ function CH:RegisterLAM()
             local mapped=CH.scribingSkillLineByKey[definition.key]; local match=lines and lines[mapped] or mapped==line
             if match then addScribingControls(controls,definition) end
         end
+        if line=="Mages Guild" then
+            controls[#controls+1]=check("Track Equilibrium / Balance penalty","balanceEnabled","Tracks the 4-second self-inflicted healing and damage-shield reduction from Equilibrium and both morphs.")
+            controls[#controls+1]=dropdown("Equilibrium penalty position","balanceSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end)
+            controls[#controls+1]=dropdown("Equilibrium penalty color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end)
+        end
         submenu(line,controls)
     end
     for _,line in ipairs(CH.weaponSkillLines) do addSkillLineSubmenu(line) end
     categoryRow("GUILD / VAMPIRE / WEREWOLF TIMERS - CHARACTER SPECIFIC")
     for _,line in ipairs(CH.otherSkillLines) do addSkillLineSubmenu(line) end
     addSkillLineSubmenu("Armor",{["Light Armor"]=true,["Medium Armor"]=true,["Heavy Armor"]=true})
+    categoryRow("ITEM SET TIMERS - CHARACTER SPECIFIC")
+    for _,category in ipairs(CH.setTrackerCategories) do
+        local controls={}
+        if category=="DPS Sets" then
+            controls[#controls+1]=check("Way of Martial Knowledge Stamina cue","martialKnowledgeStaminaCue","While five pieces are equipped, tint Stamina light green below 50% (procable) and light red at or above 50%. Preview demonstrates the cue without requiring the set.")
+        end
+        for _,definition in ipairs(CH.setTrackerDefinitions) do
+            if definition.category==category then
+                local tip=definition.passive and "Shows ACTIVE when the five-piece passive is detected." or definition.readyMode=="condition" and "Shows a green READY indicator only while the proc condition is primed; otherwise tracks its cooldown." or definition.cooldown and "Tracks the proc cooldown and turns green when the set is ready again." or definition.displayStacks and "Shows the current stack count and the time until the stack window expires." or "Tracks the set's active duration."
+                append(controls,standardControls(definition,tip))
+            end
+        end
+        submenu(category,controls)
+    end
     LAM:RegisterOptionControls(panelName,options)
     CH:Log("LibAddonMenu-2.0 settings registered")
     return true
@@ -124,7 +152,15 @@ end
 function CH:RegisterHarvens()
     local HAS = LibHarvensAddonSettings
     if not HAS or not HAS.AddAddon then return false end
-    local panel = HAS:AddAddon("CurvedHUD", { allowDefaults = true, allowRefresh = true, defaultsFunction = function() for k,v in pairs(CH.defaults) do CH.sv[k]=v end CH:ApplyLayout() end })
+    local panel = HAS:AddAddon("CurvedHUD", { allowDefaults = true, allowRefresh = true, defaultsFunction = function()
+        -- Runtime discovery caches are internal data, not user preferences.
+        -- Preserve them when resetting visible settings so localized ID/icon
+        -- learning is not discarded.
+        for k,v in pairs(CH.defaults) do
+            if k~="iconCache" and k~="setEffectIconCache" and k~="abilityIdCache" and k~="carveAbilityIds" then CH.sv[k]=v end
+        end
+        CH:ApplyLayout()
+    end })
     if not panel or not panel.AddSetting then return false end
     local function checkbox(label,key)
         panel:AddSetting({type=HAS.ST_CHECKBOX,label=label,getFunction=function() return CH.sv[key] end,setFunction=function(v) apply(key,v) end,default=CH.defaults[key]})
@@ -143,11 +179,20 @@ function CH:RegisterHarvens()
     local function title(label) panel:AddSetting({type=HAS.ST_SECTION or HAS.ST_LABEL,label=label}) end
     checkbox("Enabled","enabled"); checkbox("Preview mode","preview"); checkbox("Show default ESO resource bars","showDefaultResources"); checkbox("Use out-of-combat opacity","useOutOfCombatOpacity")
     panel:AddSetting({type=HAS.ST_SLIDER,label="Out-of-combat opacity",min=0.05,max=1,step=0.05,getFunction=function() return CH.sv.outOfCombatOpacity end,setFunction=function(v) apply("outOfCombatOpacity",v) end,default=CH.defaults.outOfCombatOpacity,disable=function() return not CH.sv.useOutOfCombatOpacity end})
+    title("QUEST & GOLDEN PURSUITS TRACKERS")
+    checkbox("Reduce trackers in combat","reduceQuestTrackersInCombat")
+    checkbox("Reduce trackers in dungeons and trials","reduceQuestTrackersInInstances")
+    panel:AddSetting({type=HAS.ST_SLIDER,label="Reduced tracker opacity",tooltip="0% hides both trackers completely; higher values dim them.",min=0,max=1,step=0.05,getFunction=function() return CH.sv.reducedQuestTrackerOpacity end,setFunction=function(v) apply("reducedQuestTrackerOpacity",v) end,default=CH.defaults.reducedQuestTrackerOpacity,disable=function() return not CH.sv.reduceQuestTrackersInCombat and not CH.sv.reduceQuestTrackersInInstances end})
     checkbox("Stamina inside / top","staminaInside"); checkbox("Debug chat logging","debug")
     panel:AddSetting({type=HAS.ST_DROPDOWN,label="Right resource layout",items={{name="Parallel",data="Parallel"},{name="Stacked",data="Stacked"}},getFunction=function() return CH.sv.layout end,setFunction=function(_,name,item) apply("layout",(item and item.data) or name) end,default=CH.defaults.layout})
     slider("HUD scale","scale",0.5,1.5,0.05); slider("Character spacing","spacing",100,450,5); slider("Vertical offset","verticalOffset",-250,250,5)
     panel:AddSetting({type=HAS.ST_SLIDER,label="Buff/debuff vertical offset",tooltip="Active when the default ESO resource bars are hidden.",min=-750,max=750,step=5,getFunction=function() return CH.sv.buffVerticalOffset end,setFunction=function(v) apply("buffVerticalOffset",v) end,default=CH.defaults.buffVerticalOffset,disable=function() return CH.sv.showDefaultResources end})
-    slider("Parallel gap","resourceGap",0,80,1); slider("Bar width","barWidth",24,80,1); slider("Fill opacity","fillAlpha",0.1,1,0.05)
+    slider("Parallel gap","resourceGap",0,80,1); slider("Bar width","barWidth",24,80,1)
+    slider("Left timer horizontal offset","leftTimerOffset",-60,60,1)
+    slider("Left inside/outside timer spacing","leftTimerSpacing",-120,120,1)
+    slider("Right timer horizontal offset","rightTimerOffset",-60,60,1)
+    slider("Right inside/outside timer spacing","rightTimerSpacing",-120,120,1)
+    slider("Fill opacity","fillAlpha",0.1,1,0.05)
     slider("Tracker timer font size","timerFontSize",16,36,1)
     checkbox("Imminent expiration alerts","expirationAlerts")
     dropdown("Inside timer thickness","insideTimerStyle",{"Thin","Thick"},"Shared by every tracker assigned to an inside position.")
@@ -155,11 +200,12 @@ function CH:RegisterHarvens()
     slider("Resource value font size","resourceValueFontSize",16,42,1); slider("Resource percent font size","resourcePercentFontSize",14,34,1)
     checkbox("Show raw values","showRaw"); checkbox("Show maximum values","showMaximum"); checkbox("Show percentages","showPercent")
     title("GLOBAL TIMERS - CHARACTER SPECIFIC")
-    dropdown("Lower-left major buff","majorBuffTracked",CH.majorBuffChoices,"Select the standardized Major buff tracked by the lower-left outside timer.")
-    dropdown("Major buff timer color","majorBuffColor",CH.colorChoices)
-    checkbox("Track Balance debuff","balanceEnabled")
-    dropdown("Balance position","balanceSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end)
-    dropdown("Balance timer color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end)
+    for _,definition in ipairs(CH.standardBuffTrackerDefinitions) do
+        local disabled=function() return CH.sv[definition.selectionSetting]=="None" end
+        dropdown(definition.label,definition.selectionSetting,definition.choices,"Select the standardized buff tracked in this slot.")
+        dropdown(definition.label.." position",definition.slotSetting,CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,disabled)
+        dropdown(definition.label.." color",definition.colorSetting,CH.colorChoices,nil,nil,disabled)
+    end
     title("CLASS TIMERS - CHARACTER SPECIFIC")
     title("SORCERER")
     checkbox("Track Bound Aegis","aegisEnabled")
@@ -219,6 +265,11 @@ function CH:RegisterHarvens()
         title(line:upper())
         for _,definition in ipairs(CH.nonClassTrackerDefinitions) do if definition.line==line then addStandardDefinition(definition) end end
         for _,definition in ipairs(CH.scribingTrackerDefinitions) do if CH.scribingSkillLineByKey[definition.key]==line then addScribingDefinition(definition) end end
+        if line=="Mages Guild" then
+            checkbox("Track Equilibrium / Balance penalty","balanceEnabled")
+            dropdown("Equilibrium penalty position","balanceSlot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv.balanceEnabled end)
+            dropdown("Equilibrium penalty color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end)
+        end
     end
     title("WEAPON TIMERS - CHARACTER SPECIFIC")
     for _,line in ipairs(CH.weaponSkillLines) do addSkillLine(line) end
@@ -227,6 +278,12 @@ function CH:RegisterHarvens()
     title("ARMOR")
     for _,definition in ipairs(CH.nonClassTrackerDefinitions) do
         for _,line in ipairs(CH.armorSkillLines) do if definition.line==line then addStandardDefinition(definition); break end end
+    end
+    title("ITEM SET TIMERS - CHARACTER SPECIFIC")
+    for _,category in ipairs(CH.setTrackerCategories) do
+        title(category:upper())
+        if category=="DPS Sets" then checkbox("Way of Martial Knowledge Stamina cue","martialKnowledgeStaminaCue") end
+        for _,definition in ipairs(CH.setTrackerDefinitions) do if definition.category==category then addStandardDefinition(definition) end end
     end
     CH:Log("LibHarvensAddonSettings settings registered")
     return true

@@ -17,11 +17,7 @@ FurC.settings.emptyItemSources = FurC.settings.emptyItemSources or {}
 FurC.CharacterName = FurC.CharacterName or "Eats-Your-Bugs"
 
 local function count(t)
-  local n = 0
-  for _ in pairs(t or {}) do
-    n = n + 1
-  end
-  return n
+  return NonContiguousCount(t or {})
 end
 
 -- version table as: version, itemsTable
@@ -33,17 +29,23 @@ local function firstPopulatedVersion(versioned)
   end
 end
 
+function Test.ensureDB()
+  FurC.EnsureDB(true)
+end
+
+Test.ensureDB()
+
 local dataset
 
 --- Build once and return data set
---- (if headless it builds, in-game addon already does it)
 function Test.dataset()
   if dataset then
     return dataset
   end
 
-  FurC.EnsureDB()
+  Test.ensureDB()
   local db = FurC.DB
+  assert(next(db) ~= nil, "FurC.DB is empty, scan did not run")
 
   local DS = {}
   for id in pairs(db or {}) do
@@ -63,6 +65,19 @@ function Test.dataset()
   local luxVer, luxItems = firstPopulatedVersion(FurC.LuxuryFurnisher)
   DS.luxVersion, DS.luxItem = luxVer, luxItems and next(luxItems)
 
+  -- luxItem comes straight from the data file, this one is also guaranteed to be in the DB
+  for _, versionData in pairs(FurC.LuxuryFurnisher) do
+    for itemId in pairs(versionData) do
+      if db[itemId] then
+        DS.luxItemInDB = itemId
+        break
+      end
+    end
+    if DS.luxItemInDB then
+      break
+    end
+  end
+
   local rolisVer, rolisItems = firstPopulatedVersion(FurC.Rolis)
   DS.rolisVersion, DS.rolisItem = rolisVer, rolisItems and next(rolisItems)
 
@@ -72,10 +87,27 @@ end
 
 --- itemlink for integer id in expected FurC format
 function Test.link(id)
+  assert(type(id) == "number", "Test.link needs an item id, got " .. tostring(id))
   return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", id)
 end
 
 --- Count FurC.DB to check if scan ran at all
 function Test.dbSize()
   return count(FurC.DB)
+end
+
+function Test.keySet(tbl)
+  local set = {}
+  for key in pairs(tbl) do
+    set[key] = true
+  end
+  return set
+end
+
+function Test.nameSet(names)
+  local set = {}
+  for i = 1, #names do
+    set[names[i]] = true
+  end
+  return set
 end

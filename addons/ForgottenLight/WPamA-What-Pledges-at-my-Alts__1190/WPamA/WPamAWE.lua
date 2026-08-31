@@ -22,6 +22,7 @@ local WORLD_EVENT_LOCATION_CONTEXT_MIX = 99 -- a dummy context for mixed context
 local WorldEvents = {
   CurrentZoneId = 0,
   CurrentActivePOI = { POI = 0, InstanceId = 0, StartTS = 0 },
+  CurrentActiveENC = { InstanceId = 0, Stage = 0, EndTS = 0, isPart = false },
   AverageTimeBetweenPOI = 0,
   UNITBuffs = { [122559] = true, [122561] = true, [122562] = true },
   -- Buff 122562 [Storm Dragon] | 122561 [Frost Dragon] | 122559 [Flame Dragon]
@@ -63,9 +64,6 @@ local WorldEvents = {
                POI = { 43, 44, 45 },
                -- PinIcon = "|t24:24:/esoui/art/icons/poi/poi_portal_complete. dds|t",
                -- PinType = 40,
-               -- the "Vampire Hunt" dynamic encounter
-               -- 96 >> 99 -> 100 -> 101 -> 102 -> 103 -> 104 -> 105 >> 96
-               Stages = { [96] = 0, [99] = 1, [101] = 25, [103] = 50, [105] = 75 },
              },
 ------------
     [  19] = { PZI = 4, -- PoiZoneIndex "Stormhaven"
@@ -87,9 +85,6 @@ local WorldEvents = {
                WEContext = WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST,
                EventType = WORLD_EVENT_TYPE_SCRIPTED_EVENT,
                POI = { 43, 44, 45 },
-               -- the "Bilsa's Delivery" dynamic encounter
-               -- 95 >> 106 -> 107 -> 108 -> 109 -> 112 -> 110 >> 95
-               Stages = { [95] = 0, [107] = 25, [109] = 50, [110] = 75 },
              },
 ------------
     [  57] = { PZI = 10, -- PoiZoneIndex "Deshaan"
@@ -160,8 +155,6 @@ local WorldEvents = {
                WEContext = WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST,
                EventType = WORLD_EVENT_TYPE_SCRIPTED_EVENT,
                POI = { 37, 38, 39 },
-               -- the "Flowervine Farm" dynamic encounter
-               Stages = { [98] = 0 }, -- [131] = ??
              },
 ------------
     [ 382] = { PZI = 179, -- PoiZoneIndex "Reaper's March"
@@ -260,6 +253,38 @@ local WorldEvents = {
                            string.format("%02x%02x%02x", 175, 248, 240) },
              },
   }, -- MIXEvents array
+  DYNEvents = {
+    [   3] = { --PZI = 2, -- "Glenumbra"
+               -- the "Vampire Hunt" dynamic encounter
+               --WEContext = WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST,
+               EventType = WORLD_EVENT_TYPE_STATIC_MONSTER,
+               -- 96 >> 99 -> 100 -> 101 -> 102 -> 103 -> 104 -> 105 >> 96
+               DynEvent = { [96] = 0, [99] = 1, [100] = 2, [101] = 3, [102] = 4, [103] = 5, [104] = 6, [105] = 7 },
+               DynProgr = { [99] = 10, [101] = 25, [103] = 50, [105] = 75 },
+               ----DynCoord = { StartX = 246580, StartZ = 147292, StopX = 226055, StopZ = 117905 },
+             },
+------------
+    [  41] = { --PZI = 9, -- "Stonefalls"
+               -- the "Bilsa's Delivery" dynamic encounter
+               --WEContext = WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST,
+               EventType = WORLD_EVENT_TYPE_STATIC_MONSTER,
+               -- 95 >> 106 -> 107 -> 108 -> 109 -> 112 -> 110 >> 95
+               DynEvent = { [95] = 0, [106] = 1, [107] = 2, [108] = 3, [109] = 4, [112] = 5, [110] = 6 },
+               DynProgr = { [107] = 25, [109] = 50, [110] = 75 },
+               ----DynCoord = { StartX = 182608, StartZ = 207728, StopX = 166945, StopZ = 244688 },
+             },
+------------
+    [ 381] = { --PZI = 178, -- "Auridon"
+               -- the "Flowervine Farm" dynamic encounter
+               --WEContext = WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST,
+               EventType = WORLD_EVENT_TYPE_STATIC_MONSTER,
+               -- 98 >> 131 >> 98
+               DynEvent = { [98] = 0, [131] = 1 },
+               DynProgr = { }, -- [131] = 10 },
+               ----DynCoord = { StartX = 249090, StartZ = 371435, StopX = 249090, StopZ = 371435 },
+             },
+------------
+  }, -- DYNEvents array
 } -- WorldEvents array
 local isPlayerChangedZone = false -- true if player change location
 --=========================================================================
@@ -315,6 +340,30 @@ local function GetDistancePoiFromPlayer(poiZI, poiInd)
   local D = zo_floor( zo_sqrt(X*X + Z*Z) / 100 )
   ---- local D = zo_floor( zo_distance(PoiX, PoiZ, PlayerX, PlayerZ) / 100)
   return D
+end
+
+local function IsWorldEventDynamical(WEInstanceId)
+  local WE = WorldEvents
+  if WE.DYNEvents[WE.CurrentZoneId] then -- it's a DYN-WE location
+    local zoneWE = WE.DYNEvents[WE.CurrentZoneId]
+    if zoneWE.DynEvent[WEInstanceId] then return true end
+  end
+  return false
+end
+
+local function GetActiveDynamicEncounterStage()
+  local count = -1 -- no Dynamic Encounter by default
+  local WE = WorldEvents
+  if WE.DYNEvents[WE.CurrentZoneId] then -- it's a DYN-WE location
+    local zoneWE = WE.DYNEvents[WE.CurrentZoneId]
+    --if zoneWE.DynEvent then
+      count = 0
+      for wei, val in pairs(zoneWE.DynEvent) do
+        if GetWorldEventId(wei) > 0 then count = count + val end
+      end
+    --end
+  end
+  return count
 end
 
 --[[
@@ -453,59 +502,107 @@ local function DeactivateWorldEventDataPOI(WEInstanceId)
   WE.CurrentActivePOI.StartTS = 0
 end -- DeactivateWorldEventDataPOI end
 
---!!!!
-local function ActivateDynamicEncounterDataPOI(WEInstanceId)
+local function ActivateDynamicEncounterData(WEInstanceId, isEventCalled)
   local WE = WorldEvents
-  local MSG = WPamA.i18n.DynamicEncounter or false
-  if WE.POIEvents[WE.CurrentZoneId] then -- it's a POI-WE location
-    local zoneWE = WE.POIEvents[WE.CurrentZoneId]
-    if zoneWE.Stages and zoneWE.Stages[WEInstanceId] then
-      local progress = zoneWE.Stages[WEInstanceId]
-      local messageText = ""
-      if progress > 0 then
+  local CE = WE.CurrentActiveENC
+  local stage = GetActiveDynamicEncounterStage()
+  if stage < 0 then
+   --- no Dynamic Encounter = no data ---
+    CE.InstanceId = 0
+    CE.Stage = 0
+    CE.EndTS = 0
+    CE.isPart = false
+    return
+  elseif (stage == 0) and (not isEventCalled) then
+   --- fake Dynamic Encounter activity ---
+    return
+  elseif (stage == 0) and (CE.Stage > 0) then
+   --- fake Dynamic Encounter call before an event end ---
+    return
+  --elseif isPlayerChangedZone or (CE.InstanceId ~= WEInstanceId) then
+  end
+  --============= an active Dynamic Encounter =============
+  local zoneWE = WE.DYNEvents[WE.CurrentZoneId]
+  if stage == 0 then
+   --- init Dynamic Encounter event ---
+    CE.InstanceId = WEInstanceId
+    CE.Stage = 0
+    CE.EndTS = 0
+    CE.isPart = false
+  --elseif (stage > 0) and (zoneWE.DynEvent[WEInstanceId] > 0) then
+  elseif stage > 0 then
+   --- current Dynamic Encounter stage ---
+    CE.InstanceId = WEInstanceId
+    CE.Stage = stage
+    CE.EndTS = 0
+    local eid = GetParticipatingWorldEventStep()
+    CE.isPart = eid > 0
+  end
+  --============= notify Dynamic Encounter ================
+  local showNotify = WPamA.SV_Main.DynEncounterNotifyMode
+  if showNotify > 0 then
+    local messageText = ""
+    if (showNotify == 2) or ( (showNotify == 1) and (not CE.isPart) ) then
+      local isOnInitStage = (stage > 0) and (zoneWE.DynEvent[WEInstanceId] == 0)
+      local MSG = WPamA.i18n.DynamicEncounter
+      if stage == 0 then
+        messageText = MSG.Start
+      elseif isOnInitStage and (not isEventCalled) then
+        messageText = MSG.Activ
+        stage = 0
+      elseif stage > 0 then
         local WEType = GetWorldEventType( GetWorldEventId(WEInstanceId) )
-        if WEType == WORLD_EVENT_TYPE_STATIC_MONSTER then
+        local progress = zoneWE.DynProgr[WEInstanceId]
+        if progress and (WEType == zoneWE.EventType) then
           messageText = zo_strformat(MSG.Progr, progress)
         end
-      else
-        messageText = MSG.Start
       end
-      --[[
-      if MSG then
-        if messageText ~= "" then d(messageText) end
-        if progress == 0 then
-          local color = string.format("%02x%02x%02x", 238, 238, 200)
-          local messageText = zo_strformat("|c<<1>><<2>>|r", color, messageText)
-          WPamA:PostScreenAnnounceMessage(messageText, CSA_CATEGORY_MAJOR_TEXT, nil,
-                                          ----CENTER_SCREEN_ANNOUNCE_TYPE_SYSTEM_BROADCAST,
-                                          WPamA.Textures.GetTexture(73))
-        end
-      end
-      --]]
     end
-  end
-end -- ActivateDynamicEncounterDataPOI end
-
-local function DeactivateDynamicEncounterDataPOI(WEInstanceId)
-  local WE = WorldEvents
-  local MSG = WPamA.i18n.DynamicEncounter or false
-  if WE.POIEvents[WE.CurrentZoneId] then -- it's a POI-WE location
-    local zoneWE = WE.POIEvents[WE.CurrentZoneId]
-    if zoneWE.Stages and zoneWE.Stages[WEInstanceId] then
-      --[[
-      if MSG then
-        d(MSG.Stop)
-        local color = string.format("%02x%02x%02x", 238, 238, 200)
-        local messageText = zo_strformat("|c<<1>><<2>>|r", color, MSG.Stop)
+    ---
+    if messageText ~= "" then
+      local color = string.format("%02x%02x%02x", 238, 238, 200)
+      messageText = zo_strformat("|c<<1>><<2>>|r", color, messageText)
+      WPamA:PostChatMessage(messageText)
+      if stage == 0 then
         WPamA:PostScreenAnnounceMessage(messageText, CSA_CATEGORY_MAJOR_TEXT, nil,
                                         ----CENTER_SCREEN_ANNOUNCE_TYPE_SYSTEM_BROADCAST,
                                         WPamA.Textures.GetTexture(73))
       end
-      --]]
+    end
+    ---
+  end
+  --=============================
+end -- ActivateDynamicEncounterData end
+
+local function DeactivateDynamicEncounterData(WEInstanceId)
+  local WE = WorldEvents
+  local zoneWE = WE.DYNEvents[WE.CurrentZoneId]
+  if zoneWE.DynEvent[WEInstanceId] > 0 then return end
+  --============= notify Dynamic Encounter ================
+  local showNotify = WPamA.SV_Main.DynEncounterNotifyMode
+  if showNotify > 0 then
+    local messageText = ""
+    if (showNotify == 2) or ( (showNotify == 1) and (not WE.CurrentActiveENC.isPart) ) then
+      messageText = WPamA.i18n.DynamicEncounter.Stop
+    end
+    ---
+    if messageText ~= "" then
+      local color = string.format("%02x%02x%02x", 238, 238, 200)
+      messageText = zo_strformat("|c<<1>><<2>>|r", color, messageText)
+      WPamA:PostChatMessage(messageText)
+      ----d("Ending Time: " .. WPamA:TimestampToStr(WE.CurrentActiveENC.EndTS) )
+      ----d("Next Time: " .. WPamA:TimestampToStr(30 * 60 + WE.CurrentActiveENC.EndTS) )
+      WPamA:PostScreenAnnounceMessage(messageText, CSA_CATEGORY_MAJOR_TEXT, nil,
+                                      ----CENTER_SCREEN_ANNOUNCE_TYPE_SYSTEM_BROADCAST,
+                                      WPamA.Textures.GetTexture(73))
     end
   end
-end -- DeactivateDynamicEncounterDataPOI end
---!!!!
+  --=============================
+  WE.CurrentActiveENC.InstanceId = WEInstanceId
+  WE.CurrentActiveENC.Stage = 0
+  WE.CurrentActiveENC.EndTS = GetTimeStamp()
+  WE.CurrentActiveENC.isPart = false
+end -- DeactivateDynamicEncounterData end
 
 local function ActivateAdventureEventDataUNIT(WEInstanceId)
   local WE = WorldEvents
@@ -600,15 +697,21 @@ end -- DeactivateAdventureEventDataPOI end
 
 local function UpdateCurrentWorldEvents(WEContext, WEAction, WEInstanceId)
   if WEAction == "RELOAD" then
+    WorldEvents.CurrentActiveENC = { InstanceId = 0, Stage = 0, EndTS = 0, isPart = false }
    --- collect info about all current World Events ---
     WEInstanceId = GetNextWorldEventInstanceId(nil)
     while WEInstanceId do
-      if WEContext == WORLD_EVENT_LOCATION_CONTEXT_UNIT then
+      ---
+      if IsWorldEventDynamical(WEInstanceId) then
+       --- any of dynamic World Events ---
+        ActivateDynamicEncounterData(WEInstanceId, false)
+       --- any of static World Events ---
+      elseif WEContext == WORLD_EVENT_LOCATION_CONTEXT_UNIT then
         ActivateWorldEventDataUNIT(WEInstanceId)
       elseif WEContext == WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST then
         ActivateWorldEventDataPOI(WEInstanceId)
-        --ActivateDynamicEncounterDataPOI(WEInstanceId)
       end
+      ---
       WEInstanceId = GetNextWorldEventInstanceId( WEInstanceId )
     end
 --
@@ -618,7 +721,6 @@ local function UpdateCurrentWorldEvents(WEContext, WEAction, WEInstanceId)
       ActivateWorldEventDataUNIT(WEInstanceId, WEUnitTag)
     elseif WEContext == WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST then
       ActivateWorldEventDataPOI(WEInstanceId)
-      ActivateDynamicEncounterDataPOI(WEInstanceId)
     end
 --
   elseif WEAction == "DEACT" then
@@ -627,7 +729,6 @@ local function UpdateCurrentWorldEvents(WEContext, WEAction, WEInstanceId)
       DeactivateWorldEventDataUNIT(WEInstanceId, WEUnitTag)
     elseif WEContext == WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST then
       DeactivateWorldEventDataPOI(WEInstanceId)
-      DeactivateDynamicEncounterDataPOI(WEInstanceId)
     end
 --
   elseif WEAction == "RELOAD-MIX" then
@@ -812,7 +913,6 @@ function WPamA.OnPlayerActiveWE(event, ...)
     WPamA.CurChar.PlayedTime = GetSecondsPlayed()
     WPamA:UpdateActiveTimedEffects()
   elseif event == EVENT_PLAYER_ACTIVATED then
-    ReloadCurrentZoneWE()
     WPamA.PlayerInZone = {
       AvA     = IsInCampaign() or IsInImperialCity() or IsActiveWorldBattleground() or false,
       Veng    = IsCurrentCampaignVengeanceRuleset() or false,
@@ -821,6 +921,7 @@ function WPamA.OnPlayerActiveWE(event, ...)
       Dungeon = IsUnitInDungeon("player") or false,
       Advent  = IsInAdventureZone() or false
     }
+    ReloadCurrentZoneWE()
     WPamA.isPlayerActive = true
     if WPamA:IsDelayedChatMessage() then WPamA:PostDelayedChatMessages() end
   end -- events
@@ -836,9 +937,18 @@ function WPamA.OnWorldEventsCalled(eventCode, WEInstanceId, unitTag, ...)
     WELocationContext = WORLD_EVENT_LOCATION_CONTEXT_MIX
   end
 
+  --================== Dynamic Encounter events ======================
+  if IsWorldEventDynamical(WEInstanceId) then
+    if eventCode == EVENT_WORLD_EVENT_ACTIVATED then
+    -- EVENT_WORLD_EVENT_ACTIVATED (worldEventInstanceId)
+      ActivateDynamicEncounterData(WEInstanceId, true)
+    elseif eventCode == EVENT_WORLD_EVENT_DEACTIVATED then
+     -- EVENT_WORLD_EVENT_DEACTIVATED (worldEventInstanceId)
+      DeactivateDynamicEncounterData(WEInstanceId)
+    end
+
   --======================= Unknown events ===========================
-  if WELocationContext == WORLD_EVENT_LOCATION_CONTEXT_NONE then
-    ActivateDynamicEncounterDataPOI(WEInstanceId)
+  elseif WELocationContext == WORLD_EVENT_LOCATION_CONTEXT_NONE then
     --[[
     if not WPamA.PlayerInZone.Advent then
       local WEType = GetWorldEventType( GetWorldEventId(WEInstanceId) )

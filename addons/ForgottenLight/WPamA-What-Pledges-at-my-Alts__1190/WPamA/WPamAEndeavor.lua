@@ -401,7 +401,7 @@ function WPamA:EndeavorDataPrepare()
       if cond.isClaim then taSeasonCompl = taSeasonCompl + 1 end
     end
   end -- for TA Loop
-  --- Patch for U49 --!!
+  --- Patch for U49
   --[[
   if #EndeavorDailyConditions < 1 then
     EndeavorDailyConditions[1] =
@@ -418,7 +418,7 @@ function WPamA:EndeavorDataPrepare()
     EndeavorSeasonConditions[1] =
       { Ind = 1, Name = "---", isComplete = false, isClaim = false, Value = 1,
         Progress = "--- / ---", ClaimProgress = "--- / ---", Reward = "---" }
-  end -------------------- --!!
+  end
   --- Sort conditions data arrays ---
   table.sort( EndeavorDailyConditions,  function(v1, v2)
                                           --local valV1 = v1.isComplete and 1 or v1.Value
@@ -487,14 +487,11 @@ function WPamA:EndeavorDataUpdate( taIndex )
     --- Set max progress for endeavor Activity's types ---
     local totalMaxProgress = taMaxProgress * taMaxClaim
     local typedName = taName:gsub(" (%d+)", " #")
-    ----if (taIndex == 0) and (taProgress < taMaxProgress) then --!!
     if (taIndex == 0) and (taClaim < taMaxClaim) then
       if remain[typedName] then
-        ----if remain[typedName] < taMaxProgress then remain[typedName] = taMaxProgress end --!!
         if remain[typedName] < totalMaxProgress then remain[typedName] = totalMaxProgress end
       else
         remain[typedName] = totalMaxProgress
-        ----remain[typedName] = taMaxProgress --!!
       end
     end
     --- Show Endeavor's progress in chat ---
@@ -1086,6 +1083,8 @@ function WPamA:SetCompanionsPersons()
       end
     end
   end
+  ---
+  self.Companions.MinSkillBarSlot, self.Companions.MaxSkillBarSlot = GetAssignableAbilityBarStartAndEndSlots()
 end -- SetCompanionsPersons end
 
 function WPamA:CheckCompanionsUnlocked()
@@ -1161,13 +1160,14 @@ WCP = { IID = IngameCompanionId, DLC = CollectibleId, Name = "CompanionName", QI
         SQ = {StoryQuestIds}, isLocked = lockedStatus }
 CCC = { Rapport = 0, RapportLvl = 1, hasQuest = false, }
 ACC = { Lvl = 99, LvlPrc = 0, Skills = { [ind] = {Lvl = 1, LvlPrc = 0, isLocked = true} },
-        Equips = {[1]..[12] = "item link data"} }
+        Equips = {[1]..[12] = "item link data"}, SkillBar = {[3]..[8] = AbilityId} }
 --]]
   if WCP[ccid].isLocked then WCP[ccid].isLocked = false end
   if CCC[ccid].hasQuest then CCC[ccid].hasQuest = false end
   if not ACC[ccid].LvlPrc then ACC[ccid].LvlPrc = 0 end
   if not ACC[ccid].Skills then ACC[ccid].Skills = {} end
   if not ACC[ccid].Equips then ACC[ccid].Equips = {} end
+  if not ACC[ccid].SkillBar then ACC[ccid].SkillBar = {} end
 --
   local curRapport = GetActiveCompanionRapport()
   CCC[ccid].Rapport = curRapport
@@ -1214,13 +1214,20 @@ ACC = { Lvl = 99, LvlPrc = 0, Skills = { [ind] = {Lvl = 1, LvlPrc = 0, isLocked 
       sln[i].isLocked = slp.isLocked
     end
   end
---[[
--- just for rare cases of delayed event ??
-  if ACC[ccid].Lvl < sln[1].Lvl then
-    ACC[ccid].Lvl = sln[1].Lvl
-    ACC[ccid].LvlPrc = sln[1].LvlPrc
+  --[[
+-- update SkillBar Slots --
+  if (self.Companions.MinSkillBarSlot == 0) or (self.Companions.MaxSkillBarSlot == 0) then
+    self.Companions.MinSkillBarSlot, self.Companions.MaxSkillBarSlot = GetAssignableAbilityBarStartAndEndSlots()
   end
---]]
+  local hotbar = ACC[ccid].SkillBar
+  for slotIndex = self.Companions.MinSkillBarSlot, self.Companions.MaxSkillBarSlot do
+    local abilityId = GetSlotBoundId(slotIndex, HOTBAR_CATEGORY_COMPANION)
+    hotbar[slotIndex] = abilityId
+    --local abilityName = GetAbilityName(abilityId)
+    --d(zo_strformat("Slot:<<1>> AbilId:<<2>> [<<3>>]", slotIndex, abilityId, abilityName))
+    --d(zo_strformat("Hotbar [<<1>>] = <<2>>", slotIndex, hotbar[slotIndex]))
+  end
+  --]]
 ---
 end -- UpdActiveCompanionData end
 
@@ -1268,6 +1275,34 @@ function WPamA.OnCompanionExpGain(event, companionId, level, previousExperience,
   local Modes = { [29] = true, [32] = true, [36] = true, [39] = true, [40] = true, [46] = true }
   if (m == 32) or ( Modes[m] and (oldLvl ~= ACC[ccid].Lvl) ) then WPamA:UpdWindowInfo() end
 end -- OnCompanionExpGain end
+
+function WPamA.OnCompanionSkillBarUpdate(event, actionSlotIndex, hotbarCategory) --!!
+--EVENT_HOTBAR_SLOT_STATE_UPDATED (luaindex actionSlotIndex, HotBarCategory hotbarCategory)
+  if hotbarCategory ~= HOTBAR_CATEGORY_COMPANION then return end
+  if not HasActiveCompanion() then return end
+  --local sceneName = SCENE_MANAGER.currentScene:GetName()
+  --if sceneName ~= "companionSkillsKeyboard" then return end
+  local ccid = WPamA.Companions.ActiveCompanionId
+  if ccid == 0 then
+    local companionId = GetActiveCompanionDefId()
+    ccid = WPamA.Companions.Iterators.I[companionId]
+    if not ccid then return end
+  end
+--
+  local ACC = WPamA.SV_Main.Companions
+  --if not ACC[ccid].SkillBar then ACC[ccid].SkillBar = {} end
+  local abilityId = GetSlotBoundId(actionSlotIndex, hotbarCategory)
+  ACC[ccid].SkillBar[actionSlotIndex] = abilityId
+     --[[
+     d("-= HOTBAR SLOT STATE UPDATED =-")
+     local aid = ACC[ccid].SkillBar[actionSlotIndex]
+     local abilityName = GetAbilityName(aid)
+     d(zo_strformat("Slot:<<1>> AbId:<<2>> [<<3>>]", actionSlotIndex, aid, abilityName))
+     --]]
+--
+  --local m = WPamA.SV_Main.ShowMode
+  --if m == ?? then WPamA:UpdWindowInfo() end
+end -- OnCompanionSkillBarUpdate end
 
 function WPamA.OnCompanionSkillLineUpdate(event, skillLineId, ...)
 --EVENT_COMPANION_SKILL_LINE_ADDED (*integer* _skillLineId_)

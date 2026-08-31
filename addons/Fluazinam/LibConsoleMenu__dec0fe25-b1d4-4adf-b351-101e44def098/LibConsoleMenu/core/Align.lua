@@ -85,14 +85,17 @@ function LCM.ResolveRowAlign(setting, panel)
 	return align, LCM.AlignIndentPx(align)
 end
 
--- Header / section: same precedence as rows. Returns align, indentPx.
-function LCM.ResolveHeaderAlign(align, setting, panel)
+-- List section title: same precedence as rows. Returns align, indentPx.
+function LCM.ResolveSectionAlign(align, setting, panel)
 	if align == nil then
 		align = GetPageChildrenAlign(setting, panel)
 	end
 	align = LCM.NormalizeAlign(align)
 	return align, LCM.AlignIndentPx(align)
 end
+
+-- Legacy alias.
+LCM.ResolveHeaderAlign = LCM.ResolveSectionAlign
 
 -- Re-anchor a full-width Name label for center / leftIndent / leftFlush.
 -- Prefer RootSpacer (ZO_GAMEPAD_CONTENT_WIDTH) — same as stock FullWidthLabel /

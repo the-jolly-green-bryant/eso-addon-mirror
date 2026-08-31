@@ -127,7 +127,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Potent Nirncrux Alert - Loot Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Potent-Nirncrux-Alert---Loot-Alert__3487) | notnear | PC / Mac | 2.0.2 |
 | [Potion Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/Potion-Alert__834ff723-3c30-4778-855c-4431d3a2f040) | user562x | Console | — |
 | [Potion Cooldown Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/partdark/Potion-Cooldown-Tracker__4122) | partdark | PC / Mac | 1.3.3 |
-| [Potion Maker (for Alchemy Crafting)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/facit/Potion-Maker-for-Alchemy-Crafting__405) | facit | PC / Mac | 5.10.3 |
+| [Potion Maker (for Alchemy Crafting)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/facit/Potion-Maker-for-Alchemy-Crafting__405) | facit | PC / Mac | 5.11.0 |
 | [Potion Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kamaros/Potion-Reminder__2768) | Kamaros | PC / Mac | 1.2.0 |
 | [Potion Taken Sound Fix & Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trader08/Potion-Taken-Sound-Fix-Alerts__2463) | Trader08 | PC / Mac | 1.10 |
 | [Power Lash Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Power-Lash-Tracker__32111121-29be-4447-ba40-3c064d28680e) | Vixen_Hunny | Console | — |

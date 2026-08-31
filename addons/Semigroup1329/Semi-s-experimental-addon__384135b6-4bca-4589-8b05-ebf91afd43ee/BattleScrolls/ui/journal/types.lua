@@ -182,6 +182,9 @@ journal.StatIcons = {
     AOE = "EsoUI/Art/Icons/scribing_primary_multihit.dds",
     SINGLE_TARGET = "EsoUI/Art/Icons/scribing_tertiary_vulnerability.dds",
 
+    -- Ultimate
+    HEROISM = "EsoUI/Art/Icons/scribing_tertiary_heroism.dds",
+
     -- Deaths
     DEATH = "EsoUI/Art/ZoneStories/completionTypeIcon_groupBoss.dds",
 

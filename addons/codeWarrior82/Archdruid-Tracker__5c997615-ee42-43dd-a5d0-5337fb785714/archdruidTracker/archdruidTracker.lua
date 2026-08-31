@@ -6,6 +6,7 @@ local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
 local procTime = 15
 local vulnTime = 7
+local isMenuOpen = false
 
 archdruidTracker = {}
 
@@ -151,11 +152,13 @@ end
 
 --when UI opens
 local function onMenuOpened()
+	isMenuOpen = true
     archAddonText:SetHidden(true)
 end
 
 --when UI closes
 local function onMenuClosed()
+	isMenuOpen = false
     if archdruidTracker.savedVariables.trackArch then
         archAddonText:SetHidden(false)
     end
@@ -182,7 +185,7 @@ end
 --change icon anchor to move text around the screen
 local function setAnchorIcon(x, y)  
     archAddonText:SetHidden(false)
-    zo_callLater(function () archAddonText:SetHidden(true) end, 2000)
+	zo_callLater(function () if isMenuOpen == true then archAddonText:SetHidden(true) end end, 2000)
     archAddonText:ClearAnchors()
     archAddonText:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end
@@ -295,6 +298,11 @@ local function onAddOnLoaded(event, name)
 
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+
+	--notify if tracking is disabled
+	if not archdruidTracker.savedVariables.trackArch then
+		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+	end
 
     --load saved variables
     archdruidTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("adtAddonVars", 1, "Settings", archdruidTracker.defaults, GetUnitName("player"))

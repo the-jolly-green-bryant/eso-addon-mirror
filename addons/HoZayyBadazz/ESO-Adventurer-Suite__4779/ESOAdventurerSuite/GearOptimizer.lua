@@ -63,8 +63,10 @@ local SLOT_LABELS = {
     [EQUIP_SLOT_NECK] = "Neck",
     [EQUIP_SLOT_RING1] = "Ring 1",
     [EQUIP_SLOT_RING2] = "Ring 2",
-    [EQUIP_SLOT_MAIN_HAND] = "Front Bar",
-    [EQUIP_SLOT_BACKUP_MAIN] = "Back Bar",
+    [EQUIP_SLOT_MAIN_HAND] = "Front Main Hand",
+    [EQUIP_SLOT_OFF_HAND] = "Front Off Hand",
+    [EQUIP_SLOT_BACKUP_MAIN] = "Back Main Hand",
+    [EQUIP_SLOT_BACKUP_OFF] = "Back Off Hand",
 }
 
 local function itemName(link)
@@ -133,15 +135,36 @@ end
 
 function G:GetProfile()
     local classId = safeNumber(GetUnitClassId, 0, "player")
-    local mag = safeNumber(GetUnitPower, 0, "player", POWERTYPE_MAGICKA)
-    local stam = safeNumber(GetUnitPower, 0, "player", POWERTYPE_STAMINA)
+    local magCurrent, magMax = safe(GetUnitPower, 0, "player", POWERTYPE_MAGICKA)
+    local stamCurrent, stamMax = safe(GetUnitPower, 0, "player", POWERTYPE_STAMINA)
+    local mag = tonumber(magMax) or tonumber(magCurrent) or 0
+    local stam = tonumber(stamMax) or tonumber(stamCurrent) or 0
     local magicka = mag >= stam
+    local role = EPC.Role and type(EPC.Role.GetRole) == "function" and EPC.Role:GetRole() or "DAMAGE"
+    local metaKey = EPC.EndgameMeta and type(EPC.EndgameMeta.GetProfileKey) == "function" and EPC.EndgameMeta:GetProfileKey(classId, magicka, role) or nil
+    local metaLabel = EPC.EndgameMeta and type(EPC.EndgameMeta.GetProfileLabel) == "function" and EPC.EndgameMeta:GetProfileLabel(classId, magicka, role) or nil
     return {
-        id = (classId == 2 and magicka) and "MAG_SORC_PVE" or (magicka and "MAGICKA_PVE" or "STAMINA_PVE"),
+        id = metaKey or (magicka and "MAGICKA_PVE" or "STAMINA_PVE"),
+        metaKey = metaKey,
         classId = classId,
         magicka = magicka,
-        label = (classId == 2 and magicka) and "Magicka Sorcerer PvE Endgame" or (magicka and "Magicka PvE Endgame" or "Stamina PvE Endgame"),
+        role = role,
+        label = metaLabel or (role == "TANK" and "PvE Tank" or role == "HEALER" and "PvE Healer" or (magicka and "Magicka PvE DPS" or "Stamina PvE DPS")),
     }
+end
+
+function G:GetMetaTemplate(profile, presetKey)
+    if not EPC.EndgameMeta or type(EPC.EndgameMeta.GetTemplate) ~= "function" then return nil end
+    return EPC.EndgameMeta:GetTemplate(profile or self:GetProfile(), presetKey or select(1, self:GetPreset()))
+end
+
+function G:GetMetaSummaryLines()
+    local profile = self:GetProfile()
+    local presetKey = select(1, self:GetPreset())
+    if EPC.EndgameMeta and type(EPC.EndgameMeta.GetSummaryLines) == "function" then
+        return EPC.EndgameMeta:GetSummaryLines(profile, presetKey)
+    end
+    return {"Live endgame meta snapshot unavailable."}
 end
 
 function G:GetTargetSets()
@@ -458,15 +481,498 @@ function G:EquipBestArmorWeight(weightKey)
     return true
 end
 
+
+local function metaSetMatches(actual, wanted)
+    if EPC.EndgameMeta and type(EPC.EndgameMeta.SameSet) == "function" then
+        return EPC.EndgameMeta:SameSet(actual, wanted)
+    end
+    return same(actual, wanted)
+end
+
+local function metaArmorTypeMatches(link, wanted)
+    wanted = string.upper(tostring(wanted or ""))
+    if wanted == "" then return true end
+    local armorType = safeNumber(GetItemLinkArmorType, ARMORTYPE_NONE or 0, link)
+    if wanted == "LIGHT" then return armorType == (ARMORTYPE_LIGHT or -1) end
+    if wanted == "MEDIUM" then return armorType == (ARMORTYPE_MEDIUM or -2) end
+    if wanted == "HEAVY" then return armorType == (ARMORTYPE_HEAVY or -3) end
+    return true
+end
+
+local function metaWeaponTypeMatches(link, wanted)
+    wanted = string.upper(tostring(wanted or ""))
+    if wanted == "" then return true end
+    local wt = safeNumber(GetItemLinkWeaponType, WEAPONTYPE_NONE or 0, link)
+    local equipType = safeNumber(GetItemLinkEquipType, EQUIP_TYPE_INVALID or 0, link)
+    if wanted == "LIGHTNING STAFF" then return wt == (WEAPONTYPE_LIGHTNING_STAFF or -1) end
+    if wanted == "INFERNO STAFF" or wanted == "FIRE STAFF" then return wt == (WEAPONTYPE_FIRE_STAFF or -2) end
+    if wanted == "FROST STAFF" or wanted == "ICE STAFF" then return wt == (WEAPONTYPE_FROST_STAFF or -3) end
+    if wanted == "RESTORATION STAFF" or wanted == "HEALING STAFF" then return wt == (WEAPONTYPE_HEALING_STAFF or -4) end
+    if wanted == "GREATSWORD" then return wt == (WEAPONTYPE_TWO_HANDED_SWORD or -5) end
+    if wanted == "BATTLE AXE" then return wt == (WEAPONTYPE_TWO_HANDED_AXE or -6) end
+    if wanted == "MAUL" then return wt == (WEAPONTYPE_TWO_HANDED_HAMMER or -7) end
+    if wanted == "DAGGER" then return wt == (WEAPONTYPE_DAGGER or -8) end
+    if wanted == "SWORD" then return wt == (WEAPONTYPE_SWORD or WEAPONTYPE_ONE_HANDED_SWORD or -9) end
+    if wanted == "AXE" then return wt == (WEAPONTYPE_AXE or WEAPONTYPE_ONE_HANDED_AXE or -10) end
+    if wanted == "MACE" or wanted == "HAMMER" then return wt == (WEAPONTYPE_HAMMER or WEAPONTYPE_ONE_HANDED_HAMMER or -11) end
+    if wanted == "BOW" then return wt == (WEAPONTYPE_BOW or -12) end
+    if wanted == "SHIELD" then
+        return wt == (WEAPONTYPE_SHIELD or -13) or equipType == (EQUIP_TYPE_OFF_HAND or -14)
+    end
+    return true
+end
+
+local function metaTraitMatches(link, wanted)
+    wanted = string.upper(tostring(wanted or ""))
+    if wanted == "" or type(GetItemLinkTraitInfo) ~= "function" then return true end
+    local trait = safeNumber(GetItemLinkTraitInfo, ITEM_TRAIT_TYPE_NONE or 0, link)
+    local armorType = safeNumber(GetItemLinkArmorType, ARMORTYPE_NONE or 0, link)
+    local wt = safeNumber(GetItemLinkWeaponType, WEAPONTYPE_NONE or 0, link)
+    local expected = nil
+    if wanted == "INFUSED" then
+        if wt ~= (WEAPONTYPE_NONE or 0) then expected = ITEM_TRAIT_TYPE_WEAPON_INFUSED
+        elseif armorType ~= (ARMORTYPE_NONE or 0) then expected = ITEM_TRAIT_TYPE_ARMOR_INFUSED
+        else expected = ITEM_TRAIT_TYPE_JEWELRY_INFUSED end
+    elseif wanted == "DIVINES" then expected = ITEM_TRAIT_TYPE_ARMOR_DIVINES
+    elseif wanted == "STURDY" then expected = ITEM_TRAIT_TYPE_ARMOR_STURDY
+    elseif wanted == "REINFORCED" then expected = ITEM_TRAIT_TYPE_ARMOR_REINFORCED
+    elseif wanted == "BLOODTHIRSTY" then expected = ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY
+    elseif wanted == "ARCANE" then expected = ITEM_TRAIT_TYPE_JEWELRY_ARCANE
+    elseif wanted == "HEALTHY" then expected = ITEM_TRAIT_TYPE_JEWELRY_HEALTHY
+    elseif wanted == "TRIUNE" then expected = ITEM_TRAIT_TYPE_JEWELRY_TRIUNE
+    elseif wanted == "PRECISE" then expected = ITEM_TRAIT_TYPE_WEAPON_PRECISE
+    elseif wanted == "CHARGED" then expected = ITEM_TRAIT_TYPE_WEAPON_CHARGED
+    elseif wanted == "NIRNHONED" then expected = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
+    elseif wanted == "POWERED" then expected = ITEM_TRAIT_TYPE_WEAPON_POWERED
+    elseif wanted == "DECISIVE" then expected = ITEM_TRAIT_TYPE_WEAPON_DECISIVE
+    elseif wanted == "DEFENDING" then expected = ITEM_TRAIT_TYPE_WEAPON_DEFENDING
+    end
+    return expected == nil or trait == expected
+end
+
+local function metaDestinationForLink(link)
+    if not link or link == "" then return nil end
+    local equipType = safeNumber(GetItemLinkEquipType, EQUIP_TYPE_INVALID or 0, link)
+    return EQUIP_TYPE_TO_SLOT[equipType]
+end
+
+function G:ScoreMetaCandidate(bag, slot, requirement, wornDest)
+    if type(requirement) ~= "table" then return nil end
+    local _,_,_,meets,locked,equipType,_,fq,dq = safe(GetItemInfo,nil,bag,slot)
+    if not equipType or equipType == EQUIP_TYPE_INVALID or meets == false then return nil end
+    if bag ~= BAG_WORN and locked == true then return nil end
+    if bag ~= BAG_WORN and type(IsItemPlayerLocked) == "function" and safe(IsItemPlayerLocked,false,bag,slot)==true then return nil end
+    local link = safe(GetItemLink,"",bag,slot,LINK_STYLE_DEFAULT or 0)
+    if link == "" then return nil end
+    local setName = setNameFor(link)
+    if not metaSetMatches(setName, requirement.set) then return nil end
+
+    local score = effectiveItemLevel(bag,slot) * 25 + (tonumber(fq) or tonumber(dq) or 0) * 45 + 1800
+    if requirement.perfectedPreferred and string.find(lower(itemName(link)), "perfected", 1, true) then score = score + 350 end
+    if requirement.armor then score = score + (metaArmorTypeMatches(link, requirement.armor) and 260 or -90) end
+    if requirement.weapon then score = score + (metaWeaponTypeMatches(link, requirement.weapon) and 620 or -500) end
+    if requirement.trait then score = score + (metaTraitMatches(link, requirement.trait) and 320 or 0) end
+    if bag == BAG_WORN then score = score + 12 end
+
+    local dest = wornDest or metaDestinationForLink(link)
+    return {
+        bag = bag,
+        slot = slot,
+        dest = dest,
+        worn = bag == BAG_WORN,
+        link = link,
+        setName = setName,
+        score = score,
+        requirement = requirement,
+        key = tostring(bag) .. ":" .. tostring(slot),
+    }
+end
+
+function G:CollectMetaCandidates(requirement, kind)
+    local out = {}
+    local function add(bag, slot, dest)
+        local c = self:ScoreMetaCandidate(bag, slot, requirement, dest)
+        if not c then return end
+        if kind == "BODY" then
+            local valid = false
+            for _,bodyDest in ipairs(BODY_SLOTS) do if c.dest == bodyDest then valid = true break end end
+            if not valid then return end
+        elseif kind == "NECK" then
+            if safeNumber(GetItemLinkEquipType, EQUIP_TYPE_INVALID or 0, c.link) ~= (EQUIP_TYPE_NECK or -1) then return end
+            c.dest = EQUIP_SLOT_NECK
+        elseif kind == "RING" then
+            if safeNumber(GetItemLinkEquipType, EQUIP_TYPE_INVALID or 0, c.link) ~= (EQUIP_TYPE_RING or -1) then return end
+        elseif kind == "FRONT" then
+            if not metaWeaponTypeMatches(c.link, requirement.weapon) then return end
+            c.dest = EQUIP_SLOT_MAIN_HAND
+        elseif kind == "FRONT_OFF" then
+            if not metaWeaponTypeMatches(c.link, requirement.weapon) then return end
+            c.dest = EQUIP_SLOT_OFF_HAND
+        elseif kind == "BACK" then
+            if not metaWeaponTypeMatches(c.link, requirement.weapon) then return end
+            c.dest = EQUIP_SLOT_BACKUP_MAIN
+        elseif kind == "BACK_OFF" then
+            if not metaWeaponTypeMatches(c.link, requirement.weapon) then return end
+            c.dest = EQUIP_SLOT_BACKUP_OFF
+        end
+        out[#out+1] = c
+    end
+
+    if kind == "BODY" then
+        for _,dest in ipairs(BODY_SLOTS) do add(BAG_WORN,dest,dest) end
+    elseif kind == "NECK" then
+        add(BAG_WORN,EQUIP_SLOT_NECK,EQUIP_SLOT_NECK)
+    elseif kind == "RING" then
+        add(BAG_WORN,EQUIP_SLOT_RING1,EQUIP_SLOT_RING1)
+        add(BAG_WORN,EQUIP_SLOT_RING2,EQUIP_SLOT_RING2)
+    elseif kind == "FRONT" then
+        add(BAG_WORN,EQUIP_SLOT_MAIN_HAND,EQUIP_SLOT_MAIN_HAND)
+    elseif kind == "FRONT_OFF" then
+        add(BAG_WORN,EQUIP_SLOT_OFF_HAND,EQUIP_SLOT_OFF_HAND)
+    elseif kind == "BACK" then
+        add(BAG_WORN,EQUIP_SLOT_BACKUP_MAIN,EQUIP_SLOT_BACKUP_MAIN)
+    elseif kind == "BACK_OFF" then
+        add(BAG_WORN,EQUIP_SLOT_BACKUP_OFF,EQUIP_SLOT_BACKUP_OFF)
+    end
+
+    local count = safeNumber(GetBagSize, 0, BAG_BACKPACK)
+    for slot=0,count-1 do add(BAG_BACKPACK,slot,nil) end
+    table.sort(out,function(a,b) return a.score > b.score end)
+    return out
+end
+
+local function bestMetaForDest(candidates, dest)
+    local best = nil
+    for _,c in ipairs(candidates or {}) do
+        if c.dest == dest and (not best or c.score > best.score) then best = c end
+    end
+    return best
+end
+
+local function appendMissing(missing, text)
+    if text and text ~= "" then missing[#missing+1] = text end
+end
+
+local function appendUnique(list, seen, text)
+    text = tostring(text or "")
+    if text == "" or seen[text] then return end
+    seen[text] = true
+    list[#list+1] = text
+end
+
+local function addMetaCandidateImprovements(candidate, requirement, improvements, seen)
+    if not candidate or not requirement then return end
+    local setLabel = tostring(requirement.set or candidate.setName or "Item")
+    if requirement.armor and not metaArmorTypeMatches(candidate.link, requirement.armor) then
+        appendUnique(improvements,seen,setLabel .. ": prefer " .. tostring(requirement.armor) .. " armor weight")
+    end
+    if requirement.trait and not metaTraitMatches(candidate.link, requirement.trait) then
+        appendUnique(improvements,seen,setLabel .. ": transmute/reconstruct to " .. tostring(requirement.trait))
+    end
+    if requirement.perfectedPreferred and not string.find(lower(itemName(candidate.link)), "perfected", 1, true) then
+        appendUnique(improvements,seen,setLabel .. ": perfected version is the endgame target")
+    end
+end
+
+function G:BuildMetaBodySelection(template)
+    local selected, missing = {}, {}
+    local body = template and template.body or {}
+    if #body == 0 then return selected, missing, 0, 0 end
+
+    local bulkIndex, bulkReq = nil, nil
+    for i,req in ipairs(body) do
+        if (tonumber(req.count) or 1) > 1 and (not bulkReq or (tonumber(req.count) or 1) > (tonumber(bulkReq.count) or 1)) then
+            bulkIndex, bulkReq = i, req
+        end
+    end
+    local singletons = {}
+    for i,req in ipairs(body) do
+        if i ~= bulkIndex then
+            singletons[#singletons+1] = {req=req,candidates=self:CollectMetaCandidates(req,"BODY")}
+        end
+    end
+    local bulkCandidates = bulkReq and self:CollectMetaCandidates(bulkReq,"BODY") or {}
+
+    local bestAssign, bestScore = {}, -999999999
+    local function evaluate(assign, used, baseScore)
+        local coverage = 0
+        for _,dest in ipairs(BODY_SLOTS) do
+            if not used[dest] and bestMetaForDest(bulkCandidates,dest) then coverage = coverage + 1 end
+        end
+        local score = baseScore + coverage * 5000
+        if score > bestScore then
+            bestScore = score
+            bestAssign = {}
+            for k,v in pairs(assign) do bestAssign[k] = v end
+        end
+    end
+    local function walk(index, assign, used, score)
+        if index > #singletons then evaluate(assign,used,score); return end
+        local entry = singletons[index]
+        local tried = false
+        local bestByDest = {}
+        for _,c in ipairs(entry.candidates or {}) do
+            if not used[c.dest] and (not bestByDest[c.dest] or c.score > bestByDest[c.dest].score) then bestByDest[c.dest] = c end
+        end
+        for dest,c in pairs(bestByDest) do
+            tried = true
+            used[dest] = true
+            assign[index] = c
+            walk(index+1,assign,used,score+c.score+8000)
+            assign[index] = nil
+            used[dest] = nil
+        end
+        -- Also consider skipping a conflicting singleton so the solver can choose
+        -- the best partial meta combination when two special pieces share a slot.
+        walk(index+1,assign,used,score-8000)
+    end
+    walk(1,{}, {},0)
+
+    local matched, total = 0, 0
+    local used = {}
+    for i,entry in ipairs(singletons) do
+        total = total + (tonumber(entry.req.count) or 1)
+        local c = bestAssign[i]
+        if c then
+            selected[c.dest] = c
+            used[c.dest] = true
+            matched = matched + 1
+        else
+            appendMissing(missing, tostring(entry.req.set) .. " body piece")
+        end
+    end
+
+    if bulkReq then
+        local wanted = tonumber(bulkReq.count) or 1
+        total = total + wanted
+        local got = 0
+        for _,dest in ipairs(BODY_SLOTS) do
+            if not used[dest] and got < wanted then
+                local c = bestMetaForDest(bulkCandidates,dest)
+                if c then
+                    selected[dest] = c
+                    used[dest] = true
+                    got = got + 1
+                    matched = matched + 1
+                end
+            end
+        end
+        if got < wanted then appendMissing(missing, string.format("%s body: %d more piece%s", tostring(bulkReq.set), wanted-got, (wanted-got)==1 and "" or "s")) end
+    end
+    return selected, missing, matched, total
+end
+
+function G:BuildMetaPlan(template)
+    local plan, missing, improvements, improvementSeen = {}, {}, {}, {}
+    local matched, total = 0, 0
+    if type(template) ~= "table" then return plan, missing, matched, total, improvements end
+
+    local bodySelected, bodyMissing, bodyMatched, bodyTotal = self:BuildMetaBodySelection(template)
+    matched, total = matched + bodyMatched, total + bodyTotal
+    for _,text in ipairs(bodyMissing) do missing[#missing+1] = text end
+    for dest,c in pairs(bodySelected) do
+        if c then
+            addMetaCandidateImprovements(c,c.requirement,improvements,improvementSeen)
+            if c.bag ~= BAG_WORN then c.dest=dest; plan[#plan+1]=c end
+        end
+    end
+
+    if template.neck then
+        total = total + 1
+        local c = self:CollectMetaCandidates(template.neck,"NECK")[1]
+        if c then
+            matched = matched + 1
+            addMetaCandidateImprovements(c,template.neck,improvements,improvementSeen)
+            if c.bag ~= BAG_WORN then c.dest=EQUIP_SLOT_NECK; plan[#plan+1]=c end
+        else appendMissing(missing, tostring(template.neck.set) .. " necklace") end
+    end
+
+    local ringReqs = template.rings or {}
+    if #ringReqs > 0 then
+        total = total + #ringReqs
+        local pools = {}
+        for i,req in ipairs(ringReqs) do pools[i] = self:CollectMetaCandidates(req,"RING") end
+        local bestPair, bestPairScore = nil, -999999999
+        if #ringReqs == 2 then
+            for _,a in ipairs(pools[1]) do
+                for _,b in ipairs(pools[2]) do
+                    if a.key ~= b.key then
+                        local bonus = 0
+                        if a.worn and b.worn and a.dest ~= b.dest then bonus = 100 end
+                        local score = a.score + b.score + bonus
+                        if score > bestPairScore then bestPairScore=score; bestPair={a,b} end
+                    end
+                end
+            end
+        end
+        if bestPair then
+            matched = matched + 2
+            local occupied = {}
+            for _,c in ipairs(bestPair) do if c.worn and c.dest then occupied[c.dest]=true end end
+            local open = {}
+            for _,dest in ipairs({EQUIP_SLOT_RING1,EQUIP_SLOT_RING2}) do if not occupied[dest] then open[#open+1]=dest end end
+            local oi=1
+            for i,c in ipairs(bestPair) do
+                addMetaCandidateImprovements(c,ringReqs[i],improvements,improvementSeen)
+                if not c.worn then c.dest=open[oi] or EQUIP_SLOT_RING1; oi=oi+1; plan[#plan+1]=c end
+            end
+        else
+            for i,req in ipairs(ringReqs) do
+                local c = pools[i] and pools[i][1] or nil
+                if c then
+                    matched = matched + 1
+                    addMetaCandidateImprovements(c,req,improvements,improvementSeen)
+                    if c.bag ~= BAG_WORN then
+                        c.dest = i == 1 and EQUIP_SLOT_RING1 or EQUIP_SLOT_RING2
+                        plan[#plan+1]=c
+                    end
+                else appendMissing(missing, tostring(req.set) .. " ring") end
+            end
+        end
+    end
+
+    local function chooseWeaponPair(mainReq, offReq, mainKind, offKind, mainDest, offDest, barLabel)
+        if not mainReq and not offReq then return end
+        if mainReq and offReq then
+            total = total + 2
+            local mainPool = self:CollectMetaCandidates(mainReq,mainKind)
+            local offPool = self:CollectMetaCandidates(offReq,offKind)
+            local bestMain,bestOff,bestScore = nil,nil,-999999999
+            for _,a in ipairs(mainPool) do
+                for _,b in ipairs(offPool) do
+                    if a.key ~= b.key then
+                        local score = (a.score or 0) + (b.score or 0)
+                        if a.worn and a.dest == mainDest then score = score + 100 end
+                        if b.worn and b.dest == offDest then score = score + 100 end
+                        if score > bestScore then bestScore=score; bestMain=a; bestOff=b end
+                    end
+                end
+            end
+            -- If only one side is owned, still count/equip that side and report the other as missing.
+            if not bestMain and mainPool[1] then bestMain = mainPool[1] end
+            if not bestOff then
+                for _,candidate in ipairs(offPool) do
+                    if not bestMain or candidate.key ~= bestMain.key then bestOff = candidate break end
+                end
+            end
+            if bestMain then
+                matched = matched + 1
+                addMetaCandidateImprovements(bestMain,mainReq,improvements,improvementSeen)
+                if not (bestMain.worn and bestMain.dest == mainDest) then bestMain.dest=mainDest; plan[#plan+1]=bestMain end
+            else
+                appendMissing(missing,tostring(mainReq.set) .. " " .. tostring(mainReq.weapon or (barLabel .. " main hand")))
+            end
+            if bestOff then
+                matched = matched + 1
+                addMetaCandidateImprovements(bestOff,offReq,improvements,improvementSeen)
+                if not (bestOff.worn and bestOff.dest == offDest) then bestOff.dest=offDest; plan[#plan+1]=bestOff end
+            else
+                appendMissing(missing,tostring(offReq.set) .. " " .. tostring(offReq.weapon or (barLabel .. " off hand")))
+            end
+            return
+        end
+
+        local req = mainReq or offReq
+        local kind = mainReq and mainKind or offKind
+        local dest = mainReq and mainDest or offDest
+        total = total + 1
+        local c = self:CollectMetaCandidates(req,kind)[1]
+        if c then
+            matched = matched + 1
+            addMetaCandidateImprovements(c,req,improvements,improvementSeen)
+            if not (c.worn and c.dest == dest) then c.dest=dest; plan[#plan+1]=c end
+        else
+            appendMissing(missing,tostring(req.set) .. " " .. tostring(req.weapon or (barLabel .. " weapon")))
+        end
+    end
+
+    chooseWeaponPair(template.frontWeapon,template.frontOffhand,"FRONT","FRONT_OFF",EQUIP_SLOT_MAIN_HAND,EQUIP_SLOT_OFF_HAND,"front")
+    chooseWeaponPair(template.backWeapon,template.backOffhand,"BACK","BACK_OFF",EQUIP_SLOT_BACKUP_MAIN,EQUIP_SLOT_BACKUP_OFF,"back")
+
+    table.sort(plan,function(a,b) return (a.score or 0) > (b.score or 0) end)
+    return plan, missing, matched, total, improvements
+end
+
+function G:PrintMetaMissing(template, missing, matched, total, improvements)
+    if not EPC or not EPC.Print then return end
+    local snapshot = EPC.EndgameMeta and EPC.EndgameMeta.SNAPSHOT or {}
+    EPC:Print(string.format("BEST ENDGAME META: %s | %d/%d owned", tostring(template and template.label or "ENDGAME"), tonumber(matched) or 0, tonumber(total) or 0))
+    if missing and #missing > 0 then
+        EPC:Print("Missing from worn + backpack:")
+        for _,line in ipairs(missing) do EPC:Print("  - " .. tostring(line)) end
+    else
+        EPC:Print("All curated meta requirements are present in worn + backpack gear.")
+    end
+    if improvements and #improvements > 0 then
+        EPC:Print("Owned-piece improvements toward the exact meta target:")
+        for _,line in ipairs(improvements) do EPC:Print("  - " .. tostring(line)) end
+    end
+end
+
+
+function G:ReportMetaVerifiedChanges(beforeLinks, requested, template)
+    local confirmed = 0
+    for _,item in ipairs(requested or {}) do
+        local before = beforeLinks[item.dest] or ""
+        local after = safe(GetItemLink,"",BAG_WORN,item.dest,LINK_STYLE_DEFAULT or 0)
+        if after ~= "" and after ~= before then confirmed = confirmed + 1 end
+    end
+    local remainingPlan,missing,matched,total,improvements = self:BuildMetaPlan(template)
+    self:NotifyResult(string.format("BEST ENDGAME: %d/%d change%s confirmed | Meta gear owned %d/%d", confirmed, #(requested or {}), #(requested or {})==1 and "" or "s", matched, total), confirmed > 0 or (#missing==0 and #remainingPlan==0))
+    self:PrintMetaMissing(template,missing,matched,total,improvements)
+    if #remainingPlan > 0 and EPC and EPC.Print then EPC:Print("Some owned meta pieces are still not equipped. Run BEST ENDGAME again after ESO finishes inventory updates.") end
+    if EPC and EPC.RequestRefresh then EPC:RequestRefresh("endgame-meta-verified") end
+end
+
 function G:EquipBestRecommended()
     if safe(IsUnitInCombat,false,"player")==true then self:NotifyResult("Endgame Gear: leave combat before changing equipment.", false); return false end
     if type(RequestEquipItem)~="function" then self:NotifyResult("Endgame Gear: ESO's equipment API is unavailable.", false); return false end
     local profile=self:GetProfile()
-    local targets=self:GetTargetSets()
     local presetKey,preset = self:GetPreset()
+    local template = self:GetMetaTemplate(profile,presetKey)
+
+    -- Curated live-meta path. This is intentionally local/versioned: ESO addons
+    -- cannot query websites at runtime, so the snapshot ships with the addon.
+    if template then
+        local plan,missing,matched,total,improvements = self:BuildMetaPlan(template)
+        self:PrintMetaMissing(template,missing,matched,total,improvements)
+        if #plan==0 then
+            if #missing==0 then
+                self:NotifyResult(string.format("BEST ENDGAME: current worn gear already matches the owned %s template.", tostring(template.label or preset.label)), true)
+            else
+                self:NotifyResult("BEST ENDGAME: no owned meta upgrades are available to equip. Missing pieces were printed in chat.", false)
+            end
+            return #missing==0
+        end
+
+        local beforeLinks = {}
+        local requested = {}
+        local equipped=0
+        for _,item in ipairs(plan) do
+            beforeLinks[item.dest] = safe(GetItemLink,"",BAG_WORN,item.dest,LINK_STYLE_DEFAULT or 0)
+            if pcall(RequestEquipItem,item.bag,item.slot,BAG_WORN,item.dest) then
+                equipped=equipped+1
+                requested[#requested+1] = {dest=item.dest, expected=item.link}
+            end
+        end
+        if equipped>0 then
+            local snapshot = EPC.EndgameMeta and EPC.EndgameMeta.SNAPSHOT or {}
+            self:NotifyResult(string.format("BEST ENDGAME: requested %d meta change%s...", equipped, equipped==1 and "" or "s"), true)
+            local verify = function()
+                self:ReportMetaVerifiedChanges(beforeLinks,requested,template)
+            end
+            if type(zo_callLater) == "function" then zo_callLater(verify,900) else verify() end
+            return true
+        end
+        self:NotifyResult("BEST ENDGAME: ESO did not accept the meta equipment changes.", false)
+        return false
+    end
+
+    -- Generic fallback for profiles that do not yet have a curated live template.
+    local targets=self:GetTargetSets()
     local minimumTargets = presetKey == "SOLO" and 1 or 2
     if #targets<minimumTargets then
-        self:NotifyResult("Endgame Gear: configure " .. tostring(minimumTargets) .. " Target Set" .. (minimumTargets == 1 and "" or "s") .. " first so the optimizer can preserve complete set bonuses.", false)
+        self:NotifyResult("Endgame Gear: no curated live template exists for this class/role/preset yet. Configure " .. tostring(minimumTargets) .. " Target Set" .. (minimumTargets == 1 and "" or "s") .. " for the local optimizer.", false)
         return false
     end
     local beforeScore = self:ScoreCurrentLoadout(profile,presetKey)
@@ -501,7 +1007,6 @@ function G:EquipBestRecommended()
     self:NotifyResult("Endgame Gear: ESO did not accept the equipment changes.", false)
     return false
 end
-
 
 local function isWeaponDestination(dest)
     return dest == EQUIP_SLOT_MAIN_HAND or dest == EQUIP_SLOT_OFF_HAND or dest == EQUIP_SLOT_BACKUP_MAIN or dest == EQUIP_SLOT_BACKUP_OFF
@@ -568,41 +1073,123 @@ end
 
 function G:CollectPurchasedActiveAbilities()
     local out = {}
+    local seen = {}
+    local stats = {
+        available = 0,
+        normalPurchased = 0,
+        normalUnresolved = 0,
+        scribedPurchased = 0,
+        scribedUnresolved = 0,
+        scribedDisabled = 0,
+    }
     if type(GetNumSkillTypes) ~= "function" or type(GetNumSkillLines) ~= "function" or type(GetNumSkillAbilities) ~= "function" or type(GetSkillAbilityInfo) ~= "function" then
-        return out
+        return out, stats
     end
+
+    local function add(entry, key)
+        if not entry or not key or seen[key] then return false end
+        local abilityIndex = tonumber(entry.abilityIndex) or 0
+        local abilityId = tonumber(entry.abilityId) or 0
+        if abilityId <= 0 and abilityIndex > 0 and type(GetAbilityIdByIndex) == "function" then
+            abilityId = safeNumber(GetAbilityIdByIndex, 0, abilityIndex)
+            entry.abilityId = abilityId
+        end
+        if tostring(entry.name or "") == "" or abilityId <= 0 then return false end
+        if entry.crafted ~= true and abilityIndex <= 0 then return false end
+        seen[key] = true
+        entry.actionId = entry.crafted == true and (tonumber(entry.craftedAbilityId) or abilityId) or abilityId
+        out[#out+1] = entry
+        stats.available = stats.available + 1
+        if entry.crafted == true then stats.scribedPurchased = stats.scribedPurchased + 1
+        else stats.normalPurchased = stats.normalPurchased + 1 end
+        return true
+    end
+
+    -- Keep the proven pre-Scribing normal-skill enumeration path intact. The
+    -- previous 0.29.10 collector made normal skills depend on the newer crafted
+    -- ability resolution path and could collapse the regular candidate pool to
+    -- zero on live clients. Normal abilities are resolved independently first.
     for skillType=1,safeNumber(GetNumSkillTypes,0) do
         for skillLine=1,safeNumber(GetNumSkillLines,0,skillType) do
-            local count = safeNumber(GetNumSkillAbilities,0,skillType,skillLine)
+            local count=safeNumber(GetNumSkillAbilities,0,skillType,skillLine)
+            local lineId=type(GetSkillLineId)=="function" and safeNumber(GetSkillLineId,0,skillType,skillLine) or 0
+            local lineName=easSkillLineName and easSkillLineName(skillType,skillLine,lineId) or ""
             for skillIndex=1,count do
-                local skipCrafted = type(IsCraftedAbilitySkill) == "function" and safe(IsCraftedAbilitySkill,false,skillType,skillLine,skillIndex) == true
-                if not skipCrafted then
-                    local name,texture,earnedRank,passive,ultimate,purchased,progressionIndex,rank = safe(GetSkillAbilityInfo,nil,skillType,skillLine,skillIndex)
-                    if purchased == true and passive ~= true and name and name ~= "" then
-                        local abilityName = tostring(name)
-                        local abilityIndex = nil
-                        local abilityId = type(GetSkillAbilityId) == "function" and safeNumber(GetSkillAbilityId,0,skillType,skillLine,skillIndex,false) or 0
-                        if progressionIndex and type(GetAbilityProgressionInfo) == "function" and type(GetAbilityProgressionAbilityInfo) == "function" then
-                            local _,morphChoice,currentRank = safe(GetAbilityProgressionInfo,nil,progressionIndex)
-                            local morphedName,_,idx = safe(GetAbilityProgressionAbilityInfo,nil,progressionIndex,tonumber(morphChoice) or 0,tonumber(currentRank) or tonumber(rank) or 1)
-                            if morphedName and morphedName ~= "" then abilityName = tostring(morphedName) end
-                            abilityIndex = tonumber(idx)
+                local crafted=type(IsCraftedAbilitySkill)=="function" and safe(IsCraftedAbilitySkill,false,skillType,skillLine,skillIndex)==true
+                if not crafted then
+                    local name,texture,earnedRank,passive,ultimate,purchased,progressionIndex,rank=safe(GetSkillAbilityInfo,nil,skillType,skillLine,skillIndex)
+                    if purchased==true and passive~=true and name and name~="" then
+                        local abilityName=tostring(name)
+                        local abilityIndex=0
+                        local abilityId=type(GetSkillAbilityId)=="function" and safeNumber(GetSkillAbilityId,0,skillType,skillLine,skillIndex,false) or 0
+                        if progressionIndex and type(GetAbilityProgressionInfo)=="function" and type(GetAbilityProgressionAbilityInfo)=="function" then
+                            local _,morphChoice,currentRank=safe(GetAbilityProgressionInfo,nil,progressionIndex)
+                            local resolvedRank=tonumber(currentRank)
+                            if not resolvedRank or resolvedRank<=0 then resolvedRank=tonumber(rank) or 1 end
+                            local morphedName,_,idx=safe(GetAbilityProgressionAbilityInfo,nil,progressionIndex,tonumber(morphChoice) or 0,resolvedRank)
+                            if morphedName and morphedName~="" then abilityName=tostring(morphedName) end
+                            abilityIndex=tonumber(idx) or 0
                         end
-                        if (not abilityIndex or abilityIndex <= 0) and abilityId > 0 and type(GetAbilityIndex) == "function" then
-                            abilityIndex = safeNumber(GetAbilityIndex,0,abilityId)
+                        if abilityIndex<=0 and abilityId>0 and type(GetAbilityIndex)=="function" then
+                            abilityIndex=safeNumber(GetAbilityIndex,0,abilityId)
                         end
-                        if abilityIndex and abilityIndex > 0 then
-                            out[#out+1] = {
-                                name=abilityName, abilityIndex=abilityIndex, abilityId=abilityId,
-                                ultimate=ultimate == true, skillType=skillType, skillLine=skillLine,
-                            }
+                        if abilityIndex>0 and type(GetAbilityIdByIndex)=="function" then
+                            local liveId=safeNumber(GetAbilityIdByIndex,0,abilityIndex)
+                            if liveId>0 then abilityId=liveId end
+                        end
+                        local key=string.format("normal:%d:%d:%d",tonumber(skillType) or 0,tonumber(skillLine) or 0,tonumber(skillIndex) or 0)
+                        if not add({
+                            name=abilityName, abilityIndex=abilityIndex, abilityId=abilityId,
+                            ultimate=ultimate==true, skillType=skillType, skillLine=skillLine,
+                            skillIndex=skillIndex, skillLineId=lineId, skillLineName=lineName,
+                            progressionIndex=progressionIndex, crafted=false,
+                        },key) then
+                            stats.normalUnresolved=stats.normalUnresolved+1
                         end
                     end
                 end
             end
         end
     end
-    return out
+
+    -- Add Scribed abilities as a second, independent pass. A failure to resolve
+    -- a Grimoire can never suppress or invalidate the normal purchased skills.
+    if type(IsCraftedAbilitySkill)=="function" then
+        for skillType=1,safeNumber(GetNumSkillTypes,0) do
+            for skillLine=1,safeNumber(GetNumSkillLines,0,skillType) do
+                local count=safeNumber(GetNumSkillAbilities,0,skillType,skillLine)
+                local lineId=type(GetSkillLineId)=="function" and safeNumber(GetSkillLineId,0,skillType,skillLine) or 0
+                local lineName=easSkillLineName and easSkillLineName(skillType,skillLine,lineId) or ""
+                for skillIndex=1,count do
+                    if safe(IsCraftedAbilitySkill,false,skillType,skillLine,skillIndex)==true then
+                        local craftedAbilityId=type(GetCraftedAbilitySkillCraftedAbilityId)=="function" and safeNumber(GetCraftedAbilitySkillCraftedAbilityId,0,skillType,skillLine,skillIndex) or 0
+                        local isScribed=craftedAbilityId>0
+                        if isScribed and type(IsCraftedAbilityScribed)=="function" then isScribed=safe(IsCraftedAbilityScribed,false,craftedAbilityId)==true end
+                        local disabled=craftedAbilityId>0 and type(IsCraftedAbilityDisabled)=="function" and safe(IsCraftedAbilityDisabled,false,craftedAbilityId)==true
+                        if isScribed and disabled then
+                            stats.scribedDisabled=stats.scribedDisabled+1
+                        elseif isScribed then
+                            local abilityId=type(GetAbilityIdForCraftedAbilityId)=="function" and safeNumber(GetAbilityIdForCraftedAbilityId,0,craftedAbilityId) or 0
+                            if abilityId<=0 and type(GetCraftedAbilityRepresentativeAbilityId)=="function" then abilityId=safeNumber(GetCraftedAbilityRepresentativeAbilityId,0,craftedAbilityId) end
+                            local abilityIndex=abilityId>0 and type(GetAbilityIndex)=="function" and safeNumber(GetAbilityIndex,0,abilityId) or 0
+                            local abilityName=abilityId>0 and type(GetAbilityName)=="function" and tostring(safe(GetAbilityName,"",abilityId) or "") or ""
+                            if abilityName=="" and type(GetCraftedAbilityDisplayName)=="function" then abilityName=tostring(safe(GetCraftedAbilityDisplayName,"",craftedAbilityId) or "") end
+                            local key="crafted:"..tostring(craftedAbilityId)
+                            if not add({
+                                name=abilityName, abilityIndex=abilityIndex, abilityId=abilityId,
+                                ultimate=false, skillType=skillType, skillLine=skillLine,
+                                skillIndex=skillIndex, skillLineId=lineId, skillLineName=lineName,
+                                crafted=true, craftedAbilityId=craftedAbilityId,
+                            },key) then
+                                stats.scribedUnresolved=stats.scribedUnresolved+1
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return out,stats
 end
 
 local SORC_MAG_PRIORITY = {
@@ -664,9 +1251,15 @@ function G:GetWornBuildContext()
         if w == (WEAPONTYPE_ONE_HAND_AND_SHIELD or -110) then return "One Hand + Shield" end
         return "Weapon"
     end
+    local presetKey = select(1,self:GetPreset())
+    local classRow = EPC.EndgameMeta and EPC.EndgameMeta.CLASSES and EPC.EndgameMeta.CLASSES[tonumber(profile.classId) or 0] or nil
     return {
         profile=profile, role=role, sets=sets, frontWeaponType=frontType, backWeaponType=backType,
         frontWeapon=weaponLabel(frontType), backWeapon=weaponLabel(backType),
+        classId=tonumber(profile.classId) or 0,
+        className=classRow and classRow.name or "Unknown Class",
+        resource=profile.magicka and "MAGICKA" or "STAMINA",
+        presetKey=presetKey,
     }
 end
 
@@ -706,23 +1299,19 @@ function G:ScoreAbilityForCurrentBuild(a, context)
 end
 
 function G:BuildBestAbilityView()
-    local context = self:GetWornBuildContext()
-    local pool = self:CollectPurchasedActiveAbilities()
-    local normal, ults = {}, {}
-    for _,a in ipairs(pool) do
-        local entry = {ability=a, score=self:ScoreAbilityForCurrentBuild(a, context)}
-        if a.ultimate then ults[#ults+1]=entry else normal[#normal+1]=entry end
-    end
-    local sorter = function(x,y)
-        if x.score == y.score then return lower(x.ability.name) < lower(y.ability.name) end
-        return x.score > y.score
-    end
-    table.sort(normal, sorter)
-    table.sort(ults, sorter)
-    local chosen = {}
-    for i=1,math.min(5,#normal) do chosen[#chosen+1]=normal[i].ability end
-    local ultimate = ults[1] and ults[1].ability or nil
-    return {context=context, abilities=chosen, ultimate=ultimate, purchased=#pool}
+    local plan=self:BuildFullSkillPlan()
+    local context=plan.context or self:GetWornBuildContext()
+    return {
+        context=context,
+        abilities=plan.frontWanted or {},
+        ultimate=plan.frontUltWanted,
+        backAbilities=plan.backWanted or {},
+        backUltimate=plan.backUltWanted,
+        meta=plan.skillMeta,
+        frontMetaStats=plan.frontMetaStats,
+        backMetaStats=plan.backMetaStats,
+        purchased=#(plan.allActive or {}),
+    }
 end
 
 function G:ChooseBestAbilities()
@@ -730,42 +1319,8 @@ function G:ChooseBestAbilities()
     return view.abilities or {}, view.ultimate
 end
 
-function G:EquipBestAbilities()
-    if safe(IsUnitInCombat,false,"player") == true then
-        self:NotifyResult("BEST ABILITIES: leave combat before changing action-bar skills.", false)
-        return false
-    end
-    if type(CallSecureProtected) ~= "function" then
-        self:NotifyResult("BEST ABILITIES: ESO's secure slot API is unavailable.", false)
-        return false
-    end
-    local chosen,ultimate = self:ChooseBestAbilities()
-    if #chosen == 0 then
-        self:NotifyResult("BEST ABILITIES: no purchased active abilities were available to slot.", false)
-        return false
-    end
-    local first = tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 3
-    local ultimateSlot = tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or (first + 5)
-    local successCount = 0
-    for i=1,math.min(5,#chosen) do
-        local ok,result = pcall(CallSecureProtected,"SelectSlotAbility",chosen[i].abilityIndex,first+i-1)
-        if ok and result ~= false then successCount=successCount+1 end
-    end
-    if ultimate then
-        local ok,result = pcall(CallSecureProtected,"SelectSlotAbility",ultimate.abilityIndex,ultimateSlot)
-        if ok and result ~= false then successCount=successCount+1 end
-    end
-    if successCount == 0 then
-        self:NotifyResult("BEST ABILITIES: ESO did not accept the requested bar changes. Make sure you are out of combat and not in UI lockdown.", false)
-        return false
-    end
-    local names={}
-    for i,a in ipairs(chosen) do if i<=5 then names[#names+1]=tostring(i).."="..a.name end end
-    if ultimate then names[#names+1]="ULT="..ultimate.name end
-    self:NotifyResult("BEST ABILITIES: "..table.concat(names," | "), true)
-    if EPC and EPC.AbilityOverlays and EPC.AbilityOverlays.Refresh then EPC.AbilityOverlays:Refresh() end
-    return true
-end
+-- Standalone BEST ABILITIES action removed in 0.29.14.
+-- Skill/action-bar rebuilding is handled by RESPEC + BUILD below.
 
 
 -- Full current-build skill respec / rebuild (v0.25.53)
@@ -835,6 +1390,9 @@ function G:ScorePassiveForCurrentBuild(entry, context)
             if containsAny(n,{"stamina","weapon","critical","penetration","recovery","damage","medium armor","martial"}) then score=score+560 end
             if containsAny(n,{"magicka cost"}) then score=score-120 end
         end
+    end
+    if EPC.SkillMeta and type(EPC.SkillMeta.GetPassiveBonus)=="function" and context and context.skillMeta then
+        score = score + (tonumber(EPC.SkillMeta:GetPassiveBonus(entry.name,context.skillMeta)) or 0)
     end
     return score
 end
@@ -917,6 +1475,146 @@ function G:IsPlannedAbilityCompatibleWithWeapon(entry, weaponType)
     return string.find(line,family,1,true)~=nil
 end
 
+
+function G:GetSkillMetaForContext(context)
+    context=context or self:GetWornBuildContext()
+    local presetKey=context.presetKey or select(1,self:GetPreset())
+    if not EPC.SkillMeta or type(EPC.SkillMeta.GetProfile)~="function" then return nil,presetKey end
+    local profile=context.profile or self:GetProfile()
+    local meta=EPC.SkillMeta:GetProfile(profile.classId,context.role or profile.role,profile.magicka,presetKey)
+    context.skillMeta=meta
+    context.skillPreset=presetKey
+    return meta,presetKey
+end
+
+local function easMetaEntryKey(e)
+    if not e then return nil end
+    return tostring(e.skillType)..":"..tostring(e.skillLine)..":"..tostring(e.skillIndex)
+end
+
+function G:ApplyMetaMorphPreference(entry, desiredName)
+    if not entry or not desiredName or not EPC.SkillMeta or type(EPC.SkillMeta.NameMatches)~="function" then return false end
+    local function matches(name) return EPC.SkillMeta:NameMatches(name,desiredName) end
+    if matches(entry.name) then
+        entry.metaPreferredName=tostring(desiredName)
+        return true
+    end
+    -- If the profile named the base skill, keep the planner's best available
+    -- morph. Profiles list the preferred morph first and the base skill last.
+    if matches(entry.baseName) then
+        entry.metaPreferredName=tostring(desiredName)
+        return true
+    end
+    local progressionId=tonumber(entry.progressionId) or 0
+    if progressionId<=0 or type(GetProgressionSkillMorphSlotAbilityId)~="function" then return false end
+    local base=rawget(_G,"MORPH_SLOT_BASE") or 0
+    local slots={base,rawget(_G,"MORPH_SLOT_MORPH_1") or 1,rawget(_G,"MORPH_SLOT_MORPH_2") or 2}
+    for _,morphSlot in ipairs(slots) do
+        local abilityId=safeNumber(GetProgressionSkillMorphSlotAbilityId,0,progressionId,morphSlot)
+        local morphName=easAbilityNameById(abilityId,"")
+        if abilityId>0 and matches(morphName) then
+            -- A morph can only be planned when ESO says the progression is at
+            -- the morph point (or the character already owns a morph and can
+            -- legally switch it during the full respec). Otherwise select the
+            -- correct base skill and let it remain unmorphed rather than fail.
+            if morphSlot~=base then
+                if entry.canMorph==true or (tonumber(entry.currentMorph) or base)~=base then
+                    entry.morphSlot=morphSlot
+                    entry.abilityId=abilityId
+                    entry.name=morphName
+                end
+            end
+            entry.metaPreferredName=tostring(desiredName)
+            return true
+        end
+    end
+    return false
+end
+
+function G:FindMetaAbilityEntry(active, candidates, context, isBackup, used, wantUltimate)
+    if type(candidates)=="string" then candidates={candidates} end
+    if type(candidates)~="table" then return nil,nil end
+    local weaponType=isBackup and context.backWeaponType or context.frontWeaponType
+    for _,desired in ipairs(candidates) do
+        for _,entry in ipairs(active or {}) do
+            local key=easMetaEntryKey(entry)
+            if (entry.ultimate==true)==(wantUltimate==true) and not (used and used[key]) and self:IsPlannedAbilityCompatibleWithWeapon(entry,weaponType) then
+                if self:ApplyMetaMorphPreference(entry,desired) then
+                    return entry,tostring(desired)
+                end
+            end
+        end
+    end
+    return nil,nil
+end
+
+function G:BuildMetaWeaponBar(active, context, isBackup, meta)
+    if not meta then
+        local wanted,ultimate=self:BuildPlannedWeaponBar(active,context,isBackup)
+        return wanted,ultimate,{matched=0,fallback=5,requested=5,ultimateMatched=false}
+    end
+    local wantedBar=isBackup and meta.back or meta.front
+    local wantedUlt=isBackup and meta.backUlt or meta.frontUlt
+    local result,used={},{}
+    local stats={matched=0,fallback=0,requested=5,slotMatches={},ultimateMatched=false}
+
+    for i=1,5 do
+        local candidates=wantedBar and wantedBar[i] or nil
+        local entry,desired=self:FindMetaAbilityEntry(active,candidates,context,isBackup,used,false)
+        if entry then
+            local key=easMetaEntryKey(entry)
+            used[key]=true
+            result[i]=entry
+            stats.matched=stats.matched+1
+            stats.slotMatches[i]=desired
+        end
+    end
+
+    -- Any meta skill the character has not unlocked (or that conflicts with the
+    -- equipped weapon) is filled by the proven generic scorer. This keeps
+    -- RESPEC + BUILD complete for leveling characters and unusual weapon bars.
+    local fallback={}
+    for _,entry in ipairs(active or {}) do
+        if entry.ultimate~=true and not used[easMetaEntryKey(entry)] then
+            local score=self:ScoreAbilityForWeaponBar(entry,context,isBackup)
+            if score>-900000 then fallback[#fallback+1]={entry=entry,score=score} end
+        end
+    end
+    table.sort(fallback,function(a,b)
+        if a.score==b.score then return lower(a.entry.name)<lower(b.entry.name) end
+        return a.score>b.score
+    end)
+    local fi=1
+    for i=1,5 do
+        if not result[i] then
+            while fallback[fi] and used[easMetaEntryKey(fallback[fi].entry)] do fi=fi+1 end
+            if fallback[fi] then
+                local entry=fallback[fi].entry
+                result[i]=entry
+                used[easMetaEntryKey(entry)]=true
+                stats.fallback=stats.fallback+1
+                fi=fi+1
+            end
+        end
+    end
+
+    local ultimate,desiredUlt=self:FindMetaAbilityEntry(active,wantedUlt,context,isBackup,nil,true)
+    if ultimate then
+        stats.ultimateMatched=true
+        stats.ultimateName=desiredUlt
+    else
+        local best,bestScore=nil,-1000000
+        for _,entry in ipairs(active or {}) do
+            if entry.ultimate==true then
+                local score=self:ScoreAbilityForWeaponBar(entry,context,isBackup)
+                if score>bestScore then best,bestScore=entry,score end
+            end
+        end
+        ultimate=best
+    end
+    return result,ultimate,stats
+end
+
 function G:ScoreAbilityForWeaponBar(entry, context, isBackup)
     local score=self:ScoreAbilityForCurrentBuild(entry,context)
     local weaponType=isBackup and context.backWeaponType or context.frontWeaponType
@@ -959,6 +1657,7 @@ end
 
 function G:BuildFullSkillPlan()
     local context=self:GetWornBuildContext()
+    local skillMeta,skillPreset=self:GetSkillMetaForContext(context)
     local budget,available,allocated=self:GetTotalSkillPointBudget()
     local active,passives={},{}
     local playerLevel = type(GetUnitLevel)=="function" and safeNumber(GetUnitLevel,1,"player") or 1
@@ -1021,8 +1720,17 @@ function G:BuildFullSkillPlan()
     -- Plan Primary and Backup independently from their equipped weapon types.
     -- The purchase list is the union of both bar plans, so the respec buys the
     -- skills needed by either weapon rather than taking a generic top-ten list.
-    local frontWanted,frontUltWanted=self:BuildPlannedWeaponBar(active,context,false)
-    local backWanted,backUltWanted=self:BuildPlannedWeaponBar(active,context,true)
+    local frontWanted,frontUltWanted,frontMetaStats
+    local backWanted,backUltWanted,backMetaStats
+    if skillMeta then
+        frontWanted,frontUltWanted,frontMetaStats=self:BuildMetaWeaponBar(active,context,false,skillMeta)
+        backWanted,backUltWanted,backMetaStats=self:BuildMetaWeaponBar(active,context,true,skillMeta)
+    else
+        frontWanted,frontUltWanted=self:BuildPlannedWeaponBar(active,context,false)
+        backWanted,backUltWanted=self:BuildPlannedWeaponBar(active,context,true)
+        frontMetaStats={matched=0,fallback=5,requested=5,ultimateMatched=false}
+        backMetaStats={matched=0,fallback=5,requested=5,ultimateMatched=false}
+    end
     local chosen,chosenMap={},{}
     local chosenUlts={}
     local spent=0
@@ -1146,7 +1854,7 @@ function G:BuildFullSkillPlan()
             if can>0 then desiredPassiveRanks[e]=can spent=spent+can end
         end
     end
-    return {context=context,budget=budget,available=available,allocated=allocated,allActive=active,allPassives=passives,chosen=chosen,chosenUlts=chosenUlts,chosenMap=chosenMap,frontWanted=frontWanted,backWanted=backWanted,frontUltWanted=frontUltWanted,backUltWanted=backUltWanted,desiredPassiveRanks=desiredPassiveRanks,spent=spent}
+    return {context=context,budget=budget,available=available,allocated=allocated,allActive=active,allPassives=passives,chosen=chosen,chosenUlts=chosenUlts,chosenMap=chosenMap,frontWanted=frontWanted,backWanted=backWanted,frontUltWanted=frontUltWanted,backUltWanted=backUltWanted,desiredPassiveRanks=desiredPassiveRanks,spent=spent,skillMeta=skillMeta,skillMetaPreset=skillPreset,frontMetaStats=frontMetaStats,backMetaStats=backMetaStats}
 end
 
 local function easProtectedOrDirect(functionName,...)
@@ -1181,27 +1889,63 @@ function G:ResolvePlannedAbilityIndex(entry)
     return nil
 end
 
-function G:IsAbilityLegalForBar(abilityId, abilityIndex, slot, category)
+function G:GetAbilityLegalityForBar(abilityId, abilityIndex, slot, category, craftedAbilityId)
     abilityId=tonumber(abilityId) or 0
     abilityIndex=tonumber(abilityIndex) or 0
-    if abilityId<=0 or abilityIndex<=0 then return false end
-    if type(IsActionSlotMutable)=="function" and safe(IsActionSlotMutable,false,slot,category)~=true then return false end
-    if type(IsActionSlotRestricted)=="function" and safe(IsActionSlotRestricted,false,slot,category)==true then return false end
-    -- This is the important weapon/category compatibility check. It catches
-    -- weapon skills that cannot be used on the requested front/back bar.
-    if type(CanAbilityBeUsedFromHotbar)=="function" and safe(CanAbilityBeUsedFromHotbar,false,abilityId,category)~=true then return false end
-    return true
+    craftedAbilityId=tonumber(craftedAbilityId) or 0
+    if abilityId<=0 then return false,"missing ability id" end
+    if craftedAbilityId<=0 and abilityIndex<=0 then return false,"missing normal ability index" end
+
+    -- IMPORTANT: Do NOT reject a purchased skill because IsActionSlotMutable()
+    -- reports false here. On live ESO that state can be false for a weapon bar
+    -- that is not currently active (and in some UI states for both bars), while
+    -- ACTION_BAR_ASSIGNMENT_MANAGER can still legally edit Primary/Backup out of
+    -- combat. That pre-check was the reason 0.29.11/0.29.12 reduced a valid pool
+    -- to zero regular candidates and printed "no unused compatible ability".
+    --
+    -- Planning only needs to know whether the ACTION TYPE belongs in a regular
+    -- slot or the Ultimate slot. Actual edit permission is decided when ESO's
+    -- assignment manager / protected slot API receives the requested change.
+    if craftedAbilityId>0 then
+        if type(IsValidCraftedAbilityForSlot)=="function" and safe(IsValidCraftedAbilityForSlot,false,craftedAbilityId,slot)~=true then
+            return false,"scribed ability is not valid for this slot"
+        end
+    elseif type(IsValidAbilityForSlot)=="function" and safe(IsValidAbilityForSlot,false,abilityIndex,slot)~=true then
+        return false,"ability type is not valid for this slot"
+    end
+    return true,"slot type legal"
+end
+
+function G:IsAbilityLegalForBar(abilityId, abilityIndex, slot, category, craftedAbilityId)
+    local legal=self:GetAbilityLegalityForBar(abilityId,abilityIndex,slot,category,craftedAbilityId)
+    return legal==true
 end
 
 function G:BuildCompatiblePurchasedBar(category, context)
-    local pool=self:CollectPurchasedActiveAbilities()
+    local pool,poolStats=self:CollectPurchasedActiveAbilities()
     local normal,ults={},{}
-    for _,a in ipairs(pool) do
+    local stats={
+        available=#(pool or {}),
+        normalPurchased=poolStats and poolStats.normalPurchased or 0,
+        normalUnresolved=poolStats and poolStats.normalUnresolved or 0,
+        scribedPurchased=poolStats and poolStats.scribedPurchased or 0,
+        scribedUnresolved=poolStats and poolStats.scribedUnresolved or 0,
+        scribedDisabled=poolStats and poolStats.scribedDisabled or 0,
+        hotbarLegal=0,
+        hotbarRejected=0,
+        buildFiltered=0,
+        regularCandidates=0,
+        ultimateCandidates=0,
+        rejectReasons={},
+    }
+    for _,a in ipairs(pool or {}) do
         local abilityId=tonumber(a.abilityId) or 0
         a.abilityId=abilityId
         local first=tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 3
         local probeSlot=a.ultimate and (tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or (first+5)) or first
-        if self:IsAbilityLegalForBar(abilityId,a.abilityIndex,probeSlot,category) then
+        local legal,reason=self:GetAbilityLegalityForBar(abilityId,a.abilityIndex,probeSlot,category,a.craftedAbilityId)
+        if legal then
+            stats.hotbarLegal=stats.hotbarLegal+1
             if (not a.skillLineName or a.skillLineName=="") and a.skillType and a.skillLine then
                 local lineId=type(GetSkillLineId)=="function" and safeNumber(GetSkillLineId,0,a.skillType,a.skillLine) or 0
                 a.skillLineName=easSkillLineName(a.skillType,a.skillLine,lineId)
@@ -1211,7 +1955,13 @@ function G:BuildCompatiblePurchasedBar(category, context)
             if score>-900000 then
                 local row={ability=a,score=score}
                 if a.ultimate then ults[#ults+1]=row else normal[#normal+1]=row end
+            else
+                stats.buildFiltered=stats.buildFiltered+1
             end
+        else
+            stats.hotbarRejected=stats.hotbarRejected+1
+            reason=tostring(reason or "rejected")
+            stats.rejectReasons[reason]=(stats.rejectReasons[reason] or 0)+1
         end
     end
     local function sorter(x,y)
@@ -1219,9 +1969,11 @@ function G:BuildCompatiblePurchasedBar(category, context)
         return x.score>y.score
     end
     table.sort(normal,sorter); table.sort(ults,sorter)
+    stats.regularCandidates=#normal
+    stats.ultimateCandidates=#ults
     local chosen={}
     for i=1,math.min(5,#normal) do chosen[#chosen+1]=normal[i].ability end
-    return chosen,ults[1] and ults[1].ability or nil
+    return chosen,ults[1] and ults[1].ability or nil,normal,ults,stats
 end
 
 function G:StagePlannedHotbarsInRespec(plan)
@@ -1491,7 +2243,7 @@ function G:ApplyFullSkillPlan(plan)
         return false
     end
 
-    -- Update 49+: NEVER directly prepare a RESPEC_PAYMENT_TYPE_GOLD request here.
+    -- current ESO clients: NEVER directly prepare a RESPEC_PAYMENT_TYPE_GOLD request here.
     -- Vanilla ESO first enters a shrine-free respec session with StartSkillRespecFromUI(),
     -- then edits SKILL_POINT_ALLOCATION_MANAGER state and commits through
     -- SKILLS_AND_ACTION_BAR_MANAGER:ApplyChanges(). Calling Prepare... with GOLD
@@ -1750,6 +2502,11 @@ function G:RespecAndApplyBestBuild()
     end
     if SCENE_MANAGER and type(SCENE_MANAGER.Show)=="function" then
         pcall(function() SCENE_MANAGER:Show("skills") end)
+    end
+    if plan.skillMeta and EPC.SkillMeta then
+        local fs=plan.frontMetaStats or {}
+        local bs=plan.backMetaStats or {}
+        self:NotifyResult(string.format("RESPEC BUILD META: %s | %s | Primary %d/5 meta | Backup %d/5 meta. Unlocked/weapon fallbacks fill the rest.",tostring(plan.skillMeta.label or "Current profile"),tostring(plan.skillMetaPreset or "TRIAL"),tonumber(fs.matched) or 0,tonumber(bs.matched) or 0),true)
     end
     self:NotifyResult("RESPEC BUILD: opening Skills and preparing the best detected build...",true)
     if type(zo_callLater)=="function" then

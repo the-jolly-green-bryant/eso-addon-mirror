@@ -194,22 +194,35 @@ local function OnAddOnLoaded(event, addonName)
     local function RefreshStationKeybind()
         if not TetsuDailyWritPrecrafter.Crafting then return end
         EVENT_MANAGER:UnregisterForUpdate("TDWP_KeybindRefresh")
+        local C = TetsuDailyWritPrecrafter.Crafting
+        local ct = GetCraftingInteractionType and GetCraftingInteractionType() or 0
+        if C.IsWritCraftType and not C.IsWritCraftType(ct) then
+            if C.RemoveStationKeybind then C.RemoveStationKeybind() end
+            return
+        end
         local attempts = 0
         EVENT_MANAGER:RegisterForUpdate("TDWP_KeybindRefresh", 200, function()
             attempts = attempts + 1
-            if not GetCraftingInteractionType or GetCraftingInteractionType() == 0 then
+            local now = GetCraftingInteractionType and GetCraftingInteractionType() or 0
+            if (C.IsWritCraftType and not C.IsWritCraftType(now)) or now == 0 then
                 EVENT_MANAGER:UnregisterForUpdate("TDWP_KeybindRefresh")
-                TetsuDailyWritPrecrafter.Crafting.RemoveStationKeybind()
+                if C.RemoveStationKeybind then C.RemoveStationKeybind() end
                 return
             end
-            TetsuDailyWritPrecrafter.Crafting.AddStationKeybind()
+            C.AddStationKeybind()
             if attempts >= 2 then
                 EVENT_MANAGER:UnregisterForUpdate("TDWP_KeybindRefresh")
             end
         end)
     end
 
-    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "_StationOpen", EVENT_CRAFTING_STATION_INTERACT, function()
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "_StationOpen", EVENT_CRAFTING_STATION_INTERACT, function(_, craftingType)
+        local C = TetsuDailyWritPrecrafter.Crafting
+        if C and C.IsWritCraftType and not C.IsWritCraftType(craftingType) then
+            EVENT_MANAGER:UnregisterForUpdate("TDWP_KeybindRefresh")
+            if C.RemoveStationKeybind then C.RemoveStationKeybind() end
+            return
+        end
         RefreshStationKeybind()
     end)
 

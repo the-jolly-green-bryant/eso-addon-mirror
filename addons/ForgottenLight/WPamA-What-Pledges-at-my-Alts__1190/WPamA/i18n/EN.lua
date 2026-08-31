@@ -2,6 +2,7 @@ local Icon = WPamA.Consts.IconsW
 local GetIcon = WPamA.Textures.GetTexture
 local OpenWindowText = GetString(SI_ENTER_CODE_CONFIRM_BUTTON) -- "Open Window"
 local DynamicEncounterText = GetAchievementSubCategoryInfo(1,4) -- "Dynamic Encounters"
+--SI_HUD_EDITOR_DYNAMIC_EVENT_TRACKER = "Dynamic Event" at U51
 WPamA.i18n = {
   Lng = "EN",
 -- DateTime settings
@@ -102,7 +103,8 @@ WPamA.i18n = {
         [5] = {N=GetIcon(31,28), NC=GetIcon(31,28,true), W=28, S=true,
                A=GetString(SI_GAMEPAD_PLAYER_INVENTORY_CAPACITY_FOOTER_LABEL)},
         [6] = {N=GetIcon(61,24), NC=GetIcon(61,24,true), W=28, S=true,
-               A=zo_strformat("<<1>>, <<2>>", GetString(SI_SPECIALIZEDITEMTYPE100), GetString(SI_SPECIALIZEDITEMTYPE101))},
+               A=zo_strformat("<<1>>,\n<<2>>,\n<<3>>", GetString(SI_SPECIALIZEDITEMTYPE100),
+                              GetString(SI_SPECIALIZEDITEMTYPE101), GetString(SI_SPECIALIZEDITEMTYPE2750) )},
         [7] = {N=GetIcon(65,28), NC=GetIcon(65,28,true), W=28, S=true,
                A=GetString(SI_ITEMTYPEDISPLAYCATEGORY26)}, -- "Containers"
       },
@@ -120,6 +122,18 @@ WPamA.i18n = {
     },
     [6] = {
       Capt = GetString(SI_MAPFILTER14), -- "Companions"
+--[[
+SI_MAIN_MENU_SKILLS | SI_COMPANION_OVERVIEW_SKILLS = "Skills"
+SI_SKILLS_ACTIVE_ABILITIES = "Active Abilities"
+SI_UTILITY_WHEEL_SLOT_FORMATTER = "Slot <<1>>"
+
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_3 "Ability 1"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_4 "Ability 2"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_5 "Ability 3"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_6 "Ability 4"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_7 "Ability 5"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_8 "Ultimate"
+--]]
       Tab = {
         [1] = {N=GetIcon(45, 24) .. "1", NC=GetIcon(45, 24, true) .. "1", W=70, S=true, A=GetString(SI_COMPANION_OVERVIEW_RAPPORT)},
         [2] = {N=GetIcon(45, 24) .. "2", NC=GetIcon(45, 24, true) .. "1", W=70, S=true, A=GetString(SI_COMPANION_OVERVIEW_RAPPORT)},
@@ -146,6 +160,7 @@ WPamA.i18n = {
         [1] = {N="Seasonal Festivals", W=146},
         [2] = {N=GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES803), W=70},
         [3] = {N=GetString(SI_RECIPECRAFTINGSYSTEM6), W=100}, -- Blueprints
+        [4] = {N=GetString(SI_QUESTTYPE19), W=100}, -- Favors
       },
     },
     [8] = {
@@ -163,32 +178,32 @@ WPamA.i18n = {
   },
   ModeSettings = {
     [25] = {
-      HdT = {
-        [1] = "Total",
-        [2] = "In use",
-        [3] = "Free",
-      },
+      HdT = { [1] = "Total", [2] = "In use", [3] = "Free" }
     },
 --------
     [42] = {
       HdT = {
         [1] = GetString(SI_COLLECTIBLERESTRICTIONTYPE1), -- Race
         [2] = GetString(SI_COLLECTIBLERESTRICTIONTYPE3), -- Class
-        [3] = "SP", [4] = "Last login", [5] = "Played time",
+        [3] = "SP", [4] = "Last login", [5] = "Played time"
       },
     },
 --------
     [50] = {
       HdT = {
         [1] = GetString(SI_CAMPAIGN_OVERVIEW_CATEGORY_BONUSES), -- Bonuses
-        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", ""), -- time remaining
+        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", "") -- time remaining
       },
     },
 --------
+    [51] = {
+      HdT = { [1] = GetMailListName(1), [2] = GetMailListName(2), [3] = GetMailListName(3) }
+    },
+--------
   }, -- ModeSettings
-  SelModeWin = {x = 220, y = 2, dy = 24,},
+  SelModeWin = {x = 220, y = 2, dy = 24},
 -- Labels
-  TotalRow = {[1] = "BANK",[2] = "TOTAL",},
+  TotalRow = {[1] = "BANK", [2] = "TOTAL"},
   HdrLvl = "Lvl",
   HdrName = "Name",
   HdrClnd = "Calendar",
@@ -292,6 +307,13 @@ WPamA.i18n = {
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_THOUSANDS_NARRATION),     " : 1234 K\n",
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_TEN_THOUSANDS_NARRATION), " : 12345 K"
                          } ),
+  OptDynEncounterNotify = zo_strformat("<<1>>: <<2>>", DynamicEncounterText, GetString(SI_MAIN_MENU_NOTIFICATIONS)), -- "Notifications"
+  OptDynEncounterNotifyF = table.concat(
+                           { "Show notifications at screen and in chat about the start, activity, completion, ",
+                             "progress of Dynamic Encounters.\n\n",
+                             GetString(SI_ACTIONBARSETTINGCHOICE2), " - hide notifications while the character is ",
+                             "participating in an Encounter, otherwise show Dynamic Encounter notifications."
+                           } ),
   OptCompanionRapport = "Show companions rapport as...",
   OptCompanionRprtList = {"number", "text"},
   OptCompanionRprtMax = "Also show maximum value",
@@ -442,8 +464,9 @@ WPamA.i18n = {
   Login1DayAgo = "Yesterday",
 -- Dynamic Encounter Status
   DynamicEncounter = {
-    Start = DynamicEncounterText .. ":\n The event started",
-    Stop  = DynamicEncounterText .. ":\n The event completed",
+    Start = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n The event started" }),
+    Stop  = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n The event completed" }),
+    Activ = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n The event is active" }),
     Progr = table.concat({ GetIcon(73,20), DynamicEncounterText, ": ",
             GetString(SI_ENDLESS_DUNGEON_SUMMARY_PROGRESS_HEADER), -- "Progress"
             " ", GetString(SI_SPECTACLE_EVENTS_PROGRESS_PERCENT) }) -- "<<1>>%"
@@ -678,6 +701,7 @@ WPamA.i18n.ToolTip = {
   [270] = "Soulcaller's Haunt\n - Soulcaller",
   [271] = "Lair of Wo-Xeeth\n - Wo-Xeeth",
   [272] = "Zyv-Elehk Ritual Site\n - Ghishzor",
+--273-280 Item name
 }
 --
 WPamA.i18n.ToolTip[215] = WPamA.i18n.ToolTip[34]

@@ -44,6 +44,7 @@ local newTracker = {
 	appliedBySelf = false,
 	hideInactive = false,
 	hideActive = false,
+    hideOutOfCombat = false,
 	hidden = false,
 	x = 0,
 	y = 0,
@@ -209,7 +210,7 @@ local function updateTrackerSettingList()
 		appendTables(loadedSettingsList, settingPages.newTracker.editedNav)
 	end
 	
-	loadMenu(loadedSettingsList, true)
+	loadMenu(loadedSettingsList, false)
 end
 
 local function getNextAvailableIndex(charSettings, isSetup)
@@ -308,6 +309,9 @@ local function previewTracker()
 
 end
 
+local function toWhiteString(str) return "|cFFFFFF"..str.."|r" end
+local function toYellowString(str) return "|cFFFF00"..str.."|r" end
+
 function UniversalTracker.InitSettings()
 	if not LibHarvensAddonSettings then return end
 
@@ -317,63 +321,41 @@ function UniversalTracker.InitSettings()
 	---				Sections			---
 	---------------------------------------
 
-	local setupSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Setups"}
-	local trackerSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Trackers",}
-	local navSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Navigation",}
-
-	local accountTrackersSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Account Trackers",}
-	local characterTrackersSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Character Trackers",}
-
-	local editSetupSection = { type = LibHarvensAddonSettings.ST_SECTION, label = "Edit Setup",}
-	local accountSetupsSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Account Setups",}
-	local characterSetupsSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Character Setups",}
-
-	local trackerGeneralSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "General",}
-	local visibilitySection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Visibility",}
-	local abilityIDListSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Tracked abilityIDs",}
-	local positionSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Position",}
-	local listSettingsSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "List Settings",}
-	local barSettingsSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Bar Settings",}
-	local durationSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Duration",}
-	local stacksSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Stacks",}
-	local abilityNameSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Ability Name",}
-	local unitNameSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Unit Name",}
-
-	local printSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Print",}
-	local eventSection = {type = LibHarvensAddonSettings.ST_SECTION,label = "Event Listener",}
-	local presetSection = {type = LibHarvensAddonSettings.ST_SECTION, label = "Presets"}
-
+	local setupSection = {type = LibHarvensAddonSettings.ST_SECTION,label = toWhiteString("Setups")}
+	local trackerSection = {type = LibHarvensAddonSettings.ST_SECTION,label = toWhiteString("Trackers")}
+	local printSection = {type = LibHarvensAddonSettings.ST_SECTION,label = toWhiteString("Print")}
+	local eventSection = {type = LibHarvensAddonSettings.ST_SECTION,label = toWhiteString("Event Listener")}
+	local presetSection = {type = LibHarvensAddonSettings.ST_SECTION, label = toWhiteString("Presets")}
 
 	---------------------------------------
 	---				LABELS				---
 	---------------------------------------
 
-	local setupLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Setups"}
-	local trackerLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Trackers",}
-	local navLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Navigation",}
+	local setupLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Setups")}
+	local trackerLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Trackers")}
+	local navLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Navigation")}
 
-	local accountTrackersLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Account Trackers",}
-	local characterTrackersLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Character Trackers",}
+	local accountTrackersLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Account Trackers")}
+	local characterTrackersLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Character Trackers")}
 
-	local editSetupLabel = { type = LibHarvensAddonSettings.ST_LABEL, label = "Edit Setup",}
-	local accountSetupsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Account Setups",}
-	local characterSetupsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Character Setups",}
+	local editSetupLabel = { type = LibHarvensAddonSettings.ST_LABEL, label = toYellowString("Edit Setup")}
+	local accountSetupsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Account Setups")}
+	local characterSetupsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Character Setups")}
 
-	local editTrackerLabel = { type = LibHarvensAddonSettings.ST_LABEL, label = "Edit Tracker",}
-	local generalLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "General",}
-	local visibilityLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Visibility",}
-	local abilityIDListLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Tracked abilityIDs",}
-	local positionLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Position",}
-	local listSettingsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "List Settings",}
-	local barSettingsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Bar Settings",}
-	local durationLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Duration",}
-	local stacksLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Stacks",}
-	local abilityNameLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Ability Name",}
-	local unitNameLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Unit Name",}
+	local generalLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("General")}
+	local visibilityLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Visibility")}
+	local abilityIDListLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Tracked abilityIDs")}
+	local positionLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Position")}
+	local listSettingsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("List Settings")}
+	local barSettingsLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Bar Settings")}
+	local durationLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Duration")}
+	local stacksLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Stacks")}
+	local abilityNameLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Ability Name")}
+	local unitNameLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Unit Name")}
 
-	local printLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Print",}
-	local eventLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = "Event Listener",}
-	local presetLabel = {type = LibHarvensAddonSettings.ST_LABEL, label = "Presets"}
+	local printLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Print")}
+	local eventLabel = {type = LibHarvensAddonSettings.ST_LABEL,label = toYellowString("Event Listener")}
+	local presetLabel = {type = LibHarvensAddonSettings.ST_LABEL, label = toYellowString("Presets")}
 
 	-----------------------------------------------------------
 	---		Early Declarations for Self/Cross References	---
@@ -407,6 +389,8 @@ function UniversalTracker.InitSettings()
 		clickHandler = function(control)
 			loadMenu(settingPages.setupList, true)
 
+			local insertIndex = settings:GetIndexOf(accountSetupsLabel, true) + 1
+
 			for k, v in pairs(UniversalTracker.savedVariables.setupList) do
 				if v and v.name then
 					settings:AddSetting({
@@ -418,10 +402,12 @@ function UniversalTracker.InitSettings()
 							editIndex = k
 							isCharacterSettings = false
 							newSetup = ZO_DeepTableCopy(UniversalTracker.savedVariables.setupList[editIndex])
-							loadMenu(settingPages.newSetup, true)
+							loadMenu(settingPages.newSetup, false)
 
 							--Remove the save destination
 							settings:RemoveSettings(#settings.settings - 2, 1, false)
+
+							local insertIndex = settings:GetIndexOf(accountTrackersLabel, true) + 1
 
 							--Add the trackers to toggle for the setup.
 							for k, v in pairs(UniversalTracker.savedVariables.trackerList) do
@@ -439,9 +425,11 @@ function UniversalTracker.InitSettings()
 											end						
 										end,
 										default = false
-									}, 7, false)
+									}, insertIndex, false)
 								end
 							end
+
+							insertIndex = settings:GetIndexOf(characterTrackersLabel, true) + 1
 
 							for k, v in pairs(UniversalTracker.characterSavedVariables.trackerList) do
 								if v and v.id and v.name then
@@ -458,18 +446,20 @@ function UniversalTracker.InitSettings()
 											end						
 										end,
 										default = false
-									}, #settings.settings - 3, false)
+									}, insertIndex, false)
 								end
 							end
 
-							settings:AddSetting(loadSetup, 5, false)
+							settings:AddSetting(loadSetup, 3, false)
 
 							settings:AddSettings({deleteSetup, copySetupToCharacter, copySetupToAccount}, #settings.settings - 1, false)
 
 						end
-					}, 4, false)
+					}, insertIndex, false)
 				end
 			end
+
+			insertIndex = settings:GetIndexOf(characterSetupsLabel, true) + 1
 
 			for k, v in pairs(UniversalTracker.characterSavedVariables.setupList) do
 				if v and v.name then
@@ -482,10 +472,12 @@ function UniversalTracker.InitSettings()
 							editIndex = k
 							isCharacterSettings = true
 							newSetup = ZO_DeepTableCopy(UniversalTracker.characterSavedVariables.setupList[editIndex])
-							loadMenu(settingPages.newSetup, true)
+							loadMenu(settingPages.newSetup, false)
 
 							--Remove the save destination
 							settings:RemoveSettings(6, 1, false)
+
+							local insertIndex = settings:GetIndexOf(accountTrackersLabel, true) + 1
 
 							--Add the trackers to toggle for the setup.
 							for k, v in pairs(UniversalTracker.savedVariables.trackerList) do
@@ -503,9 +495,11 @@ function UniversalTracker.InitSettings()
 											end						
 										end,
 										default = false
-									}, 4, false)
+									}, insertIndex, false)
 								end
 							end
+
+							insertIndex = settings:GetIndexOf(characterTrackersLabel, true) + 1
 
 							for k, v in pairs(UniversalTracker.characterSavedVariables.trackerList) do
 								if v and v.id and v.name then
@@ -522,7 +516,7 @@ function UniversalTracker.InitSettings()
 											end						
 										end,
 										default = false
-									}, #settings.settings - 2, false)
+									}, insertIndex, false)
 								end
 							end
 
@@ -531,11 +525,12 @@ function UniversalTracker.InitSettings()
 							settings:AddSettings({deleteSetup, copySetupToCharacter, copySetupToAccount}, #settings.settings - 1, false)
 
 						end
-					}, #settings.settings - 2, false)
+					}, insertIndex, false)
 				end
 			end
 		end
 	}
+
 	local addNewSetupButton = {
 		type = LibHarvensAddonSettings.ST_BUTTON,
 		label = "NEW SETUP",
@@ -568,7 +563,7 @@ function UniversalTracker.InitSettings()
 							end						
 						end,
 						default = false
-					}, 7, false)
+					}, 4, false)
 				end
 			end
 
@@ -587,7 +582,7 @@ function UniversalTracker.InitSettings()
 							end						
 						end,
 						default = false
-					}, #settings.settings - 4, false)
+					}, #settings.settings - 3, false)
 				end
 			end
 
@@ -597,8 +592,13 @@ function UniversalTracker.InitSettings()
 
 	-- Helper function to reduce clutter between account/character saved variables
 	local function loadTrackerList(savedVarTrackerListTable, isCharSettings)
-		local insertIndex = 4
-		if isCharSettings then insertIndex = #settings.settings - 2 end
+		local insertIndex
+		if isCharSettings then
+			insertIndex = settings:GetIndexOf(characterTrackersLabel, true) + 1
+		else
+			insertIndex = settings:GetIndexOf(accountTrackersLabel, true) + 1
+		end
+
 		for k, v in pairs(savedVarTrackerListTable) do
 			if v.name then --avoids creating blank entries in the list.
 				settings:AddSetting({
@@ -669,6 +669,7 @@ function UniversalTracker.InitSettings()
 				appliedBySelf = false,
 				hideInactive = false,
 				hideActive = false,
+    			hideOutOfCombat = false,
 				hidden = false,
 				x = 0,
 				y = 0,
@@ -788,7 +789,7 @@ function UniversalTracker.InitSettings()
 		buttonText = "BACK",
 		tooltip = "Return to main menu.",
 		clickHandler = function(control)
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 		end
 	}
 
@@ -839,7 +840,7 @@ function UniversalTracker.InitSettings()
 				end
 			end
 			
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 			editIndex = -1
 		end
 	}
@@ -849,7 +850,7 @@ function UniversalTracker.InitSettings()
 		buttonText = "CANCEL",
 		tooltip = "Discard Changes and Return to main menu.",
 		clickHandler = function(control)
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 			editIndex = -1
 		end
 	}
@@ -889,7 +890,7 @@ function UniversalTracker.InitSettings()
 				table.remove(UniversalTracker.savedVariables.setupList, editIndex)
 			end
 
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 		end
 	}
 
@@ -1008,7 +1009,7 @@ function UniversalTracker.InitSettings()
 			end
 			
 			
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 			editIndex = -1
 		end
 	}
@@ -1018,7 +1019,7 @@ function UniversalTracker.InitSettings()
 		buttonText = "CANCEL",
 		tooltip = "Discard Changes and Return to main menu.",
 		clickHandler = function(control)
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 			if editIndex >= 0 then
 				if not isCharacterSettings then
 					UniversalTracker.InitSingleDisplay(UniversalTracker.savedVariables.trackerList[editIndex]) --Load old changes
@@ -1045,7 +1046,7 @@ function UniversalTracker.InitSettings()
 				table.remove(UniversalTracker.savedVariables.trackerList, editIndex)
 			end
 
-			loadMenu(settingPages.mainMenu, true)
+			loadMenu(settingPages.mainMenu, false)
 		end
 	}
 
@@ -1134,7 +1135,8 @@ function UniversalTracker.InitSettings()
 		default = "New Tracker",
 	}
 
-	local setNewTrackerType = {
+	local setNewTrackerType = nil
+	setNewTrackerType = {
 		type = LibHarvensAddonSettings.ST_DROPDOWN,
 		label = "Tracker Type",
 		tooltip = "Choose the display type.\n\nFloating trackers aren't compatible with \"Reticle Target\" or \"All\" target types.",
@@ -1147,11 +1149,14 @@ function UniversalTracker.InitSettings()
 		setFunction = function(control, itemName, itemData) 
 			newTracker.type = itemName
 			updateTrackerSettingList()
+			local index = settings:GetIndexOf(setNewTrackerType, true)
+			LibHarvensAddonSettings.list:SetSelectedIndexWithoutAnimation(index)
 		end,
 		default = 1,
 	}
 
-	local setNewTrackerTargetType = {
+	local setNewTrackerTargetType = nil
+	setNewTrackerTargetType = {
 		type = LibHarvensAddonSettings.ST_DROPDOWN,
 		label = "Target Type",
 		tooltip = "Choose who the tracker will focus on.",
@@ -1166,6 +1171,8 @@ function UniversalTracker.InitSettings()
 		setFunction = function(control, itemName, itemData) 
 			newTracker.targetType = itemName
 			updateTrackerSettingList()
+			local index = settings:GetIndexOf(setNewTrackerTargetType, true)
+			LibHarvensAddonSettings.list:SetSelectedIndexWithoutAnimation(index)
 		end,
 		default = 1
 	}
@@ -1236,6 +1243,17 @@ function UniversalTracker.InitSettings()
 			newTracker.appliedBySelf = value
 		end,
 		default = newTracker.appliedBySelf
+	}
+
+	local hideOutOfCombat = {
+		type = LibHarvensAddonSettings.ST_CHECKBOX,
+		label = "Only In Combat",
+		tooltip = "Hides the tracker when you are out of combat.\n\nDoesn't affect trackers with \"All\" target type.",
+		getFunction = function() return newTracker.hideOutOfCombat end,
+		setFunction = function(value) 
+			newTracker.hideOutOfCombat = value
+		end,
+		default = newTracker.hideInactive
 	}
 
 	local hideInactive = {
@@ -2129,31 +2147,31 @@ function UniversalTracker.InitSettings()
 							printSection, printLabel, printSkills, printItemSets, printCurrentZone, printCurrentEffects, printTargetEffects, printBossEffects,
 							eventSection, eventLabel, trackEffectGained, trackEffectGainedDuration, trackEffectFaded, allowDuplicates, stopDebugSpam, startDebugSpam,
 							presetSection, presetLabel, setNewTrackerSaveType, offBalancePreset, tauntPreset, staggerPreset, relentlessPreset, mercilessPreset, alkoshPreset, mkPreset, synergyPreset}
-	settingPages.setupList = {setupLabel, accountSetupsSection, accountSetupsLabel, characterSetupsSection, characterSetupsLabel, navSection, navLabel, returnToMainMenuButton}
-	settingPages.newSetup = {editSetupLabel, editSetupSection, editSetupLabel, setNewSetupName, accountTrackersSection, accountTrackersLabel, characterTrackersSection, characterTrackersLabel, navSection, navLabel, setNewTrackerSaveType, setupCancelButton, setupSaveButton}
-	settingPages.trackedList = {trackerLabel, accountTrackersSection, accountTrackersLabel, characterTrackersSection, characterTrackersLabel, navSection, navLabel, returnToMainMenuButton}
+	settingPages.setupList = {accountSetupsLabel, characterSetupsLabel, navLabel, returnToMainMenuButton}
+	settingPages.newSetup = {editSetupLabel, setNewSetupName, accountTrackersLabel, characterTrackersLabel, navLabel, setNewTrackerSaveType, setupCancelButton, setupSaveButton}
+	settingPages.trackedList = {accountTrackersLabel, characterTrackersLabel, navLabel, returnToMainMenuButton}
 
-	settingPages.newTracker.general = {editTrackerLabel, trackerGeneralSection, generalLabel, setNewTrackerName, setNewTrackerType, setNewTrackerTargetType, setNewTrackerOverrideTexture, hideTracker}
-	settingPages.newTracker.visiblity = {visibilitySection, visibilityLabel, setRequiredSetID, setRequiredSkillID, setRequiredZone, appliedBySelf, hideInactive, hideActive}
-	settingPages.newTracker.abilities = {abilityIDListSection, abilityIDListLabel, setNewAbilityID, add1AbilityID}
-	settingPages.newTracker.position = {positionSection, positionLabel, newScale, newXOffset, newYOffset}
-	settingPages.newTracker.bar = {barSettingsSection, barSettingsLabel, setBarAlignment, setBarLength, setBarBackgroundColor, setBarEdgeColor, setUseBarEndColor, setBarStartColor, setBarEndColor}
-	settingPages.newTracker.columns = {listSettingsSection, listSettingsLabel, columnCount, horizontalSpacing, verticalSpacing}
+	settingPages.newTracker.general = {generalLabel, setNewTrackerName, setNewTrackerType, setNewTrackerTargetType, setNewTrackerOverrideTexture, hideTracker}
+	settingPages.newTracker.visiblity = {visibilityLabel, setRequiredSetID, setRequiredSkillID, setRequiredZone, appliedBySelf, hideInactive, hideActive, hideOutOfCombat}
+	settingPages.newTracker.abilities = {abilityIDListLabel, setNewAbilityID, add1AbilityID}
+	settingPages.newTracker.position = {positionLabel, newScale, newXOffset, newYOffset}
+	settingPages.newTracker.bar = {barSettingsLabel, setBarAlignment, setBarLength, setBarBackgroundColor, setBarEdgeColor, setUseBarEndColor, setBarStartColor, setBarEndColor}
+	settingPages.newTracker.columns = {listSettingsLabel, columnCount, horizontalSpacing, verticalSpacing}
 	settingPages.newTracker.text = {
-		duration = {durationSection, durationLabel, hideDuration, durationOverride, durationFontColor, durationFontScale, durationXOffset, durationYOffset},
-		stacks = {stacksSection, stacksLabel, hideStacks, stackFontColor, stackFontScale, stackXOffset, stackYOffset},
-		abilityName = {abilityNameSection, abilityNameLabel, hideAbilityLabel, abilityLabelFontColor, abilityLabelFontScale, abilityLabelXOffset, abilityLabelYOffset},
-		unitName = {unitNameSection, unitNameLabel, hideunitLabel, preferPlayerName, unitLabelFontColor, unitLabelFontScale, unitLabelXOffset, unitLabelYOffset}
+		duration = {durationLabel, hideDuration, durationOverride, durationFontColor, durationFontScale, durationXOffset, durationYOffset},
+		stacks = {stacksLabel, hideStacks, stackFontColor, stackFontScale, stackXOffset, stackYOffset},
+		abilityName = {abilityNameLabel, hideAbilityLabel, abilityLabelFontColor, abilityLabelFontScale, abilityLabelXOffset, abilityLabelYOffset},
+		unitName = {unitNameLabel, hideunitLabel, preferPlayerName, unitLabelFontColor, unitLabelFontScale, unitLabelXOffset, unitLabelYOffset}
 	}
-	settingPages.newTracker.editedNav = {navSection, navLabel, deleteTracker, copyTrackerToCharacter, copyTrackerToAccount, trackerCancelButton, trackerSaveButton}
-	settingPages.newTracker.newNav = {navSection, navLabel, setNewTrackerSaveType, trackerCancelButton, trackerSaveButton}
+	settingPages.newTracker.editedNav = {navLabel, deleteTracker, copyTrackerToCharacter, copyTrackerToAccount, trackerCancelButton, trackerSaveButton}
+	settingPages.newTracker.newNav = {navLabel, setNewTrackerSaveType, trackerCancelButton, trackerSaveButton}
 
 	-- I'm resorting to storing and calculating this so 
 	-- I don't have to edit a dozen lines every time I want to
 	-- put a setting before the abilityID
 	--
 	-- This is the index of the first abilityID textbox.
-	firstAbilityIDIndex = #settingPages.newTracker.general + #settingPages.newTracker.visiblity + 3
+	firstAbilityIDIndex = #settingPages.newTracker.general + #settingPages.newTracker.visiblity + 2
 
 	settings:AddSettings(settingPages.mainMenu)
 end

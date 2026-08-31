@@ -73,7 +73,40 @@ ImmersiveQuests.localization = {
 
 
 -- \/ PASTE CODE UNDER THIS LINE \/ -- -- \/ PASTE CODE UNDER THIS LINE \/ -- -- \/ PASTE CODE UNDER THIS LINE \/ -- 
-
+	[GetQuestName(4625)] = { --"Tears of the Two Moons"
+		[1] = 
+			{appendStepText="", stepTextKey="We should enter the temple courtyard and see what we can find of Rurelion."},
+		["Enter the Temple Courtyard"] =
+			{appendText=". Its gate faces westward, flanked by two massive lit braziers."},
+		[2] = 
+			{appendStepText="", stepTextKey="A skeleton spoke to us as we approached the temple courtyard."},
+		["Talk to the Skeleton"] =
+			{appendText=" at the top of the temple entrance steps. What is \"intricate stitching\" supposed to mean?"},
+		[3] = 
+			{appendStepText="", stepTextKey="The skeleton warned us away, claiming Rurelion is being held inside the temple. Gathwen told me magical wards block the temple entrance. I should look for spider and scorpion emblems marking the wards so she can disrupt them."},
+		["Disrupt the Temple Wards"] =
+			{appendText=" in the couryard. Gathwen might have more to say about where they are if I miss one. I'll have to protect her from any undead revenants while she works."},
+		[4] = 
+			{appendStepText="", stepTextKey="Gathwen destroyed the wards blocking entrance to the temple. We need to enter the temple's catacombs to search for her master."},
+		["Enter the Temple Catacombs"] =
+			{appendText=" using any of the trapdoors housed in the rooms along the back of the temple courtyard."},
+		[5] = 
+			{appendStepText="", stepTextKey="A strange barrier seals the door leading further into the temple. Gathwen thinks the cycle of both moons is key to breaking the seal."},
+		["Disrupt the Barrier"] =
+			{appendText=". Perhaps the pillars around the room have some significance. Gathwen is a researcher after all, so her suggestion about the cycle of the moons may be useful to keep in mind as well."},
+		[6] = 
+			{appendStepText="", stepTextKey="I broke the barrier leading further into the temple, but Gathwen wants to speak with me before we proceed."},
+		["Talk to Gathwen"] =
+			{appendText=" outside the door to the catacombs' Central Ruins."},
+		[7] = 
+			{appendStepText="", stepTextKey="Gathwen fears her master is in grave danger. She urges caution as we proceed to the temple's central ruins."},
+		["Find Rurelion"] =
+			{appendText=" deeper in the Temple Catacombs. The scrolls of his research scattered around down here may give us an idea of what happened to him, unless we can find the skeleton that took his body."},
+		[8] = 
+			{appendStepText="", stepTextKey="Rurelion appears to be possessed by a spirit named Uldor, who plans to raise an undead army. Harming Uldor would harm Rurelion. To avoid this, Gathwen and I must stop Uldor's summoning ritual."},
+		["Disrupt Uldor's Summoning Ritual"] =
+			{appendText=""},
+	},
 -- /\ PASTE CODE ABOVE THIS LINE /\ ---- /\ PASTE CODE ABOVE THIS LINE /\ ---- /\ PASTE CODE ABOVE THIS LINE /\ --
 
 

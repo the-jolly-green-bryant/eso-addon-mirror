@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+; and/or other countries. All rights reserved.
+
+## Title: |cada684ChatEx|r
+## Description: EN: Movable mirror windows for keyboard chat tabs. DE: Verschiebbare Spiegelfenster für Tastatur-Chatreiter.
+## Author: |cFFFF00@Trobo|r
+## Credits: ZeniMax Online Studios UI team; pChat; rChat; PerfectPixel
+## Version: 2.5.1
+## AddOnVersion: 205001
+## APIVersion: 101050 101051
+## SavedVariables: ChatEx_SavedVariables
+## OptionalDependsOn: pChat rChat PerfectPixel
+
+lang/default.lua
+lang/$(officialLanguage).lua
+
+ChatEx.lua

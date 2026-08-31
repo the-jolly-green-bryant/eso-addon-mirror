@@ -1,6 +1,6 @@
 local ADDON_NAME = "TamrielProgressMap"
 local DISPLAY_NAME = "Tamriel Progress Map"
-local VERSION = "2.4.57"
+local VERSION = "2.6.30_Beta"
 local AUTHOR = "Raccoonplayz"
 local PIN_TYPE_STRING = "TamrielProgressMap_ZoneProgressPin"
 
@@ -53,6 +53,17 @@ local DEFAULTS =
     statisticsWindowScale = 100,
     statisticsSortMode = "progress",
     statisticsPage = "progress",
+    statisticsCompletionPage = 1, -- 2.6.0: 1=zone completion, 2=collections, 3=achievements
+    statisticsCategorySortMode = "all", -- 2.6.8: all/name/asc/desc for the three completion sub-pages
+    skyshardGoalEnabled = false, -- personal zone-aware Skyshard goal HUD
+    skyshardGoalPosition = 1, -- 2.6.15: 1=directly above Tamriel Tomes, 2=directly below
+    skyshardGoalCustomPosition = false, -- 2.6.21: user-dragged HUD position overrides automatic slot 1/2
+    skyshardGoalCustomX = false,
+    skyshardGoalCustomY = false,
+    skyshardGoalCustomWidth = false, -- 2.6.25: optional user-sized HUD width
+    skyshardGoalCustomHeight = false, -- 2.6.25: optional user-sized HUD height
+    progressGoalCategoryType = false, -- 2.6.26: currently selected progress-category HUD row
+    statisticsFocusZoneId = 0, -- 2.6.14: 0=all Tamriel, otherwise one supported progress zone
     combatStatsByCharacter = {},
     economyStats = { trackingVersion = "2.0.10", currencies = {} }, -- legacy account-wide ledger from 2.0.10-2.0.14
     economyStatsByCharacter = {},
@@ -207,6 +218,29 @@ local COMPLETION_TYPES =
     ZONE_COMPLETION_TYPE_MAGES_GUILD_BOOKS,
 }
 
+-- Progress sub-pages: zone completion, Collections and Achievements.
+-- Keep the API constants as names and resolve them at runtime so a missing or
+-- renamed category can never prevent the addon from loading after an ESO update.
+-- These collection counters are informational only and NEVER change Tamriel %.
+local COLLECTION_STAT_DEFINITIONS =
+{
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_MOUNT",                labelKey = "STAT_COLLECTION_MOUNTS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_VANITY_PET",           labelKey = "STAT_COLLECTION_PETS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_COSTUME",              labelKey = "STAT_COLLECTION_COSTUMES" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_PERSONALITY",          labelKey = "STAT_COLLECTION_PERSONALITIES" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_POLYMORPH",            labelKey = "STAT_COLLECTION_POLYMORPHS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_SKIN",                 labelKey = "STAT_COLLECTION_SKINS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_MEMENTO",              labelKey = "STAT_COLLECTION_MEMENTOS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_EMOTE",                labelKey = "STAT_COLLECTION_EMOTES" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_HOUSE",                labelKey = "STAT_COLLECTION_HOUSES" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_HAT",                  labelKey = "STAT_COLLECTION_HATS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING",         labelKey = "STAT_COLLECTION_BODY_MARKINGS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING",         labelKey = "STAT_COLLECTION_HEAD_MARKINGS" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_HAIR",                 labelKey = "STAT_COLLECTION_HAIR" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY",     labelKey = "STAT_COLLECTION_FACIAL_ACCESSORIES" },
+    { typeGlobal = "COLLECTIBLE_CATEGORY_TYPE_COMBINATION_FRAGMENT", labelKey = "STAT_COLLECTION_FRAGMENTS" },
+}
+
 local COMPLETION_LOCALIZATION_KEYS =
 {
     [ZONE_COMPLETION_TYPE_PRIORITY_QUESTS] = "CAT_QUESTS",
@@ -226,6 +260,50 @@ local COMPLETION_LOCALIZATION_KEYS =
 
 local SIDE_QUEST_CATEGORY_KEY = "side_quests"
 local CROWN_QUEST_CATEGORY_KEY = "crown_quests"
+local ZONE_STABLE_MOUNT_CATEGORY_KEY = "zone_stable_mount"
+
+-- Update 49 stablemaster mounts that are intentionally tied to specific zones.
+-- This is an informational Zone Focus row only; it never changes ESO's native
+-- Zone Guide percentage. Zone IDs are stable game identifiers, so the mapping
+-- is independent from the client/TPM language.
+local ZONE_STABLEMASTER_MOUNTS =
+{
+    [1011] = { name = "Highland Spotted Lynx", price = 100000 }, -- Summerset
+    [888]  = { name = "Highland Spotted Lynx", price = 100000 }, -- Craglorn
+    [381]  = { name = "Ja'zennji Siir Fox", price = 50000 }, -- Auridon
+    [1261] = { name = "Ja'zennji Siir Fox", price = 50000 }, -- Blackwood
+    [108]  = { name = "Noble Riverhold Senche-Lion", price = 50000 }, -- Greenshade
+    [20]   = { name = "Noble Riverhold Senche-Lion", price = 50000 }, -- Rivenspire
+    [383]  = { name = "Faunfrolic Great Elk", price = 200000 }, -- Grahtwood
+    [58]   = { name = "Faunfrolic Great Elk", price = 200000 }, -- Malabal Tor
+    [1318] = { name = "Faunfrolic Great Elk", price = 200000 }, -- High Isle
+    [382]  = { name = "Senche-Cougar", price = 50000 }, -- Reaper's March
+    [1086] = { name = "Spotted Duneracer Senche-raht", price = 200000 }, -- Northern Elsweyr
+    [1133] = { name = "Spotted Duneracer Senche-raht", price = 200000 }, -- Southern Elsweyr
+    [726]  = { name = "Shadowghost Guar", price = 50000 }, -- Murkmire
+    [117]  = { name = "Shadowghost Guar", price = 50000 }, -- Shadowfen
+    [41]   = { name = "Shadowghost Guar", price = 50000 }, -- Stonefalls
+    [1502] = { name = "Frostborn Durzog Mangler", price = 100000 }, -- Solstice
+    [347]  = { name = "Frostborn Durzog Mangler", price = 100000 }, -- Coldharbour
+    [1282] = { name = "Frostborn Durzog Mangler", price = 100000 }, -- Fargrave
+    [57]   = { name = "Hearthfire Kagouti", price = 100000 }, -- Deshaan
+    [1414] = { name = "Rubyflare Torchnix", price = 100000 }, -- Telvanni Peninsula
+    [849]  = { name = "Rubyflare Torchnix", price = 100000 }, -- Vvardenfell
+    [103]  = { name = "Yorgrim River Ram", price = 100000 }, -- The Rift
+    [101]  = { name = "Yorgrim River Ram", price = 100000 }, -- Eastmarch
+    [19]   = { name = "Yorgrim River Ram", price = 100000 }, -- Stormhaven
+    [1160] = { name = "Ashbone Sabre Cat", price = 100000 }, -- Western Skyrim
+    [92]   = { name = "Ashbone Sabre Cat", price = 100000 }, -- Bangkorai
+    [1207] = { name = "Snow Bear", price = 50000 }, -- The Reach
+    [684]  = { name = "Snow Bear", price = 50000 }, -- Wrothgar
+    [3]    = { name = "Bleakrock Snowdog", price = 50000 }, -- Glenumbra
+    [1383] = { name = "Bleakrock Snowdog", price = 50000 }, -- Galen
+    [104]  = { name = "Hammerfell Camel", price = 50000 }, -- Alik'r Desert
+    [816]  = { name = "Hammerfell Camel", price = 50000 }, -- Hew's Bane
+    [823]  = { name = "Sapiarchic Senche-Serval", price = 100000 }, -- Gold Coast
+    [1443] = { name = "Sapiarchic Senche-Serval", price = 100000 }, -- West Weald
+    [980]  = { name = "Ebon Dwarven Horse", price = 400000 }, -- Clockwork City
+}
 
 local STATISTICS_CATEGORY_ICON_TEXTURES =
 {
@@ -244,6 +322,7 @@ local STATISTICS_CATEGORY_ICON_TEXTURES =
     [ZONE_COMPLETION_TYPE_MAGES_GUILD_BOOKS] = "TamrielProgressMap/art/cat_book.dds",
     [SIDE_QUEST_CATEGORY_KEY] = "TamrielProgressMap/art/cat_sidequests.dds",
     [CROWN_QUEST_CATEGORY_KEY] = "TamrielProgressMap/art/cat_crown.dds",
+    [ZONE_STABLE_MOUNT_CATEGORY_KEY] = "TamrielProgressMap/art/cat_crown.dds",
 }
 local ESO_GOLD_HEX = "E6C45C"
 local SIDE_QUEST_SCAN_MAX_ID = 12000
@@ -759,7 +838,9 @@ function TPM:GetEconomyStats()
         if definition.key == "gold" then
             entry.fenceSales = math.max(0, Round(tonumber(entry.fenceSales) or 0))
             entry.stolenGold = math.max(0, Round(tonumber(entry.stolenGold) or 0))
+            entry.bountyPaid = math.max(0, Round(tonumber(entry.bountyPaid) or 0))
             entry.crimeTrackingVersion = entry.crimeTrackingVersion or "3.4.24"
+            entry.bountyTrackingVersion = entry.bountyTrackingVersion or "2.6.22"
         end
     end
     return stats
@@ -872,6 +953,33 @@ function TPM:RecordEconomyCurrencyChange(currencyType, currencyLocation, newAmou
             self:RefreshHistoryStatisticsPage()
         end
     end
+end
+
+
+-- v2.6.22 Justice / bounty payments -------------------------------------------
+-- EVENT_JUSTICE_GOLD_REMOVED is ESO's dedicated notification for gold removed
+-- by the Justice system. Keep it as a subcategory of normal Gold "Spent"; the
+-- regular currency event already accounts for the wallet loss, so this function
+-- must never add the amount to entry.spent a second time.
+function TPM:RecordEconomyBountyPayment(goldAmount)
+    goldAmount = math.max(0, Round(tonumber(goldAmount) or 0))
+    if goldAmount <= 0 then return end
+
+    local stats = self:GetEconomyStats()
+    local entry = stats and stats.currencies and stats.currencies.gold
+    if not entry then return end
+
+    entry.bountyPaid = math.max(0, Round((tonumber(entry.bountyPaid) or 0) + goldAmount))
+    entry.bountyTrackingVersion = entry.bountyTrackingVersion or "2.6.22"
+
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
+        if self.saved.statisticsPage == "economy" then
+            self:RefreshEconomyStatisticsPage()
+        elseif self.saved.statisticsPage == "history" then
+            self:RefreshHistoryStatisticsPage()
+        end
+    end
+    self:QueueEconomyHistoryCheckpoint()
 end
 
 
@@ -1341,6 +1449,165 @@ function TPM:PruneWorldEventTrackers()
     end
 end
 
+-- 2.6.2: Some classic World Events (especially Dark Anchors/Dolmens) can
+-- activate/deactivate without a reliable PARTICIPATION_BEGIN callback on every
+-- client/event path. Keep a lightweight candidate from activation and promote it
+-- only when ESO also gives evidence that the player is at that event (near/inside
+-- its POI plus combat, XP or Gold). This avoids the old zone-wide false positives.
+function TPM:DiscoverCurrentZoneWorldEventCandidates(force)
+    if type(GetPOIWorldEventInstanceId) ~= "function" or type(GetNumPOIs) ~= "function" then return 0 end
+
+    local nowMs = type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds() or (TPM_Now() * 1000)
+    if not force and tonumber(self.lastWorldEventPoiScanAtMs) and (nowMs - self.lastWorldEventPoiScanAtMs) < 700 then
+        return tonumber(self.lastWorldEventPoiScanCount) or 0
+    end
+    self.lastWorldEventPoiScanAtMs = nowMs
+
+    local _, playerZoneIndex = self:GetCurrentPlayerZoneIdentity()
+    playerZoneIndex = tonumber(playerZoneIndex) or 0
+    if playerZoneIndex <= 0 then
+        self.lastWorldEventPoiScanCount = 0
+        return 0
+    end
+
+    local okCount, poiCount = pcall(GetNumPOIs, playerZoneIndex)
+    if not okCount or type(poiCount) ~= "number" or poiCount <= 0 then
+        self.lastWorldEventPoiScanCount = 0
+        return 0
+    end
+
+    local found = 0
+    for poiIndex = 1, poiCount do
+        local ok, instanceId = pcall(GetPOIWorldEventInstanceId, playerZoneIndex, poiIndex)
+        instanceId = ok and (tonumber(instanceId) or 0) or 0
+        if instanceId > 0 then
+            found = found + 1
+            self:ObserveWorldEventActivation(instanceId)
+        end
+    end
+    self.lastWorldEventPoiScanCount = found
+    return found
+end
+
+function TPM:IsWorldEventInPlayerZone(metadata)
+    if type(metadata) ~= "table" then return false end
+    local _, playerZoneIndex = self:GetCurrentPlayerZoneIdentity()
+    playerZoneIndex = tonumber(playerZoneIndex) or 0
+    local eventZoneIndex = tonumber(metadata.zoneIndex) or 0
+    return playerZoneIndex > 0 and eventZoneIndex > 0 and playerZoneIndex == eventZoneIndex
+end
+
+function TPM:IsPlayerNearWorldEvent(metadata)
+    if type(metadata) ~= "table" then return false end
+    local zoneIndex = tonumber(metadata.zoneIndex) or 0
+    local poiIndex = tonumber(metadata.poiIndex) or 0
+    if zoneIndex <= 0 or poiIndex <= 0 then return false end
+
+    if type(GetCurrentSubZonePOIIndices) == "function" then
+        local ok, currentZoneIndex, currentPoiIndex = pcall(GetCurrentSubZonePOIIndices)
+        if ok and tonumber(currentZoneIndex) == zoneIndex and tonumber(currentPoiIndex) == poiIndex then
+            return true
+        end
+    end
+
+    -- isNearby is independent of the player's discovery state and is a useful
+    -- fallback when ESO does not expose the current sub-zone POI directly.
+    if type(GetPOIMapInfo) == "function" then
+        local ok, _, _, _, _, _, _, _, isNearby = pcall(GetPOIMapInfo, zoneIndex, poiIndex)
+        if ok and isNearby == true then return true end
+    end
+
+    -- Some POIs (notably active Dark Anchors) do not always report isNearby at
+    -- the exact moment combat/XP arrives. Matching ESO's current location name
+    -- to the event POI is a safe additional local signal.
+    local poiName = TPM_WorldEventNormalizeText(metadata.poiName)
+    local playerLocation = TPM_WorldEventNormalizeText(metadata.playerLocation)
+    if poiName ~= "" and playerLocation ~= "" and poiName == playerLocation then return true end
+    return false
+end
+
+function TPM:ObserveWorldEventActivation(worldEventInstanceId, stepDefId)
+    local id = tonumber(worldEventInstanceId) or 0
+    if id <= 0 then return end
+    self.worldEventTrackers = self.worldEventTrackers or {}
+    self:PruneWorldEventTrackers()
+
+    local tracker = self.worldEventTrackers[id]
+    local metadata = self:GetWorldEventMetadata(id, stepDefId)
+    if type(tracker) ~= "table" then
+        local now = TPM_Now()
+        tracker = {
+            instanceId = id,
+            startedAt = now,
+            startCounters = self:GetWorldEventCombatCounterSnapshot(),
+            goldEarned = 0,
+            xpEarned = 0,
+            observedNpcKills = 0,
+            observedBossKills = 0,
+            observedPveDeaths = 0,
+            everParticipated = false,
+            participating = false,
+            activationCandidate = true,
+            evidenceCount = 0,
+        }
+        self.worldEventTrackers[id] = tracker
+    end
+    tracker.metadata = metadata
+    tracker.kind = self:ClassifyWorldEvent(metadata)
+    tracker.name = self:GetWorldEventDisplayName(metadata, tracker.kind)
+    tracker.stepDefId = tonumber(stepDefId) or tracker.stepDefId or 0
+    tracker.lastSeenAt = TPM_Now()
+end
+
+function TPM:MarkNearbyWorldEventParticipationEvidence(evidenceKind)
+    -- If the event was already active when the player entered the area, the
+    -- activation callback may have happened before TPM could see it. Ask the
+    -- current zone POIs for their live World Event instance ids as a fallback.
+    self:DiscoverCurrentZoneWorldEventCandidates(false)
+    if type(self.worldEventTrackers) ~= "table" then return false end
+
+    local now = TPM_Now()
+    local marked = false
+    local sameZoneCandidates = {}
+
+    local function MarkTracker(id, tracker)
+        if type(tracker) ~= "table" or tracker.deactivatedAt then return false end
+        tracker.everParticipated = true
+        tracker.participating = true
+        tracker.evidenceCount = (tonumber(tracker.evidenceCount) or 0) + 1
+        tracker.lastEvidenceKind = tostring(evidenceKind or "unknown")
+        tracker.lastEvidenceAt = now
+        tracker.lastSeenAt = now
+        self:MarkDynamicEncounterActivity(id)
+        return true
+    end
+
+    for id, tracker in pairs(self.worldEventTrackers) do
+        if type(tracker) == "table" and not tracker.deactivatedAt then
+            self:UpdateWorldEventTrackerMetadata(id, tracker.stepDefId)
+            if self:IsWorldEventInPlayerZone(tracker.metadata) then
+                sameZoneCandidates[#sameZoneCandidates + 1] = { id = id, tracker = tracker }
+                if self:IsPlayerNearWorldEvent(tracker.metadata) then
+                    if MarkTracker(id, tracker) then marked = true end
+                end
+            end
+        end
+    end
+
+    if marked then return true end
+
+    -- Dark Anchors normally have only one active World Event POI in a zone.
+    -- If ESO withholds the proximity flag but there is exactly one active event
+    -- in the player's zone, combat/XP/Gold is strong enough evidence to promote
+    -- that candidate. For zones with multiple simultaneous events we stay
+    -- conservative to avoid assigning activity to the wrong dragon/event.
+    if #sameZoneCandidates == 1 then
+        local candidate = sameZoneCandidates[1]
+        return MarkTracker(candidate.id, candidate.tracker)
+    end
+    return false
+end
+
 function TPM:BeginWorldEventParticipation(worldEventInstanceId, stepDefId)
     local id = tonumber(worldEventInstanceId) or 0
     if id <= 0 then return end
@@ -1357,6 +1624,9 @@ function TPM:BeginWorldEventParticipation(worldEventInstanceId, stepDefId)
             startCounters = self:GetWorldEventCombatCounterSnapshot(),
             goldEarned = 0,
             xpEarned = 0,
+            observedNpcKills = 0,
+            observedBossKills = 0,
+            observedPveDeaths = 0,
             everParticipated = true,
         }
         self.worldEventTrackers[id] = tracker
@@ -1367,6 +1637,8 @@ function TPM:BeginWorldEventParticipation(worldEventInstanceId, stepDefId)
     tracker.stepDefId = tonumber(stepDefId) or tracker.stepDefId or 0
     tracker.participating = true
     tracker.everParticipated = true
+    tracker.activationCandidate = tracker.activationCandidate == true
+    tracker.evidenceCount = math.max(1, tonumber(tracker.evidenceCount) or 0)
     tracker.lastSeenAt = now
     tracker.participationEndedAt = nil
     tracker.endCounters = nil
@@ -1375,8 +1647,11 @@ end
 
 function TPM:UpdateWorldEventTrackerMetadata(worldEventInstanceId, stepDefId)
     local id = tonumber(worldEventInstanceId) or 0
-    if id <= 0 or type(self.worldEventTrackers) ~= "table" then return end
-    local tracker = self.worldEventTrackers[id]
+    if id <= 0 then return end
+    if type(self.worldEventTrackers) ~= "table" or type(self.worldEventTrackers[id]) ~= "table" then
+        self:ObserveWorldEventActivation(id, stepDefId)
+    end
+    local tracker = type(self.worldEventTrackers) == "table" and self.worldEventTrackers[id] or nil
     if type(tracker) ~= "table" then return end
 
     local fresh = self:GetWorldEventMetadata(id, stepDefId or tracker.stepDefId)
@@ -1420,6 +1695,7 @@ end
 function TPM:RecordWorldEventGoldGain(delta)
     delta = tonumber(delta) or 0
     if delta <= 0 or type(self.worldEventTrackers) ~= "table" then return end
+    self:MarkNearbyWorldEventParticipationEvidence("gold")
     local now = TPM_Now()
     for _, tracker in pairs(self.worldEventTrackers) do
         local endedAt = tonumber(tracker.participationEndedAt or tracker.deactivatedAt) or 0
@@ -1434,6 +1710,7 @@ function TPM:RecordWorldEventExperienceGain(gained, source)
     gained = tonumber(gained) or 0
     if gained <= 0 or type(self.worldEventTrackers) ~= "table" then return end
     source = tostring(source or "unknown")
+    self:MarkNearbyWorldEventParticipationEvidence("xp")
 
     -- EVENT_EXPERIENCE_GAIN and EVENT_EXPERIENCE_UPDATE can describe the same
     -- XP change. Use both for reliability, but suppress only a matching value
@@ -1458,6 +1735,40 @@ function TPM:RecordWorldEventExperienceGain(gained, source)
         if tracker.participating or (tracker.everParticipated and endedAt > 0 and now - endedAt <= 10) then
             tracker.xpEarned = math.max(0, (tonumber(tracker.xpEarned) or 0) + gained)
             tracker.lastSeenAt = now
+        end
+    end
+end
+
+-- 2.6.6: attribute combat events directly to a confirmed active World Event.
+-- Counter snapshots remain as a fallback, but explicit event-local counters avoid
+-- losing kills when ESO reports PARTICIPATION_BEGIN late during a Dolmen.
+function TPM:RecordWorldEventPveKill(kind)
+    if type(self.worldEventTrackers) ~= "table" then return end
+    local now = TPM_Now()
+    for _, tracker in pairs(self.worldEventTrackers) do
+        if type(tracker) == "table" and tracker.everParticipated then
+            local endedAt = tonumber(tracker.participationEndedAt or tracker.deactivatedAt) or 0
+            if tracker.participating or (endedAt > 0 and now - endedAt <= 10) then
+                tracker.observedNpcKills = math.max(0, (tonumber(tracker.observedNpcKills) or 0) + 1)
+                if kind == "killBoss" then
+                    tracker.observedBossKills = math.max(0, (tonumber(tracker.observedBossKills) or 0) + 1)
+                end
+                tracker.lastSeenAt = now
+            end
+        end
+    end
+end
+
+function TPM:RecordWorldEventPveDeath()
+    if type(self.worldEventTrackers) ~= "table" then return end
+    local now = TPM_Now()
+    for _, tracker in pairs(self.worldEventTrackers) do
+        if type(tracker) == "table" and tracker.everParticipated then
+            local endedAt = tonumber(tracker.participationEndedAt or tracker.deactivatedAt) or 0
+            if tracker.participating or (endedAt > 0 and now - endedAt <= 10) then
+                tracker.observedPveDeaths = math.max(0, (tonumber(tracker.observedPveDeaths) or 0) + 1)
+                tracker.lastSeenAt = now
+            end
         end
     end
 end
@@ -1491,9 +1802,15 @@ function TPM:FinalizeWorldEventActivity(worldEventInstanceId)
         startedAt = tonumber(tracker.startedAt) or now,
         endedAt = now,
         timestamp = now,
-        npcKillsDelta = math.max(0, (tonumber(endCounters.npcKills) or 0) - (tonumber(startCounters.npcKills) or 0)),
-        bossKillsDelta = math.max(0, (tonumber(endCounters.bossKills) or 0) - (tonumber(startCounters.bossKills) or 0)),
-        pveDeathsDelta = math.max(0, (tonumber(endCounters.pveDeaths) or 0) - (tonumber(startCounters.pveDeaths) or 0)),
+        npcKillsDelta = (tonumber(tracker.observedNpcKills) or 0) > 0
+            and math.max(0, tonumber(tracker.observedNpcKills) or 0)
+            or math.max(0, (tonumber(endCounters.npcKills) or 0) - (tonumber(startCounters.npcKills) or 0)),
+        bossKillsDelta = (tonumber(tracker.observedBossKills) or 0) > 0
+            and math.max(0, tonumber(tracker.observedBossKills) or 0)
+            or math.max(0, (tonumber(endCounters.bossKills) or 0) - (tonumber(startCounters.bossKills) or 0)),
+        pveDeathsDelta = (tonumber(tracker.observedPveDeaths) or 0) > 0
+            and math.max(0, tonumber(tracker.observedPveDeaths) or 0)
+            or math.max(0, (tonumber(endCounters.pveDeaths) or 0) - (tonumber(startCounters.pveDeaths) or 0)),
         pvpKillsDelta = math.max(0, (tonumber(endCounters.pvpKills) or 0) - (tonumber(startCounters.pvpKills) or 0)),
         pvpDeathsDelta = math.max(0, (tonumber(endCounters.pvpDeaths) or 0) - (tonumber(startCounters.pvpDeaths) or 0)),
         participatedWorldEvent = true,
@@ -1505,15 +1822,32 @@ function TPM:DeactivateWorldEvent(worldEventInstanceId)
     if id <= 0 then return end
     local tracker = type(self.worldEventTrackers) == "table" and self.worldEventTrackers[id] or nil
     self:ClearDynamicEncounterActivity(id)
-    if type(tracker) ~= "table" or not tracker.everParticipated then return end
+    if type(tracker) ~= "table" then return end
+
+    -- Last chance for classic Dolmens: the player may still be standing inside
+    -- the POI when DEACTIVATED arrives even if PARTICIPATION_BEGIN was omitted.
+    if not tracker.everParticipated and (tonumber(tracker.evidenceCount) or 0) > 0 and self:IsPlayerNearWorldEvent(tracker.metadata) then
+        tracker.everParticipated = true
+        tracker.participating = true
+    end
+    if not tracker.everParticipated then
+        self.worldEventTrackers[id] = nil
+        return
+    end
 
     local now = TPM_Now()
     -- If participation ended long before the event deactivated, the player
     -- walked away rather than completing it. Do not log that as a completion.
     local participationEndedAt = tonumber(tracker.participationEndedAt) or 0
-    if not tracker.participating and participationEndedAt > 0 and now - participationEndedAt > 30 then
-        self.worldEventTrackers[id] = nil
-        return
+    if not tracker.participating and participationEndedAt > 0 then
+        local lastEvidenceAt = tonumber(tracker.lastEvidenceAt) or participationEndedAt
+        -- PARTICIPATION_END can arrive noticeably before the visual World Event
+        -- fully deactivates. Keep a wider completion grace, but still discard a
+        -- tracker if the player has clearly been away for two minutes.
+        if now - participationEndedAt > 120 and now - lastEvidenceAt > 120 then
+            self.worldEventTrackers[id] = nil
+            return
+        end
     end
 
     if tracker.participating then
@@ -1625,6 +1959,50 @@ function TPM:IsKnownBossName(name)
         if normalizedBoss ~= "" and normalizedBoss == normalizedName then return true end
     end
     return false
+end
+
+function TPM:RememberPlayerPveCombatTarget(targetName, targetUnitId, targetType)
+    local cleanName, normalizedName = self:NormalizeCombatUnitName(targetName)
+    local numericTargetId = tonumber(targetUnitId) or 0
+    if cleanName == "" and numericTargetId <= 0 then return end
+    if _G.COMBAT_UNIT_TYPE_NONE ~= nil and targetType ~= nil and targetType ~= _G.COMBAT_UNIT_TYPE_NONE then return end
+
+    self.recentPlayerPveCombatTargets = self.recentPlayerPveCombatTargets or {}
+    local nowMs = TPM_KillLogNowMs()
+    local snapshot = cleanName ~= "" and self:GetPveKillSnapshot(cleanName) or nil
+    local entry = {
+        name = cleanName,
+        normalizedName = normalizedName,
+        targetUnitId = numericTargetId,
+        atMs = nowMs,
+        difficulty = snapshot and snapshot.difficulty or nil,
+        livestock = snapshot and snapshot.livestock or false,
+        critter = snapshot and snapshot.critter or false,
+    }
+    table.insert(self.recentPlayerPveCombatTargets, 1, entry)
+    for i = #self.recentPlayerPveCombatTargets, 1, -1 do
+        local item = self.recentPlayerPveCombatTargets[i]
+        if i > 64 or type(item) ~= "table" or (nowMs - (tonumber(item.atMs) or 0)) > 15000 then
+            table.remove(self.recentPlayerPveCombatTargets, i)
+        end
+    end
+end
+
+function TPM:GetRecentPlayerPveCombatTarget(targetUnitId, targetName)
+    local numericTargetId = tonumber(targetUnitId) or 0
+    local _, normalizedName = self:NormalizeCombatUnitName(targetName)
+    local nowMs = TPM_KillLogNowMs()
+    for _, entry in ipairs(self.recentPlayerPveCombatTargets or {}) do
+        if type(entry) == "table" then
+            local age = nowMs - (tonumber(entry.atMs) or 0)
+            if age >= 0 and age <= 15000 then
+                local sameUnit = numericTargetId > 0 and tonumber(entry.targetUnitId) == numericTargetId
+                local sameName = normalizedName ~= "" and entry.normalizedName == normalizedName
+                if sameUnit or sameName then return entry end
+            end
+        end
+    end
+    return nil
 end
 
 function TPM:GetPveKillSnapshot(targetName)
@@ -2106,9 +2484,80 @@ function TPM:GetCachedQuestCompletionData(questName)
     return cached
 end
 
+local function TPM_GetLogDateText(timestamp)
+    timestamp = tonumber(timestamp) or TPM_Now()
+    if type(GetDateStringFromTimestamp) == "function" then
+        local ok, value = pcall(GetDateStringFromTimestamp, timestamp)
+        if ok and type(value) == "string" and value ~= "" then return value end
+    end
+    return ""
+end
+
+local function TPM_GetCurrentLogTimeText()
+    -- GetSecondsSinceMidnight is the most reliable ESO source for the local
+    -- player clock. Prefer it over GetTimeString, whose return format differs
+    -- between client locales and UI settings.
+    if type(GetSecondsSinceMidnight) == "function" then
+        local ok, seconds = pcall(GetSecondsSinceMidnight)
+        seconds = ok and tonumber(seconds) or nil
+        if seconds then
+            local hours = math.floor(seconds / 3600) % 24
+            local minutes = math.floor(seconds / 60) % 60
+            return string.format("%02d:%02d", hours, minutes)
+        end
+    end
+    if type(GetTimeString) == "function" then
+        local ok, value = pcall(GetTimeString)
+        if ok and type(value) == "string" and value ~= "" then
+            local hh, mm = value:match("(%d%d?)[:%.](%d%d)")
+            if hh and mm then return string.format("%02d:%02d", tonumber(hh) or 0, tonumber(mm) or 0) end
+        end
+    end
+    return ""
+end
+
+local function TPM_GetLogTimeTextFromTimestamp(timestamp)
+    timestamp = tonumber(timestamp) or 0
+    if timestamp <= 0 then return "" end
+
+    -- Recover local clock time for old entries too. GetTimeStamp is epoch based,
+    -- while GetSecondsSinceMidnight reflects the client's local clock. Their
+    -- difference gives us the current local offset without requiring os.date.
+    if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
+        local okStamp, nowStamp = pcall(GetTimeStamp)
+        local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
+        nowStamp = okStamp and tonumber(nowStamp) or nil
+        localSeconds = okLocal and tonumber(localSeconds) or nil
+        if nowStamp and localSeconds then
+            local utcSeconds = nowStamp % 86400
+            local offset = localSeconds - utcSeconds
+            if offset > 43200 then offset = offset - 86400 end
+            if offset < -43200 then offset = offset + 86400 end
+            local seconds = (timestamp + offset) % 86400
+            local hours = math.floor(seconds / 3600) % 24
+            local minutes = math.floor(seconds / 60) % 60
+            return string.format("%02d:%02d", hours, minutes)
+        end
+    end
+    return ""
+end
+
+function TPM:FormatLogTimestamp(entry)
+    if type(entry) ~= "table" then return "" end
+    local dateText = tostring(entry.logDateText or "")
+    if dateText == "" then dateText = TPM_GetLogDateText(entry.timestamp) end
+    local timeText = tostring(entry.logTimeText or "")
+    if timeText == "" then timeText = TPM_GetLogTimeTextFromTimestamp(entry.timestamp) end
+    if dateText ~= "" and timeText ~= "" then return dateText .. " • " .. timeText end
+    return dateText ~= "" and dateText or timeText
+end
+
 function TPM:AddActivityLogEntry(entry)
     if type(entry) ~= "table" then return end
     if not TPM_IsMeaningfulDynamicEncounter(entry) then return end
+    entry.timestamp = tonumber(entry.timestamp) or TPM_Now()
+    if tostring(entry.logDateText or "") == "" then entry.logDateText = TPM_GetLogDateText(entry.timestamp) end
+    if tostring(entry.logTimeText or "") == "" then entry.logTimeText = TPM_GetCurrentLogTimeText() end
     local store = self:GetHistoryStore()
     if not store then return end
     local isCombat = self:IsCombatLogKind(entry.activityKind)
@@ -2121,9 +2570,16 @@ function TPM:AddActivityLogEntry(entry)
     -- hide a later event with the same location/name.
     if self:IsWorldEventActivityKind(entry.activityKind) and tonumber(entry.worldEventInstanceId) and tonumber(entry.worldEventInstanceId) > 0 then
         local incomingId = tonumber(entry.worldEventInstanceId)
+        local incomingTime = tonumber(entry.timestamp) or TPM_Now()
         for i = #list, math.max(1, #list - 8), -1 do
             local previous = list[i]
-            if type(previous) == "table" and tonumber(previous.worldEventInstanceId) == incomingId then return end
+            if type(previous) == "table" and tonumber(previous.worldEventInstanceId) == incomingId then
+                -- ESO may reuse the same World Event instance id when the same
+                -- Dolmen/location activates again later. Only suppress callbacks
+                -- from the *same completion*, not a later legitimate run.
+                local previousTime = tonumber(previous.timestamp) or 0
+                if previousTime > 0 and math.abs(incomingTime - previousTime) <= 15 then return end
+            end
         end
     end
 
@@ -3813,6 +4269,1009 @@ function TPM:GetResolvedCompletion(zoneId)
 end
 
 
+-- 2.6.14: Match the native HUD lifecycle. Tamriel Tomes is visible on the
+-- HUD/HUD-UI scenes, but disappears when the world map (M), game menu (ESC) or
+-- another full-screen scene takes over. The Skyshard goal now follows exactly
+-- that scene rule instead of being an always-on top-level overlay.
+function TPM:IsSkyshardGoalHudSceneVisible()
+    -- Use the scene manager's *current* scene first. A HUD scene can still be
+    -- technically in a shown state while another full-screen scene is taking
+    -- over. Requiring HUD/HUD-UI to be the current scene makes the TPM block
+    -- disappear on M, ESC, inventory and other full-screen menus exactly like
+    -- ESO's native tracker instead of behaving like an always-on overlay.
+    local sceneManager = _G.SCENE_MANAGER
+    if sceneManager and type(sceneManager.GetCurrentScene) == "function" then
+        local ok, currentScene = pcall(sceneManager.GetCurrentScene, sceneManager)
+        if ok and currentScene then
+            if currentScene == _G.HUD_SCENE or currentScene == _G.HUD_UI_SCENE then
+                return true
+            end
+            return false
+        end
+    end
+
+    -- Compatibility fallback for clients where the scene manager is not yet
+    -- fully initialized during addon startup.
+    local function SceneVisible(scene)
+        if not scene then return false end
+        if type(scene.IsShowing) == "function" then
+            local ok, visible = pcall(scene.IsShowing, scene)
+            if ok and visible then return true end
+        end
+        if type(scene.GetState) == "function" then
+            local ok, state = pcall(scene.GetState, scene)
+            if ok and (state == _G.SCENE_SHOWING or state == _G.SCENE_SHOWN) then return true end
+        end
+        return false
+    end
+    return SceneVisible(_G.HUD_SCENE) or SceneVisible(_G.HUD_UI_SCENE)
+end
+
+-- 2.6.13: Personal Skyshard HUD renderer rebuilt around a true top-level
+-- window. Earlier test builds used a normal GuiRoot child and tried to anchor
+-- to ESO's quest tracker container. On current clients that container can have
+-- scene-dependent geometry/visibility, so an enabled goal could exist but never
+-- become effectively visible. The goal now owns its own top-level window and
+-- uses an independently resolved HUD anchor.
+function TPM:CreateSkyshardGoalWidget()
+    if self.skyshardGoalWidget then return end
+    if not WINDOW_MANAGER or not GuiRoot then return end
+
+    local widgetName = ADDON_NAME .. "SkyshardGoalHUD"
+    local widget = nil
+    if type(WINDOW_MANAGER.CreateTopLevelWindow) == "function" then
+        local ok, control = pcall(WINDOW_MANAGER.CreateTopLevelWindow, WINDOW_MANAGER, widgetName)
+        if ok then widget = control end
+    end
+    if not widget then
+        local ok, control = pcall(WINDOW_MANAGER.CreateControl, WINDOW_MANAGER, widgetName, GuiRoot, CT_CONTROL)
+        if ok then widget = control end
+    end
+    if not widget then return end
+
+    local savedWidth = self.saved and tonumber(self.saved.skyshardGoalCustomWidth) or nil
+    local savedHeight = self.saved and tonumber(self.saved.skyshardGoalCustomHeight) or nil
+    local initialWidth = Clamp(savedWidth or 360, 230, 760)
+    local initialHeight = Clamp(savedHeight or 60, 60, 220)
+    widget:SetDimensions(initialWidth, initialHeight)
+    widget:SetMouseEnabled(false)
+    if widget.SetMovable then widget:SetMovable(false) end
+    if widget.SetClampedToScreen then widget:SetClampedToScreen(true) end
+    if widget.SetAlpha then widget:SetAlpha(1) end
+    if widget.SetDrawTier then widget:SetDrawTier(DT_HIGH) end
+    if widget.SetDrawLayer then widget:SetDrawLayer(DL_OVERLAY) end
+    if widget.SetDrawLevel then widget:SetDrawLevel(200) end
+
+    -- 2.6.25: The HUD itself remains completely transparent in normal play.
+    -- The golden editing frame appears only while the gear button is active.
+    local editBackdrop = WINDOW_MANAGER:CreateControl(widgetName .. "EditBackdrop", widget, CT_BACKDROP)
+    editBackdrop:SetAnchorFill(widget)
+    editBackdrop:SetCenterColor(0.06, 0.05, 0.02, 0.16)
+    editBackdrop:SetEdgeColor(1.00, 0.82, 0.24, 0.98)
+    editBackdrop:SetEdgeTexture(nil, 1, 1, 2)
+    editBackdrop:SetMouseEnabled(false)
+    editBackdrop:SetHidden(true)
+
+    local title = WINDOW_MANAGER:CreateControl(widgetName .. "Title", widget, CT_LABEL)
+    title:SetAnchor(TOPLEFT, widget, TOPLEFT, 0, 0)
+    title:SetAnchor(TOPRIGHT, widget, TOPRIGHT, 0, 0)
+    title:SetHeight(24)
+    title:SetFont("$(BOLD_FONT)|19|soft-shadow-thick")
+    title:SetColor(1.00, 0.82, 0.24, 1)
+    title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    title:SetMouseEnabled(false)
+
+    local progress = WINDOW_MANAGER:CreateControl(widgetName .. "Progress", widget, CT_LABEL)
+    -- 2.6.28: Match ESO's native tracker indentation. The white detail line
+    -- begins slightly to the right of the yellow title/icon row, just like the
+    -- Tamriel Tomes objective text beneath its yellow heading.
+    progress:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 36, -1)
+    progress:SetAnchor(TOPRIGHT, title, BOTTOMRIGHT, 28, -1)
+    progress:SetHeight(23)
+    progress:SetFont("$(BOLD_FONT)|17|soft-shadow-thick")
+    progress:SetColor(1, 1, 1, 1)
+    progress:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    progress:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    progress:SetMouseEnabled(false)
+
+    -- Most of the frame moves the HUD. The lower-right corner is deliberately
+    -- left free for the resize grip so moving and resizing can never compete.
+    local dragSurface = WINDOW_MANAGER:CreateControl(widgetName .. "DragSurface", widget, CT_CONTROL)
+    dragSurface:SetAnchor(TOPLEFT, widget, TOPLEFT, 0, 0)
+    dragSurface:SetAnchor(BOTTOMRIGHT, widget, BOTTOMRIGHT, -20, -20)
+    dragSurface:SetMouseEnabled(false)
+    if dragSurface.SetDrawLayer then dragSurface:SetDrawLayer(DL_OVERLAY) end
+    if dragSurface.SetDrawLevel then dragSurface:SetDrawLevel(15000) end
+
+    local resizeGrip = WINDOW_MANAGER:CreateControl(widgetName .. "ResizeGrip", widget, CT_BACKDROP)
+    resizeGrip:SetDimensions(18, 18)
+    resizeGrip:SetAnchor(BOTTOMRIGHT, widget, BOTTOMRIGHT, -2, -2)
+    resizeGrip:SetCenterColor(0.78, 0.59, 0.16, 0.88)
+    resizeGrip:SetEdgeColor(1.00, 0.86, 0.30, 1)
+    resizeGrip:SetEdgeTexture(nil, 1, 1, 1)
+    resizeGrip:SetMouseEnabled(false)
+    resizeGrip:SetHidden(true)
+    if resizeGrip.SetDrawLayer then resizeGrip:SetDrawLayer(DL_OVERLAY) end
+    if resizeGrip.SetDrawLevel then resizeGrip:SetDrawLevel(16000) end
+
+    -- Three tiny dark marks make the corner read as a resize grip without
+    -- relying on a Unicode arrow that may be missing in one of ESO's fonts.
+    for i = 1, 3 do
+        local mark = WINDOW_MANAGER:CreateControl(nil, resizeGrip, CT_BACKDROP)
+        local size = 3 + (i - 1) * 3
+        mark:SetDimensions(size, 2)
+        mark:SetAnchor(BOTTOMRIGHT, resizeGrip, BOTTOMRIGHT, -2, -(2 + (i - 1) * 4))
+        mark:SetCenterColor(0.08, 0.07, 0.04, 0.95)
+        mark:SetEdgeColor(0, 0, 0, 0)
+        mark:SetMouseEnabled(false)
+    end
+
+    self.skyshardGoalWidget = widget
+    self.skyshardGoalZoneLabel = title
+    self.skyshardGoalProgressLabel = progress
+    self.skyshardGoalEditBackdrop = editBackdrop
+    self.skyshardGoalDragSurface = dragSurface
+    self.skyshardGoalResizeGrip = resizeGrip
+    self.skyshardGoalTomesAnchor = nil
+    self.skyshardGoalLastAnchorScan = 0
+
+    local function StopMove()
+        dragSurface:SetHandler("OnUpdate", nil)
+        self.skyshardGoalDragging = false
+    end
+
+    local function StopResize()
+        resizeGrip:SetHandler("OnUpdate", nil)
+        self.skyshardGoalResizing = false
+    end
+
+    dragSurface:SetHandler("OnMouseDown", function(_, button)
+        if TPM.skyshardGoalEditMode ~= true or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        StopResize()
+        if type(GetUIMousePosition) ~= "function" then return end
+        local mouseX, mouseY = GetUIMousePosition()
+        local left = type(widget.GetLeft) == "function" and tonumber(widget:GetLeft()) or nil
+        local top = type(widget.GetTop) == "function" and tonumber(widget:GetTop()) or nil
+        mouseX, mouseY = tonumber(mouseX), tonumber(mouseY)
+        if not mouseX or not mouseY or not left or not top then return end
+
+        TPM.skyshardGoalDragging = true
+        TPM.skyshardGoalDragStartMouseX = mouseX
+        TPM.skyshardGoalDragStartMouseY = mouseY
+        TPM.skyshardGoalDragStartX = left
+        TPM.skyshardGoalDragStartY = top
+
+        dragSurface:SetHandler("OnUpdate", function()
+            if TPM.skyshardGoalDragging ~= true or TPM.skyshardGoalEditMode ~= true then
+                dragSurface:SetHandler("OnUpdate", nil)
+                return
+            end
+            if type(GetUIMousePosition) ~= "function" then return end
+            local currentX, currentY = GetUIMousePosition()
+            currentX, currentY = tonumber(currentX), tonumber(currentY)
+            if not currentX or not currentY then return end
+
+            local x = (tonumber(TPM.skyshardGoalDragStartX) or 0) + currentX - (tonumber(TPM.skyshardGoalDragStartMouseX) or currentX)
+            local y = (tonumber(TPM.skyshardGoalDragStartY) or 0) + currentY - (tonumber(TPM.skyshardGoalDragStartMouseY) or currentY)
+            local rootW = type(GuiRoot.GetWidth) == "function" and (tonumber(GuiRoot:GetWidth()) or 0) or 0
+            local rootH = type(GuiRoot.GetHeight) == "function" and (tonumber(GuiRoot:GetHeight()) or 0) or 0
+            local widgetW = tonumber(widget:GetWidth()) or 360
+            local widgetH = tonumber(widget:GetHeight()) or 60
+            if rootW > 0 then x = Clamp(x, 0, math.max(0, rootW - widgetW)) end
+            if rootH > 0 then y = Clamp(y, 0, math.max(0, rootH - widgetH)) end
+            widget:ClearAnchors()
+            widget:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+            TPM.skyshardGoalAnchorMode = "custom_edit_live"
+        end)
+    end)
+
+    dragSurface:SetHandler("OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then StopMove() end
+    end)
+
+    resizeGrip:SetHandler("OnMouseDown", function(_, button)
+        if TPM.skyshardGoalEditMode ~= true or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        StopMove()
+        if type(GetUIMousePosition) ~= "function" then return end
+        local mouseX, mouseY = GetUIMousePosition()
+        mouseX, mouseY = tonumber(mouseX), tonumber(mouseY)
+        if not mouseX or not mouseY then return end
+        TPM.skyshardGoalResizing = true
+        TPM.skyshardGoalResizeStartMouseX = mouseX
+        TPM.skyshardGoalResizeStartMouseY = mouseY
+        TPM.skyshardGoalResizeStartWidth = tonumber(widget:GetWidth()) or 360
+        TPM.skyshardGoalResizeStartHeight = tonumber(widget:GetHeight()) or 60
+
+        resizeGrip:SetHandler("OnUpdate", function()
+            if TPM.skyshardGoalResizing ~= true or TPM.skyshardGoalEditMode ~= true then
+                resizeGrip:SetHandler("OnUpdate", nil)
+                return
+            end
+            local currentX, currentY = GetUIMousePosition()
+            currentX, currentY = tonumber(currentX), tonumber(currentY)
+            if not currentX or not currentY then return end
+            local width = (tonumber(TPM.skyshardGoalResizeStartWidth) or 360) + currentX - (tonumber(TPM.skyshardGoalResizeStartMouseX) or currentX)
+            local height = (tonumber(TPM.skyshardGoalResizeStartHeight) or 60) + currentY - (tonumber(TPM.skyshardGoalResizeStartMouseY) or currentY)
+            local left = tonumber(widget:GetLeft()) or 0
+            local top = tonumber(widget:GetTop()) or 0
+            local rootW = type(GuiRoot.GetWidth) == "function" and (tonumber(GuiRoot:GetWidth()) or 0) or 0
+            local rootH = type(GuiRoot.GetHeight) == "function" and (tonumber(GuiRoot:GetHeight()) or 0) or 0
+            local maxWidth = rootW > 0 and math.max(230, rootW - left) or 760
+            local maxHeight = rootH > 0 and math.max(60, rootH - top) or 220
+            width = Clamp(width, 230, math.min(760, maxWidth))
+            height = Clamp(height, 60, math.min(220, maxHeight))
+            widget:SetDimensions(math.floor(width + 0.5), math.floor(height + 0.5))
+        end)
+    end)
+
+    resizeGrip:SetHandler("OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then StopResize() end
+    end)
+
+    self:UpdateSkyshardGoalAnchor(true)
+    widget:SetHidden(true)
+end
+
+local function TPM_SkyshardStripControlText(text)
+    text = tostring(text or "")
+    text = string.gsub(text, "|c%x%x%x%x%x%x", "")
+    text = string.gsub(text, "|r", "")
+    text = zo_strlower(text)
+    return text
+end
+
+local function TPM_IsUsableHudAnchorControl(control)
+    if not control or not GuiRoot or control == GuiRoot then return false end
+    if type(control.GetTop) ~= "function" or type(control.GetRight) ~= "function" then return false end
+
+    local okTop, top = pcall(control.GetTop, control)
+    local okRight, right = pcall(control.GetRight, control)
+    top, right = okTop and tonumber(top) or nil, okRight and tonumber(right) or nil
+    if not top or not right then return false end
+
+    local rootWidth = type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 0
+    local rootHeight = type(GuiRoot.GetHeight) == "function" and tonumber(GuiRoot:GetHeight()) or 0
+    if right <= 0 or top < 0 then return false end
+    if rootWidth > 0 and right > rootWidth + 5 then return false end
+    if rootHeight > 0 and top > rootHeight + 5 then return false end
+
+    -- 2.6.15: A control can report itself as visible while one of its scene
+    -- parents is hidden. Walk the parent chain so an inactive duplicate tracker
+    -- can never be selected as the anchor for the Skyshard HUD.
+    local current = control
+    for _ = 1, 12 do
+        if type(current.IsHidden) == "function" then
+            local okHidden, hidden = pcall(current.IsHidden, current)
+            if okHidden and hidden == true then return false end
+        end
+        if type(current.GetParent) ~= "function" then break end
+        local okParent, parent = pcall(current.GetParent, current)
+        if not okParent or not parent or parent == current then break end
+        if parent == GuiRoot then break end
+        current = parent
+    end
+    return true
+end
+
+local function TPM_IsTamrielTomesHudText(text)
+    text = TPM_SkyshardStripControlText(text)
+    if text == "" then return false end
+    return string.find(text, "tamrielfoliant", 1, true) ~= nil
+        or string.find(text, "tamriel tome", 1, true) ~= nil
+        or string.find(text, "tamriel-tome", 1, true) ~= nil
+        or string.find(text, "tomes de tamriel", 1, true) ~= nil
+        or string.find(text, "tome de tamriel", 1, true) ~= nil
+        or (string.find(text, "том", 1, true) ~= nil and string.find(text, "тамри", 1, true) ~= nil)
+end
+
+local function TPM_GetControlText(control)
+    local controlType = type(control)
+    if (controlType ~= "table" and controlType ~= "userdata") or type(control.GetText) ~= "function" then return "" end
+    local ok, value = pcall(control.GetText, control)
+    return ok and tostring(value or "") or ""
+end
+
+local function TPM_GetNativeHudTrackerContainer(value)
+    local valueType = type(value)
+    if valueType ~= "table" and valueType ~= "userdata" then return nil end
+
+    -- Native ZO_HUDTracker_Base objects expose owner.container/headerLabel.
+    -- Resolve either an owner object or a control whose owner points at one.
+    local objects = { value }
+    local okOwner, owner = pcall(function() return value.owner end)
+    if okOwner and owner and owner ~= value then objects[#objects + 1] = owner end
+
+    for _, object in ipairs(objects) do
+        local okContainer, container = pcall(function() return object.container end)
+        local okHeader, header = pcall(function() return object.headerLabel end)
+        container = okContainer and container or nil
+        header = okHeader and header or nil
+        if header and TPM_IsTamrielTomesHudText(TPM_GetControlText(header)) then
+            -- 2.6.17: Return the actual visible title label first. The native
+            -- tracker container can span the complete right-hand tracker column
+            -- (quests + timed activities + Tamriel Tomes). Anchoring Position 1
+            -- to that container placed the Skyshard goal far above the Tomes.
+            if TPM_IsUsableHudAnchorControl(header) then return header end
+            if TPM_IsUsableHudAnchorControl(container) then return container end
+        end
+    end
+
+    if TPM_IsTamrielTomesHudText(TPM_GetControlText(value)) then
+        -- If the scanned control itself is the visible Tamriel Tomes label,
+        -- keep that exact control as the anchor instead of climbing to a large
+        -- shared tracker container.
+        if TPM_IsUsableHudAnchorControl(value) then return value end
+        if okOwner and owner then
+            local okContainer, container = pcall(function() return owner.container end)
+            if okContainer and TPM_IsUsableHudAnchorControl(container) then return container end
+        end
+    end
+    return nil
+end
+
+function TPM:FindTamrielTomesHudAnchor(force)
+    if not GuiRoot then return nil end
+
+    if not force and TPM_IsUsableHudAnchorControl(self.skyshardGoalTomesAnchor) then
+        return self.skyshardGoalTomesAnchor
+    end
+
+    local nowMs = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or 0
+    if not force and nowMs > 0 and (nowMs - (tonumber(self.skyshardGoalLastAnchorScan) or 0)) < 5000 then
+        return nil
+    end
+    self.skyshardGoalLastAnchorScan = nowMs
+
+    -- Prefer ESO's native HUD tracker registry. This is more reliable than
+    -- searching arbitrary globals and lets us anchor to the complete native
+    -- Tamriel Tomes tracker container when it is registered there.
+    if HUD_TRACKER_MANAGER and type(HUD_TRACKER_MANAGER.GetTrackers) == "function" then
+        local okTrackers, trackers = pcall(HUD_TRACKER_MANAGER.GetTrackers, HUD_TRACKER_MANAGER)
+        if okTrackers and type(trackers) == "table" then
+            for tracker in pairs(trackers) do
+                local anchor = TPM_GetNativeHudTrackerContainer(tracker)
+                if TPM_IsUsableHudAnchorControl(anchor) then
+                    self.skyshardGoalTomesAnchor = anchor
+                    return anchor
+                end
+            end
+        end
+    end
+
+    -- SECURITY NOTE (2.6.16): never enumerate _G here. ESO exposes private API
+    -- functions in the global table (for example GetMarketProductInfo). Merely
+    -- iterating over _G from addon code can cross the secure/private boundary and
+    -- trigger a UI error before our filtering code even runs. The native tracker
+    -- registry above plus the visible control-tree scan below are safe discovery
+    -- paths and are sufficient for locating the Tamriel Tomes HUD block.
+
+    -- Fallback: scan the visible UI tree. Keep the deeper 2.6.15 search, but do
+    -- than the old version and also checks each control's native tracker owner.
+    local queue = { { control = GuiRoot, depth = 0 } }
+    local index, visited = 1, 0
+    while index <= #queue and visited < 12000 do
+        local item = queue[index]
+        index = index + 1
+        local control, depth = item.control, item.depth
+        visited = visited + 1
+
+        if control ~= GuiRoot then
+            local ownerAnchor = TPM_GetNativeHudTrackerContainer(control)
+            if TPM_IsUsableHudAnchorControl(ownerAnchor) then
+                self.skyshardGoalTomesAnchor = ownerAnchor
+                return ownerAnchor
+            end
+
+            if TPM_IsUsableHudAnchorControl(control) then
+                local name = ""
+                if type(control.GetName) == "function" then
+                    local ok, value = pcall(control.GetName, control)
+                    if ok then name = zo_strlower(tostring(value or "")) end
+                end
+                local textLooksLikeTomes = TPM_IsTamrielTomesHudText(TPM_GetControlText(control))
+                local nameLooksLikeTomes = string.find(name, "tamrieltome", 1, true) ~= nil
+                    or string.find(name, "tamriel_tome", 1, true) ~= nil
+                if textLooksLikeTomes or (nameLooksLikeTomes and type(control.GetText) == "function") then
+                    self.skyshardGoalTomesAnchor = control
+                    return control
+                end
+            end
+        end
+
+        if depth < 14 and control and type(control.GetNumChildren) == "function" and type(control.GetChild) == "function" then
+            local okCount, count = pcall(control.GetNumChildren, control)
+            count = okCount and math.min(tonumber(count) or 0, 900) or 0
+            for childIndex = 1, count do
+                local okChild, child = pcall(control.GetChild, control, childIndex)
+                if okChild and child then queue[#queue + 1] = { control = child, depth = depth + 1 } end
+            end
+        end
+    end
+
+    self.skyshardGoalTomesAnchor = nil
+    return nil
+end
+
+local function TPM_GetTamrielTomesBlockAnchor(titleControl)
+    if not TPM_IsUsableHudAnchorControl(titleControl) then return titleControl end
+
+    -- If this is already a native HUD tracker container, do not climb into the
+    -- shared tracker column. That is what caused Position 1 to land far above
+    -- or around the middle of the screen in earlier builds.
+    local okOwner, owner = pcall(function() return titleControl.owner end)
+    if okOwner and owner then
+        local okContainer, container = pcall(function() return owner.container end)
+        if okContainer and container == titleControl then return titleControl end
+    end
+
+    local current = titleControl
+    -- Pick the FIRST compact parent large enough to contain title + objective,
+    -- instead of the highest matching parent in the whole HUD hierarchy.
+    for _ = 1, 8 do
+        if type(current.GetParent) ~= "function" then break end
+        local ok, parent = pcall(current.GetParent, current)
+        if not ok or not parent or parent == GuiRoot then break end
+        if TPM_IsUsableHudAnchorControl(parent) then
+            local width = type(parent.GetWidth) == "function" and tonumber(parent:GetWidth()) or 0
+            local height = type(parent.GetHeight) == "function" and tonumber(parent:GetHeight()) or 0
+            if width >= 150 and width <= 700 and height >= 45 and height <= 220 then
+                return parent
+            end
+        end
+        current = parent
+    end
+    return titleControl
+end
+
+local function TPM_GetRenderedLabelBounds(control)
+    if not TPM_IsUsableHudAnchorControl(control) then return nil, nil end
+    local okLeft, left = pcall(control.GetLeft, control)
+    local okWidth, width = pcall(control.GetWidth, control)
+    left = okLeft and tonumber(left) or nil
+    width = okWidth and tonumber(width) or nil
+    if not left then return nil, nil end
+
+    local textWidth = nil
+    if type(control.GetTextWidth) == "function" then
+        local okTextWidth, value = pcall(control.GetTextWidth, control)
+        textWidth = okTextWidth and tonumber(value) or nil
+    end
+    if not textWidth or textWidth <= 0 or not width or width <= 0 then
+        local right = type(control.GetRight) == "function" and tonumber(control:GetRight()) or nil
+        return left, right or (left + math.max(0, width or 0))
+    end
+
+    local alignment = nil
+    if type(control.GetHorizontalAlignment) == "function" then
+        local okAlignment, value = pcall(control.GetHorizontalAlignment, control)
+        if okAlignment then alignment = value end
+    end
+
+    local renderedLeft = left
+    if alignment == TEXT_ALIGN_RIGHT then
+        renderedLeft = left + math.max(0, width - textWidth)
+    elseif alignment == TEXT_ALIGN_CENTER then
+        renderedLeft = left + math.max(0, (width - textWidth) * 0.5)
+    end
+    return renderedLeft, renderedLeft + textWidth
+end
+
+local function TPM_GetRenderedLabelLeft(control)
+    local left = TPM_GetRenderedLabelBounds(control)
+    return left
+end
+
+local function TPM_GetRenderedLabelRight(control)
+    local _, right = TPM_GetRenderedLabelBounds(control)
+    return right
+end
+
+function TPM:UpdateSkyshardGoalAnchor(forceScan)
+    local widget = self.skyshardGoalWidget
+    if not widget or not GuiRoot then return end
+
+    local customLayout = self.saved and self.saved.skyshardGoalCustomPosition == true
+    local width = customLayout and tonumber(self.saved.skyshardGoalCustomWidth) or 360
+    local height = customLayout and tonumber(self.saved.skyshardGoalCustomHeight) or 60
+    widget:SetDimensions(Clamp(width or 360, 230, 760), Clamp(height or 60, 60, 220))
+    widget:ClearAnchors()
+
+    -- A manually dragged position takes precedence over the automatic Tamriel
+    -- Tomes slots. Selecting position 1/2 in settings resets this override.
+    if self.saved and self.saved.skyshardGoalCustomPosition == true then
+        local customX = tonumber(self.saved.skyshardGoalCustomX)
+        local customY = tonumber(self.saved.skyshardGoalCustomY)
+        if customX and customY then
+            if self.skyshardGoalZoneLabel then self.skyshardGoalZoneLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+            if self.skyshardGoalProgressLabel then self.skyshardGoalProgressLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+            widget:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, customX, customY)
+            self.skyshardGoalAnchorMode = "custom_saved"
+            return
+        end
+    end
+
+    local position = self.saved and tonumber(self.saved.skyshardGoalPosition) or 1
+    position = position == 2 and 2 or 1
+
+    local tomeTitle = self:FindTamrielTomesHudAnchor(forceScan == true)
+    if TPM_IsUsableHudAnchorControl(tomeTitle) then
+        -- 2.6.20: The screenshots exposed the exact geometry bug. The native
+        -- Tamriel Tomes title label is a wide right/centre-aligned control. Its
+        -- calculated rendered LEFT edge can therefore sit ~100 px left of the
+        -- actual tracker column. Align our 360 px goal by the rendered RIGHT
+        -- edge instead, and right-align both goal labels. This makes the visible
+        -- text share the same right edge as Tamriel Tomes regardless of the
+        -- hidden label-control width.
+        local visualRight = tonumber(TPM_GetRenderedLabelRight(tomeTitle))
+        local okTop, tomeTop = pcall(tomeTitle.GetTop, tomeTitle)
+        tomeTop = okTop and tonumber(tomeTop) or nil
+        if self.skyshardGoalZoneLabel then self.skyshardGoalZoneLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
+        if self.skyshardGoalProgressLabel then self.skyshardGoalProgressLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
+        if position == 2 then
+            local tomeBlock = TPM_GetTamrielTomesBlockAnchor(tomeTitle)
+            local okBottom, blockBottom = pcall(tomeBlock.GetBottom, tomeBlock)
+            blockBottom = okBottom and tonumber(blockBottom) or nil
+            if visualRight and blockBottom then
+                widget:SetAnchor(TOPRIGHT, GuiRoot, TOPLEFT, visualRight, blockBottom + 8)
+            else
+                widget:SetAnchor(TOPRIGHT, tomeBlock, BOTTOMRIGHT, 0, 8)
+            end
+        else
+            if visualRight and tomeTop then
+                widget:SetAnchor(BOTTOMRIGHT, GuiRoot, TOPLEFT, visualRight, tomeTop - 4)
+            else
+                widget:SetAnchor(BOTTOMRIGHT, tomeTitle, TOPRIGHT, 0, -4)
+            end
+        end
+        self.skyshardGoalAnchorMode = "tamriel_tomes_visual_right_pos" .. tostring(position)
+        return
+    end
+
+    -- Last-resort slots. Position 1 now sits much closer to the usual Tamriel
+    -- Tomes location instead of the old overly-high fallback.
+    if self.skyshardGoalZoneLabel then self.skyshardGoalZoneLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
+    if self.skyshardGoalProgressLabel then self.skyshardGoalProgressLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
+    if position == 2 then
+        widget:SetAnchor(BOTTOMRIGHT, GuiRoot, BOTTOMRIGHT, -42, -90)
+    else
+        widget:SetAnchor(BOTTOMRIGHT, GuiRoot, BOTTOMRIGHT, -42, -155)
+    end
+    self.skyshardGoalAnchorMode = "screen_fallback_pos" .. tostring(position)
+end
+
+function TPM:GetActiveProgressGoalCategoryType()
+    if not self.saved then return nil end
+    local value = self.saved.progressGoalCategoryType
+    if value == nil or value == false or value == "" then
+        return self.saved.skyshardGoalEnabled == true and _G.ZONE_COMPLETION_TYPE_SKYSHARDS or nil
+    end
+    local numeric = tonumber(value)
+    if numeric ~= nil then return numeric end
+    return value
+end
+
+function TPM:IsProgressGoalCategoryActive(completionType)
+    if not self.saved or self.saved.skyshardGoalEnabled ~= true or completionType == nil then return false end
+    return tostring(self:GetActiveProgressGoalCategoryType()) == tostring(completionType)
+end
+
+function TPM:GetProgressGoalCategoryDisplayName(completionType)
+    if completionType == SIDE_QUEST_CATEGORY_KEY then return self:L("CAT_SIDE_QUESTS") end
+    if completionType == CROWN_QUEST_CATEGORY_KEY then return self:L("CAT_CROWN_QUESTS") end
+    if completionType == ZONE_STABLE_MOUNT_CATEGORY_KEY then return self:L("STAT_ZONE_STABLE_MOUNT") end
+    return self:GetCompletionTypeName(completionType)
+end
+
+function TPM:GetProgressGoalCategoryIconTexture(completionType)
+    -- 2.6.29: Use ESO's own Zone Stories completion icons in the HUD instead
+    -- of TPM's custom category artwork. This is the same native icon resolver
+    -- used by the game's Zone Guide / Zone Stories activity-completion tiles.
+    local manager = _G.ZO_ZoneStories_Manager
+    if type(completionType) == "number" and type(manager) == "table" and type(manager.GetCompletionTypeIcon) == "function" then
+        local ok, texture = pcall(manager.GetCompletionTypeIcon, completionType)
+        if ok and type(texture) == "string" and texture ~= "" then
+            return texture
+        end
+    end
+
+    -- Safe direct native fallbacks in case the manager has not initialized yet.
+    local nativeIcons =
+    {
+        [ZONE_COMPLETION_TYPE_PRIORITY_QUESTS] = "EsoUI/Art/ZoneStories/completionTypeIcon_priorityQuest.dds",
+        [ZONE_COMPLETION_TYPE_POINTS_OF_INTEREST] = "EsoUI/Art/ZoneStories/completionTypeIcon_pointOfInterest.dds",
+        [ZONE_COMPLETION_TYPE_WAYSHRINES] = "EsoUI/Art/ZoneStories/completionTypeIcon_wayshrine.dds",
+        [ZONE_COMPLETION_TYPE_DELVES] = "EsoUI/Art/ZoneStories/completionTypeIcon_delve.dds",
+        [ZONE_COMPLETION_TYPE_GROUP_DELVES] = "EsoUI/Art/ZoneStories/completionTypeIcon_groupDelve.dds",
+        [ZONE_COMPLETION_TYPE_SKYSHARDS] = "EsoUI/Art/ZoneStories/completionTypeIcon_skyshard.dds",
+        [ZONE_COMPLETION_TYPE_WORLD_EVENTS] = "EsoUI/Art/ZoneStories/completionTypeIcon_worldEvents.dds",
+        [ZONE_COMPLETION_TYPE_GROUP_BOSSES] = "EsoUI/Art/ZoneStories/completionTypeIcon_groupBoss.dds",
+        [ZONE_COMPLETION_TYPE_STRIKING_LOCALES] = "EsoUI/Art/ZoneStories/completionTypeIcon_strikingLocales.dds",
+        [ZONE_COMPLETION_TYPE_MAGES_GUILD_BOOKS] = "EsoUI/Art/ZoneStories/completionTypeIcon_lorebooks.dds",
+        [ZONE_COMPLETION_TYPE_MUNDUS_STONES] = "EsoUI/Art/ZoneStories/completionTypeIcon_mundusStone.dds",
+        [ZONE_COMPLETION_TYPE_PUBLIC_DUNGEONS] = "EsoUI/Art/ZoneStories/completionTypeIcon_publicDungeon.dds",
+        [ZONE_COMPLETION_TYPE_SET_STATIONS] = "EsoUI/Art/ZoneStories/completionTypeIcon_setStation.dds",
+    }
+    return nativeIcons[completionType] or STATISTICS_CATEGORY_ICON_TEXTURES[completionType] or "TamrielProgressMap/art/cat_quests.dds"
+end
+
+function TPM:GetProgressGoalHudTitle(completionType)
+    local name = self:GetProgressGoalCategoryDisplayName(completionType)
+    local texture = self:GetProgressGoalCategoryIconTexture(completionType)
+    -- ESO labels support inline textures. Keeping the icon inside the title
+    -- makes it follow both the automatic right alignment near Tamriel Tomes and
+    -- the user's custom left-aligned HUD position without separate anchor math.
+    return string.format("|t22:22:%s|t  %s", texture, name)
+end
+
+function TPM:ToggleSkyshardGoalWidget(completionType)
+    if not self.saved then return end
+    local targetType = completionType or self:GetActiveProgressGoalCategoryType() or _G.ZONE_COMPLETION_TYPE_SKYSHARDS
+    local sameActive = self.saved.skyshardGoalEnabled == true and tostring(self:GetActiveProgressGoalCategoryType()) == tostring(targetType)
+    if sameActive then
+        self.saved.skyshardGoalEnabled = false
+    else
+        self.saved.progressGoalCategoryType = targetType
+        self.saved.skyshardGoalEnabled = true
+    end
+    if self.saved.skyshardGoalEnabled ~= true and self.skyshardGoalEditMode == true then
+        self:SetSkyshardGoalEditMode(false, false)
+    end
+    self:RefreshSkyshardGoalWidget()
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        self:RefreshStatisticsWindow()
+    end
+end
+
+local function TPM_TryZoneStoriesSkyshardProgress(zoneId)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 or not _G.ZONE_STORIES_MANAGER then return nil end
+
+    local manager = _G.ZONE_STORIES_MANAGER
+    local completionType = _G.ZONE_COMPLETION_TYPE_SKYSHARDS
+    if completionType == nil then return nil end
+
+    local function Accept(a, b)
+        a, b = tonumber(a), tonumber(b)
+        if a ~= nil and b ~= nil and b > 0 then
+            return math.max(0, a), math.max(0, b)
+        end
+        return nil
+    end
+
+    -- ESO's own zone-story scoreboard uses these manager functions. Depending
+    -- on client revision they can be exposed in dot-style or method-style, so
+    -- safely support both call forms.
+    local fn = manager.GetActivityCompletionProgressValues
+    if type(fn) == "function" then
+        local ok, a, b = pcall(fn, zoneId, completionType)
+        if ok then
+            local completed, total = Accept(a, b)
+            if completed then return completed, total end
+        end
+        ok, a, b = pcall(fn, manager, zoneId, completionType)
+        if ok then
+            local completed, total = Accept(a, b)
+            if completed then return completed, total end
+        end
+    end
+
+    fn = manager.GetActivityCompletionProgressValuesAndText
+    if type(fn) == "function" then
+        local ok, a, b = pcall(fn, zoneId, completionType)
+        if ok then
+            local completed, total = Accept(a, b)
+            if completed then return completed, total end
+        end
+        ok, a, b = pcall(fn, manager, zoneId, completionType)
+        if ok then
+            local completed, total = Accept(a, b)
+            if completed then return completed, total end
+        end
+    end
+
+    return nil
+end
+
+function TPM:GetCurrentSkyshardGoalData()
+    local activeType = self:GetActiveProgressGoalCategoryType() or _G.ZONE_COMPLETION_TYPE_SKYSHARDS
+
+    if activeType == CROWN_QUEST_CATEGORY_KEY then
+        local crownStats = self:GetCrownQuestStatistics()
+        if crownStats then
+            return {
+                zoneId = 0,
+                name = self:L("TAMRIEL_TOTAL"),
+                completed = crownStats.completed or 0,
+                total = crownStats.total or 0,
+                countText = crownStats.countText,
+                informational = crownStats.informational,
+                completionType = activeType,
+                categoryName = crownStats.name or self:GetProgressGoalCategoryDisplayName(activeType),
+            }
+        end
+    end
+
+    local sourceZoneIds, seenSources = {}, {}
+    local function AddSource(zoneId)
+        zoneId = tonumber(zoneId) or 0
+        if zoneId <= 0 or seenSources[zoneId] then return end
+        seenSources[zoneId] = true
+        sourceZoneIds[#sourceZoneIds + 1] = zoneId
+    end
+
+    if type(_G.ZO_ExplorationUtils_GetPlayerCurrentZoneId) == "function" then
+        local ok, zoneId = pcall(_G.ZO_ExplorationUtils_GetPlayerCurrentZoneId)
+        if ok then AddSource(zoneId) end
+    end
+    if type(GetUnitWorldPosition) == "function" then
+        local ok, zoneId = pcall(GetUnitWorldPosition, "player")
+        if ok then AddSource(zoneId) end
+    end
+    if type(GetUnitRawWorldPosition) == "function" then
+        local ok, zoneId = pcall(GetUnitRawWorldPosition, "player")
+        if ok then AddSource(zoneId) end
+    end
+
+    local currentZoneId = self:GetCurrentPlayerZoneIdentity()
+    AddSource(currentZoneId)
+    if #sourceZoneIds == 0 then return nil end
+
+    local candidates, seenCandidates = {}, {}
+    local function AddCandidate(zoneId)
+        zoneId = tonumber(zoneId) or 0
+        if zoneId <= 0 or seenCandidates[zoneId] then return end
+        seenCandidates[zoneId] = true
+        candidates[#candidates + 1] = zoneId
+    end
+
+    local function AddExpanded(zoneId)
+        zoneId = tonumber(zoneId) or 0
+        if zoneId <= 0 then return end
+        local current = zoneId
+        for _ = 1, 8 do
+            if current <= 0 then break end
+            if type(GetZoneStoryZoneIdForZoneId) == "function" then
+                local ok, storyZoneId = pcall(GetZoneStoryZoneIdForZoneId, current)
+                if ok then AddCandidate(storyZoneId) end
+            end
+            AddCandidate(current)
+            if type(GetParentZoneId) ~= "function" then break end
+            local ok, parentZoneId = pcall(GetParentZoneId, current)
+            parentZoneId = ok and (tonumber(parentZoneId) or 0) or 0
+            if parentZoneId <= 0 or parentZoneId == current then break end
+            current = parentZoneId
+        end
+    end
+
+    for _, zoneId in ipairs(sourceZoneIds) do AddExpanded(zoneId) end
+
+    for _, zoneId in ipairs(candidates) do
+        local stats = self:GetStatisticsData(false, zoneId)
+        if stats and type(stats.categories) == "table" then
+            for _, row in ipairs(stats.categories) do
+                if tostring(row.completionType) == tostring(activeType) then
+                    return {
+                        zoneId = zoneId,
+                        name = SafeZoneName(zoneId),
+                        completed = row.completed or 0,
+                        total = row.total or 0,
+                        countText = row.countText,
+                        informational = row.informational,
+                        completionType = activeType,
+                        categoryName = row.name or self:GetProgressGoalCategoryDisplayName(activeType),
+                    }
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+function TPM:RefreshSkyshardGoalWidget()
+    if not self.skyshardGoalWidget then self:CreateSkyshardGoalWidget() end
+    local widget = self.skyshardGoalWidget
+    if not widget then return end
+
+    local editingPosition = self.skyshardGoalEditMode == true
+    if (not self.saved or self.saved.skyshardGoalEnabled ~= true) and not editingPosition then
+        widget:SetHidden(true)
+        return
+    end
+    if not editingPosition and not self:IsSkyshardGoalHudSceneVisible() then
+        widget:SetHidden(true)
+        return
+    end
+
+    -- Render FIRST, then resolve progress. This makes the HUD independent from
+    -- any Zone Stories/API failure. An enabled goal must always be visible.
+    if widget.SetAlpha then widget:SetAlpha(1) end
+    local activeType = self:GetActiveProgressGoalCategoryType() or _G.ZONE_COMPLETION_TYPE_SKYSHARDS
+    self.skyshardGoalZoneLabel:SetText(self:GetProgressGoalHudTitle(activeType))
+
+    local _, _, fallbackZoneName = self:GetCurrentPlayerZoneIdentity()
+    fallbackZoneName = tostring(fallbackZoneName or "")
+    if fallbackZoneName == "" then fallbackZoneName = "—" end
+    self.skyshardGoalProgressLabel:SetText(fallbackZoneName .. "  —/—")
+    if not editingPosition then
+        self:UpdateSkyshardGoalAnchor(false)
+    end
+    widget:SetHidden(false)
+
+    -- Data collection is isolated behind pcall. A bad/new API signature can no
+    -- longer abort the refresh after the control was made visible.
+    local okData, dataOrError = pcall(function()
+        return self:GetCurrentSkyshardGoalData()
+    end)
+    self.skyshardGoalLastDataError = okData and nil or tostring(dataOrError or "unknown")
+
+    local data = okData and dataOrError or nil
+    if type(data) == "table" then
+        local zoneName = tostring(data.name or fallbackZoneName or "—")
+        if data.informational and data.countText and data.countText ~= "" then
+            self.skyshardGoalProgressLabel:SetText(string.format("%s  %s", zoneName, tostring(data.countText)))
+            self.skyshardGoalLastData = data
+        elseif (tonumber(data.total) or 0) > 0 then
+            self.skyshardGoalProgressLabel:SetText(self:L("SKYSHARD_GOAL_PROGRESS", zoneName, tonumber(data.completed) or 0, tonumber(data.total) or 0))
+            self.skyshardGoalLastData = data
+        else
+            self.skyshardGoalLastData = nil
+        end
+    else
+        self.skyshardGoalLastData = nil
+    end
+
+    -- A few UI systems can modify anchors during scene transitions. Re-assert
+    -- the top-level window only if the HUD is still the current scene; otherwise
+    -- a same-frame ESC/M transition must win over this refresh.
+    if not editingPosition and not self:IsSkyshardGoalHudSceneVisible() then
+        widget:SetHidden(true)
+        return
+    end
+    if widget.SetAlpha then widget:SetAlpha(1) end
+    widget:SetHidden(false)
+end
+
+function TPM:SetSkyshardGoalEditMode(enabled, commitChanges)
+    enabled = enabled == true
+    if enabled and self.saved and not self:GetActiveProgressGoalCategoryType() then
+        self.saved.progressGoalCategoryType = _G.ZONE_COMPLETION_TYPE_SKYSHARDS
+        self.saved.skyshardGoalEnabled = true
+    end
+    local wasEditing = self.skyshardGoalEditMode == true
+    if not self.skyshardGoalWidget then self:CreateSkyshardGoalWidget() end
+    local widget = self.skyshardGoalWidget
+    if not widget then return end
+
+    -- Clicking the gear a second time is the explicit SAVE action. Movement
+    -- and resizing stay live but unsaved until this point.
+    if wasEditing and not enabled and commitChanges ~= false and self.saved then
+        local left = type(widget.GetLeft) == "function" and tonumber(widget:GetLeft()) or nil
+        local top = type(widget.GetTop) == "function" and tonumber(widget:GetTop()) or nil
+        local width = type(widget.GetWidth) == "function" and tonumber(widget:GetWidth()) or nil
+        local height = type(widget.GetHeight) == "function" and tonumber(widget:GetHeight()) or nil
+        if left and top and width and height then
+            self.saved.skyshardGoalCustomPosition = true
+            self.saved.skyshardGoalCustomX = math.floor(left + 0.5)
+            self.saved.skyshardGoalCustomY = math.floor(top + 0.5)
+            self.saved.skyshardGoalCustomWidth = math.floor(Clamp(width, 230, 760) + 0.5)
+            self.saved.skyshardGoalCustomHeight = math.floor(Clamp(height, 60, 220) + 0.5)
+            self.skyshardGoalAnchorMode = "custom_saved"
+        end
+    end
+
+    self.skyshardGoalEditMode = enabled
+    self.skyshardGoalDragging = false
+    self.skyshardGoalResizing = false
+    if self.skyshardGoalDragSurface then self.skyshardGoalDragSurface:SetHandler("OnUpdate", nil) end
+    if self.skyshardGoalResizeGrip then self.skyshardGoalResizeGrip:SetHandler("OnUpdate", nil) end
+
+    if enabled and not wasEditing then
+        -- Start from the current automatic/saved location, then convert to an
+        -- absolute TOPLEFT anchor so ESO's native tracker can no longer move it
+        -- underneath the editor while the user is working.
+        self:UpdateSkyshardGoalAnchor(true)
+        local left = type(widget.GetLeft) == "function" and tonumber(widget:GetLeft()) or 0
+        local top = type(widget.GetTop) == "function" and tonumber(widget:GetTop()) or 0
+        widget:ClearAnchors()
+        widget:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+        if self.skyshardGoalZoneLabel then self.skyshardGoalZoneLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if self.skyshardGoalProgressLabel then self.skyshardGoalProgressLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        self.skyshardGoalAnchorMode = "custom_edit"
+    end
+
+    if self.skyshardGoalEditBackdrop then self.skyshardGoalEditBackdrop:SetHidden(not enabled) end
+    if self.skyshardGoalResizeGrip then
+        self.skyshardGoalResizeGrip:SetHidden(not enabled)
+        self.skyshardGoalResizeGrip:SetMouseEnabled(enabled)
+    end
+    widget:SetMouseEnabled(enabled)
+    if widget.SetMovable then widget:SetMovable(false) end
+    if self.skyshardGoalDragSurface then self.skyshardGoalDragSurface:SetMouseEnabled(enabled) end
+    if widget.SetDrawLevel then widget:SetDrawLevel(enabled and 14000 or 200) end
+
+    if enabled then
+        self:RefreshSkyshardGoalWidget()
+        widget:SetHidden(false)
+        if widget.BringWindowToTop then widget:BringWindowToTop() end
+    else
+        self:RefreshSkyshardGoalWidget()
+    end
+
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        self:RefreshStatisticsWindow()
+    end
+end
+
+function TPM:ToggleSkyshardGoalEditMode()
+    self:SetSkyshardGoalEditMode(not (self.skyshardGoalEditMode == true))
+end
+
+function TPM:ResetSkyshardGoalCustomPosition()
+    if not self.saved then return end
+    self:SetSkyshardGoalEditMode(false, false)
+    self.saved.skyshardGoalCustomPosition = false
+    self.saved.skyshardGoalCustomX = false
+    self.saved.skyshardGoalCustomY = false
+    self.saved.skyshardGoalCustomWidth = false
+    self.saved.skyshardGoalCustomHeight = false
+    if self.skyshardGoalWidget then self.skyshardGoalWidget:SetDimensions(360, 60) end
+    self:UpdateSkyshardGoalAnchor(true)
+    self:RefreshSkyshardGoalWidget()
+end
+
+function TPM:PrintSkyshardGoalDebug()
+    local widget = self.skyshardGoalWidget
+    local enabled = self.saved and self.saved.skyshardGoalEnabled == true
+    if not widget then
+        d(string.format("TPM skydebug: enabled=%s widget=nil", tostring(enabled)))
+        return
+    end
+
+    local function SafeControlNumber(methodName)
+        local fn = widget[methodName]
+        if type(fn) ~= "function" then return nil end
+        local ok, value = pcall(fn, widget)
+        return ok and tonumber(value) or nil
+    end
+
+    local hidden = nil
+    if type(widget.IsHidden) == "function" then
+        local ok, value = pcall(widget.IsHidden, widget)
+        if ok then hidden = value end
+    end
+    local alpha = SafeControlNumber("GetAlpha")
+    local left, top = SafeControlNumber("GetLeft"), SafeControlNumber("GetTop")
+    local right, bottom = SafeControlNumber("GetRight"), SafeControlNumber("GetBottom")
+    local rootW = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 0
+    local rootH = GuiRoot and type(GuiRoot.GetHeight) == "function" and tonumber(GuiRoot:GetHeight()) or 0
+
+    local _, _, zoneName = self:GetCurrentPlayerZoneIdentity()
+    local data = self.skyshardGoalLastData
+    d(string.format("TPM skydebug: enabled=%s hidden=%s alpha=%s anchor=%s pos=%.0f,%.0f-%.0f,%.0f root=%.0fx%.0f zone=%s progress=%s error=%s",
+        tostring(enabled), tostring(hidden), tostring(alpha), tostring(self.skyshardGoalAnchorMode or "?"),
+        tonumber(left) or -1, tonumber(top) or -1, tonumber(right) or -1, tonumber(bottom) or -1,
+        tonumber(rootW) or 0, tonumber(rootH) or 0, tostring(zoneName or "?"),
+        data and string.format("%s/%s", tostring(data.completed), tostring(data.total)) or "—/—",
+        tostring(self.skyshardGoalLastDataError or "none")))
+end
+
+function TPM:SetSkyshardGoalPosition(position)
+    if not self.saved then return end
+    position = tonumber(position) == 2 and 2 or 1
+    self.saved.skyshardGoalPosition = position
+    self:SetSkyshardGoalEditMode(false, false)
+    self.saved.skyshardGoalCustomPosition = false
+    self.saved.skyshardGoalCustomX = false
+    self.saved.skyshardGoalCustomY = false
+    self.saved.skyshardGoalCustomWidth = false
+    self.saved.skyshardGoalCustomHeight = false
+    if self.skyshardGoalWidget then self.skyshardGoalWidget:SetDimensions(360, 60) end
+    self:UpdateSkyshardGoalAnchor(true)
+    self:RefreshSkyshardGoalWidget()
+end
+
 function TPM:GetAllProgressZoneIds(forceRebuild)
     if not forceRebuild and self.progressZoneIdsCache then
         return self.progressZoneIdsCache
@@ -3857,11 +5316,17 @@ function TPM:GetAllProgressZoneIds(forceRebuild)
 end
 
 function TPM:InvalidateStatisticsData(rebuildZoneList)
+    -- Keep the global Tamriel cache separate from the optional zone-focus cache.
+    -- History, milestones and the Goals page must always continue to use Tamriel.
     self.statisticsCache = nil
+    self.statisticsFocusCache = nil
+    self.statisticsFocusCacheZoneId = nil
     self.statisticsData = nil
+    self.zoneAchievementSummaryCache = nil
     if rebuildZoneList then
         self.progressZoneIdsCache = nil
-        self.sideQuestIndexBuilt = false
+        self.sideQuestIdsByScope = nil
+        self.sideQuestIndexBuilt = false -- legacy cleanup for pre-2.6.14 Saved/UI state
         self.sideQuestIds = nil
         self.crownQuestIndexBuilt = false
         self.crownQuestIds = nil
@@ -4462,9 +5927,8 @@ function TPM:ShowQuestRewardDetailsTooltip(control)
     if #details == 0 then return end
 
     -- Anchor the details tooltip to the OUTER edge of the whole quest window,
-    -- not to the small info icon inside it. The old icon-relative anchor put
-    -- the tooltip directly underneath our high-draw-level reward window, which
-    -- is why large parts of "Belohnungsdetails" were hidden behind the panel.
+    -- not to the small info icon inside it. This keeps the tooltip above/outside
+    -- the high-draw-level reward panel instead of hiding it behind that panel.
     local owner = self.questRewardControl or control
     local rootWidth = (GuiRoot and GuiRoot.GetWidth and GuiRoot:GetWidth()) or 1920
     local ownerLeft = (owner and owner.GetLeft and owner:GetLeft()) or 0
@@ -4725,8 +6189,8 @@ function TPM:AutoSizeQuestRewardWindow()
     local control = self.questRewardControl
     if not control or not self.questRewardLines or not self.questRewardTitle then return end
 
-    -- First apply the current width to the text controls, then measure. This is
-    -- important for wrapped reward names and ESO-generated skill-point text.
+    -- Apply the current width before measuring wrapped text. This matters for
+    -- long ESO-generated reward names and skill-point lines.
     self:UpdateQuestRewardLayout()
 
     local titleTextHeight = self.questRewardTitle:GetTextHeight() or 0
@@ -4738,7 +6202,6 @@ function TPM:AutoSizeQuestRewardWindow()
     local rootHeight = (GuiRoot and GuiRoot.GetHeight and GuiRoot:GetHeight()) or 1080
     local maxAutoHeight = Clamp(rootHeight - 32, 160, 650)
     local desiredHeight = Clamp(titleHeight + rewardTextHeight + 112, 160, maxAutoHeight)
-
     control:SetHeight(desiredHeight)
     self.saved.questRewardHeight = Round(desiredHeight)
     self:UpdateQuestRewardLayout()
@@ -4965,9 +6428,8 @@ function TPM:HideQuestRewards()
 end
 
 function TPM:RefreshQuestRewards()
-    -- Release hardening: this top-level window belongs to the real world-map
-    -- scene only. Minimap addons may keep ZO_WorldMap visible on the HUD, so
-    -- control visibility alone must never reopen the quest reward window.
+    -- Full-map-only UI: minimap addons may keep ZO_WorldMap visible on the HUD.
+    -- The reward window belongs to the actual world-map scene only.
     if not self:IsFullWorldMapSceneVisible() then
         if self.questRewardControl then self:HideQuestRewards() end
         return
@@ -5048,8 +6510,8 @@ function TPM:RefreshQuestRewards()
                 TPM:AutoSizeQuestRewardWindow()
             end
         end
-        -- ESO text/icon metrics can settle one frame after SetText(). Re-measure
-        -- once more so the last reward line (notably skill points) is not clipped.
+        -- ESO text/icon metrics can settle after SetText(). Re-measure twice so
+        -- long reward lines (especially skill points) are not clipped.
         zo_callLater(RecheckQuestRewardAutoSize, 1)
         zo_callLater(RecheckQuestRewardAutoSize, 50)
     end
@@ -5059,8 +6521,17 @@ end
 -- v2.0.1 Tamriel Completion Journal / full statistics window -----------------
 local function GetZoneNameSortKey(name)
     local key = zo_strlower(name or "")
-    -- German umlauts should sort where players expect them in an A-Z list.
+    -- Keep A-Z intuitive for the addon languages. Cyrillic already follows a
+    -- stable Unicode order; normalize common German/French accented letters so
+    -- localized TPM labels sort where players expect them.
     key = key:gsub("ä", "ae"):gsub("ö", "oe"):gsub("ü", "ue"):gsub("ß", "ss")
+    key = key:gsub("à", "a"):gsub("â", "a"):gsub("á", "a"):gsub("ä", "a")
+    key = key:gsub("ç", "c")
+    key = key:gsub("é", "e"):gsub("è", "e"):gsub("ê", "e"):gsub("ë", "e")
+    key = key:gsub("î", "i"):gsub("ï", "i"):gsub("í", "i")
+    key = key:gsub("ô", "o"):gsub("ö", "o"):gsub("ó", "o")
+    key = key:gsub("ù", "u"):gsub("û", "u"):gsub("ü", "u"):gsub("ú", "u")
+    key = key:gsub("ÿ", "y")
     return key
 end
 
@@ -5089,26 +6560,38 @@ function TPM:IsLikelySideQuestName(name)
     return true
 end
 
-function TPM:BuildSideQuestIndex(progressZoneIds)
-    if self.sideQuestIndexBuilt then return end
-    self.sideQuestIds = {}
+local function TPM_GetProgressZoneScopeKey(progressZoneIds)
+    local ids = {}
+    for zoneId in pairs(progressZoneIds or {}) do ids[#ids + 1] = tonumber(zoneId) or 0 end
+    table.sort(ids)
+    if #ids == 0 then return "none" end
+    if #ids == 1 then return "zone:" .. tostring(ids[1]) end
+    -- The normal all-Tamriel scope is stable for a client build. A compact key
+    -- avoids rescanning the entire quest master table whenever zone focus changes.
+    return "zones:" .. table.concat(ids, ",")
+end
 
+function TPM:BuildSideQuestIndex(progressZoneIds)
+    self.sideQuestIdsByScope = self.sideQuestIdsByScope or {}
+    local scopeKey = TPM_GetProgressZoneScopeKey(progressZoneIds)
+    if self.sideQuestIdsByScope[scopeKey] then
+        return self.sideQuestIdsByScope[scopeKey]
+    end
+
+    local sideQuestIds = {}
     if type(GetQuestName) ~= "function"
         or type(GetQuestZoneId) ~= "function"
         or type(GetQuestType) ~= "function"
         or type(GetQuestRepeatableType) ~= "function"
         or type(HasCompletedQuest) ~= "function" then
-        return
+        return sideQuestIds
     end
 
     local priorityQuestIds = self:GetPriorityQuestIdSet(progressZoneIds)
     local notRepeatable = _G.QUEST_REPEAT_NOT_REPEATABLE
     local normalQuestType = _G.QUEST_TYPE_NONE
-    if notRepeatable == nil or normalQuestType == nil then return end
+    if notRepeatable == nil or normalQuestType == nil then return sideQuestIds end
 
-    -- Mark the index as built only after all required quest APIs/constants are
-    -- available. This avoids permanently caching an empty index during early load.
-    self.sideQuestIndexBuilt = true
     for questId = 1, SIDE_QUEST_SCAN_MAX_ID do
         if not priorityQuestIds[questId] then
             local zoneId = GetQuestZoneId(questId) or 0
@@ -5124,20 +6607,23 @@ function TPM:BuildSideQuestIndex(progressZoneIds)
                     and GetQuestType(questId) == normalQuestType then
                     local name = GetQuestName(questId) or ""
                     if self:IsLikelySideQuestName(name) then
-                        self.sideQuestIds[#self.sideQuestIds + 1] = questId
+                        sideQuestIds[#sideQuestIds + 1] = questId
                     end
                 end
             end
         end
     end
+
+    self.sideQuestIdsByScope[scopeKey] = sideQuestIds
+    return sideQuestIds
 end
 
 function TPM:GetSideQuestStatistics(progressZoneIds)
-    self:BuildSideQuestIndex(progressZoneIds)
-    local total = #(self.sideQuestIds or {})
+    local sideQuestIds = self:BuildSideQuestIndex(progressZoneIds) or {}
+    local total = #sideQuestIds
     if total <= 0 then return nil end
     local completed = 0
-    for _, questId in ipairs(self.sideQuestIds) do
+    for _, questId in ipairs(sideQuestIds) do
         if HasCompletedQuest(questId) then completed = completed + 1 end
     end
     local percent = Clamp(Round((completed / total) * 100), 0, 100)
@@ -5262,8 +6748,184 @@ function TPM:GetCrownQuestStatistics()
     }
 end
 
-function TPM:GetStatisticsData(forceRefresh)
-    if not forceRefresh and self.statisticsCache then
+function TPM:GetStatisticsFocusZoneId()
+    local zoneId = self.saved and tonumber(self.saved.statisticsFocusZoneId) or 0
+    zoneId = Round(zoneId or 0)
+    if zoneId <= 0 then return 0 end
+
+    local available = self:GetAllProgressZoneIds()
+    if not available[zoneId] then
+        if self.saved then self.saved.statisticsFocusZoneId = 0 end
+        return 0
+    end
+    return zoneId
+end
+
+function TPM:SetStatisticsFocusZone(zoneId)
+    if not self.saved then return false end
+    zoneId = Round(tonumber(zoneId) or 0)
+    if zoneId > 0 and not self:GetAllProgressZoneIds()[zoneId] then return false end
+    if tonumber(self.saved.statisticsFocusZoneId) == zoneId then return true end
+
+    self.saved.statisticsFocusZoneId = zoneId
+    -- 2.6.20: Keep the current 1/3, 2/3 or 3/3 page while changing zone
+    -- focus. Pages 2 and 3 now have their own honest zone-aware presentation,
+    -- so forcing the player back to page 1 made the selector feel jumpy.
+    self.statisticsScrollOffset = 0
+    self.statisticsFocusCache = nil
+    self.statisticsFocusCacheZoneId = nil
+    self.statisticsData = nil
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        -- Refresh one frame later so the custom selector can finish its click
+        -- handler before the progress data and zone rows are rebuilt.
+        if type(zo_callLater) == "function" then
+            zo_callLater(function()
+                if TPM and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
+                    TPM:RefreshStatisticsWindow()
+                end
+            end, 0)
+        else
+            self:RefreshStatisticsWindow()
+        end
+    end
+    return true
+end
+
+function TPM:GetStatisticsFocusZoneChoices()
+    local rows = {}
+    for zoneId in pairs(self:GetAllProgressZoneIds()) do
+        rows[#rows + 1] = { zoneId = zoneId, name = SafeZoneName(zoneId) }
+    end
+    table.sort(rows, function(a, b)
+        local an, bn = GetZoneNameSortKey(a.name), GetZoneNameSortKey(b.name)
+        if an == bn then return a.zoneId < b.zoneId end
+        return an < bn
+    end)
+    return rows
+end
+
+function TPM:HideStatisticsFocusDropdown()
+    if self.statisticsFocusDropdown then self.statisticsFocusDropdown:SetHidden(true) end
+end
+
+function TPM:RefreshStatisticsFocusDropdownRows()
+    local dropdown = self.statisticsFocusDropdown
+    local rows = self.statisticsFocusDropdownRows
+    local choices = self.statisticsFocusChoices or {}
+    if not dropdown or not rows then return end
+
+    local visibleRows = #rows
+    local maxOffset = math.max(0, #choices - visibleRows)
+    self.statisticsFocusDropdownOffset = Clamp(Round(tonumber(self.statisticsFocusDropdownOffset) or 0), 0, maxOffset)
+    local offset = self.statisticsFocusDropdownOffset
+    local selectedZoneId = self:GetStatisticsFocusZoneId()
+
+    for rowIndex, row in ipairs(rows) do
+        local choice = choices[offset + rowIndex]
+        if choice then
+            row.TPMZoneId = choice.zoneId
+            row:SetHidden(false)
+            row.label:SetText(choice.name or "")
+            row.selected = tonumber(choice.zoneId) == tonumber(selectedZoneId)
+            if row.selected then
+                row.bg:SetCenterColor(0.16, 0.125, 0.040, 0.98)
+                row.label:SetColor(1.00, 0.84, 0.26, 1)
+                if row.selectedMark then row.selectedMark:SetText("X") end
+            else
+                row.bg:SetCenterColor(0.025, 0.022, 0.017, 0.98)
+                row.label:SetColor(0.91, 0.88, 0.78, 1)
+                if row.selectedMark then row.selectedMark:SetText("") end
+            end
+        else
+            row.TPMZoneId = nil
+            row.selected = false
+            if row.selectedMark then row.selectedMark:SetText("") end
+            row:SetHidden(true)
+        end
+    end
+
+    if self.statisticsFocusScrollBar then
+        self.statisticsFocusScrollBarRefreshing = true
+        self.statisticsFocusScrollBar:SetMinMax(0, maxOffset)
+        self.statisticsFocusScrollBar:SetValueStep(1)
+        self.statisticsFocusScrollBar:SetValue(offset)
+        self.statisticsFocusScrollBar:SetHidden(maxOffset <= 0)
+        self.statisticsFocusScrollBarRefreshing = false
+    end
+end
+
+function TPM:ScrollStatisticsFocusDropdown(delta)
+    if not self.statisticsFocusDropdown or self.statisticsFocusDropdown:IsHidden() then return end
+    delta = Round(tonumber(delta) or 0)
+    if delta == 0 then return end
+    local choices = self.statisticsFocusChoices or {}
+    local visibleRows = self.statisticsFocusDropdownRows and #self.statisticsFocusDropdownRows or 9
+    local maxOffset = math.max(0, #choices - visibleRows)
+    self.statisticsFocusDropdownOffset = Clamp((tonumber(self.statisticsFocusDropdownOffset) or 0) - delta, 0, maxOffset)
+    if self.statisticsFocusScrollBar then
+        self.statisticsFocusScrollBar:SetValue(self.statisticsFocusDropdownOffset)
+    else
+        self:RefreshStatisticsFocusDropdownRows()
+    end
+end
+
+function TPM:ToggleStatisticsFocusDropdown()
+    local dropdown = self.statisticsFocusDropdown
+    if not dropdown then return end
+    if not dropdown:IsHidden() then
+        self:HideStatisticsFocusDropdown()
+        return
+    end
+
+    self.statisticsFocusChoices = { { zoneId = 0, name = self:L("STAT_FOCUS_TAMRIEL") } }
+    for _, zone in ipairs(self:GetStatisticsFocusZoneChoices()) do
+        self.statisticsFocusChoices[#self.statisticsFocusChoices + 1] = zone
+    end
+
+    local selectedZoneId = self:GetStatisticsFocusZoneId()
+    local selectedIndex = 1
+    for index, choice in ipairs(self.statisticsFocusChoices) do
+        if tonumber(choice.zoneId) == tonumber(selectedZoneId) then
+            selectedIndex = index
+            break
+        end
+    end
+    local visibleRows = self.statisticsFocusDropdownRows and #self.statisticsFocusDropdownRows or 9
+    local maxOffset = math.max(0, #self.statisticsFocusChoices - visibleRows)
+    self.statisticsFocusDropdownOffset = Clamp(selectedIndex - math.ceil(visibleRows / 2), 0, maxOffset)
+    self:RefreshStatisticsFocusDropdownRows()
+    dropdown:SetHidden(false)
+end
+
+function TPM:RefreshStatisticsFocusSelector()
+    local selectedLabel = self.statisticsFocusSelectedLabel
+    if not selectedLabel then return end
+
+    local selectedZoneId = self:GetStatisticsFocusZoneId()
+    if selectedZoneId > 0 then
+        selectedLabel:SetText(SafeZoneName(selectedZoneId))
+    else
+        selectedLabel:SetText(self:L("STAT_FOCUS_TAMRIEL"))
+    end
+
+    -- Rebuild names whenever the statistics window refreshes so client/LibZone
+    -- localization changes are reflected immediately without reopening TPM.
+    self.statisticsFocusChoices = { { zoneId = 0, name = self:L("STAT_FOCUS_TAMRIEL") } }
+    for _, zone in ipairs(self:GetStatisticsFocusZoneChoices()) do
+        self.statisticsFocusChoices[#self.statisticsFocusChoices + 1] = zone
+    end
+    if self.statisticsFocusDropdown and not self.statisticsFocusDropdown:IsHidden() then
+        self:RefreshStatisticsFocusDropdownRows()
+    end
+end
+
+function TPM:GetStatisticsData(forceRefresh, focusZoneId)
+    focusZoneId = Round(tonumber(focusZoneId) or 0)
+    if focusZoneId > 0 then
+        if not forceRefresh and self.statisticsFocusCache and self.statisticsFocusCacheZoneId == focusZoneId then
+            return self.statisticsFocusCache
+        end
+    elseif not forceRefresh and self.statisticsCache then
         return self.statisticsCache
     end
 
@@ -5280,6 +6942,8 @@ function TPM:GetStatisticsData(forceRefresh)
         untouchedZones = 0,
         zones = {},
         categories = {},
+        focusZoneId = focusZoneId,
+        isZoneFocus = focusZoneId > 0,
     }
 
     local categoryTotals = {}
@@ -5290,6 +6954,12 @@ function TPM:GetStatisticsData(forceRefresh)
     local categoryRatioTotal = 0
     local categoryCount = 0
     local progressZoneIds = self:GetAllProgressZoneIds()
+    if focusZoneId > 0 then
+        -- Strict one-zone data source: page 1 categories, summary cards and the
+        -- lower zone table are all built from this single Zone Story only.
+        progressZoneIds = { [focusZoneId] = true }
+        stats.focusName = SafeZoneName(focusZoneId)
+    end
     for zoneId in pairs(progressZoneIds) do
         local breakdown, completed, total, percent = self:GetCompletionBreakdown(zoneId)
         if total > 0 then
@@ -5387,29 +7057,46 @@ function TPM:GetStatisticsData(forceRefresh)
 
     -- Crown Store quest starters are a journal-only statistic. They never alter
     -- ESO's native zone-completion percentage. Keep them next to Main/Side Quests.
-    local crownQuestStats = self:GetCrownQuestStatistics()
-    if crownQuestStats then
-        local insertAt = 1
-        for index, category in ipairs(stats.categories) do
-            if category.completionType == SIDE_QUEST_CATEGORY_KEY then
-                insertAt = index + 1
-                break
-            elseif category.completionType == ZONE_COMPLETION_TYPE_PRIORITY_QUESTS then
-                insertAt = index + 1
+    -- Crown Store quest starters are account-wide and cannot be attributed
+    -- reliably to one Zone Story, so hide that one journal-only row while a
+    -- specific-zone focus is active. Native and zone-attributable rows remain.
+    if focusZoneId <= 0 then
+        local crownQuestStats = self:GetCrownQuestStatistics()
+        if crownQuestStats then
+            local insertAt = 1
+            for index, category in ipairs(stats.categories) do
+                if category.completionType == SIDE_QUEST_CATEGORY_KEY then
+                    insertAt = index + 1
+                    break
+                elseif category.completionType == ZONE_COMPLETION_TYPE_PRIORITY_QUESTS then
+                    insertAt = index + 1
+                end
             end
+            table.insert(stats.categories, insertAt, crownQuestStats)
         end
-        table.insert(stats.categories, insertAt, crownQuestStats)
+    else
+        -- 2.6.19: Zone Focus also surfaces the Update 49 special mount sold by
+        -- that zone's Stablemaster. This row is informational only and does not
+        -- count toward Tamriel/Zone Guide completion.
+        local mount = ZONE_STABLEMASTER_MOUNTS[focusZoneId]
+        if mount then
+            stats.categories[#stats.categories + 1] =
+            {
+                completionType = ZONE_STABLE_MOUNT_CATEGORY_KEY,
+                name = self:L("STAT_ZONE_STABLE_MOUNT"),
+                completed = 0,
+                total = 0,
+                remaining = 0,
+                percent = 0,
+                informational = true,
+                countText = self:L("STAT_ZONE_STABLE_MOUNT_AVAILABLE", 4),
+                tooltipText = self:L("STAT_ZONE_STABLE_MOUNT_TT", mount.name, ZO_CommaDelimitNumber and ZO_CommaDelimitNumber(mount.price) or tostring(mount.price)),
+            }
+        end
     end
 
-    -- 3.1.9 Progress page: categories and zones are always alphabetical in
-    -- the addon's selected language. Rebuild after a language switch so the
-    -- translated category names are sorted again.
-    table.sort(stats.categories, function(a, b)
-        local an = zo_strlower(tostring(a.name or ""))
-        local bn = zo_strlower(tostring(b.name or ""))
-        if an == bn then return tostring(a.completionType) < tostring(b.completionType) end
-        return an < bn
-    end)
+    -- Zone list remains alphabetical. Completion-category ordering is now
+    -- controlled independently by the 2.6.8 sort bar (All / A-Z / 0->100 / 100->0).
     table.sort(stats.zones, function(a, b)
         local an = GetZoneNameSortKey(a.name)
         local bn = GetZoneNameSortKey(b.name)
@@ -5417,7 +7104,12 @@ function TPM:GetStatisticsData(forceRefresh)
         return an < bn
     end)
 
-    self.statisticsCache = stats
+    if focusZoneId > 0 then
+        self.statisticsFocusCache = stats
+        self.statisticsFocusCacheZoneId = focusZoneId
+    else
+        self.statisticsCache = stats
+    end
     return stats
 end
 
@@ -5524,13 +7216,14 @@ function TPM:CreateProgressPlaytimeCard(parent, name, x, width)
     return { control = card, title = title, value = value, detail = detail, icon = icon, topGlow = topGlow }
 end
 
-function TPM:CreateStatisticsCategoryRow(parent, index)
+function TPM:CreateStatisticsCategoryRow(parent, index, controlPrefix)
     local column = index <= 8 and 1 or 2
     local rowIndex = column == 1 and index or (index - 8)
     local x = column == 1 and 30 or 518
-    local y = 232 + ((rowIndex - 1) * 20)
+    local y = 234 + ((rowIndex - 1) * 20)
 
-    local row = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatsCategory" .. tostring(index), parent, CT_CONTROL)
+    local prefix = controlPrefix or "StatsCategory"
+    local row = WINDOW_MANAGER:CreateControl(ADDON_NAME .. prefix .. tostring(index), parent, CT_CONTROL)
     row:SetDimensions(442, 20)
     row:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
     row:SetMouseEnabled(false)
@@ -5585,7 +7278,878 @@ function TPM:CreateStatisticsCategoryRow(parent, index)
     percent:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     percent:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
-    return { control = row, label = label, count = count, bar = bar, fill = fill, percent = percent, icon = icon, bg = rowBg }
+    -- 2.6.25: The old information button is now a real settings gear. One
+    -- click enters the HUD editor; clicking the gear again saves position and
+    -- size. No help popup is shown here anymore.
+    local gearButton = WINDOW_MANAGER:CreateControl(nil, row, CT_BUTTON)
+    gearButton:SetDimensions(18, 18)
+    gearButton:SetAnchor(LEFT, row, RIGHT, 4, 0)
+    gearButton:SetMouseEnabled(true)
+    gearButton:SetHidden(true)
+    local gearIcon = WINDOW_MANAGER:CreateControl(nil, gearButton, CT_TEXTURE)
+    gearIcon:SetDimensions(16, 16)
+    gearIcon:SetAnchor(CENTER, gearButton, CENTER, 0, 0)
+    gearIcon:SetTexture("TamrielProgressMap/art/settings_gear.dds")
+    gearIcon:SetColor(0.88, 0.82, 0.64, 0.92)
+    gearIcon:SetMouseEnabled(false)
+    gearButton.TPMIcon = gearIcon
+
+    return { control = row, label = label, count = count, bar = bar, fill = fill, percent = percent, icon = icon, bg = rowBg, gearButton = gearButton }
+end
+
+-- Returns the live account collection count reported by ESO for one
+-- CollectibleCategoryType. The category-type API is intentionally used here:
+-- GetCollectibleCategoryInfo expects a Collections-book top-level index, not a
+-- CollectibleCategoryType. Using ESO's dedicated type counters avoids both that
+-- mismatch and an expensive scan across all collectible IDs.
+function TPM:GetCollectionStatisticData(definition)
+    if type(definition) ~= "table" then return nil end
+
+    local categoryType = _G[definition.typeGlobal]
+    local data =
+    {
+        name = self:L(definition.labelKey),
+        owned = 0,
+        total = 0,
+        percent = 0,
+        icon = nil,
+        available = false,
+    }
+
+    if type(categoryType) ~= "number"
+        or type(GetTotalCollectiblesByCategoryType) ~= "function"
+        or type(GetTotalUnlockedCollectiblesByCategoryType) ~= "function" then
+        return data
+    end
+
+    local total = tonumber(GetTotalCollectiblesByCategoryType(categoryType)) or 0
+    local owned = tonumber(GetTotalUnlockedCollectiblesByCategoryType(categoryType)) or 0
+    if total < 0 then total = 0 end
+    owned = Clamp(owned, 0, total)
+
+    -- Use real ESO collectible art for the collection rows. Some category-icon
+    -- lookups return ESO's generic question-mark placeholder for categories such
+    -- as markings, hair or fragments. Prefer an actual collectible icon first;
+    -- only fall back to the Collections-book category icon when needed.
+    local function IsUsableCollectionIcon(texture)
+        if type(texture) ~= "string" or texture == "" then return false end
+        local lower = zo_strlower(texture)
+        if lower == zo_strlower(tostring(ZO_NO_TEXTURE_FILE or "")) then return false end
+        if string.find(lower, "question", 1, true)
+            or string.find(lower, "unknown", 1, true)
+            or string.find(lower, "missing", 1, true)
+            or string.find(lower, "placeholder", 1, true) then
+            return false
+        end
+        return true
+    end
+
+    if total > 0 and type(GetCollectibleIdFromType) == "function" then
+        local collectibleId = nil
+        -- A few collection types can have an unusable first slot. Look through a
+        -- handful of entries and keep the first one with real artwork.
+        local probeCount = math.min(total, 12)
+        for collectibleIndex = 1, probeCount do
+            local candidateId = GetCollectibleIdFromType(categoryType, collectibleIndex)
+            if candidateId and candidateId > 0 then
+                collectibleId = candidateId
+                if type(GetCollectibleIcon) == "function" then
+                    local collectibleIcon = GetCollectibleIcon(candidateId)
+                    if IsUsableCollectionIcon(collectibleIcon) then
+                        data.icon = collectibleIcon
+                        break
+                    end
+                end
+            end
+        end
+
+        if collectibleId and not data.icon
+            and type(GetCategoryInfoFromCollectibleId) == "function"
+            and type(GetCollectibleCategoryKeyboardIcons) == "function" then
+            local topLevelIndex, categoryIndex = GetCategoryInfoFromCollectibleId(collectibleId)
+            if topLevelIndex then
+                local normalIcon = GetCollectibleCategoryKeyboardIcons(topLevelIndex, categoryIndex)
+                if IsUsableCollectionIcon(normalIcon) then
+                    data.icon = normalIcon
+                end
+            end
+        end
+    end
+
+    data.total = total
+    data.owned = owned
+    data.percent = total > 0 and Round((owned / total) * 100) or 0
+    data.available = true
+    return data
+end
+
+-- 2.6.14: Achievement category names returned by ESO follow the GAME client
+-- language, while TPM intentionally supports its own live DE/EN/RU/FR language
+-- switch. Normalize the known top-level category names from all four supported
+-- client languages and route them through TPM localization. Unknown/new ESO
+-- categories safely fall back to the API name instead of being hidden.
+local function TPM_NormalizeAchievementCategoryName(name)
+    local value = zo_strlower(tostring(name or ""))
+    value = value:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    value = value:gsub("[’'`´]", "")
+    value = value:gsub("[%s%-%–%—_/%.,:&]+", "")
+    return value
+end
+
+local ACHIEVEMENT_CATEGORY_LOCALIZATION_ALIASES = {}
+local function TPM_RegisterAchievementCategoryAliases(key, aliases)
+    for _, alias in ipairs(aliases or {}) do
+        ACHIEVEMENT_CATEGORY_LOCALIZATION_ALIASES[TPM_NormalizeAchievementCategoryName(alias)] = key
+    end
+end
+
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_CHARACTER", {
+    "Charakter", "Character", "Personnage", "Персонаж",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_RECENT_SEASONS", {
+    "Jüngste Seasons", "Jüngste Saisons", "Recent Seasons", "Saisons récentes", "Последние сезоны",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_QUESTS", {
+    "Quests", "Quêtes", "Задания", "Квесты",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_CRAFTING", {
+    "Handwerk", "Crafting", "Artisanat", "Ремесло",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_EXPLORATION", {
+    "Erkunden", "Exploration", "Исследование",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_PVP", {
+    "Spieler gegen Spieler", "Player vs Player", "Player versus Player", "Joueur contre joueur", "Игрок против игрока",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_DUNGEONS", {
+    "Verliese", "Dungeons", "Donjons", "Подземелья",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_HOUSING", {
+    "Wohnen", "Housing", "Logement", "Жильё", "Жилье",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_FESTIVALS", {
+    "Feste und Feiern", "Festivals and Celebrations", "Festivals & Events", "Events", "Fêtes et événements", "Fêtes et célébrations", "Праздники и события", "Праздники",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_ARENAS", {
+    "Arenen", "Arenas", "Arènes", "Арены",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_DLC_DUNGEONS", {
+    "DLC-Verliese", "DLC Dungeons", "Donjons de DLC", "DLC-подземелья", "Подземелья DLC",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_ENDLESS_ARCHIVE", {
+    "Endloses Archiv", "Endless Archive", "Archives infinies", "Бесконечный архив",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_NIGHT_MARKET", {
+    "Nachtmarkt", "Night Market", "Marché nocturne", "Ночной рынок",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACH_CAT_TRIALS", {
+    "Prüfungen", "Trials", "Épreuves", "Испытания",
+})
+TPM_RegisterAchievementCategoryAliases("STAT_ACHIEVEMENT_OTHER", {
+    "Weitere Errungenschaften", "Other Achievements", "Autres succès", "Другие достижения",
+})
+
+function TPM:GetLocalizedAchievementCategoryName(apiName)
+    local key = ACHIEVEMENT_CATEGORY_LOCALIZATION_ALIASES[TPM_NormalizeAchievementCategoryName(apiName)]
+    if key then return self:L(key) end
+    return zo_strformat("<<C:1>>", tostring(apiName or ""))
+end
+
+-- 2.6.20: Conservative zone-focused achievement summary. ESO does not expose
+-- one universal "all achievements for zoneId" API, so we do not pretend it does.
+-- Instead we use ESO's own achievement hierarchy plus the client-localized zone
+-- name: achievements in a matching subcategory, or whose own name/description
+-- explicitly references the zone, are aggregated into one safe zone row.
+local function TPM_NormalizeZoneAchievementText(value)
+    local text = zo_strlower(tostring(value or ""))
+    text = text:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    text = text:gsub("[’'`´]", "")
+    text = text:gsub("[%s%-%–%—_/%.,:&]+", "")
+    return text
+end
+
+function TPM:GetZoneAchievementSummary(zoneId)
+    zoneId = Round(tonumber(zoneId) or 0)
+    if zoneId <= 0 then return nil end
+    self.zoneAchievementSummaryCache = self.zoneAchievementSummaryCache or {}
+    if self.zoneAchievementSummaryCache[zoneId] then
+        return self.zoneAchievementSummaryCache[zoneId]
+    end
+    if type(GetNumAchievementCategories) ~= "function"
+        or type(GetAchievementCategoryInfo) ~= "function"
+        or type(GetAchievementSubCategoryInfo) ~= "function"
+        or type(GetAchievementId) ~= "function"
+        or type(GetAchievementInfo) ~= "function" then
+        return nil
+    end
+
+    local needles = {}
+    local function AddNeedle(name)
+        local key = TPM_NormalizeZoneAchievementText(name)
+        if key ~= "" then needles[key] = true end
+    end
+    AddNeedle(SafeZoneName(zoneId))
+    if type(GetZoneNameById) == "function" then AddNeedle(GetZoneNameById(zoneId)) end
+
+    local function TextMatches(value)
+        local haystack = TPM_NormalizeZoneAchievementText(value)
+        if haystack == "" then return false end
+        for needle in pairs(needles) do
+            if #needle >= 4 and string.find(haystack, needle, 1, true) then return true end
+        end
+        return false
+    end
+
+    local seen = {}
+    local earnedPoints, totalPoints, matchedCount, completedCount = 0, 0, 0, 0
+    local function AddAchievement(achievementId, forceMatch)
+        achievementId = tonumber(achievementId) or 0
+        if achievementId <= 0 or seen[achievementId] then return end
+        local name, description, points, icon, completed = GetAchievementInfo(achievementId)
+        if not forceMatch and not TextMatches(name) and not TextMatches(description) then return end
+        seen[achievementId] = true
+        points = math.max(0, tonumber(points) or 0)
+        totalPoints = totalPoints + points
+        matchedCount = matchedCount + 1
+        if completed == true then
+            earnedPoints = earnedPoints + points
+            completedCount = completedCount + 1
+        end
+    end
+
+    local numCategories = tonumber(GetNumAchievementCategories()) or 0
+    for topIndex = 1, numCategories do
+        local _, numSubCategories, numTopAchievements = GetAchievementCategoryInfo(topIndex)
+        numSubCategories = tonumber(numSubCategories) or 0
+        numTopAchievements = tonumber(numTopAchievements) or 0
+        for achievementIndex = 1, numTopAchievements do
+            AddAchievement(GetAchievementId(topIndex, nil, achievementIndex), false)
+        end
+        for subIndex = 1, numSubCategories do
+            local subName, numAchievements = GetAchievementSubCategoryInfo(topIndex, subIndex)
+            local forceSubcategory = TextMatches(subName)
+            numAchievements = tonumber(numAchievements) or 0
+            for achievementIndex = 1, numAchievements do
+                AddAchievement(GetAchievementId(topIndex, subIndex, achievementIndex), forceSubcategory)
+            end
+        end
+    end
+
+    local percent = totalPoints > 0 and Clamp(Round((earnedPoints / totalPoints) * 100), 0, 100) or 0
+    local result =
+    {
+        name = self:L("STAT_ZONE_ACHIEVEMENTS"),
+        earned = earnedPoints,
+        total = totalPoints,
+        percent = percent,
+        icon = "TamrielProgressMap/art/stat_complete.dds",
+        isTotal = true,
+        tooltipText = self:L("STAT_ZONE_ACHIEVEMENTS_TT", completedCount, matchedCount),
+    }
+    self.zoneAchievementSummaryCache[zoneId] = result
+    return result
+end
+
+-- 2.6.0: Achievement completion page. ESO exposes earned/total points per
+-- top-level achievement category, so TPM can stay update-safe without keeping
+-- a hard-coded achievement-id database. These values are informational only and
+-- NEVER affect the normal Tamriel completion percentage.
+function TPM:GetAchievementStatisticsData()
+    local rows = {}
+    if type(GetNumAchievementCategories) ~= "function"
+        or type(GetAchievementCategoryInfo) ~= "function" then
+        return rows
+    end
+
+    local categories = {}
+    local summedEarned, summedTotal = 0, 0
+    local numCategories = tonumber(GetNumAchievementCategories()) or 0
+
+    for categoryIndex = 1, numCategories do
+        local name, _, _, earnedPoints, totalPoints = GetAchievementCategoryInfo(categoryIndex)
+        earnedPoints = math.max(0, tonumber(earnedPoints) or 0)
+        totalPoints = math.max(0, tonumber(totalPoints) or 0)
+        if totalPoints > 0 and type(name) == "string" and name ~= "" then
+            local icon = nil
+            if type(GetAchievementCategoryKeyboardIcons) == "function" then
+                icon = select(1, GetAchievementCategoryKeyboardIcons(categoryIndex))
+            end
+            categories[#categories + 1] =
+            {
+                name = self:GetLocalizedAchievementCategoryName(name),
+                earned = math.min(earnedPoints, totalPoints),
+                total = totalPoints,
+                percent = Clamp(Round((earnedPoints / totalPoints) * 100), 0, 100),
+                icon = icon,
+            }
+            summedEarned = summedEarned + math.min(earnedPoints, totalPoints)
+            summedTotal = summedTotal + totalPoints
+        end
+    end
+
+    local totalEarned = type(GetEarnedAchievementPoints) == "function" and tonumber(GetEarnedAchievementPoints()) or summedEarned
+    local totalPoints = type(GetTotalAchievementPoints) == "function" and tonumber(GetTotalAchievementPoints()) or summedTotal
+    totalEarned = math.max(0, totalEarned or 0)
+    totalPoints = math.max(0, totalPoints or 0)
+    if totalPoints > 0 then totalEarned = math.min(totalEarned, totalPoints) end
+
+    rows[#rows + 1] =
+    {
+        name = self:L("STAT_ACHIEVEMENT_TOTAL"),
+        earned = totalEarned,
+        total = totalPoints,
+        percent = totalPoints > 0 and Clamp(Round((totalEarned / totalPoints) * 100), 0, 100) or 0,
+        icon = "TamrielProgressMap/art/stat_complete.dds",
+        isTotal = true,
+    }
+
+    -- The shared category grid has 16 slots. Reserve one for the account-wide
+    -- total. If ESO ever exposes more than 15 top-level categories, combine the
+    -- overflow instead of letting rows spill outside the panel.
+    local maxCategoryRows = 15
+    if #categories <= maxCategoryRows then
+        for _, data in ipairs(categories) do rows[#rows + 1] = data end
+    else
+        for index = 1, maxCategoryRows - 1 do
+            rows[#rows + 1] = categories[index]
+        end
+        local otherEarned, otherTotal = 0, 0
+        for index = maxCategoryRows, #categories do
+            otherEarned = otherEarned + categories[index].earned
+            otherTotal = otherTotal + categories[index].total
+        end
+        rows[#rows + 1] =
+        {
+            name = self:L("STAT_ACHIEVEMENT_OTHER"),
+            earned = otherEarned,
+            total = otherTotal,
+            percent = otherTotal > 0 and Clamp(Round((otherEarned / otherTotal) * 100), 0, 100) or 0,
+            icon = "TamrielProgressMap/art/stat_objectives.dds",
+        }
+    end
+
+    return rows
+end
+
+function TPM:SetStatisticsCompletionPage(page)
+    self:HideStatisticsHoverTooltips()
+    self:HideStatisticsFocusDropdown()
+    page = Clamp(Round(tonumber(page) or 1), 1, 3)
+    if self.saved then self.saved.statisticsCompletionPage = page end
+    self.statisticsCompletionPage = page
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        self:RefreshStatisticsWindow()
+    end
+end
+
+function TPM:GetStatisticsCompletionPage()
+    local page = self.saved and tonumber(self.saved.statisticsCompletionPage) or tonumber(self.statisticsCompletionPage) or 1
+    return Clamp(Round(page), 1, 3)
+end
+
+-- 2.6.8: The three completion sub-pages share one compact sort control.
+-- "all" preserves each page's natural/original order. A-Z always sorts the
+-- names currently displayed to the player, so TPM-localized category names
+-- automatically follow the selected addon language.
+function TPM:GetStatisticsCategorySortMode()
+    local mode = self.saved and self.saved.statisticsCategorySortMode or "all"
+    if mode ~= "all" and mode ~= "name" and mode ~= "asc" and mode ~= "desc" then
+        mode = "all"
+    end
+    return mode
+end
+
+function TPM:SetStatisticsCategorySortMode(mode)
+    if mode ~= "all" and mode ~= "name" and mode ~= "asc" and mode ~= "desc" then return false end
+    if self.saved then self.saved.statisticsCategorySortMode = mode end
+    self:HideStatisticsHoverTooltips()
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        self:RefreshStatisticsWindow()
+    end
+    return true
+end
+
+local function TPM_CopyArray(rows)
+    local copy = {}
+    for index, row in ipairs(rows or {}) do copy[index] = row end
+    return copy
+end
+
+function TPM:SortStatisticsCategoryData(rows, keepTotalFirst)
+    local mode = self:GetStatisticsCategorySortMode()
+    local copy = TPM_CopyArray(rows)
+    if mode == "all" or #copy <= 1 then return copy end
+
+    local pinnedTotal = nil
+    if keepTotalFirst then
+        for index, row in ipairs(copy) do
+            if row and row.isTotal then
+                pinnedTotal = row
+                table.remove(copy, index)
+                break
+            end
+        end
+    end
+
+    -- Informational rows (for example the zone Stablemaster mount) are not
+    -- completion percentages and therefore must not jump to the top in 0->100
+    -- sorting. Keep them at the bottom regardless of the selected sort mode.
+    local informationalRows = {}
+    for index = #copy, 1, -1 do
+        local row = copy[index]
+        if row and row.informational then
+            table.insert(informationalRows, 1, row)
+            table.remove(copy, index)
+        end
+    end
+
+    local function NameKey(row)
+        return GetZoneNameSortKey(tostring(row and row.name or ""))
+    end
+    table.sort(copy, function(a, b)
+        if mode == "name" then
+            local an, bn = NameKey(a), NameKey(b)
+            if an == bn then return tostring(a.name or "") < tostring(b.name or "") end
+            return an < bn
+        end
+
+        local ap = Clamp(tonumber(a and a.percent) or 0, 0, 100)
+        local bp = Clamp(tonumber(b and b.percent) or 0, 0, 100)
+        if ap == bp then
+            local an, bn = NameKey(a), NameKey(b)
+            if an == bn then return tostring(a.name or "") < tostring(b.name or "") end
+            return an < bn
+        end
+        if mode == "desc" then return ap > bp end
+        return ap < bp
+    end)
+
+    if pinnedTotal then table.insert(copy, 1, pinnedTotal) end
+    for _, row in ipairs(informationalRows) do copy[#copy + 1] = row end
+    return copy
+end
+
+function TPM:RefreshStatisticsCategorySortControls()
+    local mode = self:GetStatisticsCategorySortMode()
+    local buttons = self.statisticsCategorySortButtons or {}
+    local labels =
+    {
+        all = self:L("FILTER_ALL"),
+        name = self:L("STAT_SORT_ALPHABETICAL"),
+        asc = "0→100%",
+        desc = "100→0%",
+    }
+    for key, button in pairs(buttons) do
+        if button then
+            button:SetText(labels[key] or key)
+            local selected = key == mode
+            button:SetNormalFontColor(selected and 1.00 or 0.76, selected and 0.84 or 0.72, selected and 0.26 or 0.58, 1)
+            if button.TPMBackdrop then
+                button.TPMBackdrop:SetCenterColor(selected and 0.16 or 0.035, selected and 0.12 or 0.031, selected and 0.025 or 0.024, selected and 0.96 or 0.72)
+                button.TPMBackdrop:SetEdgeColor(selected and 0.78 or 0.30, selected and 0.60 or 0.24, selected and 0.12 or 0.12, selected and 0.90 or 0.45)
+            end
+        end
+    end
+end
+
+-- 2.6.1: All hover panels that belong to the Tamriel Statistics journal use
+-- the same screen position and draw above the journal. This prevents ESO's
+-- shared InformationTooltip from being hidden behind the statistics window.
+function TPM:AnchorStatisticsHoverTooltip(tip, yOffset)
+    if not tip then return end
+    tip:ClearAnchors()
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        tip:SetAnchor(TOPLEFT, self.statisticsWindow, TOPRIGHT, 10, tonumber(yOffset) or 58)
+    elseif GuiRoot then
+        tip:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -18, 80)
+    end
+    if tip.BringWindowToTop then tip:BringWindowToTop() end
+    tip:SetHidden(false)
+end
+
+function TPM:HideStatisticsHoverTooltips()
+    local tooltips =
+    {
+        self.statisticsHoverTooltip,
+        self.statisticsAchievementTooltip,
+        self.statisticsLogHelpTooltip,
+    }
+    for _, tip in ipairs(tooltips) do
+        if tip then
+            tip.TPMSourceControl = nil
+            tip:SetHidden(true)
+        end
+    end
+    if InformationTooltip then ClearTooltip(InformationTooltip) end
+end
+
+-- 2.6.4: Do not rely only on OnMouseExit for statistics hover panels. ESO can
+-- skip that callback when small nested controls are clicked or hidden during a
+-- refresh. Each hover panel remembers the control that opened it and closes
+-- itself as soon as the cursor is no longer above that control.
+local function TPM_ArmStatisticsHoverTooltip(tip, sourceControl)
+    if not tip then return end
+    tip.TPMSourceControl = sourceControl
+    if tip.TPMAutoHideInstalled then return end
+    tip.TPMAutoHideInstalled = true
+    tip:SetHandler("OnUpdate", function(panel)
+        if panel:IsHidden() then return end
+        if not TPM.statisticsWindow or TPM.statisticsWindow:IsHidden() then
+            panel.TPMSourceControl = nil
+            panel:SetHidden(true)
+            return
+        end
+        local source = panel.TPMSourceControl
+        if source and type(MouseIsOver) == "function" then
+            local ok, hovered = pcall(MouseIsOver, source)
+            if ok and not hovered then
+                panel.TPMSourceControl = nil
+                panel:SetHidden(true)
+            end
+        end
+    end)
+end
+
+local function TPM_EnsureStatisticsHoverTooltip()
+    if TPM.statisticsHoverTooltip then return TPM.statisticsHoverTooltip end
+    if not WINDOW_MANAGER or not GuiRoot then return nil end
+
+    local tip = WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME .. "StatisticsHoverTooltip")
+    tip:SetDimensions(360, 96)
+    tip:SetHidden(true)
+    tip:SetMouseEnabled(false)
+    tip:SetMovable(false)
+    if tip.SetClampedToScreen then tip:SetClampedToScreen(true) end
+    if tip.SetDrawTier and DT_HIGH then tip:SetDrawTier(DT_HIGH) end
+    if tip.SetDrawLayer and DL_OVERLAY then tip:SetDrawLayer(DL_OVERLAY) end
+    if tip.SetDrawLevel then tip:SetDrawLevel(13000) end
+
+    local bg = WINDOW_MANAGER:CreateControl(nil, tip, CT_BACKDROP)
+    bg:SetAnchorFill()
+    bg:SetCenterColor(0.035, 0.031, 0.026, 0.985)
+    bg:SetEdgeColor(0.92, 0.76, 0.14, 0.96)
+    bg:SetEdgeTexture(nil, 1, 1, 1)
+
+    local title = WINDOW_MANAGER:CreateControl(nil, tip, CT_LABEL)
+    title:SetAnchor(TOPLEFT, tip, TOPLEFT, 14, 12)
+    title:SetAnchor(TOPRIGHT, tip, TOPRIGHT, -14, 12)
+    title:SetHeight(28)
+    title:SetFont("ZoFontWinH3")
+    title:SetColor(0.98, 0.96, 0.90, 1)
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local body = WINDOW_MANAGER:CreateControl(nil, tip, CT_LABEL)
+    body:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 8)
+    body:SetAnchor(TOPRIGHT, title, BOTTOMRIGHT, 0, 8)
+    body:SetHeight(42)
+    body:SetFont("$(MEDIUM_FONT)|13")
+    body:SetColor(0.86, 0.84, 0.78, 1)
+    body:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    body:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    tip.TPMTitle = title
+    tip.TPMBody = body
+    TPM.statisticsHoverTooltip = tip
+    return tip
+end
+
+function TPM:ShowStatisticsHoverTooltip(titleText, bodyText, sourceControl)
+    local tip = TPM_EnsureStatisticsHoverTooltip()
+    if not tip then return end
+    self:HideStatisticsHoverTooltips()
+
+    titleText = tostring(titleText or "")
+    bodyText = tostring(bodyText or "")
+
+    -- 2.6.24: Longer help text (especially the Skyshard positioning guide)
+    -- gets a wider panel instead of being squeezed into the old 360 px box.
+    -- Height is still calculated from the rendered text below, so translated
+    -- DE/EN/RU/FR instructions can grow naturally without clipping.
+    local lineBreaks = 0
+    for _ in string.gmatch(bodyText, "\n") do lineBreaks = lineBreaks + 1 end
+    local longHelp = #bodyText >= 170 or lineBreaks >= 3
+    local tooltipWidth = longHelp and 440 or 360
+    if tip.SetWidth then tip:SetWidth(tooltipWidth) end
+    if tip.TPMBody.SetHorizontalAlignment then
+        tip.TPMBody:SetHorizontalAlignment(longHelp and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER)
+    end
+
+    tip.TPMTitle:SetText(titleText)
+    tip.TPMBody:SetText(bodyText)
+    tip.TPMBody:SetHidden(bodyText == "")
+
+    local titleHeight = 28
+    local bodyHeight = 0
+    if tip.TPMTitle.GetTextHeight then
+        titleHeight = math.max(28, math.ceil(tonumber(tip.TPMTitle:GetTextHeight()) or 28))
+    end
+    if bodyText ~= "" then
+        bodyHeight = 34
+        if tip.TPMBody.GetTextHeight then
+            bodyHeight = math.max(34, math.ceil(tonumber(tip.TPMBody:GetTextHeight()) or 34))
+        end
+    end
+    tip.TPMTitle:SetHeight(titleHeight)
+    tip.TPMBody:SetHeight(math.max(1, bodyHeight))
+    tip:SetHeight(12 + titleHeight + (bodyHeight > 0 and (8 + bodyHeight) or 0) + 12)
+
+    TPM_ArmStatisticsHoverTooltip(tip, sourceControl)
+    self:AnchorStatisticsHoverTooltip(tip, 58)
+end
+
+local function TPM_EnsureAchievementTooltip()
+    if TPM.statisticsAchievementTooltip then return TPM.statisticsAchievementTooltip end
+    if not WINDOW_MANAGER or not GuiRoot then return nil end
+
+    local tip = WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME .. "AchievementTooltip")
+    tip:SetDimensions(320, 126)
+    tip:SetHidden(true)
+    tip:SetMouseEnabled(false)
+    tip:SetMovable(false)
+    if tip.SetClampedToScreen then tip:SetClampedToScreen(true) end
+    if tip.SetDrawTier and DT_HIGH then tip:SetDrawTier(DT_HIGH) end
+    if tip.SetDrawLayer and DL_OVERLAY then tip:SetDrawLayer(DL_OVERLAY) end
+    -- Statistics itself uses draw level 7200. Keep this panel clearly above it.
+    if tip.SetDrawLevel then tip:SetDrawLevel(12000) end
+
+    local bg = WINDOW_MANAGER:CreateControl(nil, tip, CT_BACKDROP)
+    bg:SetAnchorFill()
+    bg:SetCenterColor(0.035, 0.031, 0.026, 0.985)
+    bg:SetEdgeColor(0.92, 0.76, 0.14, 0.96)
+    bg:SetEdgeTexture(nil, 1, 1, 1)
+
+    local title = WINDOW_MANAGER:CreateControl(nil, tip, CT_LABEL)
+    title:SetAnchor(TOPLEFT, tip, TOPLEFT, 14, 12)
+    title:SetAnchor(TOPRIGHT, tip, TOPRIGHT, -14, 12)
+    title:SetHeight(28)
+    title:SetFont("ZoFontWinH3")
+    title:SetColor(0.98, 0.96, 0.90, 1)
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local points = WINDOW_MANAGER:CreateControl(nil, tip, CT_LABEL)
+    points:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 8)
+    points:SetAnchor(TOPRIGHT, title, BOTTOMRIGHT, 0, 8)
+    points:SetHeight(24)
+    points:SetFont("$(MEDIUM_FONT)|16")
+    points:SetColor(0.94, 0.92, 0.86, 1)
+    points:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    points:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local note = WINDOW_MANAGER:CreateControl(nil, tip, CT_LABEL)
+    note:SetAnchor(TOPLEFT, points, BOTTOMLEFT, 0, 8)
+    note:SetAnchor(TOPRIGHT, points, BOTTOMRIGHT, 0, 8)
+    note:SetHeight(44)
+    note:SetFont("$(MEDIUM_FONT)|12")
+    note:SetColor(0.78, 0.75, 0.68, 1)
+    note:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    note:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    tip.TPMTitle = title
+    tip.TPMPoints = points
+    tip.TPMNote = note
+    TPM.statisticsAchievementTooltip = tip
+    return tip
+end
+
+local function TPM_ShowAchievementTooltip(data, sourceControl)
+    if not data or not TPM.statisticsWindow then return end
+    local tip = TPM_EnsureAchievementTooltip()
+    if not tip then return end
+    TPM:HideStatisticsHoverTooltips()
+
+    tip.TPMTitle:SetText(data.name or "")
+    tip.TPMPoints:SetText(TPM:L("STAT_ACHIEVEMENT_POINTS_TT", data.earned or 0, data.total or 0))
+    tip.TPMNote:SetText(TPM:L("STAT_ACHIEVEMENT_LANGUAGE_NOTE"))
+
+    -- Let long translated category names and notes grow instead of clipping.
+    local titleHeight = 28
+    local pointsHeight = 24
+    local noteHeight = 38
+    if tip.TPMTitle.GetTextHeight then
+        titleHeight = math.max(28, math.ceil(tonumber(tip.TPMTitle:GetTextHeight()) or 28))
+    end
+    if tip.TPMPoints.GetTextHeight then
+        pointsHeight = math.max(24, math.ceil(tonumber(tip.TPMPoints:GetTextHeight()) or 24))
+    end
+    if tip.TPMNote.GetTextHeight then
+        noteHeight = math.max(34, math.ceil(tonumber(tip.TPMNote:GetTextHeight()) or 38))
+    end
+    tip.TPMTitle:SetHeight(titleHeight)
+    tip.TPMPoints:SetHeight(pointsHeight)
+    tip.TPMNote:SetHeight(noteHeight)
+    tip:SetHeight(12 + titleHeight + 8 + pointsHeight + 8 + noteHeight + 12)
+
+    -- Always place achievement details beside the journal, aligned near its
+    -- upper-right corner rather than attaching them to an individual row.
+    TPM_ArmStatisticsHoverTooltip(tip, sourceControl)
+    TPM:AnchorStatisticsHoverTooltip(tip, 58)
+end
+
+local function TPM_HideAchievementTooltip()
+    local tip = TPM.statisticsAchievementTooltip
+    if tip then tip:SetHidden(true) end
+end
+
+function TPM:RefreshStatisticsCollectionPager()
+    local page = self:GetStatisticsCompletionPage()
+    self.statisticsCompletionPage = page
+    self:RefreshStatisticsCategorySortControls()
+
+    if self.statisticsCategoryPageIndicator then
+        self.statisticsCategoryPageIndicator:SetText(string.format("%d / 3", page))
+    end
+    if self.statisticsCategoryPrev then
+        self.statisticsCategoryPrev:SetEnabled(page > 1)
+        self.statisticsCategoryPrev:SetAlpha(page > 1 and 1 or 0.32)
+    end
+    if self.statisticsCategoryNext then
+        self.statisticsCategoryNext:SetEnabled(page < 3)
+        self.statisticsCategoryNext:SetAlpha(page < 3 and 1 or 0.32)
+    end
+
+    -- Hide both optional pages first. Page 1 rows have already been refreshed by
+    -- RefreshStatisticsWindow and are only hidden when page 2 or 3 is selected.
+    for _, row in ipairs(self.statisticsCollectionRows or {}) do
+        row.control:SetHidden(true)
+    end
+    for _, row in ipairs(self.statisticsAchievementRows or {}) do
+        row.control:SetHidden(true)
+    end
+
+    if page == 1 then
+        if self.statisticsCategoryTitle then
+            local focusZoneId = self:GetStatisticsFocusZoneId()
+            if focusZoneId > 0 then
+                self.statisticsCategoryTitle:SetText(string.format("%s — %s", self:L("STAT_CATEGORIES"), SafeZoneName(focusZoneId)))
+            else
+                self.statisticsCategoryTitle:SetText(self:L("STAT_CATEGORIES"))
+            end
+        end
+        return
+    end
+
+    for _, row in ipairs(self.statisticsCategoryRows or {}) do
+        row.control:SetHidden(true)
+    end
+
+    if page == 2 then
+        local focusZoneId = self:GetStatisticsFocusZoneId()
+        if self.statisticsCategoryTitle then
+            self.statisticsCategoryTitle:SetText(focusZoneId > 0
+                and string.format("%s — %s", self:L("STAT_COLLECTIONS"), SafeZoneName(focusZoneId))
+                or self:L("STAT_COLLECTIONS"))
+        end
+        local collectionData = {}
+        if focusZoneId > 0 then
+            -- Only show collection data TPM can attribute to this zone without
+            -- guessing. At the moment that is the Stablemaster stock introduced
+            -- with Update 49. Global account collection totals remain available
+            -- immediately by switching focus back to All Tamriel.
+            local mount = ZONE_STABLEMASTER_MOUNTS[focusZoneId]
+            if mount then
+                collectionData[#collectionData + 1] =
+                {
+                    name = self:L("STAT_ZONE_STABLE_MOUNT"),
+                    owned = 0, total = 0, percent = 0, available = true, informational = true,
+                    countText = self:L("STAT_ZONE_STABLE_MOUNT_AVAILABLE", 4),
+                    tooltipText = self:L("STAT_ZONE_STABLE_MOUNT_TT", mount.name, ZO_CommaDelimitNumber and ZO_CommaDelimitNumber(mount.price) or tostring(mount.price)),
+                    icon = "TamrielProgressMap/art/cat_crown.dds",
+                }
+            end
+        else
+            for _, definition in ipairs(COLLECTION_STAT_DEFINITIONS) do
+                local data = self:GetCollectionStatisticData(definition)
+                if data then collectionData[#collectionData + 1] = data end
+            end
+            collectionData = self:SortStatisticsCategoryData(collectionData, false)
+        end
+        for index, row in ipairs(self.statisticsCollectionRows or {}) do
+            local data = collectionData[index]
+            row.control:SetHidden(data == nil)
+            row.control:SetMouseEnabled(data ~= nil and data.tooltipText ~= nil)
+            if data then
+                row.label:SetText(data.name)
+                if data.informational then
+                    row.count:SetText(data.countText or "—")
+                    row.percent:SetText("—")
+                    self:SetStatisticsBarPercent(row.fill, 96, 0)
+                elseif data.available then
+                    row.count:SetText(string.format("%d / %d", data.owned, data.total))
+                    row.percent:SetText(string.format("|c%s%d%%|r", self:GetStatisticsPercentTextColor(data.percent), data.percent))
+                    self:SetStatisticsBarPercent(row.fill, 96, data.percent)
+                else
+                    row.count:SetText("—")
+                    row.percent:SetText("—")
+                    self:SetStatisticsBarPercent(row.fill, 96, 0)
+                end
+                if row.icon then
+                    row.icon:SetTexture(data.icon or "TamrielProgressMap/art/cat_quests.dds")
+                    local ir, ig, ib = self:GetStatisticsProgressColor(data.percent)
+                    row.icon:SetColor(ir, ig, ib, data.available and 0.96 or 0.45)
+                end
+                if data.tooltipText then
+                    row.control:SetHandler("OnMouseEnter", function(control)
+                        TPM:ShowStatisticsHoverTooltip(data.name, data.tooltipText, control)
+                    end)
+                    row.control:SetHandler("OnMouseExit", function() TPM:HideStatisticsHoverTooltips() end)
+                else
+                    row.control:SetHandler("OnMouseEnter", nil)
+                    row.control:SetHandler("OnMouseExit", nil)
+                end
+            else
+                row.control:SetHandler("OnMouseEnter", nil)
+                row.control:SetHandler("OnMouseExit", nil)
+            end
+        end
+        self:RefreshStatisticsCategorySortControls()
+        return
+    end
+
+    local focusZoneId = self:GetStatisticsFocusZoneId()
+    if self.statisticsCategoryTitle then
+        self.statisticsCategoryTitle:SetText(focusZoneId > 0
+            and string.format("%s — %s", self:L("STAT_ACHIEVEMENTS"), SafeZoneName(focusZoneId))
+            or self:L("STAT_ACHIEVEMENTS"))
+    end
+    local achievementRows
+    if focusZoneId > 0 then
+        local summary = self:GetZoneAchievementSummary(focusZoneId)
+        achievementRows = summary and { summary } or {}
+    else
+        achievementRows = self:SortStatisticsCategoryData(self:GetAchievementStatisticsData(), true)
+    end
+    for index, row in ipairs(self.statisticsAchievementRows or {}) do
+        local data = achievementRows[index]
+        row.control:SetHidden(data == nil)
+        row.control:SetMouseEnabled(data ~= nil)
+        if data then
+            row.label:SetText(data.name)
+            row.count:SetText(string.format("%d / %d", data.earned or 0, data.total or 0))
+            row.percent:SetText(string.format("|c%s%d%%|r", self:GetStatisticsPercentTextColor(data.percent or 0), data.percent or 0))
+            self:SetStatisticsBarPercent(row.fill, 96, data.percent or 0)
+            if row.icon then
+                row.icon:SetTexture(data.icon or "TamrielProgressMap/art/stat_objectives.dds")
+                local ir, ig, ib = self:GetStatisticsProgressColor(data.percent or 0)
+                row.icon:SetColor(ir, ig, ib, 0.96)
+            end
+            row.control:SetHandler("OnMouseEnter", function(control)
+                if data.tooltipText then
+                    TPM:ShowStatisticsHoverTooltip(data.name, data.tooltipText, control)
+                else
+                    TPM_ShowAchievementTooltip(data, control)
+                end
+            end)
+            row.control:SetHandler("OnMouseExit", function()
+                TPM_HideAchievementTooltip()
+                TPM:HideStatisticsHoverTooltips()
+            end)
+        else
+            row.control:SetHandler("OnMouseEnter", nil)
+            row.control:SetHandler("OnMouseExit", nil)
+        end
+    end
 end
 
 function TPM:CreateStatisticsZoneRow(parent, index)
@@ -6205,7 +8769,7 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
 
     local function CreateBottomMetric(xPos, valueColor)
         local label = WINDOW_MANAGER:CreateControl(nil, card, CT_LABEL)
-        label:SetDimensions(160, 16)
+        label:SetDimensions(142, 16)
         label:SetAnchor(TOPLEFT, card, TOPLEFT, xPos, 91)
         label:SetFont("$(MEDIUM_FONT)|12")
         label:SetColor(0.76, 0.71, 0.61, 1)
@@ -6213,7 +8777,7 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
         label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
         local value = WINDOW_MANAGER:CreateControl(nil, card, CT_LABEL)
-        value:SetDimensions(160, 20)
+        value:SetDimensions(142, 20)
         value:SetAnchor(TOPLEFT, card, TOPLEFT, xPos, 106)
         value:SetFont("$(BOLD_FONT)|14")
         value:SetColor(valueColor[1], valueColor[2], valueColor[3], 1)
@@ -6222,10 +8786,13 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
         return { label = label, value = value }
     end
 
+    -- Five compact ledger subtotals fit across the promoted Gold card.
+    -- Bounty paid is a Justice subset of Spent, not additional spending.
     local received = CreateBottomMetric(142, { 0.48, 0.92, 0.40 })
-    local spent = CreateBottomMetric(332, { 0.94, 0.52, 0.32 })
-    local fence = CreateBottomMetric(522, { 0.86, 0.70, 0.30 })
-    local stolen = CreateBottomMetric(712, { 0.96, 0.60, 0.32 })
+    local spent = CreateBottomMetric(292, { 0.94, 0.52, 0.32 })
+    local fence = CreateBottomMetric(442, { 0.86, 0.70, 0.30 })
+    local stolen = CreateBottomMetric(592, { 0.96, 0.60, 0.32 })
+    local bounty = CreateBottomMetric(742, { 0.94, 0.72, 0.28 })
 
     return {
         control = card,
@@ -6239,6 +8806,7 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
         spent = spent,
         fence = fence,
         stolen = stolen,
+        bounty = bounty,
         isGoldCard = true,
     }
 end
@@ -6384,10 +8952,12 @@ function TPM:RefreshEconomyStatisticsPage()
                 card.spent.label:SetText(self:L("STAT_ECONOMY_LABEL_SPENT"))
                 card.fence.label:SetText(self:L("STAT_ECONOMY_FENCE_SHORT"))
                 card.stolen.label:SetText(self:L("STAT_ECONOMY_STOLEN_SHORT"))
+                if card.bounty then card.bounty.label:SetText(self:L("STAT_ECONOMY_BOUNTY_PAID_SHORT")) end
                 card.received.value:SetText("+" .. FormatNumber(entry.received or 0))
                 card.spent.value:SetText("-" .. FormatNumber(entry.spent or 0))
                 card.fence.value:SetText("+" .. FormatNumber(entry.fenceSales or 0))
                 card.stolen.value:SetText("+" .. FormatNumber(entry.stolenGold or 0))
+                if card.bounty then card.bounty.value:SetText("-" .. FormatNumber(entry.bountyPaid or 0)) end
             else
                 local accent = visual.accent or { 0.86, 0.66, 0.18 }
                 local accentHex = RGBToHex(accent[1], accent[2], accent[3])
@@ -6496,6 +9066,8 @@ function TPM:RefreshStatisticsPageTabs()
 end
 
 function TPM:SetStatisticsPage(page)
+    self:HideStatisticsHoverTooltips()
+    self:HideStatisticsFocusDropdown()
     if not self:IsValidStatisticsPage(page) then page = "progress" end
     if self.saved then self.saved.statisticsPage = page end
     self:UpdateStatisticsPageVisibility(page)
@@ -6616,18 +9188,17 @@ function TPM:CreateGoalCard(parent, name, y)
     card:SetHandler("OnMouseEnter", function(c)
         c:SetCenterColor(0.11, 0.085, 0.040, 0.98)
         local data = c.goalData
-        if data and InformationTooltip then
-            InitializeTooltip(InformationTooltip, c, LEFT, -8, 0, RIGHT)
-            InformationTooltip:AddLine(data.name or "", "ZoFontWinH3")
-            InformationTooltip:AddLine(TPM:L("GOAL_TOOLTIP_HEADER", data.percent or 0, data.remaining or 0), "ZoFontGame")
+        if data then
+            local lines = { TPM:L("GOAL_TOOLTIP_HEADER", data.percent or 0, data.remaining or 0) }
             for _, item in ipairs(data.missing or {}) do
-                InformationTooltip:AddLine(TPM:L("GOAL_TOOLTIP_LINE", item.name or "", item.remaining or 0), "ZoFontGame")
+                lines[#lines + 1] = TPM:L("GOAL_TOOLTIP_LINE", item.name or "", item.remaining or 0)
             end
+            TPM:ShowStatisticsHoverTooltip(data.name or "", table.concat(lines, "\n"), c)
         end
     end)
     card:SetHandler("OnMouseExit", function(c)
         c:SetCenterColor(0.045, 0.037, 0.026, 0.96)
-        if InformationTooltip then ClearTooltip(InformationTooltip) end
+        TPM:HideStatisticsHoverTooltips()
     end)
     card:SetHandler("OnMouseUp", function(c, button, upInside)
         if not upInside or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
@@ -7416,9 +9987,7 @@ local function TPM_EnsureLogHelpTooltip()
     if not WINDOW_MANAGER or not GuiRoot then return nil end
 
     local tip = WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME .. "LogHelpTooltip")
-    -- Keep the tooltip width stable, but calculate its height from the localized
-    -- title/body text when it is shown. The previous fixed 350x126 layout could
-    -- clip or visually overflow at different UI scales and with longer strings.
+    -- Width is stable; height is recalculated from localized text when shown.
     tip:SetDimensions(380, 126)
     tip:SetHidden(true)
     tip:SetMouseEnabled(false)
@@ -7458,12 +10027,13 @@ local function TPM_ShowLogHelpTooltip(control, title, text)
     if not control or not text or text == "" then return end
     local tip = TPM_EnsureLogHelpTooltip()
     if not tip then return end
+    TPM:HideStatisticsHoverTooltips()
 
     tip.TPMTitle:SetText(title or "")
     tip.TPMBody:SetText(text)
 
-    -- Re-measure after assigning the localized strings. ESO labels can wrap
-    -- differently depending on language, UI scale and font rendering.
+    -- Re-measure after assigning translated strings. Different UI scales and
+    -- languages wrap differently and must not overflow the frame.
     local titleHeight = 24
     local bodyHeight = 78
     if tip.TPMTitle.GetTextHeight then
@@ -7476,13 +10046,10 @@ local function TPM_ShowLogHelpTooltip(control, title, text)
     tip.TPMBody:SetHeight(bodyHeight)
     tip:SetHeight(10 + titleHeight + 5 + bodyHeight + 12)
 
-    tip:ClearAnchors()
-
-    -- Top-level + GuiRoot keeps the help panel above the statistics window.
-    -- Anchor above the hovered icon and let ESO clamp it to the screen.
-    tip:SetAnchor(BOTTOMRIGHT, control, TOPRIGHT, 0, -6)
-    if tip.BringWindowToTop then tip:BringWindowToTop() end
-    tip:SetHidden(false)
+    -- Keep every statistics-related hover panel in the same place: directly
+    -- to the upper-right of the Tamriel Statistics journal.
+    TPM_ArmStatisticsHoverTooltip(tip, control)
+    TPM:AnchorStatisticsHoverTooltip(tip, 58)
 end
 
 local function TPM_HideLogHelpTooltip()
@@ -7490,36 +10057,46 @@ local function TPM_HideLogHelpTooltip()
     if tip then tip:SetHidden(true) end
 end
 
-local function TPM_CreateHeaderIconButton(parent, width, height, glyph, normalR, normalG, normalB, hoverR, hoverG, hoverB)
-    -- Separate backdrop parent keeps the border behind the button glyph.
-    local frame = WINDOW_MANAGER:CreateControl(nil, parent, CT_BACKDROP)
-    frame:SetDimensions(width, height)
-    frame:SetMouseEnabled(false)
-    frame:SetCenterColor(0.065, 0.055, 0.042, 0.92)
-    frame:SetEdgeColor(0.52, 0.43, 0.18, 0.92)
-    frame:SetEdgeTexture(nil, 1, 1, 1)
+local function TPM_CreateHeaderIconButton(parent, width, height, iconKind)
+    local button = WINDOW_MANAGER:CreateControl(nil, parent, CT_BUTTON)
+    button:SetDimensions(width, height)
+    button:SetMouseEnabled(true)
 
-    local button = WINDOW_MANAGER:CreateControl(nil, frame, CT_BUTTON)
-    button:SetAnchorFill()
-    button:SetFont("$(BOLD_FONT)|15")
-    button:SetText(glyph)
-    if button.SetNormalFontColor then button:SetNormalFontColor(normalR, normalG, normalB, 1) end
-    if button.SetMouseOverFontColor then button:SetMouseOverFontColor(hoverR, hoverG, hoverB, 1) end
-    if button.SetPressedFontColor then button:SetPressedFontColor(0.96, 0.84, 0.30, 1) end
-    button.TPMFrame = frame
+    if iconKind == "clear" then
+        -- Use ESO's native close-button art instead of a text glyph in a box.
+        button:SetNormalTexture("EsoUI/Art/Buttons/closeButton_up.dds")
+        button:SetPressedTexture("EsoUI/Art/Buttons/closeButton_down.dds")
+        button:SetMouseOverTexture("EsoUI/Art/Buttons/closeButton_mouseOver.dds")
+        if button.SetDisabledTexture then
+            button:SetDisabledTexture("EsoUI/Art/Buttons/closeButton_disabled.dds")
+        end
+        if button.SetTextureCoords then
+            button:SetTextureCoords(0, 0.625, 0, 0.625)
+        end
+    else
+        -- LibAddonMenu and ESO themselves use this native help icon.
+        local icon = WINDOW_MANAGER:CreateControl(nil, button, CT_TEXTURE)
+        icon:SetDimensions(math.max(16, width - 3), math.max(16, height - 3))
+        icon:SetAnchor(CENTER, button, CENTER, 0, 0)
+        icon:SetTexture("EsoUI/Art/Miscellaneous/help_icon.dds")
+        icon:SetColor(0.88, 0.82, 0.64, 0.92)
+        icon:SetMouseEnabled(false)
+        button.TPMIcon = icon
+    end
 
     button:SetHandler("OnMouseEnter", function(selfButton)
-        if selfButton.TPMFrame then
-            selfButton.TPMFrame:SetCenterColor(0.12, 0.095, 0.055, 0.98)
-            selfButton.TPMFrame:SetEdgeColor(0.92, 0.76, 0.14, 1)
+        if selfButton.TPMIcon then
+            selfButton.TPMIcon:SetColor(1.00, 0.86, 0.30, 1)
+        end
+        if selfButton.TPMHelpTitle and selfButton.TPMHelpText then
+            TPM_ShowLogHelpTooltip(selfButton, selfButton.TPMHelpTitle, selfButton.TPMHelpText)
         end
     end)
     button:SetHandler("OnMouseExit", function(selfButton)
-        if selfButton.TPMFrame then
-            selfButton.TPMFrame:SetCenterColor(0.065, 0.055, 0.042, 0.92)
-            selfButton.TPMFrame:SetEdgeColor(0.52, 0.43, 0.18, 0.92)
+        if selfButton.TPMIcon then
+            selfButton.TPMIcon:SetColor(0.88, 0.82, 0.64, 0.92)
         end
-        TPM_HideLogHelpTooltip()
+        TPM:HideStatisticsHoverTooltips()
     end)
     return button
 end
@@ -7548,27 +10125,20 @@ function TPM:EnsureCombatActivityLogControls()
     combatCount:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     self.statisticsCombatKillLogCount = combatCount
 
-    local combatClear = TPM_CreateHeaderIconButton(session, 24, 20, "✖", 0.88, 0.64, 0.57, 1.00, 0.34, 0.24)
-    combatClear.TPMFrame:SetAnchor(TOPLEFT, session, TOPLEFT, 306, 8)
-    combatClear:SetHandler("OnClicked", function() self:ClearCombatActivityList(true) end)
-    combatClear:SetHandler("OnMouseEnter", function(control)
-        if control.TPMFrame then
-            control.TPMFrame:SetCenterColor(0.16, 0.055, 0.04, 0.98)
-            control.TPMFrame:SetEdgeColor(0.98, 0.34, 0.24, 1)
-        end
-        TPM_ShowLogHelpTooltip(control, self:L("HISTORY_CLEAR_COMBAT_LOG"), self:L("HISTORY_CLEAR_TOOLTIP"))
+    local combatClear = TPM_CreateHeaderIconButton(session, 22, 22, "clear")
+    combatClear:SetAnchor(TOPLEFT, session, TOPLEFT, 307, 7)
+    combatClear.TPMHelpTitle = self:L("HISTORY_CLEAR_COMBAT_LOG")
+    combatClear.TPMHelpText = self:L("HISTORY_CLEAR_TOOLTIP")
+    combatClear:SetHandler("OnClicked", function()
+        self:HideStatisticsHoverTooltips()
+        self:ClearCombatActivityList(true)
     end)
     self.statisticsCombatKillLogClearButton = combatClear
 
-    local combatInfo = TPM_CreateHeaderIconButton(session, 24, 20, "ⓘ", 0.82, 0.80, 0.70, 1.00, 0.86, 0.30)
-    combatInfo.TPMFrame:SetAnchor(TOPLEFT, session, TOPLEFT, 334, 8)
-    combatInfo:SetHandler("OnMouseEnter", function(control)
-        if control.TPMFrame then
-            control.TPMFrame:SetCenterColor(0.12, 0.095, 0.055, 0.98)
-            control.TPMFrame:SetEdgeColor(0.96, 0.84, 0.30, 1)
-        end
-        TPM_ShowLogHelpTooltip(control, self:L("HISTORY_LOG_INFO_TITLE"), self:L("HISTORY_LOG_INFO_TOOLTIP"))
-    end)
+    local combatInfo = TPM_CreateHeaderIconButton(session, 21, 21, "info")
+    combatInfo:SetAnchor(TOPLEFT, session, TOPLEFT, 335, 8)
+    combatInfo.TPMHelpTitle = self:L("HISTORY_LOG_INFO_TITLE")
+    combatInfo.TPMHelpText = self:L("HISTORY_LOG_INFO_TOOLTIP")
     self.statisticsCombatKillLogInfoButton = combatInfo
 
     local divider = self.statisticsCombatActivityDivider
@@ -7595,27 +10165,20 @@ function TPM:EnsureCombatActivityLogControls()
     activityCount:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     self.statisticsCombatActivityLogCount = activityCount
 
-    local activityClear = TPM_CreateHeaderIconButton(session, 24, 20, "✖", 0.88, 0.64, 0.57, 1.00, 0.34, 0.24)
-    activityClear.TPMFrame:SetAnchor(TOPRIGHT, session, TOPRIGHT, -124, 8)
-    activityClear:SetHandler("OnClicked", function() self:ClearCombatActivityList(false) end)
-    activityClear:SetHandler("OnMouseEnter", function(control)
-        if control.TPMFrame then
-            control.TPMFrame:SetCenterColor(0.16, 0.055, 0.04, 0.98)
-            control.TPMFrame:SetEdgeColor(0.98, 0.34, 0.24, 1)
-        end
-        TPM_ShowLogHelpTooltip(control, self:L("HISTORY_CLEAR_ACTIVITY_LOG"), self:L("HISTORY_CLEAR_TOOLTIP"))
+    local activityClear = TPM_CreateHeaderIconButton(session, 22, 22, "clear")
+    activityClear:SetAnchor(TOPRIGHT, session, TOPRIGHT, -124, 7)
+    activityClear.TPMHelpTitle = self:L("HISTORY_CLEAR_ACTIVITY_LOG")
+    activityClear.TPMHelpText = self:L("HISTORY_CLEAR_TOOLTIP")
+    activityClear:SetHandler("OnClicked", function()
+        self:HideStatisticsHoverTooltips()
+        self:ClearCombatActivityList(false)
     end)
     self.statisticsCombatActivityLogClearButton = activityClear
 
-    local activityInfo = TPM_CreateHeaderIconButton(session, 24, 20, "ⓘ", 0.82, 0.80, 0.70, 1.00, 0.86, 0.30)
-    activityInfo.TPMFrame:SetAnchor(TOPRIGHT, session, TOPRIGHT, -96, 8)
-    activityInfo:SetHandler("OnMouseEnter", function(control)
-        if control.TPMFrame then
-            control.TPMFrame:SetCenterColor(0.12, 0.095, 0.055, 0.98)
-            control.TPMFrame:SetEdgeColor(0.96, 0.84, 0.30, 1)
-        end
-        TPM_ShowLogHelpTooltip(control, self:L("HISTORY_LOG_INFO_TITLE"), self:L("HISTORY_LOG_INFO_TOOLTIP"))
-    end)
+    local activityInfo = TPM_CreateHeaderIconButton(session, 21, 21, "info")
+    activityInfo:SetAnchor(TOPRIGHT, session, TOPRIGHT, -96, 8)
+    activityInfo.TPMHelpTitle = self:L("HISTORY_LOG_INFO_TITLE")
+    activityInfo.TPMHelpText = self:L("HISTORY_LOG_INFO_TOOLTIP")
     self.statisticsCombatActivityLogInfoButton = activityInfo
 
     local function CreateLogScroll(name, x, width, isCombat)
@@ -7643,13 +10206,23 @@ function TPM:EnsureCombatActivityLogControls()
             row.TPMAccent = accent
 
             local title = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
-            title:SetDimensions(rowWidth - 18, 21)
+            title:SetDimensions(rowWidth - 160, 21)
             title:SetAnchor(TOPLEFT, row, TOPLEFT, 10, 3)
             title:SetFont("$(BOLD_FONT)|13")
             title:SetColor(0.95, 0.94, 0.91, 1)
             title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
             title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+            if title.SetWrapMode and _G.TEXT_WRAP_MODE_TRUNCATE then title:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE) end
             row.TPMTitle = title
+
+            local timestamp = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
+            timestamp:SetDimensions(142, 19)
+            timestamp:SetAnchor(TOPRIGHT, row, TOPRIGHT, -8, 4)
+            timestamp:SetFont("$(MEDIUM_FONT)|10")
+            timestamp:SetColor(0.68, 0.66, 0.60, 1)
+            timestamp:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+            timestamp:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+            row.TPMTimestamp = timestamp
 
             local detail = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
             detail:SetDimensions(rowWidth - 18, 19)
@@ -7776,8 +10349,6 @@ function TPM:RefreshCombatActivityPanel()
 
     if self.statisticsHistorySessionTitle then self.statisticsHistorySessionTitle:SetText(self:L("HISTORY_COMBAT_LOG")) end
     if self.statisticsCombatActivityRightTitle then self.statisticsCombatActivityRightTitle:SetText(self:L("HISTORY_ACTIVITY_LIST")) end
-    if self.statisticsCombatKillLogInfoButton then self.statisticsCombatKillLogInfoButton:SetText("ⓘ") end
-    if self.statisticsCombatActivityLogInfoButton then self.statisticsCombatActivityLogInfoButton:SetText("ⓘ") end
     if self.statisticsCombatKillLogCount then self.statisticsCombatKillLogCount:SetText(string.format("%d / 100", #combatActivities)) end
     if self.statisticsCombatActivityLogCount then self.statisticsCombatActivityLogCount:SetText(string.format("%d / 100", #activities)) end
 
@@ -7797,6 +10368,7 @@ function TPM:RefreshCombatActivityPanel()
             local b = tonumber(hex:sub(5,6), 16) / 255
             if row.TPMAccent then row.TPMAccent:SetCenterColor(r, g, b, 0.92) end
             if row.TPMTitle then row.TPMTitle:SetText(self:GetCombatLogTitle(item)) end
+            if row.TPMTimestamp then row.TPMTimestamp:SetText(self:FormatLogTimestamp(item)) end
             if row.TPMDetail then row.TPMDetail:SetText(self:FormatCombatLogDetail(item)) end
         end
     end
@@ -7812,6 +10384,7 @@ function TPM:RefreshCombatActivityPanel()
                 row.TPMTitle:SetColor(0.95, 0.94, 0.91, 1)
                 row.TPMTitle:SetText(self:GetActivityDisplayName(item))
             end
+            if row.TPMTimestamp then row.TPMTimestamp:SetText(self:FormatLogTimestamp(item)) end
             if row.TPMDetail then row.TPMDetail:SetText(self:FormatActivityLogDetail(item)) end
         end
     end
@@ -8579,7 +11152,178 @@ function TPM:CreateStatisticsWindow()
     subtitle:SetColor(0.64, 0.61, 0.54, 1)
     subtitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     subtitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    subtitle:SetWidth(390)
     self.statisticsSubtitle = subtitle
+
+    -- 2.6.14: Native-style zone focus selector. "Tamriel" preserves the old
+    -- all-zone view; any supported Zone Story narrows the summary, categories
+    -- and zone table to that one zone without affecting global history/goals.
+    local focusLabel = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_LABEL)
+    focusLabel:SetDimensions(72, 24)
+    focusLabel:SetAnchor(TOPLEFT, control, TOPLEFT, 598, 92)
+    focusLabel:SetFont("$(MEDIUM_FONT)|14")
+    focusLabel:SetColor(0.74, 0.70, 0.62, 1)
+    focusLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    focusLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.statisticsFocusLabel = focusLabel
+
+    -- 2.6.15: Own TPM selector instead of ZO_ComboBox. The virtual combo could
+    -- render correctly but not receive/open its dropdown in the world-map
+    -- overlay. This control is fully mouse-driven and its popup lives directly
+    -- on the statistics top-level window, so it cannot be clipped by the page.
+    local focusSelector = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsFocusSelector", progressPage, CT_CONTROL)
+    focusSelector:SetDimensions(286, 26)
+    focusSelector:SetAnchor(TOPLEFT, control, TOPLEFT, 678, 91)
+    focusSelector:SetMouseEnabled(true)
+    local focusSelectorBg = WINDOW_MANAGER:CreateControl(nil, focusSelector, CT_BACKDROP)
+    focusSelectorBg:SetAnchorFill(focusSelector)
+    focusSelectorBg:SetCenterColor(0.022, 0.020, 0.016, 0.98)
+    focusSelectorBg:SetEdgeColor(0.72, 0.58, 0.17, 0.95)
+    focusSelectorBg:SetEdgeTexture(nil, 1, 1, 1)
+    focusSelectorBg:SetMouseEnabled(false)
+    local focusSelected = WINDOW_MANAGER:CreateControl(nil, focusSelector, CT_LABEL)
+    focusSelected:SetDimensions(250, 24)
+    focusSelected:SetAnchor(LEFT, focusSelector, LEFT, 8, 0)
+    focusSelected:SetFont("$(MEDIUM_FONT)|16")
+    focusSelected:SetColor(0.94, 0.91, 0.82, 1)
+    focusSelected:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    focusSelected:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    local focusArrow = WINDOW_MANAGER:CreateControl(nil, focusSelector, CT_LABEL)
+    focusArrow:SetDimensions(22, 24)
+    focusArrow:SetAnchor(RIGHT, focusSelector, RIGHT, -4, 0)
+    focusArrow:SetFont("$(BOLD_FONT)|15")
+    focusArrow:SetColor(0.95, 0.78, 0.20, 1)
+    focusArrow:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    focusArrow:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    focusArrow:SetText("▼")
+    focusSelector:SetHandler("OnMouseEnter", function()
+        focusSelectorBg:SetCenterColor(0.085, 0.066, 0.025, 0.98)
+        focusSelectorBg:SetEdgeColor(0.95, 0.76, 0.20, 1)
+    end)
+    focusSelector:SetHandler("OnMouseExit", function()
+        focusSelectorBg:SetCenterColor(0.022, 0.020, 0.016, 0.98)
+        focusSelectorBg:SetEdgeColor(0.72, 0.58, 0.17, 0.95)
+    end)
+    focusSelector:SetHandler("OnMouseUp", function(_, button, upInside)
+        if upInside and button == MOUSE_BUTTON_INDEX_LEFT then TPM:ToggleStatisticsFocusDropdown() end
+    end)
+    focusSelector:SetHandler("OnMouseWheel", function(_, delta)
+        if TPM.statisticsFocusDropdown and not TPM.statisticsFocusDropdown:IsHidden() then
+            TPM:ScrollStatisticsFocusDropdown(delta)
+        end
+    end)
+    self.statisticsFocusSelector = focusSelector
+    self.statisticsFocusSelectedLabel = focusSelected
+    self.statisticsFocusArrow = focusArrow
+
+    local focusDropdown = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsFocusDropdown", control, CT_CONTROL)
+    focusDropdown:SetDimensions(286, 242)
+    focusDropdown:SetAnchor(TOPLEFT, control, TOPLEFT, 678, 120)
+    focusDropdown:SetMouseEnabled(true)
+    focusDropdown:SetHidden(true)
+    if focusDropdown.SetDrawTier then focusDropdown:SetDrawTier(DT_HIGH) end
+    if focusDropdown.SetDrawLayer then focusDropdown:SetDrawLayer(DL_OVERLAY) end
+    if focusDropdown.SetDrawLevel then focusDropdown:SetDrawLevel(7600) end
+    focusDropdown:SetHandler("OnMouseWheel", function(_, delta) TPM:ScrollStatisticsFocusDropdown(delta) end)
+    local focusDropdownBg = WINDOW_MANAGER:CreateControl(nil, focusDropdown, CT_BACKDROP)
+    focusDropdownBg:SetAnchorFill(focusDropdown)
+    focusDropdownBg:SetCenterColor(0.010, 0.009, 0.007, 0.995)
+    focusDropdownBg:SetEdgeColor(0.88, 0.70, 0.18, 1)
+    focusDropdownBg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 2)
+    focusDropdownBg:SetInsets(2, 2, -2, -2)
+    focusDropdownBg:SetMouseEnabled(false)
+
+    self.statisticsFocusDropdownRows = {}
+    for rowIndex = 1, 9 do
+        local row = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsFocusRow" .. tostring(rowIndex), focusDropdown, CT_BUTTON)
+        row:SetDimensions(258, 25)
+        row:SetAnchor(TOPLEFT, focusDropdown, TOPLEFT, 4, 4 + ((rowIndex - 1) * 26))
+        row:SetMouseEnabled(true)
+        if row.SetDrawLayer then row:SetDrawLayer(DL_OVERLAY) end
+        if row.SetDrawLevel then row:SetDrawLevel(7610 + rowIndex) end
+        local rowBg = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
+        rowBg:SetAnchorFill(row)
+        rowBg:SetCenterColor(0.025, 0.022, 0.017, 0.98)
+        rowBg:SetEdgeColor(0.23, 0.19, 0.10, 0.85)
+        rowBg:SetEdgeTexture(nil, 1, 1, 1)
+        rowBg:SetMouseEnabled(false)
+        local rowLabel = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
+        rowLabel:SetDimensions(220, 23)
+        rowLabel:SetAnchor(LEFT, row, LEFT, 8, 0)
+        rowLabel:SetFont("$(MEDIUM_FONT)|15")
+        rowLabel:SetColor(0.91, 0.88, 0.78, 1)
+        rowLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        rowLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        local selectedMark = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
+        selectedMark:SetDimensions(24, 23)
+        selectedMark:SetAnchor(RIGHT, row, RIGHT, -6, 0)
+        selectedMark:SetFont("$(BOLD_FONT)|16")
+        selectedMark:SetColor(1.00, 0.84, 0.26, 1)
+        selectedMark:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        selectedMark:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        selectedMark:SetText("")
+        row.bg, row.label, row.selectedMark = rowBg, rowLabel, selectedMark
+        row:SetHandler("OnMouseEnter", function(r)
+            r.bg:SetCenterColor(0.13, 0.10, 0.035, 0.99)
+            r.label:SetColor(1.00, 0.84, 0.26, 1)
+        end)
+        row:SetHandler("OnMouseExit", function(r)
+            if r.selected then
+                r.bg:SetCenterColor(0.16, 0.125, 0.040, 0.98)
+                r.label:SetColor(1.00, 0.84, 0.26, 1)
+            else
+                r.bg:SetCenterColor(0.025, 0.022, 0.017, 0.98)
+                r.label:SetColor(0.91, 0.88, 0.78, 1)
+            end
+        end)
+        row:SetHandler("OnMouseWheel", function(_, delta) TPM:ScrollStatisticsFocusDropdown(delta) end)
+        -- 2.6.19: use the native button click event. OnMouseUp/upInside on a
+        -- custom CT_CONTROL was unreliable while the popup overlapped the main
+        -- progress controls, which made every zone look unselectable.
+        row:SetHandler("OnClicked", function(r, button)
+            if button and button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+            if r.TPMZoneId == nil then return end
+            local zoneId = tonumber(r.TPMZoneId) or 0
+
+            -- Apply and paint the choice before closing the popup. In 2.6.19
+            -- the popup was hidden first, so the old OnMouseExit state could
+            -- briefly erase the highlight and make selection feel unreliable.
+            if TPM:SetStatisticsFocusZone(zoneId) then
+                if TPM.statisticsFocusSelectedLabel then
+                    TPM.statisticsFocusSelectedLabel:SetText(zoneId > 0 and SafeZoneName(zoneId) or TPM:L("STAT_FOCUS_TAMRIEL"))
+                end
+                TPM:RefreshStatisticsFocusDropdownRows()
+            end
+            TPM:HideStatisticsFocusDropdown()
+        end)
+        self.statisticsFocusDropdownRows[rowIndex] = row
+    end
+
+    -- 2.6.18: one real vertical scroll rail instead of tiny up/down buttons.
+    -- It can be dragged just like the main zone-list scrollbar and mouse-wheel
+    -- scrolling remains available anywhere inside the popup.
+    local focusScrollBar = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsFocusScrollBar", focusDropdown, CT_SLIDER)
+    focusScrollBar:SetDimensions(14, 226)
+    focusScrollBar:SetAnchor(TOPRIGHT, focusDropdown, TOPRIGHT, -5, 8)
+    focusScrollBar:SetOrientation(ORIENTATION_VERTICAL)
+    focusScrollBar:SetMouseEnabled(true)
+    local focusElevator = "/esoui/art/miscellaneous/scrollbox_elevator.dds"
+    focusScrollBar:SetThumbTexture(focusElevator, focusElevator, focusElevator, 18, 44, 0, 0, 1, 1)
+    if focusScrollBar.SetBackgroundMiddleTexture then
+        focusScrollBar:SetBackgroundMiddleTexture("/esoui/art/chatwindow/chat_scrollbar_track.dds", 0, 0, 1, 1)
+    end
+    focusScrollBar:SetValueStep(1)
+    focusScrollBar:SetMinMax(0, 0)
+    focusScrollBar:SetValue(0)
+    focusScrollBar:SetHandler("OnValueChanged", function(_, value)
+        if TPM.statisticsFocusScrollBarRefreshing then return end
+        TPM.statisticsFocusDropdownOffset = Round(tonumber(value) or 0)
+        TPM:RefreshStatisticsFocusDropdownRows()
+    end)
+    self.statisticsFocusDropdown = focusDropdown
+    self.statisticsFocusScrollBar = focusScrollBar
+    self.statisticsFocusScrollUp = nil
+    self.statisticsFocusScrollDown = nil
 
     self.statisticsCards =
     {
@@ -8602,6 +11346,23 @@ function TPM:CreateStatisticsWindow()
     categoryTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsCategoryTitle = categoryTitle
 
+    local categoryGearButton = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_BUTTON)
+    categoryGearButton:SetDimensions(18, 18)
+    categoryGearButton:SetAnchor(TOPLEFT, control, TOPLEFT, 200, 207)
+    categoryGearButton:SetMouseEnabled(true)
+    local categoryGearIcon = WINDOW_MANAGER:CreateControl(nil, categoryGearButton, CT_TEXTURE)
+    categoryGearIcon:SetDimensions(16, 16)
+    categoryGearIcon:SetAnchor(CENTER, categoryGearButton, CENTER, 0, 0)
+    categoryGearIcon:SetTexture("TamrielProgressMap/art/settings_gear.dds")
+    categoryGearIcon:SetColor(0.55, 0.52, 0.46, 0.80)
+    categoryGearIcon:SetMouseEnabled(false)
+    categoryGearButton.TPMIcon = categoryGearIcon
+    self.statisticsCategoryGearButton = categoryGearButton
+    self.statisticsCategoryGearIcon = categoryGearIcon
+
+    -- 2.6.5: Use one clean divider without a center glyph. The font-based
+    -- diamond could look optically off-center at different UI scales even
+    -- when its control was mathematically centered.
     local categoryDivider = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_BACKDROP)
     categoryDivider:SetDimensions(956, 1)
     categoryDivider:SetAnchor(TOPLEFT, control, TOPLEFT, 22, 227)
@@ -8609,18 +11370,9 @@ function TPM:CreateStatisticsWindow()
     categoryDivider:SetEdgeColor(0, 0, 0, 0)
     self.statisticsCategoryDivider = categoryDivider
 
-    local categoryDiamond = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_LABEL)
-    categoryDiamond:SetDimensions(20, 20)
-    categoryDiamond:SetAnchor(CENTER, categoryDivider, CENTER, 0, 0)
-    categoryDiamond:SetFont("$(BOLD_FONT)|14")
-    categoryDiamond:SetText("◆")
-    categoryDiamond:SetColor(0.80, 0.62, 0.22, 0.78)
-    categoryDiamond:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    categoryDiamond:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-
     local categoryPanelLeft = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_BACKDROP)
     categoryPanelLeft:SetDimensions(456, 164)
-    categoryPanelLeft:SetAnchor(TOPLEFT, control, TOPLEFT, 22, 230)
+    categoryPanelLeft:SetAnchor(TOPLEFT, control, TOPLEFT, 22, 232)
     categoryPanelLeft:SetCenterColor(0.022, 0.020, 0.016, 0.64)
     categoryPanelLeft:SetEdgeColor(0.34, 0.27, 0.12, 0.58)
     categoryPanelLeft:SetEdgeTexture(nil, 1, 1, 1)
@@ -8629,7 +11381,7 @@ function TPM:CreateStatisticsWindow()
 
     local categoryPanelRight = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_BACKDROP)
     categoryPanelRight:SetDimensions(456, 164)
-    categoryPanelRight:SetAnchor(TOPLEFT, control, TOPLEFT, 510, 230)
+    categoryPanelRight:SetAnchor(TOPLEFT, control, TOPLEFT, 510, 232)
     categoryPanelRight:SetCenterColor(0.022, 0.020, 0.016, 0.64)
     categoryPanelRight:SetEdgeColor(0.34, 0.27, 0.12, 0.58)
     categoryPanelRight:SetEdgeTexture(nil, 1, 1, 1)
@@ -8640,6 +11392,109 @@ function TPM:CreateStatisticsWindow()
     for index = 1, (#COMPLETION_TYPES + 2) do
         self.statisticsCategoryRows[index] = self:CreateStatisticsCategoryRow(progressPage, index)
     end
+
+    -- 2.5.0 TEST: collection rows occupy the exact same grid and are only
+    -- shown on page 2. Page 1 controls above are intentionally unchanged.
+    self.statisticsCollectionRows = {}
+    for index = 1, #COLLECTION_STAT_DEFINITIONS do
+        local row = self:CreateStatisticsCategoryRow(progressPage, index, "StatsCollection")
+        row.label:SetFont("$(MEDIUM_FONT)|14")
+        row.control:SetHidden(true)
+        self.statisticsCollectionRows[index] = row
+    end
+
+    -- 2.6.0: Page 3 uses the same 8 + 8 grid for ESO achievement categories.
+    self.statisticsAchievementRows = {}
+    for index = 1, 16 do
+        local row = self:CreateStatisticsCategoryRow(progressPage, index, "StatsAchievement")
+        row.label:SetFont("$(MEDIUM_FONT)|14")
+        row.count:SetFont("$(MEDIUM_FONT)|13")
+        row.control:SetHidden(true)
+        self.statisticsAchievementRows[index] = row
+    end
+
+    -- 2.6.8: Compact sort bar shared by Completion / Collections / Achievements.
+    local categorySortBox = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatsCategorySortBox", progressPage, CT_BACKDROP)
+    categorySortBox:SetDimensions(326, 26)
+    categorySortBox:SetAnchor(TOPLEFT, control, TOPLEFT, 505, 201)
+    categorySortBox:SetCenterColor(0.024, 0.021, 0.016, 0.82)
+    categorySortBox:SetEdgeColor(0.34, 0.27, 0.12, 0.62)
+    categorySortBox:SetEdgeTexture(nil, 1, 1, 1)
+    categorySortBox:SetMouseEnabled(false)
+    self.statisticsCategorySortBox = categorySortBox
+    self.statisticsCategorySortButtons = {}
+
+    local function CreateCategorySortButton(key, x, width)
+        local back = WINDOW_MANAGER:CreateControl(nil, categorySortBox, CT_BACKDROP)
+        back:SetDimensions(width, 22)
+        back:SetAnchor(LEFT, categorySortBox, LEFT, x, 0)
+        back:SetCenterColor(0.035, 0.031, 0.024, 0.72)
+        back:SetEdgeColor(0.30, 0.24, 0.12, 0.45)
+        back:SetEdgeTexture(nil, 1, 1, 1)
+        back:SetMouseEnabled(false)
+
+        local button = WINDOW_MANAGER:CreateControl(nil, categorySortBox, CT_BUTTON)
+        button:SetDimensions(width, 22)
+        button:SetAnchorFill(back)
+        button:SetFont("$(BOLD_FONT)|13")
+        button:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        button:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        button:SetMouseOverFontColor(1.00, 0.90, 0.40, 1)
+        button:SetPressedFontColor(1.00, 0.72, 0.18, 1)
+        button:SetHandler("OnClicked", function() TPM:SetStatisticsCategorySortMode(key) end)
+        button.TPMBackdrop = back
+        self.statisticsCategorySortButtons[key] = button
+    end
+
+    CreateCategorySortButton("all", 2, 64)
+    CreateCategorySortButton("name", 68, 66)
+    CreateCategorySortButton("asc", 136, 92)
+    CreateCategorySortButton("desc", 230, 94)
+    self:RefreshStatisticsCategorySortControls()
+
+    local categoryPrev = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatsCategoryPrev", progressPage, CT_BUTTON)
+    categoryPrev:SetDimensions(28, 24)
+    categoryPrev:SetAnchor(TOPRIGHT, control, TOPRIGHT, -116, 202)
+    categoryPrev:SetFont("$(BOLD_FONT)|20")
+    categoryPrev:SetText("‹")
+    categoryPrev:SetNormalFontColor(0.86, 0.72, 0.28, 1)
+    categoryPrev:SetMouseOverFontColor(1.00, 0.88, 0.42, 1)
+    categoryPrev:SetPressedFontColor(1.00, 0.70, 0.14, 1)
+    categoryPrev:SetHandler("OnClicked", function() TPM:SetStatisticsCompletionPage(TPM:GetStatisticsCompletionPage() - 1) end)
+    categoryPrev:SetHandler("OnMouseEnter", function(control)
+        local targetPage = math.max(1, TPM:GetStatisticsCompletionPage() - 1)
+        local key = targetPage == 1 and "STAT_PAGE_COMPLETION" or "STAT_PAGE_COLLECTIONS"
+        TPM:ShowStatisticsHoverTooltip(TPM:L(key), "", control)
+    end)
+    categoryPrev:SetHandler("OnMouseExit", function() TPM:HideStatisticsHoverTooltips() end)
+    self.statisticsCategoryPrev = categoryPrev
+
+    local categoryPageIndicator = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_LABEL)
+    categoryPageIndicator:SetDimensions(54, 24)
+    categoryPageIndicator:SetAnchor(TOPRIGHT, control, TOPRIGHT, -58, 202)
+    categoryPageIndicator:SetFont("$(BOLD_FONT)|14")
+    categoryPageIndicator:SetColor(0.78, 0.72, 0.58, 1)
+    categoryPageIndicator:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    categoryPageIndicator:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    categoryPageIndicator:SetText("1 / 3")
+    self.statisticsCategoryPageIndicator = categoryPageIndicator
+
+    local categoryNext = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatsCategoryNext", progressPage, CT_BUTTON)
+    categoryNext:SetDimensions(28, 24)
+    categoryNext:SetAnchor(TOPRIGHT, control, TOPRIGHT, -22, 202)
+    categoryNext:SetFont("$(BOLD_FONT)|20")
+    categoryNext:SetText("›")
+    categoryNext:SetNormalFontColor(0.86, 0.72, 0.28, 1)
+    categoryNext:SetMouseOverFontColor(1.00, 0.88, 0.42, 1)
+    categoryNext:SetPressedFontColor(1.00, 0.70, 0.14, 1)
+    categoryNext:SetHandler("OnClicked", function() TPM:SetStatisticsCompletionPage(TPM:GetStatisticsCompletionPage() + 1) end)
+    categoryNext:SetHandler("OnMouseEnter", function(control)
+        local targetPage = math.min(3, TPM:GetStatisticsCompletionPage() + 1)
+        local key = targetPage == 2 and "STAT_PAGE_COLLECTIONS" or "STAT_PAGE_ACHIEVEMENTS"
+        TPM:ShowStatisticsHoverTooltip(TPM:L(key), "", control)
+    end)
+    categoryNext:SetHandler("OnMouseExit", function() TPM:HideStatisticsHoverTooltips() end)
+    self.statisticsCategoryNext = categoryNext
 
     local zoneSectionTop = 402
     local zoneTitle = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_LABEL)
@@ -8999,13 +11854,22 @@ function TPM:RefreshStatisticsWindow()
     end
 
     self:SetProgressStatisticsControlsHidden(false)
-    local stats = self:GetStatisticsData()
+    local focusZoneId = self:GetStatisticsFocusZoneId()
+    local stats = self:GetStatisticsData(false, focusZoneId)
     self.statisticsData = stats
 
     self.statisticsTitle:SetText(self:L("STATISTICS_TITLE"))
     self.statisticsMode:SetText(self:L("STAT_MODE", self.saved.calculationMode == "categories" and self:L("MODE_CATEGORIES") or self:L("MODE_OBJECTIVES")))
-    self.statisticsTamrielLabel:SetText(self:L("TAMRIEL_TOTAL"))
-    self.statisticsSubtitle:SetText(self:L("STATISTICS_SUBTITLE"))
+    if self.statisticsFocusLabel then self.statisticsFocusLabel:SetText(self:L("STAT_FOCUS_LABEL")) end
+    self:RefreshStatisticsFocusSelector()
+    if focusZoneId > 0 then
+        local focusName = stats.focusName or SafeZoneName(focusZoneId)
+        self.statisticsTamrielLabel:SetText(focusName)
+        self.statisticsSubtitle:SetText(self:L("STATISTICS_SUBTITLE_ZONE", focusName))
+    else
+        self.statisticsTamrielLabel:SetText(self:L("TAMRIEL_TOTAL"))
+        self.statisticsSubtitle:SetText(self:L("STATISTICS_SUBTITLE"))
+    end
 
     local color = self:GetStatisticsPercentTextColor(stats.percent)
     self.statisticsOverall:SetText(string.format("|c%s%d%%|r", color, stats.percent))
@@ -9044,36 +11908,92 @@ function TPM:RefreshStatisticsWindow()
     self:RefreshStatisticsPlayerProgress()
 
     self.statisticsCategoryTitle:SetText(self:L("STAT_CATEGORIES"))
+    self:RefreshStatisticsCategorySortControls()
+    local displayedCategories = self:SortStatisticsCategoryData(stats.categories, false)
     for index, categoryControl in ipairs(self.statisticsCategoryRows or {}) do
-        local data = stats.categories[index]
+        local data = displayedCategories[index]
         categoryControl.control:SetHidden(data == nil)
         if data then
             categoryControl.label:SetText(data.name)
             categoryControl.count:SetText(data.countText or string.format("%d/%d", data.completed, data.total))
-            categoryControl.percent:SetText(string.format("|c%s%d%%|r", self:GetStatisticsPercentTextColor(data.percent), data.percent))
-            self:SetStatisticsBarPercent(categoryControl.fill, 96, data.percent)
+            if data.informational then
+                categoryControl.percent:SetText("—")
+                self:SetStatisticsBarPercent(categoryControl.fill, 96, 0)
+                categoryControl.fill:SetHidden(true)
+            else
+                categoryControl.percent:SetText(string.format("|c%s%d%%|r", self:GetStatisticsPercentTextColor(data.percent), data.percent))
+                categoryControl.fill:SetHidden(false)
+                self:SetStatisticsBarPercent(categoryControl.fill, 96, data.percent)
+            end
             if categoryControl.icon then
                 local iconTexture = STATISTICS_CATEGORY_ICON_TEXTURES[data.completionType] or "TamrielProgressMap/art/cat_quests.dds"
                 categoryControl.icon:SetTexture(iconTexture)
                 local ir, ig, ib = self:GetStatisticsProgressColor(data.percent)
                 categoryControl.icon:SetColor(ir, ig, ib, 0.96)
             end
-            if data.tooltipText then
-                local tooltipName = data.name
-                local tooltipText = data.tooltipText
-                categoryControl.control:SetMouseEnabled(true)
-                categoryControl.control:SetHandler("OnMouseEnter", function(row)
-                    InitializeTooltip(InformationTooltip, row, LEFT, -8, 0, RIGHT)
-                    InformationTooltip:AddLine(tooltipName, "ZoFontWinH3")
-                    InformationTooltip:AddLine(tooltipText, "ZoFontGame")
-                end)
-                categoryControl.control:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
-            else
-                categoryControl.control:SetMouseEnabled(false)
-                categoryControl.control:SetHandler("OnMouseEnter", nil)
-                categoryControl.control:SetHandler("OnMouseExit", nil)
+            local hudRowActive = self:IsProgressGoalCategoryActive(data.completionType)
+            if categoryControl.gearButton then
+                categoryControl.gearButton:SetHidden(true)
+                categoryControl.gearButton:SetHandler("OnMouseEnter", nil)
+                categoryControl.gearButton:SetHandler("OnMouseExit", nil)
+                categoryControl.gearButton:SetHandler("OnClicked", nil)
+                categoryControl.gearButton:SetHandler("OnMouseUp", nil)
             end
+            categoryControl.label:SetColor(hudRowActive and 1.00 or 0.92, hudRowActive and 1.00 or 0.89, hudRowActive and 1.00 or 0.81, 1)
+            categoryControl.bg:SetEdgeColor(hudRowActive and 0.82 or 0.28, hudRowActive and 0.74 or 0.23, hudRowActive and 0.48 or 0.12, hudRowActive and 0.70 or 0.20)
+
+            local tooltipName = data.name
+            local tooltipText = data.tooltipText or ""
+            categoryControl.control:SetMouseEnabled(true)
+            categoryControl.control:SetHandler("OnMouseEnter", function()
+                TPM:ShowStatisticsHoverTooltip(tooltipName, tooltipText, categoryControl.control)
+            end)
+            categoryControl.control:SetHandler("OnMouseExit", function() TPM:HideStatisticsHoverTooltips() end)
+            categoryControl.control:SetHandler("OnMouseUp", function(_, button, upInside)
+                if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
+                    TPM:HideStatisticsHoverTooltips()
+                    TPM:ToggleSkyshardGoalWidget(data.completionType)
+                end
+            end)
         end
+    end
+
+    -- Apply page 1/2/3 visibility only after the unchanged completion rows have
+    -- refreshed, so switching pages cannot alter their data or Tamriel %.
+    self:RefreshStatisticsCollectionPager()
+
+    if self.statisticsCategoryGearButton then
+        local activeType = self:GetActiveProgressGoalCategoryType()
+        local showGear = (tonumber(self.saved.statisticsCompletionPage) or 1) == 1 and activeType ~= nil
+        local editing = self.skyshardGoalEditMode == true
+        self.statisticsCategoryGearButton:SetHidden(not showGear)
+        self.statisticsCategoryGearButton:SetMouseEnabled(showGear)
+        if self.statisticsCategoryGearIcon then
+            self.statisticsCategoryGearIcon:SetColor(showGear and (editing and 1.00 or 0.88) or 0.55, showGear and (editing and 0.82 or 0.82) or 0.52, showGear and (editing and 0.24 or 0.64) or 0.46, showGear and (editing and 1.00 or 0.92) or 0.80)
+        end
+        self.statisticsCategoryGearButton:SetHandler("OnMouseEnter", showGear and function(button)
+            if button.TPMIcon then button.TPMIcon:SetColor(1.00, 0.86, 0.30, 1) end
+            local completionType = TPM:GetActiveProgressGoalCategoryType()
+            local title = TPM:L("STAT_GOAL_HUD_GEAR_TITLE", TPM:GetProgressGoalCategoryDisplayName(completionType))
+            local body = TPM:L("STAT_GOAL_HUD_GEAR_TT")
+            TPM:ShowStatisticsHoverTooltip(title, body, button)
+        end or nil)
+        self.statisticsCategoryGearButton:SetHandler("OnMouseExit", showGear and function(button)
+            local activeEditor = TPM.skyshardGoalEditMode == true
+            if button.TPMIcon then
+                button.TPMIcon:SetColor(activeEditor and 1.00 or 0.88, activeEditor and 0.82 or 0.82, activeEditor and 0.24 or 0.64, activeEditor and 1.00 or 0.92)
+            end
+            TPM:HideStatisticsHoverTooltips()
+        end or nil)
+        self.statisticsCategoryGearButton:SetHandler("OnClicked", showGear and function()
+            TPM:HideStatisticsHoverTooltips()
+            TPM:ToggleSkyshardGoalEditMode()
+        end or nil)
+        self.statisticsCategoryGearButton:SetHandler("OnMouseUp", showGear and function(_, button, upInside)
+            if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
+                TPM:ResetSkyshardGoalCustomPosition()
+            end
+        end or nil)
     end
 
     self.statisticsZoneTitle:SetText(self:L("STAT_ZONE_PROGRESS", stats.totalZones))
@@ -9117,6 +12037,12 @@ function TPM:ShowStatisticsWindow()
 end
 
 function TPM:HideStatisticsWindow()
+    self:HideStatisticsHoverTooltips()
+    self:HideStatisticsFocusDropdown()
+    TPM_HideAchievementTooltip()
+    -- Keep the Skyshard HUD editor alive when the world map closes. The gear
+    -- button is the explicit editor toggle: moving/resizing stays active until
+    -- the user clicks the gear again to save.
     if self.statisticsWindowMoving then
         self:StopMovingStatisticsWindow()
     end
@@ -9414,8 +12340,6 @@ function TPM:ApplyHeaderProgressAnchor()
 
     self.headerLabel:ClearAnchors()
     if gamepadMap then
-        -- ESO's gamepad map places the zone title around the upper centre. Move
-        -- TPM's large percentage to the upper-right so both remain readable.
         self.headerLabel:SetAnchor(TOPRIGHT, ZO_WorldMapScroll, TOPRIGHT, -120, 76)
         self.headerLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     else
@@ -9580,7 +12504,6 @@ end
 function TPM:RefreshBindingStrings()
     local stringId = _G.SI_BINDING_NAME_TPM_TOGGLE_STATISTICS
     if stringId and type(SafeAddString) == "function" then
-        -- Incremented version allows an already-created string id to be replaced.
         SafeAddString(stringId, self:L("KEYBIND_TOGGLE_STATS"), 2)
     end
 end
@@ -9600,9 +12523,10 @@ function TPM:SetLanguage(value, silent)
     self:RefreshStatisticsWindow()
     self:RefreshQuickFilterBar()
     self:RefreshQuestRewards()
+    self:RefreshSkyshardGoalWidget()
     self:QueueRefresh(10)
-    -- Some LAM/map controls rebuild a frame after the language button is used.
-    -- Refresh them again after layout settles so no stale DE/EN/RU labels remain.
+    -- LAM/map controls can settle a frame after switching language. Refresh a
+    -- second time so no stale labels remain.
     if type(zo_callLater) == "function" then
         zo_callLater(function()
             if TPM then
@@ -9641,6 +12565,9 @@ function TPM:HandleSlashCommand(text)
         self.saved.showQuestRewards = not self.saved.showQuestRewards
         d(string.format("%s: %s", self:L("QUEST_REWARDS"), self.saved.showQuestRewards and self:L("ON") or self:L("OFF")))
         self:QueueRefresh(10)
+    elseif text == "skydebug" then
+        self:RefreshSkyshardGoalWidget()
+        self:PrintSkyshardGoalDebug()
     elseif text == "rewarddebug" then
         local questIndex = self:GetFocusedQuestIndex()
         local lines = questIndex and self:GetQuestRewardLines(questIndex) or {}
@@ -9717,16 +12644,12 @@ function TPM:RefreshLAMSettingsLocalization()
                 if control.header and control.header.SetText then control.header:SetText(name) end
                 if control.button and control.button.SetText then control.button:SetText(name) end
             end
-
             if control.desc and data.text ~= nil and control.desc.SetText then
                 control.desc:SetText(Resolve(data.text) or "")
             end
             if control.title and data.title ~= nil and control.title.SetText then
                 control.title:SetText(Resolve(data.title) or "")
             end
-
-            -- LAM resolves tooltip functions only when a standard control is
-            -- created. Re-resolve them after TPM's own live language switch.
             if data.tooltip ~= nil then
                 local tooltipText = Resolve(data.tooltip) or ""
                 data.tooltipText = tooltipText
@@ -9734,10 +12657,6 @@ function TPM:RefreshLAMSettingsLocalization()
                     control.button.data.tooltipText = tooltipText
                 end
             end
-
-            -- LAM's checkbox ON/OFF words follow the ESO client language. TPM
-            -- has an independent language selector, so keep these words in the
-            -- currently selected TPM language as well.
             if control.checkbox then
                 control.checkedText = self:L("ON")
                 control.uncheckedText = self:L("OFF")
@@ -10460,6 +13379,17 @@ function TPM:RegisterSettings()
             refreshFunc = function(control) TPM:SetupCalculationCustomControl(control) end,
             width = "full",
         },
+        {
+            type = "dropdown",
+            name = function() return TPM:L("SETTINGS_SKYSHARD_POSITION") end,
+            tooltip = function() return TPM:L("SETTINGS_SKYSHARD_POSITION_TT") end,
+            choices = { "1", "2" },
+            choicesValues = { 1, 2 },
+            getFunc = function() return tonumber(TPM.saved.skyshardGoalPosition) == 2 and 2 or 1 end,
+            setFunc = function(value) TPM:SetSkyshardGoalPosition(value) end,
+            default = DEFAULTS.skyshardGoalPosition,
+            width = "full",
+        },
 
         { type = "header", name = function() return TPM:L("SETTINGS_SECTION_QUEST") end, width = "full" },
         {
@@ -10691,6 +13621,43 @@ function TPM:Initialize()
     if not self:IsValidStatisticsPage(self.saved.statisticsPage) then
         self.saved.statisticsPage = DEFAULTS.statisticsPage
     end
+    if tonumber(self.saved.statisticsCompletionPage) ~= 1 and tonumber(self.saved.statisticsCompletionPage) ~= 2 and tonumber(self.saved.statisticsCompletionPage) ~= 3 then
+        self.saved.statisticsCompletionPage = DEFAULTS.statisticsCompletionPage
+    else
+        self.saved.statisticsCompletionPage = tonumber(self.saved.statisticsCompletionPage)
+    end
+    if self.saved.statisticsCategorySortMode ~= "all" and self.saved.statisticsCategorySortMode ~= "name"
+        and self.saved.statisticsCategorySortMode ~= "asc" and self.saved.statisticsCategorySortMode ~= "desc" then
+        self.saved.statisticsCategorySortMode = DEFAULTS.statisticsCategorySortMode
+    end
+    self.saved.statisticsFocusZoneId = math.max(0, Round(tonumber(self.saved.statisticsFocusZoneId) or 0))
+    self.saved.skyshardGoalPosition = tonumber(self.saved.skyshardGoalPosition) == 2 and 2 or 1
+    self.saved.skyshardGoalCustomPosition = self.saved.skyshardGoalCustomPosition == true
+    if type(self.saved.skyshardGoalCustomX) ~= "number" or type(self.saved.skyshardGoalCustomY) ~= "number" then
+        self.saved.skyshardGoalCustomPosition = false
+        self.saved.skyshardGoalCustomX = false
+        self.saved.skyshardGoalCustomY = false
+    end
+    if type(self.saved.skyshardGoalCustomWidth) ~= "number" or type(self.saved.skyshardGoalCustomHeight) ~= "number" then
+        self.saved.skyshardGoalCustomWidth = false
+        self.saved.skyshardGoalCustomHeight = false
+    else
+        self.saved.skyshardGoalCustomWidth = math.floor(Clamp(self.saved.skyshardGoalCustomWidth, 230, 760) + 0.5)
+        self.saved.skyshardGoalCustomHeight = math.floor(Clamp(self.saved.skyshardGoalCustomHeight, 60, 220) + 0.5)
+    end
+    if not self.saved.skyshardGoalCustomPosition then
+        self.saved.skyshardGoalCustomWidth = false
+        self.saved.skyshardGoalCustomHeight = false
+    end
+    if self.saved.progressGoalCategoryType ~= SIDE_QUEST_CATEGORY_KEY
+        and self.saved.progressGoalCategoryType ~= CROWN_QUEST_CATEGORY_KEY
+        and self.saved.progressGoalCategoryType ~= ZONE_STABLE_MOUNT_CATEGORY_KEY then
+        local numericGoalType = tonumber(self.saved.progressGoalCategoryType)
+        self.saved.progressGoalCategoryType = numericGoalType or false
+    end
+    if self.saved.skyshardGoalEnabled == true and not self.saved.progressGoalCategoryType then
+        self.saved.progressGoalCategoryType = _G.ZONE_COMPLETION_TYPE_SKYSHARDS
+    end
     -- 3.0.6 simplifies Goals to two meaningful modes. Preserve old category
     -- tabs as the new compact category filter during migration.
     if self.saved.goalPlannerMode == "quests" or self.saved.goalPlannerMode == "skyshards" or self.saved.goalPlannerMode == "bosses" then
@@ -10755,6 +13722,7 @@ function TPM:Initialize()
     self:CreateHeaderProgressLabel()
     self:CreateQuestRewardControl()
     self:CreateStatisticsWindow()
+    self:CreateSkyshardGoalWidget()
     self:RegisterSettings()
     self:RegisterVanillaQuestRewardColorHooks()
 
@@ -10778,6 +13746,7 @@ function TPM:Initialize()
         WORLD_MAP_SCENE:RegisterCallback("StateChange", function(_, newState)
             if newState == SCENE_SHOWING then
                 TPM.worldMapSceneVisible = true
+                if TPM.skyshardGoalWidget then TPM.skyshardGoalWidget:SetHidden(true) end
                 TPM:QueueRefresh(40)
             elseif newState == SCENE_SHOWN then
                 TPM.worldMapSceneVisible = true
@@ -10792,8 +13761,8 @@ function TPM:Initialize()
                 TPM:HideHeaderProgress()
                 TPM:HideQuestRewards()
                 TPM:HideStatisticsWindow()
-                -- Explicitly hide full-map controls before minimap addons can
-                -- reuse ZO_WorldMap outside the real world-map scene.
+                zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 50)
+                -- Minimap addons can reuse ZO_WorldMap after the real scene closes.
                 TPM:RefreshQuickFilterBar()
             end
         end)
@@ -10809,6 +13778,7 @@ function TPM:Initialize()
         GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", function(_, newState)
             if newState == SCENE_SHOWING then
                 TPM.gamepadWorldMapSceneVisible = true
+                if TPM.skyshardGoalWidget then TPM.skyshardGoalWidget:SetHidden(true) end
                 TPM:QueueRefresh(40)
             elseif newState == SCENE_SHOWN then
                 TPM.gamepadWorldMapSceneVisible = true
@@ -10821,8 +13791,8 @@ function TPM:Initialize()
                 TPM:HideHeaderProgress()
                 TPM:HideQuestRewards()
                 TPM:HideStatisticsWindow()
-                -- Explicitly hide full-map controls before minimap addons can
-                -- reuse ZO_WorldMap outside the real world-map scene.
+                zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 50)
+                -- Minimap addons can reuse ZO_WorldMap after the real scene closes.
                 TPM:RefreshQuickFilterBar()
             end
         end)
@@ -10841,6 +13811,31 @@ function TPM:Initialize()
             end)
     end
 
+    -- Keep the Skyshard goal synchronized with the same HUD scene lifecycle
+    -- used by native trackers. This makes M/ESC hiding immediate, not dependent
+    -- on the 1.5s safety refresh timer.
+    local function RegisterSkyshardHudScene(scene)
+        if scene and type(scene.RegisterCallback) == "function" then
+            scene:RegisterCallback("StateChange", function()
+                zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 0)
+            end)
+        end
+    end
+    RegisterSkyshardHudScene(_G.HUD_SCENE)
+    RegisterSkyshardHudScene(_G.HUD_UI_SCENE)
+
+    -- React to *every* scene transition, not only the world map. This is the
+    -- reliable part for ESC: as soon as the current scene stops being HUD or
+    -- HUD-UI, the Skyshard block is hidden. Returning to the HUD restores it.
+    if _G.SCENE_MANAGER and type(_G.SCENE_MANAGER.RegisterCallback) == "function" then
+        _G.SCENE_MANAGER:RegisterCallback("SceneStateChanged", function()
+            if TPM and TPM.skyshardGoalWidget and not TPM:IsSkyshardGoalHudSceneVisible() then
+                TPM.skyshardGoalWidget:SetHidden(true)
+            end
+            zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 0)
+        end)
+    end
+
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "PlayerActivated", EVENT_PLAYER_ACTIVATED, function()
         -- Ownership and available zone-story data can change between sessions.
         -- Economy tracking is character-scoped from 2.0.15 onward, so this also
@@ -10851,9 +13846,11 @@ function TPM:Initialize()
         TPM:StartOrResumeHistorySession()
         TPM:HandleTrackedActivityActivated()
         TPM:ResumeParticipatingWorldEvent()
+        TPM:DiscoverCurrentZoneWorldEventCandidates(true)
         zo_callLater(function() if TPM then TPM:HandleTrackedActivityActivated() end end, 350)
-        zo_callLater(function() if TPM then TPM:ResumeParticipatingWorldEvent() end end, 500)
+        zo_callLater(function() if TPM then TPM:ResumeParticipatingWorldEvent(); TPM:DiscoverCurrentZoneWorldEventCandidates(true) end end, 500)
         zo_callLater(function() if TPM then TPM:RefreshQuestRewards() end end, 250)
+        zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 450)
         if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
             and TPM.saved and TPM.saved.statisticsPage == "economy" then
             TPM:RefreshEconomyStatisticsPage()
@@ -10870,6 +13867,39 @@ function TPM:Initialize()
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "HistoryCheckpoint", HISTORY_CHECKPOINT_MS, function()
         if TPM.saved and TPM.saved.historyEnabled ~= false then
             TPM:CheckpointHistory("periodic", false)
+        end
+    end)
+
+    if _G.EVENT_TIMED_ACTIVITY_TRACKING_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardTomeTracking", _G.EVENT_TIMED_ACTIVITY_TRACKING_UPDATED, function()
+            -- ESO rebuilds/reanchors the native Tome HUD when the tracked Tome
+            -- changes. Throw away our cached control and resolve the new native
+            -- tracker twice: once immediately, once after its layout settles.
+            TPM.skyshardGoalTomesAnchor = nil
+            TPM.skyshardGoalLastAnchorScan = 0
+            zo_callLater(function()
+                if TPM then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
+            end, 50)
+            zo_callLater(function()
+                if TPM then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
+            end, 450)
+        end)
+    end
+
+    if _G.EVENT_ZONE_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalZoneChanged", _G.EVENT_ZONE_CHANGED, function()
+            zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 100)
+        end)
+    end
+    if _G.EVENT_SKYSHARD_GAINED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalGained", _G.EVENT_SKYSHARD_GAINED, function()
+            TPM:InvalidateStatisticsData(false)
+            zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 100)
+        end)
+    end
+    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "SkyshardGoalHudRefresh", 1500, function()
+        if TPM and TPM.saved and TPM.saved.skyshardGoalEnabled == true then
+            TPM:RefreshSkyshardGoalWidget()
         end
     end)
 
@@ -10926,6 +13956,22 @@ function TPM:Initialize()
             TPM:QueueProgressHistoryCheckpoint()
         end)
     end
+
+    -- Collection unlocks are rare events. Refresh page 2 immediately when
+    -- ESO changes the account Collections data; no polling is required.
+    local function RegisterCollectionRefreshEvent(suffix, eventCode)
+        if not eventCode then return end
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Collections" .. suffix, eventCode, function()
+            if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
+                and TPM.saved and TPM.saved.statisticsPage == "progress"
+                and tonumber(TPM.saved.statisticsCompletionPage) == 2 then
+                TPM:RefreshStatisticsWindow()
+            end
+        end)
+    end
+    RegisterCollectionRefreshEvent("Collection", _G.EVENT_COLLECTION_UPDATED)
+    RegisterCollectionRefreshEvent("Collectible", _G.EVENT_COLLECTIBLE_UPDATED)
+    RegisterCollectionRefreshEvent("Collectibles", _G.EVENT_COLLECTIBLES_UPDATED)
 
     if _G.EVENT_QUEST_COMPLETE_DIALOG then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestRewardCacheDialog", EVENT_QUEST_COMPLETE_DIALOG,
@@ -11041,49 +14087,92 @@ function TPM:Initialize()
             if TPM:IsInPvPEnvironment() then return end
 
             local isXpDeathResult = _G.ACTION_RESULT_DIED_XP ~= nil and result == _G.ACTION_RESULT_DIED_XP
-            if isXpDeathResult then
-                -- DIED_XP may have a blank targetName; promote the DIED row by
-                -- unit id before applying the normal name/source filters.
-                TPM:MarkPendingPveKillXpResult(targetName, targetUnitId)
-            end
-            if not targetName or targetName == "" then return end
-
-            -- ZOS defines COMBAT_UNIT_TYPE_NONE as a unit that is not a player,
-            -- group member, pet or target dummy. That is the PvE NPC/mob/animal
-            -- bucket we want. COMBAT_UNIT_TYPE_OTHER is another real player and
-            -- must never be counted as PvE.
-            if _G.COMBAT_UNIT_TYPE_NONE ~= nil and targetType ~= _G.COMBAT_UNIT_TYPE_NONE then return end
-
-            local sourceCounts = sourceType == _G.COMBAT_UNIT_TYPE_PLAYER
-                or sourceType == _G.COMBAT_UNIT_TYPE_GROUP
-                or sourceType == _G.COMBAT_UNIT_TYPE_PLAYER_PET
-                or (_G.COMBAT_UNIT_TYPE_PLAYER_COMPANION ~= nil and sourceType == _G.COMBAT_UNIT_TYPE_PLAYER_COMPANION)
-            if not sourceCounts then return end
-
             local numericTargetId = tonumber(targetUnitId) or 0
+            local recentTarget = TPM:GetRecentPlayerPveCombatTarget(numericTargetId, targetName)
 
-            -- Keep the combat counter group-aware, but only add individual log
-            -- rows for kills credited to the player/pet/companion. Queue BEFORE
-            -- the duplicate counter gate so DIED_XP can still promote the same
-            -- pending unit-id row created by DIED.
+            if isXpDeathResult then
+                -- ESO commonly blanks targetName on DIED_XP when somebody else
+                -- lands the final hit. targetUnitId is often still available,
+                -- so promote an already pending row before resolving the name.
+                TPM:MarkPendingPveKillXpResult(targetName, numericTargetId)
+            end
+
+            local cleanTargetName = select(1, TPM:NormalizeCombatUnitName(targetName))
+            if cleanTargetName == "" and type(recentTarget) == "table" then
+                cleanTargetName = tostring(recentTarget.name or "")
+            end
+
+            -- If ESO still withholds the name, do not silently drop a confirmed
+            -- XP death. Show an explicit Unknown Enemy row instead so the combat
+            -- log reflects every death participation the API actually reports.
+            if cleanTargetName == "" and isXpDeathResult then
+                cleanTargetName = TPM:L("HISTORY_UNKNOWN_ENEMY")
+            end
+            if cleanTargetName == "" then return end
+
+            -- NPC/mob/animal targets normally use COMBAT_UNIT_TYPE_NONE. On
+            -- privacy-limited death events ESO can blank unit metadata; DIED_XP
+            -- plus a recently player-hit target is still valid PvE evidence.
+            local targetLooksPve = _G.COMBAT_UNIT_TYPE_NONE == nil
+                or targetType == _G.COMBAT_UNIT_TYPE_NONE
+                or isXpDeathResult
+                or recentTarget ~= nil
+            if not targetLooksPve then return end
+
             local personalSource = sourceType == _G.COMBAT_UNIT_TYPE_PLAYER
                 or sourceType == _G.COMBAT_UNIT_TYPE_PLAYER_PET
                 or (_G.COMBAT_UNIT_TYPE_PLAYER_COMPANION ~= nil and sourceType == _G.COMBAT_UNIT_TYPE_PLAYER_COMPANION)
-            if personalSource then
-                local kind = TPM:GetPveKillActivityKind(targetName)
-                local difficulty = TPM:GetPveKillDifficulty(targetName, kind)
-                local expectsXp = isXpDeathResult
-                TPM:QueuePveKillActivity(targetName, kind, expectsXp, numericTargetId, difficulty, isXpDeathResult)
+            local groupSource = sourceType == _G.COMBAT_UNIT_TYPE_GROUP
+            local participated = personalSource or groupSource or isXpDeathResult or recentTarget ~= nil
+            if not participated then return end
+
+            -- Death/XP at a currently active World Event is strong participation
+            -- evidence. The helper can now discover an already-active Dolmen by
+            -- its live POI instance id even if activation happened earlier.
+            TPM:MarkNearbyWorldEventParticipationEvidence(isXpDeathResult and "death_xp" or "combat")
+
+            -- Log every death participation ESO exposes, not just kills where
+            -- the player dealt the final blow. This covers public-event mobs
+            -- killed by another player after we damaged them, and grouped kills.
+            local kind = TPM:GetPveKillActivityKind(cleanTargetName)
+            if type(recentTarget) == "table" then
+                if recentTarget.livestock or recentTarget.critter then kind = "killAnimal" end
+                if _G.MONSTER_DIFFICULTY_DEADLY ~= nil and recentTarget.difficulty == _G.MONSTER_DIFFICULTY_DEADLY then kind = "killBoss" end
             end
+            local difficulty = (type(recentTarget) == "table" and recentTarget.difficulty) or TPM:GetPveKillDifficulty(cleanTargetName, kind)
+            TPM:QueuePveKillActivity(cleanTargetName, kind, isXpDeathResult, numericTargetId, difficulty, isXpDeathResult)
 
             if numericTargetId > 0 then
                 local deathKey = "pve_npc_death|" .. tostring(numericTargetId)
                 if TPM:IsDuplicateCombatCounterEvent(deathKey, 1800) then return end
             end
-
             TPM:IncrementPlayerCombatStat("npcKills", 1)
-
+            TPM:RecordWorldEventPveKill(kind)
         end
+
+        -- Cache NPCs affected by the player/pet/companion. ESO can blank
+        -- targetName on the later DIED_XP event if another player lands the
+        -- killing blow; targetUnitId lets us recover the name from this cache.
+        local function OnPlayerPveCombatTarget(_, result, isError, abilityName, abilityId, abilityActionSlotType,
+            sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log,
+            sourceUnitId, targetUnitId)
+            if TPM:IsInPvPEnvironment() then return end
+            if not targetName or targetName == "" then return end
+            if _G.COMBAT_UNIT_TYPE_NONE ~= nil and targetType ~= _G.COMBAT_UNIT_TYPE_NONE then return end
+            TPM:RememberPlayerPveCombatTarget(targetName, targetUnitId, targetType)
+        end
+
+        local function RegisterPlayerTargetSource(suffix, combatUnitType)
+            if type(combatUnitType) ~= "number" then return end
+            local namespace = ADDON_NAME .. "CombatTargetCache" .. suffix
+            EVENT_MANAGER:RegisterForEvent(namespace, EVENT_COMBAT_EVENT, OnPlayerPveCombatTarget)
+            if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE then
+                EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, combatUnitType)
+            end
+        end
+        RegisterPlayerTargetSource("Player", _G.COMBAT_UNIT_TYPE_PLAYER)
+        RegisterPlayerTargetSource("Pet", _G.COMBAT_UNIT_TYPE_PLAYER_PET)
+        RegisterPlayerTargetSource("Companion", _G.COMBAT_UNIT_TYPE_PLAYER_COMPANION)
 
         local registeredDeathResult = false
         local function RegisterPveDeathResult(suffix, resultCode)
@@ -11108,8 +14197,15 @@ function TPM:Initialize()
     end
 
 
-    -- 2.4.48 World Events. Activation is only zone-wide presence; real log
-    -- tracking starts exclusively when ESO reports player participation.
+    -- 2.6.2 World Events. PARTICIPATION_BEGIN remains the strongest signal,
+    -- but activation is now kept as a candidate so classic Dark Anchors can be
+    -- promoted by local combat/XP/Gold evidence when that callback is missing.
+    if _G.EVENT_WORLD_EVENT_ACTIVATED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventActivated", EVENT_WORLD_EVENT_ACTIVATED,
+            function(_, worldEventInstanceId)
+                TPM:ObserveWorldEventActivation(worldEventInstanceId)
+            end)
+    end
     if _G.EVENT_WORLD_EVENT_PARTICIPATION_BEGIN then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventParticipationBegin", EVENT_WORLD_EVENT_PARTICIPATION_BEGIN,
             function(_, worldEventInstanceId, stepDefId)
@@ -11131,6 +14227,7 @@ function TPM:Initialize()
     if _G.EVENT_WORLD_EVENT_ACTIVE_LOCATION_CHANGED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventLocationChanged", EVENT_WORLD_EVENT_ACTIVE_LOCATION_CHANGED,
             function(_, worldEventInstanceId)
+                TPM:ObserveWorldEventActivation(worldEventInstanceId)
                 TPM:UpdateWorldEventTrackerMetadata(worldEventInstanceId)
             end)
     end
@@ -11145,7 +14242,9 @@ function TPM:Initialize()
         local namespace = ADDON_NAME .. "CombatStatsPlayerDeath"
         EVENT_MANAGER:RegisterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, function(_, unitTag, isDead)
             if unitTag == "player" and isDead and not TPM:IsInPvPEnvironment() and not TPM:IsDuplicateCombatCounterEvent("pve_player_death", 2500) then
+                TPM:MarkNearbyWorldEventParticipationEvidence("player_death")
                 TPM:IncrementPlayerCombatStat("pveDeaths", 1)
+                TPM:RecordWorldEventPveDeath()
             end
         end)
         if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_UNIT_TAG then EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG, "player") end
@@ -11181,6 +14280,16 @@ function TPM:Initialize()
                     and (not _G.CURRENCY_CHANGE_REASON_PLAYER_INIT or reason ~= _G.CURRENCY_CHANGE_REASON_PLAYER_INIT) then
                     TPM:QueueEconomyHistoryCheckpoint()
                 end
+            end)
+    end
+
+    -- v2.6.22: track how much gold this character has actually lost to the
+    -- Justice system (bounty payoff). This event does not represent passive
+    -- bounty decay, and the amount is stored only as a Gold spending sub-total.
+    if _G.EVENT_JUSTICE_GOLD_REMOVED then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "EconomyBountyPaid", EVENT_JUSTICE_GOLD_REMOVED,
+            function(_, goldAmount)
+                TPM:RecordEconomyBountyPayment(goldAmount)
             end)
     end
 
@@ -11251,6 +14360,7 @@ function TPM:Initialize()
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ScreenResized", EVENT_SCREEN_RESIZED, function()
             if TPM.statisticsWindow then TPM:ClampStatisticsWindowToScreen() end
             if TPM.questRewardControl then TPM:ApplyQuestRewardPosition() end
+            if TPM.skyshardGoalWidget then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
         end)
     end
 

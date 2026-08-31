@@ -37,7 +37,7 @@ function BT:CreateSettingsMenu()
         {type=LHAS.ST_SECTION,label="Encounter Features"},
         {type=LHAS.ST_CHECKBOX,label="Enable Better Twins",tooltip="Master switch for all Better Twins features.",getFunction=function() return BT.sv.enabled==true end,setFunction=function(v) BT.sv.enabled=v==true;if not v then BT:ResetFight() end end},
         {type=LHAS.ST_CHECKBOX,label="Phase 1 — Corner Assignments",tooltip="Enables the corner sequence system.",getFunction=function() return BT.sv.phaseOneEnabled==true end,setFunction=function(v) BT.sv.phaseOneEnabled=v==true end},
-        {type=LHAS.ST_CHECKBOX,label="Split Phase — Dome & Bash",tooltip="Locks the first Twin hard-targeted while both bosses are present and provides that boss's dome countdown and bash callout.",getFunction=function() return BT.sv.splitEnabled==true end,setFunction=function(v) BT.sv.splitEnabled=v==true;if not v then BT.state.lockedBoss=nil;BT.hud.root:SetHidden(true) end end},
+        {type=LHAS.ST_CHECKBOX,label="Split Phase — Dome & Bash",tooltip="Locks the first Twin hard-targeted while both bosses are present, shows a persistent dome readiness warning, and calls the confirmed bash event.",getFunction=function() return BT.sv.splitEnabled==true end,setFunction=function(v) BT.sv.splitEnabled=v==true;if not v then BT.state.lockedBoss=nil;BT.hud.root:SetHidden(true) end end},
 
         {type=LHAS.ST_SECTION,label="Split Callout Position and Size"},
         {type=LHAS.ST_LABEL,label="The preview appears for five seconds after each adjustment. Gameplay callouts only appear on the HUD."},
@@ -51,10 +51,10 @@ function BT:CreateSettingsMenu()
         {type=LHAS.ST_BUTTON,buttonText="Callout Right",clickHandler=function() Nudge(20,0) end},
         {type=LHAS.ST_BUTTON,buttonText="Restore Callout Position and Size",clickHandler=function() BT.sv.callout={scale=1.0,offsetX=0,offsetY=-165};BT:ApplyCalloutLayout();BT:ShowPreview() end},
 
-        {type=LHAS.ST_SECTION,label="Corner Diagnostic Recorder"},
-        {type=LHAS.ST_CHECKBOX,label="Arm Diagnostic Recorder",tooltip="Turn ON before the fight. Records only the 30-second MultiLoc corner window.",getFunction=function() return BT.sv.diagnosticArmed==true end,setFunction=function(v) BT.sv.diagnosticArmed=v==true;if not v then BT:StopRecording("recorder disarmed") end end},
-        {type=LHAS.ST_BUTTON,buttonText="Open Diagnostic Report",clickHandler=function() BT:HidePreview();BT:OpenReport() end},
-        {type=LHAS.ST_BUTTON,buttonText="Clear Diagnostic Report",clickHandler=function() BT.sv.diagnosticLines={};BT.sv.diagnosticPull=0 end},
+        {type=LHAS.ST_SECTION,label="Diagnostic Recorder"},
+        {type=LHAS.ST_CHECKBOX,label="Arm Diagnostic Recorder",tooltip="Turn ON before the fight. Records the focused 30-second corner window and split-phase timing around each real Twin channel.",getFunction=function() return BT.sv.diagnosticArmed==true end,setFunction=function(v) BT.sv.diagnosticArmed=v==true;if not v then BT:StopRecording("recorder disarmed");BT:StopSplitDiagnostic("recorder disarmed") end end},
+        {type=LHAS.ST_BUTTON,buttonText="Open Corner Diagnostic Report",clickHandler=function() BT:HidePreview();BT:OpenReport("corner") end},
+        {type=LHAS.ST_BUTTON,buttonText="Open Split Timing Report",clickHandler=function() BT:HidePreview();BT:OpenReport("split") end},
+        {type=LHAS.ST_BUTTON,buttonText="Clear Diagnostic Reports",clickHandler=function() BT.sv.diagnosticLines={};BT.sv.diagnosticPull=0;BT.sv.splitDiagnosticLines={};BT.sv.splitDiagnosticPull=0 end},
     })
 end
-

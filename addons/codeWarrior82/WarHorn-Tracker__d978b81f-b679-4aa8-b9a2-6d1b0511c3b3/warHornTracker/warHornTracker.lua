@@ -4,6 +4,7 @@ local isLoaded = false
 local isWhActive = false
 local timeRemaining = 0
 local abilityTmp = 0
+local isMenuOpen = false
 
 warHornTracker = {}
 
@@ -135,18 +136,20 @@ end
 --change icon anchor to move text around the screen
 local function setAnchorIcon(x, y)  
     whtAddonText:SetHidden(false)
-    zo_callLater(function () whtAddonText:SetHidden(true) end, 2000)
+	zo_callLater(function () if isMenuOpen == true then whtAddonText:SetHidden(true) end end, 2000)
     whtAddonText:ClearAnchors()
     whtAddonText:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end
 
 --when UI opens
 local function onMenuOpened()
+	isMenuOpen = true
     whtAddonText:SetHidden(true)
 end
 
 --when UI closes
 local function onMenuClosed()
+	isMenuOpen = false
     if isWhActive then
         whtAddonText:SetHidden(false)
     else
@@ -263,6 +266,11 @@ local function onAddOnLoadedWht(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
 
+	--notify if tracking is disabled
+	if not warHornTracker.savedVariables.trackWh then
+		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+	end
+	
     --load saved variables
     warHornTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("whtAddonVars", 1, "Settings", warHornTracker.defaults, GetUnitName("player"))
 
@@ -274,8 +282,13 @@ local function onAddOnLoadedWht(event, name)
     whtAddonText:SetHidden(true)
     setAnchorStartupIcon(warHornTracker.savedVariables.xAxisText, warHornTracker.savedVariables.yAxisText)
 
-    --register for combat alerts
-    registerAlerts()
+    --register for combat alerts if tracking is enabled
+    if warHornTracker.savedVariables.trackWh then
+        registerAlerts()
+        whtAddonText:SetHidden(false)
+    else
+        whtAddonText:SetHidden(true)
+    end
 
     --register for notifications of menu or map opening
     SCENE_MANAGER:RegisterCallback("SceneStateChanged", onSceneStateChange)

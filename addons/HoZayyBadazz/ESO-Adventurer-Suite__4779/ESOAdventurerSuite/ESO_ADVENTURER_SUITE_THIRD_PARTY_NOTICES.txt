@@ -1,0 +1,21 @@
+ESO ADVENTURER SUITE - THIRD-PARTY LICENSE & ATTRIBUTION NOTICES
+============================================
+
+Project / brand: ESO Adventurer Suite
+Creator: HoZayyBadazz
+
+LOREBOOKS INTEGRATION
+The LoreBooks/ directory contains integrated third-party material. Its original
+licenses and attribution requirements remain applicable. See:
+LoreBooks/ESO_ADVENTURER_SUITE_LOREBOOKS_LICENSE_NOTICE.txt
+
+THE ELDER SCROLLS ONLINE
+The Elder Scrolls Online, The Elder Scrolls, ZeniMax, Bethesda, related game
+assets, APIs, names, and trademarks belong to their respective rights holders.
+The ZeniMax addon disclaimer in README.txt / ESOUI_DESCRIPTION.txt must remain
+for distributed ESO addons.
+
+RESOURCE COMMUNITY DATA
+The CommunityData/ files are the Suite-formatted resource-location dataset used
+by Suite Resource Pins. Any rights that apply to the source community dataset
+are not replaced by the ESO Adventurer Suite proprietary license.

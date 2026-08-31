@@ -82,3 +82,18 @@ Equipment and glyphs must be made by the character who turns the writ in. That i
 - If you only want **one day** of auto-craft and no future stock, you can keep using Dolgubon's Lazy Writ Creator **instead of** this addon.
 - Potions and food can still be shared by hand; the addon does not touch the bank.
 - If this addon helped you, a little in-game gold by mail to **@Tetsurion** is appreciated. Same mail for bugs and ideas.
+
+---
+
+## 2.5.2
+
+Scribing (`CRAFTING_TYPE_SCRIBING`) is ignored: no R3, no “rotation phase unknown”. Enchanting glyphs are unchanged. 2.5.1 tab-filter revert.
+
+## 2.5.0
+
+Alchemy and enchanting daily writs now follow the real rank tables (UESP / Lazy Writ):
+
+- Alchemy solvents use official item IDs. Writ rank 2 is Pristine Water (Dram), not Clear Water / Yeast. Ranks 6 and 7 both use Cloud Mist (Panacea). Distillate / Star Dew is never requested.
+- Solvent Proficiency 8 crafts Essence on Lorkhan’s Tears **and** Poison IX on Alkahest (Drain / Damage). Quest mode matches the journal with potion *and* poison results.
+- Alchemy rotation is 4 days (8 products at rank 8). Taking today’s writ once lets pre-craft follow your cycle; without a learned phase it stocks every product that exists at your rank.
+- Enchanting rank 10 daily writs use **Rejera** (Superb CP150), not Repora (CP160).

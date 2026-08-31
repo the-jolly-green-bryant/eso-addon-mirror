@@ -5,7 +5,7 @@ AetherChat = AetherChat or {}
 local AetherChat = AetherChat
 
 AetherChat.name = 'AetherChat'
-AetherChat.version = '1.2'
+AetherChat.version = '1.2.2'
 
 -- Keybinding Strings (Must be created before Bindings.xml is loaded by C++ engine)
 local L = AetherChat.L or function(k) return k end

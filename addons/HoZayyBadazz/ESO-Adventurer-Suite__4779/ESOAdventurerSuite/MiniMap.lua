@@ -2458,9 +2458,35 @@ function M:RefreshQuestPin()
                 if type(GetJournalQuestName) == "function" then
                     questName = clean(safe(GetJournalQuestName, "Quest", questIndex), "Quest")
                 end
+                local qx, qy = tonumber(position.x), tonumber(position.y)
+                local currentMapId = 0
+                if type(GetCurrentMapId) == "function" then
+                    currentMapId = tonumber(safe(GetCurrentMapId, 0)) or 0
+                end
+                -- RequestJournalQuestConditionAssistance returns coordinates for
+                -- the objective map. If the player is on another map/zone, those
+                -- normalized coordinates cannot be drawn directly on this
+                -- minimap. Use the universal coordinates cached by Travel to
+                -- project the objective back into the player's current map.
+                if tonumber(position.mapId) and tonumber(position.mapId) > 0
+                    and currentMapId > 0 and tonumber(position.mapId) ~= currentMapId then
+                    local gx, gy = tonumber(position.globalX), tonumber(position.globalY)
+                    if gx ~= nil and gy ~= nil then
+                        local projectedX, projectedY = easLocalPointForMap(currentMapId, gx, gy)
+                        if projectedX ~= nil and projectedY ~= nil then
+                            qx, qy = projectedX, projectedY
+                        else
+                            self.questPin:SetHidden(true)
+                            return
+                        end
+                    else
+                        self.questPin:SetHidden(true)
+                        return
+                    end
+                end
                 self.questPosition = {
-                    x = tonumber(position.x),
-                    y = tonumber(position.y),
+                    x = qx,
+                    y = qy,
                     name = questName,
                     objective = position.targetText,
                 }

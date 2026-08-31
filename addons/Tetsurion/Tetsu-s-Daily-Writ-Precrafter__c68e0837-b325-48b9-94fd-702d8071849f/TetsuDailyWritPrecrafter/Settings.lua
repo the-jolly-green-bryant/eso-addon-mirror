@@ -11,7 +11,7 @@ function TetsuDailyWritPrecrafter.RegisterSettings()
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true })
     if not settings then return end
 
-    settings.version = "2.4.3"
+    settings.version = "2.5.2"
     settings.author = "Tetsurion"
 
     settings:AddSetting({

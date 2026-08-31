@@ -2,6 +2,7 @@ local Icon = WPamA.Consts.IconsW
 local GetIcon = WPamA.Textures.GetTexture
 local OpenWindowText = GetString(SI_ENTER_CODE_CONFIRM_BUTTON) -- "Открыть окно"
 local DynamicEncounterText = GetAchievementSubCategoryInfo(1,4) -- "Случайные события"
+--SI_HUD_EDITOR_DYNAMIC_EVENT_TRACKER = "Случайное событие" at U51
 WPamA.i18n = {
   Lng = "RU",
 -- DateTime settings
@@ -109,7 +110,8 @@ WPamA.i18n = {
         [5] = {N=GetIcon(31,28), NC=GetIcon(31,28,true), W=28, S=true,
                A=GetString(SI_GAMEPAD_PLAYER_INVENTORY_CAPACITY_FOOTER_LABEL)}, -- "Вместимость инвентаря"
         [6] = {N=GetIcon(61,24), NC=GetIcon(61,24,true), W=28, S=true,
-               A=zo_strformat("<<1>>, <<2>>", GetString(SI_SPECIALIZEDITEMTYPE100), GetString(SI_SPECIALIZEDITEMTYPE101))},
+               A=zo_strformat("<<1>>,\n<<2>>,\n<<3>>", GetString(SI_SPECIALIZEDITEMTYPE100),
+                              GetString(SI_SPECIALIZEDITEMTYPE101), GetString(SI_SPECIALIZEDITEMTYPE2750) )},
         [7] = {N=GetIcon(65,28), NC=GetIcon(65,28,true), W=28, S=true,
                A=GetString(SI_ITEMTYPEDISPLAYCATEGORY26)}, -- "Контейнеры"
       },
@@ -127,6 +129,18 @@ WPamA.i18n = {
     },
     [6] = {
       Capt = GetString(SI_MAPFILTER14), -- "Спутники"
+--[[
+SI_MAIN_MENU_SKILLS | SI_COMPANION_OVERVIEW_SKILLS = "Навыки"
+SI_SKILLS_ACTIVE_ABILITIES = "Активные способности"
+SI_UTILITY_WHEEL_SLOT_FORMATTER = "Ячейка <<1>>"
+
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_3 "Способность 1"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_4 "Способность 2"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_5 "Способность 3"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_6 "Способность 4"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_7 "Способность 5"
+SI_BINDING_NAME_GAMEPAD_ACTION_BUTTON_8 "Суперспособность"
+--]]
       Tab = {
         [1] = {N=GetIcon(45, 24) .. "1", NC=GetIcon(45, 24, true) .. "1", W=70, S=true, A="Отношения"}, -- GetString(SI_COMPANION_OVERVIEW_RAPPORT)
         [2] = {N=GetIcon(45, 24) .. "2", NC=GetIcon(45, 24, true) .. "2", W=70, S=true, A="Отношения"}, -- GetString(SI_COMPANION_OVERVIEW_RAPPORT)
@@ -155,6 +169,7 @@ WPamA.i18n = {
         [1] = {N="Сезонные фестивали", W=172},
         [2] = {N=GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES803), W=70},
         [3] = {N=GetString(SI_RECIPECRAFTINGSYSTEM6), W=100}, -- "Чертежи"
+        [4] = {N=GetString(SI_QUESTTYPE19), W=100}, -- "Просьбы"
       },
     },
     [8] = {
@@ -172,32 +187,32 @@ WPamA.i18n = {
   },
   ModeSettings = {
     [25] = {
-      HdT = {
-        [1] = "Всего",
-        [2] = "Занято",
-        [3] = "Свободно",
-      },
+      HdT = { [1] = "Всего", [2] = "Занято", [3] = "Свободно" }
     },
 --------
     [42] = {
       HdT = {
         [1] = GetString(SI_COLLECTIBLERESTRICTIONTYPE1), -- Race
         [2] = GetString(SI_COLLECTIBLERESTRICTIONTYPE3), -- Class
-        [3] = "Очки", [4] = "Последний вход", [5] = "Время игры",
+        [3] = "Очки", [4] = "Последний вход", [5] = "Время игры"
       },
     },
 --------
     [50] = {
       HdT = {
         [1] = GetString(SI_CAMPAIGN_OVERVIEW_CATEGORY_BONUSES), -- Бонусы
-        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", ""), -- time remaining
+        [2] = GetString(SI_STAT_GAMEPAD_TIME_REMAINING):gsub(":", "") -- time remaining
       },
     },
 --------
+    [51] = {
+      HdT = { [1] = GetMailListName(1), [2] = GetMailListName(2), [3] = GetMailListName(3) }
+    },
+--------
   }, -- ModeSettings
-  SelModeWin = {x = 230, y = 2, dy = 24,},
+  SelModeWin = {x = 230, y = 2, dy = 24},
 -- Labels
-  TotalRow = {[1] = "БАНК",[2] = "ИТОГО",},
+  TotalRow = {[1] = "БАНК", [2] = "ИТОГО"},
   HdrLvl = "Лвл",
   HdrName = "Имя",
   HdrClnd = "Календарь",
@@ -315,6 +330,14 @@ SI_TIMED_ACTIVITIES_REWARD_HEADER, "Награда"
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_THOUSANDS_NARRATION),     " : 1234 K\n",
                            GetString(SI_GAMEPAD_CURRENCY_SELECTOR_TEN_THOUSANDS_NARRATION), " : 12345 K"
                          } ),
+  OptDynEncounterNotify = zo_strformat("<<1>>: <<2>>", DynamicEncounterText, GetString(SI_MAIN_MENU_NOTIFICATIONS)), -- "Уведомления"
+  OptDynEncounterNotifyF = table.concat(
+                           { "Уведомлять на экране и в чате о начале, активности, завершении и прогрессе случайных событий.\n\n",
+                           -- GetString(SI_ACTIONBARSETTINGCHOICE0), " - не показывать уведомления событий.\n",
+                           -- GetString(SI_ACTIONBARSETTINGCHOICE1), " - всегда показывать уведомления событий.\n",
+                             GetString(SI_ACTIONBARSETTINGCHOICE2), " - скрывать уведомления, пока персонаж ",
+                             "принимает участие в событии, иначе показывать уведомления события."
+                           } ),
   OptCompanionRapport = "Показывать отношение спутников как...",
   OptCompanionRprtList = {"число", "текст"},
   OptCompanionRprtMax = "Показывать максимальное значение",
@@ -467,8 +490,9 @@ SI_TIMED_ACTIVITIES_REWARD_HEADER, "Награда"
   Login1DayAgo = "Вчера",
 -- Dynamic Encounter Status
   DynamicEncounter = {
-    Start = DynamicEncounterText .. ":\n началось событие",
-    Stop  = DynamicEncounterText .. ":\n событие завершено",
+    Start = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n началось событие" }),
+    Stop  = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n событие завершено" }),
+    Activ = table.concat({ GetIcon(73,20), DynamicEncounterText, ":\n событие активно" }),
     Progr = table.concat({ GetIcon(73,20), DynamicEncounterText, ": ",
             GetString(SI_ENDLESS_DUNGEON_SUMMARY_PROGRESS_HEADER), -- "Прогресс"
             " ", GetString(SI_SPECTACLE_EVENTS_PROGRESS_PERCENT) }) -- "<<1>>%"
@@ -711,6 +735,7 @@ WPamA.i18n.ToolTip = {
   [270] = "Обиталище Призывательницы Душ\n - Призывательница Душ",
   [271] = "Логово Во-Зита\n - Во-Зит",
   [272] = "Место для ритуала в Зив-Элеке\n - Гишзор",
+--273-280 Item name
 }
 --
 WPamA.i18n.ToolTip[215] = WPamA.i18n.ToolTip[34]

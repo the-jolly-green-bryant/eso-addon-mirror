@@ -512,7 +512,7 @@ LCM.setupControlFunctions[LCM.CT_SUBMENU] = function(self, params)
 	self.disable = params.disable
 	self.onEnter = params.onEnter
 	self.onExit = params.onExit
-	self.screenHeaderConfig = params.screenHeaderConfig
+	self.headerConfig = params.headerConfig
 end
 
 function LCM.CreateSubmenuPoolFactory()
@@ -544,10 +544,14 @@ function LCM.CreateSubmenuPoolFactory()
 			local targetList = LCM:GetSubmenuListAtDepth(LCM.GetSubmenuDepth(submenu))
 			targetList.currentSubmenu = submenu
 			LCM.scrollList:SetCurrentList(targetList)
+			if LCM.scrollList:IsHeaderActive() then
+				LCM.scrollList:ExitHeader()
+			end
 			LCM.currentMenu.lastSelectedRow = nil
 			LCM.currentMenu:CreateControls()
 			LCM.currentMenu:SelectFirstRow()
 			LCM:RefreshSceneHeader()
+			LCM.RefreshSelectedListRow()
 			PlaySound(SOUNDS.GAMEPAD_MENU_FORWARD)
 			if type(submenu.onEnter) == "function" then
 				submenu.onEnter(submenu)

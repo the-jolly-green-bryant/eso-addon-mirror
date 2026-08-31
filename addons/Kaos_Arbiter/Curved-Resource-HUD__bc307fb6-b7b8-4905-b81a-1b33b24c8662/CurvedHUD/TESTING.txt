@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.9.0 REMAINING CLASS TRACKERS TEST CHECKLIST
+CURVED RESOURCE HUD 0.9.16 RELEASE CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,188 @@ CURVED RESOURCE HUD 0.9.0 REMAINING CLASS TRACKERS TEST CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.9.0-test; HUD, shield, and trackers created
+   [CurvedHUD] Loaded 0.9.16; HUD, shield, and trackers created
+
+0.9.16 combat-end cleanup checklist:
+- Build Carve to its 32-second tier, end combat early, and confirm its timer and
+  stacks disappear immediately. The next combat's first Carve must start at 12.
+- Repeat with Stampede, Wall of Elements, Volley, Twin Slashes, class DoTs and
+  ground effects. Enemy-bound timers must clear when combat ends.
+- Confirm Relequen and other classified enemy-bound stacks clear with combat.
+- Confirm self-buffs, heals, shields, Major/Minor buffs, proc readiness and
+  active item-set cooldowns do not get cleared by leaving combat.
+
+0.9.15 periodic-effect checklist:
+- Cast Stampede and let it expire naturally. Its last damage tick must not
+  restart the complete timer.
+- Repeat with Volley/Arrow Barrage/Endless Hail, Poison Arrow, Twin Slashes,
+  Caltrops, Boneyard, Lightning Splash and other enabled periodic abilities.
+- Confirm short intermediate ticks never shorten the displayed parent duration.
+- Confirm a legitimate later full-duration endpoint may still extend a timer.
+- Test Wall of Elements with Flame, Frost and Lightning staves, including
+  Unstable Wall and Elemental Blockade variants. Each must start the appropriate
+  complete timer and must disappear after its final tick instead of restarting.
+
+0.9.14 Carve checklist:
+- Cast Carve once and confirm a 12-second bleed timer.
+- Recast before expiration and confirm 22 seconds, then recast again for 32.
+- Further active recasts must remain capped at 32 seconds.
+- Let Carve expire completely; the next cast must reset to 12 seconds.
+- Cast Brawler and receive/lose its shield. The shield must never start, shorten,
+  clear or replace the Cleave/Carve timer.
+
+0.9.13 release-hardening checklist:
+- Upgrade an existing character and confirm all enabled trackers, positions and
+  colors survive while obsolete letter-build radius settings are removed.
+- Start a clean character and confirm every optional tracker remains disabled.
+- Confirm debug chat is off after the migration and `/curvedhud debug` still
+  toggles it explicitly.
+- Run `/curvedhud report`. Confirm it prints version 0.9.13, schema 1, API,
+  detected LibAddonMenu/LibVotans status, layout, tracker counts, memory and the
+  guarded-error count.
+- Cast enabled slotted skills, reload, then run the report again. The learned
+  ability-ID count should persist and ID matches should continue to track even
+  when the displayed skill name is unavailable or localized.
+
+Final right outer timer geometry:
+- In Parallel layout, confirm Thin outer-right uses the selected 0.8 radius and
+  Thick outer-right uses the extended 0.5 radius.
+- Confirm the outer resource uses the selected fixed 0.8 correction. When
+  Stamina is outer, Riding Stamina should receive the same correction; when
+  Stamina is inner, its Riding Stamina curve must remain unchanged.
+- Verify the complete lower cap remains visible on both upper outside thin bars.
+
+0.9.12 timer geometry checklist:
+- At Bar Width 72, confirm every timer matches the finalized 0.9.11 geometry.
+- Test Bar Width 24, 53, 72, and 80. Each timer radius must compress or expand
+  horizontally with the resource radius while retaining its vertical length.
+- Change HUD Scale at each width and verify radius scaling is not applied twice.
+- Confirm each side's horizontal offset slider moves its complete timer
+  group without changing the gap between those two rails.
+- Confirm each side's spacing slider expands or contracts the inside/outside gap
+  around the same group center in both Parallel and Stacked layouts.
+- Thin: outer left should remain stable; inner left should be slightly tighter;
+  right inner should be broader in Parallel and tighter in Stacked.
+- Thick: every quadrant must have the same visible stroke width as outer left.
+  Outer left is slightly tighter, inner left slightly broader, inner right very
+  slightly tighter, and outer right substantially tighter.
+- Upper outside icons must not cover or trim either timer endpoint.
+- Confirm the upper-outside thin bars retain their complete lower semicircular
+  cap on both sides. Upper and lower outer-right timers must align horizontally.
+- In Parallel, confirm the outer resource bar has a slightly broader radius and
+  nests cleanly with the inner resource bar.
+- With all character trackers disabled, `/curvedhud memory` should report no
+  instantiated tracker controls. Enabling one timer should add only that timer.
+  Repeatedly applying an unchanged layout must not rotate or preload variants.
+
+0.9.10 tracker and layout checklist:
+- With both Fate Carver and Cleave/Carve/Brawler enabled, casting Fate Carver
+  must never activate the Two Handed tracker.
+- Blue Betty/Bull Netch, Vigor, and other pulsing skills must count down their
+  complete effect duration rather than resetting or shortening to the next tick.
+- Additional Carve stacks must extend the existing endpoint and total duration.
+- Test bar widths 24, 53, 72, and 80. Inside/outside timers must retain their
+  order and follow the resource edge; use the left/right horizontal offset sliders
+  only for personal fine tuning. Test the right side in Parallel and Stacked.
+- Log into a character that has never initialized CurvedHUD. Every optional
+  tracker and standardized Major/Minor buff slot must start disabled.
+
+0.9.9 Turning Tide checklist:
+- Equip three persistent Turning Tide pieces and complete the five-piece bonus
+  only on the front weapon bar. The tracker must remain visible on both bars.
+- Without Flowing Water, it should read WAIT without a green border.
+- Block to prime Flowing Water after the cooldown has finished; it should show
+  READY. Activating Turning Tide should replace READY with its cooldown timer.
+
+0.9.8 performance checklist:
+- After a clean reload, run /curvedhud memory with only the default trackers,
+  then enable several class and set trackers and run it again. The instantiated
+  count should grow only by the trackers explicitly enabled.
+- Critical Surge, Vibrant Shroud, Crux, and unused Major/Minor buff slots must
+  likewise add no tracker controls until they are enabled or selected.
+- Compare the platform's add-on memory percentage after a fresh reload with
+  0.9.7 and 0.9.8 using identical settings. Do not compare after repeatedly
+  opening settings, because the settings library itself retains menu controls.
+- Enable a previously disabled tracker without reloading. It must be created,
+  positioned, and begin tracking immediately. Disable it and confirm it stops
+  displaying; reload to release the now-unused UI control from memory.
+- Leave both Quest/Golden Pursuits reduction toggles off and watch memory over
+  several minutes. Then enable them and repeat. Memory must remain stable rather
+  than climbing from temporary control-discovery tables.
+
+0.9.7 icon-priority checklist:
+- Proc Powerful Assault, confirm its buff icon appears, then swap weapon bars
+  repeatedly. The icon must never become the equipped Powerful Assault staff.
+- Repeat with duration, stack, cooldown/READY, conditional, arena weapon, and
+  monster-set trackers. Live effect artwork must survive inventory and bar
+  refreshes; item artwork may appear only before the first valid effect icon.
+- Reload after resolving several effect icons. Confirm their dedicated effect
+  cache restores them without falling back to older item icons.
+- Enable combat reduction for the Quest and Golden Pursuits trackers. Test 0%
+  (fully invisible) and a partial opacity, then leave combat and confirm their
+  original opacity returns without changing ESO's native visibility setting.
+- Enable dungeon/trial reduction and test a four-player dungeon and a trial.
+  Confirm it applies on zone entry, restores after leaving, and also recognizes
+  Infinite Archive. Verify both keyboard and gamepad quest tracker elements.
+
+0.9.6 one-bar set checklist:
+- Equip Powerful Assault or Turning Tide as a five-piece bonus completed only
+  on one weapon bar. Proc it, swap bars, and confirm its timer is not cleared.
+- Proc the set again after swapping back. Confirm the refreshed timer survives
+  subsequent swaps and reaches expiration or READY normally.
+- Repeat with a two-handed staff/bow/great weapon and with dual wield or
+  one-hand-and-shield. The two-handed weapon must count as two set pieces.
+- Remove a set while its effect is active. Its live timer should finish, but the
+  tracker must not remain available for new effects after expiration.
+
+0.9.5 regression checklist:
+- Reapply at least one duration set, one stack set, one cooldown set, and one
+  conditional-ready set. Confirm refreshed timers persist through stale fades,
+  cooldowns reach READY, stacks update, and unequipping immediately hides them.
+
+0.9.4 item-set checklist:
+- Confirm the five item-set category submenus retain independent per-character
+  enable, position, and color settings.
+- Relequen, Kinras, and Siroria must show live stacks over the icon while their
+  arc counts down the stack-expiration window.
+- Powerful Assault and other duration trackers must follow ESO's reported end.
+- Recast Powerful Assault repeatedly, including before and after its previous
+  timer expires. Every application must restart the timer. Let different group
+  recipients lose the buff at different times; one recipient's fade must not
+  hide a newer application that remains active elsewhere.
+- Archdruid, Roaring Opportunist, Pillager, Symphony, Whorl, Pillar, Tremorscale,
+  Mechanical Acuity, and arena cooldowns must count down then show green READY.
+- Turning Tide must remain visible whenever its five-piece bonus is equipped.
+  It must show green READY only while Flowing Water is primed and its cooldown
+  has finished. The Flowing Water block condition itself must not start the
+  cooldown. After
+  the Bash consumes it, hide READY and continue the 15-second cooldown.
+- Equip five Jorvuld pieces and confirm its optional tracker says ACTIVE. Check
+  that live standardized buff and shield timers show their extended durations.
+- Verify every enabled set hides when its required pieces are unequipped and
+  restores after re-equipping or reloading.
+- Equip five Way of Martial Knowledge pieces and enable its Stamina cue. At
+  50% or more Stamina the arc must be light red; below 50% it must be light
+  green. Unequipping the five-piece or disabling the option restores the
+  normal Stamina gradient. Preview should demonstrate the light-red state.
+- Test the added trial-composition trackers: Z'en, Elemental Catalyst (up to
+  three weakness stacks), Alkosh, Olorime, Saxhleel, Master Architect, and War
+  Machine. Their timers must only appear while their matching set is equipped.
+- Test the added four-player trackers: Drake's Rush, Arkasis, Yolnahkriin,
+  Encratis, Rush of Agony, Dark Convergence, Aegis Caller, Burning Spellweave,
+  and Briarheart. Cooldown trackers must turn green when procable again.
+
+0.9.3 checklist:
+- Configure two Major and two Minor buffs independently. Confirm all four can
+  use different positions and colors and retain settings per character.
+- Confirm selecting None hides the corresponding standardized tracker in live
+  play and Preview, while changing a selection updates its icon and live timer.
+- Confirm Equilibrium, Balance, and Spell Symmetry share the Mages Guild penalty
+  tracker and that its controls no longer appear under Global.
+- Test Blood for Blood, Blood Frenzy/Sated Fury/Simmering Frenzy, Malevolent /
+  Healthy / Shrewd Offering, and Unstoppable/Immovable self-penalty trackers.
+- With imminent expiration alerts enabled, verify none of these negative timers
+  turns red or pulses as it approaches zero.
 
 4. Type /curvedhud preview. Expected:
    - red health arc on the left

@@ -16,14 +16,14 @@ T.RaidBuffPairs = {
 
 -- Boss named pairs. Off-Balance uses Active | Immune instead of Mj | Mn.
 T.BossDebuffPairs = {
-    { id = "breach",      keysMaj = { "majorBreach" },         keysMin = { "minorBreach" } },
-    { id = "fracture",    keysMaj = { "majorFracture" },       keysMin = { "minorFracture" } },
-    { id = "vulnerability", keysMaj = { "majorVulnerability" }, keysMin = { "minorVulnerability" } },
-    { id = "brittle",     keysMaj = { "majorBrittle" },        keysMin = { "minorBrittle" } },
-    { id = "cowardice",   keysMaj = { "majorCowardice" },      keysMin = { "minorCowardice" } },
-    { id = "maim",        keysMaj = { "majorMaim" },           keysMin = { "minorMaim" } },
-    { id = "defile",      keysMaj = { "majorDefile" },         keysMin = { "minorDefile" } },
-    { id = "offbalance",  keysMaj = { "offBalance" },          keysMin = { "offBalanceImm" }, ob = true },
+    { id = "breach",         keysMaj = { "majorBreach" },         keysMin = { "minorBreach" } },
+    { id = "vulnerability",  keysMaj = { "majorVulnerability" }, keysMin = { "minorVulnerability" } },
+    { id = "brittle",        keysMaj = { "majorBrittle" },        keysMin = { "minorBrittle" } },
+    { id = "offbalance",     keysMaj = { "offBalance" },          keysMin = { "offBalanceImm" }, ob = true },
+    { id = "defile",         keysMaj = { "majorDefile" },         keysMin = { "minorDefile" } },
+    { id = "fracture",       keysMaj = { "majorFracture" },       keysMin = { "minorFracture" } },
+    { id = "cowardice",      keysMaj = { "majorCowardice" },      keysMin = { "minorCowardice" } },
+    { id = "maim",           keysMaj = { "majorMaim" },           keysMin = { "minorMaim" } },
 }
 
 T.NameNeedles = T.NameNeedles or {}

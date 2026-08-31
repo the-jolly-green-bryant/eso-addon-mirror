@@ -56,6 +56,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FCO Ultimate Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Ultimate-Reminder__1628) | Baertram | PC / Mac | 1.1 |
 | [FCO Ultimate Sound](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Ultimate-Sound__979) | Baertram | PC / Mac | 0.1.8 |
 | [Featured pledges in the Dungeon Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Stefanoo/Featured-pledges-in-the-Dungeon-Finder__4555) | Stefanoo | PC / Mac | 130 |
+| [Feeding Frenzy Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Feeding-Frenzy-Tracker__9526cff9-d7f1-4c3c-a96b-aecfb0daa347) | codeWarrior82 | Console | — |
 | [Fighting Display - Shows Fighting! when in combat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Fighting-Display---Shows-Fighting-when-in-combat__4246) | Duesentrieb | PC / Mac | 20250909-1138 |
 | [Filtered Loot Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MycroftJr/Filtered-Loot-Tracker__3932) | MycroftJr | PC / Mac | 1.0.0 |
 | [Find My Stuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Find-My-Stuff__3a04382d-3f1c-4340-9fa5-abd6af19a2af) | Vixen_Hunny | Console | — |
@@ -124,7 +125,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Furnishing Recipe Collector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomstock/Furnishing-Recipe-Collector__3862) | tomstock | PC / Mac | 1.4.9 |
 | [Furnishing Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Furnishing-Tracker__c49eb98c-6821-47de-9cb2-10b972d1a55f) | Eldibabalo | Console | — |
 | [Furnishings placed 2 Nickname](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/remosito/Furnishings-placed-2-Nickname__3579) | remosito | PC / Mac | 37.0 |
-| [Furniture Catalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Catalogue__1617) | manavortex | PC / Mac | 6.3.0 |
+| [Furniture Catalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Furniture-Catalogue__1617) | manavortex | PC / Mac | 7.0.0 |
 | [Furniture Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Finder__2b591c30-b518-46da-978a-c1a788963735) | killerkev77 | Console | — |
 | [Furniture Grouper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/datael/Furniture-Grouper__1799) | datael | PC / Mac | 1.0.6a |
 | [Furniture Placer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/killerkev77/Furniture-Placer__33acf830-6318-4dc0-8458-4a061eca1ad3) | killerkev77 | Console | — |

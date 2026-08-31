@@ -9,9 +9,9 @@ local G = EPC.GoldenPursuits
 local wm = WINDOW_MANAGER
 
 local DEFAULT_WIDTH = 420
-local DEFAULT_HEIGHT = 80
-local MIN_WIDTH = 300
-local MIN_HEIGHT = 72
+local DEFAULT_HEIGHT = 136
+local MIN_WIDTH = 180
+local MIN_HEIGHT = 90
 local MAX_WIDTH = 900
 local MAX_HEIGHT = 420
 
@@ -51,9 +51,12 @@ function G:Create2505()
 
     -- v0.25.09: migrate the older tall HUD once so existing SavedVariables
     -- do not keep the previous 140px height after the compact redesign.
-    if EPC.saved and EPC.saved.goldenPursuitsCompactHeightVersion ~= 2509 then
-        EPC.saved.goldenPursuitsHeight = DEFAULT_HEIGHT
-        EPC.saved.goldenPursuitsCompactHeightVersion = 2509
+    if EPC.saved and EPC.saved.goldenPursuitsCompactHeightVersion ~= 2871 then
+        local oldHeight = tonumber(EPC.saved.goldenPursuitsHeight) or 0
+        if oldHeight < MIN_HEIGHT then
+            EPC.saved.goldenPursuitsHeight = DEFAULT_HEIGHT
+        end
+        EPC.saved.goldenPursuitsCompactHeightVersion = 2871
     end
 
     local frame = wm:CreateTopLevelWindow("EAS_GoldenPursuitsHUD2505")
@@ -148,6 +151,8 @@ function G:Create2505()
         local w, h = control:GetDimensions()
         EPC.saved.goldenPursuitsWidth = math.floor((tonumber(w) or DEFAULT_WIDTH) + 0.5)
         EPC.saved.goldenPursuitsHeight = math.floor((tonumber(h) or DEFAULT_HEIGHT) + 0.5)
+        EPC.saved.goldenPursuitsManualSize2875 = true
+        if self.ApplyCompactLayout2875 then self:ApplyCompactLayout2875() end
     end)
 
     self.frame2505 = frame
@@ -162,12 +167,17 @@ function G:Create2505()
     return frame
 end
 
-function G:SetSelectedPursuitQuest2504(pursuitName, questName)
+function G:SetSelectedPursuitQuest2504(pursuitName, questName, campaignKey, activityIndex)
     self.selectedPursuitName2504 = tostring(pursuitName or "")
     self.selectedQuestName2504 = tostring(questName or "")
+    self.selectedCampaignKey2871 = campaignKey
+    self.selectedActivityIndex2871 = tonumber(activityIndex)
     if EPC.saved then
         EPC.saved.goldenPursuitName = self.selectedPursuitName2504
         EPC.saved.goldenPursuitQuestName = self.selectedQuestName2504
+        local keyType = type(campaignKey)
+        EPC.saved.goldenPursuitCampaignKey2871 = (keyType == "number" or keyType == "string") and campaignKey or nil
+        EPC.saved.goldenPursuitActivityIndex2871 = tonumber(activityIndex)
     end
     self:RefreshSelectedQuestPanel2504()
 end
@@ -175,11 +185,80 @@ end
 function G:ClearSelectedPursuitQuest2504()
     self.selectedPursuitName2504 = ""
     self.selectedQuestName2504 = ""
+    self.selectedCampaignKey2871 = nil
+    self.selectedActivityIndex2871 = nil
     if EPC.saved then
         EPC.saved.goldenPursuitName = ""
         EPC.saved.goldenPursuitQuestName = ""
+        EPC.saved.goldenPursuitCampaignKey2871 = nil
+        EPC.saved.goldenPursuitActivityIndex2871 = nil
     end
     self:RefreshSelectedQuestPanel2504()
+end
+
+local function easLower2871(value)
+    local text = tostring(value or "")
+    if type(zo_strlower) == "function" then return zo_strlower(text) end
+    return string.lower(text)
+end
+
+local function easSameKey2871(a, b)
+    if a == nil or b == nil then return false end
+    if tostring(a) == tostring(b) then return true end
+    local an, bn = tonumber(a), tonumber(b)
+    return an ~= nil and bn ~= nil and an == bn
+end
+
+function G:FindSelectedPursuitRow2871()
+    local pursuitName = tostring(self.selectedPursuitName2504 or "")
+    if pursuitName == "" then return nil end
+    local journal = EPC.Journal
+    if not journal or type(journal.BuildGoldenPursuitsView2494) ~= "function" then return nil end
+
+    local ok, view = pcall(journal.BuildGoldenPursuitsView2494, journal)
+    if not ok or type(view) ~= "table" then return nil end
+    local rows = view.allRows or view.rows or {}
+    local wantedKey = self.selectedCampaignKey2871
+    if wantedKey == nil and EPC.saved then wantedKey = EPC.saved.goldenPursuitCampaignKey2871 end
+    local wantedActivity = tonumber(self.selectedActivityIndex2871)
+    if not wantedActivity and EPC.saved then wantedActivity = tonumber(EPC.saved.goldenPursuitActivityIndex2871) end
+
+    local nameMatch = nil
+    local wantedName = easLower2871(pursuitName)
+    for _, row in ipairs(rows) do
+        local activityIndex = tonumber(row.activityIndex)
+        if wantedActivity and activityIndex == wantedActivity then
+            if wantedKey == nil or easSameKey2871(row.campaignKey, wantedKey) then
+                return row
+            end
+        end
+        if not nameMatch and easLower2871(row.name) == wantedName then
+            nameMatch = row
+        end
+    end
+    return nameMatch
+end
+
+function G:GetSelectedProgress2871()
+    local row = self:FindSelectedPursuitRow2871()
+    if not row then return nil end
+    local progress = math.max(0, tonumber(row.progress) or 0)
+    local goal = math.max(0, tonumber(row.goal) or 0)
+    local complete = row.complete == true
+    local percent = nil
+    if goal > 0 then
+        percent = math.max(0, math.min(100, math.floor((progress / goal) * 100 + 0.5)))
+    end
+    return {
+        row = row,
+        name = tostring(row.name or self.selectedPursuitName2504 or "Golden Pursuit"),
+        progress = progress,
+        goal = goal,
+        percent = percent,
+        complete = complete,
+        campaignCompleted = math.max(0, tonumber(row.campaignCompleted) or 0),
+        campaignThreshold = math.max(0, tonumber(row.campaignThreshold) or 0),
+    }
 end
 
 function G:RefreshSelectedQuestPanel2504()
@@ -189,22 +268,107 @@ function G:RefreshSelectedQuestPanel2504()
     local pursuitName = tostring(self.selectedPursuitName2504 or "")
     local questName = tostring(self.selectedQuestName2504 or "")
     local hasSelection = pursuitName ~= "" or questName ~= ""
+    local progressInfo = hasSelection and self:GetSelectedProgress2871() or nil
 
-    -- Keep this HUD intentionally minimal: GOLDEN PURSUITS header + active quest only.
     if self.layoutMode and not hasSelection then
-        self.title2505:SetText("Active quest preview")
-    elseif questName ~= "" then
-        self.title2505:SetText(questName)
+        self.title2505:SetText("Linked quest preview")
+        self.pursuit2505:SetText("Golden Pursuit task preview")
+        self.status2505:SetText("• PROGRESS: 3 / 10 (30%)\n• CAMPAIGN: 6 / 20")
+        self.status2505:SetColor(1, 1, 1, 1)
     else
-        self.title2505:SetText(pursuitName)
+        local displayTitle = questName ~= "" and questName or pursuitName
+        self.title2505:SetText(displayTitle)
+
+        local taskName = progressInfo and progressInfo.name or pursuitName
+        if taskName ~= "" and easLower2871(taskName) ~= easLower2871(displayTitle) then
+            self.pursuit2505:SetText(taskName)
+        else
+            self.pursuit2505:SetText("")
+        end
+
+        if progressInfo then
+            local progressText
+            if progressInfo.complete then
+                if progressInfo.goal > 0 then
+                    progressText = string.format("• PROGRESS: %d / %d (COMPLETE)", progressInfo.progress, progressInfo.goal)
+                else
+                    progressText = "• PROGRESS: COMPLETE"
+                end
+                self.status2505:SetColor(1, 1, 1, 1)
+            elseif progressInfo.goal > 0 then
+                progressText = string.format("• PROGRESS: %d / %d (%d%%)", progressInfo.progress, progressInfo.goal, progressInfo.percent or 0)
+                self.status2505:SetColor(1, 1, 1, 1)
+            else
+                progressText = string.format("• PROGRESS: %d", progressInfo.progress)
+                self.status2505:SetColor(1, 1, 1, 1)
+            end
+            if progressInfo.campaignThreshold > 0 then
+                progressText = progressText .. string.format("\n• CAMPAIGN: %d / %d", progressInfo.campaignCompleted, progressInfo.campaignThreshold)
+            end
+            self.status2505:SetText(progressText)
+        elseif hasSelection then
+            self.status2505:SetText("• PROGRESS: Syncing with Golden Pursuits...")
+            self.status2505:SetColor(0.78, 0.80, 0.84, 1)
+        else
+            self.status2505:SetText("")
+        end
     end
 
-    self.pursuit2505:SetText("")
-    self.status2505:SetText("")
-    self.pursuit2505:SetHidden(true)
-    self.status2505:SetHidden(true)
+    local hasPursuitLine = self.pursuit2505:GetText() ~= ""
+    self.pursuit2505:SetHidden(not hasPursuitLine)
 
+    -- v0.28.75: reflow all rows into the user's current viewport instead of
+    -- reserving a tall fixed layout that prevents compact sizing.
+    self:ApplyCompactLayout2875()
     self:RefreshVisibility2496()
+end
+
+-- v0.28.75: keep Golden Pursuits usable at compact manual sizes. Rows are
+-- stacked from the top and the status label becomes a clipped viewport instead
+-- of imposing the old 300x126 minimum footprint.
+function G:ApplyCompactLayout2875()
+    local frame = self.frame2505 or self:Create2505()
+    if not frame or not self.header2505 or not self.title2505 or not self.pursuit2505 or not self.status2505 then return end
+
+    local frameWidth = tonumber(frame:GetWidth()) or DEFAULT_WIDTH
+    local frameHeight = math.max(MIN_HEIGHT, tonumber(frame:GetHeight()) or DEFAULT_HEIGHT)
+    local pad = frameWidth < 240 and 8 or 12
+    local headerTop, headerHeight = 6, 18
+
+    self.header2505:ClearAnchors()
+    self.header2505:SetAnchor(TOPLEFT, frame, TOPLEFT, pad, headerTop)
+    self.header2505:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -pad, headerTop)
+    self.header2505:SetHeight(headerHeight)
+
+    local titleTop = headerTop + headerHeight + 2
+    local titleDesired = 38
+    if type(self.title2505.GetTextHeight) == "function" then
+        local ok, value = pcall(self.title2505.GetTextHeight, self.title2505)
+        if ok and tonumber(value) then titleDesired = math.max(18, math.ceil(tonumber(value)) + 2) end
+    end
+    local titleHeight = math.max(18, math.min(38, titleDesired))
+    self.title2505:ClearAnchors()
+    self.title2505:SetAnchor(TOPLEFT, frame, TOPLEFT, pad, titleTop)
+    self.title2505:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -pad, titleTop)
+    self.title2505:SetHeight(titleHeight)
+
+    local cursorY = titleTop + titleHeight + 2
+    local hasPursuitLine = not self.pursuit2505:IsHidden() and tostring(self.pursuit2505:GetText() or "") ~= ""
+    if hasPursuitLine then
+        local pursuitHeight = 20
+        self.pursuit2505:ClearAnchors()
+        self.pursuit2505:SetAnchor(TOPLEFT, frame, TOPLEFT, pad, cursorY)
+        self.pursuit2505:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -pad, cursorY)
+        self.pursuit2505:SetHeight(pursuitHeight)
+        cursorY = cursorY + pursuitHeight + 2
+    end
+
+    self.status2505:ClearAnchors()
+    self.status2505:SetAnchor(TOPLEFT, frame, TOPLEFT, pad, cursorY)
+    self.status2505:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -pad, cursorY)
+    local statusHeight = math.max(0, frameHeight - cursorY - 6)
+    self.status2505:SetHeight(statusHeight)
+    self.status2505:SetHidden(tostring(self.status2505:GetText() or "") == "" or statusHeight < 6)
 end
 
 function G:RefreshVisibility2496()
@@ -215,7 +379,12 @@ function G:RefreshVisibility2496()
     local pursuitName = tostring(self.selectedPursuitName2504 or "")
     local questName = tostring(self.selectedQuestName2504 or "")
     local hasSelection = pursuitName ~= "" or questName ~= ""
-    local show = hasSelection or self.layoutMode
+    local enabled = not EPC.saved or EPC.saved.showGoldenPursuitsOverlay ~= false
+    local show = (enabled and hasSelection) or self.layoutMode
+
+    if show and not self.layoutMode and EPC.OverlayModeAllows then
+        show = EPC:OverlayModeAllows("goldenPursuitsVisibility")
+    end
 
     if show and not self.layoutMode then
         if self:IsSuiteMenuOpen2496() then
@@ -248,6 +417,8 @@ function G:SetSize(width, height)
     frame:SetDimensions(width, height)
     EPC.saved.goldenPursuitsWidth = math.floor(width + 0.5)
     EPC.saved.goldenPursuitsHeight = math.floor(height + 0.5)
+    EPC.saved.goldenPursuitsManualSize2875 = true
+    self:ApplyCompactLayout2875()
 end
 
 function G:ResetSize()
@@ -255,7 +426,9 @@ function G:ResetSize()
     if not frame or not EPC.saved then return end
     EPC.saved.goldenPursuitsWidth = DEFAULT_WIDTH
     EPC.saved.goldenPursuitsHeight = DEFAULT_HEIGHT
+    EPC.saved.goldenPursuitsManualSize2875 = false
     frame:SetDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    self:ApplyCompactLayout2875()
 end
 
 function G:ResetPosition()
@@ -271,6 +444,8 @@ function G:Initialize()
     self.layoutMode = false
     self.selectedPursuitName2504 = tostring(EPC.saved and EPC.saved.goldenPursuitName or "")
     self.selectedQuestName2504 = tostring(EPC.saved and EPC.saved.goldenPursuitQuestName or "")
+    self.selectedCampaignKey2871 = EPC.saved and EPC.saved.goldenPursuitCampaignKey2871 or nil
+    self.selectedActivityIndex2871 = EPC.saved and tonumber(EPC.saved.goldenPursuitActivityIndex2871) or nil
     self:SuppressNativeTracker2505()
     self:Create2505()
     self:RefreshSelectedQuestPanel2504()
@@ -297,24 +472,36 @@ function G:Initialize()
             self:RefreshSelectedQuestPanel2504()
         end)
     end
+    if PROMOTIONAL_EVENT_MANAGER and type(PROMOTIONAL_EVENT_MANAGER.RegisterCallback) == "function" then
+        pcall(PROMOTIONAL_EVENT_MANAGER.RegisterCallback, PROMOTIONAL_EVENT_MANAGER, "ActivityProgressUpdated", function()
+            self:RefreshSelectedQuestPanel2504()
+        end)
+        pcall(PROMOTIONAL_EVENT_MANAGER.RegisterCallback, PROMOTIONAL_EVENT_MANAGER, "RewardsClaimed", function()
+            self:RefreshSelectedQuestPanel2504()
+        end)
+    end
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 200, function()
         self:SuppressNativeTracker2505()
         self:RefreshVisibility2496()
     end)
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Progress2871", 750, function()
+        if self.selectedPursuitName2504 ~= "" then
+            self:RefreshSelectedQuestPanel2504()
+        end
+    end)
 end
 
--- v0.25.13: only show this tracker when Golden Pursuits is the selected
--- quest-tracking source. HUD Layout Mode still exposes it for positioning.
+-- v0.28.72: the Golden Pursuits HUD is independently toggleable. The
+-- authoritative quest-tracking source still controls ESO assisted tracking and
+-- compass behavior, but no longer suppresses this dedicated overlay.
 local easLegacyRefreshVisibility_2513 = G.RefreshVisibility2496
 function G:RefreshVisibility2496()
-    easLegacyRefreshVisibility_2513(self)
-    if self.layoutMode then return end
-    local source = tostring(EPC.saved and EPC.saved.questTrackingSource or "ACTIVE_QUEST")
-    if source ~= "GOLDEN_PURSUITS" then
-        local frame = self:Create2505()
-        if frame then
-            frame:SetHidden(true)
-            if frame.SetAlpha then frame:SetAlpha(0) end
-        end
-    end
+    return easLegacyRefreshVisibility_2513(self)
 end
+
+
+-- v0.28.74: Golden Pursuits progress/campaign text uses white and the status
+-- row collapses upward whenever there is no separate pursuit-task line.
+
+-- v0.28.74: Golden Pursuits progress and campaign values render as separate
+-- white bullet rows to match the Active Quest objective presentation.

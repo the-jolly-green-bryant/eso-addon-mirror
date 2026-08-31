@@ -18,7 +18,7 @@
     "MyLittleJournal"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4802/",
-  "fingerprint": "e0f17437518703a6ed9603500ebd7ecddbb0bcc1fa230bdd158f38b6f1bbc9fe",
+  "fingerprint": "5eeeeeb313608b44eed84b23e74d5b982ddd4bc288b3f109df59b5cc2a7d1497",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17172.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4802",
   "source_url": "https://www.esoui.com/downloads/info4802-MyLittleJournal.html",
   "stats": {
-    "downloads": 7,
+    "downloads": 14,
     "favorites": 1,
-    "monthly_downloads": 5
+    "monthly_downloads": 10
   },
   "title": "My Little Journal",
-  "updated_at": 1788019430000,
-  "version": "1.0"
+  "updated_at": 1788086845000,
+  "version": "1.01"
 }

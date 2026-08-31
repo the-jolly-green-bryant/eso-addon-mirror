@@ -7,6 +7,7 @@ local timeLeft = ""
 local stacks = 0
 local picPath = "/esoui/art/icons/ability_warrior_005.dds"
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
+local isMenuOpen = false
 
 advancingYokedaTracker = {}
 
@@ -118,20 +119,21 @@ end
 --change icon anchor to move text around the screen
 local function setAnchorIcon(x, y)  
     advAddonText:SetHidden(false)
-    zo_callLater(function () advAddonText:SetHidden(true) end, 2000)
+	zo_callLater(function () if isMenuOpen == true then advAddonText:SetHidden(true) end end, 2000)
     advAddonText:ClearAnchors()
     advAddonText:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end
 
 --when UI opens
 local function onMenuOpened()
-    if advancingYokedaTracker.savedVariables.trackAdv then
-        advAddonText:SetHidden(true)
+	isMenuOpen = true
+	advAddonText:SetHidden(true)
     end
 end
 
 --when UI closes
 local function onMenuClosed()
+	isMenuOpen = false
     if advancingYokedaTracker.savedVariables.trackAdv then
         advAddonText:SetHidden(false)
     end
@@ -248,6 +250,11 @@ local function onAddOnLoadedAdv(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
 
+	--notify if tracking is disabled
+	if not advancingYokedaTracker.savedVariables.trackAdv then
+		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+	end
+
     --load saved variables
     advancingYokedaTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("aytAddonVars", 1, "Settings", advancingYokedaTracker.defaults, GetUnitName("player"))
 
@@ -261,8 +268,13 @@ local function onAddOnLoadedAdv(event, name)
     advAddonTextLabelStacks:SetText("")
     setAnchorStartupIcon(advancingYokedaTracker.savedVariables.xAxisText, advancingYokedaTracker.savedVariables.yAxisText)
 
-    --register for combat alerts
-    registerAlerts()
+    --register for combat alerts if tracking is enabled
+    if advancingYokedaTracker.savedVariables.trackAdv then
+        registerAlerts()
+        advAddonText:SetHidden(false)
+    else
+        advAddonText:SetHidden(true)
+    end
 
     --register for notifications of menu or map opening
     SCENE_MANAGER:RegisterCallback("SceneStateChanged", onSceneStateChange)

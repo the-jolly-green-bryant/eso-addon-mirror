@@ -1,0 +1,9 @@
+## Title: |cFFFF00ZoneDailyTracker|r
+## Description: Track Daily In All Zone.
+## APIVersion: 101051
+## Version: 1.0
+## Author: |c00FFCCThewizadt|r
+## DependsOn: LibAddonMenu-2.0 LibMapPins-1.0
+
+ZoneDailyDataStore.lua
+ZoneDailyTracker.lua

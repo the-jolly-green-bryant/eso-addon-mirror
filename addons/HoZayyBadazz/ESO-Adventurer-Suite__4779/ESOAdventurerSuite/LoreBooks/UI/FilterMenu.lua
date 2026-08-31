@@ -14,7 +14,7 @@ local PIN_TYPE_LABELS = EASLoreLibrary.pinTypeLabels
 
 -- returns "|t<size>:<size>:<texture>:inheritcolor|t" wrapped in the pin's
 -- tint color, i.e. the inline icon markup shown before each label, colored to
--- match that pin type's map/compass/world icon (same technique HarvestMap's
+-- match that pin type's map/compass/world icon (same technique the reference map system's
 -- filter menu uses)
 local function GetColoredIcon(pinTypeId, size)
 	local layout = EASLoreLibrary.mapPinLayout[pinTypeId]

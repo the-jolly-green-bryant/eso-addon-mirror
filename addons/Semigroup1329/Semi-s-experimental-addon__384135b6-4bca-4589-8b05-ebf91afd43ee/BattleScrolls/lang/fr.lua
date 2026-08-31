@@ -1033,11 +1033,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ZEN] = "Cumul de DoT (Z'en)",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "DoTs en moyenne",
     [BATTLESCROLLS_ZEN_UPTIME] = "Temps d'activité du débuff Z'en",
-    [BATTLESCROLLS_ZEN_POTENTIAL] = "Temps avec 1+ DoTs",
+    [BATTLESCROLLS_ZEN_PEAK_TIME] = "Temps à <<1>>",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>> DoTs",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "moy. <<1>> — <<2>> à 5 DoTs",
     [BATTLESCROLLS_ZEN_SHORT] = "Z'en",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "moy. <<1>> DoTs — Z'en <<2>>% — 1+ DoTs <<3>>%",
+    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "moy. <<1>> DoTs — Z'en <<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "Soutien",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "Résurrections",

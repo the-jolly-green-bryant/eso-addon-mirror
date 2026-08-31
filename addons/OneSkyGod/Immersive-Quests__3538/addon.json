@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/OneSkyGod/Immersive-Quests__3538",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "OneSkyGod",
   "canonical_id": "esoui:3538",
   "category_id": "114",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:3538",
@@ -17,7 +18,7 @@
     "ImmersiveQuests"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3538/",
-  "fingerprint": "c3fb2ed86f7eee0ae560f76532c9d04dfe956a12a6bc7b62f99169dc23c095bc",
+  "fingerprint": "12bb129ac1b347a978e39658c18b361754408a03b1b30dc8a4b7de394dbe406e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw12042.png",
     "https://cdn-eso.mmoui.com/preview/pvw12041.png"
@@ -28,11 +29,11 @@
   "source_id": "3538",
   "source_url": "https://www.esoui.com/downloads/info3538-ImmersiveQuests.html",
   "stats": {
-    "downloads": 28880,
+    "downloads": 29230,
     "favorites": 42,
-    "monthly_downloads": 629
+    "monthly_downloads": 304
   },
   "title": "Immersive Quests",
-  "updated_at": 1783626051000,
-  "version": "0.0055"
+  "updated_at": 1788154079000,
+  "version": "0.0057"
 }

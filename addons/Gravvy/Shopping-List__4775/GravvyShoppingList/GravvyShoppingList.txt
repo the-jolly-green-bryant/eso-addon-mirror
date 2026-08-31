@@ -1,7 +1,7 @@
 ## Title: |cFFAA33Shopping List|r
-## Description: A compact shopping list for guild store trips. Version 0.19.2
+## Description: A compact shopping list for guild store trips. Version 0.19.3
 ## Author: Gravvy
-## Version: 0.19.2
+## Version: 0.19.3
 ## APIVersion: 101050 101051
 ## AddOnVersion: 36
 ## DependsOn: LibAddonMenu-2.0>=43 LibMainMenu-2.0>=40500 LibSets>=0009000

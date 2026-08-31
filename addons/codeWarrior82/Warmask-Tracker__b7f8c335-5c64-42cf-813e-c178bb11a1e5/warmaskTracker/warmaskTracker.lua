@@ -6,7 +6,7 @@ local timeRemaining = 0
 local picPath = GetAbilityIcon(markOfHircineID)
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
-
+local isMenuOpen = false
 --[[
 todo:
 
@@ -192,7 +192,7 @@ end
 --change icon anchor to move text around the screen
 local function setAnchorIcon(x, y)  
     wmtAddonText:SetHidden(false)
-    zo_callLater(function () wmtAddonText:SetHidden(true) end, 2000)
+	zo_callLater(function () if isMenuOpen == true then wmtAddonText:SetHidden(true) end end, 2000)
     wmtAddonText:ClearAnchors()
     wmtAddonText:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end
@@ -387,6 +387,7 @@ end
 
 --when UI opens
 local function onMenuOpened()
+	isMenuOpen = true
     if warmaskTracker.savedVariables.trackWarmask then
         wmtAddonText:SetHidden(true)
     end
@@ -400,6 +401,7 @@ end
 
 --when UI closes
 local function onMenuClosed()
+	isMenuOpen = false
     if warmaskTracker.savedVariables.trackWarmask then
         wmtAddonText:SetHidden(false)
     end
@@ -437,6 +439,11 @@ local function onAddOnLoaded(event, name)
 
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+
+	--notify if tracking is disabled
+	if not warmaskTracker.savedVariables.trackWarmask then
+		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+	end
 
     --load saved variables
     warmaskTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("wmtAddonVars", 1, "Settings", warmaskTracker.defaults, GetUnitName("player"))

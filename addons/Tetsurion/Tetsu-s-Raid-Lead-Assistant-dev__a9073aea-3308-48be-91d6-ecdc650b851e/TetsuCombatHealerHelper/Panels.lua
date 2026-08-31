@@ -5,15 +5,16 @@ local P = T.Panels
 
 local COL_BUFF = { 0.25, 0.55, 1.00 }
 local COL_DEBUFF = { 1.00, 0.22, 0.18 }
+local COL_IMM = { 1.00, 0.82, 0.18 }
 
 local buffRoot, debuffRoot
 local buffRows, debuffBlocks = {}, {}
 local bossFx = {}
 local attached = false
 
-local COL = 36
-local ROW = 22
-local NAME_W = 88
+local COL = 40
+local ROW = 24
+local NAME_W = 84
 
 local function Now()
     return GetGameTimeMilliseconds()
@@ -79,7 +80,9 @@ local function PaintDot(ring, fill, glow, mode, rgb)
     if not fill then return end
     fill:SetHidden(false)
     rgb = rgb or COL_BUFF
-    local a = (mode == 0 and 0.45) or (mode == 1 and 0.55) or 1
+    local a = (mode == 0 and 0.45) or (mode == 1 and 0.70) or 1
+    local size = (mode == 1 and 9) or 16
+    fill:SetDimensions(size, size)
     local r, g, b = 0, 0, 0
     if mode ~= 0 then
         r, g, b = rgb[1], rgb[2], rgb[3]
@@ -115,6 +118,9 @@ local function MakeDot(parent, suffix)
 end
 
 local function PairLabel(id)
+    if T.PairPanelLabel then
+        return T.PairPanelLabel(id)
+    end
     if T.HudLabel then
         return T.HudLabel(id, 8)
     end
@@ -165,7 +171,15 @@ local function BossHas(tag, key)
 end
 
 function P.OnBossEffect(_, changeType, _slot, effectName, unitTag, beginTime, endTime, _s, _i, _bt, _et, _at, _st, _un, _uid, abilityId)
-    if not unitTag or not unitTag:find("^boss") then return end
+    if not unitTag then return end
+    if unitTag:find("^boss") then
+        -- ok
+    elseif unitTag == "reticleover" then
+        local vars = Vars()
+        if vars and vars.debuffOnTarget == false then return end
+    else
+        return
+    end
     local key = T.MatchPairKey and T.MatchPairKey(abilityId, effectName)
     if not key then return end
     bossFx[unitTag] = bossFx[unitTag] or {}
@@ -174,20 +188,9 @@ function P.OnBossEffect(_, changeType, _slot, effectName, unitTag, beginTime, en
     if gained then
         local endMs = 0
         if endTime and endTime > 0 then endMs = math.floor(endTime * 1000) end
-        if key == "offBalance" or key == "offBalanceImm" then
-            local sticky = Now() + 2000
-            if endMs < sticky then endMs = sticky end
-        end
         bossFx[unitTag][key] = endMs
     elseif changeType == EFFECT_RESULT_FADED then
         bossFx[unitTag][key] = nil
-        if key == "offBalance" then
-            local immUntil = Now() + 15000
-            local cur = bossFx[unitTag].offBalanceImm
-            if not cur or cur < immUntil then
-                bossFx[unitTag].offBalanceImm = immUntil
-            end
-        end
     end
 end
 
@@ -230,7 +233,7 @@ local function EnsureBuffHud()
     title:SetDimensions(NAME_W - 2, 18)
     title:SetColor(0.45, 0.95, 0.68, 1)
     ApplyFont(title)
-    title:SetText((T.L and T.L.RAID_BUFFS) or "Raid buffs")
+    title:SetText((T.L and (T.L.BUFFS_SHORT or T.L.RAID_BUFFS)) or "Buffs")
     local mj = WINDOW_MANAGER:CreateControl("TetsuCHH_RaidBuffsMj", buffRoot, CT_LABEL)
     mj:SetAnchor(TOPLEFT, buffRoot, TOPLEFT, NAME_W + 8, 22)
     mj:SetDimensions(COL, 18)
@@ -317,13 +320,28 @@ end
 
 local function LiveBosses()
     local list = {}
-    for i = 1, 6 do
+    for i = 1, 8 do
         local tag = "boss" .. i
         if DoesUnitExist and DoesUnitExist(tag) then
             local name = GetUnitName and GetUnitName(tag) or tag
             if name and name ~= "" then
                 list[#list + 1] = { tag = tag, name = name }
             end
+        end
+    end
+    local allowTarget = not Vars() or Vars().debuffOnTarget ~= false
+    if allowTarget and #list == 0 and DoesUnitExist and DoesUnitExist("reticleover") then
+        local monster = false
+        if IsUnitMonster then
+            local okM, m = pcall(IsUnitMonster, "reticleover")
+            monster = okM and m
+        elseif GetUnitType then
+            local okT, typ = pcall(GetUnitType, "reticleover")
+            monster = okT and typ and typ ~= 0
+        end
+        if monster then
+            local name = GetUnitName and GetUnitName("reticleover") or "Target"
+            list[1] = { tag = "reticleover", name = name, target = true }
         end
     end
     return list
@@ -383,9 +401,11 @@ function P.Refresh()
     end
 
     local bosses = showDeb and LiveBosses() or {}
+    local compactBoss = false
     if showDeb then
         if #bosses < 1 then
-            bosses = { { tag = "boss1", name = (T.L and T.L.NO_BOSS) or "—" } }
+            compactBoss = true
+            bosses = { { tag = "boss1", name = (T.L and T.L.NO_BOSS) or "Out", empty = true } }
         end
         local root = EnsureDebuffHud()
         if root then
@@ -397,12 +417,35 @@ function P.Refresh()
                     blk.block:ClearAnchors()
                     blk.block:SetAnchor(TOPLEFT, root, TOPLEFT, 0, y)
                     blk.block:SetHidden(false)
-                    local nm = bosses[b].name
-                    if zo_strlen(nm) > 16 then nm = zo_strsub(nm, 1, 15) .. "…" end
+                    local panelWord = (T.L and T.L.DEBUFFS_SHORT) or "Debuffs"
+                    local nm
+                    if compactBoss or bosses[b].empty then
+                        nm = panelWord
+                    elseif bosses[b].name and bosses[b].name ~= "" then
+                        nm = bosses[b].name
+                        if (T.Utf8Len and T.Utf8Len(nm) or #nm) > 14 then nm = (T.Utf8Sub and T.Utf8Sub(nm, 1, 13) or nm) .. "…" end
+                    else
+                        nm = panelWord
+                    end
                     blk.title:SetText(nm)
                     blk.h1:SetText("Mj")
                     blk.h2:SetText("Mn")
-                    local ry = 42
+                    local ry = 22
+                    if compactBoss or bosses[b].empty then
+                        blk.h1:SetHidden(true)
+                        blk.h2:SetHidden(true)
+                        blk.title:SetText(panelWord .. "  " .. ((T.L and T.L.NO_BOSS) or "Out"))
+                        for i = 1, #blk.rows do
+                            blk.rows[i].row:SetHidden(true)
+                        end
+                        if blk.obH then blk.obH:SetHidden(true) end
+                        if blk.obH2 then blk.obH2:SetHidden(true) end
+                        blk.block:SetDimensions(176, 26)
+                        y = y + 28
+                    else
+                    blk.h1:SetHidden(false)
+                    blk.h2:SetHidden(false)
+                    ry = 42
                     local obPair, obRow
                     for i = 1, #T.BossDebuffPairs do
                         local pair = T.BossDebuffPairs[i]
@@ -463,7 +506,7 @@ function P.Refresh()
                         local on = BossHas(bosses[b].tag, "offBalance")
                         local imm = BossHas(bosses[b].tag, "offBalanceImm")
                         PaintDot(obRow.d1.ring, obRow.d1.fill, obRow.d1.glow, on and 2 or 0, COL_DEBUFF)
-                        PaintDot(obRow.d2.ring, obRow.d2.fill, obRow.d2.glow, imm and 2 or 0, COL_DEBUFF)
+                        PaintDot(obRow.d2.ring, obRow.d2.fill, obRow.d2.glow, imm and 2 or 0, COL_IMM)
                         obRow.row:SetHidden(false)
                         ry = ry + ROW
                     else
@@ -473,6 +516,7 @@ function P.Refresh()
                     end
                     blk.block:SetDimensions(176, ry + 4)
                     y = y + ry + 8
+                    end
                 end
             end
             for b = #bosses + 1, #debuffBlocks do
@@ -486,17 +530,20 @@ function P.Refresh()
 
     local buffShown = buffRoot and not buffRoot:IsHidden()
     local debShown = debuffRoot and not debuffRoot:IsHidden()
+    -- Pack from the healer's RIGHT edge. Pair widths are fixed (~170+176);
+    -- if we hang them off the healer's LEFT, a short healer grid pushes the
+    -- boss window off-screen and SetClampedToScreen slides it back over buffs.
     if healerOn and parent and not parent:IsHidden() then
-        if buffShown then
-            buffRoot:ClearAnchors()
-            buffRoot:SetAnchor(TOPLEFT, parent, BOTTOMLEFT, 0, 8)
-        end
         if debShown then
             debuffRoot:ClearAnchors()
-            if buffShown then
-                debuffRoot:SetAnchor(TOPLEFT, buffRoot, TOPRIGHT, 8, 0)
+            debuffRoot:SetAnchor(TOPRIGHT, parent, BOTTOMRIGHT, 0, 8)
+        end
+        if buffShown then
+            buffRoot:ClearAnchors()
+            if debShown then
+                buffRoot:SetAnchor(TOPRIGHT, debuffRoot, TOPLEFT, -8, 0)
             else
-                debuffRoot:SetAnchor(TOPLEFT, parent, BOTTOMLEFT, 0, 8)
+                buffRoot:SetAnchor(TOPRIGHT, parent, BOTTOMRIGHT, 0, 8)
             end
         end
     else

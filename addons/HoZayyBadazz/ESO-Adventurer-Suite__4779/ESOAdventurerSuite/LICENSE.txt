@@ -32,14 +32,14 @@ Except with prior written permission from HoZayyBadazz, you may not:
 - sell, rent, sublicense, monetize, bundle for consideration, place behind a
   paywall, or commercially exploit the Software;
 - use the Software, its name, or its branding in a way that falsely suggests an
-  official association with HoZayyBadazz, ZeniMax, Bethesda, or ESOUI.
+  official association with ESO Adventurer Suite, ZeniMax, Bethesda, or ESOUI.
 
 No permission is granted to use the source code as the basis of a competing
-publicly distributed add-on without written authorization from HoZayyBadazz.
+publicly distributed add-on without written authorization from ESO Adventurer Suite.
 
 OFFICIAL DISTRIBUTION
 ---------------------
-Authorized public releases are those published by HoZayyBadazz, or by a party
+Authorized public releases are those published by HoZayyBadazz under the ESO Adventurer Suite project, or by a party
 explicitly authorized in writing by HoZayyBadazz. The intended public distribution
 channel for this project is ESOUI/Minion under the author name HoZayyBadazz.
 

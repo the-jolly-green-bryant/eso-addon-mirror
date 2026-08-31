@@ -394,3 +394,98 @@ function C:Initialize()
         self:Refresh()
     end)
 end
+
+
+-- ============================================================================
+-- v0.28.65 - Reliable Champion Point Gain Only detection
+-- Some clients can deliver Champion events before GetPlayerChampionPointsEarned
+-- has updated (or not deliver the expected update event at all).  Keep a tiny
+-- gameplay-safe watcher on the real earned CP total so GAIN mode always reacts
+-- to an actual account Champion Point increase.
+-- ============================================================================
+function C:CheckEarnedChampionPointGain2865(forceShow)
+    local earned = getEarnedChampionPoints2515()
+    local previous = tonumber(self.lastEarnedChampionPoints2518)
+
+    -- First sample / character activation establishes a baseline only.
+    if previous == nil then
+        self.lastEarnedChampionPoints2518 = earned
+        return false
+    end
+
+    -- Account/character transitions can occasionally make the sampled value
+    -- move backwards temporarily.  Treat that as a new baseline, never a gain.
+    if earned < previous then
+        self.lastEarnedChampionPoints2518 = earned
+        return false
+    end
+
+    local gained = (earned > previous)
+    self.lastEarnedChampionPoints2518 = earned
+
+    if forceShow == true or gained then
+        self:ShowForChampionGain2518()
+        return true
+    end
+    return false
+end
+
+-- Replace the older event handler with the same behavior plus the reliable
+-- earned-total comparison above.
+function C:HandleChampionPointEvent2518(forceGain)
+    if forceGain == true then
+        -- EVENT_CHAMPION_POINT_GAINED is authoritative.  Show immediately even
+        -- when the account total is updated a frame later, then refresh the
+        -- baseline on the follow-up watcher tick.
+        self:CheckEarnedChampionPointGain2865(true)
+    else
+        if not self:CheckEarnedChampionPointGain2865(false) then
+            self:Refresh()
+        end
+    end
+end
+
+local easLegacySetVisibilityModeChampion_2865 = C.SetVisibilityMode2518
+function C:SetVisibilityMode2518(mode)
+    -- Start GAIN mode from the current value so an old/stale baseline can never
+    -- create a fake popup as soon as the setting is changed.
+    self.lastEarnedChampionPoints2518 = getEarnedChampionPoints2515()
+    easLegacySetVisibilityModeChampion_2865(self, mode)
+end
+
+local easLegacyInitializeChampion_2865 = C.Initialize
+function C:Initialize()
+    easLegacyInitializeChampion_2865(self)
+
+    local prefix = EPC.name .. "_ChampionGainWatch2865"
+
+    -- Polling the earned CP total is deliberately lightweight and only performs
+    -- the comparison while Champion Point Gain Only is selected.  This makes
+    -- the mode independent of event timing differences between ESO clients.
+    EVENT_MANAGER:RegisterForUpdate(prefix, 500, function()
+        if not EPC.saved or self:GetVisibilityMode2518() ~= "GAIN" then return end
+        self:CheckEarnedChampionPointGain2865(false)
+    end)
+
+    -- XP gain is a useful fast-path: Champion Points are awarded from XP, so do
+    -- a few delayed checks around the award boundary.  The 500ms watcher above
+    -- remains the final fallback.
+    if EVENT_EXPERIENCE_GAIN then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_XP", EVENT_EXPERIENCE_GAIN, function()
+            if not EPC.saved or self:GetVisibilityMode2518() ~= "GAIN" then return end
+            self.cpGainCheckToken2865 = (tonumber(self.cpGainCheckToken2865) or 0) + 1
+            local token = self.cpGainCheckToken2865
+            local function delayedCheck()
+                if token ~= self.cpGainCheckToken2865 then return end
+                self:CheckEarnedChampionPointGain2865(false)
+            end
+            if type(zo_callLater) == "function" then
+                zo_callLater(delayedCheck, 100)
+                zo_callLater(delayedCheck, 350)
+                zo_callLater(delayedCheck, 800)
+            else
+                delayedCheck()
+            end
+        end)
+    end
+end

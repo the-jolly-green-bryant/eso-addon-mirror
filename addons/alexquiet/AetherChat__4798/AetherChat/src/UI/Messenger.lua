@@ -123,15 +123,19 @@ function Messenger.Initialize()
                 InformationTooltip:AddLine(string.format("|c38BDF8• " .. L('TT_MAIL_UNREAD') .. "|r", numUnreadMail), "ZoFontGame", 0.2, 0.7, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
             end
 
-            InformationTooltip:AddLine("|c888888" .. L('BINDING_NAME') .. " : Raccourci clavier|r", "ZoFontGameSmall", 0.6, 0.6, 0.6, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            InformationTooltip:AddLine("|c888888" .. L('BINDING_NAME') .. " : Clic gauche ou Raccourci|r", "ZoFontGameSmall", 0.6, 0.6, 0.6, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
         end)
 
         Messenger.minBar:SetHandler('OnMouseExit', function(self)
             ClearTooltip(InformationTooltip)
         end)
 
-        -- MinBar does NOT toggle on click (prevents crosshair cursor lock issues)
-        Messenger.minBar:SetHandler('OnMouseUp', nil)
+        -- MinBar toggles AetherChat cleanly on left-click
+        Messenger.minBar:SetHandler('OnMouseUp', function(self, button, upInside)
+            if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
+                Messenger.Toggle()
+            end
+        end)
 
         -- Register MinBar as official HUD Fragment so ESO never confuses it with modal UI
         if SCENE_MANAGER then
@@ -143,6 +147,14 @@ function Messenger.Initialize()
         Messenger.UpdateTotalBadge()
         Messenger.UpdateFriendsBadge()
         Messenger.UpdateMailBadge()
+    end
+
+    -- Window Header Close Button
+    local closeBtn = Messenger.window:GetNamedChild('CloseBtn')
+    if closeBtn then
+        closeBtn:SetHandler('OnClicked', function()
+            Messenger.Hide()
+        end)
     end
 
     -- 2. Messenger Window Position & Saved Dimensions
@@ -1168,7 +1180,24 @@ function Messenger.DockNativeChatEntry()
     ZO_ChatWindowTextEntry:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, leftOffset, -8)
     ZO_ChatWindowTextEntry:SetAnchor(BOTTOMRIGHT, Messenger.window, BOTTOMRIGHT, -10, -8)
     ZO_ChatWindowTextEntry:SetMovable(false)
-    ZO_ChatWindowTextEntry:SetHidden(Messenger.window:IsHidden())
+    ZO_ChatWindowTextEntry:SetHidden(false)
+end
+
+function Messenger.UndockNativeChatEntry()
+    if not ZO_ChatWindowTextEntry then return end
+    if ZO_ChatWindow then
+        ZO_ChatWindowTextEntry:SetParent(ZO_ChatWindow)
+        ZO_ChatWindowTextEntry:ClearAnchors()
+        ZO_ChatWindowTextEntry:SetAnchor(BOTTOMLEFT, ZO_ChatWindow, BOTTOMLEFT, 0, 0)
+        ZO_ChatWindowTextEntry:SetAnchor(BOTTOMRIGHT, ZO_ChatWindow, BOTTOMRIGHT, 0, 0)
+        ZO_ChatWindowTextEntry:SetMovable(false)
+        local hideOfficial = Settings.Get('hideOfficialChat', false)
+        if not hideOfficial then
+            ZO_ChatWindowTextEntry:SetHidden(false)
+        else
+            ZO_ChatWindowTextEntry:SetHidden(true)
+        end
+    end
 end
 
 function Messenger.ApplyBackdropAlpha(alphaPercent)
@@ -1315,9 +1344,8 @@ function Messenger.Hide()
         ZO_ChatWindowTextEntryEditBox:LoseFocus()
     end
 
-    if ZO_ChatWindowTextEntry then
-        ZO_ChatWindowTextEntry:SetHidden(true)
-    end
+    -- Return text entry back to native chat immediately so old chat works flawlessly!
+    Messenger.UndockNativeChatEntry()
 
     if PopupTooltip and not PopupTooltip:IsHidden() then
         ZO_PopupTooltip_Hide()

@@ -174,23 +174,25 @@ Data.Patterns = {
 }
 
 -- Additive potency used by daily Health/Magicka/Stamina armor glyphs.
--- IDs from UESP Online:Runestones. Rank 10 daily writs ask for CP160 (Repora).
+-- Potency Improvement ranks skip every other rune (same table as UESP Enchanter Writ
+-- and Dolgubon's Lazy Writ itemLinkLevel). Rank 10 daily writs ask for Superb CP150
+-- (Rejera), never Truly Superb CP160 (Repora).
 Data.EnchantingPotency = {
-    [1]  = 45855, -- Jora
-    [2]  = 45857, -- Jera
-    [3]  = 45807, -- Odra
-    [4]  = 45809, -- Edora
-    [5]  = 45811, -- Pora
-    [6]  = 45813, -- Rera
-    [7]  = 45814, -- Derado
-    [8]  = 45815, -- Rekura
-    [9]  = 45816, -- Kura
-    [10] = 68341, -- Repora (CP160)
+    [1]  = 45855, -- Jora     Trifling
+    [2]  = 45857, -- Jera     Petty
+    [3]  = 45807, -- Odra     Minor
+    [4]  = 45809, -- Edora    Moderate
+    [5]  = 45811, -- Pora     Strong
+    [6]  = 45813, -- Rera     Greater
+    [7]  = 45814, -- Derado   Grand
+    [8]  = 45815, -- Rekura   Splendid
+    [9]  = 45816, -- Kura     Monumental
+    [10] = 64509, -- Rejera   Superb CP150
 }
 
--- Rank 10 also commonly requests Rejera (CP150). Parser tries both.
+-- Repora is not a daily-writ rune. Kept only so a probe can still try it.
 Data.EnchantingPotencyAlt = {
-    [10] = 64509, -- Rejera
+    [10] = 68341, -- Repora (CP160)
 }
 
 Data.ESSENCE_OKO   = 45831
@@ -459,27 +461,53 @@ end
 
 
 -- =============================================================================
--- Alchemy / Provisioning — "3 days ahead" pre-craft templates
--- Daily writs rotate; we pre-craft the classic restore set that covers all
--- common daily potion writs (Health / Magicka / Stamina) once per day slot.
--- Pattern index 1/2/3 maps to the three potion types; for offsets 0..2 we craft
--- all three types so the player is covered for today+2 regardless of rotation.
+-- Alchemy / Provisioning
+-- Alchemy daily writs follow Solvent Proficiency (1-8), NOT every craftable water.
+-- Clear Water / Tincture and Star Dew / Distillate are never requested.
+-- Rank 6 and 7 both ask for Panacea (Cloud Mist). Rank 8 mixes Essence + Poison IX.
+-- Rotation is 4 days (SP1-7) or 8 products (SP8), start is per-character.
 -- =============================================================================
 Data.CRAFT_ALCHEMY = 4
 Data.CRAFT_PROVISIONING = 5
 
--- Solvent itemIds by Solvent Proficiency rank (1..8).
--- Rank maps to alchemy skill line / NON_COMBAT_BONUS_ALCHEMY_LEVEL.
--- Main (maxed) can craft any rank; we pick the solvent matching the TARGET character.
+-- Official solvent item IDs (UESP / crafting-material addons).
+Data.ALCHEMY_WATER = {
+    NATURAL   = 883,    -- Sip
+    CLEAR     = 1187,   -- Tincture — craftable at SP1, never a daily writ
+    PRISTINE  = 4570,   -- Dram
+    CLEANSED  = 23265,  -- Potion
+    FILTERED  = 23266,  -- Solution
+    PURIFIED  = 23267,  -- Elixir
+    CLOUD     = 23268,  -- Panacea
+    STAR_DEW  = 64500,  -- Distillate — never a daily writ
+    LORKHAN   = 64501,  -- Essence
+}
+Data.ALCHEMY_OIL = {
+    ALKAHEST  = 75365,  -- Poison IX (SP8 daily writs)
+}
+
+-- Potion solvent the daily writ actually asks for at this Solvent Proficiency rank.
+Data.AlchemyPotionSolventByRank = {
+    [1] = Data.ALCHEMY_WATER.NATURAL,
+    [2] = Data.ALCHEMY_WATER.PRISTINE,
+    [3] = Data.ALCHEMY_WATER.CLEANSED,
+    [4] = Data.ALCHEMY_WATER.FILTERED,
+    [5] = Data.ALCHEMY_WATER.PURIFIED,
+    [6] = Data.ALCHEMY_WATER.CLOUD,
+    [7] = Data.ALCHEMY_WATER.CLOUD,
+    [8] = Data.ALCHEMY_WATER.LORKHAN,
+}
+
+-- Backward-compatible list form used by older callers.
 Data.AlchemySolventByRank = {
-    [1] = { 883 },           -- Natural Water  -> Sip
-    [2] = { 33774 },         -- Clear Water    -> Tincture
-    [3] = { 33775 },         -- Pristine Water -> Dram
-    [4] = { 33776 },         -- Cleansed Water -> Potion
-    [5] = { 33777 },         -- Filtered Water -> Solution
-    [6] = { 33778 },         -- Purified Water -> Elixir
-    [7] = { 33779 },         -- Cloud Mist     -> Panacea
-    [8] = { 64501, 33780 },  -- Lorkhan's Tears (Essence) / Star Dew fallback
+    [1] = { Data.ALCHEMY_WATER.NATURAL },
+    [2] = { Data.ALCHEMY_WATER.PRISTINE },
+    [3] = { Data.ALCHEMY_WATER.CLEANSED },
+    [4] = { Data.ALCHEMY_WATER.FILTERED },
+    [5] = { Data.ALCHEMY_WATER.PURIFIED },
+    [6] = { Data.ALCHEMY_WATER.CLOUD },
+    [7] = { Data.ALCHEMY_WATER.CLOUD },
+    [8] = { Data.ALCHEMY_WATER.LORKHAN },
 }
 
 -- Reagent pairs for restore potions (covers standard daily writ variants)
@@ -502,11 +530,143 @@ for i = 1, #Data.AlchemyRecipes do
     Data.AlchemyRecipeByKey[Data.AlchemyRecipes[i].key] = Data.AlchemyRecipes[i]
 end
 
-function Data.GetAlchemySolventIdsForRank(rank)
+function Data.ClampAlchemyRank(rank)
     rank = tonumber(rank) or 1
-    if rank < 1 then rank = 1 end
-    if rank > 8 then rank = 8 end
-    return Data.AlchemySolventByRank[rank] or Data.AlchemySolventByRank[1]
+    if rank < 1 then return 1 end
+    if rank > 8 then return 8 end
+    return rank
+end
+
+function Data.GetAlchemyPotionSolventId(rank)
+    rank = Data.ClampAlchemyRank(rank)
+    return Data.AlchemyPotionSolventByRank[rank] or Data.ALCHEMY_WATER.NATURAL
+end
+
+function Data.GetAlchemyPoisonSolventId(rank)
+    rank = Data.ClampAlchemyRank(rank)
+    if rank >= 8 then
+        return Data.ALCHEMY_OIL.ALKAHEST
+    end
+    return nil
+end
+
+function Data.GetAlchemySolventIdsForRank(rank)
+    return { Data.GetAlchemyPotionSolventId(rank) }
+end
+
+-- Per-rank daily rotation (BenevolentBowd / UESP Alchemist Writ).
+-- SP1-7: 4-day cycle. SP8: 8 products (4 potions + 4 poisons).
+-- poison=true means Restore-X reagents + oil → Drain X Poison,
+-- or Ravage-X reagents + oil → Damage X Poison.
+Data.AlchemyWritRotation = {
+    [1] = {
+        { key = "Stamina",       poison = false },
+        { key = "RavageStamina", poison = false },
+        { key = "Health",        poison = false },
+        { key = "Magicka",       poison = false },
+    },
+    [2] = {
+        { key = "Magicka",       poison = false },
+        { key = "Stamina",       poison = false },
+        { key = "RavageMagicka", poison = false },
+        { key = "Health",        poison = false },
+    },
+    [3] = {
+        { key = "Health",        poison = false },
+        { key = "Magicka",       poison = false },
+        { key = "Stamina",       poison = false },
+        { key = "RavageHealth",  poison = false },
+    },
+    [4] = {
+        { key = "Magicka",       poison = false },
+        { key = "Stamina",       poison = false },
+        { key = "RavageStamina", poison = false },
+        { key = "Health",        poison = false },
+    },
+    [5] = {
+        { key = "RavageMagicka", poison = false },
+        { key = "Health",        poison = false },
+        { key = "Magicka",       poison = false },
+        { key = "Stamina",       poison = false },
+    },
+    [6] = {
+        { key = "Stamina",       poison = false },
+        { key = "RavageHealth",  poison = false },
+        { key = "Health",        poison = false },
+        { key = "Magicka",       poison = false },
+    },
+    [7] = {
+        { key = "Magicka",       poison = false },
+        { key = "Stamina",       poison = false },
+        { key = "RavageHealth",  poison = false },
+        { key = "Health",        poison = false },
+    },
+    [8] = {
+        { key = "Health",        poison = true },   -- Drain Health Poison IX
+        { key = "RavageHealth",  poison = false }, -- Essence of Ravage Health
+        { key = "Health",        poison = false }, -- Essence of Health
+        { key = "Stamina",       poison = false }, -- Essence of Stamina
+        { key = "Magicka",       poison = false }, -- Essence of Magicka
+        { key = "RavageHealth",  poison = true },  -- Damage Health Poison IX
+        { key = "RavageStamina", poison = true },  -- Damage Stamina Poison IX
+        { key = "RavageMagicka", poison = true },  -- Damage Magicka Poison IX
+    },
+}
+
+function Data.GetAlchemyRotation(rank)
+    rank = Data.ClampAlchemyRank(rank)
+    return Data.AlchemyWritRotation[rank] or Data.AlchemyWritRotation[1]
+end
+
+function Data.FindAlchemyRotationIndex(rank, key, isPoison)
+    local rot = Data.GetAlchemyRotation(rank)
+    isPoison = isPoison and true or false
+    for i = 1, #rot do
+        if rot[i].key == key and (rot[i].poison and true or false) == isPoison then
+            return i
+        end
+    end
+    return nil
+end
+
+function Data.MakeAlchemyJob(tier, slot, dayOffset)
+    if not slot or not slot.key then return nil end
+    local rec = Data.AlchemyRecipeByKey and Data.AlchemyRecipeByKey[slot.key]
+    if not rec then return nil end
+    local isPoison = slot.poison and true or false
+    local solventId
+    if isPoison then
+        solventId = Data.GetAlchemyPoisonSolventId(tier)
+        if not solventId then return nil end
+    else
+        solventId = Data.GetAlchemyPotionSolventId(tier)
+    end
+    local label = rec.name
+    if isPoison then
+        if slot.key == "Health" then
+            label = "Drain Health Poison"
+        elseif slot.key == "RavageHealth" then
+            label = "Damage Health Poison"
+        elseif slot.key == "RavageMagicka" then
+            label = "Damage Magicka Poison"
+        elseif slot.key == "RavageStamina" then
+            label = "Damage Stamina Poison"
+        else
+            label = rec.name .. " Poison"
+        end
+    end
+    return {
+        craftType = 4,
+        dayOffset = dayOffset or 0,
+        alchemyTier = tier,
+        recipeKey = slot.key,
+        recipeName = label,
+        reagent1Id = rec.r1,
+        reagent2Id = rec.r2,
+        solventIds = { solventId },
+        isPoison = isPoison,
+        phase = slot._phase,
+    }
 end
 
 -- Jobs for current character at a given alchemy tier: 3 restore types × N day slots.
@@ -562,28 +722,75 @@ function Data.GetProvisioningDrinkYield()
     return SkillLineAbilityYield(5, { "brewer", "brew", "brauer", "brasseur", "cervec", "пивовар", "酿" })
 end
 
-function Data.GetAlchemyJobsForTier(tier, days)
+local function AlchemyYieldCrafts(appearances)
+    local yield = Data.GetAlchemyPotionYield and Data.GetAlchemyPotionYield() or 1
+    if yield < 1 then yield = 1 end
+    local crafts = math.ceil((tonumber(appearances) or 1) / yield)
+    if crafts < 1 then crafts = 1 end
+    return crafts
+end
+
+-- Collapse identical alchemy jobs so Chemistry covers several day-slots per click.
+local function CompactAlchemyJobs(jobs)
+    local grouped, order = {}, {}
+    for i = 1, #jobs do
+        local j = jobs[i]
+        local key = tostring(j.recipeKey or j.recipeName) .. ":" .. tostring(j.isPoison and 1 or 0)
+            .. ":" .. tostring((j.solventIds and j.solventIds[1]) or 0)
+        if not grouped[key] then
+            grouped[key] = { job = j, n = 0 }
+            order[#order + 1] = key
+        end
+        grouped[key].n = grouped[key].n + 1
+    end
+    local compact = {}
+    for i = 1, #order do
+        local g = grouped[order[i]]
+        local crafts = AlchemyYieldCrafts(g.n)
+        for _ = 1, crafts do
+            compact[#compact + 1] = g.job
+        end
+    end
+    return compact
+end
+
+-- startPhase 1..N of the rank rotation. If nil, stock every unique product at this rank
+-- (covers unknown future days; taking a live writ once lets precraft follow the cycle).
+function Data.GetAlchemyJobsForTier(tier, days, startPhase, startOffset)
     days = tonumber(days) or 5
     if days < 1 then days = 1 end
     if days > 11 then days = 11 end
-    local yield = Data.GetAlchemyPotionYield and Data.GetAlchemyPotionYield() or 1
-    if yield < 1 then yield = 1 end
-    local crafts = math.ceil(days / yield)
-    if crafts < 1 then crafts = 1 end
-    local solventIds = Data.GetAlchemySolventIdsForRank(tier)
+    startOffset = tonumber(startOffset) or 0
+    if startOffset < 0 then startOffset = 0 end
+    tier = Data.ClampAlchemyRank(tier)
+    local rot = Data.GetAlchemyRotation(tier)
     local jobs = {}
-    for n = 1, crafts do
-        for i = 1, #Data.AlchemyRecipes do
-            local r = Data.AlchemyRecipes[i]
-            table.insert(jobs, {
-                craftType = 4,
-                dayOffset = n - 1,
-                alchemyTier = tier,
-                recipeName = r.name .. " (rank " .. tostring(tier) .. ")",
-                reagent1Id = r.r1,
-                reagent2Id = r.r2,
-                solventIds = solventIds,
-            })
+    if startPhase and startPhase >= 1 and startPhase <= #rot then
+        for offset = startOffset, startOffset + days - 1 do
+            local idx = ((startPhase - 1 + offset) % #rot) + 1
+            local slot = rot[idx]
+            local job = Data.MakeAlchemyJob(tier, slot, offset)
+            if job then
+                job.phase = idx
+                jobs[#jobs + 1] = job
+            end
+        end
+        return CompactAlchemyJobs(jobs)
+    end
+    -- Unknown phase: one of each unique product at this rank, enough times to cover `days`.
+    local seen = {}
+    for i = 1, #rot do
+        local slot = rot[i]
+        local uniq = tostring(slot.key) .. ":" .. (slot.poison and "p" or "w")
+        if not seen[uniq] then
+            seen[uniq] = true
+            local job = Data.MakeAlchemyJob(tier, slot, 0)
+            if job then
+                local crafts = AlchemyYieldCrafts(days)
+                for n = 1, crafts do
+                    jobs[#jobs + 1] = job
+                end
+            end
         end
     end
     return jobs
@@ -591,9 +798,19 @@ end
 
 -- Alias for compatibility
 
--- Detect which restore type the ACTIVE alchemy writ wants (locale keywords).
+local function AlchemyItemIsPoison(itemId)
+    if not itemId or itemId <= 0 then return false end
+    local fake = string.format("|H0:item:%d:1:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId)
+    if GetItemLinkItemType then
+        local ok, itemType = pcall(GetItemLinkItemType, fake)
+        if ok and itemType == ITEMTYPE_POISON then return true end
+        if ok and itemType == ITEMTYPE_POTION then return false end
+    end
+    return false
+end
+
+-- Returns key, isPoison (or nil).
 function Data.DetectAlchemyWritType()
-    -- Preferred: potion item on the writ condition (language-independent)
     if GetQuestConditionItemInfo and GetTraitIdFromBasePotion then
         local maxQ = MAX_JOURNAL_QUESTS or 25
         local MAIN = QUEST_MAIN_STEP_INDEX or 1
@@ -601,35 +818,37 @@ function Data.DetectAlchemyWritType()
             if IsValidQuestIndex and IsValidQuestIndex(q) and GetJournalQuestType(q) == QUEST_TYPE_CRAFTING then
                 local n = GetJournalQuestNumConditions(q, MAIN) or 0
                 for c = 1, n do
-                    local _, cur, maxv, _, isComplete = GetJournalQuestConditionInfo(q, MAIN, c)
+                    local text, cur, maxv, _, isComplete = GetJournalQuestConditionInfo(q, MAIN, c)
                     if not isComplete and (maxv or 1) > (cur or 0) then
-                        local ok, itemId = pcall(GetQuestConditionItemInfo, q, MAIN, c)
-                        itemId = ok and tonumber(itemId) or nil
-                        if itemId and itemId > 0 then
-                            local ok2, trait = pcall(GetTraitIdFromBasePotion, itemId)
-                            trait = ok2 and tonumber(trait) or nil
-                            -- Dolgubon effectMap: 1 Health, 2 Ravage Health, 3 Magicka, 4 Ravage Magicka, 5 Stamina, 6 Ravage Stamina
-                            if trait == 1 then return "Health" end
-                            if trait == 2 then return "RavageHealth" end
-                            if trait == 3 then return "Magicka" end
-                            if trait == 4 then return "RavageMagicka" end
-                            if trait == 5 then return "Stamina" end
-                            if trait == 6 then return "RavageStamina" end
+                        local hay = string.lower(text or "")
+                        if hay:find("добы", 1, true) or hay:find("acquire", 1, true) or hay:find("gather", 1, true)
+                            or hay:find("loot", 1, true) or hay:find("собрать", 1, true)
+                            or hay:find("природн", 1, true) then
+                            -- skip gather / solvent conditions
+                        else
+                            local ok, itemId = pcall(GetQuestConditionItemInfo, q, MAIN, c)
+                            itemId = ok and tonumber(itemId) or nil
+                            if itemId and itemId > 0 then
+                                local ok2, trait = pcall(GetTraitIdFromBasePotion, itemId)
+                                trait = ok2 and tonumber(trait) or nil
+                                local isPoison = AlchemyItemIsPoison(itemId)
+                                    or hay:find("poison", 1, true) or hay:find("яд", 1, true)
+                                    or hay:find("gift", 1, true)
+                                -- Dolgubon effectMap: 1 Health, 2 Ravage Health, 3 Magicka, 4 Ravage Magicka, 5 Stamina, 6 Ravage Stamina
+                                -- Restore-X crafted as poison = Drain X Poison.
+                                if trait == 1 then return "Health", isPoison end
+                                if trait == 2 then return "RavageHealth", isPoison end
+                                if trait == 3 then return "Magicka", isPoison end
+                                if trait == 4 then return "RavageMagicka", isPoison end
+                                if trait == 5 then return "Stamina", isPoison end
+                                if trait == 6 then return "RavageStamina", isPoison end
+                            end
                         end
                     end
                 end
             end
         end
     end
-    local keys = {
-        RavageHealth  = { "ravage health", "разорен", "здоровья", "gesundheit schaden", "sante dimin", "salud mengua" },
-        RavageMagicka = { "ravage magicka", "магии", "magicka schaden" },
-        RavageStamina = { "ravage stamina", "запаса сил", "ausdauer schaden" },
-        Health  = { "health", "здоров", "gesundheit", "sante", "salud", "体力", "生命" },
-        Magicka = { "magicka", "маги", "magie", "magie", "magia", "魔力" },
-        Stamina = { "stamina", "запас сил", "сил", "ausdauer", "endurance", "vigor", "スタミナ", "耐力" },
-    }
-    -- Prefer stamina/magicka/health restore; skip "gather X" conditions
     local maxQ = MAX_JOURNAL_QUESTS or 25
     for q = 1, maxQ do
         if IsValidQuestIndex and IsValidQuestIndex(q) and GetJournalQuestType(q) == QUEST_TYPE_CRAFTING then
@@ -638,40 +857,42 @@ function Data.DetectAlchemyWritType()
                 local text, cur, maxv, _, isComplete = GetJournalQuestConditionInfo(q, 1, c)
                 if text and not isComplete and (maxv or 1) > (cur or 0) then
                     local hay = string.lower(text)
-                    -- skip gather/loot conditions
                     if hay:find("добы", 1, true) or hay:find("acquire", 1, true) or hay:find("gather", 1, true)
                         or hay:find("loot", 1, true) or hay:find("собрать", 1, true)
                         or hay:find("природн", 1, true) then
                         -- skip gather / solvent conditions
                     else
+                        local isPoison = hay:find("poison", 1, true) or hay:find("яд", 1, true)
+                            or hay:find("gift", 1, true) or hay:find("drain", 1, true)
+                            or hay:find("поглощ", 1, true)
                         local ravage = hay:find("опустош", 1, true) or hay:find("ravage", 1, true)
                             or hay:find("разорен", 1, true) or hay:find("schaden", 1, true)
-                            or hay:find("poison", 1, true) or hay:find("яд", 1, true)
+                            or hay:find("damage", 1, true) or hay:find("урон", 1, true)
+                        local drain = hay:find("drain", 1, true) or hay:find("поглощ", 1, true)
                         local stam = hay:find("stamina", 1, true) or hay:find("ausdauer", 1, true)
-                            or hay:find("запаса сил", 1, true) or hay:find("сил", 1, true)
-                            or hay:find("endurance", 1, true)
+                            or hay:find("запаса сил", 1, true) or hay:find("endurance", 1, true)
                         local mag = hay:find("маги", 1, true) or hay:find("magicka", 1, true)
                             or hay:find("magie", 1, true)
                         local hp = hay:find("здоров", 1, true) or hay:find("health", 1, true)
                             or hay:find("gesundheit", 1, true)
                         if stam then
-                            if ravage then return "RavageStamina" end
-                            return "Stamina"
+                            if ravage then return "RavageStamina", isPoison end
+                            return "Stamina", isPoison or drain
                         end
                         if mag then
-                            if ravage then return "RavageMagicka" end
-                            return "Magicka"
+                            if ravage then return "RavageMagicka", isPoison end
+                            return "Magicka", isPoison or drain
                         end
                         if hp then
-                            if ravage then return "RavageHealth" end
-                            return "Health"
+                            if ravage then return "RavageHealth", isPoison end
+                            return "Health", isPoison or drain
                         end
                     end
                 end
             end
         end
     end
-    return nil
+    return nil, false
 end
 
 local function AlchemyLinkFulfillsWrit(link)
@@ -695,48 +916,53 @@ local function AlchemyLinkFulfillsWrit(link)
 end
 
 function Data.GetAlchemyJobsForQuest(tier)
-    local solventIds = Data.GetAlchemySolventIdsForRank(tier)
-    -- Prefer the pair whose RESULTING potion actually ticks the journal
+    tier = Data.ClampAlchemyRank(tier)
+    local solvents = { Data.GetAlchemyPotionSolventId(tier) }
+    local oil = Data.GetAlchemyPoisonSolventId(tier)
+    if oil then solvents[#solvents + 1] = oil end
+
     if GetAlchemyResultingItemLink then
-        local sBag, sSlot
-        for i = 1, #solventIds do
-            sBag, sSlot = Data.FindItemInBags(solventIds[i])
-            if sBag then break end
-        end
-        if sBag then
-            for i = 1, #Data.AlchemyRecipes do
-                local r = Data.AlchemyRecipes[i]
-                local b1, sl1 = Data.FindItemInBags(r.r1)
-                local b2, sl2 = Data.FindItemInBags(r.r2)
-                if b1 and b2 then
-                    local ok, link = pcall(GetAlchemyResultingItemLink, sBag, sSlot, b1, sl1, b2, sl2)
-                    if ok and AlchemyLinkFulfillsWrit(link) then
-                        return {{
-                            craftType = 4,
-                            alchemyTier = tier,
-                            recipeName = r.name,
-                            reagent1Id = r.r1,
-                            reagent2Id = r.r2,
-                            solventIds = solventIds,
-                        }}
+        for s = 1, #solvents do
+            local sBag, sSlot = Data.FindItemInBags(solvents[s])
+            if sBag then
+                for i = 1, #Data.AlchemyRecipes do
+                    local r = Data.AlchemyRecipes[i]
+                    local b1, sl1 = Data.FindItemInBags(r.r1)
+                    local b2, sl2 = Data.FindItemInBags(r.r2)
+                    if b1 and b2 then
+                        local ok, link = pcall(GetAlchemyResultingItemLink, sBag, sSlot, b1, sl1, b2, sl2)
+                        if ok and AlchemyLinkFulfillsWrit(link) then
+                            local isPoison = (solvents[s] == oil)
+                            return {{
+                                craftType = 4,
+                                alchemyTier = tier,
+                                recipeKey = r.key,
+                                recipeName = r.name,
+                                reagent1Id = r.r1,
+                                reagent2Id = r.r2,
+                                solventIds = { solvents[s] },
+                                isPoison = isPoison,
+                            }}
+                        end
                     end
                 end
             end
         end
     end
-    local kind = Data.DetectAlchemyWritType()
+
+    local kind, isPoison = Data.DetectAlchemyWritType()
     local rec = kind and Data.AlchemyRecipeByKey and Data.AlchemyRecipeByKey[kind]
     if not rec then
         return {}
     end
-    return {{
-        craftType = 4,
-        alchemyTier = tier,
-        recipeName = rec.name,
-        reagent1Id = rec.r1,
-        reagent2Id = rec.r2,
-        solventIds = solventIds,
-    }}
+    if isPoison and not oil then
+        isPoison = false
+    end
+    local job = Data.MakeAlchemyJob(tier, { key = kind, poison = isPoison }, 0)
+    if job then
+        return { job }
+    end
+    return {}
 end
 function Data.GetAlchemyThreeDayJobsForTier(tier)
     return Data.GetAlchemyJobsForTier(tier, 5)

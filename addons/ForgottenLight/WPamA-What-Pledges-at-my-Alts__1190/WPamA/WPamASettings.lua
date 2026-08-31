@@ -186,6 +186,16 @@ function WPamA:CreateOptionsPanel()
          setFunc = function(value) WPamA.SetVal_CurrencyValueThreshold(value) end,
          default = 99999 },
         { type = "dropdown",
+         name = Lang.OptDynEncounterNotify,
+         tooltip = nvl(Lang.OptDynEncounterNotifyF,Lang.OptDynEncounterNotify),
+         choices = { GetString(SI_ACTIONBARSETTINGCHOICE0),   -- "Don't Show"
+                     GetString(SI_ACTIONBARSETTINGCHOICE2),   -- "Automatic"
+                     GetString(SI_ACTIONBARSETTINGCHOICE1) }, -- "Always Show"
+         choicesValues = {0, 1, 2},
+         getFunc = function() return SV.DynEncounterNotifyMode end,
+         setFunc = function(value) SV.DynEncounterNotifyMode = value end,
+         default = 1 },
+        { type = "dropdown",
          name = Lang.OptCompanionRapport,
          tooltip = nvl(Lang.OptCompanionRapportF,Lang.OptCompanionRapport),
          choices = Lang.OptCompanionRprtList,

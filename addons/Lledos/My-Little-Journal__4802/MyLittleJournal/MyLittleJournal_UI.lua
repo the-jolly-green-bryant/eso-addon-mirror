@@ -840,12 +840,23 @@ local function createWindow()
     bookBg:SetAnchor(CENTER, win, CENTER, 0, 0)
     bookBg:SetDrawLayer(DL_BACKGROUND)
 
+    -- The close X sits on the parchment itself (the book cover art to the
+    -- right of the page hid it). The visual is a texture so it can be
+    -- tinted ink-dark for the light paper; a plain invisible button on top
+    -- takes the clicks, raised above everything else on the page.
+    local closeIcon = WINDOW_MANAGER:CreateControl(nil, win, CT_TEXTURE)
+    closeIcon:SetDimensions(26, 26)
+    closeIcon:SetAnchor(TOPRIGHT, win, TOPLEFT, RIGHT_PAGE_X + PAGE_WIDTH + 8, PAGE_TOP + 4)
+    closeIcon:SetTexture("/esoui/art/buttons/closebutton_up.dds")
+    closeIcon:SetColor(0.20, 0.12, 0.07, 0.9)
+    closeIcon:SetDrawLevel(20)
+
     local closeButton = WINDOW_MANAGER:CreateControl(nil, win, CT_BUTTON)
-    closeButton:SetDimensions(28, 28)
-    closeButton:SetAnchor(TOPRIGHT, win, TOPRIGHT, -28, 30)
-    closeButton:SetNormalTexture("/esoui/art/buttons/closebutton_up.dds")
-    closeButton:SetPressedTexture("/esoui/art/buttons/closebutton_down.dds")
-    closeButton:SetMouseOverTexture("/esoui/art/buttons/closebutton_mouseover.dds")
+    closeButton:SetDimensions(34, 34) -- a bit larger than the icon: easier to hit
+    closeButton:SetAnchor(CENTER, closeIcon, CENTER, 0, 0)
+    closeButton:SetDrawLevel(21)
+    closeButton:SetHandler("OnMouseEnter", function() closeIcon:SetColor(0.55, 0.10, 0.05, 1) end)
+    closeButton:SetHandler("OnMouseExit", function() closeIcon:SetColor(0.20, 0.12, 0.07, 0.9) end)
     closeButton:SetHandler("OnClicked", function() UI.Hide() end)
 
     -- Page containers: everything on a page lives inside one of these so a

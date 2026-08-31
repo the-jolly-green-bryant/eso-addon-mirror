@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/wookiefriseur/LibFurnitureCatalogue__4804",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "wookiefriseur",
+  "canonical_id": "esoui:4804",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4804",
+  "deleted": false,
+  "directories": [
+    "LibFurnitureCatalogue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4804/",
+  "fingerprint": "c2799519a4bbf78221f54a92e9c6c281949f0548b70b2658535a095e58fdfe4d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4804",
+  "source_url": "https://www.esoui.com/downloads/info4804-LibFurnitureCatalogue.html",
+  "stats": {
+    "downloads": 25,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "LibFurnitureCatalogue",
+  "updated_at": 1788121914000,
+  "version": "1.0.0"
+}

@@ -178,7 +178,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [My Damage Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/My-Damage-Tracker__709a6cab-1710-4ae0-803a-1b4957a0a59a) | Architectofmusic | Console | — |
 | [My Domain GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/My-Domain-GuildHalls__3092) | Verling | PC / Mac | 1.0.7 |
 | [My Donation (Arkadius' Trade Tools Addon)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verbalinkontinenz/My-Donation-Arkadius-Trade-Tools-Addon__2762) | Verbalinkontinenz | PC / Mac | 1.0.3 |
-| [My Little Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/My-Little-Journal__4802) | Lledos | PC / Mac | 1.0 |
+| [My Little Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/My-Little-Journal__4802) | Lledos | PC / Mac | 1.01 |
 | [MyAutoMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyAutoMarker__097cf265-8ddc-4970-9836-914d69dbdc80) | Unfounded_Puppy3 | Console | — |
 | [MyDebuffLog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyDebuffLog__eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10) | Unfounded_Puppy3 | Console | — |
 | [MyDung](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awfuldead/MyDung__2888) | awfuldead | PC / Mac | 1.1.1 |

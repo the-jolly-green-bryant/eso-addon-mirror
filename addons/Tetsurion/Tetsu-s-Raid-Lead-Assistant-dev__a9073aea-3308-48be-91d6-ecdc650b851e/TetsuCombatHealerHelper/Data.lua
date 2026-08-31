@@ -25,8 +25,9 @@ T.Ability = {
         61693, 61737, 61665,
     },
     -- Set: cast any Assault skill in combat -> WD/SD buff on you + 5 allies 12m 15s.
+    -- 40225 is Warhorn Major Force, not this set.
     powerfulAssault = {
-        61771, 61763, 61772, 40225,
+        61771, 61763, 61772,
     },
     -- Echoing Vigor (group HoT 15m / up to 16s). Cap 6 targets.
     echoingVigor = {
@@ -53,14 +54,102 @@ T.Ability = {
     energyOrb = {
         85431, 85432, 95057, 26188, 26192, 42038, 43439, 43443,
     },
+    -- 40225 = Aggressive Horn Major Force (source id). 61747 = generic Major Force.
     majorForce = {
         61747, 40225,
+    },
+    minorForce = {
+        61746,
     },
     majorSlayer = {
         93109, 121910,
     },
     minorCourage = {
-        61707, 147417, 121876,
+        61707, 121876,
+    },
+    majorBerserk = {
+        61736,
+    },
+    majorResolve = {
+        61694,
+    },
+    majorVitality = {
+        61748,
+    },
+    minorVitality = {
+        61749,
+    },
+    majorBrutality = {
+        61710,
+    },
+    minorBrutality = {
+        61711,
+    },
+    majorSorcery = {
+        61713,
+    },
+    minorSorcery = {
+        61685,
+    },
+    majorProphecy = {
+        61721,
+    },
+    minorProphecy = {
+        61666,
+    },
+    majorSavagery = {
+        61723,
+    },
+    minorSavagery = {
+        61664,
+    },
+    majorIntellect = {
+        61716,
+    },
+    minorIntellect = {
+        61717,
+    },
+    majorEndurance = {
+        61733,
+    },
+    minorEndurance = {
+        61734,
+    },
+    majorHeroism = {
+        61755,
+    },
+    minorHeroism = {
+        61756,
+    },
+    majorBreach = {
+        61743,
+    },
+    minorBreach = {
+        79720, 34838,
+    },
+    majorMaim = {
+        61740,
+    },
+    minorMaim = {
+        61741,
+    },
+    majorVulnerability = {
+        106754, 122177,
+    },
+    minorVulnerability = {
+        79717, 61781,
+    },
+    majorCowardice = {
+        147643, 143808,
+    },
+    minorCowardice = {
+        147644,
+    },
+    majorDefile = {
+        61726,
+    },
+    minorDefile = {
+        61727,
     },
     minorMagickasteal = {
         88401, 39173, 26220,
@@ -68,9 +157,9 @@ T.Ability = {
     orbLockout = {
         85434, 63512, 48052, 95924, 26869, 67717, 22270,
     },
-    -- Heal cut: Major/Minor Defile + named absorb / anti-heal auras.
+    -- Heal cut extras (absorb / anti-heal). Defile ids live on majorDefile / minorDefile.
     healCut = {
-        61726, 61727, 61742, 79851, 21927,
+        61742, 79851, 21927,
     },
     offBalance = {
         39077, 63003, 62988, 115001,
@@ -91,8 +180,6 @@ T.SlotCatalog = {
     { key = "prayer" },
     { key = "radiatingRegen" },
     { key = "rapidRegen" },
-    { key = "energyOrb" },
-    { key = "orbLockout" },
     { key = "powerfulAssault" },
     { key = "majorCourage" },
     { key = "minorCourage" },
@@ -308,9 +395,7 @@ function T.NameMatches(abilityId, key)
 end
 
 function T.IsIllustriousAbility(abilityId)
-    if not abilityId then return false end
-    if T.IsIllustrious and T.IsIllustrious[abilityId] then return true end
-    return T.LookupKeyForAbilityId(abilityId, nil) == "illustrious"
+    return abilityId and T.IsIllustrious and T.IsIllustrious[abilityId] and true or false
 end
 
 local function CleanName(text)
@@ -352,11 +437,32 @@ local needleList = {}
 
 function T.BuildLookupIndex()
     needleList = {}
+    idToKey = {}
+    local deferred = {
+        healCut = true,
+        vigor = true,
+        echoingVigor = true,
+        resolvingVigor = true,
+    }
+    local function assign(key, ids)
+        if type(ids) ~= "table" then return end
+        local mapped = AliasKey(key)
+        for i = 1, #ids do
+            local id = ids[i]
+            if id and idToKey[id] == nil then
+                idToKey[id] = mapped
+            end
+        end
+    end
     if T.Ability then
         for key, ids in pairs(T.Ability) do
-            local mapped = AliasKey(key)
-            for i = 1, #ids do
-                idToKey[ids[i]] = mapped
+            if not deferred[key] then
+                assign(key, ids)
+            end
+        end
+        for key, ids in pairs(T.Ability) do
+            if deferred[key] then
+                assign(key, ids)
             end
         end
     end
@@ -420,14 +526,15 @@ function T.LookupKeyForAbilityId(abilityId, effectName)
         end
         if hitKey then
             nameToKey[name] = hitKey
-            if abilityId and abilityId ~= 0 then idToKey[abilityId] = hitKey end
+            if abilityId and abilityId ~= 0 and idToKey[abilityId] == nil then
+                idToKey[abilityId] = hitKey
+            end
             return hitKey
         end
         nameToKey[name] = false
     end
-    if abilityId and abilityId ~= 0 then
-        idToKey[abilityId] = false
-    end
+    -- Never negative-cache an abilityId when the name was empty. Combat log
+    -- often arrives with id only; a later EFFECT_CHANGED still needs to learn it.
     return nil
 end
 
@@ -451,8 +558,6 @@ T.EnglishName = {
     illustrious = "Illustrious Healing",
     radiatingRegen = "Radiating Regeneration",
     rapidRegen = "Rapid Regeneration",
-    energyOrb = "Energy Orb",
-    orbLockout = "Orb synergy CD",
     powerfulAssault = "Powerful Assault",
     majorCourage = "Major Courage",
     minorCourage = "Minor Courage",
@@ -466,9 +571,9 @@ T.EnglishName = {
     berserk = "Berserk",
     resolve = "Resolve",
     vitality = "Vitality",
-    wdspd = "Sorc/Brut",
-    crit = "Prop/Sav",
-    recover = "Int/End",
+    wdspd = "Sorcery/Brutality",
+    crit = "Prophecy/Savagery",
+    recover = "Intellect/Endurance",
     heroism = "Heroism",
     breach = "Breach",
     fracture = "Fracture",
@@ -477,7 +582,18 @@ T.EnglishName = {
     cowardice = "Cowardice",
     maim = "Maim",
     defile = "Defile",
-    offbalance = "Off-Balance",
+    offbalance = "Off Balance",
+}
+
+-- Healer HUD default (no custom text): drop Major/Minor prefix.
+T.HudBareName = {
+    majorCourage = "Courage",
+    minorCourage = "Courage",
+    majorForce = "Force",
+    majorSlayer = "Slayer",
+    minorBerserk = "Berserk",
+    minorResolve = "Resolve",
+    minorMagickasteal = "Magickasteal",
 }
 
 function T.WorldHudVisible()
@@ -512,25 +628,81 @@ function T.ColumnColor(index)
     return T.DotColors[fallback[index] or "green"]
 end
 
+-- Console zo_strlen / zo_strsub count UTF-8 bytes, not letters.
+-- "Луч" is 3 letters / 6 bytes; a 4-byte clip becomes "Лу".
+local function Utf8Next(s, i)
+    local c = s:byte(i)
+    if not c then return nil end
+    if c < 0x80 then return i + 1 end
+    if c < 0xE0 then return i + 2 end
+    if c < 0xF0 then return i + 3 end
+    return i + 4
+end
+
+function T.Utf8Len(s)
+    if not s or s == "" then return 0 end
+    s = tostring(s)
+    local n, i, lim = 0, 1, #s
+    while i <= lim do
+        local nxt = Utf8Next(s, i)
+        if not nxt then break end
+        n = n + 1
+        i = nxt
+    end
+    return n
+end
+
+function T.Utf8Sub(s, from, to)
+    if not s or s == "" then return "" end
+    s = tostring(s)
+    from = from or 1
+    if from < 1 then from = 1 end
+    local i, n, startb, lim = 1, 0, nil, #s
+    while i <= lim do
+        local nxt = Utf8Next(s, i)
+        if not nxt then break end
+        n = n + 1
+        if n == from then startb = i end
+        if to and n == to then
+            return s:sub(startb or 1, nxt - 1)
+        end
+        i = nxt
+    end
+    if startb then return s:sub(startb) end
+    return ""
+end
+
 function T.ClipLabel(text, maxLen)
     if not text then return "" end
     text = tostring(text):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
     if not maxLen or maxLen < 1 then return text end
-    if zo_strlen(text) <= maxLen then return text end
-    return zo_strsub(text, 1, maxLen)
+    if T.Utf8Len(text) <= maxLen then return text end
+    return T.Utf8Sub(text, 1, maxLen)
 end
 
 function T.GetCustomLabel(key)
     local vars = T.savedVars
-    if vars and vars.customLabel and vars.customLabel[key] and vars.customLabel[key] ~= "" then
-        return vars.customLabel[key]
+    if vars and vars.customLabel and type(vars.customLabel[key]) == "string" then
+        local raw = vars.customLabel[key]:gsub("^%s+", ""):gsub("%s+$", "")
+        if raw ~= "" then
+            return raw
+        end
+    end
+    return nil
+end
+
+function T.DisplayBaseName(key)
+    if not key or key == "off" then return "" end
+    if T.HudBareName and T.HudBareName[key] then
+        return T.HudBareName[key]
     end
     return T.EnglishName[key] or key
 end
 
 function T.HudLabel(key, maxLen)
     if not key or key == "off" then return "" end
-    return T.ClipLabel(T.GetCustomLabel(key), maxLen)
+    local text = T.GetCustomLabel(key) or T.DisplayBaseName(key)
+    return T.ClipLabel(text, maxLen)
 end
 
 function T.SlotLabel(key)
@@ -540,9 +712,101 @@ function T.SlotLabel(key)
     return T.EnglishName[key] or key
 end
 
+T.HudShortName = {
+    prayer = "Pray",
+    powerfulAssault = "PA",
+    majorCourage = "Cour",
+    minorCourage = "mCou",
+    radiatingRegen = "Rad",
+    rapidRegen = "Rap",
+    majorForce = "Forc",
+    majorSlayer = "Slay",
+    minorBerserk = "Bers",
+    minorResolve = "Res",
+    minorMagickasteal = "MStl",
+    slayer = "Slay",
+    force = "Forc",
+    berserk = "Bers",
+    resolve = "Res",
+    vitality = "Vit",
+    wdspd = "WdSd",
+    crit = "Crit",
+    recover = "Rec",
+    heroism = "Hero",
+    breach = "Brch",
+    fracture = "Frac",
+    vulnerability = "Vuln",
+    brittle = "Brit",
+    cowardice = "Cow",
+    maim = "Maim",
+    defile = "Def",
+    offbalance = "OB",
+}
+
+T.PairLocaleKey = {
+    slayer = "PAIR_SLAYER",
+    force = "PAIR_FORCE",
+    berserk = "PAIR_BERSERK",
+    resolve = "PAIR_RESOLVE",
+    vitality = "PAIR_VITALITY",
+    wdspd = "PAIR_WDSPD",
+    crit = "PAIR_CRIT",
+    recover = "PAIR_RECOVER",
+    heroism = "PAIR_HEROISM",
+    breach = "PAIR_BREACH",
+    fracture = "PAIR_FRACTURE",
+    vulnerability = "PAIR_VULNERABILITY",
+    brittle = "PAIR_BRITTLE",
+    cowardice = "PAIR_COWARDICE",
+    maim = "PAIR_MAIM",
+    defile = "PAIR_DEFILE",
+    offbalance = "PAIR_OFFBALANCE",
+}
+
 function T.SlotShort(key)
     if not key or key == "off" then return "" end
-    return T.HudLabel(key, 5)
+    local custom = T.GetCustomLabel(key)
+    if custom then return T.ClipLabel(custom, 4) end
+    if T.HudShortName and T.HudShortName[key] then
+        return T.HudShortName[key]
+    end
+    return T.ClipLabel(T.DisplayBaseName(key), 4)
+end
+
+function T.PairPanelLabel(id)
+    if not id then return "" end
+    local custom = T.GetCustomLabel(id)
+    if custom then return T.ClipLabel(custom, 8) end
+    local L = T.L
+    local loc = T.PairLocaleKey and T.PairLocaleKey[id]
+    if L and loc and L[loc] and L[loc] ~= "" then
+        return T.ClipLabel(L[loc], 8)
+    end
+    if T.HudShortName and T.HudShortName[id] then
+        return T.HudShortName[id]
+    end
+    return T.ClipLabel((T.EnglishName and T.EnglishName[id]) or id, 8)
+end
+
+function T.ResolveSlotKey(val)
+    if not val or val == "off" then return "off" end
+    if val == "energyOrb" or val == "orbLockout" then return "off" end
+    local catalog = T.SlotCatalog or {}
+    for i = 1, #catalog do
+        if catalog[i].key == val then
+            return val
+        end
+    end
+    local vars = T.savedVars
+    for i = 1, #catalog do
+        local key = catalog[i].key
+        if key and key ~= "off" then
+            if T.EnglishName[key] == val then return key end
+            if T.HudBareName and T.HudBareName[key] == val then return key end
+            if vars and vars.customLabel and vars.customLabel[key] == val then return key end
+        end
+    end
+    return "off"
 end
 
 function T.WorldToRender(worldX, worldY, worldZ)

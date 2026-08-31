@@ -67,6 +67,9 @@ function C:Initialize()
         ZONE_COMPLETION = allFunctions({"GetUnitZoneIndex", "GetNumPOIs", "GetPOIMapInfo", "GetPOIZoneCompletionType"}),
         SKYSHARDS = allFunctions({"GetNumSkyshardsInZone", "GetZoneSkyshardId", "GetSkyshardDiscoveryStatus"}),
         UNIT_FRAMES = allFunctions({"DoesUnitExist", "GetUnitName", "GetUnitPower", "GetNumBuffs", "GetUnitBuffInfo", "GetGroupSize"}),
+        DUNGEON_CHEST_FINDER = allFunctions({"GetUnitRawWorldPosition", "WorldPositionToGuiRender3DPosition", "GetGameCameraInteractableActionInfo", "IsUnitInDungeon"}),
+        RESOURCE_PINS = allFunctions({"GetUnitRawWorldPosition", "WorldPositionToGuiRender3DPosition", "GetGameCameraInteractableActionInfo", "GetInteractionType"}) and EVENT_LOOT_RECEIVED ~= nil,
+        BUG_CATCHER = EVENT_LUA_ERROR ~= nil,
         ABILITY_OVERLAYS = allFunctions({"GetSlotTexture", "GetSlotName", "GetSlotCooldownInfo", "IsSlotUsed", "GetActiveHotbarCategory"}),
         REPAIR_COST_OVERLAY = allFunctions({"GetItemLink", "GetItemRepairCost", "GetItemCondition", "GetChargeInfoForItem"}),
         ADVANCED_STATS = allFunctions({"GetPlayerStat", "GetAdvancedStatValue"}),
@@ -112,6 +115,14 @@ function C:DisableModule(name, err)
     if err then self.lastErrors[name] = tostring(err) end
 end
 
+function C:ReportCaughtError(kind, moduleName, err)
+    if not err or tostring(err) == "" then return end
+    if tostring(moduleName or "") == "BUG_CATCHER" then return end
+    if EPC.BugCatcher and EPC.BugCatcher.ready and type(EPC.BugCatcher.Capture) == "function" then
+        EPC.BugCatcher:Capture(tostring(kind or "SUITE"), string.format("ESO Adventurer Suite %s error [%s]: %s", tostring(kind or "runtime"), tostring(moduleName or "UNKNOWN"), tostring(err)))
+    end
+end
+
 function C:GetModuleState(name)
     return self.moduleStates[tostring(name or "")] or "UNKNOWN"
 end
@@ -126,6 +137,7 @@ function C:Call(moduleName, object, methodName, fallback, ...)
     local ok = table.remove(results, 1)
     if not ok then
         self:DisableModule(moduleName, results[1])
+        self:ReportCaughtError("runtime", moduleName, results[1])
         return fallback
     end
     if self.moduleStates[moduleName] == "DEGRADED" then
@@ -143,6 +155,7 @@ function C:InitializeModule(name, object)
     local ok, err = pcall(object.Initialize, object)
     if not ok then
         self:DisableModule(name, err)
+        self:ReportCaughtError("initialize", name, err)
         return false
     end
     self.moduleStates[name] = self.moduleStates[name] == "UNAVAILABLE" and "UNAVAILABLE" or "READY"
@@ -154,7 +167,7 @@ function C:GetDiagnosticLines()
     local order = {
         "CORE", "GEAR", "ACTIVITIES", "QUEST_ROUTING", "QUEST_INDEX", "SHRINE_TRAVEL", "SOCIAL_TRAVEL",
         "CHAMPION", "COMBAT", "ROLE_AUTO", "UI_MODE", "INVENTORY", "RESEARCH", "COLLECTIONS", "SET_JOURNAL",
-        "ZONE_COMPLETION", "SKYSHARDS", "UNIT_FRAMES", "ABILITY_OVERLAYS", "REPAIR_COST_OVERLAY", "ADVANCED_STATS", "MINI_MAP", "STABLE_TIMER", "AUTO_MAINTENANCE",
+        "ZONE_COMPLETION", "SKYSHARDS", "UNIT_FRAMES", "DUNGEON_CHEST_FINDER", "RESOURCE_PINS", "BUG_CATCHER", "ABILITY_OVERLAYS", "REPAIR_COST_OVERLAY", "ADVANCED_STATS", "MINI_MAP", "STABLE_TIMER", "AUTO_MAINTENANCE",
         "ROLE", "TRAVEL", "QUEST_FINDER", "SET_JOURNAL", "ENDGAME", "TARGET_BUILD", "ADVISOR", "MAINTENANCE", "STABLE_TIMER", "UTILITY_SUITE", "ENGINE", "UI", "EVENTS"
     }
     local seen = {}

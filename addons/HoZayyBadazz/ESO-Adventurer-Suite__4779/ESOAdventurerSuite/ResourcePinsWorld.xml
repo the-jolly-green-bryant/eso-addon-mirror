@@ -1,0 +1,11 @@
+<GuiXml>
+    <Controls>
+        <Control name="EAS_ResourceWorldPin" virtual="true">
+            <Controls>
+                <Texture name="$(parent)Beam" />
+                <Texture name="$(parent)Icon" />
+            </Controls>
+        </Control>
+        <TopLevelControl name="EAS_ResourceWorldPins" layer="0" level="0" />
+    </Controls>
+</GuiXml>

@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.28.50"
+EPC.version = "0.28.74"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -56,6 +56,9 @@ EPC.defaults = {
     dungeonQueueHudTop = -1,
     dungeonQueueHudWidth = 360,
     dungeonQueueHudHeight = 128,
+    synergyOverlayCustom2861 = false,
+    synergyOverlayOffsetX2861 = 0,
+    synergyOverlayOffsetY2861 = 0,
     activityRunHistory = { runs = {}, importedAchievements = {} },
     autoExpandInteract = true,
     coachFocus = "AUTO",
@@ -68,6 +71,11 @@ EPC.defaults = {
     combatHudAlpha = 0.94,
     combatHudLocked = true,
     combatRoleMode = "AUTO",
+    rotationAssistantEnabled = true,
+    rotationAssistantLeft = -1,
+    rotationAssistantTop = -1,
+    rotationAssistantWidth = 330,
+    rotationAssistantHeight = 112,
     smartCoach = true,
     sessionMode = "CONTINUOUS",
     sessionMinutes = 60,
@@ -103,6 +111,103 @@ EPC.defaults = {
     showEnemyOverheadHealthBars = true,
     showOutgoingDamageNumbers = true,
     showCombatStatusEffects = true,
+
+    -- Team visibility: native group markers plus optional 3D role-colored lights.
+    teamVisibilityEnabled = true,
+    teamVisibilityLightsEnabled = true,
+    teamVisibilityThroughWalls = true,
+    teamVisibilityBeamWidth = 3.55,
+    teamVisibilityBeamHeight = 8.20,
+    teamVisibilityOpacity = 0.24,
+    teamVisibilityStyleVersion = 26,
+    teamVisibilityCompanionColor = { r = 0.72, g = 0.38, b = 1.00 },
+    teamVisibilityCompanionBeamWidth = 3.55,
+    teamVisibilityCompanionBeamHeight = 8.20,
+    teamVisibilityCompanionOpacity = 0.24,
+    teamVisibilityCompanionThroughWalls = true,
+    teamVisibilityDeadOpacity = 1.00,
+    teamVisibilityPlayerOverrides = {},
+    teamVisibilitySelectedGroupSlot = 1,
+
+    -- Dungeon / Trial Chest Finder. Learns chest and Heavy Sack spawn points
+    -- while the player encounters them inside supported instanced PvE content.
+    dungeonChestFinderEnabled = true,
+    dungeonChestShowPossible = false,
+    dungeonChestShowHeavySacks = true,
+    dungeonChestLearnLocations = true,
+    dungeonChestThroughWalls = true,
+    dungeonChestDistance = 120,
+    dungeonChestMarkerScale = 1.0,
+    dungeonChestGlowOpacity = 0.60,
+    -- Keep this at 0 in defaults so SavedVars does not mask a missing migration
+    -- flag from older builds. DungeonChestFinder upgrades and persists it to 3.
+    dungeonChestGlowStyleVersion = 0,
+    dungeonChestColor = { r = 1.00, g = 0.74, b = 0.14 },
+    dungeonChestSackColor = { r = 0.62, g = 0.92, b = 0.52 },
+    dungeonChestLocations = {},
+
+    -- Suite-owned personal learning, bundled community resource data, and configurable 3D resource markers.
+    resourcePinsEnabled = true,
+    resourcePinsShow3D = true,
+    resourcePinsLearn = true,
+    resourcePinsCommunityEnabled = true,
+    resourcePinsCommunityShowAll = true, -- full bundled database remains available; 3D output is dynamically culled
+    resourcePinsThroughWalls = true,
+    resourcePinsDistance = 200,
+    resourcePinsMaxVisible = 72,
+    resourcePinsSafeGlowFallback = false,
+    resourcePinsPerformanceVersion = 3,
+    resourcePinsScale = 1.0,
+    resourcePinsOpacity = 0.72,
+    resourcePinsSharpIcons = true,
+    resourcePinsValueGlow = true,
+    resourcePinsGlowStrength = 78,
+    resourcePinsHideDepleted = true,
+    resourcePinsDepletedCooldownMinutes = 5,
+    resourcePinsDepleted = {},
+    resourcePinsIconSize = 100,
+    resourcePinsIconTintStrength = 85,
+    resourcePinsShowOre = true,
+    resourcePinsShowWood = true,
+    resourcePinsShowCloth = true,
+    resourcePinsShowAlchemy = true,
+    resourcePinsShowRunes = true,
+    resourcePinsShowWater = true,
+    resourcePinsShowFishing = true,
+    resourcePinsShowSpecial = true,
+    resourcePinsShowOther = true,
+    -- Farm Focus is a temporary target-only view. Normal resource filters are
+    -- preserved underneath and resume when Farm Focus is disabled.
+    resourcePinsFarmFocusEnabled = false,
+    resourcePinsFarmOre = false,
+    resourcePinsFarmWood = false,
+    resourcePinsFarmCloth = false,
+    resourcePinsFarmAlchemy = false,
+    resourcePinsFarmRunes = false,
+    resourcePinsFarmWater = false,
+    resourcePinsFarmFishing = false,
+    resourcePinsFarmSpecial = false,
+    resourcePinsFarmOther = false,
+    resourcePinsIconMode = "SUITE_GLOW",
+    resourcePinsIconOre = "AUTO",
+    resourcePinsIconWood = "AUTO",
+    resourcePinsIconCloth = "AUTO",
+    resourcePinsIconAlchemy = "AUTO",
+    resourcePinsIconRunes = "AUTO",
+    resourcePinsIconWater = "AUTO",
+    resourcePinsIconFishing = "AUTO",
+    resourcePinsIconSpecial = "AUTO",
+    resourcePinsIconOther = "AUTO",
+    resourcePinLocations = {},
+
+    -- Built-in error logger. It observes ESO's Lua error event instead of
+    -- replacing the global handler, making it safe to run with other addons.
+    bugCatcherEnabled = true,
+    bugCatcherNotifyChat = true,
+    bugCatcherSuppressPopup = false,
+    bugCatcherMaxErrors = 40,
+    bugCatcherUnread = 0,
+    bugCatcherLog = {},
     unitFrameScale = 1.0, -- legacy shared scale
     playerFrameScale = 1.0,
     targetFrameScale = 1.0,
@@ -172,7 +277,10 @@ EPC.defaults = {
     mainHudQuestId = 0,
     mainHudQuestName = "",
 
-    -- Suite-owned Golden Pursuits HUD tracker.
+    -- Suite-owned Golden Pursuits HUD tracker. Display is independent from
+    -- the authoritative quest-tracking/compass source.
+    showGoldenPursuitsOverlay = true,
+    goldenPursuitsVisibility = "ALWAYS",
     goldenPursuitsLeft = -1,
     goldenPursuitsTop = -1,
     goldenPursuitsWidth = 420,
@@ -198,6 +306,18 @@ EPC.defaults = {
     abilityOverlayVisibility = "ALWAYS",
     abilityOverlayScale = 1.0,
     abilityOverlaySize = 56,
+
+    -- Movable quickslot item/food/potion overlay.
+    showQuickslotOverlay = true,
+    quickslotOverlayVisibility = "BEFORE_AND_DURING",
+    quickslotOverlayLeft = -1,
+    quickslotOverlayTop = -1,
+
+    -- Suite-managed native Infinite Archive tracker (F5/title/progression).
+    showInfiniteArchiveOverlay = true,
+    infiniteArchiveOverlayLeft = -1,
+    infiniteArchiveOverlayTop = -1,
+    infiniteArchiveOverlayScale = 1.0,
 
     -- Optional Suite-owned reticle. DEFAULT restores ESO's native crosshair.
     customReticleEnabled = false,
@@ -369,8 +489,18 @@ function EPC:OverlayModeAllows(modeKey)
     -- when a Combat Only overlay would normally be hidden.
     if self.unitFramesMoveMode or self.miniMapMoveMode or self.combatHudMoveMode then return true end
     local mode = self.saved and self.saved[modeKey] or "ALWAYS"
-    if mode ~= "COMBAT" then return true end
-    return self:Safe(IsUnitInCombat, false, "player") == true
+    if mode == "COMBAT" then
+        return self:Safe(IsUnitInCombat, false, "player") == true
+    elseif mode == "BEFORE_ONLY" or mode == "OUT_OF_COMBAT" then
+        -- Before Combat Only: visible while preparing, hidden once combat starts.
+        -- OUT_OF_COMBAT is retained as a legacy alias.
+        return self:Safe(IsUnitInCombat, false, "player") ~= true
+    elseif mode == "BEFORE_AND_DURING" or mode == "BEFORE_COMBAT" then
+        -- Keep it visible through the transition into combat. BEFORE_COMBAT is
+        -- retained as a legacy value and now follows the requested combined mode.
+        return true
+    end
+    return true
 end
 
 function EPC:RefreshGameplayOverlays()
@@ -379,9 +509,12 @@ function EPC:RefreshGameplayOverlays()
     if self.StableTimer and self.StableTimer.Refresh then self.StableTimer:Refresh() end
     if self.Clock and self.Clock.Refresh then self.Clock:Refresh() end
     if self.ActiveQuest and self.ActiveQuest.Refresh then self.ActiveQuest:Refresh() end
+    if self.GoldenPursuits and self.GoldenPursuits.RefreshVisibility2496 then self.GoldenPursuits:RefreshVisibility2496() end
     if self.AllianceRank and self.AllianceRank.Refresh then self.AllianceRank:Refresh() end
     if self.ChampionOverlay and self.ChampionOverlay.Refresh then self.ChampionOverlay:Refresh() end
     if self.AbilityOverlays and self.AbilityOverlays.Refresh then self.AbilityOverlays:Refresh() end
+    if self.QuickslotOverlay and self.QuickslotOverlay.Refresh then self.QuickslotOverlay:Refresh() end
+    if self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.Refresh then self.InfiniteArchiveOverlay:Refresh() end
     if self.RepairCostOverlay and self.RepairCostOverlay.Refresh then self.RepairCostOverlay:Refresh() end
     if self.EncounterReminders and self.EncounterReminders.Refresh then self.EncounterReminders:Refresh() end
     if self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.Refresh then self.ChallengeDifficultyOverlay:Refresh() end
@@ -498,6 +631,52 @@ function EPC:ResetCombatHUDPosition()
     self:Print("Combat HUD position reset to the upper-right.")
 end
 
+function EPC:RaiseLayoutOverlays()
+    if not self.unitFramesMoveMode then return end
+
+    local function raiseLayoutControls(root, seen, depth)
+        if type(root) ~= "table" or depth > 2 or seen[root] then return end
+        seen[root] = true
+
+        if type(root.RaiseForLayout) == "function" then
+            pcall(root.RaiseForLayout, root)
+        end
+
+        for _, value in pairs(root) do
+            if type(value) == "userdata" then
+                pcall(function()
+                    -- Only raise actual top-level/root windows here. Child
+                    -- labels/backdrops must keep their own draw levels or the
+                    -- background can wind up covering the text.
+                    local parent = value.GetParent and value:GetParent() or nil
+                    local isRootWindow = (parent == nil or parent == GuiRoot)
+                    if isRootWindow and value ~= GuiRoot then
+                        if value.SetTopLevel then value:SetTopLevel(true) end
+                        if value.SetDrawLayer and DL_OVERLAY then value:SetDrawLayer(DL_OVERLAY) end
+                        if value.SetDrawTier and DT_HIGH then value:SetDrawTier(DT_HIGH) end
+                        if value.SetDrawLevel then value:SetDrawLevel(900) end
+                        if value.BringWindowToTop then value:BringWindowToTop() end
+                    end
+                end)
+            elseif type(value) == "table" then
+                raiseLayoutControls(value, seen, depth + 1)
+            end
+        end
+    end
+
+    local seen = {}
+    for _, module in ipairs({
+        self.UnitFrames, self.MiniMap, self.StableTimer, self.Clock,
+        self.ActiveQuest, self.GoldenPursuits, self.AllianceRank,
+        self.ChampionOverlay, self.AbilityOverlays, self.QuickslotOverlay,
+        self.InfiniteArchiveOverlay, self.RepairCostOverlay, self.EncounterReminders,
+        self.ChallengeDifficultyOverlay, self.DungeonFinder,
+        self.SynergyOverlay, self.RotationAssistant
+    }) do
+        if module then raiseLayoutControls(module, seen, 0) end
+    end
+end
+
 function EPC:SetUnitFramesMoveMode(active)
     if not self.saved then return end
     local canFrames = self.UnitFrames and self.UnitFrames.SetLayoutMode
@@ -509,11 +688,15 @@ function EPC:SetUnitFramesMoveMode(active)
     local canAllianceRank = self.AllianceRank and self.AllianceRank.SetLayoutMode
     local canChampionOverlay = self.ChampionOverlay and self.ChampionOverlay.SetLayoutMode
     local canAbilities = self.AbilityOverlays and self.AbilityOverlays.SetLayoutMode
+    local canQuickslot = self.QuickslotOverlay and self.QuickslotOverlay.SetLayoutMode
+    local canInfiniteArchive = self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.SetLayoutMode
     local canRepairCosts = self.RepairCostOverlay and self.RepairCostOverlay.SetLayoutMode
     local canEncounterReminders = self.EncounterReminders and self.EncounterReminders.SetLayoutMode
     local canChallengeOverlay = self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.SetLayoutMode
     local canDungeonQueue = self.DungeonFinder and self.DungeonFinder.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canRepairCosts and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue then return end
+    local canSynergy = self.SynergyOverlay and self.SynergyOverlay.SetLayoutMode
+    local canRotationAssistant = self.RotationAssistant and self.RotationAssistant.SetLayoutMode
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant then return end
     active = active == true
 
     if active then
@@ -531,13 +714,32 @@ function EPC:SetUnitFramesMoveMode(active)
         if canAllianceRank then self.AllianceRank:SetLayoutMode(true) end
         if canChampionOverlay then self.ChampionOverlay:SetLayoutMode(true) end
         if canAbilities then self.AbilityOverlays:SetLayoutMode(true) end
+        if canQuickslot then self.QuickslotOverlay:SetLayoutMode(true) end
+        if canInfiniteArchive then self.InfiniteArchiveOverlay:SetLayoutMode(true) end
+
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(true) end
         if canEncounterReminders then self.EncounterReminders:SetLayoutMode(true) end
         if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(true) end
         if canDungeonQueue then self.DungeonFinder:SetLayoutMode(true) end
-        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Repair Estimate, Encounter Reminders, Challenge Difficulty icon, Dungeon Queue, and each Ability icon, then use /esosuite frames lock.")
+        if canSynergy then self.SynergyOverlay:SetLayoutMode(true) end
+        if canRotationAssistant then self.RotationAssistant:SetLayoutMode(true) end
+
+        -- Raise only after every overlay has been unhidden.  LibAddonMenu can
+        -- otherwise reclaim z-order when a hidden overlay becomes visible.
+        self:RaiseLayoutOverlays()
+        EVENT_MANAGER:UnregisterForUpdate(self.name .. "_LayoutOverlayRaiseGuard")
+        EVENT_MANAGER:RegisterForUpdate(self.name .. "_LayoutOverlayRaiseGuard", 250, function()
+            if EPC.unitFramesMoveMode then
+                EPC:RaiseLayoutOverlays()
+            else
+                EVENT_MANAGER:UnregisterForUpdate(EPC.name .. "_LayoutOverlayRaiseGuard")
+            end
+        end)
+
+        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Repair Estimate, Encounter Reminders, Challenge Difficulty icon, Activity Finder Queue, Infinite Archive, Use Synergy, Rotation Assistant, and each Ability icon, then use /esosuite frames lock.")
     else
         self.unitFramesMoveMode = false
+        EVENT_MANAGER:UnregisterForUpdate(self.name .. "_LayoutOverlayRaiseGuard")
         if canFrames then self.UnitFrames:SetLayoutMode(false) end
         if canMiniMap then self.MiniMap:SetLayoutMode(false) end
         if canStableTimer then self.StableTimer:SetLayoutMode(false) end
@@ -547,11 +749,15 @@ function EPC:SetUnitFramesMoveMode(active)
         if canAllianceRank then self.AllianceRank:SetLayoutMode(false) end
         if canChampionOverlay then self.ChampionOverlay:SetLayoutMode(false) end
         if canAbilities then self.AbilityOverlays:SetLayoutMode(false) end
+        if canQuickslot then self.QuickslotOverlay:SetLayoutMode(false) end
+        if canInfiniteArchive then self.InfiniteArchiveOverlay:SetLayoutMode(false) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(false) end
         if canEncounterReminders then self.EncounterReminders:SetLayoutMode(false) end
         if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(false) end
         if canDungeonQueue then self.DungeonFinder:SetLayoutMode(false) end
+        if canRotationAssistant then self.RotationAssistant:SetLayoutMode(false) end
         if self.unitFramesMoveOwned and not self.interactionMode and not self.combatHudMoveMode and not self.miniMapMoveMode then setCameraUIMode(false) end
+        if canSynergy then self.SynergyOverlay:SetLayoutMode(false) end
         self.unitFramesMoveOwned = false
         self:Print("HUD unit frames locked.")
     end
@@ -626,11 +832,25 @@ function EPC:ResetUnitFramePositions()
         self.AbilityOverlays:ResetPositions()
         self.AbilityOverlays:Refresh()
     end
+    if self.QuickslotOverlay and self.QuickslotOverlay.ResetPosition then
+        self.QuickslotOverlay:ResetPosition()
+        self.QuickslotOverlay:Refresh()
+    end
+    if self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.ResetPosition then
+        self.InfiniteArchiveOverlay:ResetPosition()
+    end
     if self.RepairCostOverlay and self.RepairCostOverlay.ResetPosition then
         self.RepairCostOverlay:ResetPosition()
         self.RepairCostOverlay:Refresh()
     end
-    self:Print("Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Repair Estimate, and Ability positions reset.")
+    if self.SynergyOverlay and self.SynergyOverlay.ResetPosition then
+        self.SynergyOverlay:ResetPosition()
+    end
+    if self.RotationAssistant and self.RotationAssistant.ResetPosition then
+        self.RotationAssistant:ResetPosition()
+        self.RotationAssistant:Refresh()
+    end
+    self:Print("Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Infinite Archive, Repair Estimate, Use Synergy, Rotation Assistant, and Ability positions reset.")
 end
 
 function ESOProgressionCoach_Toggle()
@@ -1123,6 +1343,9 @@ function EPC:RegisterEvents()
                 if self.AllianceRank and self.AllianceRank.SetLayoutMode then self.AllianceRank:SetLayoutMode(false) end
                 if self.ChampionOverlay and self.ChampionOverlay.SetLayoutMode then self.ChampionOverlay:SetLayoutMode(false) end
                 if self.AbilityOverlays and self.AbilityOverlays.SetLayoutMode then self.AbilityOverlays:SetLayoutMode(false) end
+                if self.QuickslotOverlay and self.QuickslotOverlay.SetLayoutMode then self.QuickslotOverlay:SetLayoutMode(false) end
+                if self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.SetLayoutMode then self.InfiniteArchiveOverlay:SetLayoutMode(false) end
+                if self.SynergyOverlay and self.SynergyOverlay.SetLayoutMode then self.SynergyOverlay:SetLayoutMode(false) end
             end
             if self.miniMapMoveMode and self:Safe(IsGameCameraUIModeActive, false) ~= true then
                 self.miniMapMoveMode = false
@@ -1258,6 +1481,7 @@ function EPC:Initialize()
         return true
     end
 
+    initModule("BUG_CATCHER", self.BugCatcher)
     initModule("ROLE", self.Role)
     initModule("TRAVEL", self.Travel)
     initModule("ACTIVITIES", self.Activities)
@@ -1269,16 +1493,24 @@ function EPC:Initialize()
     initModule("ENDGAME", self.Endgame)
     initModule("TARGET_BUILD", self.TargetBuild)
     initModule("GEAR_OPTIMIZER", self.GearOptimizer)
+    initModule("COMPANION_OPTIMIZER", self.CompanionOptimizer)
     initModule("GEAR_LOADOUT_OVERLAY", self.GearLoadoutOverlay)
     initModule("LOADOUT_MANAGER", self.LoadoutManager)
     initModule("ADVISOR", self.Advisor)
     initModule("COMBAT_PRESENTATION", self.CombatPresentation)
     initModule("COMBAT", self.Combat)
+    initModule("ROTATION_ASSISTANT", self.RotationAssistant)
     initModule("MAINTENANCE", self.Maintenance)
     initModule("UNIT_FRAMES", self.UnitFrames)
+    initModule("TEAM_VISIBILITY", self.TeamVisibility)
+    initModule("DUNGEON_CHEST_FINDER", self.DungeonChestFinder)
+    initModule("RESOURCE_PINS", self.ResourcePins)
     initModule("ALLIANCE_RANK", self.AllianceRank)
     initModule("CHAMPION_OVERLAY", self.ChampionOverlay)
     initModule("ABILITY_OVERLAYS", self.AbilityOverlays)
+    initModule("QUICKSLOT_OVERLAY", self.QuickslotOverlay)
+    initModule("INFINITE_ARCHIVE_OVERLAY", self.InfiniteArchiveOverlay)
+    initModule("SYNERGY_OVERLAY", self.SynergyOverlay)
     initModule("CUSTOM_RETICLE", self.Reticle)
     initModule("REPAIR_COST_OVERLAY", self.RepairCostOverlay)
     initModule("ENCOUNTER_REMINDERS", self.EncounterReminders)
@@ -1295,7 +1527,12 @@ function EPC:Initialize()
     -- Book-location subsystem is namespaced and initialized as part of the Suite.
     if EASLoreLibrary and EASLoreLibrary.Initialize then
         local ok, err = pcall(EASLoreLibrary.Initialize, EASLoreLibrary)
-        if not ok then self:Print("Book locations could not initialize: " .. tostring(err)) end
+        if not ok then
+            self:Print("Book locations could not initialize: " .. tostring(err))
+            if self.BugCatcher and self.BugCatcher.ready and self.BugCatcher.Capture then
+                self.BugCatcher:Capture("initialize", "ESO Adventurer Suite Lore Books initialize error: " .. tostring(err))
+            end
+        end
     end
 
     local uiOk = true

@@ -35,6 +35,27 @@ local function ChatInfo(msg)
     Chat(msg)
 end
 
+-- Daily writ tradeskills only. Scribing (CRAFTING_TYPE_SCRIBING, usually 8)
+-- is a crafting interaction but has no daily writ — never R3, never phase warning.
+local WRIT_CRAFT_TYPES = {
+    [1] = true, -- blacksmithing
+    [2] = true, -- clothier
+    [3] = true, -- enchanting (glyphs)
+    [4] = true, -- alchemy
+    [5] = true, -- provisioning
+    [6] = true, -- woodworking
+    [7] = true, -- jewelry
+}
+
+function Crafting.IsWritCraftType(craftType)
+    craftType = tonumber(craftType)
+    if not craftType then return false end
+    if WRIT_CRAFT_TYPES[craftType] then return true end
+    local scribing = rawget(_G, "CRAFTING_TYPE_SCRIBING")
+    if scribing and craftType == scribing then return false end
+    return false
+end
+
 local function LeaveCraftingStation()
     zo_callLater(function()
         pcall(function()
@@ -284,9 +305,12 @@ local function ResolveEnchantingFromQuest(potencyTier)
         end
         potencyIds[#potencyIds + 1] = id
     end
-    addPot(Data.EnchantingPotencyAlt and Data.EnchantingPotencyAlt[10])
-    addPot(Data.EnchantingPotency[10])
+    -- Daily writs use the potency for THIS character's Potency Improvement rank.
+    -- Rank 10 = Rejera (Superb CP150). Do not lead with Repora.
     addPot(Data.EnchantingPotency[potencyTier])
+    if potencyTier == 10 then
+        addPot(Data.EnchantingPotency[10])
+    end
     if Data.EnchantingPotencyAlt then addPot(Data.EnchantingPotencyAlt[potencyTier]) end
 
     local aBag, aSlot = Data.FindItemInBags(Data.ASPECT_TA)
@@ -452,10 +476,35 @@ local function EffectiveDaysFromSettings()
     return (b - a + 1), a, b
 end
 
-local function BuildPrecraftAlchemyJobs()
+local function LearnAlchemyPhaseFromJobs(questJobs, tier, cs)
+    if not questJobs or #questJobs == 0 or not Data.FindAlchemyRotationIndex then
+        return nil
+    end
+    local job = questJobs[1]
+    local key = job.recipeKey
+    if not key and job.reagent1Id and Data.AlchemyRecipes then
+        for i = 1, #Data.AlchemyRecipes do
+            local r = Data.AlchemyRecipes[i]
+            if r.r1 == job.reagent1Id and r.r2 == job.reagent2Id then
+                key = r.key
+                break
+            end
+        end
+    end
+    if not key then return nil end
+    local idx = Data.FindAlchemyRotationIndex(tier, key, job.isPoison)
+    if idx and cs then
+        cs.writPhase = cs.writPhase or {}
+        cs.writPhase[4] = idx
+        cs.writPhase[Data.CRAFT_ALCHEMY or 4] = idx
+    end
+    return idx
+end
+
+local function BuildPrecraftAlchemyJobs(savedPhase)
     local tier = Data.GetCraftingTier(4)
-    local n = EffectiveDaysFromSettings()
-    return Data.GetAlchemyJobsForTier(tier, n)
+    local n, startOff = EffectiveDaysFromSettings()
+    return Data.GetAlchemyJobsForTier(tier, n, savedPhase, startOff)
 end
 
 local function BuildPrecraftProvisioningJobs()
@@ -472,6 +521,9 @@ end
 
 function Crafting.GetRequiredItemsForStation(craftType)
     EnsureData()
+    if not Crafting.IsWritCraftType(craftType) then
+        return {}, "none", 0
+    end
     local cs = TetsuDailyWritPrecrafter.GetCharSettings and TetsuDailyWritPrecrafter.GetCharSettings()
     local preCraft = cs and cs.preCraftEnabled == true
     local compat = TetsuDailyWritPrecrafter.IsLazyWritCompat and TetsuDailyWritPrecrafter.IsLazyWritCompat()
@@ -496,11 +548,13 @@ function Crafting.GetRequiredItemsForStation(craftType)
     -- Always try to resolve from active quest first (correct items + quantities)
     local questJobs = {}
     if craftType == 4 or craftType == Data.CRAFT_ALCHEMY then
-        if not preCraft then
-            local tier = Data.GetCraftingTier(4)
-            if Data.GetAlchemyJobsForQuest then
-                questJobs = Data.GetAlchemyJobsForQuest(tier)
-            end
+        local tier = Data.GetCraftingTier(4)
+        if Data.GetAlchemyJobsForQuest then
+            questJobs = Data.GetAlchemyJobsForQuest(tier) or {}
+        end
+        phase = LearnAlchemyPhaseFromJobs(questJobs, tier, cs)
+        if (not phase) and cs and cs.writPhase then
+            phase = cs.writPhase[craftType] or cs.writPhase[4]
         end
     elseif craftType == 5 or craftType == Data.CRAFT_PROVISIONING then
         if not preCraft then
@@ -552,7 +606,10 @@ function Crafting.GetRequiredItemsForStation(craftType)
     if preCraft then
         mode = "precraft"
         if craftType == 4 or craftType == Data.CRAFT_ALCHEMY then
-            jobs = BuildPrecraftAlchemyJobs()
+            jobs = BuildPrecraftAlchemyJobs(phase)
+            if phase then
+                Crafting._lastKnownPhase = phase
+            end
         elseif craftType == 5 or craftType == Data.CRAFT_PROVISIONING then
             jobs = BuildPrecraftProvisioningJobs()
         else
@@ -748,7 +805,8 @@ end
 local function JobCollapseKey(job)
     local ct = job.craftType or 0
     if ct == 4 then
-        return "4:" .. tostring(job.reagent1Id) .. ":" .. tostring(job.reagent2Id)
+        local sid = (job.solventIds and job.solventIds[1]) or 0
+        return "4:" .. tostring(job.reagent1Id) .. ":" .. tostring(job.reagent2Id) .. ":" .. tostring(sid)
     end
     if ct == 5 then
         return "5:" .. tostring(job.recipeListIndex) .. ":" .. tostring(job.recipeIndex)
@@ -1100,7 +1158,7 @@ function Crafting.AddStationKeybind()
         return
     end
     local craftType = GetCraftingInteractionType()
-    if not craftType or craftType == 0 then
+    if not Crafting.IsWritCraftType(craftType) then
         Crafting.RemoveStationKeybind()
         return
     end
@@ -1175,8 +1233,7 @@ function Crafting.AddStationKeybind()
         order = 500,
         visible = function()
             if isCrafting then return false end
-            local cType = GetCraftingInteractionType()
-            return cType and cType ~= 0
+            return Crafting.IsWritCraftType(GetCraftingInteractionType())
         end,
         callback = function()
             local cType = GetCraftingInteractionType()

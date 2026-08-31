@@ -1,0 +1,424 @@
+-- Addon entry: defaults + SavedVars, logger, version dropdown, init on EVENT_ADD_ON_LOADED
+
+FurC = FurC or {}
+
+local this = FurC
+this.name = "FurnitureCatalogue"
+this.author = "manavortex"
+this.tag = "FurC"
+
+this.version = 7000000 -- will be AUTOREPLACED with AddonVersion
+
+this.CharacterName = nil
+this.website = "https://www.esoui.com/downloads/fileinfo.php?id=1617"
+this.settings = {}
+
+local LFC = LibFurnitureCatalogue
+local src = LFC.API.GetSourceTypes()
+local ver = LFC.Internal.Constants.Versioning
+
+-- data from LibFurnitureCatalogue
+this.AchievementVendors = this.AchievementVendors or {}
+this.LuxuryFurnisher = this.LuxuryFurnisher or {}
+this.Recipes = this.Recipes or {}
+this.Rolis = this.Rolis or {}
+this.Faustina = this.Faustina or {}
+this.RolisRecipes = this.RolisRecipes or {}
+this.FaustinaRecipes = this.FaustinaRecipes or {}
+this.Books = this.Books or {}
+this.EventItems = this.EventItems or {}
+this.PVP = this.PVP or {}
+this.MiscItemSources = this.MiscItemSources or {}
+this.RumourRecipes = this.RumourRecipes or {}
+this.FurnishingFolios = this.FurnishingFolios or {}
+this.Antiquities = this.Antiquities or {}
+
+local defaults = {
+  hideMats = true,
+  dontScanTradingHouse = false,
+  enableDebug = false,
+  skipInitialScan = true,
+
+  favorites = {},
+  filterCraftingType = {},
+  filterQuality = {},
+  filterFurnCategory = {},
+  filterFurnSubcategory = {},
+
+  resetDropdownChoice = false,
+  useTinyUi = true,
+  useInventoryIcons = true,
+  fontSize = 18,
+
+  gui = {
+    lastX = 100,
+    lastY = 100,
+    width = 650,
+    height = 550,
+  },
+
+  dropdownDefaults = {
+    Source = 1,
+    Character = 1,
+    Version = 1,
+  },
+
+  -- tooltips
+  disableTooltips = false,
+  coloredTooltips = true,
+  dateFormat = "YYYY-MM-DD",
+  hideKnowledge = false,
+  tooltipHiddenSources = {},
+
+  hideBooks = true,
+  hideDoubtfuls = true,
+  hideCrownstore = true,
+  hideRumourEntry = false,
+  hideCrownStoreEntry = false,
+  wipeDatabase = false,
+
+  hideUiButtons = {
+    FURC_RUMOUR = false,
+    FURC_CROWN = false,
+  },
+}
+
+local sourceIndicesKeys = {}
+local function getSourceIndicesKeys()
+  sourceIndicesKeys[src.NONE] = "off"
+  sourceIndicesKeys[src.FAVE] = "favorites"
+  sourceIndicesKeys[src.CRAFTING] = "craft_all"
+  sourceIndicesKeys[src.CRAFTING_KNOWN] = "craft_known"
+  sourceIndicesKeys[src.CRAFTING_UNKNOWN] = "craft_unknown"
+  sourceIndicesKeys[src.VENDOR] = "purch_gold"
+  sourceIndicesKeys[src.PVP] = "purch_ap"
+  sourceIndicesKeys[src.BAZAAR] = "purch_tbars"
+  sourceIndicesKeys[src.TELVAR] = "purch_telvar"
+  -- sourceIndicesKeys[src.TOMES] = "purch_tomepoints"
+  sourceIndicesKeys[src.WRIT_VENDOR] = "writ_vendor"
+  sourceIndicesKeys[src.CROWN] = "crownstore"
+  sourceIndicesKeys[src.ANTIQUITY] = "antiquity"
+  sourceIndicesKeys[src.RUMOUR] = "rumour"
+  sourceIndicesKeys[src.LUXURY] = "luxury"
+  sourceIndicesKeys[src.OTHER] = "other"
+  --sourceIndicesKeys[src.ROLIS]            = "ROLIS"
+  --sourceIndicesKeys[src.DROP]             = "DROP"
+  sourceIndicesKeys[src.JUSTICE] = "justice"
+  sourceIndicesKeys[src.FISHING] = "fishing"
+  --sourceIndicesKeys[src.GUILDSTORE]       = "GUILDSTORE"
+  --sourceIndicesKeys[src.FESTIVAL_DROP]    = "FESTIVAL_DROP"
+
+  return sourceIndicesKeys
+end
+this.GetSourceIndicesKeys = getSourceIndicesKeys
+
+local choicesSource = {}
+local function getChoicesSource()
+  choicesSource[src.NONE] = GetString(SI_FURC_FILTER_SRC_NONE)
+  choicesSource[src.FAVE] = GetString(SI_FURC_FILTER_SRC_FAVE)
+  choicesSource[src.CRAFTING] = GetString(SI_FURC_FILTER_SRC_CRAFTING)
+  choicesSource[src.CRAFTING_KNOWN] = GetString(SI_FURC_FILTER_SRC_CRAFTING_KNOWN)
+  choicesSource[src.CRAFTING_UNKNOWN] = GetString(SI_FURC_FILTER_SRC_CRAFTING_UNKNOWN)
+  choicesSource[src.VENDOR] = GetString(SI_FURC_FILTER_SRC_SOLD_GOLD)
+  choicesSource[src.PVP] = GetString(SI_FURC_FILTER_SRC_SOLD_AP)
+  choicesSource[src.TELVAR] = GetString(SI_FURC_FILTER_SRC_SOLD_TELVAR)
+  choicesSource[src.BAZAAR] = GetString(SI_FURC_FILTER_SRC_SOLD_TBARS)
+  -- choicesSource[src.TOMES] = GetString(SI_FURC_FILTER_SRC_SOLD_TOMEPOINTS)
+  choicesSource[src.WRIT_VENDOR] = GetString(SI_FURC_FILTER_SRC_SOLD_WRIT)
+  choicesSource[src.CROWN] = GetString(SI_FURC_FILTER_SRC_CROWN)
+  choicesSource[src.ANTIQUITY] = GetString(SI_FURC_FILTER_SRC_ANTIQUITY)
+  choicesSource[src.RUMOUR] = GetString(SI_FURC_FILTER_SRC_RUMOUR)
+  choicesSource[src.LUXURY] = GetString(SI_FURC_FILTER_SRC_LUX)
+  choicesSource[src.OTHER] = GetString(SI_FURC_FILTER_SRC_OTHER)
+  --choicesSource[src.ROLIS]            = "ROLIS"
+  --choicesSource[src.DROP]             = "DROP"
+  choicesSource[src.JUSTICE] = GetString(SI_FURC_FILTER_SRC_JUSTICE)
+  choicesSource[src.FISHING] = GetString(SI_FURC_FILTER_SRC_FISHING)
+  --choicesSource[src.GUILDSTORE]       = "GUILDSTORE"
+  --choicesSource[src.FESTIVAL_DROP]    = "FESTIVAL_DROP"
+
+  return choicesSource
+end
+this.GetChoicesSource = getChoicesSource
+
+local tooltipsSource = {}
+local function getTooltipsSource()
+  tooltipsSource[src.NONE] = GetString(SI_FURC_FILTER_SRC_NONE_TT)
+  tooltipsSource[src.FAVE] = GetString(SI_FURC_FILTER_SRC_FAVE_TT)
+  tooltipsSource[src.CRAFTING] = GetString(SI_FURC_FILTER_SRC_CRAFTING_TT)
+  tooltipsSource[src.CRAFTING_KNOWN] = GetString(SI_FURC_FILTER_SRC_CRAFTING_KNOWN_TT)
+  tooltipsSource[src.CRAFTING_UNKNOWN] = GetString(SI_FURC_FILTER_SRC_CRAFTING_UNKNOWN_TT)
+  tooltipsSource[src.VENDOR] = GetString(SI_FURC_FILTER_SRC_SOLD_GOLD_TT)
+  tooltipsSource[src.PVP] = GetString(SI_FURC_FILTER_SRC_SOLD_AP_TT)
+  tooltipsSource[src.TELVAR] = GetString(SI_FURC_FILTER_SRC_SOLD_TELVAR_TT)
+  tooltipsSource[src.BAZAAR] = GetString(SI_FURC_FILTER_SRC_SOLD_TBARS_TT)
+  -- tooltipsSource[src.TOMES] = GetString(SI_FURC_FILTER_SRC_SOLD_TOMEPOINTS_TT)
+  tooltipsSource[src.CROWN] = GetString(SI_FURC_FILTER_SRC_CROWN_TT)
+  tooltipsSource[src.ANTIQUITY] = GetString(SI_FURC_FILTER_SRC_ANTIQUITY_TT)
+  tooltipsSource[src.WRIT_VENDOR] = GetString(SI_FURC_FILTER_SRC_SOLD_WRIT_TT)
+  tooltipsSource[src.RUMOUR] = GetString(SI_FURC_FILTER_SRC_RUMOUR_TT)
+  tooltipsSource[src.LUXURY] = GetString(SI_FURC_FILTER_SRC_LUX_TT)
+  tooltipsSource[src.OTHER] = GetString(SI_FURC_FILTER_SRC_OTHER_TT)
+  --tooltipsSource[src.ROLIS]            = "ROLIS"
+  --tooltipsSource[src.DROP]             = "DROP"
+  tooltipsSource[src.JUSTICE] = GetString(SI_FURC_FILTER_SRC_JUSTICE_TT)
+  tooltipsSource[src.FISHING] = GetString(SI_FURC_FILTER_SRC_FISHING_TT)
+  --tooltipsSource[src.GUILDSTORE]       = "GUILDSTORE"
+  --tooltipsSource[src.FESTIVAL_DROP]    = "FESTIVAL_DROP"
+
+  return tooltipsSource
+end
+this.GetTooltipsSource = getTooltipsSource
+
+-- Display order of source filter choices
+local sourceChoiceValues = {
+  src.NONE,
+  src.FAVE,
+  src.CRAFTING,
+  src.CRAFTING_KNOWN,
+  src.CRAFTING_UNKNOWN,
+  src.VENDOR,
+  src.PVP,
+  src.TELVAR,
+  src.BAZAAR,
+  src.WRIT_VENDOR,
+  src.CROWN,
+  src.ANTIQUITY,
+  src.RUMOUR,
+  src.LUXURY,
+  src.JUSTICE,
+  src.FISHING,
+  src.OTHER,
+}
+
+---LAM does not like NonContiguous, so we go gapless
+---@return string[] choices parallel to GetChoicesSourceValues()
+local function getChoicesSourceList()
+  local texts = getChoicesSource()
+  local list = {}
+  for i = 1, #sourceChoiceValues do
+    list[i] = texts[sourceChoiceValues[i]]
+  end
+  return list
+end
+this.GetChoicesSourceList = getChoicesSourceList
+
+---Source ids for LAM choicesValues
+---@return integer[] choicesValues
+function this.GetChoicesSourceValues()
+  return sourceChoiceValues
+end
+
+-- TODO #REFACTOR Just auto generate those from Constants.Versioning ¯\_(ツ)_/¯
+
+-- [UPGRADING GAME VERSIONS, PTS compatibility]
+this.DropdownData = {
+  ChoicesVersion = {
+    [ver.NONE] = GetString(SI_FURC_FILTER_VERSION_OFF),
+    [ver.HOMESTEAD] = GetString(SI_FURC_FILTER_VERSION_HS),
+    [ver.MORROWIND] = GetString(SI_FURC_FILTER_VERSION_M),
+    [ver.REACH] = GetString(SI_FURC_FILTER_VERSION_R),
+    [ver.CLOCKWORK] = GetString(SI_FURC_FILTER_VERSION_CC),
+    [ver.DRAGONS] = GetString(SI_FURC_FILTER_VERSION_DRAGON),
+    [ver.ALTMER] = GetString(SI_FURC_FILTER_VERSION_ALTMER),
+    [ver.SLAVES] = GetString(SI_FURC_FILTER_VERSION_SLAVES),
+    [ver.WEREWOLF] = GetString(SI_FURC_FILTER_VERSION_WEREWOLF),
+    [ver.WOTL] = GetString(SI_FURC_FILTER_VERSION_WOTL),
+    [ver.KITTY] = GetString(SI_FURC_FILTER_VERSION_KITTY),
+    [ver.SCALES] = GetString(SI_FURC_FILTER_VERSION_SCALES),
+    [ver.DRAGON2] = GetString(SI_FURC_FILTER_VERSION_DRAGON2),
+    [ver.HARROW] = GetString(SI_FURC_FILTER_VERSION_HARROW),
+    [ver.SKYRIM] = GetString(SI_FURC_FILTER_VERSION_SKYRIM),
+    [ver.STONET] = GetString(SI_FURC_FILTER_VERSION_STONET),
+    [ver.MARKAT] = GetString(SI_FURC_FILTER_VERSION_MARKAT),
+    [ver.FLAMES] = GetString(SI_FURC_FILTER_VERSION_FLAMES),
+    [ver.BLACKW] = GetString(SI_FURC_FILTER_VERSION_BLACKW),
+    [ver.WAKE] = GetString(SI_FURC_FILTER_VERSION_WAKE),
+    [ver.DEADL] = GetString(SI_FURC_FILTER_VERSION_DEADL),
+    [ver.TIDES] = GetString(SI_FURC_FILTER_VERSION_TIDES),
+    [ver.BRETON] = GetString(SI_FURC_FILTER_VERSION_BRETON),
+    [ver.DEPTHS] = GetString(SI_FURC_FILTER_VERSION_DEPTHS),
+    [ver.DRUID] = GetString(SI_FURC_FILTER_VERSION_DRUID),
+    [ver.SCRIBE] = GetString(SI_FURC_FILTER_VERSION_SCRIBE),
+    [ver.NECROM] = GetString(SI_FURC_FILTER_VERSION_NECROM),
+    [ver.BASED] = GetString(SI_FURC_FILTER_VERSION_BASED),
+    [ver.ENDLESS] = GetString(SI_FURC_FILTER_VERSION_ENDLESS),
+    [ver.SCIONS] = GetString(SI_FURC_FILTER_VERSION_SCIONS),
+    [ver.WEALD] = GetString(SI_FURC_FILTER_VERSION_WEALD),
+    [ver.BASE43] = GetString(SI_FURC_FILTER_VERSION_BASE43),
+    [ver.BASE44] = GetString(SI_FURC_FILTER_VERSION_BASE44),
+    [ver.FALLBAN] = GetString(SI_FURC_FILTER_VERSION_FALLBAN),
+    [ver.WORMS] = GetString(SI_FURC_FILTER_VERSION_WORMS),
+    [ver.SHADOWS] = GetString(SI_FURC_FILTER_VERSION_SHADOWS),
+    [ver.WORMS2] = GetString(SI_FURC_FILTER_VERSION_WORMS2),
+    [ver.ZERO] = GetString(SI_FURC_FILTER_VERSION_ZERO),
+    [ver.ZERO2] = GetString(SI_FURC_FILTER_VERSION_ZERO2),
+    [ver.THIEVES] = GetString(SI_FURC_FILTER_VERSION_THIEVES),
+  },
+
+  TooltipsVersion = {
+    [ver.NONE] = GetString(SI_FURC_FILTER_VERSION_OFF_TT),
+    [ver.HOMESTEAD] = GetString(SI_FURC_FILTER_VERSION_HS_TT),
+    [ver.MORROWIND] = GetString(SI_FURC_FILTER_VERSION_M_TT),
+    [ver.REACH] = GetString(SI_FURC_FILTER_VERSION_R_TT),
+    [ver.CLOCKWORK] = GetString(SI_FURC_FILTER_VERSION_CC_TT),
+    [ver.DRAGONS] = GetString(SI_FURC_FILTER_VERSION_DRAGON_TT),
+    [ver.ALTMER] = GetString(SI_FURC_FILTER_VERSION_ALTMER_TT),
+    [ver.SLAVES] = GetString(SI_FURC_FILTER_VERSION_SLAVES_TT),
+    [ver.WEREWOLF] = GetString(SI_FURC_FILTER_VERSION_WEREWOLF_TT),
+    [ver.WOTL] = GetString(SI_FURC_FILTER_VERSION_WOTL_TT),
+    [ver.KITTY] = GetString(SI_FURC_FILTER_VERSION_KITTY_TT),
+    [ver.SCALES] = GetString(SI_FURC_FILTER_VERSION_SCALES_TT),
+    [ver.DRAGON2] = GetString(SI_FURC_FILTER_VERSION_DRAGON2_TT),
+    [ver.HARROW] = GetString(SI_FURC_FILTER_VERSION_HARROW_TT),
+    [ver.SKYRIM] = GetString(SI_FURC_FILTER_VERSION_SKYRIM_TT),
+    [ver.STONET] = GetString(SI_FURC_FILTER_VERSION_STONET_TT),
+    [ver.MARKAT] = GetString(SI_FURC_FILTER_VERSION_MARKAT_TT),
+    [ver.FLAMES] = GetString(SI_FURC_FILTER_VERSION_FLAMES_TT),
+    [ver.BLACKW] = GetString(SI_FURC_FILTER_VERSION_BLACKW_TT),
+    [ver.WAKE] = GetString(SI_FURC_FILTER_VERSION_WAKE_TT),
+    [ver.DEADL] = GetString(SI_FURC_FILTER_VERSION_DEADL_TT),
+    [ver.TIDES] = GetString(SI_FURC_FILTER_VERSION_TIDES_TT),
+    [ver.BRETON] = GetString(SI_FURC_FILTER_VERSION_BRETON_TT),
+    [ver.DEPTHS] = GetString(SI_FURC_FILTER_VERSION_DEPTHS_TT),
+    [ver.DRUID] = GetString(SI_FURC_FILTER_VERSION_DRUID_TT),
+    [ver.SCRIBE] = GetString(SI_FURC_FILTER_VERSION_SCRIBE_TT),
+    [ver.NECROM] = GetString(SI_FURC_FILTER_VERSION_NECROM_TT),
+    [ver.BASED] = GetString(SI_FURC_FILTER_VERSION_BASED_TT),
+    [ver.ENDLESS] = GetString(SI_FURC_FILTER_VERSION_ENDLESS_TT),
+    [ver.SCIONS] = GetString(SI_FURC_FILTER_VERSION_SCIONS_TT),
+    [ver.WEALD] = GetString(SI_FURC_FILTER_VERSION_WEALD_TT),
+    [ver.BASE43] = GetString(SI_FURC_FILTER_VERSION_BASE43_TT),
+    [ver.BASE44] = GetString(SI_FURC_FILTER_VERSION_BASE44_TT),
+    [ver.FALLBAN] = GetString(SI_FURC_FILTER_VERSION_FALLBAN_TT),
+    [ver.WORMS] = GetString(SI_FURC_FILTER_VERSION_WORMS_TT),
+    [ver.SHADOWS] = GetString(SI_FURC_FILTER_VERSION_SHADOWS_TT),
+    [ver.WORMS2] = GetString(SI_FURC_FILTER_VERSION_WORMS2_TT),
+    [ver.ZERO] = GetString(SI_FURC_FILTER_VERSION_ZERO_TT),
+    [ver.ZERO2] = GetString(SI_FURC_FILTER_VERSION_ZERO2_TT),
+    [ver.THIEVES] = GetString(SI_FURC_FILTER_VERSION_THIEVES_TT),
+  },
+
+  ChoicesCharacter = {
+    [1] = GetString(SI_FURC_FILTER_CHAR_OFF),
+  },
+  TooltipsCharacter = {
+    [1] = GetString(SI_FURC_FILTER_CHAR_OFF_TT),
+  },
+
+  -- will be set in setupSourceDropdown
+  ChoicesSource = {},
+  TooltipsSource = {},
+}
+
+function this.UpdateDropdowns()
+  this.DropdownData.ChoicesSource = this.GetChoicesSource()
+  this.DropdownData.TooltipsSource = this.GetTooltipsSource()
+end
+
+local function setupSourceDropdown()
+  this.UpdateDropdowns()
+  this.SourceIndices = getSourceIndicesKeys()
+end
+
+local logger
+--- Gets the current logger or creates it if it doesn't exist yet
+--- @return Logger logger instance
+function this.getOrCreateLogger()
+  if logger then
+    return logger
+  end -- return existing reference
+
+  if not LibDebugLogger then
+    local function ignore(...) end -- black hole for most property calls, like logger:Debug
+    local function info(self, ...)
+      local prefix = string.format("[%s]: ", this.tag)
+      if tostring(...):find("%%") then
+        d(prefix .. string.format(...))
+      else
+        d(prefix .. tostring(...))
+      end
+    end
+    logger = {}
+    logger.Verbose = ignore
+    logger.Debug = ignore
+    logger.Info = info
+    logger.Warn = ignore
+    logger.Error = ignore
+    logger.Log = ignore
+    logger.LOG_LEVEL_VERBOSE = "V"
+    logger.LOG_LEVEL_DEBUG = "D"
+    logger.LOG_LEVEL_INFO = "I"
+    logger.LOG_LEVEL_WARNING = "W"
+    logger.LOG_LEVEL_ERROR = "E"
+    logger.SetMinLevelOverride = ignore
+
+    return logger
+  end
+
+  -- use logger from library
+  logger = LibDebugLogger(this.tag)
+  logger.LOG_LEVEL_VERBOSE = LibDebugLogger.LOG_LEVEL_VERBOSE
+  logger.LOG_LEVEL_DEBUG = LibDebugLogger.LOG_LEVEL_DEBUG
+  logger.LOG_LEVEL_INFO = LibDebugLogger.LOG_LEVEL_INFO
+  logger.LOG_LEVEL_WARNING = LibDebugLogger.LOG_LEVEL_WARNING
+  logger.LOG_LEVEL_ERROR = LibDebugLogger.LOG_LEVEL_ERROR
+
+  -- set initial log level
+  if this.settings.enableDebug then
+    logger:SetMinLevelOverride(logger.LOG_LEVEL_DEBUG)
+  else
+    logger:SetMinLevelOverride(logger.LOG_LEVEL_INFO)
+  end
+
+  return logger
+end
+
+this.Logger = this.getOrCreateLogger()
+-- initialization stuff
+local function initialise(eventCode, addOnName)
+  if addOnName ~= this.name then
+    return
+  end
+
+  this.settings = ZO_SavedVars:NewAccountWide(this.name .. "_Settings", 2, nil, defaults)
+  -- setup the "source" dropdown for the menu
+  setupSourceDropdown()
+
+  this.CreateSettings(this.settings, defaults)
+  this.Logger = this.getOrCreateLogger()
+  this.Logger:Debug("Initialising..." .. eventCode)
+
+  this.CharacterName = zo_strformat(GetUnitName("player"))
+
+  this.Internal.InitLCK()
+
+  this.InitGui()
+
+  this.CreateTooltips()
+  this.InitRightclickMenu()
+
+  this.SetupInventoryRecipeIcons()
+
+  if this.settings.version < this.version then
+    this.settings.version = this.version
+  end
+
+  this.settings.databaseVersion = this.version
+  SLASH_COMMANDS["/fur"] = FurnitureCatalogue_Toggle
+
+  this.Migrate()
+
+  -- DB is built lazily on first use
+  if not this.GetSkipInitialScan() then
+    this.EnsureDB()
+  end
+  this.SetFilter(true)
+
+  EVENT_MANAGER:UnregisterForEvent(this.name, EVENT_ADD_ON_LOADED)
+  this.Logger:Debug("Initialisation complete")
+end
+
+ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_FURNITURE_CATALOGUE", "Toggle main window")
+ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_FURNITURE_CATALOGUE_RECIPE", "Toggle Blueprint on tooltip")
+EVENT_MANAGER:RegisterForEvent(this.name, EVENT_ADD_ON_LOADED, initialise)

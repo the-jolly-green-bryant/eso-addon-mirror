@@ -25,7 +25,7 @@ function LCM.CreateControlListEntry(control)
 	LCM:AddControlEntry(control)
 end
 
--- Control setup stores headerAlign for ResolveSettingEntryTemplate.
+-- Control setup stores sectionAlign for ResolveSettingEntryTemplate.
 function LCM.Control:Setup(params)
 	local setup = LCM.setupControlFunctions[self.type]
 	if setup then
@@ -34,8 +34,8 @@ function LCM.Control:Setup(params)
 	self.popSubmenu = params.popSubmenu
 	self.popAfterSubmenu = params.popAfterSubmenu
 	self.popAfterSubmenuIndex = params.popAfterSubmenuIndex
-	self.headerText = params.header
-	self.headerAlign = params.headerAlign
+	self.sectionTitle = params.sectionTitle
+	self.sectionAlign = params.sectionAlign
 end
 
 function LCM.Control:CreateControl(lastControl)

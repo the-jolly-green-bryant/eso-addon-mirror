@@ -1035,11 +1035,11 @@ ZO_CreateStringId("BATTLESCROLLS_HEADER_CRUX_BY_ABILITY", "Crux Discipline by Ab
 ZO_CreateStringId("BATTLESCROLLS_HEADER_ZEN", "DoT Stacking (Z'en)")
 ZO_CreateStringId("BATTLESCROLLS_ZEN_AVG_DOTS", "Average DoTs")
 ZO_CreateStringId("BATTLESCROLLS_ZEN_UPTIME", "Z'en debuff uptime")
-ZO_CreateStringId("BATTLESCROLLS_ZEN_POTENTIAL", "Time with 1+ DoTs")
+ZO_CreateStringId("BATTLESCROLLS_ZEN_PEAK_TIME", "Time at <<1>>")
 ZO_CreateStringId("BATTLESCROLLS_ZEN_DOTS_LABEL", "<<1>> DoTs")
 ZO_CreateStringId("BATTLESCROLLS_ZEN_SHARE_LINE", "avg <<1>> — <<2>> at 5 DoTs")
 ZO_CreateStringId("BATTLESCROLLS_ZEN_SHORT", "Z'en")
-ZO_CreateStringId("BATTLESCROLLS_ZEN_BOSS_SUMMARY", "avg <<1>> DoTs — Z'en <<2>>% — 1+ DoTs <<3>>%")
+ZO_CreateStringId("BATTLESCROLLS_ZEN_BOSS_SUMMARY", "avg <<1>> DoTs — Z'en <<2>>% — <<3>> <<4>>%")
 
 -- Support (Activity tab)
 ZO_CreateStringId("BATTLESCROLLS_HEADER_SUPPORT", "Support")

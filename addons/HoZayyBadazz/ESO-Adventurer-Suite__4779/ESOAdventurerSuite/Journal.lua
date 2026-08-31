@@ -9,19 +9,19 @@ EPC.Journal = EPC.Journal or {}
 local J = EPC.Journal
 local wm = WINDOW_MANAGER
 
-local TABS = {"NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "GROUPFINDER", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
+local TABS = {"NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "BATTLEGROUNDS", "GROUPFINDER", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
 local TAB_LABELS = {
     NOTES="Notes", PINS="Checkpoints", BUILD="Build Guide", GEAR="Gear & Sets", SKILLS="Skills & CP",
-    COMBAT="Combat", ACTIVITY="Activities", DUNGEONS="Dungeon Finder", GROUPFINDER="Group Finder", QUESTS="Quest Finder", TRAVEL="Map / Travel", TOOLS="Utilities",
+    COMBAT="Combat", ACTIVITY="Activities", DUNGEONS="Dungeon Finder", BATTLEGROUNDS="Battleground Finder", GROUPFINDER="Group Finder", QUESTS="Quest Finder", TRAVEL="Map / Travel", TOOLS="Utilities",
     ACHIEVEMENTS="Achievements", STATS="Character Stats", CODEX="Crafting Codex", DICE="Dice & Coin",
 }
 local TAB_TITLES = {
     NOTES="TAMRIEL CODEX", PINS="CHECKPOINTS", BUILD="BUILD GUIDE", GEAR="GEAR & SETS", SKILLS="SKILLS & CHAMPION",
-    COMBAT="COMBAT", ACTIVITY="ACTIVITIES", DUNGEONS="DUNGEON FINDER", GROUPFINDER="GROUP FINDER", QUESTS="QUEST FINDER", TRAVEL="MAP & TRAVEL", TOOLS="UTILITIES",
+    COMBAT="COMBAT", ACTIVITY="ACTIVITIES", DUNGEONS="DUNGEON FINDER", BATTLEGROUNDS="BATTLEGROUND FINDER", GROUPFINDER="GROUP FINDER", QUESTS="QUEST FINDER", TRAVEL="MAP & TRAVEL", TOOLS="UTILITIES",
     ACHIEVEMENTS="ACHIEVEMENTS", STATS="CHARACTER STATS", CODEX="CRAFTING CODEX", DICE="DICE & COIN",
 }
 local TAB_PAGE_NUMBERS = { NOTES="01", PINS="02", BUILD="03", GEAR="04", SKILLS="05", COMBAT="06", ACTIVITY="07", QUESTS="08", TRAVEL="09", TOOLS="10", ACHIEVEMENTS="11", STATS="12", CODEX="13", DICE="14" }
-local SUITE_TABS = { BUILD=true, GEAR=true, SKILLS=true, COMBAT=true, ACTIVITY=true, DUNGEONS=true, GROUPFINDER=true, QUESTS=true, TRAVEL=true, TOOLS=true }
+local SUITE_TABS = { BUILD=true, GEAR=true, SKILLS=true, COMBAT=true, ACTIVITY=true, DUNGEONS=true, BATTLEGROUNDS=true, GROUPFINDER=true, QUESTS=true, TRAVEL=true, TOOLS=true }
 local CATEGORIES = {"ALL", "Adventure", "Quests", "Builds", "Crafting", "Roleplay", "Personal"}
 local THEMES = {
     PARCHMENT = { bg={0.0,0.0,0.0,0.0}, panel={0.93,0.88,0.76,0.08}, page={0.955,0.915,0.81,0.992}, page2={0.965,0.925,0.825,0.992}, cover={0.10,0.07,0.035,0.96}, edge={0.50,0.38,0.18,0.92}, text={0.15,0.09,0.04,1}, accent={0.32,0.18,0.08,1} },
@@ -454,15 +454,47 @@ function J:GetFilteredEntries()
 end
 
 function J:SaveCurrentEntry()
-    if not self.currentEntryId or not self.noteTitleEdit or not self.noteBodyEdit then return end
+    if not self.noteTitleEdit or not self.noteBodyEdit then return nil end
+
+    local title = trim(self.noteTitleEdit:GetText())
+    local body = tostring(self.noteBodyEdit:GetText() or "")
+
+    -- v0.29.43: SAVE NOTE must work even when the user types directly into an
+    -- empty editor without pressing NEW NOTE first. Previously currentEntryId
+    -- was nil, so SaveCurrentEntry returned immediately and RefreshNotes then
+    -- cleared the text, making the note appear to disappear.
+    if not self.currentEntryId then
+        if title == "" and trim(body) == "" then
+            self.dirty = false
+            return nil
+        end
+        local s = self:EnsureSaved()
+        local category = self.category ~= "ALL" and self.category or "Personal"
+        local stamp = nowStamp()
+        local e = {
+            id = s.nextEntryId,
+            title = title ~= "" and title or "Untitled Note",
+            body = body,
+            category = category,
+            created = stamp,
+            modified = stamp,
+        }
+        s.nextEntryId = s.nextEntryId + 1
+        s.entries[#s.entries + 1] = e
+        self.currentEntryId = e.id
+        self.dirty = false
+        return e
+    end
+
     local e = self:FindEntry(self.currentEntryId)
-    if not e then return end
-    e.title = trim(self.noteTitleEdit:GetText())
+    if not e then return nil end
+    e.title = title
     if e.title == "" then e.title = "Untitled Note" end
-    e.body = tostring(self.noteBodyEdit:GetText() or "")
+    e.body = body
     e.category = e.category or (self.category ~= "ALL" and self.category or "Personal")
     e.modified = nowStamp()
     self.dirty = false
+    return e
 end
 
 function J:SelectEntry(id)
@@ -600,7 +632,7 @@ function J:FindCheckpoint(query)
     return nil, matches
 end
 
-function J:SaveCurrentLocation(customName)
+function J:SaveCurrentLocation(customName, saveMode)
     if type(SetMapToPlayerLocation) == "function" then pcall(SetMapToPlayerLocation) end
     local x,y,_,inCurrentMap = safe(GetMapPlayerPosition, 0, "player")
     x, y = tonumber(x) or 0, tonumber(y) or 0
@@ -616,13 +648,42 @@ function J:SaveCurrentLocation(customName)
     if name == "" and self.checkpointNameEdit then name = trim(self.checkpointNameEdit:GetText()) end
     if name == "" then name = string.format("Checkpoint %d - %s", s.nextPinId, zone ~= "" and zone or mapName) end
 
-    -- If a checkpoint is selected, SAVE / UPDATE HERE edits that checkpoint in place,
-    -- including its custom name. With no selection, an exact-name match is updated;
-    -- otherwise a new named checkpoint is created.
-    local existing = self.selectedPinId and self:GetPinById(self.selectedPinId) or nil
-    if not existing then
+    -- v0.29.44: the Suite UI now has explicit SAVE NEW and UPDATE SELECTED
+    -- actions. This removes the old ambiguity where saving another checkpoint
+    -- while one was selected silently moved/renamed the selected checkpoint.
+    -- CLI callers keep the legacy exact-name update behavior unless they pass a
+    -- saveMode explicitly.
+    local mode = tostring(saveMode or "legacy")
+    local existing = nil
+
+    if mode == "update" then
+        existing = self.selectedPinId and self:GetPinById(self.selectedPinId) or nil
+        if not existing then
+            EPC:Print("Select a checkpoint before using UPDATE SELECTED.")
+            return false
+        end
+    elseif mode == "new" then
+        -- A new checkpoint must always get its own id, even in the same zone or
+        -- at the same map position. If the typed name is already used, append a
+        -- small numeric suffix so every saved row remains unambiguous.
+        local wanted = name
+        local used = {}
         for _, pin in ipairs(s.pins) do
-            if zo_strlower(trim(pin.name or "")) == zo_strlower(name) then existing = pin break end
+            used[zo_strlower(trim(pin.name or ""))] = true
+        end
+        if used[zo_strlower(name)] then
+            local n = 2
+            repeat
+                name = string.format("%s (%d)", wanted, n)
+                n = n + 1
+            until not used[zo_strlower(name)]
+        end
+    else
+        existing = self.selectedPinId and self:GetPinById(self.selectedPinId) or nil
+        if not existing then
+            for _, pin in ipairs(s.pins) do
+                if zo_strlower(trim(pin.name or "")) == zo_strlower(name) then existing = pin break end
+            end
         end
     end
 
@@ -985,37 +1046,25 @@ function J:BuildStatsSpread()
     end
 
     local left = {
-        "CHARACTER OVERVIEW",
-        "",
-        "Name",
-        "  " .. (name ~= "" and name or "Player"),
+        "IDENTITY",
+        string.format("Name: %s", name ~= "" and name or "Player"),
     }
-    if display ~= "" then
-        left[#left+1] = ""
-        left[#left+1] = "Account"
-        left[#left+1] = "  " .. display
-    end
+    if display ~= "" then left[#left+1] = "Account: " .. display end
     left[#left+1] = ""
+    left[#left+1] = "PROGRESSION"
     left[#left+1] = string.format("Level: %d", level)
     left[#left+1] = string.format("Champion Points: %d", cp)
-    if zone ~= "" then left[#left+1] = "Zone: " .. zone end
-
     left[#left+1] = ""
+    left[#left+1] = "LOCATION"
+    left[#left+1] = "Zone: " .. (zone ~= "" and zone or "Unknown")
     left[#left+1] = ""
     left[#left+1] = "INVENTORY & WEALTH"
-    left[#left+1] = ""
     left[#left+1] = string.format("Backpack: %d / %d", tonumber(bagUsed) or 0, tonumber(bagSize) or 0)
-    left[#left+1] = ""
     left[#left+1] = string.format("Current Gold: %s", commaNumber(money))
-
-    left[#left+1] = ""
     left[#left+1] = ""
     left[#left+1] = "RIDING TRAINING"
-    left[#left+1] = ""
     left[#left+1] = string.format("Speed: %d / %d", tonumber(speed) or 0, tonumber(maxSpeed) or 0)
-    left[#left+1] = ""
     left[#left+1] = string.format("Stamina: %d / %d", tonumber(stam) or 0, tonumber(maxStam) or 0)
-    left[#left+1] = ""
     left[#left+1] = string.format("Carry Capacity: %d / %d", tonumber(inv) or 0, tonumber(maxInv) or 0)
 
     local spending = EPC.Activities and EPC.Activities.GetGoldSpendingView and EPC.Activities:GetGoldSpendingView() or { total = 0, rows = {} }
@@ -1056,14 +1105,19 @@ function J:BuildStatsSpread()
     end
 
     addSpendGroup("CRAFTING & EQUIPMENT", {
-        "blacksmith", "clothier", "woodworker", "jeweler", "armsman", "armorer",
+        "blacksmith", "clothier", "woodworker", "jeweler", "armsman", "armorer", "crafting",
     })
     addSpendGroup("SUPPLIES & SERVICES", {
-        "alchemist", "enchanter", "grocer", "brewer", "chef", "merchant", "stable", "repairs", "respec",
+        "alchemist", "enchanter", "grocer", "brewer", "chef", "merchant", "stable", "repairs", "respec", "travel",
+        "bagSpace", "bankSpace", "bankFees", "buyback",
     })
-    addSpendGroup("MARKET, TRAVEL & OTHER", {
-        "guildStore", "guildStoreFees", "laundering", "travel", "other",
+    addSpendGroup("MARKET & SOCIAL", {
+        "guildStore", "guildStoreFees", "cashOnDelivery", "playerTrade", "mail",
     })
+    addSpendGroup("JUSTICE, GUILD & PVP", {
+        "laundering", "bounty", "guildCosts", "pvpCosts", "tribute",
+    })
+    addSpendGroup("OTHER", {"other", "unclassified"})
 
     if (tonumber(spending.total) or 0) <= 0 then
         right[#right+1] = "No tracked spending yet."
@@ -1072,7 +1126,7 @@ function J:BuildStatsSpread()
     right[#right+1] = ""
     right[#right+1] = "Tracking starts when this feature is installed."
     right[#right+1] = ""
-    right[#right+1] = "Bank transfers are not counted as spending."
+    right[#right+1] = "Internal bank and guild-bank transfers are not counted as spending."
 
     return table.concat(left, "\n"), table.concat(right, "\n")
 end
@@ -1142,6 +1196,10 @@ Research traits and improvement materials are character/account progression syst
 function J:SetCodexMode(mode)
     if CODEX[mode] then self.codexMode = mode self:RefreshCodex() end
 end
+function J:GetCodexText()
+    return CODEX[self.codexMode or "ALCHEMY"] or ""
+end
+
 function J:RefreshCodex()
     if self.codexBody then setBookText(self.codexBody, CODEX[self.codexMode or "ALCHEMY"] or "", self.codexBody:GetWidth()) end
     for mode,b in pairs(self.codexButtons or {}) do setButtonStyle(b, mode == (self.codexMode or "ALCHEMY"), self:GetTheme()) end
@@ -1322,8 +1380,6 @@ function J:RunSuiteAction(tab, action)
             EPC.AttributeOptimizer:ApplyBestAttributes()
             EPC:RefreshNow("codex-attribute-redistribute")
         elseif action == 4 then
-            EPC:RefreshNow("codex-skill-preview")
-        elseif action == 5 then
             EPC:RefreshNow("codex-refresh")
         end
         if action >= 1 and action <= 3 and type(zo_callLater) == "function" then
@@ -1413,11 +1469,21 @@ function J:BuildSuiteText(tab)
         lines[#lines+1] = string.format("Weapons: %s / %s", tostring(c.frontWeapon or "Weapon"), tostring(c.backWeapon or "Weapon"))
         if #(c.sets or {}) > 0 then lines[#lines+1] = "Worn sets: " .. table.concat(c.sets, ", ") end
         lines[#lines+1] = ""
-        lines[#lines+1] = "RECOMMENDED ACTIVE BAR"
+        local meta=v.meta
+        if meta and EPC.SkillMeta then
+            lines[#lines+1] = "SKILL META: CURRENT"
+            lines[#lines+1] = string.format("Profile: %s  -  Preset: %s", tostring(meta.label or "Current build"), tostring(meta.preset or "TRIAL"))
+            lines[#lines+1] = string.format("Confidence: %s", tostring(meta.confidence or "CURATED"))
+            lines[#lines+1] = ""
+        end
+        lines[#lines+1] = "PRIMARY BAR"
         for i,a in ipairs(v.abilities or {}) do lines[#lines+1] = string.format("%d. %s", i, tostring(a.name or "Ability")) end
-        lines[#lines+1] = string.format("ULT. %s", tostring(v.ultimate and v.ultimate.name or "No purchased ultimate found"))
+        lines[#lines+1] = string.format("ULT. %s", tostring(v.ultimate and v.ultimate.name or "No Ultimate available"))
         lines[#lines+1] = ""
-        lines[#lines+1] = "RESPEC + BUILD uses ESO's full skill respec to rebuild combat skills for your current role, resource build, weapons, and worn sets. It buys the recommended actives, chooses the best available morph when a skill is morph-ready, ranks relevant passives, and fills both weapon bars (1-5 + Ultimate). A gold-cost respec requires a second confirmation click. Extra points stay unspent instead of being forced into unrelated crafting skills. PREVIEW recalculates without making changes."
+        lines[#lines+1] = "BACKUP BAR"
+        for i,a in ipairs(v.backAbilities or {}) do lines[#lines+1] = string.format("%d. %s", i, tostring(a.name or "Ability")) end
+        lines[#lines+1] = string.format("ULT. %s", tostring(v.backUltimate and v.backUltimate.name or "No Ultimate available"))
+        lines[#lines+1] = ""
         if EPC.ChampionOptimizer and EPC.ChampionOptimizer.BuildView then
             local cpv=EPC.ChampionOptimizer:BuildView()
             lines[#lines+1] = ""
@@ -1933,6 +1999,7 @@ function J:Create()
     self.pages.COMBAT = self:CreateSuitePage(content, "COMBAT")
     self.pages.ACTIVITY = self:CreateSuitePage(content, "ACTIVITY")
     self.pages.DUNGEONS = self:CreateSuitePage(content, "DUNGEONS")
+    self.pages.BATTLEGROUNDS = self:CreateSuitePage(content, "BATTLEGROUNDS")
     self.pages.GROUPFINDER = self:CreateSuitePage(content, "GROUPFINDER")
     self.pages.QUESTS = self:CreateSuitePage(content, "QUESTS")
     self.pages.TRAVEL = self:CreateSuitePage(content, "TRAVEL")
@@ -1941,7 +2008,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentPage(content, "STATS")
     self.pages.CODEX = self:CreateCodexPage(content)
     self.pages.DICE = self:CreateDicePage(content)
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, GROUPFINDER=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, BATTLEGROUNDS=0, GROUPFINDER=0 }
 
     local prevPage = makeButton("EAS_CustomJournal_PrevPage", rightPage, "< PREV", 6, pageH-28, 88, 26, function() self:TurnPage(-1) end)
     local pageNumber = makeLabel("EAS_CustomJournal_PageNumber", rightPage, "Page 1 / 7", math.floor((pageW-150)/2), pageH-26, 150, 22, "ZoFontGameSmall")
@@ -2088,14 +2155,14 @@ end
     book layout with a true two-page spread plus an index and edge chapter tabs.
 ]]
 
-TABS = {"INDEX", "NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "GROUPFINDER", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
+TABS = {"INDEX", "NOTES", "PINS", "BUILD", "GEAR", "SKILLS", "COMBAT", "ACTIVITY", "DUNGEONS", "BATTLEGROUNDS", "GROUPFINDER", "QUESTS", "TRAVEL", "TOOLS", "ACHIEVEMENTS", "STATS", "CODEX", "DICE"}
 TAB_LABELS.INDEX = "Index"
 TAB_LABELS.DICE = "Dice & Coin"
 TAB_TITLES.INDEX = "TAMRIEL CODEX"
 
 local EAS_TAB_SHORT = {
     INDEX="INDEX", NOTES="NOTES", PINS="PINS", BUILD="BUILD", GEAR="GEAR", SKILLS="SKILLS", COMBAT="COMBAT",
-    ACTIVITY="ACTIVITY", DUNGEONS="DUNGEONS", GROUPFINDER="GROUPS", QUESTS="QUESTS", TRAVEL="TRAVEL", TOOLS="TOOLS", ACHIEVEMENTS="ACHV", STATS="STATS",
+    ACTIVITY="ACTIVITY", DUNGEONS="DUNGEONS", BATTLEGROUNDS="BGS", GROUPFINDER="GROUPS", QUESTS="QUESTS", TRAVEL="TRAVEL", TOOLS="TOOLS", ACHIEVEMENTS="ACHV", STATS="STATS",
     CODEX="CRAFT", DICE="DICE",
 }
 
@@ -2109,6 +2176,7 @@ local EAS_TAB_DESCRIPTIONS = {
     COMBAT="Role-aware combat information and recent fight analysis.",
     ACTIVITY="Activities for XP, gold, quests, and progression goals.",
     DUNGEONS="All detected 4-player dungeons sorted alphabetically, with Base Game versus DLC / Chapter labeling.",
+    BATTLEGROUNDS="Live ESO Battleground Finder queues, availability, team size, daily reward state, and queue controls.",
     GROUPFINDER="Browse live player-created ESO Group Finder listings by category and difficulty.",
     QUESTS="Quest discovery and routing for active and not-yet-started quests.",
     TRAVEL="Wayshrines, group, guild, and social travel destinations.",
@@ -2633,6 +2701,7 @@ function J:Create()
     self.pages.COMBAT = self:CreateSuiteSpread("COMBAT")
     self.pages.ACTIVITY = self:CreateSuiteSpread("ACTIVITY")
     self.pages.DUNGEONS = self:CreateSuiteSpread("DUNGEONS")
+    self.pages.BATTLEGROUNDS = self:CreateSuiteSpread("BATTLEGROUNDS")
     self.pages.GROUPFINDER = self:CreateSuiteSpread("GROUPFINDER")
     self.pages.QUESTS = self:CreateSuiteSpread("QUESTS")
     self.pages.TRAVEL = self:CreateSuiteSpread("TRAVEL")
@@ -2641,7 +2710,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentSpread("STATS")
     self.pages.CODEX = self:CreateCodexSpread()
     self.pages.DICE = self:CreateDiceSpread()
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, GROUPFINDER=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, BATTLEGROUNDS=0, GROUPFINDER=0 }
 
     local prev = makeButton("EAS_CodexPrevSpread", window, "< PREV", 336, 894, 86, 26, function() self:TurnPage(-1) end)
     local spreadNo = makeLabel("EAS_CodexSpreadNumber", window, "1-2", 452, 896, 120, 22, "ZoFontGameSmall")
@@ -2703,7 +2772,7 @@ end
     Left page = filters + clickable rows. Right page = selected details + actions.
 ]]
 
-local EAS_INTERACTIVE_TABS = { GEAR=true, QUESTS=true, TRAVEL=true, ACTIVITY=true, DUNGEONS=true, GROUPFINDER=true }
+local EAS_INTERACTIVE_TABS = { GEAR=true, QUESTS=true, TRAVEL=true, ACTIVITY=true, DUNGEONS=true, BATTLEGROUNDS=true, GROUPFINDER=true }
 
 local function easSetEnabled(control, enabled)
     if not control then return end
@@ -2986,6 +3055,13 @@ function J:CreateInteractiveSuiteSpread(name)
         -- v0.27.10: Saved Loadouts must be directly discoverable from the
         -- Gear & Sets chapter. Do not depend on the optional Live Equipment
         -- floating panel to expose the Dressing-Room-style manager.
+        spread.companionAbilitiesButton = makeButton("EAS_CodexBestCompanionAbilities", spread.right, "BEST COMPANION ABILITIES + ULT", 10, self.pageH-396, self.pageW-20, 28, function()
+            if EPC.CompanionOptimizer and type(EPC.CompanionOptimizer.EquipBestAbilities) == "function" then
+                EPC.CompanionOptimizer:EquipBestAbilities()
+            end
+            self:RefreshSuitePage("GEAR")
+        end)
+
         spread.savedLoadoutsButton = makeButton("EAS_CodexSavedLoadouts", spread.right, "OPEN LOADOUTS", 10, self.pageH-362, self.pageW-20, 28, function()
             if EPC.LoadoutManager and type(EPC.LoadoutManager.Show) == "function" then
                 EPC.LoadoutManager:Show()
@@ -3000,7 +3076,7 @@ function J:CreateInteractiveSuiteSpread(name)
         }
         -- v0.24.93: give the four loadout actions enough room to display
         -- their complete labels. The old four-column row clipped WEAPONS,
-        -- JEWELRY, ABILITIES, and POTIONS on the Figma page width.
+        -- JEWELRY, ABILITIES, and POTIONS on the Glass page width.
         local loadoutGap = 8
         local loadoutW = math.floor((self.pageW - 28 - loadoutGap) / 2)
         local loadoutY = self.pageH - 326
@@ -3256,7 +3332,7 @@ function J:RunInteractiveTertiaryAction(tab)
     elseif tab == "TRAVEL" and EPC.Travel and EPC.Travel.TravelToNearestService then
         EPC.Travel:TravelToNearestService("GUILD_STORE")
     elseif tab == "DUNGEONS" and EPC.DungeonFinder then EPC.DungeonFinder:CancelQueue()
-    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:RefreshLiveListings(true)
+    elseif tab == "GROUPFINDER" and EPC.DungeonFinder then EPC.DungeonFinder:CreateCurrentDungeonListing()
     end
     self:RefreshSuitePage(tab)
 end
@@ -3360,6 +3436,20 @@ function J:RefreshInteractiveGear(page)
             b:SetText(preset and preset.label or key)
             setButtonStyle(b, key == active, self:GetTheme())
         end
+    end
+    if page.companionAbilitiesButton then
+        page.companionAbilitiesButton:SetHidden(false)
+        setButtonStyle(page.companionAbilitiesButton, false, self:GetTheme())
+        if EPC.CompanionOptimizer and type(EPC.CompanionOptimizer.GetButtonLabel) == "function" then
+            page.companionAbilitiesButton:SetText(EPC.CompanionOptimizer:GetButtonLabel())
+        else
+            page.companionAbilitiesButton:SetText("BEST COMPANION ABILITIES + ULT")
+        end
+        local enabled = EPC.CompanionOptimizer ~= nil
+            and type(EPC.CompanionOptimizer.EquipBestAbilities) == "function"
+            and type(EPC.CompanionOptimizer.IsAvailable) == "function"
+            and EPC.CompanionOptimizer:IsAvailable()
+        easSetEnabled(page.companionAbilitiesButton, enabled)
     end
     if page.savedLoadoutsButton then
         page.savedLoadoutsButton:SetHidden(false)
@@ -3758,7 +3848,11 @@ function J:ShowGuildLeaderHomeDropdown(page)
     local height = titleH + (#options * rowH) + pad
     popup:SetDimensions(width, height)
     popup:ClearAnchors()
-    popup:SetAnchor(TOP, anchor, BOTTOM, 0, 5)
+    if page and page.guildLeaderAnchorAbove then
+        popup:SetAnchor(BOTTOMRIGHT, anchor, TOPRIGHT, 0, -5)
+    else
+        popup:SetAnchor(TOP, anchor, BOTTOM, 0, 5)
+    end
 
     for i = 1, #popup.epcRows do
         popup.epcRows[i]:SetHidden(true)
@@ -3825,6 +3919,9 @@ function J:ShowGuildLeaderHomeDropdown(page)
             EPC.Travel:SelectGuildLeaderGuild(guildId)
             self:HideGuildLeaderHomeDropdown()
             self:RefreshSuitePage("TRAVEL")
+            if page and page.guildLeaderTravelOnSelect and EPC.Travel.TravelToSelectedGuildLeaderHome then
+                EPC.Travel:TravelToSelectedGuildLeaderHome()
+            end
         end)
     end
 
@@ -4284,20 +4381,20 @@ function J:Create()
 end
 
 -- ============================================================================
--- v0.24.78 - Advanced glass/Figma-style Codex shell
+-- v0.24.78 - Advanced glass/Glass-style Codex shell
 -- Replaces the lore-book presentation while preserving all existing Codex data
 -- pages and actions. The top-level window is movable/resizable and remembers
 -- its size/position. Internal content scales as one workspace when resized.
 -- ============================================================================
 
-local EAS_FIGMA_BASE_W = 1180
-local EAS_FIGMA_BASE_H = 760
-local EAS_FIGMA_MIN_W = 620
-local EAS_FIGMA_MIN_H = 400
-local EAS_FIGMA_MAX_W = 1680
-local EAS_FIGMA_MAX_H = 1080
+local EAS_GLASS_BASE_W = 1180
+local EAS_GLASS_BASE_H = 760
+local EAS_GLASS_MIN_W = 620
+local EAS_GLASS_MIN_H = 400
+local EAS_GLASS_MAX_W = 1680
+local EAS_GLASS_MAX_H = 1080
 
-local function easFigmaBackdrop(name, parent, left, top, right, bottom, centerAlpha, edgeAlpha)
+local function easGlassBackdrop(name, parent, left, top, right, bottom, centerAlpha, edgeAlpha)
     local p = wm:CreateControl(name, parent, CT_BACKDROP)
     if left ~= nil then
         p:SetAnchor(TOPLEFT, parent, TOPLEFT, left, top)
@@ -4311,20 +4408,20 @@ local function easFigmaBackdrop(name, parent, left, top, right, bottom, centerAl
     return p
 end
 
-function J:UpdateFigmaScale()
-    if not self.window or not self.figmaCanvas then return end
+function J:UpdateGlassScale()
+    if not self.window or not self.glassCanvas then return end
     local w, h = self.window:GetDimensions()
-    w, h = tonumber(w) or EAS_FIGMA_BASE_W, tonumber(h) or EAS_FIGMA_BASE_H
-    local scale = math.min(w / EAS_FIGMA_BASE_W, h / EAS_FIGMA_BASE_H)
+    w, h = tonumber(w) or EAS_GLASS_BASE_W, tonumber(h) or EAS_GLASS_BASE_H
+    local scale = math.min(w / EAS_GLASS_BASE_W, h / EAS_GLASS_BASE_H)
     scale = math.max(0.52, math.min(1.35, scale))
-    self.figmaCanvas:SetScale(scale)
-    self.figmaCanvas:ClearAnchors()
-    self.figmaCanvas:SetAnchor(CENTER, self.window, CENTER, 0, 0)
+    self.glassCanvas:SetScale(scale)
+    self.glassCanvas:ClearAnchors()
+    self.glassCanvas:SetAnchor(CENTER, self.window, CENTER, 0, 0)
 end
 
 local easLegacyApplyTheme_2478 = J.ApplyTheme
 function J:ApplyTheme()
-    if not self.figmaMode then
+    if not self.glassMode then
         return easLegacyApplyTheme_2478(self)
     end
     if not self.window then return end
@@ -4338,29 +4435,29 @@ function J:ApplyTheme()
         self.bg:SetCenterColor(0.020, 0.026, 0.038, 0.72)
         self.bg:SetEdgeColor(accent[1], accent[2], accent[3], 0.62)
     end
-    if self.figmaTopBar then
-        self.figmaTopBar:SetCenterColor(0.030, 0.038, 0.052, 0.82)
-        self.figmaTopBar:SetEdgeColor(0.25, 0.31, 0.40, 0.55)
+    if self.glassTopBar then
+        self.glassTopBar:SetCenterColor(0.030, 0.038, 0.052, 0.82)
+        self.glassTopBar:SetEdgeColor(0.25, 0.31, 0.40, 0.55)
     end
-    if self.figmaSidebar then
-        self.figmaSidebar:SetCenterColor(0.025, 0.032, 0.046, 0.76)
-        self.figmaSidebar:SetEdgeColor(0.22, 0.28, 0.36, 0.48)
+    if self.glassSidebar then
+        self.glassSidebar:SetCenterColor(0.025, 0.032, 0.046, 0.76)
+        self.glassSidebar:SetEdgeColor(0.22, 0.28, 0.36, 0.48)
     end
-    if self.figmaLeftCard then
-        self.figmaLeftCard:SetCenterColor(0.040, 0.050, 0.068, 0.68)
-        self.figmaLeftCard:SetEdgeColor(0.28, 0.34, 0.43, 0.58)
+    if self.glassLeftCard then
+        self.glassLeftCard:SetCenterColor(0.040, 0.050, 0.068, 0.68)
+        self.glassLeftCard:SetEdgeColor(0.28, 0.34, 0.43, 0.58)
     end
-    if self.figmaRightCard then
-        self.figmaRightCard:SetCenterColor(0.040, 0.050, 0.068, 0.68)
-        self.figmaRightCard:SetEdgeColor(0.28, 0.34, 0.43, 0.58)
+    if self.glassRightCard then
+        self.glassRightCard:SetCenterColor(0.040, 0.050, 0.068, 0.68)
+        self.glassRightCard:SetEdgeColor(0.28, 0.34, 0.43, 0.58)
     end
-    if self.figmaAccent then
-        self.figmaAccent:SetCenterColor(accent[1], accent[2], accent[3], 0.95)
-        self.figmaAccent:SetEdgeColor(0,0,0,0)
+    if self.glassAccent then
+        self.glassAccent:SetCenterColor(accent[1], accent[2], accent[3], 0.95)
+        self.glassAccent:SetEdgeColor(0,0,0,0)
     end
-    if self.figmaBrand then self.figmaBrand:SetColor(text[1], text[2], text[3], 1) end
-    if self.figmaSubtitle then self.figmaSubtitle:SetColor(muted[1], muted[2], muted[3], 1) end
-    if self.figmaResizeHint then self.figmaResizeHint:SetColor(muted[1], muted[2], muted[3], 0.95) end
+    if self.glassBrand then self.glassBrand:SetColor(text[1], text[2], text[3], 1) end
+    if self.glassSubtitle then self.glassSubtitle:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.glassResizeHint then self.glassResizeHint:SetColor(muted[1], muted[2], muted[3], 0.95) end
 
     for _, l in pairs(self.themeLabels or {}) do
         if l and l.SetColor then l:SetColor(text[1], text[2], text[3], 1) end
@@ -4377,15 +4474,15 @@ function J:ApplyTheme()
             b:SetMouseOverFontColor(1,1,1,1)
             b:SetPressedFontColor(accent[1],accent[2],accent[3],1)
         end
-        if b and b.figmaBg then
+        if b and b.glassBg then
             if name == self.activeTab then
-                b.figmaBg:SetCenterColor(accent[1],accent[2],accent[3],0.16)
-                b.figmaBg:SetEdgeColor(0.24,0.36,0.54,0.94)
-                if b.figmaRail then b.figmaRail:SetColor(accent[1],accent[2],accent[3],1) end
+                b.glassBg:SetCenterColor(accent[1],accent[2],accent[3],0.16)
+                b.glassBg:SetEdgeColor(0.24,0.36,0.54,0.94)
+                if b.glassRail then b.glassRail:SetColor(accent[1],accent[2],accent[3],1) end
             else
-                b.figmaBg:SetCenterColor(0.05,0.06,0.08,0.16)
-                b.figmaBg:SetEdgeColor(0.24,0.36,0.54,0.78)
-                if b.figmaRail then b.figmaRail:SetColor(0,0,0,0) end
+                b.glassBg:SetCenterColor(0.05,0.06,0.08,0.16)
+                b.glassBg:SetEdgeColor(0.24,0.36,0.54,0.78)
+                if b.glassRail then b.glassRail:SetColor(0,0,0,0) end
             end
         end
     end
@@ -4407,8 +4504,8 @@ end
 
 local easLegacyCreateSpreadShell_2478 = J.CreateSpreadShell
 function J:CreateSpreadShell(name)
-    if not self.figmaMode then return easLegacyCreateSpreadShell_2478(self, name) end
-    local parent = self.figmaWorkspace or self.window
+    if not self.glassMode then return easLegacyCreateSpreadShell_2478(self, name) end
+    local parent = self.glassWorkspace or self.window
     local spread = wm:CreateControl("EAS_CodexSpread_"..name, parent, CT_CONTROL)
     spread:SetAnchorFill(parent)
 
@@ -4426,20 +4523,20 @@ function J:CreateSpreadShell(name)
 end
 
 function J:Create()
-    self.figmaMode = true
+    self.glassMode = true
     local s = self:EnsureSaved()
-    if s.figmaGlassUpgrade ~= true then
+    if s.glassGlassUpgrade ~= true then
         s.theme = "MIDNIGHT"
         s.activeTab = s.activeTab or "INDEX"
-        s.figmaGlassUpgrade = true
+        s.glassGlassUpgrade = true
     end
 
     local window = wm:CreateTopLevelWindow("EAS_CustomJournal")
     self.window = window
-    local savedW = math.max(EAS_FIGMA_MIN_W, math.min(EAS_FIGMA_MAX_W, tonumber(s.figmaWidth) or EAS_FIGMA_BASE_W))
-    local savedH = math.max(EAS_FIGMA_MIN_H, math.min(EAS_FIGMA_MAX_H, tonumber(s.figmaHeight) or EAS_FIGMA_BASE_H))
+    local savedW = math.max(EAS_GLASS_MIN_W, math.min(EAS_GLASS_MAX_W, tonumber(s.glassWidth) or EAS_GLASS_BASE_W))
+    local savedH = math.max(EAS_GLASS_MIN_H, math.min(EAS_GLASS_MAX_H, tonumber(s.glassHeight) or EAS_GLASS_BASE_H))
     window:SetDimensions(savedW, savedH)
-    window:SetDimensionConstraints(EAS_FIGMA_MIN_W, EAS_FIGMA_MIN_H, EAS_FIGMA_MAX_W, EAS_FIGMA_MAX_H)
+    window:SetDimensionConstraints(EAS_GLASS_MIN_W, EAS_GLASS_MIN_H, EAS_GLASS_MAX_W, EAS_GLASS_MAX_H)
     window:SetResizeHandleSize(24)
     window:SetAnchor(CENTER, GuiRoot, CENTER, 0, -8)
     window:SetClampedToScreen(true)
@@ -4454,48 +4551,48 @@ function J:Create()
         window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, s.left, s.top)
     end
 
-    local canvas = wm:CreateControl("EAS_FigmaCanvas", window, CT_CONTROL)
-    canvas:SetDimensions(EAS_FIGMA_BASE_W, EAS_FIGMA_BASE_H)
+    local canvas = wm:CreateControl("EAS_GlassCanvas", window, CT_CONTROL)
+    canvas:SetDimensions(EAS_GLASS_BASE_W, EAS_GLASS_BASE_H)
     canvas:SetAnchor(CENTER, window, CENTER, 0, 0)
-    self.figmaCanvas = canvas
+    self.glassCanvas = canvas
 
-    local bg = easFigmaBackdrop("EAS_CustomJournal_BG", canvas, nil, nil, nil, nil, 0.72, 0.62)
+    local bg = easGlassBackdrop("EAS_CustomJournal_BG", canvas, nil, nil, nil, nil, 0.72, 0.62)
     self.bg = bg
     self.nativeBook = nil
     self.bookTexture = nil
 
-    local topBar = wm:CreateControl("EAS_FigmaTopBar", canvas, CT_BACKDROP)
+    local topBar = wm:CreateControl("EAS_GlassTopBar", canvas, CT_BACKDROP)
     topBar:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, 0)
     topBar:SetAnchor(TOPRIGHT, canvas, TOPRIGHT, 0, 0)
     topBar:SetHeight(64)
     topBar:SetEdgeTexture(nil, 1, 1, 1)
-    self.figmaTopBar = topBar
+    self.glassTopBar = topBar
 
-    local accent = wm:CreateControl("EAS_FigmaAccent", canvas, CT_BACKDROP)
+    local accent = wm:CreateControl("EAS_GlassAccent", canvas, CT_BACKDROP)
     accent:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, 0)
-    accent:SetDimensions(4, EAS_FIGMA_BASE_H)
+    accent:SetDimensions(4, EAS_GLASS_BASE_H)
     accent:SetEdgeTexture(nil, 1, 1, 1)
-    self.figmaAccent = accent
+    self.glassAccent = accent
 
-    local brand = makeLabel("EAS_FigmaBrand", canvas, "ESO ADVENTURER SUITE", 24, 12, 320, 24, "ZoFontWinH2")
+    local brand = makeLabel("EAS_GlassBrand", canvas, "ESO ADVENTURER SUITE", 24, 12, 320, 24, "ZoFontWinH2")
     brand:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    local subtitle = makeLabel("EAS_FigmaSubtitle", canvas, "COMMAND CENTER  /  TAMRIEL WORKSPACE", 25, 37, 360, 18, "ZoFontGameSmall")
-    self.figmaBrand, self.figmaSubtitle = brand, subtitle
+    local subtitle = makeLabel("EAS_GlassSubtitle", canvas, "COMMAND CENTER  /  TAMRIEL WORKSPACE", 25, 37, 360, 18, "ZoFontGameSmall")
+    self.glassBrand, self.glassSubtitle = brand, subtitle
 
-    local sidebar = wm:CreateControl("EAS_FigmaSidebar", canvas, CT_BACKDROP)
+    local sidebar = wm:CreateControl("EAS_GlassSidebar", canvas, CT_BACKDROP)
     sidebar:SetAnchor(TOPLEFT, canvas, TOPLEFT, 12, 76)
     sidebar:SetDimensions(206, 664)
     sidebar:SetEdgeTexture(nil, 1, 1, 1)
-    self.figmaSidebar = sidebar
+    self.glassSidebar = sidebar
 
-    local sideTitle = makeLabel("EAS_FigmaSideTitle", sidebar, "WORKSPACE", 16, 12, 174, 20, "ZoFontGameBold")
+    local sideTitle = makeLabel("EAS_GlassSideTitle", sidebar, "WORKSPACE", 16, 12, 174, 20, "ZoFontGameBold")
     sideTitle:SetColor(0.62,0.68,0.78,1)
 
     self.panels, self.themeLabels, self.tabButtons, self.pages, self.topButtons = {}, {}, {}, {}, {}
     self.categoryButtons = {}
 
     local function addNav(key, label, y)
-        local b = wm:CreateControl("EAS_FigmaNav_"..key, sidebar, CT_BUTTON)
+        local b = wm:CreateControl("EAS_GlassNav_"..key, sidebar, CT_BUTTON)
         b:SetAnchor(TOPLEFT, sidebar, TOPLEFT, 10, y)
         b:SetDimensions(186, 28)
         b:SetFont("ZoFontGame")
@@ -4503,16 +4600,16 @@ function J:Create()
         if b.SetVerticalAlignment then b:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
         b:SetText(tostring(label or key))
         b:SetHandler("OnClicked", function() self:SetTab(key) end)
-        local nb = wm:CreateControl("EAS_FigmaNavBG_"..key, b, CT_BACKDROP)
+        local nb = wm:CreateControl("EAS_GlassNavBG_"..key, b, CT_BACKDROP)
         nb:SetAnchor(TOPLEFT, b, TOPLEFT, 1, 1)
         nb:SetAnchor(BOTTOMRIGHT, b, BOTTOMRIGHT, -1, -1)
         nb:SetEdgeTexture(nil, 1, 1, 1)
         nb:SetDrawLevel(0)
-        b.figmaBg = nb
-        local rail = wm:CreateControl("EAS_FigmaNavRail_"..key, b, CT_TEXTURE)
+        b.glassBg = nb
+        local rail = wm:CreateControl("EAS_GlassNavRail_"..key, b, CT_TEXTURE)
         rail:SetAnchor(LEFT, b, LEFT, 4, 0)
         rail:SetDimensions(3, 19)
-        b.figmaRail = rail
+        b.glassRail = rail
         self.tabButtons[key] = b
         return b
     end
@@ -4527,14 +4624,14 @@ function J:Create()
         end
     end
 
-    local workspace = wm:CreateControl("EAS_FigmaWorkspace", canvas, CT_CONTROL)
+    local workspace = wm:CreateControl("EAS_GlassWorkspace", canvas, CT_CONTROL)
     workspace:SetAnchor(TOPLEFT, canvas, TOPLEFT, 232, 76)
     workspace:SetDimensions(932, 664)
-    self.figmaWorkspace = workspace
+    self.glassWorkspace = workspace
 
-    local leftCard = easFigmaBackdrop("EAS_FigmaLeftCard", workspace, 0, 0, -474, -8, 0.68, 0.58)
-    local rightCard = easFigmaBackdrop("EAS_FigmaRightCard", workspace, 474, 0, -8, -8, 0.68, 0.58)
-    self.figmaLeftCard, self.figmaRightCard = leftCard, rightCard
+    local leftCard = easGlassBackdrop("EAS_GlassLeftCard", workspace, 0, 0, -474, -8, 0.68, 0.58)
+    local rightCard = easGlassBackdrop("EAS_GlassRightCard", workspace, 474, 0, -8, -8, 0.68, 0.58)
+    self.glassLeftCard, self.glassRightCard = leftCard, rightCard
 
     local pageW, pageH = 430, 610
     self.pageW, self.pageH = pageW, pageH
@@ -4550,8 +4647,8 @@ function J:Create()
     self.rightPageHost = rightHost
     self.rightContent = rightHost
 
-    local navPrev = makeButton("EAS_FigmaPrev", canvas, "<", 946, 17, 38, 30, function() self:TurnPage(-1) end)
-    local navNext = makeButton("EAS_FigmaNext", canvas, ">", 990, 17, 38, 30, function() self:TurnPage(1) end)
+    local navPrev = makeButton("EAS_GlassPrev", canvas, "<", 946, 17, 38, 30, function() self:TurnPage(-1) end)
+    local navNext = makeButton("EAS_GlassNext", canvas, ">", 990, 17, 38, 30, function() self:TurnPage(1) end)
     local theme = makeButton("EAS_CodexTheme", canvas, "ACCENT", 1036, 17, 68, 30, function() self:CycleTheme() end)
     local close = makeButton("EAS_CodexClose", canvas, "X", 1112, 17, 40, 30, function() self:Hide() end)
     self.prevPageButton, self.nextPageButton = navPrev, navNext
@@ -4570,6 +4667,7 @@ function J:Create()
     self.pages.COMBAT = self:CreateSuiteSpread("COMBAT")
     self.pages.ACTIVITY = self:CreateSuiteSpread("ACTIVITY")
     self.pages.DUNGEONS = self:CreateSuiteSpread("DUNGEONS")
+    self.pages.BATTLEGROUNDS = self:CreateSuiteSpread("BATTLEGROUNDS")
     self.pages.GROUPFINDER = self:CreateSuiteSpread("GROUPFINDER")
     self.pages.QUESTS = self:CreateSuiteSpread("QUESTS")
     self.pages.TRAVEL = self:CreateSuiteSpread("TRAVEL")
@@ -4578,7 +4676,7 @@ function J:Create()
     self.pages.STATS = self:CreateDocumentSpread("STATS")
     self.pages.CODEX = self:CreateCodexSpread()
     self.pages.DICE = self:CreateDiceSpread()
-    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, GROUPFINDER=0 }
+    self.suiteRowIndex = { GEAR=0, QUESTS=0, TRAVEL=0, ACTIVITY=0, DUNGEONS=0, BATTLEGROUNDS=0, GROUPFINDER=0 }
 
     local spreadNo = makeLabel("EAS_CodexSpreadNumber", canvas, "", 852, 22, 86, 22, "ZoFontGameSmall")
     spreadNo:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -4605,9 +4703,9 @@ function J:Create()
     flipMark:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.themeLabels[#self.themeLabels+1] = flipMark
 
-    local resizeHint = makeLabel("EAS_FigmaResizeHint", canvas, "DRAG WINDOW  /  RESIZE FROM EDGES", 816, 734, 330, 18, "ZoFontGameSmall")
+    local resizeHint = makeLabel("EAS_GlassResizeHint", canvas, "DRAG WINDOW  /  RESIZE FROM EDGES", 816, 734, 330, 18, "ZoFontGameSmall")
     resizeHint:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    self.figmaResizeHint = resizeHint
+    self.glassResizeHint = resizeHint
 
     window:SetHandler("OnMoveStop", function(control)
         local sv = self:EnsureSaved()
@@ -4616,9 +4714,9 @@ function J:Create()
     window:SetHandler("OnResizeStop", function(control)
         local sv = self:EnsureSaved()
         local w, h = control:GetDimensions()
-        sv.figmaWidth = math.floor((tonumber(w) or EAS_FIGMA_BASE_W) + 0.5)
-        sv.figmaHeight = math.floor((tonumber(h) or EAS_FIGMA_BASE_H) + 0.5)
-        self:UpdateFigmaScale()
+        sv.glassWidth = math.floor((tonumber(w) or EAS_GLASS_BASE_W) + 0.5)
+        sv.glassHeight = math.floor((tonumber(h) or EAS_GLASS_BASE_H) + 0.5)
+        self:UpdateGlassScale()
     end)
 
     self.category = s.category or "ALL"
@@ -4644,13 +4742,13 @@ function J:Create()
     self:SetEditorEnabled(not self.readMode)
     if EPC.UI and EPC.UI.root then EPC.UI.root:SetHidden(true) end
 
-    self:UpdateFigmaScale()
+    self:UpdateGlassScale()
     self:ApplyTheme()
 end
 
 
 -- ============================================================================
--- v0.24.79 - Premium Figma polish pass
+-- v0.24.79 - Premium Glass polish pass
 -- Pushes the glass Codex closer to a modern design-tool dashboard with
 -- sharper button chrome, floating toolbars, sidebar hero card, section chips,
 -- and stronger visual hierarchy while preserving existing behavior.
@@ -4723,127 +4821,127 @@ styleIconButton = function(button, theme)
     end
 end
 
-function J:EnhanceFigmaPremiumVisuals()
-    if not self.figmaMode or not self.window or self.figmaPremium2479 then return end
-    self.figmaPremium2479 = true
+function J:EnhanceGlassPremiumVisuals()
+    if not self.glassMode or not self.window or self.glassPremium2479 then return end
+    self.glassPremium2479 = true
 
     local orderedTabs = {"INDEX"}
     for _, tab in ipairs(TABS) do
         if tab ~= "INDEX" then orderedTabs[#orderedTabs+1] = tab end
     end
 
-    if self.figmaSidebar then
-        local hero = wm:CreateControl("EAS_FigmaHeroCard", self.figmaSidebar, CT_BACKDROP)
-        hero:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 38)
+    if self.glassSidebar then
+        local hero = wm:CreateControl("EAS_GlassHeroCard", self.glassSidebar, CT_BACKDROP)
+        hero:SetAnchor(TOPLEFT, self.glassSidebar, TOPLEFT, 10, 38)
         hero:SetDimensions(186, 92)
         hero:SetEdgeTexture(nil, 1, 1, 1)
-        self.figmaHeroCard = hero
+        self.glassHeroCard = hero
 
-        local heroStripe = wm:CreateControl("EAS_FigmaHeroStripe", hero, CT_BACKDROP)
+        local heroStripe = wm:CreateControl("EAS_GlassHeroStripe", hero, CT_BACKDROP)
         heroStripe:SetAnchor(TOPLEFT, hero, TOPLEFT, 0, 0)
         heroStripe:SetDimensions(186, 4)
         heroStripe:SetEdgeTexture(nil, 1, 1, 1)
-        self.figmaHeroStripe = heroStripe
+        self.glassHeroStripe = heroStripe
 
-        local heroLabel = makeLabel("EAS_FigmaHeroLabel", hero, "TACTICAL DASHBOARD", 14, 12, 158, 18, "ZoFontGameBold")
-        local heroSub = makeLabel("EAS_FigmaHeroSub", hero, "Glass workspace for builds, sets, dungeons, travel and combat tools.", 14, 34, 158, 36, "ZoFontGameSmall")
+        local heroLabel = makeLabel("EAS_GlassHeroLabel", hero, "TACTICAL DASHBOARD", 14, 12, 158, 18, "ZoFontGameBold")
+        local heroSub = makeLabel("EAS_GlassHeroSub", hero, "Glass workspace for builds, sets, dungeons, travel and combat tools.", 14, 34, 158, 36, "ZoFontGameSmall")
         heroSub:SetVerticalAlignment(TEXT_ALIGN_TOP)
-        self.figmaHeroLabel, self.figmaHeroSub = heroLabel, heroSub
+        self.glassHeroLabel, self.glassHeroSub = heroLabel, heroSub
         table.insert(self.themeLabels, heroLabel)
         table.insert(self.themeLabels, heroSub)
 
-        local chip1 = wm:CreateControl("EAS_FigmaHeroChip1", hero, CT_BACKDROP)
+        local chip1 = wm:CreateControl("EAS_GlassHeroChip1", hero, CT_BACKDROP)
         chip1:SetAnchor(TOPLEFT, hero, TOPLEFT, 14, 70)
         chip1:SetDimensions(56, 16)
         chip1:SetEdgeTexture(nil, 1, 1, 1)
-        local chip1Text = makeLabel("EAS_FigmaHeroChipText1", hero, "LIVE", 14, 70, 56, 16, "ZoFontGameSmall")
+        local chip1Text = makeLabel("EAS_GlassHeroChipText1", hero, "LIVE", 14, 70, 56, 16, "ZoFontGameSmall")
         chip1Text:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        local chip2 = wm:CreateControl("EAS_FigmaHeroChip2", hero, CT_BACKDROP)
+        local chip2 = wm:CreateControl("EAS_GlassHeroChip2", hero, CT_BACKDROP)
         chip2:SetAnchor(TOPLEFT, hero, TOPLEFT, 78, 70)
         chip2:SetDimensions(92, 16)
         chip2:SetEdgeTexture(nil, 1, 1, 1)
-        local chip2Text = makeLabel("EAS_FigmaHeroChipText2", hero, "SCALABLE UI", 78, 70, 92, 16, "ZoFontGameSmall")
+        local chip2Text = makeLabel("EAS_GlassHeroChipText2", hero, "SCALABLE UI", 78, 70, 92, 16, "ZoFontGameSmall")
         chip2Text:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        self.figmaHeroChip1, self.figmaHeroChip2 = chip1, chip2
+        self.glassHeroChip1, self.glassHeroChip2 = chip1, chip2
         table.insert(self.themeLabels, chip1Text)
         table.insert(self.themeLabels, chip2Text)
 
-        if self.figmaSideTitle then self.figmaSideTitle:ClearAnchors(); self.figmaSideTitle:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 16, 12) end
+        if self.glassSideTitle then self.glassSideTitle:ClearAnchors(); self.glassSideTitle:SetAnchor(TOPLEFT, self.glassSidebar, TOPLEFT, 16, 12) end
         for index, key in ipairs(orderedTabs) do
             local b = self.tabButtons and self.tabButtons[key]
             if b then
                 b:ClearAnchors()
-                b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 142 + ((index - 1) * 31))
+                b:SetAnchor(TOPLEFT, self.glassSidebar, TOPLEFT, 10, 142 + ((index - 1) * 31))
                 b:SetDimensions(186, 27)
-                if not b.figmaIconBadge then
+                if not b.glassIconBadge then
                     local badge = wm:CreateControl((b:GetName() or key).."_Badge", b, CT_BACKDROP)
                     badge:SetAnchor(LEFT, b, LEFT, 8, 0)
                     badge:SetDimensions(18, 18)
                     badge:SetEdgeTexture(nil, 1, 1, 1)
-                    b.figmaIconBadge = badge
+                    b.glassIconBadge = badge
                     local iconText = makeLabel((b:GetName() or key).."_BadgeText", b, string.sub(tostring(TAB_LABELS[key] or key),1,1), 8, 4, 18, 12, "ZoFontGameSmall")
                     iconText:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-                    b.figmaIconText = iconText
+                    b.glassIconText = iconText
                     table.insert(self.themeLabels, iconText)
                 end
             end
         end
     end
 
-    if self.figmaTopBar then
-        local toolbar = wm:CreateControl("EAS_FigmaFloatingToolbar", self.figmaCanvas, CT_BACKDROP)
-        toolbar:SetAnchor(TOPRIGHT, self.figmaCanvas, TOPRIGHT, -14, 11)
+    if self.glassTopBar then
+        local toolbar = wm:CreateControl("EAS_GlassFloatingToolbar", self.glassCanvas, CT_BACKDROP)
+        toolbar:SetAnchor(TOPRIGHT, self.glassCanvas, TOPRIGHT, -14, 11)
         toolbar:SetDimensions(216, 42)
         toolbar:SetEdgeTexture(nil, 1, 1, 1)
-        self.figmaFloatingToolbar = toolbar
+        self.glassFloatingToolbar = toolbar
         if self.prevPageButton then self.prevPageButton:SetDrawTier(DT_HIGH) end
         if self.nextPageButton then self.nextPageButton:SetDrawTier(DT_HIGH) end
         if self.themeButton then self.themeButton:SetDrawTier(DT_HIGH) end
         if self.closeButton then self.closeButton:SetDrawTier(DT_HIGH) end
 
-        local searchShell = wm:CreateControl("EAS_FigmaSearchShell", self.figmaCanvas, CT_BACKDROP)
-        searchShell:SetAnchor(TOPLEFT, self.figmaCanvas, TOPLEFT, 410, 14)
+        local searchShell = wm:CreateControl("EAS_GlassSearchShell", self.glassCanvas, CT_BACKDROP)
+        searchShell:SetAnchor(TOPLEFT, self.glassCanvas, TOPLEFT, 410, 14)
         searchShell:SetDimensions(302, 36)
         searchShell:SetEdgeTexture(nil, 1, 1, 1)
-        self.figmaSearchShell = searchShell
-        local searchIcon = makeLabel("EAS_FigmaSearchIcon", self.figmaCanvas, "Q", 422, 22, 12, 12, "ZoFontGameBold")
-        local searchText = makeLabel("EAS_FigmaSearchText", self.figmaCanvas, "Quick view: builds, sets, quests, dungeons", 444, 20, 248, 16, "ZoFontGameSmall")
-        self.figmaSearchIcon, self.figmaSearchText = searchIcon, searchText
+        self.glassSearchShell = searchShell
+        local searchIcon = makeLabel("EAS_GlassSearchIcon", self.glassCanvas, "Q", 422, 22, 12, 12, "ZoFontGameBold")
+        local searchText = makeLabel("EAS_GlassSearchText", self.glassCanvas, "Quick view: builds, sets, quests, dungeons", 444, 20, 248, 16, "ZoFontGameSmall")
+        self.glassSearchIcon, self.glassSearchText = searchIcon, searchText
         table.insert(self.themeLabels, searchIcon)
         table.insert(self.themeLabels, searchText)
     end
 
     if self.leftPageHost and self.rightPageHost then
         self.leftPageHost:ClearAnchors()
-        self.leftPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 14, 44)
+        self.leftPageHost:SetAnchor(TOPLEFT, self.glassWorkspace, TOPLEFT, 14, 44)
         self.rightPageHost:ClearAnchors()
-        self.rightPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 488, 44)
+        self.rightPageHost:SetAnchor(TOPLEFT, self.glassWorkspace, TOPLEFT, 488, 44)
 
-        local leftHeader = wm:CreateControl("EAS_FigmaLeftHeader", self.figmaWorkspace, CT_BACKDROP)
-        leftHeader:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 14, 14)
+        local leftHeader = wm:CreateControl("EAS_GlassLeftHeader", self.glassWorkspace, CT_BACKDROP)
+        leftHeader:SetAnchor(TOPLEFT, self.glassWorkspace, TOPLEFT, 14, 14)
         leftHeader:SetDimensions(430, 24)
         leftHeader:SetEdgeTexture(nil, 1, 1, 1)
-        self.figmaLeftHeader = leftHeader
-        local leftHeaderText = makeLabel("EAS_FigmaLeftHeaderText", self.figmaWorkspace, "NAVIGATOR", 28, 19, 150, 16, "ZoFontGameBold")
-        self.figmaLeftHeaderText = leftHeaderText
+        self.glassLeftHeader = leftHeader
+        local leftHeaderText = makeLabel("EAS_GlassLeftHeaderText", self.glassWorkspace, "NAVIGATOR", 28, 19, 150, 16, "ZoFontGameBold")
+        self.glassLeftHeaderText = leftHeaderText
         table.insert(self.themeLabels, leftHeaderText)
 
-        local rightHeader = wm:CreateControl("EAS_FigmaRightHeader", self.figmaWorkspace, CT_BACKDROP)
-        rightHeader:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 488, 14)
+        local rightHeader = wm:CreateControl("EAS_GlassRightHeader", self.glassWorkspace, CT_BACKDROP)
+        rightHeader:SetAnchor(TOPLEFT, self.glassWorkspace, TOPLEFT, 488, 14)
         rightHeader:SetDimensions(430, 24)
         rightHeader:SetEdgeTexture(nil, 1, 1, 1)
-        self.figmaRightHeader = rightHeader
-        local rightHeaderText = makeLabel("EAS_FigmaRightHeaderText", self.figmaWorkspace, "DETAIL PANEL", 502, 19, 160, 16, "ZoFontGameBold")
-        self.figmaRightHeaderText = rightHeaderText
+        self.glassRightHeader = rightHeader
+        local rightHeaderText = makeLabel("EAS_GlassRightHeaderText", self.glassWorkspace, "DETAIL PANEL", 502, 19, 160, 16, "ZoFontGameBold")
+        self.glassRightHeaderText = rightHeaderText
         table.insert(self.themeLabels, rightHeaderText)
     end
 
-    local footer = wm:CreateControl("EAS_FigmaFooterRail", self.figmaCanvas, CT_BACKDROP)
-    footer:SetAnchor(BOTTOMLEFT, self.figmaCanvas, BOTTOMLEFT, 232, -6)
+    local footer = wm:CreateControl("EAS_GlassFooterRail", self.glassCanvas, CT_BACKDROP)
+    footer:SetAnchor(BOTTOMLEFT, self.glassCanvas, BOTTOMLEFT, 232, -6)
     footer:SetDimensions(932, 20)
     footer:SetEdgeTexture(nil, 1, 1, 1)
-    self.figmaFooterRail = footer
-    local footerText = makeLabel("EAS_FigmaFooterText", self.figmaCanvas, "MOVE  /  RESIZE  /  REVIEW BUILDS  /  EQUIP LOADOUTS  /  ROUTE CONTENT", 248, 739, 700, 14, "ZoFontGameSmall")
+    self.glassFooterRail = footer
+    local footerText = makeLabel("EAS_GlassFooterText", self.glassCanvas, "MOVE  /  RESIZE  /  REVIEW BUILDS  /  EQUIP LOADOUTS  /  ROUTE CONTENT", 248, 739, 700, 14, "ZoFontGameSmall")
     table.insert(self.themeLabels, footerText)
 
     self:ApplyTheme()
@@ -4852,46 +4950,46 @@ end
 local easLegacyApplyTheme_2479 = J.ApplyTheme
 function J:ApplyTheme()
     easLegacyApplyTheme_2479(self)
-    if not self.figmaMode then return end
+    if not self.glassMode then return end
     local t = self:GetTheme()
     local accent = t.accent or {0.43, 0.68, 0.96, 1}
     local text = t.text or {0.92, 0.95, 0.99, 1}
     local muted = {0.62, 0.70, 0.80, 1}
 
     if self.bg then self.bg:SetCenterColor(0.014, 0.018, 0.028, 0.76) self.bg:SetEdgeColor(accent[1], accent[2], accent[3], 0.40) end
-    if self.figmaTopBar then self.figmaTopBar:SetCenterColor(0.024, 0.028, 0.040, 0.88) self.figmaTopBar:SetEdgeColor(0.16, 0.20, 0.28, 0.48) end
-    if self.figmaSidebar then self.figmaSidebar:SetCenterColor(0.020, 0.026, 0.038, 0.82) self.figmaSidebar:SetEdgeColor(0.18, 0.24, 0.31, 0.46) end
-    if self.figmaLeftCard then self.figmaLeftCard:SetCenterColor(0.042, 0.052, 0.070, 0.82) self.figmaLeftCard:SetEdgeColor(0.24, 0.32, 0.40, 0.54) end
-    if self.figmaRightCard then self.figmaRightCard:SetCenterColor(0.042, 0.052, 0.070, 0.82) self.figmaRightCard:SetEdgeColor(0.24, 0.32, 0.40, 0.54) end
-    if self.figmaAccent then self.figmaAccent:SetCenterColor(accent[1], accent[2], accent[3], 1) self.figmaAccent:SetEdgeColor(0,0,0,0) end
-    if self.figmaFloatingToolbar then self.figmaFloatingToolbar:SetCenterColor(0.045, 0.055, 0.076, 0.90) self.figmaFloatingToolbar:SetEdgeColor(accent[1], accent[2], accent[3], 0.28) end
-    if self.figmaSearchShell then self.figmaSearchShell:SetCenterColor(0.032, 0.040, 0.056, 0.84) self.figmaSearchShell:SetEdgeColor(0.17, 0.22, 0.30, 0.40) end
-    if self.figmaHeroCard then self.figmaHeroCard:SetCenterColor(0.038, 0.046, 0.064, 0.88) self.figmaHeroCard:SetEdgeColor(accent[1], accent[2], accent[3], 0.28) end
-    if self.figmaHeroStripe then self.figmaHeroStripe:SetCenterColor(accent[1], accent[2], accent[3], 0.96) self.figmaHeroStripe:SetEdgeColor(0,0,0,0) end
-    if self.figmaHeroChip1 then self.figmaHeroChip1:SetCenterColor(accent[1], accent[2], accent[3], 0.20) self.figmaHeroChip1:SetEdgeColor(accent[1], accent[2], accent[3], 0.36) end
-    if self.figmaHeroChip2 then self.figmaHeroChip2:SetCenterColor(0.07, 0.09, 0.12, 0.62) self.figmaHeroChip2:SetEdgeColor(0.20, 0.25, 0.34, 0.34) end
-    if self.figmaLeftHeader then self.figmaLeftHeader:SetCenterColor(0.050, 0.060, 0.082, 0.72) self.figmaLeftHeader:SetEdgeColor(0.20, 0.24, 0.31, 0.34) end
-    if self.figmaRightHeader then self.figmaRightHeader:SetCenterColor(0.050, 0.060, 0.082, 0.72) self.figmaRightHeader:SetEdgeColor(0.20, 0.24, 0.31, 0.34) end
-    if self.figmaFooterRail then self.figmaFooterRail:SetCenterColor(0.028, 0.032, 0.048, 0.72) self.figmaFooterRail:SetEdgeColor(0.16, 0.20, 0.28, 0.30) end
-    if self.figmaBrand then self.figmaBrand:SetColor(text[1], text[2], text[3], 1) end
-    if self.figmaSubtitle then self.figmaSubtitle:SetColor(muted[1], muted[2], muted[3], 1) end
-    if self.figmaHeroLabel then self.figmaHeroLabel:SetColor(text[1], text[2], text[3], 1) end
-    if self.figmaHeroSub then self.figmaHeroSub:SetColor(muted[1], muted[2], muted[3], 1) end
-    if self.figmaSearchIcon then self.figmaSearchIcon:SetColor(accent[1], accent[2], accent[3], 1) end
-    if self.figmaSearchText then self.figmaSearchText:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.glassTopBar then self.glassTopBar:SetCenterColor(0.024, 0.028, 0.040, 0.88) self.glassTopBar:SetEdgeColor(0.16, 0.20, 0.28, 0.48) end
+    if self.glassSidebar then self.glassSidebar:SetCenterColor(0.020, 0.026, 0.038, 0.82) self.glassSidebar:SetEdgeColor(0.18, 0.24, 0.31, 0.46) end
+    if self.glassLeftCard then self.glassLeftCard:SetCenterColor(0.042, 0.052, 0.070, 0.82) self.glassLeftCard:SetEdgeColor(0.24, 0.32, 0.40, 0.54) end
+    if self.glassRightCard then self.glassRightCard:SetCenterColor(0.042, 0.052, 0.070, 0.82) self.glassRightCard:SetEdgeColor(0.24, 0.32, 0.40, 0.54) end
+    if self.glassAccent then self.glassAccent:SetCenterColor(accent[1], accent[2], accent[3], 1) self.glassAccent:SetEdgeColor(0,0,0,0) end
+    if self.glassFloatingToolbar then self.glassFloatingToolbar:SetCenterColor(0.045, 0.055, 0.076, 0.90) self.glassFloatingToolbar:SetEdgeColor(accent[1], accent[2], accent[3], 0.28) end
+    if self.glassSearchShell then self.glassSearchShell:SetCenterColor(0.032, 0.040, 0.056, 0.84) self.glassSearchShell:SetEdgeColor(0.17, 0.22, 0.30, 0.40) end
+    if self.glassHeroCard then self.glassHeroCard:SetCenterColor(0.038, 0.046, 0.064, 0.88) self.glassHeroCard:SetEdgeColor(accent[1], accent[2], accent[3], 0.28) end
+    if self.glassHeroStripe then self.glassHeroStripe:SetCenterColor(accent[1], accent[2], accent[3], 0.96) self.glassHeroStripe:SetEdgeColor(0,0,0,0) end
+    if self.glassHeroChip1 then self.glassHeroChip1:SetCenterColor(accent[1], accent[2], accent[3], 0.20) self.glassHeroChip1:SetEdgeColor(accent[1], accent[2], accent[3], 0.36) end
+    if self.glassHeroChip2 then self.glassHeroChip2:SetCenterColor(0.07, 0.09, 0.12, 0.62) self.glassHeroChip2:SetEdgeColor(0.20, 0.25, 0.34, 0.34) end
+    if self.glassLeftHeader then self.glassLeftHeader:SetCenterColor(0.050, 0.060, 0.082, 0.72) self.glassLeftHeader:SetEdgeColor(0.20, 0.24, 0.31, 0.34) end
+    if self.glassRightHeader then self.glassRightHeader:SetCenterColor(0.050, 0.060, 0.082, 0.72) self.glassRightHeader:SetEdgeColor(0.20, 0.24, 0.31, 0.34) end
+    if self.glassFooterRail then self.glassFooterRail:SetCenterColor(0.028, 0.032, 0.048, 0.72) self.glassFooterRail:SetEdgeColor(0.16, 0.20, 0.28, 0.30) end
+    if self.glassBrand then self.glassBrand:SetColor(text[1], text[2], text[3], 1) end
+    if self.glassSubtitle then self.glassSubtitle:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.glassHeroLabel then self.glassHeroLabel:SetColor(text[1], text[2], text[3], 1) end
+    if self.glassHeroSub then self.glassHeroSub:SetColor(muted[1], muted[2], muted[3], 1) end
+    if self.glassSearchIcon then self.glassSearchIcon:SetColor(accent[1], accent[2], accent[3], 1) end
+    if self.glassSearchText then self.glassSearchText:SetColor(muted[1], muted[2], muted[3], 1) end
 
     if self.tabButtons then
         for key, b in pairs(self.tabButtons) do
-            if b and b.figmaIconBadge then
+            if b and b.glassIconBadge then
                 local active = key == self.activeTab
                 if active then
-                    b.figmaIconBadge:SetCenterColor(accent[1], accent[2], accent[3], 0.24)
-                    b.figmaIconBadge:SetEdgeColor(accent[1], accent[2], accent[3], 0.44)
-                    if b.figmaIconText then b.figmaIconText:SetColor(accent[1], accent[2], accent[3], 1) end
+                    b.glassIconBadge:SetCenterColor(accent[1], accent[2], accent[3], 0.24)
+                    b.glassIconBadge:SetEdgeColor(accent[1], accent[2], accent[3], 0.44)
+                    if b.glassIconText then b.glassIconText:SetColor(accent[1], accent[2], accent[3], 1) end
                 else
-                    b.figmaIconBadge:SetCenterColor(0.07, 0.09, 0.12, 0.62)
-                    b.figmaIconBadge:SetEdgeColor(0.18, 0.24, 0.31, 0.20)
-                    if b.figmaIconText then b.figmaIconText:SetColor(text[1], text[2], text[3], 0.86) end
+                    b.glassIconBadge:SetCenterColor(0.07, 0.09, 0.12, 0.62)
+                    b.glassIconBadge:SetEdgeColor(0.18, 0.24, 0.31, 0.20)
+                    if b.glassIconText then b.glassIconText:SetColor(text[1], text[2], text[3], 0.86) end
                 end
             end
             setButtonStyle(b, key == self.activeTab, t)
@@ -4907,51 +5005,51 @@ end
 local easLegacyCreate_2479 = J.Create
 function J:Create()
     easLegacyCreate_2479(self)
-    self:EnhanceFigmaPremiumVisuals()
+    self:EnhanceGlassPremiumVisuals()
 end
 
 
 -- ============================================================================
--- v0.24.80 - Figma duplicate navigation control fix
+-- v0.24.80 - Glass duplicate navigation control fix
 -- INDEX is excluded from the dynamic TABS loop because an earlier compatibility
--- upgrade adds INDEX to TABS. This prevents EAS_FigmaNav_INDEX from being
+-- upgrade adds INDEX to TABS. This prevents EAS_GlassNav_INDEX from being
 -- created twice during startup.
 -- ============================================================================
 
 
 -- ============================================================================
--- v0.24.82 - Clean Figma layout + full-border live resizing
+-- v0.24.82 - Clean Glass layout + full-border live resizing
 -- Reduces decorative crowding, restores more usable workspace, and enlarges
 -- the native resize hit area around all four sides/corners. The canvas scales
 -- continuously while resizing so controls do not bunch together mid-drag.
 -- ============================================================================
 
-function J:ApplyFigmaCleanLayout2482()
-    if not self.figmaMode or not self.window or self.figmaClean2482 then return end
-    self.figmaClean2482 = true
+function J:ApplyGlassCleanLayout2482()
+    if not self.glassMode or not self.window or self.glassClean2482 then return end
+    self.glassClean2482 = true
 
     -- Keep the advanced glass shell, but remove decorative overlays that were
     -- competing with functional controls for space.
     local hideList = {
-        self.figmaHeroCard, self.figmaHeroStripe, self.figmaHeroChip1, self.figmaHeroChip2,
-        self.figmaHeroLabel, self.figmaHeroSub,
-        self.figmaSearchShell, self.figmaSearchIcon, self.figmaSearchText,
-        self.figmaLeftHeader, self.figmaRightHeader,
-        self.figmaLeftHeaderText, self.figmaRightHeaderText,
-        self.figmaFooterRail,
+        self.glassHeroCard, self.glassHeroStripe, self.glassHeroChip1, self.glassHeroChip2,
+        self.glassHeroLabel, self.glassHeroSub,
+        self.glassSearchShell, self.glassSearchIcon, self.glassSearchText,
+        self.glassLeftHeader, self.glassRightHeader,
+        self.glassLeftHeaderText, self.glassRightHeaderText,
+        self.glassFooterRail,
     }
     for _, control in ipairs(hideList) do
         if control and control.SetHidden then control:SetHidden(true) end
     end
 
     -- Give the two functional work panels the full vertical space again.
-    if self.leftPageHost and self.figmaWorkspace then
+    if self.leftPageHost and self.glassWorkspace then
         self.leftPageHost:ClearAnchors()
-        self.leftPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 14, 18)
+        self.leftPageHost:SetAnchor(TOPLEFT, self.glassWorkspace, TOPLEFT, 14, 18)
     end
-    if self.rightPageHost and self.figmaWorkspace then
+    if self.rightPageHost and self.glassWorkspace then
         self.rightPageHost:ClearAnchors()
-        self.rightPageHost:SetAnchor(TOPLEFT, self.figmaWorkspace, TOPLEFT, 488, 18)
+        self.rightPageHost:SetAnchor(TOPLEFT, self.glassWorkspace, TOPLEFT, 488, 18)
     end
 
     -- Compact, evenly-spaced sidebar. INDEX appears only once.
@@ -4961,9 +5059,9 @@ function J:ApplyFigmaCleanLayout2482()
     end
     for index, key in ipairs(orderedTabs) do
         local b = self.tabButtons and self.tabButtons[key]
-        if b and self.figmaSidebar then
+        if b and self.glassSidebar then
             b:ClearAnchors()
-            b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 40 + ((index - 1) * 35))
+            b:SetAnchor(TOPLEFT, self.glassSidebar, TOPLEFT, 10, 40 + ((index - 1) * 35))
             b:SetDimensions(186, 30)
             b:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
             b:SetText("        " .. tostring(TAB_LABELS[key] or key))
@@ -4977,50 +5075,50 @@ function J:ApplyFigmaCleanLayout2482()
     -- Only attach the per-frame resize callback while the user is actively
     -- resizing. Keeping OnUpdate detached the rest of the time avoids an
     -- unnecessary Lua callback every rendered frame.
-    self.figmaResizeActive2482 = false
+    self.glassResizeActive2482 = false
     self.window:SetHandler("OnResizeStart", function(control)
-        self.figmaResizeActive2482 = true
+        self.glassResizeActive2482 = true
         control:SetHandler("OnUpdate", function()
-            if self.figmaResizeActive2482 then self:UpdateFigmaScale() end
+            if self.glassResizeActive2482 then self:UpdateGlassScale() end
         end)
     end)
     self.window:SetHandler("OnResizeStop", function(control)
-        self.figmaResizeActive2482 = false
+        self.glassResizeActive2482 = false
         control:SetHandler("OnUpdate", nil)
         local sv = self:EnsureSaved()
         local w, h = control:GetDimensions()
-        sv.figmaWidth = math.floor((tonumber(w) or EAS_FIGMA_BASE_W) + 0.5)
-        sv.figmaHeight = math.floor((tonumber(h) or EAS_FIGMA_BASE_H) + 0.5)
-        self:UpdateFigmaScale()
+        sv.glassWidth = math.floor((tonumber(w) or EAS_GLASS_BASE_W) + 0.5)
+        sv.glassHeight = math.floor((tonumber(h) or EAS_GLASS_BASE_H) + 0.5)
+        self:UpdateGlassScale()
     end)
 
-    if self.figmaResizeHint then
-        self.figmaResizeHint:SetText("RESIZE FROM ANY SIDE OR CORNER")
-        self.figmaResizeHint:ClearAnchors()
-        self.figmaResizeHint:SetAnchor(BOTTOMRIGHT, self.figmaCanvas, BOTTOMRIGHT, -16, -8)
-        self.figmaResizeHint:SetDimensions(320, 18)
+    if self.glassResizeHint then
+        self.glassResizeHint:SetText("RESIZE FROM ANY SIDE OR CORNER")
+        self.glassResizeHint:ClearAnchors()
+        self.glassResizeHint:SetAnchor(BOTTOMRIGHT, self.glassCanvas, BOTTOMRIGHT, -16, -8)
+        self.glassResizeHint:SetDimensions(320, 18)
     end
 end
 
 local easLegacyCreate_2482 = J.Create
 function J:Create()
     easLegacyCreate_2482(self)
-    self:ApplyFigmaCleanLayout2482()
+    self:ApplyGlassCleanLayout2482()
     self:ApplyTheme()
 end
 
 
 -- ============================================================================
 -- v0.24.83 - Clean header/title collision fix
--- Decorative Figma column labels are hidden independently from their backdrop
+-- Decorative Glass column labels are hidden independently from their backdrop
 -- controls so they cannot overlap real Codex section titles.
 -- ============================================================================
 
-function J:ApplyFigmaHeaderCollisionFix2483()
-    if not self.figmaMode then return end
+function J:ApplyGlassHeaderCollisionFix2483()
+    if not self.glassMode then return end
     local controls = {
-        self.figmaLeftHeader, self.figmaRightHeader,
-        self.figmaLeftHeaderText, self.figmaRightHeaderText,
+        self.glassLeftHeader, self.glassRightHeader,
+        self.glassLeftHeaderText, self.glassRightHeaderText,
     }
     for _, control in ipairs(controls) do
         if control and control.SetHidden then control:SetHidden(true) end
@@ -5030,7 +5128,7 @@ end
 local easLegacyCreate_2483 = J.Create
 function J:Create()
     easLegacyCreate_2483(self)
-    self:ApplyFigmaHeaderCollisionFix2483()
+    self:ApplyGlassHeaderCollisionFix2483()
 end
 
 
@@ -5039,13 +5137,13 @@ end
 -- Centers the top navigation/action controls inside their glass container and
 -- removes the decorative single-letter workspace badges from the sidebar.
 -- ============================================================================
-function J:ApplyFigmaToolbarAndNavCleanup2484()
-    if not self.figmaMode then return end
+function J:ApplyGlassToolbarAndNavCleanup2484()
+    if not self.glassMode then return end
 
-    if self.figmaFloatingToolbar then
-        self.figmaFloatingToolbar:ClearAnchors()
-        self.figmaFloatingToolbar:SetAnchor(TOPRIGHT, self.figmaCanvas, TOPRIGHT, -14, 11)
-        self.figmaFloatingToolbar:SetDimensions(220, 42)
+    if self.glassFloatingToolbar then
+        self.glassFloatingToolbar:ClearAnchors()
+        self.glassFloatingToolbar:SetAnchor(TOPRIGHT, self.glassCanvas, TOPRIGHT, -14, 11)
+        self.glassFloatingToolbar:SetDimensions(220, 42)
 
         local controls = {
             {self.prevPageButton, 8, 6, 36, 30},
@@ -5057,7 +5155,7 @@ function J:ApplyFigmaToolbarAndNavCleanup2484()
             local c = data[1]
             if c then
                 c:ClearAnchors()
-                c:SetAnchor(TOPLEFT, self.figmaFloatingToolbar, TOPLEFT, data[2], data[3])
+                c:SetAnchor(TOPLEFT, self.glassFloatingToolbar, TOPLEFT, data[2], data[3])
                 c:SetDimensions(data[4], data[5])
             end
         end
@@ -5068,8 +5166,8 @@ function J:ApplyFigmaToolbarAndNavCleanup2484()
     for _, key in ipairs(orderedTabs) do
         local b = self.tabButtons and self.tabButtons[key]
         if b then
-            if b.figmaIconBadge then b.figmaIconBadge:SetHidden(true) end
-            if b.figmaIconText then b.figmaIconText:SetHidden(true) end
+            if b.glassIconBadge then b.glassIconBadge:SetHidden(true) end
+            if b.glassIconText then b.glassIconText:SetHidden(true) end
             b:SetText("    " .. tostring(TAB_LABELS[key] or key))
         end
     end
@@ -5078,15 +5176,15 @@ end
 local easLegacyCreate_2484 = J.Create
 function J:Create()
     easLegacyCreate_2484(self)
-    self:ApplyFigmaToolbarAndNavCleanup2484()
+    self:ApplyGlassToolbarAndNavCleanup2484()
     self:ApplyTheme()
 end
 
 
 -- ============================================================================
--- v0.24.86 - Smaller Figma minimum size
+-- v0.24.86 - Smaller Glass minimum size
 -- The command-center can now shrink to roughly half-scale while preserving
--- the all-sides/all-corners resize behavior from the clean Figma shell.
+-- the all-sides/all-corners resize behavior from the clean Glass shell.
 -- ============================================================================
 
 
@@ -5154,7 +5252,7 @@ end
 
 -- ============================================================================
 -- v0.24.94 - Golden Pursuits workspace + dynamic index + gear border cleanup
--- Adds Golden Pursuits to the shared TABS registry so both the Figma nav and
+-- Adds Golden Pursuits to the shared TABS registry so both the Glass nav and
 -- the Index pick it up automatically. Also keeps future registered tabs in the
 -- Index by continuing to build that spread directly from TABS.
 -- ============================================================================
@@ -5553,7 +5651,7 @@ function J:Create()
 
     -- Re-fit all sidebar entries after adding a new workspace. This keeps the
     -- final tab completely inside the rail instead of letting it clip at bottom.
-    if self.figmaSidebar and self.tabButtons then
+    if self.glassSidebar and self.tabButtons then
         local orderedTabs = {"INDEX"}
         for _, key in ipairs(TABS) do if key ~= "INDEX" then orderedTabs[#orderedTabs + 1] = key end end
         -- Keep every workspace entry inside the 664px sidebar. Golden Pursuits
@@ -5564,7 +5662,7 @@ function J:Create()
             local b = self.tabButtons[key]
             if b then
                 b:ClearAnchors()
-                b:SetAnchor(TOPLEFT, self.figmaSidebar, TOPLEFT, 10, 42 + ((index - 1) * step))
+                b:SetAnchor(TOPLEFT, self.glassSidebar, TOPLEFT, 10, 42 + ((index - 1) * step))
                 b:SetDimensions(186, 28)
                 b:SetText("    " .. tostring(TAB_LABELS[key] or key))
             end
@@ -5578,7 +5676,7 @@ end
 
 -- ============================================================================
 -- v0.24.95 - Alliance theme labels + readable Dungeon selected status
--- The Figma accent selector now cycles only the three ESO alliances and labels
+-- The Glass accent selector now cycles only the three ESO alliances and labels
 -- the active alliance directly. Dungeon availability/status is rendered as
 -- separate lines instead of one compressed sentence.
 -- ============================================================================
@@ -5657,8 +5755,8 @@ function J:Create()
 
     easLegacyCreate_2495(self)
 
-    if self.figmaFloatingToolbar then
-        self.figmaFloatingToolbar:SetDimensions(220, 42)
+    if self.glassFloatingToolbar then
+        self.glassFloatingToolbar:SetDimensions(220, 42)
         local controls = {
             {self.prevPageButton, 8, 6, 30, 30},
             {self.nextPageButton, 42, 6, 30, 30},
@@ -5669,7 +5767,7 @@ function J:Create()
             local c = data[1]
             if c then
                 c:ClearAnchors()
-                c:SetAnchor(TOPLEFT, self.figmaFloatingToolbar, TOPLEFT, data[2], data[3])
+                c:SetAnchor(TOPLEFT, self.glassFloatingToolbar, TOPLEFT, data[2], data[3])
                 c:SetDimensions(data[4], data[5])
             end
         end
@@ -5685,7 +5783,7 @@ end
 -- ============================================================================
 
 function J:ApplyIndexAllianceTheme2496()
-    if not self.figmaMode then return end
+    if not self.glassMode then return end
     local t = self:GetTheme()
     local accent = t.accent or t.edge or {0.43, 0.68, 0.96, 1}
     local text = t.text or {0.92, 0.95, 0.99, 1}
@@ -6235,7 +6333,7 @@ function J:ActivateGoldenPursuit2497(globalIndex)
 
     if row and not row.complete and EPC.GoldenPursuits and EPC.GoldenPursuits.SetSelectedPursuitQuest2504 then
         local questIndex, questName = self:FindJournalQuestForPursuit2497(row)
-        EPC.GoldenPursuits:SetSelectedPursuitQuest2504(row.name, questIndex and questName or nil)
+        EPC.GoldenPursuits:SetSelectedPursuitQuest2504(row.name, questIndex and questName or nil, row.campaignKey, row.activityIndex)
     end
 
     return easLegacyActivateGoldenPursuit_2504(self, globalIndex)
@@ -6638,6 +6736,27 @@ function J:RefreshInteractiveGroupFinder(page)
         page.secondary[4]:SetText("PUBLIC")
     end
 
+    -- In the public browser, the fourth action hosts whichever supported dungeon
+    -- the player is physically inside: a Public Dungeon or a four-player Group Dungeon.
+    if mode == "PUBLIC" and page.action3 then
+        local groupDungeon = D.GetCurrentGroupDungeonInfo and D:GetCurrentGroupDungeonInfo() or nil
+        local publicDungeon = nil
+        if not groupDungeon and D.GetCurrentPublicDungeonInfo then publicDungeon = D:GetCurrentPublicDungeonInfo() end
+        local currentDungeon = groupDungeon or publicDungeon
+        local alreadyHosting = D.IsHostingGroupFinderListing and D:IsHostingGroupFinderListing() or false
+        local canLead = true
+        if type(IsUnitSoloOrGroupLeader) == "function" then
+            local ok, leader = pcall(IsUnitSoloOrGroupLeader, "player")
+            if ok then canLead = leader == true end
+        end
+        local label = "HOST CURRENT DUNGEON"
+        if groupDungeon then label = "HOST CURRENT GROUP DUNGEON"
+        elseif publicDungeon then label = "HOST CURRENT PUBLIC DUNGEON" end
+        page.action3:SetHidden(false)
+        page.action3:SetText(alreadyHosting and "ALREADY HOSTING" or label)
+        easSetEnabled(page.action3, currentDungeon ~= nil and canLead and not alreadyHosting)
+    end
+
     -- Make the right-side action buttons visually obvious too.
     for _,b in ipairs({page.action0,page.action1,page.action2,page.action3}) do
         if b and not b:IsHidden() then
@@ -6651,10 +6770,11 @@ local easRunInteractiveSecondary02542 = J.RunInteractiveSecondary
 function J:RunInteractiveSecondary(tab, index)
     if tab == "GROUPFINDER" and EPC.DungeonFinder and tostring(EPC.DungeonFinder.socialMode or "PUBLIC") == "PUBLIC" then
         local D = EPC.DungeonFinder
-        if index == 1 then D:ChangeLivePage(-1)
-        elseif index == 2 then D:ChangeLivePage(1)
-        elseif index == 3 then D:ToggleLiveDifficulty()
-        elseif index == 4 then D:CycleLiveCategory() end
+        -- v0.29.67: Group Finder no longer exposes PREV/NEXT paging controls.
+        -- Keep only the two intentional top actions: difficulty and finder style.
+        if index == 3 then D:ToggleLiveDifficulty()
+        elseif index == 4 then D:CycleLiveCategory()
+        else return end
         self:RefreshSuitePage(tab)
         return
     end
@@ -7281,9 +7401,9 @@ function J:OrganizeDensePages02716()
 
         gear.sectionLoadouts02716 = easSectionLabel02716("EAS_GearSectionLoadouts02716", gear.right, "LOADOUTS", 207, self.pageW-36)
         gear.sectionBuild02716 = easSectionLabel02716("EAS_GearSectionBuild02716", gear.right, "BUILD TOOLS", 253, self.pageW-36)
-        gear.sectionPreset02716 = easSectionLabel02716("EAS_GearSectionPreset02716", gear.right, "COMBAT PRESET", 333, self.pageW-36)
-        gear.sectionArmor02716 = easSectionLabel02716("EAS_GearSectionArmor02716", gear.right, "ARMOR WEIGHT", 379, self.pageW-36)
-        gear.sectionRoute02716 = easSectionLabel02716("EAS_GearSectionRoute02716", gear.right, "SET ACTIONS", 425, self.pageW-36)
+        gear.sectionPreset02716 = easSectionLabel02716("EAS_GearSectionPreset02716", gear.right, "COMBAT PRESET", 362, self.pageW-36)
+        gear.sectionArmor02716 = easSectionLabel02716("EAS_GearSectionArmor02716", gear.right, "ARMOR WEIGHT", 408, self.pageW-36)
+        gear.sectionRoute02716 = easSectionLabel02716("EAS_GearSectionRoute02716", gear.right, "SET ACTIONS", 452, self.pageW-36)
 
         if gear.savedLoadoutsButton then
             gear.savedLoadoutsButton:ClearAnchors()
@@ -7299,11 +7419,16 @@ function J:OrganizeDensePages02716()
                 b:SetDimensions(w, 25)
             end
         end
+        if gear.companionAbilitiesButton then
+            gear.companionAbilitiesButton:ClearAnchors()
+            gear.companionAbilitiesButton:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 331)
+            gear.companionAbilitiesButton:SetDimensions(self.pageW-36, 25)
+        end
         if gear.optimizerModes then
             local gap, w = 3, math.floor((self.pageW - 45) / 4)
             for i,b in ipairs(gear.optimizerModes) do
                 b:ClearAnchors()
-                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + (i-1)*(w+gap), 352)
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + (i-1)*(w+gap), 381)
                 b:SetDimensions(w, 24)
             end
         end
@@ -7311,15 +7436,16 @@ function J:OrganizeDensePages02716()
             local gap, w = 4, math.floor((self.pageW - 44) / 3)
             for i,b in ipairs(gear.armorWeightButtons) do
                 b:ClearAnchors()
-                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + (i-1)*(w+gap), 398)
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18 + (i-1)*(w+gap), 427)
                 b:SetDimensions(w, 24)
             end
         end
         for i,b in ipairs({gear.action0, gear.action1, gear.action2, gear.action3}) do
             if b then
                 b:ClearAnchors()
-                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 444 + (i-1)*30)
-                b:SetDimensions(self.pageW-36, 26)
+                b:SetAnchor(TOPLEFT, gear.right, TOPLEFT, 18, 471 + (i-1)*22)
+                b:SetDimensions(self.pageW-36, 22)
+                b:SetFont("ZoFontGameSmall")
             end
         end
     end
@@ -7504,6 +7630,7 @@ function J:RefreshSkillsOrganized02716(page)
     local v = EPC.GearOptimizer and EPC.GearOptimizer.BuildBestAbilityView and EPC.GearOptimizer:BuildBestAbilityView() or {}
     local c = v.context or {}
     local font = "$(BOLD_FONT)|20|soft-shadow-thin"
+    local respecDetailFont = "$(BOLD_FONT)|18|soft-shadow-thin"
     local lineH = 22
     local contentW = self.pageW - 40
 
@@ -7553,6 +7680,10 @@ function J:RefreshSkillsOrganized02716(page)
         string.format("Front: %s", tostring(c.frontWeapon or "Weapon")),
         string.format("Back: %s", tostring(c.backWeapon or "Weapon")),
     }
+    if v.meta and EPC.SkillMeta then
+        buildLines[#buildLines + 1] = string.format("Preset: %s", tostring(v.meta.preset or "TRIAL"))
+        buildLines[#buildLines + 1] = string.format("Profile: %s", tostring(v.meta.label or "Current build"))
+    end
     if #(c.sets or {}) > 0 then
         buildLines[#buildLines + 1] = "Sets:"
         for _, setName in ipairs(c.sets or {}) do
@@ -7562,7 +7693,7 @@ function J:RefreshSkillsOrganized02716(page)
     syncLines("buildOverviewLine2845_", "EAS_BuildOverviewLine2845_", page.left, 20, buildTitleY + 26, buildLines, contentW, font)
 
     local activeTitleY = buildTitleY + 26 + (#buildLines * lineH) + 18
-    ensureLabel("activeBarTitle2845", "EAS_SkillsActiveBarTitle2845", page.left, 20, activeTitleY, contentW, 22, font):SetText("RECOMMENDED ACTIVE BAR")
+    ensureLabel("activeBarTitle2845", "EAS_SkillsActiveBarTitle2845", page.left, 20, activeTitleY, contentW, 22, font):SetText(v.meta and "META - PRIMARY BAR" or "RECOMMENDED PRIMARY BAR")
     local activeLines = {}
     for i = 1, 5 do
         local a = v.abilities and v.abilities[i]
@@ -7573,8 +7704,8 @@ function J:RefreshSkillsOrganized02716(page)
 
     local respecTitleY = activeTitleY + 26 + (#activeLines * lineH) + 12
     ensureLabel("respecTitle2845", "EAS_SkillsRespecTitle2845", page.left, 20, respecTitleY, contentW, 22, font):SetText("RESPEC + BUILD")
-    ensureLabel("respecLine12845", "EAS_SkillsRespecLine12845", page.left, 20, respecTitleY + 22, contentW, 22, font):SetText("Rebuilds both weapon bars, morphs, and passives.")
-    ensureLabel("respecLine22845", "EAS_SkillsRespecLine22845", page.left, 20, respecTitleY + 44, contentW, 22, font):SetText("Paid changes require confirmation.")
+    ensureLabel("respecLine12845", "EAS_SkillsRespecLine12845", page.left, 20, respecTitleY + 22, contentW, 22, respecDetailFont):SetText("Uses current class/role meta; falls back only when needed.")
+    ensureLabel("respecLine22845", "EAS_SkillsRespecLine22845", page.left, 20, respecTitleY + 44, contentW, 22, respecDetailFont):SetText("Paid changes require confirmation.")
 
     local cpTitleY = 58
     ensureLabel("cpTitle2845", "EAS_SkillsCPTitle2845", page.right, 20, cpTitleY, contentW, 22, font):SetText("CHAMPION POINT OPTIMIZER")
@@ -7862,4 +7993,1013 @@ function J:RefreshInteractiveDungeons(page)
     elseif page.detailBody and selectedCount > 0 then
         setBookText(page.detailBody, string.format("%d dungeons selected. Click any dungeon row to add or remove it from your specific queue. Then press QUEUE SELECTED.", selectedCount), page.detailBody:GetWidth())
     end
+end
+
+
+-- ============================================================================
+-- v0.28.76 - Dedicated Battleground Finder chapter + queue-type aware HUD
+-- ============================================================================
+function J:RefreshInteractiveBattlegrounds02876(page)
+    local B = EPC.BattlegroundFinder
+    if not page or not B then return end
+    local v = B:BuildView(false)
+
+    -- Top controls: available/all filter and manual refresh.
+    local labels = {"AVAILABLE", "ALL", "REFRESH", ""}
+    for i = 1, 4 do
+        local control = page.controls[i]
+        if control then
+            control:SetText(labels[i])
+            control:SetHidden(i == 4)
+            if i == 1 then setButtonStyle(control, v.showLocked ~= true, self:GetTheme())
+            elseif i == 2 then setButtonStyle(control, v.showLocked == true, self:GetTheme())
+            else setButtonStyle(control, false, self:GetTheme()) end
+        end
+    end
+
+    page.secondary[1]:SetText("< PREV")
+    page.secondary[2]:SetText("NEXT >")
+    page.secondary[1]:SetHidden(false)
+    page.secondary[2]:SetHidden(false)
+    page.secondary[3]:SetHidden(true)
+    page.secondary[4]:SetHidden(true)
+    setButtonStyle(page.secondary[1], false, self:GetTheme())
+    setButtonStyle(page.secondary[2], false, self:GetTheme())
+
+    local selected = v.selected
+    local selectedId = selected and selected.id or nil
+    for i, rowControl in ipairs(page.rows or {}) do
+        local row = v.rows and v.rows[i]
+        if row then
+            rowControl:SetHidden(false)
+            rowControl.titleLabel:SetText(tostring(row.name or "Battleground"))
+            rowControl.detailLabel:SetText(tostring(row.detail or ""))
+            local isSelected = selectedId ~= nil and row.id == selectedId
+            easSetInk(rowControl.titleLabel, isSelected, row.locked == true)
+            easSetInk(rowControl.detailLabel, isSelected, true)
+        else
+            rowControl:SetHidden(true)
+        end
+    end
+
+    page.pageLabel:SetText(string.format("PAGE %d / %d  -  %d BATTLEGROUND QUEUES", tonumber(v.page) or 1, tonumber(v.pageCount) or 1, tonumber(v.total) or 0))
+
+    if selected then
+        page.detailTitle:SetText(tostring(selected.name or "BATTLEGROUND"))
+        local state = selected.locked and "LOCKED" or "READY"
+        local groupSize = selected.minGroupSize == selected.maxGroupSize and tostring(selected.maxGroupSize)
+            or string.format("%d-%d", tonumber(selected.minGroupSize) or 1, tonumber(selected.maxGroupSize) or 1)
+        local reward = selected.dailyReady and "DAILY BONUS READY" or "STANDARD REWARD"
+        local solo = selected.soloBonus and "AVAILABLE" or "N/A"
+        local detail = string.format("STATUS\n%s\n\nGROUP / TEAM SIZE\n%s\n\nREWARD\n%s\n\nSOLO BONUS\n%s",
+            state, groupSize, reward, solo)
+        if selected.locked and selected.lockReason and selected.lockReason ~= "" then
+            detail = detail .. "\n\nLOCK REASON\n" .. tostring(selected.lockReason)
+        end
+        if selected.description and selected.description ~= "" then
+            detail = detail .. "\n\n" .. tostring(selected.description)
+        end
+        setBookText(page.detailBody, detail, page.detailBody:GetWidth())
+    else
+        page.detailTitle:SetText("BATTLEGROUND FINDER")
+        setBookText(page.detailBody, tostring(v.hint or "No Battleground queues are available right now."), page.detailBody:GetWidth())
+    end
+
+    page.action0:SetText(v.queued and "ALREADY QUEUED" or "QUEUE SELECTED")
+    page.action1:SetText("CANCEL QUEUE")
+    page.action2:SetText("REFRESH")
+    page.action3:SetHidden(true)
+    page.action0:SetHidden(false)
+    page.action1:SetHidden(false)
+    page.action2:SetHidden(false)
+    setButtonStyle(page.action0, false, self:GetTheme())
+    setButtonStyle(page.action1, false, self:GetTheme())
+    setButtonStyle(page.action2, false, self:GetTheme())
+    easSetEnabled(page.action0, selected ~= nil and not selected.locked and not v.queued)
+    easSetEnabled(page.action1, v.queued == true)
+    easSetEnabled(page.action2, true)
+end
+
+local easRefreshSuitePage02876 = J.RefreshSuitePage
+function J:RefreshSuitePage(tab)
+    tab = tab or self.activeTab
+    if tab == "BATTLEGROUNDS" then
+        local page = self.pages and self.pages.BATTLEGROUNDS
+        if page then self:RefreshInteractiveBattlegrounds02876(page) end
+        return
+    end
+    return easRefreshSuitePage02876(self, tab)
+end
+
+local easRunInteractiveControl02876 = J.RunInteractiveControl
+function J:RunInteractiveControl(tab, index)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        if index == 1 then EPC.BattlegroundFinder:SetShowLocked(false)
+        elseif index == 2 then EPC.BattlegroundFinder:SetShowLocked(true)
+        elseif index == 3 then EPC.BattlegroundFinder:BuildLocations(true) end
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveControl02876(self, tab, index)
+end
+
+local easRunInteractiveSecondary02876 = J.RunInteractiveSecondary
+function J:RunInteractiveSecondary(tab, index)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        if index == 1 then EPC.BattlegroundFinder:ChangePage(-1)
+        elseif index == 2 then EPC.BattlegroundFinder:ChangePage(1) end
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveSecondary02876(self, tab, index)
+end
+
+local easSelectInteractiveRow02876 = J.SelectInteractiveRow
+function J:SelectInteractiveRow(tab, index)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        EPC.BattlegroundFinder:SelectRow(index)
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easSelectInteractiveRow02876(self, tab, index)
+end
+
+local easRunInteractiveGearOptimizer02876 = J.RunInteractiveGearOptimizer
+function J:RunInteractiveGearOptimizer(tab)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        EPC.BattlegroundFinder:QueueSelected()
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveGearOptimizer02876(self, tab)
+end
+
+local easRunInteractivePrimary02876 = J.RunInteractivePrimary
+function J:RunInteractivePrimary(tab)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        EPC.BattlegroundFinder:CancelQueue()
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractivePrimary02876(self, tab)
+end
+
+local easRunInteractiveSecondaryAction02876 = J.RunInteractiveSecondaryAction
+function J:RunInteractiveSecondaryAction(tab)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        EPC.BattlegroundFinder:BuildLocations(true)
+        self:RefreshSuitePage(tab)
+        return
+    end
+    return easRunInteractiveSecondaryAction02876(self, tab)
+end
+
+local easSelectTab02876 = J.SelectTab
+function J:SelectTab(tab, ...)
+    local result = easSelectTab02876(self, tab, ...)
+    if tab == "BATTLEGROUNDS" and EPC.BattlegroundFinder then
+        EPC.BattlegroundFinder:BuildLocations(true)
+        self:RefreshSuitePage("BATTLEGROUNDS")
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.28.77 - Suite 2027 full Codex visual system
+-- A presentation-only redesign. Feature/data logic is intentionally untouched.
+-- The complete Codex now shares one Suite-inspired command-center language:
+-- layered dark surfaces, subtle borders, cyan/accent focus, compact navigation,
+-- modern list/action controls, consistent editors, and responsive Dice & Coin.
+-- ============================================================================
+
+local EAS_2027 = {
+    canvas = {0.011, 0.016, 0.024, 0.985},
+    topbar = {0.020, 0.028, 0.040, 0.985},
+    sidebar = {0.016, 0.023, 0.034, 0.980},
+    surface = {0.030, 0.040, 0.056, 0.965},
+    surface2 = {0.042, 0.054, 0.073, 0.950},
+    hover = {0.075, 0.098, 0.132, 0.975},
+    border = {0.20, 0.28, 0.38, 0.72},
+    borderSoft = {0.16, 0.22, 0.30, 0.52},
+    text = {0.94, 0.965, 0.995, 1},
+    muted = {0.62, 0.69, 0.78, 1},
+    faint = {0.43, 0.50, 0.60, 1},
+}
+
+local function easAccent02877(theme)
+    local t = type(theme) == "table" and theme or (J.GetTheme and J:GetTheme()) or {}
+    local a = type(t.accent) == "table" and t.accent or {0.18, 0.72, 0.92, 1}
+    return tonumber(a[1]) or 0.18, tonumber(a[2]) or 0.72, tonumber(a[3]) or 0.92
+end
+
+local function easSetSolid02877(control, color, alpha)
+    if not control then return end
+    if control.SetEdgeTexture then control:SetEdgeTexture(nil, 1, 1, 1) end
+    if control.SetCenterColor then control:SetCenterColor(color[1], color[2], color[3], alpha or color[4] or 1) end
+    if control.SetEdgeColor then control:SetEdgeColor(0, 0, 0, 0) end
+end
+
+local function easEnsureButtonChrome02877(button)
+    if not button or button._easModernChrome02877 then return end
+    button._easModernChrome02877 = true
+    local name = button.GetName and tostring(button:GetName() or "") or ""
+    if string.find(name, "EAS_GlassNav_", 1, true) then return end
+    if button.bg then return end
+    -- Shared makeButton controls already own a background and four border strips.
+    -- Reuse those controls so the redesign never stacks a second frame on top.
+    if button._easBorder and button._easBorderLines then return end
+
+    local bg = wm:CreateControl(name .. "_ModernBG02877", button, CT_BACKDROP)
+    bg:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+    bg:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+    if bg.SetDrawLayer then bg:SetDrawLayer(DL_BACKGROUND) end
+    if bg.SetDrawLevel then bg:SetDrawLevel(0) end
+    bg:SetEdgeTexture(nil, 1, 1, 1)
+    bg:SetCenterColor(EAS_2027.surface2[1], EAS_2027.surface2[2], EAS_2027.surface2[3], 0.78)
+    bg:SetEdgeColor(0,0,0,0)
+    button._easBorder = bg
+
+    local function line(suffix)
+        local l = wm:CreateControl(name .. "_ModernBorder02877_" .. suffix, button, CT_BACKDROP)
+        if l.SetDrawLayer then l:SetDrawLayer(DL_CONTROLS) end
+        if l.SetDrawLevel then l:SetDrawLevel(1) end
+        l:SetCenterColor(EAS_2027.border[1], EAS_2027.border[2], EAS_2027.border[3], 0.56)
+        l:SetEdgeColor(0,0,0,0)
+        return l
+    end
+    local top = line("T")
+    top:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+    top:SetAnchor(TOPRIGHT, button, TOPRIGHT, -1, 1)
+    top:SetHeight(1)
+    local bottom = line("B")
+    bottom:SetAnchor(BOTTOMLEFT, button, BOTTOMLEFT, 1, -1)
+    bottom:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+    bottom:SetHeight(1)
+    local left = line("L")
+    left:SetAnchor(TOPLEFT, button, TOPLEFT, 1, 1)
+    left:SetAnchor(BOTTOMLEFT, button, BOTTOMLEFT, 1, -1)
+    left:SetWidth(1)
+    local right = line("R")
+    right:SetAnchor(TOPRIGHT, button, TOPRIGHT, -1, 1)
+    right:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -1, -1)
+    right:SetWidth(1)
+    button._easBorderLines = {top, bottom, left, right}
+end
+
+local function easPaintButton02877(button, selected, theme, hovered)
+    if not button then return end
+    easEnsureButtonChrome02877(button)
+    local ar, ag, ab = easAccent02877(theme)
+    button._easSelected02877 = selected == true
+    button._easTheme02877 = theme
+
+    if button.SetNormalFontColor then
+        if selected then button:SetNormalFontColor(EAS_2027.text[1], EAS_2027.text[2], EAS_2027.text[3], 1)
+        else button:SetNormalFontColor(EAS_2027.text[1], EAS_2027.text[2], EAS_2027.text[3], 0.93) end
+        button:SetMouseOverFontColor(1,1,1,1)
+        button:SetPressedFontColor(ar,ag,ab,1)
+    end
+
+    local bg = button._easBorder or button.bg
+    if bg and bg.SetCenterColor then
+        if selected then bg:SetCenterColor(ar,ag,ab,0.16)
+        elseif hovered then bg:SetCenterColor(EAS_2027.hover[1],EAS_2027.hover[2],EAS_2027.hover[3],0.94)
+        else bg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.76) end
+        if bg.SetEdgeColor then bg:SetEdgeColor(0,0,0,0) end
+    end
+
+    if button._easBorderLines then
+        local r,g,b,a
+        if selected then r,g,b,a = ar,ag,ab,0.94
+        elseif hovered then r,g,b,a = ar,ag,ab,0.62
+        else r,g,b,a = EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.58 end
+        for _, l in ipairs(button._easBorderLines) do
+            if l and l.SetCenterColor then l:SetCenterColor(r,g,b,a) end
+        end
+    end
+end
+
+-- Replaces the shared visual style used by every existing Codex action.
+setButtonStyle = function(button, selected, theme)
+    easPaintButton02877(button, selected, theme, button and button._easHover02877 == true)
+end
+
+local easMakeButtonPre02877 = makeButton
+makeButton = function(name, parent, text, x, y, w, h, handler)
+    local b = easMakeButtonPre02877(name, parent, text, x, y, w, h, handler)
+    easPaintButton02877(b, false, J:GetTheme(), false)
+    if b and not b._easHoverHandlers02877 then
+        b._easHoverHandlers02877 = true
+        b:SetHandler("OnMouseEnter", function(control)
+            control._easHover02877 = true
+            easPaintButton02877(control, control._easSelected02877, control._easTheme02877 or J:GetTheme(), true)
+        end)
+        b:SetHandler("OnMouseExit", function(control)
+            control._easHover02877 = false
+            easPaintButton02877(control, control._easSelected02877, control._easTheme02877 or J:GetTheme(), false)
+        end)
+    end
+    return b
+end
+
+local easMakePanelPre02877 = makePanel
+makePanel = function(name, parent, x, y, w, h)
+    local p = easMakePanelPre02877(name, parent, x, y, w, h)
+    if p then
+        p:SetEdgeTexture(nil,1,1,1)
+        p:SetCenterColor(EAS_2027.surface2[1], EAS_2027.surface2[2], EAS_2027.surface2[3], 0.88)
+        p:SetEdgeColor(EAS_2027.border[1], EAS_2027.border[2], EAS_2027.border[3], 0.56)
+    end
+    return p
+end
+
+local easStyleIconButtonPre02877 = styleIconButton
+styleIconButton = function(button, theme)
+    if not button then return end
+    local ar,ag,ab = easAccent02877(theme)
+    if button.bg then
+        button.bg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.86)
+        button.bg:SetEdgeColor(EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.60)
+    end
+    if button.label then button.label:SetColor(EAS_2027.text[1],EAS_2027.text[2],EAS_2027.text[3],1) end
+    button._theme = theme
+    if not button._easHoverHandlers02877 then
+        button._easHoverHandlers02877 = true
+        button:SetHandler("OnMouseEnter", function(control)
+            if control.bg then
+                control.bg:SetCenterColor(EAS_2027.hover[1],EAS_2027.hover[2],EAS_2027.hover[3],0.98)
+                control.bg:SetEdgeColor(ar,ag,ab,0.78)
+            end
+        end)
+        button:SetHandler("OnMouseExit", function(control)
+            if control.bg then
+                control.bg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.86)
+                control.bg:SetEdgeColor(EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.60)
+            end
+        end)
+    end
+end
+
+local easCreateEditBoxPre02877 = J.CreateEditBox
+function J:CreateEditBox(name, parent, x, y, w, h, multiLine)
+    local e = easCreateEditBoxPre02877(self, name, parent, x, y, w, h, multiLine)
+    if e then
+        e:SetColor(EAS_2027.text[1], EAS_2027.text[2], EAS_2027.text[3], 1)
+        if not e._easInputBG02877 then
+            local bg = wm:CreateControl(name .. "_ModernInputBG02877", e, CT_BACKDROP)
+            bg:SetAnchorFill(e)
+            if bg.SetDrawLayer then bg:SetDrawLayer(DL_BACKGROUND) end
+            if bg.SetDrawLevel then bg:SetDrawLevel(0) end
+            bg:SetEdgeTexture(nil,1,1,1)
+            bg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.82)
+            bg:SetEdgeColor(EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.64)
+            e._easInputBG02877 = bg
+        end
+    end
+    return e
+end
+
+-- Interactive enabled/selected states also use the modern palette instead of\n-- restoring the legacy all-cyan frame on every refresh.\neasSetEnabled = function(control, enabled)\n    if not control then return end\n    local active = enabled == true\n    if control.SetEnabled then control:SetEnabled(active) end\n    if control.SetAlpha then control:SetAlpha(active and 1 or 0.42) end\n    if active then\n        easPaintButton02877(control, control._easSelected02877 == true, J:GetTheme(), false)\n    else\n        easEnsureButtonChrome02877(control)\n        if control._easBorder and control._easBorder.SetCenterColor then\n            control._easBorder:SetCenterColor(0.020,0.026,0.036,0.58)\n        end\n        if control._easBorderLines then\n            for _,line in ipairs(control._easBorderLines) do\n                if line and line.SetCenterColor then line:SetCenterColor(0.14,0.19,0.26,0.38) end\n            end\n        end\n    end\nend\n\neasSetInk = function(label, selected, muted)\n    if not label or not label.SetColor then return end\n    local ar,ag,ab = easAccent02877(J:GetTheme())\n    if selected then label:SetColor(ar,ag,ab,1)\n    elseif muted then label:SetColor(EAS_2027.muted[1],EAS_2027.muted[2],EAS_2027.muted[3],0.90)\n    else label:SetColor(EAS_2027.text[1],EAS_2027.text[2],EAS_2027.text[3],0.96) end\nend\n\n-- Every chapter receives the same master/detail surface system.\nlocal easCreateSpreadShellPre02877 = J.CreateSpreadShell
+function J:CreateSpreadShell(name)
+    local spread = easCreateSpreadShellPre02877(self, name)
+    if spread and self.glassMode then
+        local function surface(control, suffix)
+            local bg = wm:CreateControl("EAS_ModernSurface02877_"..tostring(name)..suffix, control, CT_BACKDROP)
+            bg:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 0)
+            bg:SetAnchor(BOTTOMRIGHT, control, BOTTOMRIGHT, 0, 0)
+            if bg.SetDrawLayer then bg:SetDrawLayer(DL_BACKGROUND) end
+            if bg.SetDrawLevel then bg:SetDrawLevel(0) end
+            bg:SetEdgeTexture(nil,1,1,1)
+            bg:SetCenterColor(EAS_2027.surface[1],EAS_2027.surface[2],EAS_2027.surface[3],0.52)
+            bg:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.38)
+            return bg
+        end
+        spread.leftSurface02877 = surface(spread.left, "L")
+        spread.rightSurface02877 = surface(spread.right, "R")
+    end
+    return spread
+end
+
+-- Modern chapter heading treatment shared by every page.
+function J:AddSpreadHeader(spread, leftTitle, rightTitle)
+    local key = tostring(spread.key or leftTitle or "Spread"):gsub("%W", "")
+    local lt = makeLabel("EAS_Codex_"..key.."_LeftTitle", spread.left, leftTitle or "", 16, 9, self.pageW-32, 28, "ZoFontWinH2")
+    lt:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    local rt = makeLabel("EAS_Codex_"..key.."_RightTitle", spread.right, rightTitle or leftTitle or "", 16, 9, self.pageW-32, 28, "ZoFontWinH2")
+    rt:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+
+    local function rule(name, parent)
+        local r = wm:CreateControl(name, parent, CT_BACKDROP)
+        r:SetAnchor(TOPLEFT, parent, TOPLEFT, 16, 42)
+        r:SetDimensions(self.pageW-32, 1)
+        r:SetCenterColor(0.18,0.72,0.92,0.62)
+        r:SetEdgeColor(0,0,0,0)
+        return r
+    end
+    spread.headerRuleLeft02877 = rule("EAS_CodexModernRuleL02877_"..key, spread.left)
+    spread.headerRuleRight02877 = rule("EAS_CodexModernRuleR02877_"..key, spread.right)
+    self.themeLabels[#self.themeLabels+1] = lt
+    self.themeLabels[#self.themeLabels+1] = rt
+    spread.leftTitle, spread.rightTitle = lt, rt
+end
+
+-- Dice & Coin is rebuilt as a compact 4x2 launcher so it cannot run outside
+-- the page at any supported Codex size/scale.
+function J:CreateDiceSpread()
+    local spread = self:CreateSpreadShell("DICE")
+    self:AddSpreadHeader(spread, "DICE & COIN", "RESULT & HISTORY")
+
+    local intro = makeLabel("EAS_CodexDiceIntro", spread.left,
+        "Fast roleplay rolls, loot calls, encounter checks, and coin tosses.",
+        16, 54, self.pageW-32, 44, "ZoFontGame")
+    self.themeLabels[#self.themeLabels+1] = intro
+    setBookText(intro, intro:GetText(), intro:GetWidth())
+
+    self.iconButtons = self.iconButtons or {}
+    local gap = 8
+    local cols = 4
+    local tileW = math.floor((self.pageW - 32 - gap * (cols - 1)) / cols)
+    local tileH = 78
+    local choices = {
+        {kind="DICE", sides=4, label="D4"}, {kind="DICE", sides=6, label="D6"},
+        {kind="DICE", sides=8, label="D8"}, {kind="DICE", sides=10, label="D10"},
+        {kind="DICE", sides=12, label="D12"}, {kind="DICE", sides=20, label="D20"},
+        {kind="DICE", sides=100, label="D100"}, {kind="COIN", label="COIN"},
+    }
+    for i, item in ipairs(choices) do
+        local col = (i - 1) % cols
+        local row = math.floor((i - 1) / cols)
+        local x = 16 + col * (tileW + gap)
+        local y = 108 + row * (tileH + 10)
+        local texture = item.kind == "COIN" and getChanceTexture("COIN") or getChanceTexture("DICE", item.sides)
+        local handler
+        if item.kind == "COIN" then handler = function() self:TossCoin() end
+        else local sides = item.sides handler = function() self:Roll(sides) end end
+        local btn = makeIconButton("EAS_CodexChance02877_"..tostring(i), spread.left, texture, item.label, x, y, tileW, tileH, handler)
+        self.iconButtons[#self.iconButtons+1] = btn
+    end
+
+    local hint = makeLabel("EAS_CodexDiceHint", spread.left,
+        "Your latest result and recent history stay visible on the right.",
+        16, 300, self.pageW-32, 42, "ZoFontGameSmall")
+    self.themeLabels[#self.themeLabels+1] = hint
+    setBookText(hint, hint:GetText(), hint:GetWidth())
+
+    self.diceResultPanel = makePanel("EAS_CodexDiceResultPanel", spread.right, 16, 58, self.pageW-32, 212)
+    self.diceResultTitle = makeLabel("EAS_CodexDiceResultTitle", self.diceResultPanel, "LUCK OF THE DRAW", 14, 12, self.diceResultPanel:GetWidth()-28, 26, "ZoFontWinH2")
+    self.diceResultTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    self.themeLabels[#self.themeLabels+1] = self.diceResultTitle
+
+    self.diceResultIcon = wm:CreateControl("EAS_CodexDiceResultIcon", self.diceResultPanel, CT_TEXTURE)
+    self.diceResultIcon:SetDimensions(68,68)
+    self.diceResultIcon:SetAnchor(TOPLEFT, self.diceResultPanel, TOPLEFT, 18, 50)
+    self.diceResultIcon:SetTexture(getChanceTexture("DICE",20))
+
+    self.diceResultValue = makeLabel("EAS_CodexDiceResultValue", self.diceResultPanel, "READY", 104, 52, self.diceResultPanel:GetWidth()-122, 42, "ZoFontWinH1")
+    self.diceResultValue:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    self.diceResultValue:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.diceResultSub = makeLabel("EAS_CodexDiceResultSub", self.diceResultPanel,
+        "Choose a die or toss the coin.", 104, 98, self.diceResultPanel:GetWidth()-122, 72, "ZoFontGame")
+    self.diceResultSub:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    self.diceResultSub:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    self.themeLabels[#self.themeLabels+1] = self.diceResultSub
+    setBookText(self.diceResultSub, self.diceResultSub:GetText(), self.diceResultSub:GetWidth())
+
+    local historyTitle = makeLabel("EAS_CodexDiceHistoryTitle", spread.right, "RECENT ROLLS", 16, 294, self.pageW-32, 22, "ZoFontGameBold")
+    historyTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    self.themeLabels[#self.themeLabels+1] = historyTitle
+    self.diceHistoryOutput = makeLabel("EAS_CodexDiceHistoryOutput", spread.right, "Choose a die or toss a coin.", 16, 328, self.pageW-32, self.pageH-350, "ZoFontGame")
+    self.themeLabels[#self.themeLabels+1] = self.diceHistoryOutput
+    self.diceOutput = self.diceHistoryOutput
+    self:RefreshDice()
+    return spread
+end
+
+local function easStyleInput02877(edit, name)
+    if not edit or edit._easInputBG02877 then return end
+    local bg = wm:CreateControl(name, edit, CT_BACKDROP)
+    bg:SetAnchorFill(edit)
+    if bg.SetDrawLayer then bg:SetDrawLayer(DL_BACKGROUND) end
+    bg:SetEdgeTexture(nil,1,1,1)
+    bg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.82)
+    bg:SetEdgeColor(EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.64)
+    edit._easInputBG02877 = bg
+    if edit.SetColor then edit:SetColor(EAS_2027.text[1],EAS_2027.text[2],EAS_2027.text[3],1) end
+end
+
+local function easStyleDirectButton02877(control)
+    if not control or not control.GetName then return end
+    local name = tostring(control:GetName() or "")
+    if string.find(name, "EAS_GlassNav_", 1, true) then return end
+    if string.find(name, "ModernBG02877", 1, true) or string.find(name, "ModernBorder02877", 1, true) then return end
+    if control.SetNormalFontColor and control.SetMouseOverFontColor and control.SetPressedFontColor then
+        easPaintButton02877(control, control._easSelected02877 == true, J:GetTheme(), false)
+    end
+end
+
+local function easWalk02877(control, fn)
+    if not control then return end
+    fn(control)
+    if not control.GetNumChildren or not control.GetChild then return end
+    local ok, count = pcall(control.GetNumChildren, control)
+    if not ok then return end
+    count = tonumber(count) or 0
+    for i=1,count do
+        local okChild, child = pcall(control.GetChild, control, i)
+        if okChild and child then easWalk02877(child, fn) end
+    end
+end
+
+function J:ApplySuite2027Layout02877()
+    if not self.glassMode or not self.window or self.suite2027Applied02877 then return end
+    self.suite2027Applied02877 = true
+    local ar,ag,ab = easAccent02877(self:GetTheme())
+
+    -- Whole-window shell.
+    if self.bg then
+        self.bg:SetCenterColor(EAS_2027.canvas[1],EAS_2027.canvas[2],EAS_2027.canvas[3],EAS_2027.canvas[4])
+        self.bg:SetEdgeColor(ar,ag,ab,0.48)
+    end
+    if self.glassTopBar then
+        self.glassTopBar:SetCenterColor(EAS_2027.topbar[1],EAS_2027.topbar[2],EAS_2027.topbar[3],EAS_2027.topbar[4])
+        self.glassTopBar:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.46)
+    end
+    if self.glassSidebar then
+        self.glassSidebar:SetCenterColor(EAS_2027.sidebar[1],EAS_2027.sidebar[2],EAS_2027.sidebar[3],EAS_2027.sidebar[4])
+        self.glassSidebar:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.50)
+    end
+    if self.glassLeftCard then
+        self.glassLeftCard:SetCenterColor(EAS_2027.surface[1],EAS_2027.surface[2],EAS_2027.surface[3],0.78)
+        self.glassLeftCard:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.40)
+    end
+    if self.glassRightCard then
+        self.glassRightCard:SetCenterColor(EAS_2027.surface[1],EAS_2027.surface[2],EAS_2027.surface[3],0.78)
+        self.glassRightCard:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.40)
+    end
+    if self.glassAccent then
+        self.glassAccent:SetDimensions(3, EAS_GLASS_BASE_H)
+        self.glassAccent:SetCenterColor(ar,ag,ab,0.96)
+    end
+
+    if self.glassBrand then
+        self.glassBrand:SetText("ESO ADVENTURER SUITE")
+        self.glassBrand:SetColor(EAS_2027.text[1],EAS_2027.text[2],EAS_2027.text[3],1)
+    end
+    if self.glassSubtitle then
+        self.glassSubtitle:SetText("TAMRIEL COMMAND CENTER  /  SUITE 2027")
+        self.glassSubtitle:SetColor(EAS_2027.muted[1],EAS_2027.muted[2],EAS_2027.muted[3],1)
+    end
+
+    -- Current-workspace breadcrumb in the command bar.
+    if not self.suiteChapter02877 then
+        self.suiteChapter02877 = makeLabel("EAS_SuiteChapter02877", self.glassCanvas,
+            "DASHBOARD", 420, 20, 392, 24, "ZoFontGameBold")
+        self.suiteChapter02877:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    end
+    self.suiteChapter02877:SetColor(EAS_2027.muted[1],EAS_2027.muted[2],EAS_2027.muted[3],1)
+
+    -- Toolbar is a compact command cluster, not four disconnected boxes.
+    if self.prevPageButton then self.prevPageButton:SetText("PREV") end
+    if self.nextPageButton then self.nextPageButton:SetText("NEXT") end
+    if self.themeButton then self.themeButton:SetText("COLOR") end
+    if self.closeButton then self.closeButton:SetText("CLOSE") end
+    if self.glassFloatingToolbar then
+        self.glassFloatingToolbar:SetCenterColor(EAS_2027.surface[1],EAS_2027.surface[2],EAS_2027.surface[3],0.90)
+        self.glassFloatingToolbar:SetEdgeColor(EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.58)
+    end
+
+    -- Dynamic navigation sizing: Dashboard + every chapter always fits.
+    local ordered = {"INDEX"}
+    for _, key in ipairs(TABS) do if key ~= "INDEX" then ordered[#ordered+1] = key end end
+    local count = #ordered
+    local startY, bottomPad = 40, 10
+    local available = 664 - startY - bottomPad
+    local step = math.floor(available / math.max(1,count))
+    local buttonH = math.max(23, math.min(29, step - 3))
+    for i,key in ipairs(ordered) do
+        local b = self.tabButtons and self.tabButtons[key]
+        if b and self.glassSidebar then
+            b:ClearAnchors()
+            b:SetAnchor(TOPLEFT, self.glassSidebar, TOPLEFT, 10, startY + (i-1)*step)
+            b:SetDimensions(186, buttonH)
+            b:SetFont(buttonH <= 24 and "ZoFontGameSmall" or "ZoFontGame")
+            b:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+            b:SetText("    " .. tostring(key == "INDEX" and "Dashboard" or (TAB_LABELS[key] or key)))
+            if b.glassBg then
+                b.glassBg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.34)
+                b.glassBg:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.38)
+            end
+        end
+    end
+
+    -- One subtle divider turns the workspace into a master/detail layout.
+    if self.glassWorkspace and not self.suiteDivider02877 then
+        local divider = wm:CreateControl("EAS_SuiteWorkspaceDivider02877", self.glassWorkspace, CT_BACKDROP)
+        divider:SetAnchor(TOP, self.glassWorkspace, TOP, 0, 12)
+        divider:SetDimensions(1, 632)
+        divider:SetCenterColor(EAS_2027.border[1],EAS_2027.border[2],EAS_2027.border[3],0.56)
+        divider:SetEdgeColor(0,0,0,0)
+        self.suiteDivider02877 = divider
+    end
+
+    -- Direct-created controls (interactive rows etc.) inherit the same chrome.
+    easWalk02877(self.window, function(control)
+        if control.GetName then
+            local name = tostring(control:GetName() or "")
+            if string.find(name, "EAS_", 1, true) == 1 then
+                easStyleDirectButton02877(control)
+            end
+        end
+    end)
+
+    easStyleInput02877(self.noteTitleEdit, "EAS_SuiteNoteTitleBG02877")
+    easStyleInput02877(self.noteBodyEdit, "EAS_SuiteNoteBodyBG02877")
+    easStyleInput02877(self.checkpointNameEdit, "EAS_SuiteCheckpointBG02877")
+
+    if self.pageNumber then self.pageNumber:SetHidden(true) end
+    if self.leftPageNumber then self.leftPageNumber:SetHidden(true) end
+    if self.rightPageNumber then self.rightPageNumber:SetHidden(true) end
+    if self.glassResizeHint then
+        self.glassResizeHint:SetText("DRAG TO MOVE  •  RESIZE FROM ANY EDGE")
+        self.glassResizeHint:SetColor(EAS_2027.faint[1],EAS_2027.faint[2],EAS_2027.faint[3],0.95)
+    end
+end
+
+local easApplyThemePre02877 = J.ApplyTheme
+function J:ApplyTheme()
+    local result = easApplyThemePre02877(self)
+    if not self.glassMode or not self.window then return result end
+    local ar,ag,ab = easAccent02877(self:GetTheme())
+
+    if self.bg then
+        self.bg:SetCenterColor(EAS_2027.canvas[1],EAS_2027.canvas[2],EAS_2027.canvas[3],EAS_2027.canvas[4])
+        self.bg:SetEdgeColor(ar,ag,ab,0.48)
+    end
+    if self.glassTopBar then self.glassTopBar:SetCenterColor(EAS_2027.topbar[1],EAS_2027.topbar[2],EAS_2027.topbar[3],EAS_2027.topbar[4]) end
+    if self.glassSidebar then self.glassSidebar:SetCenterColor(EAS_2027.sidebar[1],EAS_2027.sidebar[2],EAS_2027.sidebar[3],EAS_2027.sidebar[4]) end
+    if self.glassLeftCard then self.glassLeftCard:SetCenterColor(EAS_2027.surface[1],EAS_2027.surface[2],EAS_2027.surface[3],0.78) end
+    if self.glassRightCard then self.glassRightCard:SetCenterColor(EAS_2027.surface[1],EAS_2027.surface[2],EAS_2027.surface[3],0.78) end
+
+    for _,label in pairs(self.themeLabels or {}) do
+        if label and label.SetColor then label:SetColor(EAS_2027.text[1],EAS_2027.text[2],EAS_2027.text[3],1) end
+    end
+    if self.glassSubtitle then self.glassSubtitle:SetColor(EAS_2027.muted[1],EAS_2027.muted[2],EAS_2027.muted[3],1) end
+    if self.suiteChapter02877 then self.suiteChapter02877:SetColor(ar,ag,ab,0.94) end
+
+    for key,b in pairs(self.tabButtons or {}) do
+        if b then
+            local selected = key == self.activeTab
+            if b.SetNormalFontColor then
+                if selected then b:SetNormalFontColor(1,1,1,1)
+                else b:SetNormalFontColor(EAS_2027.text[1],EAS_2027.text[2],EAS_2027.text[3],0.86) end
+                b:SetMouseOverFontColor(1,1,1,1)
+                b:SetPressedFontColor(ar,ag,ab,1)
+            end
+            if b.glassBg then
+                if selected then b.glassBg:SetCenterColor(ar,ag,ab,0.17); b.glassBg:SetEdgeColor(ar,ag,ab,0.66)
+                else b.glassBg:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.34); b.glassBg:SetEdgeColor(EAS_2027.borderSoft[1],EAS_2027.borderSoft[2],EAS_2027.borderSoft[3],0.38) end
+            end
+            if b.glassRail then
+                if selected then b.glassRail:SetColor(ar,ag,ab,1) else b.glassRail:SetColor(0,0,0,0) end
+            end
+        end
+    end
+
+    for _,b in ipairs(self.topButtons or {}) do easPaintButton02877(b, false, self:GetTheme(), false) end
+    for _,b in ipairs(self.iconButtons or {}) do styleIconButton(b, self:GetTheme()) end
+    if self.diceResultPanel then
+        self.diceResultPanel:SetCenterColor(EAS_2027.surface2[1],EAS_2027.surface2[2],EAS_2027.surface2[3],0.90)
+        self.diceResultPanel:SetEdgeColor(ar,ag,ab,0.40)
+    end
+    if self.diceResultValue then self.diceResultValue:SetColor(ar,ag,ab,1) end
+    return result
+end
+
+local easSetTabPre02877 = J.SetTab
+function J:SetTab(tab, ...)
+    local result = easSetTabPre02877(self, tab, ...)
+    if self.suiteChapter02877 then
+        self.suiteChapter02877:SetText(string.upper(tostring(tab == "INDEX" and "DASHBOARD" or (TAB_LABELS[tab] or tab or "WORKSPACE"))))
+    end
+    self:ApplyTheme()
+    return result
+end
+
+local easCreatePre02877 = J.Create
+function J:Create()
+    local result = easCreatePre02877(self)
+    self:ApplySuite2027Layout02877()
+    if self.activeTab then self:SetTab(self.activeTab) end
+    self:ApplyTheme()
+    return result
+end
+
+-- ============================================================================
+-- v0.28.79 - Hard replacement app shell
+-- The legacy Codex is still constructed first so every existing feature keeps
+-- its event handlers/state, but its visible shell/navigation is removed and all
+-- live pages are mounted inside a new single-window dashboard application.
+-- ============================================================================
+TAB_LABELS.CHARACTER = "Character"
+TAB_TITLES.CHARACTER = "CHARACTER"
+TAB_LABELS.COMPANIONS = "Companions"
+TAB_TITLES.COMPANIONS = "COMPANIONS"
+
+local EAS_APP_GROUPS_02879 = {
+    HOME = {"INDEX"},
+    CHARACTER = {"CHARACTER","COMPANIONS","BUILD","GEAR","SKILLS","COMBAT","STATS","ACHIEVEMENTS"},
+    ADVENTURE = {"QUESTS","PURSUITS","ACTIVITY","TRAVEL"},
+    FINDERS = {"DUNGEONS","BATTLEGROUNDS","GROUPFINDER"},
+    TOOLS = {"NOTES","PINS","TOOLS","CODEX","DICE"},
+}
+local EAS_APP_GROUP_ORDER_02879 = {"HOME","CHARACTER","ADVENTURE","FINDERS","TOOLS"}
+local EAS_APP_ICONS_02879 = {
+    INDEX="home", CHARACTER="character", COMPANIONS="companions", BUILD="build", GEAR="gear",
+    SKILLS="skills", COMBAT="combat", STATS="stats", ACHIEVEMENTS="achievements", QUESTS="quests",
+    PURSUITS="pursuits", ACTIVITY="activity", TRAVEL="travel", DUNGEONS="dungeons",
+    BATTLEGROUNDS="battlegrounds", GROUPFINDER="groupfinder", NOTES="notes", PINS="pins",
+    TOOLS="tools", CODEX="codex", DICE="dice",
+}
+
+local function easAppTabGroup02879(tab)
+    for group, tabs in pairs(EAS_APP_GROUPS_02879) do
+        for _, value in ipairs(tabs) do if value == tab then return group end end
+    end
+    return "HOME"
+end
+
+local function easAppPanel02879(name, parent, x, y, w, h, r,g,b,a)
+    local c = wm:CreateControl(name, parent, CT_BACKDROP)
+    c:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    c:SetDimensions(w,h)
+    c:SetEdgeTexture(nil,1,1,1)
+    c:SetCenterColor(r or 0.035,g or 0.038,b or 0.052,a or 0.96)
+    c:SetEdgeColor(0.16,0.15,0.22,0.72)
+    return c
+end
+
+local function easAppLabel02879(name, parent, text, x,y,w,h,font,color)
+    local l = wm:CreateControl(name, parent, CT_LABEL)
+    l:SetAnchor(TOPLEFT,parent,TOPLEFT,x,y)
+    l:SetDimensions(w,h)
+    l:SetFont(font or "ZoFontGame")
+    l:SetText(text or "")
+    local c = color or {0.94,0.94,0.98,1}
+    l:SetColor(c[1],c[2],c[3],c[4] or 1)
+    l:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    return l
+end
+
+local function easAppButton02879(name,parent,text,x,y,w,h,callback)
+    local b = wm:CreateControl(name,parent,CT_BUTTON)
+    b:SetAnchor(TOPLEFT,parent,TOPLEFT,x,y); b:SetDimensions(w,h)
+    b:SetFont("ZoFontGameBold"); b:SetText(text or "")
+    b:SetNormalFontColor(0.88,0.88,0.94,1); b:SetMouseOverFontColor(1,1,1,1); b:SetPressedFontColor(1,1,1,1)
+    local bg = easAppPanel02879(name.."BG",b,0,0,w,h,0.055,0.055,0.075,0.96)
+    bg:SetDrawLevel(0); b._appBg02879=bg
+    b:SetHandler("OnMouseEnter",function(c) c._appBg02879:SetCenterColor(0.16,0.12,0.30,0.98); c._appBg02879:SetEdgeColor(0.49,0.36,1,0.95) end)
+    b:SetHandler("OnMouseExit",function(c) c._appBg02879:SetCenterColor(0.055,0.055,0.075,0.96); c._appBg02879:SetEdgeColor(0.16,0.15,0.22,0.72) end)
+    if callback then b:SetHandler("OnClicked",callback) end
+    return b
+end
+
+local function easAppCleanName02879(value)
+    local s = tostring(value or "")
+    if type(zo_strformat)=="function" and s~="" then
+        local ok,v=pcall(zo_strformat,"<<C:1>>",s); if ok and v then s=tostring(v) end
+    end
+    return s~="" and s or "Adventurer"
+end
+
+local function easAppCurrentClassTexture02879()
+    local name = string.lower(tostring(safe(GetUnitClass,"Sorcerer","player") or "Sorcerer"))
+    local key = "sorcerer"
+    if string.find(name,"dragon",1,true) then key="dragonknight"
+    elseif string.find(name,"night",1,true) then key="nightblade"
+    elseif string.find(name,"warden",1,true) then key="warden"
+    elseif string.find(name,"necro",1,true) then key="necromancer"
+    elseif string.find(name,"templar",1,true) then key="templar"
+    elseif string.find(name,"arcan",1,true) then key="arcanist" end
+    return "ESOAdventurerSuite/Art/Cards/class_"..key..".dds", key
+end
+
+local function easAppTextureCard02879(name,parent,path,x,y,w,h,selected)
+    local card=easAppPanel02879(name,parent,x,y,w,h,0.025,0.026,0.034,1)
+    if selected then card:SetEdgeColor(0.49,0.36,1,1) end
+    local t=wm:CreateControl(name.."Texture",card,CT_TEXTURE)
+    t:SetAnchor(TOPLEFT,card,TOPLEFT,3,3); t:SetDimensions(w-6,h-6); t:SetTexture(path); t:SetTextureCoords(0,1,0,0.6914)
+    return card,t
+end
+
+function J:CreateAppDashboard02879()
+    local p=wm:CreateControl("EAS_AppDashboard02879",self.glassWorkspace,CT_CONTROL); p:SetAnchorFill(self.glassWorkspace)
+    local hero=easAppPanel02879("EAS_AppHero02879",p,18,18,650,260,0.028,0.029,0.039,0.98)
+    easAppLabel02879("EAS_AppHeroEyebrow02879",hero,"TAMRIEL COMMAND CENTER",28,24,360,22,"ZoFontGameBold",{0.49,0.36,1,1})
+    self.appHeroTitle02879=easAppLabel02879("EAS_AppHeroTitle02879",hero,"YOUR ADVENTURE.\nONE COMMAND CENTER.",28,58,460,92,"$(BOLD_FONT)|30|soft-shadow-thick")
+    self.appHeroSub02879=easAppLabel02879("EAS_AppHeroSub02879",hero,"",28,150,510,44,"ZoFontGame",{0.56,0.57,0.66,1})
+    easAppButton02879("EAS_AppQuestButton02879",hero,"CONTINUE QUEST",28,208,190,38,function() self:SetTab("QUESTS") end)
+    easAppButton02879("EAS_AppFindButton02879",hero,"FIND ACTIVITY",232,208,178,38,function() self:SetTab("DUNGEONS") end)
+
+    local profile=easAppPanel02879("EAS_AppProfileCard02879",p,684,18,360,260,0.032,0.032,0.044,0.99)
+    self.appProfileName02879=easAppLabel02879("EAS_AppProfileName02879",profile,"",20,18,190,30,"ZoFontWinH2")
+    self.appProfileMeta02879=easAppLabel02879("EAS_AppProfileMeta02879",profile,"",20,50,190,36,"ZoFontGame",{0.58,0.59,0.68,1})
+    local texturePath=easAppCurrentClassTexture02879()
+    local art=wm:CreateControl("EAS_AppProfileArt02879",profile,CT_TEXTURE); art:SetAnchor(TOPRIGHT,profile,TOPRIGHT,-12,12); art:SetDimensions(142,196); art:SetTexture(texturePath); art:SetTextureCoords(0,1,0,0.6914); self.appProfileArt02879=art
+    self.appProfileStats02879=easAppLabel02879("EAS_AppProfileStats02879",profile,"",20,100,180,94,"ZoFontGameSmall",{0.84,0.84,0.90,1})
+    easAppButton02879("EAS_AppBuildButton02879",profile,"OPEN BUILD",20,210,142,34,function() self:SetTab("BUILD") end)
+
+    local cards={
+        {"QUEST","Active Quest","QUESTS"},{"GOLD","Golden Pursuits","PURSUITS"},{"QUEUE","Activity Queue","DUNGEONS"},
+        {"COMP","Companion","COMPANIONS"},{"ZONE","Current Zone","TRAVEL"},{"GEAR","Gear & Sets","GEAR"},
+    }
+    self.appDashboardCards02879={}
+    for i,data in ipairs(cards) do
+        local col=(i-1)%3; local row=math.floor((i-1)/3); local x=18+col*347; local y=296+row*154
+        local c=easAppPanel02879("EAS_AppDashCard02879_"..i,p,x,y,329,136,0.037,0.038,0.052,0.98)
+        local tag=easAppLabel02879("EAS_AppDashTag02879_"..i,c,data[1],18,15,70,20,"ZoFontGameBold",{0.49,0.36,1,1})
+        local title=easAppLabel02879("EAS_AppDashTitle02879_"..i,c,data[2],18,39,285,25,"ZoFontGameBold")
+        local value=easAppLabel02879("EAS_AppDashValue02879_"..i,c,"",18,67,285,38,"ZoFontGame",{0.66,0.67,0.74,1}); value:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+        local hit=wm:CreateControl("EAS_AppDashHit02879_"..i,c,CT_BUTTON); hit:SetAnchorFill(c); hit:SetHandler("OnClicked",function() self:SetTab(data[3]) end)
+        hit:SetHandler("OnMouseEnter",function() c:SetEdgeColor(0.49,0.36,1,0.92) end); hit:SetHandler("OnMouseExit",function() c:SetEdgeColor(0.16,0.15,0.22,0.72) end)
+        self.appDashboardCards02879[i]={value=value,target=data[3],panel=c}
+    end
+    return p
+end
+
+function J:CreateAppCharacterPage02879()
+    local p=wm:CreateControl("EAS_AppCharacterPage02879",self.glassWorkspace,CT_CONTROL); p:SetAnchorFill(self.glassWorkspace)
+    easAppLabel02879("EAS_AppCharacterTitle02879",p,"CHARACTER",22,18,500,34,"$(BOLD_FONT)|26|soft-shadow-thick")
+    easAppLabel02879("EAS_AppCharacterSub02879",p,"Your active class is highlighted. Open Build, Gear, Skills or Stats from the rail for live optimization.",22,51,850,30,"ZoFontGame",{0.56,0.57,0.66,1})
+    local classes={{"dragonknight","Dragonknight"},{"sorcerer","Sorcerer"},{"nightblade","Nightblade"},{"warden","Warden"},{"necromancer","Necromancer"},{"templar","Templar"},{"arcanist","Arcanist"}}
+    local _,current=easAppCurrentClassTexture02879()
+    self.appClassCards02879={}
+    for i,d in ipairs(classes) do
+        local col=(i-1)%4; local row=math.floor((i-1)/4); local x=22+col*254; local y=96+row*265
+        local card=easAppTextureCard02879("EAS_AppClassCard02879_"..i,p,"ESOAdventurerSuite/Art/Cards/class_"..d[1]..".dds",x,y,226,246,d[1]==current)
+        self.appClassCards02879[i]=card
+    end
+    easAppButton02879("EAS_AppCharacterBuild02879",p,"OPEN CURRENT BUILD",786,621,250,36,function() self:SetTab("BUILD") end)
+    return p
+end
+
+function J:CreateAppCompanionPage02879()
+    local p=wm:CreateControl("EAS_AppCompanionPage02879",self.glassWorkspace,CT_CONTROL); p:SetAnchorFill(self.glassWorkspace)
+    easAppLabel02879("EAS_AppCompanionTitle02879",p,"COMPANIONS",22,18,500,34,"$(BOLD_FONT)|26|soft-shadow-thick")
+    self.appCompanionSub02879=easAppLabel02879("EAS_AppCompanionSub02879",p,"",22,51,850,30,"ZoFontGame",{0.56,0.57,0.66,1})
+    local companions={{"azandar","Azandar"},{"bastian","Bastian Hallix"},{"ember","Ember"},{"isobel","Isobel Veloise"},{"mirri","Mirri Elendis"},{"sharp","Sharp-as-Night"},{"tanlorin","Tanlorin"},{"zerithvar","Zerith-var"}}
+    self.appCompanionCards02879={}
+    for i,d in ipairs(companions) do
+        local col=(i-1)%4; local row=math.floor((i-1)/4); local x=22+col*254; local y=96+row*265
+        local card=easAppTextureCard02879("EAS_AppCompanionCard02879_"..i,p,"ESOAdventurerSuite/Art/Cards/companion_"..d[1]..".dds",x,y,226,246,false)
+        self.appCompanionCards02879[i]={control=card,key=d[1],label=d[2]}
+    end
+    return p
+end
+
+function J:RefreshAppPages02879()
+    local player=easAppCleanName02879(safe(GetUnitName,"Adventurer","player"))
+    local class=easAppCleanName02879(safe(GetUnitClass,"Adventurer","player"))
+    local level=tonumber(safe(GetUnitLevel,0,"player")) or 0
+    local cp=tonumber(safe(GetUnitChampionPoints,0,"player")) or 0
+    local zone=easAppCleanName02879(safe(GetUnitZone,"Tamriel","player"))
+    if self.appProfileName02879 then self.appProfileName02879:SetText(player) end
+    if self.appProfileMeta02879 then self.appProfileMeta02879:SetText(class.."  •  "..(cp>0 and ("CP "..cp) or ("LEVEL "..level))) end
+    if self.appHeroSub02879 then self.appHeroSub02879:SetText(zone.."  •  "..class.."  •  "..(cp>0 and ("Champion "..cp) or ("Level "..level))) end
+    if self.appProfileArt02879 then local path=easAppCurrentClassTexture02879(); self.appProfileArt02879:SetTexture(path) end
+    if self.appProfileStats02879 then
+        local hc,hm=safe(GetUnitPower,0,"player",POWERTYPE_HEALTH); local mc,mm=safe(GetUnitPower,0,"player",POWERTYPE_MAGICKA); local sc,sm=safe(GetUnitPower,0,"player",POWERTYPE_STAMINA)
+        self.appProfileStats02879:SetText(string.format("HEALTH   %s\nMAGICKA  %s\nSTAMINA  %s",tostring(hm or hc or "--"),tostring(mm or mc or "--"),tostring(sm or sc or "--")))
+    end
+    local quest="No assisted quest"
+    if EPC.ActiveQuest and EPC.ActiveQuest.GetActiveQuestIndex then
+        local ok,idx=pcall(EPC.ActiveQuest.GetActiveQuestIndex,EPC.ActiveQuest); if ok and tonumber(idx) and tonumber(idx)>0 then local q=safe(GetJournalQuestInfo,"",tonumber(idx)); if q and q~="" then quest=easAppCleanName02879(q) end end
+    end
+    local pursuit="No active pursuit"
+    if self.BuildGoldenPursuitsView2494 then local ok,v=pcall(self.BuildGoldenPursuitsView2494,self); if ok and v and v.rows and v.rows[1] then local r=v.rows[1]; pursuit=tostring(r.name or r.activityName or r.description or "Golden Pursuit") end end
+    local queue="Not queued"
+    if EPC.BattlegroundFinder and EPC.BattlegroundFinder.IsQueued and EPC.BattlegroundFinder:IsQueued() then queue="Battleground queue active"
+    elseif EPC.DungeonFinder and EPC.DungeonFinder.IsQueued and EPC.DungeonFinder:IsQueued() then queue="Dungeon queue active" end
+    local companion="No active companion"
+    if safe(DoesUnitExist,false,"companion") == true then companion=easAppCleanName02879(safe(GetUnitName,"Companion","companion")) end
+    local values={quest,pursuit,queue,companion,zone,class.." build"}
+    for i,v in ipairs(values) do if self.appDashboardCards02879 and self.appDashboardCards02879[i] then self.appDashboardCards02879[i].value:SetText(v) end end
+    if self.appCompanionSub02879 then self.appCompanionSub02879:SetText("ACTIVE: "..companion.."  •  companion cards use the ESO artwork you supplied") end
+    local activeKey=string.lower(companion):gsub("[^%a]","")
+    for _,entry in ipairs(self.appCompanionCards02879 or {}) do
+        local selected=string.find(activeKey,entry.key:gsub("[^%a]",""),1,true)~=nil
+        entry.control:SetEdgeColor(selected and 0.49 or 0.16,selected and 0.36 or 0.15,selected and 1 or 0.22,selected and 1 or 0.72)
+    end
+end
+
+function J:BuildAppRail02879()
+    if not self.appRail02879 then return end
+    for _,b in pairs(self.appRailButtons02879 or {}) do b:SetHidden(true) end
+    local group=self.appActiveGroup02879 or easAppTabGroup02879(self.activeTab)
+    local tabs=EAS_APP_GROUPS_02879[group] or EAS_APP_GROUPS_02879.HOME
+    for i,tab in ipairs(tabs) do
+        local b=self.appRailButtons02879[tab]
+        if not b then
+            b=wm:CreateControl("EAS_AppRailButton02879_"..tab,self.appRail02879,CT_BUTTON); b:SetDimensions(50,50)
+            local bg=easAppPanel02879("EAS_AppRailButtonBG02879_"..tab,b,0,0,50,50,0.03,0.03,0.042,0); bg:SetEdgeColor(0,0,0,0); b._bg02879=bg
+            local tex=wm:CreateControl("EAS_AppRailIcon02879_"..tab,b,CT_TEXTURE); tex:SetAnchor(CENTER,b,CENTER,0,0); tex:SetDimensions(25,25); tex:SetTexture("ESOAdventurerSuite/Art/AppIcons/"..(EAS_APP_ICONS_02879[tab] or "home")..".dds"); tex:SetColor(0.48,0.48,0.56,1); b._icon02879=tex
+            b:SetHandler("OnClicked",function() self:SetTab(tab) end)
+            b:SetHandler("OnMouseEnter",function(c) c._icon02879:SetColor(0.75,0.65,1,1); self.appRailTip02879:SetText(TAB_LABELS[tab] or tab); self.appRailTip02879:SetHidden(false); self.appRailTip02879:ClearAnchors(); self.appRailTip02879:SetAnchor(LEFT,c,RIGHT,10,0) end)
+            b:SetHandler("OnMouseExit",function(c) self.appRailTip02879:SetHidden(true); if self.activeTab~=tab then c._icon02879:SetColor(0.48,0.48,0.56,1) end end)
+            self.appRailButtons02879[tab]=b
+        end
+        b:ClearAnchors(); b:SetAnchor(TOPLEFT,self.appRail02879,TOPLEFT,11,96+(i-1)*58); b:SetHidden(false)
+        local selected=self.activeTab==tab; b._icon02879:SetColor(selected and 0.63 or 0.48,selected and 0.47 or 0.48,selected and 1 or 0.56,1); b._bg02879:SetCenterColor(selected and 0.11 or 0.03,selected and 0.075 or 0.03,selected and 0.20 or 0.042,selected and 0.92 or 0)
+    end
+end
+
+function J:UpdateAppNavigation02879()
+    if not self.appShell02879 then return end
+    self.appActiveGroup02879=easAppTabGroup02879(self.activeTab)
+    for group,b in pairs(self.appGroupButtons02879 or {}) do
+        local selected=group==self.appActiveGroup02879; b._appBg02879:SetCenterColor(selected and 0.16 or 0.045,selected and 0.11 or 0.045,selected and 0.30 or 0.06,0.98); b._appBg02879:SetEdgeColor(selected and 0.49 or 0.12,selected and 0.36 or 0.12,selected and 1 or 0.18,selected and 0.9 or 0.5)
+    end
+    if self.appSectionTitle02879 then self.appSectionTitle02879:SetText(string.upper(TAB_LABELS[self.activeTab] or self.activeTab or "HOME")) end
+    self:BuildAppRail02879()
+end
+
+function J:ApplyHardAppShell02879()
+    if self.appShell02879 or not self.glassCanvas then return end
+    self.hardAppShell02879=true
+    -- Remove every visible piece of the prior Codex/Glass shell.
+    for _,c in ipairs({self.bg,self.glassTopBar,self.glassAccent,self.glassSidebar,self.glassLeftCard,self.glassRightCard,self.glassFloatingToolbar,self.suiteDivider02877,self.glassBrand,self.glassSubtitle,self.prevPageButton,self.nextPageButton,self.themeButton,self.closeButton,self.pageNumber,self.leftPageNumber,self.rightPageNumber,self.flipPage}) do if c and c.SetHidden then c:SetHidden(true) end end
+    for _,b in pairs(self.tabButtons or {}) do if b and b.SetHidden then b:SetHidden(true) end end
+    if self.bookTexture then self.bookTexture:SetHidden(true) end
+
+    local canvas=self.glassCanvas
+    local shell=easAppPanel02879("EAS_AppShell02879",canvas,0,0,EAS_GLASS_BASE_W,EAS_GLASS_BASE_H,0.018,0.018,0.026,1); shell:SetEdgeColor(0.12,0.11,0.18,1); shell:SetDrawLevel(0); self.appShell02879=shell
+    local rail=easAppPanel02879("EAS_AppRail02879",canvas,0,0,76,EAS_GLASS_BASE_H,0.025,0.025,0.034,1); rail:SetEdgeColor(0.08,0.08,0.12,1); rail:SetDrawLevel(30); self.appRail02879=rail
+    local logo=easAppPanel02879("EAS_AppLogo02879",rail,18,18,40,40,0.025,0.025,0.034,1); logo:SetEdgeColor(0.49,0.36,1,1)
+    easAppLabel02879("EAS_AppLogoText02879",logo,"A",0,0,40,40,"ZoFontWinH2",{0.72,0.62,1,1}):SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    local top=easAppPanel02879("EAS_AppTop02879",canvas,76,0,1104,72,0.025,0.025,0.034,1); top:SetEdgeColor(0.08,0.08,0.12,1); top:SetDrawLevel(30); self.appTop02879=top
+    easAppLabel02879("EAS_AppBrand02879",top,"ESO ADVENTURER SUITE",24,17,235,28,"ZoFontWinH2")
+    self.appSectionTitle02879=easAppLabel02879("EAS_AppSectionTitle02879",top,"HOME",258,21,170,22,"ZoFontGameBold",{0.49,0.36,1,1})
+    self.appGroupButtons02879={}
+    local gx=430
+    for i,group in ipairs(EAS_APP_GROUP_ORDER_02879) do local b=easAppButton02879("EAS_AppGroup02879_"..group,top,group,gx+(i-1)*104,15,96,40,function() self.appActiveGroup02879=group; self:SetTab(EAS_APP_GROUPS_02879[group][1]) end); self.appGroupButtons02879[group]=b end
+    self.appProfileTopName02879=easAppLabel02879("EAS_AppTopProfile02879",top,easAppCleanName02879(safe(GetUnitName,"Adventurer","player")),950,14,116,22,"ZoFontGameBold"); self.appProfileTopName02879:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    self.appProfileTopClass02879=easAppLabel02879("EAS_AppTopProfileSub02879",top,easAppCleanName02879(safe(GetUnitClass,"", "player")),930,35,136,18,"ZoFontGameSmall",{0.49,0.36,1,1}); self.appProfileTopClass02879:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    local close=easAppButton02879("EAS_AppClose02879",top,"X",1070,16,34,36,function() self:Hide() end); close:SetNormalFontColor(0.7,0.7,0.76,1)
+    self.appRailButtons02879={}
+    self.appRailTip02879=easAppLabel02879("EAS_AppRailTip02879",canvas,"",0,0,160,28,"ZoFontGameBold"); self.appRailTip02879:SetHidden(true); self.appRailTip02879:SetDrawLevel(100)
+
+    -- Existing live pages stay wired but are now placed inside the new app content canvas.
+    self.glassWorkspace:ClearAnchors(); self.glassWorkspace:SetAnchor(TOPLEFT,canvas,TOPLEFT,88,82); self.glassWorkspace:SetDimensions(1074,662); self.glassWorkspace:SetDrawLevel(10)
+    self.leftPageHost:ClearAnchors(); self.leftPageHost:SetAnchor(TOPLEFT,self.glassWorkspace,TOPLEFT,14,42); self.leftPageHost:SetDimensions(self.pageW,self.pageH)
+    self.rightPageHost:ClearAnchors(); self.rightPageHost:SetAnchor(TOPLEFT,self.glassWorkspace,TOPLEFT,528,42); self.rightPageHost:SetDimensions(self.pageW,self.pageH)
+    for key,page in pairs(self.pages or {}) do
+        if page and page.leftSurface02877 then page.leftSurface02877:SetCenterColor(0.032,0.033,0.045,0.99); page.leftSurface02877:SetEdgeColor(0.14,0.13,0.19,0.72) end
+        if page and page.rightSurface02877 then page.rightSurface02877:SetCenterColor(0.032,0.033,0.045,0.99); page.rightSurface02877:SetEdgeColor(0.14,0.13,0.19,0.72) end
+        if page and page.headerRuleLeft02877 then page.headerRuleLeft02877:SetCenterColor(0.49,0.36,1,0.72) end
+        if page and page.headerRuleRight02877 then page.headerRuleRight02877:SetCenterColor(0.49,0.36,1,0.72) end
+    end
+    local oldIndex=self.pages.INDEX; if oldIndex then oldIndex:SetHidden(true) end
+    self.legacyIndexPage02879=oldIndex
+    self.pages.INDEX=self:CreateAppDashboard02879()
+    self.pages.CHARACTER=self:CreateAppCharacterPage02879()
+    self.pages.COMPANIONS=self:CreateAppCompanionPage02879()
+    self:RefreshAppPages02879(); self:UpdateAppNavigation02879()
+    -- No page-turn animation in the application shell.
+    self.openSound=nil; self.closeSound=nil; self.turnSound=nil
+end
+
+local easPlayPageTurnPre02879=J.PlayPageTurn
+function J:PlayPageTurn() if self.hardAppShell02879 then return end; return easPlayPageTurnPre02879(self) end
+
+local easSetTabPre02879=J.SetTab
+function J:SetTab(tab,...)
+    local result=easSetTabPre02879(self,tab,...)
+    if self.appShell02879 then self:RefreshAppPages02879(); self:UpdateAppNavigation02879() end
+    return result
+end
+
+local easApplyThemePre02879=J.ApplyTheme
+function J:ApplyTheme(...)
+    local result=easApplyThemePre02879(self,...)
+    if self.appShell02879 then
+        self.appShell02879:SetCenterColor(0.018,0.018,0.026,1)
+        self.appRail02879:SetCenterColor(0.025,0.025,0.034,1)
+        self.appTop02879:SetCenterColor(0.025,0.025,0.034,1)
+        self:UpdateAppNavigation02879()
+    end
+    return result
+end
+
+local easCreatePre02879=J.Create
+function J:Create()
+    local result=easCreatePre02879(self)
+    self:ApplyHardAppShell02879()
+    local wanted=self.activeTab or self:EnsureSaved().activeTab or "INDEX"
+    if wanted~="CHARACTER" and wanted~="COMPANIONS" and not self.pages[wanted] then wanted="INDEX" end
+    self:SetTab(wanted)
+    if self.window and self.window.SetKeyboardEnabled then self.window:SetKeyboardEnabled(true) end
+    if self.window then self.window:SetHandler("OnKeyDown",function(_,key,ctrl,alt,shift,command) if self.window and not self.window:IsHidden() and self:RawKeyMatchesAction("ESO_PROGRESSION_COACH_TOGGLE",key,ctrl,alt,shift,command) then self:Hide() end end) end
+    -- Permanently retire the older standalone Suite menu.
+    if EPC.UI and EPC.UI.root then EPC.UI.root:SetHidden(true) end
+    return result
 end

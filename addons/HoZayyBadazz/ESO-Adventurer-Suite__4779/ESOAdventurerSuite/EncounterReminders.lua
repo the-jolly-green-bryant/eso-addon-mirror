@@ -35,11 +35,45 @@ function R:ArmorNeedsRepair()
     return false
 end
 
+function R:HasAttackableTarget()
+    return safe(IsUnitAttackable, false, "reticleover") == true
+end
+
 function R:IsEncounterContext()
-    if safe(IsUnitInDungeon, false, "player") == true then return true end
-    if safe(IsPlayerInRaid, false) == true then return true end
-    if safe(IsUnitAttackable, false, "reticleover") == true then return true end
-    return false
+    -- Being inside a dungeon or raid is not enough by itself.  Pre-encounter
+    -- reminders should only appear when the player is actually lining up an
+    -- attackable target, with a short grace period after the reticle moves off.
+    return self.attackableTarget == true or self.preEncounterGrace == true
+end
+
+function R:OnReticleTargetChanged()
+    local attackable = self:HasAttackableTarget()
+    self.attackableTarget = attackable
+    self.reticleGeneration = (tonumber(self.reticleGeneration) or 0) + 1
+    local generation = self.reticleGeneration
+
+    if attackable then
+        self.preEncounterGrace = true
+        self:Refresh()
+        return
+    end
+
+    if self.preEncounterGrace ~= true then
+        self:Refresh()
+        return
+    end
+
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            if generation ~= self.reticleGeneration then return end
+            if self:HasAttackableTarget() then return end
+            self.preEncounterGrace = false
+            self:Refresh()
+        end, 2500)
+    else
+        self.preEncounterGrace = false
+        self:Refresh()
+    end
 end
 
 local function anchorWindow(control, leftKey, topKey, presetKey, defaultX, defaultY)
@@ -172,17 +206,27 @@ end
 
 function R:Initialize()
     self.layoutMode = false
+    self.attackableTarget = false
+    self.preEncounterGrace = false
+    self.reticleGeneration = 0
     self:Create()
     local prefix = EPC.name .. "_EncounterReminders"
 
     if EVENT_PLAYER_COMBAT_STATE then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end)
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function(_, inCombat)
+            if inCombat == true then
+                self.attackableTarget = false
+                self.preEncounterGrace = false
+                self.reticleGeneration = (tonumber(self.reticleGeneration) or 0) + 1
+            end
+            self:Refresh()
+        end)
     end
     if EVENT_PLAYER_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end)
     end
     if EVENT_RETICLE_TARGET_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Reticle", EVENT_RETICLE_TARGET_CHANGED, function() self:Refresh() end)
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Reticle", EVENT_RETICLE_TARGET_CHANGED, function() self:OnReticleTargetChanged() end)
     end
     if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then
         local reg = prefix .. "_Worn"

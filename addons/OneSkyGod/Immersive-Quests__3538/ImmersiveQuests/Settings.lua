@@ -50,7 +50,7 @@ local optionsTable = {
         width = "full"
     }, {
         type = "description",
-        title = "|c3CB371Tutorial - Aldmeri Dominion - Ebonheart Pact - Daggerfall Covenant - Coldharbour - Craglorn - Cyrodiil - Imperial City - Wrothgar - Vvardenfell - Clockwork City - Summerset - The Reach - Solstice|r",
+        title = "|c3CB371Tutorial - Aldmeri Dominion - Ebonheart Pact - Daggerfall Covenant - Coldharbour - Craglorn - Cyrodiil - Imperial City - Wrothgar - Vvardenfell - Hew's Bane Thieves Guild - Clockwork City - Summerset - The Reach - Solstice - Mages Guild|r",
         width = "full"
     }, {
         type = "header",
@@ -132,7 +132,7 @@ local optionsTable = {
         width = "full"
     }, {
         type = "description",
-        title = "|c33ccccRosque - Mouch30 -  Westrany - @ARKANOBOT - Johnyfreeman - Chaos Blaze - Devinstrike - IggyTheMad - Kayreb - BEASTESS-@KhajiitEscort - @NaomiFriz - Kalindria - Theoderic Castellanos - Cyberjanet - @Jordakai - @octavare - SaipanDamashii Mehmet - 'Marquolin' Ortaç - Martin Toms <contact@toms.click> - Nilena - Reja Craven -  Tahir - SamPhysis - JayAstrophel - Naughtyninja56 - Mannd - @Nismesis - Litinum - Immy - Szyler - HavocSource - @Aashiana - A Pro Benji - Teaji - S'vin - OneSkyGod - @Carnassia - Darktalon - @Dragneel1207 - LadyAnime - Cirrose - The Lusty Argonian Maid - @boneten - @waldjvnge - @Rekeme - @Dagoth_Ur - TJ - WishPib - Sasquehanna - @Silmuriliam - Charleevada - @thepandalore - @MatchedPython96 - Rheum - @ThatOneApple - @Tes96 - @derpy_mushroom - @ravenshadow6513 - @SoyTempeh - dampendair - Kelinmiriel - HagarDeV - Strangelove -  Yutoma - Wex - Lord Gung - Ég elska klaka - Morgan Miles - Kid-Atlantic - Gheistr - Ppgballs - Creakinator - Ra Re - BoarGules - Fadosch|r",
+        title = "|c33ccccRosque - Mouch30 -  Westrany - @ARKANOBOT - Johnyfreeman - Chaos Blaze - Devinstrike - IggyTheMad - Kayreb - BEASTESS-@KhajiitEscort - @NaomiFriz - Kalindria - Theoderic Castellanos - Cyberjanet - @Jordakai - @octavare - SaipanDamashii Mehmet - 'Marquolin' Ortaç - Martin Toms <contact@toms.click> - Nilena - Reja Craven -  Tahir - SamPhysis - JayAstrophel - Naughtyninja56 - Mannd - @Nismesis - Litinum - Immy - Szyler - HavocSource - @Aashiana - A Pro Benji - Teaji - S'vin - OneSkyGod - @Carnassia - Darktalon - @Dragneel1207 - LadyAnime - Cirrose - The Lusty Argonian Maid - @boneten - @waldjvnge - @Rekeme - @Dagoth_Ur - TJ - WishPib - Sasquehanna - @Silmuriliam - Charleevada - @thepandalore - @MatchedPython96 - Rheum - @ThatOneApple - @Tes96 - @derpy_mushroom - @ravenshadow6513 - @SoyTempeh - dampendair - Kelinmiriel - HagarDeV - Strangelove -  Yutoma - Wex - Lord Gung - Ég elska klaka - Morgan Miles - Kid-Atlantic - Gheistr - Ppgballs - Creakinator - Ra Re - BoarGules - Fadosch - @fletcherfletcher|r",
         width = "full"
     }, {type = "divider", width = "full"},
 

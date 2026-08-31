@@ -1,3 +1,6 @@
+0.19.3
+• Prevented invalid recovery copies and copies made before legacy cleanup from retrying whenever the Shopping List window opens.
+
 0.19.2
 • Added list cost projections showing spending, remaining target cost, projected total, current and planned budget balances, and entries without maximum prices.
 • Added optional local price suggestions from Tamriel Trade Centre, EsoHub, Master Merchant, and Arkadius Trade Tools for linked items.

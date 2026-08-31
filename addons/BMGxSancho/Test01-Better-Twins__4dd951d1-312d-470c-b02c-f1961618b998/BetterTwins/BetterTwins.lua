@@ -1,16 +1,45 @@
 BetterTwins = BetterTwins or {}
 local BT = BetterTwins
-BT.name, BT.displayName, BT.version = "BetterTwins", "Better Twins", "0.0.01-dev1"
+BT.name, BT.displayName, BT.version = "BetterTwins", "Better Twins", "0.0.01-dev2"
 
 local ID = { CINDER=166693, NUMBING=166735, T_MULTI=166745, L_MULTI=166909 }
 local bossFor = {[ID.CINDER]="Lylanar", [ID.NUMBING]="Turlassil"}
+local diagnosticCandidates = {
+    [166745]=true,[166766]=true,[166776]=true,[166777]=true,[166778]=true,
+    [166803]=true,[166804]=true,[166830]=true,[166880]=true,[166886]=true,
+    [166887]=true,[166897]=true,[166898]=true,[166899]=true,[166900]=true,
+    [166909]=true,[166910]=true,[166911]=true,[166912]=true,[166913]=true,
+    [166914]=true,[166915]=true,[168200]=true,[168228]=true,[168229]=true,
+    [168246]=true,[169406]=true,[169420]=true,
+}
+local splitTimingCandidates = {
+    [166693]=true,[166694]=true,[166695]=true,[166701]=true,[166734]=true,
+    [166735]=true,[166736]=true,[166737]=true,[166741]=true,[166742]=true,
+    [166816]=true,[166817]=true,[166818]=true,[166819]=true,[166892]=true,
+    [166893]=true,[166959]=true,[166960]=true,[166961]=true,[166962]=true,
+    [166963]=true,[166983]=true,[168166]=true,[168167]=true,[168168]=true,
+    [168169]=true,[168170]=true,[168171]=true,[168172]=true,[168173]=true,
+    [168174]=true,[168175]=true,[168176]=true,[168177]=true,[168178]=true,
+    [168181]=true,[168184]=true,[168200]=true,[168228]=true,[168229]=true,
+    [168230]=true,[168236]=true,[168237]=true,[168246]=true,[168248]=true,
+    [168250]=true,[168251]=true,[168252]=true,[168253]=true,[168254]=true,
+    [168255]=true,[168256]=true,[168257]=true,[168258]=true,[168259]=true,
+    [168260]=true,[168261]=true,[168262]=true,[168263]=true,[168264]=true,
+    [168269]=true,[168271]=true,[168591]=true,[168600]=true,[168603]=true,
+    [168604]=true,[168605]=true,[168606]=true,[169406]=true,[169420]=true,
+    [176859]=true,[176860]=true,[176862]=true,[176863]=true,[176864]=true,
+    [176865]=true,[176866]=true,[176867]=true,[176868]=true,[176869]=true,
+    [177298]=true,[177300]=true,
+}
 local defaults = {enabled=true, phaseOneEnabled=true, splitEnabled=true,
     diagnosticArmed=false, diagnosticLines={}, diagnosticPull=0,
+    splitDiagnosticLines={},splitDiagnosticPull=0,
     callout={scale=1.0,offsetX=0,offsetY=-165}}
 BT.state = {
-    Lylanar={interval=20,samples={}}, Turlassil={interval=20,samples={}},
+    Lylanar={}, Turlassil={},
     lockedBoss=nil, calloutUntil=0, recording=false, recordStart=0, recordStop=0,
-    reportOpen=false, reportScene=nil, previewActive=false, previewScene=nil,
+    reportOpen=false, reportScene=nil, reportMode="corner", previewActive=false, previewScene=nil,
+    splitDiagnosticActive=false,splitDiagnosticStart=0,splitBuffer={},splitPostUntil=0,splitLastSnapshot=0,
 }
 
 local function BossName(name)
@@ -23,13 +52,6 @@ local function Short(name)
     name=zo_strformat("<<C:1>>",name or "")
     if name=="" then return "-" end
     return #name>15 and string.sub(name,1,15) or name
-end
-
-local function Median(t)
-    if #t==0 then return nil end
-    local c={}; for i=1,#t do c[i]=t[i] end; table.sort(c)
-    local m=math.floor((#c+1)/2)
-    return #c%2==1 and c[m] or (c[m]+c[m+1])/2
 end
 
 -- Not every named ActionResult constant is exported on every console API.
@@ -79,7 +101,7 @@ end
 
 function BT:ShowPreview()
     self.state.previewActive=true; self:AttachPreview(); self:ApplyCalloutLayout()
-    self.hud.boss:SetText("LYLANAR"); self.hud.main:SetText("GRAB DOME NOW"); self.hud.main:SetColor(1,.72,.08,1); self.hud.sub:SetText("ICE DOME • PREVIEW"); self.hud.root:SetHidden(false)
+    self.hud.boss:SetText("LYLANAR"); self.hud.main:SetText("DOME SOON"); self.hud.main:SetColor(1,.72,.08,1); self.hud.sub:SetText("GET READY • PREVIEW"); self.hud.root:SetHidden(false)
     EVENT_MANAGER:UnregisterForUpdate(self.name.."PreviewTimeout")
     EVENT_MANAGER:RegisterForUpdate(self.name.."PreviewTimeout",5000,function() EVENT_MANAGER:UnregisterForUpdate(self.name.."PreviewTimeout"); self:HidePreview() end)
 end
@@ -98,11 +120,13 @@ function BT:CreateReport()
     local bg=w:CreateControl("$(parent)BG",root,CT_BACKDROP); bg:SetAnchorFill(); bg:SetCenterColor(.025,.035,.055,.97); bg:SetEdgeColor(.79,.5,.09,1); bg:SetEdgeTexture("EsoUI/Art/Tooltips/Gamepad/gp_toolTip_edge.dds",16,4)
     local title=w:CreateControl("$(parent)Title",root,CT_LABEL); title:SetAnchor(TOPLEFT,root,TOPLEFT,36,24); title:SetFont("ZoFontGamepadBold34"); title:SetColor(1,.72,.12,1); title:SetText("BETTER TWINS — CORNER DIAGNOSTIC"); title:SetDimensions(1100,44)
     local status=w:CreateControl("$(parent)Status",root,CT_LABEL); status:SetAnchor(TOPLEFT,title,BOTTOMLEFT,0,4); status:SetFont("ZoFontGamepad27"); status:SetDimensions(1100,36)
-    local scroll=w:CreateControlFromVirtual("$(parent)Scroll",root,"ZO_ScrollContainer"); scroll:SetAnchor(TOPLEFT,status,BOTTOMLEFT,0,18); scroll:SetDimensions(1100,570)
-    local child=scroll:GetNamedChild("ScrollChild")
-    local label=w:CreateControl("$(parent)Text",child,CT_LABEL); label:SetAnchor(TOPLEFT,child,TOPLEFT); label:SetFont("ZoFontGamepad22"); label:SetColor(.94,.96,1,1); label:SetWidth(1060)
-    local foot=w:CreateControl("$(parent)Footer",root,CT_LABEL); foot:SetAnchor(BOTTOMLEFT,root,BOTTOMLEFT,36,-22); foot:SetFont("ZoFontGamepad22"); foot:SetText("Right stick: Scroll  •  |cFFD700Circle: Close|r"); foot:SetDimensions(1100,32)
-    self.report={root=root,status=status,scroll=scroll,child=child,label=label}
+    local listControl=w:CreateControlFromVirtual("$(parent)List",root,"ZO_VerticalParametricScrollListTemplate")
+    listControl:SetAnchor(TOPLEFT,status,BOTTOMLEFT,0,18); listControl:SetDimensions(1100,570)
+    local list=ZO_GamepadVerticalParametricScrollList:New(listControl)
+    list:AddDataTemplate("ZO_GamepadMenuEntryTemplate",ZO_SharedGamepadEntry_OnSetup,ZO_GamepadMenuEntryTemplateParametricListFunction)
+    list:SetAlignToScreenCenter(false)
+    local foot=w:CreateControl("$(parent)Footer",root,CT_LABEL); foot:SetAnchor(BOTTOMLEFT,root,BOTTOMLEFT,36,-22); foot:SetFont("ZoFontGamepad22"); foot:SetText("Right stick / D-pad: Scroll  •  |cFFD700Circle: Close|r"); foot:SetDimensions(1100,32)
+    self.report={root=root,title=title,status=status,list=list}
     self.reportKeys={alignment=KEYBIND_STRIP_ALIGN_LEFT,{name=GetString(SI_DIALOG_CLOSE),keybind="UI_SHORTCUT_NEGATIVE",callback=function() self:CloseReport() end}}
 end
 
@@ -138,8 +162,9 @@ function BT:Callout(text,boss,color,duration)
 end
 
 function BT:AddLine(text)
-    local t=self.sv.diagnosticLines; t[#t+1]=text
-    if #t>180 then table.remove(t,1) end
+    local t=self.sv.diagnosticLines
+    if #t>=300 then return end
+    t[#t+1]=text
 end
 
 function BT:StartRecording(abilityId,sourceName)
@@ -150,7 +175,7 @@ function BT:StartRecording(abilityId,sourceName)
     self.sv.diagnosticPull=(self.sv.diagnosticPull or 0)+1; self.sv.diagnosticLines={}
     self:AddLine(string.format("Better Twins %s | Capture %d",self.version,self.sv.diagnosticPull))
     self:AddLine(string.format("START +0.000 %s MultiLoc id=%d source=%s",boss,abilityId,Short(sourceName)))
-    self:AddLine("TIME     ID      RESULT    VALUE  SOURCE          TARGET          SRC-ID      TGT-ID      ABILITY")
+    self:AddLine("TYPE  TIME     ID      ABILITY          RESULT   VALUE  SOURCE-ID  TARGET-ID")
     EVENT_MANAGER:RegisterForEvent(self.name.."Diagnostic",EVENT_COMBAT_EVENT,function(...) self:DiagnosticEvent(...) end)
 end
 
@@ -160,19 +185,76 @@ function BT:StopRecording(reason)
     self:AddLine(string.format("END +%.3f %s",(GetGameTimeMilliseconds()-self.state.recordStart)/1000,reason or "complete"))
 end
 
+function BT:AddSplitLine(text)
+    local t=self.sv.splitDiagnosticLines
+    if #t>=600 then return end
+    t[#t+1]=text
+end
+
+function BT:StartSplitDiagnostic()
+    if self.state.splitDiagnosticActive or not self.sv.diagnosticArmed or not self.state.lockedBoss or not self:BothTwinsPresent() then return end
+    local now=GetGameTimeMilliseconds()
+    self.state.splitDiagnosticActive=true
+    self.state.splitDiagnosticStart=now
+    self.state.splitBuffer={}
+    self.state.splitPostUntil=0
+    self.state.splitLastSnapshot=0
+    self.sv.splitDiagnosticPull=(self.sv.splitDiagnosticPull or 0)+1
+    self.sv.splitDiagnosticLines={}
+    self:AddSplitLine(string.format("Better Twins %s | Split Capture %d",self.version,self.sv.splitDiagnosticPull))
+    self:AddSplitLine(string.format("START +0.000 hard target=%s",self.state.lockedBoss))
+    self:AddSplitLine("TYPE  TIME     ID      ABILITY          RESULT   VALUE  SOURCE-ID  TARGET-ID")
+    EVENT_MANAGER:RegisterForEvent(self.name.."SplitDiagnostic",EVENT_COMBAT_EVENT,function(...) self:SplitDiagnosticEvent(...) end)
+end
+
+function BT:StopSplitDiagnostic(reason)
+    if not self.state.splitDiagnosticActive then return end
+    self.state.splitDiagnosticActive=false
+    EVENT_MANAGER:UnregisterForEvent(self.name.."SplitDiagnostic",EVENT_COMBAT_EVENT)
+    self:AddSplitLine(string.format("END +%.3f %s",(GetGameTimeMilliseconds()-self.state.splitDiagnosticStart)/1000,reason or "complete"))
+end
+
+function BT:SplitDiagnosticEvent(_,result,_,abilityName,_,_,sourceName,_,_,_,hitValue,_,_,_,sourceId,targetId,abilityId)
+    if not self.state.splitDiagnosticActive then return end
+    local twinSource=BossName(sourceName)~=nil
+    if not splitTimingCandidates[abilityId] and not twinSource then return end
+    local now=GetGameTimeMilliseconds()
+    local elapsed=(now-self.state.splitDiagnosticStart)/1000
+    local line=string.format("+%06.2f  %d  %-15s %-8s v%-6d S%s T%s",
+        elapsed,abilityId,Short(abilityName),resultNames[result] or tostring(result),hitValue or 0,tostring(sourceId or 0),tostring(targetId or 0))
+    local buffer=self.state.splitBuffer
+    buffer[#buffer+1]={time=now,text=line}
+    while buffer[1] and now-buffer[1].time>12000 do table.remove(buffer,1) end
+    if now<=self.state.splitPostUntil then self:AddSplitLine("POST "..line) end
+    local actual=(abilityId==ID.CINDER or abilityId==ID.NUMBING) and (result==ACTION_RESULT_EFFECT_GAINED or result==ACTION_RESULT_BEGIN)
+    if actual and now-self.state.splitLastSnapshot>750 then
+        self.state.splitLastSnapshot=now
+        self.state.splitPostUntil=now+2000
+        self:AddSplitLine(string.format("--- CHANNEL %s id=%d hard target=%s ---",bossFor[abilityId] or "Twin",abilityId,self.state.lockedBoss or "none"))
+        for i=1,#buffer do self:AddSplitLine("PRE  "..buffer[i].text) end
+    end
+end
+
 function BT:DiagnosticEvent(_,result,_,abilityName,_,_,sourceName,_,targetName,_,hitValue,_,_,_,sourceId,targetId,abilityId)
     if not self.state.recording then return end
-    if not BossName(sourceName) and (abilityId<166100 or abilityId>177400) then return end
-    self:AddLine(string.format("+%06.3f %-7d %-9s %-6d %-15s %-15s %-11s %-11s %s",
-        (GetGameTimeMilliseconds()-self.state.recordStart)/1000,abilityId,resultNames[result] or tostring(result),hitValue or 0,Short(sourceName),Short(targetName),tostring(sourceId or 0),tostring(targetId or 0),Short(abilityName)))
+    local elapsed=(GetGameTimeMilliseconds()-self.state.recordStart)/1000
+    local candidate=diagnosticCandidates[abilityId]==true
+    local earlyTwinEvent=elapsed<=15 and BossName(sourceName)~=nil
+    if not candidate and not earlyTwinEvent then return end
+    self:AddLine(string.format("%s +%05.2f  %d  %-15s %-8s v%-6d S%s T%s",
+        candidate and "CAND" or "TWIN",elapsed,abilityId,Short(abilityName),resultNames[result] or tostring(result),hitValue or 0,tostring(sourceId or 0),tostring(targetId or 0)))
 end
 
 function BT:Interrupt(abilityId,sourceName)
     if not self.sv.splitEnabled then return end
     local boss=bossFor[abilityId] or BossName(sourceName); if not boss then return end
-    local now=GetGameTimeMilliseconds()/1000; local s=self.state[boss]
-    if s.last and now-s.last>8 and now-s.last<40 then s.samples[#s.samples+1]=now-s.last; if #s.samples>5 then table.remove(s.samples,1) end; s.interval=Median(s.samples) or s.interval end
-    s.last=now; s.next=now+s.interval
+    local now=GetGameTimeMilliseconds(); local s=self.state[boss]
+    if s.lastSignal and now-s.lastSignal<750 then return end
+    s.lastSignal=now
+    s.last=now
+    -- Queueing can delay the next channel by several seconds. Until the diagnostic
+    -- identifies a real precursor, this is only a readiness threshold, not a timer.
+    s.readyAt=now+18000
     if self.state.lockedBoss==boss then self:Callout("BASH NOW",boss,{1,.2,.1,1},1800); self.hud.sub:SetText(boss=="Lylanar" and "ICE DOME" or "FIRE DOME") end
 end
 
@@ -183,40 +265,67 @@ function BT:TrackedEvent(_,result,_,_,_,_,sourceName,_,_,_,_,_,_,_,_,_,abilityId
 end
 
 function BT:RefreshReport()
-    local t=self.sv.diagnosticLines or {}
-    self.report.status:SetText(#t==0 and "No corner-phase capture recorded." or string.format("%s • %d recorded lines",self.state.recording and "RECORDING" or "CAPTURE COMPLETE",#t))
-    self.report.label:SetText(#t==0 and "Arm Diagnostic Recorder before the fight. Recording begins automatically when MultiLoc starts." or table.concat(t,"\n"))
-    local h=math.max(550,self.report.label:GetTextHeight()+20); self.report.label:SetHeight(h); self.report.child:SetHeight(h); ZO_Scroll_ResetToTop(self.report.scroll)
+    local split=self.state.reportMode=="split"
+    local t=split and (self.sv.splitDiagnosticLines or {}) or (self.sv.diagnosticLines or {})
+    self.report.title:SetText(split and "BETTER TWINS — SPLIT TIMING DIAGNOSTIC" or "BETTER TWINS — CORNER DIAGNOSTIC")
+    local active=split and self.state.splitDiagnosticActive or (not split and self.state.recording)
+    self.report.status:SetText(#t==0 and (split and "No split-phase timing capture recorded." or "No corner-phase capture recorded.") or string.format("%s • %d recorded lines",active and "RECORDING" or "CAPTURE COMPLETE",#t))
+    local list=self.report.list
+    list:Clear()
+    if #t==0 then
+        local emptyText=split and "Arm Diagnostic Recorder before the fight and hard-target your assigned Twin during split phase." or "Arm Diagnostic Recorder before the fight. Corner recording begins automatically when MultiLoc starts."
+        local entry=ZO_GamepadEntryData:New(emptyText)
+        entry:SetFontScaleOnSelection(false)
+        list:AddEntry("ZO_GamepadMenuEntryTemplate",entry)
+    else
+        for i=1,#t do
+            local entry=ZO_GamepadEntryData:New(t[i])
+            entry:SetFontScaleOnSelection(false)
+            list:AddEntry("ZO_GamepadMenuEntryTemplate",entry)
+        end
+    end
+    list:Commit(true)
+    list:SetSelectedIndex(1,true,true)
 end
 
-function BT:OpenReport()
+function BT:OpenReport(mode)
     if self.state.reportOpen then return end
-    self:RefreshReport(); self.state.reportOpen=true; self.hud.root:SetHidden(true); self.report.root:SetHidden(false); KEYBIND_STRIP:AddKeybindButtonGroup(self.reportKeys)
+    self.state.reportMode=mode=="split" and "split" or "corner"
+    self:RefreshReport(); self.state.reportOpen=true; self.hud.root:SetHidden(true); self.report.root:SetHidden(false); self.report.list:Activate(); self.report.list:SetDirectionalInputEnabled(true); KEYBIND_STRIP:AddKeybindButtonGroup(self.reportKeys)
     local s=SCENE_MANAGER and SCENE_MANAGER:GetCurrentScene(); self.state.reportScene=s; if s then s:RegisterCallback("StateChange",self.sceneCallback) end
 end
 
 function BT:CloseReport()
     if not self.state.reportOpen then return end
-    self.state.reportOpen=false; self.report.root:SetHidden(true); KEYBIND_STRIP:RemoveKeybindButtonGroup(self.reportKeys)
+    self.state.reportOpen=false; self.report.list:SetDirectionalInputEnabled(false); self.report.list:Deactivate(); self.report.root:SetHidden(true); KEYBIND_STRIP:RemoveKeybindButtonGroup(self.reportKeys)
     local s=self.state.reportScene; if s then s:UnregisterCallback("StateChange",self.sceneCallback) end; self.state.reportScene=nil
 end
 
 function BT:Update()
     self:CaptureHardTarget()
     if self.state.recording and GetGameTimeMilliseconds()>=self.state.recordStop then self:StopRecording("30-second corner window complete") end
+    if self.sv.enabled and self.sv.diagnosticArmed and self.state.lockedBoss and self:BothTwinsPresent() then
+        self:StartSplitDiagnostic()
+    elseif self.state.splitDiagnosticActive and (not self.sv.enabled or not self.sv.diagnosticArmed) then
+        self:StopSplitDiagnostic("recorder stopped")
+    end
+    -- The settings preview owns the HUD for its full five-second lifetime.
+    if self.state.previewActive then return end
     if not self.sv.enabled or not self.sv.splitEnabled or not self:HudScene() then self.hud.root:SetHidden(true); return end
     local now=GetGameTimeMilliseconds(); if now<self.state.calloutUntil then return end
     local boss=self.state.lockedBoss; local s=boss and self.state[boss]
-    if not s or not s.next then self.hud.root:SetHidden(true); return end
-    local left=s.next-now/1000
-    if left<=1 then self:Callout("GRAB DOME NOW",boss,{1,.72,.08,1},1000); s.next=nil
-    elseif left<=5 then self.hud.boss:SetText(string.upper(boss)); self.hud.main:SetText(string.format("DOME IN %.1f",left)); self.hud.main:SetColor(1,.72,.08,1); self.hud.sub:SetText(boss=="Lylanar" and "ICE DOME" or "FIRE DOME"); self.hud.root:SetHidden(false)
-    else self.hud.root:SetHidden(true) end
+    if not s or not s.readyAt or now<s.readyAt then self.hud.root:SetHidden(true); return end
+    self.hud.boss:SetText(string.upper(boss))
+    self.hud.main:SetText("DOME SOON")
+    self.hud.main:SetColor(1,.72,.08,1)
+    self.hud.sub:SetText((boss=="Lylanar" and "ICE DOME" or "FIRE DOME").." • GET READY")
+    self.hud.root:SetHidden(false)
 end
 
 function BT:ResetFight()
     self:StopRecording("combat ended")
-    for _,b in ipairs({"Lylanar","Turlassil"}) do local s=self.state[b]; s.next=nil;s.last=nil;s.samples={};s.interval=20 end
+    self:StopSplitDiagnostic("combat ended")
+    for _,b in ipairs({"Lylanar","Turlassil"}) do local s=self.state[b]; s.readyAt=nil;s.last=nil;s.lastSignal=nil end
     self.state.lockedBoss=nil; self.state.calloutUntil=0; self.hud.root:SetHidden(true)
 end
 

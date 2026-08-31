@@ -52,7 +52,7 @@ local function HookQuickslotWheel()
 
             if category == WHEEL_CATEGORY and index == WHEEL_SLOT_INDEX then
                 originalAddEntry(menuSelf, "Furniture Locator", WHEEL_ICON, WHEEL_ICON, function()
-                    SCENE_MANAGER:Toggle("FurnitureLocatorSceneGamepad")
+                    FurnitureLocatorDialogs.ShowCategoryDialog()
                 end, data)
             else
                 originalAddEntry(menuSelf, name, inactiveIcon, activeIcon, callback, data)

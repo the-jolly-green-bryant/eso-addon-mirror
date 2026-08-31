@@ -192,7 +192,6 @@ function addon:RestoreStartupDataIfNeeded()
         return
     end
     if not restored then
-        self.startupRecoveryChecked = false
         d(zo_strformat(
             GetString(SI_SHOPPING_LIST_EXTERNAL_RESTORE_FAILED),
             message or GetString(SI_SHOPPING_LIST_BACKUP_ERROR_DATA)

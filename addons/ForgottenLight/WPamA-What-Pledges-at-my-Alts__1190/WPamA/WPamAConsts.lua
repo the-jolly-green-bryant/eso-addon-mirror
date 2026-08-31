@@ -1,6 +1,6 @@
 WPamA = {
   Name = "WPamA",
-  Version = "2.6.6",
+  Version = "2.6.7",
   RGLA_Mode = 0,
   RGLA_Started = false,
   RGLA_QuestJI = 0,
@@ -353,7 +353,8 @@ WPamA.Inventory = { -- Character Inventory
   InvtItemModes = {[3]=0,[19]=0,[20]=0,[21]=0,[23]=0,[35]=0,[37]=0,[50]=0},
   InvtItem = {
     -- 4=ITEMTYPE_FOOD, 5=ITEMTYPE_TROPHY, 7=ITEMTYPE_POTION, 9=ITEMTYPE_TOOL, 18=ITEMTYPE_CONTAINER
-    -- 19=ITEMTYPE_SOUL_GEM, 70=ITEMTYPE_CONTAINER_CURRENCY, 74=ITEMTYPE_SCRIBING_INK
+    -- 19=ITEMTYPE_SOUL_GEM, 60=ITEMTYPE_MASTER_WRIT, 70=ITEMTYPE_CONTAINER_CURRENCY, 74=ITEMTYPE_SCRIBING_INK
+    -- 75=ITEMTYPE_CONTAINER_STACKABLE
     [ 1] = {t = 57, TT = 65, ids = {64537,135110,138811}, link = "64537:124:1", HdT=GetIcon(32,24) .. "(50%)"}, -- Crown Experience Scroll (50%)
     [ 2] = {t =  0, TT = 61, c = CURT_MONEY, HdT="|t24:24:esoui/art/currency/currency_gold.dds|t"}, -- Gold
     [ 3] = {t =  0, TT = 62, c = CURT_WRIT_VOUCHERS, HdT="|t24:24:esoui/art/currency/currency_writvoucher.dds|t"},
@@ -369,7 +370,7 @@ WPamA.Inventory = { -- Character Inventory
     [13] = {t = 18, TT =163, ids = {134619,145577,181436,184171,190009,194353,204404,210866,214239,219651,224367},
             link = "145577:122:1", HdT=GetIcon(21,24)}, -- Rewards for the Worthy
            -- { 225247, 225248, 225249 } = "Veterancy Rewards for the Worthy"
-    [14] = {t = 70, TT =168, ids = {211304,134618}, link ="211304:122:1", HdT=GetIcon(60,24) .. "(25)", TTf="%(.+", nL=25, nH=25}, -- Transmutation Geode (25) + Uncracked (4-25)
+    [14] = {t = 70, TT =168, ids = {211304,134618}, link = "211304:122:1", HdT=GetIcon(60,24) .. "(25)", TTf="%(.+", nL=25, nH=25}, -- Transmutation Geode (25) + Uncracked (4-25)
     [15] = {t = 57, TT =165, ids = 94439, link = "94439:124:1", HdT="|t24:24:esoui/art/icons/crowncrate_experiencescroll_001.dds|t(50%)",}, -- Gold Coast Experience Scroll (50%)
     [16] = {t = 57, TT =166, ids = 94440, link = "94440:124:1", HdT="|t24:24:esoui/art/icons/crowncrate_experiencescroll_002.dds|t(100%)",}, -- Major Gold Coast Experience Scroll (100%)
                                                                 --|H1:item:187936:124:1:0:0:0:0:0:0:0:0:0:0:0:1:36:0:1:0:0:0|h|h -- "Pre-Purchase Crown Experience Scroll" (100%)
@@ -391,23 +392,39 @@ WPamA.Inventory = { -- Character Inventory
     [32] = {t =  5, TT =176, st = 100, TTs = GetString(SI_SPECIALIZEDITEMTYPE100), HdT=GetIcon(61,24) .. GetIcon(65,24)}, -- Treasure map
     [33] = {t =  5, TT =177, st = 101, TTs = GetString(SI_SPECIALIZEDITEMTYPE101), HdT=GetIcon(61,24) .. "|t24:24:esoui/art/treeicons/tutorial_idexicon_tradeskills_up.dds|t"}, -- Survey report
     ---
-    [34] = {t =  5, TT =178, ids =203611, link = "203611:122:1", HdT="|t24:24:esoui/art/icons/u40_verse_item_offense.dds|t", i = "/esoui/art/icons/u40_verse_item_offense.dds",}, -- Mystery Offensive Verse
-    [35] = {t =  5, TT =179, ids =203612, link = "203612:122:1", HdT="|t24:24:esoui/art/icons/u40_verse_item_defense.dds|t", i = "/esoui/art/icons/u40_verse_item_defense.dds",}, -- Mystery Defensive Verse
-    [36] = {t =  5, TT =180, ids =203613, link = "203613:122:1", HdT="|t24:24:esoui/art/icons/u40_verse_item_utility.dds|t", i = "/esoui/art/icons/u40_verse_item_utility.dds",}, -- Mystery Utility Verse
-    [37] = {t =  5, TT =181, ids =208359, link = "208359:123:1", HdT="|t24:24:/esoui/art/icons/u40_verse_item_offense.dds|t", i = "/esoui/art/icons/u40_verse_item_offense.dds",}, -- Mystery Transformation Verse
+    [34] = {t =  5, TT =178, ids =203611, link ="203611:122:1", HdT="|t24:24:esoui/art/icons/u40_verse_item_offense.dds|t", i = "/esoui/art/icons/u40_verse_item_offense.dds",}, -- Mystery Offensive Verse
+    [35] = {t =  5, TT =179, ids =203612, link ="203612:122:1", HdT="|t24:24:esoui/art/icons/u40_verse_item_defense.dds|t", i = "/esoui/art/icons/u40_verse_item_defense.dds",}, -- Mystery Defensive Verse
+    [36] = {t =  5, TT =180, ids =203613, link ="203613:122:1", HdT="|t24:24:esoui/art/icons/u40_verse_item_utility.dds|t", i = "/esoui/art/icons/u40_verse_item_utility.dds",}, -- Mystery Utility Verse
+    [37] = {t =  5, TT =181, ids =208359, link ="208359:123:1", HdT="|t24:24:/esoui/art/icons/u40_verse_item_offense.dds|t", i = "/esoui/art/icons/u40_verse_item_offense.dds",}, -- Mystery Transformation Verse
     ---
-    [38] = {t =  4, TT =182, ids =171323, link = "171323:124:10", HdT="|t24:24:esoui/art/icons/crownstore_consumable_entremet_cake.dds|t"}, -- Colovian War Torte
-    [39] = {t =  4, TT =183, ids =171329, link = "171329:124:10", HdT="|t24:24:esoui/art/icons/ava_skill_boost_food_001.dds|t"}, -- Molten War Torte
-    [40] = {t =  4, TT =184, ids =171432, link = "171432:124:10", HdT="|t24:24:esoui/art/icons/ava_skill_boost_food_002.dds|t"}, -- White-Gold War Torte
+    [38] = {t =  4, TT =182, ids =171323, link ="171323:124:10", HdT="|t24:24:esoui/art/icons/crownstore_consumable_entremet_cake.dds|t"}, -- Colovian War Torte
+    [39] = {t =  4, TT =183, ids =171329, link ="171329:124:10", HdT="|t24:24:esoui/art/icons/ava_skill_boost_food_001.dds|t"}, -- Molten War Torte
+    [40] = {t =  4, TT =184, ids =171432, link ="171432:124:10", HdT="|t24:24:esoui/art/icons/ava_skill_boost_food_002.dds|t"}, -- White-Gold War Torte
     ---
     [41] = {t = 70, TT =185, ids = 69413, link = "69413:122:1", HdT="|t24:24:esoui/art/icons/quest_container_001.dds|t"}, -- Light Tel Var Satchel
     [42] = {t = 18, TT =186, ids =192612, link ="192612:124:1", HdT="|t24:24:esoui/art/icons/event_midyear_giftbox.dds|t", i = "/esoui/art/icons/event_midyear_giftbox.dds"}, -- Pelinal's Boon Box
     [43] = {t = 18, TT =187, ids =187700, link ="187700:124:1", HdT="|t24:24:esoui/art/icons/justice_stolen_pouch_001.dds|t", i = "/esoui/art/icons/justice_stolen_pouch_001.dds"}, -- Zenithar's Bounty
     [44] = {t = 74, TT =188, ids =204881, link ="204881:30:1",  HdT=GetIcon(44,24)}, -- Luminous Ink
     [45] = {t = 70, TT =164, ids =212235, link ="212235:370:50", HdT=GetIcon(64,24)}, -- Battlemaster Token
-    -- GetItemLinkInfo("|H0:item:171432:124:10:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
-    -- GetItemLinkItemType("|H0:item:171329:124:10:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
-    -- TT reserved for Item name : 61...70, 160...190
+    ---
+    [46] = {t = 75, TT =273, ids =224681, link ="224681:122:1", HdT="|t24:24:esoui/art/icons/item_u47_sealed_scroll.dds|t" .. GetIcon(65,24)}, -- Unopened Treasure Map
+    [47] = {t = 75, TT =274, ids ={219849,219850,219851,219852,219853,219854}, link ="219849:122:1",
+            TTs = zo_strformat("<<1>>\n(<<2>>)", GetString(SI_SPECIALIZEDITEMTYPE101), GetString(SI_ITEMTYPE75)),
+            HdT="|t24:24:esoui/art/icons/item_u47_envelope_string_brown.dds|t" .. "|t24:24:esoui/art/treeicons/tutorial_idexicon_tradeskills_up.dds|t"}, -- Unidentified Survey Report
+    [48] = {t = 60, TT =275, st =2750, TTs = GetString(SI_SPECIALIZEDITEMTYPE2750), HdT="|t24:24:esoui/art/icons/master_writ_woodworking.dds|t"}, -- Master Writ
+    [49] = {t = 75, TT =276, ids ={217917,217918,217919,217920,217921,217922,217923}, link = "217917:123:1",
+            TTs = zo_strformat("<<1>>\n(<<2>>)", GetString(SI_SPECIALIZEDITEMTYPE2750), GetString(SI_ITEMTYPE75)),
+            HdT="|t24:24:esoui/art/icons/item_u47_latched_box_tan.dds|t"}, -- Unknown Writ
+    ---
+    [50] = {t = 57, TT =277, ids =171262, link = "171262:124:10", HdT="|t24:24:esoui/art/icons/store_alliancewarscroll_basic.dds|t"}, -- Alliance War Skill Line Scroll (Basic)
+    [51] = {t = 57, TT =278, ids =170148, link = "170148:124:10", HdT="|t24:24:esoui/art/icons/store_alliancewarscroll_major.dds|t"}, -- Alliance War Skill Line Scroll (Major)
+    [52] = {t = 57, TT =279, ids =171263, link = "171263:124:10", HdT="|t24:24:esoui/art/icons/store_alliancewarscroll_grand.dds|t"}, -- Alliance War Skill Line Scroll (Grand)
+    -- GetItemLinkInfo("|H1:item:217922:123:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+    -- GetItemLinkItemType("|H1:item:217922:123:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+    -- TT reserved for Item name : 61...70, 160...190, 273...280
+  }, -- InvtItem
+  ItemTypeForCheckST = {
+    [ITEMTYPE_TROPHY] = true, [ITEMTYPE_TOOL] = true, [ITEMTYPE_SOUL_GEM] = true, [ITEMTYPE_MASTER_WRIT] = true
   },
   CreateModesHeaders = function()
      local Inv = WPamA.Inventory
@@ -768,7 +785,25 @@ WPamA.DailyWrits = {
        end
      end
   end,
-}
+} -- DailyWrits
+---
+WPamA.Favors = {
+  QuestIDs = {
+   [1] = 7469, -- Favor for Holgunn One-Eye
+   [2] = 7477, -- Favor for Battlereeve Urcelmo
+   [3] = 7513, -- Favor for Lady Arabelle
+  },
+  Iterators = { N = {}, Q = {} }, -- { N = { [QName] = Favor's index }, Q = { [QID] = Favor's index } }
+  CreateIterators = function()
+     local FI, FQ = WPamA.Favors.Iterators, WPamA.Favors.QuestIDs
+     for j = 1, #FQ do
+       local qid = FQ[j]
+       local qn = GetQuestName(qid)
+       FI.Q[qid] = j
+       FI.N[qn] = j
+     end
+  end,
+} -- Favors
 ---
 WPamA.CraftCerts = {
   QuestIDs = {
@@ -801,6 +836,8 @@ WPamA.Companions = {
     [RAPPORT_LEVEL_SLIGHT_AFFINITY]  = "|cCFDCBD<<1>>|r", [RAPPORT_LEVEL_SLIGHT_DISLIKE]     = "|cCFCF90<<1>>|r",
     [RAPPORT_LEVEL_HIGH_DISLIKE]     = "|cCF9500<<1>>|r", [RAPPORT_LEVEL_MAXIMUM_DISLIKE]    = "|cCF4D47<<1>>|r",
   },
+  MaxSkillBarSlot = 0, --!!
+  MinSkillBarSlot = 0,
   ActiveCompanionId = 0, -- CCID of current active companion or 0
   -- Structure: { IID = IngameCompanionId, DLC = CollectibleId, Name = "CompanionName", QID = IntroQuestId,
   --              SQ = {StoryQuestIds}, isLocked = lockedStatus }
@@ -1186,6 +1223,12 @@ WPamA.TimedEffects = { -- Character Timed Effects (long-term buffs)
      [2] = { AbilityId = {147733}, Perc = 100, ItemId = {171329} }, -- Molten War Torte (100%)
      -- "Alliance Skill Gain 150% Boost" esoui/art/icons/ava_skill_boost_food_002.dds
      [3] = { AbilityId = {147734}, Perc = 150, ItemId = {171432} }, -- White-Gold War Torte (150%)
+     -- "Alliance Skill Gain" esoui/art/icons/store_alliancewarscroll_basic.dds
+     [4] = { AbilityId = {147466}, Perc = 50,  ItemId = {171262} }, -- Alliance War Skill Line Scroll (Basic)
+     -- "Alliance Skill Gain, Major" esoui/art/icons/store_alliancewarscroll_major.dds
+     [5] = { AbilityId = {137733}, Perc = 100, ItemId = {170148} }, -- Alliance War Skill Line Scroll (Major)
+     -- "Alliance Skill Gain, Grand" esoui/art/icons/store_alliancewarscroll_grand.dds
+     [6] = { AbilityId = {147467}, Perc = 150, ItemId = {171263} }, -- Alliance War Skill Line Scroll (Grand)
      LinkFormatter = "|H0:item:<<1>>:124:10:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h"
   }, -- AvA
   PvE = {

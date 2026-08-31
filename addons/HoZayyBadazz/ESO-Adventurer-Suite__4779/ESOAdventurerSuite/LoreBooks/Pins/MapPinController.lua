@@ -7,7 +7,7 @@ EASLoreLibrary:RegisterModule("pinController", PinController)
 This file handles creation and maintenance of texture controls, i.e., map pins.
 It also handles compatibility between different kind of maps, such as
 main map or the various minimap addons.
-Adapted from HarvestMap Console's Pins/MapPinController.lua.
+Adapted from the reference map system's Pins/MapPinController.lua.
 ]]--
 
 local NO_MAP_MODE, MAIN_MAP_MODE, VOTAN_MODE, FYR_MODE, AUI_MODE
@@ -58,7 +58,18 @@ end
 
 function PinController:InitializeMouseHandling()
 	self.onClickHandlers = {}
-	self.mouseOverPin = CreateControl("LL-mouseover", self.container, CT_TEXTURE)
+
+	-- UI controls survive /reloadui and can also be left behind by an older
+	-- version of the Lore Library. Never blindly CreateControl() with a
+	-- global name, or ESO will throw a duplicate-control error.
+	self.mouseOverPin = GetControl("EASLL-mouseover")
+	if not self.mouseOverPin then
+		self.mouseOverPin = GetControl("LL-mouseover")
+	end
+	if not self.mouseOverPin then
+		self.mouseOverPin = CreateControl("EASLL-mouseover", self.container, CT_TEXTURE)
+	end
+
 	self.mouseOverPin:SetHidden(true)
 	self.mouseOverPin:SetDrawTier(DT_HIGH)
 	self.mouseOverPin:SetPixelRoundingEnabled(false)
@@ -398,10 +409,15 @@ function PinController:OnMapSizeChange(width, height)
 		end
 	end
 
-	if not self.mouseOverPin:IsHidden() then
+	-- OnMapSizeChange can fire while the module is initializing. If another
+	-- addon/old version prevented mouse handling from finishing, the hover
+	-- control may not exist yet. Do not let that break the map pin system.
+	if self.mouseOverPin and not self.mouseOverPin:IsHidden() then
 		local manager = self.pinTypeManagers[self.mouseOverPin.pinTypeId]
-		local x, _, y, _ = manager:GetPinInsets(self.mouseOverPin.pinIndex)
-		self.mouseOverPin:SetAnchor(CENTER, self.container, TOPLEFT, x, y)
+		if manager and self.mouseOverPin.pinIndex then
+			local x, _, y, _ = manager:GetPinInsets(self.mouseOverPin.pinIndex)
+			self.mouseOverPin:SetAnchor(CENTER, self.container, TOPLEFT, x, y)
+		end
 	end
 end
 

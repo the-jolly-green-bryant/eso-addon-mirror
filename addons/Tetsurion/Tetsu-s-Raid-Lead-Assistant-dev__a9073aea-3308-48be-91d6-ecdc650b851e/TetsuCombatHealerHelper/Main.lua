@@ -8,7 +8,7 @@ local defaultAccountVars = {
     hudBuff1 = "prayer",
     hudBuff2 = "powerfulAssault",
     hudBuff3 = "majorCourage",
-    hudBuff4 = "orbLockout",
+    hudBuff4 = "off",
     hudBuff5 = "off",
     hudOffsetX = 0,
     hudOffsetY = 0,
@@ -20,6 +20,7 @@ local defaultAccountVars = {
     hudDotStyle = "solid",
     showRaidPanel = true,
     showBossPanel = true,
+    debuffOnTarget = true,
     showPairPanels = true,
     pairOffsetX = 0,
     pairOffsetY = 0,
@@ -71,11 +72,40 @@ local function RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_GROUP_MEMBER_LEFT, function()
         if T.Hud then T.Hud.RefreshAll() end
     end)
-    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_COMBAT_EVENT, function(...)
-        if T.Hud and T.Hud.OnCombatEvent then
-            T.Hud.OnCombatEvent(...)
+    -- IH is a ground HoT: ticks often use ids that are not the skill id.
+    -- Ability-id filters on EVENT_COMBAT_EVENT miss those on console.
+    -- Listen to heal results only (not every swing), then match id or name.
+    local healResults = {
+        ACTION_RESULT_HOT_TICK,
+        ACTION_RESULT_HOT_TICK_CRITICAL,
+        ACTION_RESULT_HEAL,
+        ACTION_RESULT_HEAL_CRIT,
+        ACTION_RESULT_EFFECT_GAINED,
+        ACTION_RESULT_EFFECT_GAINED_DURATION,
+    }
+    local registered = false
+    if REGISTER_FILTER_COMBAT_RESULT then
+        for i = 1, #healResults do
+            local res = healResults[i]
+            if res then
+                local ns = ADDON_NAME .. "IHRes" .. tostring(res)
+                EVENT_MANAGER:RegisterForEvent(ns, EVENT_COMBAT_EVENT, function(...)
+                    if T.Hud and T.Hud.OnCombatEvent then
+                        T.Hud.OnCombatEvent(...)
+                    end
+                end)
+                EVENT_MANAGER:AddFilterForEvent(ns, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, res)
+                registered = true
+            end
         end
-    end)
+    end
+    if not registered then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_COMBAT_EVENT, function(...)
+            if T.Hud and T.Hud.OnCombatEvent then
+                T.Hud.OnCombatEvent(...)
+            end
+        end)
+    end
     if EVENT_GROUP_UPDATE then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_GROUP_UPDATE, Refresh)
     end
@@ -107,6 +137,8 @@ local function OnAddOnLoaded(_, addonName)
         vigor = true,
         echoingVigor = true,
         resolvingVigor = true,
+        energyOrb = true,
+        orbLockout = true,
     }
     for i = 1, 5 do
         local k = T.savedVars["hudBuff" .. i]
@@ -115,6 +147,10 @@ local function OnAddOnLoaded(_, addonName)
         end
     end
     T.savedVars.autoColumns = false
+    -- Less-used boss pairs start off so the panel stays short.
+    if T.savedVars.debuffPair_fracture == nil then T.savedVars.debuffPair_fracture = false end
+    if T.savedVars.debuffPair_cowardice == nil then T.savedVars.debuffPair_cowardice = false end
+    if T.savedVars.debuffPair_maim == nil then T.savedVars.debuffPair_maim = false end
 
     if T.RegisterSettings then
         T.RegisterSettings()
@@ -126,7 +162,7 @@ local function OnAddOnLoaded(_, addonName)
     end
     if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
         pcall(function()
-            CHAT_SYSTEM:AddMessage("|c3CFF8C[Tetsu RLA 1.6.0]|r Raid Lead Assistant.")
+            -- no boot chat spam
         end)
     end
 end

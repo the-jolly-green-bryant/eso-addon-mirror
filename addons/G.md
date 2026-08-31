@@ -103,7 +103,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Group Finder Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/murphyx/Group-Finder-Alerts__8e142999-8113-4317-9868-a6be8e0a34cc) | murphyx | Console | — |
 | [Group Finder in Chat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Group-Finder-in-Chat__4542) | Masteroshi430 | PC / Mac | 2026.07.09 |
 | [Group Food & Drink Buffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Group-Food-Drink-Buffs__1560) | Phinix | PC / Mac | 1.22 |
-| [Group History - Shows Who Joined, Left, Changed Role etc.](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Group-History---Shows-Who-Joined-Left-Changed-Role-etc__4320) | Duesentrieb | PC / Mac | 20260710-0001 |
+| [Group History - Shows Who Joined, Left, Changed Role etc.](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Group-History---Shows-Who-Joined-Left-Changed-Role-etc__4320) | Duesentrieb | PC / Mac | 20260831-0002 |
 | [Group Keys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Group-Keys__4580) | M0R | PC / Mac | 1.0 |
 | [Group Kill Feed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Group-Kill-Feed__e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6) | SugaComa | Console | — |
 | [Group Kill Feed (only tested on console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Group-Kill-Feed-only-tested-on-console__4285) | SugaComa | PC / Mac | 1.3.5 |

@@ -547,16 +547,18 @@ ImmersiveQuests.localization = {
 			["Talk to Juranda-ra 2"] = 
 				{appendText="", stepTextKey="Juranda-ra was thankful for my aid. Perhaps there's a reward for my help."},
 		},
-		[GetQuestName(4673)] = { -- "The Root of the Problem"		-- OneSkyGod
-			["Enter the Cave"] = 
-				{appendText=" below the Great Tree, on the edge of the Windcatcher Plantation."},
-			["Talk to Naarwe"] = 
-				{appendText=" below the Great Tree, on the edge of the Windcatcher Plantation."},
-			["Protect the Spirit as It Heals the Roots"] = 
-				{appendText=" from the adult kwama that are deeper in the cave below the Great Tree, on the edge of the Windcatcher Plantation."},
-			["Talk to Spinner Benieth"] = 
-				{appendText=" outside of the cave below the Great Tree, on the edge of the Windcatcher Plantation."},
-		},
+
+
+	[GetQuestName(4673)] = { -- "The Root of the Problem"	-- OneSkyGod
+		["Enter the Cave"] = 
+			{appendText=" below the Great Tree, on the edge of the Windcatcher Plantation."},
+		["Talk to Naarwe"] = 
+			{appendText=" below the Great Tree, on the edge of the Windcatcher Plantation."},
+		["Protect the Spirit as It Heals the Roots"] = 
+			{appendText="\nHostile, adult kwama are deeper in the cave below the Great Tree, on the edge of the Windcatcher Plantation."},
+		["Talk to Spinner Benieth"] = 
+			{appendText=" outside of the cave below the Great Tree, on the edge of the Windcatcher Plantation."},
+	},
 
 
 -- 		=========================================================================
@@ -11336,16 +11338,18 @@ ImmersiveQuests.localization = {
 			["Talk to Lokra 2"] =
 				{appendText=", she's at the docks in the Stonetooth Fortress.", stepTextKey=""},
 		},
-		[GetQuestName(4548)] = { -- "Farsight"						-- NaeomiFriz
-			["Activate Northern Shrine"] =
-				{appendText=", it is southeast of Eyearata, and west-southwest of Moriseli."},
-			["Activate Western Shrine"] =
-				{appendText=", it lies near to the southeast coast, on the side path far southwest of Stonetooth Fortress."},
-			["Activate Southern Shrine"] =
-				{appendText=", it lies on a small lake island south of the Carved Hills."},
-			["Talk to Magula"] =
-				{appendText=", her longhouse is known as the Long Tooth Lodge."},
-		},
+
+
+[GetQuestName(4548)] = { -- "Farsight"	-- NaeomiFriz
+	["Activate Northern Shrine"] =
+		{appendText=", it is southeast of Eyearata, and west-southwest of Moriseli."},
+	["Activate Western Shrine"] =
+		{appendText=", it lies near to the southeast coast, on the side path far southwest of Stonetooth Fortress."},
+	["Activate Southern Shrine"] =
+		{appendText=", it lies on a small lake island south of the Carved Hills."},
+	["Talk to Magula"] =
+		{appendText=", her longhouse is known as the Loose Tooth Lodge."},
+	},
 		[GetQuestName(4547)] = { -- "Prove Your Worth"				-- NaeomiFriz
 			["Talk to Garnikh"] =
 				{appendText=", at the Seamount camp south of Grimfield."},
@@ -11499,7 +11503,7 @@ ImmersiveQuests.localization = {
 			["Free the Second Prisoner"] =
 				{appendText=", I should check the houses near the Aldcroft Lighthouse."},
 			["Talk to Duke Sebastien 2"] =
-				{appendText=", he should be in his temporary command.", stepTextKey="At the Duke of Camlorn's request, I rescued a second prisoner from the Bloodthorn cult, Gloria Fausta. I should make sure that Duke Sebastien made it back to Aldcroft."},
+				{appendText=", he should be in Duke's Temporary Command.", stepTextKey="At the Duke of Camlorn's request, I rescued a second prisoner from the Bloodthorn cult, Gloria Fausta. I should make sure that Duke Sebastien made it back to Aldcroft."},
 		},
 		[GetQuestName(3013)] = { -- "Wolves in the Fold"			-- NaeomiFriz
 			["Reveal and Defeat Hidden Werewolves"] =
@@ -11762,9 +11766,11 @@ ImmersiveQuests.localization = {
 			["Talk to Lieutenant Dubois"] =
 				{appendText=" at the plaza in front of the Mages Guild.\n\nAccording to Matthew, the Lieutenant might reward you for dealing with the werewolf.\n"},
 		},
+
+
 		[GetQuestName(4088)] = { -- "Can't Take It With Them"		-- Johnyfreeman
 			["Recover Ceremonial Gems"] =
-				{appendText=". In addition to the bones of the unfortunate ones who were sacrificed and the skeletons that still roam the dark tunnels, there are new skeletons scattered everywhere in the central and southern part. These skeletons still have the gems that were used to summon the Dremora."},
+				{appendText="\nIn addition to the bones of the unfortunate ones who were sacrificed and the skeletons that still roam the dark tunnels, there are skeletons of dead conjurers scattered in the central and southern part. These skeletons still have the gems that were used to summon the Dremora."},
 			["Return to Finvir"] =
 				{appendText=" in the eastern tunnel near a hole in the ground that provides access to the tunnel leading west."},
 		},
@@ -11908,33 +11914,35 @@ ImmersiveQuests.localization = {
 			["Talk to a Daggerfall Guard Near the Manor"] =
 				{appendText=" on the road north of Deleyn's Mill and warn them of the impending assault before they're caught ill-prepared.\n"},
 		},
+
+
 		[GetQuestName(4080)] = { -- "Season of Harvest"				-- Johnyfreeman
 			["Collect Apples"] =
-				{appendText=". As an offering, people bring a range of fruits and other products from their harvests. Baskets with apples are scattered around the big tree.\n"},
+				{appendText="\nAs an offering, people bring a range of fruits and other products from their harvests. Baskets with apples are scattered around the big tree.\n"},
 			["Collect Grain"] =
-				{appendText=". There are small sacks of grains in a tent near the tree."},
+				{appendText="\nThere are small sacks of grains in a tent near the tree."},
 			["Place the Offerings"] =
-				{appendText=". Around the tree many scrolls are scattered. Two bowls are mark the place of the offering altar."},
+				{appendText=". Around the tree many scrolls are scattered. Two bowls mark the place of the offering altar."},
 			["Watch the Ceremony"] =
 				{appendText=" near the big tree."},
 			["Talk to Curator Nicholas"] =
-				{appendText=". Fire burs the offerings. After the strange cerimony, the Curator waits near the trees."},
+				{appendText=". Fire burns the offerings. After the strange ceremony, the Curator waits near the tree."},
 			["Throw Dirt in the Fire"] =
-				{appendText=". The fervent blaze's warmth dances, enveloping the oferings in the altar in a shroud of ravenous hunger."},
+				{appendText=". The fervent blaze's warmth dances, enveloping the offerings on the altar in a shroud of ravenous hunger."},
 			["Search the Tunnels"] =
-				{appendText=". Amidst the thorny roots a woman in a blue dress apears to be trapped at the entrance of the tunnels."},
+				{appendText=". Amidst the thorny roots a woman in a blue dress appears to be trapped at the entrance of the tunnels."},
 			["Free Eveline Vette"] =
-				{appendText=". The is a dead Shalk not far away, just southeast of the bone pile of the unfortunate ones who were sacrificed before. The inflammable gland can help release Eveline by burning the roots."},
+				{appendText=". There is a dead Shalk not far away, just southeast of the bone pile of the unfortunate ones who were sacrificed before. The inflammable gland can help release Eveline by burning the roots."},
 			["Talk to Eveline Vette 1"] =
-				{appendText=". After the roots were consumed by the fire's embrace. A haunting sound of anguish echoed through the tunnels. Eveline may know more about this strange place, she is near the water close to the eastern tunnel entrance.", stepTextKey="Eveline Vette is free of the roots. I should speak to her and find out just what's going on here."},
+				{appendText=". After the roots were consumed by the fire's embrace, a haunting sound of anguish echoed through the tunnels. Eveline may know more about this strange place. She is near the water, close to the eastern tunnel entrance.", stepTextKey="Eveline Vette is free of the roots. I should speak to her and find out just what's going on here."},
 			["Burn Newly Grown Roots"] =
-				{appendText=". Shalks roam around the tunnels, their flammable glands will be useful against the small thorny roots that grow in the place."},
+				{appendText="\nShalks roam around the tunnels, their flammable glands will be useful against the newly grown thorny roots that grow in the place."},
 			["Talk to Eveline Vette 2"] =
-				{appendText=", she is waiting near a portal in the southern end of the tunnel.", stepTextKey="Eveline Vette is waiting for me to return with good news. I should speak to her."},
+				{appendText=". She is waiting near a portal in the southern end of the tunnel.", stepTextKey="Eveline Vette is waiting for me to return with good news. I should speak to her."},
 			["Defeat the Bad Man"] =
-				{appendText=". The portal to leave is in the southern edge of the tunnels. The Dremora killed all the cultists around, but Nicholas managed to survive. He is near a rock to the north of the tree."},
+				{appendText=". The portal to leave is in the southern edge of the tunnels.\n\nThe Dremora killed all the cultists around, but Nicholas managed to survive. He is near a rock to the north of the tree."},
 			["Talk to Eveline Vette 3"] =
-				{appendText=". With the defeat of the Dremora who was posing as Bad Man, Glenumbra is a little safer not. Eveline is near a portal north of the tree.", stepTextKey="The Bad Man has been destroyed. I should tell Eveline Vette."},
+				{appendText=". With the defeat of the Dremora who was posing as Bad Man, Glenumbra is a little safer now. Eveline is near a portal north of the tree.", stepTextKey="The Bad Man has been destroyed. I should tell Eveline Vette."},
 		},
 		[GetQuestName(3416)] = { -- "Signals of Dominion"			-- Westrany
 			["Collect Dominion Messages"] =
@@ -11966,7 +11974,7 @@ ImmersiveQuests.localization = {
 			["Rescue Recruit Cecile"] =
 				{appendText=". Two Dominion ships can be seen not far from Farwatch Tower on the eastern coast of Glenumbra, their camp must be nearby."},
 			["Talk to Recruit Cecile"] =
-				{appendText=" near the blocked door on the northern side of the tower. Farwatch Tower stands imposingly on the eastern coast of Glenumbra."},
+				{appendText=" near the blocked door on the northern side of the tower. Farwatch Tower stands imposingly on the weastern coast of Glenumbra."},
 		},
 		[GetQuestName(4531)] = { -- "A Brush With Death"			-- Westrany
 			["Talk to Odette Vinielle"] =
@@ -12232,7 +12240,7 @@ ImmersiveQuests.localization = {
 			["Meet Tamien Sellan at the Inn"] =
 				{appendText=". The mine is now liberated, now to the next move against the bandits. Sellan must be waiting outside, in the back of the inn."},
 			["Talk to Tamien Sellan"] =
-				{appendText=" in the back of the inn."},
+				{appendText=" in behind the inn."},
 		},
 		[GetQuestName(3059)] = { -- "Servants of Ancient Kings"		-- Johnyfreeman
 			["Rescue the Subdued Spirits"] =
@@ -14779,14 +14787,18 @@ ImmersiveQuests.localization = {
 			["Talk to Adusa-daro"] =
 				{appendText=" in front of Montclair Manor, the large house west of Shornhelm Castle in the upper city.\n"},
 		},
-		[GetQuestName(4952)] = { -- "Dearly Departed"				-- TheoWriter
-			["Bury the Hinault Family"] =
-				{appendText=" in the cemetery behind the ruins of the old tower. Its shattered husk has long been a playground for the family, but now the stone giant lies silent and casts a long shadow on the farm below.\n"},
-			["Listen to Jowan's Eulogy"] =
-				{appendText=" for his lost family.\n"},
-			["Talk to Jowan Hinault"] =
-				{appendText=" behind the ruins of the old tower, once dominating the farm by the foothills - now an inseperable part of the tragedy.\n", stepTextKey="We buried the Hinault family and listened to Jowan's eulogy. Now I should speak to him and make sure he's doing alright."},
+
+
+
+[GetQuestName(4952)] = { -- "Dearly Departed"  -- TheoWriter
+	["Bury the Hinault Family"] =
+		{appendText="\nGravestones mark the cemetery behind the ruins of the old tower. Its shattered husk has long been a playground for the family, but now the stone giant lies silent and casts a long shadow on the farm below.\n"},
+	["Listen to Jowan's Eulogy"] =
+		{appendText=" for his lost family.\n"},
+	["Talk to Jowan Hinault"] =
+		{appendText=" behind the ruins of the old tower, once dominating the farm by the foothills - now an inseperable part of the tragedy.\n", stepTextKey="We buried the Hinault family and listened to Jowan's eulogy. Now I should speak to him and make sure he's doing alright."},
 		},
+
 		[GetQuestName(657)]  = { -- "Fadeel's Freedom"				-- TheoWriter
 			["Search Handre's Remains"] =
 				{appendText=", his hand still clutching the piece of parchment scribbled with his desperate last words. Handre’s final resting place is deep in the crypt, among the ancient bones dug up by Bitterhand Bandits inside the decrepit halls of Flyleaf Catacombs.\n"},
@@ -22627,7 +22639,88 @@ ImmersiveQuests.localization = {
 			["Talk to Orzorga 3"] =
 				{appendText=". She seems disappointed that I chose not to try the drink.", stepTextKey="I brought Orzorga what she wanted. I should speak with her."},
 		},
-[GetQuestName(5637)] = { --"Maelstrom Arena"				--OneSkyGod
+
+[GetQuestName(5448)] = { --"Maelstrom Arena"				--OneSkyGod
+		[1] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, Vale of the Surreal."},
+		["Enter Vale of the Surreal"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[2] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, Vale of the Surreal."},
+		["Survive Vale of the Surreal"] =
+			{appendText=" within the Oblivion portal."},
+		[3] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, Seht's Balcony."},
+		["Enter Seht's Balcony"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[4] = 
+			{appendStepText="", stepTextKey="I need to survive the challenge of Seht's Balcony."},
+		["Survive Seht's Balcony"] =
+			{appendText=" within the Oblivion portal."},
+		[5] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, The Drome of Toxic Shock."},
+		["Enter the Drome of Toxic Shock"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[6] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, The Drome of Toxic Shock."},
+		["Survive the Drome of Toxic Shock"] =
+			{appendText=" within the Oblivion portal."},
+		[7] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, Seht's Flywheel."},
+		["Enter Seht's Flywheel"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[8] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, Seht's Flywheel."},
+		["Survive Seht's Flywheel"] =
+			{appendText=" within the Oblivion portal."},
+		[9] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, The Rink of Frozen Blood."},
+		["Enter the Rink of Frozen Blood"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[10] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, The Rink of Frozen Blood."},
+		["Survive the Rink of Frozen Blood"] =
+			{appendText=" within the Oblivion portal."},
+		[11] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, The Spiral Shadows."},
+		["Enter the Spiral Shadows"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[12] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, The Spiral Shadows."},
+		["Survive the Spiral Shadows"] =
+			{appendText=" within the Oblivion portal"},
+		[13] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, The Vault of Umbrage."},
+		["Enter the Vault of Umbrage"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[14] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, The Vault of Umbrage."},
+		["Survive the Vault of Umbrage"] =
+			{appendText=" within the Oblivion portal."},
+		[15] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, The Igneous Cistern."},
+		["Enter the Igneous Cistern"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[16] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, The Igneous Cistern."},
+		["Survive the Igneous Cistern"] =
+			{appendText=" within the Oblivion portal."},
+		[17] = 
+			{appendStepText="", stepTextKey="I should enter the next arena, The Theater of Despair."},
+		["Enter the Theater of Despair"] =
+			{appendText=" within the Oblivion portal housed inside the Maelstrom Arena’s palace."},
+		[18] = 
+			{appendStepText="", stepTextKey="I need to survive this challenge, The Theater of Despair."},
+		["Survive the Theater of Despair"] =
+			{appendText=" within the Oblivion portal."},
+		[19] = 
+			{appendStepText="", stepTextKey="I should speak to Fa-Nuit-Hen."},
+		["Talk to Fa-Nuit-Hen"] =
+			{appendText=" inside the Maelstrom Arena palace's courtyard."},
+	},
+
+
+[GetQuestName(5637)] = { --"Maelstrom Arena"		--Vetran		--OneSkyGod
 		[1] = 
 			{appendStepText="", stepTextKey="I should enter the next arena, Vale of the Surreal."},
 		["Enter Vale of the Surreal"] =
@@ -23282,7 +23375,2678 @@ ImmersiveQuests.localization = {
     },
 
 
+-- ==================================================================================================================================================
+--	Hew's Bane - Thieves Guild																											Wrothgar - Orsinium
+-- ==================================================================================================================================================
 
+-- 		=========================================================================
+--		 Thieves Guild - Main Story
+-- 		=========================================================================
+
+
+[GetQuestName(5531)] = { --"Partners in Crime" --Jordakai
+	[1] = 
+		{appendStepText="", stepTextKey="I should find her in an Outlaws Refuge."},
+	["Find Quen in any Outlaws Refuge"] =
+		{appendText=". A splayed trident symbol marks entrances to the underground refuges found in major cities across Tamriel."},
+	[2] = 
+		{appendStepText="I spoke with the leather-clad Altmer in the Outlaws Refuge and agreed to be her partner on a job she has lined up. ", stepTextKey="Quen arranged transportation to the job, but wasn't keen to share the particulars until she knew I was committed. She'll tell me the details when I meet her at the docks in Woodhearth."},
+	["Meet Quen at the Woodhearth Docks"] =
+		{appendText=". She has a boat waiting on the western dock, southwest of Shipshape Carpentry in the Altmer area of the city. \n\nA blend of Bosmer and Altmer where Imperials once dwelled, Woodhearth is the port city in western Greenshade. Its wayshrine is at the city's southeastern edge."},
+	[3] = 
+		{appendStepText="I met Quen by the boat on the western dock, southwest of Shipshape Carpentry in the Altmer area of Woodhearth in western Greenshade. \n\n", stepTextKey="Quen revealed our target is the Giovessen Skull, a treasure held in the frigid Fulstrom Homestead. When I'm ready, we should take the boat at the docks in Woodhearth."},
+	["Travel to Fulstrom Homestead 1"] =
+		{appendText=".", stepTextKey="Quen revealed our target is the Giovessen Skull, a treasure held in the frigid Fulstrom Homestead. When I'm ready, we should take the boat at the docks in Woodhearth."},
+	[4] = 
+		{appendStepText="I spoke with the leather-clad Altmer in the Outlaws Refuge and agreed to be her partner on a job she has lined up. ", stepTextKey="Quen arranged transportation to the job, but wasn't keen to share the particulars until she knew I was committed. She'll tell me the details when I meet her at the docks in Wayrest."},
+	["Meet Quen at the Wayrest Docks"] =
+		{appendText=", southeast of the city. She has a boat waiting at the small, northeastern Harbor Skiff dock in the main port. \n\nA long-standing symbol of Breton power, Wayrest is the southern port city in Stormhaven. Its wayshrine is behind High King Emeric's castle."},
+	[5] = 
+		{appendStepText="I met Quen by the boat at the northwestern Harbor Skiff dock in Wayrest's port in southern Stormhaven. ", stepTextKey="Quen revealed our target is the Giovessen Skull, a treasure held in the frigid Fulstrom Homestead. When I'm ready, we should take the boat at the docks in Wayrest."},
+	["Travel to Fulstrom Homestead 2"] =
+		{appendText=".", stepTextKey="Quen revealed our target is the Giovessen Skull, a treasure held in the frigid Fulstrom Homestead. When I'm ready, we should take the boat at the docks in Wayrest."},
+	[6] = 
+		{appendStepText="I spoke with the leather-clad Altmer in the Outlaws Refuge and agreed to be her partner on a job she has lined up. ", stepTextKey="Quen arranged transportation to the job, but wasn't keen to share the particulars until she knew I was committed. She'll tell me the details when I meet her at the docks in Windhelm."},
+	["Meet Quen at the Windhelm Docks"] =
+		{appendText=". She is by the bulletin board with the Navigators at the lower southeastern dock on the city's eastern river. \n\nHome of the Skald-King and seemingly endless mugs of mead, the Nord fortress of Windhelm stands in northern Eastmarch. Its wayshrine is near the Mages Guild in the center of town."},
+	[7] = 
+		{appendStepText="I met Quen by the Navigators at the eastern river docks of Windhelm in northern Eastmarch. ", stepTextKey="Quen revealed our target is the Giovessen Skull, a treasure held in the frigid Fulstrom Homestead. When I'm ready, we should take the boat at the docks in Windhelm."},
+	["Travel to Fulstrom Homestead 3"] =
+		{appendText=".", stepTextKey="Quen revealed our target is the Giovessen Skull, a treasure held in the frigid Fulstrom Homestead. When I'm ready, we should take the boat at the docks in Windhelm."},
+	[8] = 
+		{appendStepText="", stepTextKey="Quen and I arrived at the shores of Fulstrom Homestead. We should make our approach and find our way past the main gates."},
+	["Approach Fulstrom Homestead"] =
+		{appendText=", a fortified estate in northeastern Eastmarch, accessible only by boat. Its large manor house sits on a snowy hilltop, above the island's northern shore. Quen may have more information to share. \n\nLarge woven baskets and other places may be good for hiding along the way to the main portcullis in the wall south of the manor."},
+	[9] = 
+		{appendStepText="At Fulstrom Homestead, ", stepTextKey="Quen and I made it past a portcullis. We should make our way past the guards and find a way inside the manor."},
+	["Enter Fulstrom Manor"] =
+		{appendText=" up on the hill to the north. There should be a side entrance or a cellar door."},
+	[10] = 
+		{appendStepText="At Fulstrom Homestead, we found a cellar door on the northeast side of the large house. ", stepTextKey="Now that Quen and I are inside the manor, we should search for a way into the treasury."},
+	["Enter the Treasury"] =
+		{appendText=" beyond the locked, double doors flanking a bookcase with a horn, candle, and skull on it."},
+	[11] = 
+		{appendStepText="We entered a cellar door on the northeast side of the Fulstrom Homestead manor. Then, ", stepTextKey="Quen and I made it into the treasury. The Giovessen Skull is here—all we need to do is steal it."},
+	["Steal the Giovessen Skull"] =
+		{appendText="."},
+	[12] = 
+		{appendStepText="We entered a cellar door on the northeast side of the Fulstrom Homestead manor. We found the skull in the treasury. \n\n", stepTextKey="Quen and I were set up! I should follow her lead."},
+	["Follow Quen's Lead"] =
+		{appendText="."},
+	[13] = 
+		{appendStepText="We entered a cellar door on the northeast side of the Fulstrom Homestead manor and found the skull in the treasury. \n\n", stepTextKey="Quen and I were set up! Chief Inspector Rhanbiq and his \"Iron Wheel\" demand I return the Giovessen Skull and surrender. But if I wanted, I could fight them off and steal the treasure. Quen will follow my lead, whatever I decide."},
+	["Return the Giovessen Skull"] =
+		{appendText=" by placing it back where it was, between the teacup candles on the Relic Display table. \n"},
+	["Fight the Iron Wheel"] =
+		{appendText=" mercenaries and escape with the skull into the cellar through a nearby trapdoor."},
+	[14] = 
+		{appendStepText="In the manor's treasury at Fulstrom Homestead, ", stepTextKey="I'm committed. If I can't defeat these Iron Wheel soldiers, they will arrest Quen and I!"},
+	["Defeat the Iron Wheel"] =
+		{appendText=" mercenaries and escape into the cellar through a nearby trapdoor."},
+	[15] = 
+		{appendStepText="In the manor's cellar at Fulstrom Homestead, ", stepTextKey="I need to figure out what's going on. I should speak with Quen—maybe she has answers."},
+	["Talk to Quen in the Cellar"] =
+		{appendText="."},
+	[16] = 
+		{appendStepText="In the cellar of Fulstrom Homestead's manor, I was speaking with Quen. ", stepTextKey="It seems Quen and I have some unexpected aid. I should listen to what this Argonian has to say."},
+	["Listen to Walks-Softly"] =
+		{appendText=", a well-dressed Argonian."},
+	[17] = 
+			{appendStepText="In the manor's cellar at Fulstrom Homestead, ", stepTextKey="Walks-Softly helped Quen escape the manor with a guard uniform. But to evade the Iron Wheel, he and I must flee through the catacombs. Quen will steal a boat and meet us at the exit."},
+	["Enter the Catacombs"] =
+		{appendText=" by heading west and then north with the well-dressed Argonian."},
+	[18] = 
+		{appendStepText="", stepTextKey="Walks-Softly and I should find a way to escape the catacombs below Fulstrom Homestead. Quen will steal a boat and meet us at the exit."},
+	["Escape From the Catacombs"] =
+		{appendText=". There should be an exit to the northeast."},
+	[19] = 
+		{appendStepText="In the catacombs at Fulstrom Homestead, we found a Draugr crypt and spiders. Then, ", stepTextKey="Walks-Softly found an exit! I should follow him to the surface."},
+	["Follow Walks-Softly"] =
+		{appendText=" up the old tower stairs in the northeastern ruin."},
+	[20] = 
+		{appendStepText="Walks-Softly and I emerged from the catacombs through the old tower ruin on the small island beyond the walls of the fortress. ", stepTextKey="Quen stole a boat, as promised. We should escape Fulstrom Homestead before the Iron Wheel catches on."},
+	["Escape Fulstrom Homestead"] =
+		{appendText=" by boat."},
+	[21] = 
+		{appendStepText="", stepTextKey="Quen and I are back at the docks where we began—along with Walks-Softly. Now that we are far away from Fulstrom Homestead and the Iron Wheel, I should speak with him about Abah's Landing."},
+	["Talk to Walks-Softly"] =
+		{appendText="."},
+	[22] = 
+		{appendStepText="After helping Quen with the job at Fulstrom Homestead, I arrived at Abah's Landing, the port city of Hew's Bane. I should speak with Walks-Softly again. Then, ", stepTextKey="I should speak with the guildmaster of the Abah's Landing Thieves Guild. Perhaps I can get some answers. Walks-Softly mentioned a \"Thieves Den.\""},
+	["Talk to the Guildmaster in the Thieves Den"] =
+		{appendText=". The Guild is based in the old, blue-domed cistern, tucked away up in the city's northwest, north of the crafters at Sharper's Alley. Guildmaster Zeira should be there."},
+	[23] = 
+		{appendStepText="At the Thieves Den in Abah's Landing, the port city of Hew's Bane, I spoke with the guildmaster. ", stepTextKey="Zeira considers the job at Fulstrom Homestead to be a successful audition into the ranks of the the Abah's Landing Thieves Guild. She invited Zeira and I to join. I should speak with her about the offer."},
+	["Talk to Zeira"] =
+		{appendText=" on the upper level of the den's central area.", stepTextKey="Zeira considers the job at Fulstrom Homestead to be a successful audition into the ranks of the the Abah's Landing Thieves Guild. She invited Zeira and I to join. I should speak with her about the offer."},
+},
+
+	[GetQuestName(5534)] = { --"Cleaning House" --Jordakai
+		[1] = 
+			{appendStepText="It seems I am needed in Hew's Bane at the guild's new home in the circular, blue-domed cistern, up in the northeast part of Abah's Landing. ", stepTextKey="I should speak with Zeira in the Thieves Den."},
+		["Talk to Zeira 1"] =
+			{appendText=". She is probably on the upper platform in the central area of the den.", stepTextKey="I should speak with Zeira in the Thieves Den."},
+		[2] = 
+			{appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, I spoke with the guildmaster. ", stepTextKey="Zeira thinks a former guildmate is responsible. Velsa should be at her home in the flooded district of Abah's Landing. When I'm ready, I should meet Zeira outside the flooded district."},
+		["Meet Zeira Outside Abah's Landing"] =
+			{appendText=" in an alley where water flows unhurried to the river from the city's southwestern walls. She told me thieves always travel separately. Something her mentor taught her."},
+		[3] = 
+			{appendStepText="East of the river in Hew's Bane, I went to the watery alley in the city's southwest. ", stepTextKey="When I arrived outside the flooded district of Abah's Landing, an Iron Wheel messenger staggered out of the alley and collapsed. I should speak to Zeira."},
+		["Talk to Zeira 2"] =
+			{appendText=" about what she read in the message. ", stepTextKey="When I arrived outside the flooded district of Abah's Landing, an Iron Wheel messenger staggered out of the alley and collapsed. I should speak to Zeira."},
+		[4] = 
+			{appendStepText="East of the river in Hew's Bane, I met the guildmaster in the watery alley in the city's southwest. ", stepTextKey="Zeira realized the Iron Wheel and Velsa are not allies. Zeira wants me to find Velsa, warn her of the Iron Wheel, and convince her to return to the Thieves Den."},
+		["Find Velsa's Villa"] =
+			{appendText=" with the large garden, north of the watery alley. A torch and lantern mark a ladder to a vacant house with a door opening out to the upper areas of the southwestern district. Planks, ledges, and stairs provide an illuminated path through the maze. Velsa's traps will be near her garden."},
+		[5] = 
+			{appendStepText="From the watery southwestern alley of Abah's Landing, I made my way through a vacant house to reach the upper areas of the district. Planks, ledges, and stairs guided me along an illuminated path until I spotted a garden. ", stepTextKey="It's a short jump into Velsa's private garden. I should speak with her there."},
+		["Enter Velsa's Garden"] =
+			{appendText="."},
+		[6] = 
+			{appendStepText="From the watery southwestern alley of Abah's Landing, I made my way through a vacant house to reach the upper areas of the district. Planks, ledges, and stairs guided me along an illuminated path until I jumped down into her garden. Now, ", stepTextKey="I should warn Velsa that the Iron Wheel is searching for her."},
+		["Talk to Velsa in Her Garden"] =
+			{appendText=". A Khajiit is with her."},
+		[7] = 
+			{appendStepText="From the watery southwestern alley of Abah's Landing, I made my way through a vacant house to reach the upper areas of the district. Following torches and lanterns along planks, ledges, and stairs got me to Velsa's garden. The Khajiit, Silver-Claw, is a merchant with a request. ", stepTextKey="Velsa will head to the Thieves Den if I help her repay a favor. I should meet Velsa outside Silver-Claw's warehouse."},
+		["Meet Velsa Outside Silver-Claw's Warehouse"] =
+			{appendText=", in back. It is the large, southernmost building on the port's west side, by the southern wall of the city. \n\nI should speak with Silver-Claw before leaving Velsa's garden. Velsa's villa has a secret passage that leads to an abandoned warehouse with an upstairs exit to the Warehouse District."},
+		[8] = 
+			{appendStepText="", stepTextKey="Someone forced Silver-Claw out of his own warehouse. Velsa and I need to break in, steal his ledger, and return it to him. I should enter Silver-Claw's warehouse through the rear window."},
+		["Enter Silver-Claw's Warehouse"] =
+			{appendText=". His old warehouse is the large, southernmost building in the Warehouse Distdrict on the west side of the port in Abah's Landing."},
+		[9] = 
+			{appendStepText="I met Velsa behind the Khajiit's old warehouse. It is the large, southernmost building in the Warehouse District on the west side of the port in Abah's Landing. ", stepTextKey="Now that we're inside, Silver-Claw's warehouse, I should speak with Velsa about how best to proceed."},
+		["Talk to Velsa"] =
+			{appendText=", crouching on a platform close to where we entered through the back window."},
+		[10] = 
+			{appendStepText="Velsa is in place at Silver-Claw's old warehouse, the southernmost building in the Warehouse District on the west side of the city's port. ", stepTextKey="Velsa wants me to distract Foreman Torkming. I should throw this \"stink apple\" at him. Once he's distracted, I should be able to slip past him into Silver-Claw's old office."},
+		["Distract Torkming"] =
+			{appendText="."},
+		[11] = 
+			{appendStepText="Velsa knocked out the overseer of the southernmost warehouse in the Warehouse District on the west side of the city's port. Now, ", stepTextKey="I should search the warehouse office for Silver-Claw's Ledger."},
+		["Search Silver-Claw's Office"] =
+			{appendText=". It is on top of the building, reached by exiting the upper warehouse area and following wooden ramps up a level."},
+		[12] = 
+			{appendStepText="On top of the southernmost building in the Warehouse District on the west side of the city's port, we entered Silver-Claw's office at the top of the wooden ramps. Now, ", stepTextKey="I need to steal Silver-Claw's Ledger from the office."},
+		["Steal Silver-Claw's Ledger"] =
+			{appendText=" from his stash beneath the floor tile near his desk."},
+		[13] = 
+			{appendStepText="On top of the southernmost building in the Warehouse District on the west side of the city's port, we entered Silver-Claw's office at the top of the wooden ramps. I found the ledger. Then, ", stepTextKey="Velsa heard someone approaching Silver-Claw's office. I should find a place to hide."},
+		["Hide in Silver-Claw's Office"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="On top of the southernmost warehouse on the west side of the city's port, we entered Silver-Claw's office and I found the ledger. Someone approached, but ", stepTextKey="Velsa's distraction worked. I should escape the warehouse before anyone returns to the office."},
+		["Escape Silver-Claw's Warehouse"] =
+			{appendText=" and the Warehouse District."},
+		[15] = 
+			{appendStepText="I left the Warehouse District. Now, ", stepTextKey="I should return the ledger to Silver-Claw at the Thieves Den."},
+		["Return Silver-Claw's Ledger"] =
+			{appendText=". He and Velsa should be at the cistern entrance to the Thieves Den in the city's northeast."},
+		[16] = 
+			{appendStepText="I returned the ledger to Silver-Claw outside the cistern at the Thieves Den in Abah's Landing. Now, ", stepTextKey="I should speak with Zeira in the Den about Velsa."},
+		["Talk to Zeira 3"] =
+			{appendText=" on  the upper platform.", stepTextKey="I should speak with Zeira in the Den about Velsa."},
+	},
+
+	[GetQuestName(5532)] = { --"The Long Game" --Jordakai
+		[1] = 
+			{appendStepText="I am needed in Hew's Bane at the guild's new home in the circular, blue-domed cistern, up in the northeast part of Abah's Landing. ", stepTextKey="I should speak with Zeira and see what she plans to do."},
+		["Talk to Zeira"] =
+			{appendText=". She is probably on the upper platform in the central area of the Thieves Den."},
+		[2] = 
+			{appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, I met with the guildmaster. ", stepTextKey="Zeira sent the others ahead to see what they could learn. Walks-Softly is waiting for me nearby—I should speak with him first. I can find him at the Abah's Landing harbor."},
+		["Meet Walks-Softly at the Harbor"] =
+			{appendText=". The well-dressed Argonian is waiting at the water's edge on the east side of the port, southwest of the Harbor Skiff dock with boats to Woodhearth, Wayrest, and Windhelm."},
+		[3] = 
+			{appendStepText="I spoke to my guildmate, the well-dressed Argonian. He was waiting on the east side of the city's port, southwest of the Harbor Skiff dock. ", stepTextKey="Walks-Softly thinks the captain of the Dreamsnake may be a candidate for Cosh's blackmail. To confirm this, I could spy on her meeting in Abah's Landing or try to steal Captain Evani's log."},
+		["Eavesdrop on Captain Evani"] =
+			{appendText=". She usually meets secretive clients up on the harbor's southeastern stone platform near the ship builder's barrels, crates, and cages. It's east of the cargo cranes waiting to load or unload ships."},
+		["Steal Captain Evani's Log"] =
+			{appendText=" from a cabin below deck  aboard the \"Dreamsnake\". The ship is anchored at the eastern dock, south of the harbor's guild traders, with its figurehead ready to strike."},
+		[4] = 
+			{appendStepText="I finished the task for Walks-Softly. Now, ", stepTextKey="I should speak with Quen and see what she turned up. I can find her at the Abah's Landing harbor."},
+		["Meet Quen at the Harbor"] =
+			{appendText=", above and northwest of the Harbor Skiff dock. She is sitting on a crate watching a performance while the rhythmic beat of a drum dances behind her."},
+		[5] = 
+			{appendStepText="I spoke with my Altmer guildmate at the north end of the harbor of Abah's Landing. ", stepTextKey="Quen suspects a dockyard boss may be a candidate for Cosh's blackmail. To confirm this, I could spy on a meeting he called with \"the Imperial client,\" or search the Imperial's private room at the Serpent and Senche."},
+		["Eavesdrop on the Imperial Client"] =
+			{appendText=", meeting with Zulgukh in the city's Bazaar by the inn across from the Mages Guild. A good hiding place is on the road, between a vacant food merchant's tarp and the adjacent vendor's place with its rolled carpets."},
+		["Search Ventilias Proximus's Private Room"] =
+			{appendText=" at the inn across from the Fighters Guild."},
+		[6] = 
+			{appendStepText="I finished Quen's task and headed back to the small courtyard above and north of the small Harbor Skiff dock at the harbor of Abah's Landing. ", stepTextKey="Velsa went to Silver-Claw's shop. I should speak with her there."},
+		["Meet Velsa at Silver-Claw's Shop"] =
+			{appendText=". Its doorway is in the northeast corner of the small area where the drummer entices others to dance and enjoy."},
+		[7] = 
+			{appendStepText="I entered the Khajiit's shop in the northeastern area of the harbor of Abah's Landing. The beat of the drum's music outside faded. ", stepTextKey="Silver-Claw seems distressed. I should speak with him and see what's wrong."},
+		["Talk to Silver-Claw"] =
+			{appendText="."},
+		[8] = 
+			{appendStepText="", stepTextKey="Silver-Claw says Velsa headed to No Shira Citadel, the Iron Wheel's headquarters! Before I follow her, he insisted I procure a disguise for my own protection. I should speak with Percius Loche at the Diamond Thimble."},
+		["Meet Percius Loche at the Diamond Thimble"] =
+			{appendText=" near the center of Abah's Landing. Its entrance is on the wide Promenade."},
+		[9] = 
+			{appendStepText="On the Promenade of Abah's Landing, I spoke with the master tailor at The Diamond Thimble. ", stepTextKey="Percius Loche crafted an outfit for a servant who works in No Shira Citadel, but was never paid for the trouble. He suggested I recover it for my own use. Alternatively, he will sell me a similar outfit."},
+		["Steal Servant's Outfit"] =
+			{appendText=" from the shirker servant at the Sailor's Rest. It is far above the water on the east side of the harbor, tucked up against the wall of the city's immense palatial grounds."},
+		["Purchase Servant's Outfit"] =
+			{appendText=" from Percius Loche."},
+		[10] = 
+			{appendStepText="Now that I have a servant's disguise, ", stepTextKey="I should speak with Velsa about why she's at No Shira Citadel, far south of Abah's Landing."},
+		["Meet Velsa Outside No Shira Citadel"] =
+			{appendText=" by following the main road south to the ancient Yokudan fortress in southeastern Hew's Bane. She is probably avoiding attention near the main gateway of the ruins."},
+		[11] = 
+			{appendStepText="In the camp outside the main gate of No Shira Citadel in southeastern Hew's Bane, I spoke with the retired master thief. ", stepTextKey="Velsa learned Cosh is currently inside the Iron Wheel's headquarters. She wants me to find out his connection to the Iron Wheel and steal his blackmail. For her plan to work, I need to learn the pass-phrase needed to gain access."},
+		["Learn the Iron Wheel Headquarters Pass-Phrase"] =
+			{appendText="\n\nOne can use a servant's outfit as a disguise or just sneak to find the documents in tents of the Iron Wheel camps in the valley between the main gateway and the rest of the ruins."},
+		[12] = 
+			{appendStepText="At the southeastern Yokudan ruins in Hew's Bane, I found the three Excerpts I needed and put them in my pack. \n\n", stepTextKey="I should enter Iron Wheel Headquarters with the Iron Wheel pass-phrase. Once inside, I can set Velsa's plan into motion."},
+		["Enter Iron Wheel Headquarters With Pass-Phrase"] =
+			{appendText=" using the three Excerpts. The headquarters' entrance is up in the center of the Yokudan ruin."},
+		[13] = 
+			{appendStepText="I entered the Iron Wheel Headquarters through a door in the alley at the base of the central tower of No Shira Citadel in southeastern Hew's Bane. ", stepTextKey="Velsa wants me to learn more about Cosh's plans. If I have the chance, I should steal whatever blackmail material he has at hand."},
+		["Learn Cosh's Plans"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="I entered the Iron Wheel Headquarters through a door in the alley at the base of the central tower of No Shira Citadel in southeastern Hew's Bane. ", stepTextKey="Cosh is meeting with Chief Inspector Rhanbiq! I should spy on them and learn Cosh's connection to the Iron Wheel."},
+		["Spy on Chief Inspector Rhanbiq and Cosh"] =
+			{appendText=". There is a suspicious Yokudan relief on the wall in the northwestern stub of hallway in the Iron Wheel Administration area."},
+		[15] = 
+			{appendStepText="In the Iron Wheel Headquarters at No Shira Citadel in southeastern Hew's Bane, I listened as ", stepTextKey="Cosh made a deal with Chief Inspector Rhanbiq to recover a missing dowry. I should escape from Iron Wheel Headquarters."},
+		["Escape Iron Wheel Headquarters"] =
+			{appendText=" through an exit at the far north end of the underground complex."},
+		[16] = 
+			{appendStepText="My visit to the Iron Wheel headquarters at No Shira Citadel in Hew's Bane was successful. I have Cosh's Evidence in my pack. Now, ", stepTextKey="I should bring what I've found to Zeira. Perhaps she can make sense of it."},
+		["Meet Zeira at the Thieves Den"] =
+			{appendText=" in Abah's Landing."},
+		[17] = 
+			{appendStepText="Around Abah's Landing and at No Shira Citadel in Hew's Bane, I helped Walks-Softly, Quen, and Velsa with the tasks the guildmaster assigned to them. ", stepTextKey="I should speak with Zeira in the Thieves Den and see what she plans to do about Cosh."},
+		["Talk to Zeira in the Thieves Den"] =
+			{appendText="."},
+	},
+
+	[GetQuestName(5556)] = { --"A Flawless Plan" --Jordakai
+		[1] = 
+			{appendStepText="I am needed in Hew's Bane at the guild's new home in the circular, blue-domed cistern, up in the northeast part of Abah's Landing. ", stepTextKey="I should head to the Thieves Den and speak with Zeira about her plan."},
+		["Talk to Zeira 1"] =
+			{appendText=". She is probably on the upper platform in the central area of the Thieves Den.", stepTextKey="I should head to the Thieves Den and speak with Zeira about her plan."},
+		[2] = 
+			{appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, I met with the guildmaster. ", stepTextKey="Zeira plans to return to the al-Danobia family tomb where Nicolas and the rest of the guild perished. She believes Percius Loche can help, and asked Quen and I to meet him at his shop in Abah's Landing."},
+		["Meet Percius Loche at the Diamond Thimble"] =
+			{appendText=", his clothing store in the center of the city."},
+		[3] = 
+			{appendStepText="I entered The Diamond Thimble in central Abah's Landing. ", stepTextKey="Percius Loche isn't here, and his shop is in shambles! I should speak with his clerk, Mamaea of his whereabouts."},
+		["Talk to Mamaea"] =
+			{appendText=", a Khajiit."},
+		[4] = 
+			{appendStepText="The Diamond Thimble, the master tailor's shop in central Abah's Landing, is a mess. ", stepTextKey="The Iron Wheel is after Percius Loche! In his rush to escape from his shop, he stumbled through a vat of bright green dye. I should find where his trail begins!"},
+		["Find Percius Loche's Trail"] =
+			{appendText=" outside the store's front door."},
+		[5] = 
+			{appendStepText="I reached the central fountain of Abah's Landing. ", stepTextKey="There's very little time to find Percius Loche before the Iron Wheel catches him. I should follow his trail of bright green footprints as fast as I can!"},
+		["Find Percius Loche Before the Iron Wheel Does"] =
+			{appendText=". The footprints go to the northwest alley and then continue."},
+		[6] = 
+			{appendStepText="I reached the closed gates of the Warehouse District in southwestern Abah's Landing. All I found was a beggar by the gate. I should talk to him. \n\n", stepTextKey="There's no sign of Percius Loche. I can only assume the worst. If I can track him down, perhaps I can free him from the Iron Wheel. Alternatively, I could leave him to his fate. If that's the case, I can tell Zeira we should leave without him."},
+		["Tell Zeira to Abandon Percius Loche"] =
+			{appendText=". She is by a camp at the end of the northwestern road in Hew's Bane.\n"},
+		["Rescue Percius Loche From the Iron Wheel"] =
+			{appendText="'s small camp southeast of the No Shira Wayshrine in Hew's Bane."},
+		[7] = 
+			{appendStepText="", stepTextKey="The matter with Percius Loche is resolved. I should talk to Zeira at Prince's Gate when I'm ready to depart Abah's Landing."},
+		["Talk to Zeira 2"] =
+			{appendText=" by the camp at the end of the northwestern road in Hew's Bane.", stepTextKey="The matter with Percius Loche is resolved. I should talk to Zeira at Prince's Gate when I'm ready to depart Abah's Landing."},
+		[8] = 
+			{appendStepText="I met with Zeira by the camp at Prince's Gate, near the end of the northwestern road in Abah's Landing. ", stepTextKey="When I'm ready, I should speak with Zeira and let her know I'm ready to travel to al-Danobia Tomb."},
+		["Travel to al-Danobia Tomb"] =
+			{appendText=". The ancient site is in Hammerfell, north across the bay from Hew's Bane. Zeira has arrranged for transportation."},
+		[9] = 
+			{appendStepText="We arrived at the tomb from the camp by Prince's Gate at the end of the northwestern road in Hew's Bane. ", stepTextKey="The Iron Wheel has set up camp outside al-Danobia Tomb. I should sneak past the camp in order to reach the entrance."},
+		["Sneak Past the Iron Wheel"] =
+			{appendText="'s camp after speaking with the guildmaster and the others."},
+		[10] = 
+			{appendStepText="", stepTextKey="I should explore al-Danobia Tomb."},
+		["Explore al-Danobia Tomb"] =
+			{appendText=" while heading to the square, western chamber, Tu'whacca's Pillars."},
+		[11] = 
+			{appendStepText="", stepTextKey="A great door blocks our way. If we are to advance further into al-Danobia Tomb, I must solve the mystery of Tu'whacca's Pillars. I should refer to Nicolas' journal for hints."},
+		["Bypass Tu'whacca's Pillars"] =
+			{appendText=". In the chambers are four pillars with an ancient text at the base of each. The doors to the east are blocked, but flanked by relief wheels. And near the open coffin, Nicholas left excerpts from his journal, probably with clues about solving the puzzle."},
+		[12] = 
+			{appendStepText="Using the journal and relief wheels, I solved the puzzle. ", stepTextKey="Now that we've bypassed Tu'whacca's Pillars, we should venture deeper into al-Danobia Tomb."},
+		["Explore HoonDing's Passage"] =
+			{appendText=" to the east."},
+		[13] = 
+			{appendStepText="", stepTextKey="After exploring further into al-Danobia Tomb, we reached an impassable chasm known as Shinji's Truth. I should see what Zeira has to say and follow her lead."},
+		["Follow Zeira's Lead"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="In al-Danobia Tomb, ", stepTextKey="Zeira needs me to watch her back as we walk Malooc's Path. I should stay close to Zeira until we make it through."},
+		["Walk Malooc's Path"] =
+			{appendText=", the northern passageways of the tomb. Zeira can provide more information about what is to come."},
+		[15] = 
+			{appendStepText="", stepTextKey="Zeira and I made it through Malooc's Path. We should recover Tall Papa's Ashes, which will reveal Shinji's Truth."},
+		["Recover Tall Papa's Ashes"] =
+			{appendText=" from the ewer on the stone table near the guildmaster. \n"},
+		["Talk to Zeira 3"] =
+			{appendText=".", stepTextKey="Zeira and I made it through Malooc's Path. We should recover Tall Papa's Ashes, which will reveal Shinji's Truth."},
+		[16] = 
+			{appendStepText="In the al-Danobia Tomb, we found the ewer with the ashes. Zeira also noticed a lantern that belonged to Nicholas. ", stepTextKey="I should return to Shinji's Truth with Tall Papa's Ashes."},
+		["Return to Shinji's Truth"] =
+			{appendText=" by heading south through Malooc's Path to HoonDing's Passage."},
+		[17] = 
+			{appendStepText="In the center of al-Danobia Tomb, ", stepTextKey="Shinji's Truth is an invisible path that can only be revealed by spreading Tall Papa's Ashes upon it. I should do so and cross."},
+		["Cross Shinji's Truth"] =
+			{appendText="."},
+		[18] = 
+			{appendStepText="", stepTextKey="Now that I've crossed Shinji's Truth, I should enter the al-Danobia treasure vaults."},
+		["Investigate the Treasure Vaults"] =
+			{appendText=" in the eastern chamber of the al-Danobia Crypt."},
+		[19] = 
+			{appendStepText="We entered the eastern chamber of the tomb, the al-Danobia Crypt. ", stepTextKey="We awoke an ancient tomb guardian! We must defeat it!"},
+		["Find a Way into the al-Danobia Vault Room"] =
+			{appendText=". Without a pass-phrase, the guardian, Lakayd the Repentent, must be defeated."},
+		[20] = 
+			{appendStepText="In southwest Abah's Landing, ", stepTextKey="I found Percius Loche before the Iron Wheel did. I should speak with him, quickly."},
+		["Talk to Percius Loche"] =
+			{appendText=" hiding behind a tree near the Warehouse District's entrance."},
+		[21] = 
+			{appendStepText="In the eastern crypt of the al-Danobia Tomb, I defeated the guardian blocking our way. ", stepTextKey="We should search the al-Danobia treasure vaults for Magnifica Falorah's dowry, or clues to its absence."},
+		["Search the al-Danobia Treasure Vaults"] =
+			{appendText="."},
+		[22] = 
+			{appendStepText="In the Treasure Vaults of the al-Danobia Tomb, ", stepTextKey="Magnifica Falorah's dowry is gone, and Nicolas—the former guildmaster—may have had something to do with it. I should return to Hew's Bane as soon as I can. From there, I will meet Zeira at Nicolas's desert retreat."},
+		["Leave al-Danobia Tomb"] =
+			{appendText=" through the southeastern doors to Taneth, then head south past the Iron Wheel camp."},
+		[23] = 
+			{appendStepText="", stepTextKey="Zeira asked me to meet her at Nicolas's desert retreat, in the badlands of Hew's Bane."},
+		["Meet Zeira at Nicolas' Desert Retreat"] =
+			{appendText=". It's double-door entry is in a small, watery grotto, northwest of Abah's Landing, northeast of No Shira, up in the cliffs above the waterfall of the southwestern river."},
+		[24] = 
+			{appendStepText="I found the old ruin with its double-door entry in a small, watery grotto, southwest of Abah's Landing, northeast of No Shira, up in the cliffs above the waterfall of the southwestern river. Inside, ", stepTextKey="Zeira and I should search Nicolas's desert retreat for any signs of him or Magnifica Falorah's dowry."},
+		["Search Nicolas' Desert Retreat"] =
+			{appendText=" \n\nCoins, chests, papers, or crystals may be of use.", stepTextKey="Zeira and I should search Nicolas's desert retreat for any signs of him or Magnifica Falorah's dowry."},
+		[25] = 
+			{appendStepText="I found the old ruin with its double-door entry in a small, watery grotto, southwest of Abah's Landing, northeast of No Shira, up in the cliffs above the waterfalls of the southwestern river. Inside, ", stepTextKey="Zeira and I should search Nicolas's desert retreat for any signs of him or Magnifica Falorah's dowry."},
+		["Talk to Zeira 4"] =
+			{appendText=" in the retreat.", stepTextKey="Zeira and I should search Nicolas's desert retreat for any signs of him or Magnifica Falorah's dowry."},
+		[26] = 
+			{appendStepText="At his Desert Retreat in southwestern Hew's Bane, we learned that ", stepTextKey="Nicolas betrayed the Thieves Guild! Zeira plans to inform them of his secret deal with the merchant lord, Cosh. I should meet her at the Thieves Den."},
+		["Return to the Thieves Den"] =
+			{appendText=" in Abah's Landing."},
+		[27] = 
+			{appendStepText="I returned to the den in Abah's Landing. ", stepTextKey="Zeira plans to inform the Thieves Guild of Nicolas' betrayal. I should speak with her at the Den and find out what we do next."},
+		["Talk to Zeira at the Thieves Den"] =
+			{appendText=". She should be on the upper platform."},
+	},
+
+	[GetQuestName(5549)] = { --"Forever Hold Your Peace" --Jordakai
+		[1] = 
+			{appendStepText="I am needed in Hew's Bane at the guild's new home in the circular, blue-domed cistern, up in the northwest part of Abah's Landing. ", stepTextKey="I should talk to Zeira in the Thieves Den."},
+		["Talk to Zeira 1"] =
+			{appendText=". She is probably on the upper platform in the central area.", stepTextKey="I should talk to Zeira in the Thieves Den."},
+		[2] = 
+			{appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, I met with the guildmaster about the upcoming marriage. She said ", stepTextKey="Silver-Claw has details on acquiring a wedding invitation. I should meet him at his shop in Abah's Landing."},
+		["Meet Silver-Claw at Spotless Goods"] =
+			{appendText=" on the east side of the city's port. The Khajiit's shop is above and northwest of the Harbor Skiff dock, in the northeast corner of the small area where a drummer entices others to dance and enjoy."},
+		[3] = 
+			{appendStepText="At his shop near the harbor, I learned the talented ", stepTextKey="Silver-Claw can forge a wedding invitation if I can steal an original. I should pickpocket Lord Wallavir in the Abah's Landing markets or steal Lady Balina's invitation from her nearby mansion."},
+		["Steal a Wedding Invitation"] =
+			{appendText=": \n •  Silver-Claw mentioned Lord Wallavir will carry his invitation on his person as he wanders among the merchants of the Promenade in the central area of the city.\n • The talented Khajiit also said that Lady Balina would keep her invitation on the dresser in her upstairs bedroom at her home, east of the city's northern fountain plaza. It's fenced entry is across from a juggler giving a private performance."},
+		[4] = 
+			{appendStepText="Silver-Claw's information was very helpful. ", stepTextKey="I stole an invite to the wedding. I should return to the Thieves Den."},
+		["Return to the Thieves Den 1"] =
+			{appendText=" of Abah's Landing at its cistern home in the city's northwest. Silver-Claw should be there.", stepTextKey="I stole an invite to the wedding. I should return to the Thieves Den."},
+		[5] = 
+			{appendStepText="In Hew's Bane, at the cistern in northwest Abah's Landing, ", stepTextKey="I should talk to Silver-Claw in the Thieves Den."},
+		["Talk to Silver-Claw"] =
+			{appendText="."},
+		[6] = 
+			{appendStepText="In Hew's Bane, I returned to the Thieves Den of Abah's Landing and gave Silver-Claw the invitation I acquired. ", stepTextKey="The wedding invitation allows one guest. I should choose a date to support me inside Hubalajad Palace. Any of my compatriots in the Thieves Guild should do."},
+		["Choose Your Date for the Wedding"] =
+			{appendText=" after speaking with Walks-Softly, Quen, Velsa, and Silver-Claw."},
+		[7] = 
+			{appendStepText="In Hew's Bane, ", stepTextKey="I should head to the Diamond Thimble in Abah's Landing to find an appropriate outfit for the wedding."},
+		["Go to the Diamond Thimble"] =
+			{appendText=" on the city's central Promenade. They will have something suitable for an invited wedding guest or two."},
+		[8] = 
+			{appendStepText="In Hew's Bane, ", stepTextKey="I went to the Diamond Thimble in Abah's Landing. I should speak with the tailor about finding an appropriate outfit for the wedding."},
+		["Talk to the Tailor"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="In Hew's Bane, ", stepTextKey="I went to the Diamond Thimble in Abah's Landing. I should choose an outfit to wear the wedding."},
+		["Choose Your Outfit"] =
+			{appendText=" from the four on display in the tailor's shop."},
+		[10] = 
+			{appendStepText="In Hew's Bane, I selected an outfit for the wedding when ", stepTextKey="I went to the Diamond Thimble in Abah's Landing. I should speak with Zeira."},
+		["Talk to Zeira 2"] =
+			{appendText=" in the tailor's shop.", stepTextKey="I went to the Diamond Thimble in Abah's Landing. I should speak with Zeira."},
+		[11] = 
+			{appendStepText="In The Diamond Thimble near the center of Abah's Landing in Hew's Bane, Zeira gave me the invitation Silver-Claw prepared. My companion for the event will be at the gate. ", stepTextKey="I should present my forged wedding invitation to the gatekeeper at Hubalajad Palace in Abah's Landing."},
+		["Give Forged Invitation to the Gatekeeper"] =
+			{appendText=", Muazel, at the end of the Promenade east of The Diamond Thimble. \n\nZeira asked that I distract the gatekeeper after entering the palatial grounds. I should look for my date near the gate."},
+		[12] = 
+			{appendStepText="At the coastal city of Hew's Bane, ", stepTextKey="I should enter Hubalajad Palace in Abah's Landing to attend the wedding."},
+		["Enter the Wedding"] =
+			{appendText=" through the palatial gates at the southeastern end of the city's Promenade."},
+		[13] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should speak with my date about getting Zeira inside the palace."},
+		["Talk to Your Date"] =
+			{appendText=" in private, near the entrance."},
+		[14] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. If we can cause trouble in a discreet way, the doorman may leave his post. At that point we could get Zeira inside."},
+		["Help Zeira Gain Entry"] =
+			{appendText=" with a distraction or by convincing Zafrik, the guard at the gate, to move away for a moment.\n\nIf an invited noble brought their dog, perhaps some food might help cause a disturbance. Wandering the courtyard may present opportunities."},
+		[15] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should speak with Zeira about the plan."},
+		["Talk to Zeira 3"] =
+			{appendText=" near the gate. She is dressed in an ivory bedlah with her face veiled.", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should speak with Zeira about the plan."},
+		[16] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should speak with Zeira about our next step."},
+		["Talk to Zeira 4"] =
+			{appendText=" in her ivory bedlah. After realizing Nicolas is the merchant lord, Cosh, she walked over to a table in the pergola on the southwest side of the long pool at the center of the palatial grounds.", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should speak with Zeira about our next step."},
+		[17] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should mingle with the guests to determine Magnifica Falorah's whereabouts and find a way inside the palace."},
+		["Determine Magnifica Falorah's Whereabouts"] =
+			{appendText=". Perhaps an unhappy, overworked servant would be willing to share what she knows."},
+		["Find a Way Inside the Palace"] =
+			{appendText=". Plenty of servers wandering around with trays of food and drink. Perhaps one would have a key in their pocket. It appears there is a doorway into the palace used by the servers to the southeast."},
+		[18] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should escort Zeira to the palace, where people seem to be gathering."},
+		["Escort Zeira to the Palace"] =
+			{appendText=". There is a doorway into the kitchens of the palace used by the servers on the right side of the enormous stairs."},
+		[19] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should enter the palace kitchens before the wedding starts."},
+		["Enter the Palace"] =
+			{appendText=" by unlocking the door to the kitchens in the southeastern area of the palatial grounds. The veiled guildmaster should be there."},
+		[20] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should sneak to Magnifica Falorah's room."},
+		["Sneak Into Magnifica Falorah's Room"] =
+			{appendText=", Cosh's bedchamber. It is on the upper level of the Palace, at the end of the northeastern hallway."},
+		[21] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should speak with Magnifica Falorah and inform her of Cosh's treacherous nature."},
+		["Talk to Magnifica Falorah"] =
+			{appendText=" of Taneth, the bride-to-be, in Cosh's bedchamber at the end of the uppermost, northeastern hallway."},
+		[22] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. I should search for a hidden way out of Magnifica Falorah's room."},
+		["Search Cosh's Room"] =
+			{appendText=", his bedchamber at the end of the uppermost, northeastern hallway of the Palace. Magnifica Falorah wants proof that Cosh is Nicholas, the thief who stole her dowry. There are four large paintings with candle sconces, books, and cabinets. Zeira once said Nicholas loved puzzles. There must be a way to discover a secret passage."},
+		[23] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. We found irrefutable proof that Nicolas stole Magnifica Falorah's dowry. I should speak with Zeira about our next steps."},
+		["Talk to Zeira 5"] =
+			{appendText=" in the secret room we entered through the cabinet in Cosh's bedchamber at the end of the uppermost, northeastern hallway in the Palace.", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. We found irrefutable proof that Nicolas stole Magnifica Falorah's dowry. I should speak with Zeira about our next steps."},
+		[24] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. We found irrefutable proof that Nicolas stole Magnifica Falorah's dowry. Zeira wants my date and I to attend the wedding while she presents Danobia's crown to Magnifica Falorah."},
+		["Attend the Wedding Ceremony"] =
+			{appendText=" in the great hall of the Palace. There must be an exit from the secret room away from the bedchamber."},
+		[25] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. Chief Inspector Rhanbiq ordered the Iron Wheel to arrest everyone at the wedding. I should escape to the palace courtyard with my date."},
+		["Escape to the Courtyard"] =
+			{appendText=" through the kitchens in the southwest lower floor of the Palace."},
+		[26] = 
+			{appendStepText="At the port city of Hew's Bane, ", stepTextKey="I'm in Hubalajad Palace in Abah's Landing. Chief Inspector Rhanbiq ordered the Iron Wheel to arrest everyone at the wedding. I should escape the palace with my date."},
+		["Escort Your Date Out Of Hubalajad Palace"] =
+			{appendText="."},
+		[27] = 
+			{appendStepText="At the port city of Hew's Bane, at the Hubajalah Palace in southeastern Abah's Landing, the wedding ceremony devolved into chaos. ", stepTextKey="Zeira's plan worked, but she was captured by the Iron Wheel. I should return to the Thieves Den as soon as I can."},
+		["Return to the Thieves Den 2"] =
+			{appendText=" at the cistern in the city's northwest.", stepTextKey="Zeira's plan worked, but she was captured by the Iron Wheel. I should return to the Thieves Den as soon as I can."},
+		[28] = 
+			{appendStepText="At the port city of Hew's Bane, at the Hubajalah Palace in southeastern Abah's Landing, the wedding ceremony devolved into chaos. ", stepTextKey="Zeira's plan worked, but she was captured by the Iron Wheel. I should speak with Walks-Softly in the Thieves Den as soon as possible."},
+		["Talk to Walks-Softly 1"] =
+			{appendText=" in the upper area of the den.", stepTextKey="Zeira's plan worked, but she was captured by the Iron Wheel. I should speak with Walks-Softly in the Thieves Den as soon as possible."},
+		[29] = 
+			{appendStepText="At the port city of Hew's Bane, at the Hubajalah Palace in southeastern Abah's Landing, ", stepTextKey="Zeira's plan worked, but she was captured by the Iron Wheel. I should speak with Walks-Softly in the Thieves Den as soon as possible."},
+		["Talk to Walks-Softly 2"] =
+			{appendText=" in the upper area of the den.", stepTextKey="Zeira's plan worked, but she was captured by the Iron Wheel. I should speak with Walks-Softly in the Thieves Den as soon as possible."},
+	},
+
+
+	[GetQuestName(5545)] = { --"Prison Break" --Jordakai
+		[1] = 
+			{appendStepText="I returned to Abah's Landing in Hew's Bane. Now, ", stepTextKey="I should speak with Silver-Claw in the Thieves Den."},
+		["Talk to Silver-Claw"] =
+			{appendText=" at the guild's home in the blue-domed cistern in the city's northwest."},
+		[2] = 
+			{appendStepText="I received news from Silver-Claw at the Thieves Den of Abah's Landing in Hew's Bane. ", stepTextKey="The Thieves Guild has assembled in the Den. I should speak to each of them and organize Zeira's prison break."},
+		["Organize the Thieves Guild to Rescue Zeira"] =
+			{appendText=" \n\nWalks-Softly, Quen, and Velsa are available."},
+		[3] = 
+			{appendStepText="At the cistern in northwestern Abah's Landing in Hew's Bane, I met with Walks-Softly, Quen, and Velsa. We will be going to No Shira Citadel to rescue Zeira. ", stepTextKey="I should bring the Evidence of Nicolas's Treachery with me. It's in the Thieves Den."},
+		["Take the Evidence of Nicolas's Treachery"] =
+			{appendText=". The stack of papers is on the table in the upper area."},
+		[4] = 
+			{appendStepText="In Hew's Bane, south of Abah's Landing, is the ancient Yokudan fortress where the Iron Wheel have their headquarters and prison. ", stepTextKey="I should meet Quen outside No Shira Citadel."},
+		["Meet Quen Outside No Shira Citadel"] =
+			{appendText=". She indicated a location across the bridge northwest of the No Shira Citadel Wayshrine."},
+		[5] = 
+			{appendStepText="I found Quen by the road, across the bridge northwest of the No Shira Citadel Wayshrine. Now, ", stepTextKey="I should speak to Quen outside No Shira Citadel."},
+		["Talk to Quen"] =
+			{appendText=" about what she learned from scouting the ruin."},
+		[6] = 
+			{appendStepText="In Hew's Bane, across the bridge northwest of the No Shira Citadel Wayshrine, I met with the Altmer thief. After scouting the ruin, ", stepTextKey="Quen found a way into the Iron Wheel's headquarters. I should meet Walks-Softly outside No Shira Citadel."},
+		["Meet Walks-Softly Outside No Shira Citadel"] =
+			{appendText="'s southwestern wall. The well-dressed Argonian is by the vacant camp with the small fire, a short distance southeast of the wayshrine."},
+		[7] = 
+			{appendStepText="In Hew's Bane near a small camp outside the walls of the Yokudan ruin, southeast of No Shira Citadel Wayshrine, I found the Argonian thief. ", stepTextKey="Walks-Softly has a plan to get past the Iron Wheel sentry outside No Shira Citadel."},
+		["Bypass the Iron Wheel Sentry"] =
+			{appendText=" by observing Walks-Softly, who is speaking with the guard."},
+		[8] = 
+			{appendStepText="In Hew's Bane near a small camp outside the wall of the Yokudan ruin, southeast of No Shira Citadel Wayshrine, Walks-Softly went into the nearby Old No Shira Gate. ", stepTextKey="I should speak with Walks-Softly inside the entrance to No Shira Citadel."},
+		["Talk to Walks-Softly"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="In southeastern Hew's Bane, I entered the ancient Yokudan ruins. ", stepTextKey="I should find Chief Inspector Rhanbiq's office in No Shira Citadel."},
+		["Go to Chief Inspector Rhanbiq's Office"] =
+			{appendText=" in the tower on the upper, far eastern platform of the ruin, overlooking the sea and a docked ship to the south."},
+		[10] = 
+			{appendStepText="I traversed the Yokudan ruin in southeastern Hew's Bane because ", stepTextKey="Magnifica Falorah was inside No Shira Citadel. Although wary of my intentions, it seems she wants to talk."},
+		["Talk to Magnifica Falorah"] =
+			{appendText=" at the chief inspector's office in the tower above the upper, far eastern platform of the ruin. The room overlooks the sea, northwest of a docked ship."},
+		[11] = 
+			{appendStepText="At the No Shira Citadel in southeastern Hew's Bane, I met with Magnifica Falorah and gave her Nicolas' journal. She agreed to walk me to the prison's entrance in the eastern area of the ruin. ", stepTextKey="The Iron Wheel holds Zeira in No Shira Prison. I should search for her cell block. Once I'm there I should be able to locate her cell."},
+		["Find Zeira's Cell Block"] =
+			{appendText=" in the underground compound. Walks-Softly should be inside the prison's entry, wearing an Iron Wheel uniform."},
+		[12] = 
+			{appendStepText="At the No Shira Citadel in southeastern Hew's Bane, I entered the prison in the ruin's far eastern area. When I reached the prison's cells, ", stepTextKey="Zeira was not in her cell block, but Nicolas was. I should speak with him and see what he knows."},
+		["Talk to Nicolas"] =
+			{appendText=", still dressed in his finery as Cosh the merchant lord."},
+		[13] = 
+			{appendStepText="At the No Shira Citadel in southeastern Hew's Bane, I entered the prison in the ruin's far eastern area and reached the cell blocks. I found Nicolas, but not Zeira. ", stepTextKey="If I provide Nicolas with a single lockpick, he will tell me where to find Zeira. Before I make my decision, I could consult with the others in No Shira Prison."},
+		["Decide the Fate of Nicolas"] =
+			{appendText=" after speaking with Quen, Velsa, and Walks-Softly at the cell."},
+		[14] = 
+			{appendStepText="At the ruins of the Yokudan citadel in southeastern Hew's Bane, I learned ", stepTextKey="Zeira is aboard a prison ship that is about to leave No Shira Prison. I should hurry there."},
+		["Find Zeira on the Prison Ship"] =
+			{appendText=", The Anemone, docked at No Shira Harbor. She is likely being held below decks in a locked area. A lockpick or key should work. A guard by the ramp for boarding the ship may keep a key nearby."},
+		[15] = 
+			{appendStepText="At the No Shira Harbor in southeastern Hew's Bane, ", stepTextKey="I need to free Zeira from the prison ship outside No Shira Citadel."},
+		["Free Zeira"] =
+			{appendText=" below decks on The Anemone, the ship at the dock. Chief Inspector Rhanbiq should be confronted if he is onboard."},
+		[16] = 
+			{appendStepText="At the No Shira Harbor in southeastern Hew's Bane, ", stepTextKey="I should speak to Zeira now that she is freed and back in charge."},
+		["Talk to Zeira 1"] =
+			{appendText=" in the hold of the docked ship, The Anemone.", stepTextKey="I should speak to Zeira now that she is freed and back in charge."},
+		[17] = 
+			{appendStepText="At the No Shira Harbor in southeastern Hew's Bane, I found and freed the guildmaster. ", stepTextKey="Zeira and I should escape No Shira Citadel before the Iron Wheel realizes. Other prisoners have been freed as well and are retrieving much of the amassed treasure."},
+		["Escape No Shira Citadel"] =
+			{appendText="'s docks and return to Abah's Landing. There is a rowboat on the shore, beyond a small camp north of the ship."},
+		[18] = 
+			{appendStepText="I arrived at Abah's Landing in Hew's Bane. Now ", stepTextKey="I should return to the Thieves Den and speak with Zeira."},
+		["Meet Zeira at the Den"] =
+			{appendText=" in the blue-domed cistern in the city's northwest."},
+		[19] = 
+			{appendStepText="At Abah's Landing in Hew's Bane, ", stepTextKey="I should speak with Zeira in the Thieves Den."},
+		["Talk to Zeira 2"] =
+			{appendText=".", stepTextKey="I should speak with Zeira in the Thieves Den."},
+		[20] = 
+			{appendStepText="At No Shira Citadel in southeastern Hew's Bane, I entered the prison in the ruin's far eastern area and reached the cell blocks. I spoke with Nicolas. ", stepTextKey="The Warden's Office in No Shira Prison has Zeira's transfer orders which should reveal her location."},
+		["Get Transfer Orders from the Warden's Office"] =
+			{appendText=" in the northern chamber of the Iron Wheel Headquarters, beyond the prison's cell blocks."},
+	},
+
+
+
+
+-- 		=========================================================================
+--		 Thieves Guild - Side Quests
+-- 		=========================================================================
+    [GetQuestName(5535)] = { --"A Double Life" --Jordakai
+        [1] = 
+            {appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, there was a Note from Quen for me. ", stepTextKey="I should meet Quen at the place where she goes to think."},
+        ["Talk to Quen at Her Rooftop Retreat"] =
+            {appendText=" on a ledge between Tall Papa's Hoard and the Mages Guild, up on the plank paths overlooking the merchants of the city's Bazaar."},
+        [2] = 
+            {appendStepText="In Hew's Bane, at her retreat above the city's merchant bazaar, I met Quen. She heard Lady Sulima was a client of her father, purchasing relics he acquired. ", stepTextKey="Quen came to Abah's Landing to find her father. She believes information of his whereabouts is in the manor of Lady Sulima, a wealthy citizen of Abah's Landing. I should meet Quen outside Sulima Mansion."},
+        ["Talk to Quen at Sulima Mansion"] =
+            {appendText=" in the northern upper district of the city. She will be at a doorway, up the stairs near the northeastern wall of the district."},
+        [3] = 
+            {appendStepText="At Lady Sulima's home in the upper, northeastern district of Abah's Landing in Hew's Bane, ", stepTextKey="Quen and I need to break into Sulima Mansion. When I'm ready, she will slip inside and unbar the gate."},
+        ["Break Into Sulima Mansion"] =
+            {appendText=" and search for anything to help Quen learn about her father's whereabouts."},
+        [4] = 
+            {appendStepText="We entered Lady Sulima's home in the upper, northeastern district of Abah's Landing in Hew's Bane. ", stepTextKey="Quen and I should search Sulima Mansion for clues regarding the whereabouts of Quen's father."},
+        ["Search Sulima Mansion"] =
+            {appendText=". The upper rooms should have items of interest. There are bookcases in the hallways, a jewelry box in the small servant rooms to the north. Then search the large bedchamber in the southern area."},
+        [5] = 
+            {appendStepText="We entered Lady Sulima's home in the upper, northeastern district of Abah's Landing in Hew's Bane. We found a couple of items and a hidden entrance in the master bedchamber on the upper floor. ", stepTextKey="It seems Lady Sulima knew Quen's father! I should speak with her."},
+        ["Talk to Lady Sulima"] =
+            {appendText=" in her hidden chamber."},
+        [6] = 
+            {appendStepText="We entered Lady Sulima's home in the upper, northeastern district of Abah's Landing in Hew's Bane. In the southwest area of the mansion's upper floor, a hidden entrance through a cabinet led Quen and I to a chamber where we met the Redguard noble. ", stepTextKey="According to Lady Sulima, Quen's father died at the hands of the Iron Wheel. She suspects they were after his ledger, which she gave to me. I should speak with Quen about what she wants to do now."},
+        ["Talk to Quen Outside Sulima Mansion"] =
+            {appendText="'s western entry, in the courtyard of the city's northern district. She should have her father's ledger, his portrait, and the book we found."},
+    },
+
+   [GetQuestName(5537)] = { --"His Greatest Treasure" --Jordakai
+        [1] = 
+            {appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, there was a Note from Quen for me. ", stepTextKey="I should meet Quen at her rooftop retreat."},
+        ["Talk to Quen 1"] =
+            {appendText=" at her place on a ledge between Tall Papa's Hoard and the Mages Guild, up on the plank paths overlooking the merchants of the city's Bazaar.", stepTextKey="I should meet Quen at her rooftop retreat."},
+        [2] = 
+            {appendStepText="At her retreat above the merchant bazaar of Abah's Landing in Hew's Bane, I learned that ", stepTextKey="Quen believes her father buried treasure somewhere outside of Abah's Landing. We should search for it."},
+        ["Find Saroldo's Treasure"] =
+            {appendText=" under a natural arch in the ravine, east of the river, south of the city, and north of the No Shira Wayshrine. There is a cart with a lantern and shovel nearby."},
+        [3] = 
+            {appendStepText="In Hew's Bane, we searched under a natural arch in the ravine, east of the river, south of the city, and north of the No Shira Wayshrine. ", stepTextKey="We found the treasure buried by Quen's father! All we need to do now is take it."},
+        ["Take Saroldo's Treasure"] =
+            {appendText=" in the strongbox."},
+        [4] = 
+            {appendStepText="We found the treasure in Hew's Bane, under a natural arch in the ravine, east of the river, south of the city, and north of the No Shira Wayshrine. Then, ", stepTextKey="Quen spotted Lady Sulima's mercenaries near where we located Saroldo's treasure. We should confront them and see what they're doing out here."},
+        ["Confront Lady Sulima's Mercenaries"] =
+            {appendText=" digging near the cart and lantern."},
+        [5] = 
+            {appendStepText="In Hew's Bane, near the natural arch in the ravine, east of the river and south of the city, I approached the mercenaries to learn why they were here. They attacked me before I could speak with them. ", stepTextKey="It seems Lady Sulima sent her mercenaries to take Saroldo's treasure. Quen and I should confront her."},
+        ["Confront Lady Sulima"] =
+            {appendText=". She ran up a path to the southeast, to a campsite on a ridge northeast of No Shira Citadel. Quen gave chase."},
+        [6] = 
+            {appendStepText="We confronted Lady Sulima at the campsite on the ridge northeast of No Shira Citadel and northwest of its wayshrine. ", stepTextKey="Quen showed no mercy to Lady Sulima. I should speak with Quen."},
+        ["Talk to Quen 2"] =
+            {appendText=".", stepTextKey="Quen showed no mercy to Lady Sulima. I should speak with Quen."},
+        [7] = 
+            {appendStepText="We confronted Lady Sulima at the campsite on the ridge northeast of No Shira Citadel and northwest of its wayshrine. ", stepTextKey="Quen saw that Lady Sulima was driven through desperation, and offered her sanctuary in the Thieves Den. I should speak with her."},
+        ["Talk to Quen 3"] =
+            {appendText=".", stepTextKey="Quen saw that Lady Sulima was driven through desperation, and offered her sanctuary in the Thieves Den. I should speak with her."},
+    },
+
+	[GetQuestName(5543)] = { --"Shell Game" --Jordakai
+		[1] = 
+			{appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, there was a note for me from the well-dressed Argonian thief. ", stepTextKey="I should meet Walks-Softly near the Velmont Mansion in Abah's Landing to find out more about this delicate situation."},
+		["Talk to Walks-Softly in the Upper District"] =
+			{appendText="'s southeast, in the northern part of the city. Stairs lead up to the manor's fenced courtyard."},
+		[2] = 
+			{appendStepText="In the northern upper district of Abah's Landing in Hew's Bane, I met my guildmate. ", stepTextKey="Walks-Softly wants me to break into the Velmont Mansion and help him search for keepsakes that his friend Anais has held onto for all these years. We just need to be careful that we're not spotted."},
+		["Enter the Velmont Mansion"] =
+			{appendText=". The manor house is up the stairs in the southeastern area of the district."},
+		[3] = 
+			{appendStepText="In the northern upper district of Abah's Landing in Hew's Bane, I met my guildmate at the southeastern manor, the Velmont family home. ", stepTextKey="Walks-Softly wants me to search the mansion's courtyard and kitchen area for a few of the keepsakes from his time living here with Anais. As I search, I should take care to remain hidden so as not to attract attention."},
+		["Find Walks-Softly's Hatchling Shell Bracelet"] =
+			{appendText=" buried in the planter at the east end of the courtyard.\n"},
+		["Find Walks-Softly's Velmont Devotion Ring"] =
+			{appendText=" in a jewelry box on the floor of the upper storage room for the kitchen. A convenient entry is in the southern hallway off the courtyard."},
+		[4] = 
+			{appendStepText="In the northern upper district of Abah's Landing in Hew's Bane, I met my guildmate at the southeastern manor, the Velmont family home. Inside, ", stepTextKey="I found two items that could be the keepsakes Walks-Softly was looking for. I should meet Walks-Softly in the family quarters of the mansion and see if there's anything else he wants to steal from Anais Velmont."},
+		["Meet Walks-Softly in the Family Quarters"] =
+			{appendText=" on the northeast side of the manor's courtyard. An entry in the hallway off the courtyard should lead to the upper chambers."},
+		[5] = 
+			{appendStepText="In the northern upper district of Abah's Landing in Hew's Bane, I met my guildmate inside the southeastern manor, the Velmont family home. ", stepTextKey="Walks-Softly wants me to take the amulet so we can leave the mansion."},
+		["Take the Amulet"] =
+			{appendText=" from the coffer on the desk in the large bedchamber on the upper floor of the Velmont family quarters."},
+		[6] = 
+			{appendStepText="In the northern upper district of Abah's Landing in Hew's Bane, I met my guildmate at the southeastern manor, the Velmont family home. Before we leave, ", stepTextKey="Walks-Softly would like to visit the balcony where he and Anais Velmont used to spend time playing when they were young."},
+		["Go to the Balcony"] =
+			{appendText=". It is outside the Velmont family quarters and farther northeast from the courtyard."},
+		[7] = 
+			{appendStepText="At the Velmont manor in the southeastern area of the northern upper district of Abah's Landing in Hew's Bane, ", stepTextKey="Anais Velmont approached us while we were on the balcony. She said some terrible things to Walks-Softly. I should confront her about this."},
+		["Confront Anais Velmont"] =
+			{appendText=" on the balcony at the end of the hallway northeast of the manor's courtyard."},
+		[8] = 
+			{appendStepText="In Hew's Bane, at the Velmont Mansion of Abah's Landing, ", stepTextKey="I think we overstayed our welcome. Walks-Softly and I should leave Anais's family mansion immediately."},
+		["Escape the Estate"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="", stepTextKey="We made it out of the Velmont Mansion. Now I should return to the Thieves Den and speak to Walks-Softly about our meeting with Anais Velmont."},
+		["Talk to Walks-Softly at the Thieves Den 1"] =
+			{appendText=" of Abah's Landing in Hew's Bane. He is probably at his place in the den's southern area.", stepTextKey="We made it out of the Velmont Mansion. Now I should return to the Thieves Den and speak to Walks-Softly about our meeting with Anais Velmont."},
+		[10] = 
+			{appendStepText="At Abah's Landing in Hew's Bane, ", stepTextKey="I need to talk to Walks-Softly at the Thieves Den about our encounter with his old friend, Anais Velmont."},
+		["Talk to Walks-Softly at the Thieves Den 2"] =
+			{appendText="'s southern chamber.", stepTextKey="I need to talk to Walks-Softly at the Thieves Den about our encounter with his old friend, Anais Velmont."},
+	},
+
+	[GetQuestName(5570)] = { --"Everyone Has A Price" --Jordakai
+		[1] = 
+			{appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, there was a note for me from the well-dressed Argonian thief. ", stepTextKey="I need to meet Walks-Softly in a warehouse near the docks to find out about the solution he's come up with for dealing with his old friend, Anais Velmont."},
+		["Meet Walks-Softly Near the Docks"] =
+			{appendText=" in a small warehouse on the uppermost platform, southeast of the guild traders and north of the ship-loading cranes. Its recessed entry is across from a few fishing cages, not far from a tattooed dancer."},
+		[2] = 
+			{appendStepText="I found Walks-Softly in a small warehouse on the uppermost platform, southeast of the guild traders and north of the ship-loading cranes. He has Anais here. ", stepTextKey="I should watch Walks-Softly as he interacts with Anais Velmont so I can see what he's planning to do."},
+		["Observe Walks-Softly's Plan"] =
+			{appendText="."},
+		[3] = 
+			{appendStepText="I found Walks-Softly in a small warehouse on the uppermost platform, southeast of the guild traders and north of the ship-loading cranes. ", stepTextKey="It appears that Walks-Softly has kidnapped Anais and asked for a ransom to be paid. I'm not sure how this teaches her the lesson that Walks-Softly keeps talking about. I should speak to him and find out what he's actually thinking."},
+		["Talk to Walks-Softly 1"] =
+			{appendText=" in the warehouse.", stepTextKey="It appears that Walks-Softly has kidnapped Anais and asked for a ransom to be paid. I'm not sure how this teaches her the lesson that Walks-Softly keeps talking about. I should speak to him and find out what he's actually thinking."},
+		[4] = 
+			{appendStepText="In Hew's Bane, the well-dressed Argonian thief has Anais Velmont tied up in a small warehouse at the harbor of Abah's Landing. ", stepTextKey="Walks-Softly wants to keep Anais's family from looking for her while he teaches her a lesson. He asked me to plant these letters he forged in the Velmont Mansion to explain her absence."},
+		["Plant the Travel Itinerary"] =
+			{appendText=" on a dressing table in the center of the upper chamber in the Velmont Family Gallery. The gallery entrance is in the northeastern hallway off the courtyard."},
+		["Plant the Letter to Percy Velmont"] =
+			{appendText=" on the Receiving Table in his master bedchamber, upstairs in the manor's main foyer. The foyer is entered from the city's upper district or through another door on the manor's courtyard."},
+		["Plant the Orders from Lady Anais"] =
+			{appendText=" on the Steward's desk in the first room at the top of the stairs in the Velmont Suites, entered from the southwestern hallway off the courtyard.\n\nVelmont Mansion is the manor with a fenced courtyard in the southeastern corner of the city's northern, upper district."},
+		[5] = 
+			{appendStepText="I finished planting the documents at the Velmont Mansion in the upper district of Abah's Landing in Hew's Bane. ", stepTextKey="Walks-Softly requested that I meet him back in the Thieves Den after I delivered the forged letters to the Velmont Mansion."},
+		["Return to the Thieves Den"] =
+			{appendText=". Walks-Softly should be at his place with all the mirrors in the den's southern area."},
+		[6] = 
+			{appendStepText="At the Thieves Den of Abah's Landing, ", stepTextKey="Walks-Softly left me another message. This one indicates that pirates have taken Anais Velmont captive and spirited her to Shark's Teeth Grotto. I should head to the grotto and help Walks-Softly rescue his old friend."},
+		["Rescue Anais Velmont from Shark's Teeth Grotto"] =
+			{appendText=" in southwestern Hew's Bane. She is probably being held in a hideout on the east side, far above the docks, close to the long, wooden bridge spanning the gorge.\n\nThe door will most likely be locked. Perhaps a key can be found or taken from a pirate."},
+		[7] = 
+			{appendStepText="At Shark's Teeth Grotto in southwestern Hew's Bane, we found Anais being held in a pirate's hideout far up on the east side, close to the long, wooden bridge spanning the gorge. ", stepTextKey="I arrived to find Walks-Softly talking with Anais Velmont. I should listen to their exchange."},
+		["Observe Walks-Softly's Discussion"] =
+			{appendText=" in the pirate's hideout."},
+		[8] = 
+			{appendStepText="In southwestern Hew's Bane, at the pirate's haven, far up on the east side of the gorge, close to the long, wooden bridge, ", stepTextKey="Walks-Softly located Anais in the pirate hide-out in Shark's Teeth Grotto. I should find out how he wants to proceed."},
+		["Talk to Walks-Softly 2"] =
+			{appendText=" in the hideout.", stepTextKey="Walks-Softly located Anais in the pirate hide-out in Shark's Teeth Grotto. I should find out how he wants to proceed."},
+		[9] = 
+			{appendStepText="At Shark's Teeth Grotto in southwestern Hew's Bane, ", stepTextKey="I convinced Walks-Softly to leave Anais with the pirates to teach her a lesson. I should go back to the Thieves Den and meet up with Walks-Softly so that we can put this despicable business behind us."},
+		["Meet Walks-Softly at the Thieves Den 1"] =
+			{appendText=" in Abah's Landing.", stepTextKey="I convinced Walks-Softly to leave Anais with the pirates to teach her a lesson. I should go back to the Thieves Den and meet up with Walks-Softly so that we can put this despicable business behind us."},
+		[10] = 
+			{appendStepText="At Shark's Teeth Grotto in southwestern Hew's Bane, ", stepTextKey="I convinced Walks-Softly to rescue Anais from the pirates and escort her safely back to her estate. I should go back to the Thieves Den and meet up with Walks-Softly so that we can put this despicable business behind us."},
+		["Meet Walks-Softly at the Thieves Den 2"] =
+			{appendText=" in Abah's Landing.", stepTextKey="I convinced Walks-Softly to rescue Anais from the pirates and escort her safely back to her estate. I should go back to the Thieves Den and meet up with Walks-Softly so that we can put this despicable business behind us."},
+	},
+
+[GetQuestName(5566)] = { --"A Faded Flower" --Jordakai
+
+--1
+    ["Talk to Velsa in Her Garden"] = {
+	appendStepText="There was a note from Velsa for me at the Thieves Den of Abah's Landing in Hew's Bane. ",
+	stepTextKey="I should speak with Velsa in her garden.",
+	appendText=" at her villa in the city's southwestern Warehouse District. \nThe garden can be reached from above using planks, ledges, and stairs. Or inside the district's main gate, the first building on the right, the Weaver's Storeroom, is an abandoned warehouse filled with spiders and webs. There is a trapdoor on the lower level to Velsa's secret passage."
+   },
+--2
+    ["Read the Letter"] = {
+	appendStepText="I met with Velsa in her garden at her villa in Abah's Landing in Hew's Bane. ",
+	stepTextKey="Someone in the market slipped a folded letter into Velsa's things. She thinks it may be related to her family or that it could be a trap. I should read the letter before I investigate further.",
+	appendText=" on the table. Velsa thinks a half-naked Nord gave it to her."
+    },
+--3
+    ["Find the Half-Naked Nord"] = {
+	appendStepText="",
+	stepTextKey="Velsa doesn't remember anything suspicious except for the half-naked Nord who bumped into her. She thinks I can find him in the merchant camp outside the city. I should ask him if he knows anything about the letter.",
+	appendText=" near the merchant camp by the Abah's Landing Wayshrine in Hew's Bane."
+    },
+--4.AD
+    ["Travel to Rawl'kha in Reaper's March"] = {
+	appendStepText="I found Tovjor sunning himself on a rock by the Abah's Landing Wayshrine in Hew's Bane. ",
+	stepTextKey="The half-naked Nord said that he met the Khajiit woman who paid him to deliver the letter to Velsa in Rawl'kha. I should travel to Reaper's March and see if I can find this mysterious Khajiit.",
+	appendText=" via wayshrine."
+    },
+--4.DC
+    ["Travel to Evermore in Bangkorai"] = {
+	appendStepText="I found Tovjor sunning himself on a rock by the Abah's Landing Wayshrine in Hew's Bane. ",
+	stepTextKey="The half-naked Nord said that he met the Khajiit woman who paid him to deliver the letter to Velsa in Evermore. I should travel to Bangkorai and see if I can find this mysterious Khajiit.",
+	appendText=" via wayshrine."
+    },
+--4.EP
+    ["Travel to Riften in The Rift"] = {
+	appendStepText="I found Tovjor sunning himself on a rock by the Abah's Landing Wayshrine in Hew's Bane. ",
+	stepTextKey="The half-naked Nord said that he met the Khajiit woman who paid him to deliver the letter to Velsa in Riften. I should travel to the Rift and see if I can find this mysterious Khajiit.",
+	appendText=" via wayshrine."
+    },
+--5
+    ["Find the Khajiit"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I arrived at Rawl'kha, the central city of Reaper's March. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I arrived at Evermore, the northern city of Bangkorai. ",
+            [ALLIANCE_EBONHEART_PACT] = "I arrived at Riften, the eastern city of The Rift. "
+        },
+        stepTextKey = "I should ask at the inn and see if anyone knows anything about this mysterious Khajiit.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " by speaking with guests outside The Waxing Crescent.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " by speaking with guests at the Anchor's Point Inn.",
+            [ALLIANCE_EBONHEART_PACT] = " by speaking with guests on the porch at the Shadehome Inn, located between the city's guildhalls."
+        }
+    },
+--6
+    ["Talk to Narahni 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Upstairs in The Waxing Crescent of Rawl'kha in Reaper's March, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Upstairs in the Anchor's Point Inn of Evermore in Bangkorai, ",
+            [ALLIANCE_EBONHEART_PACT] = "Upstairs in the Shadehome Inn of Riften in The Rift, "
+        },
+        stepTextKey = "I entered the servants' quarters. Now I should talk to Narahni and ask her if she sent the letter to Velsa.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", the Khajiit.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", the Khajiit.",
+            [ALLIANCE_EBONHEART_PACT] = ", the Khajiit."
+        }
+    },
+--7
+    ["Meet Narahni in Abah's Landing"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Upstairs in The Waxing Crescent of Rawl'kha in Reaper's March, I met the Khajiit. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Upstairs in the Anchor's Point Inn of Evermore in Bangkorai, I met the Khajiit. ",
+            [ALLIANCE_EBONHEART_PACT] = "Upstairs in the Shadehome Inn of Riften in The Rift, I met the Khajiit. "
+        },
+        stepTextKey = "Narahni did send the letter to Velsa. I convinced her to come to Abah's Landing to see Velsa in person. I should meet her there.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in Hew's Bane.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in Hew's Bane.",
+            [ALLIANCE_EBONHEART_PACT] = " in Hew's Bane."
+        }
+    },
+--8
+    ["Talk to Narahni 2"] = {
+	appendStepText="I returned to Abah's Landing in Hew's Bane. ",
+	stepTextKey="I should talk to Narahni before taking her to see Velsa.",
+	appendText=", outside the Weaver's Storeroom, the first building on the right inside the city's southwestern Warehouse District."
+    },
+--9
+    ["Reunite Velsa and Narahni"] = {
+	appendStepText="I spoke with the elderly Khajiit by the Weaver's Storeroom, the first building in the Warehouse District of Abah's Landing in Hew's Bane. ",
+	stepTextKey="Now that Narahni is ready, I should lead her through the warehouse and secret passage to Velsa's secluded garden so the old friends can be reunited.",
+	appendText=" by escorting the elderly Khajiit through the spider-infested storeroom to use the trapdoor on the lower level."
+    },
+--10
+    ["Talk to Velsa 1"] = {
+	appendStepText="I escorted Narahni to Velsa's villa using the trapdoor in the Weaver's Storeroom, the first building inside the Warehouse District of Abah's Landing in Hew's Bane. \n\n",
+	stepTextKey="Velsa and Narahni seem to have worked out their past differences. I should speak to Velsa and see if she needs anything else from me.",
+	appendText=" in her villa."
+    },
+--11
+    ["Talk to Velsa 2"] = {
+	appendStepText="I escorted the elderly Khajiit to Velsa's villa using the trapdoor in the Weaver's Storeroom, the first building inside the Warehouse District of Abah's Landing in Hew's Bane. \n\n",
+	stepTextKey="Velsa and Narahni have found each other again, and in spite of the years they lost, they both appear to be happy. I should talk to Velsa and see if she needs anything else from me.",
+	appendText=" in her villa."
+    },
+},
+
+[GetQuestName(5581)] = { --"That Which Was Lost" --Jordakai
+   ["Talk to Narahni"] = {
+	appendStepText="Velsa left the message on the table in the cistern entryway of the Thieves Den of Abah's Landing in Hew's Bane. ",
+	stepTextKey="I should go and talk to Narahni and see what she needs.",
+	appendText=", the Khajiit. Velsa's dear friend is staying with her in the den's southern area."
+    },
+    ["Examine Faradan's Letter"] = {
+	appendStepText="In the Thieves Den of Abah's Landing in Hew's Bane, I spoke with Narahni. She is very concerned about her son. ",
+	stepTextKey="I should examine the letter Narahni received from Faradan. It might shed more light on her son Tashmin's predicament.",
+	appendText=" on the bed in Velsa's comfortable place in the den's southern area."
+    },
+    ["Go to Skywatch in Auridon"] = {
+	appendStepText="",
+	stepTextKey="Faradan's letter says that bounty hunters in Skywatch captured Narahni's son, Tashmin. A young Breton woman was seen with Tashmin just before he was captured. I should travel to Auridon and see if I can pick up their trail.",
+	appendText=" on the island's eastern coast."
+    },
+    ["Go to Wayrest in Stormhaven"] = {
+	appendStepText="",
+	stepTextKey="Faradan's letter says that bounty hunters in Wayrest captured Narahni's son, Tashmin. A young Breton woman was seen with Tashmin just before he was captured. I should travel to Stormhaven and see if I can pick up their trail.",
+	appendText="."
+    },
+    ["Go to Windhelm in Eastmarch"] = {
+	appendStepText="",
+	stepTextKey="Faradan's letter says that bounty hunters in Windhelm captured Narahni's son, Tashmin. A young Breton woman was seen with Tashmin just before he was captured. I should travel to Eastmarch and see if I can pick up their trail.",
+	appendText="."
+    },
+    ["Find Tashmin's Friend"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I arrived in Skywatch, the eastern port city of Auridon. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I arrived in Wayrest, the southern port city of Stormhaven. ",
+            [ALLIANCE_EBONHEART_PACT] = "I arrived in Windhelm, the northern city in Eastmarch. "
+        },
+        stepTextKey = "Faradan's letter mentioned that a young Breton woman was seen with Tashmin just before he was captured. I should try to find her.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", a female Breton. She may be sitting by herself, out of the way, near the city's Market-Side Meadery.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", a female Breton. She may be sitting by herself, out of the way, in the city's central Merchant District.",
+            [ALLIANCE_EBONHEART_PACT] = ", a female Breton. She may be sitting by herself, probably in the area near the bank or The Sober Nord Tavern in the upper northwest area of the city."
+        }
+    },
+    ["Acquire Erendette's Ledger Page"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I came to Skywatch in eastern Auridon to find a Breton woman who may know about Narahni's son. I found Erendette, but she wants a favor. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I came to Wayrest in southern Stormhaven to find a Breton woman who may know about Narahni's son. I found Erendette, but she wants a favor. ",
+            [ALLIANCE_EBONHEART_PACT] = "I came to Windhelm in northern Eastmarch to find a Breton woman who may know about Narahni's son. I found Erendette, but she wants a favor. "
+        },
+        stepTextKey = "I need to rip the page detailing Erendette's debt out of the ledger her skooma dealer keeps in a locked chest. Then she'll tell me what she knows about Tashmin.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " from the locked chest at the brewer's tent of The Sleepy Eaglet open-air tavern, south of the Skywatch Tribute Club's tent.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " from the locked chest at North Gate Novelties, across from the Foal's Rest Stables at the city's northern gate.",
+            [ALLIANCE_EBONHEART_PACT] = " from the locked chest sitting with supply crates and barrels by the city's blacksmith at The Anvil and Pauldron."
+        }
+    },
+    ["Give Erendette the Ledger Page"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "By the brewer's tent at the The Sleepy Eaglet of Skywatch in Auridon, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "By the merchant cart of North Gate Novelties of Wayrest in Stormhaven, ",
+            [ALLIANCE_EBONHEART_PACT] = "By the smithy at The Anvil and Pauldron of Windhelm in Eastmarch, "
+        },
+        stepTextKey = "I acquired the ledger page detailing Erendette's debt to her skooma dealer. I should bring it to her.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". The blond Breton is sitting with her back against the wall, under the bridge southwest of the Market-Side Meadery.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". The blond Breton is sitting with her back against the wall by the mystic's tent in the city's central Merchant District.",
+            [ALLIANCE_EBONHEART_PACT] = ". The blond Breton is sitting by a tree behind the Windhelm Bank in the upper northwest area of the city."
+        }
+    },
+    ["Search for Tashmin by the Docks"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I helped Erendette with her situation at Skywatch in Auridon and she returned the favor. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I helped Erendette with her situation at Wayrest in Stormhaven and she returned the favor. ",
+            [ALLIANCE_EBONHEART_PACT] = "I helped Erendette with her situation at Windhelm in Eastmarch and she returned the favor. "
+        },
+        stepTextKey = "According to Tashmin's friend, the two Dark Elves that captured him have tied him up and left him near the docks while they search for other unfortunates they can turn into slaves. I should search near the docks and see if I can find Tash.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " on the south side of the city.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " on Iliac Bay at the southeastern end of the city.",
+            [ALLIANCE_EBONHEART_PACT] = " on the city's eastern river."
+        }
+    },
+   ["Pickpocket the Bounty Hunter"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I found Narahni's son at the Skywatch docks in Auridon. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I found Narahni's son at the southeastern Wayrest docks in Stormhaven. ",
+            [ALLIANCE_EBONHEART_PACT] = "I found Narahni's son near the Pact Navigators at the Windhelm docks in Eastmarch. "
+        },
+        stepTextKey = "I need to get the arrest writ with Tashmin's name on it from the Dark Elf bounty hunter. I'll have to sneak up on him and pick his pocket before his partner returns.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+    ["Set Tashmin Free"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Skywatch docks in Auridon, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the southeastern Wayrest docks in Stormhaven, ",
+            [ALLIANCE_EBONHEART_PACT] = "Near the Pact Navigators at the Windhelm docks in Eastmarch, "
+        },
+        stepTextKey = "I recovered the arrest writ from the bounty hunter. Now I should untie Tashmin and set him free.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+    ["Meet Tashmin in the City"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Skywatch docks in Auridon, after I released him, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Wayrest docks in Stormhaven, after I released him, ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Windhelm docks in Eastmarch, after I released him, "
+        },
+        stepTextKey = "Tashmin ran off. I should meet him at the location he mentioned before he left me at the docks.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "'s western area by the Sky's Edge Tavern, south of the guild traders and below the wayshrine.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " by the western gate, not far from the guild traders.",
+            [ALLIANCE_EBONHEART_PACT] = "'s southeast at Cold-Moon Fine Steeds."
+        }
+    },
+    ["Return to the Thieves Den"] = {
+	appendStepText="I invited Narahni's son to visit his mother in the port city of Hew's Bane. ",
+	stepTextKey="Now that Tashmin is free, I should return to the Thieves Den in Abah's Landing and let Narahni know that he's all right.",
+	appendText="."
+    },
+    ["Talk to Tashmin"] = {
+	appendStepText="I returned to the Thieves Den of Abah's Landing in Hew's Bane. Narahni's son arrived before I did. ",
+	stepTextKey="I should talk to Tashmin and see if he's ready to be reunited with his mother.",
+	appendText=" in the cistern entry passage to the den."
+    },
+    ["Reunite Tashmin and Narahni"] = {
+	appendStepText="I spoke with the Khajiit at the Thieves Den of Abah's Landing in Hew's Bane. It seems ",
+	stepTextKey="Tashmin is ready to be reunited with his mother. I should take him to see her now.",
+	appendText=" by walking with him to Velsa's place in the den's southern area."
+    },
+    ["Talk to Velsa 1"] = {
+	appendStepText="I returned Tashmin to his mother at Velsa's place in the southern area of the Thieves Den of Abah's Landing in Hew's Bane. ",
+	stepTextKey="While Narahni and her son reacquaint themselves, I should talk to Velsa.",
+	appendText="."
+    },
+    ["Talk to Velsa 2"] = {
+	appendStepText="I returned Tashmin to his mother at Velsa's place in the southern area of the Thieves Den of Abah's Landing in Hew's Bane. ",
+	stepTextKey="While Narahni and her son reacquaint themselves, I should talk to Velsa and make sure this arrangement works for her.",
+	appendText="."
+    },
+},
+
+
+[GetQuestName(5553)] = { --"The One That Got Away" --Jordakai
+    ["Talk to Zeira 1"] = {
+	appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, there was a note for me from the guildmaster. ",
+	stepTextKey="I should meet Zeira at Hew's Mane, a tavern in Abah's Landing.",
+	appendText=", upstairs in the fine establishment on the Promenade near the city's central fountain.", stepTextKey="I should meet Zeira at Hew's Mane, a tavern in Abah's Landing."
+    },
+    ["Find the Desert Falcon in Marbruk"] = {
+	appendStepText="I met the guildmaster at Hew's Mane tavern in Abah's Landing in Hew's Bane. ",
+	stepTextKey="Zeira suspects Nicolas escaped from the Iron Wheel. She learned of someone called the \"Desert Falcon\" who has been asking about Nicolas. She asked me to find and approach the Desert Falcon in Greenshade in the city of Marbruk.",
+	appendText=". A local tavern there would be a good place to start."
+    },
+    ["Find the Desert Falcon in Shornhelm"] = {
+	appendStepText="I met the guildmaster at Hew's Mane tavern in Abah's Landing in Hew's Bane. ",
+	stepTextKey="Zeira suspects Nicolas escaped from the Iron Wheel. She learned of someone called the \"Desert Falcon\" who has been asking about Nicolas. She asked me to find and approach the Desert Falcon in Rivenspire in the city of Shornhelm.",
+	appendText=". A local tavern there would be a good place to start."
+    },
+    ["Find the Desert Falcon in Stormhold"] = {
+	appendStepText="I met the guildmaster at Hew's Mane tavern in Abah's Landing in Hew's Bane. ",
+	stepTextKey="Zeira suspects Nicolas escaped from the Iron Wheel. She learned of someone called the \"Desert Falcon\" who has been asking about Nicolas. She asked me to find and approach the Desert Falcon in Shadowfen in the city of Stormhold.",
+	appendText=". A local tavern there would be a good place to start."
+    },
+    ["Talk to Rhanbiq"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In Marburk, the northeastern city in Greenshade, I visited the Parchment and Horn tavern and found the man Zeira mentioned. \n\n",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In Shornhelm, the central city in Rivenspire, I visited the Dead Wolf Inn and found the man Zeira mentioned. \n\n",
+            [ALLIANCE_EBONHEART_PACT] = "In Stormhold, the northern city in Shadowfen, I visited the Coin Brothers' Cornerclub and found the man Zeira mentioned. \n\n"
+        },
+        stepTextKey = "The \"Desert Falcon\" is Rhanbiq, former Chief Inspector of the Iron Wheel! I should speak with him and learn his interest in this matter.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the tavern, enjoying a drink.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the inn, enjoying a drink.",
+            [ALLIANCE_EBONHEART_PACT] = " in the cornerclub, leaning against the wall."
+        }
+    },
+    ["Retrieve Rhanbiq's Notes"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Parchment and Horn tavern in Marbruk, the northeastern city of Greenshade, I spoke with the Desert Falcon. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Dead Wolf Inn in Shornhelm, the central city of Rivenspire, I spoke with the Desert Falcon. ",
+            [ALLIANCE_EBONHEART_PACT] = "In the Coin Brothers' Cornerclub in Stormhold, the northern city of Shadowfen, I spoke with the Desert Falcon. "
+        },
+        stepTextKey = "Rhanbiq seemed willing to help. He provided me with a key to his strongbox, which contains all his notes on the trail Nicolas left behind.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " from his strongbox, upstairs in the tavern.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " from his strongbox, upstairs in his room at the inn.",
+            [ALLIANCE_EBONHEART_PACT] = " from his Argonian strongbox in the back of the cornerclub."
+        }
+    },
+    ["Search Rhanbiq's Things"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Parchment and Horn tavern in Marbruk, the northeastern city of Greenshade, I spoke with the Desert Falcon. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Dead Wolf Inn in Shornhelm, the central city of Rivensspire, I spoke with the Desert Falcon. ",
+            [ALLIANCE_EBONHEART_PACT] = "In the Coin Brothers' Cornerclub in Stormhold, the northern city of Shadowfen, I spoke with the Desert Falcon. "
+        },
+        stepTextKey = "Rhanbiq was unwilling to help. He also said I should stay away from his things. I should search them and see what I can find.",
+            [ALLIANCE_ALDMERI_DOMINION] = " in his strongbox, upstairs in the tavern.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in his strongbox, upstairs in his room at the inn.",
+            [ALLIANCE_EBONHEART_PACT] = " in his Argonian strongbox at the back of the cornerclub."
+        },
+    ["Find Bellulor Chatterbeak in the Marbruk Outlaws Refuge"] = {
+	appendStepText="",
+	stepTextKey="Rhanbiq learned Nicolas was spotted in town. He suspects a local named Bellulor may know more, but has been unable to track him down. I should search for Bellulor in the Marbruk Outlaws Refuge, in Greenshade.",
+	appendText="."
+    },
+    ["Find Bellulor Chatterbeak in the Shornhelm Outlaws Refuge"] = {
+	appendStepText="",
+	stepTextKey="Rhanbiq learned Nicolas was spotted in town. He suspects a local named Bellulor may know more, but has been unable to track him down. I should search for Bellulor in the Shornhelm Outlaws Refuge, in Rivenspire.",
+	appendText=". The Bosmer is enjoying a meal near the merchant's shop in the southwestern area of the refuge."
+    },
+    ["Find Bellulor Chatterbeak in the Stormhold Outlaws Refuge"] = {
+	appendStepText="",
+	stepTextKey="Rhanbiq learned Nicolas was spotted in town. He suspects a local named Bellulor may know more, but has been unable to track him down. I should search for Bellulor in the Stormhold Outlaws Refuge, in Shadowfen.",
+	appendText="."
+    },
+    ["Talk to Bellulor"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Marburk Outlaws Refuge in Greenshade, I found the Bosmer. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Shornhelm Outlaws Refuge in Rivenspire, I found the Bosmer. ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Stormhold Outlaws Refuge in Shadowfen, I found the Bosmer. "
+        },
+        stepTextKey = "I should speak with Bellulor. He may know where I can find Nicolas.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", relaxing by the cooking fire in the western corner of the refuge.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", enjoying a meal near the merchant's shop in the southwestern area of the refuge.",
+            [ALLIANCE_EBONHEART_PACT] = ", warming his hands at a fire in the center of the refuge."
+        }
+    },
+    ["Find Nicolas in Grahtwood"] = {
+	appendStepText="At the Marbruk Outlaws Refuge in northeastern Greenshade, I chatted with a Wood Elf. ",
+	stepTextKey="Bellulor confirmed Nicolas was in town with a High Elf he called \"Volu.\" They were to be married when they returned to her manor in Grahtwood, somewhere near the city of Haven.",
+	appendText=" near its southeastern city. With Nicolas trying to hide his past again, the Altmer manor is probably secluded, like the one across the inlet, east of Haven. There must be a rowboat available on the shore near the city."
+    },
+    ["Find Nicolas in the Alik'r Desert"] = {
+	appendStepText="At the Shornhelm Outlaws Refuge in Rivenspire, I chatted with a Wood Elf. ",
+	stepTextKey="Bellulor confirmed Nicolas was in town with a High Elf he called \"Volu.\" They were to be married when they returned to her manor in the Alik'r Desert, somewhere near the city of Sentinel.",
+	appendText=", far northeast of Sentinel. With Nicolas trying to hide his past again, his manor is probably secluded, like the one on the island west of the northern city of Tava's Blessing, north of the Aswala Stables Wayshrine. There should be a boat available on the shore."
+    },
+    ["Find Nicolas in Deshaan"] = {
+	appendStepText="At the Stormhold Outlaws Refuge in northern Shadowfen, I chatted with a Wood Elf. ",
+	stepTextKey="Bellulor confirmed Nicolas was in town with a High Elf he called \"Volu.\" They were to be married when they returned to her manor in Deshaan, somewhere near the Tal'Deic Fortress.",
+	appendText=". With Nicolas trying to hide his past again, the Altmer manor is probably secluded, like the one across the river in of the southeastern town of Silent Mire, near Smuggler's Slip. It's a long walk from the eastern fortress. There must be a rowboat available on the riverbank east of the Tal'Deic Wayshrine to make travel downriver easier."
+    },
+    ["Talk to Volunidai"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Across the inlet east of Haven, the southeastern city of Grahtwood, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "On the island west of Tava's Blessing and north of the Aswala Stables Wayshrine in Alik'r Desert, ",
+            [ALLIANCE_EBONHEART_PACT] = "Across the river from the town of Silent Mire, near Smuggler's Slip in southeastern Deshaan, "
+        },
+        stepTextKey = "I located the manor belonging to Volunidai, the High Elf seen with Nicolas. I should speak with her and see what I can learn of his whereabouts.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the manor's garden.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the manor's garden.",
+            [ALLIANCE_EBONHEART_PACT] = " in the manor's garden."
+        }
+    },
+    ["Find a Way Into Volunidai's Manor"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Across the inlet east of Haven, the southeastern city of Grahtwood, I entered the manor's garden. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "On the island west of Tava's Blessing and north of the Aswala Stables Wayshrine in Alik'r Desert, I entered the manor's garden. ",
+            [ALLIANCE_EBONHEART_PACT] = "Across the river from the town of Silent Mire, near Smuggler's Slip in southeastern Deshaan, I entered the manor's garden. "
+        },
+        stepTextKey = "Volunidai said her husband is an Imperial man named Vantus, not Nicolas. When I asked to speak with him, she insisted I leave. I should find a way into her manor.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". Perhaps there is a cellar door on the side of the manor.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". Perhaps there is a cellar door behind the manor.",
+            [ALLIANCE_EBONHEART_PACT] = ". Perhaps there is a cellar door behind the manor."
+        }
+    },
+    ["Confront Nicolas"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "After entering the manor across the inlet east of Haven, the southeastern city of Grahtwood, I entered the manor house through a side cellar door. Nicolas spoke. He thinks it's his wife, Volunidal. She knows him as Vantus, but I know ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "After entering the manor on the island west of Tava's Blessing and north of the Aswala Stables Wayshrine in northern Alik'r Desert, I entered the manor house through a back cellar door. Nicolas spoke. He thinks it's his wife, Volunidal. She knows him as Vantus, but I know ",
+            [ALLIANCE_EBONHEART_PACT] = "After entering the manor across the river from the town of Silent Mire, near Smuggler's Slip in southeastern Deshaan, I entered the manor house through a back cellar door. Nicolas spoke. He thinks it's his wife, Volunidal. She knows him as Vantus, but I know "
+        },
+        stepTextKey = "Nicolas and Vantus are the same person. I should decide what to do with him. Zeira left his fate to my discretion.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " inside the manor house.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " inside the manor house.",
+            [ALLIANCE_EBONHEART_PACT] = " inside the manor house."
+        }
+    },
+    ["Kill Nicolas"] = {
+        appendStepText = {
+           [ALLIANCE_ALDMERI_DOMINION] = "Across the inlet east of Haven, the southeastern city of Grahtwood, I entered the manor house and confronted Nicolas. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "On the island west of Tava's Blessing and north of the Aswala Stables Wayshrine in northern Alik'r Desert, I entered the manor house and confronted Nicolas. ",
+            [ALLIANCE_EBONHEART_PACT] = "Across the river from the town of Silent Mire, near Smuggler's Slip in southeastern Deshaan, I entered the manor house and confronted Niclolas. "
+        },
+        stepTextKey = "I decided to kill Nicolas. I will make it quick.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " inside the manor house.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " inside the manor house.",
+            [ALLIANCE_EBONHEART_PACT] = " inside the manor house."
+        }
+    },
+    ["Report to Zeira 1"] = {
+	appendStepText="I should go to Hew's Bane now that ",
+	stepTextKey="Nicolas is dead. I should return to Abah's Landing and inform Zeira of his fate.",
+	appendText=" at the Hew's Mane tavern on the Promenade, by the city's central fountain."
+    },
+    ["Tell Volunidai About Nicolas"] = {
+        appendStepText = {
+           [ALLIANCE_ALDMERI_DOMINION] = "Across the inlet east of Haven, the southeastern city of Grahtwood, I entered the manor house and confronted Nicolas. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "On the island west of Tava's Blessing and north of the Aswala Stables Wayshrine in northern Alik'r Desert, I entered the manor house and confronted Nicolas. ",
+            [ALLIANCE_EBONHEART_PACT] = "Across the river from the town of Silent Mire, near Smuggler's Slip in southeastern Deshaan, I entered the manor house and confronted Nicolas. "        },
+        stepTextKey = "I decided Nicolas should lose everything important to him. I should speak with Volunidai and convince her that her husband isn't what he seems.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the manor's garden.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the manor's garden.",
+            [ALLIANCE_EBONHEART_PACT] = " in the manor's garden."
+        }
+    },
+    ["Report to Zeira 2"] = {
+	appendStepText="Before leaving for Hew's Bane, I spoke with Volunidal at her manor. ",
+	stepTextKey="Nicolas is ruined. I should return to Abah's Landing and inform Zeira of his fate.",
+	appendText=" at the Hew's Mane tavern, the fine establishment on the Promenade by the city's central fountain."
+    },
+    ["Report to Zeira 3"] = {
+	appendStepText="After speaking with the Imperial, Nicolas promised to stay away from the Thieves Guild. He wants to be Vantus and live a new life. I leave for Hew's Bane knowing ",
+	stepTextKey="Nicolas is unharmed. I should return to Abah's Landing and inform Zeira of his fate.",
+	appendText=" at the Hew's Mane tavern on the Promenade, by the city's central fountain."
+    },
+    ["Talk to Zeira 2"] = {
+	appendStepText="I returned to Hew's Bane. ",
+	stepTextKey="The matter with Nicolas seems resolved, but I should speak with Zeira in Abah's Landing to be certain.",
+	appendText=" at the Hew's Mane tavern on the Promenade, by the city's central fountain."
+    },
+},
+
+    [GetQuestName(5668)] = { --"The Cutpurse's Craft" --Jordakai
+        [1] = 
+            {appendStepText="From the Tip Board at the Thieves Den of Abah's Landing in Hew's Bane, I found an opportunity. ", stepTextKey="I can prove I'm a discerning pickpocket by nabbing a few personal items, or an industrious pickpocket by taking a lot of treasures. I was recommended to look for targets in Abah's Landing, but I can technically pickpocket anyone in Hew's Bane."},
+        ["Pickpocket Personal Effects in Hew's Bane"] =
+            {appendText=" \n\nCommoners are good prospects."},
+        ["Pickpocket Any Treasures in Hew's Bane"] =
+            {appendText=" \n\nAlmost anyone is a good target for acquiring treasures."},
+        [2] = 
+            {appendStepText="", stepTextKey="I have what I need. I should meet Kari in the Abah's Landing Thieves Den and inform her of my success."},
+        ["Meet Kari in the Thieves Den"] =
+            {appendText=" near the Tip Board."},
+    },
+
+
+    [GetQuestName(5582)] = { --"Master of Heists" --Jordakai
+        [1] = 
+            {appendStepText="At the Thieves Den of Abah's Landing in Hew's Bane, there was a Note from Velsa for me on the Heist Board. ", stepTextKey="I should speak with Velsa outside of the Den."},
+        ["Meet Velsa Outside the Den"] =
+            {appendText=" at a campsite on the ledge south of the den and northwest above Sharper's Alley."},
+        [2] = 
+            {appendStepText="At Abah's Landing in Hew's Bane, just south of the Thieves Den, I spoke with Velsa. ", stepTextKey="I'm supposed to meet Fa'ren-dar in Abah's Landing and make my introduction."},
+        ["Talk to Fa'ren-dar"] =
+            {appendText=", a Khajiit, enjoying a drink at the Pick Your Poison outdoor tavern near the city's central fountain."},
+        [3] = 
+            {appendStepText="I visited with the Khajiit claw-cutter at the Pick Your Poison outdoor tavern by the central fountain of Abah's Landing in Hew's Bane. ", stepTextKey="Fa'ren-dar explained what his role is as heist master and invited me to try my hand at a job. I'm to meet him at the tip board back the Thieve's Den."},
+        ["Meet Fa'ren-dar at the Heist Board"] =
+            {appendText=" in the Thieves Den near its Hew's Bane entrance."},
+    },
+-- 		=========================================================================
+--		 Thieves Guild - Daily Quests
+-- 		=========================================================================
+
+[GetQuestName(5645)] = { --"Crime Spree" --Jordakai
+--AD
+    ["Break into Any Single Safebox in Auridon"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Grahtwood"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Greenshade"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Malabar Tor"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Reaper's March"] = {
+	appendText="."
+    },
+--DC
+    ["Break into Any Single Safebox in Glenumbra"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Stormhaven"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Rivenspire"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Alik'r Desert"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Bangkorai"] = {
+	appendText="."
+    },
+--EP
+    ["Break into Any Single Safebox in Stonefalls"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Deshaan"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Shadowfen"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Eastmarch"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in The Rift"] = {
+	appendText="."
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She is usually sitting near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She is usually sitting near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5646)] = { --"Crime Spree" --Jordakai
+--AD
+    ["Break into Any Single Safebox in Auridon"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Grahtwood"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Greenshade"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Malabar Tor"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Reaper's March"] = {
+	appendText="."
+    },
+--DC
+    ["Break into Any Single Safebox in Glenumbra"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Stormhaven"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Rivenspire"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Alik'r Desert"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Bangkorai"] = {
+	appendText="."
+    },
+--EP
+    ["Break into Any Single Safebox in Stonefalls"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Deshaan"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Shadowfen"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Eastmarch"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in The Rift"] = {
+	appendText="."
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She is usually sitting near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She is usually sitting near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5647)] = { --"Crime Spree" --Jordakai
+--AD
+    ["Break into Any Single Safebox in Auridon"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Grahtwood"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Greenshade"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Malabar Tor"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Reaper's March"] = {
+	appendText="."
+    },
+--DC
+    ["Break into Any Single Safebox in Glenumbra"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Stormhaven"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Rivenspire"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Alik'r Desert"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Bangkorai"] = {
+	appendText="."
+    },
+--EP
+    ["Break into Any Single Safebox in Stonefalls"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Deshaan"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Shadowfen"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in Eastmarch"] = {
+	appendText="."
+    },
+    ["Break into Any Single Safebox in The Rift"] = {
+	appendText="."
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She is usually sitting near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She is usually sitting near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+
+[GetQuestName(5610)] = { --"Idle Hands" --Jordakai
+--AD
+    ["Pickpocket Craft Supplies in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Craft Supplies in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Craft Supplies in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5639)] = { --"Idle Hands" --Jordakai
+--AD
+    ["Pickpocket Craft Supplies in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Craft Supplies in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Craft Supplies in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5640)] = { --"Idle Hands" --Jordakai
+--AD
+    ["Pickpocket Craft Supplies in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Craft Supplies in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Craft Supplies in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Craft Supplies in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+
+[GetQuestName(5609)] = { --"Plucking Fingers" --Jordakai
+--AD
+    ["Pickpocket Entertainment Goods in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Entertainment Goods in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Entertainment Goods in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5641)] = { --"Plucking Fingers" --Jordakai
+--AD
+    ["Pickpocket Entertainment Goods in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Entertainment Goods in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Entertainment Goods in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5642)] = { --"Plucking Fingers" --Jordakai
+--AD
+    ["Pickpocket Entertainment Goods in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Entertainment Goods in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Entertainment Goods in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Entertainment Goods in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+
+[GetQuestName(5584)] = { --"The Covetous Countess" --Jordakai
+	[1] = 
+		{appendStepText="I visited the Tip Board in the Thieves Den. ", stepTextKey="The contract requests that I steal games, dolls, and statues, launder those items to remove all traces of the original owners, and deliver them to the client, but any clean goods should do."},
+	["Collect \"Clean\" Games, Dolls, and Statues"] =
+		{appendText=""},
+	[2] = 
+		{appendStepText="I visited the Tip Board in the Thieves Den. ", stepTextKey="The contract requests that I steal ritual objects and oddities, launder those items to remove all traces of the original owners, and deliver them to the client, but any clean goods should do."},
+	["Collect \"Clean\" Ritual Objects and Oddities"] =
+		{appendText=""},
+	[3] = 
+		{appendStepText="I visited the Tip Board in the Thieves Den. ", stepTextKey="The contract requests that I steal writings and maps, launder those items to remove all traces of the original owners, and deliver them to the client, but any clean goods should do."},
+	["Collect \"Clean\" Writings and Maps"] =
+		{appendText=""},
+	[4] = 
+		{appendStepText="I visited the Tip Board in the Thieves Den. ", stepTextKey="The contract requests that I steal cosmetic items, linens, and garment accessories, launder those items to remove all traces of the original owners, and deliver them to the client, but any clean goods should do."},
+	["Collect \"Clean\" Cosmetics, Linens, and Accessories"] =
+		{appendText=""},
+	[5] = 
+		{appendStepText="I visited the Tip Board in the Thieves Den. ", stepTextKey="The contract requests that I steal drinkware, utensils, and dishes, launder those items to remove all traces of the original owners, and deliver them to the client, but any clean goods should do."},
+	["Collect \"Clean\" Drinkware, Utensils, and Dishes"] =
+		{appendText=""},
+    --AD.1
+	[6] = 
+		{appendStepText="", stepTextKey="Now that I have the requested games, dolls, and statues, I must deliver the untraceable goods to my client in Vulkhel Guard."},
+	["Deliver \"Clean\" Items to Client in Vulkhel Guard"] =
+		{appendText=", the southern port city of Auridon. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, is at the city's manor and treasury, most likely upstairs."},
+    --AD.2
+	[7] = 
+		{appendStepText="", stepTextKey="Now that I have the requested ritual objects and oddities, I must deliver the untraceable goods to my client in Elden Root."},
+	["Deliver \"Clean\" Items to Client in Elden Root"] =
+		{appendText=", the central tree city of Grahtwood. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, may be at The Fruit Basket eatery near the wayshrine."},
+    --AD.3
+	[8] = 
+		{appendStepText="", stepTextKey="Now that I have the requested writings and maps, I must deliver the untraceable goods to my client in Marbruk."},
+	["Deliver \"Clean\" Items to Client in Marbruk"] =
+		{appendText=", the eastern city of Greenshade. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be at the Merchant's Plaza."},
+    --AD.4
+	[9] = 
+		{appendStepText="", stepTextKey="Now that I have the requested cosmetics, linens, and garment accessories, I must deliver the untraceable goods to my client in Baandari Trading Post."},
+	["Deliver \"Clean\" Items to Client in Baandari Trading Post"] =
+		{appendText=", the northeastern town of Malabal Tor. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be at the town's Trade Stalls."},
+    --AD.5
+	[10] = 
+		{appendStepText="", stepTextKey="Now that I have the requested drinkware, utensils, and dishes, I must deliver the untraceable goods to the client in Rawl'kha."},
+	["Deliver \"Clean\" Items to Client in Rawl'kha"] =
+		{appendText=", the central city of Reaper's March. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be at the city's center among the merchants of The March Bazaar."},
+    --DC.1
+	[11] = 
+		{appendStepText="", stepTextKey="Now that I have the requested games, dolls, and statues, I must deliver the untraceable goods to my client in Daggerfall."},
+	["Deliver \"Clean\" Items to Client in Daggerfall"] =
+		{appendText=", the southern port city of Glenumbra. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, may be browsing the goods for sale at the Daggerfall Marketplace."},
+    --DC.2
+	[12] = 
+		{appendStepText="", stepTextKey="Now that I have the requested ritual objects and oddities, I must deliver the untraceable goods to my client in Wayrest."},
+	["Deliver \"Clean\" Items to Client in Wayrest"] =
+		{appendText=", the southern port city of Stormhaven. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, may be enjoying the music at the Cloudy Dregs Inn."},
+    --DC.3
+	[13] = 
+		{appendStepText="", stepTextKey="Now that I have the requested writings and maps, I must deliver the untraceable goods to my client in Shornhelm."},
+	["Deliver \"Clean\" Items to Client in Shornhelm"] =
+		{appendText=", the central city of Rivenspire. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be in front of the Dead Wolf Inn, considering a new pack."},
+    --DC.4
+	[14] = 
+		{appendStepText="", stepTextKey="Now that I have the requested cosmetics, linens, and garment accessories, I must deliver the untraceable goods to my client in Sentinel."},
+	["Deliver \"Clean\" Items to Client in Sentinel"] =
+		{appendText=", the northwestern city of Alik'r Desert. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be at the Sisters of the Sands Inn. She is likely reading in the common area of the inn."},
+    --DC.5
+	[15] = 
+		{appendStepText="", stepTextKey="Now that I have the requested drinkware, utensils, and dishes, I must deliver the untraceable goods to the client in Evermore."},
+	["Deliver \"Clean\" Items to Client in Evermore"] =
+		{appendText=", the northern city of Bangkorai. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be at the Anchor's Point Inn, the city's tavern. She is likely out front by a decorated table circled with chairs."},
+    --EP.1
+	[16] = 
+		{appendStepText="", stepTextKey="Now that I have the requested games, dolls, and statues, I must deliver the untraceable goods to my client in Davon's Watch."},
+	["Deliver \"Clean\" Items to Client in Davon's Watch"] =
+		{appendText=", the northeastern city of Stonefalls. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, is reading scrolls, upstairs in the city's tavern, The Watch House."},
+    --EP.2
+	[17] = 
+		{appendStepText="", stepTextKey="Now that I have the requested ritual objects and oddities, I must deliver the untraceable goods to my client in Mournhold."},
+	["Deliver \"Clean\" Items to Client in Mournhold"] =
+		{appendText=", the central city of Deshaan. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, may be in the central courtyard of the city's Mages Guild."},
+    --EP.3
+	[18] = 
+		{appendStepText="", stepTextKey="Now that I have the requested writings and maps, I must deliver the untraceable goods to my client in Stormhold."},
+	["Deliver \"Clean\" Items to Client in Stormhold"] =
+		{appendText=", the northern city of Shadowfen. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be having a drink at Coin Brothers' Cornerclub."},
+    --EP.4
+	[19] = 
+		{appendStepText="", stepTextKey="Now that I have the requested cosmetics, linens, and garment accessories, I must deliver the untraceable goods to my client in Windhelm."},
+	["Deliver \"Clean\" Items to Client in Windhelm"] =
+		{appendText=", the northern city of Eastmarch. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be outside The Adept's Retreat, the enchanter's shop in the city's northeast area. She may be listening to a bard's melodic lute."},
+    --EP.5
+	[20] = 
+		{appendStepText="", stepTextKey="Now that I have the requested drinkware, utensils, and dishes, I must deliver the untraceable goods to the client in Riften."},
+	["Deliver \"Clean\" Items to Client in Riften"] =
+		{appendText=", the eastern city of The Rift. Countess Viatrix Celata, an Imperial dressed in her casual traveling attire, should be visiting merchants at the city's central Marketplace."},
+    --All
+	[21] = 
+		{appendStepText="I met with Countess Viatrix Celata. ", stepTextKey="I completed the odd requests from that eccentric collector. Hopefully it was worth the bother. I should return to the Den for my cut of the payout."},
+	["Return to Kari at the Thieves Den"] =
+		{appendText=". She is usually near the Tip Board."},
+    },
+
+[GetQuestName(5638)] = { --"Under Our Thumb" --Jordakai
+--AD
+    ["Pickpocket Personal Effects in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Personal Effects in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Personal Effects in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5643)] = { --"Under Our Thumb" --Jordakai
+--AD
+    ["Pickpocket Personal Effects in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Personal Effects in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Personal Effects in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+[GetQuestName(5644)] = { --"Under Our Thumb" --Jordakai
+--AD
+    ["Pickpocket Personal Effects in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Auridon"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Grahtwood"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Greenshade"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Malabar Tor"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Reaper's March"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Reaper's March"] = {
+	appendText="\n"
+    },
+--DC
+    ["Pickpocket Personal Effects in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Glenumbra"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Items in Stormhaven"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Rivenspire"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Alik'r Desert"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Bangkorai"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Bangkorai"] = {
+	appendText="\n"
+    },
+--EP
+    ["Pickpocket Personal Effects in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Stonefalls"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Deshaan"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Shadowfen"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in Eastmarch"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Any Treasures in The Rift"] = {
+	appendText="\n"
+    },
+    ["Pickpocket Personal Effects in The Rift"] = {
+	appendText="\n"
+    },
+--All
+    ["Head Back to the Thieves Den for a Small Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Head Back to the Thieves Den for a Moderate Reward"] = {
+	appendText=" from Kari. She usually sits near the Tip Board."
+    },
+    ["Talk to Kari in the Thieves Den"] = {
+	appendText=". She is usually near the Tip Board."
+    },
+},
+
+    [GetQuestName(5588)] = { --"Memories of Youth" --Jordakai
+        [1] = 
+            {appendStepText="I took a contract from the Reacquisition Board at Spencer's nook by the Thieves Den cistern in Abah's Landing. ", stepTextKey="I've been sent to recover an Engagement Ring from Bahraha's Gloom."},
+        ["Retrieve the Engagement Ring"] =
+            {appendText=". It was lost in the tomb known as Bahraha's Gloom in Hew's Bane, northwest of the city. Most likely the ring will be on a corpse by the throne in the southeastern chamber."},
+        [2] = 
+            {appendStepText="From the throne room of Bahraha's Gloom in Hew's Bane, ", stepTextKey="I've recovered the Engagement Ring mentioned in the finder's contract. I should return to Spencer Rye to receive my payment."},
+        ["Talk to Spencer Rye"] =
+            {appendText=" at his work nook by the Thieves Den cistern in northwest Abah's Landing."},
+    },
+
+    [GetQuestName(5586)] = { --"The Lost Pearls" --Jordakai
+        [1] = 
+            {appendStepText="I took a contract from the Reacquisition Board at Spencer's nook by the Thieves Den cistern in Abah's Landing. ", stepTextKey="I've been sent to recover a Tarnished Silver Pendant from Ko Estaran. Additionally, Spencer requested I collect any Small Blue Pearls I can find."},
+        ["Collect the Pearls"] =
+            {appendText=" \n\nPearls are often found by hunting lamia in the wetlands at the ruin."},
+        ["Collect the Pendant"] =
+            {appendText=". It is probably in a bag near the center of the ruin.\n\nUnique among the Yokudan ruins of Hew's Bane, Ko Estaran sinks in the low wetlands west of No Shira Citadel and is usually infested with lamia. Explorers have reported seeing an exceptionally powerful lamia from time to time within the central ruin."},
+        [2] = 
+            {appendStepText="I traveled to the Yokudan ruin in the wetlands west of No Shira Citadel and hunted lamia. One lamia, much larger and more aggressive than the others, appeared as we hunted. The story of a powerful lamia proved true. Nevertheless, ", stepTextKey="I've recovered the Tarnished Silver Pendant mentioned in the finder's contract. I should return to Spencer Rye to receive my payment."},
+        ["Talk to Spencer Rye"] =
+            {appendText=" at his work nook by the Thieves Den cistern in northwest Abah's Landing."},
+    },
+
+    [GetQuestName(5589)] = { --"The Sailor's Pipe" --Jordakai
+        [1] = 
+            {appendStepText="I took a contract from the Reacquisition Board at Spencer's nook by the Thieves Den cistern in Abah's Landing. ", stepTextKey="I was sent to recover the Sailor's Pipe from Shark's Teeth Grotto."},
+        ["Retrieve the Sailor's Pipe"] =
+            {appendText=" from the pirate haven on the southwestern coast of Hew's Bane. Up in the highest southwestern area of the grotto is a wooden platform with a cooking fire, benches, and stolen goods. Between two red couches, the pipe rests among the liquor bottles."},
+        [2] = 
+            {appendStepText="From Shark's Teeth Grotto in southwestern Hew's Bane, ", stepTextKey="I recovered the Sailor's Pipe mentioned in the finder's contract. I should return to Spencer Rye to receive my payment."},
+        ["Talk to Spencer Rye"] =
+            {appendText=" at his work nook by the Thieves Den cistern in northwest Abah's Landing."},
+    },
+
+    [GetQuestName(5587)] = { --"Thrall Cove" --Jordakai
+        [1] = 
+            {appendStepText="I took a contract from the Reacquisition Board at Spencer's nook by the Thieves Den cistern in Abah's Landing. ", stepTextKey="I've been sent to recover the Captain's Spyglass from Thrall Cove. No doubt the bandits there have it on their person. The Captain has also requested that I free any captured crew I can find, before they are sold as chattel."},
+        ["Retrieve the Captain's Spyglass"] =
+            {appendText=". It may be kept in a dirty bag by a tent or carried by one of the pirates. \n"},
+        ["Rescue Captives"] =
+            {appendText=" \n\nThey are probably being held near cages or tents. Rumors whisper of a slave-trading Maormer Captain and her crew having overrun the landing at a cove on the west coast of Hew's Bane, far to the west of Abah's Landing."},
+        [2] = 
+            {appendStepText="I traveled to Thrall Cove on the west coast of Hew's Bane. The rumors were true about pirates. ", stepTextKey="I've recovered the Captain's Spyglass mentioned in the finder's contract. I should return to Spencer Rye to receive my payment."},
+        ["Talk to Spencer Rye"] =
+            {appendText=" at his work nook by the Thieves Den cistern in northwest Abah's Landing."},
+    },
+
+	[GetQuestName(5536)] = { --"Heist: Deadhollow Halls" --Jordakai
+		[1] = 
+			{appendStepText="The tip-off was posted on the Heist Board in the Thieves Den. ", stepTextKey="I need to get to the target hideout without drawing attention to myself. Fa'ren-dar will be able to help with that."},
+		["Talk to Fa'ren-dar 1"] =
+			{appendText=", the guild's overseer for the heists. The Khajiit is usually near the Heist Board. \n\nLockpicks are required for this job.", stepTextKey="I need to get to the target hideout without drawing attention to myself. Fa'ren-dar will be able to help with that."},
+		[2] = 
+			{appendStepText="From the Thieves Den, Fa'ren-dar escorted me to an underground Daedric ruin. ", stepTextKey="The valuables are secured in the hideout beyond this entry. They are sure to be guarded and the buyer wants discretion, so I need to maintain a low profile."},
+		["Enter the Tunnels to Begin the Heist"] =
+			{appendText=". Use the circular door at the bottom of the platform's stairs in the entry cavern."},
+		[3] = 
+			{appendStepText="", stepTextKey="The Daedric treasures I'm looking for should be in secure chests within this hideout."},
+		["Search for the Daedric Treasures"] =
+			{appendText="\nThe strongboxes are usually found in the small campsites in the ruin's chambers."},
+		[4] = 
+			{appendStepText="", stepTextKey="I have the Daedric treasures! I just need to get them to Fa'ren-dar before he meets the buyers."},
+		["Get Back to Fa'ren-dar"] =
+			{appendText=" on the platform in the Daedric ruin's southern entry cavern."},
+		[5] = 
+			{appendStepText="", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		["Talk to Fa'ren-dar 2"] =
+			{appendText=" on the platform in the Daedric ruin's southern entry cavern.", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		[6] = 
+			{appendStepText="", stepTextKey="I have the Daedric treasures, but my window has expired. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. Hopefully the haul is still worth something to someone."},
+		["Talk to Fa'ren-dar 3"] =
+			{appendText=" on the platform in the Daedric ruin's southern entry cavern.", stepTextKey="I have the Daedric treasures, but my window has expired. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. Hopefully the haul is still worth something to someone."},
+		[7] = 
+			{appendStepText="", stepTextKey="I turned over the goods to Fa'ren-dar. He'll be waiting with my share at the Thieves Den."},
+		["Collect Reward from Fa'ren-dar"] =
+			{appendText=". The Khajiit is by the Heist Board."},
+	},
+
+	[GetQuestName(5575)] = { --"Heist: Glittering Grotto" --Jordakai
+		[1] = 
+			{appendStepText="The tip-off was posted on the Heist Board in the Thieves Den. ", stepTextKey="I need to get to the site without drawing attention to myself. I should speak with Fa'ren-dar."},
+		["Talk to Fa'ren-dar 1"] =
+			{appendText=", the guild's overseer for the heists. The Khajiit is usually near the Heist Board. \n\nLockpicks are required for this job.", stepTextKey="I need to get to the site without drawing attention to myself. I should speak with Fa'ren-dar."},
+		[2] = 
+			{appendStepText="From the Thieves Den, Fa'ren-dar escorted me to the grotto. ", stepTextKey="When I'm ready, I should head down the tunnels to start the heist."},
+		["Enter the Tunnel to Begin Heist"] =
+			{appendText=", heading north."},
+		[3] = 
+			{appendStepText="", stepTextKey="I need to locate the rare gems being held at this hideout. The area is heavily trapped, so I must be on my guard."},
+		["Steal Rare Gemstones"] =
+			{appendText="\nThe small pouches of gemstones are scattered around with the crates and other items in the grotto."},
+		[4] = 
+			{appendStepText="", stepTextKey="I have the gems! I just need to get them safely to Fa'ren-dar."},
+		["Get Back to Fa'ren-dar"] =
+			{appendText=" in the southern entry area."},
+		[5] = 
+			{appendStepText="", stepTextKey="I acquired the gems without disturbing the traps strewn about the hideout. Fa'ren-dar is waiting to lead me back to the Thieves Den from here."},
+		["Talk to Fa'ren-dar 2"] =
+			{appendText=" in the southern entry area of the grotto.", stepTextKey="I acquired the gems without disturbing the traps strewn about the hideout. Fa'ren-dar is waiting to lead me back to the Thieves Den from here."},
+		[6] = 
+			{appendStepText="", stepTextKey="I secured the gems, but left traces of my activity along the way. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is still good."},
+		["Talk to Fa'ren-dar 3"] =
+			{appendText=" in the southern entry area of the grotto.", stepTextKey="I secured the gems, but left traces of my activity along the way. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is still good."},
+		[7] = 
+			{appendStepText="", stepTextKey="I turned over the goods to Fa'ren-dar. He'll be waiting with my share at the Thieves Den."},
+		["Collect Reward from Fa'ren-dar"] =
+			{appendText=". The Khajiit is by the Heist Board."},
+	},
+
+	[GetQuestName(5577)] = { --"Heist: Secluded Sewers" --Jordakai
+		[1] = 
+			{appendStepText="The tip-off was posted on the Heist Board in the Thieves Den. ", stepTextKey="I need to get to the site without drawing attention to myself. I should speak with Fa'ren-dar."},
+		["Talk to Fa'ren-dar 1"] =
+			{appendText=", the guild's overseer for the heists. The Khajiit is usually near the Heist Board. \n\nLockpicks are required for this job.", stepTextKey="I need to get to the site without drawing attention to myself. I should speak with Fa'ren-dar."},
+		[2] = 
+			{appendStepText="From the Thieves Den, Fa'ren-dar escorted me to an entrance in the sewers. ", stepTextKey="The valuables are secured in the hideout beyond this entry. They are sure to be guarded. I need to maintain a low profile."},
+		["Enter the Tunnels to Begin the Heist"] =
+			{appendText=". Use the stone door on the eastern wall of the entry chamber."},
+		[3] = 
+			{appendStepText="", stepTextKey="The treasures I'm looking for should be in secure chests somewhere within this hideout. I need to break in once they're located."},
+		["Find the Treasure"] =
+			{appendText=" in a Secure Chest.\n"},
+		["Find Hidden Caches"] =
+			{appendText="\nThe Hidden Caches are in various types of chests scattered about the sewer complex."},
+		[4] = 
+			{appendStepText="", stepTextKey="I have the treasure the buyers are interested in. Now I need to get the haul safely to Fa'ren-dar."},
+		["Return to Fa'ren-dar"] =
+			{appendText=" in the western entry chamber of the secluded sewers.", stepTextKey="I have the treasure the buyers are interested in. Now I need to get the haul safely to Fa'ren-dar."},
+		[5] = 
+			{appendStepText="", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		["Talk to Fa'ren-dar 2"] =
+			{appendText=" in the western entry chamber of the secluded sewers.", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."}, 
+		[6] = 
+			{appendStepText="", stepTextKey="I have the treasure, but my window has expired. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. Hopefully the haul is still worth something to someone."},
+		["Talk to Fa'ren-dar 3"] =
+			{appendText=" in the western entry chamber of the secluded sewers.", stepTextKey="I have the treasure, but my window has expired. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. Hopefully the haul is still worth something to someone."},
+		[7] = 
+			{appendStepText="", stepTextKey="I turned over the goods to Fa'ren-dar. He'll be waiting with my share at the Thieves Den."},
+		["Collect Reward from Fa'ren-dar"] =
+			{appendText=". The Khajiit is by the Heist Board."},
+	},
+
+	[GetQuestName(5572)] = { --"Heist: The Hideaway" --Jordakai
+		[1] = 
+			{appendStepText="The tip-off was posted on the Heist Board in the Thieves Den. ", stepTextKey="I need to get to the target location without drawing attention to myself. I should speak with Fa'ren-dar."},
+		["Talk to Fa'ren-dar 1"] =
+			{appendText=", the guild's overseer for the heists. The Khajiit is usually near the Heist Board. \n\nLockpicks are required for this job.", stepTextKey="I need to get to the target location without drawing attention to myself. I should speak with Fa'ren-dar."},
+		[2] = 
+			{appendStepText="From the Thieves Den, Fa'ren-dar escorted me to the entrance of the hideaway. ", stepTextKey="When I'm ready, I should head down the tunnels to start the heist."},
+		["Enter Tunnels to Begin Heist"] =
+			{appendText="."},
+		[3] = 
+			{appendStepText="", stepTextKey="I need to find valuables being stashed in the Hideaway, but it'd be best if I don't attract any undue attention and let the owners know the guild is on to them."},
+		["Find the Treasure"] =
+			{appendText=" in a Secure Chest.\n"},
+		["Find Hidden Caches"] =
+			{appendText="\nCaches are stashed in other chambers, often out of plain sight in various types of chests."},
+		[4] = 
+			{appendStepText="", stepTextKey="I have the loot. Now I need to get the haul to Fa'ren-dar."},
+		["Get Back to Fa'ren-dar"] =
+			{appendText=". The Khajiit waits in the southern entry chamber of the hideaway.", stepTextKey="I have the loot. Now I need to get the haul to Fa'ren-dar."},
+		[5] = 
+			{appendStepText="", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		["Talk to Fa'ren-dar 2"] =
+			{appendText=" in the southern entry chamber of the hideaway.", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		[6] = 
+			{appendStepText="", stepTextKey="I have the treasures, but I was seen stealing them. Fa'ren-dar is waiting to lead me back to the Thieves Den from here."},
+		["Talk to Fa'ren-dar 3"] =
+			{appendText=" in the southern entry chamber of the hideaway.", stepTextKey="I have the treasures, but I was seen stealing them. Fa'ren-dar is waiting to lead me back to the Thieves Den from here."},
+		[7] = 
+			{appendStepText="", stepTextKey="I turned over the goods to Fa'ren-dar. He'll be waiting with my share at the Thieves Den."},
+		["Collect Reward from Fa'ren-dar"] =
+			{appendText=". The Khajiit is by the Heist Board."},
+	},
+
+	[GetQuestName(5573)] = { --"Heist: Underground Sepulcher" --Jordakai
+		[1] = 
+			{appendStepText="The tip-off was posted on the Heist Board in the Thieves Den. ", stepTextKey="I need to get to the site without drawing attention to myself. I should speak with Fa'ren-dar."},
+		["Talk to Fa'ren-dar 1"] =
+			{appendText=", the guild's overseer for the heists. The Khajiit is usually near the Heist Board. \n\nLockpicks are required for this job.", stepTextKey="I need to get to the site without drawing attention to myself. I should speak with Fa'ren-dar."},
+		[2] = 
+			{appendStepText="From the Thieves Den, Fa'ren-dar escorted me to an entry chamber in the sepulcher. ", stepTextKey="The valuables are secured in the hideout beyond this entry. They are sure to be guarded. I need to maintain a low profile."},
+		["Enter the Tunnels to Begin the Heist"] =
+			{appendText=". Use the western gates of the entry chamber."},
+		[3] = 
+			{appendStepText="", stepTextKey="The treasures I'm looking for should be in a secure chest somewhere within this hideout. I need to break in once they're located."},
+		["Find the Treasure"] =
+			{appendText=" in a Secure Chest."},
+		["Find Hidden Caches"] =
+			{appendText="\nThe Hidden Caches are in various types of chests in the underground sepulcher."},
+		[4] = 
+			{appendStepText="", stepTextKey="I have the treasure! I just need to get it to Fa'ren-dar before he meets the buyers."},
+		["Return to Fa'ren-dar"] =
+			{appendText=". The Khajiit waits by the gates in the southern entry chamber of the sepulcher."},
+		[5] = 
+			{appendStepText="", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		["Talk to Fa'ren-dar 2"] =
+			{appendText=". The Khajiit waits by the gates in the southern entry chamber of the sepulcher.", stepTextKey="Fa'ren-dar is waiting to lead me back to the Thieves Den from here. We should get going while the going is good."},
+		[6] = 
+			{appendStepText="", stepTextKey="I have the treasures, but my window has expired. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. Hopefully the haul is still worth something to someone."},
+		["Talk to Fa'ren-dar 3"] =
+			{appendText=". The Khajiit waits by the gates in the southern entry chamber of the sepulcher.", stepTextKey="I have the treasures, but my window has expired. Fa'ren-dar is waiting to lead me back to the Thieves Den from here. Hopefully the haul is still worth something to someone."},
+		[7] = 
+			{appendStepText="", stepTextKey="I turned over the goods to Fa'ren-dar. He'll be waiting with my share at the Thieves Den."},
+		["Collect Reward from Fa'ren-dar"] =
+			{appendText=". The Khajiit is by the Heist Board."},
+	},
+
+    [GetQuestName(5552)] = { --"The Shark's Teeth" --Jordakai
+        [1] = 
+            {appendStepText="Near the guild traders docked at the harbor in Abah's Landing, I spoke with a Redguard woman. ", stepTextKey="Rohefa suggested I could make some easy gold if I talk to her boss, Shalug, at Shark's Teeth Grotto."},
+        ["Talk to Shalug the Shark"] =
+            {appendText=". She should be at the entry, inside the pirate's haven of Shark's Teeth Grotto in southwestern Hew's Bane."},
+        [2] = 
+            {appendStepText="At the grotto in southwestern Hew's Bane, I spoke with the tough Orc, Shalug the Shark. She leads the Shark's Teeth crew. ", stepTextKey="Shalug wants me to enter the grotto and place her sigil where the pirates will see it. She figures that that will show them that the Shark's Teeth still control the grotto—regardless of the presence of so many pirates."},
+        ["Place Sigil on the Bloody Docks"] =
+            {appendText=" by marking the back wall inside a small shed on the west side of the inlet, not far from the grotto's entrance."},
+        ["Place Sigil on Suicide Cliff"] =
+            {appendText=" by marking the adobe wall of the building up on the high wooden platform where the pirates rest and drink. It is above and southwest of the wooden bridge spanning the gorge."},
+        ["Place Sigil on Plank Hill"] =
+            {appendText=" by marking the bare stone between a brazier and a keg at a covered sitting area up on the highest platform at the north end of the open-air gorge."},
+        ["Place Sigil in the Silent Room"] =
+            {appendText=" by marking the stone blocks inside a small alcove with golden pots at the center of the Yokudan chamber south of the grotto's northwestern cavern."},
+        [3] = 
+            {appendStepText="In southwestern Hew's Bane, ", stepTextKey="I placed the sigil of the Shark's Teeth throughout the grotto, just as Shalug asked. I should return to her and claim my reward for services rendered."},
+        ["Talk to Shalug"] =
+            {appendText=" the Shark by the grotto's entry."},
+    },
+
+	[GetQuestName(5565)] = { --"A Secret Shame" --Jordakai
+		[1] = 
+			{appendStepText="I have been given a sacred amulet. Now, I must enter the ancient tomb northwest of Abah's Landing. When I head in that direction from the city, the pillars of its entrance between two waterfalls become visible.\n\nInside the tomb, ", stepTextKey="I need to use this Spiritcatcher to absorb the energy of the spirits released by the necromancers in Bahraha's Gloom."},
+		["Use Spiritcatcher on Salt Catcher Spirits"] =
+			{appendText="\n\nThe spirits of necromancers sealed in the tomb long ago by Prince Hew must be caught to restore the great seal that bound them."},
+		[2] = 
+			{appendStepText="In the ancient tomb northwest of Abah's Landing, the sacred amulet called ", stepTextKey="Spiritcatcher has absorbed a fair amount of energy. I can use it now to recharge the seal protecting Bahraha's Gloom."},
+		["Use the Amulet to Recharge the Seal"] =
+			{appendText=" at the empty pedestal by the eastern wall, up behind the ancient ship in the southeastern chamber of the tomb."},
+		[3] = 
+			{appendStepText="In the ancient tomb northwest of Abah's Landing, ", stepTextKey="I restored the seal protecting Bahraha's Gloom with the energy from Spiritcatcher. I should return the amulet to the priest and let her know what happened."},
+		["Talk to Sabileh"] =
+			{appendText=". She is up in her rooftop retreat above Sharper's Alley, east of the Fighters Guild in Abah's Landing."},
+	},
 -- ==================================================================================================================================================
 --	Vvardenfell																															Undaunted
 -- ==================================================================================================================================================
@@ -26053,6 +28817,107 @@ ImmersiveQuests.localization = {
 -- ==================================================================================================================================================
 --	Clockwork City																														Undaunted
 -- ==================================================================================================================================================
+
+
+
+
+	[GetQuestName(6023)] = { --"Of Knives and Long Shadows"				--Jordakai
+		[1] = 
+			{appendStepText="", stepTextKey="I should travel to the Mages Guild hall in Mournhold. Perhaps I can learn more from Skaldir himself."},
+		["Talk to Skaldir"] =
+			{appendText=" at the guildhall in Deshaan's central city of Mournhold."},
+		[2] = 
+			{appendStepText="", stepTextKey="As soon as I arrived in the Mournhold guild hall, Skaldir's shadow came to life and stabbed him to death. A Nord woman arrived shortly thereafter, demanding answers. I should talk to her."},
+		["Talk to Bonafryd 1"] =
+			{appendText=".", stepTextKey="As soon as I arrived in the Mournhold guild hall, Skaldir's shadow came to life and stabbed him to death. A Nord woman arrived shortly thereafter, demanding answers. I should talk to her."},
+		[3] = 
+			{appendStepText="Within the Mages Guild there is an association, the Order of the Eye. ", stepTextKey="Three of Skaldir's associates are in danger. According to Bonafryd, Adeber is studying in Shornhelm, Rivenspire. Wenridil can be found in the city of Marbruk, Greenshade. And Neelo resides in Stormhold, Shadowfen. I must warn these mages."},
+		["Warn Adeber"] =
+			{appendText=". Eloic Montieu, another mage at the guildhall, may know where he is."},
+		["Warn Wenridil"] =
+			{appendText=", a female Bosmer, who enjoys studying in the city's garden plaza, west of the wayshrine."},
+		["Warn Neelo"] =
+			{appendText=", an Argonian, who often practices his spells near a couple of boulders just southeast of the city's wayshrine. He has a sister in town who is a Captain."},
+		[4] = 
+			{appendStepText="I finished warning those I could. ", stepTextKey="A projection of a High Elf woman has appeared. I should speak to her."},
+		["Talk to Lilatha 1"] =
+			{appendText=".", stepTextKey="A projection of a High Elf woman has appeared. I should speak to her."},
+		[5] = 
+			{appendStepText="", stepTextKey="Lilatha, a Psijic mage, believes she can discover the location of the Daedric artifact, but she needs two powerful objects to do so. I can find the Anuic Lantern in Khenarthi's Roost, and the Liminal Lens in Craglorn's Howling Sepulchers."},
+		["Collect the Anuic Lantern"] =
+			{appendText=" from the southernmost shipwreck, south of Eagles Strand.\n"},
+		["Collect the Liminal Lens"] =
+			{appendText=" from the expanisve ancient Nord burial site along the road north of the Valley of Scars Wayshrine in Upper Craglorn's northeastern mountains. I should search the large, eastern Dragon Priest's sepulcher."},
+		[6] = 
+			{appendStepText="From Khenarthi's Roost and Craglorn, ", stepTextKey="I collected the items Lilatha requested, now I must find the boat she promised. It should be moored somewhere just outside Vulkhel Guard."},
+		["Find Lilatha's Boat"] =
+			{appendText=", near the harbor of Auridon's southern city. Perhaps it is in a secluded spot, like the small southern islet with a seawall."},
+		[7] = 
+			{appendStepText="In Auridon's southern city of Vulkhel Guard, I found a small sailboat beached on the south side of the seawall on the harbor's lone islet, near a large ship.\n\n", stepTextKey="Bonafryd appeared as soon as I arrived at Lilatha's boat. I should talk to her to figure out what this is about."},
+		["Talk to Bonafryd 2"] =
+			{appendText=".", stepTextKey="Bonafryd appeared as soon as I arrived at Lilatha's boat. I should talk to her to figure out what this is about."},
+		[8] = 
+			{appendStepText="In Auridon's southern city of Vulkhel Guard, I found a small sailboat beached on the south side of the seawall on the harbor's lone islet, near a large ship.\n\n", stepTextKey="Bonafryd admitted that she's been following me. Now she wants to accompany me in Lilatha's boat. I must decide whether or not to bring her along."},
+		["Bring Bonafryd Along"] =
+			{appendText=".\n"},
+		["Leave Bonafryd Behind"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="In Auridon at Vulkhel Guard's harbor, on the southernmost islet with a seawall, I've spoken with Bonafryd and ", stepTextKey="I've found Lilatha's enchanted boat. Hopefully it will take me to her current location."},
+		["Travel to Lilatha's Island"] =
+			{appendText=", Dranil Kir."},
+		[10] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, ", stepTextKey="I arrived on a gloomy island off the coast of Auridon. I should search for Lilatha."},
+		["Find Lilatha"] =
+			{appendText="."},
+		[11] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\n", stepTextKey="I found Lilatha outside an ancient ruin on Dranil Kir. I should follow her inside."},
+		["Follow Lilatha"] =
+			{appendText=" up the hill to the Obscuros Scrying Chamber within the Ayleid ruin."},
+		[12] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\nIn the Obscuros Scrying Chamber, ", stepTextKey="Lilatha's shadow came to life. It no doubt seeks to kill her. I must defeat this creature to defend Lilatha and the Obscuros."},
+		["Defeat Lilatha's Shadow"] =
+			{appendText="."},
+		[13] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\nIn the Obscuros Scrying Chamber, ", stepTextKey="It appears that my former ally, Bonafryd, is responsible for the shadow murders. I must defeat her and the shadow if Lilatha and I plan to make it out of this ruin alive."},
+		["Defeat Bonafryd"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\nIn the Obscuros Scrying Chamber, ", stepTextKey="Lilatha and I managed to defeat Bonafryd and her shadowy minion. Now that Lilatha is safe, I should reassemble the Obscuros device."},
+		["Reassemble the Obscuros"] =
+			{appendText=" on the dais where the Psijic mage stands."},
+		[15] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\nIn the scrying chamber, ", stepTextKey="I reassembled the Obscuros. Now we can activate it and see if it shows us the location of the Daedric artifact."},
+		["Activate the Obscuros"] =
+			{appendText="."},
+		[16] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\nIn the scrying chamber, I reassembled the device. \n\n", stepTextKey="The Obscuros is working! The device appears to be showing us the location of the Daedric artifact."},
+		["Watch the Projection"] =
+			{appendText="."},
+		[17] = 
+			{appendStepText="From the southernmost islet in Vulkhel Guard harbor, I came to Dranil Kir and watched a projection.\n\n", stepTextKey="The Obscuros showed us several images of the Clockwork City. I should talk to Lilatha to see if she can elaborate on what we've witnessed."},
+		["Talk to Lilatha 2"] =
+			{appendText=" in the scrying chamber.", stepTextKey="The Obscuros showed us several images of the Clockwork City. I should talk to Lilatha to see if she can elaborate on what we've witnessed."},
+		[18] = 
+			{appendStepText="Taking the enchanted boat from the southernmost islet in Vulkhel Guard harbor, I reached Dranil Kir.\n\nIn the Obscuros Scrying Chamber, I learned a little about Sotha Sil's creation. ", stepTextKey="Lilatha believes that the mysterious Daedric artifact we've been seeking is somewhere inside the Clockwork City. We should discuss our next move."},
+		["Talk to Lilatha 3"] =
+			{appendText=".", stepTextKey="Lilatha believes that the mysterious Daedric artifact we've been seeking is somewhere inside the Clockwork City. We should discuss our next move."},
+		[19] = 
+			{appendStepText="", stepTextKey="Lilatha believes that the mysterious Daedric artifact we've been seeking is somewhere inside the Clockwork City. We should discuss our next move."},
+		["Talk to Lilatha 4"] =
+			{appendText=". I should ask her more questions about what I've learned.", stepTextKey="Lilatha believes that the mysterious Daedric artifact we've been seeking is somewhere inside the Clockwork City. We should discuss our next move."},
+	},
+
+
+
+
+
+
+
+
+
+
+
 
 	[GetQuestName(6050)] = { --"To The Clockwork City"				--Jordakai
 		[1] = 
@@ -36479,8 +39344,1244 @@ ImmersiveQuests.localization = {
 --		  WALL QUESTS SOLSTICE
 -- 		=========================================================================
 
+-- ==================================================================================================================================================
+--	Fighters Guild																															Undaunted
+-- ==================================================================================================================================================
+
+-- 		=========================================================================
+--		  Fighters Guild Main Quest
+-- 		=========================================================================
+
+-- 		=========================================================================
+--		  Fighters Guild Dailies
+-- 		=========================================================================
+
+-- ==================================================================================================================================================
+--	Mages Guild																															Undaunted
+-- ==================================================================================================================================================
+
+-- 		=========================================================================
+--		  Mages Guild Main Quest
+-- 		=========================================================================
+[GetQuestName(5071)] = { --"Curinure's Invitation" --Cyberjanet
+        [1] = 
+            {appendStepText="He is modest. His ambition extends far beyond the Vulkhel Guard Mages Guild. He travels and recruits in almost every starter city in every territory across Tamriel, other than those held by the opposing alliances.\n\n", stepTextKey="I should find out what I can about the Mages Guild, and decide if the Guild is for me."},
+        ["Talk to Curinure 1"] =
+            {appendText=" at any of the Mages Guilds in his scope. He invites anyone interested in knowledge and the acquisition of new tomes. He stresses the Guild is neutral in the war between the three alliances, and everyone is welcome: all races, all alliances.", stepTextKey="I should find out what I can about the Mages Guild, and decide if the Guild is for me."},
+        [2] = 
+            {appendStepText="He is modest. His ambition extends far beyond the Vulkhel Guard Mages Guild. He travels and recruits in almost every starter city in every territory across Tamriel, other than those held by the opposing alliances.\n\n", stepTextKey="I should speak to Curinure to confirm my interest in joining the Mages Guild."},
+        ["Talk to Curinure 2"] =
+            {appendText=" at any of the Mages Guilds in his scope. He has promised knowledge, unique skills, and the possibility of special projects!", stepTextKey="I should speak to Curinure to confirm my interest in joining the Mages Guild."},
+    },
+
+[GetQuestName(5076)] = { --"Nemarc's Invitation" --Wex
+        [1] = 
+            {appendStepText="In Daggerfall in Glenumbra, ", stepTextKey="I should find out what I can about the Mages Guild, and decide if the Guild is for me."},
+        ["Talk to Nemarc 1"] =
+            {appendText=" on the ground floor by the staircase.", stepTextKey="I should find out what I can about the Mages Guild, and decide if the Guild is for me."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should speak to Nemarc to confirm my interest in joining the Mages Guild."},
+        ["Talk to Nemarc 2"] =
+            {appendText=" by the staircase in the Daggerfall Mages Guild in Glenumbra.", stepTextKey="I should speak to Nemarc to confirm my interest in joining the Mages Guild."},
+    },
+
+[GetQuestName(5074)] = { --"Rudrasa's Invitation" --Wex
+        [1] = 
+            {appendStepText="", stepTextKey="I should find out what I can about the Mages Guild, and decide if the Guild is for me."},
+        ["Talk to Rudrasa 1"] =
+            {appendText=", found upstairs in the Davon’s Watch Mages Guild in Stonefalls, reading a book.", stepTextKey="I should find out what I can about the Mages Guild, and decide if the Guild is for me."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should speak to Rudrasa to confirm my interest in joining the Mages Guild."},
+        ["Talk to Rudrasa 2"] =
+            {appendText=" on the upper floor of the Davon’s Watch Mages Guild in Stonefalls, down the hall from the entrance.", stepTextKey="I should speak to Rudrasa to confirm my interest in joining the Mages Guild."},
+    },
+
+[GetQuestName(3916)] = { -- "Long Lost Lore" --Jordakai
+
+    ["Talk to Valaste 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I spoke with Adelle Montagne at the Mages Guild. She said ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I spoke with Adelle Montagne at the Mages Guild. She said ",
+            [ALLIANCE_EBONHEART_PACT] = "I spoke with Adelle Montagne at the Mages Guild. She said "
+        },
+        stepTextKey = "I should speak to Valaste, the Mages Guild Mistress of Incunabula.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". Adelle told me to find her in the Vulkhel Guard Mages Guild in southern Auridon. She is probably busy writing down her thoughts, perhaps on the task she has for me.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". Adelle told me to find her in the Daggerfall Mages Guild in southern Glenumbra. She is probably on the main floor of the guildhall, perhaps writing down some notes about the nearby books.",
+            [ALLIANCE_EBONHEART_PACT] = ". Adelle told me to find her in the Stonefall Mages Guild in northeast Davon's Watch. She is probably on the lower level of the guildhall, perhaps writing down some of her thoughts."
+        }
+    },
+
+    ["Enter the Ruins"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Vulkhel Guard Mages Guild in Auridon, the master of ancient tomes has received news of some potential acquisitions for the guild's library. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Daggerfall Mages Guild in Glenumbra, the master of ancient tomes has received news of some potential acquisitions for the guild's library. ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Davon's Watch Mages Guild in Stonefalls, the master of ancient tomes has received news of some potential acquisitions for the guild's library. "
+        },
+        stepTextKey = "I must find a ruin nearby, which Valaste says may hold a store of ancient knowledge.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " of Ondil, north of Vulkhel Guard near the headwaters of the island's southern river. \n\nThe entrance to this Ayleid ruin is up the hill on the east side of the northbound road from Tanzelwil Wayshrine. Lit stone stairs lead to a circular descent where the entry door awaits.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " known as Silumm, an underground Ayleid structure north of the city. Its carved stone entrance is east of Daggerfall's lighthouse at the city's port on Glenumbra's western coast.",
+            [ALLIANCE_EBONHEART_PACT] = " known as Inner Sea Armature, a Dwemer structure southwest of The Harborage in Stonefalls. Near a tree with burnt sienna leaves, its entrance is recessed into the rocky slope of the volcanic Ash Mountain."
+        }
+    },
+
+    ["Retrieve the Tomes"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "The Ayleid ruin of Ondil is north of Auridon's Tanzelwil Wayshrine. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "On Glenumbra's western coast, north of Daggerfall, is the underground Ayleid structure of Silumm. ",
+            [ALLIANCE_EBONHEART_PACT] = "On the northern slopes of Ash Mountain, west of The Harborage in Stonefalls, is the Inner Sea Armature. "
+        },
+        stepTextKey = "I've found the ruins Valaste spoke of. Now to find those tomes.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " \n\n- There is a tome on a stone table flanked by shelves in the first small chamber entered, near a cold flame brazier. \n- There is a tome down the stairs in the large western repository where there are many books. One tome rests on a stone table by an empty coffin near the western wall. Perhaps I should check for other books.\n- A tome circles in the air in the watery northeast chamber, where evidence of dark rituals remain. \n- There is a tome in the eastern hallway where the water meets the dry stone, on a stone table where roots hang from the ceiling.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " \n\n- In the northwestern chamber of the ruin, a tome rests on the pedestal below a statue of a seated, robed swordsman. \n- In an alcove of the northern hallway, an unusual tome circles in the air above a stone altar. \n- There is a tome on an altar with another book in the southeastern hallway. \n- In the large southern chamber, a candlelit altar stands near the eastern alcove. The tome desired is not an open book.",
+            [ALLIANCE_EBONHEART_PACT] = " \n\n- In the northern chamber of the ruin, under a dwarven lantern, a table holds a large Dwemer gear, forge tongs, and an urn. The tome on that table seems out of place. Perhaps there are other writings of interest here, too. \n- In the central chamber there is a table with books and other writings, including one pinned with a dagger. \n- There is a tome on a candle-filled table in a dead end side passage of the western hallway. \n- In the southwestern cavern, a small table stands near spinning dwarven gears. An unusual tome circles above it."
+        }
+    },
+
+    ["Return to the Mages Guild"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "North of Auridon's Tanzewil Wayshrine, while I was searching in Ondil for the books, a mage's spirit appeared and spoke to me. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "On Glenumbra's western coast, north of Daggerfall, while I was searching in Silumm for the books, a mage's spirit appeared and spoke to me. ",
+            [ALLIANCE_EBONHEART_PACT] = "West of The Harborage in Stonefalls, while I was searching in the Inner Sea Armature for the books, a mage's spirit appeared and spoke to me. "
+        },
+        stepTextKey = "Now that I've found the tomes, I must return to the Mages Guild and speak to Valaste.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in Vulkhel Guard in southern Auridon, with the four tomes.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in Daggerfall in southern Glenumbra, with the four tomes.",
+            [ALLIANCE_EBONHEART_PACT] = " in Davon's Watch in northeast Stonefalls, with the four tomes."
+        }
+    },
+
+    ["Talk to Valaste 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I returned to Vulkhel Guard in southern Auridon with the four tomes. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I returned to Daggerfall in southern Glenumbra with the four tomes. ",
+            [ALLIANCE_EBONHEART_PACT] = "I returned to Davon's Watch in northeast Stonefalls with the four tomes. "
+        },
+        stepTextKey = "I should speak to Valaste at the Mages Guild.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". She is probably on the guildhall's main floor.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She is probably on the guildhall's main level.",
+            [ALLIANCE_EBONHEART_PACT] = ". She is probably on the guildhall's lower level."
+        }
+    },
+
+    ["Place the Tome on the Arcane Brazier"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Vulkhel Guard Mages Guild in Auridon, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Daggerfall Mages Guild in Glenumbra, ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Davon's Watch Mages Guild in Stonefalls, "
+        },
+        stepTextKey = "Valaste asked me to place the tome in the flaming brazier.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " at the west end of the guildhall's main floor. Let's see what this Forgotten Tome contains.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". The brazier burns below a guild banner in the west wing of the guildhall's main level. Let's see what this Forgotten Tome contains.",
+            [ALLIANCE_EBONHEART_PACT] = ". The brazier burns below a guild banner on the northern wall of the guildhall's lower level. Let's see what this Forgotten Tome contains."
+        }
+    },
+
+    ["Talk to Valaste 3"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Vulkhel Guard Mages Guild in Auridon, I placed the Forgotten Tome on the arcane brazier. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the west wing on the main floor of the Daggerfall Mages Guild in Glenumbra, I placed the Forgotten Tome on the arcane brazier. ",
+            [ALLIANCE_EBONHEART_PACT] = "In the lower level of the Davon's Watch Mages Guild in Stonefalls, I placed the Forgotten Tome on the arcane brazier. "
+        },
+        stepTextKey = "I should tell Valaste what I've seen in the spellbook.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She is waiting at Magus Eiline's counter.",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+
+    ["Summon Arch-Mage Shalidor"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Vulkhel Guard Mages Guild in Auridon, I learned that ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Daggerfall Mages Guild in Glenumbra, I learned that ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Davon's Watch Mages Guild in Stonefalls, I learned that "
+        },
+        stepTextKey = "Valaste believes she knows how to summon Arch-Mage Shalidor.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the center of the guildhall, by touching the violet glow of the ritual orb nearest Valaste.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the center of the guildhall, by touching the violet glow of the ritual orb nearest Valaste.",
+            [ALLIANCE_EBONHEART_PACT] = " in the center of the guildhall's lower level, by touching the violet glow of the ritual orb nearest Valaste."
+        }
+    },
+
+    ["Talk to Arch-Mage Shalidor 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Vulkhel Guard Mages Guild in Auridon, Valaste was successful. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Daggerfall Mages Guild in Glenumbra, Valaste was successful. ",
+            [ALLIANCE_EBONHEART_PACT] = "On the lower level of the Davon's Watch Mages Guild in Stonefalls, Valaste was successful. "
+        },
+        stepTextKey = "We've summoned Arch-Mage Shalidor. I should speak to him and see what he wants me to do.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " within the glowing circle.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " within the glowing circle.",
+            [ALLIANCE_EBONHEART_PACT] = " within the glowing circle."
+        }
+    },
+
+    ["Enter the Portal to Sheogorath's Shrine"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Within the Vulkhel Guard Mages Guild in southern Auridon, Arch-Mage Shalidor spoke with me about Eyevea and Sheogorath. Now ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Within the Daggerfall Mages Guild in southern Glenumbra, Arch-Mage Shalidor spoke with me about Eyevea and Sheogorath. Now ",
+            [ALLIANCE_EBONHEART_PACT] = "Within the Davon's Watch Mages Guild in northeastern Stonefalls, Arch-Mage Shalidor spoke with me about Eyevea and Sheogorath. Now "
+        },
+        stepTextKey = "I should enter the portal to Sheogorath's shrine.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " that Shalidor opened for me in the guildhall. I'm going to a place called Cheesemonger's Hollow.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " that Shalidor opened for me in the guildhall. I'm going to a place called Cheesemonger's Hollow.",
+            [ALLIANCE_EBONHEART_PACT] = " that Shalidor opened for me in the guildhall on its lower level. I'm going to a place called Cheesemonger's Hollow."
+        }
+    },
+
+    ["Talk to Haskill 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I used Arch-Mage Shalidor's portal in the Vulkhel Guard Mages Guild in Auridon and arrived in a place called Cheesemonger's Hollow. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I used Arch-Mage Shalidor's portal in the Daggerfall Mages Guild in Glenumbra and arrived in a place called Cheesemonger's Hollow. ",
+            [ALLIANCE_EBONHEART_PACT] = "I used Arch-Mage Shalidor's portal in the Davon's Watch Mages Guild in Stonefalls and arrived in a place called Cheesemonger's Hollow. "
+        },
+        stepTextKey = "I should speak to Haskill about the location of the tomes.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", a bald man standing behind a desk, surrounded by books. For a Daedric shrine, this place seems well-kept.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", a bald man standing behind a desk, surrounded by books. For a Daedric shrine, this place seems well-kept.",
+            [ALLIANCE_EBONHEART_PACT] = ", a bald man standing behind a desk, surrounded by books. For a Daedric shrine, this place seems well-kept."
+        }
+    },
+
+--InstanceStart
+
+    ["Close the Portal"] = {
+        appendStepText = "At his desk in the Daedric shrine, ",
+        stepTextKey = "Haskill said he won't let me pass unless I pass a test. He wants me to close a portal to prove myself.",
+        appendText = " by defeating any Daedra that use it to enter the shrine."
+    },
+    ["Talk to Haskill 2"] = {
+        appendStepText = "In the entry chamber of Cheesemonger's Hollow, Haskill wanted to test my resolve with a few hostile Daedra. ",
+        stepTextKey = "Now that the portal is closed, I should speak to Haskill.",
+        appendText = ", still standing behind his desk."
+    },
+    ["Wait for Haskill to Open the Door"] = {
+        appendStepText = "",
+        stepTextKey = "I need to wait for Haskill to unlock the door before I can explore Cheesemonger's Hollow any further.",
+        appendText = " at the top of the stairs behind his desk in the Daedric shrine. Perhaps I should speak with him again before entering the Hollow."
+    },
+    ["Explore the Hollow"] = {
+        appendStepText = "",
+        stepTextKey = "Haskill said to follow the path outside into Cheesemonger's Hollow. The tomes I need are hidden there.",
+        appendText = " after leaving the shrine. I should head towards the northeastern end of this place."
+    },
+    ["Kill Gutsripper"] = {
+        appendStepText = "I reached the northeastern end of Cheesemonger's Hollow. ",
+        stepTextKey = "A monster bars my way to the spellbooks.",
+        appendText = ", a very large clanfear."
+    },
+    ["Take the Tomes"] = {
+        appendStepText = "At the northeastern end of Cheesemonger's Hollow, ",
+        stepTextKey = "I've done it. I need to grab one of the books set out on the stands.",
+        appendText = ", each circling above its own pedestal."
+    },
+    ["Talk to Sheogorath"] = {
+        appendStepText = "I found the four tomes at the northeastern end of Cheesemonger's Hollow. ",
+        stepTextKey = "After I took one of the tomes, Sheogorath made the rest of them disappear. I should speak to him and find out what he wants.",
+        appendText = ", the Mad God."
+    },
+    ["Observe the Conversation"] = {
+        appendStepText = "",
+        stepTextKey = "Sheogorath has summoned Arch-Mage Shalidor to Cheesemonger's Hollow. This should prove interesting.",
+        appendText = "."
+    },
+    ["Talk to Arch-Mage Shalidor 2"] = {
+        appendStepText = "At the northeastern end of Cheesemonger's Hollow, ",
+        stepTextKey = "Sheogorath disappeared after speaking to Arch-Mage Shalidor. I should speak to the Arch-Mage.",
+        appendText = "."
+    },
+
+--InstanceEnd
+
+    ["Talk to Valaste at the Mages Guild"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In Cheesemonger's Hollow, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In Cheesemonger's Hollow, ",
+            [ALLIANCE_EBONHEART_PACT] = "In Cheesemonger's Hollow, "
+        },
+        stepTextKey = "I've retrieved the book. I should return to the Guildhall and speak to Valaste.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in Vulkhel Guard in southern Auridon.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in Daggerfall in southern Glenumbra.",
+            [ALLIANCE_EBONHEART_PACT] = " in Davon's Watch in northeastern Stonefalls."
+        }
+    },
+
+    ["Talk to Valaste 4"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Vulkhel Guard Mages Guild in Auridon, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Daggerfall Mages Guild in Glenumbra, ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Davon's Watch Mages Guild in Stonefalls, "
+        },
+        stepTextKey = "I should speak to Valaste",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+},
 
 
+[GetQuestName(4435)] = { --"Simply Misplaced" --Jordakai
+
+    ["Talk to Valaste 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "Shalidor appeared and told me Valaste has finished translating the first book. I need to find her at the Mages Guildhall.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". She should be in Elden Root in central Grahtwood.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She should be in Wayrest in coastal Stormhaven.",
+            [ALLIANCE_EBONHEART_PACT] = ". She should be in Mournhold in central Deshaan."
+        }
+    },
+   ["Talk to Shalidor 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In Grahtwood at the Elden Root Mages Guild, I spoke with Valaste. She said ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In Stormhaven at the Wayrest Mages Guild, I spoke with Valaste. She said ",
+            [ALLIANCE_EBONHEART_PACT] = "In Deshaan at the Mournhold Mages Guild, I spoke with Valaste. She said "
+        },
+        stepTextKey = "Shalidor has made preparations to create a portal to the Isles. I should speak with him at the back of the Mages Guild.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", standing at a brazier between Earnaana's Enchantments and Edrisi Telas' Alchemical Arts.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", standing at a brazier under a guild banner in the hall's southeast wing near Magister Benry Claverie's desk.",
+            [ALLIANCE_EBONHEART_PACT] = ", standing at a brazier under a guild banner in the hall's western room."
+        }
+    },
+    ["Wait for Shalidor to Open the Portal"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Elden Root Mages Guild in Grahtwood, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Wayrest Mages Guild in Stormhaven, ",
+            [ALLIANCE_EBONHEART_PACT] = "In the westernmost room of the Mournhold Mages Guild in Deshaan, "
+        },
+        stepTextKey = "Shalidor is casting a spell to open a portal to the Shivering Isles. I need to wait until he's finished.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+    ["Enter Portal"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Elden Root Mages Guild in Grahtwood, near the Enchamter's banner, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the southeast wing of the Wayrest Mages Guild in Stormhaven, ",
+            [ALLIANCE_EBONHEART_PACT] = "In the westernmost room of the Mournhold Mages Guild in Deshaan, "
+        },
+        stepTextKey = "I should enter the portal Shalidor created.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "  to the Shivering Isles. I may wish to speak with Arch-Mage Shalidor again before I leave.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " to the Shivering Isles. I may wish to speak with Arch-Mage Shalidor again before I leave.",
+            [ALLIANCE_EBONHEART_PACT] = " to the Shivering Isles. I may wish to speak with Arch-Mage Shalidor again before I leave."
+        }
+    },
+
+--InstanceStart1
+
+    ["Talk to Haskill 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I entered the portal Shalidor opened for me in the Elden Root Mages Guild in Grahtwood. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I entered the portal Shalidor opened for me in the Wayrest Mages Guild in Stormhaven. ",
+            [ALLIANCE_EBONHEART_PACT] = "I entered the portal Shalidor opened for me in the Mournhold Mages Guild in Deshaan. "
+        },
+        stepTextKey = "Haskill awaited my arrival in the Isles. I should talk to him to see what Sheogorath has planned for me.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the peaceful courtyard of a lovely Altmer estate called the Glade of the Divines. \n\nI suspect there will be little that is \"divine\" about what the Mad God has planned for me.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the peaceful courtyard of a lovely Altmer estate called the Glade of the Divines. \n\nI suspect there will be little that is \"divine\" about what the Mad God has planned for me.",
+            [ALLIANCE_EBONHEART_PACT] = " in the peaceful courtyard of a lovely Altmer estate called the Glade of the Divines. \n\nI suspect there will be little that is \"divine\" about what the Mad God has planned for me."
+        }
+    },
+    ["Enter the Portal 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I entered Shalidor's portal in Grahtwood's Elden Root Mages Guild to reach the Shivering Isles. Haskill has opened a portal in the Isles' Glade of the Divines courtyard. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I entered Shalidor's portal in Stormhaven's Wayrest Mages Guild to reach the Shivering Isles. Haskill has opened a portal in the Isles' Glade of the Divines courtyard. ",
+            [ALLIANCE_EBONHEART_PACT] = "I entered Shalidor's portal in Deshaan's Mournhold Mages Guild to reach the Shivering Isles. Haskill has opened a portal in the Isles' Glade of the Divines courtyard. "
+        },
+        stepTextKey = "He is sending me to a place called Vuldngrav to retrieve a … fork. I should enter the portal he created for me.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " to Vuldngrav.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " to Vuldngrav.",
+            [ALLIANCE_EBONHEART_PACT] = " to Vuldngrav."
+        }
+    },
+
+--InstanceEnd1
+
+--InstanceStart2
+
+    ["Explore Vuldngrav 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "After going to the Shivering Isles from Grahtwood's Elden Root Mages Guild using Shalidor's portal, I entered a portal that Haskill opened in the courtyard of the Glade of the Divines. Now ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "After going to the Shivering Isles from Stormhaven's Wayrest Mages Guild using Shalidor's portal, I entered a portal that Haskill opened in the courtyard of the Glade of the Divines. Now ",
+            [ALLIANCE_EBONHEART_PACT] = "After going to the Shivering Isles from Deshaan's Mournhold Mages Guild using Shalidor's portal, I entered a portal that Haskill opened in the courtyard of the Glade of the Divines. Now "
+        },
+        stepTextKey = "I need to explore Vuldngrav to see if I can find the fork that Sheogorath misplaced.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " with Arch-Mage Shalidor's assistance. It certainly looks like a place in Skyrim. Now to find that fork...",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " with Arch-Mage Shalidor's assistance. It certainly looks like a place in Skyrim. Now to find that fork...",
+            [ALLIANCE_EBONHEART_PACT] = " with Arch-Mage Shalidor's assistance. It certainly looks like a place in Skyrim. Now to find that fork..."
+        }
+    },
+    ["Examine the Chest"] = {
+        appendStepText = "As I explored Vuldngrav, I entered a rectangular chamber within the catacombs. ",
+        stepTextKey = "Shalidor pointed out some kind of chest in the corner of the room. I should check it out.",
+        appendText = " on the dais near the eastern wall."
+    },
+    ["Defeat the Draugr"] = {
+        appendStepText = "In Vuldngrav Catacombs, I found an ornate chest. ",
+        stepTextKey = "Examining the chest angered the Dragon Priest, Korthor. I need to survive the draugr he's now sending after me.",
+        appendText = "."
+    },
+    ["Explore Vuldngrav 2"] = {
+        appendStepText = "",
+        stepTextKey = "After surviving the draugr, Korthor beckoned to me. I should seek out his tomb. He may have the fork I'm looking for.",
+        appendText = ", going deeper into the catacombs."
+    },
+    ["Retrieve the Fork"] = {
+        appendStepText = "At the northern end of the catacombs, deep within Vuldngrav, ",
+        stepTextKey = "I made it to Korthor's tomb. Time to retrieve the fork—whatever it takes.",
+        appendText = "."
+    },
+    ["Talk to Haskill 2"] = {
+        appendStepText = "At the northern end of the catacombs, deep within Vuldngrav, ",
+        stepTextKey = "Haskill appeared after I obtained the fork. I should see what he has to say.",
+        appendText = ", now that I have the Fork of Horripilation."
+    },
+    ["Enter the Portal 2"] = {
+        appendStepText = "I gave the Fork of Horripilation to Haskill in Vuldngrav before he opened a portal for me. \n\nNow ",
+        stepTextKey = "Haskill is sending me to a place called Asakala to retrieve the staff. I need to enter the portal he created to get there.",
+        appendText = " to Asakala in Hammerfell."
+    },
+
+--InstanceEnd2
+
+--InstanceStart3
+
+    ["Talk to Shalidor 2"] = {
+        appendStepText = "I used Haskill's portal to reach a desert valley that looks like a necropolis. ",
+        stepTextKey = "I arrived at Asakala. Now I should speak to Shalidor about this place.",
+        appendText = " the Arch-Mage."
+    },
+    ["Collect Essence"] = {
+        appendStepText = "I reached the valley of the necropolis of Asakala using Haskill's portal. \n\n",
+        stepTextKey = "I need to collect essences to deposit within the scarab tile of one of the statues. Shalidor granted me a spell that will help attract the essences to me, but I can only collect four at a time.",
+        appendText = "s. \n\nThe small wisps are floating around the sands of the valley.\n\nWith the arch-mage's enchantment, I should be able to run into the wisps to collect them."
+    },
+    ["Activate a Scarab Seal 1"] = {
+        appendStepText = "I reached the valley of the necropolis of Asakala using Haskill's portal.\n\nNow ",
+        stepTextKey = "I have the essences I need to activate one of the scarab seals. I should make use of the essences I collected.",
+        appendText = " at the foot of a gigantic Yokudan guardian with a raised hand at the north end of the valley."
+    },
+    ["Activate a Scarab Seal 2"] = {
+        appendStepText = "I reached the valley of the necropolis of Asakala using Haskill's portal.\n\nNow ",
+        stepTextKey = "I have the essences I need to activate the remaining scarab seal. I should make use of the essences I collected.",
+        appendText = " at the foot of the other gigantic Yokudan guardian with a raised hand at the north end of the valley."
+    },
+    ["Talk to Shalidor 3"] = {
+        appendStepText = "In the valley of the necropolis Asakala, ",
+        stepTextKey = "I've activated the two seals near the front of the ruin. Shalidor may know how I can activate the two rear seals.",
+        appendText = " the Arch-Mage at Asakala."
+    },
+    ["Activate the Spider Seal"] = {
+	appendStepText="In the valley of the necropolis Asakala, Shalidor explained that I need to find the tombs of the Prince's generals and collect their essences. \n\n",
+	stepTextKey="I need to activate one of the two seals on the rear statues in the valley.",
+	appendText=" using General Rashomta's essence.\n"
+    },
+    ["Activate Scorpion Seal"] =
+	{appendText=" using General Sahdina's essence."
+    },
+    ["Use the Key Ritual Orb"] = {
+        appendStepText = "In the valley of the necropolis Asakala, I used essences on the seals of the four guardians. ",
+        stepTextKey = "With all the statues activated, a ritual orb has appeared at the brazier. I need to activate it to open Maleel al-Akir's tomb.",
+        appendText = "."
+    },
+
+    ["Wait For the Tomb to Open"] = {
+        appendStepText = "At the Yokudan necropolis of Asakala, ",
+        stepTextKey = "I need to wait for the tomb to open.",
+        appendText = "."
+    },
+    ["Retrieve the Staff"] = {
+        appendStepText = "At Asakala's southern end lies the ancient Yokudan tomb of Prince Maleel al-Akir. ",
+        stepTextKey = "With the tomb open, I can now enter and kill Maleel to obtain the staff.",
+        appendText = "."
+    },
+    ["Talk to Haskill 3"] = {
+        appendStepText = "At the southern end of the valley of the Yokudan necropolis of Asakala, near the tomb of Prince Maleel al-Akir, ",
+        stepTextKey = "Haskill appeared once I obtained the staff. I should speak to him.",
+        appendText = " again."
+    },
+    ["Return to the Shivering Isles"] = {
+        appendStepText = "Haskill opened a portal in the valley of Asakala. ",
+        stepTextKey = "I need to enter the portal to return to the Shivering Isles.",
+        appendText = "' Glade of the Divines estate."
+    },
+
+--InstanceEnd3
+
+--InstanceStart4
+
+    ["Talk to Sheogorath 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I have traveled from Grahtwood's Elden Root Mages Guild, to a Skyrim barrow, a Yokudan tomb, and back to the Shivering Isles. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I have traveled from Stormhaven's Wayrest Mages Guild, to a Skyrim barrow, a Yokudan tomb, and back to the Shivering Isles. ",
+            [ALLIANCE_EBONHEART_PACT] = "I have traveled from Deshaan's Mournhold Mages Guild, to a Skyrim barrow, a Yokudan tomb, and back to the Shivering Isles. "
+        },
+        stepTextKey = "When I returned to the Shivering Isles, Sheogorath was waiting for me. I should speak to him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", the Mad God.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", the Mad God.",
+            [ALLIANCE_EBONHEART_PACT] = ", the Mad God."
+        }
+    },
+    ["Test the Wabbajack"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "It has been an interesting journey since I left Grahtwood's Elden Root Mages Guild for the Shivering Isles. \n\nNow ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "It has been an interesting journey since I left Stormhaven's Wayrest Mages Guild for the Shivering Isles. \n\nNow ",
+            [ALLIANCE_EBONHEART_PACT] = "It has been an interesting journey since I left Deshaan's Mournhold Mages Guild for the Shivering Isles. \n\nNow "
+        },
+        stepTextKey = "Sheogorath wants me to test out his staff on the \"people\" of the Isles.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " \n\nI should use it like a weapon to see what happens.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " \n\nI should use it like a weapon to see what happens.",
+            [ALLIANCE_EBONHEART_PACT] = " \n\nI should use it like a weapon to see what happens."
+        }
+    },
+    ["Talk to Sheogorath 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I have traveled from Grahtwood's Elden Root Mages Guild, to a Skyrim barrow and a Yokudan tomb, and back to the Shivering Isles. \n\nThe Mad God gave me the Wabbajack to use on people in the courtyard, so ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I have traveled from Stormhaven's Wayrest Mages Guild, to a Skyrim barrow and a Yokudan tomb, and back to the Shivering Isles. \n\nThe Mad God gave me the Wabbajack to use on people in the courtyard, so ",
+            [ALLIANCE_EBONHEART_PACT] = "I have traveled from Deshaan's Mournhold Mages Guild, to a Skyrim barrow and a Yokudan tomb, and back to the Shivering Isles. \n\nThe Mad God gave me the Wabbajack to use on people in the courtyard, so "
+        },
+        stepTextKey = "I tested out Sheogorath's staff. I should speak to him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+    ["Collect the Book"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In Grahtwood's Elden Root Mages Guild, I started a journey to get one tome for Valaste and Shalidor. Now I'm in the Shivering Isles' Glade of the Divines with the Mad God and ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In Stormhaven's Wayrest Mages Guild, I started a journey to get one tome for Valaste and Shalidor. Now I'm in the Shivering Isles' Glade of the Divines with the Mad God and ",
+            [ALLIANCE_EBONHEART_PACT] = "In Deshaan's Mournhold Mages Guild, I started a journey to get one tome for Valaste and Shalidor. Now I'm in the Shivering Isles' Glade of the Divines with the Mad God and "
+        },
+        stepTextKey = "Sheogorath told me to take the book. Finally! Time to grab it and move on.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " circling above its pedestal.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " circling above its pedestal.",
+            [ALLIANCE_EBONHEART_PACT] = " circling above its pedestal."
+        }
+    },
+
+--InstanceEnd4
+
+    ["Talk to Valaste 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Taking the tome entitled \"The Circus of Cheerful Slaughter\" sent me to Elden Root in Grahtwood. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Taking the tome entitled \"The Circus of Cheerful Slaughter\" sent me to Wayrest in Stormhaven. ",
+            [ALLIANCE_EBONHEART_PACT] = "Taking the tome entitled \"The Circus of Cheerful Slaughter\" sent me to Mournhold in Deshaan. "
+        },
+        stepTextKey = "I should return to Valaste at the Mages Guild with the book.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". She seems busy writing with her favorite feather quill ... like Haskill.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She seems busy writing with her favorite feather quill ... like Haskill.",
+            [ALLIANCE_EBONHEART_PACT] = ". She seems busy writing with her favorite feather quill ... like Haskill."
+        }
+    },
+},
+
+
+
+[GetQuestName(3918)] = { --"Circus of Cheerful Slaughter" --Jordakai
+
+   ["Talk to Valaste"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "I should talk to Valaste at the Mages Guild.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". She should be in Marbruk in eastern Greenshade.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She should be in Shornhelm in central Rivenspire.",
+            [ALLIANCE_EBONHEART_PACT] = ". She should be in Stormhold in northern Shadowfen."
+        }
+    },
+   ["Read \"Circus of Cheerful Slaughter\""] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At Marbruk in eastern Greenshade, near the central area of the Mages Guildhall, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At Shornhelm in central Rivenspire, in the west wing of the Mages Guildhall, ",
+            [ALLIANCE_EBONHEART_PACT] = "At Stormhold in northern Shadowfen, in the southeastern corner of the Mages area of the Guildhall, "
+        },
+        stepTextKey = "I should examine the book on the table nearby.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", on the dining table behind Valaste.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", on the large table made of desks.",
+            [ALLIANCE_EBONHEART_PACT] = ", alone on a stone table."
+        }
+    },
+
+--InstanceStart
+
+   ["Talk to Sheogorath 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Well, I'm not in the Marbruk Mages Guild in Greenshade. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Well, I'm not in the Shornhelm Mages Guild in Rivenspire. ",
+            [ALLIANCE_EBONHEART_PACT] = "Well, I'm not in the Stormhold Mages Guild in Shadowfen. "
+        },
+        stepTextKey = "The book has transported me to one of Sheogorath's realms of Madness. I should talk to Sheogorath to start the next trial.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". There is something on that table where I entered.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". There is something on that table where I entered.",
+            [ALLIANCE_EBONHEART_PACT] = ". There is something on that table where I entered."
+        }
+    },
+
+    ["Find Sheogorath in Heartholdhelm"] = {
+        appendStepText = "Sheogorath is putting on a play in three acts and I'm the star. To begin Act One, ",
+        stepTextKey = "I need to follow the path to a town held by the Ebonheart Pact.",
+        appendText = ". Perhaps the Mad God left things to entertain me along the way throughout his play."
+    },
+    ["Kill Ebonheart Pact Actors"] = {
+        appendStepText = "",
+        stepTextKey = "Sheogorath has created these actors that look like Pact soldiers to attack me. I'll need to destroy them to satisfy the Mad God's whims.",
+        appendText = ", all of them, in Heartholdhelm, the imaginary Pact town."
+    },
+    ["Kill Pact Lead Roles"] = {
+        appendStepText = "In the play's imaginary Pact town of Heartholdhelm, ",
+        stepTextKey = "Sheogorath has summoned actors that look like the leaders of the Ebonheart Pact. I'll have to destroy them to advance this insane trial.",
+        appendText = "."
+    },
+    ["Find Sheogorath in Skyroot Hearth"] = {
+        appendStepText = "For Act Two, ",
+        stepTextKey = "Sheogorath has moved on. I'll need to follow the path to the next town, held by the Aldmeri Dominion.",
+        appendText = "."
+    },
+    ["Watch Queen Ayrenn's Speech"] = {
+        appendStepText = "",
+        stepTextKey = "Sheogorath has written a speech for Ayrenn, the leader of the Aldmeri Dominion. I should hear what she has to say.",
+        appendText = " in the imaginary Dominion town of Skyroot Hearth."
+    },
+    ["Kill Aldmeri Dominion Actors"] = {
+        appendStepText = "",
+        stepTextKey = "Once again, Sheogorath has pitted me against actors shaped like soldiers. I'll need to destroy the Dominion forces to continue my trial.",
+        appendText = ", all of them, in Skyroot Hearth, the imaginary Dominion town."
+    },
+    ["Kill Queen Ayrenn"] = {
+        appendStepText = "",
+        stepTextKey = "The \"Queen Ayrenn\" actress is the only foe still facing me. I should destroy her to move on.",
+        appendText = " in the imaginary Dominion town of Skyroot Hearth."
+    },
+    ["Find Sheogorath in Daggerwaymore"] = {
+        appendStepText = "For Act Three, ",
+        stepTextKey = "Sheogorath has moved on to the final town, a place meant to represent the Daggerfall Covenant. I should meet him there.",
+        appendText = "."
+    },
+    ["Save the Guild Members"] = {
+        appendStepText = "",
+        stepTextKey = "The actors representing important members of the Mages guild must be saved for me to move on.",
+        appendText = " in the play's imaginary Covenant town of Daggerwaymore. The three mages are in separate locations."
+    },
+    ["Kill High King Emeric"] = {
+        appendStepText = "",
+        stepTextKey = "The only opponent still standing in my way is an actor meant to represent High King Emeric, leader of the Covenant. He'll have to be destroyed if I want to complete my trial.",
+        appendText = " in the center of the imaginary Covenant town of Daggerwaymore."
+    },
+    ["Talk to Sheogorath 2"] = {
+        appendStepText = "The Mad God must have a reason for showing me shadowy illusions and having me star in his alliance-themed play. Maybe Valaste will know. Anyway, ",
+        stepTextKey = "I think I've managed to complete Sheogorath's insane trial. I should speak with him to get my reward.",
+        appendText = ", standing near a stockade with Mages Guild banners."
+    },
+    ["Collect the Book"] = {
+        appendStepText = "",
+        stepTextKey = "After stepping through this tiresome performance, Sheogorath has given me the go-ahead to collect the book. I should grab it and get out of here.",
+        appendText = ", circling above its pedestal at the mage's stockade the Mad God set at the end of this realm."
+    },
+
+-- InstanceEnd
+
+   ["Return to Valaste"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Taking the tome entitled \"Uncle Robier's Vegetable Garden\" sent me to Marbruk in Greenshade. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Taking the tome entitled \"Uncle Robier's Vegetable Garden\" sent me to Shornhelm in Rivenspire. ",
+            [ALLIANCE_EBONHEART_PACT] = "Taking the tome entitled \"Uncle Robier's Vegetable Garden\" sent me to Stormhold in Shadowfen. "
+        },
+        stepTextKey = "I should give Sheogorath's book to Valaste.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". She should be in the Mages Guild, on the main floor.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She should be in the west wing of the Mages Guild.",
+            [ALLIANCE_EBONHEART_PACT] = ". She should be in the Mages area of the city's Guild Hall."
+        }
+    },
+},
+
+
+[GetQuestName(3953)] = { --"Chateau of the Ravenous Rodent" --Jordakai
+
+    ["Talk to Valaste 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "I need to find Valaste as quickly as I can. Shalidor says she's translated the last book I won from Sheogorath.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the Mages area of the Guildhall in Baandari Trading Post in northeastern Malabar Tor.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the Sentinel Mages Guild tower in northwestern Alik'r Desert.",
+            [ALLIANCE_EBONHEART_PACT] = " upstairs in the Windhelm Mages Guild in northern Eastmarch."
+        }
+    },
+    ["Wait for Valaste to Open the Portal"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I found Valaste in the Mages area of the Guildhall in Baandari Trading Post in northeastern Malabar Tor. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I found Valaste in the Sentinel Mages Guild tower in northwestern Alik'r Desert. ",
+            [ALLIANCE_EBONHEART_PACT] = "I found Valaste in the Windhelm Mages Guild in northern Eastmarch. "
+        },
+        stepTextKey = "Valaste has discovered where I need to go for my final trial. I should wait for her to open a portal to this Chateau.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the Mages area of the Guildhall.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the Guild tower.",
+            [ALLIANCE_EBONHEART_PACT] = " upstairs in the Guildhall."
+        }
+    },
+    ["Enter the Shivering Isles"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Mages area of in the Guildhall in Baandari Trading Post in northeastern Malabar Tor, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Sentinel Mages Guild tower in northwestern Alik'r Desert, ",
+            [ALLIANCE_EBONHEART_PACT] = "Upstairs in the Windhelm Mages Guild in northern Eastmarch, "
+        },
+        stepTextKey = "I need to enter the portal Valaste opened to get to Sheogorath's realm.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " through the portal Valaste opened for me. That effort seems to have affected her. Should I talk to her?",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " through the portal Valaste opened for me. That effort seems to have affected her. Should I talk to her?",
+            [ALLIANCE_EBONHEART_PACT] = " through the portal Valaste opened for me. That effort seems to have affected her. Should I talk to her?"
+        }
+    },
+--InstanceStart
+    ["Talk to Shalidor"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I used the portal in the Mages area of the Guildhall in Baandari Trading Post in northeastern Malabar Tor. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I used the portal in the Sentinel Mages Guild tower in northwestern Alik'r Desert. ",
+            [ALLIANCE_EBONHEART_PACT] = "I used the portal upstairs in the Windhelm Mages Guild in northern Eastmarch. "
+        },
+        stepTextKey = "Shalidor was waiting for me on the far side of the portal. I should speak to him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", standing nearby.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", standing nearby.",
+            [ALLIANCE_EBONHEART_PACT] = ", standing nearby."
+        }
+    },
+    ["Watch Sheogorath and Shalidor"] = {
+	appendStepText="While Shalidor was speaking with me at the Chateau of the Ravenous Rodent, ",
+	stepTextKey="Sheogorath has appeared before us. I should see what happens.",
+	appendText="."
+    },
+    ["Talk to Sheogorath 1"] = {
+	appendStepText="In his realm of the Chateau of Ravenous Rodents, The Mad God dismissed Shalidor the Arch-Mage. ",
+	stepTextKey="I'm guessing Sheogorath won't let me advance without having a chat first. I should speak to him.",
+	appendText=" near the portal where I entered."
+    },
+    ["Enter the Chateau Guesthouse"] = {
+	appendStepText="At his Chateau, ",
+	stepTextKey="Sheogorath's asked me head into the \"Guesthouse\" of his Chateau so that I can evict one of this wayward guests. I should enter the Guesthouse.",
+	appendText=" at the southern end of the path."
+    },
+    ["Evict the Guest That Doesn't Belong"] = {
+	appendStepText="",
+	stepTextKey="Sheogorath says he wants one of his houseguests evicted, that they aren't fitting in. He also warned me that some of them are homicidal. I should talk to the guests and decide which one I want to evict.",
+	appendText=" in the Chateau Guesthouse."
+    },
+    ["Enter the Portal"] = {
+	appendStepText="In the Chateau Guesthouse, ",
+	stepTextKey="Sheogorath has \"kindly\" created a portal so I can continue my tour. I suppose I should take it.",
+	appendText=" to the Chateau Gardens."
+    },
+    ["Talk to Sheogorath 2"] = {
+	appendStepText="",
+	stepTextKey="Sheogorath sure does love the sound of his own voice. Time to talk to him again.",
+	appendText=", standing at the top of the stairs south of the Chateau Guesthouse's portal."
+    },
+    ["Light the Braziers"] = {
+	appendStepText="",
+	stepTextKey="Sheogorath wants me to tour another part of his Chateau, a maze. He thinks the ambiance in there is too dark, and wants me to light some braziers as I go. He also said something about \"Bumps in the Night\"?",
+	appendText=" \n\nPale blue crystals mark the braziers in the maze below. After entering the maze, there is a brazier to the far left around a corner and a brazier to the far right around a corner. A third brazier is to the right of the center passage, near hanging vines of ivy. The final brazier is in the southern corner. The maze's exit is to the southeast, up some stairs."
+    },
+    ["Find the Maze Exit"] = {
+	appendStepText="From the portal in the Guesthouse, I entered the Chateau Gardens' maze. ",
+	stepTextKey="I've lit the braziers and need to make my way out of the maze.",
+	appendText=" to the southeast and up some stairs."
+    },
+    ["Talk to Sheogorath 3"] = {
+	appendStepText="From the Guesthouse and through the Gardens, ",
+	stepTextKey="I've found my way out of the maze. Sheogorath is back again to have a chat. Time for another conversation.",
+	appendText=", standing at a festive Dunmer spot with tables and chairs.", 
+    },
+    ["Explore the Manse"] = {
+	appendStepText="",
+	stepTextKey="The \"manse\" Sheogorath spoke of is one of the few places I haven't explored yet. Sheogorath wants me to meet his family within and play with his heirlooms.",
+	appendText=" at the southeasternmost area of the Chateau."
+    },
+    ["Light All the Heirlooms"] = {
+	appendStepText="Within the Chateau Manse in the realm's southeasternmost area, ",
+	stepTextKey="I've found the heirlooms Sheogorath spoke of. He gave me some confusing clues as to what to do: \"Four lights in a row, poke one to make it glow.\" and \"Four lights in a trough, poke one to turn it off.\"",
+	appendText="."
+    },
+    ["Talk to Sheogorath 4"] = {
+	appendStepText="Within the Chateau Manse in the realm's southeasternmost area, ",
+	stepTextKey="I've completed Sheogorath's little test. Time to speak to him again. Hopefully this will be one of the last times.",
+	appendText=", standing near the door lit by the  heirlooms."
+    },
+    ["Kill Uncle Leo"] = {
+	appendStepText="From the Guesthouse through the Garden maze and into the Chateau Manse. Here, ",
+	stepTextKey="Sheogorath told me the story behind his \"Uncle Leo.\" The beast is apparently now an embarassment to the family, and needs to be disposed of.",
+	appendText=". He is in the Chateau's Master Bedroom through the heirloom-lit door."
+    },
+    ["Talk to Sheogorath 5"] = {
+	appendStepText="I defeated Uncle Leo in the Chateau Manse's Master Bedroom. ",
+	stepTextKey="I've survived Sheogorath's trials. Hopefully now he'll just give me the last tome.",
+	appendText=". He is standing on the stairway I used to enter the Master Bedroom. A tome circles in the air beside him."
+    },
+    ["Collect the Tome"] = {
+	appendStepText="On the stairs of the Chateau Manse's Master Bedroom, ",
+	stepTextKey="Sheogorath said the tome is mine. I should collect it and return to Valaste.",
+	appendText=" circling above a pedestal. I suspect taking \"A Gift of Sanctuary\" will send me back to the Mages Guild."
+    },
+--InstanceEnd
+    ["Talk to Valaste 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I'm back in the Mages area of the Guildhall in Baandari Trading Post in northeastern Malabar Tor. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I'm back in the Sentinel Mages Guild tower in northwestern Alik'r Desert. ",
+            [ALLIANCE_EBONHEART_PACT] = "I'm back in the Windhelm Mages Guild in northern Eastmarch. "
+        },
+        stepTextKey = "Now that I have the final book, I should speak to Valaste.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". As usual, she is writing with her feather quill. She stands near the counter in the Mages area.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". As usual, she is writing with her feather quill. She stands near the counter covered with books.",
+            [ALLIANCE_EBONHEART_PACT] = ", upstairs. As usual, she is writing with her feather quill."
+        }
+    },
+},
+
+
+[GetQuestName(3997)] = { --"The Mad God's Bargain" --Jordakai
+
+    ["Talk to Valaste 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "I need to talk to Valaste as soon as I can.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " on the lower level of the Rawl'kha Mages Guild, next to the Temple in central Reaper's March.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the Evermore Mages Guild in northwestern Bangkorai.",
+            [ALLIANCE_EBONHEART_PACT] = " in the Riften Mages Guild in the eastern part of The Rift. She is in the Ritual Room reached through a trapdoor."
+        }
+    },
+    ["Place the Books"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In central Reaper's March, on the lower level of the Rawl'kha Mages Guild, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Evermore Mages Guild in northwestern Bangkorai, ",
+            [ALLIANCE_EBONHEART_PACT] = "In the Riften Mages Guild in the eastern part of The Rift, I went through a trap door to a Ritual Room, where "
+        },
+        stepTextKey = "Valaste has prepared a ritual space to allow Shalidor to do his work. She's asked me to start the ritual by placing the books in the beams of light.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", one at each glowing pillar in the guildhall.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", one at each glowing pillar in the guildhall.",
+            [ALLIANCE_EBONHEART_PACT] = ", one at each glowing pillar in the guildhall."
+        }
+    },
+    ["Talk to Shalidor 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In central Reaper's March, in the Rawl'kha Mages Guild, the center of the lower level is surrounded by tomes circling in glowing pillars of light. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In northeastern Bangkorai, the center of the Evermore Mages Guildhall is surrounded by tomes circling in glowing pillars of light. ",
+            [ALLIANCE_EBONHEART_PACT] = "In the eastern city of The Rift, underneath the Riften Mages Guild through a trapdoor, the center of the Ritual Room is surrounded by tomes circling in glowing pillars of light. "
+        },
+        stepTextKey = "Shalidor appeared in a nimbus of light. I should speak to him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " the Arch-Mage.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " the Arch-Mage.",
+            [ALLIANCE_EBONHEART_PACT] = " the Arch-Mage."
+        }
+    },
+    ["Wait for Shalidor"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I'm on the lower level of the Rawl'kha Mages Guildhall at the Temple in central Reaper's March. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I'm in the Evermore Mages Guild in northeastern Bangkorai. ",
+            [ALLIANCE_EBONHEART_PACT] = "I'm in the Ritual Room I entered through a trapdoor, underneath the Riften Mages Guild in the eastern part of The Rift. "
+        },
+        stepTextKey = "This is it, Shalidor is set to wrest Eyevea back to Tamriel. I should watch what he does.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+    ["Enter Portal to Eyevea"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "On the lower level in the Rawl'kha Mages Guild in central Reaper's March, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Evermore Mages Guild in northeastern Bangkorai, ",
+            [ALLIANCE_EBONHEART_PACT] = "In the Ritual Room entered through a trapdoor, underneath the Riften Mages Guild in the eastern part of The Rift, "
+        },
+        stepTextKey = "Shalidor shouted that he sensed something wrong and dove into the portal. I should follow him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ".",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ".",
+            [ALLIANCE_EBONHEART_PACT] = "."
+        }
+    },
+    ["Talk to Shalidor 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I entered Shalidor's portal to Eyevea on the lower level of the Rawl'kha Mages Guild in central Reaper's March. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I entered Shalidor's portal to Eyevea at the Evermore Mages Guild in northeastern Bangkorai. ",
+            [ALLIANCE_EBONHEART_PACT] = "I entered Shalidor's portal to Eyevea in the Ritual Room that I entered  through a trapdoor, underneath the Riften Mages Guild in the eastern part of The Rift. "
+        },
+        stepTextKey = "Shalidor is waiting for me to speak with him about the island. I should do so.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " the Arch-Mage near the wayshrine on the island of Eyevea.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " the Arch-Mage near the wayshrine on the island of Eyevea.",
+            [ALLIANCE_EBONHEART_PACT] = " the Arch-Mage near the wayshrine on the island of Eyevea."
+        }
+    },
+    ["Find Shalidor at the Guild Hall"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "From the portal at the Rawl'kha Mages Guild in central Reaper's March, I came to Shalidor's island. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "From the portal at the Evermore Mages Guild in northeastern Bangkorai, I came to Shalidor's island. ",
+            [ALLIANCE_EBONHEART_PACT] = "From the portal under the Riften Mages Guild in the eastern part of The Rift, I came to Shalidor's island. "
+        },
+        stepTextKey = "Daedra swarm the island of Eyevea, and Shalidor is furious. He's gone ahead to the Guild Hall to look around. I'll need to fight my way through the Daedra to meet him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " at the center of the island by following the central road southwest and then west from the Eyevea Wayshrine.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " at the center of the island by following the central road southwest and then west from the Eyevea Wayshrine.",
+            [ALLIANCE_EBONHEART_PACT] = " at the center of the island by following the central road southwest and then west from the Eyevea Wayshrine."
+        }
+    },
+    ["Talk to Sheogorath 1"] = {
+	appendStepText="I found the Guild Hall at the center of Eyevea. Sheogorath was there. ",
+	stepTextKey="In his anger, Shalidor confronted Sheogorath. The Mad God easily subdued the Archmage. I should talk to Sheogorath and try to resolve the situation.",
+	appendText=".", stepTextKey="In his anger, Shalidor confronted Sheogorath. The Mad God easily subdued the Archmage. I should talk to Sheogorath and try to resolve the situation."
+    },
+    ["Talk to Shalidor 3"] = {
+	appendStepText="On Eyevea, ",
+	stepTextKey="Sheogorath has given this island to us, but Daedra swarm from the open portals. I should talk Shalidor to plan our next move.",
+	appendText=" in front of the Guild Hall at the center of the island."
+    },
+    ["Close the West Portal"] = {
+	appendStepText="On the island of Eyevea, ",
+	stepTextKey="Shalidor asked me to close the portals on the edges of Eyevea. That should stop the influx of Daedra. Sheogorath told me that to close the portals I'll need to pull out the nearby crystals powering them.",
+	appendText=" behind the guildhall by taking its yellow crystal.\n"
+    },
+    ["Close the Northeast Portal"] = {
+	appendStepText="On the island of Eyevea, ",
+	stepTextKey="Shalidor asked me to close the portals on the edges of Eyevea. That should stop the influx of Daedra. Sheogorath told me that to close the portals I'll need to pull out the nearby crystals powering them.",
+	appendText=" by taking its white crystal.\n"},
+    ["Close the Southeast Portal"] = {
+	appendStepText="On the island of Eyevea, ",
+	stepTextKey="Shalidor asked me to close the portals on the edges of Eyevea. That should stop the influx of Daedra. Sheogorath told me that to close the portals I'll need to pull out the nearby crystals powering them.",
+	appendText=" by taking its green crystal."
+    },
+    ["Place the Crystals at the Guildhall"] = {
+	appendStepText="On the island, I closed the portals. Now ",
+	stepTextKey="I have the three crystals that were powering portals around Eyevea. By placing them in the sconces out front of the Guildhall I should be able to help Shalidor crack that ward.",
+	appendText="\n\nOne sconce is on the guildhall's south side near the well. Two others are in front, to the north."
+    },
+    ["Talk to Shalidor 4"] = {
+	appendStepText="On the island of Eyevea, ",
+	stepTextKey="I've closed the portals and slotted the power crystals out front of the Guildhall. I should speak to Shalidor once again to see how he's doing with the ward.",
+	appendText=" the Arch-Mage in front of the Eyevea Guildhall."
+    },
+    ["Enter the Guildhall"] = {
+	appendStepText="At the center of Eyevea, ",
+	stepTextKey="Shalidor removed the ward from the Guildhall doors. Time to face Sheogorath once again.",
+	appendText="."
+    },
+    ["Confront Sheogorath"] = {
+	appendStepText="At the center of the island of Eyevea, ",
+	stepTextKey="Sheogorath and his assistant Haskill await me inside the Hall. I should confront him and tell him to leave.",
+	appendText=", the Mad God."
+    },
+    ["Defeat Haskill"] = {
+	appendStepText="In the Mages Guildhall at the center of the island of Eyevea, ",
+	stepTextKey="Sheogorath says he isn't the fighting type, so he's instructed Haskill to spar with me. I should do my best to defeat the Mad God's assistant.",
+	appendText="."
+    },
+    ["Watch the Confrontation"] = {
+	appendStepText="",
+	stepTextKey="After defeating Haskill Shalidor burst his way into the Guildhall. I should watch the confrontation between the Arch-Mage and Sheogorath.",
+	appendText=" inside the Eyevea Mages Guildhall."
+    },
+    ["Talk to Sheogorath 2"] = {
+	appendStepText="In the Mages Guildhall at the center of Eyevea, ",
+	stepTextKey="Sheogorath has made me a tempting offer. He says that I can choose to have Valaste stay, or go with him. If she stays, he'll cure her insanity. If she goes, he'll give me a tome of power worth several skyshards. I should choose what to do.",
+	appendText=" about his latest deal."
+    },
+    ["Talk to Sheogorath 3"] = {
+	appendStepText="In the Mages Guildhall at the center of Eyevea, ",
+	stepTextKey="I've chosen to allow Sheogorath to take Valaste with him to the Shivering Isles. I should speak to him again to receive my reward.",
+	appendText="."
+    },
+    ["Wait for Sheogorath"] = {
+	appendStepText="In the Eyevea Mages Guildhall, ",
+	stepTextKey="Sheogorath seems to be taking my choice in stride. I should wait for him to make his exit.",
+	appendText="."
+    },
+    ["Talk to Valaste 2"] = {
+	appendStepText="",
+	stepTextKey="With Sheogorath gone and Valaste's sanity returned, it seems we're well and truly in control of Eyevea. I should speak with Valaste to see how she's doing.",
+	appendText=" inside the Eyevea Mages Guildhall."
+    },
+},
+
+
+    [GetQuestName(4971)] = { --"The Arch-Mage's Boon"  --Jordakai
+        [1] = 
+            {appendStepText="At the center of the island of Eyevea, in front of the Mages Guild Hall, ", stepTextKey="Shalidor has asked for a moment to prepare casting the memory charm."},
+        ["Watch Shalidor Prepare the Spell"] =
+            {appendText="."},
+        [2] = 
+            {appendStepText="In front of the Eyevea Mages Guild Hall, ", stepTextKey="I should speak to the Arch-Mage again so that he can cast the memory charm on me."},
+        ["Talk to Shalidor"] =
+            {appendText=" the Arch-Mage."},
+    },
+-- 		=========================================================================
+--		  Mages Guild Dailies
+-- 		=========================================================================
+
+    [GetQuestName(5814)] = { --"Madness in Alik'r Desert"--Jordakai
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover the Longsleeves from the Lost City of the Na-Totambu."},
+        ["Recover the Longsleeves from the Lost City of the Na-Totambu in Alik'r Desert"] =
+            {appendText=", from the Mad God's Coffer in the ancient site's west-central area near the western wall, behind pillars of light. The Lost City is far to the east of Sentinel, northwest of the southeastern city of Kozanset, in the high cliffs east of Sap's Spine Wayshrine. Its entrance is a trapdoor in the sand at the side of the road."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+        [3] = 
+            {appendStepText="Now that I've recovered it, ", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+[GetQuestName(5816)] = { --"Madness in Auridon"--Aashiana
+        [1] = 
+            {appendStepText="Across from a small island along the south-central coast of Auridon, up a dirt path to a wooden door in the rocky hillside, ", stepTextKey="I need to find and recover Embittering Muzzle from Toothmaul Gully."},
+        ["Recover Embittering Muzzle from Toothmaul Gully in Auridon"] =
+            {appendText=". The chest containing the relic is in the large central cavern, behind the Toothmaul camp and the giant Strangler known as Bloodroot."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+
+[GetQuestName(5818)] = { --"Madness in Bangkorai"--Aashiana
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Asylum Earplugs from Razak's Wheel."},
+        ["Recover Asylum Earplugs from Razak's Wheel in Bangkorai"] =
+            {appendText=", southwest of the southern road. A dead mage near a broken cart and imposing archways lies before the entrance to these large Dwemer ruins.\n\nOnce inside, travel straight ahead and follow the eastern passageways through two large rooms, where Imperial Guardsmen investigate the dwemer constructs that remain active. Continue following the easternmost pathway as it turns north to another large open room. The coffer containing the Asylum Earplugs is behind a flesh abomination on a stone altar in the southeast corner of the room."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+
+[GetQuestName(5819)] = { --"Madness in Deshaan"--Wex
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover the Ceremonial Cheese Knife from the Forgotten Crypts."},
+        ["Recover the Ceremonial Cheese Knife from the Forgotten Crypts in Deshaan"] =
+            {appendText=". The crypts are located along the road to the north of Narsis.\n\nThe Mad God's Coffer lies somewhere within a kwama den."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+[GetQuestName(5820)] = { --"Madness in Eastmarch"--Aashiana
+        [1] = 
+            {appendStepText="In the northern city of Windhelm, ", stepTextKey="I need to find and recover The About Face from Hall of the Dead."},
+        ["Recover The About Face from Hall of the Dead in Eastmarch"] =
+            {appendText=". The torchlit, wooden entrance to the Hall of the Dead is in a sunken courtyard west of the Mages Guild. Follow the passages through the Hall of the Dead, staying to the left and heading to the southeast, fighting off the risen dead at every turn.\n\nContinue through the icy caves to a large pillared rectangular chamber to the east. Here, Reynor the Destroyer reigns over his undead thralls and draugr from his throne in the back of the room. A chest containing the relic sits near the throne."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+[GetQuestName(5822)] = { --"Madness in Glenumbra"--Aashiana
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover the Discordant Fiddle from Bad Man's Hallows."},
+        ["Recover the Discordant Fiddle from Bad Man's Hallows in Glenumbra"] =
+            {appendText=". The entrance is in the cliffs along the beach southwest of the main docks in Daggerfall. Inside, travel to the back of the Hollow behind the central tree, and take the portal near the pillar by the water to the underground caves.\n\nEnter the tunnel directly across from the portal with three purple mushrooms on the left side of the entrance. Take the right-hand fork and jump down into the deep hole. Continue down the passage at the bottom to the cave where the Giant Snake Mother makes her den. The coffer containing the Discordant Fiddle is in the back of the cave with the remains of unlucky adventurers."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+[GetQuestName(5823)] = { --"Madness in Grahtwood"--Aashiana
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Big Sister, Little Brother from Root Sunder Ruins."},
+        ["Recover Big Sister, Little Brother from Root Sunder Ruins in Grahtwood"] =
+            {appendText=", the large Ayleid ruins east of the bend in the road heading south from Elden Root. Aldmeri researchers' tents surround the entrance to the site. \n\nFrom the first central cavern, take the eastern passageway to another large cavern and then north up the stairs to the small cave farthest from the entrance. Remnants of an old stone pathway lead up the Mad God's Coffer, near blue glowing crystals in a pile of bones. A large bone colossus rises from the dead periodically to guard the treasure."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+[GetQuestName(5824)] = { --"Madness in Greenshade"--Aashiana
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Wabbajerky from Rulanyil's Fall."},
+        ["Recover Wabbajerky from Rulanyil's Fall in Greenshade"] =
+            {appendText=". The entrance to the caves can be found on the south side of the eastern end of the west-central mountain range in Greenshade. Stone steps lead up to the Ayleid ruins built into the mountainside.\n\nThe Wabbajerky can be found in the southeasternmost room of the ruins, which can be reached by crossing through the partially submerged ruins south of the entrance, then heading east along the southern corridor.\n\nThe coffer containing the Wabbajerky is behind the central altar, which may be guarded by undead minions."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+   [GetQuestName(5825)] = { --"Madness in Malabal Tor"--Wex
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Lucid Liquor from Crimson Cove."},
+        ["Recover Lucid Liquor from Crimson Cove in Malabal Tor"] =
+            {appendText=". The cove is located east of Velyn Harbor along the coast.\n\nThis cove is home to an infamous mage named Kathner the Cunning, who spends his time experimenting on trolls. He is the kind of person who would likely keep one of the Mad God's relics in his possession."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" in the Mages Guild in one of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" in the Mages Guild in one of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+[GetQuestName(5826)] = { --"Madness in Reaper's March"--Aashiana
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover a Ravenous Rodent from the Vile Manse."},
+        ["Recover a Ravenous Rodent from the Vile Manse in Reaper's March"] =
+            {appendText=". The Vile Manse is a large stone mansion in the far northwest corner of Reaper's March, seldom visited for good reason. It appears relatively normal on the main floors, but go through the trapdoor in the kitchen and a large labyrinth of monstrous beings and dangerous doings is revealed. It's not hard to imagine that the Daedric Prince would conceal something unusual down here.\n\nTravel through the tortuous passageways to reach the southernmost cave. Where a frozen woman on the floor gestures toward a board with unreadable messages, the cave passage to the left leads down to one of Sheogorath's secret hideaways. Inside the large frozen cave, a coffer containing the Ravenous Rodent lies behind a frozen pillar near the central table. Best to get this back to the Mages Guild as soon as possible..."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in any of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+
+    [GetQuestName(5827)] = { --"Madness in Rivenspire"--Wex
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Mad God's Lost Button from Obsidian Scar."},
+        ["Recover Mad God's Lost Button from Obsidian Scar in Rivenspire"] =
+            {appendText=". The entrance to Obsidian Scar lies tucked away in the mountains northwest of the road leading from Shornhelm to Northpoint.\n\nZilbash the Deceiver, a ruthless warrior of the Oathbound Clan, is closing in on the Mad God's Coffer deep within the ruins."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" in the Mages Guild in one of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" in the Mages Guild in one of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+    [GetQuestName(5828)] = { --"Madness in Shadowfen"  --Jordakai
+        [1] = 
+            {appendStepText="I spoke with Alvur Baren at the Mages Guild. ", stepTextKey="I need to find and recover The Eidar Scrolls: The Merethic Cheeses, Vol 2 from Sanguine's Demesne."},
+        ["Recover The Eidar Scrolls"] =
+            {appendText=" from the Mad God's Coffer near the wall in the far northern chamber of a Daedric shrine. The shrine is in an Argonion ruin to the northeast, east of the northern city of Stormhold."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" in the Mages Guild at Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+        [3] = 
+            {appendStepText="Now that I've recovered it, ", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" in the Mages Guild at Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+   [GetQuestName(5829)] = { --"Madness in Stonefalls"  --Cyberjanet
+        [1] = 
+            {appendStepText="The relic is hidden in Crow's Wood, a secret island sanctuary near Davon's Watch. The entrance is strangely concealed in a cave close to the dockside pub, The Fish Stink.\n\n", stepTextKey="I need to find and recover The Nightlight from Crow's Wood."},
+        ["Recover The Nightlight from Crow's Wood in Stonefalls"] =
+            {appendText=". The chest is at the base of statue in a glowing green pool near the southeast shore of the mainland. It is protected by ghostly figures and wraiths."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" in the Mages Guild at Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+        [3] = 
+            {appendStepText="Now that I've recovered it, ", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" in the Mages Guild at Mournhold in Deshaan, Elden Root in Grahtwood, or Wayrest in Stormhaven."},
+    },
+
+[GetQuestName(5830)] = { --"Madness in Stormhaven" --Wex
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Uncle Leo's Spectacles from Bonesnap Ruins."},
+        ["Recover Uncle Leo's Spectacles from Bonesnap Ruins in Stormhaven"] =
+            {appendText=". The wayshrine to the ruins lies along the river flowing from Alcaire Castle.\n\nIn a cave deep within the ruins lies an Ayleid throne under the protection of Eternal Soldiers. Perhaps the Mad God hid one of his coffers there."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" in the Mages Guild in one of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" in the Mages Guild in one of the three Alliance capital cities - Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
+
+[GetQuestName(5831)] = { --"Madness in the Rift"  --Aashiana
+        [1] = 
+            {appendStepText="", stepTextKey="I need to find and recover Madman's Chalice from the Lion's Den."},
+        ["Recover Madman's Chalice from the Lion's Den in the Rift"] =
+            {appendText=", a stronghold in the western mountains. To reach it, travel west of Nimalten to a Fighters and Mages guild camp overlooking a Worm Cult excavation, just southwest of the Taarengrav Wayshrine. Take the path leading west from the dragon mound being excavated below.\n\nOnce inside the Lion's Den, follow the path up the central valley and through the stockaded entrance to the upper valley. Take the right-hand path up the hill to a wooden doorway behind a poster warning about a giant in the cave. The coffer containing the Madman's Chalice is prominently displayed on a ledge in the giant's camp at the top of the hill."},
+        [2] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren in my Alliance capital."},
+        ["Return to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should return the relic to Alvur Baren."},
+        ["Talk to Alvur Baren"] =
+            {appendText=" at the Mages Guild in Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
+    },
 -- ==================================================================================================================================================
 --	Undaunted																															Undaunted
 -- ==================================================================================================================================================

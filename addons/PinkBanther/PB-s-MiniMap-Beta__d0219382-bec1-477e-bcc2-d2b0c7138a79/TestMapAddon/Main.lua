@@ -456,11 +456,33 @@ local function HookHotPathDeferred(container, key, addonImpl)
 	return vanilla
 end
 
+-- Swapping a hook in or out means writing a saved function into a shared slot, and that slot
+-- does not belong to this add-on alone.
+--
+-- If another add-on has hooked the same function after we did, what is installed is its
+-- wrapper -- around ours. Writing our saved pointer over that does not remove our hook, it
+-- removes theirs, permanently and silently. HarvestMap hooks
+-- ZO_WorldMapPins_Manager:UpdatePinsForMapSizeChange, which is how its pins follow the zoom,
+-- and it stopped working the first time the player opened and closed the world map: that is
+-- the first dormancy transition, and the transition was overwriting its wrapper.
+--
+-- So a swap only happens when what is installed is still the exact function we expect to be
+-- replacing. When somebody has wrapped us we leave the chain alone and stay in it; our own
+-- implementations already hand straight back while the standard map is in front, which is the
+-- state the swap was for.
+local function SwapHook(hook, from, to)
+	if hook.container[hook.key] == from then
+		hook.container[hook.key] = to
+		return true
+	end
+	return false
+end
+
 function addon:InstallDeferredHotPathHooks()
 	for i = 1, #pendingHooks do
 		local hook = pendingHooks[i]
 		hook.pending = nil
-		hook.container[hook.key] = hook.addonImpl
+		SwapHook(hook, hook.vanilla, hook.addonImpl)
 	end
 	pendingHooks = {}
 end
@@ -471,7 +493,11 @@ function addon:SetHotPathHooksActive(active)
 		local hook = hotPathHooks[i]
 		-- Never install a hook that was deferred and not asked for.
 		if not hook.pending then
-			hook.container[hook.key] = active and hook.addonImpl or hook.vanilla
+			if active then
+				SwapHook(hook, hook.vanilla, hook.addonImpl)
+			else
+				SwapHook(hook, hook.addonImpl, hook.vanilla)
+			end
 		end
 	end
 end
@@ -1113,6 +1139,23 @@ function addon:InitTweaks()
 			labelControl:SetDrawLevel(pinLevel + 1)
 		end
 		function ZO_WorldMapPins_Manager:UpdatePinsForMapSizeChange()
+			-- Hand straight back unless the custom minimap mode is actually in use.
+			--
+			-- This is the async pin-resize machinery, and it belongs to that mode. Every other
+			-- replacement in this file is gated the same way; this one was not, so it ran on
+			-- the lite path where the mode is never entered.
+			--
+			-- That matters beyond wasted work. Add-ons load HarvestMap before PBsMiniMap, so
+			-- its ZO_PreHook on this method ends up underneath our replacement -- and the cache
+			-- below returns without calling through whenever the container has not changed
+			-- size. HarvestMap's hook is what moves its pins when the map zooms, so its pins
+			-- stopped following the zoom on the standard map.
+			--
+			-- Anything hooked under us now always runs, which is what "no involvement while
+			-- the standard map is showing" was supposed to mean in the first place.
+			if not WORLD_MAP_MANAGER:IsInMode(MAP_MODE_PBS_MINIMAP) then
+				return orgUpdatePinsForMapSizeChange(self)
+			end
 			w, h = ZO_WorldMapContainer:GetDimensions()
 			local zone = GetMapTileTexture()
 			if lastW ~= w or lastH ~= h or lastZone ~= zone then
@@ -1165,6 +1208,22 @@ function addon:InitRequiredModifications()
 		ZO_WorldMapPins_Manager,
 		"UpdatePinsForMapSizeChange",
 		function(pins)
+			-- Never stand between the game and anything hooked beneath us while the standard
+			-- map is in front.
+			--
+			-- This hook exists to drop redundant full pin refreshes, which is worth having on
+			-- the HUD where the add-on memory pool is the constraint. But dropping a call also
+			-- drops everything hooked under it: HarvestMap tracks zoom with a ZO_PreHook on
+			-- this very method, add-ons load it before this one so its hook sits underneath,
+			-- and its pins stopped following the zoom on the standard map because the call
+			-- never reached it.
+			--
+			-- On the standard map there is nothing to save -- the add-on is meant to be
+			-- invisible there -- so the call goes straight through.
+			if IsWorldMapInFront() then
+				return orgUpdatePinsForMapSizeChange(pins)
+			end
+
 			local w, h = ZO_WorldMapContainer:GetDimensions()
 			w, h = zo_round(w), zo_round(h)
 			local zone = GetMapTileTexture()
@@ -2691,12 +2750,58 @@ function addon:Initialize()
 		ZO_WorldMap_UpdateMap = orgZO_WorldMap_UpdateMap
 	end
 
+	-- The game persists the map window's geometry, and we must not be the one writing it.
+	--
+	-- ZO_WorldMap_OnResizeStop calls SaveMapPosition, and SetMapWindowSize ends by storing the
+	-- new width and height. Both write into WORLD_MAP_MANAGER:GetModeData(), and that table is
+	-- g_savedVars[mode] -- the game's own ZO_Ingame_SavedVariables. Both are guarded by
+	-- IsInMode(MAP_MODE_SMALL_CUSTOM), so with the map in any other mode they do nothing, and
+	-- the logs from this add-on have only ever shown mode 2 (MAP_MODE_LARGE_CUSTOM).
+	--
+	-- But a player whose map is in the small mode would have the minimap's size and position
+	-- written into their saved standard-map geometry, every time the layout was applied, and
+	-- it would survive uninstalling this add-on. So the mode data is put back exactly as it
+	-- was around anything that could touch it.
+	local function CaptureModeData()
+		if not WORLD_MAP_MANAGER or not WORLD_MAP_MANAGER.GetModeData then
+			return nil
+		end
+		if not MAP_MODE_SMALL_CUSTOM or not WORLD_MAP_MANAGER:IsInMode(MAP_MODE_SMALL_CUSTOM) then
+			return nil
+		end
+		local modeData = WORLD_MAP_MANAGER:GetModeData()
+		if not modeData then
+			return nil
+		end
+		return {
+			data = modeData,
+			width = modeData.width,
+			height = modeData.height,
+			point = modeData.point,
+			relPoint = modeData.relPoint,
+			x = modeData.x,
+			y = modeData.y,
+		}
+	end
+
+	local function RestoreModeData(saved)
+		if not saved then
+			return
+		end
+		local modeData = saved.data
+		modeData.width, modeData.height = saved.width, saved.height
+		modeData.point, modeData.relPoint = saved.point, saved.relPoint
+		modeData.x, modeData.y = saved.x, saved.y
+	end
+
 	function addon:ApplyLiteMinimapLayout()
 		local account = self.account
 		if not account or not ZO_WorldMap then
 			return
 		end
 		CaptureDefaultLayout()
+
+		local savedModeData = CaptureModeData()
 
 		-- Everything below is this add-on moving the window on purpose, so the anchor guard
 		-- has to let it through.
@@ -2766,6 +2871,7 @@ function addon:Initialize()
 		end
 
 		ZO_WorldMap_UpdateMap = orgZO_WorldMap_UpdateMap
+		RestoreModeData(savedModeData)
 		self:EndOwnAnchor()
 	end
 
@@ -3368,7 +3474,11 @@ function addon:Initialize()
 			)
 		end
 		em:RegisterForEvent(self.name .. "LiteZone", EVENT_ZONE_CHANGED, resync)
-		em:RegisterForEvent(self.name .. "LiteActivated", EVENT_PLAYER_ACTIVATED, resync)
+		em:RegisterForEvent(
+			self.name .. "LiteActivated",
+			EVENT_PLAYER_ACTIVATED,
+			resync
+		)
 		-- Not present on every API version, so only wire it up when it exists.
 		if EVENT_LINKED_WORLD_POSITION_CHANGED then
 			em:RegisterForEvent(self.name .. "LiteLinked", EVENT_LINKED_WORLD_POSITION_CHANGED, resync)

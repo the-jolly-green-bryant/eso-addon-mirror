@@ -1644,6 +1644,25 @@ function WPamA:UpdRowModeBook(v, r)
   end
 end
 
+function WPamA:UpdRowModeFavors(v, r)
+  local clrLabel, clrGray, clrGreen = self.Colors.LabelLvl, self.Colors.DungStNA, self.Colors.DungStDone
+  local progrFormat = "<<1>> / <<2>>"
+  local txt = ""
+  for i = 1, #self.Favors.QuestIDs do
+    local Favors = v.Favors[i]
+    if (not Favors.Unlock) or (not Favors.Total) then
+      r.B[i]:SetColor(self:GetColor(clrGray)) -- gray
+      txt = self.i18n.DungStNA
+    else
+      local color = (Favors.Unlock >= Favors.Total) and clrGreen or clrLabel
+      color = (Favors.Unlock == 0) and clrGray or clrLabel
+      r.B[i]:SetColor(self:GetColor(color)) -- white color by default or green
+      txt = zo_strformat(progrFormat, Favors.Unlock, Favors.Total)
+    end
+    self:SetScaledText(r.B[i], txt)
+  end
+end
+
 function WPamA:UpdRowModeCharInfo(v, r, TS)
   local icon, SecInDay = self.Consts.IconsW, self.Consts.SecInDay
   local iconFormat = "|t24:24:<<1>>|t"
@@ -1824,6 +1843,8 @@ function WPamA:UpdWindowModeChar()
           self:UpdRowModeWeaponCharge(v, r)
         elseif m == 49 then
           self:UpdRowModeBlueprints(v, r)
+        elseif m == 51 then
+          self:UpdRowModeFavors(v, r)
         end
       end
     end
@@ -2168,6 +2189,7 @@ end
 function WPamA:UpdInvtItemsInternal(Invt, bagIdX)
   local II = self.Inventory.InvtItem
   local BI = self.Inventory.InvtItemByID
+  local IT = self.Inventory.ItemTypeForCheckST
 -- Scan for Items
   local function do_upd(bagId)
     local slotId = ZO_GetNextBagSlotIndex(bagId, nil)
@@ -2179,7 +2201,7 @@ function WPamA:UpdInvtItemsInternal(Invt, bagIdX)
         local _, stack = GetItemInfo(bagId, slotId)
         Invt[j] = (Invt[j] or 0) + stack
       else
-        if (itemType == ITEMTYPE_TROPHY) or (itemType == ITEMTYPE_TOOL) or (itemType == ITEMTYPE_SOUL_GEM) then
+        if IT[itemType] then
           local icon, stack = GetItemInfo(bagId, slotId)
           for i = 1, #II do
             if itemType == II[i].t and (specialType == II[i].st or icon == II[i].i) then
@@ -2191,7 +2213,7 @@ function WPamA:UpdInvtItemsInternal(Invt, bagIdX)
       end
       slotId = ZO_GetNextBagSlotIndex(bagId, slotId)
     end
-  end
+  end -- do_upd end
   ---
   if type(bagIdX) == "table" then
     for _, v in pairs(bagIdX) do
@@ -2338,6 +2360,17 @@ function WPamA:UpdAvailableCHMP(init)
   end
 end -- UpdAvailableCHMP end
 
+function WPamA:UpdFavorsCount()
+  local Favors = self.CurChar.Favors
+  for i = 1, #self.Favors.QuestIDs do
+    local unlocked, total = GetNumUnlockedMailsInMailList(i)
+    if total > 0 then
+      Favors[i].Unlock = unlocked
+      Favors[i].Total  = total
+    end
+  end
+end
+
 function WPamA:UpdLoreBookCount()
   local Books = self.CurChar.Books
   local n = GetNumLoreCategories()
@@ -2379,9 +2412,10 @@ function WPamA:UpdCharInfo()
 --]]
     self:UpdActiveCompanionData()
     self:UpdLoreBookCount()
+    self:UpdFavorsCount()
     self:UpdWindowInfo(true)
   end 
-end
+end -- UpdCharInfo end
 
 function WPamA:UpdCharLoginData(isPlayerChangedZone)
   if self.SV_Main.RequestedReloadUI then
@@ -2561,6 +2595,11 @@ function WPamA:InitCharsList(SV)
       if v.Festivals[j] == nil then v.Festivals[j] = {} end
     end
 --
+    if v.Favors == nil then v.Favors = {} end
+    for j = 1, #self.Favors.QuestIDs do
+      if v.Favors[j] == nil then v.Favors[j] = {} end
+    end
+--
     if v.RidingSkills == nil then v.RidingSkills = {[1] = 0, [2] = 0, [3] = 0, [4] = nil}
       -- 1 = Speed, 2 = Stamina, 3 = Capacity, 4 = TimeWhenNextTrainReady
     end
@@ -2666,8 +2705,11 @@ function WPamA:InitSavedVars()
 -- Initialization of the account's Companions
   if SV.Companions == nil then SV.Companions = {} end
   for ccid = 1, #self.Companions.Persons do
-    if SV.Companions[ccid] == nil then SV.Companions[ccid] = { Lvl = 99, LvlPrc = 0, Skills = {}, Equips = {} } end
+    if SV.Companions[ccid] == nil then
+      SV.Companions[ccid] = { Lvl = 99, LvlPrc = 0, Skills = {}, Equips = {}, SkillBar = {} }
+    end
     if SV.Companions[ccid].Equips == nil then SV.Companions[ccid].Equips = {} end
+    if SV.Companions[ccid].SkillBar == nil then SV.Companions[ccid].SkillBar = {} end
   end
 -- Initialization of Window
   if SV.isWindVisible == nil then SV.isWindVisible = {} end
@@ -2725,6 +2767,7 @@ function WPamA:InitSavedVars()
   if SV.CharNamesCorrMode == nil then SV.CharNamesCorrMode = 0 end
   if SV.CharNamesMaskFrom == nil then SV.CharNamesMaskFrom = "" end
   if SV.CharNamesMaskTo == nil then SV.CharNamesMaskTo = "" end
+  if SV.DynEncounterNotifyMode == nil then SV.DynEncounterNotifyMode = 1 end
   if SV.CompanionRapportMode == nil then SV.CompanionRapportMode = 1 end
   if SV.CompanionRapportShowMax == nil then SV.CompanionRapportShowMax = true end
   if SV.CompanionEquipMode == nil then SV.CompanionEquipMode = 1 end
@@ -3024,6 +3067,14 @@ function WPamA:Initialize()
       ReloadUI()
     elseif cmd == "rcpb" or cmd == "bluepr" then
       self:ShowRecipeData()
+    elseif cmd == "favors" then
+      local favors = self.CurChar.Favors
+      msg("Favors Status")
+      for j = 1, #self.Favors.QuestIDs do
+        local name = GetMailListName(j)
+        msg(zo_strformat("<<1>>: <<2>> / <<3>>", name, favors[j].Unlock or "none", favors[j].Total or "none"))
+      end
+    ---
     end
   end
   SLASH_COMMANDS["/rgla"] = function(cmd)
@@ -3672,6 +3723,11 @@ function WPamA.OnQuestRemoved(eventCode, isCompleted, journalIndex, questName, z
     if isCompleted then
       local di = WPamA.EndlessDungeons.Iterators.IQ[questId]
       WPamA.CurChar.EndlessDungeons[di].EndTS = 0
+    end
+  ------------
+  elseif WPamA.Favors.Iterators.Q[questId] then -- daily Favors
+    if isCompleted then
+      WPamA:UpdFavorsCount()
     end
   ------------
   elseif ZO_IsElementInNumericallyIndexedTable(WPamA.AvA.BattleGrounds.DailyQuestIDs, questId) then -- BattleGrounds dailies
@@ -4498,6 +4554,7 @@ function WPamA.OnAddOnLoaded(event, addonName)
     EM:RegisterForEvent(WN, EVENT_COMPANION_SKILL_LINE_ADDED, WPamA.OnCompanionSkillLineUpdate)
     EM:RegisterForEvent(WN, EVENT_COMPANION_SKILL_RANK_UPDATE, WPamA.OnCompanionSkillLineUpdate)
     EM:RegisterForEvent(WN, EVENT_COMPANION_SKILL_XP_UPDATE, WPamA.OnCompanionSkillLineUpdate)
+    EM:RegisterForEvent(WN, EVENT_HOTBAR_SLOT_STATE_UPDATED, WPamA.OnCompanionSkillBarUpdate)
     EM:RegisterForEvent(WN, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, WPamA.OnCompanionEquipSlotUpdate)
     EM:AddFilterForEvent(WN, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_COMPANION_WORN)
 --

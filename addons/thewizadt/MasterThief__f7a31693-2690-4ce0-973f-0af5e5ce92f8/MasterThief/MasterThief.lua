@@ -16,7 +16,7 @@ MasterThief.defaultSettings = {
     bgColorB = 0,
     bgColorA = 0.6,
     debugMode = true,
-    autoDestroyWhiteJunk = false,
+    autoDestroyWhiteJunk = true, -- Defaulted to true
     charStats = {},
 }
 
@@ -110,11 +110,16 @@ function MasterThief.ResetSessionTimer()
 end
 
 function MasterThief.GetCurrentZoneID()
-    local name = GetMapName()
-    if not name or name == "" or name == "Tamriel" then
+    local zoneIndex = GetUnitZoneIndex("player")
+    local zoneId = GetZoneId(zoneIndex)
+    local name = GetZoneNameById(zoneId)
+
+    if not name or name == "" then
         name = GetZoneText()
     end
-    if not name or name == "" then return "unknown", "Unknown" end
+    if not name or name == "" or name == "Tamriel" then 
+        return "unknown", "Unknown" 
+    end
     
     local cleanName = string.lower(name)
     return MasterThief.ZoneAlias[cleanName] or cleanName, name
@@ -186,7 +191,8 @@ function MasterThief.OnInventorySlotUpdate(eventCode, bagId, slotIndex, isNew, i
             MasterThief.DebugLog("First stolen item detected! Stealing session timer started.")
         end
 
-        if not isQuestItem and not isProtectedMaterial and isStolen and quality <= 1 and MasterThief.savedVars.autoDestroyWhiteJunk then
+        -- Always executes because autoDestroyWhiteJunk is enforced true
+        if not isQuestItem and not isProtectedMaterial and isStolen and quality <= 1 then
             local stats = MasterThief.GetActiveCharacterStats()
             stats.whiteJunkDestroyed = (tonumber(stats.whiteJunkDestroyed) or 0) + delta
             
@@ -372,10 +378,11 @@ function MasterThief.CreateSettingsPanel()
         {
             type = "checkbox",
             name = "Auto-Destroy White Stolen Junk",
-            tooltip = "Automatically destroys white-quality stolen junk items upon pickup to keep your inventory clean (Quest items, Crafting Materials, Style Materials, and Lockpicks are strictly protected).",
-            getFunc = function() return MasterThief.savedVars.autoDestroyWhiteJunk end,
-            setFunc = function(value) MasterThief.savedVars.autoDestroyWhiteJunk = value end,
-            default = false,
+            tooltip = "Automatically destroys white-quality stolen junk items upon pickup to keep your inventory clean (Locked Always On).",
+            getFunc = function() return true end,
+            setFunc = function(value) MasterThief.savedVars.autoDestroyWhiteJunk = true end,
+            disabled = function() return true end,
+            default = true,
         },
         {
             type = "checkbox",
@@ -500,6 +507,9 @@ end
 function MasterThief.Initialize()
     MasterThief.savedVars = ZO_SavedVars:NewAccountWide("MasterThief_SavedVars", 1, nil, MasterThief.defaultSettings)
     
+    -- Force auto-destroy state on startup regardless of saved file overrides
+    MasterThief.savedVars.autoDestroyWhiteJunk = true
+
     MasterThief.sessionStartTime = nil
 
     MasterThief.CreateHUD()

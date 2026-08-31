@@ -71,6 +71,13 @@ function A:CreateWidget(slot, ordinal)
     local frame = wm:CreateTopLevelWindow(name)
     frame:SetDimensions(size,size)
     frame:SetClampedToScreen(true)
+    -- Keep editable overlays above the LibAddonMenu settings window while HUD
+    -- layout mode is active. LAM opens a high-tier window, so normal TopLevel
+    -- ordering can otherwise put these controls behind the settings panel.
+    if frame.SetDrawLayer and DL_OVERLAY then frame:SetDrawLayer(DL_OVERLAY) end
+    if frame.SetDrawTier and DT_HIGH then frame:SetDrawTier(DT_HIGH) end
+    if frame.SetDrawLevel then frame:SetDrawLevel(1000) end
+    if frame.SetTopLevel then frame:SetTopLevel(true) end
     frame:SetMouseEnabled(false)
     frame:SetMovable(false)
     frame.epcSlot = slot
@@ -227,9 +234,13 @@ function A:RefreshWidget(widget)
         if isUltimate and used and COMBAT_MECHANIC_FLAGS_ULTIMATE then
             local current, maximum = safe(GetUnitPower, 0, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
             current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
-            local cost = tonumber(safe(GetSlotAbilityCost, 0, slot, COMBAT_MECHANIC_FLAGS_ULTIMATE, category)) or 0
+            -- ESO's Ultimate resource is normally 0..500, but the
+            -- percentage shown here is relative to THIS slotted Ultimate's
+            -- actual cost. This intentionally allows values above 100%:
+            -- e.g. 375/250 = 150% and 500/250 = 200%.
+            local cost = tonumber(safe(GetSlotAbilityCost, 0, slot)) or 0
             local target = cost > 0 and cost or maximum
-            local pct = target > 0 and math.floor(math.min(1, current / target) * 100 + 0.5) or 0
+            local pct = target > 0 and math.floor((current / target) * 100 + 0.5) or 0
             widget.epcUltimatePct:SetText(tostring(pct) .. "%")
             widget.epcUltimatePct:SetColor(pct >= 100 and 1.00 or 0.93, pct >= 100 and 0.76 or 0.86, pct >= 100 and 0.18 or 0.36, 1)
             widget.epcUltimatePct:SetHidden(false)

@@ -1,6 +1,5 @@
 -- Deterministic profiling scenarios
---   /furcdev bench     run all scenarios in order (asks for confirmation first)
---   /furcdev bench <n> run one scenario
+--   /furcdev bench   run all scenarios in order (asks for confirmation first)
 
 if not FurCDev then
   return
@@ -9,6 +8,7 @@ local this = FurCDev
 
 -- initial settle before each step
 local DELAY = 1000 -- ms
+local IDLE_TIMEOUT = 6000 -- ms
 
 -- should work in all locales (only tested EN and DE):
 local SEARCH_ITEM_ID = 211366 -- Ayleid Lamp, Ornate Stone
@@ -17,6 +17,13 @@ local SEARCH_FALLBACK = "ayl" -- if item name isn't loaded
 
 local function box()
   return FurC_SearchBox
+end
+
+-- profiler timeline marker
+local function mark(label)
+  if RecordScriptProfilerUserEvent then
+    RecordScriptProfilerUserEvent("furcbench|" .. label)
+  end
 end
 
 -- first n characters of UTF-8 string
@@ -33,12 +40,15 @@ end
 -- poll until FurC is done (abuses the "please wait" label)
 local function whenIdle(cb, waited)
   waited = waited or 0
-  if FurCGui_Wait and not FurCGui_Wait:IsControlHidden() and waited < 6000 then
+  -- The wait control can retain its visible state while its parent window is
+  -- hidden. In that case no GUI refresh can be running, so treat it as idle.
+  local busy = FurCGui and not FurCGui:IsControlHidden() and FurCGui_Wait and not FurCGui_Wait:IsControlHidden()
+  if busy and waited < IDLE_TIMEOUT then
     zo_callLater(function()
       whenIdle(cb, waited + 200)
     end, 200)
   else
-    cb()
+    cb(busy, waited)
   end
 end
 
@@ -50,10 +60,23 @@ local function runSteps(steps, onDone)
     if not s then
       return onDone and onDone()
     end
+    local stepNumber = i
     s.fn()
     -- wait for idle before next step
     zo_callLater(function()
-      whenIdle(nextStep)
+      whenIdle(function(timedOut, idleWaited)
+        if timedOut then
+          mark("idle-timeout step=" .. stepNumber)
+          d(
+            string.format(
+              "|cFF3333FurCDev|r: idle timeout after %d ms at benchmark step %d; continuing",
+              idleWaited,
+              stepNumber
+            )
+          )
+        end
+        nextStep()
+      end)
     end, s.delay or DELAY)
   end
   nextStep()
@@ -73,13 +96,6 @@ local function ensureClosed()
   end
 end
 
--- profiler timeline marker
-local function mark(label)
-  if RecordScriptProfilerUserEvent then
-    RecordScriptProfilerUserEvent("furcbench|" .. label)
-  end
-end
-
 -- clear all filters and debounce rebuild stuff, so we don't keep reloading
 local function resetState()
   local realUpdate = FurC.UpdateGui
@@ -95,6 +111,45 @@ local function resetState()
   end, 700)
 end
 
+-- Always same preconditions for every benchmark
+local function clearCaches()
+  FurC.Utils.ClearLinkCache()
+  FurC.ClearFilterCaches()
+  FurC.SearchIndex.Invalidate()
+  -- force sorted-index rebuild
+  LibFurnitureCatalogue.Internal.DBRevision = LibFurnitureCatalogue.Internal.DBRevision + 1
+end
+
+local function warmCaches()
+  FurC.UpdateGui()
+  if box() then
+    box():SetText(SEARCH_FALLBACK)
+    FurC.GuiSetSearchboxTextFrom(box())
+  end
+end
+
+-- Runs before the profiler starts, so none of it is profiled
+local function prepareSteps(cold)
+  local steps = {
+    { fn = ensureClosed, delay = 600 },
+    {
+      fn = function()
+        mark("prepare")
+        FurC.RebuildDB(true) -- blocking: identical data, and no scan inside the capture
+        clearCaches()
+      end,
+      delay = DELAY,
+    },
+    { fn = resetState },
+  }
+  if not cold then
+    steps[#steps + 1] = { fn = ensureOpen, delay = 700 }
+    steps[#steps + 1] = { fn = warmCaches, delay = DELAY }
+    steps[#steps + 1] = { fn = resetState }
+  end
+  return steps
+end
+
 local function setSource(value)
   return function()
     FurC.SetDropdownChoice("Source", FurC.DropdownData.ChoicesSource[value], value)
@@ -105,16 +160,6 @@ local function setVersion(value)
   return function()
     FurC.SetDropdownChoice("Version", FurC.DropdownData.ChoicesVersion[value], value)
   end
-end
-
-local function maxVersion()
-  local m = 0
-  for k in pairs(FurC.DropdownData.ChoicesVersion or {}) do
-    if type(k) == "number" and k > m then
-      m = k
-    end
-  end
-  return m
 end
 
 -- one step per keystroke, growing the localized item name from 3 chars up to SEARCH_LEN
@@ -140,21 +185,17 @@ local function searchSteps()
 end
 
 -- structure:
--- scenario id -> { label, steps(), setup?() }
+-- scenario id -> { label, steps(), coldCaches? }
 -- (run all runs them in order)
 local function scenarios()
-  local src = FurC.Constants.ItemSources
+  local constants = LibFurnitureCatalogue.Internal.Constants
+  local src = constants.ItemSources
+  local ver = constants.Versioning
   return {
     [1] = {
       label = "window load (cold start + reopen)",
-      -- start closed so first open runs cache stuff etc
-      -- best after a reloadui (or else it might be cached already)
-      setup = function()
-        return {
-          { fn = ensureClosed, delay = 600 },
-          { fn = resetState },
-        }
-      end,
+      -- measures the first refresh
+      coldCaches = true,
       steps = function()
         local function open(tag)
           return {
@@ -196,14 +237,54 @@ local function scenarios()
       end,
     },
     [5] = {
-      label = "version = latest",
+      label = "version = Homestead",
       steps = function()
-        return { { fn = setVersion(maxVersion()) } }
+        return {
+          { fn = setVersion(ver.HOMESTEAD) },
+          {
+            fn = function()
+              local dataLines = FurCGui_ListHolder and FurCGui_ListHolder.dataLines
+              mark("5 result-count=" .. (dataLines and #dataLines or "unavailable"))
+            end,
+            delay = 0,
+          },
+        }
       end,
     },
     [6] = {
       label = "search keystrokes",
       steps = searchSteps,
+    },
+    -- Must run last
+    [7] = {
+      label = "rebuild DB + caches",
+      steps = function()
+        return {
+          {
+            fn = function()
+              clearCaches()
+              FurC.RebuildDB() -- async, exactly as normal use
+              mark("7 onready-request")
+              LibFurnitureCatalogue.API.OnReady(function()
+                mark("7 onready-callback")
+              end)
+            end,
+            delay = DELAY,
+          },
+          -- first refresh rebuilds sorted index
+          { fn = FurC.UpdateGui, delay = DELAY },
+          -- first search rebuilds search-term index
+          {
+            fn = function()
+              if box() then
+                box():SetText(SEARCH_FALLBACK)
+                FurC.GuiSetSearchboxTextFrom(box())
+              end
+            end,
+            delay = DELAY,
+          },
+        }
+      end,
     },
   }
 end
@@ -218,11 +299,10 @@ local function scenarioListText()
 end
 
 local REMINDER = "Before running:\n"
-  .. "- best run after a fresh reloadui\n"
   .. "- wait until addons have settled and run only necessary ones\n"
   .. "- be inside player house (stable fps and nothing else happening)\n"
-  .. "- can't hurt to rebuild DB first (in case of leftover broken items)\n"
   .. "- don't interact with game and keep game window focused until done (~30s per scenario)\n\n"
+  .. "It might take up to 45 seconds before you see the first test pop up, just be patient.\n\n"
 
 -- confirmation popup with Cancel
 local function confirm(body, run)
@@ -250,8 +330,7 @@ end
 local function runSequence(ns)
   local sc = scenarios()
   local loaded, autoProfile = profilerState()
-  local label = (#ns == 1) and tostring(ns[1]) or "ALL"
-  d(string.format("|cFF3333FurCDev|r: benchmark %s%s ...", label, autoProfile and " [profiling]" or ""))
+  d(string.format("|cFF3333FurCDev|r: benchmark ALL%s ...", autoProfile and " [profiling]" or ""))
 
   -- clear the default-shown "please wait" label
   if FurCGui_Wait then
@@ -260,48 +339,58 @@ local function runSequence(ns)
 
   local all = {}
   for idx, n in ipairs(ns) do
-    local setup = sc[n].setup and sc[n].setup() or { { fn = ensureOpen, delay = 700 }, { fn = resetState } }
+    local position = idx
+    local scenarioId = n
+    local scenario = sc[scenarioId]
+    local scenarioTag = scenarioId .. " " .. scenario.label
+
+    -- preconditions for the whole capture
+    local setup = (position == 1 and prepareSteps(scenario.coldCaches))
+      or { { fn = ensureOpen, delay = 700 }, { fn = resetState } }
     for _, s in ipairs(setup) do
       all[#all + 1] = s
     end
-    if idx == 1 and autoProfile then
+    if position == 1 and autoProfile then
       all[#all + 1] = { fn = StartScriptProfiler }
     end
     all[#all + 1] = {
       fn = function()
-        d(string.format("|cFF3333FurCDev|r: [%d/%d] %s", idx, #ns, sc[n].label))
-        mark(n .. " " .. sc[n].label)
+        d(string.format("|cFF3333FurCDev|r: [%d/%d] %s", position, #ns, scenario.label))
+        mark(scenarioTag)
       end,
     }
-    for _, s in ipairs(sc[n].steps()) do
+    for _, s in ipairs(scenario.steps()) do
       all[#all + 1] = s
     end
+    all[#all + 1] = {
+      fn = function()
+        mark("end " .. scenarioTag)
+      end,
+      delay = 0,
+    }
   end
 
   runSteps(all, function()
-    if autoProfile then
-      StopScriptProfiler()
+    mark("benchmark-end")
+    local function finish()
+      if autoProfile then
+        StopScriptProfiler()
+      end
+      -- cleanup
+      ensureClosed()
+      resetState()
+      d("|cFF3333FurCDev|r: benchmark ALL done" .. exportHint(autoProfile, loaded))
+      PlaySound(SOUNDS.JUSTICE_PICKPOCKET_BONUS)
     end
-    -- cleanup
-    ensureClosed()
-    resetState()
-    d("|cFF3333FurCDev|r: benchmark " .. label .. " done" .. exportHint(autoProfile, loaded))
-    PlaySound(SOUNDS.JUSTICE_PICKPOCKET_BONUS)
+    if autoProfile then
+      -- Give the profiler a separate update to record the final marker before
+      -- stopping it.
+      zo_callLater(finish, 100)
+    else
+      finish()
+    end
   end)
 end
-
-local function runBenchmark(token)
-  local sc = scenarios()
-  local n = tonumber(token)
-  if not n or not sc[n] then
-    d("|cFF3333FurCDev|r: unknown scenario '" .. tostring(token) .. "'. Scenarios:\n" .. scenarioListText())
-    return
-  end
-  confirm("Run: " .. sc[n].label, function()
-    runSequence({ n })
-  end)
-end
-this.RunBenchmark = runBenchmark
 
 local function runAll()
   local sc = scenarios()

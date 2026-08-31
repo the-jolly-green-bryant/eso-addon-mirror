@@ -138,7 +138,7 @@ function Settings.RegisterLAM()
         name = "AetherChat",
         displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "1.2",
+        version = "1.2.2",
         registerForRefresh = true,
         registerForDefaults = true,
     }

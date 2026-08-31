@@ -1,3 +1,5 @@
+-- FurCDev entry point: namespace, control references, init
+
 FurCDev = {}
 
 local this = FurCDev
@@ -7,11 +9,6 @@ local control = FurCDevControl
 this.name = "FurnitureCatalogue_DevUtility"
 this.control = control
 this.textbox = FurCDevControlBox
-
-local function toggleEditBox()
-  control:SetHidden(not control:IsHidden())
-end
-this.ToggleEditBox = toggleEditBox
 
 -- List of TestSuites so we can start them from FurCDev
 this.TestSuites = {
@@ -76,29 +73,24 @@ local function handleSlash(args)
 
   -- no arg: trader furniture list
   if cmd == "" then
-    toggleEditBox()
+    this.ToggleEditBox()
   -- list tests
   elseif cmd == "tests" then
     listSuites()
   -- run tests
   elseif cmd == "test" then
     runTests(rest or "")
-  -- profiling benchmarks (runs all if no id)
+  -- profiling benchmarks: run all, sequence important
   elseif cmd == "bench" then
-    local bn = tostring(rest or ""):match("^(%S*)")
-    if bn == "" then
-      if this.RunAllBenchmarks then
-        this.RunAllBenchmarks()
-      end
-    elseif this.RunBenchmark then
-      this.RunBenchmark(bn)
+    if this.RunAllBenchmarks then
+      this.RunAllBenchmarks()
     end
   else
     d("|cFF3333FurCDev|r: unknown cmd '" .. cmd .. "'.")
     d("Cmds: |cAACCFF/furcdev|r            toggle trader box")
     d("      |cAACCFF/furcdev tests|r      list tests")
     d("      |cAACCFF/furcdev test [id]|r  run test")
-    d("      |cAACCFF/furcdev bench [n]|r  run profiler scenario (leave empty for all)")
+    d("      |cAACCFF/furcdev bench|r      run all profiler scenarios in order")
   end
 end
 this.HandleSlash = handleSlash
@@ -109,8 +101,8 @@ local function init(_, addonName)
     return
   end
   this.textbox = FurCDevControlBox
-  this.textbox:SetMaxInputChars(3000)
   this.InitRightclickMenu()
+  this.InitDashboard()
 
   EVENT_MANAGER:UnregisterForEvent(FurCDev.name, EVENT_ADD_ON_LOADED)
 end

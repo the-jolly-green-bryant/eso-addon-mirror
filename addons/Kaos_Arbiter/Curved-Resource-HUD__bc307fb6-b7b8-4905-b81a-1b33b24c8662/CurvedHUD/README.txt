@@ -1,4 +1,4 @@
-Curved Resource HUD 0.9.0 REMAINING CLASS TRACKERS TEST BUILD
+Curved Resource HUD 0.9.16
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -10,6 +10,7 @@ Settings libraries are optional by design:
 If neither library loads, the HUD still renders. Chat commands:
   /curvedhud preview  - toggle fixed test values
   /curvedhud debug    - toggle diagnostic logging
+  /curvedhud report   - print release diagnostics and the latest guarded error
   /curvedhud          - show version/load status
 
 0.7.0 includes ESO-style gradient fills for Health, Stamina, and Magicka. The
@@ -17,7 +18,138 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.9.0-test; HUD, shield, and trackers created
+  [CurvedHUD] Loaded 0.9.16; HUD, shield, and trackers created
+
+0.9.16 clears enemy-bound timers when combat ends, matching ESO's removal of
+hostile DoTs, ground effects, target debuffs and combat-only stacks. Carve also
+forgets its accumulated 12/22/32-second tier so the next combat begins at 12.
+Self-buffs, heals, shields, utility windows, readiness states and item-set
+cooldowns remain untouched.
+
+0.9.15 separates complete cast-owned durations from their periodic child ticks.
+Short pulses, final ticks and their fade events can no longer restart, shorten or
+clear an expiring parent timer. A later full-duration API endpoint can still
+extend the timer when appropriate. Destruction Staff tracking now recognizes
+the Fire, Frost and Storm variants of Wall of Elements and Elemental Blockade.
+
+0.9.14 corrects Carve's stacking bleed timer. A fresh application starts at 12
+seconds; recasting while it remains active advances it to 22 and then 32 seconds.
+Duplicate reports for one cast are ignored. Brawler's short damage-shield effect
+is excluded completely and cannot start, shorten, clear or replace this timer.
+
+0.9.13 adds ID-first skill-family matching. Confirmed and automatically learned
+ability IDs are persisted account-wide, slotted abilities can also bind through
+language-independent icon paths, and localized API names remain the final
+fallback. Successful fallback matches teach the ID for later casts and sessions.
+
+Saved data now carries an explicit schema version. The first 0.9.13 load removes
+obsolete letter-build calibration settings without resetting character tracker
+choices, validates the icon/ID caches, and disables the former default debug
+logging. `/curvedhud report` prints version/schema/API information, detected
+menu libraries, layout, tracker counts, learned IDs, Lua memory and recent errors.
+
+The Parallel outer resource radius is fixed at the selected 0.8 calibration.
+Riding Stamina receives the same correction only while it occupies the outer
+Parallel position; its inner and Stacked configurations remain unchanged.
+
+The final Parallel outer-right timer radii are fixed at 0.8 for Thin and 0.5
+for Thick. Their shared horizontal offset defaults to 3. Shared spacing defaults
+to 3 for Thin, while Thick retains its tested built-in correction to -2.
+
+0.9.12 treats Bar Width 72 as the calibrated timer-radius reference. All timer
+textures now stretch or compress horizontally by the current Bar Width divided
+by 72, keeping their curve radius aligned as the main HUD radius changes. HUD
+Scale remains independent and therefore cannot double-apply this correction.
+
+0.9.11 separates timer-group offset from inside/outside timer spacing. The
+settings now expose only one offset and spacing pair for each side, while the
+layout-specific curve geometry remains in its dedicated textures. Thin and thick
+inside/outside radii were refined from the 0.9.10 screenshots, all thick bars
+share the outer-left reference thickness. Upper outside textures retain their
+complete caps, while their icons and timer labels now sit closer to the arcs.
+The follow-up geometry revision increases both thin-left sweeps and substantially
+increases thin-right sweeps, preserves the approved thick inner-left curve, and
+separately tunes thick right Parallel and Stacked radii. Upper-outside textures
+now retain padded semicircular endpoints, the two outer-right quadrants share
+one horizontal baseline, and the Parallel outer resource arc nests more closely.
+The memory guard remains definition-driven and lazy. Balance, Bound Aegis, Bound
+Armaments, and Crystal Fragments now also allocate controls only when enabled.
+Each instantiated timer references only its current side/layout/inside-outside/
+thickness fill-and-frame pair, and unchanged layout refreshes skip texture calls.
+
+0.9.10 isolates skill-family matching so partial words such as Carve inside Fate
+Carver cannot cross class and weapon trackers. Pulsing effects retain their full
+parent duration, while later endpoints extend stackable effects such as Carve.
+Timer arcs now compensate for resource-bar width and provide separate left,
+right-parallel, and right-stacked horizontal offsets. New characters begin with
+all optional trackers disabled; existing character profiles remain unchanged.
+
+0.9.9 keeps Turning Tide visible whenever at least three persistent set pieces
+are equipped, supporting common front-bar-only configurations. Its icon displays
+WAIT until Flowing Water is primed, READY only when both the block condition and
+cooldown permit activation, and the cooldown after the set actually procs.
+
+0.9.8 substantially reduces the add-on's idle memory footprint. The previous
+build instantiated all class, weapon, guild, scribing, and 44 item-set trackers
+at startup, including disabled choices. Definition-driven trackers are now
+created only when enabled. Quest/Golden Pursuits controls are cached once and
+their periodic opacity update no longer allocates temporary tables. Use
+`/curvedhud memory` to report the instantiated tracker count and total ESO UI
+Lua memory for before/after comparisons. Total Lua memory includes other add-ons.
+The second optimization pass also creates Critical Surge, Vibrant Shroud, Crux,
+and unused Major/Minor buff controls only when selected. This avoids paying for
+their textures, labels, borders, and curved timer layers on characters that do
+not use them.
+
+0.9.7 separates live set-effect artwork from worn-item fallback artwork. Once
+ESO supplies a valid buff, debuff, proc, or cooldown icon, equipment and weapon
+bar refreshes can no longer replace it with an equipped staff, shield, weapon,
+or armor icon. The rule applies to every item-set tracker; item artwork remains
+only as the last fallback before a live effect has been observed.
+This build also adds optional contextual opacity for ESO's focused Quest Tracker
+and Golden Pursuits tracker. They can be reduced independently during combat
+and while inside dungeons, trials, or Infinite Archive. An opacity of 0% hides
+them completely; higher values leave them dimmed. Both behaviors default off.
+
+0.9.6 separates active-bar set counts from overall equipped-set availability.
+Sets completed by a front- or back-bar weapon, including Powerful Assault and
+Turning Tide, remain eligible across weapon swaps. Two-handed weapons count as
+two set pieces, inactive-bar items remain available, and an already-running
+effect stays visible through its natural expiration even after a genuine
+equipment change.
+
+0.9.5 fixes repeated applications of group set effects such as Powerful Assault.
+All duration sets now retain separate live instances per affected unit, ignore
+stale fade events after a refresh, and clear every runtime state when unequipped.
+The correction is shared by all item-set definitions rather than being specific
+to Powerful Assault.
+
+0.9.4 introduces character-specific item-set tracking organized into DPS,
+Healer & Support, Tank, Arena Weapon, and Infinite Archive Class Set submenus.
+Trackers support live durations, stack counts with expiration windows, cooldown
+countdowns, green READY indicators, conditional Turning Tide readiness, and a
+five-piece Jorvuld's Guidance ACTIVE indicator. ESO's live begin/end times are
+used when available, so Jorvuld-extended Major/Minor buffs and shields retain
+their actual extended durations rather than an unmodified fallback value.
+The expanded composition pass adds Z'en's Redress, Elemental Catalyst, Roar of
+Alkosh, Aegis Caller, Burning Spellweave, Briarheart, Vestment of Olorime,
+Saxhleel Champion, Master Architect, War Machine, Drake's Rush, Arkasis's
+Genius, Claw of Yolnahkriin, Encratis's Behemoth, Rush of Agony, and Dark
+Convergence. Way of Martial Knowledge has a separate character-specific
+Stamina cue: light green below 50% while procable and light red at or above
+50%. The cue only applies with five pieces equipped and is disabled by default.
+Set duration tracking now keeps separate live effect instances per affected
+unit. A fade from one group member can no longer cancel a refreshed application
+on another member, fixing repeated Powerful Assault casts and protecting every
+other group-duration tracker from the same event-ordering problem.
+
+0.9.3 expands standardized buff tracking to two independently selectable Major
+buffs and two independently selectable Minor buffs. Each has its own timer
+position and color and remains character-specific. The Equilibrium/Balance
+penalty is now correctly located under Mages Guild. Additional optional negative
+trackers cover Blood for Blood, Blood Frenzy, Nightblade Offering health drain,
+and the short Unstoppable self-snare window. Self-penalties never trigger the
+positive imminent-expiration warning.
 
 0.9.0 completes the initial class-tracker framework with dedicated expandable
 Dragonknight, Nightblade, Templar, and Necromancer submenus. Each tracker is
